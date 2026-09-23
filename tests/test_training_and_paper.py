@@ -1,10 +1,11 @@
 """Tests for the pretraining execution harness (Task 18), the teacher-throughput
 benchmark (Task 11) and the paper scaffolding / manuscript linter (Task 21).
 
-Everything runs on CPU with tiny synthetic data, no network, and no external
-tools.  The real thermodynamic teacher is *not* installed (see
-``rnajepa.distill.ThermodynamicTeacher``), so only the ``MockTeacher`` is used --
-and the tests assert that the throughput report says so.
+Everything runs on CPU with tiny synthetic data and no network.  ViennaRNA *is*
+installed out-of-tree at ``/mnt/cunyuliu/pylibs`` (the ``/home`` quota is full),
+so the thermodynamic-teacher tests are written to hold in either environment:
+the assertion is "a real tool is never silently replaced by the mock", not "this
+host happens to lack the tool".
 
 Run:  python -m pytest tests/test_training_and_paper.py -v
   or: python tests/test_training_and_paper.py
@@ -552,11 +553,35 @@ def test_teacher_ensemble_assembly_and_probability_self_consistency():
     assert TP.probability_self_consistency(broken, mask)["passes"] is False
 
 
-def test_teacher_throughput_refuses_real_tools_instead_of_using_the_mock():
+def test_teacher_throughput_never_degrades_a_real_tool_to_the_mock(monkeypatch):
+    """A real teacher is used when importable, and raises when it is not.
+
+    The earlier version of this test asserted that ViennaRNA was *absent*; that
+    held only before it was installed out-of-tree at ``/mnt/cunyuliu/pylibs``.
+    The contract is about behaviour, so it is checked in both directions here.
+    """
+    from rnajepa import distill as Distill
+
+    try:
+        import RNA  # noqa: F401  (optional dependency of the real teacher)
+    except ImportError:  # pragma: no cover - depends on the host
+        pytest.skip("ViennaRNA not importable in this interpreter")
+
+    real = TP._resolve_teacher("viennarna", 0)
+    assert real.tool == "viennarna"
+    assert real.name == "thermo:viennarna"
+    assert real.tool_version().startswith("ViennaRNA")
+
+    def _absent():
+        raise Distill.ThermodynamicUnavailableError("simulated: ViennaRNA absent")
+
+    monkeypatch.setattr(Distill.ThermodynamicTeacher, "_import_rna",
+                        staticmethod(_absent))
     with pytest.raises(TP.TeacherUnavailableError):
         TP._resolve_teacher("viennarna", 0)
     assert TP.main(["--teacher", "viennarna"]) == 3
-    # --mock runs and exits 0
+
+    # --mock still runs, exits 0, and reports itself as a mock
     assert TP.main(["--mock", "--buckets", "32", "--n-per-bucket", "1",
                     "--repeats", "1", "--warmup", "0"]) == 0
 

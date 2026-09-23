@@ -55,6 +55,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.checkpoint import checkpoint
 
 from rnajepa.encoder import RT_KCAL, UNK_INDEX, nn_dg_lookup_table
 from rnajepa.harness import MIN_LOOP, average_flops_estimate, valid_pair_mask
@@ -191,12 +192,21 @@ class PairTypeHead(nn.Module):
         b = hj[:, None, :, :].expand(B, Li, Lj, d)
         return self.proj(torch.cat([a, b], dim=-1))
 
-    def forward(self, h: torch.Tensor) -> torch.Tensor:
-        B, L, _ = h.shape
-        t = self.cross(h, h)
-        upper = torch.triu(torch.ones(L, L, dtype=torch.bool, device=h.device), diagonal=1)
+    def symmetrize(self, t: torch.Tensor) -> torch.Tensor:
+        """Enforce ``t_ji = Pi t_ij`` on a full ``(B, L, L, 6)`` tensor.
+
+        Split out of :meth:`forward` so the chunked path in
+        :class:`FlatDecisionHead` can build ``t`` column-chunk by column-chunk and
+        apply the constraint once, instead of materialising the whole
+        ``(B, L, L, 2*d)`` activation.
+        """
+        L = t.shape[1]
+        upper = torch.triu(torch.ones(L, L, dtype=torch.bool, device=t.device), diagonal=1)
         t = t * upper[None, :, :, None]
         return t + t[..., list(TYPE_PERM)].transpose(1, 2)
+
+    def forward(self, h: torch.Tensor) -> torch.Tensor:
+        return self.symmetrize(self.cross(h, h))
 
 
 # --------------------------------------------------------------------------- #
@@ -314,10 +324,23 @@ class FlatDecisionHead(nn.Module):
         min_loop: int = MIN_LOOP,
         calibration_edges: Sequence[int] = DEFAULT_BUCKET_EDGES,
         use_turner_prior: bool = True,
+        chunk_size: int = 64,
+        grad_checkpoint: bool = True,
     ) -> None:
         super().__init__()
         self.min_loop = min_loop
         self.use_turner_prior = use_turner_prior
+        #: Column-chunk width for the pair tensors.  ``0`` disables chunking (the
+        #: original whole-matrix path, kept for equivalence testing).  See the
+        #: module docstring of ``tools/patch_head_chunking.py`` for the measurement
+        #: that motivates it.
+        self.chunk_size = int(chunk_size)
+        #: Recompute each chunk during backward instead of retaining its internal
+        #: activations.  Chunking alone does **not** bound peak memory -- autograd
+        #: keeps every chunk's saved tensors -- so this is the part that actually
+        #: makes long sequences trainable on a small MIG slice.  See
+        #: ``tools/patch_head_checkpointing.py`` for the measurement.
+        self.grad_checkpoint = bool(grad_checkpoint)
         self.pair_repr = PairRepresentation(d_model, d_z)
         self.turner = TurnerResidual(d_z, hidden)
         self.type_head = PairTypeHead(d_model, n_types)
@@ -337,16 +360,51 @@ class FlatDecisionHead(nn.Module):
     ) -> DecisionScores:
         B, L, _ = h.shape
         mask = pair_mask_from_ids(seq_ids, self.min_loop).to(h.device)
-        z = self.pair_repr(h)
-        s = self.turner(z)
+        s, types = self.pair_scores_and_types(h)
         if self.use_turner_prior:
             s = s + turner_phys_scores(seq_ids).to(h.device)
         if calibrate and lengths is not None:
             s = self.calibration(s, lengths)
         s = torch.where(mask, s, torch.full_like(s, float("-inf")))
-        types = self.type_head(h)
         self.last_flops = flat_flops_estimate(L, self.pair_repr.d_z)
         return DecisionScores(scores=s, pair_types=types, mask=mask)
+
+    def pair_scores_and_types(self, h: torch.Tensor):
+        """``(scores, pair_types)`` for every ``(i, j)``, chunked along ``j``.
+
+        With ``chunk_size == 0`` or a chunk no smaller than ``L`` this is exactly
+        the original whole-matrix computation; otherwise the same projection is
+        evaluated on column slices and concatenated, which is bitwise identical
+        and costs ``O(B * L * chunk * d)`` peak activation instead of
+        ``O(B * L * L * d)``.
+        """
+        B, L, _ = h.shape
+        chunk = self.chunk_size if 0 < self.chunk_size < L else L
+        #: Checkpointing is only meaningful when there is more than one chunk; with
+        #: a single chunk it would just recompute the whole matrix for nothing.
+        use_ckpt = self.grad_checkpoint and chunk < L
+        score_chunks, type_chunks = [], []
+        for j0 in range(0, L, chunk):
+            hj = h[:, j0:j0 + chunk]
+            if use_ckpt:
+                score_chunks.append(checkpoint(self._chunk_scores, h, hj,
+                                               use_reentrant=False))
+                type_chunks.append(checkpoint(self._chunk_types, h, hj,
+                                              use_reentrant=False))
+            else:
+                score_chunks.append(self._chunk_scores(h, hj))
+                type_chunks.append(self._chunk_types(h, hj))
+        s = score_chunks[0] if len(score_chunks) == 1 else torch.cat(score_chunks, dim=2)
+        t = type_chunks[0] if len(type_chunks) == 1 else torch.cat(type_chunks, dim=2)
+        return s, self.type_head.symmetrize(t)
+
+    def _chunk_scores(self, h: torch.Tensor, hj: torch.Tensor) -> torch.Tensor:
+        """Pair scores for the column block ``hj`` -- the checkpointed unit."""
+        return self.turner(self.pair_repr.cross(h, hj))
+
+    def _chunk_types(self, h: torch.Tensor, hj: torch.Tensor) -> torch.Tensor:
+        """Pair-type logits for the column block ``hj`` -- the checkpointed unit."""
+        return self.type_head.cross(h, hj)
 
 
 # --------------------------------------------------------------------------- #
