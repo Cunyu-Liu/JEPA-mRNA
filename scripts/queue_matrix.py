@@ -94,6 +94,11 @@ def main() -> int:
                          "value is then applied to every model, so the comparison stays fair.")
     ap.add_argument("--epochs_override", type=int, default=0,
                     help="shorter schedule for sweeps (the sweep only needs the dev curve)")
+    ap.add_argument("--force", action="store_true",
+                    help="re-enqueue cells that already have result.json. Used to repair "
+                         "cells whose run_meta.json shows a protocol deviation (the OOM "
+                         "retry can halve the batch) -- the new run overwrites the same "
+                         "output directory, so there stays exactly one artefact per cell.")
     ap.add_argument("--dry_run", action="store_true")
     ap.add_argument("--python", default=os.environ.get(
         "RNAJEPA_PYTHON", "/home/cunyuliu/miniconda3/envs/lucaone/bin/python"),
@@ -137,7 +142,9 @@ def main() -> int:
             is_sweep = bool(args.lrs)
             name = (f"{args.model_label}_{task}_lr{lr:g}_s{seed}" if is_sweep
                     else f"{args.model_label}_{task}_s{seed}")
-            if is_sweep:
+            if args.force:
+                pass
+            elif is_sweep:
                 if os.path.isfile(os.path.join(sweep_out_dir_for(args.model_label, task, seed, lr),
                                                "result.json")):
                     skipped_done += 1

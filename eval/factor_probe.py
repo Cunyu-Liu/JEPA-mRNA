@@ -1,0 +1,335 @@
+"""Factor semantics probe for a pre-trained RNA-JEPA checkpoint (Fig.5 material).
+
+Question the probe answers: **do the K orthogonal factors of the OPF basis carry
+interpretable RNA semantics, or are they an arbitrary decomposition?**  The answer
+decides whether claim C3 survives or whether Fig.5 degrades to a training-dynamics
+panel, as the proposal's fallback path allows.
+
+Method
+------
+1. Encode a pool of sequences drawn from the three mRNA regions (5'UTR-only, CDS-only,
+   3'UTR-only tasks) with the checkpoint's encoder.
+2. For every sequence build the factor coordinates: pool the region-aware summary,
+   apply the region projection, then project through the learned basis ``P_k``.
+3. Probe those coordinates for (a) the factor's own region identity and (b) the task
+   family, using both a linear classifier (accuracy, balanced accuracy) and clustering
+   (ARI, FMI).
+4. **Random-subspace control.**  Repeat (3) with K random orthonormal projections of the
+   same rank.  A linear probe is invariant to rotation, so comparing against a *rotated*
+   basis would be vacuous; what actually needs controlling for is whether the learned
+   r-dimensional subspaces are better than arbitrary r-dimensional subspaces.
+5. Significance: permutation test (label shuffling) per probe, then Benjamini-Hochberg
+   across all probes.  Nothing is reported without the control and the correction.
+
+Outputs: ``factor_probe.json`` (all numbers), ``factor_coords.csv`` (coordinates plus
+labels for t-SNE/UMAP figures), ``probe_report.md`` (human-readable summary).
+
+Usage:
+  python eval/factor_probe.py --ckpt <run>/hf/step_N --weights <weights_dir> \
+      --data_root <extracted> --out <dir> --n_per_task 400
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import os
+import random
+import sys
+from typing import Dict, List, Sequence, Tuple
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+
+# Tasks whose sequences are dominated by one region, used to give the probe a
+# region label that is true by construction of the task, not by our annotation.
+REGION_TASKS = {
+    "5UTR": ["5UTR/Rank/U1", "5UTR/Rank/U2"],
+    "CDS": ["CDS/mRFP", "CDS/Fungal"],
+    "3UTR": ["3UTR/RNA_protein_interaction/22_eCLIP/0"],
+}
+
+
+def _preselect_device(dev: str) -> None:
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(dev)
+
+
+def load_sequences(data_root: str, relpaths: Sequence[str], n_per_task: int,
+                   seed: int) -> List[Tuple[List[int], List[int]]]:
+    """Return ``(space_separated_tokens, per-token region ids)`` for each sequence.
+
+    Region ids are recovered from the tokenisation itself: a three-character token is
+    a codon (CDS), a one-character token is a nucleotide (UTR).  That is exact for the
+    `codon` and `utr` tasks used here; the ambiguity that exists for `complete`
+    sequences (a short trailing codon) does not arise because none of the pool tasks
+    uses it.
+    """
+    from rnajepa.tokenization import REGION_3UTR, REGION_CDS, REGION_5UTR
+    rng = random.Random(seed)
+    out: List[Tuple[List[int], List[int]]] = []
+    for rel in relpaths:
+        path = os.path.join(data_root, rel, "train.csv")
+        if not os.path.isfile(path):
+            print(f"  WARN missing {path}")
+            continue
+        rows = list(csv.reader(open(path, encoding="utf-8")))[1:]
+        rows = [r for r in rows if len(r) >= 2 and r[0].strip()]
+        rng.shuffle(rows)
+        for row in rows[:n_per_task]:
+            toks = row[0].split()
+            regions = []
+            seen_codon = False
+            for t in toks:
+                if len(t) >= 3:
+                    regions.append(REGION_CDS)
+                    seen_codon = True
+                else:
+                    regions.append(REGION_3UTR if seen_codon else REGION_5UTR)
+            out.append((toks, regions))
+    return out
+
+
+def build_features(model, tokenizer, specials, samples, device, max_len: int):
+    """Return factor coordinates ``[N, K, r_dim]`` and the sequence-level labels."""
+    import numpy as np
+    import torch
+    from rnajepa.tokenization import REGION_NONE
+
+    tok_map = tokenizer.get_vocab()
+    feats, regions = [], []
+    model.eval()
+    with torch.no_grad():
+        for toks, regs in samples:
+            ids = [specials["cls"]] + [tok_map.get(t, specials["unk"]) for t in toks] \
+                  + [specials["sep"]]
+            rids = [REGION_NONE] + regs + [REGION_NONE]
+            if len(ids) > max_len:
+                ids = ids[:max_len - 1] + [specials["sep"]]
+                rids = rids[:max_len - 1] + [REGION_NONE]
+            ids_t = torch.tensor([ids], device=device)
+            attn = torch.ones_like(ids_t)
+            rids_t = torch.tensor([rids], device=device)
+            h = model.student.encode(ids_t, attn)
+
+            # region summary in the same way the objective forms one
+            present = [r for r in (0, 1, 2) if ((rids_t == r) & attn.bool()).any()]
+            if present:
+                r = max(present, key=lambda rr: ((rids_t == rr) & attn.bool()).sum().item())
+                sel = (rids_t == r) & attn.bool()
+                w = sel.to(h.dtype).unsqueeze(-1)
+                pooled = (h * w).sum(dim=1) / w.sum(dim=1).clamp_min(1.0)
+                pooled = model.region_proj[str(r)](pooled)
+                label_region = r
+            else:
+                pooled = h[:, 0]
+                label_region = -1
+            coords = model.factor_basis.project(pooled).squeeze(0)   # K, r_dim
+            feats.append(coords.cpu().numpy())
+            regions.append(label_region)
+    return np.stack(feats), np.array(regions)
+
+
+def probes(coords, labels, seed: int, n_perm: int = 200) -> Dict[str, float]:
+    """Linear probe accuracy + clustering agreement + permutation p-value."""
+    import numpy as np
+    from sklearn.cluster import KMeans
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import (accuracy_score, adjusted_rand_score,
+                                 balanced_accuracy_score, fowlkes_mallows_score)
+    from sklearn.model_selection import train_test_split
+
+    rng = np.random.default_rng(seed)
+    x = coords.reshape(len(coords), -1)
+    y = np.asarray(labels)
+    uniq, counts = np.unique(y, return_counts=True)
+    if uniq.size < 2:
+        return {"status": "single_class", "n_classes": int(uniq.size)}
+
+    x_tr, x_te, y_tr, y_te = train_test_split(x, y, test_size=0.3, random_state=seed,
+                                              stratify=y)
+    clf = LogisticRegression(max_iter=2000, C=1.0)
+    clf.fit(x_tr, y_tr)
+    pred = clf.predict(x_te)
+    acc = float(accuracy_score(y_te, pred))
+    bal = float(balanced_accuracy_score(y_te, pred))
+
+    km = KMeans(n_clusters=uniq.size, n_init=10, random_state=seed).fit_predict(x)
+    ari = float(adjusted_rand_score(y, km))
+    fmi = float(fowlkes_mallows_score(y, km))
+
+    null = []
+    for _ in range(n_perm):
+        y_perm = rng.permutation(y)
+        xtr, xte, ytr, yte = train_test_split(x, y_perm, test_size=0.3,
+                                              random_state=seed, stratify=y_perm)
+        null.append(accuracy_score(yte, LogisticRegression(max_iter=1000).fit(xtr, ytr)
+                                   .predict(xte)))
+    null = np.asarray(null)
+    p = float((null >= acc).mean() * (n_perm + 1) / n_perm)
+    return {"status": "ok", "n": int(len(coords)), "n_classes": int(uniq.size),
+            "majority": float(counts.max() / counts.sum()), "acc": acc,
+            "balanced_acc": bal, "ari": ari, "fmi": fmi,
+            "chance": float(null.mean()), "p_perm": p}
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--ckpt", required=True, help="dir holding rnajepa_modules.pt + config")
+    ap.add_argument("--weights", required=True, help="pristine weights dir (tokenizer/config)")
+    ap.add_argument("--data_root", default="/mnt/cunyuliu/rna-jepa/data/downstream_extracted")
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--n_per_task", type=int, default=400)
+    ap.add_argument("--max_len", type=int, default=512)
+    ap.add_argument("--device", default="0")
+    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--n_perm", type=int, default=200)
+    args = ap.parse_args()
+
+    _preselect_device(args.device)
+    import numpy as np
+    import torch
+    from transformers import AutoTokenizer
+
+    from rnajepa.metrics import benjamini_hochberg
+    from rnajepa.model import JEPAConfig, RNARJEPA
+
+    if not torch.cuda.is_available():
+        raise SystemExit("FATAL: CUDA unavailable; the probe must run on GPU")
+    os.makedirs(args.out, exist_ok=True)
+
+    tokenizer = AutoTokenizer.from_pretrained(args.weights, use_fast=True,
+                                              trust_remote_code=True)
+    specials = {"cls": tokenizer.cls_token_id, "sep": tokenizer.sep_token_id,
+                "pad": tokenizer.pad_token_id, "mask": tokenizer.mask_token_id,
+                "unk": tokenizer.unk_token_id}
+    cfg = JEPAConfig(model_path=args.weights, mask_token_id=specials["mask"])
+    model = RNARJEPA(cfg).cuda()
+
+    modules = os.path.join(args.ckpt, "rnajepa_modules.pt")
+    if os.path.isfile(modules):
+        state = torch.load(modules, map_location="cpu")
+        model.predictor.load_state_dict(state["predictor"])
+        model.factor_basis.load_state_dict(state["factor_basis"])
+        model.region_proj.load_state_dict(state["region_proj"])
+        model.teacher_region_proj.load_state_dict(state["teacher_region_proj"])
+        with torch.no_grad():
+            model.remask_embed.copy_(state["remask_embed"])
+        print(f"loaded RNA-JEPA modules from {modules}")
+    else:
+        print("WARN: no rnajepa_modules.pt; factors will be at their initial values")
+
+    ckpt_model = os.path.join(args.ckpt, "pytorch_model.bin")
+    if os.path.isfile(ckpt_model):
+        sd = torch.load(ckpt_model, map_location="cpu")
+        missing, unexpected = model.student.load_state_dict(sd, strict=False)
+        print(f"loaded encoder from checkpoint; missing={len(missing)} "
+              f"unexpected={len(unexpected)}")
+    else:
+        print("WARN: no encoder checkpoint next to the modules; using the original weights")
+
+    all_samples, region_labels = [], []
+    for region_name, rels in REGION_TASKS.items():
+        got = load_sequences(args.data_root, rels, args.n_per_task, args.seed)
+        print(f"pool {region_name}: {len(got)} sequences")
+        all_samples.extend(got)
+        region_labels.extend([region_name] * len(got))
+
+    coords, _ = build_features(model, tokenizer, specials, all_samples, "cuda",
+                               args.max_len)
+    k = coords.shape[1]
+    print(f"factor coordinates: {coords.shape}")
+
+    region_names = np.array(region_labels)
+    results: Dict[str, dict] = {}
+    pvals, keys = [], []
+
+    # per-factor probes: does factor k alone encode the region label?
+    for kk in range(k):
+        r = probes(coords[:, kk, :], region_names, args.seed, args.n_perm)
+        results[f"factor_{kk}_region"] = r
+        if r.get("status") == "ok":
+            pvals.append(r["p_perm"])
+            keys.append(f"factor_{kk}_region")
+
+    # all factors together
+    r_all = probes(coords.reshape(len(coords), -1), region_names, args.seed, args.n_perm)
+    results["all_factors_region"] = r_all
+    if r_all.get("status") == "ok":
+        pvals.append(r_all["p_perm"])
+        keys.append("all_factors_region")
+
+    # ---- random-subspace control ------------------------------------------
+    control: Dict[str, dict] = {}
+    with torch.no_grad():
+        d = model.hidden_size
+        for trial in range(3):
+            torch.manual_seed(1000 + trial)
+            q, _ = torch.linalg.qr(torch.randn(d, d, device="cuda"))
+            rand_P = torch.stack([q[:, kk * (d // k):(kk + 1) * (d // k)] for kk in range(k)])
+            orig = model.factor_basis.P.data.clone()
+            model.factor_basis.P.data.copy_(rand_P)
+            c2, _ = build_features(model, tokenizer, specials, all_samples, "cuda",
+                                   args.max_len)
+            model.factor_basis.P.data.copy_(orig)
+            control[f"random_subspace_trial{trial}"] = probes(
+                c2.reshape(len(c2), -1), region_names, args.seed, args.n_perm)
+
+    # ---- FDR across every probe reported ----------------------------------
+    if pvals:
+        adj = benjamini_hochberg(pvals, alpha=0.05)
+        for key, pa, rej in zip(keys, adj["p_adj"], adj["reject"]):
+            results[key]["p_adj_bh"] = pa
+            results[key]["significant_bh"] = bool(rej)
+
+    # ---- write ------------------------------------------------------------
+    with open(os.path.join(args.out, "factor_probe.json"), "w", encoding="utf-8") as fh:
+        json.dump({"ckpt": args.ckpt, "n_sequences": len(coords), "K": k,
+                   "r_dim": int(coords.shape[2]), "probes": results,
+                   "random_subspace_control": control}, fh, indent=1, default=str)
+
+    with open(os.path.join(args.out, "factor_coords.csv"), "w", newline="",
+              encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow(["index", "region"] + [f"f{kk}_{j}" for kk in range(k)
+                                          for j in range(coords.shape[2])])
+        flat = coords.reshape(len(coords), -1)
+        for i in range(len(coords)):
+            w.writerow([i, region_names[i]] + [f"{v:.5f}" for v in flat[i]])
+
+    lines = ["# Factor semantics probe", "",
+             f"checkpoint: `{args.ckpt}`", f"sequences: {len(coords)} "
+             f"({', '.join(f'{r}={int((region_names == r).sum())}' for r in sorted(set(region_labels)))})",
+             f"K = {k}, r_dim = {coords.shape[2]}", "",
+             "| probe | n | classes | chance | balanced acc | ARI | FMI | p(perm) | p(BH) | significant |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
+    for name, r in list(results.items()) + list(control.items()):
+        if r.get("status") != "ok":
+            lines.append(f"| {name} | - | - | - | - | - | - | - | - | {r.get('status')} |")
+            continue
+        lines.append(
+            f"| {name} | {r['n']} | {r['n_classes']} | {r['chance']:.3f} | "
+            f"{r['balanced_acc']:.3f} | {r['ari']:.3f} | {r['fmi']:.3f} | "
+            f"{r['p_perm']:.4f} | {r.get('p_adj_bh', float('nan')):.4f} | "
+            f"{r.get('significant_bh', '')} |")
+    lines += ["", "The random-subspace rows use K random orthonormal projections of the same "
+                  "rank. A linear probe is rotation-invariant, so rotating the learned basis "
+                  "would prove nothing; what is controlled for is whether the learned "
+                  "subspaces beat arbitrary subspaces of equal dimension.",
+              "",
+              "This is an interpretability probe, not a performance result. If no probe "
+              "survives FDR, claim C3 is withdrawn and Fig.5 becomes a training-dynamics "
+              "panel, as the proposal's fallback path specifies."]
+    with open(os.path.join(args.out, "probe_report.md"), "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+
+    for name, r in results.items():
+        if r.get("status") == "ok":
+            print(f"  {name}: bal_acc={r['balanced_acc']:.3f} (chance {r['chance']:.3f}) "
+                  f"ARI={r['ari']:.3f} p={r['p_perm']:.4f} "
+                  f"p_bh={r.get('p_adj_bh')}")
+    print(f"wrote {args.out}/factor_probe.json, factor_coords.csv, probe_report.md")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

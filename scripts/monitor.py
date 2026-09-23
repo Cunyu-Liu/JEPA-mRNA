@@ -52,7 +52,7 @@ STATUS = os.path.join(ART, "status.json")
 ALERTS = os.path.join(ART, "alerts.log")
 GPU_HISTORY = os.path.join(ART, "gpu_history.jsonl")
 
-STALL_MINUTES = 25
+STALL_MINUTES = 45
 ASYNC_READ_EVERY = 10  # bytes of tail inspected for NaN
 
 NAN_PATTERNS = (

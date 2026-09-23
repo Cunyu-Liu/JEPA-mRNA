@@ -1,39 +1,25 @@
-Evaluation orchestration: queue matrix, LR calibration, table statistics
+Analysis tooling and two correctness gates for the published table
 
-The paper's main table needs a full task x seed x model matrix, produced without a
-job scheduler on a shared node.  Three pieces close that loop:
-
-- scripts/queue_matrix.py turns the frozen task registry into queue specs.  The
-  auto-dispatcher then places them onto idle cards, so nothing has to be launched by
-  hand and the queue is the only thing that decides what runs.  It is idempotent
-  (a cell with result.json is skipped) and ordered so the main-result tasks go first.
-  It also supports a learning-rate sweep mode that writes to a separate output root,
-  because the protocol has to be calibrated on the reference model once and then
-  applied to every model identically -- tuning each model separately would invalidate
-  the comparison.
-- eval/make_tables.py builds the head-to-head table with paired bootstrap confidence
-  intervals, Wilcoxon signed-rank and Benjamini-Hochberg correction, and enforces the
-  positive-class-F1 convention for binary tasks.  Model discovery is opt-in so a
-  scratch run cannot silently enter the published table.
-- scripts/monitor.py: this was broken in three separate ways and none of them were
-  visible without reading its dispatch logs, which is why it now owns the log file
-  descriptor instead of relying on a shell redirect:
-    1. ``timeout 86400 cd ... && ...`` -- timeout execs its argument directly, so a
-       command starting with ``cd`` failed immediately with "failed to run command cd";
-    2. ``setsid`` on top of ``start_new_session=True`` -- the child is already a
-       session leader and setsid refuses, so the command never ran at all;
-    3. jobs dispatched in one pass all picked the same emptiest card, collided, and had
-       their batch size halved by the OOM retry.  The dispatcher now reserves one card
-       per job and passes it down as a preference, which removes the collision.
-
-Also: pre-training now resumes and survives OOM.  ``--resume`` was parsed but never
-implemented, so an interrupted run silently restarted from scratch; resume.pt now
-stores the teacher EMA as well as the student (without it the objective would change
-silently on resume), and the corpus position is stored as a line offset rather than a
-batch count so halving the batch size mid-run does not shift the data.
-
-Registry v3: verified every task source path against the extracted bundle, corrected
-CDS/stability and CDS/Tc/1, dropped apa_usage (that data is not in Zenodo 17786045 --
-recorded as unavailable rather than substituted), and flagged full_in_cell_half_life
-as not comparable to the paper because the whole full_length family is ~233 sequences
-and the paper used cross-validation where we have a 21-sequence holdout.
+- eval/make_tables.py: head-to-head table with paired bootstrap CIs, Wilcoxon
+  signed-rank and Benjamini-Hochberg correction, and a **protocol-conformity gate**.
+  The auto-dispatcher halves the batch size when a shared card runs out of memory --
+  the right engineering call, but a protocol deviation that still writes a
+  result.json, so without this gate such a run would quietly enter the published
+  table with a different effective batch. Conforming runs are now verified against
+  the registry (batch, epochs, max_len, lr) and deviating ones are listed and
+  excluded rather than averaged in.
+- eval/factor_probe.py: the Fig.5 probe. Region-labelled sequence pools, factor
+  coordinates from the learned basis, linear probe plus ARI/FMI, permutation test and
+  BH correction. The control is a *random-subspace* control rather than a rotated
+  basis, because a linear probe is rotation-invariant and rotating P_k would prove
+  nothing; what needs controlling for is whether the learned r-dimensional subspaces
+  beat arbitrary subspaces of the same rank. If nothing survives FDR, claim C3 is
+  withdrawn and Fig.5 becomes a dynamics panel, as the proposal allows.
+- eval/plot_dynamics.py: Fig.6 panels from train_log.jsonl (losses, the four collapse
+  monitors, curriculum and realised mask fraction), plus dynamics.csv.
+- run_meta.json is now written atomically: the OOM retry starts a fresh process while
+  the previous one may still be finishing, and two interleaved writers produced a
+  truncated file that the report failed to parse. queue_matrix.py gained --force to
+  re-run a deviated cell in place.
+- monitor.py: stall threshold raised to 45 minutes; the old 25-minute value flagged
+  long jobs during their epoch-boundary evaluation.

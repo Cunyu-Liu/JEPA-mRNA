@@ -490,8 +490,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "torch": torch.__version__,
         "transformers": transformers.__version__,
     }
-    with open(os.path.join(args.out_dir, "run_meta.json"), "w", encoding="utf-8") as fh:
+    # Write atomically: the OOM retry path starts a fresh process while the previous
+    # one may still be finishing, and two writers interleaving produced a truncated
+    # run_meta.json that the table builder then failed to parse.
+    meta_path = os.path.join(args.out_dir, "run_meta.json")
+    tmp_path = meta_path + ".tmp"
+    with open(tmp_path, "w", encoding="utf-8") as fh:
         json.dump(meta, fh, indent=1, allow_nan=False, sort_keys=True)
+    os.replace(tmp_path, meta_path)
 
     if args.save_model:
         model.save_pretrained(os.path.join(args.out_dir, "best"))

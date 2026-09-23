@@ -78,6 +78,40 @@ def collect(eval_root: str, model_label: str, task: str) -> List[dict]:
     return out
 
 
+PROTOCOL_KEYS = ("batch_size", "epochs_requested", "max_len")
+
+
+def protocol_check(run_dir: str, spec: dict, lr_expected: float) -> tuple:
+    """Verify a run actually used the registered protocol.
+
+    The auto-dispatcher halves the batch size when a shared card runs out of memory,
+    which is the right engineering call but a *protocol deviation*.  Those runs are
+    still written to disk with a result.json, so without this check they would quietly
+    enter the published table with a different effective batch size.  Returns
+    ``(ok, details)``.
+    """
+    path = os.path.join(run_dir, "run_meta.json")
+    if not os.path.isfile(path):
+        return True, "no run_meta.json (cannot verify; treated as conforming)"
+    try:
+        with open(path, encoding="utf-8") as fh:
+            meta = json.load(fh)
+    except (json.JSONDecodeError, OSError) as exc:
+        # A concurrent writer used to be able to leave a truncated file; treat an
+        # unverifiable run as non-conforming rather than crashing the report.
+        return False, f"run_meta.json unreadable ({exc})"
+    problems = []
+    for key in PROTOCOL_KEYS:
+        want = spec.get(key if key != "batch_size" else "batch")
+        got = meta.get(key)
+        if want is not None and got is not None and float(want) != float(got):
+            problems.append(f"{key}: registry={want} run={got}")
+    got_lr = meta.get("lr")
+    if got_lr is not None and abs(float(got_lr) - lr_expected) > 1e-12:
+        problems.append(f"lr: registry={lr_expected:g} run={got_lr:g}")
+    return (not problems), ("; ".join(problems) if problems else "ok")
+
+
 def metric_value(rec: dict, metric: str, f1_kind: str) -> Optional[float]:
     if metric == "accuracy":
         return rec.get("accuracy")
@@ -124,6 +158,7 @@ def main() -> int:
     os.makedirs(args.out, exist_ok=True)
     rows: List[dict] = []
     comparisons: List[dict] = []
+    deviations: List[dict] = []
     pvals: List[float] = []
     comp_index: List[int] = []
 
@@ -133,26 +168,44 @@ def main() -> int:
             recs = collect(args.eval_root, model, task)
             if not recs:
                 continue
-            vals = [metric_value(r, metric, args.f1) for r in recs]
+            for r in recs:
+                ok, detail = protocol_check(r["_dir"], spec, float(spec["lr"]))
+                r["_protocol_ok"], r["_protocol_detail"] = ok, detail
+            deviated = [r for r in recs if not r["_protocol_ok"]]
+            conforming = [r for r in recs if r["_protocol_ok"]]
+            if deviated:
+                deviations.append({
+                    "task": task, "model": model, "n_deviated": len(deviated),
+                    "details": [r["_protocol_detail"] for r in deviated],
+                    "dirs": [r["_dir"] for r in deviated],
+                })
+            recs_used = conforming or []
+            vals = [metric_value(r, metric, args.f1) for r in recs_used]
             vals = [v for v in vals if v is not None and v == v]
             rows.append({
                 "task": task, "family": spec["family"], "metric": metric,
                 "model": model, "n_seeds": len(vals),
                 "mean": statistics.fmean(vals) if vals else None,
                 "sd": (statistics.stdev(vals) if len(vals) > 1 else 0.0) if vals else None,
-                "seeds": ",".join(str(r["_seed"]) for r in recs),
+                "seeds": ",".join(str(r["_seed"]) for r in recs_used),
+                "n_deviated_excluded": len(deviated),
                 "paper": spec.get("paper"),
                 "paper_delta": (statistics.fmean(vals) - spec["paper"]
                                 if vals and spec.get("paper") is not None else None),
                 "shared_dev_test": bool(spec.get("shared_dev_test", False)),
             })
 
-        ref = collect(args.eval_root, args.reference, task)
+        ref_all = collect(args.eval_root, args.reference, task)
+        if not ref_all:
+            continue
+        ref = [r for r in ref_all
+               if protocol_check(r["_dir"], spec, float(spec["lr"]))[0]]
         if not ref:
             continue
         ref_by_seed = {r["_seed"]: metric_value(r, metric, args.f1) for r in ref}
         for cand in candidates:
-            crec = collect(args.eval_root, cand, task)
+            crec = [r for r in collect(args.eval_root, cand, task)
+                    if protocol_check(r["_dir"], spec, float(spec["lr"]))[0]]
             if not crec:
                 continue
             cand_by_seed = {r["_seed"]: metric_value(r, metric, args.f1) for r in crec}
@@ -253,6 +306,7 @@ def main() -> int:
         "f1_convention": args.f1, "alpha": args.alpha,
         "n_rows": len(rows), "n_comparisons": len(comparisons),
         "rows": rows, "comparisons": comparisons,
+        "protocol_deviations": deviations,
         "wins": sum(1 for c in comparisons if str(c.get("verdict", "")).startswith("win")),
         "losses": sum(1 for c in comparisons if str(c.get("verdict", "")).startswith("loss")),
         "ties": sum(1 for c in comparisons if c.get("verdict") == "tie"),
@@ -263,6 +317,10 @@ def main() -> int:
     print(f"models: {models}")
     print(f"wrote {main_csv}\n      {cmp_csv}\n      {os.path.join(args.out,'table_main.md')}"
           f"\n      {os.path.join(args.out,'summary.json')}")
+    if deviations:
+        print(f"PROTOCOL DEVIATIONS: {len(deviations)} run group(s) excluded from the table")
+        for d in deviations[:8]:
+            print(f"  {d['task']} [{d['model']}]: {d['n_deviated']} run(s) -- {d['details'][0]}")
     print(f"rows={len(rows)} comparisons={len(comparisons)} "
           f"wins={summary['wins']} losses={summary['losses']} ties={summary['ties']}")
     if not comparisons:
