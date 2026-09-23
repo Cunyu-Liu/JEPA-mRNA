@@ -376,7 +376,6 @@ class TeacherLabelStore:
 
     @classmethod
     def from_mock(cls, seed: int = 0) -> "TeacherLabelStore":
-        teacher = MockTeacher(seed=seed)
         return cls({}, name="mock", version_lock="synthetic",
                    source=f"mock:seed={seed}", n_labels=0)
 

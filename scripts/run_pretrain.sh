@@ -138,7 +138,7 @@ fi
 ARGS+=( --device "$GPU" )
 
 mkdir -p "$OUT"
-log "launching arm=$ARM on gpu$GPU -> $OUT"
+log "launching arm=$ARM device=$GPU -> $OUT"
 nohup "$PY" "${ARGS[@]}" > "$OUT.stdout.log" 2>&1 &
 PID=$!
 log "pid $PID writing $OUT.stdout.log"

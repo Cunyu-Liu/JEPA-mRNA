@@ -54,10 +54,23 @@ fi
 say "corpus verified ($(du -h "$ZIP" | cut -f1))"
 
 # ---------------------------------------------------------------- 2. preprocess
+# Prefer pre-extracted FASTAs: reading them as plain files removes the single-threaded
+# inflate step from the critical path (see scripts/extract_corpus.sh).
+FASTA_DIR="$ART/data/pretrain_fasta"
+FASTA_LIST=""
+if [ -d "$FASTA_DIR" ]; then
+  FASTA_LIST=$(ls -1 "$FASTA_DIR"/*.fasta 2>/dev/null | paste -sd, -)
+fi
 if [ -f "$STATS" ] && [ -s "$PRE_REG" ]; then
   say "preprocessed corpus already present; skipping"
+elif [ -n "$FASTA_LIST" ]; then
+  say "preprocessing $WORKERS workers from pre-extracted FASTAs"
+  "$PY" "$ROOT/data/prep_pretrain.py" --zip "$FASTA_LIST" \
+      --work "$ART/data/pretrain_work" --out "$PRE" --out_regions "$PRE_REG" \
+      --stats "$STATS" --workers "$WORKERS" --verify 20000 2>&1 | tee -a "$LOG"
+  [ -f "$STATS" ] || { say "FATAL: preprocessing produced no stats.json"; exit 1; }
 else
-  say "preprocessing with $WORKERS workers"
+  say "preprocessing with $WORKERS workers (reading the nested archive directly)"
   "$PY" "$ROOT/data/prep_pretrain.py" --zip "$ZIP" \
       --work "$ART/data/pretrain_work" --out "$PRE" --out_regions "$PRE_REG" \
       --stats "$STATS" --workers "$WORKERS" --verify 20000 2>&1 | tee -a "$LOG"

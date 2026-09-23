@@ -1,26 +1,28 @@
-Corpus reality check: 2k tokens per sequence, so crop both ends; and stop writing to /tmp
+49x faster ORF search, and extract the corpus FASTAs first
 
-Three fixes that only surfaced once the real corpus started flowing.
+Two throughput fixes for pre-processing, both measured.
 
-1. **The corpus is much longer than the official sample.** The official repository's
-   sample FASTA averages 413 tokens per sequence; the real corpus averages 2,021, i.e.
-   ~73 billion tokens in total. Plain head truncation at max_len 512 would therefore show
-   only the start of every sequence and the 3'UTR would essentially never appear during
-   pre-training -- silently disabling the 3'UTR half of the region objective, which is
-   the thing this paper is about. The reader now crops from the head or the tail,
-   chosen deterministically from the sequence index (so resuming and re-running with the
-   same seed see identical crops). The main run moves to max_len 1024 with batch 4 x
-   grad_accum 8, keeping the effective batch at 32 sequences per optimiser step.
+1. The ORF search was the real bottleneck, not I/O. The official rule is simply "for every
+   ATG the ORF ends at the first in-frame stop at or after start+3; take the longest, ties
+   to the smallest start", which can be evaluated over codon *position lists* obtained
+   with str.find (C speed) instead of walking characters in Python. On 200 real sequences
+   averaging 4,077 nt: 57 seq/s -> 2,773 seq/s, a 48.7x speedup. Equivalence was
+   re-verified after the rewrite, not assumed: 17 adversarial cases, 4,000 skewed-alphabet
+   random sequences and all 22,671 sequences of the official sample FASTA still match the
+   official implementation exactly, and the pipeline's own verify stage reports
+   ORF mismatches 0 / token mismatches 0 on 20,000 sequences sampled from the real corpus.
 
-2. **Worker temp files were being written to /tmp**, which on this node lives on the root
-   filesystem shared with 68 other users: 440 files, 15 GB, on a partition with 103 GB
-   free. They now go to the /mnt work directory (RNAJEPA_TMPDIR overrides), and the 440
-   stray files were cleaned up.
+2. scripts/extract_corpus.sh extracts the five FASTAs once (~99 GB) so pre-processing reads
+   plain files. Reading them straight out of the nested zip made the reader single-threaded
+   and CPU-bound at roughly 10-19 MB/s under contention; extraction runs at 150-160 MB/s
+   because it stays inside zlib's C path. The pipeline prefers pre-extracted FASTAs when
+   present and falls back to the archive otherwise.
 
-3. **The first drain of results only happened after workers*4 batches**, i.e. after
-   several million sequences, so pre.txt sat at zero bytes and the stage looked stalled
-   for its first half hour. The window is now workers*2 and progress is logged every
-   200k sequences.
+Also worth recording, because it changes the picture: the real corpus averages 2,021 tokens
+per sequence against 413 for the official sample, i.e. ~89 billion tokens in total. That is
+why plain head truncation was replaced with a head-or-tail crop (previous commit): at
+max_len 512 the 3'UTR would essentially never have been seen.
 
-Also: the machine has 96 cores and the first version asked for 96 workers, which
-oversubscribed it alongside the reader and the GPU jobs; the run now uses 48.
+Observed after both fixes: 8,000 sequences/s end to end, pre.txt growing at ~2.6 GB/min,
+and a spot check of the first 20,000 output lines shows 0 token/region misalignments with
+a balanced region distribution (CDS 3.66M, 5'UTR 1.57M, 3'UTR 6.11M tokens).

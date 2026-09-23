@@ -60,7 +60,6 @@ from rnajepa.distill import (  # noqa: E402
     ThermodynamicTeacher,
     ThermodynamicUnavailableError,
     assemble_teacher,
-    sha256_hex,
 )
 from rnajepa.harness import inside_outside, valid_pair_mask  # noqa: E402
 
