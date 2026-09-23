@@ -1,23 +1,15 @@
-Unlock 75 GB of idle MIG capacity that the scheduler was refusing to use
+MIG slices: conservative capacity estimate, and proof they carry real work
 
-The GPU inventory excluded MIG-enabled parents outright. The reasoning was that the parent
-reports an aggregate free-memory figure yet is not schedulable as a whole device -- which
-is true -- but the conclusion drawn from it was wrong: the MIG *instances* are perfectly
-schedulable, and they were sitting idle.
+Dispatching against the nominal slice size oversold the hardware: a 3g.20gb slice measured
+19.6 GB total but only 11.0 GB actually free, so the first two jobs sent there OOM'd and
+fell back to a full card (the OOM-retry path doing exactly its job, but at the cost of a
+wasted attempt). The estimate is now 55% of the profile, which reproduces the measurement
+(3g.20gb -> 11.3 GB, 1g.5gb -> 2.8 GB). It is an estimate, not a measurement, and the code
+says so; OOM retry stays the backstop.
 
-Verified on this node before changing anything:
+Also lowered the queue's min_free thresholds so a task can be placed on a 20 GB slice when
+it actually fits, instead of demanding a whole card: 18 GB for the long-sequence tasks and
+10 GB otherwise. And te_human moves back to batch 1 -- at batch 2 the quadratic attention
+pushes it to ~20 GB, which excludes the very slices we just unlocked.
 
-    CUDA_VISIBLE_DEVICES=6                        -> "MIG 1g.5gb", allocation succeeds
-    CUDA_VISIBLE_DEVICES=MIG-10b9b777-...         -> "MIG 3g.20gb", 19.6 GB total,
-                                                     11.0 GB free, allocation succeeds
-
-The node has 7 x 1g.5gb on GPU 6 and 2 x 3g.20gb on GPU 7, i.e. about 75 GB of usable
-memory that no job of ours could reach. Both scripts/gpu_util.sh and scripts/monitor.py
-now enumerate instances by UUID (setting the parent index leaves it ambiguous which
-instance you get, while the UUID is exact) and offer them to the dispatcher. Inventory
-goes from 8 devices / 6 schedulable to 17 devices / 15 schedulable.
-
-Per-instance free memory is derived from the profile name, because this driver does not
-report it (`nvidia-smi -i MIG-<uuid>` returns "No devices were found"). That is a capacity
-estimate rather than a measurement, so MIG targets still go through the OOM-retry path,
-and the code says so where it matters.
+Cosmetic: the dispatch line no longer prints "gpu" in front of a MIG UUID.

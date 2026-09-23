@@ -231,8 +231,12 @@ tasks:
     # 13,383 steps, which fits the deadline; the shortened protocol is applied
     # identically to every model being compared, so the delta remains valid while the
     # absolute value is not comparable to the paper's 20-epoch number.
-    protocol_note: "epochs 20 -> 3, batch 1 -> 2; identical for every model in the study"
-    batch: 2
+    # batch 1 rather than 2: the quadratic attention needs ~226 MB of scores per sample
+    # per layer, so batch 2 pushes the run to ~20 GB and it then cannot use the 20 GB MIG
+    # slices that make up a third of this node's idle capacity. At batch 1 it needs about
+    # 11 GB, which fits everywhere. Same three epochs, applied to every model.
+    protocol_note: "epochs 20 -> 3; identical for every model in the study"
+    batch: 1
     epochs: 3
     lr: 2.0e-5
     lr_status: selected

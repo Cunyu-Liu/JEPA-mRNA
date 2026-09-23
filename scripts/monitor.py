@@ -136,6 +136,12 @@ def gpu_snapshot() -> list:
             listing = ""
         prof_mib = {"7g.40gb": 40960, "4g.20gb": 20480, "3g.20gb": 20480,
                     "2g.10gb": 10240, "1g.10gb": 10240, "1g.5gb": 5120}
+        # The profile is the slice's nominal size, which is optimistic in practice: a
+        # 3g.20gb slice measured 19.6 GB total but only 11.0 GB actually free
+        # (torch.cuda.mem_get_info), and dispatching against the nominal figure made jobs
+        # OOM and fall back to a full card.  Use a conservative fraction so the
+        # dispatcher does not oversell; the OOM-retry path remains the backstop.
+        MIG_USABLE_FRACTION = 0.55
         for line in listing.splitlines():
             if "MIG" not in line:
                 continue
@@ -146,10 +152,11 @@ def gpu_snapshot() -> list:
                 elif len(tok) > 3 and tok[0].isdigit() and "g." in tok:
                     prof = tok
             if uuid and prof:
+                nominal = prof_mib.get(prof, 4096)
                 gpus.append({"index": uuid, "mig": True, "kind": "mig",
                              "util_pct": None, "used_mib": None,
-                             "total_mib": prof_mib.get(prof, 4096),
-                             "free_mib": prof_mib.get(prof, 4096),
+                             "total_mib": nominal,
+                             "free_mib": int(nominal * MIG_USABLE_FRACTION),
                              "profile": prof})
     return gpus
 
@@ -348,7 +355,7 @@ def one_pass(dispatch_enabled: bool) -> dict:
     for it in issues:
         print(f"   ALERT {it['level']}: {it['message']}")
     for l in launched:
-        print(f"   dispatched {l['name']} (pid {l['pid']}, capacity hint gpu"
+        print(f"   dispatched {l['name']} (pid {l['pid']}, capacity hint "
               f"{l['capacity_gpu_hint']})")
     return status
 

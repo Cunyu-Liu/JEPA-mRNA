@@ -171,7 +171,15 @@ def main() -> int:
             out_dir = (sweep_out_dir_for(args.model_label, task, seed, lr) if is_sweep
                        else out_dir_for(args.model_label, task, seed))
             epochs = args.epochs_override or spec["epochs"]
-            min_free = args.min_free or (26000 if spec["max_len"] > 1024 else 12000)
+            # min_free follows the task's memory appetite. The 20 GB MIG slices are a
+            # third of this node's idle capacity, so the threshold is set to admit them
+            # where the task can actually fit rather than demanding a whole card.
+            if args.min_free:
+                min_free = args.min_free
+            elif spec["max_len"] > 1024:
+                min_free = 18000
+            else:
+                min_free = 10000
             cmd = (
                 f"cd {ROOT} && RNAJEPA_PYTHON={args.python} "
                 f"bash scripts/submit_finetune.sh"
