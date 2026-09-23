@@ -180,6 +180,12 @@ def _max_dp(scores: np.ndarray, mask: np.ndarray, band: Optional[int] = None,
     for d in range(1, L):
         if d <= min_loop:
             continue                            # N stays 0, no legal pair fits
+        n_k = d - min_loop - 1                  # candidate partners k per interval
+        if n_k > 0 and band is not None:
+            # ``j - k`` for k = i+1 .. i+n_k is d-1 .. min_loop+1, independent of i
+            span_ok = np.arange(d - 1, min_loop, -1) <= band
+        else:
+            span_ok = None
         for i in range(0, L - d):
             j = i + d
             best = N[i, j - 1]
@@ -194,15 +200,26 @@ def _max_dp(scores: np.ndarray, mask: np.ndarray, band: Optional[int] = None,
                 if v > best:
                     best, bdec, bk = v, 2, -1
 
-            kmax = j - min_loop - 1
-            for k in range(i + 1, kmax + 1):
-                if not mask[k, j]:
-                    continue
-                if band is not None and (j - k) > band:
-                    continue
-                v = N[i, k - 1] + N[k + 1, j - 1] + scores[k, j]
+            # Partner search for j, vectorised over k: for fixed (i, j) every
+            # per-k quantity is a contiguous slice.  ``bk`` reproduces the exact
+            # tie-breaking of the sequential scan, which keeps the *first*
+            # (smallest) k that is *strictly* greater than everything seen so
+            # far -- hence argmax over the k-ordered candidates, not max().
+            if n_k > 0:
+                kmax = j - min_loop - 1                      # last candidate k
+                cand = (N[i, i:kmax] + N[i + 2:kmax + 2, j - 1]
+                        + scores[i + 1:kmax + 1, j])
+                ok = mask[i + 1:kmax + 1, j]
+                if span_ok is not None:
+                    ok = ok & span_ok
+                # a NaN candidate never satisfies ``v > best`` in the scalar
+                # code, so it must not be allowed to win the argmax either
+                ok = ok & ~np.isnan(cand)
+                cand = np.where(ok, cand, -math.inf)
+                idx = int(np.argmax(cand))
+                v = cand[idx]
                 if v > best:
-                    best, bdec, bk = v, 3, k
+                    best, bdec, bk = v, 3, i + 1 + idx
 
             N[i, j] = best
             dec[i, j] = bdec
@@ -274,14 +291,21 @@ def nussinov_inside(scores: np.ndarray, mask: np.ndarray) -> Tuple[float, np.nda
     for d in range(1, L):
         if d <= MIN_LOOP:
             continue
+        n_k = d - MIN_LOOP                          # candidate partners per interval
         for i in range(0, L - d):
             j = i + d
-            terms = [Z[i, j - 1]]                    # j unpaired
-            for k in range(i, j - MIN_LOOP):         # j paired with k
-                if mask[k, j]:
-                    left = Z[i, k - 1] if k > i else 0.0
-                    right = Z[k + 1, j - 1] if k + 1 <= j - 1 else 0.0
-                    terms.append(left + right + scores[k, j])
+            # j unpaired, plus j paired with k in [i, j - MIN_LOOP), vectorised:
+            # for fixed (i, j) every per-k quantity is a contiguous slice, and
+            # ``left[k] = Z[i, k-1]`` uses the empty-interval convention
+            # ``Z[i, i-1] = log 1 = 0`` for the k = i term.
+            kmax = j - MIN_LOOP                     # exclusive upper bound on k
+            left = np.empty(n_k, dtype=np.float64)
+            left[0] = 0.0
+            left[1:] = Z[i, i:i + n_k - 1]
+            cand = left + Z[i + 1:kmax + 1, j - 1] + scores[i:kmax, j]
+            # boolean filtering keeps the exact element order (and hence the
+            # exact pairwise-summation order inside _logsumexp)
+            terms = np.concatenate(([Z[i, j - 1]], cand[mask[i:kmax, j]]))
             Z[i, j] = _logsumexp(terms)
 
     logZ = float(Z[0, L - 1]) if L > 0 else 0.0
