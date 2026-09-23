@@ -202,6 +202,10 @@ class TrainConfig:
     d_ff: int = 3072
     d_z: int = 128
     hidden: int = 64
+    #: Column-chunk width for the head's pair tensors (0 = no chunking).  The chunk
+    #: transient is (B, L, chunk, 3*d), so this is the knob that decides whether a
+    #: run fits on a small MIG slice; see tools/patch_head_checkpointing.py.
+    head_chunk_size: int = 64
     max_len: int = 4096
 
     # lr calibration
@@ -212,6 +216,12 @@ class TrainConfig:
     # bookkeeping
     out_dir: str = ""
     device: str = "cpu"
+    #: Directory of frozen embeddings (``--embedding-dir``).  When set, the head
+    #: trains on cached activations and no encoder is built at all.
+    embedding_dir: str = ""
+    #: Hidden size of the cached embeddings; required with ``embedding_dir`` because
+    #: there is no encoder to read it from.
+    embedding_d_model: int = 0
     #: Explicit opt-in for the CPU path.  Exists so the test suite can run the
     #: driver without a GPU; a real training run must not set it.
     allow_cpu: bool = False
@@ -283,6 +293,10 @@ class DecisionExample:
     gt_pairs: List[Tuple[int, int]]
     teacher_probs: Optional[np.ndarray]
     source: str = "synthetic"
+    #: Frozen per-residue embedding ``(L, d)`` from a pretrained backbone, or
+    #: ``None`` when this run should compute them with its own encoder.  Never
+    #: mixed within a batch -- see :class:`EmbeddingStore`.
+    embedding: Optional[np.ndarray] = None
 
     @property
     def length(self) -> int:
@@ -327,6 +341,8 @@ class DecisionDataset:
             # provenance: distinguishes "no soft labels needed" from "labels lost"
             "has_teacher_probs": bool(self.examples) and
                                  all(e.teacher_probs is not None for e in self.examples),
+            "has_embeddings": bool(self.examples) and
+                              all(e.embedding is not None for e in self.examples),
         }
 
 
@@ -439,10 +455,94 @@ class TeacherLabelStore:
                 "is_mock": self.name == "mock"}
 
 
+class EmbeddingStore:
+    """Frozen per-residue embeddings from ``tools/extract_rinalmo_embeddings.py``.
+
+    Shards are ``<split>.shard{k}of{n}.npz`` holding a concatenated ``h`` array,
+    an ``offsets`` vector and the ``seqs`` they belong to.  Lookup is **by
+    sequence**, deliberately: the extractor excludes sequences longer than the
+    model's positional limit, so a positional index would silently shift every
+    embedding after the first exclusion.
+
+    ``strict`` mirrors the teacher-store convention: when the run declares it is
+    using cached embeddings, a missing sequence is an error rather than a quiet
+    fallback to a randomly initialised encoder.
+    """
+
+    def __init__(self, mapping: Dict[str, np.ndarray], *, name: str,
+                 d_model: Optional[int], n_sequences: int, source: str) -> None:
+        self.mapping = mapping
+        self.name = name
+        self.d_model = d_model
+        self.n_sequences = n_sequences
+        self.source = source
+
+    @classmethod
+    def from_dir(cls, directory: str, *, split: str = "") -> "EmbeddingStore":
+        directory = str(directory)
+        manifest_path = os.path.join(directory, "manifest.json")
+        entries: List[Dict[str, object]] = []
+        if os.path.isfile(manifest_path):
+            with open(manifest_path, encoding="utf-8") as fh:
+                entries = list(json.load(fh).get("entries", []))
+        else:
+            # No manifest yet: the extractor writes it only after all its splits
+            # finish, so a store must still work while extraction is in progress.
+            # The split is taken from the file name, which is <split>.shardKofN.npz.
+            entries = [{"path": os.path.join(directory, f),
+                        "split": f.split(".")[0]}
+                       for f in sorted(os.listdir(directory)) if f.endswith(".npz")]
+        if not entries:
+            raise ConfigError(f"no embedding shards found under {directory}")
+
+        mapping: Dict[str, np.ndarray] = {}
+        d_model = None
+        n_excluded = 0
+        for entry in entries:
+            path = str(entry.get("path", ""))
+            if not os.path.isfile(path):
+                continue
+            entry_split = str(entry.get("split")
+                              or os.path.basename(path).split(".")[0])
+            if split and not entry_split.startswith(split):
+                continue
+            n_excluded += int(entry.get("n_excluded_over_max_len", 0) or 0)
+            with np.load(path, allow_pickle=True) as data:
+                h, offsets, seqs = data["h"], data["offsets"], data["seqs"]
+                d_model = int(h.shape[1]) if d_model is None else d_model
+                for k, seq in enumerate(seqs):
+                    mapping[str(seq)] = np.asarray(
+                        h[offsets[k]:offsets[k + 1]], dtype=np.float32)
+        if not mapping:
+            raise ConfigError(f"embedding shards under {directory} contained no "
+                              f"sequences matching split={split!r}")
+        return cls(mapping, name=f"frozen:{os.path.basename(directory)}",
+                   d_model=d_model, n_sequences=len(mapping),
+                   source=f"dir:{directory}:split={split or '*'}:"
+                          f"excluded_over_max_len={n_excluded}")
+
+    def get(self, seq: str) -> np.ndarray:
+        try:
+            return self.mapping[seq]
+        except KeyError as exc:
+            raise ConfigError(
+                f"no cached embedding for a {len(seq)} nt sequence "
+                f"(store={self.name!r}, {self.n_sequences} sequences). Refusing to "
+                "fall back to the encoder: the run declares it uses frozen "
+                "embeddings, and mixing the two would make the result meaningless. "
+                "Re-extract this split, or drop --embedding-dir.") from exc
+
+    def meta(self) -> Dict[str, object]:
+        return {"name": self.name, "d_model": self.d_model,
+                "n_sequences": self.n_sequences, "source": self.source}
+
+
 def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
                             mock_seed: int = 0, *,
                             need_teacher_probs: bool = True,
-                            strict_teacher: bool = False) -> DecisionDataset:
+                            strict_teacher: bool = False,
+                            embedding_store: Optional["EmbeddingStore"] = None
+                            ) -> DecisionDataset:
     """Load ``{"seq": ..., "structure": "<dot-bracket>"}`` records from JSONL.
 
     Hard labels are parsed from the dot-bracket string (reusing the frozen
@@ -474,9 +574,11 @@ def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
                 else parse_pairs(str(record["structure"]))
             probs = (teacher.probs_for(seq, teacher=mock, strict=strict_teacher)
                      if need_teacher_probs else None)
+            embedding = (embedding_store.get(seq) if embedding_store is not None
+                         else None)
             examples.append(DecisionExample(
                 seq=seq, gt_pairs=sorted(pairs),
-                teacher_probs=probs, source="jsonl"))
+                teacher_probs=probs, source="jsonl", embedding=embedding))
     return DecisionDataset(examples, source=f"jsonl:{path}",
                            version=sha256_file(path))
 
@@ -495,7 +597,18 @@ def build_decision_model(config: TrainConfig):
     what produced "mat1 and mat2 shapes cannot be multiplied (38642x1536 and
     2304x128)" on the first 35M run.
     """
-    from rnajepa.decision_head import DecisionModel
+    from rnajepa.decision_head import DecisionModel, HeadOnlyModel
+
+    if config.embedding_dir:
+        if not config.embedding_d_model:
+            raise ConfigError(
+                "--embedding-dir requires --embedding-d-model: with cached embeddings "
+                "there is no encoder to read the hidden size from, and guessing it "
+                "would build a head whose projection silently mismatches.")
+        head = FlatDecisionHead(d_model=int(config.embedding_d_model),
+                                d_z=config.d_z, hidden=config.hidden,
+                                chunk_size=config.head_chunk_size)
+        return HeadOnlyModel(head)
 
     if config.tiny:
         encoder = RNAEncoder(d_model=config.d_model, n_layer=config.n_layer,
@@ -505,7 +618,8 @@ def build_decision_model(config: TrainConfig):
         encoder = build_encoder(size=config.encoder_size)
 
     encoder_dim = int(getattr(encoder, "d_model", config.d_model))
-    head = FlatDecisionHead(d_model=encoder_dim, d_z=config.d_z, hidden=config.hidden)
+    head = FlatDecisionHead(d_model=encoder_dim, d_z=config.d_z, hidden=config.hidden,
+                            chunk_size=config.head_chunk_size)
     return DecisionModel(encoder, head)
 
 
@@ -531,6 +645,7 @@ def collate(examples: Sequence[DecisionExample]) -> Dict[str, object]:
         "gt_pairs": [e.gt_pairs for e in examples],
         "teacher_probs": [e.teacher_probs for e in examples],
         "labels": [e.labels for e in examples],
+        "embeddings": [e.embedding for e in examples],
     }
 
 
@@ -586,7 +701,7 @@ def _batch_to_device(batch: Dict[str, object], device) -> Dict[str, object]:
         value = moved.get(key)
         if torch.is_tensor(value):
             moved[key] = value.to(device, non_blocking=True)
-    for key in ("masks", "labels", "teacher_probs"):
+    for key in ("masks", "labels", "teacher_probs", "embeddings"):
         values = moved.get(key)
         if values is None:
             continue
@@ -607,6 +722,29 @@ def _batch_to_device(batch: Dict[str, object], device) -> Dict[str, object]:
 
 
 
+def _stack_embeddings(items, max_len: int, device, dtype=torch.float32) -> torch.Tensor:
+    """``(B, max_len, d)`` from a list of ``(L_i, d)`` arrays/tensors, zero-padded.
+
+    Accepts numpy as well as tensors: ``_batch_to_device`` deliberately returns the
+    batch unchanged on CPU (the frozen loss modules take numpy), so on that path the
+    embeddings arrive as arrays.  Converting here keeps a single owner for "cached
+    embedding -> padded tensor" instead of adding a second transfer path.
+
+    Padding is safe because ``objective_terms`` slices each row to
+    ``[:length, :length]`` before the objective, so padded positions are never read.
+    """
+    if not items:
+        raise ConfigError("empty embedding list")
+    converted = [item if torch.is_tensor(item)
+                 else torch.as_tensor(np.asarray(item), dtype=dtype)
+                 for item in items]
+    d = int(converted[0].shape[-1])
+    out = torch.zeros((len(converted), max_len, d), dtype=dtype, device=device)
+    for row, item in enumerate(converted):
+        out[row, :item.shape[0]] = item.to(device=device, dtype=dtype)
+    return out
+
+
 def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, *,
                      distill_kind: str = "kl", reward: str = "brier", beta: float = 1.0,
                      n_bins: int = 10, tau: float = 0.1
@@ -625,7 +763,26 @@ def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, 
             "zeros: the distillation term would be meaningless and the run would "
             "still report it as active.")
     batch = _batch_to_device(batch, next(model.parameters()).device)
-    scores = model(batch["seq_ids"], lengths=batch["lengths"])
+
+    # The cached-embedding path and the own-encoder path are mutually exclusive.
+    # A batch half of whose rows came from a frozen 650 M encoder and half from a
+    # trainable 35 M encoder would produce a loss that means nothing, and nothing
+    # downstream would flag it -- so it is rejected here instead.
+    embeddings = batch.get("embeddings")
+    has_embeddings = embeddings is not None and any(e is not None for e in embeddings)
+    if has_embeddings != bool(getattr(model, "head_only", False)):
+        raise ConfigError(
+            "the batch and the model disagree about where representations come from: "
+            f"batch has_embeddings={has_embeddings}, "
+            f"model.head_only={bool(getattr(model, 'head_only', False))}. "
+            "Pass --embedding-dir consistently for the whole run.")
+
+    if has_embeddings:
+        h = _stack_embeddings(embeddings, int(batch["seq_ids"].shape[1]),
+                              device=batch["seq_ids"].device)
+        scores = model(h, batch["seq_ids"], lengths=batch["lengths"])
+    else:
+        scores = model(batch["seq_ids"], lengths=batch["lengths"])
     matrix = scores.scores
     total: Optional[torch.Tensor] = None
     aggregated: Dict[str, float] = {}
@@ -1177,6 +1334,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--tiny", action="store_true", help="CPU-sized model (tests / smoke)")
     p.add_argument("--encoder-size", default="150M", choices=["35M", "150M", "650M"])
     p.add_argument("--device", default="cpu")
+    p.add_argument("--embedding-dir", default="",
+                   help="directory of frozen embeddings; trains the head only")
+    p.add_argument("--head-chunk-size", type=int, default=64,
+                   help="column-chunk width for the head's pair tensors (0 = none); "
+                        "lower it when 3*d_model makes the chunk transient too big")
+    p.add_argument("--embedding-d-model", type=int, default=0,
+                   help="hidden size of the cached embeddings (required with "
+                        "--embedding-dir)")
     p.add_argument("--allow-cpu", action="store_true",
                    help="permit the CPU path (tests only; a real run must use a GPU)")
     # lr calibration
@@ -1198,6 +1363,9 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         tiny=args.tiny, encoder_size=args.encoder_size, device=args.device,
         allow_cpu=args.allow_cpu,
         out_dir=args.out, resume=args.resume, arm=args.arm,
+        embedding_dir=args.embedding_dir,
+        embedding_d_model=args.embedding_d_model,
+        head_chunk_size=args.head_chunk_size,
         lr_calibrate=args.lr_calibrate,
         lr_candidates=tuple(float(x) for x in args.lr_candidates.split(",") if x.strip()),
         lr_probe_steps=args.lr_probe_steps,
@@ -1217,10 +1385,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif args.data:
             teacher_store = (TeacherLabelStore.from_dir(args.teacher_dir)
                              if args.teacher_dir else TeacherLabelStore.from_mock(args.teacher_seed))
+            # Scope the store to the split being trained.  Loading every shard
+            # would (a) hold ~14 GB of unused embeddings and (b) try to read shards
+            # that a concurrent extraction run is still writing.
+            _split = os.path.basename(args.data).split(".")[0]
+            embedding_store = (EmbeddingStore.from_dir(args.embedding_dir, split=_split)
+                               if args.embedding_dir else None)
             dataset = load_dataset_from_jsonl(
                 args.data, teacher_store, mock_seed=args.teacher_seed,
                 need_teacher_probs=float(args.lambda_distill) != 0.0,
-                strict_teacher=bool(args.teacher_dir))
+                strict_teacher=bool(args.teacher_dir),
+                embedding_store=embedding_store)
         else:
             print("FATAL: give --synthetic N or --data FILE", file=sys.stderr)
             return 2

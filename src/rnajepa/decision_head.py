@@ -634,6 +634,35 @@ class DecisionModel(nn.Module):
 
 
 # --------------------------------------------------------------------------- #
+# Head over frozen (cached) embeddings
+# --------------------------------------------------------------------------- #
+class HeadOnlyModel(nn.Module):
+    """Decision head over precomputed per-residue embeddings.
+
+    Exists so a run can train the head on a **pretrained** backbone whose
+    activations are cached on disk: the 650 M encoder never enters the training
+    process.  That is what lets an arm fit on a MIG slice far too small to hold it,
+    and it lets the head be retrained for every ablation without re-running the
+    encoder.
+
+    ``head_only`` is the marker ``train_decision.objective_terms`` branches on, so
+    the cached-embedding path and the own-encoder path cannot be confused.  A
+    ``DecisionModel`` has no such attribute, which is what makes the check
+    one-sided and therefore safe.
+    """
+
+    head_only = True
+
+    def __init__(self, head: FlatDecisionHead) -> None:
+        super().__init__()
+        self.head = head
+
+    def forward(self, h: torch.Tensor, seq_ids: torch.Tensor,
+                lengths: Optional[torch.Tensor] = None) -> DecisionScores:
+        return self.head(h, seq_ids, lengths=lengths)
+
+
+# --------------------------------------------------------------------------- #
 # L0 helix recall (spec §8.2 P6 -- the cascade's false-negative gate)
 # --------------------------------------------------------------------------- #
 def group_helices(pairs: Sequence[Tuple[int, int]]) -> List[List[Tuple[int, int]]]:

@@ -262,6 +262,46 @@ L=498、B=2 时约 3.0 GB + 2.0 GB，**在 2.2 GiB 的 MIG 切片上直接 OOM**
 
 ---
 
+
+## 运行 9：RiNALMo 冻结嵌入 → 纯决策头训练（进行中）
+
+- **嵌入提取完成**：10 个 split 全部落盘（`/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga/`，
+  `<split>.shard0of1.npz` + `manifest.json`，10 条 shard 记录）。
+  实测吞吐 48–57 seq/s；`archiveii` 与 `pdb669` 各 16 条超过 1024，**显式排除并记录**。
+- **训练臂已启动**：`rinalmo_full_b2_s0`，**head-only**（650 M 编码器完全不进训练进程），
+  batch 2、`--head-chunk-size 16`、40,000 步、四项损失全开。
+  首个日志：`step 50/40000 loss=92.1445 terms={'nll': 90.302, 'distill': 1.0028, 'rlcd': -0.1845, 'cal': 1.0242}`。
+  → 冻结嵌入 → 决策头的通路**端到端打通**。
+- **为什么用冻结嵌入**：650 M + AdamW 状态放不进任何空闲切片（MIG 1g.5gb，2.19–4.63 GiB）；
+  冻结后编码器离开训练进程，head-only 只需极少量显存，**连最小的 2.19 GiB 切片也能跑**。
+  代价是编码器不随任务适配，如实记录。
+- **接入方式**：`--embedding-dir` + `--embedding-d-model`，新增 `HeadOnlyModel`；
+  批内**不允许混用**冻结嵌入与自编码器激活（`objective_terms` 硬性拒绝），
+  缺失序列**报错而非回退**（否则一半来自 650 M 冻结编码器、一半来自 35 M 可训练编码器，损失毫无意义）。
+
+### 本次接线中修掉的 3 个真 bug（都由新测试暴露，非事后检查）
+
+| # | 现象 | 根因 | 修法 |
+|---|---|---|---|
+| 1 | `'list' object has no attribute 'shape'` | `objective_terms` 把 `collate` 产出的**列表**直接喂给 head，未拼接为 `(B,L,d)` | 新增 `_stack_embeddings`，按 batch 最大长度零填充（安全：`objective_terms` 之后按 `[:length,:length]` 切片） |
+| 2 | CPU 路径仍报 `got ndarray` | `_batch_to_device` 在非 CUDA 时**原样返回** batch（冻结损失模块接受 numpy），嵌入因此未转张量 | `_stack_embeddings` 直接接受 numpy 并转张量，避免再加一条设备搬运路径 |
+| 3 | `no sequences matching split='bprna_tr0'` | 提取器只在**全部** split 结束后才写 `manifest.json`，运行中无 manifest → 按文件名推断 split | `from_dir` 在无 manifest 时从 `<split>.shardKofN.npz` 推断 split |
+
+> 注：bug 1 与 2 说明——**单元测试全绿 ≠ 通路可用**。store 与 `build_decision_model` 的单测都过了，
+> 而真正的训练路径是坏的。故新增 `test_head_only_run_trains_end_to_end_on_cpu` 直接跑完整驱动。
+
+### 测试
+
+`tests/test_embedding_head.py` 8 项通过；**全量 246 passed, 0 failed**（含既有 238 项）。
+
+### 另修的工程问题
+
+- `np.savez_compressed` 在慢挂载 + CPU 争抢下**极慢**（tr0 的 3.6 GB 数组压缩超过 20 分钟）→ 改为
+  `np.savez`（不压缩）。同时它曾导致 `bprna_ts0` 在写入中途被杀而产生**坏 zip**，
+  该文件已删除重做；已用脚本校验现存 shard 的 `offsets[-1] == h.shape[0]` 与逐条长度一致性（tr0: 0 处不符）。
+
+---
+
 ## 待办（按 Gate）
 
 | Gate | 内容 | 状态 |

@@ -155,7 +155,7 @@ def embed_split(split: str, shard: int, shards: int, batch_size: int,
     h_cat = np.concatenate(hs, axis=0).astype(np.float16)
 
     os.makedirs(OUT_DIR, exist_ok=True)
-    np.savez_compressed(out_path, h=h_cat, offsets=offs, lengths=lengths,
+    np.savez(out_path, h=h_cat, offsets=offs, lengths=lengths,
                         seqs=np.array([seqs[i] for i in ordered], dtype=object))
     entry = {"split": split, "shard": shard, "shards": shards, "path": out_path,
              "n_sequences": len(seqs), "n_residues": int(h_cat.shape[0]),
