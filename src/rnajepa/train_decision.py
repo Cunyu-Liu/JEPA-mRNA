@@ -114,6 +114,7 @@ __all__ = [
     "assert_gradient_coverage",
     "_check_device_request",
     "_assert_device",
+    "_batch_to_device",
     "calibrate_learning_rate",
     "run_training",
     "plan",
@@ -448,7 +449,16 @@ def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
 # model
 # ---------------------------------------------------------------------------
 def build_decision_model(config: TrainConfig):
-    """Encoder + flat decision head (single forward pass -> ``L x L`` scores)."""
+    """Encoder + flat decision head (single forward pass -> ``L x L`` scores).
+
+    The head is sized from the *encoder that was actually built*, not from
+    ``config.d_model``.  ``build_encoder(size=...)`` picks its own hidden size
+    (35M -> 512, 150M -> 768, 650M -> 1024) and ``PairRepresentation.proj`` is
+    ``nn.Linear(3 * d_model, d_z)``, so reading ``config.d_model`` here builds a
+    mismatched head whenever the preset differs from the default 150M.  That is
+    what produced "mat1 and mat2 shapes cannot be multiplied (38642x1536 and
+    2304x128)" on the first 35M run.
+    """
     from rnajepa.decision_head import DecisionModel
 
     if config.tiny:
@@ -457,7 +467,9 @@ def build_decision_model(config: TrainConfig):
                              max_len=config.max_len, window=None, global_stride=None)
     else:
         encoder = build_encoder(size=config.encoder_size)
-    head = FlatDecisionHead(d_model=config.d_model, d_z=config.d_z, hidden=config.hidden)
+
+    encoder_dim = int(getattr(encoder, "d_model", config.d_model))
+    head = FlatDecisionHead(d_model=encoder_dim, d_z=config.d_z, hidden=config.hidden)
     return DecisionModel(encoder, head)
 
 
@@ -517,6 +529,42 @@ def _batch_stream(dataset: DecisionDataset, config: TrainConfig,
 # ---------------------------------------------------------------------------
 # objective
 # ---------------------------------------------------------------------------
+def _batch_to_device(batch: Dict[str, object], device) -> Dict[str, object]:
+    """Move every device-sensitive member of a collated batch onto ``device``.
+
+    ``collate`` builds CPU tensors and numpy arrays, and the frozen loss modules
+    infer device from their tensor arguments rather than moving anything
+    (``distill.as_tensor`` preserves the device of a tensor but creates a *CPU*
+    tensor from a numpy array).  On ``device="cpu"`` that is invisible; on a GPU
+    it fails on the first forward pass with "found at least two devices".  The
+    batch is therefore normalised here, in one place.
+
+    ``gt_pairs`` is intentionally left alone: it is consumed by the numpy DP and
+    by Python-level indexing, never as a tensor.
+    """
+    if not str(device).startswith("cuda"):
+        return batch
+
+    moved: Dict[str, object] = dict(batch)
+    for key in ("seq_ids", "attention_mask", "lengths"):
+        value = moved.get(key)
+        if torch.is_tensor(value):
+            moved[key] = value.to(device, non_blocking=True)
+    for key in ("masks", "labels", "teacher_probs"):
+        values = moved.get(key)
+        if values is None:
+            continue
+        converted = []
+        for item in values:  # type: ignore[union-attr]
+            if torch.is_tensor(item):
+                converted.append(item.to(device, non_blocking=True))
+            else:
+                converted.append(torch.as_tensor(np.asarray(item), device=device))
+        moved[key] = converted
+    return moved
+
+
+
 def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, *,
                      distill_kind: str = "kl", reward: str = "brier", beta: float = 1.0,
                      n_bins: int = 10, tau: float = 0.1
@@ -527,6 +575,7 @@ def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, 
     evaluated (see the module docstring: ``(-inf) * 0.0`` is ``NaN`` and the
     frozen objective contains such a product).
     """
+    batch = _batch_to_device(batch, next(model.parameters()).device)
     scores = model(batch["seq_ids"], lengths=batch["lengths"])
     matrix = scores.scores
     total: Optional[torch.Tensor] = None
