@@ -10,7 +10,7 @@
 
 | 问题 | 决策 |
 |---|---|
-| 主集（in-distribution） | **TS0（1,305）** 为主 + **ArchiveII** 为辅；训练集用 **bpRNA TR0（10,814）**，并在 **RNAStrAlign（37,052）** 上做规模扩展实验 |
+| 主集（in-distribution） | **TS0（1,305）** + **ArchiveII bpseq（3,966，BPfold 版）**；训练集用 **bpRNA TR0（10,814）**。~~RNAStrAlign 规模扩展~~ → **该集全零字节不可用**，见 §2.1 纠正 |
 | 跨家族 OOD（主） | **bpRNA-new（5,401）** |
 | 跨家族 OOD（补充） | **Rfam12.3–14.10（10,791）**（家族级）+ **Rfam14.10–15.0**（时间级，BPfold 发布） |
 | 实验标签集 | **PDB ts1/ts2/ts3（60/38/18）** + **PDB_669（669）** |
@@ -50,27 +50,35 @@
 
 数据根：`/mnt/cunyuliu/BPfold_data`（BPfold 发布包）+ `/mnt/cunyuliu/rna_ss_data`（本次新增）
 
-| 数据集 | 路径 | 实测文件数 | 用途 | 状态 |
-|---|---|---|---|---|
-| bpRNA **TR0** | `BPfold_data/bpRNA/TR0` | **10,814** | 训练 | 已落盘 |
-| bpRNA **TS0** | `BPfold_data/bpRNA/TS0` | **1,305** | **主集（测试）** | 已落盘 |
-| bpRNA **VL0** | `BPfold_data/bpRNA/VL0` | **198** | 验证 | 存疑，见 §2.4 |
-| **RNAStrAlign** | `BPfold_data/RNAStrAlign_bpseq` | **37,052** | 训练（规模扩展） | 已落盘 |
-| **PDB_669** | `BPfold_data/PDB_669/PDB` | **669** | 实验标签训练 | 已落盘 |
-| **Rfam12.3–14.10** | `BPfold_data/Rfam12.3-14.10` | **10,791** | **家族级 OOD** | 已落盘 |
-| **ArchiveII** | `BPfold_data/archiveII/archiveII` | **0** | 主集（测试） | **空目录** |
-| **bpRNA-new** | `rna_ss_data/bpfold/extracted/.../bpRNAnew/bpRNAnew.nr500.canonicals` | **5,401** | **跨家族 OOD 主集** | 本次下载 |
-| **PDB ts1 / ts2 / ts3** | `rna_ss_data/bpfold/extracted/.../PDB_test/{TS1,TS2,TS3}` | **60 / 38 / 18** | 实验标签测试 | 本次下载 |
-| **Rfam14.10–15.0** | `rna_ss_data/bpfold/BPfold_test_results/`（需解包） | 待计数 | **时间级 OOD** | 本次下载 |
-| **ArchiveII（CSV 版）** | `rna_ss_data/rinalmo/ArchiveII.csv` | **3,864** 条记录 | 主集替代 | 本次下载 |
-| bpRNA（CSV 版） | `rna_ss_data/rinalmo/bpRNA.csv` | 18,820 条记录 | 交叉核对 | 本次下载 |
-| PDB-RNA（CSV 版） | `rna_ss_data/rinalmo/PDB-RNA.csv` | 203 条记录 | 交叉核对 | 本次下载 |
+| 数据集 | 路径 | **可用文件数** | 零字节 | 用途 | 状态 |
+|---|---|---|---|---|---|
+| bpRNA **TR0** | `BPfold_data/bpRNA/TR0` | **10,814** | 0 | 训练 | 可用 |
+| bpRNA **TS0** | `BPfold_data/bpRNA/TS0` | **1,305** | 0 | **主集（测试）** | 可用 |
+| bpRNA **VL0** | `BPfold_data/bpRNA/VL0` | **198** | 0 | 验证 | 可用（条数见 §2.4） |
+| **PDB_669** | `BPfold_data/PDB_669/PDB` | **669** | 0 | 实验标签训练 | 可用 |
+| **ArchiveII**（bpseq） | `BPfold_test_results/archiveII` | **3,966** | 0 | **主集（测试）** | **本次恢复** |
+| **Rfam12.3–14.10** | `BPfold_test_results/Rfam12.3-14.10` | **10,791** | 0 | **家族级 OOD** | **本次恢复** |
+| **Rfam14.10–15.0** | `BPfold_test_results/Rfam14.10-15.0` | **436** | 0 | **时间级 OOD** | **本次恢复** |
+| **bpRNA-new** | `BPfold_test_results/bpRNAnew` | **5,401** | 0 | **跨家族 OOD 主集** | 可用 |
+| **PDB ts1 / ts2 / ts3** | `BPfold_test_results/PDB_test` | **116**（60/38/18） | 0 | 实验标签测试 | 可用 |
+| **ArchiveII（CSV 版）** | `rinalmo/ArchiveII.csv` | **3,864** 条记录 | — | 交叉核对 | 可用 |
+| bpRNA（CSV 版） | `rinalmo/bpRNA.csv` | 18,820 条记录 | — | 交叉核对 | 可用 |
+| PDB-RNA（CSV 版） | `rinalmo/PDB-RNA.csv` | 203 条记录 | — | 交叉核对 | 可用 |
+| ~~RNAStrAlign~~ | `BPfold_data/RNAStrAlign_bpseq` | **0** | **37,052** | ~~训练扩展~~ | **不可用** |
 
-**ArchiveII 的处理决定**：
-- 集群上原有的 `archiveII/archiveII/` 是**空目录**（同批 0 字节的 `archiveII.lst`、`data_index_archive.yaml` 表明那次解包被截断）。
-- BPfold 的 release 包 `BPfold_data.tar.gz`（v0.2，159 MB）**不含 archiveII**——已实测解包确认，只有 `PDB_669 / PDB_test / bpRNAnew / test_data`。
-- 因此 **ArchiveII 采用 RiNALMo benchmark 的整理版 `ArchiveII.csv`（3,864 条，含 sequence / structure / base_pairs / len）**，并**同时提供 family-fold 与 k-fold 两套划分**（`ArchiveII_famfold_splits.csv`、`ArchiveII_kfold_splits.csv`）。
-- **必须在论文中写明 ArchiveII 版本与条数**（社区 3,975 / 3,966 / 3,864 三个数字并存），并说明我们用的是 RiNALMo 整理版；**不得笼统称"ArchiveII 3975"**。
+> **关键纠正（2026-09-24，内容审计）**：上一版本表列的是**文件数**，不是**可用文件数**——这是错的，且已造成实际损失。
+> 实测：`BPfold_data/RNAStrAlign_bpseq`（37,052 个文件）与 `BPfold_data/Rfam12.3-14.10`（10,791 个文件）**全部是 0 字节**，`archiveII/archiveII` 是空目录。
+> 计数文件名把三者都报成"健康"。后果：语料构建产出 0 字节的 `rnastralign.jsonl` + 1 MB 的 `empty: no rows` 拒绝记录，问题才暴露。
+>
+> **恢复**：BPfold 的 `BPfold_test_results.tar.gz`（8.3 MB，已下载）内含全部测试划分且**全部非空**：
+> `archiveII` **3,966**（与 BPfold 论文 n=3966 一致）、`Rfam12.3-14.10` **10,791**、`Rfam14.10-15.0` **436**、`bpRNAnew` 5,401、`bpRNA` 1,305、`PDB_test` 116。
+> 数据根：`/mnt/cunyuliu/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results/`
+>
+> **仍不可用**：**RNAStrAlign**（37,052 文件全空）。它是训练集的可选规模扩展项，**不是必需**——领域标准训练集是 bpRNA TR0（10,814），我们已有。已记录为不可得，不静默替代。
+>
+> **ArchiveII 的口径已确定**：主表用 **BPfold 的 bpseq 版（3,966）**（与 BPfold 论文可直接对齐）；RiNALMo CSV 版（3,864）作**交叉核对**，并因带 family-fold/k-fold 划分而用于泛化切分。论文须写明两者并存。
+
+**数据完整性守则（新增，防止再犯）**：任何数据源在进入清洗链之前，必须做**内容审计**（可用字节数 ≠ 0 的文件数），并把审计结果写进 manifest。`scripts/build_ss_corpus.sh` 已内置该审计：必需输入可用文件数 = 0 时**硬失败**，可选输入记 0 并继续。
 
 ### 2.2 本次新增下载（含来源与大小）
 
@@ -99,7 +107,9 @@
 ### 2.4 存疑项（**不得当作事实引用，须在运行前核实**）
 
 1. **bpRNA VL0 条数**：集群实测 **198**，而 SPOT-RNA 原文记为 **1,300**。差异未解释。→ 训练/验证划分若使用 VL0，必须先核实，否则**改用 TS0 内部切分或改用 RiNALMo `bpRNA_splits.csv`**。
-2. **archiveII 原始 bpseq 版**：未取得。若后续需要与 UFold/SPOT-RNA 论文数字严格对齐，需另寻镜像。
+2. ~~archiveII 原始 bpseq 版：未取得~~ → **已解决**：BPfold `BPfold_test_results` 内含 archiveII bpseq **3,966 条**，与 BPfold 论文 n=3966 一致。
+2b. **RNAStrAlign 不可用**（37,052 文件全为 0 字节）。不再作为训练集；若后续需要规模扩展，须另寻来源并重做内容审计。
+2c. **Rfam12.3–14.10 / Rfam14.10–15.0 已从 tarball 恢复**，但它们是 **BPfold 的整理版**（家族级/时间级划分），与 SPOT-RNA2 的 bpRNA-new 构造方式不同；论文中须分别标注来源。
 3. **bpRNA-new 的 Rfam 版本**（14.1 vs 14.2）与**精确条数**：二手来源冲突，未从一手核实。
 4. **ts3 的精确定义**（同一性阈值 / 分辨率过滤）：未核实。
 5. **bpRNA-1m 标签来源**：**不是 RNAfold 机器标注**，而是 7 个来源的"已知结构"汇编（多为比较分析/协方差衍生）。SPOT-RNA 原文指出其噪声使 **precision 上界约 96%**。→ **必须在论文中写明**，且这正是**必须补实验标签集（PDB ts1/ts2/ts3）的理由**。
@@ -211,7 +221,8 @@
 | 优先级 | 缺口 | 处置 |
 |---|---|---|
 | **P0** | ViennaRNA 未安装（全集群 5 个候选环境均无 `RNA` 模块） | pip 安装 + **版本锁定**，记录 Turner 参数版本 |
-| **P0** | archiveII 原始 bpseq 版 | 先用 RiNALMo CSV 版；论文写明版本 |
+| ~~P0~~ | ~~archiveII 原始 bpseq 版~~ | **已解决**：BPfold `BPfold_test_results` 内 archiveII bpseq 3,966 条 |
+| **P1** | RNAStrAlign 全零字节（不可用） | 记为不可得；训练用 TR0（10,814），论文写明训练集口径 |
 | **P1** | bpRNA VL0 条数存疑（198 vs 1,300） | 训练/验证划分前核实；否则改用 RiNALMo `bpRNA_splits.csv` |
 | **P1** | LinearPartition 未安装 | 源码编译 |
 | **P2** | PDB ts1/ts2/ts3 的标签由 DSSR 从 3D 导出——需确认我们拿到的 bpseq 是否同源 | 抽样核对 |
