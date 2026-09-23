@@ -1,0 +1,1080 @@
+"""Pretraining / fine-tuning driver for the decision model (Task 18).
+
+What this file is
+-----------------
+The execution harness for the four-term objective of spec §5.2 / §5.7 / §5.8::
+
+    L = L_NLL + lambda_distill * L_distill + lambda_RLCD * L_RLCD + lambda_1 * L_cal
+
+Every weight is independently switchable so the 15 ablations of spec §7.5 (see
+``eval/ss/ablations.py``) can be run as pure config changes.  The terms themselves
+live in the frozen modules ``rnajepa.rlcd`` (``combined_loss``) and
+``rnajepa.distill``; this driver only wires them to a model, a data source and a
+teacher, and adds the execution guarantees the project needs:
+
+* **gradient-coverage assertion** -- every learnable block that is on the loss
+  path must actually receive a gradient;
+* **NaN / Inf monitoring with a hard failure** on divergence (no silent
+  continuation with a dead run);
+* **learning-rate calibration** -- the earlier phase of this project measured that
+  the documented default ``lr=1e-4`` destroys the pretrained encoder on tasks with
+  more than ~10k rows (3'UTR-RBP collapsed to ``F1pos = 0.0``; see
+  ``records/R3_GATE_AND_LR_CALIBRATION.md`` and
+  ``records/INVESTIGATION_rbp_0_degenerate.md``).  The chosen LR is therefore
+  *measured* on train/dev and recorded in ``run_meta.json``, never inherited;
+* checkpointing, training curves, ``run_meta.json`` and a resumable ledger.
+
+Honesty / provenance (spec §0.3, §0.7 problem 2, §5.8.4)
+-------------------------------------------------------
+* The Gibbs / partition-function framework used by the ``L_NLL`` term is **not our
+  contribution** -- it is the CONTRAfold / CRF lineage.
+* ``L_RLCD`` is an **RLCD-inspired, self-designed objective**, not Jev's RLCD
+  (which is undisclosed); nothing here claims to reproduce or match it.
+* The real thermodynamic teacher is **not installed and cannot be downloaded
+  here**, so this driver runs against the synthetic :class:`MockTeacher` or against
+  soft labels previously written by the ``rnajepa.distill`` driver.  A run that
+  uses the mock teacher records that fact in ``run_meta.json`` and must never be
+  reported as a physical distillation result.
+
+Two implementation facts worth knowing (both measured here, not assumed)
+-----------------------------------------------------------------------
+1. ``-inf`` sentinels and the four-term objective.  ``FlatDecisionHead`` writes
+   ``-inf`` on every illegal pair.  ``combined_loss`` contains
+   ``total = s.sum() * 0.0`` and ``negative_log_likelihood`` contains
+   ``gt_score = scores.sum() * 0.0``; ``(-inf) * 0.0`` is ``NaN``, so passing the
+   raw head output makes ``L_NLL`` NaN even though no illegal pair is ever read
+   (both the harness and ``select_pairs`` mask them).  The driver therefore
+   replaces non-finite scores with a large negative finite sentinel before the
+   objective is evaluated.  This is numerically equivalent -- the entries are
+   never read -- but keeps the loss and its gradient finite.
+2. **Zero-initialised ``MLP_T`` makes the first backward pass dead.**  Because
+   ``TurnerResidual``'s last layer is zero-initialised (spec §5.4.2), at step 0
+   ``d L / d z = W_last^T ... = 0``, so the encoder, ``PairRepresentation`` and the
+   inner ``MLP_T`` layers receive an *exactly zero* gradient; only
+   ``turner.net[-1]`` and the calibration temperature do not.  After a single
+   optimizer step the last layer is non-zero and full gradient coverage resumes
+   (measured: 3/26 non-zero parameters at step 0, 26/26 from step 1).  The
+   coverage assertion is therefore evaluated after the first optimizer step, and
+   the observation is recorded in ``run_meta.json``.
+
+Usage (CPU, tiny synthetic data -- the path the test suite exercises)::
+
+    python -m rnajepa.train_decision --synthetic 8 --length 24 --tiny \\
+        --steps 6 --batch-size 2 --lr 1e-3 --out /tmp/run --dry-run
+
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import socket
+import subprocess
+import sys
+import time
+from dataclasses import asdict, dataclass, replace
+from pathlib import Path
+from typing import Dict, Iterable, Iterator, List, Optional, Sequence, Tuple
+
+import numpy as np
+import torch
+
+from rnajepa.decision_head import FlatDecisionHead
+from rnajepa.distill import (
+    MockTeacher,
+    generate_teacher_labels,
+    load_teacher_shard,
+    pair_indicator,
+    sha256_file,
+)
+from rnajepa.encoder import RNAEncoder, build_encoder
+from rnajepa.harness import nussinov_map, valid_pair_mask
+from rnajepa.rlcd import ObjectiveWeights, combined_loss
+
+__all__ = [
+    "BASE_TO_ID",
+    "DEFAULT_EXCLUDED_GRAD_BLOCKS",
+    "NEG_BIG",
+    "ConfigError",
+    "DivergenceError",
+    "GradientCoverageError",
+    "TrainConfig",
+    "DecisionExample",
+    "DecisionDataset",
+    "TeacherLabelStore",
+    "make_synthetic_dataset",
+    "write_mock_teacher_dir",
+    "build_decision_model",
+    "collate",
+    "iter_batches",
+    "objective_terms",
+    "gradient_coverage",
+    "assert_gradient_coverage",
+    "calibrate_learning_rate",
+    "run_training",
+    "plan",
+    "parse_args",
+    "main",
+]
+
+#: Base -> encoder index (matches ``rnajepa.encoder.BASE_TO_INDEX``).
+BASE_TO_ID: Dict[str, int] = {"A": 0, "C": 1, "G": 2, "U": 3}
+
+#: Finite stand-in for the head's ``-inf`` illegal-pair sentinel (see docstring).
+NEG_BIG = -1.0e4
+
+#: Parameters that are deliberately *not* on the four-term loss path.
+#:
+#: * ``head.type_head`` -- the ordered pair-type head (spec §5.4.3) is supervised
+#:   by its own pair-type objective, not by the pair-existence objective this
+#:   driver implements;
+#: * ``encoder.channel_proj`` -- the SHAPE / DMS probing channel (spec §5.3.1) is
+#:   multiplied by the reactivity input and is a no-op when none is supplied (T3).
+DEFAULT_EXCLUDED_GRAD_BLOCKS: Tuple[str, ...] = (
+    "head.type_head",
+    "encoder.channel_proj",
+)
+
+#: Provenance note carried in ``run_meta.json``.
+HONESTY = {
+    "gibbs_framework": "NOT our contribution -- CONTRAfold (Do et al. 2006) / CRF lineage (spec §0.7 problem 2)",
+    "rlcd": "RLCD-inspired, self-designed objective; Jev's RLCD is undisclosed and is NOT reproduced or matched (spec §5.8.4)",
+    "turner_prior": "MLP_T=0 yields exactly 'Nussinov + Turner stacking', NOT ViennaRNA (spec §0.7 problem 3)",
+}
+
+
+# ---------------------------------------------------------------------------
+# errors
+# ---------------------------------------------------------------------------
+class ConfigError(ValueError):
+    """Raised when a configuration is internally inconsistent."""
+
+
+class DivergenceError(RuntimeError):
+    """Raised on a non-finite loss or gradient (hard failure, never silent)."""
+
+
+class GradientCoverageError(RuntimeError):
+    """Raised when a learnable block on the loss path receives no gradient."""
+
+
+# ---------------------------------------------------------------------------
+# configuration
+# ---------------------------------------------------------------------------
+@dataclass
+class TrainConfig:
+    """Every hyper-parameter of one run (written verbatim into ``run_meta.json``)."""
+
+    # schedule
+    steps: int = 50
+    batch_size: int = 2
+    lr: float = 1e-4
+    weight_decay: float = 0.0
+    warmup_steps: int = 5
+    grad_clip: float = 1.0
+    seed: int = 0
+    log_every: int = 5
+    save_every: int = 0
+    max_hours: float = 0.0
+
+    # four-term objective (all independently switchable -- spec §7.5 ablations)
+    lambda_nll: float = 1.0
+    lambda_distill: float = 1.0
+    lambda_rlcd: float = 1.0
+    lambda_cal: float = 1.0
+    distill_kind: str = "kl"
+    rlcd_reward: str = "brier"
+    beta: float = 1.0
+    n_bins: int = 10
+    soft_ece_tau: float = 0.1
+
+    # model
+    tiny: bool = False
+    encoder_size: str = "150M"
+    d_model: int = 768
+    n_layer: int = 12
+    n_head: int = 12
+    d_ff: int = 3072
+    d_z: int = 128
+    hidden: int = 64
+    max_len: int = 4096
+
+    # lr calibration
+    lr_calibrate: bool = False
+    lr_candidates: Tuple[float, ...] = (1e-4, 5e-5, 1e-5)
+    lr_probe_steps: int = 5
+
+    # bookkeeping
+    out_dir: str = ""
+    device: str = "cpu"
+    resume: str = ""
+    arm: str = "decision"
+
+    def __post_init__(self) -> None:
+        if self.tiny:
+            # CPU-sized model with the same topology (encoder + light head).
+            self.encoder_size = "tiny"
+            self.d_model = 32
+            self.n_layer = 1
+            self.n_head = 4
+            self.d_ff = 64
+            self.d_z = 16
+            self.hidden = 16
+            self.max_len = 256
+
+    def validate(self) -> None:
+        """Reject an inconsistent configuration before anything is built."""
+        if self.steps <= 0:
+            raise ConfigError(f"steps must be positive, got {self.steps}")
+        if self.batch_size <= 0:
+            raise ConfigError(f"batch_size must be positive, got {self.batch_size}")
+        if self.lr <= 0.0:
+            raise ConfigError(f"lr must be positive, got {self.lr}")
+        if self.distill_kind not in ("kl", "l2"):
+            raise ConfigError(f"distill_kind must be 'kl' or 'l2', got {self.distill_kind!r}")
+        if self.rlcd_reward not in ("brier", "log", "log_score"):
+            raise ConfigError(
+                f"rlcd_reward must be 'brier' or 'log', got {self.rlcd_reward!r}")
+        if self.d_model % self.n_head != 0:
+            raise ConfigError(f"d_model {self.d_model} not divisible by n_head {self.n_head}")
+        weights = (self.lambda_nll, self.lambda_distill, self.lambda_rlcd, self.lambda_cal)
+        if all(w == 0.0 for w in weights):
+            raise ConfigError("all four objective weights are zero; there is nothing to optimise")
+        if any(w < 0.0 for w in weights):
+            raise ConfigError(f"objective weights must be non-negative, got {weights}")
+        if self.lr_calibrate and not self.lr_candidates:
+            raise ConfigError("lr_calibrate requires a non-empty lr_candidates grid")
+
+    def objective_weights(self) -> ObjectiveWeights:
+        return ObjectiveWeights(
+            lambda_nll=self.lambda_nll,
+            lambda_distill=self.lambda_distill,
+            lambda_rlcd=self.lambda_rlcd,
+            lambda_cal=self.lambda_cal,
+        )
+
+    def as_dict(self) -> Dict[str, object]:
+        d = asdict(self)
+        d["lr_candidates"] = list(self.lr_candidates)
+        return d
+
+
+# ---------------------------------------------------------------------------
+# data
+# ---------------------------------------------------------------------------
+@dataclass
+class DecisionExample:
+    """One training instance: sequence + hard labels + teacher soft labels."""
+
+    seq: str
+    gt_pairs: List[Tuple[int, int]]
+    teacher_probs: np.ndarray
+    source: str = "synthetic"
+
+    @property
+    def length(self) -> int:
+        return len(self.seq)
+
+    @property
+    def seq_ids(self) -> torch.Tensor:
+        return torch.tensor([BASE_TO_ID.get(c, 4) for c in self.seq], dtype=torch.long)
+
+    @property
+    def mask(self) -> np.ndarray:
+        return valid_pair_mask(self.seq)
+
+    @property
+    def labels(self) -> np.ndarray:
+        return pair_indicator(self.length, self.gt_pairs)
+
+
+class DecisionDataset:
+    """A list of :class:`DecisionExample` plus its provenance."""
+
+    def __init__(self, examples: Sequence[DecisionExample], *, source: str,
+                 version: str) -> None:
+        self.examples: List[DecisionExample] = list(examples)
+        self.source = source
+        self.version = version
+
+    def __len__(self) -> int:
+        return len(self.examples)
+
+    def __getitem__(self, index: int) -> DecisionExample:
+        return self.examples[index]
+
+    def describe(self) -> Dict[str, object]:
+        lengths = [e.length for e in self.examples]
+        return {
+            "source": self.source,
+            "version": self.version,
+            "n_examples": len(self.examples),
+            "min_length": int(min(lengths)) if lengths else 0,
+            "max_length": int(max(lengths)) if lengths else 0,
+        }
+
+
+def _random_seq(rng: np.random.Generator, length: int) -> str:
+    return "".join(rng.choice(list("ACGU")) for _ in range(length))
+
+
+def make_synthetic_dataset(n: int, length: int, seed: int = 0,
+                           teacher_seed: int = 0) -> DecisionDataset:
+    """Tiny self-contained dataset: random sequences, legal structures, mock teacher.
+
+    The hard labels are the Nussinov MAP of an *independent* random score matrix,
+    so they are guaranteed legal (non-crossing, minimum hairpin loop respected)
+    without needing any annotation file.  The teacher soft labels come from
+    :class:`rnajepa.distill.MockTeacher`, whose target is a genuine Gibbs marginal
+    of a seeded random score matrix -- a real probability matrix, but **not a
+    physical model**.
+    """
+    if n <= 0:
+        raise ConfigError(f"n must be positive, got {n}")
+    if length <= 0:
+        raise ConfigError(f"length must be positive, got {length}")
+    teacher = MockTeacher(seed=teacher_seed)
+    examples: List[DecisionExample] = []
+    for i in range(n):
+        rng = np.random.default_rng((seed, i))
+        seq = _random_seq(rng, length)
+        mask = valid_pair_mask(seq)
+        scores = np.triu(rng.normal(0.0, 1.0, size=(length, length)), k=1)
+        gt = nussinov_map(scores, mask)
+        examples.append(DecisionExample(seq=seq, gt_pairs=[tuple(p) for p in gt],
+                                        teacher_probs=teacher.predict_probs(seq),
+                                        source="synthetic"))
+    version = f"synthetic:seed={seed}:n={n}:L={length}:teacher_seed={teacher_seed}"
+    return DecisionDataset(examples, source="synthetic", version=version)
+
+
+def write_mock_teacher_dir(sequences: Sequence[str], out_dir: str,
+                           seed: int = 0) -> Dict[str, object]:
+    """Write a mock-teacher label directory using the ``distill`` driver.
+
+    Exists so the consumption path (shard manifest -> :class:`TeacherLabelStore`)
+    is exercised without the real thermodynamic tools.  The returned manifest
+    records ``teacher="mock"``, which the driver propagates into
+    ``run_meta.json``.
+    """
+    teacher = MockTeacher(seed=seed)
+    return generate_teacher_labels(sequences, teacher, out_dir, shard_size=8)
+
+
+class TeacherLabelStore:
+    """Teacher soft labels keyed by sequence, with provenance for the run record."""
+
+    def __init__(self, mapping: Dict[str, np.ndarray], *, name: str,
+                 version_lock: Optional[str], source: str, n_labels: int) -> None:
+        self.mapping = mapping
+        self.name = name
+        self.version_lock = version_lock
+        self.source = source
+        self.n_labels = n_labels
+
+    @classmethod
+    def from_mock(cls, seed: int = 0) -> "TeacherLabelStore":
+        teacher = MockTeacher(seed=seed)
+        return cls({}, name="mock", version_lock="synthetic",
+                   source=f"mock:seed={seed}", n_labels=0)
+
+    @classmethod
+    def from_dir(cls, directory: str) -> "TeacherLabelStore":
+        """Load every shard written by ``distill.generate_teacher_labels``."""
+        directory = str(directory)
+        manifest_path = os.path.join(directory, "manifest.json")
+        if not os.path.isfile(manifest_path):
+            raise ConfigError(f"no teacher manifest at {manifest_path}")
+        with open(manifest_path, encoding="utf-8") as fh:
+            manifest = json.load(fh)
+        mapping: Dict[str, np.ndarray] = {}
+        for shard in manifest.get("shards", []):
+            seqs, probs = load_teacher_shard(os.path.join(directory, str(shard["file"])))
+            for seq, prob in zip(seqs, probs):
+                mapping[str(seq)] = np.asarray(prob, dtype=np.float64)
+        return cls(mapping, name=str(manifest.get("teacher", "unknown")),
+                   version_lock=manifest.get("version_lock"),
+                   source=f"dir:{directory}", n_labels=len(mapping))
+
+    def probs_for(self, seq: str, *, teacher: Optional[MockTeacher] = None) -> np.ndarray:
+        if seq in self.mapping:
+            return self.mapping[seq]
+        if teacher is None:
+            teacher = MockTeacher(seed=0)
+        return teacher.predict_probs(seq)
+
+    def meta(self) -> Dict[str, object]:
+        return {"name": self.name, "version_lock": self.version_lock,
+                "source": self.source, "n_labels": self.n_labels,
+                "is_mock": self.name == "mock"}
+
+
+def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
+                            mock_seed: int = 0) -> DecisionDataset:
+    """Load ``{"seq": ..., "structure": "<dot-bracket>"}`` records from JSONL.
+
+    Hard labels are parsed from the dot-bracket string (reusing the frozen
+    ``rnajepa.clean.c3_structure.parse_pairs``); soft labels are looked up in the
+    teacher store and fall back to the mock teacher for unseen sequences (which is
+    recorded via the store's provenance).
+    """
+    from rnajepa.clean.c3_structure import parse_pairs
+
+    mock = MockTeacher(seed=mock_seed)
+    examples: List[DecisionExample] = []
+    with open(path, encoding="utf-8") as fh:
+        for lineno, line in enumerate(fh, 1):
+            line = line.strip()
+            if not line:
+                continue
+            record = json.loads(line)
+            seq = str(record["seq"]).upper().replace("T", "U")
+            pairs = [tuple(p) for p in record["pairs"]] if "pairs" in record \
+                else parse_pairs(str(record["structure"]))
+            examples.append(DecisionExample(
+                seq=seq, gt_pairs=sorted(pairs),
+                teacher_probs=teacher.probs_for(seq, teacher=mock), source="jsonl"))
+    return DecisionDataset(examples, source=f"jsonl:{path}",
+                           version=sha256_file(path))
+
+
+# ---------------------------------------------------------------------------
+# model
+# ---------------------------------------------------------------------------
+def build_decision_model(config: TrainConfig):
+    """Encoder + flat decision head (single forward pass -> ``L x L`` scores)."""
+    from rnajepa.decision_head import DecisionModel
+
+    if config.tiny:
+        encoder = RNAEncoder(d_model=config.d_model, n_layer=config.n_layer,
+                             n_head=config.n_head, d_ff=config.d_ff,
+                             max_len=config.max_len, window=None, global_stride=None)
+    else:
+        encoder = build_encoder(size=config.encoder_size)
+    head = FlatDecisionHead(d_model=config.d_model, d_z=config.d_z, hidden=config.hidden)
+    return DecisionModel(encoder, head)
+
+
+# ---------------------------------------------------------------------------
+# batching (pad to the longest sequence in the batch, slice per example)
+# ---------------------------------------------------------------------------
+def collate(examples: Sequence[DecisionExample]) -> Dict[str, object]:
+    """Pad a list of examples into one batch; masks/labels stay per-example."""
+    lengths = [e.length for e in examples]
+    max_len = max(lengths)
+    rows = len(examples)
+    seq_ids = torch.zeros((rows, max_len), dtype=torch.long)
+    attention = torch.zeros((rows, max_len), dtype=torch.long)
+    for row, example in enumerate(examples):
+        ids = example.seq_ids
+        seq_ids[row, :example.length] = ids
+        attention[row, :example.length] = 1
+    return {
+        "seq_ids": seq_ids,
+        "attention_mask": attention,
+        "lengths": torch.tensor(lengths, dtype=torch.long),
+        "masks": [e.mask for e in examples],
+        "gt_pairs": [e.gt_pairs for e in examples],
+        "teacher_probs": [e.teacher_probs for e in examples],
+        "labels": [e.labels for e in examples],
+    }
+
+
+def iter_batches(dataset: DecisionDataset, batch_size: int, seed: int,
+                 epoch: int = 0) -> Iterator[Dict[str, object]]:
+    """Yield length-bucketed batches; bucket order is shuffled per epoch.
+
+    Bucketing by encoded length keeps padding bounded.  The shuffle is seeded by
+    ``(seed, epoch)`` so a resumed run reproduces the same batch sequence.
+    """
+    order = sorted(range(len(dataset)), key=lambda i: dataset[i].length)
+    buckets = [order[i:i + batch_size] for i in range(0, len(order), batch_size)]
+    rng = np.random.default_rng((seed, epoch))
+    for index in rng.permutation(len(buckets)):
+        yield collate([dataset[i] for i in buckets[int(index)]])
+
+
+def _batch_stream(dataset: DecisionDataset, config: TrainConfig,
+                  start_step: int = 0) -> Iterator[Dict[str, object]]:
+    """Endless batch stream; skips ``start_step`` batches when resuming."""
+    skipped = 0
+    epoch = 0
+    while True:
+        for batch in iter_batches(dataset, config.batch_size, config.seed, epoch):
+            if skipped < start_step:
+                skipped += 1
+                continue
+            yield batch
+        epoch += 1
+
+
+# ---------------------------------------------------------------------------
+# objective
+# ---------------------------------------------------------------------------
+def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, *,
+                     distill_kind: str = "kl", reward: str = "brier", beta: float = 1.0,
+                     n_bins: int = 10, tau: float = 0.1
+                     ) -> Tuple[torch.Tensor, Dict[str, float]]:
+    """Mean four-term objective over a batch, plus the per-term values.
+
+    Non-finite head scores are replaced by :data:`NEG_BIG` before the objective is
+    evaluated (see the module docstring: ``(-inf) * 0.0`` is ``NaN`` and the
+    frozen objective contains such a product).
+    """
+    scores = model(batch["seq_ids"], lengths=batch["lengths"])
+    matrix = scores.scores
+    total: Optional[torch.Tensor] = None
+    aggregated: Dict[str, float] = {}
+    n = int(matrix.shape[0])
+    for b in range(n):
+        length = int(batch["lengths"][b])
+        s = matrix[b, :length, :length]
+        s = torch.where(torch.isfinite(s), s, torch.full_like(s, NEG_BIG))
+        loss, terms = combined_loss(
+            s, batch["masks"][b], batch["gt_pairs"][b], weights,
+            teacher_probs=batch["teacher_probs"][b],
+            student_probs=torch.sigmoid(s),
+            labels=torch.as_tensor(batch["labels"][b], dtype=torch.float64),
+            distill_kind=distill_kind, reward=reward, beta=beta,
+            n_bins=n_bins, tau=tau, return_terms=True,
+        )
+        total = loss if total is None else total + loss
+        for name, value in terms.items():
+            aggregated[name] = aggregated.get(name, 0.0) + float(value.detach())
+    if total is None:
+        raise ConfigError("empty batch: nothing to optimise")
+    for name in aggregated:
+        aggregated[name] /= n
+    return total / n, aggregated
+
+
+# ---------------------------------------------------------------------------
+# gradient coverage
+# ---------------------------------------------------------------------------
+def gradient_coverage(model, *, excluded: Sequence[str] = DEFAULT_EXCLUDED_GRAD_BLOCKS
+                      ) -> Dict[str, List[str]]:
+    """Classify every learnable parameter by the gradient it currently holds.
+
+    Returns ``{"covered", "zero", "missing", "excluded", "nonfinite"}``.  A
+    parameter is ``missing`` when ``.grad is None`` (it is disconnected from the
+    loss graph), which is the failure this check exists to catch; ``zero`` is
+    reported separately because an exactly zero gradient is legitimate for a
+    zero-initialised sub-network or a zero input.
+    """
+    covered, zero, missing, excluded_names, nonfinite = [], [], [], [], []
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+        if any(name.startswith(prefix) for prefix in excluded):
+            excluded_names.append(name)
+            continue
+        if param.grad is None:
+            missing.append(name)
+        elif not bool(torch.isfinite(param.grad).all()):
+            nonfinite.append(name)
+        elif float(param.grad.abs().sum()) == 0.0:
+            zero.append(name)
+        else:
+            covered.append(name)
+    return {"covered": covered, "zero": zero, "missing": missing,
+            "excluded": excluded_names, "nonfinite": nonfinite}
+
+
+def assert_gradient_coverage(model, *, excluded: Sequence[str] = DEFAULT_EXCLUDED_GRAD_BLOCKS,
+                             require_nonzero: bool = True) -> Dict[str, List[str]]:
+    """Hard-fail unless every non-excluded learnable block receives a gradient.
+
+    ``require_nonzero=True`` additionally rejects an all-zero gradient, which is
+    what the zero-initialised ``MLP_T`` produces on the very first backward pass
+    (see the module docstring); call this after the first optimizer step.
+    """
+    report = gradient_coverage(model, excluded=excluded)
+    if report["nonfinite"]:
+        raise GradientCoverageError(
+            f"non-finite gradient on {len(report['nonfinite'])} parameter(s): "
+            f"{report['nonfinite'][:5]}")
+    if report["missing"]:
+        raise GradientCoverageError(
+            f"{len(report['missing'])} learnable block(s) receive no gradient: "
+            f"{report['missing'][:8]}; either wire them into the objective or add "
+            f"them to `excluded` with a documented reason")
+    if require_nonzero and report["zero"]:
+        raise GradientCoverageError(
+            f"{len(report['zero'])} learnable block(s) have an exactly zero gradient: "
+            f"{report['zero'][:8]}")
+    return report
+
+
+# ---------------------------------------------------------------------------
+# divergence monitoring
+# ---------------------------------------------------------------------------
+def _finite(value, what: str) -> float:
+    """Return ``value`` as a float, raising :class:`DivergenceError` if not finite."""
+    number = float(value)
+    if not math.isfinite(number):
+        raise DivergenceError(f"{what} is not finite ({number}); refusing to continue")
+    return number
+
+
+def _grad_norm(parameters: Iterable[torch.nn.Parameter]) -> float:
+    total = 0.0
+    for param in parameters:
+        if param.grad is not None:
+            total += float(param.grad.detach().pow(2).sum())
+    return math.sqrt(total)
+
+
+# ---------------------------------------------------------------------------
+# learning-rate calibration
+# ---------------------------------------------------------------------------
+def calibrate_learning_rate(config: TrainConfig, dataset: DecisionDataset, *,
+                            candidates: Optional[Sequence[float]] = None,
+                            probe_steps: Optional[int] = None,
+                            verbose: bool = False) -> Dict[str, object]:
+    """Probe each candidate LR for a few steps; return the chosen value and the table.
+
+    The earlier phase of this project measured that the documented default
+    ``lr=1e-4`` destroys the pretrained encoder on tasks with more than ~10k rows
+    (``records/R3_GATE_AND_LR_CALIBRATION.md``).  Rather than inherit a default,
+    each candidate is run for ``probe_steps`` optimiser steps on a freshly built
+    model and scored by its final (finite) objective value; the best non-diverged
+    candidate wins.  Diverged candidates (non-finite loss or gradient) are recorded
+    and never selected.
+
+    Note (honest scope): the probe selects on the *training* objective.  In a real
+    run the selection must use a dev split -- the spec freezes "the test set never
+    participates in hyper-parameter selection", and this driver's caller is
+    responsible for passing the dev dataset here.
+    """
+    candidates = tuple(candidates if candidates is not None else config.lr_candidates)
+    if not candidates:
+        raise ConfigError("calibrate_learning_rate needs at least one candidate")
+    probe_steps = int(probe_steps if probe_steps is not None else config.lr_probe_steps)
+    if probe_steps <= 0:
+        raise ConfigError(f"probe_steps must be positive, got {probe_steps}")
+
+    weights = config.objective_weights()
+    rows: List[Dict[str, object]] = []
+    for lr in candidates:
+        torch.manual_seed(config.seed)
+        model = build_decision_model(replace(config, lr=float(lr)))
+        model.to(config.device)
+        model.train()
+        optimizer = torch.optim.AdamW(
+            [p for p in model.parameters() if p.requires_grad],
+            lr=float(lr), weight_decay=config.weight_decay, betas=(0.9, 0.98))
+        losses: List[float] = []
+        diverged = False
+        stream = _batch_stream(dataset, replace(config, batch_size=config.batch_size))
+        for _ in range(probe_steps):
+            batch = next(stream)
+            optimizer.zero_grad(set_to_none=True)
+            loss, _terms = objective_terms(
+                model, batch, weights, distill_kind=config.distill_kind,
+                reward=config.rlcd_reward, beta=config.beta,
+                n_bins=config.n_bins, tau=config.soft_ece_tau)
+            try:
+                value = _finite(loss.detach(), f"probe loss at lr={lr}")
+                loss.backward()
+                norm = _grad_norm(model.parameters())
+                if not math.isfinite(norm):
+                    raise DivergenceError(f"probe gradient norm at lr={lr} is {norm}")
+            except DivergenceError:
+                diverged = True
+                break
+            if config.grad_clip:
+                torch.nn.utils.clip_grad_norm_(
+                    [p for p in model.parameters() if p.requires_grad], config.grad_clip)
+            optimizer.step()
+            losses.append(value)
+        row = {"lr": float(lr), "diverged": diverged,
+               "final_loss": (losses[-1] if losses else None), "losses": losses}
+        rows.append(row)
+        if verbose:
+            print(f"[lr-calib] lr={lr:g} diverged={diverged} final={row['final_loss']}",
+                  flush=True)
+
+    usable = [r for r in rows if not r["diverged"] and r["final_loss"] is not None]
+    if usable:
+        best = min(usable, key=lambda r: float(r["final_loss"]))
+        chosen = float(best["lr"])
+        reason = (f"lowest finite probe loss ({best['final_loss']:.6g}) among "
+                  f"{len(usable)} non-diverged candidate(s)")
+    else:
+        chosen = float(candidates[-1])
+        reason = "every candidate diverged; falling back to the most conservative candidate"
+    return {"chosen": chosen, "candidates": [float(c) for c in candidates],
+            "probe_steps": probe_steps, "rows": rows, "reason": reason,
+            "selection_split": "train objective (caller must pass a dev split in real runs)"}
+
+
+# ---------------------------------------------------------------------------
+# bookkeeping helpers
+# ---------------------------------------------------------------------------
+def _git_commit() -> str:
+    """Best-effort commit hash; ``待核验`` when unavailable (never invented)."""
+    try:
+        root = Path(__file__).resolve().parents[2]
+        out = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(root),
+                             capture_output=True, text=True, timeout=10)
+        if out.returncode == 0 and out.stdout.strip():
+            return out.stdout.strip()
+    except Exception:  # noqa: BLE001 - provenance must never crash a run
+        pass
+    return "待核验"
+
+
+def _ledger_row(path: str, row: Dict[str, object]) -> None:
+    row = dict(row)
+    row.setdefault("ts", time.strftime("%Y-%m-%dT%H:%M:%S%z"))
+    row.setdefault("host", socket.gethostname())
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    with open(path, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
+def _save_resume(path: str, model, optimizer, scheduler, step: int, config: TrainConfig,
+                 coverage: Optional[Dict[str, object]] = None) -> None:
+    torch.save({
+        "step": int(step),
+        "model": model.state_dict(),
+        "optimizer": optimizer.state_dict(),
+        "scheduler": scheduler.state_dict(),
+        "config": config.as_dict(),
+        "gradient_coverage": coverage,
+    }, path)
+
+
+# ---------------------------------------------------------------------------
+# plan / dry run
+# ---------------------------------------------------------------------------
+def plan(config: TrainConfig, dataset: DecisionDataset, teacher: TeacherLabelStore
+         ) -> Dict[str, object]:
+    """Validate the configuration and describe what a real run would do.
+
+    Used by ``--dry-run``: it touches no model, no optimizer and no checkpoint, so
+    it cannot start training by accident.
+    """
+    config.validate()
+    weights = config.objective_weights()
+    active = [name for name, value in (("nll", weights.lambda_nll),
+                                       ("distill", weights.lambda_distill),
+                                       ("rlcd", weights.lambda_rlcd),
+                                       ("cal", weights.lambda_cal)) if value != 0.0]
+    steps_per_epoch = max(1, math.ceil(len(dataset) / config.batch_size))
+    return {
+        "dry_run": True,
+        "arm": config.arm,
+        "steps": config.steps,
+        "batch_size": config.batch_size,
+        "lr": config.lr,
+        "lr_calibrate": config.lr_calibrate,
+        "objective": {name: getattr(weights, f"lambda_{name}") for name in
+                      ("nll", "distill", "rlcd", "cal")},
+        "active_terms": active,
+        "distill_kind": config.distill_kind,
+        "rlcd_reward": config.rlcd_reward,
+        "beta": config.beta,
+        "device": config.device,
+        "out_dir": config.out_dir,
+        "data": dataset.describe(),
+        "teacher": teacher.meta(),
+        "steps_per_epoch": steps_per_epoch,
+        "epochs": config.steps / steps_per_epoch,
+        "model": {"tiny": config.tiny, "encoder_size": config.encoder_size,
+                  "d_model": config.d_model, "n_layer": config.n_layer},
+        "would_write": [os.path.join(config.out_dir, name) for name in
+                        ("run_meta.json", "train_log.jsonl", "ledger.jsonl", "resume.pt")],
+        "honesty": dict(HONESTY),
+    }
+
+
+# ---------------------------------------------------------------------------
+# the training run
+# ---------------------------------------------------------------------------
+def run_training(config: TrainConfig, dataset: DecisionDataset,
+                 teacher: TeacherLabelStore, *, dry_run: bool = False) -> Dict[str, object]:
+    """Run (or, with ``dry_run``, only plan) one training job."""
+    config.validate()
+    if dry_run:
+        return plan(config, dataset, teacher)
+    if len(dataset) == 0:
+        raise ConfigError("dataset is empty; nothing to train on")
+
+    os.makedirs(config.out_dir, exist_ok=True)
+    ledger = os.path.join(config.out_dir, "ledger.jsonl")
+    log_path = os.path.join(config.out_dir, "train_log.jsonl")
+    meta_path = os.path.join(config.out_dir, "run_meta.json")
+    resume_path = config.resume or os.path.join(config.out_dir, "resume.pt")
+
+    lr_calibration: Optional[Dict[str, object]] = None
+    if config.lr_calibrate:
+        lr_calibration = calibrate_learning_rate(config, dataset, verbose=True)
+        config = replace(config, lr=float(lr_calibration["chosen"]))
+        print(f"[train] lr calibrated to {config.lr:g} ({lr_calibration['reason']})",
+              flush=True)
+
+    torch.manual_seed(config.seed)
+    np.random.seed(config.seed)
+    model = build_decision_model(config).to(config.device)
+    n_params = sum(p.numel() for p in model.parameters())
+    n_learnable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    model.train()
+
+    optimizer = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],
+                                  lr=config.lr, weight_decay=config.weight_decay,
+                                  betas=(0.9, 0.98))
+    scheduler = torch.optim.lr_scheduler.LambdaLR(
+        optimizer, lambda st: min(1.0, (st + 1) / max(1, config.warmup_steps)))
+
+    weights = config.objective_weights()
+    start_step = 0
+    coverage: Optional[Dict[str, object]] = None
+    if os.path.isfile(resume_path):
+        state = torch.load(resume_path, map_location="cpu")
+        model.load_state_dict(state["model"])
+        optimizer.load_state_dict(state["optimizer"])
+        scheduler.load_state_dict(state["scheduler"])
+        start_step = int(state["step"])
+        coverage = state.get("gradient_coverage")
+        print(f"[train] resumed from {resume_path} at step {start_step}", flush=True)
+
+    meta = {
+        "run_id": f"{config.arm}-{int(time.time())}",
+        "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "git_commit": _git_commit(),
+        "spec_reference": (".trae/specs/build-rna-ss-decision-model/spec.md "
+                           "§5.2 / §5.7 / §5.8"),
+        "config": config.as_dict(),
+        "model": {"n_params": n_params, "n_learnable_params": n_learnable,
+                  "tiny": config.tiny, "encoder_size": config.encoder_size},
+        "data": dataset.describe(),
+        "teacher": teacher.meta(),
+        "lr_calibration": lr_calibration,
+        "objective_terms_active": [name for name, value in
+                                   (("nll", weights.lambda_nll),
+                                    ("distill", weights.lambda_distill),
+                                    ("rlcd", weights.lambda_rlcd),
+                                    ("cal", weights.lambda_cal)) if value != 0.0],
+        "environment": {"python": sys.version.split()[0], "torch": torch.__version__,
+                        "numpy": np.__version__, "host": socket.gethostname(),
+                        "device": config.device},
+        "honesty": dict(HONESTY),
+        "implementation_notes": {
+            "neginf_sentinel": ("head scores are -inf on illegal pairs; replaced by "
+                                f"{NEG_BIG} before the objective because (-inf)*0.0 is NaN"),
+            "zero_init_dead_gradient": ("with the zero-initialised MLP_T last layer the "
+                                        "step-0 backward gives an exactly zero gradient to "
+                                        "the encoder and inner MLP_T layers; coverage is "
+                                        "asserted after the first optimizer step"),
+        },
+        "gradient_coverage": None,
+        "final_loss": None,
+        "steps_completed": start_step,
+    }
+    with open(meta_path, "w", encoding="utf-8") as fh:
+        json.dump(meta, fh, indent=1, sort_keys=True)
+
+    _ledger_row(ledger, {"status": "start", "arm": config.arm, "steps": config.steps,
+                         "lr": config.lr, "batch_size": config.batch_size,
+                         "resume_from": start_step,
+                         "active_terms": meta["objective_terms_active"],
+                         "teacher": teacher.name,
+                         "data_version": dataset.version})
+
+    stream = _batch_stream(dataset, config, start_step=start_step)
+    running: List[float] = []
+    running_terms: Dict[str, float] = {}
+    start_wall = time.time()
+    step = start_step
+    final_loss: Optional[float] = None
+
+    try:
+        while step < config.steps:
+            batch = next(stream)
+            optimizer.zero_grad(set_to_none=True)
+            loss, terms = objective_terms(
+                model, batch, weights, distill_kind=config.distill_kind,
+                reward=config.rlcd_reward, beta=config.beta,
+                n_bins=config.n_bins, tau=config.soft_ece_tau)
+            value = _finite(loss.detach(), f"loss at step {step + 1}")
+            loss.backward()
+            norm = _grad_norm(model.parameters())
+            if not math.isfinite(norm):
+                raise DivergenceError(
+                    f"gradient norm at step {step + 1} is {norm}; run diverged")
+
+            # Coverage is asserted on the *second* backward pass: the first one is
+            # dead for the encoder because the zero-initialised MLP_T last layer
+            # blocks the gradient (see the module docstring).  After one optimizer
+            # step the last layer is non-zero and coverage is complete.
+            if coverage is None and step >= 1:
+                coverage = assert_gradient_coverage(model)
+                meta["gradient_coverage"] = coverage
+
+            if config.grad_clip:
+                torch.nn.utils.clip_grad_norm_(
+                    [p for p in model.parameters() if p.requires_grad], config.grad_clip)
+            optimizer.step()
+            scheduler.step()
+            step += 1
+            running.append(value)
+            for name, term in terms.items():
+                running_terms[name] = running_terms.get(name, 0.0) + term
+            final_loss = value
+
+            if config.log_every and step % config.log_every == 0:
+                n = max(1, len(running))
+                row = {"ts": time.time(), "step": step, "lr": scheduler.get_last_lr()[0],
+                       "loss": sum(running) / n,
+                       "terms": {k: v / n for k, v in running_terms.items()},
+                       "grad_norm": norm}
+                with open(log_path, "a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(row) + "\n")
+                print(f"[{config.arm}] step {step}/{config.steps} loss={row['loss']:.4f} "
+                      f"terms={ {k: round(v, 4) for k, v in row['terms'].items()} } "
+                      f"gnorm={norm:.3f}", flush=True)
+                running, running_terms = [], {}
+
+            if config.save_every and step % config.save_every == 0:
+                _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage)
+                print(f"[{config.arm}] checkpoint written {resume_path} (step {step})",
+                      flush=True)
+
+            if config.max_hours and (time.time() - start_wall) / 3600.0 > config.max_hours:
+                print(f"[{config.arm}] max_hours reached at step {step}", flush=True)
+                break
+    except DivergenceError:
+        _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage)
+        _ledger_row(ledger, {"status": "diverged", "arm": config.arm, "step": step,
+                             "lr": config.lr})
+        meta["final_loss"] = final_loss
+        meta["steps_completed"] = step
+        meta["status"] = "diverged"
+        with open(meta_path, "w", encoding="utf-8") as fh:
+            json.dump(meta, fh, indent=1, sort_keys=True)
+        raise
+
+    if coverage is None:
+        # Very short runs (a single step) never reach the second backward pass, so
+        # the dead-gradient window is still open; assert connectivity only.
+        coverage = assert_gradient_coverage(model, require_nonzero=False)
+        meta["gradient_coverage"] = coverage
+        meta["gradient_coverage_note"] = ("require_nonzero=False: the run was too short "
+                                         "to leave the zero-init dead-gradient window")
+
+    _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage)
+    meta["final_loss"] = final_loss
+    meta["steps_completed"] = step
+    meta["status"] = "completed"
+    meta["wall_seconds"] = time.time() - start_wall
+    with open(meta_path, "w", encoding="utf-8") as fh:
+        json.dump(meta, fh, indent=1, sort_keys=True)
+    _ledger_row(ledger, {"status": "completed", "arm": config.arm, "step": step,
+                         "lr": config.lr, "final_loss": final_loss})
+
+    return {"dry_run": False, "final_loss": final_loss, "steps_completed": step,
+            "run_meta": meta, "out_dir": config.out_dir, "ledger": ledger}
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("--arm", default="decision")
+    p.add_argument("--out", default="", help="run directory (required unless --dry-run)")
+    p.add_argument("--dry-run", action="store_true",
+                   help="validate the configuration and print the plan; no training")
+    # data
+    p.add_argument("--synthetic", type=int, default=0,
+                   help="generate N synthetic examples instead of reading --data")
+    p.add_argument("--length", type=int, default=24)
+    p.add_argument("--data", default="", help="JSONL with {seq, structure|pairs}")
+    p.add_argument("--teacher-dir", default="",
+                   help="soft labels written by the rnajepa.distill driver")
+    p.add_argument("--teacher-seed", type=int, default=0)
+    # schedule
+    p.add_argument("--steps", type=int, default=50)
+    p.add_argument("--batch-size", type=int, default=2)
+    p.add_argument("--lr", type=float, default=1e-4)
+    p.add_argument("--weight-decay", type=float, default=0.0)
+    p.add_argument("--warmup-steps", type=int, default=5)
+    p.add_argument("--grad-clip", type=float, default=1.0)
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--log-every", type=int, default=5)
+    p.add_argument("--save-every", type=int, default=0)
+    p.add_argument("--max-hours", type=float, default=0.0)
+    p.add_argument("--resume", default="")
+    # objective
+    p.add_argument("--lambda-nll", type=float, default=1.0)
+    p.add_argument("--lambda-distill", type=float, default=1.0)
+    p.add_argument("--lambda-rlcd", type=float, default=1.0)
+    p.add_argument("--lambda-cal", type=float, default=1.0)
+    p.add_argument("--distill-kind", default="kl", choices=["kl", "l2"])
+    p.add_argument("--rlcd-reward", default="brier", choices=["brier", "log"])
+    p.add_argument("--beta", type=float, default=1.0)
+    # model
+    p.add_argument("--tiny", action="store_true", help="CPU-sized model (tests / smoke)")
+    p.add_argument("--encoder-size", default="150M", choices=["35M", "150M", "650M"])
+    p.add_argument("--device", default="cpu")
+    # lr calibration
+    p.add_argument("--lr-calibrate", action="store_true")
+    p.add_argument("--lr-candidates", default="1e-4,5e-5,1e-5")
+    p.add_argument("--lr-probe-steps", type=int, default=5)
+    return p.parse_args(argv)
+
+
+def _config_from_args(args: argparse.Namespace) -> TrainConfig:
+    return TrainConfig(
+        steps=args.steps, batch_size=args.batch_size, lr=args.lr,
+        weight_decay=args.weight_decay, warmup_steps=args.warmup_steps,
+        grad_clip=args.grad_clip, seed=args.seed, log_every=args.log_every,
+        save_every=args.save_every, max_hours=args.max_hours,
+        lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
+        lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal,
+        distill_kind=args.distill_kind, rlcd_reward=args.rlcd_reward, beta=args.beta,
+        tiny=args.tiny, encoder_size=args.encoder_size, device=args.device,
+        out_dir=args.out, resume=args.resume, arm=args.arm,
+        lr_calibrate=args.lr_calibrate,
+        lr_candidates=tuple(float(x) for x in args.lr_candidates.split(",") if x.strip()),
+        lr_probe_steps=args.lr_probe_steps,
+    )
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    args = parse_args(argv)
+    if not args.out and not args.dry_run:
+        print("FATAL: --out is required unless --dry-run", file=sys.stderr)
+        return 2
+    config = _config_from_args(args)
+    try:
+        if args.synthetic:
+            dataset = make_synthetic_dataset(args.synthetic, args.length, seed=args.seed,
+                                             teacher_seed=args.teacher_seed)
+        elif args.data:
+            teacher_store = (TeacherLabelStore.from_dir(args.teacher_dir)
+                             if args.teacher_dir else TeacherLabelStore.from_mock(args.teacher_seed))
+            dataset = load_dataset_from_jsonl(args.data, teacher_store,
+                                              mock_seed=args.teacher_seed)
+        else:
+            print("FATAL: give --synthetic N or --data FILE", file=sys.stderr)
+            return 2
+        teacher = (TeacherLabelStore.from_dir(args.teacher_dir) if args.teacher_dir
+                   else TeacherLabelStore.from_mock(args.teacher_seed))
+        result = run_training(config, dataset, teacher, dry_run=args.dry_run)
+    except (ConfigError, DivergenceError, GradientCoverageError) as exc:
+        print(f"FATAL: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 1
+    if result.get("dry_run"):
+        print(json.dumps(result, indent=1, ensure_ascii=False))
+    else:
+        print(f"[{config.arm}] DONE steps={result['steps_completed']} "
+              f"final_loss={result['final_loss']} out={result['out_dir']}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
