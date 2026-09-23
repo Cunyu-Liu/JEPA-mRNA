@@ -1,27 +1,27 @@
-Fix a resumed pre-training run hanging forever instead of failing
+Corpus is a zip of zips; TE protocol is impractical as specified
 
-Found while verifying resume with a small corpus: PHASE2 of the three-phase check sat at
-zero output for over an hour. Two distinct defects, both in the data path:
+Two findings from actually running the pipeline against the real artefacts.
 
-1. Resuming with a corpus offset at or past the end of the corpus made the reader yield
-   an empty iterator. The training loop then spun at zero steps per second, indefinitely
-   -- no error, no progress, no log line. On the small verification corpus this triggered
-   immediately; on the 36M-sequence corpus it would have triggered after one pass, i.e.
-   potentially a day into the real run, and would have been very hard to attribute.
-   Both readers now restart the pass from the beginning and say so, and
-2. as defence in depth the loop now raises if an iterator produces no batches at all,
-   so the failure mode is loud.
+1. The released pre-training archive is a zip containing five zips, each holding one
+   FASTA (0.fasta alone is 21.8 GB). The reader treated those members as FASTA text and
+   parsed compressed bytes as sequence -- the verify stage then reported mismatches
+   against binary garbage. iter_fasta_from_zip now recurses into nested archives,
+   spilling each inner zip to the work directory one at a time (a nested zip needs random
+   access and the members are deflated, so a stream will not do) and deleting it after
+   consumption, which bounds peak extra disk at the largest member instead of the whole
+   21 GB. Verified on the real corpus: 5000 sequences, ORF mismatches 0, token mismatches
+   0 against the official implementation.
 
-Also verified in the same session: a pre-training checkpoint written by this code loads
-back into the model with missing=0 unexpected=0, so the released `bert.*`/`cls.*` key
-layout round-trips correctly through save_hf_checkpoint.
+2. ultra-long TE cannot be run as published. At the 3066-token budget with batch 1 and
+   20 epochs it is 178,440 optimizer steps, and the quadratic attention needs 450 MiB of
+   scores per layer per sample, which OOMs on a shared card. Registry updated to batch 2
+   x 3 epochs (13,383 steps) with a protocol_note recording the deviation: the shortened
+   protocol is applied identically to every model compared, so the delta stays valid
+   while the absolute value is not comparable to the paper's 20-epoch number.
 
-Factor probe: the random-subspace control was vacuous and is now fixed. The K learned
-blocks tile the hidden space, so concatenating all K is just an orthogonal rotation of
-the whole vector -- and a linear probe is rotation-invariant, so the earlier control
-reported numbers identical to the learned basis by construction (0.933 vs 0.933). The
-control now fixes the *rank*: one random r_dim-dimensional subspace, probed exactly like
-a single learned factor. A factor-specificity test is added alongside it, comparing each
-factor against the union of the others, because that is the question C3 actually asks --
-whether a factor carries privileged semantics rather than being one arbitrary partition
-of a representation that is easy to decode from almost anywhere.
+Also: the corpus download finished and its md5 matches the published value exactly
+(bf8bc5c946a0bd3b07716b1c7f785d54, 20,021,485,711 bytes). The last 15 chunks had to be
+recovered with one connection per missing chunk: the 168-way fan-out had hit what
+behaves like per-client throttling -- single-chunk fetches to three different Zenodo IPs
+timed out while it was running, and dropping to ~14 connections recovered 12 of 14
+chunks in six minutes.

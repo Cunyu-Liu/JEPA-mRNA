@@ -221,8 +221,15 @@ tasks:
     source: te_ultra_full_length/human
     rows: [8922, 1115, 1116]
     max_len: 3066
-    batch: 1
-    epochs: 20
+    # Protocol deviation, recorded so it is not silent: the published 3066-token budget
+    # with batch 1 x 20 epochs is 178,440 optimizer steps and also OOMs on the quadratic
+    # attention (450 MiB of scores per layer, per sample). Three epochs at batch 2 is
+    # 13,383 steps, which fits the deadline; the shortened protocol is applied
+    # identically to every model being compared, so the delta remains valid while the
+    # absolute value is not comparable to the paper's 20-epoch number.
+    protocol_note: "epochs 20 -> 3, batch 1 -> 2; identical for every model in the study"
+    batch: 2
+    epochs: 3
     lr: 2.0e-5
     lr_status: selected
     metric: r2
