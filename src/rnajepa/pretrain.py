@@ -154,6 +154,14 @@ class CorpusReader:
         import numpy as np
         n_seq = int(len(self.offsets) - 1)
         start = int(self.start_line)
+        if start >= n_seq:
+            # Resuming past the end of the corpus must start a new pass, not yield an
+            # empty iterator: an empty iterator makes the training loop spin forever at
+            # zero steps per second, which is how a resumed run hangs instead of failing.
+            print(f"[pretrain] corpus position {start:,} >= {n_seq:,} sequences; "
+                  f"starting a new pass from the beginning", flush=True)
+            start = 0
+            self.start_line = 0
         chunk = self.chunk_lines
         for begin in range(start, n_seq, chunk):
             end = min(begin + chunk, n_seq)
@@ -182,8 +190,17 @@ class CorpusReader:
     def _chunks_text(self) -> Iterator[Tuple[List[List[int]], List[List[int]]]]:
         tok_fh = open(self.tokens_path, encoding="utf-8")
         reg_fh = open(self.regions_path, encoding="utf-8")
+        start = max(0, int(self.start_line))
+        if start:
+            # Same guard as the binary path: skipping more lines than the file has
+            # would leave nothing to train on and the loop would never advance.
+            if start >= sum(1 for _ in open(self.tokens_path, encoding="utf-8")):
+                print(f"[pretrain] text corpus position {start:,} is past the end; "
+                      f"starting a new pass", flush=True)
+                start = 0
+                self.start_line = 0
         try:
-            for _ in range(self.start_line):
+            for _ in range(start):
                 if not tok_fh.readline():
                     break
                 reg_fh.readline()
@@ -489,7 +506,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             data_iter = reader.batches(batch_size, args.seed)
             running: Dict[str, float] = {}
             while opt_step < total_opt_steps:
+                produced = 0
                 for batch in data_iter:
+                    produced += 1
                     batch = {k: v.cuda(non_blocking=True) for k, v in batch.items()}
                     # ``micro`` counts *completed* micro-batches; increment first so
                     # that the diagnostics flag has the same parity as the flush
@@ -579,6 +598,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                         return 0
                     if opt_step >= total_opt_steps:
                         break
+                if produced == 0:
+                    # Defence in depth behind the corpus wraparound: an empty iterator
+                    # must be a loud failure, never a silent spin at 0 steps/second.
+                    raise RuntimeError(
+                        f"corpus reader produced no batches at step {opt_step}; "
+                        f"refusing to spin. Check that {args.data} is non-empty and that "
+                        f"the resume offset is within range.")
             break
         except torch.OutOfMemoryError:
             # The node is shared, so a card that had room at launch can fill up

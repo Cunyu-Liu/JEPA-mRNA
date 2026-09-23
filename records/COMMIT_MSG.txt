@@ -1,24 +1,27 @@
-Contract verifier, and a factor-probe fix found by using it
+Fix a resumed pre-training run hanging forever instead of failing
 
-scripts/verify_contract.py reduces every requirement in the project spec to a check
-that reads real state -- files, md5s, row counts, ledger rows, result.json contents --
-and reports PASS / FAIL / PENDING with the evidence. A stage that has not produced its
-evidence is reported as not done, which is the point: the first run reports 10 PASS,
-7 FAIL, 6 PENDING, and every FAIL is an artefact that legitimately does not exist yet
-(V1/V2 checkpoints, ablation arms, the full-corpus region sidecar, candidate
-evaluations). It also surfaces the two gate tasks whose reproduction is still outside
-tolerance and the one task whose download is incomplete.
+Found while verifying resume with a small corpus: PHASE2 of the three-phase check sat at
+zero output for over an hour. Two distinct defects, both in the data path:
 
-The verifier immediately caught a real bug of mine: eval/factor_probe.py failed after
-the earlier refactor because the write section still referenced `coords`, which had
-moved into a per-pool scope, so it wrote a zero-byte factor_probe.json. The write
-section now emits one coordinate file per pool and reports per-pool sizes and the
-protocol note inline, so the region pool can never be quoted as evidence for C3 by
-mistake.
+1. Resuming with a corpus offset at or past the end of the corpus made the reader yield
+   an empty iterator. The training loop then spun at zero steps per second, indefinitely
+   -- no error, no progress, no log line. On the small verification corpus this triggered
+   immediately; on the 36M-sequence corpus it would have triggered after one pass, i.e.
+   potentially a day into the real run, and would have been very hard to attribute.
+   Both readers now restart the pass from the beginning and say so, and
+2. as defence in depth the loop now raises if an iterator produces no batches at all,
+   so the failure mode is loud.
 
-Environment: the dedicated mrnabert env finished installing (torch 2.1.2+cu121,
-transformers 4.32.0 and accelerate 0.24.1 exactly as the official requirements pin,
-einops, sklearn, scipy, pandas, peft). Triton was then uninstalled, which is the
-official README's instruction and selects the pure-PyTorch attention path -- so all
-models in this study share one attention implementation, and anyone following the
-README reproduces it.
+Also verified in the same session: a pre-training checkpoint written by this code loads
+back into the model with missing=0 unexpected=0, so the released `bert.*`/`cls.*` key
+layout round-trips correctly through save_hf_checkpoint.
+
+Factor probe: the random-subspace control was vacuous and is now fixed. The K learned
+blocks tile the hidden space, so concatenating all K is just an orthogonal rotation of
+the whole vector -- and a linear probe is rotation-invariant, so the earlier control
+reported numbers identical to the learned basis by construction (0.933 vs 0.933). The
+control now fixes the *rank*: one random r_dim-dimensional subspace, probed exactly like
+a single learned factor. A factor-specificity test is added alongside it, comparing each
+factor against the union of the others, because that is the question C3 actually asks --
+whether a factor carries privileged semantics rather than being one arbitrary partition
+of a representation that is easy to decode from almost anywhere.

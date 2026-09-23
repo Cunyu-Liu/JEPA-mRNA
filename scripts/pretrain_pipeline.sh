@@ -65,6 +65,12 @@ else
 fi
 N_SEQ=$("$PY" -c "import json;print(json.load(open('$STATS'))['n'])" 2>/dev/null || echo 0)
 say "corpus sequences: $N_SEQ"
+# Step budget rationale: the run must be evaluated *while* it trains, because the node is
+# shared with ~70 other users and wall-clock is unpredictable.  Checkpoints every 5000
+# steps (12 of them at 40k) let the learning curve be probed as it goes and the best
+# checkpoint taken, instead of waiting for a fixed final step.  --max_hours guarantees a
+# clean save-and-exit rather than an indefinite stall; resume.pt continues it later.
+say "pretrain budget: steps=${PRETRAIN_STEPS:-40000} save_every=${SAVE_EVERY:-5000} max_hours=${MAX_HOURS:-20}"
 
 # ---------------------------------------------------------------- 3. smoke
 if [ "$SKIP_SMOKE" = "0" ]; then
@@ -96,9 +102,10 @@ for ARM in v1_cont v2_scratch; do
   say "launching $ARM (init=$INIT) on gpu$G"
   nohup "$PY" -m rnajepa.pretrain --arm "$ARM" --init "$INIT" \
       --data "$PRE" --regions "$PRE_REG" --weights "$WEIGHTS" --out "$out" \
-      --device "$G" --batch_size 8 --grad_accum 4 --steps 60000 --warmup_steps 2000 \
-      --lr 5e-5 --max_len 512 --save_every 2000 --log_every 50 \
-      --alpha 0.5 --jepa_target both \
+      --device "$G" --batch_size 8 --grad_accum 4 --steps "${PRETRAIN_STEPS:-40000}" \
+      --warmup_steps 1000 \
+      --lr 5e-5 --max_len 512 --save_every "${SAVE_EVERY:-5000}" --log_every 50 \
+      --alpha 0.5 --jepa_target both --max_hours "${MAX_HOURS:-20}" \
       > "$out.stdout.log" 2>&1 &
   say "$ARM pid $! writing $out.stdout.log"
 done

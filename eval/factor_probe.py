@@ -271,21 +271,45 @@ def main() -> int:
             pvals.append(results[key]["p_perm"])
             keys.append(key)
 
-        # random-subspace control on the same pool
+        # Specificity: does factor k beat the *union of the others* for this label?
+        # If the factors are interchangeable partitions of one representation, this
+        # difference is ~0, which is the honest outcome to report.
+        for kk in range(k):
+            others = [j for j in range(k) if j != kk]
+            key_o = f"{tag}_factor{kk}_vs_others"
+            a = probes(coords[:, kk, :], y, args.seed, args.n_perm).get("balanced_acc")
+            b = probes(coords[:, others, :].reshape(len(coords), -1), y, args.seed,
+                       args.n_perm).get("balanced_acc")
+            if a is not None and b is not None:
+                results[key_o] = {"status": "specificity", "factor": kk,
+                                  "bal_acc_factor": a, "bal_acc_others": b,
+                                  "delta": a - b}
+                print(f"  {key_o}: factor {kk} {a:.3f} vs others {b:.3f} "
+                      f"(delta {a - b:+.3f})")
+
+        # ---- random-subspace control -------------------------------------
+        # The K learned blocks tile the hidden space, so concatenating all K is just an
+        # orthogonal rotation of the whole vector -- and a linear probe is
+        # rotation-invariant, which makes that version of the control vacuous (an
+        # earlier version of this file did exactly that and reported identical numbers
+        # for learned and control, which is a property of the probe, not evidence about
+        # the factors).  The meaningful control keeps the *rank* fixed: one random
+        # r_dim-dimensional subspace, probed exactly like a single learned factor.
         with torch.no_grad():
             d = model.hidden_size
+            r_dim = d // k
+            orig = model.factor_basis.P.data.clone()
             for trial in range(2):
                 torch.manual_seed(1000 + trial)
                 q, _ = torch.linalg.qr(torch.randn(d, d, device="cuda"))
-                rand_P = torch.stack([q[:, kk * (d // k):(kk + 1) * (d // k)]
-                                      for kk in range(k)])
-                orig = model.factor_basis.P.data.clone()
-                model.factor_basis.P.data.copy_(rand_P)
+                rand_sub = q[:, :r_dim]                       # single random r_dim subspace
+                model.factor_basis.P.data.copy_(
+                    rand_sub.unsqueeze(0).expand(k, -1, -1).clone())
                 c2, _ = build_features(model, tokenizer, specials, samples, "cuda",
                                        args.max_len)
                 model.factor_basis.P.data.copy_(orig)
-                control[f"{tag}_random_subspace_trial{trial}"] = probes(
-                    c2.reshape(len(c2), -1), y, args.seed, args.n_perm)
+                control[f"{tag}_random_{r_dim}d_subspace_trial{trial}"] = probes(
+                    c2[:, 0, :].reshape(len(c2), -1), y, args.seed, args.n_perm)
 
     control: Dict[str, dict] = {}
     print("pool A: region identity (sanity check, confounded by token length)")
@@ -337,7 +361,16 @@ def main() -> int:
              "",
              "| probe | n | classes | chance | balanced acc | ARI | FMI | p(perm) | p(BH) | significant |",
              "|---|---|---|---|---|---|---|---|---|---|"]
+    spec_lines = ["", "### Factor specificity (factor k vs the union of the others)", "",
+                  "| pool | factor | bal_acc(factor) | bal_acc(others) | delta |",
+                  "|---|---|---|---|---|"]
+    for name, r in results.items():
+        if r.get("status") == "specificity":
+            spec_lines.append(f"| {name} | {r['factor']} | {r['bal_acc_factor']:.3f} | "
+                              f"{r['bal_acc_others']:.3f} | {r['delta']:+.3f} |")
     for name, r in list(results.items()) + list(control.items()):
+        if r.get("status") == "specificity":
+            continue
         if r.get("status") != "ok":
             lines.append(f"| {name} | - | - | - | - | - | - | - | - | {r.get('status')} |")
             continue
@@ -346,7 +379,7 @@ def main() -> int:
             f"{r['balanced_acc']:.3f} | {r['ari']:.3f} | {r['fmi']:.3f} | "
             f"{r['p_perm']:.4f} | {r.get('p_adj_bh', float('nan')):.4f} | "
             f"{r.get('significant_bh', '')} |")
-    lines += ["",
+    lines += spec_lines + ["",
               "`region_*` is a sanity check confounded by tokenisation; `task_*` is the",
               "interpretable pool (four CDS tasks, identical codon tokenisation).",
               "Controls use random orthonormal subspaces of equal rank: a linear probe is",
