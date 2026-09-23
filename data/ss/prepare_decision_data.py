@@ -165,21 +165,45 @@ def pairs_to_dotbracket(length: int, pairs: Sequence[Tuple[int, int]]) -> str:
     return "".join(chars)
 
 
-def dotbracket_to_pairs(structure: str) -> List[Tuple[int, int]]:
-    """Parse a nested dot-bracket string; brackets must be properly balanced."""
-    stack: List[int] = []
+#: Standard extended dot-bracket: each bracket family is one pseudoknot level.
+_EXTENDED_BRACKETS: Dict[str, str] = {"(": ")", "[": "]", "{": "}", "<": ">"}
+
+
+def dotbracket_to_pairs(structure: str, *, extended: bool = False
+                        ) -> List[Tuple[int, int]]:
+    """Parse a dot-bracket string; brackets must be properly balanced.
+
+    With ``extended=True`` the ``[]``, ``{}`` and ``<>`` families are accepted as
+    additional pairing levels, which is the standard notation for pseudoknots and
+    is what the RiNALMo benchmark CSVs use (measured: 1,007 ``<``/``>`` and 2
+    ``{``/``}`` occurrences in ArchiveII.csv).  Default is strict ``()`` so that
+    the projection code, which produces nested structures only, keeps its
+    narrower contract.
+    """
+    if extended:
+        openers = dict(_EXTENDED_BRACKETS)
+        closers = {close: open_ for open_, close in _EXTENDED_BRACKETS.items()}
+    else:
+        openers = {"(": ")"}
+        closers = {")": "("}
+
+    stacks: Dict[str, List[int]] = {open_: [] for open_ in openers}
     pairs: List[Tuple[int, int]] = []
     for index, char in enumerate(structure):
-        if char == "(":
-            stack.append(index)
-        elif char == ")":
-            if not stack:
-                raise RejectError("unbalanced_bracket", f"')' at {index} with empty stack")
-            pairs.append((stack.pop(), index))
+        if char in openers:
+            stacks[char].append(index)
+        elif char in closers:
+            opener = closers[char]
+            if not stacks[opener]:
+                raise RejectError("unbalanced_bracket",
+                                  f"{char!r} at {index} with empty {opener!r} stack")
+            pairs.append((stacks[opener].pop(), index))
         elif char != ".":
             raise RejectError("unknown_structure_char", f"{char!r} at {index}")
-    if stack:
-        raise RejectError("unbalanced_bracket", f"{len(stack)} unclosed '('")
+    for opener, stack in stacks.items():
+        if stack:
+            raise RejectError("unbalanced_bracket",
+                              f"{len(stack)} unclosed {opener!r}")
     pairs.sort()
     return pairs
 
@@ -334,13 +358,25 @@ def _parse_rinalmo_row(row: Dict[str, str], source: str) -> Dict[str, object]:
             parsed = ast.literal_eval(raw_pairs)
         except (ValueError, SyntaxError) as exc:
             raise RejectError("csv_bad_base_pairs", f"{name}: {raw_pairs[:60]!r}") from exc
-        csv_pairs = sorted((int(a), int(b)) for a, b in parsed)
-    db_pairs = dotbracket_to_pairs(structure)
+        # The column is 1-based (verified against the data: a 112 nt sequence
+        # whose first pair is [1, 111] has its outermost '(' at index 0 and ')'
+        # at index 110).  Dot-bracket parsing here is 0-based, so shift.
+        try:
+            csv_pairs = sorted((int(a) - 1, int(b) - 1) for a, b in parsed)
+        except (TypeError, ValueError) as exc:
+            raise RejectError("csv_bad_base_pairs", f"{name}: {raw_pairs[:60]!r}") from exc
+        if any(i < 0 or j < 0 for i, j in csv_pairs):
+            raise RejectError("csv_bad_base_pairs",
+                              f"{name}: non-positive index in {raw_pairs[:60]!r}")
+    # extended=True: these CSVs mark pseudoknot levels with [] {} <>
+    db_pairs = dotbracket_to_pairs(structure, extended=True)
     if csv_pairs != db_pairs:
+        only_csv = sorted(set(csv_pairs) - set(db_pairs))[:3]
+        only_db = sorted(set(db_pairs) - set(csv_pairs))[:3]
         raise RejectError(
             "csv_pair_column_disagrees",
             f"{name}: base_pairs has {len(csv_pairs)} entries, dot-bracket has "
-            f"{len(db_pairs)}")
+            f"{len(db_pairs)}; only in column {only_csv}, only in bracket {only_db}")
     return {"name": name, "seq": seq, "pairs": csv_pairs, "source": source}
 
 

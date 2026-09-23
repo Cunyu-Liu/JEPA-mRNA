@@ -193,7 +193,8 @@ def _write_csv(tmp_path, body: str) -> str:
 
 
 def test_csv_row_parsed(tmp_path):
-    path = _write_csv(tmp_path, 'r1,ACGUACGU,"((....))","[[0, 7], [1, 6]]",8\n')
+    # base_pairs is 1-based in the real format; (1,8) and (2,7) are 0-based (0,7) and (1,6)
+    path = _write_csv(tmp_path, 'r1,ACGUACGU,"((....))","[[1, 8], [2, 7]]",8\n')
     rows = list(prep.read_rinalmo_csv(path))
     assert len(rows) == 1
     assert rows[0]["name"] == "r1"
@@ -314,6 +315,87 @@ def test_dir_fingerprint_detects_membership_change(tmp_path):
     after = prep.dir_fingerprint(str(corpus))
     assert before["n_files"] == 1 and after["n_files"] == 2
     assert before["names_sha256"] != after["names_sha256"]
+
+
+# ---------------------------------------------------------------------------
+# the real RiNALMo format: 1-based base_pairs, extended (pseudoknot) brackets
+#
+# Both were found by running the parser on the actual ArchiveII.csv, where it
+# rejected 3,859 of 3,864 rows.  The second one is the dangerous one: a parser
+# that only knows () silently drops every pseudoknotted structure.
+# ---------------------------------------------------------------------------
+def test_csv_base_pairs_are_one_based():
+    """The column is 1-based; the parser must shift to 0-based."""
+    path = _write_csv(_tmp(), 'r1,ACGUACGU,"((....))","[[1, 8], [2, 7]]",8\n')
+    rows = list(prep.read_rinalmo_csv(path))
+    assert rows[0]["pairs"] == [(0, 7), (1, 6)]
+
+
+def test_csv_rejects_zero_index_in_base_pairs():
+    """A 0-based index would shift to -1 and must be refused, not wrapped."""
+    path = _write_csv(_tmp(), 'r1,ACGUACGU,"((....))","[[0, 7]]",8\n')
+    with pytest.raises(prep.RejectError) as info:
+        list(prep.read_rinalmo_csv(path))
+    assert info.value.reason == "csv_bad_base_pairs"
+
+
+def test_extended_dotbracket_parses_pseudoknot_levels():
+    """[] {} <> are successive pseudoknot levels in the standard notation."""
+    # 11 chars: two nested () pairs, then a crossing pair marked with <>
+    assert prep.dotbracket_to_pairs("((..<<.>>))", extended=True) == \
+        [(0, 10), (1, 9), (4, 8), (5, 7)]
+
+
+def test_extended_dotbracket_handles_all_four_families():
+    assert prep.dotbracket_to_pairs("([{<..>}])", extended=True) == \
+        [(0, 9), (1, 8), (2, 7), (3, 6)]
+
+
+def test_strict_mode_still_rejects_extended_brackets():
+    """Default stays strict, so the nested-only projection contract is unchanged."""
+    with pytest.raises(prep.RejectError) as info:
+        prep.dotbracket_to_pairs("<<..>>")
+    assert info.value.reason == "unknown_structure_char"
+
+
+def test_extended_mode_rejects_genuinely_unknown_char():
+    with pytest.raises(prep.RejectError) as info:
+        prep.dotbracket_to_pairs("((..ZZ))", extended=True)
+    assert info.value.reason == "unknown_structure_char"
+
+
+def test_extended_mode_rejects_unbalanced_family():
+    with pytest.raises(prep.RejectError) as info:
+        prep.dotbracket_to_pairs("<<..>", extended=True)
+    assert info.value.reason == "unbalanced_bracket"
+
+
+def test_csv_with_pseudoknot_brackets_is_accepted():
+    """End-to-end: a row using <> must parse, not be rejected."""
+    #           0123456789012345678901
+    structure = "((..<<.>>))"                    # 11 chars
+    # 0-based pairs (0,10) (1,9) (4,8) (5,7) -> 1-based [[1,11],[2,10],[5,9],[6,8]]
+    body = ('pk,ACGUACGUACG,"%s","[[1, 11], [2, 10], [5, 9], [6, 8]]",11\n'
+            % structure)
+    path = _write_csv(_tmp(), body)
+    rows = list(prep.read_rinalmo_csv(path))
+    assert len(rows) == 1
+    assert rows[0]["pairs"] == [(0, 10), (1, 9), (4, 8), (5, 7)]
+
+
+def test_csv_disagreement_message_names_the_offending_pairs():
+    """The message must say *which* pairs disagree, not just how many."""
+    path = _write_csv(_tmp(), 'r1,ACGUACGU,"((....))","[[1, 8]]",8\n')
+    with pytest.raises(prep.RejectError) as info:
+        list(prep.read_rinalmo_csv(path))
+    message = str(info.value)
+    assert info.value.reason == "csv_pair_column_disagrees"
+    assert "only in" in message
+
+
+def _tmp():
+    import tempfile
+    return Path(tempfile.mkdtemp(prefix="rna_csv_"))
 
 
 # ---------------------------------------------------------------------------
@@ -534,9 +616,9 @@ def test_bad_csv_row_does_not_abort_the_rest(tmp_path):
     path = tmp_path / "bench.csv"
     path.write_text(
         "id,sequence,structure,base_pairs,len\n"
-        'good1,ACGUACGU,"((....))","[[0, 7], [1, 6]]",8\n'
+        'good1,ACGUACGU,"((....))","[[1, 8], [2, 7]]",8\n'
         'badlen,ACGU,"....","[]",9\n'
-        'good2,ACGUACGU,"((....))","[[0, 7], [1, 6]]",8\n',
+        'good2,ACGUACGU,"((....))","[[1, 8], [2, 7]]",8\n',
         encoding="utf-8")
     out = tmp_path / "out.jsonl"
     manifest = tmp_path / "out.manifest.json"
