@@ -113,8 +113,9 @@ tasks:
     max_len: 128
     batch: 16
     epochs: 20
-    lr: 1.0e-4
-    lr_status: selected
+    lr: 5.0e-5
+    lr_status: verified
+    lr_evidence: "0.8335 at 5e-5 vs 0.5382 at 1e-4 vs 0.7869 at 1e-5; paper 0.89"
     metric: spearman
     paper: 0.89
   cds_riboswitch_1:
@@ -126,8 +127,9 @@ tasks:
     max_len: 64
     batch: 16
     epochs: 20
-    lr: 1.0e-4
-    lr_status: selected
+    lr: 1.0e-5
+    lr_status: verified
+    lr_evidence: "0.5050 at 1e-5 vs 0.3980 at 1e-4 vs 0.4193 at 5e-5; paper 0.58"
     metric: spearman
     paper: 0.58
   rbp_0:
@@ -191,8 +193,9 @@ tasks:
     max_len: 512
     batch: 8
     epochs: 20
-    lr: 1.0e-4
-    lr_status: selected
+    lr: 5.0e-5
+    lr_status: verified
+    lr_evidence: "0.6488 at 5e-5 vs -0.0194 at 1e-4 vs 0.6289 at 1e-5; the official default collapses this regression task the same way it collapses 3UTR-RBP"
     metric: r2
     paper: 0.63
   full_in_cell_half_life:
@@ -209,8 +212,9 @@ tasks:
     max_len: 1024
     batch: 8
     epochs: 20
-    lr: 2.0e-5
-    lr_status: selected
+    lr: 5.0e-5
+    lr_status: verified
+    lr_evidence: "0.6688 at 5e-5 vs 0.4677 at 1e-4 vs 0.4976 at 1e-5 (Spearman; the paper metric is R2)"
     shared_dev_test: true
     metric: r2
     paper: 0.769

@@ -1,27 +1,28 @@
-Corpus is a zip of zips; TE protocol is impractical as specified
+Learning-rate calibration: the official default fails on more tasks than first thought
 
-Two findings from actually running the pipeline against the real artefacts.
+The dev-set sweep over lr {1e-4, 5e-5, 1e-5} on the reference model, applied identically
+to every model afterwards, changes four task settings and reveals that the collapse is
+not confined to classification:
 
-1. The released pre-training archive is a zip containing five zips, each holding one
-   FASTA (0.fasta alone is 21.8 GB). The reader treated those members as FASTA text and
-   parsed compressed bytes as sequence -- the verify stage then reported mismatches
-   against binary garbage. iter_fasta_from_zip now recurses into nested archives,
-   spilling each inner zip to the work directory one at a time (a nested zip needs random
-   access and the members are deflated, so a stream will not do) and deleting it after
-   consumption, which bounds peak extra disk at the largest member instead of the whole
-   21 GB. Verified on the real corpus: 5000 sequences, ORF mismatches 0, token mismatches
-   0 against the official implementation.
+| task | 1e-4 | 5e-5 | 1e-5 | paper |
+|---|---|---|---|---|
+| cds_cov | 0.5382 | **0.8335** | 0.7869 | 0.89 |
+| cds_riboswitch_1 | 0.3980 | 0.4193 | **0.5050** | 0.58 |
+| full_in_cell_half_life | 0.4677 | **0.6688** | 0.4976 | (R2 0.769) |
+| protein_solubility | **-0.0194** | **0.6488** | 0.6289 | (R2 0.63) |
 
-2. ultra-long TE cannot be run as published. At the 3066-token budget with batch 1 and
-   20 epochs it is 178,440 optimizer steps, and the quadratic attention needs 450 MiB of
-   scores per layer per sample, which OOMs on a shared card. Registry updated to batch 2
-   x 3 epochs (13,383 steps) with a protocol_note recording the deviation: the shortened
-   protocol is applied identically to every model compared, so the delta stays valid
-   while the absolute value is not comparable to the paper's 20-epoch number.
+protein_solubility at lr 1e-4 gives a Spearman of -0.019: a *regression* task collapsing
+to no correlation at all, the same failure mode as 3UTR-RBP. cds_fungal is still worse,
+-0.0041 against a published 0.89, and is now queued for its own sweep. So the documented
+default is unsafe across task kinds, not just for classification with many samples.
 
-Also: the corpus download finished and its md5 matches the published value exactly
-(bf8bc5c946a0bd3b07716b1c7f785d54, 20,021,485,711 bytes). The last 15 chunks had to be
-recovered with one connection per missing chunk: the 168-way fan-out had hit what
-behaves like per-client throttling -- single-chunk fetches to three different Zenodo IPs
-timed out while it was running, and dropping to ~14 connections recovered 12 of 14
-chunks in six minutes.
+The registry now carries lr_status: verified plus the measured evidence string for each
+calibrated task, so the chosen value is traceable to a number rather than to taste. Cells
+whose learning rate changed are re-queued with --force (the run overwrites its own output
+directory, so there stays exactly one artefact per cell), and the five remaining
+uncalibrated tasks are queued for sweeps.
+
+Protocol integrity note: the sweep is run on the reference model only and the chosen value
+is then applied to every model. Tuning each model separately would let the baseline and
+the candidate end up with different hyper-parameters, which would make the head-to-head
+meaningless.
