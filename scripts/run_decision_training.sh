@@ -94,7 +94,18 @@ MAX_ATTEMPTS="${RNAJEV_MAX_ATTEMPTS:-4}"
 
 while [ "$ATTEMPT" -lt "$MAX_ATTEMPTS" ]; do
   ATTEMPT=$((ATTEMPT + 1))
-  TARGET="$(pick_gpu_excluding "$MIN_FREE" "$TRIED")"
+  if [ -n "${RNAJEV_FORCE_DEVICE:-}" ]; then
+    # Pinned explicitly.  Needed when several arms start together: pick_gpu only
+    # sees memory that is already allocated, so concurrent launches all choose
+    # the same emptiest card before any of them has claimed anything.
+    TARGET="$RNAJEV_FORCE_DEVICE"
+    if [ "$ATTEMPT" -gt 1 ]; then
+      echo "[launch] pinned device $TARGET failed; falling back to auto-selection"
+      TARGET="$(pick_gpu_excluding "$MIN_FREE" "$TRIED")"
+    fi
+  else
+    TARGET="$(pick_gpu_excluding "$MIN_FREE" "$TRIED")"
+  fi
   if [ -z "$TARGET" ]; then
     echo "[launch] no GPU with >= ${MIN_FREE} MiB free; tried: ${TRIED:-none}" >&2
     ledger "\"status\":\"no_capacity\",\"min_free\":$MIN_FREE"

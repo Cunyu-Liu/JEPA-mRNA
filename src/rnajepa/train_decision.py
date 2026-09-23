@@ -592,7 +592,13 @@ def _batch_to_device(batch: Dict[str, object], device) -> Dict[str, object]:
             continue
         converted = []
         for item in values:  # type: ignore[union-attr]
-            if torch.is_tensor(item):
+            if item is None:
+                # teacher_probs is None by design when the distillation term is
+                # off; np.asarray(None) is an object array and torch refuses it.
+                # objective_terms() rejects a None that is actually needed, so
+                # passing it through here cannot hide a missing label.
+                converted.append(None)
+            elif torch.is_tensor(item):
                 converted.append(item.to(device, non_blocking=True))
             else:
                 converted.append(torch.as_tensor(np.asarray(item), device=device))
