@@ -39,12 +39,65 @@ STUB = os.path.join(PAPER_DIR, "manuscript_stub.md")
 OBJECTIONS = os.path.join(PAPER_DIR, "reviewer_objections.md")
 
 
+def test_cpu_requires_an_explicit_opt_in():
+    """A silent CPU run must be impossible: it would still yield a checkpoint."""
+    dataset = TD.make_synthetic_dataset(4, 16, seed=0)
+    teacher = TD.TeacherLabelStore.from_mock()
+    with tempfile.TemporaryDirectory() as out:
+        config = TD.TrainConfig(tiny=True, steps=2, batch_size=2, out_dir=out,
+                                log_every=1)          # allow_cpu deliberately absent
+        try:
+            TD.run_training(config, dataset, teacher)
+        except TD.ConfigError as exc:
+            assert "--allow-cpu" in str(exc)
+        else:  # pragma: no cover
+            raise AssertionError("device='cpu' without --allow-cpu must be refused")
+
+
+def test_cuda_request_is_refused_when_unavailable():
+    """Requesting cuda on a CPU-only host must fail, not fall back."""
+    import torch
+
+    dataset = TD.make_synthetic_dataset(4, 16, seed=0)
+    teacher = TD.TeacherLabelStore.from_mock()
+    with tempfile.TemporaryDirectory() as out:
+        config = TD.TrainConfig(tiny=True, steps=2, batch_size=2, out_dir=out,
+                                log_every=1, device="cuda", allow_cpu=False)
+        try:
+            has_cuda = bool(torch.cuda.is_available())
+        except Exception:   # CPU-only torch builds raise instead of returning False
+            has_cuda = False
+        if has_cuda:
+            print("[skip] this host has CUDA, so the refusal path is not reachable")
+            return
+        try:
+            TD.run_training(config, dataset, teacher)
+        except TD.ConfigError as exc:
+            assert "cuda" in str(exc)
+        else:  # pragma: no cover
+            raise AssertionError("device='cuda' without CUDA must be refused")
+
+
+def test_run_meta_records_the_resolved_device():
+    dataset = TD.make_synthetic_dataset(4, 16, seed=0)
+    teacher = TD.TeacherLabelStore.from_mock()
+    with tempfile.TemporaryDirectory() as out:
+        result = TD.run_training(_tiny_config(out, steps=2), dataset, teacher)
+        env = result["run_meta"]["environment"]
+        assert env["device"] == "cpu"
+        assert env["resolved_device"] == "cpu"
+        assert "cuda_visible_devices" in env and "gpu_name" in env
+
+
 # ---------------------------------------------------------------------------
 # shared fixtures / helpers
 # ---------------------------------------------------------------------------
 def _tiny_config(out_dir, **overrides):
+    # allow_cpu: the driver refuses device="cpu" unless this is set, so a silent
+    # CPU training run cannot be mistaken for a real one. This fixture is the
+    # CPU path by definition, so it opts in.
     kwargs = dict(tiny=True, steps=24, batch_size=2, lr=5e-3, seed=0,
-                  log_every=1, warmup_steps=2, out_dir=out_dir)
+                  log_every=1, warmup_steps=2, out_dir=out_dir, allow_cpu=True)
     kwargs.update(overrides)
     return TD.TrainConfig(**kwargs)
 
@@ -225,7 +278,8 @@ def test_four_loss_weights_are_independently_switchable():
         assert abs(total_off - (total_all - terms[name])) < 1e-9
 
     # all four off is rejected by the config validator (nothing to optimise)
-    zero = TD.TrainConfig(tiny=True, steps=1, out_dir="", lambda_nll=0.0,
+    zero = TD.TrainConfig(tiny=True, steps=1, out_dir="", allow_cpu=True,
+                          lambda_nll=0.0,
                           lambda_distill=0.0, lambda_rlcd=0.0, lambda_cal=0.0)
     with pytest.raises(TD.ConfigError):
         zero.validate()
@@ -233,7 +287,8 @@ def test_four_loss_weights_are_independently_switchable():
     # and the switch is visible in the dry-run plan
     dataset2 = TD.make_synthetic_dataset(2, 20, seed=6)
     teacher = TD.TeacherLabelStore.from_mock()
-    plan = TD.plan(TD.TrainConfig(tiny=True, steps=1, out_dir="", lambda_rlcd=0.0),
+    plan = TD.plan(TD.TrainConfig(tiny=True, steps=1, out_dir="", allow_cpu=True,
+                                  lambda_rlcd=0.0),
                    dataset2, teacher)
     assert plan["active_terms"] == ["nll", "distill", "cal"]
     assert plan["objective"]["rlcd"] == 0.0
@@ -330,11 +385,14 @@ def test_invalid_configuration_is_rejected_before_anything_runs():
     dataset = TD.make_synthetic_dataset(2, 20, seed=10)
     teacher = TD.TeacherLabelStore.from_mock()
     with pytest.raises(TD.ConfigError):
-        TD.plan(TD.TrainConfig(tiny=True, steps=0, out_dir=""), dataset, teacher)
+        TD.plan(TD.TrainConfig(tiny=True, steps=0, out_dir="", allow_cpu=True),
+                dataset, teacher)
     with pytest.raises(TD.ConfigError):
-        TD.plan(TD.TrainConfig(tiny=True, steps=1, out_dir="", lr=0.0), dataset, teacher)
+        TD.plan(TD.TrainConfig(tiny=True, steps=1, out_dir="", lr=0.0,
+                               allow_cpu=True), dataset, teacher)
     with pytest.raises(TD.ConfigError):
-        TD.plan(TD.TrainConfig(tiny=True, steps=1, out_dir="", distill_kind="nope"),
+        TD.plan(TD.TrainConfig(tiny=True, steps=1, out_dir="", allow_cpu=True,
+                               distill_kind="nope"),
                 dataset, teacher)
 
 

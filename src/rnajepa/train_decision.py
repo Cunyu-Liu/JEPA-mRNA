@@ -112,6 +112,8 @@ __all__ = [
     "objective_terms",
     "gradient_coverage",
     "assert_gradient_coverage",
+    "_check_device_request",
+    "_assert_device",
     "calibrate_learning_rate",
     "run_training",
     "plan",
@@ -209,6 +211,9 @@ class TrainConfig:
     # bookkeeping
     out_dir: str = ""
     device: str = "cpu"
+    #: Explicit opt-in for the CPU path.  Exists so the test suite can run the
+    #: driver without a GPU; a real training run must not set it.
+    allow_cpu: bool = False
     resume: str = ""
     arm: str = "decision"
 
@@ -607,6 +612,53 @@ def assert_gradient_coverage(model, *, excluded: Sequence[str] = DEFAULT_EXCLUDE
 
 
 # ---------------------------------------------------------------------------
+# device enforcement
+# ---------------------------------------------------------------------------
+def _check_device_request(device: str, *, allow_cpu: bool = False) -> str:
+    """Validate a device request *before* any tensor is moved to it.
+
+    Must run before ``model.to(device)``: on a CPU-only torch build,
+    ``.to("cuda")`` raises ``AssertionError("Torch not compiled with CUDA
+    enabled")`` from inside torch, so checking afterwards never happens and the
+    error the user sees is torch's rather than ours.
+    """
+    requested = str(device)
+    if requested.startswith("cuda"):
+        try:
+            available = bool(torch.cuda.is_available())
+        except Exception:  # noqa: BLE001 - CPU-only builds raise instead of returning False
+            available = False
+        if not available:
+            raise ConfigError(
+                f"device={requested!r} was requested but CUDA is not available in "
+                "this interpreter; refusing to fall back to CPU silently. Install a "
+                "CUDA build of torch, or pass --allow-cpu for the CPU path (tests only).")
+        return f"cuda:{torch.cuda.current_device()}"
+    if requested == "cpu" and not allow_cpu:
+        raise ConfigError(
+            "device='cpu' requires --allow-cpu. Training and GPU validation must "
+            "run on a GPU (project rule); the CPU path exists for the test suite "
+            "only, and a CPU run must never be reported as a training result.")
+    return requested
+
+
+def _assert_device(model, device: str, *, allow_cpu: bool = False) -> str:
+    """Validate the request, then confirm the parameters really landed there.
+
+    Hard-fails rather than silently training on the wrong device: a run that
+    quietly fell back to CPU would still produce a loss curve and a checkpoint,
+    which is exactly the failure mode worth preventing.  Returns the resolved
+    device string for the run record.
+    """
+    resolved = _check_device_request(device, allow_cpu=allow_cpu)
+    if resolved.startswith("cuda") and not any(p.is_cuda for p in model.parameters()):
+        raise ConfigError(
+            f"device={device!r} was requested but the model parameters are not on "
+            "CUDA; refusing to continue")
+    return resolved
+
+
+# ---------------------------------------------------------------------------
 # divergence monitoring
 # ---------------------------------------------------------------------------
 def _finite(value, what: str) -> float:
@@ -658,8 +710,10 @@ def calibrate_learning_rate(config: TrainConfig, dataset: DecisionDataset, *,
     rows: List[Dict[str, object]] = []
     for lr in candidates:
         torch.manual_seed(config.seed)
+        _check_device_request(config.device, allow_cpu=config.allow_cpu)
         model = build_decision_model(replace(config, lr=float(lr)))
         model.to(config.device)
+        _assert_device(model, config.device, allow_cpu=config.allow_cpu)
         model.train()
         optimizer = torch.optim.AdamW(
             [p for p in model.parameters() if p.requires_grad],
@@ -817,7 +871,10 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
 
     torch.manual_seed(config.seed)
     np.random.seed(config.seed)
+    # checked before .to(): a CPU-only torch build raises from inside .to("cuda")
+    _check_device_request(config.device, allow_cpu=config.allow_cpu)
     model = build_decision_model(config).to(config.device)
+    resolved_device = _assert_device(model, config.device, allow_cpu=config.allow_cpu)
     n_params = sum(p.numel() for p in model.parameters())
     n_learnable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     model.train()
@@ -859,7 +916,10 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                                     ("cal", weights.lambda_cal)) if value != 0.0],
         "environment": {"python": sys.version.split()[0], "torch": torch.__version__,
                         "numpy": np.__version__, "host": socket.gethostname(),
-                        "device": config.device},
+                        "device": config.device, "resolved_device": resolved_device,
+                        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES", ""),
+                        "gpu_name": (torch.cuda.get_device_name(torch.cuda.current_device())
+                                     if torch.cuda.is_available() else "cpu")},
         "honesty": dict(HONESTY),
         "implementation_notes": {
             "neginf_sentinel": ("head scores are -inf on illegal pairs; replaced by "
@@ -1019,6 +1079,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--tiny", action="store_true", help="CPU-sized model (tests / smoke)")
     p.add_argument("--encoder-size", default="150M", choices=["35M", "150M", "650M"])
     p.add_argument("--device", default="cpu")
+    p.add_argument("--allow-cpu", action="store_true",
+                   help="permit the CPU path (tests only; a real run must use a GPU)")
     # lr calibration
     p.add_argument("--lr-calibrate", action="store_true")
     p.add_argument("--lr-candidates", default="1e-4,5e-5,1e-5")
@@ -1036,6 +1098,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal,
         distill_kind=args.distill_kind, rlcd_reward=args.rlcd_reward, beta=args.beta,
         tiny=args.tiny, encoder_size=args.encoder_size, device=args.device,
+        allow_cpu=args.allow_cpu,
         out_dir=args.out, resume=args.resume, arm=args.arm,
         lr_calibrate=args.lr_calibrate,
         lr_candidates=tuple(float(x) for x in args.lr_candidates.split(",") if x.strip()),
