@@ -1,18 +1,24 @@
-Ablation arms, a pure-MLM baseline path, and the learning-curve probe
+Contract verifier, and a factor-probe fix found by using it
 
-- model.py: jepa_target gains "none" (pure MLM -- teacher, predictor and every
-  regulariser are skipped, so A0 measures MLM-only at the same step and data budget
-  rather than paying for a latent branch it does not use) and "cls" (global objective
-  only, which with n_factors=1 is the single-vector JEPA-DNA minimal arm A1).
-  Verified on GPU: the A0 run reports loss == loss_mlm and jepa/var/cov/orth exactly 0.
-- scripts/pretrain_ablations.sh: the eight A0-A5 runs, each differing from the main run
-  in exactly one factor, launched sequentially with a capacity wait. Sequential on
-  purpose: launching them together is how batch sizes ended up halved earlier, which
-  would confound the ablation with a protocol change.
-- scripts/queue_matrix.py: refuses to enqueue a matrix whose model_path does not exist
-  yet. Without it, queueing V1/V2 evaluation before the runs finish launches every cell
-  against a missing checkpoint, burning GPU slots and filling the ledger with noise.
-- eval/linear_probe_curve.py: Fig.6c. Frozen-feature probe over a list of pre-training
-  checkpoints, using mean-pooled last-layer states because that is the feature-
-  extraction recipe the released README documents -- the probe should not quietly use a
-  different representation from the baseline.
+scripts/verify_contract.py reduces every requirement in the project spec to a check
+that reads real state -- files, md5s, row counts, ledger rows, result.json contents --
+and reports PASS / FAIL / PENDING with the evidence. A stage that has not produced its
+evidence is reported as not done, which is the point: the first run reports 10 PASS,
+7 FAIL, 6 PENDING, and every FAIL is an artefact that legitimately does not exist yet
+(V1/V2 checkpoints, ablation arms, the full-corpus region sidecar, candidate
+evaluations). It also surfaces the two gate tasks whose reproduction is still outside
+tolerance and the one task whose download is incomplete.
+
+The verifier immediately caught a real bug of mine: eval/factor_probe.py failed after
+the earlier refactor because the write section still referenced `coords`, which had
+moved into a per-pool scope, so it wrote a zero-byte factor_probe.json. The write
+section now emits one coordinate file per pool and reports per-pool sizes and the
+protocol note inline, so the region pool can never be quoted as evidence for C3 by
+mistake.
+
+Environment: the dedicated mrnabert env finished installing (torch 2.1.2+cu121,
+transformers 4.32.0 and accelerate 0.24.1 exactly as the official requirements pin,
+einops, sklearn, scipy, pandas, peft). Triton was then uninstalled, which is the
+official README's instruction and selects the pure-PyTorch attention path -- so all
+models in this study share one attention implementation, and anyone following the
+README reproduces it.

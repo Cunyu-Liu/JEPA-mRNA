@@ -242,6 +242,7 @@ def main() -> int:
     results: Dict[str, dict] = {}
     pvals, keys = [], []
     k = None
+    per_pool: Dict[str, tuple] = {}
 
     def run_pool(pool: Dict[str, Sequence[str]], pool_name: str, tag: str,
                  control: Dict[str, dict]) -> None:
@@ -256,6 +257,7 @@ def main() -> int:
                                    args.max_len)
         k = coords.shape[1]
         y = np.array(labels)
+        per_pool[tag] = (coords, y)
         print(f"  {pool_name}: coordinates {coords.shape}")
         for kk in range(k):
             key = f"{tag}_factor{kk}"
@@ -290,7 +292,7 @@ def main() -> int:
     run_pool(REGION_TASKS, "region", "region", control)
     print("pool B: task identity within one region (the interpretable question)")
     run_pool(WITHIN_REGION_TASKS, "within-region task", "task", control)
-    all_samples = None
+
 
     # ---- FDR across every probe reported ----------------------------------
     if pvals:
@@ -300,24 +302,39 @@ def main() -> int:
             results[key]["significant_bh"] = bool(rej)
 
     # ---- write ------------------------------------------------------------
+    n_total = sum(int(c.shape[0]) for c, _ in per_pool.values())
     with open(os.path.join(args.out, "factor_probe.json"), "w", encoding="utf-8") as fh:
-        json.dump({"ckpt": args.ckpt, "n_sequences": len(coords), "K": k,
-                   "r_dim": int(coords.shape[2]), "probes": results,
-                   "random_subspace_control": control}, fh, indent=1, default=str)
+        json.dump({"ckpt": args.ckpt, "n_sequences": n_total,
+                   "K": k, "r_dim": int(next(iter(per_pool.values()))[0].shape[2]) if per_pool else None,
+                   "probes": results, "random_subspace_control": control,
+                   "pool_sizes": {tag: int(c.shape[0]) for tag, (c, _) in per_pool.items()},
+                   "protocol_note": (
+                       "The region pool is a sanity check on the machinery and is "
+                       "confounded by tokenisation (codons are three characters, UTR "
+                       "tokens are one), so it must not be quoted as evidence for C3. "
+                       "The within-region task pool is the interpretable question: all "
+                       "four tasks are CDS with identical codon tokenisation. Controls "
+                       "are random orthonormal subspaces of equal rank, because a linear "
+                       "probe is rotation-invariant and rotating the learned basis would "
+                       "prove nothing. If no probe survives BH-FDR, claim C3 is withdrawn "
+                       "and Fig.5 becomes a training-dynamics panel.")},
+                  fh, indent=1, default=str)
 
-    with open(os.path.join(args.out, "factor_coords.csv"), "w", newline="",
-              encoding="utf-8") as fh:
-        w = csv.writer(fh)
-        w.writerow(["index", "region"] + [f"f{kk}_{j}" for kk in range(k)
-                                          for j in range(coords.shape[2])])
-        flat = coords.reshape(len(coords), -1)
-        for i in range(len(coords)):
-            w.writerow([i, region_names[i]] + [f"{v:.5f}" for v in flat[i]])
+    for tag, (coords, y) in per_pool.items():
+        path = os.path.join(args.out, f"factor_coords_{tag}.csv")
+        with open(path, "w", newline="", encoding="utf-8") as fh:
+            w = csv.writer(fh)
+            w.writerow(["index", "label"] + [f"f{kk}_{j}" for kk in range(coords.shape[1])
+                                             for j in range(coords.shape[2])])
+            flat = coords.reshape(len(coords), -1)
+            for i in range(len(coords)):
+                w.writerow([i, y[i]] + [f"{v:.5f}" for v in flat[i]])
 
     lines = ["# Factor semantics probe", "",
-             f"checkpoint: `{args.ckpt}`", f"sequences: {len(coords)} "
-             f"({', '.join(f'{r}={int((region_names == r).sum())}' for r in sorted(set(region_labels)))})",
-             f"K = {k}, r_dim = {coords.shape[2]}", "",
+             f"checkpoint: `{args.ckpt}`",
+             f"sequences: {n_total} across {len(per_pool)} pool(s)",
+             f"K = {k}, r_dim = {next(iter(per_pool.values()))[0].shape[2] if per_pool else '?'}",
+             "",
              "| probe | n | classes | chance | balanced acc | ARI | FMI | p(perm) | p(BH) | significant |",
              "|---|---|---|---|---|---|---|---|---|---|"]
     for name, r in list(results.items()) + list(control.items()):
@@ -329,23 +346,22 @@ def main() -> int:
             f"{r['balanced_acc']:.3f} | {r['ari']:.3f} | {r['fmi']:.3f} | "
             f"{r['p_perm']:.4f} | {r.get('p_adj_bh', float('nan')):.4f} | "
             f"{r.get('significant_bh', '')} |")
-    lines += ["", "The random-subspace rows use K random orthonormal projections of the same "
-                  "rank. A linear probe is rotation-invariant, so rotating the learned basis "
-                  "would prove nothing; what is controlled for is whether the learned "
-                  "subspaces beat arbitrary subspaces of equal dimension.",
+    lines += ["",
+              "`region_*` is a sanity check confounded by tokenisation; `task_*` is the",
+              "interpretable pool (four CDS tasks, identical codon tokenisation).",
+              "Controls use random orthonormal subspaces of equal rank: a linear probe is",
+              "rotation-invariant, so rotating the learned basis would prove nothing.",
               "",
-              "This is an interpretability probe, not a performance result. If no probe "
-              "survives FDR, claim C3 is withdrawn and Fig.5 becomes a training-dynamics "
-              "panel, as the proposal's fallback path specifies."]
+              "This is an interpretability probe, not a performance result. If nothing",
+              "survives FDR, claim C3 is withdrawn and Fig.5 becomes a dynamics panel."]
     with open(os.path.join(args.out, "probe_report.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
 
     for name, r in results.items():
         if r.get("status") == "ok":
             print(f"  {name}: bal_acc={r['balanced_acc']:.3f} (chance {r['chance']:.3f}) "
-                  f"ARI={r['ari']:.3f} p={r['p_perm']:.4f} "
-                  f"p_bh={r.get('p_adj_bh')}")
-    print(f"wrote {args.out}/factor_probe.json, factor_coords.csv, probe_report.md")
+                  f"ARI={r['ari']:.3f} p={r['p_perm']:.4f} p_bh={r.get('p_adj_bh')}")
+    print(f"wrote {args.out}/factor_probe.json, factor_coords_*.csv, probe_report.md")
     return 0
 
 
