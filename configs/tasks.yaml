@@ -4,42 +4,64 @@
 # ledger: task keys are used verbatim in every artefact path, and the learning rate is
 # part of the published protocol.
 #
+# Every `source` below was checked to exist in the extracted Zenodo 17786045 bundle on
+# 2026-09-23, together with its train/dev/test row counts.  Two corrections were needed
+# against the earlier draft: the stability task directory is `CDS/stability` (lower
+# case), and the Tc riboswitch task is `CDS/Tc/1` / `CDS/Tc/3`.
+#
+# NOT included: `apa_usage`.  The xlsx protocol lists a 228k-row APA task but that data
+# is **not part of Zenodo 17786045** -- searching the extracted tree for `apa`/`usage`
+# returns nothing.  It is therefore dropped from the subset and recorded as unavailable
+# rather than silently replaced.  Seven families remain covered without it.
+#
 # Fields
-#   family   : task family, used for the Fig.3 facets (7 families must be covered)
-#   kind     : regression | binary_classification | multiclass_classification
-#   split    : official tokenisation mode (utr | codon | complete), see
-#              src/rnajepa/tokenization.py.  `complete` needs [ ] CDS markers.
-#   source   : sub-directory inside the extracted Zenodo 17786045 bundle
-#   max_len  : token budget passed to both the tokenizer and the model
-#   batch    : per-device train batch size
-#   epochs   : train epochs (regression 20 / classification 1 = official default)
-#   lr       : learning rate
-#   lr_status: "verified" = the value was shown to reproduce on this task family;
-#              "selected" = chosen by a short dev-set sweep in the eval stage and
-#              recorded here once done
-#   paper    : the value reported in the mRNABERT paper (xlsx sheet 04_关键结果)
-#   metric   : the paper's primary metric key
+#   family    : task family, used for the Fig.3 facets (7 families, each >= 1 task)
+#   kind      : regression | binary_classification | multiclass_classification
+#   split     : official tokenisation mode (utr | codon | complete); `complete` needs
+#               [ ] CDS markers
+#   source    : path inside the extracted Zenodo bundle
+#   rows      : train/dev/test rows, measured (not transcribed) from the files
+#   max_len   : token budget passed to both the tokenizer and the model
+#   batch     : per-device train batch size
+#   epochs    : train epochs
+#   lr        : learning rate
+#   lr_status : verified = shown to reproduce on this task; selected = chosen by a short
+#               dev sweep in the eval stage and recorded once done
+#   paper     : value reported in the mRNABERT paper (xlsx 04_关键结果)
+#   metric    : the paper's primary metric key
 #
 # Learning-rate policy (evidence, not convention)
 # ----------------------------------------------
-# The official documented default of lr = 1e-4 provably fails on classification tasks
-# with ~10k+ training rows: on 3UTR-RBP it collapses to the majority class
-# (ACC 0.6675, F1pos 0.0, AUC 0.46) at 1, 5 and 10 epochs and in fp32, while a frozen
-# encoder still reaches 0.7796 and full fine-tuning at lr = 2e-5 reaches
-# ACC 0.8250 / F1pos 0.7381 (paper: 0.786 / 0.751).  See
-# records/INVESTIGATION_rbp_0_degenerate.md.  Small regression tasks keep 1e-4, which
-# does reproduce (cds_mrfp 0.8663 vs 0.89).
-version: 2
+# The official default lr = 1e-4 provably fails on classification tasks with ~10k+
+# training rows: on 3UTR-RBP it collapses to the majority class (ACC 0.6675, F1pos 0.0,
+# AUC 0.46) at 1, 5 and 10 epochs and in fp32, while a frozen encoder still reaches
+# 0.7796 and full fine-tuning at lr = 2e-5 reaches ACC 0.8250 / F1pos 0.7381 (paper
+# 0.786 / 0.751).  See records/INVESTIGATION_rbp_0_degenerate.md.  Small regression
+# tasks keep 1e-4, which does reproduce (cds_mrfp 0.8663 vs 0.89).
+#
+# Epoch policy: regression 20 / classification 5 (the official classification default of
+# 1 epoch cannot fit multiclass tasks); `utr5_*` uses 5 epochs because its train split is
+# 260k rows -- the shortened protocol is applied identically to every model compared.
+version: 3
+families:
+  - 5UTR-MRL
+  - CDS
+  - 3UTR-RBP
+  - 3UTR-m6A
+  - protein
+  - full-length
+  - ultra-long-TE
 tasks:
   cds_mrfp:
     family: CDS
     kind: regression
     split: codon
     source: CDS/mRFP
+    rows: [1021, 219, 219]
     max_len: 256
     batch: 16
     epochs: 20
-    lr: 1e-4
+    lr: 1.0e-4
     lr_status: verified
     metric: spearman
     paper: 0.89
@@ -48,10 +70,11 @@ tasks:
     kind: regression
     split: codon
     source: CDS/Fungal
+    rows: [5089, 1000, 1000]
     max_len: 1024
     batch: 8
     epochs: 20
-    lr: 1e-4
+    lr: 1.0e-4
     lr_status: selected
     metric: spearman
     paper: 0.89
@@ -60,10 +83,11 @@ tasks:
     kind: multiclass_classification
     split: codon
     source: CDS/ecoli
+    rows: [4348, 1000, 1000]
     max_len: 1024
     batch: 8
     epochs: 5
-    lr: 2e-5
+    lr: 2.0e-5
     lr_status: selected
     metric: accuracy
     paper: 0.58
@@ -71,11 +95,12 @@ tasks:
     family: CDS
     kind: regression
     split: codon
-    source: CDS/Stability
+    source: CDS/stability
+    rows: [45749, 9803, 9804]
     max_len: 512
     batch: 8
     epochs: 20
-    lr: 2e-5
+    lr: 2.0e-5
     lr_status: selected
     metric: spearman
     paper: 0.56
@@ -84,23 +109,50 @@ tasks:
     kind: regression
     split: codon
     source: CDS/Cov
+    rows: [1600, 401, 400]
     max_len: 128
     batch: 16
     epochs: 20
-    lr: 1e-4
+    lr: 1.0e-4
     lr_status: selected
     metric: spearman
     paper: 0.89
+  cds_riboswitch_1:
+    family: CDS
+    kind: regression
+    split: codon
+    source: CDS/Tc/1
+    rows: [248, 53, 54]
+    max_len: 64
+    batch: 16
+    epochs: 20
+    lr: 1.0e-4
+    lr_status: selected
+    metric: spearman
+    paper: 0.58
   rbp_0:
     family: 3UTR-RBP
     kind: binary_classification
     split: utr
     source: 3UTR/RNA_protein_interaction/22_eCLIP/0
+    rows: [12848, 1606, 1606]
     max_len: 128
     batch: 16
     epochs: 5
-    lr: 2e-5
+    lr: 2.0e-5
     lr_status: verified
+    metric: accuracy
+    paper: 0.786
+  rbp_1:
+    family: 3UTR-RBP
+    kind: binary_classification
+    split: utr
+    source: 3UTR/RNA_protein_interaction/22_eCLIP/1
+    max_len: 128
+    batch: 16
+    epochs: 5
+    lr: 2.0e-5
+    lr_status: selected
     metric: accuracy
     paper: 0.786
   m6a_HEK293T_fold0:
@@ -108,72 +160,70 @@ tasks:
     kind: binary_classification
     split: utr
     source: 3UTR/m6A_modification/HEK293T/0
+    rows: [32007, 8002, 10003]
     max_len: 128
     batch: 16
     epochs: 5
-    lr: 2e-5
+    lr: 2.0e-5
     lr_status: selected
     metric: accuracy
     paper: 0.966
-  apa_usage:
-    family: APA
-    kind: regression
-    split: complete
-    source: full_length
-    max_len: 512
-    batch: 8
-    epochs: 20
-    lr: 2e-5
-    lr_status: selected
-    metric: spearman
-    paper: 0.916
   utr5_U1:
     family: 5UTR-MRL
     kind: regression
     split: utr
     source: 5UTR/Rank/U1
+    rows: [260001, 20000, 20000]
     max_len: 64
     batch: 16
-    epochs: 20
-    lr: 1e-4
+    epochs: 5
+    lr: 1.0e-4
     lr_status: selected
     shared_dev_test: true
     metric: spearman
     paper: 0.962
-  full_in_cell_half_life:
-    family: full-length
-    kind: regression
-    split: complete
-    source: full_length/in_cell_half_life
-    max_len: 1024
-    batch: 8
-    epochs: 20
-    lr: 2e-5
-    lr_status: selected
-    shared_dev_test: true
-    metric: r2
-    paper: 0.769
   protein_solubility:
     family: protein
     kind: regression
     split: codon
     source: protein/solubility
+    rows: [4177, 522, 523]
     max_len: 512
     batch: 8
     epochs: 20
-    lr: 1e-4
+    lr: 1.0e-4
     lr_status: selected
     metric: r2
     paper: 0.63
+  full_in_cell_half_life:
+    family: full-length
+    kind: regression
+    split: complete
+    source: full_length/in_cell_half_life
+    rows: [182, 21, 21]
+    # The whole full_length family is tiny (~233 sequences); the paper evaluated it by
+    # cross-validation, so its reported R2 is not comparable to a single 21-sequence
+    # holdout and we do not claim it is. The model-vs-model delta is still valid because
+    # both models see this identical split.  Observed: R2 0.2911 vs paper 0.769.
+    not_comparable_to_paper: true
+    max_len: 1024
+    batch: 8
+    epochs: 20
+    lr: 2.0e-5
+    lr_status: selected
+    shared_dev_test: true
+    metric: r2
+    paper: 0.769
   te_human:
     family: ultra-long-TE
     kind: regression
     split: complete
     source: te_ultra_full_length/human
+    rows: [8922, 1115, 1116]
     max_len: 3066
     batch: 1
     epochs: 20
-    lr: 2e-5
+    lr: 2.0e-5
     lr_status: selected
     metric: r2
     paper: 0.669

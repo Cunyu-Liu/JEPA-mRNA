@@ -110,7 +110,17 @@ tried=""
 batch="$BATCH"
 while [ "$attempt" -lt 6 ]; do
   attempt=$((attempt+1))
-  device=$(pick_gpu_excluding "$MIN_FREE" "$tried")
+  if [ "$attempt" -eq 1 ] && [ -n "${RNAJEPA_PREFER_GPU:-}" ]; then
+    # The auto-dispatcher reserves one GPU per job it launches, so it hands down the
+    # card it already accounted for.  Without this, several jobs dispatched in the
+    # same pass all pick the same emptiest card, collide, and get their batch size
+    # halved by the OOM retry -- a recorded protocol deviation we do not want in the
+    # main table.  The hint is only a preference: the normal picker still applies on
+    # retries and when the hint is empty.
+    device="$RNAJEPA_PREFER_GPU"
+  else
+    device=$(pick_gpu_excluding "$MIN_FREE" "$tried")
+  fi
   if [ -z "$device" ]; then
     echo "[submit] no GPU with >=${MIN_FREE}MiB free after excluding: $tried" | tee -a "$LOG"
     if [ "$batch" -gt 2 ]; then

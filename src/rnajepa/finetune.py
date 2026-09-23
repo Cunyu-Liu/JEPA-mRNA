@@ -399,7 +399,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
               f"({len(enc)} tensors) head={args.lr:.2e} ({len(head)} tensors), "
               f"{total_steps} steps", flush=True)
 
-    trainer = Trainer(
+    trainer_kwargs = dict(
         model=model,
         args=targs,
         train_dataset=train,
@@ -408,8 +408,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                                is_regression=is_regression),
         compute_metrics=make_compute_metrics(is_regression, multiclass),
         tokenizer=tokenizer,
-        optimizers=optimizers,
     )
+    if optimizers is not None:
+        # transformers 4.26 does `self.optimizer, self.lr_scheduler = optimizers`
+        # unconditionally, so passing optimizers=None raises TypeError.  Omit the
+        # keyword entirely unless we actually built them.
+        trainer_kwargs["optimizers"] = optimizers
+    trainer = Trainer(**trainer_kwargs)
 
     torch.cuda.reset_peak_memory_stats()
     train_result = trainer.train()

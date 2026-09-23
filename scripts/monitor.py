@@ -39,6 +39,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import subprocess
 import time
 from datetime import datetime, timedelta
@@ -236,9 +237,31 @@ def dispatch(gpus: list) -> list:
         cmd = spec["cmd"]
         timeout_s = int(spec.get("timeout_s", 0))
         if timeout_s:
-            cmd = f"timeout {timeout_s} {cmd}"
-        proc = subprocess.Popen(["bash", "-lc", f"{cmd} > {log_path} 2>&1"],
-                                start_new_session=True)
+            # ``timeout N <cmd>`` executes <cmd> directly, so a command string that
+            # starts with ``cd ... && ...`` fails with "failed to run command 'cd'".
+            # Wrap it in a shell instead of relying on the outer bash -lc.
+            inner = f"timeout {timeout_s} bash -lc {shlex.quote(cmd)}"
+        else:
+            inner = cmd
+        # Detach with ``start_new_session=True`` (which performs setsid internally) and
+        # open the log in *this* process, handing the descriptor to the child.
+        #
+        # Two traps this avoids, both of which produced silent no-ops before:
+        #   * calling the ``setsid`` binary on top of ``start_new_session`` fails,
+        #     because the child is already a session leader and setsid refuses;
+        #     the command then never runs and its stderr went to /dev/null.
+        #   * relying on a shell redirect means a failed exec leaves no trace at all.
+        # Owning the descriptor here guarantees the log exists the moment we return.
+        log_fh = open(log_path, "ab", buffering=0)
+        try:
+            env = dict(os.environ)
+            env["RNAJEPA_PREFER_GPU"] = str(idx)
+            proc = subprocess.Popen(
+                ["bash", "-lc", inner], start_new_session=True, env=env,
+                stdin=subprocess.DEVNULL, stdout=log_fh, stderr=log_fh,
+                close_fds=True)
+        finally:
+            log_fh.close()
         claimed.add(idx)
         append_jsonl(os.path.join(QUEUE, "running", f"{name}.jsonl"),
                      {"ts": now(), "name": name, "pid": proc.pid,
@@ -286,7 +309,8 @@ def one_pass(dispatch_enabled: bool) -> dict:
     for it in issues:
         print(f"   ALERT {it['level']}: {it['message']}")
     for l in launched:
-        print(f"   dispatched {l['name']} -> gpu{l['gpu']} (pid {l['pid']})")
+        print(f"   dispatched {l['name']} (pid {l['pid']}, capacity hint gpu"
+              f"{l['capacity_gpu_hint']})")
     return status
 
 

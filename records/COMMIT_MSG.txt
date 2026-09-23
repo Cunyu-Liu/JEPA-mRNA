@@ -1,18 +1,39 @@
-R3 gate: 3UTR-RBP root cause found and fixed; additive LR remedies implemented
+Evaluation orchestration: queue matrix, LR calibration, table statistics
 
-A 3-mer logistic regression reaches 0.781 ACC on the official 3UTR-RBP split, so the
-task is learnable and the pipeline was at fault. Controls isolate the knob: fp32
-reproduces the identical degenerate 0.6675, so it is not an fp16/ALiBi artefact; a
-frozen encoder reaches 0.7796, so the pre-trained features are fine; full fine-tuning
-at lr 1e-4 destroys them within about 100 steps, after which train loss rises from
-0.549 back to 0.64 and the head latches onto the class prior. Both remedies beat the
-published numbers: lr 2e-5 gives ACC 0.8250 / F1pos 0.7381 and discriminative LR
-(encoder 1e-5, head 1e-4) gives 0.8132 / 0.7076, against the published 0.786 / 0.751.
+The paper's main table needs a full task x seed x model matrix, produced without a
+job scheduler on a shared node.  Three pieces close that loop:
 
-- src/rnajepa/finetune.py: --freeze_encoder and --encoder_lr_scale, the latter
-  building its own parameter groups and cosine schedule.
-- configs/tasks.yaml v2: per-task learning rate plus an lr_status field marking which
-  values are verified and which are still to be selected by a dev sweep.
-- records/INVESTIGATION_rbp_0_degenerate.md: the full control table.
-- scripts/pretrain_pipeline.sh: unattended corpus verification, preprocessing, alpha
-  smoke sweep and V1/V2 launch, idempotent at every stage.
+- scripts/queue_matrix.py turns the frozen task registry into queue specs.  The
+  auto-dispatcher then places them onto idle cards, so nothing has to be launched by
+  hand and the queue is the only thing that decides what runs.  It is idempotent
+  (a cell with result.json is skipped) and ordered so the main-result tasks go first.
+  It also supports a learning-rate sweep mode that writes to a separate output root,
+  because the protocol has to be calibrated on the reference model once and then
+  applied to every model identically -- tuning each model separately would invalidate
+  the comparison.
+- eval/make_tables.py builds the head-to-head table with paired bootstrap confidence
+  intervals, Wilcoxon signed-rank and Benjamini-Hochberg correction, and enforces the
+  positive-class-F1 convention for binary tasks.  Model discovery is opt-in so a
+  scratch run cannot silently enter the published table.
+- scripts/monitor.py: this was broken in three separate ways and none of them were
+  visible without reading its dispatch logs, which is why it now owns the log file
+  descriptor instead of relying on a shell redirect:
+    1. ``timeout 86400 cd ... && ...`` -- timeout execs its argument directly, so a
+       command starting with ``cd`` failed immediately with "failed to run command cd";
+    2. ``setsid`` on top of ``start_new_session=True`` -- the child is already a
+       session leader and setsid refuses, so the command never ran at all;
+    3. jobs dispatched in one pass all picked the same emptiest card, collided, and had
+       their batch size halved by the OOM retry.  The dispatcher now reserves one card
+       per job and passes it down as a preference, which removes the collision.
+
+Also: pre-training now resumes and survives OOM.  ``--resume`` was parsed but never
+implemented, so an interrupted run silently restarted from scratch; resume.pt now
+stores the teacher EMA as well as the student (without it the objective would change
+silently on resume), and the corpus position is stored as a line offset rather than a
+batch count so halving the batch size mid-run does not shift the data.
+
+Registry v3: verified every task source path against the extracted bundle, corrected
+CDS/stability and CDS/Tc/1, dropped apa_usage (that data is not in Zenodo 17786045 --
+recorded as unavailable rather than substituted), and flagged full_in_cell_half_life
+as not comparable to the paper because the whole full_length family is ~233 sequences
+and the paper used cross-validation where we have a 21-sequence holdout.

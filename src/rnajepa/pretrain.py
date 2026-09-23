@@ -106,7 +106,8 @@ class CorpusReader:
     """
 
     def __init__(self, tokens_path: str, regions_path: str, token_map: Dict[str, int],
-                 specials: Dict[str, int], max_len: int, chunk_lines: int = 200000):
+                 specials: Dict[str, int], max_len: int, chunk_lines: int = 200000,
+                 start_line: int = 0):
         self.tokens_path = tokens_path
         self.regions_path = regions_path
         self.token_map = token_map
@@ -114,11 +115,19 @@ class CorpusReader:
         self.max_len = max_len
         self.chunk_lines = chunk_lines
         self.n_seen = 0
+        # Skip a whole number of corpus lines when resuming.  Offsetting in lines
+        # rather than in batches keeps the data position independent of the batch
+        # size, which matters because an OOM retry changes the batch size mid-run.
+        self.start_line = max(0, int(start_line))
 
     def _chunks(self) -> Iterator[Tuple[List[List[int]], List[List[int]]]]:
         tok_fh = open(self.tokens_path, encoding="utf-8")
         reg_fh = open(self.regions_path, encoding="utf-8")
         try:
+            for _ in range(self.start_line):
+                if not tok_fh.readline():
+                    break
+                reg_fh.readline()
             while True:
                 toks: List[List[int]] = []
                 regs: List[List[int]] = []
@@ -357,86 +366,130 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print("[pretrain] V2 arm: encoder re-initialised from scratch", flush=True)
 
     model.train()
-    optimizer = torch.optim.AdamW(
-        [p for p in model.parameters() if p.requires_grad],
-        lr=args.lr, weight_decay=args.weight_decay, betas=(0.9, 0.98))
+
+    def build_optimizer_scheduler(bs: int):
+        opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],
+                                lr=args.lr, weight_decay=args.weight_decay,
+                                betas=(0.9, 0.98))
+        sched = torch.optim.lr_scheduler.LambdaLR(
+            opt, lambda st: min(1.0, (st + 1) / max(1, args.warmup_steps)))
+        return opt, sched
+
+    batch_size = args.batch_size
     total_opt_steps = max(1, args.steps // args.grad_accum)
-    scheduler = torch.optim.lr_scheduler.LambdaLR(
-        optimizer, lambda s: min(1.0, (s + 1) / max(1, args.warmup_steps)))
+    optimizer, scheduler = build_optimizer_scheduler(batch_size)
 
-    reader = CorpusReader(args.data, args.regions, token_map, specials, args.max_len)
-    data_iter = reader.batches(args.batch_size, args.seed)
-    micro = 0
     opt_step = 0
+    micro = 0
+    consumed_lines = 0
+    resume_path = args.resume or os.path.join(args.out, "resume.pt")
+    if os.path.isfile(resume_path):
+        state = torch.load(resume_path, map_location="cpu")
+        model.student.load_state_dict(state["student"])
+        model.predictor.load_state_dict(state["predictor"])
+        model.factor_basis.load_state_dict(state["factor_basis"])
+        model.region_proj.load_state_dict(state["region_proj"])
+        model.teacher_region_proj.load_state_dict(state["teacher_region_proj"])
+        with torch.no_grad():
+            model.remask_embed.copy_(state["remask_embed"])
+        if "teacher" in state:
+            model.teacher.load_state_dict(state["teacher"])
+        else:
+            # older checkpoints did not store the EMA copy; falling back to the
+            # student would silently change the objective, so rebuild it as the
+            # EMA would have been at this point (momentum applied once is closer
+            # to the truth than skipping the copy entirely).
+            model.teacher.load_state_dict(model.student.state_dict())
+            print(f"[{args.arm}] WARN resume file has no teacher state; teacher reset "
+                  f"from the student", flush=True)
+        optimizer.load_state_dict(state["optimizer"])
+        scheduler.load_state_dict(state["scheduler"])
+        if "rng" in state:
+            torch.set_rng_state(state["rng"])
+        opt_step = int(state["step"])
+        consumed_lines = int(state.get("corpus_lines_seen", 0))
+        micro = opt_step * args.grad_accum
+        print(f"[{args.arm}] resumed from {resume_path} at step {opt_step}, "
+              f"corpus line {consumed_lines}", flush=True)
+
     start_wall = time.time()
-    running: Dict[str, float] = {}
+    attempt = 0
+    while attempt < 6:
+        attempt += 1
+        reader = CorpusReader(args.data, args.regions, token_map, specials,
+                              args.max_len, start_line=consumed_lines)
+        try:
+            data_iter = reader.batches(batch_size, args.seed)
+            running: Dict[str, float] = {}
+            while opt_step < total_opt_steps:
+                for batch in data_iter:
+                    batch = {k: v.cuda(non_blocking=True) for k, v in batch.items()}
+                    # ``micro`` counts *completed* micro-batches; increment first so
+                    # that the diagnostics flag has the same parity as the flush
+                    # below.  On the other parity the expensive Procrustes and
+                    # correlation metrics would only ever be produced on steps that
+                    # are never logged.
+                    micro += 1
+                    is_boundary = (micro % args.grad_accum == 0)
+                    out = model(batch["input_ids"], batch["attention_mask"],
+                                batch["region_ids"], step=opt_step,
+                                total_steps=total_opt_steps,
+                                special_ids=batch["special_ids"],
+                                compute_diagnostics=is_boundary)
+                    loss = out["loss"] / args.grad_accum
+                    loss.backward()
 
-    def flush_step():
-        nonlocal micro, opt_step
-        torch.nn.utils.clip_grad_norm_(
-            [p for p in model.parameters() if p.requires_grad], 1.0)
-        optimizer.step()
-        scheduler.step()
-        optimizer.zero_grad(set_to_none=True)
-        opt_step += 1
-
-    while opt_step < total_opt_steps:
-        for batch in data_iter:
-            batch = {k: v.cuda(non_blocking=True) for k, v in batch.items()}
-            # ``micro`` counts *completed* micro-batches; increment first so that
-            # the diagnostics flag has the same parity as the flush below.
-            # Computing diagnostics on the other parity would mean the expensive
-            # Procrustes/correlation metrics were only ever produced on steps that
-            # are never logged.
-            micro += 1
-            is_boundary = (micro % args.grad_accum == 0)
-            out = model(batch["input_ids"], batch["attention_mask"],
-                        batch["region_ids"], step=opt_step, total_steps=total_opt_steps,
-                        special_ids=batch["special_ids"],
-                        compute_diagnostics=is_boundary)
-            loss = out["loss"] / args.grad_accum
-            loss.backward()
-
-            for key in ("loss", "loss_mlm", "loss_jepa", "loss_var", "loss_cov", "loss_orth"):
-                running[key] = running.get(key, 0.0) + float(out[key])
-            running["_micro"] = running.get("_micro", 0) + 1
-
-            if is_boundary:
-                flush_step()
-                model.update_teacher(model.ema_momentum(opt_step, total_opt_steps))
-
-                if opt_step % args.log_every == 0:
-                    n = max(1, running["_micro"])
-                    row = {"ts": time.time(), "step": opt_step, "micro": micro,
-                           "lr": scheduler.get_last_lr()[0],
-                           "sequences_seen_m": round(reader.n_seen / 1e6, 3),
-                           "sequences_seen": reader.n_seen}
                     for key in ("loss", "loss_mlm", "loss_jepa", "loss_var",
                                 "loss_cov", "loss_orth"):
-                        row[key] = running[key] / n
-                    for key in ("procrustes_residual", "cos_mean", "cls_corr", "cls_var",
-                                "w_region", "w_cls", "mask_frac"):
-                        if key in out:
-                            row[key] = float(out[key])
-                    if "factor_activity" in out:
-                        row["factor_activity"] = [float(x) for x in out["factor_activity"]]
-                    with open(log_path, "a", encoding="utf-8") as fh:
-                        fh.write(json.dumps(row) + "\n")
-                    msg = (f"[{args.arm}] step {opt_step}/{total_opt_steps} "
-                           f"loss={row['loss']:.4f} mlm={row['loss_mlm']:.4f} "
-                           f"jepa={row['loss_jepa']:.4f} var={row['loss_var']:.4f} "
-                           f"cov={row['loss_cov']:.4f} orth={row['loss_orth']:.4f}")
-                    if "cos_mean" in row:
-                        msg += f" cos={row['cos_mean']:.3f} proc={row.get('procrustes_residual', float('nan')):.3f}"
-                    if "cls_corr" in row:
-                        msg += f" cls_corr={row['cls_corr']:.3f}"
-                    print(msg, flush=True)
-                    running = {}
+                        running[key] = running.get(key, 0.0) + float(out[key])
+                    running["_micro"] = running.get("_micro", 0) + 1
 
-                if args.save_every and opt_step % args.save_every == 0:
-                    ck = save_hf_checkpoint(model, args.weights, args.out, opt_step)
-                    torch.save({"step": opt_step,
+                    if is_boundary:
+                        torch.nn.utils.clip_grad_norm_(
+                            [p for p in model.parameters() if p.requires_grad], 1.0)
+                        optimizer.step()
+                        scheduler.step()
+                        optimizer.zero_grad(set_to_none=True)
+                        opt_step += 1
+                        model.update_teacher(model.ema_momentum(opt_step, total_opt_steps))
+
+                        if opt_step % args.log_every == 0:
+                            n = max(1, running["_micro"])
+                            row = {"ts": time.time(), "step": opt_step, "micro": micro,
+                                   "lr": scheduler.get_last_lr()[0],
+                                   "batch_size": batch_size,
+                                   "sequences_seen_m": round(reader.n_seen / 1e6, 3),
+                                   "sequences_seen": reader.n_seen}
+                            for key in ("loss", "loss_mlm", "loss_jepa", "loss_var",
+                                        "loss_cov", "loss_orth"):
+                                row[key] = running[key] / n
+                            for key in ("procrustes_residual", "cos_mean", "cls_corr",
+                                        "cls_var", "w_region", "w_cls", "mask_frac"):
+                                if key in out:
+                                    row[key] = float(out[key])
+                            if "factor_activity" in out:
+                                row["factor_activity"] = [
+                                    float(x) for x in out["factor_activity"]]
+                            with open(log_path, "a", encoding="utf-8") as fh:
+                                fh.write(json.dumps(row) + "\n")
+                            msg = (f"[{args.arm}] step {opt_step}/{total_opt_steps} "
+                                   f"loss={row['loss']:.4f} mlm={row['loss_mlm']:.4f} "
+                                   f"jepa={row['loss_jepa']:.4f} var={row['loss_var']:.4f} "
+                                   f"cov={row['loss_cov']:.4f} orth={row['loss_orth']:.4f}")
+                            if "cos_mean" in row:
+                                msg += (f" cos={row['cos_mean']:.3f} "
+                                        f"proc={row.get('procrustes_residual', float('nan')):.3f}")
+                            if "cls_corr" in row:
+                                msg += f" cls_corr={row['cls_corr']:.3f}"
+                            print(msg, flush=True)
+                            running = {}
+
+                        if args.save_every and opt_step % args.save_every == 0:
+                            ck = save_hf_checkpoint(model, args.weights, args.out, opt_step)
+                            torch.save({
+                                "step": opt_step,
                                 "student": model.student.state_dict(),
+                                "teacher": model.teacher.state_dict(),
                                 "predictor": model.predictor.state_dict(),
                                 "factor_basis": model.factor_basis.state_dict(),
                                 "region_proj": model.region_proj.state_dict(),
@@ -445,16 +498,38 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                                 "optimizer": optimizer.state_dict(),
                                 "scheduler": scheduler.state_dict(),
                                 "rng": torch.get_rng_state(),
-                                "sequences_seen": reader.n_seen},
-                               os.path.join(args.out, "resume.pt"))
-                    print(f"[{args.arm}] checkpoint written {ck} (resume.pt updated)", flush=True)
+                                "batch_size": batch_size,
+                                "sequences_seen": reader.n_seen,
+                                "corpus_lines_seen": consumed_lines + reader.n_seen,
+                            }, os.path.join(args.out, "resume.pt"))
+                            print(f"[{args.arm}] checkpoint written {ck} "
+                                  f"(resume.pt updated)", flush=True)
 
-            if args.max_hours and (time.time() - start_wall) / 3600.0 > args.max_hours:
-                print(f"[{args.arm}] max_hours reached, stopping at step {opt_step}", flush=True)
-                save_hf_checkpoint(model, args.weights, args.out, opt_step)
-                return 0
-            if opt_step >= total_opt_steps:
-                break
+                    if args.max_hours and (time.time() - start_wall) / 3600.0 > args.max_hours:
+                        print(f"[{args.arm}] max_hours reached, stopping at step {opt_step}",
+                              flush=True)
+                        save_hf_checkpoint(model, args.weights, args.out, opt_step)
+                        return 0
+                    if opt_step >= total_opt_steps:
+                        break
+            break
+        except torch.OutOfMemoryError:
+            # The node is shared, so a card that had room at launch can fill up
+            # mid-run.  Persist what we have, halve the batch, and continue from
+            # the current weights: losing the whole run is worse than a recorded
+            # batch-size change.
+            consumed_lines += reader.n_seen
+            torch.cuda.empty_cache()
+            save_hf_checkpoint(model, args.weights, args.out, opt_step)
+            batch_size = max(2, batch_size // 2)
+            optimizer, scheduler = build_optimizer_scheduler(batch_size)
+            print(f"[{args.arm}] CUDA OOM -> halving batch to {batch_size} and resuming "
+                  f"from step {opt_step} (corpus line {consumed_lines})", flush=True)
+            with open(os.path.join(args.out, "oom_events.jsonl"), "a",
+                      encoding="utf-8") as fh:
+                fh.write(json.dumps({"ts": time.time(), "step": opt_step,
+                                     "new_batch_size": batch_size,
+                                     "corpus_lines_seen": consumed_lines}) + "\n")
 
     final = save_hf_checkpoint(model, args.weights, args.out, opt_step)
     print(f"[{args.arm}] DONE steps={opt_step} final={final} "
