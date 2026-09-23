@@ -306,3 +306,40 @@
 - Task 19 → Task 20（下游跑通才能测评）
 - Task 20 → Task 21（结果与门限核验齐备才能写作与投稿）
 - Task 20.3 依赖 Task 13–17 全部完成（消融需四项目标可独立开关）
+
+---
+
+## 第二轮回归审计的派生任务（2026-09-24 新增）
+
+> 来源：`spec/spec.md` §0.9.5。第一轮审计比对范式，第二轮直接读代码与运行配置，
+> 结论更严厉：**C2 目前不是可用架构，且编码器是随机初始化**。
+
+| # | 任务 | 完成判据 | 阻塞关系 |
+|---|---|---|---|
+| **T-A1** | 为层级级联设计**分层目标**（L0 块对 / L1 螺旋 / L2 局部各自成项、各自归一），接入 `train_decision` 与 `evaluate_decision` | L0 螺旋召回 ≥ **0.98**（P6）；级联臂在 TS0 上 F1 不退化 | **阻塞 C2 的贡献主张** |
+| **T-A2** | 级联的**可微稀疏选择**，替代硬 `top_k`（未训练 L0 召回实测仅 **0.1548**，min 0.0） | 训练中 GT 螺旋的梯度覆盖率 ≥ 0.98 | 依赖 T-A1 |
+| **T-A3** | 补齐**预训练骨干**：接入已下载的 RiNALMo-giga，或改用 245 GB 无标签语料自监督预训练 | `run_meta.json` 记录骨干来源；训练量 ≥ 20 epoch | **阻塞「优秀结果」** |
+| **T-A4** | 目标函数**长度归一**（按 GT 配对数）+ 重新标定 `grad_clip`（裁剪前范数实测 40–673 vs 阈值 1.0） | 批间损失可比；裁剪触发率与步长波动写入记录 | 影响所有后续训练 |
+| **T-A5** | 首轮三臂（3000 步 ≈ 0.56 epoch）的结果**逐处标注**为「通路验证，非科学结论」 | 训练记录与论文草稿中无遗漏 | — |
+| **T-A6** | 监控脚本覆盖**直接启动**的运行（原先只读共享台账，直接启动的臂完全不可见） | 能发现静默死亡 | ✅ 已完成（commit `4218f73`） |
+| **T-A7** | 决策头**显存**修复：沿 `j` 分块 + 每块 `torch.utils.checkpoint` | L=498/B=4 由 OOM 降到 **2366 MiB**；前向逐位等价、梯度 fp64 精确到 1e-15 | ✅ 已完成（commit `2397364`，11 项测试） |
+
+### 已下载/安装的资产（2026-09-24）
+
+| 资产 | 路径 | 状态 |
+|---|---|---|
+| RiNALMo-giga 权重（650M；33 层 / hidden 1280 / 20 heads / rotary / max_pos 1024） | `/mnt/cunyuliu/rna-jepa/weights/rinalmo-giga/model.safetensors`（2.60 GB） | **已下载**（经 `hf-mirror.com`；`huggingface.co` 与 Zenodo 不通） |
+| multimolecule 0.0.8 + transformers 4.57.6 + torch 2.8.0 | `/mnt/cunyuliu/rnalmo_pkgs`（`pip --target` 隔离安装，**不污染**训练环境） | **已安装** |
+| 无标签语料 | `/mnt/cunyuliu/rna-jepa/data/pretrain`（**245 GB**）、`pretrain_fasta`（93 GB） | 已有（规模远超 spec 早先写的 20 GB） |
+
+> **许可提示（必须先确认再使用）**：`multimolecule/rinalmo-giga` 标注 **AGPL-3.0**。
+> 用于研究/论文前需确认合规性，或改用许可更宽松的骨干。**当前尚未在任何训练中使用。**
+
+### 环境约束（必须知道）
+
+- **`/home` 配额 200 GB 已满**（`du -sh /home/cunyuliu` = 200G），连 1 MB 写入都会失败，
+  `git commit` 会报 `Disk quota exceeded`。本次通过清理 `~/.cache/pip`（4.6 GB）
+  与把 RNA 基线目录迁到 `/mnt/cunyuliu/relocated_home/`（符号链接回原位）临时解决。
+- 配额的主要占用者**不是本项目**：`mrna_editflow_goal` 75 G（其中 `mrna_editflow` 43 G、
+  `runs` 23 G）、`reactflow/artifacts` 51 G、`miniconda3` 59 G。
+  `mrna_editflow_goal` 有 8 个进程的 cwd 在其中，**不可擅自迁移**；需要用户决定。
