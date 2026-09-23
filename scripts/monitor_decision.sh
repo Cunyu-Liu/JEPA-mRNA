@@ -58,58 +58,102 @@ done < <(list_schedulable_gpus)
 # ---------------------------------------------------------------------------
 # 2. health check
 # ---------------------------------------------------------------------------
-python3 - "$LEDGER" "$STALE_SECONDS" "$ALERTS" <<'PY'
-import json, os, sys, time
+# Two arrival routes, and the check must cover both:
+#   * runs launched directly (scripts/launch_long_decision.sh) write only their own
+#     <out_dir>/ledger.jsonl -- they never touch a shared ledger;
+#   * queue-dispatched runs go through run_decision_training.sh.
+# Replaying a single shared ledger therefore ignored every directly-launched arm,
+# which is precisely the population whose silent death nothing else would catch.
+# So runs are discovered from the filesystem instead.
+python3 - "$RUNS" "$STALE_SECONDS" "$ALERTS" <<'PY'
+import json, os, re, subprocess, sys, time
 
-ledger, stale_seconds, alerts = sys.argv[1], int(sys.argv[2]), sys.argv[3]
-if not os.path.isfile(ledger):
-    sys.exit(0)
+runs_dir, stale_seconds, alerts = sys.argv[1], int(sys.argv[2]), sys.argv[3]
 
-last = {}
-order = []
-with open(ledger, encoding="utf-8") as fh:
-    for line in fh:
-        line = line.strip()
-        if not line:
-            continue
+# Deliberately specific markers: a bare "nan"/"inf" substring matches innocuous
+# words ("maintenance", "information"), so only the exact tokens the driver prints
+# count.  train_decision.py hard-fails on a non-finite loss already; this is a
+# backstop for a run that was killed before it could report.
+CRASH = (("Traceback (most recent call last)", "traceback"),
+         ("loss=nan", "NaN loss"),
+         ("loss=inf", "Inf loss"),
+         ("gnorm=nan", "NaN gradient norm"),
+         ("CUDA out of memory", "CUDA OOM"),
+         ("FATAL:", "fatal error"),
+         ("DivergenceError", "divergence"))
+TERMINAL = {"completed", "diverged", "failed", "oom", "exhausted"}
+
+
+def status_of(run_dir: str) -> str:
+    """Last status in the run's own ledger, else run_meta.json, else 'unknown'."""
+    ledger = os.path.join(run_dir, "ledger.jsonl")
+    status = None
+    if os.path.isfile(ledger):
+        with open(ledger, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    status = json.loads(line).get("status")
+                except json.JSONDecodeError:
+                    pass
+    if status is None:
         try:
-            row = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        run = row.get("run")
-        if run:
-            if run not in last:
-                order.append(run)
-            last[run] = row
+            with open(os.path.join(run_dir, "run_meta.json"), encoding="utf-8") as fh:
+                status = json.load(fh).get("status")
+        except Exception:
+            status = "unknown"
+    return status or "unknown"
 
-TERMINAL = {"completed", "failed", "oom", "exhausted", "no_capacity"}
-problems = []
-for run in order:
-    row = last[run]
-    if row.get("status") not in {"start", "running"}:
-        continue
-    log = os.path.join(os.path.dirname(ledger), f"{run}.log")
-    if not os.path.isfile(log):
-        problems.append(f"{run}: started but no log file at {log}")
-        continue
-    age = time.time() - os.path.getmtime(log)
-    if age > stale_seconds:
-        problems.append(f"{run}: log stale for {age/60:.0f} min")
-    with open(log, encoding="utf-8", errors="replace") as fh:
-        tail = fh.read()[-20000:]
-    # Patterns are deliberately specific.  A bare "nan"/"inf" substring matches
-    # innocuous words ("maintenance", "information"), so only the exact tokens the
-    # driver prints are treated as divergence.  train_decision.py already
-    # hard-fails on a non-finite loss, so this is a backstop for a killed run.
-    for marker, label in (("Traceback (most recent call last)", "traceback"),
-                          ("loss=nan", "NaN loss"),
-                          ("loss=inf", "Inf loss"),
-                          ("gnorm=nan", "NaN gradient norm"),
-                          ("CUDA out of memory", "CUDA OOM"),
-                          ("FATAL:", "fatal error"),
-                          ("DivergenceError", "divergence")):
-        if marker in tail:
-            problems.append(f"{run}: {label} in log tail")
+
+def log_for(name: str):
+    """Direct-launched runs log to <tag>.log while their dir is <tag>_<timestamp>."""
+    candidates = [os.path.join(runs_dir, name + ".log"),
+                  os.path.join(runs_dir, re.sub(r"_\d{8}T\d{6}$", "", name) + ".log"),
+                  os.path.join(runs_dir, re.sub(r"_\d{8}T\d{6}$", "", name) + ".stdout.log")]
+    for path in candidates:
+        if os.path.isfile(path):
+            return path
+    return None
+
+
+def alive(run_dir: str) -> bool:
+    """A process whose command line mentions this run directory."""
+    try:
+        out = subprocess.run(["pgrep", "-f", run_dir], capture_output=True, text=True,
+                             timeout=10)
+    except Exception:
+        return True  # never alert on an inconclusive probe
+    return bool(out.stdout.strip())
+
+
+problems, checked = [], 0
+if os.path.isdir(runs_dir):
+    for name in sorted(os.listdir(runs_dir)):
+        run_dir = os.path.join(runs_dir, name)
+        if not os.path.isfile(os.path.join(run_dir, "run_meta.json")):
+            continue
+        checked += 1
+        status = status_of(run_dir)
+        if status in TERMINAL:
+            continue
+        log = log_for(name)
+        if log is None:
+            problems.append(f"{name}: status={status} but no log file found")
+            continue
+        age = time.time() - os.path.getmtime(log)
+        if age > stale_seconds:
+            problems.append(f"{name}: log stale for {age / 60:.0f} min (status={status})")
+        with open(log, encoding="utf-8", errors="replace") as fh:
+            tail = fh.read()[-20000:]
+        for marker, label in CRASH:
+            if marker in tail:
+                problems.append(f"{name}: {label} in log tail")
+                break
+        if not alive(run_dir):
+            problems.append(f"{name}: no live process but status={status} "
+                            f"(died without a terminal ledger row)")
 
 if problems:
     stamp = time.strftime("%Y-%m-%dT%H:%M:%S%z")
@@ -119,7 +163,7 @@ if problems:
     for problem in problems:
         print(f"ALERT {problem}", file=sys.stderr)
 else:
-    print(f"health: {len(order)} run(s) replayed, no problems")
+    print(f"health: {checked} run dir(s) discovered, no problems")
 PY
 
 # ---------------------------------------------------------------------------
