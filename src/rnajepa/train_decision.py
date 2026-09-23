@@ -272,11 +272,16 @@ class TrainConfig:
 # ---------------------------------------------------------------------------
 @dataclass
 class DecisionExample:
-    """One training instance: sequence + hard labels + teacher soft labels."""
+    """One training instance: sequence + hard labels + optional teacher soft labels.
+
+    ``teacher_probs`` is ``None`` when the distillation term is switched off and
+    the loader was therefore not asked to produce them.  It is never silently
+    zero-filled: the objective raises if a run needs them and they are absent.
+    """
 
     seq: str
     gt_pairs: List[Tuple[int, int]]
-    teacher_probs: np.ndarray
+    teacher_probs: Optional[np.ndarray]
     source: str = "synthetic"
 
     @property
@@ -319,6 +324,9 @@ class DecisionDataset:
             "n_examples": len(self.examples),
             "min_length": int(min(lengths)) if lengths else 0,
             "max_length": int(max(lengths)) if lengths else 0,
+            # provenance: distinguishes "no soft labels needed" from "labels lost"
+            "has_teacher_probs": bool(self.examples) and
+                                 all(e.teacher_probs is not None for e in self.examples),
         }
 
 
@@ -403,9 +411,24 @@ class TeacherLabelStore:
                    version_lock=manifest.get("version_lock"),
                    source=f"dir:{directory}", n_labels=len(mapping))
 
-    def probs_for(self, seq: str, *, teacher: Optional[MockTeacher] = None) -> np.ndarray:
+    def probs_for(self, seq: str, *, teacher: Optional[MockTeacher] = None,
+                  strict: bool = False) -> np.ndarray:
+        """Soft labels for ``seq``, from the store or (unless strict) the mock.
+
+        ``strict=True`` is used whenever a real ``--teacher-dir`` was supplied:
+        falling back to the mock there would mix a non-physical teacher into
+        labels the run reports as thermodynamic, so a missing sequence is an
+        error rather than a substitution.
+        """
         if seq in self.mapping:
             return self.mapping[seq]
+        if strict:
+            raise ConfigError(
+                f"no teacher label for a {len(seq)} nt sequence (store={self.name!r}, "
+                f"source={self.source!r}). Refusing to fall back to the mock teacher: "
+                "the soft labels would no longer be the physical teacher this run "
+                "reports. Regenerate the labels for this corpus, or drop "
+                "--teacher-dir and set --lambda-distill 0.")
         if teacher is None:
             teacher = MockTeacher(seed=0)
         return teacher.predict_probs(seq)
@@ -417,17 +440,28 @@ class TeacherLabelStore:
 
 
 def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
-                            mock_seed: int = 0) -> DecisionDataset:
+                            mock_seed: int = 0, *,
+                            need_teacher_probs: bool = True,
+                            strict_teacher: bool = False) -> DecisionDataset:
     """Load ``{"seq": ..., "structure": "<dot-bracket>"}`` records from JSONL.
 
     Hard labels are parsed from the dot-bracket string (reusing the frozen
-    ``rnajepa.clean.c3_structure.parse_pairs``); soft labels are looked up in the
-    teacher store and fall back to the mock teacher for unseen sequences (which is
-    recorded via the store's provenance).
+    ``rnajepa.clean.c3_structure.parse_pairs``).
+
+    ``need_teacher_probs=False`` skips soft-label generation entirely and stores
+    ``None``.  That matters: without a ``--teacher-dir`` the store is the mock
+    one, whose ``predict_probs`` runs an O(L^3) numpy DP per sequence, so
+    computing labels that ``lambda_distill == 0`` will never read costs ~2.5e10
+    operations over a 10k-sequence corpus and made a real run appear hung.
+    ``objective_terms`` hard-fails if the labels are needed and absent, so this
+    is not a silent zero-fill.
+
+    ``strict_teacher=True`` (set whenever a real teacher dir is in use) makes a
+    missing sequence an error rather than a mock fallback.
     """
     from rnajepa.clean.c3_structure import parse_pairs
 
-    mock = MockTeacher(seed=mock_seed)
+    mock = MockTeacher(seed=mock_seed) if need_teacher_probs else None
     examples: List[DecisionExample] = []
     with open(path, encoding="utf-8") as fh:
         for lineno, line in enumerate(fh, 1):
@@ -438,9 +472,11 @@ def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
             seq = str(record["seq"]).upper().replace("T", "U")
             pairs = [tuple(p) for p in record["pairs"]] if "pairs" in record \
                 else parse_pairs(str(record["structure"]))
+            probs = (teacher.probs_for(seq, teacher=mock, strict=strict_teacher)
+                     if need_teacher_probs else None)
             examples.append(DecisionExample(
                 seq=seq, gt_pairs=sorted(pairs),
-                teacher_probs=teacher.probs_for(seq, teacher=mock), source="jsonl"))
+                teacher_probs=probs, source="jsonl"))
     return DecisionDataset(examples, source=f"jsonl:{path}",
                            version=sha256_file(path))
 
@@ -575,6 +611,13 @@ def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, 
     evaluated (see the module docstring: ``(-inf) * 0.0`` is ``NaN`` and the
     frozen objective contains such a product).
     """
+    if weights.lambda_distill != 0.0 and any(
+            t is None for t in batch["teacher_probs"]):  # type: ignore[union-attr]
+        raise ConfigError(
+            "lambda_distill != 0 but the dataset carries no teacher probabilities. "
+            "Pass --teacher-dir, or set --lambda-distill 0. Refusing to substitute "
+            "zeros: the distillation term would be meaningless and the run would "
+            "still report it as active.")
     batch = _batch_to_device(batch, next(model.parameters()).device)
     scores = model(batch["seq_ids"], lengths=batch["lengths"])
     matrix = scores.scores
@@ -1168,8 +1211,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif args.data:
             teacher_store = (TeacherLabelStore.from_dir(args.teacher_dir)
                              if args.teacher_dir else TeacherLabelStore.from_mock(args.teacher_seed))
-            dataset = load_dataset_from_jsonl(args.data, teacher_store,
-                                              mock_seed=args.teacher_seed)
+            dataset = load_dataset_from_jsonl(
+                args.data, teacher_store, mock_seed=args.teacher_seed,
+                need_teacher_probs=float(args.lambda_distill) != 0.0,
+                strict_teacher=bool(args.teacher_dir))
         else:
             print("FATAL: give --synthetic N or --data FILE", file=sys.stderr)
             return 2

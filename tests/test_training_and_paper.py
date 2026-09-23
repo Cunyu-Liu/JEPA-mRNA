@@ -39,6 +39,85 @@ STUB = os.path.join(PAPER_DIR, "manuscript_stub.md")
 OBJECTIONS = os.path.join(PAPER_DIR, "reviewer_objections.md")
 
 
+def test_loader_skips_teacher_probs_when_not_needed(tmp_path):
+    """need_teacher_probs=False must not run the O(L^3) mock DP.
+
+    Regression: the loader called probs_for() for every record unconditionally,
+    and with no teacher dir that runs a numpy inside-outside DP per sequence --
+    ~2.5e10 operations over a 10k corpus, which made a real run look hung at
+    100% CPU with no GPU work.
+    """
+    path = tmp_path / "corpus.jsonl"
+    path.write_text(
+        json.dumps({"seq": "ACGUACGUACGU", "structure": "(((...)))..."}) + "\n",
+        encoding="utf-8")
+    store = TD.TeacherLabelStore.from_mock()
+
+    lazy = TD.load_dataset_from_jsonl(str(path), store, need_teacher_probs=False)
+    assert lazy[0].teacher_probs is None
+    assert lazy.describe()["has_teacher_probs"] is False
+
+    eager = TD.load_dataset_from_jsonl(str(path), store, need_teacher_probs=True)
+    assert eager[0].teacher_probs is not None
+    assert eager.describe()["has_teacher_probs"] is True
+
+
+def test_objective_refuses_missing_teacher_labels():
+    """lambda_distill != 0 with no labels must fail, not zero-fill."""
+    dataset = TD.make_synthetic_dataset(4, 16, seed=0)
+    dataset.examples = [
+        TD.DecisionExample(seq=e.seq, gt_pairs=e.gt_pairs, teacher_probs=None)
+        for e in dataset.examples]
+    teacher = TD.TeacherLabelStore.from_mock()
+    with tempfile.TemporaryDirectory() as out:
+        config = TD.TrainConfig(tiny=True, steps=2, batch_size=2, out_dir=out,
+                                allow_cpu=True, lambda_distill=1.0)
+        try:
+            TD.run_training(config, dataset, teacher)
+        except TD.ConfigError as exc:
+            assert "teacher probabilities" in str(exc)
+        else:  # pragma: no cover
+            raise AssertionError("missing teacher labels must not be zero-filled")
+
+
+def test_objective_accepts_absent_teacher_labels_when_distill_is_off():
+    """The same dataset must train fine with lambda_distill == 0."""
+    dataset = TD.make_synthetic_dataset(4, 16, seed=0)
+    dataset.examples = [
+        TD.DecisionExample(seq=e.seq, gt_pairs=e.gt_pairs, teacher_probs=None)
+        for e in dataset.examples]
+    teacher = TD.TeacherLabelStore.from_mock()
+    with tempfile.TemporaryDirectory() as out:
+        config = TD.TrainConfig(tiny=True, steps=2, batch_size=2, out_dir=out,
+                                allow_cpu=True, lambda_distill=0.0,
+                                lambda_rlcd=0.0, lambda_cal=0.0)
+        result = TD.run_training(config, dataset, teacher)
+        assert result["steps_completed"] == 2
+
+
+def test_strict_teacher_lookup_refuses_the_mock_fallback():
+    """A real teacher dir must not silently mix in mock labels."""
+    store = TD.TeacherLabelStore({}, name="thermo:viennarna", version_lock="2.7.2",
+                                 source="dir:/nowhere", n_labels=0)
+    # non-strict keeps the documented mock fallback (tests, no-teacher runs)
+    assert store.probs_for("ACGUACGU").shape == (8, 8)
+    # strict refuses
+    try:
+        store.probs_for("ACGUACGU", strict=True)
+    except TD.ConfigError as exc:
+        assert "mock teacher" in str(exc)
+    else:  # pragma: no cover
+        raise AssertionError("strict lookup must not fall back to the mock teacher")
+
+
+def test_strict_teacher_lookup_returns_stored_labels():
+    seq = "ACGUACGUACGU"
+    probs = np.triu(np.ones((12, 12)) * 0.1, k=1)
+    store = TD.TeacherLabelStore({seq: probs}, name="thermo:viennarna",
+                                 version_lock="2.7.2", source="dir:x", n_labels=1)
+    assert np.allclose(store.probs_for(seq, strict=True), probs)
+
+
 def test_cpu_requires_an_explicit_opt_in():
     """A silent CPU run must be impossible: it would still yield a checkpoint."""
     dataset = TD.make_synthetic_dataset(4, 16, seed=0)
