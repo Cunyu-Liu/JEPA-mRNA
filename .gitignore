@@ -1,0 +1,28 @@
+# Code lives in /home, large artefacts live in /mnt/cunyuliu. Never commit data,
+# weights, checkpoints or evaluation output.
+data/
+runs/
+eval_out/
+weights/
+
+# Upstream checkouts and copies of the released HF repo: reproducible by cloning /
+# downloading, and large. The repo stores paths and md5s, not the bytes.
+third_party/
+weights_ref/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Local scratch
+*.bak
+*.tmp

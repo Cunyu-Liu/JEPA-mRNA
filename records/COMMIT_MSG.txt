@@ -1,0 +1,46 @@
+RNA-JEPA: verified replication scaffolding, model and pre-training loop
+
+Tokenisation is the whole ball game here: the released 74-token vocabulary has no
+"##" continuation pieces, so raw un-spaced sequences collapse to [CLS] [UNK] [SEP]
+and a previous reproduction attempt measured Spearman ~0.005. split_sequence is
+verified byte-identical to the official splitter on all 1459 mRFP rows, and the
+collapse itself is kept as a regression test.
+
+Included:
+
+- src/rnajepa/{tokenization,metrics,finetune,model,pretrain}.py
+  model.py implements the region-aware factorised latent objective: EMA teacher,
+  re-masking, linear-attention predictor conditioned on region descriptors, K
+  orthogonal shared factors, region-specific W_r, the region/CLS curriculum, and the
+  four anti-collapse mechanisms. Documented deviations: r_dim = 192 (768/K) instead
+  of the design table's 128, which is impossible with a 768-d backbone; and the
+  variance term is measured on a same-batch eval-mode pass rather than on a
+  length-truncated batch. W_r is realised as a trainable student projection with an
+  EMA mirror, because the design note placed it on the detached target side, where it
+  would never have received a gradient.
+- data/build_manifest.py: audits 145 downstream tasks against the protocol spreadsheet
+  (0 row-count mismatches) and flags the 23 tasks whose dev and test files are
+  byte-identical, whose test score is therefore a development score.
+- data/prep_pretrain.py: writes the official pre.txt plus a per-token region sidecar,
+  because the official script discards the CDS markers and region identity cannot be
+  recovered afterwards. The ORF search is linear-time and proven equivalent to the
+  official quadratic implementation on 17 adversarial cases, 4000 skewed-alphabet
+  random sequences, and all 22671 real sequences shipped in the official repository.
+- scripts/: multi-connection resumable Zenodo fetcher (zenodo.org does not resolve on
+  this cluster and a single connection is throttled to ~15 KB/s, but aggregate reaches
+  ~4 MB/s at 168 workers), GPU picker, OOM-retrying submitter with an append-only
+  experiment ledger, and a 10-minute cron monitor that health-checks running jobs and
+  dispatches queued work onto idle cards.
+- tests/: tokenisation equivalence, ORF equivalence, and a GPU integration test for the
+  objective (gradients reach every learned block while the teacher stays frozen, EMA
+  anneals 0.996 to 0.9997, predictor stays memory-linear at L=4096).
+
+Records so far:
+
+- cds_mrfp baseline gate PASS: test Spearman 0.8663 against the paper's 0.89.
+- The pooled-region-summary latent target saturates within 60 optimizer steps
+  (cos -> 0.99) and raising the mask rate to 0.50 does not help, so the A3 target-set
+  ablation is the experiment that has to settle which target is used.
+- 3UTR-RBP currently degenerates to the majority class while a 3-mer logistic
+  regression reaches 0.781 on the same split; three controls are running to separate
+  learning rate, precision and fine-tuning-damage explanations.
