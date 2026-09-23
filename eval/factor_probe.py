@@ -49,6 +49,18 @@ REGION_TASKS = {
     "3UTR": ["3UTR/RNA_protein_interaction/22_eCLIP/0"],
 }
 
+# A *non-trivial* label set.  All three tasks are CDS with identical codon
+# tokenisation, so tokenisation granularity cannot separate them: any probe accuracy
+# above chance must come from sequence content.  The region pool above is kept as a
+# sanity check on the machinery, but it is confounded by token length (codons vs
+# single nucleotides) and must never be quoted as evidence for C3.
+WITHIN_REGION_TASKS = {
+    "CDS-mRFP": ["CDS/mRFP"],
+    "CDS-Fungal": ["CDS/Fungal"],
+    "CDS-Cov": ["CDS/Cov"],
+    "CDS-ecoli": ["CDS/ecoli"],
+}
+
 
 def _preselect_device(dev: str) -> None:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(dev)
@@ -227,52 +239,58 @@ def main() -> int:
     else:
         print("WARN: no encoder checkpoint next to the modules; using the original weights")
 
-    all_samples, region_labels = [], []
-    for region_name, rels in REGION_TASKS.items():
-        got = load_sequences(args.data_root, rels, args.n_per_task, args.seed)
-        print(f"pool {region_name}: {len(got)} sequences")
-        all_samples.extend(got)
-        region_labels.extend([region_name] * len(got))
-
-    coords, _ = build_features(model, tokenizer, specials, all_samples, "cuda",
-                               args.max_len)
-    k = coords.shape[1]
-    print(f"factor coordinates: {coords.shape}")
-
-    region_names = np.array(region_labels)
     results: Dict[str, dict] = {}
     pvals, keys = [], []
+    k = None
 
-    # per-factor probes: does factor k alone encode the region label?
-    for kk in range(k):
-        r = probes(coords[:, kk, :], region_names, args.seed, args.n_perm)
-        results[f"factor_{kk}_region"] = r
-        if r.get("status") == "ok":
-            pvals.append(r["p_perm"])
-            keys.append(f"factor_{kk}_region")
-
-    # all factors together
-    r_all = probes(coords.reshape(len(coords), -1), region_names, args.seed, args.n_perm)
-    results["all_factors_region"] = r_all
-    if r_all.get("status") == "ok":
-        pvals.append(r_all["p_perm"])
-        keys.append("all_factors_region")
-
-    # ---- random-subspace control ------------------------------------------
-    control: Dict[str, dict] = {}
-    with torch.no_grad():
-        d = model.hidden_size
-        for trial in range(3):
-            torch.manual_seed(1000 + trial)
-            q, _ = torch.linalg.qr(torch.randn(d, d, device="cuda"))
-            rand_P = torch.stack([q[:, kk * (d // k):(kk + 1) * (d // k)] for kk in range(k)])
-            orig = model.factor_basis.P.data.clone()
-            model.factor_basis.P.data.copy_(rand_P)
-            c2, _ = build_features(model, tokenizer, specials, all_samples, "cuda",
+    def run_pool(pool: Dict[str, Sequence[str]], pool_name: str, tag: str,
+                 control: Dict[str, dict]) -> None:
+        nonlocal k
+        samples, labels = [], []
+        for label, rels in pool.items():
+            got = load_sequences(args.data_root, rels, args.n_per_task, args.seed)
+            print(f"  pool {label}: {len(got)} sequences")
+            samples.extend(got)
+            labels.extend([label] * len(got))
+        coords, _ = build_features(model, tokenizer, specials, samples, "cuda",
                                    args.max_len)
-            model.factor_basis.P.data.copy_(orig)
-            control[f"random_subspace_trial{trial}"] = probes(
-                c2.reshape(len(c2), -1), region_names, args.seed, args.n_perm)
+        k = coords.shape[1]
+        y = np.array(labels)
+        print(f"  {pool_name}: coordinates {coords.shape}")
+        for kk in range(k):
+            key = f"{tag}_factor{kk}"
+            results[key] = probes(coords[:, kk, :], y, args.seed, args.n_perm)
+            if results[key].get("status") == "ok":
+                pvals.append(results[key]["p_perm"])
+                keys.append(key)
+        key = f"{tag}_all"
+        results[key] = probes(coords.reshape(len(coords), -1), y, args.seed, args.n_perm)
+        if results[key].get("status") == "ok":
+            pvals.append(results[key]["p_perm"])
+            keys.append(key)
+
+        # random-subspace control on the same pool
+        with torch.no_grad():
+            d = model.hidden_size
+            for trial in range(2):
+                torch.manual_seed(1000 + trial)
+                q, _ = torch.linalg.qr(torch.randn(d, d, device="cuda"))
+                rand_P = torch.stack([q[:, kk * (d // k):(kk + 1) * (d // k)]
+                                      for kk in range(k)])
+                orig = model.factor_basis.P.data.clone()
+                model.factor_basis.P.data.copy_(rand_P)
+                c2, _ = build_features(model, tokenizer, specials, samples, "cuda",
+                                       args.max_len)
+                model.factor_basis.P.data.copy_(orig)
+                control[f"{tag}_random_subspace_trial{trial}"] = probes(
+                    c2.reshape(len(c2), -1), y, args.seed, args.n_perm)
+
+    control: Dict[str, dict] = {}
+    print("pool A: region identity (sanity check, confounded by token length)")
+    run_pool(REGION_TASKS, "region", "region", control)
+    print("pool B: task identity within one region (the interpretable question)")
+    run_pool(WITHIN_REGION_TASKS, "within-region task", "task", control)
+    all_samples = None
 
     # ---- FDR across every probe reported ----------------------------------
     if pvals:

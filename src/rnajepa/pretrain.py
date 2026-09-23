@@ -107,7 +107,7 @@ class CorpusReader:
 
     def __init__(self, tokens_path: str, regions_path: str, token_map: Dict[str, int],
                  specials: Dict[str, int], max_len: int, chunk_lines: int = 200000,
-                 start_line: int = 0):
+                 start_line: int = 0, binary_prefix: str = ""):
         self.tokens_path = tokens_path
         self.regions_path = regions_path
         self.token_map = token_map
@@ -119,8 +119,67 @@ class CorpusReader:
         # rather than in batches keeps the data position independent of the batch
         # size, which matters because an OOM retry changes the batch size mid-run.
         self.start_line = max(0, int(start_line))
+        # When pre-encoded arrays are available, use them: the text path splits and
+        # dict-maps every token in Python, which is CPU-bound on a shared node and can
+        # starve the GPU.  The arrays are produced (and verified against the text
+        # source) by data/pretokenize.py.
+        self.ids = self.regions = self.offsets = None
+        if binary_prefix:
+            cand = (binary_prefix + ".ids.u16.npy", binary_prefix + ".regions.i8.npy",
+                    binary_prefix + ".offsets.npy")
+            if all(os.path.isfile(c) for c in cand):
+                import numpy as np
+                self.ids = np.load(cand[0], mmap_mode="r")
+                self.regions = np.load(cand[1], mmap_mode="r")
+                self.offsets = np.load(cand[2], mmap_mode="r")
+                # offsets has n_seq+1 entries; ids/regions are the flattened token count
+                if len(self.ids) != len(self.regions):
+                    raise ValueError(
+                        f"pre-encoded corpus is inconsistent: {len(self.ids)} token ids "
+                        f"vs {len(self.regions)} region ids")
+                print(f"[pretrain] using pre-encoded corpus: {len(self.offsets)-1:,} "
+                      f"sequences, {len(self.ids):,} tokens", flush=True)
+            elif binary_prefix:
+                print(f"[pretrain] WARN pre-encoded corpus not found at {binary_prefix}*; "
+                      f"falling back to parsing {tokens_path}", flush=True)
 
-    def _chunks(self) -> Iterator[Tuple[List[List[int]], List[List[int]]]]:
+    def _chunks(self):
+        if self.ids is not None:
+            yield from self._chunks_binary()
+            return
+        yield from self._chunks_text()
+
+    def _chunks_binary(self):
+        """Slice sequences straight out of the memory-mapped arrays."""
+        import numpy as np
+        n_seq = int(len(self.offsets) - 1)
+        start = int(self.start_line)
+        chunk = self.chunk_lines
+        for begin in range(start, n_seq, chunk):
+            end = min(begin + chunk, n_seq)
+            lo = int(self.offsets[begin])
+            hi = int(self.offsets[end])
+            flat_ids = np.asarray(self.ids[lo:hi])
+            flat_regs = np.asarray(self.regions[lo:hi])
+            lens = np.diff(np.asarray(self.offsets[begin:end + 1]))
+            toks, regs = [], []
+            pos = 0
+            for length in lens:
+                length = int(length)
+                ids = flat_ids[pos:pos + length]
+                rr = flat_regs[pos:pos + length]
+                pos += length
+                if length > self.max_len - 2:
+                    ids = ids[:self.max_len - 2]
+                    rr = rr[:self.max_len - 2]
+                ids = [self.specials["cls"]] + ids.tolist() + [self.specials["sep"]]
+                reg = [-1] + rr.tolist() + [-1]
+                toks.append(ids)
+                regs.append(reg)
+            self.n_seen += len(toks)
+            yield toks, regs
+
+    def _chunks_text(self) -> Iterator[Tuple[List[List[int]], List[List[int]]]]:
         tok_fh = open(self.tokens_path, encoding="utf-8")
         reg_fh = open(self.regions_path, encoding="utf-8")
         try:
@@ -280,6 +339,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--save_every", type=int, default=1000)
     p.add_argument("--log_every", type=int, default=20)
     p.add_argument("--resume", default="")
+    p.add_argument("--binary_prefix", default="",
+                   help="prefix of the pre-encoded corpus arrays written by "
+                        "data/pretokenize.py; defaults to the --data path without its "
+                        "extension, and falls back to text parsing when absent")
     p.add_argument("--max_hours", type=float, default=0.0, help="stop after N hours (0 = no limit)")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--fp16", action="store_true")
@@ -417,7 +480,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     while attempt < 6:
         attempt += 1
         reader = CorpusReader(args.data, args.regions, token_map, specials,
-                              args.max_len, start_line=consumed_lines)
+                              args.max_len, start_line=consumed_lines,
+                              binary_prefix=args.binary_prefix or args.data.rsplit(".", 1)[0])
         try:
             data_iter = reader.batches(batch_size, args.seed)
             running: Dict[str, float] = {}
