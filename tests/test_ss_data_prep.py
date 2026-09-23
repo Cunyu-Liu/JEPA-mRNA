@@ -456,6 +456,101 @@ def test_cli_pseudoknot_keep_flags_record(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# robustness: a bad member file must not abort the whole build
+# ---------------------------------------------------------------------------
+def test_empty_bpseq_file_is_rejected_not_fatal(tmp_path):
+    """An empty .bpseq must become a counted reject, not a crash.
+
+    Regression: the Rfam12.3-14.10 run died here, producing a 0-byte corpus.
+    """
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    (corpus / "a_valid.bpseq").write_text("1 A 0\n2 C 0\n", encoding="utf-8")
+    (corpus / "b_empty.bpseq").write_text("", encoding="utf-8")
+    (corpus / "c_valid.bpseq").write_text("1 G 5\n2 C 0\n3 A 0\n4 A 0\n5 G 1\n",
+                                          encoding="utf-8")
+
+    out = tmp_path / "out.jsonl"
+    manifest = tmp_path / "out.manifest.json"
+    rc = prep.main(["--bpseq-dir", str(corpus), "--out", str(out),
+                    "--manifest", str(manifest)])
+    assert rc == 0
+
+    records = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    # the two good files survive even though the middle one is empty
+    assert {r["name"] for r in records} == {"a_valid.bpseq", "c_valid.bpseq"}
+
+    meta = json.loads(manifest.read_text(encoding="utf-8"))
+    assert meta["n_accepted"] == 2
+    assert meta["n_rejected"] == 1
+    assert meta["reject_reasons"] == {"empty": 1}
+    assert meta["n_accepted"] + meta["n_rejected"] == meta["provenance"]["n_files"] == 3
+
+
+def test_malformed_bpseq_file_does_not_abort_others(tmp_path):
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    (corpus / "a.bpseq").write_text("1 A 0\n", encoding="utf-8")
+    (corpus / "b.bpseq").write_text("1 A\n", encoding="utf-8")          # malformed row
+    (corpus / "c.bpseq").write_text("1 A 2\n2 C 0\n", encoding="utf-8")  # asymmetric
+    (corpus / "d.bpseq").write_text("1 A 0\n", encoding="utf-8")
+
+    out = tmp_path / "out.jsonl"
+    manifest = tmp_path / "out.manifest.json"
+    assert prep.main(["--bpseq-dir", str(corpus), "--out", str(out),
+                      "--manifest", str(manifest)]) == 0
+
+    records = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert {r["name"] for r in records} == {"a.bpseq", "d.bpseq"}
+    meta = json.loads(manifest.read_text(encoding="utf-8"))
+    assert meta["reject_reasons"] == {"bpseq_malformed": 1, "partner_asymmetric": 1}
+    assert meta["n_accepted"] + meta["n_rejected"] == 4
+
+
+def test_every_file_is_accounted_for_under_mixed_failures(tmp_path):
+    """Conservation: accepted + rejected must equal the number of input files."""
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    (corpus / "ok1.bpseq").write_text("1 A 0\n2 C 0\n", encoding="utf-8")
+    (corpus / "empty.bpseq").write_text("", encoding="utf-8")
+    (corpus / "n_base.bpseq").write_text("1 A 0\n2 N 0\n", encoding="utf-8")
+    (corpus / "ok2.bpseq").write_text("1 G 5\n2 C 0\n3 A 0\n4 A 0\n5 G 1\n",
+                                      encoding="utf-8")
+    (corpus / "short_hairpin.bpseq").write_text("1 A 4\n2 C 0\n3 G 0\n4 U 1\n",
+                                                encoding="utf-8")
+    out = tmp_path / "out.jsonl"
+    manifest = tmp_path / "out.manifest.json"
+    prep.main(["--bpseq-dir", str(corpus), "--out", str(out),
+               "--manifest", str(manifest)])
+    meta = json.loads(manifest.read_text(encoding="utf-8"))
+    assert meta["provenance"]["n_files"] == 5
+    assert meta["n_accepted"] + meta["n_rejected"] == 5
+    # the short-hairpin file is rejected under the default strict policy
+    assert meta["reject_reasons"] == {"empty": 1, "bad_alphabet": 1,
+                                     "hairpin_too_short": 1}
+
+
+def test_bad_csv_row_does_not_abort_the_rest(tmp_path):
+    path = tmp_path / "bench.csv"
+    path.write_text(
+        "id,sequence,structure,base_pairs,len\n"
+        'good1,ACGUACGU,"((....))","[[0, 7], [1, 6]]",8\n'
+        'badlen,ACGU,"....","[]",9\n'
+        'good2,ACGUACGU,"((....))","[[0, 7], [1, 6]]",8\n',
+        encoding="utf-8")
+    out = tmp_path / "out.jsonl"
+    manifest = tmp_path / "out.manifest.json"
+    assert prep.main(["--rinalmo-csv", str(path), "--out", str(out),
+                      "--manifest", str(manifest)]) == 0
+    records = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert {r["name"] for r in records} == {"good1", "good2"}
+    meta = json.loads(manifest.read_text(encoding="utf-8"))
+    assert meta["n_accepted"] == 2
+    assert meta["n_rejected"] == 1
+    assert meta["reject_reasons"] == {"csv_len_mismatch": 1}
+
+
+# ---------------------------------------------------------------------------
 # length bucketing must match the protocol frozen in the benchmark decision
 # ---------------------------------------------------------------------------
 def test_length_histogram_matches_protocol_buckets():

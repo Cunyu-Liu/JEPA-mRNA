@@ -72,6 +72,7 @@ __all__ = [
     "read_bpseq",
     "read_bpseq_text",
     "read_rinalmo_csv",
+    "iter_rinalmo_csv_safe",
     "pairs_to_dotbracket",
     "dotbracket_to_pairs",
     "find_crossing_pairs",
@@ -295,41 +296,79 @@ def read_rinalmo_csv(path: str) -> Iterator[Dict[str, object]]:
     """
     with open(path, encoding="utf-8", newline="") as fh:
         reader = csv.DictReader(fh)
-        expected = {"id", "sequence", "structure", "base_pairs", "len"}
-        missing = expected - set(reader.fieldnames or [])
+        missing = _RINALMO_COLUMNS - set(reader.fieldnames or [])
         if missing:
             raise RejectError("csv_missing_columns", f"{sorted(missing)}")
         for row in reader:
-            name = str(row["id"])
-            seq = str(row["sequence"]).upper().replace("T", "U")
-            structure = str(row["structure"]).strip()
+            yield _parse_rinalmo_row(row, os.path.basename(path))
+
+
+#: Required columns of the RiNALMo benchmark CSVs.
+_RINALMO_COLUMNS = {"id", "sequence", "structure", "base_pairs", "len"}
+
+
+def _parse_rinalmo_row(row: Dict[str, str], source: str) -> Dict[str, object]:
+    """Parse one CSV row, cross-checking the two encodings of the structure.
+
+    Raises :class:`RejectError` with a reason code.  Kept separate from the
+    generator so :func:`iter_rinalmo_csv_safe` can catch it per row.
+    """
+    name = str(row["id"])
+    seq = str(row["sequence"]).upper().replace("T", "U")
+    structure = str(row["structure"]).strip()
+    try:
+        stated_len = int(row["len"])
+    except (TypeError, ValueError) as exc:
+        raise RejectError("csv_bad_len", f"{name}: {row['len']!r}") from exc
+    if stated_len != len(seq):
+        raise RejectError("csv_len_mismatch",
+                          f"{name}: column says {stated_len}, sequence has {len(seq)}")
+    if len(structure) != len(seq):
+        raise RejectError("csv_structure_len_mismatch",
+                          f"{name}: structure {len(structure)} vs sequence {len(seq)}")
+    raw_pairs = str(row["base_pairs"]).strip()
+    if raw_pairs in ("", "[]", "nan"):
+        csv_pairs: List[Tuple[int, int]] = []
+    else:
+        try:
+            parsed = ast.literal_eval(raw_pairs)
+        except (ValueError, SyntaxError) as exc:
+            raise RejectError("csv_bad_base_pairs", f"{name}: {raw_pairs[:60]!r}") from exc
+        csv_pairs = sorted((int(a), int(b)) for a, b in parsed)
+    db_pairs = dotbracket_to_pairs(structure)
+    if csv_pairs != db_pairs:
+        raise RejectError(
+            "csv_pair_column_disagrees",
+            f"{name}: base_pairs has {len(csv_pairs)} entries, dot-bracket has "
+            f"{len(db_pairs)}")
+    return {"name": name, "seq": seq, "pairs": csv_pairs, "source": source}
+
+
+def iter_rinalmo_csv_safe(path: str) -> Iterator[Tuple[str, object]]:
+    """Yield ``(name, payload)`` for every row; never raises on a bad row.
+
+    ``payload`` is ``(seq, pairs)`` on success and a :class:`RejectError`
+    otherwise.  This exists because a generator that raises is exhausted: the
+    earlier version caught the error in the caller and then got StopIteration,
+    silently dropping every row after the first bad one.
+    """
+    with open(path, encoding="utf-8", newline="") as fh:
+        reader = csv.DictReader(fh)
+        missing = _RINALMO_COLUMNS - set(reader.fieldnames or [])
+        if missing:
+            yield "<header>", RejectError("csv_missing_columns", f"{sorted(missing)}")
+            return
+        for row in reader:
+            row_id = str(row.get("id", "<row>"))
             try:
-                stated_len = int(row["len"])
-            except (TypeError, ValueError) as exc:
-                raise RejectError("csv_bad_len", f"{name}: {row['len']!r}") from exc
-            if stated_len != len(seq):
-                raise RejectError("csv_len_mismatch",
-                                  f"{name}: column says {stated_len}, sequence has {len(seq)}")
-            if len(structure) != len(seq):
-                raise RejectError("csv_structure_len_mismatch",
-                                  f"{name}: structure {len(structure)} vs sequence {len(seq)}")
-            raw_pairs = str(row["base_pairs"]).strip()
-            if raw_pairs in ("", "[]", "nan"):
-                csv_pairs: List[Tuple[int, int]] = []
-            else:
-                try:
-                    parsed = ast.literal_eval(raw_pairs)
-                except (ValueError, SyntaxError) as exc:
-                    raise RejectError("csv_bad_base_pairs", f"{name}: {raw_pairs[:60]!r}") from exc
-                csv_pairs = sorted((int(a), int(b)) for a, b in parsed)
-            db_pairs = dotbracket_to_pairs(structure)
-            if csv_pairs != db_pairs:
-                raise RejectError(
-                    "csv_pair_column_disagrees",
-                    f"{name}: base_pairs has {len(csv_pairs)} entries, dot-bracket has "
-                    f"{len(db_pairs)}")
-            yield {"name": name, "seq": seq, "pairs": csv_pairs,
-                   "source": os.path.basename(path)}
+                parsed = _parse_rinalmo_row(row, os.path.basename(path))
+            except RejectError as exc:
+                yield row_id, exc
+                continue
+            except (KeyError, TypeError) as exc:
+                yield row_id, RejectError("csv_bad_row", repr(exc))
+                continue
+            yield parsed["name"], (parsed["seq"], parsed["pairs"])
 
 
 # ---------------------------------------------------------------------------
@@ -418,21 +457,47 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if not names:
             print(f"FATAL: no .bpseq files under {args.bpseq_dir}", file=sys.stderr)
             return 2
-        stream = ((name, read_bpseq(os.path.join(args.bpseq_dir, name)))
-                  for name in names)
+
+        def stream():
+            """Yield ``(name, payload)`` where payload is ``(seq, pairs)`` or a RejectError.
+
+            The read happens *inside* the generator so that an empty, truncated or
+            unreadable member file becomes one accounted-for reject instead of
+            aborting the whole corpus build.  Rfam12.3-14.10 contains empty
+            .bpseq files, and the previous version of this script died on the
+            first one, writing a 0-byte corpus.
+            """
+            for name in names:
+                try:
+                    yield name, read_bpseq(os.path.join(args.bpseq_dir, name))
+                except RejectError as exc:
+                    yield name, exc
+                except OSError as exc:
+                    yield name, RejectError("io_error", str(exc))
+
         provenance: Dict[str, object] = dir_fingerprint(args.bpseq_dir)
         source_kind = "bpseq"
     else:
-        rows = read_rinalmo_csv(args.rinalmo_csv)
-        stream = ((str(row["name"]), (str(row["seq"]), list(row["pairs"])))
-                  for row in rows)
+        # iter_rinalmo_csv_safe never raises, so a bad row cannot truncate the file
+        def stream():
+            yield from iter_rinalmo_csv_safe(args.rinalmo_csv)
+
         provenance = {"file": os.path.abspath(args.rinalmo_csv),
                       "sha256": _sha256_file(args.rinalmo_csv)}
         source_kind = "rinalmo_csv"
 
     with open(args.out, "w", encoding="utf-8") as out_fh, \
             open(rejects_path, "w", encoding="utf-8") as rej_fh:
-        for name, (seq, pairs) in stream:
+        for name, payload in stream():
+            # 0. a read failure is a reject with a reason, never a silent skip.
+            if isinstance(payload, RejectError):
+                reject_reasons[payload.reason] += 1
+                rej_fh.write(json.dumps({"name": name, "reason": payload.reason,
+                                         "detail": payload.detail, "length": 0},
+                                        ensure_ascii=False) + "\n")
+                continue
+            seq, pairs = payload
+
             # 1. hard validity of the *raw* record (alphabet, symmetry, bounds).
             try:
                 raw = check_record(seq, pairs, min_loop=0)
