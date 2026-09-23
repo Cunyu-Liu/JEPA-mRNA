@@ -1,29 +1,18 @@
-Factor probe with a non-trivial label set; pre-encoded corpus option
+Ablation arms, a pure-MLM baseline path, and the learning-curve probe
 
-The first version of the factor probe reported balanced accuracy 0.90 against chance
-0.41 for the region label and looked like strong evidence for the interpretability
-claim. It is not. Region identity is almost perfectly determined by token length --
-CDS tasks are codon-tokenised (three characters per token) and UTR tasks are not -- so
-an encoder separates them for free and the probe measures the tokeniser, not the
-learned semantics. The region pool is kept, but relabelled in the output as a sanity
-check on the machinery.
-
-The interpretable question is added as a second pool: task identity *within one
-region*. mRFP, Fungal, Cov and ecoli are all CDS with identical codon tokenisation, so
-nothing about the input format separates them and any accuracy above chance has to come
-from sequence content. Both pools get their own random-subspace control and FDR
-correction, and the report states plainly that if nothing survives FDR, claim C3 is
-withdrawn and Fig.5 becomes a training-dynamics panel.
-
-data/pretokenize.py converts the prepared corpus into flat uint16 id / int8 region
-arrays plus offsets, so the trainer can memory-map instead of splitting and
-dict-mapping every token in Python. It verifies itself against the text source on a
-random sample before writing. CorpusReader gained the memory-mapped path with the text
-path retained as a fallback. Measured on the sample corpus: 22671 sequences in 4 s,
-verified identical.
-
-Worth recording why this is *available but not used* for the main run: at the planned
-budget of 60k steps x batch 8 the run consumes about 480k sequences, roughly 1.3% of a
-36M-sequence corpus, so the text path only pays for what it reads and pretokenising the
-whole corpus (about two hours) would be spent to save nothing. The option exists for
-the case where the step budget grows past roughly one epoch.
+- model.py: jepa_target gains "none" (pure MLM -- teacher, predictor and every
+  regulariser are skipped, so A0 measures MLM-only at the same step and data budget
+  rather than paying for a latent branch it does not use) and "cls" (global objective
+  only, which with n_factors=1 is the single-vector JEPA-DNA minimal arm A1).
+  Verified on GPU: the A0 run reports loss == loss_mlm and jepa/var/cov/orth exactly 0.
+- scripts/pretrain_ablations.sh: the eight A0-A5 runs, each differing from the main run
+  in exactly one factor, launched sequentially with a capacity wait. Sequential on
+  purpose: launching them together is how batch sizes ended up halved earlier, which
+  would confound the ablation with a protocol change.
+- scripts/queue_matrix.py: refuses to enqueue a matrix whose model_path does not exist
+  yet. Without it, queueing V1/V2 evaluation before the runs finish launches every cell
+  against a missing checkpoint, burning GPU slots and filling the ledger with noise.
+- eval/linear_probe_curve.py: Fig.6c. Frozen-feature probe over a list of pre-training
+  checkpoints, using mean-pooled last-layer states because that is the feature-
+  extraction recipe the released README documents -- the probe should not quietly use a
+  different representation from the baseline.

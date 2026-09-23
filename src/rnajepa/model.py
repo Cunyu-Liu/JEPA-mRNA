@@ -74,6 +74,12 @@ class JEPAConfig:
     #   "masked" -> teacher hidden states at the masked positions (JEPA-DNA /
     #               ProteinJEPA "masked-position latent prediction" recipe)
     #   "both"   -> sum of the two
+    #   "cls"    -> only the global [CLS] objective.  With n_factors=1 this is the
+    #               single-vector JEPA-DNA minimal arm used as ablation A1, i.e. the
+    #               mixed objective without any region factorisation.
+    #   "none"   -> no latent objective at all: the pure MLM baseline (ablation A0).
+    #               The teacher, predictor and regularisers are skipped entirely so
+    #               A0 measures MLM-only at the same step and data budget.
     # The A3 ablation crosses this with the loss form.
     jepa_target: str = "region"
     loss_form: str = "cos"                # cos | mse
@@ -520,6 +526,19 @@ class RNARJEPA(nn.Module):
             region_ids, attention_mask, special_ids, cfg, generator)
         corrupted, mlm_labels = apply_bert_masking(
             input_ids, mask_positions, self.vocab_size, self.mask_token_id, generator)
+        if cfg.jepa_target == "none":
+            # Pure MLM: no teacher forward, no predictor, no regularisers.
+            h_s = self.student.encode(corrupted, attention_mask)
+            mlm_logits = self.student.mlm_logits(h_s)
+            flat_labels = mlm_labels.flatten()
+            keep = flat_labels > 0
+            loss_mlm = F.cross_entropy(mlm_logits.flatten(0, 1)[keep], flat_labels[keep])
+            zero = torch.zeros((), device=device)
+            return {"loss": loss_mlm, "loss_mlm": loss_mlm.detach(), "loss_jepa": zero,
+                    "loss_var": zero, "loss_cov": zero, "loss_orth": zero,
+                    "w_region": zero, "w_cls": zero, "n_region_terms": zero,
+                    "mask_frac": mask_positions.float().mean().detach()}
+
         descriptors = region_descriptors(region_ids, attention_mask)
         remask = self.remask_embed.view(1, 1, -1)
 

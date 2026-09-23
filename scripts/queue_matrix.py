@@ -125,6 +125,19 @@ def main() -> int:
     seeds = [int(s) for s in args.seeds.split(",") if s.strip()]
     os.makedirs(QUEUE, exist_ok=True)
 
+    # Refuse to enqueue against a checkpoint that does not exist yet.  Without this a
+    # matrix can be queued for a pre-training arm that is still running, the
+    # dispatcher will happily launch every cell, and they will all fail on the missing
+    # model path -- burning GPU slots and filling the ledger with noise.
+    if not os.path.isdir(args.model_path):
+        print(f"FATAL: model path does not exist yet: {args.model_path}")
+        print("       queue this matrix once the run has written its checkpoint")
+        return 3
+    has_weights = os.path.isfile(os.path.join(args.model_path, "pytorch_model.bin"))
+    if not has_weights:
+        print(f"WARNING: {args.model_path} has no pytorch_model.bin; the loader will fall "
+              f"back to config+tokenizer only and the run would be meaningless")
+
     # sort by priority then task name so the queue order is deterministic
     selected.sort(key=lambda t: (PRIORITY.get(t, 9), t))
 

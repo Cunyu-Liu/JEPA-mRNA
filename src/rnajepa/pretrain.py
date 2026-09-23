@@ -324,9 +324,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--alpha", type=float, default=0.5)
     p.add_argument("--mask_prob", type=float, default=0.15)
     p.add_argument("--mask_mode", default="token_uniform", choices=["token_uniform", "codon_span"])
-    p.add_argument("--jepa_target", default="region", choices=["region", "masked", "both"],
+    p.add_argument("--jepa_target", default="region",
+                   choices=["region", "masked", "both", "cls", "none"],
                    help="latent target: pooled region summaries, teacher states at masked "
-                        "positions, or both (A3 ablation axis)")
+                        "positions, both (A3 ablation axis), or CLS only (A1, the "
+                        "single-vector JEPA-DNA minimal arm -- pair with --n_factors 1), "
+                        "or none for the pure MLM baseline (A0)")
     p.add_argument("--loss_form", default="cos", choices=["cos", "mse"],
                    help="latent loss form (A3 ablation axis)")
     p.add_argument("--n_factors", type=int, default=4)
