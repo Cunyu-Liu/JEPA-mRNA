@@ -211,6 +211,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
                    help="freeze the pre-trained encoder and train only the pooler + "
                         "classifier head (linear-probe control; separates 'features are "
                         "uninformative' from 'fine-tuning destabilises them')")
+    p.add_argument("--encoder_lr_scale", type=float, default=1.0,
+                   help="multiply the encoder learning rate by this factor while the "
+                        "randomly initialised pooler/classifier keep --lr. 1.0 reproduces "
+                        "the official single-LR protocol; <1 is the discriminative-LR "
+                        "remedy for tasks where full fine-tuning destroys the encoder.")
     p.add_argument("--run_name", default=None)
     args = p.parse_args(argv)
     args.run_name = args.run_name or f"{args.task}_s{args.seed}"
@@ -363,6 +368,37 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         disable_tqdm=not sys.stdout.isatty(),
     )
 
+    optimizers = None
+    if args.encoder_lr_scale != 1.0:
+        # Discriminative learning rates: the pre-trained encoder moves gently while the
+        # randomly initialised pooler/classifier learn at full speed.  Built explicitly
+        # because HF Trainer cannot express per-group multipliers.
+        from transformers.optimization import get_cosine_schedule_with_warmup
+        enc, head = [], []
+        for name, param in model.named_parameters():
+            if not param.requires_grad:
+                continue
+            if name.startswith("bert.encoder") or name.startswith("bert.embeddings"):
+                enc.append(param)
+            else:
+                head.append(param)
+        groups = [
+            {"params": enc, "lr": args.lr * args.encoder_lr_scale,
+             "weight_decay": args.weight_decay, "name": "encoder"},
+            {"params": head, "lr": args.lr,
+             "weight_decay": args.weight_decay, "name": "head"},
+        ]
+        optimizer = torch.optim.AdamW(groups, lr=args.lr, betas=(0.9, 0.999))
+        steps_per_epoch = max(1, math.ceil(len(train) / args.batch_size / args.grad_accum))
+        total_steps = steps_per_epoch * args.epochs
+        scheduler = get_cosine_schedule_with_warmup(
+            optimizer, num_warmup_steps=args.warmup_steps,
+            num_training_steps=max(total_steps, args.warmup_steps + 1))
+        optimizers = (optimizer, scheduler)
+        print(f"[{args.task}] discriminative LR: encoder={args.lr * args.encoder_lr_scale:.2e} "
+              f"({len(enc)} tensors) head={args.lr:.2e} ({len(head)} tensors), "
+              f"{total_steps} steps", flush=True)
+
     trainer = Trainer(
         model=model,
         args=targs,
@@ -372,6 +408,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                                is_regression=is_regression),
         compute_metrics=make_compute_metrics(is_regression, multiclass),
         tokenizer=tokenizer,
+        optimizers=optimizers,
     )
 
     torch.cuda.reset_peak_memory_stats()

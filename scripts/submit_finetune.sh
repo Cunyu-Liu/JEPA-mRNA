@@ -21,7 +21,7 @@ set -uo pipefail
 
 TASK=""; TASK_KIND=""; MODEL_PATH=""; DATA_DIR=""; OUT_DIR=""
 SEED=42; MAX_LEN=512; BATCH=8; EVAL_BATCH=32; EPOCHS=20; LR=1e-4; MIN_FREE=16000
-FP16=0; SAVE_MODEL=0; GRAD_CKPT=0; FREEZE=0
+FP16=0; SAVE_MODEL=0; GRAD_CKPT=0; FREEZE=0; ENC_LR_SCALE=1.0
 PYTHON="${RNAJEPA_PYTHON:-/home/cunyuliu/miniconda3/envs/mrnabert/bin/python}"
 TAG=""
 
@@ -43,6 +43,7 @@ while [ $# -gt 0 ]; do
     --save_model) SAVE_MODEL=1; shift;;
     --grad_checkpoint) GRAD_CKPT=1; shift;;
     --freeze_encoder) FREEZE=1; shift;;
+    --encoder_lr_scale) ENC_LR_SCALE="$2"; shift 2;;
     --python) PYTHON="$2"; shift 2;;
     --tag) TAG="$2"; shift 2;;
     *) echo "unknown argument: $1" >&2; exit 2;;
@@ -76,7 +77,7 @@ row = {
     "seed": $SEED, "max_len": $MAX_LEN, "batch": $batch,
     "epochs": $EPOCHS, "lr": $LR,
     "fp16": bool($FP16), "save_model": bool($SAVE_MODEL),
-    "grad_checkpoint": bool($GRAD_CKPT), "freeze_encoder": bool($FREEZE),
+    "grad_checkpoint": bool($GRAD_CKPT), "freeze_encoder": bool($FREEZE), "encoder_lr_scale": $ENC_LR_SCALE,
     "device": "$device", "attempt": "$attempt", "status": "$status",
 }
 path = "$LEDGER"
@@ -93,6 +94,7 @@ run_once() {  # device batch -> exit code
   [ "$SAVE_MODEL" = "1" ] && extra="$extra --save_model"
   [ "$GRAD_CKPT" = "1" ] && extra="$extra --grad_checkpoint"
   [ "$FREEZE" = "1" ] && extra="$extra --freeze_encoder"
+  [ "$ENC_LR_SCALE" != "1.0" ] && extra="$extra --encoder_lr_scale $ENC_LR_SCALE"
   echo "=== [$(date '+%F %T')] task=$TASK device=$device batch=$batch ===" | tee -a "$LOG"
   # shellcheck disable=SC2086
   "$PYTHON" -m rnajepa.finetune \
