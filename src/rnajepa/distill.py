@@ -52,6 +52,9 @@ __all__ = [
     "distillation_loss",
     "assemble_teacher",
     "exact_marginal_teacher",
+    "ThermodynamicTeacher",
+    "ThermodynamicUnavailableError",
+    "MockTeacher",
     "empirical_pair_frequencies",
     "teacher_scores_from_structures",
     "pair_indicator",
@@ -404,15 +407,22 @@ class ThermodynamicUnavailableError(RuntimeError):
 class ThermodynamicTeacher:
     """System-2 teacher backed by a thermodynamic partition-function package.
 
-    **Not usable in this environment.**  ViennaRNA / RNAstructure / LinearPartition
-    are not installed and cannot be downloaded here, and the teacher version (and
-    hence the Turner parameters) must be locked for the soft labels to be
-    reproducible (spec §3.5, §5.7, §8.1 G5).  Calling :meth:`predict_probs` raises
-    a clear, actionable :class:`ThermodynamicUnavailableError` instead of silently
-    degrading to a different model.
+    ``viennarna`` is implemented and usable (verified against ViennaRNA 2.7.2).
+    ``rnastructure`` and ``linearpartition`` are still stubs and raise
+    :class:`ThermodynamicUnavailableError` -- deliberately, rather than silently
+    substituting a different model, because the ensemble of teachers in spec §5.7
+    is only meaningful if each member is the model it claims to be.
+
+    The version is locked and reported through :meth:`tool_version` so the soft
+    labels are reproducible (spec §3.5, §5.7, §8.1 G5).  Note that ViennaRNA's
+    default energy parameters are Turner 2004; the build string is recorded rather
+    than the parameter set name, because the latter is not exposed by the binding.
     """
 
     SUPPORTED = ("viennarna", "rnastructure", "linearpartition")
+
+    #: Below this length no base pair can form (minimum hairpin loop 3 + 2 bases).
+    MIN_LENGTH = 5
 
     def __init__(self, tool: str = "viennarna", version_lock: Optional[str] = None):
         if tool not in self.SUPPORTED:
@@ -421,16 +431,66 @@ class ThermodynamicTeacher:
         self.version_lock = version_lock
         self.name = f"thermo:{tool}"
 
+    # -- availability ------------------------------------------------------
+    @staticmethod
+    def _import_rna():
+        try:
+            import RNA  # noqa: PLC0415 - optional dependency, imported lazily
+        except ImportError as exc:  # pragma: no cover - depends on the host
+            raise ThermodynamicUnavailableError(
+                "ViennaRNA is not importable in this interpreter. It is installed "
+                "out-of-tree at /mnt/cunyuliu/pylibs (the /home quota is full), so "
+                "run with PYTHONPATH=/mnt/cunyuliu/pylibs, or install it into the "
+                "active environment. Teacher soft labels cannot be produced without it."
+            ) from exc
+        return RNA
+
+    def tool_version(self) -> str:
+        """Locked version string for the shard manifest (never invented)."""
+        if self.tool != "viennarna":
+            return "unavailable"
+        RNA = self._import_rna()
+        return f"ViennaRNA {RNA.__version__}"
+
+    # -- the teacher itself ------------------------------------------------
     def predict_probs(self, seq: str) -> np.ndarray:
-        raise ThermodynamicUnavailableError(
-            f"The thermodynamic teacher '{self.tool}' is not installed and cannot be "
-            "downloaded in this environment, so exact teacher soft labels cannot be "
-            "generated here. Install the locked version of the tool "
-            f"({self.tool}, version_lock={self.version_lock!r}) and re-run "
-            "generate_teacher_labels(); until then use MockTeacher in tests only. "
-            "The teacher software + Turner-parameter version MUST be recorded and "
-            "locked (spec §3.5, §8.1 G5)."
-        )
+        """Base-pair probability matrix ``p_ij`` from the partition function.
+
+        Returns an ``L x L`` array with ``p_ij`` for ``i < j`` and zeros on the
+        diagonal and below.  ``fc.bpp()`` is 1-indexed and populates only the
+        upper triangle, so the conversion is a slice plus ``np.triu``.
+
+        Sequences too short to contain any pair return zeros rather than raising:
+        the empty structure is the correct, exact answer there.
+        """
+        if self.tool != "viennarna":
+            raise ThermodynamicUnavailableError(
+                f"The thermodynamic teacher '{self.tool}' is not installed, so exact "
+                "teacher soft labels cannot be generated. Only 'viennarna' is "
+                f"implemented; requested {self.tool!r} with "
+                f"version_lock={self.version_lock!r}. Use MockTeacher in tests only. "
+                "The teacher software + parameter version MUST be recorded and "
+                "locked (spec §3.5, §8.1 G5)."
+            )
+        RNA = self._import_rna()
+
+        sequence = str(seq).upper().replace("T", "U")
+        length = len(sequence)
+        out = np.zeros((length, length), dtype=np.float64)
+        if length < self.MIN_LENGTH:
+            return out
+
+        model = RNA.md()
+        fold_compound = RNA.fold_compound(sequence, model)
+        fold_compound.pf()
+        probs = np.asarray(fold_compound.bpp(), dtype=np.float64)
+        if probs.shape != (length + 1, length + 1):
+            raise RuntimeError(
+                f"unexpected bpp shape {probs.shape} for length {length}; "
+                "the ViennaRNA binding changed and the 1-indexed slice below "
+                "would silently misalign the matrix")
+        out[:, :] = probs[1:length + 1, 1:length + 1]
+        return np.triu(out, k=1)
 
 
 class MockTeacher:

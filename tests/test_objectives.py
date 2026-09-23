@@ -366,14 +366,74 @@ def test_exact_marginal_teacher_modes_and_ensemble():
     assert np.allclose(assemble_teacher(t1), t1)
 
 
-def test_thermodynamic_teacher_stub_is_actionable():
-    teacher = ThermodynamicTeacher(tool="viennarna", version_lock="2.6.4")
+def test_unimplemented_thermodynamic_teachers_raise_actionably():
+    """rnastructure / linearpartition must raise, never silently substitute."""
+    for tool in ("rnastructure", "linearpartition"):
+        teacher = ThermodynamicTeacher(tool=tool, version_lock="unlocked")
+        try:
+            teacher.predict_probs("AUGCAUGC")
+        except ThermodynamicUnavailableError as exc:
+            message = str(exc)
+            assert tool in message
+            assert "version_lock" in message
+        else:  # pragma: no cover
+            raise AssertionError(f"{tool} must raise, not degrade")
+
+
+def test_unknown_thermodynamic_tool_is_rejected():
     try:
-        teacher.predict_probs("AUGC")
-    except ThermodynamicUnavailableError as exc:
-        assert "not installed" in str(exc) and "version_lock" in str(exc)
+        ThermodynamicTeacher(tool="not-a-tool")
+    except ValueError as exc:
+        assert "not-a-tool" in str(exc)
     else:  # pragma: no cover
-        raise AssertionError("the thermodynamic teacher must raise, not degrade")
+        raise AssertionError("an unknown tool name must be rejected at construction")
+
+
+def test_vienna_teacher_returns_a_valid_probability_matrix():
+    """Real ViennaRNA output: shape, triangularity, range, and self-consistency.
+
+    Skips when RNA is not importable (the laptop); runs on the cluster.
+    """
+    try:
+        import RNA  # noqa: F401
+    except ImportError:
+        print("[skip] ViennaRNA not importable here")
+        return
+
+    teacher = ThermodynamicTeacher(tool="viennarna", version_lock=None)
+    seq = "GCGCAGGACUCGGCUUCUUCGGAAGGGACGAGGGGCGC"
+    p = teacher.predict_probs(seq)
+    L = len(seq)
+
+    assert p.shape == (L, L)
+    # upper-triangular only, and a real probability
+    assert np.allclose(np.tril(p), 0.0)
+    assert float(p.min()) >= 0.0 and float(p.max()) <= 1.0 + 1e-9
+    # something must actually pair
+    assert float(p.max()) > 0.5
+
+    # self-consistency: the MFE structure's pairs must be the high-probability ones
+    fold_compound = RNA.fold_compound(seq)
+    mfe_structure, _ = fold_compound.mfe()
+    # parse the dot-bracket MFE directly
+    stack, mfe_pairs = [], []
+    for index, char in enumerate(mfe_structure):
+        if char == "(":
+            stack.append(index)
+        elif char == ")":
+            mfe_pairs.append((stack.pop(), index))
+    assert mfe_pairs, "the MFE structure should contain at least one pair"
+    mfe_probs = [p[i, j] for i, j in mfe_pairs]
+    # every MFE pair should be far more likely than the average candidate pair
+    candidate_mean = float(p[np.triu_indices(L, k=1)].mean())
+    assert min(mfe_probs) > candidate_mean
+
+    # short sequences are exactly unpaired rather than an error
+    assert teacher.predict_probs("AUG").shape == (3, 3)
+    assert float(teacher.predict_probs("AUG").sum()) == 0.0
+    assert teacher.predict_probs("").shape == (0, 0)
+
+    assert teacher.tool_version().startswith("ViennaRNA")
 
 
 def test_teacher_label_driver_sharding_resume_and_hash():
