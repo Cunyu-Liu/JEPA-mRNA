@@ -73,6 +73,7 @@ from rnajepa.train_decision import (  # noqa: E402
 )
 from eval.ss.metrics import (  # noqa: E402
     CalibrationMetrics,
+    pooled_pair_calibration,
     PairLevelMetrics,
     StructureLevelMetrics,
     check_structure,
@@ -294,32 +295,14 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
     macro_inf = float(statistics.fmean([r["inf"] for r in per_seq])) if per_seq else 0.0
 
     def _pooled_ece(probs_list, labels_list, masks_list):
-        """Micro ECE over all pairs: concatenate the flattened candidate pairs."""
-        p_all, a_all = [], []
-        for probs, labels, mask in zip(probs_list, labels_list, masks_list):
-            sel = np.triu(mask, k=1)
-            p_all.append(probs[sel])
-            a_all.append(labels[sel])
-        p = np.concatenate(p_all) if p_all else np.zeros(0)
-        a = np.concatenate(a_all) if a_all else np.zeros(0)
-        if p.size == 0:
-            return {"ece": float("nan"), "nll": float("nan"),
-                    "brier": float("nan"), "n": 0}
-        # ECE on a 1-D pair sample: equal-width bins
-        edges = np.linspace(0.0, 1.0, args.n_bins + 1)
-        idx = np.clip(np.digitize(p, edges[1:-1], right=False), 0, args.n_bins - 1)
-        ece = 0.0
-        for b in range(args.n_bins):
-            sel = idx == b
-            if not sel.any():
-                continue
-            ece += (sel.sum() / p.size) * abs(p[sel].mean() - a[sel].mean())
-        eps = 1e-12
-        nll = float(-np.mean(a * np.log(p + eps) + (1 - a) * np.log(1 - p + eps)))
-        brier = float(np.mean((p - a) ** 2))
-        return {"ece": float(ece), "nll": nll, "brier": brier, "n": int(p.size),
-                "mean_predicted": float(p.mean()), "mean_observed": float(a.mean()),
-                "marginal_calibration_error": float(abs(p.mean() - a.mean()))}
+        """Micro ECE over all pairs -- delegates to the shared implementation.
+
+        The body used to live here; it now lives in ``ss.metrics`` so the C1-b
+        reference measurements use byte-identical code (see
+        ``eval/ss/reference_calibration.py``).
+        """
+        return pooled_pair_calibration(probs_list, labels_list, masks_list,
+                                       n_bins=args.n_bins)
 
     cal_s1 = _pooled_ece(all_probs_s1, all_labels, all_masks)
     cal_ex = (_pooled_ece(all_probs_ex, all_labels_ex, all_masks_ex)

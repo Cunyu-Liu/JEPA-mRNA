@@ -907,3 +907,46 @@ __all__ = [
     "structure_posteriors",
     "valid_pair_mask",
 ]
+
+
+def pooled_pair_calibration(probs_list, labels_list, masks_list,
+                            n_bins: int = 10) -> Dict[str, object]:
+    """Micro calibration over the pooled candidate pairs of a whole split.
+
+    Every sequence contributes its ``(i < j)`` candidate entries; all sequences
+    are concatenated and binned together, so a long sequence does not get its own
+    private calibration curve.  This is the protocol C1-a/b/c are stated in, and it
+    is the *only* implementation -- ``evaluate_decision._pooled_ece`` delegates
+    here, and so does ``eval/ss/reference_calibration.py`` for the ViennaRNA and
+    LinearPartition references.
+
+    Returns ``ece`` (equal-width bins), ``nll``, ``brier``, ``n``, and the two
+    marginal quantities ``mean_predicted`` / ``mean_observed`` whose difference is
+    ``marginal_calibration_error`` -- the single most diagnostic number for the
+    failure mode observed in the untrained run (predicted 0.5605 vs observed
+    0.0058).
+    """
+    p_all, a_all = [], []
+    for probs, labels, mask in zip(probs_list, labels_list, masks_list):
+        sel = np.triu(mask, k=1)
+        p_all.append(np.asarray(probs)[sel])
+        a_all.append(np.asarray(labels)[sel])
+    p = np.concatenate(p_all) if p_all else np.zeros(0)
+    a = np.concatenate(a_all) if a_all else np.zeros(0)
+    if p.size == 0:
+        return {"ece": float("nan"), "nll": float("nan"),
+                "brier": float("nan"), "n": 0}
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    idx = np.clip(np.digitize(p, edges[1:-1], right=False), 0, n_bins - 1)
+    ece = 0.0
+    for b in range(n_bins):
+        sel = idx == b
+        if not sel.any():
+            continue
+        ece += (sel.sum() / p.size) * abs(p[sel].mean() - a[sel].mean())
+    eps = 1e-12
+    nll = float(-np.mean(a * np.log(p + eps) + (1 - a) * np.log(1 - p + eps)))
+    brier = float(np.mean((p - a) ** 2))
+    return {"ece": float(ece), "nll": nll, "brier": brier, "n": int(p.size),
+            "mean_predicted": float(p.mean()), "mean_observed": float(a.mean()),
+            "marginal_calibration_error": float(abs(p.mean() - a.mean()))}
