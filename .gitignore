@@ -1,6 +1,13 @@
 # Code lives in /home, large artefacts live in /mnt/cunyuliu. Never commit data,
 # weights, checkpoints or evaluation output.
-data/
+# Data artefacts (raw corpora, extracted JSONL, downloaded archives) are never
+# committed -- they live under /mnt/cunyuliu.  The code that *builds* them is
+# source and does belong here, so source-like files are re-included below.
+data/**
+!data/**/
+!data/**/*.py
+!data/**/*.md
+!data/**/*.json
 runs/
 eval_out/
 weights/
