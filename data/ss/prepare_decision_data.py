@@ -76,6 +76,7 @@ __all__ = [
     "dotbracket_to_pairs",
     "find_crossing_pairs",
     "check_record",
+    "project_to_legal",
     "dir_fingerprint",
 ]
 
@@ -201,6 +202,56 @@ def find_crossing_pairs(pairs: Sequence[Tuple[int, int]]) -> List[Tuple[Tuple[in
             if b < d:
                 crossings.append(((a, b), (c, d)))
     return crossings
+
+
+def project_to_legal(length: int, pairs: Sequence[Tuple[int, int]], *,
+                     min_loop: int = 3) -> Tuple[List[Tuple[int, int]],
+                                                 List[Tuple[int, int]],
+                                                 List[Tuple[int, int]]]:
+    """Project a structure into the model's output space (nested, loop >= min_loop).
+
+    Returns ``(kept, dropped_illegal, dropped_crossing)``.  Deterministic:
+
+    1. pairs whose span is ``<= min_loop`` (i.e. a hairpin loop shorter than the
+       physical minimum) are removed -- these are independent of each other, so
+       the order does not matter;
+    2. crossings are then resolved greedily: the pair implicated in the most
+       crossings is removed, ties broken toward the larger span, and the process
+       repeats.  Greedy is not the minimum-cardinality solution in general
+       (that is NP-hard for pseudoknot removal), but it is reproducible and the
+       removed count is reported, which is what matters for honesty.
+
+    ``length`` is accepted for bounds checking so a caller cannot silently pass a
+    pair beyond the sequence.
+    """
+    for i, j in pairs:
+        if not (0 <= i < j < length):
+            raise RejectError("pair_out_of_range", f"({i}, {j}) with L={length}")
+
+    kept: List[Tuple[int, int]] = []
+    dropped_illegal: List[Tuple[int, int]] = []
+    for pair in sorted(pairs):
+        if pair[1] - pair[0] <= min_loop:
+            dropped_illegal.append(pair)
+        else:
+            kept.append(pair)
+
+    dropped_crossing: List[Tuple[int, int]] = []
+    while True:
+        crossings = find_crossing_pairs(kept)
+        if not crossings:
+            break
+        counts: Counter = Counter()
+        for left, right in crossings:
+            counts[left] += 1
+            counts[right] += 1
+        victim = max(counts.items(),
+                     key=lambda item: (item[1], item[0][1] - item[0][0]))[0]
+        kept.remove(victim)
+        dropped_crossing.append(victim)
+
+    kept.sort()
+    return kept, dropped_illegal, dropped_crossing
 
 
 # ---------------------------------------------------------------------------
@@ -336,6 +387,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                         help="sidecar JSONL for rejected records "
                              "(default: <out>.rejects.jsonl)")
     parser.add_argument("--min-loop", type=int, default=3)
+    parser.add_argument("--min-loop-policy", default="reject",
+                        choices=["reject", "drop"],
+                        help="reject (curated 2D sets) or drop the offending pair "
+                             "(3D-derived sets, where tight loops are real geometry)")
+    parser.add_argument("--pseudoknot-policy", default="keep",
+                        choices=["reject", "drop", "keep"],
+                        help="keep records the crossing count; drop projects into "
+                             "the nested space; reject discards the record")
     parser.add_argument("--limit", type=int, default=0,
                         help="stop after N accepted records (0 = no limit; smoke runs)")
     args = parser.parse_args(argv)
@@ -349,6 +408,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     n_accept = 0
     n_pseudo = 0
     n_pairs_total = 0
+    n_dropped_illegal = 0
+    n_dropped_crossing = 0
+    n_records_with_drops = 0
+    n_records_pseudoknot = 0
 
     if args.bpseq_dir:
         names = sorted(n for n in os.listdir(args.bpseq_dir) if n.endswith(".bpseq"))
@@ -370,22 +433,51 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     with open(args.out, "w", encoding="utf-8") as out_fh, \
             open(rejects_path, "w", encoding="utf-8") as rej_fh:
         for name, (seq, pairs) in stream:
+            # 1. hard validity of the *raw* record (alphabet, symmetry, bounds).
             try:
-                facts = check_record(seq, pairs, min_loop=args.min_loop)
+                raw = check_record(seq, pairs, min_loop=0)
             except RejectError as exc:
                 reject_reasons[exc.reason] += 1
                 rej_fh.write(json.dumps({"name": name, "reason": exc.reason,
                                          "detail": exc.detail, "length": len(seq)},
                                         ensure_ascii=False) + "\n")
                 continue
+
+            had_pseudoknot = bool(raw["n_crossing"])
+            kept, dropped_illegal, dropped_crossing = project_to_legal(
+                len(seq), pairs, min_loop=args.min_loop)
+
+            # 2. policy on pairs that had to be removed to enter the output space.
+            if args.min_loop_policy == "reject" and dropped_illegal:
+                reject_reasons["hairpin_too_short"] += 1
+                rej_fh.write(json.dumps(
+                    {"name": name, "reason": "hairpin_too_short",
+                     "detail": f"{len(dropped_illegal)} pair(s), first {dropped_illegal[0]}",
+                     "length": len(seq)}, ensure_ascii=False) + "\n")
+                continue
+            if args.pseudoknot_policy == "reject" and dropped_crossing:
+                reject_reasons["pseudoknot"] += 1
+                rej_fh.write(json.dumps(
+                    {"name": name, "reason": "pseudoknot",
+                     "detail": f"{len(dropped_crossing)} crossing pair(s)",
+                     "length": len(seq)}, ensure_ascii=False) + "\n")
+                continue
+            if args.pseudoknot_policy == "keep" and dropped_crossing:
+                # keep the crossings: the record is not a legal T1 target, so it
+                # must be routable to the pseudoknot set instead.
+                kept = sorted(list(pairs))
+
+            facts = check_record(seq, kept, min_loop=args.min_loop)
             record = {
                 "name": name,
                 "seq": seq,
-                "structure": pairs_to_dotbracket(len(seq), pairs),
-                "pairs": [[i, j] for i, j in pairs],
+                "structure": pairs_to_dotbracket(len(seq), kept),
+                "pairs": [[i, j] for i, j in kept],
                 "n_pairs": facts["n_pairs"],
                 "n_crossing": facts["n_crossing"],
                 "is_pseudoknot": facts["is_pseudoknot"],
+                "n_dropped_illegal": len(dropped_illegal),
+                "n_dropped_crossing": len(dropped_crossing),
                 "source": f"{source_kind}:{name}",
             }
             out_fh.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -394,6 +486,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             n_pairs_total += int(facts["n_pairs"])
             if facts["is_pseudoknot"]:
                 n_pseudo += 1
+            if had_pseudoknot:
+                n_records_pseudoknot += 1
+            n_dropped_illegal += len(dropped_illegal)
+            n_dropped_crossing += len(dropped_crossing)
+            if dropped_illegal or dropped_crossing:
+                n_records_with_drops += 1
             if args.limit and n_accept >= args.limit:
                 break
 
@@ -402,10 +500,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "source_kind": source_kind,
         "provenance": provenance,
         "min_loop": args.min_loop,
+        "min_loop_policy": args.min_loop_policy,
+        "pseudoknot_policy": args.pseudoknot_policy,
         "n_accepted": n_accept,
         "n_rejected": int(sum(reject_reasons.values())),
         "reject_reasons": dict(sorted(reject_reasons.items())),
         "n_pseudoknot": n_pseudo,
+        "n_records_containing_pseudoknot": n_records_pseudoknot,
+        "n_records_with_drops": n_records_with_drops,
+        "n_dropped_illegal_pairs": n_dropped_illegal,
+        "n_dropped_crossing_pairs": n_dropped_crossing,
         "n_pairs_total": n_pairs_total,
         "mean_pairs_per_sequence": (n_pairs_total / n_accept) if n_accept else 0.0,
         "min_length": min(lengths) if lengths else 0,
@@ -423,7 +527,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     print(json.dumps({k: manifest[k] for k in
                       ("source_kind", "n_accepted", "n_rejected", "reject_reasons",
-                       "n_pseudoknot", "min_length", "max_length", "mean_length",
+                       "n_pseudoknot", "n_records_with_drops",
+                       "n_dropped_illegal_pairs", "n_dropped_crossing_pairs",
+                       "min_length", "max_length", "mean_length",
                        "length_histogram", "out_sha256")},
                      indent=1, ensure_ascii=False))
     return 0

@@ -317,6 +317,145 @@ def test_dir_fingerprint_detects_membership_change(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# projection into the model's output space
+#
+# The PDB test sets are DSSR-derived 2D annotations of real 3D structures and
+# genuinely contain pairs spanning loops of 0-2 bases.  Rejecting those records
+# would discard 27/38 of ts2 and 16/18 of ts3, so the policy is to remove the
+# offending pairs and *count* them.
+# ---------------------------------------------------------------------------
+def test_project_keeps_legal_structure_untouched():
+    kept, illegal, crossing = prep.project_to_legal(12, [(0, 11), (1, 10)])
+    assert kept == [(0, 11), (1, 10)]
+    assert illegal == [] and crossing == []
+
+
+def test_project_drops_pair_below_minimum_loop():
+    # span 3 -> a two-base loop, below the physical minimum of three.
+    kept, illegal, crossing = prep.project_to_legal(10, [(0, 3), (4, 9)])
+    assert kept == [(4, 9)]
+    assert illegal == [(0, 3)]
+    assert crossing == []
+
+
+def test_project_keeps_span_four():
+    kept, illegal, crossing = prep.project_to_legal(10, [(0, 4)])
+    assert kept == [(0, 4)] and illegal == [] and crossing == []
+
+
+def test_project_resolves_pseudoknot_deterministically():
+    kept, illegal, crossing = prep.project_to_legal(12, [(0, 7), (2, 11)])
+    # both pairs participate in exactly one crossing; the larger span (0,7)
+    # versus (2,11) -- (2,11) has span 9, (0,7) has span 7, so (2,11) goes.
+    assert kept == [(0, 7)]
+    assert crossing == [(2, 11)]
+    assert illegal == []
+
+
+def test_project_result_is_always_nested_and_legal():
+    pairs = [(0, 11), (1, 3), (2, 9), (5, 8)]
+    kept, illegal, crossing = prep.project_to_legal(12, pairs)
+    assert prep.find_crossing_pairs(kept) == []
+    assert all(j - i > 3 for i, j in kept)
+    assert len(kept) + len(illegal) + len(crossing) == len(pairs)
+
+
+def test_project_rejects_out_of_range_pair():
+    with pytest.raises(prep.RejectError) as info:
+        prep.project_to_legal(5, [(0, 9)])
+    assert info.value.reason == "pair_out_of_range"
+
+
+def test_project_is_deterministic_across_input_order():
+    a = prep.project_to_legal(12, [(0, 7), (2, 11), (4, 6)])
+    b = prep.project_to_legal(12, [(4, 6), (2, 11), (0, 7)])
+    assert a == b
+
+
+# ---------------------------------------------------------------------------
+# CLI policies
+# ---------------------------------------------------------------------------
+def test_cli_min_loop_reject_is_the_default(tmp_path):
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    # pair (0,3) spans a two-base loop -> illegal under the strict policy
+    (corpus / "tight.bpseq").write_text("1 A 4\n2 C 0\n3 G 0\n4 U 1\n",
+                                        encoding="utf-8")
+    out = tmp_path / "o.jsonl"
+    prep.main(["--bpseq-dir", str(corpus), "--out", str(out)])
+    assert out.read_text(encoding="utf-8").strip() == ""
+
+
+def test_cli_min_loop_drop_keeps_record_and_counts_the_removal(tmp_path):
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    (corpus / "tight.bpseq").write_text("1 A 4\n2 C 0\n3 G 0\n4 U 1\n",
+                                        encoding="utf-8")
+    out = tmp_path / "o.jsonl"
+    manifest = tmp_path / "o.manifest.json"
+    rc = prep.main(["--bpseq-dir", str(corpus), "--out", str(out),
+                    "--manifest", str(manifest), "--min-loop-policy", "drop"])
+    assert rc == 0
+    records = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 1
+    assert records[0]["pairs"] == []
+    assert records[0]["n_dropped_illegal"] == 1
+    meta = json.loads(manifest.read_text(encoding="utf-8"))
+    assert meta["n_dropped_illegal_pairs"] == 1
+    assert meta["n_records_with_drops"] == 1
+    assert meta["min_loop_policy"] == "drop"
+
+
+def test_cli_pseudoknot_drop_projects_into_nested_space(tmp_path):
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    # (0,7) and (2,11) cross
+    rows = [(1, "A", 8), (2, "C", 0), (3, "G", 12), (4, "U", 0),
+            (5, "A", 0), (6, "C", 0), (7, "G", 0), (8, "U", 1),
+            (9, "A", 0), (10, "C", 0), (11, "G", 0), (12, "U", 3)]
+    (corpus / "pk.bpseq").write_text(
+        "".join(f"{i} {b} {p}\n" for i, b, p in rows), encoding="utf-8")
+    out = tmp_path / "o.jsonl"
+    prep.main(["--bpseq-dir", str(corpus), "--out", str(out),
+               "--pseudoknot-policy", "drop"])
+    records = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 1
+    assert records[0]["is_pseudoknot"] is False
+    assert records[0]["n_dropped_crossing"] == 1
+
+
+def test_cli_pseudoknot_reject_discards_record(tmp_path):
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    rows = [(1, "A", 8), (2, "C", 0), (3, "G", 12), (4, "U", 0),
+            (5, "A", 0), (6, "C", 0), (7, "G", 0), (8, "U", 1),
+            (9, "A", 0), (10, "C", 0), (11, "G", 0), (12, "U", 3)]
+    (corpus / "pk.bpseq").write_text(
+        "".join(f"{i} {b} {p}\n" for i, b, p in rows), encoding="utf-8")
+    out = tmp_path / "o.jsonl"
+    prep.main(["--bpseq-dir", str(corpus), "--out", str(out),
+               "--pseudoknot-policy", "reject"])
+    assert out.read_text(encoding="utf-8").strip() == ""
+
+
+def test_cli_pseudoknot_keep_flags_record(tmp_path):
+    corpus = tmp_path / "bpseq"
+    corpus.mkdir()
+    rows = [(1, "A", 8), (2, "C", 0), (3, "G", 12), (4, "U", 0),
+            (5, "A", 0), (6, "C", 0), (7, "G", 0), (8, "U", 1),
+            (9, "A", 0), (10, "C", 0), (11, "G", 0), (12, "U", 3)]
+    (corpus / "pk.bpseq").write_text(
+        "".join(f"{i} {b} {p}\n" for i, b, p in rows), encoding="utf-8")
+    out = tmp_path / "o.jsonl"
+    prep.main(["--bpseq-dir", str(corpus), "--out", str(out),
+               "--pseudoknot-policy", "keep"])
+    records = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 1
+    assert records[0]["is_pseudoknot"] is True
+    assert records[0]["n_pairs"] == 2
+
+
+# ---------------------------------------------------------------------------
 # length bucketing must match the protocol frozen in the benchmark decision
 # ---------------------------------------------------------------------------
 def test_length_histogram_matches_protocol_buckets():
