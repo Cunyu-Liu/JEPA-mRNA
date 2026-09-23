@@ -1,0 +1,83 @@
+{
+  "cdpfold": {
+    "ece": 0.3787878787878788,
+    "marginal_calibration": 0.3787878787878788,
+    "brier": 0.25,
+    "nll": 0.6931471805599454,
+    "mean_pred": 0.5,
+    "mean_empirical": 0.12121212121212122,
+    "reliability": [
+      {
+        "bin": 5.0,
+        "bin_lo": 0.5,
+        "bin_hi": 0.6,
+        "count": 66.0,
+        "mean_pred": 0.5,
+        "mean_empirical": 0.12121212121212122
+      }
+    ]
+  },
+  "ours_system1": {
+    "ece": 0.010000000000000002,
+    "marginal_calibration": 0.007575757575757541,
+    "brier": 0.00010000000000000005,
+    "nll": 0.01005033585350145,
+    "mean_pred": 0.12878787878787876,
+    "mean_empirical": 0.12121212121212122,
+    "reliability": [
+      {
+        "bin": 0.0,
+        "bin_lo": 0.0,
+        "bin_hi": 0.1,
+        "count": 58.0,
+        "mean_pred": 0.010000000000000002,
+        "mean_empirical": 0.0
+      },
+      {
+        "bin": 9.0,
+        "bin_lo": 0.9,
+        "bin_hi": 1.0,
+        "count": 8.0,
+        "mean_pred": 0.99,
+        "mean_empirical": 1.0
+      }
+    ]
+  },
+  "exact_marginals": {
+    "ece": 0.010000000000000002,
+    "marginal_calibration": 0.007575757575757541,
+    "brier": 0.00010000000000000005,
+    "nll": 0.01005033585350145,
+    "mean_pred": 0.12878787878787876,
+    "mean_empirical": 0.12121212121212122,
+    "reliability": [
+      {
+        "bin": 0.0,
+        "bin_lo": 0.0,
+        "bin_hi": 0.1,
+        "count": 58.0,
+        "mean_pred": 0.010000000000000002,
+        "mean_empirical": 0.0
+      },
+      {
+        "bin": 9.0,
+        "bin_lo": 0.9,
+        "bin_hi": 1.0,
+        "count": 8.0,
+        "mean_pred": 0.99,
+        "mean_empirical": 1.0
+      }
+    ]
+  },
+  "verdict": {
+    "delta_ece_cdp_minus_ours": 0.3687878787878788,
+    "tol": 0.02,
+    "within_tol": false,
+    "c1_holds": true,
+    "reason": "CDPFold 校准显著更差（ΔECE=0.3688 > 0.02）-> C1 成立",
+    "verdict": "C1 成立（免 DP 的校准成立）",
+    "fallback": "C2 + C1",
+    "s7_ours_vs_exact": true
+  },
+  "tol": 0.02
+}

@@ -70,7 +70,10 @@ say "corpus sequences: $N_SEQ"
 # steps (12 of them at 40k) let the learning curve be probed as it goes and the best
 # checkpoint taken, instead of waiting for a fixed final step.  --max_hours guarantees a
 # clean save-and-exit rather than an indefinite stall; resume.pt continues it later.
-say "pretrain budget: steps=${PRETRAIN_STEPS:-40000} save_every=${SAVE_EVERY:-5000} max_hours=${MAX_HOURS:-20}"
+# max_len 1024 with batch 4 x accum 8 keeps the effective batch at 32 sequences per
+# optimiser step while giving each region a chance to appear, and the reader crops from
+# the head or the tail deterministically so the 3'UTR is actually seen.
+say "pretrain budget: micro-steps=${PRETRAIN_STEPS:-80000} (10k opt steps) save_every=${SAVE_EVERY:-5000} max_hours=${MAX_HOURS:-20} max_len=1024 batch=4x8"
 
 # ---------------------------------------------------------------- 3. smoke
 if [ "$SKIP_SMOKE" = "0" ]; then
@@ -82,8 +85,8 @@ if [ "$SKIP_SMOKE" = "0" ]; then
     say "smoke alpha=$A on gpu$G"
     "$PY" -m rnajepa.pretrain --arm "$name" --init official \
         --data "$PRE" --regions "$PRE_REG" --weights "$WEIGHTS" --out "$out" \
-        --device "$G" --batch_size 8 --grad_accum 2 --steps 400 --warmup_steps 50 \
-        --lr 5e-5 --max_len 512 --save_every 0 --log_every 20 \
+        --device "$G" --batch_size 4 --grad_accum 8 --steps 800 --warmup_steps 50 \
+        --lr 5e-5 --max_len 1024 --save_every 0 --log_every 20 \
         --alpha "$A" --jepa_target both 2>&1 | tee -a "$LOG" | grep -E "^\[|DONE"
   done
 fi
@@ -102,9 +105,9 @@ for ARM in v1_cont v2_scratch; do
   say "launching $ARM (init=$INIT) on gpu$G"
   nohup "$PY" -m rnajepa.pretrain --arm "$ARM" --init "$INIT" \
       --data "$PRE" --regions "$PRE_REG" --weights "$WEIGHTS" --out "$out" \
-      --device "$G" --batch_size 8 --grad_accum 4 --steps "${PRETRAIN_STEPS:-40000}" \
+      --device "$G" --batch_size 4 --grad_accum 8 --steps "${PRETRAIN_STEPS:-80000}" \
       --warmup_steps 1000 \
-      --lr 5e-5 --max_len 512 --save_every "${SAVE_EVERY:-5000}" --log_every 50 \
+      --lr 5e-5 --max_len 1024 --save_every "${SAVE_EVERY:-5000}" --log_every 50 \
       --alpha 0.5 --jepa_target both --max_hours "${MAX_HOURS:-20}" \
       > "$out.stdout.log" 2>&1 &
   say "$ARM pid $! writing $out.stdout.log"

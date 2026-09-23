@@ -97,6 +97,27 @@ def encode_line_fast(line: str, token_map: Dict[str, int],
 # --------------------------------------------------------------------------- #
 # Data
 # --------------------------------------------------------------------------- #
+def _crop(ids, regions, keep: int, index: int):
+    """Keep ``keep`` tokens from the head or the tail, chosen by sequence index.
+
+    Plain head truncation is wrong for this corpus.  The mean sequence is about 2,000
+    tokens, so a 512-token budget would show only the beginning of every sequence and the
+    3'UTR would essentially never be seen -- which would silently disable the 3'UTR half
+    of the region objective, the thing the paper is about.  Cropping from the tail half
+    the time guarantees every region appears during training.
+
+    The side is chosen from the index rather than from a stateful RNG so that a resumed
+    run produces the same crops, and so a rerun with the same seed sees the same data.
+    """
+    if len(ids) <= keep:
+        return ids, regions
+    take_tail = (index * 2654435761) % 2 == 0        # deterministic pseudo-random parity
+    if take_tail:
+        return ids[-keep:], regions[-keep:]
+    return ids[:keep], regions[:keep]
+
+
+
 class CorpusReader:
     """Pair ``pre.txt`` with ``pre_regions.txt`` and yield bucketed batches.
 
@@ -178,8 +199,7 @@ class CorpusReader:
                 rr = flat_regs[pos:pos + length]
                 pos += length
                 if length > self.max_len - 2:
-                    ids = ids[:self.max_len - 2]
-                    rr = rr[:self.max_len - 2]
+                    ids, rr = _crop(ids, rr, self.max_len - 2, begin + len(toks))
                 ids = [self.specials["cls"]] + ids.tolist() + [self.specials["sep"]]
                 reg = [-1] + rr.tolist() + [-1]
                 toks.append(ids)
@@ -222,8 +242,11 @@ class CorpusReader:
                             f"region/token misalignment at line {self.n_seen + len(toks)}: "
                             f"{len(r)} regions vs {raw_len} tokens")
                     if len(ids) > self.max_len:
-                        ids = ids[:self.max_len - 1] + [self.specials["sep"]]
-                        r = r[:self.max_len - 2]
+                        # Crop from the head or the tail, decided deterministically by
+                        # the sequence index (see _crop).
+                        body, r = _crop(ids[1:-1], r, self.max_len - 2,
+                                        self.n_seen + len(toks))
+                        ids = [self.specials["cls"]] + body + [self.specials["sep"]]
                     toks.append(ids)
                     regs.append([-1] + r + [-1])           # CLS / SEP carry no region
                 if not toks:

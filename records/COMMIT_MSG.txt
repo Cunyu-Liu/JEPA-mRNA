@@ -1,28 +1,26 @@
-Learning-rate calibration: the official default fails on more tasks than first thought
+Corpus reality check: 2k tokens per sequence, so crop both ends; and stop writing to /tmp
 
-The dev-set sweep over lr {1e-4, 5e-5, 1e-5} on the reference model, applied identically
-to every model afterwards, changes four task settings and reveals that the collapse is
-not confined to classification:
+Three fixes that only surfaced once the real corpus started flowing.
 
-| task | 1e-4 | 5e-5 | 1e-5 | paper |
-|---|---|---|---|---|
-| cds_cov | 0.5382 | **0.8335** | 0.7869 | 0.89 |
-| cds_riboswitch_1 | 0.3980 | 0.4193 | **0.5050** | 0.58 |
-| full_in_cell_half_life | 0.4677 | **0.6688** | 0.4976 | (R2 0.769) |
-| protein_solubility | **-0.0194** | **0.6488** | 0.6289 | (R2 0.63) |
+1. **The corpus is much longer than the official sample.** The official repository's
+   sample FASTA averages 413 tokens per sequence; the real corpus averages 2,021, i.e.
+   ~73 billion tokens in total. Plain head truncation at max_len 512 would therefore show
+   only the start of every sequence and the 3'UTR would essentially never appear during
+   pre-training -- silently disabling the 3'UTR half of the region objective, which is
+   the thing this paper is about. The reader now crops from the head or the tail,
+   chosen deterministically from the sequence index (so resuming and re-running with the
+   same seed see identical crops). The main run moves to max_len 1024 with batch 4 x
+   grad_accum 8, keeping the effective batch at 32 sequences per optimiser step.
 
-protein_solubility at lr 1e-4 gives a Spearman of -0.019: a *regression* task collapsing
-to no correlation at all, the same failure mode as 3UTR-RBP. cds_fungal is still worse,
--0.0041 against a published 0.89, and is now queued for its own sweep. So the documented
-default is unsafe across task kinds, not just for classification with many samples.
+2. **Worker temp files were being written to /tmp**, which on this node lives on the root
+   filesystem shared with 68 other users: 440 files, 15 GB, on a partition with 103 GB
+   free. They now go to the /mnt work directory (RNAJEPA_TMPDIR overrides), and the 440
+   stray files were cleaned up.
 
-The registry now carries lr_status: verified plus the measured evidence string for each
-calibrated task, so the chosen value is traceable to a number rather than to taste. Cells
-whose learning rate changed are re-queued with --force (the run overwrites its own output
-directory, so there stays exactly one artefact per cell), and the five remaining
-uncalibrated tasks are queued for sweeps.
+3. **The first drain of results only happened after workers*4 batches**, i.e. after
+   several million sequences, so pre.txt sat at zero bytes and the stage looked stalled
+   for its first half hour. The window is now workers*2 and progress is logged every
+   200k sequences.
 
-Protocol integrity note: the sweep is run on the reference model only and the chosen value
-is then applied to every model. Tuning each model separately would let the baseline and
-the candidate end up with different hyper-parameters, which would make the head-to-head
-meaningless.
+Also: the machine has 96 cores and the first version asked for 96 workers, which
+oversubscribed it alongside the reader and the GPU jobs; the run now uses 48.

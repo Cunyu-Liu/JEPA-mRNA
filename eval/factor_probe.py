@@ -265,6 +265,43 @@ def main() -> int:
             if results[key].get("status") == "ok":
                 pvals.append(results[key]["p_perm"])
                 keys.append(key)
+        # ---- factor x label interaction -------------------------------------
+        # "Factors carry semantics" predicts that the accuracy *profile* differs between
+        # factors: factor k good for one label and poor for another, with factor j the
+        # reverse.  If the four blocks are interchangeable partitions of one
+        # representation, every factor scores the same on every label.  Testing the
+        # profile rather than the level is what distinguishes the two, and it is a
+        # Friedman test with labels as the blocking factor.
+        uniq = sorted(set(y.tolist()))
+        if len(uniq) >= 3:
+            import numpy as np
+            from scipy.stats import friedmanchisquare
+            prof = np.zeros((k, len(uniq)))
+            for li, lab in enumerate(uniq):
+                sel = y == lab
+                yy = (y[sel] == lab).astype(int)
+                if len(set(yy.tolist())) < 2:
+                    continue
+                for kk in range(k):
+                    r = probes(coords[sel, kk, :], y[sel], args.seed, max(20, args.n_perm // 4))
+                    prof[kk, li] = r.get("balanced_acc", float("nan"))
+            valid = ~np.isnan(prof).any(axis=0)
+            if valid.sum() >= 3:
+                try:
+                    stat, pval = friedmanchisquare(*[prof[kk, valid] for kk in range(k)])
+                except ValueError:
+                    stat, pval = float("nan"), float("nan")
+                results[f"{tag}_factor_label_interaction"] = {
+                    "status": "interaction", "friedman_stat": float(stat),
+                    "p_friedman": float(pval), "n_labels": int(valid.sum()),
+                    "matrix": prof.tolist(),
+                    "interpretation": ("low p -> factor accuracy profiles differ across "
+                                       "labels, i.e. some specialisation; high p -> the "
+                                       "factors are interchangeable on these labels"),
+                }
+                print(f"  {tag}_factor_label_interaction: Friedman chi2={stat:.2f} "
+                      f"p={pval:.4f} over {int(valid.sum())} labels")
+
         key = f"{tag}_all"
         results[key] = probes(coords.reshape(len(coords), -1), y, args.seed, args.n_perm)
         if results[key].get("status") == "ok":
@@ -364,10 +401,18 @@ def main() -> int:
     spec_lines = ["", "### Factor specificity (factor k vs the union of the others)", "",
                   "| pool | factor | bal_acc(factor) | bal_acc(others) | delta |",
                   "|---|---|---|---|---|"]
+    inter_lines = ["", "### Factor x label interaction (does any factor specialise?)", "",
+                   "| pool | Friedman chi2 | p | labels | verdict |", "|---|---|---|---|---|"]
     for name, r in results.items():
         if r.get("status") == "specificity":
             spec_lines.append(f"| {name} | {r['factor']} | {r['bal_acc_factor']:.3f} | "
                               f"{r['bal_acc_others']:.3f} | {r['delta']:+.3f} |")
+        elif r.get("status") == "interaction":
+            verdict = ("profiles differ (possible specialisation)"
+                       if r["p_friedman"] < 0.05 else
+                       "profiles indistinguishable (no specialisation)")
+            inter_lines.append(f"| {name} | {r['friedman_stat']:.2f} | {r['p_friedman']:.4f} "
+                               f"| {r['n_labels']} | {verdict} |")
     for name, r in list(results.items()) + list(control.items()):
         if r.get("status") == "specificity":
             continue
@@ -379,7 +424,7 @@ def main() -> int:
             f"{r['balanced_acc']:.3f} | {r['ari']:.3f} | {r['fmi']:.3f} | "
             f"{r['p_perm']:.4f} | {r.get('p_adj_bh', float('nan')):.4f} | "
             f"{r.get('significant_bh', '')} |")
-    lines += spec_lines + ["",
+    lines += spec_lines + inter_lines + ["",
               "`region_*` is a sanity check confounded by tokenisation; `task_*` is the",
               "interpretable pool (four CDS tasks, identical codon tokenisation).",
               "Controls use random orthonormal subspaces of equal rank: a linear probe is",

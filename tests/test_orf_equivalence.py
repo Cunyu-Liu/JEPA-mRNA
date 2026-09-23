@@ -95,7 +95,7 @@ def test_random_sequences():
     print("  ok  4000 random sequences (skewed alphabets) match")
 
 
-def test_real_mrna(fasta: str, limit: int = 0):
+def _check_real_mrna(fasta: str, limit: int = 0):
     if not os.path.isfile(fasta):
         print(f"  SKIP real sequences: {fasta} not found")
         return
@@ -134,7 +134,7 @@ def main() -> int:
             failures += 1
             print(f"  FAIL {name}: {exc}")
     try:
-        test_real_mrna(fasta)
+        _check_real_mrna(fasta)
     except AssertionError as exc:
         failures += 1
         print(f"  FAIL real: {exc}")
