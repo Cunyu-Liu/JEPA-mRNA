@@ -635,3 +635,38 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    sequences and `RFAM` >400 nt holds 15, so neither is strong on its own; the
    conserved-stratum claim rests on the `CRW` <=100 nt cell and its validation-split
    replication. `vienna_mfe` was not run on the two longest `RFAM` cells.
+
+## References
+
+All entries below were verified against PubMed (E-utilities record) or arXiv on
+2026-09-25; the cluster has no outbound network, so verification was done
+off-cluster and logged in `spec/citation_register.csv`.
+
+1. Do CB, Woods DA, Batzoglou S. CONTRAfold: RNA secondary structure prediction
+   without physics-based models. *Bioinformatics* 22(14):e90–e98, 2006.
+   doi:10.1093/bioinformatics/btl246. PMID 16873527.
+2. McCaskill JS. The equilibrium partition function and base pair binding
+   probabilities for RNA secondary structure. *Biopolymers* 29(6–7):1105–1119,
+   1990. doi:10.1002/bip.360290621. PMID 1695107.
+3. Lorenz R, Bernhart SH, Höner zu Siederdissen C, Tafer H, Flamm C, Stadler PF,
+   Hofacker IL. ViennaRNA Package 2.0. *Algorithms for Molecular Biology* 6:26,
+   2011. doi:10.1186/1748-7188-6-26. PMID 22115189.
+4. Danaee P, Rouches M, Wiley M, Deng D, Huang L, Hendrix D. bpRNA: large-scale
+   automated annotation and analysis of RNA secondary structure. *Nucleic Acids
+   Research* 46(11):5381–5394, 2018. doi:10.1093/nar/gky285. PMID 29746666.
+5. Singh J, Hanson J, Paliwal K, Zhou Y. RNA secondary structure prediction using
+   an ensemble of two-dimensional deep neural networks and transfer learning
+   (SPOT-RNA). *Nature Communications* 10:5407, 2019.
+   doi:10.1038/s41467-019-13395-9. PMID 31776342.
+6. Sato K, Akiyama M, Sakakibara Y. RNA secondary structure prediction using deep
+   learning with thermodynamic integration (MXfold2). *Nature Communications*
+   12:941, 2021. doi:10.1038/s41467-021-21194-4. PMID 33574226.
+7. Fu L, Cao Y, Wu J, Peng Q, Nie Q, Xie X. UFold: fast and accurate RNA secondary
+   structure prediction with deep learning. *Nucleic Acids Research* 50(3):e14,
+   2022. doi:10.1093/nar/gkab1074. PMID 34792173.
+8. Franke JKH, Runge F, Hutter F. Scalable deep learning for RNA secondary
+   structure prediction (RNAformer). arXiv:2307.10073, 2023.
+   doi:10.48550/arXiv.2307.10073. ICML 2023 Workshop on Computational Biology.
+9. Penić RJ, Vlašić T, Huber RG, Wan Y, Šikić M. RiNALMo: general-purpose RNA
+   language models can generalize well on structure prediction tasks. *Nature
+   Communications* 16:5671, 2025. doi:10.1038/s41467-025-60872-5. PMID 40593636.
