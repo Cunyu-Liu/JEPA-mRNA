@@ -199,6 +199,27 @@ class TrainConfig:
     #: ``"sum"`` so that resuming any pre-existing run is bit-exact.
     nll_normalization: str = "sum"
 
+    # head / objective family
+    #: ``"flat"`` = the original single ``L x L`` head with the four-term objective.
+    #: ``"cascade"`` = the hierarchical head with the *layered* objective of
+    #: ``rnajepa.cascade_objective``.  Before 2026-09-24 the cascade existed but was on
+    #: neither the training nor the evaluation path, and could not have been trained
+    #: even if it had been (its ``-inf`` mask made ``log Z`` meaningless and its hard
+    #: ``top_k`` was not differentiable).  See ``spec/spec.md`` §0.9.5 finding A.
+    head: str = "flat"
+    cascade_block_size: int = 8
+    cascade_top_k: int = 2
+    cascade_d_z: int = 128
+    cascade_hidden: int = 64
+    cascade_soft_gate: bool = True
+    cascade_gate_theta: float = 0.0
+    cascade_gate_tau: float = 0.5
+    cascade_l0: float = 1.0
+    cascade_l1: float = 1.0
+    cascade_l2: float = 1.0
+    cascade_sparse: float = 0.1
+    cascade_miss_cost: float = 20.0
+
     # model
     tiny: bool = False
     encoder_size: str = "150M"
@@ -280,6 +301,32 @@ class TrainConfig:
             raise ConfigError(f"objective weights must be non-negative, got {weights}")
         if self.lr_calibrate and not self.lr_candidates:
             raise ConfigError("lr_calibrate requires a non-empty lr_candidates grid")
+        if self.head not in ("flat", "cascade"):
+            raise ConfigError(f"head must be 'flat' or 'cascade', got {self.head!r}")
+        if self.head == "cascade":
+            if not self.cascade_soft_gate:
+                raise ConfigError(
+                    "head='cascade' requires cascade_soft_gate: without the gate the "
+                    "cascade's L0 selection is the non-differentiable hard top_k whose "
+                    "recall is structurally capped at 0.1548 against the P6 gate of 0.98, "
+                    "and its -inf mask makes the CRF's log Z meaningless. Training it "
+                    "would produce an arm that cannot support the C2 claim and whose logs "
+                    "would not say so.")
+            if self.cascade_block_size < 1:
+                raise ConfigError(
+                    f"cascade_block_size must be >= 1, got {self.cascade_block_size}")
+            if self.cascade_gate_tau <= 0.0:
+                raise ConfigError(
+                    f"cascade_gate_tau must be > 0, got {self.cascade_gate_tau}")
+            if min(self.cascade_l0, self.cascade_l1, self.cascade_l2,
+                   self.cascade_sparse) < 0.0:
+                raise ConfigError("layered cascade weights must be non-negative")
+            if (self.cascade_l0, self.cascade_l1, self.cascade_l2,
+                    self.cascade_sparse) == (0.0, 0.0, 0.0, 0.0):
+                raise ConfigError(
+                    "all layered cascade weights are zero; the cascade would have no "
+                    "structure objective at all (its auxiliary terms alone cannot learn "
+                    "which block pairs carry helices)")
 
     def objective_weights(self) -> ObjectiveWeights:
         return ObjectiveWeights(
@@ -288,6 +335,14 @@ class TrainConfig:
             lambda_rlcd=self.lambda_rlcd,
             lambda_cal=self.lambda_cal,
         )
+
+    def layered_weights(self):
+        """The L0/L1/L2/sparse weights of the cascade objective (imported lazily)."""
+        from rnajepa.cascade_objective import LayeredWeights
+
+        return LayeredWeights(l0=self.cascade_l0, l1=self.cascade_l1,
+                              l2=self.cascade_l2, sparse=self.cascade_sparse,
+                              miss_cost=self.cascade_miss_cost)
 
     def as_dict(self) -> Dict[str, object]:
         d = asdict(self)
@@ -615,7 +670,19 @@ def build_decision_model(config: TrainConfig):
     what produced "mat1 and mat2 shapes cannot be multiplied (38642x1536 and
     2304x128)" on the first 35M run.
     """
-    from rnajepa.decision_head import DecisionModel, HeadOnlyModel
+    from rnajepa.decision_head import DecisionModel, FlatDecisionHead, HierarchicalCascade, HeadOnlyModel
+
+    cascade = config.head == "cascade"
+
+    def _build_head(d_model: int):
+        if cascade:
+            return HierarchicalCascade(
+                d_model=d_model, block_size=config.cascade_block_size,
+                top_k=config.cascade_top_k, d_z=config.cascade_d_z,
+                hidden=config.cascade_hidden, soft_gate=config.cascade_soft_gate,
+                gate_theta=config.cascade_gate_theta, gate_tau=config.cascade_gate_tau)
+        return FlatDecisionHead(d_model=d_model, d_z=config.d_z, hidden=config.hidden,
+                                chunk_size=config.head_chunk_size)
 
     if config.embedding_dir:
         if not config.embedding_d_model:
@@ -623,10 +690,7 @@ def build_decision_model(config: TrainConfig):
                 "--embedding-dir requires --embedding-d-model: with cached embeddings "
                 "there is no encoder to read the hidden size from, and guessing it "
                 "would build a head whose projection silently mismatches.")
-        head = FlatDecisionHead(d_model=int(config.embedding_d_model),
-                                d_z=config.d_z, hidden=config.hidden,
-                                chunk_size=config.head_chunk_size)
-        return HeadOnlyModel(head)
+        return HeadOnlyModel(_build_head(int(config.embedding_d_model)))
 
     if config.tiny:
         encoder = RNAEncoder(d_model=config.d_model, n_layer=config.n_layer,
@@ -636,9 +700,7 @@ def build_decision_model(config: TrainConfig):
         encoder = build_encoder(size=config.encoder_size)
 
     encoder_dim = int(getattr(encoder, "d_model", config.d_model))
-    head = FlatDecisionHead(d_model=encoder_dim, d_z=config.d_z, hidden=config.hidden,
-                            chunk_size=config.head_chunk_size)
-    return DecisionModel(encoder, head)
+    return DecisionModel(encoder, _build_head(encoder_dim))
 
 
 # ---------------------------------------------------------------------------
@@ -766,7 +828,10 @@ def _stack_embeddings(items, max_len: int, device, dtype=torch.float32) -> torch
 def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, *,
                      distill_kind: str = "kl", reward: str = "brier", beta: float = 1.0,
                      n_bins: int = 10, tau: float = 0.1,
-                     nll_normalization: str = "sum"
+                     nll_normalization: str = "sum",
+                     cascade: bool = False,
+                     cascade_weights: Optional[LayeredWeights] = None,
+                     cascade_block_size: int = 8
                      ) -> Tuple[torch.Tensor, Dict[str, float]]:
     """Mean four-term objective over a batch, plus the per-term values.
 
@@ -795,6 +860,14 @@ def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, 
             f"batch has_embeddings={has_embeddings}, "
             f"model.head_only={bool(getattr(model, 'head_only', False))}. "
             "Pass --embedding-dir consistently for the whole run.")
+
+    if cascade:
+        from rnajepa.cascade_objective import LayeredWeights
+
+        return _cascade_objective_terms(
+            model, batch, weights, cascade_weights or LayeredWeights(),
+            has_embeddings=has_embeddings, block_size=cascade_block_size,
+            distill_kind=distill_kind, reward=reward, beta=beta, n_bins=n_bins, tau=tau)
 
     if has_embeddings:
         h = _stack_embeddings(embeddings, int(batch["seq_ids"].shape[1]),
@@ -827,6 +900,84 @@ def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, 
     for name in aggregated:
         aggregated[name] /= n
     return total / n, aggregated
+
+
+def _cascade_objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights,
+                             cascade_weights: LayeredWeights, *,
+                             has_embeddings: bool, block_size: int,
+                             distill_kind: str = "kl", reward: str = "brier",
+                             beta: float = 1.0, n_bins: int = 10, tau: float = 0.1,
+                             ) -> Tuple[torch.Tensor, Dict[str, float]]:
+    """Layered objective over a batch for the hierarchical head.
+
+    Uses :meth:`forward_gated`, **not** the hard ``top_k`` path: only the gated forward
+    produces a finite score matrix, and only the gated forward has a ``gate`` for the
+    L0/L1 terms to act on.  Calling the hard path here would silently train an
+    architecture whose L0 is not learnable -- the exact state the second-round audit
+    found the cascade in.
+
+    The two objective families **compose** rather than replace each other.  The layered
+    terms (L0/L1/L2/sparse) own the structure decision, and ``L2`` is the only CRF
+    likelihood; ``weights.lambda_nll`` is therefore forced to 0 in the auxiliary call so
+    the likelihood is not counted twice.  The distillation / RLCD / calibration terms
+    still act on ``sigmoid`` of the gated score matrix -- i.e. on the head's pair
+    probabilities *after* the block gate -- which is what keeps C1's calibration
+    machinery testable on the cascade instead of only on the flat head.
+
+    The returned ``terms`` carries both the losses and the **P6 metrics**
+    (``l0_helix_recall``, and the stricter ``l0_blockpair_recall`` the L0 loss actually
+    optimises) so the gate can be watched during training rather than discovered at
+    evaluation time.
+    """
+    from rnajepa.cascade_objective import (
+        block_pair_presence, l0_helix_recall_pooled, l0_metrics, layered_cascade_loss)
+
+    seq_ids = batch["seq_ids"]
+    if has_embeddings:
+        h = _stack_embeddings(batch["embeddings"], int(seq_ids.shape[1]),
+                              device=seq_ids.device)
+        out = model.forward_gated(h, seq_ids)
+    else:
+        out = model.forward_gated(seq_ids)
+
+    gt_pairs = batch["gt_pairs"]
+    target, compat = block_pair_presence(seq_ids, gt_pairs, block_size=block_size)
+
+    total, terms = layered_cascade_loss(
+        block_logits=out.block_logits, gate=out.gate, target=target, compat=compat,
+        helix_logits=out.helix_logits, scores=out.scores, mask=batch["masks"],
+        gt_pairs=gt_pairs, weights=cascade_weights, block_size=block_size,
+        return_terms=True)
+
+    metrics: Dict[str, float] = {k: float(v.detach()) for k, v in terms.items()}
+
+    # ---- auxiliary (calibration) terms, composed on top of L2 ---------------- #
+    aux = replace(weights, lambda_nll=0.0)
+    if any(w != 0.0 for w in (aux.lambda_distill, aux.lambda_rlcd, aux.lambda_cal)):
+        n = int(seq_ids.shape[0])
+        aux_total: Optional[torch.Tensor] = None
+        aux_agg: Dict[str, float] = {}
+        for b in range(n):
+            length = int(batch["lengths"][b])
+            s = out.scores[b, :length, :length]
+            loss_b, terms_b = combined_loss(
+                s, batch["masks"][b], gt_pairs[b], aux,
+                teacher_probs=batch["teacher_probs"][b],
+                student_probs=torch.sigmoid(s),
+                labels=torch.as_tensor(batch["labels"][b], dtype=torch.float64),
+                distill_kind=distill_kind, reward=reward, beta=beta,
+                n_bins=n_bins, tau=tau, return_terms=True)
+            aux_total = loss_b if aux_total is None else aux_total + loss_b
+            for name, value in terms_b.items():
+                aux_agg[name] = aux_agg.get(name, 0.0) + float(value.detach())
+        if aux_total is not None:
+            total = total + aux_total / n
+            for name, value in aux_agg.items():
+                metrics[f"aux_{name}"] = value / n
+
+    metrics.update(l0_helix_recall_pooled(out.block_kept, gt_pairs, block_size))
+    metrics.update(l0_metrics(out.gate.detach(), target, compat))
+    return total, metrics
 
 
 # ---------------------------------------------------------------------------
@@ -1003,7 +1154,10 @@ def calibrate_learning_rate(config: TrainConfig, dataset: DecisionDataset, *,
                 model, batch, weights, distill_kind=config.distill_kind,
                 reward=config.rlcd_reward, beta=config.beta,
                 n_bins=config.n_bins, tau=config.soft_ece_tau,
-                nll_normalization=config.nll_normalization)
+                nll_normalization=config.nll_normalization,
+                cascade=config.head == "cascade",
+                cascade_weights=config.layered_weights(),
+                cascade_block_size=config.cascade_block_size)
             try:
                 value = _finite(loss.detach(), f"probe loss at lr={lr}")
                 loss.backward()
@@ -1357,7 +1511,10 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                 model, batch, weights, distill_kind=config.distill_kind,
                 reward=config.rlcd_reward, beta=config.beta,
                 n_bins=config.n_bins, tau=config.soft_ece_tau,
-                nll_normalization=config.nll_normalization)
+                nll_normalization=config.nll_normalization,
+                cascade=config.head == "cascade",
+                cascade_weights=config.layered_weights(),
+                cascade_block_size=config.cascade_block_size)
             value = _finite(loss.detach(), f"loss at step {step + 1}")
             loss.backward()
             norm = _grad_norm(model.parameters())
@@ -1479,6 +1636,31 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
                    help="'sum' = historical log Z - sum s_ij (O(L)); 'length' = that "
                         "divided by L, so the CRF term is comparable to the per-pair-mean "
                         "distill/RLCD/cal terms (with 'sum' they were <3%% of the loss).")
+    # head / layered objective
+    p.add_argument("--head", default="flat", choices=["flat", "cascade"],
+                   help="'flat' = single L x L head with the four-term objective; "
+                        "'cascade' = hierarchical head with the layered objective "
+                        "(L0 block pairs / L1 helices / L2 base pairs), which requires "
+                        "the differentiable gate.")
+    p.add_argument("--cascade-block-size", type=int, default=8)
+    p.add_argument("--cascade-top-k", type=int, default=2,
+                   help="only used for the FLOPs accounting and the hard-path ablation; "
+                        "the gated forward selects by a learned threshold, not by k")
+    p.add_argument("--cascade-d-z", type=int, default=128)
+    p.add_argument("--cascade-hidden", type=int, default=64)
+    p.add_argument("--no-cascade-soft-gate", dest="cascade_soft_gate",
+                   action="store_false", default=True,
+                   help="disable the differentiable gate -- refused when head=cascade")
+    p.add_argument("--cascade-gate-theta", type=float, default=0.0)
+    p.add_argument("--cascade-gate-tau", type=float, default=0.5)
+    p.add_argument("--cascade-l0", type=float, default=1.0)
+    p.add_argument("--cascade-l1", type=float, default=1.0)
+    p.add_argument("--cascade-l2", type=float, default=1.0)
+    p.add_argument("--cascade-sparse", type=float, default=0.1)
+    p.add_argument("--cascade-miss-cost", type=float, default=20.0,
+                   help="how much more a missed ground-truth block pair costs than a "
+                        "false positive in the L0 term; this is what drives L0 recall "
+                        "towards the P6 gate of 0.98")
     # model
     p.add_argument("--tiny", action="store_true", help="CPU-sized model (tests / smoke)")
     p.add_argument("--encoder-size", default="150M", choices=["35M", "150M", "650M"])
@@ -1518,6 +1700,14 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal,
         distill_kind=args.distill_kind, rlcd_reward=args.rlcd_reward, beta=args.beta,
         nll_normalization=args.nll_normalization,
+        head=args.head, cascade_block_size=args.cascade_block_size,
+        cascade_top_k=args.cascade_top_k, cascade_d_z=args.cascade_d_z,
+        cascade_hidden=args.cascade_hidden, cascade_soft_gate=args.cascade_soft_gate,
+        cascade_gate_theta=args.cascade_gate_theta,
+        cascade_gate_tau=args.cascade_gate_tau,
+        cascade_l0=args.cascade_l0, cascade_l1=args.cascade_l1,
+        cascade_l2=args.cascade_l2, cascade_sparse=args.cascade_sparse,
+        cascade_miss_cost=args.cascade_miss_cost,
         tiny=args.tiny, encoder_size=args.encoder_size, device=args.device,
         allow_cpu=args.allow_cpu,
         out_dir=args.out, resume=args.resume, arm=args.arm,

@@ -69,7 +69,7 @@ from rnajepa.harness import (  # noqa: E402
     nussinov_map,
     valid_pair_mask,
 )
-from rnajepa.decision_head import turner_phys_scores  # noqa: E402
+from rnajepa.decision_head import HierarchicalCascade, turner_phys_scores  # noqa: E402
 from rnajepa.distill import pair_indicator  # noqa: E402
 from rnajepa.rlcd import apply_platt_scaling, fit_platt_scaling  # noqa: E402
 from rnajepa.train_decision import (  # noqa: E402
@@ -254,11 +254,28 @@ def reweight_turner_prior(model, scores, seq_ids, length: int, weight: float):
     if weight < 0 or getattr(getattr(model, "head", None), "prior_weight", None) is None:
         return scores
     head = model.head
+    prior = turner_phys_scores(seq_ids)[0, :length, :length].to(
+        device=scores.device, dtype=scores.dtype)
+
+    if isinstance(head, HierarchicalCascade):
+        # The gated cascade applies **no temperature** (``forward_gated`` returns
+        # ``MLP_T + pw * prior + log gate``), so its inversion is a pure shift and the
+        # log gate is left untouched.  ``head.calibration`` does not exist here, so the
+        # flat branch below would raise AttributeError rather than mis-reweight.
+        #
+        # The convention is the same as the flat path's: ``weight`` is *relative* to the
+        # trained multiplier, so ``weight = 1`` keeps the trained value and the change in
+        # the effective multiplier is ``weight - 1``.
+        return scores + (weight - 1.0) * prior
+
     lengths = torch.tensor([length], dtype=torch.long, device=scores.device)
     bucket = int(head.calibration.bucket_index(lengths).item())
     temp = torch.exp(head.calibration.log_temperature)[bucket].to(scores.dtype)
-    prior = turner_phys_scores(seq_ids)[0, :length, :length].to(
-        device=scores.device, dtype=scores.dtype)
+    # ``(1 - weight)``, not ``(pw - weight)``: the flat head's ``weight`` is relative to
+    # the trained multiplier ``pw`` (``scores = (MLP_T + pw*prior)/T``), so this form
+    # yields an effective multiplier of ``pw + weight - 1``.  ``prior_weight_effective``
+    # in the result JSON records that absolute value.  Changing this to an absolute form
+    # would silently move every existing evaluation's decoded structures.
     return temp * scores - (1.0 - weight) * prior
 
 
@@ -283,13 +300,11 @@ def _flat_scores_and_labels(model, records, device, embedding_store, *, prior_we
             ids = torch.tensor([[BASE_TO_ID.get(c, 4) for c in seq]], dtype=torch.long,
                                device=device)
             lengths = torch.tensor([L], dtype=torch.long, device=device)
+            h = None
             if embedding_store is not None:
                 h = torch.as_tensor(embedding_store.get(seq), dtype=torch.float32,
                                     device=device).unsqueeze(0)
-                out = model(h, ids, lengths=lengths)
-            else:
-                out = model(ids, lengths=lengths)
-            scores = out.scores[0, :L, :L].double()
+            scores = _forward_scores(model, ids, h, lengths)[0, :L, :L].double()
             scores = reweight_turner_prior(model, scores, ids, L, prior_weight)
             scores = scores.cpu().numpy()
             sel = np.triu(mask, k=1)
@@ -298,6 +313,28 @@ def _flat_scores_and_labels(model, records, device, embedding_store, *, prior_we
     if not scores_all:
         return np.zeros(0), np.zeros(0)
     return np.concatenate(scores_all), np.concatenate(labels_all)
+
+
+def _forward_scores(model, ids, h, lengths):
+    """One forward pass -> the ``(1, L, L)`` score matrix, honouring the head family.
+
+    A checkpoint whose head is a :class:`HierarchicalCascade` must be evaluated through
+    ``forward_gated``.  Its plain ``forward`` is the **hard ``top_k``** path, which is
+    (a) not what the gated arm was trained on and (b) not trainable at all -- its
+    ``-inf`` mask on 94% of candidate pairs makes the CRF's ``log Z`` describe a space
+    the model cannot produce.  Evaluating that path would report numbers for an
+    architecture that was never trained, and nothing in the output would say so.
+
+    ``h`` is the cached embedding when the run is head-only, else ``None``.
+    """
+    head = getattr(model, "head", None)
+    if head is not None and hasattr(head, "forward_gated"):
+        out = model.forward_gated(h, ids) if h is not None else model.forward_gated(ids)
+    elif h is not None:
+        out = model(h, ids, lengths=lengths)
+    else:
+        out = model(ids, lengths=lengths)
+    return out.scores
 
 
 def evaluate(args: argparse.Namespace) -> Dict[str, object]:
@@ -336,7 +373,7 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             raise SystemExit(
                 "the checkpoint is head-only but its config has no embedding_dir; "
                 "there is no way to reconstruct its inputs")
-        split = os.path.basename(args.data).split(".")[0]
+        split = args.embedding_split or os.path.basename(args.data).split(".")[0]
         embedding_store = EmbeddingStore.from_dir(config.embedding_dir, split=split)
         print(f"[eval] head-only model; embeddings from {config.embedding_dir} "
               f"({embedding_store.n_sequences} sequences, d={embedding_store.d_model})",
@@ -441,15 +478,13 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
 
             _sync(device)
             t0 = time.perf_counter()
+            h = None
             if embedding_store is not None:
                 h = torch.as_tensor(embedding_store.get(seq), dtype=torch.float32,
                                     device=device).unsqueeze(0)
-                out = model(h, ids, lengths=lengths)
-            else:
-                out = model(ids, lengths=lengths)
+            scores = _forward_scores(model, ids, h, lengths)[0, :length, :length].double()
             _sync(device)
             t1 = time.perf_counter()
-            scores = out.scores[0, :length, :length].double()
             scores = reweight_turner_prior(model, scores, ids, length,
                                            args.prior_weight)
 
@@ -647,6 +682,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--allow-cpu", action="store_true")
     parser.add_argument("--max-length", type=int, default=0)
+    parser.add_argument("--embedding-split", default="",
+                        help="name of the cached-embedding shard to read, when it "
+                             "differs from the --data file stem.  Needed when the split "
+                             "being scored is a filtered view of the split the "
+                             "embeddings were extracted from (e.g. ArchiveII minus the "
+                             "sequences longer than the backbone's max_pos).")
     parser.add_argument("--n-bins", type=int, default=10)
     parser.add_argument("--head-chunk", type=int, default=0,
                         help="override the checkpoint's head_chunk_size for this "

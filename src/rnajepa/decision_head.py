@@ -448,6 +448,34 @@ class CascadeOutput:
     flops: float
 
 
+@dataclass
+class GatedCascadeOutput:
+    """Output of :meth:`HierarchicalCascade.forward_gated`.
+
+    ``scores`` is **finite on every pair** -- unlike :class:`CascadeOutput`, where it
+    is ``-inf`` outside the kept blocks.  That is what makes the CRF's ``log Z`` a
+    partition function over the real structure space rather than over a space where
+    most candidate pairs are forbidden.
+
+    ``local_scores`` is the L2 output *before* the log-gate is added (0 outside the
+    kept blocks), kept separate so a caller can check the decomposition
+    ``scores == local_scores + log gate`` and so the gating can be ablated without
+    touching L2.
+    """
+
+    scores: torch.Tensor          # (B, L, L)   finite everywhere
+    pair_types: torch.Tensor      # (B, L, L, 6)
+    block_logits: torch.Tensor    # (B, nb, nb) L0 logits, pre-gate
+    gate: torch.Tensor            # (B, nb, nb) differentiable gate in (0, 1)
+    block_kept: torch.Tensor      # (B, nb, nb) bool, gate >= threshold & compat
+    block_compat: torch.Tensor    # (B, nb, nb) bool, sequence-compatible block pairs
+    local_scores: torch.Tensor    # (B, L, L)   L2 only, 0 outside kept blocks
+    helix_spans: torch.Tensor     # (B, nc, 2)
+    helix_logits: torch.Tensor    # (B, nc)
+    helix_mask: torch.Tensor      # (B, nc)     bool
+    flops: float
+
+
 class HierarchicalCascade(nn.Module):
     """Three-level decision cascade: L0 block pairs -> L1 helices -> L2 base pairs.
 
@@ -476,6 +504,10 @@ class HierarchicalCascade(nn.Module):
         n_types: int = N_PAIR_TYPES,
         min_loop: int = MIN_LOOP,
         use_turner_prior: bool = True,
+        soft_gate: bool = False,
+        gate_theta: float = 0.0,
+        gate_tau: float = 0.5,
+        grad_checkpoint: bool = True,
     ) -> None:
         super().__init__()
         if block_size < 1:
@@ -483,6 +515,10 @@ class HierarchicalCascade(nn.Module):
         self.w = int(block_size)
         self.top_k = int(top_k)
         self.min_loop = min_loop
+        #: Per-block-pair gradient checkpointing for L2.  See :meth:`_l2_block`: without
+        #: it the loop's activations accumulate over every kept block pair, and the
+        #: gated selection is not capped by ``top_k``, so the first gated launch OOM'd.
+        self.grad_checkpoint = bool(grad_checkpoint)
         self.use_turner_prior = use_turner_prior
         # L0: shared projection, so block logits ``q q^T`` are symmetric.
         self.l0_query = nn.Linear(d_model, d_model, bias=False)
@@ -500,6 +536,19 @@ class HierarchicalCascade(nn.Module):
             self.prior_weight = nn.Parameter(torch.ones(1))
         else:
             self.register_parameter("prior_weight", None)
+        #: Differentiable replacement for the hard ``top_k`` mask.  Built only when
+        #: asked for, so a cascade constructed without ``soft_gate=True`` has exactly
+        #: the parameter set it had before this option existed.  The gate lives here
+        #: (rather than in the objective module) because it is part of the forward
+        #: pass: it decides which block pairs L2 refines and it supplies the log-gate
+        #: that keeps the CRF's ``log Z`` finite.  See ``rnajepa.cascade_objective``.
+        self.soft_gate = bool(soft_gate)
+        if self.soft_gate:
+            from rnajepa.cascade_objective import BlockGate
+
+            self.gate = BlockGate(theta=gate_theta, tau=gate_tau)
+        else:
+            self.gate = None
         self.last_flops: Optional[float] = None
 
     # -- helpers ----------------------------------------------------------- #
@@ -570,6 +619,27 @@ class HierarchicalCascade(nn.Module):
         return helix_spans, helix_logits.reshape(B, nb * nb), block_active.reshape(B, nb * nb)
 
     # -- L2 ---------------------------------------------------------------- #
+    def _l2_block(self, hi, hj, phys_ij, mask_ij, active_b, diagonal: bool):
+        """One block pair's contribution to L2: ``(scores, pair_types)``.
+
+        Extracted from :meth:`l2` so it can be wrapped in ``torch.utils.checkpoint``.
+        That is not a micro-optimisation: the loop runs once per *kept* block pair, and
+        without checkpointing autograd retains every iteration's activations.  With the
+        differentiable gate the kept set is no longer capped at ``top_k``, so at
+        initialisation (when the gate is open) a 500 nt sequence means ~2000 iterations
+        and the retained activations alone exceeded the MIG slice -- the first gated
+        launch died with ``CUDA out of memory`` inside ``PairTypeHead.cross``.
+        Checkpointing keeps only each iteration's inputs.
+        """
+        z = self.pair_repr.cross(hi, hj)
+        s = self.turner(z)
+        if self.use_turner_prior:
+            s = s + self.prior_weight.to(s.dtype) * phys_ij
+        t = self.type_head(hi) if diagonal else self.type_head.cross(hi, hj)
+        valid = mask_ij & active_b[:, None, None]
+        s = torch.where(valid, s, torch.full_like(s, float("-inf")))
+        return s, t * valid.unsqueeze(-1)
+
     def l2(self, h: torch.Tensor, seq_ids: torch.Tensor, block_active: torch.Tensor):
         """Base-level refinement inside the active block sub-blocks."""
         B, L, d = h.shape
@@ -582,16 +652,16 @@ class HierarchicalCascade(nn.Module):
         for b1, b2 in block_active.any(dim=0).nonzero().tolist():
             i0, j0 = b1 * self.w, b2 * self.w
             hi, hj = hp[:, i0:i0 + self.w, :], hp[:, j0:j0 + self.w, :]
-            z = self.pair_repr.cross(hi, hj)
-            s = self.turner(z)
-            if self.use_turner_prior:
-                s = s + self.prior_weight.to(s.dtype) * phys_p[:, i0:i0 + self.w, j0:j0 + self.w]
-            t = self.type_head(hi) if b1 == b2 else self.type_head.cross(hi, hj)
-            valid = mask_p[:, i0:i0 + self.w, j0:j0 + self.w] & block_active[:, b1, b2][:, None, None]
-            scores[:, i0:i0 + self.w, j0:j0 + self.w] = torch.where(
-                valid, s, torch.full_like(s, float("-inf"))
-            )
-            types[:, i0:i0 + self.w, j0:j0 + self.w] = t * valid.unsqueeze(-1)
+            phys_ij = phys_p[:, i0:i0 + self.w, j0:j0 + self.w]
+            mask_ij = mask_p[:, i0:i0 + self.w, j0:j0 + self.w]
+            active_b = block_active[:, b1, b2]
+            if self.grad_checkpoint and self.training:
+                s, t = checkpoint(self._l2_block, hi, hj, phys_ij, mask_ij, active_b,
+                                  b1 == b2, use_reentrant=False)
+            else:
+                s, t = self._l2_block(hi, hj, phys_ij, mask_ij, active_b, b1 == b2)
+            scores[:, i0:i0 + self.w, j0:j0 + self.w] = s
+            types[:, i0:i0 + self.w, j0:j0 + self.w] = t
         return scores[:, :L, :L], types[:, :L, :L]
 
     # -- full cascade ------------------------------------------------------ #
@@ -606,6 +676,63 @@ class HierarchicalCascade(nn.Module):
             scores=scores, pair_types=types, block_logits=block_logits,
             block_active=block_active, helix_spans=helix_spans,
             helix_logits=helix_logits, helix_mask=helix_mask, flops=self.last_flops,
+        )
+
+    # -- full cascade, differentiable selection ---------------------------- #
+    def forward_gated(self, h: torch.Tensor, seq_ids: torch.Tensor,
+                      threshold: float = 0.5) -> "GatedCascadeOutput":
+        """Forward pass with the **learned, differentiable** block-pair gate.
+
+        Differences from :meth:`forward`, and why each is necessary:
+
+        * The kept set is ``gate >= threshold`` where ``gate`` is
+          ``sigmoid((l0_logit - theta) / tau)`` with ``theta`` learned, **not** the
+          hard ``top_k`` of :meth:`l0`.  ``top_k = 2`` structurally capped L0 recall
+          at 0.1548 against a P6 gate of 0.98, because a median-length sequence has
+          more distinct ground-truth block pairs per block row than ``k``.
+        * L2 still refines only the kept block pairs -- that is the cascade's whole
+          cost argument -- but its ``-inf`` outside those blocks is replaced by
+          ``log gate``, which is **finite**.  The CRF's ``log Z`` therefore ranges
+          over the full non-crossing structure space again, instead of over a space
+          where 94% of candidate pairs are forbidden.  Before this, the cascade
+          could not be trained with the project's own objective at all
+          (``flat_nll = 6.271`` vs ``cascade_nll = 90017.977`` at ``L = 60``).
+        * ``theta``, ``tau`` and ``l0_query`` receive gradient from two places: the
+          explicit L0 term of :func:`rnajepa.cascade_objective.layered_cascade_loss`,
+          and ``log Z`` itself.
+
+        Raises ``ValueError`` when the cascade was built without ``soft_gate=True``:
+        silently falling back to the hard mask would produce a run whose logs say
+        "gated" while nothing was learnable.
+        """
+        from rnajepa.cascade_objective import (expand_blocks_to_pairs,
+                                               gated_score_matrix,
+                                               zero_outside_kept_blocks)
+
+        if not self.soft_gate or self.gate is None:
+            raise ValueError(
+                "forward_gated requires the cascade to be built with soft_gate=True; "
+                "this instance has soft_gate=False, so there is no learnable gate and "
+                "falling back to the hard top_k mask would silently make the run "
+                "un-trainable at L0")
+
+        B, L, _ = h.shape
+        block_logits, _hard_active, compat = self.l0(h, seq_ids)
+        gate = self.gate(block_logits)
+        kept = (gate >= threshold) & compat
+
+        scores_raw, types = self.l2(h, seq_ids, kept)
+        local = zero_outside_kept_blocks(scores_raw, kept, self.w)
+        scores = gated_score_matrix(local, gate, block_size=self.w)
+
+        helix_spans, helix_logits, helix_mask = self.l1(h, seq_ids, block_logits, kept)
+        self.last_flops = cascade_flops_estimate(L, self.w, h.shape[-1], self.top_k,
+                                                 self.pair_repr.d_z)
+        return GatedCascadeOutput(
+            scores=scores, pair_types=types, block_logits=block_logits,
+            gate=gate, block_kept=kept, block_compat=compat,
+            local_scores=local, helix_spans=helix_spans, helix_logits=helix_logits,
+            helix_mask=helix_mask, flops=self.last_flops,
         )
 
 
@@ -655,6 +782,21 @@ class DecisionModel(nn.Module):
                                  device=seq_ids.device)
         return self.head(h, seq_ids, lengths=lengths)
 
+    def forward_gated(self, seq_ids: torch.Tensor, reactivity: Optional[torch.Tensor] = None):
+        """Cascade path with the differentiable block-pair gate.
+
+        ``lengths`` is deliberately not accepted: the cascade derives its block count
+        from the tensor width, and padded positions carry no legal pairs (the pad token
+        maps to "N", which is not in ``PAIRS``), so they cannot enter ``compat``,
+        ``target`` or any scored pair.  Accepting a ``lengths`` argument would suggest
+        the cascade honoured it when it does not.
+        """
+        if not hasattr(self.head, "forward_gated"):
+            raise TypeError(
+                f"forward_gated needs a HierarchicalCascade head; this model has "
+                f"{type(self.head).__name__}, which only offers the flat forward pass")
+        return self.head.forward_gated(self.encoder(seq_ids, reactivity), seq_ids)
+
 
 # --------------------------------------------------------------------------- #
 # Head over frozen (cached) embeddings
@@ -684,6 +826,14 @@ class HeadOnlyModel(nn.Module):
                 lengths: Optional[torch.Tensor] = None) -> DecisionScores:
         return self.head(h, seq_ids, lengths=lengths)
 
+    def forward_gated(self, h: torch.Tensor, seq_ids: torch.Tensor):
+        """Cascade path over cached embeddings; see :meth:`DecisionModel.forward_gated`."""
+        if not hasattr(self.head, "forward_gated"):
+            raise TypeError(
+                f"forward_gated needs a HierarchicalCascade head; this model has "
+                f"{type(self.head).__name__}, which only offers the flat forward pass")
+        return self.head.forward_gated(h, seq_ids)
+
 
 # --------------------------------------------------------------------------- #
 # L0 helix recall (spec §8.2 P6 -- the cascade's false-negative gate)
@@ -705,18 +855,21 @@ def group_helices(pairs: Sequence[Tuple[int, int]]) -> List[List[Tuple[int, int]
     return helices
 
 
-def l0_helix_recall(block_active: torch.Tensor, gt_pairs: Sequence[Tuple[int, int]],
-                    block_size: int) -> float:
-    """Fraction of ground-truth helices whose block pair survived L0.
+def helix_hits(block_active: torch.Tensor, gt_pairs: Sequence[Tuple[int, int]],
+               block_size: int) -> Tuple[int, int]:
+    """``(hits, total)`` ground-truth helices whose block pair survived L0.
 
-    An L0 false negative is unrecoverable downstream (spec §5.0.2(f)), so this is
-    an independent gate (target >= 0.98, spec §8.2 P6).  ``block_active`` is
-    ``(nb, nb)``; a helix ``(i_start .. j_end)`` is a hit iff the block pair
-    ``(i_start // w, j_end // w)`` is active.
+    The single implementation behind both :func:`l0_helix_recall` (per sequence, the
+    P6 metric) and the pooled batch version used during training.  Split out so the
+    two cannot drift: a P6 gate measured with a different definition of "hit" than the
+    one reported in the paper would be worthless.
+
+    ``block_active`` is ``(nb, nb)``; a helix ``(i_start .. j_end)`` is a hit iff the
+    block pair ``(i_start // w, j_end // w)`` is active.
     """
     helices = group_helices(gt_pairs)
     if not helices:
-        return 1.0
+        return 0, 0
     nb = block_active.shape[-1]
     hits = 0
     for helix in helices:
@@ -725,7 +878,21 @@ def l0_helix_recall(block_active: torch.Tensor, gt_pairs: Sequence[Tuple[int, in
         b2 = min(j1 // block_size, nb - 1)
         if bool(block_active[b1, b2]) or bool(block_active[b2, b1]):
             hits += 1
-    return hits / len(helices)
+    return hits, len(helices)
+
+
+def l0_helix_recall(block_active: torch.Tensor, gt_pairs: Sequence[Tuple[int, int]],
+                    block_size: int) -> float:
+    """Fraction of ground-truth helices whose block pair survived L0.
+
+    An L0 false negative is unrecoverable downstream (spec §5.0.2(f)), so this is
+    an independent gate (target >= 0.98, spec §8.2 P6).  A sequence with no helices
+    scores 1.0 -- it cannot be missed -- so when averaging over a batch use
+    :func:`rnajepa.cascade_objective.l0_helix_recall_pooled`, which pools hits and
+    totals instead of averaging ratios.
+    """
+    hits, total = helix_hits(block_active, gt_pairs, block_size)
+    return 1.0 if total == 0 else hits / total
 
 
 # --------------------------------------------------------------------------- #
