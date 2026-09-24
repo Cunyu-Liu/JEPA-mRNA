@@ -185,6 +185,42 @@ def _decode(scores_np: "np.ndarray", mask: "np.ndarray", args):
     return nussinov_map(scores_np, mask)
 
 
+def matched_prefix_c1c(probs_s1, labels, masks, probs_ex, labels_ex, masks_ex, *,
+                       n_bins: int = 10, tolerance: float = 0.02,
+                       pooled=pooled_pair_calibration) -> Dict[str, object]:
+    """C1-c on the **same sequences** for both sides.
+
+    The exact marginal is O(L^3) in numpy and is therefore computed for at most
+    ``--exact-marginal-limit`` sequences, i.e. a *prefix* of the split.  Comparing
+    its ECE against a System-1 ECE pooled over the whole split is not a comparison:
+    the two numbers are population statistics over different length distributions,
+    so the reported gap moves when the split is reordered and says nothing about
+    the head.  (Measured on bpRNA TS0: the first 300 sequences hold 1.04 M pairs
+    at 3468 pairs/sequence against 4670 for the split as a whole.)
+
+    Both sides are restricted to the prefix here.  The full-population System-1
+    row is still reported separately, because that is the number P4 (pair ECE <=
+    0.05) is stated on.
+
+    ``probs_ex`` etc. must be the prefix, in the same order as ``probs_s1``.
+    """
+    n_exact = len(probs_ex)
+    if n_exact == 0:
+        return {"n_sequences_matched": 0, "system1": None, "exact_marginal": None,
+                "ece_gap": float("nan"), "threshold": tolerance, "pass": None,
+                "note": "exact marginal not computed; C1-c is not measured"}
+    if n_exact > len(probs_s1):
+        raise ValueError(
+            f"the exact-marginal pool has {n_exact} sequences but the System-1 pool "
+            f"only {len(probs_s1)}; the exact pool must be a prefix of it")
+    cal_s1 = pooled(probs_s1[:n_exact], labels[:n_exact], masks[:n_exact], n_bins=n_bins)
+    cal_ex = pooled(probs_ex, labels_ex, masks_ex, n_bins=n_bins)
+    gap = abs(float(cal_s1["ece"]) - float(cal_ex["ece"]))
+    return {"n_sequences_matched": int(n_exact), "system1": cal_s1,
+            "exact_marginal": cal_ex, "ece_gap": gap, "threshold": tolerance,
+            "pass": bool(gap <= tolerance)}
+
+
 def evaluate(args: argparse.Namespace) -> Dict[str, object]:
     _check_device_request(args.device, allow_cpu=args.allow_cpu)
     device = args.device
@@ -349,6 +385,17 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
               if all_probs_ex else {"ece": float("nan"), "nll": float("nan"),
                                     "brier": float("nan"), "n": 0,
                                     "note": "exact marginal not computed"})
+    # C1-c compares like with like: the exact marginal only exists for the first
+    # `exact_marginal_limit` sequences, so the System-1 side is restricted to the
+    # same prefix.  `cal_s1` above stays whole-split because that is what P4 uses.
+    c1c = matched_prefix_c1c(all_probs_s1, all_labels, all_masks,
+                             all_probs_ex, all_labels_ex, all_masks_ex,
+                             n_bins=args.n_bins)
+    if c1c["pass"] is False:
+        print(f"[eval] C1-c: matched-prefix gap {c1c['ece_gap']:.4f} > "
+              f"{c1c['threshold']} (System-1 {c1c['system1']['ece']:.4f} vs exact "
+              f"{c1c['exact_marginal']['ece']:.4f}, n={c1c['n_sequences_matched']} seqs)",
+              file=sys.stderr)
 
     result: Dict[str, object] = {
         "tag": args.tag,
@@ -369,14 +416,14 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
         "calibration": {
             "system1": cal_s1,
             "exact_marginal": cal_ex,
-            # C1-c: the DP-free head must be as calibrated as the exact marginal
-            "c1c_ece_gap": (abs(cal_s1["ece"] - cal_ex["ece"])
-                            if cal_s1.get("ece") == cal_s1.get("ece")
-                            and cal_ex.get("ece") == cal_ex.get("ece") else float("nan")),
-            "c1c_threshold": 0.02,
-            "c1c_pass": (abs(cal_s1["ece"] - cal_ex["ece"]) <= 0.02
-                         if cal_s1.get("ece") == cal_s1.get("ece")
-                         and cal_ex.get("ece") == cal_ex.get("ece") else None),
+            # C1-c: the DP-free head must be as calibrated as the exact marginal.
+            # Both sides are restricted to the same sequence prefix -- see
+            # matched_prefix_c1c for why an unrestricted System-1 ECE is not
+            # comparable against a prefix-limited exact-marginal ECE.
+            "c1c": c1c,
+            "c1c_ece_gap": c1c["ece_gap"],
+            "c1c_threshold": c1c["threshold"],
+            "c1c_pass": c1c["pass"],
         },
         "legality": {
             "illegal_structure_rate": illegal / len(records) if records else 0.0,

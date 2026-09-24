@@ -524,6 +524,76 @@ def test_gate_s7_threshold():
     assert status == G.PASS  # identical distributions -> delta 0
 
 
+def _cal_and_miscal_pools(L=8):
+    """One calibrated and one miscalibrated sequence as flat (probs, labels, mask).
+
+    ``A``: p = 0.5 on every candidate pair, half of them positive -> ECE = 0.
+    ``B``: p = 0.9 on every candidate pair, none positive    -> ECE = 0.9.
+    """
+    mask = np.triu(np.ones((L, L), dtype=bool), k=1)
+    n_pairs = int(mask.sum())
+    labels_a = np.zeros((L, L), dtype=np.float64)
+    idx = np.argwhere(mask)
+    labels_a[tuple(idx[: n_pairs // 2].T)] = 1.0
+    probs_a = np.full((L, L), 0.5)
+    probs_b = np.full((L, L), 0.9)
+    labels_b = np.zeros((L, L), dtype=np.float64)
+    return (probs_a, labels_a, mask), (probs_b, labels_b, mask)
+
+
+def test_c1c_matched_prefix_is_not_the_whole_split_gap():
+    """C1-c must not compare a prefix-limited exact ECE against a whole-split one.
+
+    Crafted so the two protocols disagree by construction: the System-1 pool is
+    calibrated on the first sequence and miscalibrated on the second, while the
+    exact pool exists only for the first.  Pooling the whole System-1 split
+    against a one-sequence exact pool reports 0.45; restricting both sides to the
+    prefix reports 0.0.  Only the second number is a statement about the head.
+    """
+    from ss.evaluate_decision import matched_prefix_c1c
+
+    (pa, la, mask_a), (pb, lb, mask_b) = _cal_and_miscal_pools()
+
+    naive = M.pooled_pair_calibration([pa, pb], [la, lb], [mask_a, mask_b])
+    assert naive["ece"] == pytest.approx(0.45, abs=1e-9)
+
+    res = matched_prefix_c1c([pa, pb], [la, lb], [mask_a, mask_b],
+                             [pa], [la], [mask_a])
+    assert res["n_sequences_matched"] == 1
+    assert res["system1"]["ece"] == pytest.approx(0.0, abs=1e-9)
+    assert res["exact_marginal"]["ece"] == pytest.approx(0.0, abs=1e-9)
+    assert res["ece_gap"] == pytest.approx(0.0, abs=1e-9)
+    assert res["pass"] is True
+    # the two protocols must genuinely differ on this input
+    assert abs(naive["ece"] - res["exact_marginal"]["ece"]) > 0.4
+
+
+def test_c1c_matched_prefix_fails_when_the_prefix_is_miscalibrated():
+    from ss.evaluate_decision import matched_prefix_c1c
+
+    (pa, la, mask_a), (pb, lb, mask_b) = _cal_and_miscal_pools()
+    # System-1 is miscalibrated on the prefix (ECE 0.9); the exact marginal on the
+    # same prefix is calibrated (ECE 0.0) -> the gap must be 0.9 and fail.
+    res = matched_prefix_c1c([pb, pa], [lb, la], [mask_b, mask_a],
+                             [pa], [la], [mask_a], tolerance=0.02)
+    assert res["system1"]["ece"] == pytest.approx(0.9, abs=1e-9)
+    assert res["exact_marginal"]["ece"] == pytest.approx(0.0, abs=1e-9)
+    assert res["ece_gap"] == pytest.approx(0.9, abs=1e-9)
+    assert res["pass"] is False
+
+
+def test_c1c_matched_prefix_edge_cases():
+    from ss.evaluate_decision import matched_prefix_c1c
+
+    (pa, la, mask_a), _ = _cal_and_miscal_pools()
+    empty = matched_prefix_c1c([pa], [la], [mask_a], [], [], [])
+    assert empty["pass"] is None and empty["n_sequences_matched"] == 0
+    assert empty["ece_gap"] != empty["ece_gap"]  # NaN, never a silent pass
+
+    with pytest.raises(ValueError):
+        matched_prefix_c1c([pa], [la], [mask_a], [pa, pa], [la, la], [mask_a, mask_a])
+
+
 def test_gate_s6_matched_flops():
     good = {
         "s6_f1_gated": 0.80, "s6_f1_system1": 0.70, "s6_f1_system2": 0.75,
