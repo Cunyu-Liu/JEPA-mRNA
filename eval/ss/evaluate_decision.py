@@ -72,6 +72,7 @@ from rnajepa.harness import (  # noqa: E402
 from rnajepa.distill import pair_indicator  # noqa: E402
 from rnajepa.train_decision import (  # noqa: E402
     BASE_TO_ID,
+    EmbeddingStore,
     TrainConfig,
     _check_device_request,
     build_decision_model,
@@ -201,6 +202,22 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
         print(f"[eval] WARNING state_dict mismatch: missing={len(missing)} "
               f"unexpected={len(unexpected)}", file=sys.stderr)
 
+    # A head-only checkpoint (trained on frozen RiNALMo embeddings) needs its
+    # representations looked up rather than computed.  The split is taken from the
+    # data file name so the store never reads a shard a concurrent extraction run
+    # is still writing.
+    embedding_store = None
+    if getattr(model, "head_only", False):
+        if not config.embedding_dir:
+            raise SystemExit(
+                "the checkpoint is head-only but its config has no embedding_dir; "
+                "there is no way to reconstruct its inputs")
+        split = os.path.basename(args.data).split(".")[0]
+        embedding_store = EmbeddingStore.from_dir(config.embedding_dir, split=split)
+        print(f"[eval] head-only model; embeddings from {config.embedding_dir} "
+              f"({embedding_store.n_sequences} sequences, d={embedding_store.d_model})",
+              file=sys.stderr)
+
     records = load_corpus(args.data, max_length=args.max_length)
     if not records:
         raise SystemExit(f"FATAL: no records in {args.data}")
@@ -235,7 +252,12 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
 
             _sync(device)
             t0 = time.perf_counter()
-            out = model(ids, lengths=lengths)
+            if embedding_store is not None:
+                h = torch.as_tensor(embedding_store.get(seq), dtype=torch.float32,
+                                    device=device).unsqueeze(0)
+                out = model(h, ids, lengths=lengths)
+            else:
+                out = model(ids, lengths=lengths)
             _sync(device)
             t1 = time.perf_counter()
             scores = out.scores[0, :length, :length].double()
