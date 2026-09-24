@@ -151,10 +151,10 @@ running and is therefore *not* reported here.
 arm scales it to 512 (4.8x parameters). The data axis swaps the training corpus from
 TR0 (10,682 sequences) to TR1 (45,865 sequences, 4.29x after de-duplication) with
 everything else fixed. Both axes are reported at 20,000 steps, `w=-1` decode, on the
-same splits. The seed spread of the base configuration across 5 seeds
-(0.5958 / 0.5893 / 0.5927 / 0.5898 / 0.5990) is **mean 0.5953, std 0.0038**, so the
-capacity gain (+0.047) and the cross-family data gain (+0.163) are respectively
-~12x and ~43x the spread.
+same splits. The seed spread of the base configuration across 6 seeds
+(0.5958 / 0.5893 / 0.5927 / 0.5898 / 0.5990 / 0.5939) is **mean 0.5951, std
+0.0034**, so the capacity gain (+0.047) and the cross-family data gain (+0.163) are
+respectively ~14x and ~48x the spread.
 
 **DP-free recalibration.** After training, a two-parameter affine map
 `p = sigmoid(a * s + b)` is fitted on a validation split disjoint from every test
@@ -303,6 +303,26 @@ Three readings of this table, stated exactly:
    the DP decode moves TS0 by +0.001 (0.6760 -> 0.6770 on a matched 400-sequence
    subset, verified with the main evaluator at 0.6772). Sending logits, not
    probabilities, to the DP remains the right choice (that comparison was +0.045).
+
+### 4.3b Three component ablations on the trained checkpoint
+
+All three use the same step-20000 checkpoint, the same score extraction, and TS0;
+only the named component is switched off.
+
+| Configuration | micro F1 | P / R | Crossing / hairpin violations |
+|---|---|---|---|
+| DP decode (reference) | **0.5955** | 0.580 / 0.612 | 0 / 0 |
+| Non-crossing constraint removed (independent threshold, UFold-style) | **0.0586** | 0.031 / 0.763 | **1,268 of 1,288 sequences** / 0 |
+| Turner residual zeroed (`MLP_T = 0`) | **0.2124** | — | 0 / 0 |
+| Calibration temperature off (`T = 1`) | 0.5955 | — | 0 / 0 |
+
+The legalisation cost of the built-in constraint is **0.537** — the head's scores are
+log-potentials, and thresholding them independently collapses precision to 0.031
+while making 98% of the sequences contain crossing pairs. The DP harness is
+load-bearing, not a formality. The learned residual contributes **+0.383** (64% of
+the final F1) on top of the Nussinov+Turner stacking baseline; the temperature
+calibration layer is decode-neutral by construction (it rescales probabilities
+without reordering the argmax), which the measurement confirms exactly.
 
 The ArchiveII row is struck through rather than deleted so the withdrawal is visible:
 35.6% of that split duplicates the training data, and re-measurement on the
