@@ -374,3 +374,10 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    `CRW` strata are small (68 and 81 sequences), so the +0.29 / +0.30 margins rest on
    few independent examples even though the two splits agree. A verified family-level
    split has not been run.
+5. **The strata differ in more than their source.** Mean length is matched (75.9 vs
+   78.0 nt on TS0), but `CRW` is also GC-richer (0.564 vs 0.482) and more densely
+   paired (0.270 vs 0.200 pairs per nt). Source, GC and density therefore vary
+   together, and §4.3 identifies a stratum rather than isolating a cause. A density
+   effect would move both methods, and it does not: ViennaRNA centroid is nearly flat
+   across the two strata (0.6729 vs 0.6209) while ours swings by 0.42. That is an
+   argument, not a proof — a density-matched re-measurement has not been done.
