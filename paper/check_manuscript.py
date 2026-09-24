@@ -17,9 +17,23 @@ Four checks (each independently selectable with ``--checks``):
 (c) **missing Q1-Q12 landing points** -- every anticipated objection of spec §9.3
     must have an explicit landing point in the manuscript.  Spec: "Q1-Q12 每一条都
     必须在稿件中有明确落点。任何一条无落点，即视为未准备好投稿."
-(d) **forbidden generalization phrasing** -- the claim must be "smaller OOD
-    degradation (more robust)", never "higher OOD accuracy" (spec §0.9.3, see
-    ``paper/generalization_claim.md``).
+(d) **forbidden generalization phrasing** -- two families of wording are banned,
+    and the second one is the reason this rule was rewritten.
+
+    * "higher OOD accuracy" was always banned (spec §0.9.3).
+    * **"smaller OOD degradation / more robust / degrades less" is now banned too.**
+      It used to be the *sanctioned* wording, on the assumption that our model
+      degrades less than the physical baselines.  That assumption was measured and
+      is false: on bpRNA-new the same checkpoint scores micro F1 **0.3094** while
+      ViennaRNA centroid scores **0.6770**, and 0.3094 is statistically
+      indistinguishable from our own Nussinov+Turner prior (**0.3015**)
+      -- i.e. cross-family discriminative power collapses to the prior, and the
+      physical baseline *rises* rather than degrades.  See
+      ``records/DECISION_TRAINING_LOG.md`` §14.18.
+
+    So the sanctioned wording is now the *quantified limitation*: cross-family
+    generalization is insufficient and is reported as such.  A linter that kept
+    blessing "more robust" would be enforcing a claim the data refutes.
 
 Negation handling
 -----------------
@@ -196,8 +210,12 @@ _DISCLAIMER_PATTERNS: Tuple[str, ...] = (
     r"不作[^。]{0,8}贡献", r"不主张",
 )
 
-#: Forbidden generalization phrasings (spec §0.9.3).
+#: Forbidden generalization phrasings.  Two families, and the second family is the
+#: one that had to be *demoted* from allowed to forbidden after §14.18 was measured:
+#: claiming our model degrades less / is more robust than the baselines is not
+#: supported -- on bpRNA-new the baselines improve while we collapse to our own prior.
 FORBIDDEN_OOD_PATTERNS: Tuple[str, ...] = (
+    # family 1: never defensible (spec §0.9.3)
     r"higher\s+(out[- ]of[- ]distribution|ood)\s+accuracy",
     r"better\s+(out[- ]of[- ]distribution|ood)\s+accuracy",
     r"improv(e|es|ed|ing)\s+(the\s+)?(out[- ]of[- ]distribution|ood)\s+accuracy",
@@ -207,15 +225,27 @@ FORBIDDEN_OOD_PATTERNS: Tuple[str, ...] = (
     r"(ood|out[- ]of[- ]distribution)[^.]{0,24}精度(更高|提升)",
     r"跨家族(精度|表现)[^。]{0,8}(超越|更高|高于|超过)",
     r"OOD\s*精度更高",
+    # family 2: refuted by measurement (§14.18) -- was previously the allowed wording
+    r"smaller\s+(out[- ]of[- ]distribution|ood)\s+degradation",
+    r"less\s+(out[- ]of[- ]distribution|ood)\s+degradation",
+    r"degrades?\s+less",
+    r"more\s+robust",
+    r"衰减更小",
+    r"更鲁棒",
+    r"退化更小",
 )
 
-#: The wording the claim must actually use.
+#: The wording the generalization statement must actually use: the limitation is
+#: *quantified*, not spun.  Kept as patterns so a caller can confirm the manuscript
+#: expresses the honest form rather than merely avoiding the banned one.
 ALLOWED_GENERALIZATION_PATTERNS: Tuple[str, ...] = (
-    r"smaller\s+(out[- ]of[- ]distribution|ood)\s+degradation",
-    r"more\s+robust",
-    r"degrades?\s+less",
-    r"less\s+(out[- ]of[- ]distribution|ood)\s+degradation",
-    r"衰减更小", r"更鲁棒", r"退化更小",
+    r"cross[- ]family\s+generalization\s+is\s+insufficient",
+    r"cross[- ]family\s+(performance|generalization)[^.]{0,30}"
+    r"(insufficient|collapses?|degrades?\s+to)",
+    r"does\s+not\s+beat\s+(its\s+own\s+)?(physical\s+)?prior",
+    r"跨家族(泛化|表现)[^。]{0,12}(不足|已量化|退到|塌缩)",
+    r"退到[^。]{0,12}先验",
+    r"跨家族泛化不足",
 )
 
 #: Cells that mean "the landing point has not been written yet".
@@ -406,12 +436,16 @@ def find_forbidden_ood_phrasing(text: str) -> List[Dict[str, object]]:
 
 
 def check_generalization_wording(text: str) -> Dict[str, object]:
-    """Guard for the spec §0.9.3 wording rule.
+    """Guard for the generalization-wording rule (rewritten after §14.18).
 
-    ``ok`` is ``True`` only when no forbidden phrasing is present, whatever else
-    the text says.  ``allowed_hits`` lists the occurrences of the sanctioned
-    "smaller degradation / more robust" wording, so a caller can confirm the claim
-    is actually expressed in the defensible form.
+    ``ok`` is ``True`` only when no banned phrasing is present, whatever else the
+    text says.  ``allowed_hits`` lists the occurrences of the sanctioned *quantified
+    limitation* wording, so a caller can confirm the honest form is actually written
+    rather than merely that the banned form is absent.
+
+    The sanctioned form used to be "smaller OOD degradation (more robust)".  §14.18
+    measured that to be false (bpRNA-new: ours 0.3094, ViennaRNA centroid 0.6770,
+    our own Nussinov+Turner prior 0.3015), so it moved into the banned set.
     """
     findings = find_forbidden_ood_phrasing(text)
     allowed_hits = _find(text, ALLOWED_GENERALIZATION_PATTERNS, skip_negated=False)
@@ -419,8 +453,10 @@ def check_generalization_wording(text: str) -> Dict[str, object]:
         "ok": not findings,
         "findings": findings,
         "allowed_hits": allowed_hits,
-        "rule": ('the OOD claim must be "smaller OOD degradation (more robust)", '
-                 'never "higher OOD accuracy" (spec §0.9.3)'),
+        "rule": ('cross-family generalization must be reported as a quantified '
+                 'limitation; neither "higher OOD accuracy" nor "smaller OOD '
+                 'degradation / more robust" may be claimed (spec §0.9.3, '
+                 'records/DECISION_TRAINING_LOG.md §14.18)'),
     }
 
 

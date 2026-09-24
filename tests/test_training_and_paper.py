@@ -834,14 +834,26 @@ def test_linter_flags_forbidden_ood_phrasing():
         report = CM.lint_manuscript(path, checks="d")
         assert report["d_ok"] is False and report["ok"] is False
 
-        # the sanctioned wording is accepted and reported as present
+        # "smaller OOD degradation / more robust" used to be the *sanctioned* wording.
+        # It was demoted to forbidden after records/DECISION_TRAINING_LOG.md §14.18
+        # measured the opposite of what it asserts (bpRNA-new: ours 0.3094, ViennaRNA
+        # centroid 0.6770, our own Nussinov+Turner prior 0.3015).  A linter that kept
+        # blessing it would enforce a claim the data refutes.
+        demoted = _write(tmp, "demoted_d.md",
+                         "# Draft\n\nOur model shows smaller OOD degradation than the "
+                         "baselines and is more robust.\n")
+        report_demoted = CM.lint_manuscript(demoted, checks="d")
+        assert report_demoted["d_ok"] is False
+        assert report_demoted["generalization_wording"]["findings"]
+
+        # the sanctioned wording is now the quantified limitation, and is reported
         good = _write(tmp, "good_d.md",
-                      "# Draft\n\nOur model shows smaller OOD degradation than the "
-                      "baselines and is more robust.\n")
+                      "# Draft\n\nCross-family generalization is insufficient: on "
+                      "bpRNA-new our model does not beat its own physical prior.\n")
         report_good = CM.lint_manuscript(good, checks="d")
         assert report_good["d_ok"] is True
         hits = {h["match"] for h in report_good["generalization_wording"]["allowed_hits"]}
-        assert "smaller OOD degradation" in hits
+        assert "Cross-family generalization is insufficient" in hits
 
 
 def test_linter_cli_exit_codes_and_check_selection():
@@ -863,10 +875,11 @@ def test_linter_cli_exit_codes_and_check_selection():
 # ===========================================================================
 def test_generalization_guard_accepts_correct_and_rejects_forbidden_wording():
     accepted = [
-        "Our model shows smaller OOD degradation than the baselines.",
-        "The proposed model is more robust under distribution shift.",
-        "Cross-family performance degrades less than the baselines.",
-        "本方法在跨家族场景下衰减更小，更鲁棒。",
+        "Cross-family generalization is insufficient and is reported as such.",
+        "On bpRNA-new our model does not beat its own physical prior.",
+        "Cross-family performance collapses to the prior.",
+        "跨家族泛化不足，已量化。",
+        "跨家族表现退到自身物理先验水平。",
     ]
     for text in accepted:
         guard = CM.check_generalization_wording(text)
@@ -880,6 +893,11 @@ def test_generalization_guard_accepts_correct_and_rejects_forbidden_wording():
         "Our model has superior cross-family performance.",
         "本方法 OOD 精度更高。",
         "本方法跨家族精度超越基线。",
+        # second family: demoted from allowed to forbidden after §14.18
+        "Our model shows smaller OOD degradation than the baselines.",
+        "The proposed model is more robust under distribution shift.",
+        "Cross-family performance degrades less than the baselines.",
+        "本方法在跨家族场景下衰减更小，更鲁棒。",
     ]
     for text in rejected:
         guard = CM.check_generalization_wording(text)
@@ -887,14 +905,19 @@ def test_generalization_guard_accepts_correct_and_rejects_forbidden_wording():
         assert guard["findings"], text
 
     # the guard states the rule it enforces
-    assert "smaller OOD degradation" in CM.check_generalization_wording("")["rule"]
+    rule = CM.check_generalization_wording("")["rule"]
+    assert "quantified" in rule and "more robust" in rule
 
     # the paper's own rule document is consistent with the guard's patterns
     rule_doc = open(os.path.join(PAPER_DIR, "generalization_claim.md"),
                     encoding="utf-8").read()
-    assert "smaller OOD degradation" in rule_doc
+    assert "more robust" in rule_doc
     assert "higher OOD accuracy" in rule_doc
+    assert "insufficient" in rule_doc
     assert len(CM.FORBIDDEN_OOD_PATTERNS) >= 4
+    # both families are covered
+    assert any("smaller" in p for p in CM.FORBIDDEN_OOD_PATTERNS)
+    assert any("robust" in p for p in CM.FORBIDDEN_OOD_PATTERNS)
 
 
 # ===========================================================================

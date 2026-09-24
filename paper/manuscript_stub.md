@@ -14,9 +14,10 @@ probabilities. We show that a single-forward-pass decision head can be trained t
 calibrated as the exact partition-function marginals, so that inference skips the
 `O(L^3)` partition function entirely. The resulting calibrated confidence then acts as a
 compute-allocation controller, so exact physics is invoked only where the model is
-uncertain. On the cross-family benchmark our method shows **smaller OOD degradation**
-than the baselines, and it is **more robust** under distribution shift. All headline
-numbers are `待核验` pending baseline reproduction.
+uncertain. Cross-family generalization is insufficient and is reported as such: on
+bpRNA-new our model does not beat its own physical prior, and the physical baselines
+improve rather than degrade. All headline numbers are `待核验` pending baseline
+reproduction.
 
 ## 1. Introduction
 
@@ -32,8 +33,12 @@ worth paying for `O(L^3)`?*
 The closest prior work is CONTRAfold, which already trains a log-linear model on the
 non-crossing structure space with an exact partition function. This work sits in the
 CONTRAfold / CRF lineage; the log-linear CRF framework and the partition function are not
-our contribution. We also compare against CDPFold, which likewise predicts a pair
-probability matrix without dynamic programming, and against LinearPartition and E2Efold.
+our contribution. We also compare against LinearPartition and E2Efold. We do **not**
+treat CDPFold as a DP-free precedent: CDPFold is a CNN followed by dynamic programming
+(Front Genet 10:467, 2019), so it neither removes the DP nor establishes DP-free
+calibration. The DP-free precedents that matter are SPOT-RNA / SPOT-RNA2 / UFold, which
+emit an `L x L` sigmoid matrix in one forward pass; what none of them reports is whether
+those probabilities are calibrated.
 
 ## 3. Contributions
 

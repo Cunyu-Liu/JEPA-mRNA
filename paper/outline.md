@@ -63,7 +63,7 @@
 | 2 Related work | **头号先验工作**：CONTRAfold、CDPFold、LinearPartition、E2Efold；全路线覆盖（spec §7.2） | — | — |
 | 3 Method | §3.1 双模式折叠；§3.2 决策头（Turner 残差、构造性对称）；§3.3 层级决策级联；§3.4 训练目标四项 | C1, C2 | — |
 | 4 Experiments | 基准集、七类指标、统计协议、全消融（15 项） | C1–C4 | G1–G5 / P1–P7 / S1–S9 |
-| 5 Discussion | 负结果与机制解释；泛化主张（**更小衰减**口径） | — | SC1–SC4 |
+| 5 Discussion | 负结果与机制解释；泛化**已量化的局限**（bpRNA-new 退到自身先验） | — | SC1–SC4 |
 | 6 Limitations | 五点局限（见 `limitations.md`，逐字使用） | — | — |
 | 7 Reproducibility | 见 `reproducibility_checklist.md` | — | G5 |
 
@@ -74,7 +74,7 @@
 - [ ] Q1–Q12 **每一条**在稿件中有明确落点（`reviewer_objections.md` 的自检；`check_manuscript.py` 强制）
 - [ ] 6 条禁止表述在稿件（含摘要、贡献句、图注）中**均不存在**
 - [ ] 5 项实现手段**不出现在贡献列表或摘要贡献句中**
-- [ ] 泛化主张使用「**更小衰减（更鲁棒）**」口径，不得使用「OOD 精度更高」
+- [ ] 泛化主张写成**已量化的局限**（跨家族泛化不足 / 退到自身先验）；**既不得**写「OOD 精度更高」，**也不得**写「更小衰减（更鲁棒）」（后者已被 §14.18 实测否证）
 - [ ] CDPFold 校准对比已完成（**阻塞项**：若其校准与本文相当，C1 崩塌，骨架退为 C2 + C4）
 - [ ] 所有引用具备标题、作者/年份、标识符与 URL，否则标记 `待核验`（`spec/citation_register.csv`）
 

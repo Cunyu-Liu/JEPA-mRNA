@@ -11,12 +11,23 @@
 > **2026-09-24 更新**：A100 集群已接入（`ssh A100`），**数据与算力阻塞已解除**。
 > 权威的 benchmark / 数据 / 评测协议决策见 **`spec/benchmark_decision.md`**；本文件与其冲突时以该文件为准。
 
-**代码基础设施：`python -m pytest tests/ -q` → 291 passed, 0 failed**（集群 torch 2.5.1，权威环境）
+**代码基础设施：`python -m pytest tests/ -q` → 317 passed, 0 failed**（集群 torch 2.5.1，权威环境）
 
 > **2026-09-24 14:20 状态刷新**（细节见 `records/DECISION_TRAINING_LOG.md` §14.9–§14.14）：
 > 10 个臂在跑（6 个 from-scratch + 4 个 RiNALMo head-only），本轮新增 **4 个目标函数对照臂**（见 T-A4）。
 > **TS0 目前最好 micro F1 = 0.4957**（`rinalmo_ff` @2000，w 在 VL0 上选）；对照物
 > **ViennaRNA centroid 0.5393 / MXfold2 0.5651**（均为本仓库同口径实测）——**尚未超过物理基线，不得写成"优秀结果"**。
+
+> **2026-09-24 15:50 状态刷新**（细节见 §14.16–§14.20；这是**当前权威口径**）：
+> **16 个臂在跑**（6 from-scratch + 4 RiNALMo 原臂 + 4 目标函数对照臂 + 2 级联臂 + 1 容量臂）。
+> **TS0 headline 已落地且不依赖任何 VL0 选择**：`rinalmo_ff`@3500、`--prior-weight -1`（模型自训练权重 0.9627）
+> → **micro F1 0.4953 / macro 0.4858 / P 0.5325 / R 0.4629**；同一 checkpoint 用 VL0 选出的 `w=0.75` 得 0.4959
+> （**差 0.0006**，故 §14.15 问题 2 对 headline 的威胁已解除）。
+> **C1-c 只在「免 DP 仿射重标定」口径下 PASS**：`w=-1` gap **0.0002** / `w=0.75` **0.0006** / ArchiveII **0.0093**（阈值 0.02）；
+> **裸头 gap 0.1348，未过**——两个口径必须同时报。
+> 仍未超过物理基线（centroid 0.5393 / MXfold2 0.5651）；**跨家族 bpRNA-new 0.3094 vs ViennaRNA centroid 0.6770**，
+> 已退到自己的 Nussinov+Turner 先验（0.3015）水平 → **泛化不足，已量化，不得主张"OOD 更鲁棒"**。
+> **ArchiveII 只能用 3,950/3,966 行**且**不是 OOD 集**（26.7% 与 TR0 近重复）。
 
 | 类别 | 任务 | 状态 |
 |---|---|---|
@@ -25,7 +36,7 @@
 | **进行中** | Task 10(实际复现)、Task 11(教师安装)、Task 18(实际预训练)、Task 20(实际评测) | 🔄 |
 | **已作废** | Task 10.8 的**原始判据**（CDPFold 单点风险）——前提有误，见下 | ❌ |
 | **已作废（新）** | T-A4 的**原始表述**「按 GT 配对数归一」——实测后改为**按序列长度**归一（§14.12），判据已按实际口径更新 | ❌ |
-| **新增** | T-A8（评测溯源）、T-A9（先验权重逐 checkpoint 重选 + 评测脱离 ssh） | 见下表 |
+| **新增** | T-A8（评测溯源）、T-A9（先验权重逐 checkpoint 重选 + 评测脱离 ssh）、**T-A10（headline 去 VL0 化 + 收敛曲线同口径）** | 见下表 |
 
 ### 关键勘误（2026-09-24，必须执行）
 
@@ -338,7 +349,10 @@
 | **T-A6** | 监控脚本覆盖**直接启动**的运行（原先只读共享台账，直接启动的臂完全不可见） | 能发现静默死亡 | ✅ 已完成（commit `4218f73`） |
 | **T-A7** | 决策头**显存**修复：沿 `j` 分块 + 每块 `torch.utils.checkpoint` | L=498/B=4 由 OOM 降到 **2366 MiB**；前向逐位等价、梯度 fp64 精确到 1e-15 | ✅ 已完成（commit `2397364`，11 项测试） |
 | **T-A8**（新） | **评测记录的溯源**：目录名/`tag` 声称的步数必须能被 checkpoint 支持；活 `resume.pt` 不得用于事后读步数 | 每条记录有可靠步数或显式标注不可靠 | ✅ 已完成（`tools/summarize_evals.py` + `tools/fix_eval_record_provenance.py`；`ff3600→ff3500`、`ff500_ts0.json→ff_live_early_ts0`，见 §14.13） |
-| **T-A9**（新） | **先验权重逐 checkpoint 在 VL0 上重选**后再评测试集；评测任务一律 `setsid nohup` 脱离 ssh | 选择不在测试集上做；评测不因 ssh 断开而丢失 | 🔄 进行中（`run_ood_reselect.sh` 已 detached 启动，见 §14.14） |
+| **T-A9**（新） | **先验权重逐 checkpoint 在 VL0 上重选**后再评测试集；评测任务一律 `setsid nohup` 脱离 ssh | 选择不在测试集上做；评测不因 ssh 断开而丢失 | 🔄 进行中（`run_ood_reselect.sh` 已 detached 启动，见 §14.14）。**注**：该任务的价值已降级——headline 已改用模型自训练权重（T-A10），VL0 选 w 只作敏感性分析 |
+| **T-A10**（新，本轮） | **headline 去 VL0 化**：用 `--prior-weight -1`（模型自训练权重）重测 TS0，证明结论不依赖任何在 VL0 上的选择 | 两个口径的 micro F1 之差 ≪ 种子方差 | ✅ **TS0 已完成**（§14.20）：`w=-1` **0.4953** vs `w=0.75` **0.4959**，差 **0.0006**；且 `w=-1` 下 C1-c 重标定 gap 更紧（**0.0002**）。ArchiveII / bpRNA-new 排队中 |
+| **T-A11**（新，本轮） | **同口径收敛曲线**：`rinalmo_ff` 在 step 6000 / 10000、`w=-1` 的 TS0 评测（已有的三点各用了不同的 w，**不可连成曲线**） | 至少 3 个同口径点，能回答"再多训是否还在涨" | 🔄 `run_step_trend_eval.sh` 已 detached 启动（`eval_decision/step_trend.log`），与另两个评测队列**显式串行** |
+| **T-A12**（新，本轮） | **checkpoint 步数溯源**：`tools/ckpt_steps.py` 直接从 `.pt` 内读 `step` 字段，不从文件名推断 | 每个被引用的快照都有文件内步数证据 | ✅ 已完成：已核验 `rinalmo_ff_ff_w05_snapshot.pt` **文件内 `step=3500`**（与 `tag` 一致），并清点出 `rinalmo_ff` 可用快照 = 2000/4000/6000/10000 |
 
 ### 已下载/安装的资产（2026-09-24）
 

@@ -16,15 +16,15 @@
 | **C 数据清洗** | ✅ 管线已实现并通过 22 项测试 | MMseqs2/CD-HIT 真实执行未做（工具未安装） |
 | **D 基线复现** | 🔄 进行中 | **ViennaRNA 2.7.2 已装并锁定**（`mfe/centroid/mea` 三条已在 TS0 上跑完）；**MXfold2 已装并跑完 TS0**（唯一可得的学习型基线）；SPOT-RNA/UFold 权重源（Dropbox/Google Drive）**不可达 → C1-a 无法完成**；LinearPartition / RNAstructure / CONTRAfold 仍缺 |
 | **E 教师模型** | ✅ 已解除阻塞 | ViennaRNA 2.7.2 装在 `/mnt/cunyuliu/pylibs`（`/home` 配额满）；教师软标签已按锁定版本生成并自洽校验通过（`verify_teacher_labels() == True`）；吞吐实测仍未做 |
-| **F 架构实现** | ✅ 全部可验证 | 291 项测试通过（集群 torch 2.5.1）；数学核心达机器精度；决策头显存已修复（L=498/B=4 → 2366 MiB） |
+| **F 架构实现** | ✅ 全部可验证 | **317 项测试通过**（集群 torch 2.5.1）；数学核心达机器精度；决策头显存已修复（L=498/B=4 → 2366 MiB） |
 | **G 蒸馏与 RLCD** | ⚠️ 目标已实现并测试，但**实测发现 λ=1 下三项辅助项只占目标 2–3%** | 见 §14.12：`--nll-normalization length` 已实施，四项变为同量级；2×2 对照臂已启动，H6 尚无可结论 |
-| **H 下游任务** | 🔄 有训练权重可跑 | RiNALMo head-only 臂已产出 checkpoint（step 3500 已评测） |
-| **I 测评与消融** | 🔄 进行中 | TS0 已有多点结果；**目前最好 micro F1 = 0.4957**，仍低于 ViennaRNA centroid **0.5393** 与 MXfold2 **0.5651**；ArchiveII / bpRNA-new 正在跑 |
-| **J 量化门限** | 🔄 部分核验 | G1/G2（非法率、发夹环违规率）在**每个评测点均为 0**；C1-c 分两口径（裸头 0.0877 未过 / 仿射重标定 0.00118 PASS）；G5 仍**故意 FAIL** |
-| **K 假设结论** | 🔄 有中间结论 | C1-c 趋势、解码口径负结果、先验权重效应区间（+0.010~+0.048）已记录；**均为中间结论** |
+| **H 下游任务** | 🔄 有训练权重可跑 | RiNALMo head-only 臂已产出 checkpoint（step 3500 已评测，step 2000/4000/6000/10000 快照已落盘且**步数已从文件内读出核验**） |
+| **I 测评与消融** | 🔄 进行中 | **TS0 headline（`w=-1`，不依赖 VL0 选择）= micro F1 0.4953 / macro 0.4858**；仍低于 ViennaRNA centroid **0.5393** 与 MXfold2 **0.5651**。ArchiveII（3,950 行，`w=0.75`）= **0.5829**（**非 OOD 集**）；bpRNA-new = **0.3094**（跨家族）。as-trained 的 ArchiveII / bpRNA-new 与 step 6000/10000 趋势**排队中** |
+| **J 量化门限** | 🔄 部分核验 | G1/G2（非法率、发夹环违规率）在**每个评测点均为 0**；C1-c 分两口径（裸头 `w=-1` **0.1348** 未过 / 仿射重标定 **0.0002** PASS）；G5 仍**故意 FAIL**；速度门 S1–S9 **未核验**（带状解码路径未接评测） |
+| **K 假设结论** | 🔄 有中间结论 | C1-c 趋势、解码口径负结果、先验权重效应区间（+0.010~+0.048）、**headline 不依赖 VL0（差 0.0006）**、**跨家族退到自身先验水平**已记录；H6（2×2）**尚无结论**；**全部为中间结论** |
 | **L 论文与投稿** | 🟡 部分 | 脚手架与 linter 已完成；稿件未撰写 |
 
-**测试基线**：`python -m pytest tests/ -q` → **291 passed, 0 failed**（集群 torch 2.5.1；本地 torch 2.8.0 下 `test_head_chunking.py` 有 4 项 `torch.equal` 因分块累加顺序失败，非逻辑缺陷）
+**测试基线**：`python -m pytest tests/ -q` → **317 passed, 0 failed**（集群 torch 2.5.1；本地 torch 2.8.0 下 `test_head_chunking.py` 有 4 项 `torch.equal` 因分块累加顺序失败，非逻辑缺陷）
 
 **诚实性声明**：**ViennaRNA 2.7.2 已真实安装并使用**（版本已锁定）。仍未安装的工具（RNAstructure / LinearPartition / MMseqs2 / CD-HIT / UFold / SPOT-RNA）一律以抛错的干净 stub 呈现，**从未伪造输出**；`citation_register.csv` 全部标 `待核验`。
 
@@ -57,7 +57,7 @@
 - [x] **C1-b**：与 **ViennaRNA 精确配分函数概率**、**LinearPartition 近似 BPP** 做**同口径** ECE / Brier 对比
   - **部分完成**：ViennaRNA 2.7.2 精确 BPP 已完成（TS0：ECE **0.0048** / Brier 0.0051 / NLL 0.0259，与 `evaluate_decision.py` **共用同一份指标实现**，见 `eval/ss/reference_calibration.py`）。**LinearPartition 未装 → 该项未完成。**
 - [ ] **C1-c**：System-1 头 ECE 与精确边际 `p̂^exact` 的 ECE 之差 **≤ 0.02**（原 S7 门限）
-  - **分两口径，不得混写**：① **裸头**：step 3500 上 gap = **0.0877**（精确边际 0.0022），**未过**；趋势从 step 20 的 0.549 单调降到 0.0877。② **免 DP 仿射重标定**（`sigmoid(a·s+b)`，2 参数在 VL0 上拟合，**评测期不跑配分函数**）：gap = **0.00118 PASS**。→ **当前只有 ② 成立。**
+  - **分两口径，不得混写**：① **裸头**：step 3500、`w=-1` 上 gap = **0.1348**（`w=0.75` 时 0.1053），**未过**；趋势从 step 20 的 0.549 单调下降。② **免 DP 仿射重标定**（`sigmoid(a·s+b)`，2 参数在 VL0 上拟合，**评测期不跑配分函数**）：gap = **0.0002**（TS0，`w=-1`）/ **0.0006**（TS0，`w=0.75`）/ **0.0093**（ArchiveII，`w=0.75`），**全部 PASS**。→ **当前只有 ② 成立**；两个 split、两个口径都必须报。
 - [ ] **校准指标口径已自行定义并冻结**（领域空白：未检索到 RNA 配对概率的 ECE/可靠性图/Brier/NLL 系统评测），含配对间相关性处理与结构层面校准
 - [x] **§2.4「明确不主张」清单存在**，含 6 条禁止表述（不主张首创 Gibbs、不主张共转录顺序创新、不主张非法率=0 是贡献、不主张 `MLP_T=0` 等于 ViennaRNA、不主张复现 RLCD、不主张复杂度优于 LinearFold）
 - [x] **§9.3 预期审稿质疑 Q1–Q12 应答表存在**，每条标注所需证据

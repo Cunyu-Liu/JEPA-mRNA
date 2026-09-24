@@ -42,7 +42,7 @@ cd /home/cunyuliu/rna-jepa || exit 1
 # The cascade materialises a dense (B, L, L) score matrix (the DP is O(L^3) dense in
 # this implementation regardless), so its peak is comparable to the flat head's.
 DEV="${RNAJEV_CASCADE_GPU:-MIG-10b9b777-a776-56de-9f7c-efde6c584f71}"
-TAG=rinalmo_casc_b4_s0
+TAG="${RNAJEV_CASCADE_TAG:-rinalmo_casc_b4_s0}"
 OUT=$D/runs/$TAG
 LOG=$D/runs/$TAG.log
 
@@ -60,8 +60,9 @@ CUDA_VISIBLE_DEVICES="$DEV" setsid nohup "$PY" -m rnajepa.train_decision \
     --teacher-dir "$TEACHER" \
     --embedding-dir "$EMB" --embedding-d-model 1280 \
     --head cascade --cascade-block-size 8 \
-    --cascade-l0 1 --cascade-l1 1 --cascade-l2 1 --cascade-sparse 0.1 \
-    --cascade-miss-cost 20 \
+    --cascade-l0 1 --cascade-l1 1 --cascade-l2 1 \
+    --cascade-miss-cost "${RNAJEV_CASCADE_MISS_COST:-20}" \
+    --cascade-sparse "${RNAJEV_CASCADE_SPARSE:-0.1}" \
     --nll-normalization length \
     --lambda-nll 1 --lambda-distill 1 --lambda-rlcd 1 --lambda-cal 1 \
     > "$LOG" 2>&1 < /dev/null &
