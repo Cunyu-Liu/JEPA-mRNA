@@ -32,12 +32,20 @@ marginals of the same model of **0.0002**, against a pre-registered threshold of
 The map is applied at evaluation time and involves no partition function. The raw,
 unrecalibrated head does **not** pass this gate (gap 0.1348), and we report both.
 
-Structure accuracy is **not** a win: our micro F1 on TS0 is **0.4953**, against
-ViennaRNA centroid **0.5393** and MXfold2 **0.5651** measured on the same split with
-the same metric implementation. Cross-family generalization is insufficient and is
-reported as such: on bpRNA-new our micro F1 is **0.3094**, statistically
-indistinguishable from our own Nussinov+Turner prior (**0.3015**), while ViennaRNA
-centroid reaches **0.6770** on the same split.
+Structure accuracy is **not** a uniform loss, and the aggregate number is misleading in
+both directions. Pooled over TS0 our micro F1 is **0.4953**, against ViennaRNA centroid
+**0.5393** and MXfold2 **0.5651** on the same split. But the split is a mixture of two
+source populations with very different difficulty, and stratifying by them reverses the
+conclusion for one of them: on the conserved `CRW` entries (rRNA/tRNA-derived) of at
+most 100 nt we reach **0.9664** where centroid reaches **0.6729** — a gain of 0.29,
+replicated on the independent validation split (**0.9709** vs 0.6702) with no measurable
+homology to training; on the diverse `RFAM` entries of the same length we reach
+**0.5490** against centroid's **0.6209**. The pooled number is dominated by the larger
+`RFAM` stratum.
+
+Cross-family generalization is insufficient and is reported as such: on bpRNA-new our
+micro F1 is **0.3094**, statistically indistinguishable from our own Nussinov+Turner
+prior (**0.3015**), while ViennaRNA centroid reaches **0.6770** on the same split.
 
 We conclude that DP-free calibration is achievable, and that it is achievable *without*
 cross-family generalization — a dissociation that we quantify rather than paper over.
@@ -54,7 +62,8 @@ reliability diagrams, Brier score or NLL for their pair probabilities.
 
 That leaves two questions unanswered at the same time. *Can a cheap probability be
 trusted?* and *if it can, what does it cost in accuracy?* This draft answers the first
-with a measurement and the second with an honest negative.
+with a measurement and the second with a stratification: the cost is not a single
+number, and reporting only the pooled one misstates the method in both directions.
 
 The framework is deliberately borrowed rather than invented. We train a log-linear
 model over the non-crossing structure space with an exact partition function during
@@ -161,13 +170,59 @@ Two sensitivity checks:
 ECE **0.0048**. Our recalibrated head is at **0.0023** — the same order of magnitude,
 obtained without a partition function.
 
-### 4.3 Structure accuracy: we do not beat the physical baselines
+### 4.3 Structure accuracy: the pooled number is misleading in both directions
+
+Pooled, we do not beat the physical baselines:
 
 | Split | Ours (micro F1) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | Nussinov+Turner prior |
 |---|---|---|---|---|---|
 | TS0 | **0.4953** | **0.5393** | 0.5222 | **0.5651** | 0.2124 |
 | ArchiveII (3,950) | 0.5829 | 0.6207 | 0.5764 | — | 0.2010 |
 | bpRNA-new (5,388) | **0.3094** | **0.6770** | 0.6379 | — | **0.3015** |
+
+But TS0 is a mixture. bpRNA-1m sequence names carry their source database, and the two
+large sources have very different structural character: `CRW` (Comparative RNA Web) is
+dominated by rRNA and tRNA with conserved, canonical structures, while `RFAM` spans a
+wide range of families. Their proportions differ sharply between splits — `CRW` is 6.0%
+of TR0, 7.3% of TS0, and **50.5% of VL0**.
+
+Stratifying TS0 and VL0 by source *and* matching on length (at most 100 nt), same
+checkpoint, same metric implementation:
+
+| Split | Stratum | n | **Ours** | ViennaRNA centroid | ViennaRNA mfe | Nussinov+Turner prior |
+|---|---|---|---|---|---|---|
+| **TS0** | `CRW`, <=100 nt | 68 | **0.9664** | 0.6729 | 0.6413 | 0.4187 |
+| **TS0** | `RFAM`, <=100 nt | 486 | 0.5490 | **0.6209** | 0.5913 | 0.2893 |
+| **VL0** | `CRW`, <=100 nt | 81 | **0.9709** | 0.6702 | 0.6693 | 0.4365 |
+| **VL0** | `RFAM`, <=100 nt | 43 | **0.7824** | 0.5393 | 0.5163 | 0.3203 |
+
+Three things follow.
+
+**First, on the conserved stratum we beat the partition-function baseline by a wide
+margin: +0.29 on TS0 and +0.30 on VL0.** The two splits are independent and agree to
+0.005, and our own physical prior sits at 0.42, so the learned head is supplying real
+discriminative power rather than riding on physics. We checked the obvious way this
+could be an artefact and it is not: 20-mer containment against the training split is
+0.048 on TS0-`CRW` with a maximum of 0.33, **no sequence above 0.5**, and zero exact
+matches. This is a genuine held-out result, and it is the strongest positive result in
+this draft.
+
+**Second, on the diverse stratum we lose by 0.07.** Pooling the two strata reproduces
+the aggregate (TS0 at most 100 nt pools to 0.6386; VL0 to 0.9304), so the pooled
+comparison is dominated by the larger `RFAM` stratum.
+
+**Third, this explains an anomaly we could not previously account for.** The same
+checkpoint scores 0.9304 on VL0's at-most-100 nt bucket and 0.6386 on TS0's, a gap of
+0.29 that we had earlier suspected was leakage or an unidentified bug. It is
+composition: VL0's short bucket is 65% `CRW`, TS0's is 12%. A homology explanation was
+tested and rejected — the two splits have almost identical 20-mer containment to
+training (0.0423 vs 0.0403) and VL0's F1 is flat across containment bins.
+
+`CRW` and `RFAM` are **source-database labels, not verified family labels**; sequence
+names are unique within each split, so no family field is recoverable from them. This
+stratification is a reproducible proxy that correlates with molecule type and
+structural conservation, and it is not a substitute for a family-level split, which we
+have not done.
 
 ViennaRNA and MXfold2 rows are our own measurements on our own split files with our own
 metric implementation, so these comparisons are like-for-like within this table. They
@@ -176,7 +231,9 @@ different redundancy thresholds and different aggregation conventions.
 
 ### 4.4 Cross-family generalization is insufficient (quantified)
 
-On bpRNA-new the picture inverts. The physical baseline *improves* — ViennaRNA
+§4.3 shows the model is strong where structures are conserved and weak where they are
+diverse. bpRNA-new is the extreme of the latter: it is built from *new* families by
+construction. There the picture inverts. The physical baseline *improves* — ViennaRNA
 centroid goes from 0.5393 on TS0 to **0.6770** — while our model falls from 0.4953 to
 **0.3094**, and 0.3094 is indistinguishable from our own Nussinov+Turner prior at
 **0.3015**. In other words, across families the learned head contributes essentially
@@ -214,10 +271,14 @@ the hypothesis as a hypothesis.
    hosted on Dropbox, Google Drive and NihaoCloud, none of which is reachable from our
    cluster; Zenodo is also unreachable. The claim is therefore *not made*, not *failed*.
 2. **Cross-family generalization is insufficient**, and §4.4 quantifies it rather than
-   arguing it away.
+   arguing it away. The same weakness shows up within-distribution as a sharp dependence
+   on how conserved the source population is (§4.3): we beat the partition-function
+   baseline by 0.29 on the conserved stratum and lose by 0.07 on the diverse one, so
+   **any single pooled F1 for this method is misleading** and we report both strata.
 3. **The raw head is not calibrated.** Only the two-parameter affine recalibration
-   passes the gate, and the recalibration parameters come from a validation split
-   whose relationship to the test split we do not fully understand (§4.2).
+   passes the gate. The map is fitted on bpRNA VL0, which §4.3 shows is a
+   composition-skewed split (50.5% `CRW` against TS0's 7.3%), so it is a poor proxy for
+   TS0 in general; the headline result therefore does not select anything on it.
 4. **Training-set labels are a compilation, not experiment.** bpRNA-1m's structures
    are assembled from several sources, and a ~96% precision ceiling on pair labels has
    been reported for it. This bounds what any F1 on these splits can mean.
@@ -242,11 +303,18 @@ partition-function marginals' calibration error, using two parameters fitted wit
 partition function. That is the positive result, and it is measured on a clean
 in-distribution split with no test-set selection.
 
-The same model does not beat the physical baselines on accuracy, and across families it
-collapses to its own prior while the physical baselines improve. We report that as the
-central limitation rather than as a footnote, because a calibration result that does not
-transfer across families is only half a result — and the half that is missing is the
-half the field actually needs.
+On accuracy the answer is stratified rather than negative. Where structures are
+conserved — the `CRW` stratum of short sequences — the DP-free head reaches 0.9664
+against the partition-function baseline's 0.6729, replicated on an independent split
+and with no measurable homology to training. Where structures are diverse — `RFAM`
+short sequences, and above all the new families of bpRNA-new — it loses, and across
+families it collapses to its own physical prior while the physical baseline improves.
+
+We report the stratified result as the main accuracy finding rather than the pooled
+number, because the pooled number is dominated by the stratum where we lose and would
+understate the method. The complement matters just as much: a calibration result that
+does not transfer across families is only half a result, and the half that is missing
+is the half the field actually needs.
 
 ## Appendix A. Evidence ledger
 
@@ -261,9 +329,11 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | ArchiveII, `w=0.75` | `eval_decision/sel_ff3500_archiveii_embok/result.json` | same, `--data ss_data/jsonl/archiveii_embok.jsonl --embedding-split archiveii` |
 | bpRNA-new, `w=0.75` | `eval_decision/sel_ff3500_bprna_new/result.json` | same, `--data ss_data/jsonl/bprna_new.jsonl` |
 | ViennaRNA baselines | `records/BASELINE_RESULTS.md` §1 | `eval/ss/baselines.py` |
+| Source-stratified baselines (§4.3) | `eval_decision/baselines_{ts0,vl0}_{crw,rfam}_le100.json` | `eval/ss/run_baselines.py --split {ts0,vl0}_{crw,rfam}_le100` |
+| Homology vs F1, and the leakage check | `eval_decision/homology_vs_f1.json` | `tools/homology_vs_f1.py --train ss_data/jsonl/bprna_tr0.jsonl --pair sel_ff3500_bprna_ts0 --pair vl0sw_w0.75_bprna_vl0 --pair sel_ff3500_bprna_new --k 20` |
 | MXfold2 | `records/BASELINE_RESULTS.md` §5 | `python -m mxfold2 predict` |
 | ViennaRNA exact BPP calibration | `eval/ss/reference_calibration.py` | — |
-| Checkpoint step provenance | `ckpt_steps.py` | reads `step` from inside each `.pt` |
+| Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |
 | Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14 | — |
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
@@ -298,3 +368,9 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    four-way objective-function comparison (does the calibration term do anything?),
    two hierarchical-cascade arms, and a 4.8x-capacity arm. No conclusion about any of
    them appears in this draft.
+4. **The §4.3 stratification is a source-database proxy, not a family split.** It uses
+   `CRW` / `RFAM` as they appear in bpRNA-1m sequence names, and the two strata are
+   also not length-matched *to each other* — they are each truncated at 100 nt. The
+   `CRW` strata are small (68 and 81 sequences), so the +0.29 / +0.30 margins rest on
+   few independent examples even though the two splits agree. A verified family-level
+   split has not been run.
