@@ -22,10 +22,15 @@
 # being ignored.  They are now enumerated by UUID, because setting the *parent index*
 # leaves it ambiguous which instance you get, while the UUID is exact.
 #
-# Free memory for an instance is derived from its profile name, since this driver does
-# not report per-instance free memory (``nvidia-smi -i MIG-<uuid>`` returns
-# "No devices were found").  That is a capacity estimate rather than a measurement, so
-# jobs dispatched to a MIG target still go through the OOM-retry path.
+# Free memory for an instance is **measured** by ``tools/mig_free.py``, which runs
+# ``torch.cuda.mem_get_info()`` inside each instance (the only accurate source --
+# see that file for why nvidia-smi cannot do it here).  The earlier version derived
+# free memory from the profile name, which reports the slice *size*: on
+# 2026-09-24 10:43 every one of the nine instances was occupied by a live run, yet
+# the estimate reported 20480 MiB free for both 3g.20gb slices and 5120 MiB for all
+# seven 1g.5gb slices.  A dispatcher reading that will submit into a full slice and
+# lose the run to an OOM.  The profile figure is kept only as a fallback for when
+# the probe cannot run at all.
 _mig_enabled_indices() {
   nvidia-smi --query-gpu=index,mig.mode.current --format=csv,noheader,nounits 2>/dev/null \
     | awk -F', *' '$2 ~ /Enabled/ {print $1}'
@@ -54,7 +59,17 @@ list_schedulable_gpus() {
       if ! echo "$mig" | grep -qx "$idx"; then echo "$idx $free"; fi
     done
 
-  # MIG instances: one line per instance, keyed by UUID
+  # MIG instances: measured free memory, keyed by UUID
+  local measured
+  measured="$("${RNAJEV_PY:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}" \
+      "$(dirname "${BASH_SOURCE[0]}")/../tools/mig_free.py" 2>/dev/null \
+      | awk '$2 ~ /^[0-9]+$/ {print $1, $2}')"
+  if [ -n "$measured" ]; then
+    echo "$measured" | sort -k2,2nr
+    return
+  fi
+
+  # fallback: profile-name estimate (capacity, not availability)
   nvidia-smi -L 2>/dev/null | awk '
     /^GPU [0-9]+:/ { parent = $2; sub(":", "", parent) }
     /MIG/ {
