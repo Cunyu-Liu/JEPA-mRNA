@@ -63,7 +63,12 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_HERE, "..", "..", "src"))
 sys.path.insert(0, os.path.join(_HERE, "..", ".."))
 
-from rnajepa.harness import inside_outside, nussinov_map, valid_pair_mask  # noqa: E402
+from rnajepa.harness import (  # noqa: E402
+    fold_system1,
+    inside_outside,
+    nussinov_map,
+    valid_pair_mask,
+)
 from rnajepa.distill import pair_indicator  # noqa: E402
 from rnajepa.train_decision import (  # noqa: E402
     BASE_TO_ID,
@@ -166,6 +171,19 @@ def _sync(device: str) -> None:
         torch.cuda.synchronize()
 
 
+def _decode(scores_np: "np.ndarray", mask: "np.ndarray", args):
+    """System-1 structure from the head's scores, under the requested decoder.
+
+    ``scores_np`` carries ``-inf`` on illegal pairs; both decoders mask those out,
+    so the sentinel is never read.  ``band`` restricts candidates to ``j - i <= band``,
+    which is what makes the decode near-linear -- and what makes it lose long-range
+    pairs, hence the requirement to report its F1 next to the exact one.
+    """
+    if args.decode == "band":
+        return fold_system1(scores_np, mask, band=int(args.band))
+    return nussinov_map(scores_np, mask)
+
+
 def evaluate(args: argparse.Namespace) -> Dict[str, object]:
     _check_device_request(args.device, allow_cpu=args.allow_cpu)
     device = args.device
@@ -229,7 +247,7 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             scores_np = np.where(mask, scores_np, -np.inf)
 
             t2 = time.perf_counter()
-            pred_pairs = [tuple(p) for p in nussinov_map(scores_np, mask)]
+            pred_pairs = [tuple(p) for p in _decode(scores_np, mask, args)]
             t3 = time.perf_counter()
 
             # ---- reference only: exact marginal, for the C1-c comparison.
@@ -344,6 +362,12 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             "n_illegal": illegal, "n_hairpin_violations": hairpin_violations,
         },
         "latency": latency.report(),
+        "decode": {"mode": args.decode, "band": (args.band if args.decode == "band"
+                                                else None),
+                   "meaning": ("exact = nussinov_map, O(L^3) numpy, exact max-product; "
+                               "band = fold_system1 with j-i <= band, the fast path "
+                               "spec 5.0.1 defines System-1 as. Banding trades "
+                               "long-range pairs for speed, so report both F1s.")},
         "latency_note": ("system1_* is the claim (one forward + legal decode, no partition "
                          "function). exact_marginal_ms is a reference measurement for "
                          "C1-c and is NOT part of the System-1 latency."),
@@ -365,6 +389,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--max-length", type=int, default=0)
     parser.add_argument("--n-bins", type=int, default=10)
     parser.add_argument("--progress", type=int, default=0)
+    parser.add_argument("--decode", choices=["exact", "band"], default="exact",
+                        help="System-1 decoder: 'exact' is nussinov_map (O(L^3) in "
+                             "numpy), 'band' is the banded max-product path the spec "
+                             "actually defines System-1 as. Report both.")
+    parser.add_argument("--band", type=int, default=128,
+                        help="band width j - i <= band when --decode band")
     parser.add_argument("--exact-marginal-limit", type=int, default=300,
                         help="compute the exact marginal (C1-c reference) for the "
                              "first N sequences; 0 = all, negative = none")

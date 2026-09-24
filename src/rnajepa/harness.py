@@ -158,9 +158,13 @@ def structure_weight(structure: Structure, scores: np.ndarray) -> float:
 # ---------------------------------------------------------------------------
 # max-product (Nussinov) DP + traceback
 # ---------------------------------------------------------------------------
-def _max_dp(scores: np.ndarray, mask: np.ndarray, band: Optional[int] = None,
-            min_loop: int = MIN_LOOP):
-    """Max-product DP tables.
+def _max_dp_reference(scores: np.ndarray, mask: np.ndarray,
+                      band: Optional[int] = None, min_loop: int = MIN_LOOP):
+    """Max-product DP tables -- the original scalar-over-``i`` implementation.
+
+    Kept as the reference the vectorised path is verified against, bit-for-bit on
+    ``N``, ``dec`` and ``kp``.  Do not delete: without it the equivalence claim is
+    unfalsifiable.
 
     ``N[i, j]`` is the optimal weight of a legal structure confined to ``[i, j]``;
     ``dec``/``kp`` record the argmax for traceback.  Recurrence (as specified):
@@ -224,6 +228,80 @@ def _max_dp(scores: np.ndarray, mask: np.ndarray, band: Optional[int] = None,
             N[i, j] = best
             dec[i, j] = bdec
             kp[i, j] = bk
+
+    return N, dec, kp
+
+
+def _max_dp(scores: np.ndarray, mask: np.ndarray, band: Optional[int] = None,
+            min_loop: int = MIN_LOOP):
+    """Dispatch: vectorised by default, the reference when ``RN_FAST_MAX_DP=0``."""
+    import os as _os
+    if _os.environ.get("RN_FAST_MAX_DP", "1") == "0":
+        return _max_dp_reference(scores, mask, band=band, min_loop=min_loop)
+    return _max_dp_fast(scores, mask, band=band, min_loop=min_loop)
+
+
+def _max_dp_fast(scores: np.ndarray, mask: np.ndarray, band: Optional[int] = None,
+                 min_loop: int = MIN_LOOP):
+    """Vectorised max-product DP: one set of array ops per span ``d``.
+
+    Same recurrence and the same tie-breaking order as :func:`_max_dp_reference`
+    (unpaired-j, unpaired-i, pair(i,j), then the partner scan keeping the *first
+    strictly greater* k).
+    """
+    L = scores.shape[0]
+    N = np.zeros((L, L), dtype=np.float64)
+    dec = np.zeros((L, L), dtype=np.int8)
+    kp = np.full((L, L), -1, dtype=np.int64)
+
+    for d in range(1, L):
+        if d <= min_loop:
+            continue
+        n_i = L - d
+        if n_i <= 0:
+            continue
+        rows = np.arange(n_i)
+        cols = rows + d
+
+        best = N[rows, cols - 1]                 # fancy indexing copies, no aliasing
+        bdec = np.zeros(n_i, dtype=np.int8)
+        bk = np.full(n_i, -1, dtype=np.int64)
+
+        v = N[rows + 1, cols]                    # unpaired i
+        take = v > best
+        best = np.where(take, v, best)
+        bdec[take] = 1
+
+        pair_ok = mask[rows, cols]
+        if band is not None:
+            pair_ok = pair_ok & (d <= band)
+        v = np.where(pair_ok, N[rows + 1, cols - 1] + scores[rows, cols], -math.inf)
+        take = v > best
+        best = np.where(take, v, best)
+        bdec[take] = 2
+
+        n_k = d - min_loop - 1
+        if n_k > 0:
+            U = np.arange(n_k)[:, None]
+            R = rows[None, :]
+            cand = (N[R, R + U] + N[R + 2 + U, R + d - 1]
+                    + scores[R + 1 + U, R + d])
+            ok = mask[R + 1 + U, R + d]
+            if band is not None:
+                # j - k for k = i+1 .. i+n_k is d-1 .. min_loop+1, independent of i
+                ok = ok & (np.arange(d - 1, min_loop, -1) <= band)[:, None]
+            ok = ok & ~np.isnan(cand)
+            cand = np.where(ok, cand, -math.inf)
+            idx = np.argmax(cand, axis=0)        # first max, as in the scalar scan
+            v = cand[idx, np.arange(n_i)]
+            take = v > best
+            best = np.where(take, v, best)
+            bdec[take] = 3
+            bk[take] = (rows + 1 + idx)[take]
+
+        N[rows, cols] = best
+        dec[rows, cols] = bdec
+        kp[rows, cols] = bk
 
     return N, dec, kp
 
