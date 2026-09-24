@@ -65,16 +65,19 @@ number necessarily shows a loss. The conserved-stratum advantage is not memorisa
 containment against the training split there is 0.048 with no sequence above 0.5 — and it
 replicates on the independent validation split (0.9709 vs 0.6702).
 
-Cross-family generalization is the method's dominant weakness: on bpRNA-new our micro
-F1 is **0.3536** against ViennaRNA centroid's **0.6770** — a deficit of 0.32. It is not
-a total collapse (our own Nussinov+Turner prior scores 0.3015, so the learned head still
-adds 0.05), but it is far from competitive. Notably, the calibration result **does**
-survive the cross-family shift: the recalibrated C1-c gap on bpRNA-new is **0.0014**,
-inside the same 0.02 threshold. A model can rank poorly and still report honest
-probabilities, and on this benchmark it does.
+Cross-family generalization is the method's dominant weakness, and data scaling is what
+moves it: on bpRNA-new our TR0-trained model reaches micro F1 **0.3536**, while the same
+recipe on 4.29x more training data reaches **0.5162** (+0.163) — against ViennaRNA
+centroid's **0.6770** and UFold's **0.6106**. The deficit is no longer a collapse but it
+is still 0.16-0.09, and we report it as the main open number. Notably, the calibration
+result **does** survive both the cross-family shift and the data scaling (recalibrated
+C1-c gap 0.0014 on TR0 and 0.00078 on TR1, inside the same 0.02 threshold). A model can
+rank poorly and still report honest probabilities, and on this benchmark it does.
 
-We conclude that DP-free calibration is achievable, and that it is achievable *without*
-cross-family generalization — a dissociation that we quantify rather than paper over.
+We conclude that DP-free calibration is achievable, that it dissociates from ranking
+quality — a dissociation we quantify rather than paper over — and that the two scaling
+axes we measure (head capacity, training data) buy different things: capacity buys
+pooled accuracy (+0.047), data buys cross-family generalisation (+0.163).
 
 ## 1. Introduction
 
@@ -241,11 +244,20 @@ obtained without a partition function.
 Pooled, we now sit between the physical baselines and the strongest published deep
 baselines, and the capacity sweep moves us further up:
 
-| Split | Ours (micro F1, 128-dim head) | Ours (4.8x-capacity head) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
-|---|---|---|---|---|---|---|---|---|
-| TS0 | **0.5958** | **0.6425** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
-| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
-| bpRNA-new (5,388) | **0.3536** | queued | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+| Split | Ours (micro F1, 128-dim head, TR0) | Ours (4.8x-capacity head, TR0) | Ours (TR1: 4.29x data) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
+|---|---|---|---|---|---|---|---|---|---|
+| TS0 | **0.5958** | **0.6425** | 0.5840 | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
+| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
+| bpRNA-new (5,388) | 0.3536 | queued | **0.5162** | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+
+The TR1 column is the data-scaling experiment: same recipe, same 20,000 steps, training
+corpus expanded 4.29x (10,682 -> 45,865 sequences after de-duplication). Its reading
+is the mirror image of the capacity experiment — **in-distribution it costs −0.012
+(0.5958 -> 0.5840, within twice the seed spread), while cross-family it gains +0.163
+(0.3536 -> 0.5162, sixty times the seed spread)**. Data scaling buys generalisation,
+not pooled accuracy; head capacity buys pooled accuracy and (pending the queued
+cross-family run) may or may not buy generalisation. The two axes are separable, and
+the combination arm (4.8x capacity x 4.29x data) is training.
 
 Three readings of this table, stated exactly:
 
