@@ -29,8 +29,70 @@ import inventory as I  # noqa: E402
 
 
 # ===========================================================================
-# 1. inventory
+# external predictions (MXfold2): the flag must actually be read
 # ===========================================================================
+def _write_split(tmp_path, records):
+    """A minimal <split>.jsonl in the layout run_baselines.read_records expects."""
+    path = tmp_path / "synth.jsonl"
+    path.write_text("\n".join(
+        json.dumps({"seq": seq, "structure": struct}) for seq, struct in records) + "\n",
+        encoding="utf-8")
+    return str(tmp_path)
+
+
+def test_external_dbn_is_actually_scored(tmp_path, monkeypatch):
+    """`--external-dbn` used to be accepted and silently ignored.
+
+    The patch that added it defined the main-block edit but never applied it (it
+    only ran the CLI and reader edits), so the flag parsed fine and produced a
+    result file with no external row.  A baseline script that silently drops a row
+    is worse than one that fails: the table looks complete.  This test asserts the
+    row is present, so the flag cannot go dead again unnoticed.
+    """
+    import run_baselines as RB
+
+    records = [("GGGGAAAACCCC", "((((....))))"), ("GCGCGCGCGC", "((........))")]
+    monkeypatch.setattr(RB, "JSONL_DIR", _write_split(tmp_path, records))
+
+    dbn = tmp_path / "ext.dbn"
+    dbn.write_text("".join(f">s{i}\n{seq}\n{struct} (0.0)\n"
+                           for i, (seq, struct) in enumerate(records)), encoding="utf-8")
+    out = tmp_path / "out.json"
+
+    rc = RB.main(["--split", "synth", "--baselines", "", "--external-dbn", str(dbn),
+                  "--external-name", "mxfold2", "--out", str(out)])
+    assert rc == 0
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert "mxfold2" in data["baselines"], list(data["baselines"])
+    entry = data["baselines"]["mxfold2"]
+    assert entry["micro_f1"] == 1.0  # the file holds the ground truth
+    assert entry["n_sequences"] == len(records)
+    assert "ext.dbn" in entry["source"]
+
+
+def test_external_dbn_misaligned_with_the_split_is_refused(tmp_path, monkeypatch):
+    """A reordered or truncated file must fail, not score the wrong structures."""
+    import run_baselines as RB
+
+    records = [("GGGGAAAACCCC", "((((....))))"), ("GCGCGCGCGC", "((........))")]
+    monkeypatch.setattr(RB, "JSONL_DIR", _write_split(tmp_path, records))
+
+    short = tmp_path / "short.dbn"
+    short.write_text(f">s0\n{records[0][0]}\n{records[0][1]} (0.0)\n", encoding="utf-8")
+    with pytest.raises(SystemExit):
+        RB.main(["--split", "synth", "--baselines", "", "--external-dbn", str(short),
+                 "--out", str(tmp_path / "o1.json")])
+
+    # right count, wrong sequence at position 1 -> the position check must fire
+    swapped = tmp_path / "swapped.dbn"
+    swapped.write_text("".join(f">s{i}\n{seq}\n{struct} (0.0)\n" for i, (seq, struct)
+                               in enumerate(reversed(records))), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        RB.main(["--split", "synth", "--baselines", "", "--external-dbn", str(swapped),
+                 "--out", str(tmp_path / "o2.json")])
+
+
+
 def test_inventory_every_source_has_a_four_category_status():
     inv = I.build_inventory(offline=True)
     assert inv["entries"], "inventory is empty"

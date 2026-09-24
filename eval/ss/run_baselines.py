@@ -156,7 +156,7 @@ def score_all(records, predictor) -> Dict[str, object]:
     }
 
 
-def main() -> int:
+def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", default="bprna_ts0")
     ap.add_argument("--limit", type=int, default=0)
@@ -167,7 +167,7 @@ def main() -> int:
                          "score against --split, in the same order")
     ap.add_argument("--external-name", default="external",
                     help="label for the --external-dbn row")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     records = read_records(args.split, args.limit)
     print(f"[base] {args.split}: {len(records)} sequences", flush=True)
@@ -197,6 +197,41 @@ def main() -> int:
                            if name == "nussinov_turner" else f"ViennaRNA {name}")
         result["baselines"][name] = entry
         print(f"[base] {name}: micro_f1={entry['micro_f1']:.4f} "
+              f"macro_f1={entry['macro_f1']:.4f} inf={entry['inf']:.4f} "
+              f"({entry['wall_seconds']}s)", flush=True)
+
+    if args.external_dbn:
+        # MXfold2 is the one *learned* baseline whose weights are obtainable, and it
+        # runs in a different conda env, so it is driven as a CLI over FASTA and its
+        # dot-bracket output is scored here -- through score_all, i.e. the same metric
+        # code as every other row.
+        #
+        # The order check is the point: structures are matched to records by position,
+        # so a reordered or filtered file would silently score the wrong structures
+        # against the right labels and produce a plausible number.
+        preds = read_dbn_fasta(args.external_dbn)
+        if len(preds) != len(records):
+            raise SystemExit(
+                f"--external-dbn has {len(preds)} structures but {args.split} has "
+                f"{len(records)} records; they must be scored in the same order")
+        for k, ((seq, _struct), (rec_seq, _gt)) in enumerate(zip(preds, records)):
+            if seq != rec_seq:
+                raise SystemExit(
+                    f"--external-dbn record {k} is {len(seq)} nt but the split's is "
+                    f"{len(rec_seq)} nt: the file is not aligned with --split")
+        print(f"[base] scoring external predictions from {args.external_dbn}", flush=True)
+        structures = [struct for _seq, struct in preds]
+        cursor = {"i": 0}
+
+        def _next_pred(_seq: str):
+            struct = structures[cursor["i"]]
+            cursor["i"] += 1
+            return sorted(parse_pairs(struct))
+
+        entry = score_all(records, _next_pred)
+        entry["source"] = f"external predictions from {args.external_dbn}"
+        result["baselines"][args.external_name] = entry
+        print(f"[base] {args.external_name}: micro_f1={entry['micro_f1']:.4f} "
               f"macro_f1={entry['macro_f1']:.4f} inf={entry['inf']:.4f} "
               f"({entry['wall_seconds']}s)", flush=True)
 

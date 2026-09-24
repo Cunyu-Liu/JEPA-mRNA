@@ -79,3 +79,36 @@ PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/run_baselines.py \
 > - **C1-a 无法完成**，除非作者侧提供权重。论文必须**显式说明这一缺口**，
 >   而不能用"未发现其校准评测"来代替"我们做了对比"。
 > - 可替代的**学习型**对照是 **MXfold2**（权重可得），应优先补上它在三个 split 上的 F1/INF。
+
+---
+
+## 5. MXfold2 实测（唯一可得的学习型基线）
+
+| split | micro F1 | macro F1 | INF | 备注 |
+|---|---|---|---|---|
+| **bpRNA TS0** | **0.5651** | **0.5698** | **0.5832** | 1,288 条，打分 23.6 s |
+
+命令：`python -m mxfold2 predict bprna_ts0.fa > mxfold2_bprna_ts0.dbn`（`rna_baselines` env）
+→ `eval/ss/run_baselines.py --split bprna_ts0 --external-dbn ... --external-name mxfold2`
+
+### 5.1 **这改变了 P1/P2 的目标值**
+
+之前以 ViennaRNA centroid 0.5393 作为"要超越的基线"；**MXfold2 把门槛抬到 0.5651**。
+当前最好模型（`rinalmo_ff_b4_s0` @1000 步）是 **0.4554**，差距 **0.110**。
+**这是当前第一风险，必须优先解决**（架构/解码/训练量三条路，见 `DECISION_TRAINING_LOG.md` 运行 14.7 末段）。
+
+### 5.2 一个必须核实的污染问题（**尚未证实，不得当成结论**）
+
+MXfold2 的训练集是随包自带的 `models/TrainSetAB.pth`（bpRNA-1m 的 TrainSetA+B）。
+若它确实只用了 bpRNA-1m 的标准 train 划分，则与 TS0 天然不相交，0.5651 是无污染的；
+但**本集群无法读取该 `.pth` 的训练序列清单**，所以：
+- 论文中引用 0.5651 时**必须同时声明"未能核实其训练集与 TS0 的同源重叠"**；
+- 可行的替代核验：用 CD-HIT / BLAST 对 TS0 与 bpRNA-1m train 做同源筛选（**未做**）。
+
+### 5.3 顺带修掉的一个真 bug：`--external-dbn` 曾被静默忽略
+
+`eval/ss/run_baselines.py` 接受 `--external-dbn` 却**从不读取它**——当初生成该补丁的脚本
+定义了主流程的改动却只应用了 CLI 与读取器两处（`MAIN_OLD`/`MAIN_NEW` 定义了但没进循环）。
+后果：第一次运行"成功"写出结果文件，但里面**没有 mxfold2 那一行**，表格看起来是完整的。
+现已补上主流程并新增 2 个测试（打分正确性 + 顺序错位必须报错）。**这类"静默丢行"比直接报错更危险。**
+
