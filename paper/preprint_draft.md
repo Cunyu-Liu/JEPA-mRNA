@@ -169,14 +169,19 @@ Two sensitivity checks:
   micro F1 is 0.4959 versus 0.4953 — a difference of 0.0006 — and the recalibrated
   gap is 0.0006. The validation split is not a proxy for TS0 (see §4.3), so this check
   matters and it passes.
-- **The result holds on the secondary split, and the same insensitivity holds there.**
-  On ArchiveII (3,950 rows) the recalibrated gap is **0.0044** at the model's own
-  weight and 0.0093 at the validation-selected weight, with micro F1 0.5834 versus
-  0.5829 — again a difference of 0.0005. Both are inside the 0.02 threshold.
+- **The result holds on the secondary split, and the same insensitivity holds there —
+  but that split is contaminated, so the number is provisional.** On ArchiveII
+  (3,950 rows) the recalibrated gap is **0.0044** at the model's own weight and 0.0093
+  at the validation-selected weight, with micro F1 0.5834 versus 0.5829 — again a
+  difference of 0.0005. **However §4.5 shows 35.6% of ArchiveII is duplicated in the
+  training split**, so these figures are withdrawn pending re-measurement on the
+  de-duplicated subset (2,544 rows, queued). The TS0 row above is not affected: TS0
+  loses 3 of 1,288 rows to the same filter.
 
-Four combinations (two splits x two decode conventions) pass, and the decode
-convention moves micro F1 by at most 0.0006 anywhere. The headline therefore involves
-no selection on any split, which is what makes it reportable.
+The TS0 row therefore passes under both decode conventions, and the decode convention
+moves micro F1 by 0.0006 there. The headline involves no selection on any split, which
+is what makes it reportable; the ArchiveII replication is provisional for the separate
+reason given in §4.5.
 
 **Reference point.** ViennaRNA's exact base-pair probabilities on TS0 have
 ECE **0.0048**. Our recalibrated head is at **0.0023** — the same order of magnitude,
@@ -189,8 +194,14 @@ Pooled, we do not beat the physical baselines:
 | Split | Ours (micro F1) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | Nussinov+Turner prior |
 |---|---|---|---|---|---|
 | TS0 | **0.4953** | **0.5393** | 0.5222 | **0.5651** | 0.2124 |
-| ArchiveII (3,950) | 0.5829 | 0.6207 | 0.5764 | — | 0.2010 |
+| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | ~~0.6207~~ | ~~0.5764~~ | — | ~~0.2010~~ |
 | bpRNA-new (5,388) | **0.3094** | **0.6770** | 0.6379 | — | **0.3015** |
+
+The ArchiveII row is struck through rather than deleted so the withdrawal is visible:
+35.6% of that split duplicates the training data, and re-measurement on the
+de-duplicated subset is queued. **TS0 and bpRNA-new are the two splits in this draft
+whose held-out status has been verified** (exact duplicates 0; mean 20-mer containment
+0.040 and 0.0001 respectively).
 
 But TS0 is a mixture along **two** axes, and both matter.
 
@@ -308,14 +319,29 @@ the hypothesis as a hypothesis.
 
 ### 4.5 Two dataset caveats that constrain what may be claimed
 
-1. **ArchiveII is not an out-of-distribution split.** 26.7% of its sequences are
-   near-duplicates of the training split under a 20-mer containment criterion
-   (>0.9). Its 0.5829 is therefore *not* evidence of generalization and must not be
-   placed next to published ArchiveII numbers as if it were.
+1. **ArchiveII is not a held-out split, and every ArchiveII number in this draft is
+   withdrawn pending re-measurement on the de-duplicated version.** Measuring the
+   overlap against the training split gives:
+
+   | split | rows | exact duplicates of TR0 | 20-mer containment > 0.5 | kept |
+   |---|---|---|---|---|
+   | **ArchiveII** | 3,950 | **812 (20.6%)** | 594 (15.0%) | **2,544 (64.4%)** |
+   | TS0 | 1,288 | 0 | 3 (0.2%) | 1,285 (99.8%) |
+   | VL0 | 196 | 0 | 0 | 196 (100%) |
+   | bpRNA-new | 5,388 | 0 | 0 | 5,388 (100%) |
+
+   The duplicates are literal: ArchiveII's `5s_Acholeplasma-laidlawii-2.bpseq` is
+   byte-identical to TR0's `bpRNA_RFAM_654.bpseq`. So 35.6% of ArchiveII is not
+   held-out, and its 0.5829 — and the +0.149 advantage over centroid in the at-most-100 nt
+   bucket — are partly memorisation scores. A clean subset (2,544 rows) has been built
+   and the re-measurement is queued; until it lands, **only TS0 and bpRNA-new numbers
+   in this draft are held-out results.** TS0 loses 3 rows to the same filter and
+   bpRNA-new loses none.
 2. **ArchiveII can only be scored on 3,950 of 3,966 rows.** RiNALMo's `max_pos` is
    1024, so 16 rows have no cached embedding. The evaluator refuses to silently mix
    frozen and freshly computed representations, which is the correct behaviour; the
-   cost is that any ArchiveII number we report must carry the 3,950/3,966 qualifier.
+   cost is that any ArchiveII number must carry the 3,950/3,966 qualifier — on top of
+   the de-duplication qualifier above.
 
 ## 5. Limitations
 
@@ -384,6 +410,9 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | ViennaRNA baselines | `records/BASELINE_RESULTS.md` §1 | `eval/ss/baselines.py` |
 | Source-stratified baselines (§4.3) | `eval_decision/baselines_{ts0,vl0}_{crw,rfam}_le100.json` | `eval/ss/run_baselines.py --split {ts0,vl0}_{crw,rfam}_le100` |
 | Homology vs F1, and the leakage check | `eval_decision/homology_vs_f1.json` | `tools/homology_vs_f1.py --train ss_data/jsonl/bprna_tr0.jsonl --pair sel_ff3500_bprna_ts0 --pair vl0sw_w0.75_bprna_vl0 --pair sel_ff3500_bprna_new --k 20` |
+| De-duplication audit and clean subsets | `ss_data/jsonl/*_clean.jsonl` | `tools/dedup_against_train.py --train ss_data/jsonl/bprna_tr0.jsonl --split ss_data/jsonl/archiveii_embok.jsonl --threshold 0.5 --k 20` |
+| Source stratification | `eval_decision/stratified_le100.json` | `tools/stratify_by_source.py --eval-root eval_decision --data-dir ss_data/jsonl --run astrained_ff3500_bprna_ts0 --run sel_ff3500_bprna_ts0 --max-length 100` |
+| Length-bucketed leaderboard | `eval_decision/buckets_bprna_ts0.json` | `tools/length_bucketed_leaderboard.py --split bprna_ts0 --run sel_ff3500_bprna_ts0 --bucket 100 --bucket 200 --bucket 400` |
 | MXfold2 | `records/BASELINE_RESULTS.md` §5 | `python -m mxfold2 predict` |
 | ViennaRNA exact BPP calibration | `eval/ss/reference_calibration.py` | — |
 | Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |

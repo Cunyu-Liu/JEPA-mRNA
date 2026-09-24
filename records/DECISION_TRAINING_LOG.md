@@ -1466,6 +1466,65 @@ GPU 0 has a total capacity of 39.49 GiB of which 1.10 GiB is free.
 
 ---
 
+### 14.25 **ArchiveII 必须去冗余：20.6% 的行与 TR0 完全相同**（2026-09-24 17:05）
+
+§14.15 问题 1 早就记过"ArchiveII 有约 27% 与 TR0 近重复"，但**从未真正去冗余**，
+而它一直被当作"主集"用。本轮把它测到底，并把去冗余做成工具。
+
+#### 全 split 去冗余审计（`tools/dedup_against_train.py`，本轮新增）
+
+工具做两级过滤并输出**守恒**的衰减表（`total = kept + removed_exact + removed_homology`，
+脚本内断言该等式）。k=20 包含度，阈值 0.5。
+
+| split | 总行数 | **精确重复** | 包含度 >0.5 | **保留** | 保留率 |
+|---|---|---|---|---|---|
+| **ArchiveII** | 3,950 | **812（20.6%）** | 594（15.0%） | **2,544** | **64.4%** |
+| TS0 | 1,288 | 0 | 3（0.2%） | 1,285 | 99.8% |
+| VL0 | 196 | 0 | 0 | 196 | 100% |
+| bpRNA-new | 5,388 | 0 | 0 | 5,388 | 100% |
+
+**只有 ArchiveII 被污染**，其余三个 split 干净（这与 §14.21/§14.24 里 TS0 与
+bpRNA-new 的包含度实测一致：0.0403 / 0.0001）。
+
+**已抽样人工核对**，确认不是脚本 bug：
+
+```
+archiveii: 5s_Acholeplasma-laidlawii-2.bpseq  == tr0: bpRNA_RFAM_654.bpseq
+archiveii: 5s_Acidithiobacillus-thiooxidans-1.bpseq == tr0: bpRNA_CRW_55448.bpseq
+archiveii: 5s_Artemia-sp.-2.bpseq             == tr0: bpRNA_CRW_18570.bpseq
+```
+
+ArchiveII 的 5S rRNA 条目**逐字节**存在于 TR0 里。阈值敏感性也已输出：
+包含度 ≤0.1 保留 1,242 行（31.4%）、≤0.2 保留 1,830（46.3%）、≤0.3 保留 2,174（55.0%）。
+
+#### 被这条审计推翻的结论（必须撤回）
+
+1. **`sel_ff3500_archiveii_embok` 的 0.5829 不是 held-out 结果**——它的 35.6% 行与训练集重复。
+2. **§14.22 里"ArchiveII ≤100 nt 我们 0.8656 vs centroid 0.7167（+0.149）"必须撤回**：
+   该桶 836 行里有 **207 行与 TR0 完全相同（24.8%）**、42.1% 的行包含度 >0.5。
+   +0.149 里有多少是记忆，在去冗余之前无法回答。
+3. 因此 **`benchmark_decision.md` §0 里"ArchiveII 是主集"的定位需要降级**为
+   "次级集，且必须用去冗余版本"。
+
+#### 处置（已启动，不猜）
+
+`archiveii_embok_clean.jsonl`（2,544 行）已生成。评测队列 `run_clean_split_evals.sh`
+（`eval_decision/clean_splits.log`，已 detached）会在四个既有队列全部结束后执行：
+
+- 干净 ArchiveII 上的 `w=-1` 与 `w=0.75` 两口径；
+- 干净 TS0 上的 `w=-1`（只有 3 行被删，用来**确认** headline 不依赖它们，而不是假设）；
+- 干净 ArchiveII 的**长度分桶**（重测"≤200 nt 超过 centroid"这一条）。
+
+**在它出结果之前，任何 ArchiveII 数字都不得引用。**
+
+#### 教训
+
+"记录了问题"不等于"解决了问题"。§14.15 把 ArchiveII 的污染写进了日志，但后续评测
+**照旧使用未去冗余的 split**，于是又产生了 §14.22 里一个基于污染数据的正面结论。
+**一条被记录但未阻断下游的缺陷，会以"新结论"的形式再次出现。**
+
+---
+
 ## 待办（按 Gate）
 
 | Gate | 内容 | 状态 |
