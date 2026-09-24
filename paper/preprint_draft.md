@@ -34,14 +34,21 @@ unrecalibrated head does **not** pass this gate (gap 0.1348), and we report both
 
 Structure accuracy is **not** a uniform loss, and the aggregate number is misleading in
 both directions. Pooled over TS0 our micro F1 is **0.4953**, against ViennaRNA centroid
-**0.5393** and MXfold2 **0.5651** on the same split. But the split is a mixture of two
-source populations with very different difficulty, and stratifying by them reverses the
-conclusion for one of them: on the conserved `CRW` entries (rRNA/tRNA-derived) of at
-most 100 nt we reach **0.9664** where centroid reaches **0.6729** — a gain of 0.29,
-replicated on the independent validation split (**0.9709** vs 0.6702) with no measurable
-homology to training; on the diverse `RFAM` entries of the same length we reach
-**0.5490** against centroid's **0.6209**. The pooled number is dominated by the larger
-`RFAM` stratum.
+**0.5393** and MXfold2 **0.5651** on the same split. The comparison reverses once the
+split is stratified, along two axes at once:
+
+- **By source.** bpRNA-1m's two large source populations differ by roughly 0.4 F1 and
+  appear in very different proportions in different splits. On the conserved `CRW`
+  entries (rRNA/tRNA-derived) of at most 100 nt we reach **0.9664** where centroid
+  reaches **0.6729** — a gain of 0.29, replicated on the independent validation split
+  (**0.9709** vs 0.6702) with no measurable homology to training. On the diverse `RFAM`
+  entries of the same length we reach **0.5490** against centroid's **0.6209**.
+- **By length.** On TS0 we lead centroid only in the at-most-100 nt bucket
+  (**0.6386** vs 0.6277) and trail in every longer bucket, by a margin that grows with
+  length (−0.090 at 100–200 nt, −0.133 above 400 nt).
+
+So the method is competitive on short, structurally conserved sequences and loses on
+long, diverse ones. A single pooled number, in either direction, misstates it.
 
 Cross-family generalization is insufficient and is reported as such: on bpRNA-new our
 micro F1 is **0.3094**, statistically indistinguishable from our own Nussinov+Turner
@@ -180,14 +187,32 @@ Pooled, we do not beat the physical baselines:
 | ArchiveII (3,950) | 0.5829 | 0.6207 | 0.5764 | — | 0.2010 |
 | bpRNA-new (5,388) | **0.3094** | **0.6770** | 0.6379 | — | **0.3015** |
 
-But TS0 is a mixture. bpRNA-1m sequence names carry their source database, and the two
+But TS0 is a mixture along **two** axes, and both matter.
+
+**Axis 1, source.** bpRNA-1m sequence names carry their source database, and the two
 large sources have very different structural character: `CRW` (Comparative RNA Web) is
 dominated by rRNA and tRNA with conserved, canonical structures, while `RFAM` spans a
 wide range of families. Their proportions differ sharply between splits — `CRW` is 6.0%
 of TR0, 7.3% of TS0, and **50.5% of VL0**.
 
-Stratifying TS0 and VL0 by source *and* matching on length (at most 100 nt), same
-checkpoint, same metric implementation:
+**Axis 2, length.** Per-length-bucket results are the protocol-mandated form and they
+change the sign of the comparison at the short end:
+
+| TS0 length bucket | n | **Ours** | ViennaRNA centroid | ViennaRNA mfe | Nussinov+Turner prior |
+|---|---|---|---|---|---|
+| <=100 nt | 580 | **0.6386** | 0.6277 | 0.5999 | 0.3084 |
+| 100–200 nt | 516 | 0.4478 | **0.5375** | 0.5045 | 0.2002 |
+| 200–400 nt | 164 | 0.4538 | **0.4690** | 0.4305 | 0.1572 |
+| >400 nt | 28 | 0.3522 | **0.4854** | 0.4561 | 0.1465 |
+| whole split | 1,288 | 0.4959 | **0.5393** | 0.5222 | 0.2124 |
+
+We lead only in the shortest bucket (+0.011), and the deficit grows with length
+(−0.090, −0.015, −0.133). Our own physical prior scores 0.15–0.31 in every bucket, so
+the learned head contributes real discriminative power throughout — it simply does not
+contribute enough as sequences get longer.
+
+Stratifying by source *and* matching on length (at most 100 nt), same checkpoint, same
+metric implementation:
 
 | Split | Stratum | n | **Ours** | ViennaRNA centroid | ViennaRNA mfe | Nussinov+Turner prior |
 |---|---|---|---|---|---|---|
@@ -223,6 +248,12 @@ names are unique within each split, so no family field is recoverable from them.
 stratification is a reproducible proxy that correlates with molecule type and
 structural conservation, and it is not a substitute for a family-level split, which we
 have not done.
+
+The two axes are also **not separated**: the length buckets above are cut on length
+alone, so their source composition is unmatched, and the source strata are cut on
+source alone at a fixed length. Isolating a length effect from a source effect requires
+a joint length x source grid, which we have not built. Both axes are real; neither is
+attributed on its own.
 
 ViennaRNA and MXfold2 rows are our own measurements on our own split files with our own
 metric implementation, so these comparisons are like-for-like within this table. They
