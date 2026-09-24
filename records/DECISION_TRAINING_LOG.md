@@ -2526,3 +2526,22 @@ TR0 数字作为"数据量消融"的对照。**bigtr1（容量×数据组合）�
 
 **draft 行动**：种子 std 入 method 节（0.0038）；§4.3 的"seed spread"数字从 0.0027
 更新为 5-seed 0.0038；容量/数据增益的稳健倍数更新（12×/43×）。
+
+
+## §14.52 GPU2 大空位利用：big s2 + pw s1 两臂启动；隔夜 watch 两轮全覆盖（2026-09-25 03:40）
+
+GPU2 在 03:25 实测有 26.8 GB 空余（我们的进程仅占极小），内存 available 380 GB。
+按"显存必须占满"的合同要求启动两臂（均为关键结论的第二 seed）：
+
+| 臂 | seed | 配置 | 目的 |
+|---|---|---|---|
+| rinalmo_big_b4_s2 | 2 | 512d/512h/length 归一（与 big s0 逐字同配置） | 容量结论的第 2 seed（当前 12× std 单 seed） |
+| rinalmo_pw_b4_s1 | 1 | prior-init 0.5 可学习（与 pw s0 同配置，**重启修正过**：首次启动漏 `--prior-init 0.5`，发现后 kill 并带正确 flag 重启，pid 379857） | pw +0.0048 未达显著的判定需要 |
+
+**注意（诚实记录）**：pw s1 首次启动漏了 `--prior-init 0.5`（默认 init 不同），对照就不干净；
+pkill 后删除 run 目录重启。这个错误在 run_meta 校验时被抓住，未污染任何数据。
+
+**watch 覆盖**：`run_overnight_watch.sh`（s3-s5✅/cascR✅/big-new✅/bigtr1/TR1-40k）+
+`run_overnight_watch2.sh`（s3/big_s2/pw_s1）两轮轮询，到点即评、串行协议。
+顺带清理：`rinalmo_ff_b8_s0`（batch 8 臂）18 小时前已死（日志停在 step 150，
+进程不在），run 目录保留供排查，不再重启（batch 对照非关键路径）。
