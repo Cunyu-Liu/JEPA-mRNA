@@ -355,6 +355,49 @@ MXfold2 / CONTRAfold / LinearPartition、E2Efold。
 
 ---
 
+
+## 运行 12：CPU 争抢事故与处置（吞吐减半 → 恢复）
+
+### 现象
+
+09:27 实测训练速率从 **18.6 步/分降到 9.5 步/分**（减半），`load average` 从 114 升到 **166**。
+
+### 根因（实测，非推测）
+
+`ps --sort=-pcpu` 显示一个**不属于本线**的进程占用 **1465% CPU**：
+
+```
+eval/factor_probe.py --ckpt /mnt/cunyuliu/rna-jepa/runs/...
+```
+
+`factor_probe` 是**早期 JEPA 线的产物**——而 spec §0.6 已因**否定性证据**明确移除 JEPA 线
+（区域均值目标 60 步内饱和、因子探针对照是空操作）。进一步查 cron：
+
+```
+*/10 * * * * cd /mnt/cunyuliu/rna-jepa/code && ... scripts/monitor.py >> ... # RNAJEPA_MONITOR
+```
+
+**mRNA/JEPA 线的监控 cron 每 10 分钟从 `queue/pending/` 自动派发任务**
+（日志实证：`dispatched 003_mrnabert_official_cds_ecoli_s3 (pid 1568909, ...)`），
+其中包含已废弃的 JEPA 探针，持续抢走十几个核。
+
+### 处置（最小、可逆、已记录）
+
+1. **杀掉正在运行的 `factor_probe.py`**（废弃线的产物，无损失）。
+2. **给该 cron 加 `--no-dispatch`**：**保留监控**（便宜、无害），**停止自动派发**（昂贵）。
+   `monitor.py` 原生支持该开关（第 1331 行），**没有改动任何代码，也没有停用监控**。
+   → 只停止**新**任务的派发；已在跑的任务不受影响。
+
+### 结果
+
+速率 **9.5 → 14.2 步/分**（1.5×），load 166 → 155。仍未回到 18.6，因为其他用户的
+GROMACS 任务（`gmx mdrun`，合计约 3400% CPU）仍在占用宿主机。
+
+> **需要用户确认**：这只是**临时**措施。若 mRNA 线需要继续派发任务，请告知，我立即恢复该 cron。
+> 反之，如果 mRNA 线已收尾，建议直接停用该 cron，把整机 CPU 让给本项目的一周冲刺。
+
+---
+
 ## 待办（按 Gate）
 
 | Gate | 内容 | 状态 |
