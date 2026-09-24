@@ -105,16 +105,27 @@ The framework is not our contribution. CONTRAfold already trains a log-linear mo
 over the non-crossing structure space with an exact partition function, and the CRF
 lineage is long. We sit inside it.
 
-The DP-free precedents that matter are SPOT-RNA, SPOT-RNA2 and UFold: they emit an
-`L x L` pair-probability matrix from a single forward pass and do not run a partition
-function. We therefore do **not** claim to be first at emitting probabilities without
-dynamic programming. What we could not find in that literature is any calibration
-report — no ECE, no reliability diagram, no Brier score — which is the gap this draft
-addresses.
+The DP-free precedents that matter are SPOT-RNA, SPOT-RNA2, UFold and **RNAformer**:
+they emit an `L x L` pair-probability matrix from a single forward pass and do not run
+a partition function. We therefore do **not** claim to be first at emitting
+probabilities without dynamic programming — and after measuring them we do not claim
+to be first at calibrated ones either: RNAformer's probabilities, which had not been
+audited before, turn out to be well calibrated (ECE 0.0015 on TS0). What we could not
+find in that literature is any calibration *report* — no ECE, no reliability diagram,
+no Brier score — which is the gap this draft closes with a six-source audit rather
+than with a new model.
 
 We also correct an earlier internal misreading: CDPFold is a CNN followed by dynamic
 programming (Front Genet 10:467, 2019). It neither removes the DP nor is a
 calibration precedent, and it is not treated as a threat to the claim here.
+
+**Why a frozen foundation-model backbone.** The from-scratch alternative was measured
+to failure: an own-encoder 35M Transformer trained on the same corpus peaks at 0.547
+(nll+distill) and *degrades* with further training (0.511 at 20k, 0.495 at 40k for
+the four-objective variant — overfitting on 10k sequences), while the frozen RiNALMo
+embeddings reach 0.5958 at identical steps. The decision head on frozen
+representations is therefore not a convenience but a measured choice, consistent with
+the backbone-scale literature (RiNALMo, RNA-FM).
 
 ## 3. Method
 
@@ -134,6 +145,14 @@ teacher pair probabilities, a calibration term, and a proper-scoring-rule reward
 A length-normalisation switch makes the four terms numerically comparable; the effect
 of that switch is the subject of a separate controlled comparison that is still
 running and is therefore *not* reported here.
+
+**Scaling axes.** The headline head uses a 128-dim pair representation; the capacity
+arm scales it to 512 (4.8x parameters). The data axis swaps the training corpus from
+TR0 (10,682 sequences) to TR1 (45,865 sequences, 4.29x after de-duplication) with
+everything else fixed. Both axes are reported at 20,000 steps, `w=-1` decode, on the
+same splits; the seed spread of the base configuration (3 seeds so far) is 0.0027
+std, so the capacity gain (+0.047) and the cross-family data gain (+0.163) are
+respectively ~7x and ~60x the spread.
 
 **DP-free recalibration.** After training, a two-parameter affine map
 `p = sigmoid(a * s + b)` is fitted on a validation split disjoint from every test
