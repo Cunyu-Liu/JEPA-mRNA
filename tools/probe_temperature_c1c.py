@@ -54,7 +54,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_HERE, "..", "src"))
 sys.path.insert(0, os.path.join(_HERE, ".."))
 
-from rnajepa.harness import inside_outside, valid_pair_mask  # noqa: E402
+from rnajepa.harness import inside_outside, nussinov_map, valid_pair_mask  # noqa: E402
 from rnajepa.distill import pair_indicator  # noqa: E402
 from rnajepa.train_decision import (  # noqa: E402
     BASE_TO_ID,
@@ -181,7 +181,7 @@ def apply_isotonic(s: np.ndarray, knots_x: np.ndarray, knots_y: np.ndarray) -> n
 # ---------------------------------------------------------------------------
 # model I/O
 # ---------------------------------------------------------------------------
-def load_records(path: str):
+def load_records(path: str, limit: int = 0):
     out = []
     with open(path, encoding="utf-8") as fh:
         for line in fh:
@@ -191,6 +191,8 @@ def load_records(path: str):
             row = json.loads(line)
             seq = str(row["seq"]).upper().replace("T", "U")
             out.append((seq, sorted(tuple(p) for p in row["pairs"])))
+            if limit and len(out) >= limit:
+                break
     return out
 
 
@@ -295,6 +297,10 @@ def main() -> int:
     ap.add_argument("--exact-limit", type=int, default=0,
                     help="0 = compute the exact marginal on every dev sequence")
     ap.add_argument("--head-chunk", type=int, default=0)
+    ap.add_argument("--limit", type=int, default=0,
+                    help="cap the test split; the decode comparison costs three O(L^3) "
+                         "DP passes over the whole split, so a small limit is the way "
+                         "to exercise the path without paying for it")
     ap.add_argument("--out", default="")
     args = ap.parse_args()
 
@@ -317,7 +323,7 @@ def main() -> int:
         split = os.path.basename(path).split(".")[0]
         return EmbeddingStore.from_dir(config.embedding_dir, split=split)
 
-    dev, test = load_records(args.dev), load_records(args.test)
+    dev, test = load_records(args.dev), load_records(args.test, limit=args.limit)
     print(f"[probe] dev={len(dev)} seqs, test={len(test)} seqs")
     ds, dp, da, dpex, _ = collect(model, dev, args.device, exact_limit=args.exact_limit,
                                   embedding_store=store_for(args.dev))
@@ -417,8 +423,30 @@ def main() -> int:
             print(f"[probe] gap {name:28s} {gap:.5f} "
                   f"{'PASS' if gap <= 0.02 else 'FAIL'}")
 
+    # Persist the calibration half before the decode half.  The decode comparison is
+    # the expensive part (three O(L^3) DP passes over the whole split) and the first
+    # version of this script crashed at its first line on a missing import, losing
+    # two hours of work that had already been computed and printed but never written.
+    def _dump(path, payload):
+        if not path:
+            return
+        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=1, ensure_ascii=False)
+
+    out["decode"] = None
+    out["decode_status"] = "not_attempted"
+    _dump(args.out, out)
+    print(f"[probe] calibration results written to {args.out} (decode pending)")
+
     # ---- decode comparison (same forward pass, no extra model cost)
-    out["decode"] = decode_comparison(test_per_seq, args.n_bins)
+    try:
+        out["decode"] = decode_comparison(test_per_seq, args.n_bins)
+        out["decode_status"] = "ok"
+    except Exception as exc:  # noqa: BLE001 -- partial results are worth keeping
+        out["decode_status"] = f"failed: {type(exc).__name__}: {exc}"
+        _dump(args.out, out)
+        raise
     for key, row in out["decode"].items():
         print(f"[probe] decode {key}: micro F1={row['micro_f1']:.4f} "
               f"P={row['micro_precision']:.4f} R={row['micro_recall']:.4f} "
@@ -428,10 +456,8 @@ def main() -> int:
     else:
         print("[probe] decoding the potentials beats decoding the probabilities on F1")
 
+    _dump(args.out, out)
     if args.out:
-        os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
-        with open(args.out, "w", encoding="utf-8") as fh:
-            json.dump(out, fh, indent=1, ensure_ascii=False)
         print(f"[probe] wrote {args.out}")
     return 0
 

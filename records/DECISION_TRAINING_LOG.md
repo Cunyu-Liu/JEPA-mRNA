@@ -653,6 +653,39 @@ head-only、batch 4、chunk 16、20,000 步、`--prior-init 0.5`，其余与 `ri
 （可直接对比）。放在 **GPU5**（实测空闲 8.5 GiB；MIG 切片全满）。首日志：
 `step 25/20000 loss=51.65`（`rinalmo_ff` 同点是 66.5 —— 起点更好），参数量 519,503（比原来多 1，即该标量）。
 
+### 14.10 两次「静默失败」的教训 + 解码口径的初步信号
+
+#### 教训 1：`--external-dbn` 被接受却从不读取（见 `BASELINE_RESULTS.md` §5.3）
+
+补丁脚本定义了主流程改动却没进循环，于是"成功"写出一个**缺行**的结果文件。
+
+#### 教训 2：探针脚本崩了 2 小时，而我以为它在跑
+
+`tools/probe_temperature_c1c.py` 合并解码对比时用了 `nussinov_map` 却**没有 import**，
+进程在写完 14.7 的全部结果、准备做解码对比时抛 `NameError` 直接退出。
+我连续两次检查只看了"文件还没写出"就推断"还在跑"——**没有验证进程是否存活**。
+
+处置（都已实施）：
+1. 补 import；`load_records` 加 `--limit`（用 8 条序列把整条路径跑通，`rc=0`）；
+2. **结果分两次落盘**：校准部分先写盘（`decode_status: not_attempted`），解码部分完成后再覆盖，
+   失败时写入 `decode_status: failed: ...` 并保留校准结果；
+3. 教训：**ad-hoc 脚本不在 10 分钟监控的 `runs/` 覆盖范围内**，必须用
+   `pgrep -af '[p]robe...'`（避免自匹配）单独确认存活，而不是靠"文件没出现"推断。
+
+#### 解码口径：初步信号是「当前口径已经是对的」
+
+8 条序列的路径冒烟（**样本太小，仅作路径验证，不得当结论**）：
+
+| 口径 | micro F1 |
+|---|---|
+| A `nussinov_map(scores)`（当前 System-1） | **0.8330** |
+| B `nussinov_map(sigmoid(scores))` | 0.7692 |
+| C `nussinov_map(精确边际)`（该分数矩阵的 oracle） | 0.7822 |
+
+即 **A > C**：把**势**直接送进 max-product DP，比把该分数矩阵自己的 Gibbs 边际送进去更好。
+这与"centroid 解码优于 mfe"的直觉相反，但两者是不同的对象（一个是本模型的原生推断，
+一个是另一个分布）。全 split 复测在 `eval_decision/probe_c1_ff2000.log`（进行中）。
+
 ---
 
 ## 待办（按 Gate）
