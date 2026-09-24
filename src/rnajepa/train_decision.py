@@ -208,6 +208,18 @@ class TrainConfig:
     head_chunk_size: int = 64
     max_len: int = 4096
 
+    #: Initial value of the head's learnable Turner-prior multiplier.
+    #:
+    #: The prior used to be added at a hard-coded weight of 1, which training could
+    #: not reach: ``MLP_T`` sees only ``z_ij`` (never the prior) and the temperature
+    #: divides the sum, so ``MLP_T / prior`` is invariant.  A zero-training sweep
+    #: (``tools/probe_prior_weight.py``, selected on bpRNA VL0) measured the optimum
+    #: at w = 0.5 for the frozen-RiNALMo head (+0.048 micro F1) and ~1 for the
+    #: from-scratch encoder, i.e. it is arm-dependent.  The parameter is learnable, so
+    #: this only sets where the search starts; 1.0 keeps every existing checkpoint's
+    #: exact behaviour.
+    prior_init: float = 1.0
+
     # lr calibration
     lr_calibrate: bool = False
     lr_candidates: Tuple[float, ...] = (1e-4, 5e-5, 1e-5)
@@ -1129,6 +1141,19 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     # checked before .to(): a CPU-only torch build raises from inside .to("cuda")
     _check_device_request(config.device, allow_cpu=config.allow_cpu)
     model = build_decision_model(config).to(config.device)
+    # Start the learnable prior multiplier where a held-out split says it should be.
+    # Only the initialisation: it stays a Parameter and training moves it from here.
+    if config.prior_init != 1.0:
+        prior = getattr(getattr(model, "head", None), "prior_weight", None)
+        if prior is None:
+            raise ConfigError(
+                f"--prior-init {config.prior_init} was given but this model has no "
+                "learnable Turner-prior weight (use_turner_prior is off, or the head "
+                "predates it); refusing to ignore the flag silently")
+        with torch.no_grad():
+            prior.fill_(float(config.prior_init))
+        print(f"[train] Turner prior initialised to {config.prior_init:g} "
+              f"(learnable from here)", flush=True)
     resolved_device = _assert_device(model, config.device, allow_cpu=config.allow_cpu)
     n_params = sum(p.numel() for p in model.parameters())
     n_learnable = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -1342,6 +1367,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--embedding-d-model", type=int, default=0,
                    help="hidden size of the cached embeddings (required with "
                         "--embedding-dir)")
+    p.add_argument("--prior-init", type=float, default=1.0,
+                   help="initial value of the head's learnable Turner-prior "
+                        "multiplier (1.0 = the historical hard-coded behaviour).  The "
+                        "weight is learnable either way; this only sets where the "
+                        "search starts.  Select it on a held-out split -- "
+                        "tools/probe_prior_weight.py measures the optimum without any "
+                        "training, and it differs per arm (0.5 for the frozen-RiNALMo "
+                        "head, ~1 for the from-scratch encoder).")
     p.add_argument("--allow-cpu", action="store_true",
                    help="permit the CPU path (tests only; a real run must use a GPU)")
     # lr calibration
@@ -1366,6 +1399,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         embedding_dir=args.embedding_dir,
         embedding_d_model=args.embedding_d_model,
         head_chunk_size=args.head_chunk_size,
+        prior_init=args.prior_init,
         lr_calibrate=args.lr_calibrate,
         lr_candidates=tuple(float(x) for x in args.lr_candidates.split(",") if x.strip()),
         lr_probe_steps=args.lr_probe_steps,

@@ -345,6 +345,23 @@ class FlatDecisionHead(nn.Module):
         self.turner = TurnerResidual(d_z, hidden)
         self.type_head = PairTypeHead(d_model, n_types)
         self.calibration = TemperatureCalibration(calibration_edges)
+        #: Learnable multiplier on the Turner prior.  **Without this the prior's weight
+        #: is a hyper-parameter training cannot reach**: ``MLP_T`` sees only ``z_ij``
+        #: (built from the encoder states), never the prior, so it can neither rescale
+        #: nor cancel it, and the temperature that follows divides the *sum*, leaving
+        #: ``MLP_T / prior`` invariant.  Measured with a zero-training sweep
+        #: (``tools/probe_prior_weight.py``, weight selected on bpRNA VL0): the frozen
+        #: RiNALMo head gains +0.048 micro F1 at w = 0.5, while the from-scratch 35 M
+        #: encoder -- whose own features are weak and which leans on the prior -- is
+        #: flat between w = 0.5 and w = 1.5.  So the optimum is arm-dependent and has
+        #: to be found, which is exactly what a learnable scalar does.
+        #:
+        #: Initialised to 1, so a checkpoint saved before this existed loads with
+        #: ``strict=False`` and behaves identically.
+        if use_turner_prior:
+            self.prior_weight = nn.Parameter(torch.ones(1))
+        else:
+            self.register_parameter("prior_weight", None)
         self.last_flops: Optional[float] = None
 
     def zero_residual(self) -> None:
@@ -362,7 +379,7 @@ class FlatDecisionHead(nn.Module):
         mask = pair_mask_from_ids(seq_ids, self.min_loop).to(h.device)
         s, types = self.pair_scores_and_types(h)
         if self.use_turner_prior:
-            s = s + turner_phys_scores(seq_ids).to(h.device)
+            s = s + self.prior_weight.to(s.dtype) * turner_phys_scores(seq_ids).to(h.device)
         if calibrate and lengths is not None:
             s = self.calibration(s, lengths)
         s = torch.where(mask, s, torch.full_like(s, float("-inf")))
@@ -477,6 +494,12 @@ class HierarchicalCascade(nn.Module):
         self.pair_repr = PairRepresentation(d_model, d_z)
         self.turner = TurnerResidual(d_z, hidden)
         self.type_head = PairTypeHead(d_model, n_types)
+        #: Same learnable prior multiplier as :class:`FlatDecisionHead`; see the note
+        #: there for why the weight is otherwise unreachable by training.
+        if use_turner_prior:
+            self.prior_weight = nn.Parameter(torch.ones(1))
+        else:
+            self.register_parameter("prior_weight", None)
         self.last_flops: Optional[float] = None
 
     # -- helpers ----------------------------------------------------------- #
@@ -562,7 +585,7 @@ class HierarchicalCascade(nn.Module):
             z = self.pair_repr.cross(hi, hj)
             s = self.turner(z)
             if self.use_turner_prior:
-                s = s + phys_p[:, i0:i0 + self.w, j0:j0 + self.w]
+                s = s + self.prior_weight.to(s.dtype) * phys_p[:, i0:i0 + self.w, j0:j0 + self.w]
             t = self.type_head(hi) if b1 == b2 else self.type_head.cross(hi, hj)
             valid = mask_p[:, i0:i0 + self.w, j0:j0 + self.w] & block_active[:, b1, b2][:, None, None]
             scores[:, i0:i0 + self.w, j0:j0 + self.w] = torch.where(

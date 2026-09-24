@@ -244,8 +244,14 @@ def reweight_turner_prior(model, scores, seq_ids, length: int, weight: float):
     ``tools/probe_prior_weight.py``.  This is a change of the decoded structure, not
     a reparameterisation: the decode maximises a *sum* over pairs, so reweighting one
     additive term changes the argmax.  Legality is untouched -- same DP, same mask.
+
+    ``weight < 0`` means "leave the model's own trained weight alone" and is the
+    default; a non-negative value overrides it.  The two have to be distinguishable:
+    now that the weight is learnable, a checkpoint can have been trained at w = 0.5,
+    and a flag defaulting to 1.0 would silently mean "force 1.0" instead of "keep
+    0.5" for exactly those runs.
     """
-    if weight == 1.0:
+    if weight < 0 or getattr(getattr(model, "head", None), "prior_weight", None) is None:
         return scores
     head = model.head
     lengths = torch.tensor([length], dtype=torch.long, device=scores.device)
@@ -256,7 +262,7 @@ def reweight_turner_prior(model, scores, seq_ids, length: int, weight: float):
     return temp * scores - (1.0 - weight) * prior
 
 
-def _flat_scores_and_labels(model, records, device, embedding_store, *, prior_weight=1.0):
+def _flat_scores_and_labels(model, records, device, embedding_store, *, prior_weight=-1.0):
     """Flat System-1 **scores** and pair labels over a whole split.
 
     Used only to fit the DP-free recalibration, and deliberately a separate loop:
@@ -575,9 +581,13 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
         "encoder_size": args.encoder_size,
         "device": device,
         "prior_weight": args.prior_weight,
-        "prior_weight_note": ("multiplier on the fixed-weight Turner prior in the decode "
-                              "score; 1.0 is the trained configuration.  Select it on a "
-                              "held-out split."),
+        "prior_weight_note": ("multiplier on the Turner prior in the decode score.  "
+                              "Negative means the model's own trained weight was used; "
+                              "the effective value is in `prior_weight_effective`."),
+        "prior_weight_effective": (
+            float(model.head.prior_weight.detach().cpu()) if args.prior_weight < 0
+            and getattr(getattr(model, "head", None), "prior_weight", None) is not None
+            else (None if args.prior_weight < 0 else float(args.prior_weight))),
         "n_sequences": len(records),
         "n_gt_pairs_total": n_pairs_total,
         "pair_level": {
@@ -653,13 +663,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--calib-objective", default="ece", choices=["ece", "nll"],
                         help="what the recalibration minimises on the calibration "
                              "split (spec §5.8.3 allows either)")
-    parser.add_argument("--prior-weight", type=float, default=1.0,
-                        help="multiplier on the Turner prior in the decode score "
-                             "(1.0 = the trained configuration).  The head adds the "
-                             "prior at a fixed weight that training never touches and "
-                             "MLP_T cannot cancel, so this is a real hyper-parameter; "
-                             "select it on a held-out split, never on the test split. "
-                             "See reweight_turner_prior.")
+    parser.add_argument("--prior-weight", type=float, default=-1.0,
+                        help="multiplier on the Turner prior in the decode score. "
+                             "NEGATIVE (the default) leaves the model's own trained "
+                             "weight alone; 1.0 forces the historical hard-coded value. "
+                             "The head adds the prior at a weight that training could "
+                             "not reach and MLP_T cannot cancel, so it is a real "
+                             "hyper-parameter -- select it on a held-out split, never "
+                             "on the test split.  See reweight_turner_prior.")
     parser.add_argument("--decode", choices=["exact", "band"], default="exact",
                         help="System-1 decoder: 'exact' is nussinov_map (O(L^3) in "
                              "numpy), 'band' is the banded max-product path the spec "

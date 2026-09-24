@@ -137,6 +137,93 @@ def test_pair_score_symmetry_is_exact():
 
 
 # --------------------------------------------------------------------------- #
+# 2b. the Turner prior weight is learnable (and old checkpoints still load)
+# --------------------------------------------------------------------------- #
+def test_prior_weight_defaults_to_one_and_scales_the_prior_exactly():
+    """`w = 1` reproduces the old behaviour; other `w` scales the prior exactly.
+
+    The head used to add the prior at a hard-coded weight of 1, which made the
+    weight a hyper-parameter training could not reach: `MLP_T` sees only `z_ij` and
+    the temperature divides the sum, so `MLP_T / prior` is invariant.  A zero-training
+    sweep (`tools/probe_prior_weight.py`) put the frozen-RiNALMo optimum at w = 0.5
+    (+0.048 micro F1) and the from-scratch optimum at ~1, so the weight is
+    arm-dependent and has to be learned rather than fixed.
+
+    `calibrate=False` is used so the temperature does not divide the comparison.
+    """
+    torch.manual_seed(2)
+    head = make_head()
+    head.zero_residual()                      # MLP_T == 0, so scores == w * prior
+    assert head.prior_weight is not None
+    assert float(head.prior_weight) == 1.0
+
+    ids = ids_of(SEQ24)
+    h = torch.randn(1, len(SEQ24), D_MODEL)
+    phys = turner_phys_scores(ids)
+    mask = head(h, ids, calibrate=False).mask
+
+    base = head(h, ids, calibrate=False).scores
+    assert torch.equal(base[mask], phys[mask]), "w=1 must be exactly the old behaviour"
+
+    for w in (0.0, 0.5, 2.0):
+        with torch.no_grad():
+            head.prior_weight.fill_(w)
+        got = head(h, ids, calibrate=False).scores
+        assert torch.equal(got[mask], (w * phys)[mask]), f"w={w} did not scale the prior"
+        assert torch.equal(got[~mask], base[~mask]), "mask handling changed with w"
+
+
+def test_prior_weight_receives_a_gradient():
+    """It must be on the loss path, or `assert_gradient_coverage` would reject a run."""
+    torch.manual_seed(3)
+    head = make_head()
+    ids = ids_of(SEQ24)
+    h = torch.randn(1, len(SEQ24), D_MODEL, requires_grad=True)
+    out = head(h, ids, lengths=torch.tensor([len(SEQ24)]))
+    loss = out.scores[torch.isfinite(out.scores)].sum()
+    loss.backward()
+    assert head.prior_weight.grad is not None
+    assert float(head.prior_weight.grad.abs().sum()) > 0.0
+
+
+def test_prior_weight_absent_when_the_prior_is_disabled():
+    """With no prior there is nothing to weight; a dangling Parameter would break the
+    gradient-coverage assertion that every learnable block is on the loss path."""
+    head = FlatDecisionHead(d_model=D_MODEL, use_turner_prior=False)
+    assert head.prior_weight is None
+    assert "prior_weight" not in dict(head.named_parameters())
+    ids = ids_of(SEQ24)
+    out = head(torch.randn(1, len(SEQ24), D_MODEL), ids, calibrate=False)
+    assert torch.isfinite(out.scores[out.mask]).all()
+
+
+def test_checkpoint_without_prior_weight_still_loads_identically():
+    """Every checkpoint trained before this change must keep its exact behaviour.
+
+    `strict=False` leaves a missing key at its initialisation, which is 1, so the
+    forward pass is bit-identical.  Checked rather than assumed, because a silent
+    change of behaviour here would invalidate every number already measured.
+    """
+    torch.manual_seed(4)
+    head = make_head()
+    with torch.no_grad():
+        head.turner.net[-1].weight.normal_(0.0, 0.2)   # non-trivial MLP_T
+    ids = ids_of(SEQ24)
+    h = torch.randn(1, len(SEQ24), D_MODEL)
+    reference = head(h, ids, lengths=torch.tensor([len(SEQ24)])).scores
+
+    legacy = {k: v for k, v in head.state_dict().items() if k != "prior_weight"}
+    assert "prior_weight" in head.state_dict(), "the parameter should exist to be dropped"
+
+    fresh = make_head()
+    missing, unexpected = fresh.load_state_dict(legacy, strict=False)
+    assert list(missing) == ["prior_weight"], missing
+    assert not unexpected
+    assert float(fresh.prior_weight) == 1.0
+    assert torch.equal(fresh(h, ids, lengths=torch.tensor([len(SEQ24)])).scores, reference)
+
+
+# --------------------------------------------------------------------------- #
 # 2. zero-init Turner residual equivalence (self-consistency, not ViennaRNA)
 # --------------------------------------------------------------------------- #
 def test_zero_init_residual_reproduces_physics_prior():
