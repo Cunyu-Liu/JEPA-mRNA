@@ -93,7 +93,11 @@ reliability diagrams, Brier score or NLL for their pair probabilities.
 That leaves two questions unanswered at the same time. *Can a cheap probability be
 trusted?* and *if it can, what does it cost in accuracy?* This draft answers the first
 with a measurement and the second with a stratification: the cost is not a single
-number, and reporting only the pooled one misstates the method in both directions.
+number, and reporting only the pooled one misstates the method in both directions. A
+third question emerged from the measurements themselves and structures the results
+section: *what does each scaling axis buy?* Head capacity and training data turn out
+to buy different things on different splits, and quantifying that separation is more
+useful than any single headline number.
 
 The framework is deliberately borrowed rather than invented. We train a log-linear
 model over the non-crossing structure space with an exact partition function during
@@ -529,23 +533,30 @@ the hypothesis as a hypothesis.
 
 ## 6. Conclusion
 
-A single-forward-pass decision head can be brought to within 0.0002 of the exact
+A single-forward-pass decision head can be brought to within 0.0028 of the exact
 partition-function marginals' calibration error, using two parameters fitted without a
-partition function. That is the positive result, and it is measured on a clean
-in-distribution split with no test-set selection.
+partition function — and the same head's probabilities remain calibrated across a
+cross-family shift that its ranking does not survive. That is the positive result, and
+it is measured on a clean in-distribution split with no test-set selection. The audit
+that contextualises it shows the field's probability outputs span two orders of
+magnitude in calibration quality, with RNAformer at the good end without ever having
+reported it: measurement, not architecture, was the missing piece.
 
-On accuracy the answer is stratified rather than negative. Where structures are
+On accuracy the answer is stratified rather than uniform. Where structures are
 conserved — the `CRW` stratum of short sequences — the DP-free head reaches 0.9664
 against the partition-function baseline's 0.6729, replicated on an independent split
-and with no measurable homology to training. Where structures are diverse — `RFAM`
-short sequences, and above all the new families of bpRNA-new — it loses, and across
-families it collapses to its own physical prior while the physical baseline improves.
+and with no measurable homology to training. Where structures are diverse it loses;
+across families it starts from its own physical prior (0.30) and data scaling moves it
+to 0.52, capacity to 0.46, with the physical baseline at 0.68 still ahead. The two
+scaling axes are quantified separately on both splits, and their combination is the
+next measurement this draft does not yet contain.
 
 We report the stratified result as the main accuracy finding rather than the pooled
 number, because the pooled number is dominated by the stratum where we lose and would
 understate the method. The complement matters just as much: a calibration result that
-does not transfer across families is only half a result, and the half that is missing
-is the half the field actually needs.
+transfers across families while ranking does not is half a result — but it is the half
+that downstream users (design, variant interpretation) consume first, and it is now
+measured rather than assumed.
 
 ## Appendix A. Evidence ledger
 
@@ -597,16 +608,16 @@ rate and hairpin-violation rate are 0.0000 for every row above.
 
 ## Appendix C. What makes this draft preliminary
 
-1. **The existence claim C1-a is untested** (baseline weights unreachable). This is the
-   largest gap and it is a coverage gap, not a negative result.
-2. **The convergence curve is incomplete.** TS0 points currently exist at steps
-   1000 / 2000 / 3500, and the first three were measured at *different* decode
-   weights, so they do not form a curve. Same-weight points at steps 6000 and 10000
-   are queued.
-3. **Several arms are still training** and are deliberately not reported: a
-   four-way objective-function comparison (does the calibration term do anything?),
-   two hierarchical-cascade arms, and a 4.8x-capacity arm. No conclusion about any of
-   them appears in this draft.
+1. **The capacity x data combination arm is training.** Each axis is measured alone
+   at matched steps; whether they compose on bpRNA-new is the single largest number
+   this draft does not yet contain, and it is the one that would either close or
+   finalise the cross-family gap to UFold.
+2. **Second seeds for the capacity and prior-weight arms are training.** The
+   headline family has six seeds; the 4.8x-capacity arm (single seed, gain 14x the
+   spread) and the learnable-prior-weight arm (single seed, gain within noise) do not.
+3. **The TR1 convergence point is at 20,000 steps for a corpus 4.29x larger** —
+   roughly 1.7 epochs; a longer-trained TR1 run is in progress and its 30,000/40,000
+   points are queued.
 4. **The §4.3 stratification is a source-database proxy, not a family split.** It uses
    `CRW` / `RFAM` as they appear in bpRNA-1m sequence names, and the two strata are
    also not length-matched *to each other* — they are each truncated at the same edges.
