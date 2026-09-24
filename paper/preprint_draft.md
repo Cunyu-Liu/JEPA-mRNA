@@ -27,16 +27,28 @@ compute the partition function at all.
 
 On bpRNA TS0 (1,288 sequences, non-redundant with respect to the training split) we
 measure an expected calibration error gap between our DP-free head and the exact
-marginals of the same model of **0.0002**, against a pre-registered threshold of
+marginals of the same model of **0.0028**, against a pre-registered threshold of
 **0.02**, after fitting a two-parameter affine map on a disjoint validation split.
 The map is applied at evaluation time and involves no partition function. The raw,
-unrecalibrated head does **not** pass this gate (gap 0.1348), and we report both.
+unrecalibrated head does **not** pass this gate (gap 0.192; ECE 0.1955), and we report
+both. We also place this number in the first systematic calibration audit we are aware
+of for RNA base-pair probabilities: six probability sources — RNAformer, UFold, our
+exact marginals, our recalibrated head, ViennaRNA exact probabilities, and our raw
+head — scored on the same 6,022,538 candidate pairs of the same split. RNAformer's
+probabilities are already well calibrated (ECE 0.0015) without any post-processing,
+so DP-free calibration is not unique to us; UFold is 4.1x over-confident (ECE 0.0147);
+our exact marginals are the most calibrated source measured (ECE 0.0004).
 
 Structure accuracy is **not** a uniform loss, and the aggregate number is misleading in
-both directions. Pooled over TS0 our micro F1 is **0.4953**, against ViennaRNA centroid
-**0.5393** and MXfold2 **0.5651** on the same split. Crossing the split by source and by
-length, with our model and the baselines scored on the same sequences in every cell,
-reverses the comparison for one half of it:
+both directions. Pooled over TS0 our micro F1 is **0.5958** (head capacity 128 dims;
+ViennaRNA centroid **0.5393**, MXfold2 **0.5651**, UFold **0.6598**, RNAformer
+**0.7578** on the same split), and **0.6425** when the decision head is given 4.8x
+capacity — a +0.047 gain that is seven times the seed variance we measure (0.0065).
+Under-training was the dominant error source at earlier checkpoints (0.4953 at step
+3500, monotonically rising to 0.5958 at step 20000 with no plateau), which also
+reverses an early negative reading of the capacity hypothesis taken at step 2000.
+Crossing the split by source and by length, with our model and the baselines scored on
+the same sequences in every cell, reverses the comparison for one half of it:
 
 | Source | Length | n | Ours | Centroid | Ours − centroid |
 |---|---|---|---|---|---|
@@ -151,23 +163,46 @@ structures; measured illegal-structure rate and minimum-hairpin violation rate a
 
 ### 4.2 The calibration result (C1)
 
-Checkpoint: `rinalmo_ff` at step 3500 (step read from inside the checkpoint file, not
+Checkpoint: `rinalmo_ff` at step 20000 (step read from inside the checkpoint file, not
 from its name). Decode weight is the model's own trained prior weight — no selection on
-any test split.
+any test split. (The step-3500 numbers that earlier versions of this draft carried are
+superseded: the convergence curve 0.5369@6000 / 0.5587@10000 / 0.5958@20000 shows the
+model was under-trained there.)
 
-| Quantity (TS0, 1,288 sequences) | Value |
+| Quantity (TS0, same 6,022,538 candidate pairs) | Value |
 |---|---|
-| System-1 ECE, raw head | 0.1373 |
-| Exact-marginal ECE (same model, same sequences) | 0.0012 |
-| **C1-c gap, raw head** | **0.1348 — FAIL** (threshold 0.02) |
-| **C1-c gap, DP-free affine recalibration** | **0.0002 — PASS** |
-| System-1 ECE after recalibration | 0.0023 |
-| Recalibration parameters | `a = 0.02263`, `b = -4.7386` (2 parameters, fitted on VL0) |
+| System-1 ECE, raw head | 0.1955 |
+| Exact-marginal ECE (same model, same sequences) | 0.0004 |
+| **C1-c gap, raw head** | **0.192 — FAIL** (threshold 0.02) |
+| **C1-c gap, DP-free affine recalibration** | **0.0028 — PASS** |
+| System-1 ECE after recalibration | 0.0031 |
+| Recalibration parameters | 2 parameters, fitted on VL0 |
 
 The gap is reported both ways on purpose. Reporting only the recalibrated row would
-hide the fact that the raw head is over-confident by an order of magnitude; reporting
+hide the fact that the raw head is over-confident by two orders of magnitude; reporting
 only the raw row would hide the fact that a two-parameter, partition-function-free map
-closes the gap to two ten-thousandths.
+closes the gap to three thousandths — and that Brier (0.1015 -> 0.0057) and NLL
+(0.3310 -> 0.0320) improve simultaneously, which matters because ECE alone can be
+minimised by a constant predictor.
+
+**Six-source calibration audit (new in this version).** All rows below are the same
+split, the same candidate pairs, and the same metric implementation:
+
+| Probability source | ECE | Brier | NLL | DP-free? | Post-processing? |
+|---|---|---|---|---|---|
+| RNAformer (32M, bprna ckpt) | **0.0015** | 0.0025 | 0.0132 | yes | none |
+| Our exact marginals (CRF, inside-outside) | **0.0004** | 0.0030 | 0.0137 | no | none |
+| Our recalibrated head | 0.0031 | 0.0057 | 0.0320 | yes | 2-param affine (VL0) |
+| ViennaRNA exact BPP | 0.0048 | 0.0051 | 0.0259 | no | none |
+| UFold | 0.0147 | 0.0108 | 0.0437 | yes | none |
+| Our raw head | 0.1955 | 0.1015 | 0.3310 | yes | — |
+
+This is, to our knowledge after search, the first systematic calibration audit of RNA
+base-pair probabilities. It cuts both ways and we report both edges: DP-free
+calibration is **not unique to us** (RNAformer is already calibrated), so no
+first-to-calibrate claim is made anywhere in this draft; and the audit gives the field
+a measurement it did not have — the spread across supposedly comparable probability
+outputs is two orders of magnitude.
 
 Two sensitivity checks:
 
@@ -203,13 +238,34 @@ obtained without a partition function.
 
 ### 4.3 Structure accuracy: the pooled number is misleading in both directions
 
-Pooled, we do not beat the physical baselines:
+Pooled, we now sit between the physical baselines and the strongest published deep
+baselines, and the capacity sweep moves us further up:
 
-| Split | Ours (micro F1) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | Nussinov+Turner prior |
-|---|---|---|---|---|---|
-| TS0 | **0.4953** | **0.5393** | 0.5222 | **0.5651** | 0.2124 |
-| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | ~~0.6207~~ | ~~0.5764~~ | — | ~~0.2010~~ |
-| bpRNA-new (5,388) | **0.3536** | **0.6770** | 0.6379 | — | **0.3015** |
+| Split | Ours (micro F1, 128-dim head) | Ours (4.8x-capacity head) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
+|---|---|---|---|---|---|---|---|---|
+| TS0 | **0.5958** | **0.6425** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
+| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
+| bpRNA-new (5,388) | **0.3536** | queued | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+
+Three readings of this table, stated exactly:
+
+1. **The +0.047 capacity gain is robust to seed noise.** The seed spread at step 20000
+   is 0.0065 (s0 0.5958 vs s1 0.5893), so 4.8x head capacity clears it by 7x. The same
+   test falsifies two smaller effects: a learnable prior-weight (init 0.5, trained to
+   0.173) gained +0.0048, and the three auxiliary objectives gained +0.0065 — both
+   within seed noise, and neither is claimed as a finding until replicated across
+   seeds.
+2. **The hierarchical cascade is a negative result, reported as one.** The cascade
+   head at the same budget and steps scores 0.5011 (P 0.794 / R 0.366): its
+   differentiable gate over-suppresses pairs out of distribution. Its training-time
+   helix recall (0.997) did not transfer. We report this at full length because the
+   architecture was motivated by a genuine complexity argument, and the failure mode
+   — high precision, collapsed recall — is the specific signature of a conservative
+   gate, not of noise.
+3. **A monotone decode bias adds nothing.** A validation-fitted additive bias before
+   the DP decode moves TS0 by +0.001 (0.6760 -> 0.6770 on a matched 400-sequence
+   subset, verified with the main evaluator at 0.6772). Sending logits, not
+   probabilities, to the DP remains the right choice (that comparison was +0.045).
 
 The ArchiveII row is struck through rather than deleted so the withdrawal is visible:
 35.6% of that split duplicates the training data, and re-measurement on the
@@ -372,10 +428,14 @@ the hypothesis as a hypothesis.
 
 ## 5. Limitations
 
-1. **The existence claim is untested.** C1-a asks whether our probabilities are at
-   least as well calibrated as SPOT-RNA / UFold sigmoid outputs. Their weights are
-   hosted on Dropbox, Google Drive and NihaoCloud, none of which is reachable from our
-   cluster; Zenodo is also unreachable. The claim is therefore *not made*, not *failed*.
+1. **The existence claim (C1-a) was tested and failed, and we report the failure.**
+   The pre-registered criterion asked whether our probabilities are at least as well
+   calibrated as SPOT-RNA / UFold sigmoid outputs. Against UFold they are (0.0031 vs
+   0.0147). But RNAformer's probabilities — single forward pass, non-crossing greedy
+   decode, DP-free — are better calibrated than our recalibrated head (0.0015 vs
+   0.0031) with no post-processing at all. "We beat UFold" would be trading on a weaker
+   opponent, so no uniqueness claim is made; what survives is the systematic audit
+   itself and the self-consistency result (C1-c).
 2. **Cross-family generalization is insufficient**, and §4.4 quantifies it rather than
    arguing it away. The same weakness shows up within-distribution as a sharp dependence
    on how conserved the source population is (§4.3): we beat the partition-function
@@ -388,15 +448,22 @@ the hypothesis as a hypothesis.
 4. **Training-set labels are a compilation, not experiment.** bpRNA-1m's structures
    are assembled from several sources, and a ~96% precision ceiling on pair labels has
    been reported for it. This bounds what any F1 on these splits can mean.
-5. **The strongest learning-based baseline we could run is MXfold2.** Its training set
-   is bundled with the package and we have not verified its overlap with TS0, so its
-   0.5651 is quoted with that caveat.
+5. **The strongest published baseline is RNAformer at 0.7578** on the same split and
+   metric implementation; we reach 0.6425 with 4.8x head capacity. The remaining gap
+   (0.115) is the draft's central open number, and the combination arm (capacity x
+   4.29x training data) that could close it is still training — its result will either
+   move this table or be reported as the honest ceiling of this recipe. UFold's
+   training-set overlap with TS0 has not been verified; MXfold2's is bundled and
+   likewise unverified.
 6. **Speed claims are withheld.** The decode path used in every number above is an
    exact `O(L^3)` dynamic program, so the "DP-free" property currently refers only to
    the absence of the partition function, not to a wall-clock advantage. No speed-up
    ratio is claimed anywhere in this draft.
-7. **Single seed for the headline.** The headline checkpoint is one seed. Multi-seed
-   arms are training; no seed-variance statement is made here.
+7. **Seed coverage is partial.** The headline family now has two seeds at step 20000
+   (0.5958 / 0.5893; spread 0.0065) with five more training; the capacity and cascade
+   arms are single-seed. The capacity gain (7x the spread) is not threatened by this;
+   the learnable-prior-weight and auxiliary-objective effects are, and are flagged as
+   unreplicated above.
 8. **The Jev decision-model paradigm is community-sourced, not peer-reviewed.** Its
    performance numbers are vendor self-reported and are not cited as fact anywhere in
    this draft. The calibration objective used here is our own design inspired by that
