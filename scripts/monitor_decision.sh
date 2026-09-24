@@ -6,6 +6,10 @@
 #   1. **Capacity watch.**  Snapshot every schedulable target (full GPUs and MIG
 #      instances) with its free memory, so the "fill every card" policy is
 #      auditable after the fact rather than asserted.
+#   1b. **Checkpoint snapshots.**  ``train_decision.py`` overwrites ``resume.pt`` in
+#      place, so a run leaves one file behind and the F1/ECE-vs-steps curves cannot
+#      be recovered afterwards.  Copies at multiples of RNAJEV_SNAP_EVERY steps are
+#      kept in $ART/ckpts.
 #   2. **Health check.**  Replay runs/ledger.jsonl; for every run whose last row
 #      is "start", decide whether it is alive, stale, diverged or crashed, and
 #      write an alert.  A run that died silently is the failure this catches.
@@ -54,6 +58,17 @@ while read -r target free; do
   printf '{"ts":"%s","target":"%s","free_mib":%s}\n' "$TS" "$target" "$free" \
     >> "$GPU_HISTORY"
 done < <(list_schedulable_gpus)
+
+# ---------------------------------------------------------------------------
+# 1b. checkpoint snapshots
+# ---------------------------------------------------------------------------
+# resume.pt is overwritten in place by the driver, so without this the step-wise
+# F1 / ECE curves for a run are unrecoverable once it moves on.
+CKPT_SNAP="${RNAJEV_CKPT_SNAP:-$ART/ckpts}"
+SNAP_EVERY="${RNAJEV_SNAP_EVERY:-2000}"
+mkdir -p "$CKPT_SNAP"
+python3 "$HERE/../tools/snapshot_checkpoints.py" --runs "$RUNS" --out "$CKPT_SNAP" \
+        --every "$SNAP_EVERY" || echo "snapshot: failed (non-fatal)"
 
 # ---------------------------------------------------------------------------
 # 2. health check
