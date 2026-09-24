@@ -155,9 +155,9 @@ running and is therefore *not* reported here.
 arm scales it to 512 (4.8x parameters). The data axis swaps the training corpus from
 TR0 (10,682 sequences) to TR1 (45,865 sequences, 4.29x after de-duplication) with
 everything else fixed. Both axes are reported at 20,000 steps, `w=-1` decode, on the
-same splits. The seed spread of the base configuration across 7 seeds is **mean
-0.5948, std 0.0033**, so the capacity gain (+0.047) and the cross-family data gain
-(+0.163) are respectively ~14x and ~49x the spread.
+same splits. The seed spread of the base configuration across 8 seeds is **mean
+0.5950, std 0.0033** (range 0.5893–0.5990), so the capacity gain (+0.047) and the
+cross-family data gain (+0.163) are respectively ~14x and ~49x the spread.
 
 **DP-free recalibration.** After training, a two-parameter affine map
 `p = sigmoid(a * s + b)` is fitted on a validation split disjoint from every test
@@ -519,12 +519,12 @@ the hypothesis as a hypothesis.
    exact `O(L^3)` dynamic program, so the "DP-free" property currently refers only to
    the absence of the partition function, not to a wall-clock advantage. No speed-up
    ratio is claimed anywhere in this draft.
-7. **Seed coverage is partial but the load-bearing results are covered.** The
-   headline family has seven seeds at step 20000 (mean 0.5948, std 0.0033), with an
-   eighth training; the capacity and cascade arms are single-seed, so a second
-   capacity seed and a second learnable-prior-weight seed are training. The capacity
-   gain (14x the spread) is not threatened by this; the learnable-prior-weight and
-   auxiliary-objective effects are, and are flagged as unreplicated above.
+7. **Seed coverage: the headline family is complete at 8 seeds** (mean 0.5950,
+   std 0.0033, range 0.0097); the capacity and cascade arms are single-seed, so
+   second seeds for the capacity, learnable-prior-weight and combination arms are
+   training. The capacity gain (14x the spread) is not threatened by this; the
+   learnable-prior-weight and auxiliary-objective effects are, and are flagged as
+   unreplicated above.
 8. **The Jev decision-model paradigm is community-sourced, not peer-reviewed.** Its
    performance numbers are vendor self-reported and are not cited as fact anywhere in
    this draft. The calibration objective used here is our own design inspired by that
