@@ -49,11 +49,33 @@ PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/run_baselines.py \
     --split bprna_ts0 --out /mnt/cunyuliu/rna-jepa/eval_decision/baselines_bprna_ts0.json
 ```
 
-## 4. 尚未取得的基线（如实记录）
+## 4. 基线获取状态（实测，非推测）
 
-| 基线 | 状态 | 说明 |
+### 4.1 已取得
+
+| 基线 | 状态 | 证据 |
 |---|---|---|
-| UFold / SPOT-RNA / SPOT-RNA2 | **未取得** | 需下载权重；是 C1-a 的头号对照（"免 DP 但未校准"） |
-| BPfold | 权重已在集群（`rna_ss_data/bpfold/mp/model_predict/`），**包未安装** | 需 clone `heqin-zhu/BPfold` |
-| MXfold2 / CONTRAfold / LinearPartition | 未安装 | CONTRAfold 是最接近的先验工作，应尽量补上 |
-| E2Efold | 未复现 | 其 bpRNA-new 数字是 OOD 论断的关键，需核对原文 |
+| ViennaRNA MFE / centroid / MEA | ✅ **已测** | 见 §1，ViennaRNA 2.7.2 |
+| Nussinov+Turner（我们 MLP_T=0） | ✅ **已测** | 见 §1 |
+| **MXfold2** | ✅ **可运行** | `~/miniconda3/envs/rna_baselines` 已装；`python -m mxfold2 predict x.fa` 实测输出正确（`GGGAAACCCUUUAGCUAGCU → ((....))............ (-2.0)`）。**注意子命令是 `predict` 不是 `fold`**；`from mxfold2 import mxfold2` 会 ImportError（`__init__.py` 为空），必须走 CLI。训练参数随包自带（`mxfold2/models/TrainSetAB.pth`）。 |
+
+`eval/ss/run_baselines.py` 新增 `--external-dbn`：对**外部工具产出的 dot-bracket** 打分，
+复用同一套 `score_all`（同一份指标实现），并**逐条校验序列长度**以防顺序错位。
+
+### 4.2 明确取不到（含原因，避免重复尝试）
+
+| 基线 | 结论 | 原因（实测） |
+|---|---|---|
+| **UFold** | ❌ 权重不可得 | 仓库 `uci-cbcl/UFold` 的 `models/` 目录**只有 Readme.md（1 字节）**，权重不在仓库内 |
+| **SPOT-RNA / SPOT-RNA2** | ❌ 权重不可得 | 仓库根目录只有代码（`SPOT-RNA.py`、`utils/`、`sample_inputs/`…），**无任何权重文件**；`models/` 路径 404；README 未给出可下载链接 |
+| 网络限制 | — | `huggingface.co` / `zenodo.org` 不通（`hf-mirror.com`、PyPI、GitHub API/raw 通） |
+| BPfold | ⚠️ 权重在本地但包未装 | `rna_ss_data/bpfold/mp/model_predict/`（6 个 `.pth`）；需 clone `heqin-zhu/BPfold` |
+| CONTRAfold / LinearPartition | ❌ 未装 | 未尝试安装；CONTRAfold 是**最接近的先验工作**，优先级应高于 UFold |
+| E2Efold | ❌ 未复现 | 其 bpRNA-new 数字是 OOD 论断的关键，**引用前必须回原文核对** |
+
+> **对 C1-a 的影响（必须如实写进论文）**：C1-a 要求与 SPOT-RNA/UFold 的 sigmoid 概率做同口径 ECE 对比，
+> 而**这两者的权重在本集群不可得**。因此：
+> - **C1-b（对 ViennaRNA 精确边际）与 C1-c（对精确边际）可以完成**；
+> - **C1-a 无法完成**，除非作者侧提供权重。论文必须**显式说明这一缺口**，
+>   而不能用"未发现其校准评测"来代替"我们做了对比"。
+> - 可替代的**学习型**对照是 **MXfold2**（权重可得），应优先补上它在三个 split 上的 F1/INF。

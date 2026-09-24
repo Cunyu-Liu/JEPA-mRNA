@@ -104,6 +104,28 @@ def nussinov_turner(seq: str) -> List[Tuple[int, int]]:
     return sorted(tuple(p) for p in nussinov_map(scores, mask))
 
 
+def read_dbn_fasta(path: str):
+    """Structures from a FASTA whose third line per record is dot-bracket.
+
+    Verifies the sequence line against the record it will be scored against, so a
+    reordered or filtered file fails loudly instead of producing plausible numbers
+    for the wrong structures.
+    """
+    out = []
+    with open(path, encoding="utf-8") as fh:
+        lines = [ln.rstrip("\n") for ln in fh if ln.strip()]
+    i = 0
+    while i < len(lines):
+        if not lines[i].startswith(">"):
+            i += 1
+            continue
+        seq = lines[i + 1].strip().upper().replace("T", "U")
+        struct = lines[i + 2].split()[0].strip()
+        out.append((seq, struct))
+        i += 3
+    return out
+
+
 def score_all(records, predictor) -> Dict[str, object]:
     """Aggregate micro/macro F1 and INF over a split, mirroring the eval driver."""
     tp = fp = fn = 0
@@ -140,6 +162,11 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--baselines", default=",".join(ALL_BASELINES))
     ap.add_argument("--out", default="")
+    ap.add_argument("--external-dbn", default="",
+                    help="FASTA of externally produced dot-bracket (e.g. MXfold2) to "
+                         "score against --split, in the same order")
+    ap.add_argument("--external-name", default="external",
+                    help="label for the --external-dbn row")
     args = ap.parse_args()
 
     records = read_records(args.split, args.limit)
