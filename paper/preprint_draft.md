@@ -167,11 +167,16 @@ Two sensitivity checks:
 - **The result does not depend on any choice made on the validation split.** With a
   validation-selected decode weight of 0.75 instead of the model's own weight, TS0
   micro F1 is 0.4959 versus 0.4953 — a difference of 0.0006 — and the recalibrated
-  gap is 0.0006. The validation split is not a proxy for TS0 (the same checkpoint
-  scores 0.9230 on VL0 versus 0.6188 on TS0 within the <=100 nt length bucket, for
-  reasons we have not identified), so this check matters and it passes.
-- **The result holds on the secondary split.** On ArchiveII (3,950 rows) the
-  recalibrated gap is 0.0093, still inside the 0.02 threshold.
+  gap is 0.0006. The validation split is not a proxy for TS0 (see §4.3), so this check
+  matters and it passes.
+- **The result holds on the secondary split, and the same insensitivity holds there.**
+  On ArchiveII (3,950 rows) the recalibrated gap is **0.0044** at the model's own
+  weight and 0.0093 at the validation-selected weight, with micro F1 0.5834 versus
+  0.5829 — again a difference of 0.0005. Both are inside the 0.02 threshold.
+
+Four combinations (two splits x two decode conventions) pass, and the decode
+convention moves micro F1 by at most 0.0006 anywhere. The headline therefore involves
+no selection on any split, which is what makes it reportable.
 
 **Reference point.** ViennaRNA's exact base-pair probabilities on TS0 have
 ECE **0.0048**. Our recalibrated head is at **0.0023** — the same order of magnitude,
