@@ -726,7 +726,10 @@ class _DifferentiableInside(torch.autograd.Function):
         return g, None
 
 
-def negative_log_likelihood(scores, mask, gt_pairs) -> float:
+NLL_NORMALIZATIONS = ("sum", "length")
+
+
+def negative_log_likelihood(scores, mask, gt_pairs, normalization: str = "sum"):
     """``L_NLL = log Z(x) - sum_{(i,j) in gt_pairs} s_ij``.
 
     Return type follows the input: a plain ``float`` for a NumPy ``scores``
@@ -740,20 +743,53 @@ def negative_log_likelihood(scores, mask, gt_pairs) -> float:
     where ``y`` is the indicator of ``gt_pairs``; the lower triangle receives no
     gradient because it is never read.  (This is the negative of the
     ``sum (y_ij - p_hat_ij) * grad s_ij`` form in the project spec.)
+
+    ``normalization``
+        ``"sum"``    -- the raw quantity above.  Both ``log Z`` and
+                        ``sum s_ij`` are extensive in ``L``, so this value is
+                        ``O(L)`` and is **not** comparable across sequences of
+                        different length.  This is the historical default and is
+                        what every run before 2026-09-24 used.
+        ``"length"`` -- the same quantity divided by ``L`` ("NLL per
+                        nucleotide"), which is intensive in ``L`` and therefore
+                        comparable across batches.  The gradient is divided by
+                        the same factor, so this is a *different objective*, not
+                        a rescaling of the loss for logging: it removes the
+                        ``O(L)`` bias that made the per-pair learning signal on
+                        long sequences ``L`` times weaker than on short ones once
+                        gradient clipping normalised the batch gradient.
+
+                        It also makes the CRF term the same order of magnitude as
+                        the per-pair-mean auxiliary terms (``L_distill``,
+                        ``L_RLCD``, ``L_cal``).  Measured on real batches, the
+                        summed NLL was ~55 while each auxiliary term was ~0.4, so
+                        with ``lambda_* = 1`` the three novel terms contributed
+                        under 3% of the objective -- i.e. the "four-term" objective
+                        was numerically a one-term objective.  See
+                        ``records/DECISION_TRAINING_LOG.md``.
     """
+    if normalization not in NLL_NORMALIZATIONS:
+        raise ValueError(f"normalization must be one of {NLL_NORMALIZATIONS}, "
+                         f"got {normalization!r}")
+    length = int(scores.shape[0])
+    if normalization == "length" and length <= 0:
+        raise ValueError("cannot normalise an empty score matrix by length")
+
     if not torch.is_tensor(scores):
         s_np = _to_numpy_float(scores)
         m_np = _to_numpy_bool(mask)
         logZ, _ = nussinov_inside(s_np, m_np)
         gt = float(sum(s_np[i, j] for i, j in gt_pairs))
-        return float(logZ - gt)
+        value = float(logZ - gt)
+        return value / length if normalization == "length" else value
 
     mask_t = mask if torch.is_tensor(mask) else torch.as_tensor(_to_numpy_bool(mask))
     logZ_t = _DifferentiableInside.apply(scores, mask_t)
     gt_score = scores.sum() * 0.0
     for i, j in gt_pairs:
         gt_score = gt_score + scores[i, j]
-    return logZ_t - gt_score
+    value_t = logZ_t - gt_score
+    return value_t / length if normalization == "length" else value_t
 
 
 # ---------------------------------------------------------------------------

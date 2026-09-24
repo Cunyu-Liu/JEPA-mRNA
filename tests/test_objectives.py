@@ -562,6 +562,111 @@ def test_fit_platt_scaling_nll_objective_and_rejects_empty():
         R.fit_platt_scaling(s, labels, objective="brier")
 
 
+def _random_sequence(L, seed):
+    rng = np.random.default_rng(seed)
+    return "".join(rng.choice(list(ALPHABET), size=L))
+
+
+def _gt_pairs(seq, seed=0):
+    """A non-trivial ground-truth structure: the MAP of a seeded random score matrix.
+
+    Using an all-zero matrix would return the empty structure (every pair option
+    ties with ``N(i, j-1)`` and the strict ``>`` keeps "unpaired"), which would
+    make the ``y`` term of every gradient assertion vanish.
+    """
+    from rnajepa.harness import nussinov_map
+
+    mask = valid_pair_mask(seq)
+    rng = np.random.default_rng(seed + 991)
+    scores = np.triu(rng.normal(size=(len(seq), len(seq))), 1)
+    return mask, nussinov_map(scores + scores.T, mask)
+
+
+def test_nll_length_normalization_is_an_exact_division_on_both_paths():
+    """``"length"`` must be exactly ``"sum" / L`` -- value *and* gradient.
+
+    This is the whole content of the option, so it is checked on the NumPy path
+    (value only) and on the torch path (value and gradient) at two lengths.
+    """
+    for L, seed in ((12, 1), (31, 2)):
+        seq = _random_sequence(L, seed)
+        mask = valid_pair_mask(seq)
+        rng = np.random.default_rng(seed + 100)
+        s_np = rng.normal(size=(L, L))
+        s_np = np.triu(s_np, 1)
+        s_np = s_np + s_np.T
+        _, gt = _gt_pairs(seq)
+
+        raw = negative_log_likelihood(s_np, mask, gt, normalization="sum")
+        norm = negative_log_likelihood(s_np, mask, gt, normalization="length")
+        assert abs(norm - raw / L) < 1e-12 * max(1.0, abs(raw))
+
+        t = torch.tensor(s_np, requires_grad=True)
+        v_norm = negative_log_likelihood(t, mask, gt, normalization="length")
+        v_norm.backward()
+        g_norm = t.grad.clone().detach()
+
+        t2 = torch.tensor(s_np, requires_grad=True)
+        v_sum = negative_log_likelihood(t2, mask, gt, normalization="sum")
+        v_sum.backward()
+        g_sum = t2.grad.clone().detach()
+
+        assert torch.allclose(g_norm, g_sum / L, atol=1e-12, rtol=1e-10)
+        # and it is still exactly (p_hat - y) / L on the strict upper triangle, which
+        # is the only region the DP reads (the lower triangle is documented as never
+        # consulted, and `p_hat` is not guaranteed to be zero there)
+        _, p_hat = inside_outside(s_np, mask)
+        y = np.asarray(pair_indicator(L, gt))
+        upper = np.triu(np.ones((L, L), dtype=bool), 1)
+        expected = torch.tensor((p_hat - y) / L)[torch.tensor(upper)]
+        assert torch.allclose(g_norm[torch.tensor(upper)], expected,
+                              atol=1e-9, rtol=1e-7)
+
+
+def test_combined_loss_normalization_changes_the_objective_not_just_the_scale():
+    """With auxiliary terms active, ``"length"`` is a *different* objective.
+
+    If the option only rescaled the reported loss, then
+    ``combined(length) * L == combined(sum)`` would hold.  It must not, because
+    only the CRF term is divided while the other three stay per-pair means --
+    which is precisely what makes ``lambda_* = 1`` meaningful.
+    """
+    L = 24
+    seq = _random_sequence(L, 7)
+    mask = valid_pair_mask(seq)
+    rng = np.random.default_rng(7)
+    s = np.triu(rng.normal(size=(L, L)), 1)
+    s = s + s.T
+    _, gt = _gt_pairs(seq)
+    labels = pair_indicator(L, gt)
+    teacher = np.clip(np.abs(np.triu(rng.normal(size=(L, L)), 1)) * 0.05, 0.0, 1.0)
+    teacher = teacher + teacher.T
+
+    w = R.ObjectiveWeights(lambda_nll=1.0, lambda_distill=1.0, lambda_rlcd=1.0,
+                           lambda_cal=1.0)
+    kw = dict(teacher_probs=teacher, labels=labels)
+    tot_sum, terms_sum = R.combined_loss(s, mask, gt, w, return_terms=True,
+                                         nll_normalization="sum", **kw)
+    tot_len, terms_len = R.combined_loss(s, mask, gt, w, return_terms=True,
+                                         nll_normalization="length", **kw)
+
+    assert abs(float(terms_len["nll"]) - float(terms_sum["nll"]) / L) < 1e-12
+    for name in ("distill", "rlcd", "cal"):
+        assert abs(float(terms_len[name]) - float(terms_sum[name])) < 1e-12
+    assert abs(float(tot_len) * L - float(tot_sum)) > 1e-6
+
+
+def test_nll_normalization_rejects_unknown_value_and_defaults_to_sum():
+    seq = _random_sequence(10, 3)
+    mask = valid_pair_mask(seq)
+    s = np.zeros((10, 10))
+    with pytest.raises(ValueError):
+        negative_log_likelihood(s, mask, (), normalization="pairs")
+    # the default must stay the historical quantity: existing runs resume bit-exact
+    assert (negative_log_likelihood(s, mask, (), normalization="sum")
+            == negative_log_likelihood(s, mask, ()))
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in sorted(globals().items()):

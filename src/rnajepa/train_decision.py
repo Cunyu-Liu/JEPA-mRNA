@@ -192,6 +192,12 @@ class TrainConfig:
     beta: float = 1.0
     n_bins: int = 10
     soft_ece_tau: float = 0.1
+    #: How ``L_NLL`` is scaled before the four terms are added.  ``"sum"`` is the
+    #: historical ``log Z - sum s_ij`` (``O(L)``); ``"length"`` divides it by ``L``.
+    #: With ``"sum"`` the auxiliary terms measured ~0.4 against an NLL of ~55, so
+    #: ``lambda_* = 1`` made them contribute <3% of the objective.  Defaults to
+    #: ``"sum"`` so that resuming any pre-existing run is bit-exact.
+    nll_normalization: str = "sum"
 
     # model
     tiny: bool = False
@@ -759,7 +765,8 @@ def _stack_embeddings(items, max_len: int, device, dtype=torch.float32) -> torch
 
 def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, *,
                      distill_kind: str = "kl", reward: str = "brier", beta: float = 1.0,
-                     n_bins: int = 10, tau: float = 0.1
+                     n_bins: int = 10, tau: float = 0.1,
+                     nll_normalization: str = "sum"
                      ) -> Tuple[torch.Tensor, Dict[str, float]]:
     """Mean four-term objective over a batch, plus the per-term values.
 
@@ -810,6 +817,7 @@ def objective_terms(model, batch: Dict[str, object], weights: ObjectiveWeights, 
             labels=torch.as_tensor(batch["labels"][b], dtype=torch.float64),
             distill_kind=distill_kind, reward=reward, beta=beta,
             n_bins=n_bins, tau=tau, return_terms=True,
+            nll_normalization=nll_normalization,
         )
         total = loss if total is None else total + loss
         for name, value in terms.items():
@@ -994,7 +1002,8 @@ def calibrate_learning_rate(config: TrainConfig, dataset: DecisionDataset, *,
             loss, _terms = objective_terms(
                 model, batch, weights, distill_kind=config.distill_kind,
                 reward=config.rlcd_reward, beta=config.beta,
-                n_bins=config.n_bins, tau=config.soft_ece_tau)
+                n_bins=config.n_bins, tau=config.soft_ece_tau,
+                nll_normalization=config.nll_normalization)
             try:
                 value = _finite(loss.detach(), f"probe loss at lr={lr}")
                 loss.backward()
@@ -1347,7 +1356,8 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
             loss, terms = objective_terms(
                 model, batch, weights, distill_kind=config.distill_kind,
                 reward=config.rlcd_reward, beta=config.beta,
-                n_bins=config.n_bins, tau=config.soft_ece_tau)
+                n_bins=config.n_bins, tau=config.soft_ece_tau,
+                nll_normalization=config.nll_normalization)
             value = _finite(loss.detach(), f"loss at step {step + 1}")
             loss.backward()
             norm = _grad_norm(model.parameters())
@@ -1465,6 +1475,10 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--distill-kind", default="kl", choices=["kl", "l2"])
     p.add_argument("--rlcd-reward", default="brier", choices=["brier", "log"])
     p.add_argument("--beta", type=float, default=1.0)
+    p.add_argument("--nll-normalization", default="sum", choices=["sum", "length"],
+                   help="'sum' = historical log Z - sum s_ij (O(L)); 'length' = that "
+                        "divided by L, so the CRF term is comparable to the per-pair-mean "
+                        "distill/RLCD/cal terms (with 'sum' they were <3%% of the loss).")
     # model
     p.add_argument("--tiny", action="store_true", help="CPU-sized model (tests / smoke)")
     p.add_argument("--encoder-size", default="150M", choices=["35M", "150M", "650M"])
@@ -1503,6 +1517,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
         lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal,
         distill_kind=args.distill_kind, rlcd_reward=args.rlcd_reward, beta=args.beta,
+        nll_normalization=args.nll_normalization,
         tiny=args.tiny, encoder_size=args.encoder_size, device=args.device,
         allow_cpu=args.allow_cpu,
         out_dir=args.out, resume=args.resume, arm=args.arm,

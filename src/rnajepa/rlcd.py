@@ -376,6 +376,7 @@ def combined_loss(scores, mask, gt_pairs, weights: Optional[ObjectiveWeights] = 
                   distill_kind: str = "kl", reward: str = "brier", beta: float = 1.0,
                   calibration_temperature: float = 1.0, calibrator: Optional[TemperatureScaler] = None,
                   length: Optional[int] = None, n_bins: int = 10, tau: float = 0.1,
+                  nll_normalization: str = "sum",
                   return_terms: bool = False):
     """``L = l_nll L_NLL + l_distill L_distill + l_rlcd L_RLCD + l_cal L_cal``.
 
@@ -387,13 +388,20 @@ def combined_loss(scores, mask, gt_pairs, weights: Optional[ObjectiveWeights] = 
     calibration terms; when omitted it is derived as ``sigmoid(scores)`` (the flat
     per-pair head).  ``labels`` defaults to the indicator of ``gt_pairs``.  Returns
     a 0-dim tensor, or ``(total, terms)`` when ``return_terms=True``.
+
+    ``nll_normalization`` is forwarded to
+    :func:`rnajepa.harness.negative_log_likelihood`: ``"sum"`` is the historical
+    ``O(L)`` CRF likelihood, ``"length"`` divides it by ``L`` so that it is
+    comparable to the per-pair-mean auxiliary terms.  It defaults to ``"sum"`` so
+    that every run started before 2026-09-24 keeps exactly its original objective.
     """
     weights = weights or ObjectiveWeights()
     s = as_tensor(scores)
     terms: Dict[str, torch.Tensor] = {}
 
     if weights.lambda_nll != 0.0:
-        terms["nll"] = as_tensor(negative_log_likelihood(s, mask, gt_pairs))
+        terms["nll"] = as_tensor(negative_log_likelihood(
+            s, mask, gt_pairs, normalization=nll_normalization))
 
     need_prob = any(w != 0.0 for w in (weights.lambda_distill, weights.lambda_rlcd,
                                        weights.lambda_cal))

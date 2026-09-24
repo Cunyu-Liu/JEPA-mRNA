@@ -742,6 +742,149 @@ from-scratch 六臂剩余的 36,000 步从约 38 小时降到约 12 小时。
    AdamW 把保存的动量缓冲套到了错误的参数上 → **9 个臂又全死**。改为**按名字重映射**。
 3. 守卫测试又抓到我自己的第 3 个缺陷：`dict()` 浅拷贝使填充**改写了调用方的字典**，第二次调用走了不同分支。
 
+### 14.12 **四项目标函数在数值上其实是单项目标** —— T-A4 的真正内容（2026-09-24 14:00）
+
+#### 症状：λ=1 的四项目标里，三项只占 **2–3%**
+
+从正在跑的臂的日志里直接读出的逐项量级（`full_b4_s0` step 4700、`rinalmo_ff_b4_s0` step 3700）：
+
+| 臂 | L_NLL | L_distill | L_RLCD | L_cal | 三项之和 / L_NLL |
+|---|---|---|---|---|---|
+| `full_b4_s0` @4700 | 65.29 | 0.366 | −0.655 | 0.373 | **2.1%** |
+| `rinalmo_ff_b4_s0` @3700 | 47.76 | 0.275 | −0.778 | 0.267 | **2.8%** |
+
+**根因（代码级）**：`harness.negative_log_likelihood` 返回 `log Z(x) − Σ_(i,j)∈gt s_ij`，
+`log Z` 与 `Σ s` **都随 L 线性增长**，所以它是 **O(L)** 的量；而
+`distillation_loss` / `rlcd_loss` / `calibration_loss` **三者都用了 `.mean()`**
+（在候选对上取均值），是 **O(1)** 的量。spec §5.2 把四项写成 `Σ` 相加，
+但实现里只有 CRF 项是"和"。于是 `λ=1` 并不是"等权"，而是"CRF 独占 97–98%"。
+
+**这不是"损失值不好看"，而是三个实质后果**：
+
+1. **`full` 与 `nllonly` 在数值上是同一个实验**（实测两者 loss 差 <1%）。
+   §7.5 的 H6 消融（RLCD/蒸馏是否只是装饰）**在当前配置下根本无法回答**。
+2. **C1 的机制被关掉了**：C1 的立论是"用蒸馏/RLCD 把免 DP 头的概率校准到精确边际"，
+   而校准项只占 0.4–1.4% 的权重。C1-c 目前能过，靠的是评测端的仿射重标定，不是训练目标。
+3. **`grad_clip=1.0` 下每一步都被裁死**：实测裁剪前范数 **25–88**（batch 4）。
+
+#### 修复：`--nll-normalization length`
+
+新增 `harness.negative_log_likelihood(..., normalization=)`，取值 `sum`（历史量，默认）
+或 `length`（除以 L，"每核苷酸 NLL"）。梯度按同一因子缩放，所以这是**换目标函数**，
+不是给日志换个刻度。默认保持 `sum`，因此**所有已有臂 `--resume` 后逐位不变**（有测试断言）。
+
+**真实数据 4 步 pre-flight**（`bprna_tr0`，batch 4，head-only，随机初始化的头）：
+
+| `--nll-normalization` | L_NLL | L_distill | L_RLCD | L_cal | gnorm |
+|---|---|---|---|---|---|
+| `sum` | 31.2 / 62.9 / 56.9 / 87.7 | 1.32 / 1.11 / 1.09 / 1.16 | −0.056 … −0.089 | 1.33 / 1.12 / 1.10 / 1.18 | 25.6 / 54.7 / 46.6 / 87.7 |
+| `length` | **0.40 / 0.61 / 0.56 / 0.71** | 同上（未被归一） | 同上 | 同上 | **3.03 / 2.75 / 2.65 / 3.12** |
+
+→ 四项**同量级**（0.4–1.3）；批间极差从 2.8× 降到 1.8×（T-A4 的"批间损失可比"判据）；
+gnorm 降到 2.7–3.1，裁剪从"每步都裁"变成"偶尔裁"。
+
+**诚实边界（必须写进记录）**：在**随机初始化的头**上，`length` 口径下三项辅助项
+（1.1–1.3）**比** CRF 项（0.4–0.7）**大**——这是反向的不平衡。随着训练推进辅助项会下降
+（训练到 3700 步时已降到 0.27）。所以 `λ=1` 的含义是"四项同量级"，
+**不是一个被调优过的最优点**，这一点不得含糊。
+
+#### 新实验：{sum, length} × {aux 开, aux 关} 的完整 2×2（已启动）
+
+同一冻结 RiNALMo 头、同一数据/教师/batch/lr/步数，只改目标函数，使两个效应可分离：
+
+| 目标函数 | 臂 | 状态 |
+|---|---|---|
+| `sum` + aux 关 | `rinalmo_sum_b4_s0` | 本次新增 |
+| `sum` + aux 开 | `rinalmo_ff_b4_s0` | 已在跑（20,000 步） |
+| `length` + aux 关 | `rinalmo_len_b4_s0` | 本次新增 |
+| `length` + aux 开 | `rinalmo_bal_b4_s0` / `rinalmo_bal_b4_s1` | 本次新增（含种子方差） |
+
+启动脚本 `launch_objective_scale.sh`（按 MIG UUID 钉卡，不按父卡序号）。首条日志确认口径生效：
+
+| 臂 | step 25 loss | nll | distill | rlcd | cal | gnorm |
+|---|---|---|---|---|---|---|
+| `rinalmo_bal_b4_s0` | 2.774 | 0.588 | 1.130 | −0.099 | 1.155 | 30.8 |
+| `rinalmo_bal_b4_s1` | 2.844 | 0.675 | 1.120 | −0.094 | 1.143 | 33.4 |
+| `rinalmo_len_b4_s0` | 0.590 | 0.590 | — | — | — | 1.05 |
+| `rinalmo_sum_b4_s0` | 64.30 | 64.30 | — | — | — | 72.8 |
+
+**纪律**：这四臂在过评测前**不产生任何科学结论**。它们要回答的唯一问题是
+"四项目标与单项目标是否给出不同结果"；若 `bal ≈ len`，则 H6 的答案是**否定**的，
+必须如实写（这本身也是有用结论）。
+
+#### 测试
+
+新增 3 项（`tests/test_objectives.py`）：`length` 在 numpy/torch 两条路径上**精确等于** `sum / L`
+（值**与梯度**），且梯度仍等于 `(p̂ − y)/L`；`combined_loss` 在辅助项开启时
+`combined(length)·L ≠ combined(sum)`（证明它换的是目标函数而不是刻度）；
+默认值仍是 `sum`（已有臂 `--resume` 逐位不变）。**全量：291 passed, 0 failed**（集群 torch 2.5.1）。
+
+> 附带发现：本地 torch 2.8.0 下 `tests/test_head_chunking.py` 有 4 项 `torch.equal` 失败，
+> 集群 torch 2.5.1 下全通过。差异来自分块矩阵乘的累加顺序（fp32），**不是逻辑缺陷**；
+> 权威环境是集群。
+
+### 14.13 评测记录的**两个溯源缺陷**（已修）
+
+同一类错误：目录名与 `tag` 声称了一个 checkpoint 支持不了的步数。
+
+| 记录 | 缺陷 | 处置 |
+|---|---|---|
+| `ff3600_bprna_ts0` | checkpoint 是 `ckpts/rinalmo_ff_ff_w05_snapshot.pt`，**记录步数是 3500 不是 3600** | 目录改名 `ff3500_bprna_ts0`，`tag` 改 `rinalmo_ff_step3500_w05_bprna_ts0` |
+| `ff500_ts0.json/` | checkpoint 是**活的** `runs/rinalmo_ff_b4_s0/resume.pt`，而 `train_decision.py` **原地覆盖**它 → 事后读到的步数是"现在"的步数，不是评测当时的 | 改名 `ff_live_early_ts0`，并写入 `step_provenance: UNRELIABLE…` 字段说明原因 |
+
+新增两个工具：
+- `tools/fix_eval_record_provenance.py`（一次性修复，默认 dry-run）；
+- `tools/summarize_evals.py`：把 `eval_decision/*/result.json` 汇成一张表，
+  并**从 checkpoint 里读步数**而不是相信目录名，同时对 `resume.pt` 标注 `LIVE`。
+
+**教训**：目录名是**声称**，checkpoint 里的 `step` 才是**证据**；两者不一致时以证据为准。
+`resume.pt` 原地覆盖这个设计决定了"事后读步数"**结构性地不可靠**，必须靠 `ckpts/` 里的
+快照副本来做溯源（cron 每 10 分钟按 2000 步整数倍保留，已生效）。
+
+### 14.14 OOD 评测的**两次静默丢失** + 先验权重必须**逐 checkpoint 重选**
+
+#### 丢失 1：脚本随 ssh 管道一起死掉
+
+13:50 启动的 OOD 评测（`run_ood_evals.sh`，TS0 → ArchiveII → bpRNA-new）在
+**13:52 写完 TS0 后进程消失**，日志里没有下一行的 `=== … archiveii ===`。
+原因：脚本是在前台 ssh 里跑的，ssh 连接超时断开（`client_loop: send disconnect: Broken pipe`）
+把它带走了。**两个 split 的评测静默丢失，而日志"看起来"只是还没写出下一行。**
+
+→ 处置：重跑一律 `setsid nohup … < /dev/null &`，且日志里显式写 `=== <split> done rc=$? ===`。
+
+#### 丢失 2：w=0.5 是**为 step 2000 选的**，被直接用在 step 3500 上
+
+先验权重是训练**碰不到**的超参数（`MLP_T` 看不到先验，温度除的是**和**，比值不变），
+所以它必须逐 checkpoint 在 held-out split 上重选。实测 step 3500 / w=0.5 在 TS0 上
+**precision 0.6767 / recall 0.3692** —— 明显过于保守，即 w=0.5 对这一步**偏小**。
+沿用旧 w 会**低估**模型，而且这个错误在 headline F1 里**看不出来**。
+
+→ 处置：新脚本 `run_ood_reselect.sh`（detached）先在 **bpRNA VL0**（196 条，与 TR0/TS0 不相交，
+是唯一可用的 held-out 选择集）上扫 `w ∈ {0.25, 0.5, 0.75, 1.0, 1.5, 2.0}`，
+按 VL0 micro F1 选 `w*`，再用 `w*` 评 TS0 / ArchiveII / bpRNA-new。
+**选择永远不在测试集上做。**
+
+#### step 3500（w=0.5）在 TS0 的完整结果（已落盘 `ff3500_bprna_ts0`）
+
+| 指标 | 值 |
+|---|---|
+| micro F1 / macro F1 | 0.4778 / 0.4242 |
+| precision / recall | 0.6767 / 0.3692 |
+| 原始 ECE（System-1） | 0.0890 |
+| C1-c 原始 gap（vs 精确边际 0.0022） | **0.0877**（阈值 0.02，未过） |
+| C1-c 重标定 gap | **0.00118 PASS** |
+| 非法结构率 / 发夹环违规率 | 0 / 0 |
+
+**C1-c 原始 gap 的轨迹**（这是 C1 的 headline，必须看趋势而不是单点）：
+
+| step | 20（未训练） | ~500 | 1000 | 2000 | 3500 |
+|---|---|---|---|---|---|
+| 原始 gap | 0.549 | 0.2274 | 0.1777 | 0.2162 | **0.0877** |
+
+→ 单调下降趋势明显（未训练 → 3500 步降了 6.3×），但**尚未到 0.02**。
+**结论口径**：目前能主张的是"**免 DP 头 + 免 DP 仿射重标定** 可把 gap 压到 ≤0.02（实测 0.0012）"；
+"**裸头**的 gap ≤0.02"**尚不成立**（当前 0.0877），必须如实分开报告，不得混写。
+
 ---
 
 ## 待办（按 Gate）
@@ -751,12 +894,14 @@ from-scratch 六臂剩余的 36,000 步从约 38 小时降到约 12 小时。
 | 运行 5 完成 | 六臂各 40,000 steps 跑完并落 checkpoint（`--save-every 4000`） | **进行中**（各 4,000+ 步；副本已按 2000 步自动快照） |
 | **预训练骨干** | 接入公开 RNA 基础模型权重 | **已接入**（RiNALMo-giga 冻结嵌入；`rinalmo_full_b2_s0` / `rinalmo_ff_b4_s0` / `rinalmo_cal_b4_s0`） |
 | **C2 分层目标** | 为级联设计 L0/L1/L2 分层目标 + 可微稀疏选择；过 P6（L0 召回 ≥ 0.98） | **未开始（阻塞 C2 的贡献主张）** |
-| 损失归一 | 按 GT 配对数归一 + 重新标定 `grad_clip`；记录裁剪前范数分布 | 未开始 |
-| Gate I | 在 **TS0(1,305) / ArchiveII(3,966) / bpRNA-new(5,401)** 上评测：F1(micro+macro) / INF / ECE / Brier / NLL / 非法结构率 / 延迟分桶 | **进行中**（TS0 已完成两点：`full_b4_s0`@4000、`rinalmo_ff`@500；其余待做） |
+| 损失归一 | 按长度归一（`--nll-normalization length`）+ 重新标定 `grad_clip`；记录裁剪前范数分布 | **已实施**（§14.12）：四项同量级（0.4–1.3）、gnorm 25–88 → 2.7–3.1、批间极差 2.8× → 1.8×；**2×2 对照臂已启动**；`grad_clip` 仍是 1.0（待四臂过评测后按实测分布再定） |
+| Gate I | 在 **TS0(1,305) / ArchiveII(3,966) / bpRNA-new(5,401)** 上评测：F1(micro+macro) / INF / ECE / Brier / NLL / 非法结构率 / 延迟分桶 | **进行中**（TS0 已完成 `full_b4_s0`@4000、`rinalmo_ff`@1000/2000/**3500**；ArchiveII 与 bpRNA-new 的 step-3500 评测正由 `run_ood_reselect.sh` 重跑，上一轮**静默丢失**见 §14.14） |
 | C1-a | 对 SPOT-RNA/UFold 概率同口径 ECE | **不可得**（权重取不到，证据见 `BASELINE_RESULTS.md` §4.2）→ 必须如实写进论文 |
 | C1-b | 对 ViennaRNA 精确配分函数概率 | **已完成**（TS0 ECE 0.0048） |
-| C1-c | 免 DP 校准判据 `|ECE(System-1) − ECE(exact)| ≤ 0.02` | **已通过**（运行 14.7）：口径已修正；温度上限 0.165 不足，**免 DP 仿射重标定** `sigmoid(a·s+b)` 在 VL0 上拟合后 gap **0.00035 / 0.00108**，且 NLL 同时降 9.7×（非平凡解） |
+| C1-c | 免 DP 校准判据 `|ECE(System-1) − ECE(exact)| ≤ 0.02` | **分两口径，不得混写**：① **裸头**（训练时直接用头的 sigmoid）在 step 3500 上 gap = **0.0877**，**未过**，但从 0.549 单调降到 0.0877（6.3×）；② **免 DP 仿射重标定**（2 个参数，在 VL0 上拟合）后 gap = **0.00118 PASS**。当前可主张的是 ② |
 | Gate J | §8 硬门 G1–G5 / 性能门 P1–P7 / 速度门 S1–S9 逐项核验 | 待做（G1/G2 已在每个评测点均为 0） |
 | 基线 | ViennaRNA（mfe/centroid/mea）+ Nussinov/Turner 已完成；**MXfold2 正在跑**（唯一可得的学习型基线）；BPfold 权重在集群 | **进行中** |
 | 带状/快速解码 | §5.0.2 的带状解码路径，**分别报告**精确解码 F1 与快速解码 F1/延迟 | 待做（在此之前不得引用任何加速比） |
-| **解码口径** | `nussinov_map(scores)` vs `nussinov_map(sigmoid(scores))` 的 F1 对比 | **正在测**（centroid 比 mfe 高 0.034，说明解码矩阵的选择是真问题） |
+| **解码口径** | `nussinov_map(scores)` vs `nussinov_map(sigmoid(scores))` 的 F1 对比 | **已定论**（§14.11）：A 送势 **0.4861** > B 送概率 0.4406（全 split）；**没有换解码的免费收益**（有用负结果） |
+| **四项目标 vs 单项目标** | {sum, length} × {aux 开, 关} 的 2×2，回答 H6（RLCD/蒸馏是否只是装饰） | **进行中**（§14.12，四臂已启动；在过评测前不产生结论） |
+| **先验权重逐 checkpoint 重选** | 评测前在 VL0 上重选 `w*`，再用于 TS0/ArchiveII/bpRNA-new | **进行中**（§14.14，`run_ood_reselect.sh` 已 detached 启动） |

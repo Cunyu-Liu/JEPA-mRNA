@@ -14,21 +14,23 @@
 | **A 规范与证据** | ✅ 全部可验证 | `spec/` 三份文档已产出并抽查 |
 | **B 数据盘查与获取** | ✅ 主体完成（集群实测） | 数据盘查与结构数据获取已在 A100 集群完成；`archiveII` bpseq 版未取得（有替代方案）；PseudoBase++ / RNA-Puzzles / 探测数据未取得（已记录） |
 | **C 数据清洗** | ✅ 管线已实现并通过 22 项测试 | MMseqs2/CD-HIT 真实执行未做（工具未安装） |
-| **D 基线复现** | 🔄 进行中 | 数据已就绪；**BPfold 官方权重已下载到集群**（可复现的最强 SOTA 基线）；ViennaRNA/LinearPartition 待安装；SPOT-RNA/UFold 权重源（Dropbox/Google Drive）**不可达** |
-| **E 教师模型** | ⛔ 受工具阻塞 | 生成器/集成/自洽性已实现；工具未安装 |
-| **F 架构实现** | ✅ 全部可验证 | 31 项测试通过；数学核心达机器精度 |
-| **G 蒸馏与 RLCD** | ✅ 目标已实现并测试 | 真实热力学教师为干净 stub |
-| **H 下游任务** | ⛔ 需训练权重 | 适配器已实现；无模型可跑 |
-| **I 测评与消融** | ⛔ 需真实运行 | 管线已实现；无结果可报告 |
-| **J 量化门限** | ⛔ 需真实运行 | 核验器已实现；G5 当前**故意 FAIL** |
-| **K 假设结论** | ⛔ 需真实运行 | 无实证结论 |
+| **D 基线复现** | 🔄 进行中 | **ViennaRNA 2.7.2 已装并锁定**（`mfe/centroid/mea` 三条已在 TS0 上跑完）；**MXfold2 已装并跑完 TS0**（唯一可得的学习型基线）；SPOT-RNA/UFold 权重源（Dropbox/Google Drive）**不可达 → C1-a 无法完成**；LinearPartition / RNAstructure / CONTRAfold 仍缺 |
+| **E 教师模型** | ✅ 已解除阻塞 | ViennaRNA 2.7.2 装在 `/mnt/cunyuliu/pylibs`（`/home` 配额满）；教师软标签已按锁定版本生成并自洽校验通过（`verify_teacher_labels() == True`）；吞吐实测仍未做 |
+| **F 架构实现** | ✅ 全部可验证 | 291 项测试通过（集群 torch 2.5.1）；数学核心达机器精度；决策头显存已修复（L=498/B=4 → 2366 MiB） |
+| **G 蒸馏与 RLCD** | ⚠️ 目标已实现并测试，但**实测发现 λ=1 下三项辅助项只占目标 2–3%** | 见 §14.12：`--nll-normalization length` 已实施，四项变为同量级；2×2 对照臂已启动，H6 尚无可结论 |
+| **H 下游任务** | 🔄 有训练权重可跑 | RiNALMo head-only 臂已产出 checkpoint（step 3500 已评测） |
+| **I 测评与消融** | 🔄 进行中 | TS0 已有多点结果；**目前最好 micro F1 = 0.4957**，仍低于 ViennaRNA centroid **0.5393** 与 MXfold2 **0.5651**；ArchiveII / bpRNA-new 正在跑 |
+| **J 量化门限** | 🔄 部分核验 | G1/G2（非法率、发夹环违规率）在**每个评测点均为 0**；C1-c 分两口径（裸头 0.0877 未过 / 仿射重标定 0.00118 PASS）；G5 仍**故意 FAIL** |
+| **K 假设结论** | 🔄 有中间结论 | C1-c 趋势、解码口径负结果、先验权重效应区间（+0.010~+0.048）已记录；**均为中间结论** |
 | **L 论文与投稿** | 🟡 部分 | 脚手架与 linter 已完成；稿件未撰写 |
 
-**测试基线**：`python -m pytest tests/ -q` → **155 passed, 0 errors**
+**测试基线**：`python -m pytest tests/ -q` → **291 passed, 0 failed**（集群 torch 2.5.1；本地 torch 2.8.0 下 `test_head_chunking.py` 有 4 项 `torch.equal` 因分块累加顺序失败，非逻辑缺陷）
 
-**诚实性声明**：未安装的外部工具（ViennaRNA / RNAstructure / LinearPartition / MMseqs2 / CD-HIT / CDPFold / 全部深度学习基线）一律以抛错的干净 stub 呈现，**从未伪造输出**；`citation_register.csv` 全部标 `待核验`。
+**诚实性声明**：**ViennaRNA 2.7.2 已真实安装并使用**（版本已锁定）。仍未安装的工具（RNAstructure / LinearPartition / MMseqs2 / CD-HIT / UFold / SPOT-RNA）一律以抛错的干净 stub 呈现，**从未伪造输出**；`citation_register.csv` 全部标 `待核验`。
 
-**2026-09-24 状态更新（集群实测）**：A100 集群已接入（`ssh A100`，8×A100-40GB）。结构标注数据已落盘（见 B 区实测计数）。**BPfold 官方权重已下载到集群**，是当前**唯一可实际复现的 SOTA 基线**。**ViennaRNA 在全集群 5 个候选 conda 环境中均未安装**（`import RNA` 全部失败）→ 列为 P0 待装。**尚无任何训练运行**，因此 I/J/K 区保持未勾选是诚实状态。
+**2026-09-24 14:20 状态更新（集群实测）**：A100 集群已接入（`ssh A100`，8×A100-40GB，含 GPU6 的 7×1g.5gb 与 GPU7 的 2×3g.20gb MIG 切片）。结构标注数据已落盘。**ViennaRNA 2.7.2 已装并锁定**；**MXfold2 已装并跑完 TS0（0.5651）**；**RiNALMo-giga 冻结嵌入已接入**，head-only 臂是当前最好的路线（TS0 micro F1 0.4957 @2000）。
+**已作废一条旧表述**：早先"BPfold 权重是唯一可复现的 SOTA 基线"——BPfold 属 mRNA 线遗留资产，结构线实际可用的学习型基线是 **MXfold2**。
+**已作废一条旧表述**：早先"尚无任何训练运行"——截至 14:20 有 **14 个臂**在跑（10 个原臂 + 4 个目标函数对照臂）。
 
 ---
 
@@ -51,8 +53,11 @@
 - [x] **泛化主张口径已改为「OOD 衰减更小（更鲁棒）」**，而非"OOD 精度更高"
 - [x] **CDPFold 校准对比**——**该项作废（2026-09-24 勘误）**：CDPFold 实为 **CNN + 动态规划**（Front Genet 10:467, 2019），非条件扩散、**不免 DP**、无校准评测证据，**不是** C1 的先例威胁。原"单点风险/阻塞项"判断的前提有误。C1 判据改为 **C1-a / C1-b / C1-c**（`spec/benchmark_decision.md` §3.2）
 - [ ] **C1-a**：System-1 头在 TS0 / ArchiveII / PDB ts1 上 ECE 与 Brier **优于或持平 SPOT-RNA / UFold** 的 sigmoid 概率
-- [ ] **C1-b**：与 **ViennaRNA 精确配分函数概率**、**LinearPartition 近似 BPP** 做**同口径** ECE / Brier 对比
+  - ⛔ **不可完成（如实记录）**：SPOT-RNA / UFold 的权重在集群网络下取不到（证据 `records/BASELINE_RESULTS.md` §4.2）。**C1-a 必须写进论文的局限章节，不得省略。**
+- [x] **C1-b**：与 **ViennaRNA 精确配分函数概率**、**LinearPartition 近似 BPP** 做**同口径** ECE / Brier 对比
+  - **部分完成**：ViennaRNA 2.7.2 精确 BPP 已完成（TS0：ECE **0.0048** / Brier 0.0051 / NLL 0.0259，与 `evaluate_decision.py` **共用同一份指标实现**，见 `eval/ss/reference_calibration.py`）。**LinearPartition 未装 → 该项未完成。**
 - [ ] **C1-c**：System-1 头 ECE 与精确边际 `p̂^exact` 的 ECE 之差 **≤ 0.02**（原 S7 门限）
+  - **分两口径，不得混写**：① **裸头**：step 3500 上 gap = **0.0877**（精确边际 0.0022），**未过**；趋势从 step 20 的 0.549 单调降到 0.0877。② **免 DP 仿射重标定**（`sigmoid(a·s+b)`，2 参数在 VL0 上拟合，**评测期不跑配分函数**）：gap = **0.00118 PASS**。→ **当前只有 ② 成立。**
 - [ ] **校准指标口径已自行定义并冻结**（领域空白：未检索到 RNA 配对概率的 ECE/可靠性图/Brier/NLL 系统评测），含配对间相关性处理与结构层面校准
 - [x] **§2.4「明确不主张」清单存在**，含 6 条禁止表述（不主张首创 Gibbs、不主张共转录顺序创新、不主张非法率=0 是贡献、不主张 `MLP_T=0` 等于 ViennaRNA、不主张复现 RLCD、不主张复杂度优于 LinearFold）
 - [x] **§9.3 预期审稿质疑 Q1–Q12 应答表存在**，每条标注所需证据

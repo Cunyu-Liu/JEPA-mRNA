@@ -11,7 +11,12 @@
 > **2026-09-24 更新**：A100 集群已接入（`ssh A100`），**数据与算力阻塞已解除**。
 > 权威的 benchmark / 数据 / 评测协议决策见 **`spec/benchmark_decision.md`**；本文件与其冲突时以该文件为准。
 
-**代码基础设施：`python -m pytest tests/ -q` → 155 passed, 0 errors**
+**代码基础设施：`python -m pytest tests/ -q` → 291 passed, 0 failed**（集群 torch 2.5.1，权威环境）
+
+> **2026-09-24 14:20 状态刷新**（细节见 `records/DECISION_TRAINING_LOG.md` §14.9–§14.14）：
+> 10 个臂在跑（6 个 from-scratch + 4 个 RiNALMo head-only），本轮新增 **4 个目标函数对照臂**（见 T-A4）。
+> **TS0 目前最好 micro F1 = 0.4957**（`rinalmo_ff` @2000，w 在 VL0 上选）；对照物
+> **ViennaRNA centroid 0.5393 / MXfold2 0.5651**（均为本仓库同口径实测）——**尚未超过物理基线，不得写成"优秀结果"**。
 
 | 类别 | 任务 | 状态 |
 |---|---|---|
@@ -19,6 +24,8 @@
 | **已完成（集群侧实测）** | **Task 2**（数据盘查）、**Task 3**（结构数据落盘）——依据见下「集群实测数据现状」 | ✅ |
 | **进行中** | Task 10(实际复现)、Task 11(教师安装)、Task 18(实际预训练)、Task 20(实际评测) | 🔄 |
 | **已作废** | Task 10.8 的**原始判据**（CDPFold 单点风险）——前提有误，见下 | ❌ |
+| **已作废（新）** | T-A4 的**原始表述**「按 GT 配对数归一」——实测后改为**按序列长度**归一（§14.12），判据已按实际口径更新 | ❌ |
+| **新增** | T-A8（评测溯源）、T-A9（先验权重逐 checkpoint 重选 + 评测脱离 ssh） | 见下表 |
 
 ### 关键勘误（2026-09-24，必须执行）
 
@@ -153,10 +160,12 @@
 
 - [ ] Task 10: 复现基线矩阵（四条路线）。
   - [ ] SubTask 10.1: 热力学 DP：RNAfold、RNAstructure；**CONTRAfold 必须单独处理为头号对比对象**（§7.2.1），评测维度含 F1 / **ECE / 边际校准** / 延迟 / 是否需 DP
+    - **部分完成（2026-09-24 实测）**：**ViennaRNA 2.7.2**（版本已锁定）的 `mfe / centroid / mea` 三条已在 TS0 上跑完，数字见 `records/BASELINE_RESULTS.md`；**centroid 0.5393 是本项目必须超过的门槛**。RNAstructure 未安装；CONTRAfold 仍缺。
   - [ ] SubTask 10.1b: **LinearPartition 单独对比**（"快概率"的另一条路线），评测 F1 / ECE / 延迟 / 跨家族泛化
   - [ ] SubTask 10.1c: 建立「**Nussinov + Turner 堆叠能**」基线（`MLP_T` 置零的对照物，**非 ViennaRNA**，§0.7 问题 3）
   - [ ] SubTask 10.2: 线性时间 DP：LinearFold、LinearPartition
   - [ ] SubTask 10.3: 判别式深度：UFold、SPOT-RNA/SPOT-RNA2、MXfold2、E2Efold
+    - **部分完成（2026-09-24 实测）**：**MXfold2** 已装上并跑完 TS0 → micro F1 **0.5651**（唯一可得的学习型基线；**是本项目必须超过的第二个门槛**）。UFold / SPOT-RNA 权重在集群网络下**取不到**（证据见 `records/BASELINE_RESULTS.md` §4.2）→ **C1-a 因此无法完成，必须如实写进论文**。ArchiveII 上的 MXfold2 正在跑。
   - [ ] SubTask 10.4: RNA 基础模型：RNA-FM、RiNALMo（650M）、mRNABERT、RNA-MSM
   - [ ] SubTask 10.5: 至少 1 个自回归/生成式结构模型（"去解码"关键对照）
   - [ ] SubTask 10.6: 记录每个基线的仓库 commit、权重哈希、评测脚本版本
@@ -170,7 +179,8 @@
   - **判据**：每个基线在 ArchiveII 上有可复现 F1/INF；记录字段齐全；门限已复核冻结；**C1-a/b/c 三条判据的测量报告产出，并据此明确 C1 是否成立（含退路决策记录）**
 
 - [ ] Task 11: 教师模型部署与吞吐实测（System 2）：**新的算力瓶颈，必须先实测**。
-  - [ ] SubTask 11.1: 安装并**锁定版本** ViennaRNA、RNAstructure、LinearPartition（记录 Turner 参数版本）
+  - [x] SubTask 11.1: 安装并**锁定版本** ViennaRNA、RNAstructure、LinearPartition（记录 Turner 参数版本）
+    - **部分完成（2026-09-24 实测）**：**ViennaRNA 2.7.2 已装并锁定**（装在 `/mnt/cunyuliu/pylibs`，因 `/home` 配额满）；教师软标签已按该版本生成（`verify_teacher_labels() == True`，锁定记录在 manifest）。RNAstructure / LinearPartition **未装**。
   - [x] SubTask 11.2: 实现教师概率矩阵批量生成器（输出 `p^teacher_ij`）
   - [ ] SubTask 11.3: 实测教师吞吐（序列/秒，分长度桶），估算全量 36M 序列的耗时
   - [x] SubTask 11.4: 实现教师集成 `p^teacher = mean(三教师)`
@@ -245,10 +255,13 @@
 
 - [ ] Task 18: 执行预训练并验证梯度与稳定性。
   - [ ] SubTask 18.1: 在清洗后语料 + 教师软标签上运行预训练，监控 loss/梯度/NaN
+    - **进行中（2026-09-24）**：10 个臂在跑（6 from-scratch @40k + 4 head-only @20k），本轮再加 **4 个目标函数对照臂**（§14.12）。全部 `--resume` 存活、无 NaN、梯度覆盖断言通过。**未跑完前不产生科学结论。**
   - [x] SubTask 18.2: 验证梯度到达每个可学习块
   - [x] SubTask 18.3: 标定微调学习率（承接"lr=1e-4 摧毁编码器"教训）
   - [ ] SubTask 18.4: 验证学生校准概率与教师可比（ECE、与教师概率的相关性）
+    - **部分完成**：C1-b（对 ViennaRNA 精确 BPP 的同口径 ECE/Brier/NLL）已产出，TS0 ECE **0.0048**；C1-c 两口径见下。**与教师概率的相关性尚未测**。
   - [x] SubTask 18.5: 保存 checkpoint 与训练曲线
+    - 快照由 cron 每 10 分钟按 2000 步整数倍保留到 `/mnt/cunyuliu/rna-jepa/ckpts/`（因 `resume.pt` 原地覆盖，这是唯一可靠的溯源手段，见 §14.13）。
   - **判据**：无 NaN/Inf；梯度覆盖断言通过；学习率标定报告产出；学生-教师概率一致性报告产出
 
 - [x] Task 19: 下游任务适配（T1–T6）。
@@ -269,6 +282,7 @@
   - [ ] SubTask 20.6: 产出跨长度桶/跨家族/跨 GC 外推衰减曲线
   - [ ] SubTask 20.7: **核验 RLCD 收益非装饰**：同时报告 ECE 改善与 bpRNA-new F1 变化（H6）
   - [ ] SubTask 20.7b: **核验 S7（免 DP 的校准代价）**：System-1 ECE 与精确边际 ECE 之差 ≤ 0.02——**这是 C1 是否成立的判据**
+    - **分两口径核验（2026-09-24）**：① **裸头**（训练直接用头的 sigmoid）：step 3500 上 gap = **0.0877**，**未过**；但从 step 20 的 0.549 单调降到 0.0877（6.3×），趋势明确。② **免 DP 仿射重标定**（2 参数，在 VL0 上拟合，**评测期不跑配分函数**）：gap = **0.00118 PASS**。→ **当前可主张的是 ②，不得把 ① 写成已通过。**
   - [ ] SubTask 20.7c: **核验 S6（计算自适应收益）**：在**匹配平均 FLOPs** 下门控升级 ≥ 纯 System-1 与纯 System-2——**这是 C2 是否成立的判据**
   - [ ] SubTask 20.7d: **产出结构层面校准曲线**（应对 Q3：配对级 ECE 因碱基对相关性而不足），并量化配对间相关性
   - [ ] SubTask 20.8: **逐项核验 §8 硬门 G1–G5、性能门 P1–P5、速度门 S1–S7、科学门 C1–C4**
@@ -314,15 +328,17 @@
 > 来源：`spec/spec.md` §0.9.5。第一轮审计比对范式，第二轮直接读代码与运行配置，
 > 结论更严厉：**C2 目前不是可用架构，且编码器是随机初始化**。
 
-| # | 任务 | 完成判据 | 阻塞关系 |
+| # | 任务 | 完成判据 | 状态 |
 |---|---|---|---|
-| **T-A1** | 为层级级联设计**分层目标**（L0 块对 / L1 螺旋 / L2 局部各自成项、各自归一），接入 `train_decision` 与 `evaluate_decision` | L0 螺旋召回 ≥ **0.98**（P6）；级联臂在 TS0 上 F1 不退化 | **阻塞 C2 的贡献主张** |
-| **T-A2** | 级联的**可微稀疏选择**，替代硬 `top_k`（未训练 L0 召回实测仅 **0.1548**，min 0.0） | 训练中 GT 螺旋的梯度覆盖率 ≥ 0.98 | 依赖 T-A1 |
-| **T-A3** | 补齐**预训练骨干**：接入已下载的 RiNALMo-giga，或改用 245 GB 无标签语料自监督预训练 | `run_meta.json` 记录骨干来源；训练量 ≥ 20 epoch | **阻塞「优秀结果」** |
-| **T-A4** | 目标函数**长度归一**（按 GT 配对数）+ 重新标定 `grad_clip`（裁剪前范数实测 40–673 vs 阈值 1.0） | 批间损失可比；裁剪触发率与步长波动写入记录 | 影响所有后续训练 |
-| **T-A5** | 首轮三臂（3000 步 ≈ 0.56 epoch）的结果**逐处标注**为「通路验证，非科学结论」 | 训练记录与论文草稿中无遗漏 | — |
+| **T-A1** | 为层级级联设计**分层目标**（L0 块对 / L1 螺旋 / L2 局部各自成项、各自归一），接入 `train_decision` 与 `evaluate_decision` | L0 螺旋召回 ≥ **0.98**（P6）；级联臂在 TS0 上 F1 不退化 | ❌ **未开始** —— **仍阻塞 C2 的贡献主张** |
+| **T-A2** | 级联的**可微稀疏选择**，替代硬 `top_k`（未训练 L0 召回实测仅 **0.1548**，min 0.0） | 训练中 GT 螺旋的梯度覆盖率 ≥ 0.98 | ❌ 未开始（依赖 T-A1） |
+| **T-A3** | 补齐**预训练骨干**：接入已下载的 RiNALMo-giga，或改用 245 GB 无标签语料自监督预训练 | `run_meta.json` 记录骨干来源；训练量 ≥ 20 epoch | 🔄 **部分完成**：RiNALMo-giga **冻结嵌入**已接入（4 个 head-only 臂 + 4 个新臂），`run_meta.json` 有记录；**20 epoch 未达**（当前 20,000 步 × batch 4 ≈ 7.5 epoch）。from-scratch 编码器臂实测 TS0 F1 仅 **0.3022**（@4000），远差于 head-only，见 `records/DECISION_TRAINING_LOG.md` |
+| **T-A4** | 目标函数**长度归一**（按长度）+ 重新标定 `grad_clip`（裁剪前范数实测 40–673 vs 阈值 1.0） | 批间损失可比；裁剪触发率与步长波动写入记录 | ✅ **已实施并实测**：`--nll-normalization length`；四项由「CRF 独占 97–98%」变为**同量级 0.4–1.3**；批间极差 2.8× → 1.8×；gnorm 25–88 → 2.7–3.1；**{sum,length}×{aux 开,关} 2×2 对照臂已启动**；3 项新测试、291 passed。记录见 §14.12。**`grad_clip` 仍为 1.0**（待四臂过评测后按实测分布再定） |
+| **T-A5** | 首轮三臂（3000 步 ≈ 0.56 epoch）的结果**逐处标注**为「通路验证，非科学结论」 | 训练记录与论文草稿中无遗漏 | ✅ 已完成（`records/DECISION_TRAINING_LOG.md`「运行 0/1/2/3」逐处标注） |
 | **T-A6** | 监控脚本覆盖**直接启动**的运行（原先只读共享台账，直接启动的臂完全不可见） | 能发现静默死亡 | ✅ 已完成（commit `4218f73`） |
 | **T-A7** | 决策头**显存**修复：沿 `j` 分块 + 每块 `torch.utils.checkpoint` | L=498/B=4 由 OOM 降到 **2366 MiB**；前向逐位等价、梯度 fp64 精确到 1e-15 | ✅ 已完成（commit `2397364`，11 项测试） |
+| **T-A8**（新） | **评测记录的溯源**：目录名/`tag` 声称的步数必须能被 checkpoint 支持；活 `resume.pt` 不得用于事后读步数 | 每条记录有可靠步数或显式标注不可靠 | ✅ 已完成（`tools/summarize_evals.py` + `tools/fix_eval_record_provenance.py`；`ff3600→ff3500`、`ff500_ts0.json→ff_live_early_ts0`，见 §14.13） |
+| **T-A9**（新） | **先验权重逐 checkpoint 在 VL0 上重选**后再评测试集；评测任务一律 `setsid nohup` 脱离 ssh | 选择不在测试集上做；评测不因 ssh 断开而丢失 | 🔄 进行中（`run_ood_reselect.sh` 已 detached 启动，见 §14.14） |
 
 ### 已下载/安装的资产（2026-09-24）
 
