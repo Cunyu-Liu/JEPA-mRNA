@@ -1663,6 +1663,15 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
                         "towards the P6 gate of 0.98")
     # model
     p.add_argument("--tiny", action="store_true", help="CPU-sized model (tests / smoke)")
+    p.add_argument("--d-z", type=int, default=128,
+                   help="width of the permutation-invariant pair representation z_ij. "
+                        "The flat head's capacity is dominated by "
+                        "PairRepresentation.proj = Linear(3*d_model, d_z), so this is the "
+                        "main scale knob.  Measured: d_z=128/hidden=64 gives 519,503 "
+                        "trainable parameters against a 1280-dim frozen RiNALMo input -- "
+                        "the default is small enough to be the ceiling on F1.")
+    p.add_argument("--hidden", type=int, default=64,
+                   help="hidden width of the Turner-residual MLP (see --d-z)")
     p.add_argument("--encoder-size", default="150M", choices=["35M", "150M", "650M"])
     p.add_argument("--device", default="cpu")
     p.add_argument("--embedding-dir", default="",
@@ -1709,6 +1718,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         cascade_l2=args.cascade_l2, cascade_sparse=args.cascade_sparse,
         cascade_miss_cost=args.cascade_miss_cost,
         tiny=args.tiny, encoder_size=args.encoder_size, device=args.device,
+        d_z=args.d_z, hidden=args.hidden,
         allow_cpu=args.allow_cpu,
         out_dir=args.out, resume=args.resume, arm=args.arm,
         embedding_dir=args.embedding_dir,
