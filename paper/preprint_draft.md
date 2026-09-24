@@ -516,11 +516,12 @@ the hypothesis as a hypothesis.
    exact `O(L^3)` dynamic program, so the "DP-free" property currently refers only to
    the absence of the partition function, not to a wall-clock advantage. No speed-up
    ratio is claimed anywhere in this draft.
-7. **Seed coverage is partial.** The headline family now has two seeds at step 20000
-   (0.5958 / 0.5893; spread 0.0065) with five more training; the capacity and cascade
-   arms are single-seed. The capacity gain (7x the spread) is not threatened by this;
-   the learnable-prior-weight and auxiliary-objective effects are, and are flagged as
-   unreplicated above.
+7. **Seed coverage is partial but the load-bearing results are covered.** The
+   headline family has six seeds at step 20000 (mean 0.5951, std 0.0034); the
+   capacity and cascade arms are single-seed, so a second capacity seed and a
+   second learnable-prior-weight seed are training. The capacity gain (14x the
+   spread) is not threatened by this; the learnable-prior-weight and
+   auxiliary-objective effects are, and are flagged as unreplicated above.
 8. **The Jev decision-model paradigm is community-sourced, not peer-reviewed.** Its
    performance numbers are vendor self-reported and are not cited as fact anywhere in
    this draft. The calibration objective used here is our own design inspired by that
@@ -554,20 +555,25 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 
 | Result | Artifact | Command |
 |---|---|---|
-| TS0 headline, `w=-1` | `eval_decision/astrained_ff3500_bprna_ts0/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_ff_w05_snapshot.pt --data ss_data/jsonl/bprna_ts0.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1` |
-| TS0, `w=0.75` | `eval_decision/sel_ff3500_bprna_ts0/result.json` | same, `--prior-weight 0.75` |
-| ArchiveII, `w=0.75` | `eval_decision/sel_ff3500_archiveii_embok/result.json` | same, `--data ss_data/jsonl/archiveii_embok.jsonl --embedding-split archiveii` |
-| bpRNA-new, `w=0.75` | `eval_decision/sel_ff3500_bprna_new/result.json` | same, `--data ss_data/jsonl/bprna_new.jsonl` |
-| ViennaRNA baselines | `records/BASELINE_RESULTS.md` §1 | `eval/ss/baselines.py` |
-| Source-stratified baselines (§4.3) | `eval_decision/baselines_{ts0,vl0}_{crw,rfam}_le100.json` | `eval/ss/run_baselines.py --split {ts0,vl0}_{crw,rfam}_le100` |
-| Homology vs F1, and the leakage check | `eval_decision/homology_vs_f1.json` | `tools/homology_vs_f1.py --train ss_data/jsonl/bprna_tr0.jsonl --pair sel_ff3500_bprna_ts0 --pair vl0sw_w0.75_bprna_vl0 --pair sel_ff3500_bprna_new --k 20` |
-| De-duplication audit and clean subsets | `ss_data/jsonl/*_clean.jsonl` | `tools/dedup_against_train.py --train ss_data/jsonl/bprna_tr0.jsonl --split ss_data/jsonl/archiveii_embok.jsonl --threshold 0.5 --k 20` |
-| Source stratification | `eval_decision/stratified_le100.json` | `tools/stratify_by_source.py --eval-root eval_decision --data-dir ss_data/jsonl --run astrained_ff3500_bprna_ts0 --run sel_ff3500_bprna_ts0 --max-length 100` |
-| Length-bucketed leaderboard | `eval_decision/buckets_bprna_ts0.json` | `tools/length_bucketed_leaderboard.py --split bprna_ts0 --run sel_ff3500_bprna_ts0 --bucket 100 --bucket 200 --bucket 400` |
-| MXfold2 | `records/BASELINE_RESULTS.md` §5 | `python -m mxfold2 predict` |
-| ViennaRNA exact BPP calibration | `eval/ss/reference_calibration.py` | — |
+| TS0 headline (ff s0, step 20000), `w=-1` | `eval_decision/ff20000_ref_bprna_ts0/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_ts0.jsonl --embedding-split bprna_ts0 --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1` |
+| Seeds s1–s5 (headline spread) | `eval_decision/arms_rinalmo_ff_b4_{s1,s2}_step20000_ts0`, `eval_decision/ow_rinalmo_ff_b4_{s4,s5,s3}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
+| Capacity arm (big, 4.8x) | `eval_decision/arms_rinalmo_big_b4_s0_step20000_ts0` | same + `--d-z 512 --hidden 512` at train time |
+| Capacity on cross-family | `eval_decision/ow_rinalmo_big_b4_s0_step20000_bprna_new` | same, `--data ss_data/jsonl/bprna_new.jsonl` |
+| Data-scaling (TR1) TS0 + bpRNA-new | `eval_decision/tr1_ff_step20000_{bprna_ts0,bprna_new}` | same, trained on `bprna_tr1.jsonl` |
+| Cascade (negative) + conservative variant | `eval_decision/arch_rinalmo_casc_b4_s0_step2000_ts0`, `ow_rinalmo_cascR_b4_s0_step20000_bprna_ts0` | cascade arms at train time |
+| Six-source calibration audit | `eval_decision/c1a_rnaformer_ref_bprna_ts0.json`, `reference_calibration.py` outputs | same split, same 6,022,538 candidate pairs |
+| UFold baseline + its calibration | `records/UFOLD_BASELINE_ADAPTER.md`, `ufold_probs_*.npz` | `eval/ss/run_ufold.py` |
+| RNAformer baseline + its calibration | `records/RNAFORMER_BASELINE_RUN.md`, `rnaformer_probs_*.npz` | `eval/ss/run_rnaformer.py` |
+| ViennaRNA baselines (7 splits) | `records/BASELINE_RESULTS.md` | `eval/ss/baselines.py` |
+| MXfold2 (incl. bprna-new) | `eval_decision/baselines_mxfold2_bprna_new.json` | `python -m mxfold2 predict` |
+| Convergence curve 6k/10k/20k | `eval_decision/trend_ff_step{6000,10000}_ts0` + headline | same protocol, snapshots |
+| Decode-affine probe (negative) | `eval_decision/affine_probe_ff20000.json` + `ff20000_ts0_first400` | `tools/probe_decode_affine.py` |
+| Component ablations (§4.3b) | `eval_decision/offline_ablations_ff20000.json` | `tools/probe_offline_ablations.py` |
+| From-scratch backbone failure | `eval_decision/fs_{full,nlldistill}_b4_s0_20260924T060638_step{20000,40000}_ts0` | own-encoder arms, no embeddings |
+| 2x2 objective grid | `eval_decision/arms_rinalmo_{len,sum,bal,bal_s1,pw}_b4_s0_step20000_ts0` | objective-arm queue |
+| De-duplication audit and clean subsets | `ss_data/jsonl/*_clean.jsonl` | `tools/dedup_against_train.py --train ss_data/jsonl/bprna_tr0.jsonl --threshold 0.5 --k 20` |
 | Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |
-| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14 | — |
+| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.53 | — |
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
 rate and hairpin-violation rate are 0.0000 for every row above.
