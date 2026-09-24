@@ -52,7 +52,11 @@ for _p in (os.path.join(_ROOT, "src"), os.path.join(_ROOT, "eval")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from rnajepa.distill import ThermodynamicTeacher, ThermodynamicUnavailableError  # noqa: E402
+from rnajepa.distill import (  # noqa: E402
+    ThermodynamicTeacher,
+    ThermodynamicUnavailableError,
+    load_teacher_shard,
+)
 from rnajepa.harness import inside_outside, valid_pair_mask  # noqa: E402
 from ss.metrics import pooled_pair_calibration  # noqa: E402
 
@@ -119,6 +123,13 @@ def main() -> int:
     ap.add_argument("--out", default="")
     ap.add_argument("--sources", default="viennarna,turner_prior",
                     help="comma list of: viennarna, turner_prior")
+    ap.add_argument("--external-probs", default="",
+                    help="a teacher-shard-format .npz (sequences + L x L probs, the "
+                         "same layout rnajepa.distill.load_teacher_shard reads) holding "
+                         "a baseline's own sigmoid probabilities. Required for C1-a, "
+                         "which compares our head against a learning baseline's "
+                         "probabilities rather than against a physical model's")
+    ap.add_argument("--external-name", default="external")
     args = ap.parse_args()
 
     records = read_records(args.split, args.limit)
@@ -127,6 +138,17 @@ def main() -> int:
           flush=True)
 
     sources = [s.strip() for s in args.sources.split(",") if s.strip()]
+    external: Dict[str, np.ndarray] = {}
+    if args.external_probs:
+        # Keyed by sequence, not by position: the baseline was free to run the
+        # split in any order, and matching by sequence makes an order mismatch
+        # impossible rather than merely unlikely.
+        seqs_ext, probs_ext = load_teacher_shard(args.external_probs)
+        external = {str(s): np.asarray(p, dtype=np.float64)
+                    for s, p in zip(seqs_ext, probs_ext)}
+        sources.append(args.external_name)
+        print(f"[ref] external {args.external_name}: {len(external)} probability "
+              f"matrices from {args.external_probs}", flush=True)
     teacher = None
     if "viennarna" in sources:
         try:
@@ -158,6 +180,18 @@ def main() -> int:
             elif name == "turner_prior":
                 scores = turner_prior_scores(seq)
                 probs = exact_marginals(scores, mask)
+            elif name == args.external_name:
+                if seq not in external:
+                    raise SystemExit(
+                        f"external source {name!r} has no matrix for a {len(seq)} nt "
+                        f"sequence present in split {args.split!r} (n_available="
+                        f"{len(external)}). Refusing to skip it silently: the reported "
+                        "ECE would then describe a different sequence set than the F1.")
+                probs = external[seq]
+                if probs.shape != mask.shape:
+                    raise SystemExit(
+                        f"external matrix for a {len(seq)} nt sequence has shape "
+                        f"{probs.shape}, expected {mask.shape}")
             else:
                 raise SystemExit(f"unknown source {name!r}")
             probs = np.where(np.triu(mask, k=1), probs, 0.0)
