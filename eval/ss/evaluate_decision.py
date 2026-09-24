@@ -325,13 +325,37 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
         cs, cl = _flat_scores_and_labels(model, calib_records, device, calib_store)
         a_fit, b_fit = fit_platt_scaling(cs, cl, objective=args.calib_objective,
                                         n_bins=args.n_bins)
+        # ECE alone is gameable: a map that pushes every pair to the base rate has a
+        # small ECE and no information.  Two guards.  First, a fit that lands on the
+        # parameter bounds has collapsed, and with a tiny calibration sample it will
+        # -- measured: 225 dev pairs gave a=0.001, b=-40, i.e. "predict ~0 for
+        # everything".  Second, the collapsed map is only *detectable* from a proper
+        # scoring rule, so NLL and Brier are reported for every recalibrated row and
+        # must be quoted next to the ECE (the ECE-optimal temperature on the same
+        # data raised NLL from 0.338 to 1.209 while lowering ECE -- see
+        # tools/probe_temperature_c1c.py).
+        collapsed = (a_fit <= 1e-3 + 1e-12 or b_fit <= -40.0 + 1e-12
+                     or a_fit >= 1e3 - 1e-6 or b_fit >= 40.0 - 1e-6)
+        if collapsed or cs.size < 10_000:
+            print(f"[eval] WARNING: the recalibration fit is suspect -- "
+                  f"a={a_fit:.6g} b={b_fit:.6g} on {cs.size} dev pairs"
+                  + (" (parameters are on the bounds: the map has collapsed to a "
+                     "constant, which has a small ECE and no information -- read "
+                     "the NLL/Brier of `system1_recalibrated` before quoting the gap)"
+                     if collapsed else " (few pairs; a small calibration split can "
+                                       "give a degenerate map)"),
+                  file=sys.stderr)
         recalibration = {
             "kind": "platt", "a": a_fit, "b": b_fit,
             "objective": args.calib_objective, "n_bins": args.n_bins,
             "calib_data": os.path.abspath(args.calib_data),
             "n_sequences": len(calib_records), "n_pairs": int(cs.size),
+            "fit_collapsed_to_bounds": bool(collapsed),
             "form": "p = sigmoid(a * score + b); DP-free (no partition function). "
                     "A temperature is the b == 0 special case.",
+            "read_with": "system1_recalibrated NLL/Brier -- ECE alone is minimised "
+                         "by a constant predictor, so the gap is only meaningful "
+                         "when the proper scoring rules improve too",
         }
         print(f"[eval] DP-free recalibration fitted on {args.calib_data}: "
               f"a={a_fit:.6g} b={b_fit:.6g} ({args.calib_objective}, "
