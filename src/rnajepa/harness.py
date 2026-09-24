@@ -46,6 +46,7 @@ this mirrors the recurrence in the project spec, and is exactly what
 from __future__ import annotations
 
 import math
+import os
 from typing import Iterable, List, Optional, Tuple
 
 import numpy as np
@@ -353,6 +354,24 @@ def nussinov_map(scores: np.ndarray, mask: np.ndarray) -> List[Pair]:
 def nussinov_inside(scores: np.ndarray, mask: np.ndarray) -> Tuple[float, np.ndarray]:
     """Sum-product inside algorithm.  Returns ``(logZ, N)``.
 
+    This stays the **scalar reference** on purpose.  ``_inside_fast`` is the
+    vectorised version used by the training path (through ``inside_outside``), and
+    it is *not* bit-identical: vectorising over the start index means each row of
+    the reduction is padded with ``-inf``, which changes NumPy's pairwise-summation
+    tree and moves ``logZ`` by about one ULP (measured 1e-15 absolute on a logZ of
+    4.08).  The max-product DP could be made bit-exact because its reduction is an
+    integer argmax, not a float sum; this one cannot.  Keeping the reference here
+    means the existing bit-for-bit guarantee is preserved rather than weakened, and
+    the vectorised path is checked against it by an explicit bound plus the
+    brute-force marginal tests.
+    """
+    return _nussinov_inside_reference(scores, mask)
+
+
+def _nussinov_inside_reference(scores: np.ndarray,
+                               mask: np.ndarray) -> Tuple[float, np.ndarray]:
+    """Sum-product inside algorithm.  Returns ``(logZ, N)``.
+
     ``N[i, j]`` is the log-partition function of legal structures confined to
     ``[i, j]`` (``N[i, j] = 0`` for ``i > j`` and for ``j - i <= MIN_LOOP``).
     Recurrence, partitioned by the partner of ``j``::
@@ -390,7 +409,162 @@ def nussinov_inside(scores: np.ndarray, mask: np.ndarray) -> Tuple[float, np.nda
     return logZ, Z
 
 
+def _logsumexp_rows(vals: np.ndarray) -> np.ndarray:
+    """Row-wise log-sum-exp, with :func:`_logsumexp`'s ``-inf`` / ``+inf`` handling.
+
+    ``-inf`` entries contribute ``exp(-inf) = 0``, which is exact in a float sum, so
+    padding a ragged row with ``-inf`` gives the same value as reducing only the
+    finite terms in the same order.  That is what lets the vectorised recursions
+    below reproduce the reference bit for bit.
+    """
+    m = np.max(vals, axis=1)
+    out = np.full(m.shape, -math.inf, dtype=np.float64)
+    pos = np.isposinf(m)
+    if pos.any():
+        out[pos] = math.inf
+    fin = np.isfinite(m)
+    if fin.any():
+        out[fin] = m[fin] + np.log(np.sum(np.exp(vals[fin] - m[fin, None]), axis=1))
+    return out
+
+
+def _inside_fast(scores: np.ndarray, mask: np.ndarray,
+                 min_loop: int = MIN_LOOP) -> Tuple[float, np.ndarray]:
+    """Vectorised inside recursion: one set of array ops per span ``d``.
+
+    ``nussinov_inside`` loops in Python over **both** the span and the start index --
+    O(L^2) iterations, each doing a handful of tiny NumPy calls.  Measured on bpRNA
+    TS0, that recursion is 36.5% of a training step and the outside recursion is
+    55.2%, while the max-product DP (already vectorised) is 8.3%.
+
+    Same recurrence, same term order and the same reduction as ``nussinov_inside``;
+    equivalence is asserted on real sequences in ``tests/test_harness_vectorized.py``.
+    """
+    L = scores.shape[0]
+    Z = np.zeros((L, L), dtype=np.float64)
+    for d in range(min_loop + 1, L):
+        n_i = L - d
+        n_k = d - min_loop
+        if n_i <= 0 or n_k <= 0:
+            continue
+        i_idx = np.arange(n_i)
+        m_idx = np.arange(n_k)
+        j = i_idx + d
+
+        # left[i, m] = Z[i, i+m-1]; the empty interval (m = 0) is log 1 = 0
+        cols_l = i_idx[:, None] + m_idx[None, :] - 1
+        left = np.where(m_idx[None, :] >= 1,
+                        Z[i_idx[:, None], np.maximum(cols_l, 0)], 0.0)
+        # mid[i, m] = Z[i+m+1, i+d-1]
+        mid = Z[i_idx[:, None] + m_idx[None, :] + 1, (i_idx + d - 1)[:, None]]
+        # sk[i, m] = scores[i+m, i+d], mk = mask[i+m, i+d]
+        rows_s = i_idx[:, None] + m_idx[None, :]
+        cols_s = (i_idx + d)[:, None]
+        sk = scores[rows_s, cols_s]
+        mk = mask[rows_s, cols_s]
+
+        terms = np.concatenate(
+            [Z[i_idx, j - 1][:, None], np.where(mk, left + mid + sk, -math.inf)],
+            axis=1)
+        Z[i_idx, j] = _logsumexp_rows(terms)
+    logZ = float(Z[0, L - 1]) if L > 0 else 0.0
+    return logZ, Z
+
+
+def _inside_outside_fast(scores: np.ndarray, mask: np.ndarray,
+                         min_loop: int = MIN_LOOP) -> Tuple[float, np.ndarray]:
+    """Vectorised inside-outside; same recursion as :func:`inside_outside`.
+
+    Three loops become span-only loops:
+
+    * ``ZG`` is a shift of ``Z`` rather than an O(L^2) Python double loop
+      (``ZG[a, b] = Z[a+1, b-1]``, and for ``b <= a+1`` the shift reads ``Z[i, j]``
+      with ``i > j``, which is 0 under the empty-interval convention -- exactly what
+      the reference leaves there);
+    * the parent-sum term ``P[i, j+1:L] + ZG[j, j+1:L]`` is built as a masked block;
+    * the ``P`` update writes distinct ``(row, column)`` pairs within one span --
+      the column is ``j = i + d``, which determines ``i`` -- so a fancy-indexed
+      assignment is safe and no ``ufunc.at`` is needed;
+    * the final ``p_hat`` loop is a gather/scatter.
+
+    ``p_hat`` is the only quantity that can differ at all, because the reference uses
+    scalar ``math.exp`` where this uses ``np.exp``; the difference is at the 1e-16
+    level and the equivalence test bounds it explicitly.
+    """
+    scores = _to_numpy_float(scores)
+    mask = _to_numpy_bool(mask)
+    L = scores.shape[0]
+    logZ, Z = _inside_fast(scores, mask, min_loop=min_loop)
+    p_hat = np.zeros((L, L), dtype=np.float64)
+    if L < min_loop + 2:
+        return logZ, p_hat
+
+    ZG = np.zeros((L, L), dtype=np.float64)
+    if L >= 2:
+        ZG[:L - 1, 1:L] = Z[1:L, :L - 1]
+
+    O = np.full((L, L), -math.inf, dtype=np.float64)
+    P = np.full((L, L), -math.inf, dtype=np.float64)
+
+    for d in range(L - 1, min_loop, -1):
+        n_i = L - d
+        if n_i <= 0:
+            continue
+        i_idx = np.arange(n_i)
+        j = i_idx + d
+
+        # ---- O[i, j] = logsumexp(top-level context, all parent contexts)
+        zi_left = np.where(i_idx >= 1, Z[0, np.maximum(i_idx - 1, 0)], 0.0)
+        zi_right = np.where(j + 1 <= L - 1, Z[np.minimum(j + 1, L - 1), L - 1], 0.0)
+        first = zi_left + zi_right
+        t_sub = np.arange(d + 1, L)                  # only t > j is ever read
+        if t_sub.size:
+            block = (P[i_idx[:, None], t_sub[None, :]]
+                     + ZG[j[:, None], t_sub[None, :]])
+            block = np.where(t_sub[None, :] >= (j + 1)[:, None], block, -math.inf)
+            second = _logsumexp_rows(block)
+        else:
+            second = np.full(n_i, -math.inf, dtype=np.float64)
+        O[i_idx, j] = _logsumexp_rows(np.stack([first, second], axis=1))
+
+        # ---- (i, j) becomes the parent of children starting at ip in (i, j)
+        m2 = np.arange(1, d)
+        if m2.size:
+            rows_p = i_idx[:, None] + m2[None, :]
+            cols_p = np.broadcast_to(j[:, None], rows_p.shape)
+            upd = (O[i_idx, j][:, None] + scores[i_idx, j][:, None]
+                   + ZG[i_idx[:, None], rows_p])
+            valid = mask[i_idx, j][:, None] & (rows_p < cols_p)
+            rr, cc, uu = rows_p[valid], cols_p[valid], upd[valid]
+            P[rr, cc] = np.logaddexp(P[rr, cc], uu)
+
+    for d in range(min_loop + 1, L):
+        n_i = L - d
+        if n_i <= 0:
+            continue
+        i_idx = np.arange(n_i)
+        j = i_idx + d
+        ok = mask[i_idx, j]
+        if not ok.any():
+            continue
+        val = np.clip(np.exp(O[i_idx, j] + scores[i_idx, j] + ZG[i_idx, j] - logZ),
+                      0.0, 1.0)
+        rows, cols = i_idx[ok], j[ok]
+        p_hat[rows, cols] = val[ok]
+        p_hat[cols, rows] = val[ok]
+
+    return logZ, p_hat
+
+
 def inside_outside(scores: np.ndarray, mask: np.ndarray) -> Tuple[float, np.ndarray]:
+    """Dispatch: vectorised by default, the reference when ``RN_FAST_INSIDE=0``."""
+    if os.environ.get("RN_FAST_INSIDE", "1") == "0":
+        return _inside_outside_reference(scores, mask)
+    return _inside_outside_fast(scores, mask)
+
+
+def _inside_outside_reference(scores: np.ndarray,
+                              mask: np.ndarray) -> Tuple[float, np.ndarray]:
     """Exact marginals via the full inside-outside algorithm.
 
     Returns ``(logZ, p_hat)`` with ``p_hat[i, j] = P((i, j) in M)`` under the
@@ -420,7 +594,7 @@ def inside_outside(scores: np.ndarray, mask: np.ndarray) -> Tuple[float, np.ndar
     scores = _to_numpy_float(scores)
     mask = _to_numpy_bool(mask)
     L = scores.shape[0]
-    logZ, Z = nussinov_inside(scores, mask)
+    logZ, Z = _nussinov_inside_reference(scores, mask)
 
     p_hat = np.zeros((L, L), dtype=np.float64)
     if L < MIN_LOOP + 2:

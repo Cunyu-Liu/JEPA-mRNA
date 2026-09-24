@@ -330,6 +330,113 @@ def test_training_resumes_from_checkpoint_and_appends_to_the_ledger():
         assert ledger[2]["resume_from"] == 3
 
 
+def test_resume_survives_a_parameter_added_after_the_checkpoint():
+    """A checkpoint written before `prior_weight` existed must still resume.
+
+    This is not hypothetical: adding that parameter made `load_state_dict` strict and
+    **killed nine running arms** on restart, because the training resume path used the
+    default `strict=True` while the evaluation path used `strict=False`.  The fix is
+    an explicit allow-list -- a missing key is accepted only when its initialisation
+    is the documented default -- so a genuine architecture mismatch still fails.
+    """
+    dataset = TD.make_synthetic_dataset(4, 20, seed=7)
+    teacher = TD.TeacherLabelStore.from_mock()
+    with tempfile.TemporaryDirectory() as out:
+        TD.run_training(_tiny_config(out, steps=2), dataset, teacher)
+        path = os.path.join(out, "resume.pt")
+        state = torch.load(path, map_location="cpu")
+        assert "head.prior_weight" in state["model"]
+
+        # Simulate a pre-change checkpoint faithfully: the parameter is absent from
+        # the model state **and** from the optimizer's slots, with the state indices
+        # above it renumbered -- exactly what the old code would have written.
+        keys = list(state["model"].keys())
+        idx = keys.index("head.prior_weight")
+        del state["model"]["head.prior_weight"]
+        state["optimizer"]["param_groups"][0]["params"].pop(idx)
+        state["optimizer"]["state"] = {
+            (k - 1 if k > idx else k): v
+            for k, v in state["optimizer"]["state"].items() if k != idx}
+        torch.save(state, path)
+        second = TD.run_training(_tiny_config(out, steps=4), dataset, teacher)
+        assert second["steps_completed"] == 4
+        note = second["run_meta"]["resume_note"]
+        assert note["missing_keys_defaulted"] == ["head.prior_weight"]
+
+        # an *unexpected* key must still be refused, not silently ignored
+        state = torch.load(path, map_location="cpu")
+        state["model"]["head.not_a_real_parameter"] = torch.zeros(1)
+        torch.save(state, path)
+        with pytest.raises(TD.ConfigError):
+            TD.run_training(_tiny_config(out, steps=6), dataset, teacher)
+
+
+def test_pad_optimizer_groups_matches_by_name_not_by_position():
+    """Resuming across an added parameter must remap the optimizer state by name.
+
+    `Optimizer.load_state_dict` matches by *position within a group*, so a checkpoint
+    taken before a parameter existed cannot be loaded.  Padding the tail is not enough:
+    a module's own `Parameter`s are enumerated before its submodules', so
+    `head.prior_weight` lands **before** `pair_repr`, not at the end.  Padding the tail
+    shifted every later slot by one and AdamW then applied a saved moment buffer to the
+    wrong parameter -- `The size of tensor a (128) must match the size of tensor b
+    (1536)` -- which killed nine running arms.  The head pair below reproduces exactly
+    that ordering, and every pre-existing parameter is checked to keep a buffer of its
+    own shape.
+    """
+    from rnajepa.decision_head import FlatDecisionHead
+
+    torch.manual_seed(31)
+    old_head = FlatDecisionHead(d_model=32, d_z=8, hidden=8, use_turner_prior=False)
+    opt_old = torch.optim.AdamW([p for p in old_head.parameters() if p.requires_grad],
+                                lr=1e-3)
+    ids = torch.randint(0, 4, (1, 10))
+    out = old_head(torch.randn(1, 10, 32), ids, calibrate=False)
+    out.scores[torch.isfinite(out.scores)].sum().backward()
+    opt_old.step()
+    saved = opt_old.state_dict()
+    old_keys = list(old_head.state_dict().keys())
+    assert len(old_keys) == len(saved["param_groups"][0]["params"])
+
+    new_head = FlatDecisionHead(d_model=32, d_z=8, hidden=8, use_turner_prior=True)
+    new_head.load_state_dict(old_head.state_dict(), strict=False)
+    new_names = [n for n, p in new_head.named_parameters() if p.requires_grad]
+    # this ordering is the whole reason the tail-padding assumption failed
+    assert new_names.index("prior_weight") < new_names.index("pair_repr.proj.weight")
+
+    opt_new = torch.optim.AdamW([p for p in new_head.parameters() if p.requires_grad],
+                                lr=1e-3)
+    padded = TD._pad_optimizer_groups(saved, opt_new, old_state_keys=old_keys,
+                                      current_names=new_names,
+                                      defaultable=["prior_weight"])
+    opt_new.load_state_dict(padded)
+    # Only parameters that actually had optimizer state in the old model can be
+    # required to have it now: `head.type_head` is deliberately off the loss path
+    # (DEFAULT_EXCLUDED_GRAD_BLOCKS), so it never received a gradient and AdamW never
+    # created buffers for it.
+    checked = 0
+    for name, p in new_head.named_parameters():
+        if not p.requires_grad or name not in old_keys:
+            continue
+        if old_keys.index(name) not in saved["state"]:
+            continue
+        buf = opt_new.state.get(p)
+        assert buf is not None, f"{name} lost its optimizer state"
+        assert tuple(buf["exp_avg"].shape) == tuple(p.shape), name
+        checked += 1
+    assert checked >= 5, f"only {checked} parameter(s) checked; the test would be vacuous"
+
+    # guards: an unexplained missing parameter, and a state_dict/optimizer count
+    # mismatch, must both be refused rather than guessed at
+    with pytest.raises(TD.ConfigError):
+        TD._pad_optimizer_groups(saved, opt_new, old_state_keys=old_keys,
+                                 current_names=new_names, defaultable=[])
+    with pytest.raises(TD.ConfigError):
+        TD._pad_optimizer_groups(saved, opt_new, old_state_keys=old_keys[:-1],
+                                 current_names=new_names,
+                                 defaultable=["prior_weight"])
+
+
 # ===========================================================================
 # 2. every loss weight is independently switchable
 # ===========================================================================

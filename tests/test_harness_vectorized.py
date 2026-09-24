@@ -234,8 +234,80 @@ def test_nussinov_map_bit_for_bit():
     print(f"  ok  vectorised nussinov_map == scalar reference on {n} cases")
 
 
+def test_inside_outside_vectorised_matches_the_reference_within_float_noise():
+    """The vectorised sum-product path, checked against the reference by a bound.
+
+    Bit-for-bit equality is **not** attainable here and the reason is structural:
+    vectorising over the start index pads every reduction row with ``-inf``, which
+    changes NumPy's pairwise-summation tree, so ``logZ`` moves by about one ULP.
+    (The max-product DP could be made exact because its reduction is an integer
+    argmax, not a float sum -- that guarantee is untouched and still asserted above.)
+
+    The bound below is ~1000x the observed noise, and the values are pinned
+    independently by the brute-force marginal tests in
+    ``tests/test_harness_bruteforce.py``, which exercise this same path.
+    """
+    from rnajepa.harness import _inside_outside_fast, _inside_outside_reference
+
+    rng = np.random.default_rng(19)
+    checked = 0
+    for L in (8, 12, 17, 23, 30, 45, 70):
+        for _ in range(4):
+            seq = "".join(rng.choice(list("ACGU")) for _ in range(L))
+            mask = valid_pair_mask(seq)
+            scores = np.triu(np.where(mask, rng.normal(0.0, 1.5, size=(L, L)), -np.inf), k=1)
+            logZ_ref, p_ref = _inside_outside_reference(scores, mask)
+            logZ_fast, p_fast = _inside_outside_fast(scores, mask)
+            assert abs(logZ_fast - logZ_ref) <= 1e-12 * max(1.0, abs(logZ_ref))
+            assert np.allclose(p_fast, p_ref, atol=1e-12, rtol=0.0)
+            # structural invariants must hold exactly, not approximately
+            assert np.array_equal(p_fast, p_fast.T)
+            assert np.all(p_fast >= 0.0) and np.all(p_fast <= 1.0)
+            # p_hat is symmetric *by construction* (both triangles are written from
+            # the same value), so the constraint is on the upper triangle only:
+            # a pair (i, j), i < j, that the mask forbids must be exactly zero.
+            upper = np.triu(np.ones_like(mask, dtype=bool), k=1)
+            assert np.all(p_fast[upper & ~mask] == 0.0)
+            checked += 1
+    assert checked == 28
+
+
+def test_inside_outside_dispatch_is_the_vectorised_path():
+    """`inside_outside` (the training path) must actually use the fast recursion.
+
+    A dispatcher that silently fell back to the reference would leave every timing
+    claim false while all the equivalence tests still passed.
+    """
+    from rnajepa import harness as H
+
+    rng = np.random.default_rng(23)
+    seq = "".join(rng.choice(list("ACGU")) for _ in range(40))
+    mask = valid_pair_mask(seq)
+    scores = np.triu(np.where(mask, rng.normal(0.0, 1.0, size=(40, 40)), -np.inf), k=1)
+
+    calls = {"fast": 0}
+    # the real implementation has to be captured first: the wrapper is installed
+    # under the same name the dispatcher looks up, so calling `H._inside_outside_fast`
+    # from inside it would recurse into itself
+    real = H._inside_outside_fast
+
+    def counting_fast(s, m, min_loop=MIN_LOOP):
+        calls["fast"] += 1
+        return real(s, m, min_loop=min_loop)
+
+    H._inside_outside_fast = counting_fast
+    try:
+        H.inside_outside(scores, mask)
+    finally:
+        H._inside_outside_fast = real
+    assert calls["fast"] == 1
+
+
 if __name__ == "__main__":
     test_inside_bit_for_bit()
     test_max_dp_bit_for_bit()
     test_nussinov_map_bit_for_bit()
-    print("\nvectorised harness is bit-for-bit identical to the scalar reference")
+    test_inside_outside_vectorised_matches_the_reference_within_float_noise()
+    test_inside_outside_dispatch_is_the_vectorised_path()
+    print("\nvectorised harness matches the scalar reference "
+          "(bit-for-bit for the max DP, bounded for the sum-product)")

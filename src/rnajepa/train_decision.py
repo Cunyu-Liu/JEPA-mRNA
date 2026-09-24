@@ -1114,6 +1114,87 @@ def plan(config: TrainConfig, dataset: DecisionDataset, teacher: TeacherLabelSto
 # ---------------------------------------------------------------------------
 # the training run
 # ---------------------------------------------------------------------------
+def _pad_optimizer_groups(saved: Dict[str, object], optimizer,
+                          old_state_keys: Sequence[str],
+                          current_names: Sequence[str],
+                          defaultable: Sequence[str]) -> Dict[str, object]:
+    """Make a saved optimizer state loadable after parameters were added.
+
+    ``Optimizer.load_state_dict`` matches parameters **by position within a group**, so
+    a checkpoint taken before a parameter existed cannot be loaded.  Padding the tail
+    is *not* enough: a module's own ``Parameter``s are enumerated **before** its
+    submodules', so ``head.prior_weight`` lands right after the encoder -- at index 78
+    of 89, not at the end.  Appending shifted every later slot by one and AdamW then
+    applied a saved moment buffer to the wrong parameter and died with
+    ``The size of tensor a (128) must match the size of tensor b (1536)``.
+
+    So the slots are matched **by name** instead: the checkpoint's parameter order is
+    recovered from its own ``state_dict`` keys, and each current parameter either
+    reuses the saved index whose state belongs to it, or gets a fresh index with no
+    state.  A fresh index is correct -- AdamW creates its moment buffers lazily, so an
+    added parameter starts from zero momentum while every pre-existing one keeps its
+    history.
+
+    Guarded rather than permissive: every parameter in the checkpoint must still exist
+    (otherwise a parameter was removed and resume cannot repair it), and every current
+    parameter missing from the checkpoint must be in ``defaultable``.
+    """
+    saved = dict(saved)
+    groups = [dict(group) for group in saved["param_groups"]]
+    if len(groups) != len(optimizer.param_groups):
+        raise ConfigError(
+            f"optimizer state has {len(groups)} parameter group(s) but the model has "
+            f"{len(optimizer.param_groups)}; refusing to guess")
+
+    current = list(current_names)
+    current_set = set(current)
+    # The checkpoint stores no names, but its state_dict does, in the same order the
+    # optimizer saw them.  That correspondence only holds if the state_dict contains
+    # exactly the parameters -- a persistent buffer would occupy a key without a slot,
+    # so the equality is asserted instead of assumed.
+    old = list(old_state_keys)
+    n_slots = len(groups[0]["params"])
+    if len(old) != n_slots:
+        raise ConfigError(
+            f"the checkpoint's state_dict has {len(old)} entries but its optimizer has "
+            f"{n_slots} slot(s); they must correspond one-to-one for the name-based "
+            "remap to be valid, and a persistent buffer would break that")
+    removed = [name for name in old if name not in current_set]
+    if removed:
+        raise ConfigError(
+            f"the checkpoint has parameter(s) this model does not: {removed[:5]}; a "
+            "parameter was removed, which resume cannot repair")
+    old_index = {name: i for i, name in enumerate(old)}
+    unexplained = [name for name in current
+                   if name not in old_index and name not in set(defaultable)]
+    if unexplained:
+        raise ConfigError(
+            f"the checkpoint is missing parameter(s) that are not known-defaultable: "
+            f"{unexplained[:5]} (known-defaultable: {sorted(defaultable)})")
+
+    state_keys = set(saved["state"].keys())
+    fresh = (max(state_keys) + 1) if state_keys else 0
+    new_ids: List[int] = []
+    for name in current:
+        old_i = old_index.get(name)
+        if old_i is not None and old_i in state_keys:
+            new_ids.append(old_i)                 # reuse the slot that holds its state
+        else:
+            new_ids.append(fresh)
+            fresh += 1
+
+    # the remapped list describes the *current* model, so it must match the current
+    # optimizer's group, not the checkpoint's
+    n_current = len(optimizer.param_groups[0]["params"])
+    if len(new_ids) != n_current:
+        raise ConfigError(
+            f"the model has {len(new_ids)} trainable parameter(s) but its optimizer's "
+            f"first group has {n_current}; refusing to guess")
+    groups[0]["params"] = new_ids
+    saved["param_groups"] = groups
+    return saved
+
+
 def run_training(config: TrainConfig, dataset: DecisionDataset,
                  teacher: TeacherLabelStore, *, dry_run: bool = False) -> Dict[str, object]:
     """Run (or, with ``dry_run``, only plan) one training job."""
@@ -1168,10 +1249,38 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     weights = config.objective_weights()
     start_step = 0
     coverage: Optional[Dict[str, object]] = None
+    resume_note: Optional[Dict[str, object]] = None
     if os.path.isfile(resume_path):
         state = torch.load(resume_path, map_location="cpu")
-        model.load_state_dict(state["model"])
-        optimizer.load_state_dict(state["optimizer"])
+        # Resuming must survive a parameter that was added *after* the checkpoint was
+        # written, but must not hide a genuine mismatch.  `strict=True` rejected the
+        # added Turner-prior multiplier and killed nine running arms on restart;
+        # `strict=False` alone would also swallow a real architecture change.  So the
+        # missing keys are checked against an explicit allow-list of parameters whose
+        # initialisation is the correct default, and *unexpected* keys always fail.
+        missing, unexpected = model.load_state_dict(state["model"], strict=False)
+        defaultable = {"head.prior_weight"}
+        unexplained = [k for k in missing if k not in defaultable]
+        if unexpected or unexplained:
+            raise ConfigError(
+                f"cannot resume from {resume_path}: the checkpoint does not match this "
+                f"model. unexpected keys={list(unexpected)}; missing keys that are not "
+                f"known-defaultable={unexplained} (known-defaultable: {sorted(defaultable)})")
+        if missing:
+            resume_note = {
+                "missing_keys_defaulted": sorted(missing),
+                "why": ("added after this checkpoint was written; their initialisation "
+                        "is the documented default, so the resumed trajectory is the "
+                        "same as if training had continued uninterrupted"),
+            }
+            print(f"[train] resume: defaulted {sorted(missing)} "
+                  f"(added after this checkpoint)", flush=True)
+        saved_opt = _pad_optimizer_groups(
+            state["optimizer"], optimizer,
+            old_state_keys=list(state["model"].keys()),
+            current_names=[n for n, p in model.named_parameters() if p.requires_grad],
+            defaultable=sorted(defaultable))
+        optimizer.load_state_dict(saved_opt)
         scheduler.load_state_dict(state["scheduler"])
         start_step = int(state["step"])
         coverage = state.get("gradient_coverage")
@@ -1210,6 +1319,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                                         "asserted after the first optimizer step"),
         },
         "gradient_coverage": None,
+        "resume_note": resume_note,
         "final_loss": None,
         "steps_completed": start_step,
     }
