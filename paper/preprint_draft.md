@@ -151,9 +151,10 @@ running and is therefore *not* reported here.
 arm scales it to 512 (4.8x parameters). The data axis swaps the training corpus from
 TR0 (10,682 sequences) to TR1 (45,865 sequences, 4.29x after de-duplication) with
 everything else fixed. Both axes are reported at 20,000 steps, `w=-1` decode, on the
-same splits; the seed spread of the base configuration (3 seeds so far) is 0.0027
-std, so the capacity gain (+0.047) and the cross-family data gain (+0.163) are
-respectively ~7x and ~60x the spread.
+same splits. The seed spread of the base configuration across 5 seeds
+(0.5958 / 0.5893 / 0.5927 / 0.5898 / 0.5990) is **mean 0.5953, std 0.0038**, so the
+capacity gain (+0.047) and the cross-family data gain (+0.163) are respectively
+~12x and ~43x the spread.
 
 **DP-free recalibration.** After training, a two-parameter affine map
 `p = sigmoid(a * s + b)` is fitted on a validation split disjoint from every test
@@ -282,18 +283,22 @@ is training to test whether they add up.
 Three readings of this table, stated exactly:
 
 1. **The +0.047 capacity gain is robust to seed noise.** The seed spread at step 20000
-   is 0.0065 (s0 0.5958 vs s1 0.5893), so 4.8x head capacity clears it by 7x. The same
+   across 5 seeds is std 0.0038 (mean 0.5953), so 4.8x head capacity clears it by 12x
+   and the cross-family capacity and data gains clear it by 29x and 43x. The same
    test falsifies two smaller effects: a learnable prior-weight (init 0.5, trained to
    0.173) gained +0.0048, and the three auxiliary objectives gained +0.0065 — both
-   within seed noise, and neither is claimed as a finding until replicated across
-   seeds.
+   within 2x the seed std, and neither is claimed as a finding until replicated
+   across seeds.
 2. **The hierarchical cascade is a negative result, reported as one.** The cascade
    head at the same budget and steps scores 0.5011 (P 0.794 / R 0.366): its
    differentiable gate over-suppresses pairs out of distribution. Its training-time
-   helix recall (0.997) did not transfer. We report this at full length because the
-   architecture was motivated by a genuine complexity argument, and the failure mode
-   — high precision, collapsed recall — is the specific signature of a conservative
-   gate, not of noise.
+   helix recall (0.997) did not transfer. A conservative variant of the same
+   architecture (miss-cost 200, sparsity 0.02) recovers to 0.5889 — statistically
+   level with the flat head and below its mean — so the cascade family offers no
+   gain while its aggressive variant carries a demonstrated out-of-distribution
+   failure mode. We report this at full length because the architecture was
+   motivated by a genuine complexity argument, and the failure signature
+   — high precision, collapsed recall — is that of a conservative gate, not noise.
 3. **A monotone decode bias adds nothing.** A validation-fitted additive bias before
    the DP decode moves TS0 by +0.001 (0.6760 -> 0.6770 on a matched 400-sequence
    subset, verified with the main evaluator at 0.6772). Sending logits, not
