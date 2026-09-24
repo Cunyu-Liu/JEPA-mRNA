@@ -236,27 +236,29 @@ in every cell, gives the central accuracy result of this draft:
 | `CRW` | 100–200 nt | 16 | **0.8725** | 0.6004 | 0.6447 | 0.2148 | **+0.272** |
 | `RFAM` | <=100 nt | 486 | 0.5598 | **0.6209** | 0.5913 | 0.2893 | **−0.061** |
 | `RFAM` | 100–200 nt | 498 | 0.4272 | **0.5347** | 0.4985 | 0.2000 | **−0.108** |
-| `RFAM` | 200–400 nt | 126 | 0.4265 | — | — | — | — |
-| `RFAM` | >400 nt | 15 | 0.2766 | — | — | — | — |
+| `RFAM` | 200–400 nt | 126 | 0.4265 | **0.4345** | — | 0.1596 | **−0.008** |
+| `RFAM` | >400 nt | 15 | 0.2766 | **0.4010** | — | 0.1201 | **−0.124** |
 
 **The sign of the comparison is set by source, not by length.** On conserved sequences
 we beat the partition-function baseline in *both* length buckets (+0.295 and +0.272); on
-diverse sequences we trail in *both* (−0.061 and −0.108). Length changes the magnitude
-within a stratum — `RFAM` declines monotonically from 0.5598 to 0.2766 — but it does not
-flip the sign.
+diverse sequences we trail in *all four* (−0.061, −0.108, −0.008, −0.124). Length changes
+the magnitude within a stratum — `RFAM` declines from 0.5598 to 0.2766 — but it neither
+flips the sign nor varies monotonically, so "longer is relatively worse" would also be
+too strong a reading.
 
 That also explains why any pooled number misleads: `RFAM` accounts for 984 of TS0's 1,288
 sequences (76%), so the pooled comparison must show a loss even though we lead by 0.29
 where structures are conserved.
 
-Our own physical prior scores 0.20–0.42 in every cell, so the learned head contributes
+Our own physical prior scores 0.12–0.42 in every cell, so the learned head contributes
 real discriminative power throughout; it simply contributes far more where structures
 are conserved.
 
-Two cells of the grid are missing baselines (`RFAM` above 200 nt), so "we always trail on
-diverse sequences" is established only up to 200 nt. The `CRW` 100–200 nt cell holds 16
-sequences and is weak on its own; the `CRW` <=100 nt cell (n=68) and its independent
-replication on the validation split (n=81, 0.9709 vs 0.6702) carry that claim.
+The `CRW` 100–200 nt cell holds 16 sequences and the `RFAM` >400 nt cell holds 15, so
+those two cells are weak on their own; the `CRW` <=100 nt cell (n=68) and its independent
+replication on the validation split (n=81, 0.9709 vs 0.6702) carry the conserved-stratum
+claim. `vienna_mfe` was not run on the two longest `RFAM` cells and is left blank rather
+than estimated.
 
 Two things follow that the grid alone does not show.
 
@@ -488,6 +490,7 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    effect would move both methods, and it does not: ViennaRNA centroid is nearly flat
    across the two strata (0.6729 vs 0.6209) while ours swings by 0.42. That is an
    argument, not a proof — a density-matched re-measurement has not been done.
-6. **Two cells of the §4.3 grid have no baseline.** `RFAM` above 200 nt (126 and 15
-   sequences) is scored for our model only, so "we trail on diverse sequences" is
-   established only up to 200 nt.
+6. **The two smallest cells of the §4.3 grid are small.** `CRW` 100–200 nt holds 16
+   sequences and `RFAM` >400 nt holds 15, so neither is strong on its own; the
+   conserved-stratum claim rests on the `CRW` <=100 nt cell and its validation-split
+   replication. `vienna_mfe` was not run on the two longest `RFAM` cells.
