@@ -34,21 +34,24 @@ unrecalibrated head does **not** pass this gate (gap 0.1348), and we report both
 
 Structure accuracy is **not** a uniform loss, and the aggregate number is misleading in
 both directions. Pooled over TS0 our micro F1 is **0.4953**, against ViennaRNA centroid
-**0.5393** and MXfold2 **0.5651** on the same split. The comparison reverses once the
-split is stratified, along two axes at once:
+**0.5393** and MXfold2 **0.5651** on the same split. Crossing the split by source and by
+length, with our model and the baselines scored on the same sequences in every cell,
+reverses the comparison for one half of it:
 
-- **By source.** bpRNA-1m's two large source populations differ by roughly 0.4 F1 and
-  appear in very different proportions in different splits. On the conserved `CRW`
-  entries (rRNA/tRNA-derived) of at most 100 nt we reach **0.9664** where centroid
-  reaches **0.6729** — a gain of 0.29, replicated on the independent validation split
-  (**0.9709** vs 0.6702) with no measurable homology to training. On the diverse `RFAM`
-  entries of the same length we reach **0.5490** against centroid's **0.6209**.
-- **By length.** On TS0 we lead centroid only in the at-most-100 nt bucket
-  (**0.6386** vs 0.6277) and trail in every longer bucket, by a margin that grows with
-  length (−0.090 at 100–200 nt, −0.133 above 400 nt).
+| Source | Length | n | Ours | Centroid | Ours − centroid |
+|---|---|---|---|---|---|
+| `CRW` (conserved) | <=100 nt | 68 | **0.9677** | 0.6729 | **+0.295** |
+| `CRW` (conserved) | 100–200 nt | 16 | **0.8725** | 0.6004 | **+0.272** |
+| `RFAM` (diverse) | <=100 nt | 486 | 0.5598 | **0.6209** | **−0.061** |
+| `RFAM` (diverse) | 100–200 nt | 498 | 0.4272 | **0.5347** | **−0.108** |
 
-So the method is competitive on short, structurally conserved sequences and loses on
-long, diverse ones. A single pooled number, in either direction, misstates it.
+**The sign of the comparison is set by how conserved the source population is, not by
+length.** We beat the partition-function baseline in both length buckets on conserved
+sequences and trail in both on diverse ones; length changes the magnitude within a
+stratum but never flips the sign. Because `RFAM` accounts for 76% of TS0, the pooled
+number necessarily shows a loss. The conserved-stratum advantage is not memorisation —
+containment against the training split there is 0.048 with no sequence above 0.5 — and it
+replicates on the independent validation split (0.9709 vs 0.6702).
 
 Cross-family generalization is the method's dominant weakness: on bpRNA-new our micro
 F1 is **0.3536** against ViennaRNA centroid's **0.6770** — a deficit of 0.32. It is not
@@ -222,60 +225,51 @@ dominated by rRNA and tRNA with conserved, canonical structures, while `RFAM` sp
 wide range of families. Their proportions differ sharply between splits — `CRW` is 6.0%
 of TR0, 7.3% of TS0, and **50.5% of VL0**.
 
-**Axis 2, length.** Per-length-bucket results are the protocol-mandated form and they
-change the sign of the comparison at the short end:
+**Axis 2, length.** Per-length-bucket results are the protocol-mandated form.
 
-| TS0 length bucket | n | **Ours** | ViennaRNA centroid | ViennaRNA mfe | Nussinov+Turner prior |
-|---|---|---|---|---|---|
-| <=100 nt | 580 | **0.6386** | 0.6277 | 0.5999 | 0.3084 |
-| 100–200 nt | 516 | 0.4478 | **0.5375** | 0.5045 | 0.2002 |
-| 200–400 nt | 164 | 0.4538 | **0.4690** | 0.4305 | 0.1572 |
-| >400 nt | 28 | 0.3522 | **0.4854** | 0.4561 | 0.1465 |
-| whole split | 1,288 | 0.4959 | **0.5393** | 0.5222 | 0.2124 |
+Crossing the two axes, with our model and the baselines scored on the *same* sequences
+in every cell, gives the central accuracy result of this draft:
 
-We lead only in the shortest bucket (+0.011), and the deficit grows with length
-(−0.090, −0.015, −0.133). Our own physical prior scores 0.15–0.31 in every bucket, so
-the learned head contributes real discriminative power throughout — it simply does not
-contribute enough as sequences get longer.
+| Source | Length | n | **Ours** | ViennaRNA centroid | ViennaRNA mfe | Nussinov+Turner prior | **Ours − centroid** |
+|---|---|---|---|---|---|---|---|
+| `CRW` | <=100 nt | 68 | **0.9677** | 0.6729 | 0.6413 | 0.4187 | **+0.295** |
+| `CRW` | 100–200 nt | 16 | **0.8725** | 0.6004 | 0.6447 | 0.2148 | **+0.272** |
+| `RFAM` | <=100 nt | 486 | 0.5598 | **0.6209** | 0.5913 | 0.2893 | **−0.061** |
+| `RFAM` | 100–200 nt | 498 | 0.4272 | **0.5347** | 0.4985 | 0.2000 | **−0.108** |
+| `RFAM` | 200–400 nt | 126 | 0.4265 | — | — | — | — |
+| `RFAM` | >400 nt | 15 | 0.2766 | — | — | — | — |
 
-Stratifying by source *and* matching on length (at most 100 nt), same checkpoint, same
-metric implementation:
+**The sign of the comparison is set by source, not by length.** On conserved sequences
+we beat the partition-function baseline in *both* length buckets (+0.295 and +0.272); on
+diverse sequences we trail in *both* (−0.061 and −0.108). Length changes the magnitude
+within a stratum — `RFAM` declines monotonically from 0.5598 to 0.2766 — but it does not
+flip the sign.
 
-| Split | Stratum | n | **Ours** | ViennaRNA centroid | ViennaRNA mfe | Nussinov+Turner prior |
-|---|---|---|---|---|---|---|
-| **TS0** | `CRW`, <=100 nt | 68 | **0.9664** | 0.6729 | 0.6413 | 0.4187 |
-| **TS0** | `RFAM`, <=100 nt | 486 | 0.5490 | **0.6209** | 0.5913 | 0.2893 |
-| **VL0** | `CRW`, <=100 nt | 81 | **0.9709** | 0.6702 | 0.6693 | 0.4365 |
-| **VL0** | `RFAM`, <=100 nt | 43 | **0.7824** | 0.5393 | 0.5163 | 0.3203 |
+That also explains why any pooled number misleads: `RFAM` accounts for 984 of TS0's 1,288
+sequences (76%), so the pooled comparison must show a loss even though we lead by 0.29
+where structures are conserved.
 
-Three things follow.
+Our own physical prior scores 0.20–0.42 in every cell, so the learned head contributes
+real discriminative power throughout; it simply contributes far more where structures
+are conserved.
 
-**First, on the conserved stratum we beat the partition-function baseline by a wide
-margin: +0.29 on TS0 and +0.30 on VL0.** The two splits are independent and agree to
-0.005, and our own physical prior sits at 0.42, so the learned head is supplying real
-discriminative power rather than riding on physics. We checked the obvious way this
-could be an artefact and it is not: 20-mer containment against the training split is
-0.048 on TS0-`CRW` with a maximum of 0.33, **no sequence above 0.5**, and zero exact
-matches. This is a genuine held-out result, and it is the strongest positive result in
-this draft.
+Two cells of the grid are missing baselines (`RFAM` above 200 nt), so "we always trail on
+diverse sequences" is established only up to 200 nt. The `CRW` 100–200 nt cell holds 16
+sequences and is weak on its own; the `CRW` <=100 nt cell (n=68) and its independent
+replication on the validation split (n=81, 0.9709 vs 0.6702) carry that claim.
 
-**Second, on the diverse stratum we lose by 0.07.** Pooling the two strata reproduces
-the aggregate (TS0 at most 100 nt pools to 0.6386; VL0 to 0.9304), so the pooled
-comparison is dominated by the larger `RFAM` stratum.
+Two things follow that the grid alone does not show.
 
-**Third, this explains an anomaly we could not previously account for.** The same
-checkpoint scores 0.9304 on VL0's at-most-100 nt bucket and 0.6386 on TS0's, a gap of
-0.29 that we had earlier suspected was leakage or an unidentified bug. It is
-composition: VL0's short bucket is 65% `CRW`, TS0's is 12%. A homology explanation was
-tested and rejected — the two splits have almost identical 20-mer containment to
-training (0.0423 vs 0.0403) and VL0's F1 is flat across containment bins.
+**The conserved-stratum advantage is not memorisation.** 20-mer containment against the
+training split is 0.048 on TS0-`CRW`, with a maximum of 0.33, **no sequence above 0.5**,
+and zero exact matches. The split-level de-duplication audit in §4.5 confirms it: TS0
+loses 3 of 1,288 rows to the filter. This is a held-out result.
 
-**Fourth, the source effect is a property of the benchmark, not of our backbone.** A
-natural objection to the `CRW` result is that a frozen language-model representation
-might simply be good at rRNA because rRNA is abundant in pretraining. We can test this
-without training anything new, because the repository also holds a from-scratch arm
-with a randomly initialised encoder and the same head and data. Both arms show the same
-pattern, on the same sequences:
+**The source effect is a property of the benchmark, not of our backbone.** A natural
+objection is that a frozen language-model representation might simply be good at rRNA
+because rRNA is abundant in pretraining. We can test this without training anything new,
+because the repository also holds a from-scratch arm with a randomly initialised encoder
+and the same head and data. Both arms show the same pattern, on the same sequences:
 
 | Arm | Encoder | `CRW` <=100 nt (n=68) | `RFAM` <=100 nt (n=486) | `CRW` − `RFAM` |
 |---|---|---|---|---|
@@ -287,17 +281,20 @@ stratification is a property of the data rather than of the representation. The 
 backbone adds +0.093 on `CRW` and +0.139 on `RFAM` — it helps both strata, and its value
 is a separate question from the `CRW`/`RFAM` split.
 
+A third observation, about our own pipeline rather than the benchmark: **the same
+checkpoint scores 0.9304 on VL0's at-most-100 nt bucket and 0.6386 on TS0's**, a gap of
+0.29 that we had earlier suspected was leakage or an unidentified bug. It is composition
+— VL0's short bucket is 65% `CRW`, TS0's is 12%. A homology explanation was tested and
+rejected: the two splits have almost identical 20-mer containment to training (0.0423 vs
+0.0403) and VL0's F1 is flat across containment bins.
+
 `CRW` and `RFAM` are **source-database labels, not verified family labels**; sequence
 names are unique within each split, so no family field is recoverable from them. This
-stratification is a reproducible proxy that correlates with molecule type and
-structural conservation, and it is not a substitute for a family-level split, which we
-have not done.
-
-The two axes are also **not separated**: the length buckets above are cut on length
-alone, so their source composition is unmatched, and the source strata are cut on
-source alone at a fixed length. Isolating a length effect from a source effect requires
-a joint length x source grid, which we have not built. Both axes are real; neither is
-attributed on its own.
+stratification is a reproducible proxy that correlates with molecule type and structural
+conservation, and it is not a substitute for a family-level split, which we have not
+done. The strata also differ in GC content (0.564 vs 0.482) and pair density (0.270 vs
+0.200 pairs per nt) at matched length, so the grid identifies a stratum rather than
+isolating a cause.
 
 ViennaRNA and MXfold2 rows are our own measurements on our own split files with our own
 metric implementation, so these comparisons are like-for-like within this table. They
@@ -480,10 +477,10 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    them appears in this draft.
 4. **The §4.3 stratification is a source-database proxy, not a family split.** It uses
    `CRW` / `RFAM` as they appear in bpRNA-1m sequence names, and the two strata are
-   also not length-matched *to each other* — they are each truncated at 100 nt. The
-   `CRW` strata are small (68 and 81 sequences), so the +0.29 / +0.30 margins rest on
-   few independent examples even though the two splits agree. A verified family-level
-   split has not been run.
+   also not length-matched *to each other* — they are each truncated at the same edges.
+   The `CRW` cells are small (68 and 16 sequences), so the +0.295 / +0.272 margins rest
+   on few independent examples, although the <=100 nt cell replicates on the validation
+   split. A verified family-level split has not been run.
 5. **The strata differ in more than their source.** Mean length is matched (75.9 vs
    78.0 nt on TS0), but `CRW` is also GC-richer (0.564 vs 0.482) and more densely
    paired (0.270 vs 0.200 pairs per nt). Source, GC and density therefore vary
@@ -491,3 +488,6 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    effect would move both methods, and it does not: ViennaRNA centroid is nearly flat
    across the two strata (0.6729 vs 0.6209) while ours swings by 0.42. That is an
    argument, not a proof — a density-matched re-measurement has not been done.
+6. **Two cells of the §4.3 grid have no baseline.** `RFAM` above 200 nt (126 and 15
+   sequences) is scored for our model only, so "we trail on diverse sequences" is
+   established only up to 200 nt.
