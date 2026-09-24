@@ -2012,3 +2012,41 @@ RNAformer 官方发布的数据集（`/mnt/cunyuliu/rna-jepa/refmodels/datasets/
 「本项目口径 vs 发布口径」两列；RNAformer 的适配器已同时产出两组（`baselines_rnaformer_*`
 与 `rnaformer_release_gt_*`），但**两者目前数值完全相同，说明第二组可能并未真正用发布口径**，
 **在核实之前不得声称已做双口径对比**。
+
+---
+
+## §14.37 EternaFold **实测可用**（教师集成的关键成员）（2026-09-24 晚）
+
+用户问「ViennaRNA 在 RNA 二级结构预测的性能并不是最高的，为什么选它作为教师」。
+要把质疑落地，需要第二个热力学模型。**EternaFold 不需要编译——二进制早就在盘上**：
+
+```
+/mnt/cunyuliu/rna_baselines_src/EternaFold/src/contrafold   (873 KB, 可执行, 7 月 24 日)
+```
+
+`make multi` 失败（Error 127，MPI 的 `mpicxx` 不在），**但这只影响多线程目标**；
+单线程 `contrafold` 已可用。实测四条命令：
+
+| 用途 | 命令 | 实测结果 |
+|---|---|---|
+| MEA 结构 | `./src/contrafold predict <seq.fa> --params parameters/EternaFoldParams.v1` | 返回 `>structure` 行，结构合法 |
+| **配对后验（BPP）** | 同上 + `--posteriors 0.0 <out.txt>` | 每行 `位置 碱基 伙伴:概率 ...`（1-based），66 nt 得 66 行 |
+| 配分函数 | 同上 + `--partition` | 仅返回配分函数 / Viterbi 分 |
+| Centroid | 同上 + `--centroid` | 用 centroid 估计子（而非 MEA） |
+
+> **一个使用陷阱（已实测）**：`--posteriors CUTOFF OUTFILEORDIR` 的第三个参数
+> **当只有一个输入文件时必须是文件名**；传目录会报
+> `ERROR: Unable to open output posteriors file ...`。参数名里的 `OUTFILEORDIR` 会误导人。
+
+**因此教师集成的实现路径已打通，且不需要新装任何软件**：
+
+- **教师软标签**：ViennaRNA BPP 与 EternaFold BPP 的平均。
+  `--posteriors` 给的就是配对概率，与 `predict_probs` 的输出语义一致，
+  可落到同一套 `TeacherLabelStore` 约定；
+- **C1-b 的第二个参照**：EternaFold 的后验是「学出来的热力学模型」下的精确边际，
+  与 ViennaRNA 的「Turner 参数下的精确边际」并列，正好构成 C1-b 要求的两个参照点；
+- **消融**：单教师（ViennaRNA）vs 集成，回答用户的质疑是否在指标上兑现。
+
+**纪律**：以上是**可用性实测**，不是集成效果。
+教师集成的 F1/ECE 效果**必须实测后才能写**，
+不得由「EternaFold 在很多 benchmark 上更好」这一文献结论外推。
