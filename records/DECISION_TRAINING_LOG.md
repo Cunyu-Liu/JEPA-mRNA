@@ -2165,3 +2165,68 @@ ViennaRNA centroid 是 **0.6770** —— **跨家族 OOD 上我们落后 UFold 0
 > **仍须保留的诚实声明**：(a) 这是**单一 seed、单一 checkpoint**，协议要求 ≥5 seed；
 > (b) UFold 的**训练集与 TS0 的同源重叠未核实**（见 `BASELINE_RESULTS.md` §5.2）；
 > (c) `bprna_new` 上我们 0.3536 vs UFold 0.6106 —— **跨家族短板依旧，且比 TS0 差距大 4 倍**。
+
+---
+
+## §14.41 **RNAformer 实测：我们与最强已发布基线的差距是 0.162，不是 0.064**（2026-09-24 晚）
+
+**这一节修正 §14.40 的一句话。** §14.40 写「同集差距 0.0640」时只比了 UFold；
+RNAformer 在同一 split 上的实测**更高**，因此**正确的最强基线差距是 0.162**。
+
+### F1（`ref_bprna_ts0`，1,291 条，全部同集同口径）
+
+| 模型 | **micro F1** | macro F1 | 备注 |
+|---|---|---|---|
+| **RNAformer**（32M, bprna ckpt） | **0.7578** | 0.7454 | **最强已发布基线** |
+| **UFold** | 0.6598 | 0.7221 | |
+| **我们** `rinalmo_ff_b4_s0` @20000，`w=-1` | **0.5958** | 0.5970 | |
+| ViennaRNA centroid | 0.5393 | 0.5288 | |
+| ViennaRNA mfe | 0.5056 | — | |
+
+→ **与 RNAformer 的差距 = 0.1620**，是与 UFold 差距（0.0640）的 **2.5 倍**。
+**论文必须拿 RNAformer 作主对标**，不能只写 UFold。三个 `pdb_ts2/ts3` 上的 RNAformer
+（0.8590 / 0.9410）与我们的差距更大，但那些集只有 39/19 条，噪声大，只作辅证。
+
+### 双口径对比**已完成**（§14.36 里标记的「未核实」现在可销）
+
+RNAformer 的适配器同时产出了「项目口径（规范+嵌套）」与「发布口径（全配对集）」两套：
+
+| split | 项目口径 micro F1 | 发布口径 micro F1 | 被移除配对 | 移除占比 |
+|---|---|---|---|---|
+| `ref_bprna_ts0` | **0.7578** | 0.7154 | 5,119 / 40,067 | **12.8%** |
+| `ref_pdb_ts2` | **0.8590** | 0.7203 | 249 / 904 | 27.5% |
+| `ref_pdb_ts3` | **0.9410** | 0.7826 | 227 / 644 | **35.2%** |
+
+**结论（重要）**：**移除非规范/假结配对会显著抬高任何模型的 F1**，
+θ 越大（假结越多的集）抬得越多（ts3 上抬 +0.158）。
+→ 所以本项目所有 F1 **必须与上面这一列同时报**，否则与已发表数字不可比。
+这一列也解释了为什么「我们的口径 vs 他们的口径」不能混着引用。
+
+### 已发表数字已核实（适配器可信度的独立证据）
+
+- **RNAformer 32M+recycling 在 TS0 上报 F1 = 0.728**（arXiv:2307.10073 Table 1，**已核实**）。
+- 我们的复现：**发布口径 0.7154 / 项目口径 0.7578**，**恰好夹住 0.728**。
+  两个口径各自的偏差方向都与「移除配对抬高 F1」一致 → **适配器和读数是对的**。
+- `pdb_ts1/ts2/ts3` 的已发表数字**标记为 unverified**（2024 bioRxiv 预印本多次抓取超时），
+  **不得引用**。
+
+### checkpoint 加载（三个都 strict 通过）
+
+| checkpoint | 键数 | 状态 |
+|---|---|---|
+| `..._state_dict_bprna.pth` | 121 | strict OK，missing/unexpected = 0 |
+| `..._state_dict_biophysical.pth` | 121 | strict OK |
+| `..._state_dict_inter_family_finetuned.pth` | 205 | **需要 LoRA 注入 + `cycling=6`** 才 strict OK（适配器已自动处理） |
+
+**踩到的坑（记录以免重犯）**：`beartype` / `einops` / `rotary_embedding_torch` 缺失（已装入共享 `pylibs`）；
+lightning / deepspeed **经核验不需要**；flash-attn 缺失会自动回退 `Attention2d`；
+生物/接口模型不设 `cycling=6` 会报 `Unexpected key(s) in state_dict: "recycle_pair_norm.weight"`；
+`CUDA_VISIBLE_DEVICES=6` 是 4.75 GiB 的 MIG 切片（§14.34 已记录同一坑）。
+
+### 概率矩阵的约定差异（做 ECE 前必须处理）
+
+RNAformer 输出 `sigmoid(logits[...,-1])` 后**对称化，但未按 canonical 置零**，
+与 ViennaRNA 教师（严格上三角、非 canonical 为 0）**不同**。
+→ 计算 ECE 前必须套 `valid_pair_mask`。`reference_calibration.py` 里的
+`probs = np.where(np.triu(mask, k=1), probs, 0.0)` 正好做了这一步，**因此无需改代码**；
+但这解释了**为什么不能跨来源直接比较原始矩阵的数值**。
