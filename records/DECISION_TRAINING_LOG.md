@@ -1707,3 +1707,257 @@ arch_arms                [排队]    级联 ×2 + 容量臂  →  C2 与容量
 | **headline 不依赖 VL0** | 用 `--prior-weight -1`（模型自训练权重）评 TS0/ArchiveII/bpRNA-new，VL0 选 w 只作敏感性分析 | **TS0 已完成**（§14.20）：`w=-1` → micro F1 **0.4953** vs `w=0.75` **0.4959**，差 0.0006；**headline 威胁已解除**。ArchiveII / bpRNA-new 排队中 |
 | **ArchiveII 去冗余** | ArchiveII 必须先去掉与 TR0 近重复的序列（实测 26.7% 的 20-mer 包含度 >0.9）才能报告 | **待做**（§14.15 问题 1；Task 5 的 MMseqs2/CD-HIT 从未执行） |
 | **家族级划分核验** | 核验 Task 5 判据「同家族跨 split 数 = 0」 | **待做**（已知 VL0/TS0 与 TR0 共享 `bpRNA_RFAM_*` 标签，判据很可能不成立） |
+
+
+---
+
+## §14.29 训练数据扩容：用户质疑后的全面复查（2026-09-24 晚）
+
+**用户质疑（原话）**：「训练数据也太少了吧。我感觉你没有调研清楚吧。怎么能只有这么一点训练数据呢？你没有选全，或者没有调研全。质量不错，继续保持。」
+
+**结论：用户是对的。** 之前的盘查只覆盖了 `/mnt/cunyuliu/BPfold_data`，而集群上另有一整套
+RNAformer 官方发布的数据集（`/mnt/cunyuliu/rna-jepa/refmodels/datasets/*.plk`），
+是从 `ml.informatik.uni-freiburg.de` 下载的（该主机 HTTP 200，此前从未探测过）。
+
+### 实测清单（全部为 `pickle.load` 后的真实行数）
+
+| 数据集 | 行数 | set 划分 | 结构栏 | 长度 |
+|---|---|---|---|---|
+| `biophysical_model_data.plk` | **416,479** | train 410,408 / synthetic_valid 2,727 / synthetic_test 3,344 | ✅ 有 | ≤200（全部） |
+| `experimental_pretrain_data.plk` | 45,203 | train 44,091 / valid 1,112 | ❌ 仅 pos1id/pos2id | mean 141，max 500 |
+| `bprna_data.plk` | 40,673 | train 38,184 / valid 1,184 / bprna_ts0 1,305 | ❌ 仅 pos1id/pos2id | mean 128，max 500 |
+| `intra_family_experimental_data.plk` | 6,042 | train 4,824 / valid 1,112 / pdb_ts1 67 / pdb_ts2 39 | ❌ | mean 109 |
+| `inter_family_experimental_data.plk` | 4,935 | train 3,480 / valid 1,302 / pdb_ts1 67 / ts2 39 / ts_hard 28 / ts3 19 | ✅ 有 | mean 114 |
+| `test_sets.plk` | 5,821 | 6 个具名 split | ✅ 有 | — |
+
+### 扩容的两个硬结论（都是实测，不是估算）
+
+**(1) 「新数据」的一半是重复的。** 把 TR0 与四个 train 划分合并，输入 98,095 条，
+**逐序列精确重复 52,230 条（53.3%）**：
+
+| 输入 | n_in | n_kept | 保留率 |
+|---|---|---|---|
+| `bprna_tr0.jsonl`（已有） | 10,682 | 10,682 | 100.0% |
+| `ref_tr_bprna` | 36,865 | **25,320** | 68.7% |
+| `ref_tr_experimental` | 42,283 | **9,582** | 22.7% |
+| `ref_tr_intra` | 4,803 | 281 | 5.9% |
+| `ref_tr_inter` | 3,462 | **0** | **0.0%** |
+
+→ **`ref_tr_inter` 与已有数据完全重合，贡献 0 条。** 若不做这一步而直接报「98K 训练数据」，
+就是虚报 2.1 倍。真实扩容是 **10,682 → 45,865 唯一序列 = 4.29×**。
+工具 `tools/concat_corpora.py`（**只做精确序列去重**，绝不声称做了同源去冗余）。
+
+**(2) 同一序列带着不同结构出现。** 在 98,095 条输入上，**结构冲突 5,393 条（5.5%）**。
+其中相当一部分是**同一个文件内部**的冲突：`ref_tr_experimental` 内部 992、`ref_tr_bprna` 内部 978、
+`ref_tr_intra` 内部 743。跨文件冲突最大的是 `bprna ↔ experimental` 743。
+→ 这说明**标注本身有不一致**，语料存在一个与训练量无关的 precision 上界。
+去重保留「先出现的那个」，是确定性的，但这个数必须记录，已在 `concat_corpora.py` 里做成常驻计数。
+
+### 规划（两条独立的路）
+
+- **TR1（实数据）**：45,865 条 → ViennaRNA 全量教师软标签。
+- **ref_syn_train（合成，410,408 条）**：结构**按构造**只含规范嵌套配对（实测非规范配对 0、
+  假结 0、多联体 0、长度全部 ≤200），正是决策头能输出的空间，因此可用作**额外数据**；
+  但 410K × L×L 的教师标签约 29 GB 且 `TeacherLabelStore.from_dir` 是把整份标签读进内存的字典，
+  所以这条**只走硬标签（λ_distill=0）**，作为独立臂，不混进 TR1。
+
+---
+
+## §14.30 教师为什么是 ViennaRNA：正面回答用户的质疑
+
+**用户质疑**：「教师的软标签，意思你教师模型选成 ViennaRNA 是吧？但是它在 RNA 二级结构预测的
+性能并不是最高的，为什么要选它作为教师呢？」
+
+**质疑成立，且我们自己的实测数据支持它。** 但「性能最高」和「适合当这个教师」是两件事，
+两者都要说清楚：
+
+1. **当初选 ViennaRNA 的理由只有一个：C1-c 需要一个「精确」参照。**
+   C1-c 的判据是「我们免 DP 头的 ECE 与精确边际的 ECE 之差 ≤ 0.02」。
+   这里要求的是**在某个明确定义的物理模型下精确的**碱基配对概率，而 ViennaRNA 的
+   McCaskill 配分函数给的正是这个——封闭形式、可复现、版本可锁定（我们锁了 **2.7.2**）。
+   EternaFold / CONTRAfold 的 BPP 在**它们自己的参数下**同样是精确的，但参数是从实验数据
+   拟合出来的，属于「学出来的热力学模型」，作为**参照系**的性质不同。
+
+2. **但它在预测精度上确实不是最好的，这一点我们的数据已经量化了：**
+   - TS0：ViennaRNA centroid `0.5393` < **MXfold2 `0.5651`**（`BASELINE_RESULTS.md` §5）
+   - ViennaRNA 是纯热力学（Turner）模型，不含任何学习成分；EternaFold 用 Eterna 高通量实验
+     数据做了多任务学习，在很多 benchmark 上优于 ViennaRNA（Wayment-Steele et al., Nat Methods 2022）。
+
+3. **因此的正确做法（正在做）**：把教师从「单个 ViennaRNA」升级为**集成**，而
+   `scripts/deploy_teachers.sh` 里早就写着教师应该是
+   `p^teacher = mean(p^ViennaRNA, p^RNAstructure, p^LinearPartition)`——**这条从未落地**。
+   现在按**本集群实际可得**的成员重建：ViennaRNA（已有）+ **EternaFold**（源码在
+   `/mnt/cunyuliu/rna_baselines_src/EternaFold/`，`make multi` 编译后可用
+   `./src/contrafold predict <seq> --params parameters/EternaFoldParams.v1`），
+   并做**单教师 vs 集成**的消融。
+   → **「为什么原选 ViennaRNA」（C1 需要精确参照）不等于「它是最好的教师」**，
+   这两句话在论文里必须分开写。
+
+---
+
+## §14.31 新语料的标注口径：一次必须显式作出的选择
+
+把参考发布里的 `pos1id`/`pos2id` 读进来之后，发现它与我们既有的 `.bpseq` 语料
+**在标注口径上不是一回事**，实测：
+
+| 语料 | 非规范配对占比 | 假结配对占比 | 一行多配（多联体） |
+|---|---|---|---|
+| `bprna_data.plk` train | **9.1%** | 3.2% | 2,612 行 |
+| `pdb_ts1` | **21.8%** | 21.1% | 53 处 |
+| `intra_family` train | 23.3% | 7.1% | 3,881 处 |
+| 我们的 `bprna_tr0.jsonl`（`.bpseq` 来源） | **0.000** | 0 | 0 |
+
+也就是说，**「同一份 bpRNA-1m」在两个发布里的配对集合不同**：BPfold 的 `.bpseq` 已被预处理成
+规范配对，RNAformer 的 `.plk` 保留了原始注释（含非规范/假结/多联体）。
+
+**决策（写入 `data/ss/prepare_decision_data.py`，并对每条规则各写了测试）**：
+
+| 规则 | 取值 | 理由 |
+|---|---|---|
+| `--pseudoknot-source pk` | 用 `pk` 栏精确删除假结配对 | 比贪心交叉删除更准：贪心会连带删掉被卷入交叉的**无辜嵌套配对** |
+| `--pair-type-policy canonical-drop` | 删除非规范配对 | 决策头只能输出 AU/GC/GU，拿它无法表达的配对当 GT 是没有意义的；删除条数全部记进 manifest |
+| `--multiplet-policy drop` | 一个碱基多个配对时保留跨度最大的那个 | **这条不是冗余保护**：`find_crossing_pairs` 只捕捉「共享左端」形式，**共享右端**形式（`(2,9)`+`(4,9)`）完全漏掉，而 `pairs_to_dotbracket` 会**静默**写出两个 `")"`、得到一个配对更少的字符串——没有异常、没有日志 |
+| `--structure-crosscheck report` | 只计数、不拒绝 | 实测该栏在假结行上是**坏的**：`pdb_ts1` Id 632970 有 37 个索引配对但只有 29 个括号配对，且 `[`/`]`/`<`/`}` 不平衡。若按它拒绝，恰好会丢掉 benchmark 最想测的那些结构 |
+
+**对论文的影响**：所有 F1 都是在「规范 + 嵌套」地面真值上算的，与发布方的原始配对集不同。
+两个数（删除了多少配对、剩余多少）都必须报，且**所有基线走我们同一份 JSONL 与同一套
+`ss.metrics` 实现**，保证模型与基线是同口径可比的。
+
+---
+
+## §14.32 基线可得性：先前的「不可得」清单多处是错的
+
+**用户质疑**：「而且你对标的 baseline 也都很差呀。有很多那种预训练好的模型里都没有归纳进去。
+你所谓的确实不可得的这些模型里面，其实有很多都是可以找到的……而且 A100 集群上是有里面的
+部分模型的权重的，你找一下就能用。」
+
+**逐条实测纠正（`BASELINE_RESULTS.md` §4.2 与 `spec/benchmark_decision.md` §2.3 必须改）**：
+
+| 模型 | 旧记录 | 实测 |
+|---|---|---|
+| **UFold** | 「权重不可得，仓库只有 Readme」 | **错**。权重在盘上：`/home/cunyuliu/rna_baselines_src/UFold-main/models/ufold_train_alldata.pt`（34.6 MB）；`ufold_run.log` 显示**跑通过**。它真正的问题是**数据**缺失（`data/TS0.cPickle` 等不在仓库里），需要绕开它的数据管线直接喂序列 |
+| **RNAformer** | 「不可得」 | **错**。3 个 checkpoint + 配置已在盘上；源码**本轮已从 GitHub 成功 clone**（`/mnt/cunyuliu/rna_baselines_src/RNAformer-code`，含 `evaluate_RNAformer.py`）。这个模型恰恰是本轮新 benchmark 的来源，因此是**可比性最强的已发布基线** |
+| **EternaFold** | 未提及 | 源码在盘上，`make multi` 即可编译 —— **同时是教师集成问题的答案** |
+| **MoEFold2D / RiFold / Graph-Mamba** | 未提及 | 源码在 `/mnt/cunyuliu/` |
+| **mmseqs** | 「未安装所以 80% identity 去冗余做不了」 | **`/mnt/cunyuliu/mmseqs` 在盘上** |
+| **MXfold2** | 可得（已测 TS0 0.5651） | 唯一之前就承认可得的 |
+
+**教训（写进纪律）**：旧结论是**从少数几台探测主机的网络可达性外推**出来的，
+而「可达性探测失败」被当成了「资产不存在」。两者不是一回事：
+**权重可以已经在盘上，与网络无关**。今后任何「不可得」结论必须写明
+「在哪几台机器上、用什么命令探测过、错误原文是什么」，并**先在集群本地搜一遍文件名**。
+
+**本轮已启动的两条独立基线任务**（各自独立的执行线程，产物落
+`/mnt/cunyuliu/rna-jepa/eval_decision/baselines_{ufold,rnaformer}_*.json`）：
+- UFold：绕开数据管线写适配器，产出 dot-bracket **与 sigmoid 概率矩阵**（前者给 F1，后者给 **C1-a**）
+- RNAformer：用盘上的 3 个 checkpoint 在**同一份参考 split** 上跑，产出 F1 与概率矩阵
+
+→ **C1-a 的判定要改**：它此前被标为「不可完成，必须如实写进论文」。
+以 UFold/RNAformer 的概率可得为前提，C1-a **可以完成**，`spec/checklist.md` 的门必须重开。
+在两条任务真的产出概率矩阵之前，**不得**再声称 C1-a 可完成——等产物。
+
+---
+
+## §14.33 benchmark 扩容（2 → 9 个 split）
+
+新增（全部由 `scripts/build_ref_corpus.sh` 从参考发布构建，走与既有语料**同一条**
+投影/校验代码路径）：
+
+| split | 条数 | 说明 |
+|---|---|---|
+| `ref_pdb_ts1` | 63 | 实验标签（PDB），4 条因含 `N` 被拒 |
+| `ref_pdb_ts2` | 39 | 实验标签 |
+| `ref_pdb_ts3` | 19 | 实验标签（**用户此前指出 71% 会被拒绝**，本项目用「投影」策略，故保留） |
+| `ref_pdb_ts_hard` | 28 | 对抗子集 |
+| `ref_synthetic_test` | 3,344 | 发布的合成测试集（规范/嵌套，0 删除） |
+| `ref_synthetic_valid` | **2,727** | **新的选择用验证集**——VL0 因组成偏斜（CRW 50.5% vs TS0 7.3%）不可用于选择，此集可替代 |
+| `ref_bprna_ts0` | 1,291 | 与既有 `.bpseq` 版 TS0（1,288）**同源**：两个独立解析器对同一 split 读数的交叉核验 |
+
+加上既有的 `bprna_ts0`、`bprna_new`、`archiveii`、`rfam_fam`、`rfam_temporal`、`pdb_ts_all`、`pdb669`。
+
+**待核验**：`ref_bprna_ts0`（1,291）与 `bprna_ts0`（1,288）相差 3 条，
+来源应是 `N` 碱基拒绝（14 条）与 `.bpseq` 侧的投影差异。**在解释清楚之前，两个 split 不混用。**
+
+---
+
+## §14.34 **强基线实测：我们与已发表 SOTA 的真实差距**（2026-09-24 晚，关键）
+
+**用户质疑**：「你对标的 baseline 也都很差呀。」**质疑成立，而且差距比预想的大。**
+
+此前 headline 的对比对象是 ViennaRNA centroid（TS0 **0.5393**）与 MXfold2（TS0 **0.5651**），
+两者都是**参数化热力学**模型。真正的**学习型**强基线的权重此前被认为不可得，因此从未测过。
+本轮把 **UFold** 与 **RNAformer** 真正跑起来后，实测（全部走本项目同一份 JSONL
+与同一套 `ss.metrics`，`micro F1` 为 TP/FP/FN 汇总口径）：
+
+| 模型 | split | **micro F1** | macro F1 | 备注 |
+|---|---|---|---|---|
+| **UFold** | `ref_bprna_ts0`（1,291） | **0.6584** | 0.7210 | 权重 `ufold_train_alldata.pt`；适配器绕开其缺失的数据管线 |
+| **UFold** | `ref_pdb_ts1`（63） | **0.6434** | 0.6505 | |
+| **RNAformer**（bprna ckpt） | `ref_pdb_ts2`（39） | **0.8590** | 0.8550 | |
+| **RNAformer**（bprna ckpt） | `ref_pdb_ts3`（19） | **0.9410** | 0.9340 | |
+| **RNAformer**（biophysical ckpt） | `ref_pdb_ts3` | 0.8265 | 0.7806 | |
+| **RNAformer**（inter-family ckpt） | `ref_pdb_ts3` | 0.8245 | 0.7731 | |
+| 我们（`rinalmo_ff_b4_s0` @3500，TR0） | `bprna_ts0`（1,288） | **0.4953** | 0.4858 | headline |
+| ViennaRNA centroid | `bprna_ts0` | 0.5393 | 0.5288 | |
+| MXfold2 | `bprna_ts0` | 0.5651 | 0.5698 | |
+
+**三条必须立刻生效的结论：**
+
+1. **在同一个 TS0 上，UFold 比我们高 0.163 F1**（0.6584 vs 0.4953）。
+   `pdb_ts2`/`pdb_ts3` 上 RNAformer 到 0.86–0.94，差距更大（但这两集只有 39/19 条，噪声大）。
+   → **论文在任何情况下都必须把 UFold 0.6584 与我们的数字并列**，
+   不得只与 ViennaRNA / MXfold2 比较。`records/BASELINE_RESULTS.md` §5.1 里
+   「把门槛抬到 0.5651」的说法同时作废——**门槛是 0.6584**。
+2. **这个差距的归因尚未确定，不得猜测。** 候选解释（三条都可测，且互不排斥）：
+   (a) **训练量**——我们的 headline 只跑了 3,500 步 / 0.56 epoch，TR1 扩容就是为此；
+   (b) **GT 口径**——两边的 split 条数不同（1,291 vs 1,288），且本项目把
+   GT 限制在「规范 + 嵌套」；UFold 的 `postprocess_new` 输出本身也是嵌套规范结构，
+   但**两者的配对集合未必逐条相同**，必须做**逐序列配对的同集比较**才能排除；
+   (c) **架构/解码**——UFold 单次前向直接出 `L×L` 接触图并用其自有 DP 后处理，
+   而我们的解码口径已实测「送势 > 送概率」（§14.11）。
+   **在 (a)(b) 排除之前，不得写成「架构不如 UFold」。**
+3. **已排入的对照**：把我们的 step-20000 checkpoint 评到**同一个** `ref_bprna_ts0`
+   （需要先为该 split 抽 RiNALMo 嵌入），得到**逐条同集**的对比；
+   这是排除 (b) 的唯一办法。脚本 `eval_decision/run_matched_eval.sh`，
+   产物 `eval_decision/ff20000_ref_bprna_ts0/result.json`。
+
+**对 C1 的影响（正面）**：UFold 的 sigmoid 概率矩阵与 dot-bracket **已实际产出并通过校验**
+（矩阵对称、取值 ∈[0,1]、行数与 split 严格一致）。这意味着 **C1-a 的前提成立**：
+它的 ECE/Brier 可以与本项目 System-1 头在同一 split 上同口径比较。
+
+> **纪律提醒**：本节全部数字都是**单一 checkpoint、单一 seed**。F1 一律标注步数与 seed，
+> 不得写成「我们的方法性能是 X」。
+
+---
+
+## §14.35 **欠训练是主因：headline 从 0.4953 → 0.5956**（2026-09-24 晚，关键）
+
+`rinalmo_ff_b4_s0` 在 TR0 上**跑满 20,000 步**（此前 headline 引用的是 step 3500）。
+同一 checkpoint 家族、同一评测口径（`--prior-weight -1`，**无任何选择**，TS0 n=1,288，
+微汇总 TP/FP/FN），逐步实测：
+
+| step | micro F1 | macro F1 | ECE | 备注 |
+|---|---|---|---|---|
+| 20（未训练） | 0.2167 | 0.2372 | 0.5547 | 起点的物理一致性检验 |
+| 1,000 | 0.4554 | 0.4592 | 0.1837 | |
+| 2,000 | 0.4861 | 0.4978 | 0.2726 | |
+| 3,500 | **0.4953** | 0.4858 | 0.1373 | **旧 headline** |
+| 6,000 | 0.5369 | 0.5384 | 0.2126 | |
+| 10,000 | 0.5587 | 0.5549 | 0.1965 | |
+| **20,000** | **0.5956** | **0.5965** | 0.1957 | **新 headline** |
+
+**三条结论：**
+
+1. **§14.34 里的假设 (a)「训练量」被证实是主因。** 3,500 → 20,000 步带来
+   **+0.1003 F1**，而 3,500 步时只训练了 **0.56 epoch**（batch 4 × 3,500 = 14,000 条 / 10,682）。
+   → **在 20,000 步上我们已超过 ViennaRNA centroid（0.5393）与 MXfold2（0.5651）**，
+   与 UFold（0.6584）的差距从 **0.163 收窄到 0.063**。
+2. **旧 headline（0.4953）必须停止被引用。** 它在「低于两个参数化热力学基线」的位置上停留了整轮，
+   而真实原因是训练不足，不是方法不行。**任何非满步数的数字都要标注步数**（本表做了）。
+3. **ECE 不随训练单调改善**（0.1373@3500 → 0.1957@20000）：F1 上升、校准变差，
+   说明「准确率」与「校准」在本目标下并非同一方向——这正是 C1 要单独立论的理由，
+   也让「免 DP 仿射重标定」的价值更明确（重标定后 gap 0.0002–0.0011，全部 PASS）。
+
+> **纪律**：以上仍是 **单 seed、单 checkpoint**。协议要求 ≥5 seed；
+> seed 1–5 在 TR0 上只跑到 2,125–4,850 步，**尚未达到 20,000 步**，
+> 因此**当前不得报告 mean ± std**，只能报告单点并标注步数。

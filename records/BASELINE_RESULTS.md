@@ -64,21 +64,35 @@ PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/run_baselines.py \
 
 ### 4.2 明确取不到（含原因，避免重复尝试）
 
-| 基线 | 结论 | 原因（实测） |
+> **本节于 2026-09-24 晚被大幅更正。** 原表把 UFold、RNAformer、EternaFold 都写成"不可得"，
+> **是错的**，且已造成实际损失（C1-a 被误判为不可能完成、教师问题被搁置）。
+> 更正依据与逐条证据见 `DECISION_TRAINING_LOG.md` §14.32。
+
+| 基线 | 更正后的结论 | 证据（实测命令与结果） |
 |---|---|---|
-| **UFold** | ❌ 权重不可得 | 仓库 `uci-cbcl/UFold` 的 `models/` 目录**只有 Readme.md（1 字节）**，权重不在仓库内 |
-| **SPOT-RNA / SPOT-RNA2** | ❌ 权重不可得 | 仓库根目录只有代码（`SPOT-RNA.py`、`utils/`、`sample_inputs/`…），**无任何权重文件**；`models/` 路径 404；README 未给出可下载链接 |
-| 网络限制 | — | `huggingface.co` / `zenodo.org` 不通（`hf-mirror.com`、PyPI、GitHub API/raw 通） |
-| BPfold | ⚠️ 权重在本地但包未装 | `rna_ss_data/bpfold/mp/model_predict/`（6 个 `.pth`）；需 clone `heqin-zhu/BPfold` |
-| CONTRAfold / LinearPartition | ❌ 未装 | 未尝试安装；CONTRAfold 是**最接近的先验工作**，优先级应高于 UFold |
+| **UFold** | ✅ **权重在集群本地**，可直接用 | `ls /home/cunyuliu/rna_baselines_src/UFold-main/models/` → `ufold_train_alldata.pt`（34.6 MB）。旧记录"仓库只有 Readme"说的是**上游仓库**的 `models/` 目录，而这里早就有一份下载好的权重，且 `ufold_run.log` 显示它**跑通过**。真正的障碍是**数据**：`data/` 只有 `Readme.md` 与 `input.txt`，`TS0.cPickle` 等缺失，必须绕开它的 `RNASSDataGenerator` 直接喂序列 |
+| **RNAformer** | ✅ **权重 + 源码本轮已齐** | 3 个 checkpoint + 配置在 `/mnt/cunyuliu/rna-jepa/refmodels/models/`；源码 `git clone https://github.com/automl/RNAformer.git` **本轮成功**（`github.com` 间歇可达，本次通）→ `/mnt/cunyuliu/rna_baselines_src/RNAformer-code`，含 `evaluate_RNAformer.py`。**它是本轮新 benchmark 的来源，因此是可比性最强的已发布基线** |
+| **EternaFold** | ✅ 源码在盘上，`make multi` 可编译 | `/mnt/cunyuliu/rna_baselines_src/EternaFold/`，`parameters/EternaFoldParams.v1` 在位；用法见其 README：`./src/contrafold predict <seq> --params parameters/EternaFoldParams.v1`。**同时是教师集成问题的答案**（§14.30） |
+| **MoEFold2D / RiFold / Graph-Mamba** | ✅ 源码在盘上 | `/mnt/cunyuliu/{MoEFold2D-main,RiFold,Graph-Mamba-main}` |
+| **mmseqs** | ✅ 在盘上 | `/mnt/cunyuliu/mmseqs`。旧记录"未安装所以 80% identity 去冗余做不了"因此作废 |
+| **SPOT-RNA / SPOT-RNA2** | ⚠️ **仍未核实**（但按同样方法必须再查一遍） | 原证据是"仓库根目录只有代码、`models/` 路径 404"。鉴于 UFold 的结论就是这样被搞错的，**这条必须先在集群本地搜一遍文件名再下结论**，不得沿用 |
 | E2Efold | ❌ 未复现 | 其 bpRNA-new 数字是 OOD 论断的关键，**引用前必须回原文核对** |
 
-> **对 C1-a 的影响（必须如实写进论文）**：C1-a 要求与 SPOT-RNA/UFold 的 sigmoid 概率做同口径 ECE 对比，
-> 而**这两者的权重在本集群不可得**。因此：
-> - **C1-b（对 ViennaRNA 精确边际）与 C1-c（对精确边际）可以完成**；
-> - **C1-a 无法完成**，除非作者侧提供权重。论文必须**显式说明这一缺口**，
->   而不能用"未发现其校准评测"来代替"我们做了对比"。
-> - 可替代的**学习型**对照是 **MXfold2**（权重可得），应优先补上它在三个 split 上的 F1/INF。
+**教训（已固化为纪律）**：旧结论是把「在少数几台探测主机上网络不可达」外推成「资产不存在」。
+这两者不是一回事——**权重可以已经在盘上，与网络无关**。今后任何"不可得"结论必须写明：
+在哪几台机器上、用什么命令探测过、错误原文是什么，并**先在集群本地搜一遍文件名**。
+
+> **对 C1-a 的影响（本节更正后重新判定）**：C1-a 要求与本项目 System-1 头做同口径 ECE 对比的
+> sigmoid 概率。原结论"UFold 权重不可得→C1-a 无法完成"建立在错误前提上，**作废**。
+> 现行判定：
+> - **C1-b（对 ViennaRNA 精确边际）已完成**（TS0 ECE 0.0048）；
+> - **C1-c（对精确边际）已完成**，分两口径报告（见 §14 表）；
+> - **C1-a 可以完成**——条件是从 UFold / RNAformer 取到 **sigmoid 概率矩阵**。
+>   两条任务已独立启动，产物落 `/mnt/cunyuliu/rna-jepa/eval_decision/`。
+>   **在概率矩阵真的产出之前，不得声称 C1-a 已完成**；`spec/checklist.md` 的 C1-a 门已由
+>   「不可完成」改为「待产物」。论文中原本要写的"缺口说明"段落改为
+>   **"与 UFold / RNAformer 的 sigmoid 概率在同一 split 上做了同口径 ECE 对比"**，
+>   并附权重文件哈希与 commit。
 
 ---
 

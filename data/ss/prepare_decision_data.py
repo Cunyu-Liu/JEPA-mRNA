@@ -63,7 +63,9 @@ import csv
 import hashlib
 import json
 import os
+import pickle
 import sys
+import types
 from collections import Counter
 from typing import Dict, Iterable, Iterator, List, Optional, Sequence, Tuple
 
@@ -73,6 +75,8 @@ __all__ = [
     "read_bpseq_text",
     "read_rinalmo_csv",
     "iter_rinalmo_csv_safe",
+    "read_ref_plk",
+    "iter_ref_plk_safe",
     "pairs_to_dotbracket",
     "dotbracket_to_pairs",
     "find_crossing_pairs",
@@ -408,6 +412,299 @@ def iter_rinalmo_csv_safe(path: str) -> Iterator[Tuple[str, object]]:
 
 
 # ---------------------------------------------------------------------------
+# RNAformer reference .plk DataFrames
+# ---------------------------------------------------------------------------
+#: ``pandas.core.indexes.numeric`` was removed in pandas 2.0, but the reference
+#: releases were pickled with pandas 1.x, so a bare ``pickle.load`` dies with
+#: ModuleNotFoundError *before* any data is read.  The pickles only reference
+#: those names to rebuild integer indexes, so aliasing them to ``Index`` is
+#: lossless.
+_PANDAS1_INDEX_ALIASES = ("Int64Index", "UInt64Index", "Float64Index",
+                          "NumericIndex")
+
+
+def _install_pandas1_index_shim() -> None:
+    """Teach pandas 2.x the pandas 1.x index module names.
+
+    Installed lazily: importing this module must not mutate global pandas state
+    for callers that never touch a ``.plk``.
+    """
+    import pandas as pd
+    if "pandas.core.indexes.numeric" in sys.modules:
+        return
+    shim = types.ModuleType("pandas.core.indexes.numeric")
+    for name in _PANDAS1_INDEX_ALIASES:
+        setattr(shim, name, pd.Index)
+    sys.modules["pandas.core.indexes.numeric"] = shim
+
+
+def _plk_frames(path: str) -> List[Tuple[str, "object"]]:
+    """Load a ``.plk`` and return ``[(key, DataFrame), ...]``.
+
+    Two layouts occur in the reference releases: a bare ``DataFrame`` (the
+    training sets) and a ``dict`` of named ``DataFrame``\\ s (``test_sets.plk``,
+    whose keys are the split names).
+    """
+    _install_pandas1_index_shim()
+    import pandas as pd
+    with open(path, "rb") as fh:
+        obj = pickle.load(fh)
+    if isinstance(obj, pd.DataFrame):
+        return [("", obj)]
+    if isinstance(obj, dict):
+        return [(str(k), v) for k, v in obj.items() if isinstance(v, pd.DataFrame)]
+    raise RejectError("plk_not_a_frame", f"{type(obj).__name__}")
+
+
+def _row_pairs(row: Dict[str, object], length: int) -> Tuple[List[Tuple[int, int]],
+                                                               List[int]]:
+    """Build the pair list of one ``.plk`` row from ``pos1id`` / ``pos2id``.
+
+    Returns ``(pairs, pk_labels)`` where ``pk_labels[k]`` is the pseudoknot class
+    of ``pairs[k]`` (``0`` = ordinary nested pair, non-zero = pseudoknot level).
+    Verified on the release: ``len(pk) == len(pos1id)`` for every frame.
+
+    ``structure`` is deliberately *not* used here.  Measured on ``pdb_ts1``, that
+    column is mangled wherever a row has pseudoknots (row ``632970``: 37 index
+    pairs but only 29 bracket pairs, with unbalanced ``[``/``]``/``<``/``}``), so
+    it cannot serve as ground truth.  The pair indices can.
+
+    Pair order is normalised to ``i < j`` and sorted: a reversed tuple would
+    still pass a naive bounds check and then produce a nonsense dot-bracket.
+    """
+    left = row.get("pos1id")
+    right = row.get("pos2id")
+    if left is None or right is None:
+        raise RejectError("plk_missing_pair_columns", "needs pos1id and pos2id")
+    left = [int(v) for v in left]
+    right = [int(v) for v in right]
+    if len(left) != len(right):
+        raise RejectError("plk_pair_column_mismatch", f"{len(left)} vs {len(right)}")
+    labels_raw = row.get("pk")
+    labels = [int(v) for v in labels_raw] if labels_raw is not None else []
+    if labels and len(labels) != len(left):
+        raise RejectError("plk_pk_column_mismatch",
+                          f"pk n={len(labels)} vs pairs n={len(left)}")
+    if not labels:
+        labels = [0] * len(left)
+    pairs: List[Tuple[int, int]] = []
+    for a, b in zip(left, right):
+        pairs.append((a, b) if a < b else (b, a))
+    if len(set(pairs)) != len(pairs):
+        raise RejectError("duplicate_pair", f"{len(pairs)} pairs, {len(set(pairs))} unique")
+    for i, j in pairs:
+        if not (0 <= i < j < length):
+            # An off-by-one (1-based indices) lands here on every row, so this
+            # check is what catches a base-convention error immediately.
+            raise RejectError("pair_out_of_range", f"({i}, {j}) with L={length}")
+    order = sorted(range(len(pairs)), key=lambda k: pairs[k])
+    return [pairs[k] for k in order], [labels[k] for k in order]
+
+
+#: Canonical base pairs (Watson-Crick plus the G-U wobble).
+CANONICAL_PAIRS = frozenset([("A", "U"), ("U", "A"), ("G", "C"), ("C", "G"),
+                             ("G", "U"), ("U", "G")])
+
+
+def _bump(stats: Dict[str, int], key: str, amount: int = 1) -> None:
+    """Increment a counter that may be a plain ``dict`` or a ``Counter``.
+
+    ``Counter`` supplies missing keys; a plain dict does not.  Doing it here
+    keeps the callers free of ``.get(key, 0) + 1`` noise and stops a caller that
+    passes ``{}`` from crashing on the first filter that actually fires.
+    """
+    stats[key] = stats.get(key, 0) + amount
+
+
+def filter_raw_pairs(seq: str, pairs: List[Tuple[int, int]], labels: List[int], *,
+                     pseudoknot_from_pk: bool, pair_type_policy: str,
+                     multiplet_policy: str, stats: Dict[str, int]
+                     ) -> Tuple[List[Tuple[int, int]], List[Tuple[int, int]]]:
+    """Remove pairs the model cannot represent, from the *raw* annotation.
+
+    Applied before :func:`project_to_legal` so that the validated projection /
+    validation machinery downstream is unchanged.  Returns ``(kept, dropped)``
+    and accumulates per-reason counts into ``stats``.
+
+    Order matters and is fixed: pseudoknots first (a pseudoknotted pair is also
+    often non-canonical, and counting it twice would overstate either category),
+    then pair type, then multiplets.
+
+    Why each step exists -- all three were measured on the release, not assumed:
+
+    * ``pseudoknot_from_pk``  the ``pk`` column labels each pair with its
+      crossing class, so pseudoknotted pairs can be removed *exactly* instead of
+      by the greedy crossing heuristic (which also removes innocent nested
+      pairs that happen to be implicated in a crossing).
+    * ``pair_type_policy``    non-canonical pairs are 9-24% of pairs in the
+      reference releases (``bprna_data`` train 9.1%, ``pdb_ts1`` 21.8%), but
+      **0.0%** in the corpus we already built from ``.bpseq``.  A model that can
+      only emit ``AU``/``GC``/``GU`` cannot be scored against a ground truth
+      containing the rest, so the choice must be explicit rather than inherited.
+    * ``multiplet_policy``    a position annotated with more than one partner
+      (``has_multiplet``) must be resolved here, because the downstream crossing
+      pass only catches *half* of the cases and the failure mode is silent.
+      ``find_crossing_pairs`` tests ``c >= b`` / ``b < d`` on pairs sorted by
+      left index, so:
+        - shared **left** endpoint, ``(2,4)`` + ``(2,9)``: caught (``4 < 9``),
+          but resolved by crossing-degree, not by span;
+        - shared **right** endpoint, ``(2,9)`` + ``(4,9)``: **not caught**
+          (``c >= b`` breaks the scan before ``b < d`` can fire), and
+          :func:`pairs_to_dotbracket` then just writes ``")"`` twice and returns
+          a string with *fewer* pairs than the ``pairs`` list claims -- no
+          exception, no log line, just a record whose two encodings disagree.
+    """
+    dropped: List[Tuple[int, int]] = []
+    keep_mask = [True] * len(pairs)
+
+    if pseudoknot_from_pk:
+        for k, (pair, label) in enumerate(zip(pairs, labels)):
+            if label != 0:
+                keep_mask[k] = False
+                _bump(stats, "dropped_pseudoknot_pairs")
+                dropped.append(pair)
+
+    if pair_type_policy != "keep":
+        for k, (i, j) in enumerate(pairs):
+            if not keep_mask[k]:
+                continue
+            if (seq[i], seq[j]) not in CANONICAL_PAIRS:
+                keep_mask[k] = False
+                _bump(stats, "dropped_noncanonical_pairs")
+                dropped.append((i, j))
+
+    if multiplet_policy != "keep":
+        partner: Dict[int, List[int]] = {}
+        for k, (i, j) in enumerate(pairs):
+            if keep_mask[k]:
+                partner.setdefault(i, []).append(k)
+                partner.setdefault(j, []).append(k)
+        for index, members in partner.items():
+            if len(members) < 2:
+                continue
+            _bump(stats, "multiplet_positions")
+            # Keep the longest-span pair (most structural information), ties
+            # broken by the lexicographically smallest pair.  Deterministic.
+            def rank(k: int) -> Tuple[int, Tuple[int, int]]:
+                return (-(pairs[k][1] - pairs[k][0]), pairs[k])
+            winner = min(members, key=rank)
+            for k in members:
+                if k != winner:
+                    keep_mask[k] = False
+                    _bump(stats, "dropped_multiplet_pairs")
+                    dropped.append(pairs[k])
+
+    kept = [pair for k, pair in enumerate(pairs) if keep_mask[k]]
+    return kept, dropped
+
+
+def read_ref_plk(path: str, *, set_name: str = "", name_col: str = "",
+                 crosscheck: str = "report",
+                 pseudoknot_from_pk: bool = True,
+                 pair_type_policy: str = "canonical-drop",
+                 multiplet_policy: str = "drop",
+                 stats: Optional[Dict[str, int]] = None,
+                 notes: Optional[List[str]] = None
+                 ) -> Iterator[Tuple[str, object]]:
+    """Yield ``(name, (seq, pairs))`` from a reference ``.plk`` DataFrame.
+
+    ``set_name`` selects rows of the ``set`` column (the training releases carry
+    ``train`` / ``valid`` / test-split labels).  For a dict-of-frames release
+    (``test_sets.plk``) the dict key is the split name.
+
+    ``stats`` accumulates per-reason pair counts for the manifest; ``notes``
+    collects one-line diagnostics.  ``crosscheck`` controls the ``structure``
+    column comparison: ``off`` skips it, ``report`` counts disagreements,
+    ``reject`` treats them as invalid records.  The default is ``report``
+    because the column is **provably unreliable** on the pseudoknot-heavy PDB
+    frames, so rejecting on it would discard exactly the hardest structures.
+    """
+    stats = stats if stats is not None else {}
+    notes = notes if notes is not None else []
+    emitted = 0
+    for key, frame in _plk_frames(path):
+        if set_name and "set" not in frame.columns:
+            if key != set_name:
+                continue
+        selected = frame
+        if set_name and "set" in frame.columns:
+            selected = frame[frame["set"] == set_name]
+        if selected.empty:
+            continue
+        for index, row in selected.iterrows():
+            row_dict = dict(row)
+            row_id = row_dict.get(name_col, index) if name_col else index
+            name = f"{key or 'plk'}#{row_id}"
+            seq_list = row_dict.get("sequence")
+            if seq_list is None:
+                yield name, RejectError("plk_missing_sequence", "no sequence column")
+                continue
+            seq = "".join(seq_list).upper().replace("T", "U")
+            try:
+                pairs, labels = _row_pairs(row_dict, len(seq))
+            except RejectError as exc:
+                yield name, exc
+                continue
+
+            kept, _dropped = filter_raw_pairs(
+                seq, pairs, labels,
+                pseudoknot_from_pk=pseudoknot_from_pk,
+                pair_type_policy=pair_type_policy,
+                multiplet_policy=multiplet_policy,
+                stats=stats)
+
+            if crosscheck != "off" and row_dict.get("structure") is not None \
+                    and not _dropped:
+                # Only meaningful when nothing was filtered: otherwise the
+                # disagreement is explained by the filters themselves.
+                try:
+                    stated = dotbracket_to_pairs(
+                        "".join(row_dict["structure"]), extended=True)
+                except RejectError:
+                    stated = None
+                if stated is not None and sorted(stated) != kept:
+                    _bump(stats, "structure_crosscheck_mismatch")
+                    if crosscheck == "reject":
+                        yield name, RejectError(
+                            "pair_encoding_mismatch",
+                            f"index pairs n={len(kept)} vs structure n={len(stated)}")
+                        continue
+            elif crosscheck != "off" and _dropped:
+                _bump(stats, "structure_crosscheck_skipped_filtered")
+            yield name, (seq, kept)
+            emitted += 1
+    if emitted == 0:
+        notes.append(f"no rows selected for set={set_name!r} in {os.path.basename(path)}")
+
+
+def iter_ref_plk_safe(path: str, *, set_name: str = "", name_col: str = "",
+                      crosscheck: str = "report",
+                      pseudoknot_from_pk: bool = True,
+                      pair_type_policy: str = "canonical-drop",
+                      multiplet_policy: str = "drop",
+                      stats: Optional[Dict[str, int]] = None,
+                      notes: Optional[List[str]] = None
+                      ) -> Iterator[Tuple[str, object]]:
+    """``read_ref_plk`` that degrades a hard failure into one reject row.
+
+    A truncated or unreadable pickle must not produce a 0-byte corpus that looks
+    like "the dataset is empty" -- that exact failure mode already cost time
+    once (see the content audit in ``scripts/build_ss_corpus.sh``).
+    """
+    try:
+        yield from read_ref_plk(path, set_name=set_name, name_col=name_col,
+                                crosscheck=crosscheck,
+                                pseudoknot_from_pk=pseudoknot_from_pk,
+                                pair_type_policy=pair_type_policy,
+                                multiplet_policy=multiplet_policy,
+                                stats=stats, notes=notes)
+    except RejectError as exc:
+        yield "<plk>", exc
+    except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+        yield "<plk>", RejectError("plk_unreadable", repr(exc))
+
+
+# ---------------------------------------------------------------------------
 # provenance
 # ---------------------------------------------------------------------------
 def dir_fingerprint(directory: str, pattern: str = ".bpseq") -> Dict[str, object]:
@@ -456,6 +753,35 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--bpseq-dir", help="directory of .bpseq files")
     source.add_argument("--rinalmo-csv", help="RiNALMo benchmark CSV")
+    source.add_argument("--ref-plk", help="reference .plk DataFrame "
+                                          "(RNAformer release layout)")
+    parser.add_argument("--ref-plk-set", default="",
+                        help="value of the `set` column (or dict key) to keep; "
+                             "empty keeps every row")
+    parser.add_argument("--ref-plk-name-col", default="",
+                        help="column used for the record name (e.g. Id)")
+    parser.add_argument("--structure-crosscheck", default="report",
+                        choices=["off", "report", "reject"],
+                        help="compare index pairs against the `structure` column: "
+                             "off (skip) / report (count into the manifest) / "
+                             "reject (treat a mismatch as an invalid record). "
+                             "Default report: that column is mangled on "
+                             "pseudoknot-heavy frames, so rejecting on it would "
+                             "discard the hardest structures")
+    parser.add_argument("--pseudoknot-source", default="pk", choices=["pk", "crossing"],
+                        help="pk (use the per-pair `pk` class column to remove "
+                             "pseudoknotted pairs exactly) or crossing (leave it "
+                             "to the greedy crossing heuristic in project_to_legal)")
+    parser.add_argument("--pair-type-policy", default="canonical-drop",
+                        choices=["keep", "canonical-drop", "reject"],
+                        help="non-canonical pairs are 9-24%% of pairs in the "
+                             "reference releases but 0%% in our .bpseq corpora; "
+                             "the model can only emit AU/GC/GU")
+    parser.add_argument("--multiplet-policy", default="drop",
+                        choices=["keep", "drop", "reject"],
+                        help="a position annotated with several partners is not "
+                             "detected as a crossing, so it must be resolved or "
+                             "rejected explicitly")
     parser.add_argument("--out", required=True, help="output JSONL path")
     parser.add_argument("--manifest", default="", help="output manifest JSON path")
     parser.add_argument("--rejects", default="",
@@ -488,6 +814,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     n_records_with_drops = 0
     n_records_pseudoknot = 0
 
+    #: Per-reason raw-annotation counts.  Only the .plk source populates these;
+    #: declared for every source so the manifest schema does not vary by input.
+    #: A ``Counter`` because the filters increment keys lazily.
+    raw_stats: Dict[str, int] = Counter()
+    raw_notes: List[str] = []
+
     if args.bpseq_dir:
         names = sorted(n for n in os.listdir(args.bpseq_dir) if n.endswith(".bpseq"))
         if not names:
@@ -513,6 +845,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
         provenance: Dict[str, object] = dir_fingerprint(args.bpseq_dir)
         source_kind = "bpseq"
+    elif args.ref_plk:
+        def stream():
+            yield from iter_ref_plk_safe(
+                args.ref_plk, set_name=args.ref_plk_set,
+                name_col=args.ref_plk_name_col,
+                crosscheck=args.structure_crosscheck,
+                pseudoknot_from_pk=(args.pseudoknot_source == "pk"),
+                pair_type_policy=args.pair_type_policy,
+                multiplet_policy=args.multiplet_policy,
+                stats=raw_stats, notes=raw_notes)
+
+        provenance = {"file": os.path.abspath(args.ref_plk),
+                      "sha256": _sha256_file(args.ref_plk),
+                      "set": args.ref_plk_set,
+                      "structure_crosscheck": args.structure_crosscheck,
+                      "pseudoknot_source": args.pseudoknot_source,
+                      "pair_type_policy": args.pair_type_policy,
+                      "multiplet_policy": args.multiplet_policy}
+        source_kind = "ref_plk"
     else:
         # iter_rinalmo_csv_safe never raises, so a bad row cannot truncate the file
         def stream():
@@ -596,6 +947,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             if args.limit and n_accept >= args.limit:
                 break
 
+    if args.ref_plk and n_accept == 0:
+        # A wrong --ref-plk-set silently selects nothing and would otherwise
+        # look exactly like "this dataset is empty".
+        print(f"FATAL: no rows selected for --ref-plk-set {args.ref_plk_set!r} "
+              f"in {args.ref_plk}", file=sys.stderr)
+        return 2
+
     manifest = {
         "generated_by": "data/ss/prepare_decision_data.py",
         "source_kind": source_kind,
@@ -606,6 +964,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "n_accepted": n_accept,
         "n_rejected": int(sum(reject_reasons.values())),
         "reject_reasons": dict(sorted(reject_reasons.items())),
+        "raw_annotation_stats": dict(sorted(raw_stats.items())),
+        "raw_notes": raw_notes,
         "n_pseudoknot": n_pseudo,
         "n_records_containing_pseudoknot": n_records_pseudoknot,
         "n_records_with_drops": n_records_with_drops,

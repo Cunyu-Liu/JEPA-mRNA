@@ -12,10 +12,10 @@
 | 区块 | 状态 | 依据 |
 |---|---|---|
 | **A 规范与证据** | ✅ 全部可验证 | `spec/` 三份文档已产出并抽查 |
-| **B 数据盘查与获取** | ✅ 主体完成（集群实测） | 数据盘查与结构数据获取已在 A100 集群完成；`archiveII` bpseq 版未取得（有替代方案）；PseudoBase++ / RNA-Puzzles / 探测数据未取得（已记录） |
-| **C 数据清洗** | ✅ 管线已实现并通过 22 项测试 | MMseqs2/CD-HIT 真实执行未做（工具未安装） |
-| **D 基线复现** | 🔄 进行中 | **ViennaRNA 2.7.2 已装并锁定**（`mfe/centroid/mea` 三条已在 TS0 上跑完）；**MXfold2 已装并跑完 TS0**（唯一可得的学习型基线）；SPOT-RNA/UFold 权重源（Dropbox/Google Drive）**不可达 → C1-a 无法完成**；LinearPartition / RNAstructure / CONTRAfold 仍缺 |
-| **E 教师模型** | ✅ 已解除阻塞 | ViennaRNA 2.7.2 装在 `/mnt/cunyuliu/pylibs`（`/home` 配额满）；教师软标签已按锁定版本生成并自洽校验通过（`verify_teacher_labels() == True`）；吞吐实测仍未做 |
+| **B 数据盘查与获取** | ✅ 完成，且**范围在 2026-09-24 晚扩大** | 原盘查只覆盖 `BPfold_data`，结论「训练数据只有 10,682 条」**不成立**：集群另有 RNAformer 参考发布（`refmodels/datasets/*.plk`），含 `biophysical_model_data` **416,479** 行、四个 train 划分等；`archiveII` bpseq 版**已取得**（BPfold tarball，3,966）。去重后 **TR1 = 45,865 唯一序列（4.29×）**，见 §14.29。PseudoBase++ / RNA-Puzzles 仍未取得（已记录） |
+| **C 数据清洗** | ✅ 管线实现 + 80 项测试 | ~~MMseqs2/CD-HIT 真实执行未做（工具未安装）~~ → **`/mnt/cunyuliu/mmseqs` 在盘上，该理由作废**；真实 identity 去冗余仍**待做**。新语料新增三条显式规则（假结 `pk` 精确删除 / 非规范配对删除 / 多联体解析）各带测试，见 §14.31 |
+| **D 基线复现** | 🔄 进行中（**2026-09-24 晚大幅更正**） | **ViennaRNA 2.7.2 已装并锁定**（`mfe/centroid/mea` 三条已在 TS0 上跑完，并已扩到 7 个新 split）；**MXfold2 已装并跑完 TS0**；~~SPOT-RNA/UFold 权重源不可达 → C1-a 无法完成~~ **该结论错误并已作废**：**UFold 权重在集群本地**、**RNAformer 源码+3 checkpoint 已齐**、**EternaFold 源码可 `make multi` 编译**，三者的适配器分别启动中（见下方 C1-a 与 §14.32）；`mmseqs` 也在盘上（推翻"去冗余做不了"）。仍缺：SPOT-RNA（**未核实**，须按新纪律先本地搜文件）、LinearPartition、RNAstructure |
+| **E 教师模型** | 🔄 部分完成，**问题已重开** | ViennaRNA 2.7.2 装在 `/mnt/cunyuliu/pylibs`；TR0/TR1 软标签均已生成并自洽校验通过（`verify_teacher_labels() == True`）。**吞吐已实测**（`L=100` 34 seq/s，`L=500` 0.6 seq/s）→ 45,865 条 12 进程 892 s。**但用户质疑"ViennaRNA 不是性能最高的，为什么选它当教师"成立**，教师需扩为集成（EternaFold 源码已可编译），见 §14.30。吞吐实测的旧声明「未做」作废 |
 | **F 架构实现** | ✅ 全部可验证 | **317 项测试通过**（集群 torch 2.5.1）；数学核心达机器精度；决策头显存已修复（L=498/B=4 → 2366 MiB） |
 | **G 蒸馏与 RLCD** | ⚠️ 目标已实现并测试，但**实测发现 λ=1 下三项辅助项只占目标 2–3%** | 见 §14.12：`--nll-normalization length` 已实施，四项变为同量级；2×2 对照臂已启动，H6 尚无可结论 |
 | **H 下游任务** | 🔄 有训练权重可跑 | RiNALMo head-only 臂已产出 checkpoint（step 3500 已评测，step 2000/4000/6000/10000 快照已落盘且**步数已从文件内读出核验**） |
@@ -53,7 +53,17 @@
 - [x] **泛化主张口径已改为「OOD 衰减更小（更鲁棒）」**，而非"OOD 精度更高"
 - [x] **CDPFold 校准对比**——**该项作废（2026-09-24 勘误）**：CDPFold 实为 **CNN + 动态规划**（Front Genet 10:467, 2019），非条件扩散、**不免 DP**、无校准评测证据，**不是** C1 的先例威胁。原"单点风险/阻塞项"判断的前提有误。C1 判据改为 **C1-a / C1-b / C1-c**（`spec/benchmark_decision.md` §3.2）
 - [ ] **C1-a**：System-1 头在 TS0 / ArchiveII / PDB ts1 上 ECE 与 Brier **优于或持平 SPOT-RNA / UFold** 的 sigmoid 概率
-  - ⛔ **不可完成（如实记录）**：SPOT-RNA / UFold 的权重在集群网络下取不到（证据 `records/BASELINE_RESULTS.md` §4.2）。**C1-a 必须写进论文的局限章节，不得省略。**
+  - 🔄 **原判定「不可完成」已于 2026-09-24 晚作废**——它建立在一个错误前提上（详见
+    `records/BASELINE_RESULTS.md` §4.2 与 `records/DECISION_TRAINING_LOG.md` §14.32）：
+    **UFold 的权重一直就在集群本地**（`/home/cunyuliu/rna_baselines_src/UFold-main/models/ufold_train_alldata.pt`，
+    且 `ufold_run.log` 显示它跑通过）；**RNAformer 的源码与 3 个 checkpoint 本轮已齐**
+    （`git clone` 成功 + 权重在 `/mnt/cunyuliu/rna-jepa/refmodels/models/`）。
+    旧结论把「在少数探测主机上网络不可达」外推成了「资产不存在」。
+  - 现行状态：**待产物**。两个适配器已分别独立启动，产出 dot-bracket（给 F1）+ **sigmoid 概率矩阵**（给 ECE/Brier）：
+    UFold、RNAformer。**在概率矩阵真的落盘并通过校验之前，不得勾选本项**，
+    也不得把「已对比」写进论文。
+  - 已到手的部分证据（中间结果，尚不构成本项通过）：UFold 在 `ref_bprna_ts0` 上 micro F1 **0.6584**，
+    落在其已发表区间内，说明适配器的编码/后处理是可信的。
 - [x] **C1-b**：与 **ViennaRNA 精确配分函数概率**、**LinearPartition 近似 BPP** 做**同口径** ECE / Brier 对比
   - **部分完成**：ViennaRNA 2.7.2 精确 BPP 已完成（TS0：ECE **0.0048** / Brier 0.0051 / NLL 0.0259，与 `evaluate_decision.py` **共用同一份指标实现**，见 `eval/ss/reference_calibration.py`）。**LinearPartition 未装 → 该项未完成。**
 - [ ] **C1-c**：System-1 头 ECE 与精确边际 `p̂^exact` 的 ECE 之差 **≤ 0.02**（原 S7 门限）

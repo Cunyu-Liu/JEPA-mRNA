@@ -318,6 +318,323 @@ def test_dir_fingerprint_detects_membership_change(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# reference .plk source
+# ---------------------------------------------------------------------------
+def _write_plk(path, frames, *, name_col="Id", with_pk=True, with_structure=True):
+    """Write a ``.plk`` in the RNAformer release layout.
+
+    ``frames`` maps a split name to a list of rows, each row being
+    ``(seq, pairs, pk_labels, structure_or_None)``.  Built with the pandas that
+    is actually installed, so the read side is exercised without needing the
+    pandas-1.x compatibility shim (which is separately unit-tested).
+    """
+    pd = pytest.importorskip("pandas")
+    out = {}
+    for split, rows in frames.items():
+        records = []
+        for index, (seq, pairs, labels, structure) in enumerate(rows):
+            record = {
+                "sequence": list(seq),
+                "pos1id": [i for i, _ in pairs],
+                "pos2id": [j for _, j in pairs],
+                "set": split,
+                "length": len(seq),
+                "is_pdb": False,
+                "has_pk": any(labels),
+                "has_multiplet": False,
+                "has_nc": False,
+            }
+            if with_pk:
+                record["pk"] = list(labels)
+            if with_structure:
+                record["structure"] = list(structure) if structure is not None \
+                    else list("." * len(seq))
+            if name_col:
+                record[name_col] = f"{split}_{index}"
+            records.append(record)
+        out[split] = pd.DataFrame(records)
+    if len(out) == 1:
+        pd.to_pickle(next(iter(out.values())), path)
+    else:
+        pd.to_pickle(out, path)
+    return path
+
+
+def test_row_pairs_normalises_reversed_and_sorts():
+    pairs, labels = prep._row_pairs(
+        {"pos1id": [7, 1], "pos2id": [2, 9], "pk": [1, 0]}, 10)
+    assert pairs == [(1, 9), (2, 7)]
+    # labels must follow their pairs through the sort, not stay in input order
+    assert labels == [0, 1]
+
+
+def test_row_pairs_rejects_out_of_range():
+    with pytest.raises(prep.RejectError) as excinfo:
+        prep._row_pairs({"pos1id": [0], "pos2id": [10]}, 10)
+    assert excinfo.value.reason == "pair_out_of_range"
+
+
+def test_row_pairs_rejects_pk_length_mismatch():
+    with pytest.raises(prep.RejectError) as excinfo:
+        prep._row_pairs({"pos1id": [0, 1], "pos2id": [9, 8], "pk": [0]}, 10)
+    assert excinfo.value.reason == "plk_pk_column_mismatch"
+
+
+def test_filter_removes_exactly_the_pk_labelled_pairs():
+    """pk-drop must remove the crossing pairs and leave the nested ones alone."""
+    seq = "A" * 12
+    pairs = [(0, 11), (1, 10), (2, 6), (3, 7)]
+    labels = [0, 0, 1, 1]           # the (2,6)/(3,7) pair crosses (0,11)
+    stats = {}
+    kept, dropped = prep.filter_raw_pairs(
+        seq, pairs, labels, pseudoknot_from_pk=True,
+        pair_type_policy="keep", multiplet_policy="keep", stats=stats)
+    assert kept == [(0, 11), (1, 10)]
+    assert dropped == [(2, 6), (3, 7)]
+    assert stats["dropped_pseudoknot_pairs"] == 2
+
+
+def test_filter_drops_non_canonical_pairs():
+    seq = "A" * 6 + "A" + "A" * 5        # pairs (0,11) and (1,6) both A-A
+    pairs = [(0, 11), (1, 6)]
+    stats = {}
+    kept, _ = prep.filter_raw_pairs(
+        seq, pairs, [0, 0], pseudoknot_from_pk=False,
+        pair_type_policy="canonical-drop", multiplet_policy="keep", stats=stats)
+    assert kept == []
+    assert stats["dropped_noncanonical_pairs"] == 2
+
+
+def test_filter_keeps_canonical_and_wobble():
+    seq = "AUG" + "C" * 5 + "CAU"          # (0,10) A-U, (1,9) U-A, (2,8) G-C
+    pairs = [(0, 10), (1, 9), (2, 8)]
+    stats = {}
+    kept, _ = prep.filter_raw_pairs(
+        seq, pairs, [0, 0, 0], pseudoknot_from_pk=False,
+        pair_type_policy="canonical-drop", multiplet_policy="keep", stats=stats)
+    assert kept == pairs and stats.get("dropped_noncanonical_pairs", 0) == 0
+
+
+def test_filter_keeps_the_wobble_pair_specifically():
+    """G-U must survive: it is the canonical third pair, not a non-canonical one."""
+    seq = "G" + "A" * 9 + "U"              # length 11; (0,10) is G-U
+    stats = {}
+    kept, _ = prep.filter_raw_pairs(
+        seq, [(0, 10)], [0], pseudoknot_from_pk=False,
+        pair_type_policy="canonical-drop", multiplet_policy="keep", stats=stats)
+    assert kept == [(0, 10)]
+
+
+def test_multiplet_position_is_resolved_to_one_partner():
+    """A base with two partners must be reduced to a single partner.
+
+    The downstream crossing pass only handles the shared-*left*-endpoint form
+    (``(2,4)`` + ``(2,9)``), and it resolves it by crossing degree rather than by
+    span.  The shared-*right* form is not detected at all, and
+    :func:`pairs_to_dotbracket` would then silently write ``")"`` twice.
+    """
+    seq = "A" * 12
+    pairs = [(2, 4), (2, 9)]
+    stats = {}
+    kept, _ = prep.filter_raw_pairs(
+        seq, pairs, [0, 0], pseudoknot_from_pk=False,
+        pair_type_policy="keep", multiplet_policy="drop", stats=stats)
+    assert kept == [(2, 9)]              # longest span wins
+    assert stats["dropped_multiplet_pairs"] == 1
+    assert stats["multiplet_positions"] == 1
+    # and the surviving set is representable
+    prep.pairs_to_dotbracket(12, kept)
+
+
+def test_shared_right_endpoint_is_not_a_crossing_but_corrupts_the_render():
+    """Pins the premise of the rule above with the case the pass really misses.
+
+    This is the evidence that ``multiplet_policy`` is load-bearing rather than
+    belt-and-braces: ``find_crossing_pairs`` returns nothing, and
+    ``pairs_to_dotbracket`` returns an *unbalanced* string with one ``")"`` --
+    one fewer pair than the ``pairs`` list still claims.  Nothing in the record
+    path re-reads that string, so the inconsistency would be written to the
+    corpus as-is; only a later round-trip discovers it, and by then it is a
+    rejected record rather than a filtered pair.
+    """
+    shared_right = [(2, 9), (4, 9)]
+    assert prep.find_crossing_pairs(shared_right) == []
+    rendered = prep.pairs_to_dotbracket(12, shared_right)
+    assert rendered.count("(") == 2 and rendered.count(")") == 1
+    with pytest.raises(prep.RejectError) as excinfo:
+        prep.dotbracket_to_pairs(rendered)
+    assert excinfo.value.reason == "unbalanced_bracket"
+
+    stats = {}
+    kept, _ = prep.filter_raw_pairs(
+        "A" * 12, shared_right, [0, 0], pseudoknot_from_pk=False,
+        pair_type_policy="keep", multiplet_policy="drop", stats=stats)
+    assert kept == [(2, 9)]
+    # and the surviving render round-trips
+    assert prep.dotbracket_to_pairs(prep.pairs_to_dotbracket(12, kept)) == kept
+
+
+def test_shared_left_endpoint_is_a_crossing_but_resolved_by_degree():
+    """Documents why the multiplet rule is not redundant even for this form."""
+    shared_left = [(2, 4), (2, 9)]
+    assert prep.find_crossing_pairs(shared_left) != []
+
+
+def test_multiplet_drop_leaves_a_consistent_record(tmp_path):
+    """End-to-end: the rendered structure and the pair list must agree."""
+    # seq[9] = "U" makes both (2,9) and (4,9) canonical A-U pairs, so the only
+    # reason either can disappear is the multiplet rule.
+    seq = "A" * 9 + "U" + "A" * 2
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [(seq, [(2, 9), (4, 9)], [0, 0], None)]})
+    out = tmp_path / "out.jsonl"
+    prep.main(["--ref-plk", str(path), "--ref-plk-set", "train",
+               "--min-loop-policy", "drop", "--pseudoknot-policy", "drop",
+               "--out", str(out)])
+    record = json.loads(out.read_text(encoding="utf-8").splitlines()[0])
+    assert record["pairs"] == [[2, 9]]
+    assert record["structure"].count("(") == len(record["pairs"])
+
+
+def test_read_ref_plk_selects_by_set_column(tmp_path):
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [("AUGCAUGC", [(0, 7), (1, 6)], [0, 0], None)],
+        "valid": [("AUGCAUGC", [(0, 7)], [0], None)],
+    })
+    rows = list(prep.read_ref_plk(str(path), set_name="valid",
+                                  name_col="Id", pair_type_policy="keep"))
+    assert [name for name, _ in rows] == ["valid#valid_0"]
+    assert rows[0][1][1] == [(0, 7)]
+
+
+def test_read_ref_plk_selects_by_dict_key(tmp_path):
+    path = _write_plk(tmp_path / "t.plk", {
+        "pdb_ts1": [("AUGCAUGC", [(0, 7)], [0], None)],
+        "pdb_ts2": [("AUGCAUGC", [(0, 7)], [0], None)],
+    })
+    rows = list(prep.read_ref_plk(str(path), set_name="pdb_ts1",
+                                  pair_type_policy="keep"))
+    assert len(rows) == 1 and rows[0][0].startswith("pdb_ts1#")
+
+
+def test_read_ref_plk_unknown_set_yields_nothing(tmp_path):
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [("AUGCAUGC", [(0, 7)], [0], None)]})
+    assert list(prep.read_ref_plk(str(path), set_name="nope")) == []
+
+
+def test_read_ref_plk_uses_pk_labels_not_crossing_heuristic(tmp_path):
+    """pk labelled pairs go, and the nested pair implicated in no crossing stays."""
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [("AAAAAAAAGGGG", [(0, 11), (1, 10), (2, 6), (3, 7)],
+                   [0, 0, 1, 1], None)]})
+    rows = list(prep.read_ref_plk(str(path), set_name="train",
+                                  pair_type_policy="keep"))
+    assert rows[0][1][1] == [(0, 11), (1, 10)]
+
+
+def test_read_ref_plk_canonical_drop_is_the_default(tmp_path):
+    """The default must filter pair *type*, not only pseudoknots.
+
+    Every pair here is nested (no ``pk`` label) and every one is non-canonical,
+    so a reader that ignored pair type would report two pairs where the model
+    can only ever emit zero.
+    """
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [("AAAAAAAAAAAA", [(0, 11), (1, 10)], [0, 0], None)]})
+    rows = list(prep.read_ref_plk(str(path), set_name="train"))
+    assert rows[0][1][1] == []
+
+
+def test_cli_ref_plk_end_to_end(tmp_path):
+    # (0,11) A-U, (1,10) U-G, (2,9) G-C: all canonical, all nested
+    seq = "AUG" + "A" * 6 + "CGU"
+    structure = "(((" + "." * 6 + ")))"
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [(seq, [(0, 11), (1, 10), (2, 9)], [0, 0, 0], structure)]})
+    out = tmp_path / "out.jsonl"
+    manifest = tmp_path / "m.json"
+    rc = prep.main(["--ref-plk", str(path), "--ref-plk-set", "train",
+                    "--min-loop-policy", "drop", "--pseudoknot-policy", "drop",
+                    "--out", str(out), "--manifest", str(manifest)])
+    assert rc == 0
+    rows = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 1
+    assert rows[0]["pairs"] == [[0, 11], [1, 10], [2, 9]]
+    assert rows[0]["structure"] == structure
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    assert data["source_kind"] == "ref_plk"
+    assert data["provenance"]["pair_type_policy"] == "canonical-drop"
+    assert data["reject_reasons"] == {}
+    assert data["raw_annotation_stats"].get("structure_crosscheck_mismatch", 0) == 0
+
+
+def test_cli_ref_plk_wrong_set_is_an_error(tmp_path, capsys):
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [("AUGCAUGC", [(0, 7)], [0], None)]})
+    rc = prep.main(["--ref-plk", str(path), "--ref-plk-set", "wrong",
+                    "--out", str(tmp_path / "o.jsonl")])
+    assert rc == 2
+    assert "no rows selected" in capsys.readouterr().err
+
+
+def test_cli_ref_plk_structure_crosscheck_is_reported_not_fatal(tmp_path):
+    """A mangled `structure` column must be counted, not allowed to reject rows.
+
+    Measured on the real release, ``pdb_ts1`` row ``632970`` has 37 index pairs
+    but only 29 bracket pairs.  Rejecting on that disagreement would discard
+    precisely the pseudoknot-heavy structures the benchmark exists to measure.
+    """
+    # (0,5) A-U and (1,6) U-G: canonical, nested, and nothing filtered -- so the
+    # cross-check really does run.  An all-dots `structure` then contradicts it.
+    seq = "AUGCAUGC"
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [(seq, [(0, 5), (1, 6)], [0, 0], "." * 8)]})
+    out = tmp_path / "out.jsonl"
+    manifest = tmp_path / "m.json"
+    rc = prep.main(["--ref-plk", str(path), "--ref-plk-set", "train",
+                    "--min-loop-policy", "drop", "--pseudoknot-policy", "drop",
+                    "--out", str(out), "--manifest", str(manifest)])
+    assert rc == 0
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    assert data["n_accepted"] == 1
+    assert data["reject_reasons"] == {}
+    # the disagreement was recorded rather than dropped on the floor
+    assert data["raw_annotation_stats"]["structure_crosscheck_mismatch"] == 1
+
+
+def test_cli_ref_plk_crosscheck_skipped_when_pairs_were_filtered(tmp_path):
+    """A row whose pairs were filtered cannot be cross-checked against a column
+    that still contains them; that must be counted separately, not as a
+    mismatch, or the diagnostic would report a defect that is really a policy."""
+    seq = "AAAAAAAAAAAA"                 # every pair non-canonical
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [(seq, [(0, 11), (1, 10)], [0, 0], "((......))..")]})
+    manifest = tmp_path / "m.json"
+    rc = prep.main(["--ref-plk", str(path), "--ref-plk-set", "train",
+                    "--min-loop-policy", "drop", "--pseudoknot-policy", "drop",
+                    "--out", str(tmp_path / "o.jsonl"),
+                    "--manifest", str(manifest)])
+    assert rc == 0
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    stats = data["raw_annotation_stats"]
+    assert stats["structure_crosscheck_skipped_filtered"] == 1
+    assert stats.get("structure_crosscheck_mismatch", 0) == 0
+
+
+def test_cli_ref_plk_crosscheck_reject_mode_still_available(tmp_path):
+    seq = "AUGCAUGC"
+    path = _write_plk(tmp_path / "d.plk", {
+        "train": [(seq, [(0, 5), (1, 6)], [0, 0], "." * 8)]})
+    rc = prep.main(["--ref-plk", str(path), "--ref-plk-set", "train",
+                    "--structure-crosscheck", "reject",
+                    "--min-loop-policy", "drop", "--pseudoknot-policy", "drop",
+                    "--out", str(tmp_path / "o.jsonl"),
+                    "--manifest", str(tmp_path / "m.json")])
+    assert rc == 2
+
+
+# ---------------------------------------------------------------------------
 # the real RiNALMo format: 1-based base_pairs, extended (pseudoknot) brackets
 #
 # Both were found by running the parser on the actual ArchiveII.csv, where it
