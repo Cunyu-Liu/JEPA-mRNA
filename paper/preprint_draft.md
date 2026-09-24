@@ -50,9 +50,13 @@ split is stratified, along two axes at once:
 So the method is competitive on short, structurally conserved sequences and loses on
 long, diverse ones. A single pooled number, in either direction, misstates it.
 
-Cross-family generalization is insufficient and is reported as such: on bpRNA-new our
-micro F1 is **0.3094**, statistically indistinguishable from our own Nussinov+Turner
-prior (**0.3015**), while ViennaRNA centroid reaches **0.6770** on the same split.
+Cross-family generalization is the method's dominant weakness: on bpRNA-new our micro
+F1 is **0.3536** against ViennaRNA centroid's **0.6770** — a deficit of 0.32. It is not
+a total collapse (our own Nussinov+Turner prior scores 0.3015, so the learned head still
+adds 0.05), but it is far from competitive. Notably, the calibration result **does**
+survive the cross-family shift: the recalibrated C1-c gap on bpRNA-new is **0.0014**,
+inside the same 0.02 threshold. A model can rank poorly and still report honest
+probabilities, and on this benchmark it does.
 
 We conclude that DP-free calibration is achievable, and that it is achievable *without*
 cross-family generalization — a dissociation that we quantify rather than paper over.
@@ -183,6 +187,13 @@ moves micro F1 by 0.0006 there. The headline involves no selection on any split,
 is what makes it reportable; the ArchiveII replication is provisional for the separate
 reason given in §4.5.
 
+**The calibration result also survives the cross-family shift.** On bpRNA-new — the
+split where accuracy collapses — the recalibrated gap is **0.0014** at the model's own
+weight, again inside the 0.02 threshold. That is the cleanest form of the claim in this
+draft, because it does not depend on F1 at all: the head ranks pairs poorly across
+families and still reports probabilities whose calibration error matches the exact
+marginals' to within two thousandths.
+
 **Reference point.** ViennaRNA's exact base-pair probabilities on TS0 have
 ECE **0.0048**. Our recalibrated head is at **0.0023** — the same order of magnitude,
 obtained without a partition function.
@@ -195,7 +206,7 @@ Pooled, we do not beat the physical baselines:
 |---|---|---|---|---|---|
 | TS0 | **0.4953** | **0.5393** | 0.5222 | **0.5651** | 0.2124 |
 | ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | ~~0.6207~~ | ~~0.5764~~ | — | ~~0.2010~~ |
-| bpRNA-new (5,388) | **0.3094** | **0.6770** | 0.6379 | — | **0.3015** |
+| bpRNA-new (5,388) | **0.3536** | **0.6770** | 0.6379 | — | **0.3015** |
 
 The ArchiveII row is struck through rather than deleted so the withdrawal is visible:
 35.6% of that split duplicates the training data, and re-measurement on the
@@ -299,17 +310,34 @@ different redundancy thresholds and different aggregation conventions.
 diverse. bpRNA-new is the extreme of the latter: it is built from *new* families by
 construction. There the picture inverts. The physical baseline *improves* — ViennaRNA
 centroid goes from 0.5393 on TS0 to **0.6770** — while our model falls from 0.4953 to
-**0.3094**, and 0.3094 is indistinguishable from our own Nussinov+Turner prior at
-**0.3015**. In other words, across families the learned head contributes essentially
-nothing beyond the physical prior it started from.
+**0.3536**.
 
-We checked the obvious explanations and they do not account for it:
+The decode weight matters more here than anywhere else, and getting it wrong produced a
+claim we have had to withdraw:
 
-- **Not a decode-weight artefact.** Every length bucket loses both precision and
-  recall; it is not one region of the score matrix being mis-weighted.
-- **Not exact overlap.** Exact sequence overlap between bpRNA-new and TR0 is zero.
-- **Not measured homology.** 20-mer containment is 0.000 for bpRNA-new against TR0,
-  which is why it is our OOD split of choice.
+| bpRNA-new | ours | our own prior | centroid |
+|---|---|---|---|
+| `w = -1` (model's own trained weight) | **0.3536** | 0.3015 | 0.6770 |
+| `w = 0.75` (selected on the validation split) | 0.3094 | 0.3015 | 0.6770 |
+
+At `w = 0.75` the model sits only 0.008 above its own physical prior, which we had
+earlier read as "cross-family discriminative power disappears". At the model's own
+weight it is 0.052 above. The difference is real but the conclusion changes: the head
+does contribute across families, weakly, and the earlier "collapse" was partly an
+artefact of selecting the weight on a split whose composition we now know is skewed
+(§4.3).
+
+What does **not** change: **we trail the physical baseline by 0.32 on this split**, which
+is the method's dominant weakness, and no pooled number in this draft should be read as
+generalization evidence.
+
+We checked the obvious explanations for the deficit and they do not account for it:
+
+- **Not a decode-weight artefact of the kind just described.** Even at the best weight
+  the deficit is 0.32.
+- **Not exact overlap.** Exact sequence overlap between bpRNA-new and TR0 is zero, and
+  20-mer containment is 0.0001.
+- **Not measured homology.** That is why bpRNA-new is our OOD split of choice.
 
 The mechanism is not established. Our working hypothesis is that the frozen
 representation transfers but the family-specific structural motifs learned by the head
