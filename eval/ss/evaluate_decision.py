@@ -70,6 +70,7 @@ from rnajepa.harness import (  # noqa: E402
     valid_pair_mask,
 )
 from rnajepa.distill import pair_indicator  # noqa: E402
+from rnajepa.rlcd import apply_platt_scaling, fit_platt_scaling  # noqa: E402
 from rnajepa.train_decision import (  # noqa: E402
     BASE_TO_ID,
     EmbeddingStore,
@@ -221,6 +222,39 @@ def matched_prefix_c1c(probs_s1, labels, masks, probs_ex, labels_ex, masks_ex, *
             "pass": bool(gap <= tolerance)}
 
 
+def _flat_scores_and_labels(model, records, device, embedding_store):
+    """Flat System-1 **scores** and pair labels over a whole split.
+
+    Used only to fit the DP-free recalibration, and deliberately a separate loop:
+    the main loop also decodes, times and checks legality, none of which the fit
+    needs.  Scores are returned rather than probabilities because the fit is affine
+    *in the score* -- the whole point being that a map which is only a scale of the
+    probability cannot remove a systematic bias.
+    """
+    scores_all, labels_all = [], []
+    with torch.no_grad():
+        for record in records:
+            seq = str(record["seq"])
+            L = len(seq)
+            mask = valid_pair_mask(seq)
+            ids = torch.tensor([[BASE_TO_ID.get(c, 4) for c in seq]], dtype=torch.long,
+                               device=device)
+            lengths = torch.tensor([L], dtype=torch.long, device=device)
+            if embedding_store is not None:
+                h = torch.as_tensor(embedding_store.get(seq), dtype=torch.float32,
+                                    device=device).unsqueeze(0)
+                out = model(h, ids, lengths=lengths)
+            else:
+                out = model(ids, lengths=lengths)
+            scores = out.scores[0, :L, :L].double().cpu().numpy()
+            sel = np.triu(mask, k=1)
+            scores_all.append(scores[sel])
+            labels_all.append(pair_indicator(L, list(record["gt_pairs"]))[sel])
+    if not scores_all:
+        return np.zeros(0), np.zeros(0)
+    return np.concatenate(scores_all), np.concatenate(labels_all)
+
+
 def evaluate(args: argparse.Namespace) -> Dict[str, object]:
     _check_device_request(args.device, allow_cpu=args.allow_cpu)
     device = args.device
@@ -230,6 +264,15 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
                             if k in TrainConfig.__dataclass_fields__})
     config = TrainConfig(**{**asdict(config), "encoder_size": args.encoder_size,
                             "device": device, "allow_cpu": args.allow_cpu})
+    # The head's peak memory is O(L^2) per j-block, so evaluation of a checkpoint
+    # trained at chunk 64 cannot fit in the small MIG slice that the training run
+    # itself may occupy.  Chunking is numerically exact (forward bitwise equal,
+    # gradients exact to 1e-15 -- tests/test_head_chunking.py), so lowering it for
+    # the eval pass changes nothing that is measured.
+    if args.head_chunk and args.head_chunk != config.head_chunk_size:
+        print(f"[eval] head_chunk_size {config.head_chunk_size} -> {args.head_chunk} "
+              f"(numerically exact; only the peak-memory profile changes)")
+        config = TrainConfig(**{**asdict(config), "head_chunk_size": int(args.head_chunk)})
 
     model = build_decision_model(config).to(device)
     missing, unexpected = model.load_state_dict(checkpoint["model"], strict=False)
@@ -257,6 +300,43 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
     records = load_corpus(args.data, max_length=args.max_length)
     if not records:
         raise SystemExit(f"FATAL: no records in {args.data}")
+
+    # ---- DP-free recalibration, fitted on a held-out split -----------------
+    # spec §5.8.3 defines L_cal as post-hoc calibration on a held-out split; the
+    # test split never participates.  Temperature alone was measured to be
+    # insufficient (tools/probe_temperature_c1c.py: the ceiling is 0.165 against a
+    # 0.02 threshold) because the miscalibration is a systematic bias, so the map
+    # fitted here is the affine generalisation of a temperature, sigmoid(a*s + b).
+    recalibration = None
+    if args.calib_data:
+        if os.path.abspath(args.calib_data) == os.path.abspath(args.data):
+            raise SystemExit(
+                "FATAL: --calib-data is the same file as --data. The calibration map "
+                "must be fitted on a split disjoint from the one it is reported on; "
+                "fitting it here would be test-set tuning.")
+        calib_records = load_corpus(args.calib_data, max_length=args.max_length)
+        if not calib_records:
+            raise SystemExit(f"FATAL: no records in --calib-data {args.calib_data}")
+        calib_store = None
+        if embedding_store is not None:
+            calib_store = EmbeddingStore.from_dir(
+                config.embedding_dir,
+                split=os.path.basename(args.calib_data).split(".")[0])
+        cs, cl = _flat_scores_and_labels(model, calib_records, device, calib_store)
+        a_fit, b_fit = fit_platt_scaling(cs, cl, objective=args.calib_objective,
+                                        n_bins=args.n_bins)
+        recalibration = {
+            "kind": "platt", "a": a_fit, "b": b_fit,
+            "objective": args.calib_objective, "n_bins": args.n_bins,
+            "calib_data": os.path.abspath(args.calib_data),
+            "n_sequences": len(calib_records), "n_pairs": int(cs.size),
+            "form": "p = sigmoid(a * score + b); DP-free (no partition function). "
+                    "A temperature is the b == 0 special case.",
+        }
+        print(f"[eval] DP-free recalibration fitted on {args.calib_data}: "
+              f"a={a_fit:.6g} b={b_fit:.6g} ({args.calib_objective}, "
+              f"{cs.size} pairs)")
+
     print(f"[eval] {len(records)} sequences from {os.path.basename(args.data)} "
           f"(L {min(len(r['seq']) for r in records)}-"
           f"{max(len(r['seq']) for r in records)})")
@@ -270,6 +350,9 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
 
     # per-sequence calibration inputs, pooled at the end (micro over pairs)
     all_probs_s1: List[np.ndarray] = []
+    # raw score matrices, kept so the DP-free recalibration can be applied after it
+    # has been fitted (it is affine in the score, not in the probability)
+    all_scores_s1: List[np.ndarray] = []
     all_probs_ex: List[np.ndarray] = []
     all_labels: List[np.ndarray] = []
     all_masks: List[np.ndarray] = []
@@ -302,6 +385,7 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             p_s1 = torch.sigmoid(scores).cpu().numpy()
             p_s1 = np.where(mask, p_s1, 0.0)
             scores_np = scores.cpu().numpy()
+            all_scores_s1.append(np.where(mask, scores_np, 0.0))
             scores_np = np.where(mask, scores_np, -np.inf)
 
             t2 = time.perf_counter()
@@ -397,6 +481,27 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
               f"{c1c['exact_marginal']['ece']:.4f}, n={c1c['n_sequences_matched']} seqs)",
               file=sys.stderr)
 
+    # ---- the same two numbers after the DP-free recalibration ---------------
+    # This is the row C1 is stated on when a recalibration was fitted: the raw
+    # `system1` row above is kept and reported next to it, so the gap between
+    # "sigmoid(score)" and "sigmoid(score) recalibrated without a partition
+    # function" is visible rather than hidden.
+    cal_s1_cal = None
+    c1c_cal = None
+    if recalibration is not None:
+        probs_cal = [np.where(mask, apply_platt_scaling(
+            torch.as_tensor(s), recalibration["a"], recalibration["b"]).numpy(), 0.0)
+            for s, mask in zip(all_scores_s1, all_masks)]
+        cal_s1_cal = _pooled_ece(probs_cal, all_labels, all_masks)
+        # the exact marginals stay untouched -- they are the reference, and
+        # recalibrating them would be comparing a fitted map against itself
+        c1c_cal = matched_prefix_c1c(probs_cal, all_labels, all_masks,
+                                     all_probs_ex, all_labels_ex, all_masks_ex,
+                                     n_bins=args.n_bins)
+        print(f"[eval] recalibrated: System-1 ECE {cal_s1_cal['ece']:.5f} "
+              f"(raw {cal_s1['ece']:.5f}); C1-c matched gap {c1c_cal['ece_gap']:.5f} "
+              f"-> {'PASS' if c1c_cal['pass'] else 'FAIL'}")
+
     result: Dict[str, object] = {
         "tag": args.tag,
         "checkpoint": os.path.abspath(args.checkpoint),
@@ -424,6 +529,12 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             "c1c_ece_gap": c1c["ece_gap"],
             "c1c_threshold": c1c["threshold"],
             "c1c_pass": c1c["pass"],
+            # The same measurement after the DP-free recalibration.  Both rows are
+            # always present so the raw number can never be dropped in favour of
+            # the fitted one (SC4: no selective reporting).
+            "recalibration": recalibration,
+            "system1_recalibrated": cal_s1_cal,
+            "c1c_recalibrated": c1c_cal,
         },
         "legality": {
             "illegal_structure_rate": illegal / len(records) if records else 0.0,
@@ -457,7 +568,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--allow-cpu", action="store_true")
     parser.add_argument("--max-length", type=int, default=0)
     parser.add_argument("--n-bins", type=int, default=10)
+    parser.add_argument("--head-chunk", type=int, default=0,
+                        help="override the checkpoint's head_chunk_size for this "
+                             "evaluation pass (0 = keep the trained value).  Chunking "
+                             "is numerically exact, so this only lowers peak memory -- "
+                             "which is what lets a chunk-64 checkpoint be evaluated on "
+                             "the small MIG slice its own training run occupies.")
     parser.add_argument("--progress", type=int, default=0)
+    parser.add_argument("--calib-data", default="",
+                        help="held-out split (e.g. bpRNA VL0) on which to fit the "
+                             "DP-free recalibration p = sigmoid(a*score + b).  Must "
+                             "be disjoint from --data; the fit never sees the test "
+                             "split.  Omitted -> no recalibrated row is produced.")
+    parser.add_argument("--calib-objective", default="ece", choices=["ece", "nll"],
+                        help="what the recalibration minimises on the calibration "
+                             "split (spec §5.8.3 allows either)")
     parser.add_argument("--decode", choices=["exact", "band"], default="exact",
                         help="System-1 decoder: 'exact' is nussinov_map (O(L^3) in "
                              "numpy), 'band' is the banded max-product path the spec "

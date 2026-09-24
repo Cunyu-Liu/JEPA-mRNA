@@ -51,6 +51,9 @@ __all__ = [
     "exact_marginal_calibration_gradient",
     "calibration_loss",
     "fit_temperature",
+    "ece_from_pairs",
+    "apply_platt_scaling",
+    "fit_platt_scaling",
     "TemperatureScaler",
     "ObjectiveWeights",
     "combined_loss",
@@ -233,6 +236,87 @@ def fit_temperature(probs, labels, mask=None, objective: str = "nll",
     res = minimize_scalar(objective_fn, bounds=(math.log(0.05), math.log(20.0)),
                           method="bounded")
     return float(math.exp(res.x))
+
+
+# ---------------------------------------------------------------------------
+# flat-sample calibration: ECE and an affine (Platt) recalibration of a score
+# ---------------------------------------------------------------------------
+def ece_from_pairs(p, a, n_bins: int = 10) -> float:
+    """Equal-width ECE on a **flat** pair sample, matching
+    :func:`expected_calibration_error` on the same selected pairs.
+
+    ``expected_calibration_error`` takes ``(L, L)`` matrices; a recalibration
+    fitted over a whole split pools millions of pairs from sequences of different
+    lengths, which is a flat sample and cannot be expressed as one matrix.  The two
+    must agree bin for bin, so the equivalence is asserted in
+    ``tests/test_objectives.py`` rather than assumed.
+    """
+    p = as_tensor(p).detach().cpu().numpy()
+    a = as_tensor(a).detach().cpu().numpy()
+    if p.size == 0:
+        return float("nan")
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    idx = np.clip(np.digitize(p, edges[1:-1], right=False), 0, n_bins - 1)
+    total = 0.0
+    for b in range(n_bins):
+        sel = idx == b
+        if not sel.any():
+            continue
+        total += (sel.sum() / p.size) * abs(p[sel].mean() - a[sel].mean())
+    return float(total)
+
+
+def apply_platt_scaling(scores, a: float, b: float):
+    """``p = sigmoid(a * s + b)`` -- pointwise, so no partition function is used.
+
+    A temperature is the special case ``b == 0``.  The shift is what matters here:
+    a pair whose score is ~0 maps to ``p ~ 0.5`` at *every* temperature, so a
+    scale alone cannot remove a systematic bias.  See ``tools/probe_temperature_c1c.py``
+    for the measurement that forced this generalisation.
+    """
+    s = as_tensor(scores)
+    return torch.sigmoid(float(a) * s + float(b))
+
+
+def fit_platt_scaling(scores, labels, *, objective: str = "ece", n_bins: int = 10,
+                      lo_scale: float = 1e-3, hi_scale: float = 1e3,
+                      lo_bias: float = -40.0, hi_bias: float = 40.0) -> Tuple[float, float]:
+    """Fit ``(a, b)`` on a **held-out** flat pair sample; returns the pair.
+
+    ``objective`` is ``"ece"`` or ``"nll"``.  Both are computed on the flat sample
+    only, and nothing here touches the test split -- the caller is responsible for
+    passing dev, exactly as with :func:`fit_temperature`.
+    """
+    from scipy.optimize import minimize
+
+    s = as_tensor(scores).detach().cpu().numpy().astype(np.float64)
+    a_lab = as_tensor(labels).detach().cpu().numpy().astype(np.float64)
+    if s.size == 0:
+        raise ValueError("fit_platt_scaling needs a non-empty sample")
+    if objective not in ("ece", "nll"):
+        raise ValueError(f"objective must be 'ece' or 'nll', got {objective!r}")
+
+    def loss(params) -> float:
+        log_scale, bias = params
+        p = 1.0 / (1.0 + np.exp(-(math.exp(log_scale) * s + bias)))
+        if objective == "ece":
+            return ece_from_pairs(p, a_lab, n_bins)
+        p = np.clip(p, _EPS, 1.0 - _EPS)
+        return float(-np.mean(a_lab * np.log(p) + (1 - a_lab) * np.log1p(-p)))
+
+    # Three starts: the identity, a sharpening-with-offset and a softening-with-offset.
+    # A single start at the identity is enough for a convex NLL but not for ECE,
+    # which is piecewise constant in the bins and has many local minima.
+    starts = ((math.log(1.0), 0.0), (math.log(0.2), -2.0), (math.log(5.0), -4.0))
+    best = None
+    for x0 in starts:
+        res = minimize(loss, x0, method="Nelder-Mead",
+                       options={"xatol": 1e-5, "fatol": 1e-9, "maxiter": 2000})
+        if best is None or res.fun < best.fun:
+            best = res
+    scale = float(math.exp(best.x[0]))
+    bias = float(best.x[1])
+    return (min(max(scale, lo_scale), hi_scale), min(max(bias, lo_bias), hi_bias))
 
 
 @dataclass

@@ -16,6 +16,7 @@ import tempfile
 from dataclasses import replace
 
 import numpy as np
+import pytest
 import torch
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -470,6 +471,95 @@ def test_rlcd_sweep_produces_a_tradeoff_curve():
     curve = R.tradeoff_curve(results)
     assert set(curve) == {"lambda_rlcd", "beta", "ece", "accuracy", "pareto_indices"}
     assert all(0 <= i < 4 for i in curve["pareto_indices"])
+
+
+def test_ece_from_pairs_agrees_with_the_matrix_ece():
+    """The flat-sample ECE must be bin-for-bin the frozen matrix ECE.
+
+    ``ece_from_pairs`` exists because a recalibration fitted over a whole split
+    pools pairs from sequences of different lengths, which is a flat sample and
+    cannot be one ``(L, L)`` matrix.  Two implementations of the same quantity is
+    exactly the situation where they drift apart silently, so the equivalence is
+    asserted rather than assumed.
+    """
+    rng = np.random.default_rng(7)
+    seq = "GCAUGCUAAGCUUAGCAAUGCUAAGC"
+    L = len(seq)
+    mask = valid_pair_mask(seq)
+    scores = np.triu(rng.normal(0.0, 1.5, size=(L, L)), k=1)
+    probs = 1.0 / (1.0 + np.exp(-scores))
+    labels = pair_indicator(L, nussinov_map(scores, mask))
+    sel = np.triu(mask, k=1)
+
+    matrix_ece = expected_calibration_error(probs, labels, mask, 10)
+    flat_ece = R.ece_from_pairs(probs[sel], labels[sel], 10)
+    assert flat_ece == matrix_ece
+
+    # and on a second, deliberately miscalibrated sample
+    skewed = np.where(sel, 0.9, 0.0)
+    assert (R.ece_from_pairs(skewed[sel], labels[sel], 10)
+            == expected_calibration_error(skewed, labels, mask, 10))
+
+
+def test_platt_scaling_identity_and_monotonicity():
+    """``(a, b) = (1, 0)`` is exactly ``sigmoid``; a shift moves the positive rate."""
+    s = torch.tensor([[-3.0, -0.5], [0.0, 4.0]], dtype=torch.float64)
+    assert torch.allclose(R.apply_platt_scaling(s, 1.0, 0.0), torch.sigmoid(s))
+
+    # a negative bias must lower every probability (that is the whole point: a
+    # temperature cannot, because score ~ 0 maps to p ~ 0.5 at every temperature)
+    plain = R.apply_platt_scaling(s, 1.0, 0.0)
+    shifted = R.apply_platt_scaling(s, 1.0, -5.0)
+    assert bool((shifted < plain).all())
+    assert abs(float(R.apply_platt_scaling(torch.tensor([0.0]), 1.0, -5.0))
+               - 1.0 / (1.0 + np.exp(5.0))) < 1e-12
+    # a temperature leaves a probability of 0.5 at 0.5 for every T (logit 0 / T = 0),
+    # i.e. a score of 0 stays at p = 0.5 -- which is exactly why a scale alone cannot
+    # remove a systematic bias, and why the shift above matters
+    for t in (0.13, 1.0, 8.0):
+        assert abs(float(R._temperature_scaled(torch.tensor([0.5]), t)) - 0.5) < 1e-12
+
+
+def test_fit_platt_scaling_recovers_a_known_bias_and_beats_no_fit():
+    """Scores generated as ``sigmoid(2s - 3)`` must be re-found by the fit.
+
+    The fit is given the *scores*, and the labels are drawn from a known affine
+    map of them, so the correct answer is known up to sampling noise.  The test
+    asserts both that the ECE improves and that the recovered parameters are close
+    to the generating ones -- an improvement alone would be satisfied by any
+    over-fitting map.
+    """
+    rng = np.random.default_rng(11)
+    s = rng.normal(0.0, 2.0, size=200_000)
+    p_true = 1.0 / (1.0 + np.exp(-(2.0 * s - 3.0)))
+    labels = (rng.random(s.size) < p_true).astype(np.float64)
+
+    raw = 1.0 / (1.0 + np.exp(-s))
+    ece_before = R.ece_from_pairs(raw, labels, 10)
+    a, b = R.fit_platt_scaling(s, labels, objective="ece", n_bins=10)
+    ece_after = R.ece_from_pairs(R.apply_platt_scaling(s, a, b).numpy(), labels, 10)
+
+    assert ece_after < ece_before / 5.0, (ece_before, ece_after)
+    assert abs(a - 2.0) < 0.25, a
+    assert abs(b + 3.0) < 0.25, b
+
+
+def test_fit_platt_scaling_nll_objective_and_rejects_empty():
+    rng = np.random.default_rng(13)
+    s = rng.normal(0.0, 1.0, size=50_000)
+    labels = (rng.random(s.size) < 1.0 / (1.0 + np.exp(-(1.5 * s + 0.5)))).astype(float)
+    a, b = R.fit_platt_scaling(s, labels, objective="nll")
+    assert a > 0.0
+    p = R.apply_platt_scaling(s, a, b).numpy()
+    raw_nll = -np.mean(labels * np.log(1 / (1 + np.exp(-s)) + 1e-12)
+                       + (1 - labels) * np.log(1 - 1 / (1 + np.exp(-s)) + 1e-12))
+    fitted_nll = -np.mean(labels * np.log(p) + (1 - labels) * np.log1p(-p))
+    assert fitted_nll < raw_nll
+
+    with pytest.raises(ValueError):
+        R.fit_platt_scaling(np.zeros(0), np.zeros(0))
+    with pytest.raises(ValueError):
+        R.fit_platt_scaling(s, labels, objective="brier")
 
 
 if __name__ == "__main__":
