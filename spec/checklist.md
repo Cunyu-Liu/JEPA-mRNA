@@ -19,10 +19,10 @@
 | **F 架构实现** | ✅ 全部可验证 | **317 项测试通过**（集群 torch 2.5.1）；数学核心达机器精度；决策头显存已修复（L=498/B=4 → 2366 MiB） |
 | **G 蒸馏与 RLCD** | ⚠️ 目标已实现并测试，但**实测发现 λ=1 下三项辅助项只占目标 2–3%** | 见 §14.12：`--nll-normalization length` 已实施，四项变为同量级；2×2 对照臂已启动，H6 尚无可结论 |
 | **H 下游任务** | 🔄 有训练权重可跑 | RiNALMo head-only 臂已产出 checkpoint（step 3500 已评测，step 2000/4000/6000/10000 快照已落盘且**步数已从文件内读出核验**） |
-| **I 测评与消融** | 🔄 进行中 | **TS0 headline（`w=-1`，不依赖 VL0 选择）= micro F1 0.4953 / macro 0.4858**，C1-c 重标定 gap **0.0002 PASS**；低于 ViennaRNA centroid **0.5393** 与 MXfold2 **0.5651**。bpRNA-new = **0.3094**（跨家族）。**ArchiveII 全部数字已撤回**——实测 35.6% 的行与 TR0 重复（§14.25），去冗余版（2,544 行）重测排队中。**分层后方向不同**：TS0 CRW≤100 我们 **0.9664** vs centroid 0.6729 |
-| **J 量化门限** | 🔄 部分核验 | G1/G2（非法率、发夹环违规率）在**每个评测点均为 0**；C1-c 分两口径（裸头 `w=-1` **0.1348** 未过 / 仿射重标定 **0.0002** PASS）；G5 仍**故意 FAIL**；速度门 S1–S9 **未核验**（带状解码路径未接评测） |
-| **K 假设结论** | 🔄 有中间结论 | C1-c 趋势、解码口径负结果、先验权重效应区间（+0.010~+0.048）、**headline 不依赖 VL0（差 0.0006）**、**跨家族退到自身先验水平**已记录；H6（2×2）**尚无结论**；**全部为中间结论** |
-| **L 论文与投稿** | 🟡 部分 | 脚手架与 linter 已完成；稿件未撰写 |
+| **I 测评与消融** | 🔄 进行中（**2026-09-24 晚刷新**） | **TS0 headline 已到 0.5958**（`ff`@20000、`w=-1`、`ref_bprna_ts0` 1,291 条；超 centroid 0.5393，距 UFold 0.6598 差 0.064，**距 RNAformer 0.7578 差 0.162——主对标**）。收敛曲线同口径 0.5369@6k→0.5587@10k→0.5958@20k（未收敛）。C1-c 同集重标定 gap 0.0028 PASS + Brier/NLL 同改善；**C1-a FAIL（RNAformer ECE 0.0015）**。bprna_new **0.3536** vs UFold 0.6106 / centroid 0.6770（最大短板）。架构臂 step2000：casc 0.4610 / cascR 0.4654 / big 0.4850。ArchiveII 去冗余版（2,544 行）基线已落 |
+| **J 量化门限** | 🔄 部分核验（**2026-09-24 晚刷新**） | G1/G2 在每个评测点均为 0；C1-c 分两口径（裸头 0.1955/0.1957 **未过** / 同集重标定 **0.0028 PASS**）；**C1-a 已判 FAIL**（RNAformer 反例）；G5 仍**故意 FAIL**；速度门 S1–S9 未核验（带状解码路径未接评测） |
+| **K 假设结论** | 🔄 有中间结论（**刷新**） | C1-c 同集 PASS（双口径须并列）、解码口径负结果（送势>送概率）、先验权重效应区间、headline 不依赖 VL0、**欠训练是主因（收敛曲线未收敛）**、**C1 新颖性主张被否证→重组为"系统评测+自洽性"**、跨家族退到自身先验水平已记录；H6（2×2）四格已出两格；**全部为中间结论** |
+| **L 论文与投稿** | 🟡 部分 | 脚手架与 linter 已完成；稿件未撰写（T-A17：本周内按重组后结构启动初稿） |
 
 **测试基线**：`python -m pytest tests/ -q` → **317 passed, 0 failed**（集群 torch 2.5.1；本地 torch 2.8.0 下 `test_head_chunking.py` 有 4 项 `torch.equal` 因分块累加顺序失败，非逻辑缺陷）
 
@@ -31,6 +31,8 @@
 **2026-09-24 14:20 状态更新（集群实测）**：A100 集群已接入（`ssh A100`，8×A100-40GB，含 GPU6 的 7×1g.5gb 与 GPU7 的 2×3g.20gb MIG 切片）。结构标注数据已落盘。**ViennaRNA 2.7.2 已装并锁定**；**MXfold2 已装并跑完 TS0（0.5651）**；**RiNALMo-giga 冻结嵌入已接入**，head-only 臂是当前最好的路线（TS0 micro F1 0.4957 @2000）。
 **已作废一条旧表述**：早先"BPfold 权重是唯一可复现的 SOTA 基线"——BPfold 属 mRNA 线遗留资产，结构线实际可用的学习型基线是 **MXfold2**。
 **已作废一条旧表述**：早先"尚无任何训练运行"——截至 14:20 有 **14 个臂**在跑（10 个原臂 + 4 个目标函数对照臂）。
+
+**2026-09-24 21:40 交接更新（第四轮自检后）**：**19 个臂在跑**；headline @20000 已到 **0.5958**；**C1-a 判 FAIL → C1 重组为"系统评测+自洽性"**（spec §0.10，新增第 7 条写作红线）；**主对标换为 RNAformer（0.7578）**；TR1（4.29× 数据）与种子 s1–s5 在跑；`/home` 配额问题实测已解除（74G，写入正常）。**每周 cadence**：训练记录一律写 `records/DECISION_TRAINING_LOG.md`（当前至 §14.42），代码确认后即 commit+push（git@github.com:Cunyu-Liu/JEPA-mRNA.git）。
 
 ---
 
@@ -165,23 +167,24 @@
 
 ## D. 基线复现（Gate D）
 
-- [ ] RNAfold 复现
+- [x] RNAfold 复现（**ViennaRNA 2.7.2，版本锁定**；`mfe/centroid/mea` 已在 TS0 + 7 个新 split 跑完，`records/BASELINE_RESULTS.md`）
 - [ ] RNAstructure 复现
 - [ ] **CONTRAfold 复现并作为头号对比对象**（§7.2.1）：评测 F1 / **ECE / 边际校准** / 延迟 / 是否需 DP
 - [x] ~~**CDPFold 复现并对比**~~ → **勘误（2026-09-24）**：CDPFold 是 **CNN + DP**（Front Genet 10:467, 2019），**非免 DP**，不构成 C1 先例威胁。降级为普通基线；其权重公开性未核实，若不可得则引用原文数字并标注口径
-- [ ] **SPOT-RNA / SPOT-RNA2 / UFold 概率的校准评测**（**新的 C1 头号对照**）：对其 sigmoid 输出做 ECE / 可靠性图 / Brier / NLL，与我们的 System-1 头同口径对比
-- [ ] **BPfold 基线复现**（权重已下载到集群，**我们可实际复现的最强 SOTA**）
+- [x] **SPOT-RNA / UFold 概率的校准评测**：**UFold 已完成（2026-09-24 晚）**——权重本地加载 strict 通过（156 键），`ref_bprna_ts0` micro F1 **0.6598**，ECE **0.0147**（4.1× 过自信），概率矩阵落 `eval_decision/ufold_probs_*.npz`；其自带 `seq2dot` 逐位 argmax 有 34/1291 括号不平衡缺陷（已改互为最优解码，0.6584→0.6598）。**SPOT-RNA 仍未核实**。~~C1 头号对照~~ → C1-a 已判 FAIL（RNAformer 反例），本项降级为校准评测表的一个来源
+- [ ] **BPfold 基线复现**（权重已下载到集群）
 - [ ] **LinearPartition 复现并单独对比**（"快概率"另一路线）：评测 F1 / ECE / 延迟 / 跨家族泛化
-- [ ] **「Nussinov + Turner 堆叠能」基线已建立**（`MLP_T` 置零的对照物，**非 ViennaRNA**）
+- [x] **「Nussinov + Turner 堆叠能」基线已建立**（`turner_prior` 已进校准表：ECE 0.0054 / Brier 0.0064 / NLL 0.0323，`ref_bprna_ts0`）
 - [ ] LinearFold 复现
-- [ ] UFold 复现
+- [x] UFold 复现（**2026-09-24 晚**：`ref_bprna_ts0` 0.6598 / `ref_pdb_ts1` 0.6455 / `bprna_new` 0.6106；适配器 `eval/ss/run_ufold.py`，记录 `records/UFOLD_BASELINE_ADAPTER.md`）
 - [ ] SPOT-RNA 或 SPOT-RNA2 复现
-- [ ] MXfold2 复现
+- [x] MXfold2 复现（TS0 0.5651；archiveii_clean 21:23 已跑，JSON 落 `eval_decision/`）
 - [ ] E2Efold 复现
 - [ ] RNA-FM 复现
 - [ ] RiNALMo（650M）复现
 - [ ] mRNABERT 复现
 - [ ] RNA-MSM 复现
+- [x] **RNAformer 复现（主对标，2026-09-24 晚完成）**：3 checkpoint strict 加载（bprna/biophysical/inter_family+LoRA+cycling=6）；`ref_bprna_ts0` **0.7578**（发布口径 0.7154，夹住已发表 0.728）；概率 ECE **0.0015**；`records/RNAFORMER_BASELINE_RUN.md` + 概率矩阵 `.npz` 落盘
 - [ ] 至少 1 个自回归/生成式结构模型复现
 - [ ] 每个基线记录仓库 commit、权重哈希、评测脚本版本，缺失数 = 0
 - [ ] **基线完成后 §8 全部门限已复核并冻结**
@@ -312,15 +315,15 @@
 
 ## I. 测评与消融（Gate I）
 
-- [ ] 配对层面指标（Precision/Recall/F1/MCC）已报告
-- [ ] 结构层面指标（INF）已报告
-- [ ] 校准指标（ECE、可靠性图、NLL/Brier、**边际校准**）已报告
-- [ ] 合法性指标（非法结构率、最小发夹环违规率）已报告
+- [x] 配对层面指标（Precision/Recall/F1/MCC）已报告（每个 `result.json` 均含 micro/macro P/R/F1/INF；headline 0.5958 含全指标）
+- [x] 结构层面指标（INF）已报告（headline macro INF 0.6012；各评测点均有）
+- [x] 校准指标（ECE、可靠性图、NLL/Brier、**边际校准**）已报告（**6 来源同集表已落**：`c1a_rnaformer_ref_bprna_ts0.json` 等；ECE/Brier/NLL/mean_predicted/mean_observed/marginal_calibration_error 全报）
+- [x] 合法性指标（非法结构率、最小发夹环违规率）已报告（**每个评测点均为 0**，含 ff20000/arch 三臂/三 split）
 - [ ] 速度指标（分长度桶延迟、吞吐、峰值显存、GPU 小时/千条）已报告
 - [ ] **相对 McCaskill 配分函数的加速比已报告**
-- [ ] **跨家族泛化指标（bpRNA-new F1）独立报告，与同源评测分列**
+- [x] **跨家族泛化指标（bpRNA-new F1）独立报告，与同源评测分列**（我们 0.3536 / UFold 0.6106 / centroid 0.6770；Rfam12.3–14.10 同报）
 - [ ] 回退行为指标（低置信回退比例、回退对 F1 的边际贡献）已报告
-- [ ] 每配置 ≥5 seed，报告均值 ± std
+- [ ] 每配置 ≥5 seed，报告均值 ± std（**ff s1–s5 在跑，ETA 09-25**，T-A14）
 - [ ] 配对显著性检验（Wilcoxon / bootstrap CI）已执行
 - [ ] 多重比较校正（Holm-Bonferroni / FDR）已执行
 - [ ] 消融：**去掉非交叉约束**（改独立 sigmoid + 阈值，即 UFold 式后处理）
