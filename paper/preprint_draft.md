@@ -248,6 +248,23 @@ composition: VL0's short bucket is 65% `CRW`, TS0's is 12%. A homology explanati
 tested and rejected — the two splits have almost identical 20-mer containment to
 training (0.0423 vs 0.0403) and VL0's F1 is flat across containment bins.
 
+**Fourth, the source effect is a property of the benchmark, not of our backbone.** A
+natural objection to the `CRW` result is that a frozen language-model representation
+might simply be good at rRNA because rRNA is abundant in pretraining. We can test this
+without training anything new, because the repository also holds a from-scratch arm
+with a randomly initialised encoder and the same head and data. Both arms show the same
+pattern, on the same sequences:
+
+| Arm | Encoder | `CRW` <=100 nt (n=68) | `RFAM` <=100 nt (n=486) | `CRW` − `RFAM` |
+|---|---|---|---|---|
+| from scratch | randomly initialised | 0.8735 | 0.4105 | **+0.463** |
+| frozen backbone | RiNALMo-giga | 0.9664 | 0.5490 | **+0.417** |
+
+The random-encoder arm shows a *larger* `CRW` advantage than the frozen one, so the
+stratification is a property of the data rather than of the representation. The frozen
+backbone adds +0.093 on `CRW` and +0.139 on `RFAM` — it helps both strata, and its value
+is a separate question from the `CRW`/`RFAM` split.
+
 `CRW` and `RFAM` are **source-database labels, not verified family labels**; sequence
 names are unique within each split, so no family field is recoverable from them. This
 stratification is a reproducible proxy that correlates with molecule type and
