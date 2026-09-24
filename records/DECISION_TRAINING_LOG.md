@@ -324,6 +324,37 @@ L=498、B=2 时约 3.0 GB + 2.0 GB，**在 2.2 GiB 的 MIG 切片上直接 OOM**
 
 ---
 
+
+## 运行 11：物理基线实测（`eval/ss/run_baselines.py`，新增）
+
+> 完整表与解读见 **`records/BASELINE_RESULTS.md`**。指标与 `evaluate_decision.py` 共用同一实现，可直接比较。
+
+| split | 基线 | micro F1 | macro F1 | INF |
+|---|---|---|---|---|
+| bprna_ts0 | `vienna_mfe` | 0.5055 | 0.5086 | 0.5222 |
+| bprna_ts0 | **`vienna_centroid`** | **0.5393** | 0.5288 | 0.5405 |
+| bprna_ts0 | `vienna_mea` | 0.5241 | 0.5218 | 0.5346 |
+| bprna_ts0 | `nussinov_turner`（我们 MLP_T=0） | 0.2124 | 0.2303 | 0.2362 |
+| archiveii | `vienna_mfe` | 0.5764 | 0.6219 | 0.6264 |
+| bprna_new（OOD） | `vienna_mfe` | 0.6379 | 0.6581 | 0.6638 |
+| bprna_new（OOD） | **`vienna_centroid`** | **0.6770** | 0.6821 | 0.6871 |
+
+**三条直接改变论文的结论**：
+
+1. **centroid > MEA > MFE 在三个 split 上一致**，而 centroid/MEA 都建立在配分函数之上。
+   → **C1 的正确标尺是「逼近 centroid 的 F1（TS0 0.5393）而一次配分函数都不算」**，比"快 50×"有力且可实测。
+2. **`nussinov_turner`（0.2124）≈ 未训练头（0.2167）**，差 0.004。
+   这**验证了"MLP_T=0 时起点精确等于 Nussinov+Turner"这一实现声明**，并证明 0.56 epoch 的头
+   **确实还没学到东西**，而不是架构不行。
+3. **ViennaRNA 在 OOD 上更好**（bpRNA-new 0.638 > TS0 0.506）。领域常引的"学习方法在 bpRNA-new 上全崩"
+   **是学习方法的问题，不是数据问题**；这为我们的物理先验设计提供了直接实证支持。
+   （E2Efold F≈0.0361 这个数字**引用前必须回原文核对**，本次未独立复现。）
+
+**仍未取得**：UFold / SPOT-RNA（C1-a 头号对照，需下载权重）、BPfold（权重在集群但包未装）、
+MXfold2 / CONTRAfold / LinearPartition、E2Efold。
+
+---
+
 ## 待办（按 Gate）
 
 | Gate | 内容 | 状态 |
