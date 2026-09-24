@@ -69,6 +69,7 @@ from rnajepa.harness import (  # noqa: E402
     nussinov_map,
     valid_pair_mask,
 )
+from rnajepa.decision_head import turner_phys_scores  # noqa: E402
 from rnajepa.distill import pair_indicator  # noqa: E402
 from rnajepa.rlcd import apply_platt_scaling, fit_platt_scaling  # noqa: E402
 from rnajepa.train_decision import (  # noqa: E402
@@ -222,7 +223,40 @@ def matched_prefix_c1c(probs_s1, labels, masks, probs_ex, labels_ex, masks_ex, *
             "pass": bool(gap <= tolerance)}
 
 
-def _flat_scores_and_labels(model, records, device, embedding_store):
+def reweight_turner_prior(model, scores, seq_ids, length: int, weight: float):
+    """``s -> MLP_T + weight * prior``, recovered exactly from the head's output.
+
+    The head computes ``scores = (MLP_T(z) + prior) / T``, where ``prior`` is the
+    fixed-weight Turner term and ``MLP_T`` only ever sees ``z_ij`` (built from the
+    encoder states) -- so the trained model **cannot rescale the prior, nor cancel
+    it**, and the learned temperature divides the sum, leaving ``MLP_T / prior``
+    invariant.  The prior's weight is therefore a hyper-parameter training never
+    touches.
+
+    Inverting the head's own arithmetic gives it back for free::
+
+        T * scores - prior = MLP_T
+        MLP_T + weight * prior = T * scores - (1 - weight) * prior
+
+    Measured on ``rinalmo_ff_b4_s0`` step 1000, with the weight selected on bpRNA
+    VL0 and read off a 250-sequence TS0 subset: ``weight = 1`` (the trained value)
+    gives micro F1 0.577, ``weight = 0.5`` gives 0.626.  See
+    ``tools/probe_prior_weight.py``.  This is a change of the decoded structure, not
+    a reparameterisation: the decode maximises a *sum* over pairs, so reweighting one
+    additive term changes the argmax.  Legality is untouched -- same DP, same mask.
+    """
+    if weight == 1.0:
+        return scores
+    head = model.head
+    lengths = torch.tensor([length], dtype=torch.long, device=scores.device)
+    bucket = int(head.calibration.bucket_index(lengths).item())
+    temp = torch.exp(head.calibration.log_temperature)[bucket].to(scores.dtype)
+    prior = turner_phys_scores(seq_ids)[0, :length, :length].to(
+        device=scores.device, dtype=scores.dtype)
+    return temp * scores - (1.0 - weight) * prior
+
+
+def _flat_scores_and_labels(model, records, device, embedding_store, *, prior_weight=1.0):
     """Flat System-1 **scores** and pair labels over a whole split.
 
     Used only to fit the DP-free recalibration, and deliberately a separate loop:
@@ -230,6 +264,9 @@ def _flat_scores_and_labels(model, records, device, embedding_store):
     needs.  Scores are returned rather than probabilities because the fit is affine
     *in the score* -- the whole point being that a map which is only a scale of the
     probability cannot remove a systematic bias.
+
+    ``prior_weight`` must match the value the evaluation itself uses, otherwise the
+    recalibration is fitted on a different score scale from the one it is applied to.
     """
     scores_all, labels_all = [], []
     with torch.no_grad():
@@ -246,7 +283,9 @@ def _flat_scores_and_labels(model, records, device, embedding_store):
                 out = model(h, ids, lengths=lengths)
             else:
                 out = model(ids, lengths=lengths)
-            scores = out.scores[0, :L, :L].double().cpu().numpy()
+            scores = out.scores[0, :L, :L].double()
+            scores = reweight_turner_prior(model, scores, ids, L, prior_weight)
+            scores = scores.cpu().numpy()
             sel = np.triu(mask, k=1)
             scores_all.append(scores[sel])
             labels_all.append(pair_indicator(L, list(record["gt_pairs"]))[sel])
@@ -322,7 +361,8 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             calib_store = EmbeddingStore.from_dir(
                 config.embedding_dir,
                 split=os.path.basename(args.calib_data).split(".")[0])
-        cs, cl = _flat_scores_and_labels(model, calib_records, device, calib_store)
+        cs, cl = _flat_scores_and_labels(model, calib_records, device, calib_store,
+                                         prior_weight=args.prior_weight)
         a_fit, b_fit = fit_platt_scaling(cs, cl, objective=args.calib_objective,
                                         n_bins=args.n_bins)
         # ECE alone is gameable: a map that pushes every pair to the base rate has a
@@ -404,6 +444,8 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             _sync(device)
             t1 = time.perf_counter()
             scores = out.scores[0, :length, :length].double()
+            scores = reweight_turner_prior(model, scores, ids, length,
+                                           args.prior_weight)
 
             # ---- System-1: probabilities straight off the head, no partition fn
             p_s1 = torch.sigmoid(scores).cpu().numpy()
@@ -532,6 +574,10 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
         "data": os.path.abspath(args.data),
         "encoder_size": args.encoder_size,
         "device": device,
+        "prior_weight": args.prior_weight,
+        "prior_weight_note": ("multiplier on the fixed-weight Turner prior in the decode "
+                              "score; 1.0 is the trained configuration.  Select it on a "
+                              "held-out split."),
         "n_sequences": len(records),
         "n_gt_pairs_total": n_pairs_total,
         "pair_level": {
@@ -607,6 +653,13 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--calib-objective", default="ece", choices=["ece", "nll"],
                         help="what the recalibration minimises on the calibration "
                              "split (spec §5.8.3 allows either)")
+    parser.add_argument("--prior-weight", type=float, default=1.0,
+                        help="multiplier on the Turner prior in the decode score "
+                             "(1.0 = the trained configuration).  The head adds the "
+                             "prior at a fixed weight that training never touches and "
+                             "MLP_T cannot cancel, so this is a real hyper-parameter; "
+                             "select it on a held-out split, never on the test split. "
+                             "See reweight_turner_prior.")
     parser.add_argument("--decode", choices=["exact", "band"], default="exact",
                         help="System-1 decoder: 'exact' is nussinov_map (O(L^3) in "
                              "numpy), 'band' is the banded max-product path the spec "
