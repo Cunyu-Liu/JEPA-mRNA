@@ -76,8 +76,9 @@ rank poorly and still report honest probabilities, and on this benchmark it does
 
 We conclude that DP-free calibration is achievable, that it dissociates from ranking
 quality — a dissociation we quantify rather than paper over — and that the two scaling
-axes we measure (head capacity, training data) buy different things: capacity buys
-pooled accuracy (+0.047), data buys cross-family generalisation (+0.163).
+axes we measure buy complementary things: head capacity raises both splits (+0.047
+pooled, +0.111 cross-family), training data is the stronger cross-family lever
+(+0.163) at a small pooled cost (−0.012).
 
 ## 1. Introduction
 
@@ -267,16 +268,16 @@ baselines, and the capacity sweep moves us further up:
 |---|---|---|---|---|---|---|---|---|---|
 | TS0 | **0.5958** | **0.6425** | 0.5840 | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
 | ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
-| bpRNA-new (5,388) | 0.3536 | queued | **0.5162** | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+| bpRNA-new (5,388) | 0.3536 | **0.4641** | **0.5162** | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
 
-The TR1 column is the data-scaling experiment: same recipe, same 20,000 steps, training
-corpus expanded 4.29x (10,682 -> 45,865 sequences after de-duplication). Its reading
-is the mirror image of the capacity experiment — **in-distribution it costs −0.012
-(0.5958 -> 0.5840, within twice the seed spread), while cross-family it gains +0.163
-(0.3536 -> 0.5162, sixty times the seed spread)**. Data scaling buys generalisation,
-not pooled accuracy; head capacity buys pooled accuracy and (pending the queued
-cross-family run) may or may not buy generalisation. The two axes are separable, and
-the combination arm (4.8x capacity x 4.29x data) is training.
+The TR1 column is the data-scaling experiment and the 0.4641 cell is the
+capacity-on-cross-family measurement: same recipe, same 20,000 steps, one axis varied
+at a time. **Both scaling axes buy cross-family accuracy** — capacity +0.111
+(0.3536 -> 0.4641), data +0.163 (0.3536 -> 0.5162) — while their in-distribution
+effects differ: capacity gains +0.047 pooled, data costs −0.012 pooled. Data is the
+stronger out-of-distribution lever and the only one that hurts in-distribution; the
+two axes are roughly orthogonal, and the combination arm (4.8x capacity x 4.29x data)
+is training to test whether they add up.
 
 Three readings of this table, stated exactly:
 
