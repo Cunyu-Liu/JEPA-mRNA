@@ -100,8 +100,8 @@ ck("v3.6: big 4-seed mean 0.6324", f"{st.mean(big4):.4f}" == "0.6324", f"{st.mea
 ck("v3.6: bigtr1 2-seed ts0 mean 0.6364", f"{st.mean([V['bigtr1_ts0'], V['bigtr1_s1_ts0']]):.4f}" == "0.6364" and "0.6364" in text)
 ck("v3.6: bigtr1 2-seed new mean 0.4323", f"{st.mean([V['bigtr1_new'], V['bigtr1_s1_new']]):.4f}" == "0.4323" and "0.4323" in text)
 ck("v3.6: ff_tr1 2-seed new mean 0.5058", f"{st.mean([V['tr1_20k_new'], V['tr1_s1_20k_new']]):.4f}" == "0.5058" and "0.5058" in text)
-ck("v3.6: combo s1 vs tr1 s1 -0.125 stated", "-0.125" in text or "−0.125" in text)
-ck("v3.6: combo s1 new vs ff -0.119 stated", "-0.119" in text or "−0.119" in text)
+ck("v3.6: combo s1 vs tr1 s1 -0.087 stated", "-0.087" in text or "−0.087" in text or "−0.09" in text)
+ck("v3.6: combo s1 new vs ff -0.078 stated", "-0.078" in text or "−0.078" in text)
 ck("v3.6: drift canon s7 0.5974", f"{V['ff_s7']:.4f}" == "0.5974", f"{V['ff_s7']:.5f}")
 ck("v3.6: drift canon big_s2 0.6337", f"{V['big_s2']:.4f}" == "0.6337", f"{V['big_s2']:.5f}")
 

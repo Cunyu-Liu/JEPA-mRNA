@@ -1,11 +1,18 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.6, 2026-09-25.**
+**Preliminary preprint draft — v3.7, 2026-09-25.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
+>
+> **v3.7 change note (seed completions + rounding audit).** The capacity,
+> combination, and TR1 arms gained seeds (capacity now 4: 0.6324 ± 0.0098;
+> combination 2: interaction direction unanimous; TR1 2). The sum-normalised
+> 512-dim replication arm closes the capacity normalisation confound (0.6302).
+> An arithmetic audit also corrected the 8-seed mean to 0.5938 and one capacity
+> seed value (0.6337, not 0.6343) — both errors were ours and both are flagged.
 >
 > **v3.6 change note (TestSetB + INF columns).** The RiNALMo supplementary tables
 > S2–S5 are now aligned table-by-table: S4's INF convention is added to §4.3d, and
@@ -28,7 +35,7 @@
 > step-20000 checkpoint. All cross-family comparisons in this version use the matched
 > number (0.4870), which reverses the sign of the capacity effect out of distribution
 > and rescales the data effect; the 8-seed mean was also recomputed exactly
-> (0.5937, not 0.5950). Significance is now reported as paired per-sequence Wilcoxon
+> (0.5938, not 0.5950). Significance is now reported as paired per-sequence Wilcoxon
 > tests with Holm correction (§4.3c, `tables/stats_definitive.json`).
 >
 > The draft is nevertheless **preliminary** in three specific,
@@ -66,7 +73,7 @@ so DP-free calibration is not unique to us; UFold is 4.1x over-confident (ECE 0.
 our exact marginals are the most calibrated source measured (ECE 0.0004).
 
 Structure accuracy is **not** a uniform loss, and the aggregate number is misleading in
-both directions. Pooled over TS0 our micro F1 is **0.5937** across 8 seeds
+both directions. Pooled over TS0 our micro F1 is **0.5938** across 8 seeds
 (128-dim head; ViennaRNA centroid **0.5393**, MXfold2 **0.5651**, UFold **0.6598**,
 RNAformer **0.7578** on the same split), and **0.6425** when the decision head is given
 4.8x capacity — a paired gain of +0.039 that holds in all three capacity seeds but is
@@ -206,14 +213,15 @@ TR0 (10,682 sequences) to TR1 (45,865 sequences, 4.29x after de-duplication) wit
 everything else fixed — the data and combination axes train with the same NLL
 normalisation as the base family. The capacity arm, however, was launched with
 length-normalised NLL where the base family uses unnormalised (sum) NLL, so the
-capacity comparison carries a second changed variable; a controlled pair at 128 dims
-(len 0.5870 vs sum 0.5893, both at 20k) bounds that confound at 0.002 — inside the
-seed spread and in the direction that would *understate* the capacity gain — so it
-cannot account for the +0.039 effect, and we disclose it rather than hide it. Both
-axes are reported at 20,000 steps, `w=-1` decode, on the same splits. The seed spread
-of the base configuration across 8 seeds is **mean 0.5937, std 0.0033** (range
-0.5893–0.5990); the capacity arm across 3 seeds is
-**0.6425 / 0.6189 / 0.6343** (mean 0.6319, std 0.0098) — its paired capacity gain is
+capacity comparison carries a second changed variable; two controls close it: a
+matched pair at 128 dims (len 0.5870 vs sum 0.5893, both at 20k) bounds the
+normalisation effect at 0.002 — inside the seed spread — and a **sum-normalised
+512-dim replication arm** reaches 0.6302, reproducing the capacity gain (+0.036 over
+the 8-seed base mean) with the confounding variable removed. Both axes are reported
+at 20,000 steps, `w=-1` decode, on the same splits. The seed spread
+of the base configuration across 8 seeds is **mean 0.5938, std 0.0034** (range
+0.5893–0.5990); the capacity arm across 4 seeds is
+**0.6425 / 0.6189 / 0.6337 / 0.6345** (mean 0.6324, std 0.0098) — its paired capacity gain is
 **+0.0394 ± 0.0088**, about 12x the base spread, and its own seed spread is visibly
 larger than the base configuration's, consistent with capacity amplifying
 initialisation effects. The cross-family data gain (+0.029) is ~9x the base spread.
@@ -333,7 +341,7 @@ baselines, and the capacity sweep moves us further up:
 
 | Split | Ours (micro F1, 128-dim head, TR0) | Ours (4.8x-capacity head, TR0) | Ours (TR1: 4.29x data) | Ours (TR1, 2x steps) | Ours (capacity x data) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| TS0 | **0.5937** (8 seeds) | **0.6425** | 0.5840 | **0.6147** | **0.6446** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
+| TS0 | **0.5938** (8 seeds) | **0.6425** | 0.5840 | **0.6147** | **0.6446** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
 | ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
 | bpRNA-new (5,388) | 0.4870 | 0.4641 | **0.5162** | 0.4999 | 0.4558 | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
 
@@ -343,22 +351,25 @@ capacity-on-cross-family measurement, and the last "Ours" column is the combinat
 column. **The two scaling axes point in opposite directions out of distribution**:
 against the matched TR0 baseline (0.4870) on bpRNA-new, capacity *costs* 0.023
 (0.4870 -> 0.4641, per-sequence p = 7e-83) while data gains +0.029 (0.4870 -> 0.5162,
-per-sequence p = 4e-62); in-distribution the effects differ again: capacity gains
-+0.039 paired (3 seeds), data costs −0.012 at 20k. Doubling the training steps
-splits the picture once more: pooled gains +0.031 (0.5840 -> 0.6147, 9x the seed
-spread) while cross-family **loses** 0.016 (0.5162 -> 0.4999, 5x the spread).
+per-sequence p = 4e-62; 0.4954 in the TR1 second seed, 2-seed mean 0.5058);
+in-distribution the effects differ again: capacity gains +0.039 paired (4 seeds),
+data costs −0.012 at 20k (TR1 2-seed TS0: 0.5840 / 0.5842). Doubling the training
+steps splits the picture once more: pooled gains +0.031 (0.5840 -> 0.6147, 9x the
+seed spread) while cross-family **loses** 0.016 (0.5162 -> 0.4999, 5x the spread).
 Training beyond roughly two epochs on the larger corpus improves in-distribution
 accuracy and gives back part of the cross-family gain — the out-of-distribution
 optimum arrives earlier than the in-distribution one, which bounds how far this
 recipe can be pushed by optimisation alone.
 
-**The two axes combine additively in-distribution and interfere cross-family.**
-The combination arm reaches **0.6446** on TS0 — the best number in this draft,
-0.015 below UFold and consistent with the axes' pooled effects composing. On
-bpRNA-new it scores **0.4558**, below *every* single-axis number (ff 0.4870, big
-0.4641, TR1 0.5162): the interaction is negative against the matched baseline
-(−0.031, per-sequence p = 4e-147) and −0.06 against either single axis, with a
-sharply conservative precision/recall profile out of distribution (0.701/0.338).
+**The two axes combine additively in-distribution and interfere cross-family —
+now replicated in a second seed.** The combination arm reaches **0.6446** on TS0
+(0.6282 in its second seed; mean 0.6364 over two) — the best mean number in this
+draft, consistent with the axes' pooled effects composing. On bpRNA-new it scores
+**0.4558** and **0.4088** in the two seeds (mean 0.4323), below *every* single-axis
+number (ff 0.4870, big 0.4641, TR1 0.5162/0.4954 mean 0.5058): the interaction is
+negative against the matched baseline (−0.031 and −0.078 per seed, per-sequence
+p = 4e-147 for s0) and −0.06 to −0.09 against either single axis, with a sharply
+conservative precision/recall profile out of distribution (0.701/0.338).
 More capacity on more diverse data does not buy more generalisation here; it buys a
 harder-trained decision boundary that generalises worse outside the training
 families. We report this as the scaling result of the draft: the three knobs
@@ -368,9 +379,9 @@ optimising them jointly is not the same as optimising them separately.
 Three readings of this table, stated exactly:
 
 1. **The capacity gain is robust at the pooled level and concentrated at the
-   per-sequence level.** The base configuration spans 8 seeds (mean 0.5937, std
-   0.0033); the 4.8x-capacity head spans 3 seeds so far (0.6425 / 0.6189 / 0.6343,
-   mean 0.6319, std 0.0098) — a paired gain of +0.039, ~12x the base spread, with the
+   per-sequence level.** The base configuration spans 8 seeds (mean 0.5938, std
+   0.0034); the 4.8x-capacity head spans 4 seeds (0.6425 / 0.6189 / 0.6337 / 0.6345,
+   mean 0.6324, std 0.0098) — a paired gain of +0.039, ~12x the base spread, with the
    larger capacity arm also showing the larger seed spread. But the paired
    per-sequence mean gain is only +0.016 in s0, **−0.021 in s1 (p = 7e-9)** and
    −0.005 in s2 (n.s.): the pooled micro gain lives on pair-dense sequences, and
@@ -767,25 +778,27 @@ the hypothesis as a hypothesis.
    comparison against ViennaRNA's wall clock because our implementation of the DP
    decode is unoptimised numpy and any ratio would measure our engineering, not
    the method.
-7. **Seed coverage: the headline family is complete at 8 seeds** (mean 0.5937,
-   std 0.0033, range 0.0097); the capacity arm has 3 seeds (paired gain +0.039, but
-   per-sequence divergence in one seed, §4.3c); the cascade and combination arms are
-   single-seed, with second seeds for the combination and TR1 arms training now.
+7. **Seed coverage: the headline family is complete at 8 seeds** (mean 0.5938,
+   std 0.0034, range 0.0097); the capacity arm has 4 seeds (paired gain +0.039, but
+   per-sequence divergence in one seed, §4.3c) plus a sum-normalised replication
+   (§5 item 9); the combination and TR1 arms have 2 seeds each (interaction
+   direction unanimous); the cascade and auxiliary-objective arms are single-seed.
    The learnable-prior-weight (2 seeds) and auxiliary-objective (1 seed) effects
    remain unreplicated and are flagged as such.
 8. **Pooled micro F1 alone can mislead — inside our own draft.** The v3.4 protocol
    audit corrected a cross-family baseline that had been taken from an under-trained
    snapshot, reversing one sign and rescaling two effects; §4.3c documents that the
-   capacity effect is positive pooled but negative per-sequence in one of three
+   capacity effect is positive pooled but negative per-sequence in one of four
    seeds. We report the audit trail openly because aggregation and protocol
    mismatches are failure modes any evaluation of this kind inherits, not because
    we believe we are uniquely error-prone.
-9. **The capacity comparison carries a normalisation confound.** The capacity arm
-   trains with length-normalised NLL while the base family uses unnormalised NLL
-   (§3). A matched control bounds the confound at 0.002 — inside the seed spread and
-   in the conservative direction — so it does not threaten the +0.039 capacity gain,
-   but strictly the capacity axis is a two-variable comparison and a single-variable
-   replication (sum-normalised 512-dim head) is not yet run.
+9. **The capacity comparison's normalisation confound is now closed by a
+   single-variable replication.** The capacity arm trains with length-normalised
+   NLL while the base family uses unnormalised NLL (§3). A matched control at
+   128 dims bounds the confound at 0.002, and a **sum-normalised 512-dim head**
+   trained after the audit reproduces the capacity effect directly (0.6302 vs
+   0.6425 length-normalised, both ~+0.04 over the 0.5938 base): the gain is
+   capacity, not normalisation, and both rows are reported.
 10. **The RiNALMo paper's ArchiveII leave-one-family-out protocol (its Tables
    S2/S3) is not replicated.** It requires nine separate fine-tuning runs with
    family-held-out splits; our ArchiveII numbers are additionally withdrawn for
@@ -841,7 +854,8 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | TS0 headline (ff s0, step 20000), `w=-1` | `eval_decision/ff20000_ref_bprna_ts0/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_ts0.jsonl --embedding-split bprna_ts0 --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1` |
 | Seeds s1–s5 (headline spread) | `eval_decision/arms_rinalmo_ff_b4_{s1,s2}_step20000_ts0`, `eval_decision/ow_rinalmo_ff_b4_{s4,s5,s3}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
 | Capacity arm (big, 4.8x) | `eval_decision/arms_rinalmo_big_b4_s0_step20000_ts0` | same + `--d-z 512 --hidden 512` at train time |
-| Capacity seeds s1–s2 (paired) | `eval_decision/ow_rinalmo_big_b4_{s1,s2}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
+| Capacity seeds s1–s3 (paired) + sum-norm replication | `eval_decision/ow_rinalmo_big_b4_{s1,s2,s3}_step20000_bprna_ts0`, `eval_decision/ow_rinalmo_bigsum_b4_s0_step20000_bprna_ts0` | same protocol, `--seed` changed only; bigsum adds `--nll-normalization sum` |
+| Combination + TR1 second seeds | `eval_decision/ow_rinalmo_bigtr1_b4_s1_step20000_{bprna_ts0,bprna_new}`, `eval_decision/ow_rinalmo_ff_tr1_b4_s1_step20000_{bprna_ts0,bprna_new}` | same protocol |
 | Paired significance tests + quartile/length-bucket decomposition | `tables/stats_definitive.json`, `tables/stats_significance.md` | `tools/stats_definitive.py`, `tools/stats_significance.py` |
 | Cross-family TR0 baseline (matched protocol) | `eval_decision/ff20000_bprna_new/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_new.jsonl --prior-weight -1` |
 | Capacity on cross-family | `eval_decision/ow_rinalmo_big_b4_s0_step20000_bprna_new` | same, `--data ss_data/jsonl/bprna_new.jsonl` |
@@ -889,7 +903,7 @@ rate and hairpin-violation rate are 0.0000 for every row above.
 
 1. **Second seeds for the combination and TR1 arms are training**, and the capacity
    arm's per-sequence divergence (§4.3c) is measured in one seed only. The headline
-   family has eight seeds; the capacity arm three (pooled direction unanimous,
+   family has eight seeds; the capacity arm four (pooled direction unanimous,
    per-sequence direction not); the learnable-prior-weight arm two (not
    significant); the cascade and auxiliary-objective arms one each.
 2. **The TR1 convergence point is at 20,000 steps for a corpus 4.29x larger** —
