@@ -2876,3 +2876,28 @@ Methods 节声明的判分协议。）
 **未做**（明确披露）：RiNALMo 官方 fine-tuned 结构头权重在 Zenodo
 （集群无外网），我们只有 giga 骨干——所以「RiNALMo fine-tuned」行
 只能引论文值，不能实测复现。这必须在 draft 里写清楚。
+
+## §14.63 例行监控（18:18）：四臂全健康、出数时间线落定；本轮零新结果（2026-09-25 18:18）
+
+pgrep + train_log tail 复核（18:18，日志全部 <4 min 新鲜，四个训练进程全在）：
+
+| 臂 | step@18:15 | 速率 | ETA(20k) | 评测接管 |
+|---|---|---|---|---|
+| bigtr1_b4_s1 | 18175 | 0.50 st/s | ~19:20 | watch3（ts0+new 双 split） |
+| big_b4_s3 | 12675 | 0.83 st/s | ~20:45 | watch4（ts0） |
+| ff_tr1_b4_s1 | 12800 | 0.80 st/s | ~21:00 | watch4（ts0+new 双 split） |
+| bigsum_b4_s0 | 6025 | 0.78 st/s | ~23:10 | watch5（ts0+new 双 split） |
+
+- **无恢复协议触发**。watch3/4/5 均在运行（PID 981471/2277665/2781638），
+  eval_one 目标已核对，串行互斥（wait_quiet）正常。
+- §14.62（18:05）之后无新 ow_* / official1305 产物；本轮零出数，
+  统计与 draft 不动；check_draft_v34 复跑 **24/24 PASS**（v3.5）。
+- GPU 共享卡（0-5）无可派新臂空位：卡 2/4 空余大但已被本任务占用
+  （big_s3+bigsum 在卡 2、ff_tr1_s1 在卡 4、bigtr1_s1 在卡 5），
+  卡 0 空闲 ~15.9GB 但 util 100% 且为他人任务；当前排期无新臂
+  （等四臂出数再决策），无行动。
+- 本地 `~/rna-jepa-sync/` 同步副本首次建立（scp 拉回 paper/spec/records
+  全量；机器上原仅有数据传输目录 rna-jepa-transfer，非同步副本）。
+- **下轮（~20:15）预期**：bigtr1_s1 双 split 应已出数 → 按 §14.59 基线
+  四查写 §14.64+，重点判定 TS0 预期 ~0.64、new 预期 ~0.45（交互为负
+  复现）。
