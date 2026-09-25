@@ -2816,3 +2816,63 @@ bigsum 复现臂（512d + sum + 全目标，GPU2 @1950+）将在 20k 出数后�
 **行动**：draft §3 的 confound 段已按此口径写（len 0.5870 vs sum 0.5893
 即纯 NLL 对）；§5 item 9 保持。无新增臂需求——所有需要的对照都已在跑或
 已有数据。
+## §14.62 与预训练 RNA 大模型的基线补齐：官方 TS0-1305 全集 + Mathews 宽容判分口径（2026-09-25 18:05，关键）
+
+**用户需求**：baseline 缺 RiNALMo 等预训练 RNA 大模型对比；数据集要与他们论文一致。
+
+### 一、split 考古（对齐确认）
+
+- `/mnt/cunyuliu/rna_ss_data/rinalmo/` 下有 RiNALMo 官方数据包（bpRNA.csv 18,821
+  行 + bpRNA_splits.csv：TR0 10,814 / VL0 1,300 / TS0 **1,305** / new 5,401；
+  ArchiveII famfold 9 家族 9-fold splits；PDB-RNA splits）。
+- **我们的 TS0（1,288）= 官方 TS0（1,305）的严格子集**（sequence 级全匹配），
+  差 17 条（CRW×5 / RFAM×5 / tmRNA×6 / SRP×1），8 条含伪结（我们的非交叉
+  管线按 project_to_legal 投影，丢弃 6-26 对/条，已记账面）。TR0/new 同为子集。
+- RNAformer 官方 `test_sets.plk` 的 bprna_ts0 也是同一 1,305 集（Id 是内部编号
+  633123+，用序列内容对齐验证）。
+
+### 二、官方 1305 全集评测（同口径 w=-1、VL0 校准、exact 解码）
+
+从 RNAformer pickle 补 17 条（`tools/build_ts0_1305.py`）→
+`bprna_ts0_1305.jsonl` → RiNALMo-giga 嵌入提取（95.1s，pc_cng env，
+MIG 切片）→ 三个 headline checkpoint 重评：
+
+| 臂 | strict micro | strict macro | **Mathews tolerant macro** |
+|---|---|---|---|
+| ff s0 @20k | 0.5945 | 0.5962 | **0.6368** |
+| big s0 @20k | 0.6421 | 0.6122 | **0.6474** |
+| bigtr1 s0 @20k | 0.6446 | 0.6132 | **0.6449** |
+| RNAformer 32M（实测，1291 project-GT） | 0.7578 | 0.7454 | **0.7779** |
+
+（Mathews 宽容判分：预测对 (i,j) 时 GT 含 (i±1,j) 或 (i,j±1) 也算对——
+`tools/rescore_mathews.py` / `tools/rescore_dbn.py`，正是 RiNALMo 论文
+Methods 节声明的判分协议。）
+
+**与 1,288 子集的一致性**：ff 0.5945 vs 0.5956（−0.001，17 条几乎不移动均值）
+——我们的原评测协议与官方 split 实质等价，补齐只是消除口径疑点。
+
+### 三、与 RiNALMo 论文的对比位置（诚实口径声明）
+
+- RiNALMo 论文（Penić 2025）TS0 上的结构预测是其 Fig 3c：RiNALMo fine-tuned
+  （650M + ResNet 头 + 15 epoch 渐进解冻）为其最优，外部报道其 F1 ≈ 0.59
+  （Mathews 宽容 macro 口径）。**我们的 ff（同骨干、冻结、20k 步小头）
+  在同判分口径下 0.6368 已超过该报道值**——因为我们的头是 CRF 训练而非
+  二分类 BCE + 贪心解码。
+- 但 RiNALMo 论文原值须从其正文/补充材料精确核读后才可入表（图值不可抄），
+  暂以「论文报告值，同协议」列引用并标注非实测。
+- RNA-FM/SPOT-RNA/UFold/MXfold2 在 RiNALMo 论文同一 Fig 3c 有同协议数字，
+  同样按论文报告值引用。UFold 我们有自己的实测（0.6598 strict micro），
+  Mathews 宽容口径待补（dbn 在服务器）。
+
+### 四、下一步（挂起的活）
+
+1. ViennaRNA/MXfold2 dbn 的 Mathews 重打分（离线，几分钟）——补齐宽容口径
+   全列。
+2. RiNALMo 论文 Fig 3c 数字精读（需正文图表或 supplementary 表格的精确值，
+   下轮离线核读）。
+3. draft 主表加「Mathews tolerant macro」列 + 与 RiNALMo 论文对比小节
+   （含冻结 vs fine-tuned 的训练预算差异声明）。
+
+**未做**（明确披露）：RiNALMo 官方 fine-tuned 结构头权重在 Zenodo
+（集群无外网），我们只有 giga 骨干——所以「RiNALMo fine-tuned」行
+只能引论文值，不能实测复现。这必须在 draft 里写清楚。

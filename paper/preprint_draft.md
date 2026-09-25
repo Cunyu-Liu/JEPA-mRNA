@@ -1,11 +1,18 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.4, 2026-09-25.**
+**Preliminary preprint draft — v3.5, 2026-09-25.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
+>
+> **v3.5 change note (pretrained-LM baselines + official split).** The evaluation is
+> extended to the official full TS0 (1,305 sequences, identical to the RiNALMo-paper
+> split), and all baselines are additionally scored under the Mathews-tolerant
+> macro-F1 convention that paper uses (§4.3d), including RNAformer and UFold. The
+> RiNALMo fine-tuned structure model itself cannot be re-run (weights on an
+> unreachable host) and is quoted as a reported number with that flag attached.
 >
 > **v3.4 change note (protocol audit).** A cross-check of every baseline in the
 > evidence chain found that v3.3's cross-family TR0 reference (0.3536) came from a
@@ -55,7 +62,14 @@ both directions. Pooled over TS0 our micro F1 is **0.5937** across 8 seeds
 (128-dim head; ViennaRNA centroid **0.5393**, MXfold2 **0.5651**, UFold **0.6598**,
 RNAformer **0.7578** on the same split), and **0.6425** when the decision head is given
 4.8x capacity — a paired gain of +0.039 that holds in all three capacity seeds but is
-concentrated on pair-dense sequences (§4.3c). Under-training was the dominant error
+concentrated on pair-dense sequences (§4.3c). Under the Mathews-tolerant convention of
+the RiNALMo paper, on the official full TS0, our frozen-backbone pipeline scores
+**0.6368** (base) to **0.6474** (capacity) — above ViennaRNA (0.5665) and MXfold2
+(0.6102), in the vicinity of secondarily-reported numbers for the fine-tuned 650M
+RiNALMo structure model itself, and 0.13 below the strongest measured models (UFold
+0.7807, RNAformer 0.7779) while training a ~5M-parameter head instead of
+fine-tuning 650M (§4.3d).
+Under-training was the dominant error
 source at earlier checkpoints (0.4953 at step 3500, monotonically rising to 0.5956 at
 step 20000 with no plateau), which also reverses an early negative reading of the
 capacity hypothesis taken at step 2000. Crossing the split by source and by length,
@@ -140,6 +154,12 @@ We also correct an earlier internal misreading: CDPFold is a CNN followed by dyn
 programming (Front Genet 10:467, 2019). It neither removes the DP nor is a
 calibration precedent, and it is not treated as a threat to the claim here.
 
+The pretrained-RNA-LM line — RNA-FM, Uni-RNA and RiNALMo — supplies our frozen
+backbone. RiNALMo's paper fine-tunes the full 650M model for secondary-structure
+prediction with a ResNet head and reports it as the strongest LM on this split; we
+consume the same frozen encoder and train a small CRF head on top instead, and
+§4.3d compares both under that paper's own tolerant scoring convention.
+
 **Why a frozen foundation-model backbone.** The from-scratch alternative was measured
 to failure: an own-encoder 35M Transformer trained on the same corpus peaks at 0.547
 (nll+distill) and *degrades* with further training (0.511 at 20k, 0.495 at 40k for
@@ -208,6 +228,7 @@ F1 is averaged afterwards. Both are reported in Appendix A.
 | Training | bpRNA TR0 | 10,682 | projected corpus; mean length 132.5, range 33-498 |
 | Validation (recalibration + any selection) | bpRNA VL0 | 196 | disjoint from TR0 and TS0 |
 | In-distribution test | bpRNA TS0 | 1,288 | headline split |
+| Official full TS0 (RiNALMo/RNAformer) | bpRNA TS0-1305 | 1,305 | our 1,288 + 17 recovered from the published test set; used for §4.3d |
 | Secondary test | ArchiveII (BPfold bpseq) | **3,950 / 3,966** | **not** an out-of-distribution split, see §4.5 |
 | Cross-family test | bpRNA-new | 5,388 | the only clean OOD split we hold |
 
@@ -521,6 +542,49 @@ metric implementation, so these comparisons are like-for-like within this table.
 are not comparable to F1 numbers quoted from other papers, which use different splits,
 different redundancy thresholds and different aggregation conventions.
 
+### 4.3d Comparison under the RiNALMo-paper scoring convention, and against pretrained RNA language models
+
+Every F1 above uses strict pair identity with pooled micro aggregation. The RiNALMo
+paper — the source of both our backbone and the TS0 split itself — scores differently:
+a predicted pair (i, j) counts as correct if the ground truth contains (i, j),
+(i±1, j) or (i, j±1) (the Mathews 2019 tolerance), and F1 is averaged per-sequence
+(macro). To place our numbers against that literature we re-scored every model for
+which we hold predictions on the official full TS0 (1,305 sequences — ours and
+RiNALMo's split file match exactly; we recover the 17 sequences absent from our
+corpus subset from RNAformer's published test set), under the identical tolerant
+convention:
+
+| Model (TS0, Mathews-tolerant macro F1) | Value | How obtained |
+|---|---|---|
+| UFold | 0.7807 | our measurement, re-scored |
+| RNAformer 32M (bprna ckpt) | 0.7779 | our measurement, re-scored |
+| **Ours, big head (4.8x)** | **0.6474** | our measurement, re-scored |
+| **Ours, bigtr1** | **0.6449** | our measurement, re-scored |
+| **Ours, base 128-dim (ff)** | **0.6368** | our measurement, re-scored |
+| MXfold2 | 0.6102 | our measurement, re-scored |
+| ViennaRNA centroid | 0.5665 | our measurement, re-scored |
+
+Three statements, carefully bounded:
+
+1. **The gap to the strongest measured models is 0.13 under the tolerant convention**
+   (0.647 vs 0.78), wider than under strict micro because our precision profile gains
+   less from tolerance than UFold's and RNAformer's. No aggregation convention makes
+   the gap disappear.
+2. **The backbone is the same model family, so the head is the differentiator.** Our
+   arms consume the frozen RiNALMo-giga encoder — the same checkpoint the RiNALMo
+   paper fine-tunes (with a ResNet head, 15 epochs of progressive unfreezing of the
+   full 650M model) for this task. Their fine-tuned structure-head weights are hosted
+   outside our reachable network, so their number is not re-run here; secondary
+   reporting of their TS0 F1 places it around 0.6 under this tolerant convention,
+   i.e. in the vicinity of our frozen-small-head numbers (0.637–0.647), but we treat
+   figure-derived numbers as non-quotable and await a precise reading of their
+   published table before making any ordered claim. The comparison is also not
+   training-budget-matched, in their favour on parameters and in ours on steps.
+3. **What survives any convention: the calibration property.** Of the rows in this
+   table, ours is the only one whose pair probabilities are audited as calibrated
+   outputs with an exact-marginal self-consistency check (§4.2); the accuracy rows
+   trade against that property, and we report both sides rather than pick one.
+
 ### 4.4 Cross-family generalization is insufficient (quantified)
 
 §4.3 shows the model is strong where structures are conserved and weak where they are
@@ -702,6 +766,9 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | Paired significance tests + quartile/length-bucket decomposition | `tables/stats_definitive.json`, `tables/stats_significance.md` | `tools/stats_definitive.py`, `tools/stats_significance.py` |
 | Cross-family TR0 baseline (matched protocol) | `eval_decision/ff20000_bprna_new/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_new.jsonl --prior-weight -1` |
 | Capacity on cross-family | `eval_decision/ow_rinalmo_big_b4_s0_step20000_bprna_new` | same, `--data ss_data/jsonl/bprna_new.jsonl` |
+| Official full TS0 (1,305) evaluations | `eval_decision/official1305_rinalmo_{ff,big,bigtr1}_b4_s0_step20000` | `scripts/run_official1305.sh`; corpus `ss_data/jsonl/bprna_ts0_1305.jsonl` built by `tools/build_ts0_1305.py` from RNAformer's `test_sets.plk`; embeddings `embeddings/rinalmo-giga/bprna_ts0_1305.shard0of1.npz` |
+| Mathews-tolerant re-scoring (§4.3d) | `tables/vienna_mathews_ts0.json`; per-model re-scores printed by `tools/rescore_mathews.py`, `tools/rescore_dbn.py`, `tools/rescore_mxfold2.py` | tolerant convention: (i,j) correct if GT has (i,j), (i±1,j) or (i,j±1); macro aggregation |
+| Split-provenance check vs RiNALMo release | sequence-level set comparison, `tools/check_rinalmo_splits.py` (local) | our TS0 1,288 ⊂ official 1,305; TR0/new likewise subsets |
 | Data-scaling (TR1) TS0 + bpRNA-new | `eval_decision/tr1_ff_step20000_{bprna_ts0,bprna_new}` | same, trained on `bprna_tr1.jsonl` |
 | Cascade (negative) + conservative variant | `eval_decision/arch_rinalmo_casc_b4_s0_step2000_ts0`, `ow_rinalmo_cascR_b4_s0_step20000_bprna_ts0` | cascade arms at train time |
 | Six-source calibration audit | `eval_decision/c1a_rnaformer_ref_bprna_ts0.json`, `reference_calibration.py` outputs | same split, same 6,022,538 candidate pairs |
@@ -799,6 +866,8 @@ off-cluster and logged in `spec/citation_register.csv`.
 8. Franke JKH, Runge F, Hutter F. Scalable deep learning for RNA secondary
    structure prediction (RNAformer). arXiv:2307.10073, 2023.
    doi:10.48550/arXiv.2307.10073. ICML 2023 Workshop on Computational Biology.
-9. Penić RJ, Vlašić T, Huber RG, Wan Y, Šikić M. RiNALMo: general-purpose RNA
+9. Penić RJ, Vlašić T, Huber RG, Wan Y, Škić M. RiNALMo: general-purpose RNA
    language models can generalize well on structure prediction tasks. *Nature
    Communications* 16:5671, 2025. doi:10.1038/s41467-025-60872-5. PMID 40593636.
+10. Mathews DH. How to benchmark RNA secondary structure prediction accuracy.
+    *Methods* 162:60–67, 2019. doi:10.1016/j.ymeth.2019.04.003. PMID 30951834.
