@@ -268,20 +268,26 @@ obtained without a partition function.
 Pooled, we now sit between the physical baselines and the strongest published deep
 baselines, and the capacity sweep moves us further up:
 
-| Split | Ours (micro F1, 128-dim head, TR0) | Ours (4.8x-capacity head, TR0) | Ours (TR1: 4.29x data) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
-|---|---|---|---|---|---|---|---|---|---|
-| TS0 | **0.5958** | **0.6425** | 0.5840 | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
-| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
-| bpRNA-new (5,388) | 0.3536 | **0.4641** | **0.5162** | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+| Split | Ours (micro F1, 128-dim head, TR0) | Ours (4.8x-capacity head, TR0) | Ours (TR1: 4.29x data) | Ours (TR1, 2x steps) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
+|---|---|---|---|---|---|---|---|---|---|---|
+| TS0 | **0.5958** | **0.6425** | 0.5840 | **0.6147** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
+| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
+| bpRNA-new (5,388) | 0.3536 | **0.4641** | **0.5162** | 0.4999 | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
 
-The TR1 column is the data-scaling experiment and the 0.4641 cell is the
-capacity-on-cross-family measurement: same recipe, same 20,000 steps, one axis varied
-at a time. **Both scaling axes buy cross-family accuracy** — capacity +0.111
-(0.3536 -> 0.4641), data +0.163 (0.3536 -> 0.5162) — while their in-distribution
-effects differ: capacity gains +0.047 pooled, data costs −0.012 pooled. Data is the
-stronger out-of-distribution lever and the only one that hurts in-distribution; the
-two axes are roughly orthogonal, and the combination arm (4.8x capacity x 4.29x data)
-is training to test whether they add up.
+The TR1 columns are the data-scaling experiment and the 0.4641 cell is the
+capacity-on-cross-family measurement: same recipe, one axis varied at a time. All
+"Ours" columns are 20,000 steps except the last, which doubles the training on the
+TR1 corpus to 40,000 (3.4 epochs). **Both scaling axes buy cross-family accuracy at
+20k steps** — capacity +0.111 (0.3536 -> 0.4641), data +0.163 (0.3536 -> 0.5162) —
+while their in-distribution effects differ: capacity gains +0.047 pooled, data costs
+−0.012 pooled. Doubling the training steps splits the picture again: pooled gains
++0.031 (0.5840 -> 0.6147, 9x the seed spread) while cross-family **loses** 0.016
+(0.5162 -> 0.4999, 5x the spread). Training beyond roughly two epochs on the larger
+corpus improves in-distribution accuracy and gives back part of the cross-family
+gain — the out-of-distribution optimum arrives earlier than the in-distribution one,
+which bounds how far this recipe can be pushed by optimisation alone. The
+combination arm (4.8x capacity x 4.29x data) is training to test whether the two
+axes add up.
 
 Three readings of this table, stated exactly:
 
