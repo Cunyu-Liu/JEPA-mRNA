@@ -370,14 +370,20 @@
 | **T-A11**（新，本轮） | **同口径收敛曲线**：`rinalmo_ff` 在 step 6000 / 10000、`w=-1` 的 TS0 评测（已有的三点各用了不同的 w，**不可连成曲线**） | 至少 3 个同口径点，能回答"再多训是否还在涨" | ✅ **已完成（17:46）**：`trend_ff_step6000_ts0` **0.5369** / `trend_ff_step10000_ts0` **0.5587** / `ff20000` **0.5958**（`w=-1` 全程同口径）→ **训练曲线单调上升且未收敛，"欠训练是主因"（§14.35）再获一条独立证据** |
 | **T-A12**（新，本轮） | **checkpoint 步数溯源**：`tools/ckpt_steps.py` 直接从 `.pt` 内读 `step` 字段，不从文件名推断 | 每个被引用的快照都有文件内步数证据 | ✅ 已完成：已核验 `rinalmo_ff_ff_w05_snapshot.pt` **文件内 `step=3500`**（与 `tag` 一致），并清点出 `rinalmo_ff` 可用快照 = 2000/4000/6000/10000 |
 
-### 预训练 LM 基线对齐（2026-09-25 §14.62，用户要求）
+### 预训练 LM 基线对齐（2026-09-25 §14.62–§14.64，用户要求）
 
 - [x] 与 RiNALMo 论文 split 对齐（官方 TS0 1,305 全集评测 + 序列级溯源）
 - [x] Mathews 宽容判分口径实现 + 全部可实测基线重打分（UFold/RNAformer/MXfold2/Vienna/我们）
 - [x] draft §4.3d 新节 + 引用红线（reported vs measured 必须区分）
-- [ ] RiNALMo 论文 Fig 3c / Supplementary 表格精读（离线，下一轮）——精确数字入表前
-      不得写任何"我们超过/接近 RiNALMo"的有序比较
+- [x] **S4（TS0 INF）对标**：我们 0.6005/0.6199/0.6238；UFold/MXfold2 实测
+      0.7325/0.5832 与论文 0.67/0.61 差异 = 判分实现差异（双列声明）
+- [x] **S5（TORNADO TestSetB）对标**：数据下载转换（428/430），三臂零样本
+      评测 + Vienna + EternaFold（CONTRAfold 族代用）——**big 0.7932 宽容 F1 /
+      0.7781 INF 超该基准全部已发表数字（含 RiNALMo fine-tuned 0.67）**
+- [x] **S2/S3（ArchiveII famfold 9-fold）判定：不复现**（需 9 次训练，
+      deadline 不可行；ArchiveII 另有训练集污染问题 §4.5）——limitations 已声明
 - [ ] RNA-FM 权重不可得确认记录（Zenodo/HF 不可达）
+- [ ] RiNALMo 论文 Fig 3c 精确数字精读（图值不可引，当前只用 vicinity 表述）
 
 ### 第三轮交接新增任务（2026-09-24 晚，源自 §14.34–§14.42 与用户一周预印本要求）
 
