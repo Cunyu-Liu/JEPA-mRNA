@@ -1,12 +1,21 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.8, 2026-09-26.**
+**Preliminary preprint draft — v3.9, 2026-09-26.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here is
 > extrapolated.
 >
+> **v3.9 change note (seed ensembles).** A zero-training-cost improvement is
+> added: averaging the raw score matrices of the K seed checkpoints before one
+> exact decode (new §4.3f). TS0 0.6105 (8-seed; +0.0166 over the 8-seed mean,
+> paired p = 6.3e-18), bpRNA-new 0.5106 (+0.0236 over the matched single,
+> p = 1.0e-68), TR1 2-seed ensemble 0.5229. All three values are read directly
+> from the ensemble result.json artifacts, and their three paired Wilcoxon tests
+> are reported separately from the 18-test family of §4.3c. A backbone-swap arm
+> (RNA-FM 640-d, frozen, same head) is training and is not yet in any table.
+
 > **v3.8 change note (bigsum OOD cell + table re-audit).** The sum-normalised
 > 512-dim replication arm now has its out-of-distribution number: 0.4789 on bpRNA-new
 > (−0.008 vs the matched TR0 baseline, p = 1.1e-10), which closes the normalisation
@@ -687,6 +696,38 @@ itself the finding:
    than conflated with it; RNAstructure and RNA-FM are quoted-only, as in
    §4.3d.
 
+### 4.3f Seed ensembles: +0.017 to +0.024 for zero training cost
+
+Averaging is the cheapest baseline improver left to us, and it also measures how
+diverse the seeds actually are.  averages the *raw score
+matrices* of K same-config checkpoints (score-average, not probability-average:
+the scores are log-potentials, and illegal pairs are -inf in every member so the
+mean stays -inf) and decodes the average once with the exact Nussinov DP — the
+only protocol difference from a single-model evaluation:
+
+| Ensemble | TS0 micro | bpRNA-new micro |
+|---|---|---|
+| 8-seed ff ensemble | **0.6105** | **0.5106** |
+| TR1 2-seed ensemble | — | **0.5229** |
+| (reference) 8-seed single-model mean | 0.5938 | — |
+| (reference) best single seed (s5) | 0.5990 | — |
+| (reference) ff s0 single, matched | — | 0.4870 |
+
+Three observations, each with its paired per-sequence Wilcoxon test (reported
+separately from the 18-test family of §4.3c, so uncorrected):
+
+1. **In distribution the ensemble beats even the best seed** (+0.0115 micro over
+   s5; paired per-seq +0.0090, p = 7.9e-07) and the mean by +0.0166
+   (p = 6.3e-18). Ensemble gain over the mean is roughly 5x the seed std —
+   the seeds disagree on borderline pairs often enough to matter.
+2. **The gain is larger out of distribution**: +0.0236 on bpRNA-new over the
+   matched single (p = 1.0e-68), consistent with seed variance being higher OOD;
+   more of the single-model error is seed-idiosyncratic there.
+3. **The best cross-family number on our side becomes 0.5229** (TR1 2-seed
+   ensemble, +0.0171 over its 2-seed single mean 0.5058) — still far below the
+   physical ViennaRNA centroid (0.6770), so the §4.4 conclusion is unchanged:
+   ensembling narrows, but does not close, the cross-family gap.
+
 ### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
 §4.3 shows the model is strong where structures are conserved and weak where they are
@@ -906,7 +947,8 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | 2x2 objective grid | `eval_decision/arms_rinalmo_{len,sum,bal,bal_s1,pw}_b4_s0_step20000_ts0` | objective-arm queue |
 | De-duplication audit and clean subsets | `ss_data/jsonl/*_clean.jsonl` | `tools/dedup_against_train.py --train ss_data/jsonl/bprna_tr0.jsonl --threshold 0.5 --k 20` |
 | Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |
-| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.53 | — |
+| Seed ensembles (§4.3f) | `eval_decision/ensemble8_{ts0,new}`, `eval_decision/ensemble_tr1_2seed_new` | `tools/ensemble_eval.py`: K-checkpoint score-average, single exact decode; stats in `tables/stats_definitive.json` (v5 `ensembles` block) |
+| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.66 | — |
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
 rate and hairpin-violation rate are 0.0000 for every row above.

@@ -16,6 +16,11 @@ watch self-heal loops (watch3 19:23 / watch4 20:51) after an unknown
 cleanup removed them; the re-evals are protocol-identical and moved f1 by
 0.0006-0.0007 (below seed std), so current on-disk values are canonical.
 
+v5 (2026-09-26 02:20, 14.66): ensemble results land. 8-seed score-average
+ensemble on TS0 (0.6105) and bprna_new (0.5106), TR1 2-seed ensemble on
+bprna_new (0.5229). All read from the ensemble result.json files directly —
+no manual transcription. Wilcoxon: ensemble vs single-model paired tests
+added (same per-sequence F1 convention).
 v4 (2026-09-26 00:45, 14.65): bigsum lands on both splits. The OOD cell
 (0.4789, -0.008 vs matched TR0 baseline) completes the normalisation
 confound closure out of distribution. Wilcoxon family grows to 18 tests
@@ -181,6 +186,41 @@ for rank, i in enumerate(order):
 for t in tests:
     print(f"   {t['label']:24s} n={t['n']}  mean_diff={t['mean_diff']:+.4f}  p={t['p']:.2e}  Holm={t['p_holm']:.2e}")
 
+
+print("=" * 72)
+print("6. ENSEMBLES (v5, 14.66 — read from ensemble result.json, no manual copy)")
+def load_ens(path):
+    d = json.load(open(path))
+    per = {r["name"]: (r["f1"], r.get("n_gt_pairs", 0)) for r in d["per_sequence"]}
+    micro = d["pair_level"]["micro"]["f1"]
+    macro = d["pair_level"]["macro"]["f1"]
+    return per, micro, macro
+
+ENS_TS0 = load_ens(ART / "eval_decision/ensemble8_ts0/result.json")
+ENS_NEW = load_ens(ART / "eval_decision/ensemble8_ts0/result.json".replace("ts0", "new"))
+ENS_TR1_NEW = load_ens(ART / "eval_decision/ensemble_tr1_2seed_new/result.json")
+print(f"   8-seed ensemble TS0:  micro {ENS_TS0[1]:.4f}  macro {ENS_TS0[2]:.4f}  (vs 8-seed mean {st.mean(vals):.4f}: {ENS_TS0[1]-st.mean(vals):+.4f}; vs best single {max(vals):.4f}: {ENS_TS0[1]-max(vals):+.4f})")
+print(f"   8-seed ensemble new:  micro {ENS_NEW[1]:.4f}  macro {ENS_NEW[2]:.4f}  (vs ff s0 single {FF_NEW[1]:.4f}: {ENS_NEW[1]-FF_NEW[1]:+.4f})")
+print(f"   TR1 2-seed ensemble new: micro {ENS_TR1_NEW[1]:.4f}  macro {ENS_TR1_NEW[2]:.4f}  (vs TR1 2-seed single mean {st.mean([TR1_20K_NEW[1], TR1_S1_20K_NEW[1]]):.4f}: {ENS_TR1_NEW[1]-st.mean([TR1_20K_NEW[1], TR1_S1_20K_NEW[1]]):+.4f})")
+best_seed = max(FF, key=lambda s: FF[s][1])
+ensemble_tests = [
+    wtest("ens8_ts0_vs_best_single_s%d" % best_seed, ENS_TS0[0], FF[best_seed][0]),
+    wtest("ens8_new_vs_ff_s0", ENS_NEW[0], FF_NEW[0]),
+    wtest("ens_tr1_new_vs_tr1_s0", ENS_TR1_NEW[0], TR1_20K_NEW[0]),
+]
+for t in ensemble_tests:
+    print("   %-28s n=%d  mean_diff=%+.4f  p=%.2e" % (t["label"], t["n"], t["mean_diff"], t["p"]))
+ens_out = dict(
+    ens8_ts0=dict(micro=round(ENS_TS0[1], 4), macro=round(ENS_TS0[2], 4),
+                  vs_seed8_mean=round(ENS_TS0[1] - st.mean(vals), 4),
+                  vs_best_single=round(ENS_TS0[1] - max(vals), 4)),
+    ens8_new=dict(micro=round(ENS_NEW[1], 4), macro=round(ENS_NEW[2], 4),
+                  vs_ff_s0_new=round(ENS_NEW[1] - FF_NEW[1], 4)),
+    ens_tr1_new=dict(micro=round(ENS_TR1_NEW[1], 4), macro=round(ENS_TR1_NEW[2], 4),
+                     vs_tr1_2seed_mean=round(ENS_TR1_NEW[1] - st.mean([TR1_20K_NEW[1], TR1_S1_20K_NEW[1]]), 4)),
+    wilcoxon=ensemble_tests,
+)
+
 print("=" * 72)
 print("5. LENGTH-BUCKET DECOMPOSITION (per-seq F1 mean gain vs ff s0)")
 
@@ -225,6 +265,7 @@ out = dict(
                 ood_cost_sum_norm=round(BIGSUM_NEW[1] - FF_NEW[1], 4)),
     cross_family={name: dict(micro=round(m, 4), macro=round(g, 4)) for name, (_, m, g) in rows},
     wilcoxon=tests,
+    ensembles=ens_out,
 )
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "stats_definitive.json").write_text(json.dumps(out, indent=2))

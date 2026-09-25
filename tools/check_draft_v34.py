@@ -114,6 +114,22 @@ ck("v3.8: bigsum new vs big +0.015 stated", f"{V['bigsum_new'] - V['big_new']:+.
 ck("v3.8: 18-test family stated", "18-test family" in text)
 ck("v3.8: bigsum both splits in appendix", "ow_rinalmo_bigsum_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 
+
+ENS = "/mnt/cunyuliu/rna-jepa/eval_decision"
+V["ens8_ts0"] = micro_of(f"{E}/ensemble8_ts0/result.json")
+V["ens8_new"] = micro_of(f"{E}/ensemble8_new/result.json")
+V["ens_tr1_new"] = micro_of(f"{E}/ensemble_tr1_2seed_new/result.json")
+sd = json.load(open("/mnt/cunyuliu/rna-jepa/tables/stats_definitive.json"))
+ens = sd.get("ensembles", {})
+
+ck("v3.9: ens8 ts0 0.6105", f"{V['ens8_ts0']:.4f}" == "0.6105" and "0.6105" in text, f"{V['ens8_ts0']:.4f}")
+ck("v3.9: ens8 new 0.5106", f"{V['ens8_new']:.4f}" == "0.5106" and "0.5106" in text, f"{V['ens8_new']:.4f}")
+ck("v3.9: ens tr1 2seed new 0.5229", f"{V['ens_tr1_new']:.4f}" == "0.5229" and "0.5229" in text, f"{V['ens_tr1_new']:.4f}")
+ck("v3.9: ensemble gain +0.0166 stated", "+0.0166" in text)
+ck("v3.9: ensemble OOD gain +0.0236 stated", "+0.0236" in text)
+ck("v3.9: ensemble section 4.3f present", "4.3f" in text and "seed ensemble" in text.lower())
+ck("v3.9: stats json ensembles block matches", ens.get("ens8_ts0", {}).get("micro") == round(V["ens8_ts0"], 4) and ens.get("ens8_new", {}).get("micro") == round(V["ens8_new"], 4), f"{ens}")
+
 fails = [c for c in checks if not c[1]]
 for name, ok, detail in checks:
     print(("PASS " if ok else "FAIL ") + name + (f"  [{detail}]" if detail and not ok else ""))

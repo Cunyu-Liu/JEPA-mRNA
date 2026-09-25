@@ -58,13 +58,16 @@ def main():
         total = sum(lengths)
         mat = np.zeros((total, d), dtype=np.float32)
         ofs = 0
+        offsets = []
         for emb in flat:
             mat[ofs:ofs + emb.shape[0]] = emb
+            offsets.append(ofs)
             ofs += emb.shape[0]
         np.savez(out_path,
-                 names=np.array([f"s{i}" for i in range(len(flat))]),
+                 h=mat,
+                 offsets=np.array(offsets + [ofs], dtype=np.int64),
                  lengths=np.array(lengths, dtype=np.int64),
-                 embeddings=mat)
+                 seqs=np.array(seqs))
         print(f"[done] {out_path}: {len(flat)} seqs, {total} residues, d={d}")
 
 

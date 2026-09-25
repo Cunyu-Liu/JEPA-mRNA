@@ -3259,3 +3259,129 @@ A/C/G/U=4/5/6/7、BOS=0 EOS=2、d=640 12 层。**fairseq TransformerEncoder
 - [ ] RiNALMo ft 权重下载完 → 传服务器 → 官方头评测（SS 头是 ResNet，
       输入 pair concat——与我们的 pair 表示同一思路，直接可评）
 - [ ] SPOT-RNA 失效记录写 draft limitations
+
+
+## §14.66 例行监控出数：四臂已完成、ensemble 三结果落地、RNA-FM 臂崩溃修复并重启、draft v3.9（2026-09-26 03:02，关键）
+
+> 节号说明：用户指令预期"§14.61 起"，但实际盘上日志已推进至 §14.65
+> （×2，历史重复节号已声明不回改、后续严格递增），本节取 §14.66。
+
+### 一、四臂训练状态：全部自然完成，无恢复协议触发
+
+| 臂 | 终点 | 完成时刻 | 状态 |
+|---|---|---|---|
+| rinalmo_bigtr1_b4_s1 | step 20000/20000 | 09-25 19:17 | ✅ 完成 + resume.pt 落盘 |
+| rinalmo_big_b4_s3 | step 20000/20000 | 09-25 20:33 | ✅ 完成 + resume.pt 落盘 |
+| rinalmo_ff_tr1_b4_s1 | step 20000/20000 | 09-25 20:32 | ✅ 完成 + resume.pt 落盘 |
+| rinalmo_bigsum_b4_s0 | step 20000/20000 | 09-25 22:58 | ✅ 完成 + resume.pt 落盘 |
+
+pgrep train_decision 无进程 ≠ 崩溃：四臂均达 20000 步正常收队
+（`pgrep -af train_decision` 此前误报"进程消失"实为训练完成，恢复
+协议零触发——DECISION_TRAINING_LOG 的恢复判定需先看日志终点步数，
+再看进程，否则会把"完成"误判为"消失"，本轮已实证一次）。
+
+四个臂的 ow_* 评测（watch3/4/5 自动产出）已分别由 §14.63（18:18）、
+§14.64（22:45）、§14.64b（23:55）、§14.65（00:50）入账：bigtr1_s1
+双 split（TS0 0.6282 / new 0.4088，交互为负 2-seed 复现定稿）、big_s3
+（容量 4-seed 0.6324±0.0098）、ff_tr1_s1（TR1 2-seed）、bigsum（容量
+单变量复现 0.6302/0.4789，混杂终判已闭环）。**本轮无第四轮新单模型评测。**
+
+### 二、本轮真正的新结果：三个 ensemble（基线四查通过）
+
+| Ensemble | TS0 micro | new micro | 参照 | 增益 |
+|---|---|---|---|---|
+| 8-seed ff | **0.6105** | **0.5106** | 均值 0.5938 / 匹配单模 0.4870 | +0.0166 / +0.0236 |
+| TR1 2-seed | — | **0.5229** | 2-seed 单模均值 0.5058 | +0.0171 |
+| （TS0 侧）对最佳单 seed s5 | 0.5990 | — | paired per-seq +0.0090 | p=7.9e-07 |
+
+**基线四查（§14.59 协议）**：
+1. **同 checkpoint 步数** ✅ —— ensemble 成员全部 step20000
+   （checkpoints 列表逐一核对）；
+2. **同 prior-weight/校准** ⚠️ 协议内差异，如实披露 —— ensemble_eval.py
+   与 evaluate_decision.py 唯一差异是 score 矩阵平均；解码用各模型自身
+   训练内权重（w=-1 语义一致），**但不含 VL0 重标定步**（单模型行有
+   DP-free recalibration）。TS0 对照侧（§14.65 的 0.6105 vs 0.5938）同样
+   是未重标定的单模型 ow_* 口径，对照公平；跨表引用时须注明"ensemble
+   行无重标定"。
+3. **同 split/解码** ✅ —— bprna_ts0 1288 / bprna_new 5388，exact
+   Nussinov，valid_pair_mask 同源；
+4. **同 nll_normalization** ✅ —— ensemble 不涉训练，成员 ff 系全 sum。
+
+### 三、统计重算（stats_definitive.py v5，禁止手抄）
+
+`tools/stats_definitive.py` 新增 §6 ENSEMBLES 块（v5，2026-09-26 02:20），
+全部从 `eval_decision/ensemble*/result.json` 直读；`tables/stats_definitive.json`
+新增 `ensembles` 块。关键数字（脚本打印为准）：
+
+- 8-seed ensemble TS0 micro 0.6105，**+0.0166** vs 均值（paired
+  Wilcoxon p=6.3e-18）；+0.0115 vs 最佳单 seed 0.5990（p=7.9e-07，
+  修正过程中曾误用 s4 作"最佳"，已改为动态选 max）；
+- 8-seed ensemble new micro 0.5106，**+0.0236** vs 匹配单模（p=1.0e-68）；
+- TR1 2-seed ensemble new micro 0.5229，+0.0171 vs 2-seed 单模均值；
+- **OOD 增益 > 同分布增益**（+0.0236 > +0.0166）：seed 方差在 OOD 上更大
+  （big 的 seed std 0.0098 也佐证），更多单模误差是 seed 特异的——
+  集成在弱处收益更大，与"数据增益普惠、容量增益集中"的 §14.59 结论
+  互为表里。
+- 我们侧跨家族最好数字变为 **0.5229**（仍远低于物理基线 0.6770）：
+  §4.4 结论不变——集成收窄但不闭合跨家族差距。
+
+### 四、Draft v3.9（50/50 检查通过）
+
+- 新增 §4.3f "Seed ensembles: +0.17 to +0.024 for zero training cost"
+  （含上表、三条观察、配对 Wilcoxon）；change note v3.9 置顶；
+  Appendix A 登记 ensemble artifact 行，运行日志区间更新为 §14.1–§14.66；
+- `tools/check_draft_v34.py` 扩展至 **50 检查（43+7）**，全部直读
+  ensemble result.json + stats json ensembles 块核对，**50/50 PASS**；
+- 3 条 ensemble Wilcoxon 作为独立小家族报告（不并入 §4.3c 的 18-test
+  family，避免改历史 Holm 校正基数——v3.8 审计教训的直接应用）。
+
+### 五、RNA-FM 骨干对照臂：崩溃根因修复 + 重启成功
+
+01:42 首次启动即崩（`KeyError: 'h' is not a file in the archive'`），
+无人重启。逐层排查发现**两个叠加 bug**（都修了）：
+
+1. **npz schema 不匹配**：01:42 时嵌入尚未提取完（01:48–01:51 才落盘），
+   当时读到的可能是旧 schema（键名 `embeddings`）—— extractor v2 已改
+   `h/offsets/seqs`，与本轮修复后一致；
+2. **offsets 长度 off-by-one**：extractor 写 n 长起始位表，
+   `EmbeddingStore`（及 rinalmo-giga 参照 schema）要求 n+1（含末位
+   结束偏移）。已修 4 个 npz（bprna_new/tr0/ts0/vl0，zip 完整性 +
+   schema 校验通过），extractor 源码同步修正
+   （`offsets + [ofs]`），并补写 `manifest.json`（4 entries）。
+
+修复后以 **ff_b4_s0 镜像配置**重启（仅换 embedding 源为 rna-fm 640d，
+d_z=128/hidden=64/sum 归一化/四目标全开/seed 0/20k 步）：
+MIG-10b9b777（9.7 GiB 空闲，ff 家族同实例），PID 874289，
+03:02 时 step 750/20000、loss 66→72 波动下降（nll 主导）、进程存活。
+**watch6 已挂起**（`scripts/run_watch6.sh`，镜像 watch3 模板：
+step20000 双 split 自动评测 + 串行 wait_quiet 协议 + 完成即退出），
+watch6.log 已开写。预期 ~2 天后出数（若步速与前臂类似）。
+
+### 六、RiNALMo-ft 权重下载与 SPOT-RNA（如实记账）
+
+- RiNALMo fine-tuned（Zenodo 15043668，2.4 GB）：本地/服务器均无下载
+  痕迹（01:40 状态"下载中 90MB/2.4GB"的进程已不在，无 .crdownload/
+  .part 残留）——**下载已死，未完成**。deadline 前（09-30）需人工
+  重试或转引论文值（draft §4.3d 已按 quoted-only 处理，不阻塞出版）。
+- SPOT-RNA：全网托管已死（§14.65 已记），保持 quoted-only + draft
+  limitations 声明。
+
+### 七、GPU 状态与排期
+
+- 共享卡 0–5 全被他人任务占满（27.7–37.9 GB/卡，多用户 rnafteval/
+  rnajepa.finetune 等在跑）；卡 6（1g.5gb×7 MIG）与卡 7（3g.20gb×2
+  MIG）按 MIG 实例记账：本轮 RNA-FM 臂占用 MIG-10b9b777（卡 7 的
+  3g.20gb 实例，含本组任务）。其余 MIG 实例空闲 2.3–4.7 GiB，不足以
+  再起训练臂。
+- **排期决定：本轮无新训练臂排队**（四臂已齐；RNA-FM 臂已占位）。
+  下一可排实验是 watch6 出数后（预计 09-28 前后）：若 RNA-FM 臂
+  640d ≥ ff 1280d 的 90%（≥0.53 TS0），则骨干维度轴有故事可讲；
+  否则记 negative 结果入 §4.5。RiNALMo-ft 权重若人工下载成功，
+  官方 ResNet 头评测可随时插队（不占训练卡）。
+
+### 八、待办（下轮监控 ~05:00 前后）
+
+- [ ] watch6 / RNA-FM 臂健康（step 进度、loss 收敛形态）
+- [ ] RiNALMo-ft 权重人工重试下载（本地带宽）→ 传服务器
+- [ ] 若 ensemble8 想进主表：需确认 draft §4.3 主表是否加 ensemble
+      列（当前只在 §4.3f，主表未动——冻结面维持 v3.8 判定）
