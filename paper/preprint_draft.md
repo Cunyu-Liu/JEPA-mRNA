@@ -156,8 +156,11 @@ arm scales it to 512 (4.8x parameters). The data axis swaps the training corpus 
 TR0 (10,682 sequences) to TR1 (45,865 sequences, 4.29x after de-duplication) with
 everything else fixed. Both axes are reported at 20,000 steps, `w=-1` decode, on the
 same splits. The seed spread of the base configuration across 8 seeds is **mean
-0.5950, std 0.0033** (range 0.5893–0.5990), so the capacity gain (+0.047) and the
-cross-family data gain (+0.163) are respectively ~14x and ~49x the spread.
+0.5950, std 0.0033** (range 0.5893–0.5990); the capacity arm across 3 seeds is
+**mean 0.6319, std 0.0098** — its capacity gain is **+0.037, about 3.8x the pooled
+spread**, and its own seed spread (0.024) is visibly larger than the base
+configuration's, consistent with capacity amplifying initialisation effects. The
+cross-family data gain (+0.163) remains ~49x the base spread.
 
 **DP-free recalibration.** After training, a two-parameter affine map
 `p = sigmoid(a * s + b)` is fitted on a validation split disjoint from every test
@@ -301,13 +304,15 @@ optimising them jointly is not the same as optimising them separately.
 
 Three readings of this table, stated exactly:
 
-1. **The +0.047 capacity gain is robust to seed noise.** The seed spread at step 20000
-   across 5 seeds is std 0.0038 (mean 0.5953), so 4.8x head capacity clears it by 12x
-   and the cross-family capacity and data gains clear it by 29x and 43x. The same
-   test falsifies two smaller effects: a learnable prior-weight (init 0.5, trained to
-   0.173) gained +0.0048, and the three auxiliary objectives gained +0.0065 — both
-   within 2x the seed std, and neither is claimed as a finding until replicated
-   across seeds.
+1. **The capacity gain is robust across its own seeds.** The base configuration
+   spans 8 seeds (mean 0.5950, std 0.0033); the 4.8x-capacity head spans 3 seeds so
+   far (0.6425 / 0.6189 / 0.6343, mean 0.6319, std 0.0098) — a gain of +0.037,
+   ~3.8x the pooled spread, with the larger capacity arm also showing the larger
+   seed spread. The cross-family capacity and data gains clear the base spread by
+   29x and 43x. The same test falsifies two smaller effects: a learnable
+   prior-weight (two seeds: 0.6006 / 0.5912, mean 0.5959 — indistinguishable from
+   the base mean) and the three auxiliary objectives (+0.0065, single-seed) —
+   neither is claimed as a finding.
 2. **The hierarchical cascade is a negative result, reported as one.** The cascade
    head at the same budget and steps scores 0.5011 (P 0.794 / R 0.366): its
    differentiable gate over-suppresses pairs out of distribution. Its training-time
