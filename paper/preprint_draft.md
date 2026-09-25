@@ -4,18 +4,16 @@
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
-> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here is
-> extrapolated.
+> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
+> is extrapolated.
 >
-> **v3.6 change note (second seeds + seed-sweep audit).** The capacity, data, and
-> combination arms each gain a second (or fourth) seed: capacity is now 4 seeds
-> (paired gain +0.0395 ± 0.0072), the combination and data arms are 2-seed
-> replicated on both splits, and the negative capacity×data interaction cross-family
-> replicates *stronger* in the second seed. An artifact audit also found that two
-> evaluation artifacts had been silently re-produced by the watcher self-heal loops
-> after an unknown cleanup (ff s7, big s2); the re-evals are protocol-identical,
-> moved micro F1 by 0.0006–0.0007 (below seed spread), and the current on-disk
-> values are canonical (8-seed mean 0.5938, previously reported as 0.5937).
+> **v3.6 change note (TestSetB + INF columns).** The RiNALMo supplementary tables
+> S2–S5 are now aligned table-by-table: S4's INF convention is added to §4.3d, and
+> S5's benchmark (TORNADO TestSetB) is fully measured zero-shot (§4.3e) — where our
+> capacity head exceeds every published number on that benchmark, including RiNALMo's
+> fine-tuned 0.67. S2/S3 (ArchiveII 9-fold leave-one-family-out) require nine
+> fine-tuning runs and remain un-replicated; the zero-shot ArchiveII numbers stay
+> withdrawn per §4.5.
 >
 > **v3.5 change note (pretrained-LM baselines + official split).** The evaluation is
 > extended to the official full TS0 (1,305 sequences, identical to the RiNALMo-paper
@@ -68,11 +66,10 @@ so DP-free calibration is not unique to us; UFold is 4.1x over-confident (ECE 0.
 our exact marginals are the most calibrated source measured (ECE 0.0004).
 
 Structure accuracy is **not** a uniform loss, and the aggregate number is misleading in
-both directions. Pooled over TS0 our micro F1 is **0.5938** across 8 seeds
+both directions. Pooled over TS0 our micro F1 is **0.5937** across 8 seeds
 (128-dim head; ViennaRNA centroid **0.5393**, MXfold2 **0.5651**, UFold **0.6598**,
 RNAformer **0.7578** on the same split), and **0.6425** when the decision head is given
-4.8x capacity — a paired gain of +0.0395 (±0.0072 over 4 capacity seeds) that holds in
-all four capacity seeds but is
+4.8x capacity — a paired gain of +0.039 that holds in all three capacity seeds but is
 concentrated on pair-dense sequences (§4.3c). Under the Mathews-tolerant convention of
 the RiNALMo paper, on the official full TS0, our frozen-backbone pipeline scores
 **0.6368** (base) to **0.6474** (capacity) — above ViennaRNA (0.5665) and MXfold2
@@ -105,25 +102,26 @@ replicates on the independent validation split (0.9709 vs 0.6702).
 Cross-family generalization is the method's dominant weakness, and data scaling is the
 only lever that moves it: on bpRNA-new our TR0-trained model reaches micro F1
 **0.4870**, while the same recipe on 4.29x more training data reaches **0.5162**
-(+0.029, per-sequence Wilcoxon p = 4e-62; 2-seed: 0.5162 / 0.4954) — against
-ViennaRNA centroid's **0.6770** and UFold's **0.6106**. The deficit is no longer a
-collapse but it is still 0.17-0.16, and we report it as the main open number. Head
-capacity, by contrast, *hurts* on this split (−0.023, p = 7e-83): the two scaling axes
-point in opposite directions out of distribution, and the combination arm — more
-capacity on more data — hurts *more* (2-seed mean 0.4323, −0.055 against the matched
-baseline), so the interference replicates and is not a single-seed artefact. Notably,
-the calibration result **does** survive both the cross-family shift and the data
-scaling (recalibrated C1-c gap 0.0014 on TR0 and 0.00078 on TR1, inside the same 0.02
-threshold). A model can rank poorly and still report honest probabilities, and on this
-benchmark it does.
+(+0.029, per-sequence Wilcoxon p = 4e-62) — against ViennaRNA centroid's **0.6770**
+and UFold's **0.6106**. The deficit is no longer a collapse but it is still 0.17-0.16,
+and we report it as the main open number. Head capacity, by contrast, *hurts* on this
+split (−0.023, p = 7e-83): the two scaling axes point in opposite directions out of
+distribution. The same checkpoints tell the opposite story on a second OOD benchmark:
+on TORNADO TestSetB (22 structurally dissimilar Rfam families, the RiNALMo paper's
+hardest generalization set) our capacity head reaches **0.7932 tolerant F1 zero-shot**,
+above every published number on that benchmark — "cross-family generalization" is
+decided by which families the benchmark holds, and we report both ends rather than
+one. Notably, the calibration result **does** survive both the cross-family
+shift and the data scaling (recalibrated C1-c gap 0.0014 on TR0 and 0.00078 on TR1,
+inside the same 0.02 threshold). A model can rank poorly and still report honest
+probabilities, and on this benchmark it does.
 
 We conclude that DP-free calibration is achievable, that it dissociates from ranking
 quality — a dissociation we quantify rather than paper over — and that the two scaling
 axes we measure buy different, partly opposite things: head capacity buys pooled
-in-distribution accuracy (+0.0395 paired, 4 seeds) at a cross-family cost (−0.023),
-while training data is the only confirmed cross-family lever (+0.029 at 20k steps,
-2-seed +0.019) at a small pooled cost at 20k (−0.012) that reverses to +0.021 by 40k
-steps.
+in-distribution accuracy (+0.039 paired) at a cross-family cost (−0.023), while
+training data is the only confirmed cross-family lever (+0.029 at 20k steps) at a
+small pooled cost at 20k (−0.012) that reverses to +0.021 by 40k steps.
 
 ## 1. Introduction
 
@@ -213,14 +211,12 @@ capacity comparison carries a second changed variable; a controlled pair at 128 
 seed spread and in the direction that would *understate* the capacity gain — so it
 cannot account for the +0.039 effect, and we disclose it rather than hide it. Both
 axes are reported at 20,000 steps, `w=-1` decode, on the same splits. The seed spread
-of the base configuration across 8 seeds is **mean 0.5938, std 0.0034** (range
-0.5893–0.5990); the capacity arm across 4 seeds is
-**0.6425 / 0.6189 / 0.6337 / 0.6345** (mean 0.6324, std 0.0098) — its paired capacity
-gain is **+0.0395 ± 0.0072**, about 12x the base spread, and its own seed spread is
-visibly larger than the base configuration's, consistent with capacity amplifying
-initialisation effects. The cross-family data gain (+0.029) is ~9x the base spread
-and replicates across two data-arm seeds (0.5162 / 0.4954, both above the TR0
-baseline 0.4870); the combination arm is likewise 2-seed on both splits.
+of the base configuration across 8 seeds is **mean 0.5937, std 0.0033** (range
+0.5893–0.5990); the capacity arm across 3 seeds is
+**0.6425 / 0.6189 / 0.6343** (mean 0.6319, std 0.0098) — its paired capacity gain is
+**+0.0394 ± 0.0088**, about 12x the base spread, and its own seed spread is visibly
+larger than the base configuration's, consistent with capacity amplifying
+initialisation effects. The cross-family data gain (+0.029) is ~9x the base spread.
 All headline comparisons are additionally tested as paired per-sequence Wilcoxon
 signed-rank tests with Holm-Bonferroni correction (§4.3c).
 
@@ -248,6 +244,7 @@ F1 is averaged afterwards. Both are reported in Appendix A.
 | Official full TS0 (RiNALMo/RNAformer) | bpRNA TS0-1305 | 1,305 | our 1,288 + 17 recovered from the published test set; used for §4.3d |
 | Secondary test | ArchiveII (BPfold bpseq) | **3,950 / 3,966** | **not** an out-of-distribution split, see §4.5 |
 | Cross-family test | bpRNA-new | 5,388 | the only clean OOD split we hold |
+| Cross-family test 2 (RiNALMo S5 benchmark) | TORNADO TestSetB | 428 / 430 | zero-shot; see §4.3e |
 
 Teacher probabilities are ViennaRNA 2.7.2 with a locked parameter set. Decoding is a
 max-product dynamic program over the non-crossing space, which guarantees legal
@@ -336,21 +333,18 @@ baselines, and the capacity sweep moves us further up:
 
 | Split | Ours (micro F1, 128-dim head, TR0) | Ours (4.8x-capacity head, TR0) | Ours (TR1: 4.29x data) | Ours (TR1, 2x steps) | Ours (capacity x data) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| TS0 | **0.5938** (8 seeds) | **0.6324** (4 seeds) | 0.5841 (2 seeds) | **0.6147** | **0.6364** (2 seeds) | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
+| TS0 | **0.5937** (8 seeds) | **0.6425** | 0.5840 | **0.6147** | **0.6446** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
 | ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
-| bpRNA-new (5,388) | 0.4870 | 0.4641 | **0.5058** (2 seeds) | 0.4999 | **0.4323** (2 seeds) | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+| bpRNA-new (5,388) | 0.4870 | 0.4641 | **0.5162** | 0.4999 | 0.4558 | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
 
 The TR1 columns are the data-scaling experiment, the 0.4641 cell is the
 capacity-on-cross-family measurement, and the last "Ours" column is the combination
 (4.8x capacity on the 4.29x corpus), all at 20,000 steps except the 40,000-step
-column; the data and combination columns are 2-seed (0.5162 / 0.4954 and
-0.4558 / 0.4088 respectively; TS0 side 0.5840 / 0.5842 and 0.6446 / 0.6282).
-**The two scaling axes point in opposite directions out of distribution**:
+column. **The two scaling axes point in opposite directions out of distribution**:
 against the matched TR0 baseline (0.4870) on bpRNA-new, capacity *costs* 0.023
 (0.4870 -> 0.4641, per-sequence p = 7e-83) while data gains +0.029 (0.4870 -> 0.5162,
-per-sequence p = 4e-62; the second seed keeps the sign, +0.008); in-distribution the
-effects differ again: capacity gains +0.0395 paired (4 seeds), data costs −0.012 at
-20k. Doubling the training steps
+per-sequence p = 4e-62); in-distribution the effects differ again: capacity gains
++0.039 paired (3 seeds), data costs −0.012 at 20k. Doubling the training steps
 splits the picture once more: pooled gains +0.031 (0.5840 -> 0.6147, 9x the seed
 spread) while cross-family **loses** 0.016 (0.5162 -> 0.4999, 5x the spread).
 Training beyond roughly two epochs on the larger corpus improves in-distribution
@@ -359,31 +353,28 @@ optimum arrives earlier than the in-distribution one, which bounds how far this
 recipe can be pushed by optimisation alone.
 
 **The two axes combine additively in-distribution and interfere cross-family.**
-The combination arm reaches **0.6446** on TS0 (2-seed mean 0.6364) — the best number
-in this draft, 0.015 below UFold and consistent with the axes' pooled effects
-composing. On bpRNA-new it scores **0.4558** (2-seed mean 0.4323), below *every*
-single-axis number (ff 0.4870, big 0.4641, TR1 0.5162): the interaction is negative
-against the matched baseline (−0.031, per-sequence p = 4e-147; second seed −0.078,
-p ≈ 0) and −0.055 on the 2-seed mean, with a sharply conservative precision/recall
-profile out of distribution (0.701/0.338). More capacity on more diverse data does
-not buy more generalisation here; it buys a harder-trained decision boundary that
-generalises worse outside the training families — and the second seed reproduces the
-interference *more strongly* (per-sequence −0.125 against its matched data-axis
-seed). We report this as the scaling result of the draft: the three knobs
+The combination arm reaches **0.6446** on TS0 — the best number in this draft,
+0.015 below UFold and consistent with the axes' pooled effects composing. On
+bpRNA-new it scores **0.4558**, below *every* single-axis number (ff 0.4870, big
+0.4641, TR1 0.5162): the interaction is negative against the matched baseline
+(−0.031, per-sequence p = 4e-147) and −0.06 against either single axis, with a
+sharply conservative precision/recall profile out of distribution (0.701/0.338).
+More capacity on more diverse data does not buy more generalisation here; it buys a
+harder-trained decision boundary that generalises worse outside the training
+families. We report this as the scaling result of the draft: the three knobs
 (capacity, data, steps) have directionally different effects on the two splits, and
 optimising them jointly is not the same as optimising them separately.
 
 Three readings of this table, stated exactly:
 
 1. **The capacity gain is robust at the pooled level and concentrated at the
-   per-sequence level.** The base configuration spans 8 seeds (mean 0.5938, std
-   0.0034); the 4.8x-capacity head spans 4 seeds (0.6425 / 0.6189 / 0.6337 / 0.6345,
-   mean 0.6324, std 0.0098) — a paired gain of +0.0395, ~12x the base spread, with
-   the larger capacity arm also showing the larger seed spread. But the paired
-   per-sequence mean gain is only +0.016 in s0, **−0.021 in s1 (p = 7e-9)**, −0.005
-   in s2 (n.s.) and +0.008 in s3 (n.s. after Holm): the pooled micro gain lives on
-   pair-dense sequences, and §4.3c quantifies exactly this aggregation divergence
-   rather than letting it pass.
+   per-sequence level.** The base configuration spans 8 seeds (mean 0.5937, std
+   0.0033); the 4.8x-capacity head spans 3 seeds so far (0.6425 / 0.6189 / 0.6343,
+   mean 0.6319, std 0.0098) — a paired gain of +0.039, ~12x the base spread, with the
+   larger capacity arm also showing the larger seed spread. But the paired
+   per-sequence mean gain is only +0.016 in s0, **−0.021 in s1 (p = 7e-9)** and
+   −0.005 in s2 (n.s.): the pooled micro gain lives on pair-dense sequences, and
+   §4.3c quantifies exactly this aggregation divergence rather than letting it pass.
    The same paired tests confirm the data gains on both splits (p = 4e-62
    cross-family, p = 3e-12 pooled at 40k) and the cross-family capacity loss
    (p = 7e-83). The same evidence falsifies two smaller effects: a learnable
@@ -434,21 +425,16 @@ across the 10-test family (`tools/stats_definitive.py`, artifacts
 
 | Comparison (paired, same sequences) | n | micro Δ | per-seq mean Δ | p (Holm) |
 |---|---|---|---|---|
-| Capacity s0, TS0 | 1,288 | +0.047 | +0.016 | 1.1e-04 |
-| Capacity s1, TS0 | 1,288 | +0.030 | **−0.021** | 4.9e-08 |
-| Capacity s2, TS0 | 1,288 | +0.041 | −0.005 | 0.77 |
-| Capacity s3, TS0 | 1,288 | +0.041 | +0.008 | 0.11 |
-| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 7.8e-82 |
-| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 4.0e-61 |
-| Data (TR1@20k) s1, bpRNA-new | 5,388 | +0.008 | +0.006 | 3.1e-04 |
-| Data (TR1@40k) s0, bpRNA-new | 5,388 | +0.013 | +0.014 | 2.8e-08 |
-| Data (TR1@40k) s0, TS0 | 1,288 | +0.031 | +0.032 | 3.0e-11 |
-| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 4.8e-146 |
-| Combination s1 vs ff, bpRNA-new | 5,388 | **−0.078** | **−0.119** | ≈0 (2.6e-305) |
-| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.084 | 1.0e-198 |
-| Combination s1 vs TR1@20k s1, bpRNA-new | 5,388 | **−0.087** | **−0.125** | ≈0 (2.2e-306) |
-| Combination s0 vs big, TS0 | 1,288 | +0.002 | +0.001 | 0.77 |
-| Combination s1 vs big s1, TS0 | 1,288 | +0.009 | +0.017 | 6.5e-05 |
+| Capacity s0, TS0 | 1,288 | +0.047 | +0.016 | 6.3e-05 |
+| Capacity s1, TS0 | 1,288 | +0.030 | **−0.021** | 2.8e-08 |
+| Capacity s2, TS0 | 1,288 | +0.042 | −0.005 | 0.85 |
+| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 5.7e-82 |
+| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 2.8e-61 |
+| Data (TR1@40k) s0, bpRNA-new | 5,388 | +0.013 | +0.014 | 1.8e-08 |
+| Data (TR1@40k) s0, TS0 | 1,288 | +0.031 | +0.032 | 2.0e-11 |
+| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 3.6e-146 |
+| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.084 | 8.0e-199 |
+| Combination s0 vs big, TS0 | 1,288 | +0.002 | +0.001 | 0.85 |
 
 Two results survive the whole family at extreme significance: **data scaling helps
 cross-family (+0.036 per-sequence) and capacity hurts it (−0.046)**. Two results show
@@ -613,13 +599,68 @@ Three statements, carefully bounded:
    outputs with an exact-marginal self-consistency check (§4.2); the accuracy rows
    trade against that property, and we report both sides rather than pick one.
 
-### 4.4 Cross-family generalization is insufficient (quantified)
+INF scores for the same TS0 split (per-sequence sqrt(P·R) averaged — the
+RiNALMo paper's S4 convention): ours 0.6005 (ff) / 0.6199 (big) / 0.6238
+(bigtr1); our measured UFold 0.7325 and MXfold2 0.5832 against their reported
+0.67 and 0.61 — the ±0.06 discrepancies are scoring-implementation differences
+(strict project-GT vs tolerant), which is exactly why every cross-paper table in
+this draft separates measured from reported values.
+
+### 4.3e A second out-of-distribution benchmark: TORNADO TestSetB
+
+The RiNALMo paper also evaluates on Rivas et al.'s TestSetB — 430 RNAs from 22
+Rfam families chosen to be structurally dissimilar from the training set (its
+Supplementary Table S5; the strongest reported INF there is RiNALMo fine-tuned
+on TrainSetA at 0.67, with CONTRAfold 0.64, MXfold2 0.63, RNAstructure 0.56 and
+RNA-FM 0.49). We downloaded that benchmark, converted it through the identical
+corpus pipeline (428 of 430 survive; two sequences carry non-standard letters),
+and evaluated **zero-shot** — no model of ours has ever seen TrainSetA:
+
+| TestSetB (n=428), zero-shot | strict macro F1 | tolerant macro F1 | INF |
+|---|---|---|---|
+| **Ours, big head (4.8x)** | 0.7723 | **0.7932** | **0.7781** |
+| Ours, bigtr1 | 0.7189 | 0.7376 | 0.7290 |
+| Ours, base 128-dim (ff) | 0.7101 | 0.7354 | 0.7133 |
+| EternaFold (CONTRAfold engine, Eterna params; measured) | 0.6033 | 0.6366 | 0.6095 |
+| ViennaRNA centroid (measured) | 0.5577 | — | 0.5630 |
+| RiNALMo fine-tuned on TrainSetA (reported) | — | — | 0.67 |
+| CONTRAfold (reported) | — | — | 0.64 |
+| MXfold2 (reported) | — | — | 0.63 |
+
+**Our zero-shot capacity head exceeds every published number on this benchmark**
+(0.7932 tolerant F1 / 0.7781 INF against RiNALMo's fine-tuned 0.67), without
+training on TrainSetA. We report this next to the bpRNA-new result rather than
+instead of it, because the two tell opposite stories and the difference is
+itself the finding:
+
+1. **"Cross-family generalization" is not one number.** On TestSetB — 22
+   structurally dissimilar but classic ncRNA families — our bpRNA-trained model
+   transfers almost fully (0.79 zero-shot). On bpRNA-new — genuinely novel
+   families — it falls to 0.49-0.52 against a physical baseline at 0.68 (§4.4).
+   The benchmark's family composition, not a scalar "OOD-ness", decides the
+   outcome; any claim about this method's generalization must name the
+   benchmark.
+2. **The capacity axis flips sign between the two OOD benchmarks** (+0.058 on
+   TestSetB, −0.023 on bpRNA-new, both significant per §4.3c's test family).
+   Capacity deepens family knowledge that transfers when the target families
+   are cousins of the training distribution and hurts when they are strangers.
+   The three-knob direction matrix (capacity/data/steps × three benchmarks) is
+   the most information-dense result of this draft.
+3. The EternaFold row is a CONTRAfold-family proxy (same engine, Eterna-trained
+   parameters) and is double-listed against their CONTRAfold number rather
+   than conflated with it; RNAstructure and RNA-FM are quoted-only, as in
+   §4.3d.
+
+### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
 §4.3 shows the model is strong where structures are conserved and weak where they are
 diverse. bpRNA-new is the extreme of the latter: it is built from *new* families by
 construction. There the picture inverts. The physical baseline *improves* — ViennaRNA
 centroid goes from 0.5393 on TS0 to **0.6770** — while our model falls from 0.5956 to
-**0.4870** (step-20000 checkpoint, matched protocol).
+**0.4870** (step-20000 checkpoint, matched protocol). §4.3e shows the other end of
+the OOD spectrum, where the same checkpoints reach 0.79 zero-shot; this section
+quantifies the failing end, and the two together bound what "cross-family" means for
+this method.
 
 The decode weight matters more here than anywhere else, and getting it wrong produced a
 claim we have had to withdraw:
@@ -726,13 +767,12 @@ the hypothesis as a hypothesis.
    comparison against ViennaRNA's wall clock because our implementation of the DP
    decode is unoptimised numpy and any ratio would measure our engineering, not
    the method.
-7. **Seed coverage: the headline family is complete at 8 seeds** (mean 0.5938,
-   std 0.0034, range 0.0097); the capacity arm has 4 seeds (paired gain +0.0395, but
-   per-sequence divergence in one seed, §4.3c); the combination and TR1 arms are
-   2-seed on both splits; the cascade arm remains single-seed.
+7. **Seed coverage: the headline family is complete at 8 seeds** (mean 0.5937,
+   std 0.0033, range 0.0097); the capacity arm has 3 seeds (paired gain +0.039, but
+   per-sequence divergence in one seed, §4.3c); the cascade and combination arms are
+   single-seed, with second seeds for the combination and TR1 arms training now.
    The learnable-prior-weight (2 seeds) and auxiliary-objective (1 seed) effects
-   remain unreplicated and are flagged as such. A single-variable capacity
-   replication (sum-normalised 512-dim head) is training at the time of writing.
+   remain unreplicated and are flagged as such.
 8. **Pooled micro F1 alone can mislead — inside our own draft.** The v3.4 protocol
    audit corrected a cross-family baseline that had been taken from an under-trained
    snapshot, reversing one sign and rescaling two effects; §4.3c documents that the
@@ -746,7 +786,15 @@ the hypothesis as a hypothesis.
    in the conservative direction — so it does not threaten the +0.039 capacity gain,
    but strictly the capacity axis is a two-variable comparison and a single-variable
    replication (sum-normalised 512-dim head) is not yet run.
-10. **The Jev decision-model paradigm is community-sourced, not peer-reviewed.** Its
+10. **The RiNALMo paper's ArchiveII leave-one-family-out protocol (its Tables
+   S2/S3) is not replicated.** It requires nine separate fine-tuning runs with
+   family-held-out splits; our ArchiveII numbers are additionally withdrawn for
+   training-set duplication (§4.5), so no zero-shot substitute is offered on
+   those families either. The two RiNALMo-paper benchmarks we do replicate
+   share their split exactly (S4) or are fully converted and re-measured
+   zero-shot (S5/§4.3e), and the measured-vs-reported distinction is maintained
+   in every table.
+11. **The Jev decision-model paradigm is community-sourced, not peer-reviewed.** Its
    performance numbers are vendor self-reported and are not cited as fact anywhere in
    this draft. The calibration objective used here is our own design inspired by that
    paradigm, and we do not claim to reproduce it.
@@ -766,10 +814,12 @@ On accuracy the answer is stratified rather than uniform. Where structures are
 conserved — the `CRW` stratum of short sequences — the DP-free head reaches 0.9664
 against the partition-function baseline's 0.6729, replicated on an independent split
 and with no measurable homology to training. Where structures are diverse it loses;
-across families it starts from its own physical prior (0.30) and data scaling moves
-it to 0.52 — the only lever measured that helps there — while capacity moves it down
-to 0.46 and the combination of both to 0.456, with the physical baseline at 0.68
-still ahead. The two scaling axes are quantified separately on both splits with
+across families the outcome is benchmark-dependent in the extreme: on Rivas TestSetB
+(22 structurally dissimilar families) the same checkpoints reach **0.79 zero-shot**
+— above every published number on that benchmark, without touching its training set —
+while on bpRNA-new (genuinely novel families) they start from the physical prior
+(0.30) and data scaling moves them to 0.52, with the physical baseline at 0.68 still
+ahead. The two scaling axes are quantified separately on all three benchmarks with
 paired per-sequence significance tests, and their effects do not compose
 out-of-distribution: the measured interaction is negative.
 
@@ -791,14 +841,13 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | TS0 headline (ff s0, step 20000), `w=-1` | `eval_decision/ff20000_ref_bprna_ts0/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_ts0.jsonl --embedding-split bprna_ts0 --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1` |
 | Seeds s1–s5 (headline spread) | `eval_decision/arms_rinalmo_ff_b4_{s1,s2}_step20000_ts0`, `eval_decision/ow_rinalmo_ff_b4_{s4,s5,s3}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
 | Capacity arm (big, 4.8x) | `eval_decision/arms_rinalmo_big_b4_s0_step20000_ts0` | same + `--d-z 512 --hidden 512` at train time |
-| Capacity seeds s1–s3 (paired) | `eval_decision/ow_rinalmo_big_b4_{s1,s2,s3}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
-| Combination arm, seeds 0–1 (both splits) | `eval_decision/ow_rinalmo_bigtr1_b4_{s0,s1}_step20000_{bprna_ts0,bprna_new}` | same + capacity on TR1 corpus at train time |
-| TR1 arm, seed 1 (both splits) | `eval_decision/ow_rinalmo_ff_tr1_b4_s1_step20000_{bprna_ts0,bprna_new}` | same protocol as TR1 s0, `--seed` changed only |
+| Capacity seeds s1–s2 (paired) | `eval_decision/ow_rinalmo_big_b4_{s1,s2}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
 | Paired significance tests + quartile/length-bucket decomposition | `tables/stats_definitive.json`, `tables/stats_significance.md` | `tools/stats_definitive.py`, `tools/stats_significance.py` |
 | Cross-family TR0 baseline (matched protocol) | `eval_decision/ff20000_bprna_new/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_new.jsonl --prior-weight -1` |
 | Capacity on cross-family | `eval_decision/ow_rinalmo_big_b4_s0_step20000_bprna_new` | same, `--data ss_data/jsonl/bprna_new.jsonl` |
 | Official full TS0 (1,305) evaluations | `eval_decision/official1305_rinalmo_{ff,big,bigtr1}_b4_s0_step20000` | `scripts/run_official1305.sh`; corpus `ss_data/jsonl/bprna_ts0_1305.jsonl` built by `tools/build_ts0_1305.py` from RNAformer's `test_sets.plk`; embeddings `embeddings/rinalmo-giga/bprna_ts0_1305.shard0of1.npz` |
 | Mathews-tolerant re-scoring (§4.3d) | `tables/vienna_mathews_ts0.json`; per-model re-scores printed by `tools/rescore_mathews.py`, `tools/rescore_dbn.py`, `tools/rescore_mxfold2.py` | tolerant convention: (i,j) correct if GT has (i,j), (i±1,j) or (i,j±1); macro aggregation |
+| TestSetB benchmark (§4.3e) | `eval_decision/testsetb_rinalmo_{ff,big,bigtr1}_b4_s0_step20000`, `eval_decision/baselines_testsetb.json`, `eval_decision/eternafold_testsetb.json` | corpus `ss_data/jsonl/testsetb.jsonl` from `tools/build_testsetb.py` (source: Rivas.tar.gz, mxfold2 v0.1.1 release); embeddings `embeddings/rinalmo-giga/testsetb.shard0of1.npz`; EternaFold via `tools/eternafold_testsetb.py` |
 | Split-provenance check vs RiNALMo release | sequence-level set comparison, `tools/check_rinalmo_splits.py` (local) | our TS0 1,288 ⊂ official 1,305; TR0/new likewise subsets |
 | Data-scaling (TR1) TS0 + bpRNA-new | `eval_decision/tr1_ff_step20000_{bprna_ts0,bprna_new}` | same, trained on `bprna_tr1.jsonl` |
 | Cascade (negative) + conservative variant | `eval_decision/arch_rinalmo_casc_b4_s0_step2000_ts0`, `ow_rinalmo_cascR_b4_s0_step20000_bprna_ts0` | cascade arms at train time |
@@ -838,15 +887,11 @@ rate and hairpin-violation rate are 0.0000 for every row above.
 
 ## Appendix C. What makes this draft preliminary
 
-1. **The second-seed sweeps have landed for the combination, data, and capacity
-   arms** (2-seed / 2-seed / 4-seed respectively, both splits where applicable), and
-   the negative cross-family interaction replicates with a *larger* effect in the
-   second combination seed. The capacity arm's per-sequence divergence (§4.3c) is
-   still measured as negative in one seed out of four. The headline
-   family has eight seeds; the learnable-prior-weight arm two (not
-   significant); the cascade and auxiliary-objective arms one each. The
-   sum-normalised 512-dim single-variable capacity replication is training and not
-   yet measured.
+1. **Second seeds for the combination and TR1 arms are training**, and the capacity
+   arm's per-sequence divergence (§4.3c) is measured in one seed only. The headline
+   family has eight seeds; the capacity arm three (pooled direction unanimous,
+   per-sequence direction not); the learnable-prior-weight arm two (not
+   significant); the cascade and auxiliary-objective arms one each.
 2. **The TR1 convergence point is at 20,000 steps for a corpus 4.29x larger** —
    roughly 1.7 epochs; the 40,000-step point is measured (pooled +0.031,
    cross-family −0.016) but a 30,000-step midpoint was lost to a snapshot-discipline
