@@ -478,6 +478,19 @@ Jev 的训练方法名为 **RLCD（Reinforcement Learning for Calibrated Decisio
 | ❌ 不得再主张 | 首次给出经校准验证的免 DP 配对概率 | **RNAformer 是反例**。UFold 4.1× 过自信这一点仍真，但推不出"既有方法都没校准" |
 | ❌ 不得再主张 | C1 是方法新颖性 | C1 定位为**评测 + 自洽性贡献** |
 
+#### 与预训练 RNA LM 论文口径的对齐状态（2026-09-25 §14.62 新增）
+
+- **split 已对齐**：我们 TS0 1,288 = RiNALMo 官方 TS0 1,305 的严格子集（序列级验证）；
+  官方全集评测落盘（`official1305_*`，ff 0.5945 / big 0.6421 / bigtr1 0.6446 strict micro）。
+- **判分口径已实现**：Mathews 宽容判分（(i±1,j)/(i,j±1) 算对）+ macro——RiNALMo 论文
+  Methods 声明口径；`tools/rescore_mathews.py` / `rescore_dbn.py` / `rescore_mxfold2.py` /
+  `vienna_mathews.py` 全部落盘。宽容口径下：UFold 0.7807 / RNAformer 0.7779 /
+  我们 0.6368–0.6474 / MXfold2 0.6102 / Vienna centroid 0.5665。
+- **RiNALMo fine-tuned 结构头权重不可得**（Zenodo，集群无外网）——只能引用论文值，
+  且图读数字不可引用；待精确核读其正文表格后才可入主表（目前 draft 只做" vicinity "
+  表述，不做有序比较）。RNA-FM 同理。
+- **红线**：论文报告值必须标注"reported, not re-run"；判分协议差异必须逐行声明。
+
 #### 新增写作红线（与 §2.4 六条并列，共八条）
 
 **不得出现「首次给出经校准验证的免 DP 配对概率」**。可以写「首次**系统评测** RNA 配对概率的校准」，不可以写「首次实现校准」。
