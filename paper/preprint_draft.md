@@ -621,10 +621,19 @@ the hypothesis as a hypothesis.
    reported as the honest ceiling of this recipe at this budget. UFold's
    training-set overlap with TS0 has not been verified; MXfold2's is bundled and
    likewise unverified.
-6. **Speed claims are withheld.** The decode path used in every number above is an
-   exact `O(L^3)` dynamic program, so the "DP-free" property currently refers only to
-   the absence of the partition function, not to a wall-clock advantage. No speed-up
-   ratio is claimed anywhere in this draft.
+6. **No speed-up ratio is claimed, but measured latency is reported.** The decode
+   path used in every number above is an exact `O(L^3)` dynamic program, so the
+   "DP-free" property refers only to the absence of the partition function, not to
+   a wall-clock advantage. Measured per-sequence end-to-end latency of System-1
+   (one forward pass + legal decode, batch 1, on the same A100 as every other
+   measurement) is: median 133 ms at <=100 nt (n=565), 167 ms at 100–200 nt
+   (n=528), 716 ms at 200–400 nt (n=167) and 1,341 ms at 400–600 nt (n=28) for the
+   128-dim head; the 512-dim head is comparable (80 / 166 / 778 / 2,256 ms by
+   bucket median). The forward pass and the decode contribute roughly equally at
+   long lengths. These are honest numbers, not a marketing claim, and we make no
+   comparison against ViennaRNA's wall clock because our implementation of the DP
+   decode is unoptimised numpy and any ratio would measure our engineering, not
+   the method.
 7. **Seed coverage: the headline family is complete at 8 seeds** (mean 0.5937,
    std 0.0033, range 0.0097); the capacity arm has 3 seeds (paired gain +0.039, but
    per-sequence divergence in one seed, §4.3c); the cascade and combination arms are
@@ -726,7 +735,7 @@ rate and hairpin-violation rate are 0.0000 for every row above.
 | Q8 | The cotranscriptional order is trivial. | §3 — no order claim is made anywhere in this draft |
 | Q9 | bpRNA-1m is redundant and may contaminate the test set. | §4.5 items 1-2; §5 item 4 |
 | Q10 | Anyone can get a zero illegal-structure rate. | §4.1 — reported as a guarantee, not as a contribution |
-| Q11 | Is the speed-up against McCaskill fair? | §5 item 6 — no speed-up is claimed |
+| Q11 | Is the speed-up against McCaskill fair? | §5 item 6 — no speed-up is claimed; measured latency is reported instead |
 | Q12 | Is the Jev citation reliable? | §5 item 8 |
 
 ## Appendix C. What makes this draft preliminary
