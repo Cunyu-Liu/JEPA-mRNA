@@ -170,9 +170,16 @@ running and is therefore *not* reported here.
 **Scaling axes.** The headline head uses a 128-dim pair representation; the capacity
 arm scales it to 512 (4.8x parameters). The data axis swaps the training corpus from
 TR0 (10,682 sequences) to TR1 (45,865 sequences, 4.29x after de-duplication) with
-everything else fixed. Both axes are reported at 20,000 steps, `w=-1` decode, on the
-same splits. The seed spread of the base configuration across 8 seeds is **mean
-0.5937, std 0.0033** (range 0.5893–0.5990); the capacity arm across 3 seeds is
+everything else fixed — the data and combination axes train with the same NLL
+normalisation as the base family. The capacity arm, however, was launched with
+length-normalised NLL where the base family uses unnormalised (sum) NLL, so the
+capacity comparison carries a second changed variable; a controlled pair at 128 dims
+(len 0.5870 vs sum 0.5893, both at 20k) bounds that confound at 0.002 — inside the
+seed spread and in the direction that would *understate* the capacity gain — so it
+cannot account for the +0.039 effect, and we disclose it rather than hide it. Both
+axes are reported at 20,000 steps, `w=-1` decode, on the same splits. The seed spread
+of the base configuration across 8 seeds is **mean 0.5937, std 0.0033** (range
+0.5893–0.5990); the capacity arm across 3 seeds is
 **0.6425 / 0.6189 / 0.6343** (mean 0.6319, std 0.0098) — its paired capacity gain is
 **+0.0394 ± 0.0088**, about 12x the base spread, and its own seed spread is visibly
 larger than the base configuration's, consistent with capacity amplifying
@@ -631,7 +638,13 @@ the hypothesis as a hypothesis.
    seeds. We report the audit trail openly because aggregation and protocol
    mismatches are failure modes any evaluation of this kind inherits, not because
    we believe we are uniquely error-prone.
-9. **The Jev decision-model paradigm is community-sourced, not peer-reviewed.** Its
+9. **The capacity comparison carries a normalisation confound.** The capacity arm
+   trains with length-normalised NLL while the base family uses unnormalised NLL
+   (§3). A matched control bounds the confound at 0.002 — inside the seed spread and
+   in the conservative direction — so it does not threaten the +0.039 capacity gain,
+   but strictly the capacity axis is a two-variable comparison and a single-variable
+   replication (sum-normalised 512-dim head) is not yet run.
+10. **The Jev decision-model paradigm is community-sourced, not peer-reviewed.** Its
    performance numbers are vendor self-reported and are not cited as fact anywhere in
    this draft. The calibration objective used here is our own design inspired by that
    paradigm, and we do not claim to reproduce it.
