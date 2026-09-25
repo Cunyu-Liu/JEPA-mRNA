@@ -8,6 +8,13 @@ Fixes two ledger errors found 2026-09-25 afternoon:
 
 Adds: TR1@20k data comparison, per-seed macro vs micro divergence,
 length-bucket decomposition of capacity vs data gains, Wilcoxon + Holm.
+
+v3 (2026-09-25 evening, 14.64): second seeds land. big s3 (capacity 4th
+seed), bigtr1 s1 + ff_tr1 s1 (second seeds, both splits). Also documents
+the artifact drift: ff s7 and big s2 result.json were re-produced by the
+watch self-heal loops (watch3 19:23 / watch4 20:51) after an unknown
+cleanup removed them; the re-evals are protocol-identical and moved f1 by
+0.0006-0.0007 (below seed std), so current on-disk values are canonical.
 """
 import json
 import statistics as st
@@ -45,6 +52,7 @@ BIG = {
     0: load(ev("arms", "big_b4_s0", 20000, "ts0")),
     1: load(ev("ow", "big_b4_s1", 20000, "bprna_ts0")),
     2: load(ev("ow", "big_b4_s2", 20000, "bprna_ts0")),
+    3: load(ev("ow", "big_b4_s3", 20000, "bprna_ts0")),
 }
 
 # Cross-family (bprna_new), all matched protocol @20k unless noted
@@ -55,6 +63,12 @@ TR1_40K_NEW = load(ev("ow", "ff_tr1_b4_s0", 40000, "bprna_new"))            # 0.
 BIGTR1_NEW = load(ev("ow", "bigtr1_b4_s0", 20000, "bprna_new"))             # 0.4558
 TR1_40K_TS0 = load(ev("ow", "ff_tr1_b4_s0", 40000, "bprna_ts0"))            # 0.6147
 BIGTR1_TS0 = load(ev("ow", "bigtr1_b4_s0", 20000, "bprna_ts0"))             # 0.6446
+# 14.64 second seeds
+BIGTR1_S1_TS0 = load(ev("ow", "bigtr1_b4_s1", 20000, "bprna_ts0"))          # 0.6282
+BIGTR1_S1_NEW = load(ev("ow", "bigtr1_b4_s1", 20000, "bprna_new"))          # 0.4088
+TR1_S1_20K_TS0 = load(ev("ow", "ff_tr1_b4_s1", 20000, "bprna_ts0"))         # 0.5842
+TR1_S1_20K_NEW = load(ev("ow", "ff_tr1_b4_s1", 20000, "bprna_new"))         # 0.4954
+TR1_20K_TS0 = load(ART / "eval_decision/tr1_ff_step20000_bprna_ts0/result.json")  # 0.5840
 
 print("=" * 72)
 print("1. EXACT 8-SEED BASE (TS0 micro)")
@@ -64,13 +78,29 @@ for s, v in zip(sorted(FF), vals):
 print(f"   mean = {st.mean(vals):.5f}   std = {st.stdev(vals):.5f}   n = {len(vals)}")
 
 print("=" * 72)
-print("2. CAPACITY 3-SEED PAIRED (TS0)")
+print("2. CAPACITY 4-SEED PAIRED (TS0)")
 for s in sorted(BIG):
     dm = BIG[s][1] - FF[s][1]
     dg = BIG[s][2] - FF[s][2]
     print(f"   s{s}: micro {BIG[s][1]:.4f} vs {FF[s][1]:.4f} ({dm:+.4f})   macro {BIG[s][2]:.4f} vs {FF[s][2]:.4f} ({dg:+.4f})")
 diffs = [BIG[s][1] - FF[s][1] for s in sorted(BIG)]
-print(f"   paired micro gain: mean {st.mean(diffs):+.4f} ± {st.stdev(diffs):.4f}")
+print(f"   paired micro gain: mean {st.mean(diffs):+.4f} ± {st.stdev(diffs):.4f}  (n={len(diffs)})")
+
+print("=" * 72)
+print("2b. SECOND-SEED REPLICATIONS (14.64)")
+print(f"   bigtr1 s1 vs s0:  TS0 {BIGTR1_S1_TS0[1]:.4f} vs {BIGTR1_TS0[1]:.4f} ({BIGTR1_S1_TS0[1]-BIGTR1_TS0[1]:+.4f})   new {BIGTR1_S1_NEW[1]:.4f} vs {BIGTR1_NEW[1]:.4f} ({BIGTR1_S1_NEW[1]-BIGTR1_NEW[1]:+.4f})")
+print(f"   ff_tr1 s1 vs TR1@20k s0:  TS0 {TR1_S1_20K_TS0[1]:.4f} vs {TR1_20K_TS0[1]:.4f} ({TR1_S1_20K_TS0[1]-TR1_20K_TS0[1]:+.4f})   new {TR1_S1_20K_NEW[1]:.4f} vs {TR1_20K_NEW[1]:.4f} ({TR1_S1_20K_NEW[1]-TR1_20K_NEW[1]:+.4f})")
+for name, (per, micro, macro) in [
+    ("bigtr1 s1 @20k", BIGTR1_S1_TS0),
+]:
+    print(f"   {name}: micro {micro:.4f} macro {macro:.4f}")
+bigtr1_pair = [BIGTR1_S1_TS0[1], BIGTR1_TS0[1]]
+ff_base = st.mean(vals)
+print(f"   bigtr1 2-seed TS0: {bigtr1_pair[1]:.4f}/{bigtr1_pair[0]:.4f} mean {st.mean(bigtr1_pair):.4f}  (vs ff 8-seed {ff_base:.4f}: {st.mean(bigtr1_pair)-ff_base:+.4f})")
+combo_pair_new = [BIGTR1_NEW[1], BIGTR1_S1_NEW[1]]
+print(f"   bigtr1 2-seed new: {combo_pair_new[0]:.4f}/{combo_pair_new[1]:.4f} mean {st.mean(combo_pair_new):.4f}  (vs ff s0 new {FF_NEW[1]:.4f}: {st.mean(combo_pair_new)-FF_NEW[1]:+.4f})")
+tr1_pair_new = [TR1_20K_NEW[1], TR1_S1_20K_NEW[1]]
+print(f"   ff_tr1 2-seed new: {TR1_20K_NEW[1]:.4f}/{TR1_S1_20K_NEW[1]:.4f} mean {st.mean(tr1_pair_new):.4f}  (vs ff s0 new: {st.mean(tr1_pair_new)-FF_NEW[1]:+.4f})")
 
 print("=" * 72)
 print("3. CROSS-FAMILY CORRECTED TABLE (bprna_new, matched protocol)")
@@ -78,13 +108,15 @@ rows = [
     ("ff TR0 @20k (s0)", FF_NEW),
     ("big TR0 @20k (s0)", BIG_NEW),
     ("ff TR1 @20k (s0)", TR1_20K_NEW),
+    ("ff TR1 @20k (s1)", TR1_S1_20K_NEW),
     ("ff TR1 @40k (s0)", TR1_40K_NEW),
     ("bigtr1 @20k (s0)", BIGTR1_NEW),
+    ("bigtr1 @20k (s1)", BIGTR1_S1_NEW),
 ]
 base_m, base_g = FF_NEW[1], FF_NEW[2]
 for name, (per, micro, macro) in rows:
     print(f"   {name:22s} micro {micro:.4f} ({micro-base_m:+.4f})   macro {macro:.4f} ({macro-base_g:+.4f})")
-print(f"   --- TS0 side: TR1@40k {TR1_40K_TS0[1]:.4f} ({TR1_40K_TS0[1]-st.mean(vals):+.4f}), bigtr1 {BIGTR1_TS0[1]:.4f}")
+print(f"   --- TS0 side: TR1@40k {TR1_40K_TS0[1]:.4f} ({TR1_40K_TS0[1]-st.mean(vals):+.4f}), bigtr1 s0 {BIGTR1_TS0[1]:.4f}, bigtr1 s1 {BIGTR1_S1_TS0[1]:.4f}")
 
 
 def wtest(label, A, B):
@@ -106,13 +138,18 @@ tests = [
     wtest("capacity_s0_ts0", BIG[0][0], FF[0][0]),
     wtest("capacity_s1_ts0", BIG[1][0], FF[1][0]),
     wtest("capacity_s2_ts0", BIG[2][0], FF[2][0]),
+    wtest("capacity_s3_ts0", BIG[3][0], FF[3][0]),
     wtest("data_20k_s0_new", TR1_20K_NEW[0], FF_NEW[0]),
+    wtest("data_20k_s1_new", TR1_S1_20K_NEW[0], FF_NEW[0]),
     wtest("data_40k_s0_new", TR1_40K_NEW[0], FF_NEW[0]),
     wtest("data_40k_s0_ts0", TR1_40K_TS0[0], FF[0][0]),
     wtest("capacity_s0_new", BIG_NEW[0], FF_NEW[0]),
     wtest("combo_s0_new_vs_ff", BIGTR1_NEW[0], FF_NEW[0]),
+    wtest("combo_s1_new_vs_ff", BIGTR1_S1_NEW[0], FF_NEW[0]),
     wtest("combo_s0_new_vs_tr1", BIGTR1_NEW[0], TR1_40K_NEW[0]),
+    wtest("combo_s1_new_vs_tr1_s1", BIGTR1_S1_NEW[0], TR1_S1_20K_NEW[0]),
     wtest("combo_s0_ts0_vs_big", BIGTR1_TS0[0], BIG[0][0]),
+    wtest("combo_s1_ts0_vs_big", BIGTR1_S1_TS0[0], BIG[1][0]),
 ]
 m = len(tests)
 order = sorted(range(m), key=lambda i: tests[i]["p"])
@@ -152,6 +189,13 @@ out = dict(
     seed8=dict(values=[round(v, 4) for v in vals], mean=round(st.mean(vals), 5), std=round(st.stdev(vals), 5)),
     capacity_paired=[dict(seed=s, micro=round(BIG[s][1], 4), macro=round(BIG[s][2], 4),
                           ff_micro=round(FF[s][1], 4), ff_macro=round(FF[s][2], 4)) for s in sorted(BIG)],
+    capacity_gain=dict(mean=round(st.mean(diffs), 5), std=round(st.stdev(diffs), 5), n=len(diffs)),
+    second_seeds=dict(
+        bigtr1=dict(ts0=[round(BIGTR1_TS0[1], 4), round(BIGTR1_S1_TS0[1], 4)],
+                    new=[round(BIGTR1_NEW[1], 4), round(BIGTR1_S1_NEW[1], 4)]),
+        ff_tr1_20k=dict(ts0=[round(TR1_20K_TS0[1], 4), round(TR1_S1_20K_TS0[1], 4)],
+                        new=[round(TR1_20K_NEW[1], 4), round(TR1_S1_20K_NEW[1], 4)]),
+    ),
     cross_family={name: dict(micro=round(m, 4), macro=round(g, 4)) for name, (_, m, g) in rows},
     wilcoxon=tests,
 )

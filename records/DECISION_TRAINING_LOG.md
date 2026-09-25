@@ -2901,3 +2901,90 @@ pgrep + train_log tail 复核（18:18，日志全部 <4 min 新鲜，四个训�
 - **下轮（~20:15）预期**：bigtr1_s1 双 split 应已出数 → 按 §14.59 基线
   四查写 §14.64+，重点判定 TS0 预期 ~0.64、new 预期 ~0.45（交互为负
   复现）。
+
+## §14.64 三臂第二 seed 出数：交互为负更强复现、容量 4-seed、数据轴保号；artifact 自愈重评事件记账（2026-09-25 22:45，关键）
+
+监控周期 22:19 复核：bigtr1_b4_s1 / big_b4_s3 / ff_tr1_b4_s1 三臂均
+**DONE@20000 干净收尾**（stdout 尾部 DONE 行 + resume.pt step 20000 落盘），
+bigsum_b4_s0 19.5k/20k 在训（日志新鲜，watch5 待接管）。watch3（20:27/20:34）
+与 watch4（21:00/21:07/21:12）自动评出 5 个新 result.json。
+
+### 一、意外发现：两个 result.json 被静默重写（自愈重评，先记账再判数）
+
+跑 check_draft_v34 发现 19/24 FAIL——与 §14.63 记录的 24/24 矛盾。取证结论：
+
+- **ff_b4_s7**（原 07:03 master_watch 评出 0.5967）与 **big_b4_s2**（原 13:51
+  评出 0.6343）的 result.json 在 19:25 / 20:57 被 watch3 / watch4 **重新生成**
+  （mtime + watch 日志头行对齐；两者的重评协议与原始协议完全一致：w=-1、
+  VL0 校准、exact 解码、1288 序列）。
+- watcher 的 `[ -f result.json ] && return 0` 守卫只在文件缺失时触发——说明
+  15:52 统计定稿（§14.59）之后的某个时点，这两个文件曾被某次未知清理删除
+  （集群上另有两个并行 agent 会话在跑监控类任务，具体删除者无法追溯），
+  watcher 周期巡检时自动补评。
+- **数值影响**：s7 0.5967→0.5974、big_s2 0.6343→0.6337，各移动 0.0006~0.0007，
+  远低于 8-seed std（0.0034）与容量 seed std（0.0098）。重评为同协议，
+  **按 §14.59"以 artifact 为准"红线，当前盘上数值为正典（canonical）**。
+- 连带统计修正：8-seed mean 0.5937→**0.5938**、std 0.0033→0.0034；容量
+  3-seed +0.0394±0.0088 →（并入 s3 后 4-seed）**+0.0395±0.0072**。方向、
+  量级、结论全部不变；std 反而收窄（第 4 seed 落在 0.6345，紧贴均值）。
+- **流程教训（补入四查清单执行细则）**：任何"check 曾 PASS"的记录只对
+  当时快照负责；每轮出数后必须**重跑**一致性检查，并核对关键 artifact 的
+  mtime 是否晚于上轮统计时间戳。watch 自愈 = 好事（结果目录非终态，
+  有自愈能力的监控链路更可信），但漂移必须显式记账。
+
+### 二、基线四查（§14.59 协议，全部通过）
+
+| 臂 | checkpoint 步数 | prior/校准 | split/解码 | nll_norm |
+|---|---|---|---|---|
+| bigtr1_b4_s1（ts0/new） | 20000 ✅ | w=-1（pw_eff 0.2564）+ VL0 Platt ✅ | 1288/5388，exact ✅ | length（与 big 系一致） |
+| big_b4_s3（ts0） | 20000 ✅ | w=-1（pw_eff 0.2384）+ VL0 ✅ | 1288，exact ✅ | length ✅ |
+| ff_tr1_b4_s1（ts0/new） | 20000 ✅ | w=-1（pw_eff 0.2814）+ VL0 ✅ | 1288/5388，exact ✅ | sum（与 ff 系一致） |
+| bigsum_b4_s0 | 训中（挂账） | watch5 待评 | — | sum ✅（run_meta 核对） |
+
+### 三、三个判定
+
+1. **bigtr1_s1（组合臂第 2 seed）：TS0 0.6282（预期 ~0.64 略低，但在组合臂
+   seed 间差内）、new 0.4088——交互为负以更大间距复现（用户预期 ~0.45 若
+   交互为负，实测更负）**。配对检验：vs ff baseline micro −0.078（per-seq
+   −0.119，p≈0）；vs 同 seed 数据臂 ff_tr1_s1 micro −0.087（per-seq −0.125，
+   p≈0）。2-seed 均值：TS0 0.6364（+0.043 vs ff 8-seed）、new 0.4323
+   （−0.055 vs ff baseline）。§14.57 的"跨家族不可加"从单 seed 观察升级为
+   **2-seed 复现结论**，且第二 seed 方向更强——不是 seed 运气。
+2. **big_s3（容量第 4 seed）：0.6345**。4-seed：0.6425/0.6189/0.6337/0.6345，
+   mean 0.6324 std 0.0098，配对增益 +0.0395±0.0072（全部四 seed 同向，
+   mean 与 3-seed 几乎不动、std 收窄 18%）。**容量结论终版：+0.040 量级、
+   4-seed 全同向、pooled 显著**（per-seq 分歧仅 s1 一个 seed，已在
+   §4.3c 披露）。
+3. **ff_tr1_s1（TR1 第 2 seed）：TS0 0.5842 vs 0.5840（复现精度 0.0002，
+   干净到罕见）、new 0.4954**。数据轴 2-seed：TS0 0.5841、new 0.5058
+   （+0.019 vs ff baseline，两 seed 均高于基线但 s1 端增益收窄至 +0.008）。
+   **"数据扩容的收益在 OOD"结论保持，但幅度估计从单 seed +0.029 收敛到
+   2-seed +0.019——draft 数字改按 2-seed 口径写，单 seed +0.029 仍报
+   p=4e-62 的配对检验（s0 内配对不受 seed 间波动影响）**。
+
+### 四、产物
+
+- `tools/stats_definitive.py` v3：容量 4-seed、2-seed 复现段、15 检验
+  （新增 capacity_s3 / data_20k_s1 / combo_s1×2，combo_s1 对照改为同 seed
+  的 ff_tr1_s1——配对干净）；`tables/stats_definitive.json` 重落盘
+  （含 second_seeds 与 capacity_gain 字段）。
+- draft **v3.6**：banner 记第二 seed 与 artifact 漂移正典化；主表改
+  多 seed 均值口径（TS0 列 0.5938/0.6324/0.5841/0.6364，new 列
+  0.5058/0.4323）；4.3c 表扩到 15 行（s1 组合行 p≈0 记下溢精确值
+  2.6e-305/2.2e-306）；Appendix A 补 2-seed artifact 行；C1 预告性
+  条目改为"已落地"。
+- `tools/check_draft_v34.py` 升级 **37 项**断言（4-seed 数值、2-seed 均值、
+  漂移正典 s7=0.5974 / big_s2=0.6337、stale-mean 巡逻扩到 0.5937）：
+  **37/37 PASS**。
+
+### 五、挂账与下轮
+
+- **bigsum（§14.60 混杂闭环）：19.5k/20k @22:49，ETA 完训 ~23:03、
+  watch5 双 split 评测 ETA ~23:35-23:50**。判定标准不变：TS0 micro
+  ≥0.63 → 容量单变量复现成立、混杂终确认闭环；<0.63 → 归一化混杂
+  上修。下轮监控周期直接收数。
+- GPU：共享卡无 ≥15GB 且无任务卡的空位（卡 1 空闲 15.9GB 但 util 100%
+  他人任务临界），排期无新臂——等 bigsum 出数后再决策（可能方向：
+  bigsum s1 第二 seed，或按 §14.62 挂起的 Mathews 口径补齐项）。
+- 下轮例行：bigsum 收数 + §14.65（混杂终判）+ draft v3.7（如 bigsum
+  ≥0.63，把 §5 item 9 的"not yet run"改为已复现）。
