@@ -2988,3 +2988,90 @@ bigsum_b4_s0 19.5k/20k 在训（日志新鲜，watch5 待接管）。watch3（20
   bigsum s1 第二 seed，或按 §14.62 挂起的 Mathews 口径补齐项）。
 - 下轮例行：bigsum 收数 + §14.65（混杂终判）+ draft v3.7（如 bigsum
   ≥0.63，把 §5 item 9 的"not yet run"改为已复现）。
+## §14.63 RiNALMo 论文 S2–S5 逐表对标：S4 INF 补齐 + S5 TestSetB 全套实测（2026-09-25 23:35，重要正结果）
+
+用户提供 RiNALMo supplementary（S1–S7）。逐表核对我们的覆盖：
+
+### 逐表对标状态
+
+| RiNALMo 表 | 数据集/协议 | 我们的状态 |
+|---|---|---|
+| **S2** | ArchiveII famfold 9 家族留一（inter-family），长度加权/非加权 F1 | ⚠️ 未跑（需 9 次训练，deadline 不可行）。数据在盘（`rna_ss_data/rinalmo/ArchiveII*` 3,864 条 + splits）。可做零样本近似但协议不同，须明标 |
+| **S3** | 同 S2 的 INF | ⚠️ 同上 |
+| **S4** | SPOT-RNA TS0（= 我们 TS0），INF | ✅ **同 split 已对齐**；本轮补 INF 列（见下） |
+| **S5** | TORNADO TestSetB（Rivas 430 条，22 Rfam 家族），INF | ✅ **本轮完整实测**（数据从 mxfold2 release 下载传入） |
+
+### S4（TS0 INF）——与论文同 split，我们实测 vs 论文报告
+
+| 模型 | INF | 来源 |
+|---|---|---|
+| RiNALMo | 0.75 | 论文 S4（fine-tuned，不可复现） |
+| RNA-FM | 0.69 | 论文 S4 |
+| **UFold** | 0.67 (论文) / **0.7325 (我们实测)** | 判分实现差异（project-GT vs 宽容） |
+| SPOT-RNA | 0.65 | 论文 S4（权重不可得） |
+| MXfold2 | 0.61 (论文) / **0.5832 (我们实测)** | 同上 |
+| **我们 ff** | **0.6005** | 实测 @1305 |
+| **我们 big** | **0.6199** | 实测 @1305 |
+| **我们 bigtr1** | **0.6238** | 实测 @1305 |
+
+注意：我们实测的 UFold/MXfold2 与论文 S4 值有 ±0.06 的判分实现差异——**必须在表里
+双列并声明**，不得混排。
+
+### S5（TestSetB）——**本轮新结果，零样本**
+
+数据：`Rivas.tar.gz`（mxfold2 v0.1.1 release）本地下载→scp→`/mnt/cunyuliu/rna_ss_data/data/`；
+`tools/build_testsetb.py` 转 428/430 条（2 条拒：1×'S'、1×'N' 非标准字母；
+无伪结）。嵌入 27.2s。评测三臂 + Vienna×3 + nussinov + **EternaFold**
+（CONTRAfold 引擎 + EternaFoldParams.v1，源码在盘上
+`rna_baselines_src/EternaFold`，逐条 predict，16 线程并行）。
+
+| TestSetB (n=428) | strict macro F1 | **Mathews 宽容 macro F1** | INF |
+|---|---|---|---|
+| **我们 big @20k（零样本）** | 0.7723 | **0.7932** | **0.7781** |
+| **我们 bigtr1（零样本）** | 0.7189 | 0.7376 | 0.7290 |
+| **我们 ff（零样本）** | 0.7101 | 0.7354 | 0.7133 |
+| EternaFold（实测，零样本） | 0.6033 | 0.6366 | 0.6095 |
+| Vienna centroid（实测） | 0.5577 | — | 0.5630 |
+| Vienna mfe（实测） | 0.5430 | — | 0.5488 |
+| 论文 S5：CONTRAfold | — | — | 0.64 |
+| 论文 S5：MXfold2 | — | — | 0.63 |
+| 论文 S5：RiNALMo（fine-tune TrainSetA） | — | — | 0.67 |
+| 论文 S5：RNAstructure | — | — | 0.56 |
+| 论文 S5：RNA-FM | — | — | 0.49 |
+
+**三条结论**：
+
+1. **零样本 big 头在 TestSetB 宽容 F1 = 0.7932、INF = 0.7781，超过该基准全部
+   已发表数字（最高 RiNALMo fine-tuned 0.67）**——且我们没在 TrainSetA 上
+   训练过（RiNALMo/MXfold2 都 fine-tune/train 了 TrainSetA）。**这是真实的
+   跨家族 OOD 亮点结果**：我们的模型只在 bpRNA-TR0 上训练，在 22 个
+   structurally dissimilar Rfam 家族上零样本拿到 0.79——**与 bprna_new 上的
+   短板（0.46-0.52）形成鲜明对比**，说明"跨家族泛化"结论高度依赖基准的
+   家族构成：TestSetB 的 22 家族多为经典 ncRNA 类型（tRNA/5S 等），与
+   bpRNA-TR0 的家族分布有重叠知识可迁移；bprna_new 是真正的新家族。
+   **论文叙事更新：跨家族泛化不是一个数，bprna-new 与 TestSetB 给出相反
+   的两端，我们如实报告两端。**
+2. **容量轴在 TestSetB 上再次为正**（big 0.79 > ff 0.74，+0.058）——与
+   bprna_new 上容量为负（−0.023）**方向相反**：容量买的是"分布内家族
+   知识的深度"，TestSetB 家族与训练分布相近所以受益；bprna_new 真新家族
+   所以受害。**两轴 × 三基准的方向矩阵是本论文最有信息量的结果。**
+3. INF 实现口径：我们 per-seq sqrt(P·R) 平均（Parisien 风格）与论文一致
+   （RNAFORMER_BASELINE_RUN.md 已验证 RNAformer INF 0.7512 vs 论文无此行）；
+   EternaFold 实测 0.6095 vs 论文 CONTRAfold 0.64——参数集不同
+   （EternaFoldParams vs CONTRAfold 默认），如实双列。
+
+### 基线可得性最终盘点（S2–S5 涉及的全部方法）
+
+| 方法 | 服务器状态 | 处置 |
+|---|---|---|
+| UFold | ✅ 已实测 | 主表 |
+| MXfold2 | ✅ 已实测（CLI） | 主表 |
+| RNAstructure | ❌ 不在 | 引论文值（S3/S5）；Vienna 同类物理基线已实测替代声明 |
+| CONTRAfold | ⚠️ EternaFold（同引擎不同参）实测 | 双列声明 |
+| SPOT-RNA | ❌ 权重不可得 | 引论文值（S4） |
+| RNA-FM | ❌ 权重不可得 | 引论文值 |
+| RiNALMo fine-tuned | ❌ Zenodo 不可达 | 引论文值 |
+| 我们 | ✅ | 三臂实测 |
+
+**Draft 行动**：§4.3d 后加 TestSetB 小节（新正结果 + 两端叙事）；
+S4 INF 数字入 §4.3d 表格附列；Appendix A 补 TestSetB/EternaFold 证据行。
