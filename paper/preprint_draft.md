@@ -1,11 +1,22 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.7, 2026-09-25.**
+**Preliminary preprint draft — v3.8, 2026-09-26.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
-> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
-> is extrapolated.
+> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here is
+> extrapolated.
+>
+> **v3.8 change note (bigsum OOD cell + table re-audit).** The sum-normalised
+> 512-dim replication arm now has its out-of-distribution number: 0.4789 on bpRNA-new
+> (−0.008 vs the matched TR0 baseline, p = 1.1e-10), which closes the normalisation
+> confound on both splits — the OOD capacity cost is −0.023 length-normalised but
+> −0.008 sum-normalised, so the negative sign is capacity's and ~0.015 of the
+> magnitude is normalisation-specific. Re-auditing §4.3c for this addition caught
+> three stale cells: the table said "10-test family" while the family was already
+> 15 (now 18), one Holm cell carried a pre-drift value, and the TR1@40k TS0 row
+> mixed baselines (+0.031 was the 20k→40k step delta, not the vs-baseline delta
+> its per-sequence test uses — corrected to +0.019). All three are ours and flagged.
 >
 > **v3.7 change note (seed completions + rounding audit).** The capacity,
 > combination, and TR1 arms gained seeds (capacity now 4: 0.6324 ± 0.0098;
@@ -112,8 +123,10 @@ only lever that moves it: on bpRNA-new our TR0-trained model reaches micro F1
 (+0.029, per-sequence Wilcoxon p = 4e-62) — against ViennaRNA centroid's **0.6770**
 and UFold's **0.6106**. The deficit is no longer a collapse but it is still 0.17-0.16,
 and we report it as the main open number. Head capacity, by contrast, *hurts* on this
-split (−0.023, p = 7e-83): the two scaling axes point in opposite directions out of
-distribution. The same checkpoints tell the opposite story on a second OOD benchmark:
+split (−0.023, p = 7e-83; −0.008, p = 1.1e-10, when the normalisation variable is
+removed in the sum-normalised replication — the sign is capacity's, ~0.015 of the
+magnitude is normalisation-specific): the two scaling axes point in opposite directions
+out of distribution. The same checkpoints tell the opposite story on a second OOD benchmark:
 on TORNADO TestSetB (22 structurally dissimilar Rfam families, the RiNALMo paper's
 hardest generalization set) our capacity head reaches **0.7932 tolerant F1 zero-shot**,
 above every published number on that benchmark — "cross-family generalization" is
@@ -217,7 +230,11 @@ capacity comparison carries a second changed variable; two controls close it: a
 matched pair at 128 dims (len 0.5870 vs sum 0.5893, both at 20k) bounds the
 normalisation effect at 0.002 — inside the seed spread — and a **sum-normalised
 512-dim replication arm** reaches 0.6302, reproducing the capacity gain (+0.036 over
-the 8-seed base mean) with the confounding variable removed. Both axes are reported
+the 8-seed base mean) with the confounding variable removed. Out of distribution the
+same arm reads **0.4789** (−0.008 vs the matched TR0 baseline, p = 1.1e-10; the
+length-normalised capacity arm is −0.023), so the OOD capacity cost keeps its sign
+with the confounder removed but ~0.015 of its magnitude is normalisation-specific —
+both splits are reported and the closure holds on each. Both axes are reported
 at 20,000 steps, `w=-1` decode, on the same splits. The seed spread
 of the base configuration across 8 seeds is **mean 0.5938, std 0.0034** (range
 0.5893–0.5990); the capacity arm across 4 seeds is
@@ -431,21 +448,29 @@ without reordering the argmax), which the measurement confirms exactly.
 
 Every comparison above is additionally tested as a paired per-sequence Wilcoxon
 signed-rank test (two-sided, zero_method=wilcox) with Holm-Bonferroni correction
-across the 10-test family (`tools/stats_definitive.py`, artifacts
+across the 18-test family (`tools/stats_definitive.py`, artifacts
 `tables/stats_definitive.json`):
 
 | Comparison (paired, same sequences) | n | micro Δ | per-seq mean Δ | p (Holm) |
 |---|---|---|---|---|
-| Capacity s0, TS0 | 1,288 | +0.047 | +0.016 | 6.3e-05 |
-| Capacity s1, TS0 | 1,288 | +0.030 | **−0.021** | 2.8e-08 |
-| Capacity s2, TS0 | 1,288 | +0.042 | −0.005 | 0.85 |
-| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 5.7e-82 |
-| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 2.8e-61 |
-| Data (TR1@40k) s0, bpRNA-new | 5,388 | +0.013 | +0.014 | 1.8e-08 |
-| Data (TR1@40k) s0, TS0 | 1,288 | +0.031 | +0.032 | 2.0e-11 |
-| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 3.6e-146 |
-| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.084 | 8.0e-199 |
-| Combination s0 vs big, TS0 | 1,288 | +0.002 | +0.001 | 0.85 |
+| Capacity s0, TS0 | 1,288 | +0.047 | +0.016 | 1.1e-04 |
+| Capacity s1, TS0 | 1,288 | +0.030 | **−0.021** | 4.9e-08 |
+| Capacity s2, TS0 | 1,288 | +0.041 | −0.005 | 7.7e-01 |
+| Capacity s3, TS0 | 1,288 | +0.041 | +0.008 | 1.1e-01 |
+| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 9.9e-82 |
+| Sum-norm capacity vs ff, bpRNA-new | 5,388 | **−0.008** | −0.012 | 1.0e-09 |
+| Sum-norm capacity vs ff, TS0 | 1,288 | +0.035 | +0.031 | 1.3e-13 |
+| Sum-norm capacity vs big, bpRNA-new | 5,388 | +0.015 | +0.034 | 1.1e-44 |
+| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 5.2e-61 |
+| Data (TR1@20k) s1, bpRNA-new | 5,388 | +0.008 | +0.006 | 3.1e-04 |
+| Data (TR1@40k) s0, bpRNA-new | 5,388 | +0.013 | +0.014 | 2.8e-08 |
+| Data (TR1@40k) s0, TS0 | 1,288 | +0.019 | +0.032 | 3.3e-11 |
+| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 6.0e-146 |
+| Combination s1 vs ff, bpRNA-new | 5,388 | −0.078 | −0.119 | < 1e-300 |
+| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.083 | 1.3e-198 |
+| Combination s1 vs TR1 s1, bpRNA-new | 5,388 | −0.087 | −0.125 | < 1e-300 |
+| Combination s0 vs big, TS0 | 1,288 | +0.002 | +0.001 | 7.7e-01 |
+| Combination s1 vs big s1, TS0 | 1,288 | +0.009 | +0.017 | 6.5e-05 |
 
 Two results survive the whole family at extreme significance: **data scaling helps
 cross-family (+0.036 per-sequence) and capacity hurts it (−0.046)**. Two results show
@@ -793,12 +818,16 @@ the hypothesis as a hypothesis.
    mismatches are failure modes any evaluation of this kind inherits, not because
    we believe we are uniquely error-prone.
 9. **The capacity comparison's normalisation confound is now closed by a
-   single-variable replication.** The capacity arm trains with length-normalised
+   single-variable replication, on both splits.** The capacity arm trains with length-normalised
    NLL while the base family uses unnormalised NLL (§3). A matched control at
    128 dims bounds the confound at 0.002, and a **sum-normalised 512-dim head**
    trained after the audit reproduces the capacity effect directly (0.6302 vs
-   0.6425 length-normalised, both ~+0.04 over the 0.5938 base): the gain is
-   capacity, not normalisation, and both rows are reported.
+   0.6425 length-normalised, both ~+0.04 over the 0.5938 base) — the gain is
+   capacity, not normalisation. Out of distribution the same replication reads
+   0.4789 (−0.008 vs the 0.4870 matched baseline, vs −0.023 length-normalised):
+   the OOD cost keeps its sign with the confounder removed, but roughly two
+   thirds of its magnitude is normalisation-specific — both splits and both rows
+   are reported.
 10. **The RiNALMo paper's ArchiveII leave-one-family-out protocol (its Tables
    S2/S3) is not replicated.** It requires nine separate fine-tuning runs with
    family-held-out splits; our ArchiveII numbers are additionally withdrawn for
@@ -854,7 +883,7 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | TS0 headline (ff s0, step 20000), `w=-1` | `eval_decision/ff20000_ref_bprna_ts0/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_ts0.jsonl --embedding-split bprna_ts0 --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1` |
 | Seeds s1–s5 (headline spread) | `eval_decision/arms_rinalmo_ff_b4_{s1,s2}_step20000_ts0`, `eval_decision/ow_rinalmo_ff_b4_{s4,s5,s3}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
 | Capacity arm (big, 4.8x) | `eval_decision/arms_rinalmo_big_b4_s0_step20000_ts0` | same + `--d-z 512 --hidden 512` at train time |
-| Capacity seeds s1–s3 (paired) + sum-norm replication | `eval_decision/ow_rinalmo_big_b4_{s1,s2,s3}_step20000_bprna_ts0`, `eval_decision/ow_rinalmo_bigsum_b4_s0_step20000_bprna_ts0` | same protocol, `--seed` changed only; bigsum adds `--nll-normalization sum` |
+| Capacity seeds s1–s3 (paired) + sum-norm replication | `eval_decision/ow_rinalmo_big_b4_{s1,s2,s3}_step20000_bprna_ts0`, `eval_decision/ow_rinalmo_bigsum_b4_s0_step20000_{bprna_ts0,bprna_new}` | same protocol, `--seed` changed only; bigsum adds `--nll-normalization sum` |
 | Combination + TR1 second seeds | `eval_decision/ow_rinalmo_bigtr1_b4_s1_step20000_{bprna_ts0,bprna_new}`, `eval_decision/ow_rinalmo_ff_tr1_b4_s1_step20000_{bprna_ts0,bprna_new}` | same protocol |
 | Paired significance tests + quartile/length-bucket decomposition | `tables/stats_definitive.json`, `tables/stats_significance.md` | `tools/stats_definitive.py`, `tools/stats_significance.py` |
 | Cross-family TR0 baseline (matched protocol) | `eval_decision/ff20000_bprna_new/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_new.jsonl --prior-weight -1` |

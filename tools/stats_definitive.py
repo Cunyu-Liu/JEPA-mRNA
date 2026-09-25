@@ -15,6 +15,14 @@ the artifact drift: ff s7 and big s2 result.json were re-produced by the
 watch self-heal loops (watch3 19:23 / watch4 20:51) after an unknown
 cleanup removed them; the re-evals are protocol-identical and moved f1 by
 0.0006-0.0007 (below seed std), so current on-disk values are canonical.
+
+v4 (2026-09-26 00:45, 14.65): bigsum lands on both splits. The OOD cell
+(0.4789, -0.008 vs matched TR0 baseline) completes the normalisation
+confound closure out of distribution. Wilcoxon family grows to 18 tests
+(+3 bigsum comparisons). The draft 4.3c table is refreshed against this
+18-test family: two cells had been left on stale family values (0.85 vs
+0.77) and the family count text said 10 while the family was 15; all
+corrected here, no direction changes.
 """
 import json
 import statistics as st
@@ -69,6 +77,9 @@ BIGTR1_S1_NEW = load(ev("ow", "bigtr1_b4_s1", 20000, "bprna_new"))          # 0.
 TR1_S1_20K_TS0 = load(ev("ow", "ff_tr1_b4_s1", 20000, "bprna_ts0"))         # 0.5842
 TR1_S1_20K_NEW = load(ev("ow", "ff_tr1_b4_s1", 20000, "bprna_new"))         # 0.4954
 TR1_20K_TS0 = load(ART / "eval_decision/tr1_ff_step20000_bprna_ts0/result.json")  # 0.5840
+# 14.65 bigsum (512d + sum normalisation, single-variable capacity replication)
+BIGSUM_TS0 = load(ev("ow", "bigsum_b4_s0", 20000, "bprna_ts0"))             # 0.6302
+BIGSUM_NEW = load(ev("ow", "bigsum_b4_s0", 20000, "bprna_new"))             # 0.4789
 
 print("=" * 72)
 print("1. EXACT 8-SEED BASE (TS0 micro)")
@@ -103,10 +114,17 @@ tr1_pair_new = [TR1_20K_NEW[1], TR1_S1_20K_NEW[1]]
 print(f"   ff_tr1 2-seed new: {TR1_20K_NEW[1]:.4f}/{TR1_S1_20K_NEW[1]:.4f} mean {st.mean(tr1_pair_new):.4f}  (vs ff s0 new: {st.mean(tr1_pair_new)-FF_NEW[1]:+.4f})")
 
 print("=" * 72)
+print("2c. BIGSUM CONFOUND CLOSURE (14.65, both splits)")
+print(f"   bigsum TS0:  micro {BIGSUM_TS0[1]:.4f} macro {BIGSUM_TS0[2]:.4f}  (vs ff s0 {FF[0][1]:.4f}: {BIGSUM_TS0[1]-FF[0][1]:+.4f}; vs big s0 {BIG[0][1]:.4f}: {BIGSUM_TS0[1]-BIG[0][1]:+.4f})")
+print(f"   bigsum new:  micro {BIGSUM_NEW[1]:.4f} macro {BIGSUM_NEW[2]:.4f}  (vs ff new {FF_NEW[1]:.4f}: {BIGSUM_NEW[1]-FF_NEW[1]:+.4f}; vs big new {BIG_NEW[1]:.4f}: {BIGSUM_NEW[1]-BIG_NEW[1]:+.4f})")
+print(f"   => OOD capacity cost: length-norm {BIG_NEW[1]-FF_NEW[1]:+.4f}  vs  sum-norm {BIGSUM_NEW[1]-FF_NEW[1]:+.4f}  (sign preserved, magnitude {abs(BIGSUM_NEW[1]-FF_NEW[1])-abs(BIG_NEW[1]-FF_NEW[1]):+.4f})")
+
+print("=" * 72)
 print("3. CROSS-FAMILY CORRECTED TABLE (bprna_new, matched protocol)")
 rows = [
     ("ff TR0 @20k (s0)", FF_NEW),
     ("big TR0 @20k (s0)", BIG_NEW),
+    ("bigsum TR0 @20k (s0)", BIGSUM_NEW),
     ("ff TR1 @20k (s0)", TR1_20K_NEW),
     ("ff TR1 @20k (s1)", TR1_S1_20K_NEW),
     ("ff TR1 @40k (s0)", TR1_40K_NEW),
@@ -150,6 +168,9 @@ tests = [
     wtest("combo_s1_new_vs_tr1_s1", BIGTR1_S1_NEW[0], TR1_S1_20K_NEW[0]),
     wtest("combo_s0_ts0_vs_big", BIGTR1_TS0[0], BIG[0][0]),
     wtest("combo_s1_ts0_vs_big", BIGTR1_S1_TS0[0], BIG[1][0]),
+    wtest("bigsum_ts0_vs_ff", BIGSUM_TS0[0], FF[0][0]),
+    wtest("bigsum_new_vs_ff", BIGSUM_NEW[0], FF_NEW[0]),
+    wtest("bigsum_new_vs_big", BIGSUM_NEW[0], BIG_NEW[0]),
 ]
 m = len(tests)
 order = sorted(range(m), key=lambda i: tests[i]["p"])
@@ -196,6 +217,12 @@ out = dict(
         ff_tr1_20k=dict(ts0=[round(TR1_20K_TS0[1], 4), round(TR1_S1_20K_TS0[1], 4)],
                         new=[round(TR1_20K_NEW[1], 4), round(TR1_S1_20K_NEW[1], 4)]),
     ),
+    bigsum=dict(ts0_micro=round(BIGSUM_TS0[1], 4), ts0_macro=round(BIGSUM_TS0[2], 4),
+                new_micro=round(BIGSUM_NEW[1], 4), new_macro=round(BIGSUM_NEW[2], 4),
+                vs_ff_new=round(BIGSUM_NEW[1] - FF_NEW[1], 4),
+                vs_big_new=round(BIGSUM_NEW[1] - BIG_NEW[1], 4),
+                ood_cost_len_norm=round(BIG_NEW[1] - FF_NEW[1], 4),
+                ood_cost_sum_norm=round(BIGSUM_NEW[1] - FF_NEW[1], 4)),
     cross_family={name: dict(micro=round(m, 4), macro=round(g, 4)) for name, (_, m, g) in rows},
     wilcoxon=tests,
 )

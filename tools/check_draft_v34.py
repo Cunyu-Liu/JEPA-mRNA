@@ -40,6 +40,8 @@ V = {
     "big_s1": micro_of(f"{E}/ow_rinalmo_big_b4_s1_step20000_bprna_ts0/result.json"),
     "big_s2": micro_of(f"{E}/ow_rinalmo_big_b4_s2_step20000_bprna_ts0/result.json"),
     "big_s3": micro_of(f"{E}/ow_rinalmo_big_b4_s3_step20000_bprna_ts0/result.json"),
+    "bigsum_ts0": micro_of(f"{E}/ow_rinalmo_bigsum_b4_s0_step20000_bprna_ts0/result.json"),
+    "bigsum_new": micro_of(f"{E}/ow_rinalmo_bigsum_b4_s0_step20000_bprna_new/result.json"),
     "bigtr1_s1_ts0": micro_of(f"{E}/ow_rinalmo_bigtr1_b4_s1_step20000_bprna_ts0/result.json"),
     "bigtr1_s1_new": micro_of(f"{E}/ow_rinalmo_bigtr1_b4_s1_step20000_bprna_new/result.json"),
     "tr1_s1_20k_ts0": micro_of(f"{E}/ow_rinalmo_ff_tr1_b4_s1_step20000_bprna_ts0/result.json"),
@@ -104,6 +106,13 @@ ck("v3.6: combo s1 vs tr1 s1 -0.087 stated", "-0.087" in text or "−0.087" in t
 ck("v3.6: combo s1 new vs ff -0.078 stated", "-0.078" in text or "−0.078" in text)
 ck("v3.6: drift canon s7 0.5974", f"{V['ff_s7']:.4f}" == "0.5974", f"{V['ff_s7']:.5f}")
 ck("v3.6: drift canon big_s2 0.6337", f"{V['big_s2']:.4f}" == "0.6337", f"{V['big_s2']:.5f}")
+
+ck("v3.8: bigsum ts0 0.6302", f"{V['bigsum_ts0']:.4f}" == "0.6302" and "0.6302" in text, f"{V['bigsum_ts0']:.5f}")
+ck("v3.8: bigsum new 0.4789", f"{V['bigsum_new']:.4f}" == "0.4789" and "0.4789" in text, f"{V['bigsum_new']:.5f}")
+ck("v3.8: bigsum new vs ff -0.008 stated", f"{V['bigsum_new'] - V['ff_s0_new']:+.4f}" == "-0.0080" and ("-0.008" in text or "−0.008" in text), f"{V['bigsum_new'] - V['ff_s0_new']:+.5f}")
+ck("v3.8: bigsum new vs big +0.015 stated", f"{V['bigsum_new'] - V['big_new']:+.4f}" == "+0.0149" and ("+0.015" in text or "0.0149" in text), f"{V['bigsum_new'] - V['big_new']:+.5f}")
+ck("v3.8: 18-test family stated", "18-test family" in text)
+ck("v3.8: bigsum both splits in appendix", "ow_rinalmo_bigsum_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 
 fails = [c for c in checks if not c[1]]
 for name, ok, detail in checks:
