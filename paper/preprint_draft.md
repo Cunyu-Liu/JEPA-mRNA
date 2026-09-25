@@ -268,26 +268,36 @@ obtained without a partition function.
 Pooled, we now sit between the physical baselines and the strongest published deep
 baselines, and the capacity sweep moves us further up:
 
-| Split | Ours (micro F1, 128-dim head, TR0) | Ours (4.8x-capacity head, TR0) | Ours (TR1: 4.29x data) | Ours (TR1, 2x steps) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
-|---|---|---|---|---|---|---|---|---|---|---|
-| TS0 | **0.5958** | **0.6425** | 0.5840 | **0.6147** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
-| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
-| bpRNA-new (5,388) | 0.3536 | **0.4641** | **0.5162** | 0.4999 | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+| Split | Ours (micro F1, 128-dim head, TR0) | Ours (4.8x-capacity head, TR0) | Ours (TR1: 4.29x data) | Ours (TR1, 2x steps) | Ours (capacity x data) | ViennaRNA centroid | ViennaRNA mfe | MXfold2 | UFold | RNAformer | Nussinov+Turner prior |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| TS0 | **0.5958** | **0.6425** | 0.5840 | **0.6147** | **0.6446** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
+| ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
+| bpRNA-new (5,388) | 0.3536 | **0.4641** | **0.5162** | 0.4999 | 0.4558 | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
 
-The TR1 columns are the data-scaling experiment and the 0.4641 cell is the
-capacity-on-cross-family measurement: same recipe, one axis varied at a time. All
-"Ours" columns are 20,000 steps except the last, which doubles the training on the
-TR1 corpus to 40,000 (3.4 epochs). **Both scaling axes buy cross-family accuracy at
-20k steps** — capacity +0.111 (0.3536 -> 0.4641), data +0.163 (0.3536 -> 0.5162) —
-while their in-distribution effects differ: capacity gains +0.047 pooled, data costs
-−0.012 pooled. Doubling the training steps splits the picture again: pooled gains
-+0.031 (0.5840 -> 0.6147, 9x the seed spread) while cross-family **loses** 0.016
+The TR1 columns are the data-scaling experiment, the 0.4641 cell is the
+capacity-on-cross-family measurement, and the last "Ours" column is the combination
+(4.8x capacity on the 4.29x corpus), all at 20,000 steps except the 40,000-step
+column. **Both scaling axes buy cross-family accuracy at 20k steps** — capacity
++0.111 (0.3536 -> 0.4641), data +0.163 (0.3536 -> 0.5162) — while their
+in-distribution effects differ: capacity gains +0.047 pooled, data costs −0.012
+pooled. Doubling the training steps splits the picture again: pooled gains +0.031
+(0.5840 -> 0.6147, 9x the seed spread) while cross-family **loses** 0.016
 (0.5162 -> 0.4999, 5x the spread). Training beyond roughly two epochs on the larger
 corpus improves in-distribution accuracy and gives back part of the cross-family
 gain — the out-of-distribution optimum arrives earlier than the in-distribution one,
-which bounds how far this recipe can be pushed by optimisation alone. The
-combination arm (4.8x capacity x 4.29x data) is training to test whether the two
-axes add up.
+which bounds how far this recipe can be pushed by optimisation alone.
+
+**The two axes combine additively in-distribution and interfere cross-family.**
+The combination arm reaches **0.6446** on TS0 — the best number in this draft,
+0.015 below UFold and consistent with the axes' pooled effects composing. On
+bpRNA-new it scores **0.4558**, below *both* single-axis numbers (big 0.4641, TR1
+0.5162): the interaction is negative, roughly −0.06 against either axis alone, with
+a sharply conservative precision/recall profile out of distribution (0.701/0.338).
+More capacity on more diverse data does not buy more generalisation here; it buys a
+harder-trained decision boundary that generalises worse outside the training
+families. We report this as the scaling result of the draft: the three knobs
+(capacity, data, steps) have directionally different effects on the two splits, and
+optimising them jointly is not the same as optimising them separately.
 
 Three readings of this table, stated exactly:
 
