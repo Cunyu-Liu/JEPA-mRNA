@@ -3191,3 +3191,71 @@ S2–S5 对标）与两个 §14.64（22:45 三臂出数 / 23:55 种子完成批�
   均无本组任务。**无排队实验**（决策：等四臂出数后再议——现已全部出数，
   若需新臂（如 bigsum 第 2 seed）可在下轮巡检决定）。
 - 预印本数字面维持冻结，进入正文打磨阶段（deadline 2026-09-30）。
+## §14.65 用户三问的实验回答：差异归因四口径分解 + 权重下载 + 追赶启动（2026-09-26 01:40）
+
+### 一、四口径归因分解（"我们 vs 论文为什么差这么远"）
+
+`tools/attribution_4ways.py`：**同一份预测**（RNAformer dbn 与我们 ff 的
+per_sequence）在四种判分口径下的分解（macro F1，TS0）：
+
+| 口径 | RNAformer | 我们 ff | 差距 |
+|---|---|---|---|
+| A. project-GT + strict（我们默认） | 0.7454 | 0.5970 | 0.148 |
+| B. project-GT + tolerant（RiNALMo 式宽容） | 0.7779 | 0.6377 | 0.140 |
+| C. release-GT + strict（含伪结/非 canonical） | 0.7093 | 0.5724 | 0.137 |
+| D. release-GT + tolerant | 0.7486 | 0.6213 | 0.127 |
+
+**结论：四口径下差距都是 0.13~0.15。判分口径不解释差距——差距是真实的模型
+差距。**口径只改变绝对值（宽容 +0.03~0.05，release-GT −0.04），不改变
+相对排序。**谁都没"错"**：我们和论文各自在自己的口径内自洽；我们此前
+引用论文数字时未声明口径差异是不严谨（已修正），但差距本身是真实的
+方法差距（我们的头小 30×、训练步数少）。
+
+口径的三个独立维度（用户问"宽容和非宽容的区别"）：
+1. **宽容判分（Mathews 2019 tolerance）**：预测对 (i,j) 时，GT 若含
+   (i±1,j) 或 (i,j±1) 也算对——理由是 RNA 结构动力学里相邻配对难区分。
+   效果：+0.03~0.05 F1（见上表 A→B）。
+2. **GT 集合（project vs release）**：project-GT 只保留 canonical 嵌套对
+   （我们的任务定义）；release-GT 含全部对（伪结/非 canonical）。
+   效果：−0.04 F1（更难，C vs A）。
+3. **聚合（micro pooled vs macro per-seq 平均）**：RiNALMo 论文用 macro；
+   我们主口径 micro。长序列影响 micro 更多。
+
+### 二、权重下载状态（用户要求一个都不能少）
+
+| 模型 | 来源 | 状态 |
+|---|---|---|
+| RiNALMo-finetuned（bpRNA SS 头） | Zenodo 15043668 | ⏳ 下载中（90MB/2.4GB，~1.5MB/s） |
+| RNA-FM pretrained | HF cuhkaih/rnafm（经 hf-mirror） | ✅ 完成（1.135GB，MD5 验证，已传服务器） |
+| RNA-FM 嵌入提取 | tools/extract_rnafm_embeddings.py（editflow env 的官方 fm 包） | ⏳ 运行中（TR0 10682 条） |
+| SPOT-RNA | 官方 Dropbox/nihaocloud 均已失效 | ❌ **全网托管已死**——只能引论文值（如实声明） |
+| CONTRAfold | = EternaFold（论文正文声明用 EternaFold 参数） | ✅ 已实测（0.6366/0.6095） |
+
+RNA-FM 加载要点（记给后人）：checkpoint 是 ESM-hub 格式，用 env
+editflow 里现成的 RNA-FM 官方 `fm` 包
+`fm.pretrained.load_model_and_alphabet_local(path, theme="rna")`；
+A/C/G/U=4/5/6/7、BOS=0 EOS=2、d=640 12 层。**fairseq TransformerEncoder
+直接加载会静默失败**（输出不随序列变化，rel diff 1e-5）——第一版提取
+即踩此坑，smoke 测试（序列间差异 0.1397）拦截住了。
+
+### 三、追赶启动（bpRNA-new 弱点）
+
+1. **种子集成**（零训练成本）：`tools/ensemble_eval.py`——K 模型 score
+   矩阵平均 + 单次 Nussinov 解码。
+   **TS0 首结果：8-seed 集成 micro = 0.6105**（vs 单模型均值 0.5938，
+   **+0.017**；vs 最好单 seed 0.5956，+0.015）。bprna-new 集成评测运行中
+   （3800/5388），TR1 2-seed 集成排队。
+2. **RNA-FM 骨干对照臂**（`rinalmo_ff` 的同配置姊妹）：嵌入提取完成后
+   启动训练（CRF 头 + RNA-FM 640d 冻结嵌入，20k 步）——既补 RiNALMo
+   论文的 RNA-FM 行（同头不同骨干的公平对比），也看 640d vs 1280d
+   嵌入维度对结构预测的影响。
+3. RiNALMo fine-tuned 落地后：官方 ResNet 头直接预测 + 我们的判分口径
+   评测（与论文 Fig 3c 的 0.59 对照）。
+
+### 四、待办
+
+- [ ] ensemble new + TR1 集成出数 → draft 追赶小节
+- [ ] RNA-FM 嵌提取完 → rna-fm 训练臂启动（watch6）
+- [ ] RiNALMo ft 权重下载完 → 传服务器 → 官方头评测（SS 头是 ResNet，
+      输入 pair concat——与我们的 pair 表示同一思路，直接可评）
+- [ ] SPOT-RNA 失效记录写 draft limitations
