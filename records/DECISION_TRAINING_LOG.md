@@ -4362,3 +4362,28 @@ Plan-A 渐进解冻成本高且 OOD 符号未知，建议作为 preprint 后续�
 - [ ] structRFM Mathews 宽容口径（dbn 落盘为前提）——并行会话挂账项，
       未处理
 - [ ] draft §4.3g chase map 若 Plan-A 被否决，措辞需相应收尾
+
+### 14.75 NucleicBERT Table 1 quoted as external reference frame; v3.13
+
+User supplied the NucleicBERT paper (Nat. Mach. Intell. 2026, 404M MLM on 30M
+ncRNAs). Its Table 1 is the only external table reporting per-baseline
+parameter counts with per-benchmark P/R/F1 under the Mathews convention, and
+uniquely evaluates three regimes: fine-tuned / linear-probe (frozen) /
+random-init. Values extracted (their TS0 = same 1305 split, macro):
+
+fine-tuned 0.718/0.610/0.649 (404M); RNAErnie+ 0.622 (105M); RNA-FM 0.564
+(99.5M); MXfold2 0.558 (0.80M); RNABERT 0.477 (0.48M); linear-probe
+0.622/0.283/0.342; random-init-ft 0.204.
+
+Added to §4.3d (after INF paragraph, quoted-only flag) with three alignments:
+(1) convention/regime offsets match our measured MXfold2 0.6102 vs their
+0.558 and frozen-RNA-FM 0.4199 vs their fine-tuned 0.564; (2) their
+frozen→ft delta +0.31 and random→pretrained +0.44 independently identify
+backbone adaptation as the dominant term — same axis as our §4.3g controlled
+decomposition (our delta +0.11 is smaller exactly because RiNALMo-giga is a
+stronger frozen start than their linear-probe baseline); (3) their
+frozen-regime P/R imbalance 0.622/0.283 matches our conservative-gate
+signature — evidence it is a property of frozen representations under
+greedy/thresholded decode, not of our architecture. Draft v3.13; checker
+extended (3 new assertions), 78/78 PASS; commit f0e18ff-era. r2d evals
+(ts0/new) logs committed.
