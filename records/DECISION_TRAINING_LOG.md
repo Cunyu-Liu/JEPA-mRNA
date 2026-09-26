@@ -3458,3 +3458,123 @@ watch6.log 已开写。预期 ~2 天后出数（若步速与前臂类似）。
       官方头评测插队
 - [ ] draft §4.3f ensemble 是否进主表：维持 v3.8 冻结判定，除非
       deadline 前有明确理由
+
+## §14.68 RNA-FM 臂出数（骨干维度轴判定：negative，双 split）+ watch6 自锁 bug 根因修复 + draft v3.10（2026-09-26 09:05，关键）
+
+> 节号说明：用户指令预期"§14.61 起"，实际盘上日志已推进至 §14.67，
+> 本节取 §14.68。判定线沿用 §14.66 第七节：640d TS0 ≥ ff 1280d 的
+> 90%（≥0.53）→ 维度轴有故事；否则 negative。
+
+### 一、五臂终态：全部自然完成，无恢复协议触发
+
+| 臂 | 终点 | 完成时刻 | 状态 |
+|---|---|---|---|
+| rinalmo_bigtr1_b4_s1 / big_b4_s3 / ff_tr1_b4_s1 / bigsum_b4_s0 | 20000/20000 | 09-25 19:17–22:58 | ✅ §14.63–14.65 已入账 |
+| **rnafm_ff_b4_s0（RNA-FM 640d）** | 20000/20000 | **09-26 07:03** | ✅ 本轮出数 |
+
+`pgrep train_decision` 无进程再次属"训练完成非崩溃"（run_meta
+steps_completed=20000 与配置 steps=20000 逐一核对，§14.66 的判定
+规则连续第二轮成立）。final_loss 47.32（ff 系 sum 归一化量级，
+nll 主导、无 NaN，grad_norm 尖峰与 ff_tr1 系同形态）。
+
+### 二、watch6 自锁 bug：根因、修复与经验（重要工程教训）
+
+训练 07:03 完成后 watch6 迟迟不起评（日志 74 分钟仅 start 行）。
+两层根因，都修了：
+
+1. **wait_quiet 自匹配（真 bug）**：`run_watch6.sh` 的 wait_quiet
+   检查 `pgrep -f "[r]un_watch[3-9].sh"`，watch6 自身命令行含
+   "run_watch6.sh"，6 落在 [3-9] 区间 → 永远匹配到自己 → 死等
+   （上限 12h）。已 sed 修为 `[3-5]`，watch6 自身与 master 不再
+   自锁。watch3/4/5 的模式互斥设计正确（它们只查特定编号），新
+   watch 脚本模板必须沿用"只列更早编号"的惯例。
+2. **诊断命令自污染（操作坑）**：SSH 排查命令的命令行里含
+   "evaluate_decision.py" / "run_watch" 字样时，会被 wait_quiet
+   的 pgrep 误认为在跑评测，把等待循环又拖 30s。排查 watch 类
+   脚本时，pgrep 目标串必须用变量拼接拆开（本轮
+   `P1="evaluate_dec"; P2="ision.py"` 实证）。
+
+处置：kill 旧 watcher（895542）→ sed 修复 → 重启（08:25:57）→
+清掉毒化源（一条挂着的诊断包装进程 2132214）→ 08:39:35 TS0
+评测正常起跑，08:52:15 双 split 全部出数、watch6 按设计退出。
+代价：出数比"训练完成即评"晚了约 1.8 小时，未影响任何数据。
+
+### 三、RNA-FM 双 split 出数 + 基线四查（§14.59 协议，通过）
+
+| split | micro F1 | macro F1 | 对照 ff s0 | Δ | 比率 |
+|---|---|---|---|---|---|
+| bprna_ts0 (1288) | **0.4199** | 0.4411 | 0.5956 | **−0.1758** | 70.5% |
+| bprna_new (5388) | **0.3005** | 0.3202 | 0.4870 | **−0.1865** | 61.7% |
+
+**四查**：① checkpoint 步数 20000 ✅（runs/rnafm_ff_b4_s0
+run_meta steps_completed=20000，评测 ckpt step20000）；②
+prior-weight/校准：w=-1（pw_eff 0.4174，训练内自身权重语义）+
+VL0 Platt（196 序列、573,355 对，fit 未塌缩）✅；③ split/解码：
+bprna_ts0 1288 / bprna_new 5388，exact Nussinov ✅；④
+nll_normalization=sum（run_meta config），与 ff 系一致 ✅。
+
+**判定：骨干维度轴 negative（定稿）**。70.5% / 61.7% 远低于 90%
+门槛；配对 Wilcoxon（§4.3c 家族第 19/20 号）：TS0 per-seq
+−0.1555（p=8.8e-117，Holm 1.3e-115）、new per-seq −0.1741
+（p 下溢 0.0）。OOD 差距（−0.187）大于同分布（−0.176）——与
+容量轴的 OOD 不对称方向**相反**：容量是 OOD 掉得多、骨干换小
+是 OOD 掉得更狠。§14.66 的分叉问题就此闭环：**不排任何
+RNA-FM 后续臂**（640d 单变量已足够定论，无 seed 补臂价值）。
+
+### 四、统计与 draft（v3.10，60/60 检查通过）
+
+- `tools/stats_definitive.py` v6：新增 2d BACKBONE SWAP 块 +
+  backbone Wilcoxon 两条入 20-test 家族（18→20，Holm 全表重算）+
+  `stats_definitive.json` backbone 块（ts0/new micro+macro、
+  vs_ff、ratio_pct，全部直读 result.json 无手抄）。**Holm 漂移
+  审计**：两格 4 位有效数字漂移（combo_s0_new_vs_ff 6.0e-146→
+  6.4e-146；combo_s0_new_vs_tr1 1.3e-198→1.4e-198），§4.3c
+  表格已同步刷新（v3.8 教训执行）。
+- draft v3.10：§4.3d 新增 backbone-swap 段+表（含"TestSetB 的
+  RNA-FM 0.49 INF 是 fine-tuned 系统、不可比"的防误读声明）；
+  §4.3c 家族表 20 行；Appendix A 加 RNA-FM artifact 行（含
+  watch6 命令链）；Appendix C 第 1 条 stale 措辞修正（"second
+  seeds are training" 已过时多版，改为如实盘点 seed 覆盖）；
+  change note v3.10 置顶。`check_draft_v34.py` 50→60 检查，
+  **60/60 PASS**（其中 v3.8 家族计数检查升级为"跟踪当前家族
+  大小"，防再次 stale）。
+- draft 里 §4.3e TestSetB 段落原句"RNA-FM quoted-only"保留——
+  那是别人 fine-tuned 系统的引用值，与我们的 frozen-head 行
+  语义不同，不冲突。
+
+### 五、RiNALMo-ft 下载（本地通道，仍未完成）
+
+§14.67 重启的本地 curl 循环 06:24 后死亡（文件停 1.07GB/
+2.44GB，无 curl 进程）。本轮 08:30 重启断点续传（同
+rinalmo_dl.sh 脚本，-C - + 500 次重试包裹），当前 ~235 KB/s，
+若持续 ETA ~1.5–2h（~10:00–11:00）。完成 → 人工 scp 上服
+务器 → 官方 ResNet 头评测插队（串行协议）。
+
+### 六、GPU 与排期
+
+- 共享卡 0–5：卡 5 已回落 4.2GB 用/36.8GB 空（>15GB 空闲且
+  无本组任务）；卡 4 半忙（14.2GB 用，他人 55% util）；卡 2
+  19.6GB 用他人占。**维持无新臂**：骨干轴 negative 定稿后，
+  剩余决策空间只有 RiNALMo-ft 官方头对照（插队、不占训练卡）
+  与 deadline 前 frozen 面。空卡不主动认领。
+- MIG：RNA-FM 臂训练用 MIG-10b9b777 已释放；watch6 评测走
+  MIG-27707c52（1g.5gb）完成即退。
+
+### 七、仓库与副本状态
+
+- 本轮变更（待 commit）：`paper/preprint_draft.md`（v3.10）、
+  `tools/stats_definitive.py`（v6）、`tools/check_draft_v34.py`
+  （60 检查）、`scripts/run_watch6.sh`（wait_quiet 自匹配修
+  复）、`tables/stats_definitive.json`（backbone 块 + 20 家族
+  Holm 重算）、本节。
+- 下轮监控（~11:00）：RiNALMo-ft 下载完成后 scp+插队评测；
+  其余四臂+RNA-FM 全部收队，watch 系全退，预期零新事件。
+
+### 八、待办（下轮 ~11:00）
+
+- [ ] RiNALMo-ft 权重下载完成确认 → scp 上服务器 → 官方头
+      评测插队（wait_quiet 串行）
+- [ ] 常规巡查：alerts_decision.log（零告警预期）、五臂收队
+      状态无回退
+- [ ] 若 RiNALMo-ft 评测出数：§4.3d 引用值换实测值（quoted →
+      measured，终闭环 §14.65 的三问之一）

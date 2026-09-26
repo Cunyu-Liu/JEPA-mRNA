@@ -16,6 +16,10 @@ watch self-heal loops (watch3 19:23 / watch4 20:51) after an unknown
 cleanup removed them; the re-evals are protocol-identical and moved f1 by
 0.0006-0.0007 (below seed std), so current on-disk values are canonical.
 
+v6 (2026-09-26 08:52, 14.68): backbone-swap arm lands. RNA-FM 640d frozen
+backbone with the ff-mirror head, both splits (TS0 0.4199 / new 0.3005).
+Read from ow result.json directly. Wilcoxon family grows to 20 tests
+(+2 backbone comparisons); Holm re-run over the whole family.
 v5 (2026-09-26 02:20, 14.66): ensemble results land. 8-seed score-average
 ensemble on TS0 (0.6105) and bprna_new (0.5106), TR1 2-seed ensemble on
 bprna_new (0.5229). All read from the ensemble result.json files directly —
@@ -85,6 +89,9 @@ TR1_20K_TS0 = load(ART / "eval_decision/tr1_ff_step20000_bprna_ts0/result.json")
 # 14.65 bigsum (512d + sum normalisation, single-variable capacity replication)
 BIGSUM_TS0 = load(ev("ow", "bigsum_b4_s0", 20000, "bprna_ts0"))             # 0.6302
 BIGSUM_NEW = load(ev("ow", "bigsum_b4_s0", 20000, "bprna_new"))             # 0.4789
+# 14.68 backbone swap (RNA-FM 640d frozen, ff-mirror head, seed 0)
+RNAFM_TS0 = load(ART / "eval_decision/ow_rnafm_ff_b4_s0_step20000_bprna_ts0/result.json")  # 0.4199
+RNAFM_NEW = load(ART / "eval_decision/ow_rnafm_ff_b4_s0_step20000_bprna_new/result.json")  # 0.3005
 
 print("=" * 72)
 print("1. EXACT 8-SEED BASE (TS0 micro)")
@@ -123,6 +130,11 @@ print("2c. BIGSUM CONFOUND CLOSURE (14.65, both splits)")
 print(f"   bigsum TS0:  micro {BIGSUM_TS0[1]:.4f} macro {BIGSUM_TS0[2]:.4f}  (vs ff s0 {FF[0][1]:.4f}: {BIGSUM_TS0[1]-FF[0][1]:+.4f}; vs big s0 {BIG[0][1]:.4f}: {BIGSUM_TS0[1]-BIG[0][1]:+.4f})")
 print(f"   bigsum new:  micro {BIGSUM_NEW[1]:.4f} macro {BIGSUM_NEW[2]:.4f}  (vs ff new {FF_NEW[1]:.4f}: {BIGSUM_NEW[1]-FF_NEW[1]:+.4f}; vs big new {BIG_NEW[1]:.4f}: {BIGSUM_NEW[1]-BIG_NEW[1]:+.4f})")
 print(f"   => OOD capacity cost: length-norm {BIG_NEW[1]-FF_NEW[1]:+.4f}  vs  sum-norm {BIGSUM_NEW[1]-FF_NEW[1]:+.4f}  (sign preserved, magnitude {abs(BIGSUM_NEW[1]-FF_NEW[1])-abs(BIG_NEW[1]-FF_NEW[1]):+.4f})")
+
+print("=" * 72)
+print("2d. BACKBONE SWAP (14.68, RNA-FM 640d vs RiNALMo-giga 1280d, ff-mirror head)")
+print(f"   rnafm TS0: micro {RNAFM_TS0[1]:.4f} macro {RNAFM_TS0[2]:.4f}  (vs ff s0 {FF[0][1]:.4f}: {RNAFM_TS0[1]-FF[0][1]:+.4f}; ratio {RNAFM_TS0[1]/FF[0][1]*100:.1f}%)")
+print(f"   rnafm new: micro {RNAFM_NEW[1]:.4f} macro {RNAFM_NEW[2]:.4f}  (vs ff s0 new {FF_NEW[1]:.4f}: {RNAFM_NEW[1]-FF_NEW[1]:+.4f}; ratio {RNAFM_NEW[1]/FF_NEW[1]*100:.1f}%)")
 
 print("=" * 72)
 print("3. CROSS-FAMILY CORRECTED TABLE (bprna_new, matched protocol)")
@@ -176,6 +188,8 @@ tests = [
     wtest("bigsum_ts0_vs_ff", BIGSUM_TS0[0], FF[0][0]),
     wtest("bigsum_new_vs_ff", BIGSUM_NEW[0], FF_NEW[0]),
     wtest("bigsum_new_vs_big", BIGSUM_NEW[0], BIG_NEW[0]),
+    wtest("backbone_ts0_vs_ff", RNAFM_TS0[0], FF[0][0]),
+    wtest("backbone_new_vs_ff", RNAFM_NEW[0], FF_NEW[0]),
 ]
 m = len(tests)
 order = sorted(range(m), key=lambda i: tests[i]["p"])
@@ -263,6 +277,12 @@ out = dict(
                 vs_big_new=round(BIGSUM_NEW[1] - BIG_NEW[1], 4),
                 ood_cost_len_norm=round(BIG_NEW[1] - FF_NEW[1], 4),
                 ood_cost_sum_norm=round(BIGSUM_NEW[1] - FF_NEW[1], 4)),
+    backbone=dict(ts0_micro=round(RNAFM_TS0[1], 4), ts0_macro=round(RNAFM_TS0[2], 4),
+                  new_micro=round(RNAFM_NEW[1], 4), new_macro=round(RNAFM_NEW[2], 4),
+                  ts0_vs_ff=round(RNAFM_TS0[1] - FF[0][1], 4),
+                  new_vs_ff=round(RNAFM_NEW[1] - FF_NEW[1], 4),
+                  ts0_ratio_pct=round(RNAFM_TS0[1] / FF[0][1] * 100, 1),
+                  new_ratio_pct=round(RNAFM_NEW[1] / FF_NEW[1] * 100, 1)),
     cross_family={name: dict(micro=round(m, 4), macro=round(g, 4)) for name, (_, m, g) in rows},
     wilcoxon=tests,
     ensembles=ens_out,

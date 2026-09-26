@@ -111,7 +111,7 @@ ck("v3.8: bigsum ts0 0.6302", f"{V['bigsum_ts0']:.4f}" == "0.6302" and "0.6302" 
 ck("v3.8: bigsum new 0.4789", f"{V['bigsum_new']:.4f}" == "0.4789" and "0.4789" in text, f"{V['bigsum_new']:.5f}")
 ck("v3.8: bigsum new vs ff -0.008 stated", f"{V['bigsum_new'] - V['ff_s0_new']:+.4f}" == "-0.0080" and ("-0.008" in text or "−0.008" in text), f"{V['bigsum_new'] - V['ff_s0_new']:+.5f}")
 ck("v3.8: bigsum new vs big +0.015 stated", f"{V['bigsum_new'] - V['big_new']:+.4f}" == "+0.0149" and ("+0.015" in text or "0.0149" in text), f"{V['bigsum_new'] - V['big_new']:+.5f}")
-ck("v3.8: 18-test family stated", "18-test family" in text)
+ck("v3.8: test-family count tracks current family (20)", "20-test family" in text and "18-test family" not in text)
 ck("v3.8: bigsum both splits in appendix", "ow_rinalmo_bigsum_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 
 
@@ -129,6 +129,22 @@ ck("v3.9: ensemble gain +0.0166 stated", "+0.0166" in text)
 ck("v3.9: ensemble OOD gain +0.0236 stated", "+0.0236" in text)
 ck("v3.9: ensemble section 4.3f present", "4.3f" in text and "seed ensemble" in text.lower())
 ck("v3.9: stats json ensembles block matches", ens.get("ens8_ts0", {}).get("micro") == round(V["ens8_ts0"], 4) and ens.get("ens8_new", {}).get("micro") == round(V["ens8_new"], 4), f"{ens}")
+
+V["rnafm_ts0"] = micro_of(f"{E}/ow_rnafm_ff_b4_s0_step20000_bprna_ts0/result.json")
+V["rnafm_new"] = micro_of(f"{E}/ow_rnafm_ff_b4_s0_step20000_bprna_new/result.json")
+sd6 = json.load(open("/mnt/cunyuliu/rna-jepa/tables/stats_definitive.json"))
+bb = sd6.get("backbone", {})
+
+ck("v3.10: rnafm ts0 0.4199", f"{V['rnafm_ts0']:.4f}" == "0.4199" and "0.4199" in text, f"{V['rnafm_ts0']:.4f}")
+ck("v3.10: rnafm new 0.3005", f"{V['rnafm_new']:.4f}" == "0.3005" and "0.3005" in text, f"{V['rnafm_new']:.4f}")
+ck("v3.10: backbone ts0 delta -0.176", f"{V['rnafm_ts0'] - V['ff_s0_ts0']:+.4f}" == "-0.1758" and "−0.176" in text, f"{V['rnafm_ts0'] - V['ff_s0_ts0']:+.5f}")
+ck("v3.10: backbone new delta -0.187", f"{V['rnafm_new'] - V['ff_s0_new']:+.4f}" == "-0.1865" and "−0.187" in text, f"{V['rnafm_new'] - V['ff_s0_new']:+.5f}")
+ck("v3.10: ratios 70.5%/61.7% stated", "70.5%" in text and "61.7%" in text and f"{V['rnafm_ts0']/V['ff_s0_ts0']*100:.1f}" == "70.5" and f"{V['rnafm_new']/V['ff_s0_new']*100:.1f}" == "61.7")
+ck("v3.10: 20-test family stated", "20-test family" in text and "18-test family" not in text)
+ck("v3.10: stats json backbone block matches", bb.get("ts0_micro") == round(V["rnafm_ts0"], 4) and bb.get("new_micro") == round(V["rnafm_new"], 4) and bb.get("ts0_ratio_pct") == 70.5 and bb.get("new_ratio_pct") == 61.7, f"{bb}")
+ck("v3.10: drift cells match re-run Holm (6.4e-146, 1.4e-198)", "6.4e-146" in text and "1.4e-198" in text and "6.0e-146" not in text and "1.3e-198" not in text)
+ck("v3.10: backbone negative framing present", "backbone-dimension axis as a negative result" in text)
+ck("v3.10: appendix backbone artifact row", "ow_rnafm_ff_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 
 fails = [c for c in checks if not c[1]]
 for name, ok, detail in checks:

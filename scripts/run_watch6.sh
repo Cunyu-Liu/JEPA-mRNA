@@ -16,7 +16,7 @@ EVAL_GPU="${RNAJEV_EVAL_GPU:-MIG-27707c52-3cf5-55f8-858f-1419d97bbdf3}"
 wait_quiet() {
   for _ in $(seq 1 1440); do
       pgrep -f "[e]valuate_decision.py" >/dev/null && { sleep 30; continue; }
-      pgrep -f "[r]un_watch[3-9].sh" >/dev/null && { sleep 30; continue; }
+      pgrep -f "[r]un_watch[3-5].sh" >/dev/null && { sleep 30; continue; }
       break
   done
 }
