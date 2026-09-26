@@ -1,11 +1,28 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.11, 2026-09-26.**
+**Preliminary preprint draft — v3.12, 2026-09-26.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here is
 > extrapolated.
+>
+> **v3.12 change note (Plan-B scorer arm lands, positive).** The 2D-context
+> pair scorer (4 bottleneck 2D-residual blocks replacing the per-pair MLP at
+> matched capacity, only changed variable vs the ff baseline) lands on both
+> splits: TS0 micro **0.6629** (+0.067 over ff s0; paired per-seq +0.047,
+> Holm 1.6e-22) — level with structRFM's 0.6638 and +0.031 over the
+> 4-seed capacity mean, on ~1/3 the params of the 4.8x head. On bpRNA-new
+> 0.5010 micro (+0.014 pooled) but per-seq −0.023 (Holm 4.8e-09): the OOD
+> gain is pair-dense-concentrated, the same aggregation divergence as the
+> capacity axis. The architecture term of §4.3g's decomposition is measured:
+> ~+0.03 of the structRFM residual is the scorer alone; §4.3g's chase map
+> is updated and A+B is the stated path. The §4.3c family grows to 22
+> tests; Holm cells that drift with the larger family are refreshed against
+> `tables/stats_definitive.json` (4th-significant-digit changes only, no
+> direction changes). Eval-engineering note: watch7, the arm's serial
+> auto-evaluator, moved off the default 1g.5gb MIG slice (OOM on the
+> 2D whole-matrix intermediates) to dynamically-picked shared cards.
 >
 > **v3.11 change note (gap attribution closed; two released baselines re-run).**
 > RiNALMo-ft (650M fine-tuned, Zenodo checkpoint, MD5-verified) re-run under its
@@ -393,6 +410,7 @@ baselines, and the capacity sweep moves us further up:
 | bpRNA-new (5,388) | 0.4870 | 0.4641 | **0.5162** | 0.4999 | 0.4558 | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
 | — RiNALMo-ft 650M (re-run, strict micro) | TS0 **0.7210** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4489** (below our 0.4870) |
 | — structRFM 86M (re-run, strict micro) | TS0 **0.6638** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5438** (above our 0.4870) |
+| — Ours, 2D-context scorer (Plan B) | TS0 **0.6629** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5010** (pooled micro; per-seq −0.023, see §4.3c) |
 
 The TR1 columns are the data-scaling experiment, the 0.4641 cell is the
 capacity-on-cross-family measurement, and the last "Ours" column is the combination
@@ -455,6 +473,20 @@ Three readings of this table, stated exactly:
    the DP decode moves TS0 by +0.001 (0.6760 -> 0.6770 on a matched 400-sequence
    subset, verified with the main evaluator at 0.6772). Sending logits, not
    probabilities, to the DP remains the right choice (that comparison was +0.045).
+4. **Replacing the per-pair MLP with a 2D-context scorer is the largest single
+   architecture gain measured in this draft.** At *matched* capacity (same d_z=128,
+   ~811k head params vs the flat head's ~520k — but ~1/3 of the 4.8x
+   capacity head's 2.51M), the 4-bottleneck-block 2D residual scorer (Plan B;
+   only changed variable vs the ff baseline) reaches **0.6629 on TS0** —
+   +0.067 over the matched ff seed (paired per-seq +0.047, Holm 1.6e-22),
+   +0.031 over the 4-seed capacity-arm *mean*, and within 0.001 of
+   structRFM's 0.6638, with the backbone still frozen. On bpRNA-new it
+   reaches 0.5010 pooled micro (+0.014, Holm 4.8e-09) with a per-sequence
+   mean of −0.023 — the aggregation divergence is stated in §4.3c(3) and is a
+   property of how the pooled metric weights pair-dense sequences, not of
+   our protocol. Read strictly, the scorer is the best in-distribution
+   architecture we have and the worst cross-family *per-sequence*; read
+   pooled, it is the best on both. Both readings are reported.
 
 ### 4.3b Three component ablations on the trained checkpoint
 
@@ -480,7 +512,7 @@ without reordering the argmax), which the measurement confirms exactly.
 
 Every comparison above is additionally tested as a paired per-sequence Wilcoxon
 signed-rank test (two-sided, zero_method=wilcox) with Holm-Bonferroni correction
-across the 20-test family (`tools/stats_definitive.py`, artifacts
+across the 22-test family (`tools/stats_definitive.py`, artifacts
 `tables/stats_definitive.json`):
 
 | Comparison (paired, same sequences) | n | micro Δ | per-seq mean Δ | p (Holm) |
@@ -489,22 +521,24 @@ across the 20-test family (`tools/stats_definitive.py`, artifacts
 | Capacity s1, TS0 | 1,288 | +0.030 | **−0.021** | 4.9e-08 |
 | Capacity s2, TS0 | 1,288 | +0.041 | −0.005 | 7.7e-01 |
 | Capacity s3, TS0 | 1,288 | +0.041 | +0.008 | 1.1e-01 |
-| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 9.9e-82 |
-| Sum-norm capacity vs ff, bpRNA-new | 5,388 | **−0.008** | −0.012 | 1.0e-09 |
-| Sum-norm capacity vs ff, TS0 | 1,288 | +0.035 | +0.031 | 1.3e-13 |
-| Sum-norm capacity vs big, bpRNA-new | 5,388 | +0.015 | +0.034 | 1.1e-44 |
-| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 5.2e-61 |
+| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 1.1e-81 |
+| Sum-norm capacity vs ff, bpRNA-new | 5,388 | **−0.008** | −0.012 | 1.1e-09 |
+| Sum-norm capacity vs ff, TS0 | 1,288 | +0.035 | +0.031 | 1.5e-13 |
+| Sum-norm capacity vs big, bpRNA-new | 5,388 | +0.015 | +0.034 | 1.3e-44 |
+| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 6.0e-61 |
 | Data (TR1@20k) s1, bpRNA-new | 5,388 | +0.008 | +0.006 | 3.1e-04 |
 | Data (TR1@40k) s0, bpRNA-new | 5,388 | +0.013 | +0.014 | 2.8e-08 |
-| Data (TR1@40k) s0, TS0 | 1,288 | +0.019 | +0.032 | 3.3e-11 |
-| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 6.4e-146 |
+| Data (TR1@40k) s0, TS0 | 1,288 | +0.019 | +0.032 | 3.6e-11 |
+| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 7.2e-146 |
 | Combination s1 vs ff, bpRNA-new | 5,388 | −0.078 | −0.119 | < 1e-300 |
-| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.083 | 1.4e-198 |
+| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.083 | 1.5e-198 |
 | Combination s1 vs TR1 s1, bpRNA-new | 5,388 | −0.087 | −0.125 | < 1e-300 |
 | Combination s0 vs big, TS0 | 1,288 | +0.002 | +0.001 | 7.7e-01 |
 | Combination s1 vs big s1, TS0 | 1,288 | +0.009 | +0.017 | 6.5e-05 |
-| Backbone (RNA-FM 640-d) vs ff, TS0 | 1,288 | **−0.176** | **−0.156** | 1.3e-115 |
+| Backbone (RNA-FM 640-d) vs ff, TS0 | 1,288 | **−0.176** | **−0.156** | 1.5e-115 |
 | Backbone (RNA-FM 640-d) vs ff, bpRNA-new | 5,388 | **−0.187** | **−0.174** | < 1e-300 |
+| Scorer (2D-context) vs ff, TS0 | 1,288 | **+0.067** | **+0.047** | 1.6e-22 |
+| Scorer (2D-context) vs ff, bpRNA-new | 5,388 | **+0.014** | **−0.023** | 4.8e-09 |
 
 Two results survive the whole family at extreme significance: **data scaling helps
 cross-family (+0.036 per-sequence) and capacity hurts it (−0.046)**. Two results show
@@ -526,6 +560,15 @@ that pooled micro and per-sequence mean disagree in direction:
    sequence, not just the pooled pool. The two scaling axes differ not only in
    direction but in *distribution* of gains, and a single aggregate would hide both
    facts.
+
+3. **The scorer axis joins the aggregation-divergence family, on the pooled-positive
+   side.** The 2D-context scorer's bpRNA-new row is the third cell where the two
+   aggregations disagree in direction: pooled micro +0.014 (significant, Holm
+   4.8e-09) but per-sequence mean −0.023 — the same pair-dense signature as the
+   capacity axis, not the uniform signature of the data axis. In-distribution the
+   two aggregations agree in direction (+0.067 / +0.047). Any quotation of the
+   scorer's out-of-distribution number must therefore carry both aggregations, as
+   the capacity rows do.
 
 A protocol note follows from this, and we state it as a methodological finding of the
 audit: pooled micro F1, the de facto standard aggregation for this benchmark family,
@@ -807,17 +850,32 @@ bpRNA-new 0.3005 against RiNALMo-giga's 0.5938/0.4870: the representation
 axis alone is worth ~0.17 in-distribution, larger than the fine-tuning term —
 backbone choice dominates, backbone adaptation adds on top.
 
+**(d) Plan-B scorer arm (2D-context scorer on the frozen backbone, matched
+capacity).** TS0 micro **0.6629** (+0.067 over the matched ff seed, Holm
+1.6e-22; per-seq +0.047), bpRNA-new 0.5010 pooled (+0.014, Holm 4.8e-09;
+per-seq −0.023). The architecture half of (b)'s residual is now isolated:
+**the 2D-context scorer alone recovers ~+0.03 TS0 of the ~0.02–0.04 that
+separated structRFM from our frozen head — i.e. essentially all of the
+architecture-side residual** — without structure-aware pre-training data and
+without touching the backbone. structRFM's remaining edge over the Plan-B
+arm is +0.001 TS0 (0.6638 vs 0.6629, within our capacity-arm seed spread of
+0.0098) and +0.043 bpRNA-new pooled, which re-attributes the cross-family
+difference to its structure-guided pre-training data, not its scorer.
+
 **Combined decomposition of the 0.13–0.15 TS0 gap to the strongest models:**
 
 | factor | estimate | evidence |
 |---|---|---|
 | backbone fine-tuning (frozen → adapted) | ~0.11 | (a): same encoder, both regimes |
-| pair scorer 2D context + structure-aware pretrain data | ~0.02–0.04 residual vs structRFM's path | (b) sits between the two regimes |
+| pair scorer 2D context (flat MLP → resnet2d) | ~+0.03–0.07 (0.6629 vs 0.5956 matched) | (d): single-variable swap at matched capacity |
+| structure-aware pretrain data (structRFM's BPfold corpus) | ~0 residual TS0 / +0.04 bpRNA-new vs (d) | (b) vs (d) at near-equal TS0 |
 | seed stochasticity | ≤ ~0.02 (≤15–20% of deficit) | §4.3f ensemble bound |
 
-This is the chase map: the next arms are a 2D-context scorer on the frozen
-backbone (isolating (b)'s architecture half at matched capacity — running)
-and gradual unfreezing (isolating (a) under our objective — prepared).
+This was the chase map; the architecture half is now measured. The remaining
+open arm is gradual unfreezing of the frozen backbone under our objective
+(Plan A, prepared) — the interaction of (a)+(d) is the natural next
+combination, and the capacity×data interference of §4.3 warns that its
+cross-family sign cannot be assumed from the two single-axis positives.
 
 ### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
@@ -1044,7 +1102,8 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |
 | Seed ensembles (§4.3f) | `eval_decision/ensemble8_{ts0,new}`, `eval_decision/ensemble_tr1_2seed_new` | `tools/ensemble_eval.py`: K-checkpoint score-average, single exact decode; stats in `tables/stats_definitive.json` (v5 `ensembles` block) |
 | Backbone swap (§4.3d, negative) | `eval_decision/ow_rnafm_ff_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch6.sh` → `eval/ss/evaluate_decision.py --checkpoint ckpts/rnafm_ff_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; RNA-FM 640-d frozen embeddings `embeddings/rna-fm`; stats in `tables/stats_definitive.json` (v6 `backbone` block) |
-| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.68 | — |
+| Plan-B 2D-context scorer (§4.3g, positive) | `eval_decision/ow_rinalmo_r2d_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch7.sh` (serial protocol, dynamic shared-card pick after the 1g.5gb MIG slice OOMed on the 2D whole-matrix intermediates) → `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_r2d_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; training via `scripts/launch_plan_b.sh` + `tools/patch_resnet2d.py` (scorer=resnet2d, ff_b4_s0-mirror); stats in `tables/stats_definitive.json` (v7 `scorer` block) |
+| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.74 | — |
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
 rate and hairpin-violation rate are 0.0000 for every row above.

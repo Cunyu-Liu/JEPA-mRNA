@@ -16,6 +16,10 @@ watch self-heal loops (watch3 19:23 / watch4 20:51) after an unknown
 cleanup removed them; the re-evals are protocol-identical and moved f1 by
 0.0006-0.0007 (below seed std), so current on-disk values are canonical.
 
+v7 (2026-09-26 21:02, 14.74): Plan-B arm lands. resnet2d 2D-context pair
+scorer (only changed variable vs ff_b4_s0), both splits (TS0 0.6629 /
+new 0.5010). Read from ow result.json directly. Wilcoxon family grows
+to 22 tests (+2 scorer comparisons); Holm re-run over the whole family.
 v6 (2026-09-26 08:52, 14.68): backbone-swap arm lands. RNA-FM 640d frozen
 backbone with the ff-mirror head, both splits (TS0 0.4199 / new 0.3005).
 Read from ow result.json directly. Wilcoxon family grows to 20 tests
@@ -92,6 +96,9 @@ BIGSUM_NEW = load(ev("ow", "bigsum_b4_s0", 20000, "bprna_new"))             # 0.
 # 14.68 backbone swap (RNA-FM 640d frozen, ff-mirror head, seed 0)
 RNAFM_TS0 = load(ART / "eval_decision/ow_rnafm_ff_b4_s0_step20000_bprna_ts0/result.json")  # 0.4199
 RNAFM_NEW = load(ART / "eval_decision/ow_rnafm_ff_b4_s0_step20000_bprna_new/result.json")  # 0.3005
+# 14.74 Plan-B scorer arm (resnet2d 2D-context, ff_b4_s0-mirror, seed 0)
+R2D_TS0 = load(ART / "eval_decision/ow_rinalmo_r2d_b4_s0_step20000_bprna_ts0/result.json")  # 0.6629
+R2D_NEW = load(ART / "eval_decision/ow_rinalmo_r2d_b4_s0_step20000_bprna_new/result.json")  # 0.5010
 
 print("=" * 72)
 print("1. EXACT 8-SEED BASE (TS0 micro)")
@@ -135,6 +142,12 @@ print("=" * 72)
 print("2d. BACKBONE SWAP (14.68, RNA-FM 640d vs RiNALMo-giga 1280d, ff-mirror head)")
 print(f"   rnafm TS0: micro {RNAFM_TS0[1]:.4f} macro {RNAFM_TS0[2]:.4f}  (vs ff s0 {FF[0][1]:.4f}: {RNAFM_TS0[1]-FF[0][1]:+.4f}; ratio {RNAFM_TS0[1]/FF[0][1]*100:.1f}%)")
 print(f"   rnafm new: micro {RNAFM_NEW[1]:.4f} macro {RNAFM_NEW[2]:.4f}  (vs ff s0 new {FF_NEW[1]:.4f}: {RNAFM_NEW[1]-FF_NEW[1]:+.4f}; ratio {RNAFM_NEW[1]/FF_NEW[1]*100:.1f}%)")
+
+print("=" * 72)
+print("2e. PLAN-B SCORER SWAP (14.74, resnet2d 2D-context vs flat per-pair MLP, ff_b4_s0-mirror)")
+print(f"   r2d TS0: micro {R2D_TS0[1]:.4f} macro {R2D_TS0[2]:.4f}  (vs ff s0 {FF[0][1]:.4f}: {R2D_TS0[1]-FF[0][1]:+.4f})")
+print(f"   r2d new: micro {R2D_NEW[1]:.4f} macro {R2D_NEW[2]:.4f}  (vs ff s0 new {FF_NEW[1]:.4f}: {R2D_NEW[1]-FF_NEW[1]:+.4f})")
+print(f"   vs big family mean TS0 {st.mean([BIG[s][1] for s in sorted(BIG)]):.4f}: {R2D_TS0[1]-st.mean([BIG[s][1] for s in sorted(BIG)]):+.4f}")
 
 print("=" * 72)
 print("3. CROSS-FAMILY CORRECTED TABLE (bprna_new, matched protocol)")
@@ -190,6 +203,8 @@ tests = [
     wtest("bigsum_new_vs_big", BIGSUM_NEW[0], BIG_NEW[0]),
     wtest("backbone_ts0_vs_ff", RNAFM_TS0[0], FF[0][0]),
     wtest("backbone_new_vs_ff", RNAFM_NEW[0], FF_NEW[0]),
+    wtest("scorer_r2d_ts0_vs_ff", R2D_TS0[0], FF[0][0]),
+    wtest("scorer_r2d_new_vs_ff", R2D_NEW[0], FF_NEW[0]),
 ]
 m = len(tests)
 order = sorted(range(m), key=lambda i: tests[i]["p"])
@@ -283,6 +298,10 @@ out = dict(
                   new_vs_ff=round(RNAFM_NEW[1] - FF_NEW[1], 4),
                   ts0_ratio_pct=round(RNAFM_TS0[1] / FF[0][1] * 100, 1),
                   new_ratio_pct=round(RNAFM_NEW[1] / FF_NEW[1] * 100, 1)),
+    scorer=dict(ts0_micro=round(R2D_TS0[1], 4), ts0_macro=round(R2D_TS0[2], 4),
+                new_micro=round(R2D_NEW[1], 4), new_macro=round(R2D_NEW[2], 4),
+                ts0_vs_ff=round(R2D_TS0[1] - FF[0][1], 4),
+                new_vs_ff=round(R2D_NEW[1] - FF_NEW[1], 4)),
     cross_family={name: dict(micro=round(m, 4), macro=round(g, 4)) for name, (_, m, g) in rows},
     wilcoxon=tests,
     ensembles=ens_out,

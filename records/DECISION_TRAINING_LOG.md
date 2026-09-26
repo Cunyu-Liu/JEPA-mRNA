@@ -4233,3 +4233,132 @@ origin/main；scp 拉回 paper/spec/records 至本地 `~/rna-jepa-sync`。
       表扩行（若并行会话未先做）
 - [ ] 下载决策 C 的 quoted 收尾注记（若用户/并行会话确认）
 - [ ] 常规巡查：零告警、无新 ow_*、五臂零回退
+## §14.74 r2d（Plan-B）臂出数：架构假设确认（TS0 +0.067 双倍于判定线，per-seq 显著）+ watch7 三次 OOM→动态选卡工程处置 + stats v7 + draft v3.12（2026-09-26 21:20，关键正结果）
+
+> 节号说明：用户指令模板写"§14.61 起"，实际盘上日志已推进至 §14.73，
+> 本节取 §14.74。判定线沿用 §14.67 用户规则：**+0.03 over ff at 20k ⇒
+> 架构假设确认**。
+
+### 一、五臂终态复核（零回退、恢复协议零触发）
+
+四个原监控臂（bigtr1_s1 / big_s3 / ff_tr1_s1 / bigsum，终态 20000/20000，
+09-25 19:17–23:01 完训）与 §14.64/§14.65 记账一致，无回退。**唯一新事件：
+r2d（rinalmo_r2d_b4_s0）于 09-26 19:47:03 干净完训**（stdout 尾部
+`DONE steps=20000 final_loss=26.7036`，0 FATAL/Traceback；ledger
+`status: completed`；run_meta steps_completed=20000 与配置 steps=20000 核
+对一致；wall 18473.8s ≈ 5.1h，共享卡 1）。终笔读数存档：loss 24.89
+（terms.nll 25.657 / distill 0.0947 / rlcd -0.9347 / cal 0.0705，
+grad_norm 240.6——原始 nll 族（sum 归一化）量级与 ff 系同形态，波动属
+正常）。§14.73 尾程读数（loss 19.42 @14650）→终笔 24.89：6k 步区间内
+正常波动，非异常。
+
+### 二、r2d 双 split 出数 + 基线四查（§14.59 协议，通过）
+
+| split | micro F1 | macro F1 | 对照 ff s0 | Δ micro | per-seq Δ (Wilcoxon) |
+|---|---|---|---|---|---|
+| bprna_ts0 (1,288) | **0.6629** | 0.6436 | 0.5956 | **+0.0673** | **+0.0471**（p=1.19e-23, Holm 1.55e-22） |
+| bprna_new (5,388) | **0.5010** | 0.4714 | 0.4870 | +0.0141 | **−0.0229**（p=5.35e-10, Holm 4.82e-09） |
+
+**四查**：① checkpoint 步数 20000 ✅（runs run_meta steps_completed=20000
+= ckpt step20000）；② prior-weight w=-1（pw_eff 0.6686，训练内自身权重语
+义）+ VL0 Platt（196 序列，fit 未塌缩）✅；③ split/解码：bprna_ts0 1288 /
+bprna_new 5388，exact Nussinov（legality 0 违规，c1c_recalibrated
+pass=True 双 split 均 ✓）✅；④ nll_normalization=sum ✅（run_meta config，
+与 ff 系一致——r2d 是 ff_b4_s0 的单变量镜像：同冻结 RiNALMo-giga 嵌入、
+同 TR0 数据/teacher/batch/lr/steps/seed，唯一改变量为
+scorer=resnet2d）。
+
+**判定：架构假设确认（TS0 主判据）**。+0.0673 为用户判定线 +0.03 的
+2.2 倍；per-seq 方向一致（+0.0471, Holm 1.6e-22），统计口径全部支持。
+**Plan-B 正结果，按 §14.67 用户排序，A+B 组合为声明路径。**
+
+### 三、关键判读（三条，全部对齐 §4.3c 聚合分歧纪律）
+
+1. **TS0 上 r2d 0.6629 与 structRFM 0.6638（strict micro）几乎持平**（差
+   0.0009，远小于容量臂 seed spread 0.0098），且**无 structure-guided 预
+   训练数据、骨干仍冻结**——§4.3g(b) 中 structRFM 对我们冻结头的 TS0
+   残差（~0.02–0.04）**主体是 2D scorer 架构**，不是 BPfold 语料。
+   structRFM 的真实差异化优势在 bpRNA-new（0.5438 vs r2d 0.5010 pooled，
+   +0.043）——归因转移至其预训练数据。
+2. **bpRNA-new 的 micro +0.014 与 per-seq −0.023 方向分歧**——与容量轴
+   同型的"pooled 增益集中于 pair-dense 序列"签名（§14.63 起在容量轴上
+   已系统披露），非新现象，已作为 §4.3c 第 3 条 reading 入稿（双口径
+   强制同报）。注意与容量轴的镜像关系：容量轴是 TS0 pooled+/per-seq 分
+   seed 分歧、OOD 双负；scorer 轴是 TS0 双正、OOD pooled 正 per-seq 负。
+3. **参数效率**：r2d head 811,343 参数（ff 519,503 / big 2,507,791）——
+   1.56× ff 参数换 +0.067 TS0，且仅为 big 的 32% 参数就超过其 4-seed
+   均值 +0.031。**单变量增益远超容量轴性价比**（big +0.039 需 4.8× 参数）。
+
+### 四、watch7 三次 OOM 与工程处置（重要，已修）
+
+r2d 完训后 watch 系全退（watch3-6 已收官，r2d 无对应 watcher），按
+§14.73 待办手写 run_watch7.sh（镜像 watch6 模板、串行协议、wait_quiet
+只查更早编号 [3-6]——沿 §14.68 修复后惯例）。**三次启动三次 OOM，根因
+与处置逐层记账**：
+
+1. **首启（20:32，MIG-27707c52 默认卡）OOM**：resnet2d 的全矩阵 2D 路径
+   峰值中间张量 ~1.84–2.14GiB（type_head.cross 的 (L,L,3d) 投影 + Batch
+   Norm 全矩阵路径——§14.67 已注明 BatchNorm full-matrix 绕过列分块），
+   MIG 1g.5gb 总 4.75GiB 上他人进程占 ~1.4GiB，放不下。**教训：2D
+   scorer 臂的评测内存 profile 与 flat 头不同，1g.5gb MIG 对它结构性
+   偏紧**，watch 模板对该类臂默认值不可用。
+2. **二启（20:40，物理卡 1）再 OOM**：卡 1 在 12 分钟内从 5GB 用被他人
+   填到 ~35.6GB 用（共享卡 churn 快，固定卡不鲁棒）；且该实例未用
+   setsid，ssh 断开时被 SIGHUP 杀掉（§14.68 教训重演：nohup 在非交互
+   ssh 块里不足以护住进程组）。
+3. **三启（20:45, v2）成功**：改为**每次 eval 前动态选卡**（0-5 中空
+   闲最大且 ≥4GB）+ `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`
+   + `setsid nohup` 脱离会话。评测进程 20:46 卡 1 起跑：ts0 20:48
+   rc=0、new 20:59 rc=0、watch7 21:02 "all done" 按设计退出。双跑
+   md5 一致（stats json 9a71393b）。**run_watch7.sh 已入库**，供后续
+   2D-scorer 系臂复用（动态选卡模板）。
+
+### 五、统计与 draft（v3.12，76/76 检查通过）
+
+- `tools/stats_definitive.py` **v7**：新增 2e PLAN-B SCORER SWAP 块 +
+  scorer Wilcoxon 两条入 22-test 家族（20→22，Holm 全表重算）+
+  `stats_definitive.json` scorer 块（ts0/new micro+macro、vs_ff，直读
+  result.json 无手抄）。**Holm 漂移审计**：8 格 4 位有效数字漂移
+  （capacity_s0_new 1.1e-81、bigsum 系 3 格、data_20k 6.0e-61、
+  data_40k_ts0 3.6e-11、combo 系 2 格 7.2e-146/1.5e-198、backbone_ts0
+  1.5e-115），§4.3c 表格全部同步刷新（v3.8 教训执行，无方向变化）。
+- draft **v3.12**：banner 置顶（Plan-B 正结果）；§4.3 主表加 r2d 行 +
+  第 4 条 reading（双口径齐报）；§4.3c 家族 22 行 + 新增第 3 条聚合分
+  歧 reading（scorer 轴入分歧族）；§4.3g 新增 (d) 块 + 分解表改 4 行
+  （2D scorer 单变量 ~+0.03–0.07、structure-aware 数据 residual ~0
+  TS0/+0.04 OOD）+ chase map 更新（架构半边已测量，剩 Plan-A 渐进解冻
+  为开放臂，A+B 交互的 OOD 符号不可由两个单轴正外推——援引 §4.3 容量×
+  数据干涉教训）；Appendix A 加 r2d artifact 行（含 watch7 动态选卡说
+  明）；账本范围 §14.1–§14.74。`check_draft_v34.py` 60→**76 检查，
+  76/76 PASS**（含 2 处旧家族计数断言同步升级为跟踪当前家族大小）。
+
+### 六、GPU 与排期（维持无新臂）
+
+共享卡 0-5（21:10 实测）：卡 0 30.9GB、卡 1 24.6GB、卡 2 35.2GB、卡 3
+32.5GB、卡 4 35.9GB、卡 5 37.0GB——**无一卡 >15GB 空闲**，与 §14.73
+"无空位"状态一致（watch7 的动态选卡按需使用，不占长期卡位）。排期维
+持用户指令：**无新臂**——Plan-B 判定为正后，A+B 组合与 r2d 第二 seed
+均为候选，但启动决策留给用户（deadline 09-30 前剩余计算预算有限，
+Plan-A 渐进解冻成本高且 OOD 符号未知，建议作为 preprint 后续工作而非
+    deadline 前冒险）。卡 6/7 MIG 有零星空位但 1g.5gb 对 2D scorer 臂
+    评测结构性偏紧（见四-1），仅适合 flat 系臂。
+
+### 七、仓库与副本状态
+
+- 本轮变更（待 commit）：`paper/preprint_draft.md`（v3.12）、
+  `tools/stats_definitive.py`（v7）、`tools/check_draft_v34.py`（76 检
+  查）、`scripts/run_watch7.sh`（新，动态选卡模板）、
+  `tables/stats_definitive.json`（scorer 块 + 22 家族 Holm 重算）、本节。
+  commit 后 push origin/main；scp 拉回 paper/spec/records 至本地
+  `~/rna-jepa-sync`。
+- 下轮监控（~23:00 或用户决策时）：零新事件预期（全臂收队、watch 系全
+  退）；r2d 第二 seed / A+B 组合臂待用户排期指令。
+
+### 八、下轮待办
+
+- [ ] 常规巡查：alerts_decision.log（零告警预期）、六臂收队状态无回退
+- [ ] r2d 第二 seed 或 A+B 组合臂：**等用户排期决策**（本轮仅记账候选，
+      不启动）
+- [ ] structRFM Mathews 宽容口径（dbn 落盘为前提）——并行会话挂账项，
+      未处理
+- [ ] draft §4.3g chase map 若 Plan-A 被否决，措辞需相应收尾
