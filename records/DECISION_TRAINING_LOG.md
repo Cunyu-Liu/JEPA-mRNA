@@ -3786,3 +3786,115 @@ nvidia-smi 上 cunyuliu 名下 418MiB 常驻进程属 `rna_sc.watch_all`
 - [ ] 若下载 DONE（size=2,604,809,354）：scp 上服务器 → 官方
       ResNet 头评测插队（wait_quiet 串行）→ draft v3.11
       quoted→measured 终闭环 + check 扩展
+
+
+## §14.71 例行监控（14:20–14:45）：静默期被并行会话打破——structRFM 官方基线落地 0.6638、r2d（Plan B）臂记账、RiNALMo-ft 下载根因实锤（Zenodo IP 限流）、统计零漂移 60/60（2026-09-26 14:45）
+
+> 节号说明：用户指令模板仍写"§14.61 起"，盘上已至 §14.70（§14.66
+> 已声明此偏差）；本节取 §14.71。五臂关键判定（bigtr1_s1 双 split
+> 交互为负 2-seed 复现、big_s3 容量 4-seed、ff_tr1_s1 TR1 2-seed、
+> bigsum 0.6302≥0.63 混杂终判闭环）与 RNA-FM 骨干轴 negative 均已在
+> §14.63–14.65/§14.68 定稿，本轮无追加 seed、无四查项可复验。
+
+### 一、五臂终态复核（零回退、恢复协议零触发）
+
+`pgrep -af train_decision` 于 14:20/14:32 两轮为空 = 预期行为（§14.66
+判定顺序：先看日志终点步数 + ledger completed，再看进程——"完成"不是
+"消失"）。四臂 + RNA-FM 臂终态与 §14.70 表逐项一致，零回退：
+
+| 臂 | 终态 | 复核 |
+|---|---|---|
+| rinalmo_bigtr1_b4_s1 | 20000/20000（09-25 19:17） | ✅ |
+| rinalmo_big_b4_s3 | 20000/20000（09-25 20:33） | ✅ |
+| rinalmo_ff_tr1_b4_s1 | 20000/20000（09-25 20:32） | ✅ |
+| rinalmo_bigsum_b4_s0 | 20000/20000（09-25 22:58） | ✅ |
+| rnafm_ff_b4_s0 | 20000/20000（09-26 08:39 watch6 出数） | ✅ |
+
+watch3–6 进程全退、串行评测协议无并发；本轮 `eval_decision/` 无新
+ow_* 目录（watch6 最后一笔 08:52 收盘后静默）。
+
+### 二、新事件：并行会话工作记账（13:50 起活跃，唯一落盘产物 + 一个在训新臂）
+
+`who`/`last` 显示用户本人 13:50 起 pts/0 在线，以下工作为该会话
+推进，本节仅记账不覆写（WIP 文件不加不改不提交）：
+
+1. **structRFM 官方基线落地（§14.62 挂起项推进）**：
+   `eval_decision/structrfm_official_ts0.json`（14:14 落盘）——
+   官方 TS0-1305 全集，ckpt `refmodels/models/structRFM_SSP_bpRNA1m.pt`
+   （bpRNA1m 微调，`logs/eval_structrfm_ts0.log` 证实），n=1305 /
+   over-512=0：
+   - our 口径 strict micro F1 **0.6638**（precision 0.6185 / recall 0.7161）
+   - their 口径 strict macro F1 0.6628（两者一致到千分位——该基线
+     的 micro/macro 差异可忽略）
+   - `tools/eval_structrfm.py` 走模型自身推理路径（frozen LM emb →
+     MixedFold CNN+LSTM 打分 → Turner DP 解码），与 draft 各行同
+     "结构化解码"家族；Mathews 宽容口径暂缺（json 无 mathews 字段，
+     dbn 未见落盘——§14.62 带宽容列全表的下轮候选）
+2. **r2d（Plan B）臂首启崩溃→修复重启**：`rinalmo_r2d_b4_s0`
+   （--scorer resnet2d，其余变量与 rinalmo_ff_b4_s0 全同——2D 上下文
+   打分器单变量对照，gap factor 2 归因）。14:28 首启 FATAL
+   GradientCoverageError（head.turner.net 6 个可学习块无梯度）；
+   并行会话 14:37 修 `decision_head.py`（+92 行 resnet2d scorer）+
+   `train_decision.py`（+8 行）后 14:38 重启成功：14:40 实测 step
+   100/20000、train_log 新鲜、卡 6 占 22.8GB。**注意**：nll 量级
+   67–75、gnorm 46–265 与 bigsum 系同族（未除以序列长度的原始
+   nll），与 ff 系不可直接比 loss 曲线——出数后按 result.json 口径判。
+   该臂不在本轮四臂监控协议内，watch 未挂（下轮监控建议挂 watch 或
+   并入例行 tail 清单）。
+3. **未提交 untracked 工具**（并行会话 WIP，本轮不入库）：`tools/
+   eval_structrfm.py`、`tools/eval_rinalmo_ft.py`、`tools/
+   patch_resnet2d.py`、`tools/RiNALMo-main/`、`tools/structRFM-master/`
+   、`scripts/launch_plan_b.sh`、`scripts/run_s1_casc_eval.sh`、
+   `spec/spec.md.bak.14.59`、`logs/`；`src/rnajepa/decision_head.py` +
+   `train_decision.py` 修改同样留给出数后的正式提交。
+
+### 三、RiNALMo-ft 下载：根因实锤 + 备用源排查结论（决策建议 C）
+
+- 14:32 实测 1,122,502,432/2,604,809,354 = **43.1%**（round 7；轮间
+  净增 8.0/7.8/4.8/5.4/3.3/6.7MB——坍缩持续但未归零）；
+- **根因实锤**：本轮对 `zenodo.org/api/records/15043668` 的普通
+  HTTPS GET 被限流页拒绝（"Access restricted due to unusual
+  traffic from your network"）——Zenodo 在 IP 层面限流本网络，
+  与 §14.70 的"Zenodo 侧限速"推断吻合，非本端带宽问题；
+- **备用源排查（§14.70 选项 B，已执行）**：HF 官方 API + hf-mirror
+  查 `rinalmo`/`ss_bprna`/`lbcb-szu`——只有 giga/micro/mega 骨干
+  镜像（Taykhoom、multimolecule，文件仅 model.safetensors 等），
+  **无 ss_bprna_ft 微调头镜像**；该 2.6GB 权重唯一源就是被限流的
+  Zenodo record 15043668；
+- **决策建议：转 C（quoted 收尾）**——下载失败不阻塞投稿（draft
+  v3.10 按 quoted 处理已合规 60/60 PASS），43.1% 进度维持下载循环
+  作为零成本背景（完成则插队评测）；选项 B 已穷尽无镜像可换。
+  最终取舍留给并行会话/用户。
+
+### 四、GPU 与排队实验
+
+共享卡 0–5（14:32）：卡 0 21.3GB@100%、卡 1 13.4GB@60%、卡 2
+15.5GB@66%、卡 3 24.1GB@99%、卡 4 14.9GB@55%、卡 5 11.5GB@67%——
+无一张卡同时满足">15GB 空闲且无本组任务"（他人任务活跃，§14.70 的
+卡 2/4/5 空位已被他人填满）。本组唯一在训 r2d 在卡 6（22.8GB）。
+维持无新臂，r2d 出数（ETA 按 ff 系步速 0.8 st/s 估 ~21:30 完训）
+后再议。
+
+### 五、统计与 draft
+
+- `tools/stats_definitive.py` 重跑：与 §14.68/69/70 完全一致，
+  stats_definitive.json 重落盘 14:36（byte-stable，无漂移）；
+- `tools/check_draft_v34.py` **60/60 PASS**；draft 维持 v3.10、
+  零版本 bump、无新统计行（structRFM 行未经并行会话写入 draft，
+  禁手抄原则下本轮不动 draft）；
+- alerts_decision.log：当日零新增（mtime 触碰模式 14:27 第三轮，
+  内容零变化，继续观察）。
+
+### 六、本轮入库与下轮待办
+
+- 本轮唯一入库变更：`records/DECISION_TRAINING_LOG.md` 本节；
+  并行会话 WIP（二节所列）一律不入库；commit + push 后 scp 拉回
+  paper/spec/records 至本地 `~/rna-jepa-sync`。
+- 下轮（~16:30 或 r2d 完训时）：
+  - [ ] r2d 尾程监控（若 watch 未挂则 tail 复核；出数 → §4.3
+        scorer 消融行 + resnet2d 判定）
+  - [ ] structRFM Mathews 宽容口径补齐（dbn 需先落盘）+ draft
+        对比表扩行（若并行会话未先写）
+  - [ ] 下载决策确认（若用户/并行会话接受 C，则 draft quoted 行
+        加"measured 不可得"注记收尾）
+  - [ ] 常规巡查：零告警、五臂无回退、无新 ow_*
