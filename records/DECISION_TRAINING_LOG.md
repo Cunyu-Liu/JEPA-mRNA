@@ -3595,3 +3595,96 @@ com.user.rinalmo-dl）托管，TOTAL 修正，每轮 curl 1h 上限 +
 断点续传接力。09:14 起稳定下载中（~170 KB/s，ETA ~11:45）。
 完成后人工 scp 上服务器 → 官方 ResNet 头评测插队。下轮监控
 （~11:00）确认 DONE 并执行 scp。
+
+## §14.69 例行监控（10:19）：五臂收队后静默期首确认——零新事件、统计零漂移 60/60、RiNALMo-ft 下载 41.5%（Zenodo 断流被 --retry 吸收，ETA 修正）（2026-09-26 10:19）
+
+> 节号说明：用户指令模板仍写"§14.61 起"，实际盘上已至 §14.68
+> （§14.66 已声明过此偏差，惯例沿用）；本节取 §14.69。四臂关键
+> 判定（bigtr1_s1 双 split 交互为负 2-seed、big_s3 容量 4-seed、
+> ff_tr1_s1 TR1 2-seed、bigsum 混杂终判 0.6302≥0.63）已分别在
+> §14.64/§14.64b/§14.65 入账，RNA-FM 骨干轴 negative 已在 §14.68
+> 定稿——本轮为出数后的例行巡查，无新评测事件。
+
+### 一、五臂终态复核（零回退、恢复协议零触发）
+
+| 臂 | 终点 | ledger 终态 | 本轮复核 |
+|---|---|---|---|
+| rinalmo_bigtr1_b4_s1 | 20000/20000（09-25 19:17） | completed | ✅ 无回退 |
+| rinalmo_big_b4_s3 | 20000/20000（09-25 20:33） | completed | ✅ 无回退 |
+| rinalmo_ff_tr1_b4_s1 | 20000/20000（09-25 20:32） | completed | ✅ 无回退 |
+| rinalmo_bigsum_b4_s0 | 20000/20000（09-25 22:58） | completed | ✅ 无回退 |
+| rnafm_ff_b4_s0 | 20000/20000（09-26 08:39 watch6 出数） | completed | ✅ 无回退 |
+
+`pgrep -af train_decision` 空 = 预期行为（§14.66 确立的判定顺序：
+先看日志终点步数 + ledger completed 记录，再看进程——"完成"不是
+"消失"，本轮再次实证）。恢复协议零触发。
+
+### 二、评测与统计：零新事件 + 零漂移确认
+
+- §14.68 收盘（09:05）后 `eval_decision/` 无新 ow_* 目录（find
+  -newermt 09:05 为空）；watch3–6 进程全退，串行评测协议无并发；
+- alerts_decision.log：**2026-09-26 当日零新增告警行**（全 202 条
+  均为 09-25 的 ff_tr1_b4_s0 stale 历史告警，早已结案）。文件
+  mtime 10:17 但内容无今日行——疑似监控侧触碰，无数据影响，如实
+  记录待观察；
+- `tools/stats_definitive.py` 重跑：headline 与 §14.68 完全一致
+  （RNA-FM 70.5%/61.7% ratio、20-test 家族、Holm 6.4e-146/
+  1.4e-198 两组 drift cell），`tools/check_draft_v34.py`
+  **60/60 PASS**。draft 维持 v3.10，本轮零漂移、无版本 bump、
+  无新数字可写（禁手抄原则下的"无操作"即正确操作）。
+
+### 三、RiNALMo-ft 下载：41.5%、断流回退实证、ETA 区间修正
+
+- launchd `com.user.rinalmo-dl` running（pid 49214，09:14 起，
+  state=active 未退出）；curl（pid 49219）活跃；
+- 10:23 实测 1.082GB/2.605GB（**41.5%**），瞬时速率 25–250 KB/s
+  （Zenodo 限速呈突发性，两个 15–25s 采样窗口差异大）；
+- **Zen error-18 断流两次**（"transfer closed with 1395497674/
+  1457531402 bytes remaining"）：curl `--retry 5 --retry-all-errors`
+  内部吸收；10:19–10:22 窗口实证一次 **~66MB 回退后恢复增长**——
+  内部重试回退到本次 curl 调用起始偏移（1,081,583,832，与 09:14
+  启动时文件大小吻合），无数据损坏风险（Range 重请求语义保证），
+  完成判定仍为脚本内 size ≥ TOTAL=2,604,809,354；外层 500 轮循环
+  + `--max-time 3600` 每小时强制重开调用，保证回退不至死循环；
+- **ETA 修正（诚实区间）**：顺推 ~12:30（250KB/s 稳态）至
+  ~19:00–20:00（断流回退主导，有效 ~45KB/s），均远早于 09-30
+  deadline。§14.68 追记的 ~11:45 偏乐观。下轮 12:30 监控按实际
+  进度收敛。完成后人工 scp 上服务器 → 官方 ResNet 头评测插队
+  （wait_quiet 串行协议）。
+
+### 四、GPU 与排期（维持无新臂）
+
+共享卡 0–5 实测（used/40GB，util）：
+
+| 卡 | used | util | 判定 |
+|---|---|---|---|
+| 0 | 25.4 | 100% | 他人满载 |
+| 1 | 10.7 | 21% | 他人轻载，29.2GB 空闲 |
+| 2 | 19.5 | 58% | 他人占（同 §14.68） |
+| 3 | 21.7 | 100% | 他人满载 |
+| 4 | 14.1 | 23% | 他人半忙（同 §14.68） |
+| 5 | 1.6 | 37% | **38.4GB 空闲、无本组任务** |
+
+卡 5（及卡 1）满足">15GB 空闲且无我们任务"的认领条件，但**维持
+无新臂**：四臂已出数、骨干轴 negative 已定稿（§14.68"backbone
+axis closed, no follow-up arms"），deadline 前剩余决策面仅
+RiNALMo-ft 官方头对照（评测插队、不占训练卡）。空卡不主动认领。
+MIG：watch6 所用 MIG-27707c52 已随评测完成退出（watch 进程全退
+证实）；卡 6/7 无本组任务。
+
+### 五、仓库与副本状态
+
+- 本轮唯一入库变更：`records/DECISION_TRAINING_LOG.md` 本节；
+- 历史遗留 untracked（`logs/`、`scripts/run_s1_casc_eval.sh`、
+  `spec/spec.md.bak.14.59`）沿用 §14.66–68 惯例维持不入库；
+- commit + push（GitHub Cunyu-Liu/JEPA-mRNA）后，paper/spec/
+  records scp 拉回本地 `~/rna-jepa-sync`。
+
+### 六、待办（下轮 ~12:30 或下载 DONE 时）
+
+- [ ] 下载进度/DONE 确认（size=2,604,809,354）→ scp 上服务器 →
+      官方 ResNet 头评测插队（串行 wait_quiet）
+- [ ] 若 RiNALMo-ft 出数：draft §4.3d quoted→measured 终闭环
+      （§14.65 三问之一），预计 v3.11 + check 扩展
+- [ ] 常规巡查：零告警确认（含 alerts mtime 异动观察）、五臂
+      终态无回退、无新 ow_*
