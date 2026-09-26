@@ -1,0 +1,126 @@
+/home/cunyuliu/rna-jepa/eval/ss/evaluate_decision.py:344: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(args.checkpoint, map_location="cpu")
+[eval] head-only model; embeddings from /mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga (1305 sequences, d=1280)
+[eval] C1-c: matched-prefix gap 0.0496 > 0.02 (System-1 0.0508 vs exact 0.0012, n=300 seqs)
+[eval] DP-free recalibration fitted on /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_vl0.jsonl: a=1.14607 b=-2.9502 (ece, 573355 pairs)
+[eval] 1288 sequences from bprna_ts0.jsonl (L 22-499)
+[eval] recalibrated: System-1 ECE 0.00338 (raw 0.05835); C1-c matched gap 0.00041 -> PASS
+{
+ "tag": "r2d_b4_s0_step20000",
+ "n_sequences": 1288,
+ "pair_level": {
+  "micro": {
+   "precision": 0.6864544645323675,
+   "recall": 0.6409675847639793,
+   "f1": 0.6629316733362975,
+   "tp": 22364,
+   "fp": 10215,
+   "fn": 12527
+  },
+  "macro": {
+   "f1": 0.6436313216302942,
+   "inf": 0.6498748396862435
+  },
+  "aggregation_note": "micro pools TP/FP/FN across sequences; macro averages per-sequence F1. Both are reported because they differ and the paper must state which it quotes."
+ },
+ "calibration": {
+  "system1": {
+   "ece": 0.0583490523983894,
+   "nll": 0.08861371852319307,
+   "brier": 0.023363316755331178,
+   "n": 6015437,
+   "mean_predicted": 0.0641492960049636,
+   "mean_observed": 0.005800243606574219,
+   "marginal_calibration_error": 0.058349052398389376
+  },
+  "exact_marginal": {
+   "ece": 0.001183324440309558,
+   "nll": 0.013726262982427897,
+   "brier": 0.002852315786817251,
+   "n": 1040088,
+   "mean_predicted": 0.006211542295952054,
+   "mean_observed": 0.007121512795071186,
+   "marginal_calibration_error": 0.0009099704991191318
+  },
+  "c1c": {
+   "n_sequences_matched": 300,
+   "system1": {
+    "ece": 0.05077375626321468,
+    "nll": 0.07735365954010716,
+    "brier": 0.020055977593073815,
+    "n": 1040088,
+    "mean_predicted": 0.05789526905828588,
+    "mean_observed": 0.007121512795071186,
+    "marginal_calibration_error": 0.050773756263214696
+   },
+   "exact_marginal": {
+    "ece": 0.001183324440309558,
+    "nll": 0.013726262982427897,
+    "brier": 0.002852315786817251,
+    "n": 1040088,
+    "mean_predicted": 0.006211542295952054,
+    "mean_observed": 0.007121512795071186,
+    "marginal_calibration_error": 0.0009099704991191318
+   },
+   "ece_gap": 0.04959043182290512,
+   "threshold": 0.02,
+   "pass": false
+  },
+  "c1c_ece_gap": 0.04959043182290512,
+  "c1c_threshold": 0.02,
+  "c1c_pass": false,
+  "recalibration": {
+   "kind": "platt",
+   "a": 1.1460695227489526,
+   "b": -2.950197346901949,
+   "objective": "ece",
+   "n_bins": 10,
+   "calib_data": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_vl0.jsonl",
+   "n_sequences": 196,
+   "n_pairs": 573355,
+   "fit_collapsed_to_bounds": false,
+   "form": "p = sigmoid(a * score + b); DP-free (no partition function). A temperature is the b == 0 special case.",
+   "read_with": "system1_recalibrated NLL/Brier -- ECE alone is minimised by a constant predictor, so the gap is only meaningful when the proper scoring rules improve too"
+  },
+  "system1_recalibrated": {
+   "ece": 0.003375632344099953,
+   "nll": 0.021911015721937592,
+   "brier": 0.004908803551614229,
+   "n": 6015437,
+   "mean_predicted": 0.009175875950674168,
+   "mean_observed": 0.005800243606574219,
+   "marginal_calibration_error": 0.003375632344099949
+  },
+  "c1c_recalibrated": {
+   "n_sequences_matched": 300,
+   "system1": {
+    "ece": 0.0015908599533341937,
+    "nll": 0.021793018107510952,
+    "brier": 0.0047627518578447665,
+    "n": 1040088,
+    "mean_predicted": 0.008712372748405377,
+    "mean_observed": 0.007121512795071186,
+    "marginal_calibration_error": 0.0015908599533341911
+   },
+   "exact_marginal": {
+    "ece": 0.001183324440309558,
+    "nll": 0.013726262982427897,
+    "brier": 0.002852315786817251,
+    "n": 1040088,
+    "mean_predicted": 0.006211542295952054,
+    "mean_observed": 0.007121512795071186,
+    "marginal_calibration_error": 0.0009099704991191318
+   },
+   "ece_gap": 0.0004075355130246357,
+   "threshold": 0.02,
+   "pass": true
+  }
+ },
+ "legality": {
+  "illegal_structure_rate": 0.0,
+  "hairpin_violation_rate": 0.0,
+  "n_illegal": 0,
+  "n_hairpin_violations": 0
+ }
+}
+[eval] wrote /mnt/cunyuliu/rna-jepa/eval_decision/r2d_b4_s0_step20000_bprna_ts0/result.json

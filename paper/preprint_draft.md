@@ -1,11 +1,22 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.12, 2026-09-26.**
+**Preliminary preprint draft — v3.13, 2026-09-27.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
-> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here is
-> extrapolated.
+> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
+> is extrapolated.
+>
+> **v3.13 change note (NucleicBERT external reference frame).** §4.3d adds
+> NucleicBERT's Table 1 as a quoted external frame — the one paper reporting
+> per-baseline parameter counts with per-benchmark P/R/F1 under the Mathews
+> convention, and uniquely evaluating frozen (linear-probe), fine-tuned, and
+> random-init regimes. Their frozen→fine-tuned (+0.31) and random→pretrained
+> (+0.44) deltas independently identify backbone adaptation as the dominant
+> performance term, the same axis our §4.3g decomposition isolates by controlled
+> single-variable arms; their frozen-regime precision/recall imbalance
+> (0.622/0.283) matches the conservative-gate signature our cross-family rows
+> report. Quoted-only, flagged as such.
 >
 > **v3.12 change note (Plan-B scorer arm lands, positive).** The 2D-context
 > pair scorer (4 bottleneck 2D-residual blocks replacing the per-pair MLP at
@@ -726,6 +737,41 @@ RiNALMo paper's S4 convention): ours 0.6005 (ff) / 0.6199 (big) / 0.6238
 0.67 and 0.61 — the ±0.06 discrepancies are scoring-implementation differences
 (strict project-GT vs tolerant), which is exactly why every cross-paper table in
 this draft separates measured from reported values.
+
+A third external frame, NucleicBERT (Nat. Mach. Intell. 2026; 404M
+self-supervised MLM on 30M ncRNAs), reports per-baseline parameter counts
+alongside per-benchmark precision/recall/F1 under the same Mathews
+tolerance, and — uniquely — evaluates *both* a fine-tuned and a frozen
+"linear-probe" regime plus a random-init control. Their Table 1 values
+(quoted; their TS0 is the same 1,305 split, their macro convention):
+
+| Method (NucleicBERT Table 1) | Parameters | TS0 P | TS0 R | TS0 F1 |
+|---|---|---|---|---|
+| NucleicBERT, fine-tuned | 404M | 0.718 | 0.610 | 0.649 |
+| RNAErnie+ | 105M | 0.575 | 0.678 | 0.622 |
+| RNA-FM | 99.5M | 0.518 | 0.620 | 0.564 |
+| MXfold2 | 0.80M | 0.519 | 0.646 | 0.558 |
+| RNABERT | 0.48M | 0.435 | 0.527 | 0.477 |
+| NucleicBERT, linear probe (backbone frozen) | 404M | 0.622 | 0.283 | 0.342 |
+| Random init, fine-tuned | 404M | 0.285 | 0.184 | 0.204 |
+
+Three alignments matter for this draft. (1) Their MXfold2 row (0.558) vs our
+re-scored MXfold2 (0.6102) and their RNA-FM row (0.564, fine-tuned) vs our
+frozen-RNA-FM swap (0.4199 strict) show the same convention- and
+regime-offsets we measure directly — their numbers are fine-tuned-system
+numbers and not comparable to frozen-head rows without that flag. (2) Their
+linear-probe → fine-tuned delta (+0.31) and random-init → pretrained delta
+(+0.44) both identify backbone adaptation / pretraining quality as the
+dominant term, exactly the axis our §4.3g decomposition isolates with
+controlled single-variable arms; our frozen head (0.6474 tolerant) sits far
+above their linear probe because RiNALMo-giga is the stronger encoder, and
+our fine-tuning delta (+0.11) is correspondingly smaller than theirs — the
+frozen-vs-adapted gap shrinks as the frozen starting point improves. (3)
+Their precision/recall split for the frozen regime (0.622/0.283 — precision
+twice recall) is the same conservative-gate signature our cross-family
+measurements report (§4.4), suggesting it is a property of frozen
+representations under a greedy/thresholded decode rather than of our
+architecture specifically.
 
 A backbone-swap arm completes the pretrained-LM comparison *within* our
 protocol (same head, same training recipe, same evaluation — only the frozen

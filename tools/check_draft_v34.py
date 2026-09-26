@@ -164,7 +164,9 @@ ck("v3.12: aggregation divergence point 3 present", "joins the aggregation-diver
 ck("v3.12: 4.3g (d) block present", "Plan-B scorer arm (2D-context scorer on the frozen backbone" in text and "architecture half of (b)'s residual" in text)
 ck("v3.12: appendix scorer artifact row", "ow_rinalmo_r2d_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 ck("v3.12: structRFM near-equality stated", "0.6638 vs 0.6629" in text)
-ck("v3.12: version banner v3.12", "v3.12, 2026-09-26" in text and "v3.11 change note" in text)
+ck("v3.13: version banner v3.13", "v3.13, 2026-09-27" in text and "v3.12 change note" in text)
+ck("v3.13: nucleicbert quoted table", "Method (NucleicBERT Table 1)" in text and "0.649" in text and "404M" in text)
+ck("v3.13: nucleicbert flagged quoted-only", "Quoted-only, flagged as such" in text)
 ck("v3.12: ledger range extends to 14.74", "§14.1–§14.74" in text)
 
 fails = [c for c in checks if not c[1]]
