@@ -1,0 +1,29 @@
+/home/cunyuliu/miniconda3/envs/lucaone/lib/python3.9/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/mnt/cunyuliu/rna_baselines_src/RNAformer-code/RNAformer/module/axial_attention.py:11: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+/mnt/cunyuliu/pylibs/rotary_embedding_torch/rotary_embedding_torch.py:35: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled = False)
+/mnt/cunyuliu/pylibs/rotary_embedding_torch/rotary_embedding_torch.py:253: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled = False)
+/home/cunyuliu/rna-jepa/eval/ss/run_rnaformer.py:138: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd = torch.load(args.state_dict, map_location="cpu")
+[rnaf] load: {'n_model_keys': 121, 'n_state_dict_keys': 121, 'missing': [], 'unexpected': [], 'cycling': 6, 'lora': False, 'strict_load': True}
+[rnaf] ref_bprna_ts0: 1291 project records
+[rnaf]   100/1291 (2.15s/seq)
+[rnaf]   200/1291 (2.84s/seq)
+[rnaf]   300/1291 (2.57s/seq)
+[rnaf]   400/1291 (2.57s/seq)
+[rnaf]   500/1291 (2.48s/seq)
+[rnaf]   600/1291 (2.40s/seq)
+[rnaf]   700/1291 (2.42s/seq)
+[rnaf]   800/1291 (2.39s/seq)
+[rnaf]   900/1291 (2.34s/seq)
+[rnaf]   1000/1291 (2.30s/seq)
+[rnaf]   1100/1291 (2.27s/seq)
+[rnaf]   1200/1291 (2.22s/seq)
+[rnaf] wrote /mnt/cunyuliu/rna-jepa/eval_decision/rnaformer_ref_bprna_ts0.dbn
+[rnaf] wrote /mnt/cunyuliu/rna-jepa/eval_decision/rnaformer_probs_ref_bprna_ts0.npz
+[rnaf] release-full GT: {'micro_precision': 0.8233115680732872, 'micro_recall': 0.6325404946714254, 'micro_f1': 0.7154269583627382, 'macro_f1': 0.7093277996597698, 'inf': 0.7188530339007793, 'n_sequences': 1291, 'tp': 25344, 'fp': 5439, 'fn': 14723}
+[rnaf] project   GT  : {'micro_precision': 0.80911542084917, 'micro_recall': 0.7126874213116631, 'micro_f1': 0.7578463738570842, 'macro_f1': 0.7453839261450383, 'inf': 0.7512370624788679, 'n_sequences': 1291, 'tp': 24907, 'fp': 5876, 'fn': 10041}
+[rnaf] wrote /mnt/cunyuliu/rna-jepa/eval_decision/rnaformer_release_gt_ref_bprna_ts0.json

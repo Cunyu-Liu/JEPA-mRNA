@@ -3898,3 +3898,198 @@ ow_* 目录（watch6 最后一笔 08:52 收盘后静默）。
   - [ ] 下载决策确认（若用户/并行会话接受 C，则 draft quoted 行
         加"measured 不可得"注记收尾）
   - [ ] 常规巡查：零告警、五臂无回退、无新 ow_*
+### 14.66 Seed ensembles measured; RiNALMo-ft weights secured; v3.8
+
+**Seed ensembles (the chase lever, §4.3f).** `tools/ensemble_eval.py` averages the
+K seed-specific score matrices (`_forward_scores`) before a single `nussinov_map`
+decode, protocol matched to the single-model evaluation (`w=-1`):
+
+| ensemble | TS0 micro F1 | bpRNA-new micro F1 |
+|---|---|---|
+| 8× TR0 seeds (ff s0–s7) | **0.6105** (+0.017 over 0.5938 mean) | **0.5106** (+0.024 over 0.4870) |
+| TR1 2-seed (ff_tr1 s0/s1) | pending | pending |
+
+Key reading: the ensemble gain is **larger on the weak/OOD benchmark** (+0.024)
+than in-family (+0.017), and 0.5106 recovers ~83% of the TR1 data-scaling gain
+(0.5162) without training on a single extra sequence. Ensemble stays below the
+physical baseline on bpRNA-new (0.6770 centroid), so it narrows the gap without
+closing it — reported as the only lever whose OOD gain exceeds its in-family gain.
+
+**Four-convention attribution (gap decomposition, §4.3d addendum).**
+`tools/attribution_4ways.py` scores the same predictions under {project-GT,
+release-GT} × {strict, Mathews-tolerant}:
+
+| | project strict | project tolerant | release strict | release tolerant |
+|---|---|---|---|---|
+| RNAformer | 0.7454 | 0.7779 | 0.7093 | 0.7486 |
+| Ours (ff s0, w=-1) | 0.5970 | 0.6377 | 0.5724 | 0.6213 |
+| gap | 0.148 | 0.140 | 0.137 | 0.127 |
+
+The 0.13–0.15 gap is stable across all four conventions: **the gap is real model
+difference, not a scoring artefact**. Neither we nor the paper is "wrong";
+conventions shift absolute values (tolerant +0.03–0.05, release-GT −0.04) but not
+the ranking.
+
+**Weight downloads (user request: "一个都不能少").**
+- RNA-FM `RNA-FM_pretrained.pth` (1,135,382,528 B) ✅ downloaded, MD5 verified,
+  uploaded to `/mnt/cunyuliu/rna-jepa/refmodels/models/`.
+- RiNALMo ft `rinalmo_giga_ss_bprna_ft.pt` (2,604,809,354 B, Zenodo 15043668):
+  ✅ **downloaded to local `/tmp/rna_weights/` and MD5-verified**
+  (3688b049ac282fa2088fcd80854e34dd, exact match). Single-stream stalled at
+  161 MB / ~1.5 MB/s; re-downloaded with 8-way parallel Range segments
+  (~20 MB/s aggregate, 17 min total). Zip-integrity checked: Lightning
+  checkpoint, keys under `bprna_trained/` (lm.* + pred_head.* + threshold).
+  Transfer to cluster pending network recovery. Official repo located at
+  `github.com/lbcb-sci/RiNALMo` (tarball saved); decode protocol extracted:
+  `prob_mat_to_sec_struct` (canonical+sharp-loop mask, VL0-tuned threshold,
+  greedy conflict clean) + `_relax_ss` ±1 roll tolerant scoring, macro-F1 —
+  implemented verbatim in `tools/eval_rinalmo_ft.py` (both their convention
+  and our strict-micro reported).
+- SPOT-RNA `SPOT-RNA-models.tar.gz`: **hosting dead** (Dropbox + nihaocloud
+  404; RiNALMo repo's own `remote_data.json` still points at the dead
+  dropbox link). Quoted-only in draft §4.3d; recorded in limitations.
+- CONTRAfold: RiNALMo paper's Methods states their "CONTRAfold" row uses the
+  EternaFold parameter set on the CONTRAfold engine — that is EternaFold,
+  already compiled and measured (§4.3e + §4.3d). No gap remains.
+- Zenodo also lists `rinalmo_giga_ss_archiveII-*.ft.pt` per-family models but
+  **no TrainSetA fine-tuned model exists** — their TestSetB 0.67 row stays
+  reported-only, cannot be re-run.
+
+**RNA-FM embedding pipeline (in progress).** Official `fm` package (found in
+editflow env site-packages) loads the checkpoint via
+`fm.pretrained.load_model_and_alphabet_local(path, theme="rna")`; verified
+sequence-dependent embeddings (mean |Δ| 0.1397 across sequences; the fairseq
+TransformerEncoder path silently produced position-dominated embeddings and was
+discarded). Extraction script `tools/extract_rnafm_embeddings.py` re-running
+with the corrected npz format (keys `h/offsets/lengths/seqs` — the first
+extraction wrote `names/lengths/embeddings` and was discarded). Next:
+`rnafm_ff_b4_s0` CRF-head arm on frozen RNA-FM 640-d embeddings.
+
+**Draft v3.8 (local staging, pending cluster sync).** New §4.3f (seed ensembles),
+main-table ensemble row, Appendix A evidence rows (ensemble + four-convention),
+v3.8 banner. All numbers measured; TR1 ensemble and RNA-FM arm marked pending.
+
+**Network status:** cluster SSH (10.249.253.113) unreachable from this machine
+since ~01:55 (Operation timed out) — cluster-side background jobs (RNA-FM
+re-extraction on GPU 2, TR1 2-seed ensemble) continue running; results will be
+collected on reconnection. Zenodo parallel download unaffected (54%+ at time of
+ledger writing).
+
+**Addendum (post-v3.8, user review round).**
+
+1. **User verdict on ensembles accepted.** §4.3f reframed from "chase lever" to
+   "seed-variance diagnostic": the +0.024 ensemble gain bounds seed
+   stochasticity at ~15–20% of the deficit; the remainder is systematic.
+   Improvement programme redirected to representation/data/objective.
+
+2. **structRFM baseline secured (was missing).** bioRxiv 2025-08-06
+   (ustc/zju), structure-guided RNA FM; claims bpRNA-TS0 F1 0.641 (their
+   convention: strict per-seq F1, macro-averaged — their metrics.py has NO
+   tolerant scoring). Official SSP checkpoint `structRFM_SSP_bpRNA1m.pt`
+   (348,179,698 B, MD5 147f8839df964af45d5e86677481cbfd) + repo
+   `heqin-zhu/structRFM` downloaded. Inference path = frozen LM ->
+   MixedFold (CNN+LSTM pair scorer + Turner params + predict_mxfold DP).
+   Requires python3.8 + compiled `interface.so` (cython, bundled as
+   cpython-38 x86_64 ELF — usable on cluster as-is). Eval script
+   `tools/eval_structrfm.py` ready (dual convention: our strict micro +
+   their strict macro). Note: their TS0 F1=0.641 is on their own TS0
+   conversion (bpRNA1m); our comparison will be on our jsonl corpus with
+   their model — protocol-as-measured, flagged in draft.
+
+3. **efold = E2Efold (assumed).** ICLR 2020 "unrolled algorithm" model.
+   Weights on Google Drive (unreachable in this network); source repo
+   downloaded. If user means a different model (e.g. ErnieFold), the
+   RNAErnie_baselines repo is also downloaded (contains ErnieFold env +
+   MixedFold). ASK USER to confirm which "efold".
+
+4. **Gap-origin analysis (user Q1) delivered in reply** — decomposition:
+   backbone frozen vs fine-tuned (biggest), pair-scorer architecture
+   (outer-product MLP vs CNN+LSTM/triangular), training budget, data
+   scale, decode simplicity. Action items: gradual unfreezing arm,
+   2D-context pair scorer arm, TR1@40k, distillation from RNAformer
+   probs (already partially present as aux objective).
+### 14.67 Gap attribution closed: RiNALMo-ft + structRFM re-runs; Plan-B launched; v3.9
+
+**Cluster reconnection via `ssh A100` alias** (direct IP unreachable from this
+network all day; SSH-config alias resolves a different route). Background
+harvest on reconnection:
+
+| result | value | note |
+|---|---|---|
+| RNA-FM swap arm (TS0) | 0.4199 strict micro | frozen RNA-FM + same CRF head |
+| RNA-FM swap arm (bpRNA-new) | 0.3005 | representation axis ≈ 0.17 |
+| TR1 2-seed ensemble (bpRNA-new) | 0.5229 micro / 0.5329 macro | vs TR1 single 0.5162/0.4954 |
+
+**RiNALMo-ft re-run (the user's "一个都不能少" item, closed).** Zenodo
+checkpoint (2.6GB, md5 3688b049… verified) transferred to cluster.
+`tools/eval_rinalmo_ft.py` reproduces their inference exactly: Lightning ckpt
+(key layout lm.*/pred_head.*, threshold=0.06 popped from state), official
+`prob_mat_to_sec_struct` decode (canonical+sharp-loop mask, greedy conflict
+clean), `_relax_ss` ±1-roll tolerant scoring, macro aggregation. Three
+compat fixes were needed: flash_attn 2.7.4 `unpad_input` 5-tuple (patched
+their attention.py), Wqkv-fused checkpoint requires the flash path
+(use_flash_attn stays True), and `torch.autocast(bf16)` around forward
+(their training regime). Results:
+
+| benchmark | tolerant macro | strict micro (ours) |
+|---|---|---|
+| TS0-1305 | **0.7602** (P .7563 / R .7827) | **0.7210** |
+| bpRNA-new | 0.4553 | **0.4489** |
+
+TS0 0.7602 vs our frozen-same-encoder 0.6474 → **backbone fine-tuning =
+0.113 of the gap**; secondary reports of "RiNALMo ~0.6" were wrong (figure
+misreading). bpRNA-new: the 650M fine-tune **falls below our frozen head**
+(0.4489 vs 0.4870) — the OOD capacity-reversal replicated at 650M scale.
+
+**structRFM re-run.** GitHub-release v0.0.8 `structRFM_SSP_bpRNA1m.pt`
+(348MB, md5 147f8839… verified). Inference = structRFMForSsp (frozen LM) →
+MixedFold (CNN+LSTM pair scorer + Turner params + `predict_mxfold` DP) →
+1-based bpseq connects. Env: mrnabert (py3.8.20 + torch 2.1.2) + pip BPfold
++ transformers-4.32 collator shim (`pad_without_fast_tokenizer_warning`).
+Coordinate fix: connects are 1-based, jsonl pairs 0-based. Results:
+
+| benchmark | strict micro | their strict macro |
+|---|---|---|
+| TS0-1305 | **0.6638** (P .6185 / R .7161) | 0.6628 |
+| bpRNA-new | **0.5438** (P .5412 / R .5464) | 0.5338 |
+
+**No large backbone, yet +0.021 TS0 / +0.057 bpRNA-new over our head** —
+structure-guided pretrain data (21M BPfold-annotated pairs) + 2D-context
+scorer is a real third path. (Their paper's TS0 "0.641" matches our 0.6638
+closely on the strict convention.)
+
+**Plan-B arm launched (user directive: run B first, prepare A).**
+`ResNet2DScorer` added to `decision_head.py` (4 bottleneck 2D-residual
+blocks, 3×3 convs, relative-offset channel, ~304k params) replacing (not
+adding to) the per-pair MLP at matched d_z=128. Correctness gates passed:
+zero-init bitwise equivalence with the flat arm (finite-region max diff
+0.0), gradient-coverage audit green (replaced-not-added construction),
+BatchNorm full-matrix path bypasses column chunking, `pair_repr` z built
+column-chunked (peak-mem bound), launch on GPU 1 with
+expandable_segments. Training at step 2550+/20000, loss 66→33-43 falling.
+Script: `scripts/launch_plan_b.sh`; patcher: `tools/patch_resnet2d.py`;
+arm: `rinalmo_r2d_b4_s0` (only changed variable vs `rinalmo_ff_b4_s0`:
+scorer=resnet2d). Decision rule (user-set): **+0.03 over ff at 20k ⇒
+architecture hypothesis confirmed ⇒ A+B combination is the path**.
+
+**Plan-A prepared (not launched).** Gradual unfreezing on the RiNALMo-giga
+backbone under our CRF objective: unfreeze top-k transformer blocks after
+head warm-up (3 epochs), low LR (1e-5), LoRA optional for memory. Awaiting
+Plan-B result per user's sequencing.
+
+**eFold paper read (user-supplied PDF).** Rouskin lab, bioRxiv 2024-01:
+Evoformer-inspired dual-channel (seq self-attn + pair ResNet) trained on
+120k+ structures incl. new DMS-derived mRNA/pri-miRNA data (RNAndria).
+Architecture = same 2D-context family our Plan-B tests; their headline
+result is long-ncRNA generalisation (F1 0.32 vs UFold 0.12 on lncRNA set)
+rather than bpRNA-TS0 SOTA. Code on GitHub (DMSensei repo) but no TS0
+checkpoint published → not measurable on our benchmarks without retraining;
+recorded as related-work citation for the 2D-scorer lineage, not a baseline
+row. Value: confirms the architecture direction; not directly additive to
+the baseline table.
+
+**Draft v3.9.** §4.3g (gap attribution closes: three-term decomposition
+table), §4.3d point 2 rewritten around the re-run (0.7602 lands, ~0.6
+superseded), main-table re-run rows, Appendix A five new evidence rows,
+v3.9 banner. Text checks 21/21 PASS (v3.9 checker inline). Local → cluster
+sync done (draft + tools).

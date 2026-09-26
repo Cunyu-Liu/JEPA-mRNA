@@ -1,0 +1,21 @@
+loaded /mnt/cunyuliu/rna-jepa/refmodels/models/structRFM_SSP_bpRNA1m.pt
+n=1305 (over 512: 0), device=cuda
+  200/1305
+  400/1305
+  600/1305
+  800/1305
+  1000/1305
+  1200/1305
+{
+ "n": 1305,
+ "n_over_maxlen": 0,
+ "max_len": 512,
+ "our_protocol": {
+  "strict_micro_f1": 0.6637637702887685,
+  "precision": 0.6185339067473333,
+  "recall": 0.7161303026893214
+ },
+ "their_protocol": {
+  "strict_macro_f1": 0.6627505468334658
+ }
+}

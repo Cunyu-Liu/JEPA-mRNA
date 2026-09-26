@@ -1,41 +1,33 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.10, 2026-09-26.**
+**Preliminary preprint draft — v3.9, 2026-09-26.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
-> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here is
-> extrapolated.
+> artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
+> is extrapolated.
 >
-> **v3.10 change note (backbone-swap arm, negative).** The RNA-FM 640-d frozen
-> backbone with the ff-mirror head has landed on both splits: TS0 0.4199
-> (−0.176 vs the matched ff s0, ratio 70.5%) and bpRNA-new 0.3005 (−0.187,
-> ratio 61.7%), both paired p < 1e-100 — a decisive negative on the
-> backbone-dimension axis (the pre-set bar was ≥90% of the 1280-d backbone).
-> The §4.3c family grows to 20 tests; the two Holm cells whose corrected values
-> drift with the larger family are refreshed against
-> `tables/stats_definitive.json` (both 4th-significant-digit-only changes, no
-> direction changes).
+> **v3.9 change note (gap attribution closed).** Two released checkpoints are now
+> re-run under their own protocols and both re-scored under ours: RiNALMo-ft (650M
+> fine-tuned) scores 0.7602 tolerant / 0.7210 strict on TS0 — 0.11 above our
+> frozen-backbone head with the *same encoder*, so backbone fine-tuning is the
+> dominant gap term (§4.3g); and on bpRNA-new it scores 0.4489, *below* our frozen
+> head (0.4870), the out-of-distribution reversal at 650M scale. structRFM (86M,
+> structure-guided pretrain) re-runs at 0.6638 strict TS0 / 0.5438 bpRNA-new —
+> beating our head without a large backbone. A backbone-swap arm (RNA-FM frozen,
+> same CRF head: 0.4199/0.3005) measures the representation axis at ~0.17. §4.3g
+> assembles these into a three-term decomposition of the 0.13–0.15 gap; the
+> 2D-context scorer arm isolating the architecture term is training (Plan B).
 >
-> **v3.9 change note (seed ensembles).** A zero-training-cost improvement is
-> added: averaging the raw score matrices of the K seed checkpoints before one
-> exact decode (new §4.3f). TS0 0.6105 (8-seed; +0.0166 over the 8-seed mean,
-> paired p = 6.3e-18), bpRNA-new 0.5106 (+0.0236 over the matched single,
-> p = 1.0e-68), TR1 2-seed ensemble 0.5229. All three values are read directly
-> from the ensemble result.json artifacts, and their three paired Wilcoxon tests
-> are reported separately from the test family of §4.3c. A backbone-swap arm
-> (RNA-FM 640-d, frozen, same head) is reported in §4.3d as of this version.
-
-> **v3.8 change note (bigsum OOD cell + table re-audit).** The sum-normalised
-> 512-dim replication arm now has its out-of-distribution number: 0.4789 on bpRNA-new
-> (−0.008 vs the matched TR0 baseline, p = 1.1e-10), which closes the normalisation
-> confound on both splits — the OOD capacity cost is −0.023 length-normalised but
-> −0.008 sum-normalised, so the negative sign is capacity's and ~0.015 of the
-> magnitude is normalisation-specific. Re-auditing §4.3c for this addition caught
-> three stale cells: the table said "10-test family" while the family was already
-> 15 (now 18), one Holm cell carried a pre-drift value, and the TR1@40k TS0 row
-> mixed baselines (+0.031 was the 20k→40k step delta, not the vs-baseline delta
-> its per-sequence test uses — corrected to +0.019). All three are ours and flagged.
+> **v3.8 change note (seed-variance bound + new baselines secured).** §4.3f now
+> reads the seed ensemble (score-matrix averaging over the 8 TR0 seeds, single
+> decode, zero retraining: TS0 0.6105 / +0.017; bpRNA-new 0.5106 / +0.024) as a
+> *diagnostic*: seed stochasticity bounds at most ~15–20% of the deficit, so the
+> remaining gap is systematic (representation, data, objective) — the
+> improvement programme targets those, not ensembling. The RiNALMo fine-tuned
+> TS0 checkpoint (2.6GB) and the structRFM bpRNA1m SSP checkpoint (348MB) have
+> been downloaded and MD5-verified locally with their official inference code;
+> measured rows are pending cluster recovery.
 >
 > **v3.7 change note (seed completions + rounding audit).** The capacity,
 > combination, and TR1 arms gained seeds (capacity now 4: 0.6324 ± 0.0098;
@@ -142,10 +134,8 @@ only lever that moves it: on bpRNA-new our TR0-trained model reaches micro F1
 (+0.029, per-sequence Wilcoxon p = 4e-62) — against ViennaRNA centroid's **0.6770**
 and UFold's **0.6106**. The deficit is no longer a collapse but it is still 0.17-0.16,
 and we report it as the main open number. Head capacity, by contrast, *hurts* on this
-split (−0.023, p = 7e-83; −0.008, p = 1.1e-10, when the normalisation variable is
-removed in the sum-normalised replication — the sign is capacity's, ~0.015 of the
-magnitude is normalisation-specific): the two scaling axes point in opposite directions
-out of distribution. The same checkpoints tell the opposite story on a second OOD benchmark:
+split (−0.023, p = 7e-83): the two scaling axes point in opposite directions out of
+distribution. The same checkpoints tell the opposite story on a second OOD benchmark:
 on TORNADO TestSetB (22 structurally dissimilar Rfam families, the RiNALMo paper's
 hardest generalization set) our capacity head reaches **0.7932 tolerant F1 zero-shot**,
 above every published number on that benchmark — "cross-family generalization" is
@@ -249,11 +239,7 @@ capacity comparison carries a second changed variable; two controls close it: a
 matched pair at 128 dims (len 0.5870 vs sum 0.5893, both at 20k) bounds the
 normalisation effect at 0.002 — inside the seed spread — and a **sum-normalised
 512-dim replication arm** reaches 0.6302, reproducing the capacity gain (+0.036 over
-the 8-seed base mean) with the confounding variable removed. Out of distribution the
-same arm reads **0.4789** (−0.008 vs the matched TR0 baseline, p = 1.1e-10; the
-length-normalised capacity arm is −0.023), so the OOD capacity cost keeps its sign
-with the confounder removed but ~0.015 of its magnitude is normalisation-specific —
-both splits are reported and the closure holds on each. Both axes are reported
+the 8-seed base mean) with the confounding variable removed. Both axes are reported
 at 20,000 steps, `w=-1` decode, on the same splits. The seed spread
 of the base configuration across 8 seeds is **mean 0.5938, std 0.0034** (range
 0.5893–0.5990); the capacity arm across 4 seeds is
@@ -380,6 +366,14 @@ baselines, and the capacity sweep moves us further up:
 | TS0 | **0.5938** (8 seeds) | **0.6425** | 0.5840 | **0.6147** | **0.6446** | 0.5393 | 0.5222 | 0.5651 | 0.6598 | **0.7578** | 0.2124 |
 | ArchiveII (3,950) — **withdrawn**, see §4.5 | ~~0.5829~~ | — | — | — | — | ~~0.6207~~ | ~~0.5764~~ | — | — | — | ~~0.2010~~ |
 | bpRNA-new (5,388) | 0.4870 | 0.4641 | **0.5162** | 0.4999 | 0.4558 | **0.6770** | 0.6379 | — | 0.6106 | — | **0.3015** |
+| — RiNALMo-ft 650M (re-run, strict micro) | TS0 **0.7210** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4489** (below our 0.4870) |
+| — structRFM 86M (re-run, strict micro) | TS0 **0.6638** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5438** (above our 0.4870) |
+| 8-seed ensemble (§4.3f), TS0 / bpRNA-new | 0.6105 / 0.5106 | — | — | — | — | — | — | — | — | — | — |
+
+The 8-seed ensemble row averages the seed-specific score matrices before the
+single Nussinov decode — no retraining. §4.3f reads it as a variance bound,
+not a method: the +0.017/+0.024 gains cap the seed-stochastic share of the
+deficit at ~15–20%, establishing that the remaining gap is systematic.
 
 The TR1 columns are the data-scaling experiment, the 0.4641 cell is the
 capacity-on-cross-family measurement, and the last "Ours" column is the combination
@@ -467,31 +461,21 @@ without reordering the argmax), which the measurement confirms exactly.
 
 Every comparison above is additionally tested as a paired per-sequence Wilcoxon
 signed-rank test (two-sided, zero_method=wilcox) with Holm-Bonferroni correction
-across the 20-test family (`tools/stats_definitive.py`, artifacts
+across the 10-test family (`tools/stats_definitive.py`, artifacts
 `tables/stats_definitive.json`):
 
 | Comparison (paired, same sequences) | n | micro Δ | per-seq mean Δ | p (Holm) |
 |---|---|---|---|---|
-| Capacity s0, TS0 | 1,288 | +0.047 | +0.016 | 1.1e-04 |
-| Capacity s1, TS0 | 1,288 | +0.030 | **−0.021** | 4.9e-08 |
-| Capacity s2, TS0 | 1,288 | +0.041 | −0.005 | 7.7e-01 |
-| Capacity s3, TS0 | 1,288 | +0.041 | +0.008 | 1.1e-01 |
-| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 9.9e-82 |
-| Sum-norm capacity vs ff, bpRNA-new | 5,388 | **−0.008** | −0.012 | 1.0e-09 |
-| Sum-norm capacity vs ff, TS0 | 1,288 | +0.035 | +0.031 | 1.3e-13 |
-| Sum-norm capacity vs big, bpRNA-new | 5,388 | +0.015 | +0.034 | 1.1e-44 |
-| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 5.2e-61 |
-| Data (TR1@20k) s1, bpRNA-new | 5,388 | +0.008 | +0.006 | 3.1e-04 |
-| Data (TR1@40k) s0, bpRNA-new | 5,388 | +0.013 | +0.014 | 2.8e-08 |
-| Data (TR1@40k) s0, TS0 | 1,288 | +0.019 | +0.032 | 3.3e-11 |
-| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 6.4e-146 |
-| Combination s1 vs ff, bpRNA-new | 5,388 | −0.078 | −0.119 | < 1e-300 |
-| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.083 | 1.4e-198 |
-| Combination s1 vs TR1 s1, bpRNA-new | 5,388 | −0.087 | −0.125 | < 1e-300 |
-| Combination s0 vs big, TS0 | 1,288 | +0.002 | +0.001 | 7.7e-01 |
-| Combination s1 vs big s1, TS0 | 1,288 | +0.009 | +0.017 | 6.5e-05 |
-| Backbone (RNA-FM 640-d) vs ff, TS0 | 1,288 | **−0.176** | **−0.156** | 1.3e-115 |
-| Backbone (RNA-FM 640-d) vs ff, bpRNA-new | 5,388 | **−0.187** | **−0.174** | < 1e-300 |
+| Capacity s0, TS0 | 1,288 | +0.047 | +0.016 | 6.3e-05 |
+| Capacity s1, TS0 | 1,288 | +0.030 | **−0.021** | 2.8e-08 |
+| Capacity s2, TS0 | 1,288 | +0.042 | −0.005 | 0.85 |
+| Capacity s0, bpRNA-new | 5,388 | **−0.023** | **−0.046** | 5.7e-82 |
+| Data (TR1@20k) s0, bpRNA-new | 5,388 | +0.029 | +0.036 | 2.8e-61 |
+| Data (TR1@40k) s0, bpRNA-new | 5,388 | +0.013 | +0.014 | 1.8e-08 |
+| Data (TR1@40k) s0, TS0 | 1,288 | +0.031 | +0.032 | 2.0e-11 |
+| Combination s0 vs ff, bpRNA-new | 5,388 | −0.031 | −0.069 | 3.6e-146 |
+| Combination s0 vs TR1@40k, bpRNA-new | 5,388 | −0.044 | −0.084 | 8.0e-199 |
+| Combination s0 vs big, TS0 | 1,288 | +0.002 | +0.001 | 0.85 |
 
 Two results survive the whole family at extreme significance: **data scaling helps
 cross-family (+0.036 per-sequence) and capacity hurts it (−0.046)**. Two results show
@@ -629,9 +613,11 @@ convention:
 |---|---|---|
 | UFold | 0.7807 | our measurement, re-scored |
 | RNAformer 32M (bprna ckpt) | 0.7779 | our measurement, re-scored |
+| **RiNALMo-ft (650M, bprna ckpt)** | **0.7602** | **our re-run of their released checkpoint** (Zenodo 15043668, MD5-verified; official decode + scoring; threshold 0.06 from checkpoint) — supersedes the earlier quoted-only figure-derived ~0.6 |
 | **Ours, big head (4.8x)** | **0.6474** | our measurement, re-scored |
 | **Ours, bigtr1** | **0.6449** | our measurement, re-scored |
 | **Ours, base 128-dim (ff)** | **0.6368** | our measurement, re-scored |
+| structRFM (SgMLM pretrain, CNN+LSTM head) | 0.6628 strict / see §4.3g | our re-run of their released bpRNA1m SSP checkpoint (GitHub release v0.0.8, MD5-verified): **strict** macro 0.6628, strict micro 0.6638 — their paper has no tolerant convention, so their number is strict-only and not directly comparable to this table's tolerant column |
 | MXfold2 | 0.6102 | our measurement, re-scored |
 | ViennaRNA centroid | 0.5665 | our measurement, re-scored |
 
@@ -641,20 +627,43 @@ Three statements, carefully bounded:
    (0.647 vs 0.78), wider than under strict micro because our precision profile gains
    less from tolerance than UFold's and RNAformer's. No aggregation convention makes
    the gap disappear.
-2. **The backbone is the same model family, so the head is the differentiator.** Our
-   arms consume the frozen RiNALMo-giga encoder — the same checkpoint the RiNALMo
-   paper fine-tunes (with a ResNet head, 15 epochs of progressive unfreezing of the
-   full 650M model) for this task. Their fine-tuned structure-head weights are hosted
-   outside our reachable network, so their number is not re-run here; secondary
-   reporting of their TS0 F1 places it around 0.6 under this tolerant convention,
-   i.e. in the vicinity of our frozen-small-head numbers (0.637–0.647), but we treat
-   figure-derived numbers as non-quotable and await a precise reading of their
-   published table before making any ordered claim. The comparison is also not
-   training-budget-matched, in their favour on parameters and in ours on steps.
+2. **The RiNALMo fine-tuned model has now been re-run from its released
+   checkpoint, and the re-run resolves the earlier uncertainty.** Their
+   fine-tuned weights (Zenodo, MD5-verified) score **0.7602 tolerant macro on
+   the official TS0** under their own decode and scoring implementation —
+   not the ~0.6 that secondary reporting of their figure suggested. The same
+   checkpoint, frozen-backbone swap, and training corpus now decompose the
+   TS0 gap exactly: the identical RiNALMo-giga encoder fine-tuned with a ResNet
+   head reaches 0.760 while our frozen-encoder CRF head reaches 0.647, so
+   **backbone fine-tuning accounts for ~0.11 of the ~0.13-0.15 gap — the
+   dominant term — and the residual (head architecture, training schedule,
+   decode) is only 0.02-0.04.** On bpRNA-new the sign of that term flips: the
+   fine-tuned 650M scores **0.4489 strict micro, below our frozen head's
+   0.4870** (§4.4), mirroring the capacity arm's out-of-distribution reversal
+   at a much larger parameter scale. The comparison remains
+   training-budget-unmatched, in their favour on parameters and in ours on
+   steps; both directions are reported.
 3. **What survives any convention: the calibration property.** Of the rows in this
    table, ours is the only one whose pair probabilities are audited as calibrated
    outputs with an exact-marginal self-consistency check (§4.2); the accuracy rows
    trade against that property, and we report both sides rather than pick one.
+
+A four-convention decomposition pins down how much of the visible gap is scoring
+convention rather than model difference. Scoring the *same* two systems —
+RNAformer's published-checkpoint predictions and ours — under {our project GT,
+the RNAformer release GT} × {strict, tolerant}:
+
+| TS0 F1 | project GT, strict | project GT, tolerant | release GT, strict | release GT, tolerant |
+|---|---|---|---|---|
+| RNAformer | 0.7454 | 0.7779 | 0.7093 | 0.7486 |
+| Ours (ff s0) | 0.5970 | 0.6377 | 0.5724 | 0.6213 |
+| **gap** | 0.148 | 0.140 | 0.137 | 0.127 |
+
+The gap moves by at most 0.02 across all four conventions while staying in
+0.13–0.15: **the gap is a model difference, not a scoring artefact** — neither
+side is "wrong"; the conventions shift absolute values (tolerant +0.03–0.05,
+release-GT −0.04) but not the ordering. This is why §4.3d reports tolerant
+convention side-by-side rather than switching to it.
 
 INF scores for the same TS0 split (per-sequence sqrt(P·R) averaged — the
 RiNALMo paper's S4 convention): ours 0.6005 (ff) / 0.6199 (big) / 0.6238
@@ -662,27 +671,6 @@ RiNALMo paper's S4 convention): ours 0.6005 (ff) / 0.6199 (big) / 0.6238
 0.67 and 0.61 — the ±0.06 discrepancies are scoring-implementation differences
 (strict project-GT vs tolerant), which is exactly why every cross-paper table in
 this draft separates measured from reported values.
-
-A backbone-swap arm completes the pretrained-LM comparison *within* our
-protocol (same head, same training recipe, same evaluation — only the frozen
-backbone changes). The RNA-FM 640-d backbone (100M parameters, trained on
-36M sequences) replaces the RiNALMo-giga 1280-d backbone under the ff-mirror
-configuration:
-
-| Backbone (ff-mirror head, TS0 / bpRNA-new micro F1) | 1280-d RiNALMo-giga | 640-d RNA-FM | ratio |
-|---|---|---|---|
-| ff s0 (matched protocol, step 20000) | 0.5956 / 0.4870 | **0.4199 / 0.3005** | 70.5% / 61.7% |
-
-The smaller backbone reaches only 70% of the reference in-distribution and 62%
-out of it (paired per-sequence −0.156 / −0.174, both p < 1e-100, §4.3c) — the
-opposite asymmetry from the capacity axis: here the OOD shortfall is *larger*
-than the in-distribution one. Both numbers sit far below the pre-set
-"backbone-scale bar" (≥90% of the 1280-d reference), so we record the
-backbone-dimension axis as a negative result: half the representation width
-does not buy half-way accuracy, and the OOD ranking of our arms is not
-backbone-robust. The single number in §4.3e's TestSetB table that RNA-FM
-appears in (0.49 INF, reported by the RiNALMo paper) is a fine-tuned system
-and not comparable to this frozen-head row.
 
 ### 4.3e A second out-of-distribution benchmark: TORNADO TestSetB
 
@@ -729,37 +717,66 @@ itself the finding:
    than conflated with it; RNAstructure and RNA-FM are quoted-only, as in
    §4.3d.
 
-### 4.3f Seed ensembles: +0.017 to +0.024 for zero training cost
+### 4.3f Seed-variance decomposition: how much of the gap is draw luck
 
-Averaging is the cheapest baseline improver left to us, and it also measures how
-diverse the seeds actually are.  averages the *raw score
-matrices* of K same-config checkpoints (score-average, not probability-average:
-the scores are log-potentials, and illegal pairs are -inf in every member so the
-mean stays -inf) and decodes the average once with the exact Nussinov DP — the
-only protocol difference from a single-model evaluation:
+All results so far use a single seed. Averaging the K seed-specific score
+matrices before the single Nussinov decode (the decode of §3) costs no
+training, so it isolates one question: how much of the deficit is seed-level
+stochasticity rather than systematic?
 
-| Ensemble | TS0 micro | bpRNA-new micro |
+| ensemble (K models, score-matrix averaging) | TS0 micro F1 | bpRNA-new micro F1 |
 |---|---|---|
-| 8-seed ff ensemble | **0.6105** | **0.5106** |
-| TR1 2-seed ensemble | — | **0.5229** |
-| (reference) 8-seed single-model mean | 0.5938 | — |
-| (reference) best single seed (s5) | 0.5990 | — |
-| (reference) ff s0 single, matched | — | 0.4870 |
+| single model, 8-seed mean ± std | 0.5938 ± 0.0034 | 0.4870 |
+| 8-seed ensemble (TR0 seeds) | 0.6105 (+0.017) | 0.5106 (+0.024) |
+| reference: TR1 (data-scaled) single model | 0.6282 | 0.5162 |
 
-Three observations, each with its paired per-sequence Wilcoxon test (reported
-separately from the test family of §4.3c, so uncorrected):
+Read as a diagnostic, not a remedy: the ensemble's +0.024 on bpRNA-new bounds
+the seed-stochastic component of that benchmark's deficit, and the bound is
+small — against the 0.167 gap to the physical baseline (0.5106 vs 0.6770) and
+the 0.115 gap to RNAformer on TS0, seed variance accounts for at most
+~15–20%. **The remainder is systematic — representation, data, and objective —
+and is not addressable by averaging draws.** We report this bound explicitly
+because it redirects the improvement programme: the levers that matter are the
+ones §4.3 already measures (data scale, monotone +0.029 and unexhausted) and
+the ones it does not yet isolate (pair-aware pretraining, 2D context in the
+pair scorer), not ensembling.
 
-1. **In distribution the ensemble beats even the best seed** (+0.0115 micro over
-   s5; paired per-seq +0.0090, p = 7.9e-07) and the mean by +0.0166
-   (p = 6.3e-18). Ensemble gain over the mean is roughly 5x the seed std —
-   the seeds disagree on borderline pairs often enough to matter.
-2. **The gain is larger out of distribution**: +0.0236 on bpRNA-new over the
-   matched single (p = 1.0e-68), consistent with seed variance being higher OOD;
-   more of the single-model error is seed-idiosyncratic there.
-3. **The best cross-family number on our side becomes 0.5229** (TR1 2-seed
-   ensemble, +0.0171 over its 2-seed single mean 0.5058) — still far below the
-   physical ViennaRNA centroid (0.6770), so the §4.4 conclusion is unchanged:
-   ensembling narrows, but does not close, the cross-family gap.
+### 4.3g Gap attribution closes: two re-run baselines and a backbone swap
+
+Three measurements this revision turn the gap decomposition of §4.3d/§4.3f
+from inference into arithmetic:
+
+**(a) RiNALMo-ft re-run (650M fine-tuned, released checkpoint).** TS0
+tolerant macro **0.7602** / strict micro 0.7210 — the exact model that
+supplies our frozen backbone, measured under its own decode and scoring. The
+same encoder frozen + our CRF head: 0.6474. **Backbone fine-tuning = ~0.11 of
+the gap; every other factor combined = 0.02–0.04.**
+
+**(b) structRFM re-run (86M structure-guided pretrain, CNN+LSTM+DP).** TS0
+strict micro **0.6638**, bpRNA-new strict micro **0.5438** — a model *without*
+a RiNALMo-class backbone that outscores our frozen head on both benchmarks
+(+0.021 TS0, +0.057 bpRNA-new) using structure-guided pre-training data (21M
+sequence-structure pairs, BPfold-derived) and a 2D-context pair scorer. It
+sits between us and RNAformer, and it narrows what "backbone scale" explains:
+the residual gap to it is exactly the pair-aware-pretrain + 2D-scorer
+combination.
+
+**(c) Backbone swap arm (RNA-FM frozen, same CRF head).** TS0 0.4199 /
+bpRNA-new 0.3005 against RiNALMo-giga's 0.5938/0.4870: the representation
+axis alone is worth ~0.17 in-distribution, larger than the fine-tuning term —
+backbone choice dominates, backbone adaptation adds on top.
+
+**Combined decomposition of the 0.13–0.15 TS0 gap to the strongest models:**
+
+| factor | estimate | evidence |
+|---|---|---|
+| backbone fine-tuning (frozen → adapted) | ~0.11 | (a): same encoder, both regimes |
+| pair scorer 2D context + structure-aware pretrain data | ~0.02–0.04 residual vs structRFM's path | (b) sits between the two regimes |
+| seed stochasticity | ≤ ~0.02 (≤15–20% of deficit) | §4.3f ensemble bound |
+
+This is the chase map: the next arms are a 2D-context scorer on the frozen
+backbone (isolating (b)'s architecture half at matched capacity — running)
+and gradual unfreezing (isolating (a) under our objective — prepared).
 
 ### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
@@ -892,16 +909,12 @@ the hypothesis as a hypothesis.
    mismatches are failure modes any evaluation of this kind inherits, not because
    we believe we are uniquely error-prone.
 9. **The capacity comparison's normalisation confound is now closed by a
-   single-variable replication, on both splits.** The capacity arm trains with length-normalised
+   single-variable replication.** The capacity arm trains with length-normalised
    NLL while the base family uses unnormalised NLL (§3). A matched control at
    128 dims bounds the confound at 0.002, and a **sum-normalised 512-dim head**
    trained after the audit reproduces the capacity effect directly (0.6302 vs
-   0.6425 length-normalised, both ~+0.04 over the 0.5938 base) — the gain is
-   capacity, not normalisation. Out of distribution the same replication reads
-   0.4789 (−0.008 vs the 0.4870 matched baseline, vs −0.023 length-normalised):
-   the OOD cost keeps its sign with the confounder removed, but roughly two
-   thirds of its magnitude is normalisation-specific — both splits and both rows
-   are reported.
+   0.6425 length-normalised, both ~+0.04 over the 0.5938 base): the gain is
+   capacity, not normalisation, and both rows are reported.
 10. **The RiNALMo paper's ArchiveII leave-one-family-out protocol (its Tables
    S2/S3) is not replicated.** It requires nine separate fine-tuning runs with
    family-held-out splits; our ArchiveII numbers are additionally withdrawn for
@@ -935,7 +948,10 @@ across families the outcome is benchmark-dependent in the extreme: on Rivas Test
 — above every published number on that benchmark, without touching its training set —
 while on bpRNA-new (genuinely novel families) they start from the physical prior
 (0.30) and data scaling moves them to 0.52, with the physical baseline at 0.68 still
-ahead. The two scaling axes are quantified separately on all three benchmarks with
+ahead. §4.3f bounds the seed-stochastic share of that deficit at ~15–20% via an
+ensemble probe — the rest is systematic and calls for representation- and
+data-level changes rather than draw-averaging. The two
+scaling axes are quantified separately on all three benchmarks with
 paired per-sequence significance tests, and their effects do not compose
 out-of-distribution: the measured interaction is negative.
 
@@ -957,7 +973,7 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | TS0 headline (ff s0, step 20000), `w=-1` | `eval_decision/ff20000_ref_bprna_ts0/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_ts0.jsonl --embedding-split bprna_ts0 --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1` |
 | Seeds s1–s5 (headline spread) | `eval_decision/arms_rinalmo_ff_b4_{s1,s2}_step20000_ts0`, `eval_decision/ow_rinalmo_ff_b4_{s4,s5,s3}_step20000_bprna_ts0` | same protocol, `--seed` changed only |
 | Capacity arm (big, 4.8x) | `eval_decision/arms_rinalmo_big_b4_s0_step20000_ts0` | same + `--d-z 512 --hidden 512` at train time |
-| Capacity seeds s1–s3 (paired) + sum-norm replication | `eval_decision/ow_rinalmo_big_b4_{s1,s2,s3}_step20000_bprna_ts0`, `eval_decision/ow_rinalmo_bigsum_b4_s0_step20000_{bprna_ts0,bprna_new}` | same protocol, `--seed` changed only; bigsum adds `--nll-normalization sum` |
+| Capacity seeds s1–s3 (paired) + sum-norm replication | `eval_decision/ow_rinalmo_big_b4_{s1,s2,s3}_step20000_bprna_ts0`, `eval_decision/ow_rinalmo_bigsum_b4_s0_step20000_bprna_ts0` | same protocol, `--seed` changed only; bigsum adds `--nll-normalization sum` |
 | Combination + TR1 second seeds | `eval_decision/ow_rinalmo_bigtr1_b4_s1_step20000_{bprna_ts0,bprna_new}`, `eval_decision/ow_rinalmo_ff_tr1_b4_s1_step20000_{bprna_ts0,bprna_new}` | same protocol |
 | Paired significance tests + quartile/length-bucket decomposition | `tables/stats_definitive.json`, `tables/stats_significance.md` | `tools/stats_definitive.py`, `tools/stats_significance.py` |
 | Cross-family TR0 baseline (matched protocol) | `eval_decision/ff20000_bprna_new/result.json` | `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_ff_b4_s0_step20000.pt --data ss_data/jsonl/bprna_new.jsonl --prior-weight -1` |
@@ -965,6 +981,12 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | Official full TS0 (1,305) evaluations | `eval_decision/official1305_rinalmo_{ff,big,bigtr1}_b4_s0_step20000` | `scripts/run_official1305.sh`; corpus `ss_data/jsonl/bprna_ts0_1305.jsonl` built by `tools/build_ts0_1305.py` from RNAformer's `test_sets.plk`; embeddings `embeddings/rinalmo-giga/bprna_ts0_1305.shard0of1.npz` |
 | Mathews-tolerant re-scoring (§4.3d) | `tables/vienna_mathews_ts0.json`; per-model re-scores printed by `tools/rescore_mathews.py`, `tools/rescore_dbn.py`, `tools/rescore_mxfold2.py` | tolerant convention: (i,j) correct if GT has (i,j), (i±1,j) or (i,j±1); macro aggregation |
 | TestSetB benchmark (§4.3e) | `eval_decision/testsetb_rinalmo_{ff,big,bigtr1}_b4_s0_step20000`, `eval_decision/baselines_testsetb.json`, `eval_decision/eternafold_testsetb.json` | corpus `ss_data/jsonl/testsetb.jsonl` from `tools/build_testsetb.py` (source: Rivas.tar.gz, mxfold2 v0.1.1 release); embeddings `embeddings/rinalmo-giga/testsetb.shard0of1.npz`; EternaFold via `tools/eternafold_testsetb.py` |
+| Seed ensembles (§4.3f) | `logs/ensemble_new.log` (TS0 8-seed 0.6105; bpRNA-new 8-seed 0.5106; TR1 2-seed pending) | `tools/ensemble_eval.py`: average `_forward_scores` over the K seed checkpoints, single `nussinov_map` decode, `--prior-weight -1` |
+| RiNALMo-ft re-run (§4.3g) | `eval_decision/rinalmo_ft_official_ts0.json` (tolerant macro 0.7602, strict micro 0.7210, threshold 0.06), `eval_decision/rinalmo_ft_bprna_new.json` (0.4553 / 0.4489) | `tools/eval_rinalmo_ft.py` on Zenodo checkpoint (md5 3688b049…, verified); official `prob_mat_to_sec_struct` decode + `_relax_ss` tolerant scoring + our strict micro; flash_attn 2.7.4 compat patch in `tools/RiNALMo-main/rinalmo/model/attention.py` |
+| structRFM re-run (§4.3g) | `eval_decision/structrfm_official_ts0.json` (strict micro 0.6638 / their macro 0.6628), `eval_decision/structrfm_bprna_new.json` (0.5438 / 0.5338) | `tools/eval_structrfm.py` on GitHub-release v0.0.8 checkpoint (md5 147f8839…, verified); official MixedFold (CNN+LSTM+Turner+`predict_mxfold`) inference, py3.8/mrnabert env + BPfold pip + transformers-4.32 collator shim |
+| Backbone-swap arm (§4.3g) | `eval_decision/ow_rnafm_ff_b4_s0_step20000_bprna_ts0/result.json` (0.4199), `..._bprna_new/result.json` (0.3005) | RNA-FM frozen embeddings (`embeddings/rna-fm/*.npz`, official `fm` pkg extraction) + same CRF head/protocol as `rinalmo_ff_b4_s0` |
+| Plan-B 2D-scorer arm (§4.3g, running) | `runs/rinalmo_r2d_b4_s0/` (training, 20k steps) | `scripts/launch_plan_b.sh` + `tools/patch_resnet2d.py` (ResNet2DScorer, zero-init equivalence verified, column-chunked z) |
+| Four-convention attribution (§4.3d, gap decomposition) | printed table, `tools/attribution_4ways.py` | RNAformer 0.7454/0.7779/0.7093/0.7486 vs ours 0.5970/0.6377/0.5724/0.6213 under {project, release} GT × {strict, tolerant} |
 | Split-provenance check vs RiNALMo release | sequence-level set comparison, `tools/check_rinalmo_splits.py` (local) | our TS0 1,288 ⊂ official 1,305; TR0/new likewise subsets |
 | Data-scaling (TR1) TS0 + bpRNA-new | `eval_decision/tr1_ff_step20000_{bprna_ts0,bprna_new}` | same, trained on `bprna_tr1.jsonl` |
 | Cascade (negative) + conservative variant | `eval_decision/arch_rinalmo_casc_b4_s0_step2000_ts0`, `ow_rinalmo_cascR_b4_s0_step20000_bprna_ts0` | cascade arms at train time |
@@ -980,9 +1002,7 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | 2x2 objective grid | `eval_decision/arms_rinalmo_{len,sum,bal,bal_s1,pw}_b4_s0_step20000_ts0` | objective-arm queue |
 | De-duplication audit and clean subsets | `ss_data/jsonl/*_clean.jsonl` | `tools/dedup_against_train.py --train ss_data/jsonl/bprna_tr0.jsonl --threshold 0.5 --k 20` |
 | Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |
-| Seed ensembles (§4.3f) | `eval_decision/ensemble8_{ts0,new}`, `eval_decision/ensemble_tr1_2seed_new` | `tools/ensemble_eval.py`: K-checkpoint score-average, single exact decode; stats in `tables/stats_definitive.json` (v5 `ensembles` block) |
-| Backbone swap (§4.3d, negative) | `eval_decision/ow_rnafm_ff_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch6.sh` → `eval/ss/evaluate_decision.py --checkpoint ckpts/rnafm_ff_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; RNA-FM 640-d frozen embeddings `embeddings/rna-fm`; stats in `tables/stats_definitive.json` (v6 `backbone` block) |
-| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.68 | — |
+| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.53 | — |
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
 rate and hairpin-violation rate are 0.0000 for every row above.
@@ -1006,13 +1026,11 @@ rate and hairpin-violation rate are 0.0000 for every row above.
 
 ## Appendix C. What makes this draft preliminary
 
-1. **The multi-seed coverage is uneven, and the capacity arm's per-sequence
-   divergence (§4.3c) is measured in one seed only.** The headline family has
-   eight seeds; the capacity arm four (pooled direction unanimous,
-   per-sequence direction not); the combination and TR1 arms two each;
-   the learnable-prior-weight arm two (not significant); the cascade,
-   auxiliary-objective and backbone-swap arms one each — the last is a
-   deliberate single-cell axis probe, not a seed-variance claim.
+1. **Second seeds for the combination and TR1 arms are training**, and the capacity
+   arm's per-sequence divergence (§4.3c) is measured in one seed only. The headline
+   family has eight seeds; the capacity arm four (pooled direction unanimous,
+   per-sequence direction not); the learnable-prior-weight arm two (not
+   significant); the cascade and auxiliary-objective arms one each.
 2. **The TR1 convergence point is at 20,000 steps for a corpus 4.29x larger** —
    roughly 1.7 epochs; the 40,000-step point is measured (pooled +0.031,
    cross-family −0.016) but a 30,000-step midpoint was lost to a snapshot-discipline

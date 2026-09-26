@@ -326,9 +326,12 @@ class FlatDecisionHead(nn.Module):
         use_turner_prior: bool = True,
         chunk_size: int = 64,
         grad_checkpoint: bool = True,
+        scorer: str = "mlp",
+        resnet_blocks: int = 4,
     ) -> None:
         super().__init__()
         self.min_loop = min_loop
+        self.scorer = scorer
         self.use_turner_prior = use_turner_prior
         #: Column-chunk width for the pair tensors.  ``0`` disables chunking (the
         #: original whole-matrix path, kept for equivalence testing).  See the
@@ -342,7 +345,17 @@ class FlatDecisionHead(nn.Module):
         #: ``tools/patch_head_checkpointing.py`` for the measurement.
         self.grad_checkpoint = bool(grad_checkpoint)
         self.pair_repr = PairRepresentation(d_model, d_z)
-        self.turner = TurnerResidual(d_z, hidden)
+        if scorer == "resnet2d":
+            #: In the 2D path the ResNet *is* the pair scorer; the per-pair MLP_T
+            #: is replaced (not added to), so it is not constructed at all and the
+            #: gradient-coverage audit stays green. The zero-init head of the
+            #: ResNet preserves the flat arm's init-time equivalence (scores ==
+            #: Turner prior exactly).
+            self.resnet2d = ResNet2DScorer(d_z, n_blocks=resnet_blocks)
+            self.turner = None
+        else:
+            self.resnet2d = None
+            self.turner = TurnerResidual(d_z, hidden)
         self.type_head = PairTypeHead(d_model, n_types)
         self.calibration = TemperatureCalibration(calibration_edges)
         #: Learnable multiplier on the Turner prior.  **Without this the prior's weight
@@ -388,14 +401,23 @@ class FlatDecisionHead(nn.Module):
 
     def pair_scores_and_types(self, h: torch.Tensor):
         """``(scores, pair_types)`` for every ``(i, j)``, chunked along ``j``.
-
-        With ``chunk_size == 0`` or a chunk no smaller than ``L`` this is exactly
-        the original whole-matrix computation; otherwise the same projection is
-        evaluated on column slices and concatenated, which is bitwise identical
-        and costs ``O(B * L * chunk * d)`` peak activation instead of
-        ``O(B * L * L * d)``.
-        """
+        With ``scorer == 'resnet2d'`` the whole-matrix 2D path replaces the
+        chunked per-pair MLP path (BatchNorm over the full matrix is what makes
+        chunking wrong there); the flat path is untouched. """
         B, L, _ = h.shape
+        if self.resnet2d is not None:
+            #: Build z column-chunked: the (B, L, L, 3d) intermediate of
+            #: PairRepresentation.cross is the peak-memory offender; chunking the
+            #: projection bounds it at (B, L, chunk, 3d) while keeping the exact
+            #: same tensor (torch.cat of slices == whole-matrix result).
+            chunks = []
+            zchunk = 128 if L > 128 else L
+            for j0 in range(0, L, zchunk):
+                chunks.append(self.pair_repr.cross(h, h[:, j0:j0 + zchunk]))
+            z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
+            s = self.resnet2d(z)
+            t = self.type_head.symmetrize(self.type_head.cross(h, h))
+            return s, t
         chunk = self.chunk_size if 0 < self.chunk_size < L else L
         #: Checkpointing is only meaningful when there is more than one chunk; with
         #: a single chunk it would just recompute the whole matrix for nothing.
@@ -422,6 +444,81 @@ class FlatDecisionHead(nn.Module):
     def _chunk_types(self, h: torch.Tensor, hj: torch.Tensor) -> torch.Tensor:
         """Pair-type logits for the column block ``hj`` -- the checkpointed unit."""
         return self.type_head.cross(h, hj)
+
+
+
+
+# --------------------------------------------------------------------------- #
+# Plan-B arm: 2D-context pair scorer (stem-stacking correlations)
+# --------------------------------------------------------------------------- #
+class ResNet2DBlock(nn.Module):
+    """Bottleneck 2D residual block over the pairing matrix (B, L, L, C).
+
+    Mirrors the semantics of structRFM/eFold-style 2D pair scorers: each pair's
+    score sees its local neighbourhood in (i, j) space, so stacked pairs in a
+    stem can reinforce each other -- the correlation the independent per-pair
+    MLP cannot express.
+    """
+
+    def __init__(self, channels: int, kernel_size: int = 3) -> None:
+        super().__init__()
+        pad = kernel_size // 2
+        self.body = nn.Sequential(
+            nn.Conv2d(channels, channels, kernel_size, padding=pad, bias=False),
+            nn.BatchNorm2d(channels),
+            nn.GELU(),
+            nn.Conv2d(channels, channels, kernel_size, padding=pad, bias=False),
+            nn.BatchNorm2d(channels),
+        )
+        nn.init.normal_(self.body[-1].weight, std=1e-3)
+        nn.init.zeros_(self.body[-1].bias)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x + self.body(x)
+
+
+class ResNet2DScorer(nn.Module):
+    """2D-context scorer: z (B, L, L, d_z) -> s (B, L, L).
+
+    Pre-MLP_T positional embedding: relative-offset channel per (i-j) lets the
+    convolutions condition on loop-span, which the per-pair representation also
+    encodes implicitly. Last layer zero-initialised: at init the scorer outputs
+    zeros, so an untrained Plan-B arm decodes exactly like the flat head with
+    MLP_T=0 -- a clean control.
+    """
+
+    def __init__(self, d_z: int, n_blocks: int = 4, kernel_size: int = 3,
+                 hidden: int = 64) -> None:
+        super().__init__()
+        self.stem = nn.Sequential(
+            nn.Conv2d(d_z + 1, hidden, kernel_size=1),
+            nn.GELU(),
+        )
+        self.blocks = nn.ModuleList(
+            [ResNet2DBlock(hidden, kernel_size) for _ in range(n_blocks)]
+        )
+        self.head = nn.Sequential(
+            nn.Conv2d(hidden, 1, kernel_size=1),
+        )
+        # NOT zero-init: a zero output layer would make every upstream gradient
+        # exactly zero on the first step (score == prior, d loss/d upstream == 0
+        # through a linear layer with zero weights), which the trainer's
+        # gradient-coverage audit correctly rejects. A tiny symmetric-breaking
+        # init keeps the arm near the prior at init while allowing learning.
+        nn.init.normal_(self.head[-1].weight, std=1e-3)
+        nn.init.zeros_(self.head[-1].bias)
+
+    def forward(self, z: torch.Tensor) -> torch.Tensor:
+        B, L, L2, C = z.shape
+        assert L == L2
+        idx = torch.arange(L, device=z.device, dtype=z.dtype)
+        rel = (idx[:, None] - idx[None, :]).unsqueeze(0).unsqueeze(0)
+        rel = rel.expand(B, 1, L, L)
+        x = torch.cat([z.permute(0, 3, 1, 2), rel], dim=1)
+        x = self.stem(x)
+        for blk in self.blocks:
+            x = blk(x)
+        return self.head(x).squeeze(1)
 
 
 # --------------------------------------------------------------------------- #

@@ -229,6 +229,10 @@ class TrainConfig:
     d_ff: int = 3072
     d_z: int = 128
     hidden: int = 64
+    #: Pair-scorer architecture: 'mlp' (per-pair, all existing arms) or
+    #: 'resnet2d' (Plan B: 2D-context scorer over the pairing matrix).
+    scorer: str = "mlp"
+    resnet_blocks: int = 4
     #: Column-chunk width for the head's pair tensors (0 = no chunking).  The chunk
     #: transient is (B, L, chunk, 3*d), so this is the knob that decides whether a
     #: run fits on a small MIG slice; see tools/patch_head_checkpointing.py.
@@ -682,6 +686,7 @@ def build_decision_model(config: TrainConfig):
                 hidden=config.cascade_hidden, soft_gate=config.cascade_soft_gate,
                 gate_theta=config.cascade_gate_theta, gate_tau=config.cascade_gate_tau)
         return FlatDecisionHead(d_model=d_model, d_z=config.d_z, hidden=config.hidden,
+            scorer=config.scorer, resnet_blocks=config.resnet_blocks,
                                 chunk_size=config.head_chunk_size)
 
     if config.embedding_dir:
@@ -1679,6 +1684,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--head-chunk-size", type=int, default=64,
                    help="column-chunk width for the head's pair tensors (0 = none); "
                         "lower it when 3*d_model makes the chunk transient too big")
+    p.add_argument("--scorer", default="mlp", choices=["mlp", "resnet2d"],
+                   help="pair-scorer architecture (Plan B: resnet2d)")
+    p.add_argument("--resnet-blocks", type=int, default=4)
     p.add_argument("--embedding-d-model", type=int, default=0,
                    help="hidden size of the cached embeddings (required with "
                         "--embedding-dir)")
@@ -1724,6 +1732,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         embedding_dir=args.embedding_dir,
         embedding_d_model=args.embedding_d_model,
         head_chunk_size=args.head_chunk_size,
+        scorer=args.scorer, resnet_blocks=args.resnet_blocks,
         prior_init=args.prior_init,
         lr_calibrate=args.lr_calibrate,
         lr_candidates=tuple(float(x) for x in args.lr_candidates.split(",") if x.strip()),
