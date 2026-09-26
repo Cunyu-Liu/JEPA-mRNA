@@ -4164,3 +4164,72 @@ watch3–6 全退、queue_decision 空、串行评测协议无并发（watch6 �
         扩行（若并行会话未先做）
   - [ ] 下载决策 C 的 quoted 收尾注记（若用户/并行会话确认）
   - [ ] 常规巡查：零告警、无新 ow_*、五臂零回退
+
+## §14.73 例行监控（18:19）：四臂终态复核零回退、r2d 尾程健康（loss 38→19，ETA 修正 ~19:45）、零新 ow_* + 统计零漂移 60/60 维持、共享卡无空位（2026-09-26 18:25）
+
+> 节号说明：沿用 §14.66/§14.72 的偏差声明，用户模板"§14.61 起"
+> 对应盘上 §14.73。四臂关键判定（bigtr1_s1 交互为负 2-seed 复现、
+> big_s3 容量 4-seed、ff_tr1_s1 TR1 2-seed、bigsum ≥0.63 混杂
+> 终判）已在 §14.63–14.65/§14.67 定稿，本轮无新出数、无四查项。
+
+### 一、训练臂与进程复核（零回退、恢复协议零触发）
+
+四个原监控臂终态 20000/20000 与 §14.71/§14.72 记录逐项一致
+（bigtr1_s1 19:17 / big_s3 20:33 / ff_tr1_s1 20:32 / bigsum 22:58，
+均为 09-25 终笔；pgrep train_decision 无四臂进程——完成退出而非
+消失，恢复协议零触发）。终笔读数存档：bigtr1_s1 loss -0.6954
+（nll 0.1937 / distill 0.0608 / rlcd -0.9791 / cal 0.0292，
+grad_norm 0.438）；big_s3 loss -0.6738（nll 0.2268，grad_norm
+1.024）；ff_tr1_s1 loss 26.28（原始 nll 族）；bigsum loss 28.37
+（原始 nll 族，grad_norm 214.5 收敛途中正常波动）。
+
+唯一在训新臂 r2d（rinalmo_r2d_b4_s0，进程 3587129，共享卡 1）：
+18:17 实测 **step 14650/20000**，train_log 新鲜（mtime 18:17:30，
+2 分钟内）。中→尾程读数：loss 38.26（§14.72 @8100）→ **19.42**
+（@14650，terms.nll 20.08，与 bigsum 系同族原始口径），grad_norm
+163.9 区间波动，无 FATAL。估速修正：8100→14650 共 6550 步 /
+105.5 分钟 ≈ **1.04 st/s**（低于 §14.72 实测的 1.15 st/s），剩余
+5350 步 ≈ 86 分钟，**完训 ETA ~19:45**（§14.72 的 ~19:25 略乐观）。
+
+### 二、评测与统计：零新事件 + 零漂移维持
+
+- `ls -t eval_decision/ | head -6` 与 §14.72 完全同构：三个非
+  ow_ JSON（rinalmo_ft_official_ts0 14:51 / rinalmo_ft_bprna_new
+  15:01 / structrfm_bprna_new 15:11，并行会话产物，已记账
+  §14.67）在前排；watch6 收盘 08:52 后**零新 ow_*** 目录（最后
+  一笔 ow_rnafm_ff_b4_s0 bprna_new）。watch3/4/5 均已收官（末笔
+  09-25 20:51 / 21:22 / 23:41，watch5 末笔即 bigsum bprna_new
+  result.json 落盘，双 split 结果已入 §14.64/§14.65 记账），串行
+  评测协议无并发痕迹。
+- `tools/stats_definitive.py` 重跑两遍 md5 一致（5284307e…，
+  byte-stable，无漂移）；`tools/check_draft_v34.py` **60/60 PASS**；
+  draft 维持 **v3.11**（commit 0d3466d，15:27）——禁手抄原则下
+  本轮无新数可入，不动 draft 统计行。
+- alerts_decision.log：当日零新增内容（mtime 18:17 触碰模式延
+  续，末笔实为 09-25 08:10 的 ff_tr1_b4_s0 stale 告警）。
+
+### 三、GPU 与排队实验（维持无新臂）
+
+共享卡 0–5（18:19 实测，已用/总 40GB）：卡 0 30.9GB、卡 1
+38.5GB（本组 r2d 占 31.7GB + 他人）、卡 2 28.5GB、卡 3 29.5GB、
+卡 4 34.1GB、卡 5 28.0GB——名义空位最大 12.6GB（卡 5），**无一
+张卡满足">15GB 空闲且无本组任务"**。卡 6 6.9GB 为他人残留（§14.72
+勘误后本组在卡 6 无任务）。维持无新臂（用户排期：等 r2d 出数后
+再议；并行会话 Plan-B 判定规则 +0.03 over ff）。
+
+### 四、仓库状态：与 origin 同步，本轮仅入账本节
+
+`git status -sb`：`## main...origin/main`（§14.72 代推两 commit
+后 ahead 归零），工作树干净。本轮入库变更仅
+`records/DECISION_TRAINING_LOG.md` 本节；commit 后 push
+origin/main；scp 拉回 paper/spec/records 至本地 `~/rna-jepa-sync`。
+
+### 五、下轮待办（~20:30 或 r2d 完训 ~19:45 后）
+
+- [ ] r2d 完训确认 + 手跑 evaluate_decision.py 双 split
+      result.json（串行协议；r2d 复用 ff_b4_s0 的数据/种子/嵌入
+      路径，逐项对齐后按 §4.3 scorer 消融行记账）
+- [ ] structRFM Mathews 宽容口径（dbn 落盘为前提）+ draft 对比
+      表扩行（若并行会话未先做）
+- [ ] 下载决策 C 的 quoted 收尾注记（若用户/并行会话确认）
+- [ ] 常规巡查：零告警、无新 ow_*、五臂零回退
