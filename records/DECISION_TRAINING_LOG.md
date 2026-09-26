@@ -3578,3 +3578,20 @@ rinalmo_dl.sh 脚本，-C - + 500 次重试包裹），当前 ~235 KB/s，
       状态无回退
 - [ ] 若 RiNALMo-ft 评测出数：§4.3d 引用值换实测值（quoted →
       measured，终闭环 §14.65 的三问之一）
+
+### 九、§14.68 追记（09:15）：RiNALMo-ft 下载的持久化修复
+
+§14.68 第五节记录的 08:30 重启再次死亡（两次同模式：进程消失、
+无错误输出）。根因链（三层，全部实证）：
+1. **TRAE 会话清理杀子进程**：nohup+disown 在非交互 shell 里
+   不足以让进程组存活（06:19、09:10 两次死亡同源）；
+2. **launchd + ~/Downloads 被 TCC 拒**：LaunchAgent 报
+   "Operation not permitted"（macOS 对 Downloads 的盘符级
+   保护，sandbox 化服务无访问权）；
+3. **TOTAL 判定值错误**：206 续传响应的 1,529,930,890 是
+   "剩余字节数"而非文件总长，HEAD 实测总长 2,604,809,354。
+修复：脚本与半成品文件迁 ~/rna-tmp/，launchd（
+com.user.rinalmo-dl）托管，TOTAL 修正，每轮 curl 1h 上限 +
+断点续传接力。09:14 起稳定下载中（~170 KB/s，ETA ~11:45）。
+完成后人工 scp 上服务器 → 官方 ResNet 头评测插队。下轮监控
+（~11:00）确认 DONE 并执行 scp。
