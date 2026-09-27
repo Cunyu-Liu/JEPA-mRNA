@@ -4387,3 +4387,69 @@ signature — evidence it is a property of frozen representations under
 greedy/thresholded decode, not of our architecture. Draft v3.13; checker
 extended (3 new assertions), 78/78 PASS; commit f0e18ff-era. r2d evals
 (ts0/new) logs committed.
+
+
+## 14.76 Plan-A launched: gradual unfreeze of RiNALMo-giga (the A of the A+B path)
+
+Decision context. Plan-B passed its decision bar (TS0 micro F1 0.6629, +0.067
+over the ff arm, 2.2x the +0.03 threshold), so the pre-agreed A+B path is now
+active: A = backbone adaptation (this entry), the last unmeasured term of the
+§4.3g three-term decomposition (frozen 0.6474 / fine-tuned 0.7602 / scorer
++0.067 / structured-pretrain ~0 residual).
+
+Protocol audit before launch (v1 -> v2 of tools/train_plan_a.py). The first
+draft would have confounded the backbone-adaptation axis: it ran the nll term
+only (ObjectiveWeights() defaults lambda_distill=0, and the smoke test passing
+with teacher_probs=None was precisely the evidence), random pairing at
+batch 2, a bare encoder frame with no <cls>/<eos> and no attention_mask,
+default AdamW betas, and the -1e9 sentinel. v2 reproduces the control arm's
+(rinalmo_r2d_b4_s0) protocol one-for-one: four-term objective with the
+thermo:viennarna teacher (strict sequence keying, all 10682 labels present),
+length-bucketed batch 4 with the exact iter_batches RNG (seed,epoch), the
+extraction frame (<cls>+seq+<eos> + attention_mask, hidden[:,1:L+1], fp16
+round-trip to match the cached-embedding precision, zero-padded rows matching
+_stack_embeddings), AdamW betas=(0.9,0.98) with the 5-step warmup LambdaLR,
+NEG_BIG=-1e4, symmetric pair_indicator labels, valid_pair_mask.
+
+Memory engineering (needed because the control arm's head path needs ~35GB
+dynamic at B=4, L~500 on a full card, and both 3g.20gb MIG slices are the only
+contended-free resources): (a) z built column-chunked with each chunk under
+torch.utils.checkpoint -- PairRepresentation.cross is Linear+elementwise, so
+recompute is exact and torch.cat reproduces the whole-matrix tensor bitwise;
+(b) the type head is skipped: its output never enters the loss, so the control
+arm trained it into its exact init state (no gradient -> no AdamW update, wd=0,
+no BatchNorm); evaluation reproduces it by re-initialisation; (c) the resnet2d
+scorer is checkpointed with a BatchNorm-snapshot restore after backward, so
+the running stats see exactly one update per step as in the control arm. A
+full-unfreeze stress pass on the longest bucket (L=493-498, B=4) measured peak
+14.1GB. Verified: the 8-step smoke loss is bit-identical before/after the
+checkpointing changes (33.8088).
+
+Launch. scripts/launch_plan_a.sh (wait-for-device daemon over GPU-2 / the two
+3g.20gb MIG UUIDs / GPU-0 / GPU-3, 16GB threshold, 2-minute poll) acquired
+MIG-6e59f9af within 2.5 minutes. Training pid 1712482: 20000 steps, batch 4,
+head-lr 1e-4 / backbone-lr 1e-5, head-only until step 1600, then top-down
+unfreeze 2 blocks / 800 steps (33 blocks -> fully trainable by step 14400).
+Rate ~0.92 steps/s frozen-phase -> ETA 6-9h (unfreeze slows the backward).
+Health at step 525: four terms in the control arm's ranges (nll 37-79,
+distill 0.19-0.62, rlcd -0.83..-0.51, cal 0.18-0.63), gnorm 63-269, peak
+5.8GB. tools/watch_plan_a.sh (pid 1733214) waits for DONE and runs the final
+evaluation automatically.
+
+Evaluation plan. tools/eval_plan_a.py mirrors the stock evaluator's scoring
+protocol (nussinov_map decode over the head's raw scores, model's own
+prior_weight, PairLevelMetrics pooled micro P/R/F1) with the in-loop frame
+(its backbone cannot use the cached-embedding lookup path). A dry run on a
+30-sequence TS0 head with the step-500 checkpoint measured micro F1 0.7949
+(subset only; not comparable to the 0.6629 headline, which is full TS0) and
+validated the end-to-end path. Final: TS0 + bpRNA-new full splits after
+DONE, result to eval_decision/plana_giga_s0_step20000/result.json, then
+draft v3.14 + §14.77.
+
+Read-out discipline. The number that lands in the draft is the *difference*
+against the control arm on both splits: any TS0 gain attributable to backbone
+adaptation at matched protocol, and whether bpRNA-new moves above 0.5010 --
+the OOD axis is where the capacity-reversal story (RiNALMo-ft 0.4489 below
+our frozen 0.4870) predicts risk for aggressive fine-tuning. Gradual unfreeze
+with backbone-lr 1e-5 is the controlled, low-catastrophe-forgetting version
+of that experiment.
