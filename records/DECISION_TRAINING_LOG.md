@@ -4943,3 +4943,46 @@ daemons + trainers, tail of every daemon log and alerts_decision.log).
    in eval_decision/ — no arm has finished.
 
 Next ledger writer: take **14.87**.
+
+## 14.87 Eleventh patrol (05:10): zero events — s1 at 56%; ext40k survived a partial-reservation race, resumed from 20k and stepping; r2d daemon was watchdog-restarted overnight and holds
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: pid 69636 at step 11100/20000 (56%), 22/33 unfrozen,
+   peak ~10.9 GB, resume.pt fresh (05:01); v3 watcher 2467761 alive — it
+   adopted the live trainer at the 04:47 reflight and has been silent since,
+   which is correct (no events).
+2. **plana_giga_s0_ext40k**: the 05:03:33 launch (pid 2513755,
+   MIG-6e59f9af) cleared the >=15 GB bar, but co-tenants claimed ~9 GB
+   during torch import/config, so the 12 GB reservation capped at 5.6 GB
+   (free-at-reservation ~6.1 GB; free_gb via mem_get_info is slice-scoped,
+   so the bar itself was genuine — this is the 14.79a memory race, not a
+   measurement bug). The attempt survived placement anyway, resumed from
+   step 20000 (33/33 unfrozen, s0's end state) and is stepping
+   (20025/40000 at patrol, peak 14.6 GB). Watcher 2467763 alive, restart
+   counter 0/40 (no death counted this instance). Caveat: peak 14.6 GB is
+   0.5 GB above the 14.1 GB sizing basis of 14.86, so slice co-tenants
+   >=4.5 GB would OOM it later — auto-handled by resume.pt (every 500
+   steps) + watcher relaunch if so; GPU-5 (15.8 GB free, first candidate)
+   is the preferred fallback target on any relaunch.
+3. **rinalmo_r2d_b4_s1**: daemon 2147894 alive since ~02:44 — the earlier
+   instance died silently overnight (no log line, cause unknown; nothing
+   was running, so nothing was lost) and the */10 ensure_r2d_s1_daemon.sh
+   watchdog cron restarted it: first observed live action of the 14.79b
+   watchdog, working as designed. Config verified in the running script:
+   NEED_GB 34 two-phase (CONFIRM_GAP 90 s), --gpu-reserve-gb 33 (line
+   101), MAX_RESTARTS 12, resume.pt step 500 in place. No full card
+   qualifies (GPU-0..4 at 100% util with 0.4-7.2 GB free; GPU-5 15.8 GB
+   free — below the 34 GB bar; GPU-6/7 are MIG). Holding is correct.
+4. **Monitoring**: alerts_decision.log written on schedule (05:00:48),
+   FATAL count 0; the r2d/ext40k "log stale / no live process" alerts are
+   the known while-waiting false positives (14.79a). eval_decision/: no
+   new result.json (plana_giga_s0_step20000's is the Sep 29 02:29 file
+   recorded in 14.77). Nothing finished; s1 ETA ~16:10 at ~4.4 s/step.
+5. No manual intervention, no code change this round (ledger-only; the
+   pytest gate does not apply). One ssh connection reset mid-patrol (the
+   known flaky sshd, 14.86 item 4) — retried after a pause, state
+   re-verified before proceeding.
+
+Next ledger writer: take **14.88**.
