@@ -110,7 +110,7 @@ while true; do
       --steps 20000 --batch-size 4 \
       --head-lr 1e-4 --backbone-lr 1e-5 \
       --warmup-head-steps 1600 --unfreeze-every 800 --unfreeze-per-step 2 \
-      --save-every 500 --snapshot-every 2000 --seed 1 --gpu-reserve-gb 14 \
+      --save-every 500 --snapshot-every 2000 --seed 1 --gpu-reserve-gb 12 \
       9>&- >> "$LOG" 2>&1 < /dev/null &
     NEW_PID=$!
     echo "$NEW_PID" > "$PID_FILE"

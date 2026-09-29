@@ -4893,3 +4893,53 @@ Zero events: nothing restarted, nothing edited on disk beyond this entry,
 no arm finished. Repo was clean and synced at 555570e before this commit
 (docs only, no code change, so no pytest subset was triggered).
 Next ledger writer: take **14.86**.
+
+## 14.86 Tenth patrol (04:34): ext40k's first post-DEV-fix launch OOMed in the placement window — the 14 GB reservation flag was mis-sized for the MIG slice; both plana watchers re-flighted at 12 GB
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. State on arrival: all three daemons alive; s1 training (pid 69636, step
+   ~10625/20000, 22/33 unfrozen, peak 11.7 GB, ~4.4 s/step, ETA ~16:10);
+   the ext40k watcher had fired its FIRST launch on the DEV-pollution-fixed
+   script at 04:34:08 (pid 2440581 on MIG-6e59f9af, 16.1 GB free ≥ the 15 GB
+   bar, co-tenants ~3.5 GB).
+2. New failure mode, distinct from the old memory race: the trainer OOMed at
+   `encoder.to(device)` while ITSELF holding 15.94 GiB. The reservation is
+   released only AFTER encoder+head are on device (train_plan_a.py:206-212),
+   so the placement window must fit reservation + model + co-tenants on the
+   19.62 GiB slice: 14 + 2.6 + 3.5 = 20.1 > 19.62. Two auto-relaunches
+   (pids 2456195, 2464923) burned identically (restarts 1-3 of 40) — a
+   guaranteed ~7 min OOM loop for as long as the ~3.5 GB co-tenants persist.
+3. Fix: `--gpu-reserve-gb 14 -> 12` in both plana-class watchers
+   (tools/watch_plan_a_ext40k.sh L105, tools/watch_plan_a_s1.sh L113).
+   Sizing: placement 12 + 2.6 + C ≤ 19.62 for every C the 15 GB bar admits
+   (C ≤ 4.6 ⇒ 19.2 ≤ 19.62 ✓); post-release training peak 14.1 + C ≤ 19.62
+   ⇒ C ≤ 5.5 ✓. The 2 GB given back narrows loading-window protection but
+   converts a certain placement OOM into a fit. r2d needs NO change:
+   train_decision.py releases the reservation after placement too
+   (src/rnajepa/train_decision.py:1439) but its GPU-side model is the
+   resnet2d head only (~0.2 GB; the ~16 GB embedding store is CPU-side),
+   so 33 + 0.2 + C ≪ 40 on a full card.
+4. Reflight per the 14.79/14.80 procedure: killed both watcher trees and the
+   doomed restart-3 trainer (2464923); waited for flock drain — ext40k lock
+   free; the s1 trainer 69636 itself still holds the OLD
+   .watch_plan_a_s1.lock (fd 9 inherited from the pre-`9>&-` watcher at its
+   15:26:59 launch — the 14.79 item-3 class), but the script's lock is the
+   `_v2` fresh file, free; sed'd both scripts; restarted both watchers with
+   setsid nohup + absolute paths at 04:47 (restart counters 0). The s1
+   watcher adopted the live trainer via PID_FILE (no duplicate launch). One
+   ssh connection reset mid-kill (the flaky sshd again); state re-verified
+   before proceeding.
+5. Post-fix: the 14 GB freed by the killed trainer was claimed by new
+   co-tenants within ~2 min (MIG-6e59f9af now 11.8 GB free < 15; GPU-2
+   ~16.7 GB free is the nearest qualifying candidate) — the ext40k watcher
+   holds at poll 0/40 and takes any qualifying gap per the standing
+   no-manual-gate rule. r2d_s1: daemon + */10 watchdog cron armed at
+   NEED_GB 34 + reservation 33, two-phase confirmation, resume.pt (step
+   500) in place.
+6. pytest decision/resume subset after the change: 5/5 pass (bash-only
+   change; subset run per the standing pre-commit gate). No new result.json
+   in eval_decision/ — no arm has finished.
+
+Next ledger writer: take **14.87**.
