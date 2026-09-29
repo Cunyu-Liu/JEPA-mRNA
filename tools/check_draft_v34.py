@@ -184,6 +184,10 @@ ck("v3.14: decomposition table plana row", "backbone adaptation under our object
 ck("v3.14: appendix plana artifact row", "eval_decision/plana_giga_s0_step20000" in text)
 ck("v3.14: single-seed caveat stated", "single-seed caveat" in text)
 
+mc = json.load(open("/mnt/cunyuliu/rna-jepa/eval_decision/stratified_mfe_cells.json"))["ts"]
+ck("v3.14: mfe grid cells 0.3966/0.3679 stated", f"{mc['RFAM_200_400']['mfe_f1']:.4f}" == "0.3966" and f"{mc['RFAM_gt400']['mfe_f1']:.4f}" == "0.3679" and "0.3966" in text and "0.3679" in text, f"{mc['RFAM_200_400']['mfe_f1']:.4f}/{mc['RFAM_gt400']['mfe_f1']:.4f}")
+ck("v3.14: mfe cells centroid-verified + artifact row", mc['RFAM_200_400']['centroid_reproduced'] and mc['RFAM_gt400']['centroid_reproduced'] and mc['RFAM_200_400']['n_ok'] and mc['RFAM_gt400']['n_ok'] and "stratified_mfe_cells.json" in text and "protocol check" in text)
+
 fails = [c for c in checks if not c[1]]
 for name, ok, detail in checks:
     print(("PASS " if ok else "FAIL ") + name + (f"  [{detail}]" if detail and not ok else ""))

@@ -4515,3 +4515,24 @@ Follow-up queued (user directive 2026-09-29: fill every idle GPU, no gating):
 
 Draft v3.14 to follow: plana row in 4.3 main table (double-protocol reading),
 4.3g chase-map closure (all terms measured), Appendix A artifact row.
+
+## 14.78 The two blank vienna_mfe grid cells are now measured (draft Appendix C item 5 half-closed)
+
+The 4.3 source x length grid left vienna_mfe blank on RFAM 200-400 nt (n=126)
+and RFAM >400 nt (n=15) - 'left blank rather than estimated'. tools/strat_mfe_cells.py
+recomputes both cells with the run_baselines.py predictor + pooling on the exact
+grid sequences, with vienna_centroid recomputed on identical cells as the protocol
+check. First pass caught its own boundary bug (>=200 admitted 3 sequences of
+length exactly 200; the bucket convention is strictly >200) via the built-in
+triples: n mismatch (129 vs 126) AND centroid mismatch (0.4377 vs 0.4345). After
+the fix both cells verify exactly:
+
+- RFAM 200-400: n=126 ok, centroid 0.4345 reproduced to 4dp -> mfe 0.3966
+- RFAM >400:    n=15 ok,  centroid 0.4010 reproduced to 4dp -> mfe 0.3979? no:
+                mfe 0.3679.
+
+Both keep the grid's pattern (mfe trails centroid on long RFAM). Draft updated
+(grid cells filled, 'not run' sentence replaced by the measured+checked
+statement, Appendix C item 5 struck through on the mfe clause, Appendix A
+artifact row added); checker 88 -> 90 assertions, 90/90 PASS. Artifact:
+eval_decision/stratified_mfe_cells.json.

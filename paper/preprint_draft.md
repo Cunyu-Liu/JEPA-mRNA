@@ -631,8 +631,8 @@ in every cell, gives the central accuracy result of this draft:
 | `CRW` | 100–200 nt | 16 | **0.8725** | 0.6004 | 0.6447 | 0.2148 | **+0.272** |
 | `RFAM` | <=100 nt | 486 | 0.5598 | **0.6209** | 0.5913 | 0.2893 | **−0.061** |
 | `RFAM` | 100–200 nt | 498 | 0.4272 | **0.5347** | 0.4985 | 0.2000 | **−0.108** |
-| `RFAM` | 200–400 nt | 126 | 0.4265 | **0.4345** | — | 0.1596 | **−0.008** |
-| `RFAM` | >400 nt | 15 | 0.2766 | **0.4010** | — | 0.1201 | **−0.124** |
+| `RFAM` | 200–400 nt | 126 | 0.4265 | **0.4345** | 0.3966 | 0.1596 | **−0.008** |
+| `RFAM` | >400 nt | 15 | 0.2766 | **0.4010** | 0.3679 | 0.1201 | **−0.124** |
 
 **The sign of the comparison is set by source, not by length.** On conserved sequences
 we beat the partition-function baseline in *both* length buckets (+0.295 and +0.272); on
@@ -652,8 +652,7 @@ are conserved.
 The `CRW` 100–200 nt cell holds 16 sequences and the `RFAM` >400 nt cell holds 15, so
 those two cells are weak on their own; the `CRW` <=100 nt cell (n=68) and its independent
 replication on the validation split (n=81, 0.9709 vs 0.6702) carry the conserved-stratum
-claim. `vienna_mfe` was not run on the two longest `RFAM` cells and is left blank rather
-than estimated.
+claim. The two longest `RFAM` cells' `vienna_mfe` values (0.3966, 0.3679) were computed after the first grid pass, with `vienna_centroid` recomputed on the identical sequence sets as the protocol check - both cells reproduce the published centroid values to 4 dp (0.4345, 0.4010), so the mfe numbers are protocol-consistent, not estimated.
 
 Two things follow that the grid alone does not show.
 
@@ -1183,6 +1182,7 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |
 | Seed ensembles (§4.3f) | `eval_decision/ensemble8_{ts0,new}`, `eval_decision/ensemble_tr1_2seed_new` | `tools/ensemble_eval.py`: K-checkpoint score-average, single exact decode; stats in `tables/stats_definitive.json` (v5 `ensembles` block) |
 | Backbone swap (§4.3d, negative) | `eval_decision/ow_rnafm_ff_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch6.sh` → `eval/ss/evaluate_decision.py --checkpoint ckpts/rnafm_ff_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; RNA-FM 640-d frozen embeddings `embeddings/rna-fm`; stats in `tables/stats_definitive.json` (v6 `backbone` block) |
+| Stratified `vienna_mfe` grid cells (§4.3) | `eval_decision/stratified_mfe_cells.json` | recomputed with `eval/ss/run_baselines.py` predictor + pooling on the exact grid cells; vienna_centroid reproduced on identical sequences as the protocol check (0.4345 / 0.4010 to 4 dp) |
 | Plan-A gradual unfreeze (§4.3g, split-signed) | `eval_decision/plana_giga_s0_step20000/result.json` | training `scripts/launch_plan_a.sh` → `tools/train_plan_a.py` (20000 steps, batch 4, head-lr 1e-4 / backbone-lr 1e-5, warmup-head 1600, unfreeze 2 blocks/800 steps, z-column checkpointing to fit a 3g.20gb MIG slice, peak 15.4GB); final eval auto-run by `tools/watch_plan_a.sh` → `tools/eval_plan_a.py` (nussinov_map decode, prior_weight −1, in-loop frame); ledger §14.76–§14.77; second seed plana_giga_s1 in flight |
 | Plan-B 2D-context scorer (§4.3g, positive) | `eval_decision/ow_rinalmo_r2d_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch7.sh` (serial protocol, dynamic shared-card pick after the 1g.5gb MIG slice OOMed on the 2D whole-matrix intermediates) → `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_r2d_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; training via `scripts/launch_plan_b.sh` + `tools/patch_resnet2d.py` (scorer=resnet2d, ff_b4_s0-mirror); stats in `tables/stats_definitive.json` (v7 `scorer` block) |
 | Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.77 | — |
@@ -1237,7 +1237,9 @@ rate and hairpin-violation rate are 0.0000 for every row above.
 5. **The two smallest cells of the §4.3 grid are small.** `CRW` 100–200 nt holds 16
    sequences and `RFAM` >400 nt holds 15, so neither is strong on its own; the
    conserved-stratum claim rests on the `CRW` <=100 nt cell and its validation-split
-   replication. `vienna_mfe` was not run on the two longest `RFAM` cells.
+   replication. ~~`vienna_mfe` was not run on the two longest `RFAM` cells.~~ The
+   two cells are now measured (0.3966 / 0.3679, centroid-checked); the small-cell
+   caveat itself stands.
 
 ## References
 
