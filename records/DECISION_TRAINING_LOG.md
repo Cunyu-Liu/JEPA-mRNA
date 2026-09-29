@@ -4631,3 +4631,41 @@ Verification: full pytest suite on the patched tree -- 338 passed, 0 failed
 (editflow env; suite baseline was 317 at the 5th round, 21 tests added since).
 Docs sixth-round blocks inserted in spec/spec.md, spec/tasks.md,
 spec/checklist.md; this ledger entry closes the round.
+
+## 14.79 Plan-B second seed (r2d_s1): the arm that would not start, diagnosed to three causes
+
+### Symptom
+rinalmo_r2d_b4_s1 (Plan-B seed variance, the paper's core positive) launched four
+times on 2026-09-29 (16:04, 16:35, 19:47, 22:12) and OOMed at step ~500 every time;
+its daemon then vanished at ~22:20 leaving no FATAL line.
+
+### Three independent causes, each measured
+1. **Transient-capacity acceptance.** `wait_device` accepted a card from ONE
+   instantaneous free-memory reading. The frozen-embedding store takes ~10 minutes
+   to load, so the headroom was gone before the first backward. Fix: a card is now
+   accepted only if it still clears NEED_GB when re-measured CONFIRM_GAP=90 s later
+   (`pick_confirmed_device`), i.e. the window must outlive the load.
+2. **Margin too thin.** NEED_GB had been lowered 36 -> 31; the trainer's own peak is
+   ~25 GiB, leaving only ~6 GiB of co-tenant slack on a node where dozens of
+   `q_fill` dispatcher contexts sit on every card. Restored to 34.
+3. **flock did not serialise.** The daemon's lock was on /mnt/cunyuliu, which is
+   **NFS** (`df -T`: 10.179.129.209:/... nfs). A second copy started alongside the
+   first without exiting - verified directly. Locks moved to local /tmp
+   (`/tmp/.r2d_s1_daemon.lock`), and re-verified: `flock -n` now returns rc=1 while
+   the daemon holds it.
+
+### Durability
+A single detached nohup is not a home for this arm: the daemon was killed from
+outside once already, and the trainer OOMs whenever the node gets busy. Added
+`scripts/ensure_r2d_s1_daemon.sh` + a `*/10` cron entry (R2D_S1_WATCHDOG) which
+starts the daemon only when none is running. Its pgrep pattern names the script
+PATH so it cannot match itself - the same self-match that killed an ssh session on
+09-29 (`pkill -f <script name>` matched the wrapper whose cmdline contained it), and
+that truncated a kill loop again today (the echo'd path inside the command matched).
+
+### Not a fix: head chunking
+`FlatDecisionHead.pair_scores_and_types` bypasses column chunking entirely when
+`scorer == 'resnet2d'` - the docstring states "BatchNorm over the full matrix is what
+makes chunking wrong there". So `--head-chunk-size` cannot shrink this arm's
+footprint, and a 3g.20gb MIG slice (20 GB) remains too small. The arm needs a real
+full card; the daemon now waits for one with a two-sample confirmation.
