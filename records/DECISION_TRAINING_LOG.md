@@ -5131,3 +5131,59 @@ Zero events: nothing restarted, nothing edited on disk beyond this entry,
 no arm finished. Repo was clean and synced with origin/main at 73396e4
 before this commit (docs only, no code change, so no pytest subset was
 triggered). Next ledger writer: take **14.91**.
+
+## 14.91 Fifteenth patrol (07:04): zero events — s1 at 73.6% (~1.5 s/step, ETA ~09:15-09:30); ext40k at 23925/40000 (ETA ~13:15-16:10); the 06:40 "CUDA OOM in log tail" alert byte-verified as the 04:44 residue finishing its slide out of the 20 KB window (residue saga closed); r2d daemon holding (full-card gaps 1.6-11.1 GB)
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: trainer pid 69636 alive ~15.6 h on MIG-10b9b777, step
+   14725/20000 (73.6%), 32/33 blocks unfrozen, peak 13.0-14.4 GB, resume.pt
+   fresh (06:57), train_log.jsonl advancing (07:03). 1225 steps since the
+   06:34 patrol (~30 min) -> ~1.5 s/step -> ETA ~09:15-09:30. v3 watcher
+   2467761 alive (the 04:47 reflight instance), silent since adopting the
+   live trainer - correct. No new OOM in the run log: last "CUDA out of
+   memory" sits at offset 3569 of the 91927-byte log (the 15:19-era restart),
+   far outside the monitor's 20 KB window. No monitor alerts for this arm.
+2. **plana_giga_s0_ext40k**: trainer pid 2513755 (05:03:33 launch on
+   MIG-6e59f9af) at step 23925/40000 (59.8% of the 40k leg), 33/33 unfrozen,
+   peak 9.5-15.9 GB - transient spikes 15.5 (step 23700) / 15.9 (23850) are
+   back above the 14.86 sizing basis of 14.1 GB, same class as the one-off
+   16.0 GB spike at 21500 (14.89); slice still fits, and any OOM is
+   auto-handled by resume.pt (fresh 06:52) + watcher relaunch. 1300 steps /
+   ~30 min -> ~1.4 s/step -> ETA ~13:15 at this rate, ~16:10 at the slower
+   historical stretches. Watcher 2467763 alive, restart counter 0/40,
+   silent since the 05:03 relaunch - correct.
+3. **The 06:40 alert, byte-verified and closed.** At 06:40:33 the monitor
+   flipped plana_giga_s0_ext40k's tail marker from "traceback" (last fired
+   06:30) to "CUDA OOM", and both cleared at 06:50. Cause: the 04:44
+   pre-fix placement-OOM residue completing its slide out of the monitor's
+   last-20KB window. CRASH is a tuple checked in order with
+   break-on-first-match, so when the "Traceback" header (offset 15496)
+   exited the window while the "CUDA out of memory" line of the same block
+   (offset 16857, ~1.4 KB later in the file) was still inside, the reported
+   label flipped for exactly one cycle. Verified this round: log now 42340
+   bytes -> 25.5 KB of clean progress after the last OOM text; no new
+   OOM/traceback anywhere after offset 16857; and the trainer was
+   continuously alive across the alert (etime matches the 05:03:33 launch
+   to the minute; no watcher "trainer died" line since 05:03). This closes
+   the residue thread tracked since 14.88.
+4. **rinalmo_r2d_b4_s1**: daemon 2147894 + inner subshell 2147922 alive
+   (since ~02:47); sleep-120 poll child fresh (53 s) - polling on schedule.
+   NEED_GB 34 (two-phase) + --gpu-reserve-gb 33; resume.pt (step 500,
+   9.7 MB) armed; the */10 ensure_r2d_s1_daemon.sh watchdog cron is
+   installed. Full cards 0-5 free: 6.6 / 8.9 / 1.6 / 8.3 / 11.1 / 4.2 GB -
+   none near the 34 GB bar; correctly holding. No launch since the 22:12
+   OOM.
+5. **Alerts / eval**: monitor cron writes on schedule (latest 07:00:31),
+   FATAL 0 on the live arms; the r2d stale (522 min) / traceback /
+   no-live-process triplet is the known while-waiting state (14.79a).
+   eval_decision/: no new result.json - the latest artifact remains
+   plana_giga_s0_step20000 (recorded in 14.77). Nothing finished. GPU
+   training confirmed on both live arms (peak_gb 13-16 in the progress
+   lines - CUDA active, no CPU fallback). Per the standing rule no manual
+   gate was added; the armed daemons take any qualifying gap on their own.
+
+Zero events: nothing restarted, nothing edited on disk beyond this entry,
+no arm finished. Docs-only commit (no code change; the pytest gate does not
+apply). Next ledger writer: take **14.92**.
