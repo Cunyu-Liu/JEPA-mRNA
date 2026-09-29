@@ -9,6 +9,13 @@
 
 本机环境（macOS，无网络、无 GPU、无二级结构标注数据）能验证的是**代码与规范类检查点**；**实证结果类检查点（需要真实数据/集群）无法在本机达成，一律保持未勾选**。
 
+> **2026-09-29 下午刷新（第五轮交接）**——覆盖下表 I/K/L 三行现状（细节 §14.76–§14.77）：
+> - **I 测评**：Plan-A（plana_giga_s0，A+B=渐进解冻+2D scorer）完成 → **TS0 micro 0.7268 / macro 0.7139；OOD bprna_new 0.4302**。TS0 对标：超 UFold 0.6598、超 NucleicBERT 微调 macro 0.649、距 RNAformer 0.7578 差 0.031。Plan-B（r2d）0.6629/0.5010 保持为 OOD 最优臂。
+> - **K 假设结论**：§4.3g 三项分解全部实测——2D scorer +0.067 双正；backbone 适配 **+0.064 ID / −0.071 OOD**（容量反转签名，P/R=0.569/0.346 损伤在召回侧）；structure-aware residual ~0。OOD 短板定位为 backbone 适配的代价而非 scorer 的缺陷。
+> - **L 论文**：draft **v3.13，78/78 检查通过**（含 §14.75 NucleicBERT 外部参照系）；v3.14（plana 行 + chase map 闭环）待写。
+> - **种子方差**：r2d_s1（GPU 5 在跑）+ plana_s1（等设备）已按"占满 GPU"指示启动。
+> - **台账卫生**：plana_giga_s0 监控误报 37h 已修复（run_meta.json 补 status=completed）。
+
 | 区块 | 状态 | 依据 |
 |---|---|---|
 | **A 规范与证据** | ✅ 全部可验证 | `spec/` 三份文档已产出并抽查 |

@@ -1,11 +1,28 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.13, 2026-09-27.**
+**Preliminary preprint draft — v3.14, 2026-09-29.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
+>
+> **v3.14 change note (Plan-A lands: the (a)+(d) interaction is measured, and it
+> is split-signed).** The gradual-unfreeze arm (Plan A: the RiNALMo-giga backbone
+> unfrozen top-down, 2 blocks per 800 steps, backbone-lr 1e-5, under the exact
+> Plan-B protocol — so this arm *is* the (a)+(d) combination) completes 20,000
+> steps: TS0 micro **0.7268** (+0.064 over the Plan-B control at matched
+> protocol; macro 0.7139) — past UFold (0.6598) and past NucleicBERT's
+> fine-tuned 404M (their macro 0.649 vs ours 0.7139), 0.031 from RNAformer. On
+> bpRNA-new it **loses** 0.071 against the same control (0.4302 vs 0.5010,
+> P 0.569 / R 0.346 — recall-side damage): exactly the cross-family sign the
+> §4.3 capacity×data interference warned could not be extrapolated from two
+> single-axis positives, now measured on the backbone axis. §4.3g's
+> decomposition table gains its last row and the chase map closes; the
+> deployment guidance follows from it (frozen backbone + 2D scorer for
+> family-unknown screening, gradual unfreeze only in-distribution). Both (d)
+> and (e) carry a single-seed caveat; seed-variance arms for Plan-B and
+> Plan-A are in flight and Appendix A lists their artifacts.
 >
 > **v3.13 change note (NucleicBERT external reference frame).** §4.3d adds
 > NucleicBERT's Table 1 as a quoted external frame — the one paper reporting
@@ -422,6 +439,7 @@ baselines, and the capacity sweep moves us further up:
 | — RiNALMo-ft 650M (re-run, strict micro) | TS0 **0.7210** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4489** (below our 0.4870) |
 | — structRFM 86M (re-run, strict micro) | TS0 **0.6638** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5438** (above our 0.4870) |
 | — Ours, 2D-context scorer (Plan B) | TS0 **0.6629** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5010** (pooled micro; per-seq −0.023, see §4.3c) |
+| — Ours, gradual unfreeze + 2D scorer (Plan A = (a)+(d), 650M in-loop) | TS0 **0.7268** (macro 0.7139) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4302** (P 0.569 / R 0.346) |
 
 The TR1 columns are the data-scaling experiment, the 0.4641 cell is the
 capacity-on-cross-family measurement, and the last "Ours" column is the combination
@@ -908,20 +926,37 @@ arm is +0.001 TS0 (0.6638 vs 0.6629, within our capacity-arm seed spread of
 0.0098) and +0.043 bpRNA-new pooled, which re-attributes the cross-family
 difference to its structure-guided pre-training data, not its scorer.
 
+**(e) Plan-A arm (gradual unfreeze under the Plan-B protocol = the (a)+(d)
+combination).** TS0 micro **0.7268** / macro 0.7139, bpRNA-new micro
+**0.4302** (P 0.569 / R 0.346). Read as deltas against its matched control
+(Plan-B, which is +0.067 on both splits): backbone adaptation under our
+objective adds **+0.064 in-distribution and −0.071 cross-family**. The
+in-distribution composition is roughly additive (ff 0.5958 → +scorer 0.6629
+→ +backbone 0.7268); the cross-family sign flips — the capacity-reversal
+signature of §4.3 and of the RiNALMo-ft re-run (a) reproduces under a
+*controlled, low-catastrophic-forgetting* schedule (backbone-lr 1e-5, 33
+blocks unfrozen top-down over the first 14.4k steps). The P/R asymmetry
+locates the damage on the recall side: fine-tuning specialises the backbone
+to bpRNA-family pairing patterns and stops firing on novel families.
+
 **Combined decomposition of the 0.13–0.15 TS0 gap to the strongest models:**
 
 | factor | estimate | evidence |
 |---|---|---|
-| backbone fine-tuning (frozen → adapted) | ~0.11 | (a): same encoder, both regimes |
+| backbone fine-tuning (frozen → adapted, released checkpoint) | ~0.11 | (a): same encoder, both regimes |
 | pair scorer 2D context (flat MLP → resnet2d) | ~+0.03–0.07 (0.6629 vs 0.5956 matched) | (d): single-variable swap at matched capacity |
+| backbone adaptation under our objective (on top of (d)) | **+0.064 TS0 / −0.071 bpRNA-new** | (e): matched-protocol single-variable read vs the Plan-B control |
 | structure-aware pretrain data (structRFM's BPfold corpus) | ~0 residual TS0 / +0.04 bpRNA-new vs (d) | (b) vs (d) at near-equal TS0 |
 | seed stochasticity | ≤ ~0.02 (≤15–20% of deficit) | §4.3f ensemble bound |
 
-This was the chase map; the architecture half is now measured. The remaining
-open arm is gradual unfreezing of the frozen backbone under our objective
-(Plan A, prepared) — the interaction of (a)+(d) is the natural next
-combination, and the capacity×data interference of §4.3 warns that its
-cross-family sign cannot be assumed from the two single-axis positives.
+This was the chase map; it is now closed — every row is measured. The
+(a)+(d) interaction composes additively in-distribution and interferes
+negatively cross-family, so the decomposition now carries deployment
+guidance, not just attribution: for family-unknown screening run the frozen
+backbone + 2D scorer (0.5010 cross-family, the best of our arms); unlock the
+backbone only when the target family is in-distribution (+0.064). The one
+caveat shared by (d) and (e) is that both are single-seed; seed-variance
+arms for Plan-B and Plan-A are in flight.
 
 ### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
@@ -1148,8 +1183,9 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | Checkpoint step provenance | `tools/ckpt_steps.py` | reads `step` from inside each `.pt` |
 | Seed ensembles (§4.3f) | `eval_decision/ensemble8_{ts0,new}`, `eval_decision/ensemble_tr1_2seed_new` | `tools/ensemble_eval.py`: K-checkpoint score-average, single exact decode; stats in `tables/stats_definitive.json` (v5 `ensembles` block) |
 | Backbone swap (§4.3d, negative) | `eval_decision/ow_rnafm_ff_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch6.sh` → `eval/ss/evaluate_decision.py --checkpoint ckpts/rnafm_ff_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; RNA-FM 640-d frozen embeddings `embeddings/rna-fm`; stats in `tables/stats_definitive.json` (v6 `backbone` block) |
+| Plan-A gradual unfreeze (§4.3g, split-signed) | `eval_decision/plana_giga_s0_step20000/result.json` | training `scripts/launch_plan_a.sh` → `tools/train_plan_a.py` (20000 steps, batch 4, head-lr 1e-4 / backbone-lr 1e-5, warmup-head 1600, unfreeze 2 blocks/800 steps, z-column checkpointing to fit a 3g.20gb MIG slice, peak 15.4GB); final eval auto-run by `tools/watch_plan_a.sh` → `tools/eval_plan_a.py` (nussinov_map decode, prior_weight −1, in-loop frame); ledger §14.76–§14.77; second seed plana_giga_s1 in flight |
 | Plan-B 2D-context scorer (§4.3g, positive) | `eval_decision/ow_rinalmo_r2d_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch7.sh` (serial protocol, dynamic shared-card pick after the 1g.5gb MIG slice OOMed on the 2D whole-matrix intermediates) → `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_r2d_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; training via `scripts/launch_plan_b.sh` + `tools/patch_resnet2d.py` (scorer=resnet2d, ff_b4_s0-mirror); stats in `tables/stats_definitive.json` (v7 `scorer` block) |
-| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.74 | — |
+| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.77 | — |
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
 rate and hairpin-violation rate are 0.0000 for every row above.

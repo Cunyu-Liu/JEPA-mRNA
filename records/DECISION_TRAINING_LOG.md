@@ -4453,3 +4453,65 @@ the OOD axis is where the capacity-reversal story (RiNALMo-ft 0.4489 below
 our frozen 0.4870) predicts risk for aggressive fine-tuning. Gradual unfreeze
 with backbone-lr 1e-5 is the controlled, low-catastrophe-forgetting version
 of that experiment.
+
+## 14.77 Plan-A final read-out: backbone adaptation +0.064 TS0 / -0.071 OOD; the A+B decomposition closes
+
+Completion. plana_giga_s0 finished all 20000 steps (train_log terminal row
+step=20000, all 33 blocks unfrozen, peak 12.7-14.1 GB on the 3g.20gb MIG slice,
+~2.7 h wall for the last 10k after the unfreeze slowdown). The watch7-style
+watcher fired the final evaluation automatically; result at
+eval_decision/plana_giga_s0_step20000/result.json (2026-09-29T02:29).
+
+Headline (full splits, nussinov_map decode, prior_weight=-1, in-loop frame):
+
+| split | plana_giga_s0 | control r2d (frozen+2D) | delta | external frame |
+|---|---|---|---|---|
+| TS0 micro F1 | **0.7268** | 0.6629 | **+0.0639** | UFold 0.6598 (beaten, +0.067); RNAformer 0.7578 (gap now 0.031, was 0.162 at ff 0.5958); NucleicBERT ft macro 0.649 vs our macro 0.7139 |
+| TS0 macro F1 | 0.7139 | 0.5970-era | — | |
+| bpRNA-new micro F1 | **0.4302** | 0.5010 | **-0.0708** | centroid 0.6770 / UFold 0.6106 still far above both |
+| bpRNA-new macro F1 | 0.4156 | — | — | |
+
+Read-out discipline (per 14.76): the numbers that count are the deltas against
+the control arm at matched protocol.
+
+1. **The A-term is now measured, and it is split-signed.** Backbone adaptation
+   (gradual unfreeze, backbone-lr 1e-5) buys +0.064 in-distribution but costs
+   -0.071 cross-family OOD. This is exactly the capacity-reversal signature the
+   14.76 launch note predicted from RiNALMo-ft 0.4489 < our frozen 0.4870: the
+   aggressive-finetuning OOD risk is real even in the controlled gradual-unfreeze
+   version. P/R asymmetry on bpRNA-new (P 0.569 / R 0.346) says the damage is
+   recall-side: fine-tuning specialises the backbone to bpRNA-family pairing
+   patterns and stops firing on novel families.
+
+2. **A+B interaction on TS0 is roughly additive (0.5958 -> +B 0.6629 -> +A
+   0.7268), but the OOD sign cannot be extrapolated from single axes - and it
+   did not: B kept OOD at 0.5010 (frozen backbone retains family generality)
+   while A+B dropped to 0.4302.** The 4.3g chase map closes with all three
+   terms measured: 2D scorer +0.067 (both splits positive), backbone adaptation
+   +0.064 ID / -0.071 OOD, structured-pretrain residual ~0. The paper's
+   deployment guidance writes itself: frozen backbone + 2D scorer for OOD
+   screening; gradual unfreeze only when the target family is in-distribution.
+
+3. **External positioning.** TS0 0.7268 beats UFold and NucleicBERT's
+   fine-tuned 404M (macro 0.649 vs 0.7139) and closes most of the gap to
+   RNAformer (0.031 remaining). OOD remains the honest weakness and must stay
+   paired with TS0 in every table (14.34 discipline).
+
+Bookkeeping fix. The 10-min monitor alerted 'plana_giga_s0: died without a
+terminal ledger row' every cycle since ~09-28 01:00 - an artifact: train_plan_a
+writes run_meta.json without a status field and no ledger.jsonl, so the health
+check read status=unknown over a finished run. Fixed by appending
+status=completed (+ note) to runs/plana_giga_s0/run_meta.json; alerts should
+stop at the next cycle. Lesson recorded: direct-launched tools must write a
+terminal status into run_meta.json.
+
+Follow-up queued (user directive 2026-09-29: fill every idle GPU, no gating):
+- rinalmo_r2d_b4_s1 (Plan-B second seed, the paper's core positive needs seed
+  variance) -> queue_decision/pending/070_r2d_s1.json, min_free 36000 MiB
+  (the 2D-scorer head path needs ~35 GB at B=4); auto-dispatches when a full
+  card frees.
+- plana_giga_s1 (Plan-A headline variance) -> 071_plana_s1.json, min_free
+  16000 MiB; same train_plan_a protocol, seed 1.
+
+Draft v3.14 to follow: plana row in 4.3 main table (double-protocol reading),
+4.3g chase-map closure (all terms measured), Appendix A artifact row.

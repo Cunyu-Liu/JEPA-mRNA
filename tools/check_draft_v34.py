@@ -164,10 +164,25 @@ ck("v3.12: aggregation divergence point 3 present", "joins the aggregation-diver
 ck("v3.12: 4.3g (d) block present", "Plan-B scorer arm (2D-context scorer on the frozen backbone" in text and "architecture half of (b)'s residual" in text)
 ck("v3.12: appendix scorer artifact row", "ow_rinalmo_r2d_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 ck("v3.12: structRFM near-equality stated", "0.6638 vs 0.6629" in text)
-ck("v3.13: version banner v3.13", "v3.13, 2026-09-27" in text and "v3.12 change note" in text)
+ck("v3.13: change note v3.13 present", "v3.13 change note" in text and "v3.12 change note" in text)
 ck("v3.13: nucleicbert quoted table", "Method (NucleicBERT Table 1)" in text and "0.649" in text and "404M" in text)
 ck("v3.13: nucleicbert flagged quoted-only", "Quoted-only, flagged as such" in text)
-ck("v3.12: ledger range extends to 14.74", "§14.1–§14.74" in text)
+ck("v3.12: ledger range extends to 14.77", "§14.1–§14.77" in text and "§14.1–§14.74" not in text)
+
+pa = json.load(open(f"{E}/plana_giga_s0_step20000/result.json"))
+V["plana_ts0"] = pa["splits"]["ts0"]["micro"]["f1"]
+V["plana_new"] = pa["splits"]["new"]["micro"]["f1"]
+
+ck("v3.14: version banner v3.14", "v3.14, 2026-09-29" in text and "v3.13 change note" in text)
+ck("v3.14: plana ts0 0.7268", f"{V['plana_ts0']:.4f}" == "0.7268" and "0.7268" in text, f"{V['plana_ts0']:.4f}")
+ck("v3.14: plana new 0.4302", f"{V['plana_new']:.4f}" == "0.4302" and "0.4302" in text, f"{V['plana_new']:.4f}")
+ck("v3.14: plana ts0 delta +0.064 vs plan-b control", f"{V['plana_ts0'] - V['r2d_ts0']:+.4f}" == "+0.0639" and "+0.064" in text, f"{V['plana_ts0'] - V['r2d_ts0']:+.5f}")
+ck("v3.14: plana new delta 0-0.071 vs plan-b control", f"{V['plana_new'] - V['r2d_new']:+.4f}" == "-0.0708" and "−0.071" in text, f"{V['plana_new'] - V['r2d_new']:+.5f}")
+ck("v3.14: 4.3g (e) block present + chase map closed", "Plan-A arm (gradual unfreeze under the Plan-B protocol" in text and "chase map; it is now closed" in text)
+ck("v3.14: main table plana row", "gradual unfreeze + 2D scorer (Plan A = (a)+(d)" in text)
+ck("v3.14: decomposition table plana row", "backbone adaptation under our objective (on top of (d))" in text)
+ck("v3.14: appendix plana artifact row", "eval_decision/plana_giga_s0_step20000" in text)
+ck("v3.14: single-seed caveat stated", "single-seed caveat" in text)
 
 fails = [c for c in checks if not c[1]]
 for name, ok, detail in checks:

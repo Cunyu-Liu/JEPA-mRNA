@@ -28,9 +28,9 @@ import numpy as np
 import torch
 
 REPO = Path("/home/cunyuliu/rna-jepa")
+sys.path.insert(0, str(REPO))        # for eval.ss.metrics (package root)
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
-sys.path.insert(0, str(REPO / "eval"))
 
 from rnajepa.encoder import BASE_TO_INDEX, UNK_INDEX  # noqa: E402
 from rnajepa.decision_head import FlatDecisionHead  # noqa: E402

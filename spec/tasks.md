@@ -8,6 +8,13 @@
 
 ## 实施状态总览
 
+> **2026-09-29 下午刷新（第五轮交接，细节见 `records/DECISION_TRAINING_LOG.md` §14.76–§14.77）**：
+> - **Plan-A（plana_giga_s0）训练+终评全部完成**：20000 步渐进解冻（33 块全解冻）→ **TS0 micro F1 0.7268 / macro 0.7139，OOD bpRNA-new 0.4302**。A 项分解测得：**+0.064 ID / −0.071 OOD**（容量反转签名）。主表对标：超 UFold 0.6598、超 NucleicBERT 微调 macro 0.649，距 RNAformer 0.7578 仅 0.031。
+> - **A+B 三项分解闭环**（§4.3g chase map 全部实测）：2D scorer +0.067 双正（0.6629/0.5010）；backbone 适配分裂符号；structure-aware residual ~0。部署指引已成型。
+> - **种子方差臂已启动（用户指示占满 GPU）**：`rinalmo_r2d_b4_s1`（GPU 5 在跑，watch7 协议终评自动接续）；`plana_giga_s1` 启动器+守护等设备自动起（≥16GB）。
+> - **台账修复**：plana_giga_s0 监控误报 37 小时（run_meta.json 缺 status 字段）；已补 completed。教训入 §14.77。
+> - **draft v3.13 已 78/78 检查通过**；v3.14（plana 行 + chase map 闭环）为下一步。
+>
 > **2026-09-24 更新**：A100 集群已接入（`ssh A100`），**数据与算力阻塞已解除**。
 > 权威的 benchmark / 数据 / 评测协议决策见 **`spec/benchmark_decision.md`**；本文件与其冲突时以该文件为准。
 

@@ -5,12 +5,20 @@
 > 架构来源：**纯血 Jev（TypeSafe AI Decision Model）范式**——不引入 JEPA / 隐空间预测 / EMA teacher 路线
 > 前置资产：`rna-jepa/` 仅作为**基础设施**复用（GPU 调度、监控、台账、tokenization 等价性、既有 mRNA 下游任务注册表），**不作为科学线**
 
-> **交接状态（2026-09-24 晚，第四轮自检后）**：
+> **交接状态（2026-09-29 下午，第五轮交接更新）**：
 > - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/mnt/cunyuliu/rna-jepa`。
-> - **当前 headline**：`rinalmo_ff_b4_s0` @step20000、`w=-1` → `ref_bprna_ts0` micro F1 **0.5958**（欠训练是已证主因，§14.35）。
+> - **当前 headline（Plan-A 完成，§14.76–§14.77）**：`plana_giga_s0`（A+B = RiNALMo-giga 渐进解冻 + resnet2d scorer，20000 步）→ **TS0 micro F1 0.7268 / macro 0.7139**；OOD bpRNA-new micro **0.4302**。
+> - **A+B 三项分解全部测得（§14.77）**：2D scorer（Plan-B，r2d）+0.067 双侧为正 → 0.6629 / 0.5010；backbone adaptation（A 项）**+0.064 ID / −0.071 OOD**（容量反转签名：P 0.569 / R 0.346，损伤在召回侧）；structure-aware 预训练 residual ~0。部署指引：OOD 筛选用 frozen+2D，目标家族在分布内才解锁 backbone。
+> - **主对标**：RNAformer 0.7578（差距缩至 **0.031**，原 0.162）；UFold 0.6598（已超 +0.067）；NucleicBERT 微调 404M macro 0.649（已超，我们 macro 0.7139，§14.75 外部参照系）；ViennaRNA centroid 0.5393。**OOD 仍是最诚实短板，必须与 TS0 并列表格**。
+> - **在跑**：`rinalmo_r2d_b4_s1`（Plan-B 第二 seed，GPU 5，14:39 起跑，协议与 s0 逐参数一致仅 seed 不同）；`plana_giga_s1` 启动器+守护（`scripts/launch_plan_a_s1.sh` + `tools/watch_plan_a_s1.sh`，等 ≥16GB 设备自动起）。监控 cron 每 10 分钟，快照落 `/mnt/cunyuliu/rna-jepa/ckpts/`。
+> - **台账修复**：plana_giga_s0 曾因 run_meta.json 无 status 字段被监控误报"died without terminal row"37 小时（训练与终评实际均完成）；已补 `status=completed`（§14.77 教训：直启工具必须写终态）。
+> - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.77**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
+> - **当前目标**：draft v3.14（plana 行入 §4.3 主表 + §4.3g chase map 三项闭环 + Appendix A artifact 行）→ r2d_s1/plana_s1 种子方差 → 预印本定稿（v3.13 已 78/78 检查通过）。
+>
+> **交接状态（2026-09-24 晚，第四轮自检后，历史快照）**：
+> - **当时 headline**：`rinalmo_ff_b4_s0` @step20000、`w=-1` → `ref_bprna_ts0` micro F1 **0.5958**（欠训练是已证主因，§14.35）。
 > - **主对标已换**：**RNAformer 0.7578**（差距 0.162）；UFold 0.6598；ViennaRNA centroid 0.5393。C1-a 已判 FAIL（§0.10）。
-> - **在跑**：19 个训练臂（6 from-scratch + ff 种子 s1–s5 + 2×2 目标对照 + 级联 casc/cascR + 容量 big + TR1 数据扩展×2），监控 cron 每 10 分钟，快照落 `/mnt/cunyuliu/rna-jepa/ckpts/`。
-> - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（§14.1–§14.42）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
+> - **当时在跑**：19 个训练臂（6 from-scratch + ff 种子 s1–s5 + 2×2 目标对照 + 级联 casc/cascR + 容量 big + TR1 数据扩展×2）。
 > - **一周目标**：TR1 评测 + 种子方差齐 + 级联/容量定型 + 预印本初稿（`paper/preprint_draft.md`）。
 
 ---
