@@ -5028,3 +5028,57 @@ daemons + trainers, tail of every daemon log and alerts_decision.log).
 Zero events: nothing restarted, nothing edited on disk beyond this entry,
 no arm finished. Docs-only commit (no code change; the pytest gate does not
 apply). Next ledger writer: take **14.89**.
+
+## 14.89 Thirteenth patrol (06:05): zero events — s1 at 62.5% (measured ~1.9 s/step on the current stretch, ETA ~10:00-12:20); ext40k past halfway to 40k (21525/40000); r2d daemon holding, no card qualifies
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: trainer pid 69636 alive (PID_FILE adoption re-verified:
+   launch_pid == 69636), step 12500/20000 (62.5%), 26/33 blocks unfrozen,
+   peak 11.5-13.1 GB, resume.pt fresh (06:04, save-every-500), train_log.jsonl
+   advancing. 925 steps since the 05:36 patrol (~29 min wall) -> ~1.9 s/step
+   on this stretch (faster than 14.88's 2.9 measurement; slice-contention
+   variance) -> ETA ~10:00 if held, ~12:20 per 14.88's rate. v3 watcher
+   2467761 alive; its DONE detection greps "[plan-a] DONE" from the log, so
+   the run_meta missing a status field (69636 is a pre-14.79-item-4 code
+   instance, adopted without relaunch at the 04:47 reflight) does not affect
+   the DONE->eval path; the s0-named snapshot stream continues and remains
+   contained by the watcher's DONE-time rename (14.83). No monitor alerts
+   for this arm.
+2. **plana_giga_s0_ext40k**: trainer pid 2513755 (05:03:33 launch,
+   MIG-6e59f9af) at step 21525/40000 (54% of the 40k leg), 33/33 unfrozen,
+   peak 11.5-16.0 GB — the 16.0 GB at step 21500 exceeds the 14.1 GB sizing
+   basis of 14.86; slice is 19.62 GiB with ~3.5 GB co-tenants -> 19.5 GB
+   total, still fits but with <0.2 GB headroom. Any OOM is auto-handled by
+   resume.pt (fresh 06:03) + watcher relaunch; GPU-5 remains the preferred
+   fallback on relaunch. Watcher 2467763 alive, restart counter 0/40.
+   Wall-rate ~2.4 s/step (1525 steps in 3690 s since resume) -> ETA ~18:20
+   today.
+3. **rinalmo_r2d_b4_s1**: daemon 2147894 + inner subshell 2147922 alive
+   (since 02:47); two-phase-confirmation children recycling on schedule;
+   NEED_GB 34 + --gpu-reserve-gb 33 + resume.pt (step 500) armed; */10
+   ensure_r2d_s1_daemon.sh watchdog cron installed (lock observed cycling
+   on schedule at 06:00). The run's launch_pid file still names the dead
+   22:12 trainer 1393854 — inert while the daemon holds (no card has
+   qualified since). Full cards 0-5 free: 7.2 / 14.1 / 2.6 / 8.9 / 18.3 /
+   4.8 GB — none reaches the 34 GB bar; correctly holding.
+4. **Alerts**: written on schedule (latest 06:00:34), FATAL 0 in the s1 and
+   ext40k run logs; r2d carries the 1 known FATAL from the 22:12 OOM (stale
+   462 min while-waiting, per 14.79a). ext40k's "traceback in log tail"
+   verified as the 04:44 pre-fix residue still inside monitor_decision.sh's
+   last-20KB window — the actual log tail is pure training progress; it
+   ages out as the trainer appends.
+5. **eval_decision/**: no new result.json — the latest artifact remains
+   plana_giga_s0_step20000 (recorded in 14.77). Nothing finished. GPU
+   training confirmed on both live arms (peak_gb 11.5-16.0 in
+   train_log.jsonl — CUDA active, no CPU fallback).
+6. Operational note: parallel ssh connections from the patrol client trigger
+   the known flaky-sshd resets (14.86 item 4) — a fresh reset occurred at
+   the start of this patrol when two ssh calls ran concurrently; serialized
+   thereafter and state re-verified before each conclusion. Patrols should
+   keep ssh calls serial.
+
+Zero events: nothing restarted, nothing edited on disk beyond this entry,
+no arm finished. Docs-only commit (no code change; the pytest gate does not
+apply). Next ledger writer: take **14.90**.
