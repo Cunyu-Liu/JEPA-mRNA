@@ -4852,3 +4852,44 @@ Zero events: nothing restarted, nothing edited on disk, no arm finished.
 Repo was clean and synced with origin/main at 9a1b3d1 before this commit
 (docs only, no code change, so no pytest subset was triggered).
 Next ledger writer: take **14.85**.
+
+## 14.85 Ninth patrol (04:05): zero events — s1 at step 10175/20000 (51%); both waiting daemons armed and polling on schedule
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: trainer pid 69636 alive ~12.5 h on MIG-10b9b777 (GPU-7),
+   step 10175/20000, 20/33 blocks unfrozen, peak 11.1 GB, train_log.jsonl
+   advancing (mtime 04:02). v3 watcher pid 2127796 alive (02:39 restart on the
+   fixed script). The pre-patch s0-named snapshot stream remains contained
+   (watcher renames at DONE per 14.83; s0 originals in the preserved dir).
+   Measured rate ~21 steps/min → ETA ~11:45 today if the slice holds.
+2. **r2d_s1**: daemon pid 2147894 + inner subshell 2147922 alive (02:47);
+   two-phase-confirmation children recycling on schedule (fresh at 04:04).
+   Adaptive NEED_GB 34 + --gpu-reserve-gb 33; resume.pt (step 500, 9.6 MB) in
+   place. No launch since the 22:12 OOM; the */10 ensure_r2d_s1_daemon.sh
+   watchdog cron is installed. Full cards 0-5 all show ≤10 GB free —
+   correctly holding.
+3. **ext40k**: watcher pid 2134269 alive (02:41, absolute path), restart
+   0/40, poll 23 at 04:02 (~3.5 min cadence), NEED_GB 15 +
+   --gpu-reserve-gb 14; resume.pt (7.8 GB step-20000 copy) in place;
+   train_log.jsonl still empty — the arm has never advanced past its resume
+   point (all five deaths were the pre-fix DEV-pollution failures recorded
+   in 14.80). Correctly holding.
+4. **Alerts**: the 10-min monitor writes on schedule (latest 04:00:50); the
+   ext40k/r2d stale/traceback/no-live-process lines remain the known
+   while-waiting state (dead trainer + armed daemon polling), not new
+   failures. No FATAL line in any daemon log.
+5. **GPU fleet**: full cards 0-5 at 31-40 GB used, 95-100% util (external
+   tenants + q_fill dispatchers); GPU-6 seven 1g.5gb MIGs (too small for
+   ext40k); GPU-7 two 3g.20gb MIGs — s1 on one, the other contested by
+   co-tenants. Per the standing rule no manual gate was added; the armed
+   daemons take any qualifying gap on their own within their polls.
+6. **eval_decision/**: no new result.json — no arm has finished; the latest
+   artifacts remain plana_giga_s0_step20000 (09-29) and
+   stratified_mfe_cells.json (16:06). Nothing to record beyond this entry.
+
+Zero events: nothing restarted, nothing edited on disk beyond this entry,
+no arm finished. Repo was clean and synced at 555570e before this commit
+(docs only, no code change, so no pytest subset was triggered).
+Next ledger writer: take **14.86**.
