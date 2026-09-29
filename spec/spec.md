@@ -19,6 +19,18 @@
 > - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.80**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
 > - **当前目标**：种子方差（r2d_s1 / plana_s1 @20k）+ 收敛判定（ext40k 三点曲线）→ 预印本定稿（v3.14 后进入收尾：把两件事的数字落进 §4.3 与 Appendix A，随后冻结投稿版）。
 >
+> **交接状态（2026-09-30 02:45，第六轮交接更新）**：
+- **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB）。**注意 `/mnt/cunyuliu` 是 NFS 挂载**（`df -T` 实测 `10.179.129.209:/... nfs`）——跨进程锁的文件路径宜放本地 `/tmp`（经实测 NFS 上 flock 亦可序列化，见 `records/DECISION_TRAINING_LOG.md` §14.79–§14.80 的更正）。
+- **plan-a 种子方差臂在跑**：`plana_giga_s1`（seed 1，A+B 组合）step 8900/20000，unfrozen 18/33，正常收敛；一条 `watch_plan_a_s1.sh` 监护 + 训练完成自动终评。
+- **plan-b 种子方差臂（r2d_s1）历经四次 step-500 OOM，已诊断到两处真实缺陷并修复**：
+  1. **瞬时容量接受**——`wait_device` 只凭**单次瞬时读数**放行；冻结嵌入加载约需 10 分钟，期间邻居（节点上的 `q_fill` 派发器会立刻抢占任何新出现的余量）把余量吃光。已改为**两阶段确认**：选出最空卡后隔 90 秒复测，仍达阈值才放行。
+  2. **裕度太薄**——阈值曾被降到 31GB，而该臂自身峰值约 25GB，只留 ~6GB 给邻居；节点上的 `q_fill` 派发器会在任何余量出现时立刻抢占，故恒定阈值等同抛硬币。已恢复 **34GB**，并加**自适应升级**：每次尝试若「未推进步数即死」，阈值自动 +2GB（上限 38GB），不再重复同一个赌注。
+  - 附带更正：我曾据一次**无效测试**（当时并无第一实例存在）断定「NFS flock 失效」，已撤回（§14.80）——有效竞争测试显示 `flock -n` 对已持有的锁返回 rc=1，即 NFS 上锁**正常**。
+  - **不可用 `--head-chunk-size` 降显存**：`FlatDecisionHead.pair_scores_and_types` 在 `scorer='resnet2d'` 时**整体跳过列分块**（docstring 原文：BatchNorm over the full matrix is what makes chunking wrong there），故该臂仍需整卡。
+  - **自愈**：新增 `scripts/ensure_r2d_s1_daemon.sh` + `*/10` cron（R2D_S1_WATCHDOG）；守护曾在 09-29 22:20 被外部杀死且日志无 FATAL 行，故不再依赖单次 nohup 存活。
+- **教训入库**：① 锁测试必须含**活的竞争者**；② 基于 `pgrep -f <模式>` 的进程检查必须验证**模式不会匹配检查命令自身**（09-29 曾因此杀掉自己的 ssh 会话两次）。
+- **下一步**：任一整卡释放（v2_scratch@50k 或 plana_s1 收队）即自动起 r2d_s1；两者齐备后 draft v3.15 记录 (d)/(e) 的 2-seed 读数。
+>
 > **交接状态（2026-09-29 下午，第五轮交接更新）**：
 > - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/mnt/cunyuliu/rna-jepa`。
 > - **当前 headline（Plan-A 完成，§14.76–§14.77）**：`plana_giga_s0`（A+B = RiNALMo-giga 渐进解冻 + resnet2d scorer，20000 步）→ **TS0 micro F1 0.7268 / macro 0.7139**；OOD bpRNA-new micro **0.4302**。

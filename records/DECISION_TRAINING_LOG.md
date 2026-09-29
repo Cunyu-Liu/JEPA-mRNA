@@ -4760,3 +4760,50 @@ Arm state at this write: plana_giga_s1 training (step ~8.9k/20k); r2d_s1
 daemon + ext40k watcher armed and polling (all full cards 33-40GB used
 overnight); the ensure_r2d_s1_daemon.sh watchdog cron covers daemon death.
 Next ledger writer: take **14.83**.
+
+## 14.83 Seventh patrol (03:09): all three arms healthy, zero restarts; the pre-patch s1 trainer's s0-named snapshot stream confirmed and its DONE-time rename closure verified in code
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: training on MIG-10b9b777 (GPU-7), step 9175/20000,
+   18/33 blocks unfrozen, ~11.6 h uptime on pid 69636 (the 15:26:59 relaunch;
+   its two predecessors died at 15:11/15:19 on the pre-fix DEV pollution and
+   a slice OOM). v3 watcher (pid 2127796, restarted 02:39 on the fixed
+   script) alive. The pre-patch trainer is indeed still writing snapshots as
+   `ckpts/plana_giga_s0_step{2000,4000,6000,8000}.pt` (19:44-00:53, 2.6 GB
+   each) - this is the 14.79 collision playing out on the running process,
+   and it is contained end-to-end: the v3 watcher renames everything
+   `plana_giga_s0_step*.pt` newer than 2026-09-29 15:00 back to s1 names at
+   DONE (final + intermediates, verified by reading the script), while s0's
+   originals sit in `plana_giga_s0_snapshots_preserved/`. No action taken.
+2. **r2d_s1**: daemon (pid 2147894, 02:47) + inner subshell alive, polling
+   GPU-0..5 at NEED_GB 34 with two-phase confirmation, the adaptive bar and
+   `--gpu-reserve-gb 33`; largest current free is 11.0 GB (GPU-0), so it is
+   correctly holding rather than launching. No launch since 22:12 (the 4th
+   step-~500 OOM); auto-resume from resume.pt pending a qualifying card.
+   The `*/10` ensure_r2d_s1_daemon.sh watchdog cron is installed.
+3. **ext40k**: watcher (pid 2134269, 02:41, absolute path) alive at restart
+   0/40, polling its 8 candidates at NEED_GB 15; the closest is
+   MIG-6e59f9af with ~13.7 GB free (co-tenant holds 6.0 GB of the 20 GB
+   slice), correctly holding. `train_log.jsonl` is empty - the arm has never
+   advanced past its step-20000 resume point (all five overnight deaths
+   were the pre-fix DEV-pollution/CUDA-init failures already recorded in
+   14.80; the 02:41 watcher restarted on the fixed script, counter at 0).
+4. **Alerts**: the 10-min monitor writes on schedule; the ext40k/r2d
+   stale/traceback/no-live-process lines are the known while-waiting state
+   (dead trainer + armed daemon polling), not new failures. No FATAL line
+   in any daemon log.
+5. **GPU fleet**: full cards 0-5 at 29-39 GB used (external tenants +
+   q_fill dispatchers), GPU-6 carries seven 1g.5gb MIGs (partially used),
+   GPU-7 two 3g.20gb MIGs - s1 holds one at 15.6 GB including its 14 GB
+   reservation, the other has ~13.7 GB free. Per the standing rule the
+   armed daemons will grab any qualifying gap on their own; no manual gate
+   was added.
+6. The 02:45 sixth-round handover blocks in spec/spec.md, spec/tasks.md,
+   spec/checklist.md were found uncommitted; they are committed together
+   with this entry (docs only, no code change, so no pytest subset was
+   triggered).
+
+Zero events: nothing restarted, nothing edited on disk, no arm finished.
+Next ledger writer: take **14.84**.
