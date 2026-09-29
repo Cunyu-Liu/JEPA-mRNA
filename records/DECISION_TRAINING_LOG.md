@@ -4528,8 +4528,7 @@ triples: n mismatch (129 vs 126) AND centroid mismatch (0.4377 vs 0.4345). After
 the fix both cells verify exactly:
 
 - RFAM 200-400: n=126 ok, centroid 0.4345 reproduced to 4dp -> mfe 0.3966
-- RFAM >400:    n=15 ok,  centroid 0.4010 reproduced to 4dp -> mfe 0.3979? no:
-                mfe 0.3679.
+- RFAM >400:    n=15 ok,  centroid 0.4010 reproduced to 4dp -> mfe 0.3679.
 
 Both keep the grid's pattern (mfe trails centroid on long RFAM). Draft updated
 (grid cells filled, 'not run' sentence replaced by the measured+checked
