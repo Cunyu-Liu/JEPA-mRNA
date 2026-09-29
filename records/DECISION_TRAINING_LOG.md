@@ -4669,3 +4669,41 @@ that truncated a kill loop again today (the echo'd path inside the command match
 makes chunking wrong there". So `--head-chunk-size` cannot shrink this arm's
 footprint, and a 3g.20gb MIG slice (20 GB) remains too small. The arm needs a real
 full card; the daemon now waits for one with a two-sample confirmation.
+
+## 14.80 Overnight round: wait_device DEV-pollution bug (ext40k burned 5 restarts); GPU reservation flag for the memory race; all daemons restarted on fixed scripts
+
+1. The "No CUDA GPUs are available" failure cluster was NOT MIG invalidity.
+   `DEV=$(wait_device)` captures ALL stdout of the function -- including the
+   "no device yet (poll N)" progress lines -- so any relaunch that had to
+   poll got a multi-line garbage CUDA_VISIBLE_DEVICES and the trainer died
+   at torch.cuda.init. v1 had the same latent bug (its successful plana_s1
+   relaunches were first-poll hits that produced a clean DEV); the v3
+   watchers inherited it; ext40k burned 5 of 40 restarts on it overnight
+   (23:29-00:12, all "No CUDA GPUs" tracebacks). Fix: poll messages go to
+   stderr (>&2), only the device name is captured on stdout. The r2d daemon
+   never had the bug (its wait_device is silent) -- its two overnight
+   failures (19:47, 22:12) were genuine memory races.
+
+2. GPU reservation (--gpu-reserve-gb, default 0.0 = off): r2d_s1 lost the
+   memory race three times overnight (19:47, 22:12; plus 16:35 yesterday)
+   -- tenants claim the card during our trainer's CPU-bound data-loading
+   phase, before it holds any GPU memory. Both trainers now accept
+   --gpu-reserve-gb N: at process start they allocate N GB (capped at
+   free-0.5GB) on cuda, then free it WITHOUT empty_cache once the model is
+   on device -- the caching allocator keeps the segments and the training
+   allocations grow into them. A failed reservation fails fast (~2 min)
+   instead of ~12 min into training. Flags wired: r2d_s1 daemon 33GB;
+   plana-class watchers/launcher 14GB (3g.20gb MIG slice, 14.1GB peak).
+
+3. All three daemons restarted on the fixed scripts (kill tree -> wait for
+   the flock to drain -> restart). The ext40k watcher restart initially
+   failed on a relative path -- `cd X && A & B & C` binds the cd only to the
+   FIRST background job, so jobs B/C ran from the home dir; rerun with
+   absolute paths. plana_s1 was untouched throughout (step ~8875/20000,
+   18/33 blocks unfrozen, v3 watcher re-armed).
+
+4. Tests: targeted decision/resume subset 6/6 pass after the changes (the
+   flag is default-off); the full suite ran 338/338 on this tree the
+   previous round. Cluster overnight: all full cards stayed 33-40GB used
+   at 93-100% util -- the armed daemons with reservations are the correct
+   posture for this level of contention.

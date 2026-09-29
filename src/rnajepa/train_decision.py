@@ -1073,6 +1073,38 @@ def _check_device_request(device: str, *, allow_cpu: bool = False) -> str:
     return requested
 
 
+_GPU_RESERVE_TENSOR = None
+
+
+def _gpu_reserve(gb: float) -> None:
+    """Hold GPU memory from process start so co-tenants cannot claim the card
+    during the (CPU-bound) data-loading phase.  Capped at free-0.5GB.  Freed
+    *without* empty_cache: the caching allocator keeps the segments and the
+    training allocations grow into them (shared-cluster race fix, 14.80)."""
+    global _GPU_RESERVE_TENSOR
+    if gb <= 0:
+        return
+    free, _total = torch.cuda.mem_get_info()
+    cap = (free - (1 << 29)) / (1 << 30)  # free minus 0.5GB
+    take = min(gb, cap)
+    if take <= 0:
+        raise RuntimeError("no free cuda memory to reserve "
+                           f"(free={free/(1<<30):.1f}GB)")
+    n = int(take * (1 << 30)) // 4
+    _GPU_RESERVE_TENSOR = torch.empty(n, dtype=torch.float32, device="cuda")
+    print(f"[train] reserved {take:.1f}GB on cuda for the data-loading window",
+          flush=True)
+
+
+def _gpu_reserve_release() -> None:
+    global _GPU_RESERVE_TENSOR
+    if _GPU_RESERVE_TENSOR is not None:
+        gb = _GPU_RESERVE_TENSOR.numel() * 4 / (1 << 30)
+        _GPU_RESERVE_TENSOR = None
+        print(f"[train] released {gb:.1f}GB reservation into the allocator pool",
+              flush=True)
+
+
 def _assert_device(model, device: str, *, allow_cpu: bool = False) -> str:
     """Validate the request, then confirm the parameters really landed there.
 
@@ -1404,6 +1436,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
         print(f"[train] Turner prior initialised to {config.prior_init:g} "
               f"(learnable from here)", flush=True)
     resolved_device = _assert_device(model, config.device, allow_cpu=config.allow_cpu)
+    _gpu_reserve_release()
     n_params = sum(p.numel() for p in model.parameters())
     n_learnable = sum(p.numel() for p in model.parameters() if p.requires_grad)
     model.train()
@@ -1693,6 +1726,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
                    help="hidden width of the Turner-residual MLP (see --d-z)")
     p.add_argument("--encoder-size", default="150M", choices=["35M", "150M", "650M"])
     p.add_argument("--device", default="cpu")
+    p.add_argument("--gpu-reserve-gb", type=float, default=0.0,
+                   help="hold this much GPU memory from process start so "
+                        "co-tenants cannot claim the card during the CPU-bound "
+                        "data-loading phase; freed into the allocator pool once "
+                        "the model is on device (shared-cluster race fix)")
     p.add_argument("--embedding-dir", default="",
                    help="directory of frozen embeddings; trains the head only")
     p.add_argument("--head-chunk-size", type=int, default=64,
@@ -1760,6 +1798,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print("FATAL: --out is required unless --dry-run", file=sys.stderr)
         return 2
     config = _config_from_args(args)
+    if args.gpu_reserve_gb > 0 and "cuda" in str(args.device):
+        try:
+            _gpu_reserve(args.gpu_reserve_gb)
+        except RuntimeError as exc:
+            if "out of memory" in str(exc).lower() or "no free cuda" in str(exc):
+                print(f"FATAL: --gpu-reserve-gb {args.gpu_reserve_gb:g} failed "
+                      f"(card fuller than at launch); backing off for a retry",
+                      file=sys.stderr)
+                return 1
+            raise
     try:
         if args.synthetic:
             dataset = make_synthetic_dataset(args.synthetic, args.length, seed=args.seed,

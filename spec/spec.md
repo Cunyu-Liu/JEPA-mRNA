@@ -16,7 +16,7 @@
 > - **在跑/在等的臂（一训练 + 三守护）**：`plana_giga_s1`（MIG 切片在训，两次 OOM 重启后稳定，~step 500/20000）；`rinalmo_r2d_b4_s1`（14:39 起跑→OOM→16:04 重启→resume ConfigError→**bug 已修**，守护在等 ≥31GB 空闲整卡，空位即起，自动从 step 500 续训）；`plana_giga_s0_ext40k`（**新增收敛延长臂**，见下）。
 > - **新增决策：plana_giga_s0_ext40k 收敛延长臂**。理由：① ff 家族 20k→40k 曾 +0.031 TS0（§14.49），plana 的全解冻阶段只有 5,600 步（解冻在 14,400 步完成），0.7268@20k 是否收敛是论文必须回答的问题；② 用户规则"模型必须训练到收敛才能停止，不要约束训练步数"。协议：从 s0 的 step-20000 resume.pt 续训到 40000 步，**唯一变量=训练时长**（同 seed/LR/数据流，stream_state 从断点恢复）；完成后 watcher 自动评 step-30000 与 step-40000 两个点，与 s0@20000 组成**三点收敛曲线**。若 40k 仍显著上升，headline 升级为 @40k 行并报告完整曲线；若走平，则"20k 已收敛"有了直接证据。
 > - **GPU 现状（16:40 实测）**：全部整卡 33–40GB 占用（外部用户 + rna-ft-eval 的 q_fill 守护在填），无 ≥16GB 空闲整卡；r2d_s1（31GB 门限）与 ext40k（16GB 门限）两个启动守护以 120s 间隔持续轮询候选设备，空位出现即抢占。plana_s1 在 3g.20gb MIG 切片上训练（峰值预计 14.1GB）。
-> - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.79**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
+> - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.80**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
 > - **当前目标**：种子方差（r2d_s1 / plana_s1 @20k）+ 收敛判定（ext40k 三点曲线）→ 预印本定稿（v3.14 后进入收尾：把两件事的数字落进 §4.3 与 Appendix A，随后冻结投稿版）。
 >
 > **交接状态（2026-09-29 下午，第五轮交接更新）**：

@@ -96,7 +96,7 @@ CUDA_VISIBLE_DEVICES="$DEV" PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
   --batch-size 4 \
   --head-lr 1e-4 --backbone-lr 1e-5 \
   --warmup-head-steps 1600 --unfreeze-every 800 --unfreeze-per-step 2 \
-  --save-every 500 --snapshot-every 2000 --seed 0 \
+  --save-every 500 --snapshot-every 2000 --seed 0 --gpu-reserve-gb 14 \
   9>&- > "$LOG" 2>&1 < /dev/null &
 
 PID=$!

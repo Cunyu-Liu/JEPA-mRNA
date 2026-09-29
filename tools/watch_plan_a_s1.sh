@@ -73,7 +73,7 @@ wait_device() {
     if [ "$waited" -ge $((MAX_WAIT_HOURS * 3600 / POLL)) ]; then
       return 1
     fi
-    echo "[watch_plan_a_s1] no device yet (poll $waited) $(date '+%T')"
+    echo "[watch_plan_a_s1] no device yet (poll $waited) $(date '+%T')" >&2
     sleep "$POLL"
     waited=$((waited + 1))
   done
@@ -110,7 +110,7 @@ while true; do
       --steps 20000 --batch-size 4 \
       --head-lr 1e-4 --backbone-lr 1e-5 \
       --warmup-head-steps 1600 --unfreeze-every 800 --unfreeze-per-step 2 \
-      --save-every 500 --snapshot-every 2000 --seed 1 \
+      --save-every 500 --snapshot-every 2000 --seed 1 --gpu-reserve-gb 14 \
       9>&- >> "$LOG" 2>&1 < /dev/null &
     NEW_PID=$!
     echo "$NEW_PID" > "$PID_FILE"

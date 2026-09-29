@@ -150,12 +150,38 @@ def main():
     ap.add_argument("--grad-clip", type=float, default=1.0)
     ap.add_argument("--zchunk", type=int, default=64, help="column width of the "
                     "checkpointed z construction (numerically exact; see docstring)")
+    ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
+                    help="hold this much GPU memory from process start so "
+                         "co-tenants cannot claim the card during the CPU-bound "
+                         "data-loading phase; freed into the allocator pool "
+                         "once the model is on device (shared-cluster race fix)")
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     device = "cuda"
+
+    _reserve = None
+    if args.gpu_reserve_gb > 0:
+        try:
+            free, _total = torch.cuda.mem_get_info()
+            cap = (free - (1 << 29)) / (1 << 30)  # free minus 0.5GB
+            take = min(args.gpu_reserve_gb, cap)
+            if take <= 0:
+                raise RuntimeError("no free cuda memory to reserve "
+                                   f"(free={free/(1<<30):.1f}GB)")
+            n = int(take * (1 << 30)) // 4
+            _reserve = torch.empty(n, dtype=torch.float32, device=device)
+            print(f"[plan-a] reserved {take:.1f}GB on {device} for the "
+                  f"data-loading window", flush=True)
+        except RuntimeError as exc:
+            if "out of memory" not in str(exc).lower() and "no free cuda" not in str(exc):
+                raise
+            print(f"[plan-a] FATAL: gpu reservation of {args.gpu_reserve_gb:g}GB "
+                  f"failed (card fuller than at launch); backing off",
+                  file=sys.stderr)
+            raise SystemExit(1)
 
     records = load_records(args.data)
     print(f"[plan-a] {len(records)} sequences from {args.data}", flush=True)
@@ -177,6 +203,11 @@ def main():
                             scorer="resnet2d", chunk_size=0)
     encoder = encoder.to(device)
     head = head.to(device)
+    if _reserve is not None:
+        _rgb = _reserve.numel() * 4 / (1 << 30)
+        _reserve = None  # freed into the caching allocator pool, not to the OS
+        print(f"[plan-a] released {_rgb:.1f}GB reservation into the allocator "
+              f"pool", flush=True)
 
     # dropout-free train() mode: matches the control's deterministic (cached)
     # features while keeping HF gradient checkpointing engaged.
