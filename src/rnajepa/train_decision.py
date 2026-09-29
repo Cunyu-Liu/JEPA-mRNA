@@ -1443,9 +1443,23 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
             }
             print(f"[train] resume: defaulted {sorted(missing)} "
                   f"(added after this checkpoint)", flush=True)
+        # r2d-era resnet2d scorer carries persistent BatchNorm buffers: they
+        # appear in state_dict but hold no optimizer slot, and the one-to-one
+        # count assertion in _pad_optimizer_groups would reject the resume
+        # (58 state_dict entries vs 34 optimizer slots).  Buffers of the
+        # *current* model are dropped from the key list; filtering preserves
+        # the relative order of the parameter keys (state_dict and
+        # named_parameters both follow module registration order), so the
+        # name->slot index stays correct.  Keys that are neither current
+        # parameters nor current buffers are kept, so a genuinely removed
+        # parameter still fails the removed-guard below.
+        _cur_buf = {n for n, _ in model.named_buffers()}
+        _cur_par = {n for n, _ in model.named_parameters()}
+        _old_keys = [k for k in state["model"].keys()
+                     if k not in _cur_buf or k in _cur_par]
         saved_opt = _pad_optimizer_groups(
             state["optimizer"], optimizer,
-            old_state_keys=list(state["model"].keys()),
+            old_state_keys=_old_keys,
             current_names=[n for n, p in model.named_parameters() if p.requires_grad],
             defaultable=sorted(defaultable))
         optimizer.load_state_dict(saved_opt)

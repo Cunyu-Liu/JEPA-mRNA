@@ -4535,3 +4535,99 @@ Both keep the grid's pattern (mfe trails centroid on long RFAM). Draft updated
 statement, Appendix C item 5 struck through on the mfe clause, Appendix A
 artifact row added); checker 88 -> 90 assertions, 90/90 PASS. Artifact:
 eval_decision/stratified_mfe_cells.json.
+
+## 14.78 Sixth-round handover: four engineering defects found and fixed while standing up the s1 arms; ext40k convergence arm queued
+
+Context. The 14.77 follow-up queued two seed-variance arms (r2d_s1, plana_s1)
+under the fill-every-idle-GPU directive. Standing them up surfaced four latent
+defects, all fixed at the code level this round, plus one new arm decision.
+
+1. Snapshot-name collision (severe). tools/train_plan_a.py hardcoded its
+   snapshot prefix to plana_giga_s0_step{N}.pt, so the running plana_giga_s1
+   would overwrite the s0 provenance snapshots one by one from step 2000 --
+   and the s1 watcher's final check expects plana_giga_s1_step20000.pt, which
+   the old code never writes (it would have FATALed after training without
+   running the eval). s0's ten snapshots (step 2000-20000, 25.5 GB) were moved
+   to ckpts/plana_giga_s0_snapshots_preserved/ minutes before the collision
+   window opened; the trainer now derives the prefix from --out's basename,
+   and the s1 watcher (v3) renames any old-code s0-named snapshots written
+   after 15:00 back to s1 names at DONE.
+
+2. Resume rejects buffer-bearing models (severe). The r2d_s1 relaunch died
+   with ConfigError "state_dict has 58 entries but its optimizer has 34
+   slots": resnet2d's BatchNorm running stats are persistent buffers --
+   present in state_dict, absent from the optimizer -- and
+   _pad_optimizer_groups asserts one-to-one. r2d_s0 never needed a resume, so
+   the path had never been exercised; s1 is the first OOM->resume r2d arm.
+   Fix at the call site: drop keys that are buffers of the *current* model
+   from old_state_keys (filtering preserves the relative order of parameter
+   keys, since state_dict and named_parameters both follow module registration
+   order; keys that are neither current params nor current buffers are kept,
+   so a genuinely removed parameter still fails the removed-guard). Verified
+   with a synthetic BatchNorm model (9 entries -> 6 filtered == 6 slots,
+   optimizer reloads) before the daemon's next relaunch could hit it.
+
+3. Watcher lock fd leak (moderate). The v1 watcher's `exec 9>lockfile` fd is
+   inherited by the very trainer it launches (setsid nohup ... &), so the lock
+   is held for the trainer's whole lifetime and any replacement watcher
+   silently exits via `flock -n || exit 0` -- which is exactly what killed the
+   first v2 deployment (zero log output; diagnosed via fuser showing the
+   trainer pid holding the lock). v3 uses a fresh lockfile and closes fd 9 in
+   relaunch commands (9>&-).
+
+4. Terminal status (moderate; 14.77 lesson closed in code). train_plan_a.py
+   now writes status=running at start and status=completed + steps_completed
+   at DONE, so the 10-min monitor no longer needs manual run_meta surgery on
+   directly-launched runs.
+
+New arm: plana_giga_s0_ext40k. The convergence question for the 0.7268
+headline is open -- the ff family gained +0.031 TS0 from 20k->40k (14.49),
+and plana's fully-unfrozen phase only had 5,600 of its 20,000 steps. Per the
+standing rule (train to convergence, do not cap steps), the ext arm continues
+s0 from its step-20000 resume.pt to 40000 steps with training duration as the
+only variable (same seed/LRs/data stream; stream_state resumes from the
+checkpoint). Launcher waits for a >=16GB device (GPU-5 had 18.6GB at decision
+time but was grabbed by other tenants before the 7.3GB resume copy finished;
+all full cards are currently 33-40GB used). The watcher will evaluate BOTH
+step-30000 and step-40000 checkpoints after DONE, giving a 3-point duration
+curve with s0@20000. If 40k still rises, the draft headline upgrades to the
+@40k row with the full curve; if flat, "converged at 20k" is directly
+evidenced.
+
+Arm status at close of round: plana_giga_s1 training on the MIG slice (2 OOM
+restarts, now stable, ~step 500/20000); r2d_s1 daemon polling for a >=31GB
+card with the resume bug fixed (auto-resumes from step 500); ext40k launcher
+polling for >=16GB. GPU fleet saturated by external tenants + the user's own
+rna-ft-eval q_fill daemons; the three armed daemons grab any qualifying gap
+within their 120s polls. plana_s1's RSS measured at 3.4GB (the in-loop
+trainer is RAM-light; the >60GB host-RAM gate was calibrated for ff-era
+cached-embedding arms and does not bind here).
+
+Docs: spec.md / tasks.md / checklist.md sixth-round blocks; this entry.
+
+### 14.78a Addendum (17:15): contention escalation, restart budgets, test suite
+
+Both newly-launched arms lost the memory race within minutes: r2d_s1
+(relaunched by the daemon on GPU-2 at 16:35 with >=31GB free) OOMed during
+training warm-up after tenants claimed ~26GB during its data-loading phase;
+ext40k (launcher fired on MIG-6e59f9af at ~16:41 with >=16GB free) OOMed the
+same way (tenants 331837/1434869 claimed ~8GB during start-up). The cluster
+is in a period of extreme contention: all full cards 33-40GB used, MIG slices
+contested, and the user-owned rna-ft-eval q_fill daemons plus external tenants
+claim any free gap within minutes. Structural note: our trainers only hold GPU
+memory after the ~6-10 min data-loading phase, so a launch that wins the
+free-memory check can still lose the card before training starts.
+
+Mitigations applied: MAX_RESTARTS raised 8 -> 40 for both the r2d_s1 daemon
+(scripts/launch_r2d_s1.sh, daemon restarted cleanly after killing the old
+instance; its orphaned wait_device subshell released the flock when it
+echoed into a dead pipe) and the ext40k watcher (tools/
+watch_plan_a_ext40k.sh, started 17:04 -- the launcher alone has no
+keep-alive loop, the watcher owns it now). The r2d daemon launch command also
+gained 9>&- (fd-leak fix, same class as the watcher bug). plana_s1 unaffected
+(training on its MIG slice, step ~675/20000, v3 watcher guarding).
+
+Verification: full pytest suite on the patched tree -- 338 passed, 0 failed
+(editflow env; suite baseline was 317 at the 5th round, 21 tests added since).
+Docs sixth-round blocks inserted in spec/spec.md, spec/tasks.md,
+spec/checklist.md; this ledger entry closes the round.

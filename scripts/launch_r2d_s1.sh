@@ -25,7 +25,11 @@ STEPS=20000
 NEED_GB=31
 POLL=120
 MAX_WAIT_HOURS=120
-MAX_RESTARTS=8
+# 40 restarts (was 8): the cluster is in a period of extreme contention --
+# tenants and the user's own rna-ft-eval q_fill daemons claim any free card
+# within minutes, often during our trainer's data-loading phase before it
+# holds GPU memory. Failed launches are expected to repeat for hours.
+MAX_RESTARTS=40
 cd $REPO || exit 1
 
 # idempotency: exit only when there is truly nothing left to do (both evals
@@ -58,7 +62,7 @@ wait_device() {
 
 launch_train() {
   local dev=$1
-  CUDA_VISIBLE_DEVICES=$dev PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True     setsid nohup nice -n 5 "$PY" -m rnajepa.train_decision     --arm $TAG --out $OUT     --data $DATA --steps $STEPS --batch-size 4 --lr 1e-4     --encoder-size 35M --seed 1 --device cuda     --log-every 25 --save-every 500     --teacher-dir "$TEACHER"     --embedding-dir "$EMB" --embedding-d-model 1280     --head-chunk-size 0 --scorer resnet2d     >> "$LOG" 2>&1 < /dev/null &
+  CUDA_VISIBLE_DEVICES=$dev PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True     setsid nohup nice -n 5 "$PY" -m rnajepa.train_decision     --arm $TAG --out $OUT     --data $DATA --steps $STEPS --batch-size 4 --lr 1e-4     --encoder-size 35M --seed 1 --device cuda     --log-every 25 --save-every 500     --teacher-dir "$TEACHER"     --embedding-dir "$EMB" --embedding-d-model 1280     --head-chunk-size 0 --scorer resnet2d     9>&- >> "$LOG" 2>&1 < /dev/null &
   echo $! > $OUT.launch_pid
   echo "$dev" > $OUT.launch_dev
   echo "[r2d_s1] launched pid=$! on $dev $(date '+%F %T')"

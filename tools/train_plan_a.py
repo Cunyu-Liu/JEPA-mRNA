@@ -220,7 +220,7 @@ def main():
     start_step = 0
 
     meta = {
-        "arm": "plana_giga_gradual_unfreeze_s0",
+        "arm": os.path.basename(args.out.rstrip("/")),
         "control_arm": "rinalmo_r2d_b4_s0",
         "control_results": {"ts0_micro_f1": 0.6629, "bprna_new_micro_f1": 0.5010},
         "backbone": "rinalmo-giga (pretrained safetensors, in-loop)",
@@ -246,6 +246,7 @@ def main():
                      "n_blocks": n_blocks},
         "seed": args.seed, "backbone_report": report,
     }
+    meta["status"] = "running"
     with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
         json.dump(meta, fh, indent=1)
 
@@ -440,8 +441,12 @@ def main():
                                   "head": head.state_dict()},
                         "meta": meta},
                        os.path.join(CKPT_DIR,
-                                    f"plana_giga_s0_step{step}.pt"))
+                                    f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt"))
 
+    meta["status"] = "completed"
+    meta["steps_completed"] = int(args.steps)
+    with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
+        json.dump(meta, fh, indent=1)
     print("[plan-a] DONE", flush=True)
 
 
