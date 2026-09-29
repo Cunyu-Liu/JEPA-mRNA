@@ -36,6 +36,7 @@ OUT=$D/runs/$TAG
 LOG=$D/runs/$TAG.log
 STEPS=20000
 NEED_GB=${R2D_NEED_GB:-34}
+NEED_GB_MAX=${R2D_NEED_GB_MAX:-38}
 POLL=120
 CONFIRM_GAP=${R2D_CONFIRM_GAP:-90}
 MAX_WAIT_HOURS=240
@@ -101,7 +102,7 @@ launch_train() {
     >> "$LOG" 2>&1 < /dev/null &
   echo $! > "$OUT.launch_pid"
   echo "$dev" > "$OUT.launch_dev"
-  echo "[r2d_s1] launched pid=$! on $dev $(date '+%F %T') (need=${NEED_GB}GB confirmed twice)"
+  echo "[r2d_s1] launched pid=$! on $dev $(date '+%F %T') (bar=${NEED_GB}GB, confirmed twice)"
 }
 
 restarts=0
@@ -111,9 +112,24 @@ while [ "$(last_step)" -lt "$STEPS" ]; do
   if [ -z "$pid" ] || ! kill -0 "$pid" 2>/dev/null; then
     if [ "$restarts" -ge "$MAX_RESTARTS" ]; then echo "[r2d_s1] FATAL: exceeded $MAX_RESTARTS restarts"; exit 1; fi
     dev=$(wait_device) || { echo "[r2d_s1] no device within ${MAX_WAIT_HOURS}h"; exit 1; }
+    before=$(last_step)
     launch_train "$dev"
     restarts=$((restarts+1))
-    sleep 90
+    # Adaptive escalation. Four attempts on 2026-09-29 all died at step ~500 on a
+    # card that had cleared the bar when sampled: the node's q_fill dispatchers
+    # launch into any headroom the moment it appears, so a constant threshold is
+    # a coin flip. If an attempt dies without advancing the step counter - i.e.
+    # it never really got going - demand more room next time instead of
+    # repeating the same bet.
+    sleep 300
+    if [ "$(last_step)" -le "$before" ]; then
+      if [ "$NEED_GB" -lt "$NEED_GB_MAX" ]; then
+        NEED_GB=$((NEED_GB + 2))
+        echo "[r2d_s1] died at step $(last_step) with no progress past $before; raising the admission bar to ${NEED_GB}GB"
+      else
+        echo "[r2d_s1] died early again but the bar is already ${NEED_GB}GB (max); continuing"
+      fi
+    fi
     continue
   fi
   sleep 120
