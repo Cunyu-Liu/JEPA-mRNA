@@ -4707,3 +4707,32 @@ full card; the daemon now waits for one with a two-sample confirmation.
    previous round. Cluster overnight: all full cards stayed 33-40GB used
    at 93-100% util -- the armed daemons with reservations are the correct
    posture for this level of contention.
+
+## 14.80 Correction to 14.79: cause 3 was a bad test, not a broken lock
+
+14.79 claimed "flock did not serialise because /mnt/cunyuliu is NFS". That claim is
+WITHDRAWN. The test behind it was invalid: I ran the daemon script while no other
+instance was alive, so it legitimately acquired the lock and kept running (my
+`timeout 20` then reported rc=124). With no contender there is nothing to serialise
+against, and the run proves nothing about the lock.
+
+The valid test - hold the lock in a background process, then try to take it:
+
+    ( flock -n $LOCK_DIR/probe2.lock -c 'sleep 8' & ) ; sleep 1
+    flock -n $LOCK_DIR/probe2.lock -c 'echo CONTENDED-acquired'   # -> rc=1
+
+rc=1 means the second attempt was refused, i.e. **flock does serialise correctly on
+this NFS mount** - so the daemon's original /mnt lock was working, and the four
+step-500 OOMs are explained by causes 1 and 2 alone (transient single-sample capacity
+acceptance, and a 31 GiB threshold with only ~6 GiB of co-tenant slack against a
+~25 GiB peak on a node where the `q_fill` dispatchers launch into any headroom the
+moment it appears).
+
+The lock paths were nevertheless moved to local /tmp in the same commit. That stays -
+it is harmless belt-and-braces and keeps the lock off a shared mount - but it is not
+a fix for a defect, and 14.79's framing of it as cause 3 is wrong.
+
+Lesson, recorded because this is the second time today an invalid or self-matching
+probe produced a confident wrong conclusion: a lock test must include a live
+contender, and a pattern-based process check must be verified not to match the
+checking command itself.
