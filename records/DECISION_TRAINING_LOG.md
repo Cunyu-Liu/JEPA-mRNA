@@ -5187,3 +5187,60 @@ daemons + trainers, tail of every daemon log and alerts_decision.log).
 Zero events: nothing restarted, nothing edited on disk beyond this entry,
 no arm finished. Docs-only commit (no code change; the pytest gate does not
 apply). Next ledger writer: take **14.92**.
+
+## 14.92 Sixteenth patrol (07:38): zero events — s1 at 79% (~1.65 s/step, ETA ~09:30-09:45); ext40k 62.6% of the 40k leg (peak back within sizing, ETA ~14:25-15:55); r2d daemon holding (largest full-card gap 20.0 GB on GPU-4, below the 34 GB bar); both trainers' MIG placement verified
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: trainer pid 69636 alive ~16.2 h on MIG-10b9b777 (GPU-7),
+   step 15925/20000 (79.6%), 33/33 blocks unfrozen, peak 13.3-14.5 GB,
+   resume.pt fresh (07:25, save-every-500), train_log.jsonl advancing. 1200
+   steps since the 07:04 patrol (14725) in ~33 min -> ~1.65 s/step -> ETA
+   ~09:30-09:45. v3 watcher 2467761 alive (the 04:47 reflight instance),
+   silent since adopting the live trainer - correct. The pre-patch s0-named
+   snapshot stream continues in ckpts/ (step2000-14000, seven files, 2.6 GB
+   each) and remains contained by the watcher's DONE-time rename (14.83);
+   s0's ten originals sit untouched in plana_giga_s0_snapshots_preserved/.
+   No monitor alerts for this arm. On DONE the watcher runs the eval
+   automatically -> eval_decision/.
+2. **plana_giga_s0_ext40k**: trainer pid 2513755 (05:03:33 launch on
+   MIG-6e59f9af, GPU-7) at step 25050/40000 (62.6% of the 40k leg), 33/33
+   unfrozen, peak 11.6-14.2 GB - within the 14.86 sizing basis. resume.pt
+   fresh (07:30). 1125 steps since 07:04 (23925) in ~31 min -> ~1.65 s/step
+   -> ETA ~14:25 at this rate, ~15:55 at the slower historical stretches.
+   Watcher 2467763 alive, restart counter 0/40, silent since the 05:03
+   relaunch - correct. The 06:40 "CUDA OOM in log tail" alert cleared at
+   06:50 and stayed clear through 07:30 - the 14.91 residue closure holds.
+3. **rinalmo_r2d_b4_s1**: daemon 2147894 + inner subshell 2147922 alive
+   (since 02:47); sleep-120 poll child fresh (07:34:38). Two transient
+   script-name processes at 07:34 (3021167/3022850) verified as the normal
+   poll cycle's command-substitution forks - already exited by patrol; no
+   confirmation window was open. NEED_GB 34 (two-phase, CONFIRM_GAP 90 s) +
+   --gpu-reserve-gb 33; resume.pt (step 500, 9.6 MB) in place; the */10
+   ensure_r2d_s1_daemon.sh watchdog cron is installed. Full cards 0-5 free:
+   6.6 / 11.0 / 1.5 / 8.3 / 20.0 / 0.45 GB - GPU-4's 20.0 GB is the largest
+   full-card gap, still below the 34 GB bar; correctly holding. No launch
+   since the 22:12 OOM.
+4. **MIG placement verified this round**: both trainers confirmed on GPU-7's
+   two separate 3g.20gb slices (compute-apps reports the parent-GPU UUID for
+   MIG processes: s1 19.1 GB, ext40k 15.3 GB). The "Process 69636 has 17.25
+   GiB" line inside ext40k's 04:44 OOM message is sibling-slice accounting
+   noise in the OOM process listing, not shared memory - MIG isolation holds.
+   GPU-6 shows 31 GB aggregate free but it is fragmented across seven 1g.5gb
+   slices - no single device qualifies for any arm; correctly ignored by the
+   armed daemons.
+5. **Alerts / eval**: monitor cron on schedule (latest 07:30:29); the r2d
+   stale (552 min) / traceback / no-live-process triplet is the known
+   while-waiting state (14.79a); FATAL count unchanged (the single known
+   22:12 OOM in r2d's run log, 0 in every other daemon/run log).
+   eval_decision/: no new result.json - the latest artifact remains
+   plana_giga_s0_step20000 (recorded in 14.77). Nothing finished. GPU
+   training confirmed on both live arms (peak_gb 13.3-14.5 / 11.6-14.2 in
+   the progress lines - CUDA active, no CPU fallback). Per the standing rule
+   no manual gate was added; the armed daemons take any qualifying gap on
+   their own within their polls.
+
+Zero events: nothing restarted, nothing edited on disk beyond this entry,
+no arm finished. Docs-only commit (no code change; the pytest gate does not
+apply). Next ledger writer: take **14.93**.
