@@ -6,6 +6,10 @@
 # silent death (train_decision auto-resumes from resume.pt). On DONE: auto-eval
 # TS0 + bpRNA-new with the watch7 protocol (w=-1, VL0 Platt, exact decode).
 set -u
+
+# single-instance guard: duplicate invocations must exit
+exec 9>/mnt/cunyuliu/rna-jepa/runs/.launch_r2d_s1.lock
+flock -n 9 || exit 0
 PY=/home/cunyuliu/miniconda3/envs/env_placeholder/bin/python
 PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
 export PYTHONPATH=/home/cunyuliu/rna-jepa/src
@@ -24,9 +28,13 @@ MAX_WAIT_HOURS=120
 MAX_RESTARTS=8
 cd $REPO || exit 1
 
-# idempotency
-if pgrep -f "rnajepa.train_decision.*--out $OUT" > /dev/null; then echo "SKIP: already running"; exit 0; fi
+# idempotency: exit only when there is truly nothing left to do (both evals
+# done). A live trainer must NOT cause an exit - the daemon's job is to watch
+# it (keep-alive + final eval); the watch loop adopts it via the pid file.
 if [ -f $D/eval_decision/ow_${TAG}_step20000_bprna_ts0/result.json ] && [ -f $D/eval_decision/ow_${TAG}_step20000_bprna_new/result.json ]; then echo "SKIP: already evaluated"; exit 0; fi
+if ! pgrep -f "rnajepa.train_decision.*--out $OUT" > /dev/null && [ ! -f $OUT/resume.pt ]; then
+  :  # fresh start - the watch loop will relaunch from scratch
+fi
 
 free_gb() { CUDA_VISIBLE_DEVICES="$1" "$PY" -c "import torch; f,_=torch.cuda.mem_get_info(); print(f/1e9)" 2>/dev/null; }
 last_step() { tail -1 $OUT/train_log.jsonl 2>/dev/null | python3 -c 'import json,sys

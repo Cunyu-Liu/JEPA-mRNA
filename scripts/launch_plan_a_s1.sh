@@ -14,6 +14,11 @@
 # (16GB threshold), then launches under setsid nohup and detaches.
 set -u
 
+# single-instance guard: duplicate invocations (e.g. replayed ssh
+# commands) must exit instead of spawning a second daemon
+exec 9>/mnt/cunyuliu/rna-jepa/runs/.launch_plan_a_s1.lock
+flock -n 9 || exit 0
+
 PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
 export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools
 D=/mnt/cunyuliu/rna-jepa
@@ -65,6 +70,10 @@ while true; do
   waited=$((waited + 1))
 done
 
+if pgrep -f "train_plan_a.py.*--out $OUT" > /dev/null; then
+  echo "[launch_plan_a_s1] trainer already alive via pgrep (watcher won the race); exiting"
+  exit 0
+fi
 echo "[launch_plan_a_s1] acquired $DEV (free ${fb}GB); launching"
 
 cd "$REPO" || exit 1

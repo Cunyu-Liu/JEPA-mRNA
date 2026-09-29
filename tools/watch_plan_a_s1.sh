@@ -9,6 +9,11 @@
 # MAX_RESTARTS times. On DONE it runs the final evaluation.
 set -u
 
+# single-instance guard: duplicate invocations (e.g. replayed ssh
+# commands) must exit instead of spawning a second daemon
+exec 9>/mnt/cunyuliu/rna-jepa/runs/.watch_plan_a_s1.lock
+flock -n 9 || exit 0
+
 PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
 export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools:/home/cunyuliu/rna-jepa/eval
 D=/mnt/cunyuliu/rna-jepa
@@ -27,7 +32,7 @@ CANDIDATES=(
 NEED_GB=15
 POLL=120
 MAX_RESTARTS=8
-MAX_WAIT_HOURS=24
+MAX_WAIT_HOURS=48
 
 free_gb() {
   CUDA_VISIBLE_DEVICES="$1" "$PY" -c "import torch; f,_=torch.cuda.mem_get_info(); print(f/1e9)" 2>/dev/null
@@ -51,6 +56,7 @@ wait_device() {
     if [ "$waited" -ge $((MAX_WAIT_HOURS * 3600 / POLL)) ]; then
       return 1
     fi
+    echo "[watch_plan_a_s1] no device yet (poll $waited) $(date '+%T')"
     sleep "$POLL"
     waited=$((waited + 1))
   done
@@ -70,6 +76,11 @@ while true; do
       exit 1
     fi
     echo "[watch_plan_a_s1] trainer died without DONE (restart $restarts); tail:"
+    if pgrep -f "train_plan_a.py.*--out $TRAIN_OUT" > /dev/null; then
+      echo "[watch_plan_a_s1] trainer alive via pgrep (launcher won the race); watching it"
+      sleep 120
+      continue
+    fi
     tail -5 "$LOG"
     DEV=$(wait_device) || { echo "[watch_plan_a_s1] no device; giving up"; exit 1; }
     echo "[watch_plan_a_s1] relaunching on $DEV $(date '+%T')"
@@ -82,7 +93,7 @@ while true; do
       --steps 20000 --batch-size 4 \
       --head-lr 1e-4 --backbone-lr 1e-5 \
       --warmup-head-steps 1600 --unfreeze-every 800 --unfreeze-per-step 2 \
-      --save-every 500 --snapshot-every 2000 --seed 1 \$
+      --save-every 500 --snapshot-every 2000 --seed 1 \
       >> "$LOG" 2>&1 < /dev/null &
     NEW_PID=$!
     echo "$NEW_PID" > "$PID_FILE"
