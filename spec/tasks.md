@@ -8,9 +8,9 @@
 
 ## 实施状态总览
 
-> **2026-09-29 傍晚刷新（第六轮交接，细节见 `records/DECISION_TRAINING_LOG.md` §14.78）**：
+> **2026-09-29 傍晚刷新（第六轮交接，细节见 `records/DECISION_TRAINING_LOG.md` §14.79）**：
 > - **draft v3.14 已提交**（**88/88 检查通过**，commit 95baf6b）——第五轮的"v3.14 为下一步"已完成（plana 行 + §4.3g (e) + 四行分解表 + 单种子 caveat）。
-> - **四个工程缺陷修复**（详见 §14.78）：① `train_plan_a` 快照名硬编码导致 s1 臂将从 step 2000 起覆盖 s0 溯源快照（s0 十份快照已移入 `ckpts/plana_giga_s0_snapshots_preserved/` 保藏；trainer 改按 `--out` 派生快照名）；② `train_decision` 的 resume 对含 BatchNorm 持久缓冲的模型误报 ConfigError（r2d_s1 断点续训被卡死 58 vs 34；已修——按当前模型缓冲集过滤旧键，合成用例验证通过）；③ watcher 锁 fd 被训练子进程继承，导致替换 watcher 静默退出（v3 换新锁文件 + `9>&-`）；④ `train_plan_a` 补 `status=running/completed` 终态写入（§14.77 教训代码级闭环）。
+> - **四个工程缺陷修复**（详见 §14.79）：① `train_plan_a` 快照名硬编码导致 s1 臂将从 step 2000 起覆盖 s0 溯源快照（s0 十份快照已移入 `ckpts/plana_giga_s0_snapshots_preserved/` 保藏；trainer 改按 `--out` 派生快照名）；② `train_decision` 的 resume 对含 BatchNorm 持久缓冲的模型误报 ConfigError（r2d_s1 断点续训被卡死 58 vs 34；已修——按当前模型缓冲集过滤旧键，合成用例验证通过）；③ watcher 锁 fd 被训练子进程继承，导致替换 watcher 静默退出（v3 换新锁文件 + `9>&-`）；④ `train_plan_a` 补 `status=running/completed` 终态写入（§14.77 教训代码级闭环）。
 > - **新增 `plana_giga_s0_ext40k` 收敛延长臂**：从 s0@20000 断点续训到 40000 步（**唯一变量=训练时长**；ff 家族 20k→40k 曾 +0.031，plana 全解冻段仅 5,600 步）；完成后自动评 30k+40k 两点，与 s0@20k 组成三点收敛曲线。启动器等 ≥16GB 设备（launch_plan_a_ext40k.sh + watch_plan_a_ext40k.sh）。
 > - **臂状态**：`plana_giga_s1` 在训（MIG 切片，两次 OOM 重启后稳定）；`rinalmo_r2d_b4_s1` 守护等 ≥31GB 整卡（resume bug 已修，自动从 step 500 续训）；GPU 整卡全满（外部租户 + rna-ft-eval q_fill），两个启动守护 120s 轮询抢占空位。
 > - **下一步**：三臂数字落地（s1 种子方差行 + ext40k 收敛行，若 40k 上升则 headline 升级为 @40k）→ 预印本冻结投稿版。

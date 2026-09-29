@@ -8,7 +8,7 @@
 > **交接状态（2026-09-29 傍晚，第六轮交接更新）**：
 > - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/mnt/cunyuliu/rna-jepa`。
 > - **draft v3.14 已提交**（commit 95baf6b，**88/88 检查通过**）：plana 行入 §4.3 主表（双协议读法）+ §4.3g (e) 块 + 四行分解表 + 单种子 caveat。第五轮"v3.14 为下一步"的表述已完成。
-> - **本轮交接发现并修复的四个工程缺陷（全部已在代码层修复，详见 §14.78）**：
+> - **本轮交接发现并修复的四个工程缺陷（全部已在代码层修复，详见 §14.79）**：
 >   1. **snapshot 碰撞（严重）**：`train_plan_a.py` 快照名硬编码 `plana_giga_s0_step{N}.pt`——在跑的 s1 臂从 step 2000 起会逐个**覆盖 s0 的溯源快照**。s0 的 10 份快照（step 2000–20000，25.5GB）已移入 `ckpts/plana_giga_s0_snapshots_preserved/` 保藏；trainer 改为按 `--out` 目录名派生快照名；s1 watcher 会在 DONE 时把旧代码写错名的 s1 快照批量改名回收。
 >   2. **resume 缓冲区 bug（严重）**：`train_decision.py` 的 `_pad_optimizer_groups` 断言 state_dict 键数 == optimizer 槽位数，而 resnet2d 的 BatchNorm 持久缓冲（24 个）使 r2d_s1 的断点续训直接 `ConfigError`（58 entries vs 34 slots）。r2d_s0 从未发生过 resume，该路径从未被触发——s1 是第一个"OOM→resume"的 r2d 臂。已改为按当前模型的缓冲集过滤旧键（顺序保持性质已论证 + 合成 BatchNorm 用例验证通过）。
 >   3. **watcher 锁泄漏（中等）**：v1 watcher 的 `exec 9>` 锁 fd 被 `setsid` 启动的训练子进程**继承**——trainer 活多久就持锁多久，任何新 watcher 实例都拿不到锁而**静默退出**（`flock -n || exit 0` 无日志）。v3 watcher 改用新锁文件 + 重启命令 `9>&-` 关闭 fd 继承。
@@ -16,7 +16,7 @@
 > - **在跑/在等的臂（一训练 + 三守护）**：`plana_giga_s1`（MIG 切片在训，两次 OOM 重启后稳定，~step 500/20000）；`rinalmo_r2d_b4_s1`（14:39 起跑→OOM→16:04 重启→resume ConfigError→**bug 已修**，守护在等 ≥31GB 空闲整卡，空位即起，自动从 step 500 续训）；`plana_giga_s0_ext40k`（**新增收敛延长臂**，见下）。
 > - **新增决策：plana_giga_s0_ext40k 收敛延长臂**。理由：① ff 家族 20k→40k 曾 +0.031 TS0（§14.49），plana 的全解冻阶段只有 5,600 步（解冻在 14,400 步完成），0.7268@20k 是否收敛是论文必须回答的问题；② 用户规则"模型必须训练到收敛才能停止，不要约束训练步数"。协议：从 s0 的 step-20000 resume.pt 续训到 40000 步，**唯一变量=训练时长**（同 seed/LR/数据流，stream_state 从断点恢复）；完成后 watcher 自动评 step-30000 与 step-40000 两个点，与 s0@20000 组成**三点收敛曲线**。若 40k 仍显著上升，headline 升级为 @40k 行并报告完整曲线；若走平，则"20k 已收敛"有了直接证据。
 > - **GPU 现状（16:40 实测）**：全部整卡 33–40GB 占用（外部用户 + rna-ft-eval 的 q_fill 守护在填），无 ≥16GB 空闲整卡；r2d_s1（31GB 门限）与 ext40k（16GB 门限）两个启动守护以 120s 间隔持续轮询候选设备，空位出现即抢占。plana_s1 在 3g.20gb MIG 切片上训练（峰值预计 14.1GB）。
-> - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.78**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
+> - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.79**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
 > - **当前目标**：种子方差（r2d_s1 / plana_s1 @20k）+ 收敛判定（ext40k 三点曲线）→ 预印本定稿（v3.14 后进入收尾：把两件事的数字落进 §4.3 与 Appendix A，随后冻结投稿版）。
 >
 > **交接状态（2026-09-29 下午，第五轮交接更新）**：

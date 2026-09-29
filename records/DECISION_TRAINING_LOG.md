@@ -4536,7 +4536,7 @@ statement, Appendix C item 5 struck through on the mfe clause, Appendix A
 artifact row added); checker 88 -> 90 assertions, 90/90 PASS. Artifact:
 eval_decision/stratified_mfe_cells.json.
 
-## 14.78 Sixth-round handover: four engineering defects found and fixed while standing up the s1 arms; ext40k convergence arm queued
+## 14.79 Sixth-round handover: four engineering defects found and fixed while standing up the s1 arms; ext40k convergence arm queued
 
 Context. The 14.77 follow-up queued two seed-variance arms (r2d_s1, plana_s1)
 under the fill-every-idle-GPU directive. Standing them up surfaced four latent
@@ -4605,7 +4605,7 @@ cached-embedding arms and does not bind here).
 
 Docs: spec.md / tasks.md / checklist.md sixth-round blocks; this entry.
 
-### 14.78a Addendum (17:15): contention escalation, restart budgets, test suite
+### 14.79a Addendum (17:15): contention escalation, restart budgets, test suite
 
 Both newly-launched arms lost the memory race within minutes: r2d_s1
 (relaunched by the daemon on GPU-2 at 16:35 with >=31GB free) OOMed during
