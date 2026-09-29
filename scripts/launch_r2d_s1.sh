@@ -98,7 +98,7 @@ launch_train() {
     --log-every 25 --save-every 500 \
     --teacher-dir "$TEACHER" \
     --embedding-dir "$EMB" --embedding-d-model 1280 \
-    --head-chunk-size 0 --scorer resnet2d \
+    --head-chunk-size 0 --scorer resnet2d --gpu-reserve-gb 33 \
     >> "$LOG" 2>&1 < /dev/null &
   echo $! > "$OUT.launch_pid"
   echo "$dev" > "$OUT.launch_dev"

@@ -4632,7 +4632,7 @@ Verification: full pytest suite on the patched tree -- 338 passed, 0 failed
 Docs sixth-round blocks inserted in spec/spec.md, spec/tasks.md,
 spec/checklist.md; this ledger entry closes the round.
 
-## 14.79 Plan-B second seed (r2d_s1): the arm that would not start, diagnosed to three causes
+## 14.79b Plan-B second seed (r2d_s1): the arm that would not start, diagnosed to three causes
 
 ### Symptom
 rinalmo_r2d_b4_s1 (Plan-B seed variance, the paper's core positive) launched four
@@ -4708,7 +4708,7 @@ full card; the daemon now waits for one with a two-sample confirmation.
    at 93-100% util -- the armed daemons with reservations are the correct
    posture for this level of contention.
 
-## 14.80 Correction to 14.79: cause 3 was a bad test, not a broken lock
+## 14.81 Correction to 14.79b: cause 3 was a bad test, not a broken lock
 
 14.79 claimed "flock did not serialise because /mnt/cunyuliu is NFS". That claim is
 WITHDRAWN. The test behind it was invalid: I ran the daemon script while no other
@@ -4736,3 +4736,27 @@ Lesson, recorded because this is the second time today an invalid or self-matchi
 probe produced a confident wrong conclusion: a lock test must include a live
 contender, and a pattern-based process check must be verified not to match the
 checking command itself.
+
+## 14.82 Coordination: numbering collisions resolved; reservation flag re-added to the rewritten r2d_s1 daemon
+
+Two parallel sessions have been writing this ledger and the launch scripts
+overnight, which produced duplicate section numbers (two 14.79s, two 14.80s)
+and one dropped code change. Resolved here, first-commit-wins per number:
+
+- The r2d_s1 diagnosis entry (e151c04) is renumbered 14.79 -> **14.79b**; its
+  self-correction (7eaf2b8) 14.80 -> **14.81** (titles and content unchanged).
+- e151c04's rewrite of scripts/launch_r2d_s1.sh (two-phase confirmation,
+  NEED_GB 34, /tmp lock, */10 ensure_r2d_s1_daemon.sh watchdog) was based on
+  the pre-4a30bc2 file and dropped the `--gpu-reserve-gb 33` flag from
+  4a30bc2. Re-added as a single line: the two mechanisms are complementary,
+  not redundant -- two-phase confirmation filters spurious free-memory
+  readings at launch; the reservation holds the card through the ~10-min
+  CPU-bound embedding-loading window that a launch-time check cannot cover
+  (14.79b's own analysis: "the embedding load is ~10 min"). Trainer side is
+  default-off and already tested (4a30bc2; targeted 6/6, full 338/338 on
+  that tree).
+
+Arm state at this write: plana_giga_s1 training (step ~8.9k/20k); r2d_s1
+daemon + ext40k watcher armed and polling (all full cards 33-40GB used
+overnight); the ensure_r2d_s1_daemon.sh watchdog cron covers daemon death.
+Next ledger writer: take **14.83**.
