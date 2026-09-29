@@ -4986,3 +4986,45 @@ daemons + trainers, tail of every daemon log and alerts_decision.log).
    re-verified before proceeding.
 
 Next ledger writer: take **14.88**.
+
+## 14.88 Twelfth patrol (05:36): zero events — s1 at 58% (measured 2.9 s/step, ETA ~12:20); ext40k stepping past its resume point (20500/40000); r2d daemon polling, no card qualifies
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: trainer pid 69636 alive 14h08m on MIG-10b9b777, step
+   11575/20000 (58%), 24/33 blocks unfrozen, peak 11.0-12.1 GB, resume.pt
+   fresh (05:31), train_log.jsonl advancing (05:33). Measured 2.9 s/step
+   since 14.87 (475 steps / 23 min) -> ETA ~12:20 today if the slice holds.
+   v3 watcher 2467761 alive (the 04:47 reflight instance); the pre-patch
+   s0-named snapshot stream continues (step8000 written 00:53, 2.6 GB) and
+   remains contained by the watcher's DONE-time rename (14.83). No monitor
+   alerts for this arm.
+2. **plana_giga_s0_ext40k**: trainer pid 2513755 (the 05:03:33 launch on
+   MIG-6e59f9af) stepping at 20500/40000, 33/33 unfrozen, peak 12.4-13.7 GB
+   (within the 14.86 sizing basis), resume.pt fresh (05:33). Watcher 2467763
+   alive, restart counter 0/40.
+3. **rinalmo_r2d_b4_s1**: daemon 2147894 + inner subshell 2147922 alive
+   (since 02:47); two-phase-confirmation children recycling on schedule
+   (fresh child at patrol). NEED_GB 34 + --gpu-reserve-gb 33 + resume.pt
+   (step 500) armed; the */10 ensure_r2d_s1_daemon.sh watchdog cron is
+   installed. Full cards 0-5 free: 12.9 / 0.1 / 14.6 / 15.1 / 6.5 / 17.3 GB
+   — none reaches the 34 GB bar; correctly holding. No launch since the
+   22:12 OOM.
+4. **Alerts**: written on schedule (latest 05:30:38), FATAL 0 in all five
+   daemon logs. The r2d stale/traceback/no-live-process lines are the known
+   while-waiting state (14.79a). ext40k's "traceback in log tail" is the
+   residue of the 04:44 placement-OOM traceback (the 14.86 failure, pre-fix)
+   inside monitor_decision.sh's last-20KB window (line 164: fh.read()
+   [-20000:]); the "no live process" line cleared after the 05:03 relaunch
+   and the residue ages out as the trainer appends. Benign.
+5. **eval_decision/**: no new result.json — the latest artifact remains
+   plana_giga_s0_step20000 (Sep 29 02:29, recorded in 14.77). Nothing
+   finished. GPU training confirmed on both live arms (peak_gb 11.0 / 12.4
+   in train_log.jsonl — CUDA active, no CPU fallback). One ssh connection
+   reset mid-patrol (the known flaky sshd, 14.86 item 4 / 14.87 item 5);
+   retried after a pause, state re-verified before proceeding.
+
+Zero events: nothing restarted, nothing edited on disk beyond this entry,
+no arm finished. Docs-only commit (no code change; the pytest gate does not
+apply). Next ledger writer: take **14.89**.
