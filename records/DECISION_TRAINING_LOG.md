@@ -4807,3 +4807,48 @@ daemons + trainers, tail of every daemon log and alerts_decision.log).
 
 Zero events: nothing restarted, nothing edited on disk, no arm finished.
 Next ledger writer: take **14.84**.
+
+## 14.84 Eighth patrol (03:41): zero events — s1 past halfway (step 9725/20000); both waiting daemons armed and holding as designed
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1**: trainer pid 69636 alive 12h08m on MIG-10b9b777 (GPU-7,
+   16.6 GB incl. the 14 GB reservation), step 9725/20000, 20/33 blocks
+   unfrozen, peak 13.8 GB, train_log.jsonl advancing (log mtime 03:32). v3
+   watcher pid 2127796 alive (02:39 restart, fixed script). The pre-patch
+   s0-named snapshot stream continues as expected (step8000 written 00:53,
+   2.6 GB; step10000 will follow) — contained by the watcher's DONE-time
+   rename per 14.83. No monitor alerts for this arm.
+2. **r2d_s1**: daemon pid 2147894 + inner subshell 2147922 alive (02:47
+   restart); two-phase-confirmation children recycling on schedule (fresh
+   subshells at 03:34). Adaptive bar NEED_GB 34 (cap 38, per 3a0902f) +
+   --gpu-reserve-gb 33 confirmed in the launch line (script line 101);
+   resume.pt (step 500, 9.6 MB) in place. Largest full-card free is ~10.4 GB
+   (GPU-4) — correctly holding; no launch since the 22:12 OOM. The */10
+   ensure_r2d_s1_daemon.sh watchdog cron (R2D_S1_WATCHDOG) is installed.
+3. **ext40k**: watcher pid 2134269 alive (02:41 restart, absolute path),
+   restart counter 0/40, poll 14 at 03:32 (~3.5 min cadence), NEED_GB 15 +
+   --gpu-reserve-gb 14 (script line 105); resume.pt (7.8 GB step-20000 copy)
+   in place; train_log.jsonl still empty — the arm has never advanced past
+   its resume point (all deaths were the pre-fix DEV-pollution failures
+   recorded in 14.80). Closest candidate MIG-6e59f9af has ~10.6 GB free
+   (co-tenants hold 9.4 GB of the 20 GB slice) — correctly holding.
+4. **Alerts**: the 10-min monitor writes on schedule (latest 03:30:42); the
+   ext40k/r2d stale/traceback/no-live-process lines remain the known
+   while-waiting state, not new failures. No FATAL in any daemon log.
+5. **GPU fleet**: full cards 0-5 at 30.5-39.5 GB used, 96-100% util
+   (external tenants + q_fill dispatchers + the user's rna_sc jobs, e.g.
+   pid 2283588 at 18.6 GB on GPU-0, 3 days old — not our arm); GPU-6 seven
+   1g.5gb MIGs (all ≤4.6 GB used, too small for ext40k); GPU-7 two 3g.20gb
+   MIGs — s1 on one at 16.6 GB, ~10.6 GB free on the other. Per the standing
+   rule no manual gate was added; the armed daemons take any qualifying gap
+   on their own within their 120 s polls.
+6. **eval_decision/**: no new result.json — no arm has finished; the latest
+   artifacts remain plana_giga_s0_step20000 (09-29) and
+   stratified_mfe_cells.json (16:06). Nothing to record beyond this entry.
+
+Zero events: nothing restarted, nothing edited on disk, no arm finished.
+Repo was clean and synced with origin/main at 9a1b3d1 before this commit
+(docs only, no code change, so no pytest subset was triggered).
+Next ledger writer: take **14.85**.
