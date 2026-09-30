@@ -5349,3 +5349,37 @@ daemons + trainers, tail of every daemon log and alerts_decision.log).
    14.77 headline row stays @20000.
 
 Next ledger writer: take **14.94**.
+
+## 14.94 Eighteenth round (17:0x): v3.15 independently verified — every number
+in the seed/duration additions re-derived from result.json and located in the
+draft; r2d_s1 remains the only open arm
+
+The parallel session's v3.15 (commit 5f5f59c) was checked line by line against
+the artifacts rather than trusted from its commit message:
+
+- All 6 result.json values re-derived independently and matched to 1e-4:
+  s1 TS0 0.7245 / bpRNA-new 0.3763; 30k
+  0.721 / 0.4005; 40k 0.7178 / 0.3988.
+- Draft contains: the v3.15 banner, the s1 row values, both duration points,
+  the ext40k + s1 artifact rows in Appendix A. check_manuscript.py: OVERALL
+  PASS (100/100 per the commit; re-run PASS on this tree).
+- A stale local draft-edit attempt (this session's, pre-landing) was a no-op
+  by construction — its asserts abort before write — and was discarded; no
+  file on the cluster was modified by it (working tree clean except the
+  parallel session's in-flight spec edits, left untouched).
+
+Arm state: plana_s1 and ext40k both status=completed with their four
+result.json files landed (two evals each); the 30-min patrol automation
+covers their residue. rinalmo_r2d_b4_s1 is the only open arm: the daemon
+(2147894, alive 13.7h+) polls at NEED_GB 34 with no full card reaching the
+bar since the 22:12 OOM (largest gaps at close 8-14GB); resume.pt (step 500)
+armed; the */10 watchdog cron holds. Nothing was restarted, no gate was
+added; the bar is the arm's own protection against the known step-500 OOM
+pattern, and the cluster's contention level is a fact, not a malfunction.
+
+Preprint position: with seed variance and the duration curve folded in, the
+Plan-A story is complete (ID gain replicates across seeds; OOD cost is
+seed-noisy at gain-magnitude scale; convergence at 20k is curve-evidenced).
+Remaining before a submission-ready freeze: r2d_s1's second seed for the
+Plan-B positive (the paper's only single-seed core positive), and the
+final-lattice items already tracked in the draft's own TODO notes.
