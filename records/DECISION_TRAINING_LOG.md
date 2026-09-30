@@ -5683,3 +5683,66 @@ artifact checks, git state).
    handover dir per the standing rule.
 
 Next ledger writer: take **14.99**.
+
+## 14.99 The plana calibration probe: the accuracy story and the calibration
+story now live on the same model (problem 2 of the 10-01 retrospective)
+
+Retrospective context. The draft's two positives were measured on different
+models: DP-free calibration (C1-c) on the ff-family frozen-backbone
+checkpoints, the 0.7268 headline on plana (adapted backbone) -- and
+eval_plan_a.py measured only F1, so nothing was known about the adapted
+head's probabilities. If they had been badly miscalibrated, the abstract
+would be selling two stories about two different models.
+
+Probe (tools/plana_calib_probe.py, protocol = the ff arms' own:
+strict-upper-triangle candidate pairs, ss.metrics.pooled_pair_calibration,
+affine recalibration fitted on VL0 with the nll objective, DP-free at eval
+time). plana_giga_s0 @20000, TS0 1,288 seqs / 6,015,437 candidate pairs:
+
+| source                       | ECE    | Brier  | NLL   |
+|------------------------------|--------|--------|-------|
+| plana raw head               | 0.0152 | 0.0105 | 0.0416 |
+| plana + 2-param VL0 Platt    | 0.0007 | 0.0031 | 0.0150 |
+| RNAformer (reference)        | 0.0015 | 0.0025 | 0.0132 |
+| our exact marginals (ff)     | 0.0004 | 0.0030 | 0.0137 |
+| ViennaRNA exact BPP          | 0.0048 | 0.0051 | 0.0259 |
+| UFold                        | 0.0147 | 0.0108 | 0.0437 |
+
+Read-out: (1) the recalibrated plana head is the best-calibrated DP-free
+probability source measured on this split (0.0007 < RNAformer's 0.0015),
+with Brier and NLL improving in lockstep (not a constant-predictor ECE
+artifact -- the guards of evaluate_decision.py's protocol); (2) the raw
+adapted head is already at UFold-level calibration (0.0152 vs 0.0147)
+without any post-processing -- the resnet2d scorer's BatchNorm-heavy path
+appears far less over-confident than the ff family's raw head (0.1955);
+(3) the C1-c style claim now extends to the headline model: gap to the
+exact marginals' ECE (0.0004) is 0.0003, inside the 0.02 threshold with
+room to spare.
+
+Engineering notes (three probe bugs, all in the probe, none in the
+science): v1 sigmoid->logit round-trip lost precision at p ~ 1-1e-7 (fix:
+carry raw scores); v2 applied a second sigmoid on top of
+apply_platt_scaling, which already returns sigmoid(a*s+b) -- everything
+squeezed to ~0.5, ECE 0.4966, caught because mean_predicted 0.5015 vs
+mean_observed 0.0058 was impossible; v3 is the correct single-sigmoid path.
+The raw row (0.0152) was valid in all three versions (that path never had
+a bug) and is unchanged across reruns. Two ssh heredoc attempts failed on
+shell parsing; the patch went through scp + python file instead.
+
+Correction folded in (14.98 patrol): the live bar on disk was 28, not 33 --
+the parallel session's 9eb7040 rewrite (34->28) landed after my 34->33 edit
+and is the version that actually admitted GPU-5; my 14.97 claim of a clean
+inode-replace was also wrong (the live daemon was executing that file at
+edit time). Both errors are the parallel session's 14.98, verified; this
+entry does not repeat them.
+
+Also this round (problem 1 of the retrospective): plana_giga_s2 (third
+seed) launched on the free 3g.20gb MIG slice (watch_plan_a_s2.sh, 12GB
+reservation, step 2600 by 01:4x) -- three seeds will either tighten the
+OOD spread (bpRNA-new 0.4302/0.3763/? ) enough to quote a mean, or
+confirm it as real noise; both are publishable statements. r2d_s1 (the
+Plan-B seed) at step 5025/20000, healthy.
+
+Draft follow-up queued: the six-source table in the abstract/4.2 gains the
+plana rows; the abstract's calibration paragraph should name that the
+headline model itself carries the best DP-free calibration measured.
