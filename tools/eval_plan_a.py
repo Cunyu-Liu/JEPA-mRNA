@@ -142,13 +142,15 @@ def main():
               f"R {results[name]['micro']['recall']:.4f}, "
               f"{results[name]['n_sequences']} seqs)", flush=True)
 
-    out = {"tag": f"plana_giga_s0_{meta.get('schedule', {}).get('steps', 'NA')}",
+    stem = Path(args.checkpoint).stem
+    out = {"tag": stem,
            "checkpoint": args.checkpoint,
-           "arm": "plana_giga_gradual_unfreeze_s0",
+           "arm": stem,
            "control": "rinalmo_r2d_b4_s0 (TS0 0.6629 / new 0.5010)",
            "protocol": "nussinov_map decode, prior_weight=-1 (model's own), "
                        "fp16-quantised in-loop frame, same as training",
            "splits": results, "meta": meta}
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as fh:
         json.dump(out, fh, indent=1)
     print(f"[eval-plan-a] written {args.out}", flush=True)
