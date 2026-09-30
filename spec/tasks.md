@@ -27,6 +27,14 @@
 - **教训入库**：① 锁测试必须含**活的竞争者**；② 基于 `pgrep -f <模式>` 的进程检查必须验证**模式不会匹配检查命令自身**（09-29 曾因此杀掉自己的 ssh 会话两次）。
 - **下一步**：任一整卡释放（v2_scratch@50k 或 plana_s1 收队）即自动起 r2d_s1；两者齐备后 draft v3.15 记录 (d)/(e) 的 2-seed 读数。
 >
+> **交接状态（2026-09-30 16:40，第七轮交接更新）**：
+- **Plan-A 种子方差臂完成且已入稿**：`plana_giga_s1`（seed 1，20k 步全解冻）终评 **TS0 micro 0.7245 / macro 0.6989；OOD bpRNA-new 0.3763**（P 0.650/R 0.265）。**A 项跨 seed 复现**：ID 增益紧密（+0.062 s1 vs +0.064 s0，Δseed 仅 -0.0023）；OOD 代价 seed 噪声大（-0.071 s0 → -0.125 s1），且 seed 间 OOD 摆幅（-0.054）与 ID 增益同量级——**两 seed 并排报告、绝不取均值**；召回侧损伤在 s1 加深。
+- **时长曲线（ext40k，seed 0）落地**：TS0 0.7268→0.7210→0.7178，OOD 0.4302→0.4005→0.3988——臂在解冻窗口终点（20k）达峰后单调退化，**headline 定格 @20000**；与 ff 臂 20k→40k 继续 +0.031 形成可报告对照（全解冻臂过其窗口即过拟合）。
+- **draft 升至 v3.15**（主表 s1 行 + 时长行、§4.3g seed 方差与收敛段落、Appendix A 两条 artifact 行），**checker 100 断言全 PASS**（commit 5f5f59c）。
+- **运维（本轮会话修复）**：`eval_plan_a.py` 终写缺父目录 mkdir 的 bug 已修（pytest 子集 37/37）；watcher 快照流 s0→s1 重命名正确执行；CUDA 短名 `GPU-4` 不可用于 CUDA_VISIBLE_DEVICES（须 MIG UUID 或数字）已入册。
+- **在飞**：r2d_s1 仍等 ≥34GB 确认窗口（守护+看门狗 cron 自愈，adaptive 门槛 34→38GB）；**RNA-JEPA 线 v2_scratch 已 50k 完成，v1_cont 50k 完成**——063/064 评测全自动展开中。
+- **下一步**：r2d_s1 起跑后 Plan-B 双 seed 齐 → draft v3.16（(d) 行 2-seed 并排）；RNA-JEPA 梯级表全齐后更新 Table1 梯级视图。
+>
 > **2026-09-29 下午刷新（第五轮交接，细节见 `records/DECISION_TRAINING_LOG.md` §14.76–§14.77）**：
 > - **Plan-A（plana_giga_s0）训练+终评全部完成**：20000 步渐进解冻（33 块全解冻）→ **TS0 micro F1 0.7268 / macro 0.7139，OOD bpRNA-new 0.4302**。A 项分解测得：**+0.064 ID / −0.071 OOD**（容量反转签名）。主表对标：超 UFold 0.6598、超 NucleicBERT 微调 macro 0.649，距 RNAformer 0.7578 仅 0.031。
 > - **A+B 三项分解闭环**（§4.3g chase map 全部实测）：2D scorer +0.067 双正（0.6629/0.5010）；backbone 适配分裂符号；structure-aware residual ~0。部署指引已成型。

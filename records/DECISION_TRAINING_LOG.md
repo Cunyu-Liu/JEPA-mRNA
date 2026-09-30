@@ -5383,3 +5383,86 @@ seed-noisy at gain-magnitude scale; convergence at 20k is curve-evidenced).
 Remaining before a submission-ready freeze: r2d_s1's second seed for the
 Plan-B positive (the paper's only single-seed core positive), and the
 final-lattice items already tracked in the draft's own TODO notes.
+
+## 14.94 v1_span 14-hour stall: the migration daemon's exit bug + interrupt-budget burn (RNA-JEPA line)
+
+### What happened
+05:06 - migrate_v1_span_when_fast correctly SIGKILLed the v1_span trainer
+(python-exe-aware selection from the 09-30 fix worked) on a card with 15 GB free,
+then re-armed per design (sleep 900 -> re-enter loop). But the re-armed loop found
+"trainer not running" and took the exit branch - the branch was written for
+"already migrated or finished", yet nothing verified the monitor had actually
+re-queued the arm. It had NOT: the interrupt counter was at 5 (4 earlier slow-card
+environment kills + this intentional one), so requeue_interrupted refused with
+"killed without a status marker 5 times; not re-queueing again". v1_span then sat
+dead for 14 h (step 19,350, train_log idle 845 min) until this patrol.
+
+### Fixes (all applied)
+1. v1_span interrupt_count.json reset 5 -> 0 with reset_reason (none of the five
+   were config errors; config identical to v1_cont which completed 50k cleanly).
+   Monitor re-queued within one cycle: 091_requeue_interrupted_v1_span.json now
+   sits in queue/pending awaiting capacity (verified).
+2. migrate_v1_span_when_fast.sh exit-block hardened: "trainer not running" now
+   exits ONLY if a pretrain process exists, a pending/running v1_span spec exists,
+   or DONE.json exists; otherwise it keeps watching (the 05:06 lesson).
+3. Two 069 half_life cells (v1_span_10k s4/s42) had retry counters burned by OOM
+   during the stall window - inspected (CUDA OOM, not config), and their retry
+   files had no counter to reset (fresh budget by default on the next requeue
+   path).
+
+### State after fix
+- 091_requeue_interrupted_v1_span pending; v1_span has resume.pt at step 19,350
+  (2.2 GB, written 00:34) - restart loses nothing.
+- te_human fullbudget s42 also dispatched this cycle (090_ spec, capacity hint 4).
+- Draft v3.15 landed this session (s1 seed + duration curve, checker 100/100,
+  commit 5f5f59c) - closing 14.93's queued work.
+
+## 14.95 Nineteenth patrol (18:0x): zero events on the three-arm cluster — r2d daemon holding (largest full-card gap 15.1 GB vs bar 34); both completed plana arms re-verified from artifacts; the parallel session's uncommitted 14.94-v1_span batch landed by this patrol (queue fix verified live)
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of the three
+daemons, tail of every daemon log and alerts_decision.log, artifact checks,
+git state).
+
+1. **rinalmo_r2d_b4_s1** (the only open decision arm): daemon 2147894 + inner
+   subshell 2147922 alive 15.3 h; sleep-120 poll child fresh (26 s, ppid
+   matches the inner subshell) - polling on schedule. NEED_GB 34 (two-phase,
+   CONFIRM_GAP 90 s) + --gpu-reserve-gb 33; resume.pt (step 500, 9.6 MB, Sep
+   29 15:24) armed; the */10 R2D_S1_WATCHDOG cron installed (crontab verified
+   live this round). Daemon log unchanged since the 22:12 launch line - no
+   FATAL, restart budget untouched. Full cards 0-5 free: 11.3 / 15.1 / 14.8 /
+   1.7 / 1.9 / 9.5 GB - none near 34; correctly holding. The monitor's
+   stale(1182 min)/traceback/no-live-process triplet for r2d is the known
+   while-waiting state (14.79a); the traceback in its run-log tail is the
+   known 22:12 OOM (pair_scores_and_types -> proj(cat) tried 3.86 GiB with
+   2.05 GiB free). GPU-6's ~36.5 GB aggregate free is fragmented across
+   seven 1g.5gb slices - no single device qualifies; correctly ignored. No
+   manual gate added per the standing rule.
+2. **plana_giga_s1 / plana_giga_s0_ext40k**: both status=completed
+   (steps_completed 20000 / 40000, run_meta terminal rows verified this
+   round); watchers exited cleanly after their ALL DONE lines (16:09:27
+   ext40k; s1's traceback at the final write is the 14.93 bug, recovered by
+   the 15:52 manual rerun). All four result.json re-read this patrol from
+   eval_decision/ - macro F1 matches 14.93 to the digit: s1 TS0 0.6989 / new
+   0.3569; ext40k@30k 0.7044 / 0.3798; ext40k@40k 0.6974 / 0.3817. Numbers
+   were recorded in 14.93 and folded into draft v3.15 in 14.94 - no new
+   ledger table needed, nothing re-run. No new result.json since 16:06 (the
+   07:30..18:00 alert stream shows no decision-arm alert besides the r2d
+   while-waiting triplet).
+3. **Parallel-session residue verified live, then landed**: the working tree
+   carried the previous session's uncommitted 14.94-v1_span entry + the
+   16:40 seventh-round spec blocks (4 files). Its fixes are working: queue
+   091_requeue_interrupted_v1_span.json was consumed at 17:08 (mtime; running/
+   091*.jsonl live), and the v1_span trainer (pids 1161093 timeout-wrapper /
+   1161098 python, device 3) has been training ~1 h - train_log.jsonl advanced
+   to step 19350 at 17:05 (pre-stall checkpoint 19350/resume.pt 2.2 GB from
+   00:34; interrupt_count.json reset 16:47). Nothing else in the diff. This
+   patrol commits that batch together with the present entry (docs-only; the
+   pytest gate does not apply - no code changed on this tree since the last
+   verified subset run).
+4. **Monitor cron**: on schedule every 10 min (latest 18:00:32), FATAL 0 on
+   the live arms. One ssh reset mid-patrol (the known sshd flakiness, 14.86
+   item 4) - retried, state re-verified before each conclusion.
+
+Zero events for the three armed arms this patrol: nothing restarted, nothing
+edited on disk beyond the ledger/spec commit, no arm finished. Next ledger
+writer: take **14.96**.

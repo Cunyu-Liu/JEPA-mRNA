@@ -19,6 +19,14 @@
 > - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.80**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
 > - **当前目标**：种子方差（r2d_s1 / plana_s1 @20k）+ 收敛判定（ext40k 三点曲线）→ 预印本定稿（v3.14 后进入收尾：把两件事的数字落进 §4.3 与 Appendix A，随后冻结投稿版）。
 >
+> **交接状态（2026-09-30 16:40，第七轮交接更新）**：
+- **Plan-A 种子方差臂完成且已入稿**：`plana_giga_s1`（seed 1，20k 步全解冻）终评 **TS0 micro 0.7245 / macro 0.6989；OOD bpRNA-new 0.3763**（P 0.650/R 0.265）。**A 项跨 seed 复现**：ID 增益紧密（+0.062 s1 vs +0.064 s0，Δseed 仅 -0.0023）；OOD 代价 seed 噪声大（-0.071 s0 → -0.125 s1），且 seed 间 OOD 摆幅（-0.054）与 ID 增益同量级——**两 seed 并排报告、绝不取均值**；召回侧损伤在 s1 加深。
+- **时长曲线（ext40k，seed 0）落地**：TS0 0.7268→0.7210→0.7178，OOD 0.4302→0.4005→0.3988——臂在解冻窗口终点（20k）达峰后单调退化，**headline 定格 @20000**；与 ff 臂 20k→40k 继续 +0.031 形成可报告对照（全解冻臂过其窗口即过拟合）。
+- **draft 升至 v3.15**（主表 s1 行 + 时长行、§4.3g seed 方差与收敛段落、Appendix A 两条 artifact 行），**checker 100 断言全 PASS**（commit 5f5f59c）。
+- **运维（本轮会话修复）**：`eval_plan_a.py` 终写缺父目录 mkdir 的 bug 已修（pytest 子集 37/37）；watcher 快照流 s0→s1 重命名正确执行；CUDA 短名 `GPU-4` 不可用于 CUDA_VISIBLE_DEVICES（须 MIG UUID 或数字）已入册。
+- **在飞**：r2d_s1 仍等 ≥34GB 确认窗口（守护+看门狗 cron 自愈，adaptive 门槛 34→38GB）；**RNA-JEPA 线 v2_scratch 已 50k 完成，v1_cont 50k 完成**——063/064 评测全自动展开中。
+- **下一步**：r2d_s1 起跑后 Plan-B 双 seed 齐 → draft v3.16（(d) 行 2-seed 并排）；RNA-JEPA 梯级表全齐后更新 Table1 梯级视图。
+>
 > **交接状态（2026-09-30 02:45，第六轮交接更新）**：
 - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB）。**注意 `/mnt/cunyuliu` 是 NFS 挂载**（`df -T` 实测 `10.179.129.209:/... nfs`）——跨进程锁的文件路径宜放本地 `/tmp`（经实测 NFS 上 flock 亦可序列化，见 `records/DECISION_TRAINING_LOG.md` §14.79–§14.80 的更正）。
 - **plan-a 种子方差臂在跑**：`plana_giga_s1`（seed 1，A+B 组合）step 8900/20000，unfrozen 18/33，正常收敛；一条 `watch_plan_a_s1.sh` 监护 + 训练完成自动终评。
