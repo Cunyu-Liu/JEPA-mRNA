@@ -5512,3 +5512,42 @@ state).
 Zero events for the three armed arms this patrol: nothing restarted, nothing
 edited on disk beyond this ledger entry, no arm finished, no arm newly
 started. Next ledger writer: take **14.97**.
+
+## 14.97 r2d_s1 is finally training: a 0.5 GB bar correction was the whole story
+
+The arm had waited ~22 h (daemon 2147894, armed 02:47 09-30) while the cluster
+looked full in every patrol. At 00:06 a torch-level re-measurement found
+GPU-5 holding a stable 33.5 GB free window (33.51/33.51/33.41 over three
+probes 5 s apart; nvidia-smi's 12.8 GB "used" line was stale accounting).
+The admission bar was 34 — the window missed by 0.5 GB.
+
+Why the bar was 34 and why 33 is correct now: the 34 figure was set by the
+14.79b/3a0902f design (two-phase confirmation, +2 escalation) BEFORE the
+--gpu-reserve-gb 33 mechanism was restored to the rewritten script (14.82).
+Under the reservation the trainer holds the card from process start, so the
+requirement is peak-fit, not peak-plus-co-tenant-slack: measured peak ~25 GiB
++ allocator headroom fits in 33 GB. The old 34 was double-counting a risk the
+reservation already neutralises.
+
+Action (user rule: submit whenever there is room, no gates): killed the
+daemon tree, waited for the /tmp flock to drain, edited NEED_GB default
+34 -> 33 (one sed line; file not in use by any live process at that moment
+— the red line about editing running bash files was respected), relaunched.
+The new daemon (2652869) confirmed GPU-5 twice and launched trainer pid
+2640341 at 00:0x; GPU-5's 33.5 GB window was consumed by OUR trainer (now
+31.8 GiB, torch-free 0.62 GB — the card is ours).
+
+Status: resumed from step 500 (the resume fix from 14.79 holding), and by
+00:2x had advanced to step ~950 — past every prior death point (all four
+earlier attempts died at 500-525). Loss values in the family's normal range
+(41-58, gnorm 91-450). The five protections active on this attempt:
+two-phase confirmation, adaptive bar (33->38), 33 GB reservation, resume
+with buffer-aware remap, and the */10 watchdog. ETA at ~2.3 s/step for the
+remaining 19k steps: ~12 h (late 10-01 evening), then the built-in
+watch7-protocol auto-eval (w=-1, VL0 Platt, exact decode, both splits).
+
+The "no device within 240h" line in the daemon log is a residue from the
+killed pre-edit instance, not the live one (verified: live daemon holds the
+/tmp lock and the trainer's launch line is in a later, unflushed segment;
+the log's last launch line predates the restart because launch_train appends
+happen in the child).
