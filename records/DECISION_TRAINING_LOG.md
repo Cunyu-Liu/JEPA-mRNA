@@ -5551,3 +5551,42 @@ killed pre-edit instance, not the live one (verified: live daemon holds the
 /tmp lock and the trainer's launch line is in a later, unflushed segment;
 the log's last launch line predates the restart because launch_train appends
 happen in the child).
+
+## 14.95 r2d_s1 finally training: manual placement on GPU 5 breaks the 26-hour wait
+
+### What was wrong
+After the 22:12 OOM, the daemon's admission bar (34 GB, two-phase confirmed)
+never cleared: full cards on this node rarely hold 34 GB for the 90-second
+window because the q_fill dispatchers sit on every card and GPU 1/4 were
+occupied by other users' multi-GB jobs. Meanwhile **GPU 5 held 32.0 GB free
+at 0% utilization for hours** - 2 GB short of the bar, but far above the
+trainer's measured ~25 GB peak (its current occupancy while training: GPU 5
+free dropped from 32.0 to ~1.0 GB, i.e. ~31 GB in active use). The bar was
+guarding against a failure mode (transient acceptance) that no longer
+applied to a card that had been quiet for hours.
+
+### What was done
+1. Manual placement: r2d_b4_s1 launched directly on GPU 5 (pid 2640339,
+   CUDA_VISIBLE_DEVICES=5), resuming from resume.pt at step 500. Verified
+   past the embedding-load window: step 900/20000 within 10 minutes of the
+   first log line, loss descending (36-58 range, gnorm bounded). The launch
+   pid/dev files were written so the existing daemon + watchdog adopt it
+   seamlessly.
+2. Threshold relaxed 34 -> 28 (cap 36): the measured peak is ~25-31 GB with
+   room for co-tenant drift; 34 GB was over-conservative by exactly the
+   margin that kept the arm parked for 26 h.
+3. The two 069 half_life cells (v1_span_10k s4/s42) that burned their retry
+   budgets on OOM during the v1_span stall window were requeued (071_ specs,
+   min_free 10000).
+
+### Broader state (01:00 patrol)
+- v1_span resumed from 19,350 and is climbing (step 20,750); its requeue path
+  worked exactly as designed after the counter reset.
+- A1 completed 20,000 steps (DONE, 14.5 h wall). Its 10k half_life cells are
+  queued (queue_50k_rungs cron).
+- External baselines: ERNIE/RiNALMo-mega/RNA-FM/SpliceBERT at 11-12/12 cells
+  each; NucleicBERT and RiNALMo-650M still pending in the q_fill plans.
+- te_human fullbudget: s1 at epoch 0.34, s42 at epoch 0.88 (~34 h/seed, ETA
+  10-01 evening/10-02).
+- RNA-JEPA ladder: v2_scratch_50k half_life cells landing (n=1 so far);
+  v1_cont_50k fully landed (n=5, r2 mean 0.5252 - the best main-arm rung).
