@@ -1,11 +1,28 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.14, 2026-09-29.**
+**Preliminary preprint draft — v3.15, 2026-09-30.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
+>
+> **v3.15 change note (Plan-A second seed + duration curve).** Two measurements
+> close the two open questions 14.77/14.93 left on the Plan-A arm. (i) **Seed 1
+> replicates the in-distribution gain and sharpens the OOD warning**: TS0 micro
+> **0.7245** (s0 0.7268, Δseed −0.0023), bpRNA-new micro **0.3763** (s0
+> 0.4302, Δseed −0.0539) — the A-term is +0.062/+0.064 ID over the
+> frozen control at both seeds (tight), but the OOD cost is seed-noisy at a
+> magnitude that matters (−0.071 s0 to −0.125 s1 vs control), and the
+> seed-to-seed OOD swing (−0.054) is of the same order as the ID gain itself;
+> the recall-side damage strengthens at s1 (P 0.6498 / R 0.2648). Two seeds are not
+> a distribution — both are reported side by side, never their mean. (ii) **The
+> duration curve (20k/30k/40k, seed 0)**: TS0 0.7268 → 0.7210 → 0.7178,
+> bpRNA-new 0.4302 → 0.4005 → 0.3988 — the arm peaks at the end of
+> its unfreeze horizon and degrades monotonically past it, so the headline stays
+> @20000 and "converged at 20k" is now a measured 3-point curve, not an assumption.
+> The contrast with the frozen-embedding ff arm (which kept gaining 20k→40k,
+> +0.031) is itself reportable: the fully-unfrozen arm overfits past its horizon.
 >
 > **v3.14 change note (Plan-A lands: the (a)+(d) interaction is measured, and it
 > is split-signed).** The gradual-unfreeze arm (Plan A: the RiNALMo-giga backbone
@@ -440,6 +457,8 @@ baselines, and the capacity sweep moves us further up:
 | — structRFM 86M (re-run, strict micro) | TS0 **0.6638** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5438** (above our 0.4870) |
 | — Ours, 2D-context scorer (Plan B) | TS0 **0.6629** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5010** (pooled micro; per-seq −0.023, see §4.3c) |
 | — Ours, gradual unfreeze + 2D scorer (Plan A = (a)+(d), 650M in-loop) | TS0 **0.7268** (macro 0.7139) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4302** (P 0.569 / R 0.346) |
+| — Ours, Plan A second seed (s1) | TS0 **0.7245** (macro 0.6989) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.3763** (P 0.650 / R 0.265) |
+| — Ours, Plan A duration curve (s0; 20k→30k→40k) | TS0 0.7268→0.7210→0.7178 | — | — | — | — | — | — | — | — | — | bpRNA-new 0.4302→0.4005→0.3988 |
 
 The TR1 columns are the data-scaling experiment, the 0.4641 cell is the
 capacity-on-cross-family measurement, and the last "Ours" column is the combination
@@ -938,6 +957,19 @@ blocks unfrozen top-down over the first 14.4k steps). The P/R asymmetry
 locates the damage on the recall side: fine-tuning specialises the backbone
 to bpRNA-family pairing patterns and stops firing on novel families.
 
+**Second seed and duration curve.** Seed 1 replicates the ID gain tightly
+(TS0 **0.7245**, Δseed −0.0023; +0.062 over the control vs s0's
++0.064) and sharpens the OOD warning (bpRNA-new **0.3763**, −0.125 vs
+control; P 0.6498 / R 0.2648 — the recall-side damage deepens). The
+seed-to-seed OOD swing (−0.054) is of the same order as the ID gain
+itself, so both seeds are reported side by side, never their mean. The
+duration curve on seed 0 (20k/30k/40k: TS0 0.7268→0.7210→0.7178,
+bpRNA-new 0.4302→0.4005→0.3988) shows the arm peaks at the end of
+its unfreeze horizon and degrades monotonically past it — the headline
+stays @20000, and the contrast with the frozen-embedding ff arm (which kept
+gaining 20k→40k, +0.031) is itself reportable: the fully-unfrozen arm
+overfits past its horizon.
+
 **Combined decomposition of the 0.13–0.15 TS0 gap to the strongest models:**
 
 | factor | estimate | evidence |
@@ -1183,6 +1215,8 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | Seed ensembles (§4.3f) | `eval_decision/ensemble8_{ts0,new}`, `eval_decision/ensemble_tr1_2seed_new` | `tools/ensemble_eval.py`: K-checkpoint score-average, single exact decode; stats in `tables/stats_definitive.json` (v5 `ensembles` block) |
 | Backbone swap (§4.3d, negative) | `eval_decision/ow_rnafm_ff_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch6.sh` → `eval/ss/evaluate_decision.py --checkpoint ckpts/rnafm_ff_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; RNA-FM 640-d frozen embeddings `embeddings/rna-fm`; stats in `tables/stats_definitive.json` (v6 `backbone` block) |
 | Stratified `vienna_mfe` grid cells (§4.3) | `eval_decision/stratified_mfe_cells.json` | recomputed with `eval/ss/run_baselines.py` predictor + pooling on the exact grid cells; vienna_centroid reproduced on identical sequences as the protocol check (0.4345 / 0.4010 to 4 dp) |
+| Plan-A second seed (§4.3g) | `eval_decision/plana_giga_s1_step20000/result.json` | training via `tools/watch_plan_a_s1.sh` (identical protocol, seed 1); final eval rerun after the v3.14-era eval script crashed on a missing parent directory (mkdir fix in eval_plan_a.py, pytest subset 37/37); MIG-slice vs full-card fp16 non-determinism 1e-4 verified |
+| Plan-A duration curve 30k/40k (§4.3g) | `eval_decision/plana_giga_s0_ext40k_step{30000,40000}/result.json` | ext40k arm (seed 0, same protocol extended to 40k steps); both evals on the patched script; closes the 20k→40k convergence question |
 | Plan-A gradual unfreeze (§4.3g, split-signed) | `eval_decision/plana_giga_s0_step20000/result.json` | training `scripts/launch_plan_a.sh` → `tools/train_plan_a.py` (20000 steps, batch 4, head-lr 1e-4 / backbone-lr 1e-5, warmup-head 1600, unfreeze 2 blocks/800 steps, z-column checkpointing to fit a 3g.20gb MIG slice, peak 15.4GB); final eval auto-run by `tools/watch_plan_a.sh` → `tools/eval_plan_a.py` (nussinov_map decode, prior_weight −1, in-loop frame); ledger §14.76–§14.77; second seed plana_giga_s1 in flight |
 | Plan-B 2D-context scorer (§4.3g, positive) | `eval_decision/ow_rinalmo_r2d_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch7.sh` (serial protocol, dynamic shared-card pick after the 1g.5gb MIG slice OOMed on the 2D whole-matrix intermediates) → `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_r2d_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; training via `scripts/launch_plan_b.sh` + `tools/patch_resnet2d.py` (scorer=resnet2d, ff_b4_s0-mirror); stats in `tables/stats_definitive.json` (v7 `scorer` block) |
 | Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.77 | — |

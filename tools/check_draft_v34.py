@@ -173,7 +173,7 @@ pa = json.load(open(f"{E}/plana_giga_s0_step20000/result.json"))
 V["plana_ts0"] = pa["splits"]["ts0"]["micro"]["f1"]
 V["plana_new"] = pa["splits"]["new"]["micro"]["f1"]
 
-ck("v3.14: version banner v3.14", "v3.14, 2026-09-29" in text and "v3.13 change note" in text)
+ck("v3.14: change note v3.14 present", "v3.14 change note" in text and "v3.13 change note" in text)
 ck("v3.14: plana ts0 0.7268", f"{V['plana_ts0']:.4f}" == "0.7268" and "0.7268" in text, f"{V['plana_ts0']:.4f}")
 ck("v3.14: plana new 0.4302", f"{V['plana_new']:.4f}" == "0.4302" and "0.4302" in text, f"{V['plana_new']:.4f}")
 ck("v3.14: plana ts0 delta +0.064 vs plan-b control", f"{V['plana_ts0'] - V['r2d_ts0']:+.4f}" == "+0.0639" and "+0.064" in text, f"{V['plana_ts0'] - V['r2d_ts0']:+.5f}")
@@ -187,6 +187,23 @@ ck("v3.14: single-seed caveat stated", "single-seed caveat" in text)
 mc = json.load(open("/mnt/cunyuliu/rna-jepa/eval_decision/stratified_mfe_cells.json"))["ts"]
 ck("v3.14: mfe grid cells 0.3966/0.3679 stated", f"{mc['RFAM_200_400']['mfe_f1']:.4f}" == "0.3966" and f"{mc['RFAM_gt400']['mfe_f1']:.4f}" == "0.3679" and "0.3966" in text and "0.3679" in text, f"{mc['RFAM_200_400']['mfe_f1']:.4f}/{mc['RFAM_gt400']['mfe_f1']:.4f}")
 ck("v3.14: mfe cells centroid-verified + artifact row", mc['RFAM_200_400']['centroid_reproduced'] and mc['RFAM_gt400']['centroid_reproduced'] and mc['RFAM_200_400']['n_ok'] and mc['RFAM_gt400']['n_ok'] and "stratified_mfe_cells.json" in text and "protocol check" in text)
+
+p15 = json.load(open(f"{E}/plana_giga_s1_step20000/result.json"))
+e30 = json.load(open(f"{E}/plana_giga_s0_ext40k_step30000/result.json"))
+e40 = json.load(open(f"{E}/plana_giga_s0_ext40k_step40000/result.json"))
+V["plana_s1_ts0"] = p15["splits"]["ts0"]["micro"]["f1"]
+V["plana_s1_new"] = p15["splits"]["new"]["micro"]["f1"]
+
+ck("v3.15: version banner v3.15", "v3.15, 2026-09-30" in text and "v3.14 change note" in text)
+ck("v3.15: plana s1 ts0 0.7245", f"{V['plana_s1_ts0']:.4f}" == "0.7245" and "0.7245" in text, f"{V['plana_s1_ts0']:.4f}")
+ck("v3.15: plana s1 new 0.3763", f"{V['plana_s1_new']:.4f}" == "0.3763" and "0.3763" in text, f"{V['plana_s1_new']:.4f}")
+ck("v3.15: s1 delta-seed ts0 -0.0023 stated", f"{V['plana_s1_ts0'] - V['plana_ts0']:+.4f}" == "-0.0023" and "0.0023" in text, f"{V['plana_s1_ts0'] - V['plana_ts0']:+.5f}")
+ck("v3.15: s1 OOD sharper -0.125 vs control stated", f"{V['plana_s1_new'] - V['r2d_new']:+.4f}" == "-0.1247" and "0.3763" in text, f"{V['plana_s1_new'] - V['r2d_new']:+.5f}")
+ck("v3.15: duration curve 30k/40k stated", f"{e30['splits']['ts0']['micro']['f1']:.4f}" == "0.7210" and f"{e40['splits']['ts0']['micro']['f1']:.4f}" == "0.7178" and "0.7268" in text and "0.7178" in text and "0.3988" in text)
+ck("v3.15: main table s1 + duration rows", "Plan A second seed (s1)" in text and "Plan A duration curve (s0; 20k" in text)
+ck("v3.15: side-by-side never-mean discipline stated", "side by side, never their mean" in text)
+ck("v3.15: appendix s1 + ext40k artifact rows", "plana_giga_s1_step20000" in text and "plana_giga_s0_ext40k_step{30000,40000}" in text)
+ck("v3.15: 4.3g second-seed paragraph present", "Second seed and duration curve" in text)
 
 fails = [c for c in checks if not c[1]]
 for name, ok, detail in checks:
