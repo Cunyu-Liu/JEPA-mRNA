@@ -5590,3 +5590,96 @@ applied to a card that had been quiet for hours.
   10-01 evening/10-02).
 - RNA-JEPA ladder: v2_scratch_50k half_life cells landing (n=1 so far);
   v1_cont_50k fully landed (n=5, r2 mean 0.5252 - the best main-arm rung).
+## 14.98 Twenty-first patrol (00:05-01:0x): r2d_s1 is TRAINING (fifth launch survived the death zone; adopted by daemon 2652869); two committed entries this round conflict with the physical record; spec/tools batch from the parallel session left uncommitted on purpose
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of the three
+daemons + trainers, tail of every daemon log and alerts_decision.log,
+artifact checks, git state).
+
+1. **rinalmo_r2d_b4_s1 - the only open arm is finally training.** Trainer
+   pid 2640341 (wrapper 2640339, started 00:09:04, bash -c style - a
+   MANUAL placement on GPU-5, CUDA_VISIBLE_DEVICES=5, with
+   --gpu-reserve-gb 33; the run launch_pid/launch_dev files point at it).
+   At 00:58 the log reads step 2850/20000 (14.1%% of the leg), loss 28.7-41.1
+   (family-normal), gnorm 48-1040, resume.pt fresh (step 2500, 00:48);
+   nvidia-smi compute-apps shows 2640341 holding 31.78 GiB on GPU-5 - CUDA
+   active, no CPU fallback (red line clean). This is the FIFTH launch and the
+   first to clear all four prior death points (500/525, 09-29); it survived
+   the ~10-min embedding-load window. The three OOM tracebacks at log lines
+   51/87/148 belong to earlier attempts - the log is append-only and the
+   current tail is pure progress. ETA at the measured ~1.6 s/step (2350
+   steps in ~49 min): ~10:00-12:00 today, then the script built-in
+   auto-eval (evaluate_decision.py, w=-1, VL0 Platt, both splits) fires per
+   lines 139-179.
+2. **Daemon line**: the OLD 02:47 daemon (2147894/2147922) is GONE from ps.
+   The live daemon is 2652869 (started 00:12:38, holds the
+   /tmp/.r2d_s1_daemon.lock per fuser), its /proc fd/255 points at the
+   DELETED pre-00:20 inode - the 00:20:20 rewrite (git 95f4a13/9eb7040,
+   "34->28 cap 36" on disk) replaced the file inode, so the running
+   daemon still executes the OLD text it started with (34-bar logic). The
+   */10 ensure_r2d_s1_daemon.sh watchdog cron (R2D_S1_WATCHDOG) is armed;
+   both daemon and trainer are observed; watchdog restarts would take the
+   NEW text. Trainer adoption path verified: the daemon PID-file check
+   (kill -0 $(cat launch_pid)) sees 2640339 alive and holds - no
+   duplicate launch, no FATAL. The adoption is what the 09-30 3e3b52b
+   restart-guard fix was written for; it is working.
+3. **Committed-entry vs physical-record discrepancies (four, all evidenced;
+   none change the operational outcome, recorded here so the next writer
+   does not build on the wrong version):**
+   - 14.97 (95f4a13) says "file not in use by any live process at that
+     moment - the red line about editing running bash files was respected".
+     FALSE as stated: the live daemon 2652869 (00:12:38) was executing the
+     script when the 00:20:20 edit landed; fd/255 -> (deleted) inode is the
+     proof. The edit happened to be the SAFE variant (inode replacement, the
+     running interpreter keeps its original fd), but the red line check
+     itself was not performed, and a same-inode editor (e.g. an in-place
+     truncate) would have corrupted the running daemon. Next reflight
+     must use the kill-tree-then-edit order.
+   - 14.97 says the new daemon "launched trainer pid 2640341 at 00:0x".
+     FALSE: the trainer started 00:09:04, the daemon 00:12:38 - the daemon
+     ADOPTED the manual launch, exactly as the second 14.95-entry (9eb7040)
+     correctly describes. 14.97 also claims the trainer "resumed from step
+     500 and by 00:2x had advanced to step ~950" - matches the physical
+     log; that part is right.
+   - 14.97 says NEED_GB was edited "34 -> 33". The file on disk reads
+     NEED_GB=28, NEED_GB_MAX=36. Commit 9eb7040 own message says
+     "34->28 cap 36". The disk (and 9eb7040) are right; 95f4a13 "33" is
+     wrong (a stale narrative from an earlier draft of the edit).
+   - The daemon log line "[r2d_s1] no device within 240h" (mtime 00:08)
+     cannot have been written by the pre-00:20 logic, which only writes it
+     after 240 h of polling - the old daemon was alive ~21.3 h. Either a
+     killed instance buffered write flushed on SIGTERM, or the line came
+     from a short-lived interim instance. The 14.97 entry footnote ("a
+     residue from the killed pre-edit instance") matches the first reading;
+     the exact provenance is unknowable now and does not affect anything
+     live. Two 14.95s and two 14.94s exist in the ledger (the new 14.95 sits
+     at line 5555, the old patrol one at 5420); the numbering-collision
+     class is the same one 14.82 resolved - next writer: renumber the
+     second 14.95 (9eb7040) to 14.97b or take 14.98 here and mind the tail.
+4. **plana_giga_s1 / plana_giga_s0_ext40k**: both terminal again this
+   patrol - run_meta status=completed, steps_completed 20000 / 40000; the
+   four result.json still on disk (s1 15:52, 30k 15:43, 40k 16:06, s0
+   Sep-29), all numbers already recorded in 14.93 and folded into draft
+   v3.15 (14.94). No new result.json since 16:06 (find -newermt 18:00
+   empty). Watchers correctly absent from ps (their ALL DONE lines are
+   16:09:27 and earlier). Nothing to re-run.
+5. **Monitoring**: alerts_decision.log written on the 10-min cadence
+   (latest 00:40:30); the r2d "log stale / traceback in log tail /
+   no-live-process" triplet ended between 00:10 and 00:20 (the trainer went
+   live and the log went quiet); only the known traceback residue remains
+   (the 22:12 and earlier OOMs inside monitor_decision.sh last-20KB
+   window; it ages out as the trainer appends). FATAL count in all daemon
+   logs: 0. Monitor cron log tail normal. One ssh connection reset
+   mid-patrol (the known flaky sshd, 14.86 item 4) - retried, state
+   re-verified before each conclusion.
+6. **Working tree**: carries the parallel session in-flight batch -
+   spec/spec.md + spec/tasks.md (modified, 00:23) and two untracked tools
+   (plana_calib_probe.py 00:53, watch_plan_a_s2.sh 00:38 - a possible
+   plana s2 third-seed arm being stood up). Left untouched: an in-flight
+   parallel session owns them; the next patrol should check whether they
+   landed (commit + pytest gate for any code change) before touching the
+   same files. This entry is a docs-only change on its own (the pytest gate
+   does not apply). Synced: this commit + spec/records to the local
+   handover dir per the standing rule.
+
+Next ledger writer: take **14.99**.
