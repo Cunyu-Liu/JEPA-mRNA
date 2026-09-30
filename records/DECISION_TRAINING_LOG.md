@@ -5466,3 +5466,49 @@ git state).
 Zero events for the three armed arms this patrol: nothing restarted, nothing
 edited on disk beyond the ledger/spec commit, no arm finished. Next ledger
 writer: take **14.96**.
+
+## 14.96 Twentieth patrol (21:05): zero events — the only open arm (r2d_s1) holds at 18.3 h; both completed plana arms terminal-verified again from run_meta + result.json; v1_span now 3.9 h past its 14.94 fix (step 19350+ at 20:04 mtime)
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of the daemon
+set, tail of every daemon log and alerts_decision.log, artifact checks, git
+state).
+
+1. **rinalmo_r2d_b4_s1** (the only open decision arm): daemon 2147894 + inner
+   subshell 2147922 alive 18 h 17 m — the SAME pids as the 14.95 patrol
+   (18:0x), i.e. no watchdog restart, no crash, no restart-budget burn.
+   launch_r2d_s1.daemon.log unchanged since the 22:12:52 line (4 launches
+   total, 0 FATAL, MAX_RESTARTS untouched). Poll cadence verified live: the
+   sleep-120 child (pid 1969883) is fresh and parented by the inner subshell.
+   NEED_GB 34 + --gpu-reserve-gb 33; resume.pt (step 500) armed. Full-card
+   free at 21:04: 14.7 / 12.3 / 25.7 / 13.8 / 17.0 / 1.05 / 34.0(GPU-6
+   aggregate, MIG-fragmented) / 14.3 GB — none clears the 34 GB bar
+   single-device; correctly holding. The alerts stream shows ONLY the known
+   while-waiting triplet (stale 1362 min / traceback-in-tail / no-live-
+   process), the residue of the 22:12 OOM — stable since 14.95. No manual
+   gate added per the standing rule.
+2. **plana_giga_s1 / plana_giga_s0_ext40k**: run_meta re-read this patrol —
+   status=completed, steps_completed 20000 / 40000. The four result.json
+   re-derived from disk (macro F1 quoted per 14.77/14.93 convention): s1
+   TS0 0.6989 / new 0.3569; ext40k@30k 0.7044 / 0.3798; ext40k@40k 0.6974 /
+   0.3817; (s0@20k reference 0.7139 / 0.4156). All four values digit-match
+   14.93/14.95 — already recorded in 14.93 and folded into draft v3.15 by
+   14.94, so no new table rows. No new result.json under eval_decision/
+   since 16:06 (find -newermt 18:00 empty). s1's final-write traceback in
+   the watcher tail is the 14.93 bug (result recovered by the 15:52 rerun);
+   ext40k's ALL DONE line is 16:09:27. Watchers correctly absent from ps.
+3. **RNA-JEPA line, verified this patrol**: v1_span trainer (1161093
+   timeout-wrapper / 1161098 python, device 3, etime 03:56:14) — the arm
+   the 14.94 batch requeued — is alive and past the 19350 resume point; the
+   parallel monitor's hourly hf/ checkpoints advancing (latest 20:04).
+   interrupt_count.json reset at 16:47 remains in effect.
+4. **Monitor cron**: writing every 10 min on schedule (latest 21:00:31);
+   FATAL count in alerts_decision.log: 0 for the entire file. One ssh
+   connection reset mid-patrol (the known sshd flakiness, 14.86 item 4) —
+   retried once, state re-verified before each conclusion.
+5. **Git**: cluster tree clean at 63bda55 (the 14.95 commit), main ==
+   origin/main; this patrol appends 14.96 docs-only (the pytest gate does
+   not apply — no code changed on this tree).
+
+Zero events for the three armed arms this patrol: nothing restarted, nothing
+edited on disk beyond this ledger entry, no arm finished, no arm newly
+started. Next ledger writer: take **14.97**.
