@@ -5244,3 +5244,108 @@ daemons + trainers, tail of every daemon log and alerts_decision.log).
 Zero events: nothing restarted, nothing edited on disk beyond this entry,
 no arm finished. Docs-only commit (no code change; the pytest gate does not
 apply). Next ledger writer: take **14.93**.
+
+## 14.93 Seventeenth patrol (15:04-16:15): both plana arms finished; eval_plan_a write-path bug found and patched in the window before ext40k's evals fired; all four result.json recovered/landed; duration curve closes the 14.79 convergence question — plana peaks at 20k on both splits
+
+Patrol per the standing procedure (14.79/14.80 pre-loaded; ps of all three
+daemons + trainers, tail of every daemon log and alerts_decision.log).
+
+1. **plana_giga_s1 finished** (training DONE 09:32:01, 20000/20000 steps, all
+   33 blocks unfrozen, run_meta status=completed written by the trainer's
+   own terminal row; final train_log row peak_gb 15.5 — CUDA throughout,
+   64,745 s wall). The v3 watcher executed its whole DONE-time closure
+   correctly: the pre-patch s0-named snapshot stream renamed to
+   plana_giga_s1_step{2000..20000}.pt (14.83 containment verified at DONE,
+   as designed), s0's preserved originals untouched. The eval then ran 22
+   min on GPU, printed both splits' micro numbers, and crashed at the FINAL
+   write: tools/eval_plan_a.py line 152 opened args.out without creating
+   the parent directory -> FileNotFoundError on
+   eval_decision/plana_giga_s1_step20000/result.json. Model, protocol and
+   numbers were fine; only the artifact write failed. The 10-min monitor
+   cannot see this failure class — it watches run_meta/train_log, not eval
+   artifacts; the crash was visible only because the patrol reads watcher
+   daemon logs end-to-end. (s0's Sep-29 eval never exercised the path: its
+   target directory already existed.)
+2. **Patch, applied pre-emptively inside the window**: at patrol time ext40k
+   was at step 39950 with ~2 min to DONE, and its watcher runs the SAME
+   eval script twice (30k + 40k). eval_plan_a.py now does
+   Path(args.out).parent.mkdir(parents=True, exist_ok=True) before the
+   write, and its out-dict tag/arm are derived from the checkpoint basename
+   — the old hardcoded "plana_giga_s0_{steps}" / gradual_unfreeze_s0
+   strings would have mislabeled all the new files (30k and 40k both tagged
+   40000, s1 tagged s0). Verified: py_compile OK; pytest
+   tests/test_eval_pipeline.py 37/37 (the evaluation-pipeline subset; no
+   test imports eval_plan_a directly). ext40k DONE 15:10:47, first eval
+   started 15:11 — the patch landed first. Editing the .py was safe (it is
+   cold-started per eval; the running-bash-file red line was not touched).
+3. **s1 eval recovered by manual rerun** on GPU-4 (numeric index 4; the
+   first attempt with CUDA_VISIBLE_DEVICES=GPU-4 died at "Invalid device
+   id" — CUDA accepts MIG UUIDs but not GPU-N short names. Worth a future
+   cleanup: the s1 watcher's CANDIDATES list carries GPU-0/2/3 short names
+   that are equally unlaunchable; inert so far only because free_gb() fails
+   on them and the MIG UUIDs answer first). The rerun reproduced the failed
+   run's printed micros to 1e-4 (TS0 0.7245 vs 0.7244 — MIG-slice vs
+   full-card fp16 non-determinism, negligible); result.json landed 15:52.
+   The failed original log is preserved as runs/plana_giga_s1_eval.log.
+4. **Seed-variance read-out (plana_giga_s1; protocol identical to 14.77 —
+   nussinov_map decode, prior_weight=-1, fp16 in-loop frame, full splits):**
+
+   | split | plana_giga_s1 (seed 1) | plana_giga_s0 (seed 0) | control r2d_b4_s0 | external frame |
+   |---|---|---|---|---|
+   | TS0 micro F1 | **0.7245** | 0.7268 (Δseed −0.0023) | 0.6629 (s1 +0.0616) | UFold 0.6598 beaten at both seeds; RNAformer 0.7578 (gap 0.033); NucleicBERT ft macro 0.649 vs s1 macro 0.6989 |
+   | TS0 macro F1 | 0.6989 | 0.7139 (−0.0150) | — | |
+   | bpRNA-new micro F1 | **0.3763** | 0.4302 (Δseed −0.0539) | 0.5010 (s1 −0.1247) | centroid 0.6770 / UFold 0.6106 still above both seeds |
+   | bpRNA-new macro F1 | 0.3569 | 0.4156 (−0.0587) | — | |
+
+   Read-out discipline (per 14.76/14.77): deltas against the control arm
+   are the numbers that count. The A-term replicates in-distribution
+   (+0.062/+0.064 over the frozen control at both seeds, tight), but the
+   OOD cost is seed-noisy at a magnitude that matters: −0.071 (s0) to
+   −0.125 (s1) vs the control, and the seed-to-seed OOD swing (−0.054) is
+   of the same order as the ID gain itself. The recall-side damage
+   signature from 14.77 strengthens at seed 1 (bpRNA-new P 0.6498 /
+   R 0.2648 vs s0's 0.5694/0.3457): the specialised-backbone forgetting is
+   not a one-off. Two seeds are not a distribution — the paper reports both
+   seeds side by side, never their mean.
+5. **ext40k duration curve (seed 0; closes 14.79's open convergence
+   question "does 20k->40k buy the ff family's +0.031?"):**
+
+   | step | TS0 micro | TS0 macro | bpRNA-new micro | bpRNA-new macro |
+   |---|---|---|---|---|
+   | 20000 | 0.7268 | 0.7139 | 0.4302 | 0.4156 |
+   | 30000 | 0.7210 | 0.7044 | 0.4005 | 0.3798 |
+   | 40000 | 0.7178 | 0.6974 | 0.3988 | 0.3817 |
+
+   Answer: NO for this family. plana peaks at the end of its unfreeze
+   horizon (20k = full unfreeze + 5,600 steps) and degrades monotonically
+   on TS0 past it while OOD falls then flattens — the headline stays
+   @20000 and "converged at 20k" is now directly evidenced by a 3-point
+   curve. The contrast with ff's +0.031 (14.49) is itself reportable: the
+   fully-unfrozen giga arm overfits past its horizon where the frozen-
+   embedding ff arm kept gaining. ext40k watcher: training DONE 15:10:47,
+   both evals on the patched script, ALL DONE 16:09:27, exit clean.
+6. **rinalmo_r2d_b4_s1**: daemon 2147894 alive throughout the patrol
+   (13.5 h at close), polls recycling on schedule; no full card has
+   reached NEED_GB 34 since the 22:12 OOM (largest full-card gap at close
+   13.3 GB on GPU-0/4); resume.pt (step 500) armed; the */10
+   ensure_r2d_s1_daemon.sh watchdog cron is installed. The monitor's
+   stale/traceback/no-live-process triplet for r2d is the known
+   while-waiting state (14.79a). Nothing restarted, no gate added.
+7. **Monitoring / artifacts**: alerts written every 10 min through the
+   patrol; FATAL 0 anywhere new. With s1 and ext40k run_meta both
+   status=completed, the monitor's "no live process but status=running"
+   line for ext40k clears at the next cycle. eval_decision/ gained four
+   result.json this round: plana_giga_s1_step20000 (15:52, rerun),
+   plana_giga_s0_ext40k_step30000 (15:43), plana_giga_s0_ext40k_step40000
+   (16:06) — all post-patch, all GPU evals (progress lines 2.0-5.6 seq/s,
+   CUDA active, no CPU fallback; red-line check clean). All numbers above
+   come from the result.json files, not proxies.
+8. Two flaky-ssh resets occurred mid-patrol (the known sshd issue, 14.86
+   item 4) — retried after a pause, state re-verified before each
+   conclusion. Commits this round: the code patch (pytest subset 37/37 run
+   before commit) then this entry; push to origin main; spec/records
+   synced to the local handover dir. Draft follow-up queued: 4.3 main
+   table gains the s1 seed column + the 3-point duration curve; the
+   14.77 headline row stays @20000.
+
+Next ledger writer: take **14.94**.
