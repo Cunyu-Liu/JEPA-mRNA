@@ -70,8 +70,12 @@ def scores_for(encoder, head, seq, device):
     return s[0, :L, :L].float()
 
 
+DUMP_PER_SEQ = False
+
+
 def evaluate_split(encoder, head, data_path, device, max_pos=1024):
     records = []
+    names = []
     with open(data_path, encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
@@ -81,8 +85,11 @@ def evaluate_split(encoder, head, data_path, device, max_pos=1024):
             seq = str(r["seq"]).upper().replace("T", "U")
             pairs = [tuple(p) for p in r["pairs"]] if "pairs" in r else []
             records.append((seq, [tuple(p) for p in pairs]))
+            names.append(str(r.get("name", "")))
     skipped = [(s, len(s)) for s, _ in records if len(s) > max_pos]
-    records = [(s, g) for s, g in records if len(s) <= max_pos]
+    keep_idx = [i for i, (s, _) in enumerate(records) if len(s) <= max_pos]
+    records = [records[i] for i in keep_idx]
+    names = [names[i] for i in keep_idx]
 
     agg = {"tp": 0, "fp": 0, "fn": 0}
     per_seq = []
@@ -109,11 +116,17 @@ def evaluate_split(encoder, head, data_path, device, max_pos=1024):
     rec = tp / (tp + fn) if (tp + fn) else 0.0
     f1 = (2 * prec * rec / (prec + rec)) if (prec + rec) else 0.0
     macro = float(np.mean([p["f1"] for p in per_seq])) if per_seq else 0.0
-    return {"n_sequences": len(records), "n_skipped_over_pos": len(skipped),
-            "skipped_lengths": [l for _, l in skipped],
-            "micro": {"precision": prec, "recall": rec, "f1": f1,
-                      "tp": tp, "fp": fp, "fn": fn},
-            "macro_f1": macro}
+    out = {"n_sequences": len(records), "n_skipped_over_pos": len(skipped),
+           "skipped_lengths": [l for _, l in skipped],
+           "micro": {"precision": prec, "recall": rec, "f1": f1,
+                     "tp": tp, "fp": fp, "fn": fn},
+           "macro_f1": macro}
+    if DUMP_PER_SEQ:
+        out["per_sequence"] = [
+            {"name": n, **row}
+            for n, row in zip(names, per_seq)
+        ]
+    return out
 
 
 def main():
@@ -122,6 +135,10 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--splits", default="ts0,new")
+    ap.add_argument("--dump-per-seq", action="store_true",
+                    help="serialise the per-sequence rows already computed "
+                         "(name from the jsonl, f1/length/n_pred/n_gt); no "
+                         "protocol change, only extra output")
     args = ap.parse_args()
 
     device = args.device
@@ -131,6 +148,8 @@ def main():
 
     split_files = {"ts0": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl",
                    "new": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_new.jsonl"}
+    global DUMP_PER_SEQ
+    DUMP_PER_SEQ = bool(args.dump_per_seq)
     results = {}
     for name in args.splits.split(","):
         path = split_files[name]

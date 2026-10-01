@@ -111,7 +111,7 @@ ck("v3.8: bigsum ts0 0.6302", f"{V['bigsum_ts0']:.4f}" == "0.6302" and "0.6302" 
 ck("v3.8: bigsum new 0.4789", f"{V['bigsum_new']:.4f}" == "0.4789" and "0.4789" in text, f"{V['bigsum_new']:.5f}")
 ck("v3.8: bigsum new vs ff -0.008 stated", f"{V['bigsum_new'] - V['ff_s0_new']:+.4f}" == "-0.0080" and ("-0.008" in text or "−0.008" in text), f"{V['bigsum_new'] - V['ff_s0_new']:+.5f}")
 ck("v3.8: bigsum new vs big +0.015 stated", f"{V['bigsum_new'] - V['big_new']:+.4f}" == "+0.0149" and ("+0.015" in text or "0.0149" in text), f"{V['bigsum_new'] - V['big_new']:+.5f}")
-ck("v3.8: test-family count tracks current family (22)", "22-test family" in text and "18-test family" not in text and "20-test family" not in text)
+ck("v3.8: test-family count tracks current family (29)", "29-test family" in text and "22-test family" not in text)
 ck("v3.8: bigsum both splits in appendix", "ow_rinalmo_bigsum_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 
 
@@ -140,7 +140,7 @@ ck("v3.10: rnafm new 0.3005", f"{V['rnafm_new']:.4f}" == "0.3005" and "0.3005" i
 ck("v3.10: backbone ts0 delta -0.176", f"{V['rnafm_ts0'] - V['ff_s0_ts0']:+.4f}" == "-0.1758" and "−0.176" in text, f"{V['rnafm_ts0'] - V['ff_s0_ts0']:+.5f}")
 ck("v3.10: backbone new delta -0.187", f"{V['rnafm_new'] - V['ff_s0_new']:+.4f}" == "-0.1865" and "−0.187" in text, f"{V['rnafm_new'] - V['ff_s0_new']:+.5f}")
 ck("v3.10: ratios 70.5%/61.7% stated", "70.5%" in text and "61.7%" in text and f"{V['rnafm_ts0']/V['ff_s0_ts0']*100:.1f}" == "70.5" and f"{V['rnafm_new']/V['ff_s0_new']*100:.1f}" == "61.7")
-ck("v3.10: 22-test family stated", "22-test family" in text and "20-test family" not in text)
+ck("v3.10: family statement supersedes 20", "20-test family" not in text)
 ck("v3.10: stats json backbone block matches", bb.get("ts0_micro") == round(V["rnafm_ts0"], 4) and bb.get("new_micro") == round(V["rnafm_new"], 4) and bb.get("ts0_ratio_pct") == 70.5 and bb.get("new_ratio_pct") == 61.7, f"{bb}")
 ck("v3.10: drift cells match 22-family re-run (7.2e-146, 1.5e-198)", "7.2e-146" in text and "1.5e-198" in text and "6.0e-146" not in text and "1.3e-198" not in text and "6.4e-146" not in text)
 ck("v3.10: backbone negative framing present", "backbone-dimension axis as a negative result" in text)
@@ -156,7 +156,7 @@ ck("v3.12: scorer ts0 delta +0.067", f"{V['r2d_ts0'] - V['ff_s0_ts0']:+.4f}" == 
 ck("v3.12: scorer new delta +0.014", f"{V['r2d_new'] - V['ff_s0_new']:+.4f}" == "+0.0141" and ("+0.014" in text or "0.0141" in text), f"{V['r2d_new'] - V['ff_s0_new']:+.5f}")
 ck("v3.12: per-seq splits +0.047/-0.023 stated", "+0.047" in text and "−0.023" in text)
 ck("v3.12: Holm cells 1.6e-22 / 4.8e-09 stated", "1.6e-22" in text and "4.8e-09" in text)
-ck("v3.12: 22-test family stated", "22-test family" in text and "20-test family" not in text and "18-test family" not in text)
+ck("v3.12: family statement supersedes 18/20", "18-test family" not in text and "20-test family" not in text)
 ck("v3.12: stats json scorer block matches", sc.get("ts0_micro") == round(V["r2d_ts0"], 4) and sc.get("new_micro") == round(V["r2d_new"], 4) and sc.get("ts0_vs_ff") == 0.0673 and sc.get("new_vs_ff") == 0.0141, f"{sc}")
 ck("v3.12: re-drifted Holm cells updated (7.2e-146, 1.5e-198, 1.5e-115, 1.1e-81, 1.1e-09, 1.5e-13, 1.3e-44, 6.0e-61, 3.6e-11)", "7.2e-146" in text and "1.5e-198" in text and "1.5e-115" in text and "1.1e-81" in text and "6.0e-61" in text and "3.6e-11" in text)
 ck("v3.12: stale Holm values purged", "6.4e-146" not in text and "1.4e-198" not in text and "1.3e-115" not in text and "9.9e-82" not in text and "5.2e-61" not in text and "3.3e-11" not in text)
@@ -203,14 +203,21 @@ ck("v3.15: duration curve 30k/40k stated", f"{e30['splits']['ts0']['micro']['f1'
 ck("v3.15: main table s1 + duration rows", "Plan A second seed (s1)" in text and "Plan A duration curve (s0; 20k" in text)
 ck("v3.15: side-by-side never-mean discipline stated", "side by side, never their mean" in text)
 ck("v3.15: appendix s1 + ext40k artifact rows", "plana_giga_s1_step20000" in text and "plana_giga_s0_ext40k_step{30000,40000}" in text)
-ck("v3.15: 4.3g second-seed paragraph present", "Second seed and duration curve" in text)
+_body = text.split("## 4. Results", 1)[-1] if "## 4. Results" in text else text
+ck("v3.15: 4.3g seed paragraph supersedes single-seed (body only; banner history may retain it)", "Second seed and duration curve" not in _body and "single-seed caveat" not in _body)
 
 pb1 = json.load(open(f"{E}/ow_rinalmo_r2d_b4_s1_step20000_bprna_ts0/result.json"))
 pb1n = json.load(open(f"{E}/ow_rinalmo_r2d_b4_s1_step20000_bprna_new/result.json"))
 V["r2d_s1_ts0"] = pb1["pair_level"]["micro"]["f1"]
 V["r2d_s1_new"] = pb1n["pair_level"]["micro"]["f1"]
 
-ck("v3.16: version banner v3.16", "v3.16, 2026-10-01" in text and "v3.15 change note" in text)
+ck("v3.16: v3.16 note retained", "v3.16 change note" in text)
+ck("v3.17: version banner v3.17", "v3.17, 2026-10-02" in text and "v3.17 change note" in text)
+ck("v3.17: s2 row in main table", "0.7336" in text and "0.3979" in text)
+ck("v3.17: 3-seed mean row", "0.7283" in text and "0.4015" in text and "0.0271" in text)
+ck("v3.17: three-seed paragraph", "Three seeds and the duration curve" in text)
+ck("v3.17: plana rows in six-source table", "adapted-backbone head (Plan-A headline, raw)" in text)
+ck("v3.17: plana recal ECE 0.0007", "0.0007" in text)
 ck("v3.16: r2d s1 ts0 0.6559", f"{V['r2d_s1_ts0']:.4f}" == "0.6559" and "0.6559" in text, f"{V['r2d_s1_ts0']:.4f}")
 ck("v3.16: r2d s1 new 0.5000", f"{V['r2d_s1_new']:.4f}" == "0.5000" and "0.5000" in text, f"{V['r2d_s1_new']:.4f}")
 ck("v3.16: seed delta tight (-0.0070/-0.0010) stated", f"{V['r2d_s1_ts0'] - V['r2d_ts0']:+.4f}" == "-0.0071" and "0.0071" in text and "0.0010" in text)

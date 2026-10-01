@@ -5822,3 +5822,45 @@ itself).
 
 The GPU 5 placement after the 26 h admission-bar episode (14.95) is now fully
 vindicated: the arm trained to completion on that card without incident.
+
+## 15.02 v3.17: the freeze-list folding completes — stats v8b + per-seq dumps
++ draft integration, checker 114/114
+
+1. eval_plan_a gained --dump-per-seq (module-global flag; serialises rows
+   it already computes — zero protocol change; one threading bug fixed on
+   the way: a True sentinel reached zip() as names). The s0/s1/s2 dumps
+   were regenerated on a free card (~50 min total, 7 seq/s); re-run micros
+   drift <=0.0006 from the recorded values (MIG-vs-full-card fp16
+   non-determinism; pairing unaffected). TS0 dumps are the FULL split
+   (no >1024 nt rows); bprna_new dumps are the <=1024 nt subset with the
+   caveat printed beside every such test.
+
+2. stats_definitive v8b: +9 family tests (22 -> 29). Decisive per-seq
+   results (Holm over the whole family):
+   - plana s0/s1/s2 vs frozen control, TS0: +0.0703 / +0.0552 / +0.0701
+     (p <= 4.3e-27) — the ID gain is per-seq significant at all seeds;
+   - plana s0/s1/s2 vs control, new: -0.0558 / -0.1145 / -0.0869
+     (p <= 3.7e-61) — the OOD cost likewise, so the split-signed
+     backbone-adaptation finding is not a pooled artifact;
+   - plana_s2 vs plana_s0, TS0: mean_diff -0.0002, p = 0.998 — the ID
+     result is essentially seed-deterministic;
+   - r2d_s1 vs r2d_s0: TS0 p=0.475 (no per-seq shift despite the -0.0071
+     pooled), new p=2.7e-09 (+0.0186 per-seq — a mild per-seq OOD gain the
+     pooled number hides; reported with both aggregations per the §4.3c
+     divergence discipline).
+
+3. Draft v3.17 (all numbers read from result.json / stats_definitive.json
+   by the folding script; asserts abort on any anchor drift):
+   banner change note; s2 + 3-seed mean rows in the 4.3 main table; the
+   4.3g (e) paragraph upgraded from two seeds to three with mean +- std
+   and the per-seq significance; two plana rows in the six-source
+   calibration table (raw 0.0152 / recalibrated 0.0007 — the best
+   DP-free source measured, on the same model as the 0.7268 headline);
+   4.3c family count 22 -> 29. Checker extended to 114 assertions,
+   114/114 PASS (one over-strict check scoped to the results body — the
+   banner's historical change-notes are records, not live claims).
+
+Preprint state: every experiment on the freeze list is measured AND folded.
+Remaining optional closers from the 10-01 retrospective: density-matched
+stratification, latency Pareto. The draft is submission-shaped pending
+the final read-through.

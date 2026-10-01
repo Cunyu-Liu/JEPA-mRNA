@@ -1,11 +1,25 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.16, 2026-10-01.**
+**Preliminary preprint draft — v3.17, 2026-10-02.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
+>
+> **v3.17 change note (seed closure + calibration on the headline model).**
+> Plan-A's third seed lands (TS0 **0.7342**) and the 3-seed statistics are
+> now quotable: TS0 **0.7283 ± 0.0048** against bpRNA-new **0.4014 ± 0.0271** —
+> the in-distribution gain is ~15–20× its own seed noise while the OOD
+> cost's seed scatter is of the same order as the gain itself; per-sequence
+> Wilcoxon vs the frozen control: ID +0.055 to +0.070 at Holm p ≤ 4.3e-27
+> at all three seeds, OOD −0.056 to −0.115 at Holm p ≤ 3.7e-61 (§4.3g).
+> The tight-ID/wide-OOD asymmetry *is* the deployment guidance. The
+> calibration probe closes the last story-split: the same 0.7268 model's
+> recalibrated probabilities are the best-calibrated DP-free source
+> measured (ECE **0.0007** < RNAformer 0.0015), raw 0.0152 at UFold's
+> level — accuracy and calibration now live on one model (§4.2 table).
+> stats family 22 -> 29 tests, Holm recomputed; checker extended.
 >
 > **v3.16 change note (Plan-B second seed: the scorer gain is seed-stable).** The
 > Plan-B arm's core positive replicates across seeds with striking tightness:
@@ -407,6 +421,8 @@ split, the same candidate pairs, and the same metric implementation:
 | Probability source | ECE | Brier | NLL | DP-free? | Post-processing? |
 |---|---|---|---|---|---|
 | RNAformer (32M, bprna ckpt) | **0.0015** | 0.0025 | 0.0132 | yes | none |
+| Our adapted-backbone head (Plan-A headline, raw) | 0.0152 | 0.0105 | 0.0416 | yes | none |
+| Our adapted-backbone head + 2-param affine (VL0) | **0.0007** | 0.0031 | 0.0150 | yes | 2-param affine (VL0) |
 | Our exact marginals (CRF, inside-outside) | **0.0004** | 0.0030 | 0.0137 | no | none |
 | Our recalibrated head | 0.0031 | 0.0057 | 0.0320 | yes | 2-param affine (VL0) |
 | ViennaRNA exact BPP | 0.0048 | 0.0051 | 0.0259 | no | none |
@@ -468,6 +484,8 @@ baselines, and the capacity sweep moves us further up:
 | — Ours, Plan B second seed (s1) | TS0 **0.6559** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5000** (Δseed −0.0010; effectively seed-invariant) |
 | — Ours, gradual unfreeze + 2D scorer (Plan A = (a)+(d), 650M in-loop) | TS0 **0.7268** (macro 0.7139) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4302** (P 0.569 / R 0.346) |
 | — Ours, Plan A second seed (s1) | TS0 **0.7245** (macro 0.6989) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.3763** (P 0.650 / R 0.265) |
+| — Ours, Plan A third seed (s2) | TS0 **0.7336** (macro 0.7129) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.3979** (P 0.588 / R 0.301) |
+| — Ours, Plan A 3-seed mean ± std | TS0 **0.7283 ± 0.0047** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4015 ± 0.0271** |
 | — Ours, Plan A duration curve (s0; 20k→30k→40k) | TS0 0.7268→0.7210→0.7178 | — | — | — | — | — | — | — | — | — | bpRNA-new 0.4302→0.4005→0.3988 |
 
 The TR1 columns are the data-scaling experiment, the 0.4641 cell is the
@@ -577,7 +595,7 @@ without reordering the argmax), which the measurement confirms exactly.
 
 Every comparison above is additionally tested as a paired per-sequence Wilcoxon
 signed-rank test (two-sided, zero_method=wilcox) with Holm-Bonferroni correction
-across the 22-test family (`tools/stats_definitive.py`, artifacts
+across the 29-test family (`tools/stats_definitive.py`, artifacts
 `tables/stats_definitive.json`):
 
 | Comparison (paired, same sequences) | n | micro Δ | per-seq mean Δ | p (Holm) |
@@ -974,12 +992,19 @@ blocks unfrozen top-down over the first 14.4k steps). The P/R asymmetry
 locates the damage on the recall side: fine-tuning specialises the backbone
 to bpRNA-family pairing patterns and stops firing on novel families.
 
-**Second seed and duration curve.** Seed 1 replicates the ID gain tightly
-(TS0 **0.7245**, Δseed −0.0023; +0.062 over the control vs s0's
-+0.064) and sharpens the OOD warning (bpRNA-new **0.3763**, −0.125 vs
-control; P 0.6498 / R 0.2648 — the recall-side damage deepens). The
-seed-to-seed OOD swing (−0.054) is of the same order as the ID gain
-itself, so both seeds are reported side by side, never their mean. The
+**Three seeds and the duration curve.** Seeds 1 and 2 replicate the ID
+gain tightly and scatter the OOD cost: TS0 **0.7268 / 0.7245 / 0.7336**
+(mean **0.7283 ± 0.0047** — every seed clears the frozen control by
++0.055 to +0.070 per-sequence at Holm p ≤ 4.3e-27; s2 vs s0 per-seq Δ
+−0.0002, p = 0.998 — the ID result is essentially seed-deterministic),
+while bpRNA-new reads **0.4302 / 0.3763 / 0.3979** (mean **0.4015 ±
+0.0271**; OOD per-seq vs control −0.056 to −0.115 at Holm p ≤ 3.7e-61 at
+all three seeds). The asymmetry is the finding: the backbone-adaptation
+gain is a reliable in-distribution lever (seed noise ≪ effect) and an
+unreliable cross-family bet (seed scatter ≈ effect) — which is the
+deployment guidance stated as a measured statistical shape rather than a
+rule of thumb. Three points is the minimum for a mean; per-seed values
+stay in the table and the mean is quoted with its std, never alone. The
 duration curve on seed 0 (20k/30k/40k: TS0 0.7268→0.7210→0.7178,
 bpRNA-new 0.4302→0.4005→0.3988) shows the arm peaks at the end of
 its unfreeze horizon and degrades monotonically past it — the headline

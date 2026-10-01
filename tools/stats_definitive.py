@@ -20,6 +20,16 @@ v7 (2026-09-26 21:02, 14.74): Plan-B arm lands. resnet2d 2D-context pair
 scorer (only changed variable vs ff_b4_s0), both splits (TS0 0.6629 /
 new 0.5010). Read from ow result.json directly. Wilcoxon family grows
 to 22 tests (+2 scorer comparisons); Holm re-run over the whole family.
+v8 (2026-10-01, 15.01): seed arms. r2d_s1 (Plan-B second seed, ow results,
+clean per-seq pairing vs r2d_s0 -> +2 family tests); plana 3-seed aggregate
+mean±std both splits (+3-point spread table).
+v8b (2026-10-02, 15.02): the per-seq dumps landed (eval_plan_a
+--dump-per-seq; re-run micros drift <=0.0006 from the recorded values,
+MIG-vs-full-card fp16 non-determinism — pairing unaffected). +7 family
+tests: plana s0/s1/s2 vs the r2d control on both splits (ts0 pairing is
+the FULL split — TS0 has no >1024 nt rows; new is the <=1024 nt subset,
+caveat printed) and plana_s2_vs_plana_s0 ts0 (third-seed reproducibility).
+Holm over the enlarged family; 4.3c cells refreshed.
 v6 (2026-09-26 08:52, 14.68): backbone-swap arm lands. RNA-FM 640d frozen
 backbone with the ff-mirror head, both splits (TS0 0.4199 / new 0.3005).
 Read from ow result.json directly. Wilcoxon family grows to 20 tests
@@ -57,6 +67,25 @@ def load(path):
 
 def ev(prefix, arm, step, split):
     return ART / "eval_decision" / f"{prefix}_rinalmo_{arm}_step{step}_{split}" / "result.json"
+
+
+def load_aggregate(path):
+    d = json.load(open(path))
+    return d["pair_level"]["micro"]["f1"], d["pair_level"]["macro"]["f1"]
+
+
+def load_plana_aggregate(seed, split):
+    d = json.load(open(ART / "eval_decision" / f"plana_giga_s{seed}_step20000" / "result.json"))
+    sp = d["splits"][split]
+    return sp["micro"]["f1"], sp["macro_f1"]
+
+
+def load_plana_ps(seed, split):
+    """per-seq dump -> (name -> (f1, len), micro, macro), ow names."""
+    d = json.load(open(ART / "eval_decision" / f"plana_giga_s{seed}_step20000_ps" / "result.json"))
+    sp = d["splits"][split]
+    per = {r["name"]: (r["f1"], r["length"]) for r in sp["per_sequence"]}
+    return per, sp["micro"]["f1"], sp["macro_f1"]
 
 
 FF = {  # seed -> (per, micro, macro) on TS0
@@ -99,6 +128,16 @@ RNAFM_NEW = load(ART / "eval_decision/ow_rnafm_ff_b4_s0_step20000_bprna_new/resu
 # 14.74 Plan-B scorer arm (resnet2d 2D-context, ff_b4_s0-mirror, seed 0)
 R2D_TS0 = load(ART / "eval_decision/ow_rinalmo_r2d_b4_s0_step20000_bprna_ts0/result.json")  # 0.6629
 R2D_NEW = load(ART / "eval_decision/ow_rinalmo_r2d_b4_s0_step20000_bprna_new/result.json")  # 0.5010
+# 15.00 Plan-B second seed
+R2D_S1_TS0 = load(ART / "eval_decision/ow_rinalmo_r2d_b4_s1_step20000_bprna_ts0/result.json")  # 0.6559
+R2D_S1_NEW = load(ART / "eval_decision/ow_rinalmo_r2d_b4_s1_step20000_bprna_new/result.json")  # 0.5000
+# 15.00 Plan-A third seed aggregates (per-seq not dumped yet)
+PLANA_S2_TS0_AGG = load_plana_aggregate(2, "ts0")   # 0.7336 / 0.7129
+PLANA_S2_NEW_AGG = load_plana_aggregate(2, "new")   # 0.3979 / 0.3844
+PLANA_3SEED_TS0 = [load_plana_aggregate(s, "ts0")[0] for s in (0, 1, 2)]
+PLANA_3SEED_NEW = [load_plana_aggregate(s, "new")[0] for s in (0, 1, 2)]
+# 15.02 per-seq dumps (subset = <=1024 nt; ts0 subset == full split)
+PLANA_PS = {(s, sp): load_plana_ps(s, sp) for s in (0, 1, 2) for sp in ("ts0", "new")}
 
 print("=" * 72)
 print("1. EXACT 8-SEED BASE (TS0 micro)")
@@ -124,6 +163,13 @@ for name, (per, micro, macro) in [
     ("bigtr1 s1 @20k", BIGTR1_S1_TS0),
 ]:
     print(f"   {name}: micro {micro:.4f} macro {macro:.4f}")
+print("=" * 72)
+print("2c. SEED ARMS (15.00)")
+print(f"   r2d s1 vs s0:  TS0 {R2D_S1_TS0[1]:.4f} vs {R2D_TS0[1]:.4f} ({R2D_S1_TS0[1]-R2D_TS0[1]:+.4f})   new {R2D_S1_NEW[1]:.4f} vs {R2D_NEW[1]:.4f} ({R2D_S1_NEW[1]-R2D_NEW[1]:+.4f})")
+print(f"   plana 3-seed TS0: {'/'.join(f'{v:.4f}' for v in PLANA_3SEED_TS0)}  mean {st.mean(PLANA_3SEED_TS0):.4f}  std {st.stdev(PLANA_3SEED_TS0):.4f}")
+print(f"   plana 3-seed new: {'/'.join(f'{v:.4f}' for v in PLANA_3SEED_NEW)}  mean {st.mean(PLANA_3SEED_NEW):.4f}  std {st.stdev(PLANA_3SEED_NEW):.4f}")
+print(f"   (plana per-seq dump pending eval_plan_a --dump-per-seq; subset paired tests join the family then)")
+
 bigtr1_pair = [BIGTR1_S1_TS0[1], BIGTR1_TS0[1]]
 ff_base = st.mean(vals)
 print(f"   bigtr1 2-seed TS0: {bigtr1_pair[1]:.4f}/{bigtr1_pair[0]:.4f} mean {st.mean(bigtr1_pair):.4f}  (vs ff 8-seed {ff_base:.4f}: {st.mean(bigtr1_pair)-ff_base:+.4f})")
@@ -182,6 +228,9 @@ def wtest(label, A, B):
 
 print("=" * 72)
 print("4. WILCOXON (per-seq F1, two-sided)")
+print("   NOTE plana_*_new tests: plana rows are the <=1024 nt subset"
+      " (n_skipped_over_pos); ts0 pairing is the full split. Quote with"
+      " the subset caveat on new.")
 tests = [
     wtest("capacity_s0_ts0", BIG[0][0], FF[0][0]),
     wtest("capacity_s1_ts0", BIG[1][0], FF[1][0]),
@@ -205,6 +254,15 @@ tests = [
     wtest("backbone_new_vs_ff", RNAFM_NEW[0], FF_NEW[0]),
     wtest("scorer_r2d_ts0_vs_ff", R2D_TS0[0], FF[0][0]),
     wtest("scorer_r2d_new_vs_ff", R2D_NEW[0], FF_NEW[0]),
+    wtest("seed_r2d_s1_ts0_vs_s0", R2D_S1_TS0[0], R2D_TS0[0]),
+    wtest("seed_r2d_s1_new_vs_s0", R2D_S1_NEW[0], R2D_NEW[0]),
+    wtest("plana_s0_vs_r2d_ts0", PLANA_PS[(0, "ts0")][0], R2D_TS0[0]),
+    wtest("plana_s0_vs_r2d_new", PLANA_PS[(0, "new")][0], R2D_NEW[0]),
+    wtest("plana_s1_vs_r2d_ts0", PLANA_PS[(1, "ts0")][0], R2D_TS0[0]),
+    wtest("plana_s1_vs_r2d_new", PLANA_PS[(1, "new")][0], R2D_NEW[0]),
+    wtest("plana_s2_vs_r2d_ts0", PLANA_PS[(2, "ts0")][0], R2D_TS0[0]),
+    wtest("plana_s2_vs_r2d_new", PLANA_PS[(2, "new")][0], R2D_NEW[0]),
+    wtest("plana_s2_vs_plana_s0_ts0", PLANA_PS[(2, "ts0")][0], PLANA_PS[(0, "ts0")][0]),
 ]
 m = len(tests)
 order = sorted(range(m), key=lambda i: tests[i]["p"])
@@ -298,6 +356,19 @@ out = dict(
                   new_vs_ff=round(RNAFM_NEW[1] - FF_NEW[1], 4),
                   ts0_ratio_pct=round(RNAFM_TS0[1] / FF[0][1] * 100, 1),
                   new_ratio_pct=round(RNAFM_NEW[1] / FF_NEW[1] * 100, 1)),
+    seed_r2d_s1=dict(ts0_micro=round(R2D_S1_TS0[1], 4), ts0_macro=round(R2D_S1_TS0[2], 4),
+                     new_micro=round(R2D_S1_NEW[1], 4), new_macro=round(R2D_S1_NEW[2], 4)),
+    plana_ps=dict(
+        **{f"s{s}_{sp}": dict(micro=round(PLANA_PS[(s, sp)][1], 4),
+                              macro=round(PLANA_PS[(s, sp)][2], 4),
+                              n=len(PLANA_PS[(s, sp)][0]))
+           for s in (0, 1, 2) for sp in ("ts0", "new")}),
+    plana_3seed=dict(ts0=[round(v, 4) for v in PLANA_3SEED_TS0],
+                     new=[round(v, 4) for v in PLANA_3SEED_NEW],
+                     ts0_mean=round(st.mean(PLANA_3SEED_TS0), 4),
+                     ts0_std=round(st.stdev(PLANA_3SEED_TS0), 4),
+                     new_mean=round(st.mean(PLANA_3SEED_NEW), 4),
+                     new_std=round(st.stdev(PLANA_3SEED_NEW), 4)),
     scorer=dict(ts0_micro=round(R2D_TS0[1], 4), ts0_macro=round(R2D_TS0[2], 4),
                 new_micro=round(R2D_NEW[1], 4), new_macro=round(R2D_NEW[2], 4),
                 ts0_vs_ff=round(R2D_TS0[1] - FF[0][1], 4),
