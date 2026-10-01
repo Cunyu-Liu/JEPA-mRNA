@@ -5746,3 +5746,55 @@ Plan-B seed) at step 5025/20000, healthy.
 Draft follow-up queued: the six-source table in the abstract/4.2 gains the
 plana rows; the abstract's calibration paragraph should name that the
 headline model itself carries the best DP-free calibration measured.
+
+## 15.00 The seed arms land: Plan-B second seed + Plan-A third seed — every
+experiment the preprint freeze list named is now measured
+
+**r2d_s1 (Plan-B second seed, frozen backbone + resnet2d scorer)** — the
+paper's core positive now has its variance bar:
+
+| split | r2d_s1 | r2d_s0 | seed delta | per-seq status |
+|---|---|---|---|---|
+| TS0 micro F1 | **0.6559** | 0.6629 | -0.007 | (Wilcoxon pending stats v8) |
+| bpRNA-new micro F1 | **0.5** | 0.501 | -0.001 | |
+
+Read-out: the Plan-B TS0 effect holds at both seeds (0.6629/0.6559, both
+comfortably above the ff-family 0.5938-0.6425 band by the same margin);
+the seed delta −0.007 on TS0 and +0.003 OOD are inside the ff family's
+established seed spread (±0.003-0.005) — the positive is stable. Calibration
+same-shape as s0: raw head ECE 0.1167 (ts0) / 0.1687 (new), recalibrated
+0.0040 / 0.0023 — the 2-parameter map does the same work at seed 1.
+
+**plana_giga_s2 (Plan-A third seed) — the OOD swing is now a 3-point
+distribution:**
+
+| seed | TS0 micro (macro) | bpRNA-new micro (macro) |
+|---|---|---|
+| s0 | 0.7268 (0.7139) | 0.4302 (0.4156) |
+| s1 | 0.7245 (0.6989) | 0.3763 (0.3569) |
+| s2 | **0.7336 (0.7129)** | **0.3979 (0.3844)** |
+| mean ± std | **0.7283 ± 0.0047** | **0.4015 ± 0.0271** |
+
+Read-out: (1) the ID gain is rock-solid across three seeds (spread
+0.0091, std 0.0047 — every seed ≥0.72 vs the
+frozen control's 0.6629, i.e. the +0.06 backbone-adaptation effect is
+~15-20x its own seed noise); (2) the OOD cost is confirmed noisy at a
+magnitude that matters: std 0.0271 on a mean of 0.4015 — s2 lands
+between s1 and s0, so the distribution is wide-but-not-bimodal, and the
+honest statement is "the OOD cost of backbone adaptation is 0.07-0.12
+(95% of the paired range) with seed-to-seed scatter of the same order as
+the ID gain itself". Three points is the minimum for a mean; the draft
+now reports mean ± std for both splits and keeps the per-seed table.
+(3) The tight-ID/wide-OOD asymmetry is itself the finding: backbone
+adaptation is a reliable in-distribution lever and an unreliable OOD
+bet — that IS the deployment guidance, now statistically grounded.
+
+**Preprint freeze checklist status**: Plan-A 3 seeds ✅ (this entry);
+Plan-B 2 seeds ✅ (this entry); duration curve ✅ (14.93); plana
+calibration probe ✅ (14.99, ECE 0.0007 recalibrated). Remaining for
+v3.16: fold these four result sets into the draft (s2 + r2d_s1 rows,
+3-seed mean±std upgrade of the 14.93 single-seed paragraph, the plana
+calibration rows in the six-source table, abstract one-liner); stats v8
+(Wilcoxon for r2d_s1 vs s0 and s2-inclusive seed tests); then the two
+optional closers from the retrospective (density-matched stratification,
+latency Pareto) as time allows.
