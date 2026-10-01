@@ -194,7 +194,7 @@ e40 = json.load(open(f"{E}/plana_giga_s0_ext40k_step40000/result.json"))
 V["plana_s1_ts0"] = p15["splits"]["ts0"]["micro"]["f1"]
 V["plana_s1_new"] = p15["splits"]["new"]["micro"]["f1"]
 
-ck("v3.15: version banner v3.15", "v3.15, 2026-09-30" in text and "v3.14 change note" in text)
+ck("v3.15: change note v3.15 present", "v3.15 change note" in text and "v3.14 change note" in text)
 ck("v3.15: plana s1 ts0 0.7245", f"{V['plana_s1_ts0']:.4f}" == "0.7245" and "0.7245" in text, f"{V['plana_s1_ts0']:.4f}")
 ck("v3.15: plana s1 new 0.3763", f"{V['plana_s1_new']:.4f}" == "0.3763" and "0.3763" in text, f"{V['plana_s1_new']:.4f}")
 ck("v3.15: s1 delta-seed ts0 -0.0023 stated", f"{V['plana_s1_ts0'] - V['plana_ts0']:+.4f}" == "-0.0023" and "0.0023" in text, f"{V['plana_s1_ts0'] - V['plana_ts0']:+.5f}")
@@ -204,6 +204,20 @@ ck("v3.15: main table s1 + duration rows", "Plan A second seed (s1)" in text and
 ck("v3.15: side-by-side never-mean discipline stated", "side by side, never their mean" in text)
 ck("v3.15: appendix s1 + ext40k artifact rows", "plana_giga_s1_step20000" in text and "plana_giga_s0_ext40k_step{30000,40000}" in text)
 ck("v3.15: 4.3g second-seed paragraph present", "Second seed and duration curve" in text)
+
+pb1 = json.load(open(f"{E}/ow_rinalmo_r2d_b4_s1_step20000_bprna_ts0/result.json"))
+pb1n = json.load(open(f"{E}/ow_rinalmo_r2d_b4_s1_step20000_bprna_new/result.json"))
+V["r2d_s1_ts0"] = pb1["pair_level"]["micro"]["f1"]
+V["r2d_s1_new"] = pb1n["pair_level"]["micro"]["f1"]
+
+ck("v3.16: version banner v3.16", "v3.16, 2026-10-01" in text and "v3.15 change note" in text)
+ck("v3.16: r2d s1 ts0 0.6559", f"{V['r2d_s1_ts0']:.4f}" == "0.6559" and "0.6559" in text, f"{V['r2d_s1_ts0']:.4f}")
+ck("v3.16: r2d s1 new 0.5000", f"{V['r2d_s1_new']:.4f}" == "0.5000" and "0.5000" in text, f"{V['r2d_s1_new']:.4f}")
+ck("v3.16: seed delta tight (-0.0070/-0.0010) stated", f"{V['r2d_s1_ts0'] - V['r2d_ts0']:+.4f}" == "-0.0071" and "0.0071" in text and "0.0010" in text)
+ck("v3.16: main table plan-b s1 row", "Plan B second seed (s1)" in text)
+ck("v3.16: reproducibility-tracks-layer finding stated", "reproducibility tracks the layer being trained" in text)
+ck("v3.16: appendix plan-b s1 artifact row", "ow_rinalmo_r2d_b4_s1_step20000_{bprna_ts0,bprna_new}" in text)
+ck("v3.16: 4.3g (d) second-seed paragraph", "Where the recipe touches only the head, it" in text)
 
 fails = [c for c in checks if not c[1]]
 for name, ok, detail in checks:

@@ -1,11 +1,20 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.15, 2026-09-30.**
+**Preliminary preprint draft — v3.16, 2026-10-01.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
+>
+> **v3.16 change note (Plan-B second seed: the scorer gain is seed-stable).** The
+> Plan-B arm's core positive replicates across seeds with striking tightness:
+> TS0 micro **0.6559** (s0 0.6629, Δseed −0.0071), bpRNA-new micro
+> **0.5000** (s0 0.5010, Δseed −0.0010). The OOD reading is effectively
+> seed-invariant. Read against the matched ff baseline (0.5958 TS0 pooled): the
+> 2D-context scorer's +0.06/+0.10-family gain now carries two seeds on both
+> splits. Contrast with Plan-A, whose OOD cost swung −0.054 between seeds:
+> the frozen-backbone scorer arm is where the recipe is reproducible.
 >
 > **v3.15 change note (Plan-A second seed + duration curve).** Two measurements
 > close the two open questions 14.77/14.93 left on the Plan-A arm. (i) **Seed 1
@@ -456,6 +465,7 @@ baselines, and the capacity sweep moves us further up:
 | — RiNALMo-ft 650M (re-run, strict micro) | TS0 **0.7210** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4489** (below our 0.4870) |
 | — structRFM 86M (re-run, strict micro) | TS0 **0.6638** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5438** (above our 0.4870) |
 | — Ours, 2D-context scorer (Plan B) | TS0 **0.6629** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5010** (pooled micro; per-seq −0.023, see §4.3c) |
+| — Ours, Plan B second seed (s1) | TS0 **0.6559** | — | — | — | — | — | — | — | — | — | bpRNA-new **0.5000** (Δseed −0.0010; effectively seed-invariant) |
 | — Ours, gradual unfreeze + 2D scorer (Plan A = (a)+(d), 650M in-loop) | TS0 **0.7268** (macro 0.7139) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.4302** (P 0.569 / R 0.346) |
 | — Ours, Plan A second seed (s1) | TS0 **0.7245** (macro 0.6989) | — | — | — | — | — | — | — | — | — | bpRNA-new **0.3763** (P 0.650 / R 0.265) |
 | — Ours, Plan A duration curve (s0; 20k→30k→40k) | TS0 0.7268→0.7210→0.7178 | — | — | — | — | — | — | — | — | — | bpRNA-new 0.4302→0.4005→0.3988 |
@@ -535,6 +545,13 @@ Three readings of this table, stated exactly:
    our protocol. Read strictly, the scorer is the best in-distribution
    architecture we have and the worst cross-family *per-sequence*; read
    pooled, it is the best on both. Both readings are reported.
+
+**Second seed.** Seed 1 lands at TS0 **0.6559** / bpRNA-new **0.5000**
+(Δseed −0.0071 / −0.0010). The scorer's gains are seed-stable to a
+degree the backbone-adaptation arm's are not — compare Plan-A's OOD swing of
+−0.054 across the same two seeds. Where the recipe touches only the head, it
+reproduces; where it touches the backbone, it does not. That contrast is itself
+a finding: reproducibility tracks the layer being trained.
 
 ### 4.3b Three component ablations on the trained checkpoint
 
@@ -1215,6 +1232,7 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | Seed ensembles (§4.3f) | `eval_decision/ensemble8_{ts0,new}`, `eval_decision/ensemble_tr1_2seed_new` | `tools/ensemble_eval.py`: K-checkpoint score-average, single exact decode; stats in `tables/stats_definitive.json` (v5 `ensembles` block) |
 | Backbone swap (§4.3d, negative) | `eval_decision/ow_rnafm_ff_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch6.sh` → `eval/ss/evaluate_decision.py --checkpoint ckpts/rnafm_ff_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; RNA-FM 640-d frozen embeddings `embeddings/rna-fm`; stats in `tables/stats_definitive.json` (v6 `backbone` block) |
 | Stratified `vienna_mfe` grid cells (§4.3) | `eval_decision/stratified_mfe_cells.json` | recomputed with `eval/ss/run_baselines.py` predictor + pooling on the exact grid cells; vienna_centroid reproduced on identical sequences as the protocol check (0.4345 / 0.4010 to 4 dp) |
+| Plan-B second seed (§4.3g) | `eval_decision/ow_rinalmo_r2d_b4_s1_step20000_{bprna_ts0,bprna_new}/result.json` | training via `scripts/launch_r2d_s1.sh` (protocol identical to s0, seed 1; GPU 5 placement after the 26 h admission-bar episode, ledger 14.95); eval via the watch7 protocol |
 | Plan-A second seed (§4.3g) | `eval_decision/plana_giga_s1_step20000/result.json` | training via `tools/watch_plan_a_s1.sh` (identical protocol, seed 1); final eval rerun after the v3.14-era eval script crashed on a missing parent directory (mkdir fix in eval_plan_a.py, pytest subset 37/37); MIG-slice vs full-card fp16 non-determinism 1e-4 verified |
 | Plan-A duration curve 30k/40k (§4.3g) | `eval_decision/plana_giga_s0_ext40k_step{30000,40000}/result.json` | ext40k arm (seed 0, same protocol extended to 40k steps); both evals on the patched script; closes the 20k→40k convergence question |
 | Plan-A gradual unfreeze (§4.3g, split-signed) | `eval_decision/plana_giga_s0_step20000/result.json` | training `scripts/launch_plan_a.sh` → `tools/train_plan_a.py` (20000 steps, batch 4, head-lr 1e-4 / backbone-lr 1e-5, warmup-head 1600, unfreeze 2 blocks/800 steps, z-column checkpointing to fit a 3g.20gb MIG slice, peak 15.4GB); final eval auto-run by `tools/watch_plan_a.sh` → `tools/eval_plan_a.py` (nussinov_map decode, prior_weight −1, in-loop frame); ledger §14.76–§14.77; second seed plana_giga_s1 in flight |

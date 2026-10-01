@@ -5798,3 +5798,27 @@ calibration rows in the six-source table, abstract one-liner); stats v8
 (Wilcoxon for r2d_s1 vs s0 and s2-inclusive seed tests); then the two
 optional closers from the retrospective (density-matched stratification,
 latency Pareto) as time allows.
+
+## 14.96 Plan-B second seed complete: the scorer gain is seed-stable (draft v3.16)
+
+rinalmo_r2d_b4_s1 finished 20,000 steps (final loss -0.910) and the watch7-protocol
+final evals landed for both splits:
+
+| split | s1 | s0 | delta |
+|---|---|---|---|
+| TS0 micro F1 | 0.6559 (P 0.6487 / R 0.6632) | 0.6629 | -0.0071 |
+| bpRNA-new micro F1 | 0.5000 (P 0.5368 / R 0.4679) | 0.5010 | -0.0010 |
+
+The Plan-B core positive replicates with striking tightness - the OOD reading is
+effectively seed-invariant, in sharp contrast with Plan-A's OOD swing of -0.054
+across the same two seeds. Paper-level reading (now in the draft, v3.16): where
+the recipe touches only the head, it reproduces; where it touches the backbone,
+it does not - reproducibility tracks the layer being trained.
+
+Draft v3.16: Plan-B s1 row in the 4.3 main table, second-seed paragraph in 4.3g(d),
+Appendix A artifact row; checker 108/108 (one precision fix on the way: the seed
+delta is -0.0071 exactly, the first write-up said -0.0070 - caught by the checker
+itself).
+
+The GPU 5 placement after the 26 h admission-bar episode (14.95) is now fully
+vindicated: the arm trained to completion on that card without incident.
