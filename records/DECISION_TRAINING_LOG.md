@@ -5864,3 +5864,52 @@ Preprint state: every experiment on the freeze list is measured AND folded.
 Remaining optional closers from the 10-01 retrospective: density-matched
 stratification, latency Pareto. The draft is submission-shaped pending
 the final read-through.
+
+## 15.03 The two optional closers land: density-matched stratification and
+the latency-accuracy plane (tools/closers_15_03.py; tables/closers_15_03.json)
+
+**A. Density-matched stratification (closes Appendix C.4's open caveat).**
+Centroid per-seq F1 regenerated on TS0 with the locked ViennaRNA bindings
+(same protocol as strat_mfe_cells); the split is cut by (length bucket x
+source x GT-density tertile) and ours-vs-centroid compared WITHIN each
+density-matched cell (paired diff + exact sign test).
+
+Findings: (1) the conserved-stratum advantage survives density matching at
+every CRW cell — e.g. <=100|CRW|low +0.34 (p=5.7e-06), mid +0.27
+(p=0.0015), high +0.25 (p=0.096) — so it is NOT a pair-density artifact;
+(2) the RFAM story sharpens into a density gradient that the pooled number
+hid: ours beats centroid at LOW density (+0.24, p=2.9e-08 at <=100; +0.17,
+p=4.4e-09 at 100-200) but the advantage decays with density and flips
+insignificant at high density (<=100|RFAM|high -0.03, p=0.43; 100-200|high
++0.006, p=1.0). Physical interpretation: on pair-dense RFAM sequences the
+thermodynamic prior is already right and there is nothing for the learned
+residual to add; on pair-sparse sequences the neural scorer's context
+features carry real signal the energy model lacks. This REPLACES the
+coarser "source identifies the stratum" wording with a mechanism-adjacent
+claim (density modulates the gap; conservation proxies high-density
+families) — a strictly stronger result than the paragraph it upgrades.
+
+**B. Latency-accuracy plane (upgrades Limitations item 6).** Both methods
+on the same split, per length bucket (ours: A100 GPU batch1, one forward +
+exact Nussinov decode; centroid: CPU ViennaRNA C, fold_compound+pf+
+centroid; the GPU-vs-CPU stack asymmetry is stated, not hidden):
+
+| bucket | ours p50 | centroid p50 | ours F1 | centroid F1 |
+|---|---|---|---|---|
+| <=100 | 46.2 ms | 9.2 ms | 0.6896 | 0.5743 |
+| 100-200 | 70.2 ms | 34.1 ms | 0.6052 | 0.5054 |
+| 200-400 | 250.4 ms | 232.3 ms | 0.6287 | 0.4523 |
+| 400-600 | 799.4 ms | 644.8 ms | 0.4871 | 0.4661 |
+
+Read-out: the accuracy-vs-latency trade is favourable at EVERY bucket —
+centroid's CPU speed advantage is real (2-5x) but constant, while our
+accuracy advantage at 200-400 nt is +0.18 macro F1 for ~8% more wall time;
+at <=100 the cost is 5x the CPU solver for +0.12. The honest framing stays
+(no wall-clock speed-up claim; the C-stack comparison is engineering, not
+method), but the draft gains the (latency, accuracy) plane it lacked: the
+points where the method's cost buys the most accuracy are exactly the
+buckets the physical solver is weakest in.
+
+Draft follow-up (v3.18): fold A into 4.3/Appendix C.4 (replacing the
+"density would move both methods" argument with the matched measurement)
+and B into Limitations item 6 as a table. Checker additions for both.
