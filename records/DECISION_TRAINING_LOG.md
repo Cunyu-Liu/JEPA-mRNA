@@ -6051,3 +6051,28 @@ The 30-min patrol automation covers the follow-through: the moment any
 card clears the bar the arm self-launches, trains ~6-8 h, and the
 built-in watch7-protocol evals land 10k AND 20k on both splits without
 human touch.
+
+## 15.06 Pre-flight deep check for r2d_tr1: the full training input chain
+verified end-to-end while the arm waits for a card (fail-fast insurance)
+
+Every input the trainer will touch, verified from disk (the "想好再开始，
+别犯错" directive applied to data, not just design):
+
+1. **TR1 teacher labels**: manifest declares 45,865 sequences / shard 256
+   / thermo:viennarna / version-lock ViennaRNA 2.7.2; 180 shard files on
+   disk = exactly ceil(45865/256); summed shard sequence count = 45,865
+   = jsonl rows; 3 random shards shape-verified (len(seq) ==
+   probs.shape[0] for every entry).
+2. **TR1 frozen embeddings**: 2 shards, 22,932 + 22,933 = 45,865
+   sequences; h matrix 2,956,864 x 1280 (fp16-packed rows + offsets
+   layout); sequence-set vs jsonl = 0 missing / 0 extra (matched on
+   normalised sequence, since the packer keys by sequence not name).
+3. **Consequence**: when a card frees, the trainer cannot fail on data —
+   the only remaining failure mode is GPU churn, which the reservation +
+   adaptive bar + 40 restarts already cover. The wait-state is not dead
+   time; it is the price of protocol purity (15.05b) with inputs now
+   proven sound.
+
+Arm status at close: daemon polling (no-device lines on schedule), no
+full card >= 34 GB (GPU0 18.3 / GPU2 14.2 GB the largest gaps). All
+automation (watchdog cron, 30-min patrol, auto-eval at 10k/20k) armed.
