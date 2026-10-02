@@ -209,6 +209,12 @@ def main(argv=None) -> int:
     ap.add_argument("--out-dbn", required=True)
     ap.add_argument("--out-npz", required=True)
     ap.add_argument("--out-release-json", default="")
+    ap.add_argument("--no-release-row", action="store_true",
+                    help="skip the release .plk row cross-check (for splits "
+                         "that are not in the release test sets, e.g. our "
+                         "bprna_new download); only legal when "
+                         "--out-release-json is empty, since that output "
+                         "needs the rows")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--device", default="", help="cuda / cuda:6 / cpu; default auto")
     ap.add_argument("--precision", default="fp32", choices=["fp32", "bf16", "fp16"])
@@ -234,6 +240,16 @@ def main(argv=None) -> int:
     records = read_jsonl_records(args.split, args.limit)
     print(f"[rnaf] {args.split}: {len(records)} project records", flush=True)
     frames = load_release_frames(args.plk)
+    _split_key = args.split[4:] if args.split.startswith("ref_") else args.split
+    _release_available = _split_key in frames
+    if args.no_release_row:
+        if not _release_available and args.out_release_json:
+            raise SystemExit("--no-release-row conflicts with --out-release-json "
+                             f"(split {_split_key!r} has no release frame anyway)")
+    elif not _release_available:
+        raise SystemExit(f"split {args.split!r} has no {_split_key!r} frame in the "
+                         f"release .plk; pass --no-release-row to evaluate a "
+                         "project-only split")
 
     seqs: List[str] = []
     probs: List[np.ndarray] = []
@@ -245,11 +261,14 @@ def main(argv=None) -> int:
     t0 = time.time()
     with torch.no_grad():
         for k, (name, seq, pairs) in enumerate(records, 1):
-            row = release_row(frames, args.split, name, seq)
-            rseq = "".join(row["sequence"]).upper().replace("T", "U")
-            if rseq != seq:
-                raise SystemExit(f"{name}: release seq != project seq (len {len(rseq)} vs {len(seq)})")
-            rpairs, _labels = pdd._row_pairs(dict(row), len(seq))
+            if args.no_release_row:
+                row, rpairs = None, pairs  # no release frame: project GT only
+            else:
+                row = release_row(frames, args.split, name, seq)
+                rseq = "".join(row["sequence"]).upper().replace("T", "U")
+                if rseq != seq:
+                    raise SystemExit(f"{name}: release seq != project seq (len {len(rseq)} vs {len(seq)})")
+                rpairs, _labels = pdd._row_pairs(dict(row), len(seq))
             raw_pair_counts["release"] += len(rpairs)
             raw_pair_counts["project"] += len(pairs)
 

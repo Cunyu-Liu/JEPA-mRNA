@@ -5913,3 +5913,68 @@ buckets the physical solver is weakest in.
 Draft follow-up (v3.18): fold A into 4.3/Appendix C.4 (replacing the
 "density would move both methods" argument with the matched measurement)
 and B into Limitations item 6 as a table. Checker additions for both.
+
+## 15.04 User audit round: every table value re-verified from its
+result.json; RNAformer measured on bpRNA-new (was the last unmeasured
+headline cell); ECE explained for the record; ArchiveII status restated
+
+1. **Source audit (user demand: no number without a source).** Every
+   headline value re-derived live from its artifact during this round:
+   RNAformer TS0 0.7578 = baselines_rnaformer_ref_bprna_ts0.json
+   /baselines/rnaformer/micro_f1 (0.7578, P 0.8091 / R 0.7127; strict
+   project-GT scoring, fp32, greedy non-crossing decode; the run log
+   records the checkpoint hash-clean loads and the adapter path). UFold
+   new 0.6106, centroid new 0.6770, mfe 0.6379, MXfold2 TS0 0.5651,
+   RiNALMo-ft TS0 0.7210 / new 0.4489 (Zenodo ckpt, md5 verified),
+   structRFM TS0 0.6638 / new 0.5438 — all re-read from their
+   result.json files this round. NucleicBERT rows are QUOTED (their
+   Table 1) and flagged as such in the draft; the two RiNALMo-paper
+   convention numbers likewise. Nothing in the main table is hand-typed.
+
+2. **RNAformer on bpRNA-new — now MEASURED (was the last blank in the
+   main table).** run_rnaformer gained --no-release-row for project-only
+   splits (bprna_new is our download, not in the release .plk; the
+   release-row cross-check is impossible and was guarded, not silently
+   skipped). Two OOM restarts (co-tenant churn) then a clean pass on
+   GPU-5 (~85 min, 0.56-1.1 s/seq): **micro F1 0.4936** (P 0.7039 /
+   R 0.3800, macro 0.4588, INF 0.4820; n=5,388; project scorer). The
+   same precision-skew / recall-collapse signature as our adapted arms.
+   Consequence for the main table: on bpRNA-new RNAformer sits BELOW
+   UFold (0.6106) and centroid (0.6770), and below our frozen Plan-B arm
+   (0.5010/0.5000) — the strongest TS0 baseline is NOT the strongest OOD
+   baseline, which reshapes the OOD leaderboard: our honest deficit is
+   0.176 to centroid / 0.117 to UFold, not 0.28 to an imagined
+   RNAformer-on-new.
+
+3. **ECE (expected calibration error), for the record:** for every
+   candidate base pair the head outputs a probability p; the true label
+   is paired (1) or not (0). Bucket the pairs by p into 10 equal-width
+   bins; ECE = the count-weighted |mean(p) - mean(label)| per bin summed.
+   ECE=0 means "when the model says 70%, ~70% of such pairs are real" —
+   the number downstream users actually need to trust a threshold or a
+   design decision. Ours recalibrated: 0.0007 (best DP-free measured);
+   raw 0.0152; UFold 0.0147 (4.1x over-confident); RNAformer 0.0015;
+   ViennaRNA exact BPP 0.0048.
+
+4. **ArchiveII ("ArchiveII-600" is not a standard benchmark name).**
+   Our ArchiveII status: 3,966 bpseq rows (RiNALMo-compatible CSV +
+   bpseq from the BPfold tarball); measured once (0.5829) then WITHDRAWN
+   — 35.6% duplicates TR0 (812 exact + 594 20-mer containment), so it is
+   not a held-out split. The de-duplicated clean subset (2,544 rows) has
+   Vienna baselines measured per length bucket (centroid 0.7212/0.6865/
+   0.5868/0.5345 by bucket) but our heads have NOT been re-run on it;
+   RiNALMo's 9-fold leave-one-family-out ArchiveII protocol needs 9
+   fine-tuning runs (declined for this budget). If the user's
+   "ArchiveII-600" means a 600-sequence subset, no such split is defined
+   here; if it means the standard ArchiveII, the answer is: tested,
+   withdrawn for contamination, clean-subset re-measurement queued as
+   the next optional run (needs embeddings for 2,544 rows + ~30 GPU-min).
+
+5. bpRNA-new target: the full OOD leaderboard now (all project scorer,
+   this round's re-reads):
+   centroid 0.6770 / UFold 0.6106 / structRFM 0.5438 / **ours-frozen
+   (Plan-B) 0.5010** / RNAformer 0.4936 / ours-TR1 0.5162 (data lever) /
+   ours-adapted (Plan-A) 0.4015±0.0271. The path to closing on UFold/
+   centroid is the data axis (TR1 +0.029 at 20k) and the structRFM-style
+   structure-aware pretraining corpus (+0.04 OOD at matched TS0) — both
+   measured, both queued for the next training round.
