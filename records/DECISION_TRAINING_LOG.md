@@ -6076,3 +6076,25 @@ Every input the trainer will touch, verified from disk (the "想好再开始，
 Arm status at close: daemon polling (no-device lines on schedule), no
 full card >= 34 GB (GPU0 18.3 / GPU2 14.2 GB the largest gaps). All
 automation (watchdog cron, 30-min patrol, auto-eval at 10k/20k) armed.
+
+## 15.07 Evening watch: GPU-5 oscillates toward the bar (32.4 GB peak
+observed); the arm stays armed and will self-launch in the night window
+
+19:30-19:50 census: GPU5's free gap swung 28.1 -> 22.9 -> 32.4 -> 27.8 GB
+as tenants (a 9.9-day rna_sc job, the parallel session's q_fill, an
+external reviewer's benchmark) churn. The 32.4 GB reading came within
+1.6 GB of the 34 GB admission bar — the evening/night churn cycle makes a
+qualifying window a matter of time, and the daemon polls every ~2.5 min
+with a 90 s two-phase confirmation, so any window >= ~4 min is caught.
+
+Decision held (no shortcuts): the rna_sc job belongs to the user's other
+project (toktokenbench) and the q_fill jobs to the parallel session —
+neither is ours to preempt. The B=2 protocol-breaking fallback stays
+rejected. The wait is bounded by tenant behaviour, not by any defect on
+our side; all three automation layers (polling daemon 168741, watchdog
+cron */10, 30-min patrol) verified in place at close.
+
+Once launched: ~6-8 h to 20k, auto-evals at 10k AND 20k on both splits
+(w=-1, VL0 Platt), results land in eval_decision/ow_rinalmo_r2dtr1_b4_s0_
+step{10000,20000}_{bprna_ts0,bprna_new}/ — the patrol records them and
+folds the read-out into the ledger.
