@@ -5978,3 +5978,50 @@ headline cell); ECE explained for the record; ArchiveII status restated
    centroid is the data axis (TR1 +0.029 at 20k) and the structRFM-style
    structure-aware pretraining corpus (+0.04 OOD at matched TS0) — both
    measured, both queued for the next training round.
+
+## 15.05 User round: (1) full metrics matrix with P/R for every measured
+cell; (2) the OOD chaser arm r2d_tr1 designed from single-axis evidence and
+launched (armed, waiting for a full card)
+
+1. **metrics_matrix.py** (tools/; output tables/metrics_matrix.md + .json):
+   every measured (method, dataset) cell with micro P / micro R / micro F1
+   / macro F1 / INF / n and its exact result.json source — 39 measured
+   cells + 8 quoted rows (NucleicBERT Table 1, RiNALMo Supp S5) with the
+   quoted flag. Vienna family + Nussinov prior on TS0/new/TestSetB and the
+   clean-ArchiveII length buckets; UFold/MXfold2/RNAformer both splits
+   (RNAformer-new = 15.04); our ff/big/TR1/bigtr1/r2d/plana arms. '—'
+   marks metrics a protocol does not emit (plana INF, some quoted cells).
+   Nothing hand-typed: the script reads everything back from disk.
+
+2. **r2d_tr1 (the OOD chaser)** — design from the measured single-axis
+   evidence, not intuition:
+   - frozen RiNALMo-giga backbone (14.77: adaptation costs -0.071 OOD;
+     the frozen arm holds family generality);
+   - resnet2d 2D scorer (14.74: +0.067 both splits — the biggest single
+     lever we own);
+   - TR1 4.29x corpus (14.49: +0.029 OOD at 20k; the 40k point 0.5162 ->
+     0.4999 shows the OOD peak sits at/below 20k for this corpus size,
+     so 20,000 steps is the target with 10k/15k snapshots for the early
+     curve);
+   - deliberately NOT combining the 4.8x capacity head (14.57: capacity
+     x data interacted NEGATIVELY OOD, 0.4558 < either single axis) —
+     this arm keeps the 811k scorer.
+   Expected value from the measured deltas (additivity is a hypothesis,
+     not a promise): 0.50 + 0.067(ID-limited OOD share) + 0.029 is not
+     how OOD adds; the honest prediction band is 0.53-0.56 OOD —
+     structRFM-level (0.5438) is the realistic target, UFold (0.6106)
+     the stretch goal. The 15.03 density-matched result explains WHY the
+     frozen arm stalls OOD (thermodynamic prior already right on
+     pair-dense sequences) and what the +0.06 scorer buys (low-density
+     context signal).
+   Protocol: byte-identical to rinalmo_r2d_b4_s0 (only --data/--arm
+   differ); 33GB reservation, two-phase 34GB confirmed admission,
+   adaptive bar to 38, 40 restarts, watchdog cron */10 (ensure_r2dtr1.sh),
+   watch7-protocol auto-eval at DONE for 10k AND 20k on both splits
+   (w=-1, VL0 Platt). Status at close: daemon armed and polling — no
+   full card has cleared 34GB this hour (largest gap 18.4GB, held by a
+   5-day 18.6GB rna_sc tenant); it launches the moment a card frees.
+
+3. Training-time estimate: TR1 arm ~36GB RSS (measured ff_tr1 family) —
+   host RAM 588GB available, no constraint. Wall: ~6-8 h at ~1 s/step
+   once placed, + ~1 h for the four evals.
