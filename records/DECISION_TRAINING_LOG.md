@@ -6025,3 +6025,29 @@ launched (armed, waiting for a full card)
 3. Training-time estimate: TR1 arm ~36GB RSS (measured ff_tr1 family) —
    host RAM 588GB available, no constraint. Wall: ~6-8 h at ~1 s/step
    once placed, + ~1 h for the four evals.
+
+### 15.05b r2d_tr1 wait-state audit: why the arm is parked and why that is
+the correct posture (checked, not assumed)
+
+Cluster census at 16:3x: full-card free gaps GPU0 18.7 / GPU2 14.7 /
+GPU1 9.8 / GPU5 7.4 / GPU3 4.5 / GPU4 3.0 GB — none clears the 34 GB
+admission bar. The 18.7 GB on GPU0 is held down by a 9-day rna_sc tenant
+(18.65 GB) plus a rising q_fill AIDO job (10.0 -> 10.7 GB during the
+audit window). The two 3g.20gb MIG slices (16.5 / 20.2 GB free) cannot
+fit the r2d family's measured ~31.8 GB steady-state at B=4 — the
+resnet2d BatchNorm full-matrix path bypasses column chunking by design
+(14.67/14.79b), so chunking cannot shrink it.
+
+A B=2 fallback channel was considered and REJECTED deliberately: halving
+the batch doubles the step count for equal data seen and breaks the
+byte-identical protocol alignment with rinalmo_r2d_b4_s0 — the arm's
+entire value is being a single-variable read (data TR0->TR1) on the
+matched protocol. Purity kept; the wait is the cost.
+
+Protections verified live: daemon 3484518 polling on schedule (no-device
+lines every ~2.5 min), watchdog cron installed (R2DTR1_WATCHDOG */10),
+reservation flag armed, adaptive bar 34->38 on no-progress, 40 restarts.
+The 30-min patrol automation covers the follow-through: the moment any
+card clears the bar the arm self-launches, trains ~6-8 h, and the
+built-in watch7-protocol evals land 10k AND 20k on both splits without
+human touch.
