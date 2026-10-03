@@ -48,8 +48,20 @@ baseline("MXfold2", "baselines_mxfold2_bprna_ts0.json", "TS0")
 baseline("MXfold2", "baselines_mxfold2_bprna_new.json", "bpRNA-new")
 baseline("RNAformer (bprna ckpt)", "baselines_rnaformer_ref_bprna_ts0.json", "TS0")
 baseline("RNAformer (bprna ckpt)", "baselines_rnaformer_bprna_new.json", "bpRNA-new")
+# 15.09: TS1 / TS-hard / TS2 / TS3 coverage (paper Table 4 comparisons)
+PDB_DS = {"ref_pdb_ts1": "TS1", "ref_pdb_ts2": "TS2", "ref_pdb_ts3": "TS3",
+          "ref_pdb_ts_hard": "TS-hard"}
 for s in ["ref_pdb_ts2", "ref_pdb_ts3"]:
-    baseline("RNAformer (bprna ckpt)", f"baselines_rnaformer_{s}.json", s.replace("ref_", ""))
+    baseline("RNAformer (bprna ckpt)", f"baselines_rnaformer_{s}.json", PDB_DS[s])
+for s in ["ref_pdb_ts1", "ref_pdb_ts_hard"]:
+    for tag, lbl in [("rnaformer_bprna", "RNAformer (bprna ckpt)"),
+                     ("rnaformer_interfam", "RNAformer (inter-family ckpt, paper Tab.4 setting)")]:
+        baseline(lbl, f"baselines_{tag}_{s}.json", PDB_DS[s])
+# classical baselines already scored on TS1/TS-hard by the project scorer
+for nm in ["vienna_centroid", "vienna_mfe", "vienna_mea", "nussinov_turner"]:
+    baseline(nm, "baselines_ref_pdb_ts1.json", "TS1")
+    baseline(nm, "baselines_ref_pdb_ts_hard.json", "TS-hard")
+baseline("UFold", "baselines_ufold_ref_pdb_ts1.json", "TS1")
 
 # --- our arms (ow_* result.json: pair_level micro + macro, INF mean) ---
 def ow_if(label, dirname, ds):
@@ -75,6 +87,13 @@ for _s in (10000, 20000):
     for _sp, _dsn in [("bprna_ts0", "TS0"), ("bprna_new", "bpRNA-new")]:
         ow_if("Ours r2d_tr1 (frozen+2D+TR1, s0 @%dk)" % _s,
               "ow_rinalmo_r2dtr1_b4_s0_step%d_%s" % (_s, _sp), _dsn)
+# 15.09: r2d_tr1 on the PDB test family
+for _sp, _dsn in [("ref_pdb_ts1", "TS1"), ("ref_pdb_ts_hard", "TS-hard"),
+                  ("ref_pdb_ts2", "TS2"), ("ref_pdb_ts3", "TS3")]:
+    ow_if("Ours r2d_tr1 (frozen+2D+TR1, s0)",
+          "ts1hard_r2dtr1_s0_%s" % _sp, _dsn)
+# ff arm has an existing TS1 eval
+ow_if("Ours ff", "ff20000_ref_pdb_ts1", "TS1")
 
 # --- plana arms ---
 plana("Ours Plan-A (adapted+2D, s0)", "plana_giga_s0_step20000", "TS0+new")
@@ -82,6 +101,12 @@ plana("Ours Plan-A s1", "plana_giga_s1_step20000", "TS0+new")
 plana("Ours Plan-A s2", "plana_giga_s2_step20000", "TS0+new")
 plana("Ours Plan-A ext40k @30k", "plana_giga_s0_ext40k_step30000", "TS0+new")
 plana("Ours Plan-A ext40k @40k", "plana_giga_s0_ext40k_step40000", "TS0+new")
+# 15.09: Plan-A seeds on the PDB test family (eval_plan_a --splits ts1,hard,ts2,ts3;
+# closer_ts1hard.sh writes plan_a_result.json under <arm>_ts1hard_all/)
+for _a in ["plana_giga_s0", "plana_giga_s1", "plana_giga_s2"]:
+    _p = ART / ("%s_ts1hard_all" % _a) / "plan_a_result.json"
+    if _p.exists():
+        SOURCES.append(("Ours Plan-A %s (PDB family)" % _a[-2:], "plana", _p, "ts1+hard+ts2+ts3"))
 
 def read_cell(label, kind, path, ds):
     if not path.exists():
@@ -116,9 +141,13 @@ def read_cell(label, kind, path, ds):
                 "source": str(path.parent.name)}
     if kind == "plana":
         d = json.load(open(path))
+        split_names = {"ts0": "TS0", "new": "bpRNA-new", "ts1": "TS1",
+                       "hard": "TS-hard", "ts2": "TS2", "ts3": "TS3"}
         rows = []
         for sp, m in d["splits"].items():
-            rows.append({"label": label, "dataset": {"ts0": "TS0", "new": "bpRNA-new"}[sp],
+            if sp not in split_names:
+                continue
+            rows.append({"label": label, "dataset": split_names[sp],
                          "micro_P": round(m["micro"]["precision"], 4),
                          "micro_R": round(m["micro"]["recall"], 4),
                          "micro_F1": round(m["micro"]["f1"], 4),

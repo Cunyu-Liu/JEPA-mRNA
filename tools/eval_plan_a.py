@@ -147,7 +147,11 @@ def main():
           flush=True)
 
     split_files = {"ts0": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl",
-                   "new": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_new.jsonl"}
+                   "new": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_new.jsonl",
+                   "ts1": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts1.jsonl",
+                   "hard": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
+                   "ts2": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts2.jsonl",
+                   "ts3": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts3.jsonl"}
     global DUMP_PER_SEQ
     DUMP_PER_SEQ = bool(args.dump_per_seq)
     results = {}
