@@ -320,6 +320,50 @@
    "source": "ow_rinalmo_r2d_b4_s1_step20000_bprna_new"
   },
   {
+   "label": "Ours r2d_tr1 (frozen+2D+TR1, s0 @10000k)",
+   "dataset": "TS0",
+   "micro_P": 0.6234,
+   "micro_R": 0.6963,
+   "micro_F1": 0.6578,
+   "macro_F1": 0.6597,
+   "INF": 0.6651,
+   "n": 1288,
+   "source": "ow_rinalmo_r2dtr1_b4_s0_step10000_bprna_ts0"
+  },
+  {
+   "label": "Ours r2d_tr1 (frozen+2D+TR1, s0 @10000k)",
+   "dataset": "bpRNA-new",
+   "micro_P": 0.6073,
+   "micro_R": 0.6017,
+   "micro_F1": 0.6045,
+   "macro_F1": 0.6034,
+   "INF": 0.6097,
+   "n": 5388,
+   "source": "ow_rinalmo_r2dtr1_b4_s0_step10000_bprna_new"
+  },
+  {
+   "label": "Ours r2d_tr1 (frozen+2D+TR1, s0 @20000k)",
+   "dataset": "TS0",
+   "micro_P": 0.65,
+   "micro_R": 0.7319,
+   "micro_F1": 0.6885,
+   "macro_F1": 0.692,
+   "INF": 0.6975,
+   "n": 1288,
+   "source": "ow_rinalmo_r2dtr1_b4_s0_step20000_bprna_ts0"
+  },
+  {
+   "label": "Ours r2d_tr1 (frozen+2D+TR1, s0 @20000k)",
+   "dataset": "bpRNA-new",
+   "micro_P": 0.6104,
+   "micro_R": 0.598,
+   "micro_F1": 0.6041,
+   "macro_F1": 0.5955,
+   "INF": 0.6012,
+   "n": 5388,
+   "source": "ow_rinalmo_r2dtr1_b4_s0_step20000_bprna_new"
+  },
+  {
    "label": "Ours Plan-A (adapted+2D, s0)",
    "dataset": "TS0",
    "micro_P": 0.7689,

@@ -71,6 +71,10 @@ ow("Ours r2d (Plan-B, frozen+2D, s0)", "ow_rinalmo_r2d_b4_s0_step20000_bprna_ts0
 ow("Ours r2d (Plan-B, s0)", "ow_rinalmo_r2d_b4_s0_step20000_bprna_new", "bpRNA-new")
 ow("Ours r2d (Plan-B, s1)", "ow_rinalmo_r2d_b4_s1_step20000_bprna_ts0", "TS0")
 ow("Ours r2d (Plan-B, s1)", "ow_rinalmo_r2d_b4_s1_step20000_bprna_new", "bpRNA-new")
+for _s in (10000, 20000):
+    for _sp, _dsn in [("bprna_ts0", "TS0"), ("bprna_new", "bpRNA-new")]:
+        ow_if("Ours r2d_tr1 (frozen+2D+TR1, s0 @%dk)" % _s,
+              "ow_rinalmo_r2dtr1_b4_s0_step%d_%s" % (_s, _sp), _dsn)
 
 # --- plana arms ---
 plana("Ours Plan-A (adapted+2D, s0)", "plana_giga_s0_step20000", "TS0+new")

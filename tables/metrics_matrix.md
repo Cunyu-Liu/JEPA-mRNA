@@ -19,7 +19,9 @@ not produced by that run's protocol (e.g. INF needs per-seq rows).
 | Ours Plan-A s1 | TS0 | 0.8300 | 0.6428 | 0.7245 | 0.6989 | — | 1288 | plana_giga_s1_step20000 |
 | Ours Plan-A ext40k @30k | TS0 | 0.7818 | 0.6689 | 0.7210 | 0.7044 | — | 1288 | plana_giga_s0_ext40k_step30000 |
 | Ours Plan-A ext40k @40k | TS0 | 0.7947 | 0.6544 | 0.7178 | 0.6974 | — | 1288 | plana_giga_s0_ext40k_step40000 |
+| Ours r2d_tr1 (frozen+2D+TR1, s0 @20000k) | TS0 | 0.6500 | 0.7319 | 0.6885 | 0.6920 | 0.6975 | 1288 | ow_rinalmo_r2dtr1_b4_s0_step20000_bprna_ts0 |
 | Ours r2d (Plan-B, frozen+2D, s0) | TS0 | 0.6865 | 0.6410 | 0.6629 | 0.6436 | 0.6499 | 1288 | ow_rinalmo_r2d_b4_s0_step20000_bprna_ts0 |
+| Ours r2d_tr1 (frozen+2D+TR1, s0 @10000k) | TS0 | 0.6234 | 0.6963 | 0.6578 | 0.6597 | 0.6651 | 1288 | ow_rinalmo_r2dtr1_b4_s0_step10000_bprna_ts0 |
 | Ours r2d (Plan-B, s1) | TS0 | 0.6487 | 0.6632 | 0.6559 | 0.6470 | 0.6525 | 1288 | ow_rinalmo_r2d_b4_s1_step20000_bprna_ts0 |
 | Ours bigtr1 (capacity x data) | TS0 | 0.7419 | 0.5699 | 0.6446 | 0.6128 | 0.6233 | 1288 | ow_rinalmo_bigtr1_b4_s0_step20000_bprna_ts0 |
 | Ours TR1 @40k | TS0 | 0.5763 | 0.6586 | 0.6147 | 0.6288 | 0.6335 | 1288 | ow_rinalmo_ff_tr1_b4_s0_step40000_bprna_ts0 |
@@ -35,6 +37,8 @@ not produced by that run's protocol (e.g. INF needs per-seq rows).
 | ViennaRNA mea | bpRNA-new | 0.5972 | 0.7426 | 0.6620 | 0.6764 | 0.6814 | 5388 | baselines_bprna_new.json |
 | ViennaRNA mfe | bpRNA-new | 0.5646 | 0.7332 | 0.6379 | 0.6581 | 0.6638 | 5388 | baselines_bprna_new.json |
 | UFold | bpRNA-new | 0.5328 | 0.7150 | 0.6106 | 0.6439 | 0.6499 | 5388 | baselines_ufold_bprna_new.json |
+| Ours r2d_tr1 (frozen+2D+TR1, s0 @10000k) | bpRNA-new | 0.6073 | 0.6017 | 0.6045 | 0.6034 | 0.6097 | 5388 | ow_rinalmo_r2dtr1_b4_s0_step10000_bprna_new |
+| Ours r2d_tr1 (frozen+2D+TR1, s0 @20000k) | bpRNA-new | 0.6104 | 0.5980 | 0.6041 | 0.5955 | 0.6012 | 5388 | ow_rinalmo_r2dtr1_b4_s0_step20000_bprna_new |
 | Ours r2d (Plan-B, s0) | bpRNA-new | 0.5836 | 0.4389 | 0.5010 | 0.4714 | 0.4868 | 5388 | ow_rinalmo_r2d_b4_s0_step20000_bprna_new |
 | Ours r2d (Plan-B, s1) | bpRNA-new | 0.5368 | 0.4679 | 0.5000 | 0.4900 | 0.5011 | 5388 | ow_rinalmo_r2d_b4_s1_step20000_bprna_new |
 | Ours TR1 @40k | bpRNA-new | 0.4927 | 0.5074 | 0.4999 | 0.5083 | 0.5122 | 5388 | ow_rinalmo_ff_tr1_b4_s0_step40000_bprna_new |
