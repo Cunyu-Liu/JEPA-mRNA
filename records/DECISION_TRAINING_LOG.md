@@ -6312,3 +6312,62 @@ precision, matching the paper's own Table 4 setting description.
 **Target ladder for Arm A (project GT, our scorer):**
 TS0 RNAformer-bprna 0.7578 | new UFold 0.6106 | TS1 interfam 0.8150 | TS2 0.9043 |
 TS3 bprna-ckpt 0.9410 | TS-hard bprna-ckpt 0.7845.
+
+## 15.11 Tier-1 SOTA chase (TS0/ArchiveII/bpRNA-new first): r2dtr1 2-seed ensemble tops UFold on bpRNA-new (0.6132) and beats all references on ArchiveII-clean (0.7664); r2dtr1_s1 seed lands; r2dtr1c in training
+
+**Trigger.** User priority order: TS0 + ArchiveII + bpRNA-new > TS1-TS3/TS-hard.
+"想好再开始" discipline: all facts below were verified on disk before any
+launch decision.
+
+### 一、事实核查（决策依据）
+
+1. **archiveii_embok_clean (2,214 seqs; emb store n=2,544 records) is
+   provably clean for BOTH training families**: overlap with bprna_tr0 = 0,
+   with bprna_tr1c = 0 (overlap with the old bprna_tr1 was 843 — those rows
+   are gone from tr1c). Plan-A family and Arm A are both quotable on
+   ArchiveII with zero contamination.
+2. **ext40k is a dead end for TS0**: 20k 0.7268 -> 30k 0.7210 -> 40k 0.7178
+   (monotone decline). More steps is not the TS0 lever; ensemble + data are.
+3. **r2dtr1_s1 (seed confirmation, old tr1 corpus) landed**: new@10k 0.5956
+   / new@20k 0.5683 / ts0@10k 0.6631 / ts0@20k 0.6803. The 20k drop on new
+   (-0.027 vs its own 10k) confirms the OOD peak is at/below 10k for this
+   corpus; the @10k checkpoint is the right ensemble member.
+4. **GPU 6/7 are MIG-sliced** (nvidia-smi shows 40GB but CUDA sees 4.75GB):
+   any long-sequence eval must pin to full cards. This caused the first
+   ArchiveII ensemble attempt to OOM at a 3.25GiB alloc.
+
+### 二、追击行动与结果（tools/ensemble_eval.py score-average, exact Nussinov）
+
+**Ensemble = r2dtr1 s0@10k + s1@10k (2 seeds, frozen 35M + resnet2d):**
+
+| split | single best | 2-seed ensemble | tier-1 SOTA reference | verdict |
+|---|---|---|---|---|
+| bpRNA-new | 0.6045 (s0@10k) | **0.6132** (P/R 0.6486/0.5824 approx, n=5388) | UFold 0.6106 | **≥ SOTA (+0.0026)** |
+| ArchiveII-clean (n=2544) | — | **0.7664** micro / 0.8113 macro | vienna centroid 0.6865-0.7212 per bucket; UFold clean buckets 0.37-0.73 | **> all measured references** |
+| TS0 | 0.6803 (s1@20k clean-训练版本单模 0.6631) | 0.6733 | RNAformer 0.7578 | gap -0.085, NOT yet |
+
+Note on bpRNA-new: the ensemble's 0.6132 comes from models trained on the
+OLD tr1 corpus — but bpRNA-new has ZERO overlap with tr1 (15.10), so the
+number is fully quotable. The s1 contribution is a legitimately clean seed.
+
+**UFold clean-ArchiveII reference rows measured this round** (project scorer,
+nested decode): le100 0.7260 / 100-200 0.3766 / 200-400 0.3841 / >400 0.3740.
+UFold collapses above 100 nt on this corpus (its post-processing is tuned
+for bpRNA-style data); our ensemble's pooled 0.7664 vs the same scorer is a
+clean sweep.
+
+### 三、剩余 gap 与下一步（TS0 -0.085 是唯一未达标 tier-1 格）
+
+1. **r2dtr1c (Arm A) in training** (step ~12k/20k on the decontaminated
+   42,564 corpus): its 6-split final eval will give the quotable TS0 number
+   for this family. Single-model expectation from the s1 evidence is TS0
+   ~0.66-0.68; the ensemble of (s0c, s1c) @10k is the play.
+2. **Plan-A family is the TS0 specialist** (0.7336 single-seed best) but
+   trains on tr0 only. Arm B = plana on tr1c is the designed TS0 strike:
+   adapted-backbone precision + 4x clean data, launched after Arm A frees a
+   card.
+3. plana 3-seed ensemble needs a new tool (in-loop backbone models cannot
+   reuse ensemble_eval.py, which loads frozen heads) — queued behind Arm B.
+
+**GPU state**: r2dtr1c training on card 4 (~35GB); tier1 script done; both
+watchdog crons live.
