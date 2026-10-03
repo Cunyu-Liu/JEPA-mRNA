@@ -6227,3 +6227,88 @@ full P/R/F1/macro/INF/n and per-cell source files.
 **Follow-ups.** r2dtr1_s1 confirmation seed training in flight (step ~4k/20k at time of
 writing); matrix auto-refresh re-run after it lands; paper draft PDB-family table fold-in
 planned with v3.18 alongside the r2d_tr1 banner.
+
+## 15.10 Contamination audit found exact-sequence leakage in TR1 — r2d_tr1 PDB-family/TS0 numbers retracted; decontaminated corpus bprna_tr1c built; Arm A (r2dtr1c) armed with 6-split final eval
+
+**Trigger.** User goal escalation: match/exceed SOTA on ALL SIX datasets (bpRNA-new, TS0,
+TS1, TS-hard, TS2, TS3). The pre-flight contamination audit this demand forces exposed a
+critical defect that had been invisible for three ledger sections.
+
+### 一、泄漏审计（15.09 补测的直接后果）
+
+Exact-sequence overlap between training corpora and eval splits (the audit script
+`tools/make_clean_corpus.py` blocklist logic):
+
+| corpus | TS0 | TS1 | TS2 | TS3 | TS-hard | new | VL0 | testsetb | archiveii |
+|---|---|---|---|---|---|---|---|---|---|
+| bprna_tr0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **bprna_tr1** | **1087** | **38** | **28** | **18** | **21** | 0 | 1 | 341* | 1788* |
+| ref_tr_bprna | 0 | 38 | 28 | 15 | 20 | 0 | 0 | | |
+| ref_tr_experimental | 1085 | 0 | 0 | 0 | 0 | 0 | 1 | | |
+| ref_tr_intra | 2 | 0 | 0 | 18 | 9 | 0 | 0 | | |
+
+(*testsetb/archiveii overlaps were not previously a claim target but are blocked too.)
+
+Attribution: the leakage enters through the three `ref_tr_*` components of TR1 (concat
+corpus). `ref_tr_experimental` carries the TS0 sequences (1085), `ref_tr_bprna` carries
+the PDB-family sequences (TS1/TS2/TS-hard), `ref_tr_intra` carries TS3. bpRNA_tr0 — the
+SPOT-RNA-era split — is fully clean.
+
+### 二、量化：泄漏序列被模型"记住"了
+
+r2d_tr1 (frozen+2D+TR1, s0) on ref_pdb_ts_hard, per-sequence rows:
+
+* 21 leaked sequences (in TR1): mean F1 **0.7068**
+* 7 clean sequences: mean F1 **0.5447**
+* memorisation delta **+0.162** — the leaked rows inflate the pooled micro numbers.
+
+### 三、撤回与保留判定
+
+**RETRACTED** (cannot be quoted, training data contained test sequences):
+* r2d_tr1 TS0 0.7283* (the +0.026 TS0 gain in 15.08 read-out)
+* r2d_tr1 PDB-family numbers from 15.09: TS1 0.7776, TS-hard 0.7246, TS2 0.8041, TS3 0.8132
+* my message to the user claiming "r2d_tr1 beats the bprna ckpt on TS1" — retracted.
+
+**STANDS** (bpRNA-new has zero overlap with TR1, verified):
+* r2d_tr1 bpRNA-new 0.6045 (10k) / 0.6041 (20k), UFold-level, recall-collapsed fixed.
+* All Plan-A / r2d / ff / big family numbers (trained on bprna_tr0 — clean).
+* 15.09's RNAformer/vienna/ufold measurements (no training involved).
+
+The 15.08 super-additivity claim is unaffected in direction (the OOD axis was the claim,
+and it is clean) but the "+0.026 TS0" component is retracted; the bpRNA-new +0.104 gain
+is the surviving headline.
+
+### 四、去污染语料 bprna_tr1c（Arm A 的训练集）
+
+* `tools/make_clean_corpus.py`: TR1 minus exact sequences of all NINE eval splits
+  (ts1/ts2/ts3/ts_hard/ts0/new/vl0/testsetb/archiveii). 45,865 -> **42,564**
+  (dropped 3,301 = 7.2% of corpus; 1172 vs the 6 target splits alone).
+* Teacher subset `ss_data/teacher/bprna_tr1c/` (167 shards, manifest re-keyed to
+  bprna_tr1c corpus) — verified: no missing, no extra, LxL probs in [0,1].
+* Embeddings `bprna_tr1c.shard0of2/shard1of2.npz` (21,282 x 2 = 42,564, manifest 21
+  entries) — dual-GPU extraction 22 min; verified exact set match with corpus.
+* Four cross-checks passed (count+unique, zero blocklist overlap, embedding coverage,
+  teacher coverage) before the arm was allowed to arm.
+
+### 五、Arm A: rinalmo_r2dtr1c_b4_s0（已武装，等待 34GB 卡）
+
+Byte-identical recipe to r2d_tr1 (frozen 35M + resnet2d + B4 + lr1e-4 + 20k steps +
+VL0-Platt watch7 eval), only `--data bprna_tr1c.jsonl --teacher-dir bprna_tr1c` differ.
+**Final eval now runs on ALL SIX target splits** (ts0, new, ts1, ts2, ts3, ts_hard) so the
+SOTA-versus table for the user's escalated goal is produced automatically. Watchdog cron
+R2DTR1C_WATCHDOG installed (*/10). r2dtr1_s1 (seed confirmation on the OLD corpus) stays
+running — its bpRNA-new number remains a valid clean measurement (new is clean), and it
+gives the seed bar for exactly that split.
+
+### 六、RNAformer inter-family ckpt TS2/TS3 补测（诚实参照补全）
+
+Project scorer, project GT: TS2 **0.9043** (P 0.9222 / R 0.8870), TS3 **0.8245**
+(P 0.8265 / R 0.8225). With these, the inter-family row spans the full PDB family:
+TS1 0.8150 / TS2 0.9043 / TS3 0.8245 / TS-hard 0.7709. Note TS2 shows the inter-family
+ckpt (covariance-filtered training) beating the bprna ckpt by +0.045 while TS3 shows the
+opposite (−0.117): the covariance-model filtering traded TS3-family recall for TS2-family
+precision, matching the paper's own Table 4 setting description.
+
+**Target ladder for Arm A (project GT, our scorer):**
+TS0 RNAformer-bprna 0.7578 | new UFold 0.6106 | TS1 interfam 0.8150 | TS2 0.9043 |
+TS3 bprna-ckpt 0.9410 | TS-hard bprna-ckpt 0.7845.
