@@ -106,6 +106,17 @@ for _sp, _dsn in [("bprna_ts0", "TS0"), ("bprna_new", "bpRNA-new"),
     ow_if("Ours r2d_tr1c (frozen+2D+clean TR1, s0 @8k)",
           "ow_rinalmo_r2dtr1c_b4_s0_step8000_%s" % _sp, _dsn)
 
+# 15.13: TestSetB + ArchiveII-clean on the clean family (tr1c has zero
+# overlap with both). The ff/big/bigtr1 TestSetB rows and the 15.11
+# ensemble ArchiveII row are RETRACTED (TR0 ∩ TestSetB = 247; tr1 ∩
+# ArchiveII-clean = 843) — only clean sources are wired in here.
+for _st in (20000, 8000):
+    ow_if("Ours r2d_tr1c (clean, s0 @%dk) TestSetB" % (_st // 1000),
+          "ow_rinalmo_r2dtr1c_b4_s0_step%d_testsetb" % _st, "TestSetB")
+    ow_if("Ours r2d_tr1c (clean, s0 @%dk) ArchiveII-clean" % (_st // 1000),
+          "ow_rinalmo_r2dtr1c_b4_s0_step%d_archiveii_embok_clean" % _st,
+          "ArchiveII-clean")
+
 # 15.11: 2-seed ensemble (score-average, exact Nussinov) — tier-1 rows
 ow_if("Ours r2d_tr1 2-seed ensemble @10k (leaky corpus; new split clean)",
       "ens_r2dtr1_2seed_bprna_ts0", "TS0")

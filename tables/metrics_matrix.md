@@ -10,6 +10,8 @@ not produced by that run's protocol (e.g. INF needs per-seq rows).
 | Method | Dataset | micro P | micro R | micro F1 | macro F1 | INF | n | source |
 |---|---|---|---|---|---|---|---|---|
 | Ours r2d_tr1 2-seed ensemble @10k | ArchiveII-clean | 0.7548 | 0.7784 | 0.7664 | 0.8113 | — | 2544 | ens_r2dtr1_2seed_archiveii_embok_clean |
+| Ours r2d_tr1c (clean, s0 @20k) ArchiveII-clean | ArchiveII-clean | 0.7230 | 0.7583 | 0.7403 | 0.7974 | 0.7995 | 2544 | ow_rinalmo_r2dtr1c_b4_s0_step20000_archiveii_embok_clean |
+| Ours r2d_tr1c (clean, s0 @8k) ArchiveII-clean | ArchiveII-clean | 0.7218 | 0.6964 | 0.7089 | 0.7684 | 0.7722 | 2544 | ow_rinalmo_r2dtr1c_b4_s0_step8000_archiveii_embok_clean |
 | vienna_centroid | ArchiveII-clean 100-200 | 0.7144 | 0.6607 | 0.6865 | 0.6725 | 0.6774 | 1136 | baselines_archiveii_embok_clean_gt100_le200.json |
 | vienna_centroid | ArchiveII-clean 200-400 | 0.5629 | 0.6128 | 0.5868 | 0.5790 | 0.5824 | 728 | baselines_archiveii_embok_clean_gt200_le400.json |
 | vienna_centroid | ArchiveII-clean <=100 | 0.7305 | 0.7122 | 0.7212 | 0.7028 | 0.7067 | 484 | baselines_archiveii_embok_clean_le100.json |
@@ -73,6 +75,8 @@ not produced by that run's protocol (e.g. INF needs per-seq rows).
 | Ours Plan-A s0 (PDB family) | TS3 | 0.7280 | 0.4556 | 0.5605 | 0.5593 | — | 19 | plana_giga_s0_ts1hard_all |
 | Ours Plan-A s2 (PDB family) | TS3 | 0.7926 | 0.4125 | 0.5426 | 0.5245 | — | 19 | plana_giga_s2_ts1hard_all |
 | Ours Plan-A s1 (PDB family) | TS3 | 0.7416 | 0.3717 | 0.4952 | 0.4728 | — | 19 | plana_giga_s1_ts1hard_all |
+| Ours r2d_tr1c (clean, s0 @20k) TestSetB | TestSetB | 0.7617 | 0.7400 | 0.7507 | 0.7542 | 0.7575 | 428 | ow_rinalmo_r2dtr1c_b4_s0_step20000_testsetb |
+| Ours r2d_tr1c (clean, s0 @8k) TestSetB | TestSetB | 0.7412 | 0.6446 | 0.6895 | 0.6980 | 0.7059 | 428 | ow_rinalmo_r2dtr1c_b4_s0_step8000_testsetb |
 | vienna_centroid | TestSetB | 0.5125 | 0.5893 | 0.5482 | 0.5577 | 0.5630 | 428 | baselines_testsetb.json |
 | vienna_mfe | TestSetB | 0.4578 | 0.6085 | 0.5225 | 0.5430 | 0.5488 | 428 | baselines_testsetb.json |
 | nussinov_turner | TestSetB | 0.1970 | 0.2401 | 0.2164 | 0.2251 | 0.2270 | 428 | baselines_testsetb.json |
