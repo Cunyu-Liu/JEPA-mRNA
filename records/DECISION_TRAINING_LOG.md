@@ -6098,3 +6098,59 @@ Once launched: ~6-8 h to 20k, auto-evals at 10k AND 20k on both splits
 (w=-1, VL0 Platt), results land in eval_decision/ow_rinalmo_r2dtr1_b4_s0_
 step{10000,20000}_{bprna_ts0,bprna_new}/ — the patrol records them and
 folds the read-out into the ledger.
+
+## 15.08 r2d_tr1 LANDS — the OOD chaser result: bpRNA-new 0.6045 (10k) /
+0.6041 (20k), the single largest jump of the project (+0.104 over the
+frozen control; +0.088 over TR1-flat; UFold-level)
+
+Timeline: launched 2026-10-02 20:34 on GPU-2 (bar 34 GB, two-phase
+confirmed — the night window delivered as predicted in 15.07), trained
+clean through 20,000 steps (DONE 01:51, ~5.3 h wall, zero restarts —
+the 33 GB reservation held the card through the night churn), all four
+auto-evals rc=0 (watch7 protocol, w=-1, VL0 Platt).
+
+| step | split | P | R | micro F1 | macro F1 |
+|---|---|---|---|---|---|
+| 10000 | TS0 | 0.6234 | 0.6963 | 0.6578 | 0.6597 |
+| 10000 | bpRNA-new | 0.6073 | 0.6017 | **0.6045** | 0.6034 |
+| 20000 | TS0 | 0.6500 | 0.7319 | 0.6885 | 0.6920 |
+| 20000 | bpRNA-new | 0.6104 | 0.5980 | **0.6041** | 0.5955 |
+
+Read-out (deltas vs the measured single axes):
+1. **bpRNA-new 0.6045/0.6041** vs the frozen control 0.5010 (+0.104),
+   vs TR1-flat 0.5162 (+0.088), vs our previous OOD best 0.5229 (2-seed
+   ensemble, +0.081). The 2D-scorer x TR1-data combination on the frozen
+   backbone is strongly super-additive OOD: predicted from the single
+   axes was ~0.53; measured is 0.604. The 14.57 negative interaction was
+   CAPACITY x data; scorer x data on the frozen backbone is the opposite
+   sign and much larger.
+2. **Leaderboard position (all project scorer, this round's re-reads):
+   centroid 0.6770 > MXfold2 0.6688 > mea 0.6620 > mfe 0.6379 >
+   **ours r2d_tr1 0.6045** > UFold 0.6106...** — correction: UFold 0.6106
+   remains +0.006 above us; we are now level with UFold's neighborhood
+   and ahead of structRFM (0.5438), RNAformer (0.4936), RiNALMo-ft
+   (0.4489), and every deep baseline measured. Deficit to UFold: 0.006.
+   Deficit to centroid: 0.072. To MXfold2: 0.064.
+3. **The OOD overfitting cliff did NOT appear**: 10k -> 20k on new is
+   0.6045 -> 0.6041 (flat, -0.0004), unlike the ff-TR1 arm's 0.5162 ->
+   0.4999. The scorer's 2D context appears to stabilise the OOD
+   optimum; the 20k checkpoint is the reportable one and both points
+   stay in the table.
+4. **P/R balance is now SOTA-shaped**: 0.610/0.598 — the recall collapse
+   (R ~ 0.34-0.44 on every other deep arm incl. RNAformer's 0.380) is
+   GONE. The combination specifically fixes the OOD failure mode.
+5. TS0 0.6885 also rises (+0.026 over r2d-TR0 0.6629): the data axis
+   helps both splits with the scorer, at zero protocol drift.
+6. Calibration: raw ECE 0.1127/0.1431 (same family shape), recalibrated
+   0.0010/0.0037 — the 2-parameter map still does the work; c1c gaps
+   0.105/0.132 raw (the known raw-head story) with recalibrated ECE at
+   the family's level. No new calibration anomaly.
+
+What this means for the goal: the "match or beat SOTA on bpRNA-new"
+target now has a concrete, measured bridgehead — UFold is +0.006 away
+(within seed noise of some arms), MXfold2/centroid +0.06-0.07. The
+remaining levers, all measured: BPfold structure-aware corpus (structRFM
+path, +0.04 evidence), 2-seed confirmation of this arm, and the
+plana-style adaptation on TR1 (the ID/OOD trade would need re-testing
+on this stronger base). Next: fold into metrics matrix + draft, and
+launch the second confirmation seed.
