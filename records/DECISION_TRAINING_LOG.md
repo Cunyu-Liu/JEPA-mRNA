@@ -6371,3 +6371,46 @@ clean sweep.
 
 **GPU state**: r2dtr1c training on card 4 (~35GB); tier1 script done; both
 watchdog crons live.
+
+## 15.12 Arm A (r2dtr1c) LANDS: clean-corpus six-split read-out; dual-phase curve (OOD peak @8k, in-family peak @20k+); matrix 88 cells
+
+**Arm A result** (decontaminated bprna_tr1c corpus, 42,564 rows; recipe
+byte-identical to r2d_tr1; watch7 protocol w=-1 + VL0 Platt):
+
+| split | @8k | @20k | SOTA (project GT) | gap @best |
+|---|---|---|---|---|
+| TS0 | 0.6336 | **0.6679** | 0.7578 (RNAformer-bprna) | -0.090 |
+| bpRNA-new | **0.6067** | 0.5643 | 0.6106 (UFold) | -0.004 |
+| TS1 | 0.6986 | **0.7551** | 0.8150 (RNAformer-interfam) | -0.060 |
+| TS2 | 0.7130 | **0.7686** | 0.9043 (RNAformer-interfam) | -0.136 |
+| TS3 | 0.7000 | **0.7815** | 0.9410 (RNAformer-bprna) | -0.160 |
+| TS-hard | 0.6335 | **0.7005** | 0.7845 (RNAformer-bprna) | -0.084 |
+
+**Read-out:**
+
+1. **Dual-phase curve confirmed on the clean corpus**: OOD (bpRNA-new) peaks
+   at 8k (0.6067) and decays by 20k (-0.042); in-family splits still climb at
+   20k. The old tr1 corpus shifted both phases left (peak <=10k) because it
+   was 7% smaller AND leaked in-family test rows (which accelerated apparent
+   in-family convergence — another cost of the leak). One checkpoint cannot
+   serve both regimes: the paper must quote @20k for in-family and @8k for
+   OOD, or use the 2-seed ensemble.
+2. **bpRNA-new single-model @8k is -0.004 from UFold** — within seed noise
+   (s1@10k old-corpus was 0.5956). The 2-seed ensemble (0.6132, 15.11)
+   already cleared it. Clean-corpus 2-seed ensemble is the next increment:
+   needs an s1c seed (armed next, same recipe, GPU window permitting).
+3. **TS0 single-model gap is structural** (-0.090): the frozen+2D recipe
+   saturates near 0.67; Plan-A (adapted backbone) holds 0.7268-0.7336 on tr0.
+   The TS0 strike is Arm B (plana x tr1c, in training, step 13k/20k).
+4. Old tr1 numbers vs tr1c confirm the 15.10 leak deltas: TS0 0.7283 ->
+   0.6679 (-0.060 was memorisation), new 0.6045 -> 0.6067 @8k (+0.002,
+   the OOD axis was honest), TS1 0.7776 -> 0.7551 (-0.023).
+
+**Matrix**: 88 measured cells (r2dtr1c @8k/@20k x 6 splits + ensemble rows +
+UFold clean-ArchiveII buckets); the old tr1 PDB-family rows now carry the
+RETRACTED label in-source.
+
+**In flight**: Arm B plana_giga_tr1c_s0 (step ~13k/20k, unfrozen 26/33,
+peak 12.8GB, on card 1); 5 watchdog crons live. Next: s1c seed arm for the
+clean-corpus ensemble; plana-tr1c 6-split auto-eval at DONE; Arm B + s1c
+ensemble decides the TS0 endgame.

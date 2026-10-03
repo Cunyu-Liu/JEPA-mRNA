@@ -87,13 +87,34 @@ for _s in (10000, 20000):
     for _sp, _dsn in [("bprna_ts0", "TS0"), ("bprna_new", "bpRNA-new")]:
         ow_if("Ours r2d_tr1 (frozen+2D+TR1, s0 @%dk)" % _s,
               "ow_rinalmo_r2dtr1_b4_s0_step%d_%s" % (_s, _sp), _dsn)
-# 15.09: r2d_tr1 on the PDB test family
+# 15.09: r2d_tr1 on the PDB test family (RETRACTED 15.10: tr1 corpus carried
+# exact test sequences; kept in the matrix only under the retraction notice,
+# superseded by the r2dtr1c rows below)
 for _sp, _dsn in [("ref_pdb_ts1", "TS1"), ("ref_pdb_ts_hard", "TS-hard"),
                   ("ref_pdb_ts2", "TS2"), ("ref_pdb_ts3", "TS3")]:
-    ow_if("Ours r2d_tr1 (frozen+2D+TR1, s0)",
-          "ts1hard_r2dtr1_s0_%s" % _sp, _dsn)
+    ow_if("Ours r2d_tr1 (RETRACTED, leaky tr1)", "ts1hard_r2dtr1_s0_%s" % _sp, _dsn)
 # ff arm has an existing TS1 eval
 ow_if("Ours ff", "ff20000_ref_pdb_ts1", "TS1")
+
+# 15.12: r2dtr1c — the same recipe on the DECONTAMINATED corpus. All six
+# splits quotable. Rows for both the 20k auto-eval and the 8k curve probe.
+for _sp, _dsn in [("bprna_ts0", "TS0"), ("bprna_new", "bpRNA-new"),
+                  ("ref_pdb_ts1", "TS1"), ("ref_pdb_ts_hard", "TS-hard"),
+                  ("ref_pdb_ts2", "TS2"), ("ref_pdb_ts3", "TS3")]:
+    ow_if("Ours r2d_tr1c (frozen+2D+clean TR1, s0 @20k)",
+          "ow_rinalmo_r2dtr1c_b4_s0_step20000_%s" % _sp, _dsn)
+    ow_if("Ours r2d_tr1c (frozen+2D+clean TR1, s0 @8k)",
+          "ow_rinalmo_r2dtr1c_b4_s0_step8000_%s" % _sp, _dsn)
+
+# 15.11: 2-seed ensemble (score-average, exact Nussinov) — tier-1 rows
+ow_if("Ours r2d_tr1 2-seed ensemble @10k (leaky corpus; new split clean)",
+      "ens_r2dtr1_2seed_bprna_ts0", "TS0")
+ow_if("Ours r2d_tr1 2-seed ensemble @10k", "ens_r2dtr1_2seed_bprna_new", "bpRNA-new")
+ow_if("Ours r2d_tr1 2-seed ensemble @10k", "ens_r2dtr1_2seed_archiveii_embok_clean", "ArchiveII-clean")
+# UFold clean-ArchiveII reference rows (project scorer)
+for _b, _n in [("le100", "ArchiveII-clean <=100"), ("gt100_le200", "ArchiveII-clean 100-200"),
+               ("gt200_le400", "ArchiveII-clean 200-400"), ("gt400", "ArchiveII-clean >400")]:
+    baseline("UFold", "ufold_archiveii_embok_clean_%s.json" % _b, _n)
 
 # --- plana arms ---
 plana("Ours Plan-A (adapted+2D, s0)", "plana_giga_s0_step20000", "TS0+new")
@@ -131,11 +152,20 @@ def read_cell(label, kind, path, ds):
         d = json.load(open(path))
         pl = d["pair_level"]
         per = d.get("per_sequence", [])
-        inf = round(sum(r["inf"] for r in per) / len(per), 4) if per else None
+        # ensemble_eval rows carry f1/precision/recall but not inf — tolerate
+        inf = round(sum(r["inf"] for r in per if "inf" in r) /
+                    max(1, sum(1 for r in per if "inf" in r)), 4) \
+            if per and any("inf" in r for r in per) else None
+        mic = pl["micro"]
+        if "precision" not in mic and "tp" in mic:  # ensemble_eval layout
+            tp, fp, fn = mic["tp"], mic["fp"], mic["fn"]
+            mic = dict(mic)
+            mic["precision"] = tp / (tp + fp) if tp + fp else 0.0
+            mic["recall"] = tp / (tp + fn) if tp + fn else 0.0
         return {"label": label, "dataset": ds,
-                "micro_P": round(pl["micro"]["precision"], 4),
-                "micro_R": round(pl["micro"]["recall"], 4),
-                "micro_F1": round(pl["micro"]["f1"], 4),
+                "micro_P": round(mic["precision"], 4),
+                "micro_R": round(mic["recall"], 4),
+                "micro_F1": round(mic["f1"], 4),
                 "macro_F1": round(pl["macro"]["f1"], 4) if isinstance(pl.get("macro"), dict) else round(pl["macro_f1"], 4) if "macro_f1" in pl else None,
                 "INF": inf, "n": d.get("n_sequences"),
                 "source": str(path.parent.name)}
