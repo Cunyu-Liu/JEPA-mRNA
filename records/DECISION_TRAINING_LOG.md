@@ -6414,3 +6414,73 @@ RETRACTED label in-source.
 peak 12.8GB, on card 1); 5 watchdog crons live. Next: s1c seed arm for the
 clean-corpus ensemble; plana-tr1c 6-split auto-eval at DONE; Arm B + s1c
 ensemble decides the TS0 endgame.
+
+## 15.13 User audit: TestSetB/ArchiveII coverage — SECOND leak found (TR0 ∩ TestSetB = 247); §14.63 "zero-shot" TestSetB numbers retracted; clean r2dtr1c TestSetB = 0.7507 (beats all published references)
+
+**Trigger.** User question: "ArchiveII 和 testsetB 呢?" — prompted the same
+audit discipline on the two remaining benchmark families.
+
+### 一、泄漏审计结果（本轮新发现）
+
+| eval split | ∩ bprna_tr0 | ∩ bprna_tr1 | ∩ bprna_tr1c |
+|---|---|---|---|
+| TestSetB (428) | **247** | 358 | **0** |
+| ArchiveII-clean (2,214) | 0 | **843** | **0** |
+
+Consequences:
+1. **§14.63's "zero-shot TestSetB" table is RETRACTED.** ff/big/bigtr1 were
+   trained on bprna_tr0, which contains 247/428 (57.7%) of TestSetB
+   sequences verbatim (e.g. `bpRNA_RFAM_5826.bpseq` ==
+   `testsetb_138.bpseq`). The claim "big 0.7932 tolerant F1, exceeds all
+   published numbers zero-shot" is invalid: those models had seen more than
+   half the benchmark in training. Draft §4.3e's TestSetB table and the v3.6
+   change note must be rewritten.
+2. **15.11's ArchiveII ensemble row (0.7664) is RETRACTED.** Its members are
+   tr1-trained; archiveii_embok_clean ∩ tr1 = 843. Only its bpRNA-new cell
+   (zero overlap) was defensible and that is already separately quoted. The
+   15.11 ArchiveII-clean verdict "sweeps all references" no longer stands
+   until the clean-corpus number lands (this section).
+3. Vienna/EternaFold/UFold/nussinov TestSetB + ArchiveII reference rows are
+   unaffected (no training).
+
+Root cause pattern (now fully characterised across the project): **every
+corpus built by pooling external datasets (TR1, and now TR0-TestSetB)
+carried test-family duplicates because the "eval splits" were assembled at
+different times by different scripts, with dedup only against the splits
+known at build time.** TR0 predates TestSetB's arrival (§14.63 fetched it
+from the mxfold2 release) and was never re-audited against it. The 15.10
+blocklist (9 splits) was the first global audit; TestSetB and archiveii
+were in it, which is exactly why tr1c is the only fully clean family.
+
+### 二、干净补测（r2dtr1c = 唯一双干净家族；watch7，w=-1，VL0 Platt）
+
+| split | @8k | @20k | published reference (same split) |
+|---|---|---|---|
+| **TestSetB** | 0.6895 | **0.7507** (P 0.7617 / R 0.7400, macro 0.7542) | RiNALMo-ft INF 0.67; CONTRAfold 0.64; MXfold2 0.63 (RiNALMo S5, quoted INF) |
+| ArchiveII-clean | **0.7089** (macro 0.7684) | running | vienna centroid 0.6865-0.7212 (bucket); UFold clean buckets 0.37-0.73 (measured, project scorer) |
+
+**TestSetB verdict: 0.7507 micro F1 / 0.7542 macro F1 zero-shot-on-clean-
+corpus, exceeding every published number on this benchmark** — and unlike
+RiNALMo/MXfold2 we did not fine-tune on TrainSetA either. Note the
+published rows are INF (RiNALMo S5) and the earlier project measurement
+(§14.63) also gave INF 0.7781 for big — that number is now retracted with
+the rest; INF for r2dtr1c @20k is in the result.json (per-seq mean).
+
+ArchiveII-clean: @8k 0.7089 already beats every measured same-scorer
+reference (vienna centroid buckets 0.6865-0.7212; UFold 0.37-0.73); the
+@20k number (in-family peak, expected higher) is running on card 0.
+
+### 三、更正后的诚实战况（tier-1 视角，全部可引用源）
+
+| split | best clean number | status |
+|---|---|---|
+| bpRNA-new | 0.6132 (15.11 ensemble; new split zero-overlap) | ≥ UFold 0.6106 ✅ |
+| TestSetB | 0.7507 (r2dtr1c @20k) | > all published ✅ |
+| ArchiveII-clean | 0.7089 @8k (20k running) | > all measured refs ✅ |
+| TS0 | 0.6679 (r2dtr1c @20k) vs 0.7578 | gap −0.090 (Arm B in training 15.4k/20k) |
+| TS1-3/TS-hard | r2dtr1c @20k 0.7551/0.7686/0.7815/0.7005 | tier-2, gaps −0.06..−0.16 |
+
+**Actions taken:** tsb_arch_clean_eval.sh (idempotent, both steps × both
+splits); 20k-archiveii running on card 0; draft §4.3e rewrite queued for
+v3.18 with the retraction + clean numbers; §14.63 rows flagged RETRACTED
+in the ledger (this section serves as the retraction notice).
