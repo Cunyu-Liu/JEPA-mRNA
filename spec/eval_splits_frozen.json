@@ -1,0 +1,96 @@
+{
+ "frozen_at": "15.14 (2026-10-04)",
+ "note": "any new training corpus MUST be built by excluding these exact sequences (tools/make_clean_corpus.py blocklist pattern); gate = zero overlap on every split below.",
+ "splits": {
+  "bprna_ts0": {
+   "n_unique": 1288,
+   "sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 0,
+    "bprna_tr1": 1087,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  },
+  "bprna_new": {
+   "n_unique": 5388,
+   "sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 0,
+    "bprna_tr1": 0,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": true
+  },
+  "ref_pdb_ts1": {
+   "n_unique": 63,
+   "sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 0,
+    "bprna_tr1": 38,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  },
+  "ref_pdb_ts2": {
+   "n_unique": 39,
+   "sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 0,
+    "bprna_tr1": 28,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  },
+  "ref_pdb_ts3": {
+   "n_unique": 19,
+   "sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 0,
+    "bprna_tr1": 18,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  },
+  "ref_pdb_ts_hard": {
+   "n_unique": 28,
+   "sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 0,
+    "bprna_tr1": 21,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  },
+  "testsetb": {
+   "n_unique": 428,
+   "sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 247,
+    "bprna_tr1": 358,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  },
+  "archiveii_embok_clean": {
+   "n_unique": 2214,
+   "sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 0,
+    "bprna_tr1": 843,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  },
+  "archiveii": {
+   "n_unique": 3451,
+   "sha256": "affeec0356be1d16db9a9e1927218d815dcb24018a8d64a81929f894d848e337",
+   "overlap_with_training_corpora": {
+    "bprna_tr0": 732,
+    "bprna_tr1": 1852,
+    "bprna_tr1c": 0
+   },
+   "fully_clean_vs_all_corpora": false
+  }
+ }
+}

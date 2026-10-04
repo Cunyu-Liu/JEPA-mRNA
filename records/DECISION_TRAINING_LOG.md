@@ -6484,3 +6484,70 @@ reference (vienna centroid buckets 0.6865-0.7212; UFold 0.37-0.73); the
 splits); 20k-archiveii running on card 0; draft §4.3e rewrite queued for
 v3.18 with the retraction + clean numbers; §14.63 rows flagged RETRACTED
 in the ledger (this section serves as the retraction notice).
+
+## 15.14 (a) NucleicBERT ArchiveII600 audit; (b) global overlap audit + frozen eval splits; (c) Arm B LANDS: TS0 0.7866 > SOTA; (d) baseline table
+
+**Trigger.** User: (1) did we evaluate the paper's ArchiveII600? (2) audit
+ALL train/test overlap, freeze the eval splits, tabulate baselines. (3)
+priority: tier-1 = TS0/ArchiveII/bpRNA-new.
+
+### 一、ArchiveII600 的事实（NucleicBERT NMI 2026, Table 1 + Methods）
+
+* **Definition**: ArchiveII subset with length <= 600 nt — "the standard
+  dataset used in tools such as UFold and RNAErnie" (paper's own words;
+  count 3,975). Our archiveii corpus: 3,966 rows -> **3,911 at <=600nt**.
+* **Protocol**: Mathews tolerance — pred pair (i,j) correct if GT has
+  (i,j)/(i±1,j)/(i,j±1); **F1 averaged per structure (macro)**.
+* Published rows (quoted): RNAErnie+ 0.875, NucleicBERT-ft 0.872, MXfold2
+  0.768, RNA-FM 0.744, E2Efold 0.690, RNAfold 0.592. NucleicBERT trained
+  on **RNAStrAlign + TR0**.
+* **Had we evaluated it? NO** — our ArchiveII rows were the de-duplicated
+  embok_clean subset under the strict project scorer. This round builds
+  `archiveii600.jsonl` (3,911) + the Mathews-protocol rescore and runs the
+  clean TS0-champion arm on it.
+
+### 二、全局重叠审计 + 测试集冻结（tools/overlap_audit.py）
+
+Definitive table (exact-sequence, every training corpus × every eval split):
+
+| eval split | n | TR0 | TR1 | tr1c | clean |
+|---|---|---|---|---|---|
+| bprna_ts0 | 1288 | 0 | 1087 | 0 | only tr1c |
+| bprna_new | 5388 | 0 | 0 | 0 | **all** |
+| ref_pdb_ts1/2/3/hard | 63/39/19/28 | 0 | 38/28/18/21 | 0 | only tr1c |
+| testsetb | 428 | **247** | 358 | 0 | only tr1c |
+| archiveii_embok_clean | 2214 | 0 | 843 | 0 | only tr1c |
+| archiveii (full) | 3451 | **732** | 1852 | 0 | only tr1c |
+
+Frozen manifest: `spec/eval_splits_frozen.json` (sha256 + n + verdict per
+split); `tables/overlap_audit.md` is the audit record. Gate for any future
+corpus build: zero overlap on every frozen split. NOTE: the published
+ArchiveII600 baselines (NucleicBERT/RNAErnie/UFold) trained on TR0∩
+archiveii=732 — **that benchmark is inherently leaky for them**; our tr1c
+arms are strictly cleaner.
+
+### 三、Arm B（plana × tr1c）落地：TS0 终局达标
+
+| split | F1 | P | R | macro | SOTA | delta |
+|---|---|---|---|---|---|---|
+| **TS0** | **0.7866** | 0.8241 | 0.7523 | 0.7839 | 0.7578 | **+0.0288 ✅** |
+| **TS1** | **0.8356** | 0.8920 | 0.7859 | 0.7926 | 0.8150 | **+0.0206 ✅** |
+| **TS-hard** | **0.8530** | 0.9135 | 0.8000 | 0.7949 | 0.7845 | **+0.0685 ✅** |
+| bpRNA-new | 0.4779 | 0.6147 | 0.3909 | 0.4626 | 0.6106 | −0.13 (arm A path covers) |
+| TS2 | 0.8197 | 0.9251 | 0.7359 | 0.7883 | 0.9043 | −0.085 |
+| TS3 | 0.9049 | 0.9206 | 0.8897 | 0.8404 | 0.9410 | −0.036 |
+
+TS0 0.7866 > RNAformer 0.7578: the adapted-backbone × 4x-clean-data axis
+was the missing lever (tr0-only plana had 0.7336; +0.053 from data).
+The 14.57 negative-interaction fear (capacity×data on flat head) did NOT
+materialise on the adaptation×data pair — positive super-additivity.
+
+### 四、SOTA 对比总表（tools/sota_vs_ours.py → tables/sota_vs_ours.md）
+
+Tier-1: TS0 ✅ 0.7866; bpRNA-new ✅ 0.6132 (ensemble); ArchiveII-clean ✅
+0.7403. Tier-2: TS1 ✅; TS-hard ✅; TestSetB ✅ 0.7507; TS2 −0.085, TS3
+−0.036 remaining (frozen-head r2dtr1c holds TS2 0.7686/TS3 0.7815 — the
+two arms are complementary: plana-tr1c for precision/in-family, r2dtr1c
+for recall; a cross-family ensemble is the natural TS2/TS3 strike).
+ArchiveII600 Mathews-protocol eval running (plana_tr1c full-set 3,911 +
+clean subset, with pred_pairs now dumped for the rescore).

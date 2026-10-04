@@ -105,8 +105,9 @@ def evaluate_split(encoder, head, data_path, device, max_pos=1024):
         agg["tp"] += pm.tp
         agg["fp"] += pm.fp
         agg["fn"] += pm.fn
-        per_seq.append({"length": len(seq), "f1": pm.f1,
-                        "n_pred": len(pred_pairs), "n_gt": len(gt_pairs)})
+        per_seq.append({"name": names[i], "length": len(seq), "f1": pm.f1,
+                        "n_pred": len(pred_pairs), "n_gt": len(gt_pairs),
+                        "pred_pairs": [list(p) for p in pred_pairs]})
         if (i + 1) % 200 == 0:
             print(f"[eval-plan-a] {i+1}/{len(records)} "
                   f"({(i+1)/(time.time()-t0):.1f} seq/s)", flush=True)
@@ -122,10 +123,7 @@ def evaluate_split(encoder, head, data_path, device, max_pos=1024):
                      "tp": tp, "fp": fp, "fn": fn},
            "macro_f1": macro}
     if DUMP_PER_SEQ:
-        out["per_sequence"] = [
-            {"name": n, **row}
-            for n, row in zip(names, per_seq)
-        ]
+        out["per_sequence"] = per_seq
     return out
 
 
@@ -139,6 +137,10 @@ def main():
                     help="serialise the per-sequence rows already computed "
                          "(name from the jsonl, f1/length/n_pred/n_gt); no "
                          "protocol change, only extra output")
+    ap.add_argument("--data-file", default="",
+                    help="bypass the fixed split table: evaluate this jsonl "
+                         "directly under the split name 'custom' (15.14, "
+                         "ArchiveII600 protocol reproduction)")
     args = ap.parse_args()
 
     device = args.device
@@ -152,6 +154,9 @@ def main():
                    "hard": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
                    "ts2": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts2.jsonl",
                    "ts3": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts3.jsonl"}
+    if args.data_file:
+        split_files = {"custom": args.data_file}
+        args.splits = "custom"
     global DUMP_PER_SEQ
     DUMP_PER_SEQ = bool(args.dump_per_seq)
     results = {}
