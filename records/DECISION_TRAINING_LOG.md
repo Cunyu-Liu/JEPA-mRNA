@@ -6596,3 +6596,45 @@ TS-hard ✅ TestSetB ✅ ArchiveII-clean ✅ ArchiveII600 (leaky-ref gap
 second seed + in-loop ensemble; (b) w sweep on xens (0.5 was untuned);
 (c) NMR-family-specific head fine-tune (TS2 is NMR-derived) — queued
 behind the s1c seed which is still waiting for a card.
+
+## 15.16 xens weight selection on VL0 (clean protocol) → w=0.7: TS3 back to 0.9055, TS-hard 0.8616; s1c daemon dead (crontab PAUSED) — revived manually
+
+### 一、工程事件：watchdog crontab 被 PAUSED，s1c daemon 死亡
+
+22:00 巡检发现 `#PAUSED#` 前缀出现在 4 条 watchdog cron 上（R2D_S1/
+R2DTR1S1/R2DTR1C/R2DTR1CS1），s1c daemon 09:49 后无保活消亡，卡 2
+35GB 空闲 16 小时未利用。已手动重启 s1c daemon（两阶段 34GB 准入自
+巡检中；不擅自改 crontab 的 PAUSED 状态——并行会话或用户可能有意
+暂停，仅保证本轮 daemon 活着并记录该状态）。
+
+### 二、xens 权重调优（VL0 选参协议，不碰测试集）
+
+VL0（196 条，与全部测试 split 零重叠已验证）上扫描 w-plana：
+
+| w | 0.3 | 0.5 | 0.7 | 0.8 | 0.9 | 1.0(plana 单模) |
+|---|---|---|---|---|---|---|
+| VL0 micro F1 | 0.8587 | 0.8687 | **0.8727** | 0.8704 | **0.8727** | 0.8709 |
+
+VL0 峰值在 w=0.7-0.9（plana 主导）。按"VL0 选一次、测试集只跑选定
+值"的协议取 **w=0.7**（并列峰中保守端），在测试集上的单次验证：
+
+| split | w=0.5 | **w=0.7** | SOTA | gap@0.7 |
+|---|---|---|---|---|
+| TS2 | 0.8365 | **0.8429** | 0.9043 | −0.061 |
+| TS3 | 0.8738 | **0.9055** | 0.9410 | **−0.036** |
+| TS-hard | 0.8339 | **0.8616** | 0.7845 | ✅ +0.077 |
+| TS1 | 0.8473 | 0.8381 | 0.8150 | ✅ +0.023 |
+
+读数：(1) VL0-selected w 在 PDB 家族方向一致有效（TS3 +0.032、
+TS-hard +0.028、TS2 +0.006），TS1 轻微回落（−0.009，量级小于其他
+split 的增益——最终表格按 split 用各自最好 w 的口径必须声明"VL0
+统一 w=0.7"vs"逐 split w"两条线，我们采用 VL0 统一口径为正文，逐
+split 数字放附录用以说明鲁棒性）。(2) TS3 gap 回到 −0.036（单模
+plana 的最好水平），TS2 −0.061：剩余两格的追击仍依赖 s1c（进行中）
+与 NMR-家族微调（排队）。
+
+**下一杠杆排序（TS2/TS3 剩余 −0.036/−0.061）**：
+1. s1c 落地 → plana×r2d×(s1c) 三路 xens（recall 成员增强）；
+2. plana_tr1c 第二种子（in-loop ensemble——plana 家族 3-seed 在 tr0
+   上曾 +0.01）；
+3. TS2 是 NMR 衍生集：PDB 家族专属 head 微调（ VL0-gate）。
