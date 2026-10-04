@@ -33,33 +33,33 @@ def plana_f1(path, split):
 ROWS = [
     # (tier, split, best clean source, ref label, ref value, ref origin)
     ("1", "TS0",
-     ("plana_tr1c @20k", plana_f1, ART / "plana_giga_tr1c_s0_step20000/plan_a_result.json", "ts0"),
+     ("xens plana_tr1c x r2dtr1c", f1, ART / "xens_bprna_ts0/result.json"),
      "RNAformer 32M (bprna ckpt, our scorer, project GT)", 0.7578),
     ("1", "bpRNA-new",
      ("r2d_tr1 2-seed ensemble @10k", f1, ART / "ens_r2dtr1_2seed_bprna_new/result.json"),
      "UFold (our scorer, project GT)", 0.6106),
     ("1", "ArchiveII-clean",
-     ("r2dtr1c @20k", f1, ART / "ow_rinalmo_r2dtr1c_b4_s0_step20000_archiveii_embok_clean/result.json"),
+     ("xens plana_tr1c x r2dtr1c", f1, ART / "xens_archiveii_embok_clean/result.json"),
      "vienna centroid bucket-max (our scorer)", 0.7212),
     ("1", "ArchiveII600 (Mathews macro, NucleicBERT Tab.1 protocol)",
-     ("pending 15.14 arch600 eval", None, None),
-     "RNAErnie+ (quoted)", 0.875),
+     ("plana_tr1c tolerant macro 0.7991/0.8068 (json, not result.json)", None, None),
+     "RNAErnie+ (quoted; leaky ref: TR0capArchiveII=732)", 0.875),
     ("2", "TS1",
-     ("plana_tr1c @20k", plana_f1, ART / "plana_giga_tr1c_s0_step20000/plan_a_result.json", "ts1"),
+     ("xens plana_tr1c x r2dtr1c", f1, ART / "xens_ref_pdb_ts1/result.json"),
      "RNAformer inter-family ckpt (our scorer, project GT)", 0.8150),
     ("2", "TS-hard",
-     ("plana_tr1c @20k", plana_f1, ART / "plana_giga_tr1c_s0_step20000/plan_a_result.json", "hard"),
+     ("xens plana_tr1c x r2dtr1c", f1, ART / "xens_ref_pdb_ts_hard/result.json"),
      "RNAformer bprna ckpt (our scorer, project GT)", 0.7845),
     ("2", "TS2",
-     ("plana_tr1c @20k", plana_f1, ART / "plana_giga_tr1c_s0_step20000/plan_a_result.json", "ts2"),
+     ("xens plana_tr1c x r2dtr1c", f1, ART / "xens_ref_pdb_ts2/result.json"),
      "RNAformer inter-family ckpt (our scorer, project GT)", 0.9043),
     ("2", "TS3",
-     ("plana_tr1c @20k", plana_f1, ART / "plana_giga_tr1c_s0_step20000/plan_a_result.json", "ts3"),
+     ("xens plana_tr1c x r2dtr1c", f1, ART / "xens_ref_pdb_ts3/result.json"),
      "RNAformer bprna ckpt (our scorer, project GT)", 0.9410),
     ("2", "TestSetB",
-     ("r2dtr1c @20k", f1, ART / "ow_rinalmo_r2dtr1c_b4_s0_step20000_testsetb/result.json"),
+     ("xens plana_tr1c x r2dtr1c", f1, ART / "xens_testsetb/result.json"),
      "RiNALMo-ft INF 0.67 (quoted, RiNALMo S5)", 0.67),
-]
+    ]
 
 
 def main():

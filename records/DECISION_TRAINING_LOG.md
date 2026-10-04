@@ -6551,3 +6551,48 @@ two arms are complementary: plana-tr1c for precision/in-family, r2dtr1c
 for recall; a cross-family ensemble is the natural TS2/TS3 strike).
 ArchiveII600 Mathews-protocol eval running (plana_tr1c full-set 3,911 +
 clean subset, with pred_pairs now dumped for the rescore).
+
+## 15.15 Cross-family ensemble LANDS: TS0 0.7859 / TS1 0.8473 / TS-hard 0.8339 / TestSetB 0.8249 / ArchiveII-clean 0.7796 — six of eight target splits beat SOTA; ArchiveII600 tolerant protocol measured
+
+**Tools.** `tools/xens_eval.py` (plana_tr1c in-loop forward + r2dtr1c frozen
+forward, score-average w=0.5, single exact Nussinov decode — the mixed-family
+generalisation of ensemble_eval.py). editflow env (multimolecule for the
+plana member). MIG cards excluded after a repeat OOM (GPU 0 transient-free
+then occupied mid-load; retried full-card runs all succeeded).
+
+**Cross-family ensemble results** (both members trained on bprna_tr1c ->
+clean on every frozen split):
+
+| split | best single | xens | SOTA | delta |
+|---|---|---|---|---|
+| TS0 | 0.7866 (plana) | 0.7859 | 0.7578 | ✅ +0.028 |
+| TS1 | 0.8356 (plana) | **0.8473** | 0.8150 | ✅ +0.032 |
+| TS-hard | 0.8530 (plana) | 0.8339 | 0.7845 | ✅ +0.049 |
+| TS2 | 0.8197 (plana) | **0.8365** | 0.9043 | −0.068 |
+| TS3 | 0.9049 (plana) | 0.8738 | 0.9410 | −0.067 |
+| TestSetB | 0.7507 (r2dtr1c) | **0.8249** | 0.67 | ✅ +0.155 |
+| ArchiveII-clean | 0.7403 (r2dtr1c) | **0.7796** | 0.7212 | ✅ +0.058 |
+| bpRNA-new | 0.6132 (2-seed ens) | 0.5472 | 0.6106 | −0.063 (r2d 2-seed path stays) |
+
+Read-out: the precision x recall complementarity is real and large on
+TestSetB (+0.074 over the better single) and ArchiveII-clean (+0.039). On
+TS2/TS3 the SOTA refs (RNAformer inter-family/bprna ckpts, 0.9043/0.9410)
+remain ahead — those checkpoints were specifically homology-filtered /
+bpRNA-scale-trained for the PDB family; our remaining gap is −0.067 on
+both. TS2/TS3 remain the only two target splits short of SOTA.
+
+**ArchiveII600 (NucleicBERT Tab.1 protocol, Mathews tolerant macro F1)**
+plana_tr1c: full-set (n=3,911) **0.7991**, clean subset (n=2,544) **0.8068**
+(strict macro 0.7757/0.7842; tolerance delta +0.023). vs published refs
+RNAErnie+ 0.875 / NucleicBERT-ft 0.872 — those numbers were achieved with
+training data overlapping the benchmark (TR0∩archiveii=732 in our audit;
+NucleicBERT trained on RNAStrAlign+TR0), so this row is reported as
+"clean-ours vs leaky-published" with the contamination note attached, not
+as a beaten-SOTA claim.
+
+**Goal state (user's 6-dataset demand):** TS0 ✅ bpRNA-new ✅ TS1 ✅
+TS-hard ✅ TestSetB ✅ ArchiveII-clean ✅ ArchiveII600 (leaky-ref gap
+−0.066) TS2 −0.068 TS3 −0.067. Next levers for TS2/TS3: (a) plana_tr1c
+second seed + in-loop ensemble; (b) w sweep on xens (0.5 was untuned);
+(c) NMR-family-specific head fine-tune (TS2 is NMR-derived) — queued
+behind the s1c seed which is still waiting for a card.

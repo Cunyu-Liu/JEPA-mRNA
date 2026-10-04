@@ -32,7 +32,7 @@ wait_gpu () {
   local need_gb=$1 gpu bestfree
   for try in $(seq 1 480); do
     gpu=""; bestfree=0
-    for c in 0 1 2 3 4 5 7; do
+    for c in 0 1 2 3 4 5; do
       u=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits -i $c 2>/dev/null) || continue
       t=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits -i $c 2>/dev/null) || continue
       free=$(( t - u ))
@@ -77,9 +77,9 @@ for NAME in archiveii600 archiveii_clean; do
     archiveii600)  GT=$D/ss_data/jsonl/archiveii600.jsonl ;;
     archiveii_clean) GT=$D/ss_data/jsonl/archiveii_embok_clean.jsonl ;;
   esac
-  $PY $REPO/tools/rescore_mathews.py \
-    --jobs "[[\"$D/eval_decision/plana_giga_tr1c_s0_${NAME}/plan_a_result.json\", \"$GT\", \"plana_tr1c_${NAME}\"]]" \
-    | tee "$OUT"
+  $PY $REPO/tools/mathews_plana.py \
+    --result $D/eval_decision/plana_giga_tr1c_s0_${NAME}/plan_a_result.json \
+    --gt $GT --out $OUT
   echo "[arch600] rescore ${NAME} rc=$?"
 done
 
