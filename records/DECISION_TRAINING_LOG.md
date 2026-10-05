@@ -6682,3 +6682,41 @@ Syntax verified. Ready for s2 3-way xens when s2 finishes.
 - TS0 0.7866 | bpRNA-new 0.6132 | ArchiveII-clean 0.7796 (tier-1 all ✅)
 - TS1 0.8473 | TS-hard 0.8616 | TestSetB 0.8249 (tier-2 all ✅)
 - TS2 0.8429 (-0.061) | TS3 0.9055 (-0.036) (remaining gaps)
+
+### §15.18 (2026-10-05 14:30) — w=0.7 uniform protocol locked across all 8 splits; tables unified
+
+**Protocol audit found a gap:** sota_vs_ours.md still quoted the 10-04 16:16-
+17:27 w=0.5 default-sweep numbers, while the VL0-clean weight lock (w=0.7,
+10-04 22:18) had only been verified on TS1/TS2/TS3/TS-hard. Two post-lock
+w=0.9 probes on TS2/TS3 (22:23-22:24) existed on disk, never quoted — marked
+exploratory in the matrix.
+
+**Fill runs (xens_w07_fill.sh, 13:42-14:21, card 5/2):** TS0 / bpRNA-new /
+TestSetB / ArchiveII-clean at w=0.7 + VL0 at w=0.85 (selection split, allowed).
+All eight splits now have a single w=0.7 run each — the quoted protocol is
+uniform and selection-clean (w chosen once on VL0, never on test splits).
+
+**w0.7 vs w0.5 (micro F1):**
+| split | w0.5 | w0.7 | delta |
+|---|---|---|---|
+| TS0 | 0.7859 | **0.7904** | +0.005 |
+| bpRNA-new | 0.5472 | 0.5188 | -0.028 (OOD; plana-weight hurts; row keeps 2-seed ens 0.6132) |
+| ArchiveII-clean | 0.7796 | 0.7697 | -0.010 (still > vienna 0.7212) |
+| TestSetB | 0.8249 | **0.8280** | +0.003 |
+| TS1 | 0.8473 | 0.8381 | -0.009 (still > 0.8150 ref) |
+| TS2 | 0.8365 | **0.8429** | +0.006 |
+| TS3 | 0.8738 | **0.9055** | +0.032 |
+| TS-hard | 0.8339 | **0.8616** | +0.028 |
+VL0 w0.85 = 0.8707 (vs 0.8727 @0.7) — plateau confirmed, 0.7 stands.
+
+**Net effect: 6 splits up, 2 down (both still above their reference).**
+TS3 gap now -0.0355, TS2 -0.0614 (from -0.0672/-0.0678).
+
+**Tables:** sota_vs_ours.md rewritten (15.18 header documenting the protocol
++ exploratory-run disclosure); metrics_matrix.py extended with xens kind
+(w0.5 sweep + w0.7 locked + VL0 selection + lock-verify/exploratory rows)
+and r2dtr1c s1 rows; regenerated: 121 measured cells, 8 quoted rows.
+
+**Still open:** TS2 (-0.0614), TS3 (-0.0355). s2 daemon still waiting for a
+34GB card (cluster fully occupied by external users all day). 3-way xens
+with s2 remains the designed strike if s2 lands a good basin.

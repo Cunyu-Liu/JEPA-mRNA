@@ -140,6 +140,44 @@ for _a in ["plana_giga_s0", "plana_giga_s1", "plana_giga_s2"]:
     if _p.exists():
         SOURCES.append(("Ours Plan-A %s (PDB family)" % _a[-2:], "plana", _p, "ts1+hard+ts2+ts3"))
 
+
+# 15.18: xens cross-family ensemble (plana_tr1c x r2dtr1c). Two protocol
+# generations on disk: w=0.5 default sweep (10-04 16:16-17:27) and the
+# VL0-locked w=0.7 uniform protocol (single run per split). Both are kept;
+# the sota table quotes only w0.7. VL0 w-sweep rows are selection-split
+# runs, not test rows. 15.17: r2dtr1c s1 (seed=1) 6-split eval — worse
+# basin, kept for the record.
+XENS_DS = {"bprna_ts0": "TS0", "bprna_new": "bpRNA-new",
+           "ref_pdb_ts1": "TS1", "ref_pdb_ts2": "TS2",
+           "ref_pdb_ts3": "TS3", "ref_pdb_ts_hard": "TS-hard",
+           "testsetb": "TestSetB", "archiveii_embok_clean": "ArchiveII-clean"}
+for _sp, _dsn in XENS_DS.items():
+    _p = ART / ("xens_%s" % _sp) / "result.json"
+    if _p.exists():
+        SOURCES.append(("Ours xens (plana_tr1c x r2dtr1c, w0.5 sweep)", "xens", _p, _dsn))
+    _p7 = ART / ("xens_%s_w0.7" % _sp) / "result.json"
+    if _p7.exists():
+        SOURCES.append(("Ours xens (plana_tr1c x r2dtr1c, VL0-locked w0.7)", "xens", _p7, _dsn))
+for _sp, _dsn in [("ref_pdb_ts1", "TS1"), ("ref_pdb_ts2", "TS2"),
+                  ("ref_pdb_ts3", "TS3"), ("ref_pdb_ts_hard", "TS-hard")]:
+    for _w in ("0.7", "0.9"):
+        _p = ART / ("xens_%s_w%s" % (_sp, _w)) / "result.json"
+        if _p.exists():
+            SOURCES.append(("Ours xens %s w%s (lock-verify / exploratory)" % (_dsn, _w),
+                            "xens", _p, _dsn))
+for _sp, _dsn in [("bprna_vl0", "VL0")]:
+    for _w in ("0.3", "0.5", "0.7", "0.8", "0.85", "0.9"):
+        _p = ART / ("xens_%s_w%s" % (_sp, _w)) / "result.json"
+        if _p.exists():
+            SOURCES.append(("Ours xens VL0 w%s (weight-selection split)" % _w,
+                            "xens", _p, _dsn))
+# 15.17: r2dtr1c s1 (seed=1) — worse basin, kept for the record
+for _sp, _dsn in XENS_DS.items():
+    if _sp == "archiveii_embok_clean":
+        continue
+    ow_if("Ours r2d_tr1c (seed=1, worse basin)",
+          "ow_rinalmo_r2dtr1c_b4_s1_step20000_%s" % _sp, _dsn)
+
 def read_cell(label, kind, path, ds):
     if not path.exists():
         return None
@@ -179,6 +217,25 @@ def read_cell(label, kind, path, ds):
                 "micro_F1": round(mic["f1"], 4),
                 "macro_F1": round(pl["macro"]["f1"], 4) if isinstance(pl.get("macro"), dict) else round(pl["macro_f1"], 4) if "macro_f1" in pl else None,
                 "INF": inf, "n": d.get("n_sequences"),
+                "source": str(path.parent.name)}
+    if kind == "xens":
+        d = json.load(open(path))
+        pl = d["pair_level"]
+        mic = dict(pl["micro"])
+        tp, fp, fn = mic.get("tp", 0), mic.get("fp", 0), mic.get("fn", 0)
+        if "precision" not in mic:
+            mic["precision"] = tp / (tp + fp) if tp + fp else 0.0
+        if "recall" not in mic:
+            mic["recall"] = tp / (tp + fn) if tp + fn else 0.0
+        mac = None
+        if isinstance(pl.get("macro"), dict):
+            mac = pl["macro"].get("f1")
+        return {"label": label, "dataset": ds,
+                "micro_P": round(mic["precision"], 4),
+                "micro_R": round(mic["recall"], 4),
+                "micro_F1": round(mic["f1"], 4),
+                "macro_F1": round(mac, 4) if mac is not None else None,
+                "INF": None, "n": d.get("n_sequences"),
                 "source": str(path.parent.name)}
     if kind == "plana":
         d = json.load(open(path))
