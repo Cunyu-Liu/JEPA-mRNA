@@ -6748,3 +6748,12 @@ TS2/TS3 bottleneck is recall — a third precision member cannot help.
 discrimination gap on short NMR-family structures, not a decoding or
 scoring artifact. Next lever: plana second seed (diversify the
 precision member; recall members are the bottleneck), GPU4 free 38.6GB.
+
+**plana_tr1c_s1 launched** (GPU4, 23:02:11, pid 997817, --seed 1): second
+seed of the precision-family member. Rationale: recall members are the
+bottleneck for more seeds (s1/s2 both land worse basins AND are precision-
+type), so the fresh diversity draw goes to the plana family instead. Plan:
+when done (est. ~10-12h) + auto 6-split eval, either (a) in-family plana
+2-seed ensemble, or (b) xens with plana-side averaging — then final
+TS2/TS3 strike + table updates. Daemon: scripts/launch_planatr1c_s1.sh
+(flock /tmp/.plana_tr1c_s1_daemon.lock).
