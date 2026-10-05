@@ -4,15 +4,17 @@ type) x r2dtr1c (frozen+2D, recall-type) — score-average then single exact
 Nussinov decode, the same semantics as tools/ensemble_eval.py but mixed
 model families.
 
+15.17 extension: optional --r2d-ckpt2 adds a second frozen-arm member
+(seed=1 variant r2dtr1c_b4_s1). When provided, the two frozen members
+are averaged with equal weight inside the (1 - w_plana) bucket, giving
+a 3-way cross-family ensemble. Backward compatible: without --r2d-ckpt2
+the script behaves identically to the 2-way version.
+
 Why: 15.14 showed the two clean arms are complementary — plana_tr1c holds
 P 0.92-0.93 but R 0.71-0.74 on TS2/TS3; r2dtr1c holds R 0.75-0.80. Score
 averaging before the decode lets the precision arm veto FP and the recall
 arm recover FN. Both trained on tr1c -> both clean on every frozen split.
-
-Inputs: two checkpoints; per-seq loop mirrors eval_plan_a (in-loop forward
-for the plana member, cached-embedding forward for the r2dtr1c member).
-Decode: nussinov_map over averaged scores with valid_pair_mask, -inf on
-illegal pairs in both (so the mean is -inf there too).
+Adding s1c (same recipe, different seed) diversifies the recall arm.
 """
 import argparse
 import json
@@ -94,19 +96,31 @@ def r2d_scores(model, seq, emb, device):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plana-ckpt", required=True)
-    ap.add_argument("--r2d-ckpt", required=True)
+    ap.add_argument("--r2d-ckpt", required=True,
+                    help="primary frozen arm (s0)")
+    ap.add_argument("--r2d-ckpt2", default=None,
+                    help="optional second frozen arm (s1c seed variant); "
+                         "when set, the two frozen members are averaged "
+                         "with equal weight inside the (1 - w_plana) bucket")
     ap.add_argument("--data", required=True)
     ap.add_argument("--embedding-dir", default="/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga")
     ap.add_argument("--embedding-split", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--w-plana", type=float, default=0.5,
-                    help="weight on the plana score; 0.5 = plain average")
+                    help="weight on the plana score; 0.5 = plain average. "
+                         "When --r2d-ckpt2 is set, the (1 - w_plana) bucket "
+                         "is split 0.5/0.5 between the two frozen members.")
     args = ap.parse_args()
 
     device = args.device
     kind, enc_or_model, head, meta = load_plana(args.plana_ckpt, device)
     kind2, model, _, _ = load_r2d(args.r2d_ckpt, device)
+    model2 = None
+    if args.r2d_ckpt2:
+        _, model2, _, _ = load_r2d(args.r2d_ckpt2, device)
+        print(f"[xens] 3-way mode: plana + r2d({args.r2d_ckpt}) + r2d2({args.r2d_ckpt2})",
+              flush=True)
     store = EmbeddingStore.from_dir(args.embedding_dir, split=args.embedding_split)
 
     records = []
@@ -131,6 +145,11 @@ def main():
         emb = store.get(seq)
         s1 = plana_scores(enc_or_model, head, seq, device).cpu().numpy()
         s2 = r2d_scores(model, seq, emb, device).cpu().numpy()
+        if model2 is not None:
+            s2b = r2d_scores(model2, seq, emb, device).cpu().numpy()
+            if s2b.shape != s2.shape:
+                s2b = s2b[:s2.shape[0], :s2.shape[1]]
+            s2 = 0.5 * s2 + 0.5 * s2b
         if s2.shape != s1.shape:
             s2 = s2[:s1.shape[0], :s1.shape[1]]
         s = args.w_plana * s1 + (1 - args.w_plana) * s2
@@ -152,8 +171,10 @@ def main():
     out = {
         "tag": Path(args.out).name,
         "plana_ckpt": args.plana_ckpt, "r2d_ckpt": args.r2d_ckpt,
+        "r2d_ckpt2": args.r2d_ckpt2,
         "w_plana": args.w_plana, "data": args.data,
-        "mode": "cross-family score average -> exact Nussinov",
+        "mode": "cross-family score average -> exact Nussinov"
+                + (" (3-way: plana + 0.5*r2d + 0.5*r2d2)" if args.r2d_ckpt2 else ""),
         "n_sequences": len(per_seq), "n_skipped": skipped,
         "pair_level": {
             "micro": {"f1": f1, "precision": prec, "recall": rec,

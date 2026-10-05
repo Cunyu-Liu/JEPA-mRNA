@@ -6638,3 +6638,47 @@ plana 的最好水平），TS2 −0.061：剩余两格的追击仍依赖 s1c（�
 2. plana_tr1c 第二种子（in-loop ensemble——plana 家族 3-seed 在 tr0
    上曾 +0.01）；
 3. TS2 是 NMR 衍生集：PDB 家族专属 head 微调（ VL0-gate）。
+
+### §15.17 (2026-10-05 11:45) — s1c (seed=1) eval complete; uniformly worse than s0; s2 launched
+
+**s1c training was already done** (step 20000 at 04:08, daemon died before eval).
+Resume.pt at runs/rinalmo_r2dtr1c_b4_s1/resume.pt; symlinked as
+ckpts/rinalmo_r2dtr1c_b4_s1_step20000.pt. Format verified byte-identical to
+s0 step20000.pt (same 9.6MB, same keys: step/model/optimizer/scheduler/config/
+gradient_coverage).
+
+**Initial daemon relaunch picked MIG card 6** (nvidia-smi reports 40GB free but
+CUDA sees 1.2GB) — would OOM on long seqs. Killed; wrote s1c_eval_card5.sh
+locking eval to card 5 (35GB real free). 6-split eval completed in 17min.
+
+**s1c vs s0 F1 (6 splits):**
+| split | s1c | s0 | Δ |
+|---|---|---|---|
+| TS0 | 0.6522 | 0.6679 | -0.016 |
+| bpRNA-new | 0.5177 | 0.5643 | -0.047 |
+| TS1 | 0.7399 | 0.7551 | -0.015 |
+| TS2 | 0.6277 | 0.7686 | **-0.141** |
+| TS3 | 0.6822 | 0.7815 | **-0.099** |
+| TS-hard | 0.6464 | 0.7005 | -0.054 |
+
+s1c uniformly worse; TS2/TS3 (target splits) hit hardest. Recall halved on
+TS2 (0.484 vs 0.672).
+
+**Investigation: grad_clip is 1.0 by default** (train_decision.py line 179,
+1207-1209). grad_norm=886 at step 20000 is PRE-clip; actual update bounded to
+norm 1.0. So s1c is NOT corrupted — seed=1 simply landed in a worse basin.
+Retraining seed=1 would reproduce the same result.
+
+**Decision: launch seed=2 (s2).** Fresh draw, different init, might find a
+better basin. Daemon launch_r2dtr1c_s2.sh polls cards 0-5 (skip 6/7 MIG) for
+34GB CUDA-free. Currently no card available (honghuiyang_af3 expanded to 24GB
+on card 5; cards 0-4 also full). Will auto-launch when a card frees.
+
+**xens_eval.py extended for 3-way** (--r2d-ckpt2 optional; when set, frozen
+members averaged 0.5/0.5 inside the (1-w_plana) bucket). Backward compatible.
+Syntax verified. Ready for s2 3-way xens when s2 finishes.
+
+**Current SOTA state unchanged:**
+- TS0 0.7866 | bpRNA-new 0.6132 | ArchiveII-clean 0.7796 (tier-1 all ✅)
+- TS1 0.8473 | TS-hard 0.8616 | TestSetB 0.8249 (tier-2 all ✅)
+- TS2 0.8429 (-0.061) | TS3 0.9055 (-0.036) (remaining gaps)
