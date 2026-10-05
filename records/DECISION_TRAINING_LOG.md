@@ -6720,3 +6720,31 @@ and r2dtr1c s1 rows; regenerated: 121 measured cells, 8 quoted rows.
 **Still open:** TS2 (-0.0614), TS3 (-0.0355). s2 daemon still waiting for a
 34GB card (cluster fully occupied by external users all day). 3-way xens
 with s2 remains the designed strike if s2 lands a good basin.
+
+### §15.19 (2026-10-05 20:05) — s2 dead-end; noncanonical/mask/tolerance/bias hypotheses all tested; recall gap is a real model gap
+
+**s2 (seed=2) full pipeline done** (train 14:17→19:29, auto 6-split eval →
+19:45). Healthy final step (grad_norm 1.9 vs s1c's 886 — s1c was not
+corrupted after all, just a bad basin). Result: uniformly worse than s0
+(TS2 0.7080 vs 0.7686, recall 0.576). Seed ranking: s0 > s2 > s1.
+3-way xens judged dead: both extra seeds are precision-type members; the
+TS2/TS3 bottleneck is recall — a third precision member cannot help.
+
+**Hypothesis tests on the TS2/TS3 gap (all CPU/GPU-cheap):**
+1. Noncanonical GT pairs blocked by valid_pair_mask → REFUTED. The first
+   analysis used 1-based indexing (off-by-one); pairs are 0-based.
+   Corrected: every split's GT pairs are 100% canonical (AU/GC/GU);
+   recall ceiling under our mask is exactly 1.0.
+2. Boundary-shift scoring artifact (Mathews tolerance) → REFUTED as the
+   main cause. tol=1/±1: xens TS2 0.8598 vs interfam 0.9323; tol=2:
+   0.8649 vs 0.9385 — gaps persist at ±1/±2, so it is not just
+   coordinate-offset. (RNAformer TS3@tol2 0.9507 vs our 0.9325.)
+3. Under-prediction (fn=156 vs fp=30 on TS2) → decode-bias lever swept
+   cleanly on VL0 (forward once, re-decode per c; 0/0.5/1/1.5/2/3/5):
+   c=0 optimal (0.8727), any c>0 trades P for R at a net loss. VL0
+   rejects the bias knob → NOT applied to test splits. protocol-clean.
+
+**Conclusion:** the TS2 (-0.061) / TS3 (-0.036) gaps are a genuine model
+discrimination gap on short NMR-family structures, not a decoding or
+scoring artifact. Next lever: plana second seed (diversify the
+precision member; recall members are the bottleneck), GPU4 free 38.6GB.
