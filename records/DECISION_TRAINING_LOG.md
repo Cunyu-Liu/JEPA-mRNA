@@ -6825,3 +6825,42 @@ eval at DONE (est ~10h). Daemon: scripts/launch_planatr1c_s2.sh
 
 **SOTA state (unchanged from 15.20):** 6/8 splits above reference;
 TS2 -0.046, TS3 -0.045 remaining.
+
+### §15.22 (2026-10-06 16:10) — full table audit: all numbers verified; dual-path table drift found and fixed
+
+**User asked for a strict re-check of every number in every table.** Wrote
+tools/audit_tables_v2.py — an INDEPENDENT re-derivation (no imports from
+metrics_matrix.py, so its bugs cannot propagate): re-computes each cell from
+the raw result.json / baselines_*.json on disk, checks every quoted
+reference value, verifies all 9 frozen-split sha256 manifests, and audits
+the ArchiveII600 tolerant-macro row against its source json.
+
+**Result: 540 checks, 0 mismatches.** All 138 measured matrix cells, all
+sota "our best" numbers, all reference values (RNAformer 0.7578/0.8150/
+0.7845/0.9043/0.9410, UFold 0.6106, vienna bucket-max 0.7212, RiNALMo
+TestSetB 0.67 paper-quoted), delta-column arithmetic, n-column counts
+(39/19/63/28/1288/428/2544/5388 all exact), frozen-split sha256 (files
+unchanged since freeze), and ArchiveII600 (0.7991 full / 0.8068 clean
+= tolerant macro, strict 0.7757/0.7842 also recorded) — every number
+traces to disk.
+
+**One real defect found and fixed (not a wrong number — a stale copy):**
+tables existed in TWO places. sota_vs_ours.md was hand-written to
+/home/<repo>/tables (correct, git-tracked, 15.20 version), but
+metrics_matrix.py wrote its output to /mnt/<repo>/tables (hard-coded
+OUT_MD). Consequences: (a) the 15.18/15.20 commits claim "121/138 cells"
+but the git-tracked matrix was a stale 10-04 version (104 rows, zero
+xens2 rows) — the 138-cell version only lived on /mnt, untracked;
+(b) /mnt/tables/sota_vs_ours.md was a stale 15.14 copy (xens w0.5
+numbers), a trap for anyone reading the /mnt tree.
+
+**Fix (canonical = /home git repo):** metrics_matrix.py OUT paths now
+point at /home/.../tables and the script mirrors both outputs to
+/mnt/.../tables (shutil.copyfile at the end, labelled "15.22 mirror");
+regenerated — 138 cells written to both; sota table copied to /mnt;
+md5 now identical across the two trees (sota c2f8bd39..., matrix
+fc150b03...). Audit v2 re-run against /home canonical: 0 mismatches.
+
+**Lesson recorded:** the /home-vs-/mnt split (code vs large artifacts)
+must never apply to *derived tables* — they are code-adjacent outputs
+and belong in the repo, with the /mnt copy as a pure mirror.

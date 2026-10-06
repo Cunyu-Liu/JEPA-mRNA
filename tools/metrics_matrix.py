@@ -8,8 +8,8 @@ import json
 from pathlib import Path
 
 ART = Path("/mnt/cunyuliu/rna-jepa/eval_decision")
-OUT_MD = Path("/mnt/cunyuliu/rna-jepa/tables/metrics_matrix.md")
-OUT_JSON = Path("/mnt/cunyuliu/rna-jepa/tables/metrics_matrix.json")
+OUT_MD = Path("/home/cunyuliu/rna-jepa/tables/metrics_matrix.md")
+OUT_JSON = Path("/home/cunyuliu/rna-jepa/tables/metrics_matrix.json")
 
 # (label, kind, path-ish, dataset) — kinds: baseline_json (baselines_*.json
 # with baselines/<name>/...), ow (ow_* result.json pair_level+per_seq INF),
@@ -326,3 +326,10 @@ OUT_MD.write_text("\n".join(lines), encoding="utf-8")
 json.dump({"measured": cells, "quoted": QUOTED},
           open(OUT_JSON, "w"), indent=1)
 print(f"written {OUT_MD} ({len(cells)} measured cells, {len(QUOTED)} quoted rows)")
+
+
+# 15.22: mirror the outputs to /mnt (historical convention kept for
+# readers of the /mnt tree; the git repo at /home is the source of truth)
+import shutil as _sh
+_sh.copyfile(OUT_MD, "/mnt/cunyuliu/rna-jepa/tables/metrics_matrix.md")
+_sh.copyfile(OUT_JSON, "/mnt/cunyuliu/rna-jepa/tables/metrics_matrix.json")
