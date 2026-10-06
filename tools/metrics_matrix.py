@@ -178,6 +178,23 @@ for _sp, _dsn in XENS_DS.items():
     ow_if("Ours r2d_tr1c (seed=1, worse basin)",
           "ow_rinalmo_r2dtr1c_b4_s1_step20000_%s" % _sp, _dsn)
 
+
+# 15.20: xens2 — plana 2-seed in-family average bucket x r2d. VL0
+# re-selected w=0.7 after the bucket change (0.8789); single run per
+# split. plana_tr1c_s1 single-seed rows come from its plan_a_result.json.
+for _sp, _dsn in XENS_DS.items():
+    _p = ART / ("xens2_%s_w0.7" % _sp) / "result.json"
+    if _p.exists():
+        SOURCES.append(("Ours xens2 (plana 2-seed avg x r2d, w0.7)", "xens", _p, _dsn))
+for _w in ("0.5", "0.7", "0.85"):
+    _p = ART / ("xens2_bprna_vl0_w%s" % _w) / "result.json"
+    if _p.exists():
+        SOURCES.append(("Ours xens2 VL0 w%s (weight-selection split)" % _w,
+                        "xens", _p, "VL0"))
+_p = ART / "plana_giga_tr1c_s1_step20000" / "plan_a_result.json"
+if _p.exists():
+    SOURCES.append(("Ours plana_tr1c s1 (adapted+2D, clean)", "plana", _p, "TS0+new+PDB"))
+
 def read_cell(label, kind, path, ds):
     if not path.exists():
         return None

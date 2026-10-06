@@ -6757,3 +6757,41 @@ when done (est. ~10-12h) + auto 6-split eval, either (a) in-family plana
 2-seed ensemble, or (b) xens with plana-side averaging — then final
 TS2/TS3 strike + table updates. Daemon: scripts/launch_planatr1c_s1.sh
 (flock /tmp/.plana_tr1c_s1_daemon.lock).
+
+### §15.20 (2026-10-06 15:00) — plana_tr1c_s1 good seed; xens2 (2-seed plana bucket) lifts 7/8 splits
+
+**plana_tr1c_s1 training completed** (23:02 -> ~08:18, 20k steps, loss
+52.6->9.8). The daemon's auto-eval OOM'd (card 0 filled by external
+processes mid-run; rc=1 mis-reported as ALL DONE) — re-run via
+scripts/plana_s1_eval_robust.sh (per-attempt card re-pick, 16GB bar).
+
+**plana_s1 vs plana_s0 (eval_plan_a protocol, 6 splits):**
+TS1 0.8570 vs 0.8356 (+0.021), TS2 0.8393 vs 0.8197 (+0.020), new
+0.4995 vs 0.4779 (+0.022), TS3 0.8902 vs 0.9049 (-0.015), hard 0.8357
+vs 0.8530 (-0.017), TS0 0.7834 vs 0.7866 (-0.003). s1 is recall-type
+(R +0.046 on TS2/TS1) — complementary to s0's precision profile. The
+recall-side seed draw finally landed well (contrast: r2dtr1c s1/s2
+both landed worse basins AND were precision-type).
+
+**xens2 = plana 2-seed in-family bucket (0.5 s0 + 0.5 s1) x r2dtr1c_s0
+bucket, w on the plana bucket.** VL0 w re-selection after the bucket
+change: 0.5->0.8762, 0.7->0.8789, 0.85->0.8782; w=0.7 retained
+(selection split only). Single run per test split:
+
+| split | xens2 | xens(15.18) | delta | ref | verdict |
+|---|---|---|---|---|---|
+| TS0 | 0.8039 | 0.7904 | +0.014 | 0.7578 | ✅ +0.046 |
+| TS1 | 0.8755 | 0.8381 | +0.037 | 0.8150 | ✅ +0.061 |
+| TS-hard | 0.8732 | 0.8616 | +0.012 | 0.7845 | ✅ +0.089 |
+| TS2 | 0.8588 | 0.8429 | +0.016 | 0.9043 | −0.0455 (from −0.061) |
+| TS3 | 0.8965 | 0.9055 | −0.009 | 0.9410 | −0.0445 (from −0.036) |
+| TestSetB | 0.8448 | 0.8280 | +0.017 | 0.6700 | ✅ +0.175 |
+| ArchiveII-clean | 0.7760 | 0.7697 | +0.006 | 0.7212 | ✅ +0.055 |
+| bpRNA-new | 0.5532 | 0.5188 | +0.034 | — | row keeps 2-seed ens 0.6132 |
+
+7/8 splits improved; only TS3 dips (s1's TS3 weakness dilutes s0's
+strength there). xens2 is the new quoted ensemble.
+TS2/TS3 gaps now −0.046/−0.045.
+
+Tables: sota_vs_ours.md (15.20 header + all xens2 rows);
+metrics_matrix.py + xens2/plana_s1 sources; regenerated 138 cells.
