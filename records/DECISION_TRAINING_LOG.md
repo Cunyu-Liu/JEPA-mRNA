@@ -6945,3 +6945,49 @@ T-A25.
 two arms); s2 (card 1, 7.9k/20k, ETA ~10-07 05:00) + s3 (card 3, fresh);
 crons RNAJEPA_MONITOR + the two new watchdogs live; git HEAD 7c9618a clean
 except spec/ docs (committed with this section).
+
+
+### §15.25 (2026-10-06 20:10) — v3.18 lands (T-A25): the turnaround chapter is in the paper; ablation arms armed (T-A27); PPT slide added
+
+**T-A25 executed — draft v3.18.** The gap between the paper and the ledger
+(flagged as problem 2 in the tenth-round retrospective) is closed:
+
+1. **New §4.3h "Decontamination turned the leaderboard"**: the two
+   self-initiated retractions (TR1∩TS0=1,087/PDB-family; TR0∩TestSetB=247,
+   memorisation delta +0.162 on TS-hard), the frozen-split protocol
+   (sha256 manifest), bprna_tr1c, the full 8-benchmark single-model +
+   same-family + cross-family table (all 16 headline cells re-derived from
+   disk by the checker), the TS2/TS3 real-model-gap finding with its three
+   refuted artefact hypotheses, the ArchiveII600 pending row, and the
+   deployment guidance restated on the clean corpus.
+2. **Banner v3.18 change note** ahead of the v3.17 note.
+3. **Limitations item 5 rewritten** (the stale 0.6446-ceiling framing is
+   superseded and its retraction is stated); **items 12/13 added**
+   (leakage-retraction disclosure; bpRNA-new ensemble-only honesty).
+4. **Conclusion refreshed** (bpRNA-new now 0.5643/0.6132 vs UFold; the
+   eight-benchmark board).
+5. **New checker tools/check_v318.py: 40/40 PASS** — every number in the
+   new section re-read from result.json, cross-checked against
+   tables/sota_vs_ours.md, structural anchors asserted. Two fold-script
+   lessons: heredoc-in-ssh mangles escapes (use scp + file), and the
+   checker's xens2 paths needed the _w0.7 suffix (caught on first run —
+   the file-not-found IS the check working).
+
+**T-A27 armed — two ablation arms queued (launch_ablation_tr1c.sh).**
+nodistill (--lambda-distill 0) and norlcd (--lambda-rlcd 0), byte-identical
+to rinalmo_r2dtr1c_b4_s0 otherwise (single-variable discipline), each with
+its own flock daemon polling 34GB cards (all full — armed, will self-launch
+on the next window), watchdog crons ABLATION_NODISTILL/NORLCD_WATCHDOG
+installed (*/10), 6-split auto-eval at DONE. These are the first two items
+of the tr1c-native ablation matrix the tenth-round retrospective demanded.
+
+**PPT slide 14 added** (user demand: results go into the deck after
+verification): the 8-benchmark SOTA table with per-split verdicts, the
+retraction->freeze->re-measure storyline, and the evidence-chain footer;
+cloned from slide 11's geometry (table + annotations), all 16 numbers
+matching the checker-verified draft.
+
+Cluster state at close: s2 @~8.3k/20k (GPU1), s3 @~430/20k (GPU3, post
+self-heal), two ablation daemons polling; 4 watchdog crons live
+(PLANA_TR1C_S2/S3 + ABLATION_NODISTILL/NORLCD); next events are the s2/s3
+completions (auto 6-split evals) and the first ablation placement.
