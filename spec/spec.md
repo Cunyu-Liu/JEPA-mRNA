@@ -27,6 +27,27 @@
 - te_human fullbudget：s1 epoch 0.34、s42 epoch 0.88（ETA 10-01 晚/10-02）。
 - RNA-JEPA 线：四大主臂 50k 全部完成，梯级评测全自动落地中（v1_cont_50k half_life n=5 r2 均值 0.5252 主臂最优档）。
 >
+> **交接状态（2026-10-06 19:30，第十轮交接更新——SOTA 大盘翻盘后的收尾轮）**：
+> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`，HEAD 603cd65），数据/权重 `/mnt/cunyuliu/rna-jepa`。
+> - **当前 SOTA 战况（全部在去污染语料 bprna_tr1c 上训练、project scorer、project GT，表 = `tables/sota_vs_ours.md` 15.23 版；§15.22 独立审计 540 checks 0 mismatch）**：
+>   | split | 单模最佳 | cross-family ens (xens2, VL0-locked w=0.7) | 参考 | verdict |
+>   |---|---|---|---|---|
+>   | TS0 | plana_s0 **0.7866** | 0.8039 | RNAformer 0.7578 | ✅ +0.046 |
+>   | bpRNA-new | r2d_s0 0.5643 | 2-seed ens **0.6132** | UFold 0.6106 | ✅ +0.003（ensemble-only，诚实标注） |
+>   | ArchiveII-clean | r2d_s0 0.7403 | 0.7760 | vienna centroid 0.7212 | ✅ +0.055 |
+>   | TS1 | plana_s1 **0.8570** | 0.8755 | RNAformer-interfam 0.8150 | ✅ +0.061 |
+>   | TS-hard | plana_s0 **0.8530** | 0.8732 | RNAformer 0.7845 | ✅ +0.089 |
+>   | TS2 | plana_s1 0.8393 | 0.8588 | RNAformer-interfam 0.9043 | −0.0455 |
+>   | TS3 | plana_s0 **0.9049** | 0.8965 | RNAformer 0.9410 | −0.0445 |
+>   | TestSetB | r2d_s0 **0.7507** | 0.8448 | RiNALMo-ft 0.67 | ✅ +0.175 |
+>   **六/八 split 超 SOTA**；TS2/TS3 剩 −0.045 左右（真模型差距，非解码/评分伪影，§15.19 三假设全部被数据否定）。用户 tier-1（TS0/ArchiveII/bpRNA-new）已全部 ✅。ArchiveII600 Mathews 协议 0.7991/0.8068，因参照系本身带泄漏（TR0∩archiveii=732）保持 pending-not-claimed。
+> - **关键范式证据链（叙事核心，全部实测）**：① 去污染审计两次抓到泄漏（TR1∩TS0=1087 → §15.10；TR0∩TestSetB=247 → §15.13），随后 9-split 冻结 + sha256（`spec/eval_splits_frozen.json`），tr1c 是唯一全干净语料；② 单模即超 5/6 参照（§15.23，防"ensemble=trickery"质疑）；③ same-family vs cross-family 消融证明集成增益来自家族互补（precision×recall）而非模型数（§15.23）；④ 复现性跟随被训练的层——head-only 配方 Δseed −0.007，backbone-adaptation OOD 摆幅 −0.054（v3.16）；⑤ 校准：0.7268 模型重标定 ECE 0.0007，全测源最优 DP-free（v3.17）。
+> - **在飞**：`plana_giga_tr1c_s2`（GPU1，step ~7.5k/20k，守护+watchdog cron）；**本轮新增** `plana_giga_tr1c_s3`（seed 3，第四个 plana-tr1c 成员；首放与 s2 同卡 step-1 即被外部租户挤爆 OOM，守护自愈路径已实战验证——换卡重启只用掉 40 次预算中的 1 次，现已落 GPU3 训练；若落地 recall-type 则 plana bucket 升 3-seed）；watchdog cron `PLANA_TR1C_S2/S3_WATCHDOG` 已装（此前所有臂的 watchdog 均处 PAUSED 状态，违反 §14.79 自愈教训——本轮补上）。
+> - **draft v3.17**（preprint_draft.md，114/114 checker）；§15.23 已重建 paper 主表（single-model 列 + same-family 消融列）。**未入稿的新数字：xens2 全套（§15.20）与 §15.18 的 w=0.7 统一协议**——这是下一步写作动作。
+> - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§15.24**，6947 行）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**冻结评测集**：`spec/eval_splits_frozen.json`；**当前任务状态**：`spec/tasks.md`。
+> - **下一步（按优先级）**：① draft v3.18：把 §15.10–§15.23 的翻盘叙事（去污染、tr1c、xens2、TS2/TS3 负结果、§15.22 审计）整章写入——当前稿件的 §4.3 主表还是 10-02 的旧局面，与 15.23 表已脱节；② s2/s3 落地 → 3-seed plana bucket 终评 + xens3；③ TS2/TS3 收官（NMR 家族 head 微调，VL0-gate）；④ 消融矩阵补齐（bprna_tr1c 上重跑核心消融，多数可离线）。
+> - **本轮问题反思（用户要求，写入交接）**：详见 tasks.md「第十轮交接反思」——核心六条：本地/集群文档滞后 7 个台账章节；写作落后实验两章；watchdog 全 PAUSED 的自愈纪律倒退；TS2/TS3 负结果尚无论文落点；消融矩阵与最终配方脱节；撤回史须作为 benchmark-hygiene 贡献完整披露。
+>
 > **交接状态（2026-10-01 15:30，第九轮交接更新）**：
 - **r2d_s1 完成并双 split 终评落地——Plan-B 种子方差极紧**：TS0 0.6559 / OOD 0.5000（Δseed **-0.0071 / -0.0010**，OOD 实际种子不变）。与 Plan-A 的 OOD 摆幅 -0.054 形成对照。
 - **draft 升至 v3.16**：Plan-B s1 行入主表 + §4.3g(d) 第二 seed 段落（**"复现性跟随被训练的层"**——只动 head 的配方复现，动 backbone 的不复现）+ Appendix A 行；**checker 108/108**（途中还抓到一处精度：Δ 实为 -0.0071 非 -0.0070）。GPU 5 的 26h 卡点后的手动放置被结果完全证明。
