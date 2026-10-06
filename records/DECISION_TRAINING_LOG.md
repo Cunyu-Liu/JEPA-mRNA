@@ -6795,3 +6795,33 @@ TS2/TS3 gaps now −0.046/−0.045.
 
 Tables: sota_vs_ours.md (15.20 header + all xens2 rows);
 metrics_matrix.py + xens2/plana_s1 sources; regenerated 138 cells.
+
+### §15.21 (2026-10-06 15:20) — asymmetric plana-bucket weights rejected on VL0; plana_s2 launched
+
+**Loss question (user):** "plana_s1 loss 9.8 — converged?" Answer with
+data: (a) s0 — our best model, TS0 0.7866 — plateaus at the same level
+(mean 11.3 vs s1's 11.0 over 18-20k; curves overlap), so ~10 IS this
+composite objective's normal plateau; (b) the loss is a four-term sum
+(nll + distill + rlcd[NEGATIVE reward] + cal) with nll summed over all
+L^2 pair positions per sequence — absolute value is not comparable to a
+per-pair CE and single-step variance is huge (s0's last 5 steps: 27.9,
+-0.0, -0.6, 93.5, 16.5); (c) longer training was already measured and
+HURTS (plana_giga_s0 ext40k: bpRNA-new 0.4302@20k -> 0.4005@30k ->
+0.3988@40k). 20k is a calibrated fixed-step schedule, not early stop.
+Verdict: s1 trained exactly as designed; F1 is the arbiter and s1's F1
+is good (TS2 0.8393 / TS1 0.8570).
+
+**VL0 asymmetric plana-bucket sweep (s1w = 0.3/0.5/0.7, w=0.7 fixed):**
+0.3 -> 0.8763, 0.5 -> 0.8789, 0.7 -> 0.8785. Equal weight (0.5) remains
+optimal on the clean selection split; the asymmetric lever is rejected
+protocol-clean. TS3's small dip cannot be recovered via bucket weights.
+
+**plana_tr1c_s2 launched** (GPU1 15:06, pid 3875380, --seed 2, 16GB
+bar): third plana-family member. If it lands recall-type like s1, the
+plana bucket becomes 3-seed (0.33 each); if precision-type, buckets
+stay 2-seed and s2 is a drop-in replacement candidate. Auto 6-split
+eval at DONE (est ~10h). Daemon: scripts/launch_planatr1c_s2.sh
+(flock .plana_tr1c_s2_daemon.lock).
+
+**SOTA state (unchanged from 15.20):** 6/8 splits above reference;
+TS2 -0.046, TS3 -0.045 remaining.

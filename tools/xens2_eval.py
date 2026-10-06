@@ -97,6 +97,9 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--w-plana", type=float, default=0.7)
+    ap.add_argument("--plana-s1-weight", type=float, default=0.5,
+                    help="weight of plana seed1 inside the plana bucket "
+                         "(0.5 = plain average; VL0-selectable)")
     args = ap.parse_args()
 
     device = args.device
@@ -131,7 +134,7 @@ def main():
         for arr in (s1, s2):
             if arr.shape != s0.shape:
                 arr = arr[:s0.shape[0], :s0.shape[1]]
-        sp = 0.5 * s0 + 0.5 * s1
+        sp = (1 - args.plana_s1_weight) * s0 + args.plana_s1_weight * s1
         s = args.w_plana * sp + (1 - args.w_plana) * s2
         mask = valid_pair_mask(seq)
         s = np.where(mask, s, -np.inf)
@@ -152,8 +155,9 @@ def main():
         "tag": Path(args.out).name,
         "plana_ckpt": args.plana_ckpt, "plana_ckpt2": args.plana_ckpt2,
         "r2d_ckpt": args.r2d_ckpt,
-        "w_plana": args.w_plana, "data": args.data,
-        "mode": "plana 2-seed in-family avg (0.5 s0 + 0.5 s1) x r2d cross-family, w on the plana bucket",
+        "w_plana": args.w_plana, "plana_s1_weight": args.plana_s1_weight,
+        "data": args.data,
+        "mode": "plana 2-seed in-family avg (s1w=%.2f) x r2d cross-family, w on the plana bucket" % args.plana_s1_weight,
         "n_sequences": len(per_seq), "n_skipped": skipped,
         "pair_level": {
             "micro": {"f1": f1, "precision": prec, "recall": rec,
