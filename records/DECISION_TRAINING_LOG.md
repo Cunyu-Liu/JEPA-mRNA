@@ -6864,3 +6864,34 @@ fc150b03...). Audit v2 re-run against /home canonical: 0 mismatches.
 **Lesson recorded:** the /home-vs-/mnt split (code vs large artifacts)
 must never apply to *derived tables* — they are code-adjacent outputs
 and belong in the repo, with the /mnt copy as a pure mirror.
+
+### §15.23 (2026-10-06 17:20) — paper main table rebuilt: single-model column + same-family ablation
+
+**Reviewer-defense plan executed** (user approved the "single model AND
+ensemble, side by side" structure against the "ensemble = trickery"
+concern).
+
+**New measurement: plana same-family 2-seed pure bucket** (xens2 with
+w_plana=1.0 => s = 0.5*plana_s0 + 0.5*plana_s1, no r2d member; structural
+ablation, no knob). All 8 splits:
+TS0 0.8078 / TS1 0.8661 / TS-hard 0.8703 / TS2 0.8602 / TS3 0.9031 /
+TestSetB 0.8426 / ArchII-clean 0.7613 / bpRNA-new 0.5187.
+(archiveii run failed rc=1 in the sweep — GPU squeezed mid-run; re-ran
+solo on GPU2, fine.)
+
+**Ablation verdict: cross-family >= same-family** on 6/8 splits
+(TS1 +0.009, ArchII +0.015, TestSetB +0.002, TS-hard +0.003; TS0/TS2 tie
+within 0.004; TS3 the known exception where s0 solo is best). The
+"ensemble gains come from family complementarity (precision x recall),
+not model count" argument now has a complete measured chain.
+
+**Paper main table (sota_vs_ours.md, rebuilt by
+tools/build_paper_table.py — every number re-read from disk):**
+new column layout: single model | single F1 | same-family 2-seed |
+cross-family ensemble | P/R | reference | verdict. Key facts now
+one-glance visible: single model beats reference on 5/6 quoted splits
+(TS0 0.7866, TS1 0.8570, TS-hard 0.8530, TestSetB 0.7507, ArchII 0.7403);
+bpRNA-new honestly flagged as the ensemble-only marginal split (+0.003);
+compute-footprint note included; ArchiveII600 kept as pending-not-claimed.
+Dual-written to /home (canonical) + /mnt (mirror).
+
