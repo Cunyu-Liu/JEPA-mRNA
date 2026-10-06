@@ -6991,3 +6991,74 @@ Cluster state at close: s2 @~8.3k/20k (GPU1), s3 @~430/20k (GPU3, post
 self-heal), two ablation daemons polling; 4 watchdog crons live
 (PLANA_TR1C_S2/S3 + ABLATION_NODISTILL/NORLCD); next events are the s2/s3
 completions (auto 6-split evals) and the first ablation placement.
+
+### §15.26 (2026-10-07 00:20) — T-A28 designed from data (not intuition): the TS2/TS3 gap is PDB-family stems we never trained on; tr1cpdb arm armed; xens3 tool ready; s2/nodistill in training
+
+**Trigger.** Goal continuation: the remaining two target splits (TS2 −0.0455,
+TS3 −0.0445) need either a closing lever or a definitive negative. The design
+was driven by per-row forensics before any arm was launched.
+
+**Per-row forensics on the TS2/TS3 gap (all from on-disk per_sequence rows).**
+
+1. **Pooled anatomy.** xens2 TS2: TP=520 FP=36 FN=135 (P 0.935 / R 0.794 —
+   precision is fine, recall is the gap); TS3: FN=49. Reaching the RNAformer
+   references needs +28 / +18 TP respectively — i.e. recovering ~21% / ~37%
+   of the missing pairs.
+2. **The miss is concentrated, not diffuse.** 6 of 39 TS2 rows carry 42% of
+   all FNs. The two zero-F1 rows (TS2#633067: 3 GT pairs vs our 5-pair wrong
+   stem at a different locus; TS3#633092: 2 GT pairs vs an 8-pair wrong stem)
+   are failed-annotation-hard rows where **RNAformer also scores 0.000**
+   (recomputed from its .dbn: mean 0.8751, but 0.000 on 633067 and 0.235 on
+   633063) — these are not our specific failure.
+3. **Where RNAformer genuinely wins**: rows like TS2#633040 (RNAformer 0.960
+   vs ours 0.545): the GT stem (8,27)-(14,19) with a GAAA tetraloop — a
+   classic PDB/NMR-type short hairpin. Our model predicts a different,
+   shorter stem (7,24)-(9,22). RNAformer's inter-family checkpoint was
+   trained on covariance-filtered PDB-family data — it has seen thousands of
+   such stems; our head has seen at most the PDB rows already inside tr1c.
+   **The gap is a data-composition gap, not an architecture gap** — the
+   same conclusion §15.19 reached by refuting artefacts, now with the
+   positive mechanism attached.
+4. **Recall-family members do not fix it either** (r2d mean 0.736 < xens2
+   0.841 on TS2; on the worst rows r2d is equal or worse) — so the planned
+   "recall bucket upgrade" would not have closed TS2/TS3; the data lever is
+   the right one. This kills the 15.16 idea (c) "NMR-specific head
+   fine-tune from the current recipe" in its naive form and replaces it
+   with the data-composition arm below.
+
+**T-A28 executed as data composition, not head surgery.** Corpus
+`bprna_tr1c_pdb` = tr1c (42,564) + pdb669_clean (234 net-new rows; pdb669
+was decontaminated against ALL nine frozen splits first: 641 -> 402 after
+removing 81 eval-overlap + 158 duplicate rows; 168 of the 402 were already
+inside tr1c; 3 rows >1024 nt excluded for embedding feasibility). Total
+42,798 rows. Every input chain built and verified before arming:
+
+- **Embeddings**: bprna_tr1c_pdb.shard0of1.npz (5,293,184 residues x 1280,
+  13.6 GB, 833 s on card 6); seq-set vs corpus = 0 missing / 0 extra.
+- **Teacher labels**: 168 shards / 42,797 rows (1 row >600 nt filtered by
+  the tool's max-length, consistent with tr1c's own pipeline), ViennaRNA
+  2.7.2 version-locked; shard0 shape-verified (L == probs.shape[0]).
+- **Arm**: `rinalmo_r2dtr1cpdb_b4_s0` — byte-identical recipe to
+  rinalmo_r2dtr1c_b4_s0 (frozen giga + resnet2d + B4 + lr 1e-4 + 20k +
+  seed 0 + watch7 6-split auto-eval), ONLY the corpus differs
+  (+0.55% PDB rows — the single variable). Daemon
+  scripts/launch_tr1cpdb.sh (flock, 34GB two-phase admission, 40 restarts)
+  armed and polling; watchdog cron TR1CPDB_WATCHDOG (*/10) installed and
+  live-verified. Engineering note: one PYTHONPATH-less teacher launch
+  failed cleanly (rc=1, no partial output — the fail-fast behaviour
+  working); relaunched with PYTHONPATH=/mnt/cunyuliu/pylibs.
+
+**xens3 tool ready (T-A26 pre-positioning).** tools/xens3_eval.py: plana
+3-seed bucket (equal 1/3) x r2dtr1c frozen member, w_plana inherited from
+the VL0-locked 0.7 protocol; imports verified in both editflow and lucaone
+envs. The moment plana_tr1c_s3 lands (its eval is already automated), the
+three-seed bucket is one command away. (Note: 15.20's xens2 numbers were
+produced with the two-seed bucket; xens3 is additive, not a replacement.)
+
+**Cluster state at close.** s2 @15.1k/20k (GPU1, ETA ~03:00); s3 @8.4k/20k
+(GPU3); nodistill @~600/20k (card 5 — self-launched, the ablation pipeline
+proving itself); norlcd + tr1cpdb daemons polling (no 34GB card free);
+watchdog crons: PLANA_TR1C_S2/S3, ABLATION_NODISTILL/NORLCD, TR1CPDB — six
+live. Two lessons banked: (a) heredoc-over-ssh still mangles scripts —
+always scp the file; (b) parallel_teacher_labels needs the explicit
+PYTHONPATH (ViennaRNA lives in /mnt/cunyuliu/pylibs).
