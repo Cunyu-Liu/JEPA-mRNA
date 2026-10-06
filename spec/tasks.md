@@ -15,6 +15,14 @@
 > - **臂状态**：`plana_giga_s1` 在训（MIG 切片，两次 OOM 重启后稳定）；`rinalmo_r2d_b4_s1` 守护等 ≥31GB 整卡（resume bug 已修，自动从 step 500 续训）；GPU 整卡全满（外部租户 + rna-ft-eval q_fill），两个启动守护 120s 轮询抢占空位。
 > - **下一步**：三臂数字落地（s1 种子方差行 + ext40k 收敛行，若 40k 上升则 headline 升级为 @40k）→ 预印本冻结投稿版。
 >
+> **交接状态（2026-10-01 01:00，第八轮交接更新）**：
+- **r2d_s1（Plan-B 第二 seed）突破 26 小时等待，已在训练**：GPU 5 实测空闲 32.0GB/0% 利用率数小时，而守护门槛 34GB 差 2GB 拒绝放行（过度保守——训练实测峰值 ~25-31GB）。已手动放置于 GPU 5（从 step 500 resume），过嵌入加载窗口验证（step 900，loss 下降）；门槛已调至 28GB（cap 36）。完成后 watch 协议自动终评，Plan-B 双 seed 齐 → draft v3.16。
+- **A1 忠实臂 20k 完成**（DONE，14.5h）；v1_span 从 19,350 续训爬升中（重排机制完全按设计工作）。
+- 台账已至 **§14.95**；draft **v3.15**（checker 100/100）。
+- 外部基线：ERNIE/RiNALMo-mega/RNA-FM/SpliceBERT 各 11-12/12 cell；NucleicBERT、RiNALMo-650M 仍在 q_fill 计划中 pending。
+- te_human fullbudget：s1 epoch 0.34、s42 epoch 0.88（ETA 10-01 晚/10-02）。
+- RNA-JEPA 线：四大主臂 50k 全部完成，梯级评测全自动落地中（v1_cont_50k half_life n=5 r2 均值 0.5252 主臂最优档）。
+>
 > **交接状态（2026-09-30 02:45，第六轮交接更新）**：
 - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB）。**注意 `/mnt/cunyuliu` 是 NFS 挂载**（`df -T` 实测 `10.179.129.209:/... nfs`）——跨进程锁的文件路径宜放本地 `/tmp`（经实测 NFS 上 flock 亦可序列化，见 `records/DECISION_TRAINING_LOG.md` §14.79–§14.80 的更正）。
 - **plan-a 种子方差臂在跑**：`plana_giga_s1`（seed 1，A+B 组合）step 8900/20000，unfrozen 18/33，正常收敛；一条 `watch_plan_a_s1.sh` 监护 + 训练完成自动终评。
@@ -26,6 +34,11 @@
   - **自愈**：新增 `scripts/ensure_r2d_s1_daemon.sh` + `*/10` cron（R2D_S1_WATCHDOG）；守护曾在 09-29 22:20 被外部杀死且日志无 FATAL 行，故不再依赖单次 nohup 存活。
 - **教训入库**：① 锁测试必须含**活的竞争者**；② 基于 `pgrep -f <模式>` 的进程检查必须验证**模式不会匹配检查命令自身**（09-29 曾因此杀掉自己的 ssh 会话两次）。
 - **下一步**：任一整卡释放（v2_scratch@50k 或 plana_s1 收队）即自动起 r2d_s1；两者齐备后 draft v3.15 记录 (d)/(e) 的 2-seed 读数。
+>
+> **交接状态（2026-10-01 15:30，第九轮交接更新）**：
+- **r2d_s1 完成并双 split 终评落地——Plan-B 种子方差极紧**：TS0 0.6559 / OOD 0.5000（Δseed **-0.0071 / -0.0010**，OOD 实际种子不变）。与 Plan-A 的 OOD 摆幅 -0.054 形成对照。
+- **draft 升至 v3.16**：Plan-B s1 行入主表 + §4.3g(d) 第二 seed 段落（**"复现性跟随被训练的层"**——只动 head 的配方复现，动 backbone 的不复现）+ Appendix A 行；**checker 108/108**（途中还抓到一处精度：Δ 实为 -0.0071 非 -0.0070）。GPU 5 的 26h 卡点后的手动放置被结果完全证明。
+- **RNA-JEPA 线挽救臂 v1_rescue 在跑**（α=2.0 已实证生效：JEPA 梯度份额 0.3-0.6%→1.9-4.2%；10k/20k 档评测全自动接线完成）。
 >
 > **交接状态（2026-09-30 16:40，第七轮交接更新）**：
 - **Plan-A 种子方差臂完成且已入稿**：`plana_giga_s1`（seed 1，20k 步全解冻）终评 **TS0 micro 0.7245 / macro 0.6989；OOD bpRNA-new 0.3763**（P 0.650/R 0.265）。**A 项跨 seed 复现**：ID 增益紧密（+0.062 s1 vs +0.064 s0，Δseed 仅 -0.0023）；OOD 代价 seed 噪声大（-0.071 s0 → -0.125 s1），且 seed 间 OOD 摆幅（-0.054）与 ID 增益同量级——**两 seed 并排报告、绝不取均值**；召回侧损伤在 s1 加深。

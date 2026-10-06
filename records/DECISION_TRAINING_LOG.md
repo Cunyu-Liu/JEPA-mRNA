@@ -6895,3 +6895,53 @@ bpRNA-new honestly flagged as the ensemble-only marginal split (+0.003);
 compute-footprint note included; ArchiveII600 kept as pending-not-claimed.
 Dual-written to /home (canonical) + /mnt (mirror).
 
+
+### §15.24 (2026-10-06 19:35) — Tenth-round handover: docs synced to §15.23; plana_tr1c_s3 armed (self-heal verified live); watchdog crons restored; retrospective written
+
+**Trigger.** User handover directive (tenth round): read all handover docs,
+update every spec-folder tasks/spec, complete the follow-on handover, reflect
+on current problems, keep chasing TS2/TS3.
+
+**Doc sync (the biggest defect found this round).** The local handover bundle
+(`spec.md/tasks.md/checklist.md`) was still at the ninth round (10-01) while
+the ledger had advanced seven sections to §15.23 (10-06) — the entire SOTA
+turnaround (two leak retractions, tr1c, Arm A/B, xens2, 6/8 splits) was
+missing from the handover docs. Fixed: the three files now carry a tenth-round
+block (SOTA matrix, evidence chain, in-flight arms, retrospective with six
+problems and their corrective actions, tasks T-A25–T-A29); tables/sota_vs_ours
+(15.23), metrics_matrix (138 cells), overlap_audit, preprint_draft pulled
+from the cluster; spec/ subfolder copies re-synced byte-identical.
+
+**plana_tr1c_s3 (seed=3) armed — the fourth plana-tr1c member.** Rationale:
+the plana bucket currently holds 2 seeds (s0 precision-type, s1 recall-type);
+a third seed that lands recall-type upgrades the bucket to 3-seed and is the
+last cheap lever for TS2/TS3 before the NMR-family fine-tune. First placement
+shared card 1 with s2 (passed the 16GB two-phase confirm) and died at step 1 —
+an external 17.3GB tenant plus s2 long-sequence peaks crowded it out. The
+daemon self-healed exactly as designed: relaunched on card 3 (~10 min later,
+1 of the 40-restart budget), trainer pid 329576 loading the 42,564-sequence
+corpus. s2 unaffected throughout (step 7875/20000 on card 1).
+
+**Watchdog crons restored (self-healing discipline regression fixed).** All
+11 arm watchdogs sat `#PAUSED#` in crontab (external pauses, not ours to
+revert), which had already cost one daemon death on 10-05 (§15.16). Two NEW
+watchdogs installed for the live arms: PLANA_TR1C_S2_WATCHDOG and
+PLANA_TR1C_S3_WATCHDOG (ensure_planatr1c_s2/s3.sh, */10), both verified live
+by manual invocation. Rule going forward: every new arm launch installs its
+watchdog in the same batch (recorded in tasks.md T-A29).
+
+**Retrospective (user demand, mirrored into tasks.md tenth-round block).**
+Six problems: (1) dual-source doc drift — fixed this round, syncing becomes
+a per-round obligation; (2) writing lags experiments — draft v3.17 still
+shows the 10-02 standings, T-A25 (v3.18 fold-in of 15.10–15.23) is the
+top priority; (3) self-healing discipline regression — watchdogs restored,
+install-at-launch rule; (4) TS2/TS3 negative result has no paper slot yet —
+T-A26; (5) ablations all ran on tr0, not the final tr1c recipe — T-A27
+(core five to re-run offline); (6) the retraction history must be disclosed
+in the paper as benchmark-hygiene contribution, not hidden — folded into
+T-A25.
+
+**Cluster state at close.** GPU 0-5 fully occupied (external tenants + our
+two arms); s2 (card 1, 7.9k/20k, ETA ~10-07 05:00) + s3 (card 3, fresh);
+crons RNAJEPA_MONITOR + the two new watchdogs live; git HEAD 7c9618a clean
+except spec/ docs (committed with this section).
