@@ -85,6 +85,22 @@
 
 ---
 
+
+## 第十一轮交接刷新（2026-10-08 00:30，细节 §15.30；上轮遗留问题状态见 tasks.md 第十一轮反思）
+
+- **算力**：GPU1 空窗（39GB/0%）实测发现并纠正——fftr1c 臂补位后 6 张物理卡全部 90–100% 利用率；tr1cpdb_s1 守护预注册排队。
+- **I 测评/消融**：tr1c-native 消融矩阵 +2 cell 在飞（fftr1c R2 在训；T-A32 离线两项待启）；R3 solver 消融已落地（DP +0.25/+0.43，greedy 397k crossing events，15.29）。xens3 8/8 完成（wash：TS0 0.8062，TestSetB 0.8477；xens2 保持 quoted）。4-seed plana-tr1c 家族图落地（TS0 spread 0.023 vs PDB 家族 0.05–0.07——种子方差集中在 PDB 稀有信号，与 15.26 机制一致）。
+- **K 假设结论**：TS2/TS3 数据构成假设已从"三假设排除后的推测"升级为"per-row forensics 正向机制"（FN 集中于 PDB-family 短茎环；tr1cpdb 臂为直接检验）。cov v2：paired-specificity 信号显著（+0.0005, CI>0）但尺度极小——诚实定位为"masked marginal 远小于读出头解码的知识"。
+- **L 论文**：draft v3.18（decontamination 章节已入，114 checks）；**v3.19 待写**（15.27–15.30 折叠，T-A34）。PPT slide 14 待 tr1cpdb 读出后一并升级。
+- **自愈**：8 条项目 watchdog cron live（+FFTR1C/TR1CPDB_S1）；本轮无 daemon 死亡事件。
+
+| 区块 | 状态（第十一轮刷新） | 依据 |
+|---|---|---|
+| **I 测评与消融** | 🔄 6/8 SOTA；消融矩阵 3/5 cell（tr1c-native） | §15.27–§15.30；solver R3 |
+| **J 量化门限** | 不变（G1/G2 全 0；G4 已过；速度门未核验） | 同上轮 |
+| **K 假设结论** | ✅ 主体闭合 + TS2/TS3 机制正向化 | §15.26 forensics；tr1cpdb 在飞 |
+| **L 论文与投稿** | 🟡 v3.18；v3.19 排队（T-A34） | preprint_draft.md |
+
 ## A. 规范与证据（Gate A：写代码前必须全过）
 
 - [ ] `analysis_plan.md` 存在，含 H1–**H6**、七类指标、统计方法与 §8 全部门限，且冻结时间戳早于首次实验运行

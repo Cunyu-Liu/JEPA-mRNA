@@ -27,6 +27,15 @@
 - te_human fullbudget：s1 epoch 0.34、s42 epoch 0.88（ETA 10-01 晚/10-02）。
 - RNA-JEPA 线：四大主臂 50k 全部完成，梯级评测全自动落地中（v1_cont_50k half_life n=5 r2 均值 0.5252 主臂最优档）。
 >
+> **交接状态（2026-10-08 00:30，第十一轮交接更新——消融矩阵补全轮，细节 §15.30）**：
+> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（HEAD 01966fe，已推 GitHub），数据/权重 `/mnt/cunyuliu/rna-jepa`。**算力纠偏**：开场实测 GPU1 整卡空闲（1.7GB/0%），补位 fftr1c 臂后 6 张物理卡全部 90–100% 利用率。
+> - **在训臂 ×3**：① `rinalmo_r2dtr1c_tr1cpdb_b4_s0`（TS2/TS3 数据构成杠杆，GPU3，~14.3k/20k，ETA ~08:00，完成自动 6-split 终评）；② `rinalmo_fftr1c_b4_s0`（T-A31 R2 线性探针消融：`--scorer mlp`，除 scorer 外与 r2dtr1c_b4_s0 字节一致；GPU1，step 75 起确认）；③ `rinalmo_r2dtr1c_tr1cpdb_b4_s1`（**预注册**第二种子，sed 派生 diff 仅 3 行，守护等 34GB 窗口）。两新臂同批装 watchdog（FFTR1C / TR1CPDB_S1）——项目 watchdog 共 8 条 live。
+> - **SOTA 战况不变（6/8）**：xens3（3-seed bucket）8/8 完成但为 wash（TS0 0.8062/TestSetB 0.8477，其余 ±0.02）——**xens2 保持 quoted ensemble，xens3 为 3-seed 稳健性行**（15.27 预注册决策：s3 稀释 PDB 家族，不进 bucket）。TS2/TS3 差距 −0.045 的唯一未测杠杆 = tr1cpdb（数据构成：+234 行去污染 PDB 家族行，15.26 per-row forensics：FN 集中在 PDB 短茎环，RNAformer 见过数千个此类茎环）。
+> - **新增已落地证据（15.27–15.29，待折叠入 v3.19）**：4-seed plana-tr1c 家族图（TS0 spread 0.023，PDB 家族 0.05–0.07——种子方差集中于 PDB 稀有信号）；tr1c-native 消融 nodistill/norlcd 6-split（辅助项"非装饰、非承重"）；**solver 消融 R3：DP 解码值 +0.25/+0.43 F1**（greedy 397k crossing events）；cov v2 配对特异性信号（+0.0005，CI>0，但尺度远小于读出头知识）。
+> - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.30**（7376 行）；draft v3.18（去污染章节已入）；**v3.19（T-A34）在 tr1cpdb 读出后写**：4-seed 图 + xens3 行 + solver 消融 + cov v2 + tr1cpdb 判定。
+> - **下一步（按优先级）**：① tr1cpdb s0 读出 → TS2/TS3 终判（翻正 → 8/8 + slide 14 升级；未翻正 → 负结果入稿 + VL0-gate NMR head 微调评估）；② T-A32 离线消融（非交叉约束/Turner 置零 tr1c-native，不占卡）；③ T-A34 draft v3.19；④ T-A33 GPU 饱和度审计 cron。
+> - **本轮反思（用户指示）**：GPU 饱和无负反馈监控（已手工纠偏，机制 T-A33）；消融矩阵还差 2 个 tr1c-native cell（T-A32）；写作再欠 15.27–15.29 三章（T-A34）；PPT 落后两波（待 tr1cpdb 一次更新）。详见 tasks.md 第十一轮反思块。
+>
 > **交接状态（2026-10-06 19:30，第十轮交接更新——SOTA 大盘翻盘后的收尾轮）**：
 > - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`，HEAD 603cd65），数据/权重 `/mnt/cunyuliu/rna-jepa`。
 > - **当前 SOTA 战况（全部在去污染语料 bprna_tr1c 上训练、project scorer、project GT，表 = `tables/sota_vs_ours.md` 15.23 版；§15.22 独立审计 540 checks 0 mismatch）**：

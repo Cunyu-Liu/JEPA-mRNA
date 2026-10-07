@@ -35,6 +35,30 @@
 - **教训入库**：① 锁测试必须含**活的竞争者**；② 基于 `pgrep -f <模式>` 的进程检查必须验证**模式不会匹配检查命令自身**（09-29 曾因此杀掉自己的 ssh 会话两次）。
 - **下一步**：任一整卡释放（v2_scratch@50k 或 plana_s1 收队）即自动起 r2d_s1；两者齐备后 draft v3.15 记录 (d)/(e) 的 2-seed 读数。
 >
+> **交接状态（2026-10-08 00:30，第十一轮交接更新——消融矩阵补全轮，细节 §15.30）**：
+> - **集群算力状态实测并纠正**：交接开场实测发现 **GPU1 整卡空闲 39GB/0% 利用率**（违反"显存必须占满"规则），立即补位两个臂后全部 6 张物理卡回到 90–100% 利用率。
+> - **新增在训臂 ×2**：
+>   1. **`rinalmo_fftr1c_b4_s0`**（T-A31 R2，tr1c-native 线性探针消融）：`--scorer mlp --head-chunk-size 16`，除 scorer（resnet2d→mlp）外与 r2dtr1c_b4_s0 字节一致（单变量纪律）；GPU1 在训（step 75 起确认，RSS 43GB）；完成后自动 6-split 终评（w=-1，VL0 Platt）。**这是消融矩阵与最终配方同语料的第 3 个 cell**（nodistill/norlcd 之后）。
+>   2. **`rinalmo_r2dtr1c_tr1cpdb_b4_s1`**（TS2/TS3 数据构成杠杆的第二种子，**预注册**）：在 s0 任何测试数字出现之前由 sed 派生（diff 仅 3 行：SUFFIX/TAG/--seed 1），守护轮询 34GB 窗口自动起跑。种子方差在读出前布防——复现 4-seed plana 家族的方法论。
+> - **两臂均同批装 watchdog cron**（FFTR1C / TR1CPDB_S1，*/10）——第十轮教训"新臂必须同批装 watchdog"已执行。项目 watchdog 现共 8 条 live。
+> - **本轮三遍检查实录**（用户纪律）：① bash -n + 占位符 grep 清零；② eval 调用旗标对照 watch7 实际协议修正（`--calib-data/--head-chunk 8/--tag`，第一稿的 `--batch-size/--calibration` 是错的）；③ embedding shard 路径实测纠正（tr1c 是 shard0of**2**，非 shard0of1）。**heredoc-over-ssh 写脚本两次翻车，最终走本地文件+scp**（15.26 教训再次验证）。
+> - **集群 git**：§15.30 已入台账并推送 GitHub（commit 01966fe）；本地三件套与 tables/paper 已从集群拉回同步（台账 7376 行）。
+> - **在飞读出（全自动，无需人工）**：① tr1cpdb s0 约 08:00 到 20k → 6-split 终评 → **TS2/TS3 数据构成假设判定**（当前 −0.0455/−0.0445 差距的唯一未测杠杆）；② fftr1c 约 10–11h → R2 消融行；③ tr1cpdb_s1 自动占位。
+>
+> ### 第十一轮交接反思：当前存在的问题与改进措施（用户指示）
+>
+> **问题 1：GPU 饱和出现空窗且无人报警**。23:56 实测 GPU1 空闲整卡近 4 小时量级窗口（1.7GB/0%），tr1cpdb 守护门槛 34GB 只在"整卡全空"时才抢，MLP 级臂（18GB 门槛）却无人排队——**算力利用率没有负反馈监控**。**改进**：后续给监控 cron 加"空闲显存 >20GB 持续 >15min 即记 warning 行"的饱和度审计（本轮已手工补位，机制留待下一轮实现，T-A33 注册）。
+> **问题 2：消融矩阵仍缺 tr1c-native 的"非交叉约束 / Turner 置零"两个 cell**。15.29 已落地 R3（solver，DP 价值 +0.25/+0.43），nodistill/norlcd 已 6-split，fftr1c 在训——但"非交叉约束去除""Turner 置零"目前只有 ff-tr0 时代的旧数字（§4.3b 的 0.0586/0.2124）。**改进**：两项是纯离线评测（tools/solver_ablation.py 同模式改 decoder/置零开关），checkpoint 已在盘，登记 T-A32，不占训练卡。
+> **问题 3：写作再欠账一轮**。15.27–15.29 三章（4-seed 家族图、xens3 8/8、solver 消融 +0.26、cov v2、norlcd 表）还没折叠进 draft v3.18——§4.3b/§4.3h 需要"数字刷新+新表"的 v3.19 合并改版。**改进**：T-A34 注册为下一写作动作；原则不变：数字全部由 tables 磁盘读取折叠、checker 断言防漂移。
+> **问题 4：PPT 落后两个数据波**。slide 14 停在 15.25 的 8-benchmark 表；xens3 行、solver 消融、4-seed spread 未进 PPT。**改进**：待 tr1cpdb 读出后一并更新（若 TS2/TS3 翻正，slide 14 升级为 8/8 表——一次性更新避免返工）。
+>
+> | # | 任务 | 完成判据 | 状态 |
+> |---|---|---|---|
+> | **T-A32** | tr1c-native 离线消融：非交叉约束去除 + Turner 置零（r2dtr1c s0 ckpt，solver_ablation 模式） | 两行 6-split 表入消融矩阵；与 ff-tr0 旧数字对照 | 待启（不占卡） |
+> | **T-A33** | GPU 饱和度审计：监控 cron 加空闲显存告警（>20GB 持续 15min 记 warning） | 下一轮交接前无 >30min 空窗记录 | 待启 |
+> | **T-A34** | draft v3.19：折叠 15.27–15.30（4-seed 图、xens3 行、solver +0.26 消融、norlcd/nodistill 表、cov v2 段）+ tr1cpdb 读出 | checker 全 PASS；每个数字可回溯 | 🔴 tr1cpdb 读出后最高优先 |
+> | **T-A35** | tr1cpdb s0/s1 双种子 6-split 终评 → TS2/TS3 终判（翻正则 8/8；未翻正则负结果入稿 + VL0-gate NMR head 微调评估） | 双种子并排表；判定有机制解释 | 🔄 s0 在训（~08:00 读出）；s1 预注册守护 |
+>
 > **交接状态（2026-10-06 19:30，第十轮交接更新——SOTA 翻盘后的收尾轮，细节 §15.10–§15.24）**：
 > - **用户六数据集目标已达成 6/8**（含 tier-1 全部三个）：TS0 ✅0.7866、bpRNA-new ✅0.6132、ArchiveII-clean ✅0.7403/0.7760、TS1 ✅0.8570/0.8755、TS-hard ✅0.8530/0.8732、TestSetB ✅0.7507/0.8448；**TS2 −0.0455 / TS3 −0.0445 未达标**（已证明是真模型差距：§15.19 否定非规范配对/边界偏移/解码偏置三假设）。
 > - **两次泄漏审计 + 冻结评测集**是本轮最大方法论成果：TR1∩TS0=1087（§15.10）、TR0∩TestSetB=247（§15.13）两次撤回旧数字，建立 9-split sha256 冻结清单（`spec/eval_splits_frozen.json`）与唯一干净语料 bprna_tr1c；**任何新语料构建必须过零重叠门**。
