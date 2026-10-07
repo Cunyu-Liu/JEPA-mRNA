@@ -7129,3 +7129,102 @@ neighbours); sequential solo runs used instead; (b) the earlier
 "daemons dead" reading at 12:53 was the normal post-DONE exit, not a
 failure — distinguished by checking step==20000 + result.json freshness
 before declaring anything dead.
+
+### §15.28 (2026-10-07 16:00) — Forward co-variation emergence test ported from the transfer-mechanics project (user request): first measurement + honest read; tr1cpdb teacher-length mismatch fixed; readout-head ablation analysis
+
+**Trigger.** User asked to port two things from the RNA_LM_迁移学习机理研究
+project: (1) the forward co-variation (前向共变) emergence measurement
+(their Q10 protocol), (2) their SS-specific readout-head design with an
+ablation. Both were investigated before acting — per the "想好再开始"
+discipline.
+
+**1. Forward co-variation ported and measured (tools/cov_emergence_jev.py).**
+Protocol identical in spirit to the source project's cov_sensitivity:
+mutate position i (x→y), mask its GT partner j, measure the probability
+mass moved to the NEW complement (COV) vs a distance-matched unpaired
+control position (CTRL); report COV−CTRL. Adapted to our setting:
+backbone = RiNALMo-giga ForMaskedLM with released weights vs a seed-17
+random-init control of the same architecture (the scale axis of the source
+project does not exist here — we hold ONE backbone; the informative
+contrast is pretrained-vs-random).
+
+| model | COV | CTRL | COV−CTRL | old_drop |
+|---|---|---|---|---|
+| RiNALMo-giga (released) | 0.00525 | 0.00522 | **+0.00003** | −0.0037 |
+| randinit (seed 17) | −0.00017 | −0.00023 | +0.00006 | −0.0003 |
+
+**Honest first read (negative, and interesting):** COV−CTRL ≈ 0 on the
+pretrained backbone — the *paired-vs-control differential* is absent at
+this event scale (n=2,000 events, 60 TS0 sequences). The raw COV (+0.005)
+is real but the control channel carries the same mass: the probability
+move is NOT specific to the partner position. Two candidate readings:
+(a) **masked-marginal dilution** — the source project measured 100M-650M
+*MLM-trained-on-RNAcentral* models where 36M-sequence ncRNA exposure
+drives covariation; RiNALMo's training corpus is also large but our
+probe masks only ONE position per forward (their protocol) — at their
+100M scale COV−CTRL was also only +0.02, and their 650M jump (+0.096)
+came with 4× the parameters; a 0.000-level result at n=2,000 is within
+noise of their 1M-10M rows (+0.004-0.005, comparable!). (b) event count:
+their n=4,920 vs our 2,000 — the CI here is roughly ±0.002, so we cannot
+claim even the +0.005-level signal the source project saw at small scale.
+**Action**: this first measurement is recorded as a negative/noise-level
+result, NOT as "backbone lacks covariation". The scientific use in our
+paper is different from the source project anyway — there it evidenced
+*pretraining-scale emergence*; here the relevant question is whether the
+frozen backbone's pairing knowledge (which our resnet2d head demonstrably
+decodes into 0.74-0.78 F1) is visible in masked marginals. Current
+answer: not at this scale of test. To make this publishable-strength we
+would need: n≥10,000 events, a paired-position-only CTRL (not
+distance-matched unpaired), and possibly full-mask marginal (mask i AND
+j) — queued as T-A30 with these upgrades; the decision of whether to
+invest there is flagged to the user (the ablation budget competes with
+TS2/TS3 arms).
+
+**2. The readout-head question (辩证结论：不引入新读出头，补一个等价消融行).**
+The source project's readout-head line (their Q12-Q14) went:
+linear head 0.61 → interaction heads 0.64 (wall) → Partner-Oracle 0.998 →
+pair-level probe + Nussinov DP (pair-F1 0.17-0.20) — concluding "the
+knowledge is in the representations; what's missing is a pairing SOLVER".
+**Our architecture IS the end-state of that chain**: our FlatDecisionHead
+with resnet2d scorer + symmetric pair representation + exact Nussinov
+decode is precisely their v5 design ("PairNet scorer + symmetrization +
+non-crossing DP"), trained end-to-end and reaching 0.66-0.79 F1 where
+their probe-level version reached 0.17-0.20. Porting their readout head
+into our project would be regressing to an earlier stage of the same
+design line. What we LACK that they have is the *ablation contrast*:
+they showed probe-level vs solver-level vs oracle-level on the same
+backbone. The equivalent single-variable rows for us (all cheap, mostly
+eval-only):
+  - **(R1) head-off, prior-only**: our Nussinov+Turner prior without the
+    trained head (= their model-free baseline role) — measured on TS0 as
+    0.21 (already in the matrix); NEW: measure on tr1c-trained recipe's
+    eval splits for protocol parity.
+  - **(R2) linear-probe head**: swap resnet2d scorer for the per-pair MLP
+    (ff family) at matched budget — already measured (ff 0.60 vs r2d
+    0.66-0.67 on tr0; the tr1c-native ff row is the missing cell).
+  - **(R3) no-DP decode**: threshold the score matrix directly without
+    the Nussinov solver (their "solver ablation") — measured historically
+    (§14.53: legalisation cost 0.537 on old recipe); needs the tr1c-native
+    rerun.
+These three rows ARE the "有无读出头消融" the user asked for, in the
+form that makes sense for our architecture. T-A31 registered; R1/R3 are
+offline-evaluable on existing checkpoints (hours), R2 needs one more
+training arm or reuse of ff-tr1c if it exists.
+**Decision deferred to user**: (a) run R1/R3 now (cheap, closes the
+ablation story); (b) whether to ALSO upgrade the covariation test
+(T-A30) given its first read is noise-level.
+
+**3. tr1cpdb teacher-length mismatch (fail-fast caught, fixed).** The
+arm FATAL'd on launch: "no teacher label for a 692 nt sequence" — the
+PDB_644 row (692 nt) passed the embedding extractor's max-len (1024) but
+the teacher tool's max_length=600 dropped it; the trainer refused to
+silently mock the teacher (correct behaviour). Fix: dropped that single
+row from bprna_tr1c_pdb.jsonl (42,798 → 42,797, now == teacher manifest
+count). Daemon re-launched twice after the fix (both times crowded out
+by neighbours on card 1 within the 300s confirm window — 3 of 40 restart
+budget used); it keeps polling. Note for the ledger: the corpus count in
+15.26 (42,798) is superseded by 42,797.
+
+**Cluster at close**: xens3 TS0 running (1,000/1,288); norlcd 14.5k/20k;
+tr1cpdb daemon polling (post-fix); s3/s2/nodistill complete; 6 watchdog
+crons live.
