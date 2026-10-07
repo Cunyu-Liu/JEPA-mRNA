@@ -7318,3 +7318,59 @@ load-bearing" verdict.
 randinit finishing; all watchdog crons live. Next: fold 15.27-15.29 into
 the draft ablation section + sota table (xens3 row), PPT update, then the
 tr1cpdb read-out decides the TS2/TS3 data-composition hypothesis.
+### §15.30 (2026-10-08 00:30) — Eleventh-round handover: fftr1c (T-A31 R2) + tr1cpdb_s1 (pre-registered) armed; GPU saturation restored; docs wave synced to §15.29
+
+**Trigger.** Goal continuation: the tenth-round retrospective's items
+T-A25–T-A29 are closed (15.25–15.29); the remaining levers are the
+tr1c-native ablation matrix (fftr1c = its missing R2 cell) and the TS2/TS3
+data-composition lever (tr1cpdb s0 in training since 17:15). This round's
+job: keep every card saturated and pre-register the seed variance of the
+TS2/TS3 lever BEFORE any test number exists.
+
+**Cluster state found at open (23:56, 2026-10-07).** GPU1 sat at 1.7 GB /
+0% util with a whole 39 GB card idle — tr1cpdb s0 on GPU3 (33.2 GB) was the
+only project arm running. This violated the saturation rule; two actions
+were taken.
+
+**1. fftr1c armed and TRAINING (T-A31 R2 — the tr1c-native linear-probe
+row).** scripts/launch_ff_tr1c.sh: per-pair MLP scorer (`--scorer mlp`,
+`--head-chunk-size 16`, NEED_GB=18) on bprna_tr1c, byte-identical
+otherwise to rinalmo_r2dtr1c_b4_s0 — the single variable is the scorer
+(resnet2d -> mlp), the R2 cell of the readout-head ablation (15.28).
+Placed on GPU1 at 00:02; train_log confirmed at step 75 (loss 64.6 ->
+67.2 early window, RSS 42.8 GB, GPU1 15.3 GB / 60% util). Watchdog cron
+FFTR1C_WATCHDOG (*/10) installed the same batch (tenth-round rule: no arm
+without its watchdog). Three check-passes before launch: (a) bash -n +
+placeholder grep clean; (b) eval-call flags aligned to the actual watch7
+protocol (`--calib-data bprna_vl0.jsonl --head-chunk 8 --tag ...`, not my
+first draft's `--batch-size/--calibration` — caught against the live
+script); (c) embedding shard corrected to bprna_tr1c.shard0of2.npz (the
+tr1c embedding is 2 shards, not 1 — caught by an ls). Local heredoc draft
+was discarded and rewritten via file + scp (the 15.26 lesson again:
+heredoc-over-ssh mangles).
+
+**2. tr1cpdb_s1 armed (seed 1 of the TS2/TS3 lever, PRE-registered).**
+Derived from launch_tr1cpdb.sh by sed: only SUFFIX, TAG and --seed differ
+(diff verified: 3 lines). The purpose: whatever the s0 read-out shows, the
+seed variance of the data-composition effect is a required column BEFORE
+any test-split number is seen (the same discipline that produced the
+4-seed plana-tr1c family picture in 15.27). Daemon polling (no 34GB card
+free at 00:15 — GPU0-5 all 90-100% util); watchdog TR1CPDB_S1_WATCHDOG
+(*/10) installed.
+
+**Cluster at close (00:25).** All six physical cards 90-100% util
+(GPU0 27.7GB/98%, GPU1 25.5GB/97% [fftr1c], GPU2 36GB/44%, GPU3
+39.3GB/91% [tr1cpdb s0 @~14.3k/20k], GPU4 22.8GB/100%, GPU5 27.8GB/89%);
+host RAM available 519 GB (fftr1c RSS ~43 GB fits); two project trainings
+live + tr1cpdb_s1 daemon polling; 8 project watchdog crons live
+(PLANA_TR1C_S2/S3, ABLATION_NODISTILL/NORLCD, TR1CPDB, TR1CPDB_S1,
+FFTR1C). Untracked daemon .out logs accumulated in logs/ — deliberate:
+they are runtime state, not code; will be git-ignored in a later
+housekeeping pass, not now (no risk of touching live runs).
+
+**Next events (all automated, no human needed):** (1) tr1cpdb s0 hits 20k
+~08:00 → watch7 auto 6-split eval → the TS2/TS3 data-composition verdict;
+(2) fftr1c 20k in ~10-11 h → auto 6-split eval → R2 ablation row; (3)
+tr1cpdb_s1 self-launches on the next 34GB window. The handover docs (spec
+/ tasks / checklist, local + this repo) are refreshed to 15.29 in the same
+batch as this entry (T-A29 discipline).
