@@ -21,8 +21,13 @@ declare -A SPLITS=(
   [ref_pdb_ts3]=ref_pdb_ts3
   [ref_pdb_ts_hard]=ref_pdb_ts_hard
   [testsetb]=testsetb
-  [archiveii_embok_clean]=archiveii_embok_clean
 )
+EMB_OVERRIDE=""
+
+for sp in archiveii_embok_clean; do
+  EMB_OVERRIDE=archiveii
+done
+# archiveii_embok_clean uses the archiveii embedding shard (xens2 protocol)
 
 for sp in bprna_ts0 bprna_new ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb archiveii_embok_clean; do
   out=$D/eval_decision/xens3_${sp}_w0.7
@@ -36,7 +41,7 @@ for sp in bprna_ts0 bprna_new ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_har
     --plana-ckpt0 $CK0 --plana-ckpt1 $CK1 --plana-ckpt2 $CK2 \
     --r2d-ckpt $R2D \
     --data $D/ss_data/jsonl/${sp}.jsonl \
-    --embedding-split ${sp} \
+    --embedding-split ${EMB_OVERRIDE:-${sp}} \
     --out $out --w-plana 0.7 >> "$LOG" 2>&1
   echo "[xens3] $sp rc=$? $(date '+%T')" >> "$LOG"
 done

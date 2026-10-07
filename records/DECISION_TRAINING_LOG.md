@@ -7228,3 +7228,93 @@ budget used); it keeps polling. Note for the ledger: the corpus count in
 **Cluster at close**: xens3 TS0 running (1,000/1,288); norlcd 14.5k/20k;
 tr1cpdb daemon polling (post-fix); s3/s2/nodistill complete; 6 watchdog
 crons live.
+
+### §15.29 (2026-10-07 21:30) — T-A30/T-A31 executed: solver ablation R3 lands decisively (DP is worth +0.26 F1); cov v2 rinalmo臂 shows a significant paired-specificity signal; xens3 completes 8/8 (TS0 0.8062, TestSetB 0.8477); norlcd ablation table closes
+
+**T-A31 R3 — the solver ablation (tools/solver_ablation.py, r2dtr1c s0 @20k,
+TS0, three decoders on the SAME score matrix):**
+
+| decoder | F1 | P | R | crossing events |
+|---|---|---|---|---|
+| **exact (Nussinov DP, production)** | **0.6679** | 0.6393 | 0.6993 | 0 |
+| greedy (per-row argmax, no constraint) | 0.4163 | 0.3560 | 0.5013 | **397,574** |
+| symgreedy (mutual argmax + threshold) | 0.2413 | 0.7126 | 0.1453 | 1,333 |
+
+Read-out (the "readout/solver" story the user asked to port, now in OUR
+architecture's numbers): the exact non-crossing DP solver is worth
+**+0.25 F1 over unconstrained argmax** and +0.43 over the symmetric-greedy
+— the single largest component in the pipeline after the backbone. The
+greedy row's 397k crossing events quantify what "no solver" means: the
+raw score matrix's top choices conflict massively; the DP's contribution
+is exactly global consistency + legality. symgreedy shows the inverse
+profile (P 0.71 / R 0.15): symmetry+thresholding alone is far too
+conservative — mutual-argmax recall collapses. This is our version of the
+source project's "the solver, not the knowledge, is the bottleneck"
+finding, stated from the other side: with the solver PRESENT, removing it
+costs −0.25/−0.43; their conclusion (probe F1 0.17-0.20 WITH DP but
+untrained head) and ours (0.67 with DP, 0.24-0.42 without) triangulate the
+same claim from both directions. Fold-in target: §4.3b ablation table.
+
+**T-A30 — cov v2 (10,000 events, 3 control channels, bootstrap CI).**
+rinalmo (released weights), TS0:
+
+| statistic | value | 95% CI |
+|---|---|---|
+| cov − ctrl_unpaired | +0.000196 | [−0.00007, +0.00046] (n.s.) |
+| **cov − ctrl_shuffled** | **+0.000527** | **[+0.00022, +0.00083] (significant)** |
+
+Interpretation: with the upgraded protocol the partner-specific signal IS
+detectable — but only in the *shuffled-partner* contrast: mutating a
+position moves probability at its TRUE partner more than at a random
+paired position of the same sequence (bootstrap CI excludes zero). The
+unpaired-position control stays n.s. (any-position diffuseness). Honest
+scale check: +0.0005 is ~1/200th of the source project's 650M reading
+(+0.096) and ~1/40th of their 1M-10M readings (+0.004-0.005) — RiNALMo's
+masked-marginal covariation is real but tiny at this probe scale; the
+paper line becomes "the frozen backbone carries a statistically
+significant but small masked-marginal covariation signal; the pairing
+knowledge the decision head decodes (0.67-0.79 F1) is far larger than
+what masked marginals reveal — consistent with the readout-channel
+argument (§15.28)". randinit arm still running (will report its CI when
+landed — the prediction is CI containing zero).
+
+**xens3 (3-seed plana bucket x r2d) — all 8 splits complete (w=0.7
+VL0-locked):**
+
+| split | xens3 | xens2 (2-seed) | Δ | ref | verdict |
+|---|---|---|---|---|---|
+| TS0 | **0.8062** | 0.8039 | +0.002 | 0.7578 | ✅ +0.048 |
+| bpRNA-new | 0.5556 | 0.5188 | +0.037 | 0.6106 | row keeps 2-seed ens 0.6132 |
+| TS1 | 0.8680 | 0.8755 | −0.008 | 0.8150 | ✅ +0.053 |
+| TS-hard | 0.8511 | 0.8732 | −0.022 | 0.7845 | ✅ +0.067 |
+| TS2 | 0.8581 | 0.8588 | −0.001 | 0.9043 | −0.046 |
+| TS3 | 0.8750 | 0.8965 | −0.022 | 0.9410 | −0.066 |
+| TestSetB | **0.8477** | 0.8448 | +0.003 | 0.67 | ✅ +0.178 |
+| ArchiveII-clean | **0.7784** | 0.7760 | +0.002 | 0.7212 | ✅ +0.057 |
+
+Read-out: the third plana seed is a **wash** — 4 splits ±0.003, 3 splits
+−0.01..−0.02 (s2's PDB-family weakness dilutes the bucket exactly as
+predicted in 15.27's pre-registered decision), TS0 +0.002. **xens2 remains
+the quoted ensemble**; xens3 is the reported 3-seed robustness row. The
+ArchiveII run needed the embedding-split=archiveii override (the clean
+subset has no own shard — same protocol as xens2; first run failed
+fail-fast, relaunched on card 1). One engineering note: CUDA_VISIBLE_DEVICES=6
+is a MIG slice (4.75GB) — the OOM there was placement, not load.
+
+**norlcd ablation row complete (6 splits)**: TS0 0.6596 / new 0.5436 /
+TS1 0.7596 / TS2 0.7091 / TS3 0.7686 / hard 0.6968. vs control r2dtr1c s0
+(TS0 0.6679 / new 0.5643@8k / TS1 0.7551 / TS2 0.7686 / TS3 0.7815 / hard
+0.7005): RLCD removal costs −0.008 TS0, −0.021 new, +0.005 TS1, −0.059
+TS2, −0.013 TS3, −0.004 hard. Together with nodistill (15.27): both
+auxiliary objectives contribute small positive terms on most splits
+(distill: +0.001 TS0/+0.007 hard/+0.021 TS3, −0.008 new/−0.012 TS2/−0.028
+TS1; RLCD: −0.008/+0.005/−0.059… wait, RLCD removal NEGATIVE on TS2 means
+RLCD HELPS there). Clean summary for the ablation section: **no single
+auxiliary term is dominant; distill leans PDB-family, RLCD leans
+cross-family/TS2; both small** — the honest "not decorative, not
+load-bearing" verdict.
+
+**Cluster at close**: tr1cpdb @2.2k/20k (card 3, post teacher-fix); cov
+randinit finishing; all watchdog crons live. Next: fold 15.27-15.29 into
+the draft ablation section + sota table (xens3 row), PPT update, then the
+tr1cpdb read-out decides the TS2/TS3 data-composition hypothesis.
