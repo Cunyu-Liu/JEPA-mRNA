@@ -7062,3 +7062,70 @@ watchdog crons: PLANA_TR1C_S2/S3, ABLATION_NODISTILL/NORLCD, TR1CPDB — six
 live. Two lessons banked: (a) heredoc-over-ssh still mangles scripts —
 always scp the file; (b) parallel_teacher_labels needs the explicit
 PYTHONPATH (ViennaRNA lives in /mnt/cunyuliu/pylibs).
+
+### §15.27 (2026-10-07 14:20) — the seed wave lands: s2/s3/nodistill complete; 4-seed plana-tr1c picture; xens3 (3-seed bucket) ready with VL0 sweep; S2/S3 verdict on the bucket
+
+**Training completions (all watch7-protocol, six-split auto-evals landed).**
+
+1. **plana_tr1c_s2** (seed 2): TS0 0.7860 / new 0.4721 / TS1 0.8388 /
+   TS-hard 0.8074 / TS2 0.7855 / TS3 0.8489.
+2. **plana_tr1c_s3** (seed 3): TS0 0.7633 / new 0.4858 / TS1 0.8425 /
+   TS-hard 0.8050 / TS2 0.7735 / TS3 0.8613.
+3. **nodistill ablation (lambda_distill=0, 6 splits)**: TS0 0.6627 /
+   new 0.5569 / TS1 0.7632 / TS2 0.7403 / TS3 0.7602 / TS-hard 0.7117 —
+   the first tr1c-native ablation row (T-A27). Read vs its matched control
+   r2dtr1c_s0 (TS0 0.6679 / new 0.5643@8k / TS1 0.7551 / TS2 0.7686 /
+   TS3 0.7815 / hard 0.7005): **distillation costs ~0.001 TS0, +0.007
+   TS-hard, +0.021 TS3, but −0.008 new / −0.012 TS2 / −0.028 TS1** —
+   mixed-sign, small; the honest reading is "the distill term is not a
+   uniform positive at this scale" — worth a longer treatment in the
+   ablation section once norlcd lands. P/R profile shows recall loss on
+   PDB-family (R 0.62-0.68 vs control's 0.67-0.72).
+4. **norlcd** still training (10.5k/20k, healthy, GPU card shared).
+
+**The 4-seed plana-tr1c family picture (s0/s1/s2/s3):**
+
+| split | s0 | s1 | s2 | s3 | spread |
+|---|---|---|---|---|---|
+| TS0 | 0.7866 | 0.7834 | 0.7860 | 0.7633 | 0.023 |
+| new | 0.4779 | 0.4995 | 0.4721 | 0.4858 | 0.027 |
+| TS1 | 0.8356 | 0.8570 | 0.8388 | 0.8425 | 0.021 |
+| TS-hard | 0.8530 | 0.8357 | 0.8074 | 0.8050 | 0.048 |
+| TS2 | 0.8197 | 0.8393 | 0.7855 | 0.7735 | 0.066 |
+| TS3 | 0.9049 | 0.8902 | 0.8489 | 0.8613 | 0.056 |
+
+Read-out: TS0 stays tight (0.023 — the ID gain remains the family's
+signature); **TS2/TS-hard/TS3 spread 3x wider than TS0's** — the PDB-family
+splits are exactly where the seeds diverge, consistent with the 15.26
+finding (PDB-family stems are the rare, hard signal; different seeds latch
+onto different amounts of it). s0 remains the best PDB-family seed
+(TS2 0.8197/TS3 0.9049), s1 the best TS1/new.
+
+**xens3 (3-seed plana bucket) built and VL0-swept.** Tool fixed on the way
+(the load_plana tuple-unpack bug — "plana" kind string was being called as
+the encoder — caught by the first VL0 run failing cleanly). VL0 sweep:
+w=0.6 → 0.8800, **w=0.7 → 0.8836 (peak)**, w=0.8 → 0.8842. Peak flat
+between 0.7-0.8 (within 0.0006); **w=0.7 retained** (the xens2-locked
+protocol value stands — no re-selection needed, the bucket upgrade does
+not move the operating point). Note xens3 VL0 0.8836 vs xens2's 0.8789:
+the third seed adds +0.005 on the selection split.
+
+**Why not run the 4-seed bucket instead**: s3 dilutes PDB-family (its
+TS2 0.7735/TS3 0.8613 drag the bucket's PDB splits); the 3-seed bucket
+(s0+s1+s2) is the VL0-chosen configuration family. s3 stays as the
+reported 4th single-seed row (seed-spread evidence), not a bucket member —
+that decision is recorded BEFORE seeing any test-split xens3 number, per
+the selection protocol.
+
+**Next**: xens3 on the 8 test splits (splits with embeddings, w=0.7,
+single run each — queued behind card availability); norlcd completion
+(~2h); tr1cpdb arm still waiting for a 34GB card. S2/S3 watchdog crons
+re-verified live (the daemons exit normally after DONE; the watchdogs are
+what relaunched them for the eval-recheck — the design holding).
+
+**Engineering notes**: (a) xens3 VL0 runs need a card with ~7GB — card 5
+shared fine, but two concurrent xens3 runs OOM'd (7+7GB > 15GB free with
+neighbours); sequential solo runs used instead; (b) the earlier
+"daemons dead" reading at 12:53 was the normal post-DONE exit, not a
+failure — distinguished by checking step==20000 + result.json freshness
+before declaring anything dead.

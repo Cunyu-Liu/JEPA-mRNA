@@ -52,9 +52,9 @@ def main():
 
     members = []
     for ck in [args.plana_ckpt0, args.plana_ckpt1, args.plana_ckpt2]:
-        enc, head, _, _ = load_plana(ck, args.device)
+        _, enc, head, _ = load_plana(ck, args.device)
         members.append((enc, head))
-    r2d_model, r2d_head, _, _ = load_r2d(args.r2d_ckpt, args.device)
+    _, r2d_model, r2d_head, _ = load_r2d(args.r2d_ckpt, args.device)
 
     records = []
     with open(args.data, encoding="utf-8") as fh:
