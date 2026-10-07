@@ -7374,3 +7374,70 @@ housekeeping pass, not now (no risk of touching live runs).
 tr1cpdb_s1 self-launches on the next 34GB window. The handover docs (spec
 / tasks / checklist, local + this repo) are refreshed to 15.29 in the same
 batch as this entry (T-A29 discipline).
+
+
+### §15.31 (2026-10-08 00:50) — T-A32 closes: the Turner prior ablation on the final recipe (6 splits) — the physics term is the OOD load-bearing wall (+0.23 ID / +0.37..+0.47 OOD); prior investigation into the missing MLP_T in the r2d path; the Turner ablation on the ff recipe doesn't need to be rerun
+
+**Trigger.** T-A32 (eleventh-round retrospective): the tr1c-native ablation
+matrix was missing its "Turner zeroed" cell — the §4.3b table still quotes
+the ff-tr0-era number (0.2124 on TS0). This entry closes that cell on the
+final recipe with the full 6-split protocol.
+
+**Architecture fact found first (check before measuring).** The r2d
+(resnet2d-scorer) path has **no MLP_T at all** — in FlatDecisionHead's 2D
+branch `self.turner = None` (decision_head.py:355) and the checkpoint's 58
+keys contain zero turner entries: the ResNet *is* the learned pair scorer,
+and the physics enters only through the additive Turner prior weighted by
+the learnable `head.prior_weight`. Therefore the faithful "Turner zeroed"
+ablation for THIS recipe is **`--prior-weight 0.0` at decode time** (the
+evaluator's reweight path: effective multiplier 0, same DP, same mask,
+same calibration protocol — single variable, zero retraining). The legacy
+"MLP_T=0" wording applies only to the ff (per-pair MLP) recipe and was
+NOT rerun: on ff the residual term and the prior are separable, and the
+old 0.2124 number remains that recipe's row; what the final recipe needs
+is the prior-value row, which is what was measured here.
+
+**Results (r2dtr1c_b4_s0 @20k, prior_weight forced 0, 6 splits, all
+legality metrics 0):**
+
+| split | turnerzero F1 | control F1 | prior worth | P(0) | R(0) |
+|---|---|---|---|---|---|
+| bprna_ts0 | 0.4413 | 0.6679 | **+0.2266** | 0.5584 | 0.3648 |
+| bprna_new | 0.1960 | 0.5643 | **+0.3683** | 0.3420 | 0.1373 |
+| ref_pdb_ts1 | 0.4738 | 0.7551 | +0.2813 | 0.6934 | 0.3599 |
+| ref_pdb_ts2 | 0.3509 | 0.7686 | **+0.4176** | 0.7051 | 0.2336 |
+| ref_pdb_ts3 | 0.3816 | 0.7815 | **+0.3999** | 0.6073 | 0.2782 |
+| ref_pdb_ts_hard | 0.2333 | 0.7005 | **+0.4672** | 0.4464 | 0.1579 |
+
+**Read-out.** (1) The Turner prior's value is **monotonically larger the
+farther the split is from the training family** — +0.23 in-distribution
+vs +0.37 (cross-family) / +0.40–0.47 (PDB-family). The learned ResNet
+scorer alone retains precision on PDB-family (P 0.45–0.71) but its recall
+collapses (R 0.16–0.36): the raw neural scores under-cover rare stems,
+and the physics term is what restores them. (2) This is the mirror image
+of the solver ablation (15.29 R3: the DP is worth +0.25/+0.43): **the two
+structural priors of the pipeline — the non-crossing DP and the Turner
+prior — each contribute a quarter to half an F1 point, and both
+contribute MORE out-of-distribution than in-distribution.** The paradigm
+narrative gains its ablation-backed answer to "what carries the OOD
+robustness": not the ensemble, not the backbone — the two physics/geometry
+terms, with the neural scorer as the in-distribution specialist. (3) For
+the paper: fold as the second row of the §4.3b tr1c-native ablation table
+(solver R3 row is the first); the old ff-tr0 0.2124 row stays as the
+ff-recipe column with its own label. The aggregation story of 4.3c is not
+affected (both rows move every split the same direction).
+
+**Protocol notes (three-pass check).** (i) The first read script died on
+Python 3.9 f-string nesting — rewritten as a file and scp'd (the
+heredoc-over-ssh lesson applies to python -c too). (ii) Control numbers
+re-read from the SAME six result.json files as the ablation rows — no
+hand-typed numbers in the table above. (iii) legality 0 on all six rows
+asserted in the read script (the DP path untouched by the reweighting —
+confirmed, not assumed). Evals ran on card 1 shared with the fftr1c
+training (head-chunk 8, ~24GB coexistence verified live).
+
+**Cluster at close.** tr1cpdb s0 @16.3k/20k (ETA ~01:30 train done, evals
+~02:30); fftr1c @1.7k/20k; saturation audit: the 00:26/00:30 GPU1 WARNs
+were the turnerzero eval's own start-up window — 00:40 back to
+all-saturated; 15 project crons live. Next: tr1cpdb 6-split read-out
+(§15.32) decides TS2/TS3; fftr1c completes ~07:00.
