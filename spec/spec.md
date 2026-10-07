@@ -27,6 +27,16 @@
 - te_human fullbudget：s1 epoch 0.34、s42 epoch 0.88（ETA 10-01 晚/10-02）。
 - RNA-JEPA 线：四大主臂 50k 全部完成，梯级评测全自动落地中（v1_cont_50k half_life n=5 r2 均值 0.5252 主臂最优档）。
 >
+> **交接状态（2026-10-08 02:30，第十二轮交接更新——两章读出落地的判定轮，细节 §15.31–§15.32）**：
+> - **集群**：`ssh A100`（bms-18937653-012），代码 `/home/cunyuliu/rna-jepa`（HEAD 3fb9828，已推 GitHub），数据 `/mnt/cunyuliu/rna-jepa`。本地台账同步至 7501 行。
+> - **SOTA 战况不变（6/8）**；**本轮两个判定**：
+>   1. **Turner 先验消融（最终配方，6-split，§15.31）**：先验价值 **+0.2266 ID / +0.3683–0.4672 OOD（单调随 OOD 距离）**——与 solver R3（DP +0.25/+0.43）互为镜像：**管线的两个结构先验各贡献 1/4–1/2 F1，OOD 上贡献更大**；OOD 鲁棒性由物理/几何项承载（非 ensemble/非 backbone），神经 scorer 是 ID 专家。r2d 路径无 MLP_T（ResNet 即 scorer，物理以可学习 prior_weight 进入），故忠实置零 = decode 期 `--prior-weight 0.0`（单变量零重训）。
+>   2. **TS2/TS3 数据构成假设否定（§15.32，干净负结果）**：tr1cpdb s0 六 split 全降（TS2 −0.2092），P 持平 R 崩 = head 被推向更保守。**差距已在四战线存活**（§15.19 三项 + 本轮数据构成）；Limitations 行成型；当前配方家族不再发 TS2/TS3 新臂（NMR head 降级 parked，T-A36）。
+> - **在训臂 ×2（全自动读出）**：fftr1c @~6.2k/20k（GPU1，R2 消融行，~07:00）+ tr1cpdb_s1（GPU3，预注册负结果种子方差，~10:30）。饱和审计 cron live（全卡 90–100%）。
+> - **消融矩阵现状（tr1c-native）**：solver R3 ✅、nodistill ✅、norlcd ✅、Turner 先验 ✅（§15.31）、ff-R2 🔄——**5 项中 4 项落地**，剩 R2 在飞。
+> - **下一步（按优先级）**：① 等 fftr1c/s1 落地 → **draft v3.19（T-A39）一次写全**（4-seed 图、xens3、solver+Turner 两行消融表、TS2/TS3 四战线负结果段、cov v2）；② PPT 同批更新（T-A40，slide 14 + 消融行 + 诚实负结果框）；③ 若 s1 显示负结果不稳定 → 解冻 T-A36。
+> - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.32**；冻结评测集 `spec/eval_splits_frozen.json`；本文件与 tasks.md/checklist.md 同批刷新（T-A29 纪律）。
+>
 > **交接状态（2026-10-08 00:30，第十一轮交接更新——消融矩阵补全轮，细节 §15.30）**：
 > - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（HEAD 01966fe，已推 GitHub），数据/权重 `/mnt/cunyuliu/rna-jepa`。**算力纠偏**：开场实测 GPU1 整卡空闲（1.7GB/0%），补位 fftr1c 臂后 6 张物理卡全部 90–100% 利用率。
 > - **在训臂 ×3**：① `rinalmo_r2dtr1c_tr1cpdb_b4_s0`（TS2/TS3 数据构成杠杆，GPU3，~14.3k/20k，ETA ~08:00，完成自动 6-split 终评）；② `rinalmo_fftr1c_b4_s0`（T-A31 R2 线性探针消融：`--scorer mlp`，除 scorer 外与 r2dtr1c_b4_s0 字节一致；GPU1，step 75 起确认）；③ `rinalmo_r2dtr1c_tr1cpdb_b4_s1`（**预注册**第二种子，sed 派生 diff 仅 3 行，守护等 34GB 窗口）。两新臂同批装 watchdog（FFTR1C / TR1CPDB_S1）——项目 watchdog 共 8 条 live。
