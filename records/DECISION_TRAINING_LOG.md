@@ -7441,3 +7441,61 @@ training (head-chunk 8, ~24GB coexistence verified live).
 were the turnerzero eval's own start-up window — 00:40 back to
 all-saturated; 15 project crons live. Next: tr1cpdb 6-split read-out
 (§15.32) decides TS2/TS3; fftr1c completes ~07:00.
+
+
+### §15.32 (2026-10-08 02:25) — the tr1cpdb read-out: the data-composition hypothesis for TS2/TS3 is REFUTED (a clean negative); the 15.26 lever is closed; s1 self-launched on the freed card (pre-registered, seed variance of the negative)
+
+**The read-out (r2dtr1c_tr1cpdb_b4_s0 @20k, watch7 6-split auto-eval, all
+legality 0, numbers read from result.json):**
+
+| split | tr1cpdb s0 | ctrl r2dtr1c | delta | ref | vs ref | P | R |
+|---|---|---|---|---|---|---|---|
+| bprna_ts0 | 0.6456 | 0.6679 | −0.0223 | 0.7578 | −0.1122 | 0.6859 | 0.6098 |
+| bprna_new | 0.4735 | 0.5643 | −0.0908 | 0.6106 | −0.1371 | 0.6132 | 0.3856 |
+| ref_pdb_ts1 | 0.6941 | 0.7551 | −0.0610 | 0.8150 | −0.1209 | 0.8595 | 0.5822 |
+| ref_pdb_ts2 | 0.5594 | 0.7686 | **−0.2092** | 0.9043 | −0.3449 | 0.8986 | 0.4061 |
+| **ref_pdb_ts2 is where the lever was aimed** | | | | | | | |
+| ref_pdb_ts3 | 0.6897 | 0.7815 | −0.0918 | 0.9410 | −0.2513 | 0.8117 | 0.5995 |
+| ref_pdb_ts_hard | 0.6034 | 0.7005 | −0.0971 | 0.7845 | −0.1811 | 0.7891 | 0.4884 |
+
+**Verdict: REFUTED.** Adding 234 clean PDB-family rows (0.55% of the
+corpus) did not lift TS2/TS3 — it **hurt every split** (TS2 −0.209, the
+very split the arm was designed to help). The P/R profile is diagnostic:
+precision HOLDS or rises (TS2 P 0.8986 vs control's 0.8980; TS1 P 0.8595
+vs 0.8305) while recall collapses (TS2 R 0.4061 vs 0.6718) — the head
+became MORE conservative on rare stems, not better at firing on them.
+234 rows is a drop in the distribution, not a family specialisation: the
+model regularised away from the rare pattern instead of learning it.
+RNAformer's TS2/TS3 advantage therefore does NOT reduce to "more PDB
+rows" at this scale; the 15.26 mechanism (family-specialised covariance
+data at thousands-of-rows scale, not hundreds) stands, but it is not
+reachable by small-corpus augmentation under our frozen-backbone recipe.
+
+**What this closes and what it opens.**
+- **Closes**: the naive data-composition lever (15.26's arm) — negative,
+  measured, seed-1 in flight for the variance column. TS2/TS3 remain a
+  real model gap (now refuted on FOUR fronts: non-canonical pairs,
+  boundary shifts, decode bias (15.19), and data composition (here)).
+- **The paper narrative is now complete on this axis**: the honest
+  Limitations row writes itself — "the remaining TS2/TS3 gap (~−0.045)
+  survives elimination of evaluation artefacts and of a data-composition
+  lever; it is a genuine modelling gap that our frozen-backbone +
+  physics-prior paradigm does not close on small PDB-family signal."
+  With 15.31's Turner ablation (+0.37..+0.47 OOD prior value) the story
+  is symmetric and measured both ways.
+- **No further TS2/TS3 arms will be launched** from the current recipe
+  family: the 15.28 VL0-gated NMR-head idea is the only remaining
+  candidate and it is now DOWN-GRADED to optional (the naive-form kill
+  in 15.26 plus this refutation make its prior low). Registered as
+  T-A36-parked, not queued.
+
+**s1 self-launched (02:21, GPU3, the freed card).** The pre-registered
+seed-variance arm of THIS negative — running to completion per the
+convergence rule; its 6-split eval will land automatically (~10:30).
+Expected: a second declining row (if it declines too, the negative is
+seed-stable; if it does not, seed variance dominates and the refutation
+softens to "not reproducible as a positive" — both publishable).
+
+**Cluster at close.** fftr1c @6.2k/20k (GPU1, healthy); tr1cpdb_s1
+training on GPU3; saturation OK; 15 project crons live. Docs wave: this
+entry + the T-A32 entry (15.31) go into the handover in the same batch.
