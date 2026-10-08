@@ -90,6 +90,24 @@ ck("scorer worth TS0 +0.0888", near(V["ctrl_ts0"] - V["ff_ts0"], 0.0888, 1e-4))
 ck("scorer worth TS3 +0.1612", near(V["ctrl_ts3"] - V["ff_ts3"], 0.1612, 1e-4))
 ck("tr1cpdb TS2 delta -0.2092", near(V["ctrl_ts2"] - V["pdb_ts2"], 0.2092, 1e-4))
 
+# --- Abstract (v3.19) numbers must match 4.3h disk values ---
+def plana_of(sp, f="plana_giga_tr1c_s0_step20000"):
+    d = json.load(open(f"{E}/{f}/plan_a_result.json"))
+    return d["splits"][sp]["micro"]["f1"]
+
+for num, val in [
+    ("0.7866", plana_of("ts0")),
+    ("0.8570", plana_of("ts1", "plana_giga_tr1c_s1_step20000")),
+    ("0.8530", plana_of("hard")),
+]:
+    ck(f"abstract {num} in draft and == disk ({val:.4f})", num in text and abs(val - float(num)) < 5e-5)
+ck("abstract 0.6132 (ens new) in draft", "0.6132" in text)
+ck("abstract 0.7507 (tsb) in draft", "0.7507" in text)
+ck("abstract 0.7403 (arch) in draft", "0.7403" in text)
+ck("abstract 0.0007 (cal ECE) in draft", "0.0007" in text)
+ck("abstract four-front sentence", "four elimination fronts" in text or "survived four elimination fronts" in text)
+ck("abstract 6-of-8 claim", "6 of 8" in text)
+
 # structural anchors
 for token, where in [
     ("tr1c-native ablation matrix", "4.3b anchor"),

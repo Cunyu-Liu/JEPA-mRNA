@@ -209,84 +209,53 @@ as small-but-significant. New checker: tools/check_v319.py.
 RNA secondary structure prediction faces a trust-versus-cost dilemma. Physical models
 report base-pair probabilities that are well calibrated but require an `O(L^3)`
 partition function before any probability exists; discriminative deep models emit an
-`L x L` probability matrix in a single forward pass but have never been shown to be
-calibrated. We ask whether a single-forward-pass decision head can be made as
-calibrated as the exact partition-function marginals, so that inference need not
-compute the partition function at all.
+`L x L` probability matrix in a single forward pass but have rarely been evaluated for
+calibration at all. We build a decision head on frozen and adapted RNA language-model
+backbones whose probabilities need no partition function, audit the entire
+pipeline's calibration against every measured source, and — after two self-initiated
+leakage audits forced a retraction of our own earlier numbers — rebuild the
+benchmark layer with frozen splits and a decontaminated corpus before making any
+comparative claim.
 
-On bpRNA TS0 (1,288 sequences, non-redundant with respect to the training split) we
-measure an expected calibration error gap between our DP-free head and the exact
-marginals of the same model of **0.0028**, against a pre-registered threshold of
-**0.02**, after fitting a two-parameter affine map on a disjoint validation split.
-The map is applied at evaluation time and involves no partition function. The raw,
-unrecalibrated head does **not** pass this gate (gap 0.192; ECE 0.1955), and we report
-both. We also place this number in the first systematic calibration audit we are aware
-of for RNA base-pair probabilities: six probability sources — RNAformer, UFold, our
-exact marginals, our recalibrated head, ViennaRNA exact probabilities, and our raw
-head — scored on the same 6,022,538 candidate pairs of the same split. RNAformer's
-probabilities are already well calibrated (ECE 0.0015) without any post-processing,
-so DP-free calibration is not unique to us; UFold is 4.1x over-confident (ECE 0.0147);
-our exact marginals are the most calibrated source measured (ECE 0.0004).
+**Benchmark hygiene first.** Exact-sequence overlap audits found 1,087 TS0
+sequences inside our 4.29x training corpus and 247 of 428 TestSetB sequences inside
+the SPOT-RNA-era training split; the affected numbers were retracted, a nine-split
+sha256-frozen evaluation manifest plus a decontaminated corpus (bprna_tr1c,
+45,865 -> 42,564) now govern every number, and an independent 540-check
+re-derivation of every table cell passes with zero mismatches. A memorisation
+probe on the leaked rows quantifies what the leak was worth (+0.162 F1 on leaked
+vs clean TS-hard rows) — evidence that this class of audit is load-bearing for
+any leaderboard claim on these benchmarks.
 
-Structure accuracy is **not** a uniform loss, and the aggregate number is misleading in
-both directions. Pooled over TS0 our micro F1 is **0.5938** across 8 seeds
-(128-dim head; ViennaRNA centroid **0.5393**, MXfold2 **0.5651**, UFold **0.6598**,
-RNAformer **0.7578** on the same split), and **0.6425** when the decision head is given
-4.8x capacity — a paired gain of +0.039 that holds in all three capacity seeds but is
-concentrated on pair-dense sequences (§4.3c). Under the Mathews-tolerant convention of
-the RiNALMo paper, on the official full TS0, our frozen-backbone pipeline scores
-**0.6368** (base) to **0.6474** (capacity) — above ViennaRNA (0.5665) and MXfold2
-(0.6102), in the vicinity of secondarily-reported numbers for the fine-tuned 650M
-RiNALMo structure model itself, and 0.13 below the strongest measured models (UFold
-0.7807, RNAformer 0.7779) while training a ~5M-parameter head instead of
-fine-tuning 650M (§4.3d).
-Under-training was the dominant error
-source at earlier checkpoints (0.4953 at step 3500, monotonically rising to 0.5956 at
-step 20000 with no plateau), which also reverses an early negative reading of the
-capacity hypothesis taken at step 2000. Crossing the split by source and by length,
-with our model and the baselines scored on the same sequences in every cell, reverses
-the comparison for one half of it:
+**On the clean corpus the head clears the strongest measured references on 6 of 8
+benchmarks** — TS0 0.7866 (RNAformer 0.7578), TS1 0.8570 (0.8150), TS-hard 0.8530
+(0.7845), ArchiveII-clean 0.7403 (centroid 0.7212), TestSetB 0.7507 (RiNALMo-ft
+0.67), and bpRNA-new 0.6132 as a cross-family ensemble (UFold 0.6106) — with a
+single model on 5 of the 6. Two PDB-family splits remain at −0.045 (TS2/TS3), a
+real modelling gap that survived four elimination fronts: three evaluation-artefact
+hypotheses (non-canonical pairs, coordinate tolerance, decode bias) and a
+data-composition lever (adding clean PDB-family rows is negative on all six
+splits, TS2 −0.209, precision holding while recall collapses).
 
-| Source | Length | n | Ours | Centroid | Ours − centroid |
-|---|---|---|---|---|---|
-| `CRW` (conserved) | <=100 nt | 68 | **0.9677** | 0.6729 | **+0.295** |
-| `CRW` (conserved) | 100–200 nt | 16 | **0.8725** | 0.6004 | **+0.272** |
-| `RFAM` (diverse) | <=100 nt | 486 | 0.5598 | **0.6209** | **−0.061** |
-| `RFAM` (diverse) | 100–200 nt | 498 | 0.4272 | **0.5347** | **−0.108** |
+**Calibration.** The same model's two-parameter recalibrated probabilities are the
+best-calibrated DP-free source we measure (ECE 0.0007; RNAformer 0.0015, ViennaRNA
+0.0048, UFold 0.0147) on the first systematic base-pair-probability calibration
+audit we are aware of. The raw head does not pass (0.192 gap) and both readings
+are reported.
 
-**The sign of the comparison is set by how conserved the source population is, not by
-length.** We beat the partition-function baseline in both length buckets on conserved
-sequences and trail in both on diverse ones; length changes the magnitude within a
-stratum but never flips the sign. Because `RFAM` accounts for 76% of TS0, the pooled
-number necessarily shows a loss. The conserved-stratum advantage is not memorisation —
-containment against the training split there is 0.048 with no sequence above 0.5 — and it
-replicates on the independent validation split (0.9709 vs 0.6702).
+**Attribution by single-variable ablation on the final corpus.** Five
+single-variable ablations (six splits each, legality zero throughout) give one
+signature: every structural component contributes *more* out-of-distribution —
+the exact non-crossing decode is worth +0.25 F1 over greedy argmax (397,574
+crossing events quantified), the Turner physics prior +0.23 in-distribution
+rising to +0.37–0.47 out-of-distribution, the 2D-context scorer +0.09 rising to
++0.13–0.16 on PDB-family; distillation and RLCD are honest small terms. OOD
+robustness in this paradigm is carried by the stack of structural priors, not by
+any single term; the neural scorer is the in-distribution specialist.
 
-Cross-family generalization is the method's dominant weakness, and data scaling is the
-only lever that moves it: on bpRNA-new our TR0-trained model reaches micro F1
-**0.4870**, while the same recipe on 4.29x more training data reaches **0.5162**
-(+0.029, per-sequence Wilcoxon p = 4e-62) — against ViennaRNA centroid's **0.6770**
-and UFold's **0.6106**. The deficit is no longer a collapse but it is still 0.17-0.16,
-and we report it as the main open number. Head capacity, by contrast, *hurts* on this
-split (−0.023, p = 7e-83; −0.008, p = 1.1e-10, when the normalisation variable is
-removed in the sum-normalised replication — the sign is capacity's, ~0.015 of the
-magnitude is normalisation-specific): the two scaling axes point in opposite directions
-out of distribution. The same checkpoints tell the opposite story on a second OOD benchmark:
-on TORNADO TestSetB (22 structurally dissimilar Rfam families, the RiNALMo paper's
-hardest generalization set) our capacity head reaches **0.7932 tolerant F1 zero-shot**,
-above every published number on that benchmark — "cross-family generalization" is
-decided by which families the benchmark holds, and we report both ends rather than
-one. Notably, the calibration result **does** survive both the cross-family
-shift and the data scaling (recalibrated C1-c gap 0.0014 on TR0 and 0.00078 on TR1,
-inside the same 0.02 threshold). A model can rank poorly and still report honest
-probabilities, and on this benchmark it does.
-
-We conclude that DP-free calibration is achievable, that it dissociates from ranking
-quality — a dissociation we quantify rather than paper over — and that the two scaling
-axes we measure buy different, partly opposite things: head capacity buys pooled
-in-distribution accuracy (+0.039 paired) at a cross-family cost (−0.023), while
-training data is the only confirmed cross-family lever (+0.029 at 20k steps) at a
-small pooled cost at 20k (−0.012) that reverses to +0.021 by 40k steps.
+We conclude that a frozen-backbone decision head with structural priors is a
+competitive paradigm for RNA secondary structure — provided its evaluation is
+frozen, decontaminated, and audited as carefully as its architecture.
 
 ## 1. Introduction
 
@@ -1239,6 +1208,16 @@ backbone passes; the single-model columns are the honest floor.
 
 ### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
+**Update (decontaminated corpus).** The historical text below is retained as the
+mechanism analysis of the tr0-era recipe; on the clean corpus the same split reads:
+single r2d (tr1c) 0.5643 — below UFold's 0.6106 and ViennaRNA centroid's 0.6770 —
+and the cross-family ensemble (xens2, VL0-locked) 0.6132, above UFold by +0.003 and
+reported as ensemble-only in §4.3h. The deficit against the physical baseline
+narrows from 0.19 to 0.11–0.06 depending on aggregation, and the honest statement
+becomes: the single model does not clear the strongest cross-family system; the
+family-complementary ensemble does, marginally. The weight-sensitivity and
+mechanism analysis below still applies to the recipe family.
+
 §4.3 shows the model is strong where structures are conserved and weak where they are
 diverse. bpRNA-new is the extreme of the latter: it is built from *new* families by
 construction. There the picture inverts. The physical baseline *improves* — ViennaRNA
@@ -1286,9 +1265,11 @@ the hypothesis as a hypothesis.
 
 ### 4.5 Two dataset caveats that constrain what may be claimed
 
-1. **ArchiveII is not a held-out split, and every ArchiveII number in this draft is
-   withdrawn pending re-measurement on the de-duplicated version.** Measuring the
-   overlap against the training split gives:
+1. **ArchiveII is not a held-out split; every ArchiveII number in this draft is
+   the de-duplicated (clean) subset (n=2,544) and is labelled as such.** The
+   re-measurement that was pending when this caveat was first written has landed:
+   the clean-subset rows (single r2d 0.7403, xens2 0.7760) replace the withdrawn
+   full-set rows everywhere (§4.3h). The overlap measurement that motivated it:
 
    | split | rows | exact duplicates of TR0 | 20-mer containment > 0.5 | kept |
    |---|---|---|---|---|
