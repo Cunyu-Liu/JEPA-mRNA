@@ -1321,7 +1321,14 @@ the hypothesis as a hypothesis.
    data-composition lever (adding 234 clean PDB-family rows, single-variable) were
    tested and refuted: the augmentation arm is negative on all six splits (TS2
    −0.209) with precision holding and recall collapsing, so the gap is not
-   closable by small-corpus family augmentation under this recipe. The pre-decontamination TS0 ceiling framing (0.6446 combination arm) is
+   closable by small-corpus family augmentation under this recipe. The axis is
+   then closed by exhaustion: RNAformer's own experimental PDB corpus (the
+   thousands-of-rows family source) yields **zero net-new admissible rows**
+   under our cleaning and decontamination rules (3,481 is_pdb rows decay to
+   107 after pseudoknot/non-canonical/multiplet/short-hairpin/crossing
+   filters, and all 107 are already inside tr1c) — the family
+   specialisation the reference enjoys is built on data our evaluation
+   hygiene excludes, a protocol difference we state rather than hide. The pre-decontamination TS0 ceiling framing (0.6446 combination arm) is
    superseded: that arm trained on the leaky TR1 corpus and its number is retracted.
    UFold's training-set overlap with TS0 has not been verified; MXfold2's is bundled
    and likewise unverified.

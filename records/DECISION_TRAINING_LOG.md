@@ -7665,3 +7665,66 @@ references formatting) and the git tag. Cluster: GPU5 released by s1's
 completion (the saturation audit will flag if it idles; no further arms
 are queued from this recipe family — the project's compute story is
 "measured, attributed, frozen", not "still running").
+
+
+### §15.37 (2026-10-08 15:10) — T-A44: the last TS2/TS3 lever is measured out of existence — RNAformer's experimental PDB corpus yields ZERO admissible rows under our cleaning+decontamination rules; the data-composition axis is closed by exhaustion, not just by the 234-row arm
+
+**Trigger.** The user's "不达目的不罢休" requirement on TS2/TS3: the
+15.26 mechanism (family-specialised PDB data at thousands-of-rows scale)
+had one untested scale point — RNAformer's own experimental corpus
+(experimental_pretrain_data.plk, 45,203 rows, 3,499 is_pdb). The 234-row
+arm (15.32/15.36) proved small augmentation is a perturbation, not a
+specialisation; the question this entry answers is whether the
+thousands-of-rows scale is even *available* under our evaluation-hygiene
+rules.
+
+**Method (tools/build_pdbexp.py, three-pass checked).** The plk has no
+dot-bracket column — only `pos1id/pos2id` pair lists — so the script:
+(i) reconstructs nested dbn by greedy non-crossing selection (crossing
+pairs dropped and counted); (ii) validates every emitted structure with
+the project's own clean-layer validator (c3_structure.validate_structure:
+balance, syntax, min-hairpin >= 3, non-crossing); (iii) applies the full
+gate stack — is_pdb & train & len<=600, has_pk/has_multiplet/has_nc
+dropped, zero exact overlap vs ALL nine frozen eval splits,
+self-dedup, tr1c-dedup.
+
+**The decay table (the result):**
+
+| stage | rows |
+|---|---|
+| is_pdb & train & len<=600 | 3,481 |
+| − has_pk | 1,310 |
+| − has_multiplet | 810 |
+| − has_nc | 338 |
+| nested-dbns passing our structure validator | 114 (223 invalid: hairpin<3 etc.; 194 crossing pairs dropped) |
+| − self-duplicates | 107 |
+| − already inside tr1c | **0** |
+
+**Verdict: ZERO admissible net-new rows.** Every one of the 107 clean
+rows RNAformer's experimental PDB corpus can yield under our rules is
+already in bprna_tr1c (via the earlier corpus builds). The
+thousands-of-rows family specialisation RNAformer enjoys is built
+precisely on the data our rules exclude — pseudoknots (has_pk removes
+2,171 rows), non-canonical pairs, multiplets, sub-3 hairpins, and
+crossing contacts. This is the strongest form the TS2/TS3 negative can
+take: **not "we tried augmentation and it failed" but "the augmenting
+data cannot exist inside a corpus that satisfies our evaluation-hygiene
+constraints"** — the gap and the hygiene rules are in direct tension,
+and we choose the hygiene. (RNAformer's checkpoints remain legitimate
+references — they were trained under *their* rules; ours forbid the same
+data, which is itself a reportable protocol difference, not a hidden
+one.)
+
+**Consequences.**
+1. T-A36 (NMR-family head) stays parked — its data path is the same
+   corpus, now proven empty.
+2. The draft's Limitations 5 gains one sentence (fold in the next
+   commit): the data-composition lever is closed by exhaustion; the
+   gap-vs-hygiene tension is stated as the trade-off we made.
+3. The freeze stands: no new arm is possible from this data axis; the
+   remaining TS2/TS3 paths (family-level pretraining of the backbone
+   itself, not the head) are out of the preprint's scope and are
+   recorded as future work.
+4. Artifact: bprna_pdbexp.jsonl is empty (0 rows) — kept as the
+   reproducible witness; build_pdbexp.py committed with the decay table
+   in its output.
