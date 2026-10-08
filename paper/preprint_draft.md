@@ -1413,12 +1413,24 @@ measured references on six. The two scaling axes are quantified separately on al
 paired per-sequence significance tests, and their effects do not compose
 out-of-distribution: the measured interaction is negative.
 
+The attribution behind those standings is measured, not asserted: five single-variable
+ablations on the final corpus agree on one signature — every structural component
+(the exact non-crossing decode, the Turner physics prior, the 2D-context scorer)
+contributes *more* out-of-distribution than in-distribution, while the auxiliary
+training objectives are honest small terms. Out-of-distribution robustness in this
+paradigm is carried by the stack of structural priors, not by any single term, and
+the neural scorer is the in-distribution specialist. Where the paradigm does not win
+(TS2/TS3, −0.045), the gap survived four elimination fronts and a two-seed refutation
+of the data-composition lever — reported as a modelling gap, not explained away.
+
 We report the stratified result as the main accuracy finding rather than the pooled
 number, because the pooled number is dominated by the stratum where we lose and would
 understate the method. The complement matters just as much: a calibration result that
 transfers across families while ranking does not is half a result — but it is the half
 that downstream users (design, variant interpretation) consume first, and it is now
-measured rather than assumed.
+measured rather than assumed. And the meta-lesson of the round: two of our own
+headline numbers were retracted by our own audit before any external reviewer saw
+them — on these benchmarks, evaluation hygiene is not bookkeeping, it is the result.
 
 ## Appendix A. Evidence ledger
 
