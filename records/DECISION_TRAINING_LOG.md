@@ -7728,3 +7728,34 @@ one.)
 4. Artifact: bprna_pdbexp.jsonl is empty (0 rows) — kept as the
    reproducible witness; build_pdbexp.py committed with the decay table
    in its output.
+
+### §15.38 (2026-10-08 19:55) — T-A45: benchmark 主表扩展 — 已发表基线全板（10 系统 × 8 split）+ 历史模型全板（53 臂 × 8 split）+ 参照值溯源审计；PPT 同步扩至 19 页
+
+**用户三问的回答（全部落成可验证产物）：**
+
+1. **有没有测评其他已发表 baseline？** 盘点结果：磁盘上共 10 个已发表
+   系统在 8-split 板上有实测 cell——ViennaRNA mfe/centroid/mea（7/8）、
+   Nussinov+Turner 堆叠（7/8）、MXfold2（2/8）、EternaFold（TestSetB）、
+   UFold（3/8）、RNAformer 3 个 checkpoint（bprna 4+3 cell、inter-fam
+   4 cell、biophys 1 cell）。新增 `tools/build_boards.py` 把全部 cell
+   磁盘直读进 `tables/sota_vs_ours.md`「Published baselines」板（— =
+   未跑，不用论文数字填格）。
+2. **历史训练的每个模型上主表**：「Our trained models」板 53 臂 ×
+   8 split 全量落表（从 ff@3500 探针到 xens2，含全部判负臂——casc
+   0.5889、tr1cpdb、RNA-FM 骨干交换 0.4199——不选择性汇报）。
+3. **参照值是自测还是引用？** 溯源审计：**主表全部参照值均为本仓库
+   同口径实测**（同一 project scorer / GT / split 文件；各系统版本
+   锁定记录在案）。唯一 quoted 项 = TestSetB 的 RiNALMo-ft 0.67
+   （INF 口径，RiNALMo 论文 S5，主表已标注 quoted）。该结论写入
+   sota_vs_ours.md Provenance 段 + PPT S18 溯源声明。
+
+**PPT 更新（19 页，10.83×7.5 用户页面 + 微软雅黑 + 1.5 倍行距全维持）：**
+- S14 主表注脚加"全部参照值均为本仓库同口径实测"；
+- 新增 **S18 基线全景**（10 系统 × 8 split 实测板 + 溯源声明）；
+- 新增 **S19 模型演进史**（53 臂全板的节选 14 行：探针→基线族→消融
+  臂→终评配方→集成，判负臂保留）。
+验证：内容 token 断言全过（S18 28 项、S19 15 项、S14 溯源句）、
+行距 780/780 = 1.5×、0 越界 / 0 重叠 / 0 小字号 / 0 竖向溢出。
+
+**Cluster git**: 67d4c9c（boards + tools）已推。metrics_matrix 同轮
+重跑（138 cell 保持）。
