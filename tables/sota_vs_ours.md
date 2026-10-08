@@ -63,10 +63,11 @@ bucket dilutes it slightly).
 | MXfold2 | 0.5651 | 0.6688 | 0.7967 | 0.8991 | 0.8127 | 0.8028 | — | — |
 | EternaFold | 0.5400 | 0.6854 | 0.7426 | 0.8635 | 0.8005 | 0.7658 | 0.6157 | 0.5850 |
 | UFold | 0.6598 | 0.6106 | 0.6455 | 0.8792 | 0.6326 | 0.6388 | 0.4111 | 0.5858 |
-| RNAformer (bprna ckpt) | — | — | 0.7658 | — | — | 0.7845 | — | — |
+| RNAformer (bprna ckpt) | 0.7578 | 0.4936 | 0.7658 | 0.8590 | 0.9410 | 0.7845 | — | — |
 | RNAformer (inter-family ckpt) | — | — | 0.8150 | 0.9043 | 0.8245 | 0.7709 | — | — |
 | RNAformer (biophysical ckpt) | — | — | — | — | 0.8265 | — | — | — |
 | RiNALMo-ft (Zenodo ckpt) | 0.7214 | 0.4489 | 0.7139 | 0.6702 | 0.6055 | 0.5556 | 0.7613 | 0.8711 |
+| NucleicBERT (frozen enc + our head) | 0.1509 | 0.0955 | 0.2029 | 0.1541 | 0.1439 | 0.1343 | 0.2372 | 0.1210 |
 
 Provenance: every cell is OUR measurement (project scorer, project GT,
 same split files) — ViennaRNA 2.7.2, MXfold2 (repo weights), UFold

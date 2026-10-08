@@ -66,7 +66,12 @@ for f in sorted(glob.glob(f"{E}/baselines_*.json")):
         elif variant.startswith("rnaformer"):
             label = {"rnaformer_bprna": "RNAformer (bprna ckpt)",
                      "rnaformer_interfam": "RNAformer (inter-family ckpt)",
-                     "rnaformer_bio": "RNAformer (biophysical ckpt)"}.get(variant, variant)
+                     "rnaformer_bio": "RNAformer (biophysical ckpt)"}.get(variant)
+            if label is None:
+                # bare "rnaformer" (baselines_rnaformer_bprna_new.json) and
+                # "rnaformer_ref" (baselines_rnaformer_ref_*.json) were both run
+                # with the bprna ckpt (metrics_matrix.py §15.09 mapping).
+                label = "RNAformer (bprna ckpt)"
             board.setdefault(label, {})[split_label] = round(v, 4)
         elif variant in ("mxfold2", "ufold"):
             key = "MXfold2" if variant == "mxfold2" else "UFold"
