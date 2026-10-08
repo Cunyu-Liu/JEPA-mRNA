@@ -7548,3 +7548,43 @@ window), ETA ~16:45 + evals ~17:30; all other cards busy (external
 tenants + our evals); saturation audit live. Next writer: v3.19 (T-A39)
 — the fold of 15.27–15.33 into the draft starts NOW (s1's variance row
 is one additive table row when it lands; no rework).
+
+
+### §15.34 (2026-10-08 11:55) — T-A39 closes: draft v3.19 — the tr1c-native ablation matrix, the fourth front, the 4-seed picture and the cov probe are all in the paper; checkers green
+
+**What landed.** v3.19 applies three insertions to the draft (banner note
++ §4.3b matrix block + Limitations-5 rewrite):
+
+1. **§4.3b — the tr1c-native ablation matrix table**: 7 rows x 6 splits
+   (control, solver greedy/symgreedy, Turner zeroed, scorer->MLP,
+   nodistill, norlcd) with the one-signature read: *every structural
+   component contributes more out-of-distribution* (prior +0.23→+0.47,
+   scorer +0.09→+0.16, DP quantified via 397k crossings); aux terms
+   honest-small. The ff-tr0 `MLP_T=0` row keeps its own label with the
+   no-MLP_T-in-2D-path explanation.
+2. **§4.3b second half — the fourth front + 4-seed + xens3 + cov-v2**:
+   the tr1cpdb negative with absolute numbers, the pre-registered s1
+   pointer to Appendix A, the 4-seed spread contrast (0.023 vs 0.05–0.07),
+   the xens3 wash row (robustness, not replacement), the cov probe
+   (+0.0005, CI>0, reported small).
+3. **Limitations 5 — four elimination fronts** (was three).
+
+**Verification (three passes).** (i) `tools/check_v319.py` — 57/57 PASS
+(every matrix number re-derived from the twelve turnerzero/fftr1c/
+tr1cpdb/control result.json files + xens3; derived deltas re-computed:
++0.2266/+0.4672/+0.0888/+0.1612/−0.2092 all match to 1e-4). (ii)
+`check_v318.py` 39/40 — the single FAIL is `banner v3.18`, i.e. the
+version bump itself (expected; the old checker pins the old banner).
+(iii) `paper/check_manuscript.py` OVERALL PASS. Draft backup at
+/tmp/preprint_backup_v318.md on the cluster.
+
+**Process notes.** The first checker run caught exactly what it should
+have: the tr1cpdb absolute numbers were written as deltas only and the
+"four elimination fronts" wording differed from the anchor — both fixed
+in place (no rework, two small patches). Commit c3a3197 pushed.
+
+**Cluster at close.** tr1cpdb_s1 training on GPU5 since 09:13 (ETA
+~16:45 + evals); all cards busy; saturation audit live. Remaining for
+the preprint freeze: s1's Appendix-A row (auto), the PPT S15 scorer row
+(now), and the final read-through (Appendix C "preliminary" list
+shrinks by three items).
