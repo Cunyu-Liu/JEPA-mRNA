@@ -1512,8 +1512,9 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    divergence (§4.3c) is measured in one seed only.** The headline family has
    eight seeds; the capacity arm four (pooled direction unanimous,
    per-sequence direction not); the combination and TR1 arms two each;
-   the learnable-prior-weight arm two (not significant); the cascade,
-   auxiliary-objective and backbone-swap arms one each — the last is a
+   the learnable-prior-weight arm two (not significant); the cascade and
+   backbone-swap arms one each (the auxiliary-objective rows now have
+   tr1c-native single-seed measurements, §4.3b) — the last is a
    deliberate single-cell axis probe, not a seed-variance claim.
 2. **The TR1 convergence point is at 20,000 steps for a corpus 4.29x larger** —
    roughly 1.7 epochs; the 40,000-step point is measured (pooled +0.031,
@@ -1539,6 +1540,19 @@ rate and hairpin-violation rate are 0.0000 for every row above.
    replication. ~~`vienna_mfe` was not run on the two longest `RFAM` cells.~~ The
    two cells are now measured (0.3966 / 0.3679, centroid-checked); the small-cell
    caveat itself stands.
+6. **The tr1c-native ablation matrix is single-seed per ablation** (§4.3b):
+   the five component rows are one seed each on the clean corpus, so the
+   component-attribution numbers carry the seed-spread context of the
+   4-seed family picture rather than their own seed error bars. The
+   solver and prior ablations are decode-time (deterministic, no seed);
+   the scorer and auxiliary-objective rows are training-time (single
+   seed). The TS2/TS3 data-composition arm has two seeds (the
+   pre-registered pair; Appendix A). The 3-seed xens3 row bounds the
+   ensemble axis.
+7. **Speed gates remain unverified** (S1-S9 of the internal gate list):
+   measured latency is reported in Limitations 6, but no
+   matched-compute comparison against the partition-function baseline
+   has been run; the draft claims no speed advantage anywhere.
 
 ## References
 
