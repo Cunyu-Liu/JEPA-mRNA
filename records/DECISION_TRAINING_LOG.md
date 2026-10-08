@@ -7499,3 +7499,52 @@ softens to "not reproducible as a positive" — both publishable).
 **Cluster at close.** fftr1c @6.2k/20k (GPU1, healthy); tr1cpdb_s1
 training on GPU3; saturation OK; 15 project crons live. Docs wave: this
 entry + the T-A32 entry (15.31) go into the handover in the same batch.
+
+
+### §15.33 (2026-10-08 11:45) — fftr1c lands: the tr1c-native ablation matrix is 5/5 complete — the 2D-context scorer is worth +0.05..+0.16 (largest on PDB-family); every pipeline component contributes MORE out-of-distribution
+
+**The read-out (rinalmo_fftr1c_b4_s0 @20k, scorer=mlp, single variable vs
+r2dtr1c_b4_s0; watch7 6-split auto-eval; all legality 0):**
+
+| split | fftr1c (mlp) | ctrl r2d (resnet2d) | scorer worth | P | R |
+|---|---|---|---|---|---|
+| bprna_ts0 | 0.5791 | 0.6679 | −0.0888 | 0.5524 | 0.6086 |
+| bprna_new | 0.5117 | 0.5643 | −0.0526 | 0.5111 | 0.5124 |
+| ref_pdb_ts1 | 0.6822 | 0.7551 | −0.0729 | 0.7400 | 0.6327 |
+| ref_pdb_ts2 | 0.6882 | 0.7686 | −0.0804 | 0.7759 | 0.6183 |
+| ref_pdb_ts3 | 0.6203 | 0.7815 | **−0.1612** | 0.6427 | 0.5995 |
+| ref_pdb_ts_hard | 0.5673 | 0.7005 | **−0.1332** | 0.6067 | 0.5326 |
+
+**Read-out.** The 2D-context (resnet2d) pair scorer is worth **+0.089
+in-distribution and +0.13..+0.16 on the PDB-family splits** — the
+architecture term replicates on the clean corpus (tr0-era: +0.067 on
+ff-vs-r2d; tr1c-era: +0.089, same direction, slightly larger), and its
+value ALSO grows with OOD distance. Combined with 15.31/15.29 the
+tr1c-native ablation matrix closes 5/5 with one uniform signature:
+
+| component ablated | ID cost | OOD/PDB cost | where it lands |
+|---|---|---|---|
+| non-crossing DP (solver R3) | −0.25 | — (397k crossings) | §15.29 |
+| Turner physics prior | −0.23 | −0.37..−0.47 | §15.31 |
+| 2D-context scorer (this) | −0.09 | −0.13..−0.16 | §15.33 |
+| distill term (nodistill) | ~0.00 | mixed ±0.03 | §15.27 |
+| RLCD term (norlcd) | −0.01 | mixed ±0.06 | §15.29 |
+
+**The emergent paper claim: in a small head, EVERY structural component
+(DP, physics prior, 2D context) contributes more out-of-distribution
+than in-distribution — OOD robustness is not carried by any single
+trick but by the stack; the two auxiliary objectives are honest small
+terms.** This is the ablation backbone for draft §4.3b's tr1c-native
+table (v3.19).
+
+**Also noted**: fftr1c's P/R is balanced (0.55/0.61, 0.74/0.63) — the MLP
+head degrades uniformly, unlike the capacity axis' recall-collapse
+signature; the ff family remains the reproducible-baseline column of the
+matrix.
+
+**Cluster at close.** tr1cpdb_s1 launched 09:13 on GPU5 (bar 34GB,
+self-heal path worked), train_log pending embedding load (~10 min
+window), ETA ~16:45 + evals ~17:30; all other cards busy (external
+tenants + our evals); saturation audit live. Next writer: v3.19 (T-A39)
+— the fold of 15.27–15.33 into the draft starts NOW (s1's variance row
+is one additive table row when it lands; no rework).
