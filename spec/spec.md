@@ -27,6 +27,12 @@
 - te_human fullbudget：s1 epoch 0.34、s42 epoch 0.88（ETA 10-01 晚/10-02）。
 - RNA-JEPA 线：四大主臂 50k 全部完成，梯级评测全自动落地中（v1_cont_50k half_life n=5 r2 均值 0.5252 主臂最优档）。
 >
+> **交接状态（2026-10-08 15:00，第十四轮交接更新——预印本冻结轮，细节 §15.36）**：
+> - **集群**：`ssh A100`，代码 HEAD bbd4c36 + **tag `preprint-v3.19-freeze`**（已推 GitHub）；本地 draft（1605 行）/台账（7667 行）已同步。
+> - **冻结态总览**：6/8 benchmark 超 SOTA（tier-1 全清）；tr1c-native 消融矩阵 5/5（统一签名：结构组件 OOD 贡献＞ID）；TS2/TS3 四战线 + 双种子负结果（0.6807/0.6456 同号）；校准 ECE 0.0007；Abstract/Conclusion 已与正文一致（终审修复）；checker 78/78 + linter PASS。
+> - **无在训臂**；项目内部无待办，下一步为导师审阅与投稿（外部动作）。T-A36（NMR head）parked，解冻条件已写明。
+> - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.36**；draft **v3.19（frozen）**；PPT 15 slides（S14 主表 + S15 五行消融表）。
+>
 > **交接状态（2026-10-08 12:00，第十三轮交接更新——v3.19 落地轮，细节 §15.33–§15.34）**：
 > - **集群**：`ssh A100`，代码 HEAD c6252ce（已推 GitHub）；本地 draft/台账已同步（台账 7590 行，draft 1578 行）。
 > - **本轮三件事**：① fftr1c 落地 → 消融矩阵 5/5 闭合（统一签名：每个结构组件 OOD 贡献更大）；② **draft v3.19**（checker 57/57 + linter PASS）；③ PPT S15 五行消融表。
