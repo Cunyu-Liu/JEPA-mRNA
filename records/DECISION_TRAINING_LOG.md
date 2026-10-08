@@ -7588,3 +7588,47 @@ in place (no rework, two small patches). Commit c3a3197 pushed.
 the preprint freeze: s1's Appendix-A row (auto), the PPT S15 scorer row
 (now), and the final read-through (Appendix C "preliminary" list
 shrinks by three items).
+
+
+### §15.35 (2026-10-08 12:40) — T-A43 terminal audit catches the draft's biggest residual: the Abstract was still pre-retraction (0.5938 era) — rewritten; 4.4/4.5 brought to the clean-corpus state; checker extended to 66/66
+
+**What the final read-through found (and why it matters).** Running the
+T-A43 audit (numbers spot-check, sanctioned wording, section-by-section
+staleness) exposed that the **Abstract was the one section no version
+bump had touched since v3.17**: it still led with the pre-decontamination
+numbers (0.5938 pooled / 8-seed headline, "0.4870 bpRNA-new" as current,
+"we trail the physical baseline by 0.19") — numbers that were retracted
+two drafts ago. Every checker was green because every checker checked
+§4.3h, §4.3b and the banner, not the Abstract. Lesson banked: **the
+checker's coverage must follow the reader's path, not the writer's** —
+the Abstract is the first thing a reviewer reads and the last thing the
+writer re-reads.
+
+**Fixes (all pushed, a07386b).**
+1. **Abstract rewritten** to the v3.19 state: benchmark-hygiene-first
+   framing (retractions, frozen splits, 540-check audit, +0.162
+   memorisation probe), the 6-of-8 clean-corpus standings with
+   ensemble-only honesty on bpRNA-new, the TS2/TS3 four-front negative,
+   the calibration result, and the five-ablation attribution signature.
+2. **§4.4** gets an "Update (decontaminated corpus)" box: single r2d
+   0.5643 vs UFold 0.6106 / centroid 0.6770, ensemble 0.6132
+   ensemble-only; deficit 0.19 -> 0.11-0.06; historical mechanism text
+   retained and labelled.
+3. **§4.5 item 1** flipped from "withdrawn pending re-measurement" to
+   "re-measurement landed; every ArchiveII number is the clean subset".
+4. **Checker extended to 66 asserts** — the six abstract numbers now
+   re-derive from the same result.json files as the body (the three
+   plana singles via plan_a_result.json, the first live use of the
+   abstract in the checker); 66/66 PASS; manuscript linter PASS.
+
+**Verification (three passes).** (i) check_v319 66/66; (ii) linter
+OVERALL PASS with both sanctioned wordings intact and consistent with
+the new text (the 4.4 title is the honest single-model statement; the
+abstract's ensemble-only phrasing does not contradict it); (iii) the
+replaced Abstract's old first line confirmed as the stale one
+(pre-retraction) in the replacement log.
+
+**Cluster at close.** tr1cpdb_s1 @~10.4k/20k (GPU5; ETA ~16:45 train,
+~17:30 evals). Remaining for freeze: s1's Appendix A row (auto) and one
+final full read of the frozen draft. Draft length 1,578 -> ~1,560 lines
+(new abstract is tighter).
