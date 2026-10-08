@@ -27,6 +27,14 @@
 - te_human fullbudget：s1 epoch 0.34、s42 epoch 0.88（ETA 10-01 晚/10-02）。
 - RNA-JEPA 线：四大主臂 50k 全部完成，梯级评测全自动落地中（v1_cont_50k half_life n=5 r2 均值 0.5252 主臂最优档）。
 >
+> **交接状态（2026-10-08 12:00，第十三轮交接更新——v3.19 落地轮，细节 §15.33–§15.34）**：
+> - **集群**：`ssh A100`，代码 HEAD c6252ce（已推 GitHub）；本地 draft/台账已同步（台账 7590 行，draft 1578 行）。
+> - **本轮三件事**：① fftr1c 落地 → 消融矩阵 5/5 闭合（统一签名：每个结构组件 OOD 贡献更大）；② **draft v3.19**（checker 57/57 + linter PASS）；③ PPT S15 五行消融表。
+> - **SOTA 战况 6/8 不变**；TS2/TS3 四战线负结果已入稿（§4.3b + Limitations 5）。
+> - **在飞**：tr1cpdb_s1（ETA ~16:45）→ Appendix A 行 + 负结果稳定性判定（T-A41）。
+> - **预印本冻结前剩余**：T-A41（自动）→ T-A42（Appendix C 收窄）→ T-A43（终审：数字 spot-check + 引用核验 + 结论句回溯）。
+> - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.34**；draft **v3.19**；本三件套同批刷新（T-A29 纪律）。
+>
 > **交接状态（2026-10-08 02:30，第十二轮交接更新——两章读出落地的判定轮，细节 §15.31–§15.32）**：
 > - **集群**：`ssh A100`（bms-18937653-012），代码 `/home/cunyuliu/rna-jepa`（HEAD 3fb9828，已推 GitHub），数据 `/mnt/cunyuliu/rna-jepa`。本地台账同步至 7501 行。
 > - **SOTA 战况不变（6/8）**；**本轮两个判定**：
