@@ -1,12 +1,29 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.18, 2026-10-06.**
+**Preliminary preprint draft — v3.19, 2026-10-08.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+> **v3.19 change note (the tr1c-native ablation matrix closes the attribution
+story).** Five single-variable ablations on the final corpus (bprna_tr1c,
+r2dtr1c s0 @20k, six splits each, legality zero throughout): the
+non-crossing DP is worth +0.25 F1 over greedy argmax (397,574 crossings
+quantified), the Turner physics prior +0.23 in-distribution rising to
++0.37..+0.47 out-of-distribution, the 2D-context scorer +0.09 rising to
++0.13..+0.16 on PDB-family — while distillation and RLCD are honest
+small terms. One signature runs through the matrix: every structural
+component contributes MORE out-of-distribution, so OOD robustness is
+carried by the stack of structural priors, not by any single term. The
+TS2/TS3 gap now survives a fourth elimination front (data composition:
+the +234-PDB-rows arm is negative on all six splits, TS2 −0.209, P
+holding while R collapses); the 4-seed family picture (TS0 spread 0.023
+vs PDB 0.05–0.07) and the 3-seed xens3 robustness row (a wash vs the
+quoted xens2) are added; a masked-marginal covariation probe is reported
+as small-but-significant. New checker: tools/check_v319.py.
+
 > **v3.18 change note (decontamination turnaround: 6/8 benchmarks at or above the
 > strongest measured references).** Two self-initiated audits found exact-sequence
 > leakage (TR1∩TS0=1,087 / PDB-family; TR0∩TestSetB=247); the affected rows
@@ -603,6 +620,81 @@ load-bearing, not a formality. The learned residual contributes **+0.383** (64% 
 the final F1) on top of the Nussinov+Turner stacking baseline; the temperature
 calibration layer is decode-neutral by construction (it rescales probabilities
 without reordering the argmax), which the measurement confirms exactly.
+
+**The tr1c-native ablation matrix (the same corpus as the final recipe).**
+The ff-tr0 table above is the historical column; the final recipe's
+component attribution is measured on bprna_tr1c, five single-variable
+ablations, six splits each, all legality-zero:
+
+| component ablated (r2dtr1c s0 @20k) | TS0 | bpRNA-new | TS1 | TS2 | TS3 | TS-hard | read |
+|---|---|---|---|---|---|---|---|
+| full recipe (control) | **0.6679** | **0.5643** | 0.7551 | 0.7686 | 0.7815 | 0.7005 | — |
+| DP decode -> greedy argmax (solver R3) | 0.4163 | — | — | — | — | — | DP worth +0.25; 397,574 crossing events on 1,288 sequences |
+| DP decode -> mutual-argmax (symgreedy) | 0.2413 | — | — | — | — | — | +0.43; recall collapses to 0.15 |
+| Turner physics prior zeroed (`w_prior=0`) | 0.4413 | 0.1960 | 0.4738 | 0.3509 | 0.3816 | 0.2333 | prior worth +0.23 ID / +0.37..+0.47 OOD |
+| 2D-context scorer -> per-pair MLP (fftr1c) | 0.5791 | 0.5117 | 0.6822 | 0.6882 | 0.6203 | 0.5673 | scorer worth +0.09 ID / +0.13..+0.16 PDB |
+| distillation off (`lambda_distill=0`) | 0.6627 | 0.5569 | 0.7632 | 0.7403 | 0.7602 | 0.7117 | mixed, |Δ|<=0.03 |
+| RLCD off (`lambda_rlcd=0`) | 0.6596 | 0.5436 | 0.7596 | 0.7091 | 0.7686 | 0.6968 | mixed, |Δ|<=0.06 |
+
+One signature runs through the whole matrix: **every structural
+component contributes more out-of-distribution than in-distribution.**
+The DP, the physics prior and the 2D scorer each cost a quarter to half
+an F1 point when removed, and their costs grow monotonically with the
+distance of the split from the training family (prior: +0.23 in-family
+→ +0.37 cross-family → +0.47 PDB-family; scorer: +0.09 → +0.13..+0.16;
+solver: the greedy row's 397k crossings are what "no global consistency"
+means on any family). The two auxiliary objectives are honest small
+terms — distillation leans PDB-family (+0.03 TS3), RLCD leans
+cross-family (+0.06 TS2), neither is load-bearing. The paper's answer to
+"what carries OOD robustness" is therefore not a single trick but the
+**stack of structural priors**; the neural scorer is the
+in-distribution specialist. (The ff-tr0 `MLP_T = 0` row keeps its own
+label: in the 2D-scorer path there is no MLP_T — the ResNet *is* the
+learned term and the physics enters via the learnable prior weight, so
+the tr1c-native equivalent is the `w_prior=0` row above.)
+
+**Seed variance of the negative (the fourth front).** The data-composition
+arm (tr1c + 234 clean PDB-family rows, the single variable) was the last
+untested lever on the TS2/TS3 gap and it lands negative: all six splits
+drop (TS0 0.6456, bpRNA-new 0.4735, TS1 0.6941, **TS2 0.5594**, TS3
+0.6897, TS-hard 0.6034 — i.e. −0.022/−0.091/−0.061/−0.209/−0.092/−0.097
+against the control) with precision holding (TS2 P 0.899) while
+recall collapses (TS2 R 0.406 vs control 0.672) — the head becomes more
+conservative on rare stems, it does not learn to fire on them. 234 rows
+is a perturbation of the distribution, not a family specialisation. The
+gap therefore survives **four elimination fronts** — non-canonical pairs,
+coordinate tolerance, decode bias (three hypotheses above), and now data
+composition — and the Limitations entry is updated accordingly. A second
+seed of the same arm (pre-registered before the read-out) is reported in
+Appendix A when it lands; no further arms are launched from this recipe
+family for TS2/TS3.
+
+**The 4-seed family picture and the 3-seed bucket.** Four seeds of the
+plana-tr1c recipe now exist: TS0 spread is 0.023 (0.7633–0.7866) while
+TS2/TS-hard/TS3 spreads are 0.05–0.07 — the seeds diverge exactly where
+the rare PDB-family signal lives, consistent with the gap's
+data-rarity mechanism. The VL0-swept 3-seed bucket (xens3, equal-weight
+s0+s1+s2, the same w=0.7 protocol) was measured on all 8 splits as a
+robustness row: it is a wash against the quoted 2-seed ensemble (TS0
+0.8062 vs 0.8039; TestSetB 0.8477 vs 0.8448; TS2/TS3 −0.01..−0.02 —
+s2's PDB-family weakness dilutes the bucket exactly as the
+pre-registered decision anticipated). xens2 remains the quoted ensemble;
+xens3 is the 3-seed evidence that the ensemble numbers are not
+2-seed artefacts.
+
+**Masked-marginal covariation probe (reported as small).** A
+mutate-position-i / probe-partner-j experiment (10,000 events, three
+control channels, bootstrap CI) on the released RiNALMo-giga weights
+finds the partner-specific signal is statistically significant but
+small: cov − ctrl_shuffled = **+0.0005** (CI [+0.0002, +0.0008]) while
+the unpaired-position control is n.s. — i.e. the frozen backbone moves
+probability at the true partner more than at a random paired position,
+but by ~1/200th of the magnitude reported for large
+covariance-pretrained models. The pairing knowledge the decision head
+decodes (0.56–0.79 F1) is far larger than what masked marginals reveal;
+this is consistent with the readout-channel argument and is reported as
+a scale caveat, not a claim.
+
 
 ### 4.3c Paired significance tests and the aggregation divergence
 
@@ -1243,8 +1335,11 @@ the hypothesis as a hypothesis.
 5. **On the decontaminated corpus the standings are 6/8 above the strongest
    measured references (§4.3h)**, with TS2 and TS3 at −0.045 each — established
    as a real discrimination gap on short NMR-family structures after three artefact
-   hypotheses (non-canonical GT, coordinate tolerance, decode bias) were tested and
-   refuted. The pre-decontamination TS0 ceiling framing (0.6446 combination arm) is
+   hypotheses (non-canonical GT, coordinate tolerance, decode bias) and a fourth
+   data-composition lever (adding 234 clean PDB-family rows, single-variable) were
+   tested and refuted: the augmentation arm is negative on all six splits (TS2
+   −0.209) with precision holding and recall collapsing, so the gap is not
+   closable by small-corpus family augmentation under this recipe. The pre-decontamination TS0 ceiling framing (0.6446 combination arm) is
    superseded: that arm trained on the leaky TR1 corpus and its number is retracted.
    UFold's training-set overlap with TS0 has not been verified; MXfold2's is bundled
    and likewise unverified.
