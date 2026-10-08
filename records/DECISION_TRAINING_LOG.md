@@ -7632,3 +7632,36 @@ replaced Abstract's old first line confirmed as the stale one
 ~17:30 evals). Remaining for freeze: s1's Appendix A row (auto) and one
 final full read of the frozen draft. Draft length 1,578 -> ~1,560 lines
 (new abstract is tighter).
+
+
+### §15.36 (2026-10-08 14:45) — T-A41 closes: tr1cpdb_s1 lands — the data-composition negative is seed-stable (6/6 same-sign); the four-front TS2/TS3 verdict is now a double-seed finding; freeze list down to the final read
+
+**The read-out (pre-registered second seed, watch7 6-split auto-eval, all
+legality 0):**
+
+| split | s1 | s0 | ctrl | s1−ctrl | s0−ctrl | seed-agree |
+|---|---|---|---|---|---|---|
+| bprna_ts0 | 0.6616 | 0.6456 | 0.6679 | −0.0063 | −0.0223 | same-sign |
+| bprna_new | 0.5526 | 0.4735 | 0.5643 | −0.0117 | −0.0908 | same-sign |
+| ref_pdb_ts1 | 0.7159 | 0.6941 | 0.7551 | −0.0392 | −0.0610 | same-sign |
+| ref_pdb_ts2 | 0.6807 | 0.5594 | 0.7686 | −0.0879 | −0.2092 | same-sign |
+| ref_pdb_ts3 | 0.7558 | 0.6897 | 0.7815 | −0.0257 | −0.0918 | same-sign |
+| ref_pdb_ts_hard | 0.6587 | 0.6034 | 0.7005 | −0.0418 | −0.0971 | same-sign |
+
+**Verdict: the negative is seed-stable.** Both seeds decline on all six
+splits; s1's magnitudes are uniformly smaller than s0's (TS2 −0.088 vs
+−0.209) — the seed affects the *size* of the perturbation damage, never
+its direction. Nothing in the read-out supports re-opening the
+data-composition lever (T-A36 stays parked). The §4.3b fourth-front
+paragraph's pointer to "a second seed ... reported in Appendix A when it
+lands" is now fulfilled: the appendix row is added with this table.
+
+**Freeze state.** With T-A41 closed, every experiment the preprint
+narrative cites is either multi-seed, decode-deterministic, or
+explicitly single-seed-flagged (Appendix C item 6). Remaining before the
+freeze: one final full read of the draft (the reader-path lesson of
+15.35 — check the sections no checker covers: intro, conclusion,
+references formatting) and the git tag. Cluster: GPU5 released by s1's
+completion (the saturation audit will flag if it idles; no further arms
+are queued from this recipe family — the project's compute story is
+"measured, attributed, frozen", not "still running").

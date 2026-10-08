@@ -90,6 +90,15 @@ ck("scorer worth TS0 +0.0888", near(V["ctrl_ts0"] - V["ff_ts0"], 0.0888, 1e-4))
 ck("scorer worth TS3 +0.1612", near(V["ctrl_ts3"] - V["ff_ts3"], 0.1612, 1e-4))
 ck("tr1cpdb TS2 delta -0.2092", near(V["ctrl_ts2"] - V["pdb_ts2"], 0.2092, 1e-4))
 
+# --- tr1cpdb s1 (second seed) numbers, 15.36 ---
+for num, sp in [
+    ("0.6616", "bprna_ts0"), ("0.5526", "bprna_new"), ("0.7159", "ref_pdb_ts1"),
+    ("0.6807", "ref_pdb_ts2"), ("0.7558", "ref_pdb_ts3"), ("0.6587", "ref_pdb_ts_hard"),
+]:
+    v = micro_of(f"{E}/ow_rinalmo_r2dtr1c_tr1cpdb_s1_b4_s0_step20000_{sp}/result.json")
+    ck(f"s1 {num} == disk ({sp})", near(v, float(num)))
+    ck(f"s1 {num} in draft", num in text)
+
 # --- Abstract (v3.19) numbers must match 4.3h disk values ---
 def plana_of(sp, f="plana_giga_tr1c_s0_step20000"):
     d = json.load(open(f"{E}/{f}/plan_a_result.json"))

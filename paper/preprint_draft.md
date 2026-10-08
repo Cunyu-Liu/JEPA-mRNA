@@ -634,9 +634,10 @@ is a perturbation of the distribution, not a family specialisation. The
 gap therefore survives **four elimination fronts** — non-canonical pairs,
 coordinate tolerance, decode bias (three hypotheses above), and now data
 composition — and the Limitations entry is updated accordingly. A second
-seed of the same arm (pre-registered before the read-out) is reported in
-Appendix A when it lands; no further arms are launched from this recipe
-family for TS2/TS3.
+seed of the same arm (pre-registered before the read-out) replicates the
+direction on all six splits (TS2 −0.088 vs −0.021-per-point; full table in
+Appendix A) — the negative is seed-stable; no further arms are launched
+from this recipe family for TS2/TS3.
 
 **The 4-seed family picture and the 3-seed bucket.** Four seeds of the
 plana-tr1c recipe now exist: TS0 spread is 0.023 (0.7633–0.7866) while
@@ -1452,6 +1453,10 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 | MXfold2 (incl. bprna-new) | `eval_decision/baselines_mxfold2_bprna_new.json` | `python -m mxfold2 predict` |
 | Convergence curve 6k/10k/20k | `eval_decision/trend_ff_step{6000,10000}_ts0` + headline | same protocol, snapshots |
 | Decode-affine probe (negative) | `eval_decision/affine_probe_ff20000.json` + `ff20000_ts0_first400` | `tools/probe_decode_affine.py` |
+| tr1cpdb s1 6-split (second seed, pre-registered) | `eval_decision/ow_rinalmo_r2dtr1c_tr1cpdb_s1_b4_s0_step20000_{ts0,new,ts1,ts2,ts3,hard}` | watch7 auto-eval |
+| tr1cpdb s0 6-split (data-composition arm) | `eval_decision/ow_rinalmo_r2dtr1c_tr1cpdb_b4_s0_step20000_{ts0,new,ts1,ts2,ts3,hard}` | watch7 auto-eval |
+| fftr1c 6-split (scorer ablation R2) | `eval_decision/ow_rinalmo_fftr1c_b4_s0_step20000_{ts0,new,ts1,ts2,ts3,hard}` | watch7 auto-eval |
+| Turner-prior ablation 6-split | `eval_decision/turnerzero_r2dtr1c_s0_step20000_{ts0,new,ts1,ts2,ts3,hard}` | §15.31 |
 | Component ablations (§4.3b) | `eval_decision/offline_ablations_ff20000.json` | `tools/probe_offline_ablations.py` |
 | From-scratch backbone failure | `eval_decision/fs_{full,nlldistill}_b4_s0_20260924T060638_step{20000,40000}_ts0` | own-encoder arms, no embeddings |
 | 2x2 objective grid | `eval_decision/arms_rinalmo_{len,sum,bal,bal_s1,pw}_b4_s0_step20000_ts0` | objective-arm queue |
@@ -1469,6 +1474,21 @@ stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
 rate and hairpin-violation rate are 0.0000 for every row above.
+
+
+**The two-seed data-composition negative (Appendix A detail).**
+
+| split | s1 | s0 | control | s1−ctrl | s0−ctrl |
+|---|---|---|---|---|---|
+| TS0 | 0.6616 | 0.6456 | 0.6679 | −0.0063 | −0.0223 |
+| bpRNA-new | 0.5526 | 0.4735 | 0.5643 | −0.0117 | −0.0908 |
+| TS1 | 0.7159 | 0.6941 | 0.7551 | −0.0392 | −0.0610 |
+| TS2 | 0.6807 | 0.5594 | 0.7686 | −0.0879 | −0.2092 |
+| TS3 | 0.7558 | 0.6897 | 0.7815 | −0.0257 | −0.0918 |
+| TS-hard | 0.6587 | 0.6034 | 0.7005 | −0.0418 | −0.0971 |
+
+Direction replicates 6/6; s1's magnitudes are uniformly smaller (seed
+affects damage size, never sign).
 
 ## Appendix B. Anticipated objections and their landing points
 
