@@ -27,6 +27,12 @@
 - te_human fullbudget：s1 epoch 0.34、s42 epoch 0.88（ETA 10-01 晚/10-02）。
 - RNA-JEPA 线：四大主臂 50k 全部完成，梯级评测全自动落地中（v1_cont_50k half_life n=5 r2 均值 0.5252 主臂最优档）。
 >
+> **交接状态（2026-10-08 15:15，第十五轮交接更新——杠杆穷尽轮，细节 §15.37）**：
+> - **集群**：`ssh A100`，HEAD 058fdfc（已推 GitHub）；本地 draft（1612 行）/台账（7730 行至 §15.37）已同步。
+> - **本轮判定**：TS2/TS3 数据构成杠杆**穷尽式关闭**（RNAformer 实验 PDB 语料在我们的规则下 0 行可用：3,481→107→0）；Limitations 5 已含 gap-vs-hygiene 张力陈述。T-A36 永久 parked。冻结 tag 不变（本条为补强证据）。
+> - **项目状态**：无在训臂、无待办实验；预印本 v3.19 冻结（tag preprint-v3.19-freeze）+ 杠杆穷尽补强。下一步为外部动作（导师审阅/投稿）。
+> - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.37**；draft v3.19+（Limitations 5 扩展）；PPT 15 slides。
+>
 > **交接状态（2026-10-08 15:00，第十四轮交接更新——预印本冻结轮，细节 §15.36）**：
 > - **集群**：`ssh A100`，代码 HEAD bbd4c36 + **tag `preprint-v3.19-freeze`**（已推 GitHub）；本地 draft（1605 行）/台账（7667 行）已同步。
 > - **冻结态总览**：6/8 benchmark 超 SOTA（tier-1 全清）；tr1c-native 消融矩阵 5/5（统一签名：结构组件 OOD 贡献＞ID）；TS2/TS3 四战线 + 双种子负结果（0.6807/0.6456 同号）；校准 ECE 0.0007；Abstract/Conclusion 已与正文一致（终审修复）；checker 78/78 + linter PASS。
