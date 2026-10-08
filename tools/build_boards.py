@@ -60,7 +60,7 @@ for f in sorted(glob.glob(f"{E}/baselines_*.json")):
         v = mres.get("micro_f1")
         if v is None:
             continue
-        if variant in (None, "", "ref", "ufold_ref"):
+        if variant in (None, "", "ref", "ufold_ref", "eternafold"):
             key = {"mxfold2": "MXfold2", "ufold": "UFold", "eternafold": "EternaFold"}.get(method, method)
             board.setdefault(key, {})[split_label] = round(v, 4)
         elif variant.startswith("rnaformer"):
@@ -78,9 +78,35 @@ if os.path.exists(p):
     d = json.load(open(p))
     board.setdefault("EternaFold", {})["TestSetB"] = round(d["strict_micro_f1"], 4)
 
+# RiNALMo-ft (Zenodo ckpt rinalmo_giga_ss_bprna_ft.pt): our_protocol.strict_micro_f1
+# from rinalmo_ft_{split}.json; TS0 prefers the board split file (bprna_ts0)
+# over the official-1305 run (rinalmo_ft_official_ts0.json).
+for sp_label, sp in SPLIT_KEYS.items():
+    p = f"{E}/rinalmo_ft_{sp}.json"
+    if sp_label == "TS0" and not os.path.exists(p):
+        p = f"{E}/rinalmo_ft_official_ts0.json"
+    if not os.path.exists(p):
+        continue
+    d = json.load(open(p))
+    v = d.get("our_protocol", {}).get("strict_micro_f1")
+    if v is not None:
+        board.setdefault("RiNALMo-ft (Zenodo ckpt)", {})[sp_label] = round(v, 4)
+
+# NucleicBERT (frozen official MLM encoder + official SSP head trained by us
+# on bprna_tr1c): baselines_nucleicbert_{split}.json -> baselines.nucleicbert.micro_f1
+for sp_label, sp in SPLIT_KEYS.items():
+    p = f"{E}/baselines_nucleicbert_{sp}.json"
+    if not os.path.exists(p):
+        continue
+    d = json.load(open(p))
+    v = d.get("baselines", {}).get("nucleicbert", {}).get("micro_f1")
+    if v is not None:
+        board.setdefault("NucleicBERT (frozen enc + our head)", {})[sp_label] = round(v, 4)
+
 ORDER = ["vienna_mfe", "vienna_centroid", "vienna_mea", "nussinov_turner",
          "MXfold2", "EternaFold", "UFold",
-         "RNAformer (bprna ckpt)", "RNAformer (inter-family ckpt)", "RNAformer (biophysical ckpt)"]
+         "RNAformer (bprna ckpt)", "RNAformer (inter-family ckpt)", "RNAformer (biophysical ckpt)",
+         "RiNALMo-ft (Zenodo ckpt)", "NucleicBERT (frozen enc + our head)"]
 
 lines = []
 lines.append("")
@@ -99,9 +125,10 @@ lines.append("")
 lines.append("Provenance: every cell is OUR measurement (project scorer, project GT,")
 lines.append("same split files) — ViennaRNA 2.7.2, MXfold2 (repo weights), UFold")
 lines.append("(released ufold_train_alldata.pt), RNAformer (3 released checkpoints),")
-lines.append("EternaFold (make multi, EternaFoldParams.v1). Quoted-only rows")
-lines.append("(RiNALMo-ft 0.67 INF on TestSetB etc.) stay in metrics_matrix.md;")
-lines.append("nothing in this board is copied from a paper.")
+lines.append("EternaFold (make multi, EternaFoldParams.v1), RiNALMo-ft (Zenodo")
+lines.append("giga_ss_bprna_ft.pt, strict pairs re-scored by our protocol), NucleicBERT")
+lines.append("(official frozen MLM encoder; SSP head trained by us on bprna_tr1c with")
+lines.append("their SecStruct2DPredictionHead — labelled, not a released SSP ckpt).")
 lines.append("")
 
 # ---------- ours-history board ----------

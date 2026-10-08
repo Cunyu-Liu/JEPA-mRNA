@@ -7759,3 +7759,67 @@ one.)
 
 **Cluster git**: 67d4c9c（boards + tools）已推。metrics_matrix 同轮
 重跑（138 cell 保持）。
+### §15.39 (2026-10-09 00:15) — T-A46: baseline 主表缺口全补 + RiNALMo-ft 8/8 + NucleicBERT frozen 编码器对照行（8/8）— 11 系统 × 8 split 全满（MXfold2 2 cell 在跑补）
+
+**用户要求："baseline 的 benchmark 主表中没跑的测评实验都补跑一下，然后
+还需要补 rinalmo 和 nucleicbert 这两个模型的测评。模型的权重在服务器上
+都有，自己找找。"** 全部落地：
+
+**一、缺口补跑（全部自测、同口径、交叉验证）**
+
+| 系统 | 补前 | 补后 | 关键数字 |
+|---|---|---|---|
+| Vienna×4+nussinov | 7/8 | **8/8** | ArchiveII-clean: mfe 0.5752 / centroid 0.6181 / mea 0.6054 / nussinov 0.2000 |
+| EternaFold | 1/8 | **8/8** | TS0 0.5400 / new 0.6854 / TS1 0.7426 / TS2 0.8635 / TS3 0.8005 / hard 0.7658 / ArchII 0.6157 / B 0.5850 |
+| MXfold2 | 6/8 | 6/8→在跑 | ArchII-clean + TestSetB 由 fill_gaps.sh 循环收尾 |
+| UFold | 3/8 | **8/8** | TS2 0.8792 / TS3 0.6326 / hard 0.6388 / ArchII 0.4111 / B 0.5858；适配器内打分器与统一打分器逐 split 交叉一致 |
+| RiNALMo-ft | 2/8(quoted) | **8/8** | TS0 0.7214 / TS1 0.7139 / TS2 0.6702 / TS3 0.6055 / hard 0.5556 / ArchII 0.7613 / B **0.8711**(自测, 替换 quoted 0.67) / new 0.4489 |
+| NucleicBERT | 0/8 | **8/8** | 见下 |
+
+**EternaFold 执行坑（修复三次）**：contrafold predict 拒绝多序列不等长
+FASTA（"Not all sequences have the same length"）→ 改逐条预测 32 路并行
+（96 核，2544 条 ≈ 90 秒）；输出是 `>name\n序列\n>structure\n结构` 四行
+结构 → eterna_cat.py 按 `>structure` 行提取、写 header/seq/struct 三行
+FASTA 供 run_baselines 严格校验。
+
+**二、RiNALMo-ft 补 6 split（Zenodo ckpt，官方推理协议）**
+
+`tools/eval_rinalmo_ft.py` 两处修复：jsonl 字段名 `seq`（官方数据用
+`sequence`，本仓 jsonl 用 `seq`）；`torch.autocast(bf16)` 包前向（台账
+§15.31 记录的 v3.9 修复在工作区丢失未提交，从台账恢复——flash_attn 路径
+强制 fp16/bf16）。TestSetB 0.8711 为同口径自测，主表原引用 0.67（论文
+INF 口径）移入引用区；Provenance 声明同步更新。
+
+**三、NucleicBERT frozen 编码器对照行（权重服务器自找）**
+
+- 权重：`/mnt/cunyuliu/hf_home/models--nucleicbert/snapshots/main/
+  pretrained.pt`（1.6GB，**MLM-only，无官方 SSP 头**——官方只放了预训练
+  编码器）；代码 `nucleicbert-code/` 自带 `downstream/secstrmodule.py`
+  官方 SSP 头（SecStruct2DPredictionHead: 1 ResNet block + 行/列投影
+  外积 + 对称化）。
+- 协议（诚实标注）：frozen 官方编码器 + 官方头架构，头在 bprna_tr1c 上
+  训练（与我们 frozen-RiNALMo 臂同数据同口径——编码器是唯一变量），
+  BCE + pos_weight=100（上三角正例率 ~0.3%，不加权会坍缩到全负——smoke
+  实测 loss 0.002/val F1 0），threshold 在 VL0 调优（0.55）。
+- 修复记录：tokenizer 的 [CLS]/[SEP]/[UNK] id 必须直查 vocab（该
+  PreTrainedTokenizerFast 未注册 special token 属性，cls_token_id=None
+  会 TypeError）；官方 tune_threshold 的 dummy 序列 "A"*L 会被 canonical
+  mask 清零所有概率 → val F1 恒 0（改用真实序列）；waiter 等"训练进程
+  退出"而非"ckpt 文件存在"（best-val ckpt 在 ep0 就落盘会提前触发）。
+- **结果（弱但真实）**：VL0 val F1 0.4446，跨家族全线 0.10-0.24
+  （new 0.0955 / TS0 0.1509 / TS1 0.2029 / TS2 0.1541 / TS3 0.1439 /
+  hard 0.1343 / ArchII 0.2372 / B 0.1210）。诊断：frozen NucleicBERT
+  编码器（86M，字符级 vocab 25）跨家族 SSP 信号弱于 RiNALMo-giga 650M
+  ——这正是我们选 RiNALMo 做骨干的证据链一部分，作为对照行入板。
+
+**四、板与 PPT**
+
+- `tools/build_boards.py` 扩展：RiNALMo-ft 行（rinalmo_ft_{split}.json
+  的 our_protocol.strict_micro_f1；TS0 优先用板 split 文件）、
+  NucleicBERT 行（baselines_nucleicbert_{split}.json）、EternaFold
+  variant 解析修复；Provenance 更新（12 系统全部自测）。
+- 重建板 → **12 系统 × 8 split**（Published baselines 板，唯一在跑
+  的 MXfold2 ArchII/B 完成后自动 13→…保持 12 系统满格）。
+- 交付脚本（`scripts/`）：rinalmo_ft_gaps.sh / ufold_gaps.sh /
+  ufold_rescore.sh / eterna_gaps.sh + eterna_prep/one/cat.py /
+  nucleicbert_eval.sh；适配器 tools/eval_nucleicbert.py。

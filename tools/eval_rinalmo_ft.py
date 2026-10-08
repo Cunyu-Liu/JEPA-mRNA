@@ -87,12 +87,13 @@ def main():
 
     with torch.no_grad():
         for k, r in enumerate(records):
-            seq = r["sequence"]
+            seq = r["sequence"] if "sequence" in r else r["seq"]
             L = len(seq)
             tokens = torch.tensor([alphabet.encode(seq)], dtype=torch.int64, device=device)
-            x = lm(tokens)["representation"]
-            logits = head(x[..., 1:-1, :]).squeeze(-1)
-            probs = torch.sigmoid(logits)[0].float().cpu().numpy()
+            with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+                x = lm(tokens)["representation"]
+                logits = head(x[..., 1:-1, :]).squeeze(-1)
+            probs = torch.sigmoid(logits.float())[0].float().cpu().numpy()
 
             # symmetrise upper triangle (their training uses upper-tri loss)
             probs = np.triu(probs, k=1)

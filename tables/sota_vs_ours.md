@@ -53,23 +53,25 @@ bucket dilutes it slightly).
 
 | baseline | TS0 | bpRNA-new | TS1 | TS2 | TS3 | TS-hard | ArchiveII-clean | TestSetB |
 |---|---|---|---|---|---|---|---|---|
-| vienna_mfe | 0.5056 | 0.6379 | 0.7209 | 0.8980 | 0.8206 | 0.7663 | — | 0.5225 |
-| vienna_centroid | 0.5393 | 0.6770 | 0.7299 | 0.8930 | 0.8235 | 0.7958 | — | 0.5482 |
-| vienna_mea | 0.5241 | 0.6620 | 0.7192 | 0.8938 | 0.8237 | 0.7864 | — | 0.5393 |
-| nussinov_turner | 0.2126 | 0.3015 | 0.3730 | 0.4187 | 0.4131 | 0.4067 | — | 0.2164 |
-| MXfold2 | 0.5651 | 0.6688 | — | — | — | — | — | — |
-| EternaFold | — | — | — | — | — | — | — | 0.5850 |
-| UFold | 0.6598 | 0.6106 | 0.6455 | — | — | — | — | — |
+| vienna_mfe | 0.5056 | 0.6379 | 0.7209 | 0.8980 | 0.8206 | 0.7663 | 0.5752 | 0.5225 |
+| vienna_centroid | 0.5393 | 0.6770 | 0.7299 | 0.8930 | 0.8235 | 0.7958 | 0.6181 | 0.5482 |
+| vienna_mea | 0.5241 | 0.6620 | 0.7192 | 0.8938 | 0.8237 | 0.7864 | 0.6054 | 0.5393 |
+| nussinov_turner | 0.2126 | 0.3015 | 0.3730 | 0.4187 | 0.4131 | 0.4067 | 0.2000 | 0.2164 |
+| MXfold2 | 0.5651 | 0.6688 | 0.7967 | 0.8991 | 0.8127 | 0.8028 | — | — |
+| EternaFold | 0.5400 | 0.6854 | 0.7426 | 0.8635 | 0.8005 | 0.7658 | 0.6157 | 0.5850 |
+| UFold | 0.6598 | 0.6106 | 0.6455 | 0.8792 | 0.6326 | 0.6388 | 0.4111 | 0.5858 |
 | RNAformer (bprna ckpt) | — | — | 0.7658 | — | — | 0.7845 | — | — |
 | RNAformer (inter-family ckpt) | — | — | 0.8150 | 0.9043 | 0.8245 | 0.7709 | — | — |
 | RNAformer (biophysical ckpt) | — | — | — | — | 0.8265 | — | — | — |
+| RiNALMo-ft (Zenodo ckpt) | 0.7214 | 0.4489 | 0.7139 | 0.6702 | 0.6055 | 0.5556 | 0.7613 | 0.8711 |
 
 Provenance: every cell is OUR measurement (project scorer, project GT,
 same split files) — ViennaRNA 2.7.2, MXfold2 (repo weights), UFold
 (released ufold_train_alldata.pt), RNAformer (3 released checkpoints),
-EternaFold (make multi, EternaFoldParams.v1). Quoted-only rows
-(RiNALMo-ft 0.67 INF on TestSetB etc.) stay in metrics_matrix.md;
-nothing in this board is copied from a paper.
+EternaFold (make multi, EternaFoldParams.v1), RiNALMo-ft (Zenodo
+giga_ss_bprna_ft.pt, strict pairs re-scored by our protocol), NucleicBERT
+(official frozen MLM encoder; SSP head trained by us on bprna_tr1c with
+their SecStruct2DPredictionHead — labelled, not a released SSP ckpt).
 
 ## Our trained models on the 8-split board (history; — = not evaluated)
 
