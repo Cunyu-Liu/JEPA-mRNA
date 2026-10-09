@@ -630,3 +630,51 @@
 
 **git**: f2c3b5b（泄漏翻案 + 6/8 + MXfold2 入板）。T-A47 臂训练中，结果
 落 eval_decision/plana_giga_tr1c_pdbexp_step20000/plan_a_result.json。
+
+### §15.40 (2026-10-09 18:20) — T-A46c 全量泄漏复查（用户点名）+ RiNALMo vs RiNALMo-ft 概念澄清 + 双臂家族扩谱迭代
+
+**一、RiNALMo 与 RiNALMo-ft 的区别（概念澄清）**
+
+- **RiNALMo**（原版）：奥地利 L进 group 2024 的 650M RNA 基础模型，
+  36M 序列 MLM 预训练，**只有编码器**，无二级结构输出头——我们项目
+  一直用它做 frozen 骨干（ff/r2d/plana 臂的 backbone）。
+- **RiNALMo-ft**（= Zenodo `rinalmo_giga_ss_bprna_ft.pt`）：官方在
+  RiNALMo-giga 骨干上**微调过的二级结构专用 checkpoint**（+官方
+  SecStructPredictionHead 头），微调数据 = **bpRNA TR0**。它是"已发表
+  基线"，我们 zero-shot 直接推理。
+- 关系：同一个 backbone；ft = 官方加过 SSP 头并在 TR0 上训过的版本。
+
+**二、全量泄漏复查（leak_full_audit.py + leak_tsb_all_refs.py）**
+
+训练语料成员图（关键事实）：
+- TR0 = 10,682；**TR0 ⊂ TR1 全包含**（10,682/10,682）
+- TR0 与 TS0/new/TS1/TS2/TS3/TS-hard/ArchII/VL0 **全部零重叠**
+- TR0 ∩ **TestSetB = 247/428（58%）** —— TestSetB 是唯一被 TR0 训练
+  系统污染的 split
+- tr1c（我们的语料）对全部 9 个评估 split 零重叠（既有审计维持）
+
+TestSetB 全参照分解（leak/clean 双口径，strict micro F1）：
+
+| 系统（训练集） | 全集 | leak 子集 | clean 子集 |
+|---|---|---|---|
+| RiNALMo-ft（TR0 ft） | 0.8711 | 0.9091 | **0.8177** |
+| MXfold2（TR0 家族） | 0.6504 | 0.6595 | 0.6379 |
+| UFold（TR0 训练） | 0.5858 | 0.6236 | 0.5331 |
+| xens2（我们，tr1c） | 0.8448 | 0.8503 | **0.8370** |
+
+结论维持并加强：**clean 口径 6/8**（TestSetB 我们 +0.019 胜）；TS2/TS3
+差距真实（TR0/ref_tr_inter 双零重叠确认，家族 gap 而非泄漏）。其余 split
+（TS0/new/ArchII/TS1/TS-hard）所有参照均零泄漏，无翻案空间也无风险。
+
+**三、TS2/TS3 迭代（双臂并行）**
+
+- 语料：`bprna_tr1c_pdbexp.jsonl` 754 条 PDB 实验结构（对全 board split
+  零重叠；ref_tr_experimental 42k 中 36k 已被 tr1c 覆盖，干净增量即此）。
+- 臂 1（T-A47，plana 家族）：`plana_giga_tr1c_pdbexp` 渐进解冻，
+  13:55 起，当前 step 11.3k/20k，正常。
+- 臂 2（T-A47b，r2d 家族）：`rinalmo_r2dtr1cplus_b4_s0` frozen+resnet2d，
+  嵌入提取中（GPU7，~15 seq/s），daemon 等嵌入完成后自动开训。
+- 评估均自动跑 8 split（含 ArchII/TestSetB）。完成后：两臂进
+  xens3 重扫（w sweep on VL0）→ 若 TS2/TS3 缩差至 +0.04~0.05 则 8/8。
+
+git: 本节 + leak_full_audit.py + launch_r2dplus.sh。
