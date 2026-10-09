@@ -7823,3 +7823,42 @@ INF 口径）移入引用区；Provenance 声明同步更新。
 - 交付脚本（`scripts/`）：rinalmo_ft_gaps.sh / ufold_gaps.sh /
   ufold_rescore.sh / eterna_gaps.sh + eterna_prep/one/cat.py /
   nucleicbert_eval.sh；适配器 tools/eval_nucleicbert.py。
+
+### 第十二轮交接（2026-10-09 下午）T-A46b/47：泄漏翻案 + PPT 重做 + 家族扩谱迭代启动
+
+**用户三点指示的落实：**
+
+1. **"PPT 没看到修改"** —— 原因：用户在 PowerPoint 打开旧副本保存（mtime 13:29），
+   回滚了我昨夜的 S14/S17/S18 修改。已重做（redo_ppt.py，幂等）：
+   S14 TestSetB 行 → clean 口径 0.8177 ✅超、副标题 6/8；S18 13 行表
+   （MXfold2 ArchII 0.7400/TSB 0.6504 入格，RiNALMo-ft TSB 标 0.8711*）；
+   S17 "6/8 clean 口径"。**注意：若用户再在 PowerPoint 里打开旧副本保存，
+   会再次回滚——请只编辑最新版。**
+
+2. **RiNALMo-ft TestSetB 0.8711 口径**：测了 **1 次**（确定性推理：eval 模式 +
+   no_grad + 固定 ckpt，无随机性，无需均值；此前一次因 jsonl 字段 bug 失败未
+   产出）。但用户此问引出了**关键泄漏审计**：该 ckpt 训练于 bpRNA TR0，而
+   TR0∩TestSetB=247/428（58%）。分解：leak 子集 0.9091 / **clean 子集 0.8177**。
+   我们 xens2 clean 0.8370 —— **clean 口径反超 +0.019**。工具：
+   tools/leak_audit_tsb.py、tools/clean_head2head.py（每系统 leak/clean 双口径表）。
+
+3. **"5/8 不满足要求，继续迭代"** —— 纠正：**clean 口径实为 6/8**（TestSetB 翻案）；
+   真实缺口只剩 TS2/TS3（RNAformer-if 0.9043/0.9410，零泄漏审计确认差距真实）。
+   根因：tr1c 100% bpRNA 家族，TS2/TS3 是 PDB 家族。**迭代已启动**：
+   - 语料审计：ref_tr_experimental（42,283 PDB 结构）与 TS2/TS3 零重叠，但
+     36,365 已在 tr1c 内 → 干净增量仅 754 条（bprna_tr1c_pdbexp.jsonl，
+     对全 board split 零重叠，sha256 级审计）；
+   - teacher：ViennaRNA 蒸馏标签已生成（hydrarna env！editflow/sota 的 RNAlib
+     绑定不可用——这是复跑 teacher 的环境坑）；合并目录
+     teacher/bprna_tr1c_plus（183 shards，43,318 序列，加载验证过）；
+   - 训练臂 T-A47：plana_giga_tr1c_pdbexp（scripts/launch_pdbexp.sh，配方与
+     plana_tr1c_s0 逐字节一致只换语料，20k 步，卡 1 已启动 13:55）；
+   - 预期：PDB 谱系注入针对 TS2/TS3 家族 gap；若 +0.04~0.05 则 8/8 可达
+     （xens3 组合重扫 w）。若 pdbexp 增量太小（754/43318=1.7%）效果不足，
+     下一步是 r2d 家族同轴臂 + xens4 四家族集成。
+
+**MXfold2 收尾**（昨夜 fill_gaps 循环完成）：ArchII 0.7400 / TestSetB 0.6504
+入板。board 现为 **12 系统 × 8 split 全满格**，主表 6/8 clean（f2c3b5b）。
+
+**git**: f2c3b5b（泄漏翻案 + 6/8 + MXfold2 入板）。T-A47 臂训练中，结果
+落 eval_decision/plana_giga_tr1c_pdbexp_step20000/plan_a_result.json。
