@@ -7910,3 +7910,108 @@ TestSetB 全参照分解（leak/clean 双口径，strict micro F1）：
   xens3 重扫（w sweep on VL0）→ 若 TS2/TS3 缩差至 +0.04~0.05 则 8/8。
 
 git: 本节 + leak_full_audit.py + launch_r2dplus.sh。
+
+### §15.41 (2026-10-09 20:55) — 第十六轮交接：全量 PPT 数字复核（0 处错误）+ 八项数据审计独立重跑 + 叙事支撑强度审查 + arms16 监控 cron
+
+**用户四点指示的执行（读全部交接文档 → 核 PPT → 反思改进 → 八项数据核查）：**
+
+**一、PPT 全表格数字磁盘级复核（第二轮，前一轮为 T-A45/T-A46 的一致性审计）**
+
+对 `RNA-JEV_项目进展_20260924.pptx`（19 页，本地 mtime 10-08 23:5x 版本）中
+每一张含数字的表格逐格与 `eval_decision/*/result.json` 磁盘原件交叉：
+
+- S14 主表 8 行全部一致：xens2 TS0 0.8039 (P .8215/R .7869) / new 0.6132 /
+  Arch 0.7760 / TS1 0.8755 / hard 0.8732 / TS2 0.8588 / TS3 0.8965 /
+  TSB 0.8448 (P .9104/R .7880)；单模列 plana s0 0.7866 / s1 0.8570 /
+  s2 0.7860 / s3 0.7633 与 plan_a_result.json splits 逐位一致
+  （含 TS2 0.8393=s1、TS3 0.9049=s0 的"各 split 最优 seed"口径，注脚已声明）。
+- S15 消融五行全部一致：r2dtr1c 0.6679/0.5643/0.7005；greedy 0.4163
+  （solver_ablation_ts0.json，crossing 397,574）；turnerzero 0.4413/0.1960/
+  0.2333；fftr1c 0.5791/0.5117/0.5673；nodistill 0.6627/0.5569。
+- S18 全 12 行×8 列板与 build_boards.py 重建结果逐格一致（Vienna×3、
+  nussinov、MXfold2、EternaFold、UFold、RNAformer×3 ckpt、RiNALMo-ft、
+  NucleicBERT；含 RiNALMo-ft TSB 0.8711* 的泄漏标注口径）。
+- S19 演进史节选行全部一致（ff3500 0.4953/0.3536、ff20000 0.5956/0.4870、
+  big s2 0.6337、r2d 0.6629/0.5010、tr1cpdb s0 六格、plana2same 八格、
+  xens/xens2 八格、RNA-FM 0.4199、cascR 0.5889、ens_r2dtr1_2seed new
+  0.6132）。
+- S16 校准块 ECE 0.0007 来自 plana_calib_probe.json ts0_recalibrated.ece
+  （0.000702…，n=6,015,437）；S8 六来源表、S7 收敛曲线（0.2167→0.4554→
+  0.4953→0.5369→0.5587→0.5956）、S11 复现口径（0.728 published 夹在
+  0.7154/0.7578 之间）均与 records/BASELINE 系列一致。
+- **结论：0 处数字错误。** 唯一发现为"一致性已由三方保证"（PPT ↔ 本地
+  tables/*.md ↔ 集群 result.json）。
+- 过程性发现（非错误）：S8 表中 "我们 免 DP 仿射重标定 0.0031" 是
+  ff-era（plana_giga_s0 时代 0.7268 模型的校准探针为 0.0007）；PPT 下一
+  次数据更新时应统一为 0.0007 行（S16 已是 0.0007，S8 为历史表——历史
+  表保留原数值是正确做法，因为那一行是 09-24 的 C1-a 判定现场）。
+
+**二、八项数据审计独立重跑（不信任文档、只信任磁盘）**
+
+1. **数据集找全**：frozen 9-split 清单（eval_splits_frozen.json, 15.14）
+   覆盖 TS0/new/TS1/TS2/TS3/hard/ArchII-clean/ArchII-full/TestSetB +
+   VL0（选择用）；tr1c 42,564 / tr1c_plus 43,318（=42,564+754 PDB 实验增量
+   /独立复核 43,318-42,564=754 ✓）。bpRNA-new 5,401→5,388（13 被结构校验
+   拒）。**无缺失源**（PseudoBase++/RNA-Puzzles 为假结线加分项，已声明）。
+2. **清洗方法**：pk 精确删除/非规范删除/多联体解析三规则 + c1–c6 衰减表
+   守恒 + rejects.jsonl 逐文件在盘。
+3. **数据分布**：长度分桶评测（le100/gt100_le200/gt200_le400/gt400 四桶
+   ArchII 基线在盘）；家族分布由 9 split 的家族来源划分承载。
+4. **数据泄露（今晚独立重跑）**：tr1c_plus vs 8 个冻结 split 的**精确序列
+   交集全部为 0**（ts0 1288/new 5388/ts1 63/ts2 39/ts3 19/hard 28/
+   arch_clean 2214 unique/tsb 428）。ArchII-clean 行数 2,544 ↔ unique
+   2,214 ↔ frozen n_unique 2,214 三方一致（330 条为同序列多结构行——
+   由 RiNALMo CSV 的 family/k-fold 双划分带来的合法重复，评测按行进行）。
+5. **数据质量**：标注自相矛盾 5.5% 上界声明在案（S4）；合成集隔离
+   （synthetic_test 仅蒸馏一致性用途）在案。
+6. **数据集划分**：VL0 只做选择（w=0.7 lock + Platt），测试集零参与
+   超参选择（流程证明 = 15.18 统一协议）。
+7. **benchmark 找全**：12 系统全部同口径自测（含今晚核对 EternaFold 8/8、
+   RiNALMo-ft 8/8、NucleicBERT 8/8、UFold 8/8）；quoted 仅 RiNALMo-ft TSB
+   0.67（已被自测 0.8711 替换入引用区）。
+8. **baseline 找全**：CONTRAfold 经 EternaFold（同引擎）代测；LinearPartition/
+   RNAstructure/SPOT-RNA 未装（S18 注脚声明，非隐藏）。
+
+**三、叙事支撑强度审查（用户："每一个推进的叙事能不能通过实验现象得到强有力证明"）**
+
+逐条主张 → 实验现象 → 证据强度：
+- ✅ 强（消融级+多 seed）："OOD 鲁棒性由先验栈承载"——5 行消融全部
+  同号单调（ID +0.09/+0.23 → OOD +0.16/+0.47），r2dtr1c 家族 3 seed
+  （s0/s1/s2 TS0 0.6679/0.6522/0.6617）。
+- ✅ 强（双种子+四战线+穷尽）："TS2/TS3 是真家族差距"——tr1cpdb 双种子
+  6/6 同号 + 三假设否定 + RNAformer PDB 语料 0 行可用（衰减链 3,481→0）。
+- ✅ 强（工具级）："泄漏审计方法论"——两次撤回 + sha256 冻结 + 今晚
+  tr1c_plus 零重叠独立复算。
+- ⚠️ 中（单点）："TestSetB clean 口径翻案"——clean 0.8370 vs 0.8177
+  （+0.019）基于 181 条 clean 子集（428-247），无 seed 方差（xens2 单
+  run）；若审稿人质疑子集小，退路是报全集双口径（已在 S18 注脚）。
+  **改进动作**：无（xens2 为确定性集成，推理无随机性；已三处披露）。
+- ⚠️ 中（进行中）："PDB 谱系注入可缩小 TS2/TS3 差距"——pdbexp 臂在训
+  （step 14,175/20,000 @20:50，ETA ~23:30 完训 + 8-split 终评自动），
+  尚无读数，不得预写结论。若 ±0 效果：754/43,318=1.7% 增量太小的假设
+  成立，fallback = r2dtr1cplus 臂（嵌入已就绪 19:01，等 ≥34GB 整卡）+
+  xens4 四家族集成。
+
+**四、工程与监控（本轮新增）**
+
+- **arms16_monitor.sh + cron ARMS16_MONITOR（*/10）**：pdbexp/r2dplus 双臂
+  step/loss 落 `logs/arms16_monitor.log`；终评 result.json 落地时自动记
+  EVALDONE 行（每 split 只记一次）；>40 min 无 step 推进记 WARN STALE。
+  首跑已验证（20:50:39 pdbexp step=14250 loss=2.3293）。
+- **r2dplus 卡点确认（非 bug）**：嵌入 19:01 已生成（manifest 已含
+  tr1c_plus，43,318 序列，3868s @GPU7 MIG 14 seq/s）；起跑门槛 34GB
+  未满足是**资源事实**——GPU0-5 被外部租户+rna-sc 满载（GPU3 短时空窗
+  被 root 的 AlphaFold 31.5GB 占据），守护每 120s 轮询自适应（34→38GB）
+  会自动抢占。饱和审计 cron 20:40 前 all-OK。
+- **教训入库**：GPU 探测要用 `nvidia-smi -i N` 而非 CUDA_VISIBLE_DEVICES
+  轮询（后者在共享节点上每次加载 torch ~8s 且受 MIG 视图影响）——本轮
+  free_gb 手工复测确认 8 卡真实占用（GPU1 10.9GB free/GPU4 10.1GB free/
+  GPU5 14.1GB free 均为 rna-sc + toktokenbench 正常占用）。
+
+**五、PPT 维护警示（写给下一轮的自己）**
+
+用户上轮在 PowerPoint 打开旧副本保存导致回滚（§15.40 记录）。本轮核对
+的本地版本（mtime 10-08 23:5x）与集群数字一致。**规则**：任何 PPT 更新
+必须基于 `ls -la` 确认的最新 mtime 文件，更新后立即重跑 token 断言。
+
+git: 本节 + arms16_monitor.sh + cron 装载。
