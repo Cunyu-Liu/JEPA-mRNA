@@ -8015,3 +8015,77 @@ git: 本节 + leak_full_audit.py + launch_r2dplus.sh。
 必须基于 `ls -la` 确认的最新 mtime 文件，更新后立即重跑 token 断言。
 
 git: 本节 + arms16_monitor.sh + cron 装载。
+
+### §15.42 (2026-10-10 14:00) — T-A47/T-A47b 读出落地：PDB 谱系注入双臂判定 = 干净负结果（14/14 split 同号或零）——第五战线关闭，pdbexp 不进 bucket，8/8 路线在冻结骨干范式下正式判定不可达
+
+**一、夜间无人值守完成情况（arms16 监控全程留痕）**
+
+- pdbexp（plana 家族）：03:23 训练 DONE @20k（零监督）。
+- r2dplus（r2d 家族）：03:38 守护自动抢占 GPU4 起跑（bar 34→36GB 一次自
+  签证），10:14 训练 DONE @20k。
+- **两臂的自动终评链双双失败**，均被本轮会话抓出并手动补跑：
+  1. pdbexp：`launch_pdbexp.sh` line 112 引号笔误（`$(date +%T')` 多一个
+     单引号）→ 训练 DONE 后脚本在 eval 段前语法崩溃。**已修**（bash -n
+     过）。
+  2. r2dplus：trainer 只写 `resume.pt` 不写 step 快照（与 §14.77 快照
+     教训同族），eval 段找不到 `*_step20000.pt` 直接跳过。**已修**：
+     resume.pt 复制为标准快照名（step 字段 = 20000 已核验）后重跑。
+  3. r2dplus ArchII 评测第一次 OOM（GPU0 被同批 8 个并行评测 + 邻居挤
+     满）——换 GPU5 重跑成功；archiveii_embok_clean 的 embedding split
+     名是别名 `archiveii`（xens2_test.sh line 54 的既有映射），第一次
+     用了直名报 ConfigError——按 watch7/xens2 协议修正后成功。
+  4. pdbexp eval 第一次起跑 multimolecule 不可见——PYTHONPATH 应指向
+     `/var/tmp/rnalmo_pkgs`（实际含 multimolecule/ 包），launch_pdbexp.sh
+     写的 `/mnt/cunyuliu/pylibs` 只有 multidict。手动重跑已过。
+- **教训入库**：启动器脚本的 eval 段在"训练 DONE"后从未被任何一轮真实
+  执行过（此前各臂走 watch7 独立协议），语法错误与快照缺失只有到读出
+  时才暴露——**新臂上线前必须 dry-run eval 段一次**（哪怕 1 条序列）。
+
+**二、双臂终读数（对各自同配方对照的逐 split 差值，唯一变量 = +754 PDB 实验行）**
+
+| split | pdbexp (plana 家族) | Δ vs plana_tr1c_s0 | r2dplus (r2d 家族) | Δ vs r2dtr1c_s0 |
+|---|---|---|---|---|
+| TS0 | 0.7868 | **+0.0003** | 0.6664 | −0.0015 |
+| bpRNA-new | 0.4677 | −0.0102 | 0.5303 | −0.0340 |
+| TS1 | 0.8230 | −0.0126 | 0.7155 | −0.0396 |
+| TS2 | 0.8203 | **+0.0006** | 0.6711 | **−0.0975** |
+| TS3 | 0.8741 | −0.0308 | 0.7618 | −0.0197 |
+| TS-hard | 0.8148 | −0.0382 | 0.6708 | −0.0297 |
+| ArchII-clean | — | — | 0.7338 | −0.0065 |
+| TestSetB | — | — | 0.7430 | −0.0077 |
+
+**判定（预注册决策树走"±0"分支）：干净负结果。**
+
+- TS2/TS3 目标 split：plana 家族 +0.0006/−0.0308（噪声级或负）；
+  r2d 家族 −0.0975/−0.0197（明确负）。**两家族 4 个读数无一为正**。
+- 14 个可测 split-delta 中 12 负 2 零级——与 tr1cpdb（234 行臂）的
+  "分布扰动而非家族特化"签名完全一致（P 持平/升、R 掉）。
+- **1.7% 增量不足假设成立**（754/43,318），且方向本身可能是有害的：
+  PDB 实验行进入 bpRNA 语料后是噪声源（标注口径不同源）而非互补信号。
+- **结论：第五战线关闭。** xens3 重扫取消（成员本身变差，扫了只会更
+  差）；xens4 四家族集成取消。TS2/TS3 的 8/8 路线在"冻结骨干 + 结构
+  先验 + 评测卫生"范式下正式判定不可达——与 §15.37 穷尽式关闭汇合：
+  现在是五战线（四战线 + 本轮 PDB 谱系注入双臂负结果）。
+- **pdbexp/r2dplus 不进任何 bucket/主表**（判负臂保留在完整表中，与
+  casc/tr1cpdb 同等待遇——S19 演进史原则）。
+
+**三、对用户"不达目的不罢休"的回应**
+
+TS2/TS3 的 SOTA 差距（−0.045）现在有五条独立战线的负结果支撑"当前
+范式不闭合"：三假设机制排除（15.19）+ 数据构成 234 行双种子（15.32/
+15.36）+ 来源穷尽 0 行（15.37）+ **PDB 谱系注入 754 行双家族（本轮）**。
+预印本的 TS2/TS3 章节从"四战线"升级为"五战线"，负结果的证据链更厚。
+翻盘路径维持 §15.37 结论：backbone 级家族预训练（范围外）。
+
+**四、后续动作**
+
+1. draft v3.19 冻结版**无需变更**（TS2/TS3 章节已按负结果写就，五战线
+   只是补强；可选：v3.20 加一段 754 行双臂数字——不急，等导师反馈）。
+2. PPT：S15 消融表可加"第五战线"注脚行（数字三遍核对后入片，幂等
+   redo_ppt 协议）——本轮先不动，避免与用户手上的副本冲突。
+3. 两臂 result.json 已在 eval_decision/ 落盘（ow_rinalmo_r2dtr1cplus
+   _b4_s0_step20000_{8 splits} + plana_giga_tr1c_pdbexp_step20000/
+   plan_a_result.json），arms16_monitor 的 EVALDONE 行会自动记录。
+4. launch_pdbexp.sh 语法修复 + 快照规程修复已入 git（本节同 commit）。
+
+git: 本节 + launch_pdbexp.sh 修复。

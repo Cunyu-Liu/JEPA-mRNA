@@ -109,7 +109,7 @@ for try in $(seq 1 360); do
   [ "$bestfree" -ge 16000 ] && break
   sleep 600
 done
-echo "[pdbexp] eval on card $gpu $(date +%T')"
+echo "[pdbexp] eval on card $gpu $(date +%T)"
 env CUDA_VISIBLE_DEVICES=$gpu PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
   PYTHONPATH=$PYTHONPATH TMPDIR=$TMPDIR OMP_NUM_THREADS=2 nice -n 15 \
   "$EPY" $REPO/tools/eval_plan_a.py \
