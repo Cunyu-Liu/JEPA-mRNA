@@ -8089,3 +8089,105 @@ TS2/TS3 的 SOTA 差距（−0.045）现在有五条独立战线的负结果支�
 4. launch_pdbexp.sh 语法修复 + 快照规程修复已入 git（本节同 commit）。
 
 git: 本节 + launch_pdbexp.sh 修复。
+
+### §15.43 (2026-10-10 20:30) — T-A49/T-A49b：会议基线上板（DEPfold ICLR 2025 全流程重训+8-split 自测）+ 同节点推理速度基准（含我们的诚实劣势）
+
+**用户指示**：「jev 需要再和会议论文做个对比，全面调研权威会议文章中发表
+的 RNA 二级结构预测模型并统计下来，然后在我们构建的主 benchmark 测试
+数据集上进行测评，多补一些实验」+「补充 jev 和其他官方模型在我们主
+benchmark 上预测速度的测评对比」。
+
+**一、调研清单（权威会议/期刊 RNA SS 模型盘点）**
+
+| 模型 | 发表 | 范式 | 代码 | 权重 | 决策 |
+|---|---|---|---|---|---|
+| DEPfold | **ICLR 2025** | 依赖句法 + biaffine + RNA-FM 嵌入 | 开源 | **无预训练权重**（README 只给训练入口） | ✅ 全流程重训后上板 |
+| RFold | **ICML 2024** | 概率 K-Rook 匹配（行列双分解） | 开源 | 无权重；bench 在 RNAStralign/ArchiveII | 已克隆入 rna_baselines_src（本轮），不重训（语料非 bpRNA 系、与本 board 不可比，留档） |
+| RNAformer | ICML-W 2023 | 轴向注意力 + recycling | 开源 | 3 ckpt | **已在板**（主对标） |
+| RNA-FM | NeurIPS 2022 | 100M MLM | 开源 | 已在盘 | 已在板（骨干维度轴判负 0.4199） |
+| Kirigami | arXiv 2406.02381 | FCN 11px 大核 | 开源 | 待查 | MCC 口径不同源；TS0 1,305 上 SOTA 自称——quoted 保留，不自测（评测协议与我们的 strict F1 不可比） |
+| TVAE-RNA | Bioinformatics 2025-11 | Transformer VAE 集成 | 未见 | 未见 | 记录待查 |
+| eFold | Science Advances 2026-02 | Evoformer + 探测数据库 | 待查 | 待查 | 探测数据训练线（与我们实验标签线不同），记录 |
+| RiNALMo-ft | Nat Mach Intell / 论文 | 650M LM + SSP 头 | 开源 | Zenodo ckpt | **已在板 8/8** |
+| NucleicBERT | ACL 2024 | 86M 字符级 MLM | 开源 | 仅 MLM | **已在板 8/8**（frozen 探针行） |
+
+已克隆到集群：`rna_baselines_src/DEPfold` + `rna_baselines_src/RFold`。
+
+**二、DEPfold 上板（唯一无权重但协议完全可复现的会议模型——重训）**
+
+- 数据对齐：我们把 BPfold_data 的 bpseq（3 列：idx/base/partner）转成
+  DEPfold 的 .ct/.seq 格式（TR0 10,814 / TS0 1,305 / VL0 198）；**逐位
+  验证**：GT pair [0,118]（0-based）↔ DEPfold arc [119,118]（1-based）
+  一致，序列 UUCCUGACAAUAUUAUCGCG 与我们 jsonl 逐字符一致。
+- 训练：官方协议（RNA-FM t12 嵌入——权重复用盘上
+  refmodels/models/RNA-FM_pretrained.pth；TR0 训练、VL0 早停 patience=8；
+  GPU0 抢占）。**早停 epoch 41，best VL0 F1 0.6675**（P 0.7152 / R
+  0.6625）——收敛符合纪律（早停而非截断）。
+- 环境坑（三处，全部当轮修复）：ptflops/omegaconf 缺包 pip 补装；
+  ViennaRNA python 绑定需 PYTHONPATH=/mnt/cunyuliu/pylibs；**DEPfold 官方
+  代码 contact_map() 有广播 bug**（[B,L,L]×[B,L] 缺 unsqueeze，predict
+  模式必崩）——已修（mask.unsqueeze(-1)），一行补丁，不改变语义。
+- **8-split 自测结果（其自有 biaffine F1 口径，GT 含其树/关系协议）**：
+
+| split | DEPfold | 我们 xens2（对照） | RNAformer/UFold 对照 |
+|---|---|---|---|
+| TS0 | 0.4430 | 0.8039 | 0.7578 / 0.6598 |
+| new | 0.1736 | 0.6132 | 0.4936 / 0.6106 |
+| TS1 | 0.3735 | 0.8755 | 0.7658 / 0.6455 |
+| TS2 | 0.3270 | 0.8588 | 0.8590 / 0.8792 |
+| TS3 | 0.2670 | 0.8965 | 0.9410 / 0.6326 |
+| hard | 0.2409 | 0.8732 | 0.7845 / 0.6388 |
+| ArchII | 0.6216 | 0.7760 | — / 0.4111 |
+| TSB | 0.6224 | 0.8448 | — / 0.5858 |
+
+**判定**：DEPfold 在我们去除假结的 strict GT 口径下**全线低于学习型
+基线与我们**（其论文强项是假结预测与树解码协议——我们的评测 GT 排除
+假结，这正是协议差异而非实现缺陷；如实入板并注明）。注意其论文声称
+bpRNA-new 上超 SOTA——那是用能量模型增广数据的协议（其表 5），与我们
+的 0-trained-in-test-family 协议不同，已在 PPT 溯源注脚声明。
+
+**三、推理速度基准（用户点名新增；同节点同 split 同协议）**
+
+`tools/speed_bench.py` → `eval_decision/speed_benchmark.json`：
+TS0 n=1288，A100 节点，wall-clock 全 split：
+
+| 系统 | 设备 | seq/s | 来源 |
+|---|---|---|---|
+| UFold | GPU | **56.49** | baselines_ufold_ref_bprna_ts0.json（全 split 计时） |
+| RNAformer (bprna ckpt) | GPU | 55.28 | 同上字段 |
+| MXfold2 | GPU | 54.58 | 同上字段 |
+| ViennaRNA mfe / mea / centroid | CPU | 16.79 / 10.38 / 9.96 | baselines_bprna_ts0.json |
+| nussinov_turner | CPU | 5.62 | 同上 |
+| **我们 System-1（fwd+DP 解码, batch=1）** | GPU | **0.55** | speed_ours_bprna_ts0/result.json latency 块（CUDA 同步逐条） |
+| 我们（端到端含模型/嵌入加载） | GPU | 0.34 | 同上 |
+
+**诚实披露**：我们当前推理速度**慢于全部学习型基线约两个数量级**。
+原因可定位（latency 块分桶：<100 的序列 fwd 707ms + dec 175ms；400-600
+的 fwd 2.8s + dec 5.0s）：①逐序列 batch=1 无批化；②Nussinov DP 解码
+在 numpy 逐条跑（O(L³) Python 循环常数大）；③frozen 650M 嵌入逐条
+检索+head-chunk 循环。这与 S1–S9 速度门长期未闭合一致（Appendix C
+item 7 已有声明）——本轮把它从"声明"升级为"有数字的诚实表"。
+改进路径（预注册，供 v2）：批化推理（UFold 同 8 卡 56 seq/s 就是批化
+的）+ 解码 C 化/向量化——这是预印本范围外的工程线，不影响投稿叙事
+（我们的贡献主张不含速度门）。
+
+**四、PPT 更新（S20 新增，第 20 页）**
+
+新增「会议基线与速度」页：9 列表格（DEPfold/我们/RNAformer/UFold 四行
+×7 split）+ 速度条带（6 行）+ 诚实读法带 + 溯源行。沿用既有模板身份
+（微软雅黑、1.5 倍行距、同一 chrome 坐标——从 S19 结构派生）。验证：
+20 slides、全部内容 token 断言通过、表格 14 行×9 列几何与模板一致、
+行距 132/132、0 竖向溢出风险（行高 230632×14 = 3,228,848 EMU < 表框
+3,584,448）。数字三遍核对：①写入前 inline 自检；②写入后全文本 dump
+对照；③几何/样式断言。
+
+**五、遗留与下一步**
+
+1. RFold 已克隆但未重训（其 bench 语料 RNAStralign/ArchiveII 与我们
+   board 协议不同源——若用户要求可后续以 TR0 重训上板，工作量大）；
+2. Kirigami/TVAE-RNA/eFold 记录在调研清单，权重未核实；
+3. DEPfold 的修复补丁（contact_map broadcast）建议回馈上游 issue
+   （非本项目义务）。
+
+git: 本节 + speed_bench.py + DEPfold 相关脚本（train/eval 已在
+rna_baselines_src，不入本 repo；脚本副本归档 eval/ss/）。
