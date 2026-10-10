@@ -8191,3 +8191,145 @@ item 7 已有声明）——本轮把它从"声明"升级为"有数字的诚实�
 
 git: 本节 + speed_bench.py + DEPfold 相关脚本（train/eval 已在
 rna_baselines_src，不入本 repo；脚本副本归档 eval/ss/）。
+
+---
+
+## §15.44 T-A50/T-A50b/T-A50c：会议基线三家上板 + 泄漏审计 + 无损批化速度线（2026-10-11）
+
+**用户指示（本轮三条）**：① RFold 以 TR0 重训上板；② Kirigami/TVAE-RNA/eFold
+权重核实；③ 在不影响模型性能的前提下开始速度批化工程线。全部落地，且
+Kirigami 上板后发现并处理了新的泄漏问题（见二）。
+
+
+## 一、① RFold（ICML 2024, K-Rook 概率模型）以 TR0 重训上板
+
+**协议**（与 DEPfold 轮同一纪律）：
+- 语料：我们的 TR0 训练 jsonl（RFold 官方 pickle 格式，train 42,564 条 + val TS0[0:400]）；
+- 训练：官方架构 + 官方 MSE 损失 + grad-accum 8/step、Adam lr=1e-3、clip 5.0，30 epochs，
+  每 5 epoch TS0[0:400] 验证（早停观察点：ep20 best F1 0.6137，ep25/30 回落 0.6112/0.6109 → 已收敛）；
+- 评测：eval_rfold.py，遵循他们仓库 test_one_epoch 的协议细节——**model.train() 测试模式**
+  （train-mode BN，官方协议如实复现），row_col_argmax(pred) × constraint_matrix(seq)；
+  双 F1 口径：their_avg_f1（逐序列均值，论文口径）+ micro_f1（pooled TP/FP/FN，board 口径）。
+
+**8-split board 结果**（rfold_board.json，磁盘直读）：
+
+| split | their_avg_f1 | micro_f1 | n |
+|---|---|---|---|
+| TS0 | 0.5569 | **0.552** | 1288 |
+| new | 0.5261 | 0.5313 | 5388 |
+| TS1 | 0.6323 | 0.6578 | 63 |
+| TS2 | 0.6884 | 0.7002 | 39 |
+| TS3 | 0.6207 | 0.6495 | 19 |
+| hard | 0.5767 | 0.622 | 28 |
+| ArchII | 0.7366 | 0.6811 | 2544 |
+| TSB | 0.6457 | 0.6343 | 428 |
+
+**判定**：RFold TR0 重训后 TS0 0.552 micro，低于 RNAformer 0.7578 / Kirigami 0.7386 /
+UFold 0.6598，与 DEPfold 0.4430 同段（学习型低段）。其 ArchII 0.6811/0.7366 反映其
+RNAStralign/ArchiveII 同源语料偏置（其官方 bench 即 ArchII 系）——与我们 board 的
+0-train-family 协议对照读法已在 PPT 注脚声明。
+
+## 二、② Kirigami（arXiv 2406.02381, FCN 11px kernels + Nussinov-DP 后处理）官方权重零样本上板
+
+**权重核实**：官方仓库 github.com/marc-harary/kirigami **发布了权重** weights/main.ckpt
+（95MB, md5 记录于台账），零样本直接上板（无需重训）。
+
+**协议**：他们的 __call__ 硬编码 CPU one-hot 张量——我们写 eval_kirigami_gpu.py 设备修正
+（_embed_fasta → .to(cuda) → outer_concat → model.forward(post_proc=True) → mat2db），
+数学路径与 __call__ 完全一致（learner.py L94-96 同源），GPU 75× 于 CPU 路径
+（CPU 13.9 s/seq → GPU 5.4-20 seq/s）。GT/评分器：我们的（canonical pairs，micro P/R/F1）。
+
+**8-split board 结果**（kirigami_board.json）：
+
+| split | micro_f1 | n | seq/s |
+|---|---|---|---|
+| TS0 | **0.7386** | 1288 | 0.73 |
+| new | 0.5800 | 5388 | 2.0 |
+| TS1 | 0.7366 | 63 | 9.59 |
+| TS2 | 0.7061 | 39 | 20.73 |
+| TS3 | 0.7436 | 19 | 8.37 |
+| hard | 0.6782 | 28 | 10.38 |
+| ArchII | **0.7872** | 2544 | 0.15 |
+| TSB | 0.8475（全集，泄漏口径） | 428 | 2.84 |
+
+**泄漏审计（新增，决定性）**：Kirigami main.ckpt 只用 TR0.dbn 训练（其 DataModule
+硬编码 TR0/VL0/TS0；data/ 里的 archiveII/RNAStrAlign/bpRNAnew 是论文 bench 文件，
+不进训练）。序列级审计（tools/kirigami_leak_audit.py，归一化 T→U 精确匹配）：
+**7/8 split 零泄漏；TSB 247/428 泄漏**（与 RiNALMo-ft 案例同模式——同一 TR0 源）。
+- TSB clean-181 复评（tools/kirigami_tsb_clean.py）：**0.7514**（P 0.8015/R 0.7071）
+  vs 我们 xens2 clean 0.8370 → **我们净胜 +0.0856**；泄漏增益 0.8475−0.7514 = +0.096。
+- **ArchII 0.7872 为干净数字（0/2544 泄漏）**：高于我们 xens2 0.7760（+0.0112）。
+  诚实负结果，如实入板——Kirigami 在 ArchII（长序列、PDB 家族多样性 split）上
+  是当前最强公开基线，我们的 r2d 单模 0.7403/2-seed 0.7613 亦低于它。
+
+**判定**：Kirigami TS0 0.7386（strict 口径，官方权重零样本）——位于 RNAformer 0.7578
+之下、UFold 0.6598 之上，是**强会议基线**（学习型第一梯队之下）。其 TS2 0.7061/TS3 0.7436
+与我们 r2d_tr1c s0（0.7686/0.7815）和我们 xens2（0.8588/0.8965）仍有清晰差距。
+**ArchII 是我们 vs Kirigami 的唯一干净负 split**（-0.0112），TSB clean 净胜 +0.0856。
+
+## 三、② 补充：TVAE-RNA / eFold 权重核实结论 + 三会议基线 TSB 泄漏统一复评
+
+- **TVAE-RNA**（Bioinformatics 2025-11, transformer VAE）：**无公开代码/权重仓库**（搜索
+  GitHub + 论文补充材料，仅有 paper 链接）→ 记录为"权重不可得"，无法上板。
+- **eFold**（Science Advances 2026-02）：**探测数据范式**（structure probing data 输入，
+  非序列输入模型）→ 与我们"纯序列输入"board 协议不同源，**非可对比模型**（类比 MFXsub/
+  probing 线），记录为协议差异不入板。
+
+**TSB 泄漏统一复评**（三会议基线全部 TR0 训练 → 同一 247/428 泄漏源；本节新增工具
+tools/{kirigami,rfold,depfold}_tsb_clean.*，全部磁盘直读）：
+
+| 模型 | TSB 全集（泄漏口径） | TSB clean-181 | 我们 xens2 clean-181 | 差距 |
+|---|---|---|---|---|
+| Kirigami | 0.8475 | 0.7514 | 0.8370 | **我们 +0.0856** |
+| DEPfold | 0.6224 | 0.5835 | 0.8370 | **我们 +0.2535** |
+| RFold | 0.6343 | 0.5740 | 0.8370 | **我们 +0.2630** |
+
+泄漏增益（全集−clean）：Kirigami +0.096 / DEPfold +0.039 / RFold +0.060——TR0 训练
+基线在 TSB 上的全集数字系统性偏高，board 的 TSB 行必须双口径报告（与 RiNALMo-ft
+0.8711→0.8177 案例完全同构）。
+
+## 四、③ 速度批化工程线（不影响模型性能前提）
+
+**方法**：exact-length 分桶（同长度序列聚桶，无填充）+ 桶内批化前向 + 逐条 DP 解码。
+**关键发现**：padded 分桶（长度对齐填充）会移动 conv/MaxPool 的 stride-2 窗口边界，
+实测 F1 0.668→0.6669（-47 tp）——**填充是性能损失源**；exact-length 分桶（plen==L）恢复
+逐条路径的窗口对齐 → **F1 0.668 = 0.668（bitwise 等价级，tp 24401 vs 24400，差 1 = 浮点
+重结合级）**。DP 解码保持逐条（合法性保证不动）。
+
+**速度读数**（TS0 n=1288, GPU4, tools/speed_batched.py）：
+
+| batch | forward | decode | total | seq/s | 加速比 |
+|---|---|---|---|---|---|
+| 1（基线） | — | — | — | 0.55 | 1× |
+| 8 | 78.8s | 92.0s | 170.7s | **7.54** | 13.7× |
+| 16 | 63.6s | 87.9s | 151.5s | 8.50 | 15.5× |
+| 32 | 59.4s | 85.7s | 145.1s | **8.88** | 16.1× |
+
+**新瓶颈**：DP 解码（86-92s/1288 条 ≈ 67ms/条 numpy O(L³) Python 循环）——下一步工程
+线（v2，预印本范围外）：解码向量化/C 化，或批化 DP。
+
+**无损声明**：批化前后 F1 完全一致（0.668 = 0.668），tp/fp/fn 三元组逐位核对
+（24401/13766/10490 三个 batch size 完全相同）——满足用户"不影响模型性能"红线。
+
+## 五、产物与提交
+
+- `tools/speed_batched.py`（git 入库）
+- `tools/kirigami_leak_audit.py`、`tools/kirigami_tsb_clean.py`、`tools/rfold_tsb_clean.py`、
+  `tools/depfold_tsb_clean.sh`（git 入库，本轮泄漏审计三件套 + 复评）
+- `eval/ss/conf_baselines/`（git 入库，6 脚本归档，AST/bash -n 验证）：train_rfold.sh、
+  eval_rfold.py、eval_kirigami_gpu.py、eval_kirigami.py（CPU 留档）、train_depfold.sh、
+  eval_depfold.sh（DEPfold 轮补归档）
+- 结果 JSON（不入 git，数据策略）：eval_decision/rfold_board.json、kirigami_board.json、
+  kirigami_leak_audit.json、kirigami_leak_all8.json、kirigami_tsb_clean.json、
+  rfold_tsb_clean.json、speed_batched_exact_b{8,16,32}.json、speed_batched_b8.json（padded
+  对照）；DEPfold TSB clean F1 在
+  DEPfold_data/depfold_pred_tsb_clean/predict.log（Predict file F1: 0.5835）
+- 台账本节 §15.44；PPT S20 更新（RFold 行 + Kirigami 行 + 批化速度行 + TSB 双口径注）
+
+## 六、下一步
+
+1. 速度工程线 v2（DP 解码向量化）按用户指示推进；
+2. ArchII 干净负 split（Kirigami 0.7872 vs xens2 0.7760）→ 溯源分析（Kirigami 的
+   11px 大核 FCN 在长序列上的优势 vs 我们的 resnet2d head）→ 若可定位，预印本
+   Limitations 或 Discussion 补一句（诚实披露，不改叙事主张）；
+3. xens2 复评（同 seed 同 split 三遍稳定性）留作 T-A51 候选。
