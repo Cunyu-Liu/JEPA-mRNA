@@ -678,3 +678,61 @@ TestSetB 全参照分解（leak/clean 双口径，strict micro F1）：
   xens3 重扫（w sweep on VL0）→ 若 TS2/TS3 缩差至 +0.04~0.05 则 8/8。
 
 git: 本节 + leak_full_audit.py + launch_r2dplus.sh。
+
+### §15.46 (2026-10-11 20:00) — C 解码集成进正式 eval 管线（§15.45 五-1 落地）
+
+**一、变更**（`eval/ss/evaluate_decision.py`，默认行为零改动）
+
+- `--decode` 新增第三选项 `c_batched`（默认仍是 `exact`，numpy 引用
+  路径不动）；新增 `--batch-size`（默认 32）。
+- c_batched 分支：按 padded 长度分桶（L≤80→80，否则 16 对齐，与速度线
+  v2 同规则），同桶 B 条进 C 扩展 OpenMP DP；**forward 仍逐条**——分数
+  矩阵与 exact 路径逐字节一致（同一 `_forward_scores` +
+  `reweight_turner_prior` 调用序列），差异只在 decode 段。
+- 逐条结果按原始 index 重排回填（per_sequence、C1-c 前缀池、
+  all_probs_s1 全部保序——matched-prefix C1-c 语义不变）。
+- result.json `decode` 字段加 `batch_size`，`meaning` 注明 c_batched
+  与 exact bitwise 等价。
+- 工程教训：GPU6 是 MIG 4.75GB 切片，长序列 head forward OOM 两次
+  （--head-chunk 4 也不够——resnet2d scorer 整体跳过列分块，见 §15.44
+  同坑）；换 GPU0 全卡一次过。SSH 断连杀掉前台 nohup 外进程一次，
+  长任务一律 `nohup ... &` + 日志落盘。
+
+**二、验证（同 ckpt rinalmo_r2dtr1cplus_b4_s0、同 split bprna_ts0 全量
+1288 条，tools/verify_c_batched_equiv.py，11 项检查 ×2 组）**
+
+- (a) 同 GPU（都 GPU0）：11/11 PASS
+- (b) 跨 GPU（c GPU3 vs exact GPU0）：11/11 PASS
+- 检查项：micro tp/fp/fn 逐位（22171/9477/12720）、P/R/F1 至 1e-15
+  （0.666406167811359）、macro F1/INF 至 1e-12、
+  **per_seq pred_pairs 1288/1288 逐条一致**、legality（0/0）。
+- 与 §15.45 的 35 例 wrapper 自测（pairs+N+dec+kp 四层 bitwise）互为
+  补充：那是 DP 层，本节是集成层。
+
+**三、延迟（GPU0 对照，per-bucket decode ms 均值）**
+
+| bucket | n | numpy | C | 加速 |
+|---|---|---|---|---|
+| <100 | 565 | 20.6 | 1.8 | 11.6× |
+| 100-200 | 528 | 59.7 | 2.4 | 24.5× |
+| 200-400 | 167 | 449.7 | 8.8 | 51.3× |
+| 400-600 | 28 | 1345.1 | 36.7 | 36.6× |
+| 总 decode | | 155.9s | 4.8s | **32.6×** |
+| system1 吞吐 | | 4.3 | | **9.7 seq/s** |
+
+eval 管线保逐条 forward 是刻意的（分数逐字节等价优先于跑分）；
+批化 forward 的 26.7 seq/s 属 speed_batched.py 独立脚本，未动 eval。
+
+**四、产物与提交**
+
+- 修改：`eval/ss/evaluate_decision.py`（+c_batched 分支）
+- 新增：`tools/verify_c_batched_equiv.py`（验证脚本，入库）
+- 结果（不入 git）：`eval_decision/ts0_exact_ref/`、`ts0_c_batched/`、
+  `ts0_c_batched_gpu0/`
+- 台账 §15.46 已入 `records/DECISION_TRAINING_LOG.md`（8495 行）
+- commit `386c291` 已推送
+
+**五、遗留（下一轮候选）**
+
+1. ResNet-2D head 感受野消融（200-400nt 精度，§15.45 五-2）；
+2. xens2 2-seed 三遍稳定性（§15.45 五-3）。
