@@ -8493,3 +8493,45 @@ eval 管线保逐条 forward 是刻意的：分数逐字节等价优先于跑分
 **遗留（下一步候选，优先级排序）**：
 1. ResNet-2D head 感受野消融（200-400nt 精度，§15.45 五-2，候选不急）；
 2. xens2 2-seed 三遍稳定性（§15.45 五-3，当前单 seed spread=0 已证）。
+
+### 七、xens2 2-seed 三遍稳定性（§15.45 五-3 落地，T-A51b，2026-10-12）
+
+**协议**：板口径 2-seed ensemble（`tools/xens2_eval.py`：plana_tr1c s0+s1
+桶内平均 s1w=0.5 × r2dtr1c_s0，w_plana=0.7），TS0 全量 1288 条，同 ckpt
+同 split 同解码（exact Nussinov），连续三遍（守护抢到的同一张整卡，
+editflow env，2026-10-11 23:10–10-12 00:10）。
+
+| run | micro F1 | P | R | tp | fp | fn | macro F1 |
+|---|---|---|---|---|---|---|---|
+| r1 | 0.803859 | 0.821525 | 0.786936 | 27457 | 5965 | 7434 | 0.800248 |
+| r2 | 0.803859 | 0.821525 | 0.786936 | 27457 | 5965 | 7434 | 0.800248 |
+| r3 | 0.803859 | 0.821525 | 0.786936 | 27457 | 5965 | 7434 | 0.800248 |
+
+**验证（tools/verify_2seed_stability.py，14 项）——14/14 PASS**：
+- 三遍 micro tp/fp/fn 逐位一致；F1/P/R 至 1e-15 一致；**spread = 0.000000**；
+- per_seq pred_pairs **1288×3 逐条一致**（非仅聚合计数）；
+- **板值复现**：r1 与板上 `xens2_bprna_ts0_w0.7`（sota_vs_ours.md 主表 TS0
+  行的 0.8039 出处）F1/P/R 至 1e-15 且 tp/fp/fn 逐位一致——2-seed 板口径
+  本身可复现，主表 TS0 行的 ensemble 数字从此有直接三遍复证；
+- 协议字段（ckpt/w/s1w/n/skipped）跨 run 一致。
+
+**与 §15.45 单 seed 轮的关系**：单 seed（plana s0 × r2d，0.7904，spread=0）
+证的是管线确定性；本轮 2-seed 板口径（0.8039，spread=0）在此基础上把
+**主表引用数字本身**也纳入三遍复证。两者共同结论：xens2 推理管线
+（双 backbone 前向 + 分数混合 + exact Nussinov）无任何随机性，跨
+seed 数、跨 run 完全确定。
+
+**工程坑（MIG 切片，两次踩中）**：GPU6（MIG 1g.5gb 4.75GB）与 GPU7
+（MIG 3g.20gb 实报 4.75GB free）都装不下 2×plana encoder + r2d 三模型
+（需 >5GB），三次启动全部 OOM。改为**等空整卡守护**（两阶段确认抢卡，
+沿用 §14 教训）后抢到卡一次跑成。教训入库：MIG 切片卡上跑多模型
+ensemble 前先算常驻显存之和。
+
+**产物与提交**：
+- 新增：`tools/stability_2seed.sh`（等空整卡守护 + 三遍跑批）、
+  `tools/verify_2seed_stability.py`（14 项验证）
+- 结果（不入 git）：`eval_decision/xens2_2seed_ts0_stability_r{1,2,3}/`
+- commit 见 git log（S15.47）
+
+**遗留（§15.45 五-2，唯一未落地候选）**：ResNet-2D head 感受野消融
+（200-400nt 中长段精度）——候选不急，Limitations 已如实披露。

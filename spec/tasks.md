@@ -736,3 +736,32 @@ eval 管线保逐条 forward 是刻意的（分数逐字节等价优先于跑分
 
 1. ResNet-2D head 感受野消融（200-400nt 精度，§15.45 五-2）；
 2. xens2 2-seed 三遍稳定性（§15.45 五-3）。
+
+### §15.47 (2026-10-12 00:30) — xens2 2-seed 三遍稳定性（板口径 T-A51b）
+
+**协议**：`tools/xens2_eval.py` 板口径 2-seed（plana s0+s1 桶内 s1w=0.5 ×
+r2d s0，w=0.7），TS0 全量 1288，同 ckpt/split/解码，连续三遍（等空整卡
+守护，editflow env）。
+
+**结果**：三遍 micro F1 全 0.803859（P 0.821525 / R 0.786936），tp/fp/fn
+27457/5965/7434 逐位一致，per_seq pred_pairs 1288×3 逐条一致，
+**spread = 0.000000**。
+
+**14/14 检查 PASS**（tools/verify_2seed_stability.py）：三遍一致性 ×8 +
+**板值逐位复现** ×4（F1/P/R 至 1e-15 + tp/fp/fn 逐位 == 板上
+xens2_bprna_ts0_w0.7，即 sota_vs_ours.md 主表 TS0 行 0.8039 出处）+
+协议一致 ×1。**主表 TS0 ensemble 数字从此有直接三遍复证**。
+
+与 §15.45 单 seed 轮互补：单 seed（0.7904）证管线确定性，本轮 2-seed
+板口径（0.8039）把主表引用数字本身纳入三遍复证。
+
+**工程坑**：MIG 切片（GPU6 4.75GB / GPU7 实报 4.75GB free）装不下
+2×plana encoder + r2d（>5GB），三次 OOM；改等空整卡守护（两阶段确认）
+后一次跑成。多模型 ensemble 上 MIG 前先算常驻显存之和。
+
+**产物**：`tools/stability_2seed.sh` + `tools/verify_2seed_stability.py`
+（入库）；结果 `eval_decision/xens2_2seed_ts0_stability_r{1,2,3}/`（不入
+git）。台账 §15.47 已入。
+
+**遗留（§15.45 五-2，唯一候选）**：ResNet-2D head 感受野消融
+（200-400nt 精度）——不急，Limitations 已披露。
