@@ -8441,3 +8441,55 @@ not (solo P 0.686). Outside that regime the ensemble is at parity or ahead."
 2. 200-400nt 中长段精度：resnet2d head 感受野扩展实验（大核/dilated conv）
    留作消融候选（不改当前叙事，Limitations 如实披露即可）；
 3. xens2 2-seed 版三遍稳定性（本轮为 s0×r0 单 seed 版，spread=0 已证）。
+### 六、C 解码集成进正式 eval 管线（§15.45 五-1 落地，2026-10-11 晚）
+
+**变更**（`eval/ss/evaluate_decision.py`，默认行为零改动）：
+- `--decode` 新增第三选项 `c_batched`（默认仍是 `exact`，numpy 引用路径不动）；
+- 新增 `--batch-size`（默认 32，仅 c_batched 生效）：按 padded 长度分桶
+  （L≤80 → 80，否则 16 对齐，与速度线 v2 同一规则），B 条同 padded 长度
+  一起进 C 扩展 OpenMP DP；
+- **forward 仍逐条**：分数矩阵与 `exact` 路径逐字节一致（同一 `_forward_scores`
+  + `reweight_turner_prior` 调用序列），差异只在 decode 段；
+- 逐条结果按原始 index 重排后回填（`per_sequence`、C1-c 前缀池、
+  `all_probs_s1` 等全部保持原顺序——C1-c 的 matched-prefix 语义不变）；
+- exact marginal（C1-c 引用）逻辑与 `exact` 分支完全一致（本验证轮
+  `--exact-marginal-limit -1` 跳过，不影响 F1/pred_pairs）；
+- result.json 的 `decode` 字段新增 `batch_size`（band 时为 null），
+  `meaning` 注明 c_batched 与 exact bitwise 等价。
+
+**三重验证**（同 ckpt `rinalmo_r2dtr1cplus_b4_s0`、同 split bprna_ts0 全量
+1288 条、tools/verify_c_batched_equiv.py，11 项检查 ×2 组）：
+
+| 检查组 | 检查项 | 结果 |
+|---|---|---|
+| (a) 同 GPU（都 GPU0） | micro tp/fp/fn 逐位、P/R/F1 1e-15、macro F1/INF 1e-12、**per_seq pred_pairs 1288/1288 逐条一致**、legality | 11/11 PASS |
+| (b) 跨 GPU（c GPU3 vs exact GPU0） | 同上 | 11/11 PASS |
+
+F1 全部 0.666406167811359 / tp 22171 / fp 9477 / fn 12720，两路径、两卡
+完全一致。另外 wrapper 自测 35 例 bitwise（pairs+N+dec+kp）此前已全过
+（§15.45 一），本节集成层验证与之一致。
+
+**延迟读数**（GPU0 对照，per-bucket decode ms 均值）：
+
+| bucket | n | numpy dec | C dec | 加速 |
+|---|---|---|---|---|
+| <100 | 565 | 20.6 | 1.8 | 11.6× |
+| 100-200 | 528 | 59.7 | 2.4 | 24.5× |
+| 200-400 | 167 | 449.7 | 8.8 | 51.3× |
+| 400-600 | 28 | 1345.1 | 36.7 | 36.6× |
+| 总 decode | | 155.9s | 4.8s | **32.6×** |
+| system1 总速 | | 4.3 seq/s | | **9.7 seq/s** |
+
+（注：本延迟表是逐条 forward 版口径，2.2× 总加速；速度线 v2 的批化
+forward（26.7 seq/s）属 speed_batched.py 独立脚本，未动 eval 管线——
+eval 管线保逐条 forward 是刻意的：分数逐字节等价优先于跑分。）
+
+**产物**：
+- 修改：`eval/ss/evaluate_decision.py`（c_batched 分支 + --batch-size）
+- 新增：`tools/verify_c_batched_equiv.py`（11 项 ×2 组验证脚本，源码入库）
+- 结果 JSON（不入 git）：`eval_decision/ts0_exact_ref/`、
+  `eval_decision/ts0_c_batched/`（GPU3）、`eval_decision/ts0_c_batched_gpu0/`（GPU0）
+
+**遗留（下一步候选，优先级排序）**：
+1. ResNet-2D head 感受野消融（200-400nt 精度，§15.45 五-2，候选不急）；
+2. xens2 2-seed 三遍稳定性（§15.45 五-3，当前单 seed spread=0 已证）。

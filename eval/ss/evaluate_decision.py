@@ -467,90 +467,234 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
     all_masks_ex: List[np.ndarray] = []
 
     with torch.no_grad():
-        for index, record in enumerate(records):
-            seq = str(record["seq"])
-            gt_pairs = list(record["gt_pairs"])  # type: ignore[arg-type]
-            length = len(seq)
-            mask = valid_pair_mask(seq)
-            ids = torch.tensor([[BASE_TO_ID.get(c, 4) for c in seq]],
-                               dtype=torch.long, device=device)
-            lengths = torch.tensor([length], dtype=torch.long, device=device)
+        if args.decode == "c_batched":
+            # C-accelerated batched exact decode.  Forward passes stay
+            # per-sequence so the score matrices are byte-identical to the
+            # 'exact' path; only the DP decode runs in same-padded-length
+            # mini-batches through the C extension, which is bitwise-equal to
+            # nussinov_map (verified by tools/dp_decode_c_wrapper self-test).
+            from tools.dp_decode_c_wrapper import nussinov_map_batch
+            PAD = 16
 
-            _sync(device)
-            t0 = time.perf_counter()
-            h = None
-            if embedding_store is not None:
-                h = torch.as_tensor(embedding_store.get(seq), dtype=torch.float32,
-                                    device=device).unsqueeze(0)
-            scores = _forward_scores(model, ids, h, lengths)[0, :length, :length].double()
-            _sync(device)
-            t1 = time.perf_counter()
-            scores = reweight_turner_prior(model, scores, ids, length,
-                                           args.prior_weight)
+            def _padlen(L):
+                return 80 if L <= 80 else ((L + PAD - 1) // PAD) * PAD
 
-            # ---- System-1: probabilities straight off the head, no partition fn
-            p_s1 = torch.sigmoid(scores).cpu().numpy()
-            p_s1 = np.where(mask, p_s1, 0.0)
-            scores_np = scores.cpu().numpy()
-            all_scores_s1.append(np.where(mask, scores_np, 0.0))
-            scores_np = np.where(mask, scores_np, -np.inf)
+            buckets: Dict[int, List[int]] = {}
+            for _i, _r in enumerate(records):
+                buckets.setdefault(_padlen(len(_r["seq"])), []).append(_i)
+            B = max(1, int(args.batch_size))
+            # per-sequence results tagged with the original index, so the C1-c
+            # prefix comparison (which needs the exact-marginal pool to be a
+            # prefix of the System-1 pool) sees them in original order.
+            _ordered: List[Dict[str, object]] = []
+            n_done = 0
+            for pl in sorted(buckets):
+                idxs = buckets[pl]
+                for b0 in range(0, len(idxs), B):
+                    batch = idxs[b0:b0 + B]
+                    bsz = len(batch)
+                    scores_batch = np.empty((bsz, pl, pl), dtype=np.float64)
+                    mask_batch = np.empty((bsz, pl, pl), dtype=np.int8)
+                    metas = []
+                    for bi, idx in enumerate(batch):
+                        record = records[idx]
+                        seq = str(record["seq"])
+                        gt_pairs = list(record["gt_pairs"])  # type: ignore[arg-type]
+                        length = len(seq)
+                        mask = valid_pair_mask(seq)
+                        ids = torch.tensor([[BASE_TO_ID.get(c, 4) for c in seq]],
+                                           dtype=torch.long, device=device)
+                        lengths = torch.tensor([length], dtype=torch.long, device=device)
 
-            t2 = time.perf_counter()
-            pred_pairs = [tuple(p) for p in _decode(scores_np, mask, args)]
-            t3 = time.perf_counter()
+                        _sync(device)
+                        t0 = time.perf_counter()
+                        h = None
+                        if embedding_store is not None:
+                            h = torch.as_tensor(embedding_store.get(seq),
+                                                dtype=torch.float32,
+                                                device=device).unsqueeze(0)
+                        scores = _forward_scores(model, ids, h, lengths)[0, :length, :length].double()
+                        _sync(device)
+                        t1 = time.perf_counter()
+                        scores = reweight_turner_prior(model, scores, ids, length,
+                                                       args.prior_weight)
 
-            # ---- reference only: exact marginal, for the C1-c comparison.
-            # inside_outside is O(L^3) in numpy and is the dominant cost of an
-            # evaluation pass, so it is capped: the C1-c gap is a population
-            # statistic and does not need every sequence.  It is never counted in
-            # the System-1 latency regardless.
-            do_exact = args.exact_marginal_limit <= 0 or index < args.exact_marginal_limit
-            t4 = time.perf_counter()
-            if do_exact:
-                _logZ, p_exact = inside_outside(np.where(mask, scores_np, 0.0), mask)
-                p_exact = np.where(mask, np.triu(p_exact, k=1), 0.0)
-            else:
-                p_exact = None
-            t5 = time.perf_counter()
+                        # ---- System-1: probabilities straight off the head
+                        p_s1 = torch.sigmoid(scores).cpu().numpy()
+                        p_s1 = np.where(mask, p_s1, 0.0)
+                        scores_np = scores.cpu().numpy()
+                        scores_s1 = np.where(mask, scores_np, 0.0)
+                        scores_np = np.where(mask, scores_np, -np.inf)
 
-            latency.add(length,
-                        forward_ms=(t1 - t0) * 1e3,
-                        decode_ms=(t3 - t2) * 1e3,
-                        exact_ms=(t5 - t4) * 1e3)
+                        # pad to pl x pl for the batched C decode
+                        sc_pad = np.full((pl, pl), -np.inf, dtype=np.float64)
+                        sc_pad[:length, :length] = scores_np
+                        mk_pad = np.zeros((pl, pl), dtype=np.int8)
+                        mk_pad[:length, :length] = mask.astype(np.int8)
+                        scores_batch[bi] = sc_pad
+                        mask_batch[bi] = mk_pad
+                        metas.append((idx, record, seq, gt_pairs, length, mask,
+                                      p_s1, scores_s1, t0, t1))
 
-            pair_m = PairLevelMetrics.from_pairs(pred_pairs, gt_pairs, L=length, mask=mask)
-            struct_m = StructureLevelMetrics.from_pairs(pred_pairs, gt_pairs)
-            legality = check_structure(pred_pairs, seq)
-            agg["tp"] += pair_m.tp
-            agg["fp"] += pair_m.fp
-            agg["fn"] += pair_m.fn
-            n_pairs_total += len(gt_pairs)
-            if not legality.get("is_legal", False):
-                illegal += 1
-            # check_structure separates the two: is_legal covers crossing / range /
-            # duplicates / pair type (G1), min_hairpin_violations is G2.
-            if legality.get("min_hairpin_violations"):
-                hairpin_violations += 1
+                    # ---- batched C decode (bitwise-equal to nussinov_map) ----
+                    t2 = time.perf_counter()
+                    pairs_batch = nussinov_map_batch(scores_batch, mask_batch)
+                    t3 = time.perf_counter()
+                    decode_ms = (t3 - t2) * 1e3 / bsz
 
-            labels = pair_indicator(length, gt_pairs)
-            all_probs_s1.append(p_s1)
-            all_labels.append(labels)
-            all_masks.append(mask)
-            if p_exact is not None:
-                all_probs_ex.append(p_exact)
-                all_labels_ex.append(labels)
-                all_masks_ex.append(mask)
+                    # ---- per-sequence post-processing ------------------------
+                    for bi, (idx, record, seq, gt_pairs, length, mask,
+                             p_s1, scores_s1, t0, t1) in enumerate(metas):
+                        pred_pairs = [(int(i), int(j))
+                                      for (i, j) in pairs_batch[bi]
+                                      if i < length and j < length]
+                        pred_pairs.sort()
 
-            per_seq.append({
-                "name": record["name"], "length": length,
-                "n_pred_pairs": len(pred_pairs), "n_gt_pairs": len(gt_pairs),
-                "f1": pair_m.f1, "precision": pair_m.precision,
-                "recall": pair_m.recall, "inf": struct_m.inf,
-                "is_legal": bool(legality.get("is_legal", False)),
-                "pred_pairs": [list(p) for p in pred_pairs],
-            })
-            if args.progress and (index + 1) % args.progress == 0:
-                print(f"[eval] {index + 1}/{len(records)}", flush=True)
+                        # exact marginal (C1-c reference), same rule as 'exact'
+                        do_exact = (args.exact_marginal_limit <= 0
+                                    or idx < args.exact_marginal_limit)
+                        t4 = time.perf_counter()
+                        if do_exact:
+                            _logZ, p_exact = inside_outside(
+                                np.where(mask, scores_s1, 0.0), mask)
+                            p_exact = np.where(mask, np.triu(p_exact, k=1), 0.0)
+                        else:
+                            p_exact = None
+                        t5 = time.perf_counter()
+
+                        latency.add(length,
+                                    forward_ms=(t1 - t0) * 1e3,
+                                    decode_ms=decode_ms,
+                                    exact_ms=(t5 - t4) * 1e3)
+
+                        pair_m = PairLevelMetrics.from_pairs(pred_pairs, gt_pairs,
+                                                             L=length, mask=mask)
+                        struct_m = StructureLevelMetrics.from_pairs(pred_pairs, gt_pairs)
+                        legality = check_structure(pred_pairs, seq)
+                        agg["tp"] += pair_m.tp
+                        agg["fp"] += pair_m.fp
+                        agg["fn"] += pair_m.fn
+                        n_pairs_total += len(gt_pairs)
+                        if not legality.get("is_legal", False):
+                            illegal += 1
+                        if legality.get("min_hairpin_violations"):
+                            hairpin_violations += 1
+
+                        labels = pair_indicator(length, gt_pairs)
+                        _ordered.append({
+                            "idx": idx,
+                            "p_s1": p_s1, "scores_s1": scores_s1,
+                            "p_exact": p_exact, "labels": labels, "mask": mask,
+                            "per_seq": {
+                                "name": record["name"], "length": length,
+                                "n_pred_pairs": len(pred_pairs),
+                                "n_gt_pairs": len(gt_pairs),
+                                "f1": pair_m.f1, "precision": pair_m.precision,
+                                "recall": pair_m.recall, "inf": struct_m.inf,
+                                "is_legal": bool(legality.get("is_legal", False)),
+                                "pred_pairs": [list(p) for p in pred_pairs],
+                            },
+                        })
+                        n_done += 1
+                    if args.progress:
+                        print(f"[eval] {n_done}/{len(records)}", flush=True)
+            # restore original order for the C1-c prefix comparison
+            _ordered.sort(key=lambda d: d["idx"])
+            for d in _ordered:
+                all_probs_s1.append(d["p_s1"])
+                all_scores_s1.append(d["scores_s1"])
+                all_labels.append(d["labels"])
+                all_masks.append(d["mask"])
+                if d["p_exact"] is not None:
+                    all_probs_ex.append(d["p_exact"])
+                    all_labels_ex.append(d["labels"])
+                    all_masks_ex.append(d["mask"])
+                per_seq.append(d["per_seq"])
+        else:
+            for index, record in enumerate(records):
+                seq = str(record["seq"])
+                gt_pairs = list(record["gt_pairs"])  # type: ignore[arg-type]
+                length = len(seq)
+                mask = valid_pair_mask(seq)
+                ids = torch.tensor([[BASE_TO_ID.get(c, 4) for c in seq]],
+                                   dtype=torch.long, device=device)
+                lengths = torch.tensor([length], dtype=torch.long, device=device)
+
+                _sync(device)
+                t0 = time.perf_counter()
+                h = None
+                if embedding_store is not None:
+                    h = torch.as_tensor(embedding_store.get(seq), dtype=torch.float32,
+                                        device=device).unsqueeze(0)
+                scores = _forward_scores(model, ids, h, lengths)[0, :length, :length].double()
+                _sync(device)
+                t1 = time.perf_counter()
+                scores = reweight_turner_prior(model, scores, ids, length,
+                                               args.prior_weight)
+
+                # ---- System-1: probabilities straight off the head, no partition fn
+                p_s1 = torch.sigmoid(scores).cpu().numpy()
+                p_s1 = np.where(mask, p_s1, 0.0)
+                scores_np = scores.cpu().numpy()
+                all_scores_s1.append(np.where(mask, scores_np, 0.0))
+                scores_np = np.where(mask, scores_np, -np.inf)
+
+                t2 = time.perf_counter()
+                pred_pairs = [tuple(p) for p in _decode(scores_np, mask, args)]
+                t3 = time.perf_counter()
+
+                # ---- reference only: exact marginal, for the C1-c comparison.
+                # inside_outside is O(L^3) in numpy and is the dominant cost of an
+                # evaluation pass, so it is capped: the C1-c gap is a population
+                # statistic and does not need every sequence.  It is never counted in
+                # the System-1 latency regardless.
+                do_exact = args.exact_marginal_limit <= 0 or index < args.exact_marginal_limit
+                t4 = time.perf_counter()
+                if do_exact:
+                    _logZ, p_exact = inside_outside(np.where(mask, scores_np, 0.0), mask)
+                    p_exact = np.where(mask, np.triu(p_exact, k=1), 0.0)
+                else:
+                    p_exact = None
+                t5 = time.perf_counter()
+
+                latency.add(length,
+                            forward_ms=(t1 - t0) * 1e3,
+                            decode_ms=(t3 - t2) * 1e3,
+                            exact_ms=(t5 - t4) * 1e3)
+
+                pair_m = PairLevelMetrics.from_pairs(pred_pairs, gt_pairs, L=length, mask=mask)
+                struct_m = StructureLevelMetrics.from_pairs(pred_pairs, gt_pairs)
+                legality = check_structure(pred_pairs, seq)
+                agg["tp"] += pair_m.tp
+                agg["fp"] += pair_m.fp
+                agg["fn"] += pair_m.fn
+                n_pairs_total += len(gt_pairs)
+                if not legality.get("is_legal", False):
+                    illegal += 1
+                # check_structure separates the two: is_legal covers crossing / range /
+                # duplicates / pair type (G1), min_hairpin_violations is G2.
+                if legality.get("min_hairpin_violations"):
+                    hairpin_violations += 1
+
+                labels = pair_indicator(length, gt_pairs)
+                all_probs_s1.append(p_s1)
+                all_labels.append(labels)
+                all_masks.append(mask)
+                if p_exact is not None:
+                    all_probs_ex.append(p_exact)
+                    all_labels_ex.append(labels)
+                    all_masks_ex.append(mask)
+
+                per_seq.append({
+                    "name": record["name"], "length": length,
+                    "n_pred_pairs": len(pred_pairs), "n_gt_pairs": len(gt_pairs),
+                    "f1": pair_m.f1, "precision": pair_m.precision,
+                    "recall": pair_m.recall, "inf": struct_m.inf,
+                    "is_legal": bool(legality.get("is_legal", False)),
+                    "pred_pairs": [list(p) for p in pred_pairs],
+                })
+                if args.progress and (index + 1) % args.progress == 0:
+                    print(f"[eval] {index + 1}/{len(records)}", flush=True)
 
     # ---- aggregate -------------------------------------------------------
     tp, fp, fn = agg["tp"], agg["fp"], agg["fn"]
@@ -657,12 +801,16 @@ def evaluate(args: argparse.Namespace) -> Dict[str, object]:
             "n_illegal": illegal, "n_hairpin_violations": hairpin_violations,
         },
         "latency": latency.report(),
-        "decode": {"mode": args.decode, "band": (args.band if args.decode == "band"
-                                                else None),
+        "decode": {"mode": args.decode,
+                   "band": (args.band if args.decode == "band" else None),
+                   "batch_size": (args.batch_size if args.decode == "c_batched"
+                                  else None),
                    "meaning": ("exact = nussinov_map, O(L^3) numpy, exact max-product; "
                                "band = fold_system1 with j-i <= band, the fast path "
                                "spec 5.0.1 defines System-1 as. Banding trades "
-                               "long-range pairs for speed, so report both F1s.")},
+                               "long-range pairs for speed, so report both F1s. "
+                               "c_batched = C extension, same-padded-length mini-batches, "
+                               "OpenMP-parallel; bitwise-equal to 'exact'.")},
         "latency_note": ("system1_* is the claim (one forward + legal decode, no partition "
                          "function). exact_marginal_ms is a reference measurement for "
                          "C1-c and is NOT part of the System-1 latency."),
@@ -712,12 +860,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                              "not reach and MLP_T cannot cancel, so it is a real "
                              "hyper-parameter -- select it on a held-out split, never "
                              "on the test split.  See reweight_turner_prior.")
-    parser.add_argument("--decode", choices=["exact", "band"], default="exact",
+    parser.add_argument("--decode", choices=["exact", "band", "c_batched"],
+                        default="exact",
                         help="System-1 decoder: 'exact' is nussinov_map (O(L^3) in "
                              "numpy), 'band' is the banded max-product path the spec "
-                             "actually defines System-1 as. Report both.")
+                             "actually defines System-1 as. 'c_batched' is the "
+                             "C-accelerated batched exact decode (bitwise-equal to "
+                             "'exact'; OpenMP-parallel over same-padded-length "
+                             "mini-batches). Report both.")
     parser.add_argument("--band", type=int, default=128,
                         help="band width j - i <= band when --decode band")
+    parser.add_argument("--batch-size", type=int, default=32,
+                        help="mini-batch size for --decode c_batched: sequences are "
+                             "grouped by padded length and decoded B at a time with "
+                             "the C extension. Forward passes stay per-sequence so the "
+                             "score matrices are byte-identical to the 'exact' path.")
     parser.add_argument("--exact-marginal-limit", type=int, default=300,
                         help="compute the exact marginal (C1-c reference) for the "
                              "first N sequences; 0 = all, negative = none")
