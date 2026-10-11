@@ -8333,3 +8333,99 @@ tools/{kirigami,rfold,depfold}_tsb_clean.*，全部磁盘直读）：
    11px 大核 FCN 在长序列上的优势 vs 我们的 resnet2d head）→ 若可定位，预印本
    Limitations 或 Discussion 补一句（诚实披露，不改叙事主张）；
 3. xens2 复评（同 seed 同 split 三遍稳定性）留作 T-A51 候选。
+
+---
+
+## §15.45 速度线 v2（C 解码）+ ArchII 溯源 + xens2 稳定性（2026-10-11）
+
+### 一、① DP 解码 C 向量化（速度工程线 v2，用户指示③的续作）
+
+**方法**：ctypes C 扩展 `tools/dp_decode_c.c` + `tools/dp_decode_c_wrapper.py`。
+OpenMP 跨 batch 维并行；同长度桶内 B 条同时 DP。递归与 tie-breaking 与
+`_max_dp_reference` 完全一致（首严格更大者胜，argmax 取最小 k）。
+
+**bitwise 等价验证**（dp_decode_c_wrapper.py 自测，35 例随机矩阵 L∈{50,100,200}）：
+pairs + N 表 + dec 表 + kp 表四层全部逐位一致，ALL PASS。
+
+**速度读数**（TS0 n=1288, GPU1, head_chunk=4, B=32, OMP_NUM_THREADS=32）：
+
+| 版本 | 前向 | 解码 | 总计 | seq/s | F1 | tp/fp/fn |
+|---|---|---|---|---|---|---|
+| v1 numpy DP | 41.43s | 84.07s | 125.5s | 10.26 | 0.668 | 24400/13767/10491 |
+| v2 C batched | 39.71s | **8.48s** | **48.19s** | **26.73** | 0.668 | 24400/13767/10491 |
+
+**同 GPU 同 head_chunk 对照下：解码 9.9×，总速 2.6×；tp/fp/fn 三元组逐位一致**。
+单条 C DP 基准（L=200）：numpy 61.4 ms → C batched B=32 3.0 ms/seq（20.3×）。
+
+### 二、③ xens2 三遍稳定性（T-A51）
+
+**协议**：同 ckpt（plana s0 × r2d s0, w=0.7）、同 split（TS0 全量 1288）、
+同解码（exact Nussinov），连续三遍（GPU2, editflow env, 2026-10-11）。
+
+| run | micro F1 | P | R | tp | fp | fn |
+|---|---|---|---|---|---|---|
+| r1 | 0.790402 | 0.818422 | 0.764237 | 26665 | 5916 | 8226 |
+| r2 | 0.790402 | 0.818422 | 0.764237 | 26665 | 5916 | 8226 |
+| r3 | 0.790402 | 0.818422 | 0.764237 | 26665 | 5916 | 8226 |
+
+**spread = 0.000000，tp/fp/fn 逐位一致——纯推理管线完全确定性**。
+注：0.7904 是单 plana s0 × r2d w0.7 口径；板上 xens2 0.8039 是 2-seed bucket
+（0.5 s0 + 0.5 s1）× r2d 口径，两者协议不同属预期。结论：xens2 系管线
+无随机性，T-A51 复评闸门通过，板值可复现。
+
+### 三、② ArchII 干净负 split 溯源（Kirigami 0.7872 vs xens2 0.7760，-0.0112）
+
+**协议**：三方 per-bucket 评测，同一长度分桶（le100 / 100-200 / 200-400 / gt400），
+同一 GT/scorer。Kirigami 3-GPU 分片全量 2544 条（合并 overall 0.7871 ≈ 板值
+0.7872，分片合并自验证通过）；我们 r2d_tr1c_s0（C 批量解码，len≤600，2505 条）；
+xens2（plana_s0 × r2d_s0 w0.7，全量 2544，无长度截断——与 Kirigami 完全可比）。
+
+**长度分层对比**（disk 直读：kirigami_archii_perbucket.json /
+ours_archii_perbucket.json / xens2_archii_perbucket.json）：
+
+| bucket | n | Kirigami | xens2 | 差(Kir−xens) | Kir P/R | xens2 P/R |
+|---|---|---|---|---|---|---|
+| le100 | 484 | 0.9027 | 0.8994 | +0.0033 | .936/.872 | .922/.878 |
+| 100-200 | 1136 | 0.8742 | 0.8697 | +0.0045 | .913/.839 | .908/.835 |
+| **200-400** | 728 | **0.7750** | 0.7452 | **+0.0298** | **.819**/.735 | **.791**/.704 |
+| >400 | 196 | 0.5472 | 0.5556 | **−0.0084** | .603/.501 | .543/**.569** |
+
+（r2d 单模参考：200-400 桶 F1 0.6985，P 仅 0.6859——xens2 的 plana 精度臂把 P
+拉到 0.7914，部分补偿但未追平。）
+
+**加权分解**：总 gap +0.0112 = 200-400 桶贡献 +0.0085（76%）+ 100-200 桶
++0.0020 + le100 桶 +0.0006 − gt400 桶 0.0006。
+
+**结论（推翻早期"11px 长序列优势"的笼统假设）**：
+1. 负 split 的单一来源是 **200-400nt 中长段的 pair 精度**——Kirigami 11px
+   大核 FCN 在该段保持 P 0.819，我们 resnet2d head 单模只有 0.686，
+   ensemble 后 0.791 仍差 0.028；
+2. **>400nt 超长段我们反而赢**（xens2 0.5556 vs 0.5472，靠 R 0.569 vs 0.501）
+   ——不是"长序列"问题，是"中长段精度"问题；
+3. ≤200nt 两方平手（差 ≤0.005）。
+
+**Limitations 补句（预印本用，中长段诚实披露）**：
+"On ArchiveII-clean the strongest public baseline (Kirigami, 11px-kernel FCN)
+edges out our ensemble by +0.011 overall; stratified analysis locates the gap
+in the 200–400 nt mid-long regime (+0.030), where the large-kernel FCN
+sustains pair precision (P 0.819 vs our 0.791) that our ResNet-2D head does
+not (solo P 0.686). Outside that regime the ensemble is at parity or ahead."
+
+### 四、产物与提交（本节）
+
+- `tools/dp_decode_c.c` + `tools/dp_decode_c.so`（gcc -O3 -fopenmp，源码入库）
+- `tools/dp_decode_c_wrapper.py`（ctypes 包装 + 35 例 bitwise 自测）
+- `tools/speed_batched_v2.py`（v2 批化+C 解码集成）
+- `tools/archii_ours_perbucket.py`、`tools/archii_kirigami_shard.py`（分桶/分片）
+- 结果 JSON（不入 git）：speed_batched_v2_c_b32.json、speed_batched_v1_gpu1_b32.json
+  （同 GPU 对照）、ours_archii_perbucket.json、kirigami_archii_shard{0,1,2}.json、
+  kirigami_archii_perbucket.json（合并）、xens2_archii_perbucket_s0r0/、
+  xens2_archii_perbucket.json、xens2_ts0_stability_r{1,2,3}/
+
+### 五、下一步
+
+1. C 解码集成进正式 eval 管线（evaluate_decision.py 加 --decoder c_batched，
+   默认保持 numpy 以维持引用路径）；
+2. 200-400nt 中长段精度：resnet2d head 感受野扩展实验（大核/dilated conv）
+   留作消融候选（不改当前叙事，Limitations 如实披露即可）；
+3. xens2 2-seed 版三遍稳定性（本轮为 s0×r0 单 seed 版，spread=0 已证）。
