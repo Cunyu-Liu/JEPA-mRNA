@@ -328,6 +328,7 @@ class FlatDecisionHead(nn.Module):
         grad_checkpoint: bool = True,
         scorer: str = "mlp",
         resnet_blocks: int = 4,
+        resnet_kernel_size: int = 3,
     ) -> None:
         super().__init__()
         self.min_loop = min_loop
@@ -351,7 +352,8 @@ class FlatDecisionHead(nn.Module):
             #: gradient-coverage audit stays green. The zero-init head of the
             #: ResNet preserves the flat arm's init-time equivalence (scores ==
             #: Turner prior exactly).
-            self.resnet2d = ResNet2DScorer(d_z, n_blocks=resnet_blocks)
+            self.resnet2d = ResNet2DScorer(d_z, n_blocks=resnet_blocks,
+                                           kernel_size=resnet_kernel_size)
             self.turner = None
         else:
             self.resnet2d = None

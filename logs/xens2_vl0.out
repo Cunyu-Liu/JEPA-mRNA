@@ -1,0 +1,21 @@
+[xens2] START 2026-10-06 13:42:01
+[xens2] bprna_vl0 w=0.5 gpu=4 START 13:42:03
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8762 (P 0.8770 / R 0.8755, macro 0.8579, 196 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_bprna_vl0_w0.5/result.json
+[xens2] bprna_vl0 w=0.5 rc=0 13:43:58
+[xens2] bprna_vl0 w=0.7 gpu=2 START 13:44:05
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8789 (P 0.8846 / R 0.8733, macro 0.8661, 196 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_bprna_vl0_w0.7/result.json
+[xens2] bprna_vl0 w=0.7 rc=0 13:45:48
+[xens2] bprna_vl0 w=0.85 gpu=2 START 13:45:58
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8782 (P 0.8859 / R 0.8707, macro 0.8647, 196 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_bprna_vl0_w0.85/result.json
+[xens2] bprna_vl0 w=0.85 rc=0 13:47:55
+[xens2] VL0 sweep complete; inspect before test runs: 
+  VL0 w=0.5 F1=0.8762 P=0.8770 R=0.8755
+  VL0 w=0.7 F1=0.8789 P=0.8846 R=0.8733
+  VL0 w=0.85 F1=0.8782 P=0.8859 R=0.8707
+[xens2] ALL DONE 2026-10-06 13:47:55

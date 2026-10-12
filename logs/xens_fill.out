@@ -1,0 +1,73 @@
+[xensfill] START 2026-10-05 13:42:17
+[xensfill] bprna_ts0 w=0.7 emb=bprna_ts0 gpu=5 START 13:42:21
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens] 200/1288 (5.8 seq/s)
+[xens] 400/1288 (6.7 seq/s)
+[xens] 600/1288 (6.3 seq/s)
+[xens] 800/1288 (6.2 seq/s)
+[xens] 1000/1288 (6.1 seq/s)
+[xens] 1200/1288 (6.0 seq/s)
+[xens] micro F1 0.7904 (P 0.8184 / R 0.7642, macro 0.7857, 1288 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens_bprna_ts0_w0.7/result.json
+[xensfill] bprna_ts0 w=0.7 rc=0 13:47:13
+[xensfill] bprna_new w=0.7 emb=bprna_new gpu=2 START 13:47:18
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens] 200/5388 (5.3 seq/s)
+[xens] 400/5388 (5.0 seq/s)
+[xens] 600/5388 (4.6 seq/s)
+[xens] 800/5388 (5.0 seq/s)
+[xens] 1000/5388 (5.4 seq/s)
+[xens] 1200/5388 (5.6 seq/s)
+[xens] 1400/5388 (5.8 seq/s)
+[xens] 1600/5388 (6.0 seq/s)
+[xens] 1800/5388 (6.2 seq/s)
+[xens] 2000/5388 (6.3 seq/s)
+[xens] 2200/5388 (6.4 seq/s)
+[xens] 2400/5388 (6.5 seq/s)
+[xens] 2600/5388 (6.6 seq/s)
+[xens] 2800/5388 (6.7 seq/s)
+[xens] 3000/5388 (6.8 seq/s)
+[xens] 3200/5388 (6.8 seq/s)
+[xens] 3400/5388 (6.8 seq/s)
+[xens] 3600/5388 (6.9 seq/s)
+[xens] 3800/5388 (6.9 seq/s)
+[xens] 4000/5388 (6.8 seq/s)
+[xens] 4200/5388 (6.8 seq/s)
+[xens] 4400/5388 (6.9 seq/s)
+[xens] 4600/5388 (6.9 seq/s)
+[xens] 4800/5388 (6.9 seq/s)
+[xens] 5000/5388 (6.9 seq/s)
+[xens] 5200/5388 (6.9 seq/s)
+[xens] micro F1 0.5188 (P 0.6451 / R 0.4339, macro 0.5035, 5388 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens_bprna_new_w0.7/result.json
+[xensfill] bprna_new w=0.7 rc=0 14:00:59
+[xensfill] testsetb w=0.7 emb=testsetb gpu=2 START 14:01:02
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens] 200/428 (7.4 seq/s)
+[xens] 400/428 (7.6 seq/s)
+[xens] micro F1 0.8280 (P 0.8986 / R 0.7677, macro 0.8162, 428 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens_testsetb_w0.7/result.json
+[xensfill] testsetb w=0.7 rc=0 14:02:39
+[xensfill] archiveii_embok_clean w=0.7 emb=archiveii gpu=2 START 14:02:44
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens] 200/2544 (1.0 seq/s)
+[xens] 400/2544 (1.9 seq/s)
+[xens] 600/2544 (2.6 seq/s)
+[xens] 800/2544 (3.2 seq/s)
+[xens] 1000/2544 (3.7 seq/s)
+[xens] 1200/2544 (3.7 seq/s)
+[xens] 1400/2544 (3.0 seq/s)
+[xens] 1600/2544 (2.7 seq/s)
+[xens] 1800/2544 (2.8 seq/s)
+[xens] 2000/2544 (2.9 seq/s)
+[xens] 2200/2544 (3.1 seq/s)
+[xens] 2400/2544 (3.0 seq/s)
+[xens] micro F1 0.7697 (P 0.8002 / R 0.7415, macro 0.8030, 2544 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens_archiveii_embok_clean_w0.7/result.json
+[xensfill] archiveii_embok_clean w=0.7 rc=0 14:19:41
+[xensfill] bprna_vl0 w=0.85 emb=bprna_vl0 gpu=2 START 14:19:45
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens] micro F1 0.8707 (P 0.8799 / R 0.8616, macro 0.8561, 196 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens_bprna_vl0_w0.85/result.json
+[xensfill] bprna_vl0 w=0.85 rc=0 14:20:47
+[xensfill] ALL DONE 2026-10-05 14:20:47

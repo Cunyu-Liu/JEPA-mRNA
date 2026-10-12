@@ -1,0 +1,61 @@
+[plana_tr1c_s1] launched pid=997817 on 4 2026-10-05 23:02:11 (bar=16GB, confirmed twice)
+[plana_tr1c_s1] training DONE at 20000 2026-10-06 08:21:38
+[plana_tr1c_s1] eval on card 5 08:21:42
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[eval-plan-a] checkpoint /mnt/cunyuliu/rna-jepa/ckpts/plana_giga_tr1c_s1_step20000.pt step=20000
+[eval-plan-a] evaluating ts0 <- /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl
+Traceback (most recent call last):
+  File "/home/cunyuliu/rna-jepa/tools/eval_plan_a.py", line 188, in <module>
+    main()
+  File "/home/cunyuliu/rna-jepa/tools/eval_plan_a.py", line 166, in main
+    results[name] = evaluate_split(encoder, head, path, device)
+  File "/home/cunyuliu/rna-jepa/tools/eval_plan_a.py", line 98, in evaluate_split
+    s = scores_for(encoder, head, seq, device)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/home/cunyuliu/rna-jepa/tools/eval_plan_a.py", line 62, in scores_for
+    out = encoder(input_ids=enc_ids, attention_mask=attn)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/transformers/utils/generic.py", line 1040, in wrapper
+    output = func(self, *args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/transformers/utils/output_capturing.py", line 262, in wrapper
+    outputs = func(self, *args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/multimolecule/models/rinalmo/modeling_rinalmo.py", line 223, in forward
+    encoder_outputs = self.encoder(
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/multimolecule/models/rinalmo/modeling_rinalmo.py", line 705, in forward
+    hidden_states = layer_module(
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/transformers/modeling_layers.py", line 110, in __call__
+    return super().__call__(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/multimolecule/models/rinalmo/modeling_rinalmo.py", line 780, in forward
+    layer_output = apply_chunking_to_forward(
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/transformers/pytorch_utils.py", line 201, in apply_chunking_to_forward
+    return forward_fn(*input_tensors)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/multimolecule/models/rinalmo/modeling_rinalmo.py", line 787, in feed_forward_chunk
+    intermediate_output = self.intermediate(attention_output_ln)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/multimolecule/models/rinalmo/modeling_rinalmo.py", line 1115, in forward
+    return swish_out * self.linear_gate(x)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 125, in forward
+    return F.linear(input, self.weight, self.bias)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 39.49 GiB of which 12.06 MiB is free. Process 2034308 has 418.00 MiB memory in use. Process 4031944 has 418.00 MiB memory in use. Process 2677683 has 418.00 MiB memory in use. Process 2678501 has 418.00 MiB memory in use. Process 2708341 has 10.94 GiB memory in use. Process 2723715 has 9.90 GiB memory in use. Process 2742351 has 418.00 MiB memory in use. Process 2754212 has 418.00 MiB memory in use. Process 2754256 has 418.00 MiB memory in use. Process 2754375 has 418.00 MiB memory in use. Including non-PyTorch memory, this process has 2.97 GiB memory in use. Process 2761872 has 12.33 GiB memory in use. Of the allocated memory 2.46 GiB is allocated by PyTorch, and 7.59 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[plana_tr1c_s1] eval rc=1
+[plana_tr1c_s1] ALL DONE 2026-10-06 08:23:00

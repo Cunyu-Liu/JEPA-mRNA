@@ -1,0 +1,88 @@
+[xens2t] START 2026-10-06 13:48:47 w=0.7
+[xens2t] ref_pdb_ts2 gpu=4 START 13:48:52
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8588 (P 0.9353 / R 0.7939, macro 0.8407, 39 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_ref_pdb_ts2_w0.7/result.json
+[xens2t] ref_pdb_ts2 rc=0 13:50:18
+[xens2t] ref_pdb_ts3 gpu=2 START 13:50:46
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8965 (P 0.9109 / R 0.8825, macro 0.8612, 19 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_ref_pdb_ts3_w0.7/result.json
+[xens2t] ref_pdb_ts3 rc=0 13:51:57
+[xens2t] ref_pdb_ts1 gpu=4 START 13:52:02
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8755 (P 0.9212 / R 0.8342, macro 0.8443, 63 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_ref_pdb_ts1_w0.7/result.json
+[xens2t] ref_pdb_ts1 rc=0 13:53:30
+[xens2t] ref_pdb_ts_hard gpu=2 START 13:53:34
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8732 (P 0.9167 / R 0.8337, macro 0.8383, 28 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_ref_pdb_ts_hard_w0.7/result.json
+[xens2t] ref_pdb_ts_hard rc=0 13:54:46
+[xens2t] bprna_ts0 gpu=3 START 13:54:48
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] 200/1288 (3.9 seq/s)
+[xens2] 400/1288 (4.4 seq/s)
+[xens2] 600/1288 (4.3 seq/s)
+[xens2] 800/1288 (4.2 seq/s)
+[xens2] 1000/1288 (4.1 seq/s)
+[xens2] 1200/1288 (4.0 seq/s)
+[xens2] micro F1 0.8039 (P 0.8215 / R 0.7869, macro 0.8002, 1288 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_bprna_ts0_w0.7/result.json
+[xens2t] bprna_ts0 rc=0 14:01:48
+[xens2t] bprna_new gpu=2 START 14:01:52
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] 200/5388 (2.9 seq/s)
+[xens2] 400/5388 (3.1 seq/s)
+[xens2] 600/5388 (2.9 seq/s)
+[xens2] 800/5388 (3.1 seq/s)
+[xens2] 1000/5388 (3.2 seq/s)
+[xens2] 1200/5388 (3.2 seq/s)
+[xens2] 1400/5388 (3.3 seq/s)
+[xens2] 1600/5388 (3.3 seq/s)
+[xens2] 1800/5388 (3.3 seq/s)
+[xens2] 2000/5388 (3.3 seq/s)
+[xens2] 2200/5388 (3.4 seq/s)
+[xens2] 2400/5388 (3.4 seq/s)
+[xens2] 2600/5388 (3.3 seq/s)
+[xens2] 2800/5388 (3.3 seq/s)
+[xens2] 3000/5388 (3.4 seq/s)
+[xens2] 3200/5388 (3.4 seq/s)
+[xens2] 3400/5388 (3.4 seq/s)
+[xens2] 3600/5388 (3.4 seq/s)
+[xens2] 3800/5388 (3.5 seq/s)
+[xens2] 4000/5388 (3.5 seq/s)
+[xens2] 4200/5388 (3.5 seq/s)
+[xens2] 4400/5388 (3.5 seq/s)
+[xens2] 4600/5388 (3.5 seq/s)
+[xens2] 4800/5388 (3.5 seq/s)
+[xens2] 5000/5388 (3.5 seq/s)
+[xens2] 5200/5388 (3.5 seq/s)
+[xens2] micro F1 0.5532 (P 0.6574 / R 0.4776, macro 0.5423, 5388 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_bprna_new_w0.7/result.json
+[xens2t] bprna_new rc=0 14:29:00
+[xens2t] testsetb gpu=1 START 14:29:02
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] 200/428 (4.2 seq/s)
+[xens2] 400/428 (4.0 seq/s)
+[xens2] micro F1 0.8448 (P 0.9104 / R 0.7880, macro 0.8372, 428 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_testsetb_w0.7/result.json
+[xens2t] testsetb rc=0 14:31:50
+[xens2t] archiveii_embok_clean gpu=2 START 14:31:54
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] 200/2544 (0.9 seq/s)
+[xens2] 400/2544 (1.5 seq/s)
+[xens2] 600/2544 (1.9 seq/s)
+[xens2] 800/2544 (2.3 seq/s)
+[xens2] 1000/2544 (2.5 seq/s)
+[xens2] 1200/2544 (2.6 seq/s)
+[xens2] 1400/2544 (2.2 seq/s)
+[xens2] 1600/2544 (2.0 seq/s)
+[xens2] 1800/2544 (2.1 seq/s)
+[xens2] 2000/2544 (2.1 seq/s)
+[xens2] 2200/2544 (2.2 seq/s)
+[xens2] 2400/2544 (2.2 seq/s)
+[xens2] micro F1 0.7760 (P 0.7956 / R 0.7575, macro 0.8095, 2544 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_archiveii_embok_clean_w0.7/result.json
+[xens2t] archiveii_embok_clean rc=0 14:54:09
+[xens2t] ALL DONE 2026-10-06 14:54:09

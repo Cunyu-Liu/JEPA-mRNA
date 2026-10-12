@@ -1,0 +1,17 @@
+[s1wsweep] START 2026-10-06 15:10:06
+[s1wsweep] s1w=0.3 gpu=4 START 15:10:20
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8763 (P 0.8832 / R 0.8694, macro 0.8623, 196 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_vl0_s1w0.3/result.json
+[s1wsweep] s1w=0.3 rc=0 15:12:29
+[s1wsweep] s1w=0.5 gpu=2 START 15:12:36
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8789 (P 0.8846 / R 0.8733, macro 0.8661, 196 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_vl0_s1w0.5/result.json
+[s1wsweep] s1w=0.5 rc=0 15:14:41
+[s1wsweep] s1w=0.7 gpu=2 START 15:14:46
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[xens2] micro F1 0.8785 (P 0.8819 / R 0.8751, macro 0.8649, 196 seqs) -> /mnt/cunyuliu/rna-jepa/eval_decision/xens2_vl0_s1w0.7/result.json
+[s1wsweep] s1w=0.7 rc=0 15:16:44
+[s1wsweep] ALL DONE 2026-10-06 15:16:44

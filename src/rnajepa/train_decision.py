@@ -233,6 +233,10 @@ class TrainConfig:
     #: 'resnet2d' (Plan B: 2D-context scorer over the pairing matrix).
     scorer: str = "mlp"
     resnet_blocks: int = 4
+    #: Conv kernel of the resnet2d scorer blocks (single-variable ablation knob:
+    #  receptive field = kernel * 4 * n_blocks + 1; default 3 = historical value,
+    #  7 gives 41px on the pairing matrix for the 200-400nt precision hypothesis).
+    resnet_kernel_size: int = 3
     #: Column-chunk width for the head's pair tensors (0 = no chunking).  The chunk
     #: transient is (B, L, chunk, 3*d), so this is the knob that decides whether a
     #: run fits on a small MIG slice; see tools/patch_head_checkpointing.py.
@@ -687,6 +691,7 @@ def build_decision_model(config: TrainConfig):
                 gate_theta=config.cascade_gate_theta, gate_tau=config.cascade_gate_tau)
         return FlatDecisionHead(d_model=d_model, d_z=config.d_z, hidden=config.hidden,
             scorer=config.scorer, resnet_blocks=config.resnet_blocks,
+                                resnet_kernel_size=config.resnet_kernel_size,
                                 chunk_size=config.head_chunk_size)
 
     if config.embedding_dir:
@@ -1739,6 +1744,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--scorer", default="mlp", choices=["mlp", "resnet2d"],
                    help="pair-scorer architecture (Plan B: resnet2d)")
     p.add_argument("--resnet-blocks", type=int, default=4)
+    p.add_argument("--resnet-kernel-size", type=int, default=3,
+                   help="conv kernel of the resnet2d scorer blocks (receptive "
+                        "field = kernel * 4 * blocks + 1; default 3 = historical) "
+                        "-- single-variable ablation for the 200-400nt precision "
+                        "hypothesis (S15.45 attribution: Kirigami 11px-kernel FCN "
+                        "edges us in that bucket)")
     p.add_argument("--embedding-d-model", type=int, default=0,
                    help="hidden size of the cached embeddings (required with "
                         "--embedding-dir)")
@@ -1785,6 +1796,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         embedding_d_model=args.embedding_d_model,
         head_chunk_size=args.head_chunk_size,
         scorer=args.scorer, resnet_blocks=args.resnet_blocks,
+        resnet_kernel_size=args.resnet_kernel_size,
         prior_init=args.prior_init,
         lr_calibrate=args.lr_calibrate,
         lr_candidates=tuple(float(x) for x in args.lr_candidates.split(",") if x.strip()),

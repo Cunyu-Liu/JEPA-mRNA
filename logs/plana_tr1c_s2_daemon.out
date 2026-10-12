@@ -1,0 +1,53 @@
+[plana_tr1c_s2] launched pid=3875380 on 1 2026-10-06 15:06:03 (bar=16GB, confirmed twice)
+[plana_tr1c_s2] training DONE at 20000 2026-10-07 02:37:36
+[plana_tr1c_s2] eval on card 1 02:37:39
+/home/cunyuliu/miniconda3/envs/editflow/lib/python3.10/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[eval-plan-a] checkpoint /mnt/cunyuliu/rna-jepa/ckpts/plana_giga_tr1c_s2_step20000.pt step=20000
+[eval-plan-a] evaluating ts0 <- /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl
+[eval-plan-a] 200/1288 (6.7 seq/s)
+[eval-plan-a] 400/1288 (7.9 seq/s)
+[eval-plan-a] 600/1288 (7.4 seq/s)
+[eval-plan-a] 800/1288 (7.4 seq/s)
+[eval-plan-a] 1000/1288 (7.4 seq/s)
+[eval-plan-a] 1200/1288 (7.2 seq/s)
+[eval-plan-a] ts0: micro F1 0.7860 (P 0.7979 / R 0.7745, 1288 seqs)
+[eval-plan-a] evaluating new <- /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_new.jsonl
+[eval-plan-a] 200/5388 (7.1 seq/s)
+[eval-plan-a] 400/5388 (7.1 seq/s)
+[eval-plan-a] 600/5388 (6.2 seq/s)
+[eval-plan-a] 800/5388 (6.8 seq/s)
+[eval-plan-a] 1000/5388 (7.2 seq/s)
+[eval-plan-a] 1200/5388 (7.3 seq/s)
+[eval-plan-a] 1400/5388 (7.5 seq/s)
+[eval-plan-a] 1600/5388 (7.6 seq/s)
+[eval-plan-a] 1800/5388 (7.7 seq/s)
+[eval-plan-a] 2000/5388 (7.8 seq/s)
+[eval-plan-a] 2200/5388 (7.9 seq/s)
+[eval-plan-a] 2400/5388 (7.9 seq/s)
+[eval-plan-a] 2600/5388 (8.0 seq/s)
+[eval-plan-a] 2800/5388 (8.0 seq/s)
+[eval-plan-a] 3000/5388 (8.1 seq/s)
+[eval-plan-a] 3200/5388 (8.1 seq/s)
+[eval-plan-a] 3400/5388 (8.1 seq/s)
+[eval-plan-a] 3600/5388 (8.2 seq/s)
+[eval-plan-a] 3800/5388 (8.2 seq/s)
+[eval-plan-a] 4000/5388 (8.2 seq/s)
+[eval-plan-a] 4200/5388 (8.2 seq/s)
+[eval-plan-a] 4400/5388 (8.2 seq/s)
+[eval-plan-a] 4600/5388 (8.3 seq/s)
+[eval-plan-a] 4800/5388 (8.3 seq/s)
+[eval-plan-a] 5000/5388 (8.3 seq/s)
+[eval-plan-a] 5200/5388 (8.3 seq/s)
+[eval-plan-a] new: micro F1 0.4721 (P 0.5762 / R 0.3999, 5388 seqs)
+[eval-plan-a] evaluating ts1 <- /mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts1.jsonl
+[eval-plan-a] ts1: micro F1 0.8388 (P 0.9053 / R 0.7814, 63 seqs)
+[eval-plan-a] evaluating hard <- /mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts_hard.jsonl
+[eval-plan-a] hard: micro F1 0.8074 (P 0.8929 / R 0.7368, 28 seqs)
+[eval-plan-a] evaluating ts2 <- /mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts2.jsonl
+[eval-plan-a] ts2: micro F1 0.7855 (P 0.9012 / R 0.6962, 39 seqs)
+[eval-plan-a] evaluating ts3 <- /mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts3.jsonl
+[eval-plan-a] ts3: micro F1 0.8489 (P 0.8939 / R 0.8082, 19 seqs)
+[eval-plan-a] written /mnt/cunyuliu/rna-jepa/eval_decision/plana_giga_tr1c_s2_step20000/plan_a_result.json
+[plana_tr1c_s2] eval rc=0
+[plana_tr1c_s2] ALL DONE 2026-10-07 02:52:31
