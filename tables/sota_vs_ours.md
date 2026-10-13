@@ -72,6 +72,7 @@ bucket dilutes it slightly).
 | RNAformer (biophysical ckpt) | — | — | — | — | 0.8265 | — | — | — |
 | RiNALMo-ft (Zenodo ckpt) | 0.7214 | 0.4489 | 0.7139 | 0.6702 | 0.6055 | 0.5556 | 0.7613 | 0.8711 |
 | NucleicBERT (frozen enc + our head) | 0.1509 | 0.0955 | 0.2029 | 0.1541 | 0.1439 | 0.1343 | 0.2372 | 0.1210 |
+| eFold (Sci Adv 26, wheel weights, zero-shot seq mode) | 0.5612 | 0.6640 | 0.7682 | 0.8862 | 0.7354 | 0.7632 | 0.6618 | 0.5706 (clean-181 0.5661) |
 
 Provenance: every cell is OUR measurement (project scorer, project GT,
 same split files) — ViennaRNA 2.7.2, MXfold2 (repo weights), UFold
@@ -80,6 +81,9 @@ EternaFold (make multi, EternaFoldParams.v1), RiNALMo-ft (Zenodo
 giga_ss_bprna_ft.pt, strict pairs re-scored by our protocol), NucleicBERT
 (official frozen MLM encoder; SSP head trained by us on bprna_tr1c with
 their SecStruct2DPredictionHead — labelled, not a released SSP ckpt).
+
+
+eFold provenance (S15.49): efold 0.1.2 wheel + bundled efold_weights.pt (zero-shot sequence mode; E2Efold-style Lagrangian non-crossing postproc, no DP partition function; bp-list output 1-indexed, converted to our 0-indexed GT). Leak audit (efold_leak_audit.json): TS0/new/TS1-3/hard zero exact overlap vs TR0/tr1c; its pretrain = bpRNA subset + RNAstralign + Ribonanza with ArchiveII explicitly held out (paper S1) — ArchII 0.6618 is its own held-out side. Strongest zero-shot single model on bpRNA-new (0.6640 > UFold 0.6106, > xens2 0.6132) — new-row reference stays UFold per protocol, eFold quoted in note. TSB: 247/428 TR0 overlap applies but clean-vs-full delta is only -0.0045.
 
 ## Our trained models on the 8-split board (history; — = not evaluated)
 

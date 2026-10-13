@@ -810,3 +810,42 @@ git）。台账 §15.47 已入。
 **下一步（项目外部动作）**：导师审阅 v3.19 冻结稿 → 投稿决策。
 项目内部：无在训臂、无排队的必做项；速度工程线 v2（解码向量化）
 与 RFold/基线再扩展均为可选加分项，默认不动。
+
+### 第二十一轮交接（2026-10-14 凌晨，细节 §15.49）T-A56/T-A56b：eFold 上板（用户指示补测）
+
+**用户问"有没有下游任务上测评 eFold"——查台账发现两条旧记录矛盾（§14.71"无
+TS0 ckpt"、§15.44"探测范式不入板"），实测全部推翻：**
+
+1. **资产核实**：`~/reactflow_external_envs/efold_py310` venv 里装着
+   **efold 0.1.2 wheel（Rouskin lab，Sci Adv 2026-02）且权重随 wheel 打包**
+   （`efold/resources/efold_weights.pt`）；`efold.api.run` 支持纯序列
+   zero-shot 推理（Evoformer 式前向 + E2Efold 式 Lagrangian 非交叉后处理）。
+2. **8-split 全量落地**（eval/ss/conf_baselines/eval_efold.py，board 同
+   协议）：TS0 0.5612 / **new 0.6640（超 UFold 0.6106 与 xens2 0.6132，
+   当前 new 最强 zero-shot 单模）** / TS1 0.7682 / TS2 0.8862（超 xens2
+   +0.027，仍低于 RNAformer-if 0.9043）/ TS3 0.7354 / hard 0.7632 /
+   ArchII 0.6618 / TSB 0.5706（clean-181 0.5661）。
+3. **泄漏审计**（efold_leak_audit.py）：TS0/new/PDB 系对 TR0/tr1c 零精确
+   重叠；其论文 S1 自述 ArchII 显式 held-out（训练时已过滤）——ArchII 数字
+   无泄漏之忧；TSB 247/428 口径适用但 clean 差仅 −0.0045（泄漏敏感度低）。
+4. **board 判定不变**：6/8 clean 维持（eFold 非任何 split 的 board 参照；
+   new 行参照仍为 UFold，eFold 在表格注释如实引用）。TS2/TS3 负结果叙事
+   不变。
+5. **工程坑入库**：① eFold bp 列表输出 1-indexed vs 我们 GT 0-indexed——
+   首跑 1-idx 交集 0，修 −1 后放行（bp 列表输出模型必须先冒烟对索引）；
+   ② 外部资产核实先看盘上 venv（efold_py310 躺了 3 个月两轮都判"不可得"）；
+   ③ "协议不同源"要区分训练范式与推理接口。
+6. **产物**：eval_efold.py + efold_leak_audit.py 入 repo
+   （eval/ss/conf_baselines/）；结果 efold_board.json +
+   efold_leak_audit.json 落 eval_decision/；sota_vs_ours.md baselines 板
+   eFold 行 + provenance note；台账 §15.49；§14.71/§15.44 旧记录由本节
+   勘误（不删原文，本节声明作废）。
+
+| # | 任务 | 完成判据 | 状态 |
+|---|---|---|---|
+| **T-A56** | eFold 8-split zero-shot 上板 | board 同协议 + 全 split result.json | ✅ 完成（§15.49） |
+| **T-A56b** | eFold 泄漏审计 | 序列级审计 + 论文声明交叉 | ✅ 完成（efold_leak_audit.json） |
+| **T-A57** | PPT S18/S20 加 eFold 行（若导师汇报需要） | 数字三遍核对 | 🟡 待用户示意（board 判定不受影响，非必改项） |
+
+**下一步**：维持外部动作（导师审阅 v3.19 → 投稿）。eFold 数字为 draft
+Related work / 基线全景的增量证据线，需要时可一并写入 v3.20。

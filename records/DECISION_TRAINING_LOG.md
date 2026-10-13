@@ -8612,3 +8612,101 @@ embedding-split 名是否存在（对照既有 watch 脚本的 case 分支）、
 终评启动旗标是否与 watch7 协议一致。pdbexp（引号笔误）、
 r2dplus（无快照）、k7（无快照 + embedding 名错）三连翻车同一
 位置，此规则进入启动 checklist。
+
+### §15.49 eFold 上板（T-A56/T-A56b，2026-10-14 凌晨，用户指示"补测 eFold"）
+
+**背景**：用户询问 eFold 有没有在下游任务上测评。查台账发现两条旧记录矛盾：
+§14.71（09-26）记"代码在 GitHub 但无 TS0 checkpoint，不测"；§15.44（10-11）
+记"探测数据范式、协议不同源不入板"。**本轮实测推翻两者**。
+
+**一、资产核实（集群盘点）**
+
+- `~/reactflow_external_envs/efold_py310/`（venv，Python 3.10，torch 2.5.1+cu121）
+  装有 **efold 0.1.2 wheel**（Rouskin lab，Sci Adv 2026-02
+  "Diverse database and machine learning model to narrow the generalization
+  gap in RNA structure prediction"）；
+- **权重随 wheel 打包**：`efold/resources/efold_weights.pt`——旧记录"权重
+  未核实/无 checkpoint"不成立；
+- **纯序列推理可用**：`efold.api.run`（data_types=["sequence"]），
+  Evoformer 式前向 + E2Efold 式 Lagrangian 非交叉后处理（无配分函数）；
+  "探测数据范式"是它的微调/完整用法之一，序列模式 zero-shot 完全可比。
+
+**二、评测协议（与 board 完全同源）**
+
+- 适配器 `rna_baselines_src/eval_efold.py`：8 split + TSB clean-181
+  分解（kirigami_tsb_clean.py 同款序列级 T→U 精确匹配）；
+- **索引口径 bug（三遍纪律抓出）**：eFold bp 列表输出 1-indexed，
+  我们 GT 0-indexed——首跑 1-idx 交集 = 0，修为 −1 后冒烟交集 34/35，
+  才放行全量（Kirigami 走 DBN 解析天然 0-idx 没踩过此坑；bp 列表
+  输出的外部模型必须显式对索引）；
+- 速度：TS0 2.78 seq/s（GPU 逐条，含 Python 端 100 步 Lagrangian 后处理）。
+
+**三、读出（zero-shot，efold_weights.pt，我们的 GT + micro F1）**
+
+| split | eFold F1 | P | R | xens2 | 参照 | 备注 |
+|---|---|---|---|---|---|---|
+| TS0 | 0.5612 | 0.4810 | 0.6735 | 0.8039 | RNAformer 0.7578 | bpRNA 族外，弱势 |
+| bpRNA-new | **0.6640** | 0.6203 | 0.7145 | 0.6132 | UFold 0.6106 | **超 xens2 +0.0508，超 UFold +0.0534** |
+| TS1 | 0.7682 | 0.7791 | 0.7576 | 0.8755 | RNAformer-if 0.8150 | 低于参照 |
+| TS2 | **0.8862** | 0.8869 | 0.8855 | 0.8588 | RNAformer-if 0.9043 | 超 xens2 +0.0274（仍低于 if 0.9043） |
+| TS3 | 0.7354 | 0.7445 | 0.7266 | 0.8965 | RNAformer 0.9410 | 大幅低于 |
+| TS-hard | 0.7632 | 0.7665 | 0.7600 | 0.8732 | RNAformer 0.7845 | 低于 |
+| ArchII-clean | 0.6618 | 0.6014 | 0.7357 | 0.7760 | Kirigami 0.7872 | 其论文主测集，但低于两家 |
+| TestSetB | 0.5706 | 0.5266 | 0.6227 | — | — | — |
+| TSB clean-181 | 0.5661 | 0.5135 | 0.6307 | 0.8370 | xens2 0.8370 | 差 −0.271 |
+
+结果 JSON：`eval_decision/efold_board.json`（含全部 tp/fp/fn）。
+
+**四、泄漏审计（T-A56b，efold_leak_audit.py，序列级精确匹配）**
+
+eFold 论文自述预训练 = bpRNA 子集 + RNAstralign + Ribonanza（"filtered
+to remove redundant sequences and ArchiveII sequences"，即 **ArchiveII 是
+其显式 held-out 测试集**——ArchII 上 0.6618 无泄漏之忧，且该数字与其论文
+自报 ArchII 水平相当）。以 TR0 / tr1c（我们盘上的 bpRNA 训练侧全集）做
+下界探测：
+
+| split | n | TR0 命中 | tr1c 命中 | 判读 |
+|---|---|---|---|---|
+| TS0 | 1288 | 0 | 0 | 无精确重叠 |
+| bpRNA-new | 5388 | 0 | 0 | 无精确重叠 |
+| TS1/2/3/hard | 149 | 0 | 0 | 无 |
+| ArchII-clean | 2544 | 5 | 0 | 5 条 TR0 同序列（Kirigami 审计时同款已知项，非 eFold 特有） |
+| TestSetB | 428 | 247 | 0 | 与其他 TR0 训练基线同款 247/428 泄漏口径——但 eFold 训的是"bpRNA 子集"，TSB 全集与 clean 差仅 −0.0045，泄漏敏感度低 |
+
+**诚实披露**：eFold 的 bpRNA 训练子集的确切构成未公开，我们只能用盘上
+的 bpRNA 训练侧做下界——TS0/new 精确级零命中，但其 bpRNA 子集若含
+TS0/new 的同源序列（非精确重复），0.6640 的泛化数字需按"可能含同源
+训练信号"读。相比 Kirigami/DEPfold/RFold 的"全量 TR0 训练"（247/428
+TSB 泄漏实锤），eFold 的泄漏暴露面更小（clean 差 −0.0045）。
+
+**五、判读与处置**
+
+1. **格局**：eFold 是"大库泛化型"——族外/家族泛化（new +0.0508 超
+   xens2；TS2 +0.0274）强，bpRNA 同分布（TS0 −0.2427）与实验标签
+   split（TS3 −0.1611）弱。与我们互补：我们的 OOD 先验栈在 PDB 实验标签
+   上强，它的 120k 大库在跨家族上强。**bpRNA-new 上 eFold 成为当前最强
+   zero-shot 单模（0.6640）**——board 的 new 参照 UFold 0.6106 与我们
+   xens2 0.6132 都低于它，主表 new 行的"✅ 超 UFold"判定不受影响
+   （参照仍是 UFold），但表格注释必须如实加 eFold 数字。
+2. **不改变 board 判定**：6/8 clean 维持（eFold 不是任何 split 的
+   board 参照）；TS2/TS3 负结果叙事不变（eFold TS2 0.8862 仍低于
+   RNAformer-if 0.9043）。
+3. **draft 影响**：Related work 的 2D-scorer 谱系行可引 eFold 实测数字
+   替代"未测"标注；§4.3 主表加"eFold zero-shot"对照列或在
+   baselines 板加行（选后者，board 全景表 S18/S20 已有空间）。
+4. **旧记录修正**：§14.71"无 TS0 checkpoint"、§15.44"协议不同源
+   不入板"两条均已在勘误区声明作废（资产核实推翻）。
+
+**六、产物**
+
+- `rna_baselines_src/eval_efold.py`（评测器，1/0-index 修正注释在码内）
+- `rna_baselines_src/efold_leak_audit.py`（泄漏下界审计）
+- `eval_decision/efold_board.json` + `eval_decision/efold_leak_audit.json`
+- 本节 + sota_vs_ours.md「Published baselines」板新增 eFold 行 +
+  交接三件套刷新，同批 commit。
+
+**教训入库**：① 外部模型资产核实必须先看盘上环境（efold_py310 venv
+就在家目录躺了三个月，两轮调研都判"不可得"）；② bp 列表输出的外部
+模型必须先对索引口径再放行全量（1-idx/0-idx 一次冒烟即可抓出）；
+③ "协议不同源"的判定要区分训练范式与推理接口（eFold 微调用探测数据，
+但序列模式推理完全可比）。
