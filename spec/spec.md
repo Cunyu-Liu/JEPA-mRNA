@@ -5,6 +5,15 @@
 > 架构来源：**纯血 Jev（TypeSafe AI Decision Model）范式**——不引入 JEPA / 隐空间预测 / EMA teacher 路线
 > 前置资产：`rna-jepa/` 仅作为**基础设施**复用（GPU 调度、监控、台账、tokenization 等价性、既有 mRNA 下游任务注册表），**不作为科学线**
 
+> **交接状态（2026-10-13 晚，第二十轮交接更新——k7 消融收官轮，细节 §15.48）**：
+> - **集群**：`ssh A100`，代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`，HEAD 见本轮 commit）；数据/权重 `/mnt/cunyuliu/rna-jepa`。
+> - **S15.45 三遗留候选全部关闭**：① C 解码集成进 eval 管线（S15.46，--decode c_batched，解码 32.6×，bitwise 等价）；② xens2 2-seed 三遍复证（S15.47，TS0 0.8039×3，spread=0，板值逐位复现）；③ **k7 感受野消融判负（S15.48，本轮）**——kernel 3→7 在主假设主场 ArchII 反降 −0.0163，5/8 split 下降，P↑R↓ 保守签名；Kirigami ArchII 优势不能由扩感受野复现（S15.45 归因维持）。
+> - **k7 终评链双故障修复（§15.48 一）**：快照 cron #PAUSED# 致 step20000 快照缺失（§15.42 同型第三次实证，新规入库：**新臂上线前必须 dry-run eval 段**）+ ArchII embedding-split 名错（应为全量 archiveii shard）。快照按 §14.56 从 resume.pt 恢复，8-split 全量落地。
+> - **板值维持**：6/8 clean SOTA（TS0 0.8039 三遍复证 / new 0.6132 / ArchII 0.7760 / TS1 0.8755 / hard 0.8732 / TSB clean 0.8370）；TS2/TS3 五战线穷尽式负结果；v3.19 冻结维持（k7 为冻结后增量判负证据，不进主表）。
+> - **项目状态**：无在训/在飞臂；实验面收官。注意：快照 cron（monitor_decision.sh）仍 #PAUSED#——未来任何新训练臂须先恢复该 cron 或手动接管快照产出。下一步为外部动作（导师审阅 v3.19 → 投稿决策）。
+> - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.48**（8614 行）；权威表：`tables/sota_vs_ours.md`（含 k7 判负行）。
+>
+
 > **交接状态（2026-09-29 傍晚，第六轮交接更新）**：
 > - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/mnt/cunyuliu/rna-jepa`。
 > - **draft v3.14 已提交**（commit 95baf6b，**88/88 检查通过**）：plana 行入 §4.3 主表（双协议读法）+ §4.3g (e) 块 + 四行分解表 + 单种子 caveat。第五轮"v3.14 为下一步"的表述已完成。

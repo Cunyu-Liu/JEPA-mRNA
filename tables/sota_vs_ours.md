@@ -98,6 +98,7 @@ their SecStruct2DPredictionHead — labelled, not a released SSP ckpt).
 | ow_rinalmo_r2dtr1c_norlcd_b4_s0_step20000 | 0.6596 | 0.5436 | 0.7596 | 0.7091 | 0.7686 | 0.6968 | — | — |
 | ow_rinalmo_r2dtr1c_tr1cpdb_b4_s0_step20000 | 0.6456 | 0.4735 | 0.6941 | 0.5594 | 0.6897 | 0.6034 | — | — |
 | ow_rinalmo_r2dtr1c_tr1cpdb_s1_b4_s0_step20000 | 0.6616 | 0.5526 | 0.7159 | 0.6807 | 0.7558 | 0.6587 | — | — |
+| ow_rinalmo_r2dtr1c_k7_b4_s0_step20000 | 0.6647 | 0.5170 | 0.7713 | 0.7107 | 0.7614 | 0.7320 | 0.7240 | 0.7578 |
 | ow_rinalmo_fftr1c_b4_s0_step20000 | 0.5791 | 0.5117 | 0.6822 | 0.6882 | 0.6203 | 0.5673 | — | — |
 | astrained_ff3500 | 0.4953 | 0.3536 | — | — | — | — | — | — |
 | clean_ff3500 | — | — | — | — | — | — | 0.5784 | — |

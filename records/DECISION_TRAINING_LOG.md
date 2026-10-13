@@ -8535,3 +8535,80 @@ ensemble 前先算常驻显存之和。
 
 **遗留（§15.45 五-2，唯一未落地候选）**：ResNet-2D head 感受野消融
 （200-400nt 中长段精度）——候选不急，Limitations 已如实披露。
+### §15.48 感受野消融臂 k7 落地与终评链抢救（2026-10-13，第二十轮交接）
+
+**背景**：§15.45 五-2 的唯一遗留候选——ResNet-2D head 感受野消融
+（kernel 3→7，RF 17px→49px），针对 Kirigami 11px-kernel FCN 在
+ArchII 200-400nt 桶的精度优势假设。臂由上一会话（10-12 备份提交
+ced8ada）预置：`--resnet-kernel-size` 训练管线旋钮（decision_head +
+train_decision 全链接通，单变量纪律）+ `scripts/launch_r2d_k7.sh`
+（与 r2dtr1c 基线逐字节一致，仅 kernel 差异，seed 0）。
+
+**一、终评链抢救（本轮工程）**
+
+k7 于 10-13 14:53 训完 20000 步，但自动终评链空转 6 小时+，两个独立根因：
+- 根因①：快照 cron（monitor_decision.sh）处于 #PAUSED# →
+  `ckpts/rinalmo_r2dtr1c_k7_b4_s0_step20000.pt` 从未生成，daemon 每
+  10 分钟打 "NOTE: no snapshot at 20000" 空转（§15.42 r2dplus 同型
+  故障第三次实证：**新臂上线前必须 dry-run eval 段**）。
+- 根因②：ArchII 的 embedding 旗标错——launch_r2d_k7.sh 直写
+  `--embedding-split archiveii_embok_clean`，但 EmbeddingStore 只有
+  全量 `archiveii` shard（embok_clean 是其序列子集）；tier1_arch.sh
+  的 case 分支映射惯例未被抄入。
+- 修复：① 按 §14.56 纪律从 resume.pt 恢复快照（58 键结构与 k3 参照
+  快照逐位同型；strict load 0 missing 0 unexpected；config 自带
+  resnet_kernel_size=7；block 卷积 7×7 实测确认消融变量真实）；
+  ② ArchII 手工补跑 --embedding-split archiveii；③ 首次补跑在 GPU6
+  MIG 4.75GB OOM（head-chunk 4 仍装不下 L=2938 的 pair 矩阵）→
+  换 GPU0 物理卡成功。k7 cron 已暂停，臂收官。
+
+**二、读出（8-split 全量，vs 基线 r2dtr1c k3 board 行）**
+
+| split | k7 F1 | k3 F1 | Δ | k7 P | k7 R |
+|---|---|---|---|---|---|
+| TS0 | 0.6647 | 0.6679 | −0.0032 | 0.6557 | 0.6740 |
+| bpRNA-new | 0.5170 | 0.5643 | −0.0473 | 0.5764 | 0.4687 |
+| TS1 | 0.7713 | 0.7551 | +0.0162 | 0.8651 | 0.6959 |
+| TS2 | 0.7107 | 0.7686 | −0.0579 | 0.8917 | 0.5908 |
+| TS3 | 0.7614 | 0.7815 | −0.0201 | 0.8343 | 0.7002 |
+| TS-hard | 0.7320 | 0.7005 | +0.0315 | 0.8333 | 0.6526 |
+| ArchII-clean | 0.7240 | 0.7403 | **−0.0163** | 0.7250 | 0.7229 |
+| TestSetB | 0.7578 | 0.7507 | +0.0071 | 0.7957 | 0.7233 |
+
+合法性：n_illegal = 0 / hairpin violations = 0（全 split）。
+
+**三、判定：感受野假设干净负结果（判负）**
+
+1. **主假设判负**：假设主场 ArchII-clean 不升反降（−0.0163）。
+   若 200-400nt 中长段精度差距源于感受野不足，kernel 3→7
+   （RF 17→49px）应在该桶抬 P 并传导至整体 F1——实测相反。
+2. **签名定性**：7/8 split P 升 R 降（bpRNA-new P −0.023 除外），
+   与 tr1cpdb 数据扰动臂同型——大核卷积使 head 对候选配对更保守，
+   是全局行为改变而非局部精度修补。3 个正 split（TS1/TS-hard/TSB）
+   的增益来自 recall 受损较小场景下的 precision 抬升，不构成
+   中长段假设的机制证据。
+3. **S15.45 归因结论维持并加固**：Kirigami 的 ArchII 优势
+   （0.7872 vs xens2 0.7760，gap +0.0112，64.9% 来自 200-400nt 桶）
+   **不能由 ResNet-2D 扩大感受野复现**——差距更可能锚定在其
+   FCN 结构本身（11px 大核 + 全卷积端到端 + 无 chunk 稀疏）与
+   训练协议，而非单一 RF 数字。Limitations 表述不变。
+4. **处置**：判负臂待遇（同 pdbexp/tr1cpdb）：不进主表、不进
+   xens 桶，保留在完整历史表与台账。S15.45 的「候选不急」评级
+   由「未测」升级为「已测判负」。
+
+**四、产物与提交**
+
+- 快照：`ckpts/rinalmo_r2dtr1c_k7_b4_s0_step20000.pt`（resume.pt
+  恢复，§14.56 纪律）
+- 评测：`eval_decision/ow_rinalmo_r2dtr1c_k7_b4_s0_step20000_{8split}/`
+- k7 cron 暂停（ensure_r2d_k7 → #PAUSED#）；臂收官。
+- 本节 + 交接三件套第二十轮块 + sota_vs_ours 完整表 k7 行，同批
+  commit 提交。
+
+**教训入库**（老教训的第三次实证，权重升级为强制规则）：
+**任何新臂上线前，其 eval 段必须在读出前 dry-run 验证**——
+含三件事：快照路径是否会被快照 cron 产出、每个 split 的
+embedding-split 名是否存在（对照既有 watch 脚本的 case 分支）、
+终评启动旗标是否与 watch7 协议一致。pdbexp（引号笔误）、
+r2dplus（无快照）、k7（无快照 + embedding 名错）三连翻车同一
+位置，此规则进入启动 checklist。
