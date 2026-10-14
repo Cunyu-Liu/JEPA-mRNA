@@ -8744,3 +8744,40 @@ release。
 **三条均已沉淀**：§15.49 教训区（台账）+ 本节（交接 spec/tasks）+
 eval_efold.py 码内注释。后续任何新基线适配（TVAE-RNA 若出仓库、或
 Kirigami v2 等）按此清单走。
+
+### §15.50 测评数据集备份审计与补齐（T-A59，2026-10-14，用户指示核查备份盘）
+
+**用户问"所有测评数据集有没有备份到硬盘"——核查结论：完全没备份。**
+
+备份盘 `/Volumes/orico-disc/A100 大量项目文件备份/05_RNA-JEPA/` 此前只有
+评测**结果**（eval_decision/）、代码（code_git_home/mnt）、ckpt、文档与
+PPT；**任何 ss_data 数据集文件不存在**（find 全树仅 ledger.jsonl 训练
+台账）。而 `/mnt/cunyuliu` 是 NFS 挂载，属于集群生命周期资产，关停即失
+（10-12 已发生过一次"cluster shutdown backup"，那次也只备了代码与
+ckpt，没备数据）。
+
+**补齐动作（本轮）**：
+
+1. 盘点集群：`ss_data/jsonl/` 111 项（9 冻结评测 split + 训练语料
+   tr0/tr1/tr1c 系 + 长度桶/家族子集 + rfam OOD + pdb669 + synthetic
+   蒸馏集 + 全部 manifest.json 与 rejects.jsonl 溯源链），519MB。
+2. 传输：集群 tar.gz（109,110,516 B）→ scp → **传输级 sha256 验证一致**
+   （d016737c20e0…）。
+3. **内容级终验：9/9 冻结 split 的文件级 sha256 与权威清单
+   `spec/eval_splits_frozen.json`（15.14 冻结）逐项 MATCH**，行数与
+   n_unique 一致（ArchII 2544 行 = 2214 unique + 330 合法同序列多结构
+   重复，§15.41 已核的三方一致性在备份上复现）。
+4. 落盘：备份盘 `ss_data_backup/`（jsonl/ 全量 + eval_splits_frozen.json
+   + BACKUP_MANIFEST.md + tar sha256）。
+
+**有意不备份项（BACKUP_MANIFEST.md 记录了理由）**：teacher 蒸馏软标签
+20GB（jsonl + ViennaRNA 2.7.2 版本锁确定性可再生成，§14.30 有吞吐
+实测）；BPfold_data 原始 bpseq 18MB（jsonl 是其清洗投影，原始源公开可
+再下载）；RiNALMo 冻结嵌入（权重+序列确定性可再生成）。
+
+**教训入库（备份完整性维度）**：历次"backup"动作（10-12 shutdown、
+10-13 我的 orico 同步）都默认备份"结果与代码"，漏掉"数据"——因为数据
+在 NFS 且不在 git 里，最容易被忽略也最难恢复（tr1c 的构建链含
+mmseqs/清洗/去污染多步，虽可重建但成本数天）。**备份三件套检查表**：
+代码（git）+ 结果（eval_decision）+ **数据（ss_data jsonl + 冻结清单）**
+——今后任何备份轮按此三项核对。

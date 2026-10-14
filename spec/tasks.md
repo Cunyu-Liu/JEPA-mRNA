@@ -870,3 +870,20 @@ Related work / 基线全景的增量证据线，需要时可一并写入 v3.20�
    适配器脚本（eval_efold.py / efold_leak_audit.py）已备份至本地
    `/Volumes/orico-disc/A100 大量项目文件备份/05_RNA-JEPA/` 对应文件夹
    （eval_decision/ 与 code_git_home 同构布局），与既有备份结构一致。
+
+### 第二十一轮交接续（2026-10-14 晚，T-A59）测评数据集备份核查与补齐
+
+**用户指示核查备份盘 → 结论"完全没备份" → 已补齐并三重验证：**
+
+- 备份盘 `05_RNA-JEPA/ss_data_backup/`：jsonl 全量 111 项（543MB 解包后），
+  含 9 冻结评测 split、训练语料族、全部 manifest/rejects 溯源链；
+- 验证链：传输级 sha256 一致 + **9/9 冻结 split 文件级 sha256 与
+  15.14 权威清单逐项 MATCH**（BACKUP_MANIFEST.md 在备份盘内）；
+- 有意不备份：teacher 20GB（确定性可再生成）、原始 bpseq（公开可下载）、
+  embeddings（可再生成）——理由均已记录；
+- **新规则入库（§15.50）**：备份三件套检查表 = 代码（git）+ 结果
+  （eval_decision）+ 数据（ss_data + 冻结清单）；历次备份都漏了第三项。
+
+| # | 任务 | 完成判据 | 状态 |
+|---|---|---|---|
+| **T-A59** | 测评数据集备份核查 + 补齐 | 9/9 sha256 验证 + manifest 落盘 | ✅ 完成（§15.50） |
