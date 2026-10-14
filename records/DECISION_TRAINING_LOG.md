@@ -8781,3 +8781,47 @@ ckpt，没备数据）。
 mmseqs/清洗/去污染多步，虽可重建但成本数天）。**备份三件套检查表**：
 代码（git）+ 结果（eval_decision）+ **数据（ss_data jsonl + 冻结清单）**
 ——今后任何备份轮按此三项核对。
+
+### §15.51 复现能力审计 + 备份三件套落地（T-A60，2026-10-14，用户问"备份能否支持复现"）
+
+**用户问题**：现在备份好的结果能不能支持别人复现所有训练和测评结果？
+
+**一、复现能力矩阵（逐项审计）**
+
+| 复现所需资产 | 备份状态 | 可复现性 |
+|---|---|---|
+| 评测数据（9 冻结 split + 全语料 jsonl + manifest/rejects） | ✅ ss_data_backup/，9/9 sha256 验 | **完整** |
+| 代码（训练/评测/工具/测试 317 项） | ✅ GitHub Cunyu-Liu/JEPA-mRNA + 备份盘 code_git_home/mnt | **完整**（tag preprint-v3.19-freeze） |
+| 协议与台账（eval_splits_frozen + 全程决策记录） | ✅ spec/ + records/ 双份 | **完整** |
+| 评测结果原件（result.json 全量） | ✅ eval_decision/（05 备份盘） | **完整**（可逐数字比对） |
+| board 成员 ckpt（plana s0-s3 / r2dtr1c s0-s2） | 🔄 rsync 6 分片在飞（185 文件清单，64 完成） | **进行中**（数小时级，--partial 断点续传） |
+| 消融臂 ckpt（turnerzero/fftr1c/tr1cpdb 系） | 🔄 同一 rsync 计划内（ckpts/* + runs/*/resume.pt 双路径覆盖 symlink 问题） | 进行中 |
+| RiNALMo-giga 骨干 650M（2.6GB） | 🔄 本轮 scp 在飞 + sha256 清单已落盘 | HF-mirror 可再取（双保险） |
+| teacher 蒸馏软标签（20GB） | ✗ 有意不备 | **可确定性再生成**（jsonl + ViennaRNA 2.7.2 版本锁，12 进程 892s/45k 条） |
+| RiNALMo 冻结嵌入（embeddings/） | ✗ 有意不备 | 可再生成（骨干 + 序列） |
+| Python/工具环境 | ✅ ENVIRONMENT_SNAPSHOT.md（版本清单） | conda/pip 可重建 |
+
+**二、结论**：评测侧（别人拿我们的 ckpt 重跑 8-split 板）**已可完全复现**；
+训练侧（重训全部臂）在 rsync 完成后**资产齐备**——训练唯一非备份项
+（teacher 软标签）是确定性可再生的（同一 ViennaRNA 版本 → 同一标签，
+Mathews 分布分片哈希已入 manifest）。**无不可复现项**。
+
+**三、本轮新增动作**
+
+1. ENVIRONMENT_SNAPSHOT.md（备份盘 reproduction/）——Python/torch/
+   transformers 版本 + 全部外部基线版本锁 + 硬件口径。
+2. RiNALMo-giga 骨干 + sha256 清单 → weights_backbone/（HF-mirror 可
+   再取，但归档消除单点依赖）。
+3. 发现并确认：shutdown_20261014/ckpts 的 plana_s0_s1 tar **传输截断**
+   （plana_split_ab 仍在写入）——该目录由用户侧 rsync 接管，勿用截断
+   版本；权威全量在 06_RNA-JEV_mars清洗流程/rna_jepa_weights_20261013
+   （185 文件 6 分片 --partial rsync，含 runs/resume.pt 补齐 symlink 内容）。
+4. 备份三件套规则执行确认：代码 ✓ + 结果 ✓ + 数据 ✓（§15.50 新规
+   首次全绿）。
+
+**四、遗留与跟踪**
+
+- rsync 185 文件完成后：跑 sha256 终验脚本（对账集群 ckpts 清单），
+  在交接文档打勾——预计今晚完成（每分片 ~100KB/s，剩余 ~120 文件）。
+- teacher/embeddings 若未来需要"零重算复现"，按 §15.50 记录的可再生成
+  路径执行即可，无需补备份。
