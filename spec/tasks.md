@@ -911,3 +911,140 @@ Related work / 基线全景的增量证据线，需要时可一并写入 v3.20�
 |---|---|---|---|
 | **T-A60** | 复现能力矩阵 + 骨干权重归档 + 环境快照 | 矩阵入台账 + sha256 | ✅ 完成（§15.51） |
 | **T-A61** | rsync 185 文件完成后 sha256 终验 | 对账清单全绿 | 🔄 在飞（今晚） |
+# T-A62 新集群恢复指南（2026-10-15 晚，用户指示："换到新集群就知道该怎么做"）
+
+> 本节是**行动手册**：新集群到手后按顺序执行即可恢复整个项目。
+> 依据：备份三件套（§15.50 规则）已全绿，复现能力矩阵见 §15.51。
+
+## 一、恢复总图（四层依赖，自底向上）
+
+```
+第 0 层  备份盘     /Volumes/orico-disc/A100 大量项目文件备份/05_RNA-JEPA/
+         （+ 06_RNA-JEV_mars清洗流程/rna_jepa_weights_20261013/ 权重农场）
+第 1 层  环境       conda env + 外部基线版本锁（ENVIRONMENT_SNAPSHOT.md）
+第 2 层  数据       ss_data/jsonl 111 项（9 冻结 split sha256 锁死）
+第 3 层  资产       代码 git + ckpt（4 主数字 + 农场 185）+ result.json 原件
+第 4 层  验证       逐位复现板数字（验收门，见第五节步骤 5）
+```
+
+## 二、逐文件校验清单（先验后用，md5/sha256 全部对账）
+
+| 资产 | 备份盘路径 | 校验值 |
+|---|---|---|
+| git 全历史 | `shutdown_20261014/rna-jepa-final-20261015.bundle` | `git bundle list-heads` 核对 HEAD（重建后） |
+| 评测数据全量 | `ss_data_backup/jsonl/`（111 项） | 逐文件 md5 与集群原值一致（§15.50 + BACKUP_MANIFEST.md；9 冻结 split 另有文件级 sha256 锁） |
+| RiNALMo-giga 骨干 2.6GB | `weights_backbone/rinalmo-giga/` | sha256=0b3f73b5c80d267f0b7e92655b28f16088e3d5a595c6dae631b52142aa38bcda |
+| plana_tr1c s0/s1（板成员） | `06_.../rna_jepa_weights_20261013/ckpts/` | md5 s0=8b74e348efaa2ae2f444cd271a5bc3fa / s1=6f3b26195642bf2128d2ad08c2149126 |
+| r2dtr1c_s0（板成员） | `05_RNA-JEPA/ckpts/` | md5=3b6b508f4386842faefc7acce68c6f00 |
+| k7 消融臂 | `05_RNA-JEPA/ckpts/` | md5=60ffc48dae75cd049de73eda15df130d |
+| 结果原件全量 | `eval_decision/`（tar + 散目录） | result.json 磁盘直读对账 |
+| 环境快照 | `reproduction/ENVIRONMENT_SNAPSHOT.md` | 无哈希，人工核对版本号 |
+| 溯源元数据 | `ss_data_backup/ss_inventory_20261015.tar.gz` | md5=8388750de7b3aaf715541844625ff7dc |
+| teacher manifests | `ss_data_backup/teacher_manifests/` | md5=6c97932ffcaeebe78f4fe1fe54556245 |
+| mRNA 预训练语料归档 | 公开 Zenodo 12516160（盘上未存） | md5=bf8bc5c946a0bd3b07716b1c7f785d54（锁在 pretrain_pipeline.sh） |
+
+**坑 0（先读）**：`shutdown_20261014/ckpts/` 下的 `plana_s0_s1*.tar.gz` 与
+`plana_split_*` 已是历史残留（旧分块方案，部分截断）——**不要使用**，
+权重权威备份是 06_ 目录（§15.51 警告仍然有效；该残留目录已清空）。
+
+## 三、新集群重建步骤（按序执行）
+
+1. **环境**
+   ```bash
+   # conda 主环境（权威：旧集群 lucaone）
+   conda create -n lucaone python=3.9
+   # torch 2.5.1+cu121 / transformers 4.26.0 / numpy 1.26.4 / scipy 1.13.1
+   # 详细版本清单见 ENVIRONMENT_SNAPSHOT.md；317 项单测须全绿
+   # RiNALMo 推理另需 multimolecule 0.0.8 + transformers 4.57.6 + torch 2.8.0
+   # （pip --target 隔离安装，避免污染训练环境）
+   ```
+2. **代码**
+   ```bash
+   git clone rna-jepa-final-20261015.bundle rna-jepa
+   # 或：git clone https://github.com/Cunyu-Liu/JEPA-mRNA（tag preprint-v3.19-freeze
+   #        冻结态；GitHub 版落后 bundle 时以 bundle 为准）
+   cd rna-jepa && git bundle verify ../rna-jepa-final-20261015.bundle
+   ```
+3. **数据**（从备份盘 rsync 到新集群 /mnt 数据盘）
+   ```bash
+   # 全部评测/训练语料（111 项一次到位；manifest/rejects 已含在内）
+   rsync -a orico:ss_data_backup/jsonl/ /mnt/<user>/rna-jepa/ss_data/jsonl/
+   # teacher npz 若 06_ 农场 bprna_tr1c 未传完 → 重算（见第五节）
+   ```
+4. **骨干与 ckpt**
+   ```bash
+   rsync -a orico:weights_backbone/rinalmo-giga/ /mnt/<user>/rna-jepa/weights/rinalmo-giga/
+   # 板成员 4 ckpt + 农场（95+ ckpt、runs/resume.pt 断点续传产物）
+   rsync -a orico:06_.../rna_jepa_weights_20261013/ckpts/ /mnt/<user>/rna-jepa/ckpts/
+   ```
+5. **验证门（必须全过才算恢复成功）**
+   ```bash
+   # ①数据完整性：111 文件逐一 md5（对账 BACKUP_MANIFEST.md §15.50）
+   # ②骨干 sha256：0b3f73b5…（对账 rinalmo_sha.txt）
+   # ③板数字逐位复现（最强验收，约 10 分钟）：
+   PYTHONPATH=src python eval/ss/evaluate_decision.py \
+     --data ss_data/jsonl/bprna_ts0.jsonl \
+     --ckpt <plana_s0> --ckpt2 <plana_s1> --s1w 0.5 --r2d <r2dtr1c_s0> --w 0.7 \
+     --out /tmp/reproduce_ts0.json
+   # 预期：F1=0.803859，tp/fp/fn=27457/5965/7434，1288 条 per_seq 与
+   # xens2_bprna_ts0_w0.7 result.json 逐位一致（§15.47 三遍复证口径）
+   ```
+
+## 四、路径映射表（旧集群 → 新集群）
+
+| 旧（A100） | 新集群 | 内容 |
+|---|---|---|
+| `/home/cunyuliu/rna-jepa/`（git 仓） | `~/rna-jepa` | 代码/spec/records |
+| `/mnt/cunyuliu/rna-jepa/ss_data/jsonl/` | `/mnt/<user>/rna-jepa/ss_data/jsonl/` | 111 数据集 |
+| `/mnt/cunyuliu/rna-jepa/ss_data/teacher/` | 同级 `teacher/` | 蒸馏软标签（可重算） |
+| `/mnt/cunyuliu/rna-jepa/ckpts/` | `/mnt/<user>/rna-jepa/ckpts/` | ckpt（**注意 symlink**：`ckpts/*_step20000.pt` 多为 `runs/<name>/resume.pt` 的链接，恢复时要么重建链接要么直接用 runs 副本） |
+| `/mnt/cunyuliu/rna-jepa/weights/rinalmo-giga/` | `weights/rinalmo-giga/` | 骨干 2.6GB |
+| `/mnt/cunyuliu/rna-jepa/eval_decision/` | `eval_decision/` | result.json 原件（对账用） |
+| `/mnt/cunyuliu/rna-jepa/runs/` | `runs/` | 训练曲线 run_meta/train_log |
+
+## 五、可再生成资产（缺了不慌）
+
+- **teacher 软标签**：`data/ss/generate_teacher_labels.py`（git 内）+
+  ViennaRNA **2.7.2**（版本锁写死在 teacher manifest `version_lock` 字段）
+  + jsonl 语料 → 12 进程 892s/45k 条，确定性输出（分片 sha256 在
+  teacher_manifests tar 内可对账）。
+- **embeddings 缓存**：骨干 + 序列前向即得；评测管线检测缓存缺失会
+  自动回退在线前向（结果一致，仅变慢）。
+- **预训练语料**：Zenodo 12516160 公开（md5 见第二节）；受限网络注意
+  inventory 记录的 15-20KB/s 限速，需 ranged 多连接或换网。
+- **外部基线**（版本锁见 ENVIRONMENT_SNAPSHOT.md）：ViennaRNA 2.7.2、
+  MXfold2、EternaFold、UFold、RNAformer、RiNALMo-ft（Zenodo）、Kirigami
+  （main.ckpt）、eFold 0.1.2 wheel（权重在 wheel 内 `resources/efold_weights.pt`）。
+
+## 六、常见坑（已全部踩过，直接抄答案）
+
+1. **索引口径**：eFold bp 列表 1-indexed，我们 GT 0-indexed——适配新外部
+   模型先跑单序列冒烟断言 pred∩gt>0（§15.49 教训 1）。
+2. **"不可得"先查本地**：外部模型先 `ls ~/venv/site-packages` 再下结论
+   （eFold 躺了 3 个月，§15.49 教训 2）。
+3. **ckpt 步数溯源**：步数从 `.pt` 文件内 `step` 字段读
+   （tools/ckpt_steps.py），不信文件名/tag（T-A8 教训）。
+4. **MIG 切片显存**：多模型 ensemble 前先算常驻显存之和，>4.75GB 的
+   组合放整卡（§15.47 教训）。
+5. **ssh 断线杀进程**：长任务一律 `setsid nohup … &` + 磁盘日志
+   （T-A9 起 project-wide 纪律）。
+6. **长链路备份带宽坍缩**：开新传输前先 `ps aux | grep -E 'rsync|scp'`
+   双端盘点在途进程（本轮 10+ 路并发曾把单流挤到 20KB/s，§15.50 教训 1）。
+7. **sz 单位**：python-pptx 的 sz 是"百分之一 pt"，750pt 事故已入库——
+   脚本写表格必须 `assert sz <= 1300` + 几何/字号断言（§15.52 教训）。
+8. **训练确定性依据**：同环境同数据下训练逐位可复现（F1 0.803859 ×3
+   一致，§15.47），换硬件/库版本后预期"数字一致或极接近"，跨硬件
+   速度数字仅供参考（S20 口径）。
+9. **共享集群礼仪**：load average ~92-104 是旧集群常态；加训练臂前先
+   `free -g` 确认 available > 60GB（每臂 RSS 12-36GB）。
+
+## 七、验证状态快照（2026-10-15 晚）
+
+- 数据：111/111 md5 双端一致 ✓；9/9 冻结 split sha256 锁 ✓
+- 骨干：sha256 双端一致 ✓（另有 03_rna-sc 独立副本）
+- 板成员 ckpt：4/4 双端 md5 一致 ✓
+- 权重农场：185 文件清单，107 ckpt 与 35/78 runs 已落，本地 mac 看护
+  进程（/tmp/a100_puller/master_keeper.sh，每 10 分钟自检重启）仍在续传
+- 结果原件：eval_decision tar + 散目录双份 ✓
+- PPT：25 页 10-15 版（S15 SOTA 主对比 + 三张顶刊风图）md5 一致 ✓
+- 旧集群状态：无在训任务，git=本轮 commit，全部已推 GitHub
