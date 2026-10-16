@@ -9110,3 +9110,59 @@ S10 的 0.9410 为口径复现证据（项目口径 vs 发布口径对照），�
 PPT：25 → 25 页（P14+P15 已合并在前轮，本轮 +速度页 -0；页码 2-25 连续）；
 13 项终审全 PASS（页码/越界/750pt/翻案一致性/速度页数字/6/8 语义合法性）。
 图归档 ppt/figures/speed_innovation.png。
+### §15.58 E2Efold 上板补录（T-A66，2026-10-16，用户指示"没有的话补到交接文档里，后面记得做"）
+
+**用户指示**：检查 E2Efold 测评是否存在；没有则补交接文档，后续执行。
+
+**一、现状核实（三处查证）**
+
+1. **未上板**：eval_decision/ 无任何 e2e* 结果；无适配器（conf_baselines/
+   仅有 kirigami/rfold/depfold/efold）；checklist L302 "E2Efold 复现"
+   一直未勾。
+2. **与 eFold 是两个模型，勿混淆**（已发生过一次混淆风险）：
+   - **E2Efold** = Chen et al., **ICLR 2020** "RNA Secondary Structure
+     Prediction by Learning Unrolled Algorithms"，Transformer 编码器 +
+     展开的约束解码（unrolled SIDH），训练集 **RNAStralign**；
+   - **eFold** = Sci Adv 2026-02（Rouskin lab wheel），Evoformer 前向 +
+     **E2Efold 式** Lagrangian 非交叉后处理——后者只是后处理思想同源，
+     已上板（§15.49，TS0 0.5612 / new 0.6640）。
+3. **台账既有引用均为文献转述，非实测**：spec.md 引 MXfold2 论文称其
+   bpRNA-new F≈0.0361（L351 已标注"引用前必须回原文核对"）；§14 系列
+   的 0.690（L6502）同样是他引。**本项目从未自测过 E2Efold。**
+
+**二、上板决策依据（相关方处理方式）**
+
+- RNAformer 论文（Table 2 上下文 L15840）**明确排除 E2Efold**："showed
+  significantly reduced accuracy across several other works [MXfold2, UFold],
+  which indicates strong overfitting. We use the same data as the respective
+  work for evaluations and thus exclude E2Efold from our evaluations."
+- 我们的 board 已含 UFold 0.6598 / MXfold2 0.5651（同为"学习型经典"段），
+  E2Efill 上板属于补齐该段的完整画像（预期落点低段，类似 NucleicBERT）。
+- **速度维度注意**：E2Efold 展开式迭代解码在 L=512 上慢是领域共识，
+  若 S2 速度门（checklist L496 "相对 E2Efold 加速 ≥5×"）仍要用它做
+  对照，必须实测而非引用。
+
+**三、执行方案（待做，优先级中）**
+
+1. **代码/权重**：`git clone https://github.com/ml4bio/e2efold`（论文
+   官方，ml4bio）；RNAStralign 训练、模型为 Transformer+CNN 输出对称
+   矩阵。**先探权重可得性**：仓库 README 是否带 ckpt（若仅训练入口则
+   按 DEPfold 先例走"官方协议重训"路线，用我们的 TR 语料或 RNAStralign
+   原集——**记 A/B 两案，默认 A=官方权重零样本**）。
+2. **适配器**：`eval/ss/conf_baselines/eval_e2efold.py`（仿 eval_efold.py：
+   bp 列表口径冒烟→8 split 全量→TSB clean-181）；**索引口径冒烟必做**
+   （E2Efold 输出对称矩阵/接触图，转 bp 列表时 0/1-index 与 GT 对齐
+   ——eFold 的 1-indexed 教训 §15.49 直接适用）。
+3. **泄漏审计**：训练集若为 RNAStralign → 与我们 8 split 做序列级
+   T→U 精确匹配（audit 脚本现成，leak_matrix 直接加一行）；若重训用
+   TR0/tr1c 则套用 bprna_tr0 同款审计口径。
+4. **上板与记录**：sota_vs_ours.md"Published baselines"板加行 +
+   台账新节 + PPT 基线全景表（18 行 → 19 行）+ 速度表（若实测）。
+5. **验收门**：数字三遍核对（result.json 直读 + 台账行 + 表格回读）；
+   如实入板不粉饰（预期低段）。
+
+**四、追踪**
+
+- checklist.md L302 勾选状态：改为「⏳ 已立案（§15.58），待新集群执行」。
+- 前置依赖：新集群重建（CLUSTER_RESTORE_GUIDE，验证门 TS0 bitwise
+  0.803859）完成后排队执行；与 S2 速度门（L496）联动。

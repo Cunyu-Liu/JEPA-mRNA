@@ -299,7 +299,7 @@
 - [x] UFold 复现（**2026-09-24 晚**：`ref_bprna_ts0` 0.6598 / `ref_pdb_ts1` 0.6455 / `bprna_new` 0.6106；适配器 `eval/ss/run_ufold.py`，记录 `records/UFOLD_BASELINE_ADAPTER.md`）
 - [ ] SPOT-RNA 或 SPOT-RNA2 复现
 - [x] MXfold2 复现（TS0 0.5651；archiveii_clean 21:23 已跑，JSON 落 `eval_decision/`）
-- [ ] E2Efold 复现
+- [ ] E2Efold 复现 ⏳ 已立案（台账 §15.58：官方 ml4bio/e2efold，方案 A 零样本/B 重训，待新集群执行）
 - [ ] RNA-FM 复现
 - [ ] RiNALMo（650M）复现
 - [ ] mRNABERT 复现
