@@ -8991,3 +8991,71 @@ ALL MATCH）。
 - 集群恢复后（需用户重配公钥）：同步 PPT + 本节 commit push；
 - TS3 参照是否换用 inter-fam ckpt 的 0.8245（其训练集对 TS3 0/19 干净）
   重建判定——建议做，那将是"负→参照污染"的完整翻案链。
+### §15.56 RNAformer 论文-板面差距归因 + 关停后备份现状盘点（T-A64，2026-10-16，用户两问）
+
+**用户两问**：① RNAformer 论文里 TS2/TS3 的结果为什么比我们 PPT 记录的
+低那么多；② 原集群已关停，05/06 两个备份盘的资产现状整理（"很多东西
+没那么全了"）。
+
+**一、论文-板面差距归因（读原文 bioRxiv 2024.02.12.579881 Table 3/4/6）**
+
+论文数字：TS1 0.743 / TS2 0.805（intra）、TS2 0.802 / **TS3 0.702** /
+TS-hard 0.662（inter, Table 4）。我们板面：TS2 0.9043（inter-fam ckpt）/
+TS3 0.9410 / hard 0.7845（bprna ckpt）。差距分解为两个原因：
+
+1. **TS3/hard 主因（板面参照被污染）**：论文 5.3.2 明写 inter-family 实验
+   用协方差模型做相似度过滤，"因与 TS3/TS-hard 的额外相似性删掉 28% 训练
+   样本"——**作者自己做了去泄漏**。我们板面 TS3/hard 参照用的 bprna ckpt
+   训练集重叠 79%/71%（§15.55 实测）。论文 0.702 是干净同 split 分；我们
+   的 0.9410 是含 79% 泄漏的复读分。**论文数字低不是异常，是诚实口径。**
+2. **全体 PDB split 通用（+0.08~0.12，GT 口径差）**：论文 GT = DSSR 从 3D
+   结构推导，保留非规范配对+假结（其 Table 6：TS2 97.4% 样本含非规范、
+   66.7% 含假结；TS3 94.7% 含假结）。我们 GT = canonical-drop +
+   pseudoknot-drop（TS2 删 124+104 对 ≈26%，TS3 删 93+111）。删掉的正是
+   最难预测的配对类型 → 同 ckpt 在我们口径系统性高。旁证：inter-fam
+   ckpt 我们实测 TS1 0.8150 vs 论文 0.739、TS2 0.9043 vs 0.802、hard
+   0.7709 vs 0.662，差距一致。
+3. **推论（重大，待用户决策）**：TS3/hard 参照若换干净的 inter-fam ckpt
+   （TS3 0.8245 / hard 0.7709，训练集 0 重叠），则 xens2 0.8965/0.8732
+   两格反超（+0.072/+0.102）——主表 6/8 → **7/8，唯一真负只剩 TS2**。
+   TS3 的"负"是泄漏参照制造的假阴性。
+
+**二、关停后备份现状（05 盘 9.4G / 06 盘 112G，逐目录实测）**
+
+05_RNA-JEPA（评测线全量）：
+- ss_data_backup 2.1G：111 项 jsonl 全语料 + manifest/rejects 审计链，
+  9/9 冻结 split（本次 RNAformer 审计即在副本上完成，可用性已验证）；
+  teacher/embeddings 有意不备（确定性可再生，BACKUP_MANIFEST 记录）。
+- eval_decision 3.2G：全部 result.json 原件（含本轮 leak_matrix 三件）。
+- code_git_home 865M + code_git_mnt 398M：代码双份；权威 = GitHub
+  Cunyu-Liu/JEPA-mRNA（含 tag preprint-v3.19-freeze）。
+- weights_backbone 2.4G：RiNALMo-giga 650M 骨干 + sha256。
+- shutdown_20261014/：关停前最终快照（spec/records/tables/ppt/figures +
+  git bundle rna-jepa-final-20261015.bundle，已验证完整历史至 S15.53）。
+  本轮已补入：24 页版 PPT + §15.55 台账。
+- ckpts 34M + new_ckpts_1014 25M：k7 消融 ckpt 双副本等零散件。
+- ⚠️ shutdown_20261014/ckpts 与 code_git_home 为 0 文件的空壳目录
+  （当时 tar 截断事故残留，MANIFEST 有警告，权威在 06 盘）。
+
+06_RNA-JEV_mars（权重 + 预训练线，112G）：
+- rna_jepa_weights_20261013 105G：**训练侧全量权威**。ckpts/ 107 个 .pt
+  （board 成员 8/8 全在：plana_tr1c s0-s3 + r2dtr1c s0-s2 + fftr1c_s0 +
+  pdbexp；消融臂 nodistill/norlcd/tr1cpdb/tr1cpdb_s1/plus/ext40k 齐全）；
+  runs/ 43 个 resume.pt（早期探索臂 ff/bal/big/casc/pw/sum/len + 8 个
+  JEPA ablation + mars pretrain full/nlldistill/nllonly 全系）。
+  ⚠️ 21 个 run 目录为空（当时 185 文件 rsync 只到 43/64 分片被集群关停
+  截断：r2dtr1c s0/s1、plana_tr1c_s1 等的 resume 缺失，但同名 step20000
+  ckpt 在 ckpts/ 都有——**评测可复现不受影响，仅"续训"能力受损**）。
+- mars_data_gzip 3.0G / ncrna_clean30m 2.0G / ncrna_pretrain 1.5G /
+  clean_audit 620M / pretrain_export 90M / mars_scripts 47M：NucleicBERT
+  mars 清洗-压缩-语义-导出全链四代快照。
+
+**三、本轮动作**：GitHub 补推 S15.55（91d2b8c，经 bundle 克隆 + SSH 直推，
+绕开关停的集群）；新 PPT + 台账 + 审计 JSON 三件补入 orico-disc（05 盘
+ppt/、shutdown 快照、eval_decision/）；/tmp/rnaformer_paper.txt 论文
+全文提取存档（关键表已录入台账）。
+
+**遗留**：① TS3/hard 参照是否换 inter-fam 口径翻案（6/8→7/8）待用户
+决策——影响论文叙事；② 06 盘 21 个空 run 目录若未来续训需从 ckpts
+step20000 重建（fast-forward 可行）；③ 新集群重建按 CLUSTER_RESTORE_GUIDE
+执行，验证门 = TS0 bitwise 0.803859。
