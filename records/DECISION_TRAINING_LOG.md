@@ -8917,3 +8917,77 @@ clean-181 是扣掉重叠后的无泄漏子集，方法可复现（工具已 git
 
 **资产**：PPT 同步集群 /mnt/cunyuliu/rna-jepa/RNA-JEV_progress_2026-10-15.pptx；
 图归档本地 ppt/figures/leak_audit.png。
+### §15.55 RNAformer 参照泄漏审计 + PPT 三处结构调整（T-A63，2026-10-16，用户四点指示）
+
+**用户指示**：① TS2/3 上 RNAformer 领先很多，检查其是否泄漏；② 其他 split
+也测各 baseline 泄漏，统计成表；③ PPT P21 基线全景与 P24 会议基线合成一
+张表；④ P14 与 P15 合并成一页最新版。
+
+**背景**：集群 SSH 不可用（新集群指纹变更 + 公钥被拒，§15.53 重建侧后
+遗症），全部审计改在备份盘 ss_data_backup（9/9 sha256 验证过的冻结副本）
+上完成，口径与集群工具完全一致。
+
+**一、Q1 结论：TS2 干净 / TS3·hard 参照被污染（决定性发现）**
+
+审计对象：RNAformer 官方三 ckpt 的真实训练语料（refmodels/datasets/
+*.plk → jsonl，本仓库转换版），× 8 评测 split，序列级归一化 T→U 精确匹配：
+
+| split | 上板参照 ckpt | 其训练集 | 重叠 | 判定 |
+|---|---|---|---|---|
+| TS2 (n=39) | inter-family | ref_tr_inter 2,216 | **0/39** | **干净**——RNAformer 0.9043 的领先真实，我们 0.8588 是诚实差距 |
+| TS1 (n=63) | inter-family | ref_tr_inter | 0/63 | 干净 |
+| TS3 (n=19) | bprna | ref_tr_bprna 34,934 | **15/19 (79%)** | **参照被污染**——0.9410 站不住 |
+| hard (n=28) | bprna | ref_tr_bprna | **20/28 (71%)** | **参照被污染**——0.7845 站不住，但我们 0.8732 仍胜（"参照泄漏仍胜"） |
+| TSB (n=428) | bprna（速度表 0.7880） | ref_tr_bprna | **339/428 (79%)** | 污染（该 ckpt 不作 TSB 参照，主表用 RiNALMo-ft clean 口径） |
+| TS0/new/ArchII | — | ref_tr_bprna | 0 / 0 / 0 | 干净 |
+
+关键点：TS2/TS3 本是 RNAformer 论文的 inter-family 留出集（test_sets.plk），
+inter-fam ckpt 的训练集（inter_family_experimental_data.plk train 侧）与
+之按构造隔离——**它的 TS2 领先是干净的真实领先**；但我们的主表 TS3/hard
+参照选用了 bprna ckpt，其训练集（bprna_data.plk train，含 34,934 唯一
+序列）与这两个 PDB 家族 split 重叠 79%/71%。台账 L6246 早有该行数字但
+从未连到"TS3 参照选择"上——本轮把它变成判定级发现。
+
+**二、Q2 全矩阵审计（8 训练语料 × 8 split，ckpt 口径入表）**
+
+| 训练语料（对应模型） | TS0 | new | TS1 | TS2 | TS3 | hard | ArchII | TSB |
+|---|---|---|---|---|---|---|---|---|
+| ref_tr_bprna（RNAformer-bprna） | 0 | 0 | 38 | 28 | 15 | 20 | 0 | 339 |
+| ref_tr_inter（RNAformer-interfam） | 0 | 0 | 0 | 0 | 0 | 0 | 14 | 1 |
+| ref_tr_intra（无 ckpt 上板） | 2 | 0 | 0 | 0 | 18 | 9 | 49 | 1 |
+| ref_tr_experimental（预训练侧） | 1085 | 0 | 0 | 0 | 0 | 0 | 979 | 269 |
+| ref_syn_train（biophys 合成） | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| bprna_tr0（RiNALMo-ft/Kirigami/DEPfold/RFold） | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 247 |
+| bprna_tr1（我们已弃） | 1087 | 0 | 38 | 28 | 18 | 21 | 1014 | 358 |
+| **bprna_tr1c（我们现役）** | **0** | **0** | **0** | **0** | **0** | **0** | **0** | **0** |
+
+（split n：1288/5388/63/39/19/28/2544/428；eFold 训练集不公开，其对
+TR0 下界命中仅 TSB 247，clean 增益 +0.4 pt，已记 §15.49。）
+
+新审计 JSON 已归档备份盘 eval_decision/：leak_matrix_ckpt_basis.json +
+rnaformer_bprna_leak_audit.json（与既有 efold/kirigami 三件并列）。
+
+**三、PPT 三处结构（T-A61 续）**
+
+1. 泄漏审计页（现 P15）升级：RNAformer 全矩阵表（5 模型行 × 8 split
+   泄漏计数）+ TS2/TS3 关键发现注释框；删除该页旧双面板图与双口径表
+   （内容被新矩阵覆盖）。
+2. P21+P24 合并 →「16 基线系统 × 8 split 全景 + 同节点速度」一页：
+   13 行全景表并入 4 家会议模型（DEPfold/RFold/Kirigami/eFold）+ 我们
+   对照行，18 行 × 10 列（每列最优青色加粗），速度一行带（UFold 56.5 /
+   RNAformer 55.3 / MXfold2 54.6 / 我们 B32-C 26.7 seq/s，慢 48× 诚实
+   劣势），P24 删除。
+3. P14+P15 合并 →「SOTA 主对比 · 去污染重建」一页（现 P14）：双口径
+   表为体，并入 P14 泄漏撤回故事线（TR1∩TS0=1087 + TR0∩TSB=247 →
+   sha256 冻结）到注释框；TS3/hard 参照格加 ‡ 污染标记 + 脚注；用户
+   两条批注框（"优化空间"/"rnaformer 泄漏？"）已由实际审计结果回答并
+   清除。
+
+**PPT 现状**：26 → 24 页，页码 2-24 连续，全片几何/字号终审通过；合并
+表数字三遍核对（第 1 遍磁盘 JSON、第 2 遍台账行、第 3 遍入表后回读
+ALL MATCH）。
+
+**遗留**：
+- 集群恢复后（需用户重配公钥）：同步 PPT + 本节 commit push；
+- TS3 参照是否换用 inter-fam ckpt 的 0.8245（其训练集对 TS3 0/19 干净）
+  重建判定——建议做，那将是"负→参照污染"的完整翻案链。
