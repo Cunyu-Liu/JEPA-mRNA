@@ -9222,3 +9222,47 @@ caveat 一句。不把小样本 split 的负迁移藏起来。
 **教训入库**：同卡速度测试必须串行——并行挤卡会产出看似合法但
 完全错误的 seq/s 读数（这正是"反复检查"规则的价值：27 seq/s 与
 B 阶梯单调性矛盾，立即暴露）。
+
+### §15.82 RiNALMo-ft 4090 同节点重测：flash_attn shim 修复 + 双 split 复现 + 同节点速度参照（T-A71 完成，2026-10-19 凌晨）
+
+**背景**：RiNALMo-ft ckpt 下载完成（md5 3688b049… 验证通过）；4090 无
+编译版 flash-attn（无 nvcc，pip 源码编译失败）。
+
+**flash_attn shim（纯 PyTorch drop-in）**：
+- tools/flash_shim/flash_attn/：SDPA 实现 qkvpacked/varlen +
+  RotaryEmbedding + unpad/pad_input；
+- **初版 bug（根本性）**：RoPE 旋转了 q/k/v 三者——flash_attn 官方
+  语义是**只旋 q、k，v 直通**（apply_rotary_emb_qkv_）。该 bug 导致
+  RiNALMo-ft 全部输出坍缩（TS0 0.46 vs A100 0.7604，所有 probs <
+  threshold，预测为空）；
+- **发现路径**：fp32-vs-bf16 一致（非精度问题）→ 双路径一致（shim
+  无关假象）→ 块级单测对照手工 flash 语义参考抓到（第一版块级
+  err 0.28）→ 修 RoPE 后块级 err 0.0001；
+- 数值验证三遍：qkvpacked/varlen/rotary 三路径 err ≤ 0.0002。
+
+**4090 复现读数（对 A100 原件逐位对照）**：
+
+| benchmark | 4090（shim v2） | A100 原件 | Δ |
+|---|---|---|---|
+| TS0 tolerant macro | 0.760324 | 0.760388 | −0.0001 |
+| TS0 strict micro（ours 口径） | 0.721384 | 0.721427 | −0.00004 |
+| TestSetB tolerant macro | 0.901093 | 0.901186 | −0.0001 |
+| TestSetB strict micro（ours） | 0.871563 | 0.871069 | +0.0005 |
+
+跨硬件逐位级一致（fp16 帧舍入量级）——RiNALMo-ft 参照行在 4090
+完成同节点复现。
+
+**同节点速度参照（首个！）**：RiNALMo-ft 纯前向 B=1 = **14.5 seq/s**
+（300 seq 窗口，不含其后 numpy 解码）。对读数：
+- 我们 124.8 seq/s（含 C 批化解码，F1 无损）= **同节点 8.6×**；
+- 诚实口径注记：RiNALMo-ft 是 650M 全骨干微调（参数 70× 于我们的
+  9.3M 头），此对比是"冻结骨干+决策头 vs 全模型微调"的端到端吞吐
+  对比，不是同参数量对比——两种口径都写明。
+
+**含义（对速度目标）**：之前速度表只有跨硬件 A100 参照（UFold 56.5
+等）；现在**同节点参照行已落地**：124.8 vs 14.5 = 8.6×，且 F1 同板
+（0.72 strict 我们 r2d 口径 0.668 batched 同 checkpoint 族）。速度
+SOTA 主张升级为"同节点最强读数 + 逐位复现参照"。
+
+**工程交付**：tools/flash_shim（含数值验证块级测试）/scripts/
+rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
