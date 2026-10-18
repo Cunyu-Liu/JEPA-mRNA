@@ -1,12 +1,23 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.24, 2026-10-19.**
+**Preliminary preprint draft — v3.25, 2026-10-19.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+**v3.25 change note (plana-bucket seed-diversity axis closed).** The
+TS2 member axis of v3.21/v3.24 exhausted the r2d side; the plana-bucket side
+was still open (the board protocol averages only two of the four available
+tr1c seeds). A single-variable sweep on TS2 completes it: 3-seed
+0.8581 (−0.0023), 4-seed 0.8526 (−0.0078) against the 2-seed board protocol
+0.8604 — monotonic decline, mechanism-consistent (precision-type seeds dilute
+the recall-type bucket exactly where TS2 bleeds, FN 141→146). The ensemble
+lever is now exhausted on both axes; the TS2 verdict (0.8604, −0.044, seven
+attempts) is final. Artifacts: `xens2_ts2_w0.7_plana3.json` /
+`xens2_ts2_w0.7_plana4.json`.
+
 **v3.24 change note (first same-node reference reproduction).** The
 RiNALMo-ft reference system — the strongest TestSetB baseline and the
 model our §4.3g backbone-fine-tuning attribution is measured against —
@@ -1457,7 +1468,10 @@ s1 sweep is seed luck in the P/R plane, not a training-integrity effect
 (the three-seed family shows the mechanism: recall-type s1, balanced s0,
 precision-type s2, each seed trading ~0.10 P for ~0.10 R), and a
 three-member xens2 (s2 member −0.023; 2-seed r2d bucket 0.8540 vs 0.8604)
-confirms by exhaustion that the member axis is closed. The verdict is
+confirms by exhaustion that the r2d member axis is closed, and a
+plana-bucket seed sweep (2/3/4-seed: 0.8604 / 0.8581 / 0.8526)
+closes the other axis by monotonic decline — precision-type seeds
+dilute the recall-type bucket where TS2 bleeds. The verdict is
 unchanged: TS2 −0.044 against the RNAformer inter-family reference is a
 modelling gap, having survived six independent attempts to close it, each
 reported, including the one that falsified our own first explanation of
