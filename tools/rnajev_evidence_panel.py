@@ -52,13 +52,14 @@ tag(a, "(a) 8 benchmarks, ours vs strongest reference")
 
 # ---------- (b) throughput ladder (log) ----------
 conf = [("A100 B=1", 0.55, GREY), ("A100 best", 26.73, GREY),
-        ("4090 B=1", 21.4, "#749ac6"), ("4090 B=32 C", 96.1, NAVY), ("4090 B=64 fp16", 119.6, NAVY)]
+        ("4090 B=1", 21.4, "#749ac6"), ("4090 B=32 C", 96.1, NAVY),
+        ("4090 B=64 fp16", 119.6, NAVY), ("4090 B=256 fp16", 124.8, RED)]
 xs = np.arange(len(conf))
 for xi, (lab, v, col) in zip(xs, conf):
     b.bar(xi, v, 0.6, color=col, alpha=1.0 if "fp16" in lab else 0.75, edgecolor="black", lw=0.5)
     b.text(xi, v * 1.13, f"{v:g}", ha="center", fontsize=7, fontweight="bold")
 b.axhline(56.5, color=RED, lw=0.9, ls=(0, (4, 3)))
-b.text(4.4, 63, "UFold (A100) 56.5", color=RED, fontsize=6.5, ha="right")
+b.text(5.4, 63, "UFold (A100) 56.5", color=RED, fontsize=6.5, ha="right")
 b.set_yscale("log"); b.set_ylim(0.3, 300)
 b.set_xticks(xs, [c[0] for c in conf], fontsize=6.5, rotation=28)
 b.set_ylabel("Throughput (seq/s, log)")
