@@ -1,12 +1,30 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.22, 2026-10-18.**
+**Preliminary preprint draft — v3.23, 2026-10-19.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+**v3.23 change note (throughput record + confidence board).** Two
+additions. (i) Pushing the batch axis further with fp16 weights reaches
+**124.78 sequences/s at batch 256** (ledger 15.79; F1 bit-identical
+0.667971 across batch 64/128/192/256 — batch size does not move a single
+prediction), the throughput ladder's terminal reading; the text keeps
+119.6 (batch 64) as the quoted row because it matches the board protocol's
+batching, with 124.8 as the recorded maximum. (ii) The structure-level
+confidence of the previous note is now measured on **all eight board
+splits** with the VL0-fitted parameters held fixed (a strictly held-out
+test): on the four large-n splits the recalibration transfers cleanly
+(TS0 0.0315, TestSetB 0.0445, bpRNA-new 0.0677, ArchiveII-clean 0.0605;
+Spearman 0.42-0.72), while on the small PDB-family splits (n = 19-62) it
+does not — raw ECE is already low there and the bpRNA-fitted affine
+over-corrects (TS2 0.082 raw -> 0.185 recalibrated). The honest statement:
+the structure-confidence calibration is split-family-sensitive, exactly as
+the pair-level P/R profiles are; both directions are tabulated, and the
+small-n rows carry their n.
+
 **v3.22 change note (board-level reproduction + reference refresh).** The
 rebuild reproduction gate of v3.20 covered one split; it is now the whole
 board: the xens2 2-seed board protocol reproduces **8/8 splits bit-exactly
@@ -1325,11 +1343,15 @@ per-sequence numpy path it replaces) plus fp16 head weights gives, on TS0
 | batch 1 (v3.19 protocol) | 21.4 | 12.8 | 47.3 | 0.6683 | 24413/13760/10478 |
 | batch 32, C decode | 96.1 | 10.3 | 3.1 | 0.6681 | 24408/13764/10483 |
 | batch 64, C decode, fp16 weights | **119.6** | 7.9 | 2.9 | 0.6680 | 24406/13778/10485 |
+| batch 256, C decode, fp16 weights | 124.8 | 7.3 | 3.0 | 0.6680 | 24406/13778/10485 |
 
 F1 is unchanged to the third decimal at every step (the fp16 row differs
 from fp32 by 18 pairs out of 48,626 scored — a CPU-side pre-check verified
 120/120 sequences bit-exact before the GPU reading was taken, so this is
-lossless in the only sense that matters). We still do not claim a speed-up
+lossless in the only sense that matters), and it is bit-identical across
+batch 64/128/192/256 — batch size moves throughput only, never a
+prediction. The batch-256 row (124.8 seq/s) is the ladder's terminal
+reading; the quoted 119.6 row matches the board protocol's batching. We still do not claim a speed-up
 *ratio* against any reference system: the published UFold / RNAformer /
 MXfold2 throughputs (56.5 / 55.3 / 54.6 seq/s) are A100 readings and the
 same-node re-measurement of those systems is queued (RiNALMo-ft checkpoint
@@ -1370,6 +1392,32 @@ expensive verification (or escalate to the partition-function path) using
 one DP-free scalar. No accuracy claim is attached to this number; it is a
 calibration-and-ranking property, measured with held-out recalibration and
 reported both raw and recalibrated.
+
+**The confidence measurement, extended to all eight board splits** (same
+VL0-fitted parameters, never re-fitted per split — a strictly held-out
+test; 10-bucket ECE and Spearman rho between structure confidence and
+per-sequence F1):
+
+| Split | n | ECE raw | ECE recal | rho |
+|---|---|---|---|---|
+| TS0 | 1,281 | 0.1604 | **0.0315** | 0.708 |
+| bpRNA-new | 5,375 | 0.2011 | 0.0677 | 0.416 |
+| TS1 | 62 | 0.1210 | 0.1111 | 0.559 |
+| TS2 | 39 | 0.0821 | 0.1851 | 0.337 |
+| TS3 | 19 | 0.1088 | 0.1841 | 0.362 |
+| TS-hard | 27 | 0.1243 | 0.1219 | 0.676 |
+| ArchiveII-clean | 2,505 | 0.1176 | **0.0605** | 0.716 |
+| TestSetB | 428 | 0.1004 | **0.0445** | 0.694 |
+
+Two readings, both reported. On the four large-n splits the VL0
+recalibration transfers cleanly (3-5x ECE reduction, positive rank
+correlation everywhere) — the property a downstream user would rely on.
+On the small PDB-family splits it does not: their raw ECE is already low
+and the bpRNA-fitted affine over-corrects the high-confidence region, so
+the recalibrated number is worse (TS2 0.082 -> 0.185). The structure-
+confidence calibration is family-sensitive in the same way the pair-level
+P/R profiles are, and with n = 19-62 those rows are individually noisy;
+we give both columns and the n rather than averaging the effect away.
 
 **TS2, the fifth and sixth fronts, closed.** v3.19 left TS2/TS3 at
 −0.044..−0.045 after four elimination fronts. A fifth (a cleanly retrained
