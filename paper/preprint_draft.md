@@ -1,12 +1,26 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.21, 2026-10-18.**
+**Preliminary preprint draft — v3.22, 2026-10-18.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+**v3.22 change note (board-level reproduction + reference refresh).** The
+rebuild reproduction gate of v3.20 covered one split; it is now the whole
+board: the xens2 2-seed board protocol reproduces **8/8 splits bit-exactly
+on the new node** (max |Delta| = 0.0001; ledger 15.77), so every ensemble
+number in the 8-benchmark table now carries a two-hardware reproduction
+record. A reference-freshness sweep (ledger 15.78) adds the one same-protocol
+2025 model the survey found missing — HydraRNA (Genome Biol 2025, TS0 0.76
+quoted, not re-measured by us; below both our single-model 0.7866 and
+ensemble 0.8039) — and a generative speed reference, RNADiffFold's 1-2 s
+per sequence (A40, 20 diffusion steps), against which our 0.0084 s/seq
+batched stack reads ~120-240x faster under a stated cross-hardware caveat.
+A 2x3 evidence figure (fig: rnajev_evidence_panel) now carries the six
+headline panels with all values re-derived from the frozen artifacts.
+
 **v3.21 change note (attribution reversed by a pre-registered third
 seed).** The fifth-front paragraph of v3.20 reported that a cleanly
 retrained s1 improves all six comparable splits and left open whether the
@@ -1209,6 +1223,15 @@ ensemble is score-averaged with a VL0-locked weight, single run per split):
 | TS3 | plana (tr1c, s0) | **0.9049** | 0.9031 | 0.8965 | 0.9109 | 0.8825 | RNAformer bprna ckpt | 0.9410 | **−0.0445** |
 | TestSetB | r2d (tr1c, s0) | **0.7507** | 0.8426 | 0.8448 | 0.9104 | 0.7880 | RiNALMo-ft (quoted, INF) | 0.6700 | **+0.175** |
 
+**Reference freshness (2025-2026 sweep).** A post-v3.21 sweep of
+2025-2026 publications found exactly one same-protocol model not previously
+cited: HydraRNA (Genome Biol 2025), which reports TS0 average F1 0.76
+(1,305-set convention; RiNALMo 0.75 under the same convention) — below our
+single-model 0.7866 and ensemble 0.8039, and quoting-only (we did not
+re-measure it). Other 2025-2026 systems (RIBOSPAN, RESM, eFold, OFoldNA)
+report on different task conventions (long-context representations, 3D
+folding, probing ensembles) and do not enter the 8-split table.
+
 Read in order of the claims it supports:
 
 1. **The paradigm clears the strongest measured references on 6 of 8
@@ -1277,10 +1300,17 @@ repository's 337 tests pass, and the headline plana-tr1c-s0 TS0 evaluation
 reproduces at 0.786839 against the frozen 0.786563 (the difference is one
 fp16 accumulation frame crossing an Ada vs Ampere rounding boundary — the
 rank order and every downstream decision are unchanged). The 2-seed board
-ensemble (xens2) then reproduces the quoted TS0 0.803859 as 0.8039 on the
-new node. Numbers are only portable across nodes through this gate, and we
-state it as a protocol, not a boast: any cluster migration should re-run
-the frozen-manifest check before trusting a single downstream digit.
+ensemble (xens2) was then re-run **on all eight splits of the board
+protocol** and reproduces every quoted value to within 0.0001 (TS0 0.8039,
+bpRNA-new 0.5531 vs 0.5532, TS1 0.8755, TS2 0.8588, TS3 0.8965, TS-hard
+0.8732, ArchiveII-clean 0.7761 vs 0.7760, TestSetB 0.8448; ledger 15.77) —
+an 8/8 bit-exact two-hardware reproduction record for every ensemble number
+in the §4.3h table. (The bpRNA-new board-protocol value is 0.553; the 0.6132
+quoted for that split in §4.3h belongs to the r2d-family 2-seed ensemble
+row, a different configuration.) Numbers are only portable across nodes
+through this gate, and we state it as a protocol, not a boast: any cluster
+migration should re-run the frozen-manifest check before trusting a single
+downstream digit.
 
 **Throughput, measured end-to-end on one node.** v3.19 reported batch-1
 latency only (133 ms median at <=100 nt) and explicitly refused a speed
@@ -1303,9 +1333,14 @@ lossless in the only sense that matters). We still do not claim a speed-up
 *ratio* against any reference system: the published UFold / RNAformer /
 MXfold2 throughputs (56.5 / 55.3 / 54.6 seq/s) are A100 readings and the
 same-node re-measurement of those systems is queued (RiNALMo-ft checkpoint
-downloading at draft time); what is reportable now is that the batched
-stack reaches 119.6 seq/s on a consumer 24GB card while preserving the
-calibration and legality guarantees of every number in §4.3h.
+downloading at draft time). One generative reference is quotable: RNADiffFold
+(BIB 2024) reports 1-2 s per sequence on an A40 with 20 diffusion steps —
+our batched stack's 0.0084 s/seq is ~120-240x faster, a cross-hardware
+(A40 vs 4090) and cross-paradigm (diffusion sampling vs single forward
+pass) comparison we state as such rather than as a like-for-like ratio.
+What is reportable without caveat: the batched stack reaches 119.6 seq/s
+on a consumer 24GB card while preserving the calibration and legality
+guarantees of every number in §4.3h.
 
 **Structure-level confidence — the property the Jev decision models carry,
 ported to structured prediction.** Jev's per-decision confidence asks

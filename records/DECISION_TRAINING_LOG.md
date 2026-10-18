@@ -9098,3 +9098,42 @@ s0+s1 桶 × r2d tr1c **s0** 成员，w=0.7，VL0-locked s1w=0.5）。
    §15.76 成员对照的独立证据）。
 
 **读数性质**：全板为板协议复现行（预注册 w=0.7），无测试集选点。
+
+### §15.78 任务④：最新模型遗漏检查（web 调研，2026-10-18 晚）
+
+**方法**：针对速度 benchmark 与主 benchmark 两个口径，检索 2024-2026
+发表/预印的 RNA 二级结构模型，与 spec/benchmark_survey.md 已有清单
+（含 RiNALMo/RNAformer/UFold/MXfold2/RNADiffFold/Kirigami 等）对照。
+
+**调研发现（候选遗漏）与判定**：
+
+| 模型 | 年份 | 主 benchmark 口径 | 判定 |
+|---|---|---|---|
+| **HydraRNA** (Genome Biol 26:383) | 2025 | TS0 F1 0.76（HydraRNAv2，1,305 全集口径；RiNALMo 0.75/RNA-FM 0.68 同口径） | **遗漏，需补参照** |
+| **RIBOSPAN** (arXiv 2608.22849) | 2026 | 长上下文基础模型（1.61B，10,240nt）；ss F1 未在摘要报告 | 记录，暂无同口径数 |
+| **RNADiffFold** (BIB bbae618) | 2024 | TS0 0.711 / bpRNA-new 0.659 / ArchII 0.880（原文口径，含 RNA-FM 条件）；推理 1-2 s/seq (A40, 20 步) | 已在 survey；**速度口径可引用** |
+| **Kirigami** (arXiv 2406.02381) | 2024 | TS0(1305) MCC 0.706（MCC 口径非 F1） | 已在 survey（MCC 口径注明） |
+| **ERNIE-RNA** (Nat Commun 16:10076) | 2025 | ArchiveII600 0.875（TR0 重叠口径，v3.19 §4.3h 已记） | 已有 |
+| **RESM** (bio.rodeo 卡片) | 2026 | 监督 basepair 中位 F1 ~0.75（bpRNA-1m/TS70 口径，非我们 8-split） | 口径不同，不作主参照 |
+| **eFold** (Sci Adv adz4967) | 2025 | lncRNA 0.44 / viral mRNA 0.73（专用集） | 口径不同，不作主参照 |
+
+**结论**：
+1. **主 benchmark 上唯一实质性遗漏 = HydraRNA**：其 TS0 0.76 与我们
+   口径同族（1,305 集平均 F1，RiNALMo 0.75 同口径）。我们的
+   xens2 TS0 0.8039（1,288 子集 + 项目 scorer）与 plana 单模 0.7866
+   均在其上；**"6/8 清洁板"结论不受影响**——HydraRNA 未报告
+   TS1/TS2/TS3/TS-hard/TestSetB/ArchII-clean 任何 split，无法进入
+   8-split 板对比，但其 TS0 行应以"quoted, 未复测"加入 §4.3h
+   reference 列注记（诚实口径：我们未复测其模型）。
+2. **速度 benchmark 遗漏 = RNADiffFold 的 1-2 s/seq (A40)**：这是目前
+   检索到的唯一"生成式"推理速度参照。我们 119.6 seq/s（B=64,
+   4090）= 0.0084 s/seq，比 RNADiffFold 快 **~120-240×**（跨硬件
+   A40/4090 口径声明）。此参照可入速度表作"生成式上界对照"。
+3. 其余 2025-2026 模型（RIBOSPAN/RESM/eFold/OFoldNA/MERGE-RNA）均为
+   不同任务口径（长上下文/3D/集合/探测），不构成 8-split 板或速度
+   的同口径参照——记录备查，不强行入表。
+
+**待办**：
+- v3.22 预印本 §4.3h reference 列加 HydraRNA TS0 0.76（quoted）+
+  §4.3i 速度段加 RNADiffFold 1-2 s/seq 对照（均标注 quoted/跨硬件）；
+- benchmark_survey.md 补 HydraRNA/RIBOSPAN 行（引用 PubMed id）。
