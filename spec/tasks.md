@@ -1,6 +1,18 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
 > change-id: `build-rna-ss-decision-model`
+
+> **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：
+> - **集群迁移完成**：A100 集群关停（10-16 备份定格）后，新集群 `px2-jcy.matpool.com`（**1× RTX 4090 24GB**，12 核 64GB）已重建：
+>   - 环境：miniconda3 `lucaone`（Python 3.10.22 + torch 2.5.1+cu121 + multimolecule **0.0.8** + transformers 4.49.0 + gcc 9.4）；CUDA 计算验证 PASS；
+>   - 资产：代码 `/root/rna_jev`（HEAD 已推 GitHub 4ce74b9）、数据 `/root/rna_jepa_data/ss_data`（**9/9 冻结 split sha256 逐项 MATCH**）、权重 `weights_20261013`（106 ckpt）、骨干 rinalmo-giga（preflight 0.996 加载+前向 PASS）；
+>   - **验证门**：pytest **337 passed**；plana_tr1c_s0 TS0 复现 F1 0.786839 vs 板值 0.786563——**数值等价非逐位**（fp16 量化帧 Ada vs Ampere 舍入差，75/1288 条 ±1-2 对漂移，已归因入台账 §15.59；板值维持 A100 数字）；
+>   - **嵌入与 teacher 全量重建**：14 个 embedding shard（tr1c 42,564 + 13 split）+ ViennaRNA teacher 167 shard（42564 序列，备份恢复）。
+> - **速度线（§15.60）**：dp_decode_c 新集群重编译（gcc -O3 -fopenmp）；**4090 首读 B=64 = 101.0 seq/s**（同协议 A100 26.73 的 3.8×；超 UFold/RNAformer/MXfold2 的 A100 板读数 1.8×），F1 0.6681 全程无损，B=64 为 TS0 最优批。**诚实口径**：跨硬件对比必须同节点重测参照（排队），不得 4090 数字对 A100 参照直接宣称。
+> - **TS2 攻关已启动**：`rinalmo_r2dtr1c_b4_s1` 重训在跑（备份中该 ckpt 为悬空符号链接、实际缺失；seed=1，B=2 适配 24GB 卡，其余配方逐参数一致）——完成后 xens2 2-seed 板口径可复现 + TS2 集成重扫。watchdog cron（*/10 自愈 + 饱和审计）+ 3 小时巡检定时任务已装。
+> - **用户目标新增第三项**：Jev 式输出置信度调研与实现（排队）。
+> - **本地侧问题**：macOS Documents TCC 权限在会话中途被系统收紧，本地交接三件套暂缓同步（集群侧为权威，已推 GitHub）；权限恢复后需把本地副本对齐到第二十二轮。
+>
 > 每个 Task 均有明确**完成判据**（可验证）。未满足判据不得勾选。
 > 架构来源：纯血 Jev Decision Model 范式。**不引入 JEPA 线。**
 
@@ -1048,3 +1060,27 @@ Related work / 基线全景的增量证据线，需要时可一并写入 v3.20�
 - 结果原件：eval_decision tar + 散目录双份 ✓
 - PPT：25 页 10-15 版（S15 SOTA 主对比 + 三张顶刊风图）md5 一致 ✓
 - 旧集群状态：无在训任务，git=本轮 commit，全部已推 GitHub
+
+### 第二十二轮交接（2026-10-18，新集群重建轮）T-A67/T-A68/T-A69
+
+**用户三线目标落实**（速度 SOTA / 测评复核无泄漏 / TS2 攻关 8-8 + 新增置信度调研）：
+
+1. **T-A67 新集群重建（§15.59）**：环境+资产+验证门全过（337 tests；9/9 split sha256
+   MATCH；plana_tr1c_s0 TS0 复现数值等价 0.786839 vs 0.786563，fp16 帧跨架构
+   舍入已归因；14 embedding shard + teacher 167 shard 重建）。
+2. **T-A68 速度线 4090 首读（§15.60）**：B=64 101.0 seq/s（3.8× A100 同协议；
+   1.8× 超 UFold/RNAformer/MXfold2 A100 板读数），F1 无损；dp_decode_c 重编译；
+   跨硬件同节点诚实口径入库。
+3. **T-A69 TS2 攻关臂启动**：r2dtr1c_b4_s1 重训（备份缺失 ckpt；B=2 适配
+   24GB 卡），完成后 xens2 2-seed 复现 + TS2 集成重扫；watchdog cron + 3h
+   巡检定时任务已装。
+
+| # | 任务 | 完成判据 | 状态 |
+|---|---|---|---|
+| **T-A70** | r2dtr1c_b4_s1 训完 20k → 8-split 终评 | 8 result.json + 对板 s1 参照 | 🔄 在训（~24h） |
+| **T-A71** | 参照系统 4090 同节点重测（UFold 等需权重） | 同节点速度表或如实标注不可测 | 🟡 排队 |
+| **T-A72** | 速度 v3：fp16 权重半程 + 内核融合 | ≥120 seq/s 同 F1 | 🟡 排队 |
+| **T-A73** | Jev 式输出置信度方案（配对概率已有=校准卖点；结构级置信度设计） | 设计文档 + 原型实现 | 🔴 下一步 |
+| **T-A74** | 泄漏复核（新集群数据 sha256 已 MATCH；leak audit 脚本复跑） | 审计 JSON 复现 0 重叠 | 🟡 排队 |
+| **T-A75** | 本地交接三件套同步（TCC 权限恢复后） | 本地=集群=GitHub 三方一致 | ⏸️ 等 macOS 权限 |
+
