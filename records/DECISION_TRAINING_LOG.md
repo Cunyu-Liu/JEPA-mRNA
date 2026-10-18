@@ -8765,3 +8765,26 @@ deck，10 页）追加第 11 页，克隆速度页版式保持模板身份：
 
 数字全部三遍核对后入片（速度 json 直读 ↔ 图内标注 ↔ 结论行复述一致；
 置信度 ECE 0.0007/0.034 与台账 §15.63/§15.61 一致）。
+
+
+### §15.67 RiNALMo-ft ckpt 备份核查 + Zenodo 重新下载启动（T-A71 前置，2026-10-18）
+
+**核查结论**：RiNALMo-ft 的官方 ckpt（`rinalmo_giga_ss_bprna_ft.pt`，
+2,604,809,354 B，Zenodo 15043668，台账 §3936 记录）**不在任何备份归档中**
+（归档.zip 中 >2.5GB 的文件只有 plana 家族快照和 backbone safetensors；
+eval_decision/ckpts 里只有我们自己的 ff/full 小 ckpt）。当时它在
+`~/Downloads/`（home 目录），备份三件套覆盖了代码/结果/数据但漏了这个
+外部基线权重——已在恢复清单中立案。
+
+**影响评估（小）**：RiNALMo-ft 的 8-split 板行结果 JSON 全部在备份
+（eval_decision_ref/rinalmo_ft_*.json，§15.64 已用它们完成 leak/clean 分解
+复现）；**缺的只是"在新集群重跑该基线"的能力**，不影响既有板行数字
+的引用（它们是 A100 集群实测，sha256 冻结结果在案）。
+
+**行动**：启动 Zenodo 15043668 重新下载（约 2.6GB，直连测试中），
+下载完成后新集群可重跑 RiNALMo-ft 基线（含 TSB clean 口径复测）。
+若集群侧 Zenodo 不可达（旧集群曾实测不可达），从本地下载后 scp 上传。
+
+**下载实测**：新集群 Zenodo 直连 HTTP 200 OK，content-length 2604809354
+与台账 §3936 记录逐位一致——下载已启动（nohup，落
+/root/rna_baselines_src/）。
