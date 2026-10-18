@@ -323,3 +323,15 @@
 18. **各数据集/模型权重的具体许可协议**（多数未核实）。
 19. **`sparks-lab.org` 上 SPOT-RNA 数据镜像是否仍然在线**。
 20. **RNA-Puzzles / CASP 官方评估脚本与对照文件的获取方式**。
+
+### 2026-10-18 增补（§15.78 调研补充行）
+
+| 模型 | 年份 | 类型 | 主 benchmark 口径 | DP？ | 复杂度 | 来源 |
+|---|---|---|---|---|---|---|
+| **HydraRNA** | 2025 | 全长 RNA 语言模型（Hybrid SSM+MHA，84M，28.1M 序列预训练） | TS0(1305) 平均 F1 **0.76**（同口径 RiNALMo 0.75 / RNA-FM 0.68 / RNAErnie 0.66）；仅报 TS0，未报 TS1/2/3/hard/TSB/ArchII | 不需（2D ResNet 头） | O(L) 骨干 + O(L²) 头 | [Genome Biol 26:383](https://doi.org/10.1186/s13059-025-03853-7)（PMID 41214747） |
+| **RIBOSPAN** | 2026 | 长上下文 RNA 基础模型（1.61B，10,240nt 原生） | 摘要未报 ss F1（主打长 RNA 表示/零样本突变适配） | — | 10K 上下文 | [arXiv 2608.22849](https://arxiv.org/abs/2608.22849) |
+
+**判定（同 §15.78）**：HydraRNA 为唯一同口径 2025 遗漏（TS0 quoted 0.76，
+低于我方单模 0.7866/集成 0.8039，已入 v3.22 §4.3h freshness 段）；
+RIBOSPAN/RESM/eFold/OFoldNA/MERGE-RNA 均为不同任务口径，不入板。
+速度口径新增生成式参照 RNADiffFold 1-2 s/seq（A40，20 步扩散）。
