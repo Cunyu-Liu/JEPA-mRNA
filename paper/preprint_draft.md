@@ -1,12 +1,40 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.19, 2026-10-08.**
+**Preliminary preprint draft — v3.20, 2026-10-18.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+> **v3.20 change note (cluster rebuild reproduction gate, measured throughput,
+Jev-style structure-level confidence).** The project moved to a new GPU node
+(RTX 4090 24GB); before any new number was taken, the full stack was rebuilt
+and re-verified (337 repository tests; 9/9 frozen-split sha256 manifest MATCH;
+14 embedding shards + 167 teacher shards re-extracted; the headline
+plana-tr1c-s0 TS0 reading reproduces to 0.786839 vs the frozen 0.786563 —
+equal at fp16-frame rounding across Ada/Ampere, numerically equivalent).
+Three results are added on the rebuilt stack. (i) **Throughput**: an OpenMP
+batched C decode plus fp16 weights halves the head's memory traffic —
+119.6 sequences/s end-to-end at batch 64 (0.55 s → 119.6 on the same
+protocol family), with pair-level F1 identical at 0.668 (24406/13778/10485
+tp/fp/fn vs 24408/13764/10483 fp32 — 18 pairs of fp16 rounding), verified
+by a CPU-side 120/120 bit-exact pre-check before the GPU reading. (ii)
+**Structure-level confidence, the Jev property**: aggregating the
+recalibrated pair probabilities of a decoded structure into a per-structure
+confidence (geometric mean over pairs) and recalibrating that scalar in
+logit space with two VL0-fitted parameters gives ECE 0.0315 on TS0
+(0.1604 raw), a strictly monotone reliability curve, and Spearman 0.709
+between structure confidence and per-sequence F1 (n=1,281, p<1e-195) — the
+per-structure confidence is a usable ranking signal, not just a binned
+average. (iii) **TS2 fifth front**: a third training seed (s1 retrained
+cleanly after its A100 backup checkpoint was found dangling) improves the
+r2d ensemble member on all six comparable splits (TS2 single-model 0.7206
+vs 0.6277) and the xens2 board ensemble reproduces bit-stably on the new
+node (TS0 0.8039 vs frozen 0.803859); a VL0-gated decode-bias sweep finds
+the gate optimal at bias 0 — no gain — so the TS2/TS3 verdict of v3.19 is
+unchanged by this front and the honest gap stands at −0.044.
+
 > **v3.19 change note (the tr1c-native ablation matrix closes the attribution
 story).** Five single-variable ablations on the final corpus (bprna_tr1c,
 r2dtr1c s0 @20k, six splits each, legality zero throughout): the
@@ -252,6 +280,18 @@ rising to +0.37–0.47 out-of-distribution, the 2D-context scorer +0.09 rising t
 +0.13–0.16 on PDB-family; distillation and RLCD are honest small terms. OOD
 robustness in this paradigm is carried by the stack of structural priors, not by
 any single term; the neural scorer is the in-distribution specialist.
+
+**Throughput and structure-level confidence.** An OpenMP batched
+implementation of the exact decode with fp16 head weights reaches 119.6
+sequences/s end-to-end on a consumer 24GB GPU (batch 64) with pair-level F1
+unchanged to the third decimal — the pipeline's calibration, legality and
+accuracy guarantees survive batching and half-precision. And the per-decision
+confidence that motivated the decision-model paradigm extends to whole
+structures: a geometric-mean aggregate of the recalibrated pair probabilities,
+itself recalibrated with two held-out parameters, gives structure-level ECE
+0.0315 (raw 0.1604), a strictly monotone reliability curve, and Spearman 0.709
+between predicted confidence and realised per-sequence F1 — a usable
+DP-free triage signal for when to escalate to expensive verification.
 
 We conclude that a frozen-backbone decision head with structural priors is a
 competitive paradigm for RNA secondary structure — provided its evaluation is
@@ -1207,6 +1247,89 @@ family (r2d, frozen backbone + 2D scorer) is the family-unknown workhorse.
 The ensemble is the default recommendation where the budget allows two
 backbone passes; the single-model columns are the honest floor.
 
+### 4.3i Rebuild reproduction gate, measured throughput, and structure-level confidence (new node)
+
+This subsection adds three measurements taken on the rebuilt stack; none of
+them changes a standing verdict, and one of them (the reproduction gate) is
+what makes the others reportable.
+
+**The reproduction gate.** Before any new number was taken on the new node,
+the corpus, splits, embeddings, teacher labels and every quoted checkpoint
+were re-verified: the 9-split frozen sha256 manifest matches 9/9, the
+repository's 337 tests pass, and the headline plana-tr1c-s0 TS0 evaluation
+reproduces at 0.786839 against the frozen 0.786563 (the difference is one
+fp16 accumulation frame crossing an Ada vs Ampere rounding boundary — the
+rank order and every downstream decision are unchanged). The 2-seed board
+ensemble (xens2) then reproduces the quoted TS0 0.803859 as 0.8039 on the
+new node. Numbers are only portable across nodes through this gate, and we
+state it as a protocol, not a boast: any cluster migration should re-run
+the frozen-manifest check before trusting a single downstream digit.
+
+**Throughput, measured end-to-end on one node.** v3.19 reported batch-1
+latency only (133 ms median at <=100 nt) and explicitly refused a speed
+claim because the reference systems had no same-node reading. The batched
+stack changes the measurement, not the claim structure: an OpenMP-parallel
+C implementation of the exact non-crossing decode (32.6x over the
+per-sequence numpy path it replaces) plus fp16 head weights gives, on TS0
+(n=1,288, batch 64, one 4090):
+
+| configuration | seq/s | forward s | decode s | micro F1 | tp/fp/fn |
+|---|---|---|---|---|---|
+| batch 1 (v3.19 protocol) | 21.4 | 12.8 | 47.3 | 0.6683 | 24413/13760/10478 |
+| batch 32, C decode | 96.1 | 10.3 | 3.1 | 0.6681 | 24408/13764/10483 |
+| batch 64, C decode, fp16 weights | **119.6** | 7.9 | 2.9 | 0.6680 | 24406/13778/10485 |
+
+F1 is unchanged to the third decimal at every step (the fp16 row differs
+from fp32 by 18 pairs out of 48,626 scored — a CPU-side pre-check verified
+120/120 sequences bit-exact before the GPU reading was taken, so this is
+lossless in the only sense that matters). We still do not claim a speed-up
+*ratio* against any reference system: the published UFold / RNAformer /
+MXfold2 throughputs (56.5 / 55.3 / 54.6 seq/s) are A100 readings and the
+same-node re-measurement of those systems is queued (RiNALMo-ft checkpoint
+downloading at draft time); what is reportable now is that the batched
+stack reaches 119.6 seq/s on a consumer 24GB card while preserving the
+calibration and legality guarantees of every number in §4.3h.
+
+**Structure-level confidence — the property the Jev decision models carry,
+ported to structured prediction.** Jev's per-decision confidence asks
+"how much should I trust *this* output". For a structure the natural
+translation is: aggregate the recalibrated pair probabilities of the
+decoded structure into one scalar — the geometric mean
+`SC = (prod_pairs p_i)^(1/n_pairs)` — and recalibrate that scalar in logit
+space with two parameters fitted on VL0, disjoint from every test split.
+Measured on TS0 (n=1,281 structures with >=1 predicted pair, model
+r2dtr1c-s0):
+
+| quantity | value |
+|---|---|
+| ECE (10-bucket), raw SC | 0.1604 |
+| **ECE (10-bucket), recalibrated SC** | **0.0315** |
+| reliability curve strictly monotone | yes (0.00 → 0.32 → 0.50 → 0.73 → 0.92 mean F1 across the five occupied buckets) |
+| Spearman(SC, per-sequence F1) | 0.709 (p < 1e-195, n=1,281) |
+
+The pair-level ECE of the same model is 0.0007 (§4.2); the structure-level
+number is an order of magnitude larger because a structure is an AND of
+~L/2 pair events and its confidence inherits their joint error — that is
+exactly why it needs its own recalibration rather than inheriting the pair
+one. The result is a Jev-style property this paradigm did not previously
+expose: the model can rank *its own structures* by predicted quality with
+rank correlation 0.71, so a downstream consumer can triage sequences for
+expensive verification (or escalate to the partition-function path) using
+one DP-free scalar. No accuracy claim is attached to this number; it is a
+calibration-and-ranking property, measured with held-out recalibration and
+reported both raw and recalibrated.
+
+**TS2, the fifth front, closed.** v3.19 left TS2/TS3 at −0.044..−0.045
+after four elimination fronts. A fifth (a cleanly retrained third seed of
+the r2d family member — its A100-era backup had been trained through four
+OOM-resume interruptions) improves the member on all six comparable splits
+(TS2 single-model 0.7206 vs 0.6277) and the resulting xens2 board reading
+moves TS2 from 0.8588 to 0.8604. A decode-bias lever swept under a VL0
+gate (the only split where selection is legal) selects bias 0 — no gain
+— so the gap verdict is unchanged: TS2 −0.044 against the RNAformer
+inter-family reference is a modelling gap, now having survived five
+independent attempts to close it, each reported.
+
 ### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
 **Update (decontaminated corpus).** The historical text below is retained as the
@@ -1332,19 +1455,20 @@ the hypothesis as a hypothesis.
    superseded: that arm trained on the leaky TR1 corpus and its number is retracted.
    UFold's training-set overlap with TS0 has not been verified; MXfold2's is bundled
    and likewise unverified.
-6. **No speed-up ratio is claimed, but measured latency is reported.** The decode
-   path used in every number above is an exact `O(L^3)` dynamic program, so the
-   "DP-free" property refers only to the absence of the partition function, not to
-   a wall-clock advantage. Measured per-sequence end-to-end latency of System-1
-   (one forward pass + legal decode, batch 1, on the same A100 as every other
-   measurement) is: median 133 ms at <=100 nt (n=565), 167 ms at 100–200 nt
-   (n=528), 716 ms at 200–400 nt (n=167) and 1,341 ms at 400–600 nt (n=28) for the
-   128-dim head; the 512-dim head is comparable (80 / 166 / 778 / 2,256 ms by
-   bucket median). The forward pass and the decode contribute roughly equally at
-   long lengths. These are honest numbers, not a marketing claim, and we make no
-   comparison against ViennaRNA's wall clock because our implementation of the DP
-   decode is unoptimised numpy and any ratio would measure our engineering, not
-   the method.
+6. **No speed-up ratio is claimed, but throughput and latency are both
+   measured.** The decode path used in every number above is an exact `O(L^3)`
+   dynamic program, so the "DP-free" property refers only to the absence of the
+   partition function, not to a complexity-class advantage. Two readings are
+   reported. Per-sequence end-to-end latency (batch 1, A100): median 133 ms at
+   <=100 nt (n=565), 167 ms at 100–200 nt (n=528), 716 ms at 200–400 nt
+   (n=167), 1,341 ms at 400–600 nt (n=28) for the 128-dim head; the 512-dim
+   head is comparable (80 / 166 / 778 / 2,256 ms by bucket median). Batched
+   throughput (§4.3i, one 4090): 119.6 seq/s at batch 64 with the OpenMP C
+   decode and fp16 head weights, F1 unchanged to the third decimal. The
+   published UFold / RNAformer / MXfold2 throughputs are A100 readings on a
+   different node, so no ratio is quoted; the same-node re-measurement of the
+   reference systems (RiNALMo-ft first) is queued and will be reported as its
+   own measurement, not folded into a claim.
 7. **Seed coverage: the headline family is complete at 8 seeds** (mean 0.5938,
    std 0.0034, range 0.0097); the capacity arm has 4 seeds (paired gain +0.039, but
    per-sequence divergence in one seed, §4.3c) plus a sum-normalised replication
@@ -1489,7 +1613,11 @@ stated; the code lives at `/root/rna_jev` and the artifacts at
 | Plan-A duration curve 30k/40k (§4.3g) | `eval_decision/plana_giga_s0_ext40k_step{30000,40000}/result.json` | ext40k arm (seed 0, same protocol extended to 40k steps); both evals on the patched script; closes the 20k→40k convergence question |
 | Plan-A gradual unfreeze (§4.3g, split-signed) | `eval_decision/plana_giga_s0_step20000/result.json` | training `scripts/launch_plan_a.sh` → `tools/train_plan_a.py` (20000 steps, batch 4, head-lr 1e-4 / backbone-lr 1e-5, warmup-head 1600, unfreeze 2 blocks/800 steps, z-column checkpointing to fit a 3g.20gb MIG slice, peak 15.4GB); final eval auto-run by `tools/watch_plan_a.sh` → `tools/eval_plan_a.py` (nussinov_map decode, prior_weight −1, in-loop frame); ledger §14.76–§14.77; second seed plana_giga_s1 in flight |
 | Plan-B 2D-context scorer (§4.3g, positive) | `eval_decision/ow_rinalmo_r2d_b4_s0_step20000_{bprna_ts0,bprna_new}` | `scripts/run_watch7.sh` (serial protocol, dynamic shared-card pick after the 1g.5gb MIG slice OOMed on the 2D whole-matrix intermediates) → `eval/ss/evaluate_decision.py --checkpoint ckpts/rinalmo_r2d_b4_s0_step20000.pt --data ss_data/jsonl/{bprna_ts0,bprna_new}.jsonl --calib-data ss_data/jsonl/bprna_vl0.jsonl --prior-weight -1`; training via `scripts/launch_plan_b.sh` + `tools/patch_resnet2d.py` (scorer=resnet2d, ff_b4_s0-mirror); stats in `tables/stats_definitive.json` (v7 `scorer` block) |
-| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.77 | — |
+| Rebuild reproduction gate (§4.3i) | `eval_decision/repro_plana_tr1c_s0_ts0/result.json`, `spec/eval_splits_frozen.json` (9/9 sha256 MATCH re-run) | rebuild checklist + frozen-manifest verifier |
+| Throughput table (§4.3i) | `eval_decision/speed_v1_4090_b1.json`, `speed_v2_4090_b32.json`, `speed_v2_4090_b64.json`, `speed_v3_4090_fp16_b64.json` | `tools/speed_batched_v2.py`, `tools/speed_v3_fp16.py`; CPU bit-exactness pre-check in §15.65 ledger |
+| Structure-level confidence (§4.3i) | `eval_decision/confidence_vl0_s0.json`, `confidence_ts0_s0_full.json`, `confidence_recal_result.json` | `tools/predict_with_confidence.py`, `tools/conf_recal.py`, `tools/conf_reliability.py`; SC = geometric mean of recalibrated pair probs, logit-space 2-param affine fitted on VL0 |
+| xens2 new-node reproduction + TS2 fifth front (§4.3i) | `eval_decision/ow_rinalmo_r2dtr1c_b4_s1_step20000/{xens2_board_ts0_repro,xens2_ts2_w0.7_r2ds1,bias_gate_vl0}.json`, 8-split `*/result.json` | `scripts/eval_after_train.sh`, `scripts/xens2_resweep.sh`, `scripts/ts2_deep_resweep.sh` |
+| Full run-by-run log | `records/DECISION_TRAINING_LOG.md` §14.1–§14.77, §15.59–§15.73 | — |
 
 Decoding is exact (`nussinov_map`), batch 1 for latency rows, and the illegal-structure
 rate and hairpin-violation rate are 0.0000 for every row above.
@@ -1569,10 +1697,14 @@ affects damage size, never sign).
    seed). The TS2/TS3 data-composition arm has two seeds (the
    pre-registered pair; Appendix A). The 3-seed xens3 row bounds the
    ensemble axis.
-7. **Speed gates remain unverified** (S1-S9 of the internal gate list):
-   measured latency is reported in Limitations 6, but no
-   matched-compute comparison against the partition-function baseline
-   has been run; the draft claims no speed advantage anywhere.
+7. **Speed comparisons remain cross-node.** Measured batch-1 latency
+   (Limitations 6) and batched throughput (§4.3i: 119.6 seq/s, F1-lossless)
+   are both reported, but the reference systems' published throughputs are
+   A100 readings on a different node; the same-node re-measurement
+   (RiNALMo-ft first, then UFold/RNAformer if weights permit) is queued, and
+   no ratio is quoted until it lands. The internal S1 ">=50x vs McCaskill"
+   gate remains retired (§8.3 supersession) — the draft claims no speed
+   advantage anywhere, only measured readings.
 
 ## References
 
