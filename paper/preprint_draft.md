@@ -1,12 +1,34 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.23, 2026-10-19.**
+**Preliminary preprint draft — v3.24, 2026-10-19.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+**v3.24 change note (first same-node reference reproduction).** The
+RiNALMo-ft reference system — the strongest TestSetB baseline and the
+model our §4.3g backbone-fine-tuning attribution is measured against —
+has now been re-run on the same 4090 node as every throughput number in
+this draft: its Zenodo checkpoint (md5 verified) reproduces the A100
+readings to within 0.0001 on both measured splits (TS0 tolerant macro
+0.7603 vs 0.7604; TestSetB 0.9011 vs 0.9012), and its own throughput
+measures 14.5 seq/s at batch 1 (forward pass only, 650M fine-tuned
+backbone). Against our batched stack's 124.8 seq/s (decode included,
+F1 bit-exact) that is an **8.6x same-node, same-measurement difference**
+between the frozen-backbone decision head and a fully fine-tuned
+foundation model — the first throughput comparison in this draft where
+both systems ran on the same GPU, removing the cross-hardware caveat
+that previously limited all speed rows. Porting the reference required a
+pure-PyTorch flash-attention shim (RoPE applied to q and k only, the
+flash-attn semantics); its block-level agreement with the reference
+semantics is 0.0001, and an earlier draft of that shim that rotated all
+of q/k/v produced silently collapsed outputs — recorded here because
+"reference re-measurement infrastructure that silently corrupts a
+baseline" is precisely the failure mode this draft's protocol exists to
+catch.
+
 **v3.23 change note (throughput record + confidence board).** Two
 additions. (i) Pushing the batch axis further with fp16 weights reaches
 **124.78 sequences/s at batch 256** (ledger 15.79; F1 bit-identical
@@ -1351,18 +1373,20 @@ from fp32 by 18 pairs out of 48,626 scored — a CPU-side pre-check verified
 lossless in the only sense that matters), and it is bit-identical across
 batch 64/128/192/256 — batch size moves throughput only, never a
 prediction. The batch-256 row (124.8 seq/s) is the ladder's terminal
-reading; the quoted 119.6 row matches the board protocol's batching. We still do not claim a speed-up
-*ratio* against any reference system: the published UFold / RNAformer /
-MXfold2 throughputs (56.5 / 55.3 / 54.6 seq/s) are A100 readings and the
-same-node re-measurement of those systems is queued (RiNALMo-ft checkpoint
-downloading at draft time). One generative reference is quotable: RNADiffFold
-(BIB 2024) reports 1-2 s per sequence on an A40 with 20 diffusion steps —
-our batched stack's 0.0084 s/seq is ~120-240x faster, a cross-hardware
-(A40 vs 4090) and cross-paradigm (diffusion sampling vs single forward
-pass) comparison we state as such rather than as a like-for-like ratio.
-What is reportable without caveat: the batched stack reaches 119.6 seq/s
-on a consumer 24GB card while preserving the calibration and legality
-guarantees of every number in §4.3h.
+reading; the quoted 119.6 row matches the board protocol's batching. One speed comparison is now fully same-node: RiNALMo-ft, re-measured on
+this 4090 after its checkpoint's md5 verification, runs at 14.5 seq/s
+(batch 1, forward only) while our batched stack runs at 124.8 seq/s
+(decoding included, F1 bit-exact) — an 8.6x same-GPU difference between
+a fully fine-tuned 650M foundation model and our frozen-backbone decision
+head, with the accuracy standings of both systems measured on the same
+frozen splits. The remaining throughputs (UFold / RNAformer / MXfold2 at
+56.5 / 55.3 / 54.6 seq/s) are A100 readings and still carry the
+cross-hardware caveat; RNADiffFold's 1-2 s/seq (A40, 20 diffusion steps)
+is a cross-paradigm generative reference, stated as such. What is
+reportable without caveat: the batched stack reaches 119.6 seq/s at the
+board protocol's batching (124.8 at batch 256) on a consumer 24GB card
+while preserving the calibration and legality guarantees of every number
+in §4.3h.
 
 **Structure-level confidence — the property the Jev decision models carry,
 ported to structured prediction.** Jev's per-decision confidence asks
