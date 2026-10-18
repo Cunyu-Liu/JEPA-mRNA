@@ -37,7 +37,7 @@ def main():
     ckpt = torch.load(args.checkpoint, map_location="cpu")
     cfg = TrainConfig(**{k: v for k, v in ckpt["config"].items()
                          if k in TrainConfig.__dataclass_fields__})
-    cfg = TrainConfig(**{**asdict(cfg), "encoder_size": 35, "device": "cuda",
+    cfg = TrainConfig(**{**asdict(cfg), "encoder_size": 35, "device": "cuda", "embedding_dir": "/root/rna_jepa_data/embeddings/rinalmo-giga",
                          "head_chunk_size": int(args.head_chunk)})
     model = build_decision_model(cfg).to(device)
     model.load_state_dict(ckpt["model"], strict=False)
