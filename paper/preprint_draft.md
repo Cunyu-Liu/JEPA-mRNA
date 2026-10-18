@@ -1,12 +1,29 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.20, 2026-10-18.**
+**Preliminary preprint draft — v3.21, 2026-10-18.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+**v3.21 change note (attribution reversed by a pre-registered third
+seed).** The fifth-front paragraph of v3.20 reported that a cleanly
+retrained s1 improves all six comparable splits and left open whether the
+cause was training completeness (the A100 s1 had been interrupted by four
+OOM-resumes) or the seed itself. The pre-registered discriminator — the
+same clean retraining protocol applied to seed 2, against its own
+uninterrupted A100 backup — answers it: **new s2 wins only 1/6 splits
+(TS0 −0.018, TS-hard −0.094)**. If clean training were the cause, s2 would
+have won across the board; it did not, so the s1 sweep is re-attributed to
+the seed's P/R profile (recall-type, matching the splits' deficit
+direction) rather than to training integrity. The three-seed family is now
+complete on the new node (recall-type s1 / balanced s0 / precision-type s2;
+the P/R swing mechanism replicates), the xens2 three-member axis is
+exhausted with a negative (precision-type member −0.023, 2-seed r2d bucket
+−0.006), and the TS2 verdict is unchanged: 0.8604 at the pre-registered
+w=0.7 protocol, −0.044 against the reference. Nothing else in v3.20 moves.
+
 > **v3.20 change note (cluster rebuild reproduction gate, measured throughput,
 Jev-style structure-level confidence).** The project moved to a new GPU node
 (RTX 4090 24GB); before any new number was taken, the full stack was rebuilt
@@ -1319,16 +1336,25 @@ one DP-free scalar. No accuracy claim is attached to this number; it is a
 calibration-and-ranking property, measured with held-out recalibration and
 reported both raw and recalibrated.
 
-**TS2, the fifth front, closed.** v3.19 left TS2/TS3 at −0.044..−0.045
-after four elimination fronts. A fifth (a cleanly retrained third seed of
-the r2d family member — its A100-era backup had been trained through four
-OOM-resume interruptions) improves the member on all six comparable splits
-(TS2 single-model 0.7206 vs 0.6277) and the resulting xens2 board reading
-moves TS2 from 0.8588 to 0.8604. A decode-bias lever swept under a VL0
-gate (the only split where selection is legal) selects bias 0 — no gain
-— so the gap verdict is unchanged: TS2 −0.044 against the RNAformer
-inter-family reference is a modelling gap, now having survived five
-independent attempts to close it, each reported.
+**TS2, the fifth and sixth fronts, closed.** v3.19 left TS2/TS3 at
+−0.044..−0.045 after four elimination fronts. A fifth (a cleanly retrained
+third seed of the r2d family member — its A100-era backup had been trained
+through four OOM-resume interruptions) improves the member on all six
+comparable splits (TS2 single-model 0.7206 vs 0.6277) and the resulting
+xens2 board reading moves TS2 from 0.8588 to 0.8604. A decode-bias lever
+swept under a VL0 gate (the only split where selection is legal) selects
+bias 0 — no gain. The sixth front is the attribution control on the fifth:
+the identical clean-retraining protocol applied to a second seed (s2,
+against its own *uninterrupted* A100 backup) wins only 1/6 splits — so the
+s1 sweep is seed luck in the P/R plane, not a training-integrity effect
+(the three-seed family shows the mechanism: recall-type s1, balanced s0,
+precision-type s2, each seed trading ~0.10 P for ~0.10 R), and a
+three-member xens2 (s2 member −0.023; 2-seed r2d bucket 0.8540 vs 0.8604)
+confirms by exhaustion that the member axis is closed. The verdict is
+unchanged: TS2 −0.044 against the RNAformer inter-family reference is a
+modelling gap, having survived six independent attempts to close it, each
+reported, including the one that falsified our own first explanation of
+the fifth.
 
 ### 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) — and the opposite on TestSetB
 
