@@ -9266,3 +9266,17 @@ SOTA 主张升级为"同节点最强读数 + 逐位复现参照"。
 
 **工程交付**：tools/flash_shim（含数值验证块级测试）/scripts/
 rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
+
+### 15.83 plana 桶种子多样性轴 TS2 穷尽（2/3/4-seed 单调递减，轴关闭）
+
+- **实验**：`tools/xens2_eval_p3.py`（新）/ `tools/xens2_eval_p4.py`（新）。plana 桶从板协议 2-seed（tr1c s0+s1）扩展到 3-seed（+s2）与 4-seed（+s3），r2d 成员与 w=0.7 不变，TS2 单变量对照。plana tr1c 共有 s0-s3 四个种子 ckpt（此前板协议只用了 s0+s1——这是 s2 归因反转后未测的最后一个桶内杠杆）。
+- **环境**：4090（px2-jcy），lucaone env（torch 2.5.1+cu121，CUDA assert 前置），逐条命令见 `/root/plan_a3_run.sh` / `/root/plan_a4_run.sh`，日志 `/root/rna_jepa_data/monitor/plana{3,4}_ts2.log`。
+- **结果**（39 seq，0 skip，micro pair F1）：
+  | plana 桶 | F1 | P | R | vs 板协议 |
+  |---|---|---|---|---|
+  | 2-seed（板协议 §15.70） | 0.8604 | 0.9457 | 0.7879 | — |
+  | 3-seed | 0.8581 | 0.9466 | 0.7847 | −0.0023 |
+  | 4-seed | 0.8526 | 0.9443 | 0.7771 | −0.0078 |
+- **核查**：JSON config 字段直读（ckpt 名、w、r2d=s0 成员）+ P/R/F1 从 tp/fp/fn 重算全对 + p3 日志输出与 JSON 一致。三遍通过。
+- **判定**：单调递减——桶内种子平均把精确率型成员（s2/s3 偏 P 高 R 低）混入召回型桶（s1 召回型，见 §15.26 种子 P/R 剖面），稀释召回端。TS2 缺口在召回端（fn 141→146），与机制一致。**plana 桶种子多样性轴关闭**：板协议 2-seed 即最优，TS2 攻关在集成轴上至此全轴穷尽（r2d 成员侧 §15.76 负、2-seed r2d 桶 §15.76 负、plana 桶 3/4-seed 本条负）。TS2 0.8604/−0.044 六战线+第七战线（集成轴）最终判定成立。
+- **预印本**：v3.25 增补本条（§4.3 集成消融表加 plana 桶 2/3/4-seed 行）。
