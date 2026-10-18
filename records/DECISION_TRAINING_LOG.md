@@ -9280,3 +9280,13 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **核查**：JSON config 字段直读（ckpt 名、w、r2d=s0 成员）+ P/R/F1 从 tp/fp/fn 重算全对 + p3 日志输出与 JSON 一致。三遍通过。
 - **判定**：单调递减——桶内种子平均把精确率型成员（s2/s3 偏 P 高 R 低）混入召回型桶（s1 召回型，见 §15.26 种子 P/R 剖面），稀释召回端。TS2 缺口在召回端（fn 141→146），与机制一致。**plana 桶种子多样性轴关闭**：板协议 2-seed 即最优，TS2 攻关在集成轴上至此全轴穷尽（r2d 成员侧 §15.76 负、2-seed r2d 桶 §15.76 负、plana 桶 3/4-seed 本条负）。TS2 0.8604/−0.044 六战线+第七战线（集成轴）最终判定成立。
 - **预印本**：v3.25 增补本条（§4.3 集成消融表加 plana 桶 2/3/4-seed 行）。
+
+### 15.84 /teams 资产归档收尾 + ckpt 悬挂链接盘点（2026-10-19）
+
+- **teams_copy2.sh 完成**（`/root/teams_copy2.sh`，cp -a 版，rsync 集群不可用）：eval_decision 66M + ss_data + ckpts_1014 + embeddings 32G（/teams 侧 apparent-size 95G，>1G 大文件数 5/5 一致）+ weights_20261013/ckpts 45G → `/teams/HoulabData_1788502323/liucunyu/rna_jev_data/`。抽样 md5 校验：plana_giga_tr1c_s0_step20000.pt md5 `8b74e348...` 两侧一致。
+- **/teams 文件系统不支持 symlink**：weights 拷贝时 7 个 ckpt 为符号链接（Function not implemented）。处置：
+  1. **r2d s2/s1 重训 ckpt 修复**：本集群重训产物 `/root/rna_jepa_data/runs/rinalmo_r2dtr1c_b4_{s1,s2}/resume.pt` 为真文件。s2 symlink 已重定向至本地 resume.pt 并实体拷入 /teams（md5 `09b3b404...` 两侧一致）；s1（备份中本就缺失 canonical 名）新建 symlink `rinalmo_r2dtr1c_b4_s1_step20000.pt` → 本地 resume.pt，并实体拷入 /teams（md5 `9888a70d...` 两侧一致）。
+  2. **6 个悬挂链接如实清点**（/teams 侧无法恢复）：plana_giga_s0_step20000.pt（pre-tr1c 种子快照，/teams 备份的 snapshots_preserved 目录为空目录）、fftr1c/nodistill/norlcd/tr1cpdb/tr1cpdb_s1 五个消融系 ckpt——旧集群 runs 目标未随备份传出。这些是**消融与历史参照系**，不在 8/8 板协议路径上（板协议 ckpt 全部完好且已 md5 验证）。若需重启这些消融须重训；主结论（8/8 板、TS2 六+七战线、速度、置信度）不受影响。
+- **根因**：备份链路只打包了 weights_20261013/ckpts 目录（symlink 以链接形式进入归档），未打包 /mnt/cunyuliu/rna-jepa/runs 目标。已在 §15.70 备份清单知识基础上补全此认知，后续备份以 `cp -L`/tar -h 实体化。
+
+**主结论资产完整性判定**：8/8 板协议所需全部 ckpt（plana tr1c s0/s1 + r2d s0 + 各 split 数据 + embeddings）在 /root 与 /teams 双侧实体存在、md5 抽验通过；预印本 v3.24/v3.25 所引数字全部可由双侧资产重算。
