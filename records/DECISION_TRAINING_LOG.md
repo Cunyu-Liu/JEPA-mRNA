@@ -8949,3 +8949,33 @@ watchdog 已扩展至 s2（同款 */10 自愈）。
 **读出后动作**：8-split 终评（同 auto-eval 协议）→ 与旧 s2 对照表 →
 三种子家族 P/R 剖面图 → 若新 s2 同样大幅优于旧 s2，归因结论
 "训练完整性"入台账。
+
+### §15.74 预印本 v3.20 落稿（新集群证据链入稿，T-A77，2026-10-18）
+
+**变更内容**（apply_v320.py 一次性 patch，v3.19 备份后施用）：
+1. banner v3.19→v3.20 + change note（重建门/吞吐/Jev 式结构置信度/TS2 第五战线）；
+2. 新增 §4.3i（reproduction gate 0.786839 vs frozen 0.786563；吞吐表
+   21.4/96.1/119.6 三行含 F1 无损证据；结构级置信度 ECE 0.1604→0.0315 +
+   单调曲线 + Spearman 0.709 n=1281；TS2 第五战线闭环 s1 0.7206、
+   xens2 0.8604、VL0 门控 c=0）；
+3. §5 item 6 重写（吞吐+延迟双读数、跨节点诚实口径）；
+4. Appendix A 增 4 行 artifact 路径（新集群嵌套布局）；
+5. Appendix C item 7 更新（同节点重测排队声明）；
+6. Abstract 增吞吐+置信度段。
+
+**核对链（三遍）**：
+① check_v320.py 22/22 全过（每个数字从磁盘 JSON re-derive：速度 JSON ×3、
+repro gate、xens2 repro/TS2、bias gate、ECE_struct 从 confidence_ts0_s0_full
+全量重算、recal a/b）；
+② check_manuscript.py a/b/c/d 四项 PASS（Q1-Q12 落点全在）；
+③ 数字精度修正一处：fp16 舍入对差 22→18（|Δtp|+|Δfp|+|Δfn| = 2+14+2），
+草稿与 checker 同步改。
+
+**git**：dc5f395 已推 GitHub（含 eval_after_train_s2.sh 守护）。
+**v3.19 checker 路径失效说明**：check_v319.py 引用旧集群 flat 目录
+（ow_rinalmo_*_step20000_bprna_ts0 无子目录），新集群为嵌套布局——数字
+未变、路径变了；v3.18/319 段落数字仍在稿中被 check_manuscript 与
+audit_tables_v2（540/540，旧集群盘上）覆盖。
+
+**s2 读出链**：eval_after_train_s2.sh 已 setsid nohup 上线（复用 s1 协议，
+sed 派生），s2 训完自动 8-split 终评。
