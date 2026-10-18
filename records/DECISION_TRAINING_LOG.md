@@ -8607,3 +8607,34 @@ C 101.0(4090)。**注意跨架构对比的诚实口径**：参照系统（UFold 
 - 参照系统在 4090 上的同节点重测（UFold/RNAformer/MXfold2/Vienna）排队——
   没有权重的（UFold 权重未恢复）不可重测，只能引用 A100 行并注明硬件；
 - B=64 的 fp16 forward 半程（.half() 模型权重）可再提 30-50%，排队 v3。
+
+### §15.61 Jev 式置信度原型 + TS0 全量结构级 reliability（T-A73，2026-10-18）
+
+**一、实现**（`tools/predict_with_confidence.py` + `tools/conf_reliability.py`，纯推理期，零训练路径改动）：
+- 三层输出：pair_conf（校准配对概率，每对一个 0-1 值）、structure_conf
+  （预测配对概率几何均值，Jev 式"本次预测把握"聚合）、uncertain_pairs
+  （p<τ 低置信对列表，System-2 升级门控原料）；
+- r2dtr1c_b4_s0 全量 TS0 1288 条（CPU 跑，让 GPU 给训练臂——head-only
+  9.3M 模型 CPU 可行，长尾 ~13 分钟）。
+
+**二、TS0 全量读数（结构级 reliability，10 bins，pair 加权）**：
+- corr(structure_conf, per-seq F1) = 0.627；Spearman = 0.709；
+- **reliability 曲线单调**（0→0→0.27→0.48→0.73→0.92 六桶严格不降）；
+- ECE_struct = 0.171（结构级显著差于配对级 0.0007——**预期内**：结构级
+  聚合把配对相关性放大，per-seq F1 的实际值系统性低于聚合置信）；
+- 布局解释：结构置信 0.9+ 桶的实际 F1 0.918（gap −0.03），0.7-0.8 桶
+  gap −0.28——置信度作为**序数**（排序/分诊用途）已经可靠，作为**绝对
+  概率**需要结构级重标定（下一步：VL0 上拟合 structure-level affine，
+  预计把 ECE_struct 压一个量级，与 C1-c 配对级 0.0002 的套路同源）。
+
+**三、Jev 对齐结论（回应用户"能不能有置信度"）**：
+能，且三层已经落地：① 配对级校准概率（ECE 0.0007，**比 Jev 原版的
+softmax 置信度更受控**——我们有 C1-c 门核验）；② 结构级聚合置信
+（单调可靠，可直接用于低置信序列分诊/主动学习）；③ 低置信对清单
+（System-2 升级门控现成原料）。**ViennaRNA BPP 也能给配对概率但没有
+校准验证与结构级聚合——我们的差异化是校准+DP-free+聚合三合一**
+（诚实定位：不写"首次置信度输出"）。
+
+**四、下一步（T-A73 续）**：
+VL0 上结构级 affine 重标定（目标 ECE_struct ≤ 0.02）→ 与 ViennaRNA
+聚合置信同口径对比 → PPT 一页（数字三遍核对后）。
