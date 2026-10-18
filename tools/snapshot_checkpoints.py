@@ -25,8 +25,8 @@ over a 40 000-step run; a head-only arm's checkpoint is ~6 MiB.
 
 Usage::
 
-    python tools/snapshot_checkpoints.py --runs /mnt/cunyuliu/rna-jepa/runs \\
-        --out /mnt/cunyuliu/rna-jepa/ckpts --every 2000
+    python tools/snapshot_checkpoints.py --runs /root/rna_jepa_data/runs \\
+        --out /root/rna_jepa_data/ckpts --every 2000
 """
 
 from __future__ import annotations

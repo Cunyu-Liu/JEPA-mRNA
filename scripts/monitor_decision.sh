@@ -28,7 +28,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 # shellcheck source=scripts/gpu_util.sh
 source "$HERE/gpu_util.sh"
 
-ART="${RNAJEV_ART:-/mnt/cunyuliu/rna-jepa}"
+ART="${RNAJEV_ART:-/root/rna_jepa_data}"
 RUNS="${RNAJEV_RUNS:-$ART/runs}"
 LEDGER="$RUNS/ledger.jsonl"
 QUEUE="${RNAJEV_QUEUE:-$ART/queue_decision}"

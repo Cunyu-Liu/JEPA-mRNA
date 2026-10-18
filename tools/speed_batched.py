@@ -7,8 +7,8 @@ the head forward runs once per same-padded-length batch instead of once per
 sequence. DP decode stays per-sequence (legality guarantee is untouched).
 """
 import argparse, json, sys, time
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/src")
+sys.path.insert(0, "/root/rna_jev")
+sys.path.insert(0, "/root/rna_jev/src")
 
 import numpy as np
 import torch
@@ -24,7 +24,7 @@ from rnajepa.train_decision import build_decision_model
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint", required=True)
-    ap.add_argument("--data", default="/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl")
+    ap.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl")
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--max-len", type=int, default=600)
     ap.add_argument("--head-chunk", type=int, default=8)

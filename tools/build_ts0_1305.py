@@ -10,8 +10,8 @@ import json
 import pickle
 import sys
 
-sys.path.insert(0, "/home/cunyuliu/miniconda3/envs/lucaone/lib/python3.9/site-packages")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
+sys.path.insert(0, "/root/miniconda3/envs/lucaone/lib/python3.9/site-packages")
+sys.path.insert(0, "/root/rna_jev")
 import pandas  # noqa
 
 from data.ss.prepare_decision_data import (
@@ -20,12 +20,12 @@ from data.ss.prepare_decision_data import (
     project_to_legal,
 )
 
-d = pickle.load(open("/mnt/cunyuliu/rna-jepa/refmodels/datasets/test_sets.plk", "rb"))
+d = pickle.load(open("/root/rna_jepa_data/refmodels/datasets/test_sets.plk", "rb"))
 ts = d["bprna_ts0"]
 
 ours_seqs = set()
 records = []
-with open("/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl") as f:
+with open("/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl") as f:
     for line in f:
         r = json.loads(line)
         ours_seqs.add(r["seq"])
@@ -58,7 +58,7 @@ for _, row in ts.iterrows():
     added += 1
 
 assert len(records) == 1305, len(records)
-out = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0_1305.jsonl"
+out = "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0_1305.jsonl"
 with open(out, "w") as f:
     for r in records:
         f.write(json.dumps(r) + "\n")

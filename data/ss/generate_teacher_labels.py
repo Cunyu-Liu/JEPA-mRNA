@@ -33,9 +33,9 @@ Usage
 -----
 ::
 
-    PYTHONPATH=/mnt/cunyuliu/pylibs:src python data/ss/generate_teacher_labels.py \\
-        --data /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl \\
-        --out  /mnt/cunyuliu/rna-jepa/ss_data/teacher/bprna_tr0 \\
+    PYTHONPATH=/root/rna_jepa_data/pylibs:src python data/ss/generate_teacher_labels.py \\
+        --data /root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl \\
+        --out  /root/rna_jepa_data/ss_data/teacher/bprna_tr0 \\
         --shard-size 64 --limit 0
 """
 

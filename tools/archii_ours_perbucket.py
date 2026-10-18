@@ -4,8 +4,8 @@
 Uses C batched DP decode. Dynamic batch size based on sequence length.
 """
 import json, os, sys, time
-sys.path.insert(0, '/home/cunyuliu/rna-jepa')
-sys.path.insert(0, '/home/cunyuliu/rna-jepa/src')
+sys.path.insert(0, '/root/rna_jev')
+sys.path.insert(0, '/root/rna_jev/src')
 import numpy as np
 import torch
 from dataclasses import asdict
@@ -16,9 +16,9 @@ from rnajepa.train_decision import build_decision_model
 from tools.dp_decode_c_wrapper import nussinov_map_batch
 
 SPLIT = 'archiveii_embok_clean'
-DATA = f'/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{SPLIT}.jsonl'
-CKPT = '/mnt/cunyuliu/rna-jepa/runs/rinalmo_r2dtr1c_b4_s0/resume.pt'
-OUT = '/mnt/cunyuliu/rna-jepa/eval_decision/ours_archii_perbucket.json'
+DATA = f'/root/rna_jepa_data/ss_data/jsonl/{SPLIT}.jsonl'
+CKPT = '/root/rna_jepa_data/runs/rinalmo_r2dtr1c_b4_s0/resume.pt'
+OUT = '/root/rna_jepa_data/eval_decision/ours_archii_perbucket.json'
 
 BUCKETS = {
     'le100': lambda L: L <= 100,

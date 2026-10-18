@@ -32,8 +32,8 @@
 # missing (the script is still a success in the sense that it reported honestly).
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-ART="${RNAJEPA_ART:-/mnt/cunyuliu/rna-jepa}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+ART="${RNAJEPA_ART:-/root/rna_jepa_data}"
 PY="${RNAJEPA_PYTHON:-python3}"
 LOCK_FILE="${RNAJEPA_TEACHER_LOCK:-$ART/teachers/teacher_versions.json}"
 

@@ -46,12 +46,12 @@ Usage
 ::
 
     python data/ss/prepare_decision_data.py \\
-        --bpseq-dir /mnt/cunyuliu/BPfold_data/bpRNA/TR0 \\
-        --out /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl \\
-        --manifest /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.manifest.json
+        --bpseq-dir /root/rna_jepa_data/ss_data/bpRNA/TR0 \\
+        --out /root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl \\
+        --manifest /root/rna_jepa_data/ss_data/jsonl/bprna_tr0.manifest.json
 
     python data/ss/prepare_decision_data.py \\
-        --rinalmo-csv /mnt/cunyuliu/rna_ss_data/rinalmo/ArchiveII.csv \\
+        --rinalmo-csv /root/rna_jepa_data/rna_ss_data/rinalmo/ArchiveII.csv \\
         --out .../archiveii.jsonl --manifest .../archiveii.manifest.json
 """
 

@@ -23,7 +23,7 @@ Two conventions are enforced and printed so they cannot be lost:
     registry) are marked, because their test score is a development score.
 
 Usage:
-  python eval/make_tables.py --eval_root /mnt/cunyuliu/rna-jepa/eval_out \
+  python eval/make_tables.py --eval_root /root/rna_jepa_data/eval_out \
       --reference mrnabert_official --candidates v1_cont,v2_scratch
 """
 
@@ -46,7 +46,7 @@ except ImportError:  # pragma: no cover
     print("FATAL: pyyaml required", file=sys.stderr)
     raise SystemExit(2)
 
-ROOT = os.environ.get("RNAJEPA_ROOT", "/home/cunyuliu/rna-jepa")
+ROOT = os.environ.get("RNAJEPA_ROOT", "/root/rna_jev")
 
 
 def load_tasks(path: str) -> Dict[str, dict]:
@@ -130,11 +130,11 @@ def fmt(x: Optional[float], nd: int = 4) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--eval_root", default="/mnt/cunyuliu/rna-jepa/eval_out")
+    ap.add_argument("--eval_root", default="/root/rna_jepa_data/eval_out")
     ap.add_argument("--tasks_yaml", default=os.path.join(ROOT, "configs", "tasks.yaml"))
     ap.add_argument("--reference", default="mrnabert_official")
     ap.add_argument("--candidates", default="")
-    ap.add_argument("--out", default="/mnt/cunyuliu/rna-jepa/tables")
+    ap.add_argument("--out", default="/root/rna_jepa_data/tables")
     ap.add_argument("--f1", default="positive", choices=["positive", "macro"],
                     help="which F1 the verdict uses for binary tasks; the paper reports "
                          "positive-class F1, so that is the default")

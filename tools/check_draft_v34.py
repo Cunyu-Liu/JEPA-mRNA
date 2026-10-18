@@ -10,7 +10,7 @@ import re
 import sys
 from pathlib import Path
 
-DRAFT = Path("/home/cunyuliu/rna-jepa/paper/preprint_draft.md")
+DRAFT = Path("/root/rna_jev/paper/preprint_draft.md")
 text = DRAFT.read_text()
 
 checks = []
@@ -24,7 +24,7 @@ def micro_of(path):
     return json.load(open(path))["pair_level"]["micro"]["f1"]
 
 
-E = "/mnt/cunyuliu/rna-jepa/eval_decision"
+E = "/root/rna_jepa_data/eval_decision"
 
 V = {
     "ff_s0_ts0": micro_of(f"{E}/ff20000_bprna_ts0/result.json"),
@@ -66,7 +66,7 @@ std8 = st.stdev(seed8)
 big4 = [V["big_s0"], V["big_s1"], V["big_s2"], V["big_s3"]]
 capdiffs = [V["big_s0"] - V["ff_s0_ts0"], V["big_s1"] - V["ff_s1"], V["big_s2"] - V["ff_s2"], V["big_s3"] - V["ff_s3"]]
 
-d = json.load(open("/mnt/cunyuliu/rna-jepa/tables/stats_definitive.json"))
+d = json.load(open("/root/rna_jepa_data/tables/stats_definitive.json"))
 
 ck("8-seed mean 0.5938 in draft", f"{mean8:.4f}" == "0.5938" and "0.5938" in text, f"{mean8:.5f}")
 ck("8-seed std 0.0034", f"{std8:.4f}" == "0.0034", f"{std8:.5f}")
@@ -115,11 +115,11 @@ ck("v3.8: test-family count tracks current family (29)", "29-test family" in tex
 ck("v3.8: bigsum both splits in appendix", "ow_rinalmo_bigsum_b4_s0_step20000_{bprna_ts0,bprna_new}" in text)
 
 
-ENS = "/mnt/cunyuliu/rna-jepa/eval_decision"
+ENS = "/root/rna_jepa_data/eval_decision"
 V["ens8_ts0"] = micro_of(f"{E}/ensemble8_ts0/result.json")
 V["ens8_new"] = micro_of(f"{E}/ensemble8_new/result.json")
 V["ens_tr1_new"] = micro_of(f"{E}/ensemble_tr1_2seed_new/result.json")
-sd = json.load(open("/mnt/cunyuliu/rna-jepa/tables/stats_definitive.json"))
+sd = json.load(open("/root/rna_jepa_data/tables/stats_definitive.json"))
 ens = sd.get("ensembles", {})
 
 ck("v3.9: ens8 ts0 0.6105", f"{V['ens8_ts0']:.4f}" == "0.6105" and "0.6105" in text, f"{V['ens8_ts0']:.4f}")
@@ -132,7 +132,7 @@ ck("v3.9: stats json ensembles block matches", ens.get("ens8_ts0", {}).get("micr
 
 V["rnafm_ts0"] = micro_of(f"{E}/ow_rnafm_ff_b4_s0_step20000_bprna_ts0/result.json")
 V["rnafm_new"] = micro_of(f"{E}/ow_rnafm_ff_b4_s0_step20000_bprna_new/result.json")
-sd6 = json.load(open("/mnt/cunyuliu/rna-jepa/tables/stats_definitive.json"))
+sd6 = json.load(open("/root/rna_jepa_data/tables/stats_definitive.json"))
 bb = sd6.get("backbone", {})
 
 ck("v3.10: rnafm ts0 0.4199", f"{V['rnafm_ts0']:.4f}" == "0.4199" and "0.4199" in text, f"{V['rnafm_ts0']:.4f}")
@@ -184,7 +184,7 @@ ck("v3.14: decomposition table plana row", "backbone adaptation under our object
 ck("v3.14: appendix plana artifact row", "eval_decision/plana_giga_s0_step20000" in text)
 ck("v3.14: single-seed caveat stated", "single-seed caveat" in text)
 
-mc = json.load(open("/mnt/cunyuliu/rna-jepa/eval_decision/stratified_mfe_cells.json"))["ts"]
+mc = json.load(open("/root/rna_jepa_data/eval_decision/stratified_mfe_cells.json"))["ts"]
 ck("v3.14: mfe grid cells 0.3966/0.3679 stated", f"{mc['RFAM_200_400']['mfe_f1']:.4f}" == "0.3966" and f"{mc['RFAM_gt400']['mfe_f1']:.4f}" == "0.3679" and "0.3966" in text and "0.3679" in text, f"{mc['RFAM_200_400']['mfe_f1']:.4f}/{mc['RFAM_gt400']['mfe_f1']:.4f}")
 ck("v3.14: mfe cells centroid-verified + artifact row", mc['RFAM_200_400']['centroid_reproduced'] and mc['RFAM_gt400']['centroid_reproduced'] and mc['RFAM_200_400']['n_ok'] and mc['RFAM_gt400']['n_ok'] and "stratified_mfe_cells.json" in text and "protocol check" in text)
 

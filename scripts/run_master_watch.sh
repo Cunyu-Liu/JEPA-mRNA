@@ -4,12 +4,12 @@
 #   bigtr1 @20000 ts0+new, TR1-40k ts0+new, TR1-30k trend ts0,
 #   s6/s7 @20000 ts0, big_s2/pw_s1/big_s1 @20000 ts0 (2nd seeds)
 set -u
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-REPO=/home/cunyuliu/rna-jepa
-ART=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+REPO=/root/rna_jev
+ART=/root/rna_jepa_data
 DEV=$ART/ss_data/jsonl/bprna_vl0.jsonl
 LOG=$ART/eval_decision/master_watch.log
 EVAL_GPU="${RNAJEV_EVAL_GPU:-MIG-27707c52-3cf5-55f8-858f-1419d97bbdf3}"

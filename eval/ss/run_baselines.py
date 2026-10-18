@@ -26,8 +26,8 @@ different numbers for the same thing.
 
 Usage
 -----
-    PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/run_baselines.py \
-        --split bprna_ts0 --out /mnt/cunyuliu/rna-jepa/eval_decision/baselines_ts0.json
+    PYTHONPATH=/root/rna_jepa_data/pylibs:src:eval python eval/ss/run_baselines.py \
+        --split bprna_ts0 --out /root/rna_jepa_data/eval_decision/baselines_ts0.json
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ from rnajepa.harness import nussinov_map, valid_pair_mask  # noqa: E402
 from rnajepa.train_decision import BASE_TO_ID  # noqa: E402
 from ss.metrics import PairLevelMetrics, StructureLevelMetrics  # noqa: E402
 
-JSONL_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+JSONL_DIR = "/root/rna_jepa_data/ss_data/jsonl"
 ALL_BASELINES = ("vienna_mfe", "vienna_centroid", "vienna_mea", "nussinov_turner")
 
 

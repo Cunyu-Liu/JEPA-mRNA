@@ -8,23 +8,23 @@ this script evaluates the 181 clean rows with the identical protocol
 Output: eval_decision/rfold_tsb_clean.json
 """
 import json, sys, time
-sys.path.insert(0, "/home/cunyuliu/rna_baselines_src/RFold")
+sys.path.insert(0, "/root/rna_baselines_src/RFold")
 import os
-os.chdir("/home/cunyuliu/rna_baselines_src/RFold")
+os.chdir("/root/rna_baselines_src/RFold")
 import torch, numpy as np, _pickle as cPickle
 from rfold import RFold, row_col_argmax
 from colab_utils import constraint_matrix, get_cut_len
 from API.metric import evaluate_result
 
-D = '/home/cunyuliu/rna_baselines_src/RFold_data/'
+D = '/root/rna_baselines_src/RFold_data/'
 
 # load full tsb pickle and split by leak status
 tr0 = set()
-for l in open('/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl'):
+for l in open('/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl'):
     if not l.strip(): continue
     r = json.loads(l)
     tr0.add(r['seq'].upper().replace('T', 'U'))
-tsb_rows = [json.loads(l) for l in open('/mnt/cunyuliu/rna-jepa/ss_data/jsonl/testsetb.jsonl') if l.strip()]
+tsb_rows = [json.loads(l) for l in open('/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl') if l.strip()]
 clean_seqs = [r['seq'].upper().replace('T', 'U') for r in tsb_rows
               if r['seq'].upper().replace('T', 'U') not in tr0]
 print('clean seqs:', len(clean_seqs))
@@ -84,5 +84,5 @@ micro = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0
 res = {"n_clean": 181, "leaked_excluded": 247,
        "their_avg_f1": round(float(np.average(f1s)), 4),
        "micro_f1": round(micro, 4), "wall_s": round(wall, 1)}
-json.dump(res, open('/mnt/cunyuliu/rna-jepa/eval_decision/rfold_tsb_clean.json', 'w'), indent=1)
+json.dump(res, open('/root/rna_jepa_data/eval_decision/rfold_tsb_clean.json', 'w'), indent=1)
 print('CLEAN TSB RFold:', res)

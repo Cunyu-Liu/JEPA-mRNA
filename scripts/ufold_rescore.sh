@@ -3,11 +3,11 @@
 # scorer (run_baselines.py --external-dbn), exactly like the 3 existing
 # baselines_ufold_*.json rows; plus RiNALMo-ft on board TS0 (bprna_ts0).
 set -u
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-E=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+E=/root/rna_jepa_data
+REPO=/root/rna_jev
 LOG=$E/eval_decision/ufold_score.log
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
 cd $REPO || exit 1
 
 echo "=== ufold rescore start $(date +%F\ %T) ===" >> $LOG

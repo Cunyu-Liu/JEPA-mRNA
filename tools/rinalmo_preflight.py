@@ -37,7 +37,7 @@ from typing import Dict, Tuple
 
 import torch
 
-WEIGHTS = "/mnt/cunyuliu/rna-jepa/weights/rinalmo-giga"
+WEIGHTS = "/root/rna_jepa_data/weights/rinalmo-giga"
 
 #: The 28-token vocabulary, in the order given by ``vocab.txt``.
 VOCAB: Dict[str, int] = {

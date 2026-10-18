@@ -32,11 +32,11 @@ much of the result is held-out generalisation versus in-sample fitting.
 
 Usage::
 
-    PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src \\
+    PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src \\
       python tools/probe_temperature_c1c.py \\
-        --checkpoint /mnt/cunyuliu/rna-jepa/runs/rinalmo_ff_b4_s0/resume.pt \\
-        --dev /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_vl0.jsonl \\
-        --test /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl --head-chunk 16
+        --checkpoint /root/rna_jepa_data/runs/rinalmo_ff_b4_s0/resume.pt \\
+        --dev /root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl \\
+        --test /root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl --head-chunk 16
 """
 
 from __future__ import annotations

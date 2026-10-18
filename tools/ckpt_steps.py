@@ -11,7 +11,7 @@ import sys
 
 import torch
 
-root = sys.argv[1] if len(sys.argv) > 1 else "/mnt/cunyuliu/rna-jepa/ckpts"
+root = sys.argv[1] if len(sys.argv) > 1 else "/root/rna_jepa_data/ckpts"
 rows = []
 for path in sorted(glob.glob(os.path.join(root, "*.pt"))):
     try:

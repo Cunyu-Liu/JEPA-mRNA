@@ -7,10 +7,10 @@ set -u
 exec 8>/tmp/.r2dtr1c_s2_daemon.lock
 flock -n 8 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 DATA=$D/ss_data/jsonl/bprna_tr1c.jsonl
 TEACHER=$D/ss_data/teacher/bprna_tr1c
 EMB=$D/embeddings/rinalmo-giga
@@ -106,9 +106,9 @@ CKPT=$D/ckpts/${TAG}_step${STEPS}.pt
 [ -f "$CKPT" ] || { echo "[s2] FATAL: no resume.pt"; exit 1; }
 
 # 6-split eval (use whatever card has >=8GB CUDA-free, skip 6/7)
-EPY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+EPY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 for split in $EVAL_SPLITS; do
   outd=$D/eval_decision/ow_${TAG}_step${STEPS}_${split}

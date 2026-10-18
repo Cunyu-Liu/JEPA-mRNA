@@ -1,7 +1,7 @@
 """Acquisition scaffolding for the RNA secondary-structure datasets (spec §3.3).
 
 This module does **not** download anything in this environment (there is no
-network here; large artefacts live on the cluster at ``/mnt/cunyuliu/rna-jepa``).
+network here; large artefacts live on the cluster at ``/root/rna_jepa_data``).
 It provides, instead:
 
 * per-source fetch definitions -- URL(s) + mirror candidates, expected size,
@@ -46,7 +46,7 @@ FETCH_HELPER = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             "..", "..", "scripts", "fetch_zenodo_parallel.sh")
 
 #: Default root for fetched structure data (cluster path; absent on this machine).
-DEFAULT_OUT_ROOT = os.environ.get("RNAJEPA_SS_ROOT", "/mnt/cunyuliu/rna-jepa/data/ss/raw")
+DEFAULT_OUT_ROOT = os.environ.get("RNAJEPA_SS_ROOT", "/root/rna_jepa_data/data/ss/raw")
 
 HASH_UNKNOWN = "待核验"
 RESUMABILITY = "sharded_parts"

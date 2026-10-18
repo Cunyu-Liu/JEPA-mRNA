@@ -1,11 +1,11 @@
 """[archived] RFold (ICML 2024) 8-split board eval, TR0-retrained ckpt.
 
-Source of truth: /home/cunyuliu/rna_baselines_src/eval_rfold.py, run 2026-10-10/11.
+Source of truth: /root/rna_baselines_src/eval_rfold.py, run 2026-10-10/11.
 Protocol follows their repo exactly: model.train() at test time (their test_one_epoch
 uses train-mode BN), row_col_argmax(pred) * constraint_matrix(seq).
 Two F1 columns: their_avg_f1 (per-seq mean, paper-comparable) and micro_f1 (pooled
 TP/FP/FN, board-comparable with our other baselines).
-Results (NOT committed, data policy): /mnt/cunyuliu/rna-jepa/eval_decision/rfold_board.json
+Results (NOT committed, data policy): /root/rna_jepa_data/eval_decision/rfold_board.json
 """
 #!/usr/bin/env python3
 """T-A50: RFold 8-split board evaluation with the best TR0 checkpoint.
@@ -16,8 +16,8 @@ Their metric is per-seq-average F1; we ALSO compute strict micro from
 pooled TP/FP/FN (board-comparable). Report both.
 """
 import json, os, sys, time
-sys.path.insert(0, "/home/cunyuliu/rna_baselines_src/RFold")
-os.chdir("/home/cunyuliu/rna_baselines_src/RFold")
+sys.path.insert(0, "/root/rna_baselines_src/RFold")
+os.chdir("/root/rna_baselines_src/RFold")
 import torch, numpy as np, _pickle as cPickle
 from rfold import RFold, row_col_argmax
 from colab_utils import constraint_matrix, get_cut_len
@@ -30,11 +30,11 @@ args.pf_dim = 128; args.num_heads = 2
 
 dev = torch.device('cuda')
 m = RFold(args, dev)
-ck = torch.load('/home/cunyuliu/rna_baselines_src/RFold_data/rfold_tr0.pt', map_location='cpu')
+ck = torch.load('/root/rna_baselines_src/RFold_data/rfold_tr0.pt', map_location='cpu')
 m.model.load_state_dict(ck['model'])
 m.model.to(dev)
 
-D = '/home/cunyuliu/rna_baselines_src/RFold_data/'
+D = '/root/rna_baselines_src/RFold_data/'
 SPLITS = ["TS0", "new", "ts1", "ts2", "ts3", "hard", "arch", "tsb"]
 out = {}
 for sp in SPLITS:
@@ -74,5 +74,5 @@ for sp in SPLITS:
 json.dump({"model": "RFold (ICML 2024, our TR0 retrain, best ckpt ep20 "
            "val TS0[0:400] F1 0.6137, train-mode BN per their protocol)",
            "results": out},
-          open('/mnt/cunyuliu/rna-jepa/eval_decision/rfold_board.json', 'w'), indent=1)
+          open('/root/rna_jepa_data/eval_decision/rfold_board.json', 'w'), indent=1)
 print("WROTE rfold_board.json")

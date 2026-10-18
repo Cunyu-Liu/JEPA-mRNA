@@ -4,18 +4,18 @@
 # but each attempt is ~15 min; contention on this node is intermittent, so
 # retry-on-any-card until the dbn lands. 40 attempts, 2-min gaps.
 set -u
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-M=/mnt/cunyuliu/rna-jepa/refmodels/models
-O=/mnt/cunyuliu/rna-jepa/eval_decision
-LOG=/mnt/cunyuliu/rna-jepa/logs/rnaformer_bprna_new.log
+PY=/root/miniconda3/envs/lucaone/bin/python
+M=/root/rna_jepa_data/refmodels/models
+O=/root/rna_jepa_data/eval_decision
+LOG=/root/rna_jepa_data/logs/rnaformer_bprna_new.log
 DBN=$O/rnaformer_bprna_new.dbn
 NPZ=$O/rnaformer_probs_bprna_new.npz
-export PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval
-export TMPDIR=/mnt/cunyuliu/tmp
-cd /home/cunyuliu/rna-jepa || exit 1
+export PYTHONPATH=/root/rna_jepa_data/pylibs:src:eval
+export TMPDIR=/root/tmp_jev
+cd /root/rna_jev || exit 1
 
 free_gb() {
-  CUDA_VISIBLE_DEVICES=$1 /home/cunyuliu/miniconda3/envs/editflow/bin/python -c \
+  CUDA_VISIBLE_DEVICES=$1 /root/miniconda3/envs/lucaone/bin/python -c \
     "import torch; f,_=torch.cuda.mem_get_info(); print(f/1e9)" 2>/dev/null
 }
 

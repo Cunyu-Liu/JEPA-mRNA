@@ -179,10 +179,10 @@
     `records/BASELINE_RESULTS.md` §4.2 与 `records/DECISION_TRAINING_LOG.md` §14.32）：
     **UFold 的权重一直就在集群本地**（`/home/cunyuliu/rna_baselines_src/UFold-main/models/ufold_train_alldata.pt`，
     且 `ufold_run.log` 显示它跑通过）；**RNAformer 的源码与 3 个 checkpoint 本轮已齐**
-    （`git clone` 成功 + 权重在 `/mnt/cunyuliu/rna-jepa/refmodels/models/`）。
+    （`git clone` 成功 + 权重在 `/root/rna_jepa_data/refmodels/models/`）。
     旧结论把「在少数探测主机上网络不可达」外推成了「资产不存在」。
   - （此条已被下方实测取代，保留以说明流程）：原计划是先产出 dot-bracket（给 F1）
-    与 **sigmoid 概率矩阵**（给 ECE/Brier），产物落 `/mnt/cunyuliu/rna-jepa/eval_decision/`。
+    与 **sigmoid 概率矩阵**（给 ECE/Brier），产物落 `/root/rna_jepa_data/eval_decision/`。
     **在概率矩阵真的落盘并通过校验之前，不得勾选本项**——该门槛**已通过**（见下）。
   - ❌ **判据 FAIL（2026-09-24 晚，见 `DECISION_TRAINING_LOG.md` §14.42）**。
     概率矩阵已全部产出（UFold + RNAformer），同一 `ref_bprna_ts0`、同一 **6,022,538** 个候选对、

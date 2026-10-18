@@ -49,7 +49,7 @@ third_party/       mRNABERT (official code, read-only reference)
 ```
 
 Code lives in the `/home` project; all large artefacts (raw data, prepared corpora,
-checkpoints, evaluation output) live under `/mnt/cunyuliu/rna-jepa`. Nothing large is
+checkpoints, evaluation output) live under `/root/rna_jepa_data`. Nothing large is
 committed here.
 
 ## Environment

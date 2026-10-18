@@ -1,21 +1,21 @@
 # [archived] RFold (ICML 2024) TR0 retrain script.
-# Source of truth: /home/cunyuliu/rna_baselines_src/train_rfold.sh (cluster), run 2026-10-10.
+# Source of truth: /root/rna_baselines_src/train_rfold.sh (cluster), run 2026-10-10.
 # Upstream: github.com/cryo AI/RFold-style K-Rook probabilistic model, cloned to
-#   /home/cunyuliu/rna_baselines_src/RFold (upstream checkout NOT committed here).
-# Products: /home/cunyuliu/rna_baselines_src/RFold_data/rfold_tr0.pt (36MB, best ep20,
+#   /root/rna_baselines_src/RFold (upstream checkout NOT committed here).
+# Products: /root/rna_baselines_src/RFold_data/rfold_tr0.pt (36MB, best ep20,
 #   val TS0[0:400] F1 0.6137, 30 epochs, MSE loss, grad-accum 8).
-# Board JSON (NOT committed, data policy): /mnt/cunyuliu/rna-jepa/eval_decision/rfold_board.json
+# Board JSON (NOT committed, data policy): /root/rna_jepa_data/eval_decision/rfold_board.json
 #!/bin/bash
 # T-A50: RFold (ICML 2024) — train on bpRNA TR0 (our conversion), test on our
 # board splits. The repo ships only a test path; we add a minimal trainer
 # following their loss (MSE on contact maps, model.train() BN semantics as in
 # their test_one_epoch which keeps train-mode BN) — documented honestly.
 set -u
-cd /home/cunyuliu/rna_baselines_src/RFold
-export PYTHONPATH=/mnt/cunyuliu/pylibs
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
+cd /root/rna_baselines_src/RFold
+export PYTHONPATH=/root/rna_jepa_data/pylibs
+PY=/root/miniconda3/envs/lucaone/bin/python
 
-D=/home/cunyuliu/rna_baselines_src/RFold_data
+D=/root/rna_baselines_src/RFold_data
 mkdir -p $D
 
 # 1) build pickles: train.pickle (TR0) and {split}.pickle per board split
@@ -39,8 +39,8 @@ def to_instance(seq, pairs):
         onehot[i, m.get(ch, 0)] = 1.
     return (onehot, None, L, 'x', [list(map(int, p)) for p in pairs])
 
-base='/mnt/cunyuliu/rna-jepa/ss_data/jsonl/'
-out='/home/cunyuliu/rna_baselines_src/RFold_data/'
+base='/root/rna_jepa_data/ss_data/jsonl/'
+out='/root/rna_baselines_src/RFold_data/'
 for tag, f in [('train','bprna_tr0'), ('TS0','bprna_ts0'), ('new','bprna_new'),
                ('ts1','ref_pdb_ts1'), ('ts2','ref_pdb_ts2'), ('ts3','ref_pdb_ts3'),
                ('hard','ref_pdb_ts_hard'), ('arch','archiveii_embok_clean'), ('tsb','testsetb')]:
@@ -61,8 +61,8 @@ echo "[rfold] GPU $gpu (${bestfree}MB) $(date '+%F %T')"
 
 cat > $D/train_rfold.py <<'PYEOF'
 import sys, os, time, json
-sys.path.insert(0, '/home/cunyuliu/rna_baselines_src/RFold')
-os.chdir('/home/cunyuliu/rna_baselines_src/RFold')
+sys.path.insert(0, '/root/rna_baselines_src/RFold')
+os.chdir('/root/rna_baselines_src/RFold')
 import torch, numpy as np, _pickle as cPickle
 import torch.nn.functional as F
 from rfold import RFold, row_col_argmax
@@ -77,7 +77,7 @@ args.num_heads = 2
 dev = torch.device('cuda')
 m = RFold(args, dev)
 
-D = '/home/cunyuliu/rna_baselines_src/RFold_data/'
+D = '/root/rna_baselines_src/RFold_data/'
 train = cPickle.load(open(D+'train.pickle','rb'))
 print('train n =', len(train), flush=True)
 

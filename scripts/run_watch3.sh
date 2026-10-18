@@ -1,12 +1,12 @@
 #!/bin/bash
 # Watch 3: s7 (8th seed) + bigtr1_s1 (2nd combination seed) + TR1-30k trend.
 set -u
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-REPO=/home/cunyuliu/rna-jepa
-ART=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+REPO=/root/rna_jev
+ART=/root/rna_jepa_data
 DEV=$ART/ss_data/jsonl/bprna_vl0.jsonl
 LOG=$ART/eval_decision/watch3.log
 EVAL_GPU="${RNAJEV_EVAL_GPU:-MIG-27707c52-3cf5-55f8-858f-1419d97bbdf3}"

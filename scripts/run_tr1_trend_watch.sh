@@ -1,12 +1,12 @@
 #!/bin/bash
 # TR1 trend: evaluate the 30000-step snapshot when it lands (is TR1 still rising?).
 set -u
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-REPO=/home/cunyuliu/rna-jepa
-ART=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+REPO=/root/rna_jev
+ART=/root/rna_jepa_data
 DEV=$ART/ss_data/jsonl/bprna_vl0.jsonl
 LOG=$ART/eval_decision/tr1_trend_watch.log
 EVAL_GPU="${RNAJEV_EVAL_GPU:-MIG-27707c52-3cf5-55f8-858f-1419d97bbdf3}"

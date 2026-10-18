@@ -17,13 +17,13 @@
 set -u
 
 # single-instance guard
-exec 9>/mnt/cunyuliu/rna-jepa/runs/.launch_plan_a_ext40k.lock
+exec 9>/root/rna_jepa_data/runs/.launch_plan_a_ext40k.lock
 flock -n 9 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src:/root/rna_jev/tools
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 
 SRC=$D/runs/plana_giga_s0
 OUT=$D/runs/plana_giga_s0_ext40k

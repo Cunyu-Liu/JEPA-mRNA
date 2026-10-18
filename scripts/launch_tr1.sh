@@ -30,17 +30,17 @@
 # Usage: bash scripts/launch_tr1.sh [--dry-run]
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-ART="${RNAJEPA_ART:-/mnt/cunyuliu/rna-jepa}"
-PY="${RNAJEV_PYTHON:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+ART="${RNAJEPA_ART:-/root/rna_jepa_data}"
+PY="${RNAJEV_PYTHON:-/root/miniconda3/envs/lucaone/bin/python}"
 DATA="$ART/ss_data/jsonl/bprna_tr1.jsonl"
 TEACH="$ART/ss_data/teacher/bprna_tr1"
 EMB="$ART/embeddings/rinalmo-giga"
 DRY=0
 [ "${1:-}" = "--dry-run" ] && DRY=1
 
-export PYTHONPATH=/mnt/cunyuliu/pylibs:src
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:src
+export TMPDIR=/root/tmp_jev
 
 # preconditions: refuse rather than train on a half-built corpus or a teacher set
 # that cannot satisfy strict lookup

@@ -340,7 +340,7 @@ def _worker_process(batch: List[str]):
     """
     import tempfile
     tmpdir = os.environ.get("RNAJEPA_TMPDIR",
-                            "/mnt/cunyuliu/rna-jepa/data/pretrain_work/worker_tmp")
+                            "/root/rna_jepa_data/data/pretrain_work/worker_tmp")
     os.makedirs(tmpdir, exist_ok=True)
     tok_fh = tempfile.NamedTemporaryFile("w", delete=False, suffix=".tok.txt", dir=tmpdir)
     reg_fh = tempfile.NamedTemporaryFile("w", delete=False, suffix=".reg.txt", dir=tmpdir)
@@ -511,10 +511,10 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--zip", required=True,
                     help="input zip, or a comma-separated list of FASTA files")
-    ap.add_argument("--work", default="/mnt/cunyuliu/rna-jepa/data/pretrain_work")
-    ap.add_argument("--out", default="/mnt/cunyuliu/rna-jepa/data/pretrain/pre.txt")
-    ap.add_argument("--out_regions", default="/mnt/cunyuliu/rna-jepa/data/pretrain/pre_regions.txt")
-    ap.add_argument("--stats", default="/mnt/cunyuliu/rna-jepa/data/pretrain/stats.json")
+    ap.add_argument("--work", default="/root/rna_jepa_data/data/pretrain_work")
+    ap.add_argument("--out", default="/root/rna_jepa_data/data/pretrain/pre.txt")
+    ap.add_argument("--out_regions", default="/root/rna_jepa_data/data/pretrain/pre_regions.txt")
+    ap.add_argument("--stats", default="/root/rna_jepa_data/data/pretrain/stats.json")
     ap.add_argument("--workers", type=int, default=64)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--verify", type=int, default=20000)

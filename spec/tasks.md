@@ -199,7 +199,7 @@
 > - **架构臂 step2000 首评**：级联 casc **0.4610** / cascR **0.4654** / 容量 big **0.4850**（vs 同步 ff ~0.497，
 >   均无优势但臂仍在训，C2/容量假设未定论）。合法性三项全部 0。
 > - **bprna_new（跨家族）**：我们 **0.3536** vs UFold 0.6106 vs centroid 0.6770 —— **当前最大短板，必须与 TS0 并列报告**。
-> - **评测产物**：`/mnt/cunyuliu/rna-jepa/eval_decision/`（ff20000 三 split、trend 6000/10000、arch×3、
+> - **评测产物**：`/root/rna_jepa_data/eval_decision/`（ff20000 三 split、trend 6000/10000、arch×3、
 >   clean splits、c1a 同集表、mxfold2 archiveii）；监控 cron 每 10 min + checkpoint 快照每 10 min。
 
 | 类别 | 任务 | 状态 |
@@ -223,7 +223,7 @@
 
 ### 集群实测数据现状（2026-09-24，全部为实测计数）
 
-数据根：`/mnt/cunyuliu/BPfold_data`（已有）+ `/mnt/cunyuliu/rna_ss_data`（本次新增）
+数据根：`/root/rna_jepa_data/ss_data`（已有）+ `/mnt/cunyuliu/rna_ss_data`（本次新增）
 
 | 数据集 | 实测条数 | 用途 | 状态 |
 |---|---|---|---|
@@ -446,7 +446,7 @@
   - [ ] SubTask 18.4: 验证学生校准概率与教师可比（ECE、与教师概率的相关性）
     - **部分完成**：C1-b（对 ViennaRNA 精确 BPP 的同口径 ECE/Brier/NLL）已产出，TS0 ECE **0.0048**；C1-c 两口径见下。**与教师概率的相关性尚未测**。
   - [x] SubTask 18.5: 保存 checkpoint 与训练曲线
-    - 快照由 cron 每 10 分钟按 2000 步整数倍保留到 `/mnt/cunyuliu/rna-jepa/ckpts/`（因 `resume.pt` 原地覆盖，这是唯一可靠的溯源手段，见 §14.13）。
+    - 快照由 cron 每 10 分钟按 2000 步整数倍保留到 `/root/rna_jepa_data/ckpts/`（因 `resume.pt` 原地覆盖，这是唯一可靠的溯源手段，见 §14.13）。
   - **判据**：无 NaN/Inf；梯度覆盖断言通过；学习率标定报告产出；学生-教师概率一致性报告产出
 
 - [x] Task 19: 下游任务适配（T1–T6）。
@@ -562,9 +562,9 @@
 
 | 资产 | 路径 | 状态 |
 |---|---|---|
-| RiNALMo-giga 权重（650M；33 层 / hidden 1280 / 20 heads / rotary / max_pos 1024） | `/mnt/cunyuliu/rna-jepa/weights/rinalmo-giga/model.safetensors`（2.60 GB） | **已下载**（经 `hf-mirror.com`；`huggingface.co` 与 Zenodo 不通） |
+| RiNALMo-giga 权重（650M；33 层 / hidden 1280 / 20 heads / rotary / max_pos 1024） | `/root/rna_jepa_data/weights/rinalmo-giga/model.safetensors`（2.60 GB） | **已下载**（经 `hf-mirror.com`；`huggingface.co` 与 Zenodo 不通） |
 | multimolecule 0.0.8 + transformers 4.57.6 + torch 2.8.0 | `/mnt/cunyuliu/rnalmo_pkgs`（`pip --target` 隔离安装，**不污染**训练环境） | **已安装** |
-| 无标签语料 | `/mnt/cunyuliu/rna-jepa/data/pretrain`（**245 GB**）、`pretrain_fasta`（93 GB） | 已有（规模远超 spec 早先写的 20 GB） |
+| 无标签语料 | `/root/rna_jepa_data/data/pretrain`（**245 GB**）、`pretrain_fasta`（93 GB） | 已有（规模远超 spec 早先写的 20 GB） |
 
 > **许可提示（必须先确认再使用）**：`multimolecule/rinalmo-giga` 标注 **AGPL-3.0**。
 > 用于研究/论文前需确认合规性，或改用许可更宽松的骨干。**当前尚未在任何训练中使用。**

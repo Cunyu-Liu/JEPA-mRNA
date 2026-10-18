@@ -5,9 +5,9 @@ a fresh manifest — same merge contract as parallel_teacher_labels.merge_parts.
 import json
 import os
 
-TR1C = '/mnt/cunyuliu/rna-jepa/ss_data/teacher/bprna_tr1c'
-PDB = '/mnt/cunyuliu/rna-jepa/ss_data/teacher/bprna_tr1c_pdbexp'
-OUT = '/mnt/cunyuliu/rna-jepa/ss_data/teacher/bprna_tr1c_plus'
+TR1C = '/root/rna_jepa_data/ss_data/teacher/bprna_tr1c'
+PDB = '/root/rna_jepa_data/ss_data/teacher/bprna_tr1c_pdbexp'
+OUT = '/root/rna_jepa_data/ss_data/teacher/bprna_tr1c_plus'
 
 os.makedirs(OUT, exist_ok=True)
 merged = []

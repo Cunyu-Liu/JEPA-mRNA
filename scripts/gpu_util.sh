@@ -61,7 +61,7 @@ list_schedulable_gpus() {
 
   # MIG instances: measured free memory, keyed by UUID
   local measured
-  measured="$("${RNAJEV_PY:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}" \
+  measured="$("${RNAJEV_PY:-/root/miniconda3/envs/lucaone/bin/python}" \
       "$(dirname "${BASH_SOURCE[0]}")/../tools/mig_free.py" 2>/dev/null \
       | awk '$2 ~ /^[0-9]+$/ {print $1, $2}')"
   if [ -n "$measured" ]; then

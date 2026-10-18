@@ -14,10 +14,10 @@
 # (16GB threshold), then launches under setsid nohup and detaches.
 set -u
 
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src:/root/rna_jev/tools
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 
 OUT=$D/runs/plana_giga_s0
 LOG=$D/runs/plana_giga_s0.log

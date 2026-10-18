@@ -2,8 +2,8 @@
 vs RiNALMo-ft, both decomposed into TR0-leaked (247) vs clean (181)."""
 import json
 
-E = '/mnt/cunyuliu/rna-jepa/eval_decision'
-J = '/mnt/cunyuliu/rna-jepa/ss_data/jsonl'
+E = '/root/rna_jepa_data/eval_decision'
+J = '/root/rna_jepa_data/ss_data/jsonl'
 
 
 def seqs_of(path):

@@ -15,7 +15,7 @@
 >
 
 > **交接状态（2026-09-29 傍晚，第六轮交接更新）**：
-> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/mnt/cunyuliu/rna-jepa`。
+> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/root/rna_jev`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/root/rna_jepa_data`。
 > - **draft v3.14 已提交**（commit 95baf6b，**88/88 检查通过**）：plana 行入 §4.3 主表（双协议读法）+ §4.3g (e) 块 + 四行分解表 + 单种子 caveat。第五轮"v3.14 为下一步"的表述已完成。
 > - **本轮交接发现并修复的四个工程缺陷（全部已在代码层修复，详见 §14.79）**：
 >   1. **snapshot 碰撞（严重）**：`train_plan_a.py` 快照名硬编码 `plana_giga_s0_step{N}.pt`——在跑的 s1 臂从 step 2000 起会逐个**覆盖 s0 的溯源快照**。s0 的 10 份快照（step 2000–20000，25.5GB）已移入 `ckpts/plana_giga_s0_snapshots_preserved/` 保藏；trainer 改为按 `--out` 目录名派生快照名；s1 watcher 会在 DONE 时把旧代码写错名的 s1 快照批量改名回收。
@@ -57,7 +57,7 @@
 > - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.34**；draft **v3.19**；本三件套同批刷新（T-A29 纪律）。
 >
 > **交接状态（2026-10-08 02:30，第十二轮交接更新——两章读出落地的判定轮，细节 §15.31–§15.32）**：
-> - **集群**：`ssh A100`（bms-18937653-012），代码 `/home/cunyuliu/rna-jepa`（HEAD 3fb9828，已推 GitHub），数据 `/mnt/cunyuliu/rna-jepa`。本地台账同步至 7501 行。
+> - **集群**：`ssh A100`（bms-18937653-012），代码 `/root/rna_jev`（HEAD 3fb9828，已推 GitHub），数据 `/root/rna_jepa_data`。本地台账同步至 7501 行。
 > - **SOTA 战况不变（6/8）**；**本轮两个判定**：
 >   1. **Turner 先验消融（最终配方，6-split，§15.31）**：先验价值 **+0.2266 ID / +0.3683–0.4672 OOD（单调随 OOD 距离）**——与 solver R3（DP +0.25/+0.43）互为镜像：**管线的两个结构先验各贡献 1/4–1/2 F1，OOD 上贡献更大**；OOD 鲁棒性由物理/几何项承载（非 ensemble/非 backbone），神经 scorer 是 ID 专家。r2d 路径无 MLP_T（ResNet 即 scorer，物理以可学习 prior_weight 进入），故忠实置零 = decode 期 `--prior-weight 0.0`（单变量零重训）。
 >   2. **TS2/TS3 数据构成假设否定（§15.32，干净负结果）**：tr1cpdb s0 六 split 全降（TS2 −0.2092），P 持平 R 崩 = head 被推向更保守。**差距已在四战线存活**（§15.19 三项 + 本轮数据构成）；Limitations 行成型；当前配方家族不再发 TS2/TS3 新臂（NMR head 降级 parked，T-A36）。
@@ -67,7 +67,7 @@
 > - **权威台账**：`records/DECISION_TRAINING_LOG.md` 至 **§15.32**；冻结评测集 `spec/eval_splits_frozen.json`；本文件与 tasks.md/checklist.md 同批刷新（T-A29 纪律）。
 >
 > **交接状态（2026-10-08 00:30，第十一轮交接更新——消融矩阵补全轮，细节 §15.30）**：
-> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（HEAD 01966fe，已推 GitHub），数据/权重 `/mnt/cunyuliu/rna-jepa`。**算力纠偏**：开场实测 GPU1 整卡空闲（1.7GB/0%），补位 fftr1c 臂后 6 张物理卡全部 90–100% 利用率。
+> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/root/rna_jev`（HEAD 01966fe，已推 GitHub），数据/权重 `/root/rna_jepa_data`。**算力纠偏**：开场实测 GPU1 整卡空闲（1.7GB/0%），补位 fftr1c 臂后 6 张物理卡全部 90–100% 利用率。
 > - **在训臂 ×3**：① `rinalmo_r2dtr1c_tr1cpdb_b4_s0`（TS2/TS3 数据构成杠杆，GPU3，~14.3k/20k，ETA ~08:00，完成自动 6-split 终评）；② `rinalmo_fftr1c_b4_s0`（T-A31 R2 线性探针消融：`--scorer mlp`，除 scorer 外与 r2dtr1c_b4_s0 字节一致；GPU1，step 75 起确认）；③ `rinalmo_r2dtr1c_tr1cpdb_b4_s1`（**预注册**第二种子，sed 派生 diff 仅 3 行，守护等 34GB 窗口）。两新臂同批装 watchdog（FFTR1C / TR1CPDB_S1）——项目 watchdog 共 8 条 live。
 > - **SOTA 战况不变（6/8）**：xens3（3-seed bucket）8/8 完成但为 wash（TS0 0.8062/TestSetB 0.8477，其余 ±0.02）——**xens2 保持 quoted ensemble，xens3 为 3-seed 稳健性行**（15.27 预注册决策：s3 稀释 PDB 家族，不进 bucket）。TS2/TS3 差距 −0.045 的唯一未测杠杆 = tr1cpdb（数据构成：+234 行去污染 PDB 家族行，15.26 per-row forensics：FN 集中在 PDB 短茎环，RNAformer 见过数千个此类茎环）。
 > - **新增已落地证据（15.27–15.29，待折叠入 v3.19）**：4-seed plana-tr1c 家族图（TS0 spread 0.023，PDB 家族 0.05–0.07——种子方差集中于 PDB 稀有信号）；tr1c-native 消融 nodistill/norlcd 6-split（辅助项"非装饰、非承重"）；**solver 消融 R3：DP 解码值 +0.25/+0.43 F1**（greedy 397k crossing events）；cov v2 配对特异性信号（+0.0005，CI>0，但尺度远小于读出头知识）。
@@ -76,7 +76,7 @@
 > - **本轮反思（用户指示）**：GPU 饱和无负反馈监控（已手工纠偏，机制 T-A33）；消融矩阵还差 2 个 tr1c-native cell（T-A32）；写作再欠 15.27–15.29 三章（T-A34）；PPT 落后两波（待 tr1cpdb 一次更新）。详见 tasks.md 第十一轮反思块。
 >
 > **交接状态（2026-10-06 19:30，第十轮交接更新——SOTA 大盘翻盘后的收尾轮）**：
-> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`，HEAD 603cd65），数据/权重 `/mnt/cunyuliu/rna-jepa`。
+> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/root/rna_jev`（git remote `Cunyu-Liu/JEPA-mRNA`，HEAD 603cd65），数据/权重 `/root/rna_jepa_data`。
 > - **当前 SOTA 战况（全部在去污染语料 bprna_tr1c 上训练、project scorer、project GT，表 = `tables/sota_vs_ours.md` 15.23 版；§15.22 独立审计 540 checks 0 mismatch）**：
 >   | split | 单模最佳 | cross-family ens (xens2, VL0-locked w=0.7) | 参考 | verdict |
 >   |---|---|---|---|---|
@@ -122,11 +122,11 @@
 - **下一步**：任一整卡释放（v2_scratch@50k 或 plana_s1 收队）即自动起 r2d_s1；两者齐备后 draft v3.15 记录 (d)/(e) 的 2-seed 读数。
 >
 > **交接状态（2026-09-29 下午，第五轮交接更新）**：
-> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/home/cunyuliu/rna-jepa`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/mnt/cunyuliu/rna-jepa`。
+> - **集群**：`ssh A100`（bms-18937653-012，8×A100-40GB），代码 `/root/rna_jev`（git remote `Cunyu-Liu/JEPA-mRNA`），数据/权重 `/root/rna_jepa_data`。
 > - **当前 headline（Plan-A 完成，§14.76–§14.77）**：`plana_giga_s0`（A+B = RiNALMo-giga 渐进解冻 + resnet2d scorer，20000 步）→ **TS0 micro F1 0.7268 / macro 0.7139**；OOD bpRNA-new micro **0.4302**。
 > - **A+B 三项分解全部测得（§14.77）**：2D scorer（Plan-B，r2d）+0.067 双侧为正 → 0.6629 / 0.5010；backbone adaptation（A 项）**+0.064 ID / −0.071 OOD**（容量反转签名：P 0.569 / R 0.346，损伤在召回侧）；structure-aware 预训练 residual ~0。部署指引：OOD 筛选用 frozen+2D，目标家族在分布内才解锁 backbone。
 > - **主对标**：RNAformer 0.7578（差距缩至 **0.031**，原 0.162）；UFold 0.6598（已超 +0.067）；NucleicBERT 微调 404M macro 0.649（已超，我们 macro 0.7139，§14.75 外部参照系）；ViennaRNA centroid 0.5393。**OOD 仍是最诚实短板，必须与 TS0 并列表格**。
-> - **在跑**：`rinalmo_r2d_b4_s1`（Plan-B 第二 seed，GPU 5，14:39 起跑，协议与 s0 逐参数一致仅 seed 不同）；`plana_giga_s1` 启动器+守护（`scripts/launch_plan_a_s1.sh` + `tools/watch_plan_a_s1.sh`，等 ≥16GB 设备自动起）。监控 cron 每 10 分钟，快照落 `/mnt/cunyuliu/rna-jepa/ckpts/`。
+> - **在跑**：`rinalmo_r2d_b4_s1`（Plan-B 第二 seed，GPU 5，14:39 起跑，协议与 s0 逐参数一致仅 seed 不同）；`plana_giga_s1` 启动器+守护（`scripts/launch_plan_a_s1.sh` + `tools/watch_plan_a_s1.sh`，等 ≥16GB 设备自动起）。监控 cron 每 10 分钟，快照落 `/root/rna_jepa_data/ckpts/`。
 > - **台账修复**：plana_giga_s0 曾因 run_meta.json 无 status 字段被监控误报"died without terminal row"37 小时（训练与终评实际均完成）；已补 `status=completed`（§14.77 教训：直启工具必须写终态）。
 > - **权威实验台账**：`records/DECISION_TRAINING_LOG.md`（**§14.1–§14.77**）；**权威 benchmark 决策**：`spec/benchmark_decision.md`；**当前任务状态**：`spec/tasks.md`。
 > - **当前目标**：draft v3.14（plana 行入 §4.3 主表 + §4.3g chase map 三项闭环 + Appendix A artifact 行）→ r2d_s1/plana_s1 种子方差 → 预印本定稿（v3.13 已 78/78 检查通过）。
@@ -180,7 +180,7 @@ RNA 二级结构预测当前有三条路线，各自卡在不同痛点上：
   - `src/rnajepa/distill.py`（热力学决策蒸馏预训练，新增）
   - `eval/ss/`（二级结构评测，新增）
   - `configs/ss_tasks.yaml`（二级结构任务注册表，新增）
-- **Affected data**：`/mnt/cunyuliu/rna-jepa` 下新增 `clean/`、`ss/`；既有语料不改动。
+- **Affected data**：`/root/rna_jepa_data` 下新增 `clean/`、`ss/`；既有语料不改动。
 - **复用（不重写）**：`scripts/submit_finetune.sh`、`scripts/monitor.py`、`scripts/install_cron.sh`、`src/rnajepa/tokenization.py`、`eval/make_tables.py`。
 
 ---
@@ -1565,7 +1565,7 @@ L = L_NLL  +  λ_distill · L_distill  +  λ_RLCD · L_RLCD  +  λ_1 · L_cal
 | 资源 | 需求 | 现状 | 待确认 |
 |---|---|---|---|
 | GPU | 编码器 650M 规模训练 + 消融矩阵（≥12 项 × ≥5 seed） | 集群已有 GPU 选择 / OOM 重试 / 监控基础设施（`scripts/`） | **卡型与可用卡数待确认** |
-| 存储 | 20 GB 语料 + 结构数据集 1–2 GB + checkpoint（650M fp32 ≈ 2.6 GB/份 × 多份） | 集群 `/mnt/cunyuliu/rna-jepa` | **可用配额待确认** |
+| 存储 | 20 GB 语料 + 结构数据集 1–2 GB + checkpoint（650M fp32 ≈ 2.6 GB/份 × 多份） | 集群 `/root/rna_jepa_data` | **可用配额待确认** |
 | 教师模型算力 | 对 ~36M 序列跑 McCaskill 生成软标签 | 需评估 | **教师生成是新的算力瓶颈，须先做小规模吞吐实测** |
 | 软件 | ViennaRNA / RNAstructure / LinearPartition（版本锁定）、PyTorch、MMseqs2/CD-HIT | 部分已有 | 版本清单待定 |
 | 人力 | 数据清洗、架构实现、评测、写作 | — | **分工待确认** |

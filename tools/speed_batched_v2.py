@@ -9,8 +9,8 @@ Guarantee: bitwise-equal F1 to v1 (exact-length buckets → same scores;
 C decode verified bitwise-equal to Python _max_dp_reference).
 """
 import argparse, json, sys, time, os
-sys.path.insert(0, '/home/cunyuliu/rna-jepa')
-sys.path.insert(0, '/home/cunyuliu/rna-jepa/src')
+sys.path.insert(0, '/root/rna_jev')
+sys.path.insert(0, '/root/rna_jev/src')
 
 import numpy as np
 import torch
@@ -26,7 +26,7 @@ from tools.dp_decode_c_wrapper import nussinov_map_batch
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--checkpoint', required=True)
-    ap.add_argument('--data', default='/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl')
+    ap.add_argument('--data', default='/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl')
     ap.add_argument('--batch-size', type=int, default=32)
     ap.add_argument('--max-len', type=int, default=600)
     ap.add_argument('--head-chunk', type=int, default=8)

@@ -18,7 +18,7 @@ import json
 import os
 import sys
 
-RUNS = "/mnt/cunyuliu/rna-jepa/runs"
+RUNS = "/root/rna_jepa_data/runs"
 TERMINAL = {"completed", "diverged", "failed", "oom", "exhausted"}
 
 #: (run dir, status, reason, evidence)

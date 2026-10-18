@@ -12,8 +12,8 @@ import os
 import glob
 import re
 
-E = "/mnt/cunyuliu/rna-jepa/eval_decision"
-OUT = "/home/cunyuliu/rna-jepa/tables/sota_vs_ours.md"
+E = "/root/rna_jepa_data/eval_decision"
+OUT = "/root/rna_jev/tables/sota_vs_ours.md"
 SPLITS = ["TS0", "bpRNA-new", "TS1", "TS2", "TS3", "TS-hard", "ArchiveII-clean", "TestSetB"]
 SPLIT_KEYS = {
     "TS0": "bprna_ts0", "bpRNA-new": "bprna_new", "TS1": "ref_pdb_ts1",

@@ -10,8 +10,8 @@ Checks (>=3 discipline), TS0 full 1288:
 import json
 import sys
 
-BASE = "/mnt/cunyuliu/rna-jepa/eval_decision/xens2_2seed_ts0_stability_r%d/result.json"
-BOARD = "/mnt/cunyuliu/rna-jepa/eval_decision/xens2_bprna_ts0_w0.7/result.json"
+BASE = "/root/rna_jepa_data/eval_decision/xens2_2seed_ts0_stability_r%d/result.json"
+BOARD = "/root/rna_jepa_data/eval_decision/xens2_bprna_ts0_w0.7/result.json"
 
 runs = [json.load(open(BASE % r)) for r in (1, 2, 3)]
 board = json.load(open(BOARD))

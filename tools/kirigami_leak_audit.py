@@ -12,12 +12,12 @@ Output: eval_decision/kirigami_leak_audit.json
 """
 import hashlib, json, re, sys
 
-TR0 = "/mnt/cunyuliu/relocated_home/rna_baselines_src/kirigami/data/TR0.dbn"
+TR0 = "/root/rna_jepa_data/relocated_home/rna_baselines_src/kirigami/data/TR0.dbn"
 SPLITS = {
-    "archiveii_embok_clean": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/archiveii_embok_clean.jsonl",
-    "testsetb": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/testsetb.jsonl",
+    "archiveii_embok_clean": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl",
+    "testsetb": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
 }
-OUT = "/mnt/cunyuliu/rna-jepa/eval_decision/kirigami_leak_audit.json"
+OUT = "/root/rna_jepa_data/eval_decision/kirigami_leak_audit.json"
 
 def norm(seq):
     return seq.upper().replace("T", "U")

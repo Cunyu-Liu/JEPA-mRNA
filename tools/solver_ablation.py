@@ -29,9 +29,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/src")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/tools")
+sys.path.insert(0, "/root/rna_jev/src")
+sys.path.insert(0, "/root/rna_jev")
+sys.path.insert(0, "/root/rna_jev/tools")
 
 from rnajepa.harness import nussinov_map, valid_pair_mask  # noqa: E402
 from eval.ss.metrics import PairLevelMetrics  # noqa: E402
@@ -105,7 +105,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--split", default="bprna_ts0")
-    ap.add_argument("--embedding-dir", default="/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga")
+    ap.add_argument("--embedding-dir", default="/root/rna_jepa_data/embeddings/rinalmo-giga")
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--limit", type=int, default=0, help="0 = all")
@@ -115,7 +115,7 @@ def main():
     store = EmbeddingStore.from_dir(args.embedding_dir, split=args.split)
 
     records = []
-    with open(f"/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{args.split}.jsonl") as f:
+    with open(f"/root/rna_jepa_data/ss_data/jsonl/{args.split}.jsonl") as f:
         for line in f:
             r = json.loads(line)
             records.append((str(r["seq"]).upper().replace("T", "U"),

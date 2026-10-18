@@ -3,7 +3,7 @@
 #
 # Why this exists
 # ---------------
-# The first inventory of training data looked only at /mnt/cunyuliu/BPfold_data
+# The first inventory of training data looked only at /root/rna_jepa_data/ss_data
 # and concluded the project had 10,682 training sequences and two usable test
 # splits.  That was wrong, and the correction matters:
 #
@@ -46,9 +46,9 @@
 set -uo pipefail
 
 PY="${RNAJEV_PYTHON:-$HOME/miniconda3/envs/lucaone/bin/python}"
-OUT="${1:-/mnt/cunyuliu/rna-jepa/ss_data/jsonl}"
+OUT="${1:-/root/rna_jepa_data/ss_data/jsonl}"
 MODE="${2:-all}"
-D="${RNAJEV_REF_DATASETS:-/mnt/cunyuliu/rna-jepa/refmodels/datasets}"
+D="${RNAJEV_REF_DATASETS:-/root/rna_jepa_data/refmodels/datasets}"
 
 mkdir -p "$OUT"
 AUDIT="$OUT/_ref_content_audit.txt"

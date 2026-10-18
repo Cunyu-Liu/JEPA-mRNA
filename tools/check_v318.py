@@ -5,10 +5,10 @@ import json
 import sys
 from pathlib import Path
 
-DRAFT = Path("/home/cunyuliu/rna-jepa/paper/preprint_draft.md")
+DRAFT = Path("/root/rna_jev/paper/preprint_draft.md")
 text = DRAFT.read_text(encoding="utf-8")
-E = "/mnt/cunyuliu/rna-jepa/eval_decision"
-T = "/home/cunyuliu/rna-jepa/tables/sota_vs_ours.md"
+E = "/root/rna_jepa_data/eval_decision"
+T = "/root/rna_jev/tables/sota_vs_ours.md"
 
 checks = []
 

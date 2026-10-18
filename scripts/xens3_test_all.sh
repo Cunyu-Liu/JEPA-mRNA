@@ -3,10 +3,10 @@
 # sequential solo runs on card 5 — two concurrent runs OOM'd, see 15.27).
 # Idempotent per split: skips when result.json exists.
 set -u
-cd /home/cunyuliu/rna-jepa || exit 1
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools:/mnt/cunyuliu/pylibs
-EPY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-D=/mnt/cunyuliu/rna-jepa
+cd /root/rna_jev || exit 1
+export PYTHONPATH=/root/rna_jev/src:/root/rna_jev/tools:/root/rna_jepa_data/pylibs
+EPY=/root/miniconda3/envs/lucaone/bin/python
+D=/root/rna_jepa_data
 CK0=$D/ckpts/plana_giga_tr1c_s0_step20000.pt
 CK1=$D/ckpts/plana_giga_tr1c_s1_step20000.pt
 CK2=$D/ckpts/plana_giga_tr1c_s2_step20000.pt

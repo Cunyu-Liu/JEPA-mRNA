@@ -8,15 +8,15 @@ eval_kirigami_gpu.py (GPU forward path, our GT/scorer).
 Output: eval_decision/kirigami_tsb_clean.json
 """
 import json, sys, time
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
-sys.path.insert(0, "/home/cunyuliu/rna_baselines_src/kirigami")
+sys.path.insert(0, "/root/rna_jev")
+sys.path.insert(0, "/root/rna_baselines_src/kirigami")
 import torch
 from kirigami.utils import _embed_fasta, mat2db, outer_concat
 
-AUDIT = "/mnt/cunyuliu/rna-jepa/eval_decision/kirigami_leak_audit.json"
-SPLIT = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/testsetb.jsonl"
-OUT = "/mnt/cunyuliu/rna-jepa/eval_decision/kirigami_tsb_clean.json"
-TR0 = "/mnt/cunyuliu/relocated_home/rna_baselines_src/kirigami/data/TR0.dbn"
+AUDIT = "/root/rna_jepa_data/eval_decision/kirigami_leak_audit.json"
+SPLIT = "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl"
+OUT = "/root/rna_jepa_data/eval_decision/kirigami_tsb_clean.json"
+TR0 = "/root/rna_jepa_data/relocated_home/rna_baselines_src/kirigami/data/TR0.dbn"
 
 def dbn_to_pairs(dbn):
     stack, pairs = [], []
@@ -46,7 +46,7 @@ def main():
     print("clean rows:", len(clean), "/ total:", len(rows))
     assert len(clean) == 428 - 247 == 181
 
-    model = torch.hub.load('/home/cunyuliu/rna_baselines_src/kirigami',
+    model = torch.hub.load('/root/rna_baselines_src/kirigami',
                            'kirigami', pretrained=True, source='local')
     model.eval().to("cuda")
 

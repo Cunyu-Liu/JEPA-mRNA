@@ -22,7 +22,7 @@ set -uo pipefail
 TASK=""; TASK_KIND=""; MODEL_PATH=""; DATA_DIR=""; OUT_DIR=""
 SEED=42; MAX_LEN=512; BATCH=8; EVAL_BATCH=32; EPOCHS=20; LR=1e-4; MIN_FREE=16000
 FP16=0; SAVE_MODEL=0; GRAD_CKPT=0; FREEZE=0; ENC_LR_SCALE=1.0
-PYTHON="${RNAJEPA_PYTHON:-/home/cunyuliu/miniconda3/envs/mrnabert/bin/python}"
+PYTHON="${RNAJEPA_PYTHON:-/root/miniconda3/envs/mrnabert/bin/python}"
 TAG=""
 
 while [ $# -gt 0 ]; do
@@ -54,12 +54,12 @@ for v in TASK TASK_KIND MODEL_PATH DATA_DIR OUT_DIR; do
   if [ -z "${!v}" ]; then echo "missing required --$(echo $v | tr 'A-Z_' 'a-z-')" >&2; exit 2; fi
 done
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-LEDGER="${RNAJEPA_LEDGER:-/mnt/cunyuliu/rna-jepa/ledger.jsonl}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+LEDGER="${RNAJEPA_LEDGER:-/root/rna_jepa_data/ledger.jsonl}"
 mkdir -p "$OUT_DIR"
 LOG="$OUT_DIR/train.log"
 
-export PYTHONPATH="${RNAJEPA_PYEXT:-/mnt/cunyuliu/rna-jepa/pyext}:$ROOT/src"
+export PYTHONPATH="${RNAJEPA_PYEXT:-/root/rna_jepa_data/pyext}:$ROOT/src"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export TOKENIZERS_PARALLELISM=false
 

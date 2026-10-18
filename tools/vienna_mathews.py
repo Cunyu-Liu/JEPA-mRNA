@@ -7,7 +7,7 @@ CPU-only, runs in minutes for 1291 sequences.
 import json
 import sys
 
-sys.path.insert(0, "/mnt/cunyuliu/pylibs")
+sys.path.insert(0, "/root/rna_jepa_data/pylibs")
 import RNA  # ViennaRNA 2.7.2
 
 
@@ -54,7 +54,7 @@ def f1_of(pred, gt, tolerant):
 
 
 records = []
-for line in open("/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_bprna_ts0.jsonl"):
+for line in open("/root/rna_jepa_data/ss_data/jsonl/ref_bprna_ts0.jsonl"):
     r = json.loads(line)
     records.append((r["seq"], set(map(tuple, r["pairs"]))))
 
@@ -73,5 +73,5 @@ for kind in ["mfe", "centroid", "mea"]:
     }
     print(kind, out[kind])
 
-json.dump(out, open("/mnt/cunyuliu/rna-jepa/tables/vienna_mathews_ts0.json", "w"), indent=2)
-print("wrote /mnt/cunyuliu/rna-jepa/tables/vienna_mathews_ts0.json")
+json.dump(out, open("/root/rna_jepa_data/tables/vienna_mathews_ts0.json", "w"), indent=2)
+print("wrote /root/rna_jepa_data/tables/vienna_mathews_ts0.json")

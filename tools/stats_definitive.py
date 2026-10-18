@@ -53,7 +53,7 @@ from pathlib import Path
 
 from scipy.stats import wilcoxon
 
-ART = Path("/mnt/cunyuliu/rna-jepa")
+ART = Path("/root/rna_jepa_data")
 OUT = ART / "tables"
 
 

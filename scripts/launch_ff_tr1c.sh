@@ -10,10 +10,10 @@ TAG=rinalmo_fftr1c_b4_s0
 exec 8>/tmp/.r2dtr1c_${SUFFIX}_daemon.lock
 flock -n 8 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 DATA=$D/ss_data/jsonl/bprna_tr1c.jsonl
 TEACHER=$D/ss_data/teacher/bprna_tr1c
 EMB=$D/embeddings/rinalmo-giga
@@ -103,9 +103,9 @@ CKPT=$D/ckpts/${TAG}_step${STEPS}.pt
 [ -f "$OUT/resume.pt" ] && [ ! -f "$CKPT" ] && ln -sf "$OUT/resume.pt" "$CKPT"
 [ -f "$CKPT" ] || { echo "[${SUFFIX}] FATAL: no resume.pt"; exit 1; }
 
-EPY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+EPY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 for split in $EVAL_SPLITS; do
   outd=$D/eval_decision/ow_${TAG}_step${STEPS}_${split}

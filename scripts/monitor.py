@@ -44,8 +44,8 @@ import subprocess
 import time
 from datetime import datetime, timedelta
 
-ROOT = os.environ.get("RNAJEPA_ROOT", "/home/cunyuliu/rna-jepa")
-ART = os.environ.get("RNAJEPA_ART", "/mnt/cunyuliu/rna-jepa")
+ROOT = os.environ.get("RNAJEPA_ROOT", "/root/rna_jev")
+ART = os.environ.get("RNAJEPA_ART", "/root/rna_jepa_data")
 LEDGER = os.path.join(ART, "ledger.jsonl")
 QUEUE = os.path.join(ART, "queue")
 STATUS = os.path.join(ART, "status.json")

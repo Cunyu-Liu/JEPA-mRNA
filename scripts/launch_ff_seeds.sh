@@ -21,17 +21,17 @@
 # to other users rather than competing with them.
 set -u
 
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export OMP_NUM_THREADS=2
 
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-D=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+D=/root/rna_jepa_data
 DATA=$D/ss_data/jsonl/bprna_tr0.jsonl
 TEACHER=$D/ss_data/teacher/bprna_tr0
 EMB=$D/embeddings/rinalmo-giga
-cd /home/cunyuliu/rna-jepa || exit 1
+cd /root/rna_jev || exit 1
 
 launch() {
   local tag="$1"; local dev="$2"; local seed="$3"

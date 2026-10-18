@@ -5,12 +5,12 @@
 # so no VL0 selection needed — composition is fixed by the xens2 protocol.
 # Runs on all 8 standard splits for the paper ablation table.
 set -u
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 P0=$D/ckpts/plana_giga_tr1c_s0_step20000.pt
 P1=$D/ckpts/plana_giga_tr1c_s1_step20000.pt
 R2D=$D/ckpts/rinalmo_r2dtr1c_b4_s0_step20000.pt

@@ -188,7 +188,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--ckpt", required=True, help="dir holding rnajepa_modules.pt + config")
     ap.add_argument("--weights", required=True, help="pristine weights dir (tokenizer/config)")
-    ap.add_argument("--data_root", default="/mnt/cunyuliu/rna-jepa/data/downstream_extracted")
+    ap.add_argument("--data_root", default="/root/rna_jepa_data/data/downstream_extracted")
     ap.add_argument("--out", required=True)
     ap.add_argument("--n_per_task", type=int, default=400)
     ap.add_argument("--max_len", type=int, default=512)

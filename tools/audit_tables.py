@@ -17,9 +17,9 @@ import glob
 import hashlib
 from pathlib import Path
 
-ART = Path("/mnt/cunyuliu/rna-jepa/eval_decision")
-TB = Path("/home/cunyuliu/rna-jepa/tables")
-JSONL = Path("/mnt/cunyuliu/rna-jepa/ss_data/jsonl")
+ART = Path("/root/rna_jepa_data/eval_decision")
+TB = Path("/root/rna_jev/tables")
+JSONL = Path("/root/rna_jepa_data/ss_data/jsonl")
 
 errors = []
 checked = 0
@@ -241,7 +241,7 @@ for parts in measured_rows:
 
 # ---------- 4. overlap audit + frozen splits ----------
 print("=== 4. overlap_audit.md / eval_splits_frozen.json ===")
-frozen = json.load(open("/home/cunyuliu/rna-jepa/spec/eval_splits_frozen.json"))
+frozen = json.load(open("/root/rna_jev/spec/eval_splits_frozen.json"))
 for name, meta in frozen.items():
     fp = Path(meta["path"]) if "path" in meta else JSONL / f"{name}.jsonl"
     if not fp.exists():

@@ -3,12 +3,12 @@
 # Everything else identical to rinalmo_ff_b4_s0: same frozen RiNALMo backbone,
 # same TR0 data, teacher, batch, lr, steps. The ONLY changed variable is
 # scorer=resnet2d -> isolates the 2D-context hypothesis (gap factor 2).
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python; export PYTHONPATH=/home/cunyuliu/rna-jepa/src
-D=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python; export PYTHONPATH=/root/rna_jev/src
+D=/root/rna_jepa_data
 DATA=$D/ss_data/jsonl/bprna_tr0.jsonl
 TEACHER=$D/ss_data/teacher/bprna_tr0
 EMB=$D/embeddings/rinalmo-giga
-cd /home/cunyuliu/rna-jepa || exit 1
+cd /root/rna_jev || exit 1
 
 tag=rinalmo_r2d_b4_s0
 out=$D/runs/$tag

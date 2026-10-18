@@ -4,14 +4,14 @@
 Outputs per-bucket F1 to compare with our model's length-dependent pattern.
 """
 import json, os, sys, time
-sys.path.insert(0, '/home/cunyuliu/rna-jepa')
-sys.path.insert(0, '/home/cunyuliu/rna_baselines_src/kirigami')
+sys.path.insert(0, '/root/rna_jev')
+sys.path.insert(0, '/root/rna_baselines_src/kirigami')
 import torch
 from kirigami.utils import _embed_fasta, mat2db, outer_concat
 
 SPLIT = 'archiveii_embok_clean'
-DATA = f'/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{SPLIT}.jsonl'
-OUT = '/mnt/cunyuliu/rna-jepa/eval_decision/kirigami_archii_perbucket.json'
+DATA = f'/root/rna_jepa_data/ss_data/jsonl/{SPLIT}.jsonl'
+OUT = '/root/rna_jepa_data/eval_decision/kirigami_archii_perbucket.json'
 
 BUCKETS = {
     'le100': lambda L: L <= 100,
@@ -33,7 +33,7 @@ def dbn_to_pairs(dbn):
 
 def main():
     dev = torch.device('cuda')
-    model = torch.hub.load('/home/cunyuliu/rna_baselines_src/kirigami',
+    model = torch.hub.load('/root/rna_baselines_src/kirigami',
                            'kirigami', pretrained=True, source='local')
     model.eval().to(dev)
 

@@ -8,11 +8,11 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
+sys.path.insert(0, "/root/rna_jev")
 from data.ss.prepare_decision_data import find_crossing_pairs, project_to_legal, read_bpseq
 
-SRC = Path("/mnt/cunyuliu/rna_ss_data/data/TestSetB")
-OUT = Path("/mnt/cunyuliu/rna-jepa/ss_data/jsonl/testsetb.jsonl")
+SRC = Path("/root/rna_jepa_data/rna_ss_data/data/TestSetB")
+OUT = Path("/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl")
 
 records = []
 n_reject = 0

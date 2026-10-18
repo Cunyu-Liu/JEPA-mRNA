@@ -4,7 +4,7 @@ Line-based anchors that survive the \\S escape differences in the draft."""
 import io
 from pathlib import Path
 
-DRAFT = Path("/home/cunyuliu/rna-jepa/paper/preprint_draft.md")
+DRAFT = Path("/root/rna_jev/paper/preprint_draft.md")
 text = DRAFT.read_text(encoding="utf-8")
 
 # --- 1) v3.18 banner change note ---

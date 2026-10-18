@@ -7,11 +7,11 @@ Timing: wall_seconds from existing runs where the run covered the full split
 on GPU of the same node (A100-40GB); for systems lacking a timed full-split
 run, we time a fresh pass here (our decision head + RiNALMo-ft + MXfold2).
 
-Output: /mnt/cunyuliu/rna-jepa/eval_decision/speed_benchmark.json
+Output: /root/rna_jepa_data/eval_decision/speed_benchmark.json
 """
 import json, os, time, subprocess, sys
 
-ED = "/mnt/cunyuliu/rna-jepa/eval_decision"
+ED = "/root/rna_jepa_data/eval_decision"
 OUT = os.path.join(ED, "speed_benchmark.json")
 SPLIT = "bprna_ts0"
 N = 1288
@@ -58,9 +58,9 @@ else:
     add("MXfold2", -1, "GPU (A100)", "NO TIMING FIELD — needs fresh timed run")
 
 # --- 5) Our decision head (r2dtr1c s0) — re-time a fresh GPU pass ---
-PY = "/home/cunyuliu/miniconda3/envs/lucaone/bin/python"
-REPO = "/home/cunyuliu/rna-jepa"
-D = "/mnt/cunyuliu/rna-jepa"
+PY = "/root/miniconda3/envs/lucaone/bin/python"
+REPO = "/root/rna_jev"
+D = "/root/rna_jepa_data"
 ours_cmd = [
     PY, f"{REPO}/eval/ss/evaluate_decision.py",
     "--checkpoint", f"{D}/ckpts/rinalmo_r2dtr1c_b4_s0_step20000.pt",
@@ -74,8 +74,8 @@ ours_cmd = [
 ]
 env = dict(os.environ)
 env["CUDA_VISIBLE_DEVICES"] = os.environ.get("BENCH_GPU", "1")
-env["PYTHONPATH"] = "/mnt/cunyuliu/pylibs:" + REPO + "/src"
-env["TMPDIR"] = "/mnt/cunyuliu/tmp"
+env["PYTHONPATH"] = "/root/rna_jepa_data/pylibs:" + REPO + "/src"
+env["TMPDIR"] = "/root/tmp_jev"
 t0 = time.time()
 rc = subprocess.run(ours_cmd, env=env, capture_output=True, text=True).returncode
 t1 = time.time()

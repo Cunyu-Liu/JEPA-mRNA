@@ -10,8 +10,8 @@ Output: bprna_tr1c_pdbexp.jsonl (append-ready, source-tagged) + audit numbers.
 """
 import json
 
-J = '/mnt/cunyuliu/rna-jepa/ss_data/jsonl'
-OUT = '/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr1c_pdbexp.jsonl'
+J = '/root/rna_jepa_data/ss_data/jsonl'
+OUT = '/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c_pdbexp.jsonl'
 
 
 def seqs_of(path):

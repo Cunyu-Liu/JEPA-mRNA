@@ -16,15 +16,15 @@ from pathlib import Path
 import numpy as np
 import torch
 
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/src")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/eval")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
+sys.path.insert(0, "/root/rna_jev/src")
+sys.path.insert(0, "/root/rna_jev/eval")
+sys.path.insert(0, "/root/rna_jev")
 
 from rnajepa.train_decision import EmbeddingStore
 from eval.ss.evaluate_decision import _forward_scores, BASE_TO_ID
 from rnajepa.harness import nussinov_map
 
-ART = Path("/mnt/cunyuliu/rna-jepa")
+ART = Path("/root/rna_jepa_data")
 
 
 def load_model(ckpt_path, device):

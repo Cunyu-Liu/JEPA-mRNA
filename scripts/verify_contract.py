@@ -20,8 +20,8 @@ import subprocess
 import sys
 from typing import List, Optional, Tuple
 
-ROOT = os.environ.get("RNAJEPA_ROOT", "/home/cunyuliu/rna-jepa")
-ART = os.environ.get("RNAJEPA_ART", "/mnt/cunyuliu/rna-jepa")
+ROOT = os.environ.get("RNAJEPA_ROOT", "/root/rna_jev")
+ART = os.environ.get("RNAJEPA_ART", "/root/rna_jepa_data")
 ZIP_MD5 = "bf8bc5c946a0bd3b07716b1c7f785d54"
 MIN_PRETRAIN_SEQUENCES = 18_000_000
 

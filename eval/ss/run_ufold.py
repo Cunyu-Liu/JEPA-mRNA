@@ -29,7 +29,7 @@ Per split it emits, in split order:
 
 Usage
 -----
-    CUDA_VISIBLE_DEVICES=6 PYTHONPATH=/mnt/cunyuliu/pylibs:src TMPDIR=/mnt/cunyuliu/tmp \
+    CUDA_VISIBLE_DEVICES=6 PYTHONPATH=/root/rna_jepa_data/pylibs:src TMPDIR=/root/tmp_jev \
       python eval/ss/run_ufold.py --split ref_bprna_ts0
 """
 
@@ -46,7 +46,7 @@ import numpy as np
 import torch
 
 # --- UFold's own code lives outside this repo; reuse it, do not fork it. -----
-UFOLD_SRC = "/home/cunyuliu/rna_baselines_src/UFold-main"
+UFOLD_SRC = "/root/rna_baselines_src/UFold-main"
 UFOLD_WEIGHTS = os.path.join(UFOLD_SRC, "models", "ufold_train_alldata.pt")
 UFOLD_CONFIG = os.path.join(UFOLD_SRC, "ufold", "config.json")
 if UFOLD_SRC not in sys.path:
@@ -84,8 +84,8 @@ from ufold.data_generator import (                 # noqa: E402  UFold's encodin
     perm,
 )
 
-JSONL_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
-OUT_DIR = "/mnt/cunyuliu/rna-jepa/eval_decision"
+JSONL_DIR = "/root/rna_jepa_data/ss_data/jsonl"
+OUT_DIR = "/root/rna_jepa_data/eval_decision"
 BASES = "AUCG"
 
 # UFold's own inference call (ufold_predict.py / ufold_test.py), verbatim:

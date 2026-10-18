@@ -46,7 +46,7 @@
 
 ```bash
 PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/run_baselines.py \
-    --split bprna_ts0 --out /mnt/cunyuliu/rna-jepa/eval_decision/baselines_bprna_ts0.json
+    --split bprna_ts0 --out /root/rna_jepa_data/eval_decision/baselines_bprna_ts0.json
 ```
 
 ## 4. 基线获取状态（实测，非推测）
@@ -71,7 +71,7 @@ PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/run_baselines.py \
 | 基线 | 更正后的结论 | 证据（实测命令与结果） |
 |---|---|---|
 | **UFold** | ✅ **权重在集群本地**，可直接用 | `ls /home/cunyuliu/rna_baselines_src/UFold-main/models/` → `ufold_train_alldata.pt`（34.6 MB）。旧记录"仓库只有 Readme"说的是**上游仓库**的 `models/` 目录，而这里早就有一份下载好的权重，且 `ufold_run.log` 显示它**跑通过**。真正的障碍是**数据**：`data/` 只有 `Readme.md` 与 `input.txt`，`TS0.cPickle` 等缺失，必须绕开它的 `RNASSDataGenerator` 直接喂序列 |
-| **RNAformer** | ✅ **权重 + 源码本轮已齐** | 3 个 checkpoint + 配置在 `/mnt/cunyuliu/rna-jepa/refmodels/models/`；源码 `git clone https://github.com/automl/RNAformer.git` **本轮成功**（`github.com` 间歇可达，本次通）→ `/mnt/cunyuliu/rna_baselines_src/RNAformer-code`，含 `evaluate_RNAformer.py`。**它是本轮新 benchmark 的来源，因此是可比性最强的已发布基线** |
+| **RNAformer** | ✅ **权重 + 源码本轮已齐** | 3 个 checkpoint + 配置在 `/root/rna_jepa_data/refmodels/models/`；源码 `git clone https://github.com/automl/RNAformer.git` **本轮成功**（`github.com` 间歇可达，本次通）→ `/mnt/cunyuliu/rna_baselines_src/RNAformer-code`，含 `evaluate_RNAformer.py`。**它是本轮新 benchmark 的来源，因此是可比性最强的已发布基线** |
 | **EternaFold** | ✅ 源码在盘上，`make multi` 可编译 | `/mnt/cunyuliu/rna_baselines_src/EternaFold/`，`parameters/EternaFoldParams.v1` 在位；用法见其 README：`./src/contrafold predict <seq> --params parameters/EternaFoldParams.v1`。**同时是教师集成问题的答案**（§14.30） |
 | **MoEFold2D / RiFold / Graph-Mamba** | ✅ 源码在盘上 | `/mnt/cunyuliu/{MoEFold2D-main,RiFold,Graph-Mamba-main}` |
 | **mmseqs** | ✅ 在盘上 | `/mnt/cunyuliu/mmseqs`。旧记录"未安装所以 80% identity 去冗余做不了"因此作废 |
@@ -88,7 +88,7 @@ PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/run_baselines.py \
 > - **C1-b（对 ViennaRNA 精确边际）已完成**（TS0 ECE 0.0048）；
 > - **C1-c（对精确边际）已完成**，分两口径报告（见 §14 表）；
 > - **C1-a 可以完成**——条件是从 UFold / RNAformer 取到 **sigmoid 概率矩阵**。
->   两条任务已独立启动，产物落 `/mnt/cunyuliu/rna-jepa/eval_decision/`。
+>   两条任务已独立启动，产物落 `/root/rna_jepa_data/eval_decision/`。
 >   **在概率矩阵真的产出之前，不得声称 C1-a 已完成**；`spec/checklist.md` 的 C1-a 门已由
 >   「不可完成」改为「待产物」。论文中原本要写的"缺口说明"段落改为
 >   **"与 UFold / RNAformer 的 sigmoid 概率在同一 split 上做了同口径 ECE 对比"**，

@@ -37,10 +37,10 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 
-NB_CODE = "/mnt/cunyuliu/hf_home/nucleicbert-code"
-NB_CKPT = "/mnt/cunyuliu/hf_home/models--nucleicbert/snapshots/main/pretrained.pt"
+NB_CODE = "/root/rna_jepa_data/hf_home/nucleicbert-code"
+NB_CKPT = "/root/rna_jepa_data/hf_home/models--nucleicbert/snapshots/main/pretrained.pt"
 NB_TOKENIZER = os.path.join(NB_CODE, "nucleicbert/tokenizers/noncoding_seqs.json")
-JSONL_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+JSONL_DIR = "/root/rna_jepa_data/ss_data/jsonl"
 
 if NB_CODE not in sys.path:
     sys.path.insert(0, NB_CODE)

@@ -1,6 +1,6 @@
 import re
 
-P = "/home/cunyuliu/rna-jepa/tables/sota_vs_ours.md"
+P = "/root/rna_jev/tables/sota_vs_ours.md"
 text = open(P).read()
 
 # TestSetB row: replace quoted 0.67 with self-measured 0.8711, flip verdict

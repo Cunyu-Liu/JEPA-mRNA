@@ -31,7 +31,7 @@ for old in ["Int64Index", "UInt64Index", "Float64Index"]:
     if not hasattr(_num_mod, old):
         setattr(_num_mod, old, pd.Index)
 
-E = "/mnt/cunyuliu/rna-jepa"
+E = "/root/rna_jepa_data"
 SPLITS = [
     "bprna_ts0", "bprna_new", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3",
     "ref_pdb_ts_hard", "bprna_vl0", "testsetb", "archiveii_embok_clean",

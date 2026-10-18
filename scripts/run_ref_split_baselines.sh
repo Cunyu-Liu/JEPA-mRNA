@@ -21,17 +21,17 @@
 # Usage: setsid nohup bash scripts/run_ref_split_baselines.sh > ... 2>&1 < /dev/null
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-OUT="${RNAJEPA_EVAL:-/mnt/cunyuliu/rna-jepa/eval_decision}"
-PY="${RNAJEV_PYTHON:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}"
-export PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval
-export TMPDIR=/mnt/cunyuliu/tmp
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+OUT="${RNAJEPA_EVAL:-/root/rna_jepa_data/eval_decision}"
+PY="${RNAJEV_PYTHON:-/root/miniconda3/envs/lucaone/bin/python}"
+export PYTHONPATH=/root/rna_jepa_data/pylibs:src:eval
+export TMPDIR=/root/tmp_jev
 cd "$ROOT"
 
 SPLITS="ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard ref_synthetic_test ref_synthetic_valid ref_bprna_ts0"
 
 for split in $SPLITS; do
-  jsonl="/mnt/cunyuliu/rna-jepa/ss_data/jsonl/${split}.jsonl"
+  jsonl="/root/rna_jepa_data/ss_data/jsonl/${split}.jsonl"
   if [ ! -s "$jsonl" ]; then
     echo "### SKIP $split: no corpus at $jsonl"
     continue

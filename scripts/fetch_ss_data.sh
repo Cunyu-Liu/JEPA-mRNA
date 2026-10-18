@@ -2,7 +2,7 @@
 # Acquisition orchestrator for the RNA secondary-structure datasets (spec §3.3).
 #
 # There is NO network access on this machine, and large artefacts live on the
-# cluster at /mnt/cunyuliu/rna-jepa.  This script therefore defaults to a
+# cluster at /root/rna_jepa_data.  This script therefore defaults to a
 # DRY-RUN: it prints exactly what would be fetched (URL, size, md5, the sharded
 # download command) and never touches the network.
 #
@@ -25,7 +25,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 PY="${PYTHON:-python3}"
 
-OUT_ROOT="${RNAJEPA_SS_ROOT:-/mnt/cunyuliu/rna-jepa/data/ss/raw}"
+OUT_ROOT="${RNAJEPA_SS_ROOT:-/root/rna_jepa_data/data/ss/raw}"
 MANIFEST="${RNAJEPA_SS_MANIFEST:-$ROOT/data/ss/hash_manifest.json}"
 
 echo "=== RNA SS data acquisition (spec §3.3) ==="

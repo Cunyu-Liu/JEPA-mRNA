@@ -8,9 +8,9 @@ import os
 import numpy as np
 import torch
 
-CKPT = "/mnt/cunyuliu/rna-jepa/refmodels/models/RNA-FM_pretrained.pth"
-OUT_DIR = "/mnt/cunyuliu/rna-jepa/embeddings/rna-fm"
-JSONL_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+CKPT = "/root/rna_jepa_data/refmodels/models/RNA-FM_pretrained.pth"
+OUT_DIR = "/root/rna_jepa_data/embeddings/rna-fm"
+JSONL_DIR = "/root/rna_jepa_data/ss_data/jsonl"
 
 
 def main():

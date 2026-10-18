@@ -13,7 +13,7 @@
   把决策头接到预训练 RNA 语言模型上，是恢复这一性质的正直做法。
 - 已通过 `hf-mirror.com` 下载 `multimolecule/rinalmo-giga`：
   33 层 / hidden 1280 / 20 heads / rotary / max_position_embeddings 1024 / **650.9 M 参数** / 2.60 GB safetensors。
-  路径：`/mnt/cunyuliu/rna-jepa/weights/rinalmo-giga/`。
+  路径：`/root/rna_jepa_data/weights/rinalmo-giga/`。
 
 ## 2. 三个必须记住的坑（全部实测）
 

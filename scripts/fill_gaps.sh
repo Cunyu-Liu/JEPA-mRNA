@@ -3,12 +3,12 @@
 # existing rows). Runs on one GPU-light card; EternaFold is CPU (contrafold).
 # Splits covered per system ONLY where the board shows "—".
 set -u
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/eval
-E=/mnt/cunyuliu/rna-jepa
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-MXPY=/home/cunyuliu/miniconda3/envs/rna_baselines/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src:/root/rna_jev/eval
+E=/root/rna_jepa_data
+PY=/root/miniconda3/envs/lucaone/bin/python
+MXPY=/root/miniconda3/envs/rna_baselines/bin/python
 LOG=$E/eval_decision/fill_gaps.log
-cd /home/cunyuliu/rna-jepa || exit 1
+cd /root/rna_jev || exit 1
 mkdir -p $E/eval_decision/fasta
 
 ALL="bprna_ts0 bprna_new ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard archiveii_embok_clean testsetb"
@@ -23,8 +23,8 @@ if [ ! -f $E/eval_decision/baselines_archiveii_embok_clean.json ]; then
 fi
 
 # 2) EternaFold on all splits except testsetb (already done)
-EF=/mnt/cunyuliu/rna_baselines_src/EternaFold/src/contrafold
-EFP=/mnt/cunyuliu/rna_baselines_src/EternaFold/parameters/EternaFoldParams.v1
+EF=/root/rna_jepa_data/rna_baselines_src/EternaFold/src/contrafold
+EFP=/root/rna_jepa_data/rna_baselines_src/EternaFold/parameters/EternaFoldParams.v1
 for sp in $ALL; do
   testsetb_skip=0
   if [ "$sp" == "testsetb" ]; then testsetb_skip=1; fi
@@ -36,7 +36,7 @@ for sp in $ALL; do
   $PY - "$sp" "$fa" << 'PYEOF' >> $LOG 2>&1
 import json, sys
 sp, fa = sys.argv[1], sys.argv[2]
-with open(f"/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{sp}.jsonl") as fh, open(fa, "w") as out:
+with open(f"/root/rna_jepa_data/ss_data/jsonl/{sp}.jsonl") as fh, open(fa, "w") as out:
     for i, line in enumerate(fh):
         r = json.loads(line)
         seq = str(r["seq"]).upper().replace("T", "U")
@@ -45,7 +45,7 @@ print(f"fasta {fa} written")
 PYEOF
   dbn=$E/eval_decision/fasta/eterna_${sp}.dbn
   echo "[gap] eternafold $sp" >> $LOG
-  (cd /mnt/cunyuliu/rna_baselines_src/EternaFold && \
+  (cd /root/rna_jepa_data/rna_baselines_src/EternaFold && \
    ./src/contrafold predict "$fa" --params parameters/EternaFoldParams.v1 > "$dbn") >> $LOG 2>&1
   $PY eval/ss/run_baselines.py --split "$sp" \
     --external-dbn "$dbn" --external-name eternafold \
@@ -61,7 +61,7 @@ for sp in $ALL; do
     $PY - "$sp" "$fa" << 'PYEOF' >> $LOG 2>&1
 import json, sys
 sp, fa = sys.argv[1], sys.argv[2]
-with open(f"/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{sp}.jsonl") as fh, open(fa, "w") as out:
+with open(f"/root/rna_jepa_data/ss_data/jsonl/{sp}.jsonl") as fh, open(fa, "w") as out:
     for i, line in enumerate(fh):
         r = json.loads(line)
         seq = str(r["seq"]).upper().replace("T", "U")

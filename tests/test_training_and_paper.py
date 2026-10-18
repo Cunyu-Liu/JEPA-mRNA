@@ -2,7 +2,7 @@
 benchmark (Task 11) and the paper scaffolding / manuscript linter (Task 21).
 
 Everything runs on CPU with tiny synthetic data and no network.  ViennaRNA *is*
-installed out-of-tree at ``/mnt/cunyuliu/pylibs`` (the ``/home`` quota is full),
+installed out-of-tree at ``/root/rna_jepa_data/pylibs`` (the ``/home`` quota is full),
 so the thermodynamic-teacher tests are written to hold in either environment:
 the assertion is "a real tool is never silently replaced by the mock", not "this
 host happens to lack the tool".
@@ -664,7 +664,7 @@ def test_teacher_throughput_never_degrades_a_real_tool_to_the_mock(monkeypatch):
     """A real teacher is used when importable, and raises when it is not.
 
     The earlier version of this test asserted that ViennaRNA was *absent*; that
-    held only before it was installed out-of-tree at ``/mnt/cunyuliu/pylibs``.
+    held only before it was installed out-of-tree at ``/root/rna_jepa_data/pylibs``.
     The contract is about behaviour, so it is checked in both directions here.
     """
     from rnajepa import distill as Distill

@@ -15,13 +15,13 @@ set -u
 
 # single-instance guard (fresh lockfile; fd never leaks to children: the
 # relaunch command closes fd 9 via 9>&-)
-exec 9>/mnt/cunyuliu/rna-jepa/runs/.watch_plan_a_ext40k.lock
+exec 9>/root/rna_jepa_data/runs/.watch_plan_a_ext40k.lock
 flock -n 9 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools:/home/cunyuliu/rna-jepa/eval
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src:/root/rna_jev/tools:/root/rna_jev/eval
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 LOG=$D/runs/plana_giga_s0_ext40k.log
 TRAIN_OUT=$D/runs/plana_giga_s0_ext40k
 PID_FILE=$D/runs/plana_giga_s0_ext40k.launch_pid
@@ -135,7 +135,7 @@ for STEP in 30000 40000; do
   echo "[watch_ext40k] evaluating step $STEP on TS0 + bpRNA-new"
   DEV=$(wait_device) || DEV=GPU-5
   CUDA_VISIBLE_DEVICES="$DEV" PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
-    "$PY" /home/cunyuliu/rna-jepa/tools/eval_plan_a.py \
+    "$PY" /root/rna_jev/tools/eval_plan_a.py \
     --checkpoint "$CKPT" \
     --out $D/eval_decision/plana_giga_s0_ext40k_step${STEP}/result.json \
     > $D/runs/plana_giga_s0_ext40k_eval_${STEP}.log 2>&1

@@ -22,8 +22,8 @@ import time
 import numpy as np
 import torch
 
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/src")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/tools")
+sys.path.insert(0, "/root/rna_jev/src")
+sys.path.insert(0, "/root/rna_jev/tools")
 
 from xens_eval import (  # noqa: E402
     load_plana, load_r2d, plana_scores, r2d_scores,
@@ -38,7 +38,7 @@ def main():
     ap.add_argument("--plana-ckpt2", required=True)
     ap.add_argument("--r2d-ckpt", required=True)
     ap.add_argument("--data", required=True)
-    ap.add_argument("--embedding-dir", default="/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga")
+    ap.add_argument("--embedding-dir", default="/root/rna_jepa_data/embeddings/rinalmo-giga")
     ap.add_argument("--embedding-split", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")

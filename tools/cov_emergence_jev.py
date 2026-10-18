@@ -47,14 +47,14 @@ from pathlib import Path
 import numpy as np
 import torch
 
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/src")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/tools")
+sys.path.insert(0, "/root/rna_jev/src")
+sys.path.insert(0, "/root/rna_jev/tools")
 
 from rinalmo_preflight import VOCAB, load_encoder  # noqa: E402
 
 COMPLEMENT = {"A": "U", "U": "A", "G": "C", "C": "G"}
 BASES = ["A", "C", "G", "U"]
-JSONL = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+JSONL = "/root/rna_jepa_data/ss_data/jsonl"
 
 
 def load_pairs(split, n_seq):
@@ -140,7 +140,7 @@ def load_mlm(device):
     """Load RiNALMoForMaskedLM with the released weights (per preflight)."""
     from safetensors.torch import load_file
     from multimolecule import RiNALMoConfig, RiNALMoForMaskedLM
-    W = "/mnt/cunyuliu/rna-jepa/weights/rinalmo-giga"
+    W = "/root/rna_jepa_data/weights/rinalmo-giga"
     with open(f"{W}/config.json") as fh:
         cfg = RiNALMoConfig(**json.load(fh))
     mlm = RiNALMoForMaskedLM(cfg)
@@ -160,7 +160,7 @@ def load_mlm(device):
 
 def load_randinit_mlm(device):
     from multimolecule import RiNALMoConfig, RiNALMoForMaskedLM
-    W = "/mnt/cunyuliu/rna-jepa/weights/rinalmo-giga"
+    W = "/root/rna_jepa_data/weights/rinalmo-giga"
     with open(f"{W}/config.json") as fh:
         cfg = RiNALMoConfig(**json.load(fh))
     torch.manual_seed(17)

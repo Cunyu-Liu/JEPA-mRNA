@@ -2,8 +2,8 @@
 hierarchical cascade head compatible with the Gibbs/Nussinov objective?
 
 Run on the cluster:
-    PYTHONPATH=/mnt/cunyuliu/pylibs:src TMPDIR=/mnt/cunyuliu/tmp \
-        ~/miniconda3/envs/lucaone/bin/python /home/cunyuliu/rna-jepa/tools/profile_step.py
+    PYTHONPATH=/root/rna_jepa_data/pylibs:src TMPDIR=/root/tmp_jev \
+        ~/miniconda3/envs/lucaone/bin/python /root/rna_jev/tools/profile_step.py
 
 Answers three questions with measurements, not assumptions:
 
@@ -45,8 +45,8 @@ from rnajepa.train_decision import (
     load_dataset_from_jsonl,
 )
 
-DATA = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl"
-TEACHER = "/mnt/cunyuliu/rna-jepa/ss_data/teacher/bprna_tr0"
+DATA = "/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl"
+TEACHER = "/root/rna_jepa_data/ss_data/teacher/bprna_tr0"
 
 
 def _sync() -> None:

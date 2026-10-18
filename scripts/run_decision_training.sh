@@ -28,12 +28,12 @@ source "$HERE/gpu_util.sh"
 
 PY="${RNAJEV_PYTHON:-$HOME/miniconda3/envs/lucaone/bin/python}"
 # ViennaRNA lives out-of-tree: the /home quota is full, so it is installed under
-# /mnt/cunyuliu/pylibs and reached through PYTHONPATH.
-export PYTHONPATH="${RNAJEV_PYTHONPATH:-/mnt/cunyuliu/pylibs}:$ROOT/src"
-export TMPDIR="${RNAJEV_TMPDIR:-/mnt/cunyuliu/tmp}"
+# /root/rna_jepa_data/pylibs and reached through PYTHONPATH.
+export PYTHONPATH="${RNAJEV_PYTHONPATH:-/root/rna_jepa_data/pylibs}:$ROOT/src"
+export TMPDIR="${RNAJEV_TMPDIR:-/root/tmp_jev}"
 export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 
-RUNS_ROOT="${RNAJEV_RUNS:-/mnt/cunyuliu/rna-jepa/runs}"
+RUNS_ROOT="${RNAJEV_RUNS:-/root/rna_jepa_data/runs}"
 LEDGER="$RUNS_ROOT/ledger.jsonl"
 mkdir -p "$RUNS_ROOT" "$TMPDIR"
 

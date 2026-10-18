@@ -2,12 +2,12 @@
 # T-A46c: UFold gap fills on the five missing board splits.
 # Prior runs used the lucaone env (UFold deps live there).
 set -u
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-REPO=/home/cunyuliu/rna-jepa
-E=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+REPO=/root/rna_jev
+E=/root/rna_jepa_data
 LOG=$E/eval_decision/ufold_gaps.log
 
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
 cd $REPO || exit 1
 
 gpu=""

@@ -29,8 +29,8 @@ count.  Pass ``--force`` to ignore the cache.
 Usage
 -----
     python tools/length_bucketed_leaderboard.py \
-        --eval-root /mnt/cunyuliu/rna-jepa/eval_decision \
-        --data-dir  /mnt/cunyuliu/rna-jepa/ss_data/jsonl \
+        --eval-root /root/rna_jepa_data/eval_decision \
+        --data-dir  /root/rna_jepa_data/ss_data/jsonl \
         --split bprna_ts0 \
         --run sel_ff3500_bprna_ts0 \
         --bucket 100 --bucket 200 --bucket 400
@@ -108,7 +108,7 @@ def run_baselines(repo: str, split_key: str, out_path: str, force: bool,
         print(f"    cache stale for {split_key} "
               f"({cached.get('n_sequences')} != {n_rows} rows); re-running")
     env = dict(os.environ)
-    env.setdefault("TMPDIR", "/mnt/cunyuliu/tmp")
+    env.setdefault("TMPDIR", "/root/tmp_jev")
     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "2")
     cmd = [sys.executable, os.path.join(repo, "eval", "ss", "run_baselines.py"),
            "--split", split_key, "--baselines", ",".join(BASELINES),
@@ -127,7 +127,7 @@ def run_baselines(repo: str, split_key: str, out_path: str, force: bool,
 def parse_args(argv=None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--repo", default="/home/cunyuliu/rna-jepa")
+    p.add_argument("--repo", default="/root/rna_jev")
     p.add_argument("--eval-root", required=True)
     p.add_argument("--data-dir", required=True)
     p.add_argument("--split", required=True, help="split jsonl basename, no extension")

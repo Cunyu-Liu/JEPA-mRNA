@@ -3,14 +3,14 @@
 #
 # The cluster is the execution authority (/home/rna-jepa); this Mac copy is the
 # editing surface.  Large artefacts never travel this path: they live under
-# /mnt/cunyuliu on the cluster and are referenced by path.
+# /root/rna_jepa_data on the cluster and are referenced by path.
 #
 # Usage: scripts/sync_to_cluster.sh [--dry-run]
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 REMOTE="${RNAJEPA_REMOTE:-A100}"
-REMOTE_DIR="${RNAJEPA_REMOTE_DIR:-/home/cunyuliu/rna-jepa}"
+REMOTE_DIR="${RNAJEPA_REMOTE_DIR:-/root/rna_jev}"
 
 EXCLUDES=(
   --exclude '.git'

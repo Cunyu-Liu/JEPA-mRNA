@@ -12,7 +12,7 @@
 # killed an ssh session on 2026-09-29.
 set -u
 
-# Lock lives on the LOCAL filesystem: flock on /mnt/cunyuliu (shared/
+# Lock lives on the LOCAL filesystem: flock on /root/rna_jepa_data (shared/
 # network-mounted) did not serialise - a second copy started alongside the
 # first without exiting, verified 2026-09-30.
 exec 8>/tmp/.ensure_r2d_s1.lock
@@ -22,8 +22,8 @@ if pgrep -f 'scripts/launch_r2d_s1\.sh' >/dev/null 2>&1; then
   exit 0
 fi
 
-cd /home/cunyuliu/rna-jepa || exit 1
-setsid nohup bash /home/cunyuliu/rna-jepa/scripts/launch_r2d_s1.sh \
-  >> /mnt/cunyuliu/rna-jepa/runs/launch_r2d_s1.daemon.log 2>&1 < /dev/null &
+cd /root/rna_jev || exit 1
+setsid nohup bash /root/rna_jev/scripts/launch_r2d_s1.sh \
+  >> /root/rna_jepa_data/runs/launch_r2d_s1.daemon.log 2>&1 < /dev/null &
 echo "$(date '+%FT%T%z') watchdog started r2d_s1 daemon pid=$!" \
-  >> /mnt/cunyuliu/rna-jepa/logs/ensure_r2d_s1.log
+  >> /root/rna_jepa_data/logs/ensure_r2d_s1.log

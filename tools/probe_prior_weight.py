@@ -37,9 +37,9 @@ cost and a full TS0 pass is ~45 minutes.
 
 Usage::
 
-    PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src \\
+    PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src \\
       python tools/probe_prior_weight.py \\
-        --checkpoint /mnt/cunyuliu/rna-jepa/eval_decision/ckpts/rinalmo_ff_b4_s0_latest.pt \\
+        --checkpoint /root/rna_jepa_data/eval_decision/ckpts/rinalmo_ff_b4_s0_latest.pt \\
         --dev .../bprna_vl0.jsonl --test .../bprna_ts0.jsonl --head-chunk 16
 """
 

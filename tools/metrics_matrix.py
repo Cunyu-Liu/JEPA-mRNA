@@ -7,9 +7,9 @@ the end with their source flag, since they have no result.json here.
 import json
 from pathlib import Path
 
-ART = Path("/mnt/cunyuliu/rna-jepa/eval_decision")
-OUT_MD = Path("/home/cunyuliu/rna-jepa/tables/metrics_matrix.md")
-OUT_JSON = Path("/home/cunyuliu/rna-jepa/tables/metrics_matrix.json")
+ART = Path("/root/rna_jepa_data/eval_decision")
+OUT_MD = Path("/root/rna_jev/tables/metrics_matrix.md")
+OUT_JSON = Path("/root/rna_jev/tables/metrics_matrix.json")
 
 # (label, kind, path-ish, dataset) — kinds: baseline_json (baselines_*.json
 # with baselines/<name>/...), ow (ow_* result.json pair_level+per_seq INF),
@@ -331,5 +331,5 @@ print(f"written {OUT_MD} ({len(cells)} measured cells, {len(QUOTED)} quoted rows
 # 15.22: mirror the outputs to /mnt (historical convention kept for
 # readers of the /mnt tree; the git repo at /home is the source of truth)
 import shutil as _sh
-_sh.copyfile(OUT_MD, "/mnt/cunyuliu/rna-jepa/tables/metrics_matrix.md")
-_sh.copyfile(OUT_JSON, "/mnt/cunyuliu/rna-jepa/tables/metrics_matrix.json")
+_sh.copyfile(OUT_MD, "/root/rna_jepa_data/tables/metrics_matrix.md")
+_sh.copyfile(OUT_JSON, "/root/rna_jepa_data/tables/metrics_matrix.json")

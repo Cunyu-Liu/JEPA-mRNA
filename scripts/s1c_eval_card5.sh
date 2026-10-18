@@ -2,12 +2,12 @@
 # s1c 6-split eval locked to card 5 (card 6/7 are MIG-sliced, CUDA sees 1.2GB)
 # One-shot, no daemon loop, no flock.
 set -u
-EPY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+EPY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 TAG=rinalmo_r2dtr1c_b4_s1
 CKPT=$D/ckpts/${TAG}_step20000.pt
 

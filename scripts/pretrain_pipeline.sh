@@ -9,10 +9,10 @@
 # Usage: RNAJEPA_PYTHON=<python> pretrain_pipeline.sh [--skip-smoke] [--workers N]
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-ART="${RNAJEPA_ART:-/mnt/cunyuliu/rna-jepa}"
-PY="${RNAJEPA_PYTHON:-/home/cunyuliu/miniconda3/envs/mrnabert/bin/python}"
-[ -x "$PY" ] || PY="/home/cunyuliu/miniconda3/envs/lucaone/bin/python"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+ART="${RNAJEPA_ART:-/root/rna_jepa_data}"
+PY="${RNAJEPA_PYTHON:-/root/miniconda3/envs/mrnabert/bin/python}"
+[ -x "$PY" ] || PY="/root/miniconda3/envs/lucaone/bin/python"
 WORKERS=96
 SKIP_SMOKE=0
 while [ $# -gt 0 ]; do
@@ -31,7 +31,7 @@ STATS="$ART/data/pretrain/stats.json"
 WEIGHTS="$ART/weights/mRNABERT_attn_fallback"
 LOG="$ART/logs/pretrain_pipeline.log"
 
-export PYTHONPATH="${RNAJEPA_PYEXT:-/mnt/cunyuliu/rna-jepa/pyext}:$ROOT/src"
+export PYTHONPATH="${RNAJEPA_PYEXT:-/root/rna_jepa_data/pyext}:$ROOT/src"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export TOKENIZERS_PARALLELISM=false
 source "$ROOT/scripts/gpu_util.sh"

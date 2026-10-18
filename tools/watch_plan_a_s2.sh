@@ -11,13 +11,13 @@
 set -u
 
 # single-instance guard, fd never leaks to children (9>&- at launch)
-exec 9>/mnt/cunyuliu/rna-jepa/runs/.watch_plan_a_s2.lock
+exec 9>/root/rna_jepa_data/runs/.watch_plan_a_s2.lock
 flock -n 9 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools:/home/cunyuliu/rna-jepa/eval
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src:/root/rna_jev/tools:/root/rna_jev/eval
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 LOG=$D/runs/plana_giga_s2.log
 TRAIN_OUT=$D/runs/plana_giga_s2
 PID_FILE=$D/runs/plana_giga_s2.launch_pid
@@ -120,7 +120,7 @@ fi
 echo "[watch_s2] evaluating final checkpoint on TS0 + bpRNA-new"
 DEV=$(wait_device) || DEV=MIG-10b9b777-a776-56de-9f7c-efde6c584f71
 CUDA_VISIBLE_DEVICES="$DEV" PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
-  "$PY" /home/cunyuliu/rna-jepa/tools/eval_plan_a.py \
+  "$PY" /root/rna_jev/tools/eval_plan_a.py \
   --checkpoint "$CKPT" \
   --out $D/eval_decision/plana_giga_s2_step${STEPS}/result.json \
   > $D/runs/plana_giga_s2_eval.log 2>&1

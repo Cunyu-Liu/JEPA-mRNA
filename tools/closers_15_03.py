@@ -26,15 +26,15 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/src")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa/eval")
+sys.path.insert(0, "/root/rna_jev/src")
+sys.path.insert(0, "/root/rna_jev/eval")
 
-import RNA  # ViennaRNA bindings (/mnt/cunyuliu/pylibs)
+import RNA  # ViennaRNA bindings (/root/rna_jepa_data/pylibs)
 from rnajepa.clean.c3_structure import parse_pairs
 from rnajepa.decision_head import valid_pair_mask
 from ss.metrics import PairLevelMetrics
 
-ART = Path("/mnt/cunyuliu/rna-jepa")
+ART = Path("/root/rna_jepa_data")
 OURS_TAG = "ow_rinalmo_r2d_b4_s0_step20000_bprna_ts0"
 SPLIT = "bprna_ts0"
 

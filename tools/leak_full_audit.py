@@ -14,8 +14,8 @@ Step 2: RiNALMo-ft per-seq decomposition on all 8 splits (we have per_seq).
 """
 import json
 
-J = '/mnt/cunyuliu/rna-jepa/ss_data/jsonl'
-E = '/mnt/cunyuliu/rna-jepa/eval_decision'
+J = '/root/rna_jepa_data/ss_data/jsonl'
+E = '/root/rna_jepa_data/eval_decision'
 
 
 def seqs_of(path):

@@ -7,11 +7,11 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
+sys.path.insert(0, "/root/rna_jev")
 
-ART = Path("/mnt/cunyuliu/rna-jepa")
-CONTRAFOLD = "/mnt/cunyuliu/rna_baselines_src/EternaFold/src/contrafold"
-PARAMS = "/mnt/cunyuliu/rna_baselines_src/EternaFold/parameters/EternaFoldParams.v1"
+ART = Path("/root/rna_jepa_data")
+CONTRAFOLD = "/root/rna_jepa_data/rna_baselines_src/EternaFold/src/contrafold"
+PARAMS = "/root/rna_jepa_data/rna_baselines_src/EternaFold/parameters/EternaFoldParams.v1"
 
 records = [json.loads(line) for line in open(ART / "ss_data/jsonl/testsetb.jsonl")]
 

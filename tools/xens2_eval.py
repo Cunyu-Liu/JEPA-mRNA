@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-REPO = Path("/home/cunyuliu/rna-jepa")
+REPO = Path("/root/rna_jev")
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
@@ -92,7 +92,7 @@ def main():
     ap.add_argument("--plana-ckpt2", required=True, help="plana seed 1")
     ap.add_argument("--r2d-ckpt", required=True)
     ap.add_argument("--data", required=True)
-    ap.add_argument("--embedding-dir", default="/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga")
+    ap.add_argument("--embedding-dir", default="/root/rna_jepa_data/embeddings/rinalmo-giga")
     ap.add_argument("--embedding-split", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")

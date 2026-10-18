@@ -23,13 +23,13 @@ set -u
 # into the child it launched, and the child keeps the flock for its whole
 # lifetime. A new lockfile is used here, and the relaunch command closes
 # fd 9 (9>&-) so the leak cannot recur.
-exec 9>/mnt/cunyuliu/rna-jepa/runs/.watch_plan_a_s1_v2.lock
+exec 9>/root/rna_jepa_data/runs/.watch_plan_a_s1_v2.lock
 flock -n 9 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools:/home/cunyuliu/rna-jepa/eval
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src:/root/rna_jev/tools:/root/rna_jev/eval
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 LOG=$D/runs/plana_giga_s1.log
 TRAIN_OUT=$D/runs/plana_giga_s1
 PID_FILE=$D/runs/plana_giga_s1.launch_pid
@@ -159,7 +159,7 @@ PYEOF
 echo "[watch_plan_a_s1] evaluating final checkpoint on TS0 + bpRNA-new"
 DEV=$(wait_device) || DEV=MIG-6e59f9af-2716-5bf2-ac6e-fb05ef744585
 CUDA_VISIBLE_DEVICES="$DEV" PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
-  "$PY" /home/cunyuliu/rna-jepa/tools/eval_plan_a.py \
+  "$PY" /root/rna_jev/tools/eval_plan_a.py \
   --checkpoint "$FINAL" \
   --out $D/eval_decision/plana_giga_s1_step20000/result.json \
   > $D/runs/plana_giga_s1_eval.log 2>&1

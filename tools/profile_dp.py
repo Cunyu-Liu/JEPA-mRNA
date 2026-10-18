@@ -17,7 +17,7 @@ recursion, the outside recursion, and the max-product DP.
 
 Usage::
 
-    PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src \\
+    PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src \\
       python tools/profile_dp.py --data .../bprna_ts0.jsonl --limit 120
 """
 

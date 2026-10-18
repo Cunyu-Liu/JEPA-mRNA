@@ -1,15 +1,15 @@
 # [archived] DEPfold 8-split board eval script.
-# Source of truth: /home/cunyuliu/rna_baselines_src/DEPfold_data/eval_depfold.sh, run 2026-10-10.
-# Products: /mnt/cunyuliu/rna-jepa/eval_decision/depfold_pred_{split} dirs.
+# Source of truth: /root/rna_baselines_src/DEPfold_data/eval_depfold.sh, run 2026-10-10.
+# Products: /root/rna_jepa_data/eval_decision/depfold_pred_{split} dirs.
 #!/bin/bash
 # T-A49: DEPfold 8-split board evaluation via predict mode.
 # The predict() path evaluates contact-maps vs gold and writes F1 to the log;
 # we parse 'Predict file F1' lines. Data prep: our jsonl -> ct_seq dirs.
 set -u
-cd /home/cunyuliu/rna_baselines_src/DEPfold
-export PYTHONPATH=/mnt/cunyuliu/pylibs
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-DATA=/home/cunyuliu/rna_baselines_src/DEPfold_data
+cd /root/rna_baselines_src/DEPfold
+export PYTHONPATH=/root/rna_jepa_data/pylibs
+PY=/root/miniconda3/envs/lucaone/bin/python
+DATA=/root/rna_baselines_src/DEPfold_data
 MODEL=$DATA/depfold_bpRNA_rnafm/model.pt
 
 # pick most-free card
@@ -48,8 +48,8 @@ def jsonl_to_ct(jsonl, outdir):
         n += 1
     print(jsonl, '->', n)
 
-base='/mnt/cunyuliu/rna-jepa/ss_data/jsonl/'
-out='/home/cunyuliu/rna_baselines_src/DEPfold_data/board_'
+base='/root/rna_jepa_data/ss_data/jsonl/'
+out='/root/rna_baselines_src/DEPfold_data/board_'
 for tag, f in [('TS0','bprna_ts0'),('new','bprna_new'),('ts1','ref_pdb_ts1'),('ts2','ref_pdb_ts2'),('ts3','ref_pdb_ts3'),('hard','ref_pdb_ts_hard'),('arch','archiveii_embok_clean'),('tsb','testsetb')]:
     jsonl_to_ct(base+f+'.jsonl', out+tag)
 PYEOF

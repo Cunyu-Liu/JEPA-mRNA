@@ -9,8 +9,8 @@ trained on tr1c / or splits with zero overlap), and the delta.
 import json
 from pathlib import Path
 
-ART = Path("/mnt/cunyuliu/rna-jepa/eval_decision")
-OUT = Path("/mnt/cunyuliu/rna-jepa/tables/sota_vs_ours.md")
+ART = Path("/root/rna_jepa_data/eval_decision")
+OUT = Path("/root/rna_jepa_data/tables/sota_vs_ours.md")
 
 
 def f1(path):

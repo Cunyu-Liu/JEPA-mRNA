@@ -18,7 +18,7 @@ import sys
 
 import torch
 
-REPO = "/home/cunyuliu/rna-jepa"
+REPO = "/root/rna_jev"
 sys.path.insert(0, os.path.join(REPO, "src"))
 
 from rnajepa.train_decision import (  # noqa: E402
@@ -29,7 +29,7 @@ from rnajepa.train_decision import (  # noqa: E402
 
 def main() -> int:
     ckpt = sys.argv[1] if len(sys.argv) > 1 else \
-        "/mnt/cunyuliu/rna-jepa/runs/full_b4_s0_20260924T060638/resume.pt"
+        "/root/rna_jepa_data/runs/full_b4_s0_20260924T060638/resume.pt"
     state = torch.load(ckpt, map_location="cpu")
     cfg = {k: v for k, v in state["config"].items() if k in TrainConfig.__dataclass_fields__}
     cfg["device"] = "cpu"

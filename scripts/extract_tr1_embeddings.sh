@@ -5,7 +5,7 @@
 # ---------------------------
 # The frozen-embedding arms (`rinalmo_ff`, `rinalmo_len`, ...) do not run RiNALMo
 # during training; they read precomputed shards from
-# `/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga/<split>.shardKofN.npz`.  Those
+# `/root/rna_jepa_data/embeddings/rinalmo-giga/<split>.shardKofN.npz`.  Those
 # shards existed for TR0 and the eval splits but not for TR1, and the trainer
 # correctly refused to start:
 #
@@ -28,15 +28,15 @@
 # Usage: bash scripts/extract_tr1_embeddings.sh [n_shards] [batch_size]
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-OUT="${RNAJEPA_EMB:-/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga}"
-PY="${RNAJEV_PYTHON:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+OUT="${RNAJEPA_EMB:-/root/rna_jepa_data/embeddings/rinalmo-giga}"
+PY="${RNAJEV_PYTHON:-/root/miniconda3/envs/lucaone/bin/python}"
 SPLIT="${RNAJEV_SPLIT:-bprna_tr1}"
 N="${1:-2}"
 BS="${2:-2}"
 
-export PYTHONPATH=/mnt/cunyuliu/pylibs:src
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:src
+export TMPDIR=/root/tmp_jev
 cd "$ROOT"
 
 # Devices, in launch order.  Overridable because the right choice is a

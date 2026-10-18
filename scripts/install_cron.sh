@@ -9,12 +9,12 @@
 # Usage: install_cron.sh [interval_minutes]     (default 10)
 set -euo pipefail
 INTERVAL="${1:-10}"
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-PYTHON="${RNAJEPA_PYTHON:-/home/cunyuliu/miniconda3/envs/mrnabert/bin/python}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+PYTHON="${RNAJEPA_PYTHON:-/root/miniconda3/envs/mrnabert/bin/python}"
 # fall back to any python that exists, so the monitor keeps working while the
 # dedicated environment is still being built
 [ -x "$PYTHON" ] || PYTHON="$(command -v python3)"
-LOG="/mnt/cunyuliu/rna-jepa/logs/cron_monitor.log"
+LOG="/root/rna_jepa_data/logs/cron_monitor.log"
 
 MARK="# RNAJEPA_MONITOR"
 LINE="*/${INTERVAL} * * * * cd ${ROOT} && ${PYTHON} scripts/monitor.py >> ${LOG} 2>&1 ${MARK}"

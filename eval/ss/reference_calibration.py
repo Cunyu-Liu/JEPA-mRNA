@@ -31,8 +31,8 @@ copy).
 
 Usage
 -----
-    PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval python eval/ss/reference_calibration.py \
-        --split bprna_ts0 --out /mnt/cunyuliu/rna-jepa/eval_decision/reference_ts0.json
+    PYTHONPATH=/root/rna_jepa_data/pylibs:src:eval python eval/ss/reference_calibration.py \
+        --split bprna_ts0 --out /root/rna_jepa_data/eval_decision/reference_ts0.json
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ from rnajepa.distill import (  # noqa: E402
 from rnajepa.harness import inside_outside, valid_pair_mask  # noqa: E402
 from ss.metrics import pooled_pair_calibration  # noqa: E402
 
-JSONL_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+JSONL_DIR = "/root/rna_jepa_data/ss_data/jsonl"
 
 
 def read_records(split: str, limit: int = 0) -> List[Tuple[str, List[Tuple[int, int]]]]:

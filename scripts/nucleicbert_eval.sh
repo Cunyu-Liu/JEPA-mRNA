@@ -3,12 +3,12 @@
 # (Waiting on the ckpt file alone is wrong: best-val ckpt is saved after ep0
 # while training continues; eval must use the FINAL best ckpt.)
 set -u
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-E=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+E=/root/rna_jepa_data
+REPO=/root/rna_jev
 CKPT=$E/refmodels/models/nucleicbert_ss_tr1c.pt
 LOG=$E/eval_decision/nucleicbert_eval.log
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
 cd $REPO || exit 1
 
 while pgrep -f 'eval_nucleicbert.py train' > /dev/null; do

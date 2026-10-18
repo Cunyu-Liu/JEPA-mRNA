@@ -31,7 +31,7 @@ try:
 except ImportError:  # pragma: no cover
     raise SystemExit("FATAL: pyyaml required")
 
-ROOT = os.environ.get("RNAJEPA_ROOT", "/home/cunyuliu/rna-jepa")
+ROOT = os.environ.get("RNAJEPA_ROOT", "/root/rna_jev")
 
 
 def load_task_rows(path: str, max_rows: int):
@@ -87,8 +87,8 @@ def main() -> int:
                     help="comma-separated label=path pairs (path = a pre-training "
                          "checkpoint dir containing an HF-format model)")
     ap.add_argument("--tasks_yaml", default=os.path.join(ROOT, "configs", "tasks.yaml"))
-    ap.add_argument("--data_root", default="/mnt/cunyuliu/rna-jepa/data/downstream_extracted")
-    ap.add_argument("--weights", default="/mnt/cunyuliu/rna-jepa/weights/mRNABERT_attn_fallback",
+    ap.add_argument("--data_root", default="/root/rna_jepa_data/data/downstream_extracted")
+    ap.add_argument("--weights", default="/root/rna_jepa_data/weights/mRNABERT_attn_fallback",
                     help="dir holding the tokenizer/config for the checkpoints")
     ap.add_argument("--tasks", required=True)
     ap.add_argument("--out", required=True)

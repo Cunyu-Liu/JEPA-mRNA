@@ -11,11 +11,11 @@ so higher-value tasks (the paper's Fig.3 heart) are dispatched first.
 
 Usage:
   python scripts/queue_matrix.py --model_label mrnabert_official \
-      --model_path /mnt/cunyuliu/rna-jepa/weights/mRNABERT_attn_fallback \
+      --model_path /root/rna_jepa_data/weights/mRNABERT_attn_fallback \
       --seeds 42 --tasks cds_mrfp,rbp_0 --priority 1
 
   python scripts/queue_matrix.py --model_label v1_cont \
-      --model_path /mnt/cunyuliu/rna-jepa/runs/v1_cont/hf/step_60000 \
+      --model_path /root/rna_jepa_data/runs/v1_cont/hf/step_60000 \
       --seeds 42,43,44,45,46 --all-tasks
 """
 
@@ -33,8 +33,8 @@ except ImportError:  # pragma: no cover
     print("FATAL: pyyaml required (pip install pyyaml)", file=sys.stderr)
     raise SystemExit(2)
 
-ROOT = os.environ.get("RNAJEPA_ROOT", "/home/cunyuliu/rna-jepa")
-ART = os.environ.get("RNAJEPA_ART", "/mnt/cunyuliu/rna-jepa")
+ROOT = os.environ.get("RNAJEPA_ROOT", "/root/rna_jev")
+ART = os.environ.get("RNAJEPA_ART", "/root/rna_jepa_data")
 DATA = os.path.join(ART, "data", "downstream_extracted")
 QUEUE = os.path.join(ART, "queue", "pending")
 EVAL_OUT = os.path.join(ART, "eval_out")
@@ -101,7 +101,7 @@ def main() -> int:
                          "output directory, so there stays exactly one artefact per cell.")
     ap.add_argument("--dry_run", action="store_true")
     ap.add_argument("--python", default=os.environ.get(
-        "RNAJEPA_PYTHON", "/home/cunyuliu/miniconda3/envs/lucaone/bin/python"),
+        "RNAJEPA_PYTHON", "/root/miniconda3/envs/lucaone/bin/python"),
         help="interpreter for the queued jobs; embedded in the spec because the "
              "dispatcher does not inherit this shell")
     args = ap.parse_args()

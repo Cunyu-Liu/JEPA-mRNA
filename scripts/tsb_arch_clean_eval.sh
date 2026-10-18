@@ -12,11 +12,11 @@
 # Eval: r2dtr1c s0 @20k (in-family peak) and @8k (OOD peak) on TestSetB +
 # ArchiveII-clean, watch7 protocol w=-1 + VL0 Platt. Idempotent.
 set -u
-REPO=/home/cunyuliu/rna-jepa
-D=/mnt/cunyuliu/rna-jepa
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:$REPO/src
-export TMPDIR=/mnt/cunyuliu/tmp
+REPO=/root/rna_jev
+D=/root/rna_jepa_data
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:$REPO/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 LOG=$D/runs/tsb_arch_clean_eval.log
 exec >> "$LOG" 2>&1

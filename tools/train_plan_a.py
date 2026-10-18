@@ -55,7 +55,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-REPO = Path("/home/cunyuliu/rna-jepa")
+REPO = Path("/root/rna_jev")
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
 
@@ -70,8 +70,8 @@ from torch.utils.checkpoint import checkpoint as _grad_ckpt  # noqa: E402
 
 NEG_BIG = -1.0e4
 
-TEACHER_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/teacher/bprna_tr0"
-CKPT_DIR = "/mnt/cunyuliu/rna-jepa/ckpts"
+TEACHER_DIR = "/root/rna_jepa_data/ss_data/teacher/bprna_tr0"
+CKPT_DIR = "/root/rna_jepa_data/ckpts"
 
 
 def load_records(path):
@@ -133,7 +133,7 @@ class BatchStream:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--data", default="/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl")
+    ap.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl")
     ap.add_argument("--teacher-dir", default=TEACHER_DIR)
     ap.add_argument("--out", required=True)
     ap.add_argument("--steps", type=int, default=20000)

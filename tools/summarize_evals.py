@@ -112,7 +112,7 @@ def collect(root):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("root", nargs="?", default="/mnt/cunyuliu/rna-jepa/eval_decision")
+    ap.add_argument("root", nargs="?", default="/root/rna_jepa_data/eval_decision")
     ap.add_argument("--csv", default=None)
     args = ap.parse_args(argv)
 

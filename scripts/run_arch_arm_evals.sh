@@ -28,13 +28,13 @@
 # shared and the evaluator is effectively single-core.
 set -u
 
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/eval
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src:/root/rna_jev/eval
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-REPO=/home/cunyuliu/rna-jepa
-ART=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+REPO=/root/rna_jev
+ART=/root/rna_jepa_data
 JSONL=$ART/ss_data/jsonl
 DEV=$JSONL/bprna_vl0.jsonl
 LOG=$ART/eval_decision/arch_arms.log

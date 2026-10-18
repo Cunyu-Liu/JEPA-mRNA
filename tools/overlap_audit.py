@@ -17,9 +17,9 @@ import json
 import os
 from pathlib import Path
 
-JSONL = Path("/mnt/cunyuliu/rna-jepa/ss_data/jsonl")
-OUT_MD = Path("/mnt/cunyuliu/rna-jepa/tables/overlap_audit.md")
-OUT_JSON = Path("/home/cunyuliu/rna-jepa/spec/eval_splits_frozen.json")
+JSONL = Path("/root/rna_jepa_data/ss_data/jsonl")
+OUT_MD = Path("/root/rna_jepa_data/tables/overlap_audit.md")
+OUT_JSON = Path("/root/rna_jev/spec/eval_splits_frozen.json")
 
 TRAIN_CORPORA = ["bprna_tr0", "bprna_tr1", "bprna_tr1c"]
 EVAL_SPLITS = ["bprna_ts0", "bprna_new", "ref_pdb_ts1", "ref_pdb_ts2",

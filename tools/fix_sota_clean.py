@@ -1,7 +1,7 @@
 """Server-side: sync sota_vs_ours.md main table with the clean-subset verdict
 (TestSetB RiNALMo-ft ref decomposed: 0.8711 full with 247/428 TR0 leak ->
 clean 0.8177; ours xens2 0.8370 clean = win). Narrative -> 6/8 clean."""
-P = "/home/cunyuliu/rna-jepa/tables/sota_vs_ours.md"
+P = "/root/rna_jev/tables/sota_vs_ours.md"
 text = open(P).read()
 
 # revert yesterday's honesty-fix rows then apply clean-subset protocol

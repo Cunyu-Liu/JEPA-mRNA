@@ -25,8 +25,8 @@ the pooled number instead of drifting from it.
 Usage
 -----
     python tools/stratify_by_source.py \
-        --eval-root /mnt/cunyuliu/rna-jepa/eval_decision \
-        --data-dir  /mnt/cunyuliu/rna-jepa/ss_data/jsonl \
+        --eval-root /root/rna_jepa_data/eval_decision \
+        --data-dir  /root/rna_jepa_data/ss_data/jsonl \
         --run astrained_ff3500_bprna_ts0 --run sel_ff3500_bprna_ts0 \
         --max-length 100
 """

@@ -10,7 +10,7 @@ Usage (cluster): python patch_resnet2d.py <repo_root>
 import sys
 from pathlib import Path
 
-REPO = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/home/cunyuliu/rna-jepa")
+REPO = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/root/rna_jev")
 TARGET = REPO / "src" / "rnajepa" / "decision_head.py"
 
 src = TARGET.read_text()

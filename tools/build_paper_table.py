@@ -9,9 +9,9 @@ compute footprint). All numbers re-read from disk (no typing).
 import json
 from pathlib import Path
 
-ART = Path("/mnt/cunyuliu/rna-jepa/eval_decision")
-OUT = Path("/home/cunyuliu/rna-jepa/tables/sota_vs_ours.md")
-MNT = Path("/mnt/cunyuliu/rna-jepa/tables/sota_vs_ours.md")
+ART = Path("/root/rna_jepa_data/eval_decision")
+OUT = Path("/root/rna_jev/tables/sota_vs_ours.md")
+MNT = Path("/root/rna_jepa_data/tables/sota_vs_ours.md")
 
 def pl(sp, f="plana_giga_tr1c_s0_step20000"):
     d = json.load(open(ART / f / "plan_a_result.json"))

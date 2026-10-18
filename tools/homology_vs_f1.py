@@ -36,8 +36,8 @@ already been bitten by that).  Only k >= 15 should be read.
 Usage
 -----
     python tools/homology_vs_f1.py \
-        --train /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl \
-        --eval-root /mnt/cunyuliu/rna-jepa/eval_decision \
+        --train /root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl \
+        --eval-root /root/rna_jepa_data/eval_decision \
         --pair sel_ff3500_bprna_ts0 \
         --pair sel_ff3500_bprna_vl0 \
         --pair sel_ff3500_bprna_new \

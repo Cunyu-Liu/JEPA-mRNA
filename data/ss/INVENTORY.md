@@ -2,7 +2,7 @@
 
 - 生成时间（UTC）：`2026-09-23T17:54:41Z`
 - 模式：**offline**（offline：仅使用 recorded 状态，未做任何探测）
-- 数据根目录：`/mnt/cunyuliu/rna-jepa/data/raw`
+- 数据根目录：`/root/rna_jepa_data/data/raw`
 - 状态类别（恰好四档）：已落盘 / 待获取 / 网络受限 / 不可得
 
 > ## ⚠️ 关键发现（必须置顶）

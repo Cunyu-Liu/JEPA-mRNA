@@ -40,18 +40,18 @@ It is a clean, exact 17-channel `U_Net` all-data checkpoint: **no remapping need
 (Contrast with the shipped `ufold_test.py`/`ufold_predict.py` filenames
 `ufold_train.pt` / `ufold_train_pdbfinetune.pt`, neither of which exists here.)
 
-## Commands actually run (on `A100`, cwd `/home/cunyuliu/rna-jepa`)
+## Commands actually run (on `A100`, cwd `/root/rna_jev`)
 
 ```bash
 # per split (run detached):
 CUDA_VISIBLE_DEVICES=6 PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval TMPDIR=/mnt/cunyuliu/tmp \
-  /home/cunyuliu/miniconda3/envs/lucaone/bin/python eval/ss/run_ufold.py --split <SPLIT>
+  /root/miniconda3/envs/lucaone/bin/python eval/ss/run_ufold.py --split <SPLIT>
 
 # authoritative scoring (project's single metrics implementation):
 PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval TMPDIR=/mnt/cunyuliu/tmp \
-  /home/cunyuliu/miniconda3/envs/lucaone/bin/python eval/ss/run_baselines.py \
+  /root/miniconda3/envs/lucaone/bin/python eval/ss/run_baselines.py \
   --split ref_bprna_ts0 --external-dbn .../ufold_ref_bprna_ts0.dbn --external-name ufold \
-  --out /mnt/cunyuliu/rna-jepa/eval_decision/baselines_ufold_ref_bprna_ts0.json
+  --out /root/rna_jepa_data/eval_decision/baselines_ufold_ref_bprna_ts0.json
 ```
 
 ## Results
@@ -77,7 +77,7 @@ Other splits (split F1 from the adapter == scored F1 through `run_baselines.py`)
 Predicted count == split count for every split (1291/1291, 63/63, 5388/5388); the scorer's
 hard alignment check passes.
 
-## Artifacts (all under `/mnt/cunyuliu/rna-jepa/eval_decision/`)
+## Artifacts (all under `/root/rna_jepa_data/eval_decision/`)
 
 * `ufold_<split>.dbn` -- scored dot-bracket, FASTA `>name / seq / dot`, split order.
 * `ufold_<split>_probs.npz` -- `sequences` + `probs` object arrays; `probs[i]` is the `L x L`

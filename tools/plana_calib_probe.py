@@ -14,7 +14,7 @@ would live on different models. This probe closes that hole:
       disjoint from TS0), via rnajepa.rlcd.fit_platt_scaling
     * raw-vs-recalibrated reported side by side, exactly like §4.2
 
-Writes /mnt/cunyuliu/rna-jepa/eval_decision/plana_calib_probe.json.
+Writes /root/rna_jepa_data/eval_decision/plana_calib_probe.json.
 GPU-only (CUDA required; aborts otherwise -- red line).
 """
 import argparse
@@ -26,7 +26,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-REPO = Path("/home/cunyuliu/rna-jepa")
+REPO = Path("/root/rna_jev")
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
@@ -100,9 +100,9 @@ def collect(encoder, head, records, device):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint",
-                    default="/mnt/cunyuliu/rna-jepa/ckpts/plana_giga_s0_step20000.pt")
+                    default="/root/rna_jepa_data/ckpts/plana_giga_s0_step20000.pt")
     ap.add_argument("--out",
-                    default="/mnt/cunyuliu/rna-jepa/eval_decision/plana_calib_probe.json")
+                    default="/root/rna_jepa_data/eval_decision/plana_calib_probe.json")
     ap.add_argument("--device", default="cuda")
     args = ap.parse_args()
 
@@ -122,7 +122,7 @@ def main():
     head = head.to(device).eval()
     print(f"[calib-probe] model loaded from {args.checkpoint}", flush=True)
 
-    D = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+    D = "/root/rna_jepa_data/ss_data/jsonl"
     vl0 = load_split(f"{D}/bprna_vl0.jsonl")
     ts0 = load_split(f"{D}/bprna_ts0.jsonl")
     print(f"[calib-probe] VL0 {len(vl0)} seqs (fit split), TS0 {len(ts0)} seqs "

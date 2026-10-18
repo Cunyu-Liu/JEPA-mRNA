@@ -9,8 +9,8 @@
 # cluster, but aggregate scales ~linearly with connection count, so we use
 # small chunks (more chunks = more concurrent connections).
 set -uo pipefail
-S=/home/cunyuliu/rna-jepa/scripts/fetch_zenodo_parallel.sh
-RAW=/mnt/cunyuliu/rna-jepa/data/raw
+S=/root/rna_jev/scripts/fetch_zenodo_parallel.sh
+RAW=/root/rna_jepa_data/data/raw
 mkdir -p "$RAW"
 API=https://zenodo.org/api/records
 

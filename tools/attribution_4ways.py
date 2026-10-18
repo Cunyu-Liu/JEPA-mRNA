@@ -7,13 +7,13 @@ import pickle
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "/home/cunyuliu/miniconda3/envs/lucaone/lib/python3.9/site-packages")
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
+sys.path.insert(0, "/root/miniconda3/envs/lucaone/lib/python3.9/site-packages")
+sys.path.insert(0, "/root/rna_jev")
 import pandas  # noqa
 
 from data.ss.prepare_decision_data import dotbracket_to_pairs
 
-ART = Path("/mnt/cunyuliu/rna-jepa")
+ART = Path("/root/rna_jepa_data")
 
 
 def f1(pred, gt, tolerant):

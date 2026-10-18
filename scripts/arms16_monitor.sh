@@ -6,7 +6,7 @@
 #   3) after each arm reaches DONE, confirm the auto-eval protocol has started
 #      (ow_*_step20000_<split>/result.json files appearing) and log the
 #      per-split F1 as it lands.
-D=/mnt/cunyuliu/rna-jepa
+D=/root/rna_jepa_data
 LOG=$D/logs/arms16_monitor.log
 ts=$(date '+%F %T')
 

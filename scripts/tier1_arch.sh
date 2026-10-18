@@ -16,11 +16,11 @@
 #   - r2dtr1c (Arm A) evals archiveii_embok_clean with the watch7 protocol
 #     AFTER its 6-split eval -- appending, not editing, the running launcher.
 set -u
-REPO=/home/cunyuliu/rna-jepa
-D=/mnt/cunyuliu/rna-jepa
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:$REPO/src
-export TMPDIR=/mnt/cunyuliu/tmp
+REPO=/root/rna_jev
+D=/root/rna_jepa_data
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:$REPO/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 LOG=$D/runs/tier1_arch.log
 mkdir -p $D/runs

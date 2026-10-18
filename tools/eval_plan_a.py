@@ -27,7 +27,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-REPO = Path("/home/cunyuliu/rna-jepa")
+REPO = Path("/root/rna_jev")
 sys.path.insert(0, str(REPO))        # for eval.ss.metrics (package root)
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
@@ -148,12 +148,12 @@ def main():
     print(f"[eval-plan-a] checkpoint {args.checkpoint} step={meta.get('schedule', {}).get('steps')}",
           flush=True)
 
-    split_files = {"ts0": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl",
-                   "new": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_new.jsonl",
-                   "ts1": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts1.jsonl",
-                   "hard": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
-                   "ts2": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts2.jsonl",
-                   "ts3": "/mnt/cunyuliu/rna-jepa/ss_data/jsonl/ref_pdb_ts3.jsonl"}
+    split_files = {"ts0": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+                   "new": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+                   "ts1": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl",
+                   "hard": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
+                   "ts2": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl",
+                   "ts3": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl"}
     if args.data_file:
         split_files = {"custom": args.data_file}
         args.splits = "custom"

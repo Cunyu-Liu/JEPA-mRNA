@@ -17,11 +17,11 @@ set -uo pipefail
 
 ROOT="$HOME/rna-jepa"
 PY="$HOME/miniconda3/envs/lucaone/bin/python"
-DATA=/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl
-TEACHER=/mnt/cunyuliu/rna-jepa/ss_data/teacher/bprna_tr0
-RUNS=/mnt/cunyuliu/rna-jepa/runs
-export PYTHONPATH=/mnt/cunyuliu/pylibs:src
-export TMPDIR=/mnt/cunyuliu/tmp
+DATA=/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl
+TEACHER=/root/rna_jepa_data/ss_data/teacher/bprna_tr0
+RUNS=/root/rna_jepa_data/runs
+export PYTHONPATH=/root/rna_jepa_data/pylibs:src
+export TMPDIR=/root/tmp_jev
 mkdir -p "$TMPDIR" "$RUNS"
 cd "$ROOT" || exit 1
 

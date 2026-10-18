@@ -24,7 +24,7 @@ binary format would be an unverified assumption.
 
 Usage:
   python data/pretokenize.py --tokens pre.txt --regions pre_regions.txt \
-      --out /mnt/cunyuliu/rna-jepa/data/pretrain/pre --tokenizer <weights_dir> \
+      --out /root/rna_jepa_data/data/pretrain/pre --tokenizer <weights_dir> \
       --verify 20000
 """
 

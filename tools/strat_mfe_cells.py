@@ -15,11 +15,11 @@ used. Sequence counts must match the grid's n (126 and 15).
 import json
 import sys
 
-sys.path.insert(0, '/mnt/cunyuliu/pylibs')
-sys.path.insert(0, '/home/cunyuliu/rna-jepa/src')
-sys.path.insert(0, '/home/cunyuliu/rna-jepa/eval')
+sys.path.insert(0, '/root/rna_jepa_data/pylibs')
+sys.path.insert(0, '/root/rna_jev/src')
+sys.path.insert(0, '/root/rna_jev/eval')
 
-import RNA  # noqa: E402  (ViennaRNA bindings, /mnt/cunyuliu/pylibs)
+import RNA  # noqa: E402  (ViennaRNA bindings, /root/rna_jepa_data/pylibs)
 from rnajepa.clean.c3_structure import parse_pairs  # noqa: E402
 from rnajepa.decision_head import valid_pair_mask  # noqa: E402
 from ss.metrics import PairLevelMetrics  # noqa: E402
@@ -47,7 +47,7 @@ def pooled_f1(records, kind):
     return (2 * p * r / (p + r) if (p + r) else 0.0), p, r
 
 
-rows = [json.loads(l) for l in open('/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl') if l.strip()]
+rows = [json.loads(l) for l in open('/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl') if l.strip()]
 
 cells = {
     'RFAM_200_400': (201, 400, 126, 0.4345),
@@ -76,7 +76,7 @@ for name, (lo, hi, n_expect, centroid_expect) in cells.items():
                  'TRUSTWORTHY': bool(n_ok and centroid_ok)}
     print(name, '->', out[name])
 
-with open('/mnt/cunyuliu/rna-jepa/eval_decision/stratified_mfe_cells.json', 'w') as fh:
+with open('/root/rna_jepa_data/eval_decision/stratified_mfe_cells.json', 'w') as fh:
     json.dump({'ts': out, 'vienna_version': f'ViennaRNA {RNA.__version__}',
                'note': 'fills the two blank vienna_mfe cells of draft 4.3 grid; centroid recomputed on identical cells as the protocol check'}, fh, indent=1)
 print('saved eval_decision/stratified_mfe_cells.json')

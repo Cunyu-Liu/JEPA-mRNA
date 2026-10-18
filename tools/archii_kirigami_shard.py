@@ -5,13 +5,13 @@ Usage: --shard 0/3, 1/3, 2/3 processes rows [start:end).
 """
 import json, os, sys, time
 import argparse
-sys.path.insert(0, '/home/cunyuliu/rna-jepa')
-sys.path.insert(0, '/home/cunyuliu/rna_baselines_src/kirigami')
+sys.path.insert(0, '/root/rna_jev')
+sys.path.insert(0, '/root/rna_baselines_src/kirigami')
 import torch
 from kirigami.utils import _embed_fasta, mat2db, outer_concat
 
 SPLIT = 'archiveii_embok_clean'
-DATA = f'/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{SPLIT}.jsonl'
+DATA = f'/root/rna_jepa_data/ss_data/jsonl/{SPLIT}.jsonl'
 
 BUCKETS = {
     'le100': lambda L: L <= 100,
@@ -39,7 +39,7 @@ def main():
     k, N = map(int, args.shard.split('/'))
 
     dev = torch.device('cuda')
-    model = torch.hub.load('/home/cunyuliu/rna_baselines_src/kirigami',
+    model = torch.hub.load('/root/rna_baselines_src/kirigami',
                            'kirigami', pretrained=True, source='local')
     model.eval().to(dev)
 

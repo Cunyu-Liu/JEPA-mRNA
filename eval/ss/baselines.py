@@ -173,7 +173,7 @@ def registry() -> List[Baseline]:
         _b(key="mrnabert", name="mRNABERT", route=ROUTE_FOUNDATION, spec_section="§7.2.2",
            repo="https://huggingface.co/YYLY66/mRNABERT",
            version_lock="mRNABERT（本机已有权重，哈希待核验）",
-           install_hint="本地权重已在 /mnt/cunyuliu；需记录权重哈希"),
+           install_hint="本地权重已在 /root/rna_jepa_data；需记录权重哈希"),
         _b(key="rnamsm", name="RNA-MSM", route=ROUTE_FOUNDATION, spec_section="§7.2.2",
            repo="https://github.com/yikunpku/RNA-MSM", version_lock="RNA-MSM（锁定权重哈希）",
            install_hint="git clone + 官方权重（MSA-based）"),

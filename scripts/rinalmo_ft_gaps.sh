@@ -1,12 +1,12 @@
 #!/bin/bash
 # T-A46b: RiNALMo-ft (Zenodo ckpt) on the six missing board splits.
 set -u
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-E=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+E=/root/rna_jepa_data
 CKPT=$E/refmodels/models/rinalmo_giga_ss_bprna_ft.pt
-REPO=/home/cunyuliu/rna-jepa
+REPO=/root/rna_jev
 LOG=$E/eval_decision/rinalmo_ft_gaps.log
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
 cd $REPO || exit 1
 gpu=""
 bestfree=0

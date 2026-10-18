@@ -2,14 +2,14 @@
 # v3.18 fold part 2: banner change note + Limitations/Conclusion refresh
 # + checker for the new 4.3h section. Idempotent.
 set -eu
-DRAFT=/home/cunyuliu/rna-jepa/paper/preprint_draft.md
+DRAFT=/root/rna_jev/paper/preprint_draft.md
 if grep -q "v3.18 change note" "$DRAFT"; then echo "SKIP: banner note already present"; exit 0; fi
 
 python3 - << 'PYEOF'
 import io
 from pathlib import Path
 
-DRAFT = Path("/home/cunyuliu/rna-jepa/paper/preprint_draft.md")
+DRAFT = Path("/root/rna_jev/paper/preprint_draft.md")
 text = DRAFT.read_text(encoding="utf-8")
 
 # 1) Insert the v3.18 change note right after the v3.17 change note paragraph.

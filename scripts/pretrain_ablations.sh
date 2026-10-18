@@ -13,9 +13,9 @@
 # Usage: RNAJEPA_PYTHON=<py> pretrain_ablations.sh [--steps N] [--dry-run]
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-ART="${RNAJEPA_ART:-/mnt/cunyuliu/rna-jepa}"
-PY="${RNAJEPA_PYTHON:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+ART="${RNAJEPA_ART:-/root/rna_jepa_data}"
+PY="${RNAJEPA_PYTHON:-/root/miniconda3/envs/lucaone/bin/python}"
 STEPS=8000
 DRY=0
 while [ $# -gt 0 ]; do
@@ -30,7 +30,7 @@ PRE="$ART/data/pretrain/pre.txt"
 PRE_REG="$ART/data/pretrain/pre_regions.txt"
 WEIGHTS="$ART/weights/mRNABERT_attn_fallback"
 LOG="$ART/logs/ablations.log"
-export PYTHONPATH="${RNAJEPA_PYEXT:-/mnt/cunyuliu/rna-jepa/pyext}:$ROOT/src"
+export PYTHONPATH="${RNAJEPA_PYEXT:-/root/rna_jepa_data/pyext}:$ROOT/src"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 source "$ROOT/scripts/gpu_util.sh"
 

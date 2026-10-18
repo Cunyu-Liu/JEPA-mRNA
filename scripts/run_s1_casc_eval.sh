@@ -2,12 +2,12 @@
 # Eval queue round 2: ff s1 (seed variance) + casc (cascade verdict) at step 20000.
 # The earlier queue skipped s1 because its snapshot landed after that queue started.
 set -u
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-REPO=/home/cunyuliu/rna-jepa
-ART=/mnt/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+REPO=/root/rna_jev
+ART=/root/rna_jepa_data
 DEV=$ART/ss_data/jsonl/bprna_vl0.jsonl
 TEST=$ART/ss_data/jsonl/bprna_ts0.jsonl
 LOG=$ART/eval_decision/s1_casc_eval.log

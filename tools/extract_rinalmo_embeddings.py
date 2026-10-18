@@ -50,8 +50,8 @@ import torch
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from rinalmo_preflight import VOCAB, encode, load_encoder  # noqa: E402
 
-JSONL_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
-OUT_DIR = "/mnt/cunyuliu/rna-jepa/embeddings/rinalmo-giga"
+JSONL_DIR = "/root/rna_jepa_data/ss_data/jsonl"
+OUT_DIR = "/root/rna_jepa_data/embeddings/rinalmo-giga"
 
 #: Training plus every evaluation set in spec §6.
 ALL_SPLITS = ("bprna_tr0", "bprna_vl0", "bprna_ts0", "archiveii",

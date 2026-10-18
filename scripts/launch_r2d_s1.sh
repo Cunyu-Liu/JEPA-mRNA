@@ -18,16 +18,16 @@
 # instead of relying on one nohup surviving.
 set -u
 
-# Lock lives on the LOCAL filesystem: flock on /mnt/cunyuliu (shared/
+# Lock lives on the LOCAL filesystem: flock on /root/rna_jepa_data (shared/
 # network-mounted) did not serialise - a second copy started alongside the
 # first without exiting, verified 2026-09-30.
 exec 9>/tmp/.r2d_s1_daemon.lock
 flock -n 9 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 DATA=$D/ss_data/jsonl/bprna_tr0.jsonl
 TEACHER=$D/ss_data/teacher/bprna_tr0
 EMB=$D/embeddings/rinalmo-giga
@@ -136,9 +136,9 @@ while [ "$(last_step)" -lt "$STEPS" ]; do
 done
 echo "[r2d_s1] training DONE at step $STEPS $(date '+%F %T')"
 
-EPY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+EPY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 CKPT=$D/ckpts/${TAG}_step${STEPS}.pt
 for i in $(seq 1 60); do [ -f "$CKPT" ] && break; sleep 60; done

@@ -10,8 +10,8 @@ import json
 import hashlib
 from pathlib import Path
 
-ART = Path("/mnt/cunyuliu/rna-jepa/eval_decision")
-TB = Path("/home/cunyuliu/rna-jepa/tables")
+ART = Path("/root/rna_jepa_data/eval_decision")
+TB = Path("/root/rna_jev/tables")
 
 errors = []
 checked = 0
@@ -216,15 +216,15 @@ else:
 
 # ---------- frozen splits manifest ----------
 print("=== eval_splits_frozen.json ===")
-frozen = json.load(open("/home/cunyuliu/rna-jepa/spec/eval_splits_frozen.json"))
+frozen = json.load(open("/root/rna_jev/spec/eval_splits_frozen.json"))
 print("  top-level keys:", list(frozen.keys())[:6])
 splits = frozen.get("splits", frozen)
 for name, meta in splits.items():
     if not isinstance(meta, dict) or "sha256" not in meta:
         continue
-    fp = Path(meta.get("path", "")) if meta.get("path") else Path("/mnt/cunyuliu/rna-jepa/ss_data/jsonl") / f"{name}.jsonl"
+    fp = Path(meta.get("path", "")) if meta.get("path") else Path("/root/rna_jepa_data/ss_data/jsonl") / f"{name}.jsonl"
     if not fp.exists():
-        cands = list(Path("/mnt/cunyuliu/rna-jepa/ss_data/jsonl").glob(f"{name}*.jsonl"))
+        cands = list(Path("/root/rna_jepa_data/ss_data/jsonl").glob(f"{name}*.jsonl"))
         if not cands:
             err(f"frozen {name}: file not found"); continue
         fp = cands[0]

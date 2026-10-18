@@ -36,7 +36,7 @@ try:
 except Exception:  # pragma: no cover
     torch = None
 
-ROOT = "/mnt/cunyuliu/rna-jepa/eval_decision"
+ROOT = "/root/rna_jepa_data/eval_decision"
 RENAMES = {
     # old dir name -> new dir name
     "ff3600_bprna_ts0": "ff3500_bprna_ts0",

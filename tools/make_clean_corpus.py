@@ -1,6 +1,6 @@
 import json, hashlib
 from collections import Counter
-JSONL = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+JSONL = "/root/rna_jepa_data/ss_data/jsonl"
 
 BLK = set()
 BLK_FILES = ["ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard",

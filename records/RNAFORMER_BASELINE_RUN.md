@@ -1,7 +1,7 @@
 # RNAformer baseline — measured run log
 
-Date: 2026-09-24. Env: `/home/cunyuliu/miniconda3/envs/lucaone/bin/python` (torch 2.5.1+cu121,
-pandas 2.3.3, numpy 1.26.4), cwd `/home/cunyuliu/rna-jepa`, `PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval`,
+Date: 2026-09-24. Env: `/root/miniconda3/envs/lucaone/bin/python` (torch 2.5.1+cu121,
+pandas 2.3.3, numpy 1.26.4), cwd `/root/rna_jev`, `PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval`,
 `TMPDIR=/mnt/cunyuliu/tmp`, GPU `CUDA_VISIBLE_DEVICES=1` (fp32). PyPI-reachable installs only.
 
 ## What was needed to make the published code run
@@ -22,12 +22,12 @@ Installed into the shared PYTHONPATH dir `/mnt/cunyuliu/pylibs` (does not touch 
 ## Commands that work
 
 ```
-cd /home/cunyuliu/rna-jepa
+cd /root/rna_jev
 export CUDA_VISIBLE_DEVICES=1 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
        PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval TMPDIR=/mnt/cunyuliu/tmp
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-M=/mnt/cunyuliu/rna-jepa/refmodels/models
-O=/mnt/cunyuliu/rna-jepa/eval_decision
+PY=/root/miniconda3/envs/lucaone/bin/python
+M=/root/rna_jepa_data/refmodels/models
+O=/root/rna_jepa_data/eval_decision
 
 # predict (emits dbn + prob npz + release-GT json)
 $PY eval/ss/run_rnaformer.py \
@@ -111,10 +111,10 @@ be quoted as the abstract headline without saying so.
 
 ## Output paths
 
-Predictions/structures: `/mnt/cunyuliu/rna-jepa/eval_decision/rnaformer_<split>.dbn`,
+Predictions/structures: `/root/rna_jepa_data/eval_decision/rnaformer_<split>.dbn`,
 `rnaformer_probs_<split>.npz`, `rnaformer_release_gt_<split>.json`.
-Scored JSON: `/mnt/cunyuliu/rna-jepa/eval_decision/baselines_rnaformer_<split>.json`
-(plus `_bio_`/`_interfam_` variants). Log: `/home/cunyuliu/rna-jepa/logs/rnaformer_bprna_ts0.log`.
+Scored JSON: `/root/rna_jepa_data/eval_decision/baselines_rnaformer_<split>.json`
+(plus `_bio_`/`_interfam_` variants). Log: `/root/rna_jev/logs/rnaformer_bprna_ts0.log`.
 
 ## What did NOT work (verbatim)
 

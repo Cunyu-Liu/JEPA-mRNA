@@ -4,7 +4,7 @@
 # Why this script audits *contents* and not just file counts
 # ----------------------------------------------------------
 # The first version of this inventory counted files.  That was wrong, and it cost
-# real time: /mnt/cunyuliu/BPfold_data is a truncated 2025 extraction in which
+# real time: /root/rna_jepa_data/ss_data is a truncated 2025 extraction in which
 # RNAStrAlign_bpseq (37,052 files) and Rfam12.3-14.10 (10,791 files) are *all
 # zero bytes*, and archiveII/archiveII is an empty directory.  Counting names
 # reported all three as present and healthy.  The corpus build then produced a
@@ -18,10 +18,10 @@
 # Where the data actually is
 # --------------------------
 # The test splits live in the BPfold release tarball
-#   /mnt/cunyuliu/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results/
+#   /root/rna_jepa_data/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results/
 # which carries archiveII (3,966), Rfam12.3-14.10 (10,791), Rfam14.10-15.0 (436),
 # bpRNAnew (5,401), bpRNA (1,305) and PDB_test (116) -- all verified non-empty.
-# Training splits come from /mnt/cunyuliu/BPfold_data (bpRNA/TR0 10,814,
+# Training splits come from /root/rna_jepa_data/ss_data (bpRNA/TR0 10,814,
 # PDB_669 669), which are also verified non-empty.
 #
 # Policy (see spec/benchmark_decision.md): --min-loop-policy drop
@@ -35,12 +35,12 @@
 set -uo pipefail
 
 PY="${RNAJEV_PYTHON:-$HOME/miniconda3/envs/lucaone/bin/python}"
-OUT="${1:-/mnt/cunyuliu/rna-jepa/ss_data/jsonl}"
+OUT="${1:-/root/rna_jepa_data/ss_data/jsonl}"
 
-B=/mnt/cunyuliu/BPfold_data
-X=/mnt/cunyuliu/rna_ss_data/bpfold/extracted/BPfold_data
-T=/mnt/cunyuliu/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results
-RINALMO=/mnt/cunyuliu/rna_ss_data/rinalmo
+B=/root/rna_jepa_data/ss_data
+X=/root/rna_jepa_data/rna_ss_data/bpfold/extracted/BPfold_data
+T=/root/rna_jepa_data/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results
+RINALMO=/root/rna_jepa_data/rna_ss_data/rinalmo
 
 mkdir -p "$OUT"
 

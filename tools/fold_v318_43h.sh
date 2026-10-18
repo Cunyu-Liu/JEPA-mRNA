@@ -3,7 +3,7 @@
 # tr1c, SOTA main table, xens2, TS2/TS3 negative result) into the draft.
 # Idempotent: skips if the 4.3h anchor already exists.
 set -eu
-DRAFT=/home/cunyuliu/rna-jepa/paper/preprint_draft.md
+DRAFT=/root/rna_jev/paper/preprint_draft.md
 if grep -q "### 4.3h" "$DRAFT"; then echo "SKIP: 4.3h already present"; exit 0; fi
 
 # anchor: insert the new section right before "### 4.4 Cross-family"
@@ -11,7 +11,7 @@ python3 - << 'PYEOF'
 import io
 from pathlib import Path
 
-DRAFT = Path("/home/cunyuliu/rna-jepa/paper/preprint_draft.md")
+DRAFT = Path("/root/rna_jev/paper/preprint_draft.md")
 text = DRAFT.read_text(encoding="utf-8")
 
 ANCHOR = "### 4.4 Cross-family generalization is insufficient"

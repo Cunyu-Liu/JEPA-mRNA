@@ -4,10 +4,10 @@
 # for 2x plana encoder + r2d (needs >4.75GB). Poll every 5 min for a card
 # with >=20GB free, then run the 3-pass protocol on it.
 set -u
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-cd /home/cunyuliu/rna-jepa
-export PYTHONPATH=/home/cunyuliu/rna-jepa:/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools:/home/cunyuliu/rna-jepa/eval
-OUT=/mnt/cunyuliu/rna-jepa/eval_decision
+PY=/root/miniconda3/envs/lucaone/bin/python
+cd /root/rna_jev
+export PYTHONPATH=/root/rna_jev:/root/rna_jev/src:/root/rna_jev/tools:/root/rna_jev/eval
+OUT=/root/rna_jepa_data/eval_decision
 
 GPU=""
 echo "[stab2seed] waiting for free physical GPU (>=20GB) $(date '+%F %T')"
@@ -35,10 +35,10 @@ done
 echo "[stab2seed] GPU $GPU (${free2}MB free) $(date '+%F %T')"
 for r in 1 2 3; do
   CUDA_VISIBLE_DEVICES=$GPU $PY tools/xens2_eval.py \
-    --plana-ckpt /mnt/cunyuliu/rna-jepa/ckpts/plana_giga_tr1c_s0_step20000.pt \
-    --plana-ckpt2 /mnt/cunyuliu/rna-jepa/ckpts/plana_giga_tr1c_s1_step20000.pt \
-    --r2d-ckpt /mnt/cunyuliu/rna-jepa/ckpts/rinalmo_r2dtr1c_b4_s0_step20000.pt \
-    --data /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl \
+    --plana-ckpt /root/rna_jepa_data/ckpts/plana_giga_tr1c_s0_step20000.pt \
+    --plana-ckpt2 /root/rna_jepa_data/ckpts/plana_giga_tr1c_s1_step20000.pt \
+    --r2d-ckpt /root/rna_jepa_data/ckpts/rinalmo_r2dtr1c_b4_s0_step20000.pt \
+    --data /root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl \
     --embedding-split bprna_ts0 \
     --out $OUT/xens2_2seed_ts0_stability_r${r}/result.json \
     --w-plana 0.7 --plana-s1-weight 0.5
@@ -47,10 +47,10 @@ for r in 1 2 3; do
   if [ $rc -ne 0 ] && [ $r -lt 3 ]; then
     echo "[stab2seed] run $r failed; retrying once on same GPU"
     CUDA_VISIBLE_DEVICES=$GPU $PY tools/xens2_eval.py \
-      --plana-ckpt /mnt/cunyuliu/rna-jepa/ckpts/plana_giga_tr1c_s0_step20000.pt \
-      --plana-ckpt2 /mnt/cunyuliu/rna-jepa/ckpts/plana_giga_tr1c_s1_step20000.pt \
-      --r2d-ckpt /mnt/cunyuliu/rna-jepa/ckpts/rinalmo_r2dtr1c_b4_s0_step20000.pt \
-      --data /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl \
+      --plana-ckpt /root/rna_jepa_data/ckpts/plana_giga_tr1c_s0_step20000.pt \
+      --plana-ckpt2 /root/rna_jepa_data/ckpts/plana_giga_tr1c_s1_step20000.pt \
+      --r2d-ckpt /root/rna_jepa_data/ckpts/rinalmo_r2dtr1c_b4_s0_step20000.pt \
+      --data /root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl \
       --embedding-split bprna_ts0 \
       --out $OUT/xens2_2seed_ts0_stability_r${r}/result.json \
       --w-plana 0.7 --plana-s1-weight 0.5

@@ -22,9 +22,9 @@
 # Usage: setsid nohup bash scripts/await_tr1_embeddings_then_launch.sh > ... 2>&1 < /dev/null
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-ART="${RNAJEPA_ART:-/mnt/cunyuliu/rna-jepa}"
-PY="${RNAJEV_PYTHON:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+ART="${RNAJEPA_ART:-/root/rna_jepa_data}"
+PY="${RNAJEV_PYTHON:-/root/miniconda3/envs/lucaone/bin/python}"
 E="$ART/embeddings/rinalmo-giga"
 SPLIT="${RNAJEV_SPLIT:-bprna_tr1}"
 N="${RNAJEV_SHARDS:-2}"

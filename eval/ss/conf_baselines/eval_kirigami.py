@@ -2,7 +2,7 @@
 
 Kept for provenance: first correct-math eval (CPU, 13.9 s/seq). The GPU
 device-corrected variant (eval_kirigami_gpu.py, same scores) superseded it.
-Source of truth: /home/cunyuliu/rna_baselines_src/eval_kirigami.py, 2026-10-10.
+Source of truth: /root/rna_baselines_src/eval_kirigami.py, 2026-10-10.
 """
 #!/usr/bin/env python3
 """T-A50b: Kirigami (arXiv 2406.02381, official weights, zero-shot) on our
@@ -14,11 +14,11 @@ FCN pairing probabilities). We parse the DBN into pairs and score with the
 same ss.metrics micro-P/R/F1 the board uses.
 """
 import json, os, sys, time
-sys.path.insert(0, "/home/cunyuliu/rna-jepa")
+sys.path.insert(0, "/root/rna_jev")
 import torch
 
-MODEL_DIR = "/home/cunyuliu/rna_baselines_src/kirigami"
-ED = "/mnt/cunyuliu/rna-jepa/eval_decision"
+MODEL_DIR = "/root/rna_baselines_src/kirigami"
+ED = "/root/rna_jepa_data/eval_decision"
 SPLITS = ["bprna_ts0", "bprna_new", "ref_pdb_ts1", "ref_pdb_ts2",
           "ref_pdb_ts3", "ref_pdb_ts_hard", "archiveii_embok_clean", "testsetb"]
 
@@ -48,7 +48,7 @@ def main():
     out_path = os.path.join(ED, "kirigami_board.json")
     results = {}
     for sp in SPLITS:
-        rows = load_rows(f"/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{sp}.jsonl")
+        rows = load_rows(f"/root/rna_jepa_data/ss_data/jsonl/{sp}.jsonl")
         tp = fp = fn = 0
         t0 = time.time()
         n_done = 0

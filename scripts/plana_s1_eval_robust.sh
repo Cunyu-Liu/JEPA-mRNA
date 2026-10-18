@@ -3,12 +3,12 @@
 # OOM'd on card 0 when an external process filled it mid-run).
 # Retry-per-split with card re-pick on failure; skip when result exists.
 set -u
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools
-export TMPDIR=/mnt/cunyuliu/tmp
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src:/root/rna_jev/tools
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 CKPT=$D/ckpts/plana_giga_tr1c_s1_step20000.pt
 OUTD=$D/eval_decision/plana_giga_tr1c_s1_step20000
 mkdir -p $OUTD

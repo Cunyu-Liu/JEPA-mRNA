@@ -21,10 +21,10 @@ set -u
 exec 8>/tmp/.plana_tr1c_daemon.lock
 flock -n 8 || exit 0
 
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/home/cunyuliu/rna-jepa/src:/home/cunyuliu/rna-jepa/tools
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jev/src:/root/rna_jev/tools
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 DATA=$D/ss_data/jsonl/bprna_tr1c.jsonl
 TEACHER=$D/ss_data/teacher/bprna_tr1c
 OUT=$D/runs/plana_giga_tr1c_s0
@@ -98,9 +98,9 @@ done
 echo "[plana_tr1c] training DONE at $STEPS $(date '+%F %T')"
 
 # final eval: eval_plan_a (in-loop backbone protocol), tier-1 + PDB family
-EPY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:$REPO/src:$REPO/tools
-export TMPDIR=/mnt/cunyuliu/tmp
+EPY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:$REPO/src:$REPO/tools
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 CKPT=$D/ckpts/plana_giga_tr1c_s0_step${STEPS}.pt
 OUTD=$D/eval_decision/plana_giga_tr1c_s0_step${STEPS}

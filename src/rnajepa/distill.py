@@ -439,8 +439,8 @@ class ThermodynamicTeacher:
         except ImportError as exc:  # pragma: no cover - depends on the host
             raise ThermodynamicUnavailableError(
                 "ViennaRNA is not importable in this interpreter. It is installed "
-                "out-of-tree at /mnt/cunyuliu/pylibs (the /home quota is full), so "
-                "run with PYTHONPATH=/mnt/cunyuliu/pylibs, or install it into the "
+                "out-of-tree at /root/rna_jepa_data/pylibs (the /home quota is full), so "
+                "run with PYTHONPATH=/root/rna_jepa_data/pylibs, or install it into the "
                 "active environment. Teacher soft labels cannot be produced without it."
             ) from exc
         return RNA

@@ -1442,8 +1442,8 @@ them — on these benchmarks, evaluation hygiene is not bookkeeping, it is the r
 ## Appendix A. Evidence ledger
 
 Every number in §4 traces to one of these artifacts. Paths are on the cluster unless
-stated; the code lives at `/home/cunyuliu/rna-jepa` and the artifacts at
-`/mnt/cunyuliu/rna-jepa`.
+stated; the code lives at `/root/rna_jev` and the artifacts at
+`/root/rna_jepa_data`.
 
 | Result | Artifact | Command |
 |---|---|---|

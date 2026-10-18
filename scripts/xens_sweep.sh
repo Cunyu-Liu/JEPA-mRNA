@@ -4,11 +4,11 @@
 # TS0/new large -> backgrounded by the caller if needed).
 # editflow env required (plana member loads multimolecule).
 set -u
-REPO=/home/cunyuliu/rna-jepa
-D=/mnt/cunyuliu/rna-jepa
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:$REPO/src:$REPO/tools:$REPO/eval
-export TMPDIR=/mnt/cunyuliu/tmp
+REPO=/root/rna_jev
+D=/root/rna_jepa_data
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:$REPO/src:$REPO/tools:$REPO/eval
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 LOG=$D/runs/xens_sweep.log
 exec >> "$LOG" 2>&1

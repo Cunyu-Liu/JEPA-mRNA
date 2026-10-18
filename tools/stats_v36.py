@@ -5,7 +5,7 @@ import json
 import statistics as st
 from pathlib import Path
 
-ART = Path("/mnt/cunyuliu/rna-jepa")
+ART = Path("/root/rna_jepa_data")
 
 
 def micro(prefix, arm, step, split):

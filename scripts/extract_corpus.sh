@@ -16,12 +16,12 @@
 # Usage: extract_corpus.sh [dest_dir]
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-ART="${RNAJEPA_ART:-/mnt/cunyuliu/rna-jepa}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+ART="${RNAJEPA_ART:-/root/rna_jepa_data}"
 ZIP="${1:-$ART/data/raw/mRNAdataset.zip}"
 DEST="${2:-$ART/data/pretrain_fasta}"
 WORK="$ART/data/pretrain_work"
-PY="${RNAJEPA_PYTHON:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}"
+PY="${RNAJEPA_PYTHON:-/root/miniconda3/envs/lucaone/bin/python}"
 
 mkdir -p "$DEST" "$WORK"
 echo "[extract] $(date '+%F %T') archive=$ZIP dest=$DEST"

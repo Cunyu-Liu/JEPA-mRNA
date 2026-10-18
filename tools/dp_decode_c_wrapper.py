@@ -98,7 +98,7 @@ def nussinov_map_single(scores: np.ndarray, mask: np.ndarray):
 
 def test_bitwise_equal(L=50, seed=42, n_tests=20):
     """Verify C output matches Python reference bit-for-bit."""
-    sys.path.insert(0, '/home/cunyuliu/rna-jepa/src')
+    sys.path.insert(0, '/root/rna_jev/src')
     from rnajepa.harness import _max_dp_reference, _traceback_max, MIN_LOOP
 
     rng = np.random.default_rng(seed)
@@ -192,7 +192,7 @@ if __name__ == '__main__':
             if not mk[i, j]:
                 sc[i, j] = -np.inf
 
-    sys.path.insert(0, '/home/cunyuliu/rna-jepa/src')
+    sys.path.insert(0, '/root/rna_jev/src')
     from rnajepa.harness import nussinov_map as py_decode
 
     # warm up

@@ -30,9 +30,9 @@ reader can see how sensitive the result is to it.
 Usage
 -----
     python tools/dedup_against_train.py \
-        --train  /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl \
-        --split  /mnt/cunyuliu/rna-jepa/ss_data/jsonl/archiveii_embok.jsonl \
-        --out    /mnt/cunyuliu/rna-jepa/ss_data/jsonl/archiveii_clean.jsonl \
+        --train  /root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl \
+        --split  /root/rna_jepa_data/ss_data/jsonl/archiveii_embok.jsonl \
+        --out    /root/rna_jepa_data/ss_data/jsonl/archiveii_clean.jsonl \
         --threshold 0.5 --k 20
 """
 

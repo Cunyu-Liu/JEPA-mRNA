@@ -17,12 +17,12 @@
 # (2) rescore_mathews on the per-seq dump -> tolerant macro F1;
 # (3) same on archiveii_embok_clean (clean subset for the headline).
 set -u
-REPO=/home/cunyuliu/rna-jepa
-D=/mnt/cunyuliu/rna-jepa
-PYPLANA=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:$REPO/src:$REPO/tools
-export TMPDIR=/mnt/cunyuliu/tmp
+REPO=/root/rna_jev
+D=/root/rna_jepa_data
+PYPLANA=/root/miniconda3/envs/lucaone/bin/python
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:$REPO/src:$REPO/tools
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 LOG=$D/runs/arch600_eval.log
 exec >> "$LOG" 2>&1

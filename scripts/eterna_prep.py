@@ -5,7 +5,7 @@ sp, fa, outdir = sys.argv[1], sys.argv[2], sys.argv[3]
 import os
 os.makedirs(outdir, exist_ok=True)
 recs = []
-with open(f"/mnt/cunyuliu/rna-jepa/ss_data/jsonl/{sp}.jsonl") as fh:
+with open(f"/root/rna_jepa_data/ss_data/jsonl/{sp}.jsonl") as fh:
     for line in fh:
         r = json.loads(line)
         seq = str(r["seq"]).upper().replace("T", "U")

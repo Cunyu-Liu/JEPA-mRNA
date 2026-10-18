@@ -24,9 +24,9 @@
 #   RNAJEPA_PYTHON=python run_pretrain.sh --arm smoke --dry-run --synthetic 8 --tiny
 set -uo pipefail
 
-ROOT="${RNAJEPA_ROOT:-/home/cunyuliu/rna-jepa}"
-ART="${RNAJEPA_ART:-/mnt/cunyuliu/rna-jepa}"
-PY="${RNAJEPA_PYTHON:-/home/cunyuliu/miniconda3/envs/lucaone/bin/python}"
+ROOT="${RNAJEPA_ROOT:-/root/rna_jev}"
+ART="${RNAJEPA_ART:-/root/rna_jepa_data}"
+PY="${RNAJEPA_PYTHON:-/root/miniconda3/envs/lucaone/bin/python}"
 
 ARM="main"; OUT=""; DATA=""; TEACHER_DIR=""; SYNTHETIC=0; LENGTH=24
 STEPS=20000; BATCH=8; LR=""; WEIGHT_DECAY=0.0; WARMUP=1000; GRAD_CLIP=1.0
@@ -85,7 +85,7 @@ if [ -n "$DATA" ] && [ "$LAMBDA_NLL" != "0" ] && [ "$LAMBDA_NLL" != "0.0" ] \
 fi
 
 LEDGER="${RNAJEPA_LEDGER:-$ART/ledger.jsonl}"
-export PYTHONPATH="${RNAJEPA_PYEXT:-/mnt/cunyuliu/rna-jepa/pyext}:$ROOT/src"
+export PYTHONPATH="${RNAJEPA_PYEXT:-/root/rna_jepa_data/pyext}:$ROOT/src"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export TOKENIZERS_PARALLELISM=false
 

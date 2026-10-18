@@ -6,11 +6,11 @@
 # protocol, w=-1, VL0 Platt) so the peak-of-curve can be selected on VL
 # evidence rather than assumed. Idempotent.
 set -u
-REPO=/home/cunyuliu/rna-jepa
-D=/mnt/cunyuliu/rna-jepa
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:$REPO/src
-export TMPDIR=/mnt/cunyuliu/tmp
+REPO=/root/rna_jev
+D=/root/rna_jepa_data
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:$REPO/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
 LOG=$D/runs/r2dtr1c_s8k_eval.log
 exec >> "$LOG" 2>&1

@@ -18,7 +18,7 @@ ARMS = {
 print(f"{'arm':16s} {'norm':8s} {'d_z':5s} {'hidden':7s} {'corpus':26s} {'steps':7s} {'seed'}")
 for label, arm in ARMS.items():
     try:
-        m = json.load(open(f"/mnt/cunyuliu/rna-jepa/runs/{arm}/run_meta.json"))
+        m = json.load(open(f"/root/rna_jepa_data/runs/{arm}/run_meta.json"))
     except FileNotFoundError:
         print(f"{label:16s} MISSING")
         continue
@@ -26,7 +26,7 @@ for label, arm in ARMS.items():
     norm = cfg.get("nll_normalization", "(absent->sum)")
     dz = cfg.get("d_z", "?")
     hid = cfg.get("hidden", "?")
-    data = m.get("data", {}).get("source", "?").replace("jsonl:/mnt/cunyuliu/rna-jepa/ss_data/jsonl/", "")
+    data = m.get("data", {}).get("source", "?").replace("jsonl:/root/rna_jepa_data/ss_data/jsonl/", "")
     steps = cfg.get("steps", cfg.get("total_steps", "?"))
     seed = cfg.get("seed", "?")
     print(f"{label:16s} {norm:8s} {str(dz):5s} {str(hid):7s} {data:26s} {str(steps):7s} {seed}")

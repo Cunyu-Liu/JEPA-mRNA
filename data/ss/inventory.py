@@ -89,7 +89,7 @@ SS_NA = "n/a"
 #: Cluster root that holds the landed artefacts.  NOT mounted on the code-only
 #: machine this repository is developed on, so local probes will miss here and
 #: the entry is reported as recorded-fact / unprobed rather than verified.
-DEFAULT_DATA_ROOT = os.environ.get("RNAJEPA_DATA_ROOT", "/mnt/cunyuliu/rna-jepa/data/raw")
+DEFAULT_DATA_ROOT = os.environ.get("RNAJEPA_DATA_ROOT", "/root/rna_jepa_data/data/raw")
 
 
 @dataclass
@@ -352,7 +352,7 @@ NETWORK_CONSTRAINTS: List[Dict[str, str]] = [
      "consequence": "单流下载不可行；须多连接分块"},
     {"constraint": "168 并发实测约 4 MB/s（32 conn ~460 KB/s，64 conn ~950 KB/s）",
      "consequence": "大文件走多连接 ranged download + md5 校验"},
-    {"constraint": "本代码机无网络访问（大文件在集群 /mnt/cunyuliu，本机不可达）",
+    {"constraint": "本代码机无网络访问（大文件在集群 /root/rna_jepa_data，本机不可达）",
      "consequence": "本仓库只产出代码/清单；不执行下载"},
 ]
 

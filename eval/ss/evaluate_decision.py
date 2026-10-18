@@ -38,10 +38,10 @@ Usage
 -----
 ::
 
-    PYTHONPATH=/mnt/cunyuliu/pylibs:src python eval/ss/evaluate_decision.py \\
-        --checkpoint /mnt/cunyuliu/rna-jepa/runs/<run>/resume.pt \\
-        --data /mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_ts0.jsonl \\
-        --out /mnt/cunyuliu/rna-jepa/eval_decision/ts0_full \\
+    PYTHONPATH=/root/rna_jepa_data/pylibs:src python eval/ss/evaluate_decision.py \\
+        --checkpoint /root/rna_jepa_data/runs/<run>/resume.pt \\
+        --data /root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl \\
+        --out /root/rna_jepa_data/eval_decision/ts0_full \\
         --encoder-size 35M --device cuda --tag full
 """
 

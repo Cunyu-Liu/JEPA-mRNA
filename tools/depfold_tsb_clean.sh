@@ -3,10 +3,10 @@
 # Same protocol as eval_depfold.sh (predict mode, their biaffine F1), but the
 # board_tsb_clean ct/seq dir contains only the 181 rows NOT in our TR0.
 set -u
-cd /home/cunyuliu/rna_baselines_src/DEPfold
-export PYTHONPATH=/mnt/cunyuliu/pylibs
-PY=/home/cunyuliu/miniconda3/envs/lucaone/bin/python
-DATA=/home/cunyuliu/rna_baselines_src/DEPfold_data
+cd /root/rna_baselines_src/DEPfold
+export PYTHONPATH=/root/rna_jepa_data/pylibs
+PY=/root/miniconda3/envs/lucaone/bin/python
+DATA=/root/rna_baselines_src/DEPfold_data
 MODEL=$DATA/depfold_bpRNA_rnafm/model.pt
 
 # pick most-free card
@@ -21,14 +21,14 @@ echo "[depfold-clean] GPU $gpu (${bestfree}MB) $(date '+%F %T')"
 python3 - <<'PYEOF'
 import json, os
 tr0 = set()
-for l in open('/mnt/cunyuliu/rna-jepa/ss_data/jsonl/bprna_tr0.jsonl'):
+for l in open('/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl'):
     if not l.strip(): continue
     r = json.loads(l)
     tr0.add(r['seq'].upper().replace('T','U'))
-outdir = '/home/cunyuliu/rna_baselines_src/DEPfold_data/board_tsb_clean'
+outdir = '/root/rna_baselines_src/DEPfold_data/board_tsb_clean'
 ct = os.path.join(outdir, 'ct_seq'); os.makedirs(ct, exist_ok=True)
 n = 0
-for line in open('/mnt/cunyuliu/rna-jepa/ss_data/jsonl/testsetb.jsonl'):
+for line in open('/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl'):
     if not line.strip(): continue
     r = json.loads(line)
     if r['seq'].upper().replace('T','U') in tr0: continue

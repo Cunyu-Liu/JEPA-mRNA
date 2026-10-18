@@ -6,12 +6,12 @@
 # Step 2: single-run verification on the four PDB-family test splits.
 # Card: dynamic pick >= 18GB (two 650M backbones in-loop + r2d head).
 set -u
-PY=/home/cunyuliu/miniconda3/envs/editflow/bin/python
-export PYTHONPATH=/mnt/cunyuliu/pylibs:/home/cunyuliu/rna-jepa/src
-export TMPDIR=/mnt/cunyuliu/tmp
+PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/root/rna_jepa_data/pylibs:/root/rna_jev/src
+export TMPDIR=/root/tmp_jev
 export OMP_NUM_THREADS=2
-D=/mnt/cunyuliu/rna-jepa
-REPO=/home/cunyuliu/rna-jepa
+D=/root/rna_jepa_data
+REPO=/root/rna_jev
 P0=$D/ckpts/plana_giga_tr1c_s0_step20000.pt
 P1=$D/ckpts/plana_giga_tr1c_s1_step20000.pt
 R2D=$D/ckpts/rinalmo_r2dtr1c_b4_s0_step20000.pt
@@ -58,7 +58,7 @@ done
 echo "[xens2] VL0 sweep complete; inspect before test runs: "
 for w in 0.5 0.7 0.85; do
   f=$D/eval_decision/xens2_bprna_vl0_w${w}/result.json
-  [ -f "$f" ] && /home/cunyuliu/miniconda3/envs/lucaone/bin/python -c "
+  [ -f "$f" ] && /root/miniconda3/envs/lucaone/bin/python -c "
 import json; d=json.load(open('$f')); m=d['pair_level']['micro']
 print('  VL0 w=$w F1=%.4f P=%.4f R=%.4f' % (m['f1'],m['precision'],m['recall']))"
 done

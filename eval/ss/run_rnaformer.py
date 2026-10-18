@@ -38,14 +38,14 @@ model's raw output.
 
 Usage
 -----
-    PYTHONPATH=/mnt/cunyuliu/pylibs:src:eval TMPDIR=/mnt/cunyuliu/tmp \
-    /home/cunyuliu/miniconda3/envs/lucaone/bin/python eval/ss/run_rnaformer.py \
-        --state-dict  /mnt/cunyuliu/rna-jepa/refmodels/models/RNAformer_32M_state_dict_bprna.pth \
-        --config      /mnt/cunyuliu/rna-jepa/refmodels/models/RNAformer_32M_config_bprna.yml \
+    PYTHONPATH=/root/rna_jepa_data/pylibs:src:eval TMPDIR=/root/tmp_jev \
+    /root/miniconda3/envs/lucaone/bin/python eval/ss/run_rnaformer.py \
+        --state-dict  /root/rna_jepa_data/refmodels/models/RNAformer_32M_state_dict_bprna.pth \
+        --config      /root/rna_jepa_data/refmodels/models/RNAformer_32M_config_bprna.yml \
         --split ref_bprna_ts0 \
-        --out-dbn     /mnt/cunyuliu/rna-jepa/eval_decision/rnaformer_ref_bprna_ts0.dbn \
-        --out-npz     /mnt/cunyuliu/rna-jepa/eval_decision/rnaformer_probs_ref_bprna_ts0.npz \
-        --out-release-json /mnt/cunyuliu/rna-jepa/eval_decision/rnaformer_release_gt_ref_bprna_ts0.json
+        --out-dbn     /root/rna_jepa_data/eval_decision/rnaformer_ref_bprna_ts0.dbn \
+        --out-npz     /root/rna_jepa_data/eval_decision/rnaformer_probs_ref_bprna_ts0.npz \
+        --out-release-json /root/rna_jepa_data/eval_decision/rnaformer_release_gt_ref_bprna_ts0.json
 """
 
 from __future__ import annotations
@@ -68,7 +68,7 @@ for _p in (os.path.join(_REPO, "src"), os.path.join(_REPO, "eval"),
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-RNAFORMER_SRC = "/mnt/cunyuliu/rna_baselines_src/RNAformer-code"
+RNAFORMER_SRC = "/root/rna_jepa_data/rna_baselines_src/RNAformer-code"
 if RNAFORMER_SRC not in sys.path:
     sys.path.insert(0, RNAFORMER_SRC)
 
@@ -84,8 +84,8 @@ from ss.metrics import PairLevelMetrics, StructureLevelMetrics  # noqa: E402
 
 SEQ_VOCAB = ["A", "C", "G", "U", "N"]
 SEQ_STOI = {c: i for i, c in enumerate(SEQ_VOCAB)}
-DEFAULT_PLK = "/mnt/cunyuliu/rna-jepa/refmodels/datasets/test_sets.plk"
-JSONL_DIR = "/mnt/cunyuliu/rna-jepa/ss_data/jsonl"
+DEFAULT_PLK = "/root/rna_jepa_data/refmodels/datasets/test_sets.plk"
+JSONL_DIR = "/root/rna_jepa_data/ss_data/jsonl"
 
 
 def read_jsonl_records(split: str, limit: int = 0) -> List[Tuple[str, str, List[Tuple[int, int]]]]:
