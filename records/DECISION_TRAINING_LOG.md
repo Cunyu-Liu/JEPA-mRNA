@@ -9327,3 +9327,11 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **成果**：21 篇有效 PDF（页数+首页标题程序化验证）：SPOT-RNA/MXfold2/RiNALMo/BPfold/ERNIE-RNA/mRNABERT/RNA-MSM/trRosettaRNA/RiNALMo-ribo/UFold（PMC 通道）；RNAformer/RIBOSPAN/Kirigami/E2Efold/RFold/CDPfold（arXiv/bioRxiv）；HydraRNA/ContextFold/ViennaRNA2（出版商 OA）；加用户既有 NucleicBERT/rinalmo 表等。13 篇指针文件。README_下载清单.md 记录全集。
 - **核查**：每篇 pypdf 页数+标题抽取验证（0 失败）；survey 19 模型全覆盖（PDF 或指针）。
 - 另：/root 磁盘 96%→66%（weights_20261013/runs 61G 经 164/164 文件数校验迁 /teams 后删除；§15.84 纪律延续）。
+
+## 15.89 仓库卫生终态（T-A92）
+
+- 剩余 100 个 AppleDouble junk untrack 完成（commit 3c7cc97，已推送）。
+- 根因：git ls-files 对中文文件名输出 C 风格引号转义（\351\241...），脚本把带引号字符串当 pathspec 传入 git rm 导致不匹配。
+- 修复：git ls-files -z（NUL 分隔、不转义）+ subprocess 参数组精确传参 + -- 分隔符。
+- 终态验证：junk=0 / status 干净 / 追踪文件 513 / 磁盘 66%。
+- 仓库卫生链：5c888a0（67 pycache）→ 5d490af（232 pycache）→ 4e8d970（ignore 规则）→ d8cdca7（427 AppleDouble）→ 3c7cc97（100 AppleDouble，NUL 路径修复）。
