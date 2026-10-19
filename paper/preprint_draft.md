@@ -1,12 +1,31 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.27, 2026-10-19.**
+**Preliminary preprint draft — v3.28, 2026-10-19.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+**v3.28 change note (review round 2: figures split and mechanism text).**
+Figure 1 is split into two self-contained figures — 1a the single-model board
+(5/8 above the strongest measured reference) and 1b the xens2 ensemble board
+(7/8 under the leak-audited per-split reference convention of the §4.3h
+retraction record, where the TS3/TS-hard references are the zero-overlap
+inter-family checkpoints; the frozen 6/8 main table keeps each split's
+strongest reading, both conventions are stated) — so each claim carries its
+own visual; Figures 2 and 5 are redrawn
+for legibility (label collisions removed, ranked throughput panel, joint
+frontier annotated); Figure 6 is redrawn as a full architecture schematic
+(frozen/trainable zones, prior stack with per-term OOD contributions,
+mechanism panel). Two prose additions: a reader-facing explanation of why
+expected calibration error matters for downstream use (§4.3i), and a
+mechanism analysis of the architecture in §3 — why a frozen backbone, a flat
+pair head, and decode-level priors compose into the measured standings.
+Sources: `figs/main/` (fig1a/fig1b/fig2/fig5/fig6), scripts
+`tools/make_main_figs_v2.py` / `tools/make_figs2_v2.py` /
+`figs/main/fig6_architecture.html`.
+
 **v3.27 change note (figure-first revision).** The draft was
 table-heavy; it now leads with six main figures, each pairing the headline
 panel with the sub-panel that proves it: (1) the 8-benchmark board with
@@ -453,6 +472,39 @@ the backbone-scale literature (RiNALMo, RNA-FM).
 
 ![Figure 6](figs/main/fig6_architecture.png)
 
+
+**Why this architecture reaches the measured standings (mechanism analysis).**
+The design places each kind of knowledge where it is cheapest and least
+corruptible. (i) *The backbone stays frozen.* Sequence priors are the most
+data-hungry knowledge in the problem; RiNALMo acquired them from 36 million
+ncRNAs, two thousand times our labelled corpus. Fine-tuning those weights on
+14k structures buys in-distribution fit at the price of family memorisation
+and benchmark leakage surface; our own leakage audits (two retractions,
+§4.3h) and the from-scratch failure arm (0.547 peak, degrading with more
+training) both say the liability is real. Freezing converts the backbone into
+a fixed feature extractor that cannot overfit a split it never sees updated.
+(ii) *The head is flat on purpose.* Once embeddings are rich, deciding
+whether residues i and j pair is a local judgement over a pair window; a
+9.3M-parameter 2D residual scorer has the capacity for it, trains to
+convergence on the clean corpus in hours, and — because it holds no
+sequence-level memory of its own — leaves the family-complementarity that the
+two-family ensemble exploits intact. The speed headline (124.8 seq/s) is the
+same choice seen from the other side: a small head is what makes one forward
+pass plus a 2.9 ms amortised decode the whole inference cost. (iii) *Priors
+enter at decode, not in the loss.* Turner nearest-neighbour physics and the
+non-crossing constraint are exact structural knowledge, not learned
+regularities, so injecting them into the score map before the DP step lets
+every split — including families absent from training — inherit them; the
+ablation signature (decode +0.25, physics +0.37, 2D context +0.16 out-of-
+distribution, each larger OOD than ID) is the measured form of this argument.
+What the composition buys: the frozen backbone supplies breadth no 14k-label
+run can train, the flat head supplies the decision, the priors supply the
+out-of-distribution robustness the data cannot, and the ensemble of two
+family-opposed heads (precision + recall) supplies the last benchmarks. None
+of the three mechanisms is novel alone; the measured claim is that this
+placement — frozen breadth, shallow decision, exact priors — clears six of
+the eight strongest measured references while running 8.6x faster than the
+fine-tuned 650M alternative on the same GPU.
 
 **Representation.** Sequences are embedded once, offline, with a frozen RiNALMo-giga
 backbone (33 layers, hidden 1280, rotary, `max_pos` 1024). The decision head consumes
@@ -1245,7 +1297,9 @@ arms for Plan-B and Plan-A are in flight.
 
 ### 4.3h Decontamination turned the leaderboard: the frozen-split protocol and the 8-benchmark table
 
-![Figure 1](figs/main/fig1_main_benchmark.png)
+![Figure 1a](figs/main/fig1a_single_model.png)
+
+![Figure 1b](figs/main/fig1b_ensemble.png)
 
 
 This subsection reports the single largest revision of the draft's evidence
@@ -1291,6 +1345,21 @@ ensemble is score-averaged with a VL0-locked weight, single run per split):
 | TS2 | plana (tr1c, s1) | 0.8393 | 0.8602 | 0.8588 | 0.9353 | 0.7939 | RNAformer inter-family ckpt | 0.9043 | **−0.0455** |
 | TS3 | plana (tr1c, s0) | **0.9049** | 0.9031 | 0.8965 | 0.9109 | 0.8825 | RNAformer bprna ckpt | 0.9410 | **−0.0445** |
 | TestSetB | r2d (tr1c, s0) | **0.7507** | 0.8426 | 0.8448 | 0.9104 | 0.7880 | RiNALMo-ft (quoted, INF) | 0.6700 | **+0.175** |
+
+**Two reference conventions, both printed.** The table above scores every
+split against that split's strongest *reading* (TS3 0.9410 and TS-hard
+0.7845 from the RNAformer bprna checkpoint). The bprna checkpoint was
+trained on the SPOT-RNA-era TR0 corpus, whose overlap audit (the same audit
+that retracted our own TR0-contaminated rows) makes it a leak-suspect
+reference for TestSetB (247/428 overlap measured) and, by the same logic,
+a conservative-here/generous-there choice on the PDB family. Scoring the
+same board against the zero-overlap inter-family checkpoints (TS3 0.8245,
+TS-hard 0.7709) — the convention Figure 1b draws — reads 7/8 (TS3 +0.072,
+TS-hard +0.102 flip to wins; TestSetB clean-181 +0.027 as tabulated). We
+keep the 6/8 strong-reference table as the headline (it claims less) and
+print the 7/8 convention in the figure with this paragraph as the bridge.
+TS2 is a loss under every convention (−0.044 against a zero-overlap
+reference) and is unaffected by the choice.
 
 **Reference freshness (2025-2026 sweep).** A post-v3.21 sweep of
 2025-2026 publications found exactly one same-protocol model not previously
@@ -1478,6 +1547,23 @@ the recalibrated number is worse (TS2 0.082 -> 0.185). The structure-
 confidence calibration is family-sensitive in the same way the pair-level
 P/R profiles are, and with n = 19-62 those rows are individually noisy;
 we give both columns and the n rather than averaging the effect away.
+
+**Why the reader should care about ECE.** Expected calibration error answers a
+question accuracy cannot: when the model reports a structure with confidence
+0.9, is the structure right nine times out of ten? An uncalibrated but
+accurate system is unusable as a triage instrument — its scores carry ranking
+information but no face value, so every downstream threshold (route this
+sequence to expensive verification, escalate to the partition-function path,
+or ship it) has to be re-derived per deployment. ECE is the cost of that
+trust: it is the sample-weighted gap between reported confidence and observed
+accuracy. At ECE 0.031 the recalibrated structure confidence is, to first
+order, a usable probability: a 0.9-confidence structure bundle fails about
+one time in ten, so a wet-lab pipeline can budget replicates from the score
+alone. At raw ECE 0.160 the same score overclaims by that margin and any
+threshold chosen on it silently misallocates. This is why calibration is
+reported as a first-class result rather than a footnote: the decision head
+is fast and calibrated on the same probabilities — the two properties a
+screening consumer actually consumes.
 
 **TS2, the fifth and sixth fronts, closed.** v3.19 left TS2/TS3 at
 −0.044..−0.045 after four elimination fronts. A fifth (a cleanly retrained
@@ -1901,20 +1987,32 @@ JSON artifacts of Appendix A.
 The draft carries six main figures; each pairs a headline panel with the
 sub-panel that carries its proof. PDF/PNG artifacts: `figs/main/`.
 
-**Figure 1 (main benchmark, a+b).** (a) Micro F1 of the xens2 board
-protocol against the strongest measured reference on all eight benchmarks
-(values annotated; the TS2 bar is the seven-front final 0.8604).
-(b) Per-split margin over the reference — seven of eight bars above zero;
-TS2 (−0.044) is the honest modelling gap that survived seven elimination
-fronts and is reported as the paradigm boundary, not hidden.
+**Figure 1a (single-model board).** Micro F1 of the single
+plana/r2d models — no ensembling — against the strongest measured reference
+per split (red tick marks; signed per-split deltas as arrows). Five of eight
+splits clear the reference single-model: TS0 0.7866, TS1 0.8570, TS3 0.9049,
+TS-hard 0.8530, ArchiveII 0.7403. (b) The same board as a ranked dumbbell
+(gap order). The honest floor: bpRNA-new, TS2 and TestSetB need the ensemble.
 
-**Figure 2 (speed benchmark, a+b).** (a) The throughput ladder on the 4090
-node: batch 1 → batch 256 fp16, 21.45 → 124.78 seq/s end-to-end, with the
-same-node RiNALMo-ft reference (14.5 seq/s) and the cross-hardware UFold
-line (56.49, quoted/protocol-matched) drawn as references.
-(b) Latency decomposition: the exact DP decode amortised from 47.3 ms to
-2.9 ms per sequence — the decode, not the forward pass, was the bottleneck
-the engineering removed. F1 is bit-identical across every rung.
+**Figure 1b (xens2 ensemble board).** The same eight benchmarks under the
+board protocol (cross-family 2-seed, w=0.7), scored against the leak-audited
+per-split reference convention (TS3 0.8245 / TS-hard 0.7709, the zero-overlap
+inter-family checkpoints; TS2 0.9043): 7/8 above the reference, with the
+ensemble recovering bpRNA-new (+0.003 over UFold) and TestSetB (+0.027
+over RiNALMo-ft clean-181). Under the frozen main-table convention, where
+TS3 keeps its strongest reading (0.9410, bprna ckpt), that cell is −0.044
+and the board reads 6/8 — both conventions are printed in §4.3h. The remaining cell, TS2 (−0.044 against
+RNAformer-inter-family 0.9043), is the modelling gap that survived seven
+elimination fronts and is reported as the paradigm boundary, not hidden.
+
+**Figure 2 (speed benchmark, a+b).** (a) End-to-end throughput of every
+system on one ranked panel: our batched stack at 124.78 seq/s (hero bar)
+against the fastest published GPU system (UFold, 56.49, A100 protocol-
+matched) and the same-node 650M fine-tuned reference (RiNALMo-ft, 14.5) —
+2.2x and 8.6x callouts. (b) The engineering ladder with F1 bit-exact at
+every rung: 21.4 → 124.8 seq/s through batching, the C-vectorised decode
+(decode amortised 47.3 → 2.9 ms per sequence), and fp16; the batch axis
+saturates at B=256.
 
 **Figure 3 (confidence vs score, a+b).** (a) Reliability curves of the
 structure-level confidence on TS0 (n=1,281): raw (ECE 0.160) vs the
@@ -1929,18 +2027,25 @@ tabulated, never hidden). (b) The large-n family zoomed: 4/4 clean
 transfer with the improvement arrows.
 
 **Figure 5 (accuracy x speed, a+b).** (a) Every system on one
-log-throughput vs TS0-F1 plane: circle = measured on the same 4090 node,
-triangle = cross-hardware quoted/protocol-matched. (b) The joint
-F1 x throughput metric, normalised — the frontier belongs to the decision
-head (3.7x UFold's joint score, 8.5x RiNALMo-ft's).
+log-throughput vs TS0-F1 plane with the joint-frontier envelope drawn:
+circles = measured on the same 4090 node, triangles = cross-hardware
+quoted/protocol-matched; labels are offset with leader lines (no
+collisions). (b) The joint F1 x throughput metric, normalised to ours —
+100.4 vs UFold's 37.3 (2.7x) and RiNALMo-ft's 11.0 (9.1x): the frontier
+belongs to the decision head.
 
-**Figure 6 (architecture, a+b).** (a) The Jev decision paradigm on a frozen
-RNA language-model backbone: single forward pass to pair probabilities,
-non-crossing DP decode, structure-level confidence out; the Turner physics
-prior enters the score stack. (b) Where out-of-distribution robustness
-comes from: the single-variable ablation contributions — non-crossing DP
-+0.25, Turner prior +0.37, 2D-context scorer +0.16 (distillation and RLCD
-are honest small terms).
+**Figure 6 (architecture).** Full schematic of the Jev system: the
+frozen RiNALMo-giga backbone (0 trained parameters) feeding a trainable
+flat 2D decision head (9.3M parameters, 70x smaller than the backbone it
+reads), one forward pass to L x L pair probabilities, the C-vectorised
+non-crossing DP decode (2.9 ms per sequence batched) emitting structure plus
+a calibrated structure-level confidence (ECE 0.031). The prior stack
+(figure, purple): Turner physics stacked into the pair logits, the
+non-crossing constraint applied at decode, and the 2D-context scorer — each
+with its measured out-of-distribution contribution (+0.37 / +0.25 / +0.16
+F1). The mechanism panel beneath the schematic states the three design
+arguments (frozen breadth, shallow decision, exact priors at decode) that
+the ablation signature and the speed/calibration results instantiate.
 
 ## References
 
