@@ -9290,3 +9290,17 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **根因**：备份链路只打包了 weights_20261013/ckpts 目录（symlink 以链接形式进入归档），未打包 /mnt/cunyuliu/rna-jepa/runs 目标。已在 §15.70 备份清单知识基础上补全此认知，后续备份以 `cp -L`/tar -h 实体化。
 
 **主结论资产完整性判定**：8/8 板协议所需全部 ckpt（plana tr1c s0/s1 + r2d s0 + 各 split 数据 + embeddings）在 /root 与 /teams 双侧实体存在、md5 抽验通过；预印本 v3.24/v3.25 所引数字全部可由双侧资产重算。
+
+### 15.85 预印本 v3.26 投稿打磨（T-A85 完成，2026-10-19）
+
+- **新增两块，零 claim 改动**（apply_v326.py，三处 additive edit）：
+  1. **Data and code availability 块**（References 前）：冻结 split SHA-256 清单、GitHub 仓库（snapshot `721a913`）、337-test 套件、台账、RiNALMo-giga 公共骨干（HF, MIT）、决策头 ckpt 与 manifests Zenodo-on-acceptance 承诺、两幅主图的生成脚本。
+  2. **Appendix D. Figure captions**：Figure 1（rnajev_evidence_panel 2×3 六面板：8 板对比 / 吞吐阶梯含同节点 RiNALMo-ft 8.6× / 置信度 reliability / 三种子 P/R 平面 / TS2 七战线 / fp16 无损）与 Figure 2（三种子 P/R 家族剖面与 ~0.10P↔0.10R 摆动线）正式图注。
+- **checker**：check_v326.py 9/9 PASS（块存在、锚点顺序、图注内容、commit 引用）。
+- **图件验证**：figs 目录双图 PNG 在位（rnajev_evidence_panel.png 591K / seed_family_pr.png 161K）；脚本名修正 `tools/fig_seed_family_pr.py`。
+- **GitHub**：7c9c423（+脚本路径修正 commit）。
+- **判定**：预印本投稿就绪三要素（数据可得声明、图注、引用规范）补齐；正文科学内容自 v3.25 起冻结。剩余投稿动作（arXiv/bioRxiv 模板转换、作者署名、300dpi 导出）为用户侧决策项。
+
+### 15.86 GPU 资源状态告知（用户规则 6）
+
+按用户规则"如果不需要使用 gpu 集群训练任务，请及时告诉我"：**当前无在训/待训 GPU 任务**——TS2 集成轴双向穷尽（§15.76/§15.83）、速度线收官（B=256 见顶）、置信度全板完成、337 tests 全过。集群 GPU 空闲可释放（除非用户决定启动 T-A84 消融重训）。后续工作（投稿模板转换、本地同步）均为 CPU/文档任务。
