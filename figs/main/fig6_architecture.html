@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Figure 6 — Jev architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; background: #ffffff; }
+  .canvas { width: 1280px; margin: 0 auto; padding: 18px 22px; background: #fff; }
+  .figtitle { font-size: 20px; font-weight: 700; color: #1b2a5c; margin-bottom: 4px; letter-spacing: .2px; }
+  .figsub { font-size: 12px; color: #555; margin-bottom: 10px; }
+  .diagram { position: relative; height: 470px; }
+
+  .stage { position: absolute; border-radius: 10px; padding: 10px 12px; color: #fff; }
+  .stage .t { font-size: 13.5px; font-weight: 700; line-height: 1.25; }
+  .stage .d { font-size: 10.5px; opacity: .92; margin-top: 3px; line-height: 1.3; }
+
+  .s-input   { left: 0;   top: 30px; width: 130px; height: 74px; background: #8a93a5; }
+  .s-backbone{ left: 170px; top: 14px; width: 200px; height: 118px; background: #1b2a5c; box-shadow: 0 3px 10px rgba(27,42,92,.35); }
+  .s-head    { left: 420px; top: 30px; width: 190px; height: 120px; background: #27348b; }
+  .s-pair    { left: 660px; top: 30px; width: 170px; height: 74px; background: #0e7c86; }
+  .s-dp      { left: 660px; top: 152px; width: 170px; height: 74px; background: #b58600; color: #fff; }
+  .s-out     { left: 890px; top: 60px; width: 180px; height: 96px; background: #b5121b; box-shadow: 0 3px 10px rgba(181,18,27,.3); }
+
+  .frozen-tag { position: absolute; left: 170px; top: 138px; width: 200px;
+    font-size: 10px; font-weight: 700; color: #1b2a5c; letter-spacing: .5px; text-align: center; }
+  .trainable { position: absolute; left: 420px; top: 158px; width: 190px; text-align: center;
+    font-size: 10px; font-weight: 700; color: #27348b; letter-spacing: .5px; }
+
+  /* prior stack */
+  .priors { position: absolute; left: 250px; top: 200px; width: 360px; }
+  .priors .p-title { font-size: 11.5px; font-weight: 700; color: #7b5fb8; margin-bottom: 5px; letter-spacing: .3px; }
+  .prior { display: flex; align-items: center; height: 40px; margin-bottom: 5px;
+    background: #f3f0fa; border-left: 4px solid #7b5fb8; border-radius: 0 6px 6px 0; }
+  .prior .g { flex: 0 0 86px; font-size: 10.5px; font-weight: 700; color: #7b5fb8; padding-left: 9px; }
+  .prior .n { flex: 1; font-size: 10.5px; color: #333; padding-right: 8px; line-height: 1.25; }
+  .prior .v { flex: 0 0 72px; font-size: 10.5px; font-weight: 700; color: #0a7d3c; text-align: right; padding-right: 9px; }
+
+  /* arrows layer */
+  svg.arrows { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  /* mechanism strip */
+  .mech { margin-top: 10px; border-top: 1.5px solid #d8dce6; padding-top: 10px; }
+  .mech .m-title { font-size: 12.5px; font-weight: 700; color: #1b2a5c; margin-bottom: 6px; }
+  .m-row { display: flex; gap: 14px; }
+  .m-cell { flex: 1; background: #f6f7fa; border-radius: 8px; padding: 8px 10px; }
+  .m-cell .h { font-size: 10.8px; font-weight: 700; color: #b5121b; margin-bottom: 3px; }
+  .m-cell .b { font-size: 10.2px; color: #333; line-height: 1.38; }
+  .foot { margin-top: 8px; font-size: 9.5px; color: #777; font-style: italic; }
+  .legend { position: absolute; right: 0; top: 210px; width: 340px; }
+  .legend .l-title { font-size: 11px; font-weight: 700; color: #333; margin-bottom: 5px; }
+  .lg-row { display: flex; align-items: center; margin-bottom: 4px; }
+  .lg-swatch { width: 26px; height: 13px; border-radius: 3px; margin-right: 8px; }
+  .lg-t { font-size: 10px; color: #333; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="figtitle">Figure 6&nbsp;&nbsp;Jev: a decision head on a frozen RNA backbone, with a stack of structural priors</div>
+  <div class="figsub">One forward pass emits L&times;L pair probabilities; structural knowledge enters as priors, not as sampling. Micro F1 gains from the OOD ablation (ledger 15.83 family).</div>
+
+  <div class="diagram">
+    <svg class="arrows" viewBox="0 0 1280 470" preserveAspectRatio="none">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+        </marker>
+      </defs>
+      <line x1="132" y1="67" x2="166" y2="67" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="372" y1="67" x2="416" y2="67" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="612" y1="67" x2="656" y2="67" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="745" y1="106" x2="745" y2="148" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+      <line x1="832" y1="189" x2="886" y2="120" stroke="#444" stroke-width="2" marker-end="url(#arr)"/>
+      <!-- prior injections into head/dp -->
+      <line x1="470" y1="240" x2="500" y2="152" stroke="#7b5fb8" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+      <line x1="560" y1="240" x2="690" y2="152" stroke="#7b5fb8" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+      <text x="404" y="200" font-size="9.5" fill="#7b5fb8">logit stack</text>
+      <text x="600" y="216" font-size="9.5" fill="#7b5fb8">DP reward</text>
+    </svg>
+
+    <div class="stage s-input"><div class="t">RNA sequence</div><div class="d">A/C/G/U, L up to 4,000 nt</div></div>
+    <div class="stage s-backbone"><div class="t">RiNALMo-giga backbone</div><div class="d">650M-parameter RNA language model<br>pre-trained on 36M ncRNA sequences</div></div>
+    <div class="frozen-tag">FROZEN &middot; 0 trained params</div>
+    <div class="stage s-head"><div class="t">Flat decision head</div><div class="d">2D residual scorer, 9.3M params<br>reads embeddings, emits pair logits</div></div>
+    <div class="trainable">TRAINABLE &middot; 70&times; fewer params than the backbone</div>
+    <div class="stage s-pair"><div class="t">L &times; L pair probabilities</div><div class="d">sigmoid map, single pass</div></div>
+    <div class="stage s-dp"><div class="t">Non-crossing DP decode</div><div class="d">C vectorised Nussinov, 2.9 ms/seq batched</div></div>
+    <div class="stage s-out"><div class="t">Secondary structure<br>+ per-structure confidence</div><div class="d">geometric-mean SC, ECE 0.031</div></div>
+
+    <div class="priors">
+      <div class="p-title">STRUCTURAL PRIOR STACK (added at decode/logit level)</div>
+      <div class="prior"><div class="g">Turner physics</div><div class="n">nearest-neighbour free energies, stacked into pair logits</div><div class="v">+0.37 OOD F1</div></div>
+      <div class="prior"><div class="g">Non-crossing DP</div><div class="n">pseudoknot-free global optimum over pair scores</div><div class="v">+0.25 OOD F1</div></div>
+      <div class="prior"><div class="g">2D-context scorer</div><div class="n">head sees full L&times;L context before scoring a pair</div><div class="v">+0.16 OOD F1</div></div>
+    </div>
+
+    <div class="legend">
+      <div class="l-title">Why this beats end-to-end fine-tuning</div>
+      <div class="lg-row"><div class="lg-swatch" style="background:#1b2a5c"></div><div class="lg-t">Backbone knowledge from 36M sequences — no benchmark leakage enters via fine-tuning</div></div>
+      <div class="lg-row"><div class="lg-swatch" style="background:#27348b"></div><div class="lg-t">9.3M head trains in hours, converges on clean corpus, family-diverse ensembles are cheap</div></div>
+      <div class="lg-row"><div class="lg-swatch" style="background:#7b5fb8"></div><div class="lg-t">Physics + DP priors carry OOD robustness the data alone cannot supply</div></div>
+      <div class="lg-row"><div class="lg-swatch" style="background:#b5121b"></div><div class="lg-t">No partition-function sampling: one pass, deterministic decode, calibrated confidence</div></div>
+    </div>
+  </div>
+
+  <div class="mech">
+    <div class="m-title">Mechanism: where each design choice pays off</div>
+    <div class="m-row">
+      <div class="m-cell"><div class="h">Freeze the backbone</div><div class="b">Fine-tuning 650M params on ~14k structures overfits family quirks; a frozen LM keeps the 36M-sequence representation, so the head learns "decide", not "memorise". Same corpus, decontaminated: 6/8 references cleared with 70&times; fewer trained params.</div></div>
+      <div class="m-cell"><div class="h">Flat 2D head, not a deep stack</div><div class="b">Pair scoring is a local-on-pairs problem once embeddings are good. A shallow 2D residual head trains to convergence without overfitting short benchmarks and decodes in 2.9 ms — the 124.78 seq/s result is architectural, not merely engineering.</div></div>
+      <div class="m-cell"><div class="h">Priors at decode, not in the loss</div><div class="b">Turner energies and the non-crossing constraint act on the probability map, so OOD splits inherit physics even when training families are absent (+0.37/+0.25). The ensemble then only has to average two family heads — precision + recall — to take 7/8.</div></div>
+    </div>
+  </div>
+  <div class="foot">All numbers measured on the frozen 8-split board (ledger &sect;15.70/15.79/15.80/15.83); OOD deltas from the prior-stack ablation family. No simulated values.</div>
+</div>
+</body>
+</html>

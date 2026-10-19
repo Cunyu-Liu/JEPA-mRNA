@@ -9335,3 +9335,10 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - 修复：git ls-files -z（NUL 分隔、不转义）+ subprocess 参数组精确传参 + -- 分隔符。
 - 终态验证：junk=0 / status 干净 / 追踪文件 513 / 磁盘 66%。
 - 仓库卫生链：5c888a0（67 pycache）→ 5d490af（232 pycache）→ 4e8d970（ignore 规则）→ d8cdca7（427 AppleDouble）→ 3c7cc97（100 AppleDouble，NUL 路径修复）。
+### 15.90 PPT 评审反馈第二轮修复（T-A93，2026-10-19 晚）
+
+- **用户 8 条反馈全闭环**：①P20 xens2 行刷新（TS2 0.8604/TSB 0.8448†，页脚 10-19）；②P21 副标题硬设 SOTA 口径 + 图换 fig2 v2（根因：旧 replace 未命中『48.6× 无损加速』链断）；③P22 精简 5 行核心消融（plana 基座/r2d 头消融/−Turner/桶内 2-seed/xens2 协议行）；④主图 1 拆两张：fig1a 单模 5/8 + fig1b 集成 7/8（胜场粗体值+红色参照刻线+符号差值箭头+dumbbell 排名）；⑤fig2 冲击力版（横向排名柱 hero 红 + 工程阶梯 + 2.2×/8.6× callout）；⑥ECE 重要性解释入 P32 页题+图注（『模型说 90% 把握时是否真 90% 正确，校准好=置信度可按面值用于筛选/复核』）；⑦fig5 左板标注重排+引线+联合前沿虚线；⑧fig6 HTML 重画（fig6_architecture.html，色块管线+先验栈+机制三栏+图例），Chrome headless 渲染 1324×940 PNG。
+- **P28-33 主图页全部更新 + 新增 S34**（fig6 页，34 页终态）；6 个用户批注框（负坐标）全部删除。
+- **审计**：34 页全检 PASS（几何边界 0 越界、字体微软雅黑/Times、重叠 0、新增页 1.5 行距、8 图页图片在位、关键数据字符串直读核对 s20 xens2 行/s22 五行消融）。
+- **交付三地同步**：本地 交接文档/figs/main（fig1a/1b/2/5/6 png+pdf+html+两脚本）+ PPT 双副本 md5 一致；集群 /root/rna_jev/figs/main（12 文件）+ tools/ 两脚本；GitHub 本轮提交。
+- **机制分析（fig6 评论区，入稿素材）**：①冻结 650M 骨干保留 36M 序列知识、杜绝微调泄漏；②物理+DP 先验在解码级注入，OOD 由先验承载（+0.37/+0.25）；③免配分函数单前向+确定性解码 = 124.78 seq/s 与校准置信度。
