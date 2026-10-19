@@ -9304,3 +9304,18 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 ### 15.86 GPU 资源状态告知（用户规则 6）
 
 按用户规则"如果不需要使用 gpu 集群训练任务，请及时告诉我"：**当前无在训/待训 GPU 任务**——TS2 集成轴双向穷尽（§15.76/§15.83）、速度线收官（B=256 见顶）、置信度全板完成、337 tests 全过。集群 GPU 空闲可释放（除非用户决定启动 T-A84 消融重训）。后续工作（投稿模板转换、本地同步）均为 CPU/文档任务。
+
+### 15.87 论文图优先版 v3.27 + 汇报 PPT 33 页终态（2026-10-19）
+
+- **用户方向**：论文表格太多图太少 → 六主图体系（每主图配证明小图）：主 benchmark / 速度 benchmark / 置信度 / ECE / 精度×速度 / Jev 架构。
+- **六主图实现**（`tools/make_main_figs.py`，plot-is-all-you-need 图库风格：model-results-panel 面板结构 + pred-vs-obs GOLD/NAVY/RED 配色，Times New Roman，300dpi PNG+PDF，全部真实数据零模拟）：
+  - Fig1 主板：8 板 F1 柱 + 逐 split 差值条（7/8 正）
+  - Fig2 速度：吞吐阶梯（B=1→256，21.45→124.78）+ 前向/解码延迟分解（47.3→2.9 ms）
+  - Fig3 置信度：reliability 曲线（ECE 0.160→0.031）+ 置信度-F1 气泡（Spearman 0.709）
+  - Fig4 ECE：8-split raw vs recal + 大样本族 4/4 迁移放大
+  - Fig5 精度×速度：全系统 log 散点（同节点○/跨硬件△）+ 联合排名
+  - Fig6 架构：Jev 范式流程图 + 先验栈 OOD 消融（DP +0.25/物理 +0.37/2D 头 +0.16）
+- **预印本 v3.27**：六图嵌入正文证据章节（Method/4.3h/4.3i/Conclusion），Appendix D 重写为六图双面板图注；checker 12/12。投稿 PDF 26 页，6 图程序化确认（p5/15/16×2/17/20），8/8 内容检查。GitHub 6a22a20 + 3e59dc8。
+- **PPT 33 页终态**：新增 28-33 六主图页（图 2.547 纵横比精确居中）；表格数据刷新（第 14 页 TS2 0.8604/−0.044；第 21 页速度表 v4 124.78 收官）；页脚 commit 统一 3e59dc8；全审计 PASS（重叠 NONE、微软雅黑、1.5 行距、页码连续）。用户手调页零改动。
+- **plot-is-all-you-need v1.2 安装**：gitee zip 传输截断 → PK 头手工恢复 + 关键文件补拉；图库（含卡片样例）、四阶段细则、维护脚本全就位，已用于本批主图生成。
+- **交付三地一致**：本地（PPT+PDF+figs/main+spec_sync+ledger）、集群 /root/rna_jev、GitHub HEAD 3e59dc8。
