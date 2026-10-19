@@ -9319,3 +9319,11 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **PPT 33 页终态**：新增 28-33 六主图页（图 2.547 纵横比精确居中）；表格数据刷新（第 14 页 TS2 0.8604/−0.044；第 21 页速度表 v4 124.78 收官）；页脚 commit 统一 3e59dc8；全审计 PASS（重叠 NONE、微软雅黑、1.5 行距、页码连续）。用户手调页零改动。
 - **plot-is-all-you-need v1.2 安装**：gitee zip 传输截断 → PK 头手工恢复 + 关键文件补拉；图库（含卡片样例）、四阶段细则、维护脚本全就位，已用于本批主图生成。
 - **交付三地一致**：本地（PPT+PDF+figs/main+spec_sync+ledger）、集群 /root/rna_jev、GitHub HEAD 3e59dc8。
+
+### 15.88 benchmark 涉及模型论文下载（T-A91，2026-10-19）
+
+- **用户指令 ⑦**：所有 benchmark 涉及模型的论文下载到本地 `…/RNA-JEV/论文`。
+- **下载管道三级**：① PMC 通道——curl/python 全被反爬墙拦（403/HTML 挑战页），改用 TRAE 浏览器（真实 Chrome）：文章页→Download PDF 按钮→PDF viewer 页内 fetch(credentials include)→base64→evaluate 日志→本地解码，**全部通过**（含 2025 年新版 CDN 路径）；② arXiv/bioRxiv 直链 curl；③ OUP/订阅墙（RNA-FM/SPOT-RNA2/RNADiffFold GOLD OA 亦被 OUP 重定向环拦）→ 留 .pointer.txt（DOI+作者版链接），不静默缺失。
+- **成果**：21 篇有效 PDF（页数+首页标题程序化验证）：SPOT-RNA/MXfold2/RiNALMo/BPfold/ERNIE-RNA/mRNABERT/RNA-MSM/trRosettaRNA/RiNALMo-ribo/UFold（PMC 通道）；RNAformer/RIBOSPAN/Kirigami/E2Efold/RFold/CDPfold（arXiv/bioRxiv）；HydraRNA/ContextFold/ViennaRNA2（出版商 OA）；加用户既有 NucleicBERT/rinalmo 表等。13 篇指针文件。README_下载清单.md 记录全集。
+- **核查**：每篇 pypdf 页数+标题抽取验证（0 失败）；survey 19 模型全覆盖（PDF 或指针）。
+- 另：/root 磁盘 96%→66%（weights_20261013/runs 61G 经 164/164 文件数校验迁 /teams 后删除；§15.84 纪律延续）。
