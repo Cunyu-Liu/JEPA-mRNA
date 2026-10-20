@@ -9377,3 +9377,8 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **守护启动**：/root/nb_ft_launch2.sh nohup 后台运行——轮询 GPU0 ≥16000MiB 空闲即自动开跑（当前外部任务占 17.4GB/97%），训练完自动跑 8 split eval，产物落 /teams/.../nb_ft/baselines_nucleicbertft_*.json。日志 /root/nb_ft.log。
 - **GPU 告知**（用户规则）：GPU0 被外部 CodonFlow 类任务占满（17.4GB/24GB，98% util），无我方任务可跑；fine-tune 已排队等卡，显存一释放自动执行，无需人工干预。
 - 跑完后的自动落点：P19 表格 fine-tuned 行（现为论文引用 0.649*+待补测）将换成我们 tr1c 同语料实测值——与论文口径差异（训练语料不同）会在表格 protocol 列注明。
+### 15.95 S19 探针行对照证据 + fine-tune 守护巡检（T-A98，2026-10-20 深夜）
+
+- **用户"探针重测"疑虑的证据回应**：论文自身三口径对照（NMI 2026 Table 1）——fine-tuned 404M 宏 0.649 / linear-probe（冻结）0.342（P 0.622/R 0.283，召回塌缩）/ random-init 0.204。我们探针行（frozen+官方头+tr1c）TS0 0.1509 与论文 frozen 口径同方向同量级（冻结态 SSP 弱是模型已知性质，非测量错误）；数值低于 0.342 的差异 = 论文 probe 头用其训练集（可能含测试家族）vs 我们 tr1c 去污染语料。该对照已写入 S19 注脚（347 字，框高调 1.02in 无溢出）。**结论：无需重测**——fine-tuned 补测（等 GPU 中）将给出同语料可直接对比的行。
+- **fine-tune 守护巡检**：GPU0 仍被外部任务占满（free 3.8GB），守护进程健康（waiting 状态，轮询 120s 间隔）。集群 SSH 间歇限流（今晚多次 Connection closed，退避重试均恢复）。
+- PPT 双副本同步完成（S19 注脚含对照证据版）。
