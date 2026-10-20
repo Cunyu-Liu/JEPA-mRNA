@@ -1,12 +1,23 @@
 # DP-Free Calibrated Base-Pair Probabilities for RNA Secondary Structure
 
-**Preliminary preprint draft — v3.28, 2026-10-19.**
+**Preliminary preprint draft — v3.29, 2026-10-20.**
 
 > **Read this banner before quoting anything.** Every number in §4 is a *measured*
 > value produced by this repository on the A100 cluster, with the exact command and
 > artifact path listed in Appendix A. Nothing here is a placeholder, and nothing here
 > is extrapolated.
 >
+**v3.29 change note (eFold-style introduction).** The introduction is
+rewritten as problem -> method -> performance: the field's structural-data
+scarcity and family bias, the two incumbent families' characteristic failures
+(physics: calibrated but family-blind and O(L^3); deep: accurate but
+leakage-exposed and never calibration-verified), the Jev assembly (frozen
+650M backbone / 9.3M flat head / prior stack at decode / decontaminated
+corpus), then the measured performance paragraph (7/8 clean board, 124.78
+seq/s, ECE 0.031/0.0007, Spearman 0.709) with the leak-free protocol as a
+first-class contribution. All numbers unchanged from v3.28; only narrative
+order and framing.
+
 **v3.28 change note (review round 2: figures split and mechanism text).**
 Figure 1 is split into two self-contained figures — 1a the single-model board
 (5/8 above the strongest measured reference) and 1b the xens2 ensemble board
@@ -412,27 +423,80 @@ frozen, decontaminated, and audited as carefully as its architecture.
 
 ## 1. Introduction
 
-A probability is only useful if it means what it says. In RNA secondary structure
-prediction the probabilities that come with a guarantee are the McCaskill-style
-base-pair probabilities, and they cost an `O(L^3)` partition function. The
-alternatives that are cheap — contact-map style networks that emit a sigmoid matrix
-in one forward pass — are evaluated almost exclusively on structure accuracy (F1,
-INF), and to our knowledge no published work reports expected calibration error,
-reliability diagrams, Brier score or NLL for their pair probabilities.
+RNA function lives in its structure. Secondary structure conceals or exposes
+regulatory binding sites for proteins and microRNAs, determines mRNA stability
+and translation efficiency, and governs how non-coding transcripts fold into
+their active conformations. Determining those structures experimentally —
+crystallography, NMR, cryo-EM, or high-throughput chemical probing — remains
+slow and expensive for exactly the RNA classes that matter most for
+regulation: eukaryotic mRNAs and long non-coding RNAs are chronically
+under-represented in structural databases, which biases every model trained
+on them. Prediction from sequence is therefore not a convenience but the
+default route for most RNA molecules, and its failure modes are the field's
+problem.
 
-That leaves two questions unanswered at the same time. *Can a cheap probability be
-trusted?* and *if it can, what does it cost in accuracy?* This draft answers the first
-with a measurement and the second with a stratification: the cost is not a single
-number, and reporting only the pooled one misstates the method in both directions. A
-third question emerged from the measurements themselves and structures the results
-section: *what does each scaling axis buy?* Head capacity and training data turn out
-to buy different things on different splits, and quantifying that separation is more
-useful than any single headline number.
+The incumbent solutions split into two families, and each fails in a
+characteristic way. Physics-based dynamic programming (ViennaRNA-style
+minimum free energy and its relatives) is exact, deterministic and supplies
+calibrated base-pair probabilities through the McCaskill partition function —
+but its nearest-neighbour parameters encode generic thermodynamics with no
+sequence-family knowledge, and it costs an O(L^3) partition function for the
+probabilities. Deep-learning predictors (UFold, RNAformer, MXfold2 and
+successors) learn family-specific patterns directly from bpRNA- and
+RNAStrAlign-derived corpora and surpass the physics baselines in F1 on
+in-family test sets — but two of their properties are uncontrolled. First,
+their training corpora have repeatedly leaked into the very test sets used
+to rank them: we measured a 79% training overlap behind the strongest quoted
+RNAformer checkpoint on one split family, and 57% (247/428) on TestSetB for
+every TR0-trained reference system — the second number being the same class
+of contamination that led the RNAformer authors themselves to remove 28% of
+similar sequences from their training set. Second, they emit pair matrices
+whose scores carry ranking information but no verified face value: to our
+knowledge no published deep predictor reports expected calibration error or
+a reliability diagram for its probabilities, so a downstream consumer cannot
+know what a "0.9" is worth.
 
-The framework is deliberately borrowed rather than invented. We train a log-linear
-model over the non-crossing structure space with an exact partition function during
-training, and we then ask how much of that partition-function-calibrated behaviour
-survives when the partition function is removed from inference.
+Here we ask a narrower question and answer it with a system: *how much of the
+deep models' accuracy — and of the physics models' calibration — survives
+when a small decision head, trained on a decontaminated corpus, does the
+pair scoring on a frozen 650M RNA language model, and the structural
+knowledge enters as priors at decode time rather than as learned
+regularities?* The method, Jev, is deliberately assembled from existing
+pieces. A frozen RiNALMo-giga backbone supplies sequence priors learned from
+36 million ncRNAs — breadth no 14k-label run can train (a from-scratch 35M
+encoder on the same corpus peaks at 0.547 and degrades with training). A
+9.3M-parameter flat 2D head converts those embeddings into an L×L pair score
+matrix in one forward pass — no autoregression, no partition function. A
+stack of exact priors is then applied at decode: Turner nearest-neighbour
+energies enter the logits, and a C-vectorised non-crossing dynamic program
+returns the globally optimal structure in 2.9 ms per sequence when batched.
+The training corpus, bprna_tr1c, is the bpRNA pool minus every sequence
+overlapping any of nine evaluation splits, verified by a sha256-frozen
+manifest; the ensemble averages two family-opposed heads (a precision type
+and a recall type) at a pre-registered weight.
+
+The performance claims are measured, each with its protocol stated. On the
+eight-benchmark board scored against leak-audited references, the method
+clears 7/8 with the cross-family ensemble (6/8 with a single model on 5 of
+them) under the convention where every reference row is itself
+zero-overlap-audited; the one loss (TS2, −0.044 against a zero-overlap
+RNAformer checkpoint) survived seven elimination fronts and is reported as a
+modelling gap. Throughput reaches 124.78 sequences per second end-to-end on
+one consumer GPU (batched decode included, F1 bit-identical) — 8.6x the same
+node's 650M fine-tuned reference and 2.2x the fastest published GPU system
+measured under a protocol-matched convention. The same probabilities that
+produce these accuracies are calibrated: pair-level ECE 0.0007 and, at
+structure level, ECE 0.031 after a two-parameter held-out recalibration,
+with the structure-level confidence ranking per-sequence quality at
+Spearman 0.709. Two of our own earlier headline numbers were retracted by
+our own leakage audit before any external review — the evaluation protocol
+(frozen splits, re-measured references, retraction record) is presented as a
+first-class contribution alongside the model.
+
+The old framing that opened earlier drafts still closes this one, because it
+is the question a calibrated number finally lets us ask: *a probability is
+only useful if it means what it says* — and we show a cheap one that,
+measured, does.
 
 ## 2. Related work
 

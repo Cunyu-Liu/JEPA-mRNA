@@ -9352,3 +9352,14 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **口径审计发现并修复**：稿内 6/8（最强参照口径）与图内 7/8（inter-fam 零重叠口径）冲突 → §4.3h 新增 "Two reference conventions, both printed" 段：6/8 主表保持 headline（claim 更少），7/8 为图口径（TS3 +0.072/hard +0.102 翻案 + TSB clean-181 +0.027），两口径并列打印；TS2 两口径皆负（−0.044，零重叠参照）不受影响。机制段 7/8 表述同步改 6/8。
 - **PDF 重建**：pandoc→Chrome headless 管道，26 页 7 图（p5 架构/p15 fig1a+1b/p17 fig2+3+4/p21 fig5）+ 8 项关键内容程序化检查全过。
 - **交付**：本地 交接文档/paper/{preprint_draft.md, preprint_draft_v3.28.html, preprint_draft_v3.28.pdf}；集群与 GitHub 本轮同步。
+### 15.92 PPT 评审第三轮 + v3.29 eFold 式行文（T-A95，2026-10-20）
+
+- **用户四条反馈闭环**：
+  1. **P19（基线全景）**：NucleicBERT 拆两行——探针行重标注「frozen+官方头，我们的对照臂」（协议与论文 fine-tuned 不可比，0.15 数值无误，是骨干选型对照证据）；新增 fine-tuned 行（论文 Table 1 TS0 宏 0.649 引用值，标待补测——**补测阻塞：旧集群 /mnt/cunyuliu 挂载在新集群为空（pretrained.pt 0 字节），HF 无此模型，权重需从官方渠道重取，已向用户报告**）。RNAformer (inter-fam) 口径结论写入注脚：它是 RNAformer 论文官方发布 ckpt（Table 4 协方差过滤防同源设置），非我们后训练，双集群审计对 8 split 训练集零重叠，符合比较资格。**新增 S20「无泄漏主 benchmark 判定表」**（用户核心诉求）：逐格零重叠参照+重叠依据列，TS3/hard 用 inter-fam（bprna 0.9410/0.7845 有 79%/71% 重叠，剔除判定只列参考），TSB 用 clean-181，判定 7/8、唯一真负 TS2 −0.044；
+  2. **主图 4 v2**：图内中文自解释（raw=模型原始置信度/recalibrated=VL0 重标定后；青柱=变好、红柱=小样本族过矫；分族注释带+箭头改善倍数）——直接回答用户「红线是什么/raw 和 recalibrated 是什么」；
+  3. **主图 5 v3**：与主图 4 视觉彻底区分——帕累托前沿+被支配红区+8.6×/2.2× callout+综合分排名条（2.7×/9.1× 大字）；页注明「图 4 问可信吗（校准），本图问又准又快吗」；
+  4. **主图 6 拆三张**（S32-34）：6a 冻结骨干（×2000 数据差/泄漏面归零/速度红利三证据卡）、6b 平面 2D 决策头（容量消融/家族互补/9.3M=速度根源）、6c 先验栈解码级注入（turnerzero 崩塌/OOD 消融签名/为什么解码级非损失级）——各图含机制问答三栏。
+- **预印本 v3.29**：Introduction 按 eFold（Sci Adv adz4967）叙事链重写——问题（结构数据稀缺+家族偏差）→ 两家族各自失败模式（物理=校准但家族盲+O(L³)；深度=准但泄漏暴露+从不校准）→ Jev 方法组装（冻结骨干/平面头/解码级先验/去污染语料）→ 性能段（7/8 干净板、124.78 seq/s、ECE 0.031/0.0007、Spearman 0.709，数字全部沿用 v3.28 实测值，零新增）→ 旧校准框架收尾。26 页 PDF 重建，8 项内容检查过。
+- **存储纪律执行**（用户重申）：仓库迁移 /root/rna_jev → **/home/rna_jev**（git f4466be 完好，旧目录改名保留待验删）；大型数据/权重维持 /teams/HoulabData_1788502323/liucunyu/rna_jev_data（embeddings/weights/ss_data 等 85G 已在位）。
+- **审计**：34 页 PPT 全检（页码 2-34 连续、几何 0 越界、批注框 0 残留、S20 表格 9 行数据直读、6a/6b/6c 标题图注在位、fig4/5 新图嵌入）。
+- 遗留：NucleicBERT fine-tune 补测待权重（用户侧确认渠道后 GPU 即测）；探针行重测不需要——0.15 与论文 0.649 的差异是协议差异（frozen vs fine-tuned），已通过双行呈现讲清。
