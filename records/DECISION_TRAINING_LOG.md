@@ -9369,3 +9369,11 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **主图 4 重标定方法说明**（S29 图注 196 字）：SC→logit 空间两参数仿射 sigmoid(a·logit+b)，参数仅在 VL0 验证集网格搜索（a∈[0.05,10]×b∈[-6,1] 按 ECE 最优），测试 split 从不重拟合（严格 held-out，§15.63 协议）。
 - **NucleicBERT fine-tune 管线部署**（`tools/eval_nucleicbert_ft.py`，353→脚本就绪）：404M 编码器全解冻+官方 SSP 头、分层 lr（enc 1e-5/head 1e-4）、bprna_tr1c 去污染语料、BCE+pos_weight=100、VL0 阈值、8-split 板评测、ckpt 出 /teams。**阻塞在权重**：用户给的 orico 外置盘路径被 macOS TCC 拦（Operation not permitted，Finder 亦超时），已给用户两个解锁方案（拷 /tmp 或授权完全磁盘访问）。权重到位即开跑（GPU0 有 7GB 余量不够 404M 微调，等卡或用 MIG 缝隙，见 GPU 监控）。
 - 本地图集/脚本/PPT 双副本同步；集群 figs/main + tools 已推送。
+### 15.94 NucleicBERT fine-tune 补测管线全链路就绪并启动（T-A97，2026-10-20 晚）
+
+- **权重恢复**：用户从 orico 外置盘拷出 pretrained.pt（1.6GB，TCC 拦截由用户手动 cp /tmp 解决）→ 传集群 /teams/.../nb_ft/pretrained.pt，md5 两侧一致（170a248d…），torch.load 验证 389 个 state_dict 键（encoder.embedding.* 结构正确）。
+- **代码恢复**：发现旧 /mnt/cunyuliu 挂载全部为 0 字节空壳（bert.py 372 行官方内容全丢，仅目录结构在）→ 从官方 GitHub KIT-MBS/NucleicBERT v1.0.0 tag 重下（Apache-2.0），部署 /root/rna_jepa_data/hf_home/nucleicbert-code；lucaone env 补装 pytorch-lightning；import+tokenizer 双验证通过。
+- **fine-tune 脚本**：tools/eval_nucleicbert_ft.py（404M 编码器全解冻+官方 SecStruct2DPredictionHead、分层 lr enc 1e-5/head 1e-4、cosine、BCE+pos_weight=100、bprna_tr1c 去污染语料、VL0 阈值、8-split 板评测同打分器）。
+- **守护启动**：/root/nb_ft_launch2.sh nohup 后台运行——轮询 GPU0 ≥16000MiB 空闲即自动开跑（当前外部任务占 17.4GB/97%），训练完自动跑 8 split eval，产物落 /teams/.../nb_ft/baselines_nucleicbertft_*.json。日志 /root/nb_ft.log。
+- **GPU 告知**（用户规则）：GPU0 被外部 CodonFlow 类任务占满（17.4GB/24GB，98% util），无我方任务可跑；fine-tune 已排队等卡，显存一释放自动执行，无需人工干预。
+- 跑完后的自动落点：P19 表格 fine-tuned 行（现为论文引用 0.649*+待补测）将换成我们 tr1c 同语料实测值——与论文口径差异（训练语料不同）会在表格 protocol 列注明。
