@@ -25,7 +25,7 @@ RESTARTS=$(cat $STATE.restarts 2>/dev/null || echo 0)
 if [ "$S" -lt "$STEPS" ] && [ "$RUNNING" = "0" ] && [ "$RESTARTS" -lt 40 ]; then
   echo "[$(date '+%F %T')] WARN: arm died at step $S, relaunching (restart #$((RESTARTS+1)))" >> $LOG
   echo $((RESTARTS+1)) > $STATE.restarts
-  bash /root/rna_jev/scripts/launch_r2dtr1c_s1_4090.sh >> $LOG 2>&1
+  bash /home/rna_jev/scripts/launch_r2dtr1c_s1_4090.sh >> $LOG 2>&1
 fi
 # saturation audit: warn if card mostly empty with nothing running
 if [ "$RUNNING" = "0" ] && [ "${GPU_MEM:-99999}" -lt 2000 ]; then
