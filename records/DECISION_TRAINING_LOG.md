@@ -9438,3 +9438,12 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **三条守护 live（等 GPU0 释放，当前外部任务 19.5GB/97%）**：① NB fine-tune 基线（nb_ft_launch3，≥16GB/自适应）；② **T-A99 Jev 头 on NB**（nb_jev_launch.sh：NB 嵌入提取 10 split→train_decision r2d 配方单变量换骨干→8-split 终评；teacher 路径已修到 /teams/.../ss_data/teacher/bprna_tr1c）；③ ncRNA 双头（ncrna_dual_watch，≥6GB）。
 - **格式破解过程留痕**（三遍检查纪律的实例）：stride-4 扫描全失→byte-level 锚点→R 序列化手册对照→大端+packed int 确认（0x402=LISTSXP 带 tag、0x40009=CHARSXP UTF-8、0x10319=S4）；y_* 为 STRSXP 非 factor；IRanges start/width 定位；最终放弃池重建（多 SharedRaw 非单调）转本地 R 兜底——**集群侧付出的格式知识已写入 tools/rdx_*.py 系列草稿（/tmp，未入库，仅本轮台账记录）**。
 - 巡检定时任务（本地 30min）覆盖三条守护 + GPU + CHANRG 状态，写 monitor_log.md。
+
+
+### 15.96c 第二十五轮续（2026-10-21 深夜）：守护自杀陷阱修复 + T-A99 eval 协议 dry-run 修正
+
+- **两处工程错误被抓并修复（三遍检查纪律 + §14.79 教训重演）**：
+  1. **pgrep -f 自匹配假阳性**：巡检用 `pgrep -c -f nb_jev_launch` 报 1，实为查询命令自身含匹配串（bash -c 整串被 pgrep 匹配）——T-A99 与 ncrna_dual 两条守护在上一轮 restart 时已被 `pkill -f`（同样自匹配把承载 restart 的 bash -c 一起杀掉，后续 nohup 从未执行）杀死，而巡检数字掩盖了死亡。修复：全部存活检查改 bracket 模式 `nb_jev_lau[n]ch`（不自匹配）；relaunch 脚本 /tmp/relaunch_watchers.sh 幂等（先查再启）。三条守护现已真实存活（22:16 ta99 日志新行确认）。
+  2. **T-A99 stage-3 eval 旗标错误（§15.48 强制规则的实例）**：dry-run 对照 evaluate_decision.py 与 watch7 协议发现 v2 启动器给 eval 传了不存在的 `--embedding-dir/--embedding-d-model`（嵌入目录实际从 checkpoint config 读）；且缺 watch7 协议的 `--prior-weight -1 --calib-data VL0 --head-chunk 8 --tag`。v3 已修：eval 不传嵌入旗标、对齐 watch7 全套、archiveii_embok_clean 用 `--embedding-split archiveii`（k7 同坑预防）、stage-1 补提取全量 archiveii shard + VL0（校准用）。训练段补 `--log-every 25 --save-every 500 --gpu-reserve-gb 18` 与 s1_4090 启动器对齐；arm 名改 nb_jev_r2dtr1c_s0（快照命名规范）。
+- 教训入库：① `pgrep/pkill -f <模式>` 的模式必须 bracket 化或验证不自匹配（§14.79 原教训的第二次实证，且这次直接杀死了两个守护）；② 多阶段启动器的 eval 段旗标必须在上线前对照**已跑通协议**（watch7/eval_after_train.sh）逐旗标 diff，不能凭记忆写（§15.48 同型）。
+- 守护状态（22:16，bracket 核验）：nb_ft_launch3 ×2、nb_jev_launch ×1、ncrna_dual_watch ×1，全部等 GPU（外部任务 19.5GB/100%，free 4.5GB）。
