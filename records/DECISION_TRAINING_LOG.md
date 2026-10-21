@@ -9430,3 +9430,11 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 | T-A101 | ncRNA 分类双头对照（官方头 vs Jev 头） | accuracy/F1 双行 + RDx→jsonl 全程留痕 | 🟡 等 rbase + GPU |
 | T-A102 | CHANRG 板补测（gated 解锁后） | GenA/GenC/GenF/Test 四行 OOD 表 | ⏸️ 等用户申请访问权 |
 | T-A103 | nature 重写合并入稿 v3.30 | checker 全 PASS + 数字对账脚本过 | 🟡 等导师/用户过目 |
+
+
+### 15.96b 第二十五轮补记（2026-10-21 晚）：RDx 破解落地 + 三条 GPU 守护在飞
+
+- **ncRNA 数据落地（T-A101 前置）**：Rfam-novel RDx（ncrna-deep 官方）在集群无法用 R 解（conda-forge/bioconda 全被墙、pyreadr 不认 S4 DNAStringSet）。**格式逆向成功**：'RDX2\nX\n'+BE int 序列化，item = 单 BE int（type=低字节，flags=高位）；symbol 锚点（x_train@35 等 6 处）byte-level 定位验证。最终走本地 mac R 4.5.1+Biostrings 解出：**train 312,587 / val 29,560 / test 29,472，177 家族，纯 ACGT，均长 109.5nt**；CSV→jsonl→scp 集群，train md5 双端一致（1f9bb74ba0b30712befde5310928f46f）。落 /root/rna_jepa_data/ss_data/jsonl/ncrna_rfamnovel_*.jsonl。
+- **三条守护 live（等 GPU0 释放，当前外部任务 19.5GB/97%）**：① NB fine-tune 基线（nb_ft_launch3，≥16GB/自适应）；② **T-A99 Jev 头 on NB**（nb_jev_launch.sh：NB 嵌入提取 10 split→train_decision r2d 配方单变量换骨干→8-split 终评；teacher 路径已修到 /teams/.../ss_data/teacher/bprna_tr1c）；③ ncRNA 双头（ncrna_dual_watch，≥6GB）。
+- **格式破解过程留痕**（三遍检查纪律的实例）：stride-4 扫描全失→byte-level 锚点→R 序列化手册对照→大端+packed int 确认（0x402=LISTSXP 带 tag、0x40009=CHARSXP UTF-8、0x10319=S4）；y_* 为 STRSXP 非 factor；IRanges start/width 定位；最终放弃池重建（多 SharedRaw 非单调）转本地 R 兜底——**集群侧付出的格式知识已写入 tools/rdx_*.py 系列草稿（/tmp，未入库，仅本轮台账记录）**。
+- 巡检定时任务（本地 30min）覆盖三条守护 + GPU + CHANRG 状态，写 monitor_log.md。
