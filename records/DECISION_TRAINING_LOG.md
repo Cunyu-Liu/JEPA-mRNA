@@ -9382,3 +9382,51 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 - **用户"探针重测"疑虑的证据回应**：论文自身三口径对照（NMI 2026 Table 1）——fine-tuned 404M 宏 0.649 / linear-probe（冻结）0.342（P 0.622/R 0.283，召回塌缩）/ random-init 0.204。我们探针行（frozen+官方头+tr1c）TS0 0.1509 与论文 frozen 口径同方向同量级（冻结态 SSP 弱是模型已知性质，非测量错误）；数值低于 0.342 的差异 = 论文 probe 头用其训练集（可能含测试家族）vs 我们 tr1c 去污染语料。该对照已写入 S19 注脚（347 字，框高调 1.02in 无溢出）。**结论：无需重测**——fine-tuned 补测（等 GPU 中）将给出同语料可直接对比的行。
 - **fine-tune 守护巡检**：GPU0 仍被外部任务占满（free 3.8GB），守护进程健康（waiting 状态，轮询 120s 间隔）。集群 SSH 间歇限流（今晚多次 Connection closed，退避重试均恢复）。
 - PPT 双副本同步完成（S19 注脚含对照证据版）。
+
+
+### 15.96 第二十五轮交接（2026-10-21，五工作总执行轮：全量基线复审 + 下游补测规划 + NB 迁移线 + nature 写作 + OFoldNA/CHANRG 调研）
+
+**用户五项指示落实情况（本轮全部启动，三项已闭合）：**
+
+**一、工作 1：主 benchmark 全 baseline 复审（闭合，0 误差）**
+- **三遍复核**：① 97 个板格逐格从 result.json 重算（Vienna×32 / nussinov×8 / MXfold2×8 / EternaFold×8 / UFold×8 / RNAformer×11 / RiNALMo-ft×8 / eFold×8 / NucleicBERT-probe×8），全部与 sota_vs_ours.md 板值一致（tol 5e-4，实际最大差 0.0002）；② leak_full_audit.py 复跑：tr1c 对 9/9 split 零重叠维持，TR0∩TestSetB=247/428 与 TR1 撤回链（TS0 1087 / ArchII-clean 843 / PDB 38/28/18/21）逐项复现；③ eval_splits_frozen.json 9 split sha256 全 MATCH（archiveii 两 split 的 n_unique=2214/3451 与行数 2544/3966 差异为行内重复序列，sha 一致即冻结有效）。xens2 4090 板 8/8 与板值逐位一致（含 r2ds1 变体 0.8022 留档）。**结论：主板无可修正项、无新泄漏。**
+- 复现脚本入库：tools/verify_board_r25.py（97 格对账器）+ leak_full_audit_rerun_20261021.log。
+
+**二、工作 2：RiNALMo 原有下游任务补测（规划+数据落地，评测排队 GPU）**
+- 可行域扫描（RiNALMo-main 六个 datamodule）：ncRNA 分类（Rfam-novel 177 家族）、剪接位点（SpliceBERT data）、二级结构（已全覆盖）、mRNA TE/EL（Google Drive 被墙）、ribosome loading（同 TE 源）、expression level（同）。
+- **数据实取**：Rfam-novel RDx 下载完成（43MB，/tmp/rfam_novel.RDa，DONE 标记）；SpliceBERT data.tar.gz 实测 8.6GB（含全基因组 bed 区间，24GB 盘+限速网络下不可行，已停）；TE/EL 三 CSV 源被墙；**CHANRG（Rfam15 结构感知 OOD 基准）在 HF 为 gated（multimolecule/chanrg），需用户向官方申请访问权后补测**——这是 OFoldNA-SS 的 OOD 读数来源（见工作 5）。
+- **评测协议（预注册）**：ncRNA 分类 = frozen RiNALMo-giga backbone 上两种头对照——官方 RiNALMo 分类头（论文口径复现）vs 我们的 Jev 决策头（同 backbone、同数据、单变量=头架构）；报告 accuracy/F1/balanced-acc。R 环境（conda-forge r-base + Biostrings）后台安装中，用于解 RDx（x/y train-val-test 六对象）；解出后走 jsonl 化 + 嵌入提取 + 双头训练（等 GPU，与 NB fine-tune 同队列）。
+- **诚实边界**：本轮尚无任何下游补测数字可写结论；评测未跑完前不进任何表格。
+
+**三、工作 3：NucleicBERT 双线（基线 fine-tune 在飞 + 迁移实验预注册）**
+- **基线线（T-A97 延续）**：nb_ft_launch3.sh 守护 live（≥16GB 全批 / 10.5GB×10 次降批自适应），GPU0 当前 4.5GB 空闲、被 codonflow 外部任务占 19.5GB/97%——守护持续轮询中，显存一释放即自动开训（3 epochs + 8-split 终评全自动）。本地 30min 巡检定时任务已装（GPU/守护/进度三查）。
+- **迁移实验线（本轮预注册，T-A99）**：问题=「我们的架构放到 NucleicBERT 上能否在原有下游任务（SS 预测，NucleicBERT 论文口径）取得显著提升」。设计（单变量纪律）：
+  - 3 臂对照，全部 bprna_tr1c 语料、8-split 板、同一打分器：① NB 官方 frozen + 官方 SecStruct 头（已有探针行，TS0 0.1509）；② NB fine-tuned 官方配方（守护在跑，= 论文口径对照）；③ **NB frozen + 我们的 Jev 头（flat 2D resnet2d + Turner 先验 + 非交叉 DP 解码）**——复用 eval_nucleicbert.py 的嵌入通路（`enc(input_ids)` 出 33 层 embedding 列表，均值池化后喂我们的决策头），头配置与 r2dtr1c 逐参数一致，仅 backbone 换为 NB 404M。
+  - 判据：③ vs ①（同 frozen 单变量=头）给出架构增益；③ vs ② 给出 vs 全微调官方口径的定位；显著=板级 ≥3/8 split 提升 ≥0.02。
+  - 依赖：NB 嵌入提取脚本（新写 tools/extract_nb_embeddings.py，~半天）+ 等显存（与 ①② 同卡队列）。
+- 工程修复（本轮）：watchdog cron 两条从旧 /root/rna_jev 路径改指 /home/rna_jev（仓库迁移遗留，jev_watchdog*.sh 内部路径同步 sed，crontab 重写，launch 脚本路径核对）。
+
+**四、工作 4：nature-writing-studio 重写 Abstract + Introduction（闭合，v3.30 候选稿）**
+- 按用户「行文逻辑、递进性、连贯性、严谨性」要求，用 skill 知识库（95 规则 + 134 短语 + 136 AI 黑名单 + opener/gap/hedge 三 TSV）对两个读者路径章节做 pass：
+  - **Abstract**：重排为 8-beat Nature 结构（背景→概念→gap→Here-we→卫生发现→板发现→校准+消融→吞吐+总结）；保持全部 37 个数字逐字可溯（程序化对账 NONE missing）；**em-dash 9→0**（U+2014 零容忍）；
+  - **Introduction**：保留 v3.29 的 eFold 式四段弧（结构即功能→两家族各自失败模式→窄问题+系统→实测主张），按 4-beat Nature 架构加固（P1 主题句先行、P2 双未控性质对比、P3 gap 并入 Here-we 问句、P4 结果预告收在撤回记录贡献）；em-dash 12→0；
+  - 反 AI 黑名单扫描 0 命中；sentence rhythm 按 biology_bioinformatics 域（median 28 词）混合长短句；
+  - 产物：paper/nature_rewrite_r25.md（text + text_compact 双版本 + summary 元数据），已同步集群。**待用户/导师过目后合并入 preprint_draft.md 成 v3.30**——本轮不动冻结稿正文（数字零新增，纯行文重构，合并动作留给下一写作轮）。
+
+**五、工作 5：OFoldNA（arXiv 2609.37414）任务面调研（闭合，补测判定）**
+- 论文核心：全原子扩散模型 OFoldNA + SS 条件分支；其 SS 辅助头 OFoldNA-SS 在 CHANRG 上 OOD mean F1 0.3898 全场第一（BPfold 0.3608 / SPOT-RNA 0.3126 / EternaFold 0.3064 / RiNALMo-Giga 0.2140 但 ID Test 0.7579）——「FM 模型 ID 最强、OOD 塌缩」与其自身 TS2/TS3 家族差距叙事同构，**与我们 §4.4 OOD 衰减更小的主张直接对话**。
+- **可补项判定**：① **CHANRG OOD 板**（GenA/GenC/GenF + Test）是最值得补的（一个公开、结构感知去冗余、三 OOD 制度的外部板）——但 **HF gated**，需用户申请；数据到位后评测成本=嵌入提取（Rfam 15 序列，frozen RiNALMo 复用）+ 板打分，半天级；② FoldBench SS 侧（其 Table 3 的 50-200nt 长度控制口径）随 CHANRG 一并覆盖；③ OFoldNA 本体（全原子 3D）超出本课题范围，不入板。
+- 与我们叙事的连接点（写作素材）：CHANRG 的「FM 在结构感知 OOD 上塌缩」与我们「先验栈承载 OOD、神经 scorer 是 ID 专家」的消融签名互证——若补测落地，预期我们的 frozen+DP 范式在 GenA/GenC/GenF 上相对 RiNALMo-ft 的 OOD 衰减更小（这是可检验假设，非结论）。
+
+**运维与自愈**：watchdog cron 路径修复（上述）；本地 30min 巡检 cron 已装（GPU/守护/进度/CHANRG 四查 + 异常处置 + 台账续写）；conda rbase 环境后台安装（RDx 解析用）；集群 SSH 间歇限流（Connection closed 频发，退避重 20s 策略生效）。
+
+**三遍检查实录（本轮）**：① 基线对账器首版把 baselines_<split>.json 的多基线嵌套结构读错（NOF1 23 格）——直读 JSON 键结构修正后 97/97；② RiNALMo-ft 行首次 find_f1 深度遍历未命中 our_protocol 嵌套——固定字段路径后 8/8；③ 写作重写后程序化复检（em-dash 计数=0 但首查报 1——系 markdown 标题里的装饰 em-dash，非正文，已改冒号）；④ CHANRG 下载首跑 parquet 170 字节（gated 拒绝页）——识别后停止并改判定为「需申请」，避免把空文件当数据。
+
+**下一轮（第二十六轮）队列**：
+| # | 任务 | 完成判据 | 状态 |
+|---|---|---|---|
+| T-A99 | NB 嵌入提取 + Jev 头 on NB 404M 训练（3 臂对照之③） | 8-split 表 + vs ①② 对比行 | 🟡 等 GPU（队列第 2） |
+| T-A100 | NB fine-tune 基线（守护）落地 | 8 split micro_f1 全落 + P19 表格行替换 | 🔄 守护等卡（队列第 1） |
+| T-A101 | ncRNA 分类双头对照（官方头 vs Jev 头） | accuracy/F1 双行 + RDx→jsonl 全程留痕 | 🟡 等 rbase + GPU |
+| T-A102 | CHANRG 板补测（gated 解锁后） | GenA/GenC/GenF/Test 四行 OOD 表 | ⏸️ 等用户申请访问权 |
+| T-A103 | nature 重写合并入稿 v3.30 | checker 全 PASS + 数字对账脚本过 | 🟡 等导师/用户过目 |

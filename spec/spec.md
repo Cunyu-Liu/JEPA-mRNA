@@ -2,6 +2,16 @@
 
 > change-id: `build-rna-ss-decision-model`
 
+> **交接状态（2026-10-21，第二十五轮交接更新——五工作总执行轮，细节 §15.96）**：
+> - **集群**：`ssh -p 28055 root@px2-jcy.matpool.com`（1×RTX 4090 24GB）；代码 **/home/rna_jev**（GitHub HEAD 55ee511 + 本轮新增提交）；数据/权重 /root/rna_jepa_data 与 /teams/HoulabData_1788502323/liucunyu/rna_jev_data。GPU0 被外部 codonflow 任务占 19.5GB/97%，仅 4.5GB 空闲——我方任务全部排队守护，显存一释放自动起跑。
+> - **工作 1（闭合）**：主 benchmark 全 baseline 三遍复审——**97 板格逐格从 result.json 重算 0 误差**（Vienna/nussinov/MXfold2/EternaFold/UFold/RNAformer×3ckpt/RiNALMo-ft/eFold/NB-probe）；leak_full_audit 复跑（tr1c 9/9 零重叠、TR0∩TSB=247 复现）；9 split sha256 全 MATCH；xens2 4090 板 8/8 逐位一致。**无新泄漏、无可修正项。** 工具入库 tools/verify_board_r25.py。
+> - **工作 2（数据落地，评测排队）**：RiNALMo 下游补测域=ncRNA 分类（Rfam-novel 177 家族 RDx 已下载 /tmp/rfam_novel.RDa，R 环境 conda 安装中）；剪接数据实测 8.6GB 不可行已停；TE/EL 被墙；CHANRG 在 HF **gated**（需用户申请）。预注册协议：官方分类头 vs Jev 决策头双臂同 backbone 对照。
+> - **工作 3（双线）**：NB 基线 fine-tune 守护 live（≥16GB/10.5GB×10 自适应批，3ep+8split 全自动）；**迁移实验 T-A99 预注册**——NB frozen 404M + 我们的 Jev 头（resnet2d+Turner+非交叉 DP）三臂对照（①探针 0.1509 ②fine-tune ③Jev 头），判据=≥3/8 split ≥0.02。工程修复：watchdog cron 路径 /root→/home 已修。
+> - **工作 4（闭合）**：nature-writing-studio 重写 Abstract+Introduction（paper/nature_rewrite_r25.md，text+text_compact+summary）：8-beat/4-beat 结构化、37 数字程序化对账全溯源、em-dash 21→0、AI 黑名单 0 命中。**待导师过目后合并成 v3.30**（本轮不动冻结正文）。
+> - **工作 5（闭合）**：OFoldNA（2609.37414）调研——其 OFoldNA-SS 在 CHANRG OOD mean 0.3898 第一 vs RiNALMo-Giga 0.2140（ID 0.7579）；「FM ID 最强 OOD 塌缩」与我们「先验栈承载 OOD」消融签名互证。**补测判定：CHANRG 四 split（Test/GenA/GenC/GenF）最值得补但 gated 等用户申请**；FoldBench SS 口径随 CHANRG 覆盖；OFoldNA 本体 3D 不入范围。
+> - **值守**：本地 30min 巡检 cron（GPU/守护/进度/CHANRG 四查）；集群 */10 watchdog×2 已修复路径。
+> - **台账至 §15.96（9432 行）**；下一轮队列：T-A99 NB 迁移、T-A100 NB ft 落地、T-A101 ncRNA 双头、T-A102 CHANRG、T-A103 v3.30 合并。
+
 > **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：
 > - **集群迁移完成**：A100 集群关停（10-16 备份定格）后，新集群 `px2-jcy.matpool.com`（**1× RTX 4090 24GB**，12 核 64GB）已重建：
 >   - 环境：miniconda3 `lucaone`（Python 3.10.22 + torch 2.5.1+cu121 + multimolecule **0.0.8** + transformers 4.49.0 + gcc 9.4）；CUDA 计算验证 PASS；
