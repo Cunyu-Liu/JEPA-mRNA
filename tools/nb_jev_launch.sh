@@ -27,14 +27,21 @@ wait_gpu () {
 echo "[ta99] $(date) stage-1 wait (8GB)" >> $LOG
 wait_gpu 8000
 echo "[ta99] $(date) stage-1 embeddings start" >> $LOG
+FAIL=0
 cd $TOOLS
 for SPLIT in bprna_tr1c bprna_vl0 bprna_ts0 bprna_new ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard archiveii testsetb; do
   # NOTE: archiveii (full shard) covers archiveii_embok_clean (k7 lesson: the
   # clean subset needs the FULL archiveii shard name, not embok_clean).
   $PY extract_nb_embeddings.py --split $SPLIT --batch-size 8 >> $LOG 2>&1
-  echo "[ta99] $(date) emb $SPLIT rc=$?" >> $LOG
+  RC=$?
+  echo "[ta99] $(date) emb $SPLIT rc=$RC" >> $LOG
+  if [ $RC -ne 0 ]; then FAIL=$((FAIL+1)); fi
 done
 
+if [ "$FAIL" -ne 0 ]; then
+  echo "[ta99] $(date) stage-1 FAILED ($FAIL splits) - aborting before stage-2" >> $LOG
+  exit 1
+fi
 echo "[ta99] $(date) stage-2 wait (14GB)" >> $LOG
 wait_gpu 14000
 echo "[ta99] $(date) stage-2 train start" >> $LOG

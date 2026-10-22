@@ -23,7 +23,12 @@ import numpy as np
 import torch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from eval_nucleicbert import NB_CODE, NB_CKPT, get_tokenizer, encode_seq  # noqa: E402
+from eval_nucleicbert import NB_CODE, NB_TOKENIZER, get_tokenizer, encode_seq  # noqa: E402
+# NB_CKPT in eval_nucleicbert is a stale hard-coded path that does not exist
+# on this cluster (round-25d incident: stage-1 failed silently on all 10
+# splits while the launcher logged rc=0).  Resolve from env first, else the
+# known-good /teams copy verified in pre-flight (1.6GB, sha-checked dir).
+NB_CKPT = os.environ.get("NB_CKPT", "/teams/HoulabData_1788502323/liucunyu/rna_jev_data/nb_ft/pretrained.pt")
 from nucleicbert.models.bert import BERT  # noqa: E402
 
 JSONL_DIR = '/root/rna_jepa_data/ss_data/jsonl'

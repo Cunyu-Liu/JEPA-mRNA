@@ -67,7 +67,8 @@ def build_embeddings(device, batch_size=16):
                 batch = torch.zeros((len(ids), ml), dtype=torch.int64, device=device)
                 mask = torch.zeros((len(ids), ml), dtype=torch.bool, device=device)
                 for k, x in enumerate(ids):
-                    batch[k, :len(x)] = torch.tensor(x, device=device)
+                    x = x[0]  # rinalmo_preflight.encode returns (1, L+2); use the 1-D row
+                    batch[k, :len(x)] = torch.as_tensor(x, device=device)
                     mask[k, :len(x)] = True
                 out = enc(batch, repr_layers=[33], return_contacts=False)
                 h = out['hidden_states'][-1].float()  # [B, T, 1280]

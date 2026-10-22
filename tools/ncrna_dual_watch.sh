@@ -17,4 +17,5 @@ echo "[watch] $(date) free=${FREE}MiB -> launching ncrna dual-head eval" >> $LOG
 
 cd /home/rna_jev/tools
 $PY eval_ncrna_dual.py --device cuda --out /root/rna_jepa_data/eval_decision/ncrna_dual_result.json >> $LOG 2>&1
-echo "[watch] $(date) DONE rc=$?" >> $LOG
+RC=$?
+echo "[watch] $(date) DONE rc=$RC" >> $LOG
