@@ -9447,3 +9447,23 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
   2. **T-A99 stage-3 eval 旗标错误（§15.48 强制规则的实例）**：dry-run 对照 evaluate_decision.py 与 watch7 协议发现 v2 启动器给 eval 传了不存在的 `--embedding-dir/--embedding-d-model`（嵌入目录实际从 checkpoint config 读）；且缺 watch7 协议的 `--prior-weight -1 --calib-data VL0 --head-chunk 8 --tag`。v3 已修：eval 不传嵌入旗标、对齐 watch7 全套、archiveii_embok_clean 用 `--embedding-split archiveii`（k7 同坑预防）、stage-1 补提取全量 archiveii shard + VL0（校准用）。训练段补 `--log-every 25 --save-every 500 --gpu-reserve-gb 18` 与 s1_4090 启动器对齐；arm 名改 nb_jev_r2dtr1c_s0（快照命名规范）。
 - 教训入库：① `pgrep/pkill -f <模式>` 的模式必须 bracket 化或验证不自匹配（§14.79 原教训的第二次实证，且这次直接杀死了两个守护）；② 多阶段启动器的 eval 段旗标必须在上线前对照**已跑通协议**（watch7/eval_after_train.sh）逐旗标 diff，不能凭记忆写（§15.48 同型）。
 - 守护状态（22:16，bracket 核验）：nb_ft_launch3 ×2、nb_jev_launch ×1、ncrna_dual_watch ×1，全部等 GPU（外部任务 19.5GB/100%，free 4.5GB）。
+
+## 15.96d round-25d 静默失败事件与修复（2026-10-23 00:08-00:27）
+
+**事件**：隔夜（10-23 00:08）GPU 释放（free 24080 MiB），三条守护全部触发。结果：
+- T-A99 stage-1 嵌入提取 **10/10 split 全部失败**：extract_nb_embeddings.py import 的 NB_CKPT 指向 eval_nucleicbert.py 模块内硬编码路径 /root/rna_jepa_data/hf_home/models--nucleicbert/snapshots/main/pretrained.pt（本集群不存在；实际权重在 /teams/HoulabData_1788502323/liucunyu/rna_jev_data/nb_ft/pretrained.pt）。嵌入缓存目录为空。
+- ncrna dual 评测**立即崩溃**：eval_ncrna_dual.py 把 rinalmo_preflight.encode() 的返回 (1, L+2) 当一维用（len(x)=1、torch.tensor(x)=[1,L+2]），RuntimeError shape mismatch。结果 json 未产出。
+- T-A100 nb_ft **唯一健康**：起跑正常，正在训练（00:27 时 step 8100/10641，loss 0.1307，0.13s/step）。
+- 两个守护日志均记 rc=0 假成功：echo "...rc=$?" 里 $(date) 命令替换子 shell 先于 $? 求值，真实退出码被吞。
+
+**预飞行漏网复盘**：上一轮预飞行查了 nb_ft/dual 的 CLI 旗标与数据路径，但 (a) 没查 extract_nb_embeddings.py 的**模块内硬编码**路径（NB_CKPT 从 eval_nucleicbert import 时即绑定，nb_ft_launch3 的 export NB_CKPT 只对 eval_nucleicbert_ft.py 生效），(b) 没实际执行 build_embeddings 的第一批（形状 bug 只有真跑才暴露），(c) 没审 rc 记录语义。教训：预飞行必须覆盖「import 绑定 vs env 覆盖」与「真实执行路径」，不只 CLI 签名。
+
+**修复（commit 07fdeb3，4 文件）**：
+1. extract_nb_embeddings.py：NB_CKPT 改为 os.environ.get("NB_CKPT", "/teams/.../nb_ft/pretrained.pt")。
+2. nb_jev_launch.sh：rc 捕获改为 RC=$? 后再 echo；新增 FAIL 计数，stage-1 有失败则在 stage-2 前 exit 1（fail-fast，不再空等 14GB）。
+3. eval_ncrna_dual.py：x = x[0] 取一维 + torch.as_tensor（同 warning 修复）。
+4. ncrna_dual_watch.sh：DONE rc 捕获改为 RC=$?。
+
+**验证**：dry-run1 NB 权重加载（NB_CKPT 解析 /teams 路径、404M 参数 state_dict 装载 OK）；dry-run2 encode 形状（(1,12)->x[0]=(12,)->batch 赋值 OK）。两守护重启（ta99 pid 2432399 / dual pid 2432400，孤儿挂载正确），ta99 stage-1 重新等 8GB（当前 free 3586 MiB，GPU 被 nb_ft 训练占用属正常——同卡共存按设计轮询）。
+
+**遗留**：commit 07fdeb3 message 中 \$(date) 转义漏一层被展开（功能无影响，记录不洁，下笔修正）。GPU 重新被 nb_ft（我方）+ 少量外部进程占用，ta99/dual 继续轮询等卡。
