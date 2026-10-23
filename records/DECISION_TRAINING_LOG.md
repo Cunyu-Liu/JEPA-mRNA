@@ -9688,3 +9688,30 @@ per-seq forensics（xens2）：**GenF 零预测率 39.2%**（GenC 20.8% / Test 4
 **四、MRL 官方 ft 权重**（363MB）已下载待传集群——后续可做「Jev 头 frozen vs 官方 MRL 微调」的定位对照（quoted vs measured 口径分开）。
 
 **在飞**：chanrg 臂（嵌入提取重跑中，因 pkill 时机错误导致 cache 未完成——浪费一轮 ~25min，教训：杀 extract 前先确认 cache 落盘）；splice 续传。
+
+### 15.98c GenF SOTA 臂终局（2026-10-23 22:17 ALL DONE）
+
+预注册判据（GenF F1 ≥ 0.4035 = SOTA）**未达标**。四 split 读数（chanrg_r2d_s0，ViennaRNA teacher，20k 步收敛，fp16 EmbeddingStore 补丁后）：
+
+| split | P(micro) | R(micro) | F1(micro) | F1(macro) | zero-shot 板 | Δ |
+|---|---|---|---|---|---|---|
+| Test(ID) | 0.7015 | 0.5626 | 0.6244 | 0.6183 | 0.6437 | −0.019 |
+| GenA | 0.6217 | 0.4357 | 0.5123 | 0.4972 | 0.6443 | −0.132 |
+| GenC | 0.2684 | 0.1895 | 0.2221 | 0.2251 | 0.3557 | −0.134 |
+| GenF | 0.3029 | 0.2272 | 0.2596 | 0.2673 | 0.3112 | −0.052 |
+
+归因（四因素，诚实）：
+1. 监督信号错位（主因）：teacher = ViennaRNA MFE（物理最优）vs GT = Rfam consensus（功能保守协方差）。OFoldNA-SS 直接蒸馏 CHANRG GT。
+2. 配对密度先验跨域崩塌：训练臂 GenF mean_predicted 0.241 vs observed 0.012（过度开火 20x）；zero-shot 板相反（零开火 39.2%）——镜像失败。
+3. VL0 Platt 校准锚错域：calib = chanrg_train_validation（24% 密度），GenF 1.2% 密度。
+4. Test 亦降：bprna 与 Rfam 口径近（实验/协方差源），MFE 与两者均有距离。
+
+结论：r26「语料差距」诊断被证伪。单换语料不解决 GenF——瓶颈是监督口径非语料覆盖。下一步：chanrg_r2d_s0_gt（GT dbn 直接监督）+ 密度自适应校准。
+
+事故与修复：
+- OOM 死循环 ×12（rc=137）：EmbeddingStore fp32 58GB residency 顶死 64GB cgroup → fp16 补丁（train_decision.py L592-599）。修复后 RSS 51GB 稳定，20k 步 ~2h。
+- monitor_r26 退役（并发重启互覆 manifest），monitor_r27 专职看护（幂等 + resume 自愈，实测重启 9 次后第 10 次成功跑完）。
+- splice 下载文件名错误（Spliceator_dbs.zip 不存在；真实文件 data.tar.gz 8.6GB，zenodo API /content 端点）。
+- 教训：EmbeddingStore residency 按 fp16 估算；容器 cgroup 含 page cache；watchdog 重启前必须先停旧监控。
+
+落地：论文 §4.3k 增补 honest-negative 段（v3.30+）；PPT S39（fig_r27_4）；本地交接 ROUND27_NOTE 终版。

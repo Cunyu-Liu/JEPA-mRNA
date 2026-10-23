@@ -592,8 +592,11 @@ class EmbeddingStore:
                 h, offsets, seqs = data["h"], data["offsets"], data["seqs"]
                 d_model = int(h.shape[1]) if d_model is None else d_model
                 for k, seq in enumerate(seqs):
+                    # fp16 in RAM (halves residency: the 95k-seq chanrg split needs
+                    # 58GB as fp32 which OOMs the 64GB host); _stack_embeddings
+                    # upcasts to the training dtype at batch time.
                     mapping[str(seq)] = np.asarray(
-                        h[offsets[k]:offsets[k + 1]], dtype=np.float32)
+                        h[offsets[k]:offsets[k + 1]], dtype=np.float16)
         if not mapping:
             raise ConfigError(f"embedding shards under {directory} contained no "
                               f"sequences matching split={split!r}")
