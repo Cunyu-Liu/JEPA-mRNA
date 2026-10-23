@@ -9597,3 +9597,20 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 3. ncrna dual 读出（双头对照 acc/macro-F1/balanced-acc）。
 4. 结果核验 → PPT 更新（T-A99 表 + CHANRG 表）。
 5. git commit + push（含 add_pairs_chanrg.py / chanrg_board_eval.py / chanrg_eval2.sh / fix_nb_eval.sh / fix_ncrna.sh / monitor_r26.sh / nb_jev_arch_gap.sh）。
+
+## 15.97b 第二十六轮补记（2026-10-23 11:14，T-A101 完成 + ncrna 修复链复盘）
+
+**ncRNA 双头评测落地（T-A101）**：修复链共 4 处（ml 长度坑 → x[0] 已有 → load_encoder 元组解包 → HF ModelOutput 取 out[0]/last_hidden_state + attention_mask），第 4 次修复后首次完整执行：嵌入提取 322/s（312,587 train + 29,560 val + 29,472 test）→ 双头训练+评测。
+
+**结果（177 类 Rfam-novel 家族分类，frozen rinalmo-giga meanpool，单变量=头）**：
+
+| 头 | test acc | macro-F1 | balanced-acc |
+|---|---|---|---|
+| 线性头（官方式） | 0.7922 | 0.5248 | 0.5735 |
+| Jev MLP 头 | **0.8621** | **0.6308** | **0.7116** |
+
+**判定**：+0.070 acc / **+0.106 macro-F1 / +0.138 balanced-acc**——177 类长尾上 Jev 头显著优于线性探针；回答用户问题「新增架构对其他下游任务的影响」为**正向显著**（与 T-A99 迁移结论同向：Jev 头的容量设计跨任务跨骨干一致受益）。
+
+**修复链教训（升级为预飞行规则）**：外部模型调用契约（元组返回、ModelOutput dict、attention_mask 必传）必须在预飞行**真跑一个 batch**才能暴露——AST/CLI 签名检查全部漏掉。本轮 4 连修全部是「同文件同类契约」问题，教训入库：**接入外部模型的评测器，第一行验证代码应该是 `type(out)` 断言**。
+
+**在飞状态（11:15）**：chanrg board 循环——test 已出（r2d 0.4935 + xens2 完成），gena r2d 已落、xens2 跑中；genc/genf 排队。ncrna 完成、watcher 退出。

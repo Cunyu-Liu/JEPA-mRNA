@@ -50,7 +50,7 @@ def load_split(name):
 def build_embeddings(device, batch_size=16):
     """Extract mean-pooled frozen RiNALMo-giga embeddings for the 3 splits."""
     from rinalmo_preflight import load_encoder, encode
-    enc = load_encoder(device)
+    enc, _report = load_encoder(device)  # returns (model, report) tuple
     for split in ('train', 'val', 'test'):
         out_path = f'{EMB_DIR}/ncrna_rfamnovel_{split}.meanpool.npz'
         if os.path.exists(out_path):
@@ -70,8 +70,8 @@ def build_embeddings(device, batch_size=16):
                     x = x[0]  # rinalmo_preflight.encode returns (1, L+2); use the 1-D row
                     batch[k, :len(x)] = torch.as_tensor(x, device=device)
                     mask[k, :len(x)] = True
-                out = enc(batch, repr_layers=[33], return_contacts=False)
-                h = out['hidden_states'][-1].float()  # [B, T, 1280]
+                out = enc(input_ids=batch, attention_mask=mask)
+                h = (out[0] if isinstance(out, (tuple, list)) else out.last_hidden_state).float()  # [B, T, 1280]
                 m = mask.unsqueeze(-1).float()
                 pooled = (h * m).sum(1) / m.sum(1).clamp(min=1)
                 embs[i:i + len(chunk)] = pooled.cpu().numpy().astype(np.float16)
