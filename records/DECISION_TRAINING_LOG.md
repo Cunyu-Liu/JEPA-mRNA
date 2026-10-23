@@ -9636,3 +9636,43 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 **泄漏披露**：chanrg×tr1c 序列级重叠 Test 63/10597、GenA 112/5337、GenC 104/3936、GenF 0/1734（0.6-2.6%）；GenF 零重叠。家族级：CHANRG 家族（Rfam 15.0 谱系）与 bpRNA 语料天然交叉，非整族污染。
 
 **产物**：eval_decision/chanrg_{test,gena,genc,genf}/{r2d,xens2}/result.json（8 个全落地）；PPT S38（38 slides）；板表下轮更新 sota_vs_ours.md。
+
+## 15.98 第二十七轮交接（2026-10-23 下午，GenF 冲刺 + 三图 + v3.30 + 下游扩展轮）
+
+**用户四指示**：① GenF −0.097 诊断并冲 SOTA；② 新工作正刊绘图替代表格入 PPT；③ nature_rewrite_r25 直接合并（不过目）+ 新结果融入 = v3.30；④ T-A101 补更多 RiNALMo 下游任务。
+
+### 一、GenF 诊断（诚实归因）
+
+per-seq forensics（xens2）：**GenF 零预测率 39.2%**（GenC 20.8% / Test 4.3%），firing ratio 0.66；两个大家族 RF03874（n=525，F1 0.0993）+ RF03662（n=532，0.2449）占 61% 数据。根因明确：**训练分布不匹配**——我们 bpRNA tr1c 训练、CHANRG 评测是 zero-shot；而 OFoldNA-SS 用 CHANRG Train 蒸馏训练（其 Methods 明示 CHANRG 序列入蒸馏管线）。这不是架构差距而是**训练语料差距**。
+
+### 二、GenF SOTA 臂（T-A105，在飞）
+
+- 数据：chanrg_train_train.jsonl 95,181 行 + validation 10,540 行（50-200nt/pk 排除/T→U/ACGU，与评测四 split 完全同协议；md5 双端一致）。
+- 臂：`chanrg_r2d_s0` = r2d 配方逐参数一致（frozen rinalmo-giga 嵌入 + flat head resnet2d + 20k 步 + B=2 + lr 1e-4 + seed 0），**唯一变量=语料**（bpRNA tr1c → CHANRG Train）。四阶段自动链（嵌入→teacher→训→4-split 评测，calib 用 CHANRG validation）。
+- 进度：stage-1 嵌入 52k/95k（262/s）。watchdog 已挂 monitor_r26 cron。
+- 预注册判据：GenF ≥0.4035（超 OFoldNA-SS）即 SOTA；同时报 Test/GenA/GenC 完整四 split（预期 Test 大涨——同分布；OOD 三 split 是真正的泛化检验）。
+
+### 三、正刊绘图三张 + PPT 重构（T-A106 完成）
+
+- `figs/round27/`：fig_r27_1（NB 迁移 8-split 分组条形+Δ标注）、fig_r27_2（ncRNA 双头 3 指标）、fig_r27_3（CHANRG 9 方法×5 split 斜率图，我方蓝色粗线、每列★标最优参照）。house style（PALETTE、无上右脊、300dpi PNG+PDF）。
+- PPT S36/S37/S38 重建为图片页（表→图），几何零越界，页脚/页码/模板身份保持。备份 /tmp/ppt_backup_r27.pptx。
+
+### 四、v3.30 合并（T-A103 完成，直接合并版）
+
+- nature_rewrite_r25 的 Abstract（8-beat）+ Introduction（4-beat）替换旧版；新增 §4.3j（T-A99+T-A101 双头，区间表述 nature-style）与 §4.3k（CHANRG board + FM 塌缩互证）；Related work 增 OFoldNA/NucleicBERT 桥句；Limitations 增 6-8 条（GenF 负、单骨干单任务、自训对照头）；Conclusion 增迁移段。
+- 自检：em-dash 0；19/23 核心 token 正文直证（其余 4 个为表格级细节，正文区间覆盖）；AI-tell 0；接缝修复（4.3i 尾 # 残留、桥句、Limitations）。
+- 产物：集群 paper/preprint_draft_v330.md（已替换 preprint_draft.md，commit 0d6ac14）+ 本地交接文档 paper/ 同名副本。
+
+### 五、下游扩展（T-A107，MRL 在飞 + splice 数据下载中）
+
+- **MRL 双头（在飞）**：GSE114002 EGFP 5'UTR（GSM3130435，260k UTR 25-100nt）已上传（md5 一致）；eval_mrl_dual.py：frozen meanpool + RiNALMo-paper 式 2 层 MLP 回归头 vs Jev MLP（1024 GELU dropout）；per-length 评测划分（RiNALMo 惯例）；指标 PCC。watcher 等 GPU≥10GB。
+- **Splice-site 双头（数据准备）**：官方 ft 权重（acceptor/donor）已从 Zenodo 下载；Scalzitti 数据 4.1GB 下载 30%（Spliceator 同源，RiNALMo datamodule 协议）；到位后跑四物种 benchmark（Danio/Fly/Thaliana/Worm）双头对照。
+- 权重资产：rinalmo_giga_{splice_acceptor,splice_donor,mrl}_ft.pt（本地 /tmp，待传集群）。
+
+### 六、在飞汇总
+
+| 任务 | 守护 | 预期 |
+|---|---|---|
+| chanrg_r2d_s0 GenF 臂 | chanrg_arm_launch.sh + cron | ~36h 后 4-split 读数 |
+| MRL 双头 | mrl_watch.sh | ~30min（GPU 闲窗） |
+| splice 数据 | 本地 curl | 下载完成后处理+传集群 |
