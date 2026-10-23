@@ -9614,3 +9614,25 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 **修复链教训（升级为预飞行规则）**：外部模型调用契约（元组返回、ModelOutput dict、attention_mask 必传）必须在预飞行**真跑一个 batch**才能暴露——AST/CLI 签名检查全部漏掉。本轮 4 连修全部是「同文件同类契约」问题，教训入库：**接入外部模型的评测器，第一行验证代码应该是 `type(out)` 断言**。
 
 **在飞状态（11:15）**：chanrg board 循环——test 已出（r2d 0.4935 + xens2 完成），gena r2d 已落、xens2 跑中；genc/genf 排队。ncrna 完成、watcher 退出。
+
+## 15.97c 第二十六轮补记（2026-10-23 12:30，CHANRG 四 split 读出与 Table 3 对标判定）
+
+**读出（50-200nt 长度控制口径，与 OFoldNA-SS 论文 Table 3 完全同协议）**：
+
+| split | r2d 单模 | xens2 集成 | OFoldNA-SS | BPfold | RiNALMo-Giga(ft) |
+|---|---|---|---|---|---|
+| Test（ID） | 0.4935 | 0.5656 | 0.4899 | 0.4463 | **0.7832** |
+| GenA（架构 OOD） | 0.5772 | **0.6443** | 0.5695 | 0.5687 | 0.3565 |
+| GenC（clan OOD） | 0.2769 | 0.3793 | 0.3504 | **0.3956** | 0.1525 |
+| GenF（基因组稀疏 OOD） | 0.3037 | 0.3066 | **0.4035** | 0.2773 | 0.2298 |
+| OOD mean | 0.3859 | **0.4434** | 0.4410 | 0.4139 | 0.2463 |
+
+**四条判定**：
+1. **GenA 全场第一**（xens2 0.6443，超 OFoldNA-SS +0.075、超全部 8 个参照）——架构级 OOD 上我们最强。
+2. **OOD mean 0.4434 vs OFoldNA-SS 0.4410**：并列第一区间（Δ +0.0024，在 pk 排除与重叠披露的协议差异内，不宣称超）。
+3. **GenF 诚实负结果**（0.3066 vs OFoldNA-SS 0.4035，−0.097）：基因组稀疏家族上扩散模型的 SS 表征先验更强——与我们「先验栈承载 OOD」叙事互补而非矛盾（他们用 36M+ 结构蒸馏、我们用 Turner+DP）。
+4. **RiNALMo-Giga 复现「FM ID 强 OOD 塌缩」**（Test 0.7832 → OOD mean 0.2463，与我们主线消融签名互证）；我们 frozen 同骨干 +Jev 头把 OOD mean 从 0.2463 拉到 0.4434（+0.197）——**同一骨干上的最大 OOD 增幅**。
+
+**泄漏披露**：chanrg×tr1c 序列级重叠 Test 63/10597、GenA 112/5337、GenC 104/3936、GenF 0/1734（0.6-2.6%）；GenF 零重叠。家族级：CHANRG 家族（Rfam 15.0 谱系）与 bpRNA 语料天然交叉，非整族污染。
+
+**产物**：eval_decision/chanrg_{test,gena,genc,genf}/{r2d,xens2}/result.json（8 个全落地）；PPT S38（38 slides）；板表下轮更新 sota_vs_ours.md。

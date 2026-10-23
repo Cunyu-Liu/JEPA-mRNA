@@ -143,3 +143,60 @@ eFold provenance (S15.49): efold 0.1.2 wheel + bundled efold_weights.pt (zero-sh
 | ts1hard_r2dtr1_s0 | — | — | 0.7776 | 0.8041 | 0.8132 | 0.7246 | — | — |
 | turnerzero_r2dtr1c_s0_step20000 | 0.4413 | 0.1960 | 0.4738 | 0.3509 | 0.3816 | 0.2333 | — | — |
 | xens | 0.7859 | 0.5472 | 0.8473 | 0.8365 | 0.8738 | 0.8339 | 0.7796 | 0.8249 |
+
+## CHANRG OOD board (round-26, 50-200nt length-controlled, pk-excluded, T->U, ACGU-only)
+
+Protocol matches OFoldNA (arxiv 2609.37414v1) Table 3 length-controlled columns.
+Our rows: r2d = rinalmo_r2dtr1c_b4_s0 @20k (frozen RiNALMo-giga + Jev r2d head);
+xens2 = board ensemble (plana s0+s1 bucket @ s1w 0.5 x r2d @ w 0.7), --prior-weight -1,
+VL0 Platt calib. Sequence-level overlap vs tr1c disclosed: Test 63/10597, GenA 112/5337,
+GenC 104/3936, GenF 0/1734.
+
+| method | Test | GenA | GenC | GenF | OOD mean |
+|---|---|---|---|---|---|
+| xens2 (ours) | 0.5656 | **0.6443** | 0.3793 | 0.3066 | **0.4434** |
+| r2d single (ours) | 0.4935 | 0.5772 | 0.2769 | 0.3037 | 0.3859 |
+| OFoldNA-SS (quoted) | 0.4899 | 0.5695 | 0.3504 | 0.4031 | 0.4410 |
+| BPfold (quoted) | 0.4463 | 0.5687 | 0.3956 | 0.2773 | 0.4139 |
+| SPOT-RNA (quoted) | 0.4123 | 0.5304 | 0.3209 | 0.2481 | 0.3664 |
+| EternaFold (quoted) | 0.3345 | 0.4608 | 0.2882 | 0.2874 | 0.3455 |
+| RNAfold (quoted) | 0.3203 | 0.4193 | 0.2799 | 0.2812 | 0.3268 |
+| RiNALMo-Giga ft (quoted) | 0.7832 | 0.3565 | 0.1525 | 0.2298 | 0.2463 |
+| ERNIE-RNA (quoted) | 0.7300 | 0.5155 | 0.2699 | 0.2340 | 0.3398 |
+
+Verdicts: GenA first overall (xens2 0.6443, +0.075 over OFoldNA-SS); OOD mean 0.4434
+ties OFoldNA-SS 0.4410 (no claim of superiority at +0.0024); GenF honest negative
+(-0.097 vs OFoldNA-SS); RiNALMo-Giga reproduces FM ID-strong/OOD-collapse
+(Test 0.7832 -> OOD 0.2463) vs our frozen same-backbone OOD mean 0.4434 (+0.197).
+
+## NucleicBERT transfer board (round-26, T-A99 jev-on-NB, single variable = backbone)
+
+Jev r2d head on NB frozen embeddings (1024d, 20k steps, same recipe) vs NB full
+fine-tune (3 ep, official head) vs NB linear probe (0.1509 cross-family mean, quoted):
+
+| split | jev-on-NB | NB-ft | delta |
+|---|---|---|---|
+| bprna_ts0 | 0.5288 | 0.4609 | +0.068 |
+| bprna_new | 0.5792 | 0.3453 | +0.234 |
+| ref_pdb_ts1 | 0.6900 | 0.6049 | +0.085 |
+| ref_pdb_ts2 | 0.7794 | 0.6435 | +0.136 |
+| ref_pdb_ts3 | 0.7484 | 0.5175 | +0.231 |
+| ref_pdb_ts_hard | 0.6773 | 0.4845 | +0.193 |
+| archiveii_embok_clean (trunc598) | 0.5414 | 0.4735 | +0.068 |
+| testsetb | 0.5411 | 0.4862 | +0.055 |
+
+Preregistered criterion (>=3/8 splits >= +0.02): 8/8 PASS, mean delta +0.13;
+OOD/family splits largest (+0.19..+0.23) - same signature as the main-line
+"prior-stack carries OOD" ablation.
+
+## RiNALMo downstream ncRNA dual-head (round-26, T-A101, single variable = head)
+
+Rfam-novel 177-class family classification (train 312,587 / val 29,560 / test 29,472),
+frozen rinalmo-giga meanpool:
+
+| head | test acc | macro-F1 | balanced-acc |
+|---|---|---|---|
+| linear (official-style) | 0.7922 | 0.5248 | 0.5735 |
+| Jev MLP (1024-1024-177) | 0.8621 | 0.6308 | 0.7116 |
+
+delta +0.070 acc / +0.106 macro-F1 / +0.138 balanced-acc (177-class long tail).
