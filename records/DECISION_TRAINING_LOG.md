@@ -9715,3 +9715,30 @@ per-seq forensics（xens2）：**GenF 零预测率 39.2%**（GenC 20.8% / Test 4
 - 教训：EmbeddingStore residency 按 fp16 估算；容器 cgroup 含 page cache；watchdog 重启前必须先停旧监控。
 
 落地：论文 §4.3k 增补 honest-negative 段（v3.30+）；PPT S39（fig_r27_4）；本地交接 ROUND27_NOTE 终版。
+
+### 15.98d GT-teacher arm (chanrg_r2d_s0_gt) — distill signal is NOT the bottleneck (2026-10-24 04:34)
+
+Follow-up to 15.98c: swapped the ViennaRNA-MFE teacher for the GT itself
+(Rfam consensus dbn -> deterministic 0/1 pair probs, 95181 labels, teacher.name
+verified = gt:rfam_consensus in run_meta). Same 20k steps, same everything else.
+
+| split | GT arm F1 | MFE arm (r27) | zero-shot board | OFoldNA-SS |
+|---|---|---|---|---|
+| Test | 0.6246 | 0.6244 | 0.6437 | - |
+| GenA | 0.5106 | 0.5123 | 0.6443 | 0.6152 |
+| GenC | 0.2216 | 0.2221 | 0.3557 | 0.4486 |
+| GenF | 0.2611 | 0.2596 | 0.3112 | 0.4035 |
+
+Result: GT and MFE arms are within 0.002 on every split. The 15.98c
+"supervision-signal mismatch" attribution is FALSIFIED at the distill level:
+the nll term (direct GT-pairs supervision) dominates training (nll ~5e4 vs
+distill ~0.2, lambda=1), so swapping the distill soft label changes nothing.
+Real bottleneck: a 20k-step single head trained on CHANRG corpus underperforms
+the zero-shot board everywhere. Remaining suspects: (a) board is an ENSEMBLE
+(xens2 s0+s1 r2d), the arms are single heads; (b) 20k steps underconverged
+(loss still oscillating 4-7e4); (c) corpus-domain overfit.
+Next move if SOTA is still pursued: board-style ensemble on chanrg corpus
+(s0+s1 buckets + r2d) and/or longer training, honest comparison per split.
+
+Ops: one OOM rc=137 during GT-arm load (GT teacher adds ~7GB residency);
+monitor_r28 auto-resumed once and completed. monitor_r28 retired after ALL DONE.
