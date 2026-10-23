@@ -148,7 +148,8 @@ def eval_split(args):
             for k, L in enumerate(batch["Ls"]):
                 p = probs[k, :L, :L]
                 seq = ds.records[idx + k]["seq"][:L]
-                pred = prob_mat_to_sec_struct(probs=np.copy(p), seq=seq, threshold=threshold)
+                pred_mat = prob_mat_to_sec_struct(probs=np.copy(p), seq=seq, threshold=threshold)
+                pred = [(int(i), int(j)) for i, j in zip(*np.nonzero(np.triu(pred_mat, k=1)))]
                 preds.append(pred)
                 gt = batch["target"][k, :L, :L].numpy()
                 gt_u = np.argwhere(np.triu(gt, k=1) > 0.5)

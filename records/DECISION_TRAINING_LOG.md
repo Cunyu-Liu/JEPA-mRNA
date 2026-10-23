@@ -9467,3 +9467,133 @@ rinalmoft_v3.sh / rinalmoft_speed.py（speed_b1.json）。
 **验证**：dry-run1 NB 权重加载（NB_CKPT 解析 /teams 路径、404M 参数 state_dict 装载 OK）；dry-run2 encode 形状（(1,12)->x[0]=(12,)->batch 赋值 OK）。两守护重启（ta99 pid 2432399 / dual pid 2432400，孤儿挂载正确），ta99 stage-1 重新等 8GB（当前 free 3586 MiB，GPU 被 nb_ft 训练占用属正常——同卡共存按设计轮询）。
 
 **遗留**：commit 07fdeb3 message 中 \$(date) 转义漏一层被展开（功能无影响，记录不洁，下笔修正）。GPU 重新被 nb_ft（我方）+ 少量外部进程占用，ta99/dual 继续轮询等卡。
+## 15.97 第二十六轮交接（2026-10-23，CHANRG 解锁 + T-A99 完训判定 + 双头修复轮）
+
+**用户指示**：继续五工作框架；CHANRG gated token 已批（用户提供）→ 补测落地；GPU 只要有显存就用，禁止 gate；定时监控训练。
+
+### 一、工作 5：CHANRG gated 解锁 → 数据落地（完整链）
+
+1. **下载**：本地经 hf-mirror.com（huggingface.co 本地与集群均被墙）+ token 拿到 multimolecule/chanrg 三 parquet（train 14.7MB/val 2.0MB/test 4.2MB，sha256 与 LFS oid 一致：test 2d18ff0f…/train 4f6714eb…/val 80b1cf15…）。
+2. **协议预注册（50-200nt OFoldNA-SS/FoldBench SS 口径）**：test.parquet 内 Test 14070/GenA 12499/GenC 4424/GenF 1797 → 长度 50-200nt 子集 → pk 排除（[/{）→ T→U 归一化 → 非ACGU 排除 → 括号平衡。终版：**Test 10597 / GenA 5337 / GenC 3936 / GenF 1734**（manifest 含衰减表+sha256）。jsonl 上传集群双端 md5 一致（jsonl 目录 + /teams chanrg 目录）。
+3. **家族数**：Test 714 / GenA 171 / GenC 38 / GenF 10（fam 字段保留供审计）。
+4. **泄漏审计（新做）**：chanrg×{TR0,TR1,tr1c} 精确序列重叠 = Test 63/157/141、GenA 112/248/213、GenC 104/192/179、GenF 0/0/0（占比 0.6-4.5%，与 OFoldNA 论文的 Rfam15 谱系与 bpRNA 语料天然交叉一致，低于 TestSetB 的 58%；GenF 家族级零重叠）。**tr1c 对 CHANRG 无整族污染**；逐序列重叠在评测中如实披露（board 注）。
+5. **dbn→pairs 字段缺失坑**：convert 只写 dbn 字段，evaluate_decision.load_corpus 只读 pairs → 首 eval 四 split P/R=0（GT 空）。修复：add_pairs_chanrg.py 解析 dbn 为 pairs（集群已跑，10597+5337+3936+1734 行）。
+6. **embedding 路径坑**：evaluate_decision 的 EmbeddingStore 在 shard 缺失时回退 ckpt config.embedding_dir（旧 A100 路径 /mnt/cunyuliu/...）→ FileNotFoundError。修复：chanrg_eval2.sh 先 extract_rinalmo_embeddings 4 split + patch 三个板 ckpt config.embedding_dir 指向 4090 路径（幂等）。
+7. **进行中**：chanrg_eval2 重跑 4 split × {r2d, xens2}（r2d 已出结构正确的 result.json；xens2 待 pairs 修复后重跑）。
+
+### 二、工作 3：NucleicBERT 双线全线落地（本轮最大产出）
+
+**T-A100 NB fine-tune（完成）**：
+- 训练 01:20 完训（3ep × 10641 步，final loss ~0.13 段，nb_finetuned.pt 1.66GB）。
+- **eval 崩溃修复**：eval_nucleicbert_ft.py 把 prob_mat_to_sec_struct 返回的 L×L 矩阵直接传 micro_macro（期望 pair list）→ ValueError 8 连崩（train rc 被吞显示成功）。修复：pred_mat → np.triu(np.nonzero) → pair list（对齐 eval_nucleicbert.py frozen 版口径）。8-split 补跑+archiveii OOM 缺口补齐：
+  TS0 0.4609 / new 0.3453 / TS1 0.6049 / TS2 0.6435 / TS3 0.5175 / hard 0.4845 / ArchII 0.4735 / TSB 0.4862（micro F1，官方头+tr1c 全参微调）。
+
+**T-A99 Jev-on-NB（完成，判据 PASS）**：
+- 00:42 抢卡开训 → 20k 步全链（nll 主导，distill/rlcd/cal 辅助项正常量级，grad_norm 波动正常）→ 03:39 8-split 自动终评 DONE，合法性 0/0。
+- **8/8 split 结果（Jev r2d 头 + NB frozen 嵌入，唯一变量=骨干）**：
+
+| split | jev-on-NB | NB-ft | Δ |
+|---|---|---|---|
+| TS0 | 0.5288 | 0.4609 | **+0.068** |
+| bpRNA-new | 0.5792 | 0.3453 | **+0.234** |
+| TS1 | 0.6900 | 0.6049 | +0.085 |
+| TS2 | 0.7794 | 0.6435 | +0.136 |
+| TS3 | 0.7484 | 0.5175 | **+0.231** |
+| TS-hard | 0.6773 | 0.4845 | **+0.193** |
+| ArchII(598截断) | 补测中 | 0.4735 | — |
+| TestSetB | 0.5411 | 0.4862 | +0.055 |
+
+- **判定：预注册判据（≥3/8 split Δ≥+0.02）以 7/7 大幅 PASS**。架构增益方向：OOD/家族 split 增益最大（new +0.234、TS3 +0.231、hard +0.193）——**与 RiNALMo 主线的「先验栈承载 OOD」消融签名同构**：Jev 头 + 结构先验在冻结骨干上把 OOD 差距从 NB-ft 的塌缩中拉回。vs NB-probe（0.1509）同为大幅超越。结论可写入论文迁移章节：**Jev 决策头范式跨骨干可迁移且 OOD 增益方向一致**。
+- **ArchII 截断坑**：NB 嵌入 max-length 600 截断（>600nt 序列嵌入存 598 行但 seqs 存全长 → EmbeddingStore 按全长字符串查找返回短嵌入 → forward 形状崩）。NB-ft eval 同口径截断（GT 也截前 598）。补测方案：trunc598 临时 jsonl + 专属嵌入 shard → eval（在跑）。
+
+### 三、工作 2：ncRNA 双头修复（ml 长度坑，二次修复）
+
+- 01:22 崩溃根因**复现并定位**：`ml = max(len(x) for x in ids)` 对 (1, L+2) 张量 len()=1 → batch 宽度 1 → 赋值崩（上一轮 x=x[0] 只修了赋值侧没修 ml 计算侧——**同型 bug 两次命中，教训：修复必须覆盖同变量的全部使用点**）。修复：`ml = max(int(x.shape[-1]) for x in ids)` + 最小复现单测通过。watcher 重启在飞（等 GPU≥6GB）。
+
+### 四、运维与监控
+
+- **集群侧 watchdog cron 装机**（/root/monitor_r26.sh，*/10）：nb_jev 死亡检测（区分完训 vs 崩溃，step<20000 自动重启 launcher）+ ncrna/chanrg watcher 自愈 + 饱和度日志（/root/monitor_r26.log）。本轮已实战：检测到 nb_jev 完训、chanrg DONE、ncrna 重启。
+- 本地 Schedule 定时任务两次确认超时被系统跳过 → 改用集群侧 cron（更可靠，不受 SSH 限流影响）。
+- SSH 强限流应对：rex.sh 重试包装（指数退避 8 次）成为本轮默认调用方式。
+
+### 五、在飞
+
+| 任务 | 状态 | 产物 |
+|---|---|---|
+| chanrg 4-split × {r2d,xens2} | 重跑中（pairs 修复后） | eval_decision/chanrg_*/{r2d,xens2}/result.json |
+| nb_jev ArchII trunc598 | 补测中 | .../archiveii_embok_clean_trunc598/result.json |
+| ncrna dual | watcher 等卡（GPU 被 nb_jev gap-fill 占用） | ncrna_dual_result.json |
+| monitor_r26 cron | live（*/10） | /root/monitor_r26.log |
+
+### 六、下一轮队列
+
+1. CHANRG 4 split 数字读出 → 对 OFoldNA-SS published（Test ID / GenA/GenC/GenF OOD）做同口径对比表 → 板表+台账+PPT。
+2. nb_jev ArchII trunc598 落地 → T-A99 完成度 8/8。
+3. ncrna dual 读出（双头对照 acc/macro-F1/balanced-acc）。
+4. 结果核验 → PPT 更新（T-A99 表 + CHANRG 表）。
+5. git commit + push（含 add_pairs_chanrg.py / chanrg_board_eval.py / chanrg_eval2.sh / fix_nb_eval.sh / fix_ncrna.sh / monitor_r26.sh / nb_jev_arch_gap.sh）。
+## 15.97 第二十六轮交接（2026-10-23，CHANRG 解锁 + T-A99 完训判定 + 双头修复轮）
+
+**用户指示**：继续五工作框架；CHANRG gated token 已批（用户提供）→ 补测落地；GPU 只要有显存就用，禁止 gate；定时监控训练。
+
+### 一、工作 5：CHANRG gated 解锁 → 数据落地（完整链）
+
+1. **下载**：本地经 hf-mirror.com（huggingface.co 本地与集群均被墙）+ token 拿到 multimolecule/chanrg 三 parquet（train 14.7MB/val 2.0MB/test 4.2MB，sha256 与 LFS oid 一致：test 2d18ff0f…/train 4f6714eb…/val 80b1cf15…）。
+2. **协议预注册（50-200nt OFoldNA-SS/FoldBench SS 口径）**：test.parquet 内 Test 14070/GenA 12499/GenC 4424/GenF 1797 → 长度 50-200nt 子集 → pk 排除（[/{）→ T→U 归一化 → 非ACGU 排除 → 括号平衡。终版：**Test 10597 / GenA 5337 / GenC 3936 / GenF 1734**（manifest 含衰减表+sha256）。jsonl 上传集群双端 md5 一致（jsonl 目录 + /teams chanrg 目录）。
+3. **家族数**：Test 714 / GenA 171 / GenC 38 / GenF 10（fam 字段保留供审计）。
+4. **泄漏审计（新做）**：chanrg×{TR0,TR1,tr1c} 精确序列重叠 = Test 63/157/141、GenA 112/248/213、GenC 104/192/179、GenF 0/0/0（占比 0.6-4.5%，与 OFoldNA 论文的 Rfam15 谱系与 bpRNA 语料天然交叉一致，低于 TestSetB 的 58%；GenF 家族级零重叠）。**tr1c 对 CHANRG 无整族污染**；逐序列重叠在评测中如实披露（board 注）。
+5. **dbn→pairs 字段缺失坑**：convert 只写 dbn 字段，evaluate_decision.load_corpus 只读 pairs → 首 eval 四 split P/R=0（GT 空）。修复：add_pairs_chanrg.py 解析 dbn 为 pairs（集群已跑，10597+5337+3936+1734 行）。
+6. **embedding 路径坑**：evaluate_decision 的 EmbeddingStore 在 shard 缺失时回退 ckpt config.embedding_dir（旧 A100 路径 /mnt/cunyuliu/...）→ FileNotFoundError。修复：chanrg_eval2.sh 先 extract_rinalmo_embeddings 4 split + patch 三个板 ckpt config.embedding_dir 指向 4090 路径（幂等）。
+7. **进行中**：chanrg_eval2 重跑 4 split × {r2d, xens2}（r2d 已出结构正确的 result.json；xens2 待 pairs 修复后重跑）。
+
+### 二、工作 3：NucleicBERT 双线全线落地（本轮最大产出）
+
+**T-A100 NB fine-tune（完成）**：
+- 训练 01:20 完训（3ep × 10641 步，final loss ~0.13 段，nb_finetuned.pt 1.66GB）。
+- **eval 崩溃修复**：eval_nucleicbert_ft.py 把 prob_mat_to_sec_struct 返回的 L×L 矩阵直接传 micro_macro（期望 pair list）→ ValueError 8 连崩（train rc 被吞显示成功）。修复：pred_mat → np.triu(np.nonzero) → pair list（对齐 eval_nucleicbert.py frozen 版口径）。8-split 补跑+archiveii OOM 缺口补齐：
+  TS0 0.4609 / new 0.3453 / TS1 0.6049 / TS2 0.6435 / TS3 0.5175 / hard 0.4845 / ArchII 0.4735 / TSB 0.4862（micro F1，官方头+tr1c 全参微调）。
+
+**T-A99 Jev-on-NB（完成，判据 PASS）**：
+- 00:42 抢卡开训 → 20k 步全链（nll 主导，distill/rlcd/cal 辅助项正常量级，grad_norm 波动正常）→ 03:39 8-split 自动终评 DONE，合法性 0/0。
+- **8/8 split 结果（Jev r2d 头 + NB frozen 嵌入，唯一变量=骨干）**：
+
+| split | jev-on-NB | NB-ft | Δ |
+|---|---|---|---|
+| TS0 | 0.5288 | 0.4609 | **+0.068** |
+| bpRNA-new | 0.5792 | 0.3453 | **+0.234** |
+| TS1 | 0.6900 | 0.6049 | +0.085 |
+| TS2 | 0.7794 | 0.6435 | +0.136 |
+| TS3 | 0.7484 | 0.5175 | **+0.231** |
+| TS-hard | 0.6773 | 0.4845 | **+0.193** |
+| ArchII(598截断) | 补测中 | 0.4735 | — |
+| TestSetB | 0.5411 | 0.4862 | +0.055 |
+
+- **判定：预注册判据（≥3/8 split Δ≥+0.02）以 7/7 大幅 PASS**。架构增益方向：OOD/家族 split 增益最大（new +0.234、TS3 +0.231、hard +0.193）——**与 RiNALMo 主线的「先验栈承载 OOD」消融签名同构**：Jev 头 + 结构先验在冻结骨干上把 OOD 差距从 NB-ft 的塌缩中拉回。vs NB-probe（0.1509）同为大幅超越。结论可写入论文迁移章节：**Jev 决策头范式跨骨干可迁移且 OOD 增益方向一致**。
+- **ArchII 截断坑**：NB 嵌入 max-length 600 截断（>600nt 序列嵌入存 598 行但 seqs 存全长 → EmbeddingStore 按全长字符串查找返回短嵌入 → forward 形状崩）。NB-ft eval 同口径截断（GT 也截前 598）。补测方案：trunc598 临时 jsonl + 专属嵌入 shard → eval（在跑）。
+
+### 三、工作 2：ncRNA 双头修复（ml 长度坑，二次修复）
+
+- 01:22 崩溃根因**复现并定位**：`ml = max(len(x) for x in ids)` 对 (1, L+2) 张量 len()=1 → batch 宽度 1 → 赋值崩（上一轮 x=x[0] 只修了赋值侧没修 ml 计算侧——**同型 bug 两次命中，教训：修复必须覆盖同变量的全部使用点**）。修复：`ml = max(int(x.shape[-1]) for x in ids)` + 最小复现单测通过。watcher 重启在飞（等 GPU≥6GB）。
+
+### 四、运维与监控
+
+- **集群侧 watchdog cron 装机**（/root/monitor_r26.sh，*/10）：nb_jev 死亡检测（区分完训 vs 崩溃，step<20000 自动重启 launcher）+ ncrna/chanrg watcher 自愈 + 饱和度日志（/root/monitor_r26.log）。本轮已实战：检测到 nb_jev 完训、chanrg DONE、ncrna 重启。
+- 本地 Schedule 定时任务两次确认超时被系统跳过 → 改用集群侧 cron（更可靠，不受 SSH 限流影响）。
+- SSH 强限流应对：rex.sh 重试包装（指数退避 8 次）成为本轮默认调用方式。
+
+### 五、在飞
+
+| 任务 | 状态 | 产物 |
+|---|---|---|
+| chanrg 4-split × {r2d,xens2} | 重跑中（pairs 修复后） | eval_decision/chanrg_*/{r2d,xens2}/result.json |
+| nb_jev ArchII trunc598 | 补测中 | .../archiveii_embok_clean_trunc598/result.json |
+| ncrna dual | watcher 等卡（GPU 被 nb_jev gap-fill 占用） | ncrna_dual_result.json |
+| monitor_r26 cron | live（*/10） | /root/monitor_r26.log |
+
+### 六、下一轮队列
+
+1. CHANRG 4 split 数字读出 → 对 OFoldNA-SS published（Test ID / GenA/GenC/GenF OOD）做同口径对比表 → 板表+台账+PPT。
+2. nb_jev ArchII trunc598 落地 → T-A99 完成度 8/8。
+3. ncrna dual 读出（双头对照 acc/macro-F1/balanced-acc）。
+4. 结果核验 → PPT 更新（T-A99 表 + CHANRG 表）。
+5. git commit + push（含 add_pairs_chanrg.py / chanrg_board_eval.py / chanrg_eval2.sh / fix_nb_eval.sh / fix_ncrna.sh / monitor_r26.sh / nb_jev_arch_gap.sh）。

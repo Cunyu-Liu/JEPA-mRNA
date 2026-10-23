@@ -63,7 +63,7 @@ def build_embeddings(device, batch_size=16):
             for i in range(0, len(recs), batch_size):
                 chunk = recs[i:i + batch_size]
                 ids = [encode(r['seq']) for r in chunk]
-                ml = max(len(x) for x in ids)
+                ml = max(int(x.shape[-1]) for x in ids)  # encode returns (1, L+2): len() would be 1
                 batch = torch.zeros((len(ids), ml), dtype=torch.int64, device=device)
                 mask = torch.zeros((len(ids), ml), dtype=torch.bool, device=device)
                 for k, x in enumerate(ids):
