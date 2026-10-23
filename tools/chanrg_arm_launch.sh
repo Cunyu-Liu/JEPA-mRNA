@@ -24,9 +24,11 @@ for SPLIT in chanrg_train_train chanrg_train_validation; do
 done
 
 echo "[arm] $(date) stage-2 teacher labels (95k seqs, 12 proc)" >> $LOG
-if [ ! -d $TEACHER ] || [ -z "$(ls -A $TEACHER 2>/dev/null)" ]; then
+if [ ! -f $TEACHER/manifest.json ]; then
   cd /home/rna_jev
-  $PY data/ss/generate_teacher_labels.py \
+  # ViennaRNA 2.7.2 lives in the codonflow env (version-locked, matches tr1c teacher)
+  PYTHONPATH=/home/rna_jev/src \
+  /root/miniconda3/envs/codonflow/bin/python data/ss/generate_teacher_labels.py \
     --data $J/chanrg_train_train.jsonl \
     --out $TEACHER >> $LOG 2>&1
   echo "[arm] $(date) teacher rc=$?" >> $LOG

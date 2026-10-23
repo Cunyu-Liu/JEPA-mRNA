@@ -9676,3 +9676,15 @@ per-seq forensics（xens2）：**GenF 零预测率 39.2%**（GenC 20.8% / Test 4
 | chanrg_r2d_s0 GenF 臂 | chanrg_arm_launch.sh + cron | ~36h 后 4-split 读数 |
 | MRL 双头 | mrl_watch.sh | ~30min（GPU 闲窗） |
 | splice 数据 | 本地 curl | 下载完成后处理+传集群 |
+
+## 15.98b 第二十七轮补记（2026-10-23 14:50，MRL 读数 + teacher 修复链 + splice 续传）
+
+**一、MRL 双头（T-A107a）读数**：EGFP 5'UTR（GSM3130435，326k UTR 25-100nt，per-length 划分）——Jev MLP PCC **0.4954** vs paper 式 MLP 0.4851（+0.010，n_eval=100）。**诚实结论**：① 头间差异在 meanpool 表示下不显著；② 两头均远低于 RiNALMo 论文 0.93——其口径为全参微调+per-nucleotide 表示，meanpool 把 5'UTR 位置信息抹掉后 MRL 回归信息大量丢失（MRL 的关键信号是 Kozak 上下文等位置特异特征）。**判定：meanpool 口径下该任务对头架构不敏感，如实记录，不做显著主张**；升级路径（future work）：per-position 表示 + CLS/token 池化。工程修复链：usecols 列错（col0 是 reads 计数，序列在 col1）+ header 行（skiprows=1）——两次修复后完整落地。
+
+**二、GenF 臂 teacher 修复（第 3 次修复）**：generate_teacher_labels 的 ViennaRNA 是惰性 `import RNA`，lucaone 环境无、**codonflow 环境有 2.7.2（与 tr1c teacher 版本锁一致）**——arm 脚本改用 codonflow python + PYTHONPATH=/home/rna_jev/src 后通过 import 冒烟（RNA 2.7.2 + rnajepa 双 OK）。教训：**环境资产盘点必须跨 env**（第 21 轮 eFold venv 教训同型——盘上有的东西先找再装）。
+
+**三、splice 数据**：zenodo 4.1GB 首次 1200s 超时中断（1.3GB），已 `curl -C -` 后台续传（不限时）。
+
+**四、MRL 官方 ft 权重**（363MB）已下载待传集群——后续可做「Jev 头 frozen vs 官方 MRL 微调」的定位对照（quoted vs measured 口径分开）。
+
+**在飞**：chanrg 臂（嵌入提取重跑中，因 pkill 时机错误导致 cache 未完成——浪费一轮 ~25min，教训：杀 extract 前先确认 cache 落盘）；splice 续传。

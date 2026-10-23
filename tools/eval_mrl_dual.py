@@ -30,8 +30,9 @@ def parse_csv_gz(path):
     df = pd.read_csv(path, compression="gzip", header=None, low_memory=False,
                      usecols=[0, 32])
     df = df.dropna()
+    df = df[df[0].apply(lambda s: isinstance(s, str))]
     df.columns = ["seq", "rl"]
-    df = df[df["seq"].apply(lambda s: isinstance(s, str) and set(s.upper()) <= set("ACGT"))]
+    df = df[df["seq"].apply(lambda s: set(s.upper()) <= set("ACGT"))]
     df["seq"] = df["seq"].str.upper().str.replace("T", "U")
     df["len"] = df["seq"].str.len()
     df = df[(df["len"] >= 25) & (df["len"] <= 100)]
@@ -134,11 +135,12 @@ def main():
     tar_path = "/root/rna_jepa_data/downstream_data/GSE114002.tar"
     t = tarfile.open(tar_path)
     f = t.extractfile("GSM3130435_egfp_unmod_1.csv.gz")
-    df = pd.read_csv(f, compression="gzip", header=None, low_memory=False, usecols=[0, 32]).dropna()
+    df = pd.read_csv(f, compression="gzip", header=None, low_memory=False,
+                     usecols=[1, 32], skiprows=1).dropna()
     df.columns = ["seq", "rl"]
-    df = df[df["seq"].apply(lambda s: isinstance(s, str) and set(s.upper()) <= set("ACGT"))]
-    df["seq"] = df["seq"].str.upper().str.replace("T", "U")
-    df["len"] = df["seq"].str.len()
+    df = df[df["seq"].map(lambda s: isinstance(s, str) and set(s.upper()) <= set("ACGT"))]
+    df["seq"] = df["seq"].map(lambda s: s.upper().replace("T", "U"))
+    df["len"] = df["seq"].map(len)
     df = df[(df["len"] >= 25) & (df["len"] <= 100)].reset_index(drop=True)
     print(f"[data] {len(df)} UTRs (25-100nt)")
     embs, rls, lens = build_embeddings(args.device, df)
