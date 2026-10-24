@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import heapq
 import json
 import os
 import shutil
@@ -33,6 +34,7 @@ STAT_NAMES = (
     "conflicting_labels_kept_first",
     "conflicting_structure_kept_first",
     "conflicting_teacher_kept_first",
+    "filtered_hash_sample",
 )
 OPEN_TO_CLOSE = {"(": ")", "[": "]", "{": "}", "<": ">"}
 CLOSE_TO_OPEN = {value: key for key, value in OPEN_TO_CLOSE.items()}
@@ -245,6 +247,56 @@ def _load_blocklists(paths: Sequence[Path]) -> Tuple[Set[str], List[Dict[str, ob
             "n_unique_sequences": len(local),
         })
     return blocked, metadata
+
+
+def _select_hash_sample(specs: Sequence[InputSpec], sample_input: Optional[int],
+                        sample_count: Optional[int], sample_seed: str
+                        ) -> Optional[Tuple[int, Set[str], Dict[str, object]]]:
+    if sample_input is None and sample_count is None:
+        return None
+    if (sample_input is None or sample_count is None
+            or isinstance(sample_input, bool) or isinstance(sample_count, bool)
+            or sample_input < 1 or sample_input > len(specs) or sample_count <= 0
+            or not sample_seed):
+        raise CorpusBuildError(
+            "sampling requires --sample-input in input range, --sample-count > 0, "
+            "and a non-empty --sample-seed"
+        )
+    index = sample_input - 1
+    path = Path(specs[index].path)
+    before = _sha256_file(path)
+    candidates: List[Tuple[bytes, str]] = []
+    seen: Set[str] = set()
+    for lineno, record in _iter_jsonl(path):
+        sequence = _normalize_sequence(record.get("seq", ""), f"{path}:{lineno}")
+        if sequence in seen:
+            continue
+        seen.add(sequence)
+        score = hashlib.sha256(f"{sample_seed}\0{sequence}".encode("utf-8")).digest()
+        candidates.append((score, sequence))
+    after = _sha256_file(path)
+    if after != before:
+        raise CorpusBuildError(f"{path}: input hash changed while selecting hash sample")
+    if len(candidates) < sample_count:
+        raise CorpusBuildError(
+            f"{path}: only {len(candidates)} unique sequences, cannot select {sample_count}"
+        )
+    chosen = heapq.nsmallest(sample_count, candidates)
+    selected = {sequence for _score, sequence in chosen}
+    metadata: Dict[str, object] = {
+        "sample_input": sample_input,
+        "sample_count": sample_count,
+        "sample_seed": sample_seed,
+        "algorithm": "sha256(sample_seed + NUL + normalized_sequence), smallest scores",
+        "n_candidates_unique": len(candidates),
+        "n_selected_unique": len(selected),
+        "selection_sha256": _sequences_hash(sorted(selected)),
+        "input_sha256": after,
+        "input_sha256_before": before,
+        "input_sha256_after": after,
+        "selection_before_blocklist_and_dedup": True,
+    }
+    return index, selected, metadata
 
 
 class TeacherShardReader:
@@ -590,12 +642,14 @@ def _teacher_for_record(spec: InputSpec, reader: Optional[TeacherShardReader],
 
 
 def _process_pass(specs: Sequence[InputSpec], *, role: str, blocked: Set[str],
-                  consumer: object) -> Tuple[List[Dict[str, object]], Dict[str, object], Dict[str, object]]:
+                  consumer: object,
+                  sample: Optional[Tuple[int, Set[str], Dict[str, object]]] = None
+                  ) -> Tuple[List[Dict[str, object]], Dict[str, object], Dict[str, object]]:
     per_input: List[Dict[str, object]] = []
     totals: Counter[str] = Counter()
     seen: Dict[str, Tuple[bytes, bytes]] = {}
     try:
-        for spec in specs:
+        for input_index, spec in enumerate(specs):
             path = Path(spec.path)
             before = _sha256_file(path)
             reader = (TeacherShardReader(Path(spec.teacher_dir), context=f"teacher for {path}")
@@ -608,6 +662,10 @@ def _process_pass(specs: Sequence[InputSpec], *, role: str, blocked: Set[str],
                 matrix = _teacher_for_record(spec, reader, record, context)
                 sequence = str(record["seq"])
                 n_in += 1
+                if (sample is not None and input_index == sample[0]
+                        and sequence not in sample[1]):
+                    counts["filtered_hash_sample"] += 1
+                    continue
                 if role == "validation":
                     if sequence in seen:
                         raise CorpusBuildError(
@@ -716,7 +774,9 @@ def _normalized_specs(values: Sequence[InputSpec]) -> List[InputSpec]:
 def build_corpus(inputs: Sequence[InputSpec], *, out_jsonl: os.PathLike[str] | str,
                  out_teacher_dir: os.PathLike[str] | str, role: str = "train",
                  blocklists: Sequence[os.PathLike[str] | str] = (),
-                 shard_size: int = 256) -> Dict[str, object]:
+                 shard_size: int = 256, sample_input: Optional[int] = None,
+                 sample_count: Optional[int] = None,
+                 sample_seed: str = "round29-v1") -> Dict[str, object]:
     """Build and independently verify a corpus; never overwrite final outputs."""
     if role not in ("train", "validation"):
         raise CorpusBuildError("role must be train or validation")
@@ -725,6 +785,8 @@ def build_corpus(inputs: Sequence[InputSpec], *, out_jsonl: os.PathLike[str] | s
     specs = _normalized_specs(inputs)
     if role == "validation" and blocklists:
         raise CorpusBuildError("validation role does not accept --blocklist")
+    if role == "validation" and (sample_input is not None or sample_count is not None):
+        raise CorpusBuildError("validation role does not accept hash sampling")
     blocklist_paths = [Path(path).expanduser().resolve() for path in blocklists]
     for path in blocklist_paths:
         if not path.is_file():
@@ -752,21 +814,25 @@ def build_corpus(inputs: Sequence[InputSpec], *, out_jsonl: os.PathLike[str] | s
     final_jsonl_created = False
     try:
         blocked_first, blocklist_metadata_first = _load_blocklists(blocklist_paths)
+        sample_first = _select_hash_sample(specs, sample_input, sample_count, sample_seed)
         writer = BuildConsumer(temporary_jsonl, building, shard_size)
         inputs_first, stats_first, write_result = _process_pass(
-            specs, role=role, blocked=blocked_first, consumer=writer)
+            specs, role=role, blocked=blocked_first, consumer=writer, sample=sample_first)
         if not stats_first["n_records_written"]:
             raise CorpusBuildError("cleaning produced zero output records")
 
         blocked_second, blocklist_metadata_second = _load_blocklists(blocklist_paths)
         if blocklist_metadata_second != blocklist_metadata_first or blocked_second != blocked_first:
             raise CorpusBuildError("blocklist changed between build and independent verification")
+        sample_second = _select_hash_sample(specs, sample_input, sample_count, sample_seed)
+        if sample_first != sample_second:
+            raise CorpusBuildError("hash sample changed between build and independent verification")
         verifier = VerifyConsumer(
             temporary_jsonl, building, role=role, blocked=blocked_second,
             expected_jsonl_hash=str(write_result["output_jsonl_sha256"]),
         )
         inputs_second, stats_second, verify_result = _process_pass(
-            specs, role=role, blocked=blocked_second, consumer=verifier)
+            specs, role=role, blocked=blocked_second, consumer=verifier, sample=sample_second)
         if inputs_second != inputs_first:
             raise CorpusBuildError("inputs or counts changed between build and independent verification")
         if stats_second != stats_first:
@@ -790,6 +856,7 @@ def build_corpus(inputs: Sequence[InputSpec], *, out_jsonl: os.PathLike[str] | s
             "inputs": inputs_second,
             "blocklists": blocklist_metadata_second,
             "blocklist_applied": role == "train",
+            "hash_sampling": sample_second[2] if sample_second is not None else None,
             "stats": stats_second,
             "output": {
                 "jsonl": str(final_jsonl),
@@ -839,6 +906,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument("--out-jsonl", required=True)
     parser.add_argument("--out-teacher-dir", required=True)
     parser.add_argument("--shard-size", type=int, default=256)
+    parser.add_argument("--sample-input", type=int, action="append",
+                        help="1-based input to hash-sample; repeat is rejected")
+    parser.add_argument("--sample-count", type=int, action="append",
+                        help="unique sequences selected by smallest hash; repeat is rejected")
+    parser.add_argument("--sample-seed", action="append",
+                        help="sampling seed string; default round29-v1; repeat is rejected")
     return parser.parse_args(argv)
 
 
@@ -847,6 +920,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.role == "train" and not args.blocklist:
         print("FATAL: train role requires at least one explicit --blocklist", file=sys.stderr)
         return 2
+    for name in ("sample_input", "sample_count", "sample_seed"):
+        values = getattr(args, name)
+        if values is not None and len(values) != 1:
+            print(f"FATAL: --{name.replace('_', '-')} may only be given once", file=sys.stderr)
+            return 2
+    sample_input = args.sample_input[0] if args.sample_input else None
+    sample_count = args.sample_count[0] if args.sample_count else None
+    sample_seed = args.sample_seed[0] if args.sample_seed else "round29-v1"
     specs: List[InputSpec] = []
     for value in args.inputs:
         if len(value) not in (2, 3):
@@ -857,6 +938,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         manifest = build_corpus(
             specs, out_jsonl=args.out_jsonl, out_teacher_dir=args.out_teacher_dir,
             role=args.role, blocklists=args.blocklist, shard_size=args.shard_size,
+            sample_input=sample_input, sample_count=sample_count,
+            sample_seed=sample_seed,
         )
     except (CorpusBuildError, OSError, ValueError) as exc:
         print(f"FATAL: {type(exc).__name__}: {exc}", file=sys.stderr)

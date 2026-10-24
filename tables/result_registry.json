@@ -1,0 +1,1353 @@
+{
+  "comparisons": {
+    "ens3_minus_board_r2d/chanrg_gena": {
+      "delta_macro_f1": -0.04639696195272225,
+      "delta_micro_f1": -0.047649872620870615,
+      "mean_per_sequence_delta_f1": -0.04639696195272228,
+      "median_per_sequence_delta_f1": -0.034438775510204134,
+      "n_loss": 3446,
+      "n_tie": 457,
+      "n_win": 1434
+    },
+    "ens3_minus_board_r2d/chanrg_genc": {
+      "delta_macro_f1": -0.004031358458725487,
+      "delta_micro_f1": -0.00722626138404836,
+      "mean_per_sequence_delta_f1": -0.004031358458725417,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 1540,
+      "n_tie": 719,
+      "n_win": 1677
+    },
+    "ens3_minus_board_r2d/chanrg_genf": {
+      "delta_macro_f1": -0.026413599661088527,
+      "delta_micro_f1": -0.02871541119416715,
+      "mean_per_sequence_delta_f1": -0.026413599661088565,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 758,
+      "n_tie": 501,
+      "n_win": 475
+    },
+    "ens3_minus_board_r2d/chanrg_test": {
+      "delta_macro_f1": 0.12947135980202418,
+      "delta_micro_f1": 0.1427927639365732,
+      "mean_per_sequence_delta_f1": 0.1294713598020243,
+      "median_per_sequence_delta_f1": 0.10490266762797407,
+      "n_loss": 1579,
+      "n_tie": 670,
+      "n_win": 8348
+    },
+    "ens3_minus_board_xens2/chanrg_gena": {
+      "delta_macro_f1": -0.10258328173778308,
+      "delta_micro_f1": -0.11469222066099438,
+      "mean_per_sequence_delta_f1": -0.10258328173778308,
+      "median_per_sequence_delta_f1": -0.08064516129032262,
+      "n_loss": 4046,
+      "n_tie": 384,
+      "n_win": 907
+    },
+    "ens3_minus_board_xens2/chanrg_genc": {
+      "delta_macro_f1": -0.09221818352095584,
+      "delta_micro_f1": -0.10956188657059746,
+      "mean_per_sequence_delta_f1": -0.09221818352095575,
+      "median_per_sequence_delta_f1": -0.041666666666666664,
+      "n_loss": 2244,
+      "n_tie": 563,
+      "n_win": 1129
+    },
+    "ens3_minus_board_xens2/chanrg_genf": {
+      "delta_macro_f1": -0.028581256663265386,
+      "delta_micro_f1": -0.031549656227471634,
+      "mean_per_sequence_delta_f1": -0.028581256663265397,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 734,
+      "n_tie": 517,
+      "n_win": 483
+    },
+    "ens3_minus_board_xens2/chanrg_test": {
+      "delta_macro_f1": 0.06787059412000407,
+      "delta_micro_f1": 0.07070169739632248,
+      "mean_per_sequence_delta_f1": 0.06787059412000408,
+      "median_per_sequence_delta_f1": 0.06753329105897266,
+      "n_loss": 2687,
+      "n_tie": 628,
+      "n_win": 7282
+    },
+    "ens3_minus_ens2/chanrg_gena": {
+      "delta_macro_f1": 0.012953327375321289,
+      "delta_micro_f1": 0.01293434136035132,
+      "holm_family_size": 4,
+      "holm_p_value": 5.229356688124887e-101,
+      "mean_per_sequence_delta_f1": 0.01295332737532135,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 1362,
+      "n_nonzero_pairs": 3778,
+      "n_tie": 1559,
+      "n_win": 2416,
+      "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+      "wilcoxon_p_value": 1.3073391720312217e-101,
+      "wilcoxon_statistic": 2134361.5
+    },
+    "ens3_minus_ens2/chanrg_genc": {
+      "delta_macro_f1": 0.002152750025086414,
+      "delta_micro_f1": 0.002945937144835542,
+      "holm_family_size": 4,
+      "holm_p_value": 0.0038257463033779904,
+      "mean_per_sequence_delta_f1": 0.0021527500250865033,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 1197,
+      "n_nonzero_pairs": 2467,
+      "n_tie": 1469,
+      "n_win": 1270,
+      "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+      "wilcoxon_p_value": 0.0019128731516889952,
+      "wilcoxon_statistic": 1412330.0
+    },
+    "ens3_minus_ens2/chanrg_genf": {
+      "delta_macro_f1": -0.0002606764627247071,
+      "delta_micro_f1": 0.0022189052228336337,
+      "holm_family_size": 4,
+      "holm_p_value": 0.004219972808721614,
+      "mean_per_sequence_delta_f1": -0.0002606764627247192,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 375,
+      "n_nonzero_pairs": 910,
+      "n_tie": 824,
+      "n_win": 535,
+      "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+      "wilcoxon_p_value": 0.004219972808721614,
+      "wilcoxon_statistic": 184560.0
+    },
+    "ens3_minus_ens2/chanrg_test": {
+      "delta_macro_f1": 0.004805967180603776,
+      "delta_micro_f1": 0.004269962977190289,
+      "holm_family_size": 4,
+      "holm_p_value": 8.028201812542703e-48,
+      "mean_per_sequence_delta_f1": 0.004805967180603814,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 2424,
+      "n_nonzero_pairs": 5682,
+      "n_tie": 4915,
+      "n_win": 3258,
+      "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+      "wilcoxon_p_value": 2.6760672708475675e-48,
+      "wilcoxon_statistic": 6266903.0
+    },
+    "ens3_minus_s0/chanrg_gena": {
+      "delta_macro_f1": 0.024625042302298006,
+      "delta_micro_f1": 0.018959000177859897,
+      "mean_per_sequence_delta_f1": 0.024625042302297968,
+      "median_per_sequence_delta_f1": 0.006493506493506551,
+      "n_loss": 1738,
+      "n_tie": 815,
+      "n_win": 2784
+    },
+    "ens3_minus_s0/chanrg_genc": {
+      "delta_macro_f1": 0.042228147257316745,
+      "delta_micro_f1": 0.04812047208055484,
+      "mean_per_sequence_delta_f1": 0.04222814725731681,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 1067,
+      "n_tie": 942,
+      "n_win": 1927
+    },
+    "ens3_minus_s0/chanrg_genf": {
+      "delta_macro_f1": 0.007980118607280595,
+      "delta_micro_f1": 0.013884064036331578,
+      "mean_per_sequence_delta_f1": 0.00798011860728057,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 480,
+      "n_tie": 678,
+      "n_win": 576
+    },
+    "ens3_minus_s0/chanrg_test": {
+      "delta_macro_f1": 0.014467363060525873,
+      "delta_micro_f1": 0.011656224073472443,
+      "mean_per_sequence_delta_f1": 0.014467363060525871,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 3203,
+      "n_tie": 2577,
+      "n_win": 4817
+    },
+    "ens3_minus_s1/chanrg_gena": {
+      "delta_macro_f1": 0.03444049452430836,
+      "delta_micro_f1": 0.03967956865232275,
+      "mean_per_sequence_delta_f1": 0.034440494524308356,
+      "median_per_sequence_delta_f1": 0.02298850574712652,
+      "n_loss": 1251,
+      "n_tie": 700,
+      "n_win": 3386
+    },
+    "ens3_minus_s1/chanrg_genc": {
+      "delta_macro_f1": -0.008156913665147425,
+      "delta_micro_f1": -0.012113336523018714,
+      "mean_per_sequence_delta_f1": -0.008156913665147396,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 1550,
+      "n_tie": 740,
+      "n_win": 1646
+    },
+    "ens3_minus_s1/chanrg_genf": {
+      "delta_macro_f1": 0.011221836113383232,
+      "delta_micro_f1": 0.013498035597358071,
+      "mean_per_sequence_delta_f1": 0.01122183611338319,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 415,
+      "n_tie": 588,
+      "n_win": 731
+    },
+    "ens3_minus_s1/chanrg_test": {
+      "delta_macro_f1": 0.018368371260225835,
+      "delta_micro_f1": 0.019838489715510277,
+      "mean_per_sequence_delta_f1": 0.01836837126022588,
+      "median_per_sequence_delta_f1": 0.0023255813953487747,
+      "n_loss": 2800,
+      "n_tie": 2453,
+      "n_win": 5344
+    },
+    "ens3_minus_s2/chanrg_gena": {
+      "delta_macro_f1": 0.0018288588461431443,
+      "delta_micro_f1": 0.0014827917419837355,
+      "mean_per_sequence_delta_f1": 0.0018288588461430684,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 2151,
+      "n_tie": 895,
+      "n_win": 2291
+    },
+    "ens3_minus_s2/chanrg_genc": {
+      "delta_macro_f1": 0.013606621242604644,
+      "delta_micro_f1": 0.011852864561495369,
+      "mean_per_sequence_delta_f1": 0.0136066212426047,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 1272,
+      "n_tie": 1048,
+      "n_win": 1616
+    },
+    "ens3_minus_s2/chanrg_genf": {
+      "delta_macro_f1": 0.013340149716536853,
+      "delta_micro_f1": 0.008189844121401724,
+      "mean_per_sequence_delta_f1": 0.013340149716536838,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 491,
+      "n_tie": 686,
+      "n_win": 557
+    },
+    "ens3_minus_s2/chanrg_test": {
+      "delta_macro_f1": 0.008126045484971423,
+      "delta_micro_f1": 0.009446631965687957,
+      "mean_per_sequence_delta_f1": 0.00812604548497151,
+      "median_per_sequence_delta_f1": 0.0,
+      "n_loss": 3098,
+      "n_tie": 2899,
+      "n_win": 4600
+    }
+  },
+  "contract_rulings": [
+    {
+      "evidence": "tables/sota_vs_ours.md; records/DECISION_TRAINING_LOG.md",
+      "id": "archiveii_clean_reference",
+      "ours": {
+        "micro_f1": 0.776,
+        "model": "xens2"
+      },
+      "reference": {
+        "micro_f1": 0.7872,
+        "model": "Kirigami"
+      },
+      "verdict": "negative_not_unique_TS2_failure"
+    },
+    {
+      "evidence": "tables/sota_vs_ours.md; spec/spec.md round-29",
+      "id": "bprna_new_sota_boundary",
+      "ours": {
+        "micro_f1": 0.6132,
+        "model": "r2dtr1_two_seed_ensemble"
+      },
+      "references": {
+        "EternaFold": 0.6854,
+        "MXfold2": 0.6688,
+        "UFold": 0.6106,
+        "ViennaRNA_centroid": 0.677,
+        "eFold": 0.664
+      },
+      "verdict": "selected_UFold_win_only_not_all_system_SOTA"
+    },
+    {
+      "clean_reference": {
+        "RiNALMo_ft": 0.8177,
+        "xens2": 0.837
+      },
+      "evidence": "tables/overlap_audit.md; records/DECISION_TRAINING_LOG.md",
+      "id": "testsetb_withdrawal",
+      "reason": "TR0 shares 247 sequences with TestSetB; use clean-181 and retain full-428 separately",
+      "verdict": "old_zero_shot_claim_withdrawn"
+    },
+    {
+      "evidence": "spec/benchmark_decision.md; records/DECISION_TRAINING_LOG.md",
+      "id": "C1-a",
+      "reason": "RNAformer unrecalibrated ECE 0.0015 outperforms our recalibrated 0.0031",
+      "verdict": "FAIL"
+    },
+    {
+      "evidence": "spec/spec.md; records/DECISION_TRAINING_LOG.md",
+      "id": "C2_cascade",
+      "ours": {
+        "casc_at_20k": 0.5011,
+        "flat_big": 0.6425,
+        "flat_ff": 0.5958
+      },
+      "verdict": "negative_not_a_contribution"
+    },
+    {
+      "evidence": "spec/spec.md round-29 and S1/S3 table",
+      "id": "S1_S3_speed_gates",
+      "reason": "50x McCaskill and L512<=10ms are not valid acceptance gates; report only matched-protocol measurements",
+      "verdict": "RETIRED"
+    },
+    {
+      "evidence": "local RNA-SSP contrastive spec v3.0 handoff addendum",
+      "id": "contrastive_A0_A5",
+      "reason": "Jev RLCD/ensembles are not structure-aware contrastive-learning arms",
+      "verdict": "NOT_RUN"
+    }
+  ],
+  "contrastive_learning_status": "A0-A5 not run",
+  "generated_by": "tools/build_result_registry.py",
+  "rows": [
+    {
+      "aggregation": "ensemble_2_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.5069067438478112,
+        "macro_inf": 0.5155597231205531,
+        "micro_f1": 0.5166315666125247,
+        "precision": 0.599900216952535,
+        "recall": 0.45366146458583434
+      },
+      "model": "chanrg_ens2_gt",
+      "n_sequences": 5337,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens_gt/chanrg_gena/result.json",
+      "source_result_sha256": "e179d64efba1d0d9ac1c159d87c27069f5ed6819ec33747647591a657cfafcde",
+      "split": "chanrg_gena",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "ensemble_2_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.26474233587515494,
+        "macro_inf": 0.2686225946942503,
+        "micro_f1": 0.26676454599941457,
+        "precision": 0.3097673615607061,
+        "recall": 0.23424584880257843
+      },
+      "model": "chanrg_ens2_gt",
+      "n_sequences": 3936,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens_gt/chanrg_genc/result.json",
+      "source_result_sha256": "1ee3a3054cf34e84cb5e278f62139fe9a41506d3470cae02ce70df6476f002c4",
+      "split": "chanrg_genc",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "ensemble_2_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.2767805184413836,
+        "macro_inf": 0.2827094107179425,
+        "micro_f1": 0.27279922385620914,
+        "precision": 0.32175981691158756,
+        "recall": 0.23677096259528452
+      },
+      "model": "chanrg_ens2_gt",
+      "n_sequences": 1734,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens_gt/chanrg_genf/result.json",
+      "source_result_sha256": "c84e312adf3edc74668474b7c9c175740efc90edf254b83568bebabe1779976c",
+      "split": "chanrg_genf",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "ensemble_2_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.6280809939512673,
+        "macro_inf": 0.6331434374534065,
+        "micro_f1": 0.631986180527747,
+        "precision": 0.6979077237336807,
+        "recall": 0.577443226875113
+      },
+      "model": "chanrg_ens2_gt",
+      "n_sequences": 10597,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens_gt/chanrg_test/result.json",
+      "source_result_sha256": "147acc405160f55f746bcafaba0ea873e21e599360c898d6a1490a4401577a34",
+      "split": "chanrg_test",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "ensemble_3_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f",
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.5198600712231325,
+        "macro_inf": 0.5272824226041629,
+        "micro_f1": 0.5295659079728761,
+        "precision": 0.6051422986765819,
+        "recall": 0.47077116560910076
+      },
+      "model": "chanrg_ens3_gt",
+      "n_sequences": 5337,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens3_gt/chanrg_gena/result.json",
+      "source_result_sha256": "04c488e0638050e410418042a3110c09c42e2d38785ab3e184dd2b2a63429a4d",
+      "split": "chanrg_gena",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "ensemble_3_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f",
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.26689508590024136,
+        "macro_inf": 0.2704315427177126,
+        "micro_f1": 0.2697104831442501,
+        "precision": 0.31097612958226767,
+        "recall": 0.23811350006119703
+      },
+      "model": "chanrg_ens3_gt",
+      "n_sequences": 3936,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens3_gt/chanrg_genc/result.json",
+      "source_result_sha256": "25e64b4d8dcdd9501bb3e08572d58f28d0b5cd5bb28e967ff0c1746c5e804400",
+      "split": "chanrg_genc",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "ensemble_3_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f",
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.2765198419786589,
+        "macro_inf": 0.28268309515238815,
+        "micro_f1": 0.2750181290790428,
+        "precision": 0.3308511964107677,
+        "recall": 0.23530845594752703
+      },
+      "model": "chanrg_ens3_gt",
+      "n_sequences": 1734,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens3_gt/chanrg_genf/result.json",
+      "source_result_sha256": "34849a0d57f2bd7b002448e46f6b85573aa683ad23d384545962305af365dcf3",
+      "split": "chanrg_genf",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "ensemble_3_heads",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a",
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f",
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.632886961131871,
+        "macro_inf": 0.6376025614818069,
+        "micro_f1": 0.6362561435049373,
+        "precision": 0.6987106699388301,
+        "recall": 0.5840505561730153
+      },
+      "model": "chanrg_ens3_gt",
+      "n_sequences": 10597,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_ens3_gt/chanrg_test/result.json",
+      "source_result_sha256": "7d66bfd4a3be7f360ae187d54e297afcd70c705895f72fdb7218c40c9b01219e",
+      "split": "chanrg_test",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.4952350289208345,
+        "macro_inf": 0.5062781180298546,
+        "micro_f1": 0.5106069077950162,
+        "precision": 0.6215150223038572,
+        "recall": 0.43328760075458755
+      },
+      "model": "chanrg_r2d_s0_gt",
+      "n_sequences": 5337,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt/chanrg_gena/result.json",
+      "source_result_sha256": "fce6c96d093eacf28bca4d400866e1499d6b9bc6c7d787137d8fabf3ca34fac2",
+      "split": "chanrg_gena",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.2246669386429246,
+        "macro_inf": 0.23035648546169124,
+        "micro_f1": 0.22159001106369527,
+        "precision": 0.2682522380444362,
+        "recall": 0.18875606870384726
+      },
+      "model": "chanrg_r2d_s0_gt",
+      "n_sequences": 3936,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt/chanrg_genc/result.json",
+      "source_result_sha256": "38a0b0851f562f9330d59d7dabc64ba45b8bd913061fed5cbaac183916abf069",
+      "split": "chanrg_genc",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.2685397233713783,
+        "macro_inf": 0.2748619140943223,
+        "micro_f1": 0.2611340650427112,
+        "precision": 0.3050275359744182,
+        "recall": 0.22828399219996454
+      },
+      "model": "chanrg_r2d_s0_gt",
+      "n_sequences": 1734,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt/chanrg_genf/result.json",
+      "source_result_sha256": "b4e62fb4b7606d89a61620b146a86c5890f26fb7739de33542d00dfe702b5950",
+      "split": "chanrg_genf",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s0": "014941cb02a5971694949695faa68649dc4e68d6f99f6a5b100da36fe74f428a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.6184195980713452,
+        "macro_inf": 0.6246708460572331,
+        "micro_f1": 0.6245999194314649,
+        "precision": 0.7020388824356545,
+        "recall": 0.5625476490093598
+      },
+      "model": "chanrg_r2d_s0_gt",
+      "n_sequences": 10597,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt/chanrg_test/result.json",
+      "source_result_sha256": "b5f897c1f5498296499af3018e6418020132bff9e797640a6d5dcfd0f033ac34",
+      "split": "chanrg_test",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.48541957669882413,
+        "macro_inf": 0.4929681016676763,
+        "micro_f1": 0.4898863393205533,
+        "precision": 0.5448767307396155,
+        "recall": 0.4449779911964786
+      },
+      "model": "chanrg_r2d_s1_gt",
+      "n_sequences": 5337,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s1/chanrg_gena/result.json",
+      "source_result_sha256": "e578b1699455366d79ae40eb668cf1c47818e2e5d5d0ed50df1f7dd4aabd924e",
+      "split": "chanrg_gena",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.2750519995653888,
+        "macro_inf": 0.27754025380922126,
+        "micro_f1": 0.2818238196672688,
+        "precision": 0.31366350895795614,
+        "recall": 0.2558524743992493
+      },
+      "model": "chanrg_r2d_s1_gt",
+      "n_sequences": 3936,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s1/chanrg_genc/result.json",
+      "source_result_sha256": "3f981025a3772eeff61f258d7587a713b7e279962f40823a8192e22e49baba85",
+      "split": "chanrg_genc",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.2652980058652757,
+        "macro_inf": 0.26997991606071586,
+        "micro_f1": 0.2615200934816847,
+        "precision": 0.30636233781692657,
+        "recall": 0.22812887785853572
+      },
+      "model": "chanrg_r2d_s1_gt",
+      "n_sequences": 1734,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s1/chanrg_genf/result.json",
+      "source_result_sha256": "df8d72d83f98cdd1e7d7e07665623ae4012f7475f45b587ecc953e6cd675c79b",
+      "split": "chanrg_genf",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s1": "8e15f9d845466132b8ca853349aa1945498a41afbf7c71279412ecf0f8b1d98f"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.6145185898716452,
+        "macro_inf": 0.6188645802181528,
+        "micro_f1": 0.616417653789427,
+        "precision": 0.6700709250452044,
+        "recall": 0.5707195497953198
+      },
+      "model": "chanrg_r2d_s1_gt",
+      "n_sequences": 10597,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s1/chanrg_test/result.json",
+      "source_result_sha256": "e4b619b2068d68811b414a82a51836346f2fe8d9fd55e46bd600dd74666463a0",
+      "split": "chanrg_test",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.5180312123769893,
+        "macro_inf": 0.5234049099219785,
+        "micro_f1": 0.5280831162308923,
+        "precision": 0.5855561743004316,
+        "recall": 0.4808837820842623
+      },
+      "model": "chanrg_r2d_s2_gt",
+      "n_sequences": 5337,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s2/chanrg_gena/result.json",
+      "source_result_sha256": "ac54af8aeb2dcb61f3118f123f37a808d57c2950648dc13f495f9b24e46edfee",
+      "split": "chanrg_gena",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.2532884646576367,
+        "macro_inf": 0.25595143902888423,
+        "micro_f1": 0.25785761858275474,
+        "precision": 0.2923990523386338,
+        "recall": 0.23061482599649138
+      },
+      "model": "chanrg_r2d_s2_gt",
+      "n_sequences": 3936,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s2/chanrg_genc/result.json",
+      "source_result_sha256": "101b432419ee29b3361c1e4cadc80f9c34fabdb3a333935651a0d7fc4ace17e7",
+      "split": "chanrg_genc",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.26317969226212207,
+        "macro_inf": 0.26894523230229356,
+        "micro_f1": 0.26682828495764105,
+        "precision": 0.32907607812550776,
+        "recall": 0.22438397447261124
+      },
+      "model": "chanrg_r2d_s2_gt",
+      "n_sequences": 1734,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s2/chanrg_genf/result.json",
+      "source_result_sha256": "f520a9653b3a7579430a78a85816c076540ff90100d8f90a846e2db19a96565e",
+      "split": "chanrg_genf",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {
+        "s2": "269db6104427e13ede014d1b4c10fe6fb59ca137143985a980ce7817afeb135a"
+      },
+      "corpus": "CHANRG train; legacy overlap-disclosed",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "project canonical-nested; verify per source result",
+      "legacy_schema": false,
+      "metrics": {
+        "macro_f1": 0.6247609156468996,
+        "macro_inf": 0.6289464946067389,
+        "micro_f1": 0.6268095115392494,
+        "precision": 0.6805437492154014,
+        "recall": 0.580939783899304
+      },
+      "model": "chanrg_r2d_s2_gt",
+      "n_sequences": 10597,
+      "overlap_status": "legacy overlap disclosed; not clean OOD",
+      "scorer": "evaluate_decision strict pair identity",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_arm_gt_s2/chanrg_test/result.json",
+      "source_result_sha256": "2b909ffcecea61d95cfb89e82c84280ec2520055b9a9b47973f0b4c6bcd24278",
+      "split": "chanrg_test",
+      "training_convergence": "step_cap_20000_not_convergence_validated"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.5662570331758547,
+        "macro_inf": 0.5696894003086092,
+        "micro_f1": 0.5772157805937467,
+        "precision": 0.605425656086449,
+        "recall": 0.5515177499571257
+      },
+      "model": "zero_shot_r2d_tr1c",
+      "n_sequences": 5337,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_gena/r2d/result.json",
+      "source_result_sha256": "2e7cf3c6c0e84b02fa28489ea4471029897e73826a18c0520b6eab7210f43d7d",
+      "split": "chanrg_gena",
+      "training_convergence": "not_recorded_legacy"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.27092644435896684,
+        "macro_inf": 0.27445167439495405,
+        "micro_f1": 0.2769367445282985,
+        "precision": 0.30762866456005344,
+        "recall": 0.25181347150259065
+      },
+      "model": "zero_shot_r2d_tr1c",
+      "n_sequences": 3936,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_genc/r2d/result.json",
+      "source_result_sha256": "c87a10984d6237275f216ea63ccf6ad0323519a4660ed12df358683f36fd0972",
+      "split": "chanrg_genc",
+      "training_convergence": "not_recorded_legacy"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.30293344163974745,
+        "macro_inf": 0.306049946459036,
+        "micro_f1": 0.3037335402732099,
+        "precision": 0.3419497989183192,
+        "recall": 0.27320067363942563
+      },
+      "model": "zero_shot_r2d_tr1c",
+      "n_sequences": 1734,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_genf/r2d/result.json",
+      "source_result_sha256": "57d9a00884f949e03876b5fe033d2d0eeac2f57651f7ec48734e1422c22f561a",
+      "split": "chanrg_genf",
+      "training_convergence": "not_recorded_legacy"
+    },
+    {
+      "aggregation": "single",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": {
+        "band": null,
+        "batch_size": null,
+        "meaning": "exact = nussinov_map, O(L^3) numpy, exact max-product; band = fold_system1 with j-i <= band, the fast path spec 5.0.1 defines System-1 as. Banding trades long-range pairs for speed, so report both F1s. c_batched = C extension, same-padded-length mini-batches, OpenMP-parallel; bitwise-equal to 'exact'.",
+        "mode": "exact"
+      },
+      "device": "cuda",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.5034156013298469,
+        "macro_inf": 0.5071850133949843,
+        "micro_f1": 0.4934633795683641,
+        "precision": 0.5290052297334692,
+        "recall": 0.4623967030712753
+      },
+      "model": "zero_shot_r2d_tr1c",
+      "n_sequences": 10597,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_test/r2d/result.json",
+      "source_result_sha256": "97162a37862f5df54c10b9df0950231ed2fdfda7c75abc8b8db4bb1f1cdedf9f",
+      "split": "chanrg_test",
+      "training_convergence": "not_recorded_legacy"
+    },
+    {
+      "aggregation": "ensemble",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": "not_recorded_legacy",
+      "device": "not_recorded",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.6224433529609156,
+        "macro_inf": null,
+        "micro_f1": 0.6442581286338704,
+        "precision": 0.721715205536764,
+        "recall": 0.5818155833762076
+      },
+      "model": "zero_shot_xens2_tr1c",
+      "n_sequences": 5337,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_gena/xens2/result.json",
+      "source_result_sha256": "6c4d990d5dc6140e077134969535bfd897d2a3d6989dae15a1b85cdce336be22",
+      "split": "chanrg_gena",
+      "training_convergence": "not_recorded_legacy"
+    },
+    {
+      "aggregation": "ensemble",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": "not_recorded_legacy",
+      "device": "not_recorded",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.3591132694211972,
+        "macro_inf": null,
+        "micro_f1": 0.37927236971484757,
+        "precision": 0.4771105201311151,
+        "recall": 0.31473216107053975
+      },
+      "model": "zero_shot_xens2_tr1c",
+      "n_sequences": 3936,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_genc/xens2/result.json",
+      "source_result_sha256": "94b73a5f83e4ac31ebe0cc2a86480e1ed06fb50b66f6d95b62c943d4e1c1b8f9",
+      "split": "chanrg_genc",
+      "training_convergence": "not_recorded_legacy"
+    },
+    {
+      "aggregation": "ensemble",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": "not_recorded_legacy",
+      "device": "not_recorded",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.3051010986419243,
+        "macro_inf": null,
+        "micro_f1": 0.3065677853065144,
+        "precision": 0.38506902559978556,
+        "recall": 0.25465343024286474
+      },
+      "model": "zero_shot_xens2_tr1c",
+      "n_sequences": 1734,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_genf/xens2/result.json",
+      "source_result_sha256": "e273fc750d0d580b2edd06ba8621b0f2946e82b1737483006521e2e633d331ad",
+      "split": "chanrg_genf",
+      "training_convergence": "not_recorded_legacy"
+    },
+    {
+      "aggregation": "ensemble",
+      "checkpoint_sha256": {},
+      "corpus": "bpRNA tr1c; legacy board",
+      "decode": "not_recorded_legacy",
+      "device": "not_recorded",
+      "evidence_type": "measured",
+      "gt": "not_recorded_legacy",
+      "legacy_schema": true,
+      "metrics": {
+        "macro_f1": 0.565016367011867,
+        "macro_inf": null,
+        "micro_f1": 0.5655544461086148,
+        "precision": 0.6518259229512061,
+        "recall": 0.4994504098197528
+      },
+      "model": "zero_shot_xens2_tr1c",
+      "n_sequences": 10597,
+      "overlap_status": "legacy board; see overlap audit",
+      "scorer": "legacy project scorer; read source script",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/chanrg_test/xens2/result.json",
+      "source_result_sha256": "1f473270d009bfa2ac6849150ec79f7b14b032180073a9b4f5e0afa6e4ff681e",
+      "split": "chanrg_test",
+      "training_convergence": "not_recorded_legacy"
+    }
+  ],
+  "schema_version": 1,
+  "seed_statistics": {
+    "ens3_vs_seed_mean": {
+      "chanrg_gena": {
+        "delta_macro_f1": 0.020298131890916504,
+        "delta_micro_f1": 0.02004045352405548,
+        "holm_family_size": 4,
+        "holm_p_value": 7.120779147084666e-180,
+        "mean_per_sequence_delta_f1": 0.020298131890916466,
+        "median_per_sequence_delta_f1": 0.014243888156931561,
+        "n_loss": 1574,
+        "n_nonzero_pairs": 4980,
+        "n_tie": 357,
+        "n_win": 3406,
+        "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+        "wilcoxon_p_value": 2.373593049028222e-180,
+        "wilcoxon_statistic": 3295744.5
+      },
+      "chanrg_genc": {
+        "delta_macro_f1": 0.015892618278257997,
+        "delta_micro_f1": 0.015953333373010525,
+        "holm_family_size": 4,
+        "holm_p_value": 4.741854635030691e-20,
+        "mean_per_sequence_delta_f1": 0.01589261827825804,
+        "median_per_sequence_delta_f1": 0.0,
+        "n_loss": 1567,
+        "n_nonzero_pairs": 3502,
+        "n_tie": 434,
+        "n_win": 1935,
+        "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+        "wilcoxon_p_value": 2.3709273175153455e-20,
+        "wilcoxon_statistic": 2513725.0
+      },
+      "chanrg_genf": {
+        "delta_macro_f1": 0.01084736814573356,
+        "delta_micro_f1": 0.011857314585030476,
+        "holm_family_size": 4,
+        "holm_p_value": 9.331493529990491e-09,
+        "mean_per_sequence_delta_f1": 0.010847368145733532,
+        "median_per_sequence_delta_f1": 0.0,
+        "n_loss": 586,
+        "n_nonzero_pairs": 1323,
+        "n_tie": 411,
+        "n_win": 737,
+        "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+        "wilcoxon_p_value": 9.331493529990491e-09,
+        "wilcoxon_statistic": 358096.5
+      },
+      "chanrg_test": {
+        "delta_macro_f1": 0.013653926601907673,
+        "delta_micro_f1": 0.01364711525155693,
+        "holm_family_size": 4,
+        "holm_p_value": 1.172107063562623e-252,
+        "mean_per_sequence_delta_f1": 0.013653926601907757,
+        "median_per_sequence_delta_f1": 0.007662835249042099,
+        "n_loss": 3515,
+        "n_nonzero_pairs": 9953,
+        "n_tie": 644,
+        "n_win": 6438,
+        "test": "two-sided Wilcoxon signed-rank on paired per-sequence F1",
+        "wilcoxon_p_value": 2.9302676589065574e-253,
+        "wilcoxon_statistic": 15023775.5
+      }
+    },
+    "summary": {
+      "chanrg_gena": {
+        "macro_f1": {
+          "max": 0.5180312123769893,
+          "mean": 0.499561939332216,
+          "min": 0.48541957669882413,
+          "n_seeds": 3,
+          "sample_std": 0.016730849072370352
+        },
+        "macro_inf": {
+          "max": 0.5234049099219785,
+          "mean": 0.5075503765398365,
+          "min": 0.4929681016676763,
+          "n_seeds": 3,
+          "sample_std": 0.0152582372987333
+        },
+        "micro_f1": {
+          "max": 0.5280831162308923,
+          "mean": 0.5095254544488206,
+          "min": 0.4898863393205533,
+          "n_seeds": 3,
+          "sample_std": 0.019121338802226953
+        }
+      },
+      "chanrg_genc": {
+        "macro_f1": {
+          "max": 0.2750519995653888,
+          "mean": 0.25100246762198336,
+          "min": 0.2246669386429246,
+          "n_seeds": 3,
+          "sample_std": 0.025270198413850423
+        },
+        "macro_inf": {
+          "max": 0.27754025380922126,
+          "mean": 0.2546160594332656,
+          "min": 0.23035648546169124,
+          "n_seeds": 3,
+          "sample_std": 0.023620212273953847
+        },
+        "micro_f1": {
+          "max": 0.2818238196672688,
+          "mean": 0.2537571497712396,
+          "min": 0.22159001106369527,
+          "n_seeds": 3,
+          "sample_std": 0.030325538875321557
+        }
+      },
+      "chanrg_genf": {
+        "macro_f1": {
+          "max": 0.2685397233713783,
+          "mean": 0.26567247383292536,
+          "min": 0.26317969226212207,
+          "n_seeds": 3,
+          "sample_std": 0.002699565347819066
+        },
+        "macro_inf": {
+          "max": 0.2748619140943223,
+          "mean": 0.27126235415244393,
+          "min": 0.26894523230229356,
+          "n_seeds": 3,
+          "sample_std": 0.003159947222876904
+        },
+        "micro_f1": {
+          "max": 0.26682828495764105,
+          "mean": 0.2631608144940123,
+          "min": 0.2611340650427112,
+          "n_seeds": 3,
+          "sample_std": 0.003181981959426538
+        }
+      },
+      "chanrg_test": {
+        "macro_f1": {
+          "max": 0.6247609156468996,
+          "mean": 0.6192330345299634,
+          "min": 0.6145185898716452,
+          "n_seeds": 3,
+          "sample_std": 0.005169387630635487
+        },
+        "macro_inf": {
+          "max": 0.6289464946067389,
+          "mean": 0.6241606402940416,
+          "min": 0.6188645802181528,
+          "n_seeds": 3,
+          "sample_std": 0.005060284762272782
+        },
+        "micro_f1": {
+          "max": 0.6268095115392494,
+          "mean": 0.6226090282533804,
+          "min": 0.616417653789427,
+          "n_seeds": 3,
+          "sample_std": 0.0054745239642699905
+        }
+      }
+    }
+  },
+  "source_verification": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/chanrg_ens3_verification.json",
+    "sha256": "6b47e42db951608faaf6120e6c1ffa148038e5ffb010fb32a2764dcea4b52dcd"
+  },
+  "status_note": "CHANRG evidence registry; not a submission-ready global benchmark"
+}

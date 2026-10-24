@@ -22,6 +22,11 @@ def _norm(seq):
     return seq.upper().replace("T", "U")
 
 
+def _seq(index, length=12):
+    return "".join("ACGU"[(index // (4 ** position)) % 4]
+                   for position in range(length))
+
+
 def _record(seq, pairs=(), name=""):
     structure = ["."] * len(seq)
     for i, j in pairs:
@@ -410,3 +415,67 @@ def test_mixed_sequence_hash_conventions_fail_closed(tmp_path):
         _build(tmp_path, [spec], name="mixed_hash_output")
     assert not (tmp_path / "mixed_hash_output.jsonl").exists()
     assert not (tmp_path / "mixed_hash_output_teacher").exists()
+
+
+def test_hash_sampling_is_reproducible_and_precedes_blocklist(tmp_path):
+    rows = [_record(_seq(index)) for index in range(12)]
+    spec, _ = _mfe_input(tmp_path, "sampled", rows, shard_size=2)
+    _index, selected, metadata = BC._select_hash_sample([spec], 1, 3, "seed-A")
+    blocked_sequence = sorted(selected)[0]
+    unblocked_sequence = next(row["seq"] for row in rows if row["seq"] not in selected)
+    blocklist = _write_jsonl(tmp_path / "sample_block.jsonl",
+                             [{"seq": blocked_sequence}, {"seq": unblocked_sequence}])
+    result, jsonl, _ = _build(tmp_path, [spec], name="sampled_output",
+                              blocklists=[blocklist], sample_input=1,
+                              sample_count=3, sample_seed="seed-A")
+    output_sequences = {_norm(row["seq"]) for row in _rows(jsonl)}
+    assert output_sequences == selected - {blocked_sequence}
+    assert result["stats"]["filtered_hash_sample"] == 9
+    assert result["stats"]["filtered_blocklist"] == 1
+    assert result["hash_sampling"]["selection_sha256"] == metadata["selection_sha256"]
+    _other_index, _other_selected, other_metadata = BC._select_hash_sample(
+        [spec], 1, 3, "seed-B")
+    assert other_metadata["selection_sha256"] != metadata["selection_sha256"]
+
+
+def test_hash_sampling_same_source_is_identical_for_single_and_mixed(tmp_path):
+    shared_rows = [_record(_seq(index)) for index in range(8)]
+    other_rows = [_record(_seq(index + 100)) for index in range(2)]
+    shared, _ = _mfe_input(tmp_path, "shared", shared_rows, shard_size=2)
+    other, _ = _mfe_input(tmp_path, "other", other_rows, shard_size=1)
+    single, single_jsonl, _ = _build(
+        tmp_path, [shared], name="single_sample", sample_input=1,
+        sample_count=3, sample_seed="matched")
+    mixed, mixed_jsonl, _ = _build(
+        tmp_path, [other, shared], name="mixed_sample", sample_input=2,
+        sample_count=3, sample_seed="matched")
+    single_sequences = {_norm(row["seq"]) for row in _rows(single_jsonl)}
+    mixed_sequences = {_norm(row["seq"]) for row in _rows(mixed_jsonl)}
+    shared_sequences = {_norm(row["seq"]) for row in shared_rows}
+    assert single_sequences == mixed_sequences & shared_sequences
+    assert single["hash_sampling"]["selection_sha256"] == mixed["hash_sampling"]["selection_sha256"]
+
+
+def test_hash_sampling_rejects_insufficient_unique_and_validation(tmp_path):
+    rows = [_record(S1), _record(S2)]
+    spec, _ = _mfe_input(tmp_path, "too_small", rows)
+    with pytest.raises(BC.CorpusBuildError, match="cannot select 3"):
+        _build(tmp_path, [spec], name="too_small_output", sample_input=1, sample_count=3)
+    assert not (tmp_path / "too_small_output.jsonl").exists()
+    with pytest.raises(BC.CorpusBuildError, match="validation role does not accept hash sampling"):
+        _build(tmp_path, [spec], name="validation_sample", role="validation",
+               sample_input=1, sample_count=1)
+    assert not (tmp_path / "validation_sample.jsonl").exists()
+
+
+def test_cli_rejects_duplicate_sampling_options(tmp_path, capsys):
+    jsonl = _write_jsonl(tmp_path / "cli_sample.jsonl", [_record(S1)])
+    blocklist = _write_jsonl(tmp_path / "cli_sample_block.jsonl", [{"seq": S2}])
+    code = BC.main(["--role", "train", "--input", str(jsonl), "gt",
+                    "--blocklist", str(blocklist), "--sample-input", "1",
+                    "--sample-input", "1", "--sample-count", "1",
+                    "--out-jsonl", str(tmp_path / "cli_sample_out.jsonl"),
+                    "--out-teacher-dir", str(tmp_path / "cli_sample_teacher")])
+    assert code == 2
+    assert "may only be given once" in capsys.readouterr().err
+    assert not (tmp_path / "cli_sample_out.jsonl").exists()

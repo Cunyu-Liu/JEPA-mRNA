@@ -1631,14 +1631,21 @@ objective by four orders of magnitude. The third varied the head count: a
 second identically configured head, differing only in random seed and
 averaged before decoding, lifts every split over the single-head mean
 (0.6320, 0.5166, 0.2668, 0.2728) but by order 0.01, while the distance to
-the board on GenF remains 0.12. Neither corpus coverage, nor distillation
-supervision, nor head count therefore explains the deficit; what separates
-the board from every CHANRG-corpus head is that the board is a
-family-complementary ensemble trained on the bpRNA corpus with locked
-calibration, and its strength on genome-sparse families appears to come from
-that corpus mixture rather than from any property a CHANRG-only retraining
-can acquire. We state mixed-corpus board training as the follow-up this
-analysis motivates, and report the three negatives rather than smooth them.
+the board on GenF remains 0.12; extending the average to a third seed adds
+only 0.002 on GenF (0.2728 to 0.2750) and 0.004 in-distribution, the
+diminishing-return signature that rules out head count as the lever.
+Neither corpus coverage, nor distillation supervision, nor head count
+therefore explains the deficit; what separates the board from every
+CHANRG-corpus head is that the board is a family-complementary ensemble
+trained on the bpRNA corpus with locked calibration, and its strength on
+genome-sparse families appears to come from that corpus mixture rather than
+from any property a CHANRG-only retraining can acquire. The mixed-corpus
+follow-up this analysis motivates — retraining the decision head on a
+corpus that unions the bpRNA family-complementary split with the CHANRG
+training partition — is running at revision time; its four-split readout
+will either close the GenF distance to the board or localise the deficit
+outside corpus composition entirely. We report the three negatives rather
+than smooth them, and the follow-up under the same disclosure discipline.
 
 ## 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) ,  and the opposite on TestSetB
 

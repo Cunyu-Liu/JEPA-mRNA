@@ -15,9 +15,9 @@
 > | T-A112 三种子集成 | 四 split 已完成；独立复算 PASS | 结论限定为 Test 改善、GenA/GenC/GenF 落后；GenF macro 未提升，禁止 SOTA/全面提升表述 |
 > | **T-A113 接管审计与 spec 同步** | **已完成（6a55017）** | 两个 spec 目录已同步；数据、权重、日志进入新团队目录；SSH 已改密钥；秘密扫描通过 |
 > | **T-A114 CHANRG 当前证据闭环** | **已完成** | s2 单模型 4/4；`--require-s2` PASS；三种子 mean±std、Wilcoxon–Holm、第二套独立统计和台账 §15.99 已落盘；结论含 GenF macro 负增量与 OOD 失败边界 |
-> | **T-A115 验证集收敛训练** | **部分完成** | 40 项相关测试、构建器专项29项、完整 366 passed/1 skipped 与 CUDA smoke 已过；还需真实 held-out teacher/embedding dry-run 和短程 CUDA 检查；新训练必须以 early_stopping 而非 step_cap 标记 converged |
-> | **T-A116 唯一结果注册表与合同纠错** | **待办** | 以模型/语料/checkpoint/split/GT/scorer/decoder/硬件为键；处理 Kirigami ArchiveII 反例、bpRNA-new 强参照、撤回 TestSetB、C1-a/C2/S1/S3；所有 claim 可回溯 |
-> | **T-A117 清洁 CHANRG 单语料 vs 清洁 bpRNA+CHANRG 混合语料** | **待 T-A115/T-A116；无效旧 mix 已退役** | 两臂使用同一 blocklist、验证集与 early-stopping；teacher shard 唯一且 n_labels=n_records、逐条对齐；保持头、seed、有效 batch、LR、decoder/scorer 不变；至少3 seed；与彼此及 zero-shot 同协议比较，不用测试集选配置；旧含重叠臂只作历史参照 |
+> | **T-A115 验证集收敛训练** | **已完成** | 真实 dry-run、2步真实 CUDA 短跑、完整 370 passed/1 skipped 已通过；训练/validation teacher 对齐；新训练必须以 early_stopping 而非 step_cap 标记 converged |
+> | **T-A116 唯一结果注册表与合同纠错** | **已完成（当前 CHANRG 阶段）** | `tables/result_registry.json` 含28单元格、源结果/权重哈希、协议与 legacy 缺口；Kirigami、bpRNA-new、TestSetB、C1-a/C2/S1/S3 裁决已落盘；后续新结果按同 schema 追加 |
+> | **T-A117 清洁 CHANRG 单语料 vs 清洁 bpRNA+CHANRG 混合语料** | **资产构建中，未开训** | 同一30k哈希选样（seed=round29-chanrg30k-v1）先于 blocklist/dedup；单语料29,899条已验收，混合资产待完成；两臂同验证集、B=16、LR、decoder/scorer 和 early-stopping；至少3 seed；旧含重叠臂只作历史参照 |
 > | **T-A118 监控与 GitHub 闭环** | **进行中** | 10min watchdog 无自匹配误报；每个完成任务绑定 commit、配置、数据/权重哈希、日志和验证报告；确认后提交并 push，大文件与秘密不入库 |
 > | **T-A119 稿件、统计与 PPT** | **待证据门** | 清理稿件矛盾，补最终主模型校准、主表统计和新增任务完整表；PPT 只写已复核结果，保留负结果与限制 |
 > | **T-A120 预印本发布包** | **未完成** | 满足合同硬门、多种子/配对统计/Holm、完整引用与图表、代码/配置/split/预测/权重说明和复现命令；未满足不得提交预印本 |

@@ -60,7 +60,34 @@ if [ ! -f "$W/data/mixed/mixed_train.jsonl" ]; then
     --out-teacher-dir "$W/data/mixed_teacher" >> "$LOG" 2>&1
 fi
 check_complete "$W/data/mixed/mixed_train.jsonl" "$W/data/mixed_teacher" >> "$LOG"
+
+# Memory-bounded matched experiment: the same 30k CHANRG sequences in both arms.
+if [ ! -f "$W/data/chanrg_clean_30k/chanrg_train_train.jsonl" ]; then
+  echo "[assets] $(date) matched-30k clean CHANRG build start" >> "$LOG"
+  "$PY" tools/build_clean_corpus.py --role train \
+    --input "$J/chanrg_train_train.jsonl" gt "$D/ss_data/teacher_gt/chanrg_train" \
+    "${BLOCKS[@]}" \
+    --sample-input 1 --sample-count 30000 --sample-seed round29-chanrg30k-v1 \
+    --out-jsonl "$W/data/chanrg_clean_30k/chanrg_train_train.jsonl" \
+    --out-teacher-dir "$W/data/chanrg_clean_30k_teacher" >> "$LOG" 2>&1
+fi
+check_complete "$W/data/chanrg_clean_30k/chanrg_train_train.jsonl" "$W/data/chanrg_clean_30k_teacher" >> "$LOG"
+
+if [ ! -f "$W/data/mixed_30k/mixed_train.jsonl" ]; then
+  echo "[assets] $(date) matched-30k mixed build start" >> "$LOG"
+  "$PY" tools/build_clean_corpus.py --role train \
+    --input "$J/bprna_tr1c.jsonl" mfe "$D/ss_data/teacher/bprna_tr1c" \
+    --input "$J/chanrg_train_train.jsonl" gt "$D/ss_data/teacher_gt/chanrg_train" \
+    "${BLOCKS[@]}" \
+    --sample-input 2 --sample-count 30000 --sample-seed round29-chanrg30k-v1 \
+    --out-jsonl "$W/data/mixed_30k/mixed_train.jsonl" \
+    --out-teacher-dir "$W/data/mixed_30k_teacher" >> "$LOG" 2>&1
+fi
+check_complete "$W/data/mixed_30k/mixed_train.jsonl" "$W/data/mixed_30k_teacher" >> "$LOG"
+"$PY" -c 'import json; from pathlib import Path; w=Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data"); a=json.loads((w/"chanrg_clean_30k_teacher/manifest.json").read_text()); b=json.loads((w/"mixed_30k_teacher/manifest.json").read_text()); assert a["hash_sampling"]["selection_sha256"] == b["hash_sampling"]["selection_sha256"]; print("MATCHED_30K_OK", a["n_sequences"], b["n_sequences"], a["hash_sampling"]["selection_sha256"])' >> "$LOG"
 sha256sum "$W/data/validation_teacher/manifest.json" \
   "$W/data/chanrg_clean_teacher/manifest.json" \
-  "$W/data/mixed_teacher/manifest.json" >> "$LOG"
-echo "[assets] $(date) ALL_DONE validation + clean CHANRG + clean mixed" >> "$LOG"
+  "$W/data/mixed_teacher/manifest.json" \
+  "$W/data/chanrg_clean_30k_teacher/manifest.json" \
+  "$W/data/mixed_30k_teacher/manifest.json" >> "$LOG"
+echo "[assets] $(date) ALL_DONE validation + full assets + matched-30k controls" >> "$LOG"
