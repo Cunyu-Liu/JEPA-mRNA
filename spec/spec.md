@@ -2,6 +2,28 @@
 
 > change-id: `build-rna-ss-decision-model`
 
+> **当前交接（2026-10-24，第二十九轮接管审计；本节是当前执行依据）**：
+> - **事实源优先级**：原始 `result.json`/`run_meta.json`/权重哈希 > 可重跑验证脚本 > 本节的实时状态 > 历史交接快照与稿件叙述。以下旧交接块全部保留为历史，不得据其中的“在训/排队/已完成”直接执行或写结论。本轮起点 HEAD 为 `a88656b00afa93c7961ced5486459da25f0573a6`；后续提交哈希以 `git rev-parse HEAD` 为准。
+> - **当前路径与资源**：代码与 Git 提交留在 `/home/rna_jev`；本轮新增大型数据、权重和 artifacts 统一进入 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。现有 `/root/rna_jepa_data` 仅作旧资产只读依赖，不再用于本轮新 artifact。节点为 1×RTX 4090 24GB；系统盘已用 95%，团队盘余量约 2.8TB。SSH 已改用密钥，凭据不得写入任何文档、日志、脚本或 Git。
+> - **研究线边界**：本仓库是 RNA-Jev Decision Model/结构预测主线。本地《结构感知对比学习》v3.0 是后续独立对照研究方案；A0–A5 对比臂尚无实验结果，RLCD、集成或既有 Jev 头不得冒充结构感知对比学习。
+> - **第25轮后已落地**：NB fine-tune、NB+Jev 头迁移、ncRNA 双头、CHANRG 数据与四 split 评测、v3.30 合并、MRL/TE-EL/Splice 双头均有交接记录；这些状态来自第26–28轮台账与提交，本轮未全部重新训练。稿件存在并不等于投稿门通过。
+> - **CHANRG 当前实测**：GT-teacher 三种子训练均到 20k step cap；20k 只是计划终点，旧 run 没有 held-out early-stopping 证据，不得标记为“已收敛”。三种子集成四个 `result.json` 已逐序列独立复算，micro TP/FP/FN、macro-F1/INF、样本数、合法性和 CUDA 字段通过；旧 board 的 legacy schema 缺少 device/INF/legality 字段，已显式保留该证据边界。
+>
+> | split | ens2 micro-F1 | ens3 micro-F1 | ens3 macro-F1 | zero-shot xens2 micro-F1 | ens3−xens2 micro |
+> |---|---:|---:|---:|---:|---:|
+> | Test | 0.631986 | 0.636256 | 0.632887 | 0.565554 | +0.070702 |
+> | GenA | 0.516632 | 0.529566 | 0.519860 | 0.644258 | −0.114692 |
+> | GenC | 0.266765 | 0.269710 | 0.266895 | 0.379272 | −0.109562 |
+> | GenF | 0.272799 | 0.275018 | 0.276520 | 0.306568 | −0.031550 |
+>
+> - **CHANRG 科学判定**：第三种子使 ens3 相对 ens2 的 micro-F1 在四个 split 分别变化 +0.004270/+0.012934/+0.002946/+0.002219，但 GenF macro-F1 为 −0.000261，不能写“所有口径均提升”。单语料 CHANRG 训练只在本协议 Test 上优于 zero-shot xens2，GenA/GenC/GenF 均明显落后；GenF 未达到预注册的 0.4035 门，不得写 CHANRG SOTA。该结果支持做“bpRNA+CHANRG 混合语料 vs 单语料”的单变量对照，不支持继续堆 teacher、头数或测试集解码搜索。
+> - **无效混合臂已止损**：一份未纳入预注册的 `mix_s0_arm.sh` 被另行启动后，本轮发现167个 teacher shard 文件名冲突、未重新去重/blocklist、固定20k且写 `/root`。其 `run_meta` 为 steps=0、n_examples=72,564、teacher n_labels=72,067，与预期137,745条语料不一致；已保留现场、停止并隔离，任何输出不得作为科学结果。证据在 `audits/mix_s0_invalid_stop`。
+> - **本轮工程修复**：新增 `tools/verify_chanrg_ens3.py`，原始路径与团队盘镜像各独立复算一次并做镜像 diff；`ens3_chain.sh` 改为失败即停、artifact 完整后才 DONE；多头评测增加严格 head 加载和 checkpoint SHA256/ensemble 元数据；旧 watchdog 不再重启历史臂，进程计数排除 shell 误报，cron 每10分钟记录 GPU/CUDA 风险与 artifact 进度。
+> - **收敛基础设施**：`train_decision.py` 新增固定 held-out validation、确定性子集、patience/min-delta、best checkpoint、停止原因和 `converged` 标记；step cap 明确不等于收敛。集群 40 项相关测试通过，CUDA synthetic smoke 验证 early-stopping 路径通过；smoke 仅证明工程路径，不是科学结果。完整套件已完成 343 passed/1 skipped；真实验证集上的 dry-run/短跑仍是新训练前的门禁。
+> - **合同口径裁决**：不得再写无条件“7/8、唯一真负 TS2”。Kirigami 的 ArchiveII-clean 实测 0.7872 高于 xens2 0.7760；bpRNA-new 的 0.6132 只胜选定 UFold 参照且低于多个已测物理/zero-shot 系统。C1-a 维持 FAIL，C2 层级级联维持负结果，S1=50×与 S3=L512≤10ms 已作废，不得恢复。pair scoring 可称“免配分函数”，但 exact non-crossing decode 仍为 O(L^3) DP。
+> - **稿件/PPT 门禁**：当前 `preprint_draft.md` 仍混有撤回结果、模型身份混用、指标/参照不一致和未完成统计，不是可提交预印本。先建立唯一结果注册表并清理 claim–evidence，再更新稿件与 PPT；smoke、proxy、训练集结果、quoted 数字不得转写成本项目最终科学结论。
+> - **当前允许推进的顺序**：完成 s2 单模型四 split 与三种子统计 → 真实验证协议 dry-run → 冻结混合语料与去重/blocklist 审计 → 验证集早停训练 → 四 split 终评与配对统计。任一 CUDA、数据、artifact 或验收门失败即停止后续阶段并保留证据。
+
 > **交接状态（2026-10-21，第二十五轮交接更新——五工作总执行轮，细节 §15.96）**：
 > - **集群**：`ssh -p 28055 root@px2-jcy.matpool.com`（1×RTX 4090 24GB）；代码 **/home/rna_jev**（GitHub HEAD 55ee511 + 本轮新增提交）；数据/权重 /root/rna_jepa_data 与 /teams/HoulabData_1788502323/liucunyu/rna_jev_data。GPU0 被外部 codonflow 任务占 19.5GB/97%，仅 4.5GB 空闲——我方任务全部排队守护，显存一释放自动起跑。
 > - **工作 1（闭合）**：主 benchmark 全 baseline 三遍复审——**97 板格逐格从 result.json 重算 0 误差**（Vienna/nussinov/MXfold2/EternaFold/UFold/RNAformer×3ckpt/RiNALMo-ft/eFold/NB-probe）；leak_full_audit 复跑（tr1c 9/9 零重叠、TR0∩TSB=247 复现）；9 split sha256 全 MATCH；xens2 4090 板 8/8 逐位一致。**无新泄漏、无可修正项。** 工具入库 tools/verify_board_r25.py。
@@ -181,7 +203,7 @@ RNA 二级结构预测当前有三条路线，各自卡在不同痛点上：
 
 - **新增**：把 RNA 二级结构预测重构为「受限配对空间上的校准决策」，架构完全按 Jev 决策模型范式设计（受限选项集 → 单次前向 → logits → 校准概率 → 无生成 → 类型安全 → 置信度路由）。
 - **新增**：统一数学框架——在**非交叉结构空间上定义 Gibbs 分布**，用 Nussinov sum-product 精确算配分函数 `Z(x)`、inside-outside 精确算边际 `p̂_ij`、max-product 精确求 MAP。这使本方案成为**McCaskill 配分函数模型的学习化推广**：把固定 Turner 参数替换为学习的上下文相关打分函数。
-- **新增**：由框架自然导出的三点优势——① 校准置信度 = 精确边际概率（非启发式）；② 输出结构必然合法（非法结构率恒为 0）；③ 训练梯度形如 `(y - p̂)·∇s`，即**带非交叉约束的 logistic 回归**。
+- **新增**：由框架自然导出的三点优势——① 校准置信度 = 精确边际概率（非启发式）；② 输出结构必然合法（非法结构率恒为 0）；③ NLL 梯度形如 `(p̂ - y)·∇s`，即**带非交叉约束的 logistic 回归**。
 - **新增**：**决策蒸馏预训练**（Jev 式 System-1/System-2 分工）——用热力学配分函数作慢速教师生成校准概率软标签，蒸馏到单次前向的学生决策头。这是纯 Jev 路线的预训练方式，**不使用 JEPA / 隐空间预测 / EMA teacher**。
 - **新增**：**RLCD-RNA（面向校准配对决策的强化学习）**——对齐 Jev 的 **RLCD** 训练层（J9）。Jev 的置信度可信不是架构副产品，而是被显式训练出来的；只搬架构不搬 RLCD 只得一半。本方案以 Brier/对数评分 + 可微软 ECE 为奖励，直接优化配对概率的**校准**（§5.8）。**须标注为"RLCD 启发式自设计目标"，因 Jev 的 RLCD 算法未公开。**
 - **新增**：真实可用数据盘查（含实测落盘状态与获取风险）、量化成功标准、投稿目标与叙事定位、资源与排期计划。
@@ -1258,7 +1280,7 @@ L = L_NLL(硬标签, 来自 bpRNA-1m 等)  +  λ_distill · L_distill(软标签,
 
 #### 5.8.1 为什么需要 RLCD：似然训练不保证校准
 
-`L_NLL`（§5.5.3）优化的是**似然**，而似然最优**不蕴含**概率校准。具体到本任务，`L_NLL` 的梯度 `(y - p̂)·∇s` 会推动 `p̂` 逼近 `y`，但在下列情形会产生系统性失准：
+`L_NLL`（§5.5.3）优化的是**似然**，而似然最优**不蕴含**概率校准。具体到本任务，`L_NLL` 的梯度 `(p̂ - y)·∇s` 会推动 `p̂` 逼近 `y`，但在下列情形会产生系统性失准：
 
 - 训练集与测试集的**家族分布漂移**（bpRNA-new 场景）
 - 结构标签本身的**噪声**（PDB 分辨率、探测数据误差）
@@ -1501,9 +1523,9 @@ L = L_NLL  +  λ_distill · L_distill  +  λ_RLCD · L_RLCD  +  λ_1 · L_cal
 
 | 编号 | 指标 | 目标 | 说明 |
 |---|---|---|---|
-| **S1** | 相对 McCaskill 配分函数加速（同硬件，`L=512`，**System-1 免 DP**） | **≥ 50×** | 加速来源 = 跳过 `O(L³)` 配分函数 |
+| **S1（已作废）** | 原“相对 McCaskill ≥50×” | **不再作为验收门** | 只能另报同硬件、同 batch、同 decode 口径的实测，禁止恢复50×主张 |
 | **S2** | 相对 E2Efold 加速（同硬件，`L=512`） | **≥ 5×** | 加速来源 = 1 次前向 vs 展开 K 步 DP |
-| **S3** | 单序列延迟（`L=512`，GPU，batch=1，System-1） | **≤ 10 ms**（待基线标定后复核） | |
+| **S3（已作废）** | 原“`L=512`、batch=1 ≤10ms” | **不再作为验收门** | batch=1 延迟仍须测量并如实报告，未测不得称通过 |
 | **S4** | 长链可运行性（`L=2048`） | 可运行，且 F1 相对 `L≤512` 衰减 **≤ 15%** | |
 | **S5** | 速度-精度 Pareto | 在同等精度下延迟最低（或同等延迟下精度最高） | |
 | **S6** | **计算自适应收益** | 在**匹配平均 FLOPs** 下，门控升级的 F1 ≥ 纯 System-1 与纯 System-2（H5 / C2） | 计算自适应折叠的直接检验 |

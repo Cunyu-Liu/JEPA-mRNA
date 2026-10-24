@@ -109,7 +109,9 @@ __all__ = [
     "build_decision_model",
     "collate",
     "iter_batches",
+    "deterministic_validation_subset",
     "objective_terms",
+    "evaluate_validation",
     "gradient_coverage",
     "assert_gradient_coverage",
     "_check_device_request",
@@ -181,6 +183,16 @@ class TrainConfig:
     log_every: int = 5
     save_every: int = 0
     max_hours: float = 0.0
+
+    # held-out validation; supplying a dataset enables early stopping
+    teacher_seed: int = 0
+    validation_data: str = ""
+    validation_teacher_dir: str = ""
+    validation_embedding_dir: str = ""
+    validation_max_examples: int = 0
+    validation_every: int = 10
+    validation_patience: int = 5
+    validation_min_delta: float = 0.0
 
     # four-term objective (all independently switchable -- spec §7.5 ablations)
     lambda_nll: float = 1.0
@@ -295,6 +307,22 @@ class TrainConfig:
             raise ConfigError(f"batch_size must be positive, got {self.batch_size}")
         if self.lr <= 0.0:
             raise ConfigError(f"lr must be positive, got {self.lr}")
+        if self.validation_max_examples < 0:
+            raise ConfigError("validation_max_examples must be >= 0 (0 means all)")
+        if self.validation_every <= 0:
+            raise ConfigError("validation_every must be positive")
+        if self.validation_patience <= 0:
+            raise ConfigError("validation_patience must be positive")
+        if (not math.isfinite(self.validation_min_delta)
+                or self.validation_min_delta < 0.0):
+            raise ConfigError("validation_min_delta must be finite and >= 0")
+        if (not self.validation_data
+                and (self.validation_teacher_dir or self.validation_embedding_dir)):
+            raise ConfigError(
+                "validation teacher/embedding directories require validation_data")
+        if self.validation_embedding_dir and not self.embedding_dir:
+            raise ConfigError(
+                "validation_embedding_dir requires embedding_dir for training too")
         if self.distill_kind not in ("kl", "l2"):
             raise ConfigError(f"distill_kind must be 'kl' or 'l2', got {self.distill_kind!r}")
         if self.rlcd_reward not in ("brier", "log", "log_score"):
@@ -667,6 +695,23 @@ def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
                            version=sha256_file(path))
 
 
+def _load_validation_dataset(config: TrainConfig, teacher: TeacherLabelStore
+                             ) -> Tuple[DecisionDataset, TeacherLabelStore]:
+    validation_teacher = (TeacherLabelStore.from_dir(config.validation_teacher_dir)
+                          if config.validation_teacher_dir else teacher)
+    embedding_dir = config.validation_embedding_dir or config.embedding_dir
+    split = os.path.basename(config.validation_data).split(".")[0]
+    embedding_store = (EmbeddingStore.from_dir(embedding_dir, split=split)
+                       if embedding_dir else None)
+    dataset = load_dataset_from_jsonl(
+        config.validation_data, validation_teacher, mock_seed=config.teacher_seed,
+        need_teacher_probs=float(config.lambda_distill) != 0.0,
+        strict_teacher=(bool(config.validation_teacher_dir)
+                        or validation_teacher.name != "mock"),
+        embedding_store=embedding_store)
+    return dataset, validation_teacher
+
+
 # ---------------------------------------------------------------------------
 # model
 # ---------------------------------------------------------------------------
@@ -768,6 +813,18 @@ def _batch_stream(dataset: DecisionDataset, config: TrainConfig,
                 continue
             yield batch
         epoch += 1
+
+
+def deterministic_validation_subset(dataset: DecisionDataset, max_examples: int,
+                                    seed: int) -> DecisionDataset:
+    """Select one reproducible held-out subset, retaining the source data hash."""
+    if max_examples <= 0 or max_examples >= len(dataset):
+        return dataset
+    rng = np.random.default_rng(seed)
+    indices = sorted(int(i) for i in rng.choice(
+        len(dataset), size=max_examples, replace=False))
+    return DecisionDataset([dataset[i] for i in indices],
+                           source=dataset.source, version=dataset.version)
 
 
 # ---------------------------------------------------------------------------
@@ -991,6 +1048,35 @@ def _cascade_objective_terms(model, batch: Dict[str, object], weights: Objective
     metrics.update(l0_helix_recall_pooled(out.block_kept, gt_pairs, block_size))
     metrics.update(l0_metrics(out.gate.detach(), target, compat))
     return total, metrics
+
+
+def evaluate_validation(model, dataset: DecisionDataset, config: TrainConfig, *,
+                        step: Optional[int] = None) -> float:
+    """Evaluate the training objective on fixed batches without changing gradients."""
+    was_training = model.training
+    model.eval()
+    total = 0.0
+    n_examples = 0
+    try:
+        with torch.no_grad():
+            for batch in iter_batches(dataset, config.batch_size, config.seed, epoch=0):
+                loss, _terms = objective_terms(
+                    model, batch, config.objective_weights(),
+                    distill_kind=config.distill_kind, reward=config.rlcd_reward,
+                    beta=config.beta, n_bins=config.n_bins, tau=config.soft_ece_tau,
+                    nll_normalization=config.nll_normalization,
+                    cascade=config.head == "cascade",
+                    cascade_weights=config.layered_weights(),
+                    cascade_block_size=config.cascade_block_size)
+                batch_size = int(batch["seq_ids"].shape[0])
+                value = _finite(loss.detach(), f"validation loss at step {step}")
+                total += value * batch_size
+                n_examples += batch_size
+    finally:
+        model.train(was_training)
+    if n_examples == 0:
+        raise ConfigError("validation dataset is empty; nothing to evaluate")
+    return total / n_examples
 
 
 # ---------------------------------------------------------------------------
@@ -1264,22 +1350,27 @@ def _ledger_row(path: str, row: Dict[str, object]) -> None:
 
 
 def _save_resume(path: str, model, optimizer, scheduler, step: int, config: TrainConfig,
-                 coverage: Optional[Dict[str, object]] = None) -> None:
-    torch.save({
+                 coverage: Optional[Dict[str, object]] = None,
+                 validation_state: Optional[Dict[str, object]] = None) -> None:
+    state = {
         "step": int(step),
         "model": model.state_dict(),
         "optimizer": optimizer.state_dict(),
         "scheduler": scheduler.state_dict(),
         "config": config.as_dict(),
         "gradient_coverage": coverage,
-    }, path)
+    }
+    if validation_state is not None:
+        state["validation_state"] = dict(validation_state)
+    torch.save(state, path)
 
 
 # ---------------------------------------------------------------------------
 # plan / dry run
 # ---------------------------------------------------------------------------
-def plan(config: TrainConfig, dataset: DecisionDataset, teacher: TeacherLabelStore
-         ) -> Dict[str, object]:
+def plan(config: TrainConfig, dataset: DecisionDataset, teacher: TeacherLabelStore, *,
+         validation_dataset: Optional[DecisionDataset] = None,
+         validation_teacher: Optional[TeacherLabelStore] = None) -> Dict[str, object]:
     """Validate the configuration and describe what a real run would do.
 
     Used by ``--dry-run``: it touches no model, no optimizer and no checkpoint, so
@@ -1292,6 +1383,21 @@ def plan(config: TrainConfig, dataset: DecisionDataset, teacher: TeacherLabelSto
                                        ("rlcd", weights.lambda_rlcd),
                                        ("cal", weights.lambda_cal)) if value != 0.0]
     steps_per_epoch = max(1, math.ceil(len(dataset) / config.batch_size))
+    artifacts = ["run_meta.json", "train_log.jsonl", "ledger.jsonl", "resume.pt"]
+    validation = None
+    if validation_dataset is not None:
+        artifacts.extend(["validation_log.jsonl", "best.pt"])
+        validation = {
+            "early_stopping": True,
+            "steps_are_safety_cap": True,
+            "data": validation_dataset.describe(),
+            "teacher": (validation_teacher or teacher).meta(),
+            "every": config.validation_every,
+            "patience": config.validation_patience,
+            "min_delta": config.validation_min_delta,
+            "max_examples": config.validation_max_examples,
+            "selection_seed": config.seed,
+        }
     return {
         "dry_run": True,
         "arm": config.arm,
@@ -1313,8 +1419,8 @@ def plan(config: TrainConfig, dataset: DecisionDataset, teacher: TeacherLabelSto
         "epochs": config.steps / steps_per_epoch,
         "model": {"tiny": config.tiny, "encoder_size": config.encoder_size,
                   "d_model": config.d_model, "n_layer": config.n_layer},
-        "would_write": [os.path.join(config.out_dir, name) for name in
-                        ("run_meta.json", "train_log.jsonl", "ledger.jsonl", "resume.pt")],
+        "validation": validation,
+        "would_write": [os.path.join(config.out_dir, name) for name in artifacts],
         "honesty": dict(HONESTY),
     }
 
@@ -1404,11 +1510,23 @@ def _pad_optimizer_groups(saved: Dict[str, object], optimizer,
 
 
 def run_training(config: TrainConfig, dataset: DecisionDataset,
-                 teacher: TeacherLabelStore, *, dry_run: bool = False) -> Dict[str, object]:
+                 teacher: TeacherLabelStore, *, dry_run: bool = False,
+                 validation_dataset: Optional[DecisionDataset] = None,
+                 validation_teacher: Optional[TeacherLabelStore] = None
+                 ) -> Dict[str, object]:
     """Run (or, with ``dry_run``, only plan) one training job."""
     config.validate()
+    if validation_dataset is None and config.validation_data:
+        validation_dataset, validation_teacher = _load_validation_dataset(config, teacher)
+    if validation_dataset is not None:
+        if len(validation_dataset) == 0:
+            raise ConfigError("validation dataset is empty; nothing to evaluate")
+        validation_dataset = deterministic_validation_subset(
+            validation_dataset, config.validation_max_examples, config.seed)
+        validation_teacher = validation_teacher or teacher
     if dry_run:
-        return plan(config, dataset, teacher)
+        return plan(config, dataset, teacher, validation_dataset=validation_dataset,
+                    validation_teacher=validation_teacher)
     if len(dataset) == 0:
         raise ConfigError("dataset is empty; nothing to train on")
 
@@ -1417,6 +1535,8 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     log_path = os.path.join(config.out_dir, "train_log.jsonl")
     meta_path = os.path.join(config.out_dir, "run_meta.json")
     resume_path = config.resume or os.path.join(config.out_dir, "resume.pt")
+    validation_log_path = os.path.join(config.out_dir, "validation_log.jsonl")
+    best_path = os.path.join(config.out_dir, "best.pt")
 
     lr_calibration: Optional[Dict[str, object]] = None
     if config.lr_calibrate:
@@ -1459,6 +1579,27 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     start_step = 0
     coverage: Optional[Dict[str, object]] = None
     resume_note: Optional[Dict[str, object]] = None
+    validation_enabled = validation_dataset is not None
+    best_step: Optional[int] = None
+    best_validation_loss: Optional[float] = None
+    bad_evaluations = 0
+    stop_reason: Optional[str] = None
+    early_stopped = False
+
+    def current_validation_state() -> Optional[Dict[str, object]]:
+        if not validation_enabled:
+            return None
+        assert validation_dataset is not None
+        return {
+            "best_step": best_step,
+            "best_validation_loss": best_validation_loss,
+            "bad_evaluations": bad_evaluations,
+            "early_stopped": early_stopped,
+            "dataset_version": validation_dataset.version,
+            "dataset_size": len(validation_dataset),
+            "selection_seed": config.seed,
+        }
+
     if os.path.isfile(resume_path):
         state = torch.load(resume_path, map_location="cpu")
         # Resuming must survive a parameter that was added *after* the checkpoint was
@@ -1507,7 +1648,47 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
         scheduler.load_state_dict(state["scheduler"])
         start_step = int(state["step"])
         coverage = state.get("gradient_coverage")
+        if validation_enabled:
+            saved_validation = state.get("validation_state") or {}
+            expected_validation = current_validation_state() or {}
+            for key in ("dataset_version", "dataset_size", "selection_seed"):
+                if (key in saved_validation
+                        and saved_validation[key] != expected_validation[key]):
+                    raise ConfigError(
+                        f"cannot resume with a different fixed validation set ({key}: "
+                        f"checkpoint={saved_validation[key]!r}, "
+                        f"current={expected_validation[key]!r})")
+            saved_best_step = saved_validation.get("best_step")
+            best_step = int(saved_best_step) if saved_best_step is not None else None
+            saved_best_loss = saved_validation.get("best_validation_loss")
+            best_validation_loss = (float(saved_best_loss)
+                                    if saved_best_loss is not None else None)
+            bad_evaluations = int(saved_validation.get("bad_evaluations", 0))
+            early_stopped = bool(saved_validation.get("early_stopped", False))
+            if early_stopped:
+                stop_reason = "early_stopping"
+            if best_step is not None and not os.path.isfile(best_path):
+                raise ConfigError(
+                    f"resume requires the matching best checkpoint at {best_path}; "
+                    "keep best.pt beside resume.pt for validation early stopping")
         print(f"[train] resumed from {resume_path} at step {start_step}", flush=True)
+
+    validation_meta = None
+    if validation_enabled:
+        assert validation_dataset is not None and validation_teacher is not None
+        validation_meta = {
+            "early_stopping": True,
+            "steps_are_safety_cap": True,
+            "data": validation_dataset.describe(),
+            "teacher": validation_teacher.meta(),
+            "every": config.validation_every,
+            "patience": config.validation_patience,
+            "min_delta": config.validation_min_delta,
+            "max_examples": config.validation_max_examples,
+            "selection_seed": config.seed,
+            "log": validation_log_path,
+            "best_checkpoint": best_path,
+        }
 
     meta = {
         "run_id": f"{config.arm}-{int(time.time())}",
@@ -1520,6 +1701,12 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                   "tiny": config.tiny, "encoder_size": config.encoder_size},
         "data": dataset.describe(),
         "teacher": teacher.meta(),
+        "validation": validation_meta,
+        "best_step": best_step,
+        "best_validation_loss": best_validation_loss,
+        "early_stopped": False,
+        "converged": False,
+        "stop_reason": None,
         "lr_calibration": lr_calibration,
         "objective_terms_active": [name for name, value in
                                    (("nll", weights.lambda_nll),
@@ -1549,12 +1736,17 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     with open(meta_path, "w", encoding="utf-8") as fh:
         json.dump(meta, fh, indent=1, sort_keys=True)
 
-    _ledger_row(ledger, {"status": "start", "arm": config.arm, "steps": config.steps,
-                         "lr": config.lr, "batch_size": config.batch_size,
-                         "resume_from": start_step,
-                         "active_terms": meta["objective_terms_active"],
-                         "teacher": teacher.name,
-                         "data_version": dataset.version})
+    start_row = {"status": "start", "arm": config.arm, "steps": config.steps,
+                 "lr": config.lr, "batch_size": config.batch_size,
+                 "resume_from": start_step,
+                 "active_terms": meta["objective_terms_active"],
+                 "teacher": teacher.name,
+                 "data_version": dataset.version}
+    if validation_enabled:
+        assert validation_dataset is not None
+        start_row.update({"early_stopping": True,
+                          "validation_data_version": validation_dataset.version})
+    _ledger_row(ledger, start_row)
 
     stream = _batch_stream(dataset, config, start_step=start_step)
     running: List[float] = []
@@ -1564,7 +1756,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     final_loss: Optional[float] = None
 
     try:
-        while step < config.steps:
+        while step < config.steps and not early_stopped:
             batch = next(stream)
             optimizer.zero_grad(set_to_none=True)
             loss, terms = objective_terms(
@@ -1614,24 +1806,80 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                       f"gnorm={norm:.3f}", flush=True)
                 running, running_terms = [], {}
 
+            if (validation_enabled
+                    and (step % config.validation_every == 0 or step == config.steps)):
+                assert validation_dataset is not None
+                validation_loss = evaluate_validation(
+                    model, validation_dataset, config, step=step)
+                improved = (best_validation_loss is None or
+                            validation_loss < best_validation_loss - config.validation_min_delta)
+                if improved:
+                    best_step = step
+                    best_validation_loss = validation_loss
+                    bad_evaluations = 0
+                    _save_resume(best_path, model, optimizer, scheduler, step, config,
+                                 coverage, current_validation_state())
+                else:
+                    bad_evaluations += 1
+                validation_row = {
+                    "ts": time.time(), "step": step,
+                    "validation_loss": validation_loss,
+                    "best_step": best_step,
+                    "best_validation_loss": best_validation_loss,
+                    "improved": improved, "bad_evaluations": bad_evaluations,
+                }
+                with open(validation_log_path, "a", encoding="utf-8") as fh:
+                    fh.write(json.dumps(validation_row) + "\n")
+                print(f"[{config.arm}] validation step {step} "
+                      f"loss={validation_loss:.6g} best={best_validation_loss:.6g} "
+                      f"bad_evaluations={bad_evaluations}", flush=True)
+                if (bad_evaluations >= config.validation_patience
+                        and step < config.steps):
+                    stop_reason = "early_stopping"
+                    early_stopped = True
+                    break
+
             if config.save_every and step % config.save_every == 0:
-                _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage)
+                _save_resume(resume_path, model, optimizer, scheduler, step, config,
+                             coverage, current_validation_state())
                 print(f"[{config.arm}] checkpoint written {resume_path} (step {step})",
                       flush=True)
 
             if config.max_hours and (time.time() - start_wall) / 3600.0 > config.max_hours:
                 print(f"[{config.arm}] max_hours reached at step {step}", flush=True)
+                stop_reason = "max_hours"
                 break
     except DivergenceError:
-        _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage)
+        _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage,
+                     current_validation_state())
         _ledger_row(ledger, {"status": "diverged", "arm": config.arm, "step": step,
-                             "lr": config.lr})
+                             "lr": config.lr, "stop_reason": "divergence",
+                             "best_step": best_step,
+                             "best_validation_loss": best_validation_loss,
+                             "early_stopped": False})
         meta["final_loss"] = final_loss
         meta["steps_completed"] = step
         meta["status"] = "diverged"
+        meta["stop_reason"] = "divergence"
+        meta["best_step"] = best_step
+        meta["best_validation_loss"] = best_validation_loss
+        meta["early_stopped"] = False
         with open(meta_path, "w", encoding="utf-8") as fh:
             json.dump(meta, fh, indent=1, sort_keys=True)
         raise
+
+    if step >= config.steps and not early_stopped:
+        stop_reason = "step_cap"
+    elif stop_reason is None:
+        stop_reason = "step_cap"
+    if early_stopped:
+        if best_step is None:
+            raise ConfigError("early stopping has no best checkpoint to restore")
+        best_state = torch.load(best_path, map_location="cpu")
+        model.load_state_dict(best_state["model"])
+        model.train()
+        print(f"[{config.arm}] early stopping at step {step}; "
+              f"restored best checkpoint from step {best_step}", flush=True)
 
     if coverage is None:
         # Very short runs (a single step) never reach the second backward pass, so
@@ -1641,17 +1889,29 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
         meta["gradient_coverage_note"] = ("require_nonzero=False: the run was too short "
                                          "to leave the zero-init dead-gradient window")
 
-    _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage)
+    _save_resume(resume_path, model, optimizer, scheduler, step, config, coverage,
+                 current_validation_state())
     meta["final_loss"] = final_loss
     meta["steps_completed"] = step
     meta["status"] = "completed"
+    meta["stop_reason"] = stop_reason
+    meta["best_step"] = best_step
+    meta["best_validation_loss"] = best_validation_loss
+    meta["early_stopped"] = early_stopped
+    meta["converged"] = early_stopped
     meta["wall_seconds"] = time.time() - start_wall
     with open(meta_path, "w", encoding="utf-8") as fh:
         json.dump(meta, fh, indent=1, sort_keys=True)
     _ledger_row(ledger, {"status": "completed", "arm": config.arm, "step": step,
-                         "lr": config.lr, "final_loss": final_loss})
+                         "lr": config.lr, "final_loss": final_loss,
+                         "stop_reason": stop_reason, "best_step": best_step,
+                         "best_validation_loss": best_validation_loss,
+                         "early_stopped": early_stopped, "converged": early_stopped})
 
     return {"dry_run": False, "final_loss": final_loss, "steps_completed": step,
+            "stop_reason": stop_reason, "best_step": best_step,
+            "best_validation_loss": best_validation_loss,
+            "early_stopped": early_stopped, "converged": early_stopped,
             "run_meta": meta, "out_dir": config.out_dir, "ledger": ledger}
 
 
@@ -1672,6 +1932,14 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--teacher-dir", default="",
                    help="soft labels written by the rnajepa.distill driver")
     p.add_argument("--teacher-seed", type=int, default=0)
+    p.add_argument("--validation-data", default="",
+                   help="held-out JSONL; supplying it enables validation early stopping")
+    p.add_argument("--validation-teacher-dir", default="",
+                   help="held-out soft labels; defaults to the training teacher store")
+    p.add_argument("--validation-embedding-dir", default="",
+                   help="held-out frozen embeddings; defaults to --embedding-dir")
+    p.add_argument("--validation-max-examples", type=int, default=0,
+                   help="deterministically cap the fixed validation subset (0 = all)")
     # schedule
     p.add_argument("--steps", type=int, default=50)
     p.add_argument("--batch-size", type=int, default=2)
@@ -1683,6 +1951,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--log-every", type=int, default=5)
     p.add_argument("--save-every", type=int, default=0)
     p.add_argument("--max-hours", type=float, default=0.0)
+    p.add_argument("--validation-every", type=int, default=10,
+                   help="optimizer steps between held-out evaluations; the step cap is also evaluated")
+    p.add_argument("--validation-patience", type=int, default=5,
+                   help="stop after this many consecutive evaluations without improvement")
+    p.add_argument("--validation-min-delta", type=float, default=0.0,
+                   help="minimum validation-loss decrease that resets patience")
     p.add_argument("--resume", default="")
     # objective
     p.add_argument("--lambda-nll", type=float, default=1.0)
@@ -1779,6 +2053,14 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         weight_decay=args.weight_decay, warmup_steps=args.warmup_steps,
         grad_clip=args.grad_clip, seed=args.seed, log_every=args.log_every,
         save_every=args.save_every, max_hours=args.max_hours,
+        teacher_seed=args.teacher_seed,
+        validation_data=args.validation_data,
+        validation_teacher_dir=args.validation_teacher_dir,
+        validation_embedding_dir=args.validation_embedding_dir,
+        validation_max_examples=args.validation_max_examples,
+        validation_every=args.validation_every,
+        validation_patience=args.validation_patience,
+        validation_min_delta=args.validation_min_delta,
         lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
         lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal,
         distill_kind=args.distill_kind, rlcd_reward=args.rlcd_reward, beta=args.beta,
@@ -1811,6 +2093,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parse_args(argv)
     if not args.out and not args.dry_run:
         print("FATAL: --out is required unless --dry-run", file=sys.stderr)
+        return 2
+    if (args.allow_cpu and not args.dry_run
+            and (not args.synthetic or args.validation_data)):
+        print("FATAL: --allow-cpu is limited to --synthetic unit-test runs; "
+              "real training and held-out validation require CUDA", file=sys.stderr)
         return 2
     config = _config_from_args(args)
     if args.gpu_reserve_gb > 0 and "cuda" in str(args.device):

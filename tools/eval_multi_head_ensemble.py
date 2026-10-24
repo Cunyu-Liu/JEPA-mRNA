@@ -8,8 +8,11 @@ chanrg_train_validation, legality, latency) with the ensemble in place of a
 single model. Single variable vs the two-head eval: head count (2 -> 3).
 """
 import argparse
+import hashlib
+import json
 import sys
 from dataclasses import asdict
+from pathlib import Path
 from typing import Sequence, Optional
 
 import torch
@@ -84,14 +87,24 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             device = rest[i + 1]
 
     heads = []
+    checkpoint_meta = []
     for path in args.ckpts:
-        ckpt = torch.load(path, map_location="cpu")
+        digest = hashlib.sha256()
+        with open(path, "rb") as handle:
+            for block in iter(lambda: handle.read(1 << 20), b""):
+                digest.update(block)
+        checkpoint_meta.append({"path": path, "sha256": digest.hexdigest()})
+        ckpt = torch.load(path, map_location="cpu", weights_only=True)
         config = TrainConfig(**{k: v for k, v in ckpt["config"].items()
                                 if k in TrainConfig.__dataclass_fields__})
         config = TrainConfig(**{**asdict(config), "encoder_size": "35M",
                                 "device": device, "allow_cpu": False})
         m = build_decision_model(config)
-        m.load_state_dict(ckpt["model"], strict=False)
+        missing, unexpected = m.load_state_dict(ckpt["model"], strict=False)
+        missing_head = [key for key in missing if key.startswith("head.")]
+        if unexpected or missing_head:
+            raise RuntimeError(f"incompatible head checkpoint {path}: "
+                               f"missing_head={missing_head}, unexpected={list(unexpected)}")
         m.eval()
         heads.append(m.head)
 
@@ -109,10 +122,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     ed.build_decision_model = fake_build
 
     ed_argv = ["--checkpoint", args.ckpts[0]] + rest
-    ns = ed.main(ed_argv)  # writes result.json under ns.out via evaluate()
-
-    ed.build_decision_model = orig_build
-    return ns
+    try:
+        ns = ed.main(ed_argv)  # writes result.json under ns.out via evaluate()
+        result_path = Path(ns.out) / "result.json"
+        result = json.loads(result_path.read_text(encoding="utf-8"))
+        result["ensemble"] = {"n_heads": len(heads), "checkpoints": checkpoint_meta,
+                              "aggregation": "arithmetic_mean_of_head_scores"}
+        temporary = result_path.with_suffix(".json.tmp")
+        temporary.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        temporary.replace(result_path)
+        return ns
+    finally:
+        ed.build_decision_model = orig_build
 
 
 if __name__ == "__main__":

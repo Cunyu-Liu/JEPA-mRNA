@@ -2,6 +2,28 @@
 
 > change-id: `build-rna-ss-decision-model`
 
+> **当前执行队列（2026-10-24，第二十九轮接管审计）**：
+> - 本节覆盖旧队列；旧任务是否完成必须由 artifact 和完成判据重新确认，不能沿用“已启动”或“守护 live”作为完成。T-A108–T-A111 在权威 tasks 文档中无可重建定义，本轮不虚构补号；新任务从 T-A113 起。
+>
+> | 任务 | 当前状态 | 下一步与完成判据 |
+> |---|---|---|
+> | T-A99/T-A100 NB 迁移与 fine-tune | 交接记录已完成；本轮未复训 | 结果表、八 split 与协议说明可定位；统计缺口纳入 T-A119，不重跑已闭合训练 |
+> | T-A101 ncRNA 双头 | 交接记录已完成 | 只能表述分类 MLP 头结果，不能外推为完整 SSP prior-stack 或 rare-family 机制证明 |
+> | T-A102 CHANRG 数据与四 split | 数据、board 与单语料臂已落地 | 新实验前重新执行精确重叠、全局 blocklist 与 manifest/hash；有重叠的 split 不得称完全 clean |
+> | T-A103 v3.30 合并 | 文本合并完成；投稿验收未完成 | 按 T-A119 清理撤回结果、模型身份、指标和引用后才可称投稿候选 |
+> | T-A105 单语料 CHANRG | s0/s1/s2 均到20k；预注册 GenF 门未达 | s2 单模型四 split 由 T-A114 关闭；不得把 step cap 写成收敛 |
+> | T-A112 三种子集成 | 四 split 已完成；独立复算 PASS | 结论限定为 Test 改善、GenA/GenC/GenF 落后；GenF macro 未提升，禁止 SOTA/全面提升表述 |
+> | **T-A113 接管审计与 spec 同步** | **进行中** | 两个 spec 目录的 spec/tasks 同步；数据、权重、日志进入新团队目录；旧 SSH 密码改密钥；无秘密落盘 |
+> | **T-A114 CHANRG 当前证据闭环** | **进行中** | s2 单模型 4/4 `result.json`；`verify_chanrg_ens3.py --require-s2` PASS；输出三种子 mean±std、逐序列配对比较与 ens2/ens3 差值；记录正负结果后才可关闭 |
+> | **T-A115 验证集收敛训练** | **部分完成** | 40 项相关测试、完整 343 passed/1 skipped 与 CUDA smoke 已过；还需真实 held-out teacher/embedding dry-run 和短程 CUDA 检查；新训练必须以 early_stopping 而非 step_cap 标记 converged |
+> | **T-A116 唯一结果注册表与合同纠错** | **待办** | 以模型/语料/checkpoint/split/GT/scorer/decoder/硬件为键；处理 Kirigami ArchiveII 反例、bpRNA-new 强参照、撤回 TestSetB、C1-a/C2/S1/S3；所有 claim 可回溯 |
+> | **T-A117 bpRNA+CHANRG 混合语料单变量实验** | **阻塞：无效 mix_s0 已在 steps=0 停止并隔离；待 T-A114/T-A115/T-A116** | 先冻结混合比例、去重/blocklist、验证集和 early-stopping；teacher shard 必须唯一且 n_labels=n_records、逐条对齐；保持头、seed、有效 batch、LR、decoder/scorer 不变；至少3 seed；与单语料和 zero-shot 同协议比较，不用测试集选配置 |
+> | **T-A118 监控与 GitHub 闭环** | **进行中** | 10min watchdog 无自匹配误报；每个完成任务绑定 commit、配置、数据/权重哈希、日志和验证报告；确认后提交并 push，大文件与秘密不入库 |
+> | **T-A119 稿件、统计与 PPT** | **待证据门** | 清理稿件矛盾，补最终主模型校准、主表统计和新增任务完整表；PPT 只写已复核结果，保留负结果与限制 |
+> | **T-A120 预印本发布包** | **未完成** | 满足合同硬门、多种子/配对统计/Holm、完整引用与图表、代码/配置/split/预测/权重说明和复现命令；未满足不得提交预印本 |
+>
+> **当前停止规则**：CUDA 不可用或 CPU 静默降级立即停；训练 DONE 不等于 eval DONE，eval DONE 不等于验收 PASS；结果文件缺失、样本数不符、device 非 CUDA、哈希不明或验证失败不得进入下一阶段。GenF 不再重复 teacher/头数/测试集解码搜索；TS2/TS3 不重开已判负的小头变体；结构对比 A0–A5 不在其独立 G0/G1 门前抢跑。
+
 > **交接状态（2026-10-21，第二十五轮交接更新——五工作总执行轮，细节 §15.96）**：
 > - **集群**：`ssh -p 28055 root@px2-jcy.matpool.com`（1×RTX 4090 24GB）；代码 **/home/rna_jev**（GitHub HEAD 55ee511 + 本轮新增提交）；数据/权重 /root/rna_jepa_data 与 /teams/HoulabData_1788502323/liucunyu/rna_jev_data。GPU0 被外部 codonflow 任务占 19.5GB/97%，仅 4.5GB 空闲——我方任务全部排队守护，显存一释放自动起跑。
 > - **工作 1（闭合）**：主 benchmark 全 baseline 三遍复审——**97 板格逐格从 result.json 重算 0 误差**（Vienna/nussinov/MXfold2/EternaFold/UFold/RNAformer×3ckpt/RiNALMo-ft/eFold/NB-probe）；leak_full_audit 复跑（tr1c 9/9 零重叠、TR0∩TSB=247 复现）；9 split sha256 全 MATCH；xens2 4090 板 8/8 逐位一致。**无新泄漏、无可修正项。** 工具入库 tools/verify_board_r25.py。
@@ -424,7 +446,7 @@
   - [x] SubTask 14.2: 实现 Nussinov **sum-product**（inside）算配分函数 `Z(x)`
   - [x] SubTask 14.3: 实现 **inside-outside** 算精确边际 `p̂_ij`
   - [x] SubTask 14.4: 实现 `L_NLL = log Z(x) - Σ_{(i,j)∈M_gt} s_ij`
-  - [x] SubTask 14.5: 实现**隐式微分**可微 DP（前向求 `M*`，反向按 `∂N(1,L)/∂s_ij = 1[(i,j)∈M*]` 散布梯度），验证梯度 = `(y - p̂)·∇s`
+  - [x] SubTask 14.5: 实现**隐式微分**可微 DP（前向求 `M*`，反向按 `∂N(1,L)/∂s_ij = 1[(i,j)∈M*]` 散布梯度）；NLL 梯度另按 `∂L_NLL/∂s_ij = p̂_ij - y_ij` 验证，二者不得混写
   - [x] SubTask 14.6: 实现 soft-Nussinov 备选（仅 `L ≤ 256` 对照）
   - [x] SubTask 14.7: 实现带窗稀疏化版本（`|j-i| ≤ B`）
   - [x] SubTask 14.8: 实现低置信回退门控 `α_ij = σ((p̂_ij - τ)/γ)` 与热力学重打分，记录回退比例
@@ -492,7 +514,7 @@
     - **分两口径核验（2026-09-24）**：① **裸头**（训练直接用头的 sigmoid）：step 3500 上 gap = **0.0877**，**未过**；但从 step 20 的 0.549 单调降到 0.0877（6.3×），趋势明确。② **免 DP 仿射重标定**（2 参数，在 VL0 上拟合，**评测期不跑配分函数**）：gap = **0.00118 PASS**。→ **当前可主张的是 ②，不得把 ① 写成已通过。**
   - [ ] SubTask 20.7c: **核验 S6（计算自适应收益）**：在**匹配平均 FLOPs** 下门控升级 ≥ 纯 System-1 与纯 System-2——**这是 C2 是否成立的判据**
   - [ ] SubTask 20.7d: **产出结构层面校准曲线**（应对 Q3：配对级 ECE 因碱基对相关性而不足），并量化配对间相关性
-  - [ ] SubTask 20.8: **逐项核验 §8 硬门 G1–G5、性能门 P1–P5、速度门 S1–S7、科学门 C1–C4**
+  - [ ] SubTask 20.8: **逐项核验 §8 硬门 G1–G5、性能门 P1–P7、速度门 S1–S9、科学门 SC1–SC4；S1/S3 按2026-10-24修订标为已作废，不得假勾选**
   - [ ] SubTask 20.9: **核验 §9.3 的 Q1–Q12 每条均有稿件落点**（任一缺失即未准备好投稿）
   - **判据**：全部消融完成；统计检验与校正已应用；速度测量同硬件同协议；ECE 与 bpRNA-new F1 联合报告产出；**S7/S6 判据已核验**；结构层面校准曲线产出；**Q1–Q12 落点表产出**；门限核验表产出（未达项须列出）
 

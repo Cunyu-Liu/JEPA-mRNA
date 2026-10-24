@@ -1,35 +1,39 @@
 #!/bin/bash
-# JEV project watchdog: training-arm self-heal + GPU saturation audit + convergence log.
-# Runs every 10 min via cron. Actions:
-#   1. If an active arm (r2dtr1c_b4_s1) died before 20000 steps -> relaunch (max 40 restarts).
-#   2. If GPU0 has >3GB free AND no arm training -> WARN line (saturation audit).
-#   3. Append step/loss snapshot to monitor log.
-LOG=/root/rna_jepa_data/monitor/jev_watchdog.log
-OUT=/root/rna_jepa_data/runs/rinalmo_r2dtr1c_b4_s1
-STEPS=20000
-STATE=/root/rna_jepa_data/monitor/r2dtr1c_s1_state
-mkdir -p /root/rna_jepa_data/monitor
-PY=/root/miniconda3/envs/lucaone/bin/python
-last_step() { tail -1 $OUT/train_log.jsonl 2>/dev/null | $PY -c 'import json,sys
-try: print(json.loads(sys.stdin.read()).get("step",0))
-except Exception: print(0)' 2>/dev/null || echo 0; }
+# Current RNA-JEV resource/artifact watchdog; no stale-arm auto-restart.
+set -euo pipefail
+WORK=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024
+LOG=$WORK/logs/watchdog.log
+mkdir -p "$WORK/logs"
 
-S=$(last_step)
-GPU_MEM=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits -i 0 2>/dev/null)
-GPU_UTIL=$(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits -i 0 2>/dev/null)
-RUNNING=$(pgrep -fc "rnajepa.train_decision.*rinalmo_r2dtr1c_b4_s1" 2>/dev/null || echo 0)
-echo "[$(date '+%F %T')] step=$S running=$RUNNING gpu_mem=${GPU_MEM}MiB util=${GPU_UTIL}%" >> $LOG
+GPU_STATS=$(nvidia-smi --query-gpu=memory.used,utilization.gpu --format=csv,noheader,nounits -i 0)
+IFS=', ' read -r GPU_MEM GPU_UTIL <<< "$GPU_STATS"
+count_python_jobs() {
+  local pattern=$1 pid comm count=0
+  while read -r pid; do
+    comm=$(ps -p "$pid" -o comm= 2>/dev/null || true)
+    case "$comm" in
+      python|python3) count=$((count + 1)) ;;
+    esac
+  done < <(pgrep -f "$pattern" || true)
+  echo "$count"
+}
+TRAIN_RUNNING=$(count_python_jobs '[r]najepa.train_decision')
+EVAL_RUNNING=$(count_python_jobs '[e]valuate_decision.py|[e]val_multi_head_ensemble.py')
+S2_RESULTS=0
+ENS3_RESULTS=0
+for SPLIT in chanrg_test chanrg_gena chanrg_genc chanrg_genf; do
+  [ -s "$WORK/eval_decision/chanrg_arm_gt_s2/$SPLIT/result.json" ] && S2_RESULTS=$((S2_RESULTS + 1))
+  [ -s "$WORK/eval_decision/chanrg_ens3_gt/$SPLIT/result.json" ] && ENS3_RESULTS=$((ENS3_RESULTS + 1))
+done
 
-# self-heal
-RESTARTS=$(cat $STATE.restarts 2>/dev/null || echo 0)
-if [ "$S" -lt "$STEPS" ] && [ "$RUNNING" = "0" ] && [ "$RESTARTS" -lt 40 ]; then
-  echo "[$(date '+%F %T')] WARN: arm died at step $S, relaunching (restart #$((RESTARTS+1)))" >> $LOG
-  echo $((RESTARTS+1)) > $STATE.restarts
-  bash /home/rna_jev/scripts/launch_r2dtr1c_s1_4090.sh >> $LOG 2>&1
+echo "[$(date '+%F %T')] gpu_mem=${GPU_MEM}MiB util=${GPU_UTIL}% train=$TRAIN_RUNNING eval=$EVAL_RUNNING s2_results=$S2_RESULTS/4 ens3_results=$ENS3_RESULTS/4" >> "$LOG"
+if [ "$TRAIN_RUNNING" -gt 0 ] && [ "$GPU_MEM" -lt 1000 ]; then
+  echo "[$(date '+%F %T')] CUDA_WARN: training process exists but GPU memory is ${GPU_MEM}MiB; inspect for silent CPU fallback" >> "$LOG"
 fi
-# saturation audit: warn if card mostly empty with nothing running
-if [ "$RUNNING" = "0" ] && [ "${GPU_MEM:-99999}" -lt 2000 ]; then
-  echo "[$(date '+%F %T')] SATURATION_WARN: GPU idle (mem ${GPU_MEM}MiB, no arm running)" >> $LOG
+if [ "$TRAIN_RUNNING" -eq 0 ] && [ "$EVAL_RUNNING" -eq 0 ] && [ "$GPU_MEM" -lt 2000 ]; then
+  echo "[$(date '+%F %T')] IDLE_WARN: no RNA-JEV GPU job is active; submit the next contract-cleared job" >> "$LOG"
 fi
-# rotate log if > 5MB
-[ -f $LOG ] && [ $(stat -c%s $LOG) -gt 5000000 ] && tail -2000 $LOG > $LOG.tmp && mv $LOG.tmp $LOG
+if [ -f "$LOG" ] && [ "$(stat -c%s "$LOG")" -gt 5000000 ]; then
+  tail -2000 "$LOG" > "$LOG.tmp"
+  mv "$LOG.tmp" "$LOG"
+fi
