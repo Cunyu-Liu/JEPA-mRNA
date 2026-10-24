@@ -1580,7 +1580,7 @@ filtering, 90/10 split) with frozen-backbone embeddings pooled over the
 site-centered tokens of the window midpoint, and evaluating on the held-out
 four-species benchmarks, the two heads are effectively tied: across donor and
 acceptor sites and the four species (Danio, Fly, Thaliana, Worm), the paper
-convention head averages 0.9275 balanced accuracy and the Jev head 0.9238, with
+convention head averages 0.9169 balanced accuracy and the Jev head 0.9111, with
 per-cell differences within one point and sign flips between species (Jev ahead
 on Fly donors by 0.003, behind on Worm acceptors by 0.012). We read this as a
 null result and report it as such: on a local-motif discrimination task the
