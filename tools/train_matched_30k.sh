@@ -4,7 +4,7 @@ set -euo pipefail
 PY=/root/miniconda3/envs/lucaone/bin/python
 W=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024
 J=/root/rna_jepa_data/ss_data/jsonl
-E=/root/rna_jepa_data/embeddings/rinalmo-giga
+E=$W/data/embeddings_matched
 LOG=$W/logs/matched_30k_train.log
 BATCH_SIZE=16
 mkdir -p "$W/logs" "$W/weights"

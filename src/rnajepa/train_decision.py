@@ -76,7 +76,7 @@ import sys
 import time
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Optional, Sequence, Tuple
+from typing import Dict, Iterable, Iterator, List, Optional, Sequence, Set, Tuple
 
 import numpy as np
 import torch
@@ -587,7 +587,8 @@ class EmbeddingStore:
         self.source = source
 
     @classmethod
-    def from_dir(cls, directory: str, *, split: str = "") -> "EmbeddingStore":
+    def from_dir(cls, directory: str, *, split: str = "",
+                 required_sequences: Optional[Set[str]] = None) -> "EmbeddingStore":
         directory = str(directory)
         manifest_path = os.path.join(directory, "manifest.json")
         entries: List[Dict[str, object]] = []
@@ -616,10 +617,19 @@ class EmbeddingStore:
             if split and not entry_split.startswith(split):
                 continue
             n_excluded += int(entry.get("n_excluded_over_max_len", 0) or 0)
+            expected_sha256 = entry.get("sha256")
+            if expected_sha256 is not None:
+                actual_sha256 = sha256_file(path)
+                if actual_sha256 != expected_sha256:
+                    raise ConfigError(
+                        f"embedding shard {path} sha256 {actual_sha256} != manifest "
+                        f"sha256 {expected_sha256}; refusing to use changed weights")
             with np.load(path, allow_pickle=True) as data:
                 h, offsets, seqs = data["h"], data["offsets"], data["seqs"]
                 d_model = int(h.shape[1]) if d_model is None else d_model
                 for k, seq in enumerate(seqs):
+                    if required_sequences is not None and str(seq) not in required_sequences:
+                        continue
                     # fp16 in RAM (halves residency: the 95k-seq chanrg split needs
                     # 58GB as fp32 which OOMs the 64GB host); _stack_embeddings
                     # upcasts to the training dtype at batch time.
@@ -628,10 +638,19 @@ class EmbeddingStore:
         if not mapping:
             raise ConfigError(f"embedding shards under {directory} contained no "
                               f"sequences matching split={split!r}")
+        if required_sequences is not None:
+            missing = required_sequences - set(mapping)
+            if missing:
+                examples = sorted(missing, key=len)[:3]
+                raise ConfigError(
+                    f"embedding store is missing {len(missing)} required sequences "
+                    f"(split={split!r}); examples={[(len(s), s[:12]) for s in examples]}. "
+                    "Refusing to fall back to a randomly initialised encoder")
         return cls(mapping, name=f"frozen:{os.path.basename(directory)}",
                    d_model=d_model, n_sequences=len(mapping),
                    source=f"dir:{directory}:split={split or '*'}:"
-                          f"excluded_over_max_len={n_excluded}")
+                          f"excluded_over_max_len={n_excluded}:"
+                          f"required_sequences={len(required_sequences) if required_sequences is not None else 'all'}")
 
     def get(self, seq: str) -> np.ndarray:
         try:
@@ -695,14 +714,32 @@ def load_dataset_from_jsonl(path: str, teacher: TeacherLabelStore,
                            version=sha256_file(path))
 
 
+def _jsonl_sequence_set(path: str) -> Set[str]:
+    sequences: Set[str] = set()
+    with open(path, encoding="utf-8") as handle:
+        for lineno, line in enumerate(handle, 1):
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            if "seq" not in record:
+                raise ConfigError(f"{path}:{lineno}: missing seq")
+            sequence = str(record["seq"]).upper().replace("T", "U")
+            if not sequence:
+                raise ConfigError(f"{path}:{lineno}: empty sequence")
+            sequences.add(sequence)
+    return sequences
+
+
 def _load_validation_dataset(config: TrainConfig, teacher: TeacherLabelStore
                              ) -> Tuple[DecisionDataset, TeacherLabelStore]:
     validation_teacher = (TeacherLabelStore.from_dir(config.validation_teacher_dir)
                           if config.validation_teacher_dir else teacher)
     embedding_dir = config.validation_embedding_dir or config.embedding_dir
     split = os.path.basename(config.validation_data).split(".")[0]
-    embedding_store = (EmbeddingStore.from_dir(embedding_dir, split=split)
-                       if embedding_dir else None)
+    required_sequences = _jsonl_sequence_set(config.validation_data) if embedding_dir else None
+    embedding_store = (EmbeddingStore.from_dir(
+        embedding_dir, split=split, required_sequences=required_sequences)
+        if embedding_dir else None)
     dataset = load_dataset_from_jsonl(
         config.validation_data, validation_teacher, mock_seed=config.teacher_seed,
         need_teacher_probs=float(config.lambda_distill) != 0.0,
@@ -2111,18 +2148,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 return 1
             raise
     try:
+        teacher_store = TeacherLabelStore.from_mock(args.teacher_seed)
         if args.synthetic:
             dataset = make_synthetic_dataset(args.synthetic, args.length, seed=args.seed,
                                              teacher_seed=args.teacher_seed)
         elif args.data:
-            teacher_store = (TeacherLabelStore.from_dir(args.teacher_dir)
-                             if args.teacher_dir else TeacherLabelStore.from_mock(args.teacher_seed))
+            if args.teacher_dir:
+                teacher_store = TeacherLabelStore.from_dir(args.teacher_dir)
             # Scope the store to the split being trained.  Loading every shard
             # would (a) hold ~14 GB of unused embeddings and (b) try to read shards
             # that a concurrent extraction run is still writing.
             _split = os.path.basename(args.data).split(".")[0]
-            embedding_store = (EmbeddingStore.from_dir(args.embedding_dir, split=_split)
-                               if args.embedding_dir else None)
+            required_sequences = _jsonl_sequence_set(args.data) if args.embedding_dir else None
+            embedding_store = (EmbeddingStore.from_dir(
+                args.embedding_dir, split=_split, required_sequences=required_sequences)
+                if args.embedding_dir else None)
             dataset = load_dataset_from_jsonl(
                 args.data, teacher_store, mock_seed=args.teacher_seed,
                 need_teacher_probs=float(args.lambda_distill) != 0.0,
@@ -2131,8 +2171,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         else:
             print("FATAL: give --synthetic N or --data FILE", file=sys.stderr)
             return 2
-        teacher = (TeacherLabelStore.from_dir(args.teacher_dir) if args.teacher_dir
-                   else TeacherLabelStore.from_mock(args.teacher_seed))
+        # Reuse the same teacher object: loading every shard twice doubles RAM.
+        teacher = teacher_store
         result = run_training(config, dataset, teacher, dry_run=args.dry_run)
     except (ConfigError, DivergenceError, GradientCoverageError) as exc:
         print(f"FATAL: {type(exc).__name__}: {exc}", file=sys.stderr)

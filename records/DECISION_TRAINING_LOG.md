@@ -9844,3 +9844,11 @@ s2 单模型四 split 已全部完成。`verify_chanrg_ens3.py --require-s2` 对
 - held-out validation 已完成：10,540/10,540，顺序不变、无重复、teacher 逐条对齐。清洁 CHANRG 与清洁混合语料构建继续执行，未完成前不写结果。
 - 后续必须是**同一 blocklist 的清洁 CHANRG 单语料 vs 清洁 bpRNA+CHANRG 混合语料**，至少3 seed，使用相同验证集和 early stopping。旧含重叠单语料臂只能作历史参照，不能与去污染混合臂直接归因比较。
 - 在真实 dry-run、训练/validation teacher 对齐、收敛原因和四 split 终评全部通过前，T-A115/T-A117 不得勾选，稿件与 PPT 不新增科学结论。
+
+### E. 真实验证、清洁资产与结果注册表闭合
+
+- 真实 dry-run：clean CHANRG train=94,876、teacher=94,876；validation 固定子集=512，validation teacher=10,540；early_stopping=True，100k仅为安全上限，every=500、patience=6、min_delta=0。第一次调用因 `/usr/bin/time` 不存在失败，已保留日志；去掉该外部依赖后通过。
+- 真实数据 CUDA 短跑：2 steps、B=2、validation=8，device=cuda:0，梯度覆盖/NaN检查与两条 validation log 通过；stop_reason=step_cap、converged=false，不能当科学结果或收敛证据。
+- 完整资产：validation=10,540；clean CHANRG=94,876；full mixed=135,185，均有第二遍独立复读和 blocklist_overlap=0。匹配30k哈希选样 `round29-chanrg30k-v1` 先于 blocklist/dedup；clean CHANRG子集=29,899，混合子集继续构建，选样集合 hash 必须两臂一致。
+- `tables/result_registry.json` 已生成：28个 CHANRG 单元格，含源结果 SHA256、checkpoint SHA256、模型/语料/协议/设备/收敛状态和合同裁决；生成时 SHA256=`bd6a2e6a1ab1e7fe039e9cdf924de6b165791c64ae958c42ee0ef130381a02d0`。当前只关闭 CHANRG 阶段注册门，不冒充全局 benchmark 注册完成。
+- 新增哈希选样后完整测试为 **370 passed/1 skipped**。T-A115/T-A116 已完成；T-A117 仅处于资产构建阶段，尚未开训。全量混合受64GB主机内存限制，不强行启动；匹配30k是明确登记的内存可行实验，不冒充全量语料结论。
