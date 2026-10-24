@@ -9861,3 +9861,9 @@ s2 单模型四 split 已全部完成。`verify_chanrg_ens3.py --require-s2` 对
 - FoldBench 调研：3D all-atom 口径（TM/lDDT/INF）与 pair-F1 不匹配、RNA monomer ~15 条；不引入，长度趋势用自有冻结板。
 - 产出：figs_round29 七图（本地，三遍 QA）、论文 v3.34 §4.3l、PPT S42/S43（43 slides）、GitHub 4cc6579（372 tests pass）。
 - 旧 mix 臂（.invalid_20261024_r3）判定接受：无独立二遍校验资产不可入板。
+
+### G. (2026-10-25) Round30 用户五点反馈：三问入稿 + 图重排 + 合并图
+
+- 三问答复入论文 §4.3k（三问段）：①CHANRG ID 差距=家族重叠差异（参照 TR0 微调 vs 我们 63/10597 重叠，ID 差与 OOD 塌缩同象两端）；②速度 124.8 seq/s 为端到端口径（含 frozen 编码器前向 + 9M 头 + C 解码；同节点参照 14.5 seq/s，8.6× 同口径）；③Turner 先验注入非作弊（公共固定参数/VL0 选权重/消融量化反事实 -0.2266 ID -0.3683 OOD）。
+- 图重排：PPT S44-S49 六张按行文逻辑（板→GenF 归因→三问→长度分层→下游合并→OOD 签名），49 slides audit PASS；下游合并图修复标签重叠（90° 旋转标注）+ donor/acceptor 释义（5GU/3AG 剪接位点）。
+- 六臂健康：step 7650，val 58737→58716 单调降，best 7500，GPU 23.6GB。
