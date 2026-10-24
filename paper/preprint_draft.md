@@ -1563,6 +1563,18 @@ variable. The macro and balanced-accuracy margins (+0.106 and +0.138) exceed the
 accuracy margin, indicating that the gain concentrates in rare-family recall
 rather than majority-class shortcuts.
 
+A third task family completes the coverage of the RiNALMo original suite:
+translation-efficiency regression. On the HEK 5'-UTR library from the same
+GSE114002 source the original paper uses, 326,033 sequences under ten-fold
+cross-validation with the head as the only variable, the Jev MLP head reaches
+a Pearson correlation of 0.3846 (std 0.0055 over folds) against 0.3807
+(std 0.0089) for a two-layer head in the paper's convention, on frozen
+classification-token embeddings. The margin is small and we do not overstate
+it: the original 0.93 figure is full-model fine-tuning, a different protocol
+from the frozen-backbone comparison this section isolates. The splice-site
+suite completes the transfer set; its evaluation is in progress at revision
+time and is reported in the supplementary log rather than claimed here.
+
 ### 4.3k CHANRG: an externally designed OOD hierarchy confirms the prior-stack signature
 
 The CHANRG benchmark curates Rfam 15.0 into an in-distribution Test split and three
@@ -1585,6 +1597,30 @@ fine-tuned head for our frozen-backbone decision head with structural priors
 raises the out-of-distribution mean from 0.2463 to 0.4434 without any
 fine-tuning of the backbone, which is the same collapse-and-recover signature
 our main-line ablations measure component by component.
+
+Three control experiments then bound what the remaining GenF deficit is not.
+The first varied the corpus: a decision head retrained from scratch on the
+CHANRG training partition, with every architectural choice fixed, scores
+0.6244, 0.5123, 0.2221 and 0.2596 on the four splits, below the zero-shot
+board everywhere, and fires twenty times too often on GenF (mean predicted
+pairing probability 0.241 against an observed density of 0.012), the mirror
+image of the board's under-firing on the same split. The second varied the
+supervision signal: rebuilding the distillation teacher from the ground
+truth itself, deterministic unit probabilities on consensus pairs, changes
+the four splits by less than 0.002, because the negative-log-likelihood term
+already supervises the ground-truth pairs directly and dominates the
+objective by four orders of magnitude. The third varied the head count: a
+second identically configured head, differing only in random seed and
+averaged before decoding, lifts every split over the single-head mean
+(0.6320, 0.5166, 0.2668, 0.2728) but by order 0.01, while the distance to
+the board on GenF remains 0.12. Neither corpus coverage, nor distillation
+supervision, nor head count therefore explains the deficit; what separates
+the board from every CHANRG-corpus head is that the board is a
+family-complementary ensemble trained on the bpRNA corpus with locked
+calibration, and its strength on genome-sparse families appears to come from
+that corpus mixture rather than from any property a CHANRG-only retraining
+can acquire. We state mixed-corpus board training as the follow-up this
+analysis motivates, and report the three negatives rather than smooth them.
 
 ## 4.4 Cross-family generalization is insufficient on bpRNA-new (quantified) ,  and the opposite on TestSetB
 

@@ -132,11 +132,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--out", default="/root/rna_jepa_data/eval_decision/splice_dual_result.json")
+    ap.add_argument("--bs", type=int, default=64)
+    ap.add_argument("--fp16", action="store_true",
+                    help="half-precision backbone (fits alongside a big training job)")
     args = ap.parse_args()
     device = args.device
     os.makedirs(EMB_DIR, exist_ok=True)
 
     enc, _ = load_encoder(device)
+    if args.fp16:
+        enc = enc.half()
     results = {}
     for ss in ["donor", "acceptor"]:
         seqs_tr, y_tr = load_train_pair(ss)
@@ -145,7 +150,7 @@ def main():
         idx = rng.permutation(len(seqs_tr))
         n_val = max(1, int(0.1 * len(idx)))
         val_i, tr_i = idx[:n_val], idx[n_val:]
-        X_all = embed_seqs(enc, device, seqs_tr, f"{EMB_DIR}/train_{ss}_gs600.npz")
+        X_all = embed_seqs(enc, device, seqs_tr, f"{EMB_DIR}/train_{ss}_gs600.npz", bs=args.bs)
         X_tr = torch.tensor(X_all[tr_i], dtype=torch.float32, device=device)
         X_val = torch.tensor(X_all[val_i], dtype=torch.float32, device=device)
         y_tr_t = torch.tensor(y_tr[tr_i], dtype=torch.float32, device=device)
@@ -161,7 +166,7 @@ def main():
             if not seqs_t:
                 continue
             X_t = torch.tensor(embed_seqs(enc, device, seqs_t,
-                                          f"{EMB_DIR}/test_{species}_{ss}.npz"),
+                                          f"{EMB_DIR}/test_{species}_{ss}.npz", bs=args.bs),
                                dtype=torch.float32, device=device)
             y_t_t = torch.tensor(y_t, dtype=torch.float32, device=device)
             for name, cls in [("paper_mlp", PaperMLP), ("jev_mlp", JevMLP)]:
