@@ -9852,3 +9852,12 @@ s2 单模型四 split 已全部完成。`verify_chanrg_ens3.py --require-s2` 对
 - 完整资产：validation=10,540；clean CHANRG=94,876；full mixed=135,185，均有第二遍独立复读和 blocklist_overlap=0。匹配30k哈希选样 `round29-chanrg30k-v1` 先于 blocklist/dedup；clean CHANRG子集=29,899，混合子集继续构建，选样集合 hash 必须两臂一致。
 - `tables/result_registry.json` 已生成：28个 CHANRG 单元格，含源结果 SHA256、checkpoint SHA256、模型/语料/协议/设备/收敛状态和合同裁决；生成时 SHA256=`bd6a2e6a1ab1e7fe039e9cdf924de6b165791c64ae958c42ee0ef130381a02d0`。当前只关闭 CHANRG 阶段注册门，不冒充全局 benchmark 注册完成。
 - 新增哈希选样后完整测试为 **370 passed/1 skipped**。T-A115/T-A116 已完成；T-A117 仅处于资产构建阶段，尚未开训。全量混合受64GB主机内存限制，不强行启动；匹配30k是明确登记的内存可行实验，不冒充全量语料结论。
+
+### F. (2026-10-24 23:40) Round29 本地接管：T-A117 六臂启动 + 长度趋势 + 图集
+
+- 接管审计发现六臂空窗 2.5h（GPU 928MiB/0%）；22:46 启动 tools/train_matched_30k.sh（setsid nohup），chanrg_clean_30k_s0 先行，B=16、early-stopping（every 500, patience 6）；watchdog cron */10 装妥（train_matched_30k.sh 失活即重启）。
+- 训练健康度（23:39）：step 2200，validation_loss 58737→58721 单调降，best_step 跟随，device=cuda:0，GPU 23.6GB。
+- 长度趋势实验（oFoldNA 式）：TS0 四桶 strict micro F1 = xens2 0.8787/0.7974/0.7697/0.6792 vs RiNALMo-ft 0.8187/0.7182/0.6745/0.5692 vs vienna centroid 0.6277/0.5375/0.4690/0.4854（集群 result.json 重算，n=580/516/164/28）；ArchII xens2 0.8993→0.5692。>400nt 写 open frontier，不宣称优势。
+- FoldBench 调研：3D all-atom 口径（TM/lDDT/INF）与 pair-F1 不匹配、RNA monomer ~15 条；不引入，长度趋势用自有冻结板。
+- 产出：figs_round29 七图（本地，三遍 QA）、论文 v3.34 §4.3l、PPT S42/S43（43 slides）、GitHub 4cc6579（372 tests pass）。
+- 旧 mix 臂（.invalid_20261024_r3）判定接受：无独立二遍校验资产不可入板。
