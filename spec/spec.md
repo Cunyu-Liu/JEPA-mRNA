@@ -7,7 +7,7 @@
 > - **当前路径与资源**：代码与 Git 提交留在 `/home/rna_jev`；本轮新增大型数据、权重和 artifacts 统一进入 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。现有 `/root/rna_jepa_data` 仅作旧资产只读依赖，不再用于本轮新 artifact。节点为 1×RTX 4090 24GB；系统盘已用 95%，团队盘余量约 2.8TB。SSH 已改用密钥，凭据不得写入任何文档、日志、脚本或 Git。
 > - **研究线边界**：本仓库是 RNA-Jev Decision Model/结构预测主线。本地《结构感知对比学习》v3.0 是后续独立对照研究方案；A0–A5 对比臂尚无实验结果，RLCD、集成或既有 Jev 头不得冒充结构感知对比学习。
 > - **第25轮后已落地**：NB fine-tune、NB+Jev 头迁移、ncRNA 双头、CHANRG 数据与四 split 评测、v3.30 合并、MRL/TE-EL/Splice 双头均有交接记录；这些状态来自第26–28轮台账与提交，本轮未全部重新训练。稿件存在并不等于投稿门通过。
-> - **CHANRG 当前实测**：GT-teacher 三种子训练均到 20k step cap；20k 只是计划终点，旧 run 没有 held-out early-stopping 证据，不得标记为“已收敛”。三种子集成四个 `result.json` 已逐序列独立复算，micro TP/FP/FN、macro-F1/INF、样本数、合法性和 CUDA 字段通过；旧 board 的 legacy schema 缺少 device/INF/legality 字段，已显式保留该证据边界。
+> - **CHANRG 当前实测**：GT-teacher 三种子训练均到 20k step cap；20k 只是计划终点，旧 run 没有 held-out early-stopping 证据，不得标记为“已收敛”。s2 单模型与三种子集成的全部 `result.json` 已逐序列独立复算，`--require-s2` PASS，micro TP/FP/FN、macro-F1/INF、样本数、合法性和 CUDA 字段通过；旧 board 的 legacy schema 缺少 device/INF/legality 字段，已显式保留该证据边界。
 >
 > | split | ens2 micro-F1 | ens3 micro-F1 | ens3 macro-F1 | zero-shot xens2 micro-F1 | ens3−xens2 micro |
 > |---|---:|---:|---:|---:|---:|
@@ -16,13 +16,13 @@
 > | GenC | 0.266765 | 0.269710 | 0.266895 | 0.379272 | −0.109562 |
 > | GenF | 0.272799 | 0.275018 | 0.276520 | 0.306568 | −0.031550 |
 >
-> - **CHANRG 科学判定**：第三种子使 ens3 相对 ens2 的 micro-F1 在四个 split 分别变化 +0.004270/+0.012934/+0.002946/+0.002219，但 GenF macro-F1 为 −0.000261，不能写“所有口径均提升”。单语料 CHANRG 训练只在本协议 Test 上优于 zero-shot xens2，GenA/GenC/GenF 均明显落后；GenF 未达到预注册的 0.4035 门，不得写 CHANRG SOTA。该结果支持做“bpRNA+CHANRG 混合语料 vs 单语料”的单变量对照，不支持继续堆 teacher、头数或测试集解码搜索。
-> - **无效混合臂已止损**：一份未纳入预注册的 `mix_s0_arm.sh` 被另行启动后，本轮发现167个 teacher shard 文件名冲突、未重新去重/blocklist、固定20k且写 `/root`。其 `run_meta` 为 steps=0、n_examples=72,564、teacher n_labels=72,067，与预期137,745条语料不一致；已保留现场、停止并隔离，任何输出不得作为科学结果。证据在 `audits/mix_s0_invalid_stop`。
+> - **CHANRG 科学判定**：第三种子使 ens3 相对 ens2 的 micro-F1 在四个 split 分别变化 +0.004270/+0.012934/+0.002946/+0.002219，但 GenF macro-F1 为 −0.000261（Holm p=0.00422），不能写“所有口径均提升”。ens3 相对三个单模型的逐序列均值在四 split 的 macro-F1 分别增加 +0.013654/+0.020298/+0.015893/+0.010847，四 split Wilcoxon–Holm 均显著；不额外声称 family-cluster 独立性。单语料 CHANRG 训练只在本协议 Test 上优于 zero-shot xens2，GenA/GenC/GenF 均明显落后；GenF 未达到预注册的 0.4035 门，不得写 CHANRG SOTA。该结果支持做**同一 blocklist 的清洁单语料 vs 清洁混合语料**对照，不支持继续堆 teacher、头数或测试集解码搜索。
+> - **无效混合臂已止损**：一份未纳入预注册的 `mix_s0_arm.sh` 被另行启动后，本轮发现167个 teacher shard 文件名冲突、未重新去重/blocklist、固定20k且写 `/root`。其 `run_meta` 为 steps=0、n_examples=72,564、teacher n_labels=72,067，与预期137,745条语料不一致；第二次 slim 资产仍有 n_examples=72,564、teacher mapping=72,067、manifest=73,642 三方不一致；已保留现场、停止并隔离，任何输出不得作为科学结果。证据在 `audits/mix_s0_invalid_stop`。
 > - **本轮工程修复**：新增 `tools/verify_chanrg_ens3.py`，原始路径与团队盘镜像各独立复算一次并做镜像 diff；`ens3_chain.sh` 改为失败即停、artifact 完整后才 DONE；多头评测增加严格 head 加载和 checkpoint SHA256/ensemble 元数据；旧 watchdog 不再重启历史臂，进程计数排除 shell 误报，cron 每10分钟记录 GPU/CUDA 风险与 artifact 进度。
-> - **收敛基础设施**：`train_decision.py` 新增固定 held-out validation、确定性子集、patience/min-delta、best checkpoint、停止原因和 `converged` 标记；step cap 明确不等于收敛。集群 40 项相关测试通过，CUDA synthetic smoke 验证 early-stopping 路径通过；smoke 仅证明工程路径，不是科学结果。完整套件已完成 343 passed/1 skipped；真实验证集上的 dry-run/短跑仍是新训练前的门禁。
+> - **收敛基础设施**：`train_decision.py` 新增固定 held-out validation、确定性子集、patience/min-delta、best checkpoint、停止原因和 `converged` 标记；step cap 明确不等于收敛。集群 40 项相关测试通过，CUDA synthetic smoke 验证 early-stopping 路径通过；smoke 仅证明工程路径，不是科学结果。完整套件已完成 366 passed/1 skipped；真实验证集上的 dry-run/短跑仍是新训练前的门禁。
 > - **合同口径裁决**：不得再写无条件“7/8、唯一真负 TS2”。Kirigami 的 ArchiveII-clean 实测 0.7872 高于 xens2 0.7760；bpRNA-new 的 0.6132 只胜选定 UFold 参照且低于多个已测物理/zero-shot 系统。C1-a 维持 FAIL，C2 层级级联维持负结果，S1=50×与 S3=L512≤10ms 已作废，不得恢复。pair scoring 可称“免配分函数”，但 exact non-crossing decode 仍为 O(L^3) DP。
 > - **稿件/PPT 门禁**：当前 `preprint_draft.md` 仍混有撤回结果、模型身份混用、指标/参照不一致和未完成统计，不是可提交预印本。先建立唯一结果注册表并清理 claim–evidence，再更新稿件与 PPT；smoke、proxy、训练集结果、quoted 数字不得转写成本项目最终科学结论。
-> - **当前允许推进的顺序**：完成 s2 单模型四 split 与三种子统计 → 真实验证协议 dry-run → 冻结混合语料与去重/blocklist 审计 → 验证集早停训练 → 四 split 终评与配对统计。任一 CUDA、数据、artifact 或验收门失败即停止后续阶段并保留证据。
+> - **当前允许推进的顺序**：真实验证协议 dry-run → 冻结清洁单语料/混合语料与去重 blocklist 审计 → 验证集早停训练 → 四 split 终评与配对统计。任一 CUDA、数据、artifact 或验收门失败即停止后续阶段并保留证据。
 
 > **交接状态（2026-10-21，第二十五轮交接更新——五工作总执行轮，细节 §15.96）**：
 > - **集群**：`ssh -p 28055 root@px2-jcy.matpool.com`（1×RTX 4090 24GB）；代码 **/home/rna_jev**（GitHub HEAD 55ee511 + 本轮新增提交）；数据/权重 /root/rna_jepa_data 与 /teams/HoulabData_1788502323/liucunyu/rna_jev_data。GPU0 被外部 codonflow 任务占 19.5GB/97%，仅 4.5GB 空闲——我方任务全部排队守护，显存一释放自动起跑。

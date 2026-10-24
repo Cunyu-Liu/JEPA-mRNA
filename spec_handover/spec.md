@@ -4,9 +4,9 @@
 
 > **2026-10-24 接管更新**：本目录不再是第9轮历史状态的执行依据。当前权威 spec/tasks 为 `/home/rna_jev/spec/spec.md` 与 `/home/rna_jev/spec/tasks.md` 的“第二十九轮接管审计”节；本节与其同步，旧下文仅作历史快照。
 >
-> 当前代码在 `/home/rna_jev`，新大型 artifacts 在 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。CHANRG 三种子集成四 split 已独立复算：micro-F1 为 Test 0.636256、GenA 0.529566、GenC 0.269710、GenF 0.275018；相对 zero-shot xens2 仅 Test +0.070702，其余分别 −0.114692/−0.109562/−0.031550，且 GenF macro-F1 相对两种子 −0.000261。不得写 CHANRG SOTA 或全面提升。s2 单模型终评与三种子统计未完成前，不关闭该阶段。
+> 当前代码在 `/home/rna_jev`，新大型 artifacts 在 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。CHANRG 三种子集成四 split 已独立复算：micro-F1 为 Test 0.636256、GenA 0.529566、GenC 0.269710、GenF 0.275018；相对 zero-shot xens2 仅 Test +0.070702，其余分别 −0.114692/−0.109562/−0.031550，且 GenF macro-F1 相对两种子 −0.000261。不得写 CHANRG SOTA 或全面提升。s2 单模型四 split 与三种子统计已完成，`--require-s2` PASS；ens3 相对单模型均值的 macro-F1 在四 split 均提高并通过 Wilcoxon–Holm，但相对 ens2 的 GenF macro 为 −0.000261（p=0.00422）。详见台账 §15.99。
 >
-> 旧20k run 是 step cap，不是收敛证明。新训练必须先通过真实 held-out dry-run，再使用验证集 early stopping、best checkpoint 与停止原因；CUDA/CPU 规则、artifact 门禁和每10分钟监控为硬要求。一份未预注册的 mix_s0 已因167个 shard 冲突、语料/标签计数不一致和缺少去重审计在 steps=0 停止并隔离，不得引用。稿件仍含撤回结果和口径冲突，不是可提交预印本。下一阶段只允许：关闭 s2/统计 → 真实验证 dry-run → 混合语料审计与冻结 → 新训练；不得跳门。
+> 旧20k run 是 step cap，不是收敛证明。新训练必须先通过真实 held-out dry-run，再使用验证集 early stopping、best checkpoint 与停止原因；CUDA/CPU 规则、artifact 门禁和每10分钟监控为硬要求。一份未预注册的 mix_s0 已因167个 shard 冲突、语料/标签计数不一致和缺少去重审计在 steps=0 停止并隔离，不得引用。稿件仍含撤回结果和口径冲突，不是可提交预印本。下一阶段只允许：真实验证 dry-run → 清洁单语料/混合语料审计与冻结 → 新训练；不得跳门。
 >
 > 结构感知对比学习 A0–A5 是独立后续方案，当前没有实验结果；既有 RLCD/集成不得冒充该研究线。完整当前状态、合同裁决和结果表以 `spec/spec.md` 第二十九轮节为准。
 > 目标产物：一篇可投稿的论文（唯一成功判据）

@@ -13,11 +13,11 @@
 > | T-A103 v3.30 合并 | 文本合并完成；投稿验收未完成 | 按 T-A119 清理撤回结果、模型身份、指标和引用后才可称投稿候选 |
 > | T-A105 单语料 CHANRG | s0/s1/s2 均到20k；预注册 GenF 门未达 | s2 单模型四 split 由 T-A114 关闭；不得把 step cap 写成收敛 |
 > | T-A112 三种子集成 | 四 split 已完成；独立复算 PASS | 结论限定为 Test 改善、GenA/GenC/GenF 落后；GenF macro 未提升，禁止 SOTA/全面提升表述 |
-> | **T-A113 接管审计与 spec 同步** | **进行中** | 两个 spec 目录的 spec/tasks 同步；数据、权重、日志进入新团队目录；旧 SSH 密码改密钥；无秘密落盘 |
-> | **T-A114 CHANRG 当前证据闭环** | **进行中** | s2 单模型 4/4 `result.json`；`verify_chanrg_ens3.py --require-s2` PASS；输出三种子 mean±std、逐序列配对比较与 ens2/ens3 差值；记录正负结果后才可关闭 |
-> | **T-A115 验证集收敛训练** | **部分完成** | 40 项相关测试、完整 343 passed/1 skipped 与 CUDA smoke 已过；还需真实 held-out teacher/embedding dry-run 和短程 CUDA 检查；新训练必须以 early_stopping 而非 step_cap 标记 converged |
+> | **T-A113 接管审计与 spec 同步** | **已完成（6a55017）** | 两个 spec 目录已同步；数据、权重、日志进入新团队目录；SSH 已改密钥；秘密扫描通过 |
+> | **T-A114 CHANRG 当前证据闭环** | **已完成** | s2 单模型 4/4；`--require-s2` PASS；三种子 mean±std、Wilcoxon–Holm、第二套独立统计和台账 §15.99 已落盘；结论含 GenF macro 负增量与 OOD 失败边界 |
+> | **T-A115 验证集收敛训练** | **部分完成** | 40 项相关测试、构建器专项29项、完整 366 passed/1 skipped 与 CUDA smoke 已过；还需真实 held-out teacher/embedding dry-run 和短程 CUDA 检查；新训练必须以 early_stopping 而非 step_cap 标记 converged |
 > | **T-A116 唯一结果注册表与合同纠错** | **待办** | 以模型/语料/checkpoint/split/GT/scorer/decoder/硬件为键；处理 Kirigami ArchiveII 反例、bpRNA-new 强参照、撤回 TestSetB、C1-a/C2/S1/S3；所有 claim 可回溯 |
-> | **T-A117 bpRNA+CHANRG 混合语料单变量实验** | **阻塞：无效 mix_s0 已在 steps=0 停止并隔离；待 T-A114/T-A115/T-A116** | 先冻结混合比例、去重/blocklist、验证集和 early-stopping；teacher shard 必须唯一且 n_labels=n_records、逐条对齐；保持头、seed、有效 batch、LR、decoder/scorer 不变；至少3 seed；与单语料和 zero-shot 同协议比较，不用测试集选配置 |
+> | **T-A117 清洁 CHANRG 单语料 vs 清洁 bpRNA+CHANRG 混合语料** | **待 T-A115/T-A116；无效旧 mix 已退役** | 两臂使用同一 blocklist、验证集与 early-stopping；teacher shard 唯一且 n_labels=n_records、逐条对齐；保持头、seed、有效 batch、LR、decoder/scorer 不变；至少3 seed；与彼此及 zero-shot 同协议比较，不用测试集选配置；旧含重叠臂只作历史参照 |
 > | **T-A118 监控与 GitHub 闭环** | **进行中** | 10min watchdog 无自匹配误报；每个完成任务绑定 commit、配置、数据/权重哈希、日志和验证报告；确认后提交并 push，大文件与秘密不入库 |
 > | **T-A119 稿件、统计与 PPT** | **待证据门** | 清理稿件矛盾，补最终主模型校准、主表统计和新增任务完整表；PPT 只写已复核结果，保留负结果与限制 |
 > | **T-A120 预印本发布包** | **未完成** | 满足合同硬门、多种子/配对统计/Holm、完整引用与图表、代码/配置/split/预测/权重说明和复现命令；未满足不得提交预印本 |

@@ -9801,3 +9801,46 @@ three key-sets verified identical at 72,067/72,067/0 missing). Host OOM lessons:
 teacher dir and corpus must be corpus-matched slim stores; alias embedding entries
 must point at corpus-filtered shards; page cache counts against the 64G cgroup.
 Ops: weights_20261013/ckpts 45G removed (backed up on /teams per §15.84, md5 sampled).
+
+## §15.99 Round-29 接管审计、CHANRG 三种子闭环与无效混合臂止损（2026-10-24）
+
+### A. 当前事实源与工程门
+
+- 接管起点 HEAD `a88656b`；第一轮修复提交为 `6a55017`（`round29-handoff` 分支）。代码留在 `/home/rna_jev`；本轮新 artifacts 统一在 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。SSH 已改密钥，cron 每10分钟记录真实 Python 训练/评测进程、GPU 与 artifact 数。
+- 原始 `result.json`/`run_meta.json` > 可重跑验证 > spec 实时节 > 历史交接与稿件。两个 spec 目录均已更新；旧“在训/排队/7/8唯一真负”不再直接作为当前事实。
+- `train_decision.py` 已有 held-out validation early stopping、best.pt、stop_reason/converged；相关40测试、构建器专项29测试、完整 366 passed/1 skipped 与 CUDA synthetic smoke 通过。smoke 只验收工程路径，不是科学结果。真实 held-out dry-run 仍是下一道门。
+
+### B. CHANRG s2 与三种子集成最终验收
+
+s2 单模型四 split 已全部完成。`verify_chanrg_ens3.py --require-s2` 对全部单模型、ens2、ens3、r2d/xens2 board 做逐序列独立复算：PASS，errors=[]。新 result 的 device=CUDA、样本数、micro TP/FP/FN、macro-F1/INF、合法性均通过；旧 board legacy schema 缺 device/INF/legality 字段，保留该边界。团队盘镜像 diff 与第二套独立统计实现也一致。
+
+| split | s0 micro | s1 micro | s2 micro | 三种子 mean±sample std | ens2 micro | ens3 micro | zero-shot xens2 micro | ens3−xens2 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Test | 0.624600 | 0.616418 | 0.626810 | 0.622609±0.005475 | 0.631986 | 0.636256 | 0.565554 | +0.070702 |
+| GenA | 0.510607 | 0.489886 | 0.528083 | 0.509525±0.019121 | 0.516632 | 0.529566 | 0.644258 | −0.114692 |
+| GenC | 0.221590 | 0.281824 | 0.257858 | 0.253757±0.030326 | 0.266765 | 0.269710 | 0.379272 | −0.109562 |
+| GenF | 0.261134 | 0.261520 | 0.266828 | 0.263161±0.003182 | 0.272799 | 0.275018 | 0.306568 | −0.031550 |
+
+三种子集成相对“三个单模型的逐序列均值”：
+
+| split | Δmacro-F1 | Wilcoxon–Holm adjusted p |
+|---|---:|---:|
+| Test | +0.013654 | 1.17e-252 |
+| GenA | +0.020298 | 7.12e-180 |
+| GenC | +0.015893 | 4.74e-20 |
+| GenF | +0.010847 | 9.33e-09 |
+
+检验为预先声明的 per-sequence 双侧 Wilcoxon signed-rank，四个 split 内 Holm 校正；不额外声称 family-cluster 独立性。第二套独立实现复算 Test/GenF 的均值、差值和 p 值一致。
+
+**结论边界**：ensemble 相对单模型均值在四 split 均有正向增益，但相对 ens2 不是全指标单调：GenF micro 增加 +0.002219，macro 却下降 −0.000261（Holm p=0.00422）。单语料 CHANRG 只在 Test 超过 zero-shot xens2，GenA/GenC/GenF 均落后；GenF 仍未达到0.4035预注册门，不能写 CHANRG SOTA 或“全面提升”。T-A114 至此完成；s0/s1/s2 的20k仍只是 step cap，不能写成收敛。
+
+### C. 无效 mix_s0 两次启动的止损
+
+未预注册的 `mix_s0_arm.sh` 被另一执行会话重复创建并启动。审查确认：直接 `cat` 合并语料、未重跑 blocklist、同名 teacher shard 拷贝有167个冲突、固定20k、新 artifacts 写 `/root`。第一次 run_meta 为 steps=0、n_examples=72,564、teacher n_labels=72,067，与预期137,745不符。第二次提交记录声称“72,067/72,067/0 missing”，但实际复核为 run_meta n_examples=72,564、teacher mapping n_labels=72,067、manifest n_sequences=73,642，三者仍不一致，因此该 aligned 声明不成立。两次均在产生科学评测前停止并隔离，原脚本已替换为退役保护，输出一律禁止使用。现场在 `audits/mix_s0_invalid_stop`。
+
+### D. 正确的后续数据与实验路线
+
+- 新 `tools/build_clean_corpus.py` 采用流式 JSONL↔teacher 对齐、读前/读后 hash、全局精确去重、14个 test/validation blocklist、GT one-hot 逐矩阵核对、输出第二遍独立复读与零 overlap 验收；29项相关测试通过。旧 GT manifest 的 `seq_sha256` 已实证为 empty-join 算法，不是数据损坏；构建器兼容并固定记录该约定，禁止同 manifest 混用算法。
+- held-out validation 已完成：10,540/10,540，顺序不变、无重复、teacher 逐条对齐。清洁 CHANRG 与清洁混合语料构建继续执行，未完成前不写结果。
+- 后续必须是**同一 blocklist 的清洁 CHANRG 单语料 vs 清洁 bpRNA+CHANRG 混合语料**，至少3 seed，使用相同验证集和 early stopping。旧含重叠单语料臂只能作历史参照，不能与去污染混合臂直接归因比较。
+- 在真实 dry-run、训练/validation teacher 对齐、收敛原因和四 split 终评全部通过前，T-A115/T-A117 不得勾选，稿件与 PPT 不新增科学结论。

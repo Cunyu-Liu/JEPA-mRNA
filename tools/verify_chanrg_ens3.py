@@ -123,7 +123,7 @@ def verify_result(path: Path, *, legacy: bool = False) -> tuple[dict, list[str]]
     return {"metrics": metrics, "rows": rows}, errors
 
 
-def compare(reference: dict, candidate: dict) -> dict:
+def aligned_deltas(reference: dict, candidate: dict) -> list[float]:
     ref_rows = reference["rows"]
     cand_rows = candidate["rows"]
     if len(ref_rows) != len(cand_rows):
@@ -133,7 +133,11 @@ def compare(reference: dict, candidate: dict) -> dict:
                        or left["length"] == right["length"])
         if not same_length or left["n_gt_pairs"] != right["n_gt_pairs"]:
             raise ValueError(f"sequence alignment mismatch at row {index}")
-    deltas = [right["f1"] - left["f1"] for left, right in zip(ref_rows, cand_rows)]
+    return [right["f1"] - left["f1"] for left, right in zip(ref_rows, cand_rows)]
+
+
+def compare(reference: dict, candidate: dict) -> dict:
+    deltas = aligned_deltas(reference, candidate)
     return {
         "delta_micro_f1": candidate["metrics"]["micro_f1"] - reference["metrics"]["micro_f1"],
         "delta_macro_f1": candidate["metrics"]["macro_f1"] - reference["metrics"]["macro_f1"],
@@ -142,6 +146,76 @@ def compare(reference: dict, candidate: dict) -> dict:
         "n_win": sum(value > 0 for value in deltas),
         "n_tie": sum(value == 0 for value in deltas),
         "n_loss": sum(value < 0 for value in deltas),
+    }
+
+
+def add_wilcoxon(entry: dict, reference: dict, candidate: dict) -> None:
+    from scipy import stats as scipy_stats
+
+    deltas = aligned_deltas(reference, candidate)
+    nonzero = [value for value in deltas if value != 0]
+    if not nonzero:
+        entry.update({"wilcoxon_statistic": 0.0, "wilcoxon_p_value": 1.0,
+                      "n_nonzero_pairs": 0})
+    else:
+        result = scipy_stats.wilcoxon(
+            nonzero, zero_method="wilcox", alternative="two-sided", method="auto")
+        entry.update({"wilcoxon_statistic": float(result.statistic),
+                      "wilcoxon_p_value": float(result.pvalue),
+                      "n_nonzero_pairs": len(nonzero)})
+    entry["test"] = "two-sided Wilcoxon signed-rank on paired per-sequence F1"
+
+
+def apply_holm(entries: dict) -> None:
+    ordered = sorted(entries.items(), key=lambda item: item[1]["wilcoxon_p_value"])
+    running = 0.0
+    m = len(ordered)
+    for rank, (_name, entry) in enumerate(ordered, start=1):
+        running = max(running, (m - rank + 1) * entry["wilcoxon_p_value"])
+        entry["holm_p_value"] = min(1.0, running)
+        entry["holm_family_size"] = m
+
+
+def seed_summary(results: dict, split: str) -> dict:
+    summary = {}
+    for metric in ("micro_f1", "macro_f1", "macro_inf"):
+        values = [results[arm][split]["metrics"][metric] for arm in ("s0", "s1", "s2")]
+        if any(value is None for value in values):
+            summary[metric] = None
+            continue
+        summary[metric] = {
+            "mean": statistics.fmean(values),
+            "sample_std": statistics.stdev(values),
+            "min": min(values), "max": max(values), "n_seeds": len(values),
+        }
+    return summary
+
+
+def seed_average_result(results: dict, split: str) -> dict:
+    arms = ("s0", "s1", "s2")
+    rows = []
+    reference = results["s0"][split]
+    for index in range(len(reference["rows"])):
+        per_seed = [results[arm][split]["rows"][index] for arm in arms]
+        left = per_seed[0]
+        for row in per_seed[1:]:
+            same_length = (left["length"] is None or row["length"] is None
+                           or left["length"] == row["length"])
+            if not same_length or left["n_gt_pairs"] != row["n_gt_pairs"]:
+                raise ValueError(f"seed alignment mismatch at {split} row {index}")
+        inf_values = [row["inf"] for row in per_seed]
+        rows.append({"f1": statistics.fmean(row["f1"] for row in per_seed),
+                     "inf": (statistics.fmean(inf_values)
+                             if all(value is not None for value in inf_values) else None),
+                     "length": left["length"], "n_gt_pairs": left["n_gt_pairs"]})
+    return {
+        "rows": rows,
+        "metrics": {
+            "micro_f1": statistics.fmean(
+                results[arm][split]["metrics"]["micro_f1"] for arm in arms),
+            "macro_f1": statistics.fmean(
+                results[arm][split]["metrics"]["macro_f1"] for arm in arms),
+        },
     }
 
 
@@ -193,6 +267,24 @@ def main() -> int:
                 comparisons[f"ens3_minus_{arm}/{split}"] = compare(
                     results[arm][split], results["ens3"][split])
 
+    ens2_tests = {name: value for name, value in comparisons.items()
+                  if name.startswith("ens3_minus_ens2/")}
+    for name, entry in ens2_tests.items():
+        split = name.split("/", 1)[1]
+        add_wilcoxon(entry, results["ens2"][split], results["ens3"][split])
+    apply_holm(ens2_tests)
+
+    seed_statistics = {"summary": {}, "ens3_vs_seed_mean": {}}
+    for split in SPLITS:
+        if not all(split in results.get(arm, {}) for arm in ("s0", "s1", "s2", "ens3")):
+            continue
+        seed_statistics["summary"][split] = seed_summary(results, split)
+        average = seed_average_result(results, split)
+        entry = compare(average, results["ens3"][split])
+        add_wilcoxon(entry, average, results["ens3"][split])
+        seed_statistics["ens3_vs_seed_mean"][split] = entry
+    apply_holm(seed_statistics["ens3_vs_seed_mean"])
+
     checkpoints = {}
     for arm, value in CKPTS.items():
         path = args.ckpt_root / value
@@ -202,12 +294,13 @@ def main() -> int:
             errors.append(f"missing checkpoint for {arm}: {path}")
 
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
         "required_arms": required_arms,
         "splits": list(SPLITS),
         "results": {arm: {split: value["metrics"] for split, value in by_split.items()}
                     for arm, by_split in results.items()},
         "comparisons": comparisons,
+        "seed_statistics": seed_statistics,
         "checkpoint_sha256": checkpoints,
         "errors": errors,
         "status": "PASS" if not errors else "FAIL",
@@ -225,6 +318,13 @@ def main() -> int:
         if name.startswith(("ens3_minus_ens2", "ens3_minus_board")):
             print(f"{name}: d_micro={comparison['delta_micro_f1']:+.9f} "
                   f"d_macro={comparison['delta_macro_f1']:+.9f}")
+    for split, summary in seed_statistics["summary"].items():
+        micro = summary["micro_f1"]
+        print(f"seeds {split}: micro={micro['mean']:.9f}±{micro['sample_std']:.9f}")
+    for split, comparison in seed_statistics["ens3_vs_seed_mean"].items():
+        print(f"ens3_vs_seed_mean/{split}: "
+              f"d_macro={comparison['delta_macro_f1']:+.9f} "
+              f"holm_p={comparison['holm_p_value']:.6g}")
     print(f"VERIFICATION {report['status']}: {args.out}")
     return 0 if not errors else 1
 

@@ -4,9 +4,9 @@
 > 每个 Task 均有明确**完成判据**（可验证）。未满足判据不得勾选。
 > 架构来源：纯血 Jev Decision Model 范式。**不引入 JEPA 线。**
 >
-> **2026-10-24 当前任务接管**：旧下文为第9轮历史快照；当前任务以 `/home/rna_jev/spec/tasks.md` 的 T-A113–T-A120 表为准。执行顺序固定为：T-A113 spec/资产接管 → T-A114 s2 与 CHANRG 三种子证据闭环 → T-A115 真实验证 dry-run/完整测试 → T-A116 唯一结果注册表 → T-A117 混合语料单变量实验 → T-A119 稿件/PPT → T-A120 预印本发布包。T-A118 的监控、日志和 GitHub 提交贯穿所有任务。
+> **2026-10-24 当前任务接管**：旧下文为第9轮历史快照；当前任务以 `/home/rna_jev/spec/tasks.md` 的 T-A113–T-A120 表为准。T-A113/T-A114 已完成；后续顺序为：T-A115 真实验证 dry-run → T-A116 唯一结果注册表 → T-A117 清洁单语料 vs 清洁混合语料 → T-A119 稿件/PPT → T-A120 预印本发布包。T-A118 的监控、日志和 GitHub 提交贯穿所有任务。
 >
-> 当前不得勾选：三种子统计（s2 单模型四 split 未齐）、真实数据收敛训练（代码、40项相关测试、完整343 passed/1 skipped与CUDA smoke 已完成，真实 dry-run 未完成）、混合语料（未冻结；无效 mix_s0 已在 steps=0 停止）、可提交预印本（稿件与统计门未过）。任何 step cap、smoke、proxy 或 quoted 结果均不能替代对应完成判据。
+> 当前不得勾选：真实数据收敛训练（代码、40项相关测试、完整366 passed/1 skipped与CUDA smoke 已完成，真实 dry-run 未完成）、清洁双臂实验（资产未冻结；无效 mix_s0 已退役）、可提交预印本（稿件与统计门未过）。T-A113 接管和 T-A114 CHANRG 三种子证据闭环已完成。任何 step cap、smoke、proxy 或 quoted 结果均不能替代对应完成判据。
 
 ---
 
