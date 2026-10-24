@@ -9789,3 +9789,15 @@ contrasting the +0.106 macro-F1 ncRNA rare-family gain. SpliceBERT full-FT
 reference 0.9670/0.9583/0.9496/0.9482 disclosed as protocol gap.
 Paper v3.32 (splice section replaces placeholder), fig_r28_2, PPT S41.
 Three-seed ensemble eval chain launched (ens3_chain.sh, tools/eval_multi_head_ensemble.py).
+
+### §15.98g Round-28 mixed-corpus arm launched + ens3 full readout (2026-10-24)
+
+Three-seed GT ensemble (s0+s1+s2 averaged): test 0.6363 / GenA 0.5296 / GenC 0.2697 /
+GenF 0.2750. Vs two-head: +0.004 GenF (0.2728->0.2750), confirming the diminishing
+head-count return already stated in the three-control attribution.
+Mixed-corpus arm chanrg_r2d_mix_s0 launched (bprna_tr1c 42,564 full + chanrg 30,000
+sample rs=0 = 72,067 seqs; slim fp16 embed shards + slim fp32 mixed teacher, all
+three key-sets verified identical at 72,067/72,067/0 missing). Host OOM lessons:
+teacher dir and corpus must be corpus-matched slim stores; alias embedding entries
+must point at corpus-filtered shards; page cache counts against the 64G cgroup.
+Ops: weights_20261013/ckpts 45G removed (backed up on /teams per §15.84, md5 sampled).
