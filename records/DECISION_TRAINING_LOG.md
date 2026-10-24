@@ -9742,3 +9742,37 @@ Next move if SOTA is still pursued: board-style ensemble on chanrg corpus
 
 Ops: one OOM rc=137 during GT-arm load (GT teacher adds ~7GB residency);
 monitor_r28 auto-resumed once and completed. monitor_r28 retired after ALL DONE.
+
+### 15.98e CHANRG seed-ensemble + RiNALMo-original downstream suite (2026-10-24 中午)
+
+Ensemble (two-seed GT heads, score-averaged pre-decode, w=0.5, VL0 Platt on
+chanrg_train_validation):
+
+| split | ens(s0+s1) | s0 single | s1 single | zero-shot board |
+|---|---|---|---|---|
+| Test | 0.6320 | 0.6246 | 0.6164 | 0.6437 |
+| GenA | 0.5166 | 0.5106 | 0.4899 | 0.6443 |
+| GenC | 0.2668 | 0.2216 | 0.2818 | 0.3557 |
+| GenF | 0.2728 | 0.2611 | 0.2615 | 0.3112 |
+
+Honest verdict: seed ensemble lifts every split over the single-head mean but
+stays far below both the zero-shot board and OFoldNA-SS (0.4035 GenF). The
+four-attribution chain is now: corpus (falsified r27) -> teacher signal
+(falsified r28a) -> head count (small effect, +0.01 GenF) -> REMAINING GAP =
+board composition: the zero-shot board is a bprna-corpus family-complementary
+ensemble (plana s0+s1 buckets x r2d, VL0-locked), not a CHANRG-corpus system.
+GenF SOTA within this architecture family would require bprna+CHANRG mixed-
+corpus board training; we log that as the explicit next step, cost ~3 arms.
+
+Downstream suite (RiNALMo-original protocol where data is reachable):
+- TE/EL HEK (GSE114002 egfp_unmod_1, 326k seqs, KFold10 PCC, frozen CLS):
+  paper head 0.3807±0.0089, jev_mlp 0.3846±0.0055 — jev head slightly better
+  and more stable. PROTOCOL NOTE: frozen-backbone CLS vs RiNALMo full-ft 0.93
+  are different protocols; quoted as frozen comparison only.
+- Muscle/pc3: RiNALMo Drive source unreachable from BOTH host and cluster
+  (connection timeout); logged as blocked, no substitute fabricated.
+- splice: 8.1GB Spliceator tar fully downloaded and unpacked; dual-head v2
+  (GS-600 train + 4-species benchmark) eval running.
+
+Ops: /root disk hit 99% during unpack (197G/200G) — splice tar kept, runs
+dir intact. s2_gt arm (seed 2) launched to keep GPU saturated per user rule.
