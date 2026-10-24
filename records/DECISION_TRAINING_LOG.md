@@ -9867,3 +9867,8 @@ s2 单模型四 split 已全部完成。`verify_chanrg_ens3.py --require-s2` 对
 - 三问答复入论文 §4.3k（三问段）：①CHANRG ID 差距=家族重叠差异（参照 TR0 微调 vs 我们 63/10597 重叠，ID 差与 OOD 塌缩同象两端）；②速度 124.8 seq/s 为端到端口径（含 frozen 编码器前向 + 9M 头 + C 解码；同节点参照 14.5 seq/s，8.6× 同口径）；③Turner 先验注入非作弊（公共固定参数/VL0 选权重/消融量化反事实 -0.2266 ID -0.3683 OOD）。
 - 图重排：PPT S44-S49 六张按行文逻辑（板→GenF 归因→三问→长度分层→下游合并→OOD 签名），49 slides audit PASS；下游合并图修复标签重叠（90° 旋转标注）+ donor/acceptor 释义（5GU/3AG 剪接位点）。
 - 六臂健康：step 7650，val 58737→58716 单调降，best 7500，GPU 23.6GB。
+
+### H. (2026-10-25 深夜) PPT 重复 slide 清理 + 六臂健康
+
+- PPT 去重：多轮回滚-追加造成 6 张图区 slide 各重复 2-3 份（全内容签名检测），清理后 37 slides（S32-S37 = 图 1-6 唯一实例），zip 无重复项、几何 PASS、字体全微软雅黑、数据抽查 PASS。
+- 六臂：chanrg_clean_30k_s0 step 8325，val 58716.54（best 8000，improved），watchdog live，GPU 23.6GB。
