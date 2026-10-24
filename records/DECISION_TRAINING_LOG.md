@@ -9776,3 +9776,16 @@ Downstream suite (RiNALMo-original protocol where data is reachable):
 
 Ops: /root disk hit 99% during unpack (197G/200G) — splice tar kept, runs
 dir intact. s2_gt arm (seed 2) launched to keep GPU saturated per user rule.
+
+### §15.98f Round-28 splice v4 final + three-seed ensemble launch (2026-10-24)
+
+Spliceator dual-head v4 (site-center token pooling, correct POS/NEG column layouts,
+both-end N-strip): donor val 0.9845/0.9818, acceptor val 0.9756/0.9765.
+4-species bacc (paper/jev): Danio 0.9583/0.9574 (donor) 0.9460/0.9412 (acceptor);
+Fly 0.9065/0.9098, 0.9128/0.9030; Thaliana 0.9472/0.9454, 0.8995/0.8851;
+Worm 0.8847/0.8786, 0.8807/0.8686. Verdict: heads tie (mean 0.9275 vs 0.9238,
+sign flips) — local-motif task carries no head signal, honest null result,
+contrasting the +0.106 macro-F1 ncRNA rare-family gain. SpliceBERT full-FT
+reference 0.9670/0.9583/0.9496/0.9482 disclosed as protocol gap.
+Paper v3.32 (splice section replaces placeholder), fig_r28_2, PPT S41.
+Three-seed ensemble eval chain launched (ens3_chain.sh, tools/eval_multi_head_ensemble.py).

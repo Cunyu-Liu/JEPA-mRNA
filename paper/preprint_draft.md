@@ -1571,9 +1571,27 @@ a Pearson correlation of 0.3846 (std 0.0055 over folds) against 0.3807
 (std 0.0089) for a two-layer head in the paper's convention, on frozen
 classification-token embeddings. The margin is small and we do not overstate
 it: the original 0.93 figure is full-model fine-tuning, a different protocol
-from the frozen-backbone comparison this section isolates. The splice-site
-suite completes the transfer set; its evaluation is in progress at revision
-time and is reported in the supplementary log rather than claimed here.
+from the frozen-backbone comparison this section isolates.
+
+The fourth and last task family is splice-site prediction, on the Spliceator
+multi-species suite the original paper reports. Training on the GS 600-nucleotide
+donor and acceptor windows (21,973 and 22,179 sequences after ambiguity
+filtering, 90/10 split) with frozen-backbone embeddings pooled over the
+site-centered tokens of the window midpoint, and evaluating on the held-out
+four-species benchmarks, the two heads are effectively tied: across donor and
+acceptor sites and the four species (Danio, Fly, Thaliana, Worm), the paper
+convention head averages 0.9275 balanced accuracy and the Jev head 0.9238, with
+per-cell differences within one point and sign flips between species (Jev ahead
+on Fly donors by 0.003, behind on Worm acceptors by 0.012). We read this as a
+null result and report it as such: on a local-motif discrimination task the
+head architecture carries no signal, in contrast with the rare-family recall
+gains it produces on ncRNA family classification. Both sit below the published
+fine-tuned numbers (SpliceBERT full fine-tuning reaches 0.9670/0.9583/0.9496/
+0.9482 on Fish/Fly/Plant/Worm), which is the expected frozen-versus-fine-tuned
+gap rather than a deficit of the backbone; the frozen protocol cannot adapt
+the representations the task is actually sensitive to. Two of the original
+translation-efficiency datasets (Muscle, pc3) could not be obtained from their
+distribution source and are reported as blocked rather than estimated.
 
 ### 4.3k CHANRG: an externally designed OOD hierarchy confirms the prior-stack signature
 
