@@ -9950,7 +9950,7 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 ### B. T-A129 三组 MRL 预注册与实现验证
 
-- 不恢复 Muscle/pc3 的阻塞 Drive 数据，改用本地已有 GSE114002 中协议相容的三组任务：mcherry_1（269,113 条）、designed_library（100,017 条）、varying_length（106,530 条）。三组均保留原始 `rl` 标签和 25–100nt 过滤，非正 `rl` 不擅自删除。
+- 不恢复 Muscle/pc3 的阻塞 Drive 数据，改用本地已有 GSE114002 中协议相容的三组任务：mcherry_1（269,113 条）、designed_library（100,017 条）、varying_length（106,530 条）。三组均保留原始 `rl` 标签和 25–100nt 过滤，非正 `rl` 不擅自删除。三组 `unique_sequences == rows`，重复序列=0；切分后 train/validation/test 精确序列重叠=0，防止重复 UTR 泄漏。
 - 对照为 frozen RiNALMo-giga meanpool 上的 paper head vs Jev MLP head；每个长度固定 100 validation+100 test，剩余训练，五个 seed。主指标为 test PCC，报告 mean±sample std；5-seed 配对单侧 t-test，三个数据集内 Holm 校正，Δ>0 且校正 p<0.05 才允许写显著正结果。所有预测、checkpoint、输入数据与 SHA256 留档，其他正负结果均不删除。
 - `tools/eval_mrl_suite.py` 使用 CUDA early-stopping：patience=32、min_delta=1e-5、max_epochs=2000 仅失败保护；触及上限而未收敛会失败，不写成完成。`complete_mrl_suite.sh` 只在主消融 40/40 矩阵存在后启动，避免 GPU/主机内存争用。
 - 工程验证不是科学结果：先确认直接梯度与参数更新正常，再用 4,000 条稀疏真实信号合成数据复验。PaperMLP best_epoch=527/停止 559、JevMLP best_epoch=46/停止 78，两者 test PCC>0.999，早停与最佳权重恢复正常。此前高维过拟合样例只用于诊断，不得写入论文或 PPT。
@@ -9958,3 +9958,16 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 ### C. PPT 渲染验收
 
 - 19 页 draft 已通过 markitdown、fix_pptx 和 validate_layout（Issues=0），全部文本为微软雅黑且 1.5 倍行距。PowerPoint AppleEvent 与 LibreOffice 中文渲染在本机分别超时/缺字，改用 Aspose+libgdiplus 完成独立渲染；评估水印不属于 PPT 文件。封面、泄露表、最密基线表、三层架构、附录和结束页均完成视觉复核，未发现真实越界或遮挡。正式版仍受消融 40/40 和 T-A129 统计门约束。
+
+## §15.102 Clean-181 单模型纠错与图件/权重复核（2026-10-26）
+
+### A. TestSetB 单模型 clean-181
+
+- 从 `ow_rinalmo_r2dtr1c_b4_s0_step20000_testsetb/result.json` 逐序列重分组：clean-181 TP/FP/FN=3352/1307/1343，strict micro-F1=0.7166987385、macro-F1=0.7215193219；247 条重叠子集 micro=0.7754498014。全集=0.7507 不能与 clean 参照 0.8177 直接比较，主图 1 已改为 clean-181=0.7167，Δ=-0.101。
+- 最佳单 checkpoint 的 4/8 胜场不变，但“单模型”统一改标为“最佳单 checkpoint”，明确表示逐 split 最优而非一个模型贯穿八任务。xens2 clean-181 仍=0.8370、全集=0.8448，模型身份与参照不混用。
+
+### B. MRL 与图件验证补强
+
+- 每个 MRL run 现在保存 best head checkpoint、checkpoint SHA256、预测文件和预测 SHA256；`verify_saved_outputs` 从磁盘重读预测重算 PCC、严格加载每个 checkpoint、复核哈希和配对统计，全部通过才允许 `status=PASS`。稀疏信号 checkpoint 往返加载测试通过，审计 SHA256=`d36fe625…`。
+- `qa_figure_data.py` 独立复核主 benchmark 4/8、6/8、5/8 计数，速度 TP/FP/FN→F1，ECE 改善/过校正方向，A100 Pareto={RNAformer, UFold}，NB 8/8 增益、CHANRG OOD mean 和长度桶维度，全部 PASS。
+- 泄露页的 RNAformer-interfam 判定收窄为“主判定参照（TSB 除外）”，不再因 TS3/hard 零重叠而忽略 TestSetB 的 1/428。PPT 生成器、图源 JSON 和 QA 脚本已入库，结果同步脚本从验收 JSON 自动更新六臂数据，禁止手工转录。

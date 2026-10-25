@@ -47,6 +47,8 @@ def load_dataset(tar: tarfile.TarFile, spec: dict) -> pd.DataFrame:
     df = df[(df["len"] >= 25) & (df["len"] <= 100)].reset_index(drop=True)
     df["rl"] = df["rl"].astype(float)
     assert len(df) > 0 and np.isfinite(df["rl"]).all()
+    duplicate_rows = int(df["seq"].duplicated().sum())
+    assert duplicate_rows == 0, f"exact-sequence duplicates require grouped splitting: {duplicate_rows}"
     return df
 
 
@@ -217,7 +219,13 @@ def main() -> int:
         embs, rls, lens = embed_dataset(df, cache, args.device)
         assert len(embs) == len(df) == len(rls) == len(lens)
         masks = split_indices(lens)
-        dataset_result = {"n_sequences": len(df), "embedding_cache": str(cache),
+        sequences = df["seq"].to_numpy()
+        train_seqs = set(sequences[masks[0]])
+        valid_seqs = set(sequences[masks[1]])
+        test_seqs = set(sequences[masks[2]])
+        assert train_seqs.isdisjoint(valid_seqs) and train_seqs.isdisjoint(test_seqs) and valid_seqs.isdisjoint(test_seqs)
+        dataset_result = {"n_sequences": len(df), "exact_sequence_duplicates": 0,
+                          "train_validation_test_overlap": 0, "embedding_cache": str(cache),
                           "embedding_cache_sha256": sha256(cache), "heads": {}}
         for head_name, head_cls in (("paper_head", PaperMLP), ("jev_head", JevMLP)):
             runs = []
