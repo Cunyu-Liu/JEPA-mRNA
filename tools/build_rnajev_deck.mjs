@@ -476,7 +476,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
     ["T-A127", "matched 六臂与统计", HAS_MATCHED ? "24 格、3-seed mean±std 与 Wilcoxon–Holm 已完成；按预注册门判读。" : "mixed_s1 已 early-stopping；s2 与 24 格验收后继续，未齐不写最终结论。"],
     ["T-A128", "五类消融 40/40", HAS_AB ? "40/40 与控制 8/8 已完成；按 ID/外部/PDB-OOD 分组读图。" : "既有权重直接补评；norlcd 为唯一重训臂，VL0 early-stopping。"],
     ["T-A129", "新增 RiNALMo 下游", HAS_MRL ? DOWNSTREAM_NOTE : "三组 MRL 已预注册；5-seed、early-stopping、paired t-test+Holm。"],
-    ["复现门", "代码与证据", "GitHub round29-handoff 已推送；12 格三通道 PASS；权重与数据 SHA256 留档。"],
+    ["复现门", "代码与证据", `GitHub round29-handoff 已推送；${HAS_MATCHED ? "24" : "16"} 格三通道 PASS；权重与数据 SHA256 留档。`],
   ];
   states.forEach((r, i) => {
     const x = MARGIN + (i % 2) * 6.18, y = stateY + Math.floor(i / 2) * 1.20;
