@@ -110,8 +110,8 @@ def signature(data):
     for row in CORE:
         id_loss = abs(all_means[row]["ID"])
         pdb_loss = abs(all_means[row]["PDB-OOD"])
-        ratio = pdb_loss / id_loss if id_loss > 1e-8 else float("nan")
-        ratios.append(f"{ROW_LABELS[CORE.index(row)]}: PDB/ID = {ratio:.2f}×")
+        ratio_text = f"{pdb_loss / id_loss:.2f}×" if id_loss > 1e-8 else "n/a"
+        ratios.append(f"{ROW_LABELS[CORE.index(row)]}: PDB/ID = {ratio_text}")
     fig.text(0.5, 0.065, "   |   ".join(ratios), ha="center", fontsize=9.2,
              color=C["blue"], fontweight="bold")
     fig.text(0.5, 0.025, "Ratios are computed from signed group means; they are not the discarded DP OOD=0.43 proxy.",
