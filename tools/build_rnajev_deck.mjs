@@ -361,7 +361,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 14 结论与边界
 {
   const s = pptx.addSlide();
-  chrome(s, "12 / 结论", "五条创新线成立，但每条都必须带边界", "结论不再靠重复图表强化；用 claim–evidence–limitation 对齐。", 15, "结论口径：Round 32 统一复核");
+  chrome(s, "12 / 结论", "五条创新线及其证据边界", "结论不再靠重复图表强化；用 claim–evidence–limitation 对齐。", 15, "结论口径：Round 32 统一复核");
   const rows = [
     ["创新线", "可支持的结论", "必须同时展示的限制"],
     ["主 benchmark", "统一 xens2 对预注册 clean 参照为 6/8；最佳单 checkpoint 4/8", "旧 7/8 是混合模型组合；全板干净敏感性 xens2=5/8；TS2 未胜"],
