@@ -1,0 +1,131 @@
+{
+  "meta": {
+    "version": "round32-verified-v1",
+    "date": "2026-10-25",
+    "metric": "strict pair-level micro F1 unless explicitly stated",
+    "principle": "model identity, split, scorer and hardware protocol must match within each comparison",
+    "sources": [
+      "tables/sota_vs_ours.md",
+      "tables/metrics_matrix.md",
+      "records/DECISION_TRAINING_LOG.md sections 15.79-15.82 and 15.97-15.99",
+      "spec_sync/ROUND26_NOTE.md and ROUND28_NOTE.md"
+    ]
+  },
+  "main_benchmark": {
+    "splits": ["TS0", "bpRNA-new", "ArchiveII-clean", "TS1", "TS2", "TS3", "TS-hard", "TestSetB-clean"],
+    "single": [0.7866, 0.5643, 0.7403, 0.8570, 0.8393, 0.9049, 0.8530, 0.7166987385075904],
+    "xens2": [0.8039, 0.5532, 0.7760, 0.8755, 0.8604, 0.8965, 0.8732, 0.8370],
+    "clean_reference": [0.7578, 0.6106, 0.7613, 0.8150, 0.9043, 0.8245, 0.7709, 0.8177],
+    "full_clean_reference": [0.7578, 0.6854, 0.7872, 0.8150, 0.9043, 0.8245, 0.8028, 0.8177],
+    "reference_names": ["RNAformer", "UFold", "RiNALMo-ft", "RNAformer-if", "RNAformer-if", "RNAformer-if", "RNAformer-if", "RiNALMo-ft clean-181"],
+    "single_clean_wins": 4,
+    "xens2_clean_wins": 6,
+    "xens2_full_clean_wins": 5,
+    "historical_mixed_ensemble_wins": 7,
+    "correction": "The historical 7/8 summary substitutes r2d_tr1 two-seed ensemble 0.6132 for xens2 0.5532 on bpRNA-new; it is not a uniform xens2 result.",
+    "testsetb_note": "xens2 is 0.8370 on clean-181 and 0.8448 on full-428; single r2d is 0.7167 on clean-181 and 0.7507 on full-428; the clean reference RiNALMo-ft is 0.8177."
+  },
+  "leakage_audit": {
+    "columns": ["TS0", "bpRNA-new", "TS1", "TS2", "TS3", "TS-hard", "TestSetB", "ArchiveII-clean"],
+    "tr0": [0, 0, 0, 0, 0, 0, 247, 0],
+    "tr1": [1087, 0, 38, 28, 18, 21, 358, 843],
+    "tr1c": [0, 0, 0, 0, 0, 0, 0, 0],
+    "note": "Exact normalized-sequence overlap; this is not an identity- or homology-level guarantee. Clean references are chosen per split."
+  },
+  "speed": {
+    "systems": [
+      {"name": "Jev r2d B=256 fp16", "throughput": 124.78, "device": "RTX 4090", "scope": "end-to-end"},
+      {"name": "Jev r2d B=64 fp16", "throughput": 119.55, "device": "RTX 4090", "scope": "end-to-end"},
+      {"name": "Jev r2d B=32 C", "throughput": 96.14, "device": "RTX 4090", "scope": "end-to-end"},
+      {"name": "UFold", "throughput": 56.49, "device": "A100", "scope": "end-to-end"},
+      {"name": "RNAformer", "throughput": 55.28, "device": "A100", "scope": "end-to-end"},
+      {"name": "MXfold2", "throughput": 54.58, "device": "A100", "scope": "end-to-end"},
+      {"name": "ViennaRNA MFE", "throughput": 16.79, "device": "CPU", "scope": "end-to-end"},
+      {"name": "RiNALMo-ft (forward-only)", "throughput": 14.5, "device": "RTX 4090", "scope": "forward-only"}
+    ],
+    "ladder": [
+      {"label": "B=1", "throughput": 21.45},
+      {"label": "B=32 + C", "throughput": 96.14},
+      {"label": "B=64 fp16", "throughput": 119.55},
+      {"label": "B=128", "throughput": 121.24},
+      {"label": "B=192", "throughput": 120.86},
+      {"label": "B=256", "throughput": 124.78},
+      {"label": "B=384", "throughput": 116.4},
+      {"label": "B=512", "throughput": 122.6}
+    ],
+    "f1": 0.667971,
+    "tp_fp_fn": [24406, 13778, 10485],
+    "note": "All ladder points use r2dtr1c-s0 on TS0; predictions and F1 are unchanged across batch size."
+  },
+  "accuracy_speed_a100": {
+    "models": [
+      {"name": "Jev r2d", "f1": 0.6681, "throughput": 26.73, "device": "A100"},
+      {"name": "RNAformer", "f1": 0.7578, "throughput": 55.28, "device": "A100"},
+      {"name": "UFold", "f1": 0.6598, "throughput": 56.49, "device": "A100"},
+      {"name": "MXfold2", "f1": 0.5651, "throughput": 54.58, "device": "A100"}
+    ],
+    "hardware_update": {"name": "Jev r2d on RTX 4090", "f1": 0.667971, "throughput": 124.78},
+    "note": "The frontier is computed only within the A100 end-to-end TS0 board. The RTX 4090 point is shown separately and is not mixed into the A100 frontier."
+  },
+  "ece": {
+    "splits": ["TS0", "TestSetB", "bpRNA-new", "ArchiveII-clean", "TS1", "TS2", "TS3", "TS-hard"],
+    "n": [1281, 428, 5375, 2505, 62, 39, 19, 27],
+    "raw": [0.1604, 0.1004, 0.2011, 0.1176, 0.1210, 0.0821, 0.1088, 0.1243],
+    "recalibrated": [0.0315, 0.0445, 0.0677, 0.0605, 0.1111, 0.1851, 0.1841, 0.1219],
+    "spearman": [0.708, 0.694, 0.416, 0.716, 0.559, 0.337, 0.362, 0.676],
+    "note": "Structure-level ECE, 10-bin weighted absolute confidence-versus-F1 gap; VL0 affine parameters a=1.6 and b=-1.9 are frozen for every test split."
+  },
+  "nb_transfer": {
+    "splits": ["TS0", "bpRNA-new", "TS1", "TS2", "TS3", "TS-hard", "TestSetB", "ArchiveII trunc598"],
+    "jev_on_nb": [0.5288, 0.5792, 0.6900, 0.7794, 0.7484, 0.6773, 0.5411, 0.5414],
+    "nb_ft": [0.4609, 0.3453, 0.6049, 0.6435, 0.5175, 0.4845, 0.4862, 0.4735]
+  },
+  "downstream": {
+    "ncrna": {
+      "metrics": ["Accuracy", "Macro-F1", "Balanced accuracy"],
+      "paper_head": [0.7922, 0.5248, 0.5735],
+      "jev_head": [0.8621, 0.6308, 0.7116]
+    },
+    "regression": {
+      "tasks": ["MRL (EGFP 5'UTR)", "TE/EL HEK"],
+      "metric": "Pearson correlation coefficient",
+      "paper_head": [0.4851, 0.3807],
+      "jev_head": [0.4954, 0.3846]
+    },
+    "note": "Frozen RiNALMo backbone; only the downstream head changes. Splice remains archived and is not shown in the main figure."
+  },
+  "chanrg": {
+    "splits": ["Test", "GenA", "GenC", "GenF"],
+    "models": [
+      {"name": "xens2", "values": [0.5656, 0.6443, 0.3793, 0.3066], "ood_mean": 0.4434, "evidence": "measured"},
+      {"name": "r2d", "values": [0.4935, 0.5772, 0.2769, 0.3037], "ood_mean": 0.3859, "evidence": "measured"},
+      {"name": "OFoldNA-SS", "values": [0.4899, 0.5695, 0.3504, 0.4031], "ood_mean": 0.4410, "evidence": "quoted"},
+      {"name": "RiNALMo-Giga ft", "values": [0.7832, 0.3565, 0.1525, 0.2298], "ood_mean": 0.2463, "evidence": "quoted"}
+    ],
+    "note": "OFoldNA Table 3 length-controlled protocol, 50-200 nt, pseudoknots excluded. OOD mean is the unweighted mean of GenA, GenC and GenF."
+  },
+  "length": {
+    "buckets": ["<=100", "100-200", "200-400", ">400"],
+    "ts0_n": [580, 516, 164, 28],
+    "ts0": {
+      "ViennaRNA MFE": [0.5999, 0.5045, 0.4305, 0.4561],
+      "ViennaRNA centroid": [0.6277, 0.5375, 0.4690, 0.4854],
+      "RiNALMo-ft": [0.8187, 0.7182, 0.6745, 0.5692],
+      "xens2": [0.8787, 0.7974, 0.7697, 0.6792]
+    },
+    "archiveii_n": [484, 1136, 728, 196],
+    "archiveii": {
+      "ViennaRNA centroid": [0.7212, 0.6865, 0.5868, 0.5345],
+      "xens2": [0.8993, 0.8733, 0.7548, 0.5692]
+    }
+  },
+  "matched_30k_current": {
+    "splits": ["Test", "GenA", "GenC", "GenF"],
+    "clean_s0": [0.639468, 0.477211, 0.224661, 0.258190],
+    "mixed_s0": [0.580921, 0.567109, 0.282027, 0.232452],
+    "clean_s1": [0.627430, 0.460435, 0.267389, 0.277126],
+    "mixed_s1": [0.585378, 0.575519, 0.285501, 0.258446],
+    "zero_shot_xens2": [0.565554, 0.644258, 0.379272, 0.306568],
+    "note": "Four arms are complete; clean_s2 and mixed_s2 are pending. These results are not final three-seed conclusions."
+  }
+}

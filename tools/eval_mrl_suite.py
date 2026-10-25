@@ -156,6 +156,7 @@ def train_one(embs: np.ndarray, rls: np.ndarray, masks: tuple[np.ndarray, np.nda
         "test_pcc": test_pcc,
         "n_train": int(train_mask.sum()), "n_validation": int(valid_mask.sum()), "n_test": int(test_mask.sum()),
         "test_predictions": pred_test, "test_truth": rls[test_mask],
+        "best_state": best_state,
     }
 
 
@@ -194,6 +195,15 @@ def main() -> int:
                 run = train_one(embs, rls, masks, head_cls, seed, args.device)
                 predictions = run.pop("test_predictions")
                 truth = run.pop("test_truth")
+                best_state = run.pop("best_state")
+                checkpoint_path = args.out_dir / f"{dataset}_{head_name}_s{seed}_best.pt"
+                torch.save({"model_state_dict": best_state, "head": head_name,
+                            "dataset": dataset, "seed": seed,
+                            "best_epoch": run["best_epoch"],
+                            "best_validation_mse": run["best_validation_mse"],
+                            "single_variable": "head architecture"}, checkpoint_path)
+                run["checkpoint"] = str(checkpoint_path)
+                run["checkpoint_sha256"] = sha256(checkpoint_path)
                 pred_path = args.out_dir / f"{dataset}_{head_name}_s{seed}_predictions.npz"
                 np.savez_compressed(pred_path, predictions=predictions, truth=truth)
                 run["prediction_file"] = str(pred_path)
