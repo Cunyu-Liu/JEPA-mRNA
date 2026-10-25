@@ -9946,7 +9946,7 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 ### A. matched 当前 4/6 臂、16/24 格
 
 - `mixed_30k_s1` 在 step 17500 触发 early-stopping，恢复 best step=14500，四 split 已全部落盘：Test 0.585378 / GenA 0.575519 / GenC 0.285501 / GenF 0.258446，OOD mean=0.373156。与 mixed_s0 的 0.360529 同向，仍低于 zero-shot xens2 的 0.443366，不支持混合语料达到 OOD mean SOTA 的说法。
-- `verify_matched_round32.py` 已复跑，当前 completed=[clean_s0, clean_s1, mixed_s0, mixed_s1]，16/24 格全部通过 micro、per-sequence macro/INF、best checkpoint、数据行数与 SHA256 三通道检查。clean_s2 在训，mixed_s2 接续；三种子未齐仍不做最终统计结论。
+- `verify_matched_round32.py` 已复跑，当前 completed=[clean_s0, clean_s1, mixed_s0, mixed_s1]，16/24 格全部通过 micro、per-sequence macro/INF、best checkpoint、数据行数与 SHA256 三通道检查。clean_s2 在训，mixed_s2 接续；三种子未齐仍不做最终统计结论。独立 `complete_matched_analysis.sh` 已挂接 24 格门，将执行 3-seed mean±std、逐序列 Wilcoxon–Holm 和预注册门判定，不重启既有消融 driver。
 
 ### B. T-A129 三组 MRL 预注册与实现验证
 
