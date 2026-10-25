@@ -3,7 +3,7 @@
 > change-id: `build-rna-ss-decision-model`
 
 > **第 32 轮增量验收（2026-10-25 23:25）**：
-> - [x] 四个已完成臂 16 格的 CUDA、样本数、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核通过；mixed_s1 best step=14500。
+> - [x] 五个已完成臂 20 格的 CUDA、样本数、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核通过；clean_s2 best step=19000。
 > - [x] fftr1c/nodistill/r2d 权重 strict-load、消融脚本静态检查、VL0 196 条 ViennaRNA 2.7.2 标签和相关 8 tests 通过。
 > - [x] 三个新臂 12 格 macro/INF 与来源链第二、第三通道复核完成（T-A126，`verify_matched_round32.py` PASS）。
 > - [ ] matched 六臂 24 格及三种子统计完成。

@@ -9971,3 +9971,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 每个 MRL run 现在保存 best head checkpoint、checkpoint SHA256、预测文件和预测 SHA256；`verify_saved_outputs` 从磁盘重读预测重算 PCC、严格加载每个 checkpoint、复核哈希和配对统计，全部通过才允许 `status=PASS`。稀疏信号 checkpoint 往返加载测试通过，审计 SHA256=`d36fe625…`。
 - `qa_figure_data.py` 独立复核主 benchmark 4/8、6/8、5/8 计数，速度 TP/FP/FN→F1，ECE 改善/过校正方向，A100 Pareto={RNAformer, UFold}，NB 8/8 增益、CHANRG OOD mean 和长度桶维度，全部 PASS。
 - 泄露页的 RNAformer-interfam 判定收窄为“主判定参照（TSB 除外）”，不再因 TS3/hard 零重叠而忽略 TestSetB 的 1/428。PPT 生成器、图源 JSON 和 QA 脚本已入库，结果同步脚本从验收 JSON 自动更新六臂数据，禁止手工转录。
+
+## §15.103 Round-32 后续：clean_s2 完成，当前 20/24 格（2026-10-26）
+
+- `chanrg_clean_30k_s2` 在 step 22000 触发 early-stopping，恢复 best step=19000，四 split 于 03:47 全部完成：Test 0.625035 / GenA 0.527340 / GenC 0.262654 / GenF 0.266443，OOD mean=0.352146。
+- `verify_matched_round32.py` 当前 completed=[clean_s0, clean_s1, clean_s2, mixed_s0, mixed_s1]，20/24 格全部通过三通道复核。报告 SHA256=`60442300…`。
+- `mixed_30k_s2` 于 03:47 启动，是六臂门的最后一个训练臂。matched 24 格完成后，独立统计、主消融和 MRL 三条队列按 artifact 门自动接续；不提前改写最终科学结论。

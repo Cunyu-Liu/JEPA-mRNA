@@ -124,8 +124,9 @@
     "clean_s0": [0.639468, 0.477211, 0.224661, 0.258190],
     "mixed_s0": [0.580921, 0.567109, 0.282027, 0.232452],
     "clean_s1": [0.627430, 0.460435, 0.267389, 0.277126],
+    "clean_s2": [0.625035, 0.527340, 0.262654, 0.266443],
     "mixed_s1": [0.585378, 0.575519, 0.285501, 0.258446],
     "zero_shot_xens2": [0.565554, 0.644258, 0.379272, 0.306568],
-    "note": "Four arms are complete; clean_s2 and mixed_s2 are pending. These results are not final three-seed conclusions."
+    "note": "Five arms are complete; mixed_s2 is training. These results are not final three-seed conclusions."
   }
 }

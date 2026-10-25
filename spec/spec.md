@@ -3,7 +3,7 @@
 > change-id: `build-rna-ss-decision-model`
 
 > **当前交接（2026-10-25 23:25，第 32 轮：结果复核、模型身份纠错与消融补齐全链）**：
-> - **实时状态**：clean_s0、mixed_s0、clean_s1、mixed_s1 已完成 held-out early-stopping 与四 split CUDA 终评；当前 4/6 臂、16/24 格均通过三通道复核。mixed_s1 best step=14500，Test/GenA/GenC/GenF=0.585378/0.575519/0.285501/0.258446，OOD mean=0.373156；clean_s2 在训，mixed_s2 排队。T-A126 的 12 格验收已完成，新增 4 格同样通过。
+> - **实时状态**：clean_s0/s1/s2 与 mixed_s0/s1 已完成 held-out early-stopping 与四 split CUDA 终评；当前 5/6 臂、20/24 格均通过三通道复核。clean_s2 best step=19000，Test/GenA/GenC/GenF=0.625035/0.527340/0.262654/0.266443，OOD mean=0.352146；mixed_s2 于 03:47 启动。T-A126 的 12 格验收已完成，新增 8 格同样通过。
 > - **新结果**：mixed_s0 Test/GenA/GenC/GenF=0.580921/0.567109/0.282027/0.232452，OOD mean=0.360529，低于 zero-shot xens2 0.443366，GenF 未过 0.3112/0.4035 门；clean_s0=0.639468/0.477211/0.224661/0.258190，clean_s1=0.627430/0.460435/0.267389/0.277126。三种子未齐前不得写最终统计结论。
 > - **主 benchmark 模型身份复核**：统一 xens2 对预注册去污染参照为 **6/8**，不是旧表 7/8。bpRNA-new 的 xens2=0.5532；旧表 0.6132 属于 r2d_tr1 两种子集成，不能与其他七格 xens2 拼成同一模型。历史逐 split 混合集成可另列 7/8，但必须标明模型替换。全板干净敏感性 xens2=5/8，单模型=4/8。TestSetB clean=0.8370（0.8448 为全集），TS2=0.8604。
 > - **速度与 Pareto 口径**：124.78 seq/s 属于 r2dtr1c-s0（TS0 F1=0.667971），不是 xens2 的精度-速度联合点。Figure 5 仅用 A100 同节点、同 split、strict micro-F1 计算真实 Pareto 集；r2d 在 A100 被 RNAformer 同时以更高 F1/吞吐支配，不得画成前沿点。4090 更新单列，不混入 A100 前沿。

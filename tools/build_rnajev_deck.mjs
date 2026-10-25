@@ -466,7 +466,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
   chrome(s, "附录 D / 当前队列", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed 的门判定与配对结果如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 19, "T-A126–T-A132 / audits / result.json / run_meta.json");
   const cur = D.matched_30k_current;
   const rows = [["arm", "Test", "GenA", "GenC", "GenF", "OOD mean", "当前判定"]];
-  ["clean_s0", "mixed_s0", "clean_s1", "mixed_s1"].forEach(name => {
+  ["clean_s0", "mixed_s0", "clean_s1", "mixed_s1", "clean_s2"].forEach(name => {
     const v = cur[name];
     const ood = (v[1] + v[2] + v[3]) / 3;
     const gates = HAS_MATCHED ? cur.statistics.verdicts : null;
@@ -483,7 +483,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
     ["T-A127", "matched 六臂与统计", HAS_MATCHED ? "24 格、3-seed mean±std 与 Wilcoxon–Holm 已完成；按预注册门判读。" : "mixed_s1 已 early-stopping；s2 与 24 格验收后继续，未齐不写最终结论。"],
     ["T-A128", "五类消融 40/40", HAS_AB ? "40/40 与控制 8/8 已完成；按 ID/外部/PDB-OOD 分组读图。" : "既有权重直接补评；norlcd 为唯一重训臂，VL0 early-stopping。"],
     ["T-A129", "新增 RiNALMo 下游", HAS_MRL ? DOWNSTREAM_NOTE : "三组 MRL 已预注册；5-seed、early-stopping、paired t-test+Holm。"],
-    ["复现门", "代码与证据", `GitHub round29-handoff 已推送；${HAS_MATCHED ? "24" : "16"} 格三通道 PASS；权重与数据 SHA256 留档。`],
+    ["复现门", "代码与证据", `GitHub round29-handoff 已推送；${HAS_MATCHED ? "24" : "20"} 格三通道 PASS；权重与数据 SHA256 留档。`],
   ];
   states.forEach((r, i) => {
     const x = MARGIN + (i % 2) * 6.18, y = stateY + Math.floor(i / 2) * 1.20;
