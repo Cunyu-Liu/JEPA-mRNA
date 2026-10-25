@@ -6,7 +6,7 @@ W=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024
 J=/root/rna_jepa_data/ss_data/jsonl
 E=$W/data/embeddings_matched
 LOG=$W/logs/matched_30k_train.log
-BATCH_SIZE=16
+BATCH_SIZE=2
 mkdir -p "$W/logs" "$W/weights"
 cd /home/rna_jev
 export PYTHONPATH=/home/rna_jev:/home/rna_jev/src:/home/rna_jev/tools

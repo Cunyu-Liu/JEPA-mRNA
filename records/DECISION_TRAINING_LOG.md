@@ -9872,3 +9872,24 @@ s2 单模型四 split 已全部完成。`verify_chanrg_ens3.py --require-s2` 对
 
 - PPT 去重：多轮回滚-追加造成 6 张图区 slide 各重复 2-3 份（全内容签名检测），清理后 37 slides（S32-S37 = 图 1-6 唯一实例），zip 无重复项、几何 PASS、字体全微软雅黑、数据抽查 PASS。
 - 六臂：chanrg_clean_30k_s0 step 8325，val 58716.54（best 8000，improved），watchdog live，GPU 23.6GB。
+
+### I. (2026-10-25 下午) 集群关停前执行：mixed 臂 OOM 根因修复 + 全量归档迁移
+
+**一、mixed_30k_s0 十五连 OOM 根因（§H 补记）**
+- clean 臂语料 ≤200nt（CHANRG 50-200 协议），B=16 无压力；
+- mixed 臂含 bprna_tr1c 全量（≤500nt，4607 条 >200），resnet2d 头 BatchNorm 全矩阵不可分块（台账 §15.30 教训），B=16 × L=500 → 单次 7.66-9.5GiB 分配尖峰 + 外部进程（codonflow 17.5GB 周期性侵入）→ 稳定 OOM @ step 25；
+- watchdog cron 有 pgrep 自匹配 bug（模式匹配 cron 自身命令行 → 判定"活着"从不重启）——修复为 [t]rain 括号模式；
+- **修复**：BATCH_SIZE 16→4→2（14:47），重启后 step 725 起稳定，15:34 已达 step 3600（val 58728，best 3500，improved），early-stopping 门 live。
+
+**二、clean_30k_s0 读数（已完成入板）**
+Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, best 14000）——
+单语料干净对照再次低于 zero-shot 板（GenA 0.6443/GenC 0.3793/GenF 0.3066），
+与 r27 语料假设归因一致：CHANRG 单语料无法覆盖。
+
+**三、关停归档（/root → /teams/HoulabData_1788502323/liucunyu/rna_jev_shutdown_20261025/）**
+- code/（7163 文件 + git bundle rna_jev_final_20261025.bundle 25MB 全历史）；
+- results/（eval_decision + eval_decision_ref + npz + runs，2325 文件）；
+- data/（ss_data 8.6G 含 teacher/teacher_gt/manifests + downstream_data 412M，rsync 完成）；
+- weights/（backbone 2.5G + ckpts_1014 97M + embeddings_root 106G 增量迁移中）；
+- logs/（monitor + rsync 日志）；
+- 在训 mixed_30k_s0 输出已直接落 /teams（rna_ssp_20261024），不受 /root 清理影响。
