@@ -6,7 +6,7 @@
 >
 > | 任务 | 当前状态 | 下一步与完成判据 |
 > |---|---|---|
-> | **T-A126 三个新臂结果三遍复核** | **进行中** | clean_s0/mixed_s0/clean_s1 共 12 格已过 CUDA、样本数与 micro 复算；继续独立复算 per-sequence macro/INF、best checkpoint、run_meta 和 manifest/hash |
+> | **T-A126 三个新臂结果三遍复核** | **已完成** | `tools/verify_matched_round32.py` 对 clean_s0/mixed_s0/clean_s1 共 12 格完成 CUDA、样本数、micro、per-sequence F1/macro/INF、合法性、best checkpoint、run_meta、数据行数与 SHA256 三通道复核，PASS；报告 `audits/round32_matched_verification.json`，SHA256=`611a7391…` |
 > | **T-A127 matched_30k 六臂收敛与统计** | **3/6 完成，12/24 格落盘** | mixed_s1 正常训练，clean/mixed_s2 接续；六臂 early-stopping 后完成 24 格与 3-seed 配对统计。mixed_s0 GenF=0.232452、OOD mean=0.360529，未过门，不提前写最终结论 |
 > | **T-A128 五类消融×8 split** | **预检通过，等待 matched 24 格门** | fftr1c/nodistill 权重已恢复 strict-load；DP/Turner/2D/nodistill 直接补评，只有 norlcd 按原 B=4 配方+VL0 early-stopping 重训。`complete_main_ablations.sh` 自动执行；最终由 `build_main_ablation_matrix.py` 检查 40/40+控制 8/8、CUDA、样本覆盖、micro/macro 与 DP exact/control 一致性 |
 > | **T-A129 新 RiNALMo 下游任务** | **任务与数据源审计中** | 先恢复 Muscle/pc3 或选本地合理任务，冻结对照与统计后训练；不以事后正结果作为选任务依据，splice 负结果留档 |

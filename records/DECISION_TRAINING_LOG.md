@@ -9918,9 +9918,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 |---|---:|---:|---:|---:|---:|---:|
 | chanrg_clean_30k_s0 | 17000 / 14000 | 0.639468 | 0.477211 | 0.224661 | 0.258190 | 0.320021 |
 | mixed_30k_s0 | 13500 / 10500 | 0.580921 | 0.567109 | 0.282027 | 0.232452 | 0.360529 |
-| chanrg_clean_30k_s1 | 32500 / 29500 | 0.627430 | 0.460435 | 0.267389 | 0.277126 | 0.334983 |
+| chanrg_clean_30k_s1 | 32500 / 29500 | 0.627430 | 0.460435 | 0.267389 | 0.277126 | 0.334984 |
 
-- 样本数 Test/GenA/GenC/GenF = 10597/5337/3936/1734；12 格均由 TP/FP/FN 独立重算 micro-F1，和保存值一致。macro/INF、best checkpoint 与 manifest/hash 的第二、第三通道复核列入 T-A126，不因 micro 通过就提前关闭。
+- 样本数 Test/GenA/GenC/GenF = 10597/5337/3936/1734；12 格均由 TP/FP/FN 独立重算 micro-F1，和保存值一致。随后 `tools/verify_matched_round32.py` 已完成第二、第三通道：per-sequence F1/macro-F1/macro-INF、合法性、best checkpoint、run_meta、数据行数和 SHA256 全部 PASS；报告 `audits/round32_matched_verification.json`，SHA256=`611a7391…`，T-A126 关闭。
 - mixed_s0 相对 zero-shot xens2（OOD mean=0.443366）低 0.082837；GenF 未过预注册 0.3112 混合假设门，更未过 0.4035 SOTA 门。当前只能记为单种子负结果，三种子未齐不得写最终统计结论。
 - mixed_s1 日志已越过 step 10000；`run_meta.json` 仅初始化/终态刷新，不能用其中的 step 0 误判训练卡死。clean/mixed_s2 仍由既有链接续。
 

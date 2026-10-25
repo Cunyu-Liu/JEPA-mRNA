@@ -2,7 +2,7 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **2026-10-25 第 32 轮任务更新**：以 `/home/rna_jev/spec/tasks.md` T-A126–T-A132 为当前执行依据。matched 3/6 完成、12/24 格落盘，mixed_s1 正常训练；结果复核不得停在 micro，需补 macro/INF 与来源链。五类消融队列已预检通过：fftr1c/nodistill 直接补评，norlcd 为唯一重训臂，matched 24 格验收后自动启动。
+> **2026-10-25 第 32 轮任务更新**：以 `/home/rna_jev/spec/tasks.md` T-A126–T-A132 为当前执行依据。matched 3/6 完成、12/24 格落盘，mixed_s1 正常训练；T-A126 已由 `verify_matched_round32.py` 完成，12 格 micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道 PASS。五类消融队列已预检通过：fftr1c/nodistill 直接补评，norlcd 为唯一重训臂，matched 24 格验收后自动启动。
 >
 > 主 benchmark 统一 xens2=6/8（预注册 clean 参照），旧 7/8 属混合模型组合；速度 124.78 属 r2dtr1c-s0，A100 r2d 不在 Pareto 前沿。新 PPT 已完成 8 张闭环图，待 40/40 消融后组装最终版并做全页渲染。任何旧“在训/排队/完成”快照不得覆盖当前 artifact。
 

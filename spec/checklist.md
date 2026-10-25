@@ -5,7 +5,8 @@
 > **第 32 轮增量验收（2026-10-25 23:25）**：
 > - [x] 三个新臂 12 格的 CUDA、样本数与 micro TP/FP/FN 独立复算通过。
 > - [x] fftr1c/nodistill/r2d 权重 strict-load、消融脚本静态检查、VL0 196 条 ViennaRNA 2.7.2 标签和相关 8 tests 通过。
-> - [ ] macro/INF 与来源链第二、第三通道复核；matched 六臂 24 格及三种子统计完成。
+> - [x] 三个新臂 12 格 macro/INF 与来源链第二、第三通道复核完成（T-A126，`verify_matched_round32.py` PASS）。
+> - [ ] matched 六臂 24 格及三种子统计完成。
 > - [ ] 五类消融 40/40+控制 8/8；当前自动队列只完成预检，不能勾选实验完成。
 > - [ ] 新 RiNALMo 下游任务预注册、GPU 训练、统计与独立复核完成后才入主图。
 > - [ ] 新 PPT 10 图去重、图文匹配、字体/1.5 行距、markitdown/fix/layout/全页渲染通过。
