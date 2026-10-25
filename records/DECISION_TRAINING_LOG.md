@@ -9893,3 +9893,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - weights/（backbone 2.5G + ckpts_1014 97M + embeddings_root 106G 增量迁移中）；
 - logs/（monitor + rsync 日志）；
 - 在训 mixed_30k_s0 输出已直接落 /teams（rna_ssp_20261024），不受 /root 清理影响。
+
+### J. (2026-10-25 16:40) 关停归档完成验证 + SHA256 清单
+
+**归档终验（全部 PASS）**：
+- code/ 7,164 文件（含 git bundle 全历史 verify PASS，HEAD=230e369）；
+- results/ 2,325 文件（eval_decision/ref/npz/runs 全量）；
+- data/ 2,368 文件 43G（ss_data jsonl+teacher+teacher_gt+manifests + downstream）；
+- weights/ 431G（backbone 2.5G + ckpts_1014 + embeddings_root 106G 全 33 shard 迁完，emb missing=0）；
+- hash 抽验：bprna_ts0.jsonl md5 双端一致（2c643238…）；train_matched_30k.sh 双端一致（6029a7a3…）；
+- 在训 mixed_30k_s0（step 12225，val best 10500，bad=3）输出直落 /teams/rna_ssp_20261024，不受 /root 关停影响；
+- 本地交接文档同步至 ROUND31_NOTE（恢复指南 + 判读口径）。
+
+**集群关停放行条件**：mixed_30k_s0 训练+评测自动链（watchdog+cron 守护）已自持——
+若关停早于收敛，新集群恢复协议见 ROUND31_NOTE 第五节（bundle + /teams 资产 + B=2 修正已入库）。
