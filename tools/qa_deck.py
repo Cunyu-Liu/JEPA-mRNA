@@ -27,8 +27,13 @@ def main():
             if shape.shape_type == 13:
                 digest = hashlib.sha256(shape.image.blob).hexdigest()
                 images.append((slide_index, digest))
+            frames = []
             if shape.has_text_frame:
-                for paragraph in shape.text_frame.paragraphs:
+                frames.append(shape.text_frame)
+            if shape.has_table:
+                frames.extend(cell.text_frame for row in shape.table.rows for cell in row.cells)
+            for frame in frames:
+                for paragraph in frame.paragraphs:
                     if paragraph.text.strip():
                         slide_text.append(paragraph.text)
                     for run in paragraph.runs:
