@@ -9907,3 +9907,36 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 **集群关停放行条件**：mixed_30k_s0 训练+评测自动链（watchdog+cron 守护）已自持——
 若关停早于收敛，新集群恢复协议见 ROUND31_NOTE 第五节（bundle + /teams 资产 + B=2 修正已入库）。
+
+## §15.100 Round-32 三臂复核、模型身份纠错与五类消融闭环队列（2026-10-25）
+
+### A. matched_30k 新落地结果与收敛证据
+
+以下均来自 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024` 的原始 `run_meta.json` 与 `result.json`，不是旧 PPT 汇总。三个臂均在 held-out validation 上 early-stopping，且四 split 全部 `device=cuda`、预期样本覆盖完整。
+
+| arm | steps / best step | Test | GenA | GenC | GenF | OOD mean |
+|---|---:|---:|---:|---:|---:|---:|
+| chanrg_clean_30k_s0 | 17000 / 14000 | 0.639468 | 0.477211 | 0.224661 | 0.258190 | 0.320021 |
+| mixed_30k_s0 | 13500 / 10500 | 0.580921 | 0.567109 | 0.282027 | 0.232452 | 0.360529 |
+| chanrg_clean_30k_s1 | 32500 / 29500 | 0.627430 | 0.460435 | 0.267389 | 0.277126 | 0.334983 |
+
+- 样本数 Test/GenA/GenC/GenF = 10597/5337/3936/1734；12 格均由 TP/FP/FN 独立重算 micro-F1，和保存值一致。macro/INF、best checkpoint 与 manifest/hash 的第二、第三通道复核列入 T-A126，不因 micro 通过就提前关闭。
+- mixed_s0 相对 zero-shot xens2（OOD mean=0.443366）低 0.082837；GenF 未过预注册 0.3112 混合假设门，更未过 0.4035 SOTA 门。当前只能记为单种子负结果，三种子未齐不得写最终统计结论。
+- mixed_s1 日志已越过 step 10000；`run_meta.json` 仅初始化/终态刷新，不能用其中的 step 0 误判训练卡死。clean/mixed_s2 仍由既有链接续。
+
+### B. 主 benchmark、速度与 Pareto 的强制纠错
+
+1. **统一 xens2 对预注册去污染参照为 6/8，而非旧表 7/8**。bpRNA-new 的 xens2 板协议值是 0.5532；旧主表的 0.6132 属于 r2d_tr1 两种子集成，不能与其他七格 xens2 拼成同一模型。统一 xens2 的胜格为 TS0/ArchiveII/TS1/TS3/TS-hard/TestSetB，负格为 bpRNA-new/TS2。历史逐 split 混合集成可另列 7/8，但必须说明 bpRNA-new 更换了模型。全板干净敏感性 xens2=5/8，单模型=4/8。TestSetB clean-181=0.8370，0.8448 是全集；TS2 最新值 0.8604。
+2. **124.78 seq/s 属于 r2dtr1c-s0，TS0 F1=0.667971**（§15.79），不是 xens2 F1=0.8039 的联合点。旧速度图把模型身份写错，旧精度-速度图还混用了 tolerant macro、子集 F1 与 strict micro；新版速度图统一改为 Jev r2d，并保留硬件和计时范围。
+3. **Figure 5 只用 A100 同节点、同 split、strict micro-F1 计算 Pareto 集**：r2d 26.73 seq/s、F1 0.6681，被 RNAformer 55.28 seq/s、F1 0.7578 同时支配，不在前沿；真实前沿为 RNAformer 与 UFold。RTX 4090 的 124.78 更新单列，不混入 A100 前沿。旧“r2d/xens2 位于 A100 前沿顶端”的表述作废。
+
+### C. T-A128 五类消融恢复与自动队列
+
+- 权重级复核发现 `fftr1c` 与 `nodistill` 的实体 `resume.pt` 均在，只有 `norlcd` 缺权重，避免三次不必要重训。strict-load 全部通过：r2d step=20000、fftr1c step=20000、nodistill step=20000。源 SHA256 分别为 `47a82351…`、`dee84657…`、`c0fb2e0f…`；只修改 config 的当前 embedding 路径，逐 tensor 验证模型状态不变。
+- 新增/更新 `tools/solver_ablation.py`、`tools/build_main_ablation_matrix.py`、`tools/complete_main_ablations.sh`。solver 改为仓库相对路径、CUDA 不可用硬失败、输入/嵌入缺失硬失败、全样本覆盖、micro/macro/per-sequence 与 checkpoint SHA256 记录；矩阵构建器缺任一格即失败，并额外检查 DP exact 与旧控制板一致。
+- VL0 196 条教师标签已用隔离安装的 ViennaRNA 2.7.2 生成，4 shard，位于 `data/teacher_vl0`；预检、脚本静态检查、solver 合成用例和 8 项相关 pytest 均通过。
+- 自动队列只在 matched 24 格全部门通过后使用 GPU：DP 全 8 split；Turner/fftr1c/nodistill 各补 ArchiveII/TestSetB；norlcd 按原 B=4、sum NLL、seed 0 单变量配置，只改 `lambda_rlcd=0`，使用 VL0 early-stopping，100k 仅安全上限。触及上限而未收敛或 CUDA/CPU 降级均停止，不放行。norlcd 收敛后全 8 split 评测，最终形成 40/40+控制 8/8。
+
+### D. 论文逻辑版 PPT 与图件
+
+主线固定为评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NucleicBERT 迁移→RiNALMo 下游→CHANRG OOD→长度边界。主文 10 图去重，完整基线与工程表进附录。已闭环生成主 benchmark、速度、ECE、A100 Pareto、NB 迁移、RiNALMo 下游、CHANRG 和长度图，全部 300dpi PNG+PDF；三轮图例/遮挡检查已修正。消融图必须等待 40/40 实测，splice/GenF 负结果留档但不放主文。统一 xens2 的 6/8 和 r2d 的速度身份为新版硬约束。

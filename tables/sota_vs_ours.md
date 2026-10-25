@@ -1,5 +1,7 @@
 # SOTA vs ours — paper main table (15.23)
 
+> **第 32 轮纠错（2026-10-25）**：下表是历史汇总，含模型身份与参照版本混用，不能直接作为统一 xens2 的最终结论。统一 xens2 在 bpRNA-new 的板协议值为 **0.5532**；表中 0.6132 属于 `ens_r2dtr1_2seed`，因此统一 xens2 对预注册去污染参照为 **6/8**，不是 7/8。历史逐 split 混合集成可另列 7/8，但必须注明模型替换。TestSetB clean-181 的 xens2=0.8370，0.8448 是全集；TS2 最新值 0.8604。新图件以统一模型口径的结果注册表为准。
+
 Single-model column shows the paradigm beats the reference system on
 6/8 splits WITHOUT any ensembling (TS0/new/ArchII/TS1/TS-hard/TestSetB-
 clean; TS2/TS3 are honest losses against clean PDB-family references).

@@ -2,6 +2,13 @@
 
 > change-id: `build-rna-ss-decision-model`
 
+> **2026-10-25 第 32 轮接管更新**：当前权威 spec/tasks 为 `/home/rna_jev/spec/` 第 32 轮块。clean_s0、mixed_s0、clean_s1 已完成 early-stopping 和四 split CUDA 终评，mixed_s1 正常训练，s2 排队。mixed_s0 OOD mean=0.360529、GenF=0.232452，未过门，三种子未齐不得写最终结论。
+>
+> 统一 xens2 对预注册去污染参照为 **6/8**；旧 7/8 在 bpRNA-new 用 r2d_tr1 集成 0.6132 替代 xens2=0.5532，模型身份不一致。124.78 seq/s 属于 r2dtr1c-s0，不是 xens2 联合点；A100 Pareto 只含 RNAformer/UFold，r2d 被支配。
+>
+> 消融自动队列已预检通过并等待 matched 24 格门：fftr1c/nodistill 权重已恢复，只有 norlcd 需按原 B=4 配方+VL0 early-stopping 重训。PPT 重构按 10 主图去重，8 张闭环图已生成，缺数据的消融图不得抢先标完成。详细完成判据见 `spec/tasks.md` T-A126–T-A132。
+
+
 > **2026-10-24 接管更新**：本目录不再是第9轮历史状态的执行依据。当前权威 spec/tasks 为 `/home/rna_jev/spec/spec.md` 与 `/home/rna_jev/spec/tasks.md` 的“第二十九轮接管审计”节；本节与其同步，旧下文仅作历史快照。
 >
 > 当前代码在 `/home/rna_jev`，新大型 artifacts 在 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。CHANRG 三种子集成四 split 已独立复算：micro-F1 为 Test 0.636256、GenA 0.529566、GenC 0.269710、GenF 0.275018；相对 zero-shot xens2 仅 Test +0.070702，其余分别 −0.114692/−0.109562/−0.031550，且 GenF macro-F1 相对两种子 −0.000261。不得写 CHANRG SOTA 或全面提升。s2 单模型四 split 与三种子统计已完成，`--require-s2` PASS；ens3 相对单模型均值的 macro-F1 在四 split 均提高并通过 Wilcoxon–Holm，但相对 ens2 的 GenF macro 为 −0.000261（p=0.00422）。详见台账 §15.99。

@@ -2,6 +2,17 @@
 
 > change-id: `build-rna-ss-decision-model`
 
+> **第 32 轮增量验收（2026-10-25 23:25）**：
+> - [x] 三个新臂 12 格的 CUDA、样本数与 micro TP/FP/FN 独立复算通过。
+> - [x] fftr1c/nodistill/r2d 权重 strict-load、消融脚本静态检查、VL0 196 条 ViennaRNA 2.7.2 标签和相关 8 tests 通过。
+> - [ ] macro/INF 与来源链第二、第三通道复核；matched 六臂 24 格及三种子统计完成。
+> - [ ] 五类消融 40/40+控制 8/8；当前自动队列只完成预检，不能勾选实验完成。
+> - [ ] 新 RiNALMo 下游任务预注册、GPU 训练、统计与独立复核完成后才入主图。
+> - [ ] 新 PPT 10 图去重、图文匹配、字体/1.5 行距、markitdown/fix/layout/全页渲染通过。
+> - [ ] 本地/远端 spec、训练台账和 GitHub 同步完成。
+> - **禁止放行**：统一 xens2 不得写旧 7/8；124.78 不得与 xens2 F1=0.8039 拼成精度-速度点；A100 r2d 不得画入 Pareto 前沿；DP OOD=0.43 不得复用。
+
+
 > **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：
 > - **集群迁移完成**：A100 集群关停（10-16 备份定格）后，新集群 `px2-jcy.matpool.com`（**1× RTX 4090 24GB**，12 核 64GB）已重建：
 >   - 环境：miniconda3 `lucaone`（Python 3.10.22 + torch 2.5.1+cu121 + multimolecule **0.0.8** + transformers 4.49.0 + gcc 9.4）；CUDA 计算验证 PASS；

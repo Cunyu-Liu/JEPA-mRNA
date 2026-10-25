@@ -2,6 +2,15 @@
 
 > change-id: `build-rna-ss-decision-model`
 
+> **当前交接（2026-10-25 23:25，第 32 轮：结果复核、模型身份纠错与消融补齐全链）**：
+> - **实时状态**：clean_s0、mixed_s0、clean_s1 已完成 held-out early-stopping 与四 split CUDA 终评；mixed_s1 正常训练（日志已越过 step 10000，run_meta 仅终态刷新，不能据 step 0 误判卡死）；clean/mixed_s2 排队。已完成 12 格的样本数与 micro TP/FP/FN 独立复算一致，macro/INF 第二通道继续执行。
+> - **新结果**：mixed_s0 Test/GenA/GenC/GenF=0.580921/0.567109/0.282027/0.232452，OOD mean=0.360529，低于 zero-shot xens2 0.443366，GenF 未过 0.3112/0.4035 门；clean_s0=0.639468/0.477211/0.224661/0.258190，clean_s1=0.627430/0.460435/0.267389/0.277126。三种子未齐前不得写最终统计结论。
+> - **主 benchmark 模型身份复核**：统一 xens2 对预注册去污染参照为 **6/8**，不是旧表 7/8。bpRNA-new 的 xens2=0.5532；旧表 0.6132 属于 r2d_tr1 两种子集成，不能与其他七格 xens2 拼成同一模型。历史逐 split 混合集成可另列 7/8，但必须标明模型替换。全板干净敏感性 xens2=5/8，单模型=4/8。TestSetB clean=0.8370（0.8448 为全集），TS2=0.8604。
+> - **速度与 Pareto 口径**：124.78 seq/s 属于 r2dtr1c-s0（TS0 F1=0.667971），不是 xens2 的精度-速度联合点。Figure 5 仅用 A100 同节点、同 split、strict micro-F1 计算真实 Pareto 集；r2d 在 A100 被 RNAformer 同时以更高 F1/吞吐支配，不得画成前沿点。4090 更新单列，不混入 A100 前沿。
+> - **T-A128 消融闭环**：fftr1c 与 nodistill 的实体 resume.pt 已找到并 strict-load，只有 norlcd 缺权重。`tools/complete_main_ablations.sh`、`solver_ablation.py`、`build_main_ablation_matrix.py` 已预检通过并挂接 matched 24 格门；DP 全 8 split 直接评测，Turner/fftr1c/nodistill 各补 ArchII/TestSetB，norlcd 按原 B=4 配置和 VL0 early-stopping 重训后全 8 split 评测。40/40 缺一格不得出图。
+> - **PPT 合同**：按评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NB 迁移→RiNALMo 下游→CHANRG OOD→长度边界组织；10 主图去重、附录保留完整基线/工程协议。已生成 8 张闭环图，修正了模型身份、ECE 数组、A100 Pareto、CHANRG 四系统和图例遮挡；消融图待 40/40 实测。字体声明 Microsoft YaHei，正文 1.5 倍行距。
+
+
 > **当前交接（2026-10-24，第二十九轮接管审计；本节是当前执行依据）**：
 > - **事实源优先级**：原始 `result.json`/`run_meta.json`/权重哈希 > 可重跑验证脚本 > 本节的实时状态 > 历史交接快照与稿件叙述。以下旧交接块全部保留为历史，不得据其中的“在训/排队/已完成”直接执行或写结论。本轮起点 HEAD 为 `a88656b00afa93c7961ced5486459da25f0573a6`；后续提交哈希以 `git rev-parse HEAD` 为准。
 > - **当前路径与资源**：代码与 Git 提交留在 `/home/rna_jev`；本轮新增大型数据、权重和 artifacts 统一进入 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。现有 `/root/rna_jepa_data` 仅作旧资产只读依赖，不再用于本轮新 artifact。节点为 1×RTX 4090 24GB；系统盘已用 95%，团队盘余量约 2.8TB。SSH 已改用密钥，凭据不得写入任何文档、日志、脚本或 Git。
@@ -20,7 +29,7 @@
 > - **无效混合臂已止损**：一份未纳入预注册的 `mix_s0_arm.sh` 被另行启动后，本轮发现167个 teacher shard 文件名冲突、未重新去重/blocklist、固定20k且写 `/root`。其 `run_meta` 为 steps=0、n_examples=72,564、teacher n_labels=72,067，与预期137,745条语料不一致；第二次 slim 资产仍有 n_examples=72,564、teacher mapping=72,067、manifest=73,642 三方不一致；已保留现场、停止并隔离，任何输出不得作为科学结果。证据在 `audits/mix_s0_invalid_stop`。
 > - **本轮工程修复**：新增 `tools/verify_chanrg_ens3.py`，原始路径与团队盘镜像各独立复算一次并做镜像 diff；`ens3_chain.sh` 改为失败即停、artifact 完整后才 DONE；多头评测增加严格 head 加载和 checkpoint SHA256/ensemble 元数据；旧 watchdog 不再重启历史臂，进程计数排除 shell 误报，cron 每10分钟记录 GPU/CUDA 风险与 artifact 进度。
 > - **收敛基础设施**：`train_decision.py` 新增固定 held-out validation、确定性子集、patience/min-delta、best checkpoint、停止原因和 `converged` 标记；step cap 明确不等于收敛。集群 40 项相关测试通过，CUDA synthetic smoke 验证 early-stopping 路径通过；smoke 仅证明工程路径，不是科学结果。真实 held-out dry-run 与2步真实 CUDA 短跑均已通过，短跑明确记录 step_cap/converged=false；完整套件现为 370 passed/1 skipped。`tables/result_registry.json` 已登记28个 CHANRG 单元格及合同裁决。
-> - **合同口径裁决**：不得再写无条件“7/8、唯一真负 TS2”。Kirigami 的 ArchiveII-clean 实测 0.7872 高于 xens2 0.7760；bpRNA-new 的 0.6132 只胜选定 UFold 参照且低于多个已测物理/zero-shot 系统。C1-a 维持 FAIL，C2 层级级联维持负结果，S1=50×与 S3=L512≤10ms 已作废，不得恢复。pair scoring 可称“免配分函数”，但 exact non-crossing decode 仍为 O(L^3) DP。
+> - **合同口径裁决**：不得再写无条件“7/8、唯一真负 TS2”。统一 xens2 板协议对预注册去污染参照实为 **6/8**：bpRNA-new 的 xens2=0.5532，旧表 0.6132 属于 r2d_tr1 两种子集成，不能拼入同一模型列。旧“7/8”仅是混合模型组合口径；旧保守参照也写过 6/8，但胜格组成不同。Kirigami 的 ArchiveII-clean 实测 0.7872 高于 xens2 0.7760；bpRNA-new 的 0.6132 只胜选定 UFold 参照且低于多个已测物理/zero-shot 系统。C1-a 维持 FAIL，C2 层级级联维持负结果，S1=50×与 S3=L512≤10ms 已作废，不得恢复。pair scoring 可称“免配分函数”，但 exact non-crossing decode 仍为 O(L^3) DP。
 > - **稿件/PPT 门禁**：当前 `preprint_draft.md` 仍混有撤回结果、模型身份混用、指标/参照不一致和未完成统计，不是可提交预印本。先建立唯一结果注册表并清理 claim–evidence，再更新稿件与 PPT；smoke、proxy、训练集结果、quoted 数字不得转写成本项目最终科学结论。
 > - **当前允许推进的顺序**：真实验证协议 dry-run → 冻结清洁单语料/混合语料与去重 blocklist 审计 → 验证集早停训练 → 四 split 终评与配对统计。任一 CUDA、数据、artifact 或验收门失败即停止后续阶段并保留证据。
 

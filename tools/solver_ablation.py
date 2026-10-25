@@ -22,6 +22,7 @@ Usage:
       --split bprna_ts0 --embedding-split bprna_ts0 --out <dir>
 """
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -29,9 +30,10 @@ from pathlib import Path
 import numpy as np
 import torch
 
-sys.path.insert(0, "/root/rna_jev/src")
-sys.path.insert(0, "/root/rna_jev")
-sys.path.insert(0, "/root/rna_jev/tools")
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(REPO / "tools"))
 
 from rnajepa.harness import nussinov_map, valid_pair_mask  # noqa: E402
 from eval.ss.metrics import PairLevelMetrics  # noqa: E402
@@ -45,7 +47,7 @@ def load_r2d(ckpt_path, device):
     config = TrainConfig(**{k: v for k, v in cfg.items() if k in fields})
     model = build_decision_model(config)
     sd = state.get("model", state)
-    model.load_state_dict(sd, strict=False)
+    model.load_state_dict(sd, strict=True)
     return model.to(device).eval()
 
 
@@ -105,33 +107,41 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--split", default="bprna_ts0")
+    ap.add_argument("--data", default="", help="JSONL path; defaults to the legacy split path")
     ap.add_argument("--embedding-dir", default="/root/rna_jepa_data/embeddings/rinalmo-giga")
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--limit", type=int, default=0, help="0 = all")
     args = ap.parse_args()
 
+    if args.device.startswith("cuda") and not torch.cuda.is_available():
+        raise RuntimeError("CUDA requested but unavailable; refusing CPU fallback")
     model = load_r2d(args.checkpoint, args.device)
     store = EmbeddingStore.from_dir(args.embedding_dir, split=args.split)
 
     records = []
-    with open(f"/root/rna_jepa_data/ss_data/jsonl/{args.split}.jsonl") as f:
+    data_path = args.data or f"/root/rna_jepa_data/ss_data/jsonl/{args.split}.jsonl"
+    with open(data_path) as f:
         for line in f:
             r = json.loads(line)
             records.append((str(r["seq"]).upper().replace("T", "U"),
-                            [tuple(p) for p in r["pairs"]]))
+                            [tuple(p) for p in r["pairs"]], str(r.get("name", ""))))
     if args.limit:
         records = records[:args.limit]
 
     aggs = {k: {"tp": 0, "fp": 0, "fn": 0} for k in ["exact", "greedy", "symgreedy"]}
     cross = {"greedy": 0, "symgreedy": 0}
     n_seq = 0
-    for seq, gt_pairs in records:
-        if len(seq) > 1024 or store.get(seq) is None:
-            continue
+    per_sequence = []
+    for seq, gt_pairs, name in records:
+        if len(seq) > 1024:
+            raise ValueError(f"sequence exceeds 1024 nt: {name or len(seq)}")
         emb = store.get(seq)
+        if emb is None:
+            raise KeyError(f"missing embedding for sequence {name or len(per_sequence)}")
         s = forward_scores(model, seq, emb, args.device)
         mask = valid_pair_mask(seq)
+        row = {"name": name, "length": len(seq), "decoders": {}}
         for kind, fn in [("exact", None), ("greedy", greedy_pairs), ("symgreedy", symgreedy_pairs)]:
             if kind == "exact":
                 pred = [tuple(p) for p in nussinov_map(s, mask)]
@@ -139,24 +149,36 @@ def main():
                 pred = fn(s, mask)
             pm = PairLevelMetrics.from_pairs(pred, gt_pairs, L=len(seq), mask=mask)
             aggs[kind]["tp"] += pm.tp; aggs[kind]["fp"] += pm.fp; aggs[kind]["fn"] += pm.fn
+            row["decoders"][kind] = {"f1": pm.f1, "precision": pm.precision,
+                                     "recall": pm.recall, "n_pred_pairs": len(pred)}
             if kind != "exact":
                 cross[kind] += crossing_rate(pred)
+        per_sequence.append(row)
         n_seq += 1
 
-    out = {"n_sequences": n_seq, "split": args.split,
-           "checkpoint": args.checkpoint, "decoders": {}}
+    if n_seq != len(records) or n_seq == 0:
+        raise RuntimeError(f"coverage failure: {n_seq} evaluated of {len(records)} input sequences")
+    digest = hashlib.sha256()
+    with open(args.checkpoint, "rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    out = {"n_sequences": n_seq, "split": args.split, "data": data_path,
+           "checkpoint": args.checkpoint, "checkpoint_sha256": digest.hexdigest(),
+           "device": args.device, "decoders": {}, "per_sequence": per_sequence}
     for kind, a in aggs.items():
         tp, fp, fn = a["tp"], a["fp"], a["fn"]
         p = tp / (tp + fp) if tp + fp else 0
         r = tp / (tp + fn) if tp + fn else 0
         f1 = 2 * p * r / (p + r) if p + r else 0
         out["decoders"][kind] = {"precision": p, "recall": r, "f1": f1,
+                                 "macro_f1": float(np.mean([row["decoders"][kind]["f1"] for row in per_sequence])),
                                  "tp": tp, "fp": fp, "fn": fn}
     out["crossing_events"] = cross
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as f:
         json.dump(out, f, indent=1)
-    print(json.dumps(out, indent=1))
+    print(json.dumps({"split": args.split, "n_sequences": n_seq, "device": args.device,
+                      "decoders": out["decoders"], "crossing_events": cross}, indent=1))
 
 
 if __name__ == "__main__":
