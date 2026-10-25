@@ -460,13 +460,17 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 18 附录 D：当前实验与复现状态
 {
   const s = pptx.addSlide();
-  chrome(s, "附录 D / 当前队列", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed_s0/s1 的负方向仍如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 19, "T-A126–T-A132 / audits / result.json / run_meta.json");
+  chrome(s, "附录 D / 当前队列", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed 的门判定与配对结果如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 19, "T-A126–T-A132 / audits / result.json / run_meta.json");
   const cur = D.matched_30k_current;
   const rows = [["arm", "Test", "GenA", "GenC", "GenF", "OOD mean", "当前判定"]];
   ["clean_s0", "mixed_s0", "clean_s1", "mixed_s1"].forEach(name => {
     const v = cur[name];
     const ood = (v[1] + v[2] + v[3]) / 3;
-    rows.push([name, ...v.map(x => x.toFixed(4)), ood.toFixed(4), name.startsWith("mixed") ? "单点未过门" : "已完成三通道复核"]);
+    const gates = HAS_MATCHED ? cur.statistics.verdicts : null;
+    const status = HAS_MATCHED
+      ? (name.startsWith("mixed") && !gates.genf_mix_hypothesis_pass && !gates.ood_mean_sota_pass ? "3-seed 门未通过" : "已纳入 3-seed 统计")
+      : (name.startsWith("mixed") ? "单点未过门" : "已完成三通道复核");
+    rows.push([name, ...v.map(x => x.toFixed(4)), ood.toFixed(4), status]);
   });
   const currentRowH = rows.length <= 5 ? 0.45 : 0.36;
   const stateY = rows.length <= 5 ? 4.05 : 4.35;
