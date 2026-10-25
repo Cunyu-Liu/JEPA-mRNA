@@ -58,7 +58,7 @@ def main():
             assert token not in all_text, token
         assert len(images) == 9, f"expected nine unique main raster figures, got {len(images)}"
         assert len(set(digest for _, digest in images)) == len(images), "duplicate raster image across slides"
-        assert "统一模型口径：单模型 4/8，xens2 为 6/8" in texts[3]
+        assert "统一模型口径：最佳单 checkpoint 4/8，xens2 为 6/8" in texts[3]
         assert "RNAformer-interfam" in texts[2] and "TSB 除外" in texts[2]
         assert "主判定参照（TSB 除外）" in texts[2]
         assert "A100 上是 RNAformer 与 UFold" in texts[7]

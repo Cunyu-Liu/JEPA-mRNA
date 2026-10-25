@@ -170,6 +170,36 @@ def holm(p_values: list[float]) -> list[float]:
     return adjusted.tolist()
 
 
+def verify_saved_outputs(outputs: dict) -> None:
+    """从落盘文件独立重读并复算，避免生成与验收共享内存状态。"""
+    head_classes = {"paper_head": PaperMLP, "jev_head": JevMLP}
+    for dataset, record in outputs.items():
+        for head_name, head_record in record["heads"].items():
+            for run in head_record["runs"]:
+                prediction = np.load(run["prediction_file"], allow_pickle=False)
+                pcc = float(stats.pearsonr(prediction["predictions"], prediction["truth"])[0])
+                assert np.isclose(pcc, run["test_pcc"], atol=1e-10, rtol=0), (dataset, head_name, run["seed"])
+                assert sha256(Path(run["prediction_file"])) == run["prediction_sha256"]
+                assert sha256(Path(run["checkpoint"])) == run["checkpoint_sha256"]
+                checkpoint = torch.load(run["checkpoint"], map_location="cpu", weights_only=False)
+                model = head_classes[head_name]()
+                model.load_state_dict(checkpoint["model_state_dict"], strict=True)
+                assert checkpoint["dataset"] == dataset and checkpoint["head"] == head_name
+                assert checkpoint["seed"] == run["seed"] == int(checkpoint["seed"])
+                assert run["device"] == "cuda" and run["converged"] and run["early_stopped"]
+                run["independent_recheck"] = "PASS"
+            paper = np.array([run["test_pcc"] for run in head_record["runs"]])
+            assert np.isclose(head_record["pcc_mean"], paper.mean(), atol=1e-10, rtol=0)
+            assert np.isclose(head_record["pcc_sample_std"], paper.std(ddof=1), atol=1e-10, rtol=0)
+        paper = np.array([run["test_pcc"] for run in record["heads"]["paper_head"]["runs"]])
+        jev = np.array([run["test_pcc"] for run in record["heads"]["jev_head"]["runs"]])
+        comparison = record["comparison"]
+        assert np.isclose(comparison["delta_mean"], np.mean(jev - paper), atol=1e-10, rtol=0)
+        test = stats.ttest_rel(jev, paper, alternative="greater")
+        assert np.isclose(comparison["one_sided_p_value"], test.pvalue, atol=1e-10, rtol=0)
+        comparison["independent_recheck"] = "PASS"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--device", default="cuda")
@@ -229,6 +259,7 @@ def main() -> int:
     for (dataset, record), adjusted in zip(outputs.items(), holm(p_values)):
         record["comparison"]["holm_p_value"] = adjusted
         record["comparison"]["significant_positive"] = bool(record["comparison"]["delta_mean"] > 0 and adjusted < 0.05)
+    verify_saved_outputs(outputs)
     payload = {
         "schema_version": 1, "status": "PASS", "protocol": {
             "datasets": DATASETS, "seeds": list(SEEDS), "split": "fixed per-length 100 validation + 100 test; remainder train",

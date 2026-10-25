@@ -9,6 +9,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from matplotlib import font_manager
+
+FONT_PATH = "/Users/liucunyu/Library/Fonts/msyh_regular.ttf"
+if os.path.exists(FONT_PATH):
+    font_manager.fontManager.addfont(FONT_PATH)
 
 ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261025_03"))
 RESULT = ROOT / "figures" / "mrl_suite_result.json"

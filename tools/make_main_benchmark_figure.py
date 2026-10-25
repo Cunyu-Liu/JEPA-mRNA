@@ -8,6 +8,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from matplotlib import font_manager
+
+FONT_PATH = "/Users/liucunyu/Library/Fonts/msyh_regular.ttf"
+if os.path.exists(FONT_PATH):
+    font_manager.fontManager.addfont(FONT_PATH)
 
 ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261025_03"))
 D = json.loads((ROOT / "figures" / "source_data.json").read_text(encoding="utf-8"))["main_benchmark"]
@@ -18,7 +23,7 @@ plt.rcParams.update({"font.family": ["Arial", "Microsoft YaHei", "sans-serif"],
 fig, axes = plt.subplots(1, 2, figsize=(12.8, 6.4))
 ref = np.array(D["clean_reference"])
 for ax, key, panel, title in [
-    (axes[0], "single", "a", "Single model: 4/8 above clean references"),
+    (axes[0], "single", "a", "Best single checkpoint: 4/8 above clean references"),
     (axes[1], "xens2", "b", "xens2: 6/8 above clean references"),
 ]:
     vals = np.array(D[key]); y = np.arange(8)[::-1]

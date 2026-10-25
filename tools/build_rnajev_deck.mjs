@@ -261,7 +261,7 @@ function table(slide, rows, { x, y, w, colW, rowH = 0.35, fontSize = 9, headerSi
 }
 
 // 04–05 主结果与速度
-figureSlide(4, "02 / 主 benchmark", "主图 1｜统一模型口径：单模型 4/8，xens2 为 6/8", "预注册去污染参照；同一 split、同一评分器、同一模型身份。", "fig01_main_benchmark_3840x1920.png", "为何不是旧 7/8：bpRNA-new 的 xens2=0.5532；0.6132 属于另一组 r2d_tr1 集成。全板干净敏感性 xens2=5/8。", "主表与 metrics matrix；模型身份第二轮复核");
+figureSlide(4, "02 / 主 benchmark", "主图 1｜统一模型口径：最佳单 checkpoint 4/8，xens2 为 6/8", "预注册去污染参照；同一 split、同一评分器、同一模型身份。", "fig01_main_benchmark_3840x1920.png", "为何不是旧 7/8：bpRNA-new 的 xens2=0.5532；0.6132 属于另一组 r2d_tr1 集成。全板干净敏感性 xens2=5/8。", "主表与 metrics matrix；模型身份第二轮复核");
 figureSlide(5, "03 / 推理速度", "主图 2｜r2d 单模型 124.78 seq/s，F1 逐位不变", "RTX 4090、TS0、端到端含 frozen encoder + 9.3M head + C decode。", "fig02_speed_benchmark_3840x1920.png", "124.78 属于 r2dtr1c-s0（F1=0.667971），不与 xens2 的 0.8039 拼接；A100 与 forward-only 参照分别标注。", "台账 §15.79–15.82；speed_v3/v4 JSON");
 
 // 06 消融：正式版必须有完整矩阵，draft 仅展示执行状态。
@@ -352,7 +352,7 @@ figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
   chrome(s, "12 / 结论", "五条创新线成立，但每条都必须带边界", "结论不再靠重复图表强化；用 claim–evidence–limitation 对齐。", 14, "结论口径：Round 32 统一复核");
   const rows = [
     ["创新线", "可支持的结论", "必须同时展示的限制"],
-    ["主 benchmark", "统一 xens2 对预注册 clean 参照为 6/8；单模型 4/8", "旧 7/8 是混合模型组合；全板干净敏感性 xens2=5/8；TS2 未胜"],
+    ["主 benchmark", "统一 xens2 对预注册 clean 参照为 6/8；最佳单 checkpoint 4/8", "旧 7/8 是混合模型组合；全板干净敏感性 xens2=5/8；TS2 未胜"],
     ["推理速度", "r2d 在 4090 达 124.78 seq/s，批大小改变不改预测", "A100 r2d 不在 Pareto 前沿；不把该速度与 xens2 F1 拼成联合点"],
     ["OOD", "先验栈消融 + CHANRG 外部 OOD 共同支撑鲁棒性", "GenF 弱、TS2 未胜；xens2 与 OFoldNA-SS 的 OOD mean 仅并列"],
     ["ECE", "四个大样本 split 均改善，结构置信度排序全正", "TS2/TS3 过校正；小样本噪声与族敏感性不可隐藏"],
@@ -367,7 +367,7 @@ figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 15 附录 A：完整基线，修正模型身份但保留全量数据。
 {
   const s = pptx.addSlide();
-  chrome(s, "附录 A / 全板", "全板敏感性：xens2=5/8，单模型=4/8", "完整保留基线；统一 xens2 与历史 r2d_tr1 集成单列，避免旧表混用。", 15, "全板含 Vienna / Kirigami；TS3/hard 采用 clean inter-fam 参照");
+  chrome(s, "附录 A / 全板", "全板敏感性：xens2=5/8，最佳单 checkpoint=4/8", "完整保留基线；统一 xens2 与历史 r2d_tr1 集成单列，避免旧表混用。", 15, "全板含 Vienna / Kirigami；TS3/hard 采用 clean inter-fam 参照");
   const rows = [
     ["系统", "TS0", "new", "TS1", "TS2", "TS3", "hard", "ArchII", "TSB", "源"],
     ["ViennaRNA mfe", "0.5056", "0.6379", "0.7209", "0.8980", "0.8206", "0.7663", "0.5752", "0.5225", "CPU"],
@@ -391,7 +391,7 @@ figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
     ["r2d_tr1 2-seed（历史集成）", "0.6733", "0.6132", "—", "—", "—", "—", "0.7664", "—", "GPU"],
   ];
   table(s, rows, { x: MARGIN, y: 1.48, w: CONTENT_W, colW: [2.65, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.48], rowH: 0.238, fontSize: 7.0, headerSize: 7.2 });
-  text(s, "第 7 页问题的准确回答：单模型 4/8 成立；但原页混合全集、clean 子集与多套参照，不能直接据此写 xens2 7/8。†=clean-181；‡=不用于 clean 判定的旧参照。", MARGIN, 6.42, CONTENT_W, 0.36, 8.6, T.muted);
+  text(s, "第 7 页问题的准确回答：最佳单 checkpoint 4/8 成立；但原页混合全集、clean 子集与多套参照，不能直接据此写 xens2 7/8。†=clean-181；‡=不用于 clean 判定的旧参照。", MARGIN, 6.42, CONTENT_W, 0.36, 8.6, T.muted);
   s.render();
 }
 
