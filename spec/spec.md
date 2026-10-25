@@ -3,12 +3,13 @@
 > change-id: `build-rna-ss-decision-model`
 
 > **当前交接（2026-10-25 23:25，第 32 轮：结果复核、模型身份纠错与消融补齐全链）**：
-> - **实时状态**：clean_s0、mixed_s0、clean_s1 已完成 held-out early-stopping 与四 split CUDA 终评；mixed_s1 正常训练（日志已越过 step 10000，run_meta 仅终态刷新，不能据 step 0 误判卡死）；clean/mixed_s2 排队。已完成 12 格的样本数与 micro TP/FP/FN 独立复算一致；macro/INF、逐序列 F1、best checkpoint、数据行数与 SHA256 也已通过 `verify_matched_round32.py` 三通道验收，T-A126 完成。
+> - **实时状态**：clean_s0、mixed_s0、clean_s1、mixed_s1 已完成 held-out early-stopping 与四 split CUDA 终评；当前 4/6 臂、16/24 格均通过三通道复核。mixed_s1 best step=14500，Test/GenA/GenC/GenF=0.585378/0.575519/0.285501/0.258446，OOD mean=0.373156；clean_s2 在训，mixed_s2 排队。T-A126 的 12 格验收已完成，新增 4 格同样通过。
 > - **新结果**：mixed_s0 Test/GenA/GenC/GenF=0.580921/0.567109/0.282027/0.232452，OOD mean=0.360529，低于 zero-shot xens2 0.443366，GenF 未过 0.3112/0.4035 门；clean_s0=0.639468/0.477211/0.224661/0.258190，clean_s1=0.627430/0.460435/0.267389/0.277126。三种子未齐前不得写最终统计结论。
 > - **主 benchmark 模型身份复核**：统一 xens2 对预注册去污染参照为 **6/8**，不是旧表 7/8。bpRNA-new 的 xens2=0.5532；旧表 0.6132 属于 r2d_tr1 两种子集成，不能与其他七格 xens2 拼成同一模型。历史逐 split 混合集成可另列 7/8，但必须标明模型替换。全板干净敏感性 xens2=5/8，单模型=4/8。TestSetB clean=0.8370（0.8448 为全集），TS2=0.8604。
 > - **速度与 Pareto 口径**：124.78 seq/s 属于 r2dtr1c-s0（TS0 F1=0.667971），不是 xens2 的精度-速度联合点。Figure 5 仅用 A100 同节点、同 split、strict micro-F1 计算真实 Pareto 集；r2d 在 A100 被 RNAformer 同时以更高 F1/吞吐支配，不得画成前沿点。4090 更新单列，不混入 A100 前沿。
 > - **T-A128 消融闭环**：fftr1c 与 nodistill 的实体 resume.pt 已找到并 strict-load，只有 norlcd 缺权重。`tools/complete_main_ablations.sh`、`solver_ablation.py`、`build_main_ablation_matrix.py` 已预检通过并挂接 matched 24 格门；DP 全 8 split 直接评测，Turner/fftr1c/nodistill 各补 ArchII/TestSetB，norlcd 按原 B=4 配置和 VL0 early-stopping 重训后全 8 split 评测。40/40 缺一格不得出图。
-> - **PPT 合同**：按评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NB 迁移→RiNALMo 下游→CHANRG OOD→长度边界组织；10 主图去重、附录保留完整基线/工程协议。已生成 8 张闭环图，修正了模型身份、ECE 数组、A100 Pareto、CHANRG 四系统和图例遮挡；消融图待 40/40 实测。字体声明 Microsoft YaHei，正文 1.5 倍行距。
+> - **T-A129 新增下游**：本地 GSE114002 的 mcherry_1/designed_library/varying_length 三组 MRL 已预注册为 paper head vs Jev head 对照，5 seed、每长度独立 validation/test、paired t-test+Holm、early-stopping 收敛。实现通过稀疏真实信号合成验证，队列在 T-A128 后启动；显著正结果才入主图，其他结果留档。
+> - **PPT 合同**：按评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NB 迁移→RiNALMo 下游→CHANRG OOD→长度边界组织；10 主图去重、附录保留完整基线/工程协议。已生成 8 张闭环图，修正了模型身份、ECE 数组、A100 Pareto、CHANRG 四系统和图例遮挡；消融图待 40/40 实测。字体声明微软雅黑，正文 1.5 倍行距。
 
 
 > **当前交接（2026-10-24，第二十九轮接管审计；本节是当前执行依据）**：

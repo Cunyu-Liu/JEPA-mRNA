@@ -9940,3 +9940,21 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 ### D. 论文逻辑版 PPT 与图件
 
 主线固定为评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NucleicBERT 迁移→RiNALMo 下游→CHANRG OOD→长度边界。主文 10 图去重，完整基线与工程表进附录。已闭环生成主 benchmark、速度、ECE、A100 Pareto、NB 迁移、RiNALMo 下游、CHANRG 和长度图，全部 300dpi PNG+PDF；三轮图例/遮挡检查已修正。消融图必须等待 40/40 实测，splice/GenF 负结果留档但不放主文。统一 xens2 的 6/8 和 r2d 的速度身份为新版硬约束。
+
+## §15.101 Round-32 后续：mixed_s1 复核与三组 MRL 预注册（2026-10-26）
+
+### A. matched 当前 4/6 臂、16/24 格
+
+- `mixed_30k_s1` 在 step 17500 触发 early-stopping，恢复 best step=14500，四 split 已全部落盘：Test 0.585378 / GenA 0.575519 / GenC 0.285501 / GenF 0.258446，OOD mean=0.373156。与 mixed_s0 的 0.360529 同向，仍低于 zero-shot xens2 的 0.443366，不支持混合语料达到 OOD mean SOTA 的说法。
+- `verify_matched_round32.py` 已复跑，当前 completed=[clean_s0, clean_s1, mixed_s0, mixed_s1]，16/24 格全部通过 micro、per-sequence macro/INF、best checkpoint、数据行数与 SHA256 三通道检查。clean_s2 在训，mixed_s2 接续；三种子未齐仍不做最终统计结论。
+
+### B. T-A129 三组 MRL 预注册与实现验证
+
+- 不恢复 Muscle/pc3 的阻塞 Drive 数据，改用本地已有 GSE114002 中协议相容的三组任务：mcherry_1（269,113 条）、designed_library（100,017 条）、varying_length（106,530 条）。三组均保留原始 `rl` 标签和 25–100nt 过滤，非正 `rl` 不擅自删除。
+- 对照为 frozen RiNALMo-giga meanpool 上的 paper head vs Jev MLP head；每个长度固定 100 validation+100 test，剩余训练，五个 seed。主指标为 test PCC，报告 mean±sample std；5-seed 配对单侧 t-test，三个数据集内 Holm 校正，Δ>0 且校正 p<0.05 才允许写显著正结果。所有预测、checkpoint、输入数据与 SHA256 留档，其他正负结果均不删除。
+- `tools/eval_mrl_suite.py` 使用 CUDA early-stopping：patience=32、min_delta=1e-5、max_epochs=2000 仅失败保护；触及上限而未收敛会失败，不写成完成。`complete_mrl_suite.sh` 只在主消融 40/40 矩阵存在后启动，避免 GPU/主机内存争用。
+- 工程验证不是科学结果：先确认直接梯度与参数更新正常，再用 4,000 条稀疏真实信号合成数据复验。PaperMLP best_epoch=527/停止 559、JevMLP best_epoch=46/停止 78，两者 test PCC>0.999，早停与最佳权重恢复正常。此前高维过拟合样例只用于诊断，不得写入论文或 PPT。
+
+### C. PPT 渲染验收
+
+- 19 页 draft 已通过 markitdown、fix_pptx 和 validate_layout（Issues=0），全部文本为微软雅黑且 1.5 倍行距。PowerPoint AppleEvent 与 LibreOffice 中文渲染在本机分别超时/缺字，改用 Aspose+libgdiplus 完成独立渲染；评估水印不属于 PPT 文件。封面、泄露表、最密基线表、三层架构、附录和结束页均完成视觉复核，未发现真实越界或遮挡。正式版仍受消融 40/40 和 T-A129 统计门约束。
