@@ -12,9 +12,12 @@ const AB_FIG_A = path.join(FIG, "fig03a_ablation_matrix_3840x1920.png");
 const AB_FIG_B = path.join(FIG, "fig03b_ood_signature_3840x1920.png");
 const MRL_JSON = path.join(FIG, "mrl_suite_result.json");
 const MATCHED_JSON = path.join(FIG, "matched_30k_statistics.json");
-const HAS_AB = fs.existsSync(AB_JSON) && fs.existsSync(AB_FIG_A) && fs.existsSync(AB_FIG_B);
-const HAS_MRL = fs.existsSync(MRL_JSON);
-const HAS_MATCHED = fs.existsSync(MATCHED_JSON);
+const AB_DATA = fs.existsSync(AB_JSON) ? JSON.parse(fs.readFileSync(AB_JSON, "utf8")) : null;
+const MRL_DATA = fs.existsSync(MRL_JSON) ? JSON.parse(fs.readFileSync(MRL_JSON, "utf8")) : null;
+const MATCHED_DATA = fs.existsSync(MATCHED_JSON) ? JSON.parse(fs.readFileSync(MATCHED_JSON, "utf8")) : null;
+const HAS_AB = !!AB_DATA && Object.keys(AB_DATA.rows || {}).length === 6 && Object.values(AB_DATA.rows).every(row => Object.keys(row).length === 8) && fs.existsSync(AB_FIG_A) && fs.existsSync(AB_FIG_B);
+const HAS_MRL = !!MRL_DATA && MRL_DATA.status === "PASS" && Object.keys(MRL_DATA.results || {}).length === 3;
+const HAS_MATCHED = !!MATCHED_DATA && MATCHED_DATA.status === "PASS" && MATCHED_DATA.n_arms === 6 && MATCHED_DATA.n_cells === 24;
 const HAS_ALL = HAS_AB && HAS_MRL && HAS_MATCHED;
 if (!HAS_ALL && !OUT.includes("draft")) {
   throw new Error(`正式版证据门未闭合：ablation=${HAS_AB} mrl=${HAS_MRL} matched=${HAS_MATCHED}；只能生成 draft。`);
