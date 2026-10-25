@@ -18,6 +18,7 @@ if os.path.exists(FONT_PATH):
     font_manager.fontManager.addfont(FONT_PATH)
 
 ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261025_03"))
+OUTPUT_DIR = ROOT / "figures"
 SPLITS = ["bprna_ts0", "bprna_new", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "archiveii_embok_clean", "testsetb"]
 LABELS = ["TS0", "bpRNA-new", "TS1", "TS2", "TS3", "TS-hard", "ArchiveII-clean", "TestSetB"]
 ROWS = ["DP off (greedy)", "Turner prior = 0", "2D scorer -> pair MLP", "No distillation", "No RLCD"]
@@ -40,7 +41,7 @@ def style(ax):
 
 
 def save(fig, stem):
-    out = ROOT / "figures" / f"{stem}_3840x1920"
+    out = OUTPUT_DIR / f"{stem}_3840x1920"
     fig.savefig(out.with_suffix(".png"), dpi=300)
     fig.savefig(out.with_suffix(".pdf"))
     plt.close(fig)
@@ -101,7 +102,9 @@ def signature(data):
     ax.set_ylabel("Mean ΔF1 (ablation − control)", color=C["ink"])
     ax.set_title("b  Core structural components: ID, external and PDB-OOD effects",
                  loc="left", color=C["ink"], fontweight="bold", pad=13)
-    ax.legend(fontsize=8.5, loc="lower left", frameon=False, ncol=3)
+    all_values = [value for record in all_means.values() for value in record.values()]
+    ax.set_ylim(min(all_values) - 0.08, max(0.03, max(all_values) + 0.04))
+    ax.legend(fontsize=8.5, loc="upper left", frameon=False, ncol=3)
     style(ax)
     ratios = []
     for row in CORE:
@@ -122,7 +125,11 @@ def signature(data):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=ROOT / "figures" / "main_ablation_5x8.json")
+    parser.add_argument("--out-dir", type=Path, default=ROOT / "figures")
     args = parser.parse_args()
+    global OUTPUT_DIR
+    OUTPUT_DIR = args.out_dir
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     data = json.loads(args.input.read_text(encoding="utf-8"))
     assert len(data["rows"]) == 6 and all(len(v) == 8 for v in data["rows"].values())
     assert set(data["delta_from_control"]) == set(ROWS)
