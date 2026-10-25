@@ -8,10 +8,11 @@ const FIG = path.join(ROOT, "figures");
 const OUT = process.argv[2] || path.join(ROOT, "RNA-JEV_论文逻辑重构_20261025.pptx");
 const D = JSON.parse(fs.readFileSync(path.join(FIG, "source_data.json"), "utf8"));
 const AB_JSON = path.join(FIG, "main_ablation_5x8.json");
-const AB_FIG = path.join(FIG, "fig03_ablation_5x8_3840x1920.png");
+const AB_FIG_A = path.join(FIG, "fig03a_ablation_matrix_3840x1920.png");
+const AB_FIG_B = path.join(FIG, "fig03b_ood_signature_3840x1920.png");
 const MRL_JSON = path.join(FIG, "mrl_suite_result.json");
 const MATCHED_JSON = path.join(FIG, "matched_30k_statistics.json");
-const HAS_AB = fs.existsSync(AB_JSON) && fs.existsSync(AB_FIG);
+const HAS_AB = fs.existsSync(AB_JSON) && fs.existsSync(AB_FIG_A) && fs.existsSync(AB_FIG_B);
 const HAS_MRL = fs.existsSync(MRL_JSON);
 const HAS_MATCHED = fs.existsSync(MATCHED_JSON);
 const HAS_ALL = HAS_AB && HAS_MRL && HAS_MATCHED;
@@ -201,10 +202,10 @@ function table(slide, rows, { x, y, w, colW, rowH = 0.35, fontSize = 9, headerSi
   chrome(s, "论文行文", "从评测卫生到机制、迁移与边界", "五条创新线共用同一条证据链；每一图只回答一个问题。", 2, "结构：主文 10 图 + 4 个附录");
   const steps = [
     ["01", "评测卫生与主结果", "泄露审计 → 去污染主 benchmark", "03–04"],
-    ["02", "效率与机制", "速度 → OOD 消融 → ECE → 精度-速度", "05–08"],
-    ["03", "架构拆解", "冻结表征、二维决策、结构先验解码", "09"],
-    ["04", "迁移与外部验证", "NucleicBERT → RiNALMo 下游 → CHANRG → 长度", "10–13"],
-    ["05", "结论与复现", "贡献边界、全板、协议、演进与当前队列", "14–19"],
+    ["02", "效率与机制", "速度 → OOD 消融 → ECE → 精度-速度", "05–09"],
+    ["03", "架构拆解", "冻结表征、二维决策、结构先验解码", "10"],
+    ["04", "迁移与外部验证", "NucleicBERT → RiNALMo 下游 → CHANRG → 长度", "11–14"],
+    ["05", "结论与复现", "贡献边界、全板、协议、演进与当前队列", "15–20"],
   ];
   steps.forEach((r, i) => {
     const y = 1.58 + i * 1.03;
@@ -266,7 +267,8 @@ figureSlide(5, "03 / 推理速度", "主图 2｜r2d 单模型 124.78 seq/s，F1 
 
 // 06 消融：正式版必须有完整矩阵，draft 仅展示执行状态。
 if (HAS_AB) {
-  figureSlide(6, "04 / OOD 机制", "主图 3｜五类消融 × 8 split：结构先验的 ID/OOD 作用地图", "控制模型、评分协议和缺失格全部一致；不以单一 OOD 均值掩盖任务差异。", "fig03_ablation_5x8_3840x1920.png", "分组读法：ID=TS0/ArchiveII-clean；外部集=bpRNA-new/TestSetB；PDB-OOD=TS1/TS2/TS3/TS-hard。", "main_ablation_5x8.json；40/40 + 控制 8/8 原始结果");
+  figureSlide(6, "04 / OOD 机制", "主图 3a｜五类消融 × 8 split：全矩阵性能变化", "控制模型、评分协议和缺失格全部一致；不以单一 OOD 均值掩盖任务差异。", "fig03a_ablation_matrix_3840x1920.png", "每格均为消融−控制的 strict micro-F1 变化；五类消融与八 split 全部实测。", "main_ablation_5x8.json；40/40 + 控制 8/8 原始结果");
+  figureSlide(7, "04 / OOD 机制", "主图 3b｜核心三模块：ID、外部集与 PDB-OOD 效应分解", "DP、Turner 和 2D scorer 单独对照；保留原第 37 页的统一签名读法。", "fig03b_ood_signature_3840x1920.png", "ID=TS0/ArchiveII-clean；外部集=bpRNA-new/TestSetB；PDB-OOD=TS1/TS2/TS3/TS-hard。旧 DP OOD=0.43 代理值已撤回。", "main_ablation_5x8.json；核心三模块的分组均值与 PDB/ID 比值");
 } else {
   const s = pptx.addSlide();
   chrome(s, "04 / OOD 机制", "主图 3｜五类消融 × 8 split：等待完整实测矩阵", "DRAFT 状态页，不是科学结论；正式版生成器会在缺格时拒绝输出。", 6, "T-A128 / complete_main_ablations.sh");
@@ -282,16 +284,23 @@ if (HAS_AB) {
   rect(s, MARGIN, 5.48, CONTENT_W, 0.92, T.paleRed, T.paleRed);
   text(s, "禁止放行：缺一格即不出主图；不得复用旧 DP OOD=0.43，也不得把 smoke/proxy 当成最终结果。", MARGIN + 0.20, 5.73, CONTENT_W - 0.40, 0.38, 11, T.red, { bold: true });
   s.render();
+  const s2 = pptx.addSlide();
+  chrome(s2, "04 / OOD 机制", "主图 3b｜核心三模块：等待 ID/OOD 分组统计", "DRAFT 状态页，不是科学结论；完整 5×8 矩阵验收后自动生成。", 7, "T-A128 / ID、External、PDB-OOD 分组");
+  const groups = [["分组", "包含 split", "分析用途"], ["ID", "TS0、ArchiveII-clean", "近似分布内保持与通用结构能力"], ["External", "bpRNA-new、TestSetB", "外部序列集合的泛化"], ["PDB-OOD", "TS1、TS2、TS3、TS-hard", "实验结构 PDB 分布外泛化"]];
+  table(s2, groups, { x: MARGIN, y: 1.68, w: CONTENT_W, colW: [1.4, 4.3, 5.5], rowH: 0.64, fontSize: 10 });
+  rect(s2, MARGIN, 4.85, CONTENT_W, 1.10, T.surface, T.rule);
+  text(s2, "核心三模块：DP → greedy、Turner prior = 0、2D scorer → pair MLP。\n只有矩阵完整后才计算组均值与 PDB/ID 比值，不预先填写效应方向。", MARGIN + 0.22, 5.10, CONTENT_W - 0.44, 0.62, 11, T.ink);
+  s2.render();
 }
 
 // 07–08 校准与精度-速度
-figureSlide(7, "05 / 校准与置信度", "主图 4｜大样本 split 校准改善，小 PDB split 不作过度承诺", "VL0 拟合两参数 logit 仿射，测试 split 不重拟合；ECE 与排序能力并列。", "fig04_ece_confidence_3840x1920.png", "TS0/TestSetB/bpRNA-new/ArchiveII 均改善；TS1 与 TS-hard 小幅改善，TS2/TS3 过校正，必须保留 n 与限制。", "台账 §15.80；structure confidence board");
-figureSlide(8, "06 / 精度-速度", "主图 5｜真实帕累托集：A100 上是 RNAformer 与 UFold", "同节点、同 split、strict micro-F1；r2d 在 A100 被 RNAformer 同时以更高 F1 和吞吐支配。", "fig05_accuracy_speed_pareto_3840x1920.png", "4090 的 r2d=124.78 seq/s 仅作硬件更新，不混入 A100 前沿；不虚构 xens2 的吞吐或联合最优点。", "A100 baseline board + §15.79；Pareto 程序逐点判定");
+figureSlide(8, "05 / 校准与置信度", "主图 4｜大样本 split 校准改善，小 PDB split 不作过度承诺", "VL0 拟合两参数 logit 仿射，测试 split 不重拟合；ECE 与排序能力并列。", "fig04_ece_confidence_3840x1920.png", "TS0/TestSetB/bpRNA-new/ArchiveII 均改善；TS1 与 TS-hard 小幅改善，TS2/TS3 过校正，必须保留 n 与限制。", "台账 §15.80；structure confidence board");
+figureSlide(9, "06 / 精度-速度", "主图 5｜真实帕累托集：A100 上是 RNAformer 与 UFold", "同节点、同 split、strict micro-F1；r2d 在 A100 被 RNAformer 同时以更高 F1 和吞吐支配。", "fig05_accuracy_speed_pareto_3840x1920.png", "4090 的 r2d=124.78 seq/s 仅作硬件更新，不混入 A100 前沿；不虚构 xens2 的吞吐或联合最优点。", "A100 baseline board + §15.79；Pareto 程序逐点判定");
 
 // 09 原生三层架构图
 {
   const s = pptx.addSlide();
-  chrome(s, "07 / 架构拆解", "主图 6｜三层架构：冻结表征、二维决策、结构先验解码", "每个模块都标出输入、输出、可训练参数和验证路径；不是概念拼贴。", 9, "decision_head.py / harness.py / evaluate_decision.py");
+  chrome(s, "07 / 架构拆解", "主图 6｜三层架构：冻结表征、二维决策、结构先验解码", "每个模块都标出输入、输出、可训练参数和验证路径；不是概念拼贴。", 10, "decision_head.py / harness.py / evaluate_decision.py");
   const cols = [0.55, 4.74, 8.93];
   const headers = ["A  冻结序列表征", "B  二维配对决策", "C  结构先验与输出"];
   cols.forEach((x, i) => {
@@ -339,17 +348,17 @@ figureSlide(8, "06 / 精度-速度", "主图 5｜真实帕累托集：A100 上�
 }
 
 // 10–13 迁移与外部验证
-figureSlide(10, "08 / 跨骨干迁移", "主图 7｜Jev-on-NucleicBERT：8/8 split 均正增益", "Δ +0.055 至 +0.234，平均 +0.134；OOD/家族 split 增益更大。", "fig07_nucleicbert_transfer_3840x1920.png", "回答兼容性问题：同一 Jev 决策头不依赖 RiNALMo 特有表征；ArchII 使用匹配的 trunc598 口径。", "ROUND26 / T-A99；NB-ft 与 Jev-on-NB 8-split");
+figureSlide(11, "08 / 跨骨干迁移", "主图 7｜Jev-on-NucleicBERT：8/8 split 均正增益", "Δ +0.055 至 +0.234，平均 +0.134；OOD/家族 split 增益更大。", "fig07_nucleicbert_transfer_3840x1920.png", "回答兼容性问题：同一 Jev 决策头不依赖 RiNALMo 特有表征；ArchII 使用匹配的 trunc598 口径。", "ROUND26 / T-A99；NB-ft 与 Jev-on-NB 8-split");
 const NEW_POSITIVE = HAS_MRL ? Object.entries(D.downstream.additional_mrl || {}).filter(([, r]) => r.comparison.significant_positive).map(([name]) => name) : [];
 const DOWNSTREAM_NOTE = HAS_MRL ? (NEW_POSITIVE.length ? `新增显著正结果：${NEW_POSITIVE.join("、")}；其余数据留档。` : "新增三组 MRL 已完成但未达显著门，全部数据留档。") : "新增任务必须完成预注册与统计后再加入。";
-figureSlide(11, "09 / RiNALMo 下游", "主图 8｜下游头迁移：ncRNA 三指标提升，回归任务小幅为正", "ncRNA 保留 accuracy / macro-F1 / balanced accuracy；MRL 与 TE-EL 保留 PCC。", "fig08_rinalmo_downstream_3840x1920.png", `合并原第 25、28a、36 页信息；splice 数据留档不进主文。${DOWNSTREAM_NOTE}`, "ROUND26 / ROUND28 / T-A129；frozen backbone 双头对照");
-figureSlide(12, "10 / 外部 OOD", "主图 9｜CHANRG：重点看 OOD mean，而不是回避 GenF", "仅保留 RiNALMo-Giga ft、OFoldNA-SS、xens2、r2d 四个系统；其余数据留档。", "fig09_chanrg_ood_3840x1920.png", "xens2 OOD mean 0.4434 vs OFoldNA-SS 0.4410，仅写并列；GenF=0.3066 是弱项，不用均值掩盖。", "OFoldNA Table 3 同口径；ROUND26 CHANRG board");
-figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍是开放问题", "TS0 与 ArchiveII-clean 双面板；桶样本量和 strict micro-F1 全部保留。", "fig10_length_generalization_3840x1920.png", "长度分层用于界定部署边界，不把 retention 写成绝对长链优势；重复的原第 35 页已删除。", "ROUND29 length-bucket result.json 重算");
+figureSlide(12, "09 / RiNALMo 下游", "主图 8｜下游头迁移：ncRNA 三指标提升，回归任务小幅为正", "ncRNA 保留 accuracy / macro-F1 / balanced accuracy；MRL 与 TE-EL 保留 PCC。", "fig08_rinalmo_downstream_3840x1920.png", `合并原第 25、28a、36 页信息；splice 数据留档不进主文。${DOWNSTREAM_NOTE}`, "ROUND26 / ROUND28 / T-A129；frozen backbone 双头对照");
+figureSlide(13, "10 / 外部 OOD", "主图 9｜CHANRG：重点看 OOD mean，而不是回避 GenF", "仅保留 RiNALMo-Giga ft、OFoldNA-SS、xens2、r2d 四个系统；其余数据留档。", "fig09_chanrg_ood_3840x1920.png", "xens2 OOD mean 0.4434 vs OFoldNA-SS 0.4410，仅写并列；GenF=0.3066 是弱项，不用均值掩盖。", "OFoldNA Table 3 同口径；ROUND26 CHANRG board");
+figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍是开放问题", "TS0 与 ArchiveII-clean 双面板；桶样本量和 strict micro-F1 全部保留。", "fig10_length_generalization_3840x1920.png", "长度分层用于界定部署边界，不把 retention 写成绝对长链优势；重复的原第 35 页已删除。", "ROUND29 length-bucket result.json 重算");
 
 // 14 结论与边界
 {
   const s = pptx.addSlide();
-  chrome(s, "12 / 结论", "五条创新线成立，但每条都必须带边界", "结论不再靠重复图表强化；用 claim–evidence–limitation 对齐。", 14, "结论口径：Round 32 统一复核");
+  chrome(s, "12 / 结论", "五条创新线成立，但每条都必须带边界", "结论不再靠重复图表强化；用 claim–evidence–limitation 对齐。", 15, "结论口径：Round 32 统一复核");
   const rows = [
     ["创新线", "可支持的结论", "必须同时展示的限制"],
     ["主 benchmark", "统一 xens2 对预注册 clean 参照为 6/8；最佳单 checkpoint 4/8", "旧 7/8 是混合模型组合；全板干净敏感性 xens2=5/8；TS2 未胜"],
@@ -367,7 +376,7 @@ figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 15 附录 A：完整基线，修正模型身份但保留全量数据。
 {
   const s = pptx.addSlide();
-  chrome(s, "附录 A / 全板", "全板敏感性：xens2=5/8，最佳单 checkpoint=4/8", "完整保留基线；统一 xens2 与历史 r2d_tr1 集成单列，避免旧表混用。", 15, "全板含 Vienna / Kirigami；TS3/hard 采用 clean inter-fam 参照");
+  chrome(s, "附录 A / 全板", "全板敏感性：xens2=5/8，最佳单 checkpoint=4/8", "完整保留基线；统一 xens2 与历史 r2d_tr1 集成单列，避免旧表混用。", 16, "全板含 Vienna / Kirigami；TS3/hard 采用 clean inter-fam 参照");
   const rows = [
     ["系统", "TS0", "new", "TS1", "TS2", "TS3", "hard", "ArchII", "TSB", "源"],
     ["ViennaRNA mfe", "0.5056", "0.6379", "0.7209", "0.8980", "0.8206", "0.7663", "0.5752", "0.5225", "CPU"],
@@ -398,7 +407,7 @@ figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 16 附录 B：速度协议
 {
   const s = pptx.addSlide();
-  chrome(s, "附录 B / 速度协议", "模型、硬件、计时范围必须同时写", "速度测试串行执行；不把跨硬件或 forward-only 读数写成同口径。", 16, "r2dtr1c-s0 / TS0 n=1288 / strict micro-F1");
+  chrome(s, "附录 B / 速度协议", "模型、硬件、计时范围必须同时写", "速度测试串行执行；不把跨硬件或 forward-only 读数写成同口径。", 17, "r2dtr1c-s0 / TS0 n=1288 / strict micro-F1");
   const rows = [["配置", "seq/s", "F1", "协议说明"]];
   D.speed.ladder.forEach(p => rows.push([p.label, p.throughput.toFixed(2), D.speed.f1.toFixed(6), p.label === "B=256" ? "终值；峰值" : (["B=384", "B=512"].includes(p.label) ? "饱和后复测" : "批轴/工程阶梯")]));
   table(s, rows, { x: MARGIN, y: 1.55, w: 7.10, colW: [1.4, 1.0, 1.1, 2.4], rowH: 0.44, fontSize: 9 });
@@ -421,7 +430,7 @@ figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 17 附录 C：演进与机制映射
 {
   const s = pptx.addSlide();
-  chrome(s, "附录 C / 演进", "模型演进与 Jev 机制映射", "保留演进与竞争定位，但不把历史读数重新当成当前主结果。", 17, "模型演进表 + spec J1/J2/J3/J4/J6");
+  chrome(s, "附录 C / 演进", "模型演进与 Jev 机制映射", "保留演进与竞争定位，但不把历史读数重新当成当前主结果。", 18, "模型演进表 + spec J1/J2/J3/J4/J6");
   const rows = [
     ["阶段", "关键变化", "TS0 F1", "决策"],
     ["r2d / tr0", "frozen RiNALMo + ResNet2D", "0.6629", "二维上下文有效；旧语料不用于最终主表"],
@@ -451,7 +460,7 @@ figureSlide(13, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 18 附录 D：当前实验与复现状态
 {
   const s = pptx.addSlide();
-  chrome(s, "附录 D / 当前队列", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed_s0/s1 的负方向仍如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 18, "T-A126–T-A132 / audits / result.json / run_meta.json");
+  chrome(s, "附录 D / 当前队列", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed_s0/s1 的负方向仍如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 19, "T-A126–T-A132 / audits / result.json / run_meta.json");
   const cur = D.matched_30k_current;
   const rows = [["arm", "Test", "GenA", "GenC", "GenF", "OOD mean", "当前判定"]];
   ["clean_s0", "mixed_s0", "clean_s1", "mixed_s1"].forEach(name => {
