@@ -2,7 +2,7 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **当前执行队列（2026-10-26，第 32 轮续）**：旧队列只作历史，完成状态以 artifact/CUDA/验收门为准。
+> **当前执行队列（2026-10-26，第 32 轮收官）**：旧队列只作历史，完成状态以 artifact/CUDA/验收门为准。
 >
 > | 任务 | 当前状态 | 下一步与完成判据 |
 > |---|---|---|
@@ -14,7 +14,7 @@
 > | **T-A131 台账/spec/GitHub** | **已完成** | matched、消融、MRL、图源、PPT 生成器、QA、台账与两个 spec 目录均同步；确认代码提交并 push，秘密与大文件不入库 |
 > | **T-A132 最终验收** | **已完成** | 实验数值三通道、MRL SciPy/statsmodels 独立复算、PPT 内容/字体/行距/布局/渲染分别通过；科学门未达项均按负结果保留，不包装成收官正结论 |
 >
-> **新增工程事实**：matched 统计文件 `tables/matched_30k_statistics.json` 已验收；B=4 OOM 不通过静默降批掩盖，而是以同协议 B=2 控制保证 no-RLCD 单变量对照；矩阵 CSV/Markdown 表头、绘图行数和 PPT 证据门均已同步为 7 行。
+> **新增工程事实**：matched 统计文件 `tables/matched_30k_statistics.json` 已验收；B=4 OOM 不通过静默降批掩盖，而是以同协议 B=2 控制保证 no-RLCD 单变量对照；矩阵 CSV/Markdown 表头、绘图行数和 PPT 证据门均已同步为 7 行。RNAformer 原文全文配对 F1 与项目 canonical nested GT 复测分列；r2d_tr1 的三格参照比较不冒充统一 clean SOTA。
 
 
 > **当前执行队列（2026-10-24，第二十九轮接管审计）**：

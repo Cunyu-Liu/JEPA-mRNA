@@ -10029,3 +10029,23 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 最终文件 `RNA-JEV_论文逻辑重构_20261026.pptx`，SHA256=`20fa12e2ca1687492b24eb2a2c10cd363865c12b3fc7da0e15e068bf156a8a13`。21 页、10 张唯一栅格主图、原生可编辑三层架构，微软雅黑与 1.5 倍行距（640 runs，字号 7–34 pt）。
 - `markitdown` 无占位符/DRAFT，`fix_pptx` 无问题，`validate_layout Issues=0`，专项 `DECK_QA_PASS slides=21 images=10 unique_images=10`，Aspose 全 21 页渲染与缩略图/重点页视觉复核通过，ZIP 完整性无错误。评估水印只存在于 Aspose 渲染图，不在 PPTX 文件。
 - 最终科学口径：统一 xens2=6/8、最佳单 checkpoint=4/8、全板敏感性=5/8；DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，不恢复旧统一 OOD 签名；MRL 0/3 显著正，不为主图补造正结果。
+
+## §15.108 RNAformer 原文对照、r2d_tr1 身份与导师讨论图件修订（2026-10-26）
+
+### A. RNAformer 原文与项目复测不能混用
+
+- 原始论文 `RNAformer: A Simple Yet Effective Deep Learning Model for RNA Secondary Structure Prediction`（bioRxiv 2024，DOI=10.1101/2024.02.12.579881）Table 4 报告 inter-family fine-tuning 的 TS1/TS2/TS3/TS-hard F1=0.739/0.802/0.702/0.662；此前 workshop（arXiv:2307.10073）TS0=0.728。原表采用含假结和非经典配对的评价口径。
+- 项目主表的 inter-family=0.8150/0.9043/0.8245/0.7709 来自官方 checkpoint 在项目 canonical nested GT 上的统一复测，不是原文抄录。直接把 TS2 的 0.9043 换成原文 0.802 虽会多一个表面胜场，但 GT 不同，禁止据此增加 SOTA。biophysical checkpoint 对应 Rfam 合成 RNAfold 蒸馏实验，不作为 PDB 实测参照。
+- 主图 1 保留统一 GT 的柱状图与同内容表格，RNAformer 原文值改为页内原生文字独立注释；附录 A 的 inter-fam/biophys 均明确标“项目 GT 复测”。
+
+### B. r2d_tr1 两种子集成的可回答范围
+
+- 已有结果只有 TS0=0.6733、bpRNA-new=0.6132、ArchiveII-clean=0.7664 三格；相对预注册参照有 2/3 胜格，但对全板敏感性参照为 0/3。旧“7/8”是该集成与 xens2 的逐 split 混合组合，不是单一 xens2 或 r2d_tr1 模型的结果。
+- legacy TR1 在 TS0/ArchiveII 有精确序列重叠，三格中只有 bpRNA-new 对这一集合无精确重叠；因此 2/3 只能作为算术参照比较，不能写成统一 clean SOTA。bpRNA-new 的 0.6132 只胜 UFold 0.6106，低于 EternaFold 0.6854、MXfold2 0.6688、eFold 0.6640，也不是全板 SOTA。
+
+### C. 导师讨论版图件
+
+- 主图 1 改为 xens2、r2d_tr1、最佳单 checkpoint、预注册参照四系列柱状图，并配同内容表格；模型名称、缺测格和参照口径全部标出。
+- 主图 7 改为 NucleicBERT 官方头与 Jev 头的分组柱状图；主图 8b 的 MRL/TE-EL 改为双头柱状图。
+- 主图 9a 按原第 26 页形式绘制 xens2、r2d、OFoldNA-SS、RiNALMo-Giga ft 四系统折线，9b 单独绘制 OOD mean 柱状图；GenF 近邻标签错位以避免重叠。
+- 新增第 20 页论文逻辑链：去污染→主 benchmark→效率→5×8 消融→置信度与迁移→外部验证与边界。其余已确认页面结构不变；最终 21 页 PPT 的 markitdown、fix、layout=0、专项 QA 与全页渲染均复核通过。
