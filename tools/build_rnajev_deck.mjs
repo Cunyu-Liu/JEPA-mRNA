@@ -272,7 +272,7 @@ function table(slide, rows, { x, y, w, colW, rowH = 0.35, fontSize = 9, headerSi
 }
 
 // 04–05 主结果与速度
-figureSlide(4, "02 / 主 benchmark", "主图 1｜统一模型口径：最佳单 checkpoint 4/8，xens2 为 6/8", "柱状图与同内容表格并列；同一 split、同一评分器、同一模型身份。", "fig01_main_benchmark_3840x1920.png", "r2d_tr1 仅 3 格：2 格胜所选参照、0/3 全板敏感性；bpRNA-new 0.6132 非全板 SOTA。旧 7/8 是混合模型组合。", "主表与 metrics matrix；RNAformer bioRxiv 2024 Tables 2/4；模型身份与 GT 口径复核", "RNAformer 原文：TS0=0.728；TS1/2/3/hard=0.739/0.802/0.702/0.662。全文配对 F1，不替换项目 GT 胜场。");
+figureSlide(4, "02 / 主 benchmark", "主图 1｜统一模型口径：最佳单 checkpoint 4/8，xens2 为 6/8", "柱状图与同内容表格并列；同一 split、同一评分器、同一模型身份。", "fig01_main_benchmark_3840x1920.png", "r2d_tr1 仅 3 格：2 格胜所选参照、0/3 全板敏感性；bpRNA-new 0.6132 非全板 SOTA。旧 7/8 是混合模型组合。", "主表与 metrics matrix；RNAformer bioRxiv Table 4；ICML-W 2023 Table 1（TS0）；项目 GT 复测", "RNAformer 原文：TS0=0.728；TS1/2/3/hard=0.739/0.802/0.702/0.662。全文配对 F1，不替换项目 GT 胜场。");
 figureSlide(5, "03 / 推理速度", "主图 2｜r2d 单模型 124.78 seq/s，F1 逐位不变", "RTX 4090、TS0、端到端含 frozen encoder + 9.3M head + C decode。", "fig02_speed_benchmark_3840x1920.png", "124.78 属于 r2dtr1c-s0（F1=0.667971），不与 xens2 的 0.8039 拼接；A100 与 forward-only 参照分别标注。", "台账 §15.79–15.82；speed_v3/v4 JSON");
 
 // 06 消融：正式版必须有完整矩阵，draft 仅展示执行状态。

@@ -10026,7 +10026,7 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 ### B. T-A130/T-A132 正式 PPT 与最终验收
 
 - 初版 20 页完成后再增加 1 页论文逻辑链，最终交付 21 页：主文 10 图+4 个附录+1 页逻辑链。新增页依次概括去污染、主 benchmark、效率、5×8 机制、置信度与迁移、外部验证边界；不引入新结果。
-- 最终文件 `RNA-JEV_论文逻辑重构_20261026.pptx`，SHA256=`20fa12e2ca1687492b24eb2a2c10cd363865c12b3fc7da0e15e068bf156a8a13`。21 页、10 张唯一栅格主图、原生可编辑三层架构，微软雅黑与 1.5 倍行距（640 runs，字号 7–34 pt）。
+- 最终文件 `RNA-JEV_论文逻辑重构_20261026.pptx`，SHA256=`906ec6545ff804beb4fec2b379f53184f0260bda5a1ea34062834469bb5008cb`。21 页、10 张唯一栅格主图、原生可编辑三层架构，微软雅黑与 1.5 倍行距（640 runs，字号 7–34 pt）。
 - `markitdown` 无占位符/DRAFT，`fix_pptx` 无问题，`validate_layout Issues=0`，专项 `DECK_QA_PASS slides=21 images=10 unique_images=10`，Aspose 全 21 页渲染与缩略图/重点页视觉复核通过，ZIP 完整性无错误。评估水印只存在于 Aspose 渲染图，不在 PPTX 文件。
 - 最终科学口径：统一 xens2=6/8、最佳单 checkpoint=4/8、全板敏感性=5/8；DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，不恢复旧统一 OOD 签名；MRL 0/3 显著正，不为主图补造正结果。
 

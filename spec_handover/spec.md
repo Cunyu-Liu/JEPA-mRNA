@@ -6,7 +6,7 @@
 >
 > 统一 xens2 对预注册去污染参照为 **6/8**；旧 7/8 在 bpRNA-new 用 r2d_tr1 集成 0.6132 替代 xens2=0.5532，模型身份不一致。124.78 seq/s 属于 r2dtr1c-s0，不是 xens2 联合点；A100 Pareto 只含 RNAformer/UFold，r2d 被支配。
 >
-> T-A128 已完成：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过；DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×。T-A129 已完成 30/30 run，三组 MRL 均 0 显著正，数据全留而不新增主图正结果。T-A130 正式 21 页 PPT 已完成，10 图+4 附录+1 逻辑链，内容/字体/行距/布局/渲染/ZIP 全验收，SHA256=`20fa12e2…`。T-A131/T-A132 同步完成，详见 `spec/tasks.md`。
+> T-A128 已完成：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过；DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×。T-A129 已完成 30/30 run，三组 MRL 均 0 显著正，数据全留而不新增主图正结果。T-A130 正式 21 页 PPT 已完成，10 图+4 附录+1 逻辑链，内容/字体/行距/布局/渲染/ZIP 全验收，SHA256=`906ec654…`。T-A131/T-A132 同步完成，详见 `spec/tasks.md`。
 >
 > RNAformer 原文 Table 4 的 TS1/TS2/TS3/TS-hard=0.739/0.802/0.702/0.662 为全文配对口径；项目值是官方 checkpoint 的 canonical nested GT 复测，不能替换增加 TS2 胜场。biophysical 属 Rfam 合成测试。r2d_tr1 仅 3 格，2/3 仅是参照算术比较且全板敏感性 0/3，不是统一 clean SOTA；bpRNA-new 0.6132 也非全板最高。
 
