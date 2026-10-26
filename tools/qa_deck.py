@@ -70,6 +70,8 @@ def main():
         assert "r2dtr1c-s0" in texts[4] and "0.667971" in texts[4]
         assert "0.5532" in texts[15] and "0.6132" in texts[15]
         assert "B4/B2 控制各 8/8" in texts[5]
+        assert all(token in texts[6] for token in ["DP 0.71×", "Turner 1.92×", "2D 1.43×", "不再沿用"])
+        assert "DP PDB/ID=0.71×" in texts[14]
         assert "mixed_s2" in texts[18] and "0.3541" in texts[18]
     print(f"DECK_QA_PASS slides={len(prs.slides)} images={len(images)} unique_images={len(set(d for _, d in images))}")
     print("FONTS", dict(fonts))

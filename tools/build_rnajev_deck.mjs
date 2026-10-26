@@ -22,6 +22,22 @@ const HAS_ALL = HAS_AB && HAS_MRL && HAS_MATCHED;
 if (!HAS_ALL && !OUT.includes("draft")) {
   throw new Error(`正式版证据门未闭合：ablation=${HAS_AB} mrl=${HAS_MRL} matched=${HAS_MATCHED}；只能生成 draft。`);
 }
+function abGroupMean(row, splits) {
+  return splits.reduce((sum, split) => sum + AB_DATA.delta_from_control[row][split], 0) / splits.length;
+}
+function abPdbIdRatio(row) {
+  if (!HAS_AB) return null;
+  const id = Math.abs(abGroupMean(row, ["bprna_ts0", "archiveii_embok_clean"]));
+  const pdb = Math.abs(abGroupMean(row, ["ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard"]));
+  return id > 1e-8 ? pdb / id : null;
+}
+function ratioText(value) { return value === null ? "n/a" : `${value.toFixed(2)}×`; }
+const DP_PDB_ID = abPdbIdRatio("DP off (greedy)");
+const TURNER_PDB_ID = abPdbIdRatio("Turner prior = 0");
+const SCORER_PDB_ID = abPdbIdRatio("2D scorer -> pair MLP");
+const AB_SIGNATURE_SUBTITLE = HAS_AB
+  ? `实测 PDB/ID：DP ${ratioText(DP_PDB_ID)}、Turner ${ratioText(TURNER_PDB_ID)}、2D ${ratioText(SCORER_PDB_ID)}；不再沿用“所有组件 OOD 更大”的旧统一签名。`
+  : "";
 
 const pptx = new PptxGenJS();
 pptx.layout = "LAYOUT_WIDE";
@@ -271,7 +287,7 @@ figureSlide(5, "03 / 推理速度", "主图 2｜r2d 单模型 124.78 seq/s，F1 
 // 06 消融：正式版必须有完整矩阵，draft 仅展示执行状态。
 if (HAS_AB) {
   figureSlide(6, "04 / OOD 机制", "主图 3a｜五类消融 × 8 split：全矩阵性能变化", "每行使用匹配控制；No RLCD 单独使用同协议 B=2 控制，避免把显存修复混入消融效应。", "fig03a_ablation_matrix_3840x1920.png", "每格均为消融−匹配控制的 strict micro-F1 变化；五类消融与八 split 全部实测。", "main_ablation_5x8.json；40/40 + B4/B2 控制各 8/8 原始结果");
-  figureSlide(7, "04 / OOD 机制", "主图 3b｜核心三模块：ID、外部集与 PDB-OOD 效应分解", "DP、Turner 和 2D scorer 单独对照；保留原第 37 页的统一签名读法。", "fig03b_ood_signature_3840x1920.png", "ID=TS0/ArchiveII-clean；外部集=bpRNA-new/TestSetB；PDB-OOD=TS1/TS2/TS3/TS-hard。旧 DP OOD=0.43 代理值已撤回。", "main_ablation_5x8.json；核心三模块的分组均值与 PDB/ID 比值");
+  figureSlide(7, "04 / OOD 机制", "主图 3b｜核心三模块：ID、外部集与 PDB-OOD 效应分解", AB_SIGNATURE_SUBTITLE, "fig03b_ood_signature_3840x1920.png", "ID=TS0/ArchiveII-clean；外部集=bpRNA-new/TestSetB；PDB-OOD=TS1/TS2/TS3/TS-hard。旧 DP OOD=0.43 代理值已撤回。", "main_ablation_5x8.json；核心三模块的分组均值与 PDB/ID 比值");
 } else {
   const s = pptx.addSlide();
   chrome(s, "04 / OOD 机制", "主图 3｜五类消融 × 8 split：等待完整实测矩阵", "DRAFT 状态页，不是科学结论；正式版生成器会在缺格时拒绝输出。", 6, "T-A128 / complete_main_ablations.sh");
@@ -373,7 +389,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
     ["创新线", "可支持的结论", "必须同时展示的限制"],
     ["主 benchmark", "统一 xens2 对预注册 clean 参照为 6/8；最佳单 checkpoint 4/8", "旧 7/8 是混合模型组合；全板干净敏感性 xens2=5/8；TS2 未胜"],
     ["推理速度", "r2d 在 4090 达 124.78 seq/s，批大小改变不改预测", "A100 r2d 不在 Pareto 前沿；不把该速度与 xens2 F1 拼成联合点"],
-    ["OOD", "先验栈消融 + CHANRG 外部 OOD 共同支撑鲁棒性", "GenF 弱、TS2 未胜；xens2 与 OFoldNA-SS 的 OOD mean 仅并列"],
+    ["OOD", "Turner/2D 的 PDB-OOD 损失更大；DP 在全 split 保持结构价值", `DP PDB/ID=${ratioText(DP_PDB_ID)}，不写统一 OOD 签名；GenF 弱、TS2 未胜`],
     ["ECE", "四个大样本 split 均改善，结构置信度排序全正", "TS2/TS3 过校正；小样本噪声与族敏感性不可隐藏"],
     ["兼容与迁移", TRANSFER_CLAIM, TRANSFER_LIMIT],
   ];
