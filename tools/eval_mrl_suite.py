@@ -200,6 +200,13 @@ def verify_saved_outputs(outputs: dict) -> None:
         test = stats.ttest_rel(jev, paper, alternative="greater")
         assert np.isclose(comparison["one_sided_p_value"], test.pvalue, atol=1e-10, rtol=0)
         comparison["independent_recheck"] = "PASS"
+    adjusted = holm([record["comparison"]["one_sided_p_value"] for record in outputs.values()])
+    for (dataset, record), expected_p in zip(outputs.items(), adjusted):
+        comparison = record["comparison"]
+        assert np.isclose(comparison["holm_p_value"], expected_p, atol=1e-10, rtol=0), dataset
+        expected_positive = bool(comparison["delta_mean"] > 0 and expected_p < 0.05)
+        assert comparison["significant_positive"] == expected_positive, dataset
+        comparison["holm_independent_recheck"] = "PASS"
 
 
 def main() -> int:
