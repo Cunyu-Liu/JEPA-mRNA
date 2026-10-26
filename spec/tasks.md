@@ -10,7 +10,7 @@
 > | **T-A127 matched_30k 六臂收敛与统计** | **已完成：6/6、24/24、统计 PASS** | 六臂均 early-stopping；24 格三通道复核、3-seed mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成。clean/mixed OOD mean=0.335717/0.362586，xens2=0.443366；GenF 混合假设、GenF SOTA、OOD mean SOTA、OFoldNA OOD mean 四门均未通过，按负结果保留 |
 > | **T-A128 五类消融×8 split** | **已完成** | `tables/main_ablation_5x8.json`：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过；3a/3b 已生成。DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，旧统一签名撤回；No RLCD 仅对 control_B2 求差 |
 > | **T-A129 新 RiNALMo 下游任务** | **已完成：30/30 run，0/3 显著正** | mcherry_1 Δ=−0.010302/Holm=0.761928；designed_library Δ=+0.008998/Holm=0.458457；varying_length Δ=+0.001610/Holm=0.458457。全部 early-stopping、CUDA、预测/权重/数据 SHA256、配对 t-test+Holm 与独立复核通过；无新任务进入主图正结果，完整数据入附录和源 JSON |
-> | **T-A130 论文逻辑版 PPT** | **已完成：21 页** | 主文 10 图+4 个附录+1 页论文逻辑链；微软雅黑、1.5 行距、10 张唯一栅格主图、原生三层架构。markitdown、fix、layout=0、专项 QA、全页渲染与 ZIP 完整性通过；SHA256=`906ec654…` |
+> | **T-A130 论文逻辑版 PPT** | **已完成：21 页** | 主文 10 图+4 个附录+1 页论文逻辑链；微软雅黑、1.5 行距、10 张唯一栅格主图、原生三层架构。markitdown、fix、layout=0、专项 QA、全页渲染与 ZIP 完整性通过；SHA256=`cb5d62de…` |
 > | **T-A131 台账/spec/GitHub** | **已完成** | matched、消融、MRL、图源、PPT 生成器、QA、台账与两个 spec 目录均同步；确认代码提交并 push，秘密与大文件不入库 |
 > | **T-A132 最终验收** | **已完成** | 实验数值三通道、MRL SciPy/statsmodels 独立复算、PPT 内容/字体/行距/布局/渲染分别通过；科学门未达项均按负结果保留，不包装成收官正结论 |
 >
