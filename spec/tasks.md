@@ -8,9 +8,9 @@
 > |---|---|---|
 > | **T-A126 三个新臂结果三遍复核** | **已完成** | `tools/verify_matched_round32.py` 对 clean_s0/mixed_s0/clean_s1 共 12 格完成 CUDA、样本数、micro、per-sequence F1/macro/INF、合法性、best checkpoint、run_meta、数据行数与 SHA256 三通道复核，PASS；报告 `audits/round32_matched_verification.json` |
 > | **T-A127 matched_30k 六臂收敛与统计** | **已完成：6/6、24/24、统计 PASS** | 六臂均 early-stopping；24 格三通道复核、3-seed mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成。clean/mixed OOD mean=0.335717/0.362586，xens2=0.443366；GenF 混合假设、GenF SOTA、OOD mean SOTA、OFoldNA OOD mean 四门均未通过，按负结果保留 |
-> | **T-A128 五类消融×8 split** | **进行中：配对训练与 16/16 终评完成，同硬件验收补全中** | B=2 控制 best=12000/stop=15000；no-RLCD best=18500/stop=21500，均 early-stopping。旧 A100 容差门首次失败且未放宽；TS0 同 4090 B=4 与 DP exact 已逐序列零差异，剩余 7 split 正在补评。最终检查 40/40+B4/B2 控制各 8/8+同硬件 DP micro/macro/counts/per-sequence 严格等价 8/8；No RLCD 只对 control_B2 求差 |
-> | **T-A129 新 RiNALMo 下游任务** | **预注册与实现完成，队列等待 T-A128** | 本地 GSE114002 三组 MRL：mcherry_1/designed_library/varying_length；三组序列均全唯一且 train/validation/test 精确重叠=0；RiNALMo-giga meanpool、paper head vs Jev head、每长度 100 validation+100 test、5 seed、paired t-test+Holm。`eval_mrl_suite.py` 在 CUDA 上 early-stopping（patience=32、min_delta=1e-5、max_epochs=2000 仅失败保护），预测/权重/数据 SHA256 留档；显著正结果才入主图，其余保留 |
-> | **T-A130 论文逻辑版 PPT** | **8/10 图已生成，deck 组装中** | 待消融 40/40 后补第 3 主图；绘图与 deck 已接受 control/control_B2+五消融共 7 行，附录包含全部六个 matched 臂；完成架构原生图、图文匹配、微软雅黑/1.5 行距、markitdown/fix/layout/全页渲染 |
+> | **T-A128 五类消融×8 split** | **已完成** | `tables/main_ablation_5x8.json`：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过；3a/3b 已生成。DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，旧统一签名撤回；No RLCD 仅对 control_B2 求差 |
+> | **T-A129 新 RiNALMo 下游任务** | **进行中：三组 MRL 已启动** | `tarfile` 导入已修复，mcherry_1 269,113 条唯一序列预检通过；三组均执行 frozen RiNALMo-giga meanpool、paper/Jev 双头、5 seed、early-stopping、paired t-test+Holm、预测/权重/数据 SHA256 与独立复核。显著正结果才入主图，其余保留 |
+> | **T-A130 论文逻辑版 PPT** | **10/10 图初版完成，正式 deck 待 MRL** | 真实 3a/3b 已验收，图文按实测 PDB/ID 修正；MRL 终态后更新 fig08（仅在显著正时）并组装正式 20 页，完成微软雅黑/1.5 行距、markitdown/fix/layout/全页渲染 |
 > | **T-A131 台账/spec/GitHub** | **进行中** | 每轮记录配置、权重哈希、CUDA、收敛和结论；本地与远端 spec 同步，确认代码提交 push，秘密与大文件不入库 |
 > | **T-A132 最终验收** | **未开始** | 数值三通道、PPT 内容/布局/渲染、实验合同分开验收；未达科学门不得因排版完成而放行 |
 >

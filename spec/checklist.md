@@ -9,7 +9,8 @@
 > - [x] DP=8/8 与 Turner/2D-scorer/nodistill 的 ArchiveII-clean/TestSetB 补评完成；B=4 no-RLCD 的 step-25 OOM 已保留证据。
 > - [x] B=2 控制与 B=2 no-RLCD 均 early-stopping 并各完成 8/8 CUDA 终评；best 分别为 12000/18500。
 > - [x] TS0 同 4090 B=4 控制与 DP exact 的 micro/macro/TP/FP/FN 和 1288 条逐序列 F1 严格一致；旧 A100 容差门失败已留档，未放宽阈值。
-> - [ ] 剩余 7 个同硬件 B=4 诊断完成；最终五类消融 40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 后才可勾选完成。
+> - [x] 五类消融 40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全部通过；矩阵与真实 3a/3b 已生成。
+> - [x] 图文按实测 PDB/ID=DP 0.71×/Turner 1.92×/2D 1.43× 修正，旧“所有组件 OOD 更大”统一签名撤回。
 > - [x] 三组 MRL 数据与双头协议已预注册，CUDA 稀疏信号训练/早停验证通过，队列已挂接 T-A128 后门。
 > - [ ] 三组 MRL 5-seed 训练、配对 t-test+Holm 与独立复核完成后才入主图。
 > - [ ] 新 PPT 10 图去重、图文匹配、字体/1.5 行距、markitdown/fix/layout/全页渲染通过。

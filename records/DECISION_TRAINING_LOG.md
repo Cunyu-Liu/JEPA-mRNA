@@ -10006,3 +10006,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 增补同 4090、同 checkpoint、同 `evaluate_decision.py` 协议的 B=4 TS0 诊断：旧 A100 micro=0.6679259746，DP exact=同硬件 direct=0.6682634403；solver-direct micro/macro 差均为 0，TP/FP/FN 均为 24413/13760/10478，1288 条逐序列 F1 `n_diff=0`、`max_abs=0`。这证明 TS0 差异来自跨硬件数值漂移，而非 DP 或评测协议错误。
 - 验收升级为全 8 split 同硬件严格等价：`control_b4/<split>` 与 DP exact 必须在 micro、macro、TP/FP/FN 和逐序列 F1 上一致（micro/macro atol=1e-10，逐序列 atol=1e-12，counts 完全相等）。其余 7 split 补评复用同一 checkpoint 与 CUDA 协议；旧 A100 差值仅写入 `legacy_a100_control_delta_micro_f1` 作为漂移元数据，不参与等价性放行。
 - `complete_main_ablations.sh` 已加入 `run_control_b4_diagnostics`，全部既有训练与 16 格结果复用；只有缺失的 7 个诊断需要运行。矩阵门通过前 MRL 继续等待。
+
+## §15.106 五类消融矩阵收官与真实 OOD 签名（2026-10-26）
+
+- 18:22 全部同硬件诊断结束，`MAIN_ABLATION_MATRIX_PASS rows=5 splits=8 controls_B4_B2=16`；`tables/main_ablation_5x8.json` 覆盖 40/40 消融格、B4/B2 控制各 8/8 和同硬件 DP 严格等价 8/8。旧 A100 差值保留在 `legacy_a100_control_delta_micro_f1`，不再充当跨硬件等价门。
+- 三个核心结构模块在全部 8 split 的消融 ΔF1 均为负：DP greedy 范围 −0.28457..−0.14685、均值 −0.22057；Turner=0 范围 −0.46568..−0.17932、均值 −0.32249；2D→pair MLP 范围 −0.16118..−0.05228、均值 −0.09140。
+- 分组 PDB/ID 比值为 DP=0.71×、Turner=1.92×、2D scorer=1.43×。Turner 与 2D scorer 的 PDB-OOD 损失更大，但 DP 在 ID/External 的绝对损失更大，因此旧“所有组件均在 OOD 贡献更大”统一签名撤回；PPT 直接由矩阵计算并展示该差异。
+- no-distillation 的 8-split ΔF1 范围 −0.02721..+0.01278、均值 −0.00742；no-RLCD 范围 −0.02777..+0.00419、均值 −0.00805。二者按小效应和 split 异质性呈现，不写成普遍正收益。真实 `fig03a/fig03b` 已生成并通过尺寸与 ΔF1 重算检查。
+- MRL 首次启动因 `eval_mrl_suite.py` 缺少 `tarfile` 导入而在数据读取前停止；修复后真实 mcherry_1=269,113 条且全唯一的预检通过，三组 MRL 正式进入 CUDA 流程。该工程错误不产生也不改变任何科学结果。
