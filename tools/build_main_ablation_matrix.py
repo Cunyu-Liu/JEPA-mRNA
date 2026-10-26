@@ -146,12 +146,12 @@ def main() -> int:
         "All values are strict pair-level micro F1. Every cell passed independent micro/macro and CUDA/coverage checks.",
         "",
         "| split | " + " | ".join(rows) + " |",
-        "|---|" + "---:|" * (len(rows) + 1),
+        "|---|" + "---:|" * len(rows),
     ]
     for split, _ in SPLITS:
         lines.append("| " + split + " | " + " | ".join(f"{matrix[row][split]['micro_f1']:.4f}" for row in rows) + " |")
-    lines += ["", "## ΔF1 versus control", "", "| ablation | " + " | ".join(split for split, _ in SPLITS) + " |",
-              "|---|" + "---:|" * (len(SPLITS) + 1)]
+    lines += ["", "## ΔF1 versus matched control", "", "| ablation | " + " | ".join(split for split, _ in SPLITS) + " |",
+              "|---|" + "---:|" * len(SPLITS)]
     for row in ROW_NAMES:
         lines.append("| " + row + " | " + " | ".join(f"{payload['delta_from_control'][row][split]:+.4f}" for split, _ in SPLITS) + " |")
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
