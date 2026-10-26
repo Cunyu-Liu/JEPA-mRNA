@@ -2,7 +2,7 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **2026-10-26 第 32 轮续任务更新**：以 `/home/rna_jev/spec/tasks.md` T-A126–T-A132 为当前执行依据。T-A127 已完成：matched 6/6、24/24 三通道 PASS，三种子 mean±std、Wilcoxon–Holm 与四个预注册门判定均已落盘。T-A128 正在执行：既有 DP/Turner/2D/nodistill 结果复用；no-RLCD 的 B=4 OOM 后采用 B=2 控制+B=2 no-RLCD 配对重训，双方 early-stopping 且各评 8 split。T-A129 三组 MRL 双头 5-seed 实验挂接其后。
+> **2026-10-26 第 32 轮续任务更新**：以 `/home/rna_jev/spec/tasks.md` T-A126–T-A132 为当前执行依据。T-A127 已完成：matched 6/6、24/24 三通道 PASS，三种子统计与四个预注册门均已落盘。T-A128 的 B=2 配对训练和 16/16 终评已完成；TS0 同硬件 DP 严格等价已通过，剩余 7 split 正在补评，矩阵未生成前 T-A129 不得启动。T-A129 三组 MRL 双头 5-seed 实验挂接其后。
 >
 > 主 benchmark 统一 xens2=6/8（预注册 clean 参照），旧 7/8 属混合模型组合；速度 124.78 属 r2dtr1c-s0，A100 r2d 不在 Pareto 前沿。新 PPT 已完成 8 张闭环图，待 40/40 消融后组装最终版并做全页渲染。任何旧“在训/排队/完成”快照不得覆盖当前 artifact。
 

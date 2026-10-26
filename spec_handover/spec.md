@@ -6,7 +6,7 @@
 >
 > 统一 xens2 对预注册去污染参照为 **6/8**；旧 7/8 在 bpRNA-new 用 r2d_tr1 集成 0.6132 替代 xens2=0.5532，模型身份不一致。124.78 seq/s 属于 r2dtr1c-s0，不是 xens2 联合点；A100 Pareto 只含 RNAformer/UFold，r2d 被支配。
 >
-> 消融 DP=8/8 与 Turner/2D/nodistill 补评已完成。no-RLCD 的 B=4 臂 step 25 CUDA OOM 已留档，改为 B=2 控制+B=2 no-RLCD 配对重训；仅该行对 control_B2 求差，其余仍用 B=4 控制。最终须 40/40+B4/B2 控制各 8/8。PPT 重构按 10 主图去重，8 张闭环图已生成，缺数据的消融图不得抢先标完成。详细完成判据见 `spec/tasks.md` T-A126–T-A132。
+> B=2 控制与 no-RLCD 均已 early-stopping（best=12000/18500），双方 16/16 CUDA 终评完成。旧 A100 容差门首次失败后未放宽；TS0 同 4090 B=4 与 DP exact 已逐序列零差异，其余 7 split 正在补同硬件诊断。最终须 40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8，旧 A100 差值仅作漂移元数据。PPT 缺实测消融图不得标完成。详细判据见 `spec/tasks.md` T-A126–T-A132。
 
 
 > **2026-10-24 接管更新**：本目录不再是第9轮历史状态的执行依据。当前权威 spec/tasks 为 `/home/rna_jev/spec/spec.md` 与 `/home/rna_jev/spec/tasks.md` 的“第二十九轮接管审计”节；本节与其同步，旧下文仅作历史快照。

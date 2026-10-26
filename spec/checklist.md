@@ -7,7 +7,9 @@
 > - [x] 三种子 mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成；四个科学门均未通过，禁止改写为正结论。
 > - [x] fftr1c/nodistill/r2d 权重 strict-load、消融脚本静态检查、VL0 196 条 ViennaRNA 2.7.2 标签和相关 8 tests 通过。
 > - [x] DP=8/8 与 Turner/2D-scorer/nodistill 的 ArchiveII-clean/TestSetB 补评完成；B=4 no-RLCD 的 step-25 OOM 已保留证据。
-> - [ ] B=2 控制与 B=2 no-RLCD 均 early-stopping 并各完成 8/8 CUDA 终评；最终五类消融 40/40+B4/B2 控制各 8/8 后才可勾选完成。
+> - [x] B=2 控制与 B=2 no-RLCD 均 early-stopping 并各完成 8/8 CUDA 终评；best 分别为 12000/18500。
+> - [x] TS0 同 4090 B=4 控制与 DP exact 的 micro/macro/TP/FP/FN 和 1288 条逐序列 F1 严格一致；旧 A100 容差门失败已留档，未放宽阈值。
+> - [ ] 剩余 7 个同硬件 B=4 诊断完成；最终五类消融 40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 后才可勾选完成。
 > - [x] 三组 MRL 数据与双头协议已预注册，CUDA 稀疏信号训练/早停验证通过，队列已挂接 T-A128 后门。
 > - [ ] 三组 MRL 5-seed 训练、配对 t-test+Holm 与独立复核完成后才入主图。
 > - [ ] 新 PPT 10 图去重、图文匹配、字体/1.5 行距、markitdown/fix/layout/全页渲染通过。

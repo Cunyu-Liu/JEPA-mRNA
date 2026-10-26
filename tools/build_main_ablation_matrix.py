@@ -105,18 +105,34 @@ def main() -> int:
             path, decoder = source_for(row, split)
             matrix[row][split] = extract(path, decoder, expected_n)
 
-    # DP 的 exact 分支同时是控制组，必须与旧控制板逐 split 一致（跨硬件容许 0.0002）。
+    # DP exact 必须与同 4090、同 checkpoint、同评测器的 B=4 控制严格一致。
+    # 旧 A100 控制仅用于记录硬件漂移，不再用任意容差替代同协议等价性验收。
+    legacy_delta = {}
     for split, expected_n in SPLITS:
+        same_path = NEW / "control_b4" / split / "result.json"
+        same_control = extract(same_path, None, expected_n)
+        for key in ("micro_f1", "macro_f1"):
+            if not np.isclose(same_control[key], matrix["control"][split][key], atol=1e-10, rtol=0):
+                raise ValueError(f"DP exact/same-hardware control {key} mismatch on {split}")
+        for key in ("tp", "fp", "fn"):
+            if same_control[key] != matrix["control"][split][key]:
+                raise ValueError(f"DP exact/same-hardware control {key} mismatch on {split}")
+        solver_path, _ = source_for("control", split)
+        solver_rows = json.loads(solver_path.read_text(encoding="utf-8"))["per_sequence"]
+        direct_rows = json.loads(same_path.read_text(encoding="utf-8"))["per_sequence"]
+        solver_f1 = np.array([row["decoders"]["exact"]["f1"] for row in solver_rows])
+        direct_f1 = np.array([row["f1"] for row in direct_rows])
+        if not np.allclose(solver_f1, direct_f1, atol=1e-12, rtol=0):
+            raise ValueError(f"DP exact/same-hardware per-sequence mismatch on {split}")
         old_control_path = OLD / f"ow_rinalmo_r2dtr1c_b4_s0_step20000_{split}" / "result.json"
         old_control = extract(old_control_path, None, expected_n)
-        delta = abs(old_control["micro_f1"] - matrix["control"][split]["micro_f1"])
-        if delta > 0.0002:
-            raise ValueError(f"DP exact/control mismatch on {split}: {delta}")
+        legacy_delta[split] = matrix["control"][split]["micro_f1"] - old_control["micro_f1"]
 
     payload = {
         "schema_version": 1,
-        "coverage": "40/40 ablation cells + 8/8 B4 control + 8/8 B2 control",
+        "coverage": "40/40 ablation cells + 8/8 B4 control + 8/8 B2 control + 8/8 same-hardware DP checks",
         "splits": [{"name": split, "n_sequences": n} for split, n in SPLITS],
+        "legacy_a100_control_delta_micro_f1": legacy_delta,
         "rows": matrix,
         "delta_from_control": {
             row: {split: matrix[row][split]["micro_f1"] - matrix["control_B2" if row == "No RLCD" else "control"][split]["micro_f1"]
@@ -127,6 +143,7 @@ def main() -> int:
             "DP row uses greedy decoding; exact DP from the same score matrices is the control.",
             "Turner, 2D-scorer and distillation rows combine the original six splits with newly measured ArchiveII-clean and TestSetB.",
             "No-RLCD uses a paired B=2 control and B=2 no-RLCD early-stopping protocol after B=4 OOM; only this row is compared with control_B2.",
+            "DP exact passed strict micro/macro/TP/FP/FN and per-sequence equality against the same-4090 B=4 evaluate_decision control on all eight splits; legacy A100 deltas are metadata only.",
             "Every cell passed CUDA, sample coverage, micro TP/FP/FN and per-sequence macro checks.",
         ],
     }

@@ -9992,3 +9992,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新协议为 `rinalmo_r2dtr1c_b2_s0_r32`（λ_RLCD=1）与 `rinalmo_r2dtr1c_norlcd_b2_s0_r32`（λ_RLCD=0）配对重训：除 RLCD 开关外，B=2、seed=0、数据、教师、head、学习率和 VL0 early-stopping 完全一致。100000 steps 仅是失败保护，只有 `stop_reason=early_stopping` 且 `converged=true` 才放行。
 - 两个 B=2 臂各完成主 benchmark 8/8 CUDA 终评后，`build_main_ablation_matrix.py` 才生成矩阵。No RLCD 仅与 `control_B2` 求 ΔF1；其他四项仍与 B=4 控制比较。最终验收为 40/40 消融格+B4/B2 控制各 8/8，并逐格检查 CUDA、样本覆盖、micro TP/FP/FN、macro 与来源 SHA256。
 - `make_ablation_figure.py` 和 `build_rnajev_deck.mjs` 的证据门同步接受 control/control_B2+五消融共 7 行；矩阵 CSV/Markdown 表头列数已修正。PPT 附录补齐 `mixed_s2`，最终展示六个 matched 臂。
+
+## §15.105 B=2 配对收敛、16 格终评与同硬件 DP 验收（2026-10-26）
+
+### A. 两个 B=2 臂均达到 early-stopping 合同
+
+- `rinalmo_r2dtr1c_b2_s0_r32` 在 step 15000 早停，恢复 best step=12000，best validation loss=17.222301；`rinalmo_r2dtr1c_norlcd_b2_s0_r32` 在 step 21500 早停，恢复 best step=18500。两者 `converged=true`、`stop_reason=early_stopping`、resolved device=`cuda:0`，patch 后权重分别为 best step 12000/18500。
+- 控制与 no-RLCD 各完成 8/8 CUDA 终评，合计 16/16；每格样本数、micro TP/FP/FN→F1、逐序列 macro 和合法性均通过。no-RLCD 只与 B=2 控制比较，不与 B=4 控制直接求差。
+
+### B. 首次矩阵门失败与协议诊断
+
+- 17:35 首次矩阵构建停止于 `DP exact/control mismatch on bprna_ts0: 0.0003374657`；旧门要求新 4090 DP exact 与旧 A100 控制差值≤0.0002。没有放宽该阈值，也没有生成矩阵或启动 MRL。
+- 增补同 4090、同 checkpoint、同 `evaluate_decision.py` 协议的 B=4 TS0 诊断：旧 A100 micro=0.6679259746，DP exact=同硬件 direct=0.6682634403；solver-direct micro/macro 差均为 0，TP/FP/FN 均为 24413/13760/10478，1288 条逐序列 F1 `n_diff=0`、`max_abs=0`。这证明 TS0 差异来自跨硬件数值漂移，而非 DP 或评测协议错误。
+- 验收升级为全 8 split 同硬件严格等价：`control_b4/<split>` 与 DP exact 必须在 micro、macro、TP/FP/FN 和逐序列 F1 上一致（micro/macro atol=1e-10，逐序列 atol=1e-12，counts 完全相等）。其余 7 split 补评复用同一 checkpoint 与 CUDA 协议；旧 A100 差值仅写入 `legacy_a100_control_delta_micro_f1` 作为漂移元数据，不参与等价性放行。
+- `complete_main_ablations.sh` 已加入 `run_control_b4_diagnostics`，全部既有训练与 16 格结果复用；只有缺失的 7 个诊断需要运行。矩阵门通过前 MRL 继续等待。

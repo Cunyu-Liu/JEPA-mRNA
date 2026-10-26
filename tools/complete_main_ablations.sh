@@ -180,6 +180,15 @@ run_existing_evals() {
   log "existing-weight evaluations complete: DP=8 Turner=2 scorer=2 nodistill=2"
 }
 
+run_control_b4_diagnostics() {
+  local split expected
+  log "same-hardware B=4 controls: strict DP exact cross-check on all eight splits"
+  for item in bprna_ts0:1288 bprna_new:5388 ref_pdb_ts1:63 ref_pdb_ts2:39 ref_pdb_ts3:19 ref_pdb_ts_hard:28 archiveii_embok_clean:2544 testsetb:428; do
+    split=${item%%:*}; expected=${item##*:}
+    run_eval control_b4 "$WEIGHTS/r2d.pt" "$split" -1 "$expected"
+  done
+}
+
 train_b2_arm() {
   local arm=$1 lambda=$2 out=$W/runs/$1
   if ! "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d.get("converged") is True and d.get("stop_reason") == "early_stopping"' "$out/run_meta.json" 2>/dev/null; then
@@ -228,5 +237,6 @@ preflight
 wait_for_matched
 run_existing_evals
 train_norlcd
+run_control_b4_diagnostics
 "$PY" "$REPO/tools/build_main_ablation_matrix.py" >> "$LOG"
 log "ALL_DONE five ablations x eight splits"
