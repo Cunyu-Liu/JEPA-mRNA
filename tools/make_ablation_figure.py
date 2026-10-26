@@ -134,6 +134,11 @@ def main():
     assert len(data["rows"]) == 7 and all(len(v) == 8 for v in data["rows"].values())
     assert {"control", "control_B2", *ROWS} == set(data["rows"])
     assert set(data["delta_from_control"]) == set(ROWS)
+    for row in ROWS:
+        control = "control_B2" if row == "No RLCD" else "control"
+        for split in SPLITS:
+            expected = data["rows"][row][split]["micro_f1"] - data["rows"][control][split]["micro_f1"]
+            assert np.isclose(expected, data["delta_from_control"][row][split], atol=1e-12, rtol=0), (row, split)
     delta = np.array([[data["delta_from_control"][row][split] for split in SPLITS] for row in ROWS])
     assert np.isfinite(delta).all()
     matrix(delta)

@@ -158,6 +158,11 @@ def main() -> int:
     checked = json.loads(json_path.read_text(encoding="utf-8"))
     assert len(checked["rows"]) == 7
     assert all(len(values) == 8 for values in checked["rows"].values())
+    for row in ROW_NAMES:
+        control = "control_B2" if row == "No RLCD" else "control"
+        for split, _ in SPLITS:
+            expected = checked["rows"][row][split]["micro_f1"] - checked["rows"][control][split]["micro_f1"]
+            assert np.isclose(expected, checked["delta_from_control"][row][split], atol=1e-12, rtol=0), (row, split)
     print(f"MAIN_ABLATION_MATRIX_PASS rows=5 splits=8 controls_B4_B2=16 out={json_path}")
     return 0
 
