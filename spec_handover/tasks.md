@@ -2,9 +2,9 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **2026-10-26 第 32 轮续任务更新**：以 `/home/rna_jev/spec/tasks.md` T-A126–T-A132 为当前执行依据。T-A127 与 T-A128 已完成，矩阵覆盖 40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8。T-A129 三组 MRL 双头 5-seed 实验已启动；T-A130 已有 10/10 图初版，正式 20 页 PPT 等 MRL 终态、fig08 更新与全量 QA。
+> **2026-10-26 第 32 轮收官**：T-A126–T-A132 全部完成。matched 6/6、五类消融 40/40、三组 MRL 30/30 run 均验收；MRL 0/3 显著正，按负结果保留。正式 PPT 为 21 页：主文 10 图+4 附录+1 页论文逻辑链，微软雅黑、1.5 行距、全页渲染与 ZIP 完整性通过，SHA256=`20fa12e2…`。
 >
-> 主 benchmark 统一 xens2=6/8（预注册 clean 参照），旧 7/8 属混合模型组合；速度 124.78 属 r2dtr1c-s0，A100 r2d 不在 Pareto 前沿。新 PPT 已有 10/10 图初版，待 MRL 终态后组装最终版并做全页渲染。任何旧“在训/排队/完成”快照不得覆盖当前 artifact。
+> 主 benchmark 统一 xens2=6/8（预注册 clean 参照），旧 7/8 属混合模型组合；速度 124.78 属 r2dtr1c-s0，A100 r2d 不在 Pareto 前沿。任何旧“在训/排队/完成”快照不得覆盖当前 artifact。
 
 > 每个 Task 均有明确**完成判据**（可验证）。未满足判据不得勾选。
 > 架构来源：纯血 Jev Decision Model 范式。**不引入 JEPA 线。**

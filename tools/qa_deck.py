@@ -15,7 +15,7 @@ def main():
     parser.add_argument("--draft", action="store_true")
     args = parser.parse_args()
     prs = Presentation(args.pptx)
-    assert len(prs.slides) == 20, len(prs.slides)
+    assert len(prs.slides) == 21, len(prs.slides)
     fonts, sizes, spacing_errors, bounds_errors = Counter(), [], [], []
     texts, images = [], []
     for slide_index, slide in enumerate(prs.slides, 1):
@@ -70,9 +70,12 @@ def main():
         assert "r2dtr1c-s0" in texts[4] and "0.667971" in texts[4]
         assert "0.5532" in texts[15] and "0.6132" in texts[15]
         assert "B4/B2 控制各 8/8" in texts[5]
-        assert all(token in texts[6] for token in ["DP 0.71×", "Turner 1.92×", "2D 1.43×", "不再沿用"])
-        assert "DP PDB/ID=0.71×" in texts[14]
         assert "mixed_s2" in texts[18] and "0.3541" in texts[18]
+        assert "从去污染证据到可迁移结构决策模型" in texts[19]
+        assert "Turner/2D 的 OOD 贡献更大" in texts[19]
+        assert "r2d_tr1 仅 3 格" in texts[3]
+        assert "TS1/2/3/hard=0.739/0.802/0.702/0.662" in texts[3]
+        assert "RNAformer-if（项目GT复测）" in texts[15]
     print(f"DECK_QA_PASS slides={len(prs.slides)} images={len(images)} unique_images={len(set(d for _, d in images))}")
     print("FONTS", dict(fonts))
     print("FONT_SIZE_RANGE", min(sizes), max(sizes))

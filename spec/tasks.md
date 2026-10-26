@@ -9,10 +9,10 @@
 > | **T-A126 三个新臂结果三遍复核** | **已完成** | `tools/verify_matched_round32.py` 对 clean_s0/mixed_s0/clean_s1 共 12 格完成 CUDA、样本数、micro、per-sequence F1/macro/INF、合法性、best checkpoint、run_meta、数据行数与 SHA256 三通道复核，PASS；报告 `audits/round32_matched_verification.json` |
 > | **T-A127 matched_30k 六臂收敛与统计** | **已完成：6/6、24/24、统计 PASS** | 六臂均 early-stopping；24 格三通道复核、3-seed mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成。clean/mixed OOD mean=0.335717/0.362586，xens2=0.443366；GenF 混合假设、GenF SOTA、OOD mean SOTA、OFoldNA OOD mean 四门均未通过，按负结果保留 |
 > | **T-A128 五类消融×8 split** | **已完成** | `tables/main_ablation_5x8.json`：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过；3a/3b 已生成。DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，旧统一签名撤回；No RLCD 仅对 control_B2 求差 |
-> | **T-A129 新 RiNALMo 下游任务** | **进行中：三组 MRL 已启动** | `tarfile` 导入已修复，mcherry_1 269,113 条唯一序列预检通过；三组均执行 frozen RiNALMo-giga meanpool、paper/Jev 双头、5 seed、early-stopping、paired t-test+Holm、预测/权重/数据 SHA256 与独立复核。显著正结果才入主图，其余保留 |
-> | **T-A130 论文逻辑版 PPT** | **10/10 图初版完成，正式 deck 待 MRL** | 真实 3a/3b 已验收，图文按实测 PDB/ID 修正；MRL 终态后更新 fig08（仅在显著正时）并组装正式 20 页，完成微软雅黑/1.5 行距、markitdown/fix/layout/全页渲染 |
-> | **T-A131 台账/spec/GitHub** | **进行中** | 每轮记录配置、权重哈希、CUDA、收敛和结论；本地与远端 spec 同步，确认代码提交 push，秘密与大文件不入库 |
-> | **T-A132 最终验收** | **未开始** | 数值三通道、PPT 内容/布局/渲染、实验合同分开验收；未达科学门不得因排版完成而放行 |
+> | **T-A129 新 RiNALMo 下游任务** | **已完成：30/30 run，0/3 显著正** | mcherry_1 Δ=−0.010302/Holm=0.761928；designed_library Δ=+0.008998/Holm=0.458457；varying_length Δ=+0.001610/Holm=0.458457。全部 early-stopping、CUDA、预测/权重/数据 SHA256、配对 t-test+Holm 与独立复核通过；无新任务进入主图正结果，完整数据入附录和源 JSON |
+> | **T-A130 论文逻辑版 PPT** | **已完成：21 页** | 主文 10 图+4 个附录+1 页论文逻辑链；微软雅黑、1.5 行距、10 张唯一栅格主图、原生三层架构。markitdown、fix、layout=0、专项 QA、全页渲染与 ZIP 完整性通过；SHA256=`20fa12e2…` |
+> | **T-A131 台账/spec/GitHub** | **已完成** | matched、消融、MRL、图源、PPT 生成器、QA、台账与两个 spec 目录均同步；确认代码提交并 push，秘密与大文件不入库 |
+> | **T-A132 最终验收** | **已完成** | 实验数值三通道、MRL SciPy/statsmodels 独立复算、PPT 内容/字体/行距/布局/渲染分别通过；科学门未达项均按负结果保留，不包装成收官正结论 |
 >
 > **新增工程事实**：matched 统计文件 `tables/matched_30k_statistics.json` 已验收；B=4 OOM 不通过静默降批掩盖，而是以同协议 B=2 控制保证 no-RLCD 单变量对照；矩阵 CSV/Markdown 表头、绘图行数和 PPT 证据门均已同步为 7 行。
 

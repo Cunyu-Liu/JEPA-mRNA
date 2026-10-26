@@ -2,13 +2,13 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **当前交接（2026-10-26，第 32 轮续：matched 收官与 B=2 配对消融）**：
+> **当前交接（2026-10-26，第 32 轮收官：消融、MRL 与论文逻辑版 PPT）**：
 > - **T-A127 已完成**：六臂均达到 held-out early-stopping，24/24 格通过 CUDA、样本覆盖、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核；三种子 mean±std、逐序列 Wilcoxon–Holm 和预注册门判定已完成。clean/mixed 家族 OOD mean 分别为 0.335717/0.362586，zero-shot xens2 为 0.443366；`genf_mix_hypothesis_pass`、`genf_sota_pass`、`ood_mean_sota_pass`、`ofoldna_ood_mean_pass` 均为 **False**，不得把 mixed 写成 GenF 或总体 OOD 优势。
 > - **主 benchmark 模型身份复核**：统一 xens2 对预注册去污染参照为 **6/8**，不是旧表 7/8。bpRNA-new 的 xens2=0.5532；旧表 0.6132 属于 r2d_tr1 两种子集成，不能与其他七格 xens2 拼成同一模型。历史逐 split 混合集成可另列 7/8，但必须标明模型替换。全板干净敏感性 xens2=5/8，最佳单 checkpoint=4/8。TestSetB clean 的 xens2=0.8370（0.8448 为全集），单 r2d clean=0.716699（0.7507 为全集），TS2=0.8604。
 > - **速度与 Pareto 口径**：124.78 seq/s 属于 r2dtr1c-s0（TS0 F1=0.667971），不是 xens2 的精度-速度联合点。Figure 5 仅用 A100 同节点、同 split、strict micro-F1 计算真实 Pareto 集；r2d 在 A100 被 RNAformer 同时以更高 F1/吞吐支配，不得画成前沿点。4090 更新单列，不混入 A100 前沿。
 > - **T-A128 已完成**：B=2 控制/no-RLCD 分别 best=12000/18500，16/16 终评、40/40 消融格、B4/B2 控制各 8/8 与同硬件 DP 严格等价 8/8 全部通过，`tables/main_ablation_5x8.json` 已生成。DP/Turner/2D 消融在 8 split 均为负；PDB/ID 比值分别为 0.71×/1.92×/1.43×，旧“所有组件 OOD 更大”统一签名撤回。no-distillation 与 no-RLCD 的 8-split 平均 ΔF1 分别为 −0.00742/−0.00805，按小效应保留。
-> - **T-A129 新增下游**：三组 MRL 已按门启动；启动时缺少 `tarfile` 导入的工程错误已修复，真实 mcherry_1 269,113 条唯一序列读取预检通过，当前进行 frozen RiNALMo meanpool 与 5-seed 双头 CUDA 训练。最终仍须 early-stopping、paired t-test+Holm、预测/权重/数据 SHA256 与独立复核；显著正结果才入主图。
-> - **PPT 合同**：10 张主图均已生成初版，3a/3b 使用真实 40/40 矩阵；PPT 直接按矩阵计算 PDB/ID，不再沿用旧统一签名。正式 deck 仍等待 MRL 终态及可能的 fig08 更新，之后执行内容、字体/1.5 行距、布局与全页渲染验收；附录显示全部六个 matched 臂。
+> - **T-A129 已完成**：三组 MRL 共 30/30 run 全部 early-stopping 并通过独立复核。mcherry_1/designed_library/varying_length 的 ΔPCC 分别为 −0.010302/+0.008998/+0.001610，Holm=0.761928/0.458457/0.458457，**0/3 显著正**。不为主图补造正结果，fig08 保持原两面板，全部数据入附录和源 JSON。
+> - **T-A130/T-A132 已完成**：正式 PPT 为 21 页（主文 10 图+4 附录+1 页论文逻辑链），SHA256=`20fa12e2…`。微软雅黑、1.5 行距、10 张唯一主图、原生三层架构；markitdown、fix、layout=0、专项 QA、全 21 页渲染与 ZIP 完整性均通过。
 
 
 > **当前交接（2026-10-24，第二十九轮接管审计；本节是当前执行依据）**：

@@ -17,7 +17,7 @@ FONT_PATH = "/Users/liucunyu/Library/Fonts/msyh_regular.ttf"
 if os.path.exists(FONT_PATH):
     font_manager.fontManager.addfont(FONT_PATH)
 
-ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261025_03"))
+ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261020_02"))
 OUTPUT_DIR = ROOT / "figures"
 SPLITS = ["bprna_ts0", "bprna_new", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "archiveii_embok_clean", "testsetb"]
 LABELS = ["TS0", "bpRNA-new", "TS1", "TS2", "TS3", "TS-hard", "ArchiveII-clean", "TestSetB"]

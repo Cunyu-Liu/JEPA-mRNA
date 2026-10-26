@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 import os
 
-ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261025_03"))
+ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261020_02"))
 FIG = ROOT / "figures"
 stats = json.loads((FIG / "matched_30k_statistics.json").read_text(encoding="utf-8"))
 source_path = FIG / "source_data.json"

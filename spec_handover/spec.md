@@ -6,7 +6,7 @@
 >
 > 统一 xens2 对预注册去污染参照为 **6/8**；旧 7/8 在 bpRNA-new 用 r2d_tr1 集成 0.6132 替代 xens2=0.5532，模型身份不一致。124.78 seq/s 属于 r2dtr1c-s0，不是 xens2 联合点；A100 Pareto 只含 RNAformer/UFold，r2d 被支配。
 >
-> T-A128 已完成：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过，矩阵和真实 3a/3b 已生成。DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，旧统一签名撤回。no-distillation/no-RLCD 平均 ΔF1=−0.00742/−0.00805。T-A129 三组 MRL 已启动，`tarfile` 导入修复与真实数据预检通过；正式 PPT 等 MRL 终态后组装。详细判据见 `spec/tasks.md` T-A126–T-A132。
+> T-A128 已完成：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过；DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×。T-A129 已完成 30/30 run，三组 MRL 均 0 显著正，数据全留而不新增主图正结果。T-A130 正式 21 页 PPT 已完成，10 图+4 附录+1 逻辑链，内容/字体/行距/布局/渲染/ZIP 全验收，SHA256=`20fa12e2…`。T-A131/T-A132 同步完成，详见 `spec/tasks.md`。
 
 
 > **2026-10-24 接管更新**：本目录不再是第9轮历史状态的执行依据。当前权威 spec/tasks 为 `/home/rna_jev/spec/spec.md` 与 `/home/rna_jev/spec/tasks.md` 的“第二十九轮接管审计”节；本节与其同步，旧下文仅作历史快照。

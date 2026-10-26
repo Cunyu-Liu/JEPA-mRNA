@@ -10014,3 +10014,18 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 分组 PDB/ID 比值为 DP=0.71×、Turner=1.92×、2D scorer=1.43×。Turner 与 2D scorer 的 PDB-OOD 损失更大，但 DP 在 ID/External 的绝对损失更大，因此旧“所有组件均在 OOD 贡献更大”统一签名撤回；PPT 直接由矩阵计算并展示该差异。
 - no-distillation 的 8-split ΔF1 范围 −0.02721..+0.01278、均值 −0.00742；no-RLCD 范围 −0.02777..+0.00419、均值 −0.00805。二者按小效应和 split 异质性呈现，不写成普遍正收益。真实 `fig03a/fig03b` 已生成并通过尺寸与 ΔF1 重算检查。
 - MRL 首次启动因 `eval_mrl_suite.py` 缺少 `tarfile` 导入而在数据读取前停止；修复后真实 mcherry_1=269,113 条且全唯一的预检通过，三组 MRL 正式进入 CUDA 流程。该工程错误不产生也不改变任何科学结果。
+
+## §15.107 MRL 统计终态与正式 21 页 PPT 验收（2026-10-26）
+
+### A. T-A129 三组 MRL 全部完成，显著正门为 0/3
+
+- 三组各完成 paper/Jev 双头×5 seed，共 30/30 run；全部 CUDA、early-stopping、best checkpoint、预测/权重/数据 SHA256、保存后独立重读和 Holm 复算通过。
+- mcherry_1：paper=0.1919、Jev=0.1816、Δ=−0.010302、Holm=0.761928；designed_library：paper=0.8359、Jev=0.8449、Δ=+0.008998、Holm=0.458457；varying_length：paper=0.4908、Jev=0.4924、Δ=+0.001610、Holm=0.458457。三者 `significant_positive=False`。
+- SciPy 配对 t-test 与 statsmodels Holm 在本地独立重算均与原 JSON 一致，结果文件 SHA256=`65d613ce…`。designed_library/varying_length 方向为正但未达显著性，不得写成显著正结果；mcherry_1 为负。fig08 保持原两面板且哈希不变，完整 MRL 数据进入 `source_data.json` 与附录说明。
+
+### B. T-A130/T-A132 正式 PPT 与最终验收
+
+- 初版 20 页完成后再增加 1 页论文逻辑链，最终交付 21 页：主文 10 图+4 个附录+1 页逻辑链。新增页依次概括去污染、主 benchmark、效率、5×8 机制、置信度与迁移、外部验证边界；不引入新结果。
+- 最终文件 `RNA-JEV_论文逻辑重构_20261026.pptx`，SHA256=`20fa12e2ca1687492b24eb2a2c10cd363865c12b3fc7da0e15e068bf156a8a13`。21 页、10 张唯一栅格主图、原生可编辑三层架构，微软雅黑与 1.5 倍行距（640 runs，字号 7–34 pt）。
+- `markitdown` 无占位符/DRAFT，`fix_pptx` 无问题，`validate_layout Issues=0`，专项 `DECK_QA_PASS slides=21 images=10 unique_images=10`，Aspose 全 21 页渲染与缩略图/重点页视觉复核通过，ZIP 完整性无错误。评估水印只存在于 Aspose 渲染图，不在 PPTX 文件。
+- 最终科学口径：统一 xens2=6/8、最佳单 checkpoint=4/8、全板敏感性=5/8；DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，不恢复旧统一 OOD 签名；MRL 0/3 显著正，不为主图补造正结果。

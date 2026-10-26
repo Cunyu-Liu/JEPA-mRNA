@@ -15,7 +15,7 @@ FONT_PATH = "/Users/liucunyu/Library/Fonts/msyh_regular.ttf"
 if os.path.exists(FONT_PATH):
     font_manager.fontManager.addfont(FONT_PATH)
 
-ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261025_03"))
+ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261020_02"))
 RESULT = ROOT / "figures" / "mrl_suite_result.json"
 SOURCE = ROOT / "figures" / "source_data.json"
 C = {"ink": "#17243A", "blue": "#0F4D92", "teal": "#0E7C86", "grey": "#AAB3BF",
@@ -68,16 +68,18 @@ def main():
     style(a)
 
     b = fig.add_subplot(gs[0, 1])
-    reg = d["regression"]; x = np.arange(2)
+    reg = d["regression"]; x = np.arange(2); width = 0.32
     paper = np.array(reg["paper_head"]); jev = np.array(reg["jev_head"])
-    for xi, task, p, j in zip(x, reg["tasks"], paper, jev):
-        b.plot([xi, xi], [p, j], color=C["teal"], lw=2.5, zorder=2)
-        b.scatter(xi-0.06, p, s=58, color=C["grey"], zorder=3)
-        b.scatter(xi+0.06, j, s=68, color=C["blue"], zorder=4)
-        b.text(xi, max(p, j)+0.012, f"Δ {j-p:+.4f}", ha="center", fontsize=7.3,
+    b.bar(x-width/2, paper, width, color=C["grey"], label="Paper head", zorder=3)
+    b.bar(x+width/2, jev, width, color=C["blue"], label="Jev head", zorder=3)
+    for xi, p, j in zip(x, paper, jev):
+        b.text(xi-width/2, p+0.007, f"{p:.4f}", ha="center", fontsize=6.8, color=C["muted"])
+        b.text(xi+width/2, j+0.007, f"{j:.4f}", ha="center", fontsize=6.8, color=C["blue"], fontweight="bold")
+        b.text(xi, max(p, j)+0.045, f"Δ {j-p:+.4f}", ha="center", fontsize=7.3,
                color=C["teal"], fontweight="bold")
     b.set_xticks(x, reg["tasks"], fontsize=7.5)
-    b.set_xlim(-0.5, 1.5); b.set_ylim(0.34, 0.53); b.set_ylabel("PCC")
+    b.set_xlim(-0.65, 1.65); b.set_ylim(0.34, 0.56); b.set_ylabel("PCC")
+    b.legend(loc="upper right", fontsize=7.0)
     b.set_title("b  Existing regression tasks", loc="left", fontweight="bold", pad=12)
     style(b)
 
