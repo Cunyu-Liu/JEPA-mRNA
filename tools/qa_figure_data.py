@@ -52,10 +52,17 @@ for group in ["ts0", "archiveii"]:
     assert all(len(values) == 4 for values in D["length"][group].values())
 
 cur = D["matched_30k_current"]
-assert np.isclose(np.mean(cur["mixed_s0"][1:]), 0.360529, atol=1e-6)
-assert np.isclose(np.mean(cur["mixed_s1"][1:]), 0.373156, atol=1e-6)
+stats = json.loads((ROOT / "figures" / "matched_30k_statistics.json").read_text(encoding="utf-8"))
+assert stats["status"] == "PASS" and stats["n_arms"] == 6 and stats["n_cells"] == 24
+order = ["chanrg_test", "chanrg_gena", "chanrg_genc", "chanrg_genf"]
+for arm, record in stats["arms"].items():
+    short = arm.replace("chanrg_clean_30k_", "clean_") if arm.startswith("chanrg_clean") else arm.replace("mixed_30k_", "mixed_")
+    values = [record["metrics"][split] for split in order]
+    assert np.array_equal(cur[short], values), short
+    assert np.isclose(np.mean(values[1:]), record["ood_mean"], atol=1e-12), short
+assert set(cur["statistics"]["verdicts"]) >= {"genf_mix_hypothesis_pass", "genf_sota_pass", "ood_mean_sota_pass", "ofoldna_ood_mean_pass"}
 print("FIGURE_SOURCE_DATA_QA_PASS")
 print("main_benchmark single=4/8 xens2=6/8 full_clean=5/8")
 print("pareto", frontier)
 print("nb_delta", delta.min(), delta.mean(), delta.max())
-print("matched mixed_s0/s1 OOD means", np.mean(cur["mixed_s0"][1:]), np.mean(cur["mixed_s1"][1:]))
+print("matched 6/6 arms and 24/24 cells synchronized; OOD means", {key: np.mean(cur[key][1:]) for key in ["clean_s0", "clean_s1", "clean_s2", "mixed_s0", "mixed_s1", "mixed_s2"]})

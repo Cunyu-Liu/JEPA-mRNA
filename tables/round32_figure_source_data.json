@@ -12,12 +12,66 @@
     ]
   },
   "main_benchmark": {
-    "splits": ["TS0", "bpRNA-new", "ArchiveII-clean", "TS1", "TS2", "TS3", "TS-hard", "TestSetB-clean"],
-    "single": [0.7866, 0.5643, 0.7403, 0.8570, 0.8393, 0.9049, 0.8530, 0.7166987385075904],
-    "xens2": [0.8039, 0.5532, 0.7760, 0.8755, 0.8604, 0.8965, 0.8732, 0.8370],
-    "clean_reference": [0.7578, 0.6106, 0.7613, 0.8150, 0.9043, 0.8245, 0.7709, 0.8177],
-    "full_clean_reference": [0.7578, 0.6854, 0.7872, 0.8150, 0.9043, 0.8245, 0.8028, 0.8177],
-    "reference_names": ["RNAformer", "UFold", "RiNALMo-ft", "RNAformer-if", "RNAformer-if", "RNAformer-if", "RNAformer-if", "RiNALMo-ft clean-181"],
+    "splits": [
+      "TS0",
+      "bpRNA-new",
+      "ArchiveII-clean",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard",
+      "TestSetB-clean"
+    ],
+    "single": [
+      0.7866,
+      0.5643,
+      0.7403,
+      0.857,
+      0.8393,
+      0.9049,
+      0.853,
+      0.7166987385075904
+    ],
+    "xens2": [
+      0.8039,
+      0.5532,
+      0.776,
+      0.8755,
+      0.8604,
+      0.8965,
+      0.8732,
+      0.837
+    ],
+    "clean_reference": [
+      0.7578,
+      0.6106,
+      0.7613,
+      0.815,
+      0.9043,
+      0.8245,
+      0.7709,
+      0.8177
+    ],
+    "full_clean_reference": [
+      0.7578,
+      0.6854,
+      0.7872,
+      0.815,
+      0.9043,
+      0.8245,
+      0.8028,
+      0.8177
+    ],
+    "reference_names": [
+      "RNAformer",
+      "UFold",
+      "RiNALMo-ft",
+      "RNAformer-if",
+      "RNAformer-if",
+      "RNAformer-if",
+      "RNAformer-if",
+      "RiNALMo-ft clean-181"
+    ],
     "single_clean_wins": 4,
     "xens2_clean_wins": 6,
     "xens2_full_clean_wins": 5,
@@ -26,107 +80,682 @@
     "testsetb_note": "xens2 is 0.8370 on clean-181 and 0.8448 on full-428; single r2d is 0.7167 on clean-181 and 0.7507 on full-428; the clean reference RiNALMo-ft is 0.8177."
   },
   "leakage_audit": {
-    "columns": ["TS0", "bpRNA-new", "TS1", "TS2", "TS3", "TS-hard", "TestSetB", "ArchiveII-clean"],
-    "tr0": [0, 0, 0, 0, 0, 0, 247, 0],
-    "tr1": [1087, 0, 38, 28, 18, 21, 358, 843],
-    "tr1c": [0, 0, 0, 0, 0, 0, 0, 0],
+    "columns": [
+      "TS0",
+      "bpRNA-new",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard",
+      "TestSetB",
+      "ArchiveII-clean"
+    ],
+    "tr0": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      247,
+      0
+    ],
+    "tr1": [
+      1087,
+      0,
+      38,
+      28,
+      18,
+      21,
+      358,
+      843
+    ],
+    "tr1c": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
     "note": "Exact normalized-sequence overlap; this is not an identity- or homology-level guarantee. Clean references are chosen per split."
   },
   "speed": {
     "systems": [
-      {"name": "Jev r2d B=256 fp16", "throughput": 124.78, "device": "RTX 4090", "scope": "end-to-end"},
-      {"name": "Jev r2d B=64 fp16", "throughput": 119.55, "device": "RTX 4090", "scope": "end-to-end"},
-      {"name": "Jev r2d B=32 C", "throughput": 96.14, "device": "RTX 4090", "scope": "end-to-end"},
-      {"name": "UFold", "throughput": 56.49, "device": "A100", "scope": "end-to-end"},
-      {"name": "RNAformer", "throughput": 55.28, "device": "A100", "scope": "end-to-end"},
-      {"name": "MXfold2", "throughput": 54.58, "device": "A100", "scope": "end-to-end"},
-      {"name": "ViennaRNA MFE", "throughput": 16.79, "device": "CPU", "scope": "end-to-end"},
-      {"name": "RiNALMo-ft (forward-only)", "throughput": 14.5, "device": "RTX 4090", "scope": "forward-only"}
+      {
+        "name": "Jev r2d B=256 fp16",
+        "throughput": 124.78,
+        "device": "RTX 4090",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "Jev r2d B=64 fp16",
+        "throughput": 119.55,
+        "device": "RTX 4090",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "Jev r2d B=32 C",
+        "throughput": 96.14,
+        "device": "RTX 4090",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "UFold",
+        "throughput": 56.49,
+        "device": "A100",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "RNAformer",
+        "throughput": 55.28,
+        "device": "A100",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "MXfold2",
+        "throughput": 54.58,
+        "device": "A100",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "ViennaRNA MFE",
+        "throughput": 16.79,
+        "device": "CPU",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "RiNALMo-ft (forward-only)",
+        "throughput": 14.5,
+        "device": "RTX 4090",
+        "scope": "forward-only"
+      }
     ],
     "ladder": [
-      {"label": "B=1", "throughput": 21.45},
-      {"label": "B=32 + C", "throughput": 96.14},
-      {"label": "B=64 fp16", "throughput": 119.55},
-      {"label": "B=128", "throughput": 121.24},
-      {"label": "B=192", "throughput": 120.86},
-      {"label": "B=256", "throughput": 124.78},
-      {"label": "B=384", "throughput": 116.4},
-      {"label": "B=512", "throughput": 122.6}
+      {
+        "label": "B=1",
+        "throughput": 21.45
+      },
+      {
+        "label": "B=32 + C",
+        "throughput": 96.14
+      },
+      {
+        "label": "B=64 fp16",
+        "throughput": 119.55
+      },
+      {
+        "label": "B=128",
+        "throughput": 121.24
+      },
+      {
+        "label": "B=192",
+        "throughput": 120.86
+      },
+      {
+        "label": "B=256",
+        "throughput": 124.78
+      },
+      {
+        "label": "B=384",
+        "throughput": 116.4
+      },
+      {
+        "label": "B=512",
+        "throughput": 122.6
+      }
     ],
     "f1": 0.667971,
-    "tp_fp_fn": [24406, 13778, 10485],
+    "tp_fp_fn": [
+      24406,
+      13778,
+      10485
+    ],
     "note": "All ladder points use r2dtr1c-s0 on TS0; predictions and F1 are unchanged across batch size."
   },
   "accuracy_speed_a100": {
     "models": [
-      {"name": "Jev r2d", "f1": 0.6681, "throughput": 26.73, "device": "A100"},
-      {"name": "RNAformer", "f1": 0.7578, "throughput": 55.28, "device": "A100"},
-      {"name": "UFold", "f1": 0.6598, "throughput": 56.49, "device": "A100"},
-      {"name": "MXfold2", "f1": 0.5651, "throughput": 54.58, "device": "A100"}
+      {
+        "name": "Jev r2d",
+        "f1": 0.6681,
+        "throughput": 26.73,
+        "device": "A100"
+      },
+      {
+        "name": "RNAformer",
+        "f1": 0.7578,
+        "throughput": 55.28,
+        "device": "A100"
+      },
+      {
+        "name": "UFold",
+        "f1": 0.6598,
+        "throughput": 56.49,
+        "device": "A100"
+      },
+      {
+        "name": "MXfold2",
+        "f1": 0.5651,
+        "throughput": 54.58,
+        "device": "A100"
+      }
     ],
-    "hardware_update": {"name": "Jev r2d on RTX 4090", "f1": 0.667971, "throughput": 124.78},
+    "hardware_update": {
+      "name": "Jev r2d on RTX 4090",
+      "f1": 0.667971,
+      "throughput": 124.78
+    },
     "note": "The frontier is computed only within the A100 end-to-end TS0 board. The RTX 4090 point is shown separately and is not mixed into the A100 frontier."
   },
   "ece": {
-    "splits": ["TS0", "TestSetB", "bpRNA-new", "ArchiveII-clean", "TS1", "TS2", "TS3", "TS-hard"],
-    "n": [1281, 428, 5375, 2505, 62, 39, 19, 27],
-    "raw": [0.1604, 0.1004, 0.2011, 0.1176, 0.1210, 0.0821, 0.1088, 0.1243],
-    "recalibrated": [0.0315, 0.0445, 0.0677, 0.0605, 0.1111, 0.1851, 0.1841, 0.1219],
-    "spearman": [0.708, 0.694, 0.416, 0.716, 0.559, 0.337, 0.362, 0.676],
+    "splits": [
+      "TS0",
+      "TestSetB",
+      "bpRNA-new",
+      "ArchiveII-clean",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard"
+    ],
+    "n": [
+      1281,
+      428,
+      5375,
+      2505,
+      62,
+      39,
+      19,
+      27
+    ],
+    "raw": [
+      0.1604,
+      0.1004,
+      0.2011,
+      0.1176,
+      0.121,
+      0.0821,
+      0.1088,
+      0.1243
+    ],
+    "recalibrated": [
+      0.0315,
+      0.0445,
+      0.0677,
+      0.0605,
+      0.1111,
+      0.1851,
+      0.1841,
+      0.1219
+    ],
+    "spearman": [
+      0.708,
+      0.694,
+      0.416,
+      0.716,
+      0.559,
+      0.337,
+      0.362,
+      0.676
+    ],
     "note": "Structure-level ECE, 10-bin weighted absolute confidence-versus-F1 gap; VL0 affine parameters a=1.6 and b=-1.9 are frozen for every test split."
   },
   "nb_transfer": {
-    "splits": ["TS0", "bpRNA-new", "TS1", "TS2", "TS3", "TS-hard", "TestSetB", "ArchiveII trunc598"],
-    "jev_on_nb": [0.5288, 0.5792, 0.6900, 0.7794, 0.7484, 0.6773, 0.5411, 0.5414],
-    "nb_ft": [0.4609, 0.3453, 0.6049, 0.6435, 0.5175, 0.4845, 0.4862, 0.4735]
+    "splits": [
+      "TS0",
+      "bpRNA-new",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard",
+      "TestSetB",
+      "ArchiveII trunc598"
+    ],
+    "jev_on_nb": [
+      0.5288,
+      0.5792,
+      0.69,
+      0.7794,
+      0.7484,
+      0.6773,
+      0.5411,
+      0.5414
+    ],
+    "nb_ft": [
+      0.4609,
+      0.3453,
+      0.6049,
+      0.6435,
+      0.5175,
+      0.4845,
+      0.4862,
+      0.4735
+    ]
   },
   "downstream": {
     "ncrna": {
-      "metrics": ["Accuracy", "Macro-F1", "Balanced accuracy"],
-      "paper_head": [0.7922, 0.5248, 0.5735],
-      "jev_head": [0.8621, 0.6308, 0.7116]
+      "metrics": [
+        "Accuracy",
+        "Macro-F1",
+        "Balanced accuracy"
+      ],
+      "paper_head": [
+        0.7922,
+        0.5248,
+        0.5735
+      ],
+      "jev_head": [
+        0.8621,
+        0.6308,
+        0.7116
+      ]
     },
     "regression": {
-      "tasks": ["MRL (EGFP 5'UTR)", "TE/EL HEK"],
+      "tasks": [
+        "MRL (EGFP 5'UTR)",
+        "TE/EL HEK"
+      ],
       "metric": "Pearson correlation coefficient",
-      "paper_head": [0.4851, 0.3807],
-      "jev_head": [0.4954, 0.3846]
+      "paper_head": [
+        0.4851,
+        0.3807
+      ],
+      "jev_head": [
+        0.4954,
+        0.3846
+      ]
     },
     "note": "Frozen RiNALMo backbone; only the downstream head changes. Splice remains archived and is not shown in the main figure."
   },
   "chanrg": {
-    "splits": ["Test", "GenA", "GenC", "GenF"],
+    "splits": [
+      "Test",
+      "GenA",
+      "GenC",
+      "GenF"
+    ],
     "models": [
-      {"name": "xens2", "values": [0.5656, 0.6443, 0.3793, 0.3066], "ood_mean": 0.4434, "evidence": "measured"},
-      {"name": "r2d", "values": [0.4935, 0.5772, 0.2769, 0.3037], "ood_mean": 0.3859, "evidence": "measured"},
-      {"name": "OFoldNA-SS", "values": [0.4899, 0.5695, 0.3504, 0.4031], "ood_mean": 0.4410, "evidence": "quoted"},
-      {"name": "RiNALMo-Giga ft", "values": [0.7832, 0.3565, 0.1525, 0.2298], "ood_mean": 0.2463, "evidence": "quoted"}
+      {
+        "name": "xens2",
+        "values": [
+          0.5656,
+          0.6443,
+          0.3793,
+          0.3066
+        ],
+        "ood_mean": 0.4434,
+        "evidence": "measured"
+      },
+      {
+        "name": "r2d",
+        "values": [
+          0.4935,
+          0.5772,
+          0.2769,
+          0.3037
+        ],
+        "ood_mean": 0.3859,
+        "evidence": "measured"
+      },
+      {
+        "name": "OFoldNA-SS",
+        "values": [
+          0.4899,
+          0.5695,
+          0.3504,
+          0.4031
+        ],
+        "ood_mean": 0.441,
+        "evidence": "quoted"
+      },
+      {
+        "name": "RiNALMo-Giga ft",
+        "values": [
+          0.7832,
+          0.3565,
+          0.1525,
+          0.2298
+        ],
+        "ood_mean": 0.2463,
+        "evidence": "quoted"
+      }
     ],
     "note": "OFoldNA Table 3 length-controlled protocol, 50-200 nt, pseudoknots excluded. OOD mean is the unweighted mean of GenA, GenC and GenF."
   },
   "length": {
-    "buckets": ["<=100", "100-200", "200-400", ">400"],
-    "ts0_n": [580, 516, 164, 28],
+    "buckets": [
+      "<=100",
+      "100-200",
+      "200-400",
+      ">400"
+    ],
+    "ts0_n": [
+      580,
+      516,
+      164,
+      28
+    ],
     "ts0": {
-      "ViennaRNA MFE": [0.5999, 0.5045, 0.4305, 0.4561],
-      "ViennaRNA centroid": [0.6277, 0.5375, 0.4690, 0.4854],
-      "RiNALMo-ft": [0.8187, 0.7182, 0.6745, 0.5692],
-      "xens2": [0.8787, 0.7974, 0.7697, 0.6792]
+      "ViennaRNA MFE": [
+        0.5999,
+        0.5045,
+        0.4305,
+        0.4561
+      ],
+      "ViennaRNA centroid": [
+        0.6277,
+        0.5375,
+        0.469,
+        0.4854
+      ],
+      "RiNALMo-ft": [
+        0.8187,
+        0.7182,
+        0.6745,
+        0.5692
+      ],
+      "xens2": [
+        0.8787,
+        0.7974,
+        0.7697,
+        0.6792
+      ]
     },
-    "archiveii_n": [484, 1136, 728, 196],
+    "archiveii_n": [
+      484,
+      1136,
+      728,
+      196
+    ],
     "archiveii": {
-      "ViennaRNA centroid": [0.7212, 0.6865, 0.5868, 0.5345],
-      "xens2": [0.8993, 0.8733, 0.7548, 0.5692]
+      "ViennaRNA centroid": [
+        0.7212,
+        0.6865,
+        0.5868,
+        0.5345
+      ],
+      "xens2": [
+        0.8993,
+        0.8733,
+        0.7548,
+        0.5692
+      ]
     }
   },
   "matched_30k_current": {
-    "splits": ["Test", "GenA", "GenC", "GenF"],
-    "clean_s0": [0.639468, 0.477211, 0.224661, 0.258190],
-    "mixed_s0": [0.580921, 0.567109, 0.282027, 0.232452],
-    "clean_s1": [0.627430, 0.460435, 0.267389, 0.277126],
-    "clean_s2": [0.625035, 0.527340, 0.262654, 0.266443],
-    "mixed_s1": [0.585378, 0.575519, 0.285501, 0.258446],
-    "zero_shot_xens2": [0.565554, 0.644258, 0.379272, 0.306568],
-    "note": "Five arms are complete; mixed_s2 is training. These results are not final three-seed conclusions."
+    "splits": [
+      "Test",
+      "GenA",
+      "GenC",
+      "GenF"
+    ],
+    "clean_s0": [
+      0.6394677630940057,
+      0.4772113494177452,
+      0.22466086063181487,
+      0.2581902169004271
+    ],
+    "mixed_s0": [
+      0.5809211403403378,
+      0.5671092047136713,
+      0.2820266495881589,
+      0.23245204199417355
+    ],
+    "clean_s1": [
+      0.627430312512867,
+      0.4604354436729,
+      0.26738929232521713,
+      0.2771258557809201
+    ],
+    "clean_s2": [
+      0.6250351022673587,
+      0.5273402749248552,
+      0.26265432365044994,
+      0.26644270250093316
+    ],
+    "mixed_s1": [
+      0.5853778305329268,
+      0.5755190765309948,
+      0.2855014390286788,
+      0.2584463897993334
+    ],
+    "zero_shot_xens2": [
+      0.565554,
+      0.644258,
+      0.379272,
+      0.306568
+    ],
+    "note": "All six arms are complete and independently verified; three-seed statistics and preregistered verdicts are included.",
+    "mixed_s2": [
+      0.5596555763746919,
+      0.5395574108745181,
+      0.23920396409438402,
+      0.2834584584584584
+    ],
+    "statistics": {
+      "family_statistics": {
+        "chanrg_clean_30k": {
+          "micro_mean": {
+            "chanrg_test": 0.6306443926247437,
+            "chanrg_gena": 0.4883290226718335,
+            "chanrg_genc": 0.2515681588691607,
+            "chanrg_genf": 0.2672529250607601
+          },
+          "micro_sample_std": {
+            "chanrg_test": 0.007734543157706793,
+            "chanrg_gena": 0.03481043098198663,
+            "chanrg_genc": 0.023422361236921867,
+            "chanrg_genf": 0.009493784830111164
+          },
+          "ood_mean_of_seeds": 0.33571670220058475,
+          "ood_sample_std_of_seed_means": 0.016075023724897705
+        },
+        "mixed_30k": {
+          "micro_mean": {
+            "chanrg_test": 0.5753181824159855,
+            "chanrg_gena": 0.560728564039728,
+            "chanrg_genc": 0.2689106842370739,
+            "chanrg_genf": 0.25811896341732177
+          },
+          "micro_sample_std": {
+            "chanrg_test": 0.013746033714193898,
+            "chanrg_gena": 0.01881076236505413,
+            "chanrg_genc": 0.025785372920341092,
+            "chanrg_genf": 0.02550478457385487
+          },
+          "ood_mean_of_seeds": 0.36258607056470793,
+          "ood_sample_std_of_seed_means": 0.009706019926204894
+        }
+      },
+      "verdicts": {
+        "genf_mix_hypothesis_pass": false,
+        "genf_sota_pass": false,
+        "ood_mean_sota_pass": false,
+        "ofoldna_ood_mean_reference": 0.441,
+        "ofoldna_ood_mean_pass": false,
+        "zero_shot_ood_mean": 0.4433660945517441,
+        "note": "Gates are evaluated on three-seed means; paired per-sequence Wilcoxon-Holm remains mandatory for interpretation."
+      },
+      "paired_clean_vs_mixed": {
+        "chanrg_test": [
+          {
+            "seed": 0,
+            "clean_micro": 0.6394677630940057,
+            "mixed_micro": 0.5809211403403378,
+            "delta_micro": -0.05854662275366784,
+            "delta_macro": -0.05193656415357292,
+            "delta_median": -0.037634408602150615,
+            "n_win_mixed": 2903,
+            "n_tie": 766,
+            "n_loss_mixed": 6928,
+            "wilcoxon_statistic": 11731729.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.627430312512867,
+            "mixed_micro": 0.5853778305329268,
+            "delta_micro": -0.04205248197994016,
+            "delta_macro": -0.04276278527179044,
+            "delta_median": -0.028407460545193608,
+            "n_win_mixed": 3098,
+            "n_tie": 814,
+            "n_loss_mixed": 6685,
+            "wilcoxon_statistic": 12345557.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.6250351022673587,
+            "mixed_micro": 0.5596555763746919,
+            "delta_micro": -0.06537952589266682,
+            "delta_macro": -0.06288854944974119,
+            "delta_median": -0.04324956165984806,
+            "n_win_mixed": 2427,
+            "n_tie": 823,
+            "n_loss_mixed": 7347,
+            "wilcoxon_statistic": 9221936.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          }
+        ],
+        "chanrg_gena": [
+          {
+            "seed": 0,
+            "clean_micro": 0.4772113494177452,
+            "mixed_micro": 0.5671092047136713,
+            "delta_micro": 0.08989785529592614,
+            "delta_macro": 0.09651825326116752,
+            "delta_median": 0.06896551724137917,
+            "n_win_mixed": 3836,
+            "n_tie": 436,
+            "n_loss_mixed": 1065,
+            "wilcoxon_statistic": 1698158.5,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.4604354436729,
+            "mixed_micro": 0.5755190765309948,
+            "delta_micro": 0.11508363285809475,
+            "delta_macro": 0.11012240661043049,
+            "delta_median": 0.08764367816091956,
+            "n_win_mixed": 3876,
+            "n_tie": 410,
+            "n_loss_mixed": 1051,
+            "wilcoxon_statistic": 1706039.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.5273402749248552,
+            "mixed_micro": 0.5395574108745181,
+            "delta_micro": 0.012217135949662894,
+            "delta_macro": 0.009224387143806644,
+            "delta_median": 0.00527009222661412,
+            "n_win_mixed": 2767,
+            "n_tie": 530,
+            "n_loss_mixed": 2040,
+            "wilcoxon_statistic": 4858928.0,
+            "wilcoxon_p_value": 1.2793335500667706e-21,
+            "holm_p_value_within_split": 1.2793335500667706e-21
+          }
+        ],
+        "chanrg_genc": [
+          {
+            "seed": 0,
+            "clean_micro": 0.22466086063181487,
+            "mixed_micro": 0.2820266495881589,
+            "delta_micro": 0.057365788956344005,
+            "delta_macro": 0.05379025948724429,
+            "delta_median": 0.0030161610923861992,
+            "n_win_mixed": 2002,
+            "n_tie": 681,
+            "n_loss_mixed": 1253,
+            "wilcoxon_statistic": 1631911.5,
+            "wilcoxon_p_value": 2.5589055328980184e-80,
+            "holm_p_value_within_split": 7.676716598694056e-80
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.26738929232521713,
+            "mixed_micro": 0.2855014390286788,
+            "delta_micro": 0.018112146703461673,
+            "delta_macro": 0.014774240567873268,
+            "delta_median": 0.0,
+            "n_win_mixed": 1726,
+            "n_tie": 842,
+            "n_loss_mixed": 1368,
+            "wilcoxon_statistic": 2100686.5,
+            "wilcoxon_p_value": 3.587701747906109e-09,
+            "holm_p_value_within_split": 3.587701747906109e-09
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.26265432365044994,
+            "mixed_micro": 0.23920396409438402,
+            "delta_micro": -0.02345035955606592,
+            "delta_macro": -0.0192727614083507,
+            "delta_median": 0.0,
+            "n_win_mixed": 1428,
+            "n_tie": 841,
+            "n_loss_mixed": 1667,
+            "wilcoxon_statistic": 2061998.5,
+            "wilcoxon_p_value": 1.965124913555115e-11,
+            "holm_p_value_within_split": 3.93024982711023e-11
+          }
+        ],
+        "chanrg_genf": [
+          {
+            "seed": 0,
+            "clean_micro": 0.2581902169004271,
+            "mixed_micro": 0.23245204199417355,
+            "delta_micro": -0.025738174906253547,
+            "delta_macro": -0.021033510734767825,
+            "delta_median": 0.0,
+            "n_win_mixed": 626,
+            "n_tie": 447,
+            "n_loss_mixed": 661,
+            "wilcoxon_statistic": 388330.0,
+            "wilcoxon_p_value": 0.05047830744570372,
+            "holm_p_value_within_split": 0.05047830744570372
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.2771258557809201,
+            "mixed_micro": 0.2584463897993334,
+            "delta_micro": -0.018679465981586707,
+            "delta_macro": -0.014517472143167693,
+            "delta_median": 0.0,
+            "n_win_mixed": 523,
+            "n_tie": 535,
+            "n_loss_mixed": 676,
+            "wilcoxon_statistic": 304471.5,
+            "wilcoxon_p_value": 4.11962414852968e-06,
+            "holm_p_value_within_split": 8.23924829705936e-06
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.26644270250093316,
+            "mixed_micro": 0.2834584584584584,
+            "delta_micro": 0.017015755957525247,
+            "delta_macro": 0.022932916579399797,
+            "delta_median": 0.0,
+            "n_win_mixed": 713,
+            "n_tie": 521,
+            "n_loss_mixed": 500,
+            "wilcoxon_statistic": 283194.5,
+            "wilcoxon_p_value": 3.3679505716484006e-12,
+            "holm_p_value_within_split": 1.0103851714945202e-11
+          }
+        ]
+      }
+    }
   }
 }

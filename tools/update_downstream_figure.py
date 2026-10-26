@@ -97,7 +97,7 @@ def main():
         comp = record["comparison"]
         c.text(xi, max(paper[xi], jev[xi])+0.08, f"Δ {comp['delta_mean']:+.3f}\nHolm {comp['holm_p_value']:.2g}",
                ha="center", fontsize=7.2, color=C["teal"], fontweight="bold")
-    c.set_xticks(x, [name.replace("_", "\n") for _, name in positive], fontsize=7.5)
+    c.set_xticks(x, [name.replace("_", "\n") for name, _ in positive], fontsize=7.5)
     c.set_ylabel("PCC (5-seed mean ± SD)")
     c.set_title("c  New MRL tasks passing the significance gate", loc="left", fontweight="bold", pad=12)
     c.legend(fontsize=7.2, loc="upper left")

@@ -59,7 +59,7 @@ def main():
     for token in forbidden:
         assert token.lower() not in all_text.lower(), token
     if not args.draft:
-        for token in ["DRAFT", "等待完整实测矩阵", "缺一格即不出主图", "TODO", "TBD"]:
+        for token in ["DRAFT", "等待完整实测矩阵", "缺一格即不出主图", "新任务未完成前", "TODO", "TBD"]:
             assert token not in all_text, token
         assert len(images) == 10, f"expected ten unique main raster figures, got {len(images)}"
         assert len(set(digest for _, digest in images)) == len(images), "duplicate raster image across slides"
@@ -69,6 +69,8 @@ def main():
         assert "A100 上是 RNAformer 与 UFold" in texts[8]
         assert "r2dtr1c-s0" in texts[4] and "0.667971" in texts[4]
         assert "0.5532" in texts[15] and "0.6132" in texts[15]
+        assert "B4/B2 控制各 8/8" in texts[5]
+        assert "mixed_s2" in texts[18] and "0.3541" in texts[18]
     print(f"DECK_QA_PASS slides={len(prs.slides)} images={len(images)} unique_images={len(set(d for _, d in images))}")
     print("FONTS", dict(fonts))
     print("FONT_SIZE_RANGE", min(sizes), max(sizes))

@@ -3,9 +3,9 @@ import path from "node:path";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const PptxGenJS = require("pptxgenjs");
-const ROOT = process.env.RNAJEV_DECK_ROOT || "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261025_03";
+const ROOT = process.env.RNAJEV_DECK_ROOT || "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261020_02";
 const FIG = path.join(ROOT, "figures");
-const OUT = process.argv[2] || path.join(ROOT, "RNA-JEV_论文逻辑重构_20261025.pptx");
+const OUT = process.argv[2] || path.join(ROOT, "RNA-JEV_论文逻辑重构_20261026.pptx");
 const D = JSON.parse(fs.readFileSync(path.join(FIG, "source_data.json"), "utf8"));
 const AB_JSON = path.join(FIG, "main_ablation_5x8.json");
 const AB_FIG_A = path.join(FIG, "fig03a_ablation_matrix_3840x1920.png");
@@ -184,7 +184,7 @@ function table(slide, rows, { x, y, w, colW, rowH = 0.35, fontSize = 9, headerSi
   rect(s, 0.68, 4.62, 6.70, 1.22, "182944", "182944");
   text(s, "核心原则", 0.92, 4.83, 1.5, 0.28, 11, "73D4D0", { bold: true });
   text(s, "模型身份、数据划分、评分器与硬件协议必须同时匹配；不重复展示同一证据。", 0.92, 5.18, 6.12, 0.46, 12, T.white);
-  text(s, "2026-10-25 · Round 32", 0.68, 6.66, 4.5, 0.30, 11, "AAB6C8");
+  text(s, "2026-10-26 · Round 32", 0.68, 6.66, 4.5, 0.30, 11, "AAB6C8");
   // 原生 L×L 决策矩阵，呼应主题而非装饰性图片。
   const x0 = 8.65, y0 = 1.46, cell = 0.39;
   rect(s, 8.28, 1.08, 4.25, 4.55, "162740", "2B3C56");
@@ -354,7 +354,14 @@ figureSlide(9, "06 / 精度-速度", "主图 5｜真实帕累托集：A100 上�
 figureSlide(11, "08 / 跨骨干迁移", "主图 7｜Jev-on-NucleicBERT：8/8 split 均正增益", "Δ +0.055 至 +0.234，平均 +0.134；OOD/家族 split 增益更大。", "fig07_nucleicbert_transfer_3840x1920.png", "回答兼容性问题：同一 Jev 决策头不依赖 RiNALMo 特有表征；ArchII 使用匹配的 trunc598 口径。", "ROUND26 / T-A99；NB-ft 与 Jev-on-NB 8-split");
 const NEW_POSITIVE = HAS_MRL ? Object.entries(D.downstream.additional_mrl || {}).filter(([, r]) => r.comparison.significant_positive).map(([name]) => name) : [];
 const DOWNSTREAM_NOTE = HAS_MRL ? (NEW_POSITIVE.length ? `新增显著正结果：${NEW_POSITIVE.join("、")}；其余数据留档。` : "新增三组 MRL 已完成但未达显著门，全部数据留档。") : "新增任务必须完成预注册与统计后再加入。";
-figureSlide(12, "09 / RiNALMo 下游", "主图 8｜下游头迁移：ncRNA 三指标提升，回归任务小幅为正", "ncRNA 保留 accuracy / macro-F1 / balanced accuracy；MRL 与 TE-EL 保留 PCC。", "fig08_rinalmo_downstream_3840x1920.png", `合并原第 25、28a、36 页信息；splice 数据留档不进主文。${DOWNSTREAM_NOTE}`, "ROUND26 / ROUND28 / T-A129；frozen backbone 双头对照");
+const TRANSFER_CLAIM = `NucleicBERT 8/8 正增益；ncRNA 三指标提升${NEW_POSITIVE.length ? `；新增 MRL ${NEW_POSITIVE.length} 组显著正` : ""}`;
+const TRANSFER_LIMIT = HAS_MRL
+  ? (NEW_POSITIVE.length ? "显著性仅限所报 MRL；TE-EL 增益较小，不扩写为普遍优势" : "新增 MRL 未过显著门，TE-EL 增益较小；不扩写为普遍优势")
+  : "MRL/TE-EL 增益较小；新任务未完成前不得扩写为普遍优势";
+const DOWNSTREAM_TITLE = NEW_POSITIVE.length
+  ? `主图 8｜下游头迁移：ncRNA 提升，新增 MRL ${NEW_POSITIVE.length} 组显著正`
+  : "主图 8｜下游头迁移：ncRNA 三指标提升，回归任务小幅为正";
+figureSlide(12, "09 / RiNALMo 下游", DOWNSTREAM_TITLE, "ncRNA 保留 accuracy / macro-F1 / balanced accuracy；MRL 与 TE-EL 保留 PCC。", "fig08_rinalmo_downstream_3840x1920.png", `合并原第 25、28a、36 页信息；splice 数据留档不进主文。${DOWNSTREAM_NOTE}`, "ROUND26 / ROUND28 / T-A129；frozen backbone 双头对照");
 figureSlide(13, "10 / 外部 OOD", "主图 9｜CHANRG：重点看 OOD mean，而不是回避 GenF", "仅保留 RiNALMo-Giga ft、OFoldNA-SS、xens2、r2d 四个系统；其余数据留档。", "fig09_chanrg_ood_3840x1920.png", "xens2 OOD mean 0.4434 vs OFoldNA-SS 0.4410，仅写并列；GenF=0.3066 是弱项，不用均值掩盖。", "OFoldNA Table 3 同口径；ROUND26 CHANRG board");
 figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍是开放问题", "TS0 与 ArchiveII-clean 双面板；桶样本量和 strict micro-F1 全部保留。", "fig10_length_generalization_3840x1920.png", "长度分层用于界定部署边界，不把 retention 写成绝对长链优势；重复的原第 35 页已删除。", "ROUND29 length-bucket result.json 重算");
 
@@ -368,7 +375,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
     ["推理速度", "r2d 在 4090 达 124.78 seq/s，批大小改变不改预测", "A100 r2d 不在 Pareto 前沿；不把该速度与 xens2 F1 拼成联合点"],
     ["OOD", "先验栈消融 + CHANRG 外部 OOD 共同支撑鲁棒性", "GenF 弱、TS2 未胜；xens2 与 OFoldNA-SS 的 OOD mean 仅并列"],
     ["ECE", "四个大样本 split 均改善，结构置信度排序全正", "TS2/TS3 过校正；小样本噪声与族敏感性不可隐藏"],
-    ["兼容与迁移", "NucleicBERT 8/8 正增益；ncRNA 三指标提升", "MRL/TE-EL 增益较小；新任务未完成前不得扩写为普遍优势"],
+    ["兼容与迁移", TRANSFER_CLAIM, TRANSFER_LIMIT],
   ];
   table(s, rows, { x: MARGIN, y: 1.55, w: CONTENT_W, colW: [1.75, 5.0, 5.1], rowH: 0.74, fontSize: 9.2, headerSize: 9.5 });
   rect(s, MARGIN, 6.18, CONTENT_W, 0.54, T.paleBlue, T.paleBlue);
@@ -463,7 +470,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
 // 18 附录 D：当前实验与复现状态
 {
   const s = pptx.addSlide();
-  chrome(s, "附录 D / 当前队列", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed 的门判定与配对结果如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 19, "T-A126–T-A132 / audits / result.json / run_meta.json");
+  chrome(s, "附录 D / 实验状态", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed 的门判定与配对结果如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 19, "T-A126–T-A132 / audits / result.json / run_meta.json");
   const cur = D.matched_30k_current;
   const rows = [["arm", "Test", "GenA", "GenC", "GenF", "OOD mean", "当前判定"]];
   ["clean_s0", "mixed_s0", "clean_s1", "mixed_s1", "clean_s2", "mixed_s2"].forEach(name => {
