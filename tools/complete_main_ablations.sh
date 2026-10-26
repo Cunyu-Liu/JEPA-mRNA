@@ -180,37 +180,44 @@ run_existing_evals() {
   log "existing-weight evaluations complete: DP=8 Turner=2 scorer=2 nodistill=2"
 }
 
-train_norlcd() {
-  local out=$W/runs/rinalmo_r2dtr1c_norlcd_b4_s0_r32
+train_b2_arm() {
+  local arm=$1 lambda=$2 out=$W/runs/$1
   if ! "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d.get("converged") is True and d.get("stop_reason") == "early_stopping"' "$out/run_meta.json" 2>/dev/null; then
     if pgrep -f "[r]najepa.train_decision.*--out $out" >/dev/null; then
-      log "norlcd is already running; refusing duplicate"
+      log "$arm is already running; refusing duplicate"
       return 1
     fi
-    log "norlcd training starts: original B=4 recipe + held-out early stopping"
+    log "$arm training starts: paired B=2 protocol + held-out early stopping"
     CUDA_VISIBLE_DEVICES=0 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
       "$PY" -m rnajepa.train_decision \
-        --arm rinalmo_r2dtr1c_norlcd_b4_s0_r32 --out "$out" \
+        --arm "$arm" --out "$out" \
         --data "$JSONL/bprna_tr1c.jsonl" --teacher-dir "$D/ss_data/teacher/bprna_tr1c" \
-        --steps 100000 --batch-size 4 --lr 1e-4 --seed 0 \
+        --steps 100000 --batch-size 2 --lr 1e-4 --seed 0 \
         --log-every 25 --save-every 500 --head flat --scorer resnet2d \
         --resnet-blocks 4 --head-chunk-size 0 --hidden 64 --d-z 128 \
         --nll-normalization sum --distill-kind kl --rlcd-reward brier \
-        --lambda-nll 1 --lambda-distill 1 --lambda-rlcd 0 --lambda-cal 1 \
+        --lambda-nll 1 --lambda-distill 1 --lambda-rlcd "$lambda" --lambda-cal 1 \
         --gpu-reserve-gb 12 --embedding-dir "$EMB" --embedding-d-model 1280 \
         --device cuda --validation-data "$JSONL/bprna_vl0.jsonl" \
         --validation-teacher-dir "$W/data/teacher_vl0" \
         --validation-max-examples 196 --validation-every 500 \
         --validation-patience 6 --validation-min-delta 0 >> "$LOG" 2>&1
   fi
-  "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["environment"]["resolved_device"].startswith("cuda"); assert d.get("converged") is True and d.get("stop_reason") == "early_stopping"; assert d.get("best_step") is not None; assert d["config"]["lambda_rlcd"] == 0; assert d["config"]["batch_size"] == 4' "$out/run_meta.json"
-  patch_ckpt "$out/best.pt" "$WEIGHTS/norlcd.pt" >> "$LOG"
+  "$PY" -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["environment"]["resolved_device"].startswith("cuda"); assert d.get("converged") is True and d.get("stop_reason") == "early_stopping"; assert d.get("best_step") is not None; assert d["config"]["batch_size"] == 2; assert d["config"]["lambda_rlcd"] == float(sys.argv[2])' "$out/run_meta.json" "$lambda"
+  patch_ckpt "$out/best.pt" "$WEIGHTS/$arm.pt" >> "$LOG"
+}
+
+train_norlcd() {
+  log "B=4 norlcd OOM is preserved; using paired B=2 control and B=2 no-RLCD arms, no silent protocol fallback"
+  train_b2_arm rinalmo_r2dtr1c_b2_s0_r32 1
+  train_b2_arm rinalmo_r2dtr1c_norlcd_b2_s0_r32 0
   local split expected
   for item in bprna_ts0:1288 bprna_new:5388 ref_pdb_ts1:63 ref_pdb_ts2:39 ref_pdb_ts3:19 ref_pdb_ts_hard:28 archiveii_embok_clean:2544 testsetb:428; do
     split=${item%%:*}; expected=${item##*:}
-    run_eval norlcd_r32 "$WEIGHTS/norlcd.pt" "$split" -1 "$expected"
+    run_eval control_b2 "$WEIGHTS/rinalmo_r2dtr1c_b2_s0_r32.pt" "$split" -1 "$expected"
+    run_eval norlcd_b2 "$WEIGHTS/rinalmo_r2dtr1c_norlcd_b2_s0_r32.pt" "$split" -1 "$expected"
   done
-  log "norlcd converged and all eight splits evaluated"
+  log "paired B=2 control and no-RLCD converged; all eight splits evaluated for both"
 }
 
 if [ "${1:-}" = "--preflight" ]; then

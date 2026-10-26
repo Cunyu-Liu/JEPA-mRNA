@@ -2,19 +2,19 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **当前执行队列（2026-10-25 23:25，第 32 轮）**：旧队列只作历史，完成状态以 artifact/CUDA/验收门为准。
+> **当前执行队列（2026-10-26，第 32 轮续）**：旧队列只作历史，完成状态以 artifact/CUDA/验收门为准。
 >
 > | 任务 | 当前状态 | 下一步与完成判据 |
 > |---|---|---|
-> | **T-A126 三个新臂结果三遍复核** | **已完成** | `tools/verify_matched_round32.py` 对 clean_s0/mixed_s0/clean_s1 共 12 格完成 CUDA、样本数、micro、per-sequence F1/macro/INF、合法性、best checkpoint、run_meta、数据行数与 SHA256 三通道复核，PASS；报告 `audits/round32_matched_verification.json`，SHA256=`611a7391…` |
-> | **T-A127 matched_30k 六臂收敛与统计** | **5/6 完成，20/24 格三通道 PASS** | clean_s2 已 early-stopping（best step 19000）并完成四 split；mixed_s2 于 03:47 启动。clean_s2 Test/GenA/GenC/GenF=0.625035/0.527340/0.262654/0.266443，OOD mean=0.352146。六臂 early-stopping 后由独立 `complete_matched_analysis.sh` 完成 24 格、3-seed mean±std、逐序列 Wilcoxon–Holm 与预注册门判定，不提前写最终结论 |
-> | **T-A128 五类消融×8 split** | **预检通过，等待 matched 24 格门** | fftr1c/nodistill 权重已恢复 strict-load；DP/Turner/2D/nodistill 直接补评，只有 norlcd 按原 B=4 配方+VL0 early-stopping 重训。`complete_main_ablations.sh` 自动执行；最终由 `build_main_ablation_matrix.py` 检查 40/40+控制 8/8、CUDA、样本覆盖、micro/macro 与 DP exact/control 一致性 |
+> | **T-A126 三个新臂结果三遍复核** | **已完成** | `tools/verify_matched_round32.py` 对 clean_s0/mixed_s0/clean_s1 共 12 格完成 CUDA、样本数、micro、per-sequence F1/macro/INF、合法性、best checkpoint、run_meta、数据行数与 SHA256 三通道复核，PASS；报告 `audits/round32_matched_verification.json` |
+> | **T-A127 matched_30k 六臂收敛与统计** | **已完成：6/6、24/24、统计 PASS** | 六臂均 early-stopping；24 格三通道复核、3-seed mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成。clean/mixed OOD mean=0.335717/0.362586，xens2=0.443366；GenF 混合假设、GenF SOTA、OOD mean SOTA、OFoldNA OOD mean 四门均未通过，按负结果保留 |
+> | **T-A128 五类消融×8 split** | **进行中：B=4 norlcd OOM 后改为 B=2 配对重训** | DP=8/8 与 Turner/2D/nodistill 两个补评分 split 已完成，不重跑。no-RLCD 的 B=4 step-25 OOM 留档；B=2 控制与 B=2 no-RLCD 使用相同配方、种子和 VL0 early-stopping，双方各评 8 split。最终检查 40/40+B4/B2 控制各 8/8、CUDA、覆盖、micro/macro、DP exact/control 一致性；No RLCD 只对 control_B2 求差 |
 > | **T-A129 新 RiNALMo 下游任务** | **预注册与实现完成，队列等待 T-A128** | 本地 GSE114002 三组 MRL：mcherry_1/designed_library/varying_length；三组序列均全唯一且 train/validation/test 精确重叠=0；RiNALMo-giga meanpool、paper head vs Jev head、每长度 100 validation+100 test、5 seed、paired t-test+Holm。`eval_mrl_suite.py` 在 CUDA 上 early-stopping（patience=32、min_delta=1e-5、max_epochs=2000 仅失败保护），预测/权重/数据 SHA256 留档；显著正结果才入主图，其余保留 |
-> | **T-A130 论文逻辑版 PPT** | **8/10 图已生成，deck 组装中** | 待消融 40/40 后补第 3 主图；完成架构原生图、图文匹配、微软雅黑/1.5 行距、markitdown/fix/layout/全页渲染 |
+> | **T-A130 论文逻辑版 PPT** | **8/10 图已生成，deck 组装中** | 待消融 40/40 后补第 3 主图；绘图与 deck 已接受 control/control_B2+五消融共 7 行，附录包含全部六个 matched 臂；完成架构原生图、图文匹配、微软雅黑/1.5 行距、markitdown/fix/layout/全页渲染 |
 > | **T-A131 台账/spec/GitHub** | **进行中** | 每轮记录配置、权重哈希、CUDA、收敛和结论；本地与远端 spec 同步，确认代码提交 push，秘密与大文件不入库 |
 > | **T-A132 最终验收** | **未开始** | 数值三通道、PPT 内容/布局/渲染、实验合同分开验收；未达科学门不得因排版完成而放行 |
 >
-> **新增工程事实**：3 份已有权重 strict-load 通过；VL0 196 条 ViennaRNA 2.7.2 教师标签已生成至团队盘；相关测试 8 passed；消融 driver 已启动但只等待 matched 门，不抢占当前训练。
+> **新增工程事实**：matched 统计文件 `tables/matched_30k_statistics.json` 已验收；B=4 OOM 不通过静默降批掩盖，而是以同协议 B=2 控制保证 no-RLCD 单变量对照；矩阵 CSV/Markdown 表头、绘图行数和 PPT 证据门均已同步为 7 行。
 
 
 > **当前执行队列（2026-10-24，第二十九轮接管审计）**：

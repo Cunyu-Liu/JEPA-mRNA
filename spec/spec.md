@@ -2,14 +2,13 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **当前交接（2026-10-25 23:25，第 32 轮：结果复核、模型身份纠错与消融补齐全链）**：
-> - **实时状态**：clean_s0/s1/s2 与 mixed_s0/s1 已完成 held-out early-stopping 与四 split CUDA 终评；当前 5/6 臂、20/24 格均通过三通道复核。clean_s2 best step=19000，Test/GenA/GenC/GenF=0.625035/0.527340/0.262654/0.266443，OOD mean=0.352146；mixed_s2 于 03:47 启动。T-A126 的 12 格验收已完成，新增 8 格同样通过。
-> - **新结果**：mixed_s0 Test/GenA/GenC/GenF=0.580921/0.567109/0.282027/0.232452，OOD mean=0.360529，低于 zero-shot xens2 0.443366，GenF 未过 0.3112/0.4035 门；clean_s0=0.639468/0.477211/0.224661/0.258190，clean_s1=0.627430/0.460435/0.267389/0.277126。三种子未齐前不得写最终统计结论。
-> - **主 benchmark 模型身份复核**：统一 xens2 对预注册去污染参照为 **6/8**，不是旧表 7/8。bpRNA-new 的 xens2=0.5532；旧表 0.6132 属于 r2d_tr1 两种子集成，不能与其他七格 xens2 拼成同一模型。历史逐 split 混合集成可另列 7/8，但必须标明模型替换。全板干净敏感性 xens2=5/8，最佳单 checkpoint=4/8。TestSetB clean 的 xens2=0.8370（0.8448 为全集），单 r2d clean=0.7167（0.7507 为全集），TS2=0.8604。
+> **当前交接（2026-10-26，第 32 轮续：matched 收官与 B=2 配对消融）**：
+> - **T-A127 已完成**：六臂均达到 held-out early-stopping，24/24 格通过 CUDA、样本覆盖、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核；三种子 mean±std、逐序列 Wilcoxon–Holm 和预注册门判定已完成。clean/mixed 家族 OOD mean 分别为 0.335717/0.362586，zero-shot xens2 为 0.443366；`genf_mix_hypothesis_pass`、`genf_sota_pass`、`ood_mean_sota_pass`、`ofoldna_ood_mean_pass` 均为 **False**，不得把 mixed 写成 GenF 或总体 OOD 优势。
+> - **主 benchmark 模型身份复核**：统一 xens2 对预注册去污染参照为 **6/8**，不是旧表 7/8。bpRNA-new 的 xens2=0.5532；旧表 0.6132 属于 r2d_tr1 两种子集成，不能与其他七格 xens2 拼成同一模型。历史逐 split 混合集成可另列 7/8，但必须标明模型替换。全板干净敏感性 xens2=5/8，最佳单 checkpoint=4/8。TestSetB clean 的 xens2=0.8370（0.8448 为全集），单 r2d clean=0.716699（0.7507 为全集），TS2=0.8604。
 > - **速度与 Pareto 口径**：124.78 seq/s 属于 r2dtr1c-s0（TS0 F1=0.667971），不是 xens2 的精度-速度联合点。Figure 5 仅用 A100 同节点、同 split、strict micro-F1 计算真实 Pareto 集；r2d 在 A100 被 RNAformer 同时以更高 F1/吞吐支配，不得画成前沿点。4090 更新单列，不混入 A100 前沿。
-> - **T-A128 消融闭环**：fftr1c 与 nodistill 的实体 resume.pt 已找到并 strict-load，只有 norlcd 缺权重。`tools/complete_main_ablations.sh`、`solver_ablation.py`、`build_main_ablation_matrix.py` 已预检通过并挂接 matched 24 格门；DP 全 8 split 直接评测，Turner/fftr1c/nodistill 各补 ArchII/TestSetB，norlcd 按原 B=4 配置和 VL0 early-stopping 重训后全 8 split 评测。40/40 缺一格不得出图。
+> - **T-A128 消融闭环**：DP=8/8 以及 Turner/2D-scorer/nodistill 的 ArchiveII-clean、TestSetB 补评已完成，既有结果直接复用。no-RLCD 的原 B=4 臂在 step 25 确认 CUDA OOM，错误保留在 `main_ablations.log`；现预注册 **B=2 控制臂 + B=2 no-RLCD 配对重训**，两臂均须 VL0 early-stopping 收敛并各完成 8/8 CUDA 终评。只有 No RLCD 与 `control_B2` 比较，其余四项仍与 B=4 控制比较；最终门为 40/40 消融格 + B4/B2 控制各 8/8，缺一格不得出图。
 > - **T-A129 新增下游**：本地 GSE114002 的 mcherry_1/designed_library/varying_length 三组 MRL 已预注册为 paper head vs Jev head 对照，5 seed、每长度独立 validation/test、paired t-test+Holm、early-stopping 收敛。实现通过稀疏真实信号合成验证，队列在 T-A128 后启动；显著正结果才入主图，其他结果留档。
-> - **PPT 合同**：按评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NB 迁移→RiNALMo 下游→CHANRG OOD→长度边界组织；10 主图去重、附录保留完整基线/工程协议。已生成 8 张闭环图，修正了模型身份、ECE 数组、A100 Pareto、CHANRG 四系统和图例遮挡；消融图待 40/40 实测。字体声明微软雅黑，正文 1.5 倍行距。
+> - **PPT 合同**：按评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NB 迁移→RiNALMo 下游→CHANRG OOD→长度边界组织；10 主图去重、附录保留完整基线/工程协议。已生成 8 张闭环图，修正了模型身份、ECE 数组、A100 Pareto、CHANRG 四系统和图例遮挡；消融图待 40/40 实测。矩阵证据包含 B4/B2 两个控制行，PPT 附录显示全部六个 matched 臂。字体声明微软雅黑，正文 1.5 倍行距。
 
 
 > **当前交接（2026-10-24，第二十九轮接管审计；本节是当前执行依据）**：

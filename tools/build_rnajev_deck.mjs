@@ -15,7 +15,7 @@ const MATCHED_JSON = path.join(FIG, "matched_30k_statistics.json");
 const AB_DATA = fs.existsSync(AB_JSON) ? JSON.parse(fs.readFileSync(AB_JSON, "utf8")) : null;
 const MRL_DATA = fs.existsSync(MRL_JSON) ? JSON.parse(fs.readFileSync(MRL_JSON, "utf8")) : null;
 const MATCHED_DATA = fs.existsSync(MATCHED_JSON) ? JSON.parse(fs.readFileSync(MATCHED_JSON, "utf8")) : null;
-const HAS_AB = !!AB_DATA && Object.keys(AB_DATA.rows || {}).length === 6 && Object.values(AB_DATA.rows).every(row => Object.keys(row).length === 8) && fs.existsSync(AB_FIG_A) && fs.existsSync(AB_FIG_B);
+const HAS_AB = !!AB_DATA && Object.keys(AB_DATA.rows || {}).length === 7 && Object.values(AB_DATA.rows).every(row => Object.keys(row).length === 8) && fs.existsSync(AB_FIG_A) && fs.existsSync(AB_FIG_B);
 const HAS_MRL = !!MRL_DATA && MRL_DATA.status === "PASS" && Object.keys(MRL_DATA.results || {}).length === 3;
 const HAS_MATCHED = !!MATCHED_DATA && MATCHED_DATA.status === "PASS" && MATCHED_DATA.n_arms === 6 && MATCHED_DATA.n_cells === 24;
 const HAS_ALL = HAS_AB && HAS_MRL && HAS_MATCHED;
@@ -270,7 +270,7 @@ figureSlide(5, "03 / 推理速度", "主图 2｜r2d 单模型 124.78 seq/s，F1 
 
 // 06 消融：正式版必须有完整矩阵，draft 仅展示执行状态。
 if (HAS_AB) {
-  figureSlide(6, "04 / OOD 机制", "主图 3a｜五类消融 × 8 split：全矩阵性能变化", "控制模型、评分协议和缺失格全部一致；不以单一 OOD 均值掩盖任务差异。", "fig03a_ablation_matrix_3840x1920.png", "每格均为消融−控制的 strict micro-F1 变化；五类消融与八 split 全部实测。", "main_ablation_5x8.json；40/40 + 控制 8/8 原始结果");
+  figureSlide(6, "04 / OOD 机制", "主图 3a｜五类消融 × 8 split：全矩阵性能变化", "每行使用匹配控制；No RLCD 单独使用同协议 B=2 控制，避免把显存修复混入消融效应。", "fig03a_ablation_matrix_3840x1920.png", "每格均为消融−匹配控制的 strict micro-F1 变化；五类消融与八 split 全部实测。", "main_ablation_5x8.json；40/40 + B4/B2 控制各 8/8 原始结果");
   figureSlide(7, "04 / OOD 机制", "主图 3b｜核心三模块：ID、外部集与 PDB-OOD 效应分解", "DP、Turner 和 2D scorer 单独对照；保留原第 37 页的统一签名读法。", "fig03b_ood_signature_3840x1920.png", "ID=TS0/ArchiveII-clean；外部集=bpRNA-new/TestSetB；PDB-OOD=TS1/TS2/TS3/TS-hard。旧 DP OOD=0.43 代理值已撤回。", "main_ablation_5x8.json；核心三模块的分组均值与 PDB/ID 比值");
 } else {
   const s = pptx.addSlide();
@@ -281,7 +281,7 @@ if (HAS_AB) {
     ["Turner = 0", "6/8", "ArchII / TestSetB", "同一 r2d 权重、prior_weight=0"],
     ["2D scorer → pair MLP", "6/8", "ArchII / TestSetB", "复用 fftr1c 实体权重"],
     ["No distillation", "6/8", "ArchII / TestSetB", "复用 nodistill 实体权重"],
-    ["No RLCD", "6/8（历史）", "统一新 ckpt 的 8/8", "唯一重训臂；VL0 early-stopping"],
+    ["No RLCD", "B=4 OOM 已留档", "B=2 双臂各 8/8", "B=2 控制与消融配对重训；VL0 early-stopping"],
   ];
   table(s, rows, { x: MARGIN, y: 1.60, w: CONTENT_W, colW: [2.6, 1.5, 2.4, 4.6], rowH: 0.58, fontSize: 10 });
   rect(s, MARGIN, 5.48, CONTENT_W, 0.92, T.paleRed, T.paleRed);
@@ -466,7 +466,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
   chrome(s, "附录 D / 当前队列", HAS_MATCHED ? "实验状态与统计门：所有结果先验证，再决定主文呈现" : "新实验只进入记录，不在主文伪装成收官结果", HAS_MATCHED ? "matched_30k 三种子统计已纳入；mixed 的门判定与配对结果如实保留。" : "matched_30k 三种子尚未齐；mixed_s0 单点负结果如实保留。", 19, "T-A126–T-A132 / audits / result.json / run_meta.json");
   const cur = D.matched_30k_current;
   const rows = [["arm", "Test", "GenA", "GenC", "GenF", "OOD mean", "当前判定"]];
-  ["clean_s0", "mixed_s0", "clean_s1", "mixed_s1", "clean_s2"].forEach(name => {
+  ["clean_s0", "mixed_s0", "clean_s1", "mixed_s1", "clean_s2", "mixed_s2"].forEach(name => {
     const v = cur[name];
     const ood = (v[1] + v[2] + v[3]) / 3;
     const gates = HAS_MATCHED ? cur.statistics.verdicts : null;
@@ -481,7 +481,7 @@ figureSlide(14, "11 / 长度边界", "主图 10｜短中段领先，>400 nt 仍�
   table(s, rows, { x: MARGIN, y: 1.55, w: CONTENT_W, colW: [1.65, 0.85, 0.85, 0.85, 0.85, 1.05, 2.35], rowH: currentRowH, fontSize: 8.7 });
   const states = [
     ["T-A127", "matched 六臂与统计", HAS_MATCHED ? "24 格、3-seed mean±std 与 Wilcoxon–Holm 已完成；按预注册门判读。" : "mixed_s1 已 early-stopping；s2 与 24 格验收后继续，未齐不写最终结论。"],
-    ["T-A128", "五类消融 40/40", HAS_AB ? "40/40 与控制 8/8 已完成；按 ID/外部/PDB-OOD 分组读图。" : "既有权重直接补评；norlcd 为唯一重训臂，VL0 early-stopping。"],
+    ["T-A128", "五类消融 40/40", HAS_AB ? "40/40 与 B4/B2 控制各 8/8 已完成；按 ID/外部/PDB-OOD 分组读图。" : "DP/Turner/2D/nodistill 直接补评；No RLCD 使用 B=2 控制与消融配对重训。"],
     ["T-A129", "新增 RiNALMo 下游", HAS_MRL ? DOWNSTREAM_NOTE : "三组 MRL 已预注册；5-seed、early-stopping、paired t-test+Holm。"],
     ["复现门", "代码与证据", `GitHub round29-handoff 已推送；${HAS_MATCHED ? "24" : "20"} 格三通道 PASS；权重与数据 SHA256 留档。`],
   ];

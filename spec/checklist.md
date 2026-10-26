@@ -2,17 +2,17 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **第 32 轮增量验收（2026-10-25 23:25）**：
-> - [x] 五个已完成臂 20 格的 CUDA、样本数、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核通过；clean_s2 best step=19000。
+> **第 32 轮增量验收（2026-10-26 续）**：
+> - [x] matched 六臂均 early-stopping；24/24 格 CUDA、样本数、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核通过。
+> - [x] 三种子 mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成；四个科学门均未通过，禁止改写为正结论。
 > - [x] fftr1c/nodistill/r2d 权重 strict-load、消融脚本静态检查、VL0 196 条 ViennaRNA 2.7.2 标签和相关 8 tests 通过。
-> - [x] 三个新臂 12 格 macro/INF 与来源链第二、第三通道复核完成（T-A126，`verify_matched_round32.py` PASS）。
-> - [ ] matched 六臂 24 格及三种子统计完成。
-> - [ ] 五类消融 40/40+控制 8/8；当前自动队列只完成预检，不能勾选实验完成。
+> - [x] DP=8/8 与 Turner/2D-scorer/nodistill 的 ArchiveII-clean/TestSetB 补评完成；B=4 no-RLCD 的 step-25 OOM 已保留证据。
+> - [ ] B=2 控制与 B=2 no-RLCD 均 early-stopping 并各完成 8/8 CUDA 终评；最终五类消融 40/40+B4/B2 控制各 8/8 后才可勾选完成。
 > - [x] 三组 MRL 数据与双头协议已预注册，CUDA 稀疏信号训练/早停验证通过，队列已挂接 T-A128 后门。
 > - [ ] 三组 MRL 5-seed 训练、配对 t-test+Holm 与独立复核完成后才入主图。
 > - [ ] 新 PPT 10 图去重、图文匹配、字体/1.5 行距、markitdown/fix/layout/全页渲染通过。
 > - [ ] 本地/远端 spec、训练台账和 GitHub 同步完成。
-> - **禁止放行**：统一 xens2 不得写旧 7/8；124.78 不得与 xens2 F1=0.8039 拼成精度-速度点；A100 r2d 不得画入 Pareto 前沿；DP OOD=0.43 不得复用。
+> - **禁止放行**：统一 xens2 不得写旧 7/8；124.78 不得与 xens2 F1=0.8039 拼成精度-速度点；A100 r2d 不得画入 Pareto 前沿；DP OOD=0.43 不得复用；No RLCD 不得与 B=4 控制直接求差。
 
 
 > **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：

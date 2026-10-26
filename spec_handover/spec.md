@@ -2,11 +2,11 @@
 
 > change-id: `build-rna-ss-decision-model`
 
-> **2026-10-25 第 32 轮接管更新**：当前权威 spec/tasks 为 `/home/rna_jev/spec/` 第 32 轮块。clean_s0、mixed_s0、clean_s1 已完成 early-stopping 和四 split CUDA 终评，mixed_s1 正常训练，s2 排队。mixed_s0 OOD mean=0.360529、GenF=0.232452，未过门，三种子未齐不得写最终结论。
+> **2026-10-26 第 32 轮续接管更新**：当前权威 spec/tasks 为 `/home/rna_jev/spec/` 第 32 轮续块。matched 六臂均 early-stopping，24/24 格三通道复核和三种子统计已完成；clean/mixed 家族 OOD mean=0.335717/0.362586，xens2=0.443366，GenF 混合假设、GenF SOTA、OOD mean SOTA、OFoldNA OOD mean 四门均未通过，按负结果保留。
 >
 > 统一 xens2 对预注册去污染参照为 **6/8**；旧 7/8 在 bpRNA-new 用 r2d_tr1 集成 0.6132 替代 xens2=0.5532，模型身份不一致。124.78 seq/s 属于 r2dtr1c-s0，不是 xens2 联合点；A100 Pareto 只含 RNAformer/UFold，r2d 被支配。
 >
-> 消融自动队列已预检通过并等待 matched 24 格门：fftr1c/nodistill 权重已恢复，只有 norlcd 需按原 B=4 配方+VL0 early-stopping 重训。PPT 重构按 10 主图去重，8 张闭环图已生成，缺数据的消融图不得抢先标完成。详细完成判据见 `spec/tasks.md` T-A126–T-A132。
+> 消融 DP=8/8 与 Turner/2D/nodistill 补评已完成。no-RLCD 的 B=4 臂 step 25 CUDA OOM 已留档，改为 B=2 控制+B=2 no-RLCD 配对重训；仅该行对 control_B2 求差，其余仍用 B=4 控制。最终须 40/40+B4/B2 控制各 8/8。PPT 重构按 10 主图去重，8 张闭环图已生成，缺数据的消融图不得抢先标完成。详细完成判据见 `spec/tasks.md` T-A126–T-A132。
 
 
 > **2026-10-24 接管更新**：本目录不再是第9轮历史状态的执行依据。当前权威 spec/tasks 为 `/home/rna_jev/spec/spec.md` 与 `/home/rna_jev/spec/tasks.md` 的“第二十九轮接管审计”节；本节与其同步，旧下文仅作历史快照。

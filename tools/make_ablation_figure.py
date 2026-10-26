@@ -131,7 +131,8 @@ def main():
     OUTPUT_DIR = args.out_dir
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     data = json.loads(args.input.read_text(encoding="utf-8"))
-    assert len(data["rows"]) == 6 and all(len(v) == 8 for v in data["rows"].values())
+    assert len(data["rows"]) == 7 and all(len(v) == 8 for v in data["rows"].values())
+    assert {"control", "control_B2", *ROWS} == set(data["rows"])
     assert set(data["delta_from_control"]) == set(ROWS)
     delta = np.array([[data["delta_from_control"][row][split] for split in SPLITS] for row in ROWS])
     assert np.isfinite(delta).all()

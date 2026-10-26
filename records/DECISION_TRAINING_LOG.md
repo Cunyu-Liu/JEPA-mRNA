@@ -9977,3 +9977,18 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `chanrg_clean_30k_s2` 在 step 22000 触发 early-stopping，恢复 best step=19000，四 split 于 03:47 全部完成：Test 0.625035 / GenA 0.527340 / GenC 0.262654 / GenF 0.266443，OOD mean=0.352146。
 - `verify_matched_round32.py` 当前 completed=[clean_s0, clean_s1, clean_s2, mixed_s0, mixed_s1]，20/24 格全部通过三通道复核。报告 SHA256=`60442300…`。
 - `mixed_30k_s2` 于 03:47 启动，是六臂门的最后一个训练臂。matched 24 格完成后，独立统计、主消融和 MRL 三条队列按 artifact 门自动接续；不提前改写最终科学结论。
+
+## §15.104 Matched 三种子收官与 no-RLCD B=2 配对协议（2026-10-26）
+
+### A. T-A127 六臂与统计闭环
+
+- `mixed_30k_s2` 在 step 8000 触发 held-out early-stopping，恢复 best step=5000；Test/GenA/GenC/GenF=0.559656/0.539557/0.239204/0.283458，OOD mean=0.354073。至此六臂均 early-stopping，24/24 格通过 CUDA、样本覆盖、micro/macro/INF、checkpoint、数据行数与 SHA256 三通道复核。
+- `tables/matched_30k_statistics.json` 状态为 PASS（6 arms、24 cells）。clean 家族三种子 OOD mean=0.3357167±0.0160750；mixed 家族=0.3625861±0.0097060；zero-shot xens2 OOD mean=0.4433661。
+- 预注册门 `genf_mix_hypothesis_pass=False`、`genf_sota_pass=False`、`ood_mean_sota_pass=False`、`ofoldna_ood_mean_pass=False`。mixed 在 GenA/GenC 的局部改善不能改写为 GenF 或总体 OOD 优势；逐序列 Wilcoxon–Holm 原表完整保留，不用显著性替代效应方向与预注册门。
+
+### B. T-A128 B=4 OOM 与配对修复
+
+- 已完成的 DP=8/8、Turner/fftr1c/nodistill 的 ArchiveII-clean 与 TestSetB 结果全部复用，不重跑。no-RLCD 原 B=4 训练在 step 25 的 pair scoring 处申请额外 8.39 GiB 时 CUDA OOM；错误保留于 `logs/main_ablations.log`，不把 OOM 或部分训练写成科学结果。
+- 新协议为 `rinalmo_r2dtr1c_b2_s0_r32`（λ_RLCD=1）与 `rinalmo_r2dtr1c_norlcd_b2_s0_r32`（λ_RLCD=0）配对重训：除 RLCD 开关外，B=2、seed=0、数据、教师、head、学习率和 VL0 early-stopping 完全一致。100000 steps 仅是失败保护，只有 `stop_reason=early_stopping` 且 `converged=true` 才放行。
+- 两个 B=2 臂各完成主 benchmark 8/8 CUDA 终评后，`build_main_ablation_matrix.py` 才生成矩阵。No RLCD 仅与 `control_B2` 求 ΔF1；其他四项仍与 B=4 控制比较。最终验收为 40/40 消融格+B4/B2 控制各 8/8，并逐格检查 CUDA、样本覆盖、micro TP/FP/FN、macro 与来源 SHA256。
+- `make_ablation_figure.py` 和 `build_rnajev_deck.mjs` 的证据门同步接受 control/control_B2+五消融共 7 行；矩阵 CSV/Markdown 表头列数已修正。PPT 附录补齐 `mixed_s2`，最终展示六个 matched 臂。

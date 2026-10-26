@@ -33,6 +33,8 @@ def sha256(path: Path) -> str:
 def source_for(row: str, split: str) -> tuple[Path, str | None]:
     if row == "control":
         return NEW / "dp_r2d" / split / "result.json", "exact"
+    if row == "control_B2":
+        return NEW / "control_b2" / split / "result.json", None
     if row == "DP off (greedy)":
         return NEW / "dp_r2d" / split / "result.json", "greedy"
     if row == "Turner prior = 0":
@@ -48,7 +50,7 @@ def source_for(row: str, split: str) -> tuple[Path, str | None]:
             return NEW / "nodistill" / split / "result.json", None
         return OLD / f"ow_rinalmo_r2dtr1c_nodistill_b4_s0_step20000_{split}" / "result.json", None
     if row == "No RLCD":
-        return NEW / "norlcd_r32" / split / "result.json", None
+        return NEW / "norlcd_b2" / split / "result.json", None
     raise KeyError(row)
 
 
@@ -96,7 +98,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, default=W / "tables")
     args = parser.parse_args()
-    rows = ["control", *ROW_NAMES]
+    rows = ["control", "control_B2", *ROW_NAMES]
     matrix = {row: {} for row in rows}
     for row in rows:
         for split, expected_n in SPLITS:
@@ -113,18 +115,18 @@ def main() -> int:
 
     payload = {
         "schema_version": 1,
-        "coverage": "40/40 ablation cells + 8/8 control cells",
+        "coverage": "40/40 ablation cells + 8/8 B4 control + 8/8 B2 control",
         "splits": [{"name": split, "n_sequences": n} for split, n in SPLITS],
         "rows": matrix,
         "delta_from_control": {
-            row: {split: matrix[row][split]["micro_f1"] - matrix["control"][split]["micro_f1"]
+            row: {split: matrix[row][split]["micro_f1"] - matrix["control_B2" if row == "No RLCD" else "control"][split]["micro_f1"]
                   for split, _ in SPLITS}
             for row in ROW_NAMES
         },
         "notes": [
             "DP row uses greedy decoding; exact DP from the same score matrices is the control.",
             "Turner, 2D-scorer and distillation rows combine the original six splits with newly measured ArchiveII-clean and TestSetB.",
-            "No-RLCD uses a new held-out-early-stopping checkpoint and is evaluated on all eight splits.",
+            "No-RLCD uses a paired B=2 control and B=2 no-RLCD early-stopping protocol after B=4 OOM; only this row is compared with control_B2.",
             "Every cell passed CUDA, sample coverage, micro TP/FP/FN and per-sequence macro checks.",
         ],
     }
@@ -135,7 +137,7 @@ def main() -> int:
     json_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     with csv_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["split", "control", *ROW_NAMES])
+        writer.writerow(["split", *rows])
         for split, _ in SPLITS:
             writer.writerow([split] + [f"{matrix[row][split]['micro_f1']:.8f}" for row in rows])
     lines = [
@@ -143,7 +145,7 @@ def main() -> int:
         "",
         "All values are strict pair-level micro F1. Every cell passed independent micro/macro and CUDA/coverage checks.",
         "",
-        "| split | control | " + " | ".join(ROW_NAMES) + " |",
+        "| split | " + " | ".join(rows) + " |",
         "|---|" + "---:|" * (len(rows) + 1),
     ]
     for split, _ in SPLITS:
@@ -154,9 +156,9 @@ def main() -> int:
         lines.append("| " + row + " | " + " | ".join(f"{payload['delta_from_control'][row][split]:+.4f}" for split, _ in SPLITS) + " |")
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     checked = json.loads(json_path.read_text(encoding="utf-8"))
-    assert len(checked["rows"]) == 6
+    assert len(checked["rows"]) == 7
     assert all(len(values) == 8 for values in checked["rows"].values())
-    print(f"MAIN_ABLATION_MATRIX_PASS rows=5 splits=8 control=8 out={json_path}")
+    print(f"MAIN_ABLATION_MATRIX_PASS rows=5 splits=8 controls_B4_B2=16 out={json_path}")
     return 0
 
 
