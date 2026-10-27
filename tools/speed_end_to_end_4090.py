@@ -39,7 +39,8 @@ R2D_CKPT = W / "rna_ssp_20261024/weights/main_ablations/r2d.pt"
 PLANA_S0 = W / "rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s0_step20000.pt"
 PLANA_S1 = W / "rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s1_step20000.pt"
 RINALMO_FT = Path("/root/rna_baselines_src/rinalmo_giga_ss_bprna_ft.pt")
-EXPECTED_F1 = {"r2d": 0.667971, "plana": 0.7866, "xens2": 0.8039, "rinalmo_ft": 0.7214}
+EXPECTED_F1 = {"r2d": 0.667971, "plana": 0.7866, "xens2": 0.8039, "rinalmo_ft": 0.7214,
+               "mxfold2": 0.565134, "rnaformer": 0.7578}
 
 
 def sha256_file(path: Path) -> str:
@@ -86,6 +87,37 @@ def load_models(name: str, device: torch.device) -> dict:
         from eval_rinalmo_ft import load_ft_model
         lm, head, alphabet, threshold = load_ft_model(str(RINALMO_FT), str(device))
         return {"name": name, "encoder": lm, "head": head, "alphabet": alphabet, "threshold": threshold}
+    if name == "mxfold2":
+        from types import SimpleNamespace
+        from mxfold2.predict import Predict
+        package = Path(__import__("mxfold2").__path__[0])
+        weights = package / "models/TrainSetAB.pth"
+        args = SimpleNamespace(
+            model="MixC", max_helix_length=30, embed_size=64,
+            num_filters=[64] * 8, filter_size=[5, 3] * 4, pool_size=[1], dilation=0,
+            num_lstm_layers=2, num_lstm_units=32, num_transformer_layers=0,
+            num_transformer_hidden_units=2048, num_transformer_att=8,
+            num_hidden_units=[32], num_paired_filters=[64] * 8,
+            paired_filter_size=[5, 3] * 4, dropout_rate=0.5, fc_dropout_rate=0.5,
+            num_att=8, pair_join="cat", no_split_lr=False)
+        model, config = Predict().build_model(args)
+        state = torch.load(weights, map_location="cpu", weights_only=False)
+        model.load_state_dict(state, strict=True)
+        report = {"weights": str(weights), "weights_sha256": sha256_file(weights),
+                  "strict_load": True, "config": config, "n_parameters": sum(p.numel() for p in model.parameters())}
+        return {"name": name, "model": model.to(device).eval(), "report": report}
+    if name == "rnaformer":
+        from types import SimpleNamespace
+        sys.path.insert(0, str(REPO / "third_party/RNAformer"))
+        from ss.run_rnaformer import build_model
+        weights = W / "rna_ssp_20261024/weights/baselines/rnaformer/RNAformer_32M_state_dict_bprna.pth"
+        config = W / "rna_ssp_20261024/weights/baselines/rnaformer/RNAformer_32M_config_bprna.yml"
+        args = SimpleNamespace(state_dict=str(weights), config=str(config), cycling=0)
+        model, report = build_model(args)
+        report.update({"weights": str(weights), "weights_sha256": sha256_file(weights),
+                       "config": str(config), "config_sha256": sha256_file(config),
+                       "n_parameters": sum(p.numel() for p in model.parameters())})
+        return {"name": name, "model": model.to(device).eval(), "report": report}
     raise ValueError(name)
 
 
@@ -148,6 +180,34 @@ def forward_rinalmo_ft(models: dict, seqs: list[str], device: torch.device) -> l
     return output
 
 
+@torch.no_grad()
+def forward_mxfold2(models: dict, seqs: list[str]) -> list[list[tuple[int, int]]]:
+    _, _, partner_lists = models["model"](seqs)
+    predictions = []
+    for partners in partner_lists:
+        pairs = [(index - 1, int(partner) - 1)
+                 for index, partner in enumerate(partners, start=1)
+                 if int(partner) > index]
+        predictions.append(pairs)
+    return predictions
+
+
+@torch.no_grad()
+def forward_rnaformer(models: dict, seqs: list[str], device: torch.device) -> list[list[tuple[int, int]]]:
+    from ss.run_rnaformer import SEQ_STOI, decode_pairs
+    predictions = []
+    for seq in seqs:
+        ids = torch.LongTensor([SEQ_STOI.get(base, 4) for base in seq])[None, :].to(device)
+        src_len = torch.LongTensor([len(seq)]).to(device)
+        pdb_sample = torch.ones((1, 1), dtype=torch.float32, device=device)
+        logits, _ = models["model"](ids, src_len, pdb_sample)
+        probability = torch.sigmoid(logits[0, :, :, -1]).float().cpu().numpy().astype(np.float64)
+        probability = 0.5 * (probability + probability.T)
+        np.fill_diagonal(probability, 0.0)
+        predictions.append(decode_pairs(np.clip(probability, 0.0, 1.0), seq, threshold=0.5))
+    return predictions
+
+
 def decode_our(scores: np.ndarray, seqs: list[str]) -> list[list[tuple[int, int]]]:
     masks = np.stack([valid_pair_mask(seq).astype(np.int8) for seq in seqs])
     for index in range(len(seqs)):
@@ -200,6 +260,10 @@ def run_once(models: dict, records: list[dict], batch_size: int, device: torch.d
             if models["name"] == "rinalmo_ft":
                 probabilities = forward_rinalmo_ft(models, seqs, device)
                 batch_predictions = decode_rinalmo_ft(models, probabilities, seqs)
+            elif models["name"] == "mxfold2":
+                batch_predictions = forward_mxfold2(models, seqs)
+            elif models["name"] == "rnaformer":
+                batch_predictions = forward_rnaformer(models, seqs, device)
             else:
                 scores = forward_our(models, seqs, device)
                 batch_predictions = decode_our(scores, seqs)
@@ -279,6 +343,8 @@ def main() -> int:
             "repeats": args.repeats, "warmup_batches_per_repeat": 1,
             "scope": "raw sequence -> tokenization -> encoder -> task head -> required decode -> prediction scoring input",
             "cached_embeddings": False, "expected_f1": expected, "f1_tolerance": args.f1_tolerance,
+            "code_sha256": sha256_file(Path(__file__).resolve()),
+            "model_report": models.get("report"),
             "code_commit": commit,
         },
         "throughput_median_seq_per_s": throughput,
