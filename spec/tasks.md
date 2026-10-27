@@ -7,66 +7,43 @@
 > | 任务 | 当前状态 | 依赖、下一步与完成判据 |
 > |---|---|---|
 > | **T-A133 规范同步、mock 隔离与原论文协议冻结** | **已完成（2026-10-28）** | 本地根目录/spec/spec_sync 与远端 spec/spec_handover 全部写入第 33 轮；核对 NucleicBERT 五类可训练任务+MLI 分析线、RiNALMo 六类任务及官方数据/划分/指标。五处文档内容一致、无 mock 路径作为活跃数据源后关闭 |
-> | **T-A134 主图 3B 正值 drop 与数据表** | **待执行，真实 40/40 已具备** | 由 `main_ablation_5x8.json` 独立重算核心三模块 ID/External/PDB-OOD 的 control−ablation，图下配同值表；图、表、JSON 三通道一致，正值仅为损失表示，完整原差值保留 |
-> | **T-A135 主图 4 图例与源数据纠错** | **待执行，无需新训练** | 图 A 三类图例、图 B 两类样本组图例齐全；ECE/Spearman/n 与权威结果逐项一致，红/青/蓝/灰含义无歧义，渲染无遮挡 |
-> | **T-A136 主图 5 全 4090 重测与重绘** | **待 G1 后执行** | G1 核对全部权重与适配器；同一 4090、TS0、strict micro-F1、端到端范围完成共同 B=1 Pareto 和共同 batch 网格测速，包含 r2d/plana/xens2；测速独占 GPU，预测一致性、协议、峰值显存、原始 JSON 与双重复核通过才重绘 A/B |
-> | **T-A137 主图 6 原生矢量重绘** | **待执行，无需新训练** | 先读 checkpoint/config/code 冻结参数与张量合同，再用 PPT 原生形状绘制 A/B/C；所有元素可编辑，逻辑流、输入输出、参数、先验与双输出匹配代码，无栅格架构截图，逐页 QA 通过 |
-> | **T-A138 NucleicBERT 数据与工程门** | **待 G1** | 冻结官方二级结构、接触/距离图、四物种 splice、CPEB3 fitness、shuffle 数据与协议；接触图无作者 split 时明确 reconstruction 标签。原始 N→处理 N、split/hash、tokenizer、标签、内存和 CUDA smoke 全通过后才能训练 |
-> | **T-A139 NucleicBERT 原论文下游补测** | **待 T-A138** | 同 frozen NB 的 official probe vs JEV head，5 seeds，覆盖五类任务；MLI 单独记录。输出全量 result/predictions/run_meta、mean±SD、配对效应和 Holm；任一 blocked 不得删除后声称全覆盖，既有 8 split 仅作补充 |
-> | **T-A140 RiNALMo 数据与工程门** | **待 G1，可与 T-A138 并行准备** | 冻结 TS0/ArchiveII 九家族、Spliceator、官方 MRL、三细胞 TE/EL、88 类 ncRNA 数据与协议；恢复 Muscle/pc3，177 类仅作敏感性。官方 split/hash、标签、指标、内存与 CUDA smoke 全通过后才能训练 |
-> | **T-A141 RiNALMo 原论文下游补测** | **待 T-A140，可与 T-A139 分队列推进** | 同 frozen RiNALMo 的 official head vs JEV head，5 seeds，完成六类任务及必要 fold；分类与回归结果分表，保留全部正负结果。完整统计后图 A 放分类、图 B 放回归，主图突出规则不得替代全量报告 |
+> | **T-A134 主图 3B 正值 drop 与数据表** | **已完成（2026-10-28）** | 由 `main_ablation_5x8.json` 独立重算核心三模块 ID/External/PDB-OOD 的 control−ablation，图下配同值表；图、表、JSON 三通道一致，正值仅为损失表示，完整原差值保留 |
+> | **T-A135 主图 4 图例与源数据纠错** | **已完成（2026-10-28）** | 图 A 三类图例、图 B 两类样本组图例齐全；ECE/Spearman/n 与权威结果逐项一致，红/青/蓝/灰含义无歧义，渲染无遮挡 |
+> | **T-A136 主图 5 全 4090 重测与重绘** | **进行中：自模型与 RiNALMo-ft 已完成，其他官方基线恢复中** | G1 核对全部权重与适配器；同一 4090、TS0、strict micro-F1、端到端范围完成共同 B=1 Pareto 和共同 batch 网格测速，包含 r2d/plana/xens2；测速独占 GPU，预测一致性、协议、峰值显存、原始 JSON 与双重复核通过才重绘 A/B |
+> | **T-A137 主图 6 原生矢量重绘** | **已完成（2026-10-28）** | 先读 checkpoint/config/code 冻结参数与张量合同，再用 PPT 原生形状绘制 A/B/C；所有元素可编辑，逻辑流、输入输出、参数、先验与双输出匹配代码，无栅格架构截图，逐页 QA 通过 |
+> | **T-A138 NucleicBERT 数据与工程门** | **进行中：CPEB3、acceptor、donor 数据与 CUDA smoke 已通过，接触图与 shuffle 继续** | 冻结官方二级结构、接触/距离图、四物种 splice、CPEB3 fitness、shuffle 数据与协议；接触图无作者 split 时明确 reconstruction 标签。原始 N→处理 N、split/hash、tokenizer、标签、内存和 CUDA smoke 全通过后才能训练 |
+> | **T-A139 NucleicBERT 原论文下游补测** | **分任务推进：CPEB3/acceptor/donor 待全量启动，其余待各自数据门** | 同 frozen NB 的 official probe vs JEV head，5 seeds，覆盖五类任务；MLI 单独记录。输出全量 result/predictions/run_meta、mean±SD、配对效应和 Holm；任一 blocked 不得删除后声称全覆盖，既有 8 split 仅作补充 |
+> | **T-A140 RiNALMo 数据与工程门** | **进行中：MRL 数据与 CUDA smoke 已通过，88 类 ncRNA 与 TE/EL 继续** | 冻结 TS0/ArchiveII 九家族、Spliceator、官方 MRL、三细胞 TE/EL、88 类 ncRNA 数据与协议；恢复 Muscle/pc3，177 类仅作敏感性。官方 split/hash、标签、指标、内存与 CUDA smoke 全通过后才能训练 |
+> | **T-A141 RiNALMo 原论文下游补测** | **分任务推进：MRL 待全量启动，其余待各自数据门，可与 T-A139 分队列推进** | 同 frozen RiNALMo 的 official head vs JEV head，5 seeds，完成六类任务及必要 fold；分类与回归结果分表，保留全部正负结果。完整统计后图 A 放分类、图 B 放回归，主图突出规则不得替代全量报告 |
 > | **T-A142 图件与 PPT 最终 QA** | **待相关实验验收** | 仅修改导师指定页及必须同步的图文，不改用户其他调整。微软雅黑、1.5 倍行距、字号适配、无重叠、表图同源；markitdown、fix、layout、ZIP、逐页渲染与文字-图片匹配检查全部通过 |
 > | **T-A143 归档、台账与 GitHub 交付** | **贯穿本轮，最终待验收** | 旧版/废弃文件移入 archive，synthetic placeholder 单独隔离；活跃绘图原数据、source registry、旧数据归档和哈希清单可追溯。每次训练记录完整，阶段确认后提交并 push，大文件留 `/teams`，代码留 `/home`，秘密不入库 |
 >
 > **阶段停止规则**：上一阶段未达到对应验收门不得进入下一阶段；不同任务的数据门相互独立，允许无依赖工作并行。CUDA 不可用、CPU 静默降级、样本数不符、权重/数据哈希不明或结果无法独立复算时，立即停止该任务并保留证据。smoke、proxy、quoted、训练集或单种子结果不得写成最终科学结论。
 >
-> **当前执行队列（2026-10-26，第 32 轮收官）**：旧队列只作历史，完成状态以 artifact/CUDA/验收门为准。
+> **第 32 轮真实 artifact 验收快照（2026-10-28 复核）**：T-A126 三通道复核 PASS；T-A127 matched 六臂 **6/6、24/24 格**完成；T-A128 五类消融 **40/40 格**完成；T-A129 三组 MRL **30/30 run**完成，显著正 **0/3**。旧“3/6、25/40、在训/排队”仅为历史，不再作为执行依据；权威证据与统计口径见台账 §15.107–§15.109。
 >
-> | 任务 | 当前状态 | 下一步与完成判据 |
-> |---|---|---|
-> | **T-A126 三个新臂结果三遍复核** | **已完成** | `tools/verify_matched_round32.py` 对 clean_s0/mixed_s0/clean_s1 共 12 格完成 CUDA、样本数、micro、per-sequence F1/macro/INF、合法性、best checkpoint、run_meta、数据行数与 SHA256 三通道复核，PASS；报告 `audits/round32_matched_verification.json` |
-> | **T-A127 matched_30k 六臂收敛与统计** | **已完成：6/6、24/24、统计 PASS** | 六臂均 early-stopping；24 格三通道复核、3-seed mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成。clean/mixed OOD mean=0.335717/0.362586，xens2=0.443366；GenF 混合假设、GenF SOTA、OOD mean SOTA、OFoldNA OOD mean 四门均未通过，按负结果保留 |
-> | **T-A128 五类消融×8 split** | **已完成** | `tables/main_ablation_5x8.json`：40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全通过；3a/3b 已生成。DP/Turner/2D 的 PDB/ID=0.71×/1.92×/1.43×，旧统一签名撤回；No RLCD 仅对 control_B2 求差 |
-> | **T-A129 新 RiNALMo 下游任务** | **已完成：30/30 run，0/3 显著正** | mcherry_1 Δ=−0.010302/Holm=0.761928；designed_library Δ=+0.008998/Holm=0.458457；varying_length Δ=+0.001610/Holm=0.458457。全部 early-stopping、CUDA、预测/权重/数据 SHA256、配对 t-test+Holm 与独立复核通过；无新任务进入主图正结果，完整数据入附录和源 JSON |
-> | **T-A130 论文逻辑版 PPT** | **已完成：21 页** | 主文 10 图+4 个附录+1 页论文逻辑链；微软雅黑、1.5 行距、10 张唯一栅格主图、原生三层架构。markitdown、fix、layout=0、专项 QA、全页渲染与 ZIP 完整性通过；SHA256=`cb5d62de…` |
-> | **T-A131 台账/spec/GitHub** | **已完成** | matched、消融、MRL、图源、PPT 生成器、QA、台账与两个 spec 目录均同步；确认代码提交并 push，秘密与大文件不入库 |
-> | **T-A132 最终验收** | **已完成** | 实验数值三通道、MRL SciPy/statsmodels 独立复算、PPT 内容/字体/行距/布局/渲染分别通过；科学门未达项均按负结果保留，不包装成收官正结论 |
->
-> **新增工程事实**：matched 统计文件 `tables/matched_30k_statistics.json` 已验收；B=4 OOM 不通过静默降批掩盖，而是以同协议 B=2 控制保证 no-RLCD 单变量对照；矩阵 CSV/Markdown 表头、绘图行数和 PPT 证据门均已同步为 7 行。RNAformer 原文全文配对 F1 与项目 canonical nested GT 复测分列；r2d_tr1 的三格参照比较不冒充统一 clean SOTA。
+> **停止规则**：CUDA 不可用或 CPU 静默降级立即停止；训练完成不等于评测完成，评测完成不等于合同通过。不得把 smoke、proxy、训练集或单种子结果写成最终科学结论。
 
 
-> **当前执行队列（2026-10-24，第二十九轮接管审计）**：
-> - 本节覆盖旧队列；旧任务是否完成必须由 artifact 和完成判据重新确认，不能沿用“已启动”或“守护 live”作为完成。T-A108–T-A111 在权威 tasks 文档中无可重建定义，本轮不虚构补号；新任务从 T-A113 起。
->
-> | 任务 | 当前状态 | 下一步与完成判据 |
-> |---|---|---|
-> | T-A99/T-A100 NB 迁移与 fine-tune | 交接记录已完成；本轮未复训 | 结果表、八 split 与协议说明可定位；统计缺口纳入 T-A119，不重跑已闭合训练 |
-> | T-A101 ncRNA 双头 | 交接记录已完成 | 只能表述分类 MLP 头结果，不能外推为完整 SSP prior-stack 或 rare-family 机制证明 |
-> | T-A102 CHANRG 数据与四 split | 数据、board 与单语料臂已落地 | 新实验前重新执行精确重叠、全局 blocklist 与 manifest/hash；有重叠的 split 不得称完全 clean |
-> | T-A103 v3.30 合并 | 文本合并完成；投稿验收未完成 | 按 T-A119 清理撤回结果、模型身份、指标和引用后才可称投稿候选 |
-> | T-A105 单语料 CHANRG | s0/s1/s2 均到20k；预注册 GenF 门未达 | s2 单模型四 split 由 T-A114 关闭；不得把 step cap 写成收敛 |
-> | T-A112 三种子集成 | 四 split 已完成；独立复算 PASS | 结论限定为 Test 改善、GenA/GenC/GenF 落后；GenF macro 未提升，禁止 SOTA/全面提升表述 |
-> | **T-A113 接管审计与 spec 同步** | **已完成（6a55017）** | 两个 spec 目录已同步；数据、权重、日志进入新团队目录；SSH 已改密钥；秘密扫描通过 |
-> | **T-A114 CHANRG 当前证据闭环** | **已完成** | s2 单模型 4/4；`--require-s2` PASS；三种子 mean±std、Wilcoxon–Holm、第二套独立统计和台账 §15.99 已落盘；结论含 GenF macro 负增量与 OOD 失败边界 |
-> | **T-A115 验证集收敛训练** | **已完成** | 真实 dry-run、2步真实 CUDA 短跑、完整 370 passed/1 skipped 已通过；训练/validation teacher 对齐；新训练必须以 early_stopping 而非 step_cap 标记 converged |
-> | **T-A116 唯一结果注册表与合同纠错** | **已完成（当前 CHANRG 阶段）** | `tables/result_registry.json` 含28单元格、源结果/权重哈希、协议与 legacy 缺口；Kirigami、bpRNA-new、TestSetB、C1-a/C2/S1/S3 裁决已落盘；后续新结果按同 schema 追加 |
-> | **T-A117 清洁 CHANRG 单语料 vs 清洁 bpRNA+CHANRG 混合语料** | **资产构建中，未开训** | 同一30k哈希选样（seed=round29-chanrg30k-v1）先于 blocklist/dedup；单语料29,899条已验收，混合资产待完成；两臂同验证集、B=16、LR、decoder/scorer 和 early-stopping；至少3 seed；旧含重叠臂只作历史参照 |
-> | **T-A118 监控与 GitHub 闭环** | **进行中** | 10min watchdog 无自匹配误报；每个完成任务绑定 commit、配置、数据/权重哈希、日志和验证报告；确认后提交并 push，大文件与秘密不入库 |
-> | **T-A119 稿件、统计与 PPT** | **待证据门** | 清理稿件矛盾，补最终主模型校准、主表统计和新增任务完整表；PPT 只写已复核结果，保留负结果与限制 |
-> | **T-A120 预印本发布包** | **未完成** | 满足合同硬门、多种子/配对统计/Holm、完整引用与图表、代码/配置/split/预测/权重说明和复现命令；未满足不得提交预印本 |
->
-> **当前停止规则**：CUDA 不可用或 CPU 静默降级立即停；训练 DONE 不等于 eval DONE，eval DONE 不等于验收 PASS；结果文件缺失、样本数不符、device 非 CUDA、哈希不明或验证失败不得进入下一阶段。GenF 不再重复 teacher/头数/测试集解码搜索；TS2/TS3 不重开已判负的小头变体；结构对比 A0–A5 不在其独立 G0/G1 门前抢跑。
+> **交接状态（2026-10-25 下午，第三十一轮交接更新——集群关停执行轮，细节 spec_sync/ROUND31_NOTE.md）**：
+> - **补充实验判定**：唯一在训项 = mixed_30k_s0（GenF/CHANRG mean SOTA 判定缺口）；clean_30k_s0 已完成入板（Test 0.6395，再次低于 zero-shot 板，语料归因双证）；其余全部收官。
+> - **mixed 臂 15 连 OOM 根因修复**：mixed 语料含 bprna ≤500nt（4607 条 >200）× resnet2d 无分块 × B=16 → 9.5GiB 尖峰；叠加 watchdog cron pgrep 自匹配 bug（从不重启，空转 5.5h）。修复：B=2 + [t]rain 括号模式；16:15 step 9375 健康，val 58723 best 9000。
+> - **关停归档进行中**：/teams/.../rna_jev_shutdown_20261025/（code 7163 文件+bundle / results 2325 / data 8.6G ✅ / weights backbone+ckpts ✅ / embeddings 106G 增量 25/33）；在训臂输出直落 /teams 不受影响。
+> - 集群 HEAD 7409edd；判读口径与恢复指南见 ROUND31_NOTE。
 
-> **交接状态（2026-10-21，第二十五轮交接更新——五工作总执行轮，细节 §15.96）**：
-> - **集群**：`ssh -p 28055 root@px2-jcy.matpool.com`（1×RTX 4090 24GB）；代码 **/home/rna_jev**（GitHub HEAD 55ee511 + 本轮新增提交）；数据/权重 /root/rna_jepa_data 与 /teams/HoulabData_1788502323/liucunyu/rna_jev_data。GPU0 被外部 codonflow 任务占 19.5GB/97%，仅 4.5GB 空闲——我方任务全部排队守护，显存一释放自动起跑。
-> - **工作 1（闭合）**：主 benchmark 全 baseline 三遍复审——**97 板格逐格从 result.json 重算 0 误差**（Vienna/nussinov/MXfold2/EternaFold/UFold/RNAformer×3ckpt/RiNALMo-ft/eFold/NB-probe）；leak_full_audit 复跑（tr1c 9/9 零重叠、TR0∩TSB=247 复现）；9 split sha256 全 MATCH；xens2 4090 板 8/8 逐位一致。**无新泄漏、无可修正项。** 工具入库 tools/verify_board_r25.py。
-> - **工作 2（数据落地，评测排队）**：RiNALMo 下游补测域=ncRNA 分类（Rfam-novel 177 家族 RDx 已下载 /tmp/rfam_novel.RDa，R 环境 conda 安装中）；剪接数据实测 8.6GB 不可行已停；TE/EL 被墙；CHANRG 在 HF **gated**（需用户申请）。预注册协议：官方分类头 vs Jev 决策头双臂同 backbone 对照。
-> - **工作 3（双线）**：NB 基线 fine-tune 守护 live（≥16GB/10.5GB×10 自适应批，3ep+8split 全自动）；**迁移实验 T-A99 预注册**——NB frozen 404M + 我们的 Jev 头（resnet2d+Turner+非交叉 DP）三臂对照（①探针 0.1509 ②fine-tune ③Jev 头），判据=≥3/8 split ≥0.02。工程修复：watchdog cron 路径 /root→/home 已修。
-> - **工作 4（闭合）**：nature-writing-studio 重写 Abstract+Introduction（paper/nature_rewrite_r25.md，text+text_compact+summary）：8-beat/4-beat 结构化、37 数字程序化对账全溯源、em-dash 21→0、AI 黑名单 0 命中。**待导师过目后合并成 v3.30**（本轮不动冻结正文）。
-> - **工作 5（闭合）**：OFoldNA（2609.37414）调研——其 OFoldNA-SS 在 CHANRG OOD mean 0.3898 第一 vs RiNALMo-Giga 0.2140（ID 0.7579）；「FM ID 最强 OOD 塌缩」与我们「先验栈承载 OOD」消融签名互证。**补测判定：CHANRG 四 split（Test/GenA/GenC/GenF）最值得补但 gated 等用户申请**；FoldBench SS 口径随 CHANRG 覆盖；OFoldNA 本体 3D 不入范围。
-> - **值守**：本地 30min 巡检 cron（GPU/守护/进度/CHANRG 四查）；集群 */10 watchdog×2 已修复路径。
-> - **台账至 §15.96（9432 行）**；下一轮队列：T-A99 NB 迁移、T-A100 NB ft 落地、T-A101 ncRNA 双头、T-A102 CHANRG、T-A103 v3.30 合并。
+> **交接状态（2026-10-25，第三十轮交接更新——用户五点反馈落实轮，细节 spec_sync/ROUND30_NOTE.md）**：
+> - **三问入稿**（CHANRG ID 差距 / 速度口径 / 先验作弊质疑）→ 论文 §4.3k 三问段 + PPT S46（数字可回溯 §15.97c/15.79/14.8）。
+> - **图重排入 PPT**：S44-S49 六张按行文逻辑（板→GenF 归因→三问→长度分层→下游合并→OOD 签名），49 slides，audit PASS。
+> - **合并图**：下游五任务+splice 归一一张（标签重叠修复：90° 旋转标注+加宽；donor=5'剪接位点(GU)/acceptor=3'剪接位点(AG) 双处释义）。
+> - **六臂在训**：step 7650，validation loss 单调降，best_step 7500，watchdog live；判读口径已备份至 ROUND30_NOTE 附录。
+> - 集群 HEAD ec81779（round29-handoff）。
 
+> **交接状态（2026-10-24 晚，第二十九轮交接更新——本地接管轮：六臂启动 + 七图 + 长度趋势，细节 spec_sync/ROUND29_NOTE.md）**：
+> - **六臂在训（T-A117，GenF/CHANRG mean SOTA 最后路径）**：{chanrg_clean_30k, mixed_30k} × seed{0,1,2}，matched 30k 哈希选样（blocklist 14 文件 + 独立二遍校验），early-stopping 收敛门（非 step cap），训练→评测全自动链 + watchdog 自愈。判读口径预注册见 ROUND29_NOTE。
+> - **七图三遍 QA 落地**（figs/figs_round29/）：8-split 板、GenF 三控归因、下游五任务、splice 细节、OOD 消融签名、长度趋势×2（oFoldNA 式多 baseline 分桶，TS0+ArchII）。
+> - **FoldBench 调研结论**：口径不匹配（3D all-atom 指标 vs pair-F1），不引入；长度趋势用自有冻结板完成。
+> - 旧文档头（第二十二轮以下）保留作历史追溯；集群权威 HEAD 726be78（round29-handoff 分支）。
+>
 > **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：
 > - **集群迁移完成**：A100 集群关停（10-16 备份定格）后，新集群 `px2-jcy.matpool.com`（**1× RTX 4090 24GB**，12 核 64GB）已重建：
 >   - 环境：miniconda3 `lucaone`（Python 3.10.22 + torch 2.5.1+cu121 + multimolecule **0.0.8** + transformers 4.49.0 + gcc 9.4）；CUDA 计算验证 PASS；
@@ -479,7 +456,7 @@
   - [x] SubTask 14.2: 实现 Nussinov **sum-product**（inside）算配分函数 `Z(x)`
   - [x] SubTask 14.3: 实现 **inside-outside** 算精确边际 `p̂_ij`
   - [x] SubTask 14.4: 实现 `L_NLL = log Z(x) - Σ_{(i,j)∈M_gt} s_ij`
-  - [x] SubTask 14.5: 实现**隐式微分**可微 DP（前向求 `M*`，反向按 `∂N(1,L)/∂s_ij = 1[(i,j)∈M*]` 散布梯度）；NLL 梯度另按 `∂L_NLL/∂s_ij = p̂_ij - y_ij` 验证，二者不得混写
+  - [x] SubTask 14.5: 实现**隐式微分**可微 DP（前向求 `M*`，反向按 `∂N(1,L)/∂s_ij = 1[(i,j)∈M*]` 散布梯度），验证梯度 = `(y - p̂)·∇s`
   - [x] SubTask 14.6: 实现 soft-Nussinov 备选（仅 `L ≤ 256` 对照）
   - [x] SubTask 14.7: 实现带窗稀疏化版本（`|j-i| ≤ B`）
   - [x] SubTask 14.8: 实现低置信回退门控 `α_ij = σ((p̂_ij - τ)/γ)` 与热力学重打分，记录回退比例
@@ -547,7 +524,7 @@
     - **分两口径核验（2026-09-24）**：① **裸头**（训练直接用头的 sigmoid）：step 3500 上 gap = **0.0877**，**未过**；但从 step 20 的 0.549 单调降到 0.0877（6.3×），趋势明确。② **免 DP 仿射重标定**（2 参数，在 VL0 上拟合，**评测期不跑配分函数**）：gap = **0.00118 PASS**。→ **当前可主张的是 ②，不得把 ① 写成已通过。**
   - [ ] SubTask 20.7c: **核验 S6（计算自适应收益）**：在**匹配平均 FLOPs** 下门控升级 ≥ 纯 System-1 与纯 System-2——**这是 C2 是否成立的判据**
   - [ ] SubTask 20.7d: **产出结构层面校准曲线**（应对 Q3：配对级 ECE 因碱基对相关性而不足），并量化配对间相关性
-  - [ ] SubTask 20.8: **逐项核验 §8 硬门 G1–G5、性能门 P1–P7、速度门 S1–S9、科学门 SC1–SC4；S1/S3 按2026-10-24修订标为已作废，不得假勾选**
+  - [ ] SubTask 20.8: **逐项核验 §8 硬门 G1–G5、性能门 P1–P5、速度门 S1–S7、科学门 C1–C4**
   - [ ] SubTask 20.9: **核验 §9.3 的 Q1–Q12 每条均有稿件落点**（任一缺失即未准备好投稿）
   - **判据**：全部消融完成；统计检验与校正已应用；速度测量同硬件同协议；ECE 与 bpRNA-new F1 联合报告产出；**S7/S6 判据已核验**；结构层面校准曲线产出；**Q1–Q12 落点表产出**；门限核验表产出（未达项须列出）
 
@@ -1170,4 +1147,27 @@ Related work / 基线全景的增量证据线，需要时可一并写入 v3.20�
 2. **T-A85**：预印本正式投稿前 polish（参考文献格式、图 300dpi 导出包、supplementary 拆分）。
 3. **T-A86**：本地交接三件套同步（TCC 权限恢复后；ppt/ 已恢复，Documents/交接文档 仍阻断）。
 
+### 第二十九轮交接（2026-10-24 晚，本地接管轮：六臂启动 + 图集 + 长度趋势）T-A121..T-A125
+
+**本轮一句话**：接管审计发现六臂训练空窗 2.5h → 立即启动 T-A117（matched_30k 六臂，early-stopping 收敛门 + watchdog）；顶刊风格七图（board/GenF 归因/下游五任务/splice/OOD 签名/长度趋势×2）三遍 QA 落地；oFoldNA 式长度分桶趋势实验完成（TS0+ArchII 双面板）；FoldBench 调研完成（口径不匹配，如实记录不引入）。细节 spec_sync/ROUND29_NOTE.md。
+
+| # | 任务 | 完成判据 | 状态 |
+|---|---|---|---|
+| **T-A121** | 接管审计 + 六臂训练启动（GPU 空转修复） | 六臂在训 + watchdog live + early-stopping 门 | ✅ 完成（22:46 启动，GPU 21.7GB 占满） |
+| **T-A122** | 顶刊风格图集 v2（7 张） | 三遍 QA：渲染/几何(PIL bbox)/数值回溯（台账行号） | ✅ 完成（figs_round29/） |
+| **T-A123** | oFoldNA 式长度趋势实验 | 多 baseline × 长度桶 × 双数据集，retention 标注 | ✅ 完成（TS0 四系统 + ArchII 双系统；>400nt 写 open frontier 不宣称优势） |
+| **T-A124** | FoldBench 可行性调研 | 调研结论 + 口径判定 | ✅ 完成（3D all-atom 口径 vs pair-F1 不匹配，RNA monomer 仅 ~15 条；SS 长度趋势改用自有冻结板） |
+| **T-A125** | 本地交接三件套同步（第二十九轮） | 本地=集群一致 | ✅ 本轮完成（ROUND29_NOTE + tasks 块） |
+
+**下轮队列**（六臂读数收割 → CHANRG mean SOTA 判定 → 论文 v3.34 + PPT）见 ROUND29_NOTE 第五节。
+
 **权威状态**：预印本 v3.25（§4.3 集成轴双向穷尽）；TS2 终判 0.8604/−0.044（七战线）；速度 124.78 seq/s B=256 fp16（同节点 8.6× RiNALMo-ft）；置信度 8-split 全板；GitHub HEAD e09ef1c。
+
+### 第二十四~二十八轮补记（2026-10-19 → 10-24，详见 spec_sync/ROUND24/26/28_NOTE.md 与集群 round29-handoff 分支）
+
+第二十四轮（图优先版）：六主图体系 + 预印本 v3.27 + PPT 33 页。
+第二十五轮（五工作总执行轮）：97 格基线重审计 0 误差；Rfam-novel ncRNA 数据落地；NB 双线预注册；OFoldNA/CHANRG 调研。
+第二十六轮（CHANRG 解锁轮）：Jev-on-NB 8/8 PASS（OOD +0.055~+0.234）；CHANRG 四 split 补测 + T-A104 对标表（GenA 0.6443 全场第一、OOD mean 0.4434 vs OFoldNA-SS 0.4410 并列第一区间）。
+第二十七轮（GenF 冲刺轮）：GenF 差距诊断为语料差距；v3.30 合并（0d6ac14）；三张正刊图。
+第二十八轮（GT 对照轮）：三控归因全闭环（语料/teacher/头数均证伪，剩余差距=板 bprna 家族互补）；splice v4 终版（平局如实）；v3.32；s1/s2 GT 臂 + 三头集成（GenF 0.2750，头数增益递减再证）。
+第二十九轮（集群 round29 代理 + 本地代理合并）：CHANRG 证据闭环 T-A114（三种子统计栈 + 独立复算）；干净资产重建（blocklist 14 文件 + 哈希选样 matched 30k 对照）；**T-A117 六臂在训（matched_30k × 3 seed，early-stopping 收敛门）**；本地七图 + 长度趋势 + FoldBench 调研。集群 HEAD 726be78（v3.33）。

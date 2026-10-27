@@ -10049,3 +10049,62 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 主图 7 改为 NucleicBERT 官方头与 Jev 头的分组柱状图；主图 8b 的 MRL/TE-EL 改为双头柱状图。
 - 主图 9a 按原第 26 页形式绘制 xens2、r2d、OFoldNA-SS、RiNALMo-Giga ft 四系统折线，9b 单独绘制 OOD mean 柱状图；GenF 近邻标签错位以避免重叠。
 - 新增第 20 页论文逻辑链：去污染→主 benchmark→效率→5×8 消融→置信度与迁移→外部验证与边界。其余已确认页面结构不变；最终 21 页 PPT 的 markitdown、fix、layout=0、专项 QA 与全页渲染均复核通过。
+
+## §15.109 Round-33 导师反馈、真实图件与 4090 端到端测速（2026-10-28）
+
+### A. 规范与数据卫生
+
+- T-A133 已完成，第 33 轮合同同步到本地根目录/spec/spec_sync 与远端 spec/spec_handover，经本地交叉核对、远端内容检查和重新下载逐字节比较三轮验收。提交 `bba8805` 已推送 GitHub `round29-handoff`。
+- 远端第 32 轮真实 `main_ablation_5x8.json`、`matched_30k_statistics.json`、`mrl_suite_result.json` 覆盖本地旧状态。`ablation_mock.json`、`sync_mock/` 及其派生 preview 只作布局 mock，禁止科学引用。统一 `source_data.json` 已升级为 `round33-verified-v2`，保留 A100 历史段但新增独立的 4090 数据段。
+
+### B. 图 3B、图 4 与图 6
+
+- 图 3A/3B 均由真实 40/40 消融矩阵生成。图 3B 定义 `performance drop = control F1 − ablated F1`，直接控制差与 `−delta_from_control` 在 1e-12 内一致。ID/External/PDB-OOD 三组 drop 为：DP 0.268356513/0.234799494/0.189555950；Turner 0.203133385/0.305048691/0.390888318；2D scorer 0.077754151/0.065245335/0.111294388。柱状图改为正值损失，图下配同值表，图表与 JSON 三通道一致。
+- 图 4A 图例补齐 Raw confidence、VL0 improved、VL0 worsened；图 4B 补齐 larger splits(n>400) 与 small PDB splits。ECE/raw/recalibrated 与 §15.80 权威值逐项一致，坐标标签碰撞已修正。
+- 当前 r2d checkpoint 实测为 **812,375** 个可训练参数，不是旧图 9.3M。主图 6 用 158 个 PPT 原生形状/文本/连接线重建，包含冻结 RiNALMo-giga、配对表示、ResNet2D、Turner 先验、精确非交叉 DP 和 VL0 双输出；无栅格架构图。两轮布局修复后 `validate_layout Issues=0`，内嵌图片 SHA256 与磁盘图件逐一匹配，21 页渲染复核通过。
+
+### C. 原始序列端到端 4090 测速
+
+- 旧 124.78 的脚本证实使用缓存嵌入和 head-only forward，不能直接改写成完整端到端结果。新 `tools/speed_end_to_end_4090.py` 不使用缓存嵌入，计时范围为 raw sequence→tokenization→encoder→task head→required decode；每次均保存预测、TP/FP/FN、三次重复吞吐、峰值显存和协议。全量 TS0 三次重复预测均逐次一致，F1 与冻结结果在容差内。
+
+| model | strict micro-F1 | median seq/s | scope |
+|---|---:|---:|---|
+| r2d | 0.668181 | 22.282 | raw sequence + frozen encoder + 812,375 head + C decode |
+| plana | 0.786870 | 18.622 | raw sequence + fine-tuned encoder + head + C decode |
+| xens2 | 0.804063 | 7.474 | plana 双前向 + r2d 前向 + ensemble + C decode |
+| RiNALMo-ft | 0.721384 | 13.994 | official encoder/head + threshold decode |
+
+- 所有测速均独占 GPU，未与其他训练或评测并行。UFold、RNAformer、MXfold2 暂不以 A100 数值补齐；RNAformer 官方 bprna 权重已恢复，其他适配器继续验收。
+
+### D. 原论文下游数据门
+
+- CPEB3：`mut12_data=21,322`、`CPEB3_Phylo=27,647`，合计 **48,969/48,969 唯一序列**，来源交集为 0，fit_mean 全部有限且位于 [0,1]。固定 split：train=31,340、validation=7,835、test=9,794；`data_card.json` 与文件 SHA256 已落盘。双头使用同一 frozen NucleicBERT CLS 表征和划分。
+- Spliceator：官方 GS_1/db_1 已生成。acceptor train/validation=19,961/2,218；donor=19,775/2,198；Danio/Fly/Thaliana/Worm 每个 donor/acceptor 测试集均 20,000，正负各 10,000。原始 N、标签、split 与 20 个文件哈希已落盘。
+- TE/EL：RiNALMo 官方 Drive 在集群与本机均连接超时，Muscle/pc3/HEK 尚未恢复，保持 blocked，不以其他数据替代。联系图精确作者 split 尚未取得，后续只能标 protocol-matched reconstruction，不能声称逐样本复现。
+- 工程故障已记录并修正：NucleicBERT 权重原保存于 CUDA:3，改为 CPU map_location 加载；RiNALMo-ft 需要显式加入 `tools/flash_shim`。小样本 F1 不与全量冻结值比较，只用于通路检查。独立 round33 venv 的 danling/torch 兼容错误尚未关闭，不影响已完成自模型测速。
+
+### E. 当前状态
+
+- T-A134/T-A135/T-A137 已完成；T-A136 自模型与 RiNALMo-ft 测速完成，官方基线继续；T-A138/T-A140 数据准备进行中。CPEB3/Spliceator 全量双头训练尚未形成科学结论，任何 smoke 不得写入主图或论文。
+
+## §15.110 Round-33 双头实验工程预检与文档真实状态纠偏（2026-10-28）
+
+### A. 提交前工程复核
+
+- CPEB3、Spliceator、RiNALMo regression 三个双头脚本完成本地 `py_compile`；正式科学运行仍未启动。JSON 序列化增加 NumPy 标量/数组、布尔及 pandas ExtensionDtype 处理，针对此前 `Float64DType` 写出失败补齐类型覆盖。
+- 三类嵌入缓存加入序列 SHA256 身份校验，旧无指纹缓存不直接复用。CPEB3 缓存继续核对标签与突变数，Spliceator 核对标签；缓存不一致必须硬失败，不允许静默换数据。
+- MRL 静态复核发现并已修正三处运行时风险：批次构造误枚举 `ids` 而非 token rows；长度过滤后 pandas 行号可能不再等于数组位置；全量 token 嵌入转 float32 后会超过单张 4090 显存。现改为连续 RangeIndex 断言、磁盘 memmap 嵌入、训练/验证/测试分批上传 GPU，科学协议与双头结构不变。
+- 三种任务均保存每个 epoch 的 validation loss 轨迹、best epoch、early-stopping 状态和独立重读检查；RiNALMo 回归同时保存 R²、PCC、Spearman。max_epochs=2000 仅为触发失败的安全上限，patience=32 的 plateau 才允许收敛退出。
+
+### B. 文档与传输状态
+
+- 本地根目录、`spec/`、`spec_sync/` 的 tasks 已把旧 matched 3/6、消融 25/40 实时队列改为真实 artifact 快照：matched 6/6 与 24/24、消融 40/40、三组 MRL 30/30 且显著正 0/3；旧数字不再作为执行依据。
+- SSH 曾发生 kex reset/connection closed；长 base64 与 tar 流未形成完整上传，多路会话被 Matpool 代理拒绝。连接故障不记为实验失败，也不记为 smoke 通过。最新三脚本远端哈希尚未全部验收前，不启动新一轮训练。
+
+### C. 四项 CUDA smoke 最终通过（仅工程门，不是科学结果）
+
+- 真实 MRL 数据门确认：过滤后 random=83,919、human=15,555；按原协议每长度 top-100 后，实际使用 **91,519** 条，train/validation/test=**76,319/7,600/7,600**。其余 7,955 条 human 不属于官方 top-100 测试集，已显式排除并重映射连续索引。合成测试覆盖 per-length top-100、未使用 human 排除、memmap 重读、序列指纹和 JSON 类型，全部通过。
+- 最终脚本本地/远端 SHA256 一致：CPEB3=`281d9e05…`、Spliceator=`66f0601c…`、RiNALMo regression=`dbf9d73c…`。结果协议另存实际运行代码、数据、权重哈希，不再只依赖 Git HEAD。
+- CPEB3、Spliceator acceptor、Spliceator donor、MRL 的 v5 CUDA smoke 均完成双头×5 seeds、best checkpoint、预测重读、收敛轨迹和严格 JSON 验收。脚本外第三遍 QA 全部 `EXTERNAL_QA_PASS`；result SHA256 分别为 `6a95e8c8…`、`10353085…`、`a16b2b6a…`、`5cd80374…`。Splice 小样本双头预测完全一致，配对检验零方差，p-value 按合同写 `null/undefined_zero_variance`，不写成显著或等效结论。
+- SciPy `_asdict()` 的内部 `_xp` 模块和 `_dtype` 已从未知类型源头修正为只保存公开 statistic/pvalue/df；所有结果 JSON 使用 `allow_nan=False`。此前 v2/v4 的断言与 JSON 写出失败均为工程停止，未产生科学结论。
+- 上述 smoke 仅允许对应全量任务进入队列；禁止把子集 R²、accuracy、delta 或 p-value 写入主图、论文或最终结论。
