@@ -1,7 +1,21 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
 > change-id: `build-rna-ss-decision-model`
-
+>
+> **当前交接（2026-10-28，第 33 轮：导师反馈、原论文下游补测与图表纠错）**：
+> - **事实源与第 32 轮状态**：远端真实 `tables/main_ablation_5x8.json`、`tables/matched_30k_statistics.json`、`eval_decision/mrl_suite/mrl_suite_result.json` 证明 T-A127–T-A129 已完成，覆盖本地第 32 轮旧状态。`/private/tmp/rnajev_audit` 中 `ablation_mock.json`、`sync_mock/` 与含其数据的 `preview_draft.pptx` 只用于布局预览，禁止作为科学数据或最终 PPT 数据源。后续数值只能由原始 `result.json`、验收 JSON 和可重跑脚本产生。
+> - **主图 3B**：使用真实 40/40 消融矩阵，核心三模块按预注册 ID、External、PDB-OOD 分组计算 `performance drop = matched control F1 − ablated F1`，以正值展示性能损失，不直接翻转原始数据。图下必须配同一张数值表，列出分组、split 组成、三模块 drop 和必要精度。No RLCD 只能对 B=2 匹配控制，完整正负结果保留在源表。
+> - **主图 4**：图 A 图例完整标注 Raw confidence（灰）、VL0-recalibrated improved（青）、VL0-recalibrated worsened（红）；图 B 标注 larger splits（蓝，n>400）与 small PDB splits（灰，n≤400）。ECE、Spearman、n 均从权威台账与原始 confidence 结果复核，不使用旧脚本错值。
+> - **主图 5**：A100 旧图退役。所有入图系统在同一 RTX 4090、同一 TS0、同一 strict micro-F1、同一端到端计时边界下重测，计时包含序列输入、冻结或微调骨干、任务头与各自必要解码。A 为共同 B=1 的精度-吞吐 Pareto；B 为共同 batch 网格的吞吐曲线，必须包含 r2d、plana、xens2 及可运行的官方基线。测速时独占 GPU，预测一致性、warmup、精度、batch、延迟、吞吐和峰值显存全部落盘；不拼接不同模型的 F1 与速度。
+> - **主图 6**：仅使用 PowerPoint 原生形状、文本、连接符和表格绘制 A/B/C 可编辑矢量图，不以 HTML/PNG 截图代替。A 展示序列到冻结表征，B 展示置换不变配对特征、二维 scorer 与训练目标，C 展示 Turner 先验、非交叉 max-product DP、结构与置信度输出。参数量、张量形状和解码名称须从当前 checkpoint/config/code 复核，禁止沿用未经核实的 9.3M 标签。
+> - **主图 7 原论文任务注册表**：以 NucleicBERT 2026 version-of-record 和官方仓库为准，覆盖①二级结构（RNAStrAlign+TR0 训练，ArchiveII600/TS0，tolerant per-structure macro-F1），②距离图与接触图（NucleoSeeker 408 与 BGSU 467 两套来源，8 Å、20 距离类、≥24 nt 的 Top-L/5、Top-L/2、Top-L），③四物种 donor/acceptor 剪接位点（Spliceator、400 nt、accuracy），④CPEB3 核酶 fitness 回归（80:20、R²），⑤natural-vs-shuffled 序列分类及配对位点扰动分析。MLI/coevolution 属无可训练下游头的分析线，单独记录，不伪装成 JEV 头任务。既有主 benchmark 8 split 只作补充，不代替上述任务。
+> - **主图 8 原论文任务注册表**：以 RiNALMo 论文和官方仓库为准，覆盖①TS0 与 ArchiveII 九家族 leave-one-family-out 二级结构，②四物种 donor/acceptor 剪接位点，③GSE114002 varying-length 25–100 nt MRL（官方 random/human、total_reads≥10、去重与每长度 top-100 划分，R²），④Muscle/pc3/HEK 的 TE 与 EL（官方 10-fold、R²与 Spearman），⑤官方终版 88 类 ncRNA 家族分类及 boundary-noise 配置。现有 177 类结果仅保留为项目敏感性线，不能称为原论文 88 类复现。图 A 放分类任务，图 B 放回归任务，各自保留原指标，不跨指标求平均。
+> - **共同对照与统计**：主对照为同一 frozen backbone 上 official linear/probe head vs JEV head 的单变量比较；原论文 full fine-tuning 数字或 released checkpoint 只作参照，不与 frozen JEV 直接计算架构增益。每个任务使用官方数据、split、预处理、tokenization、长度、pooling、标签和解码；5 个预注册种子，报告 mean±SD、配对效应量与 Holm 校正。全部预注册任务结果均进入源表和附录，主图可按预注册规则突出验证集确定且统计通过的任务，禁止事后删除负结果。
+> - **数据缺口处理**：NucleicBERT 接触图精确作者 split 若无法从官方资产获得，只能标为 protocol-matched reconstruction，不能声称逐样本复现；须保留来源、哈希和差异说明。RiNALMo Muscle/pc3 等官方 Drive 数据须从原始分发或备份恢复，失败则任务保持 blocked 并向用户报告，不能用其他数据集替代后宣称全覆盖。
+> - **执行顺序与门**：G0 规范/mock 隔离与任务冻结 → G1 数据、哈希、权重、CUDA 和内存预检 → G2 无训练图件修正与 4090 串行测速 → G3 NucleicBERT 与 RiNALMo 各任务独立数据门后并行小head训练/评测 → G4 全量统计、绘图与 PPT 逐页 QA → G5 归档、台账、GitHub 和最终交付。速度测试期间暂停其他 GPU 作业；小head任务可在实测显存允许时并行，全骨干任务不得超订。单 4090 采用事件驱动队列，空闲即提交下一项，避免无意义频繁轮询。
+> - **训练与记录**：所有新训练以 held-out validation early-stopping、best checkpoint 和 plateau 判据确认收敛，固定 epoch/step 仅作安全上限或原论文参照，不等于收敛。CUDA 不可用或 CPU 静默降级立即停止并保存证据。每次运行记录 commit、配置、seed、数据/权重哈希、CUDA、best step/epoch、停止原因、结果路径和科学结论；每阶段三通道验收后才进入下一阶段，确认后的代码及时提交并 push。
+> - **一手来源**：NucleicBERT 论文 `https://doi.org/10.1038/s42256-026-01295-9`、官方仓库 `https://github.com/KIT-MBS/NucleicBERT`；RiNALMo 论文 `https://doi.org/10.1038/s41467-025-60872-5`、官方仓库 `https://github.com/lbcb-sci/RiNALMo`；Spliceator 数据 `https://zenodo.org/records/7995778`；MRL 数据 `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE114002`；CPEB3 数据论文 `https://doi.org/10.3389/fmolb.2022.893864`。
+>
 > **2026-10-26 第 32 轮续接管更新**：当前权威 spec/tasks 为 `/home/rna_jev/spec/` 第 32 轮续块。matched 六臂均 early-stopping，24/24 格三通道复核和三种子统计已完成；clean/mixed 家族 OOD mean=0.335717/0.362586，xens2=0.443366，GenF 混合假设、GenF SOTA、OOD mean SOTA、OFoldNA OOD mean 四门均未通过，按负结果保留。
 >
 > 统一 xens2 对预注册去污染参照为 **6/8**；旧 7/8 在 bpRNA-new 用 r2d_tr1 集成 0.6132 替代 xens2=0.5532，模型身份不一致。124.78 seq/s 属于 r2dtr1c-s0，不是 xens2 联合点；A100 Pareto 只含 RNAformer/UFold，r2d 被支配。

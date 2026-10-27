@@ -1,7 +1,21 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
 > change-id: `build-rna-ss-decision-model`
-
+>
+> **第 33 轮增量验收（2026-10-28）**：
+> - [x] 已读取全部交接文档并交叉核对远端真实第 32 轮 artifact；已识别 preview_draft 中主图 3 与 matched 的 mock 数据，禁止科学引用。
+> - [x] 已用原论文与官方仓库冻结 NucleicBERT 五类可训练任务+MLI 分析线、RiNALMo 六类任务；识别 88 类 ncRNA、官方 MRL/TE/EL 与旧项目协议的差异。
+> - [x] 五处 spec/tasks 与四处 checklist 已同步第 33 轮，且经三轮内容一致性检查（T-A133）。
+> - [ ] 主图 3B 使用真实 40/40 数据，control−ablation 正值 drop、图下数据表与 JSON 三通道一致（T-A134）。
+> - [ ] 主图 4A/B 所有颜色均有图例，ECE/Spearman/n 与权威源一致（T-A135）。
+> - [ ] 主图 5A/B 全部来自同一 4090 的共同协议，包含自模型，测速原始 JSON、预测一致性和独立复核通过（T-A136）。
+> - [ ] 主图 6A/B/C 全部为可编辑 PPT 原生矢量元素，参数与张量合同经代码/checkpoint 复核（T-A137）。
+> - [ ] NucleicBERT 数据门通过，五类任务完成 5-seed 双头评测与统计；blocked 项未隐藏，MLI 单独记录（T-A138/T-A139）。
+> - [ ] RiNALMo 数据门通过，六类任务完成 5-seed 双头评测与统计；88 类 ncRNA、官方 MRL/TE/EL 协议无替换（T-A140/T-A141）。
+> - [ ] 所有新训练均有 CUDA、early-stopping、best checkpoint、plateau 停止原因与完整台账；无 step cap 冒充收敛。
+> - [ ] PPT 仅改指定内容，微软雅黑、1.5 倍行距、无重叠，markitdown/fix/layout/ZIP/逐页渲染和图文匹配全部通过（T-A142）。
+> - [ ] 旧文档与旧绘图数据完成可追溯归档，活跃源数据无 mock，阶段代码已提交并 push（T-A143）。
+>
 > **第 32 轮增量验收（2026-10-26 续）**：
 > - [x] matched 六臂均 early-stopping；24/24 格 CUDA、样本数、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核通过。
 > - [x] 三种子 mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成；四个科学门均未通过，禁止改写为正结论。

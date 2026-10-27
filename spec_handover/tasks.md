@@ -1,7 +1,25 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
 > change-id: `build-rna-ss-decision-model`
-
+>
+> **当前执行队列（2026-10-28，第 33 轮）**：第 32 轮远端 T-A127–T-A132 的真实 artifact 状态保留；本轮只接受验收 JSON 与原始结果，禁止 mock 进入图件。
+>
+> | 任务 | 当前状态 | 依赖、下一步与完成判据 |
+> |---|---|---|
+> | **T-A133 规范同步、mock 隔离与原论文协议冻结** | **已完成（2026-10-28）** | 本地根目录/spec/spec_sync 与远端 spec/spec_handover 全部写入第 33 轮；核对 NucleicBERT 五类可训练任务+MLI 分析线、RiNALMo 六类任务及官方数据/划分/指标。五处文档内容一致、无 mock 路径作为活跃数据源后关闭 |
+> | **T-A134 主图 3B 正值 drop 与数据表** | **待执行，真实 40/40 已具备** | 由 `main_ablation_5x8.json` 独立重算核心三模块 ID/External/PDB-OOD 的 control−ablation，图下配同值表；图、表、JSON 三通道一致，正值仅为损失表示，完整原差值保留 |
+> | **T-A135 主图 4 图例与源数据纠错** | **待执行，无需新训练** | 图 A 三类图例、图 B 两类样本组图例齐全；ECE/Spearman/n 与权威结果逐项一致，红/青/蓝/灰含义无歧义，渲染无遮挡 |
+> | **T-A136 主图 5 全 4090 重测与重绘** | **待 G1 后执行** | G1 核对全部权重与适配器；同一 4090、TS0、strict micro-F1、端到端范围完成共同 B=1 Pareto 和共同 batch 网格测速，包含 r2d/plana/xens2；测速独占 GPU，预测一致性、协议、峰值显存、原始 JSON 与双重复核通过才重绘 A/B |
+> | **T-A137 主图 6 原生矢量重绘** | **待执行，无需新训练** | 先读 checkpoint/config/code 冻结参数与张量合同，再用 PPT 原生形状绘制 A/B/C；所有元素可编辑，逻辑流、输入输出、参数、先验与双输出匹配代码，无栅格架构截图，逐页 QA 通过 |
+> | **T-A138 NucleicBERT 数据与工程门** | **待 G1** | 冻结官方二级结构、接触/距离图、四物种 splice、CPEB3 fitness、shuffle 数据与协议；接触图无作者 split 时明确 reconstruction 标签。原始 N→处理 N、split/hash、tokenizer、标签、内存和 CUDA smoke 全通过后才能训练 |
+> | **T-A139 NucleicBERT 原论文下游补测** | **待 T-A138** | 同 frozen NB 的 official probe vs JEV head，5 seeds，覆盖五类任务；MLI 单独记录。输出全量 result/predictions/run_meta、mean±SD、配对效应和 Holm；任一 blocked 不得删除后声称全覆盖，既有 8 split 仅作补充 |
+> | **T-A140 RiNALMo 数据与工程门** | **待 G1，可与 T-A138 并行准备** | 冻结 TS0/ArchiveII 九家族、Spliceator、官方 MRL、三细胞 TE/EL、88 类 ncRNA 数据与协议；恢复 Muscle/pc3，177 类仅作敏感性。官方 split/hash、标签、指标、内存与 CUDA smoke 全通过后才能训练 |
+> | **T-A141 RiNALMo 原论文下游补测** | **待 T-A140，可与 T-A139 分队列推进** | 同 frozen RiNALMo 的 official head vs JEV head，5 seeds，完成六类任务及必要 fold；分类与回归结果分表，保留全部正负结果。完整统计后图 A 放分类、图 B 放回归，主图突出规则不得替代全量报告 |
+> | **T-A142 图件与 PPT 最终 QA** | **待相关实验验收** | 仅修改导师指定页及必须同步的图文，不改用户其他调整。微软雅黑、1.5 倍行距、字号适配、无重叠、表图同源；markitdown、fix、layout、ZIP、逐页渲染与文字-图片匹配检查全部通过 |
+> | **T-A143 归档、台账与 GitHub 交付** | **贯穿本轮，最终待验收** | 旧版/废弃文件移入 archive，synthetic placeholder 单独隔离；活跃绘图原数据、source registry、旧数据归档和哈希清单可追溯。每次训练记录完整，阶段确认后提交并 push，大文件留 `/teams`，代码留 `/home`，秘密不入库 |
+>
+> **阶段停止规则**：上一阶段未达到对应验收门不得进入下一阶段；不同任务的数据门相互独立，允许无依赖工作并行。CUDA 不可用、CPU 静默降级、样本数不符、权重/数据哈希不明或结果无法独立复算时，立即停止该任务并保留证据。smoke、proxy、quoted、训练集或单种子结果不得写成最终科学结论。
+>
 > **2026-10-26 第 32 轮收官**：T-A126–T-A132 全部完成。matched 6/6、五类消融 40/40、三组 MRL 30/30 run 均验收；MRL 0/3 显著正，按负结果保留。正式 PPT 为 21 页：主文 10 图+4 附录+1 页论文逻辑链，微软雅黑、1.5 行距、全页渲染与 ZIP 完整性通过，SHA256=`cb5d62de…`。
 >
 > 主 benchmark 统一 xens2=6/8（预注册 clean 参照），旧 7/8 属混合模型组合；速度 124.78 属 r2dtr1c-s0，A100 r2d 不在 Pareto 前沿。任何旧“在训/排队/完成”快照不得覆盖当前 artifact。
