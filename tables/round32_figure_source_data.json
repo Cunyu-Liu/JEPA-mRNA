@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v26",
+    "version": "round33-verified-v27",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -380,7 +380,16 @@
       0.4845,
       0.4862,
       0.4735
-    ]
+    ],
+    "recovery_audit": {
+      "status": "PASS",
+      "script_sha256": "4f65b98d46ae464d73aa92af286bb90e42ce10782bea7b19cea0f92185061f22",
+      "local_manifest_sha256": "7452ffc917be46b3e58e03d8927a372abc901a46579491bbec0104d5bf40b9f3",
+      "remote_manifest_sha256": "b2bda421f1b6d4d26b3acd53cce1325f56f2b67ae89be32787516f196c02f567",
+      "n_jev_results_verified": 8,
+      "full_ft_result_json_found_in_shutdown_backup": false,
+      "boundary": "retain previously verified nb_ft values and existing PPT panel; never substitute frozen official-probe values for full-FT"
+    }
   },
   "downstream": {
     "ncrna": {

@@ -10314,3 +10314,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 每个任务重新检查 full scope、CUDA、五种子收敛与 independent_recheck，按逐 seed 原始指标重算 official/JEV mean、sample SD、配对 Δ 和单侧 t 检验；随后在各自任务家族内执行 Holm 校正。当前没有零方差任务，Holm 可定义。
 - 本机独立 `statsmodels.stats.multitest.multipletests(method='holm')` 与脚本逐个 p 值完全一致，`HOLM_INDEPENDENT_QA_PASS`。远端直接读取七个原始 result 复现通过。两家族显著正任务均为 **0/7**；不得用未校正 p 或局部正方向选择性宣称提升。
 - 输出 `round33_completed_task_statistics.json`（本机 SHA256=`eab4ded7abfdaa6668297dfc35611c16540691d935958929d1740680635d9a67`；远端路径表示不同，SHA256=`4d9d25a1dcbf09c247a02d3eff8c9a5aba6f88f8bcd96c3a8f238ffbb1b078e4`）。源注册表升级为 `round33-verified-v26`，不包含仍在训练的 MRL/TE/EL/ArchiveII/bpRNA。
+
+### AF. NucleicBERT 主 benchmark 原始资产恢复与 full-FT 边界
+
+- 在关停备份 `results/eval_decision/nb_jev_r2dtr1c_s0_step20000/` 找回全部 8 个 JEV-on-NB 原始 result；在 `results/eval_decision_ref/` 找回对应 frozen official-probe JSON。新增 `audit_nb_transfer_assets_round33.py`，SHA256=`4f65b98d46ae464d73aa92af286bb90e42ce10782bea7b19cea0f92185061f22`。
+- 每个 split 重新按 TP/FP/FN 计算 strict micro-F1，与原始字段及 `source_data.nb_transfer.jev_on_nb` 的四位小数注册值一致；设备均为 CUDA，样本数非零。远端直接读取备份复现 `NB_TRANSFER_RECOVERY_AUDIT_PASS`，8/8 split 通过。
+- 备份中未找到 full-FT NB 的结果 JSON。frozen official-probe 与 full-FT 是不同对照，不得把刚找回的 frozen 值（如 TS0=0.1509）替换当前 full-FT 值（0.4609）。当前 full-FT 数字继续沿用已验收注册表和既有 PPT 面板，不伪造 result 路径或重新解释为 frozen probe。
+- 输出 `nb_transfer_recovery_manifest.json`，记录 8 个 JEV result 与 frozen probe 的路径、SHA 和该边界。本机 manifest SHA256=`7452ffc917be46b3e58e03d8927a372abc901a46579491bbec0104d5bf40b9f3`；远端 manifest SHA256=`b2bda421f1b6d4d26b3acd53cce1325f56f2b67ae89be32787516f196c02f567`。源注册表升级为 `round33-verified-v27`。
