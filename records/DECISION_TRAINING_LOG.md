@@ -10293,3 +10293,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - GitHub API 复核官方仓库最新提交仍为 `7beb6b38902ee963a2c514f39b69497fe9201ef9`；open+closed issues 为 0。`docs/README.md` 只列 RNAStralign/TR0/ArchiveII、BGSU/NucleoSeeker 等数据名称，没有下载地址、样本 ID 或 split，Zenodo 链接仅用于模型权重。
 - 因缺少样本身份与划分，secondary structure、contact/distance、natural-vs-shuffled 继续保持 blocked。RiNALMo 的完整 bpRNA TR0/VL0/TS0 镜像不能替代 NucleicBERT 作者处理版本；接触图不得自行假设原子规则，shuffle 不得自行生成负样本后声称复现。
 - 源注册表升级为 `round33-verified-v23`，新增本次公开复核时间、最新 commit 与无新增资产结论；没有新增科学结果。
+
+### AC. 图 8B 正式回归数据门实现与合成验收
+
+- 新增 `make_figure8b_round33.py`，SHA256=`a2f9b10f2814ded026a6afda6eb9369367b2c2dc469facf1cda418f14efe2f7d`。正式图只接受：官方 varying-length MRL full_v3 R²，以及 Muscle/PC3/HEK 的 TE、EL 全部十折 Spearman 聚合；共 1+6 个结果，缺任一项即拒绝出图，不使用旧 MRL PCC、fold0 或 smoke 代替。
+- MRL 逐 run 复核 full scope、CUDA、五种子收敛、R² mean/SD、配对 Δ 与 p；TE/EL 进一步从十折 fold_results 重算每 seed 的 CV Spearman、fold mean/SD、seed-CV Δ 和 p。零方差 p 显示 `NA`，不伪造显著性。全局 Holm 仍需结果齐后执行。
+- 本机与远端同一合成工程测试均 `FIG08B_SYNTHETIC_DATA_GATE_AND_LAYOUT_TEST_PASS`：覆盖七组合成结果、独立 SHA、零方差、三面板 3840×1920 输出和缺少 EL HEK 时硬失败。合成预览视觉检查无重叠；合成数据不进入科学结果或绘图源。
+- 当前正式 MRL/TE/EL 尚未齐，未生成真实图 8B，也未插入 PPT。源注册表升级为 `round33-verified-v24`，仅登记实现与测试状态。

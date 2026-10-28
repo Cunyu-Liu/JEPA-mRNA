@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v23",
+    "version": "round33-verified-v24",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1851,6 +1851,15 @@
       "source": "rinalmo_splice_donor_round33_full_v1/result.json"
     },
     "inference_scope": "paired training-seed effects; no test-set population inference",
+    "regression_panel_gate": {
+      "status": "implementation verified; no real figure generated; waiting official MRL full_v3 and all six TE/EL ten-fold aggregates",
+      "script_sha256": "a2f9b10f2814ded026a6afda6eb9369367b2c2dc469facf1cda418f14efe2f7d",
+      "required_results": ["MRL full_v3 R²", "Muscle TE ten-fold Spearman", "pc3 TE ten-fold Spearman", "HEK TE ten-fold Spearman", "Muscle EL ten-fold Spearman", "pc3 EL ten-fold Spearman", "HEK EL ten-fold Spearman"],
+      "local_and_remote_synthetic_test": "PASS",
+      "missing_any_result": "refuse to plot",
+      "zero_variance_p_value": "NA",
+      "global_holm": "pending after all results"
+    },
     "working_classification_figure": {
       "status": "working only; not inserted into PPT; pending ArchiveII/bpRNA and separate regression panel",
       "script_sha256": "1f58f0f37be871f8b46f162c872f516c66e579d6d7b68aa0c981e60fd2c21ccb",
