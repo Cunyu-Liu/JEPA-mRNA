@@ -10421,3 +10421,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 使用本地 NumPy/SciPy 从五 seed 原始指标重新计算：TE official/JEV Spearman 均值 0.555709/0.488381，Δ=−0.067328，p=0.998411；EL 为 0.509819/0.454464，Δ=−0.055355，p=0.978276。与远端 `primary_delta_mean`、`primary_one_sided_p_value` 完全一致，所有 run 均记录 CUDA 和 early-stopping。
 - `round34_active_source_registry.json` 升级为 `round34-working-v2`，加入两份 fold0 原始结果、哈希、Δ、p 和“fold0 only”范围声明；新增文件哈希检查通过。清单仍拒绝 synthetic preview，未把 fold0 纳入最终图 8B。
 - 当前自动训练队列和 QA watcher 均正常运行，folds2–9 尚无新增完成结果。上述复算只确认 fold0 的部分证据，不改变 TE/EL 全协议未完成状态。
+
+## §15.118（2026-10-28 后续）RNAformer 真实 batch 首次功能验证未通过
+
+- 在不测吞吐、不生成科学结果的前提下，使用同一组 4 条等长序列比较逐条前向与 B×L 批处理预测。首次断言 `sequential == batch` 未通过，说明当前 RNAformer batch 改动不能提交，也不能用于共同 batch 网格。
+- 该验证只使用 CUDA，未发生 CPU 降级。当前没有证据表明既有 B=1 结果或其他模型结果受影响；问题被限制在未提交的 RNAformer batch 改动。
+- 已新增 `qa_rnaformer_batch_round34.py` 诊断脚本，逐序列输出 logit 最大/平均绝对差、概率最大差、阈值翻转数、单条与 batch 预测差集。待诊断输出后区分实现错误与数值边界问题，未确认前不修改科学结论，不跑全量测速。
+- 主图 5 终版脚本仍要求跨 batch 预测一致，因此当前数据门保持关闭。训练中的 HEK fold 和其他项目任务不受此次失败影响。
