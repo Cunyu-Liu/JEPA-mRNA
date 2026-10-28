@@ -10272,3 +10272,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 三轮 QA：①脚本断言和 3840×1920/PDF 文件门通过；②首轮渲染发现 xens2 标签与 Pareto 框重叠，修正后第二轮视觉检查无重叠；③独立脚本再次核对四个 raw result SHA、吞吐、F1、Pareto 和文件尺寸，`FIG05A_INDEPENDENT_QA_PASS`。最终 PNG SHA256=`bad7848d4f7041c0a92521eeaf80f1f548a85a6864bec2314a835a5a8a03dfd1`。
 - 图 5A 仍标为 **working_pending_mxfold2_rnaformer_and_common_batch_grid**，没有插入 PPT；图 5B 尚无共同 batch 网格，不以旧缓存 ladder 补图。源注册表升级为 `round33-verified-v20`。
 - 远端复现时 `lucaone` 缺少 matplotlib，未在训练共用环境中安装或升级依赖；改用已有 `codonflow` 环境后同一脚本和 raw JSON 复现通过。远端缺少 Arial/微软雅黑并产生字体回退警告，因此用于交付的视觉 QA 以本机微软雅黑渲染为准，远端输出只证明数值与代码可复现。
+
+### Z. NucleicBERT 原论文任务图 7 工作面板
+
+- 新增 `make_figure7_round33.py`，SHA256=`5f7518c5dfd2ef75a788e6bbd58f9c84690e1542d842ffc536e100924902be66`。仅使用三个已全量验收的原论文任务：Splice acceptor、donor 与 CPEB3；二级结构、接触/距离图和 natural-vs-shuffled 继续明确 blocked，不声称原论文任务全覆盖。
+- 图 7A 为分类 accuracy（acceptor official=0.815510、JEV=0.810333、Δ=-0.0051775、p=0.867588；donor official=0.752230、JEV=0.747888、Δ=-0.0043425、p=0.976146）；图 7B 为 CPEB3 R²（official=0.892282、JEV=0.889696、Δ=-0.0025854、p=0.600333）。不同指标分轴，mean±sample SD 与负结果全部保留。
+- 三轮 QA：①逐 run 检查 full_dataset、CUDA、五种子收敛和 independent_recheck，重算 mean/SD/Δ/单侧配对 p，并与源注册表交叉核对；②首轮渲染发现均值文字与误差线局部重叠，移到点的两侧后第二轮视觉检查通过；③独立脚本再次核对三个 raw result SHA、统计值和 3840×1920/PDF，`FIG07_ORIGINAL_TASKS_INDEPENDENT_QA_PASS`。最终 PNG SHA256=`c12428e6b5da30b5f072de1e201c2bf9da8a97c28bf2ed14a196e258f957b25a`。
+- 远端 `codonflow` 直接读取三个原始 result 复现通过；字体回退警告与本机交付渲染分开记录。图件仍标为 working，不插入 PPT，不写成显著正结果。源注册表升级为 `round33-verified-v21`。

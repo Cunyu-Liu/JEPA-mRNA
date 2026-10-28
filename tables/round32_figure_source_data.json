@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v20",
+    "version": "round33-verified-v21",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1664,7 +1664,20 @@
       "contact_distance": "blocked: NucleoSeeker/BGSU IDs, author splits and 3D-distance conventions are unavailable; no invented atom rule or reconstruction label is permitted",
       "natural_vs_shuffled": "blocked: natural input, no_pretrain_similar exclusion list and fixed test set are unavailable; official negative generators alone are insufficient"
     },
-    "note": "Full-dataset result with independent saved-output QA; no smoke values are included. Negative and nonsignificant results are retained."
+    "note": "Full-dataset result with independent saved-output QA; no smoke values are included. Negative and nonsignificant results are retained.",
+    "working_original_task_figure": {
+      "status": "working only; not inserted into PPT; pending secondary structure, contact/distance maps and natural-vs-shuffled",
+      "script_sha256": "5f7518c5dfd2ef75a788e6bbd58f9c84690e1542d842ffc536e100924902be66",
+      "png_sha256": "c12428e6b5da30b5f072de1e201c2bf9da8a97c28bf2ed14a196e258f957b25a",
+      "pdf_sha256": "0a4950361d122ecc66bc51e4c6438e776180fd53e2faace637d4f79946f271bc",
+      "figure_source_sha256": "129715dc5b64277066843672e4f5bf3e8306f088ae88a632d584b2ebec09b5bc",
+      "raw_result_sha256": {
+        "acceptor": "cb79a922a27b7fa9f573d1a39cf86d2ba565ac269fcc6edc748fb88a15f9be2e",
+        "donor": "64ffc8f3ce9310dd5542aff7a874fb6c731ed1601ed3612385de42e03d2e2097",
+        "cpeb3": "43517c79cce5518d9397f69765858d77f082cefcd4f3e41b1ae7dc0886778ca6"
+      },
+      "positive_result_claim": false
+    }
   },
   "rinalmo_original_data_round33": {
     "te_el_official": {
