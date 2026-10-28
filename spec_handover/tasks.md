@@ -13,7 +13,7 @@
 > | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且均不显著为正；二级结构、接触/距离图、shuffle 缺官方样本/split，组合图未入片 | 继续恢复官方资产；不可用即明确 blocked，禁止替换数据或宣称全覆盖。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
 > | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | Spliceator 与 88 类 ncRNA 已完成；ArchiveII tRNA/5s、MRL full_v3、HEK fold0/fold1 TE/EL 七项在训；bpRNA 和 Muscle/PC3 等待队列；其余家族/folds 未闭环 | 先验收在训项并接续 bpRNA、Muscle/PC3 smoke，再完成 ArchiveII 其余家族与 TE/EL 600-run 全协议。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，fold0/smoke 不得写成结论 |
 > | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0；第 9/11/12 页仍待最终数据；第 5/15/17/20 页存在旧速度/参数口径需联动 | 仅改指定页及一致性必需项。微软雅黑、1.5 倍行距、无重叠、图文匹配；最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染 |
-> | T-A143 台账、归档与 GitHub | 57b607f、9d753ce、fb7bc5f 已推送；RNAformer batch 与主图 5 终版脚本待 GPU/全量验收，third_party 仅作上游依赖，不混入提交 | 继续逐任务记录并提交确认代码；PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
+> | T-A143 台账、归档与 GitHub | 57b607f、9d753ce、fb7bc5f、ed3fc34 已推送；RNAformer batch 待 GPU 验收，third_party 仅作上游依赖，不混入提交 | 继续逐任务记录并提交确认代码；PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
 >
 > **资源与停止规则**：审计时 4090 显存 22,850/24,564 MiB，七项任务在训，禁止超订；采用事件驱动队列，有余量即接续，测速必须独占。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
 >

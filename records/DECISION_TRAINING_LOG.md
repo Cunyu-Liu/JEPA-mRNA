@@ -10389,3 +10389,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 已推送提交为 `57b607f`、`9d753ce`、`fb7bc5f`。仅在本机待同步的内容包括：§15.112 及本段的训练台账、两个 spec 目录的最新 T-A142/T-A143 状态、`make_figure5_round34.py`，以及尚未完成 GPU 验证的 RNAformer batch 改动。上述内容不得写成已上传或已提交。
 - 主图 5 终版脚本已完成三项独立检查：旧 B=1 结果读取与哈希绑定、缺 B=2/4 数据时拒绝出图、篡改顶层预测后拒绝验收。RNAformer 真实 B×L batch 和新增基线全量测速仍未执行，主图 5/7/8 最终 PPT 与后续归档均未完成。
 - 恢复连接后的第一批动作：先上传并核对台账/spec，收集 watcher 新增 QA 状态和真实结果，再在独立 GPU 窗口执行 RNAformer/MXfold2 smoke 与共同 batch 网格。任一结果未经验收不得升级为最终科学结论。
+
+## §15.114（2026-10-28 后续）经 GitHub API 完成待同步文件交付
+
+- SSH 持续不可达期间，普通 git 传输同时出现 HTTP2 framing 和连接失败，但 `gh auth status` 与 GitHub REST API 可用。改用 API 提交，不将其视为 GPU 或服务器恢复。
+- 提交前通过 API 逐项核对：`spec/tasks.md` 与 `spec_handover/tasks.md` 各只有两行状态更新；训练台账只新增 §15.112–§15.114；`tools/make_figure5_round34.py` 为新文件。未纳入 RNAformer batch 改动、third_party 克隆或任何秘密。
+- 已创建并验证 `ed3fc34a1b482095b7be306783cd83aa8953b818`，提交信息为 `round34: sync QA findings and Figure 5 data gate`，远端分支 `round29-handoff` 的 ref 已指向该提交。GitHub 已更新，但服务器 `/home/rna_jev` 仍需在 SSH 恢复后 fetch/rebase 对齐，不得假定其本地工作区已包含这些提交。
+- 主图 5 终版脚本保留完整数据门：六个可运行系统的 B=1/2/4 全部到齐、跨 batch 预测一致、三次 run 哈希绑定和独立 F1 复算通过后才出图。UFold 仍明确 blocked，主图 5/7/8 的最终科学验收状态没有改变。
