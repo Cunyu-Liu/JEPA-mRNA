@@ -75,6 +75,7 @@ class OfficialRegressionHead(nn.Module):
         self.dropout = nn.Dropout(p=dropout)
         self.linear_out = nn.Linear(embed_dim, 1)
     def forward(self, x, padding_mask):
+        x = x.masked_fill(padding_mask.unsqueeze(-1), 0.0)
         x = self.linear_in(x).permute(0, 2, 1)
         for block in self.blocks:
             x = block(x)
@@ -154,17 +155,31 @@ def tokenize(seq: str, device: str) -> torch.Tensor:
 def extract_embeddings(df: pd.DataFrame, cache: Path, device: str, batch_size: int) -> dict:
     sequences = df["utr"].astype(str).str.replace("<pad>", "", regex=False).tolist()
     fingerprint = sequence_sha256(sequences)
+    weights_sha256 = sha256(Path(WEIGHTS) / "model.safetensors")
+    weights_config_sha256 = sha256(Path(WEIGHTS) / "config.json")
+    preflight_sha256 = sha256(Path("/home/rna_jev/tools/rinalmo_preflight.py"))
+    extractor_sha256 = sha256(Path(__file__).resolve())
     embs_path = cache.with_suffix(".embs.npy")
     mask_path = cache.with_suffix(".mask.npy")
     meta_path = cache.with_suffix(".json")
     if meta_path.is_file():
         meta = json.loads(meta_path.read_text())
-        if meta.get("sequence_sha256") != fingerprint or meta.get("n_sequences") != len(df):
+        if (meta.get("sequence_sha256") != fingerprint or meta.get("n_sequences") != len(df)
+                or meta.get("pretrained_sha256") != weights_sha256
+                or meta.get("pretrained_config_sha256") != weights_config_sha256
+                or meta.get("preflight_sha256") != preflight_sha256
+                or meta.get("extractor_sha256") != extractor_sha256
+                or meta.get("embedding_content_sha256") != sha256(embs_path)
+                or meta.get("padding_mask_sha256") != sha256(mask_path)):
             raise RuntimeError(f"cache identity mismatch: {meta_path}")
         embs = np.load(embs_path, mmap_mode="r", allow_pickle=False)
         padding_mask = np.load(mask_path, mmap_mode="r", allow_pickle=False)
-        if embs.shape != tuple(meta["embedding_shape"]) or padding_mask.shape != embs.shape[:2]:
-            raise RuntimeError(f"cache shape mismatch: {meta_path}")
+        if (embs.shape != tuple(meta["embedding_shape"]) or padding_mask.shape != embs.shape[:2]
+                or embs.dtype != np.dtype("float16") or padding_mask.dtype != np.dtype("bool")):
+            raise RuntimeError(f"cache shape/dtype mismatch: {meta_path}")
+        for start in range(0, len(df), 32):
+            if not np.isfinite(embs[start:start + 32]).all():
+                raise RuntimeError(f"non-finite embedding cache rows: {start}")
         return {"embs": embs, "padding_mask": padding_mask}
 
     encoder, _ = load_encoder(device)
@@ -194,11 +209,18 @@ def extract_embeddings(df: pd.DataFrame, cache: Path, device: str, batch_size: i
                 print(f"[emb] {start + len(rows)}/{len(sequences)}", flush=True)
     embs.flush()
     padding_mask.flush()
+    for start in range(0, len(df), 32):
+        if not np.isfinite(embs[start:start + 32]).all():
+            raise RuntimeError(f"non-finite extracted embedding rows: {start}")
     del embs, padding_mask, encoder
+    meta = {"sequence_sha256": fingerprint, "n_sequences": len(df),
+            "pretrained_sha256": weights_sha256, "pretrained_config_sha256": weights_config_sha256,
+            "preflight_sha256": preflight_sha256, "extractor_sha256": extractor_sha256,
+            "embedding_content_sha256": sha256(temporary_embs),
+            "padding_mask_sha256": sha256(temporary_mask),
+            "embedding_shape": [len(sequences), max_len, 1280], "dtype": "float16"}
     temporary_embs.replace(embs_path)
     temporary_mask.replace(mask_path)
-    meta = {"sequence_sha256": fingerprint, "n_sequences": len(df),
-            "embedding_shape": [len(sequences), max_len, 1280], "dtype": "float16"}
     temporary_meta = cache.with_suffix(".tmp.json")
     temporary_meta.write_text(json.dumps(meta, indent=1) + "\n")
     temporary_meta.replace(meta_path)
@@ -271,6 +293,7 @@ def train_one(arrays: dict, labels: np.ndarray, split: dict, head_cls, seed: int
     pred_valid = raw_valid * label_std + label_mean
     pred_test = raw_test * label_std + label_mean
     if scale:
+        pred_valid = np.maximum(pred_valid, 0.0)
         pred_test = np.maximum(pred_test, 0.0)
     truth_valid, truth_test = labels[valid_idx], labels[test_idx]
     r2 = lambda truth, pred: float(1 - np.sum((truth - pred) ** 2) / np.sum((truth - truth.mean()) ** 2))
@@ -301,7 +324,7 @@ def main() -> int:
     if args.task == "mrl":
         df, split = load_mrl()
         labels = df["rl"].to_numpy(dtype=float)
-        scale, huber, cache = True, False, ROOT / "data/rinalmo/mrl_official_tokens_v2.npz"
+        scale, huber, cache = True, False, ROOT / "data/rinalmo/mrl_official_tokens_v3.npz"
         source_data = TAR
     else:
         df, split = load_cell(args.task, args.cell_line, args.fold)
@@ -346,6 +369,7 @@ def main() -> int:
     test = stats.ttest_rel(jev, official, alternative="greater")
     p_value = float(test.pvalue)
     comparison = {"delta_r2_mean": float(np.mean(jev - official)),
+                  "inference_scope": "paired training-seed effects; no test-set population inference",
                   "one_sided_p_value": p_value if np.isfinite(p_value) else None,
                   "statistics_status": "ok" if np.isfinite(p_value) else "undefined_zero_variance",
                   "significant_positive": bool(np.mean(jev - official) > 0 and np.isfinite(p_value) and p_value < 0.05)}
@@ -358,6 +382,11 @@ def main() -> int:
                             "source_data": str(source_data), "source_data_sha256": sha256(source_data),
                             "pretrained_weights": WEIGHTS,
                             "pretrained_sha256": sha256(Path(WEIGHTS) / "model.safetensors"),
+                            "pretrained_config": str(Path(WEIGHTS) / "config.json"),
+                            "pretrained_config_sha256": sha256(Path(WEIGHTS) / "config.json"),
+                            "preflight_sha256": sha256(Path("/home/rna_jev/tools/rinalmo_preflight.py")),
+                            "embedding_cache_meta": str(cache.with_suffix(".json")),
+                            "embedding_cache_meta_sha256": sha256(cache.with_suffix(".json")),
                             "seeds": list(SEEDS), "optimizer": "Adam(lr=1e-3)", "train_batch_size": 32,
                             "embedding_batch_size": args.batch_size,
                             "code_sha256": sha256(Path(__file__).resolve()),
