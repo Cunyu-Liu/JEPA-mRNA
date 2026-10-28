@@ -10247,3 +10247,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 执行顺序：先完成 HEK fold0 TE/EL 全量及外部 QA → 并行完成 Muscle/PC3 四组 fold0 smoke → 分细胞复用已核验 cache，按显存门调度其余 fold → 按细胞任务汇总十折 Spearman，再做配对统计与 Holm；不设置固定 epoch 作为收敛替代，不以 fold0 挑选主图。
 - bpRNA 已注册全量自动门 PID=333608：等待 smoke 原子写出 `result.json`，随后运行加强版 `qa_bprna_result.py --expect-smoke`；只有外部 QA 返回 `BPRNA_RESULT_EXTERNAL_QA_PASS` 才启动 `rinalmo_bprna_TS0_round33_full_v1`。若 PID=322335 无 result 退出、未收敛或 QA 失败，全量不会启动。
 - 源注册表升级为 `round33-verified-v17`，记录十折完整范围、600 run、Muscle/PC3 smoke 缺口与 fold0 边界；没有新增科学数值。
+
+### W. Muscle/PC3 smoke 队列与十折统计汇总器验收
+
+- `run_te_el_smoke_queue_round33.sh` 已通过本机/远端 `bash -n` 和 SHA256=`f18f6a09ba86adb79f851e560568bb700712ce345536b817b61d669848110c31` 核对，队列 PID=339223。它在 bpRNA 当前 smoke PID=322335 退出后再竞争显存，每次启动前要求空闲≥8,000 MiB；顺序为 Muscle TE→Muscle EL→PC3 TE→PC3 EL，避免同细胞并发写 cache。每组使用与 HEK 相同的 limit=2、五种子、v4 主指标和 `--limit 2` 外部 GPU QA；失败即停止后续门。
+- 新增 `aggregate_te_el_cv_round33.py`，SHA256=`d81b5bde638442e3f736592f0b1dbbca41dc80c0f55b6a52afdd7a52d711a0a7`。它只接受同一细胞任务的全部十个 full_v4 result，逐折核对 CUDA、五种子 plateau、样本数、checkpoint/prediction SHA、预测重算 Spearman/R²/PCC、统一数据/cache/代码身份，以及匹配当前 result SHA 的 `REGRESSION_RESULT_EXTERNAL_QA_PASS scope=full` 日志。
+- 汇总算法先在每个 seed 内对十折 Spearman 求均值，再对五组 seed-level CV 值做 official/JEV 配对单侧检验；不把 50 个 fold-seed 当作独立样本。零方差继续标 `undefined_zero_variance`，不伪造显著性。输出只在十折全部通过后原子写出。
+- 本机和远端同一合成工程测试均 `TE_EL_AGGREGATOR_SYNTHETIC_TEST_PASS`：验证十折数学、100 run、seed-CV 配对值，以及修改 result 后旧 QA 日志必须拒绝。合成数据仅测试验收逻辑，不进入科学结果或绘图源。
+- 源注册表升级为 `round33-verified-v18`，登记 smoke 队列和汇总器哈希；当前仍无 Muscle/PC3 smoke 或任何完整十折科学结果。
