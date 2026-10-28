@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v24",
+    "version": "round33-verified-v25",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1688,7 +1688,7 @@
   },
   "rinalmo_original_data_round33": {
     "te_el_official": {
-      "status": "author-processed data gate and HEK TE/EL v3/v4 smoke QA passed; HEK TE and EL full_v4 have both launched; completion and external full-result QA remain pending",
+      "status": "author-processed data gate and HEK TE/EL v3/v4 smoke QA passed; HEK fold0 and fold1 TE/EL full_v4 are running with the verified shared cache; completion and external full-result QA remain pending",
       "v4_smoke_result_sha256": "0b723c595bc64bec674a4a85806a76d3e7f8a0dc293967fd2433a1fd28f6ac52",
       "v4_code_sha256": "84d8c0e25f6244c9e317ea71065549b09435e3c8e4f6b80bc33355f46a6fc6ed",
       "te_smoke_result_sha256": "3e9819bfe050c7fcfdbf59110f0f2ad99bbff8134471b43f3dd5a389846ad8dc",
@@ -1704,7 +1704,8 @@
         "remaining_smoke_queue_code_sha256": "f18f6a09ba86adb79f851e560568bb700712ce345536b817b61d669848110c31",
         "cv_aggregator_code_sha256": "d81b5bde638442e3f736592f0b1dbbca41dc80c0f55b6a52afdd7a52d711a0a7",
         "fold0_scope": "one tenth of one cell-line/task protocol; not a complete result",
-        "additional_smoke_required": ["Muscle TE", "Muscle EL", "pc3 TE", "pc3 EL"]
+        "additional_smoke_required": ["Muscle TE", "Muscle EL", "pc3 TE", "pc3 EL"],
+      "parallel_cache_safe_full_runs": ["HEK fold1 TE", "HEK fold1 EL"]
       },
       "source": "CodeOcean capsule 4214075, TE_REL_Endogenous_Cao, author-processed _sequence.csv direct downloads",
       "rows": {

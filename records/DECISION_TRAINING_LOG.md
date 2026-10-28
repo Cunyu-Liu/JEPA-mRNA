@@ -10300,3 +10300,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - MRL 逐 run 复核 full scope、CUDA、五种子收敛、R² mean/SD、配对 Δ 与 p；TE/EL 进一步从十折 fold_results 重算每 seed 的 CV Spearman、fold mean/SD、seed-CV Δ 和 p。零方差 p 显示 `NA`，不伪造显著性。全局 Holm 仍需结果齐后执行。
 - 本机与远端同一合成工程测试均 `FIG08B_SYNTHETIC_DATA_GATE_AND_LAYOUT_TEST_PASS`：覆盖七组合成结果、独立 SHA、零方差、三面板 3840×1920 输出和缺少 EL HEK 时硬失败。合成预览视觉检查无重叠；合成数据不进入科学结果或绘图源。
 - 当前正式 MRL/TE/EL 尚未齐，未生成真实图 8B，也未插入 PPT。源注册表升级为 `round33-verified-v24`，仅登记实现与测试状态。
+
+### AD. 显存余量补位：HEK fold1 TE/EL 并行启动
+
+- 用户提示显存空余后实测：RTX 4090 总显存 24,564 MiB，已用 20,475 MiB、空闲 3,609 MiB，GPU 利用率仅 12%。bpRNA 仍需等待≥8,000 MiB 的骨干加载门，未强行超订。
+- HEK 完整 `HEK_official_tokens` cache 已由 fold0 训练读取验证，fold1 无需重新加载 RiNALMo 骨干；official/JEV 回归头和 batch=32 的显存需求可在当前余量内独立运行。不同 fold 共享同一官方 KFold 协议但相互独立，启动 fold1 不降低 fold0 验收标准。
+- 已启动 `rinalmo_te_HEK_fold1_round33_full_v4` PID=382844 与 `rinalmo_el_HEK_fold1_round33_full_v4` PID=382845，均 `CUDA_VISIBLE_DEVICES=0`、full_v4、fold=1、batch-size=64，输出与日志分别独立，无覆盖。启动后两进程均存活，GPU 利用率读数升至 16%；随后双双进入 seed0 epoch8，已用 22,594 MiB、空闲 1,490 MiB、利用率 24%，不再追加任务；尚无 result，不记录中间指标。
+- 后续仍需 fold0/fold1 各自五种子 plateau、best checkpoint、完整预测和外部 GPU QA，不能用 fold1 启动代替完整十折验收。源注册表升级为 `round33-verified-v25`。
