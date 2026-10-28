@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/nb_cpeb3_round33_full_v1/result.json",
+  "result_sha256": "43517c79cce5518d9397f69765858d77f082cefcd4f3e41b1ae7dc0886778ca6",
+  "kind": "cpeb3",
+  "ss_type": null,
+  "cuda_device": "NVIDIA GeForce RTX 4090",
+  "delta": -0.0025854485348049128,
+  "p_value": 0.6003336123914955,
+  "gpu_reinference_runs": 10
+}

@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/nb_splice_acceptor_round33_full_v1/result.json",
+  "result_sha256": "cb79a922a27b7fa9f573d1a39cf86d2ba565ac269fcc6edc748fb88a15f9be2e",
+  "kind": "nb_splice",
+  "ss_type": "acceptor",
+  "cuda_device": "NVIDIA GeForce RTX 4090",
+  "delta": -0.0051774999999999235,
+  "p_value": 0.8675878224847565,
+  "gpu_reinference_runs": 10
+}

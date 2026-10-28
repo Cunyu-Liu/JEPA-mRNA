@@ -10518,3 +10518,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 本轮 7 个补验任务中，NB CPEB3/acceptor/donor 与 RiNALMo clean/bn200 ncRNA 共 5 项已完成独立全量 QA；RiNALMo Spliceator acceptor/donor 因 cache 缺失仍 pending，不能写成全部 7 项通过。
 - 根目录、`spec/`、`spec_sync/` 的 tasks 与 spec 已同步纠正旧“RiNALMo Spliceator 外部 QA 已完成”表述：明确 NB 三项与 ncRNA 两组通过，RiNALMo splice full 结果保留、原始代码已恢复、cache 重建和 GPU QA 待办。
 - 五个已通过任务均无可宣称的显著正提升，完整负结果保留。主图 7/8 不允许用这些负结果冒充正提升，也不删除源数据。
+
+## §15.132（2026-10-28 后续）Splice cache 恢复 OOM 与五项 QA 回执归档
+
+- 新增 `run_rinalmo_splice_recovery_round34.sh`，计划按原始 batch=32 依次恢复 acceptor/donor cache 并立即 QA。acceptor 首次恢复在 RiNALMo 编码器加载时再次 OOM：尝试分配 20 MiB，当时仅剩 14.44 MiB；日志完整保留，未重训、未改 batch、未 CPU 降级。恢复窗口仍须等待，不在并发高占用时继续重试。
+- 原 `qa_ncrna_full.py` 只打印 PASS 不写回执，已补充原子 `qa_result.json` 写出并重新执行 clean/bn200 两组，结果与之前完全一致。远端已逐项确认 5 个通过任务的回执均为 `status=PASS`、result SHA256 匹配、`gpu_reinference_runs=10`。
+- 五份 QA 回执已下载到本地 `figure_assets/downstream_qa/`。活跃清单升级为 `round34-working-v7`，新增 `downstream_qa`：5/7 完成、RiNALMo Spliceator 两项 pending cache，并记录每项 delta/p 值与本地回执 SHA256。
+- 清单全量哈希复核通过，共 15 个活跃/历史证据条目。回执只证明结果可复算，不改变五个任务均不显著正的结论。

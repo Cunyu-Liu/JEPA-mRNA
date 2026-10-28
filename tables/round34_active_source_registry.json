@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v6",
+  "registry_version": "round34-working-v7",
   "generated_at": "2026-10-28",
   "scientific_status": "working_not_final",
   "rules": {
@@ -81,6 +81,17 @@
       ],
       "forbidden_source": "/private/tmp/rnajev_audit/round33/fig08b_synthetic_preview"
     }
+  },
+  "downstream_qa": {
+    "status": "5_of_7_completed_rinalmo_splice_pending_cache",
+    "completed": [
+      {"task": "nb_cpeb3", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/nb_cpeb3_qa_result.json", "sha256": "637e05958fe89e6fc52648cf908e45dfc2d0da8171ec3ceae24357e12b94eafc", "delta": -0.0025854485348049128, "one_sided_p": 0.6003336123914955},
+      {"task": "nb_splice_acceptor", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/nb_splice_acceptor_qa_result.json", "sha256": "da5f361694eeb4610bae16f7a4d2f8c4bda8a0b523b773313e7c4494fecc0f6c", "delta": -0.0051774999999999235, "one_sided_p": 0.8675878224847565},
+      {"task": "nb_splice_donor", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/nb_splice_donor_qa_result.json", "sha256": "0aff998cf79a43625e151407eeb9617c42b18fa88820faf88cd02b3415667080", "delta": -0.004342500000000004, "one_sided_p": 0.976145935694066},
+      {"task": "rinalmo_ncrna_clean", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_ncrna_clean_qa_result.json", "sha256": "07925eb61bedcc5514c8989b6adb59e52a1d2575899b570f9fee1f82e1c298c1", "delta": -0.0006766593914254049, "one_sided_p": 0.659696977396977},
+      {"task": "rinalmo_ncrna_bn200", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_ncrna_bn200_qa_result.json", "sha256": "9ea0e5e2428f228aa00460e9c43c5e5f0b89ada5546b04035aa361f77a78578b", "delta": -0.007500545730722496, "one_sided_p": 0.9488427254880585}
+    ],
+    "pending": ["rinalmo_splice_acceptor: original dee8879 code restored; embedding cache missing; concurrent rebuild OOMed", "rinalmo_splice_donor: original dee8879 code restored; embedding cache missing"]
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",

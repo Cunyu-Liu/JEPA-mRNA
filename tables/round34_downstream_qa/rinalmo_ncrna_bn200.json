@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_ncrna_bn200_round33_full_v1/result.json",
+  "result_sha256": "7d0c8a9c744edd32293444e76d3fb46175f83dc276b77df028841bf69ca1eaa7",
+  "training_data_card_sha256": "d2edc8f4f65d97de56e6401d57e99d8ec1b7d177635ad9b4d76b3d88422f28d5",
+  "current_validated_data_card_sha256": "8c5efc9e9696d44dce85f13b13730aa2f6df641ba68d8dee670c2381aab03435",
+  "delta_weighted_f1_mean": -0.007500545730722496,
+  "one_sided_p_value": 0.9488427254880585,
+  "significant_positive": false,
+  "cuda_device": "NVIDIA GeForce RTX 4090",
+  "gpu_reinference_runs": 10
+}
