@@ -10223,3 +10223,19 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 对照原论文指标后，全量 MRL 继续以 R²为主，TE/EL 以 Spearman 为主；R²/PCC/Spearman 均保留。独立 v4 脚本加入主指标、双侧配对检验和零方差防线，SHA256=`84d8c0e25f6244c9e317ea71065549b09435e3c8e4f6b80bc33355f46a6fc6ed`，不覆盖正在运行的 MRL v3。HEK TE v4 smoke PID=284511，输出 `rinalmo_te_HEK_fold0_round33_smoke_v4`，验收后才启动全量。
 - v4 smoke 的外部 QA 使用独立模块路径和主指标复核，10/10 run 在 RTX 4090 重新推理一致，result SHA256=`0b723c595bc64bec674a4a85806a76d3e7f8a0dc293967fd2433a1fd28f6ac52`；smoke 的 R²/Spearman/p-value 均未写入源表。
 - HEK fold0 TE 全量已启动，PID=285468，输出 `rinalmo_te_HEK_fold0_round33_full_v4`。EL 待 TE 的完整 HEK 缓存和元数据落盘后再启动，避免并发写同一 `HEK_official_tokens` 缓存。
+
+### T. bpRNA TR0/VL0/TS0 完整数据恢复与协议边界
+
+- Dropbox 原链接在本机与浏览器均不可达，恢复 MultiMolecule `bprna-spot-0` 镜像并明确标记为镜像而非自行重建 split。三 split 为 **10,814 / 1,300 / 1,305**，总计 **13,419**，与 RiNALMo 原文总数一致；parquet SHA256 分别为 `0fda1d09…`、`00934c68…`、`bfdc1b55…`。
+- 与现有项目 JSONL 对照：TR0 的 10,682 个 ID 全部包含于镜像 10,814，TS0 的 1,288 个 ID 全部包含于镜像 1,305；新增记录主要含 N/ambiguous 符号。项目旧子集不再冒充完整原论文协议。镜像序列最长 499 nt，训练/验证/测试没有跨 split ID 重叠。
+- 本机先用 RiNALMo 官方 `dot_bracket_to_2d_mat` 逐条解析全部序列/结构，三 split 分别 **332,122 / 39,397 / 40,785** 对，合计 **412,304** 对；矩阵对称、无自配对、每个位置至多一个 partner，未删除 pseudoknot 或投影为 canonical nested。
+- 远端再次生成并逐条重读 JSONL，`BPRNA_SPLIT_PASS` 和 `BPRNA_SPOT0_DATA_PASS`。准备代码 SHA256=`a16e03c87eebe27bb09b2339de001a9e1ba303bb443b7808c530c4df7279afc6`，数据卡 SHA256=`dc370656ebce5d4ed1941dae07c31fc387025ce5d0e38feb4c09f343c4f1c9d0`。
+- 独立 `rinalmo_bprna_dual_round33.py` 已准备，沿用已验收的 frozen RiNALMo official-vs-JEV 双头、五种子、官方阈值、tolerant macro-F1 与独立 GPU 解码复核；尚未启动 smoke，不提前写科学结果。
+
+### U. bpRNA 双头三重静态验收、显存门队列与 EL 进程复核
+
+- `rinalmo_bprna_dual_round33.py` 相对已验收 ArchiveII 版本仅有 10 处任务身份、数据路径、数据卡哈希、cache 名称和输出标识差异；本地 `py_compile` 通过。`qa_bprna_result.py` 除对应身份改动外，新增官方 train/valid/test=10,814/1,300/1,305 与 smoke 每 split=2 的独立硬门，避免错误子集自洽通过。
+- 双头与 QA 已上传 `/home/rna_jev/tools/`，本机/远端 SHA256 分别为 `794087b38732a835b31617f0a57a080176e467ec63daf3aeba08d1bee0c16cb7`、`9ab53dc34e203d88c257da5cb7d56ba5b082c832833238447433de7c6d6f719d`；远端 `py_compile` 通过。数据准备代码 SHA256 再次确认为 `a16e03c87eebe27bb09b2339de001a9e1ba303bb443b7808c530c4df7279afc6`。
+- 当前 tRNA、5s、MRL、TE、EL 五任务并行，实测余量不足以安全再加载 RiNALMo-giga。bpRNA 最长 2/split smoke 已放入事件驱动队列 PID=322335：每 120 秒检查一次，单卡空闲显存达到 8,000 MiB 才启动；输出 `rinalmo_bprna_TS0_round33_smoke_v1`，batch-size=2、train-batch-size=1。尚未开始训练，更无 smoke 科学数值。
+- EL 的旧启动 PID=285817 消失一度造成“退出”疑点；按完整命令行重新扫描确认实际 Python 训练 PID=286745，日志继续推进，output 中 official seed0 文件属于正常中间产物。不得把旧 PID 消失写成训练失败，也不重启造成重复写同一输出目录。
+- 源注册表升级为 `round33-verified-v16`，记录 bpRNA 完整数据、准备/双头/QA 哈希及 TE/EL full_v4 均已启动但待全量验收；smoke 与中间值未写入图源。

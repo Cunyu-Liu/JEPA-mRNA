@@ -4,7 +4,7 @@
 >
 > **当前交接（2026-10-28，第 33 轮：导师反馈、原论文下游补测与图表纠错）**：
 > - **事实源与第 32 轮状态**：远端真实 `tables/main_ablation_5x8.json`、`tables/matched_30k_statistics.json`、`eval_decision/mrl_suite/mrl_suite_result.json` 证明 T-A127–T-A129 已完成，覆盖本地第 32 轮旧状态。`/private/tmp/rnajev_audit` 中 `ablation_mock.json`、`sync_mock/` 与含其数据的 `preview_draft.pptx` 只用于布局预览，禁止作为科学数据或最终 PPT 数据源。后续数值只能由原始 `result.json`、验收 JSON 和可重跑脚本产生。
-> - **第 33 轮已验收结果**：NucleicBERT CPEB3、acceptor、donor 与 RiNALMo Spliceator、官方 88 类 ncRNA clean/bn200 已完成全量五种子双头和外部 QA；其中仅 RiNALMo donor 均值为正但不显著，其余本轮已完成任务均未显著为正。ncRNA 两组各 10/10 best checkpoint 已在 RTX 4090 全量重新推理一致。MRL 等未完成任务继续保留在执行队列，不以中间值或旧项目 177 类结果替代。ArchiveII 九家族 fam-fold 已完成 27 split、34,785 行的数据门和脚本外 QA，tRNA 最长序列双头 smoke 与外部 QA 已通过，tRNA/5s 全量正在运行，尚无科学结果。TE/EL 已从 CodeOcean 恢复作者处理后 CSV 并通过三细胞数据卡，HEK fold0 TE/EL v3 smoke 均通过外部 GPU QA，Spearman 主指标 v4 smoke 已通过，TE full_v4 运行中、EL 待共享缓存完成。
+> - **第 33 轮已验收结果**：NucleicBERT CPEB3、acceptor、donor 与 RiNALMo Spliceator、官方 88 类 ncRNA clean/bn200 已完成全量五种子双头和外部 QA；其中仅 RiNALMo donor 均值为正但不显著，其余本轮已完成任务均未显著为正。ncRNA 两组各 10/10 best checkpoint 已在 RTX 4090 全量重新推理一致。MRL 等未完成任务继续保留在执行队列，不以中间值或旧项目 177 类结果替代。ArchiveII 九家族 fam-fold 已完成 27 split、34,785 行的数据门和脚本外 QA，tRNA 最长序列双头 smoke 与外部 QA 已通过，tRNA/5s 全量正在运行，尚无科学结果。TE/EL 已从 CodeOcean 恢复作者处理后 CSV 并通过三细胞数据卡，HEK fold0 TE/EL v3 与 Spearman 主指标 v4 smoke 均通过外部 GPU QA，TE/EL full_v4 均已启动、全量结果待验收。bpRNA TR0/VL0/TS0 完整镜像数据门已通过：13,419 行、412,304 对，未做 N/ambiguous 过滤、假结删除或 canonical nested 投影；双头脚本待 CUDA smoke。
 > - **主图 3B**：使用真实 40/40 消融矩阵，核心三模块按预注册 ID、External、PDB-OOD 分组计算 `performance drop = matched control F1 − ablated F1`，以正值展示性能损失，不直接翻转原始数据。图下必须配同一张数值表，列出分组、split 组成、三模块 drop 和必要精度。No RLCD 只能对 B=2 匹配控制，完整正负结果保留在源表。
 > - **主图 4**：图 A 图例完整标注 Raw confidence（灰）、VL0-recalibrated improved（青）、VL0-recalibrated worsened（红）；图 B 标注 larger splits（蓝，n>400）与 small PDB splits（灰，n≤400）。ECE、Spearman、n 均从权威台账与原始 confidence 结果复核，不使用旧脚本错值。
 > - **主图 5**：A100 旧图退役。所有入图系统在同一 RTX 4090、同一 TS0、同一 strict micro-F1、同一端到端计时边界下重测，计时包含序列输入、冻结或微调骨干、任务头与各自必要解码。A 为共同 B=1 的精度-吞吐 Pareto；B 为共同 batch 网格的吞吐曲线，必须包含 r2d、plana、xens2 及可运行的官方基线。测速时独占 GPU，预测一致性、warmup、精度、batch、延迟、吞吐和峰值显存全部落盘；不拼接不同模型的 F1 与速度。
@@ -17,29 +17,23 @@
 > - **训练与记录**：所有新训练以 held-out validation early-stopping、best checkpoint 和 plateau 判据确认收敛，固定 epoch/step 仅作安全上限或原论文参照，不等于收敛。CUDA 不可用或 CPU 静默降级立即停止并保存证据。每次运行记录 commit、配置、seed、数据/权重哈希、CUDA、best step/epoch、停止原因、结果路径和科学结论；每阶段三通道验收后才进入下一阶段，确认后的代码及时提交并 push。
 > - **一手来源**：NucleicBERT 论文 `https://doi.org/10.1038/s42256-026-01295-9`、官方仓库 `https://github.com/KIT-MBS/NucleicBERT`；RiNALMo 论文 `https://doi.org/10.1038/s41467-025-60872-5`、官方仓库 `https://github.com/lbcb-sci/RiNALMo`；Spliceator 数据 `https://zenodo.org/records/7995778`；MRL 数据 `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE114002`；CPEB3 数据论文 `https://doi.org/10.3389/fmolb.2022.893864`。
 >
-> **当前交接（2026-10-25 22:30，第 32 轮同步）**：本节覆盖 ROUND31 的“仅 mixed_s0 在训”快照。远端第 32 轮已推送基线 `6e19960`；clean_s0、mixed_s0、clean_s1 已完成 early-stopping 与四 split CUDA 终评，mixed_s1 在训，clean/mixed_s2 排队。12 个结果的 micro-F1 已按 TP/FP/FN 复算一致，macro/INF、best checkpoint、数据行数与 SHA256 三通道验收也已通过。
-> - clean_s0：Test/GenA/GenC/GenF=0.639468/0.477211/0.224661/0.258190，OOD mean=0.320021。
-> - mixed_s0：0.580921/0.567109/0.282027/0.232452，OOD mean=0.360529；GenF 未过 0.3112/0.4035 两门，OOD mean 低于 zero-shot xens2 0.443366，当前为单种子负结果。
-> - clean_s1：0.627430/0.460435/0.267389/0.277126，OOD mean=0.334984。
-> - 主 benchmark 不再报无条件 SOTA：统一 xens2 板协议对预注册去污染参照=**6/8**，全板干净敏感性=5/8，单模型=4/8。旧“7/8”是在 bpRNA-new 用 r2d_tr1 两种子集成 0.6132 替代 xens2=0.5532 的混合口径，只能作为另一模型组合单独列示；旧保守参照的 6/8 胜格组成也不同。TestSetB clean=0.8370、TS2=0.8604；所有页面必须标注模型身份和参照。
-> - 新 PPT 按论文逻辑只保留 10 张主图并去重；五类消融 8-split 当前 25/40，缺 15 格，必须补实测。完整执行队列见 `spec/tasks.md` 第 32 轮块；所有历史 ROUND 笔记仅作快照。
+> **当前交接（2026-10-25 22:30，第 32 轮：三臂结果复核与论文线重构）**：
+> - **事实源与实时状态**：远端 `/home/rna_jev` 当前提交以 `git rev-parse HEAD` 为准（第 32 轮已推送基线 `6e19960`）；原始 `result.json`/`run_meta.json` 优先于本块及旧交接。`chanrg_clean_30k_s0`、`mixed_30k_s0`、`chanrg_clean_30k_s1` 均已验证集 early-stopping 收敛并完成四 split CUDA 终评；`mixed_30k_s1` 于 21:57 启动，`clean/mixed_s2` 仍排队。12 个已完成结果均为 `device=cuda`，样本数为 Test/GenA/GenC/GenF=10597/5337/3936/1734，micro-F1 已由 TP/FP/FN 独立复算一致；macro/INF、逐序列 F1、best checkpoint、数据行数与 SHA256 也已通过 `verify_matched_round32.py` 三通道验收。
+> - **新结果（strict micro-F1）**：clean_s0=0.639468/0.477211/0.224661/0.258190；mixed_s0=0.580921/0.567109/0.282027/0.232452；clean_s1=0.627430/0.460435/0.267389/0.277126（顺序均为 Test/GenA/GenC/GenF）。对应 OOD mean 分别为 0.320021/0.360529/0.334984。mixed_s0 相对 zero-shot xens2 的 OOD mean 0.443366 低 0.082837，GenF 未过 0.3112 混合假设门，更未过 0.4035 SOTA 门；这是单种子负结果，三种子未齐前不得升级为最终统计结论。
+> - **SOTA 口径必须写全**：统一 xens2 板协议对**预注册去污染参照**为 **6/8**（TS0/ArchII/TS1/TS3/TS-hard/TestSetB；bpRNA-new 与 TS2 未胜）。旧“7/8”把其余 7 格的 xens2 与 bpRNA-new 的另一组 r2d_tr1 两种子集成 0.6132 拼接，不能称为单一 xens2 的成绩；该历史最佳逐 split 集成组合可单独标注为 7/8，但不得进入统一模型主口径。旧保守参照也写过 6/8，其胜格组成不同，不能只比计数。纳入 Vienna、Kirigami 等后续全板干净证据后的 xens2 敏感性口径为 5/8，单模型为 4/8。TestSetB clean-181 的 xens2=0.8370，0.8448 是全集；TS2 最新值 0.8604；bpRNA-new 的 xens2=0.5532，0.6132 属于 r2d_tr1 两种子集成，禁止混用。
+> - **第 32 轮论文/PPT 合同**：主线为评测卫生→主 benchmark→速度→OOD 消融→ECE→精度-速度→三层架构→NucleicBERT 迁移→RiNALMo 下游→CHANRG OOD→长度边界；主文 10 图去重，完整基线与工程表进附录。五类最终消融必须补齐 8 split；当前仅 25/40 格有历史结果，DP 缺 7 格，Turner/2D scorer/nodistill/norlcd 各缺 ArchII-clean 与 TestSetB 两格。缺失项必须实测，不得用旧 DP OOD=0.43 或 smoke/proxy 补图。
+> - **边界**：PPT 保留用户认可的构图与已修改文字，但修正图文错配、数据版本和越界；负面 splice/GenF 数据留档、不进主文。新增下游任务须先冻结合理任务与对照，完成 GPU 训练和统计核验后才可加入；不得为了正结果选择性删除已预注册任务。
 
 
-> **交接状态（2026-10-24 晚，第二十九轮交接更新——六臂启动 + 图集 + 长度趋势轮，细节 spec_sync/ROUND29_NOTE.md）**：
-> - **接管审计发现六臂训练空窗 2.5h**：round29 集群代理完成 T-A114（CHANRG 三种子统计闭环）/T-A115（干净资产 + CUDA smoke）/T-A116（结果注册表）后未启动 T-A117 即离开。本地代理 22:46 启动 `tools/train_matched_30k.sh`：六臂 = {chanrg_clean_30k（29,899 条单语料对照）, mixed_30k（71,284 条 bprna+chanrg 混合）} × seed{0,1,2}，B=16、resnet2d、validation early-stopping（patience 6，非 step cap），训练→best.pt→四 split 自动评测链；*/10 watchdog cron 自愈。
-> - **判读口径预注册**（GenF 诚实负可接受，**CHANRG mean 均值拿 SOTA 即可**，用户 10-24 指示）：GenF ≥0.4035 为单点 SOTA；≥0.3112 为语料混合假设成立；四 split mean 对标 OFoldNA-SS（0.4410）+ 三种子 Wilcoxon（T-A114 统计栈）。
-> - **本轮产出**：顶刊风格七图（figs_round29/：board/GenF 归因/下游五任务/splice/OOD 签名/长度趋势×2，三遍 QA：渲染/几何 PIL bbox/数值回溯台账行号）；oFoldNA 式长度分桶趋势实验（TS0 四系统 + ArchII 双系统，retention 标注，>400nt 写 open frontier）；FoldBench 调研（3D all-atom 口径 vs pair-F1 不匹配、RNA monomer 仅 ~15 条，不引入，自有冻结板更干净）。
-> - **旧 mix 臂判定接受**：`.invalid_20261024_r3` 隔离（round29 代理第三次干预），旧资产 teacher 拼接无独立二遍校验；clean 资产（blocklist 14 文件 + 哈希选样 + 独立第二遍）为正确替代。
-> - **长度趋势核心读数（TS0 strict micro F1）**：xens2 0.8787/0.7974/0.7697/0.6792（≤100/100-200/200-400/>400，retention 77%）vs RiNALMo-ft 0.8187/0.7182/0.6745/0.5692（70%）vs Vienna centroid 0.6277/0.5375/0.4690/0.4854（77%）——短中段全面领先，长尾全系统共同短板，如实叙事。
+> **交接状态（2026-10-25，第三十轮交接更新——用户五点反馈落实轮，细节 spec_sync/ROUND30_NOTE.md）**：
+> - 三问入稿（CHANRG ID / 速度口径 / 先验质疑）+ 图重排 PPT S44-S49（49 slides）+ 下游合并图（标签重叠修复 + donor/acceptor 释义）；六臂在训 step 7650 健康。
+
+> **交接状态（2026-10-24 晚，第二十九轮交接更新——本地接管轮：六臂启动 + 七图 + 长度趋势，细节 spec_sync/ROUND29_NOTE.md）**：
+> - **六臂在训（T-A117）**：{chanrg_clean_30k, mixed_30k} × seed{0,1,2}，干净资产（round29 集群代理构建：blocklist 14 文件 + 哈希选样 matched 30k + 独立二遍校验），early-stopping 收敛门，watchdog 自愈；GenF/CHANRG mean SOTA 判读口径已预注册。
+> - **七图三遍 QA**（figs/figs_round29/）+ oFoldNA 式长度趋势（TS0 四系统/ArchII 双系统）+ FoldBench 调研（口径不匹配，不引入）。
+> - 集群权威 HEAD 726be78（round29-handoff 分支，v3.33）；本地三件套已同步至第二十九轮。
 >
-> 目标产物：一篇可投稿的论文（唯一成功判据）
-> - **工作 3 双线收官**：① NB fine-tune 完训 + 8-split（TS0 0.4609 / new 0.3453 / TS1 0.6049 / TS2 0.6435 / TS3 0.5175 / hard 0.4845 / ArchII 0.4735 / TSB 0.4862，decoder 矩阵→pairs bug 修复后落地）；② **Jev-on-NB（T-A99）8-split 终评：预注册判据 7/7 大幅 PASS**（jev-on-NB vs NB-ft：TS0 +0.068 / new +0.234 / TS1 +0.085 / TS2 +0.136 / TS3 +0.231 / hard +0.193 / TSB +0.055；ArchII trunc598 补测在飞）——**Jev 头跨骨干迁移成立且 OOD 增益最大**，与主线「先验栈承载 OOD」消融签名同构。
-> - **CHANRG（T-A102）解锁全链**：gated token 批准 → hf-mirror 三 parquet（sha256 对账）→ 50-200nt/pk 排除/T→U/ACGU 清洗（Test 10597 / GenA 5337 / GenC 3936 / GenF 1734，家族 714/171/38/10）→ 双端 md5 一致；**泄漏审计**：对 TR0/TR1/tr1c 序列级重叠 0.6-4.5%（GenF 零重叠）无整族污染，如实入注。评测链（pairs 字段 + 嵌入 shard + ckpt config 路径三坑修复）在飞。
-> - **ncrna 双头（T-A101）**：ml 长度坑二次修复（len() 对 (1,L+2)=1 → x.shape[-1]），最小复现单测通过，watcher 等卡。
-> - **运维**：集群侧 monitor_r26 cron（*/10）live（nb_jev 完训/崩溃双态检测 + 三 watcher 自愈）；GitHub HEAD **727b49f**；台账 §15.97（9599 行）。
-> - **三条工程律入库**：① 评测器字段契约（convert 必须同时写 dbn+pairs，GT 空的 F1=0 是静默全错）；② EmbeddingStore 路径回退（新 split 先提取 shard）；③ 同型 bug 修复覆盖律（全部使用点，ncrna 两次命中实证）。
->
-> 目标产物：一篇可投稿的论文（唯一成功判据）
+> **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：
 > - **集群迁移完成**：A100 集群关停（10-16 备份定格）后，新集群 `px2-jcy.matpool.com`（**1× RTX 4090 24GB**，12 核 64GB）已重建：
 >   - 环境：miniconda3 `lucaone`（Python 3.10.22 + torch 2.5.1+cu121 + multimolecule **0.0.8** + transformers 4.49.0 + gcc 9.4）；CUDA 计算验证 PASS；
 >   - 资产：代码 `/root/rna_jev`（HEAD 已推 GitHub 4ce74b9）、数据 `/root/rna_jepa_data/ss_data`（**9/9 冻结 split sha256 逐项 MATCH**）、权重 `weights_20261013`（106 ckpt）、骨干 rinalmo-giga（preflight 0.996 加载+前向 PASS）；

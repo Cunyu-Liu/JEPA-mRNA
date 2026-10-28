@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v14",
+    "version": "round33-verified-v16",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1653,7 +1653,7 @@
   },
   "rinalmo_original_data_round33": {
     "te_el_official": {
-      "status": "author-processed data gate and HEK TE/EL v3/v4 smoke QA passed; HEK TE full_v4 is running and EL waits for the shared cache",
+      "status": "author-processed data gate and HEK TE/EL v3/v4 smoke QA passed; HEK TE and EL full_v4 have both launched; completion and external full-result QA remain pending",
       "v4_smoke_result_sha256": "0b723c595bc64bec674a4a85806a76d3e7f8a0dc293967fd2433a1fd28f6ac52",
       "v4_code_sha256": "84d8c0e25f6244c9e317ea71065549b09435e3c8e4f6b80bc33355f46a6fc6ed",
       "te_smoke_result_sha256": "3e9819bfe050c7fcfdbf59110f0f2ad99bbff8134471b43f3dd5a389846ad8dc",
@@ -1730,6 +1730,29 @@
         "source": "rinalmo_ncrna_bn200_round33_full_v1/result.json"
       },
       "source": "ncrna_official/data_card.json"
+    },
+    "bprna_spot0": {
+      "status": "full-data gate and local/remote static QA passed; longest-two-per-split dual-head smoke queued behind an 8000 MiB free-VRAM gate; no smoke result yet",
+      "source": "MultiMolecule bprna-spot-0 mirror of SPOT-RNA original TR0/VL0/TS0 split",
+      "rows": {
+        "train": 10814,
+        "validation": 1300,
+        "test": 1305,
+        "total": 13419
+      },
+      "pairs": {
+        "train": 332122,
+        "validation": 39397,
+        "test": 40785,
+        "total": 412304
+      },
+      "max_sequence_length": 499,
+      "processing": "official dot_bracket_to_2d_mat on full mirror sequences/structures; no N/ambiguous filtering, pseudoknot removal, or canonical-pair projection",
+      "data_card_sha256": "dc370656ebce5d4ed1941dae07c31fc387025ce5d0e38feb4c09f343c4f1c9d0",
+      "preparation_code_sha256": "a16e03c87eebe27bb09b2339de001a9e1ba303bb443b7808c530c4df7279afc6",
+      "dual_head_code_sha256": "794087b38732a835b31617f0a57a080176e467ec63daf3aeba08d1bee0c16cb7",
+      "external_qa_code_sha256": "9ab53dc34e203d88c257da5cb7d56ba5b082c832833238447433de7c6d6f719d",
+      "project_subset_note": "Project n=10682/1288-style filtered JSONL is not substituted for the full original protocol."
     },
     "archiveII_fam_fold": {
       "status": "official_data_gate_and_external_QA_pass; tRNA longest-sequence smoke pass; tRNA and 5s full runs in progress",
