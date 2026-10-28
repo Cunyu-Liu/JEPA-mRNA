@@ -10511,3 +10511,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 使用原始脚本后继续发现 acceptor/donor 的 `*_rinalmo_cls_v2.npz` cache 均不存在。初版函数因此尝试重建 RiNALMo 编码器，并在仅剩 14.44 MiB 时 OOM；进程停止，无 CPU 降级。QA 已增加 cache 存在性硬门，禁止隐式重提取。
 - 新增 `rebuild_rinalmo_splice_cache_round34.py`，只按原始 dee8879 协议恢复 embedding cache，不重训练、不改 result。该步骤需独立显存窗口；恢复前 RiNALMo splice 仍为 pending。
 - 当前续跑只执行 cache 已存在的 clean/bn200 ncRNA QA，runner 已启动。最终标记改为 `ALL_SCHEDULED_NCRNA_QA_PASS`，不再用“全部其他任务通过”覆盖 pending 项。
+
+## §15.131（2026-10-28 后续）ncRNA 两组外部 QA 完成与交接口径纠正
+
+- clean ncRNA 10/10 GPU 重推理通过，delta_weighted_f1=-0.00067666、one-sided p=0.65969698，不显著正；bn200 10/10 通过，delta=-0.00750055、p=0.94884273，不显著正。`ALL_SCHEDULED_NCRNA_QA_PASS` 已落盘。
+- 本轮 7 个补验任务中，NB CPEB3/acceptor/donor 与 RiNALMo clean/bn200 ncRNA 共 5 项已完成独立全量 QA；RiNALMo Spliceator acceptor/donor 因 cache 缺失仍 pending，不能写成全部 7 项通过。
+- 根目录、`spec/`、`spec_sync/` 的 tasks 与 spec 已同步纠正旧“RiNALMo Spliceator 外部 QA 已完成”表述：明确 NB 三项与 ncRNA 两组通过，RiNALMo splice full 结果保留、原始代码已恢复、cache 重建和 GPU QA 待办。
+- 五个已通过任务均无可宣称的显著正提升，完整负结果保留。主图 7/8 不允许用这些负结果冒充正提升，也不删除源数据。
