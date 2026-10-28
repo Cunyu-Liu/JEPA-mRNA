@@ -10180,3 +10180,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - RiNALMo Spliceator acceptor/donor 与 88 类 ncRNA clean/bn200 的 v2 smoke 均完成双头×五种子，缓存强制匹配 `sequence_sha256 + pretrained_sha256 + extractor_sha256`。result SHA256 依次为 acceptor=`17073e749ef0809013c86d12cb3425f843f868ed80344e3cfb872925db1db219`、donor=`e0249060f390d0d3530b7b582a183af0a475b2b64fed0515e7f17aa993efffe7`、clean=`26d89c25ee12907935c7bcbe4e43e17ddbbacc8f93a111b87f40dc20cd1ba903`、bn200=`626f955f7d8ecda86cd957897fc00329349598068b62b8d68400574e90250d75`。
 - 脚本外 `qa_v2_smoke.py` 再次读取四个 result、四个 v2 cache 与全部 checkpoint/prediction 哈希，核对样本和标签身份、五种子 early-stopping、当前代码与权重哈希；随后在 RTX 4090 上从 cache 重新前向，**40/40** 模型预测一致，四项均 `V2_CACHE_AND_GPU_QA_PASS`。
 - 小样本出现双头预测完全一致和 `p=null`，只表示工程链可运行，不能据此声称等效、提升或科学收敛结论；这些数值未写入 `source_data.json`。全量科学结果仍以 §15.110J/K 为准。
+
+### O. ArchiveII 九家族数据门、外部 QA 与双头 smoke 启动
+
+- 官方 `ct-splits.tar.gz` 本机/远端 SHA256=`0ff7209016ba1775288572794e850d5857937c391d67c9ccacfe9ae77c0188e5`。独立扫描纠正初始计数口径：全包含 **54,110** 个 CT，其中 RiNALMo `fam-fold` 为 **34,785**，另有 `k-fold` **19,325**；按官方下载代码只保留 fam-fold，不把全包条数写成九家族任务样本数。
+- 数据生成直接调用官方 `parse_ct_file` 和原 train/valid/test，未过滤、去重、删除假结或 canonical-pair 投影。首次版本门因官方仓库只有 untracked `__pycache__` 而停止；tracked 文件无修改，commit=`2c2c5c14…` 且 parser SHA256=`75c97165…`，因此改为检查 tracked 修改与 parser 固定哈希，不删除任何文件。最终准备代码 SHA256=`44839b50da9fed77e8741c94803be8f3c296c5064018d1ca738acdc74a99f841`。
+- 最终 `ARCHIVEII_OFFICIAL_DATA_PASS`：九家族、27 split、34,785 行、1,892,763 对，最长序列 512；数据卡 SHA256=`f4dd4f6ff0a7eb10b81cc554dab6d49f4e30e25738dd7195b94fc5f8e746108b`。脚本外 `qa_archiveii_data.py` 独立重算压缩包 fam/k-fold 计数、27 个 JSONL 哈希、逐 split 行数、来源路径、序列/配对/长度/核苷酸统计，全部 `ARCHIVE_QA_SPLIT_PASS` 和 `ARCHIVEII_EXTERNAL_QA_PASS`。
+- tRNA 最长序列双头 smoke 已启动，PID=194496，输出 `rinalmo_archiveii_tRNA_round33_smoke_v1`，启动代码 SHA256=`871d71881eaa04b54124ea63b2f13e2e5e9cb05b60a9851118fa1c2f7e3164e8`。同一 frozen RiNALMo、全部上三角 BCE、五种子、official 0.01–0.29 validation 阈值与 tolerant macro-F1、JEV 非交叉 MAP；smoke 状态与科学资格分离，当前尚无结果。
+- TE/EL 官方 Drive 在本机与集群均连接超时；已检查 `/teams/.../rna_jev_shutdown_20261025`、`/root/rna_jepa_data`、`/teams/.../rna_jev_data` 和本机 Documents，未找到 `Muscle_sequence.csv`、`pc3_sequence.csv`、`HEK_sequence.csv`。任务保持 blocked，不以其他 TE/EL 数据替代。
+- MRL 全量 PID=84406 仍在运行，尚无 result，不记录中间单种子指标。

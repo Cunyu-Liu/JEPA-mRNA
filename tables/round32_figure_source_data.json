@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v7",
+    "version": "round33-verified-v8",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -20,6 +20,7 @@
       "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_splice_donor_round33_full_v1/result.json",
       "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_ncrna_clean_round33_full_v1/result.json",
       "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_ncrna_bn200_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rinalmo/archiveII/jsonl/data_card.json",
       "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round33"
     ]
   },
@@ -1683,6 +1684,20 @@
         "source": "rinalmo_ncrna_bn200_round33_full_v1/result.json"
       },
       "source": "ncrna_official/data_card.json"
+    },
+    "archiveII_fam_fold": {
+      "status": "official_data_gate_and_external_QA_pass; tRNA dual-head longest-sequence smoke running",
+      "families": 9,
+      "fold_splits": 27,
+      "total_rows": 34785,
+      "archive_all_ct_files": 54110,
+      "excluded_k_fold_ct_files": 19325,
+      "max_sequence_length": 512,
+      "total_pairs": 1892763,
+      "processing": "official fam-fold train/valid/test and parse_ct_file; no filtering, deduplication, pseudoknot removal, or canonical-pair projection",
+      "data_card_sha256": "f4dd4f6ff0a7eb10b81cc554dab6d49f4e30e25738dd7195b94fc5f8e746108b",
+      "preparation_code_sha256": "44839b50da9fed77e8741c94803be8f3c296c5064018d1ca738acdc74a99f841",
+      "source": "archiveII/jsonl/data_card.json"
     },
     "spliceator_acceptor": {
       "metric": "mean four-species accuracy",
