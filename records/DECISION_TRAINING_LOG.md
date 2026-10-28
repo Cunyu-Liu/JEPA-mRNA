@@ -10477,3 +10477,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - EL launch.log 尾部显示 seed0 完成并进入 seed1/epoch5；seed0 的官方 head 指标为 R2=0.24857、PCC=0.54861、best epoch=234。该数值仅是 fold2 单 seed 的中间日志，不作为十折最终科学结论。
 - 两个日志尾部均无 OOM、Traceback 或 CPU 降级迹象。结合 `/proc` 存活证据，fold2 无需重启；已避免一次可能的重复训练。
 - 当前 folds2–9 QA state 仍为空是正常的，因为 fold2 尚未完成全部 seed。后续继续由 watcher 和修复后的 fold 队列自动验收、接续。
+
+## §15.126（2026-10-28 后续）修复版 fold 队列守护进程已切换
+
+- 仅对旧 fold queue 的 532587/532588 两个已核对 cmdline 的 PID 发送 SIGTERM，随后以同一 flock 启动修复版队列，新 Python PID=612477。fold2 TE/EL PID 528896/528894 未发送停止信号，QA watcher 也未重启。
+- 切换后独立执行 `--once` 返回 `HEK_FOLD_QUEUE_STATUS fold=2 state=running`，说明新队列正确接管现有外部训练，而没有重复启动 fold2。
+- 本地 SSH 包装命令已关闭；远端队列使用 `setsid + nohup + flock`，不依赖本地连接。后续 fold 只有在当前 fold 双结果 PASS 且双 QA returncode=0 后才会启动。
