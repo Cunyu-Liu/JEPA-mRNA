@@ -10483,3 +10483,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 仅对旧 fold queue 的 532587/532588 两个已核对 cmdline 的 PID 发送 SIGTERM，随后以同一 flock 启动修复版队列，新 Python PID=612477。fold2 TE/EL PID 528896/528894 未发送停止信号，QA watcher 也未重启。
 - 切换后独立执行 `--once` 返回 `HEK_FOLD_QUEUE_STATUS fold=2 state=running`，说明新队列正确接管现有外部训练，而没有重复启动 fold2。
 - 本地 SSH 包装命令已关闭；远端队列使用 `setsid + nohup + flock`，不依赖本地连接。后续 fold 只有在当前 fold 双结果 PASS 且双 QA returncode=0 后才会启动。
+
+## §15.127（2026-10-28 后续）225 nt 最长组限制 4 条后仍因并发显存 OOM
+
+- 长度分组确认当前 eligible 最长组为 225 nt。使用 `QA_GROUP_INDEX=-1 QA_MAX_SEQUENCES=4` 后，实际只选择 4 条，避免上次整组过大问题。
+- 在 RNAformer axial-attention matmul 阶段仍发生 OOM：尝试分配 198 MiB，当时 GPU 仅剩 68.44 MiB。完整 Traceback 已保留，进程退出，无 CPU 降级、无部分科学结果。
+- 此次结果再次证明并发显存不足，不能解释为模型本身不支持 B=4。停止继续重试；225 nt 组、32 条交叉验收和正式测速统一等待独立 GPU 窗口。
+- 活跃清单升级为 `round34-working-v6`，记录精确长度、样本数、剩余显存和停止条件。主图 5 数据门保持关闭。

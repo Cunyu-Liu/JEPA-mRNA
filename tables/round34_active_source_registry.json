@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v5",
+  "registry_version": "round34-working-v6",
   "generated_at": "2026-10-28",
   "scientific_status": "working_not_final",
   "rules": {
@@ -36,7 +36,7 @@
         "status": "deterministic_settings_passed_multiple_groups_pending_longest_and_full32",
         "failed_change": "uncommitted RNAformer BxL batch forward plus TF32-off deterministic inference; excluded from all results until full acceptance",
         "passed_groups_nt": [46, 48, 52, 54, 62, 63, 94],
-        "pending_validation": ["longest groups capped at 4 in an independent GPU window; previous uncapped concurrent attempt OOMed with full traceback", "B=1/2/4 full32 cross-batch invariance", "full scientific speed grid"],
+        "pending_validation": ["225 nt longest eligible group capped at 4 in an independent GPU window; capped concurrent attempt also OOMed with only 68 MiB free and full traceback", "B=1/2/4 full32 cross-batch invariance", "full scientific speed grid"],
         "gate_stress_test": "temporary engineering data passed complete gate and rejected a deliberate cross-batch mismatch; no synthetic data used as scientific evidence"
       }
     },
