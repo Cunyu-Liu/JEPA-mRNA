@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v25",
+    "version": "round33-verified-v26",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1860,6 +1860,16 @@
       "missing_any_result": "refuse to plot",
       "zero_variance_p_value": "NA",
       "global_holm": "pending after all results"
+    },
+    "completed_task_statistics": {
+      "status": "PASS",
+      "script_sha256": "2a123a73b8ffe616a2534b41d9b1d075458c7fa2579b7f43cf1a37cd11a7949a",
+      "local_output_sha256": "eab4ded7abfdaa6668297dfc35611c16540691d935958929d1740680635d9a67",
+      "remote_output_sha256": "4d9d25a1dcbf09c247a02d3eff8c9a5aba6f88f8bcd96c3a8f238ffbb1b078e4",
+      "n_tasks": 7,
+      "families": ["nucleicbert_original", "rinalmo_classification"],
+      "significant_positive_tasks": [],
+      "independent_holm_recheck": "PASS"
     },
     "working_classification_figure": {
       "status": "working only; not inserted into PPT; pending ArchiveII/bpRNA and separate regression panel",

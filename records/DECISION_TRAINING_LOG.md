@@ -10307,3 +10307,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - HEK 完整 `HEK_official_tokens` cache 已由 fold0 训练读取验证，fold1 无需重新加载 RiNALMo 骨干；official/JEV 回归头和 batch=32 的显存需求可在当前余量内独立运行。不同 fold 共享同一官方 KFold 协议但相互独立，启动 fold1 不降低 fold0 验收标准。
 - 已启动 `rinalmo_te_HEK_fold1_round33_full_v4` PID=382844 与 `rinalmo_el_HEK_fold1_round33_full_v4` PID=382845，均 `CUDA_VISIBLE_DEVICES=0`、full_v4、fold=1、batch-size=64，输出与日志分别独立，无覆盖。启动后两进程均存活，GPU 利用率读数升至 16%；随后双双进入 seed0 epoch8，已用 22,594 MiB、空闲 1,490 MiB、利用率 24%，不再追加任务；尚无 result，不记录中间指标。
 - 后续仍需 fold0/fold1 各自五种子 plateau、best checkpoint、完整预测和外部 GPU QA，不能用 fold1 启动代替完整十折验收。源注册表升级为 `round33-verified-v25`。
+
+### AE. 已完成七任务的家族内 Holm 统计
+
+- 新增 `build_round33_completed_statistics.py`，SHA256=`2a123a73b8ffe616a2534b41d9b1d075458c7fa2579b7f43cf1a37cd11a7949a`。覆盖 NucleicBERT 原论文 acceptor/donor/CPEB3 与 RiNALMo 分类 acceptor/donor/ncRNA clean/bn200，共 7 个已完成全量双头任务。
+- 每个任务重新检查 full scope、CUDA、五种子收敛与 independent_recheck，按逐 seed 原始指标重算 official/JEV mean、sample SD、配对 Δ 和单侧 t 检验；随后在各自任务家族内执行 Holm 校正。当前没有零方差任务，Holm 可定义。
+- 本机独立 `statsmodels.stats.multitest.multipletests(method='holm')` 与脚本逐个 p 值完全一致，`HOLM_INDEPENDENT_QA_PASS`。远端直接读取七个原始 result 复现通过。两家族显著正任务均为 **0/7**；不得用未校正 p 或局部正方向选择性宣称提升。
+- 输出 `round33_completed_task_statistics.json`（本机 SHA256=`eab4ded7abfdaa6668297dfc35611c16540691d935958929d1740680635d9a67`；远端路径表示不同，SHA256=`4d9d25a1dcbf09c247a02d3eff8c9a5aba6f88f8bcd96c3a8f238ffbb1b078e4`）。源注册表升级为 `round33-verified-v26`，不包含仍在训练的 MRL/TE/EL/ArchiveII/bpRNA。
