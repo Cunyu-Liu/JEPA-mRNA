@@ -10321,3 +10321,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 每个 split 重新按 TP/FP/FN 计算 strict micro-F1，与原始字段及 `source_data.nb_transfer.jev_on_nb` 的四位小数注册值一致；设备均为 CUDA，样本数非零。远端直接读取备份复现 `NB_TRANSFER_RECOVERY_AUDIT_PASS`，8/8 split 通过。
 - 备份中未找到 full-FT NB 的结果 JSON。frozen official-probe 与 full-FT 是不同对照，不得把刚找回的 frozen 值（如 TS0=0.1509）替换当前 full-FT 值（0.4609）。当前 full-FT 数字继续沿用已验收注册表和既有 PPT 面板，不伪造 result 路径或重新解释为 frozen probe。
 - 输出 `nb_transfer_recovery_manifest.json`，记录 8 个 JEV result 与 frozen probe 的路径、SHA 和该边界。本机 manifest SHA256=`7452ffc917be46b3e58e03d8927a372abc901a46579491bbec0104d5bf40b9f3`；远端 manifest SHA256=`b2bda421f1b6d4d26b3acd53cce1325f56f2b67ae89be32787516f196c02f567`。源注册表升级为 `round33-verified-v27`。
+
+### AG. 主 benchmark 与原论文任务组合图 7 工作版
+
+- 新增 `make_figure7_combined_round33.py`，SHA256=`5b1b951f165ef16f0d7023d12f48d70bc675bef049d03f0fa3aaaf681733dcf3`。A 面板保留已验收 full-FT 注册值与 8/8 JEV-on-NB 正迁移，B/C 面板分别展示原论文 Spliceator accuracy 与 CPEB3 R²，不再只有半幅原论文任务图。
+- 主 benchmark 的 8 个 JEV result 均由恢复 manifest 验证；full-FT 数字只来自既有 `source_data.nb_transfer.nb_ft`，没有伪造 full-FT result 路径，也没有把 frozen probe 当作 full-FT。原论文任务仍由全量五种子原始 result 计算。
+- 三轮 QA：①注册值、恢复 manifest、原始结果 SHA 和统计值交叉核对；②3840×1920 渲染检查主图标签、ArchII trunc598 和负结果均清晰，无裁切；③独立脚本再次执行 `FIG07_COMBINED_INDEPENDENT_QA_PASS`，远端 `codonflow` 复现通过。最终 PNG SHA256=`707f67c17a429991643c40863f63e792f4d9e0b39c4e01c93df957583191ee68`。
+- 组合图仍为 working，不插入 PPT；其余作者数据资产和 full-FT JSON 恢复保持缺口，不声称完整原论文覆盖。源注册表升级为 `round33-verified-v28`。

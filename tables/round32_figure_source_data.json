@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v27",
+    "version": "round33-verified-v28",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1681,6 +1681,16 @@
       }
     },
     "note": "Full-dataset result with independent saved-output QA; no smoke values are included. Negative and nonsignificant results are retained.",
+    "working_combined_figure": {
+      "status": "working only; not inserted into PPT; remaining original-task assets and full-FT JSON recovery pending",
+      "script_sha256": "5b1b951f165ef16f0d7023d12f48d70bc675bef049d03f0fa3aaaf681733dcf3",
+      "png_sha256": "707f67c17a429991643c40863f63e792f4d9e0b39c4e01c93df957583191ee68",
+      "pdf_sha256": "e3057bb68dc5ed902a236e3cd228b925556a36487866ed6eebe086898e5f23f9",
+      "figure_source_sha256": "bcc8cf866b472d55cb093cda37e6c549b54386097981460e110e88b479387b7d",
+      "main_benchmark": "8/8 positive JEV-on-NB transfer; full-FT registry values retained",
+      "original_tasks": ["acceptor", "donor", "cpeb3"],
+      "frozen_probe_substitution": false
+    },
     "working_original_task_figure": {
       "status": "working only; not inserted into PPT; pending secondary structure, contact/distance maps and natural-vs-shuffled",
       "script_sha256": "5f7518c5dfd2ef75a788e6bbd58f9c84690e1542d842ffc536e100924902be66",
