@@ -42,9 +42,13 @@ class JevSpliceHead(nn.Module):
 
 def extract_embeddings(df, cache: Path, device: str, batch_size: int) -> dict:
     fingerprint = base.sequence_sha256(df["sequences"])
+    weights_sha256 = base.sha256(Path(WEIGHTS) / "model.safetensors")
+    extractor_sha256 = base.sha256(Path(__file__).resolve())
     if cache.is_file():
         saved = np.load(cache, allow_pickle=False)
         if ("sequence_sha256" in saved and str(saved["sequence_sha256"]) == fingerprint
+                and "pretrained_sha256" in saved and str(saved["pretrained_sha256"]) == weights_sha256
+                and "extractor_sha256" in saved and str(saved["extractor_sha256"]) == extractor_sha256
                 and len(saved["embs"]) == len(df)
                 and np.array_equal(saved["labels"], df["labels"].to_numpy())):
             return {"embs": saved["embs"], "labels": saved["labels"]}
@@ -70,7 +74,8 @@ def extract_embeddings(df, cache: Path, device: str, batch_size: int) -> dict:
                 print(f"[emb] {start + len(rows)}/{len(sequences)}", flush=True)
     cache.parent.mkdir(parents=True, exist_ok=True)
     temporary = cache.with_suffix(".tmp.npz")
-    np.savez_compressed(temporary, embs=embs, labels=df["labels"].to_numpy(), sequence_sha256=fingerprint)
+    np.savez_compressed(temporary, embs=embs, labels=df["labels"].to_numpy(), sequence_sha256=fingerprint,
+                        pretrained_sha256=weights_sha256, extractor_sha256=extractor_sha256)
     temporary.replace(cache)
     return {"embs": embs, "labels": df["labels"].to_numpy()}
 
@@ -86,7 +91,7 @@ def main() -> int:
     if args.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA requested but unavailable; refusing CPU fallback")
     df = base.load_frame(args.ss_type, args.limit)
-    cache = DATA / f"{args.ss_type}_rinalmo_cls_v1{'_smoke' + str(args.limit) if args.limit else ''}.npz"
+    cache = DATA / f"{args.ss_type}_rinalmo_cls_v2{'_smoke' + str(args.limit) if args.limit else ''}.npz"
     arrays = extract_embeddings(df, cache, args.device, args.batch_size)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     outputs = {}
@@ -114,6 +119,7 @@ def main() -> int:
     test = stats.ttest_rel(jev, official, alternative="greater")
     p_value = float(test.pvalue)
     comparison = {"delta_accuracy_mean": float(np.mean(jev - official)),
+                  "inference_scope": "paired training-seed effects; no test-set population inference",
                   "one_sided_p_value": p_value if np.isfinite(p_value) else None,
                   "statistics_status": "ok" if np.isfinite(p_value) else "undefined_zero_variance",
                   "significant_positive": bool(np.mean(jev - official) > 0 and np.isfinite(p_value) and p_value < 0.05)}

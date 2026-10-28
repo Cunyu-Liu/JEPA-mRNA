@@ -1,14 +1,26 @@
 {
   "meta": {
-    "version": "round32-verified-v1",
-    "date": "2026-10-25",
+    "version": "round33-verified-v7",
+    "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
-    "principle": "model identity, split, scorer and hardware protocol must match within each comparison",
+    "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
     "sources": [
       "tables/sota_vs_ours.md",
       "tables/metrics_matrix.md",
-      "records/DECISION_TRAINING_LOG.md sections 15.79-15.82 and 15.97-15.99",
-      "spec_sync/ROUND26_NOTE.md and ROUND28_NOTE.md"
+      "records/DECISION_TRAINING_LOG.md sections 15.79-15.82 and 15.97-15.110",
+      "spec_sync/ROUND26_NOTE.md and ROUND28_NOTE.md",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/tables/main_ablation_5x8.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/tables/matched_30k_statistics.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mrl_suite_result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/nb_cpeb3_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/nb_splice_acceptor_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/nb_splice_donor_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rinalmo/ncrna_official/data_card.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_splice_acceptor_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_splice_donor_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_ncrna_clean_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_ncrna_bn200_round33_full_v1/result.json",
+      "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round33"
     ]
   },
   "main_benchmark": {
@@ -384,7 +396,8 @@
         0.8621,
         0.6308,
         0.7116
-      ]
+      ],
+      "protocol": "project 177-class sensitivity line; not the original RiNALMo 88-class result"
     },
     "regression": {
       "tasks": [
@@ -1069,6 +1082,48 @@
           "holm_independent_recheck": "PASS"
         }
       }
+    },
+    "ncrna_177_sensitivity": {
+      "protocol": "project 177-class sensitivity line; not the original RiNALMo 88-class result",
+      "metrics": [
+        "Accuracy",
+        "Macro-F1",
+        "Balanced accuracy"
+      ],
+      "paper_head": [
+        0.7922,
+        0.5248,
+        0.5735
+      ],
+      "jev_head": [
+        0.8621,
+        0.6308,
+        0.7116
+      ]
+    },
+    "additional_mrl_round32": {
+      "mcherry_1": {
+        "paper_head": 0.1919244271,
+        "jev_head": 0.1816224499,
+        "delta": -0.0103019773,
+        "holm_p": 0.7619283691,
+        "significant_positive": false
+      },
+      "designed_library": {
+        "paper_head": 0.8359124287,
+        "jev_head": 0.8449107836,
+        "delta": 0.0089983549,
+        "holm_p": 0.4584569662,
+        "significant_positive": false
+      },
+      "varying_length": {
+        "paper_head": 0.4908157958,
+        "jev_head": 0.4924256474,
+        "delta": 0.0016098516,
+        "holm_p": 0.4584569662,
+        "significant_positive": false
+      },
+      "protocol": "30/30 CUDA early-stopping runs; all three are retained and none is relabelled as significant"
     }
   },
   "chanrg": {
@@ -1459,5 +1514,212 @@
         ]
       }
     }
+  },
+  "ablation_round33": {
+    "definition": "performance_drop = matched_control_strict_micro_f1 - ablated_strict_micro_f1",
+    "groups": [
+      "ID",
+      "External",
+      "PDB-OOD"
+    ],
+    "DP off (greedy)": [
+      0.268356513,
+      0.234799494,
+      0.18955595
+    ],
+    "Turner prior = 0": [
+      0.203133385,
+      0.305048691,
+      0.390888318
+    ],
+    "2D scorer -> pair MLP": [
+      0.077754151,
+      0.065245335,
+      0.111294388
+    ],
+    "source": "main_ablation_5x8.json; direct control-minus-ablation and negated delta_from_control agree within 1e-12"
+  },
+  "accuracy_speed_4090_round33": {
+    "device": "RTX 4090",
+    "scope": "raw sequence -> tokenization -> encoder -> task head -> required decode; cached_embeddings=false",
+    "models": [
+      {
+        "name": "Jev r2d",
+        "f1": 0.668181,
+        "throughput": 22.282,
+        "repeats": 3,
+        "source": "r2d_b1_full.json"
+      },
+      {
+        "name": "Jev plana",
+        "f1": 0.78687,
+        "throughput": 18.622,
+        "repeats": 3,
+        "source": "plana_b1_full.json"
+      },
+      {
+        "name": "Jev xens2",
+        "f1": 0.804063,
+        "throughput": 7.474,
+        "repeats": 3,
+        "source": "xens2_b1_full.json"
+      },
+      {
+        "name": "RiNALMo-ft",
+        "f1": 0.721384,
+        "throughput": 13.994,
+        "repeats": 3,
+        "source": "rinalmo_ft_b1_full.json"
+      }
+    ],
+    "pending_official_baselines": [
+      "UFold",
+      "RNAformer",
+      "MXfold2"
+    ],
+    "note": "All listed values are medians of three complete TS0 runs with invariant predictions. UFold/RNAformer/MXfold2 remain pending and are not backfilled from A100 values."
+  },
+  "nb_original_tasks_round33": {
+    "cpeb3_fitness": {
+      "metric": "R2",
+      "official_probe_mean": 0.892281861016488,
+      "official_probe_sample_sd": 0.01603167217724026,
+      "jev_head_mean": 0.8896964173569433,
+      "jev_head_sample_sd": 0.008178729449754221,
+      "delta_r2_mean": -0.002585443659544606,
+      "one_sided_p_value": 0.6003333991817903,
+      "significant_positive": false,
+      "n_seeds": 5,
+      "split": {
+        "train": 31340,
+        "validation": 7835,
+        "test": 9794
+      },
+      "protocol": "frozen NucleicBERT CLS; official fitness-head architecture versus JEV head with the same MSE probe objective; original full fine-tuning is reference-only",
+      "result_sha256": "43517c79cce5518d9397f69765858d77f082cefcd4f3e41b1ae7dc0886778ca6",
+      "source": "nb_cpeb3_round33_full_v1/result.json"
+    },
+    "spliceator_acceptor": {
+      "metric": "mean four-species accuracy",
+      "official_probe_mean": 0.81551,
+      "official_probe_sample_sd": 0.006905067206407236,
+      "jev_head_mean": 0.8103325,
+      "jev_head_sample_sd": 0.003596076420906533,
+      "delta_accuracy_mean": -0.0051774999999999235,
+      "one_sided_p_value": 0.8675878224847565,
+      "significant_positive": false,
+      "n_seeds": 5,
+      "split": {
+        "train": 19961,
+        "validation": 2218,
+        "test": 80000
+      },
+      "result_sha256": "cb79a922a27b7fa9f573d1a39cf86d2ba565ac269fcc6edc748fb88a15f9be2e",
+      "source": "nb_splice_acceptor_round33_full_v1/result.json"
+    },
+    "spliceator_donor": {
+      "metric": "mean four-species accuracy",
+      "official_probe_mean": 0.7522300000000001,
+      "official_probe_sample_sd": 0.003328459196835688,
+      "jev_head_mean": 0.7478875,
+      "jev_head_sample_sd": 0.0019064446621918421,
+      "delta_accuracy_mean": -0.004342500000000004,
+      "one_sided_p_value": 0.976145935694066,
+      "significant_positive": false,
+      "n_seeds": 5,
+      "split": {
+        "train": 19775,
+        "validation": 2198,
+        "test": 80000
+      },
+      "result_sha256": "64ffc8f3ce9310dd5542aff7a874fb6c731ed1601ed3612385de42e03d2e2097",
+      "source": "nb_splice_donor_round33_full_v1/result.json"
+    },
+    "pending": [
+      "secondary structure",
+      "contact/distance maps",
+      "natural-vs-shuffled"
+    ],
+    "note": "Full-dataset result with independent saved-output QA; no smoke values are included. Negative and nonsignificant results are retained."
+  },
+  "rinalmo_original_data_round33": {
+    "ncrna88": {
+      "status": "official_data_gate_pass; clean and bn200 full dual-head results pass independent GPU QA",
+      "classes": 88,
+      "train": 105864,
+      "validation": 17324,
+      "test": 25342,
+      "boundary_noise": "clean and bn200; original sequence preserved with official boundary extension",
+      "data_card_sha256_at_training": "d2edc8f4f65d97de56e6401d57e99d8ec1b7d177635ad9b4d76b3d88422f28d5",
+      "strengthened_bn200_card_validation": "PASS; full original-insertion and flank-composition validation; validate-only uses Rscript for version metadata",
+      "data_card_sha256_after_strengthened_validation": "8c5efc9e9696d44dce85f13b13730aa2f6df641ba68d8dee670c2381aab03435",
+      "validation_code_sha256": "ed7117be4426017b594ddff5f46389bfd5b36fd47f494c297460d6c2e0159a74",
+      "clean": {
+        "metric": "weighted_f1",
+        "official_head_mean": 0.9774250732774385,
+        "official_head_sample_sd": 0.0016228295215646002,
+        "jev_head_mean": 0.9767484138860132,
+        "jev_head_sample_sd": 0.002178401723632643,
+        "delta_weighted_f1_mean": -0.0006766593914254049,
+        "one_sided_p_value": 0.659696977396977,
+        "significant_positive": false,
+        "n_seeds": 5,
+        "gpu_reinference_runs_passed": 10,
+        "result_sha256": "9f9c917f06c096ccd819fac732229f7b4d7badc84c3afd08cd01d9b591044cea",
+        "source": "rinalmo_ncrna_clean_round33_full_v1/result.json"
+      },
+      "bn200": {
+        "metric": "weighted_f1",
+        "official_head_mean": 0.8140585670148515,
+        "official_head_sample_sd": 0.004706745637960583,
+        "jev_head_mean": 0.806558021284129,
+        "jev_head_sample_sd": 0.004298017660642238,
+        "delta_weighted_f1_mean": -0.007500545730722496,
+        "one_sided_p_value": 0.9488427254880585,
+        "significant_positive": false,
+        "n_seeds": 5,
+        "gpu_reinference_runs_passed": 10,
+        "result_sha256": "7d0c8a9c744edd32293444e76d3fb46175f83dc276b77df028841bf69ca1eaa7",
+        "source": "rinalmo_ncrna_bn200_round33_full_v1/result.json"
+      },
+      "source": "ncrna_official/data_card.json"
+    },
+    "spliceator_acceptor": {
+      "metric": "mean four-species accuracy",
+      "official_head_mean": 0.59687,
+      "official_head_sample_sd": 0.024701193354269353,
+      "jev_head_mean": 0.5965125,
+      "jev_head_sample_sd": 0.013403961051681698,
+      "delta_accuracy_mean": -0.0003575000000000328,
+      "one_sided_p_value": 0.5126944093379351,
+      "significant_positive": false,
+      "n_seeds": 5,
+      "split": {
+        "train": 19961,
+        "validation": 2218,
+        "test": 80000
+      },
+      "result_sha256": "6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f",
+      "source": "rinalmo_splice_acceptor_round33_full_v1/result.json"
+    },
+    "spliceator_donor": {
+      "metric": "mean four-species accuracy",
+      "official_head_mean": 0.6993525,
+      "official_head_sample_sd": 0.005255186426284027,
+      "jev_head_mean": 0.6999975,
+      "jev_head_sample_sd": 0.005358618933549925,
+      "delta_accuracy_mean": 0.0006450000000000067,
+      "one_sided_p_value": 0.4305079375393121,
+      "significant_positive": false,
+      "n_seeds": 5,
+      "split": {
+        "train": 19775,
+        "validation": 2198,
+        "test": 80000
+      },
+      "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c",
+      "source": "rinalmo_splice_donor_round33_full_v1/result.json"
+    },
+    "inference_scope": "paired training-seed effects; no test-set population inference"
   }
 }

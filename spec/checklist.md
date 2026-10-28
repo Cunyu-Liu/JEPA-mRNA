@@ -6,30 +6,24 @@
 > - [x] 已读取全部交接文档并交叉核对远端真实第 32 轮 artifact；已识别 preview_draft 中主图 3 与 matched 的 mock 数据，禁止科学引用。
 > - [x] 已用原论文与官方仓库冻结 NucleicBERT 五类可训练任务+MLI 分析线、RiNALMo 六类任务；识别 88 类 ncRNA、官方 MRL/TE/EL 与旧项目协议的差异。
 > - [x] 五处 spec/tasks 与四处 checklist 已同步第 33 轮，且经三轮内容一致性检查（T-A133）。
-> - [ ] 主图 3B 使用真实 40/40 数据，control−ablation 正值 drop、图下数据表与 JSON 三通道一致（T-A134）。
-> - [ ] 主图 4A/B 所有颜色均有图例，ECE/Spearman/n 与权威源一致（T-A135）。
+> - [x] 主图 3B 使用真实 40/40 数据，control−ablation 正值 drop、图下数据表与 JSON 三通道一致（T-A134）。
+> - [x] 主图 4A/B 所有颜色均有图例，ECE/Spearman/n 与权威源一致（T-A135）。
 > - [ ] 主图 5A/B 全部来自同一 4090 的共同协议，包含自模型，测速原始 JSON、预测一致性和独立复核通过（T-A136）。
-> - [ ] 主图 6A/B/C 全部为可编辑 PPT 原生矢量元素，参数与张量合同经代码/checkpoint 复核（T-A137）。
+> - [x] 主图 6A/B/C 全部为可编辑 PPT 原生矢量元素，参数与张量合同经代码/checkpoint 复核（T-A137）。
 > - [ ] NucleicBERT 数据门通过，五类任务完成 5-seed 双头评测与统计；blocked 项未隐藏，MLI 单独记录（T-A138/T-A139）。
 > - [ ] RiNALMo 数据门通过，六类任务完成 5-seed 双头评测与统计；88 类 ncRNA、官方 MRL/TE/EL 协议无替换（T-A140/T-A141）。
+> - [x] 88 类 ncRNA clean/bn200 已完成全量五种子双头、独立指标复算与各 10/10 模型 RTX 4090 重新推理；两组均不显著为正，结果完整保留，六类任务总门仍未关闭。
 > - [ ] 所有新训练均有 CUDA、early-stopping、best checkpoint、plateau 停止原因与完整台账；无 step cap 冒充收敛。
 > - [ ] PPT 仅改指定内容，微软雅黑、1.5 倍行距、无重叠，markitdown/fix/layout/ZIP/逐页渲染和图文匹配全部通过（T-A142）。
 > - [ ] 旧文档与旧绘图数据完成可追溯归档，活跃源数据无 mock，阶段代码已提交并 push（T-A143）。
 >
-> **第 32 轮增量验收（2026-10-26 续）**：
-> - [x] matched 六臂均 early-stopping；24/24 格 CUDA、样本数、micro/macro/INF、best checkpoint、数据行数与 SHA256 三通道复核通过。
-> - [x] 三种子 mean±std、逐序列 Wilcoxon–Holm 与预注册门判定完成；四个科学门均未通过，禁止改写为正结论。
-> - [x] fftr1c/nodistill/r2d 权重 strict-load、消融脚本静态检查、VL0 196 条 ViennaRNA 2.7.2 标签和相关 8 tests 通过。
-> - [x] DP=8/8 与 Turner/2D-scorer/nodistill 的 ArchiveII-clean/TestSetB 补评完成；B=4 no-RLCD 的 step-25 OOM 已保留证据。
-> - [x] B=2 控制与 B=2 no-RLCD 均 early-stopping 并各完成 8/8 CUDA 终评；best 分别为 12000/18500。
-> - [x] TS0 同 4090 B=4 控制与 DP exact 的 micro/macro/TP/FP/FN 和 1288 条逐序列 F1 严格一致；旧 A100 容差门失败已留档，未放宽阈值。
-> - [x] 五类消融 40/40+B4/B2 控制各 8/8+同硬件 DP 严格等价 8/8 全部通过；矩阵与真实 3a/3b 已生成。
-> - [x] 图文按实测 PDB/ID=DP 0.71×/Turner 1.92×/2D 1.43× 修正，旧“所有组件 OOD 更大”统一签名撤回。
-> - [x] 三组 MRL 数据与双头协议已预注册，CUDA 稀疏信号训练/早停验证通过，队列已挂接 T-A128 后门。
-> - [x] 三组 MRL 5-seed 共 30 run、paired t-test+Holm 与独立复核完成；0/3 显著正，故无新任务入主图正结果，全部数据保留。
-> - [x] 新 PPT 21 页、10 图去重、图文匹配、微软雅黑/1.5 行距、markitdown/fix/layout/全页渲染与 ZIP 完整性通过。
-> - [x] 本地/远端 spec、训练台账和 GitHub 同步完成。
-> - **禁止放行**：统一 xens2 不得写旧 7/8；RNAformer 原文全文配对 F1 不得替换项目 canonical nested GT 以增加胜场；124.78 不得与 xens2 F1=0.8039 拼成精度-速度点；A100 r2d 不得画入 Pareto 前沿；DP OOD=0.43 不得复用；No RLCD 不得与 B=4 控制直接求差。
+> **第 32 轮真实 artifact 验收快照（2026-10-28 复核）**：
+> - [x] T-A126 三个新臂 12 格经 CUDA、样本数、micro/macro/INF、best checkpoint 与来源链三通道复核通过。
+> - [x] T-A127 matched 六臂 **6/6、24/24 格**及三种子配对统计完成；mixed_s0 未过门如实保留，不勾选 SOTA。
+> - [x] T-A128 五类消融 **40/40 格**完成，原始矩阵取代历史 25/40 与错误 DP-OOD=0.43。
+> - [x] T-A129 三组 MRL **30/30 run**完成且显著正 **0/3**，全部负/不显著结果保留。
+> - [x] T-A130/T-A132 21 页 PPT、图文、markitdown/fix/layout 与全页渲染检查完成。
+> - [x] T-A131 本地与远端 spec/tasks、训练台账和 GitHub 同步完成。
 
 
 > **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：

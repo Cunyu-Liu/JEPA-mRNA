@@ -128,7 +128,7 @@ def main() -> int:
     if args.device.startswith("cuda") and not torch.cuda.is_available():
         raise RuntimeError("CUDA requested but unavailable; refusing CPU fallback")
     df = load_frame(args.boundary_noise, args.limit)
-    cache_name = f"ncrna{args.boundary_noise or '_clean'}_rinalmo_cls_v1{'_smoke' + str(args.limit) if args.limit else ''}.npz"
+    cache_name = f"ncrna{args.boundary_noise or '_clean'}_rinalmo_cls_v2{'_smoke' + str(args.limit) if args.limit else ''}.npz"
     arrays = shared.extract_embeddings(df, cache=DATA / cache_name, device=args.device, batch_size=args.batch_size)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     outputs = {}
@@ -162,6 +162,7 @@ def main() -> int:
     comparison = {
         "primary_metric": "weighted_f1",
         "delta_weighted_f1_mean": float(np.mean(jev - official)),
+        "inference_scope": "paired training-seed effects; no test-set population inference",
         "one_sided_p_value": p_value if np.isfinite(p_value) else None,
         "delta_accuracy_mean": float(np.mean([r["accuracy"] for r in outputs["jev_head"]["runs"]]) -
                                           np.mean([r["accuracy"] for r in outputs["official_head"]["runs"]])),

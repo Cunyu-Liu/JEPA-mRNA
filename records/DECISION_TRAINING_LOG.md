@@ -10108,3 +10108,75 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - CPEB3、Spliceator acceptor、Spliceator donor、MRL 的 v5 CUDA smoke 均完成双头×5 seeds、best checkpoint、预测重读、收敛轨迹和严格 JSON 验收。脚本外第三遍 QA 全部 `EXTERNAL_QA_PASS`；result SHA256 分别为 `6a95e8c8…`、`10353085…`、`a16b2b6a…`、`5cd80374…`。Splice 小样本双头预测完全一致，配对检验零方差，p-value 按合同写 `null/undefined_zero_variance`，不写成显著或等效结论。
 - SciPy `_asdict()` 的内部 `_xp` 模块和 `_dtype` 已从未知类型源头修正为只保存公开 statistic/pvalue/df；所有结果 JSON 使用 `allow_nan=False`。此前 v2/v4 的断言与 JSON 写出失败均为工程停止，未产生科学结论。
 - 上述 smoke 仅允许对应全量任务进入队列；禁止把子集 R²、accuracy、delta 或 p-value 写入主图、论文或最终结论。
+
+### D. 验证代码提交与全量队列启动
+
+- 六个本轮脚本、更新后的 tasks 与本台账已提交并推送 GitHub `round29-handoff`，commit=`35b9eb7`；提交前远端 `py_compile`、文件哈希、Git diff/status 复核通过，工作树无未提交残留。
+- 全量队列已并行启动：CPEB3 PID=84403、Spliceator acceptor PID=84404、donor PID=84405、官方 MRL PID=84406；均 `CUDA_VISIBLE_DEVICES=0`，代码 commit=`35b9eb7`。NucleicBERT embedding batch=32，MRL embedding batch=64；大型嵌入、checkpoint、预测和日志均在 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/`。
+- 输出目录分别为 `nb_cpeb3_round33_full_v1`、`nb_splice_acceptor_round33_full_v1`、`nb_splice_donor_round33_full_v1`、`rinalmo_mrl_round33_full_v1`。启动时四进程均存活，尚无全量科学结果；下一阶段仍要求全量 sample_scope、完整样本数、五种子收敛、独立预测复算和配对统计验收。
+
+### E. CPEB3 全量五种子结果与协议边界
+
+- CPEB3 全量双头完成，train/validation/test=31,340/7,835/9,794，所有 10 run 均为 CUDA、early-stopping、best checkpoint、预测/权重哈希和独立重读 PASS。严格 JSON 与脚本外全量 QA 通过，result SHA256=`43517c79cce5518d9397f69765858d77f082cefcd4f3e41b1ae7dc0886778ca6`。
+- official fitness head：R²=**0.8922818610 ± 0.0160316722**（sample SD），PCC=0.9451801538；JEV head：R²=**0.8896964174 ± 0.0081787294**，PCC=0.9433496588。配对 ΔR²=**−0.0025854437**，单侧 p=0.6003333992，`significant_positive=false`。该结果保留在源表，不进入“显著正结果”主图候选。
+- 原论文 fitness 配置为 full fine-tuning + L1/AdamW；第 33 轮主对照预注册为 frozen backbone 上的 official head architecture vs JEV head，使用相同 MSE probe 目标。故本结果回答的是**双头单变量问题**，不宣称复现原论文 full-FT 优化过程，也不与 released full-FT 数字直接计算增益。80:20 数据划分额外从训练侧保留 20% 用于 early-stopping，形成 64%/16%/20%，序列集合不变。
+- 绘图源注册表已升级为 `round33-verified-v3`，上述数值与原始 result JSON、下载副本三通道一致；smoke 数值未进入源表。
+
+### F. NucleicBERT Spliceator 全量与 RiNALMo Spliceator 队列
+
+- NucleicBERT acceptor：official accuracy=**0.8155100000 ± 0.0069050672**，JEV=**0.8103325000 ± 0.0035960764**，Δ=-0.0051775，p=0.8675878225；train/validation/test=19,961/2,218/80,000，result SHA256=`cb79a922…`。
+- NucleicBERT donor：official accuracy=**0.7522300000 ± 0.0033284592**，JEV=**0.7478875000 ± 0.0019064447**，Δ=-0.0043425，p=0.9761459357；train/validation/test=19,775/2,198/80,000，result SHA256=`64ffc8f3…`。两类均完成 10 run 全量外部 QA，均未显著为正，源注册表升级为 `round33-verified-v4`。
+- RiNALMo acceptor/donor smoke 均完成双头×5 seeds、严格 JSON 和外部 QA，result SHA256 分别为 `2754221a…`、`0eee1db8…`。小样本预测完全一致，p-value=null，不据此声称等效。实现采用官方 CLS pooling、head embed_dim=128、BCE 和同一 Spliceator split，代码已推送 commit=`e036e2f`。
+- RiNALMo acceptor/donor 全量已启动，PID=101702/101703，输出 `rinalmo_splice_{acceptor,donor}_round33_full_v1`；全量结果尚未形成，验收标准与 NucleicBERT 相同。
+
+### G. 官方 88 类 ncRNA 数据与测速基线恢复
+
+- RiNALMo 官方 177-family RDa 已恢复，43,377,891 bytes，SHA256=`5de7d2d39e0496a751afaf4cb8c65e5119cd731e52d4a3477e8a2564f3913f4f`。直接调用官方 `prepare_ncrna_classification_data` 与 `add_noise_to_ncrna_data`，仅增加 R factor 字符串兼容层与固定随机种子；原序列、过滤、DecisionTree 假类排除、平衡采样和噪声算法未改。
+- 88 类数据卡已通过：train/validation/test=**105,864/17,324/25,342**，clean 与 bn200 均为 88 类、class_id=0..87。base canonical ATCG、长度≤200；bn200 保留完整原序列并执行官方边界扩展，长度与标签逐行一致。训练集各类平衡，10 个源文件哈希和官方 commit=`2c2c5c14…` 已写入 `data_card.json`。既有 177 类 JSONL 仍只作敏感性线，不能冒充该 88 类数据。
+- MXfold2 已实际编译出 `interface.cpython-310-x86_64-linux-gnu.so`，官方 MixC/TrainSetAB 权重 strict-load 全部匹配，参数量 802,642，weights SHA256=`8ba1283e…`。端到端测速加载器独立调用通过；全 TS0 CUDA 测速仍需独占 GPU 后验收。
+- RNAformer 官方源码 commit=`196e7dea…`，bpRNA 权重与 config 均恢复；121/121 keys strict-load，参数量 31,741,954，无 missing/unexpected。其单序列前向与 decode 已接入同一测速脚本，仍未产生 4090 数字。
+- UFold 官方 Drive 在本机 gdown 超时，集群与本机备份均未找到 `ufold_train_alldata.pt`，保持 blocked；不得以旧 A100 预测或不同权重补齐。
+
+### H. 88 类 ncRNA 双头 smoke 与全量启动
+
+- clean 与 bn200 双头 smoke 均完成五种子、weighted-F1/accuracy、checkpoint、预测和独立复核。外部 QA result SHA256 分别为 `3bac857f…`、`90ad3071…`。小样本 p-value=null，仅作工程门，不写科学结论。
+- 数据生成、双头和测速加载器代码已提交并推送 commit=`dee8879`。clean 全量 PID=116488、bn200 全量 PID=116489，输出 `rinalmo_ncrna_{clean,bn200}_round33_full_v1`，主指标 frozen 为 weighted-F1，accuracy 为次指标；全量结果尚未形成。
+- 绘图源注册表升级为 `round33-verified-v5`：旧 177 类数值明确标记为项目敏感性线，官方 88 类数据卡单列并附 SHA256=`d2edc8f4…`，避免任务身份混淆。
+
+### I. 独立代码审查与验收加固（本地修复，远端复核队列）
+
+- 独立审查指出 CLS 缓存只核对序列/标签，未绑定权重与提取代码。修订后的 RiNALMo splice/ncRNA 缓存升级为 v2，强制同时匹配 `sequence_sha256`、`pretrained_sha256`、`extractor_sha256`，旧缓存不得静默复用。当前 v1 全量任务继续使用启动时的冻结权重和脚本，后续须以独立重算抽查补强溯源，不以新代码哈希反推旧结果。
+- bn200 数据验收增加负例防线：clean 副本直接失败；每条噪声必须包含完整原序列、左右 flank 非空，且 flank 可由原序列的非重叠二核苷酸单元组成。合成正/负单测通过，官方全数据复核后再更新数据卡哈希。
+- 测速脚本绑定默认 TS0 SHA256=`f21eb88c…`，区分 full_source_file 与 full_source_file_len_le600，记录 source/filtered 数量；只有匹配参考数据且非 smoke 时才启用固定 F1 门。RiNALMo-ft 改为 strict=True 并记录 checkpoint 哈希，避免缺失张量时随机初始化仍通过 smoke。
+- paired seed 统计明确限定为训练随机性下的配对效应，不包含测试集抽样不确定性；不再单独把 seed p-value 解释为数据集层面的普遍优越性。上述修订须重新通过对应 smoke/validate-only 后提交，当前运行中的 v1 结果不因此被自动否定或自动视为已满足新门。
+
+### J. RiNALMo Spliceator 全量五种子结果
+
+- acceptor：official accuracy=**0.5968700000 ± 0.0247011934**，JEV=**0.5965125000 ± 0.0134039611**，Δ=-0.0003575，p=0.5126944093；result SHA256=`6c5edca2…`。19,961/2,218/80,000 split 与 10 run 全量外部 QA 通过。
+- donor：official accuracy=**0.6993525000 ± 0.0052551864**，JEV=**0.6999975000 ± 0.0053586189**，Δ=+0.0006450，p=0.4305079375；result SHA256=`e9c22ee7…`。19,775/2,198/80,000 split 与 10 run 全量外部 QA 通过。donor 虽方向为正，但不显著，不能作为显著正结果展示。
+- 两类结果已写入 `round33-verified-v6` 源注册表并限定 seed 推断范围；MRL 与 88 类 ncRNA 继续运行，主图候选仍待统计验收。
+
+### K. 官方 88 类 ncRNA clean/bn200 全量五种子结果
+
+- clean：official weighted-F1=**0.9774250733 ± 0.0016228295**，JEV=**0.9767484139 ± 0.0021784017**，配对 Δ=**−0.0006766594**，单侧 p=0.6596969774；result SHA256=`9f9c917f06c096ccd819fac732229f7b4d7badc84c3afd08cd01d9b591044cea`。
+- bn200：official weighted-F1=**0.8140585670 ± 0.0047067456**，JEV=**0.8065580213 ± 0.0042980177**，配对 Δ=**−0.0075005457**，单侧 p=0.9488427255；result SHA256=`7d0c8a9c744edd32293444e76d3fb46175f83dc276b77df028841bf69ca1eaa7`。
+- 两组均为完整 105,864/17,324/25,342 split、双头×五种子、CUDA early-stopping。脚本外 QA 逐 run 核对样本数、validation history、patience=32 收敛、预测/检查点 SHA256、测试标签与指标复算；随后从 best checkpoint strict-load，在 RTX 4090 上对 25,342 条测试序列对应的 frozen CLS 做全量重新推理，clean 与 bn200 各 **10/10** 模型预测逐点一致，均 `EXTERNAL_QA_PASS`。
+- 两个任务均未显著为正，保留在全量源表，不作为“显著正结果”候选。配对 p-value 只描述训练种子效应，不包含测试集抽样不确定性。
+- 原始结果已下载，本地副本 SHA256 与远端及 QA 记录一致；绘图源注册表升级为 `round33-verified-v7`。MRL 仍在运行，未引用中间单种子结果。
+
+### L. 加强版 bn200 数据卡复核中断
+
+- 加强版 `prepare_ncrna88_round33.py` 本机/远端 SHA256=`d94fcfd8ced8c2ec8b7a03ab7cfa09c6dfb5596313f3504c6a4878e7dc18e8eb`，远端 `py_compile` 通过。
+- `--validate-only` 在写出新数据卡前停止：`/root/miniconda3/envs/lucaone/bin/python` 缺少 `rpy2`，错误为 `ModuleNotFoundError: No module named 'rpy2'`。这不是数据验收通过，也不是 bn200 数据失败；当前保留训练时数据卡 SHA256=`d2edc8f4…`，待找到原 R/rpy2 环境后重跑，不伪写新哈希。
+
+### M. 加强版 bn200 全数据验收通过
+
+- 复核确认 `rpy2` 在 validate-only 中只用于读取 R/Biostrings 版本，不参与数据验收。将该元数据读取改为 `Rscript --vanilla` 子进程，官方生成路径与所有数据断言不变，避免为重跑验证重新安装生成环境。修订代码本机/远端 SHA256=`ed7117be4426017b594ddff5f46389bfd5b36fd47f494c297460d6c2e0159a74`，双端 `py_compile` 通过。
+- 全量 `--validate-only` 返回 `NCRNA88_OFFICIAL_DATA_PASS`：clean/bn200 各 split 行数保持 105,864/17,324/25,342、88 类；所有 bn200 行均通过完整原序列嵌入、左右 flank 非空与 flank 二核苷酸单元组成检查，训练集平衡、标签映射、长度、源文件哈希均通过。
+- 新数据卡 SHA256=`8c5efc9e9696d44dce85f13b13730aa2f6df641ba68d8dee670c2381aab03435`。训练时数据卡哈希继续保留在 result protocol 中，不用新卡哈希覆盖历史；源注册表同时记录两者与验证代码哈希。
+
+### N. v2 缓存身份 smoke 与独立 GPU QA
+
+- RiNALMo Spliceator acceptor/donor 与 88 类 ncRNA clean/bn200 的 v2 smoke 均完成双头×五种子，缓存强制匹配 `sequence_sha256 + pretrained_sha256 + extractor_sha256`。result SHA256 依次为 acceptor=`17073e749ef0809013c86d12cb3425f843f868ed80344e3cfb872925db1db219`、donor=`e0249060f390d0d3530b7b582a183af0a475b2b64fed0515e7f17aa993efffe7`、clean=`26d89c25ee12907935c7bcbe4e43e17ddbbacc8f93a111b87f40dc20cd1ba903`、bn200=`626f955f7d8ecda86cd957897fc00329349598068b62b8d68400574e90250d75`。
+- 脚本外 `qa_v2_smoke.py` 再次读取四个 result、四个 v2 cache 与全部 checkpoint/prediction 哈希，核对样本和标签身份、五种子 early-stopping、当前代码与权重哈希；随后在 RTX 4090 上从 cache 重新前向，**40/40** 模型预测一致，四项均 `V2_CACHE_AND_GPU_QA_PASS`。
+- 小样本出现双头预测完全一致和 `p=null`，只表示工程链可运行，不能据此声称等效、提升或科学收敛结论；这些数值未写入 `source_data.json`。全量科学结果仍以 §15.110J/K 为准。

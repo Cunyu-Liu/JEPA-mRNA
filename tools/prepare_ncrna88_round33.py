@@ -26,6 +26,33 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def valid_flank(flank: str, chunks: set[str]) -> bool:
+    reachable = [False] * (len(flank) + 1)
+    reachable[0] = True
+    for position in range(len(flank)):
+        if not reachable[position]:
+            continue
+        for chunk in chunks:
+            if flank.startswith(chunk, position):
+                reachable[position + len(chunk)] = True
+    return reachable[-1]
+
+
+def valid_bn200_pair(original: str, noisy: str) -> bool:
+    if original == noisy or original not in noisy:
+        return False
+    chunks = {original[index:index + 2] for index in range(0, len(original), 2)}
+    for start in range(len(noisy)):
+        position = noisy.find(original, start)
+        if position < 0:
+            return False
+        left = noisy[:position]
+        right = noisy[position + len(original):]
+        if left and right and valid_flank(left, chunks) and valid_flank(right, chunks):
+            return True
+    return False
+
+
 def validate_and_write_card(code_path: Path) -> dict:
     frames = {}
     files = [RDA]
@@ -55,8 +82,9 @@ def validate_and_write_card(code_path: Path) -> dict:
                 assert frame["class_id"].equals(base["class_id"])
                 original = base["sequence"].astype(str).tolist()
                 noisy = frame["sequence"].astype(str).tolist()
-                assert all(original_seq in noisy_seq for original_seq, noisy_seq in zip(original, noisy))
-                assert (frame["width"] >= base["width"]).all()
+                assert all(valid_bn200_pair(original_seq, noisy_seq)
+                           for original_seq, noisy_seq in zip(original, noisy))
+                assert (frame["width"] > base["width"]).all()
                 assert (frame["width"] <= base["width"] + 4 * (base["width"] // 2)).all()
             else:
                 assert frame["width"].between(1, 200).all()
@@ -70,7 +98,11 @@ def validate_and_write_card(code_path: Path) -> dict:
     assert class_maps["train"] == class_maps["val"] == class_maps["test"]
     assert frames["train"]["name"].value_counts().nunique() == 1, "official training balance was not preserved"
 
-    from rpy2.robjects import r
+    r_version = subprocess.check_output(
+        ["Rscript", "--vanilla", "-e", "cat(R.version.string)"], text=True).strip()
+    biostrings_version = subprocess.check_output(
+        ["Rscript", "--vanilla", "-e", "cat(as.character(packageVersion(\"Biostrings\")))"],
+        text=True).strip()
     card = {
         "schema_version": 1,
         "status": "PASS",
@@ -80,8 +112,8 @@ def validate_and_write_card(code_path: Path) -> dict:
         "processing": "official prepare_ncrna_classification_data + add_noise_to_ncrna_data; R factors preserved with as.character; random seeds fixed to 42",
         "official_repo": str(OFFICIAL_REPO),
         "official_commit": subprocess.check_output(["git", "-C", str(OFFICIAL_REPO), "rev-parse", "HEAD"], text=True).strip(),
-        "r_version": str(r("R.version.string")[0]),
-        "biostrings_version": str(r("as.character(packageVersion(\"Biostrings\"))")[0]),
+        "r_version": r_version,
+        "biostrings_version": biostrings_version,
         "counts": counts,
         "files": {path.name: sha256(path) for path in files},
         "code_sha256": sha256(code_path),
