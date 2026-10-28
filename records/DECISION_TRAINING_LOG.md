@@ -10328,3 +10328,30 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 主 benchmark 的 8 个 JEV result 均由恢复 manifest 验证；full-FT 数字只来自既有 `source_data.nb_transfer.nb_ft`，没有伪造 full-FT result 路径，也没有把 frozen probe 当作 full-FT。原论文任务仍由全量五种子原始 result 计算。
 - 三轮 QA：①注册值、恢复 manifest、原始结果 SHA 和统计值交叉核对；②3840×1920 渲染检查主图标签、ArchII trunc598 和负结果均清晰，无裁切；③独立脚本再次执行 `FIG07_COMBINED_INDEPENDENT_QA_PASS`，远端 `codonflow` 复现通过。最终 PNG SHA256=`707f67c17a429991643c40863f63e792f4d9e0b39c4e01c93df957583191ee68`。
 - 组合图仍为 working，不插入 PPT；其余作者数据资产和 full-FT JSON 恢复保持缺口，不声称完整原论文覆盖。源注册表升级为 `round33-verified-v28`。
+
+## §15.111（2026-10-28 23:35）第 34 轮接续审计、文档同步与测速工程修复
+
+### A. 三方审计与执行合同
+
+- 完成本地交接文档、全部 spec 镜像、round33 PPT、远端 `/home/rna_jev` 原始结果、训练进程与 Git 状态交叉审计。主图 3B、4 的内容修复和主图 6 原生矢量重绘已有 artifact；主图 5、7、8 未闭环。七项全量五种子双头结果在家族内 Holm 后均无显著正提升，继续完整保留，不用 synthetic/mock 数据替代。
+- 本地根目录、`spec/`、`spec_sync/`、`/private/tmp/rnajev_audit` 的历史与当前镜像，以及远端 `spec/`、`spec_handover/` 均已写入第 34 轮当前执行块。后续顺序固定为：无需新实验的 PPT 修复，验收在训项，4090 独占测速，剩余原论文任务，统计与最终图件，归档和 GitHub 交付。远端两个 spec 目录与本地上传稿 SHA256 一致。
+- 23:18 单次快照为 RTX 4090 已用 23,218 MiB、利用率 48%。ArchiveII tRNA/5s、MRL full_v3、HEK fold0/fold1 TE/EL 七项仍在训练，均未产出 result.json；bpRNA 和 Muscle/PC3 smoke 尚未实际进入 Python 训练。未新增超订任务，未把中间 validation 或 fold0 写成科学结论。
+
+### B. 无需新实验的 PPT 修复
+
+- 生成 `RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx`。主图 3B 保持 control−ablation 正值 drop 与同值表，主图 4 保留完整图例，主图 6 保持原生可编辑矢量并修复公式换行和局部小字号。
+- 第一轮实际渲染发现主图 3B 表题与 External 标签碰撞、主图 4A 最后一组两个数值重叠，已分别删除冗余表题并错位近值标注；第二轮复核通过。主图 6 公式改为 `h: L × 1280`，避免跨平台数学字符换行。
+- `markitdown` 与 round33 全文 diff 只有上述公式一处文本变化，未覆盖用户其他文字调整。`fix_pptx.py` 无问题，`validate_layout.py --slides 6,7,8,10` 为 0 issue。主图 5、7、8 未用 working 资产提前入片。
+
+### C. 4090 测速代码与负例/元数据验收
+
+- 审查确认 `eval_rinalmo_ft.py` 的 strict 权重加载和禁止 CPU fallback 修改正确；`speed_end_to_end_4090.py` 修正 smoke 截断计数与长度过滤计数混用，新增 full 协议身份与数据 SHA 校验，并将 RNAformer 的 F1 门限按当前 1,288 条序列复算值设为 0.757520。`make_figure5_round33.py` 同时兼容旧 `full_TS0` 与新 `full_source_file` 标记。
+- 两个入口的 CUDA 负例均在加载模型和写输出前以 `refusing CPU fallback` 硬失败。RiNALMo 负例首次使用错误环境触发 flash_attn 导入错误，改用项目 `tools/flash_shim` 后按预期通过；该环境差异已保留，不计为代码失败。
+- 元数据独立检查：smoke=8、full=1288、两者 `n_length_filtered=0`；绘图加载器分别通过旧 `full_TS0` 与新 `full_source_file` 结果读取。三个脚本本地和远端 `py_compile`、`git diff --check` 均通过。正向 GPU smoke 与新增基线测速仍需独占窗口，当前未执行。
+- MXfold2 与 RNAformer-bpRNA 权重、配置和 strict-load 证据齐备；UFold 当前源码和权重路径均失效，继续保持 blocked，不用旧 A100 预测替代。共同 batch 网格须先完成 RNAformer 真批处理封装与跨 batch 预测一致性检查。
+- 提交并推送 `57b607f round34: sync handoff and harden 4090 speed checks` 到 `origin/round29-handoff`。仅提交八个已审查文件，未把 `third_party/RNAformer` 或 `third_party/RiNALMo` 克隆混入项目提交。
+
+### D. 当前科学状态与下一步
+
+- 本段只记录工程与版式进展，不新增科学结果。七项在训任务出现完整 result 后，先执行对应外部 GPU QA，再更新统计与台账；任一 CUDA、样本数、哈希或独立复算失败即停止该任务并保留证据。
+- 下一阶段仍需完成 4090 新增基线与共同 batch 网格、ArchiveII 其余家族、bpRNA、MRL、TE/EL 600-run 全协议及 NucleicBERT 缺失官方资产恢复。最终 PPT 和归档必须等相应验收门通过后执行。
