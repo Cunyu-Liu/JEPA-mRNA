@@ -10396,3 +10396,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 提交前通过 API 逐项核对：`spec/tasks.md` 与 `spec_handover/tasks.md` 各只有两行状态更新；训练台账只新增 §15.112–§15.114；`tools/make_figure5_round34.py` 为新文件。未纳入 RNAformer batch 改动、third_party 克隆或任何秘密。
 - 已创建并验证 `ed3fc34a1b482095b7be306783cd83aa8953b818`，提交信息为 `round34: sync QA findings and Figure 5 data gate`，远端分支 `round29-handoff` 的 ref 已指向该提交。GitHub 已更新，但服务器 `/home/rna_jev` 仍需在 SSH 恢复后 fetch/rebase 对齐，不得假定其本地工作区已包含这些提交。
 - 主图 5 终版脚本保留完整数据门：六个可运行系统的 B=1/2/4 全部到齐、跨 batch 预测一致、三次 run 哈希绑定和独立 F1 复算通过后才出图。UFold 仍明确 blocked，主图 5/7/8 的最终科学验收状态没有改变。
+
+## §15.115（2026-10-28 后续）HEK fold2 并行补位与 folds2–9 验收队列
+
+- 服务器工作区复核：`spec/tasks.md`、`spec_handover/tasks.md` 与 `records/DECISION_TRAINING_LOG.md` 和 GitHub 当前版本一致；`make_figure5_round34.py` 虽在旧 HEAD 下显示 untracked，但工作区文件与 `origin/round29-handoff` 的 blob SHA256 均为 `4be0f787d61727b0433ad2d3774117881ccc8207d4a6874556497d0d8f0e2df8`，不存在内容漂移。
+- 最新单次资源快照为已用 19,897 MiB、余约 4.7 GiB。`rinalmo_regression_dual_round33_v4.py` 的缓存按细胞共享，HEK fold2 与 fold0/fold1 使用同一 `HEK_official_tokens.npz`，无需重新提取 650M 骨干嵌入。参考 fold1 在相同余量下稳定运行，补开两个独立小头任务以利用余量，不触发新的骨干加载。
+- 已启动 `rinalmo_te_HEK_fold2_round33_full_v4` 与 `rinalmo_el_HEK_fold2_round33_full_v4`，实际 Python PID 分别为 528896、528894，均 batch-size=64、CUDA_VISIBLE_DEVICES=0，输出目录和 launch log 独立。启动时无同名结果目录，不覆盖既有结果。
+- `watch_round34_results.py` 新增 `ROUND34_QA_FOLDS` 与 `ROUND34_QA_STATE_DIR` 配置。默认仍覆盖原 13 项；补充 watcher 仅覆盖 folds2–9 的 16 个 HEK TE/EL 任务，状态目录为 `audits/round34_qa_watch_folds2_9`，与主 watcher 不重复。配置单测 `default=13 / folds2,3=4` 通过。
+- 补充 watcher 以 `flock` 防止重复实例，实际运行 PID=530698。首次启动因 pgrep 自匹配和日志目录未创建未常驻，已逐项修正，未重复启动有效实例。
+- 已建立本地 `round34_active_source_registry.json`，记录有效图件来源、SHA、working/final 状态和禁止使用的 synthetic 路径，7 项文件哈希复核通过。该清单只用于后续图源管理，不改变科学结果状态。
+- 当前 HEK fold0 已完成 QA，fold1/fold2 在训，fold3–9 未启动。fold2 启动不代表十折完成，不得提前形成 TE/EL 任务级结论。测速仍需独立窗口，当前未执行。
