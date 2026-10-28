@@ -10457,3 +10457,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 日志显示同时存在多个训练和其他显存占用进程；本次 OOM 仅反映并发显存不足，不用于判断模型可运行性或科学性能。此前短组通过记录仍有效，但不能外推到最长组。
 - 诊断脚本新增 `QA_MAX_SEQUENCES`，最长组将限制为 4 条，分别验证 B=2 与 B=4，避免把整个等长组误当作 batch。该组及 32 条完整交叉验收须等待独立 GPU 窗口，不能通过杀停高优先级训练来抢窗口。
 - 活跃清单升级为 `round34-working-v5`，保留 OOM 待办和独立窗口要求。RNAformer batch 测速代码仍未提交，主图 5 数据门继续关闭。
+
+## §15.123（2026-10-28 后续）fold 队列未启动/停滞状态机修复
+
+- 检查发现一次 GPU 快照中没有 `train_universal_jepa.py` 进程，但 folds2–9 QA state 仍为空、fold queue 进程存在。真实 fold2 日志尚未取回前，不直接断言其失败。
+- 代码审查发现两个确定性逻辑问题：后续 fold 在 processes 为空且两个结果均 missing 时，被误报为 `running`，导致启动分支永远不可达；当一个任务已有 PASS、另一个结果 missing 时，没有检查缺失任务进程是否已退出，可能无限等待。
+- 修复后：无进程且双结果缺失返回 `ready_to_launch`；任何 missing 结果必须有对应存活进程，否则抛出 `exited without result` 或 `no tracked process`。该改动不限制训练步数，也不改变收敛/QA 门。
+- 本地状态机测试覆盖 ready-to-launch、双任务运行、死进程停止、部分死进程停止、QA pending，全部通过。随后通过 `py_compile`。真实远端 `--once` 检查因 SSH 中断尚未完成，旧队列重启和新任务启动仍需以真实日志为依据。

@@ -74,13 +74,18 @@ def fold_state(fold: int, processes: dict[str, subprocess.Popen | int]) -> str:
     statuses = {task: result_status(task, fold) for task in ("te", "el")}
     if any(status in {"writing", "unknown"} for status in statuses.values()):
         return "waiting"
-    if all(status == "missing" for status in statuses.values()):
-        for task, process in processes.items():
+    if all(status == "missing" for status in statuses.values()) and not processes:
+        return "ready_to_launch"
+    if any(status == "missing" for status in statuses.values()):
+        for task, status in statuses.items():
+            if status != "missing":
+                continue
+            process = processes.get(task)
+            if process is None:
+                raise RuntimeError(f"{task}/fold{fold} has missing result but no tracked process")
             alive = external_alive(process) if isinstance(process, int) else process.poll() is None
             if not alive:
                 raise RuntimeError(f"{task}/fold{fold} exited without result")
-        return "running"
-    if any(status == "missing" for status in statuses.values()):
         return "running"
     if any(status != "PASS" for status in statuses.values()):
         raise RuntimeError(f"result status is not PASS at fold{fold}: {statuses}")
