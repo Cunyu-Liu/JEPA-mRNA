@@ -10464,3 +10464,16 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 代码审查发现两个确定性逻辑问题：后续 fold 在 processes 为空且两个结果均 missing 时，被误报为 `running`，导致启动分支永远不可达；当一个任务已有 PASS、另一个结果 missing 时，没有检查缺失任务进程是否已退出，可能无限等待。
 - 修复后：无进程且双结果缺失返回 `ready_to_launch`；任何 missing 结果必须有对应存活进程，否则抛出 `exited without result` 或 `no tracked process`。该改动不限制训练步数，也不改变收敛/QA 门。
 - 本地状态机测试覆盖 ready-to-launch、双任务运行、死进程停止、部分死进程停止、QA pending，全部通过。随后通过 `py_compile`。真实远端 `--once` 检查因 SSH 中断尚未完成，旧队列重启和新任务启动仍需以真实日志为依据。
+
+## §15.124（2026-10-28 后续）fold2 存活状态纠正与真实日志路径
+
+- 修复后的队列 `--once` 已返回 `HEK_FOLD_QUEUE_STATUS fold=2 state=running`。直接读取 `/proc/528896` 和 `/proc/528894` 证明 TE、EL 两个外部 PID 均存活，命令分别为 `rinalmo_regression_dual_round33_v4.py --task te/el --cell-line HEK --fold 2`。
+- 实际 stdout/stderr 为 `eval_decision/rinalmo_{te,el}_HEK_fold2_round33_full_v4.launch.log`，不是此前误查的 `runs/.../train.log`。此前 pgrep 只匹配 `train_universal_jepa.py` 也不能覆盖该包装脚本，因此“没有训练进程”的判断已撤回，不作为重启依据。
+- 当前没有重复提交 fold2，也没有杀停存活任务。队列状态机修复仍保留，用于后续 fold 的正确启动和异常停止。下一步读取上述真实 launch.log 末尾，确认训练仍在推进且无 OOM/CPU 降级。
+
+## §15.125（2026-10-28 后续）fold2 真实训练日志核验
+
+- TE launch.log 尾部为 seed1/epoch136，当前 validation_loss=0.362376，best=0.336611；最近最佳值出现在 epoch115，仍在训练，未出现固定步数截断。
+- EL launch.log 尾部显示 seed0 完成并进入 seed1/epoch5；seed0 的官方 head 指标为 R2=0.24857、PCC=0.54861、best epoch=234。该数值仅是 fold2 单 seed 的中间日志，不作为十折最终科学结论。
+- 两个日志尾部均无 OOM、Traceback 或 CPU 降级迹象。结合 `/proc` 存活证据，fold2 无需重启；已避免一次可能的重复训练。
+- 当前 folds2–9 QA state 仍为空是正常的，因为 fold2 尚未完成全部 seed。后续继续由 watcher 和修复后的 fold 队列自动验收、接续。
