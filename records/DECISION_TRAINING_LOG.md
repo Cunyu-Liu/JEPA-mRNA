@@ -10189,3 +10189,25 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - tRNA 最长序列双头 smoke 已启动，PID=194496，输出 `rinalmo_archiveii_tRNA_round33_smoke_v1`，启动代码 SHA256=`871d71881eaa04b54124ea63b2f13e2e5e9cb05b60a9851118fa1c2f7e3164e8`。同一 frozen RiNALMo、全部上三角 BCE、五种子、official 0.01–0.29 validation 阈值与 tolerant macro-F1、JEV 非交叉 MAP；smoke 状态与科学资格分离，当前尚无结果。
 - TE/EL 官方 Drive 在本机与集群均连接超时；已检查 `/teams/.../rna_jev_shutdown_20261025`、`/root/rna_jepa_data`、`/teams/.../rna_jev_data` 和本机 Documents，未找到 `Muscle_sequence.csv`、`pc3_sequence.csv`、`HEK_sequence.csv`。任务保持 blocked，不以其他 TE/EL 数据替代。
 - MRL 全量 PID=84406 仍在运行，尚无 result，不记录中间单种子指标。
+
+### P. ArchiveII 最长序列 smoke 通过，tRNA/5s 全量启动
+
+- 首次 tRNA smoke 在导入阶段因 `flash_attn` 缺失停止；复用项目已验证的 `tools/flash_shim` 后通过，不改官方模型、权重或精度。最终启动代码 SHA256=`47c82bb3da585e8507c01b7a63456643ab8f335e22ee2a1a981f41bbbf2d4c8d`。
+- tRNA 最长 2/split smoke 完成，顶层 `SMOKE_PASS`、`scientific_eligibility=false`。10/10 run 均 plateau early-stopping，official 的 29 点阈值及 validation/test 重新前向/解码一致，JEV 的 C/Python DP 与 validation/test 预测一致；缓存内容 SHA、关键源码/二进制 SHA 和最长序列 forward+backward 均通过。脚本外 `qa_archiveii_result.py` 再次验收，result SHA256=`ffede19579f7e43fb0ebec53256a129049e8987dc2265be519806566db816434`。
+- smoke 的差值和 p-value 未写入绘图源注册表。验收后已并行启动 tRNA 全量 PID=207196 与 5s 全量 PID=207197，输出分别为 `rinalmo_archiveii_{tRNA,5s}_round33_full_v1`；全量五种子、完整 split、双头与独立 GPU 复核正在运行，尚无科学结论。
+
+### Q. NucleicBERT 原论文数据资产复核与阻塞边界
+
+- 官方代码仓库恢复至 commit=`7beb6b38902ee963a2c514f39b69497fe9201ef9`。二级结构配置只给出 `sec_str_data/train/train.csv`、`sec_str_vl0.csv` 等路径，没有 TR0/TS0/ArchiveII600 作者 ID 或 split 生成代码；当前 `SecStrDataset` 返回 4 项而训练步骤解包 5 项，不能直接宣称原训练链可运行。
+- NucleoSeeker 408/BGSU 467 仅有输入/target 目录约定、8Å/20 类和 Top-L 代码，未提供样本 ID、作者 split、三维距离原子/残基代表点及链处理规则。缺少这些一手信息时不自行假设 C3′/P 原子或重建 split 冒充原协议。
+- natural-vs-shuffled 的 complete/dinucleotide/kmer/pair_swap 生成代码存在，但原始 natural CSV、`no_pretrain_similar` 过滤清单和固定测试集未提供；配置验证集还明确 `enable_shuffling=False`，不能自行生成随机负样本后声称复现原论文测试。
+- Zenodo `10.5281/zenodo.16989562` API 已直接核验：仅有 `pretrained.pt`、`shuffle.ckpt`、`contactmap.ckpt`、`fitness.ckpt`、`secstr.ckpt` 五个权重文件，没有下游数据包。上述任务保持数据门 blocked，未启动不具样本身份的训练；CPEB3/Spliceator 已完成结果不受此阻塞影响。
+
+### R. MRL official-wrapper padding 偏差与停止重跑决定
+
+- 独立对照 `train_ribosome_loading.py` 发现：当前运行 v1 只在 ResNet 后的池化阶段清 padding，而官方 wrapper 在进入 prediction head 前就将 padding hidden states 置零。卷积边界与 InstanceNorm 会使两条路径不等价，因此 v1 不能标为严格 official-head 对照；split、标签、缩放和测试 R²复核未发现错位。
+- 本地修订在 official head 的 `linear_in` 前执行 `masked_fill`，与官方 wrapper 对齐；同时将 validation 预测也按官方口径 clamp 到非负（early-stopping 的 scaled validation MSE不变）。用不同长度、不同 padding 的两个样本和相同权重对照官方 `RibosomeLoadingPredictionHead`，输出最大差值 **0.0**，`OFFICIAL_PADDING_EQUIVALENCE_PASS`。
+- 决定停止 v1 并以新输出目录重跑，不删除旧日志或中间 checkpoint，不把 v1 中间值写入结论。第一次远程 SIGTERM 在 SSH 握手阶段失败，命令未执行；必须以远端进程状态确认实际停止后再启动修订版。未来 v3 缓存另绑定权重 config、preflight、提取代码、embedding/mask 内容 SHA 和 finite 检查。
+- 第二次远端操作已核对 PID 命令行后发送 SIGTERM，3 秒后 `/proc/84406` 不存在，确认 v1 实际停止。随后修订脚本上传连接被拒绝，尚未启动 v3 smoke 或新全量，不能把停止决定写成重跑完成。
+- 修订代码本机/远端 SHA256=`3ebee7300e96fcd5ee24f979fb45d2a5ea061ac839f8d1dfacdc9b5edf72c8d1`。v3 smoke 完成后，脚本外 `qa_regression_result.py` 从 cache 严格加载全部 checkpoint，在 RTX 4090 上重算全部测试预测，**10/10 run** 通过，result SHA256=`8c324dfe4233a83f08a44644346b1b1535e2d779a1fac073147db0141987ed59`；smoke 数值未写入源表。
+- 修正后的全量已启动，PID=240191，输出 `rinalmo_mrl_round33_full_v3`，使用新 v3 缓存和完整 76,319/7,600/7,600 split；尚在全量训练，不提前报告结果。

@@ -13,7 +13,7 @@
 > - [ ] NucleicBERT 数据门通过，五类任务完成 5-seed 双头评测与统计；blocked 项未隐藏，MLI 单独记录（T-A138/T-A139）。
 > - [ ] RiNALMo 数据门通过，六类任务完成 5-seed 双头评测与统计；88 类 ncRNA、官方 MRL/TE/EL 协议无替换（T-A140/T-A141）。
 > - [x] 88 类 ncRNA clean/bn200 已完成全量五种子双头、独立指标复算与各 10/10 模型 RTX 4090 重新推理；两组均不显著为正，结果完整保留，六类任务总门仍未关闭。
-> - [x] ArchiveII 九家族 fam-fold 数据门与脚本外 QA 通过：27 split、34,785 行、最长 512 nt；19,325 个 k-fold CT 明确排除，tRNA 双头 smoke 尚未完成。
+> - [x] ArchiveII 九家族 fam-fold 数据门与脚本外 QA 通过：27 split、34,785 行、最长 512 nt；19,325 个 k-fold CT 明确排除；tRNA 最长序列 smoke 与外部 QA 已通过，tRNA/5s 全量正在运行。
 > - [ ] 所有新训练均有 CUDA、early-stopping、best checkpoint、plateau 停止原因与完整台账；无 step cap 冒充收敛。
 > - [ ] PPT 仅改指定内容，微软雅黑、1.5 倍行距、无重叠，markitdown/fix/layout/ZIP/逐页渲染和图文匹配全部通过（T-A142）。
 > - [ ] 旧文档与旧绘图数据完成可追溯归档，活跃源数据无 mock，阶段代码已提交并 push（T-A143）。

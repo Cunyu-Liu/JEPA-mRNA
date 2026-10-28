@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v8",
+    "version": "round33-verified-v11",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1641,9 +1641,30 @@
       "contact/distance maps",
       "natural-vs-shuffled"
     ],
+    "data_recovery_audit": {
+      "official_code_commit": "7beb6b38902ee963a2c514f39b69497fe9201ef9",
+      "zenodo_record": "10.5281/zenodo.16989562",
+      "zenodo_contents": "five model checkpoint files only; no downstream datasets",
+      "secondary_structure": "blocked: author TR0/TS0/ArchiveII600 IDs and split generation are not published in the audited code or Zenodo record",
+      "contact_distance": "blocked: NucleoSeeker/BGSU IDs, author splits and 3D-distance conventions are unavailable; no invented atom rule or reconstruction label is permitted",
+      "natural_vs_shuffled": "blocked: natural input, no_pretrain_similar exclusion list and fixed test set are unavailable; official negative generators alone are insufficient"
+    },
     "note": "Full-dataset result with independent saved-output QA; no smoke values are included. Negative and nonsignificant results are retained."
   },
   "rinalmo_original_data_round33": {
+    "mrl_official": {
+      "status": "v1 stopped and excluded; corrected v3 smoke and external GPU QA passed; full_v3 is running",
+      "smoke_result_sha256": "8c324dfe4233a83f08a44644346b1b1535e2d779a1fac073147db0141987ed59",
+      "smoke_gpu_reinference_runs_passed": 10,
+      "split": {
+        "train": 76319,
+        "validation": 7600,
+        "test": 7600
+      },
+      "protocol_correction": "zero padding hidden states before official ResNet1D, matching the official wrapper; local equivalence test max absolute difference 0",
+      "previous_v1_results_usage": "excluded; no v1 intermediate metric is retained as a scientific result",
+      "corrected_code_sha256": "3ebee7300e96fcd5ee24f979fb45d2a5ea061ac839f8d1dfacdc9b5edf72c8d1"
+    },
     "ncrna88": {
       "status": "official_data_gate_pass; clean and bn200 full dual-head results pass independent GPU QA",
       "classes": 88,
@@ -1686,7 +1707,9 @@
       "source": "ncrna_official/data_card.json"
     },
     "archiveII_fam_fold": {
-      "status": "official_data_gate_and_external_QA_pass; tRNA dual-head longest-sequence smoke running",
+      "status": "official_data_gate_and_external_QA_pass; tRNA longest-sequence smoke pass; tRNA and 5s full runs in progress",
+      "smoke_result_sha256": "ffede19579f7e43fb0ebec53256a129049e8987dc2265be519806566db816434",
+      "smoke_scientific_eligibility": false,
       "families": 9,
       "fold_splits": 27,
       "total_rows": 34785,
