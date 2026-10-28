@@ -10503,3 +10503,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 首轮 NB acceptor QA 在物种准确率断言处停止。排查后确认原训练对整个 80k 测试集一次前向，而初版 QA 使用 4096 分批；线性层在不同矩阵尺寸下可能产生微小数值差并在 0.5 阈值处翻转。未放宽准确率断言。
 - 将 Spliceator 重推理改为与原协议一致的整批前向，并为物种断言增加实际值、期望值和阈值翻转数诊断。修正后 NB acceptor 10/10 GPU 重推理全部通过，delta_accuracy=-0.00517750、one-sided p=0.86758782，保持不显著正结论。
 - CPEB3 与 NB acceptor 的 `qa_result.json` 已生成。续跑脚本移除已通过的 NB acceptor，从 NB donor 继续，日志以 append 方式保留首次失败证据和后续通过记录。
+
+## §15.130（2026-10-28 后续）NB donor 通过；RiNALMo splice 原始代码与 cache 门
+
+- NB donor 已完成 10/10 GPU 重推理和全量 QA，delta_accuracy=-0.00434250、one-sided p=0.97614594，保持不显著正结论。至此 NB CPEB3/acceptor/donor 三个 full 结果均有本轮 `qa_result.json`。
+- RiNALMo Spliceator 初次 QA 因当前训练脚本哈希不等于 result 声明的 `code_sha256` 而停止。已从结果声明的 commit `dee8879b` 下载原始脚本，实际 SHA256 为 `67339ea4...96bc`，与协议完全一致；QA 新增 `--code-override`，不使用当前不同版本替代。
+- 使用原始脚本后继续发现 acceptor/donor 的 `*_rinalmo_cls_v2.npz` cache 均不存在。初版函数因此尝试重建 RiNALMo 编码器，并在仅剩 14.44 MiB 时 OOM；进程停止，无 CPU 降级。QA 已增加 cache 存在性硬门，禁止隐式重提取。
+- 新增 `rebuild_rinalmo_splice_cache_round34.py`，只按原始 dee8879 协议恢复 embedding cache，不重训练、不改 result。该步骤需独立显存窗口；恢复前 RiNALMo splice 仍为 pending。
+- 当前续跑只执行 cache 已存在的 clean/bn200 ncRNA QA，runner 已启动。最终标记改为 `ALL_SCHEDULED_NCRNA_QA_PASS`，不再用“全部其他任务通过”覆盖 pending 项。

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -111,19 +112,25 @@ def run_cpeb3(result_path: Path, result: dict) -> dict:
     return {"delta": delta, "p_value": float(test.pvalue), "gpu_reinference_runs": 10}
 
 
-def run_splice(result_path: Path, result: dict, family: str, ss_type: str) -> dict:
+def run_splice(result_path: Path, result: dict, family: str, ss_type: str, code_override: Path | None) -> dict:
     if family == "nb":
         module = importlib.import_module("nb_splice_dual_round33")
         official_name, official_cls = "official_probe", module.OfficialSpliceHead
         cache = module.DATA / f"{ss_type}_nb_cls_v2.npz"
     else:
-        module = importlib.import_module("rinalmo_splice_dual_round33")
+        if code_override:
+            spec = importlib.util.spec_from_file_location("rinalmo_splice_dual_round33_original", code_override)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+        else:
+            module = importlib.import_module("rinalmo_splice_dual_round33")
         official_name, official_cls = "official_head", module.OfficialSpliceHead
         cache = module.DATA / f"{ss_type}_rinalmo_cls_v2.npz"
     protocol = result["protocol"]
     assert sha256(Path(module.__file__)) == protocol["code_sha256"]
     validate_card(protocol)
     frame = module.base.load_frame(ss_type, 0) if family == "rinalmo" else module.load_frame(ss_type, 0)
+    assert cache.is_file(), f"required embedding cache is missing: {cache}; refusing implicit GPU re-extraction"
     arrays = module.extract_embeddings(frame, cache, "cuda", 32)
     test_idx = frame.index[frame["split"] == "test"].to_numpy()
     truth = arrays["labels"][test_idx]
@@ -172,6 +179,7 @@ def main() -> int:
     parser.add_argument("--result", type=Path, required=True)
     parser.add_argument("--kind", choices=["cpeb3", "nb_splice", "rinalmo_splice"], required=True)
     parser.add_argument("--ss-type", choices=["acceptor", "donor"])
+    parser.add_argument("--code-override", type=Path, help="结果协议声明的原始训练脚本")
     args = parser.parse_args()
     assert torch.cuda.is_available(), "CUDA required; refusing CPU validation"
     torch.cuda.set_device(0)
@@ -184,7 +192,7 @@ def main() -> int:
         summary = run_cpeb3(args.result, result)
     else:
         assert args.ss_type
-        summary = run_splice(args.result, result, "nb" if args.kind == "nb_splice" else "rinalmo", args.ss_type)
+        summary = run_splice(args.result, result, "nb" if args.kind == "nb_splice" else "rinalmo", args.ss_type, args.code_override)
     receipt = {"status": "PASS", "result": str(args.result), "result_sha256": sha256(args.result),
                "kind": args.kind, "ss_type": args.ss_type, "cuda_device": torch.cuda.get_device_name(0), **summary}
     output = args.result.parent / "qa_result.json"
