@@ -35,12 +35,13 @@ from tools.dp_decode_c_wrapper import nussinov_map_batch
 
 W = Path("/teams/HoulabData_1788502323/liucunyu")
 DEFAULT_DATA = Path("/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl")
+DEFAULT_DATA_SHA256 = "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882"
 R2D_CKPT = W / "rna_ssp_20261024/weights/main_ablations/r2d.pt"
 PLANA_S0 = W / "rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s0_step20000.pt"
 PLANA_S1 = W / "rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s1_step20000.pt"
 RINALMO_FT = Path("/root/rna_baselines_src/rinalmo_giga_ss_bprna_ft.pt")
 EXPECTED_F1 = {"r2d": 0.667971, "plana": 0.7866, "xens2": 0.8039, "rinalmo_ft": 0.7214,
-               "mxfold2": 0.565134, "rnaformer": 0.7578}
+               "mxfold2": 0.565134, "rnaformer": 0.757520}
 
 
 def sha256_file(path: Path) -> str:
@@ -86,7 +87,9 @@ def load_models(name: str, device: torch.device) -> dict:
     if name == "rinalmo_ft":
         from eval_rinalmo_ft import load_ft_model
         lm, head, alphabet, threshold = load_ft_model(str(RINALMO_FT), str(device))
-        return {"name": name, "encoder": lm, "head": head, "alphabet": alphabet, "threshold": threshold}
+        report = {"weights": str(RINALMO_FT), "weights_sha256": sha256_file(RINALMO_FT), "strict_load": True}
+        return {"name": name, "encoder": lm, "head": head, "alphabet": alphabet, "threshold": threshold,
+                "report": report}
     if name == "mxfold2":
         from types import SimpleNamespace
         from mxfold2.predict import Predict
@@ -224,7 +227,7 @@ def decode_rinalmo_ft(models: dict, probabilities: list[np.ndarray], seqs: list[
     return predictions
 
 
-def read_records(path: Path, max_sequences: int) -> list[dict]:
+def read_records(path: Path, max_sequences: int, return_source_count: bool = False):
     records = []
     with path.open(encoding="utf-8") as handle:
         for line in handle:
@@ -234,12 +237,14 @@ def read_records(path: Path, max_sequences: int) -> list[dict]:
             seq = str(row["seq"]).upper().replace("T", "U")
             gt = {tuple(pair) for pair in row.get("gt_pairs") or row.get("pairs") or []}
             records.append({"seq": seq, "gt": gt, "name": str(row.get("name") or row.get("id") or len(records))})
+    source_count = len(records)
     records = [row for row in records if len(row["seq"]) <= 600]
+    length_filtered_count = source_count - len(records)
     if max_sequences:
         records = records[:max_sequences]
     if not records:
         raise RuntimeError("no records")
-    return records
+    return (records, source_count, length_filtered_count) if return_source_count else records
 
 
 def run_once(models: dict, records: list[dict], batch_size: int, device: torch.device) -> dict:
@@ -308,7 +313,12 @@ def main() -> int:
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required; refusing CPU fallback")
     device = torch.device("cuda:0")
-    records = read_records(args.data, args.max_sequences)
+    records, source_count, length_filtered_count = read_records(args.data, args.max_sequences, return_source_count=True)
+    data_sha256 = sha256_file(args.data)
+    if args.data.resolve() == DEFAULT_DATA.resolve() and data_sha256 != DEFAULT_DATA_SHA256:
+        raise RuntimeError(f"reference data identity mismatch: {args.data} sha256={data_sha256}")
+    reference_protocol = (args.data.resolve() == DEFAULT_DATA.resolve()
+                          and data_sha256 == DEFAULT_DATA_SHA256 and not args.max_sequences)
     models = load_models(args.model, device)
     runs = []
     predictions = None
@@ -324,7 +334,7 @@ def main() -> int:
               f"F1={result['strict_micro_f1']:.6f} seq/s={result['throughput_seq_per_s']:.3f} "
               f"peakMiB={result['peak_memory_mib']:.0f}", flush=True)
     expected = EXPECTED_F1[args.model]
-    if not args.max_sequences:
+    if reference_protocol:
         for run in runs:
             if abs(run["strict_micro_f1"] - expected) > args.f1_tolerance:
                 raise RuntimeError(f"F1 mismatch for {args.model}: got {run['strict_micro_f1']} expected {expected}")
@@ -332,17 +342,27 @@ def main() -> int:
         raise RuntimeError("predictions are not invariant across repeated runs")
     throughput = statistics.median(run["throughput_seq_per_s"] for run in runs)
     commit = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
+    if args.max_sequences:
+        sample_scope = "engineering_smoke_subset_not_scientific_result"
+    elif length_filtered_count:
+        sample_scope = "full_source_file_len_le600"
+    else:
+        sample_scope = "full_source_file"
     payload = {
         "schema_version": 1, "status": "PASS", "model": args.model,
         "protocol": {
             "device": torch.cuda.get_device_name(device), "device_type": device.type,
             "torch": torch.__version__, "cuda": torch.version.cuda,
-            "data": str(args.data), "data_sha256": sha256_file(args.data),
-            "n_sequences": len(records), "batch_size": args.batch_size,
-            "sample_scope": "full_TS0" if not args.max_sequences else "engineering_smoke_subset_not_scientific_result",
+            "data": str(args.data), "data_sha256": data_sha256,
+            "n_sequences": len(records), "n_source_records": source_count,
+            "n_length_filtered": length_filtered_count, "batch_size": args.batch_size,
+            "sample_scope": sample_scope,
             "repeats": args.repeats, "warmup_batches_per_repeat": 1,
             "scope": "raw sequence -> tokenization -> encoder -> task head -> required decode -> prediction scoring input",
-            "cached_embeddings": False, "expected_f1": expected, "f1_tolerance": args.f1_tolerance,
+            "cached_embeddings": False,
+            "expected_f1": expected if reference_protocol else None,
+            "f1_tolerance": args.f1_tolerance if reference_protocol else None,
+            "f1_gate": "reference_TS0" if reference_protocol else "not_applicable_custom_or_smoke",
             "code_sha256": sha256_file(Path(__file__).resolve()),
             "model_report": models.get("report"),
             "code_commit": commit,

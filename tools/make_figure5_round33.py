@@ -46,7 +46,8 @@ def load_result(model):
     assert protocol["device"] == "NVIDIA GeForce RTX 4090" and protocol["device_type"] == "cuda"
     assert protocol["data_sha256"] == EXPECTED_DATA_SHA256
     assert protocol["n_sequences"] == 1288 and protocol["batch_size"] == 1
-    assert protocol["sample_scope"] == "full_TS0" and protocol["repeats"] == 3
+    assert protocol["sample_scope"] in {"full_TS0", "full_source_file", "full_source_file_len_le600"}
+    assert protocol["repeats"] == 3
     assert protocol["cached_embeddings"] is False
     assert protocol["scope"].startswith("raw sequence")
     runs = data["runs"]

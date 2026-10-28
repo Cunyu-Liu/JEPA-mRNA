@@ -45,8 +45,8 @@ def load_ft_model(ckpt_path, device):
     if not lm_keys:  # bare RiNALMo checkpoint (no wrapper prefixes)
         lm_keys = {k: v for k, v in state.items() if not k.startswith("pred_head.")}
         head_keys = {k: v for k, v in state.items() if k.startswith("pred_head.")}
-    missing_lm, unexpected_lm = lm.load_state_dict(lm_keys, strict=False)
-    missing_h, unexpected_h = head.load_state_dict(head_keys, strict=False)
+    missing_lm, unexpected_lm = lm.load_state_dict(lm_keys, strict=True)
+    missing_h, unexpected_h = head.load_state_dict(head_keys, strict=True)
     print(f"load lm: {len(lm_keys)} keys, missing={len(missing_lm)}, unexpected={len(unexpected_lm)}")
     print(f"load head: {len(head_keys)} keys, missing={len(missing_h)}, unexpected={len(unexpected_h)}")
     print(f"threshold from ckpt: {threshold}")
@@ -68,9 +68,12 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--repo", default=str(Path(__file__).parent / "RiNALMo-main"))
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--device", default="cuda")
     args = ap.parse_args()
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if args.device.startswith("cuda") and not torch.cuda.is_available():
+        raise RuntimeError("CUDA requested but unavailable; refusing CPU fallback")
+    device = args.device
     lm, head, alphabet, threshold = load_ft_model(args.ckpt, device)
 
     sys.path.insert(0, str(Path(args.repo)))

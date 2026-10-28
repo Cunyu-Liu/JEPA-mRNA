@@ -2,6 +2,14 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
+> **当前交接（2026-10-28，第 34 轮：接续验收与最终闭环）**：
+> - **审计结论**：本地交接、PPT、原始 JSON 与远端 `/home/rna_jev` 已交叉核对。主图 3B、4 的内容修复和主图 6 的原生矢量重绘已完成；主图 5、7、8 尚未闭环。七项全量五种子双头结果在各自任务家族 Holm 校正后均无显著正提升，必须完整保留，禁止选择性包装或使用 synthetic/mock 数据。
+> - **实时资源与在训项**：单张 RTX 4090 的 CUDA 实测可用，未现 CPU 静默降级。审计快照显存为 22,850/24,564 MiB；ArchiveII tRNA/5s、MRL full_v3、HEK fold0/fold1 TE/EL 共七个任务正在运行，bpRNA 与 Muscle/PC3 队列等待数据/显存门。当前不为“占满”而超订；事件驱动队列必须在有余量时接续，测速另设独占窗口。
+> - **后续唯一执行顺序**：①同步全部 spec 镜像并完成无需新实验的 PPT 排版修复；②验收上述在训项并接续 bpRNA、Muscle/PC3 smoke；③在独占窗口完成 MXfold2/RNAformer/UFold 的 4090 端到端测速及全模型共同 batch 网格；④完成 ArchiveII 其余家族、TE/EL 其余 folds 和 NucleicBERT 缺失官方资产恢复，任一不可得项保持 blocked 而非替换数据；⑤完成配对统计、分类/回归分图、PPT 全页图文与版式 QA；⑥归档废弃文档和旧绘图源数据并提交、push 已确认代码。不同任务的数据门相互独立时可并行，任何阶段不得跳过对应验收门。
+> - **图表与文字合同**：主图 5 仅采用 raw-sequence 端到端协议并包含 r2d/plana/xens2；主图 7 同页区分主 benchmark 与 NucleicBERT 原论文任务，不外推 8/8 正迁移；主图 8A/8B 分置分类和回归，保留原指标与完整负结果。跨页统一 812,375 head 参数口径，旧 124.78 seq/s 只能标为 cached-embedding/head-only 历史值，不得再称 raw-sequence 端到端。
+> - **PPT 合同**：以 round33 修复稿为底，仅改导师指定页及为一致性必须联动的文字/数值，不覆盖用户其他调整。全部原生文本使用微软雅黑和 1.5 倍行距；修复主图 6 的公式换行与小字号，逐页检查图文匹配、表格同源、重叠和有效图内字号。
+> - **历史边界**：本块是当前执行依据；下文第 33 轮及更早内容保留作追溯，不能用其中的“待执行/在训/已完成”覆盖最新 artifact。代码留 `/home/rna_jev`，大型数据、权重和 artifacts 留 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`。
+>
 > **当前交接（2026-10-28，第 33 轮：导师反馈、原论文下游补测与图表纠错）**：
 > - **事实源与第 32 轮状态**：远端真实 `tables/main_ablation_5x8.json`、`tables/matched_30k_statistics.json`、`eval_decision/mrl_suite/mrl_suite_result.json` 证明 T-A127–T-A129 已完成，覆盖本地第 32 轮旧状态。`/private/tmp/rnajev_audit` 中 `ablation_mock.json`、`sync_mock/` 与含其数据的 `preview_draft.pptx` 只用于布局预览，禁止作为科学数据或最终 PPT 数据源。后续数值只能由原始 `result.json`、验收 JSON 和可重跑脚本产生。
 > - **第 33 轮已验收结果**：NucleicBERT CPEB3、acceptor、donor 与 RiNALMo Spliceator、官方 88 类 ncRNA clean/bn200 已完成全量五种子双头和外部 QA；其中仅 RiNALMo donor 均值为正但不显著，其余本轮已完成任务均未显著为正。ncRNA 两组各 10/10 best checkpoint 已在 RTX 4090 全量重新推理一致。MRL 等未完成任务继续保留在执行队列，不以中间值或旧项目 177 类结果替代。ArchiveII 九家族 fam-fold 已完成 27 split、34,785 行的数据门和脚本外 QA，tRNA 最长序列双头 smoke 与外部 QA 已通过，tRNA/5s 全量正在运行，尚无科学结果。TE/EL 已从 CodeOcean 恢复作者处理后 CSV 并通过三细胞数据卡，HEK fold0 TE/EL v3 与 Spearman 主指标 v4 smoke 均通过外部 GPU QA，TE/EL full_v4 均已启动、全量结果待验收。bpRNA TR0/VL0/TS0 完整镜像数据门已通过：13,419 行、412,304 对，未做 N/ambiguous 过滤、假结删除或 canonical nested 投影；双头脚本待 CUDA smoke。
