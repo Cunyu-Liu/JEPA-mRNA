@@ -2,6 +2,7 @@
 """诊断 RNAformer 单条与真实 batch 前向的数值和预测差异，不测量吞吐。"""
 import importlib.util
 import json
+import os
 from pathlib import Path
 
 import torch
@@ -22,14 +23,28 @@ def direct(model, seqs, device):
 
 def main():
     assert torch.cuda.is_available(), "CUDA required"
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    torch.set_float32_matmul_precision("highest")
     device = torch.device("cuda:0")
     records, _, _ = speed.read_records(speed.DEFAULT_DATA, 0, True)
     groups = {}
     for row in records:
         groups.setdefault(len(row["seq"]), []).append(row["seq"])
-    seqs = next(items for items in groups.values() if len(items) >= 4 and len(items[0]) <= 100)[:4]
+    eligible = [items for items in groups.values() if len(items) >= 4 and len(items[0]) <= 600]
+    eligible.sort(key=lambda items: len(items[0]))
+    group_index = int(os.environ.get("QA_GROUP_INDEX", "0"))
+    seqs = eligible[group_index]
+    max_sequences = int(os.environ.get("QA_MAX_SEQUENCES", "0"))
+    if max_sequences > 0:
+        seqs = seqs[:max_sequences]
+    print("QA_GROUP", group_index, "length", len(seqs[0]), "n", len(seqs), flush=True)
     models = speed.load_models("rnaformer", device)
     model = models["model"]
+    mismatches = []
+    sequential_pairs = []
     with torch.inference_mode():
         batch_logits = direct(model, seqs, device)
         for index, seq in enumerate(seqs):
@@ -39,6 +54,7 @@ def main():
             batch_probability = torch.sigmoid(batch_logits[index, :, :, -1])
             flips = single_probability.gt(0.5) != batch_probability.gt(0.5)
             single_pairs = speed.forward_rnaformer(models, [seq], device)[0]
+            sequential_pairs.append(single_pairs)
             batch_pairs = speed.forward_rnaformer(models, seqs, device)[index]
             print(json.dumps({
                 "index": index, "length": len(seq),
@@ -50,8 +66,14 @@ def main():
                 "single_only_pairs": sorted(set(single_pairs) - set(batch_pairs)),
                 "batch_only_pairs": sorted(set(batch_pairs) - set(single_pairs)),
             }), flush=True)
+            if single_pairs != batch_pairs:
+                mismatches.append(index)
+    batch2_pairs = speed.forward_rnaformer(models, seqs[:2], device)
+    assert sequential_pairs[:2] == batch2_pairs, "B=2 prediction mismatch"
     del models, model
     torch.cuda.empty_cache()
+    assert not mismatches, f"batch prediction mismatch at indices {mismatches}"
+    print("RNAFORMER_DETERMINISTIC_BATCH_QA_PASS", len(seqs), "B1_B2_B4", flush=True)
 
 
 if __name__ == "__main__":
