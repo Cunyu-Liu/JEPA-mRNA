@@ -10490,3 +10490,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 在 RNAformer axial-attention matmul 阶段仍发生 OOM：尝试分配 198 MiB，当时 GPU 仅剩 68.44 MiB。完整 Traceback 已保留，进程退出，无 CPU 降级、无部分科学结果。
 - 此次结果再次证明并发显存不足，不能解释为模型本身不支持 B=4。停止继续重试；225 nt 组、32 条交叉验收和正式测速统一等待独立 GPU 窗口。
 - 活跃清单升级为 `round34-working-v6`，记录精确长度、样本数、剩余显存和停止条件。主图 5 数据门保持关闭。
+
+## §15.128（2026-10-28 后续）其他架构 full 结果补验与 CPEB3 外部 QA
+
+- 扫描发现 NB CPEB3/acceptor/donor、RiNALMo clean/bn200 ncRNA 与 RiNALMo acceptor/donor 共 7 个 full 结果没有 `qa_result.json` 和 telemetry。首次尝试用通用 watcher 补验时，误设了未被脚本支持的 `ROUND34_QA_JOBS`，实际重复跑了 fold0 QA；已停止该 other watcher，未把这轮误配置算作目标验收。
+- 新增 `qa_other_full_round34.py`，按原训练脚本哈希、data card、cache identity、5 seeds、收敛历史、prediction/checkpoint 哈希逐项检查，并在 RTX 4090 上从 checkpoint 重新推理。CPEB3 复算 R²/PCC，Spliceator 复算四物种准确率；全部通过才原子写入 `qa_result.json`，不修改原 result。
+- CPEB3 已完成 10/10 GPU 重推理与全量 QA：official/JEV 各种子 R² 均复算通过，delta=-0.00258545、one-sided p=0.60033361，`significant_positive=false`。该任务可保留为负结果，不作为主图 8 正提升候选。
+- 新增 `run_other_full_qa_round34.sh`，在独立 flock 下顺序执行剩余 4 个 Spliceator 与 2 个 ncRNA QA。远端 runner 已启动，日志为 `audits/round34_other_full_qa/run.log`；首项 NB acceptor 已开始。失败会立即停止并保留日志，不会跳过失败继续写总结。
