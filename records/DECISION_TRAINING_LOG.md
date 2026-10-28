@@ -10279,3 +10279,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 图 7A 为分类 accuracy（acceptor official=0.815510、JEV=0.810333、Δ=-0.0051775、p=0.867588；donor official=0.752230、JEV=0.747888、Δ=-0.0043425、p=0.976146）；图 7B 为 CPEB3 R²（official=0.892282、JEV=0.889696、Δ=-0.0025854、p=0.600333）。不同指标分轴，mean±sample SD 与负结果全部保留。
 - 三轮 QA：①逐 run 检查 full_dataset、CUDA、五种子收敛和 independent_recheck，重算 mean/SD/Δ/单侧配对 p，并与源注册表交叉核对；②首轮渲染发现均值文字与误差线局部重叠，移到点的两侧后第二轮视觉检查通过；③独立脚本再次核对三个 raw result SHA、统计值和 3840×1920/PDF，`FIG07_ORIGINAL_TASKS_INDEPENDENT_QA_PASS`。最终 PNG SHA256=`c12428e6b5da30b5f072de1e201c2bf9da8a97c28bf2ed14a196e258f957b25a`。
 - 远端 `codonflow` 直接读取三个原始 result 复现通过；字体回退警告与本机交付渲染分开记录。图件仍标为 working，不插入 PPT，不写成显著正结果。源注册表升级为 `round33-verified-v21`。
+
+### AA. RiNALMo 分类图 8A 工作面板
+
+- 本地 `rinalmo_splice_donor_round33_full_result.json` 在审计时发现为 0 字节，未用于绘图；已从远端完整 result 重新下载并确认 SHA256=`e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c`。其余三个原始结果也逐一核对非零与哈希。
+- 新增 `make_figure8_round33.py`，SHA256=`1f58f0f37be871f8b46f162c872f516c66e579d6d7b68aa0c981e60fd2c21ccb`。图 8A 分类面板拆为 Spliceator accuracy 与官方 88 类 ncRNA weighted-F1，不把指标混在同一纵轴。acceptor Δ=-0.0003575/p=0.512694；donor Δ=+0.000645/p=0.430508；clean Δ=-0.0006767/p=0.659697；bn200 Δ=-0.0075005/p=0.948843。donor 仅方向为正，四项均不显著。
+- 三轮 QA：①逐 run 检查 full_dataset、CUDA、五种子收敛和 independent_recheck，重算 mean/SD/Δ/p 并与源注册表交叉核对；②首轮渲染发现 bn200 JEV 标签超出右边界，扩大横向安全区后第二轮视觉检查通过；③独立脚本再次核对四个 raw result SHA、统计值和 3840×1920/PDF，`FIG08A_CLASSIFICATION_INDEPENDENT_QA_PASS`。最终 PNG SHA256=`7e55bf556bf553464b1d4d4f825d118e0892a6ed0dda822d6d370a7c28bf95f7`。
+- 远端 `codonflow` 直接读取四个原始 result 复现通过。图件仍为 working，不插入 PPT；ArchiveII/bpRNA 与独立回归面板继续等待全量结果，不以旧 MRL 或 fold0 补齐。源注册表升级为 `round33-verified-v22`。

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v21",
+    "version": "round33-verified-v22",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1843,6 +1843,20 @@
       "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c",
       "source": "rinalmo_splice_donor_round33_full_v1/result.json"
     },
-    "inference_scope": "paired training-seed effects; no test-set population inference"
+    "inference_scope": "paired training-seed effects; no test-set population inference",
+    "working_classification_figure": {
+      "status": "working only; not inserted into PPT; pending ArchiveII/bpRNA and separate regression panel",
+      "script_sha256": "1f58f0f37be871f8b46f162c872f516c66e579d6d7b68aa0c981e60fd2c21ccb",
+      "png_sha256": "7e55bf556bf553464b1d4d4f825d118e0892a6ed0dda822d6d370a7c28bf95f7",
+      "pdf_sha256": "d096717b2cd210bd9e22afefe585ae73944c0ddc43c18e5d016eba20c3833728",
+      "figure_source_sha256": "f600d66f757a647bc13b88fec1920bbaecd3be337efd49cff53fc5376d9ff59c",
+      "raw_result_sha256": {
+        "acceptor": "6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f",
+        "donor": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c",
+        "clean": "9f9c917f06c096ccd819fac732229f7b4d7badc84c3afd08cd01d9b591044cea",
+        "bn200": "7d0c8a9c744edd32293444e76d3fb46175f83dc276b77df028841bf69ca1eaa7"
+      },
+      "significant_positive_tasks": []
+    }
   }
 }
