@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v22",
+    "version": "round33-verified-v23",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1662,7 +1662,14 @@
       "zenodo_contents": "five model checkpoint files only; no downstream datasets",
       "secondary_structure": "blocked: author TR0/TS0/ArchiveII600 IDs and split generation are not published in the audited code or Zenodo record",
       "contact_distance": "blocked: NucleoSeeker/BGSU IDs, author splits and 3D-distance conventions are unavailable; no invented atom rule or reconstruction label is permitted",
-      "natural_vs_shuffled": "blocked: natural input, no_pretrain_similar exclusion list and fixed test set are unavailable; official negative generators alone are insufficient"
+      "natural_vs_shuffled": "blocked: natural input, no_pretrain_similar exclusion list and fixed test set are unavailable; official negative generators alone are insufficient",
+      "latest_public_recheck": {
+        "date": "2026-10-28",
+        "repository_latest_commit": "7beb6b38902ee963a2c514f39b69497fe9201ef9",
+        "issues_open_and_closed": 0,
+        "docs": "dataset names only; no author sample IDs, split files or downstream data package; Zenodo link is for model weights",
+        "result": "no new public author data assets; all three tasks remain blocked"
+      }
     },
     "note": "Full-dataset result with independent saved-output QA; no smoke values are included. Negative and nonsignificant results are retained.",
     "working_original_task_figure": {

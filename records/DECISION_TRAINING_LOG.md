@@ -10286,3 +10286,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `make_figure8_round33.py`，SHA256=`1f58f0f37be871f8b46f162c872f516c66e579d6d7b68aa0c981e60fd2c21ccb`。图 8A 分类面板拆为 Spliceator accuracy 与官方 88 类 ncRNA weighted-F1，不把指标混在同一纵轴。acceptor Δ=-0.0003575/p=0.512694；donor Δ=+0.000645/p=0.430508；clean Δ=-0.0006767/p=0.659697；bn200 Δ=-0.0075005/p=0.948843。donor 仅方向为正，四项均不显著。
 - 三轮 QA：①逐 run 检查 full_dataset、CUDA、五种子收敛和 independent_recheck，重算 mean/SD/Δ/p 并与源注册表交叉核对；②首轮渲染发现 bn200 JEV 标签超出右边界，扩大横向安全区后第二轮视觉检查通过；③独立脚本再次核对四个 raw result SHA、统计值和 3840×1920/PDF，`FIG08A_CLASSIFICATION_INDEPENDENT_QA_PASS`。最终 PNG SHA256=`7e55bf556bf553464b1d4d4f825d118e0892a6ed0dda822d6d370a7c28bf95f7`。
 - 远端 `codonflow` 直接读取四个原始 result 复现通过。图件仍为 working，不插入 PPT；ArchiveII/bpRNA 与独立回归面板继续等待全量结果，不以旧 MRL 或 fold0 补齐。源注册表升级为 `round33-verified-v22`。
+
+### AB. NucleicBERT 缺失作者资产公开渠道复核
+
+- 再次检索二级结构 TR0/VL0/TS0/ArchiveII600、NucleoSeeker/BGSU 接触图和 natural-vs-shuffled 作者数据。公开搜索没有找到可核验的作者样本 ID、split 或下游数据包；不以其他论文或第三方处理数据冒充作者协议。
+- GitHub API 复核官方仓库最新提交仍为 `7beb6b38902ee963a2c514f39b69497fe9201ef9`；open+closed issues 为 0。`docs/README.md` 只列 RNAStralign/TR0/ArchiveII、BGSU/NucleoSeeker 等数据名称，没有下载地址、样本 ID 或 split，Zenodo 链接仅用于模型权重。
+- 因缺少样本身份与划分，secondary structure、contact/distance、natural-vs-shuffled 继续保持 blocked。RiNALMo 的完整 bpRNA TR0/VL0/TS0 镜像不能替代 NucleicBERT 作者处理版本；接触图不得自行假设原子规则，shuffle 不得自行生成负样本后声称复现。
+- 源注册表升级为 `round33-verified-v23`，新增本次公开复核时间、最新 commit 与无新增资产结论；没有新增科学结果。
