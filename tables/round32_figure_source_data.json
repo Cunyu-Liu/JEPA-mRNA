@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v16",
+    "version": "round33-verified-v17",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1661,6 +1661,13 @@
       "primary_metrics": {
         "mrl": "r2",
         "te_el": "spearman"
+      },
+      "official_cross_validation": {
+        "folds_per_cell_line_and_task": 10,
+        "aggregation": "mean Spearman across ten folds for each cell line and task",
+        "full_dual_head_five_seed_runs": 600,
+        "fold0_scope": "one tenth of one cell-line/task protocol; not a complete result",
+        "additional_smoke_required": ["Muscle TE", "Muscle EL", "pc3 TE", "pc3 EL"]
       },
       "source": "CodeOcean capsule 4214075, TE_REL_Endogenous_Cao, author-processed _sequence.csv direct downloads",
       "rows": {

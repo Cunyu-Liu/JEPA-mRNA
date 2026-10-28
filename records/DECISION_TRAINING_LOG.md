@@ -10239,3 +10239,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 当前 tRNA、5s、MRL、TE、EL 五任务并行，实测余量不足以安全再加载 RiNALMo-giga。bpRNA 最长 2/split smoke 已放入事件驱动队列 PID=322335：每 120 秒检查一次，单卡空闲显存达到 8,000 MiB 才启动；输出 `rinalmo_bprna_TS0_round33_smoke_v1`，batch-size=2、train-batch-size=1。尚未开始训练，更无 smoke 科学数值。
 - EL 的旧启动 PID=285817 消失一度造成“退出”疑点；按完整命令行重新扫描确认实际 Python 训练 PID=286745，日志继续推进，output 中 official seed0 文件属于正常中间产物。不得把旧 PID 消失写成训练失败，也不重启造成重复写同一输出目录。
 - 源注册表升级为 `round33-verified-v16`，记录 bpRNA 完整数据、准备/双头/QA 哈希及 TE/EL full_v4 均已启动但待全量验收；smoke 与中间值未写入图源。
+
+### V. TE/EL 十折完整范围冻结与 bpRNA 全量自动验收门
+
+- 对照 RiNALMo 终版论文 `https://www.nature.com/articles/s41467-025-60872-5` 的 Fig. 7 与 Methods：TE、EL 均在 Muscle、PC3、HEK 上分别执行十折交叉验证，主结果为每细胞任务的十折 Spearman 均值。官方 `prepare_mrna_te_and_el_data.py` 亦逐细胞生成 fold0–9，当前 `load_cell` 的 `KFold(n_splits=10,shuffle=True,random_state=42)` 与前一折 validation 规则一致。
+- 完整双头五种子范围因此冻结为 **3 细胞×2 任务×10 folds×5 seeds×2 heads=600 run**。当前 HEK fold0 仅占一个细胞任务的 1/10，不能写成 TE/EL 完整结果；Muscle TE/EL 与 PC3 TE/EL 四组须先通过各自 CUDA smoke 和脚本外 GPU QA，再进入全量 fold。每折仍要求 plateau early-stopping、best checkpoint、预测重算和独立 QA。
+- 执行顺序：先完成 HEK fold0 TE/EL 全量及外部 QA → 并行完成 Muscle/PC3 四组 fold0 smoke → 分细胞复用已核验 cache，按显存门调度其余 fold → 按细胞任务汇总十折 Spearman，再做配对统计与 Holm；不设置固定 epoch 作为收敛替代，不以 fold0 挑选主图。
+- bpRNA 已注册全量自动门 PID=333608：等待 smoke 原子写出 `result.json`，随后运行加强版 `qa_bprna_result.py --expect-smoke`；只有外部 QA 返回 `BPRNA_RESULT_EXTERNAL_QA_PASS` 才启动 `rinalmo_bprna_TS0_round33_full_v1`。若 PID=322335 无 result 退出、未收敛或 QA 失败，全量不会启动。
+- 源注册表升级为 `round33-verified-v17`，记录十折完整范围、600 run、Muscle/PC3 smoke 缺口与 fold0 边界；没有新增科学数值。

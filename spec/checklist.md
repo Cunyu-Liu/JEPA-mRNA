@@ -16,6 +16,7 @@
 > - [x] ArchiveII 九家族 fam-fold 数据门与脚本外 QA 通过：27 split、34,785 行、最长 512 nt；19,325 个 k-fold CT 明确排除；tRNA 最长序列 smoke 与外部 QA 已通过，tRNA/5s 全量正在运行。
 > - [x] TE/EL 作者处理后 CSV 已从 CodeOcean 恢复，三细胞行数、原始表标签、100 nt/`<pad>`、自然对数标签和十折数据卡全部通过；HEK fold0 TE/EL v3 与 v4 主指标 smoke 均通过外部 GPU QA，TE/EL full_v4 均已启动、全量结果待验收。
 > - [x] bpRNA TR0/VL0/TS0 完整数据门通过：10,814/1,300/1,305 行，合计 13,419 行、412,304 对，最长 499 nt，跨 split ID 无重叠；未过滤 N/ambiguous、未删除假结或做 canonical nested 投影。双头与 QA 已通过本地静态/差异核验，CUDA smoke 与全量结果尚未验收。
+> - [ ] TE/EL 完整覆盖 Muscle/PC3/HEK × TE/EL × 10 folds 的双头五种子评测（600 run），各细胞任务先过 smoke；按原论文报告十折 Spearman 均值，fold0 或单细胞结果不作为完整结论。
 > - [ ] 所有新训练均有 CUDA、early-stopping、best checkpoint、plateau 停止原因与完整台账；无 step cap 冒充收敛。
 > - [ ] PPT 仅改指定内容，微软雅黑、1.5 倍行距、无重叠，markitdown/fix/layout/ZIP/逐页渲染和图文匹配全部通过（T-A142）。
 > - [ ] 旧文档与旧绘图数据完成可追溯归档，活跃源数据无 mock，阶段代码已提交并 push（T-A143）。
