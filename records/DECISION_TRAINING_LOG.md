@@ -10435,3 +10435,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 活跃图源清单升级为 `round34-working-v3`，登记 RNAformer 首次 batch 功能验证失败、未提交改动排除状态，以及完整门和篡改拒绝门均通过的事实。没有放宽 full、哈希或预测一致性要求。
 - 多次尝试上传并执行诊断脚本时，SSH 继续出现 `Connection reset by peer` 和 `Connection closed`。诊断所需的 logit 数值差和阈值翻转计数尚未获得，不对失败原因作经验性猜测。
 - 当前策略保持：RNAformer batch 改动不提交、不跑全量测速、不生成主图 5 终版；HEK fold 和其他架构任务继续独立推进。
+
+## §15.120（2026-10-28 后续）TF32 关闭后的 RNAformer batch 数值验证
+
+- 首轮诊断显示单条与 batch 的 logit 存在小幅差异，概率最大差约 1e-3 量级，前 4 条没有阈值翻转；全组复查时 8 条预测全部一致，说明失败具有数值非确定性，而非稳定的 batch 结构错误。
+- 在 QA 脚本中关闭 `allow_tf32`、启用 `cudnn.deterministic=True`、关闭 `cudnn.benchmark` 并设置 `torch.set_float32_matmul_precision("highest")`。同一 94 nt 组 8 条全部通过，输出 `RNAFORMER_DETERMINISTIC_BATCH_QA_PASS 8`，预测差集为空。
+- 扩展至 46 nt（5 条）、48 nt（4 条）、52 nt（5 条）三个长度组，所有预测继续一致，阈值翻转均为 0。logit 最大差仍有小幅波动，但没有造成配对变化，符合数值型漂移特征。
+- 已将相同确定性设置加入待验收的 `speed_end_to_end_4090.py` RNAformer 加载器，并在 model report 中记录。更长长度组与 32 条跨 batch 全功能验证尚未完成，故该测速代码仍未提交，也未运行全量科学测速。
+- 上述结果支持“数值漂移导致首轮偶发不一致”的工作判断，但不能替代完整 B=1/2/4 全量验收。主图 5 数据门继续关闭。
