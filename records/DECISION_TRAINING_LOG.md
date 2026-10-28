@@ -10255,3 +10255,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 汇总算法先在每个 seed 内对十折 Spearman 求均值，再对五组 seed-level CV 值做 official/JEV 配对单侧检验；不把 50 个 fold-seed 当作独立样本。零方差继续标 `undefined_zero_variance`，不伪造显著性。输出只在十折全部通过后原子写出。
 - 本机和远端同一合成工程测试均 `TE_EL_AGGREGATOR_SYNTHETIC_TEST_PASS`：验证十折数学、100 run、seed-CV 配对值，以及修改 result 后旧 QA 日志必须拒绝。合成数据仅测试验收逻辑，不进入科学结果或绘图源。
 - 源注册表升级为 `round33-verified-v18`，登记 smoke 队列和汇总器哈希；当前仍无 Muscle/PC3 smoke 或任何完整十折科学结果。
+
+### X. PPT 只读审计与旧速度源数据口径纠正
+
+- 对 `RNA-JEV_round33_working.pptx` 运行 markitdown、`fix_pptx` 和全 21 页 layout 检查。`fix_pptx=No issues found`；layout 仅 S9、S12 各一处越界，均为导师批注文本框，按“不改用户已调整内容”原则保留，不擅自移动或删除。
+- XML 共检查 669 个文本 run、665 个含文字段落。科学内容 663 段均为点值行距对应 1.5 倍，字体为微软雅黑；仅两条导师批注未显式设置字体/行距。科学内容字号范围 7–34 pt。当前工作版不是最终交付版，图 5/7/8 仍待实验与重绘。
+- markitdown 另确认 S5 与 S17 仍写旧 `9.3M head` 和缓存速度口径，不能只替换主图 5 图片。已把 T-A136/T-A142 合同补为同步更正为 **812,375 head + raw-sequence end-to-end**，确保图、标题、注释和附录协议一致。
+- 源注册表旧 `speed` 段仍把 124.78 标为 end-to-end，与 §15.109C 的代码核查矛盾。现保留 124.78/119.55/96.14 及 batch ladder 作为 **legacy cached-embedding head-only** 历史数据并明确退役，不删除旧值；最终图 5 只能使用 `accuracy_speed_4090_round33` 的 raw-sequence 结果及后续同协议官方基线。
+- 源注册表升级为 `round33-verified-v19`；本次仅做审计与口径纠正，未改动工作版 PPT，也未新增科学结果。

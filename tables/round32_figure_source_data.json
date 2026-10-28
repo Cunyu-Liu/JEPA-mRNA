@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v18",
+    "version": "round33-verified-v19",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -175,19 +175,19 @@
         "name": "Jev r2d B=256 fp16",
         "throughput": 124.78,
         "device": "RTX 4090",
-        "scope": "end-to-end"
+        "scope": "legacy cached-embedding head-only; retired from raw-sequence end-to-end Figure 5"
       },
       {
         "name": "Jev r2d B=64 fp16",
         "throughput": 119.55,
         "device": "RTX 4090",
-        "scope": "end-to-end"
+        "scope": "legacy cached-embedding head-only; retired from raw-sequence end-to-end Figure 5"
       },
       {
         "name": "Jev r2d B=32 C",
         "throughput": 96.14,
         "device": "RTX 4090",
-        "scope": "end-to-end"
+        "scope": "legacy cached-embedding head-only; retired from raw-sequence end-to-end Figure 5"
       },
       {
         "name": "UFold",
@@ -260,7 +260,7 @@
       13778,
       10485
     ],
-    "note": "All ladder points use r2dtr1c-s0 on TS0; predictions and F1 are unchanged across batch size."
+    "note": "All ladder points use r2dtr1c-s0 on TS0 with cached embeddings and head-only execution; predictions and F1 are unchanged across batch size. These legacy values are not raw-sequence end-to-end results and must not be used in the revised Figure 5."
   },
   "accuracy_speed_a100": {
     "models": [
@@ -290,11 +290,12 @@
       }
     ],
     "hardware_update": {
-      "name": "Jev r2d on RTX 4090",
+      "name": "Legacy Jev r2d cached-embedding head-only on RTX 4090 (retired from Figure 5)",
       "f1": 0.667971,
-      "throughput": 124.78
+      "throughput": 124.78,
+      "scope": "cached-embedding head-only; not raw-sequence end-to-end"
     },
-    "note": "The frontier is computed only within the A100 end-to-end TS0 board. The RTX 4090 point is shown separately and is not mixed into the A100 frontier."
+    "note": "The frontier is computed only within the A100 end-to-end TS0 board. The legacy RTX 4090 head-only point is retained for provenance but retired from Figure 5; use accuracy_speed_4090_round33 for raw-sequence end-to-end results."
   },
   "ece": {
     "splits": [
