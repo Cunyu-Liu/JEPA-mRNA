@@ -10428,3 +10428,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 该验证只使用 CUDA，未发生 CPU 降级。当前没有证据表明既有 B=1 结果或其他模型结果受影响；问题被限制在未提交的 RNAformer batch 改动。
 - 已新增 `qa_rnaformer_batch_round34.py` 诊断脚本，逐序列输出 logit 最大/平均绝对差、概率最大差、阈值翻转数、单条与 batch 预测差集。待诊断输出后区分实现错误与数值边界问题，未确认前不修改科学结论，不跑全量测速。
 - 主图 5 终版脚本仍要求跨 batch 预测一致，因此当前数据门保持关闭。训练中的 HEK fold 和其他项目任务不受此次失败影响。
+
+## §15.119（2026-10-28 后续）图 5 跨 batch 拒绝门压力测试与诊断入口中断
+
+- 使用仅存在于临时目录的工程数据，先让六个模型、B=1/2/4 的完整形式结果通过 `make_figure5_round34.py`，再故意改变 RNAformer B=2 的预测名称并同步其 run 哈希。第一种情况正常生成临时候选图，第二种情况被 `cross-batch predictions differ for rnaformer` 明确拒绝。该测试只验证数据门，不用于科学证据。
+- 活跃图源清单升级为 `round34-working-v3`，登记 RNAformer 首次 batch 功能验证失败、未提交改动排除状态，以及完整门和篡改拒绝门均通过的事实。没有放宽 full、哈希或预测一致性要求。
+- 多次尝试上传并执行诊断脚本时，SSH 继续出现 `Connection reset by peer` 和 `Connection closed`。诊断所需的 logit 数值差和阈值翻转计数尚未获得，不对失败原因作经验性猜测。
+- 当前策略保持：RNAformer batch 改动不提交、不跑全量测速、不生成主图 5 终版；HEK fold 和其他架构任务继续独立推进。
