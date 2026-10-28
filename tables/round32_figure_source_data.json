@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v11",
+    "version": "round33-verified-v14",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1652,6 +1652,31 @@
     "note": "Full-dataset result with independent saved-output QA; no smoke values are included. Negative and nonsignificant results are retained."
   },
   "rinalmo_original_data_round33": {
+    "te_el_official": {
+      "status": "author-processed data gate and HEK TE/EL v3/v4 smoke QA passed; HEK TE full_v4 is running and EL waits for the shared cache",
+      "v4_smoke_result_sha256": "0b723c595bc64bec674a4a85806a76d3e7f8a0dc293967fd2433a1fd28f6ac52",
+      "v4_code_sha256": "84d8c0e25f6244c9e317ea71065549b09435e3c8e4f6b80bc33355f46a6fc6ed",
+      "te_smoke_result_sha256": "3e9819bfe050c7fcfdbf59110f0f2ad99bbff8134471b43f3dd5a389846ad8dc",
+      "el_smoke_result_sha256": "493c3edbe81eef0e434602e2a856792641beae641133bc528abefa778de24757",
+      "primary_metrics": {
+        "mrl": "r2",
+        "te_el": "spearman"
+      },
+      "source": "CodeOcean capsule 4214075, TE_REL_Endogenous_Cao, author-processed _sequence.csv direct downloads",
+      "rows": {
+        "Muscle": 1257,
+        "pc3": 12579,
+        "HEK": 14410
+      },
+      "file_sha256": {
+        "Muscle_sequence.csv": "aebd90663a317c0cacd6ea3f359551946eef36ef041c80fad11fb919d74e5601",
+        "pc3_sequence.csv": "a73e42ae803c5ea751535f766abb787a9b1d6f6ea78038314a7c6cda935c970f",
+        "HEK_sequence.csv": "bf4adb03edd5ba6170ebaa7deadd27bb92be76093b741e6bc26ed29d9af2739b"
+      },
+      "data_card_sha256": "07ce19cec1f2c90ae02506a07ef157eb414e41b6389f8216d73eecedb9e382c9",
+      "validation_code_sha256": "878fdf6574f4f8ee36b0fc2c6bc4a6ce46d9d53d275d2348ad947b056c0d0cb7",
+      "protocol": "author last-100-nt UTR with <pad>; natural-log labels; official KFold(n_splits=10, shuffle=True, random_state=42)"
+    },
     "mrl_official": {
       "status": "v1 stopped and excluded; corrected v3 smoke and external GPU QA passed; full_v3 is running",
       "smoke_result_sha256": "8c324dfe4233a83f08a44644346b1b1535e2d779a1fac073147db0141987ed59",

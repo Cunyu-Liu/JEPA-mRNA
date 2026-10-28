@@ -10211,3 +10211,15 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第二次远端操作已核对 PID 命令行后发送 SIGTERM，3 秒后 `/proc/84406` 不存在，确认 v1 实际停止。随后修订脚本上传连接被拒绝，尚未启动 v3 smoke 或新全量，不能把停止决定写成重跑完成。
 - 修订代码本机/远端 SHA256=`3ebee7300e96fcd5ee24f979fb45d2a5ea061ac839f8d1dfacdc9b5edf72c8d1`。v3 smoke 完成后，脚本外 `qa_regression_result.py` 从 cache 严格加载全部 checkpoint，在 RTX 4090 上重算全部测试预测，**10/10 run** 通过，result SHA256=`8c324dfe4233a83f08a44644346b1b1535e2d779a1fac073147db0141987ed59`；smoke 数值未写入源表。
 - 修正后的全量已启动，PID=240191，输出 `rinalmo_mrl_round33_full_v3`，使用新 v3 缓存和完整 76,319/7,600/7,600 split；尚在全量训练，不提前报告结果。
+
+### S. TE/EL 官方处理后数据恢复与数据卡
+
+- RiNALMo 论文数据可用性给出 CodeOcean 镜像。公开 demo `4214075` 的 `TE_REL_Endogenous_Cao` 中恢复三份原始注释表，并进一步找到作者处理后的 `Muscle_sequence.csv`、`pc3_sequence.csv`、`HEK_sequence.csv` 公开直链；最终 CSV 直接使用作者产物，不根据行数猜测过滤或重建数据。先前 Google Drive/备份缺失状态因此被本一手来源解除。
+- 最终文件 SHA256：Muscle=`aebd90663a317c0cacd6ea3f359551946eef36ef041c80fad11fb919d74e5601`，PC3=`a73e42ae803c5ea751535f766abb787a9b1d6f6ea78038314a7c6cda935c970f`，HEK=`bf4adb03edd5ba6170ebaa7deadd27bb92be76093b741e6bc26ed29d9af2739b`。行数分别为 **1,257 / 12,579 / 14,410**，与 RiNALMo/UTR-LM 论文一致。
+- 三份 CSV 已上传 `/teams/.../data/rinalmo/te_el_official/`，原始注释表和 gencode FASTA 保存于 `source/`。`prepare_te_el_round33.py` 核对原始表与最终表的 ID/te/RPKM（浮点文本误差 <1e-9）、`te_log=ln(te)`、`rnaseq_log=ln(rpkm_rnaseq)`、原始 UTR 长度、last-100-nt 与 `<pad>` 规则，以及 `KFold(n_splits=10,shuffle=True,random_state=42)` 的 train/validation/test 不重叠。三细胞均 `TE_EL_CELL_PASS`，总门 `TE_EL_OFFICIAL_DATA_PASS`。
+- 验证代码 SHA256=`878fdf6574f4f8ee36b0fc2c6bc4a6ce46d9d53d275d2348ad947b056c0d0cb7`，数据卡 SHA256=`07ce19cec1f2c90ae02506a07ef157eb414e41b6389f8216d73eecedb9e382c9`。
+- HEK fold0 TE smoke 已启动，PID=282608，输出 `rinalmo_te_HEK_fold0_round33_smoke_v3`；EL 将在 TE smoke 与外部 QA 后复用同一嵌入缓存运行，避免并发写缓存。
+- HEK TE/EL v3 smoke 均完成，外部 QA 各 **10/10 run** 在 RTX 4090 重新推理一致：TE result SHA256=`3e9819bfe050c7fcfdbf59110f0f2ad99bbff8134471b43f3dd5a389846ad8dc`，EL result SHA256=`493c3edbe81eef0e434602e2a856792641beae641133bc528abefa778de24757`。smoke 数值未写入源表。
+- 对照原论文指标后，全量 MRL 继续以 R²为主，TE/EL 以 Spearman 为主；R²/PCC/Spearman 均保留。独立 v4 脚本加入主指标、双侧配对检验和零方差防线，SHA256=`84d8c0e25f6244c9e317ea71065549b09435e3c8e4f6b80bc33355f46a6fc6ed`，不覆盖正在运行的 MRL v3。HEK TE v4 smoke PID=284511，输出 `rinalmo_te_HEK_fold0_round33_smoke_v4`，验收后才启动全量。
+- v4 smoke 的外部 QA 使用独立模块路径和主指标复核，10/10 run 在 RTX 4090 重新推理一致，result SHA256=`0b723c595bc64bec674a4a85806a76d3e7f8a0dc293967fd2433a1fd28f6ac52`；smoke 的 R²/Spearman/p-value 均未写入源表。
+- HEK fold0 TE 全量已启动，PID=285468，输出 `rinalmo_te_HEK_fold0_round33_full_v4`。EL 待 TE 的完整 HEK 缓存和元数据落盘后再启动，避免并发写同一 `HEK_official_tokens` 缓存。
