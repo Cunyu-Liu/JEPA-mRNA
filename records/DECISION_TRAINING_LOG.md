@@ -10355,3 +10355,37 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 本段只记录工程与版式进展，不新增科学结果。七项在训任务出现完整 result 后，先执行对应外部 GPU QA，再更新统计与台账；任一 CUDA、样本数、哈希或独立复算失败即停止该任务并保留证据。
 - 下一阶段仍需完成 4090 新增基线与共同 batch 网格、ArchiveII 其余家族、bpRNA、MRL、TE/EL 600-run 全协议及 NucleicBERT 缺失官方资产恢复。最终 PPT 和归档必须等相应验收门通过后执行。
+
+## §15.112（2026-10-28 后续）结果驱动 QA、HEK fold0 部分读出与 UFold 恢复边界
+
+### A. 文件驱动 QA 队列
+
+- 新增并推送 `fb7bc5f round34: automate result-driven QA`。`tools/watch_round34_results.py` 只检查结果文件，不轮询 GPU；完整 JSON 出现后自动执行对应 ArchiveII/bpRNA/回归 QA，记录 result SHA、QA 日志、返回码和时间，失败即停止后续放行。
+- HEK fold0 TE、EL 已先后完成全量结果和外部 GPU QA，状态文件分别记录 result SHA256=`6f65b75a553d50fe9eba0a96073c745eec82f88ed70e53f57eebc4d9bc61b8f4`、`2d1f0f19c673724f486056fbffdfcf68230b19877d0b79c9fcbef92390054fad`。两项均为 10 run、五种子双头、CUDA、early-stopping 和预测重推理通过。
+- watcher 已按锚定进程名启动，避免 pgrep 自匹配。首次启动命令曾因 shell 自匹配未能常驻，复核后纠正，未重复启动实例。
+
+### B. HEK fold0 部分科学读出，不能外推十折结论
+
+- TE fold0 的主指标 Spearman 配对 Δ=−0.067328，p=0.998411；R² Δ=−0.079692。EL fold0 的 Spearman Δ=−0.055355，p=0.978276；R² Δ=−0.031117。两项均无显著正提升，结果完整保留。
+- 这些数值只描述 HEK fold0 的五种子配对效应，不是三细胞、十折任务级结论。不得把 fold0 与 fold1 或其他细胞拼接成完整 600-run 结果，也不得以 smoke、单 fold 或中间 validation 代替最终统计。
+- 同期单次快照为已用 20,669 MiB，余量不足以安全启动 RiNALMo 测速。未强行叠加 GPU 任务，继续由文件驱动 QA 与既有事件队列接续。
+
+### C. UFold 官方重建尝试与持续 blocked
+
+- 已从官方 GitHub 恢复源码至 `/home/rna_jev/third_party/UFold`，commit=`75bd9acc83826059682dfca9d3659df66b132cd1`。官方 README 仍只提供 Google Drive 权重文件夹。
+- 远端和本机分别执行一次官方 Drive 恢复，均因连接超时失败；没有循环重试。现有 `/root`、`/home`、`/teams`、关停归档、可见 ZIP 与 ORICO 备份均未找到匹配权重，历史 strict-load 记录不能替代本轮权重。
+- 因此 UFold 继续保持 blocked。不得用第三方 UFold 实现、旧预测 NPZ 或 A100 速度代替官方权重在 4090 上的端到端结果。主图 5 最终源表和脚注将显式标注该缺口。
+- RNAformer 共同 batch 前向已改为真实 B×L 输入，仍待独立 GPU smoke 验证 B=1/2/4 的预测一致性后才能提交和跑全量。
+
+### D. PPT 全页布局补充验收
+
+- 全 21 页 `validate_layout.py` 初次发现第 9、12 页两处页外导师反馈框越界。已按已处理反馈移除这两个非正文文本框，再次全片验证为 **0 issue**。
+- round33 到 round34 的文本差异仅限上述两个反馈框和主图 6 公式，其他用户文字未改。主图 5、7、8 的科学内容和最终入片仍待数据门，不因全片布局通过而提前关闭。
+
+## §15.113（2026-10-28 后续）SSH 中断与待同步状态
+
+- 在 `fb7bc5f` 成功推送并启动结果 QA watcher 后，远端 SSH 连续出现 `Connection reset by peer`、`Connection closed` 和延迟后的 `Connection refused`。已停止连续重试，不把连接失败解释为训练失败或结果完成。
+- 最后确认的服务器内状态：QA watcher PID=493014；HEK fold0 TE/EL 两项 QA 已通过并写入状态 JSON。服务器内训练进程不依赖本地 SSH 连接，当前无证据据此判定其他 job 已终止。
+- 已推送提交为 `57b607f`、`9d753ce`、`fb7bc5f`。仅在本机待同步的内容包括：§15.112 及本段的训练台账、两个 spec 目录的最新 T-A142/T-A143 状态、`make_figure5_round34.py`，以及尚未完成 GPU 验证的 RNAformer batch 改动。上述内容不得写成已上传或已提交。
+- 主图 5 终版脚本已完成三项独立检查：旧 B=1 结果读取与哈希绑定、缺 B=2/4 数据时拒绝出图、篡改顶层预测后拒绝验收。RNAformer 真实 B×L batch 和新增基线全量测速仍未执行，主图 5/7/8 最终 PPT 与后续归档均未完成。
+- 恢复连接后的第一批动作：先上传并核对台账/spec，收集 watcher 新增 QA 状态和真实结果，再在独立 GPU 窗口执行 RNAformer/MXfold2 smoke 与共同 batch 网格。任一结果未经验收不得升级为最终科学结论。
