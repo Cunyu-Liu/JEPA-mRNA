@@ -10525,3 +10525,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 原 `qa_ncrna_full.py` 只打印 PASS 不写回执，已补充原子 `qa_result.json` 写出并重新执行 clean/bn200 两组，结果与之前完全一致。远端已逐项确认 5 个通过任务的回执均为 `status=PASS`、result SHA256 匹配、`gpu_reinference_runs=10`。
 - 五份 QA 回执已下载到本地 `figure_assets/downstream_qa/`。活跃清单升级为 `round34-working-v7`，新增 `downstream_qa`：5/7 完成、RiNALMo Spliceator 两项 pending cache，并记录每项 delta/p 值与本地回执 SHA256。
 - 清单全量哈希复核通过，共 15 个活跃/历史证据条目。回执只证明结果可复算，不改变五个任务均不显著正的结论。
+
+## §15.133（2026-10-28 后续）RNAformer 精确 B=4 QA 控制流修正
+
+- §15.132 台账已同步至远端 `/home/rna_jev/spec/spec_handover/records/`，远端 SHA256=`92e733e759865f84a7c82ca0cd57a0610403ddf9f1aa1e84c54c8ce9e6453c22`。23:37 UTC 单次资源快照为 RTX 4090 已用 22,016 MiB、空闲 2,068 MiB；未在该窗口强行恢复 RiNALMo cache，未发生新的 OOM 或 CPU 降级。
+- HEK fold1/fold2 四个训练进程均存活。复核台账确认两折是按共享 `HEK_official_tokens` cache 和小头余量明确并行启动，并非重复提交；fold1 TE 当前 seed3、EL 当前 seed4，fold2 TE 当前 seed2、EL 当前 seed1，均尚无 result，不记录中间 validation 为科学结论。
+- 静态复核发现 `qa_rnaformer_batch_round34.py` 在等长组超过 4 条时会把整组作为 batch，却仍打印 `B1_B2_B4`；此外循环内对每条序列重复计算整组 batch 前向。此前 46/48/52/54/62/63/94 nt 记录仍是有效工程诊断，但组大小为 4–9，不应视为统一、精确的 B=4 验收。
+- 已修正为每个长度组固定取 4 条，B=4 batch 前向只执行一次，再执行四次 B=1 和一次 B=2；脚本 SHA256=`9e04b45b016ff97dbb03890897fd7170bff186ffaedd8aa2b3eeb4ef072a4307`。`py_compile` 通过，无 GPU 假模型控制流测试实测调用顺序为 `[4,1,1,1,1,2]`，不是仅核对打印标签。
+- 修正版尚未做真实 GPU 复验，也未提交为已验收代码。七个诊断组和 225 nt 最长组需用精确 B=4 脚本重新验收，之后仍需 32 条 B=1/2/4 交叉验收与正式全量测速。活跃清单升级为 `round34-working-v8`，主图 5 数据门保持关闭。

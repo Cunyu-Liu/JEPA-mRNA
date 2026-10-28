@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v7",
+  "registry_version": "round34-working-v8",
   "generated_at": "2026-10-28",
   "scientific_status": "working_not_final",
   "rules": {
@@ -33,10 +33,14 @@
       },
       "required_final_protocol": "same RTX 4090, project TS0 n=1288, raw sequence to required decode, B=1/2/4, repeats=3, cross-batch prediction invariance",
       "batch_validation": {
-        "status": "deterministic_settings_passed_multiple_groups_pending_longest_and_full32",
+        "status": "exact_b4_control_flow_fixed_pending_gpu_revalidation_longest_and_full32",
         "failed_change": "uncommitted RNAformer BxL batch forward plus TF32-off deterministic inference; excluded from all results until full acceptance",
-        "passed_groups_nt": [46, 48, 52, 54, 62, 63, 94],
-        "pending_validation": ["225 nt longest eligible group capped at 4 in an independent GPU window; capped concurrent attempt also OOMed with only 68 MiB free and full traceback", "B=1/2/4 full32 cross-batch invariance", "full scientific speed grid"],
+        "diagnostic_groups_nt": [46, 48, 52, 54, 62, 63, 94],
+        "diagnostic_scope": "previous checks compared B=1 with the whole equal-length group (4-9 sequences); they remain engineering evidence but are not a uniform exact-B=4 acceptance",
+        "exact_b4_gpu_passed_groups_nt": [],
+        "qa_script": "/home/rna_jev/tools/qa_rnaformer_batch_round34.py",
+        "qa_script_sha256": "9e04b45b016ff97dbb03890897fd7170bff186ffaedd8aa2b3eeb4ef072a4307",
+        "pending_validation": ["revalidate all seven diagnostic groups with exactly four sequences and the 225 nt longest group in an independent GPU window; the prior 225 nt concurrent attempt OOMed with only 68 MiB free and full traceback", "B=1/2/4 full32 cross-batch invariance", "full scientific speed grid"],
         "gate_stress_test": "temporary engineering data passed complete gate and rejected a deliberate cross-batch mismatch; no synthetic data used as scientific evidence"
       }
     },

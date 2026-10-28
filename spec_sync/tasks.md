@@ -8,14 +8,14 @@
 > |---|---|---|
 > | T-A133 规范与原论文协议 | 已完成全量交接/PPT/远端三方审计；全部 spec 镜像写入第 34 轮 | 三轮一致性核验后关闭；历史快照不得覆盖当前 artifact |
 > | T-A134/T-A135 主图 3B、4 | 内容修复已完成 | 最终无水印渲染复核有效字号、碰撞和图表同源，不重做实验 |
-> | T-A136 主图 5 | r2d/plana/xens2/RiNALMo-ft 的 B=1、TS0、4090 端到端结果已完成；其余基线和共同 batch 网格缺失 | 先核权重/适配器，再在独占 GPU 窗口完成 MXfold2/RNAformer/UFold B=1 与全模型共同 batch 网格；全部原始 JSON、预测一致性、峰值显存和独立复算通过后重绘 A/B |
+> | T-A136 主图 5 | r2d/plana/xens2/RiNALMo-ft 的 B=1、TS0、4090 端到端结果已完成；其余基线和共同 batch 网格缺失；RNAformer 精确 B=4 QA 控制流已修正，七个诊断组及 225 nt 最长组待真实 GPU 复验 | 先核权重/适配器，再在独占 GPU 窗口完成精确 B=1/2/4 QA、MXfold2/RNAformer/UFold B=1 与全模型共同 batch 网格；全部原始 JSON、预测一致性、峰值显存和独立复算通过后重绘 A/B |
 > | T-A137 主图 6 | 原生矢量已完成；发现公式换行和局部小字号 | 仅调整第 10 页相关文本框与字号，保持结构和用户其他调整；layout+渲染复核 |
 > | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且均不显著为正；二级结构、接触/距离图、shuffle 缺官方样本/split，组合图未入片 | 继续恢复官方资产；不可用即明确 blocked，禁止替换数据或宣称全覆盖。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
 > | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | NB Spliceator 与 88 类 ncRNA clean/bn200 已全量 GPU QA；RiNALMo Spliceator 待 embedding cache 恢复后 QA；ArchiveII tRNA/5s、MRL full_v3、HEK fold1/fold2 TE/EL 七项在训，HEK fold0 TE/EL 已全量 QA；bpRNA 和 Muscle/PC3 等待队列；其余家族/folds 未闭环 | 先验收在训项并接续 bpRNA、Muscle/PC3 smoke，再完成 ArchiveII 其余家族与 TE/EL 600-run 全协议。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，fold0/smoke 不得写成结论 |
 > | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0；第 9/11/12 页仍待最终数据；第 5/15/17/20 页存在旧速度/参数口径需联动 | 仅改指定页及一致性必需项。微软雅黑、1.5 倍行距、无重叠、图文匹配；最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染 |
 > | T-A143 台账、归档与 GitHub | 57b607f、9d753ce、fb7bc5f、ed3fc34 已推送；RNAformer batch 待 GPU 验收，third_party 仅作上游依赖，不混入提交 | 继续逐任务记录并提交确认代码；PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
 >
-> **资源与停止规则**：审计时 4090 显存 22,850/24,564 MiB，七项任务在训，禁止超订；采用事件驱动队列，有余量即接续，测速必须独占。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
+> **资源与停止规则**：2026-10-28 23:37 UTC 单次快照为 4090 显存 22,016/24,564 MiB、空闲 2,068 MiB，七项任务在训；当前不强行超订，采用事件驱动队列，有安全余量即接续，RiNALMo Spliceator cache 恢复等待安全窗口，测速必须独占。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
 >
 > **历史边界**：本块是当前执行依据；下文第 33 轮及更早任务表保留作追溯。
 >
