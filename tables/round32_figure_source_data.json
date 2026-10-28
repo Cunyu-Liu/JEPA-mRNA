@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "round33-verified-v19",
+    "version": "round33-verified-v20",
     "date": "2026-10-28",
     "metric": "strict pair-level micro F1 unless explicitly stated",
     "principle": "model identity, split, scorer and hardware protocol must match within each comparison; mock and smoke data are forbidden",
@@ -1579,7 +1579,21 @@
       "RNAformer",
       "MXfold2"
     ],
-    "note": "All listed values are medians of three complete TS0 runs with invariant predictions. UFold/RNAformer/MXfold2 remain pending and are not backfilled from A100 values."
+    "note": "All listed values are medians of three complete TS0 runs with invariant predictions. UFold/RNAformer/MXfold2 remain pending and are not backfilled from A100 values.",
+    "working_figure_5a": {
+      "status": "working only; not inserted into PPT; pending MXfold2/RNAformer and common batch grid",
+      "script_sha256": "7922742f65ba8177cf4d3feb943818a7da4207b484d2ede5f2482558094a35c4",
+      "png_sha256": "bad7848d4f7041c0a92521eeaf80f1f548a85a6864bec2314a835a5a8a03dfd1",
+      "pdf_sha256": "b565f3304a204834fc6540822b6f9338cc056a1c2fe0b55137c9f43f0a6c6056",
+      "figure_source_sha256": "69216f53be850a0eec61f4147bf287686f8f02470283df571e48841519bddf29",
+      "raw_result_sha256": {
+        "r2d": "c9915ccc5b11953a605f2c91d014da2f1600264be9d50af1d341c3d80c8dd1fc",
+        "plana": "2414b2cee920ef973e641d77ab8942c51569f4322e1410ce8b47eda9af50f878",
+        "xens2": "18cbb013ba692c35600ce881f256971a0a5165970b90bac96bc7048ce96227b5",
+        "rinalmo_ft": "a2a4b885f12f420e05d5d01aadb6493b1c3c97755a724460835efab23f0445ba"
+      },
+      "pareto_models": ["xens2", "plana", "r2d"]
+    }
   },
   "nb_original_tasks_round33": {
     "cpeb3_fitness": {

@@ -10263,3 +10263,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - markitdown 另确认 S5 与 S17 仍写旧 `9.3M head` 和缓存速度口径，不能只替换主图 5 图片。已把 T-A136/T-A142 合同补为同步更正为 **812,375 head + raw-sequence end-to-end**，确保图、标题、注释和附录协议一致。
 - 源注册表旧 `speed` 段仍把 124.78 标为 end-to-end，与 §15.109C 的代码核查矛盾。现保留 124.78/119.55/96.14 及 batch ladder 作为 **legacy cached-embedding head-only** 历史数据并明确退役，不删除旧值；最终图 5 只能使用 `accuracy_speed_4090_round33` 的 raw-sequence 结果及后续同协议官方基线。
 - 源注册表升级为 `round33-verified-v19`；本次仅做审计与口径纠正，未改动工作版 PPT，也未新增科学结果。
+
+### Y. 图 5A 四系统 4090 工作版与三轮 QA
+
+- 下载并核验四个 raw-sequence B=1 全量结果：r2d/plana/xens2/RiNALMo-ft 均为 RTX 4090、完整项目 TS0 n=1,288、三次重复、cached_embeddings=false。结果 SHA256 分别为 `c9915ccc…`、`2414b2ce…`、`18cbb013…`、`a2a4b885…`。
+- 新增 `make_figure5_round33.py`，SHA256=`7922742f65ba8177cf4d3feb943818a7da4207b484d2ede5f2482558094a35c4`。脚本逐模型检查设备、数据 SHA、样本数、B=1、三次重复和 raw-sequence 范围，按 TP/FP/FN 重算 F1、按三次吞吐重算中位数，并与 `accuracy_speed_4090_round33` 注册值交叉核对。
+- 工作版图 5A 显示 r2d=22.282 seq/s/0.668181、plana=18.622/0.786870、xens2=7.474/0.804063、RiNALMo-ft=13.994/0.721384；当前 Pareto 为 r2d→plana→xens2。旧 124.78 不入图。输出 `fig05a_accuracy_speed_4090_working_3840x1920.png/pdf` 与独立 source JSON。
+- 三轮 QA：①脚本断言和 3840×1920/PDF 文件门通过；②首轮渲染发现 xens2 标签与 Pareto 框重叠，修正后第二轮视觉检查无重叠；③独立脚本再次核对四个 raw result SHA、吞吐、F1、Pareto 和文件尺寸，`FIG05A_INDEPENDENT_QA_PASS`。最终 PNG SHA256=`bad7848d4f7041c0a92521eeaf80f1f548a85a6864bec2314a835a5a8a03dfd1`。
+- 图 5A 仍标为 **working_pending_mxfold2_rnaformer_and_common_batch_grid**，没有插入 PPT；图 5B 尚无共同 batch 网格，不以旧缓存 ladder 补图。源注册表升级为 `round33-verified-v20`。
+- 远端复现时 `lucaone` 缺少 matplotlib，未在训练共用环境中安装或升级依赖；改用已有 `codonflow` 环境后同一脚本和 raw JSON 复现通过。远端缺少 Arial/微软雅黑并产生字体回退警告，因此用于交付的视觉 QA 以本机微软雅黑渲染为准，远端输出只证明数值与代码可复现。
