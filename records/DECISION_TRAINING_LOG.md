@@ -10406,3 +10406,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 补充 watcher 以 `flock` 防止重复实例，实际运行 PID=530698。首次启动因 pgrep 自匹配和日志目录未创建未常驻，已逐项修正，未重复启动有效实例。
 - 已建立本地 `round34_active_source_registry.json`，记录有效图件来源、SHA、working/final 状态和禁止使用的 synthetic 路径，7 项文件哈希复核通过。该清单只用于后续图源管理，不改变科学结果状态。
 - 当前 HEK fold0 已完成 QA，fold1/fold2 在训，fold3–9 未启动。fold2 启动不代表十折完成，不得提前形成 TE/EL 任务级结论。测速仍需独立窗口，当前未执行。
+
+## §15.116（2026-10-28 后续）HEK folds2–9 受门自动训练队列
+
+- 新增 `run_hek_fold_queue_round34.py`，对每一折仅在 TE、EL 两个 full result 和对应 QA 均通过后启动下一折；结果缺失、QA 失败、进程无结果退出或 result 非 PASS 均停止，不提前放行。fold2 的既有外部 PID 已注册，后续任务由队列独立启动。
+- 预检发现 QA 非零返回码最初只被当作 pending，已在启动前修复为硬失败。模拟测试覆盖全 PASS 放行、QA 失败停止和缺失结果处理；远端 `--once` 实测 `fold=2 state=running`，未重复启动 fold2。
+- 队列使用 `/tmp/hek_fold_queue_round34.lock` 防重，实际运行 PID=532587。fold2 TE/EL 日志已进入 seed0 正常验证阶段，未见 OOM 或 CPU fallback；启动后显存快照约 22,016 MiB，未再追加 fold3。
+- 通过 API 提交并验证 `1983f417cecc180a9cbf73c47b1a7e22cc80257a`，包含 fold2 状态、watcher 配置和台账。服务器本地 Git 工作区与 GitHub 的同步仍需后续 fetch/rebase，科学结果状态不变。
+- 后续 folds3–9 将只在上一折双任务 QA 通过后启动，最终仍须十折聚合和五 seed 配对。该队列是资源调度措施，不是科学结果。
