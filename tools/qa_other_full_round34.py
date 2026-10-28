@@ -27,11 +27,11 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def batches(model, x, regression: bool) -> np.ndarray:
+def batches(model, x, regression: bool, batch_size: int = 4096) -> np.ndarray:
     outputs = []
     with torch.inference_mode():
-        for start in range(0, len(x), 4096):
-            value = model(x[start:start + 4096])
+        for start in range(0, len(x), batch_size):
+            value = model(x[start:start + batch_size])
             outputs.append((value if regression else torch.sigmoid(value)).cpu().numpy())
     return np.concatenate(outputs)
 
@@ -140,13 +140,13 @@ def run_splice(result_path: Path, result: dict, family: str, ss_type: str) -> di
                 saved_predictions = saved["predictions"].copy()
                 assert np.array_equal(saved["truth"], truth)
             model, checkpoint = load_model(run, head, model_cls)
-            predictions = batches(model, x, False)
+            predictions = batches(model, x, False, batch_size=len(x))
             assert np.allclose(predictions, saved_predictions, atol=1e-5, rtol=1e-5)
             accuracies = []
             for name in module.SPECIES:
                 mask = species == name
                 accuracy = float(np.mean((predictions[mask] >= 0.5) == truth[mask]))
-                assert np.isclose(accuracy, run["cells"][name]["accuracy"], atol=1e-12)
+                assert np.isclose(accuracy, run["cells"][name]["accuracy"], atol=1e-12), (name, accuracy, run["cells"][name]["accuracy"], int(np.sum((predictions[mask] >= 0.5) != (saved_predictions[mask] >= 0.5))))
                 assert int(mask.sum()) == run["cells"][name]["n"]
                 accuracies.append(accuracy)
             mean_accuracy = float(np.mean(accuracies))

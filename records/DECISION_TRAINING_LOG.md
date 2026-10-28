@@ -10497,3 +10497,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `qa_other_full_round34.py`，按原训练脚本哈希、data card、cache identity、5 seeds、收敛历史、prediction/checkpoint 哈希逐项检查，并在 RTX 4090 上从 checkpoint 重新推理。CPEB3 复算 R²/PCC，Spliceator 复算四物种准确率；全部通过才原子写入 `qa_result.json`，不修改原 result。
 - CPEB3 已完成 10/10 GPU 重推理与全量 QA：official/JEV 各种子 R² 均复算通过，delta=-0.00258545、one-sided p=0.60033361，`significant_positive=false`。该任务可保留为负结果，不作为主图 8 正提升候选。
 - 新增 `run_other_full_qa_round34.sh`，在独立 flock 下顺序执行剩余 4 个 Spliceator 与 2 个 ncRNA QA。远端 runner 已启动，日志为 `audits/round34_other_full_qa/run.log`；首项 NB acceptor 已开始。失败会立即停止并保留日志，不会跳过失败继续写总结。
+
+## §15.129（2026-10-28 后续）Spliceator 重推理批次对齐与 NB acceptor 通过
+
+- 首轮 NB acceptor QA 在物种准确率断言处停止。排查后确认原训练对整个 80k 测试集一次前向，而初版 QA 使用 4096 分批；线性层在不同矩阵尺寸下可能产生微小数值差并在 0.5 阈值处翻转。未放宽准确率断言。
+- 将 Spliceator 重推理改为与原协议一致的整批前向，并为物种断言增加实际值、期望值和阈值翻转数诊断。修正后 NB acceptor 10/10 GPU 重推理全部通过，delta_accuracy=-0.00517750、one-sided p=0.86758782，保持不显著正结论。
+- CPEB3 与 NB acceptor 的 `qa_result.json` 已生成。续跑脚本移除已通过的 NB acceptor，从 NB donor 继续，日志以 append 方式保留首次失败证据和后续通过记录。
