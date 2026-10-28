@@ -1,0 +1,90 @@
+{
+  "registry_version": "round34-working-v2",
+  "generated_at": "2026-10-28",
+  "scientific_status": "working_not_final",
+  "rules": {
+    "accepted_evidence": "original result JSON plus independent QA and SHA256",
+    "rejected_evidence": "mock, synthetic preview, proxy, smoke, training-set or single-fold results presented as final conclusions",
+    "selection": "all preregistered positive and negative results remain in the source registry"
+  },
+  "figures": {
+    "fig03b": {
+      "status": "content_complete_pending_final_deck_qa",
+      "raw_source": "/private/tmp/rnajev_audit/remote_current_20261028/main_ablation_5x8.json",
+      "raw_source_sha256": "1d6004a822379e8dd2b9dd474e61b7583e150a19f6c19a6933c302398cbf6a04",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig03b_group_drops.json",
+      "figure_source_sha256": "3e048a175cf851d09e1dd29f131329e5fd1df2b0242a412a780a494c4655caa6",
+      "definition": "performance_drop = matched_control_strict_micro_f1 - ablated_strict_micro_f1"
+    },
+    "fig04": {
+      "status": "content_complete_pending_final_deck_qa",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig04_ece_confidence_source.json",
+      "figure_source_sha256": "d12c6524197f2457af041ce88ee41b869d1ffafd4e468bbbb8e65aee8be98af4"
+    },
+    "fig05": {
+      "status": "working_pending_mxfold2_rnaformer_and_common_batch_grid",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_01/figures/fig05a_accuracy_speed_4090_working_source.json",
+      "figure_source_sha256": "69216f53be850a0eec61f4147bf287686f8f02470283df571e48841519bddf29",
+      "raw_results_directory": "/private/tmp/rnajev_audit/round33/speed_4090",
+      "completed_models": ["r2d", "plana", "xens2", "rinalmo_ft"],
+      "pending_models": ["mxfold2", "rnaformer"],
+      "blocked_models": {
+        "ufold": "official source recovered, official Drive weights unavailable; no substitution permitted"
+      },
+      "required_final_protocol": "same RTX 4090, project TS0 n=1288, raw sequence to required decode, B=1/2/4, repeats=3, cross-batch prediction invariance"
+    },
+    "fig06": {
+      "status": "native_vector_complete_pending_final_deck_qa",
+      "implementation": "PowerPoint native editable shapes, text and connectors; no raster architecture screenshot"
+    },
+    "fig07": {
+      "status": "working_with_explicit_blocked_tasks",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_01/figures/fig07_nucleicbert_combined_working_source.json",
+      "figure_source_sha256": "bcc8cf866b472d55cb093cda37e6c549b54386097981460e110e88b479387b7d",
+      "completed_original_tasks": ["splice_acceptor", "splice_donor", "cpeb3_fitness"],
+      "blocked_original_tasks": ["secondary_structure", "contact_distance_maps", "natural_vs_shuffled"],
+      "note": "main benchmark 8/8 positive transfer must not be generalized to all NucleicBERT original tasks"
+    },
+    "fig08a": {
+      "status": "working_pending_structure_and_regression_panels",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_01/figures/fig08a_rinalmo_classification_working_source.json",
+      "figure_source_sha256": "f600d66f757a647bc13b88fec1920bbaecd3be337efd49cff53fc5376d9ff59c",
+      "note": "Spliceator and official 88-class ncRNA results are nonsignificant after correction; retain all values"
+    },
+    "fig08b": {
+      "status": "pending_real_results",
+      "required_results": ["official varying-length MRL full_v3 R2", "Muscle/pc3/HEK TE and EL complete ten-fold Spearman aggregation"],
+      "completed_partial_results": [
+        {
+          "task": "HEK TE fold0",
+          "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_te_HEK_fold0_round33_full_v4.json",
+          "sha256": "6f65b75a553d50fe9eba0a96073c745eec82f88ed70e53f57eebc4d9bc61b8f4",
+          "paired_spearman_delta": -0.06732825377193769,
+          "one_sided_p": 0.9984112872877138,
+          "scope": "fold0 only; not a ten-fold conclusion"
+        },
+        {
+          "task": "HEK EL fold0",
+          "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_el_HEK_fold0_round33_full_v4.json",
+          "sha256": "2d1f0f19c673724f486056fbffdfcf68230b19877d0b79c9fcbef92390054fad",
+          "paired_spearman_delta": -0.055355054531507984,
+          "one_sided_p": 0.9782755695850012,
+          "scope": "fold0 only; not a ten-fold conclusion"
+        }
+      ],
+      "forbidden_source": "/private/tmp/rnajev_audit/round33/fig08b_synthetic_preview"
+    }
+  },
+  "deck": {
+    "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
+    "sha256": "4e9e624671bd1619037a234bb9430e81e8e0bc79c8c3b95c3dfd8a701d286126",
+    "layout_issues": 0,
+    "font": "微软雅黑",
+    "line_spacing": 1.5
+  },
+  "legacy_source_snapshot": {
+    "path": "/private/tmp/rnajev_audit/remote_current_20261028/round32_figure_source_data.merged.json",
+    "sha256": "40b57af6aafc6b46331355a8435dcf1bbab96b131628b1b51c314e788e9d05f2",
+    "note": "historical round33-verified-v7 snapshot; do not use as the current active registry"
+  }
+}

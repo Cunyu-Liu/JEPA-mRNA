@@ -10414,3 +10414,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 队列使用 `/tmp/hek_fold_queue_round34.lock` 防重，实际运行 PID=532587。fold2 TE/EL 日志已进入 seed0 正常验证阶段，未见 OOM 或 CPU fallback；启动后显存快照约 22,016 MiB，未再追加 fold3。
 - 通过 API 提交并验证 `1983f417cecc180a9cbf73c47b1a7e22cc80257a`，包含 fold2 状态、watcher 配置和台账。服务器本地 Git 工作区与 GitHub 的同步仍需后续 fetch/rebase，科学结果状态不变。
 - 后续 folds3–9 将只在上一折双任务 QA 通过后启动，最终仍须十折聚合和五 seed 配对。该队列是资源调度措施，不是科学结果。
+
+## §15.117（2026-10-28 后续）fold0 本地独立复算与活跃图源清单 v2
+
+- 已将 HEK fold0 TE、EL 两份原始 result 下载至本地证据目录。SHA256 分别为 `6f65b75a553d50fe9eba0a96073c745eec82f88ed70e53f57eebc4d9bc61b8f4`、`2d1f0f19c673724f486056fbffdfcf68230b19877d0b79c9fcbef92390054fad`，与远端 QA 状态一致。
+- 使用本地 NumPy/SciPy 从五 seed 原始指标重新计算：TE official/JEV Spearman 均值 0.555709/0.488381，Δ=−0.067328，p=0.998411；EL 为 0.509819/0.454464，Δ=−0.055355，p=0.978276。与远端 `primary_delta_mean`、`primary_one_sided_p_value` 完全一致，所有 run 均记录 CUDA 和 early-stopping。
+- `round34_active_source_registry.json` 升级为 `round34-working-v2`，加入两份 fold0 原始结果、哈希、Δ、p 和“fold0 only”范围声明；新增文件哈希检查通过。清单仍拒绝 synthetic preview，未把 fold0 纳入最终图 8B。
+- 当前自动训练队列和 QA watcher 均正常运行，folds2–9 尚无新增完成结果。上述复算只确认 fold0 的部分证据，不改变 TE/EL 全协议未完成状态。
