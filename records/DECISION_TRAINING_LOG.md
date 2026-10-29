@@ -10610,3 +10610,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 代码审查发现 `make_figure8b_round33.py` 原来只检查 `len(fold_results)==10`，重复 fold 也可通过。已增加硬门：`fold_results` 必须按顺序严格包含 fold 0–9 各一次；每个 seed 的十折 Spearman 必须全部有限。
 - 同步扩展 `test_make_figure8b_round33.py`：完整七任务工程形式数据可生成，缺失文件拒绝，重复 fold 拒绝，NaN Spearman 拒绝。初次新增 NaN 测试受前一项重复 fold 干扰，已改为独立有效 payload 后复测通过；最终输出 `FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。
 - `make_figure8b_round33.py` SHA256=`1caff313d28d0aabf5939ca1a0330cc517568139a4e4cd2394e1e9fb9acdbf78`；测试脚本 SHA256=`fe174cba569ffa87b1103194d5a85960ecbec18ef7122acb1cc7b5f57a6003f2`。活跃清单升级为 `round34-working-v16`，仅登记工程门状态；未生成正式主图 8B，fold0/fold1 仍不得拼接成十折结论。
+
+## §15.145（2026-10-29）主图 8B 远端工程测试环境待补
+
+- v16 台账、清单、聚合脚本和测试脚本已同步远端 `/home/rna_jev`，四个文件替换前后 SHA256 均匹配，两个 Python 文件均通过远端 `py_compile`。
+- 首次远端测试因默认 `FIGURE8B_SCRIPT` 指向本地 `/private/tmp` 而未执行；改用 `/home/rna_jev/tools/make_figure8b_round33.py` 后，进一步发现 `lucaone` 环境缺少 matplotlib。备用系统 Python 检查连续两次遭遇 SSH 握手重置，因此远端工程测试没有完成，不记为 PASS。
+- 本地完整形式、缺文件、重复 fold 和非有限值测试均已通过；远端仅确认代码一致性和语法有效性，尚不确认远端绘图运行环境。后续选择已有 matplotlib/scipy/PIL 的环境或补齐依赖后重跑，科学结果与正式主图 8B 状态不变。
