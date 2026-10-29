@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -46,10 +47,21 @@ def result_status(task: str, cell: str, fold: int) -> str:
         return "writing"
 
 
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
 def smoke_qa_status(task: str, cell: str) -> str:
     entry = read_json(SMOKE_STATE, {"jobs": {}})["jobs"].get(smoke_name(task, cell))
     if not entry:
         return "pending"
+    result = RESULTS / smoke_name(task, cell) / "result.json"
+    if not result.is_file() or entry.get("result_sha256") != sha256(result):
+        return "stale"
     return "passed" if entry.get("returncode") == 0 else "failed"
 
 
@@ -57,13 +69,17 @@ def full_qa_status(task: str, cell: str, fold: int) -> str:
     entry = read_json(STATE_FILE, {"jobs": {}})["jobs"].get(full_name(task, cell, fold))
     if not entry:
         return "pending"
+    result = RESULTS / full_name(task, cell, fold) / "result.json"
+    if not result.is_file() or entry.get("result_sha256") != sha256(result):
+        return "stale"
     return "passed" if entry.get("returncode") == 0 else "failed"
 
 
 def save_qa_state(task: str, cell: str, fold: int, returncode: int, log_path: Path) -> None:
     state = read_json(STATE_FILE, {"jobs": {}})
+    result = RESULTS / full_name(task, cell, fold) / "result.json"
     state["jobs"][full_name(task, cell, fold)] = {
-        "result": str(RESULTS / full_name(task, cell, fold) / "result.json"),
+        "result": str(result), "result_sha256": sha256(result),
         "returncode": returncode, "qa_log": str(log_path),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
