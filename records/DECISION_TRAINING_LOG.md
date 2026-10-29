@@ -10841,3 +10841,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 发现组合图已改为“二级结构数据门通过、五种子待验收”，但独立 original-tasks 子图和源 JSON 仍写 secondary structure blocked。仅修正该子资产的状态文字，acceptor/donor/CPEB3 的全部五种子值、Δ、Holm 和图形布局不变。
 - 更新后 source JSON SHA256=`53346872a22736a16f868079c352f7e917c214fff004bbc25dd09319ad667726`，PNG=`ee31a30ce0330a6bf28f0ab2940b5c7b2dade9a649292f762557c33cd79deb67`，PDF=`b8ca858fac04bd6376191a4d8917a64b015d202c32da8526c15289356e6ee62c`，绘图代码=`e408fe97a8189ee5d4fefeab0c178cdb071feda36e8aa7fd76122e763f9c2fc2`。
 - 独立复算确认新旧 `tasks` 对象完全相等，组合图 `original_tasks` 与子图 `tasks` 也完全相等；PNG 为 3840×1920，逐图检查无重叠或截断。active registry 升级为 `round34-working-v32`，SHA256=`5e2958cf2654f8f09b8d599c7d89e1e04d838c97542b25353fd1c9d6f8f2fefb`。PPT 使用的是已正确的组合图，因此本轮不修改 PPT；正式五种子结果仍待完成。
+
+## §15.179（2026-10-30）活跃图源三通道哈希复核与 UFold 官方通道再检索
+
+- 对 `round34-working-v32` 的全部直接文件引用逐项复核：本地 32 个文件和远端 7 个 `/home`/`/teams` 文件均存在且 SHA256 与清单一致，包括 RNAformer/MXfold2 工程脚本、失败日志、二级结构 data card 和 RiNALMo Spliceator cache。初次在本机遇到远端路径不可见不视为哈希失败，随后已在远端逐一实际读取验证。
+- working PPT 本地和远端备份 SHA256 均为 `912e4c82059e525cfa60bf47788a5559ad4cfb900be579ab52bf7f94afcf255d`，更新代码哈希也一致；本轮图 7 子资产更新没有改动 PPT。
+- 以官方文件名 `ufold_train_alldata.pt` 检索没有新增结果；扩展检索仅找到 MultiMolecule 页面，其明确标注为 **UNOFFICIAL implementation**。该实现不能替代官方 UFold 权重或协议，未下载、未入图。官方论文仍只指向 uci-cbcl/UFold 和既有官方渠道，因此 UFold 继续 blocked，正式测速不使用第三方模型或权重替代。
