@@ -10628,3 +10628,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - SSH 恢复后，使用 `FIGURE8B_SCRIPT=/home/rna_jev/tools/make_figure8b_round33.py` 和 `lucaone` 新安装的 matplotlib 3.10.9 实际执行远端测试，返回码为 0，输出 `FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。
 - 本地与远端现均验证：完整七任务形式数据可生成、缺失文件拒绝、重复 fold 拒绝、非有限 Spearman 拒绝。§15.145 的远端环境待办关闭，活跃清单升级为 `round34-working-v17` 并登记远端 Python、matplotlib 版本和通过标记。
 - 该通过仅证明工程聚合门有效，不产生正式主图 8B 或十折科学结论；真实 MRL、三细胞 TE/EL 完整结果仍需按原协议完成。
+
+## §15.148（2026-10-29）fold2 TE 第二段 seed 0 为 JEV head 而非重启
+
+- 状态检查发现 TE 日志先出现 seed 4，随后再次出现 seed 0，已进一步核查而非按正常续训直接放行。证据为：第二个 seed 0 紧接 `[te/official_head/s4]`，fold2 TE/EL 进程仍为原 PID 528896/528894，启动 tick 未变，没有新进程或结果目录覆盖。
+- 当前顺序为 official head 五种子完成后进入 JEV head 五种子，TE 第二段 seed 0 属正常双头流程；EL 尚在 official head seed 3，均持续写日志。未重启训练、未修改结果，也不把中间 validation 写成科学结论。
+- v17 清单与台账已同步远端。fold2 full result 和对应 QA 尚未产生，PPT 保持现有版本。
