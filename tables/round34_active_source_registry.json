@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v22",
+  "registry_version": "round34-working-v23",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -55,14 +55,43 @@
       },
       "required_final_protocol": "same RTX 4090, project TS0 n=1288, raw sequence to required decode, B=1/2/4, repeats=3, cross-batch prediction invariance",
       "batch_validation": {
-        "status": "exact_b4_control_flow_fixed_pending_gpu_revalidation_longest_and_full32",
+        "status": "exact_b1_b2_b4_eight_groups_and_full32_gpu_pass_pending_exclusive_speed_grid",
         "failed_change": "uncommitted RNAformer BxL batch forward plus TF32-off deterministic inference; excluded from all results until full acceptance",
         "diagnostic_groups_nt": [46, 48, 52, 54, 62, 63, 94],
-        "diagnostic_scope": "previous checks compared B=1 with the whole equal-length group (4-9 sequences); they remain engineering evidence but are not a uniform exact-B=4 acceptance",
-        "exact_b4_gpu_passed_groups_nt": [],
+        "diagnostic_scope": "all seven diagnostic groups plus the 225 nt longest group were revalidated with exactly four sequences per group and explicit B=1/2/4 comparisons",
+        "exact_b4_gpu_passed_groups_nt": [46, 48, 52, 54, 62, 63, 94, 225],
         "qa_script": "/home/rna_jev/tools/qa_rnaformer_batch_round34.py",
-        "qa_script_sha256": "9e04b45b016ff97dbb03890897fd7170bff186ffaedd8aa2b3eeb4ef072a4307",
-        "pending_validation": ["revalidate all seven diagnostic groups with exactly four sequences and the 225 nt longest group in an independent GPU window; the prior 225 nt concurrent attempt OOMed with only 68 MiB free and full traceback", "B=1/2/4 full32 cross-batch invariance", "full scientific speed grid"],
+        "qa_script_sha256": "05430925eb6407bffefd822948f88c830a164db86cba13c6df28f0f5b524f35e",
+        "successful_logs_directory": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/rnaformer_batch_qa",
+        "group_log_sha256": {
+          "46": "fd4fc77a668b8b1ed64f65099075a49f061d96fdb2f17cb15217c5744a9557e9",
+          "48": "adf9c32f20d4ee7a63ebe8aaddb331aecd2d2c942b503e17be068aed0317d2b1",
+          "52": "af131f9c7fd6326083473bfd19e41e1ae21d020fe24225d2f2ae61ee018bbd41",
+          "54": "a36e1491f015ab54bbb7b7343c53bf0ed062ee4ca21192a0983ccc05e3949ef7",
+          "62": "40745791d75a9c3219486bfd0329286d968ef2dc2ea7d4fbb45830e7ed36c8c3",
+          "63": "e11a079c52097688a1fe85f04f2976e1dd55387d033e6a75beda7086568d0d17",
+          "94": "18a952c966c204b02dd9977d9c4c683a69a1f4fc1b5c26c28a91cf2dcb5da9ed",
+          "225": "613efb984e05da16de13a5e741e7f06f28a3a73dbbafb269bfc93a7ddf6b2c21"
+        },
+        "full32": {
+          "status": "PASS",
+          "log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/rnaformer_batch_qa/full32.log",
+          "log_sha256": "5b4ffff9150a5123b0289f0b544a16a58739b378920ba8cc946b60efc043b675",
+          "prediction_sha256": "3c2f8b5c942af4a1e296491579f62006d0d3f361fc24f1a12a1bd9cb179dc6bf",
+          "strict_micro_f1_all_batches": 0.9140219272937103,
+          "tp_fp_fn_all_batches": [792, 66, 83],
+          "scope": "32-sequence engineering subset only; not a scientific speed or accuracy result"
+        },
+        "dependency_repair": {
+          "setuptools": "80.9.0",
+          "rotary_embedding_torch": "0.5.3",
+          "beartype": "0.23.1",
+          "loralib": "0.1.2",
+          "torch": "2.5.1+cu121",
+          "matplotlib": "3.10.9",
+          "failed_attempts_preserved_remote": ["audits/round34_rnaformer_batch_qa", "audits/round34_rnaformer_batch_qa_after_setuptools80", "audits/round34_rnaformer_batch_qa_deps_ready"]
+        },
+        "pending_validation": ["exclusive RTX 4090 full scientific speed grid"],
         "gate_stress_test": "temporary engineering data passed complete gate and rejected a deliberate cross-batch mismatch; no synthetic data used as scientific evidence"
       }
     },

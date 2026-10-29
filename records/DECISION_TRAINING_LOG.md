@@ -10675,3 +10675,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 未修改第 12 页图 8A 图像，也未生成或插入正式主图 8B。保留既有蓝绿科研风格、微软雅黑、1.5 倍行距、表格和卡片布局；第 19 页采用单行短句，未增加卡片高度。
 - `fix_pptx`、目标页和全 21 页 layout 检查均为 0 issues，ZIP 完整性通过。markitdown 与修改前逐页对比确认仅第 12/15/19 页变化；665 个非空原生文本运行均为微软雅黑。Aspose 三页渲染无截断或重叠，预览水印不存在于 PPT 页面元素。
 - working PPT SHA256=`97b986116c63ded6692a7b7a3ba6b06a1cbdb260c64f39726fe94b3459cfabce`；更新脚本 SHA256=`2cd291118a288ea6bce821825541b23e8c8f51a206d4bca198a8cf54e537fe01`。同一文件已原子备份到远端 `/teams/.../figure_assets/round34/`，前后 SHA256 一致。活跃清单升级为 `round34-working-v22`；本更新只同步已验收事实，不改变主图 5/7/8 的未完成状态。
+
+## §15.155（2026-10-29）RNAformer 八组精确 batch 与 full32 GPU 验收通过
+
+- 初次复验在模型加载前依次暴露 `pkg_resources`、`rotary_embedding_torch` 和其 `beartype` 依赖、`loralib` 缺失；均在 CUDA 前向前停止，没有 CPU 降级或科学结果。按官方 requirements 补齐 setuptools 80.9.0、rotary-embedding-torch 0.5.3、beartype 0.23.1、loralib 0.1.2，torch 2.5.1+cu121 与 matplotlib 3.10.9 未变。三次失败日志分别保留在独立 audits 目录，未覆盖。
+- 依赖修复后，46/48/52/54/62/63/94/225 nt 八组均在 RTX 4090 完成精确四条 B=4、四次 B=1 和一次 B=2 对照。每组四条均 `prediction_equal=true`、`threshold_flips=0`，包括此前待验的 225 nt 最长组；无 OOM 或 CPU 降级。八个成功日志 SHA256 已逐项登记。
+- 在同一脚本中复用正式 `speed.run_once` 增加 `QA_FULL32=1` 分支，未另造前向或解码逻辑。32 条序列 B=1/2/4 的预测列表和预测 SHA256 完全一致：`3c2f8b5c942af4a1e296491579f62006d0d3f361fc24f1a12a1bd9cb179dc6bf`；TP/FP/FN=792/66/83，strict micro-F1=0.9140219273，full32 日志 SHA256=`5b4ffff9150a5123b0289f0b544a16a58739b378920ba8cc946b60efc043b675`。
+- 第三遍在本地重新解析全部九个日志，确认组长度、四条记录、阈值翻转、batch 哈希和 TP/FP/FN 均符合合同。更新后 QA 脚本 SHA256=`05430925eb6407bffefd822948f88c830a164db86cba13c6df28f0f5b524f35e`，成功日志已归档到 `figure_assets/rnaformer_batch_qa/`。
+- 上述 32 条和八组仅属工程一致性证据，不作为主图 5 的速度或精度科学结果。下一步仍需在独占 4090 窗口完成 RNAformer/MXfold2 的 full TS0 B=1/2/4 测速和共同网格；活跃清单升级为 `round34-working-v23`。

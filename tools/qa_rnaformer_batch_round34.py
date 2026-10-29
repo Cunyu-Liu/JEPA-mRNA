@@ -36,17 +36,34 @@ def main():
     eligible = [items for items in groups.values() if len(items) >= 4 and len(items[0]) <= 600]
     eligible.sort(key=lambda items: len(items[0]))
     group_index = int(os.environ.get("QA_GROUP_INDEX", "0"))
-    seqs = eligible[group_index]
-    max_sequences = int(os.environ.get("QA_MAX_SEQUENCES", "0"))
-    if max_sequences > 0:
-        seqs = seqs[:max_sequences]
+    seqs = eligible[group_index][:4]
+    assert len(seqs) == 4, "B=4 QA requires exactly four sequences"
     print("QA_GROUP", group_index, "length", len(seqs[0]), "n", len(seqs), flush=True)
     models = speed.load_models("rnaformer", device)
     model = models["model"]
+    if os.environ.get("QA_FULL32") == "1":
+        selected = records[:32]
+        assert len(selected) == 32, "full32 QA requires exactly 32 sequences"
+        reference_pairs = None
+        summaries = []
+        with torch.inference_mode():
+            for batch_size in (1, 2, 4):
+                result = speed.run_once(models, selected, batch_size, device)
+                batch_pairs = result.pop("predictions")
+                if reference_pairs is None:
+                    reference_pairs = batch_pairs
+                assert batch_pairs == reference_pairs, f"B={batch_size} full32 prediction mismatch"
+                summaries.append({"batch_size": batch_size, **result})
+        assert len({item["predictions_sha256"] for item in summaries}) == 1
+        assert len({item["strict_micro_f1"] for item in summaries}) == 1
+        print(json.dumps({"n_sequences": len(selected), "runs": summaries}), flush=True)
+        print("RNAFORMER_FULL32_DETERMINISTIC_BATCH_QA_PASS 32 B1_B2_B4", flush=True)
+        return
     mismatches = []
     sequential_pairs = []
     with torch.inference_mode():
         batch_logits = direct(model, seqs, device)
+        batch_pairs = speed.forward_rnaformer(models, seqs, device)
         for index, seq in enumerate(seqs):
             single_logits = direct(model, [seq], device)[0]
             logits_diff = (single_logits - batch_logits[index]).abs()
@@ -55,18 +72,18 @@ def main():
             flips = single_probability.gt(0.5) != batch_probability.gt(0.5)
             single_pairs = speed.forward_rnaformer(models, [seq], device)[0]
             sequential_pairs.append(single_pairs)
-            batch_pairs = speed.forward_rnaformer(models, seqs, device)[index]
+            selected_batch_pairs = batch_pairs[index]
             print(json.dumps({
                 "index": index, "length": len(seq),
                 "logit_max_abs_diff": logits_diff.max().item(),
                 "logit_mean_abs_diff": logits_diff.mean().item(),
                 "probability_max_abs_diff": (single_probability - batch_probability).abs().max().item(),
                 "threshold_flips": int(flips.sum()),
-                "prediction_equal": single_pairs == batch_pairs,
-                "single_only_pairs": sorted(set(single_pairs) - set(batch_pairs)),
-                "batch_only_pairs": sorted(set(batch_pairs) - set(single_pairs)),
+                "prediction_equal": single_pairs == selected_batch_pairs,
+                "single_only_pairs": sorted(set(single_pairs) - set(selected_batch_pairs)),
+                "batch_only_pairs": sorted(set(selected_batch_pairs) - set(single_pairs)),
             }), flush=True)
-            if single_pairs != batch_pairs:
+            if single_pairs != selected_batch_pairs:
                 mismatches.append(index)
     batch2_pairs = speed.forward_rnaformer(models, seqs[:2], device)
     assert sequential_pairs[:2] == batch2_pairs, "B=2 prediction mismatch"
