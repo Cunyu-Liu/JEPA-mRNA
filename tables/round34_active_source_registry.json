@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v12",
+  "registry_version": "round34-working-v13",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -75,17 +75,25 @@
     },
     "fig07": {
       "status": "working_with_explicit_blocked_tasks",
-      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_01/figures/fig07_nucleicbert_combined_working_source.json",
-      "figure_source_sha256": "bcc8cf866b472d55cb093cda37e6c549b54386097981460e110e88b479387b7d",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_source.json",
+      "figure_source_sha256": "fab6b04dd51df59dfa779408c6a33a22c0d5449a72ba522c699051bf3ca5751d",
+      "rendered_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_3840x1920.png",
+      "rendered_png_sha256": "e581c05036b7f3d8382b5a7b697f289ca9c1e654aee7337b46f514d8e5b49e62",
+      "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_combined_round33.py",
+      "plotting_code_sha256": "40bd3dd7ec1112eeaca5a2360fc123d73d5425e5579a6e107de9e46c727e005e",
       "completed_original_tasks": ["splice_acceptor", "splice_donor", "cpeb3_fitness"],
       "blocked_original_tasks": ["secondary_structure", "contact_distance_maps", "natural_vs_shuffled"],
-      "note": "main benchmark 8/8 positive transfer must not be generalized to all NucleicBERT original tasks"
+      "note": "main benchmark 8/8 positive transfer is separated from three nonsignificant original tasks; no all-task positive-transfer claim"
     },
     "fig08a": {
-      "status": "working_pending_structure_and_regression_panels",
-      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_01/figures/fig08a_rinalmo_classification_working_source.json",
-      "figure_source_sha256": "f600d66f757a647bc13b88fec1920bbaecd3be337efd49cff53fc5376d9ff59c",
-      "note": "Spliceator and official 88-class ncRNA results are nonsignificant after correction; retain all values"
+      "status": "working_pending_rinalmo_splice_external_qa_structure_and_regression_panels",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_source.json",
+      "figure_source_sha256": "d38ccf29764eaa2f746eea7684f08012355c2ea3a998dd7d9db837fbbfd44230",
+      "rendered_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_3840x1920.png",
+      "rendered_png_sha256": "62ff63bd8ec365144316d750885983c96c6a91970644b55086d41337a75342dc",
+      "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure8_round33.py",
+      "plotting_code_sha256": "486b92f30260f5876d60e503a381207205aa8187e9bc4ac670ebe068429ffe6b",
+      "note": "Official 88-class ncRNA has external GPU QA; RiNALMo Spliceator full results await external cache QA; all values retained"
     },
     "fig08b": {
       "status": "pending_real_results",
@@ -135,7 +143,7 @@
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "6b9d8bb2d60a61477d3bb5faed462ce601e8a260c6e9a70232b318e9032e9c1a",
+    "sha256": "4d15311c10d1aebce39d86923e5fbf299651096c7b7f8021e963ca9fdfa0bb50",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5

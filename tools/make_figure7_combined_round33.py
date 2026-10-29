@@ -30,7 +30,7 @@ def main():
         assert round(record["jev_micro_f1"], 4) == round(float(jev[index]), 4)
         assert record["frozen_probe_is_not_full_ft"] is True
     original_rows = {task: original.load_task(task) for task in ("acceptor", "donor", "cpeb3")}
-    payload = {"figure_status": "working_pending_remaining_original_task_assets_and_full_ft_json_recovery",
+    payload = {"figure_status": "working_pending_remaining_original_task_assets",
                "main_benchmark": {"splits": transfer["splits"], "jev_on_nb": jev.tolist(), "nb_ft": nb_ft.tolist(),
                                   "recovery_manifest": str(MANIFEST), "recovery_manifest_sha256": original.sha256(MANIFEST),
                                   "full_ft_source": "previously verified source_data.nb_transfer.nb_ft; no frozen-probe substitution"},
@@ -62,7 +62,7 @@ def main():
     c.set_title("c  Original CPEB3: R²", loc="left", color=C["ink"], fontweight="bold", pad=14)
     fig.text(0.5, 0.035,
              "Main benchmark uses previously verified full-FT values; all 8 JEV result.json files were recovered and independently checked.\n"
-             "Original tasks show full five-seed comparisons. Secondary structure, contact/distance maps and natural-vs-shuffled remain blocked.",
+             "Original tasks show full five-seed comparisons with no significant-positive result. Secondary structure, contact/distance maps and natural-vs-shuffled remain blocked.",
              ha="center", va="bottom", fontsize=8.4, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.065, right=0.985, top=0.85, bottom=0.20, wspace=0.34)
     png = OUT / "fig07_nucleicbert_combined_working_3840x1920.png"

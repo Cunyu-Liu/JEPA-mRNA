@@ -10583,3 +10583,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 原始结果与 QA 日志已下载。本地独立从五种子 `test_spearman/test_r2/test_pcc` 重算：official/JEV Spearman 均值 0.537899/0.503488，Δ=-0.0344107861、delta SD=0.0389508390、单侧 p=0.9402880452；R² Δ=-0.0385513099，p=0.8943416994；PCC Δ=-0.0353265522，p=0.9236235528。均与 result 声明一致，`significant_positive=false`。
 - 该结果仅描述 HEK EL fold1，完整负结果保留，不作为显著正候选，不外推为三细胞或十折结论。QA 日志 SHA256=`9a1a1adfb85320f0af96e1e766ccd96fd7266773113ed42add3ce32bdb41191f`。
 - 活跃清单升级为 `round34-working-v12`，新增 fold1 EL 原始结果、QA 日志、哈希和范围声明。当前剩余在训为 ArchiveII tRNA/5s、MRL full_v3、HEK fold1 TE 与 fold2 TE/EL 共六项；fold0 TE/EL 与 fold1 EL 已验收，folds3–9 仍须受门接续。
+
+## §15.141（2026-10-29）主图 7 与 8A working 面板入片和证据边界同步
+
+- 主图 7 组合 working 面板已插入第 11 页：主 benchmark 8/8 正迁移与 acceptor/donor/CPEB3 三项原论文任务分开展示，三项均不显著为正；secondary structure/contact-distance/shuffle 继续标记官方资产 blocked，不作全覆盖声明。
+- 主图 8A 分类 working 面板已插入第 12 页：官方 88 类 ncRNA clean/bn200 与 RiNALMo Spliceator 同页，全部结果保留且未宣称显著正提升。图内明确 RiNALMo Spliceator 外部 cache QA、ArchiveII/bpRNA 和独立回归面板仍 pending；旧 177 类只作敏感性，图 8B 暂不入片。
+- 第 15 页结论表和第 20 页论文逻辑链同步改为“NB 主 benchmark 8/8；原论文任务未显著为正”，并保留官方资产、RiNALMo splice QA、回归和十折未闭环限制。第 11/12 页讲者备注与来源同步更新。
+- 两张 working 图均重新通过原始 full result 和五种子配对断言生成，3840×1920 PNG/PDF 成功。第 11/12/15/20 页 Aspose 渲染无截断或内容重叠；全 21 页 layout=0、ZIP、markitdown 和运行级微软雅黑检查通过，文本变化严格限于第 5、9、10、11、12、15、17、20 页。
+- working PPT SHA256=`4d15311c10d1aebce39d86923e5fbf299651096c7b7f8021e963ca9fdfa0bb50`；图 7 源 JSON/PNG 哈希为 `fab6b04d...751d`/`e581c050...49e62`，图 8A 为 `d38ccf29...4230`/`62ff63bd...42dc`。活跃清单升级为 `round34-working-v13`，登记新路径、绘图代码、图片和范围声明；最终主图 5/7/8 仍待完整实验闭环。

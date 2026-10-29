@@ -1,0 +1,144 @@
+{
+  "figure_status": "working_pending_remaining_original_task_assets",
+  "main_benchmark": {
+    "splits": [
+      "TS0",
+      "bpRNA-new",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard",
+      "TestSetB",
+      "ArchiveII trunc598"
+    ],
+    "jev_on_nb": [
+      0.5288,
+      0.5792,
+      0.69,
+      0.7794,
+      0.7484,
+      0.6773,
+      0.5411,
+      0.5414
+    ],
+    "nb_ft": [
+      0.4609,
+      0.3453,
+      0.6049,
+      0.6435,
+      0.5175,
+      0.4845,
+      0.4862,
+      0.4735
+    ],
+    "recovery_manifest": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_01/figures/nb_transfer_recovery_manifest.json",
+    "recovery_manifest_sha256": "7452ffc917be46b3e58e03d8927a372abc901a46579491bbec0104d5bf40b9f3",
+    "full_ft_source": "previously verified source_data.nb_transfer.nb_ft; no frozen-probe substitution"
+  },
+  "original_tasks": {
+    "acceptor": {
+      "task": "acceptor",
+      "label": "Splice acceptor",
+      "metric": "Accuracy",
+      "heads": {
+        "official_probe": {
+          "mean": 0.81551,
+          "sd": 0.006905067206407236,
+          "runs": [
+            0.818225,
+            0.819325,
+            0.8169375,
+            0.81975,
+            0.8033124999999999
+          ]
+        },
+        "jev_head": {
+          "mean": 0.8103325,
+          "sd": 0.003596076420906533,
+          "runs": [
+            0.804525,
+            0.8135125000000001,
+            0.8102875,
+            0.8102,
+            0.8131375
+          ]
+        }
+      },
+      "delta": -0.0051774999999999235,
+      "p_value": 0.8675878224847565,
+      "result_sha256": "cb79a922a27b7fa9f573d1a39cf86d2ba565ac269fcc6edc748fb88a15f9be2e",
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_splice_acceptor_round33_full_result.json"
+    },
+    "donor": {
+      "task": "donor",
+      "label": "Splice donor",
+      "metric": "Accuracy",
+      "heads": {
+        "official_probe": {
+          "mean": 0.7522300000000001,
+          "sd": 0.003328459196835688,
+          "runs": [
+            0.7535999999999999,
+            0.7476125,
+            0.7567375000000001,
+            0.75165,
+            0.7515499999999999
+          ]
+        },
+        "jev_head": {
+          "mean": 0.7478875,
+          "sd": 0.0019064446621918421,
+          "runs": [
+            0.7489999999999999,
+            0.7492,
+            0.7495875,
+            0.7461250000000001,
+            0.745525
+          ]
+        }
+      },
+      "delta": -0.004342500000000004,
+      "p_value": 0.976145935694066,
+      "result_sha256": "64ffc8f3ce9310dd5542aff7a874fb6c731ed1601ed3612385de42e03d2e2097",
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_splice_donor_round33_full_result.json"
+    },
+    "cpeb3": {
+      "task": "cpeb3",
+      "label": "CPEB3 fitness",
+      "metric": "R²",
+      "heads": {
+        "official_probe": {
+          "mean": 0.892281861016488,
+          "sd": 0.01603167217724026,
+          "runs": [
+            0.8800998218076516,
+            0.8756396172719728,
+            0.8875549606627341,
+            0.912016097414573,
+            0.9060988079255086
+          ]
+        },
+        "jev_head": {
+          "mean": 0.8896964173569433,
+          "sd": 0.008178729449754221,
+          "runs": [
+            0.8851579270973399,
+            0.895385452229703,
+            0.896733990766118,
+            0.8774920756082347,
+            0.8937126410833214
+          ]
+        }
+      },
+      "delta": -0.002585443659544606,
+      "p_value": 0.6003333991817903,
+      "result_sha256": "43517c79cce5518d9397f69765858d77f082cefcd4f3e41b1ae7dc0886778ca6",
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_cpeb3_round33_full_result.json"
+    }
+  },
+  "blocked_original_tasks": [
+    "secondary_structure",
+    "contact_distance",
+    "natural_vs_shuffled"
+  ]
+}

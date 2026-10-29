@@ -167,6 +167,48 @@ def update_speed_provenance(prs):
                 replace_run_text(slide.notes_slide, old, new, 1)
 
 
+def update_downstream_provenance(prs):
+    replacements = {
+        11: [
+            ("主图 7｜Jev-on-NucleicBERT：8/8 split 均正增益",
+             "主图 7｜主 benchmark 8/8 正迁移；原论文三任务不显著为正", 2),
+            ("分组柱状图：Δ +0.055 至 +0.234，平均 +0.134；OOD/家族 split 增益更大。",
+             "主 benchmark 与原论文任务分开展示；acceptor/donor/CPEB3 全量五种子均不显著为正。", 1),
+            ("回答兼容性问题：同一 Jev 决策头不依赖 RiNALMo 特有表征；ArchII 使用匹配的 trunc598 口径。",
+             "8/8 仅指主 benchmark；secondary structure/contact-distance/shuffle 缺官方资产，保持 blocked，不作全覆盖声明。", 2),
+            ("ROUND26 / T-A99；NB-ft 与 Jev-on-NB 8-split",
+             "ROUND26/T-A99 + round34 downstream QA；其余原论文任务待官方资产", 2),
+        ],
+        12: [
+            ("主图 8｜下游头迁移：ncRNA 三指标提升，回归任务小幅为正",
+             "主图 8A｜官方分类任务未显著为正；回归与剩余任务待验收", 2),
+            ("ncRNA 保留 accuracy / macro-F1 / balanced accuracy；MRL 与 TE-EL 保留 PCC。",
+             "官方 88 类 ncRNA 与 Spliceator 分类同页；RiNALMo splice 外部 cache QA、ArchiveII/bpRNA 与图 8B 待完成。", 1),
+            ("合并原第 25、28a、36 页信息；splice 数据留档不进主文。新增任务必须完成预注册与统计后再加入。",
+             "working 面板保留全部负结果；旧 177 类只作敏感性，不替代官方 88 类；图 8B 暂不入片。", 2),
+            ("ROUND26 / ROUND28 / T-A129；frozen backbone 双头对照",
+             "round33/34 full results + external QA；分类与回归分图", 2),
+        ],
+        15: [
+            ("NucleicBERT 8/8 正增益；ncRNA 三指标提升",
+             "NB 主 benchmark 8/8 正迁移；原论文下游任务未显著为正", 1),
+            ("MRL/TE-EL 增益较小；新任务未完成前不得扩写为普遍优势",
+             "NB 其余官方资产 blocked；RiNALMo splice QA、回归与十折未闭环", 1),
+        ],
+        20: [
+            ("大样本 ECE 改善；NB 8/8", "大样本 ECE 改善；NB 主 benchmark 8/8", 1),
+            ("ncRNA 三指标提升", "原论文任务未显著为正", 1),
+            ("新增 MRL 未过显著门；不外推", "官方资产与全协议未闭环；不外推", 1),
+        ],
+    }
+    for slide_number, items in replacements.items():
+        slide = prs.slides[slide_number - 1]
+        for old, new, expected in items:
+            replace_run_text(slide, old, new, expected - 1 if expected == 2 else expected)
+            if expected == 2:
+                replace_run_text(slide.notes_slide, old, new, 1)
+
+
 def rebuild_fig6(slide):
     for index, shape in enumerate(list(slide.shapes)):
         if index < 6:
@@ -251,6 +293,8 @@ def main():
     replace_picture(prs.slides[6], FIG / "fig03b_ood_signature_3840x1920.png")
     replace_picture(prs.slides[7], FIG / "fig04_ece_confidence_3840x1920.png")
     replace_picture(prs.slides[8], FIG / "fig05_accuracy_speed_pareto_3840x1920.png")
+    replace_picture(prs.slides[10], FIG / "fig07_nucleicbert_combined_working_3840x1920.png")
+    replace_picture(prs.slides[11], FIG / "fig08a_rinalmo_classification_working_3840x1920.png")
     for shape in list(prs.slides[5].shapes):
         if hasattr(shape, "text") and shape.text.startswith("那么这部分我有一些建议"):
             remove(shape)
@@ -260,6 +304,7 @@ def main():
                 remove(shape)
     rebuild_fig6(prs.slides[9])
     update_speed_provenance(prs)
+    update_downstream_provenance(prs)
     prs.save(OUT)
     print(f"ROUND34_DECK_WORKING_WRITTEN {OUT}")
 

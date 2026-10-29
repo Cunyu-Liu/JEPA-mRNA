@@ -99,9 +99,10 @@ def main():
         assert np.isclose(row["heads"]["jev_head"]["mean"], registered["jev_head_mean"], rtol=0, atol=1e-12)
         assert np.isclose(row["delta"], registered[spec["delta"]], rtol=0, atol=1e-12)
 
-    payload = {"figure_status": "working_pending_archiveII_bpRNA_and_regression_panel",
+    payload = {"figure_status": "working_pending_rinalmo_splice_external_qa_archiveII_bpRNA_and_regression_panel",
                "protocol": "frozen RiNALMo; official head vs JEV head; full data; five seeds; mean±sample SD",
                "tasks": rows, "significant_positive_tasks": [],
+               "qa_scope": "Official 88-class ncRNA clean/bn200 have external GPU QA; RiNALMo Spliceator full results await external cache QA",
                "note": "RiNALMo donor is positive but nonsignificant; no significant-positive classification task is claimed"}
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "fig08a_rinalmo_classification_working_source.json").write_text(
@@ -117,7 +118,7 @@ def main():
     a.legend(handles=handles, loc="upper right", fontsize=9)
     fig.text(0.5, 0.035,
              "Full-dataset, five-seed paired comparisons; error bars show sample SD. All four results are nonsignificant.\n"
-             "Working classification panel: ArchiveII/bpRNA and the separate regression panel remain pending.",
+             "Working: RiNALMo Spliceator external cache QA, ArchiveII/bpRNA and the separate regression panel remain pending.",
              ha="center", va="bottom", fontsize=8.8, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.075, right=0.98, top=0.85, bottom=0.20, wspace=0.28)
     png = OUT / "fig08a_rinalmo_classification_working_3840x1920.png"

@@ -1,0 +1,141 @@
+{
+  "figure_status": "working_pending_rinalmo_splice_external_qa_archiveII_bpRNA_and_regression_panel",
+  "protocol": "frozen RiNALMo; official head vs JEV head; full data; five seeds; mean±sample SD",
+  "tasks": {
+    "acceptor": {
+      "task": "acceptor",
+      "label": "Splice acceptor",
+      "metric": "Accuracy",
+      "heads": {
+        "official_probe": {
+          "mean": 0.59687,
+          "sd": 0.024701193354269353,
+          "runs": [
+            0.6119125000000001,
+            0.5979875,
+            0.6056,
+            0.61465,
+            0.5542
+          ]
+        },
+        "jev_head": {
+          "mean": 0.5965125,
+          "sd": 0.013403961051681698,
+          "runs": [
+            0.6020625000000001,
+            0.5753125,
+            0.59995,
+            0.6113375,
+            0.5939
+          ]
+        }
+      },
+      "delta": -0.0003575000000000328,
+      "p_value": 0.5126944093379351,
+      "result_sha256": "6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f",
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_splice_acceptor_round33_full_result.json"
+    },
+    "donor": {
+      "task": "donor",
+      "label": "Splice donor",
+      "metric": "Accuracy",
+      "heads": {
+        "official_probe": {
+          "mean": 0.6993525,
+          "sd": 0.005255186426284027,
+          "runs": [
+            0.6939875,
+            0.7081,
+            0.6990875,
+            0.6981375000000001,
+            0.6974499999999999
+          ]
+        },
+        "jev_head": {
+          "mean": 0.6999975,
+          "sd": 0.005358618933549925,
+          "runs": [
+            0.7034125,
+            0.70075,
+            0.6954375,
+            0.7065874999999999,
+            0.6938
+          ]
+        }
+      },
+      "delta": 0.0006450000000000067,
+      "p_value": 0.4305079375393121,
+      "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c",
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_splice_donor_round33_full_result.json"
+    },
+    "clean": {
+      "task": "clean",
+      "label": "88-class ncRNA · clean",
+      "metric": "Weighted-F1",
+      "heads": {
+        "official_probe": {
+          "mean": 0.9774250732774385,
+          "sd": 0.0016228295215646002,
+          "runs": [
+            0.9772742187446471,
+            0.9754866506031996,
+            0.9762500624914562,
+            0.9792082548062672,
+            0.9789061797416229
+          ]
+        },
+        "jev_head": {
+          "mean": 0.9767484138860132,
+          "sd": 0.002178401723632643,
+          "runs": [
+            0.976304447304504,
+            0.9781362202657268,
+            0.9785540109901654,
+            0.9775894053506958,
+            0.9731579855189739
+          ]
+        }
+      },
+      "delta": -0.0006766593914254049,
+      "p_value": 0.659696977396977,
+      "result_sha256": "9f9c917f06c096ccd819fac732229f7b4d7badc84c3afd08cd01d9b591044cea",
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_ncrna_clean_round33_full_v1_result.json"
+    },
+    "bn200": {
+      "task": "bn200",
+      "label": "88-class ncRNA · bn200",
+      "metric": "Weighted-F1",
+      "heads": {
+        "official_probe": {
+          "mean": 0.8140585670148515,
+          "sd": 0.004706745637960583,
+          "runs": [
+            0.8180486949634646,
+            0.818372667055813,
+            0.8068000781645971,
+            0.8141871543620695,
+            0.8128842405283135
+          ]
+        },
+        "jev_head": {
+          "mean": 0.806558021284129,
+          "sd": 0.004298017660642238,
+          "runs": [
+            0.8100228309770364,
+            0.8003009389302995,
+            0.811127845383993,
+            0.8060385019737842,
+            0.805299989155532
+          ]
+        }
+      },
+      "delta": -0.007500545730722496,
+      "p_value": 0.9488427254880585,
+      "result_sha256": "7d0c8a9c744edd32293444e76d3fb46175f83dc276b77df028841bf69ca1eaa7",
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_ncrna_bn200_round33_full_v1_result.json"
+    }
+  },
+  "significant_positive_tasks": [],
+  "qa_scope": "Official 88-class ncRNA clean/bn200 have external GPU QA; RiNALMo Spliceator full results await external cache QA",
+  "note": "RiNALMo donor is positive but nonsignificant; no significant-positive classification task is claimed"
+}
