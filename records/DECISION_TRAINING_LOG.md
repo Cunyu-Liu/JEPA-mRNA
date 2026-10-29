@@ -10768,3 +10768,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 使用临时目录与无 GPU dummy process 完整模拟结果生成、QA 写入和状态接续，不使用模拟数据作为科学证据。回归 smoke 队列按序通过 4/4 项；ArchiveII 队列通过 9/9 家族且写入 9 个 QA 状态；Muscle/PC3 full 队列通过 2 细胞×10 folds×2 任务共 40/40 项且写入 40 个 QA 状态。
 - 初次模拟因测试环境未重定向 `STATE_DIR` 而失败，明确为测试配置问题；修正后重新执行通过，未改动生产脚本或放宽门限。远端 tasks 镜像已补同步并逐文件确认 `a92c90ea` 标记，上轮 SSH reset 不遗留部分写入。
 - 正式 4090 测速仍要求真正独占窗口，不能仅凭瞬时显存空余启动，以免与后续 QA 或其他队列冲突；当前不启动测速。
+
+## §15.168（2026-10-29）队列失败路径与在训健康复核
+
+- 在训日志逐项复核仍在推进：tRNA 至 JEV seed2 epoch10、5s 至 official seed3 epoch13、bpRNA 至 official seed0 epoch38、HEK fold3 TE/EL 均至 seed2 后续 epoch，未出现停滞或 CPU 静默降级。
+- 失败路径模拟全部通过：smoke 首个进程非零退出时仅启动 1 项并停止；ArchiveII 首个 QA 失败时仅启动 1 个家族并停止；Muscle smoke QA 失败时不启动任何 full；`NOT_CONVERGED` full 结果被硬门拒绝且不启动后续任务。未自动重试、未放宽验收标准。
+- 上述测试仅验证队列控制流，不作为科学结果或性能证据。
