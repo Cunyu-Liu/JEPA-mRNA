@@ -10895,3 +10895,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 仅将第19页 T-A129 状态从“fold3 起受门推进”改为“MRL 与 HEK fold0–2 TE/EL、fold3 TE 已 QA，均不显著为正；fold3 EL 待续接”。其他文本、页面、图件和 18 个媒体文件均未改变，markitdown 差异仅此一句。
 - `fix_pptx`、编辑页及全 21 页 `validate_layout` 均为 0 issues；ZIP 完整性通过。665 个非空文本 run 均为微软雅黑，665 个有效 1.5 倍行距段落通过。Aspose 第19页渲染无重叠、截断或字号不适配，评估水印仅存在于 QA 渲染。
 - 更新后 PPT SHA256=`3812233a5b71309575806a807403c6a012911b35d361ec55079fece433f626df`，可复现更新代码 SHA256=`3cd6dbd6fdc11a04a0d8dae2c316744785a8b421e35ae534ba3ff040e25f6806`。active registry 升级为 `round34-working-v38`，SHA256=`39595f2b0fe1bdacaed61620a2d16cca59487f7932b0cf1ecfae8fec72be1557`，updated_slides=[11,12,15,19]。
+
+## §15.187（2026-10-30）正式 4090 测速独占等待队列启动
+
+- 远端实际只有一次性 `run_speed_grid_round34.py`，没有可持续等待的队列；已补齐 `run_speed_grid_queue_round34.py` 并安装。runner SHA256=`2bcaa62da9fdec4108bea8219fa78e8ecc62638f16a043d21092f60b76af8b00`，queue SHA256=`70360bea57372665ec531557efa99eb298d0e0d4fd30f4a7575475ff0b28ad35`。
+- queue dry-run 通过：4 个已验证 B=1 结果，14 个待测 job；未启动 GPU 工作。本地 mock 测试覆盖等待后完成、非独占失败停止、独占竞争重试后完成，均通过。
+- 已以 `flock /tmp/rnajev_speed_grid_round34.lock` 启动 detached queue，PID=923399，日志为 `audits/round34_speed_grid_queue/queue.log`。当前仅 `WAIT_SPEED_EXCLUSIVE`，没有其他 GPU 进程时才启动正式测速；模型/CUDA/依赖/数据失败不盲目重试，只有明确独占竞争才重试。
+- active registry 升级为 `round34-working-v39`，记录 queue 路径、哈希、PID、日志和重试边界；尚无新的科学测速结果。

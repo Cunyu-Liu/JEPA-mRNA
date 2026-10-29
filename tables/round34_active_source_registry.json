@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v38",
+  "registry_version": "round34-working-v39",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -55,13 +55,25 @@
       },
       "required_final_protocol": "same RTX 4090, project TS0 n=1288, raw sequence to required decode, B=1/2/4, repeats=3, cross-batch prediction invariance",
       "speed_grid_runner": {
-        "status": "engineering_gate_pass_pending_exclusive_gpu_window",
+        "status": "detached_exclusive_queue_started_waiting_for_idle_gpu",
         "path": "/home/rna_jev/tools/run_speed_grid_round34.py",
         "sha256": "2bcaa62da9fdec4108bea8219fa78e8ecc62638f16a043d21092f60b76af8b00",
         "dry_run": "4 verified B=1 results; 14 missing jobs; no GPU work launched",
         "validation": "existing results recheck expected F1, positive valid timing and cross-batch invariance before any skip or early return",
         "exclusive_gate": "refuses other compute processes before and during every job; intruder triggers child termination and stops without retry",
         "failure_quarantine": "any failed or intruder-contaminated new result is moved to quarantine and cannot be accepted on the next run"
+      },
+      "speed_grid_queue": {
+        "status": "running_waiting_for_exclusive_gpu",
+        "path": "/home/rna_jev/tools/run_speed_grid_queue_round34.py",
+        "sha256": "70360bea57372665ec531557efa99eb298d0e0d4fd30f4a7575475ff0b28ad35",
+        "pid": 923399,
+        "lock": "/tmp/rnajev_speed_grid_round34.lock",
+        "log": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/round34_speed_grid_queue/queue.log",
+        "dry_run": "PASS: 4 verified B=1 results and 14 missing jobs; no GPU work launched by dry-run",
+        "tests": ["wait then complete", "non-exclusivity failure stops without retry", "exclusive race retries once then completes"],
+        "retry_policy": "only an explicit exclusivity race is retried; model, CUDA, dependency and data failures stop for diagnosis",
+        "current_observation": "WAIT_SPEED_EXCLUSIVE; no speed job started yet"
       },
       "batch_validation": {
         "status": "exact_b1_b2_b4_eight_groups_and_full32_gpu_pass_pending_exclusive_speed_grid",
