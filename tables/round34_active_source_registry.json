@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v13",
+  "registry_version": "round34-working-v14",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -124,6 +124,17 @@
           "paired_spearman_delta": -0.03441078612953123,
           "paired_r2_delta": -0.0385513098782956,
           "one_sided_p": 0.940288045244299,
+          "scope": "fold1 only; 10/10 GPU re-inference passed; not a ten-fold conclusion"
+        },
+        {
+          "task": "HEK TE fold1",
+          "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_te_HEK_fold1_round33_full_v4.json",
+          "sha256": "fccff69d4a635aaa4a5b579b2ba3283998249453e14c32a6e99dba6b919c6c60",
+          "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_te_HEK_fold1_qa.log",
+          "qa_log_sha256": "6f790735043965d9f9163d88a5c9fed2bb49d04a9c1f870d7310ec18661dbb48",
+          "paired_spearman_delta": -0.02956970157468929,
+          "paired_r2_delta": 0.003840152195231239,
+          "one_sided_p": 0.984159483563283,
           "scope": "fold1 only; 10/10 GPU re-inference passed; not a ten-fold conclusion"
         }
       ],

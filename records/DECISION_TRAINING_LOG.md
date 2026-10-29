@@ -10591,3 +10591,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第 15 页结论表和第 20 页论文逻辑链同步改为“NB 主 benchmark 8/8；原论文任务未显著为正”，并保留官方资产、RiNALMo splice QA、回归和十折未闭环限制。第 11/12 页讲者备注与来源同步更新。
 - 两张 working 图均重新通过原始 full result 和五种子配对断言生成，3840×1920 PNG/PDF 成功。第 11/12/15/20 页 Aspose 渲染无截断或内容重叠；全 21 页 layout=0、ZIP、markitdown 和运行级微软雅黑检查通过，文本变化严格限于第 5、9、10、11、12、15、17、20 页。
 - working PPT SHA256=`4d15311c10d1aebce39d86923e5fbf299651096c7b7f8021e963ca9fdfa0bb50`；图 7 源 JSON/PNG 哈希为 `fab6b04d...751d`/`e581c050...49e62`，图 8A 为 `d38ccf29...4230`/`62ff63bd...42dc`。活跃清单升级为 `round34-working-v13`，登记新路径、绘图代码、图片和范围声明；最终主图 5/7/8 仍待完整实验闭环。
+
+## §15.142（2026-10-29）HEK fold1 TE 全量结果与外部 QA
+
+- `rinalmo_te_HEK_fold1_round33_full_v4` 已完成 full 结果，主 watcher 于 01:38:36 UTC 记录 `returncode=0`，10/10 checkpoint 在 RTX 4090 重推理通过。result SHA256=`fccff69d4a635aaa4a5b579b2ba3283998249453e14c32a6e99dba6b919c6c60`，QA 日志 SHA256=`6f790735043965d9f9163d88a5c9fed2bb49d04a9c1f870d7310ec18661dbb48`。
+- 本地独立复算五种子：official/JEV Spearman 均值 0.506429/0.476859，Δ=-0.0295697016、delta SD=0.0204088501、单侧 p=0.9841594836；R² Δ=+0.0038401522、p=0.4347319787；PCC Δ=-0.0065294289、p=0.6779781196。与 result 完全一致，主指标 `significant_positive=false`，R² 小幅正值也不显著。
+- 原始结果与 QA 日志已归档，活跃清单升级为 `round34-working-v14`。该结果只描述 HEK TE fold1，保留全部数值，不进入显著正候选，不外推为十折结论。
+- 全稿 21 页缩略图总览已复核，未发现空白页或明显布局异常。当前剩余在训为 ArchiveII tRNA/5s、MRL full_v3 和 HEK fold2 TE/EL 共五项；HEK fold0 与 fold1 的 TE/EL 均已验收，folds2–9 继续受门推进。
