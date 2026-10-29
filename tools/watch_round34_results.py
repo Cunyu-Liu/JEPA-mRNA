@@ -55,8 +55,8 @@ def jobs() -> dict[str, dict]:
     if "ROUND34_QA_FOLDS" not in os.environ:
         for cell in ("Muscle", "pc3"):
             for task in ("te", "el"):
-                job = f"rinalmo_{task}_{cell}_fold0_round33_smoke_v4"
-                configs[job] = regression(job, task, cell, 0, "rinalmo_regression_dual_round33_v4.py", 2)
+                job = f"rinalmo_{task}_{cell}_fold0_round33_smoke32_v4"
+                configs[job] = regression(job, task, cell, 0, "rinalmo_regression_dual_round33_v4.py", 32)
     return configs
 
 

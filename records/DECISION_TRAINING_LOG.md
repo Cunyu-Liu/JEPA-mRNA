@@ -10750,3 +10750,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 官方 `uci-cbcl/UFold` `main` 仓库树没有 `.pt/.pth/.ckpt` 权重文件，releases 为空；未发现可替代 Drive 的官方 GitHub 分发。公开 Drive 文件夹 `1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi` 的直连元数据请求再次在 30 s 后超时，WebFetch 也未返回内容，因此 `ufold_train_alldata.pt` 的可获得性仍未核实，不声称权重被撤回。
 - 主图 5 的 UFold 继续保持 blocked，不用第三方镜像、其他模型或不同权重替代。活跃清单升级为 `round34-working-v30`，其余图件与 working PPT 不变。
+
+## §15.165（2026-10-29）smoke32 QA 配置修正与 ArchiveII 九家族受门接续
+
+- `watch_round34_results.py` 的 Muscle/PC3 注册项由旧的每折 2 条 smoke 改为 `smoke32_v4`，QA 同步传入 `--limit 32`，避免新结果无人验收。更新后 SHA256=`c123629fa53464708d052763abe22a368c778f50e5950473192e482b7cfb3549`；监视器已平滑重启，`--once` 显示注册 13 项、既有通过 6 项，未重复执行已通过 QA。
+- 新增 `run_archiveii_family_queue_round34.py`，SHA256=`2a08f2cb418ffe0fa707398bf889613c575fc94713f4a708892dc36b38fb7e8f`。冻结九家族顺序为 tRNA、5s、16s、23s、RNaseP、grp1、srp、telomerase、tmRNA；tRNA/5s 复用现有 QA 状态，后续七家族必须 `result.json=PASS` 且独立 GPU QA 通过后才放行下一项。
+- 队列仅在单卡空闲显存 ≥4096 MiB 时启动一个新家族，发现部分预测、非 PASS、QA 失败或无结果退出即停止，不覆盖既有结果、不转 CPU。`--once` 已逐项确认九家族注册无误，当前 free=3061 MiB，故只等待；队列已启动，尚无新增科学结果。
