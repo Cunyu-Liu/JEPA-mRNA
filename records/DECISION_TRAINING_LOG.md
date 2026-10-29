@@ -10668,3 +10668,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 本地独立复算五种子：official/JEV Spearman 均值 0.5319639029/0.4939781960，Δ=-0.0379857069、delta SD=0.0233857022、单侧 p=0.9889403949；R² 均值 0.2398925191/0.2148026501，Δ=-0.0250898691、p=0.9441751480；PCC Δ=-0.0312799179。主指标和 R² 均不显著为正，完整负结果保留。
 - 第三遍使用刚修复的真实 `load_fold` 再验收 fold2 TE：folds2–9 QA 路径、当前 result 哈希、checkpoint/prediction 哈希、样本数、收敛历史及 Spearman/R²/PCC 独立复算全部通过；official/JEV Spearman seed mean 与本地结果完全一致。
 - 原始结果和 QA 日志已归档，活跃清单升级为 `round34-working-v21`，真实聚合预检累计覆盖 50 个 run。fold2 EL 仍在训练，ArchiveII tRNA/5s 继续运行，bpRNA 只产生 smoke 并进入受门接续链；不生成十折 aggregate、不改正式主图 8B，也不把单 fold 或 smoke 写成科学结论。
+
+## §15.154（2026-10-29）PPT 同步 MRL 与 HEK fold2 TE 验收状态
+
+- 仅修改第 12、15、19 页的原生文字：第 12 页明确 MRL full_v3 已完成验收且 R² Δ=-0.468847、不显著为正，图 8B 仍待 TE/EL 十折；第 15 页将剩余回归待办收窄到 splice QA 与 TE/EL 十折；第 19 页更新为 MRL、HEK fold0–2 TE 和 fold0–1 EL 已 QA，其余继续受门推进。
+- 未修改第 12 页图 8A 图像，也未生成或插入正式主图 8B。保留既有蓝绿科研风格、微软雅黑、1.5 倍行距、表格和卡片布局；第 19 页采用单行短句，未增加卡片高度。
+- `fix_pptx`、目标页和全 21 页 layout 检查均为 0 issues，ZIP 完整性通过。markitdown 与修改前逐页对比确认仅第 12/15/19 页变化；665 个非空原生文本运行均为微软雅黑。Aspose 三页渲染无截断或重叠，预览水印不存在于 PPT 页面元素。
+- working PPT SHA256=`97b986116c63ded6692a7b7a3ba6b06a1cbdb260c64f39726fe94b3459cfabce`；更新脚本 SHA256=`2cd291118a288ea6bce821825541b23e8c8f51a206d4bca198a8cf54e537fe01`。同一文件已原子备份到远端 `/teams/.../figure_assets/round34/`，前后 SHA256 一致。活跃清单升级为 `round34-working-v22`；本更新只同步已验收事实，不改变主图 5/7/8 的未完成状态。

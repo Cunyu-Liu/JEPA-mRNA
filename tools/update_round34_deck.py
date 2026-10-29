@@ -181,9 +181,9 @@ def update_downstream_provenance(prs):
         ],
         12: [
             ("主图 8｜下游头迁移：ncRNA 三指标提升，回归任务小幅为正",
-             "主图 8A｜官方分类任务未显著为正；回归与剩余任务待验收", 2),
+             "主图 8A｜官方分类未显著为正；MRL 已验收为负，十折回归待闭环", 2),
             ("ncRNA 保留 accuracy / macro-F1 / balanced accuracy；MRL 与 TE-EL 保留 PCC。",
-             "官方 88 类 ncRNA 与 Spliceator 分类同页；RiNALMo splice 外部 cache QA、ArchiveII/bpRNA 与图 8B 待完成。", 1),
+             "MRL full_v3：R² Δ=-0.468847（不显著为正）；图 8B 待 TE/EL 十折，其余任务继续验收。", 1),
             ("合并原第 25、28a、36 页信息；splice 数据留档不进主文。新增任务必须完成预注册与统计后再加入。",
              "working 面板保留全部负结果；旧 177 类只作敏感性，不替代官方 88 类；图 8B 暂不入片。", 2),
             ("ROUND26 / ROUND28 / T-A129；frozen backbone 双头对照",
@@ -193,11 +193,11 @@ def update_downstream_provenance(prs):
             ("NucleicBERT 8/8 正增益；ncRNA 三指标提升",
              "NB 主 benchmark 8/8 正迁移；原论文下游任务未显著为正", 1),
             ("MRL/TE-EL 增益较小；新任务未完成前不得扩写为普遍优势",
-             "NB 其余官方资产 blocked；RiNALMo splice QA、回归与十折未闭环", 1),
+             "NB 其余官方资产 blocked；MRL 已验收为负，splice QA 与 TE/EL 十折未闭环", 1),
         ],
         19: [
             ("三组 MRL 已预注册；5-seed、early-stopping、paired t-test+Holm。",
-             "HEK fold0/fold1 TE/EL 已 QA；主 Spearman 均不显著为正；fold2–9 受门推进。", 1),
+             "MRL 与 HEK fold0–2 TE、fold0–1 EL 已 QA，主指标均不显著为正；其余受门推进。", 1),
         ],
         20: [
             ("大样本 ECE 改善；NB 8/8", "大样本 ECE 改善；NB 主 benchmark 8/8", 1),

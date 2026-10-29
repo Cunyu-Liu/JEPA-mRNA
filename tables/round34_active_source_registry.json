@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v21",
+  "registry_version": "round34-working-v22",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -231,10 +231,16 @@
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "edd14a4d49a1a55346ba84dc9b5e4a30bfc4264acaca0223597d86f96e77e569",
+    "sha256": "97b986116c63ded6692a7b7a3ba6b06a1cbdb260c64f39726fe94b3459cfabce",
     "layout_issues": 0,
     "font": "微软雅黑",
-    "line_spacing": 1.5
+    "line_spacing": 1.5,
+    "updated_slides": [12, 15, 19],
+    "content_update": "MRL full_v3 negative result and HEK fold2 TE QA status synchronized; figure images and all other slide text unchanged",
+    "update_code": "/private/tmp/rnajev_audit/round34_ppt/update_round34_deck.py",
+    "update_code_sha256": "2cd291118a288ea6bce821825541b23e8c8f51a206d4bca198a8cf54e537fe01",
+    "remote_backup": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/figure_assets/round34/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
+    "qa": "edited-slide and full-deck layout=0; ZIP, markitdown, 665 native-text font checks and Aspose slide 12/15/19 rendering passed; only slides 12/15/19 changed from the prior working deck"
   },
   "legacy_source_snapshot": {
     "path": "/private/tmp/rnajev_audit/remote_current_20261028/round32_figure_source_data.merged.json",
