@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v28",
+  "registry_version": "round34-working-v29",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -156,11 +156,20 @@
     "fig07": {
       "status": "working_with_explicit_blocked_tasks",
       "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_source.json",
-      "figure_source_sha256": "fab6b04dd51df59dfa779408c6a33a22c0d5449a72ba522c699051bf3ca5751d",
+      "figure_source_sha256": "9e825e673e4b0ec2f38bf729aa97ea84577f354163a1a7bde38b84194773b320",
       "rendered_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_3840x1920.png",
-      "rendered_png_sha256": "e581c05036b7f3d8382b5a7b697f289ca9c1e654aee7337b46f514d8e5b49e62",
+      "rendered_png_sha256": "bf15a63aa3e087e090e14c1c14bab95d869466ce713683c0611096e1b9afd3c5",
+      "rendered_pdf": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_3840x1920.pdf",
+      "rendered_pdf_sha256": "2dca984b176192bc9b71b8468f07241ea614e9bf19312a5405f4f89f1192eca2",
+      "original_tasks_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_original_tasks_working_3840x1920.png",
+      "original_tasks_png_sha256": "b03d7fa0b6d3600c4f1b21da807803b31e12044d0c387cafd65e78e8567d62fd",
+      "original_tasks_source_json": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_original_tasks_working_source.json",
+      "original_tasks_source_json_sha256": "74c8978564c7081200b6c41d87be1be978c82f197ce71348771a098c7722a37e",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_combined_round33.py",
-      "plotting_code_sha256": "40bd3dd7ec1112eeaca5a2360fc123d73d5425e5579a6e107de9e46c727e005e",
+      "plotting_code_sha256": "2d4a01eaeebf21f6b526e12b3c6afa2c2ac30917efbcb3f21f30d1432f99e805",
+      "original_plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_round33.py",
+      "original_plotting_code_sha256": "a5c7cd854d3a76331f1eac9900af20b9db2283e37ed4840c3800bff2edddb926",
+      "holm_status": "PASS",
       "completed_original_tasks": ["splice_acceptor", "splice_donor", "cpeb3_fitness"],
       "blocked_original_tasks": ["secondary_structure", "contact_distance_maps", "natural_vs_shuffled"],
       "official_asset_audit": {
@@ -184,11 +193,14 @@
     "fig08a": {
       "status": "working_external_qa_complete_pending_structure_and_regression_panels",
       "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_source.json",
-      "figure_source_sha256": "b890027bfdb46de7384fcac0aff59f7b3d1e564147ca31e5810d4e2b9ab35410",
+      "figure_source_sha256": "ee033ff585e9c54f3061e3ac7be847a30563ea11ee42270b5ad4f663927cf2fd",
       "rendered_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_3840x1920.png",
-      "rendered_png_sha256": "aa68248e419688018b739a3d11ea608c1e5bbcc88d198feb0a3d560d5190dccd",
+      "rendered_png_sha256": "0dc049fcf3e2da99c270057b456d52ab236b978471ba1a57ac91ab052fa2edaa",
+      "rendered_pdf": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_3840x1920.pdf",
+      "rendered_pdf_sha256": "6f299040d7a09a9b1e1c8deaf57bb9005ddef489b1832c0bba2a393ecf304d6a",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure8_round33.py",
-      "plotting_code_sha256": "79607a97ba8931b3428d6be3c8976837eb1876610387b69130ec5af9c0756664",
+      "plotting_code_sha256": "0f02ee2f8e1e047d617d8bc294c99f76235755d5c3ab1bdf5f565bd96907fe3a",
+      "holm_status": "PASS",
       "note": "Official 88-class ncRNA and RiNALMo Spliceator acceptor/donor have external RTX 4090 QA; all values retained"
     },
     "fig08b": {
@@ -333,16 +345,16 @@
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "72717e223976d3a66ce7e044007ddb36cfbb75c95ace7811db2a49c619f56cb1",
+    "sha256": "996338d1c1b1ac417285c24e2d08ebdb3f952ccfe91cbf875519da632e40929e",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5,
-    "updated_slides": [19],
-    "content_update": "HEK fold2 EL external GPU QA completed; slide 19 now reports MRL and fold0-2 TE/EL accepted, fold3 gated continuation",
+    "updated_slides": [11, 12],
+    "content_update": "Figure 7 and Figure 8A now display family-wise Holm-adjusted p-values; all seven completed classification tasks remain nonsignificant positive and all negative results are retained",
     "update_code": "/private/tmp/rnajev_audit/round34_ppt/update_round34_deck.py",
     "update_code_sha256": "e9847fe50a54f7746f0fe0fd6594fc544d6a2b65171289c6ca5dbe14cc973d20",
     "remote_backup": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/figure_assets/round34/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "qa": "edited-slide and full-deck layout=0; ZIP, markitdown, 665 native-text font checks and Aspose slide 19 rendering passed; only slide 19 text changed and all media stayed byte-identical"
+    "qa": "only slides 11/12 media changed; all 21 slide texts and shape counts stayed identical; markitdown before/after identical; ZIP, layout=0, 278 Microsoft YaHei runs and 278 effective 1.5-spacing paragraphs passed; LibreOffice slide 11/12 renders reviewed without overlap, clipping or text-figure mismatch"
   },
   "legacy_source_snapshot": {
     "path": "/private/tmp/rnajev_audit/remote_current_20261028/round32_figure_source_data.merged.json",

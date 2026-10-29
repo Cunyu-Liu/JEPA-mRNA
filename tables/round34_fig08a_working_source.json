@@ -33,7 +33,9 @@
       "delta": -0.0003575000000000328,
       "p_value": 0.5126944093379351,
       "result_sha256": "6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f",
-      "source_result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_acceptor_round33_full_v1.json"
+      "source_result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_acceptor_round33_full_v1.json",
+      "holm_p_value": 1.0,
+      "significant_positive_holm": false
     },
     "donor": {
       "task": "donor",
@@ -66,7 +68,9 @@
       "delta": 0.0006450000000000067,
       "p_value": 0.4305079375393121,
       "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c",
-      "source_result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_donor_round33_full_v1.json"
+      "source_result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_donor_round33_full_v1.json",
+      "holm_p_value": 1.0,
+      "significant_positive_holm": false
     },
     "clean": {
       "task": "clean",
@@ -99,7 +103,9 @@
       "delta": -0.0006766593914254049,
       "p_value": 0.659696977396977,
       "result_sha256": "9f9c917f06c096ccd819fac732229f7b4d7badc84c3afd08cd01d9b591044cea",
-      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_ncrna_clean_round33_full_v1_result.json"
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_ncrna_clean_round33_full_v1_result.json",
+      "holm_p_value": 1.0,
+      "significant_positive_holm": false
     },
     "bn200": {
       "task": "bn200",
@@ -132,10 +138,14 @@
       "delta": -0.007500545730722496,
       "p_value": 0.9488427254880585,
       "result_sha256": "7d0c8a9c744edd32293444e76d3fb46175f83dc276b77df028841bf69ca1eaa7",
-      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_ncrna_bn200_round33_full_v1_result.json"
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_ncrna_bn200_round33_full_v1_result.json",
+      "holm_p_value": 1.0,
+      "significant_positive_holm": false
     }
   },
   "significant_positive_tasks": [],
+  "holm_status": "PASS",
+  "significant_positive_tasks_holm": [],
   "qa_scope": "Official 88-class ncRNA clean/bn200 and RiNALMo Spliceator acceptor/donor all have external RTX 4090 QA",
-  "note": "RiNALMo donor is positive but nonsignificant; no significant-positive classification task is claimed"
+  "note": "RiNALMo donor is positive but nonsignificant after Holm correction; no significant-positive classification task is claimed"
 }

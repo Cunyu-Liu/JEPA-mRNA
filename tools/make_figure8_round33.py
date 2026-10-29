@@ -80,8 +80,11 @@ def draw_task(ax, rows, ylim):
                     ha="right" if offset < 0 else "left", va="bottom", fontsize=8.5,
                     color=color, fontweight="bold")
         delta_color = TEAL if row["delta"] > 0 else C["red"]
+        p_label = "p_Holm" if "holm_p_value" in row else "p"
+        p_value = row.get("holm_p_value", row["p_value"])
+        p_text = "NA" if p_value is None else f"{p_value:.3f}"
         ax.text(x[index], ylim[0] + 0.003,
-                f"Δ={row['delta']:+.4f}\np={row['p_value']:.3f} (n.s.)",
+                f"Δ={row['delta']:+.4f}\n{p_label}={p_text} (n.s.)",
                 ha="center", va="bottom", fontsize=8.5, color=delta_color, linespacing=1.35)
     ax.set_xticks(x, [row["label"] for row in rows], fontsize=9.5)
     ax.set_xlim(-0.38, len(rows) - 0.42)
@@ -99,11 +102,14 @@ def main():
         assert np.isclose(row["heads"]["jev_head"]["mean"], registered["jev_head_mean"], rtol=0, atol=1e-12)
         assert np.isclose(row["delta"], registered[spec["delta"]], rtol=0, atol=1e-12)
 
+    holm_status = common.apply_holm(rows)
     payload = {"figure_status": "working_external_qa_complete_pending_archiveII_bpRNA_and_regression_panel",
                "protocol": "frozen RiNALMo; official head vs JEV head; full data; five seeds; mean±sample SD",
                "tasks": rows, "significant_positive_tasks": [],
+               "holm_status": holm_status,
+               "significant_positive_tasks_holm": [key for key, row in rows.items() if row.get("significant_positive_holm")],
                "qa_scope": "Official 88-class ncRNA clean/bn200 and RiNALMo Spliceator acceptor/donor all have external RTX 4090 QA",
-               "note": "RiNALMo donor is positive but nonsignificant; no significant-positive classification task is claimed"}
+               "note": "RiNALMo donor is positive but nonsignificant after Holm correction; no significant-positive classification task is claimed"}
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "fig08a_rinalmo_classification_working_source.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -116,10 +122,12 @@ def main():
     handles = [plt.Line2D([0], [0], marker="o", color=C["grey"], lw=0, markersize=7, label="Official head"),
                plt.Line2D([0], [0], marker="s", color=C["blue"], lw=0, markersize=7, label="JEV head")]
     a.legend(handles=handles, loc="upper right", fontsize=9)
-    fig.text(0.5, 0.035,
-             "Full-dataset, five-seed paired comparisons; error bars show sample SD. All four results are nonsignificant.\n"
-             "External QA complete for Spliceator and 88-class ncRNA; ArchiveII/bpRNA and the regression panel remain pending.",
-             ha="center", va="bottom", fontsize=8.8, color=C["muted"], linespacing=1.5)
+    footer = ("Full-dataset, five-seed paired comparisons; error bars show sample SD. Holm-adjusted p-values and all negative results are retained.\n"
+              "External QA complete for Spliceator and 88-class ncRNA; ArchiveII/bpRNA and the regression panel remain pending."
+              if holm_status == "PASS" else
+              "Full-dataset, five-seed paired comparisons; error bars show sample SD. Raw p-values are shown because Holm is undefined.\n"
+              "Working panel: no final significance claims; remaining tasks continue under the preregistered gates.")
+    fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.8, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.075, right=0.98, top=0.85, bottom=0.20, wspace=0.28)
     png = OUT / "fig08a_rinalmo_classification_working_3840x1920.png"
     pdf = OUT / "fig08a_rinalmo_classification_working_3840x1920.pdf"

@@ -10730,3 +10730,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 本地与远端均通过完整形式、零方差、有限 p 值 Holm 数值、缺文件、重复 fold 和非有限值测试，输出 `FIG08B_HOLM_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。测试独立复算排序后 Holm 校正值，未直接调用被测函数代替验证。
 - 工程预览中的 `p_Holm` 标签和页脚状态无重叠，但 synthetic preview 不作为科学证据。绘图代码 SHA256=`e7ee845d270847ecbd8094e5c746b6861ad656bd7ccdb8de128dd8767c1e8b1c`，测试代码 SHA256=`ba86e1e5662777d59c57c76f884920dc73312cf90ac89ac8d6ba790fad7e744f`。
 - 活跃清单升级为 `round34-working-v28`。真实 MRL 已验收，但 TE/EL 十折和分类/结构任务仍未闭环，因此没有生成正式主图 8B，PPT 未修改。
+
+## §15.162（2026-10-29）主图 7/8A 分类家族 Holm 校正与 PPT 三通道质检
+
+- `make_figure7_round33.py`、`make_figure7_combined_round33.py` 和 `make_figure8_round33.py` 已保留原始单侧配对 p 值，并分别对 NucleicBERT 三个原论文任务、RiNALMo 四个分类任务实施家族内 Holm-Bonferroni 校正；图面统一显示 `p_Holm`，不再只报未校正显著性。
+- 独立复算通过：NB acceptor/donor/CPEB3 的 Δ 分别为 −0.0051775/−0.0043425/−0.0025854437，RiNALMo acceptor/donor/clean/bn200 的 Δ 分别为 −0.0003575/+0.000645/−0.0006766594/−0.0075005457；七项 `p_Holm` 均为 1.000，均无校正后显著正提升。全部负结果与不显著结果保留，未改写成全任务正迁移。
+- 使用真实已验收源 JSON 重新生成图 7 original/combined 和图 8A。图 7 combined source/PNG/PDF SHA256 分别为 `9e825e67...b320`、`bf15a63a...3c5`、`2dca984b...ca2`；图 8A source/PNG/PDF 分别为 `ee033ff5...2fd`、`0dc049fc...daa`、`6f299040...d6a`。三份绘图代码 SHA256 分别为 `a5c7cd85...926`、`2d4a01ea...805`、`0f02ee2f...e3a`。
+- working PPT 仅替换第 11、12 页对应媒体；全部 21 页文本与 shape 数不变，markitdown 修改前后逐字一致，ZIP 完整、shape 越界为 0，278 个文本 run 均为微软雅黑，278 个段落的有效行距均为 1.5。Aspose 因本机缺 `libgdiplus` 未能渲染，未误记为版式失败；改用 LibreOffice 实际渲染第 11、12 页并逐图检查，无重叠、截断或图文不匹配。
+- 活跃清单升级为 `round34-working-v29`，working PPT SHA256=`996338d1c1b1ac417285c24e2d08ebdb3f952ccfe91cbf875519da632e40929e`。本轮只闭环分类端 Holm 与其 working PPT 质检；NucleicBERT 三项官方资产缺口、正式图 5、TE/EL 十折、ArchiveII/bpRNA/Muscle/PC3 与正式图 8B 仍未闭环，不能据此宣称整个课题完成。

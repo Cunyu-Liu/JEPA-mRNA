@@ -1,5 +1,6 @@
 {
   "figure_status": "working_pending_remaining_original_task_assets",
+  "holm_status": "PASS",
   "main_benchmark": {
     "splits": [
       "TS0",
@@ -67,7 +68,9 @@
       "delta": -0.0051774999999999235,
       "p_value": 0.8675878224847565,
       "result_sha256": "cb79a922a27b7fa9f573d1a39cf86d2ba565ac269fcc6edc748fb88a15f9be2e",
-      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_splice_acceptor_round33_full_result.json"
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_splice_acceptor_round33_full_result.json",
+      "holm_p_value": 1.0,
+      "significant_positive_holm": false
     },
     "donor": {
       "task": "donor",
@@ -100,7 +103,9 @@
       "delta": -0.004342500000000004,
       "p_value": 0.976145935694066,
       "result_sha256": "64ffc8f3ce9310dd5542aff7a874fb6c731ed1601ed3612385de42e03d2e2097",
-      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_splice_donor_round33_full_result.json"
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_splice_donor_round33_full_result.json",
+      "holm_p_value": 1.0,
+      "significant_positive_holm": false
     },
     "cpeb3": {
       "task": "cpeb3",
@@ -133,7 +138,9 @@
       "delta": -0.002585443659544606,
       "p_value": 0.6003333991817903,
       "result_sha256": "43517c79cce5518d9397f69765858d77f082cefcd4f3e41b1ae7dc0886778ca6",
-      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_cpeb3_round33_full_result.json"
+      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/nb_cpeb3_round33_full_result.json",
+      "holm_p_value": 1.0,
+      "significant_positive_holm": false
     }
   },
   "blocked_original_tasks": [
