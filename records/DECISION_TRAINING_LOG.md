@@ -10661,3 +10661,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 已改为 fold0/1 读取 `audits/round34_qa_watch/`，fold2–9 读取 `audits/round34_qa_watch_folds2_9/`；回执必须同时包含当前 result SHA256、`scope=full`、`runs=10` 和 `cuda_device=NVIDIA GeForce RTX 4090`，旧训练日志或无 GPU 信息的记录不能放行。
 - 回归测试已改成训练 launch.log 无 QA 标记、真实 QA 只在 audits 目录的形式，因此能覆盖本次缺陷。本地与远端 `py_compile` 和 `TE_EL_AGGREGATOR_SYNTHETIC_TEST_PASS` 均通过；聚合器 SHA256=`f211b964fd12a4cf83a80058f41783c97150f5d6f14385cd4dbfce2e66aa3879`，测试 SHA256=`efb18e81e371fcd03d3a7a442475e969272ede7f2fb7167a7b3546d78881c7ff`。
 - 在远端对已有 HEK fold0/fold1 TE/EL 调用真实 `load_fold` 预检，四项均通过：共 40 个 run 的 checkpoint/prediction 哈希、样本数、收敛历史和独立 Spearman/R²/PCC 复算一致，QA 路径与哈希绑定正确。未生成十折 aggregate，fold2–9 仍须完成各自结果和 GPU QA；活跃清单升级为 `round34-working-v20`。
+
+## §15.153（2026-10-29）HEK fold2 TE 全量结果与三遍独立验收
+
+- `rinalmo_te_HEK_fold2_round33_full_v4` 已生成 full 结果，folds2–9 watcher 于 07:46:56 UTC 记录 `returncode=0`，10/10 checkpoint 在 RTX 4090 重推理通过。result SHA256=`6e7b2704128bbbd1000f8ecc440588f439a0423df971bed07c3eacc94b91bae2`，QA 日志 SHA256=`fb6d4d8ae4119198fafa7e42967ff77e31be2da7f666263d61f035423bfe6b05`。
+- 本地独立复算五种子：official/JEV Spearman 均值 0.5319639029/0.4939781960，Δ=-0.0379857069、delta SD=0.0233857022、单侧 p=0.9889403949；R² 均值 0.2398925191/0.2148026501，Δ=-0.0250898691、p=0.9441751480；PCC Δ=-0.0312799179。主指标和 R² 均不显著为正，完整负结果保留。
+- 第三遍使用刚修复的真实 `load_fold` 再验收 fold2 TE：folds2–9 QA 路径、当前 result 哈希、checkpoint/prediction 哈希、样本数、收敛历史及 Spearman/R²/PCC 独立复算全部通过；official/JEV Spearman seed mean 与本地结果完全一致。
+- 原始结果和 QA 日志已归档，活跃清单升级为 `round34-working-v21`，真实聚合预检累计覆盖 50 个 run。fold2 EL 仍在训练，ArchiveII tRNA/5s 继续运行，bpRNA 只产生 smoke 并进入受门接续链；不生成十折 aggregate、不改正式主图 8B，也不把单 fold 或 smoke 写成科学结论。
