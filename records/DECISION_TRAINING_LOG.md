@@ -10889,3 +10889,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - `cv_aggregation.real_fold_preflight` 已更新为 HEK fold0/fold1/fold2 TE/EL 加 fold3 TE，共 70 个 run 的 checkpoint/prediction 哈希和独立指标全部通过。旧 60-run 文本不再作为当前状态。
 - 该计数仅是 fold 级预检覆盖范围，仍不生成十折 aggregate，也不改变 fold3 EL 和其他 folds 的待办。active registry 升级为 `round34-working-v37`。
+
+## §15.186（2026-10-30）working PPT 第19页 fold3 TE 状态同步与全门 QA
+
+- 仅将第19页 T-A129 状态从“fold3 起受门推进”改为“MRL 与 HEK fold0–2 TE/EL、fold3 TE 已 QA，均不显著为正；fold3 EL 待续接”。其他文本、页面、图件和 18 个媒体文件均未改变，markitdown 差异仅此一句。
+- `fix_pptx`、编辑页及全 21 页 `validate_layout` 均为 0 issues；ZIP 完整性通过。665 个非空文本 run 均为微软雅黑，665 个有效 1.5 倍行距段落通过。Aspose 第19页渲染无重叠、截断或字号不适配，评估水印仅存在于 QA 渲染。
+- 更新后 PPT SHA256=`3812233a5b71309575806a807403c6a012911b35d361ec55079fece433f626df`，可复现更新代码 SHA256=`3cd6dbd6fdc11a04a0d8dae2c316744785a8b421e35ae534ba3ff040e25f6806`。active registry 升级为 `round34-working-v38`，SHA256=`39595f2b0fe1bdacaed61620a2d16cca59487f7932b0cf1ecfae8fec72be1557`，updated_slides=[11,12,15,19]。

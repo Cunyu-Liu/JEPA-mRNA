@@ -229,6 +229,15 @@ def update_downstream_provenance(prs):
                 replace_run_text(slide.notes_slide, old, new, 1)
 
 
+def update_fold3_te_status(prs):
+    replace_run_text(
+        prs.slides[18],
+        "MRL 与 HEK fold0–2 TE/EL 已 QA，主指标均不显著为正；fold3 起受门推进。",
+        "MRL 与 HEK fold0–2 TE/EL、fold3 TE 已 QA，均不显著为正；fold3 EL 待续接。",
+        1,
+    )
+
+
 def rebuild_fig6(slide):
     for index, shape in enumerate(list(slide.shapes)):
         if index < 6:
@@ -326,6 +335,7 @@ def main():
     update_speed_provenance(prs)
     update_downstream_provenance(prs)
     update_secondary_data_status(prs)
+    update_fold3_te_status(prs)
     prs.save(OUT)
     print(f"ROUND34_DECK_WORKING_WRITTEN {OUT}")
 
