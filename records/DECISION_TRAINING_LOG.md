@@ -10598,3 +10598,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 本地独立复算五种子：official/JEV Spearman 均值 0.506429/0.476859，Δ=-0.0295697016、delta SD=0.0204088501、单侧 p=0.9841594836；R² Δ=+0.0038401522、p=0.4347319787；PCC Δ=-0.0065294289、p=0.6779781196。与 result 完全一致，主指标 `significant_positive=false`，R² 小幅正值也不显著。
 - 原始结果与 QA 日志已归档，活跃清单升级为 `round34-working-v14`。该结果只描述 HEK TE fold1，保留全部数值，不进入显著正候选，不外推为十折结论。
 - 全稿 21 页缩略图总览已复核，未发现空白页或明显布局异常。当前剩余在训为 ArchiveII tRNA/5s、MRL full_v3 和 HEK fold2 TE/EL 共五项；HEK fold0 与 fold1 的 TE/EL 均已验收，folds2–9 继续受门推进。
+
+## §15.143（2026-10-29）实验状态页同步 HEK fold0/fold1 验收状态
+
+- 第 19 页 T-A129 卡片已更新为：HEK fold0/fold1 TE/EL 已完成 QA，主 Spearman 均不显著为正，fold2–9 受门推进。该展示只同步 §15.140–§15.142 的 fold 级证据，不新增十折或三细胞结论。
+- 第 19 页 Aspose 渲染无溢出，单页及全 21 页 layout=0，ZIP 和运行级微软雅黑检查通过。markitdown 对比确认新增文本变化仅第 19 页，既有其他页面保持上一轮内容。
+- working PPT SHA256=`edd14a4d49a1a55346ba84dc9b5e4a30bfc4264acaca0223597d86f96e77e569`；`update_round34_deck.py` SHA256=`68ea10e7c7b66be293e353ed502fc14163520382a8d93c7ca8e14828c080b584`。活跃清单升级为 `round34-working-v15`。

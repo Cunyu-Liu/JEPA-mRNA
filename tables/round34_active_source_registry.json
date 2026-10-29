@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v14",
+  "registry_version": "round34-working-v15",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -154,7 +154,7 @@
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "4d15311c10d1aebce39d86923e5fbf299651096c7b7f8021e963ca9fdfa0bb50",
+    "sha256": "edd14a4d49a1a55346ba84dc9b5e4a30bfc4264acaca0223597d86f96e77e569",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5

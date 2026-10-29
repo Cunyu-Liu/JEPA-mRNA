@@ -195,6 +195,10 @@ def update_downstream_provenance(prs):
             ("MRL/TE-EL 增益较小；新任务未完成前不得扩写为普遍优势",
              "NB 其余官方资产 blocked；RiNALMo splice QA、回归与十折未闭环", 1),
         ],
+        19: [
+            ("三组 MRL 已预注册；5-seed、early-stopping、paired t-test+Holm。",
+             "HEK fold0/fold1 TE/EL 已 QA；主 Spearman 均不显著为正；fold2–9 受门推进。", 1),
+        ],
         20: [
             ("大样本 ECE 改善；NB 8/8", "大样本 ECE 改善；NB 主 benchmark 8/8", 1),
             ("ncRNA 三指标提升", "原论文任务未显著为正", 1),
