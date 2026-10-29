@@ -10902,3 +10902,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - queue dry-run 通过：4 个已验证 B=1 结果，14 个待测 job；未启动 GPU 工作。本地 mock 测试覆盖等待后完成、非独占失败停止、独占竞争重试后完成，均通过。
 - 已以 `flock /tmp/rnajev_speed_grid_round34.lock` 启动 detached queue，PID=923399，日志为 `audits/round34_speed_grid_queue/queue.log`。当前仅 `WAIT_SPEED_EXCLUSIVE`，没有其他 GPU 进程时才启动正式测速；模型/CUDA/依赖/数据失败不盲目重试，只有明确独占竞争才重试。
 - active registry 升级为 `round34-working-v39`，记录 queue 路径、哈希、PID、日志和重试边界；尚无新的科学测速结果。
+
+## §15.188（2026-10-30）Muscle TE smoke32 工程门三通道验收（非科学结果）
+
+- `rinalmo_te_Muscle_fold0_round33_smoke32_v4` 已生成 PASS，result SHA256=`d0942f247bc46bfeda90f7c162476a9c2a1f0e4cda640f8a74f5b1f91a6961ce`。协议明确标记 `engineering_smoke_subset_not_scientific_result`，train/validation/test 均为 32 条；official/JEV 各五种子全部 CUDA、converged、early-stopped，且 epochs_run=best_epoch+32。
+- 独立 RTX 4090 QA 已完成 10/10 best checkpoint 重推，QA log SHA256=`c957ef55a9c6087d9303a3ff45082689f36e6ee236df630f9b56c5b098c46968`，回执绑定当前 result 哈希、scope=smoke 和 runs=10。本地下载后再次核对文件哈希、样本数、种子、收敛状态、均值和配对统计，全部一致。
+- 此项只解除 Muscle TE 的工程 smoke 门，不是 TE/EL 科学结果，不进入图 8B，也不单独放行 Muscle 全量十折。Muscle EL 与 pc3 TE/EL smoke 仍待各自 result 和当前哈希 GPU QA；同细胞 TE/EL 两项均通过后才允许 full 队列接续。active registry 升级为 `round34-working-v40`。

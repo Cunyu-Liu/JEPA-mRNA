@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v39",
+  "registry_version": "round34-working-v40",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -253,6 +253,24 @@
     "fig08b": {
       "status": "mrl_full_v3_gpu_qa_pass_pending_te_el_ten_fold_results",
       "required_results": ["Muscle/pc3/HEK TE and EL complete ten-fold Spearman aggregation"],
+      "engineering_smoke32": {
+        "status": "muscle_te_gpu_qa_pass_muscle_el_and_pc3_pending",
+        "scientific_eligibility": false,
+        "completed": [
+          {
+            "task": "Muscle TE fold0 smoke32",
+            "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_te_Muscle_fold0_round33_smoke32_v4.json",
+            "sha256": "d0942f247bc46bfeda90f7c162476a9c2a1f0e4cda640f8a74f5b1f91a6961ce",
+            "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_te_Muscle_smoke32_qa.log",
+            "qa_log_sha256": "c957ef55a9c6087d9303a3ff45082689f36e6ee236df630f9b56c5b098c46968",
+            "gpu_reinference_runs": 10,
+            "sample_counts": {"train": 32, "validation": 32, "test": 32},
+            "scope": "engineering smoke only; independent statistics matched the result, but no scientific conclusion or figure update is permitted"
+          }
+        ],
+        "pending": ["Muscle EL smoke32 and GPU QA", "pc3 TE/EL smoke32 and GPU QA"],
+        "full_release_gate": "both TE and EL smoke32 results for the same cell line must pass current-hash external RTX 4090 QA before any full fold is launched"
+      },
       "completed_full_results": [
         {
           "task": "official varying-length MRL full_v3",
