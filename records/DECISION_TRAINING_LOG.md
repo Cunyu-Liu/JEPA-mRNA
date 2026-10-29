@@ -10616,3 +10616,15 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - v16 台账、清单、聚合脚本和测试脚本已同步远端 `/home/rna_jev`，四个文件替换前后 SHA256 均匹配，两个 Python 文件均通过远端 `py_compile`。
 - 首次远端测试因默认 `FIGURE8B_SCRIPT` 指向本地 `/private/tmp` 而未执行；改用 `/home/rna_jev/tools/make_figure8b_round33.py` 后，进一步发现 `lucaone` 环境缺少 matplotlib。备用系统 Python 检查连续两次遭遇 SSH 握手重置，因此远端工程测试没有完成，不记为 PASS。
 - 本地完整形式、缺文件、重复 fold 和非有限值测试均已通过；远端仅确认代码一致性和语法有效性，尚不确认远端绘图运行环境。后续选择已有 matplotlib/scipy/PIL 的环境或补齐依赖后重跑，科学结果与正式主图 8B 状态不变。
+
+## §15.146（2026-10-29）远端 matplotlib 已补装，工程测试待连接恢复
+
+- 两个远端 Python 环境均确认缺少 matplotlib。已在 `lucaone` 通过指定镜像成功安装 matplotlib 3.10.9（同时安装 pillow 12.3.0 及其依赖），没有升级 numpy 或修改训练代码、数据和权重。
+- 安装后连续两次调用 `FIGURE8B_SCRIPT=/home/rna_jev/tools/make_figure8b_round33.py` 执行工程测试，分别出现连接关闭和 `kex_exchange_identification` 重置，测试尚未实际运行，不记为 PASS。
+- 本地聚合门测试已通过，远端依赖缺口已修复；待连接恢复后仍需实际完成远端完整形式、重复 fold 和非有限值测试，才能关闭 §15.145 的环境待办。
+
+## §15.147（2026-10-29）远端主图 8B 聚合门工程测试通过
+
+- SSH 恢复后，使用 `FIGURE8B_SCRIPT=/home/rna_jev/tools/make_figure8b_round33.py` 和 `lucaone` 新安装的 matplotlib 3.10.9 实际执行远端测试，返回码为 0，输出 `FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。
+- 本地与远端现均验证：完整七任务形式数据可生成、缺失文件拒绝、重复 fold 拒绝、非有限 Spearman 拒绝。§15.145 的远端环境待办关闭，活跃清单升级为 `round34-working-v17` 并登记远端 Python、matplotlib 版本和通过标记。
+- 该通过仅证明工程聚合门有效，不产生正式主图 8B 或十折科学结论；真实 MRL、三细胞 TE/EL 完整结果仍需按原协议完成。

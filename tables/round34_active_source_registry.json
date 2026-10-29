@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v16",
+  "registry_version": "round34-working-v17",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -145,6 +145,9 @@
         "finite_values": "all per-fold Spearman values must be finite",
         "duplicate_fold_rejection": true,
         "nonfinite_rejection": true,
+        "remote_test_status": "PASS on RTX 4090 host using /home/rna_jev/tools and lucaone matplotlib 3.10.9; output FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS",
+        "remote_python": "/root/miniconda3/envs/lucaone/bin/python",
+        "remote_matplotlib": "3.10.9",
         "code": "/private/tmp/rnajev_audit/round33/make_figure8b_round33.py",
         "code_sha256": "1caff313d28d0aabf5939ca1a0330cc517568139a4e4cd2394e1e9fb9acdbf78",
         "test": "/private/tmp/rnajev_audit/round33/test_make_figure8b_round33.py",
