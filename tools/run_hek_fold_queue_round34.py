@@ -134,6 +134,7 @@ def main() -> int:
     args = parser.parse_args()
     for fold in range(2, 10):
         processes = dict(EXTERNAL_FOLD2_PIDS) if fold == 2 else dict(EXTERNAL_FOLD3_PIDS) if fold == 3 else {}
+        resume_attempted = False
         while True:
             waiting_tasks = set()
             if fold == 3 and args.resume_fold3_el and not args.once:
@@ -141,9 +142,10 @@ def main() -> int:
                 el_alive = external_alive(el_process) if isinstance(el_process, int) else el_process and el_process.poll() is None
                 if result_status("el", fold) == "missing" and not el_alive:
                     processes.pop("el", None)
-                    if free_mib() >= args.min_free_mib:
+                    if not resume_attempted and free_mib() >= args.min_free_mib:
                         processes["el"] = launch_resume("el", fold, args.min_free_mib)
-                    else:
+                        resume_attempted = True
+                    elif not resume_attempted:
                         waiting_tasks.add("el")
             state = fold_state(fold, processes, waiting_tasks=waiting_tasks)
             if args.once:

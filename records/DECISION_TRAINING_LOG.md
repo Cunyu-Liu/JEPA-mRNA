@@ -10828,3 +10828,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 原训练器在 early-stopping 触发时先 break 后打印，最后 epoch 无日志；续接结果将该点明确写为 `null`，不补造 loss，best epoch 使用 checkpoint 全精度值。五个 official 的历史长度、best+32、连续性和 unlogged-final 标记均通过 CPU 预检；真正恢复仍须 GPU 重推和外部 QA。
 - 更新 `run_hek_fold_queue_round34.py` SHA256=`e398809bf0e7af7920f5ec93424b21ae9b460de59fc9f9650f62d66cb4e35376`：默认发现 fold3 部分失败即停止，只有显式 `--resume-fold3-el` 且单任务空闲显存 ≥4096 MiB 才续接 EL；TE 由原 PID 接管，不重复启动。静态编译、失败/等待/进程退出状态测试，以及低显存不启动、高显存只启动 EL 的主循环模拟均通过。
 - 两个续接脚本已上传 GitHub `198f5ad79c8f859b09a8e55f24b1b7961c63c72c`。新受门队列 PID=891317 已启动，当前仅等待显存，尚无 resume 进程或 fold3 EL 结果；后续仍按 result→独立 GPU QA→下一折顺序推进。
+
+## §15.177（2026-10-30）续接队列单次放行与重复日志边界复核
+
+- 独立代码审查发现：旧续接队列若在 resume 无结果退出后进入下一轮，可能再次启动 EL；同一 seed 的失败训练日志也可能与后续成功尝试混读。已只终止旧队列 PID=891315/891317，未触碰 fold3 TE；终止时没有任何 resume 进程，因此没有训练被中断或重复。
+- `run_hek_fold_queue_round34.py` 现以 `resume_attempted` 实施单实例单次人工续接：恢复进程无结果退出后硬停止，不再自动重试；生产启动继续使用 `flock /tmp/hek_fold_queue_round34.lock`。修正后 SHA256=`03e27666b2c47de4dcd7168b8dcf1d11bf070de1a610c8fde41be7f9f061c832`。主循环模拟证明第一次恢复退出后只调用一次 launch，未启动原始 TE/EL 训练。
+- `resume_rinalmo_regression_round34.py` 现只采用完成标记前最近一次 epoch=1 开始的连续尝试，并要求完成标记 best epoch 与 checkpoint 完全一致；部分 artifact 无完成标记仍硬失败，不擅自覆盖。修正后 SHA256=`d422f10aed997f9a9f857aabeab86adb66329b6934578f44c6cef4716ca36f2d`。
+- 远端五个 official 的 marker/checkpoint/history 全部复验通过；合成失败+成功重复日志只恢复最近尝试，最终未打印 epoch 继续保留 `null`。QA watcher 已确认显式设置 `REGRESSION_MODULE_PATH=rinalmo_regression_dual_round33_v4.py`，不存在默认旧模块误用。上述修改均发生在实际 resume 启动前，fold3 EL 仍无科学结果。

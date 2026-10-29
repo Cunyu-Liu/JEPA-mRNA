@@ -44,7 +44,7 @@ def completed_segments(log_path: Path, task: str) -> dict[tuple[str, int], tuple
         key = (match.group("head"), int(match.group("seed")))
         if key in segments:
             raise RuntimeError(f"duplicate completion marker: {key}")
-        segments[key] = (previous, index, lines[previous:index])
+        segments[key] = (previous, index, lines[previous:index], int(match.group("best")))
         previous = index + 1
     return segments
 
@@ -55,7 +55,9 @@ def parse_history(segment: list[str], seed: int, best_epoch: int, best_loss: flo
         match = EPOCH.match(line)
         if match and int(match.group("seed")) == seed:
             epoch = int(match.group("epoch"))
-            if epoch in points:
+            if epoch == 1:
+                points = {}
+            elif epoch in points:
                 raise RuntimeError(f"duplicate epoch in log: seed={seed} epoch={epoch}")
             points[epoch] = float(match.group("loss"))
     if not points:
@@ -206,6 +208,8 @@ def main() -> int:
             prediction = args.out_dir / f"{head_name}_s{seed}_predictions.npz"
             if candidates[key] == "restore":
                 ckpt = torch.load(checkpoint, map_location="cpu", weights_only=True)
+                if segments[key][3] != int(ckpt["best_epoch"]):
+                    raise RuntimeError(f"completion marker/checkpoint best epoch mismatch: {key}")
                 history = parse_history(segments[key][2], seed, int(ckpt["best_epoch"]), float(ckpt["best_validation_loss"]))
                 run = restore_run(head_name, seed, arrays, labels, split, checkpoint, prediction, history)
                 restored.append(f"{head_name}/s{seed}")

@@ -26,7 +26,7 @@
 > | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且 Holm 后均不显著为正；二级结构数据门已通过（47,963/1,300/1,305/3,911），队列已启动但尚无 smoke/科学结果；contact/distance 与 shuffle 仍 blocked；组合 working 图已入第 11 页 | 依次完成 smoke→独立 GPU QA→全量提取→双头五种子→聚合统计；不得把二级结构解冻外推为所有 NB 任务解冻。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
 > | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | RiNALMo Spliceator acceptor/donor 与 88 类 ncRNA clean/bn200 已全量 GPU QA；MRL full_v3 已验收且 R² Δ=-0.468847；HEK fold0–2 TE/EL 已全量 QA；fold3 TE 在训，fold3 EL 在五个 official 种子后 OOM 停止、无结果，人工审计后的续接队列正等待显存；ArchiveII tRNA/5s、bpRNA、Muscle/PC3 及其余家族/folds 未闭环；图 8A working 已入第 12 页，正式 8B 未生成 | fold3 EL 只恢复通过日志/checkpoint/prediction/GPU 重推核验的 official，缺项 JEV 才训练，不重复 TE；随后按 result→QA→下一折推进。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，fold0/smoke 不得写成结论 |
 > | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0，665 个文本 run 均为微软雅黑且有效 1.5 倍行距，Aspose 逐页渲染通过；清单为 round34-working-v31；正式图 5、图 7 二级结构面板和图 8B 仍待结果 | 仅改指定页及一致性必需项。最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染和图文匹配，不返工已验收页面 |
-> | T-A143 台账、归档与 GitHub | 二级结构管线 a9fdf295、文档 2ee4c3a6 与续接脚本 198f5ad7 已推送；训练、失败和 QA 证据记录至 §15.176 | 继续逐任务记录并提交确认代码；全部科学结果和最终 PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
+> | T-A143 台账、归档与 GitHub | 二级结构管线 a9fdf295、文档 2ee4c3a6 与续接脚本已推送；训练、失败和 QA 证据记录至 §15.177 | 继续逐任务记录并提交确认代码；全部科学结果和最终 PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
 >
 > **资源与停止规则**：单张 RTX 4090 采用事件驱动受门队列，有安全余量即接续，正式测速必须独占；不为占满显存而超订。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、工程子集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
 >
