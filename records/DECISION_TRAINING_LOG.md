@@ -10762,3 +10762,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `run_te_el_cell_queue_round34.py`，SHA256=`e0a598ef969b1679ece299f79d6160300d75998aa4bca2021e93218cb8bebc84`。仅当某细胞的 TE、EL 两项 `smoke32_v4` 均通过外部 QA 后，才启动该细胞 fold0–9 full 协议，避免 smoke 结束后无人接续。
 - 每折允许 TE/EL 并行，按当前待启动任务数要求每个任务 ≥4096 MiB 空闲显存；结果必须为 PASS，随后以 `qa_regression_result.py` 独立复核，TE/EL 双任务 QA 均通过才进入下一折。部分预测、非 PASS、训练/QA 非零退出均停止，不重复提交、不转 CPU。
 - `--once` 已核对 Muscle/pc3 两细胞共 20 个 fold-task 全部注册，当前 smoke QA 与 full 结果均 pending；远端 full 队列已启动并处于等待门状态，尚未产生新的科学结果。
+
+## §15.167（2026-10-29）三条新队列的完整状态机模拟与 tasks 镜像补同步
+
+- 使用临时目录与无 GPU dummy process 完整模拟结果生成、QA 写入和状态接续，不使用模拟数据作为科学证据。回归 smoke 队列按序通过 4/4 项；ArchiveII 队列通过 9/9 家族且写入 9 个 QA 状态；Muscle/PC3 full 队列通过 2 细胞×10 folds×2 任务共 40/40 项且写入 40 个 QA 状态。
+- 初次模拟因测试环境未重定向 `STATE_DIR` 而失败，明确为测试配置问题；修正后重新执行通过，未改动生产脚本或放宽门限。远端 tasks 镜像已补同步并逐文件确认 `a92c90ea` 标记，上轮 SSH reset 不遗留部分写入。
+- 正式 4090 测速仍要求真正独占窗口，不能仅凭瞬时显存空余启动，以免与后续 QA 或其他队列冲突；当前不启动测速。
