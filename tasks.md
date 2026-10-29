@@ -2,6 +2,18 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
+> **当前执行增补（2026-10-30，第 34 轮：NucleicBERT 二级结构）**：本块覆盖下方同任务的旧 blocked 状态，其他任务合同不变。
+>
+> | 任务 | 当前状态 | 下一动作与放行判据 |
+> |---|---|---|
+> | T-A138 二级结构数据门 | **已完成**：RNAStrAlign+TR0 47,963、VL0 1,300、TS0 1,305、ArchiveII600 3,911；官方 ID/样本名闭环，ArchiveII 原始 bpseq 恢复 14,723 个旧版缺失交叉配对；`data_card.json` SHA256=`0863b15f...4096` | 冻结 `/teams/.../data/nucleicbert_secondary_structure_round34`；后续任何哈希变化立即停止。接触/距离图和 shuffle 仍独立 blocked，不外推 |
+> | T-A139 official head vs JEV head | **工程队列已启动，尚无科学结果**：六个脚本静态检查、33 步状态机、失败/陈旧 QA 门、100 组官方指标等价测试通过；GitHub=`a9fdf295` | smoke32 四 split 提取 → official/JEV 各 1 个工程 run → 独立 GPU QA；通过后才全量提取。正式阶段必须 2 头×5 seeds 全部 VL0 plateau、10/10 GPU QA PASS，再做 TS0/ArchiveII600 配对检验与 Holm |
+> | 特征与训练协议 | 同一冻结 NucleicBERT 33 层均值表征、原始标签、598 nt 截断/padding、未加权 BCE、AdamW；official/JEV 仅头部及原生解码不同 | 提取按唯一序列计算、2,048 条分片、原子写入和断点续跑；训练重复记录不去重。不得用 cached embedding 结果冒充 raw-sequence 测速 |
+> | 队列资源门 | 启动时 free=699 MiB，低于提取门 8,192 MiB，正确等待；既有训练/QA 队列不中断 | 提取空闲 ≥8,192 MiB、训练 ≥12,288 MiB 才放行；失败不自动重试，NOT_CONVERGED 不进入下一项 |
+> | T-A143 记录与提交 | 六个脚本已上传 `a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47`；远端本地 `86c8903` 首次 push 因分支更新被拒，未覆盖他人工作 | 逐 run 保存 commit、配置、数据/权重/cache 哈希、best epoch、停止原因、预测与 QA；正式结果出来后更新图 7 和活跃源表，未完成前不改 PPT 科学结论 |
+>
+> **当前停止边界**：数据门通过不等于实验通过，smoke 不等于科学结果，单 seed 不等于五种子结论。原始假结标签必须保留；旧删除交叉配对的 ArchiveII JSONL 仅可作历史项目证据，禁止进入本次 NucleicBERT 复现。
+>
 > **当前执行队列（2026-10-28，第 34 轮状态覆盖）**：不新增重复实验编号，T-A133–T-A143 合同不变；本表只同步最新事实和接续顺序。
 >
 > | 任务 | 第 34 轮当前状态 | 下一动作与放行判据 |

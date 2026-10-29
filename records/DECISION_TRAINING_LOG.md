@@ -10774,3 +10774,24 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 在训日志逐项复核仍在推进：tRNA 至 JEV seed2 epoch10、5s 至 official seed3 epoch13、bpRNA 至 official seed0 epoch38、HEK fold3 TE/EL 均至 seed2 后续 epoch，未出现停滞或 CPU 静默降级。
 - 失败路径模拟全部通过：smoke 首个进程非零退出时仅启动 1 项并停止；ArchiveII 首个 QA 失败时仅启动 1 个家族并停止；Muscle smoke QA 失败时不启动任何 full；`NOT_CONVERGED` full 结果被硬门拒绝且不启动后续任务。未自动重试、未放宽验收标准。
 - 上述测试仅验证队列控制流，不作为科学结果或性能证据。
+
+## §15.169（2026-10-30）NucleicBERT 二级结构官方数据门闭环
+
+- `bprna-spot-0` 经数据卡确认是 SPOT-RNA 初始 bpRNA 组件，而非 TR1/TS2 合并版：TR0/VL0/TS0 分别为 10,814/1,300/1,305，ID 均唯一、序列与结构等长。TR0 与 TS0 的 ID 集合和 RNAErnie 官方 `TR0.lst`/`TS0.lst` 完全一致；合并版多出的 120/30/106 条恰好来自其他组件，不再误用。
+- RNAStrAlign 镜像共 37,149 行、SHA256=`4422a71445d28a52d6dede78968a52d018cb15901aaabf1aab3856eca44c870f`。其中 <600 nt 为 26,069 条，与 RNAErnie `RNAStrAlign600.lst` 的 26,069 个样本名多重集合完全一致，无缺失或额外项；全长记录仍保留供官方 598 nt 截断训练，不按长度删样本。
+- ArchiveII600 的论文语义已复核：ArchiveII 全集描述为 3,975，实际 BPfold 原始包为 3,966 个 bpseq，标准 RNAErnie/UFold `archiveII600.lst` 为 3,911，不应把 3,975 当成过滤后的行数。官方清单 SHA256=`0e12c5fbe77520eee8068bcdb5c303e8e3e7b336959866c2326279134333695d`，3,911 个排序 ID SHA256=`4f0c8813127810bcc597b6dc7cfe4d1e02b893550a9cfbad1563b7155c2b4713`，与项目现有 ArchiveII600 ID 集合完全一致。
+- 二级结构任务由此解冻；接触/距离图和 shuffle 仍按各自数据门 blocked，禁止把本结论外推为 NucleicBERT 全部原论文任务已覆盖。
+
+## §15.170（2026-10-30）原始假结标签恢复、正式数据卡与训练/QA 实现
+
+- 从 `BPfold_test_results.tar.gz`（3,966 个 ArchiveII bpseq，SHA256=`e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073`）按官方 3,911 清单重建标签。与旧 `archiveii600.jsonl` 比对：3,911/3,911 ID 一致、序列差异 0、旧配对均为新配对子集；旧版缺少的 14,723 个交叉配对已恢复，新标签共 212,021 对。旧文件不再用于 NucleicBERT 复现。
+- 正式数据落盘 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/nucleicbert_secondary_structure_round34`。训练集 47,963 行、3,299,304 对、15,372 条含交叉配对；VL0 1,300、TS0 1,305、ArchiveII600 3,911。`data_card.json` SHA256=`0863b15f833ed055fd981f591458f20a441e668f8bce2ef05228698f991b4096`；四个 JSONL 的本地生成、独立复读、上传后远端哈希均一致。
+- 新增六个脚本：`prepare_nb_secstr_round34.py` SHA256=`d809e4cebd6c71735701ea4aa814dffb0d945c8e5e4701660df824a629d641bd`，`extract_nb_secstr_round34.py`=`8cacdb15172f30c8c037cbaa49268531f3543b33ccafdd05b3eb0e7c1c0474c9`，`nb_secstr_dual_round34.py`=`8dfd233d2733fa86b67f931a16b936eb1ce4919fa7e2cda279aea7befbf8e0f6`，`qa_nb_secstr_round34.py`=`5a4a814daa971116fb363fc08f2ed6c01ac0a4260703a4d4318417d3a9039a21`，`aggregate_nb_secstr_round34.py`=`bd8b0b2273f52830c8d2df5a583688b9a486dd6e8055cf6379d1c85bc3d94128`，`run_nb_secstr_queue_round34.py`=`4decf935005542f2478cd0e976a13090e7db4a708c0ab5a889e842b0c6483cb8`。
+- 对照固定为同一冻结 NucleicBERT 33 层均值表征、原始配对标签、598 nt 截断/padding、未加权 BCE、AdamW 和 VL0 早停；仅头部及原生解码不同。official 阈值在完整 VL0 上选择，JEV 使用非交叉 max-product Nussinov；二者都按 NucleicBERT 逐序列 macro-F1 评价。100 组随机矩阵上自实现指标与官方 `ss_metrics` 全部等价。
+- 特征提取按唯一序列计算、2,048 条分片、原子写入和断点续跑，训练原记录及重复序列不去重。独立 QA 必须重新加载 best checkpoint、在 GPU 重放全部 VL0/TS0/ArchiveII600 预测并逐对一致，同时复核缓存/预测/结果哈希；正式聚合要求 2 头×5 seeds 全部收敛及 10/10 QA PASS。
+
+## §15.171（2026-10-30）二级结构受门队列、状态机验证与 GitHub 同步
+
+- 队列顺序固定为 smoke32 四 split 提取 → official/JEV smoke → 独立 QA → 全量四 split 提取 → 10 个正式 run/QA → 配对统计与 Holm。完整模拟按序通过 33 个动作；`NOT_CONVERGED` 被硬门拒绝，陈旧 QA 哈希会重新触发 QA，失败不自动重试。
+- 六个脚本先提交远端本地 `86c8903`；首次 push 因 GitHub 分支已有其他确认提交而被拒，未强推或覆盖。随后基于最新分支头安全上传，GitHub commit=`a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47`，六文件 blob 与本地/远端部署一致。
+- `run_nb_secstr_queue_round34.py` 已由 `setsid+nohup+flock` 启动。启动日志为 `WAIT kind=extract free=699 required=8192`，证明显存不足时未抢卡、未转 CPU、未重复提交。当前只有数据门和工程控制流证据，尚无 smoke 结果、正式 run 或科学结论；PPT 与活跃图源不因本阶段提前修改。

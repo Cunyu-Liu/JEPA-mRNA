@@ -2,6 +2,14 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
+> **当前交接（2026-10-30，第 34 轮增补：NucleicBERT 二级结构数据门解冻）**：
+> - **数据门结论**：RNAStrAlign 37,149、TR0 10,814、VL0 1,300、TS0 1,305 与 ArchiveII600 3,911 已恢复并复核。TR0/TS0 的 ID 集合与 RNAErnie 官方清单完全一致；RNAStrAlign 的 26,069 条 <600 nt 样本名与官方 RNAStrAlign600 清单逐项一致；ArchiveII600 的 3,911 个 ID 与官方清单完全一致，排序 ID SHA256=`4f0c8813127810bcc597b6dc7cfe4d1e02b893550a9cfbad1563b7155c2b4713`。二级结构不再 blocked；接触/距离图和 shuffle 的数据门不变，仍不得宣称全覆盖。
+> - **原始标签纠偏**：旧 `archiveii600.jsonl` 仅用于历史项目协议，曾删除交叉配对，禁止用于本次 NucleicBERT 复现。现从 BPfold 原始 3,966 个 bpseq（压缩包 SHA256=`e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073`）和 RNAErnie 官方 ArchiveII600 清单重建，3,911 条序列与旧版完全一致，同时恢复旧版缺失的 14,723 个交叉配对，新标签共 212,021 对。
+> - **正式数据资产**：`/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/nucleicbert_secondary_structure_round34`；训练集 RNAStrAlign+TR0 共 47,963 行、3,299,304 对，保留 15,372 条含交叉配对记录；VL0/TS0/ArchiveII600 分别为 1,300/1,305/3,911 行。`data_card.json` SHA256=`0863b15f833ed055fd981f591458f20a441e668f8bce2ef05228698f991b4096`，四个 JSONL 已在本地、上传后和远端复读三通道核对。
+> - **单变量训练合同**：两种头共享完全相同的冻结 NucleicBERT 33 层均值表征、原始配对标签、598 nt 截断/padding、未加权 BCE、AdamW、VL0 早停和五种子；只改变头部及其原生解码。official 使用 SecStruct2DPredictionHead+官方贪心冲突清理，JEV 使用 PairRepresentation+ResNet2D+Turner 先验+非交叉 max-product DP。测试仅 TS0/ArchiveII600，逐序列 macro-F1 与原 `ss_metrics` 等价，五种子配对单侧检验并在本任务两测试集内 Holm 校正。
+> - **执行链与当前状态**：分片可恢复特征提取 → smoke32 双头 → 独立 GPU 全量复读 QA → 全量提取 → 10 个正式 run/QA → 聚合。队列已启动，启动时 free=699 MiB、低于 8,192 MiB 提取门而等待，未产生 smoke 或科学结果。33 步状态机、失败/陈旧 QA 门和 100 组指标等价测试均通过。六个脚本已上传 GitHub `a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47`；远端本地提交 `86c8903` 内容相同，push 被拒绝后未覆盖他人提交，改用最新分支头安全上传。
+> - **后续优先级**：先完成该二级结构 smoke 与正式五种子，同时让既有 ArchiveII/TE-EL/bpRNA 队列继续按门推进；正式 4090 测速仍需独占窗口。任何非 PASS、NOT_CONVERGED、哈希变化或 GPU 复读不一致立即停止，不把数据门、工程 smoke 或单个 seed 写成结论。
+>
 > **当前交接（2026-10-28，第 34 轮：接续验收与最终闭环）**：
 > - **审计结论**：本地交接、PPT、原始 JSON 与远端 `/home/rna_jev` 已交叉核对。主图 3B、4 的内容修复和主图 6 的原生矢量重绘已完成；主图 5、7、8 尚未闭环。七项全量五种子双头结果在各自任务家族 Holm 校正后均无显著正提升，必须完整保留，禁止选择性包装或使用 synthetic/mock 数据。图 7/8A 已显示家族内 Holm 校正 p 值并进入 working PPT 第 11/12 页，数值、结构、渲染三通道检查通过，活跃清单为 `round34-working-v30`。
 > - **实时资源与在训项**：单张 RTX 4090 的 CUDA 实测可用，未现 CPU 静默降级。2026-10-28 23:37 UTC 快照显存为 22,016/24,564 MiB、空闲 2,068 MiB；截至 2026-10-29 11:05 UTC，MRL full_v3 与 HEK fold0–2 TE/EL 已完成全量 QA，主指标均不显著为正；ArchiveII tRNA/5s 与 HEK fold3 TE/EL 在训，bpRNA smoke 已生成并进入受门接续链，Muscle/PC3 smoke32 与 ArchiveII 后续七家族已接入显存/QA 受门队列。RNAformer 八组精确 B=1/2/4 与 32 条跨 batch、MXfold2 32 条 B=1/2/4 及官方 CLI 逐对核验均已在 RTX 4090 通过，正式测速仍需独占窗口；当前不为“占满”而超订，事件驱动队列在有安全余量时接续。
