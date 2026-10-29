@@ -153,20 +153,17 @@ def main() -> None:
         upper = np.array([rows[model, batch]["throughput_max"] - rows[model, batch]["throughput"] for batch in batches])
         b.errorbar(batches, values, yerr=np.vstack([lower, upper]), marker=spec["marker"], markersize=6.5,
                    color=spec["color"], lw=1.6, elinewidth=0.9, capsize=3, label=spec["label"], zorder=3)
-        for batch, value in zip(batches, values):
-            b.annotate(f"{value:.1f}", (batch, value), xytext=(0, 6), textcoords="offset points",
-                       ha="center", fontsize=8.4, color=spec["color"])
     b.set_xticks([1, 2, 4], ["1", "2", "4"])
     b.set_xlim(0.65, 4.35)
     b.set_ylim(0, max(row["throughput_max"] for row in rows.values()) * 1.18)
     b.set_xlabel("Common batch size", labelpad=8)
     b.set_ylabel("Throughput (sequences/s)", labelpad=8)
-    b.set_title("b  Common batch grid; predictions invariant across batches", loc="left", fontweight="bold", pad=13)
+    b.set_title("b  Common batch grid on RTX 4090", loc="left", fontweight="bold", pad=13)
     b.legend(loc="upper left", ncol=2, fontsize=8.6)
     style(b)
 
     fig.text(0.5, 0.035,
-             "Median of three full TS0 runs; range bars show repeat throughput. Raw sequence → tokenization → encoder → head → required decode; no cached embeddings.\n"
+             "Predictions are invariant across B=1/2/4. Median of three full TS0 runs; range bars show repeat throughput. Raw sequence → tokenization → encoder → head → required decode; no cached embeddings.\n"
              "UFold remains blocked because the official Drive weights are unavailable; no substitute weights or A100 values are used. Legacy 124.78 seq/s head-only is excluded.",
              ha="center", va="bottom", fontsize=8.6, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.075, right=0.985, top=0.86, bottom=0.20, wspace=0.27)
