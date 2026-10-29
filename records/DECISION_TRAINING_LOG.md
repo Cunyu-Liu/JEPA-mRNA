@@ -10884,3 +10884,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 本地独立复算：official/JEV Spearman 均值 0.4862841970/0.4366540244，Δ=-0.0496301726、delta SD=0.0159518679、单侧 p=0.9988783136；R² Δ=-0.0338816428、p=0.9200973799；PCC Δ=-0.0359689192。主指标与 R² 均不显著为正，作为 fold 级负结果完整保留。
 - 十个 run 均为 CUDA、early-stopping converged、best epoch=epochs_run−32，train/validation/test=11528/1441/1441。真实 `aggregate_te_el_cv_round33.load_fold` 再次核对当前 result/QA 哈希、checkpoint、预测、样本数及 Spearman/R²/PCC，全部通过。
 - 本结果只证明 HEK fold3 TE 单折完成，不能外推为十折或三细胞结论。fold3 EL 仍未产生 resume 进程或结果，续接队列保持等待；不修改正式图 8B。active registry 升级为 `round34-working-v36`，SHA256=`314104a166ed33236f1193b78b87c7ed3a0aeb2e812486081c122c5fb68f8979`。
+
+## §15.185（2026-10-30）HEK 真实聚合预检计数校正
+
+- `cv_aggregation.real_fold_preflight` 已更新为 HEK fold0/fold1/fold2 TE/EL 加 fold3 TE，共 70 个 run 的 checkpoint/prediction 哈希和独立指标全部通过。旧 60-run 文本不再作为当前状态。
+- 该计数仅是 fold 级预检覆盖范围，仍不生成十折 aggregate，也不改变 fold3 EL 和其他 folds 的待办。active registry 升级为 `round34-working-v37`。
