@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v19",
+  "registry_version": "round34-working-v20",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -187,6 +187,17 @@
         "test": "/private/tmp/rnajev_audit/round33/test_make_figure8b_round33.py",
         "test_sha256": "fe174cba569ffa87b1103194d5a85960ecbec18ef7122acb1cc7b5f57a6003f2",
         "note": "synthetic engineering tests only; no scientific result or final figure generated"
+      },
+      "cv_aggregation": {
+        "status": "engineering_and_existing_fold_preflight_pass_pending_remaining_folds",
+        "code": "/private/tmp/rnajev_audit/round33/code/aggregate_te_el_cv_round33.py",
+        "code_sha256": "f211b964fd12a4cf83a80058f41783c97150f5d6f14385cd4dbfce2e66aa3879",
+        "test": "/private/tmp/rnajev_audit/round33/test_aggregate_te_el_cv_round33.py",
+        "test_sha256": "efb18e81e371fcd03d3a7a442475e969272ede7f2fb7167a7b3546d78881c7ff",
+        "fixed_defect": "external QA logs are read from audits/round34_qa_watch for folds0-1 and audits/round34_qa_watch_folds2_9 for folds2-9, not from training launch.log",
+        "qa_receipt_gate": "current result SHA256 plus scope=full, runs=10 and cuda_device=NVIDIA GeForce RTX 4090",
+        "local_and_remote_synthetic_test": "TE_EL_AGGREGATOR_SYNTHETIC_TEST_PASS",
+        "real_fold_preflight": "PASS for HEK fold0/fold1 TE/EL; 40 runs had checkpoint/prediction hashes and independently recomputed metrics verified; no ten-fold aggregate was generated"
       }
     }
   },
