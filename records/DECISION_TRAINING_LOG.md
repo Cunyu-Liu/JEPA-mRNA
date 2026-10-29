@@ -10604,3 +10604,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第 19 页 T-A129 卡片已更新为：HEK fold0/fold1 TE/EL 已完成 QA，主 Spearman 均不显著为正，fold2–9 受门推进。该展示只同步 §15.140–§15.142 的 fold 级证据，不新增十折或三细胞结论。
 - 第 19 页 Aspose 渲染无溢出，单页及全 21 页 layout=0，ZIP 和运行级微软雅黑检查通过。markitdown 对比确认新增文本变化仅第 19 页，既有其他页面保持上一轮内容。
 - working PPT SHA256=`edd14a4d49a1a55346ba84dc9b5e4a30bfc4264acaca0223597d86f96e77e569`；`update_round34_deck.py` SHA256=`68ea10e7c7b66be293e353ed502fc14163520382a8d93c7ca8e14828c080b584`。活跃清单升级为 `round34-working-v15`。
+
+## §15.144（2026-10-29）主图 8B 十折聚合门防重复与非有限值
+
+- 代码审查发现 `make_figure8b_round33.py` 原来只检查 `len(fold_results)==10`，重复 fold 也可通过。已增加硬门：`fold_results` 必须按顺序严格包含 fold 0–9 各一次；每个 seed 的十折 Spearman 必须全部有限。
+- 同步扩展 `test_make_figure8b_round33.py`：完整七任务工程形式数据可生成，缺失文件拒绝，重复 fold 拒绝，NaN Spearman 拒绝。初次新增 NaN 测试受前一项重复 fold 干扰，已改为独立有效 payload 后复测通过；最终输出 `FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。
+- `make_figure8b_round33.py` SHA256=`1caff313d28d0aabf5939ca1a0330cc517568139a4e4cd2394e1e9fb9acdbf78`；测试脚本 SHA256=`fe174cba569ffa87b1103194d5a85960ecbec18ef7122acb1cc7b5f57a6003f2`。活跃清单升级为 `round34-working-v16`，仅登记工程门状态；未生成正式主图 8B，fold0/fold1 仍不得拼接成十折结论。

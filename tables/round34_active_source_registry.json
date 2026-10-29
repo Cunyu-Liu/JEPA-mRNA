@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v15",
+  "registry_version": "round34-working-v16",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -138,7 +138,19 @@
           "scope": "fold1 only; 10/10 GPU re-inference passed; not a ten-fold conclusion"
         }
       ],
-      "forbidden_source": "/private/tmp/rnajev_audit/round33/fig08b_synthetic_preview"
+      "forbidden_source": "/private/tmp/rnajev_audit/round33/fig08b_synthetic_preview",
+      "aggregation_gate": {
+        "status": "engineering_pass_pending_real_ten_fold_results",
+        "fold_identity": "fold_results must contain each fold 0-9 exactly once",
+        "finite_values": "all per-fold Spearman values must be finite",
+        "duplicate_fold_rejection": true,
+        "nonfinite_rejection": true,
+        "code": "/private/tmp/rnajev_audit/round33/make_figure8b_round33.py",
+        "code_sha256": "1caff313d28d0aabf5939ca1a0330cc517568139a4e4cd2394e1e9fb9acdbf78",
+        "test": "/private/tmp/rnajev_audit/round33/test_make_figure8b_round33.py",
+        "test_sha256": "fe174cba569ffa87b1103194d5a85960ecbec18ef7122acb1cc7b5f57a6003f2",
+        "note": "synthetic engineering tests only; no scientific result or final figure generated"
+      }
     }
   },
   "downstream_qa": {

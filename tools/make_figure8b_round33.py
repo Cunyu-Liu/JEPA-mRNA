@@ -63,13 +63,16 @@ def load_cv(task, cell_line):
     assert protocol["task"] == task and protocol["cell_line"] == cell_line
     assert protocol["folds"] == list(range(10)) and protocol["n_fold_results"] == 10
     assert protocol["n_runs_per_head"] == 50 and len(data["fold_results"]) == 10
+    assert [fold["fold"] for fold in data["fold_results"]] == list(range(10)), "fold_results must contain each fold exactly once"
     values = {}
     for result_head, plot_head in (("official_head", "official_probe"), ("jev_head", "jev_head")):
         head = data["heads"][result_head]
         seed_cv = []
         for seed in range(5):
-            recomputed = float(np.mean([fold["heads"][result_head]["runs"][seed]["spearman"]
-                                        for fold in data["fold_results"]]))
+            per_fold = np.array([fold["heads"][result_head]["runs"][seed]["spearman"]
+                                 for fold in data["fold_results"]], dtype=float)
+            assert np.isfinite(per_fold).all(), f"non-finite Spearman in {task}/{cell_line}/seed{seed}"
+            recomputed = float(np.mean(per_fold))
             assert np.isclose(recomputed, head["seed_cv_spearman"][seed], rtol=0, atol=1e-12)
             seed_cv.append(recomputed)
         fold_means = [fold["heads"][result_head]["spearman_seed_mean"] for fold in data["fold_results"]]
