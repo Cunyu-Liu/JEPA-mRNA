@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v9",
+  "registry_version": "round34-working-v10",
   "generated_at": "2026-10-28",
   "scientific_status": "working_not_final",
   "rules": {
@@ -51,8 +51,11 @@
       }
     },
     "fig06": {
-      "status": "native_vector_complete_pending_final_deck_qa",
-      "implementation": "PowerPoint native editable shapes, text and connectors; no raster architecture screenshot"
+      "status": "native_vector_and_typography_complete_pending_final_deck_qa",
+      "implementation": "PowerPoint native editable shapes, text and connectors; no raster architecture screenshot",
+      "slide10_layout_issues": 0,
+      "formula_wrap": "explicit two-line z_ij expression; score_ij uses Unicode subscripts",
+      "render_review": "Aspose slide 10 reviewed after dependency repair; no clipping or content overlap; evaluation watermark exists only in the preview renderer"
     },
     "fig07": {
       "status": "working_with_explicit_blocked_tasks",
@@ -105,7 +108,7 @@
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "4e9e624671bd1619037a234bb9430e81e8e0bc79c8c3b95c3dfd8a701d286126",
+    "sha256": "f4a03dc1f8d8ab3f686acf993175036294aa4c20cd108de0b3a7bf1106fd5306",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5

@@ -10559,3 +10559,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 采用单个 SSH ControlMaster 连接复用，避免逐文件重新握手。八个文件（精确 B=4 QA、主图 5 绘图、四份 spec/tasks、最新台账、v9 活跃清单）先传入独立暂存目录，全部 SHA256 预检通过后才用 `os.replace` 替换最终路径。
 - 替换后再次逐文件核对 SHA256；两个 Python 脚本均通过远端 `py_compile`。四份文档的当前第 34 轮块、RiNALMo Spliceator pending 口径、v9 清单版本及台账 §15.134/§15.136 均通过内容断言，暂存目录已清理。
 - 本次仅恢复代码与交接文件，没有启动或停止训练、没有运行 GPU QA，也没有改变科学结果。GitHub 当前保存 commit=`d81ded3f21bc33f75ad19907843adc5d76f3056b`。
+
+## §15.138（2026-10-29）主图 6 公式与小字号修复、跨渲染复核
+
+- 仅调整第 10 页主图 6：`zᵢⱼ` 公式显式拆为两行，Turner 公式使用 Unicode 下标，ResNet2D 流程拆为三行；关键标签由约 8.0–8.4 pt 提高至 8.5–8.8 pt。三栏结构、蓝绿配色、原生矢量、812,375 参数和其他页面内容不变。
+- LibreOffice 旧渲染出现的标题/中文缺失并非 PPT 删除：working XML 中标题、中文运行及 `微软雅黑` 均存在，Aspose 新渲染完整显示。未按单一渲染器的缺字现象误改标题。
+- `update_round34_deck.py` 通过 `py_compile`；执行 `fix_pptx.py` 后，第 10 页与全 21 页 `validate_layout` 均为 0 issues，ZIP 完整性通过。markitdown 逐页对比证明仅第 10 页文本变化；第 10 页 155 个形状的文本运行级字体断言通过。
+- Aspose 初次渲染缺 `libgdiplus`，确认 Homebrew `mono-libgdiplus` 已安装并显式设置其 `DYLD_LIBRARY_PATH` 后成功。新渲染逐图复核公式、底部输出和关键标签，无截断或内容重叠；预览水印仅来自 Aspose evaluation renderer，不存在于 PPT 页面元素。预览 SHA256=`500ab62861447d800cf2b8c8ecc308704e2665a7f8b7decdca51d1c423439c0b`。
+- working PPT SHA256=`f4a03dc1f8d8ab3f686acf993175036294aa4c20cd108de0b3a7bf1106fd5306`；更新脚本 SHA256=`d4cb8317fcec8596248ea2d90f35ee14bacb4849d5a082f45761b9d77d8e6f77`。活跃清单升级为 `round34-working-v10`，T-A137 状态在活跃 spec/tasks 镜像中同步；主图 5/7/8 与最终 PPT 仍待正式数据。

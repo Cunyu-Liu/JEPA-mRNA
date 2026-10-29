@@ -9,7 +9,7 @@
 > | T-A133 规范与原论文协议 | 已完成全量交接/PPT/远端三方审计；全部 spec 镜像写入第 34 轮 | 三轮一致性核验后关闭；历史快照不得覆盖当前 artifact |
 > | T-A134/T-A135 主图 3B、4 | 内容修复已完成 | 最终无水印渲染复核有效字号、碰撞和图表同源，不重做实验 |
 > | T-A136 主图 5 | r2d/plana/xens2/RiNALMo-ft 的 B=1、TS0、4090 端到端结果已完成；其余基线和共同 batch 网格缺失；RNAformer 精确 B=4 QA 控制流已修正，七个诊断组及 225 nt 最长组待真实 GPU 复验 | 先核权重/适配器，再在独占 GPU 窗口完成精确 B=1/2/4 QA、MXfold2/RNAformer/UFold B=1 与全模型共同 batch 网格；全部原始 JSON、预测一致性、峰值显存和独立复算通过后重绘 A/B |
-> | T-A137 主图 6 | 原生矢量已完成；发现公式换行和局部小字号 | 仅调整第 10 页相关文本框与字号，保持结构和用户其他调整；layout+渲染复核 |
+> | T-A137 主图 6 | 原生矢量、公式换行和局部小字号修复已完成；第 10 页 layout=0，Aspose 渲染无截断或内容重叠 | 保持三栏结构与用户其他调整；最终随全稿复核可编辑性和图文一致性 |
 > | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且均不显著为正；二级结构、接触/距离图、shuffle 缺官方样本/split，组合图未入片 | 继续恢复官方资产；不可用即明确 blocked，禁止替换数据或宣称全覆盖。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
 > | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | NB Spliceator 与 88 类 ncRNA clean/bn200 已全量 GPU QA；RiNALMo Spliceator 待 embedding cache 恢复后 QA；ArchiveII tRNA/5s、MRL full_v3、HEK fold1/fold2 TE/EL 七项在训，HEK fold0 TE/EL 已全量 QA；bpRNA 和 Muscle/PC3 等待队列；其余家族/folds 未闭环 | 先验收在训项并接续 bpRNA、Muscle/PC3 smoke，再完成 ArchiveII 其余家族与 TE/EL 600-run 全协议。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，fold0/smoke 不得写成结论 |
 > | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0；第 9/11/12 页仍待最终数据；第 5/15/17/20 页存在旧速度/参数口径需联动 | 仅改指定页及一致性必需项。微软雅黑、1.5 倍行距、无重叠、图文匹配；最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染 |
