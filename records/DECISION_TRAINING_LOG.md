@@ -10870,3 +10870,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 执行器在任务前拒绝其他 GPU compute 进程，测速期间持续监视；若出现入侵进程，只终止自己的测速子进程并停止，不自动重试。`ProcessLookupError` 不覆盖原始入侵错误。任何失败或受污染的新结果均移入 quarantine，下一轮不得作为已验收结果跳过。
 - 非独占实机检查证明未启动任何新测速；模拟测速中入侵、已退出进程 killpg 和已写 PASS 竞态均通过，quarantine 生效。跨 batch 不一致拒绝测试通过，第三轮独立审查未发现剩余阻断缺陷。
 - active registry 升级为 `round34-working-v34`，SHA256=`c8af01f05c29fbf752a80a72594e84299996f0a0f0864045b104f54045475384`，记录执行器、4/18 状态和独占/quarantine 合同。当前仍未启动正式测速，必须等真正独占 4090 窗口。
+
+## §15.183（2026-10-30）RiNALMo TS0+ArchiveII 十任务统计聚合门
+
+- 新增 `aggregate_rinalmo_structure_round34.py` SHA256=`534f2a8fdfb3b78f1584bad7fdc7677e3d192512216ae9894a1275965801d189`。聚合范围固定为 bpRNA TS0 加 ArchiveII 九家族，共 10 个任务；每个任务均要求 full、CUDA、五种子、收敛和独立 recheck。
+- 每项结果必须与 QA state 中的 result 路径、当前 result SHA256、full scope、10 runs 和 `scientific_eligibility=true` 回执绑定。tRNA/5s 读取既有 watcher 状态，其余七家族读取家族队列状态，防止路径或陈旧 QA 混用。
+- 五种子配对单侧 t 检验后在全部十任务内实施 Holm。任一任务 paired delta SD=0 或其他未定义情况，整个结构家族为 `undefined_zero_variance`，所有 p_Holm=None 且不得宣称显著；全部负结果和原始差值保留。
+- 正常十任务、单家族零方差和 stale-QA 三组工程测试通过；独立审查未发现阻断问题。当前只完成聚合门，尚未生成真实科学聚合结果。active registry 升级为 `round34-working-v35`，SHA256=`7b6d2aa3860ed6de9361f3785189a8fcef116b504ef366132a5aca2e1d85e5f3`。

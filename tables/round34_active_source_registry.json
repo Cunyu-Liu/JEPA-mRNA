@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v34",
+  "registry_version": "round34-working-v35",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -226,6 +226,15 @@
       "rendered_pdf_sha256": "6f299040d7a09a9b1e1c8deaf57bb9005ddef489b1832c0bba2a393ecf304d6a",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure8_round33.py",
       "plotting_code_sha256": "0f02ee2f8e1e047d617d8bc294c99f76235755d5c3ab1bdf5f565bd96907fe3a",
+      "structure_aggregation": {
+        "status": "engineering_gate_pass_pending_real_structure_results",
+        "path": "/home/rna_jev/tools/aggregate_rinalmo_structure_round34.py",
+        "sha256": "534f2a8fdfb3b78f1584bad7fdc7677e3d192512216ae9894a1275965801d189",
+        "scope": "TS0 plus nine ArchiveII leave-one-family-out holdouts; ten tasks total",
+        "qa_binding": "each result requires matching state, current result SHA256, full scope, 10 runs and scientific_eligibility=true",
+        "statistics": "five paired training seeds per task; one-sided paired t-test and Holm across all ten tasks; any zero-variance task makes the whole family undefined",
+        "tests": "normal ten-task Holm, zero-variance family and stale-QA rejection passed; no scientific aggregate generated"
+      },
       "holm_status": "PASS",
       "note": "Official 88-class ncRNA and RiNALMo Spliceator acceptor/donor have external RTX 4090 QA; all values retained"
     },
