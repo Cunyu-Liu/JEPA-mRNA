@@ -10722,3 +10722,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第三遍在本地核验 CUDA、RTX 4090、32 条工程范围、三批预测哈希、F1 与 TP/FP/FN，均完全一致。两组结果只证明工程一致性，不作为主图 5 的科学速度或精度数据。
 - RiNALMo-ft 首次 B=1 工程尝试在 `_outer_concat` 处 CUDA OOM，未生成结果，日志 SHA256=`508a7fd44b1671d3de7b965fe25c4537db5eb5465034d4d8f892a8e39ed9f722`。没有强行重试或转 CPU，也未在相同低余量下启动 xens2；两者等待更大显存窗口。
 - 活跃清单升级为 `round34-working-v27`。PPT 未修改，正式 full TS0 共同 batch 网格仍需独占 4090 窗口。
+
+## §15.161（2026-10-29）主图 8B 回归家族 Holm 校正与零方差门闭环
+
+- `make_figure8b_round33.py` 新增同一七任务回归家族的 Holm-Bonferroni 校正：保留原始单侧配对 p 值，同时写入 `holm_p_value` 和 `significant_positive_holm`；图面在有限 p 值齐全时显示 `p_Holm`，不是只报未校正结果。
+- 任一主 p 值因零方差不可定义时，明确写入 `holm_status=undefined_zero_variance`，不计算或隐藏该校正，也不允许最终显著性声明。缺 fold、重复 fold、非有限 Spearman 和缺失文件仍由既有硬门拒绝。
+- 本地与远端均通过完整形式、零方差、有限 p 值 Holm 数值、缺文件、重复 fold 和非有限值测试，输出 `FIG08B_HOLM_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。测试独立复算排序后 Holm 校正值，未直接调用被测函数代替验证。
+- 工程预览中的 `p_Holm` 标签和页脚状态无重叠，但 synthetic preview 不作为科学证据。绘图代码 SHA256=`e7ee845d270847ecbd8094e5c746b6861ad656bd7ccdb8de128dd8767c1e8b1c`，测试代码 SHA256=`ba86e1e5662777d59c57c76f884920dc73312cf90ac89ac8d6ba790fad7e744f`。
+- 活跃清单升级为 `round34-working-v28`。真实 MRL 已验收，但 TE/EL 十折和分类/结构任务仍未闭环，因此没有生成正式主图 8B，PPT 未修改。

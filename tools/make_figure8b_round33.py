@@ -96,6 +96,26 @@ def load_cv(task, cell_line):
             "result_sha256": common.sha256(path), "source_result": str(path), "protocol": "official ten-fold aggregation"}
 
 
+def holm(p_values):
+    p = np.asarray(p_values, dtype=float)
+    order = np.argsort(p)
+    adjusted_sorted = np.maximum.accumulate((len(p) - np.arange(len(p))) * p[order])
+    adjusted = np.empty(len(p), dtype=float)
+    adjusted[order] = np.minimum(adjusted_sorted, 1.0)
+    return adjusted
+
+
+def apply_holm(rows):
+    p_values = [row["p_value"] for row in rows.values()]
+    if any(value is None for value in p_values):
+        return "undefined_zero_variance"
+    adjusted = holm(p_values)
+    for row, p_holm in zip(rows.values(), adjusted):
+        row["holm_p_value"] = float(p_holm)
+        row["significant_positive_holm"] = bool(row["delta"] > 0 and p_holm < 0.05)
+    return "PASS"
+
+
 def draw_task(ax, rows):
     all_values = [value for row in rows for head in row["heads"].values()
                   for value in (head["mean"] - head["sd"], head["mean"] + head["sd"])]
@@ -117,8 +137,10 @@ def draw_task(ax, rows):
                     f"{values['mean']:.4f}", ha="right" if offset < 0 else "left", va="bottom",
                     fontsize=8.3, color=color, fontweight="bold")
         delta_color = TEAL if row["delta"] > 0 else C["red"]
-        p_text = "NA" if row["p_value"] is None else f"{row['p_value']:.3f}"
-        ax.text(x[index], low + (high - low) * 0.035, f"Δ={row['delta']:+.4f}\np={p_text}",
+        p_label = "p_Holm" if "holm_p_value" in row else "p"
+        p_value = row.get("holm_p_value", row["p_value"])
+        p_text = "NA" if p_value is None else f"{p_value:.3f}"
+        ax.text(x[index], low + (high - low) * 0.035, f"Δ={row['delta']:+.4f}\n{p_label}={p_text}",
                 ha="center", va="bottom", fontsize=8.2, color=delta_color, linespacing=1.35)
     ax.set_xticks(x, [row["label"] for row in rows], fontsize=8.8)
     ax.set_xlim(-0.38, len(rows) - 0.42)
@@ -131,11 +153,14 @@ def main():
         for cell_line in ("Muscle", "pc3", "HEK"):
             rows[f"{task}_{cell_line}"] = load_cv(task, cell_line)
     assert len(rows) == 7
-    payload = {"figure_status": "working_pending_global_holm_and_remaining_classification_tasks",
+    holm_status = apply_holm(rows)
+    payload = {"figure_status": "working_pending_remaining_classification_tasks" if holm_status == "PASS" else "working_holm_undefined_zero_variance",
                "protocol": "official MRL full_v3 R²; TE/EL complete ten-fold Spearman aggregation",
                "tasks": rows,
+               "holm_status": holm_status,
                "raw_significant_positive_tasks": [key for key, row in rows.items() if row["significant_positive"]],
-               "note": "Raw paired p-values are shown; global Holm correction is still required before final claims"}
+               "significant_positive_tasks_holm": [key for key, row in rows.items() if row.get("significant_positive_holm")],
+               "note": "Holm-adjusted paired p-values are shown" if holm_status == "PASS" else "Holm is undefined with zero-variance tasks; no final significance claims"}
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "fig08b_rinalmo_regression_working_source.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
@@ -150,10 +175,13 @@ def main():
     handles = [plt.Line2D([0], [0], marker="o", color=C["grey"], lw=0, markersize=7, label="Official head"),
                plt.Line2D([0], [0], marker="s", color=C["blue"], lw=0, markersize=7, label="JEV head")]
     axes[0].legend(handles=handles, loc="upper right", fontsize=8.5)
-    fig.text(0.5, 0.035,
-             "Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±SD and raw paired p-values are shown.\n"
-             "Working panel: global Holm correction and remaining classification/structure tasks are still required before final claims.",
-             ha="center", va="bottom", fontsize=8.6, color=C["muted"], linespacing=1.5)
+    if holm_status == "PASS":
+        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±SD and Holm-adjusted paired p-values are shown.\n"
+                  "Working panel: remaining classification/structure tasks are still required before final claims.")
+    else:
+        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±SD and raw paired p-values are shown.\n"
+                  "Working panel: Holm is undefined with zero-variance tasks; no final significance claims.")
+    fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.6, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.065, right=0.985, top=0.85, bottom=0.20, wspace=0.34)
     png = OUT / "fig08b_rinalmo_regression_working_3840x1920.png"
     pdf = OUT / "fig08b_rinalmo_regression_working_3840x1920.pdf"

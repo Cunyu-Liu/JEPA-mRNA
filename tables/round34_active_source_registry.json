@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v27",
+  "registry_version": "round34-working-v28",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -288,18 +288,21 @@
       ],
       "forbidden_source": "/private/tmp/rnajev_audit/round33/fig08b_synthetic_preview",
       "aggregation_gate": {
-        "status": "engineering_pass_pending_real_ten_fold_results",
+        "status": "holm_engineering_pass_pending_real_ten_fold_results",
         "fold_identity": "fold_results must contain each fold 0-9 exactly once",
         "finite_values": "all per-fold Spearman values must be finite",
         "duplicate_fold_rejection": true,
         "nonfinite_rejection": true,
-        "remote_test_status": "PASS on RTX 4090 host using /home/rna_jev/tools and lucaone matplotlib 3.10.9; output FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS",
+        "holm_method": "Holm-Bonferroni within the seven-task regression family using one-sided paired p-values; raw p-values retained",
+        "zero_variance_policy": "holm_status=undefined_zero_variance and no final significance claims when any primary p-value is undefined",
+        "remote_test_status": "PASS on RTX 4090 host using /home/rna_jev/tools and lucaone matplotlib 3.10.9; output FIG08B_HOLM_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS",
         "remote_python": "/root/miniconda3/envs/lucaone/bin/python",
         "remote_matplotlib": "3.10.9",
         "code": "/private/tmp/rnajev_audit/round33/make_figure8b_round33.py",
-        "code_sha256": "1caff313d28d0aabf5939ca1a0330cc517568139a4e4cd2394e1e9fb9acdbf78",
+        "code_sha256": "e7ee845d270847ecbd8094e5c746b6861ad656bd7ccdb8de128dd8767c1e8b1c",
         "test": "/private/tmp/rnajev_audit/round33/test_make_figure8b_round33.py",
-        "test_sha256": "fe174cba569ffa87b1103194d5a85960ecbec18ef7122acb1cc7b5f57a6003f2",
+        "test_sha256": "ba86e1e5662777d59c57c76f884920dc73312cf90ac89ac8d6ba790fad7e744f",
+        "visual_review": "synthetic engineering preview shows p_Holm labels and corrected footer without overlap; not scientific evidence",
         "note": "synthetic engineering tests only; no scientific result or final figure generated"
       },
       "cv_aggregation": {

@@ -86,11 +86,32 @@ with tempfile.TemporaryDirectory(prefix='rnajev_fig8b_test_') as temporary:
     assert 'FIG08B_REGRESSION_WORKING_ASSET_PASS' in completed.stdout
     payload = json.loads((out / 'fig08b_rinalmo_regression_working_source.json').read_text())
     assert len(payload['tasks']) == 7 and payload['tasks']['te_HEK']['p_value'] is None
+    assert payload['holm_status'] == 'undefined_zero_variance'
+    assert payload['significant_positive_tasks_holm'] == []
     assert payload['tasks']['mrl']['result_sha256'] == sha(mrl)
     assert (out / 'fig08b_rinalmo_regression_working_3840x1920.png').stat().st_size > 100000
     assert (out / 'fig08b_rinalmo_regression_working_3840x1920.pdf').stat().st_size > 5000
     if os.environ.get('FIGURE8B_TEST_ARTIFACT'):
         shutil.copytree(out, os.environ['FIGURE8B_TEST_ARTIFACT'], dirs_exist_ok=True)
+    finite_hek = root / 'te_HEK_finite.json'
+    finite_hek.write_text(json.dumps(cv_payload('te', 'HEK', zero_variance=False)))
+    finite_env = env.copy()
+    finite_env['TE_HEK_RESULT'] = str(finite_hek)
+    finite_out = root / 'out_holm'
+    finite_env['FIGURE_OUT_DIR'] = str(finite_out)
+    completed = subprocess.run([sys.executable, str(SCRIPT)], env=finite_env, text=True, capture_output=True)
+    assert completed.returncode == 0, completed.stderr
+    finite_payload = json.loads((finite_out / 'fig08b_rinalmo_regression_working_source.json').read_text())
+    assert finite_payload['holm_status'] == 'PASS'
+    raw_p = np.array([row['p_value'] for row in finite_payload['tasks'].values()])
+    order = np.argsort(raw_p)
+    expected = np.empty(len(raw_p))
+    expected[order] = np.minimum(np.maximum.accumulate((len(raw_p) - np.arange(len(raw_p))) * raw_p[order]), 1.0)
+    for row, expected_p in zip(finite_payload['tasks'].values(), expected):
+        assert np.isclose(row['holm_p_value'], expected_p, rtol=0, atol=1e-12)
+        assert row['significant_positive_holm'] == bool(row['delta'] > 0 and expected_p < 0.05)
+    if os.environ.get('FIGURE8B_TEST_ARTIFACT'):
+        shutil.copytree(finite_out, Path(os.environ['FIGURE8B_TEST_ARTIFACT']) / 'holm', dirs_exist_ok=True)
     missing = root / 'el_HEK.json'
     missing.rename(root / 'el_HEK_missing.json')
     failed = subprocess.run([sys.executable, str(SCRIPT)], env=env, text=True, capture_output=True)
@@ -105,4 +126,4 @@ with tempfile.TemporaryDirectory(prefix='rnajev_fig8b_test_') as temporary:
     (root / 'te_Muscle.json').write_text(json.dumps(nonfinite))
     failed = subprocess.run([sys.executable, str(SCRIPT)], env=env, text=True, capture_output=True)
     assert failed.returncode != 0 and 'non-finite Spearman' in failed.stderr
-    print('FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS')
+    print('FIG08B_HOLM_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS')
