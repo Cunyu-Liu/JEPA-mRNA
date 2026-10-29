@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v32",
+  "registry_version": "round34-working-v33",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -166,9 +166,17 @@
       "original_tasks_source_json": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_original_tasks_working_source.json",
       "original_tasks_source_json_sha256": "53346872a22736a16f868079c352f7e917c214fff004bbc25dd09319ad667726",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_combined_round33.py",
-      "plotting_code_sha256": "3e8a61d02593bc04441dc16d7fc1c709034038fddcb6b9d04ffef6fae84ea95e",
       "original_plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_round33.py",
       "original_plotting_code_sha256": "e408fe97a8189ee5d4fefeab0c178cdb071feda36e8aa7fd76122e763f9c2fc2",
+      "plotting_code_sha256": "49f6ee7ce050a4fb7ce3a91461f509bd9b40fb7df7b1fa1c9b80519ccf21c6b3",
+      "final_secondary_integration": {
+        "status": "engineering_gate_pass_pending_real_five_seed_result",
+        "activation": "NB_SECSTR_RESULT must point to a full five-seed aggregate with scientific_eligibility=true",
+        "default_working_output": "source JSON and PNG byte-identical; registry PDF restored after rendered text/pixel identity check",
+        "layout": "2x2 with explicit task-panel label margins; no clipping in engineering render",
+        "statistics": "mean, sample SD, delta, paired t and two-split Holm independently recomputed; zero-variance family cannot be significant",
+        "scope": "engineering tests only; no synthetic final asset is registered or used in the deck"
+      },
       "holm_status": "PASS",
       "completed_original_tasks": ["splice_acceptor", "splice_donor", "cpeb3_fitness"],
       "pending_original_tasks": ["secondary_structure_five_seed_evaluation"],

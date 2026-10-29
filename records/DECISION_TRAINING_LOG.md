@@ -10856,3 +10856,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `nb_secstr_dual_round34.py` SHA256=`e148a7f511ed825c70fffaf3ae13c9a0c3dc495f7392f892d655486038fe184e`：训练/QA 读取任何缓存前，核对 JSONL、唯一序列、pretrained、extractor code、limit、manifest、metadata 和 shard 实际 SHA；合成正确缓存通过，错误 fingerprint 与篡改 shard 均被拒绝。
 - resume 现保存并核对 code/data-card/pretrained/batch/lr/patience/min-delta/max-epochs 及 train/validation cache evidence，且恢复 `early_stopped`；控制流测试证明已平台期 checkpoint 不再训练一个 epoch，身份变化立即拒绝。测试只验证控制流，不作为科学结果。
 - 二次独立审查确认零方差、缓存、resume 和重叠解释边界均闭环，未发现剩余确定性科学阻断缺陷。所有修改和测试完成时 official/JEV smoke 的 run.json 均不存在，队列仍在等待提取显存，未重跑或废弃任何科学训练。
+
+## §15.181（2026-10-30）主图 7 真实二级结构结果接入口与默认资产不变证明
+
+- `make_figure7_combined_round33.py` 新增可选 `NB_SECSTR_RESULT` 接入口：仅接受 `scientific_eligibility=true` 的正式五种子聚合，独立复算两 split 的 mean/sample SD/delta/p 与 Holm；零方差家族不得显示显著。未提供该变量时仍生成原 working 图。
+- 默认 working source JSON 与 PNG 逐字节不变，分别为 `06df2bc4...f9ae`、`fd6bc103...51fc4`。PDF 初次重导出出现哈希变化，但与旧版逐像素渲染及文本完全一致，确认只是元数据差异后已恢复清单原文件 `02de1023...f4ca`，未改变活跃图件。
+- 最终 2×2 接入口使用独立 final 文件名，不覆盖 working 资产。工程预览最初暴露右侧标签裁切，已增加任务面板横向余量并复验无裁切。正常统计和零方差两组门测试均通过；所有合成 final 文件仅位于临时目录，不进入清单、PPT 或科学结论。
+- 新绘图代码 SHA256=`49f6ee7ce050a4fb7ce3a91461f509bd9b40fb7df7b1fa1c9b80519ccf21c6b3`。active registry 升级为 `round34-working-v33`，SHA256=`94196a6bc291e8fbe4792b6ba65dd9736028d60054614c548792cef7f61586cd`，明确 final 接入口仍等待真实五种子结果。
