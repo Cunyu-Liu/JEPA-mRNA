@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v8",
+  "registry_version": "round34-working-v9",
   "generated_at": "2026-10-28",
   "scientific_status": "working_not_final",
   "rules": {
@@ -27,6 +27,12 @@
       "figure_source_sha256": "69216f53be850a0eec61f4147bf287686f8f02470283df571e48841519bddf29",
       "raw_results_directory": "/private/tmp/rnajev_audit/round33/speed_4090",
       "completed_models": ["r2d", "plana", "xens2", "rinalmo_ft"],
+      "completed_results": [
+        {"model": "r2d", "batch": 1, "path": "/private/tmp/rnajev_audit/round33/speed_4090/r2d_b1_full.json", "sha256": "c9915ccc5b11953a605f2c91d014da2f1600264be9d50af1d341c3d80c8dd1fc", "strict_micro_f1": 0.6681811339345586, "throughput_median_seq_per_s": 22.282095594719852, "scope": "RTX 4090 TS0 n=1288 raw-sequence B=1 only"},
+        {"model": "plana", "batch": 1, "path": "/private/tmp/rnajev_audit/round33/speed_4090/plana_b1_full.json", "sha256": "2414b2cee920ef973e641d77ab8942c51569f4322e1410ce8b47eda9af50f878", "strict_micro_f1": 0.7868700185773356, "throughput_median_seq_per_s": 18.621785118550733, "scope": "RTX 4090 TS0 n=1288 raw-sequence B=1 only"},
+        {"model": "xens2", "batch": 1, "path": "/private/tmp/rnajev_audit/round33/speed_4090/xens2_b1_full.json", "sha256": "18cbb013ba692c35600ce881f256971a0a5165970b90bac96bc7048ce96227b5", "strict_micro_f1": 0.8040630534373491, "throughput_median_seq_per_s": 7.473774403152247, "scope": "RTX 4090 TS0 n=1288 raw-sequence B=1 only"},
+        {"model": "rinalmo_ft", "batch": 1, "path": "/private/tmp/rnajev_audit/round33/speed_4090/rinalmo_ft_b1_full.json", "sha256": "a2a4b885f12f420e05d5d01aadb6493b1c3c97755a724460835efab23f0445ba", "strict_micro_f1": 0.7213842307800342, "throughput_median_seq_per_s": 13.994181892530495, "scope": "RTX 4090 TS0 n=1288 raw-sequence B=1 only"}
+      ],
       "pending_models": ["mxfold2", "rnaformer"],
       "blocked_models": {
         "ufold": "official source recovered, official Drive weights unavailable; no substitution permitted"
