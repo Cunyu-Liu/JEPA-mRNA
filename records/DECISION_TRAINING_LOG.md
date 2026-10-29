@@ -10863,3 +10863,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 默认 working source JSON 与 PNG 逐字节不变，分别为 `06df2bc4...f9ae`、`fd6bc103...51fc4`。PDF 初次重导出出现哈希变化，但与旧版逐像素渲染及文本完全一致，确认只是元数据差异后已恢复清单原文件 `02de1023...f4ca`，未改变活跃图件。
 - 最终 2×2 接入口使用独立 final 文件名，不覆盖 working 资产。工程预览最初暴露右侧标签裁切，已增加任务面板横向余量并复验无裁切。正常统计和零方差两组门测试均通过；所有合成 final 文件仅位于临时目录，不进入清单、PPT 或科学结论。
 - 新绘图代码 SHA256=`49f6ee7ce050a4fb7ce3a91461f509bd9b40fb7df7b1fa1c9b80519ccf21c6b3`。active registry 升级为 `round34-working-v33`，SHA256=`94196a6bc291e8fbe4792b6ba65dd9736028d60054614c548792cef7f61586cd`，明确 final 接入口仍等待真实五种子结果。
+
+## §15.182（2026-10-30）正式 4090 全网格测速执行器与独占竞态防护
+
+- 新增 `run_speed_grid_round34.py` SHA256=`2bcaa62da9fdec4108bea8219fa78e8ecc62638f16a043d21092f60b76af8b00`。dry-run 实际复验 r2d/plana/xens2/RiNALMo-ft 四个 B=1 结果，确认 4/18 已验收、14 个任务缺失；已存在结果不会因文件名存在就直接跳过，还须通过 F1、有效计时和跨 batch 一致性检查。
+- 执行器在任务前拒绝其他 GPU compute 进程，测速期间持续监视；若出现入侵进程，只终止自己的测速子进程并停止，不自动重试。`ProcessLookupError` 不覆盖原始入侵错误。任何失败或受污染的新结果均移入 quarantine，下一轮不得作为已验收结果跳过。
+- 非独占实机检查证明未启动任何新测速；模拟测速中入侵、已退出进程 killpg 和已写 PASS 竞态均通过，quarantine 生效。跨 batch 不一致拒绝测试通过，第三轮独立审查未发现剩余阻断缺陷。
+- active registry 升级为 `round34-working-v34`，SHA256=`c8af01f05c29fbf752a80a72594e84299996f0a0f0864045b104f54045475384`，记录执行器、4/18 状态和独占/quarantine 合同。当前仍未启动正式测速，必须等真正独占 4090 窗口。
