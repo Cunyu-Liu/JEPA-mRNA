@@ -10756,3 +10756,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `watch_round34_results.py` 的 Muscle/PC3 注册项由旧的每折 2 条 smoke 改为 `smoke32_v4`，QA 同步传入 `--limit 32`，避免新结果无人验收。更新后 SHA256=`c123629fa53464708d052763abe22a368c778f50e5950473192e482b7cfb3549`；监视器已平滑重启，`--once` 显示注册 13 项、既有通过 6 项，未重复执行已通过 QA。
 - 新增 `run_archiveii_family_queue_round34.py`，SHA256=`2a08f2cb418ffe0fa707398bf889613c575fc94713f4a708892dc36b38fb7e8f`。冻结九家族顺序为 tRNA、5s、16s、23s、RNaseP、grp1、srp、telomerase、tmRNA；tRNA/5s 复用现有 QA 状态，后续七家族必须 `result.json=PASS` 且独立 GPU QA 通过后才放行下一项。
 - 队列仅在单卡空闲显存 ≥4096 MiB 时启动一个新家族，发现部分预测、非 PASS、QA 失败或无结果退出即停止，不覆盖既有结果、不转 CPU。`--once` 已逐项确认九家族注册无误，当前 free=3061 MiB，故只等待；队列已启动，尚无新增科学结果。
+
+## §15.166（2026-10-29）Muscle/PC3 从 smoke QA 到十折 full 的闭环队列
+
+- 新增 `run_te_el_cell_queue_round34.py`，SHA256=`e0a598ef969b1679ece299f79d6160300d75998aa4bca2021e93218cb8bebc84`。仅当某细胞的 TE、EL 两项 `smoke32_v4` 均通过外部 QA 后，才启动该细胞 fold0–9 full 协议，避免 smoke 结束后无人接续。
+- 每折允许 TE/EL 并行，按当前待启动任务数要求每个任务 ≥4096 MiB 空闲显存；结果必须为 PASS，随后以 `qa_regression_result.py` 独立复核，TE/EL 双任务 QA 均通过才进入下一折。部分预测、非 PASS、训练/QA 非零退出均停止，不重复提交、不转 CPU。
+- `--once` 已核对 Muscle/pc3 两细胞共 20 个 fold-task 全部注册，当前 smoke QA 与 full 结果均 pending；远端 full 队列已启动并处于等待门状态，尚未产生新的科学结果。
