@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v26",
+  "registry_version": "round34-working-v27",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -117,6 +117,33 @@
         "strict_micro_f1_engineering_subset": 0.8010723860589812,
         "scope": "32-sequence engineering subset only; not a scientific speed or accuracy result",
         "failed_attempts_preserved_remote": ["audits/round34_mxfold2_batch_qa", "audits/round34_mxfold2_batch_qa_after_install", "audits/round34_mxfold2_batch_qa_adapter_fixed"]
+      },
+      "our_models_batch_validation": {
+        "status": "r2d_and_plana_b1_b2_b4_gpu_pass_rinalmo_ft_and_xens2_pending_memory_window",
+        "r2d": {
+          "status": "PASS",
+          "evidence_directory": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/r2d_batch_qa",
+          "result_sha256": {"1": "c132a386b556621fea5c48534e68586ad273397439e3a9ad23d1979f24c21da6", "2": "f4009bae96e3af46204aea3ea8473dda896164fae6e64f0dbd785a3ee29c0960", "4": "3fa3c005b68f6782c1a468a0929820327c9ab89c1139b7c11ced1c86c8e3dc01"},
+          "prediction_sha256_all_batches": "3ca62a9432ed45f10253e823da5974255784db73193d354e3d484a8ec666c51d",
+          "strict_micro_f1_engineering_subset": 0.9593220338983051,
+          "tp_fp_fn_all_batches": [849, 46, 26]
+        },
+        "plana": {
+          "status": "PASS",
+          "evidence_directory": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/plana_batch_qa",
+          "result_sha256": {"1": "c74bf74c747415b409c6201c3d1310a2cbc4ce38bd6bdf421e0d70c80bf3c67d", "2": "8d18f6d76ec48f36097dd11241da45a4bdd5720d508a4f1ba6e4529c0edea9be", "4": "d6fe7d4fa1ef0738c491bf69c732a10fe59e3cdc467110bfa320991704116826"},
+          "prediction_sha256_all_batches": "e4fca66b3e26e2faf2b661a37f2183c40734a8c7fa815854d5ecd09206cd777f",
+          "strict_micro_f1_engineering_subset": 0.961736150770988,
+          "tp_fp_fn_all_batches": [842, 34, 33]
+        },
+        "rinalmo_ft": {
+          "status": "pending_larger_memory_window",
+          "failure_log": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/round34_rinalmo_ft_batch_qa/rinalmo_ft_b1_32.log",
+          "failure_log_sha256": "508a7fd44b1671d3de7b965fe25c4537db5eb5465034d4d8f892a8e39ed9f722",
+          "reason": "CUDA OOM on first B=1 32-sequence engineering attempt; no result produced and no retry under low memory"
+        },
+        "xens2": {"status": "pending_larger_memory_window"},
+        "scope": "32-sequence engineering subsets only; not scientific speed or accuracy results"
       }
     },
     "fig06": {

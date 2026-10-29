@@ -10714,3 +10714,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第三遍真实 `load_fold` 验收通过：folds2–9 QA 路径、result 哈希、checkpoint/prediction 哈希、样本数、收敛历史和 Spearman/R²/PCC 复算一致，official/JEV Spearman seed mean 与本地结果完全相同。真实聚合预检累计覆盖 HEK fold0–2 TE/EL 共 60 个 run，未生成十折 aggregate。
 - fold2 TE/EL 现已全部闭环，fold3 TE/EL 已由受门队列自动接续，未重复提交训练。第 19 页仅更新为 MRL 与 HEK fold0–2 TE/EL 已 QA、fold3 起受门推进；其他页面和全部媒体不变。全 21 页 layout=0、ZIP、665 个微软雅黑运行及 Aspose 渲染通过，working PPT SHA256=`72717e223976d3a66ce7e044007ddb36cfbb75c95ace7811db2a49c619f56cb1`。
 - 活跃清单升级为 `round34-working-v26`。fold2 EL 只作为 fold 级证据，不外推为十折或三细胞结论，也不进入显著正候选。
+
+## §15.160（2026-10-29）r2d/plana 跨 batch 工程预检与 RiNALMo-ft 显存停止
+
+- r2d 的 32 条 B=1/2/4 工程预检全部通过：TP/FP/FN=849/46/26，strict micro-F1=0.9593220339，三批 prediction SHA256 均为 `3ca62a9432ed45f10253e823da5974255784db73193d354e3d484a8ec666c51d`；三份结果 SHA256 分别为 `c132a386...1da6`、`f4009bae...0960`、`3fa3c005...dc01`。
+- plana 的 32 条 B=1/2/4 工程预检全部通过：TP/FP/FN=842/34/33，strict micro-F1=0.9617361508，三批 prediction SHA256 均为 `e4fca66b3e26e2faf2b661a37f2183c40734a8c7fa815854d5ecd09206cd777f`；三份结果 SHA256 分别为 `c74bf74c...c67d`、`8d18f6d7...ea9be`、`d6fe7d4f...6826`。
+- 第三遍在本地核验 CUDA、RTX 4090、32 条工程范围、三批预测哈希、F1 与 TP/FP/FN，均完全一致。两组结果只证明工程一致性，不作为主图 5 的科学速度或精度数据。
+- RiNALMo-ft 首次 B=1 工程尝试在 `_outer_concat` 处 CUDA OOM，未生成结果，日志 SHA256=`508a7fd44b1671d3de7b965fe25c4537db5eb5465034d4d8f892a8e39ed9f722`。没有强行重试或转 CPU，也未在相同低余量下启动 xens2；两者等待更大显存窗口。
+- 活跃清单升级为 `round34-working-v27`。PPT 未修改，正式 full TS0 共同 batch 网格仍需独占 4090 窗口。
