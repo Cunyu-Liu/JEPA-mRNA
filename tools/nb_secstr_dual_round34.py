@@ -72,20 +72,40 @@ def load_records(role: str, limit: int) -> tuple[list[dict], dict]:
     records = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
     if limit:
         records = records[:limit]
+    unique = list(dict.fromkeys(str(r["seq"]).upper().replace("T", "U") for r in records))
+    if limit:
+        unique = unique[:limit]
+    unique.sort(key=lambda s: (len(s), s))
+    jsonl_sha256 = sha256(path)
+    expected_fingerprint = {
+        "jsonl": str(path), "jsonl_sha256": jsonl_sha256,
+        "sequence_sha256": hashlib.sha256("".join(s + "\n" for s in unique).encode()).hexdigest(),
+        "n_input_records": len(records), "n_unique_sequences": len(unique), "max_length": 600,
+        "pretrained": str(PRETRAINED), "pretrained_sha256": sha256(PRETRAINED),
+        "code_sha256": sha256(Path("/home/rna_jev/tools/extract_nb_secstr_round34.py")), "limit": limit,
+    }
+    manifest = json.loads((EMBEDDINGS / "manifest.json").read_text())
+    entries = [e for e in manifest["entries"] if e["split"] == cache_split(role, limit)]
+    if not entries:
+        raise RuntimeError(f"no manifest entries for {cache_split(role, limit)}")
+    cached_sequences = 0
+    for entry in entries:
+        shard = Path(entry["path"])
+        metadata = json.loads(shard.with_suffix(".json").read_text())
+        if metadata.get("fingerprint") != expected_fingerprint:
+            raise RuntimeError(f"embedding fingerprint mismatch: {shard}")
+        if metadata.get("sha256") != entry.get("sha256") or sha256(shard) != entry["sha256"]:
+            raise RuntimeError(f"embedding shard hash mismatch: {shard}")
+        cached_sequences += int(entry["n_sequences"])
+    if cached_sequences != len(unique):
+        raise RuntimeError(f"embedding sequence count mismatch for {cache_split(role, limit)}")
     required = {r["seq"] for r in records}
     store = EmbeddingStore.from_dir(str(EMBEDDINGS), split=cache_split(role, limit), required_sequences=required)
     for record in records:
         record["embedding"] = store.get(record["seq"])
         if len(record["embedding"]) != len(record["seq"]):
             raise RuntimeError(f"embedding length mismatch: {record['name']}")
-    entries = []
-    manifest = json.loads((EMBEDDINGS / "manifest.json").read_text())
-    for entry in manifest["entries"]:
-        if entry["split"] == cache_split(role, limit):
-            entries.append(entry)
-    if not entries:
-        raise RuntimeError(f"no manifest entries for {cache_split(role, limit)}")
-    return records, {"jsonl": str(path), "jsonl_sha256": sha256(path), "cache_entries": entries}
+    return records, {"jsonl": str(path), "jsonl_sha256": jsonl_sha256, "cache_entries": entries}
 
 
 def build_head(name: str, device: str):
@@ -241,29 +261,41 @@ def train(args) -> int:
         raise RuntimeError(f"previous non-PASS run requires manual audit: {result_path}")
     train_records, train_evidence = load_records("train", args.limit)
     valid_records, valid_evidence = load_records("validation", args.limit)
+    run_identity = {
+        "code_sha256": sha256(Path(__file__).resolve()), "data_card_sha256": sha256(DATA / "data_card.json"),
+        "pretrained_sha256": sha256(PRETRAINED), "batch_size": args.batch_size, "lr": args.lr,
+        "patience": args.patience, "min_delta": args.min_delta, "max_epochs": args.max_epochs,
+    }
     head = build_head(args.head, args.device)
     trainable = [(n, p) for n, p in head.named_parameters() if args.head == "official" or not n.startswith("type_head")]
     optimizer = torch.optim.AdamW([p for _, p in trainable], lr=args.lr, weight_decay=0.0)
     resume_path = args.out_dir / "resume.pt"
     start_epoch, best_loss, best_epoch, best_state, bad, history = 0, math.inf, 0, None, 0, []
     coverage = None
+    early_stopped = False
     if resume_path.is_file():
         saved = torch.load(resume_path, map_location="cpu", weights_only=False)
         if saved["head"] != args.head or saved["seed"] != args.seed or saved["limit"] != args.limit:
             raise RuntimeError("resume identity mismatch")
+        if saved.get("run_identity") != run_identity:
+            raise RuntimeError("resume code/data/hyperparameter identity mismatch")
+        if saved.get("train_evidence") != train_evidence or saved.get("valid_evidence") != valid_evidence:
+            raise RuntimeError("resume train/validation cache evidence mismatch")
         head.load_state_dict(saved["model"])
         optimizer.load_state_dict(saved["optimizer"])
         start_epoch = saved["epoch"]
         best_loss, best_epoch, best_state, bad, history = saved["best_loss"], saved["best_epoch"], saved["best_state"], saved["bad"], saved["history"]
         coverage = saved.get("coverage")
+        early_stopped = bool(saved["early_stopped"])
         if torch.cuda.is_available() and saved.get("cuda_rng_state"):
             torch.cuda.set_rng_state_all(saved["cuda_rng_state"])
-        print(f"RESUME epoch={start_epoch} best={best_loss:.8f}", flush=True)
+        print(f"RESUME epoch={start_epoch} best={best_loss:.8f} early_stopped={early_stopped}", flush=True)
     elif any(args.out_dir.iterdir()):
         raise RuntimeError(f"non-empty run directory has no resumable checkpoint: {args.out_dir}")
     max_epochs = args.max_epochs
-    early_stopped = False
     for epoch in range(start_epoch + 1, max_epochs + 1):
+        if early_stopped:
+            break
         head.train()
         generator = torch.Generator().manual_seed(args.seed + epoch * 100003)
         order = torch.randperm(len(train_records), generator=generator).tolist()
@@ -301,7 +333,9 @@ def train(args) -> int:
             "model": head.state_dict(), "optimizer": optimizer.state_dict(), "epoch": epoch,
             "best_loss": best_loss, "best_epoch": best_epoch, "best_state": best_state, "bad": bad,
             "history": history, "coverage": coverage, "head": args.head, "seed": args.seed,
-            "limit": args.limit, "cuda_rng_state": torch.cuda.get_rng_state_all(),
+            "limit": args.limit, "early_stopped": early_stopped, "run_identity": run_identity,
+            "train_evidence": train_evidence, "valid_evidence": valid_evidence,
+            "cuda_rng_state": torch.cuda.get_rng_state_all(),
         })
         atomic_text(args.out_dir / "validation_history.jsonl", "".join(json.dumps(row) + "\n" for row in history))
         if early_stopped:
@@ -357,8 +391,8 @@ def train(args) -> int:
         "epochs_run": len(history), "best_epoch": best_epoch, "best_validation_bce": best_loss,
         "gradient_coverage": coverage, "threshold": threshold, "threshold_validation_f1": threshold_scores,
         "protocol": protocol, "data": {"train": train_evidence, "validation": valid_evidence, **test_evidence},
-        "data_card": str(DATA / "data_card.json"), "data_card_sha256": sha256(DATA / "data_card.json"),
-        "pretrained_sha256": sha256(PRETRAINED), "code_sha256": sha256(Path(__file__).resolve()),
+        "data_card": str(DATA / "data_card.json"), "data_card_sha256": run_identity["data_card_sha256"],
+        "pretrained_sha256": run_identity["pretrained_sha256"], "code_sha256": run_identity["code_sha256"],
         "code_commit": subprocess.check_output(["git", "-C", "/home/rna_jev", "rev-parse", "HEAD"], text=True).strip(),
         "checkpoint": str(checkpoint), "checkpoint_sha256": sha256(checkpoint),
         "predictions": predictions, "peak_cuda_memory_bytes": int(torch.cuda.max_memory_allocated()),

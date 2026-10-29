@@ -10847,3 +10847,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 对 `round34-working-v32` 的全部直接文件引用逐项复核：本地 32 个文件和远端 7 个 `/home`/`/teams` 文件均存在且 SHA256 与清单一致，包括 RNAformer/MXfold2 工程脚本、失败日志、二级结构 data card 和 RiNALMo Spliceator cache。初次在本机遇到远端路径不可见不视为哈希失败，随后已在远端逐一实际读取验证。
 - working PPT 本地和远端备份 SHA256 均为 `912e4c82059e525cfa60bf47788a5559ad4cfb900be579ab52bf7f94afcf255d`，更新代码哈希也一致；本轮图 7 子资产更新没有改动 PPT。
 - 以官方文件名 `ufold_train_alldata.pt` 检索没有新增结果；扩展检索仅找到 MultiMolecule 页面，其明确标注为 **UNOFFICIAL implementation**。该实现不能替代官方 UFold 权重或协议，未下载、未入图。官方论文仍只指向 uci-cbcl/UFold 和既有官方渠道，因此 UFold 继续 blocked，正式测速不使用第三方模型或权重替代。
+
+## §15.180（2026-10-30）NucleicBERT 二级结构开跑前科学与 resume 硬门复核
+
+- 对照官方 `secstrmodule.py` 确认 training_step 同样只取 upper triangle 且注释掉 padding valid_positions，当前 `loss_train` 与官方实现一致，不将此项误判为缺陷。Nature 方法明确训练集就是 RNAStrAlign+TR0、测试为 ArchiveII600/TS0，因此不擅自删除原协议样本。
+- 实测精确序列重叠：train↔VL0=54、train↔TS0=79、train↔ArchiveII600=2,217 个唯一序列；部分重叠序列的标签集合不同。主实验只解释为**同一原论文协议下的 official head vs JEV head 配对比较**，不作为去污染独立泛化证据；聚合结果显式保留该边界。
+- `aggregate_nb_secstr_round34.py` SHA256=`1ab0e01f95f0738c2ef277b6f24b811adee6c376f90ce9e94fa32736238aada7`：paired delta SD=0 时强制 `undefined_zero_variance`，p/Holm=None 且禁止显著；任一 split 未定义则整个两测试集家族不宣称 Holm 通过。恒定非零差、正常有限 p 值两组测试通过，消除了 SciPy 在恒定非零差下 p=0 所致假阳性。
+- `nb_secstr_dual_round34.py` SHA256=`e148a7f511ed825c70fffaf3ae13c9a0c3dc495f7392f892d655486038fe184e`：训练/QA 读取任何缓存前，核对 JSONL、唯一序列、pretrained、extractor code、limit、manifest、metadata 和 shard 实际 SHA；合成正确缓存通过，错误 fingerprint 与篡改 shard 均被拒绝。
+- resume 现保存并核对 code/data-card/pretrained/batch/lr/patience/min-delta/max-epochs 及 train/validation cache evidence，且恢复 `early_stopped`；控制流测试证明已平台期 checkpoint 不再训练一个 epoch，身份变化立即拒绝。测试只验证控制流，不作为科学结果。
+- 二次独立审查确认零方差、缓存、resume 和重叠解释边界均闭环，未发现剩余确定性科学阻断缺陷。所有修改和测试完成时 official/JEV smoke 的 run.json 均不存在，队列仍在等待提取显存，未重跑或废弃任何科学训练。
