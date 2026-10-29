@@ -10835,3 +10835,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `run_hek_fold_queue_round34.py` 现以 `resume_attempted` 实施单实例单次人工续接：恢复进程无结果退出后硬停止，不再自动重试；生产启动继续使用 `flock /tmp/hek_fold_queue_round34.lock`。修正后 SHA256=`03e27666b2c47de4dcd7168b8dcf1d11bf070de1a610c8fde41be7f9f061c832`。主循环模拟证明第一次恢复退出后只调用一次 launch，未启动原始 TE/EL 训练。
 - `resume_rinalmo_regression_round34.py` 现只采用完成标记前最近一次 epoch=1 开始的连续尝试，并要求完成标记 best epoch 与 checkpoint 完全一致；部分 artifact 无完成标记仍硬失败，不擅自覆盖。修正后 SHA256=`d422f10aed997f9a9f857aabeab86adb66329b6934578f44c6cef4716ca36f2d`。
 - 远端五个 official 的 marker/checkpoint/history 全部复验通过；合成失败+成功重复日志只恢复最近尝试，最终未打印 epoch 继续保留 `null`。QA watcher 已确认显式设置 `REGRESSION_MODULE_PATH=rinalmo_regression_dual_round33_v4.py`，不存在默认旧模块误用。上述修改均发生在实际 resume 启动前，fold3 EL 仍无科学结果。
+
+## §15.178（2026-10-30）主图 7 独立 original-tasks 子图状态一致性
+
+- 发现组合图已改为“二级结构数据门通过、五种子待验收”，但独立 original-tasks 子图和源 JSON 仍写 secondary structure blocked。仅修正该子资产的状态文字，acceptor/donor/CPEB3 的全部五种子值、Δ、Holm 和图形布局不变。
+- 更新后 source JSON SHA256=`53346872a22736a16f868079c352f7e917c214fff004bbc25dd09319ad667726`，PNG=`ee31a30ce0330a6bf28f0ab2940b5c7b2dade9a649292f762557c33cd79deb67`，PDF=`b8ca858fac04bd6376191a4d8917a64b015d202c32da8526c15289356e6ee62c`，绘图代码=`e408fe97a8189ee5d4fefeab0c178cdb071feda36e8aa7fd76122e763f9c2fc2`。
+- 独立复算确认新旧 `tasks` 对象完全相等，组合图 `original_tasks` 与子图 `tasks` 也完全相等；PNG 为 3840×1920，逐图检查无重叠或截断。active registry 升级为 `round34-working-v32`，SHA256=`5e2958cf2654f8f09b8d599c7d89e1e04d838c97542b25353fd1c9d6f8f2fefb`。PPT 使用的是已正确的组合图，因此本轮不修改 PPT；正式五种子结果仍待完成。

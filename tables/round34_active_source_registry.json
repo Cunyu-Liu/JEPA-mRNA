@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v31",
+  "registry_version": "round34-working-v32",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -162,13 +162,13 @@
       "rendered_pdf": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_3840x1920.pdf",
       "rendered_pdf_sha256": "02de1023af846d9f711a7af16fa168c6d1c99a7f30c97966d652a5391904f4ca",
       "original_tasks_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_original_tasks_working_3840x1920.png",
-      "original_tasks_png_sha256": "b03d7fa0b6d3600c4f1b21da807803b31e12044d0c387cafd65e78e8567d62fd",
+      "original_tasks_png_sha256": "ee31a30ce0330a6bf28f0ab2940b5c7b2dade9a649292f762557c33cd79deb67",
       "original_tasks_source_json": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_original_tasks_working_source.json",
-      "original_tasks_source_json_sha256": "74c8978564c7081200b6c41d87be1be978c82f197ce71348771a098c7722a37e",
+      "original_tasks_source_json_sha256": "53346872a22736a16f868079c352f7e917c214fff004bbc25dd09319ad667726",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_combined_round33.py",
       "plotting_code_sha256": "3e8a61d02593bc04441dc16d7fc1c709034038fddcb6b9d04ffef6fae84ea95e",
       "original_plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_round33.py",
-      "original_plotting_code_sha256": "a5c7cd854d3a76331f1eac9900af20b9db2283e37ed4840c3800bff2edddb926",
+      "original_plotting_code_sha256": "e408fe97a8189ee5d4fefeab0c178cdb071feda36e8aa7fd76122e763f9c2fc2",
       "holm_status": "PASS",
       "completed_original_tasks": ["splice_acceptor", "splice_donor", "cpeb3_fitness"],
       "pending_original_tasks": ["secondary_structure_five_seed_evaluation"],

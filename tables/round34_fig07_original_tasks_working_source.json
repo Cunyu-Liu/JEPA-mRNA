@@ -1,5 +1,5 @@
 {
-  "figure_status": "working_pending_secondary_structure_contact_distance_and_shuffle",
+  "figure_status": "working_secondary_data_passed_five_seed_pending_contact_distance_and_shuffle_blocked",
   "protocol": "frozen NucleicBERT CLS; official probe vs JEV head; full data; five seeds; mean±sample SD",
   "tasks": {
     "acceptor": {
@@ -111,8 +111,10 @@
   "positive_result_claim": false,
   "holm_status": "PASS",
   "significant_positive_tasks_holm": [],
+  "pending_original_tasks": [
+    "secondary_structure_five_seed_evaluation"
+  ],
   "blocked_original_tasks": [
-    "secondary_structure",
     "contact_distance",
     "natural_vs_shuffled"
   ]

@@ -141,12 +141,13 @@ def main():
         assert np.isclose(row["delta"], registered["delta_r2_mean"] if task == "cpeb3" else registered["delta_accuracy_mean"], rtol=0, atol=1e-12)
 
     holm_status = apply_holm(rows)
-    payload = {"figure_status": "working_pending_secondary_structure_contact_distance_and_shuffle",
+    payload = {"figure_status": "working_secondary_data_passed_five_seed_pending_contact_distance_and_shuffle_blocked",
                "protocol": "frozen NucleicBERT CLS; official probe vs JEV head; full data; five seeds; mean±sample SD",
                "tasks": rows, "positive_result_claim": False,
                "holm_status": holm_status,
                "significant_positive_tasks_holm": [key for key, row in rows.items() if row.get("significant_positive_holm")],
-               "blocked_original_tasks": ["secondary_structure", "contact_distance", "natural_vs_shuffled"]}
+               "pending_original_tasks": ["secondary_structure_five_seed_evaluation"],
+               "blocked_original_tasks": ["contact_distance", "natural_vs_shuffled"]}
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "fig07_nucleicbert_original_tasks_working_source.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -160,10 +161,10 @@ def main():
                plt.Line2D([0], [0], marker="s", color=C["blue"], lw=0, markersize=7, label="JEV head")]
     a.legend(handles=handles, loc="upper right", fontsize=9)
     footer = ("Full-dataset, five-seed paired comparisons; error bars show sample SD. Holm-adjusted p-values and all negative results are retained.\n"
-              "Working panel: secondary structure, contact/distance maps and natural-vs-shuffled remain blocked by unavailable author data/splits."
+              "Working panel: secondary-structure data passed; five-seed evaluation pending; contact/distance maps and natural-vs-shuffled remain blocked."
               if holm_status == "PASS" else
               "Full-dataset, five-seed paired comparisons; error bars show sample SD. Raw p-values are shown because Holm is undefined.\n"
-              "Working panel: no final significance claims; official data/splits remain blocked.")
+              "Working panel: secondary-structure data passed; evaluation pending; contact/distance and shuffle remain blocked.")
     fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.8, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.075, right=0.98, top=0.85, bottom=0.20, wspace=0.28)
     png = OUT / "fig07_nucleicbert_original_tasks_working_3840x1920.png"
