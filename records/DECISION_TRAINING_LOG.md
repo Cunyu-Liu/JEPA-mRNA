@@ -10819,3 +10819,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 复核发现第 34 轮总执行表仍残留 MRL/HEK fold2 在训、RiNALMo Spliceator 待 QA、RNAformer 待 GPU 复验和 NucleicBERT 二级结构 blocked 等旧状态。已按 §15.151–§15.174 的原始结果、QA 与工程证据，更新本地交接根目录、`spec/`、`spec_sync/` 三处 spec/tasks；保留既有二级结构增补块及全部历史记录，不改写历史轮次。
 - 当前表明确：MRL、RiNALMo Spliceator 和 HEK fold0–2 已验收；RNAformer/MXfold2/r2d/plana 的跨 batch 证据仅为工程 QA；二级结构数据门已过但尚无 smoke/科学结果；正式图 5、图 7 二级结构面板和图 8B 仍未闭环。未新增、删除或修改任何科学数值，也未把工程子集升级为结论。
 - 远端 `git fetch` 已成功取得交接提交 `ed252c1746bec635e9713628b7f0a0f5e8bafaef`。随后多次 SSH 连接在镜像写入前被重置，因此本轮不宣称远端 spec/spec_handover 已同步；二级结构队列进程仍存活，最近只读日志仍为等待提取显存，未产生新的科学结果。
+
+## §15.176（2026-10-30）交接镜像闭环、HEK fold3 EL OOM 与无返工续接
+
+- 文档提交 `2ee4c3a6e8db73fe2e2148eba70a07e1388402a6` 仅含九份 spec/tasks/台账更新。随后通过远端 `git fetch+git show` 原子恢复 `/home/rna_jev` 根目录、spec、spec_sync、spec_handover 及嵌套镜像，共 13 个目标文件逐一读回校验；台账均含 §15.175，远端镜像同步现已完成。
+- HEK fold3 EL 在五个 official 种子完成后、JEV 尚未产生 checkpoint 前发生 CUDA OOM；日志末尾为 256 MiB 分配失败。任务与旧 fold 队列均已停止，未转 CPU、未盲目重试、未生成 result.json，fold3 EL 不得作为科学结果。五个 official checkpoint/prediction 均保留；fold3 TE 原进程未中断。
+- 原训练脚本保持 SHA256=`84d8c0e25f6244c9e317ea71065549b09435e3c8e4f6b80bc33355f46a6fc6ed`，避免改变缓存和 QA 身份。新增 `resume_rinalmo_regression_round34.py` SHA256=`bf0e2a086bcc695e9aedca2ba0e135bc1073cf1d3c3a2df1612ebd7aeb3930db`：只有完成标记、checkpoint、prediction、连续日志和 GPU 重推全部一致的种子才恢复，缺失种子才调用原 `train_one`。dry-run 确认 official/s0–4=restore、JEV/s0–4=train。
+- 原训练器在 early-stopping 触发时先 break 后打印，最后 epoch 无日志；续接结果将该点明确写为 `null`，不补造 loss，best epoch 使用 checkpoint 全精度值。五个 official 的历史长度、best+32、连续性和 unlogged-final 标记均通过 CPU 预检；真正恢复仍须 GPU 重推和外部 QA。
+- 更新 `run_hek_fold_queue_round34.py` SHA256=`e398809bf0e7af7920f5ec93424b21ae9b460de59fc9f9650f62d66cb4e35376`：默认发现 fold3 部分失败即停止，只有显式 `--resume-fold3-el` 且单任务空闲显存 ≥4096 MiB 才续接 EL；TE 由原 PID 接管，不重复启动。静态编译、失败/等待/进程退出状态测试，以及低显存不启动、高显存只启动 EL 的主循环模拟均通过。
+- 两个续接脚本已上传 GitHub `198f5ad79c8f859b09a8e55f24b1b7961c63c72c`。新受门队列 PID=891317 已启动，当前仅等待显存，尚无 resume 进程或 fold3 EL 结果；后续仍按 result→独立 GPU QA→下一折顺序推进。
