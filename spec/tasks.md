@@ -15,20 +15,20 @@
 >
 > **当前停止边界**：数据门通过不等于实验通过，smoke 不等于科学结果，单 seed 不等于五种子结论。原始假结标签必须保留；旧删除交叉配对的 ArchiveII JSONL 仅可作历史项目证据，禁止进入本次 NucleicBERT 复现。
 >
-> **当前执行队列（2026-10-28，第 34 轮状态覆盖）**：不新增重复实验编号，T-A133–T-A143 合同不变；本表只同步最新事实和接续顺序。
+> **当前执行队列（2026-10-30，第 34 轮状态覆盖）**：不新增重复实验编号，T-A133–T-A143 合同不变；本表只同步最新事实和接续顺序。
 >
 > | 任务 | 第 34 轮当前状态 | 下一动作与放行判据 |
 > |---|---|---|
-> | T-A133 规范与原论文协议 | 已完成全量交接/PPT/远端三方审计；全部 spec 镜像写入第 34 轮 | 三轮一致性核验后关闭；历史快照不得覆盖当前 artifact |
+> | T-A133 规范与原论文协议 | 原论文任务、对照和统计合同已冻结；当前表按台账 §15.151–§15.174 纠正旧状态 | 保持本地/spec/spec_handover 与远端镜像一致；历史快照不得覆盖当前 artifact |
 > | T-A134/T-A135 主图 3B、4 | 内容修复已完成 | 最终无水印渲染复核有效字号、碰撞和图表同源，不重做实验 |
-> | T-A136 主图 5 | r2d/plana/xens2/RiNALMo-ft 的 B=1、TS0、4090 端到端结果已完成；RNAformer 八组与 full32、MXfold2 32 条 B=1/2/4 及官方 CLI 逐对 GPU QA 均通过；r2d/plana 32 条跨 batch 预检通过，RiNALMo-ft/xens2 待更大显存窗口；正式测速和全模型共同 batch 网格待独占窗口，UFold 权重仍 blocked | 在独占 GPU 窗口完成 MXfold2/RNAformer/UFold B=1 与全模型共同 batch 网格；全部原始 JSON、预测一致性、峰值显存和独立复算通过后重绘 A/B |
+> | T-A136 主图 5 | r2d/plana/xens2/RiNALMo-ft 的 B=1、TS0、4090 端到端结果已完成；RNAformer 八组及 full32、MXfold2 32 条与官方 CLI、r2d/plana 32 条的跨 batch 工程 QA 已通过；正式全 TS0 共同 batch 网格仍未完成，UFold 权重通道 blocked | 在独占 4090 窗口完成 MXfold2/RNAformer 正式 B=1/2/4 与全模型共同网格；工程子集不得作为科学结果。全部原始 JSON、预测一致性、峰值显存和独立复算通过后重绘 A/B |
 > | T-A137 主图 6 | 原生矢量、公式换行和局部小字号修复已完成；第 10 页 layout=0，Aspose 渲染无截断或内容重叠 | 保持三栏结构与用户其他调整；最终随全稿复核可编辑性和图文一致性 |
-> | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且均不显著为正，组合 working 图已按三任务家族 Holm 校正后入第 11 页，三项 p_Holm=1.000；官方 GitHub 全历史与 Zenodo 全记录均未发布二级结构、接触/距离图、shuffle 的样本/split，仅见代码和权重，三项保持 blocked | 保留官方配置路径与资产检索证据；作者后续发布方可解冻，禁止替换数据或宣称全覆盖。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
-> | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | NB Spliceator、88 类 ncRNA clean/bn200 与 RiNALMo Spliceator acceptor/donor 均已全量 GPU QA；acceptor Δ=-0.000358、donor Δ=+0.000645，均不显著为正；MRL full_v3 R² Δ=-0.468847，不显著为正；HEK fold0–2 TE/EL 已全量 QA，fold2 TE Spearman Δ=-0.037986、fold2 EL Δ=-0.056675，均不显著为正；ArchiveII tRNA/5s、HEK fold3 TE/EL 在训，bpRNA smoke 已生成并受门接续 full；图 8A working 已按四任务家族 Holm 校正后入第 12 页，四项 p_Holm=1.000，图 8B Holm 工程门已通过；Muscle/PC3 smoke32、十折 full 与 ArchiveII 其余七家族均已接入显存/QA 受门队列；其余家族/folds 未闭环 | 先验收在训项并接续 Muscle/PC3 smoke，再完成 ArchiveII 其余家族与 TE/EL 600-run 全协议。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，单 fold/smoke 不得写成结论 |
-> | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0；第 5/9/15/17/20 页历史速度与 812,375 参数口径已联动，第 10 页主图 6 排版已完成；第 11/12 页仅替换 Holm 图件媒体，全部页面文本与 shape 数不变，ZIP、markitdown、微软雅黑、有效 1.5 倍行距及 LibreOffice 渲染检查通过；正式图 5/8B 仍待闭环 | 仅改指定页及一致性必需项。微软雅黑、1.5 倍行距、无重叠、图文匹配；最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染 |
-> | T-A143 台账、归档与 GitHub | 最新已推送基线为 a92c90ea；round34-working-v30 的分类 Holm、真实图源、PPT 三通道检查及 UFold 权重复核已记录 §15.162–§15.166；回归 smoke、十折 full 与 ArchiveII 九家族显存/QA 门队列已提交，third_party 仅作上游依赖，不混入提交 | 继续逐任务记录并提交确认代码；PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
+> | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且 Holm 后均不显著为正；二级结构数据门已通过（47,963/1,300/1,305/3,911），队列已启动但尚无 smoke/科学结果；contact/distance 与 shuffle 仍 blocked；组合 working 图已入第 11 页 | 依次完成 smoke→独立 GPU QA→全量提取→双头五种子→聚合统计；不得把二级结构解冻外推为所有 NB 任务解冻。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
+> | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | RiNALMo Spliceator acceptor/donor 与 88 类 ncRNA clean/bn200 已全量 GPU QA；MRL full_v3 已验收且 R² Δ=-0.468847；HEK fold0–2 TE/EL 已全量 QA，fold3 起受门接续；ArchiveII tRNA/5s、bpRNA、Muscle/PC3 及其余家族/folds 未闭环；图 8A working 已入第 12 页，正式 8B 未生成 | 按队列验收 ArchiveII、bpRNA、Muscle/PC3 与 TE/EL 全协议。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，fold0/smoke 不得写成结论 |
+> | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0，665 个文本 run 均为微软雅黑且有效 1.5 倍行距，Aspose 逐页渲染通过；清单为 round34-working-v31；正式图 5、图 7 二级结构面板和图 8B 仍待结果 | 仅改指定页及一致性必需项。最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染和图文匹配，不返工已验收页面 |
+> | T-A143 台账、归档与 GitHub | 六脚本二级结构管线 a9fdf295 与最新交接 ed252c1 已推送；训练、失败和 QA 证据记录至 §15.174 | 继续逐任务记录并提交确认代码；全部科学结果和最终 PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
 >
-> **资源与停止规则**：2026-10-28 23:37 UTC 单次快照为 4090 显存 22,016/24,564 MiB、空闲 2,068 MiB，截至 2026-10-29 01:38 UTC 五项任务在训（HEK fold1 TE/EL 已完成 QA）；当前不强行超订，采用事件驱动队列，有安全余量即接续，RiNALMo Spliceator cache 已恢复且两项 QA 已完成，测速必须独占。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
+> **资源与停止规则**：单张 RTX 4090 采用事件驱动受门队列，有安全余量即接续，正式测速必须独占；不为占满显存而超订。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、工程子集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
 >
 > **历史边界**：本块是当前执行依据；下文第 33 轮及更早任务表保留作追溯。
 >

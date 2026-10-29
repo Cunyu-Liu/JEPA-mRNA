@@ -2,20 +2,33 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
-> **当前执行队列（2026-10-28，第 34 轮状态覆盖）**：不新增重复实验编号，T-A133–T-A143 合同不变；本表只同步最新事实和接续顺序。
+> **当前执行增补（2026-10-30，第 34 轮：NucleicBERT 二级结构）**：本块覆盖下方同任务的旧 blocked 状态，其他任务合同不变。
+>
+> | 任务 | 当前状态 | 下一动作与放行判据 |
+> |---|---|---|
+> | T-A138 二级结构数据门 | **已完成**：RNAStrAlign+TR0 47,963、VL0 1,300、TS0 1,305、ArchiveII600 3,911；官方 ID/样本名闭环，ArchiveII 原始 bpseq 恢复 14,723 个旧版缺失交叉配对；`data_card.json` SHA256=`0863b15f...4096` | 冻结 `/teams/.../data/nucleicbert_secondary_structure_round34`；后续任何哈希变化立即停止。接触/距离图和 shuffle 仍独立 blocked，不外推 |
+> | T-A139 official head vs JEV head | **工程队列已启动，尚无科学结果**：六个脚本静态检查、33 步状态机、失败/陈旧 QA 门、100 组官方指标等价测试通过；GitHub=`a9fdf295` | smoke32 四 split 提取 → official/JEV 各 1 个工程 run → 独立 GPU QA；通过后才全量提取。正式阶段必须 2 头×5 seeds 全部 VL0 plateau、10/10 GPU QA PASS，再做 TS0/ArchiveII600 配对检验与 Holm |
+> | T-A142 working PPT 逐页 QA | **已完成**：21 页 Aspose 渲染逐页检查；665 个微软雅黑 run、665 个有效 1.5 倍行距、越界 shape=0；第 11/15 页二级结构旧 blocked 状态已改为数据门通过、五种子待验收，主图 7 数值不变，清单升级为 `round34-working-v31` | 仅完成 working 稿版式与状态一致性；正式主图 5、7 二级结构面板和 8B 仍待科学结果，入片后再做最终复核 |
+> | 特征与训练协议 | 同一冻结 NucleicBERT 33 层均值表征、原始标签、598 nt 截断/padding、未加权 BCE、AdamW；official/JEV 仅头部及原生解码不同 | 提取按唯一序列计算、2,048 条分片、原子写入和断点续跑；训练重复记录不去重。不得用 cached embedding 结果冒充 raw-sequence 测速 |
+> | 队列资源门 | 启动时 free=699 MiB，低于提取门 8,192 MiB，正确等待；既有训练/QA 队列不中断 | 提取空闲 ≥8,192 MiB、训练 ≥12,288 MiB 才放行；失败不自动重试，NOT_CONVERGED 不进入下一项 |
+> | T-A143 记录与提交 | 六个脚本已上传 `a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47`；远端本地 `86c8903` 首次 push 因分支更新被拒，未覆盖他人工作 | 逐 run 保存 commit、配置、数据/权重/cache 哈希、best epoch、停止原因、预测与 QA；正式结果出来后更新图 7 和活跃源表，未完成前不改 PPT 科学结论 |
+>
+> **当前停止边界**：数据门通过不等于实验通过，smoke 不等于科学结果，单 seed 不等于五种子结论。原始假结标签必须保留；旧删除交叉配对的 ArchiveII JSONL 仅可作历史项目证据，禁止进入本次 NucleicBERT 复现。
+>
+> **当前执行队列（2026-10-30，第 34 轮状态覆盖）**：不新增重复实验编号，T-A133–T-A143 合同不变；本表只同步最新事实和接续顺序。
 >
 > | 任务 | 第 34 轮当前状态 | 下一动作与放行判据 |
 > |---|---|---|
-> | T-A133 规范与原论文协议 | 已完成全量交接/PPT/远端三方审计；全部 spec 镜像写入第 34 轮 | 三轮一致性核验后关闭；历史快照不得覆盖当前 artifact |
+> | T-A133 规范与原论文协议 | 原论文任务、对照和统计合同已冻结；当前表按台账 §15.151–§15.174 纠正旧状态 | 保持本地/spec/spec_handover 与远端镜像一致；历史快照不得覆盖当前 artifact |
 > | T-A134/T-A135 主图 3B、4 | 内容修复已完成 | 最终无水印渲染复核有效字号、碰撞和图表同源，不重做实验 |
-> | T-A136 主图 5 | r2d/plana/xens2/RiNALMo-ft 的 B=1、TS0、4090 端到端结果已完成；其余基线和共同 batch 网格缺失 | 先核权重/适配器，再在独占 GPU 窗口完成 MXfold2/RNAformer/UFold B=1 与全模型共同 batch 网格；全部原始 JSON、预测一致性、峰值显存和独立复算通过后重绘 A/B |
-> | T-A137 主图 6 | 原生矢量已完成；发现公式换行和局部小字号 | 仅调整第 10 页相关文本框与字号，保持结构和用户其他调整；layout+渲染复核 |
-> | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且均不显著为正；二级结构、接触/距离图、shuffle 缺官方样本/split，组合图未入片 | 继续恢复官方资产；不可用即明确 blocked，禁止替换数据或宣称全覆盖。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
-> | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | Spliceator 与 88 类 ncRNA 已完成；ArchiveII tRNA/5s、MRL full_v3、HEK fold1/fold2 TE/EL 七项在训，HEK fold0 TE/EL 已全量 QA；bpRNA 和 Muscle/PC3 等待队列；其余家族/folds 未闭环 | 先验收在训项并接续 bpRNA、Muscle/PC3 smoke，再完成 ArchiveII 其余家族与 TE/EL 600-run 全协议。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，fold0/smoke 不得写成结论 |
-> | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0；第 9/11/12 页仍待最终数据；第 5/15/17/20 页存在旧速度/参数口径需联动 | 仅改指定页及一致性必需项。微软雅黑、1.5 倍行距、无重叠、图文匹配；最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染 |
-> | T-A143 台账、归档与 GitHub | 57b607f、9d753ce、fb7bc5f、ed3fc34 已推送；RNAformer batch 待 GPU 验收，third_party 仅作上游依赖，不混入提交 | 继续逐任务记录并提交确认代码；PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
+> | T-A136 主图 5 | r2d/plana/xens2/RiNALMo-ft 的 B=1、TS0、4090 端到端结果已完成；RNAformer 八组及 full32、MXfold2 32 条与官方 CLI、r2d/plana 32 条的跨 batch 工程 QA 已通过；正式全 TS0 共同 batch 网格仍未完成，UFold 权重通道 blocked | 在独占 4090 窗口完成 MXfold2/RNAformer 正式 B=1/2/4 与全模型共同网格；工程子集不得作为科学结果。全部原始 JSON、预测一致性、峰值显存和独立复算通过后重绘 A/B |
+> | T-A137 主图 6 | 原生矢量、公式换行和局部小字号修复已完成；第 10 页 layout=0，Aspose 渲染无截断或内容重叠 | 保持三栏结构与用户其他调整；最终随全稿复核可编辑性和图文一致性 |
+> | T-A138/T-A139 主图 7 与 NB 原任务 | acceptor/donor/CPEB3 全量完成且 Holm 后均不显著为正；二级结构数据门已通过（47,963/1,300/1,305/3,911），队列已启动但尚无 smoke/科学结果；contact/distance 与 shuffle 仍 blocked；组合 working 图已入第 11 页 | 依次完成 smoke→独立 GPU QA→全量提取→双头五种子→聚合统计；不得把二级结构解冻外推为所有 NB 任务解冻。最终图同页区分主 benchmark 与原论文任务，并保留全部统计 |
+> | T-A140/T-A141 主图 8 与 RiNALMo 原任务 | RiNALMo Spliceator acceptor/donor 与 88 类 ncRNA clean/bn200 已全量 GPU QA；MRL full_v3 已验收且 R² Δ=-0.468847；HEK fold0–2 TE/EL 已全量 QA，fold3 起受门接续；ArchiveII tRNA/5s、bpRNA、Muscle/PC3 及其余家族/folds 未闭环；图 8A working 已入第 12 页，正式 8B 未生成 | 按队列验收 ArchiveII、bpRNA、Muscle/PC3 与 TE/EL 全协议。每个 seed 先十折平均再做五 seed 配对；分类入 8A、回归入 8B，fold0/smoke 不得写成结论 |
+> | T-A142 图件与 PPT QA | round34 working 全 21 页 layout=0，665 个文本 run 均为微软雅黑且有效 1.5 倍行距，Aspose 逐页渲染通过；清单为 round34-working-v31；正式图 5、图 7 二级结构面板和图 8B 仍待结果 | 仅改指定页及一致性必需项。最终数据入片后再做 markitdown/fix/layout/ZIP/逐页渲染和图文匹配，不返工已验收页面 |
+> | T-A143 台账、归档与 GitHub | 六脚本二级结构管线 a9fdf295 与最新交接 ed252c1 已推送；训练、失败和 QA 证据记录至 §15.174 | 继续逐任务记录并提交确认代码；全部科学结果和最终 PPT 完成后归档废弃交接材料与旧源数据，保留活跃原始数据、哈希和索引 |
 >
-> **资源与停止规则**：审计时 4090 显存 22,850/24,564 MiB，七项任务在训，禁止超订；采用事件驱动队列，有余量即接续，测速必须独占。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
+> **资源与停止规则**：单张 RTX 4090 采用事件驱动受门队列，有安全余量即接续，正式测速必须独占；不为占满显存而超订。CUDA 不可用、CPU 静默降级、样本数/哈希不符或无法独立复算时立即停止并留证。smoke、proxy、训练集、工程子集、单 fold 或单 seed 结果不得作为最终科学结论；七项已完成任务 Holm 后无显著正提升，禁止选择性删除。
 >
 > **历史边界**：本块是当前执行依据；下文第 33 轮及更早任务表保留作追溯。
 >
@@ -31,7 +44,7 @@
 > | **T-A138 NucleicBERT 数据与工程门** | **进行中：CPEB3、acceptor、donor 已通过；二级结构/接触图/shuffle 的作者数据与 split 未随官方仓库或 Zenodo 发布，保持 blocked** | 冻结官方二级结构、接触/距离图、四物种 splice、CPEB3 fitness、shuffle 数据与协议；接触图无作者 split 时明确 reconstruction 标签。原始 N→处理 N、split/hash、tokenizer、标签、内存和 CUDA smoke 全通过后才能训练 |
 > | **T-A139 NucleicBERT 原论文下游补测** | **进行中：CPEB3/acceptor/donor 全量验收完成（均未显著正），主 benchmark+原论文任务组合图 7 工作版已生成但未入 PPT；其余待各自数据门** | 同 frozen NB 的 official probe vs JEV head，5 seeds，覆盖五类任务；MLI 单独记录。输出全量 result/predictions/run_meta、mean±SD、配对效应和 Holm；任一 blocked 不得删除后声称全覆盖，既有 8 split 仅作补充 |
 > | **T-A140 RiNALMo 数据与工程门** | **进行中：MRL、88 类 ncRNA、ArchiveII 九家族与 bpRNA TR0/VL0/TS0 完整数据门已通过；TE/EL 已从 CodeOcean 恢复作者处理后 CSV 并通过三细胞数据卡；bpRNA 双头与 QA 已通过本地静态/差异核验，待远端 CUDA smoke** | 冻结 TS0/ArchiveII 九家族、Spliceator、官方 MRL、三细胞 TE/EL、88 类 ncRNA 数据与协议；bpRNA 使用完整 13,419 行而非项目过滤子集，177 类仅作敏感性。官方 split/hash、标签、指标、内存与 CUDA smoke 全通过后才能训练 |
-> | **T-A141 RiNALMo 原论文下游补测** | **进行中：Spliceator 与 88 类 ncRNA clean/bn200 全量外部 GPU QA 完成，图 8A 分类工作面板已生成但未入 PPT，图 8B 正式数据门已通过本机/远端合成测试、正式结果待 MRL/TE/EL；ArchiveII tRNA 最长序列 smoke 已通过，tRNA/5s 全量已启动待验收；MRL v1 已停止，padding 修订版 smoke/外部 GPU QA 已通过，full_v3 已启动待验收；HEK fold0 TE/EL v3 与 Spearman 主指标 v4 smoke 均通过外部 GPU QA，HEK fold0/fold1 TE/EL full_v4 均已启动待验收；bpRNA TS0 待 CUDA smoke，其余待各自数据门** | 同 frozen RiNALMo 的 official head vs JEV head，5 seeds，完成六类任务；TE/EL 必须覆盖 3 细胞×2 任务×10 folds（双头共 600 run），先补 Muscle/PC3 四组 smoke，每个 seed 先求十折 Spearman 均值再做五 seed 配对，fold0 不得冒充完整协议；分类与回归结果分表，保留全部正负结果。完整统计后图 A 放分类、图 B 放回归，主图突出规则不得替代全量报告 |
+> | **T-A141 RiNALMo 原论文下游补测** | **进行中：NB Spliceator 与 88 类 ncRNA clean/bn200 全量外部 GPU QA 完成；RiNALMo Spliceator full 结果已存在，原始 dee8879 代码已恢复，acceptor/donor embedding cache 缺失，待恢复后 GPU QA；图 8A 分类工作面板已生成但未入 PPT，图 8B 正式数据门已通过本机/远端合成测试、正式结果待 MRL/TE/EL；ArchiveII tRNA 最长序列 smoke 已通过，tRNA/5s 全量已启动待验收；MRL v1 已停止，padding 修订版 smoke/外部 GPU QA 已通过，full_v3 已启动待验收；HEK fold0 TE/EL v3 与 Spearman 主指标 v4 smoke 均通过外部 GPU QA，HEK fold0/fold1 TE/EL full_v4 均已启动待验收；bpRNA TS0 待 CUDA smoke，其余待各自数据门** | 同 frozen RiNALMo 的 official head vs JEV head，5 seeds，完成六类任务；TE/EL 必须覆盖 3 细胞×2 任务×10 folds（双头共 600 run），先补 Muscle/PC3 四组 smoke，每个 seed 先求十折 Spearman 均值再做五 seed 配对，fold0 不得冒充完整协议；分类与回归结果分表，保留全部正负结果。完整统计后图 A 放分类、图 B 放回归，主图突出规则不得替代全量报告 |
 > | **T-A142 图件与 PPT 最终 QA** | **待相关实验验收** | 仅修改导师指定页及必须同步的图文，不改用户其他调整。微软雅黑、1.5 倍行距、字号适配、无重叠、表图同源；markitdown、fix、layout、ZIP、逐页渲染与文字-图片匹配检查全部通过 |
 > | **T-A143 归档、台账与 GitHub 交付** | **贯穿本轮，最终待验收** | 旧版/废弃文件移入 archive，synthetic placeholder 单独隔离；活跃绘图原数据、source registry、旧数据归档和哈希清单可追溯。每次训练记录完整，阶段确认后提交并 push，大文件留 `/teams`，代码留 `/home`，秘密不入库 |
 >

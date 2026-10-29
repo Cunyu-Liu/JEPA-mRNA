@@ -10813,3 +10813,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 主图 7 重新导出 3840×1920 PNG/PDF，旧新源 JSON 的 `main_benchmark`、`original_tasks` 和 Holm 结果完全一致，仅 `pending/blocked` 状态及脚注改变。PNG SHA256=`fd6bc103c7476da4e7d2d96c8b46b94f403633c4325f47dc3ed751aef0c51fc4`，PDF=`02de1023af846d9f711a7af16fa168c6d1c99a7f30c97966d652a5391904f4ca`，source JSON=`06df2bc429d29160c6f2b04e8c0b301acbc0c943f201efba39d463f9a3789fae`。
 - 更新后 PPT SHA256=`912e4c82059e525cfa60bf47788a5559ad4cfb900be579ab52bf7f94afcf255d`。再次检查 665 个文本 run 均为微软雅黑、665 个有效 1.5 倍行距、越界 shape=0，Aspose 全部 21 页和缩略图总览复核无新增重叠、截断或图例缺失。`update_round34_deck.py` 已加入可复现状态更新函数，备份稿重放后与当前 21 页文本和 shape 数一致。
 - 活跃清单升级为 `round34-working-v31`，SHA256=`3f1872b0a4d5c57d30425ab02efbf24d59ddd1583aef1cea2740be1620194e46`。PPT、图 7 PNG/PDF/source、清单和两份更新代码均已备份到远端；本结论只表示 working 稿的版式与状态一致性通过，正式主图 5、7 二级结构面板和 8B 仍待科学结果，不提前宣布最终 PPT 完成。
+
+## §15.175（2026-10-30）当前 spec/tasks 总执行表状态纠偏
+
+- 复核发现第 34 轮总执行表仍残留 MRL/HEK fold2 在训、RiNALMo Spliceator 待 QA、RNAformer 待 GPU 复验和 NucleicBERT 二级结构 blocked 等旧状态。已按 §15.151–§15.174 的原始结果、QA 与工程证据，更新本地交接根目录、`spec/`、`spec_sync/` 三处 spec/tasks；保留既有二级结构增补块及全部历史记录，不改写历史轮次。
+- 当前表明确：MRL、RiNALMo Spliceator 和 HEK fold0–2 已验收；RNAformer/MXfold2/r2d/plana 的跨 batch 证据仅为工程 QA；二级结构数据门已过但尚无 smoke/科学结果；正式图 5、图 7 二级结构面板和图 8B 仍未闭环。未新增、删除或修改任何科学数值，也未把工程子集升级为结论。
+- 远端 `git fetch` 已成功取得交接提交 `ed252c1746bec635e9713628b7f0a0f5e8bafaef`。随后多次 SSH 连接在镜像写入前被重置，因此本轮不宣称远端 spec/spec_handover 已同步；二级结构队列进程仍存活，最近只读日志仍为等待提取显存，未产生新的科学结果。
