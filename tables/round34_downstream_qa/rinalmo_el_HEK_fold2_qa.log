@@ -1,0 +1,13 @@
+
+START 2026-10-29T11:04:09.275838+00:00 result=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_el_HEK_fold2_round33_full_v4/result.json
+REGRESSION_QA_RUN_PASS official_head 0
+REGRESSION_QA_RUN_PASS official_head 1
+REGRESSION_QA_RUN_PASS official_head 2
+REGRESSION_QA_RUN_PASS official_head 3
+REGRESSION_QA_RUN_PASS official_head 4
+REGRESSION_QA_RUN_PASS jev_head 0
+REGRESSION_QA_RUN_PASS jev_head 1
+REGRESSION_QA_RUN_PASS jev_head 2
+REGRESSION_QA_RUN_PASS jev_head 3
+REGRESSION_QA_RUN_PASS jev_head 4
+REGRESSION_RESULT_EXTERNAL_QA_PASS {"scope": "full", "runs": 10, "result_sha256": "ccbc361266791ad6ee465e90a468abf92fd27ee8acb335fb69f8a0d4f76fd5e0", "cuda_device": "NVIDIA GeForce RTX 4090"}

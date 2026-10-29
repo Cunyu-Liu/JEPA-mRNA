@@ -10706,3 +10706,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 本机和远端分别对官方 `embeddedfolderview` 做 25 秒连接测试，均超时；未下载任何权重，也未得到文件夹被撤回的响应。UFold 继续因网络通道 blocked，不能用其他模型或权重替代。
 - 官方 issue #8 的作者回复确认所需文件名为 `ufold_train_alldata.pt`，位于同一官方 Drive；该 issue 没有提供备用下载源。后续若通道恢复，应先核对该文件及 SHA256，再执行独占 4090 测速。
+
+## §15.159（2026-10-29）HEK fold2 EL 全量结果与 fold0–2 双任务闭环
+
+- `rinalmo_el_HEK_fold2_round33_full_v4` 已生成 full 结果，folds2–9 watcher 于 11:05:07 UTC 记录 `returncode=0`，10/10 checkpoint 在 RTX 4090 重推理通过。result SHA256=`ccbc361266791ad6ee465e90a468abf92fd27ee8acb335fb69f8a0d4f76fd5e0`，QA 日志 SHA256=`1a9694411188942adb20d999f3984d52adc23397cfea2fbec44df08d2f33f3d8`。
+- 本地独立复算五种子：official/JEV Spearman 均值 0.5275318499/0.4708565867，Δ=-0.0566752632、delta SD=0.0428654530、单侧 p=0.9791494920；R² 均值 0.2689341588/0.2194288610，Δ=-0.0495052977、p=0.9526671069；PCC Δ=-0.0502618453。主指标与 R² 均不显著为正，完整负结果保留。
+- 第三遍真实 `load_fold` 验收通过：folds2–9 QA 路径、result 哈希、checkpoint/prediction 哈希、样本数、收敛历史和 Spearman/R²/PCC 复算一致，official/JEV Spearman seed mean 与本地结果完全相同。真实聚合预检累计覆盖 HEK fold0–2 TE/EL 共 60 个 run，未生成十折 aggregate。
+- fold2 TE/EL 现已全部闭环，fold3 TE/EL 已由受门队列自动接续，未重复提交训练。第 19 页仅更新为 MRL 与 HEK fold0–2 TE/EL 已 QA、fold3 起受门推进；其他页面和全部媒体不变。全 21 页 layout=0、ZIP、665 个微软雅黑运行及 Aspose 渲染通过，working PPT SHA256=`72717e223976d3a66ce7e044007ddb36cfbb75c95ace7811db2a49c619f56cb1`。
+- 活跃清单升级为 `round34-working-v26`。fold2 EL 只作为 fold 级证据，不外推为十折或三细胞结论，也不进入显著正候选。

@@ -197,7 +197,7 @@ def update_downstream_provenance(prs):
         ],
         19: [
             ("三组 MRL 已预注册；5-seed、early-stopping、paired t-test+Holm。",
-             "MRL 与 HEK fold0–2 TE、fold0–1 EL 已 QA，主指标均不显著为正；其余受门推进。", 1),
+             "MRL 与 HEK fold0–2 TE/EL 已 QA，主指标均不显著为正；fold3 起受门推进。", 1),
         ],
         20: [
             ("大样本 ECE 改善；NB 8/8", "大样本 ECE 改善；NB 主 benchmark 8/8", 1),
