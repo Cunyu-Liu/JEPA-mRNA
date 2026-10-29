@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v29",
+  "registry_version": "round34-working-v30",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -51,7 +51,7 @@
       ],
       "pending_models": ["mxfold2", "rnaformer"],
       "blocked_models": {
-        "ufold": "official README points only to Drive folder 1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi; 2026-10-29 local metadata-only gdown request timed out, so weight availability is unverified rather than withdrawn; no substitution permitted"
+        "ufold": "official README points only to Drive folder 1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi; 2026-10-29 direct Drive metadata request timed out again; official uci-cbcl/UFold main tree has no weight files and no releases, so availability remains unverified rather than withdrawn; no substitution permitted"
       },
       "required_final_protocol": "same RTX 4090, project TS0 n=1288, raw sequence to required decode, B=1/2/4, repeats=3, cross-batch prediction invariance",
       "batch_validation": {

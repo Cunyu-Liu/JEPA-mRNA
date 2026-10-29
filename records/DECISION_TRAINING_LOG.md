@@ -10745,3 +10745,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 三细胞数据卡复核通过：Muscle/pc3/HEK 的 CSV 行数、文件 SHA256、UTR 与 TE/EL 标签、fold0 的 train/validation/test 索引 SHA256 全部匹配；`prepare_te_el_round33.py` SHA256=`878fdf6574f4f8ee36b0fc2c6bc4a6ce46d9d53d275d2348ad947b056c0d0cb7`。
 - 首次并行启动 Muscle/PC3 TE/EL 四个 smoke 后，均在 RiNALMo 骨干加载/前向阶段 CUDA OOM，未进入 head 训练且无 `result.json`。四份日志 SHA256 分别为 Muscle-TE `b1da1296...f134`、Muscle-EL `2b546e2d...2909`、pc3-TE `b1da1296...f134`、pc3-EL `5ad0dd7e...5dba`；进程已退出，未转 CPU、未覆盖旧结果、未盲目重试。
 - 新增 `run_regression_smoke_queue_round34.py`，SHA256=`817f2eeca0b3650064ad2d23889568f02a565ceda9e501e9f610f0d31df0bbac`。队列仅在单卡空闲显存 ≥4096 MiB 时串行放行一组，前一组 `result.json=PASS` 后才接下一组，部分预测或无结果退出均停止；CUDA 不可用或再次 OOM 不会自动重试。`--once` 实测空闲 3061 MiB，故当前只等待，不抢占在训任务；远端队列进程已启动，四个 smoke 仍未验收。
+
+## §15.164（2026-10-29）UFold 官方权重入口复核：仍 blocked
+
+- 官方 `uci-cbcl/UFold` `main` 仓库树没有 `.pt/.pth/.ckpt` 权重文件，releases 为空；未发现可替代 Drive 的官方 GitHub 分发。公开 Drive 文件夹 `1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi` 的直连元数据请求再次在 30 s 后超时，WebFetch 也未返回内容，因此 `ufold_train_alldata.pt` 的可获得性仍未核实，不声称权重被撤回。
+- 主图 5 的 UFold 继续保持 blocked，不用第三方镜像、其他模型或不同权重替代。活跃清单升级为 `round34-working-v30`，其余图件与 working PPT 不变。
