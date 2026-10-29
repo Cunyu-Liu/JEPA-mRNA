@@ -96,6 +96,77 @@ def replace_picture(slide, image_path):
     pictures[0]._element.blipFill.blip.rEmbed = r_id
 
 
+def text_frames(container):
+    for shape in container.shapes:
+        if getattr(shape, "has_text_frame", False):
+            yield shape.text_frame
+        elif getattr(shape, "has_table", False):
+            for row in shape.table.rows:
+                for cell in row.cells:
+                    yield cell.text_frame
+
+
+def replace_run_text(container, old, new, expected):
+    count = 0
+    for frame in text_frames(container):
+        for paragraph in frame.paragraphs:
+            for run in paragraph.runs:
+                if old in run.text:
+                    run.text = run.text.replace(old, new)
+                    count += 1
+    assert count == expected, (old, count, expected)
+
+
+def update_speed_provenance(prs):
+    replacements = {
+        5: [
+            ("主图 2｜r2d 单模型 124.78 seq/s，F1 逐位不变",
+             "主图 2｜历史 head-only 峰值 124.78 seq/s，禁止跨口径比较", 2),
+            ("RTX 4090、TS0、端到端含 frozen encoder + 9.3M head + C decode。",
+             "RTX 4090、TS0；JEV 梯图为 cached-embedding/head-only，812,375 head；非 raw-sequence 端到端。", 1),
+            ("124.78 属于 r2dtr1c-s0（F1=0.667971），不与 xens2 的 0.8039 拼接；A100 与 forward-only 参照分别标注。",
+             "124.78 属于 r2dtr1c-s0 的历史 head-only 峰值；当前 raw-sequence B=1 为 22.28 seq/s（F1=0.668181），二者不得混用。", 2),
+        ],
+        9: [
+            ("主图 5｜真实帕累托集：A100 上是 RNAformer 与 UFold",
+             "主图 5｜历史 A100 帕累托集；4090 共同协议重测中", 2),
+            ("同节点、同 split、strict micro-F1；r2d 在 A100 被 RNAformer 同时以更高 F1 和吞吐支配。",
+             "当前图仅作 A100 历史参照；正式版使用同一 4090、TS0、raw-sequence 端到端 B=1/2/4 结果。", 1),
+            ("4090 的 r2d=124.78 seq/s 仅作硬件更新，不混入 A100 前沿；不虚构 xens2 的吞吐或联合最优点。",
+             "旧 124.78 为 cached-embedding/head-only，不能混入 raw-sequence 前沿；当前仅四个系统 B=1 已通过，完整网格待验收。", 2),
+        ],
+        15: [
+            ("r2d 在 4090 达 124.78 seq/s，批大小改变不改预测",
+             "4090 raw-seq B=1：r2d 22.28 seq/s；旧 head-only 峰值 124.78", 1),
+            ("A100 r2d 不在 Pareto 前沿；不把该速度与 xens2 F1 拼成联合点",
+             "共同 batch 网格未闭环；禁止跨口径拼接速度或 xens2 F1", 1),
+        ],
+        17: [
+            ("附录 B / 速度协议", "附录 B / 历史 head-only 速度协议", 1),
+            ("速度测试串行执行；不把跨硬件或 forward-only 读数写成同口径。",
+             "本页为历史 head-only 阶梯；不得与 raw-sequence 或 forward-only 读数混用。", 1),
+            ("配置", "历史 head-only 配置", 1),
+            ("终值；峰值", "历史峰值", 1),
+            ("124.78 属于 r2dtr1c-s0，不是 xens2；F1=0.667971。",
+             "124.78 属于 r2dtr1c-s0 的历史 head-only 峰值，不是 xens2；F1=0.667971。", 1),
+            ("端到端范围", "计时范围", 1),
+            ("含 frozen RiNALMo 前向、9.3M 头与 C 解码；不是 encoder-cache 口径。",
+             "含 cached embedding、812,375 head 与 C 解码；不包含 raw-sequence 编码器前向。", 1),
+        ],
+        20: [
+            ("r2d 在 4090 达 124.78 seq/s",
+             "raw-seq B=1：r2d 22.28 seq/s", 1),
+            ("A100 前沿为 RNAformer/UFold", "旧 head-only 峰值 124.78；共同 batch 网格待验收", 1),
+        ],
+    }
+    for slide_number, items in replacements.items():
+        slide = prs.slides[slide_number - 1]
+        for old, new, expected in items:
+            replace_run_text(slide, old, new, expected - 1 if expected == 2 else expected)
+            if expected == 2:
+                replace_run_text(slide.notes_slide, old, new, 1)
+
+
 def rebuild_fig6(slide):
     for index, shape in enumerate(list(slide.shapes)):
         if index < 6:
@@ -175,9 +246,11 @@ def rebuild_fig6(slide):
 
 def main():
     prs = Presentation(SRC)
+    replace_picture(prs.slides[4], FIG / "fig02_speed_benchmark_3840x1920.png")
     replace_picture(prs.slides[5], FIG / "fig03a_ablation_matrix_3840x1920.png")
     replace_picture(prs.slides[6], FIG / "fig03b_ood_signature_3840x1920.png")
     replace_picture(prs.slides[7], FIG / "fig04_ece_confidence_3840x1920.png")
+    replace_picture(prs.slides[8], FIG / "fig05_accuracy_speed_pareto_3840x1920.png")
     for shape in list(prs.slides[5].shapes):
         if hasattr(shape, "text") and shape.text.startswith("那么这部分我有一些建议"):
             remove(shape)
@@ -186,6 +259,7 @@ def main():
             if hasattr(shape, "text") and shape.text.startswith(prefix):
                 remove(shape)
     rebuild_fig6(prs.slides[9])
+    update_speed_provenance(prs)
     prs.save(OUT)
     print(f"ROUND34_DECK_WORKING_WRITTEN {OUT}")
 

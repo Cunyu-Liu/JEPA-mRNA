@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""按第 32 轮核定数据生成论文主图；主图 1 由 make_main_benchmark_figure.py 专用生成。"""
+"""按第 32 轮核定数据生成论文主图；不生成尚未闭环的消融图。"""
 from pathlib import Path
 import json
 import math
@@ -12,8 +12,8 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(os.environ.get("RNAJEV_DECK_ROOT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261020_02"))
-OUT = ROOT / "figures"
-D = json.loads((OUT / "source_data.json").read_text(encoding="utf-8"))
+OUT = Path(os.environ.get("RNAJEV_FIGURE_OUT", str(ROOT / "figures")))
+D = json.loads((ROOT / "figures" / "source_data.json").read_text(encoding="utf-8"))
 
 C = {
     "ink": "#17243A", "blue": "#0F4D92", "blue2": "#3775BA",
@@ -63,6 +63,44 @@ def new_fig():
     return plt.subplots(1, 2, figsize=(12.8, 6.4))
 
 
+def fig1():
+    d = D["main_benchmark"]
+    splits = d["splits"]
+    ref = np.array(d["clean_reference"])
+    fig, axes = new_fig()
+    for ax, key, panel, title in [
+        (axes[0], "single", "a", "Single model: 4/8 above clean references"),
+        (axes[1], "xens2", "b", "xens2: 6/8 above clean references"),
+    ]:
+        vals = np.array(d[key])
+        y = np.arange(len(splits))[::-1]
+        for yi, split, v, r in zip(y, splits, vals, ref):
+            win = v > r
+            color = C["blue"] if win else C["red"]
+            ax.plot([r, v], [yi, yi], color=color, lw=2.0, alpha=0.72, zorder=2)
+            ax.scatter(r, yi, marker="D", s=38, color=C["grey"], zorder=3)
+            ax.scatter(v, yi, marker="o", s=62, color=color, edgecolor="white", lw=0.7, zorder=4)
+            ax.text(0.968, yi, f"{v-r:+.3f}", va="center", ha="right", fontsize=8,
+                    color=C["teal"] if win else C["red"], fontweight="bold")
+        ax.set_yticks(y, splits, fontsize=8.5)
+        ax.set_xlim(0.48, 0.98)
+        ax.set_ylim(-0.8, 7.8)
+        ax.set_xticks([0.5, 0.6, 0.7, 0.8, 0.9])
+        ax.set_xlabel("Strict micro F1")
+        ax.set_title(f"{panel}  {title}", loc="left", fontweight="bold", pad=12)
+        style_ax(ax, grid="x")
+    axes[0].scatter([], [], marker="o", s=62, color=C["blue"], label="Ours")
+    axes[0].scatter([], [], marker="D", s=38, color=C["grey"], label="Pre-registered clean reference")
+    axes[0].legend(loc="lower left", fontsize=8.5)
+    fig.text(0.5, 0.035,
+             "Uniform model identities: bpRNA-new uses xens2 = 0.5532, not the separate r2d_tr1 ensemble (0.6132).",
+             ha="center", fontsize=9, color=C["muted"])
+    fig.subplots_adjust(left=0.11, right=0.985, top=0.88, bottom=0.14, wspace=0.32)
+    save(fig, "fig01_main_benchmark")
+    assert sum(v > r for v, r in zip(D["main_benchmark"]["single"], ref)) == 4
+    assert sum(v > r for v, r in zip(D["main_benchmark"]["xens2"], ref)) == 6
+
+
 def fig2():
     d = D["speed"]
     fig, (a, b) = new_fig()
@@ -91,10 +129,10 @@ def fig2():
                fontweight="bold" if s["name"].startswith("Jev") else "normal")
     a.set_yticks(y, names, fontsize=8.2)
     a.set_xlim(0, 145)
-    a.set_xlabel("End-to-end throughput (sequences/s, TS0)")
-    a.set_title("a  Throughput board; hardware and scope are explicit", loc="left", fontweight="bold", pad=12)
+    a.set_xlabel("Throughput (sequences/s; measurement scopes differ)")
+    a.set_title("a  Throughput board; scopes are not directly comparable", loc="left", fontweight="bold", pad=12)
     style_ax(a, grid="x")
-    a.text(67, 0.2, "2.21× UFold (A100 board)", fontsize=9, color=C["blue"], fontweight="bold")
+    a.text(67, 0.2, "no cross-scope speedup claimed", fontsize=9, color=C["muted"], fontweight="bold")
 
     ladder = d["ladder"]
     x = np.arange(len(ladder))
@@ -109,9 +147,9 @@ def fig2():
     b.set_xticks(x, [p["label"] for p in ladder], rotation=28, ha="right", fontsize=7.8)
     b.set_ylim(0, 145)
     b.set_ylabel("Throughput (sequences/s)")
-    b.set_title("b  Batch/engineering ladder; F1 stays exactly 0.667971", loc="left", fontweight="bold", pad=12)
+    b.set_title("b  Historical head-only ladder; F1 stays exactly 0.667971", loc="left", fontweight="bold", pad=12)
     style_ax(b)
-    fig.text(0.5, 0.035, "r2dtr1c-s0; TS0 n=1,288; C decode included. A100 baselines are not re-labelled as 4090 results.",
+    fig.text(0.5, 0.035, "JEV ladder: cached embeddings + 812,375-head + C decode, not raw-sequence end-to-end. Other systems remain separate-scope references.",
              ha="center", fontsize=8.8, color=C["muted"])
     fig.subplots_adjust(left=0.16, right=0.985, top=0.88, bottom=0.18, wspace=0.28)
     save(fig, "fig02_speed_benchmark")
@@ -227,7 +265,7 @@ def fig5():
     style_ax(b, grid="x")
     update = d["hardware_update"]
     fig.text(0.5, 0.035,
-             f"Hardware update shown separately: Jev r2d on RTX 4090 = {update['throughput']:.2f} seq/s at F1={update['f1']:.6f}; not mixed into the A100 frontier.",
+             f"Historical A100 frontier only. The separate RTX 4090 value {update['throughput']:.2f} seq/s at F1={update['f1']:.6f} is cached-embedding/head-only, not a raw-sequence frontier point.",
              ha="center", fontsize=8.6, color=C["muted"])
     fig.subplots_adjust(left=0.09, right=0.985, top=0.88, bottom=0.15, wspace=0.26)
     save(fig, "fig05_accuracy_speed_pareto")
@@ -376,6 +414,7 @@ def fig10():
 
 
 if __name__ == "__main__":
+    fig1()
     fig2()
     fig4()
     fig5()

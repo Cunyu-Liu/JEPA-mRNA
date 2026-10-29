@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v10",
+  "registry_version": "round34-working-v11",
   "generated_at": "2026-10-28",
   "scientific_status": "working_not_final",
   "rules": {
@@ -8,6 +8,16 @@
     "selection": "all preregistered positive and negative results remain in the source registry"
   },
   "figures": {
+    "fig02": {
+      "status": "historical_head_only_scope_corrected",
+      "raw_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261020_02/figures/source_data.json",
+      "raw_source_sha256": "7d0cb98abfad77b3fba46e50d899de4fc4d9890c15756512224f03b52e017a95",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig02_speed_benchmark_3840x1920.png",
+      "figure_source_sha256": "105859a0fb71e29ecf830458fd5d28cb8eb2f27f01fa879ba6988ad89a274d27",
+      "plotting_code": "/private/tmp/rnajev_audit/build_figures.py",
+      "plotting_code_sha256": "072004420b1ba6b86012d8aeec95ca2f569232e3edaa1ad918d3e0e39c41001d",
+      "scope": "124.78 seq/s is cached-embedding/head-only; no cross-scope speedup; current r2d raw-sequence B=1 is reported separately as 22.28 seq/s"
+    },
     "fig03b": {
       "status": "content_complete_pending_final_deck_qa",
       "raw_source": "/private/tmp/rnajev_audit/remote_current_20261028/main_ablation_5x8.json",
@@ -20,6 +30,12 @@
       "status": "content_complete_pending_final_deck_qa",
       "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig04_ece_confidence_source.json",
       "figure_source_sha256": "d12c6524197f2457af041ce88ee41b869d1ffafd4e468bbbb8e65aee8be98af4"
+    },
+    "fig05_a100_historical": {
+      "status": "historical_reference_only_not_final_4090_figure",
+      "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig05_accuracy_speed_pareto_3840x1920.png",
+      "figure_source_sha256": "4777c9fc53ec44c4ce80b82bc2f7ad6385755ace727c71f622a7cc5539c5d2c4",
+      "note": "A100 Pareto computation unchanged; separate 124.78 seq/s annotation is explicitly cached-embedding/head-only and excluded from raw-sequence frontiers"
     },
     "fig05": {
       "status": "working_pending_mxfold2_rnaformer_and_common_batch_grid",
@@ -108,7 +124,7 @@
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "f4a03dc1f8d8ab3f686acf993175036294aa4c20cd108de0b3a7bf1106fd5306",
+    "sha256": "6b9d8bb2d60a61477d3bb5faed462ce601e8a260c6e9a70232b318e9032e9c1a",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5

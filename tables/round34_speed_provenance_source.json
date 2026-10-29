@@ -1,0 +1,1464 @@
+{
+  "meta": {
+    "version": "round32-verified-v1",
+    "date": "2026-10-25",
+    "metric": "strict pair-level micro F1 unless explicitly stated",
+    "principle": "model identity, split, scorer and hardware protocol must match within each comparison",
+    "sources": [
+      "tables/sota_vs_ours.md",
+      "tables/metrics_matrix.md",
+      "records/DECISION_TRAINING_LOG.md sections 15.79-15.82 and 15.97-15.99",
+      "spec_sync/ROUND26_NOTE.md and ROUND28_NOTE.md"
+    ]
+  },
+  "main_benchmark": {
+    "splits": [
+      "TS0",
+      "bpRNA-new",
+      "ArchiveII-clean",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard",
+      "TestSetB-clean"
+    ],
+    "single": [
+      0.7866,
+      0.5643,
+      0.7403,
+      0.857,
+      0.8393,
+      0.9049,
+      0.853,
+      0.7166987385075904
+    ],
+    "xens2": [
+      0.8039,
+      0.5532,
+      0.776,
+      0.8755,
+      0.8604,
+      0.8965,
+      0.8732,
+      0.837
+    ],
+    "clean_reference": [
+      0.7578,
+      0.6106,
+      0.7613,
+      0.815,
+      0.9043,
+      0.8245,
+      0.7709,
+      0.8177
+    ],
+    "full_clean_reference": [
+      0.7578,
+      0.6854,
+      0.7872,
+      0.815,
+      0.9043,
+      0.8245,
+      0.8028,
+      0.8177
+    ],
+    "reference_names": [
+      "RNAformer",
+      "UFold",
+      "RiNALMo-ft",
+      "RNAformer-if",
+      "RNAformer-if",
+      "RNAformer-if",
+      "RNAformer-if",
+      "RiNALMo-ft clean-181"
+    ],
+    "single_clean_wins": 4,
+    "xens2_clean_wins": 6,
+    "xens2_full_clean_wins": 5,
+    "historical_mixed_ensemble_wins": 7,
+    "r2d_tr1_ensemble": {
+      "label": "r2d_tr1 two-seed ensemble (legacy TR1)",
+      "values": [
+        0.6733,
+        0.6132,
+        0.7664,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "measured_splits": [
+        "TS0",
+        "bpRNA-new",
+        "ArchiveII-clean"
+      ],
+      "selected_reference_wins": 2,
+      "full_clean_reference_wins": 0,
+      "clean_scope_note": "Legacy TR1 has exact-sequence overlap with TS0 and ArchiveII; among the three measured cells, only bpRNA-new is exact-overlap clean. Thus 2/3 is an arithmetic reference comparison, not a clean-SOTA claim.",
+      "bpRNA_new_note": "0.6132 exceeds the selected UFold reference 0.6106, but is below EternaFold 0.6854, MXfold2 0.6688 and eFold 0.6640; it is not full-board SOTA."
+    },
+    "rnaformer_original_report": {
+      "source": "Franke et al., RNAformer bioRxiv 2024, Tables 2 and 4; TS0 workshop value is from arXiv:2307.10073 Table 1",
+      "ts0": 0.728,
+      "inter_family": {
+        "TS1": 0.739,
+        "TS2": 0.802,
+        "TS3": 0.702,
+        "TS-hard": 0.662
+      },
+      "biophysical_scope": "Rfam synthetic RNAfold-distillation test, not a PDB benchmark reference",
+      "protocol_note": "Original reported F1 includes pseudoknots and non-canonical pairs; project matched-GT scores use canonical nested pairs. Original values are shown for discussion but are not substituted into SOTA counts."
+    },
+    "correction": "The historical 7/8 summary substitutes r2d_tr1 two-seed ensemble 0.6132 for xens2 0.5532 on bpRNA-new; it is not a uniform xens2 result.",
+    "testsetb_note": "xens2 is 0.8370 on clean-181 and 0.8448 on full-428; single r2d is 0.7167 on clean-181 and 0.7507 on full-428; the clean reference RiNALMo-ft is 0.8177."
+  },
+  "leakage_audit": {
+    "columns": [
+      "TS0",
+      "bpRNA-new",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard",
+      "TestSetB",
+      "ArchiveII-clean"
+    ],
+    "tr0": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      247,
+      0
+    ],
+    "tr1": [
+      1087,
+      0,
+      38,
+      28,
+      18,
+      21,
+      358,
+      843
+    ],
+    "tr1c": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "note": "Exact normalized-sequence overlap; this is not an identity- or homology-level guarantee. Clean references are chosen per split."
+  },
+  "speed": {
+    "systems": [
+      {
+        "name": "Jev r2d B=256 fp16 (head-only)",
+        "throughput": 124.78,
+        "device": "RTX 4090",
+        "scope": "cached-embedding/head-only"
+      },
+      {
+        "name": "Jev r2d B=64 fp16 (head-only)",
+        "throughput": 119.55,
+        "device": "RTX 4090",
+        "scope": "cached-embedding/head-only"
+      },
+      {
+        "name": "Jev r2d B=32 C (head-only)",
+        "throughput": 96.14,
+        "device": "RTX 4090",
+        "scope": "cached-embedding/head-only"
+      },
+      {
+        "name": "UFold",
+        "throughput": 56.49,
+        "device": "A100",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "RNAformer",
+        "throughput": 55.28,
+        "device": "A100",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "MXfold2",
+        "throughput": 54.58,
+        "device": "A100",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "ViennaRNA MFE",
+        "throughput": 16.79,
+        "device": "CPU",
+        "scope": "end-to-end"
+      },
+      {
+        "name": "RiNALMo-ft (forward-only)",
+        "throughput": 14.5,
+        "device": "RTX 4090",
+        "scope": "forward-only"
+      }
+    ],
+    "ladder": [
+      {
+        "label": "B=1",
+        "throughput": 21.45
+      },
+      {
+        "label": "B=32 + C",
+        "throughput": 96.14
+      },
+      {
+        "label": "B=64 fp16",
+        "throughput": 119.55
+      },
+      {
+        "label": "B=128",
+        "throughput": 121.24
+      },
+      {
+        "label": "B=192",
+        "throughput": 120.86
+      },
+      {
+        "label": "B=256",
+        "throughput": 124.78
+      },
+      {
+        "label": "B=384",
+        "throughput": 116.4
+      },
+      {
+        "label": "B=512",
+        "throughput": 122.6
+      }
+    ],
+    "f1": 0.667971,
+    "tp_fp_fn": [
+      24406,
+      13778,
+      10485
+    ],
+    "note": "All ladder points use r2dtr1c-s0 on TS0 with cached embeddings, the 812,375-parameter head and C decode; predictions and F1 are unchanged across batch size. These are historical head-only measurements, not raw-sequence end-to-end results, and must not be compared directly with other measurement scopes."
+  },
+  "accuracy_speed_a100": {
+    "models": [
+      {
+        "name": "Jev r2d",
+        "f1": 0.6681,
+        "throughput": 26.73,
+        "device": "A100"
+      },
+      {
+        "name": "RNAformer",
+        "f1": 0.7578,
+        "throughput": 55.28,
+        "device": "A100"
+      },
+      {
+        "name": "UFold",
+        "f1": 0.6598,
+        "throughput": 56.49,
+        "device": "A100"
+      },
+      {
+        "name": "MXfold2",
+        "f1": 0.5651,
+        "throughput": 54.58,
+        "device": "A100"
+      }
+    ],
+    "hardware_update": {
+      "name": "Jev r2d on RTX 4090 (historical head-only)",
+      "f1": 0.667971,
+      "throughput": 124.78,
+      "scope": "cached-embedding/head-only"
+    },
+    "note": "The frontier is computed only within the A100 end-to-end TS0 board. The separate RTX 4090 value is a historical cached-embedding/head-only measurement and is not a raw-sequence frontier point."
+  },
+  "ece": {
+    "splits": [
+      "TS0",
+      "TestSetB",
+      "bpRNA-new",
+      "ArchiveII-clean",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard"
+    ],
+    "n": [
+      1281,
+      428,
+      5375,
+      2505,
+      62,
+      39,
+      19,
+      27
+    ],
+    "raw": [
+      0.1604,
+      0.1004,
+      0.2011,
+      0.1176,
+      0.121,
+      0.0821,
+      0.1088,
+      0.1243
+    ],
+    "recalibrated": [
+      0.0315,
+      0.0445,
+      0.0677,
+      0.0605,
+      0.1111,
+      0.1851,
+      0.1841,
+      0.1219
+    ],
+    "spearman": [
+      0.708,
+      0.694,
+      0.416,
+      0.716,
+      0.559,
+      0.337,
+      0.362,
+      0.676
+    ],
+    "note": "Structure-level ECE, 10-bin weighted absolute confidence-versus-F1 gap; VL0 affine parameters a=1.6 and b=-1.9 are frozen for every test split."
+  },
+  "nb_transfer": {
+    "splits": [
+      "TS0",
+      "bpRNA-new",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard",
+      "TestSetB",
+      "ArchiveII trunc598"
+    ],
+    "jev_on_nb": [
+      0.5288,
+      0.5792,
+      0.69,
+      0.7794,
+      0.7484,
+      0.6773,
+      0.5411,
+      0.5414
+    ],
+    "nb_ft": [
+      0.4609,
+      0.3453,
+      0.6049,
+      0.6435,
+      0.5175,
+      0.4845,
+      0.4862,
+      0.4735
+    ]
+  },
+  "downstream": {
+    "ncrna": {
+      "metrics": [
+        "Accuracy",
+        "Macro-F1",
+        "Balanced accuracy"
+      ],
+      "paper_head": [
+        0.7922,
+        0.5248,
+        0.5735
+      ],
+      "jev_head": [
+        0.8621,
+        0.6308,
+        0.7116
+      ]
+    },
+    "regression": {
+      "tasks": [
+        "MRL (EGFP 5'UTR)",
+        "TE/EL HEK"
+      ],
+      "metric": "Pearson correlation coefficient",
+      "paper_head": [
+        0.4851,
+        0.3807
+      ],
+      "jev_head": [
+        0.4954,
+        0.3846
+      ]
+    },
+    "note": "Frozen RiNALMo backbone; only the downstream head changes. Splice remains archived and is not shown in the main figure.",
+    "additional_mrl": {
+      "mcherry_1": {
+        "n_sequences": 269113,
+        "exact_sequence_duplicates": 0,
+        "train_validation_test_overlap": 0,
+        "embedding_cache": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/mrl_suite/mcherry_1.meanpool.npz",
+        "embedding_cache_sha256": "480526b5d21b5eb3ae85cdf56b528b7adde568ed68e4be818f9bb16e965657e8",
+        "heads": {
+          "paper_head": {
+            "runs": [
+              {
+                "seed": 0,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 10,
+                "epochs_run": 42,
+                "best_validation_mse": 2.223329544067383,
+                "validation_pcc": 0.10819444245346294,
+                "test_pcc": 0.18682878689777146,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s0_best.pt",
+                "checkpoint_sha256": "5610e7c9b8e30c40f67d98f84e34ce0d5b1921ace24f98cf528d3e2261ee96ef",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s0_predictions.npz",
+                "prediction_sha256": "29a8a59b0601f1e3f0bdac8939f8ce75dc74c2c177941eb656d441d4a085d8ec",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 1,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 11,
+                "epochs_run": 43,
+                "best_validation_mse": 2.2286016941070557,
+                "validation_pcc": 0.10828433697318292,
+                "test_pcc": 0.20394505867629592,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s1_best.pt",
+                "checkpoint_sha256": "df27ed2f750fde92b82a8e23a5bfb7decfa2336d3f3afb7c304b42ba5880c3f3",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s1_predictions.npz",
+                "prediction_sha256": "39375f5ced3b27a0fa9bd0a9fd691a252949be3f75561e950a2713c0bce681e5",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 2,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 15,
+                "epochs_run": 47,
+                "best_validation_mse": 2.232663869857788,
+                "validation_pcc": 0.1090331929470604,
+                "test_pcc": 0.18954849427119375,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s2_best.pt",
+                "checkpoint_sha256": "1e96599ce94e9050347cdfbf4dafb9e52a8b42de53c33485393b3099d0031834",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s2_predictions.npz",
+                "prediction_sha256": "7264d628c9b1c31f324a80e4f5405d0aa5dc9d19988c8f01e71457ab700dfaf8",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 3,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 16,
+                "epochs_run": 48,
+                "best_validation_mse": 2.224973201751709,
+                "validation_pcc": 0.1124035791591923,
+                "test_pcc": 0.19410909311114596,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s3_best.pt",
+                "checkpoint_sha256": "dd8f2577183bc91e4444557b0457d392b2bda3d3bc49a77e1084f7dcbe89ee40",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s3_predictions.npz",
+                "prediction_sha256": "f036ce5f5d00b8c6e581cf934e0cb183b06f029901d093fc94416e3a323da9f4",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 4,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 14,
+                "epochs_run": 46,
+                "best_validation_mse": 2.2278518676757812,
+                "validation_pcc": 0.10868735187338413,
+                "test_pcc": 0.1851907026965811,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s4_best.pt",
+                "checkpoint_sha256": "82f8732be4c75c708924c125bcde1a9c927521779876e5f3ccc1aed195e0c292",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_paper_head_s4_predictions.npz",
+                "prediction_sha256": "937c8bf7c6832fedb5a0ccfbc53cf4a937d74f40f11f7797abb524879ffb117f",
+                "independent_recheck": "PASS"
+              }
+            ],
+            "pcc_mean": 0.19192442713059762,
+            "pcc_sample_std": 0.007520339076332679
+          },
+          "jev_head": {
+            "runs": [
+              {
+                "seed": 0,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 12,
+                "epochs_run": 44,
+                "best_validation_mse": 2.229764938354492,
+                "validation_pcc": 0.10928323919771284,
+                "test_pcc": 0.1756091340936864,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s0_best.pt",
+                "checkpoint_sha256": "30b818d1901d1b9a781e9ccd637de9ebdd975c232da6a2f574ce5c898f30aab0",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s0_predictions.npz",
+                "prediction_sha256": "3f74bb1deff821a0b3e9dccde2d9eb5c40c374c91b08676e44c876b2870c595a",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 1,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 1,
+                "epochs_run": 33,
+                "best_validation_mse": 2.225947380065918,
+                "validation_pcc": 0.10171881267188086,
+                "test_pcc": 0.14956763254012928,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s1_best.pt",
+                "checkpoint_sha256": "e20907ebadd5b58f0e661c15a2e02068701bd630223495e185f7080e0d88452e",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s1_predictions.npz",
+                "prediction_sha256": "e2dd896e0ca422e9e98964d6f1695a8e6e7d50e73e6c6a7612f5b8a31d5cc521",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 2,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 8,
+                "epochs_run": 40,
+                "best_validation_mse": 2.230741262435913,
+                "validation_pcc": 0.09843041310397191,
+                "test_pcc": 0.21003191700276128,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s2_best.pt",
+                "checkpoint_sha256": "2503f91c12683f4006cf61dca2b66dfbb91ab388761f1a22833c2e18a70d745c",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s2_predictions.npz",
+                "prediction_sha256": "ab271993fc92978fc54b5284bef0956b35576bb20ee7974a10ca5b02ba86b2d5",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 3,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 7,
+                "epochs_run": 39,
+                "best_validation_mse": 2.235410451889038,
+                "validation_pcc": 0.10344937288015715,
+                "test_pcc": 0.1759260431919837,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s3_best.pt",
+                "checkpoint_sha256": "bc47f95d7996274a9d3ab8a86862fd8a655e54b1169234e0573af5d7c3d9a89b",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s3_predictions.npz",
+                "prediction_sha256": "cadeb288c8e820149a47dd9ce17045423a19f6a08a14d235aee5379597f24917",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 4,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 2,
+                "epochs_run": 34,
+                "best_validation_mse": 2.238499641418457,
+                "validation_pcc": 0.09592503487278507,
+                "test_pcc": 0.19697752251309175,
+                "n_train": 268913,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s4_best.pt",
+                "checkpoint_sha256": "6f77161310149259fbc46671f41626ff665e41bad7e39d83e36bca2bf032d715",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/mcherry_1_jev_head_s4_predictions.npz",
+                "prediction_sha256": "5516aca695754add9eb99f835593a2904326aa663d32c948d82f0a10013383f7",
+                "independent_recheck": "PASS"
+              }
+            ],
+            "pcc_mean": 0.18162244986833048,
+            "pcc_sample_std": 0.02312464274513478
+          }
+        },
+        "comparison": {
+          "delta_mean": -0.01030197726226716,
+          "delta_sample_std": 0.02933110310415744,
+          "paired_t_statistic": -0.785375216857132,
+          "one_sided_p_value": 0.7619283691257943,
+          "test": "paired t-test across five pre-registered seeds; Holm correction across three datasets",
+          "holm_p_value": 0.7619283691257943,
+          "significant_positive": false,
+          "independent_recheck": "PASS",
+          "holm_independent_recheck": "PASS"
+        }
+      },
+      "designed_library": {
+        "n_sequences": 100017,
+        "exact_sequence_duplicates": 0,
+        "train_validation_test_overlap": 0,
+        "embedding_cache": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/mrl_suite/designed_library.meanpool.npz",
+        "embedding_cache_sha256": "bd0c3059e16129c0f47f39af841be3a356718e35a633a0c2f2b2247b48e1f241",
+        "heads": {
+          "paper_head": {
+            "runs": [
+              {
+                "seed": 0,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 65,
+                "epochs_run": 97,
+                "best_validation_mse": 1.1796964406967163,
+                "validation_pcc": 0.726987524789594,
+                "test_pcc": 0.816869636141765,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s0_best.pt",
+                "checkpoint_sha256": "b545642ccf8f1a520dd69a7553ab59ee0f3d275391301edf7a1c8bb87cd7cf83",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s0_predictions.npz",
+                "prediction_sha256": "81f7ec3e0f1fe3925d774bde85ecf5932c3cc626fe030efe215796e13aa1f781",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 1,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 199,
+                "epochs_run": 231,
+                "best_validation_mse": 0.9916846752166748,
+                "validation_pcc": 0.7679921492887443,
+                "test_pcc": 0.8345861816441421,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s1_best.pt",
+                "checkpoint_sha256": "a3e54f0bef4af5ae66cc5c77a6ca031c726af9e2ba6757a4dbb603c060461387",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s1_predictions.npz",
+                "prediction_sha256": "9001884346adede955bbffcb6b98fe4178666a222f61dcc20f781a72c1659850",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 2,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 62,
+                "epochs_run": 94,
+                "best_validation_mse": 1.149996280670166,
+                "validation_pcc": 0.7230227391538163,
+                "test_pcc": 0.8349258001991828,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s2_best.pt",
+                "checkpoint_sha256": "ac00c2e18e124a0b20b40200d14a4dab5662c80518e1655e6e2db85aa5fcc7d5",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s2_predictions.npz",
+                "prediction_sha256": "749e56f674fd4740d9c8e80b9013a0d94763aea09d739159347b6c228bd8d30c",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 3,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 85,
+                "epochs_run": 117,
+                "best_validation_mse": 1.1294009685516357,
+                "validation_pcc": 0.7290845319871546,
+                "test_pcc": 0.8364849942308525,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s3_best.pt",
+                "checkpoint_sha256": "f8e3ccecb50bea60aa36336ae86e3efd30caefb988a09de19ca58cf741ffe06b",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s3_predictions.npz",
+                "prediction_sha256": "6fd288a089caa6786e0b3a5c816eea37e7fe52d1c7964d492db783cec29305ee",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 4,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 141,
+                "epochs_run": 173,
+                "best_validation_mse": 1.0138957500457764,
+                "validation_pcc": 0.7627002282456133,
+                "test_pcc": 0.856695531087999,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s4_best.pt",
+                "checkpoint_sha256": "5e0c5f4dece1b70e02ad46eaa1f6435d976c21b811b5e50fc9ecf4550584ecb6",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_paper_head_s4_predictions.npz",
+                "prediction_sha256": "33fc194dff30839570eee118005c8a74b530255704bfb0cbd3787191ed550458",
+                "independent_recheck": "PASS"
+              }
+            ],
+            "pcc_mean": 0.8359124286607882,
+            "pcc_sample_std": 0.014121132139677552
+          },
+          "jev_head": {
+            "runs": [
+              {
+                "seed": 0,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 111,
+                "epochs_run": 143,
+                "best_validation_mse": 1.0024900436401367,
+                "validation_pcc": 0.7652713199162853,
+                "test_pcc": 0.8478492241303062,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s0_best.pt",
+                "checkpoint_sha256": "db115b6de5bf19b545b71d21287d551c8b663af198d3d6f5cb7e446513c7603d",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s0_predictions.npz",
+                "prediction_sha256": "017217dd6a8eacf12c861cca9d8e2858f07101f657141af6d08f97997a53e347",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 1,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 159,
+                "epochs_run": 191,
+                "best_validation_mse": 0.9964098930358887,
+                "validation_pcc": 0.7675402819755998,
+                "test_pcc": 0.8394353395434541,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s1_best.pt",
+                "checkpoint_sha256": "b2e6d293de5ab63895da23c612c447209aaf5bb4137bf6776235e2c2d7a256b9",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s1_predictions.npz",
+                "prediction_sha256": "5e1bd7047d62b63c5bdb4a1a43869fc08a78ee0e117fa6e8ac18b7f25539a6b5",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 2,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 132,
+                "epochs_run": 164,
+                "best_validation_mse": 0.9866987466812134,
+                "validation_pcc": 0.7691872784123532,
+                "test_pcc": 0.8506366980435878,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s2_best.pt",
+                "checkpoint_sha256": "e44ea56b2a7454a541f1bd36baa338cdd99d9a1ba94f8ea32857ef3a869c8483",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s2_predictions.npz",
+                "prediction_sha256": "417c7443298df51ca51e8ca3847cd57c3ca95a16aeb935351b6151e7f32b28dd",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 3,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 130,
+                "epochs_run": 162,
+                "best_validation_mse": 0.9675542712211609,
+                "validation_pcc": 0.774171572554568,
+                "test_pcc": 0.8485126223184682,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s3_best.pt",
+                "checkpoint_sha256": "5ddfc8b9353286d70020e48455b9fcad15d270e0363057678df785e8b7a070f2",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s3_predictions.npz",
+                "prediction_sha256": "09ef68ed08a98c34aacd2a0f59ed8241e947bfb7d30338c13bec9d7b33d18ff3",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 4,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 100,
+                "epochs_run": 132,
+                "best_validation_mse": 1.0776842832565308,
+                "validation_pcc": 0.7442368661179078,
+                "test_pcc": 0.8381200339822418,
+                "n_train": 99817,
+                "n_validation": 100,
+                "n_test": 100,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s4_best.pt",
+                "checkpoint_sha256": "392587977ffae9f9303e8c6d59a4c5dccfb6f31fcf56b41f1aac07c4e3cc6ee6",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/designed_library_jev_head_s4_predictions.npz",
+                "prediction_sha256": "70500734a9767e0d48957b2f318768b3f96fd81b2b98e3b33b8637af3a3c0bcf",
+                "independent_recheck": "PASS"
+              }
+            ],
+            "pcc_mean": 0.8449107836036116,
+            "pcc_sample_std": 0.005711579009055589
+          }
+        },
+        "comparison": {
+          "delta_mean": 0.008998354942823306,
+          "delta_sample_std": 0.018131067860887192,
+          "paired_t_statistic": 1.1097489398972213,
+          "one_sided_p_value": 0.16466333884922346,
+          "test": "paired t-test across five pre-registered seeds; Holm correction across three datasets",
+          "holm_p_value": 0.45845696617912124,
+          "significant_positive": false,
+          "independent_recheck": "PASS",
+          "holm_independent_recheck": "PASS"
+        }
+      },
+      "varying_length": {
+        "n_sequences": 106530,
+        "exact_sequence_duplicates": 0,
+        "train_validation_test_overlap": 0,
+        "embedding_cache": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/mrl_suite/varying_length.meanpool.npz",
+        "embedding_cache_sha256": "fb78ff85f391fa4dabbfcbfd718c020ca2c29e300f157a476b7d05b1ec90c908",
+        "heads": {
+          "paper_head": {
+            "runs": [
+              {
+                "seed": 0,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 130,
+                "epochs_run": 162,
+                "best_validation_mse": 1.504258155822754,
+                "validation_pcc": 0.4791373178491708,
+                "test_pcc": 0.4908014589730607,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s0_best.pt",
+                "checkpoint_sha256": "aa4056edb973a63566eba38e8957ea0006a89241d3d3ae319fe305139b3e41bc",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s0_predictions.npz",
+                "prediction_sha256": "7686352b6263c11bdb472a80ce0c00b6a61aacc2d6c03c707bf442c5bb7ab565",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 1,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 164,
+                "epochs_run": 196,
+                "best_validation_mse": 1.4910749197006226,
+                "validation_pcc": 0.4849702001744782,
+                "test_pcc": 0.4945478240609783,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s1_best.pt",
+                "checkpoint_sha256": "9ad9adebdd7eb6c59ba9508397d257d5ae5f55227fc2c3898a70f39c8f6ca9d2",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s1_predictions.npz",
+                "prediction_sha256": "7e8199c9b29f42b5691e76ee5dc08215622f3f6810ef0512cd8ef2451a2e17df",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 2,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 145,
+                "epochs_run": 177,
+                "best_validation_mse": 1.4980545043945312,
+                "validation_pcc": 0.47966527491309474,
+                "test_pcc": 0.4897823281683038,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s2_best.pt",
+                "checkpoint_sha256": "160bed3f738b5ef2191c29d897d774c5a708068fd5752de7f2152a417096c575",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s2_predictions.npz",
+                "prediction_sha256": "7ed564ba6270825bb84773b71812467d299cd5314fe2255b3eae0d240d16be4b",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 3,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 120,
+                "epochs_run": 152,
+                "best_validation_mse": 1.5033609867095947,
+                "validation_pcc": 0.4772522397387813,
+                "test_pcc": 0.4883603507313497,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s3_best.pt",
+                "checkpoint_sha256": "9e548be1294bb8a28ec40b1882b15dfea4349847523e93ed273be17e2d7d450b",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s3_predictions.npz",
+                "prediction_sha256": "76d467f17371003b2567492e6d2761b588e8a633abdf3b10c64db7dcbcd5b3e1",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 4,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 116,
+                "epochs_run": 148,
+                "best_validation_mse": 1.5046488046646118,
+                "validation_pcc": 0.4758899449673256,
+                "test_pcc": 0.49058701703549074,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s4_best.pt",
+                "checkpoint_sha256": "d807f53e2b43e185e3d67552998dffd4a11222a7b1ef54f763c9dc3eab9618bf",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_paper_head_s4_predictions.npz",
+                "prediction_sha256": "15d66c6ee8daae04343e8888910c28264d4cee01300bbe254fc09a095825d435",
+                "independent_recheck": "PASS"
+              }
+            ],
+            "pcc_mean": 0.4908157957938366,
+            "pcc_sample_std": 0.0022955307686546383
+          },
+          "jev_head": {
+            "runs": [
+              {
+                "seed": 0,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 116,
+                "epochs_run": 148,
+                "best_validation_mse": 1.4934253692626953,
+                "validation_pcc": 0.4817266484660603,
+                "test_pcc": 0.48989719063136417,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s0_best.pt",
+                "checkpoint_sha256": "14cdd09e0a85e7855390bb291592c1adaeddc05550b783010c75cb4a378533c6",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s0_predictions.npz",
+                "prediction_sha256": "131c579ecd1a58b562957ba8b5c8b12bd6203d672d9c04c5d8012f4e245cf51b",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 1,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 129,
+                "epochs_run": 161,
+                "best_validation_mse": 1.4901491403579712,
+                "validation_pcc": 0.4854072430952435,
+                "test_pcc": 0.49902912291216883,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s1_best.pt",
+                "checkpoint_sha256": "6caba1f907b93301fe207cbca83a6fa224aec1ba22db16031b3ab6e70d13e636",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s1_predictions.npz",
+                "prediction_sha256": "6b7e721c3b1df3f7e92aad1c7faa0f44ddf887ec6a61d006f1d809b8131639e6",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 2,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 135,
+                "epochs_run": 167,
+                "best_validation_mse": 1.5000635385513306,
+                "validation_pcc": 0.47868262193440136,
+                "test_pcc": 0.49084331449712226,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s2_best.pt",
+                "checkpoint_sha256": "ba69a97235648bcd6a65cbe03493123dcd6b938ddae9152e63741c5385cdd525",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s2_predictions.npz",
+                "prediction_sha256": "beba621cb96edea4574015d4c0ce794c3f33ff4621d0dc9cd59b58c0cdf21d13",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 3,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 125,
+                "epochs_run": 157,
+                "best_validation_mse": 1.5043870210647583,
+                "validation_pcc": 0.47563603115772835,
+                "test_pcc": 0.4934380518633561,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s3_best.pt",
+                "checkpoint_sha256": "f90118ab4eb531f20ea35108805f1998acde0d76897553fa06319a2194c20517",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s3_predictions.npz",
+                "prediction_sha256": "6653750ad051d89c251425e288c03b927e75b6c15af32dbb238992f099ad2190",
+                "independent_recheck": "PASS"
+              },
+              {
+                "seed": 4,
+                "device": "cuda",
+                "converged": true,
+                "early_stopped": true,
+                "best_epoch": 82,
+                "epochs_run": 114,
+                "best_validation_mse": 1.509656548500061,
+                "validation_pcc": 0.4759485970843391,
+                "test_pcc": 0.48892055705405896,
+                "n_train": 91330,
+                "n_validation": 7600,
+                "n_test": 7600,
+                "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s4_best.pt",
+                "checkpoint_sha256": "5a6c6680c4708fbf8638c014111ee6de63479172718229f698ab5a14488397b0",
+                "prediction_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/mrl_suite/varying_length_jev_head_s4_predictions.npz",
+                "prediction_sha256": "69ed4079a0d0b21451a0ab826a1ea3454d84b123a7322a4ec88f3ae1bc28970d",
+                "independent_recheck": "PASS"
+              }
+            ],
+            "pcc_mean": 0.4924256473916141,
+            "pcc_sample_std": 0.004056272334817884
+          }
+        },
+        "comparison": {
+          "delta_mean": 0.001609851597777412,
+          "delta_sample_std": 0.00306706127419946,
+          "paired_t_statistic": 1.1736764558955601,
+          "one_sided_p_value": 0.15281898872637376,
+          "test": "paired t-test across five pre-registered seeds; Holm correction across three datasets",
+          "holm_p_value": 0.45845696617912124,
+          "significant_positive": false,
+          "independent_recheck": "PASS",
+          "holm_independent_recheck": "PASS"
+        }
+      }
+    }
+  },
+  "chanrg": {
+    "splits": [
+      "Test",
+      "GenA",
+      "GenC",
+      "GenF"
+    ],
+    "models": [
+      {
+        "name": "xens2",
+        "values": [
+          0.5656,
+          0.6443,
+          0.3793,
+          0.3066
+        ],
+        "ood_mean": 0.4434,
+        "evidence": "measured"
+      },
+      {
+        "name": "r2d",
+        "values": [
+          0.4935,
+          0.5772,
+          0.2769,
+          0.3037
+        ],
+        "ood_mean": 0.3859,
+        "evidence": "measured"
+      },
+      {
+        "name": "OFoldNA-SS",
+        "values": [
+          0.4899,
+          0.5695,
+          0.3504,
+          0.4031
+        ],
+        "ood_mean": 0.441,
+        "evidence": "quoted"
+      },
+      {
+        "name": "RiNALMo-Giga ft",
+        "values": [
+          0.7832,
+          0.3565,
+          0.1525,
+          0.2298
+        ],
+        "ood_mean": 0.2463,
+        "evidence": "quoted"
+      }
+    ],
+    "note": "OFoldNA Table 3 length-controlled protocol, 50-200 nt, pseudoknots excluded. OOD mean is the unweighted mean of GenA, GenC and GenF."
+  },
+  "length": {
+    "buckets": [
+      "<=100",
+      "100-200",
+      "200-400",
+      ">400"
+    ],
+    "ts0_n": [
+      580,
+      516,
+      164,
+      28
+    ],
+    "ts0": {
+      "ViennaRNA MFE": [
+        0.5999,
+        0.5045,
+        0.4305,
+        0.4561
+      ],
+      "ViennaRNA centroid": [
+        0.6277,
+        0.5375,
+        0.469,
+        0.4854
+      ],
+      "RiNALMo-ft": [
+        0.8187,
+        0.7182,
+        0.6745,
+        0.5692
+      ],
+      "xens2": [
+        0.8787,
+        0.7974,
+        0.7697,
+        0.6792
+      ]
+    },
+    "archiveii_n": [
+      484,
+      1136,
+      728,
+      196
+    ],
+    "archiveii": {
+      "ViennaRNA centroid": [
+        0.7212,
+        0.6865,
+        0.5868,
+        0.5345
+      ],
+      "xens2": [
+        0.8993,
+        0.8733,
+        0.7548,
+        0.5692
+      ]
+    }
+  },
+  "matched_30k_current": {
+    "splits": [
+      "Test",
+      "GenA",
+      "GenC",
+      "GenF"
+    ],
+    "clean_s0": [
+      0.6394677630940057,
+      0.4772113494177452,
+      0.22466086063181487,
+      0.2581902169004271
+    ],
+    "mixed_s0": [
+      0.5809211403403378,
+      0.5671092047136713,
+      0.2820266495881589,
+      0.23245204199417355
+    ],
+    "clean_s1": [
+      0.627430312512867,
+      0.4604354436729,
+      0.26738929232521713,
+      0.2771258557809201
+    ],
+    "clean_s2": [
+      0.6250351022673587,
+      0.5273402749248552,
+      0.26265432365044994,
+      0.26644270250093316
+    ],
+    "mixed_s1": [
+      0.5853778305329268,
+      0.5755190765309948,
+      0.2855014390286788,
+      0.2584463897993334
+    ],
+    "zero_shot_xens2": [
+      0.565554,
+      0.644258,
+      0.379272,
+      0.306568
+    ],
+    "note": "All six arms are complete and independently verified; three-seed statistics and preregistered verdicts are included.",
+    "mixed_s2": [
+      0.5596555763746919,
+      0.5395574108745181,
+      0.23920396409438402,
+      0.2834584584584584
+    ],
+    "statistics": {
+      "family_statistics": {
+        "chanrg_clean_30k": {
+          "micro_mean": {
+            "chanrg_test": 0.6306443926247437,
+            "chanrg_gena": 0.4883290226718335,
+            "chanrg_genc": 0.2515681588691607,
+            "chanrg_genf": 0.2672529250607601
+          },
+          "micro_sample_std": {
+            "chanrg_test": 0.007734543157706793,
+            "chanrg_gena": 0.03481043098198663,
+            "chanrg_genc": 0.023422361236921867,
+            "chanrg_genf": 0.009493784830111164
+          },
+          "ood_mean_of_seeds": 0.33571670220058475,
+          "ood_sample_std_of_seed_means": 0.016075023724897705
+        },
+        "mixed_30k": {
+          "micro_mean": {
+            "chanrg_test": 0.5753181824159855,
+            "chanrg_gena": 0.560728564039728,
+            "chanrg_genc": 0.2689106842370739,
+            "chanrg_genf": 0.25811896341732177
+          },
+          "micro_sample_std": {
+            "chanrg_test": 0.013746033714193898,
+            "chanrg_gena": 0.01881076236505413,
+            "chanrg_genc": 0.025785372920341092,
+            "chanrg_genf": 0.02550478457385487
+          },
+          "ood_mean_of_seeds": 0.36258607056470793,
+          "ood_sample_std_of_seed_means": 0.009706019926204894
+        }
+      },
+      "verdicts": {
+        "genf_mix_hypothesis_pass": false,
+        "genf_sota_pass": false,
+        "ood_mean_sota_pass": false,
+        "ofoldna_ood_mean_reference": 0.441,
+        "ofoldna_ood_mean_pass": false,
+        "zero_shot_ood_mean": 0.4433660945517441,
+        "note": "Gates are evaluated on three-seed means; paired per-sequence Wilcoxon-Holm remains mandatory for interpretation."
+      },
+      "paired_clean_vs_mixed": {
+        "chanrg_test": [
+          {
+            "seed": 0,
+            "clean_micro": 0.6394677630940057,
+            "mixed_micro": 0.5809211403403378,
+            "delta_micro": -0.05854662275366784,
+            "delta_macro": -0.05193656415357292,
+            "delta_median": -0.037634408602150615,
+            "n_win_mixed": 2903,
+            "n_tie": 766,
+            "n_loss_mixed": 6928,
+            "wilcoxon_statistic": 11731729.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.627430312512867,
+            "mixed_micro": 0.5853778305329268,
+            "delta_micro": -0.04205248197994016,
+            "delta_macro": -0.04276278527179044,
+            "delta_median": -0.028407460545193608,
+            "n_win_mixed": 3098,
+            "n_tie": 814,
+            "n_loss_mixed": 6685,
+            "wilcoxon_statistic": 12345557.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.6250351022673587,
+            "mixed_micro": 0.5596555763746919,
+            "delta_micro": -0.06537952589266682,
+            "delta_macro": -0.06288854944974119,
+            "delta_median": -0.04324956165984806,
+            "n_win_mixed": 2427,
+            "n_tie": 823,
+            "n_loss_mixed": 7347,
+            "wilcoxon_statistic": 9221936.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          }
+        ],
+        "chanrg_gena": [
+          {
+            "seed": 0,
+            "clean_micro": 0.4772113494177452,
+            "mixed_micro": 0.5671092047136713,
+            "delta_micro": 0.08989785529592614,
+            "delta_macro": 0.09651825326116752,
+            "delta_median": 0.06896551724137917,
+            "n_win_mixed": 3836,
+            "n_tie": 436,
+            "n_loss_mixed": 1065,
+            "wilcoxon_statistic": 1698158.5,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.4604354436729,
+            "mixed_micro": 0.5755190765309948,
+            "delta_micro": 0.11508363285809475,
+            "delta_macro": 0.11012240661043049,
+            "delta_median": 0.08764367816091956,
+            "n_win_mixed": 3876,
+            "n_tie": 410,
+            "n_loss_mixed": 1051,
+            "wilcoxon_statistic": 1706039.0,
+            "wilcoxon_p_value": 0.0,
+            "holm_p_value_within_split": 0.0
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.5273402749248552,
+            "mixed_micro": 0.5395574108745181,
+            "delta_micro": 0.012217135949662894,
+            "delta_macro": 0.009224387143806644,
+            "delta_median": 0.00527009222661412,
+            "n_win_mixed": 2767,
+            "n_tie": 530,
+            "n_loss_mixed": 2040,
+            "wilcoxon_statistic": 4858928.0,
+            "wilcoxon_p_value": 1.2793335500667706e-21,
+            "holm_p_value_within_split": 1.2793335500667706e-21
+          }
+        ],
+        "chanrg_genc": [
+          {
+            "seed": 0,
+            "clean_micro": 0.22466086063181487,
+            "mixed_micro": 0.2820266495881589,
+            "delta_micro": 0.057365788956344005,
+            "delta_macro": 0.05379025948724429,
+            "delta_median": 0.0030161610923861992,
+            "n_win_mixed": 2002,
+            "n_tie": 681,
+            "n_loss_mixed": 1253,
+            "wilcoxon_statistic": 1631911.5,
+            "wilcoxon_p_value": 2.5589055328980184e-80,
+            "holm_p_value_within_split": 7.676716598694056e-80
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.26738929232521713,
+            "mixed_micro": 0.2855014390286788,
+            "delta_micro": 0.018112146703461673,
+            "delta_macro": 0.014774240567873268,
+            "delta_median": 0.0,
+            "n_win_mixed": 1726,
+            "n_tie": 842,
+            "n_loss_mixed": 1368,
+            "wilcoxon_statistic": 2100686.5,
+            "wilcoxon_p_value": 3.587701747906109e-09,
+            "holm_p_value_within_split": 3.587701747906109e-09
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.26265432365044994,
+            "mixed_micro": 0.23920396409438402,
+            "delta_micro": -0.02345035955606592,
+            "delta_macro": -0.0192727614083507,
+            "delta_median": 0.0,
+            "n_win_mixed": 1428,
+            "n_tie": 841,
+            "n_loss_mixed": 1667,
+            "wilcoxon_statistic": 2061998.5,
+            "wilcoxon_p_value": 1.965124913555115e-11,
+            "holm_p_value_within_split": 3.93024982711023e-11
+          }
+        ],
+        "chanrg_genf": [
+          {
+            "seed": 0,
+            "clean_micro": 0.2581902169004271,
+            "mixed_micro": 0.23245204199417355,
+            "delta_micro": -0.025738174906253547,
+            "delta_macro": -0.021033510734767825,
+            "delta_median": 0.0,
+            "n_win_mixed": 626,
+            "n_tie": 447,
+            "n_loss_mixed": 661,
+            "wilcoxon_statistic": 388330.0,
+            "wilcoxon_p_value": 0.05047830744570372,
+            "holm_p_value_within_split": 0.05047830744570372
+          },
+          {
+            "seed": 1,
+            "clean_micro": 0.2771258557809201,
+            "mixed_micro": 0.2584463897993334,
+            "delta_micro": -0.018679465981586707,
+            "delta_macro": -0.014517472143167693,
+            "delta_median": 0.0,
+            "n_win_mixed": 523,
+            "n_tie": 535,
+            "n_loss_mixed": 676,
+            "wilcoxon_statistic": 304471.5,
+            "wilcoxon_p_value": 4.11962414852968e-06,
+            "holm_p_value_within_split": 8.23924829705936e-06
+          },
+          {
+            "seed": 2,
+            "clean_micro": 0.26644270250093316,
+            "mixed_micro": 0.2834584584584584,
+            "delta_micro": 0.017015755957525247,
+            "delta_macro": 0.022932916579399797,
+            "delta_median": 0.0,
+            "n_win_mixed": 713,
+            "n_tie": 521,
+            "n_loss_mixed": 500,
+            "wilcoxon_statistic": 283194.5,
+            "wilcoxon_p_value": 3.3679505716484006e-12,
+            "holm_p_value_within_split": 1.0103851714945202e-11
+          }
+        ]
+      }
+    }
+  }
+}

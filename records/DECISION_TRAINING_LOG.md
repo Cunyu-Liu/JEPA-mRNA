@@ -10567,3 +10567,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `update_round34_deck.py` 通过 `py_compile`；执行 `fix_pptx.py` 后，第 10 页与全 21 页 `validate_layout` 均为 0 issues，ZIP 完整性通过。markitdown 逐页对比证明仅第 10 页文本变化；第 10 页 155 个形状的文本运行级字体断言通过。
 - Aspose 初次渲染缺 `libgdiplus`，确认 Homebrew `mono-libgdiplus` 已安装并显式设置其 `DYLD_LIBRARY_PATH` 后成功。新渲染逐图复核公式、底部输出和关键标签，无截断或内容重叠；预览水印仅来自 Aspose evaluation renderer，不存在于 PPT 页面元素。预览 SHA256=`500ab62861447d800cf2b8c8ecc308704e2665a7f8b7decdca51d1c423439c0b`。
 - working PPT SHA256=`f4a03dc1f8d8ab3f686acf993175036294aa4c20cd108de0b3a7bf1106fd5306`；更新脚本 SHA256=`d4cb8317fcec8596248ea2d90f35ee14bacb4849d5a082f45761b9d77d8e6f77`。活跃清单升级为 `round34-working-v10`，T-A137 状态在活跃 spec/tasks 镜像中同步；主图 5/7/8 与最终 PPT 仍待正式数据。
+
+## §15.139（2026-10-29）跨页历史速度口径与图文联动完成
+
+- 第 5 页主图 2 保留原数值和布局，但将 JEV 梯图明确标为 `cached-embedding/head-only`，参数统一为 812,375，删除不成立的 `2.21× UFold` 跨口径加速比较。页面文字另列当前已验收的 r2d raw-sequence B=1：22.28 seq/s、F1=0.668181，不与旧值混用。
+- 第 9 页保留为历史 A100 Pareto 参照，标题明确“4090 共同协议重测中”；图内旧 4090 注释也同步改为 head-only，A100 数据点与 Pareto 计算未改。正式主图 5 仍等待六模型共同 B=1/2/4 数据门。
+- 第 15、17、20 页原生文字/表格同步：124.78 仅作历史 head-only 峰值，当前 raw-seq B=1 单列 22.28 seq/s；`9.3M` 全部替换为 812,375；附录明确旧梯图不包含 raw-sequence 编码器前向。第 5、9 页讲者备注同步更新。
+- 图 2 和历史 A100 图均重新导出 3840×1920 PNG/PDF 并逐页 Aspose 渲染复核。全 21 页 `validate_layout=0`、ZIP 通过、运行级微软雅黑断言通过；markitdown 与修改前逐页对比仅第 5、9、10、15、17、20 页变化，无旧 9.3M 或含混端到端表述残留。
+- working PPT SHA256=`6b9d8bb2d60a61477d3bb5faed462ce601e8a260c6e9a70232b318e9032e9c1a`；`build_figures.py` SHA256=`072004420b1ba6b86012d8aeec95ca2f569232e3edaa1ad918d3e0e39c41001d`；`update_round34_deck.py` SHA256=`fa9015c6ee4f2465e25bc7ce652755bbebf2c6223f6c928f83e710fd52fabd04`。
+- 活跃清单升级为 `round34-working-v11`，登记图 2、历史 A100 图及其源数据/代码/文件哈希，22 项证据递归复核通过。此次只纠正历史口径，不把四份 B=1 结果扩写为完整主图 5，也不改变主图 7/8 的待实验状态。
