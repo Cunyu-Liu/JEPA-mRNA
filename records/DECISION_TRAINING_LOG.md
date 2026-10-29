@@ -10800,3 +10800,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - Nature 方法明确接触/距离图使用 BGSU RNA 3D representative release 3.368（2025-01）与 NucleoSeeker 分别构建的数据，过滤长度 32–1,024 nt、CD-HIT-EST 80%、结构质量与缺失残差修复；距离分 20 类，8 Å 得接触图，去除主对角线及上下四条 off-diagonal。论文同时写明 processed datasets 仅“available upon reasonable request”，公开仓库未给出逐样本 ID/split/target，因此继续保持 blocked，不能用相近 PDB 集合冒充。
 - Shuffle 方法确实复用二级结构训练/测试数据并按 0–100%、步长 5% 扰动，但官方配置输入为 `train_no_pretrain_similar.csv` 与 `bpRNA_val_no_pretrain_similar.csv`，仓库未含过滤清单或作者随机扰动版本。虽然基础自然序列已随二级结构数据门恢复，仍不能宣称作者版本逐样本复现；任何后续自行过滤/随机扰动只能标为 protocol-matched reconstruction，并须单独预注册和保留种子、规则与差异说明。
+
+## §15.173（2026-10-30）二级结构小张量 GPU 工程测试资源失败留证
+
+- 在等待全量提取窗口期间，尝试以 32 nt 随机张量执行 official/JEV 前向、反向与解码单元测试；official 头在 `SecStruct2DPredictionHead.to(cuda)` 阶段即报 `RuntimeError: CUDA error: out of memory`，尚未进入训练、验证或科学数据推理。
+- 已立即停止，未转 CPU、未重试、未修改训练代码、未产生结果。证据保存为 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/nb_secstr_round34/engineering_small_tensor_oom.log`。此前静态检查、队列模拟和指标等价测试仍有效，但 GPU 运行时 smoke 必须在正式显存窗口重新完成，不能据此宣称工程验收已通过。
