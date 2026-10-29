@@ -10877,3 +10877,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 每项结果必须与 QA state 中的 result 路径、当前 result SHA256、full scope、10 runs 和 `scientific_eligibility=true` 回执绑定。tRNA/5s 读取既有 watcher 状态，其余七家族读取家族队列状态，防止路径或陈旧 QA 混用。
 - 五种子配对单侧 t 检验后在全部十任务内实施 Holm。任一任务 paired delta SD=0 或其他未定义情况，整个结构家族为 `undefined_zero_variance`，所有 p_Holm=None 且不得宣称显著；全部负结果和原始差值保留。
 - 正常十任务、单家族零方差和 stale-QA 三组工程测试通过；独立审查未发现阻断问题。当前只完成聚合门，尚未生成真实科学聚合结果。active registry 升级为 `round34-working-v35`，SHA256=`7b6d2aa3860ed6de9361f3785189a8fcef116b504ef366132a5aca2e1d85e5f3`。
+
+## §15.184（2026-10-30）HEK fold3 TE 全量结果与三通道验收
+
+- `rinalmo_te_HEK_fold3_round33_full_v4` 已生成 full PASS，result SHA256=`479a1dafd1e6b2d1e8145d1b2f849d2510da533f6ef2cb75fd0af0c41adbe90e`。外部 QA 于 2026-10-29 21:15 UTC 完成 official/JEV 各五种子、10/10 best checkpoint 在 RTX 4090 重推，QA log SHA256=`ed885084a8b354e309dbac47b830180947419b1a65dcb8b0af5bd0bbfca4e390`。
+- 本地独立复算：official/JEV Spearman 均值 0.4862841970/0.4366540244，Δ=-0.0496301726、delta SD=0.0159518679、单侧 p=0.9988783136；R² Δ=-0.0338816428、p=0.9200973799；PCC Δ=-0.0359689192。主指标与 R² 均不显著为正，作为 fold 级负结果完整保留。
+- 十个 run 均为 CUDA、early-stopping converged、best epoch=epochs_run−32，train/validation/test=11528/1441/1441。真实 `aggregate_te_el_cv_round33.load_fold` 再次核对当前 result/QA 哈希、checkpoint、预测、样本数及 Spearman/R²/PCC，全部通过。
+- 本结果只证明 HEK fold3 TE 单折完成，不能外推为十折或三细胞结论。fold3 EL 仍未产生 resume 进程或结果，续接队列保持等待；不修改正式图 8B。active registry 升级为 `round34-working-v36`，SHA256=`314104a166ed33236f1193b78b87c7ed3a0aeb2e812486081c122c5fb68f8979`。

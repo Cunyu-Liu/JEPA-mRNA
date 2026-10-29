@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v35",
+  "registry_version": "round34-working-v36",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -314,6 +314,24 @@
           "paired_pcc_delta": -0.03127991790259556,
           "significant_positive": false,
           "scope": "fold2 only; 10/10 RTX 4090 re-inference, independent statistics and real load_fold preflight passed; not a ten-fold conclusion"
+        },
+        {
+          "task": "HEK TE fold3",
+          "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_te_HEK_fold3_round33_full_v4.json",
+          "sha256": "479a1dafd1e6b2d1e8145d1b2f849d2510da533f6ef2cb75fd0af0c41adbe90e",
+          "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_te_HEK_fold3_qa.log",
+          "qa_log_sha256": "ed885084a8b354e309dbac47b830180947419b1a65dcb8b0af5bd0bbfca4e390",
+          "official_spearman_mean": 0.4862841969849848,
+          "jev_spearman_mean": 0.4366540243909439,
+          "paired_spearman_delta": -0.049630172594040844,
+          "paired_spearman_delta_sample_std": 0.01595186786748217,
+          "one_sided_p": 0.9988783136176845,
+          "paired_r2_delta": -0.033881642819846666,
+          "r2_one_sided_p": 0.9200973798781666,
+          "paired_pcc_delta": -0.035968919154539036,
+          "significant_positive": false,
+          "sample_counts": {"train": 11528, "validation": 1441, "test": 1441},
+          "scope": "fold3 only; 10/10 RTX 4090 re-inference, independent statistics and real load_fold preflight passed; not a ten-fold conclusion"
         },
         {
           "task": "HEK EL fold2",
