@@ -10795,3 +10795,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 队列顺序固定为 smoke32 四 split 提取 → official/JEV smoke → 独立 QA → 全量四 split 提取 → 10 个正式 run/QA → 配对统计与 Holm。完整模拟按序通过 33 个动作；`NOT_CONVERGED` 被硬门拒绝，陈旧 QA 哈希会重新触发 QA，失败不自动重试。
 - 六个脚本先提交远端本地 `86c8903`；首次 push 因 GitHub 分支已有其他确认提交而被拒，未强推或覆盖。随后基于最新分支头安全上传，GitHub commit=`a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47`，六文件 blob 与本地/远端部署一致。
 - `run_nb_secstr_queue_round34.py` 已由 `setsid+nohup+flock` 启动。启动日志为 `WAIT kind=extract free=699 required=8192`，证明显存不足时未抢卡、未转 CPU、未重复提交。当前只有数据门和工程控制流证据，尚无 smoke 结果、正式 run 或科学结论；PPT 与活跃图源不因本阶段提前修改。
+
+## §15.172（2026-10-30）NucleicBERT 接触/距离图与 shuffle 数据边界复核
+
+- Nature 方法明确接触/距离图使用 BGSU RNA 3D representative release 3.368（2025-01）与 NucleoSeeker 分别构建的数据，过滤长度 32–1,024 nt、CD-HIT-EST 80%、结构质量与缺失残差修复；距离分 20 类，8 Å 得接触图，去除主对角线及上下四条 off-diagonal。论文同时写明 processed datasets 仅“available upon reasonable request”，公开仓库未给出逐样本 ID/split/target，因此继续保持 blocked，不能用相近 PDB 集合冒充。
+- Shuffle 方法确实复用二级结构训练/测试数据并按 0–100%、步长 5% 扰动，但官方配置输入为 `train_no_pretrain_similar.csv` 与 `bpRNA_val_no_pretrain_similar.csv`，仓库未含过滤清单或作者随机扰动版本。虽然基础自然序列已随二级结构数据门恢复，仍不能宣称作者版本逐样本复现；任何后续自行过滤/随机扰动只能标为 protocol-matched reconstruction，并须单独预注册和保留种子、规则与差异说明。
