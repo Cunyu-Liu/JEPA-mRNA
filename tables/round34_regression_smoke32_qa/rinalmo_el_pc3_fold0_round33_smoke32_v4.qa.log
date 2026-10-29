@@ -1,0 +1,13 @@
+
+START 2026-10-29T23:40:59.767355+00:00 result=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_el_pc3_fold0_round33_smoke32_v4/result.json
+REGRESSION_QA_RUN_PASS official_head 0
+REGRESSION_QA_RUN_PASS official_head 1
+REGRESSION_QA_RUN_PASS official_head 2
+REGRESSION_QA_RUN_PASS official_head 3
+REGRESSION_QA_RUN_PASS official_head 4
+REGRESSION_QA_RUN_PASS jev_head 0
+REGRESSION_QA_RUN_PASS jev_head 1
+REGRESSION_QA_RUN_PASS jev_head 2
+REGRESSION_QA_RUN_PASS jev_head 3
+REGRESSION_QA_RUN_PASS jev_head 4
+REGRESSION_RESULT_EXTERNAL_QA_PASS {"scope": "smoke", "runs": 10, "result_sha256": "49cb59b6d08fb1b1797a7872630231a60c504aa9341aeff0f5d10e4daa991ba2", "cuda_device": "NVIDIA GeForce RTX 4090"}

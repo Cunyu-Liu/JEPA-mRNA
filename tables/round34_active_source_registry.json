@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v40",
+  "registry_version": "round34-working-v41",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -254,7 +254,7 @@
       "status": "mrl_full_v3_gpu_qa_pass_pending_te_el_ten_fold_results",
       "required_results": ["Muscle/pc3/HEK TE and EL complete ten-fold Spearman aggregation"],
       "engineering_smoke32": {
-        "status": "muscle_te_gpu_qa_pass_muscle_el_and_pc3_pending",
+        "status": "all_four_gpu_qa_pass_full_ten_fold_results_pending",
         "scientific_eligibility": false,
         "completed": [
           {
@@ -264,12 +264,48 @@
             "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_te_Muscle_smoke32_qa.log",
             "qa_log_sha256": "c957ef55a9c6087d9303a3ff45082689f36e6ee236df630f9b56c5b098c46968",
             "gpu_reinference_runs": 10,
-            "sample_counts": {"train": 32, "validation": 32, "test": 32},
-            "scope": "engineering smoke only; independent statistics matched the result, but no scientific conclusion or figure update is permitted"
+            "sample_counts": {"train": 32, "validation": 32, "test": 32}
+          },
+          {
+            "task": "Muscle EL fold0 smoke32",
+            "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_el_Muscle_fold0_round33_smoke32_v4.json",
+            "sha256": "25b1fb77e80a6130aadf96e5d5dba83e82a797c12272045d45e051438859a52e",
+            "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_el_Muscle_smoke32_qa.log",
+            "qa_log_sha256": "cb9f628bea7acc904ff1db08a614b4f9db03753ac5861eaac9f6faa155390449",
+            "gpu_reinference_runs": 10,
+            "sample_counts": {"train": 32, "validation": 32, "test": 32}
+          },
+          {
+            "task": "pc3 TE fold0 smoke32",
+            "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_te_pc3_fold0_round33_smoke32_v4.json",
+            "sha256": "5959a303c485d43d393de5410c412122e6435a87e1ecb6278313c207a16691ae",
+            "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_te_pc3_smoke32_qa.log",
+            "qa_log_sha256": "d48b635d4a385c3686e5052b360a152b8dec756c2700221dd4b67ed77f9eac82",
+            "gpu_reinference_runs": 10,
+            "sample_counts": {"train": 32, "validation": 32, "test": 32}
+          },
+          {
+            "task": "pc3 EL fold0 smoke32",
+            "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_el_pc3_fold0_round33_smoke32_v4.json",
+            "sha256": "49cb59b6d08fb1b1797a7872630231a60c504aa9341aeff0f5d10e4daa991ba2",
+            "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_el_pc3_smoke32_qa.log",
+            "qa_log_sha256": "7825be6b690d35d5e015d9ed234ead347640745e25affff605a404844be4fbeb",
+            "gpu_reinference_runs": 10,
+            "sample_counts": {"train": 32, "validation": 32, "test": 32}
           }
         ],
-        "pending": ["Muscle EL smoke32 and GPU QA", "pc3 TE/EL smoke32 and GPU QA"],
-        "full_release_gate": "both TE and EL smoke32 results for the same cell line must pass current-hash external RTX 4090 QA before any full fold is launched"
+        "pending": [],
+        "scope": "all four results are engineering smoke only; local protocol, convergence, means and paired statistics matched, but no scientific conclusion or figure update is permitted",
+        "full_release_gate": "satisfied for Muscle and pc3; every full fold result still requires its own current-hash external RTX 4090 QA",
+        "queue_gate": {
+          "status": "current_hash_gate_installed_and_real_receipts_verified",
+          "path": "/home/rna_jev/tools/run_te_el_cell_queue_round34.py",
+          "sha256": "5077191b46562165096a926b2ca5da1ef0fcf796bb74b9834a6c23be8491073d",
+          "pid": 949848,
+          "github_code_commit": "2a13f0a75053aa3abb59173aede7d75a737fac53",
+          "tests": ["current smoke/full hashes pass", "tampered smoke/full results become stale", "current-hash failed QA stops", "main queue holds without launching on stale or failed smoke QA"],
+          "installation_safety": "no Muscle/pc3 full child or full result existed at installation; old queue was replaced and all four real smoke receipts return passed under the new gate"
+        }
       },
       "completed_full_results": [
         {
