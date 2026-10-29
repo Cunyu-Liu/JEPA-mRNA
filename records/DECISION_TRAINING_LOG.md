@@ -10553,3 +10553,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 使用当前 `make_figure5_round34.py::load_result` 重新核验 r2d、plana、xens2、RiNALMo-ft 四份既有 B=1 原始 JSON，均为 RTX 4090、TS0 `n=1288`、三次重复、raw-sequence 端到端且 `cached_embeddings=false`。F1/中位吞吐分别为 0.668181/22.2821、0.786870/18.6218、0.804063/7.47377、0.721384/13.9942 seq/s；这是已有结果复核，不是新实验。
 - 四份结果 SHA256 分别为 `c9915ccc...8dd1fc`、`2414b2ce...f878`、`18cbb013...27b5`、`a2a4b885...45ba`。活跃清单升级为 `round34-working-v9`，新增逐模型路径、SHA256、F1、吞吐和“仅 B=1”范围，防止仅凭目录名引用。
 - 清单递归全量哈希复核通过，共 19 个活跃/历史证据条目；清单自身 SHA256=`3e72711942e062776f6c701d606ef08faa444f32daf6ee103d0c22769c775cd7`。共同 batch 网格、MXfold2/RNAformer 和 UFold 状态不变，主图 5 仍未闭环。
+
+## §15.137（2026-10-28 后续）远端 v9 文件原子恢复完成
+
+- 采用单个 SSH ControlMaster 连接复用，避免逐文件重新握手。八个文件（精确 B=4 QA、主图 5 绘图、四份 spec/tasks、最新台账、v9 活跃清单）先传入独立暂存目录，全部 SHA256 预检通过后才用 `os.replace` 替换最终路径。
+- 替换后再次逐文件核对 SHA256；两个 Python 脚本均通过远端 `py_compile`。四份文档的当前第 34 轮块、RiNALMo Spliceator pending 口径、v9 清单版本及台账 §15.134/§15.136 均通过内容断言，暂存目录已清理。
+- 本次仅恢复代码与交接文件，没有启动或停止训练、没有运行 GPU QA，也没有改变科学结果。GitHub 当前保存 commit=`d81ded3f21bc33f75ad19907843adc5d76f3056b`。
