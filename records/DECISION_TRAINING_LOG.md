@@ -10634,3 +10634,16 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 状态检查发现 TE 日志先出现 seed 4，随后再次出现 seed 0，已进一步核查而非按正常续训直接放行。证据为：第二个 seed 0 紧接 `[te/official_head/s4]`，fold2 TE/EL 进程仍为原 PID 528896/528894，启动 tick 未变，没有新进程或结果目录覆盖。
 - 当前顺序为 official head 五种子完成后进入 JEV head 五种子，TE 第二段 seed 0 属正常双头流程；EL 尚在 official head seed 3，均持续写日志。未重启训练、未修改结果，也不把中间 validation 写成科学结论。
 - v17 清单与台账已同步远端。fold2 full result 和对应 QA 尚未产生，PPT 保持现有版本。
+
+## §15.149（2026-10-29）NucleicBERT 缺失任务官方资产全渠道复核
+
+- 对官方仓库 `KIT-MBS/NucleicBERT` 的非浅克隆完成复核：HEAD=`7beb6b38902ee963a2c514f39b69497fe9201ef9`，全部三次提交均无 `data/`；GitHub `commits?path=data` 亦为空，并非仅当前分支漏拉目录。
+- 官方配置再次确认了原始输入合同：`secstr.yml` 使用 `sec_str_data/train/train.csv` 与 `sec_str_data/bpRNA_80/sec_str_vl0.csv`；`contactmap.yml` 使用 `ns_bgsu_contact_map/{train,val}/{inputs,targets}`、8 Å 和 512 nt；`shuffle.yml` 使用 `train_no_pretrain_similar.csv` 与 `bpRNA_val_no_pretrain_similar.csv`、complete shuffle。配置路径不是数据本身，不能据此宣称样本或 split 已复现。
+- Zenodo API 以 `NucleicBERT` 检索仅有两条记录：16989562 为 `pretrained.pt`、`shuffle.ckpt`、`contactmap.ckpt`、`fitness.ckpt`、`secstr.ckpt` 五个权重文件；21111274 仅为官方源码 ZIP。两条记录均没有上述任务 CSV、输入/target 或作者 split。
+- 结论：二级结构、接触/距离图和 natural-vs-shuffled 的官方样本/split 在这些官方渠道中确实未发布，三项继续 blocked。不得以项目相似数据替代后宣称原论文复现；若未来重建，必须单列 protocol-matched reconstruction。此次只核查资产，没有启动训练或改变既有科学结果；活跃清单升级为 v18。
+
+## §15.150（2026-10-29）UFold 官方权重入口复核未完成，阻塞口径不变
+
+- UFold 官方 README 仍只给出 Google Drive 文件夹 `1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi` 作为预训练权重来源，没有 GitHub 内嵌权重。
+- 本机使用 gdown 的 `skip_download=True` 仅请求文件清单，连接 `drive.google.com/embeddedfolderview` 超时；未下载任何文件，也未得到“文件夹不存在或权限关闭”的服务端证据。因此只能记录本次网络通道失败，不能把它写成权重已被作者撤回。
+- UFold 在主图 5 中继续保持 blocked，禁止用其他权重或模型替代。待远端或可用网络通道恢复后，先核验官方文件身份与哈希，再安排独占 4090 测速。

@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v17",
+  "registry_version": "round34-working-v18",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -51,7 +51,7 @@
       ],
       "pending_models": ["mxfold2", "rnaformer"],
       "blocked_models": {
-        "ufold": "official source recovered, official Drive weights unavailable; no substitution permitted"
+        "ufold": "official README points only to Drive folder 1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi; 2026-10-29 local metadata-only gdown request timed out, so weight availability is unverified rather than withdrawn; no substitution permitted"
       },
       "required_final_protocol": "same RTX 4090, project TS0 n=1288, raw sequence to required decode, B=1/2/4, repeats=3, cross-batch prediction invariance",
       "batch_validation": {
@@ -83,6 +83,22 @@
       "plotting_code_sha256": "40bd3dd7ec1112eeaca5a2360fc123d73d5425e5579a6e107de9e46c727e005e",
       "completed_original_tasks": ["splice_acceptor", "splice_donor", "cpeb3_fitness"],
       "blocked_original_tasks": ["secondary_structure", "contact_distance_maps", "natural_vs_shuffled"],
+      "official_asset_audit": {
+        "date": "2026-10-29",
+        "github_repository": "https://github.com/KIT-MBS/NucleicBERT",
+        "github_head": "7beb6b38902ee963a2c514f39b69497fe9201ef9",
+        "github_full_history": "three commits; no data directory in any commit and commits?path=data is empty",
+        "zenodo_query_total": 2,
+        "zenodo_weights_record": 16989562,
+        "zenodo_weight_files": ["pretrained.pt", "shuffle.ckpt", "contactmap.ckpt", "fitness.ckpt", "secstr.ckpt"],
+        "zenodo_source_record": 21111274,
+        "official_config_inputs": {
+          "secondary_structure": ["../data/sec_str_data/train/train.csv", "../data/sec_str_data/bpRNA_80/sec_str_vl0.csv"],
+          "contact_distance_maps": ["../data/ns_bgsu_contact_map/train/inputs/", "../data/ns_bgsu_contact_map/train/targets/", "../data/ns_bgsu_contact_map/val/inputs/", "../data/ns_bgsu_contact_map/val/targets/"],
+          "natural_vs_shuffled": ["../data/shuffle_detection/data_from_secstr/train_no_pretrain_similar.csv", "../data/shuffle_detection/data_from_secstr/bpRNA_val_no_pretrain_similar.csv"]
+        },
+        "conclusion": "official samples and splits were not published in the audited GitHub or Zenodo assets; all three tasks remain blocked and no substitute dataset is permitted"
+      },
       "note": "main benchmark 8/8 positive transfer is separated from three nonsignificant original tasks; no all-task positive-transfer claim"
     },
     "fig08a": {
