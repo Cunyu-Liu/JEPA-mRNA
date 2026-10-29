@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v18",
+  "registry_version": "round34-working-v19",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -112,8 +112,26 @@
       "note": "Official 88-class ncRNA has external GPU QA; RiNALMo Spliceator full results await external cache QA; all values retained"
     },
     "fig08b": {
-      "status": "pending_real_results",
-      "required_results": ["official varying-length MRL full_v3 R2", "Muscle/pc3/HEK TE and EL complete ten-fold Spearman aggregation"],
+      "status": "mrl_full_v3_gpu_qa_pass_pending_te_el_ten_fold_results",
+      "required_results": ["Muscle/pc3/HEK TE and EL complete ten-fold Spearman aggregation"],
+      "completed_full_results": [
+        {
+          "task": "official varying-length MRL full_v3",
+          "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_mrl_round33_full_v3.json",
+          "sha256": "d37de2707c0548f029ef077e3a4c199a094aba95b57cdd3139652d18510eb76b",
+          "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_mrl_full_v3_qa.log",
+          "qa_log_sha256": "a3c58849f674688e179c742a49930be57287d9b00a4c9ee73b12d916d10181c5",
+          "gpu_reinference_runs": 10,
+          "official_r2_mean": 0.6822061253727428,
+          "jev_r2_mean": 0.21335915844303646,
+          "paired_r2_delta": -0.46884696692970634,
+          "paired_r2_delta_sample_std": 0.007249447906457729,
+          "one_sided_p": 0.9999999931429375,
+          "significant_positive": false,
+          "sample_counts": {"train": 76319, "validation": 7600, "test": 7600},
+          "scope": "full official varying-length MRL; five seeds; external RTX 4090 QA and independent statistics passed; retained as a negative result"
+        }
+      ],
       "completed_partial_results": [
         {
           "task": "HEK TE fold0",

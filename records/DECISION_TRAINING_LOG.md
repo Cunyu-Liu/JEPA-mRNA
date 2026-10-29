@@ -10647,3 +10647,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - UFold 官方 README 仍只给出 Google Drive 文件夹 `1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi` 作为预训练权重来源，没有 GitHub 内嵌权重。
 - 本机使用 gdown 的 `skip_download=True` 仅请求文件清单，连接 `drive.google.com/embeddedfolderview` 超时；未下载任何文件，也未得到“文件夹不存在或权限关闭”的服务端证据。因此只能记录本次网络通道失败，不能把它写成权重已被作者撤回。
 - UFold 在主图 5 中继续保持 blocked，禁止用其他权重或模型替代。待远端或可用网络通道恢复后，先核验官方文件身份与哈希，再安排独占 4090 测速。
+
+## §15.151（2026-10-29）MRL full_v3 全量结果、外部 GPU QA 与独立统计
+
+- `rinalmo_mrl_round33_full_v3` 已生成 full official protocol 结果，主 watcher 于 07:03:46 UTC 记录 `returncode=0`。QA 日志确认 official/JEV 各五种子、共 10/10 best checkpoint 在 RTX 4090 重推理通过；result SHA256=`d37de2707c0548f029ef077e3a4c199a094aba95b57cdd3139652d18510eb76b`，QA 日志 SHA256=`a3c58849f674688e179c742a49930be57287d9b00a4c9ee73b12d916d10181c5`。
+- 本地从十个 run 独立复算：official/JEV R² 均值 0.6822061254/0.2133591584，Δ=-0.4688469669、delta SD=0.0072494479、单侧 p=0.9999999931；PCC 均值 0.8281761257/0.5164611893，Δ=-0.3117149364；Spearman 均值 0.7820667440/0.4734599136，Δ=-0.3086068305。主指标 R² 为明确负结果，`significant_positive=false`，不进入正结果候选。
+- 第三遍协议核验通过：十个 run 均为 CUDA、`converged=true`、`early_stopped=true`、`independent_recheck=PASS`；每个 run 的 best epoch 与 validation history 最小值一致，停止均满足 patience=32。train/validation/test 样本数统一为 76319/7600/7600，配对种子的 label mean/std 完全一致，十个 checkpoint 与 prediction 哈希均存在且各自唯一。
+- 原始结果和 QA 日志已下载归档，活跃清单升级为 `round34-working-v19`；spec/tasks 当前队列改为 ArchiveII tRNA/5s 与 HEK fold2 TE/EL 四项在训。MRL 单项已完成，但主图 8B 仍需三细胞 TE/EL 的完整十折聚合，当前不生成正式 8B、不改 PPT，也不将该负结果删除或包装为正提升。
