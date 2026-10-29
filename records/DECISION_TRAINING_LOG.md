@@ -10738,3 +10738,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 使用真实已验收源 JSON 重新生成图 7 original/combined 和图 8A。图 7 combined source/PNG/PDF SHA256 分别为 `9e825e67...b320`、`bf15a63a...3c5`、`2dca984b...ca2`；图 8A source/PNG/PDF 分别为 `ee033ff5...2fd`、`0dc049fc...daa`、`6f299040...d6a`。三份绘图代码 SHA256 分别为 `a5c7cd85...926`、`2d4a01ea...805`、`0f02ee2f...e3a`。
 - working PPT 仅替换第 11、12 页对应媒体；全部 21 页文本与 shape 数不变，markitdown 修改前后逐字一致，ZIP 完整、shape 越界为 0，278 个文本 run 均为微软雅黑，278 个段落的有效行距均为 1.5。Aspose 因本机缺 `libgdiplus` 未能渲染，未误记为版式失败；改用 LibreOffice 实际渲染第 11、12 页并逐图检查，无重叠、截断或图文不匹配。
 - 活跃清单升级为 `round34-working-v29`，working PPT SHA256=`996338d1c1b1ac417285c24e2d08ebdb3f952ccfe91cbf875519da632e40929e`。本轮只闭环分类端 Holm 与其 working PPT 质检；NucleicBERT 三项官方资产缺口、正式图 5、TE/EL 十折、ArchiveII/bpRNA/Muscle/PC3 与正式图 8B 仍未闭环，不能据此宣称整个课题完成。
+
+## §15.163（2026-10-29）Muscle/PC3 回归 smoke 的 OOM 证据与显存门队列
+
+- 旧 `rinalmo_te_Muscle_fold0_round33_smoke_v4` 仅为每折 2 条的工程尝试，十个头文件存在但无 `result.json`，不作为验收或科学结果。新启用每折 32 条的独立 smoke，输出目录与旧证据隔离。
+- 三细胞数据卡复核通过：Muscle/pc3/HEK 的 CSV 行数、文件 SHA256、UTR 与 TE/EL 标签、fold0 的 train/validation/test 索引 SHA256 全部匹配；`prepare_te_el_round33.py` SHA256=`878fdf6574f4f8ee36b0fc2c6bc4a6ce46d9d53d275d2348ad947b056c0d0cb7`。
+- 首次并行启动 Muscle/PC3 TE/EL 四个 smoke 后，均在 RiNALMo 骨干加载/前向阶段 CUDA OOM，未进入 head 训练且无 `result.json`。四份日志 SHA256 分别为 Muscle-TE `b1da1296...f134`、Muscle-EL `2b546e2d...2909`、pc3-TE `b1da1296...f134`、pc3-EL `5ad0dd7e...5dba`；进程已退出，未转 CPU、未覆盖旧结果、未盲目重试。
+- 新增 `run_regression_smoke_queue_round34.py`，SHA256=`817f2eeca0b3650064ad2d23889568f02a565ceda9e501e9f610f0d31df0bbac`。队列仅在单卡空闲显存 ≥4096 MiB 时串行放行一组，前一组 `result.json=PASS` 后才接下一组，部分预测或无结果退出均停止；CUDA 不可用或再次 OOM 不会自动重试。`--once` 实测空闲 3061 MiB，故当前只等待，不抢占在训任务；远端队列进程已启动，四个 smoke 仍未验收。
