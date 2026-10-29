@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v23",
+  "registry_version": "round34-working-v24",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -93,6 +93,30 @@
         },
         "pending_validation": ["exclusive RTX 4090 full scientific speed grid"],
         "gate_stress_test": "temporary engineering data passed complete gate and rejected a deliberate cross-batch mismatch; no synthetic data used as scientific evidence"
+      },
+      "mxfold2_batch_validation": {
+        "status": "official_cli_pair_identity_and_b1_b2_b4_gpu_pass_pending_exclusive_speed_grid",
+        "official_release": "https://github.com/mxfold/mxfold2/releases/tag/v0.1.2",
+        "wheel_sha256": "a9ea044a6555903e019fc016d8409ba0907bfb143bbf2eda51b1d27aae763c72",
+        "weights": "TrainSetAB.pth",
+        "weights_sha256": "8ba1283e70c1c073033161adc120f67cdc467176476358d26a12cadaf63262ec",
+        "strict_load": true,
+        "adapter_code": "/home/rna_jev/tools/speed_end_to_end_4090.py",
+        "adapter_code_sha256": "0ea18aa47c349e6448dc703c4175f0f8dc81376a8e2cdb8f420853903d9da652",
+        "compatibility_code": "/home/rna_jev/tools/mxfold2_compat_round34.py",
+        "compatibility_code_sha256": "61ef811d3ae394f3bd20bdee7c453a46782499c22f09865313c18a7b0ff27059",
+        "fixed_defects": ["partner list sentinel and 1-based target index conversion corrected to (index-2, partner-1) for partner>=index", "non-contiguous permute tensors use reshape instead of view"],
+        "evidence_directory": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/mxfold2_batch_qa",
+        "result_sha256": {
+          "1": "2c16b0ee4d6e984e421af8f8925d3d9b994701b8a44a93d6e6fec818ea78f5ca",
+          "2": "350d1e629d44681b81c3a157912623b58c94db5543bef56b825baae2f66fbd06",
+          "4": "aa3c82acc4b892a69d3eac9b7fda753c641269e15a8797bbca5251afe154779b"
+        },
+        "prediction_sha256_all_batches": "75168ac3793c37930ec45c57b7713e0cda70c56ccbdd40c2a1ab0ece519c2122",
+        "official_cli_pair_identity": "990/990 pairs match exactly for B=1/2/4 after excluding the CLI score annotation from dot-bracket parsing",
+        "strict_micro_f1_engineering_subset": 0.8010723860589812,
+        "scope": "32-sequence engineering subset only; not a scientific speed or accuracy result",
+        "failed_attempts_preserved_remote": ["audits/round34_mxfold2_batch_qa", "audits/round34_mxfold2_batch_qa_after_install", "audits/round34_mxfold2_batch_qa_adapter_fixed"]
       }
     },
     "fig06": {

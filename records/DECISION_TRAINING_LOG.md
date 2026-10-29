@@ -10683,3 +10683,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 在同一脚本中复用正式 `speed.run_once` 增加 `QA_FULL32=1` 分支，未另造前向或解码逻辑。32 条序列 B=1/2/4 的预测列表和预测 SHA256 完全一致：`3c2f8b5c942af4a1e296491579f62006d0d3f361fc24f1a12a1bd9cb179dc6bf`；TP/FP/FN=792/66/83，strict micro-F1=0.9140219273，full32 日志 SHA256=`5b4ffff9150a5123b0289f0b544a16a58739b378920ba8cc946b60efc043b675`。
 - 第三遍在本地重新解析全部九个日志，确认组长度、四条记录、阈值翻转、batch 哈希和 TP/FP/FN 均符合合同。更新后 QA 脚本 SHA256=`05430925eb6407bffefd822948f88c830a164db86cba13c6df28f0f5b524f35e`，成功日志已归档到 `figure_assets/rnaformer_batch_qa/`。
 - 上述 32 条和八组仅属工程一致性证据，不作为主图 5 的速度或精度科学结果。下一步仍需在独占 4090 窗口完成 RNAformer/MXfold2 的 full TS0 B=1/2/4 测速和共同网格；活跃清单升级为 `round34-working-v23`。
+
+## §15.156（2026-10-29）MXfold2 适配器索引与 stride 修复、官方 CLI 逐对验收
+
+- 使用官方 v0.1.2 manylinux wheel，wheel SHA256=`a9ea044a6555903e019fc016d8409ba0907bfb143bbf2eda51b1d27aae763c72`；TrainSetAB.pth strict load，权重 SHA256=`8ba1283e70c1c073033161adc120f67cdc467176476358d26a12cadaf63262ec`。首次直接下载中断后改用本机 GitHub 通道并校验上传，未替换权重。
+- 初次 B=1 的 32 条 F1 仅 0.003217，B=2 同时发生非连续张量 `view` 错误，未采信。官方 CLI 首次未显式传 GPU 参数而默认 CPU，已立即停止该进程且不使用其输出；随后以 `--gpu 0` 重跑，官方模型和权重可产生正常结构。
+- 逐对比较证明 partner 列表含哨兵位且目标为 1 基索引，正确映射是 `partner>=index` 时 `(index-2, partner-1)`；旧适配器同时错移当前位置和目标位置。上游 `PairedLayer.forward` 两处 `permute` 后 `view` 改为等价 `reshape`，其余计算保持原样。兼容补丁 SHA256=`61ef811d3ae394f3bd20bdee7c453a46782499c22f09865313c18a7b0ff27059`，速度适配器 SHA256=`0ea18aa47c349e6448dc703c4175f0f8dc81376a8e2cdb8f420853903d9da652`。
+- 修复后 B=1/2/4 的 32 条预测完全一致，prediction SHA256=`75168ac3793c37930ec45c57b7713e0cda70c56ccbdd40c2a1ab0ece519c2122`；TP/FP/FN=747/243/128，engineering subset strict micro-F1=0.8010723861。三份结果 SHA256 分别为 `2c16b0ee...f5ca`、`350d1e62...fbd06`、`aa3c82ac...779b`。
+- 第三遍在本地将三批预测与官方 GPU CLI 比较，990/990 个真实配对逐对一致。初次比较多出的 32 对来自解析器误把每行末尾 `(score)` 当作结构括号，已改为只解析首个 dot-bracket 字段，未改变任何模型预测。三批 F1 由 TP/FP/FN 独立复算一致。
+- 失败日志分别保存在独立 audits 目录，成功 JSON、日志、官方 GPU CLI 输出和 input32.fa 已归档到 `figure_assets/mxfold2_batch_qa/`。这些 32 条结果只证明适配正确和跨 batch 一致，不作为主图 5 科学结果；正式 full TS0 测速仍待独占 4090 窗口，活跃清单升级为 `round34-working-v24`。

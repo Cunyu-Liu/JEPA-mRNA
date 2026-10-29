@@ -1,0 +1,98 @@
+/root/miniconda3/envs/lucaone/lib/python3.10/site-packages/mxfold2/predict.py:143: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  p = torch.load(param, map_location='cpu')
+>0
+UUCCUGACAAUAUUAUCGCGAUAGAACCACCUGAAUCCAUACCGAACUCAGAAGUGAAAUGUCGUAGUUCCGAUGGUAGUGUGAGGUUUCCUUAUGUGAGAGUAGGAGAUUGUCAGGAAA
+(((((((((((......((((((....(((((((.((......))..))))..)))...))))))......................((((.(((......)))))))))))))))))). (21.2)
+>1
+CAGGUGGCCAUAGUGGAGAGGUAAUACCCGUUCCCAUCCCGAACACGGAAGUCAAGCUCUCUUACGCCGAUGAUACUGCUGAUCAAGUGGGAAAGUAGGAUGCUGCCUGGC
+((((((((....((((((((...((..((((((.......))..))))..))....))))).))).......(..(((((.............)))))..))))))))).. (20.9)
+>2
+CCCGGUGACUAUAGAGAGAGGGCCACACCCGUUCCCAUCCCGAACACGGAAGUUAAGCCUCUCAUCGCUGAUGGUACUAUGUGGUUCGCUGCAUGGGAGAGUAGGACGUUGCCGGGUUUU
+(((((((((......((((((...((..((((((.......))..))))..))....))))))....((.((....((((((((....))))))))....)).))..))))))))).... (30.7)
+>3
+CCUGGCGUCCAUGGAGGAGGGGGUACACCCGAUCCCAUUCCGAACUCGGAAGUUAAGCCCUCCAUCGCCGAUGAUACUGCGGGGUAGCUCGUGGGAAAGUAGGCCGACGCCAGGACU
+(((((((((......((((((...((..((((((.......))..))))..))....))))))...(((.((....(((((((....)))))))....)).))).)))))))))... (42.9)
+>4
+UACAACACCAAAGGUGUUUUGUAUUUGAGAGAUAGAUAUUGAUUUUCAGCGAAGUUCCGAGAUUGGGCUGGCUGGCUGCGUGAUUAAUACAUGUAGCGGGUUAGUUUAGACAGAAUUUGCCUGGCGGCCAUAGCGCGGUGGACCCACCUGAAUCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGACACUGCCAGGCAUCAAAU
+...((((((...))))))..................................(((((.....(((((((((((.((((((((.......)))))))).)))))))))))...)))))((((((((((.....((((((((....(((((((.((......))..))))..)))...)))))).))(((.((....((((((((...))))))))....)).)).).))))))))))...... (67.2)
+>5
+CCGGUGCUUCUGGCAGGGGAGAAACACCUGUUUCCAUCCCGAACACAGAAGUAAAGUCCCCUUGCGCCUAUGGUACUGCCGGGUUUCCCGGUGGAAGAGUCGGUCGGUGCCG
+.(((((((....((((((((...((..(((((((......))).))))..))....))))).)))(((.((....((((((((...))))))))....)).))).))))))) (32.4)
+>6
+UUCGGUGGCUAUAGCGCAGGGGUCACACCUGUUCCCAUCCCGAACACAGAAGUUAAGCCCUGUUGCGCCGAUGAUACUGCAUGGGCAACUAUGUGGGAAAGUAGGUCGCCGCCGAAA
+(((((((((....((((((((...((..((((((.......))..))))..))....))))).)))(((.((....((((((((....))))))))....)).))).))))))))). (40.0)
+>7
+GCCAACGACCAUACCACGCUGAAUACAUCGGUUCUCGUCCGAUCACCGAAAUUAAGCAGCGUCGGGCGCGGUUAGUACUUAGAUGGGGGACCGCUUGGGAACACCGCGUGUUGUUGGCCUCGUCCACAACUUUUU
+(((((((((....((((((((...(..(((((..((....))..)))))..)....)))))).))(((((((..((.((.((.(((....)))))..)).))))))))))))))))))................. (41.7)
+>8
+ACAUUCGGCCAUACCAGGACGACAAAUACCCCAUCCCAUCUCGAACUGGGCAGUUAAGUCUCCUCGGGCGCGCUUAGUACUGAGGUCAGGGAUGACUCGGGAAUCGCGCGUGCUGAAUGUU
+(((((((((....((((((.(((.(((..((((((.......))..))))..)))..))))))).))((((((......(((((.(((....)))))))).....))))))))))))))). (29.1)
+>9
+AUGGAUCGUUCAAACCUUCAAGGCCCCUCCCCAUCCCAUCAGCACUGGGAAGAUAAGCCUGAAUGGGCUGAACUAGUAGUACGGUGGGGGACCACGUGCGAAUCCUCAGUGACGACCUGGUU
+..((.((((.....(((...)))...................(((((((.((...(((((....)))))...))....(((((.(((....)))))))).....)))))))))))))..... (23.1)
+>10
+GAUCCCAUCAGAACUCCGAAGUUAAGCGUGCUUGGGCGAGAGUAUUUCUAGGAAGGGUGACCUCCUAGAAACAACGCGUCGGAUACUCGGACCA
+..............(((((.((...(((((.....((....)).(((((((((.((....)))))))))))...))))).....)))))))... (21.4)
+>11
+GUGGUUCGUUCAUACCUAGGCUAUUGCGCCGGAUCCCAUCAGACCUCCGAAGCUAAAGGCCUGUGGGCGAGAAUAGUACUGGAAUGGGUGACCUUCCGGGAAGUCCUCGUGACGAACCCA
+..((((((((....((((((((...((..((((((......))..))))..))....)))))).))(((((...(.(.((((((.((....))))))))..).).))))))))))))).. (37.9)
+>12
+GACUCGUUCAUACUACAGUGGCCACACCAGAUCCCAUCAGAACUCUGAAGUUAAGCACUGUAAGGCUUGGCUAGUACUGAGGUGGGAGACCGCUCGGGAACACCAGGUGAUGAGUCAUU
+((((((((....((((((((...((..((((((......))..))))..))....))))))).)((((((...((.((..(((((....)))))..)).)).))))))))))))))... (31.8)
+>13
+GCUGUCGGUCAUACUGCGUCGAAUACACCGGAUCCCUUCAGACCUCCGAAGUUAAGCGGCGCAAGGCCCGGUUAGUACUUGGGUGGGGGACUCCCAGGGAAUACCCUCGGGUGCUGACAGCUUU
+(((((((((....((((((((...((..((((((......))..))))..))....))))))).)((((((.((...((((((.(.....).))))))...))...)))))))))))))))... (36.3)
+>14
+GCAAUCAUGAGAGUUUGAUCCUGGCUCAGGAUAAACGCUAGCUGUGUGCUUAAUACAUGCAUGUUGAACGGAAUAUUUUAGUUCGCUAAAAUAUUUAGUAGCAAAUGGGUGAGUAACACGUACCUAACCUACCUUUUGGACUGGGAUAACCAUUGGAAACAGUGGCUAAUACCAGAUAUGAUAAAAAUUUGCAUGAAUUUUUAUUCGAAGGAGCCUUCGAAGCUUCGCCUGCCCAAAGUCGGUGAGUUAACUUCGGAGACCAUUGCCUAAGGCGGACCGAUGACUGGGGUGAAGUCGUAACAAGGUAUCCCUACGAGAACGUGGGGAUGGAACACCUCCUUUCU
+........(((((....((((((...))))))........(((((((.....))))).)).(((((....(((((((((((....)))))))))))..)))))..((((((.(.....).)))))).....((....)).((((.....((((((....))))))......)))).....((((((((((....))))))))))((((((....)))))).((((((((...(((..(((((((((....)))...........(((...)))..))))))...))))))))))).......(((((((((((((....))))))))).....)))).))))). (86.7)
+>15
+AAUUGGGGGCAUAGCUCAGUUGGGAGAGCAUCUGCUUUGCAAGCAGAGGGUCGUCGGUUCGAUCCCGUCUGCCUCCACCAUUA
+...((((((((..((((........)))).(((((((...))))))).....(.(((.......))).)))))))))...... (26.4)
+>16
+GGGGGUAUAGCUCAACUGGCUAGAGCGACGGCUUUGCAGGUCGUAGGUCAGGGGUUCGAGUCCCCUUAUCUCCA
+(((((((..((((.........)))).((((((.....)))))).....(((((.......)))))))))))). (25.9)
+>17
+GCCCGAAUAGCUCAGCCGGUUAGAGCACUUGACUGUUAAUCAGGGGGUCGUUGGUUCGAGUCCAACUUCGGGCGCCA
+(((((((..((((.........)))).(((((.......))))).....(((((.......)))))))))))).... (27.2)
+>18
+UCCCUUAUAGCUCAAUUGGCAGAGUAGGUGACUGUUAAUCACUUGGUUCCUGGUUCGAGUCCAGGUGGGGGAG
+(((((((..((((........))))((((((.......))))))....(((((.......)))))))))))). (20.0)
+>19
+GGUUCCGUAGCUCAGUUGGUUAGAGCGUGCGGCUGUUAACCGCAAGGUCGUUGGUUCGAUCCCAGCCGGUACCG
+(((.(((..((((.........)))).(((((.......))))).....(((((.......)))))))).))). (23.4)
+>20
+GCGCCCCGUUCACACGAUUCCUCUGUAGUUCAGUCGGUAGAACGGCGGACUGUUAAUCCGUAUGUCACUGGUUCGAGUCCAGUCAGAGGAGCC
+..................(((((((..((((........)))).(((((.......))))).....(((((.......))))))))))))... (24.2)
+>21
+GGUCCCGUGGUGUAGUGGUUAACAUGCCUGCCUGUCACGCAGGAGAUCGCCGGUUCGACCCCGGUCGGGACCGCCAUUU
+(((((((..((((........)))).(((((.......))))).....(((((.......))))))))))))....... (27.6)
+>22
+GGGGUUGUAGUUCAAUGGUUAGAGUGUUGCCCUGUCAAGGCAAAGGUUGUGGGUUCAAGUCCCAUCAAUCCCG
+(((((((...(((........)))..(((((.......))))).....(((((.......)))))))))))). (20.3)
+>23
+GGCCCUGUGGCGCAGUUGGUUAGCGCGCCGCCCUGUCACGGCGGAGGUCGCGGGUUCGAGUCCCGUCAGGGUCGCAAGUA
+(((((((..((((.........)))).(((((.......))))).....(((((.......))))))))))))....... (32.6)
+>24
+GGCGAUAUAGCCAAAUGGUAAGGCAAAGGUCUGCAAAACCUUGAUCGCCGGUUCAAAUCCGGCUAUCGCCUUUU
+(((((((..(((.........))).(((((.......)))))....(((((.......)))))))))))).... (23.9)
+>25
+GGCGGGGUGGCAGAGUGGUCAAUGCUGCGGCUUGCAAAGCCGUAUAAGUCGGUUCGAUUCCGUUCCCCCGCCUCCA
+(((((((..(((..........))).((((((.....))))))......(((.......)))...))))))).... (27.7)
+>26
+GGUUCCUUGGAUGAGUGGCUUAGUCAGCGGUCUGCAAAACCGUGUACGGCGGUUCGAAUCCGCCAGGAACCU
+(((((((...............((..(((((.......)))))..))(((((.......)))))))))))). (24.2)
+>27
+GGCCGUGUGCCCGAGUGGCUUAGGGACUCGCCUGCAAAGCGAGGUACGUGGGUUCAAUUCCCGCCACGGCCUCCC
+(((((((..(((..........))).(((((.......)))))....(((((.......)))))))))))).... (32.0)
+>28
+GGCACCGUCGCCAAGUGGUAAGGCCCGGGUCUGCAAAACCCGUAUUCGGCGGUUCGAAUCCGCCCGGUGCCU
+(((((((..(((.........))).(((((.......))))).....(((((.......)))))))))))). (30.4)
+>29
+GGCGCGGUACCCAAGUGGUAAGGGAGAGGUCUGCAAAACCUUUAUGCGUCGGUUCGAUUCCGACCCGCGCCUCCA
+(((((((..(((.........))).(((((.......))))).....(((((.......)))))))))))).... (28.1)
+>30
+GGUGGAAUGGCUGAGUGGCUUAGGCAACGGUCUGCAAAACCGUGUACACGGGUUCGAUUCCCGUUUCCACCUCCA
+(((((((..(((..........))).(((((.......)))))....(((((.......)))))))))))).... (25.3)
+>31
+GCGGCGUUAACAAAGCGGUUAUGUAGCGGAUUUCAAAUCCGUCUAGUCCGGUUCGACUCCGGAACGCCGCUCCA
+((((((((.(((.........))).(((((((...))))))).....((((.......)))))))))))).... (25.5)
