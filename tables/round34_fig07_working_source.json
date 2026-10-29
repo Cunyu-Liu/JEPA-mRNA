@@ -143,8 +143,10 @@
       "significant_positive_holm": false
     }
   },
+  "pending_original_tasks": [
+    "secondary_structure_five_seed_evaluation"
+  ],
   "blocked_original_tasks": [
-    "secondary_structure",
     "contact_distance",
     "natural_vs_shuffled"
   ]

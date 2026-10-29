@@ -1,6 +1,6 @@
 {
-  "registry_version": "round34-working-v30",
-  "generated_at": "2026-10-29",
+  "registry_version": "round34-working-v31",
+  "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
     "accepted_evidence": "original result JSON plus independent QA and SHA256",
@@ -154,26 +154,35 @@
       "render_review": "Aspose slide 10 reviewed after dependency repair; no clipping or content overlap; evaluation watermark exists only in the preview renderer"
     },
     "fig07": {
-      "status": "working_with_explicit_blocked_tasks",
+      "status": "working_secondary_data_passed_five_seed_pending_contact_distance_and_shuffle_blocked",
       "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_source.json",
-      "figure_source_sha256": "9e825e673e4b0ec2f38bf729aa97ea84577f354163a1a7bde38b84194773b320",
+      "figure_source_sha256": "06df2bc429d29160c6f2b04e8c0b301acbc0c943f201efba39d463f9a3789fae",
       "rendered_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_3840x1920.png",
-      "rendered_png_sha256": "bf15a63aa3e087e090e14c1c14bab95d869466ce713683c0611096e1b9afd3c5",
+      "rendered_png_sha256": "fd6bc103c7476da4e7d2d96c8b46b94f403633c4325f47dc3ed751aef0c51fc4",
       "rendered_pdf": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_combined_working_3840x1920.pdf",
-      "rendered_pdf_sha256": "2dca984b176192bc9b71b8468f07241ea614e9bf19312a5405f4f89f1192eca2",
+      "rendered_pdf_sha256": "02de1023af846d9f711a7af16fa168c6d1c99a7f30c97966d652a5391904f4ca",
       "original_tasks_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_original_tasks_working_3840x1920.png",
       "original_tasks_png_sha256": "b03d7fa0b6d3600c4f1b21da807803b31e12044d0c387cafd65e78e8567d62fd",
       "original_tasks_source_json": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig07_nucleicbert_original_tasks_working_source.json",
       "original_tasks_source_json_sha256": "74c8978564c7081200b6c41d87be1be978c82f197ce71348771a098c7722a37e",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_combined_round33.py",
-      "plotting_code_sha256": "2d4a01eaeebf21f6b526e12b3c6afa2c2ac30917efbcb3f21f30d1432f99e805",
+      "plotting_code_sha256": "3e8a61d02593bc04441dc16d7fc1c709034038fddcb6b9d04ffef6fae84ea95e",
       "original_plotting_code": "/private/tmp/rnajev_audit/round33/make_figure7_round33.py",
       "original_plotting_code_sha256": "a5c7cd854d3a76331f1eac9900af20b9db2283e37ed4840c3800bff2edddb926",
       "holm_status": "PASS",
       "completed_original_tasks": ["splice_acceptor", "splice_donor", "cpeb3_fitness"],
-      "blocked_original_tasks": ["secondary_structure", "contact_distance_maps", "natural_vs_shuffled"],
+      "pending_original_tasks": ["secondary_structure_five_seed_evaluation"],
+      "blocked_original_tasks": ["contact_distance_maps", "natural_vs_shuffled"],
+      "secondary_structure_data_gate": {
+        "status": "PASS",
+        "data_card": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/nucleicbert_secondary_structure_round34/data_card.json",
+        "data_card_sha256": "0863b15f833ed055fd981f591458f20a441e668f8bce2ef05228698f991b4096",
+        "train_validation_test_rows": {"rnastralign_tr0": 47963, "vl0": 1300, "ts0": 1305, "archiveii600": 3911},
+        "restored_archiveii_crossing_pairs": 14723,
+        "github_code_commit": "a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47"
+      },
       "official_asset_audit": {
-        "date": "2026-10-29",
+        "date": "2026-10-30",
         "github_repository": "https://github.com/KIT-MBS/NucleicBERT",
         "github_head": "7beb6b38902ee963a2c514f39b69497fe9201ef9",
         "github_full_history": "three commits; no data directory in any commit and commits?path=data is empty",
@@ -186,7 +195,7 @@
           "contact_distance_maps": ["../data/ns_bgsu_contact_map/train/inputs/", "../data/ns_bgsu_contact_map/train/targets/", "../data/ns_bgsu_contact_map/val/inputs/", "../data/ns_bgsu_contact_map/val/targets/"],
           "natural_vs_shuffled": ["../data/shuffle_detection/data_from_secstr/train_no_pretrain_similar.csv", "../data/shuffle_detection/data_from_secstr/bpRNA_val_no_pretrain_similar.csv"]
         },
-        "conclusion": "official samples and splits were not published in the audited GitHub or Zenodo assets; all three tasks remain blocked and no substitute dataset is permitted"
+        "conclusion": "secondary-structure samples were independently recovered and verified against official lists/raw bpseq; contact/distance processed splits and the shuffle no_pretrain_similar filtered lists remain unpublished and blocked"
       },
       "note": "main benchmark 8/8 positive transfer is separated from three nonsignificant original tasks; no all-task positive-transfer claim"
     },
@@ -345,16 +354,16 @@
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "996338d1c1b1ac417285c24e2d08ebdb3f952ccfe91cbf875519da632e40929e",
+    "sha256": "912e4c82059e525cfa60bf47788a5559ad4cfb900be579ab52bf7f94afcf255d",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5,
-    "updated_slides": [11, 12],
-    "content_update": "Figure 7 and Figure 8A now display family-wise Holm-adjusted p-values; all seven completed classification tasks remain nonsignificant positive and all negative results are retained",
+    "updated_slides": [11, 12, 15],
+    "content_update": "Figures 7/8A retain family-wise Holm-adjusted results; Figure 7 and slide 15 now distinguish secondary-structure data-gate completion from pending five-seed evaluation; contact/distance and shuffle remain blocked",
     "update_code": "/private/tmp/rnajev_audit/round34_ppt/update_round34_deck.py",
-    "update_code_sha256": "e9847fe50a54f7746f0fe0fd6594fc544d6a2b65171289c6ca5dbe14cc973d20",
+    "update_code_sha256": "dd9605aea0aa471d0e81f6da4a516923603a433989e419a3e3751bc02c533daa",
     "remote_backup": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/figure_assets/round34/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "qa": "only slides 11/12 media changed; all 21 slide texts and shape counts stayed identical; markitdown before/after identical; ZIP, layout=0, 278 Microsoft YaHei runs and 278 effective 1.5-spacing paragraphs passed; LibreOffice slide 11/12 renders reviewed without overlap, clipping or text-figure mismatch"
+    "qa": "all 21 current pages rendered through Aspose and inspected; ZIP, zero out-of-bounds shapes, 665 Microsoft YaHei runs and 665 effective 1.5-spacing paragraphs passed; no clipping, overlap or missing legends; Figure 7 numerical arrays are unchanged and only its status footer/media plus slides 11/15 status text changed"
   },
   "legacy_source_snapshot": {
     "path": "/private/tmp/rnajev_audit/remote_current_20261028/round32_figure_source_data.merged.json",

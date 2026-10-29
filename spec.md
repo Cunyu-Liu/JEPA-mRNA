@@ -8,6 +8,7 @@
 > - **正式数据资产**：`/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/nucleicbert_secondary_structure_round34`；训练集 RNAStrAlign+TR0 共 47,963 行、3,299,304 对，保留 15,372 条含交叉配对记录；VL0/TS0/ArchiveII600 分别为 1,300/1,305/3,911 行。`data_card.json` SHA256=`0863b15f833ed055fd981f591458f20a441e668f8bce2ef05228698f991b4096`，四个 JSONL 已在本地、上传后和远端复读三通道核对。
 > - **单变量训练合同**：两种头共享完全相同的冻结 NucleicBERT 33 层均值表征、原始配对标签、598 nt 截断/padding、未加权 BCE、AdamW、VL0 早停和五种子；只改变头部及其原生解码。official 使用 SecStruct2DPredictionHead+官方贪心冲突清理，JEV 使用 PairRepresentation+ResNet2D+Turner 先验+非交叉 max-product DP。测试仅 TS0/ArchiveII600，逐序列 macro-F1 与原 `ss_metrics` 等价，五种子配对单侧检验并在本任务两测试集内 Holm 校正。
 > - **执行链与当前状态**：分片可恢复特征提取 → smoke32 双头 → 独立 GPU 全量复读 QA → 全量提取 → 10 个正式 run/QA → 聚合。队列已启动，启动时 free=699 MiB、低于 8,192 MiB 提取门而等待，未产生 smoke 或科学结果。33 步状态机、失败/陈旧 QA 门和 100 组指标等价测试均通过。六个脚本已上传 GitHub `a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47`；远端本地提交 `86c8903` 内容相同，push 被拒绝后未覆盖他人提交，改用最新分支头安全上传。
+> - **PPT working QA**：全 21 页已完成 Aspose 逐页渲染和人工复核，665 个微软雅黑 run、665 个有效 1.5 倍行距、越界 shape=0。第 11/15 页二级结构旧 blocked 状态已改为数据门通过、五种子待验收，主图 7 数值不变，活跃清单升级为 `round34-working-v31`；正式科学面板未完成前仍不称最终稿。
 > - **后续优先级**：先完成该二级结构 smoke 与正式五种子，同时让既有 ArchiveII/TE-EL/bpRNA 队列继续按门推进；正式 4090 测速仍需独占窗口。任何非 PASS、NOT_CONVERGED、哈希变化或 GPU 复读不一致立即停止，不把数据门、工程 smoke 或单个 seed 写成结论。
 >
 > **当前交接（2026-10-28，第 34 轮：接续验收与最终闭环）**：

@@ -117,6 +117,22 @@ def replace_run_text(container, old, new, expected):
     assert count == expected, (old, count, expected)
 
 
+def update_secondary_data_status(prs):
+    replace_picture(prs.slides[10], FIG / "fig07_nucleicbert_combined_working_3840x1920.png")
+    replace_run_text(
+        prs.slides[10],
+        "8/8 仅指主 benchmark；secondary structure/contact-distance/shuffle 缺官方资产，保持 blocked，不作全覆盖声明。",
+        "8/8 仅指主 benchmark；secondary-structure 数据门已过、五种子待验收；contact-distance/shuffle 保持 blocked，不作全覆盖声明。",
+        1,
+    )
+    replace_run_text(
+        prs.slides[14],
+        "NB 其余官方资产 blocked；MRL 已验收为负，TE/EL 十折未闭环",
+        "NB 二级结构待五种子；contact/distance/shuffle blocked；MRL 为负，TE/EL 未闭环",
+        1,
+    )
+
+
 def update_speed_provenance(prs):
     replacements = {
         5: [
@@ -309,6 +325,7 @@ def main():
     rebuild_fig6(prs.slides[9])
     update_speed_provenance(prs)
     update_downstream_provenance(prs)
+    update_secondary_data_status(prs)
     prs.save(OUT)
     print(f"ROUND34_DECK_WORKING_WRITTEN {OUT}")
 

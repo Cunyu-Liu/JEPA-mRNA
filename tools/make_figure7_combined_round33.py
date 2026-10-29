@@ -37,7 +37,8 @@ def main():
                                   "recovery_manifest": str(MANIFEST), "recovery_manifest_sha256": original.sha256(MANIFEST),
                                   "full_ft_source": "previously verified source_data.nb_transfer.nb_ft; no frozen-probe substitution"},
                "original_tasks": original_rows,
-               "blocked_original_tasks": ["secondary_structure", "contact_distance", "natural_vs_shuffled"]}
+               "pending_original_tasks": ["secondary_structure_five_seed_evaluation"],
+               "blocked_original_tasks": ["contact_distance", "natural_vs_shuffled"]}
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "fig07_nucleicbert_combined_working_source.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -63,10 +64,10 @@ def main():
     original.draw_task(c, [original_rows["cpeb3"]], (0.86, 0.915))
     c.set_title("c  Original CPEB3: R²", loc="left", color=C["ink"], fontweight="bold", pad=14)
     footer = ("Main benchmark uses previously verified full-FT values; all 8 JEV result.json files were recovered and independently checked.\n"
-              "Original tasks show full five-seed comparisons with Holm-adjusted p-values. Secondary structure, contact/distance maps and natural-vs-shuffled remain blocked."
+              "Original tasks show five-seed Holm-adjusted results. Secondary-structure data passed; five-seed evaluation pending; contact/distance and shuffle remain blocked."
               if holm_status == "PASS" else
               "Main benchmark uses previously verified full-FT values; original tasks show raw p-values because Holm is undefined.\n"
-              "No final significance claims; secondary structure, contact/distance maps and natural-vs-shuffled remain blocked.")
+              "No final significance claims; secondary-structure data passed, evaluation pending; contact/distance and shuffle remain blocked.")
     fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.4, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.065, right=0.985, top=0.85, bottom=0.20, wspace=0.34)
     png = OUT / "fig07_nucleicbert_combined_working_3840x1920.png"

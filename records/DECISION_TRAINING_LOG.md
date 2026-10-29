@@ -10805,3 +10805,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 在等待全量提取窗口期间，尝试以 32 nt 随机张量执行 official/JEV 前向、反向与解码单元测试；official 头在 `SecStruct2DPredictionHead.to(cuda)` 阶段即报 `RuntimeError: CUDA error: out of memory`，尚未进入训练、验证或科学数据推理。
 - 已立即停止，未转 CPU、未重试、未修改训练代码、未产生结果。证据保存为 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/nb_secstr_round34/engineering_small_tensor_oom.log`。此前静态检查、队列模拟和指标等价测试仍有效，但 GPU 运行时 smoke 必须在正式显存窗口重新完成，不能据此宣称工程验收已通过。
+
+## §15.174（2026-10-30）21 页 PPT 逐页渲染 QA 与二级结构状态纠偏
+
+- 当前 working PPT 先经 ZIP/结构检查：21 页、越界 shape=0、文本 run 均为微软雅黑、有效 1.5 倍行距全部通过。LibreOffice 虽能导出，但全局字体替换导致中文方框，不能用于内容验收；原生 PowerPoint GUI 调用超时后已停止，未修改原稿。确认 `mono-libgdiplus 6.2` 后，Aspose 成功渲染全部 21 页并逐页人工检查，中文、图件和表格均可读；评估水印只存在于 QA 渲染，不在 PPT 文件中。
+- 逐页发现第 11 页图内脚注和底部横幅、第 15 页限制表格仍把 secondary structure 写成 blocked，与已通过的数据门不一致。仅将这些状态改为“数据门已过、五种子待验收”；contact/distance 和 shuffle 仍 blocked，其他科学结果、页面、布局和用户既有调整不变。
+- 主图 7 重新导出 3840×1920 PNG/PDF，旧新源 JSON 的 `main_benchmark`、`original_tasks` 和 Holm 结果完全一致，仅 `pending/blocked` 状态及脚注改变。PNG SHA256=`fd6bc103c7476da4e7d2d96c8b46b94f403633c4325f47dc3ed751aef0c51fc4`，PDF=`02de1023af846d9f711a7af16fa168c6d1c99a7f30c97966d652a5391904f4ca`，source JSON=`06df2bc429d29160c6f2b04e8c0b301acbc0c943f201efba39d463f9a3789fae`。
+- 更新后 PPT SHA256=`912e4c82059e525cfa60bf47788a5559ad4cfb900be579ab52bf7f94afcf255d`。再次检查 665 个文本 run 均为微软雅黑、665 个有效 1.5 倍行距、越界 shape=0，Aspose 全部 21 页和缩略图总览复核无新增重叠、截断或图例缺失。`update_round34_deck.py` 已加入可复现状态更新函数，备份稿重放后与当前 21 页文本和 shape 数一致。
+- 活跃清单升级为 `round34-working-v31`，SHA256=`3f1872b0a4d5c57d30425ab02efbf24d59ddd1583aef1cea2740be1620194e46`。PPT、图 7 PNG/PDF/source、清单和两份更新代码均已备份到远端；本结论只表示 working 稿的版式与状态一致性通过，正式主图 5、7 二级结构面板和 8B 仍待科学结果，不提前宣布最终 PPT 完成。
