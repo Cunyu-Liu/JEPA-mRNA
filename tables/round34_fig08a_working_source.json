@@ -1,5 +1,5 @@
 {
-  "figure_status": "working_pending_rinalmo_splice_external_qa_archiveII_bpRNA_and_regression_panel",
+  "figure_status": "working_external_qa_complete_pending_archiveII_bpRNA_and_regression_panel",
   "protocol": "frozen RiNALMo; official head vs JEV head; full data; five seeds; mean±sample SD",
   "tasks": {
     "acceptor": {
@@ -33,7 +33,7 @@
       "delta": -0.0003575000000000328,
       "p_value": 0.5126944093379351,
       "result_sha256": "6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f",
-      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_splice_acceptor_round33_full_result.json"
+      "source_result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_acceptor_round33_full_v1.json"
     },
     "donor": {
       "task": "donor",
@@ -66,7 +66,7 @@
       "delta": 0.0006450000000000067,
       "p_value": 0.4305079375393121,
       "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c",
-      "source_result": "/private/tmp/rnajev_audit/remote_current_20261028/rinalmo_splice_donor_round33_full_result.json"
+      "source_result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_donor_round33_full_v1.json"
     },
     "clean": {
       "task": "clean",
@@ -136,6 +136,6 @@
     }
   },
   "significant_positive_tasks": [],
-  "qa_scope": "Official 88-class ncRNA clean/bn200 have external GPU QA; RiNALMo Spliceator full results await external cache QA",
+  "qa_scope": "Official 88-class ncRNA clean/bn200 and RiNALMo Spliceator acceptor/donor all have external RTX 4090 QA",
   "note": "RiNALMo donor is positive but nonsignificant; no significant-positive classification task is claimed"
 }

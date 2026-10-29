@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v24",
+  "registry_version": "round34-working-v25",
   "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
@@ -155,14 +155,14 @@
       "note": "main benchmark 8/8 positive transfer is separated from three nonsignificant original tasks; no all-task positive-transfer claim"
     },
     "fig08a": {
-      "status": "working_pending_rinalmo_splice_external_qa_structure_and_regression_panels",
+      "status": "working_external_qa_complete_pending_structure_and_regression_panels",
       "figure_source": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_source.json",
-      "figure_source_sha256": "d38ccf29764eaa2f746eea7684f08012355c2ea3a998dd7d9db837fbbfd44230",
+      "figure_source_sha256": "b890027bfdb46de7384fcac0aff59f7b3d1e564147ca31e5810d4e2b9ab35410",
       "rendered_png": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_3840x1920.png",
-      "rendered_png_sha256": "62ff63bd8ec365144316d750885983c96c6a91970644b55086d41337a75342dc",
+      "rendered_png_sha256": "aa68248e419688018b739a3d11ea608c1e5bbcc88d198feb0a3d560d5190dccd",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure8_round33.py",
-      "plotting_code_sha256": "486b92f30260f5876d60e503a381207205aa8187e9bc4ac670ebe068429ffe6b",
-      "note": "Official 88-class ncRNA has external GPU QA; RiNALMo Spliceator full results await external cache QA; all values retained"
+      "plotting_code_sha256": "79607a97ba8931b3428d6be3c8976837eb1876610387b69130ec5af9c0756664",
+      "note": "Official 88-class ncRNA and RiNALMo Spliceator acceptor/donor have external RTX 4090 QA; all values retained"
     },
     "fig08b": {
       "status": "mrl_full_v3_gpu_qa_pass_pending_te_el_ten_fold_results",
@@ -272,28 +272,30 @@
     }
   },
   "downstream_qa": {
-    "status": "5_of_7_completed_rinalmo_splice_pending_cache",
+    "status": "7_of_7_completed",
     "completed": [
       {"task": "nb_cpeb3", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/nb_cpeb3_qa_result.json", "sha256": "637e05958fe89e6fc52648cf908e45dfc2d0da8171ec3ceae24357e12b94eafc", "delta": -0.0025854485348049128, "one_sided_p": 0.6003336123914955},
       {"task": "nb_splice_acceptor", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/nb_splice_acceptor_qa_result.json", "sha256": "da5f361694eeb4610bae16f7a4d2f8c4bda8a0b523b773313e7c4494fecc0f6c", "delta": -0.0051774999999999235, "one_sided_p": 0.8675878224847565},
       {"task": "nb_splice_donor", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/nb_splice_donor_qa_result.json", "sha256": "0aff998cf79a43625e151407eeb9617c42b18fa88820faf88cd02b3415667080", "delta": -0.004342500000000004, "one_sided_p": 0.976145935694066},
       {"task": "rinalmo_ncrna_clean", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_ncrna_clean_qa_result.json", "sha256": "07925eb61bedcc5514c8989b6adb59e52a1d2575899b570f9fee1f82e1c298c1", "delta": -0.0006766593914254049, "one_sided_p": 0.659696977396977},
-      {"task": "rinalmo_ncrna_bn200", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_ncrna_bn200_qa_result.json", "sha256": "9ea0e5e2428f228aa00460e9c43c5e5f0b89ada5546b04035aa361f77a78578b", "delta": -0.007500545730722496, "one_sided_p": 0.9488427254880585}
+      {"task": "rinalmo_ncrna_bn200", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_ncrna_bn200_qa_result.json", "sha256": "9ea0e5e2428f228aa00460e9c43c5e5f0b89ada5546b04035aa361f77a78578b", "delta": -0.007500545730722496, "one_sided_p": 0.9488427254880585},
+      {"task": "rinalmo_splice_acceptor", "result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_acceptor_round33_full_v1.json", "result_sha256": "6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_splice_acceptor_qa_result.json", "sha256": "81a45028fc70005ecf2bbc20ba75111dd5a54ba669201a7f4cb1ecc865354bd3", "cache": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/spliceator_official/acceptor_rinalmo_cls_v2.npz", "cache_sha256": "d4ba2bb0a2232019f5bada3830fe493beff67e986e99536123540b2c627a3aa6", "cache_shape": [102179, 1280], "cache_log_sha256": "7a18a2b23c520d97f81e62616864d1ab5f24b7565466cd92e88d2184cdbe9bc1", "qa_log_sha256": "928e62de096200e830d64d641adb7c89125062983551a54c86ff13c3d21a3bed", "delta": -0.0003575000000000328, "one_sided_p": 0.5126944093379351, "significant_positive": false},
+      {"task": "rinalmo_splice_donor", "result": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_splice_donor_round33_full_v1.json", "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c", "receipt": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_splice_donor_qa_result.json", "sha256": "a08bd0d42c33e829562eb8b09d9e1f7bdd2587f22856b49bc52857bae4fc2b27", "cache": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/spliceator_official/donor_rinalmo_cls_v2.npz", "cache_sha256": "56b87fd839f82a43e6d5097b0afe1fcaba6f7746798c511eee18c26b44672bf2", "cache_shape": [101973, 1280], "cache_log_sha256": "1a08226519d8484f282f1d346c4b636118b5be882e6410b9f37f649a43cfdec2", "qa_log_sha256": "21f04246a58f59143b4deae6c1644c0b194b28dece69366cd6141930f0a8795f", "delta": 0.0006450000000000067, "one_sided_p": 0.4305079375393121, "significant_positive": false}
     ],
-    "pending": ["rinalmo_splice_acceptor: original dee8879 code restored; embedding cache missing; concurrent rebuild OOMed", "rinalmo_splice_donor: original dee8879 code restored; embedding cache missing"]
+    "pending": []
   },
   "deck": {
     "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "97b986116c63ded6692a7b7a3ba6b06a1cbdb260c64f39726fe94b3459cfabce",
+    "sha256": "45a7e37e0c5a5d83d6f7d4d6cc4ec8ceeb2f9c3f0d06c1d7c4395e350bbee94d",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5,
-    "updated_slides": [12, 15, 19],
-    "content_update": "MRL full_v3 negative result and HEK fold2 TE QA status synchronized; figure images and all other slide text unchanged",
+    "updated_slides": [12, 15],
+    "content_update": "RiNALMo Spliceator acceptor/donor external GPU QA completed; slide 12 image QA note and slide 15 pending-status text updated",
     "update_code": "/private/tmp/rnajev_audit/round34_ppt/update_round34_deck.py",
-    "update_code_sha256": "2cd291118a288ea6bce821825541b23e8c8f51a206d4bca198a8cf54e537fe01",
+    "update_code_sha256": "97d1184c7032ef4bac1c90894aa75d0936719ebddbce2a4e0f5ba28e9267af86",
     "remote_backup": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/figure_assets/round34/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "qa": "edited-slide and full-deck layout=0; ZIP, markitdown, 665 native-text font checks and Aspose slide 12/15/19 rendering passed; only slides 12/15/19 changed from the prior working deck"
+    "qa": "edited-slide and full-deck layout=0; ZIP, markitdown, 665 native-text font checks and Aspose slide 12/15 rendering passed; only slide 15 text and slide 12 media changed from the prior working deck"
   },
   "legacy_source_snapshot": {
     "path": "/private/tmp/rnajev_audit/remote_current_20261028/round32_figure_source_data.merged.json",

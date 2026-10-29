@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_splice_donor_round33_full_v1/result.json",
+  "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c",
+  "kind": "rinalmo_splice",
+  "ss_type": "donor",
+  "cuda_device": "NVIDIA GeForce RTX 4090",
+  "delta": 0.0006450000000000067,
+  "p_value": 0.4305079375393121,
+  "gpu_reinference_runs": 10
+}

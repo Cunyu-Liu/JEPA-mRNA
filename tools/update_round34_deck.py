@@ -193,7 +193,7 @@ def update_downstream_provenance(prs):
             ("NucleicBERT 8/8 正增益；ncRNA 三指标提升",
              "NB 主 benchmark 8/8 正迁移；原论文下游任务未显著为正", 1),
             ("MRL/TE-EL 增益较小；新任务未完成前不得扩写为普遍优势",
-             "NB 其余官方资产 blocked；MRL 已验收为负，splice QA 与 TE/EL 十折未闭环", 1),
+             "NB 其余官方资产 blocked；MRL 已验收为负，TE/EL 十折未闭环", 1),
         ],
         19: [
             ("三组 MRL 已预注册；5-seed、early-stopping、paired t-test+Holm。",

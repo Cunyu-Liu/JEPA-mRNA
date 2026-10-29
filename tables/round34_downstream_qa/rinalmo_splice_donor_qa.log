@@ -1,0 +1,11 @@
+QA_RUN_PASS rinalmo_donor official_head seed=0 accuracy=0.6939875000
+QA_RUN_PASS rinalmo_donor official_head seed=1 accuracy=0.7081000000
+QA_RUN_PASS rinalmo_donor official_head seed=2 accuracy=0.6990875000
+QA_RUN_PASS rinalmo_donor official_head seed=3 accuracy=0.6981375000
+QA_RUN_PASS rinalmo_donor official_head seed=4 accuracy=0.6974500000
+QA_RUN_PASS rinalmo_donor jev_head seed=0 accuracy=0.7034125000
+QA_RUN_PASS rinalmo_donor jev_head seed=1 accuracy=0.7007500000
+QA_RUN_PASS rinalmo_donor jev_head seed=2 accuracy=0.6954375000
+QA_RUN_PASS rinalmo_donor jev_head seed=3 accuracy=0.7065875000
+QA_RUN_PASS rinalmo_donor jev_head seed=4 accuracy=0.6938000000
+EXTERNAL_QA_PASS {"status": "PASS", "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_splice_donor_round33_full_v1/result.json", "result_sha256": "e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c", "kind": "rinalmo_splice", "ss_type": "donor", "cuda_device": "NVIDIA GeForce RTX 4090", "delta": 0.0006450000000000067, "p_value": 0.4305079375393121, "gpu_reinference_runs": 10}

@@ -10692,3 +10692,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 修复后 B=1/2/4 的 32 条预测完全一致，prediction SHA256=`75168ac3793c37930ec45c57b7713e0cda70c56ccbdd40c2a1ab0ece519c2122`；TP/FP/FN=747/243/128，engineering subset strict micro-F1=0.8010723861。三份结果 SHA256 分别为 `2c16b0ee...f5ca`、`350d1e62...fbd06`、`aa3c82ac...779b`。
 - 第三遍在本地将三批预测与官方 GPU CLI 比较，990/990 个真实配对逐对一致。初次比较多出的 32 对来自解析器误把每行末尾 `(score)` 当作结构括号，已改为只解析首个 dot-bracket 字段，未改变任何模型预测。三批 F1 由 TP/FP/FN 独立复算一致。
 - 失败日志分别保存在独立 audits 目录，成功 JSON、日志、官方 GPU CLI 输出和 input32.fa 已归档到 `figure_assets/mxfold2_batch_qa/`。这些 32 条结果只证明适配正确和跨 batch 一致，不作为主图 5 科学结果；正式 full TS0 测速仍待独占 4090 窗口，活跃清单升级为 `round34-working-v24`。
+
+## §15.157（2026-10-29）RiNALMo Spliceator cache 恢复与两项全量 GPU QA 闭环
+
+- 在约 7.2 GiB 安全余量窗口，严格按原始 dee8879 协议和 batch=32 恢复两份 cache，未重训、未改 batch、未转 CPU。acceptor 为 102179×1280、200915043 bytes，SHA256=`d4ba2bb0a2232019f5bada3830fe493beff67e986e99536123540b2c627a3aa6`；donor 为 101973×1280、200512327 bytes，SHA256=`56b87fd839f82a43e6d5097b0afe1fcaba6f7746798c511eee18c26b44672bf2`。
+- acceptor 10/10 checkpoint 在 RTX 4090 重推理通过。独立复算 official/JEV 四物种平均 accuracy=0.596870/0.5965125，Δ=-0.0003575000、delta SD=0.0236089191、单侧 p=0.5126944093，不显著为正；result SHA256=`6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f`，QA 回执 SHA256=`81a45028fc70005ecf2bbc20ba75111dd5a54ba669201a7f4cb1ecc865354bd3`。
+- donor 10/10 checkpoint 在 RTX 4090 重推理通过。official/JEV accuracy=0.6993525/0.6999975，Δ=+0.0006450000、delta SD=0.0077269091、p=0.4305079375，仍为不显著正；result SHA256=`e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c`，QA 回执 SHA256=`a08bd0d42c33e829562eb8b09d9e1f7bdd2587f22856b49bc52857bae4fc2b27`。
+- 两项均完成第三遍协议与统计核验：五种子、CUDA、early-stopping patience=32、best validation BCE、四物种 accuracy 和 checkpoint/prediction 哈希全部一致。下游早期七项任务现为 7/7 外部 QA 完成，完整负结果与不显著正结果全部保留。
+- 图 8A 仅更新 QA 状态文字，全部数值、配色和布局不变。新源 JSON SHA256=`b890027bfdb46de7384fcac0aff59f7b3d1e564147ca31e5810d4e2b9ab35410`，PNG SHA256=`aa68248e419688018b739a3d11ea608c1e5bbcc88d198feb0a3d560d5190dccd`，绘图代码 SHA256=`79607a97ba8931b3428d6be3c8976837eb1876610387b69130ec5af9c0756664`。
+- PPT 仅第 12 页替换该图件、第 15 页删除已完成的 splice QA 待办。markitdown 仅第 15 页文本变化，媒体仅 `ppt/media/image17.png` 变化；全 21 页 layout=0、ZIP、665 个微软雅黑运行及 Aspose 渲染通过。working PPT SHA256=`45a7e37e0c5a5d83d6f7d4d6cc4ec8ceeb2f9c3f0d06c1d7c4395e350bbee94d`，活跃清单升级为 `round34-working-v25`，图 8B 和其余结构任务仍待闭环。
+
+## §15.158（2026-10-29）UFold 官方 Drive 双通道复核与权重文件名确认
+
+- 本机和远端分别对官方 `embeddedfolderview` 做 25 秒连接测试，均超时；未下载任何权重，也未得到文件夹被撤回的响应。UFold 继续因网络通道 blocked，不能用其他模型或权重替代。
+- 官方 issue #8 的作者回复确认所需文件名为 `ufold_train_alldata.pt`，位于同一官方 Drive；该 issue 没有提供备用下载源。后续若通道恢复，应先核对该文件及 SHA256，再执行独占 4090 测速。
