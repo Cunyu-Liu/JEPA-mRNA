@@ -10576,3 +10576,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 图 2 和历史 A100 图均重新导出 3840×1920 PNG/PDF 并逐页 Aspose 渲染复核。全 21 页 `validate_layout=0`、ZIP 通过、运行级微软雅黑断言通过；markitdown 与修改前逐页对比仅第 5、9、10、15、17、20 页变化，无旧 9.3M 或含混端到端表述残留。
 - working PPT SHA256=`6b9d8bb2d60a61477d3bb5faed462ce601e8a260c6e9a70232b318e9032e9c1a`；`build_figures.py` SHA256=`072004420b1ba6b86012d8aeec95ca2f569232e3edaa1ad918d3e0e39c41001d`；`update_round34_deck.py` SHA256=`fa9015c6ee4f2465e25bc7ce652755bbebf2c6223f6c928f83e710fd52fabd04`。
 - 活跃清单升级为 `round34-working-v11`，登记图 2、历史 A100 图及其源数据/代码/文件哈希，22 项证据递归复核通过。此次只纠正历史口径，不把四份 B=1 结果扩写为完整主图 5，也不改变主图 7/8 的待实验状态。
+
+## §15.140（2026-10-29）HEK fold1 EL 全量结果与外部 QA
+
+- `rinalmo_el_HEK_fold1_round33_full_v4` 已生成 full `result.json`，五种子 official/JEV 均 CUDA、early-stopping 收敛、best checkpoint 和预测哈希齐全。主 watcher 于 01:01:55 UTC 记录 `returncode=0`；QA 日志确认 10/10 checkpoint 在 RTX 4090 重推理通过，result SHA256=`80e32116245fde20b4dbd034bf6832a0267427946582983964baa04fc72082fc`。
+- 原始结果与 QA 日志已下载。本地独立从五种子 `test_spearman/test_r2/test_pcc` 重算：official/JEV Spearman 均值 0.537899/0.503488，Δ=-0.0344107861、delta SD=0.0389508390、单侧 p=0.9402880452；R² Δ=-0.0385513099，p=0.8943416994；PCC Δ=-0.0353265522，p=0.9236235528。均与 result 声明一致，`significant_positive=false`。
+- 该结果仅描述 HEK EL fold1，完整负结果保留，不作为显著正候选，不外推为三细胞或十折结论。QA 日志 SHA256=`9a1a1adfb85320f0af96e1e766ccd96fd7266773113ed42add3ce32bdb41191f`。
+- 活跃清单升级为 `round34-working-v12`，新增 fold1 EL 原始结果、QA 日志、哈希和范围声明。当前剩余在训为 ArchiveII tRNA/5s、MRL full_v3、HEK fold1 TE 与 fold2 TE/EL 共六项；fold0 TE/EL 与 fold1 EL 已验收，folds3–9 仍须受门接续。

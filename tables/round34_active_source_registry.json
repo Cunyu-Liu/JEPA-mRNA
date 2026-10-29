@@ -1,6 +1,6 @@
 {
-  "registry_version": "round34-working-v11",
-  "generated_at": "2026-10-28",
+  "registry_version": "round34-working-v12",
+  "generated_at": "2026-10-29",
   "scientific_status": "working_not_final",
   "rules": {
     "accepted_evidence": "original result JSON plus independent QA and SHA256",
@@ -106,6 +106,17 @@
           "paired_spearman_delta": -0.055355054531507984,
           "one_sided_p": 0.9782755695850012,
           "scope": "fold0 only; not a ten-fold conclusion"
+        },
+        {
+          "task": "HEK EL fold1",
+          "path": "/private/tmp/rnajev_audit/round34_remote/results/rinalmo_el_HEK_fold1_round33_full_v4.json",
+          "sha256": "80e32116245fde20b4dbd034bf6832a0267427946582983964baa04fc72082fc",
+          "qa_log": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/downstream_qa/rinalmo_el_HEK_fold1_qa.log",
+          "qa_log_sha256": "9a1a1adfb85320f0af96e1e766ccd96fd7266773113ed42add3ce32bdb41191f",
+          "paired_spearman_delta": -0.03441078612953123,
+          "paired_r2_delta": -0.0385513098782956,
+          "one_sided_p": 0.940288045244299,
+          "scope": "fold1 only; 10/10 GPU re-inference passed; not a ten-fold conclusion"
         }
       ],
       "forbidden_source": "/private/tmp/rnajev_audit/round33/fig08b_synthetic_preview"
