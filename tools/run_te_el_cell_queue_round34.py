@@ -11,6 +11,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from speed_window import wait_for_speed_window
+
 PY = "/root/miniconda3/envs/lucaone/bin/python"
 SCRIPT = "/home/rna_jev/tools/rinalmo_regression_dual_round33_v4.py"
 QA_SCRIPT = "/home/rna_jev/tools/qa_regression_result.py"
@@ -180,6 +182,7 @@ def main() -> int:
                 if all(value == "passed" for value in qa.values()):
                     print(f"TE_EL_FOLD_QA_PASS cell={cell} fold={fold}", flush=True)
                     break
+                wait_for_speed_window("te_el_cell", args.interval)
                 if any(value == "writing" for value in statuses.values()):
                     time.sleep(args.interval)
                     continue

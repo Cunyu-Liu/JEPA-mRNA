@@ -9,6 +9,8 @@ import subprocess
 import time
 from pathlib import Path
 
+from speed_window import wait_for_speed_window
+
 PY = "/root/miniconda3/envs/lucaone/bin/python"
 SCRIPT = "/home/rna_jev/tools/rinalmo_regression_dual_round33_v4.py"
 BASE = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024")
@@ -96,6 +98,7 @@ def main() -> int:
             if process is not None:
                 time.sleep(args.interval)
                 continue
+            wait_for_speed_window("regression_smoke", args.interval)
             if free_memory_mib() < args.min_free_mib:
                 time.sleep(args.interval)
                 continue

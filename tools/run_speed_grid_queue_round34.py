@@ -6,6 +6,8 @@ import os
 import subprocess
 import time
 
+from speed_window import SpeedWindow, SpeedWindowConflict
+
 PYTHON = "/root/miniconda3/envs/lucaone/bin/python"
 RUNNER = "/home/rna_jev/tools/run_speed_grid_round34.py"
 
@@ -27,26 +29,36 @@ def main() -> int:
         raise ValueError("interval must be positive")
     if args.dry_run:
         return subprocess.run([PYTHON, RUNNER, "--dry-run"], check=False).returncode
-    while True:
-        others = gpu_processes()
-        if others:
-            print(f"WAIT_SPEED_EXCLUSIVE other_gpu_pids={sorted(others)}", flush=True)
-        else:
-            print("SPEED_EXCLUSIVE_WINDOW_START", flush=True)
-            result = subprocess.run([PYTHON, RUNNER], check=False,
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-            print(result.stdout, end="", flush=True)
-            if result.returncode == 0:
-                print("SPEED_QUEUE_COMPLETE", flush=True)
-                return 0
-            # Retry only an exclusivity race. Model, CUDA, dependency, and data
-            # failures stop for human diagnosis rather than being blindly retried.
-            if "exclusive RTX 4090 required" in result.stdout or "GPU exclusivity violated" in result.stdout:
-                print("SPEED_EXCLUSIVE_RACE_RETRY", flush=True)
+    try:
+        window = SpeedWindow()
+        window.__enter__()
+    except SpeedWindowConflict as error:
+        print(f"SPEED_WINDOW_DUPLICATE_REFUSED {error}", flush=True)
+        return 2
+    with window:
+        while True:
+            others = gpu_processes()
+            if others:
+                print(f"WAIT_SPEED_EXCLUSIVE other_gpu_pids={sorted(others)}", flush=True)
             else:
-                print(f"SPEED_RUNNER_STOP rc={result.returncode}; inspect runner output", flush=True)
-                return result.returncode or 1
-        time.sleep(args.interval)
+                print("SPEED_EXCLUSIVE_WINDOW_START", flush=True)
+                window.set_phase("running")
+                result = subprocess.run([PYTHON, RUNNER], check=False,
+                                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                        pass_fds=(window.fd,))
+                print(result.stdout, end="", flush=True)
+                if result.returncode == 0:
+                    print("SPEED_QUEUE_COMPLETE", flush=True)
+                    return 0
+                # Retry only an exclusivity race. Model, CUDA, dependency, and data
+                # failures stop for human diagnosis rather than being blindly retried.
+                if "exclusive RTX 4090 required" in result.stdout or "GPU exclusivity violated" in result.stdout:
+                    window.set_phase("waiting")
+                    print("SPEED_EXCLUSIVE_RACE_RETRY", flush=True)
+                else:
+                    print(f"SPEED_RUNNER_STOP rc={result.returncode}; inspect runner output", flush=True)
+                    return result.returncode or 1
+            time.sleep(args.interval)
 
 
 if __name__ == "__main__":

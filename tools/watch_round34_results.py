@@ -11,6 +11,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from speed_window import wait_for_speed_window
+
 PY = "/root/miniconda3/envs/lucaone/bin/python"
 TOOLS = Path("/home/rna_jev/tools")
 BASE = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024")
@@ -122,6 +124,8 @@ def main() -> int:
                 if state["jobs"][name]["returncode"] == 0:
                     continue
                 return 2
+            if not args.once:
+                wait_for_speed_window("qa_watch", args.interval)
             outcome = run_qa(name, config, state)
             if outcome == "failed":
                 return 2

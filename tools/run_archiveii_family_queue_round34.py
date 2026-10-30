@@ -10,6 +10,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from speed_window import wait_for_speed_window
+
 PY = "/root/miniconda3/envs/lucaone/bin/python"
 SCRIPT = "/home/rna_jev/tools/rinalmo_archiveii_dual_round33.py"
 QA_SCRIPT = "/home/rna_jev/tools/qa_archiveii_result.py"
@@ -145,6 +147,7 @@ def main() -> int:
             if args.once:
                 print(f"ARCHIVEII_STATUS {name} result={status} qa={qa_status} free_mib={free_memory_mib()}", flush=True)
                 break
+            wait_for_speed_window("archiveii_family", args.interval)
             if status == "PASS":
                 if family in EXISTING:
                     time.sleep(args.interval)

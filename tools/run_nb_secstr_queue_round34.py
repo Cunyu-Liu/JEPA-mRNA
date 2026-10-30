@@ -9,6 +9,8 @@ import subprocess
 import time
 from pathlib import Path
 
+from speed_window import wait_for_speed_window
+
 PYTHON = "/root/miniconda3/envs/lucaone/bin/python"
 TOOLS = Path("/home/rna_jev/tools")
 ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024")
@@ -122,6 +124,8 @@ def main() -> int:
         if args.dry_run:
             print(json.dumps({"kind": kind, "command": command, "log": str(log), "required_free_mib": required}), flush=True)
             return 0
+        if not args.once:
+            wait_for_speed_window("nb_secstr", args.interval)
         available = free_mib()
         if available < required:
             print(f"WAIT kind={kind} free={available} required={required}", flush=True)

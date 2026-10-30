@@ -9,6 +9,8 @@ import subprocess
 import time
 from pathlib import Path
 
+from speed_window import wait_for_speed_window
+
 PY = "/root/miniconda3/envs/lucaone/bin/python"
 SCRIPT = "/home/rna_jev/tools/rinalmo_regression_dual_round33_v4.py"
 RESUME_SCRIPT = "/home/rna_jev/tools/resume_rinalmo_regression_round34.py"
@@ -142,6 +144,8 @@ def main() -> int:
                 el_alive = external_alive(el_process) if isinstance(el_process, int) else el_process and el_process.poll() is None
                 if result_status("el", fold) == "missing" and not el_alive:
                     processes.pop("el", None)
+                    if not resume_attempted:
+                        wait_for_speed_window("hek_fold_resume", args.interval)
                     if not resume_attempted and free_mib() >= args.min_free_mib:
                         processes["el"] = launch_resume("el", fold, args.min_free_mib)
                         resume_attempted = True
@@ -158,6 +162,7 @@ def main() -> int:
                 time.sleep(args.interval)
                 continue
             if not processes:
+                wait_for_speed_window("hek_fold", args.interval)
                 if free_mib() < 2 * args.min_free_mib:
                     time.sleep(args.interval)
                     continue
