@@ -91,6 +91,81 @@ def draw_task(ax, rows, ylim):
     common.style_axis(ax, rows[0]["metric"], ylim)
 
 
+STRUCTURE_ORDER = ("TS0", "tRNA", "5s", "16s", "23s", "RNaseP", "grp1", "srp", "telomerase", "tmRNA")
+
+
+def load_structure(path):
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["status"] == "PASS" and data["scientific_eligibility"] is True
+    assert data["n_tasks"] == 10 and data["holm_status"] in {"PASS", "undefined_zero_variance"}
+    assert tuple(data["tasks"]) == STRUCTURE_ORDER
+    rows = {}
+    for name in STRUCTURE_ORDER:
+        item = data["tasks"][name]
+        official = np.asarray(item["official_seed_macro_f1"], dtype=float)
+        jev = np.asarray(item["jev_seed_macro_f1"], dtype=float)
+        assert official.shape == jev.shape == (5,) and np.isfinite(official).all() and np.isfinite(jev).all()
+        heads = {}
+        for head, values, mean_key, sd_key in (
+            ("official_probe", official, "official_mean", "official_sample_sd"),
+            ("jev_head", jev, "jev_mean", "jev_sample_sd"),
+        ):
+            mean, sd = float(np.mean(values)), float(np.std(values, ddof=1))
+            assert np.isclose(mean, item[mean_key], rtol=0, atol=1e-12)
+            assert np.isclose(sd, item[sd_key], rtol=0, atol=1e-12)
+            heads[head] = {"mean": mean, "sd": sd, "runs": values.tolist()}
+        delta = jev - official
+        assert np.isclose(float(np.mean(delta)), item["paired_delta_mean"], rtol=0, atol=1e-12)
+        assert np.isclose(float(np.std(delta, ddof=1)), item["paired_delta_sample_sd"], rtol=0, atol=1e-12)
+        p_value = item["one_sided_p_value"]
+        if item["statistics_status"] == "ok":
+            test = stats.ttest_rel(jev, official, alternative="greater")
+            assert np.isclose(float(test.pvalue), p_value, rtol=0, atol=1e-12)
+        else:
+            assert p_value is None and item["holm_p_value"] is None
+        rows[name] = {"task": name, "label": name, "metric": "Macro-F1", "heads": heads,
+                      "delta": float(np.mean(delta)), "p_value": p_value,
+                      "holm_p_value": item["holm_p_value"],
+                      "significant_positive_holm": item["significant_positive_holm"],
+                      "result_sha256": item["result_sha256"], "source_result": item["result"]}
+    if data["holm_status"] == "PASS":
+        expected = common.holm([rows[name]["p_value"] for name in STRUCTURE_ORDER])
+        for name, expected_p in zip(STRUCTURE_ORDER, expected):
+            assert np.isclose(rows[name]["holm_p_value"], expected_p, rtol=0, atol=1e-12)
+            assert rows[name]["significant_positive_holm"] == bool(rows[name]["delta"] > 0 and expected_p < 0.05)
+    else:
+        assert all(rows[name]["holm_p_value"] is None and not rows[name]["significant_positive_holm"]
+                   for name in STRUCTURE_ORDER)
+    return rows, data
+
+
+def draw_structure(ax, rows):
+    values = [head for row in rows for head in row["heads"].values()]
+    raw_low = min(head["mean"] - head["sd"] for head in values)
+    raw_high = max(head["mean"] + head["sd"] for head in values)
+    span = max(raw_high - raw_low, 0.08)
+    low, high = raw_low - 0.26 * span, raw_high + 0.18 * span
+    x = np.arange(len(rows), dtype=float)
+    for index, row in enumerate(rows):
+        official, jev = row["heads"]["official_probe"], row["heads"]["jev_head"]
+        ax.plot([x[index] - 0.10, x[index] + 0.10], [official["mean"], jev["mean"]],
+                color=C["light"], lw=1.6, zorder=1)
+        for offset, head, color, marker in ((-0.10, official, C["grey"], "o"), (0.10, jev, C["blue"], "s")):
+            ax.errorbar(x[index] + offset, head["mean"], yerr=head["sd"], fmt=marker,
+                        markersize=6.2, color=color, ecolor=color, elinewidth=1.0, capsize=3,
+                        markeredgecolor="white", markeredgewidth=0.7, zorder=3)
+            ax.text(x[index] + offset, head["mean"] + head["sd"] + 0.035 * span,
+                    f"{head['mean']:.3f}", ha="center", va="bottom", fontsize=7.2, color=color)
+        p_value = row["holm_p_value"]
+        p_text = "NA" if p_value is None else f"{p_value:.3f}"
+        ax.text(x[index], low + 0.025 * span, f"Δ={row['delta']:+.3f}\npH={p_text}",
+                ha="center", va="bottom", fontsize=7.1,
+                color=TEAL if row["delta"] > 0 else C["red"], linespacing=1.3)
+    ax.set_xticks(x, [row["label"] for row in rows], fontsize=8.1, rotation=22, ha="right")
+    ax.set_xlim(-0.55, len(rows) - 0.45)
+    common.style_axis(ax, "Macro-F1", (low, high))
+
+
 def main():
     source = json.loads(SOURCE.read_text(encoding="utf-8"))
     rows = {task: load_task(task) for task in TASKS}
@@ -103,6 +178,8 @@ def main():
         assert np.isclose(row["delta"], registered[spec["delta"]], rtol=0, atol=1e-12)
 
     holm_status = common.apply_holm(rows)
+    structure_path = os.environ.get("RINALMO_STRUCTURE_RESULT")
+    structure_rows, structure_data = load_structure(Path(structure_path)) if structure_path else (None, None)
     payload = {"figure_status": "working_external_qa_complete_pending_archiveII_bpRNA_and_regression_panel",
                "protocol": "frozen RiNALMo; official head vs JEV head; full data; five seeds; mean±sample SD",
                "tasks": rows, "significant_positive_tasks": [],
@@ -110,34 +187,61 @@ def main():
                "significant_positive_tasks_holm": [key for key, row in rows.items() if row.get("significant_positive_holm")],
                "qa_scope": "Official 88-class ncRNA clean/bn200 and RiNALMo Spliceator acceptor/donor all have external RTX 4090 QA",
                "note": "RiNALMo donor is positive but nonsignificant after Holm correction; no significant-positive classification task is claimed"}
+    if structure_rows is not None:
+        payload["figure_status"] = "final_candidate_pending_visual_qa"
+        payload["structure_tasks"] = structure_rows
+        payload["structure_holm_status"] = structure_data["holm_status"]
+        payload["structure_result_sha256"] = common.sha256(Path(structure_path))
+        payload["significant_positive_structure_tasks"] = structure_data["significant_positive_tasks"]
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "fig08a_rinalmo_classification_working_source.json").write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    source_name = "fig08a_rinalmo_classification_final_source.json" if structure_rows is not None else "fig08a_rinalmo_classification_working_source.json"
+    (OUT / source_name).write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    fig, (a, b) = plt.subplots(1, 2, figsize=(12.8, 6.4), gridspec_kw={"width_ratios": [1.35, 1.0]})
-    draw_task(a, [rows["acceptor"], rows["donor"]], (0.54, 0.75))
-    a.set_title("a  Spliceator: four-species accuracy", loc="left", color=C["ink"], fontweight="bold", pad=14)
-    draw_task(b, [rows["clean"], rows["bn200"]], (0.775, 1.005))
-    b.set_title("b  Official 88-class ncRNA: weighted-F1", loc="left", color=C["ink"], fontweight="bold", pad=14)
     handles = [plt.Line2D([0], [0], marker="o", color=C["grey"], lw=0, markersize=7, label="Official head"),
                plt.Line2D([0], [0], marker="s", color=C["blue"], lw=0, markersize=7, label="JEV head")]
-    a.legend(handles=handles, loc="upper right", fontsize=9)
-    footer = ("Full-dataset, five-seed paired comparisons; error bars show sample SD. Holm-adjusted p-values and all negative results are retained.\n"
-              "External QA complete for Spliceator and 88-class ncRNA; ArchiveII/bpRNA and the regression panel remain pending."
-              if holm_status == "PASS" else
-              "Full-dataset, five-seed paired comparisons; error bars show sample SD. Raw p-values are shown because Holm is undefined.\n"
-              "Working panel: no final significance claims; remaining tasks continue under the preregistered gates.")
-    fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.8, color=C["muted"], linespacing=1.5)
-    fig.subplots_adjust(left=0.075, right=0.98, top=0.85, bottom=0.20, wspace=0.28)
-    png = OUT / "fig08a_rinalmo_classification_working_3840x1920.png"
-    pdf = OUT / "fig08a_rinalmo_classification_working_3840x1920.pdf"
+    if structure_rows is None:
+        fig, (a, b) = plt.subplots(1, 2, figsize=(12.8, 6.4), gridspec_kw={"width_ratios": [1.35, 1.0]})
+        draw_task(a, [rows["acceptor"], rows["donor"]], (0.54, 0.75))
+        a.set_title("a  Spliceator: four-species accuracy", loc="left", color=C["ink"], fontweight="bold", pad=14)
+        draw_task(b, [rows["clean"], rows["bn200"]], (0.775, 1.005))
+        b.set_title("b  Official 88-class ncRNA: weighted-F1", loc="left", color=C["ink"], fontweight="bold", pad=14)
+        a.legend(handles=handles, loc="upper right", fontsize=9)
+        footer = ("Full-dataset, five-seed paired comparisons; error bars show sample SD. Holm-adjusted p-values and all negative results are retained.\n"
+                  "External QA complete for Spliceator and 88-class ncRNA; ArchiveII/bpRNA and the regression panel remain pending."
+                  if holm_status == "PASS" else
+                  "Full-dataset, five-seed paired comparisons; error bars show sample SD. Raw p-values are shown because Holm is undefined.\n"
+                  "Working panel: no final significance claims; remaining tasks continue under the preregistered gates.")
+        fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.8, color=C["muted"], linespacing=1.5)
+        fig.subplots_adjust(left=0.075, right=0.98, top=0.85, bottom=0.20, wspace=0.28)
+        png = OUT / "fig08a_rinalmo_classification_working_3840x1920.png"
+        pdf = OUT / "fig08a_rinalmo_classification_working_3840x1920.pdf"
+    else:
+        fig = plt.figure(figsize=(12.8, 6.4))
+        grid = fig.add_gridspec(2, 2, height_ratios=[1.25, 1.0])
+        a = fig.add_subplot(grid[0, :])
+        b = fig.add_subplot(grid[1, 0])
+        c = fig.add_subplot(grid[1, 1])
+        draw_structure(a, list(structure_rows.values()))
+        a.set_title("a  Secondary structure: TS0 + nine ArchiveII holdouts", loc="left", color=C["ink"], fontweight="bold", pad=12)
+        a.legend(handles=handles, loc="upper right", bbox_to_anchor=(1.0, 1.20), ncol=2, fontsize=8.5, borderaxespad=0)
+        draw_task(b, [rows["acceptor"], rows["donor"]], (0.54, 0.75))
+        b.set_title("b  Spliceator: four-species accuracy", loc="left", color=C["ink"], fontweight="bold", pad=12)
+        draw_task(c, [rows["clean"], rows["bn200"]], (0.775, 1.005))
+        c.set_title("c  Official 88-class ncRNA: weighted-F1", loc="left", color=C["ink"], fontweight="bold", pad=12)
+        footer = ("All classification panels show full-data, five-seed paired comparisons and task-family Holm results; error bars show seed sample SD.\n"
+                  "All positive and negative results are retained. MRL and TE/EL regression results are reported separately in Figure 8B.")
+        fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.5, color=C["muted"], linespacing=1.5)
+        fig.subplots_adjust(left=0.07, right=0.985, top=0.88, bottom=0.19, wspace=0.30, hspace=0.62)
+        png = OUT / "fig08a_rinalmo_classification_final_3840x1920.png"
+        pdf = OUT / "fig08a_rinalmo_classification_final_3840x1920.pdf"
     fig.savefig(png, dpi=300)
     fig.savefig(pdf)
     plt.close(fig)
     with Image.open(png) as image:
         assert image.size == (3840, 1920)
     assert png.stat().st_size > 100_000 and pdf.stat().st_size > 5_000
-    print("FIG08A_CLASSIFICATION_WORKING_ASSET_PASS", png, common.sha256(png))
+    print("FIG08A_CLASSIFICATION_FINAL_CANDIDATE_PASS" if structure_rows is not None else "FIG08A_CLASSIFICATION_WORKING_ASSET_PASS",
+          png, common.sha256(png))
 
 
 if __name__ == "__main__":

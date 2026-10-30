@@ -10923,3 +10923,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新 working PPT SHA256=`bf12cfd338f3391ea912337a28e942b30943849134174cd77aefc457fc85512e`。markitdown 差异仅含预期状态与版本行；`fix_pptx`、21 页 layout、ZIP 均通过；665 个非空文本 run 均为微软雅黑，665 个段落有行距设置，Aspose 全 21 页重新渲染并逐页复核，无新增重叠或截断。评估水印只存在于 QA 渲染，不在 PPTX 内。
 - 图 8B 预检发现 TE/EL 误差棒误用 fold 间 SD，违反“每 seed 先十折平均，再做五 seed 配对”的展示合同。`make_figure8b_round33.py` 已改为以五个 seed-CV Spearman 均值计算 mean±sample SD，fold SD 单独保留；同时新增 paired delta mean/SD 的独立复算门。代码 SHA256=`0d2e4855aa80c6ebd0bd99f4b22601c456169f186b452ff523051a42628676e5`，测试覆盖 seed-SD、Holm、零方差、重复 fold 与非有限值拒绝，全部 PASS；本项只修正未来绘图，不改变任何已验收科学结果。
 - 远端快照仍只有既有 tRNA/5s/bpRNA 训练与受门队列；NucleicBERT 二级结构等待 8,192 MiB 提取门，正式测速等待真正独占 4090。未出现新的科学结果，未把等待、smoke、单 fold 或训练曲线写成结论。
+
+## §15.191（2026-10-30）图 8A 结构十任务最终接入口与默认资产不变证明
+
+- `make_figure8_round33.py` 新增可选 `RINALMO_STRUCTURE_RESULT` 接入口，仅接受 `scientific_eligibility=true` 的 TS0+ArchiveII 九家族十任务聚合。逐项复算双头 mean/seed-SD、paired delta/SD、单侧 p 与十任务 Holm；零方差只显示 NA 且禁止显著，篡改输入立即拒绝。
+- 有真实聚合时输出独立 final 文件：上方为十项 macro-F1，下方分置 Spliceator 与官方 88 类 ncRNA；图 8B 回归仍单独报告。首轮合成工程渲染发现图例与 tmRNA 标签碰撞，已将图例移至数据区上方并再次渲染通过。测试文件仅含 synthetic 工程数据，不进入 registry、PPT 或科学结论。
+- 未提供聚合变量时，working source 字段和图形分支保持原合同；实际重导出 PNG SHA256=`0dc049fcf3e2da99c270057b456d52ab236b978471ba1a57ac91ab052fa2edaa`，与注册 working PNG 逐字节一致。最终接入口代码 SHA256=`f7440a7a0f89ac6a1aea4708b472285605fdd8a60a035f01752ac54c10471681`，测试 SHA256=`877632b180a788b68f085e4c21a2c78311066f36085d6538042c06e73ed1084b`。
+- 真实十任务结果仍未齐全；tRNA/5s/bpRNA 继续按 early-stopping 训练，未生成新 aggregate，未把工程预览当作科学图。active registry 升级为 `round34-working-v43`。

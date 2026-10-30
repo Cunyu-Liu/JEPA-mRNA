@@ -2,7 +2,7 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
-> **第 34 轮当前验收（2026-10-30；覆盖下方第 33 轮状态，活跃图源唯一版本为 `round34-working-v42`）**：
+> **第 34 轮当前验收（2026-10-30；覆盖下方第 33 轮状态，活跃图源唯一版本为 `round34-working-v43`）**：
 > - [x] 已复核全部交接文档、原论文任务注册表与远端 artifact；T-A133–T-A143 已包含导师全部补测要求，不新增重复实验。
 > - [x] 主图 3B 正值 performance drop 与图下同源表、主图 4 全颜色图例、主图 6 原生可编辑矢量均已完成内容验收（T-A134/T-A135/T-A137）。
 > - [ ] 主图 5：r2d/plana/xens2/RiNALMo-ft 的 4090 raw-sequence B=1 已验收；MXfold2/RNAformer 与六系统 B=1/2/4 正式共同网格仍待独占 4090，UFold 官方权重通道 blocked（T-A136）。

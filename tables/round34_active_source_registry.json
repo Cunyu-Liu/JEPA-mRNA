@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v42",
+  "registry_version": "round34-working-v43",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -237,7 +237,18 @@
       "rendered_pdf": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets/fig08a_rinalmo_classification_working_3840x1920.pdf",
       "rendered_pdf_sha256": "6f299040d7a09a9b1e1c8deaf57bb9005ddef489b1832c0bba2a393ecf304d6a",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure8_round33.py",
-      "plotting_code_sha256": "0f02ee2f8e1e047d617d8bc294c99f76235755d5c3ab1bdf5f565bd96907fe3a",
+      "plotting_code_sha256": "f7440a7a0f89ac6a1aea4708b472285605fdd8a60a035f01752ac54c10471681",
+      "final_structure_integration": {
+        "status": "engineering_gate_pass_pending_real_ten_task_aggregate",
+        "activation": "RINALMO_STRUCTURE_RESULT must point to a scientific_eligibility=true aggregate of TS0 plus nine ArchiveII holdouts",
+        "default_working_png_sha256": "0dc049fcf3e2da99c270057b456d52ab236b978471ba1a57ac91ab052fa2edaa",
+        "default_working_output": "byte-identical to the registered working asset",
+        "layout": "three panels: ten structure tasks, Spliceator and official 88-class ncRNA; legend moved above the data region after collision review",
+        "statistics": "head means and seed SD, paired deltas, one-sided p values and ten-task Holm are independently recomputed; zero-variance and tampered inputs are rejected",
+        "gate_test": "/private/tmp/rnajev_audit/round33/test_make_figure8a_round34.py",
+        "gate_test_sha256": "877632b180a788b68f085e4c21a2c78311066f36085d6538042c06e73ed1084b",
+        "scope": "synthetic-only engineering tests; no synthetic final asset is registered or used in the deck"
+      },
       "structure_aggregation": {
         "status": "engineering_gate_pass_pending_real_structure_results",
         "path": "/home/rna_jev/tools/aggregate_rinalmo_structure_round34.py",
