@@ -10355,3 +10355,598 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 本段只记录工程与版式进展，不新增科学结果。七项在训任务出现完整 result 后，先执行对应外部 GPU QA，再更新统计与台账；任一 CUDA、样本数、哈希或独立复算失败即停止该任务并保留证据。
 - 下一阶段仍需完成 4090 新增基线与共同 batch 网格、ArchiveII 其余家族、bpRNA、MRL、TE/EL 600-run 全协议及 NucleicBERT 缺失官方资产恢复。最终 PPT 和归档必须等相应验收门通过后执行。
+
+## §15.112（2026-10-28 后续）结果驱动 QA、HEK fold0 部分读出与 UFold 恢复边界
+
+### A. 文件驱动 QA 队列
+
+- 新增并推送 `fb7bc5f round34: automate result-driven QA`。`tools/watch_round34_results.py` 只检查结果文件，不轮询 GPU；完整 JSON 出现后自动执行对应 ArchiveII/bpRNA/回归 QA，记录 result SHA、QA 日志、返回码和时间，失败即停止后续放行。
+- HEK fold0 TE、EL 已先后完成全量结果和外部 GPU QA，状态文件分别记录 result SHA256=`6f65b75a553d50fe9eba0a96073c745eec82f88ed70e53f57eebc4d9bc61b8f4`、`2d1f0f19c673724f486056fbffdfcf68230b19877d0b79c9fcbef92390054fad`。两项均为 10 run、五种子双头、CUDA、early-stopping 和预测重推理通过。
+- watcher 已按锚定进程名启动，避免 pgrep 自匹配。首次启动命令曾因 shell 自匹配未能常驻，复核后纠正，未重复启动实例。
+
+### B. HEK fold0 部分科学读出，不能外推十折结论
+
+- TE fold0 的主指标 Spearman 配对 Δ=−0.067328，p=0.998411；R² Δ=−0.079692。EL fold0 的 Spearman Δ=−0.055355，p=0.978276；R² Δ=−0.031117。两项均无显著正提升，结果完整保留。
+- 这些数值只描述 HEK fold0 的五种子配对效应，不是三细胞、十折任务级结论。不得把 fold0 与 fold1 或其他细胞拼接成完整 600-run 结果，也不得以 smoke、单 fold 或中间 validation 代替最终统计。
+- 同期单次快照为已用 20,669 MiB，余量不足以安全启动 RiNALMo 测速。未强行叠加 GPU 任务，继续由文件驱动 QA 与既有事件队列接续。
+
+### C. UFold 官方重建尝试与持续 blocked
+
+- 已从官方 GitHub 恢复源码至 `/home/rna_jev/third_party/UFold`，commit=`75bd9acc83826059682dfca9d3659df66b132cd1`。官方 README 仍只提供 Google Drive 权重文件夹。
+- 远端和本机分别执行一次官方 Drive 恢复，均因连接超时失败；没有循环重试。现有 `/root`、`/home`、`/teams`、关停归档、可见 ZIP 与 ORICO 备份均未找到匹配权重，历史 strict-load 记录不能替代本轮权重。
+- 因此 UFold 继续保持 blocked。不得用第三方 UFold 实现、旧预测 NPZ 或 A100 速度代替官方权重在 4090 上的端到端结果。主图 5 最终源表和脚注将显式标注该缺口。
+- RNAformer 共同 batch 前向已改为真实 B×L 输入，仍待独立 GPU smoke 验证 B=1/2/4 的预测一致性后才能提交和跑全量。
+
+### D. PPT 全页布局补充验收
+
+- 全 21 页 `validate_layout.py` 初次发现第 9、12 页两处页外导师反馈框越界。已按已处理反馈移除这两个非正文文本框，再次全片验证为 **0 issue**。
+- round33 到 round34 的文本差异仅限上述两个反馈框和主图 6 公式，其他用户文字未改。主图 5、7、8 的科学内容和最终入片仍待数据门，不因全片布局通过而提前关闭。
+
+## §15.113（2026-10-28 后续）SSH 中断与待同步状态
+
+- 在 `fb7bc5f` 成功推送并启动结果 QA watcher 后，远端 SSH 连续出现 `Connection reset by peer`、`Connection closed` 和延迟后的 `Connection refused`。已停止连续重试，不把连接失败解释为训练失败或结果完成。
+- 最后确认的服务器内状态：QA watcher PID=493014；HEK fold0 TE/EL 两项 QA 已通过并写入状态 JSON。服务器内训练进程不依赖本地 SSH 连接，当前无证据据此判定其他 job 已终止。
+- 已推送提交为 `57b607f`、`9d753ce`、`fb7bc5f`。仅在本机待同步的内容包括：§15.112 及本段的训练台账、两个 spec 目录的最新 T-A142/T-A143 状态、`make_figure5_round34.py`，以及尚未完成 GPU 验证的 RNAformer batch 改动。上述内容不得写成已上传或已提交。
+- 主图 5 终版脚本已完成三项独立检查：旧 B=1 结果读取与哈希绑定、缺 B=2/4 数据时拒绝出图、篡改顶层预测后拒绝验收。RNAformer 真实 B×L batch 和新增基线全量测速仍未执行，主图 5/7/8 最终 PPT 与后续归档均未完成。
+- 恢复连接后的第一批动作：先上传并核对台账/spec，收集 watcher 新增 QA 状态和真实结果，再在独立 GPU 窗口执行 RNAformer/MXfold2 smoke 与共同 batch 网格。任一结果未经验收不得升级为最终科学结论。
+
+## §15.114（2026-10-28 后续）经 GitHub API 完成待同步文件交付
+
+- SSH 持续不可达期间，普通 git 传输同时出现 HTTP2 framing 和连接失败，但 `gh auth status` 与 GitHub REST API 可用。改用 API 提交，不将其视为 GPU 或服务器恢复。
+- 提交前通过 API 逐项核对：`spec/tasks.md` 与 `spec_handover/tasks.md` 各只有两行状态更新；训练台账只新增 §15.112–§15.114；`tools/make_figure5_round34.py` 为新文件。未纳入 RNAformer batch 改动、third_party 克隆或任何秘密。
+- 已创建并验证 `ed3fc34a1b482095b7be306783cd83aa8953b818`，提交信息为 `round34: sync QA findings and Figure 5 data gate`，远端分支 `round29-handoff` 的 ref 已指向该提交。GitHub 已更新，但服务器 `/home/rna_jev` 仍需在 SSH 恢复后 fetch/rebase 对齐，不得假定其本地工作区已包含这些提交。
+- 主图 5 终版脚本保留完整数据门：六个可运行系统的 B=1/2/4 全部到齐、跨 batch 预测一致、三次 run 哈希绑定和独立 F1 复算通过后才出图。UFold 仍明确 blocked，主图 5/7/8 的最终科学验收状态没有改变。
+
+## §15.115（2026-10-28 后续）HEK fold2 并行补位与 folds2–9 验收队列
+
+- 服务器工作区复核：`spec/tasks.md`、`spec_handover/tasks.md` 与 `records/DECISION_TRAINING_LOG.md` 和 GitHub 当前版本一致；`make_figure5_round34.py` 虽在旧 HEAD 下显示 untracked，但工作区文件与 `origin/round29-handoff` 的 blob SHA256 均为 `4be0f787d61727b0433ad2d3774117881ccc8207d4a6874556497d0d8f0e2df8`，不存在内容漂移。
+- 最新单次资源快照为已用 19,897 MiB、余约 4.7 GiB。`rinalmo_regression_dual_round33_v4.py` 的缓存按细胞共享，HEK fold2 与 fold0/fold1 使用同一 `HEK_official_tokens.npz`，无需重新提取 650M 骨干嵌入。参考 fold1 在相同余量下稳定运行，补开两个独立小头任务以利用余量，不触发新的骨干加载。
+- 已启动 `rinalmo_te_HEK_fold2_round33_full_v4` 与 `rinalmo_el_HEK_fold2_round33_full_v4`，实际 Python PID 分别为 528896、528894，均 batch-size=64、CUDA_VISIBLE_DEVICES=0，输出目录和 launch log 独立。启动时无同名结果目录，不覆盖既有结果。
+- `watch_round34_results.py` 新增 `ROUND34_QA_FOLDS` 与 `ROUND34_QA_STATE_DIR` 配置。默认仍覆盖原 13 项；补充 watcher 仅覆盖 folds2–9 的 16 个 HEK TE/EL 任务，状态目录为 `audits/round34_qa_watch_folds2_9`，与主 watcher 不重复。配置单测 `default=13 / folds2,3=4` 通过。
+- 补充 watcher 以 `flock` 防止重复实例，实际运行 PID=530698。首次启动因 pgrep 自匹配和日志目录未创建未常驻，已逐项修正，未重复启动有效实例。
+- 已建立本地 `round34_active_source_registry.json`，记录有效图件来源、SHA、working/final 状态和禁止使用的 synthetic 路径，7 项文件哈希复核通过。该清单只用于后续图源管理，不改变科学结果状态。
+- 当前 HEK fold0 已完成 QA，fold1/fold2 在训，fold3–9 未启动。fold2 启动不代表十折完成，不得提前形成 TE/EL 任务级结论。测速仍需独立窗口，当前未执行。
+
+## §15.116（2026-10-28 后续）HEK folds2–9 受门自动训练队列
+
+- 新增 `run_hek_fold_queue_round34.py`，对每一折仅在 TE、EL 两个 full result 和对应 QA 均通过后启动下一折；结果缺失、QA 失败、进程无结果退出或 result 非 PASS 均停止，不提前放行。fold2 的既有外部 PID 已注册，后续任务由队列独立启动。
+- 预检发现 QA 非零返回码最初只被当作 pending，已在启动前修复为硬失败。模拟测试覆盖全 PASS 放行、QA 失败停止和缺失结果处理；远端 `--once` 实测 `fold=2 state=running`，未重复启动 fold2。
+- 队列使用 `/tmp/hek_fold_queue_round34.lock` 防重，实际运行 PID=532587。fold2 TE/EL 日志已进入 seed0 正常验证阶段，未见 OOM 或 CPU fallback；启动后显存快照约 22,016 MiB，未再追加 fold3。
+- 通过 API 提交并验证 `1983f417cecc180a9cbf73c47b1a7e22cc80257a`，包含 fold2 状态、watcher 配置和台账。服务器本地 Git 工作区与 GitHub 的同步仍需后续 fetch/rebase，科学结果状态不变。
+- 后续 folds3–9 将只在上一折双任务 QA 通过后启动，最终仍须十折聚合和五 seed 配对。该队列是资源调度措施，不是科学结果。
+
+## §15.117（2026-10-28 后续）fold0 本地独立复算与活跃图源清单 v2
+
+- 已将 HEK fold0 TE、EL 两份原始 result 下载至本地证据目录。SHA256 分别为 `6f65b75a553d50fe9eba0a96073c745eec82f88ed70e53f57eebc4d9bc61b8f4`、`2d1f0f19c673724f486056fbffdfcf68230b19877d0b79c9fcbef92390054fad`，与远端 QA 状态一致。
+- 使用本地 NumPy/SciPy 从五 seed 原始指标重新计算：TE official/JEV Spearman 均值 0.555709/0.488381，Δ=−0.067328，p=0.998411；EL 为 0.509819/0.454464，Δ=−0.055355，p=0.978276。与远端 `primary_delta_mean`、`primary_one_sided_p_value` 完全一致，所有 run 均记录 CUDA 和 early-stopping。
+- `round34_active_source_registry.json` 升级为 `round34-working-v2`，加入两份 fold0 原始结果、哈希、Δ、p 和“fold0 only”范围声明；新增文件哈希检查通过。清单仍拒绝 synthetic preview，未把 fold0 纳入最终图 8B。
+- 当前自动训练队列和 QA watcher 均正常运行，folds2–9 尚无新增完成结果。上述复算只确认 fold0 的部分证据，不改变 TE/EL 全协议未完成状态。
+
+## §15.118（2026-10-28 后续）RNAformer 真实 batch 首次功能验证未通过
+
+- 在不测吞吐、不生成科学结果的前提下，使用同一组 4 条等长序列比较逐条前向与 B×L 批处理预测。首次断言 `sequential == batch` 未通过，说明当前 RNAformer batch 改动不能提交，也不能用于共同 batch 网格。
+- 该验证只使用 CUDA，未发生 CPU 降级。当前没有证据表明既有 B=1 结果或其他模型结果受影响；问题被限制在未提交的 RNAformer batch 改动。
+- 已新增 `qa_rnaformer_batch_round34.py` 诊断脚本，逐序列输出 logit 最大/平均绝对差、概率最大差、阈值翻转数、单条与 batch 预测差集。待诊断输出后区分实现错误与数值边界问题，未确认前不修改科学结论，不跑全量测速。
+- 主图 5 终版脚本仍要求跨 batch 预测一致，因此当前数据门保持关闭。训练中的 HEK fold 和其他项目任务不受此次失败影响。
+
+## §15.119（2026-10-28 后续）图 5 跨 batch 拒绝门压力测试与诊断入口中断
+
+- 使用仅存在于临时目录的工程数据，先让六个模型、B=1/2/4 的完整形式结果通过 `make_figure5_round34.py`，再故意改变 RNAformer B=2 的预测名称并同步其 run 哈希。第一种情况正常生成临时候选图，第二种情况被 `cross-batch predictions differ for rnaformer` 明确拒绝。该测试只验证数据门，不用于科学证据。
+- 活跃图源清单升级为 `round34-working-v3`，登记 RNAformer 首次 batch 功能验证失败、未提交改动排除状态，以及完整门和篡改拒绝门均通过的事实。没有放宽 full、哈希或预测一致性要求。
+- 多次尝试上传并执行诊断脚本时，SSH 继续出现 `Connection reset by peer` 和 `Connection closed`。诊断所需的 logit 数值差和阈值翻转计数尚未获得，不对失败原因作经验性猜测。
+- 当前策略保持：RNAformer batch 改动不提交、不跑全量测速、不生成主图 5 终版；HEK fold 和其他架构任务继续独立推进。
+
+## §15.120（2026-10-28 后续）TF32 关闭后的 RNAformer batch 数值验证
+
+- 首轮诊断显示单条与 batch 的 logit 存在小幅差异，概率最大差约 1e-3 量级，前 4 条没有阈值翻转；全组复查时 8 条预测全部一致，说明失败具有数值非确定性，而非稳定的 batch 结构错误。
+- 在 QA 脚本中关闭 `allow_tf32`、启用 `cudnn.deterministic=True`、关闭 `cudnn.benchmark` 并设置 `torch.set_float32_matmul_precision("highest")`。同一 94 nt 组 8 条全部通过，输出 `RNAFORMER_DETERMINISTIC_BATCH_QA_PASS 8`，预测差集为空。
+- 扩展至 46 nt（5 条）、48 nt（4 条）、52 nt（5 条）三个长度组，所有预测继续一致，阈值翻转均为 0。logit 最大差仍有小幅波动，但没有造成配对变化，符合数值型漂移特征。
+- 已将相同确定性设置加入待验收的 `speed_end_to_end_4090.py` RNAformer 加载器，并在 model report 中记录。更长长度组与 32 条跨 batch 全功能验证尚未完成，故该测速代码仍未提交，也未运行全量科学测速。
+- 上述结果支持“数值漂移导致首轮偶发不一致”的工作判断，但不能替代完整 B=1/2/4 全量验收。主图 5 数据门继续关闭。
+
+## §15.121（2026-10-28 后续）确定性 batch 扩展组通过记录
+
+- 在 TF32 关闭、cuDNN 确定性开启和 highest matmul precision 下，54 nt（4 条）、62 nt（9 条）、63 nt（8 条）全部通过逐条与 batch 预测一致性检查，阈值翻转均为 0。连同此前 46、48、52、94 nt，共 7 个长度组通过。
+- 诊断脚本已增加 B=2 独立断言和最长组选择，待补最长序列组及 32 条 B=1/2/4 全功能交叉验收。当前通过项仅证明这些组的工程可行性，不代表完整测速协议已验收。
+- 活跃图源清单升级为 `round34-working-v4`，状态改为 `deterministic_settings_passed_multiple_groups_pending_longest_and_full32`。测速代码仍未提交，主图 5 终版仍未生成。
+- SSH 在部分后续组测试期间继续间歇失败，未将未执行项目写成通过。恢复后优先完成最长组和 32 条验收，再决定是否提交 batch 测速改动。
+
+## §15.122（2026-10-28 后续）最长组并发 OOM 证据与停止条件
+
+- 尝试直接执行最长等长组的 B=1/2/4 功能检查时，GPU 仅剩约 286 MiB，RNAformer 在 softmax 阶段申请 348 MiB 失败并抛出完整 `torch.OutOfMemoryError`。进程立即退出，没有 CPU 静默降级，也没有生成部分科学结果。
+- 日志显示同时存在多个训练和其他显存占用进程；本次 OOM 仅反映并发显存不足，不用于判断模型可运行性或科学性能。此前短组通过记录仍有效，但不能外推到最长组。
+- 诊断脚本新增 `QA_MAX_SEQUENCES`，最长组将限制为 4 条，分别验证 B=2 与 B=4，避免把整个等长组误当作 batch。该组及 32 条完整交叉验收须等待独立 GPU 窗口，不能通过杀停高优先级训练来抢窗口。
+- 活跃清单升级为 `round34-working-v5`，保留 OOM 待办和独立窗口要求。RNAformer batch 测速代码仍未提交，主图 5 数据门继续关闭。
+
+## §15.123（2026-10-28 后续）fold 队列未启动/停滞状态机修复
+
+- 检查发现一次 GPU 快照中没有 `train_universal_jepa.py` 进程，但 folds2–9 QA state 仍为空、fold queue 进程存在。真实 fold2 日志尚未取回前，不直接断言其失败。
+- 代码审查发现两个确定性逻辑问题：后续 fold 在 processes 为空且两个结果均 missing 时，被误报为 `running`，导致启动分支永远不可达；当一个任务已有 PASS、另一个结果 missing 时，没有检查缺失任务进程是否已退出，可能无限等待。
+- 修复后：无进程且双结果缺失返回 `ready_to_launch`；任何 missing 结果必须有对应存活进程，否则抛出 `exited without result` 或 `no tracked process`。该改动不限制训练步数，也不改变收敛/QA 门。
+- 本地状态机测试覆盖 ready-to-launch、双任务运行、死进程停止、部分死进程停止、QA pending，全部通过。随后通过 `py_compile`。真实远端 `--once` 检查因 SSH 中断尚未完成，旧队列重启和新任务启动仍需以真实日志为依据。
+
+## §15.124（2026-10-28 后续）fold2 存活状态纠正与真实日志路径
+
+- 修复后的队列 `--once` 已返回 `HEK_FOLD_QUEUE_STATUS fold=2 state=running`。直接读取 `/proc/528896` 和 `/proc/528894` 证明 TE、EL 两个外部 PID 均存活，命令分别为 `rinalmo_regression_dual_round33_v4.py --task te/el --cell-line HEK --fold 2`。
+- 实际 stdout/stderr 为 `eval_decision/rinalmo_{te,el}_HEK_fold2_round33_full_v4.launch.log`，不是此前误查的 `runs/.../train.log`。此前 pgrep 只匹配 `train_universal_jepa.py` 也不能覆盖该包装脚本，因此“没有训练进程”的判断已撤回，不作为重启依据。
+- 当前没有重复提交 fold2，也没有杀停存活任务。队列状态机修复仍保留，用于后续 fold 的正确启动和异常停止。下一步读取上述真实 launch.log 末尾，确认训练仍在推进且无 OOM/CPU 降级。
+
+## §15.125（2026-10-28 后续）fold2 真实训练日志核验
+
+- TE launch.log 尾部为 seed1/epoch136，当前 validation_loss=0.362376，best=0.336611；最近最佳值出现在 epoch115，仍在训练，未出现固定步数截断。
+- EL launch.log 尾部显示 seed0 完成并进入 seed1/epoch5；seed0 的官方 head 指标为 R2=0.24857、PCC=0.54861、best epoch=234。该数值仅是 fold2 单 seed 的中间日志，不作为十折最终科学结论。
+- 两个日志尾部均无 OOM、Traceback 或 CPU 降级迹象。结合 `/proc` 存活证据，fold2 无需重启；已避免一次可能的重复训练。
+- 当前 folds2–9 QA state 仍为空是正常的，因为 fold2 尚未完成全部 seed。后续继续由 watcher 和修复后的 fold 队列自动验收、接续。
+
+## §15.126（2026-10-28 后续）修复版 fold 队列守护进程已切换
+
+- 仅对旧 fold queue 的 532587/532588 两个已核对 cmdline 的 PID 发送 SIGTERM，随后以同一 flock 启动修复版队列，新 Python PID=612477。fold2 TE/EL PID 528896/528894 未发送停止信号，QA watcher 也未重启。
+- 切换后独立执行 `--once` 返回 `HEK_FOLD_QUEUE_STATUS fold=2 state=running`，说明新队列正确接管现有外部训练，而没有重复启动 fold2。
+- 本地 SSH 包装命令已关闭；远端队列使用 `setsid + nohup + flock`，不依赖本地连接。后续 fold 只有在当前 fold 双结果 PASS 且双 QA returncode=0 后才会启动。
+
+## §15.127（2026-10-28 后续）225 nt 最长组限制 4 条后仍因并发显存 OOM
+
+- 长度分组确认当前 eligible 最长组为 225 nt。使用 `QA_GROUP_INDEX=-1 QA_MAX_SEQUENCES=4` 后，实际只选择 4 条，避免上次整组过大问题。
+- 在 RNAformer axial-attention matmul 阶段仍发生 OOM：尝试分配 198 MiB，当时 GPU 仅剩 68.44 MiB。完整 Traceback 已保留，进程退出，无 CPU 降级、无部分科学结果。
+- 此次结果再次证明并发显存不足，不能解释为模型本身不支持 B=4。停止继续重试；225 nt 组、32 条交叉验收和正式测速统一等待独立 GPU 窗口。
+- 活跃清单升级为 `round34-working-v6`，记录精确长度、样本数、剩余显存和停止条件。主图 5 数据门保持关闭。
+
+## §15.128（2026-10-28 后续）其他架构 full 结果补验与 CPEB3 外部 QA
+
+- 扫描发现 NB CPEB3/acceptor/donor、RiNALMo clean/bn200 ncRNA 与 RiNALMo acceptor/donor 共 7 个 full 结果没有 `qa_result.json` 和 telemetry。首次尝试用通用 watcher 补验时，误设了未被脚本支持的 `ROUND34_QA_JOBS`，实际重复跑了 fold0 QA；已停止该 other watcher，未把这轮误配置算作目标验收。
+- 新增 `qa_other_full_round34.py`，按原训练脚本哈希、data card、cache identity、5 seeds、收敛历史、prediction/checkpoint 哈希逐项检查，并在 RTX 4090 上从 checkpoint 重新推理。CPEB3 复算 R²/PCC，Spliceator 复算四物种准确率；全部通过才原子写入 `qa_result.json`，不修改原 result。
+- CPEB3 已完成 10/10 GPU 重推理与全量 QA：official/JEV 各种子 R² 均复算通过，delta=-0.00258545、one-sided p=0.60033361，`significant_positive=false`。该任务可保留为负结果，不作为主图 8 正提升候选。
+- 新增 `run_other_full_qa_round34.sh`，在独立 flock 下顺序执行剩余 4 个 Spliceator 与 2 个 ncRNA QA。远端 runner 已启动，日志为 `audits/round34_other_full_qa/run.log`；首项 NB acceptor 已开始。失败会立即停止并保留日志，不会跳过失败继续写总结。
+
+## §15.129（2026-10-28 后续）Spliceator 重推理批次对齐与 NB acceptor 通过
+
+- 首轮 NB acceptor QA 在物种准确率断言处停止。排查后确认原训练对整个 80k 测试集一次前向，而初版 QA 使用 4096 分批；线性层在不同矩阵尺寸下可能产生微小数值差并在 0.5 阈值处翻转。未放宽准确率断言。
+- 将 Spliceator 重推理改为与原协议一致的整批前向，并为物种断言增加实际值、期望值和阈值翻转数诊断。修正后 NB acceptor 10/10 GPU 重推理全部通过，delta_accuracy=-0.00517750、one-sided p=0.86758782，保持不显著正结论。
+- CPEB3 与 NB acceptor 的 `qa_result.json` 已生成。续跑脚本移除已通过的 NB acceptor，从 NB donor 继续，日志以 append 方式保留首次失败证据和后续通过记录。
+
+## §15.130（2026-10-28 后续）NB donor 通过；RiNALMo splice 原始代码与 cache 门
+
+- NB donor 已完成 10/10 GPU 重推理和全量 QA，delta_accuracy=-0.00434250、one-sided p=0.97614594，保持不显著正结论。至此 NB CPEB3/acceptor/donor 三个 full 结果均有本轮 `qa_result.json`。
+- RiNALMo Spliceator 初次 QA 因当前训练脚本哈希不等于 result 声明的 `code_sha256` 而停止。已从结果声明的 commit `dee8879b` 下载原始脚本，实际 SHA256 为 `67339ea4...96bc`，与协议完全一致；QA 新增 `--code-override`，不使用当前不同版本替代。
+- 使用原始脚本后继续发现 acceptor/donor 的 `*_rinalmo_cls_v2.npz` cache 均不存在。初版函数因此尝试重建 RiNALMo 编码器，并在仅剩 14.44 MiB 时 OOM；进程停止，无 CPU 降级。QA 已增加 cache 存在性硬门，禁止隐式重提取。
+- 新增 `rebuild_rinalmo_splice_cache_round34.py`，只按原始 dee8879 协议恢复 embedding cache，不重训练、不改 result。该步骤需独立显存窗口；恢复前 RiNALMo splice 仍为 pending。
+- 当前续跑只执行 cache 已存在的 clean/bn200 ncRNA QA，runner 已启动。最终标记改为 `ALL_SCHEDULED_NCRNA_QA_PASS`，不再用“全部其他任务通过”覆盖 pending 项。
+
+## §15.131（2026-10-28 后续）ncRNA 两组外部 QA 完成与交接口径纠正
+
+- clean ncRNA 10/10 GPU 重推理通过，delta_weighted_f1=-0.00067666、one-sided p=0.65969698，不显著正；bn200 10/10 通过，delta=-0.00750055、p=0.94884273，不显著正。`ALL_SCHEDULED_NCRNA_QA_PASS` 已落盘。
+- 本轮 7 个补验任务中，NB CPEB3/acceptor/donor 与 RiNALMo clean/bn200 ncRNA 共 5 项已完成独立全量 QA；RiNALMo Spliceator acceptor/donor 因 cache 缺失仍 pending，不能写成全部 7 项通过。
+- 根目录、`spec/`、`spec_sync/` 的 tasks 与 spec 已同步纠正旧“RiNALMo Spliceator 外部 QA 已完成”表述：明确 NB 三项与 ncRNA 两组通过，RiNALMo splice full 结果保留、原始代码已恢复、cache 重建和 GPU QA 待办。
+- 五个已通过任务均无可宣称的显著正提升，完整负结果保留。主图 7/8 不允许用这些负结果冒充正提升，也不删除源数据。
+
+## §15.132（2026-10-28 后续）Splice cache 恢复 OOM 与五项 QA 回执归档
+
+- 新增 `run_rinalmo_splice_recovery_round34.sh`，计划按原始 batch=32 依次恢复 acceptor/donor cache 并立即 QA。acceptor 首次恢复在 RiNALMo 编码器加载时再次 OOM：尝试分配 20 MiB，当时仅剩 14.44 MiB；日志完整保留，未重训、未改 batch、未 CPU 降级。恢复窗口仍须等待，不在并发高占用时继续重试。
+- 原 `qa_ncrna_full.py` 只打印 PASS 不写回执，已补充原子 `qa_result.json` 写出并重新执行 clean/bn200 两组，结果与之前完全一致。远端已逐项确认 5 个通过任务的回执均为 `status=PASS`、result SHA256 匹配、`gpu_reinference_runs=10`。
+- 五份 QA 回执已下载到本地 `figure_assets/downstream_qa/`。活跃清单升级为 `round34-working-v7`，新增 `downstream_qa`：5/7 完成、RiNALMo Spliceator 两项 pending cache，并记录每项 delta/p 值与本地回执 SHA256。
+- 清单全量哈希复核通过，共 15 个活跃/历史证据条目。回执只证明结果可复算，不改变五个任务均不显著正的结论。
+
+## §15.133（2026-10-28 后续）RNAformer 精确 B=4 QA 控制流修正
+
+- §15.132 台账已同步至远端 `/home/rna_jev/spec/spec_handover/records/`，远端 SHA256=`92e733e759865f84a7c82ca0cd57a0610403ddf9f1aa1e84c54c8ce9e6453c22`。23:37 UTC 单次资源快照为 RTX 4090 已用 22,016 MiB、空闲 2,068 MiB；未在该窗口强行恢复 RiNALMo cache，未发生新的 OOM 或 CPU 降级。
+- HEK fold1/fold2 四个训练进程均存活。复核台账确认两折是按共享 `HEK_official_tokens` cache 和小头余量明确并行启动，并非重复提交；fold1 TE 当前 seed3、EL 当前 seed4，fold2 TE 当前 seed2、EL 当前 seed1，均尚无 result，不记录中间 validation 为科学结论。
+- 静态复核发现 `qa_rnaformer_batch_round34.py` 在等长组超过 4 条时会把整组作为 batch，却仍打印 `B1_B2_B4`；此外循环内对每条序列重复计算整组 batch 前向。此前 46/48/52/54/62/63/94 nt 记录仍是有效工程诊断，但组大小为 4–9，不应视为统一、精确的 B=4 验收。
+- 已修正为每个长度组固定取 4 条，B=4 batch 前向只执行一次，再执行四次 B=1 和一次 B=2；脚本 SHA256=`9e04b45b016ff97dbb03890897fd7170bff186ffaedd8aa2b3eeb4ef072a4307`。`py_compile` 通过，无 GPU 假模型控制流测试实测调用顺序为 `[4,1,1,1,1,2]`，不是仅核对打印标签。
+- 修正版尚未做真实 GPU 复验，也未提交为已验收代码。七个诊断组和 225 nt 最长组需用精确 B=4 脚本重新验收，之后仍需 32 条 B=1/2/4 交叉验收与正式全量测速。活跃清单升级为 `round34-working-v8`，主图 5 数据门保持关闭。
+
+## §15.134（2026-10-28 后续）远端文档部署中断与原子恢复
+
+- 首次用流式 tar 直接部署第 34 轮文档时 SSH 中断。只读复核发现 QA 与四份 spec/tasks 为不匹配哈希，`spec_handover/records/DECISION_TRAINING_LOG.md` 缺失；本地权威文件、科学结果和训练进程不受影响。停止直接流式覆盖，不在未核验时启动远端 QA。
+- 改用“临时路径上传→全部 SHA256 预检→`os.replace` 原子替换”的恢复方式。远端台账已单独恢复并复核：SHA256=`41de66c42d54a7911fff4d246c24ab2636ae4af011ec058d89322f15b5f0a75d`、752,944 字节、§15.133 恰好一次。
+- 其余六个文件的首个 SCP 阶段再次连接关闭，最终路径未再改变，暂存上传未完成。当前远端 QA/spec 文件在完成原子恢复前不得作为执行版本；恢复后必须重新核对全部哈希、当前块和 `py_compile`。
+- 本地 15 项证据哈希、五份 spec 当前块、五份 tasks 当前块与三份台账镜像已核验通过；历史章节不做全文相等覆盖。GitHub 已通过独立 API 通道保存当前文档、清单和既有 QA 回执，commit=`f5ada23c86f9f4de5c686dc5c8e9e683163f4a64`。RNAformer 修正版 QA 代码尚未作为已验收代码提交。
+
+## §15.135（2026-10-28 后续）主图 5B 版面压力测试与去拥挤
+
+- 使用仅位于 `/private/tmp/rnajev_audit/round34_fig05_layout_preview/` 的工程假数据做版面压力测试，未写入活跃图源、PPT 或科学结论。初版 B 面板在低吞吐区的逐点数值标注重叠，长标题贴近右边界。
+- `make_figure5_round34.py` 已删除 B 面板重复逐点数字，缩短为 `Common batch grid on RTX 4090`，并将跨 B=1/2/4 预测一致性移至图下注释；精确数值继续由最终源 JSON 完整保存。脚本 SHA256=`3d419ab305af0052f06b72312fd28c2d997c15ed0e935861c882f3790118f8dc`。
+- 修订后 `py_compile`、完整形式门和故意跨 batch 不一致拒绝门均通过。工程预览已逐图检查，B 面板不再有点标注重叠、标题完整；预览 PNG SHA256=`554d190b47f7613cf502bf0abc9490075c15922eb9400339130191fe1ba230db`。
+- 该改动只改善呈现，不开放主图 5 数据门。正式六模型、B=1/2/4、三次全量结果收齐后仍须重新做真实数据版面与数值核验。
+
+## §15.136（2026-10-28 后续）既有四模型 B=1 原始结果逐文件登记
+
+- 使用当前 `make_figure5_round34.py::load_result` 重新核验 r2d、plana、xens2、RiNALMo-ft 四份既有 B=1 原始 JSON，均为 RTX 4090、TS0 `n=1288`、三次重复、raw-sequence 端到端且 `cached_embeddings=false`。F1/中位吞吐分别为 0.668181/22.2821、0.786870/18.6218、0.804063/7.47377、0.721384/13.9942 seq/s；这是已有结果复核，不是新实验。
+- 四份结果 SHA256 分别为 `c9915ccc...8dd1fc`、`2414b2ce...f878`、`18cbb013...27b5`、`a2a4b885...45ba`。活跃清单升级为 `round34-working-v9`，新增逐模型路径、SHA256、F1、吞吐和“仅 B=1”范围，防止仅凭目录名引用。
+- 清单递归全量哈希复核通过，共 19 个活跃/历史证据条目；清单自身 SHA256=`3e72711942e062776f6c701d606ef08faa444f32daf6ee103d0c22769c775cd7`。共同 batch 网格、MXfold2/RNAformer 和 UFold 状态不变，主图 5 仍未闭环。
+
+## §15.137（2026-10-28 后续）远端 v9 文件原子恢复完成
+
+- 采用单个 SSH ControlMaster 连接复用，避免逐文件重新握手。八个文件（精确 B=4 QA、主图 5 绘图、四份 spec/tasks、最新台账、v9 活跃清单）先传入独立暂存目录，全部 SHA256 预检通过后才用 `os.replace` 替换最终路径。
+- 替换后再次逐文件核对 SHA256；两个 Python 脚本均通过远端 `py_compile`。四份文档的当前第 34 轮块、RiNALMo Spliceator pending 口径、v9 清单版本及台账 §15.134/§15.136 均通过内容断言，暂存目录已清理。
+- 本次仅恢复代码与交接文件，没有启动或停止训练、没有运行 GPU QA，也没有改变科学结果。GitHub 当前保存 commit=`d81ded3f21bc33f75ad19907843adc5d76f3056b`。
+
+## §15.138（2026-10-29）主图 6 公式与小字号修复、跨渲染复核
+
+- 仅调整第 10 页主图 6：`zᵢⱼ` 公式显式拆为两行，Turner 公式使用 Unicode 下标，ResNet2D 流程拆为三行；关键标签由约 8.0–8.4 pt 提高至 8.5–8.8 pt。三栏结构、蓝绿配色、原生矢量、812,375 参数和其他页面内容不变。
+- LibreOffice 旧渲染出现的标题/中文缺失并非 PPT 删除：working XML 中标题、中文运行及 `微软雅黑` 均存在，Aspose 新渲染完整显示。未按单一渲染器的缺字现象误改标题。
+- `update_round34_deck.py` 通过 `py_compile`；执行 `fix_pptx.py` 后，第 10 页与全 21 页 `validate_layout` 均为 0 issues，ZIP 完整性通过。markitdown 逐页对比证明仅第 10 页文本变化；第 10 页 155 个形状的文本运行级字体断言通过。
+- Aspose 初次渲染缺 `libgdiplus`，确认 Homebrew `mono-libgdiplus` 已安装并显式设置其 `DYLD_LIBRARY_PATH` 后成功。新渲染逐图复核公式、底部输出和关键标签，无截断或内容重叠；预览水印仅来自 Aspose evaluation renderer，不存在于 PPT 页面元素。预览 SHA256=`500ab62861447d800cf2b8c8ecc308704e2665a7f8b7decdca51d1c423439c0b`。
+- working PPT SHA256=`f4a03dc1f8d8ab3f686acf993175036294aa4c20cd108de0b3a7bf1106fd5306`；更新脚本 SHA256=`d4cb8317fcec8596248ea2d90f35ee14bacb4849d5a082f45761b9d77d8e6f77`。活跃清单升级为 `round34-working-v10`，T-A137 状态在活跃 spec/tasks 镜像中同步；主图 5/7/8 与最终 PPT 仍待正式数据。
+
+## §15.139（2026-10-29）跨页历史速度口径与图文联动完成
+
+- 第 5 页主图 2 保留原数值和布局，但将 JEV 梯图明确标为 `cached-embedding/head-only`，参数统一为 812,375，删除不成立的 `2.21× UFold` 跨口径加速比较。页面文字另列当前已验收的 r2d raw-sequence B=1：22.28 seq/s、F1=0.668181，不与旧值混用。
+- 第 9 页保留为历史 A100 Pareto 参照，标题明确“4090 共同协议重测中”；图内旧 4090 注释也同步改为 head-only，A100 数据点与 Pareto 计算未改。正式主图 5 仍等待六模型共同 B=1/2/4 数据门。
+- 第 15、17、20 页原生文字/表格同步：124.78 仅作历史 head-only 峰值，当前 raw-seq B=1 单列 22.28 seq/s；`9.3M` 全部替换为 812,375；附录明确旧梯图不包含 raw-sequence 编码器前向。第 5、9 页讲者备注同步更新。
+- 图 2 和历史 A100 图均重新导出 3840×1920 PNG/PDF 并逐页 Aspose 渲染复核。全 21 页 `validate_layout=0`、ZIP 通过、运行级微软雅黑断言通过；markitdown 与修改前逐页对比仅第 5、9、10、15、17、20 页变化，无旧 9.3M 或含混端到端表述残留。
+- working PPT SHA256=`6b9d8bb2d60a61477d3bb5faed462ce601e8a260c6e9a70232b318e9032e9c1a`；`build_figures.py` SHA256=`072004420b1ba6b86012d8aeec95ca2f569232e3edaa1ad918d3e0e39c41001d`；`update_round34_deck.py` SHA256=`fa9015c6ee4f2465e25bc7ce652755bbebf2c6223f6c928f83e710fd52fabd04`。
+- 活跃清单升级为 `round34-working-v11`，登记图 2、历史 A100 图及其源数据/代码/文件哈希，22 项证据递归复核通过。此次只纠正历史口径，不把四份 B=1 结果扩写为完整主图 5，也不改变主图 7/8 的待实验状态。
+
+## §15.140（2026-10-29）HEK fold1 EL 全量结果与外部 QA
+
+- `rinalmo_el_HEK_fold1_round33_full_v4` 已生成 full `result.json`，五种子 official/JEV 均 CUDA、early-stopping 收敛、best checkpoint 和预测哈希齐全。主 watcher 于 01:01:55 UTC 记录 `returncode=0`；QA 日志确认 10/10 checkpoint 在 RTX 4090 重推理通过，result SHA256=`80e32116245fde20b4dbd034bf6832a0267427946582983964baa04fc72082fc`。
+- 原始结果与 QA 日志已下载。本地独立从五种子 `test_spearman/test_r2/test_pcc` 重算：official/JEV Spearman 均值 0.537899/0.503488，Δ=-0.0344107861、delta SD=0.0389508390、单侧 p=0.9402880452；R² Δ=-0.0385513099，p=0.8943416994；PCC Δ=-0.0353265522，p=0.9236235528。均与 result 声明一致，`significant_positive=false`。
+- 该结果仅描述 HEK EL fold1，完整负结果保留，不作为显著正候选，不外推为三细胞或十折结论。QA 日志 SHA256=`9a1a1adfb85320f0af96e1e766ccd96fd7266773113ed42add3ce32bdb41191f`。
+- 活跃清单升级为 `round34-working-v12`，新增 fold1 EL 原始结果、QA 日志、哈希和范围声明。当前剩余在训为 ArchiveII tRNA/5s、MRL full_v3、HEK fold1 TE 与 fold2 TE/EL 共六项；fold0 TE/EL 与 fold1 EL 已验收，folds3–9 仍须受门接续。
+
+## §15.141（2026-10-29）主图 7 与 8A working 面板入片和证据边界同步
+
+- 主图 7 组合 working 面板已插入第 11 页：主 benchmark 8/8 正迁移与 acceptor/donor/CPEB3 三项原论文任务分开展示，三项均不显著为正；secondary structure/contact-distance/shuffle 继续标记官方资产 blocked，不作全覆盖声明。
+- 主图 8A 分类 working 面板已插入第 12 页：官方 88 类 ncRNA clean/bn200 与 RiNALMo Spliceator 同页，全部结果保留且未宣称显著正提升。图内明确 RiNALMo Spliceator 外部 cache QA、ArchiveII/bpRNA 和独立回归面板仍 pending；旧 177 类只作敏感性，图 8B 暂不入片。
+- 第 15 页结论表和第 20 页论文逻辑链同步改为“NB 主 benchmark 8/8；原论文任务未显著为正”，并保留官方资产、RiNALMo splice QA、回归和十折未闭环限制。第 11/12 页讲者备注与来源同步更新。
+- 两张 working 图均重新通过原始 full result 和五种子配对断言生成，3840×1920 PNG/PDF 成功。第 11/12/15/20 页 Aspose 渲染无截断或内容重叠；全 21 页 layout=0、ZIP、markitdown 和运行级微软雅黑检查通过，文本变化严格限于第 5、9、10、11、12、15、17、20 页。
+- working PPT SHA256=`4d15311c10d1aebce39d86923e5fbf299651096c7b7f8021e963ca9fdfa0bb50`；图 7 源 JSON/PNG 哈希为 `fab6b04d...751d`/`e581c050...49e62`，图 8A 为 `d38ccf29...4230`/`62ff63bd...42dc`。活跃清单升级为 `round34-working-v13`，登记新路径、绘图代码、图片和范围声明；最终主图 5/7/8 仍待完整实验闭环。
+
+## §15.142（2026-10-29）HEK fold1 TE 全量结果与外部 QA
+
+- `rinalmo_te_HEK_fold1_round33_full_v4` 已完成 full 结果，主 watcher 于 01:38:36 UTC 记录 `returncode=0`，10/10 checkpoint 在 RTX 4090 重推理通过。result SHA256=`fccff69d4a635aaa4a5b579b2ba3283998249453e14c32a6e99dba6b919c6c60`，QA 日志 SHA256=`6f790735043965d9f9163d88a5c9fed2bb49d04a9c1f870d7310ec18661dbb48`。
+- 本地独立复算五种子：official/JEV Spearman 均值 0.506429/0.476859，Δ=-0.0295697016、delta SD=0.0204088501、单侧 p=0.9841594836；R² Δ=+0.0038401522、p=0.4347319787；PCC Δ=-0.0065294289、p=0.6779781196。与 result 完全一致，主指标 `significant_positive=false`，R² 小幅正值也不显著。
+- 原始结果与 QA 日志已归档，活跃清单升级为 `round34-working-v14`。该结果只描述 HEK TE fold1，保留全部数值，不进入显著正候选，不外推为十折结论。
+- 全稿 21 页缩略图总览已复核，未发现空白页或明显布局异常。当前剩余在训为 ArchiveII tRNA/5s、MRL full_v3 和 HEK fold2 TE/EL 共五项；HEK fold0 与 fold1 的 TE/EL 均已验收，folds2–9 继续受门推进。
+
+## §15.143（2026-10-29）实验状态页同步 HEK fold0/fold1 验收状态
+
+- 第 19 页 T-A129 卡片已更新为：HEK fold0/fold1 TE/EL 已完成 QA，主 Spearman 均不显著为正，fold2–9 受门推进。该展示只同步 §15.140–§15.142 的 fold 级证据，不新增十折或三细胞结论。
+- 第 19 页 Aspose 渲染无溢出，单页及全 21 页 layout=0，ZIP 和运行级微软雅黑检查通过。markitdown 对比确认新增文本变化仅第 19 页，既有其他页面保持上一轮内容。
+- working PPT SHA256=`edd14a4d49a1a55346ba84dc9b5e4a30bfc4264acaca0223597d86f96e77e569`；`update_round34_deck.py` SHA256=`68ea10e7c7b66be293e353ed502fc14163520382a8d93c7ca8e14828c080b584`。活跃清单升级为 `round34-working-v15`。
+
+## §15.144（2026-10-29）主图 8B 十折聚合门防重复与非有限值
+
+- 代码审查发现 `make_figure8b_round33.py` 原来只检查 `len(fold_results)==10`，重复 fold 也可通过。已增加硬门：`fold_results` 必须按顺序严格包含 fold 0–9 各一次；每个 seed 的十折 Spearman 必须全部有限。
+- 同步扩展 `test_make_figure8b_round33.py`：完整七任务工程形式数据可生成，缺失文件拒绝，重复 fold 拒绝，NaN Spearman 拒绝。初次新增 NaN 测试受前一项重复 fold 干扰，已改为独立有效 payload 后复测通过；最终输出 `FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。
+- `make_figure8b_round33.py` SHA256=`1caff313d28d0aabf5939ca1a0330cc517568139a4e4cd2394e1e9fb9acdbf78`；测试脚本 SHA256=`fe174cba569ffa87b1103194d5a85960ecbec18ef7122acb1cc7b5f57a6003f2`。活跃清单升级为 `round34-working-v16`，仅登记工程门状态；未生成正式主图 8B，fold0/fold1 仍不得拼接成十折结论。
+
+## §15.145（2026-10-29）主图 8B 远端工程测试环境待补
+
+- v16 台账、清单、聚合脚本和测试脚本已同步远端 `/home/rna_jev`，四个文件替换前后 SHA256 均匹配，两个 Python 文件均通过远端 `py_compile`。
+- 首次远端测试因默认 `FIGURE8B_SCRIPT` 指向本地 `/private/tmp` 而未执行；改用 `/home/rna_jev/tools/make_figure8b_round33.py` 后，进一步发现 `lucaone` 环境缺少 matplotlib。备用系统 Python 检查连续两次遭遇 SSH 握手重置，因此远端工程测试没有完成，不记为 PASS。
+- 本地完整形式、缺文件、重复 fold 和非有限值测试均已通过；远端仅确认代码一致性和语法有效性，尚不确认远端绘图运行环境。后续选择已有 matplotlib/scipy/PIL 的环境或补齐依赖后重跑，科学结果与正式主图 8B 状态不变。
+
+## §15.146（2026-10-29）远端 matplotlib 已补装，工程测试待连接恢复
+
+- 两个远端 Python 环境均确认缺少 matplotlib。已在 `lucaone` 通过指定镜像成功安装 matplotlib 3.10.9（同时安装 pillow 12.3.0 及其依赖），没有升级 numpy 或修改训练代码、数据和权重。
+- 安装后连续两次调用 `FIGURE8B_SCRIPT=/home/rna_jev/tools/make_figure8b_round33.py` 执行工程测试，分别出现连接关闭和 `kex_exchange_identification` 重置，测试尚未实际运行，不记为 PASS。
+- 本地聚合门测试已通过，远端依赖缺口已修复；待连接恢复后仍需实际完成远端完整形式、重复 fold 和非有限值测试，才能关闭 §15.145 的环境待办。
+
+## §15.147（2026-10-29）远端主图 8B 聚合门工程测试通过
+
+- SSH 恢复后，使用 `FIGURE8B_SCRIPT=/home/rna_jev/tools/make_figure8b_round33.py` 和 `lucaone` 新安装的 matplotlib 3.10.9 实际执行远端测试，返回码为 0，输出 `FIG08B_SYNTHETIC_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。
+- 本地与远端现均验证：完整七任务形式数据可生成、缺失文件拒绝、重复 fold 拒绝、非有限 Spearman 拒绝。§15.145 的远端环境待办关闭，活跃清单升级为 `round34-working-v17` 并登记远端 Python、matplotlib 版本和通过标记。
+- 该通过仅证明工程聚合门有效，不产生正式主图 8B 或十折科学结论；真实 MRL、三细胞 TE/EL 完整结果仍需按原协议完成。
+
+## §15.148（2026-10-29）fold2 TE 第二段 seed 0 为 JEV head 而非重启
+
+- 状态检查发现 TE 日志先出现 seed 4，随后再次出现 seed 0，已进一步核查而非按正常续训直接放行。证据为：第二个 seed 0 紧接 `[te/official_head/s4]`，fold2 TE/EL 进程仍为原 PID 528896/528894，启动 tick 未变，没有新进程或结果目录覆盖。
+- 当前顺序为 official head 五种子完成后进入 JEV head 五种子，TE 第二段 seed 0 属正常双头流程；EL 尚在 official head seed 3，均持续写日志。未重启训练、未修改结果，也不把中间 validation 写成科学结论。
+- v17 清单与台账已同步远端。fold2 full result 和对应 QA 尚未产生，PPT 保持现有版本。
+
+## §15.149（2026-10-29）NucleicBERT 缺失任务官方资产全渠道复核
+
+- 对官方仓库 `KIT-MBS/NucleicBERT` 的非浅克隆完成复核：HEAD=`7beb6b38902ee963a2c514f39b69497fe9201ef9`，全部三次提交均无 `data/`；GitHub `commits?path=data` 亦为空，并非仅当前分支漏拉目录。
+- 官方配置再次确认了原始输入合同：`secstr.yml` 使用 `sec_str_data/train/train.csv` 与 `sec_str_data/bpRNA_80/sec_str_vl0.csv`；`contactmap.yml` 使用 `ns_bgsu_contact_map/{train,val}/{inputs,targets}`、8 Å 和 512 nt；`shuffle.yml` 使用 `train_no_pretrain_similar.csv` 与 `bpRNA_val_no_pretrain_similar.csv`、complete shuffle。配置路径不是数据本身，不能据此宣称样本或 split 已复现。
+- Zenodo API 以 `NucleicBERT` 检索仅有两条记录：16989562 为 `pretrained.pt`、`shuffle.ckpt`、`contactmap.ckpt`、`fitness.ckpt`、`secstr.ckpt` 五个权重文件；21111274 仅为官方源码 ZIP。两条记录均没有上述任务 CSV、输入/target 或作者 split。
+- 结论：二级结构、接触/距离图和 natural-vs-shuffled 的官方样本/split 在这些官方渠道中确实未发布，三项继续 blocked。不得以项目相似数据替代后宣称原论文复现；若未来重建，必须单列 protocol-matched reconstruction。此次只核查资产，没有启动训练或改变既有科学结果；活跃清单升级为 v18。
+
+## §15.150（2026-10-29）UFold 官方权重入口复核未完成，阻塞口径不变
+
+- UFold 官方 README 仍只给出 Google Drive 文件夹 `1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi` 作为预训练权重来源，没有 GitHub 内嵌权重。
+- 本机使用 gdown 的 `skip_download=True` 仅请求文件清单，连接 `drive.google.com/embeddedfolderview` 超时；未下载任何文件，也未得到“文件夹不存在或权限关闭”的服务端证据。因此只能记录本次网络通道失败，不能把它写成权重已被作者撤回。
+- UFold 在主图 5 中继续保持 blocked，禁止用其他权重或模型替代。待远端或可用网络通道恢复后，先核验官方文件身份与哈希，再安排独占 4090 测速。
+
+## §15.151（2026-10-29）MRL full_v3 全量结果、外部 GPU QA 与独立统计
+
+- `rinalmo_mrl_round33_full_v3` 已生成 full official protocol 结果，主 watcher 于 07:03:46 UTC 记录 `returncode=0`。QA 日志确认 official/JEV 各五种子、共 10/10 best checkpoint 在 RTX 4090 重推理通过；result SHA256=`d37de2707c0548f029ef077e3a4c199a094aba95b57cdd3139652d18510eb76b`，QA 日志 SHA256=`a3c58849f674688e179c742a49930be57287d9b00a4c9ee73b12d916d10181c5`。
+- 本地从十个 run 独立复算：official/JEV R² 均值 0.6822061254/0.2133591584，Δ=-0.4688469669、delta SD=0.0072494479、单侧 p=0.9999999931；PCC 均值 0.8281761257/0.5164611893，Δ=-0.3117149364；Spearman 均值 0.7820667440/0.4734599136，Δ=-0.3086068305。主指标 R² 为明确负结果，`significant_positive=false`，不进入正结果候选。
+- 第三遍协议核验通过：十个 run 均为 CUDA、`converged=true`、`early_stopped=true`、`independent_recheck=PASS`；每个 run 的 best epoch 与 validation history 最小值一致，停止均满足 patience=32。train/validation/test 样本数统一为 76319/7600/7600，配对种子的 label mean/std 完全一致，十个 checkpoint 与 prediction 哈希均存在且各自唯一。
+- 原始结果和 QA 日志已下载归档，活跃清单升级为 `round34-working-v19`；spec/tasks 当前队列改为 ArchiveII tRNA/5s 与 HEK fold2 TE/EL 四项在训。MRL 单项已完成，但主图 8B 仍需三细胞 TE/EL 的完整十折聚合，当前不生成正式 8B、不改 PPT，也不将该负结果删除或包装为正提升。
+
+## §15.152（2026-10-29）TE/EL 十折聚合器外部 QA 路径修复与真实 fold 预检
+
+- 静态复核发现 `aggregate_te_el_cv_round33.py` 错把 `eval_decision/*.launch.log` 当作外部 QA 日志。远端 fold0/fold1 实证：训练 launch log 只有训练完成标记，真正的 `REGRESSION_RESULT_EXTERNAL_QA_PASS` 位于 `audits/round34_qa_watch*/`。若不修复，完整十折后聚合会错误停止或被迫绕过 QA。
+- 已改为 fold0/1 读取 `audits/round34_qa_watch/`，fold2–9 读取 `audits/round34_qa_watch_folds2_9/`；回执必须同时包含当前 result SHA256、`scope=full`、`runs=10` 和 `cuda_device=NVIDIA GeForce RTX 4090`，旧训练日志或无 GPU 信息的记录不能放行。
+- 回归测试已改成训练 launch.log 无 QA 标记、真实 QA 只在 audits 目录的形式，因此能覆盖本次缺陷。本地与远端 `py_compile` 和 `TE_EL_AGGREGATOR_SYNTHETIC_TEST_PASS` 均通过；聚合器 SHA256=`f211b964fd12a4cf83a80058f41783c97150f5d6f14385cd4dbfce2e66aa3879`，测试 SHA256=`efb18e81e371fcd03d3a7a442475e969272ede7f2fb7167a7b3546d78881c7ff`。
+- 在远端对已有 HEK fold0/fold1 TE/EL 调用真实 `load_fold` 预检，四项均通过：共 40 个 run 的 checkpoint/prediction 哈希、样本数、收敛历史和独立 Spearman/R²/PCC 复算一致，QA 路径与哈希绑定正确。未生成十折 aggregate，fold2–9 仍须完成各自结果和 GPU QA；活跃清单升级为 `round34-working-v20`。
+
+## §15.153（2026-10-29）HEK fold2 TE 全量结果与三遍独立验收
+
+- `rinalmo_te_HEK_fold2_round33_full_v4` 已生成 full 结果，folds2–9 watcher 于 07:46:56 UTC 记录 `returncode=0`，10/10 checkpoint 在 RTX 4090 重推理通过。result SHA256=`6e7b2704128bbbd1000f8ecc440588f439a0423df971bed07c3eacc94b91bae2`，QA 日志 SHA256=`fb6d4d8ae4119198fafa7e42967ff77e31be2da7f666263d61f035423bfe6b05`。
+- 本地独立复算五种子：official/JEV Spearman 均值 0.5319639029/0.4939781960，Δ=-0.0379857069、delta SD=0.0233857022、单侧 p=0.9889403949；R² 均值 0.2398925191/0.2148026501，Δ=-0.0250898691、p=0.9441751480；PCC Δ=-0.0312799179。主指标和 R² 均不显著为正，完整负结果保留。
+- 第三遍使用刚修复的真实 `load_fold` 再验收 fold2 TE：folds2–9 QA 路径、当前 result 哈希、checkpoint/prediction 哈希、样本数、收敛历史及 Spearman/R²/PCC 独立复算全部通过；official/JEV Spearman seed mean 与本地结果完全一致。
+- 原始结果和 QA 日志已归档，活跃清单升级为 `round34-working-v21`，真实聚合预检累计覆盖 50 个 run。fold2 EL 仍在训练，ArchiveII tRNA/5s 继续运行，bpRNA 只产生 smoke 并进入受门接续链；不生成十折 aggregate、不改正式主图 8B，也不把单 fold 或 smoke 写成科学结论。
+
+## §15.154（2026-10-29）PPT 同步 MRL 与 HEK fold2 TE 验收状态
+
+- 仅修改第 12、15、19 页的原生文字：第 12 页明确 MRL full_v3 已完成验收且 R² Δ=-0.468847、不显著为正，图 8B 仍待 TE/EL 十折；第 15 页将剩余回归待办收窄到 splice QA 与 TE/EL 十折；第 19 页更新为 MRL、HEK fold0–2 TE 和 fold0–1 EL 已 QA，其余继续受门推进。
+- 未修改第 12 页图 8A 图像，也未生成或插入正式主图 8B。保留既有蓝绿科研风格、微软雅黑、1.5 倍行距、表格和卡片布局；第 19 页采用单行短句，未增加卡片高度。
+- `fix_pptx`、目标页和全 21 页 layout 检查均为 0 issues，ZIP 完整性通过。markitdown 与修改前逐页对比确认仅第 12/15/19 页变化；665 个非空原生文本运行均为微软雅黑。Aspose 三页渲染无截断或重叠，预览水印不存在于 PPT 页面元素。
+- working PPT SHA256=`97b986116c63ded6692a7b7a3ba6b06a1cbdb260c64f39726fe94b3459cfabce`；更新脚本 SHA256=`2cd291118a288ea6bce821825541b23e8c8f51a206d4bca198a8cf54e537fe01`。同一文件已原子备份到远端 `/teams/.../figure_assets/round34/`，前后 SHA256 一致。活跃清单升级为 `round34-working-v22`；本更新只同步已验收事实，不改变主图 5/7/8 的未完成状态。
+
+## §15.155（2026-10-29）RNAformer 八组精确 batch 与 full32 GPU 验收通过
+
+- 初次复验在模型加载前依次暴露 `pkg_resources`、`rotary_embedding_torch` 和其 `beartype` 依赖、`loralib` 缺失；均在 CUDA 前向前停止，没有 CPU 降级或科学结果。按官方 requirements 补齐 setuptools 80.9.0、rotary-embedding-torch 0.5.3、beartype 0.23.1、loralib 0.1.2，torch 2.5.1+cu121 与 matplotlib 3.10.9 未变。三次失败日志分别保留在独立 audits 目录，未覆盖。
+- 依赖修复后，46/48/52/54/62/63/94/225 nt 八组均在 RTX 4090 完成精确四条 B=4、四次 B=1 和一次 B=2 对照。每组四条均 `prediction_equal=true`、`threshold_flips=0`，包括此前待验的 225 nt 最长组；无 OOM 或 CPU 降级。八个成功日志 SHA256 已逐项登记。
+- 在同一脚本中复用正式 `speed.run_once` 增加 `QA_FULL32=1` 分支，未另造前向或解码逻辑。32 条序列 B=1/2/4 的预测列表和预测 SHA256 完全一致：`3c2f8b5c942af4a1e296491579f62006d0d3f361fc24f1a12a1bd9cb179dc6bf`；TP/FP/FN=792/66/83，strict micro-F1=0.9140219273，full32 日志 SHA256=`5b4ffff9150a5123b0289f0b544a16a58739b378920ba8cc946b60efc043b675`。
+- 第三遍在本地重新解析全部九个日志，确认组长度、四条记录、阈值翻转、batch 哈希和 TP/FP/FN 均符合合同。更新后 QA 脚本 SHA256=`05430925eb6407bffefd822948f88c830a164db86cba13c6df28f0f5b524f35e`，成功日志已归档到 `figure_assets/rnaformer_batch_qa/`。
+- 上述 32 条和八组仅属工程一致性证据，不作为主图 5 的速度或精度科学结果。下一步仍需在独占 4090 窗口完成 RNAformer/MXfold2 的 full TS0 B=1/2/4 测速和共同网格；活跃清单升级为 `round34-working-v23`。
+
+## §15.156（2026-10-29）MXfold2 适配器索引与 stride 修复、官方 CLI 逐对验收
+
+- 使用官方 v0.1.2 manylinux wheel，wheel SHA256=`a9ea044a6555903e019fc016d8409ba0907bfb143bbf2eda51b1d27aae763c72`；TrainSetAB.pth strict load，权重 SHA256=`8ba1283e70c1c073033161adc120f67cdc467176476358d26a12cadaf63262ec`。首次直接下载中断后改用本机 GitHub 通道并校验上传，未替换权重。
+- 初次 B=1 的 32 条 F1 仅 0.003217，B=2 同时发生非连续张量 `view` 错误，未采信。官方 CLI 首次未显式传 GPU 参数而默认 CPU，已立即停止该进程且不使用其输出；随后以 `--gpu 0` 重跑，官方模型和权重可产生正常结构。
+- 逐对比较证明 partner 列表含哨兵位且目标为 1 基索引，正确映射是 `partner>=index` 时 `(index-2, partner-1)`；旧适配器同时错移当前位置和目标位置。上游 `PairedLayer.forward` 两处 `permute` 后 `view` 改为等价 `reshape`，其余计算保持原样。兼容补丁 SHA256=`61ef811d3ae394f3bd20bdee7c453a46782499c22f09865313c18a7b0ff27059`，速度适配器 SHA256=`0ea18aa47c349e6448dc703c4175f0f8dc81376a8e2cdb8f420853903d9da652`。
+- 修复后 B=1/2/4 的 32 条预测完全一致，prediction SHA256=`75168ac3793c37930ec45c57b7713e0cda70c56ccbdd40c2a1ab0ece519c2122`；TP/FP/FN=747/243/128，engineering subset strict micro-F1=0.8010723861。三份结果 SHA256 分别为 `2c16b0ee...f5ca`、`350d1e62...fbd06`、`aa3c82ac...779b`。
+- 第三遍在本地将三批预测与官方 GPU CLI 比较，990/990 个真实配对逐对一致。初次比较多出的 32 对来自解析器误把每行末尾 `(score)` 当作结构括号，已改为只解析首个 dot-bracket 字段，未改变任何模型预测。三批 F1 由 TP/FP/FN 独立复算一致。
+- 失败日志分别保存在独立 audits 目录，成功 JSON、日志、官方 GPU CLI 输出和 input32.fa 已归档到 `figure_assets/mxfold2_batch_qa/`。这些 32 条结果只证明适配正确和跨 batch 一致，不作为主图 5 科学结果；正式 full TS0 测速仍待独占 4090 窗口，活跃清单升级为 `round34-working-v24`。
+
+## §15.157（2026-10-29）RiNALMo Spliceator cache 恢复与两项全量 GPU QA 闭环
+
+- 在约 7.2 GiB 安全余量窗口，严格按原始 dee8879 协议和 batch=32 恢复两份 cache，未重训、未改 batch、未转 CPU。acceptor 为 102179×1280、200915043 bytes，SHA256=`d4ba2bb0a2232019f5bada3830fe493beff67e986e99536123540b2c627a3aa6`；donor 为 101973×1280、200512327 bytes，SHA256=`56b87fd839f82a43e6d5097b0afe1fcaba6f7746798c511eee18c26b44672bf2`。
+- acceptor 10/10 checkpoint 在 RTX 4090 重推理通过。独立复算 official/JEV 四物种平均 accuracy=0.596870/0.5965125，Δ=-0.0003575000、delta SD=0.0236089191、单侧 p=0.5126944093，不显著为正；result SHA256=`6c5edca247d75a96f5872e410f071bf471d9972e5b95a6e892873e4bee82bc8f`，QA 回执 SHA256=`81a45028fc70005ecf2bbc20ba75111dd5a54ba669201a7f4cb1ecc865354bd3`。
+- donor 10/10 checkpoint 在 RTX 4090 重推理通过。official/JEV accuracy=0.6993525/0.6999975，Δ=+0.0006450000、delta SD=0.0077269091、p=0.4305079375，仍为不显著正；result SHA256=`e9c22ee7cb2e9dd9f030da9eb6041eba0823cc7d7c4cdec6aeb8252cf85e787c`，QA 回执 SHA256=`a08bd0d42c33e829562eb8b09d9e1f7bdd2587f22856b49bc52857bae4fc2b27`。
+- 两项均完成第三遍协议与统计核验：五种子、CUDA、early-stopping patience=32、best validation BCE、四物种 accuracy 和 checkpoint/prediction 哈希全部一致。下游早期七项任务现为 7/7 外部 QA 完成，完整负结果与不显著正结果全部保留。
+- 图 8A 仅更新 QA 状态文字，全部数值、配色和布局不变。新源 JSON SHA256=`b890027bfdb46de7384fcac0aff59f7b3d1e564147ca31e5810d4e2b9ab35410`，PNG SHA256=`aa68248e419688018b739a3d11ea608c1e5bbcc88d198feb0a3d560d5190dccd`，绘图代码 SHA256=`79607a97ba8931b3428d6be3c8976837eb1876610387b69130ec5af9c0756664`。
+- PPT 仅第 12 页替换该图件、第 15 页删除已完成的 splice QA 待办。markitdown 仅第 15 页文本变化，媒体仅 `ppt/media/image17.png` 变化；全 21 页 layout=0、ZIP、665 个微软雅黑运行及 Aspose 渲染通过。working PPT SHA256=`45a7e37e0c5a5d83d6f7d4d6cc4ec8ceeb2f9c3f0d06c1d7c4395e350bbee94d`，活跃清单升级为 `round34-working-v25`，图 8B 和其余结构任务仍待闭环。
+
+## §15.158（2026-10-29）UFold 官方 Drive 双通道复核与权重文件名确认
+
+- 本机和远端分别对官方 `embeddedfolderview` 做 25 秒连接测试，均超时；未下载任何权重，也未得到文件夹被撤回的响应。UFold 继续因网络通道 blocked，不能用其他模型或权重替代。
+- 官方 issue #8 的作者回复确认所需文件名为 `ufold_train_alldata.pt`，位于同一官方 Drive；该 issue 没有提供备用下载源。后续若通道恢复，应先核对该文件及 SHA256，再执行独占 4090 测速。
+
+## §15.159（2026-10-29）HEK fold2 EL 全量结果与 fold0–2 双任务闭环
+
+- `rinalmo_el_HEK_fold2_round33_full_v4` 已生成 full 结果，folds2–9 watcher 于 11:05:07 UTC 记录 `returncode=0`，10/10 checkpoint 在 RTX 4090 重推理通过。result SHA256=`ccbc361266791ad6ee465e90a468abf92fd27ee8acb335fb69f8a0d4f76fd5e0`，QA 日志 SHA256=`1a9694411188942adb20d999f3984d52adc23397cfea2fbec44df08d2f33f3d8`。
+- 本地独立复算五种子：official/JEV Spearman 均值 0.5275318499/0.4708565867，Δ=-0.0566752632、delta SD=0.0428654530、单侧 p=0.9791494920；R² 均值 0.2689341588/0.2194288610，Δ=-0.0495052977、p=0.9526671069；PCC Δ=-0.0502618453。主指标与 R² 均不显著为正，完整负结果保留。
+- 第三遍真实 `load_fold` 验收通过：folds2–9 QA 路径、result 哈希、checkpoint/prediction 哈希、样本数、收敛历史和 Spearman/R²/PCC 复算一致，official/JEV Spearman seed mean 与本地结果完全相同。真实聚合预检累计覆盖 HEK fold0–2 TE/EL 共 60 个 run，未生成十折 aggregate。
+- fold2 TE/EL 现已全部闭环，fold3 TE/EL 已由受门队列自动接续，未重复提交训练。第 19 页仅更新为 MRL 与 HEK fold0–2 TE/EL 已 QA、fold3 起受门推进；其他页面和全部媒体不变。全 21 页 layout=0、ZIP、665 个微软雅黑运行及 Aspose 渲染通过，working PPT SHA256=`72717e223976d3a66ce7e044007ddb36cfbb75c95ace7811db2a49c619f56cb1`。
+- 活跃清单升级为 `round34-working-v26`。fold2 EL 只作为 fold 级证据，不外推为十折或三细胞结论，也不进入显著正候选。
+
+## §15.160（2026-10-29）r2d/plana 跨 batch 工程预检与 RiNALMo-ft 显存停止
+
+- r2d 的 32 条 B=1/2/4 工程预检全部通过：TP/FP/FN=849/46/26，strict micro-F1=0.9593220339，三批 prediction SHA256 均为 `3ca62a9432ed45f10253e823da5974255784db73193d354e3d484a8ec666c51d`；三份结果 SHA256 分别为 `c132a386...1da6`、`f4009bae...0960`、`3fa3c005...dc01`。
+- plana 的 32 条 B=1/2/4 工程预检全部通过：TP/FP/FN=842/34/33，strict micro-F1=0.9617361508，三批 prediction SHA256 均为 `e4fca66b3e26e2faf2b661a37f2183c40734a8c7fa815854d5ecd09206cd777f`；三份结果 SHA256 分别为 `c74bf74c...c67d`、`8d18f6d7...ea9be`、`d6fe7d4f...6826`。
+- 第三遍在本地核验 CUDA、RTX 4090、32 条工程范围、三批预测哈希、F1 与 TP/FP/FN，均完全一致。两组结果只证明工程一致性，不作为主图 5 的科学速度或精度数据。
+- RiNALMo-ft 首次 B=1 工程尝试在 `_outer_concat` 处 CUDA OOM，未生成结果，日志 SHA256=`508a7fd44b1671d3de7b965fe25c4537db5eb5465034d4d8f892a8e39ed9f722`。没有强行重试或转 CPU，也未在相同低余量下启动 xens2；两者等待更大显存窗口。
+- 活跃清单升级为 `round34-working-v27`。PPT 未修改，正式 full TS0 共同 batch 网格仍需独占 4090 窗口。
+
+## §15.161（2026-10-29）主图 8B 回归家族 Holm 校正与零方差门闭环
+
+- `make_figure8b_round33.py` 新增同一七任务回归家族的 Holm-Bonferroni 校正：保留原始单侧配对 p 值，同时写入 `holm_p_value` 和 `significant_positive_holm`；图面在有限 p 值齐全时显示 `p_Holm`，不是只报未校正结果。
+- 任一主 p 值因零方差不可定义时，明确写入 `holm_status=undefined_zero_variance`，不计算或隐藏该校正，也不允许最终显著性声明。缺 fold、重复 fold、非有限 Spearman 和缺失文件仍由既有硬门拒绝。
+- 本地与远端均通过完整形式、零方差、有限 p 值 Holm 数值、缺文件、重复 fold 和非有限值测试，输出 `FIG08B_HOLM_DATA_GATE_LAYOUT_DUPLICATE_FOLD_AND_NONFINITE_REJECTION_PASS`。测试独立复算排序后 Holm 校正值，未直接调用被测函数代替验证。
+- 工程预览中的 `p_Holm` 标签和页脚状态无重叠，但 synthetic preview 不作为科学证据。绘图代码 SHA256=`e7ee845d270847ecbd8094e5c746b6861ad656bd7ccdb8de128dd8767c1e8b1c`，测试代码 SHA256=`ba86e1e5662777d59c57c76f884920dc73312cf90ac89ac8d6ba790fad7e744f`。
+- 活跃清单升级为 `round34-working-v28`。真实 MRL 已验收，但 TE/EL 十折和分类/结构任务仍未闭环，因此没有生成正式主图 8B，PPT 未修改。
+
+## §15.162（2026-10-29）主图 7/8A 分类家族 Holm 校正与 PPT 三通道质检
+
+- `make_figure7_round33.py`、`make_figure7_combined_round33.py` 和 `make_figure8_round33.py` 已保留原始单侧配对 p 值，并分别对 NucleicBERT 三个原论文任务、RiNALMo 四个分类任务实施家族内 Holm-Bonferroni 校正；图面统一显示 `p_Holm`，不再只报未校正显著性。
+- 独立复算通过：NB acceptor/donor/CPEB3 的 Δ 分别为 −0.0051775/−0.0043425/−0.0025854437，RiNALMo acceptor/donor/clean/bn200 的 Δ 分别为 −0.0003575/+0.000645/−0.0006766594/−0.0075005457；七项 `p_Holm` 均为 1.000，均无校正后显著正提升。全部负结果与不显著结果保留，未改写成全任务正迁移。
+- 使用真实已验收源 JSON 重新生成图 7 original/combined 和图 8A。图 7 combined source/PNG/PDF SHA256 分别为 `9e825e67...b320`、`bf15a63a...3c5`、`2dca984b...ca2`；图 8A source/PNG/PDF 分别为 `ee033ff5...2fd`、`0dc049fc...daa`、`6f299040...d6a`。三份绘图代码 SHA256 分别为 `a5c7cd85...926`、`2d4a01ea...805`、`0f02ee2f...e3a`。
+- working PPT 仅替换第 11、12 页对应媒体；全部 21 页文本与 shape 数不变，markitdown 修改前后逐字一致，ZIP 完整、shape 越界为 0，278 个文本 run 均为微软雅黑，278 个段落的有效行距均为 1.5。Aspose 因本机缺 `libgdiplus` 未能渲染，未误记为版式失败；改用 LibreOffice 实际渲染第 11、12 页并逐图检查，无重叠、截断或图文不匹配。
+- 活跃清单升级为 `round34-working-v29`，working PPT SHA256=`996338d1c1b1ac417285c24e2d08ebdb3f952ccfe91cbf875519da632e40929e`。本轮只闭环分类端 Holm 与其 working PPT 质检；NucleicBERT 三项官方资产缺口、正式图 5、TE/EL 十折、ArchiveII/bpRNA/Muscle/PC3 与正式图 8B 仍未闭环，不能据此宣称整个课题完成。
+
+## §15.163（2026-10-29）Muscle/PC3 回归 smoke 的 OOM 证据与显存门队列
+
+- 旧 `rinalmo_te_Muscle_fold0_round33_smoke_v4` 仅为每折 2 条的工程尝试，十个头文件存在但无 `result.json`，不作为验收或科学结果。新启用每折 32 条的独立 smoke，输出目录与旧证据隔离。
+- 三细胞数据卡复核通过：Muscle/pc3/HEK 的 CSV 行数、文件 SHA256、UTR 与 TE/EL 标签、fold0 的 train/validation/test 索引 SHA256 全部匹配；`prepare_te_el_round33.py` SHA256=`878fdf6574f4f8ee36b0fc2c6bc4a6ce46d9d53d275d2348ad947b056c0d0cb7`。
+- 首次并行启动 Muscle/PC3 TE/EL 四个 smoke 后，均在 RiNALMo 骨干加载/前向阶段 CUDA OOM，未进入 head 训练且无 `result.json`。四份日志 SHA256 分别为 Muscle-TE `b1da1296...f134`、Muscle-EL `2b546e2d...2909`、pc3-TE `b1da1296...f134`、pc3-EL `5ad0dd7e...5dba`；进程已退出，未转 CPU、未覆盖旧结果、未盲目重试。
+- 新增 `run_regression_smoke_queue_round34.py`，SHA256=`817f2eeca0b3650064ad2d23889568f02a565ceda9e501e9f610f0d31df0bbac`。队列仅在单卡空闲显存 ≥4096 MiB 时串行放行一组，前一组 `result.json=PASS` 后才接下一组，部分预测或无结果退出均停止；CUDA 不可用或再次 OOM 不会自动重试。`--once` 实测空闲 3061 MiB，故当前只等待，不抢占在训任务；远端队列进程已启动，四个 smoke 仍未验收。
+
+## §15.164（2026-10-29）UFold 官方权重入口复核：仍 blocked
+
+- 官方 `uci-cbcl/UFold` `main` 仓库树没有 `.pt/.pth/.ckpt` 权重文件，releases 为空；未发现可替代 Drive 的官方 GitHub 分发。公开 Drive 文件夹 `1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi` 的直连元数据请求再次在 30 s 后超时，WebFetch 也未返回内容，因此 `ufold_train_alldata.pt` 的可获得性仍未核实，不声称权重被撤回。
+- 主图 5 的 UFold 继续保持 blocked，不用第三方镜像、其他模型或不同权重替代。活跃清单升级为 `round34-working-v30`，其余图件与 working PPT 不变。
+
+## §15.165（2026-10-29）smoke32 QA 配置修正与 ArchiveII 九家族受门接续
+
+- `watch_round34_results.py` 的 Muscle/PC3 注册项由旧的每折 2 条 smoke 改为 `smoke32_v4`，QA 同步传入 `--limit 32`，避免新结果无人验收。更新后 SHA256=`c123629fa53464708d052763abe22a368c778f50e5950473192e482b7cfb3549`；监视器已平滑重启，`--once` 显示注册 13 项、既有通过 6 项，未重复执行已通过 QA。
+- 新增 `run_archiveii_family_queue_round34.py`，SHA256=`2a08f2cb418ffe0fa707398bf889613c575fc94713f4a708892dc36b38fb7e8f`。冻结九家族顺序为 tRNA、5s、16s、23s、RNaseP、grp1、srp、telomerase、tmRNA；tRNA/5s 复用现有 QA 状态，后续七家族必须 `result.json=PASS` 且独立 GPU QA 通过后才放行下一项。
+- 队列仅在单卡空闲显存 ≥4096 MiB 时启动一个新家族，发现部分预测、非 PASS、QA 失败或无结果退出即停止，不覆盖既有结果、不转 CPU。`--once` 已逐项确认九家族注册无误，当前 free=3061 MiB，故只等待；队列已启动，尚无新增科学结果。
+
+## §15.166（2026-10-29）Muscle/PC3 从 smoke QA 到十折 full 的闭环队列
+
+- 新增 `run_te_el_cell_queue_round34.py`，SHA256=`e0a598ef969b1679ece299f79d6160300d75998aa4bca2021e93218cb8bebc84`。仅当某细胞的 TE、EL 两项 `smoke32_v4` 均通过外部 QA 后，才启动该细胞 fold0–9 full 协议，避免 smoke 结束后无人接续。
+- 每折允许 TE/EL 并行，按当前待启动任务数要求每个任务 ≥4096 MiB 空闲显存；结果必须为 PASS，随后以 `qa_regression_result.py` 独立复核，TE/EL 双任务 QA 均通过才进入下一折。部分预测、非 PASS、训练/QA 非零退出均停止，不重复提交、不转 CPU。
+- `--once` 已核对 Muscle/pc3 两细胞共 20 个 fold-task 全部注册，当前 smoke QA 与 full 结果均 pending；远端 full 队列已启动并处于等待门状态，尚未产生新的科学结果。
+
+## §15.167（2026-10-29）三条新队列的完整状态机模拟与 tasks 镜像补同步
+
+- 使用临时目录与无 GPU dummy process 完整模拟结果生成、QA 写入和状态接续，不使用模拟数据作为科学证据。回归 smoke 队列按序通过 4/4 项；ArchiveII 队列通过 9/9 家族且写入 9 个 QA 状态；Muscle/PC3 full 队列通过 2 细胞×10 folds×2 任务共 40/40 项且写入 40 个 QA 状态。
+- 初次模拟因测试环境未重定向 `STATE_DIR` 而失败，明确为测试配置问题；修正后重新执行通过，未改动生产脚本或放宽门限。远端 tasks 镜像已补同步并逐文件确认 `a92c90ea` 标记，上轮 SSH reset 不遗留部分写入。
+- 正式 4090 测速仍要求真正独占窗口，不能仅凭瞬时显存空余启动，以免与后续 QA 或其他队列冲突；当前不启动测速。
+
+## §15.168（2026-10-29）队列失败路径与在训健康复核
+
+- 在训日志逐项复核仍在推进：tRNA 至 JEV seed2 epoch10、5s 至 official seed3 epoch13、bpRNA 至 official seed0 epoch38、HEK fold3 TE/EL 均至 seed2 后续 epoch，未出现停滞或 CPU 静默降级。
+- 失败路径模拟全部通过：smoke 首个进程非零退出时仅启动 1 项并停止；ArchiveII 首个 QA 失败时仅启动 1 个家族并停止；Muscle smoke QA 失败时不启动任何 full；`NOT_CONVERGED` full 结果被硬门拒绝且不启动后续任务。未自动重试、未放宽验收标准。
+- 上述测试仅验证队列控制流，不作为科学结果或性能证据。
+
+## §15.169（2026-10-30）NucleicBERT 二级结构官方数据门闭环
+
+- `bprna-spot-0` 经数据卡确认是 SPOT-RNA 初始 bpRNA 组件，而非 TR1/TS2 合并版：TR0/VL0/TS0 分别为 10,814/1,300/1,305，ID 均唯一、序列与结构等长。TR0 与 TS0 的 ID 集合和 RNAErnie 官方 `TR0.lst`/`TS0.lst` 完全一致；合并版多出的 120/30/106 条恰好来自其他组件，不再误用。
+- RNAStrAlign 镜像共 37,149 行、SHA256=`4422a71445d28a52d6dede78968a52d018cb15901aaabf1aab3856eca44c870f`。其中 <600 nt 为 26,069 条，与 RNAErnie `RNAStrAlign600.lst` 的 26,069 个样本名多重集合完全一致，无缺失或额外项；全长记录仍保留供官方 598 nt 截断训练，不按长度删样本。
+- ArchiveII600 的论文语义已复核：ArchiveII 全集描述为 3,975，实际 BPfold 原始包为 3,966 个 bpseq，标准 RNAErnie/UFold `archiveII600.lst` 为 3,911，不应把 3,975 当成过滤后的行数。官方清单 SHA256=`0e12c5fbe77520eee8068bcdb5c303e8e3e7b336959866c2326279134333695d`，3,911 个排序 ID SHA256=`4f0c8813127810bcc597b6dc7cfe4d1e02b893550a9cfbad1563b7155c2b4713`，与项目现有 ArchiveII600 ID 集合完全一致。
+- 二级结构任务由此解冻；接触/距离图和 shuffle 仍按各自数据门 blocked，禁止把本结论外推为 NucleicBERT 全部原论文任务已覆盖。
+
+## §15.170（2026-10-30）原始假结标签恢复、正式数据卡与训练/QA 实现
+
+- 从 `BPfold_test_results.tar.gz`（3,966 个 ArchiveII bpseq，SHA256=`e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073`）按官方 3,911 清单重建标签。与旧 `archiveii600.jsonl` 比对：3,911/3,911 ID 一致、序列差异 0、旧配对均为新配对子集；旧版缺少的 14,723 个交叉配对已恢复，新标签共 212,021 对。旧文件不再用于 NucleicBERT 复现。
+- 正式数据落盘 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/nucleicbert_secondary_structure_round34`。训练集 47,963 行、3,299,304 对、15,372 条含交叉配对；VL0 1,300、TS0 1,305、ArchiveII600 3,911。`data_card.json` SHA256=`0863b15f833ed055fd981f591458f20a441e668f8bce2ef05228698f991b4096`；四个 JSONL 的本地生成、独立复读、上传后远端哈希均一致。
+- 新增六个脚本：`prepare_nb_secstr_round34.py` SHA256=`d809e4cebd6c71735701ea4aa814dffb0d945c8e5e4701660df824a629d641bd`，`extract_nb_secstr_round34.py`=`8cacdb15172f30c8c037cbaa49268531f3543b33ccafdd05b3eb0e7c1c0474c9`，`nb_secstr_dual_round34.py`=`8dfd233d2733fa86b67f931a16b936eb1ce4919fa7e2cda279aea7befbf8e0f6`，`qa_nb_secstr_round34.py`=`5a4a814daa971116fb363fc08f2ed6c01ac0a4260703a4d4318417d3a9039a21`，`aggregate_nb_secstr_round34.py`=`bd8b0b2273f52830c8d2df5a583688b9a486dd6e8055cf6379d1c85bc3d94128`，`run_nb_secstr_queue_round34.py`=`4decf935005542f2478cd0e976a13090e7db4a708c0ab5a889e842b0c6483cb8`。
+- 对照固定为同一冻结 NucleicBERT 33 层均值表征、原始配对标签、598 nt 截断/padding、未加权 BCE、AdamW 和 VL0 早停；仅头部及原生解码不同。official 阈值在完整 VL0 上选择，JEV 使用非交叉 max-product Nussinov；二者都按 NucleicBERT 逐序列 macro-F1 评价。100 组随机矩阵上自实现指标与官方 `ss_metrics` 全部等价。
+- 特征提取按唯一序列计算、2,048 条分片、原子写入和断点续跑，训练原记录及重复序列不去重。独立 QA 必须重新加载 best checkpoint、在 GPU 重放全部 VL0/TS0/ArchiveII600 预测并逐对一致，同时复核缓存/预测/结果哈希；正式聚合要求 2 头×5 seeds 全部收敛及 10/10 QA PASS。
+
+## §15.171（2026-10-30）二级结构受门队列、状态机验证与 GitHub 同步
+
+- 队列顺序固定为 smoke32 四 split 提取 → official/JEV smoke → 独立 QA → 全量四 split 提取 → 10 个正式 run/QA → 配对统计与 Holm。完整模拟按序通过 33 个动作；`NOT_CONVERGED` 被硬门拒绝，陈旧 QA 哈希会重新触发 QA，失败不自动重试。
+- 六个脚本先提交远端本地 `86c8903`；首次 push 因 GitHub 分支已有其他确认提交而被拒，未强推或覆盖。随后基于最新分支头安全上传，GitHub commit=`a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47`，六文件 blob 与本地/远端部署一致。
+- `run_nb_secstr_queue_round34.py` 已由 `setsid+nohup+flock` 启动。启动日志为 `WAIT kind=extract free=699 required=8192`，证明显存不足时未抢卡、未转 CPU、未重复提交。当前只有数据门和工程控制流证据，尚无 smoke 结果、正式 run 或科学结论；PPT 与活跃图源不因本阶段提前修改。
+
+## §15.172（2026-10-30）NucleicBERT 接触/距离图与 shuffle 数据边界复核
+
+- Nature 方法明确接触/距离图使用 BGSU RNA 3D representative release 3.368（2025-01）与 NucleoSeeker 分别构建的数据，过滤长度 32–1,024 nt、CD-HIT-EST 80%、结构质量与缺失残差修复；距离分 20 类，8 Å 得接触图，去除主对角线及上下四条 off-diagonal。论文同时写明 processed datasets 仅“available upon reasonable request”，公开仓库未给出逐样本 ID/split/target，因此继续保持 blocked，不能用相近 PDB 集合冒充。
+- Shuffle 方法确实复用二级结构训练/测试数据并按 0–100%、步长 5% 扰动，但官方配置输入为 `train_no_pretrain_similar.csv` 与 `bpRNA_val_no_pretrain_similar.csv`，仓库未含过滤清单或作者随机扰动版本。虽然基础自然序列已随二级结构数据门恢复，仍不能宣称作者版本逐样本复现；任何后续自行过滤/随机扰动只能标为 protocol-matched reconstruction，并须单独预注册和保留种子、规则与差异说明。
+
+## §15.173（2026-10-30）二级结构小张量 GPU 工程测试资源失败留证
+
+- 在等待全量提取窗口期间，尝试以 32 nt 随机张量执行 official/JEV 前向、反向与解码单元测试；official 头在 `SecStruct2DPredictionHead.to(cuda)` 阶段即报 `RuntimeError: CUDA error: out of memory`，尚未进入训练、验证或科学数据推理。
+- 已立即停止，未转 CPU、未重试、未修改训练代码、未产生结果。证据保存为 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/nb_secstr_round34/engineering_small_tensor_oom.log`。此前静态检查、队列模拟和指标等价测试仍有效，但 GPU 运行时 smoke 必须在正式显存窗口重新完成，不能据此宣称工程验收已通过。
+
+## §15.174（2026-10-30）21 页 PPT 逐页渲染 QA 与二级结构状态纠偏
+
+- 当前 working PPT 先经 ZIP/结构检查：21 页、越界 shape=0、文本 run 均为微软雅黑、有效 1.5 倍行距全部通过。LibreOffice 虽能导出，但全局字体替换导致中文方框，不能用于内容验收；原生 PowerPoint GUI 调用超时后已停止，未修改原稿。确认 `mono-libgdiplus 6.2` 后，Aspose 成功渲染全部 21 页并逐页人工检查，中文、图件和表格均可读；评估水印只存在于 QA 渲染，不在 PPT 文件中。
+- 逐页发现第 11 页图内脚注和底部横幅、第 15 页限制表格仍把 secondary structure 写成 blocked，与已通过的数据门不一致。仅将这些状态改为“数据门已过、五种子待验收”；contact/distance 和 shuffle 仍 blocked，其他科学结果、页面、布局和用户既有调整不变。
+- 主图 7 重新导出 3840×1920 PNG/PDF，旧新源 JSON 的 `main_benchmark`、`original_tasks` 和 Holm 结果完全一致，仅 `pending/blocked` 状态及脚注改变。PNG SHA256=`fd6bc103c7476da4e7d2d96c8b46b94f403633c4325f47dc3ed751aef0c51fc4`，PDF=`02de1023af846d9f711a7af16fa168c6d1c99a7f30c97966d652a5391904f4ca`，source JSON=`06df2bc429d29160c6f2b04e8c0b301acbc0c943f201efba39d463f9a3789fae`。
+- 更新后 PPT SHA256=`912e4c82059e525cfa60bf47788a5559ad4cfb900be579ab52bf7f94afcf255d`。再次检查 665 个文本 run 均为微软雅黑、665 个有效 1.5 倍行距、越界 shape=0，Aspose 全部 21 页和缩略图总览复核无新增重叠、截断或图例缺失。`update_round34_deck.py` 已加入可复现状态更新函数，备份稿重放后与当前 21 页文本和 shape 数一致。
+- 活跃清单升级为 `round34-working-v31`，SHA256=`3f1872b0a4d5c57d30425ab02efbf24d59ddd1583aef1cea2740be1620194e46`。PPT、图 7 PNG/PDF/source、清单和两份更新代码均已备份到远端；本结论只表示 working 稿的版式与状态一致性通过，正式主图 5、7 二级结构面板和 8B 仍待科学结果，不提前宣布最终 PPT 完成。
+
+## §15.175（2026-10-30）当前 spec/tasks 总执行表状态纠偏
+
+- 复核发现第 34 轮总执行表仍残留 MRL/HEK fold2 在训、RiNALMo Spliceator 待 QA、RNAformer 待 GPU 复验和 NucleicBERT 二级结构 blocked 等旧状态。已按 §15.151–§15.174 的原始结果、QA 与工程证据，更新本地交接根目录、`spec/`、`spec_sync/` 三处 spec/tasks；保留既有二级结构增补块及全部历史记录，不改写历史轮次。
+- 当前表明确：MRL、RiNALMo Spliceator 和 HEK fold0–2 已验收；RNAformer/MXfold2/r2d/plana 的跨 batch 证据仅为工程 QA；二级结构数据门已过但尚无 smoke/科学结果；正式图 5、图 7 二级结构面板和图 8B 仍未闭环。未新增、删除或修改任何科学数值，也未把工程子集升级为结论。
+- 远端 `git fetch` 已成功取得交接提交 `ed252c1746bec635e9713628b7f0a0f5e8bafaef`。随后多次 SSH 连接在镜像写入前被重置，因此本轮不宣称远端 spec/spec_handover 已同步；二级结构队列进程仍存活，最近只读日志仍为等待提取显存，未产生新的科学结果。
+
+## §15.176（2026-10-30）交接镜像闭环、HEK fold3 EL OOM 与无返工续接
+
+- 文档提交 `2ee4c3a6e8db73fe2e2148eba70a07e1388402a6` 仅含九份 spec/tasks/台账更新。随后通过远端 `git fetch+git show` 原子恢复 `/home/rna_jev` 根目录、spec、spec_sync、spec_handover 及嵌套镜像，共 13 个目标文件逐一读回校验；台账均含 §15.175，远端镜像同步现已完成。
+- HEK fold3 EL 在五个 official 种子完成后、JEV 尚未产生 checkpoint 前发生 CUDA OOM；日志末尾为 256 MiB 分配失败。任务与旧 fold 队列均已停止，未转 CPU、未盲目重试、未生成 result.json，fold3 EL 不得作为科学结果。五个 official checkpoint/prediction 均保留；fold3 TE 原进程未中断。
+- 原训练脚本保持 SHA256=`84d8c0e25f6244c9e317ea71065549b09435e3c8e4f6b80bc33355f46a6fc6ed`，避免改变缓存和 QA 身份。新增 `resume_rinalmo_regression_round34.py` SHA256=`bf0e2a086bcc695e9aedca2ba0e135bc1073cf1d3c3a2df1612ebd7aeb3930db`：只有完成标记、checkpoint、prediction、连续日志和 GPU 重推全部一致的种子才恢复，缺失种子才调用原 `train_one`。dry-run 确认 official/s0–4=restore、JEV/s0–4=train。
+- 原训练器在 early-stopping 触发时先 break 后打印，最后 epoch 无日志；续接结果将该点明确写为 `null`，不补造 loss，best epoch 使用 checkpoint 全精度值。五个 official 的历史长度、best+32、连续性和 unlogged-final 标记均通过 CPU 预检；真正恢复仍须 GPU 重推和外部 QA。
+- 更新 `run_hek_fold_queue_round34.py` SHA256=`e398809bf0e7af7920f5ec93424b21ae9b460de59fc9f9650f62d66cb4e35376`：默认发现 fold3 部分失败即停止，只有显式 `--resume-fold3-el` 且单任务空闲显存 ≥4096 MiB 才续接 EL；TE 由原 PID 接管，不重复启动。静态编译、失败/等待/进程退出状态测试，以及低显存不启动、高显存只启动 EL 的主循环模拟均通过。
+- 两个续接脚本已上传 GitHub `198f5ad79c8f859b09a8e55f24b1b7961c63c72c`。新受门队列 PID=891317 已启动，当前仅等待显存，尚无 resume 进程或 fold3 EL 结果；后续仍按 result→独立 GPU QA→下一折顺序推进。
+
+## §15.177（2026-10-30）续接队列单次放行与重复日志边界复核
+
+- 独立代码审查发现：旧续接队列若在 resume 无结果退出后进入下一轮，可能再次启动 EL；同一 seed 的失败训练日志也可能与后续成功尝试混读。已只终止旧队列 PID=891315/891317，未触碰 fold3 TE；终止时没有任何 resume 进程，因此没有训练被中断或重复。
+- `run_hek_fold_queue_round34.py` 现以 `resume_attempted` 实施单实例单次人工续接：恢复进程无结果退出后硬停止，不再自动重试；生产启动继续使用 `flock /tmp/hek_fold_queue_round34.lock`。修正后 SHA256=`03e27666b2c47de4dcd7168b8dcf1d11bf070de1a610c8fde41be7f9f061c832`。主循环模拟证明第一次恢复退出后只调用一次 launch，未启动原始 TE/EL 训练。
+- `resume_rinalmo_regression_round34.py` 现只采用完成标记前最近一次 epoch=1 开始的连续尝试，并要求完成标记 best epoch 与 checkpoint 完全一致；部分 artifact 无完成标记仍硬失败，不擅自覆盖。修正后 SHA256=`d422f10aed997f9a9f857aabeab86adb66329b6934578f44c6cef4716ca36f2d`。
+- 远端五个 official 的 marker/checkpoint/history 全部复验通过；合成失败+成功重复日志只恢复最近尝试，最终未打印 epoch 继续保留 `null`。QA watcher 已确认显式设置 `REGRESSION_MODULE_PATH=rinalmo_regression_dual_round33_v4.py`，不存在默认旧模块误用。上述修改均发生在实际 resume 启动前，fold3 EL 仍无科学结果。
+
+## §15.178（2026-10-30）主图 7 独立 original-tasks 子图状态一致性
+
+- 发现组合图已改为“二级结构数据门通过、五种子待验收”，但独立 original-tasks 子图和源 JSON 仍写 secondary structure blocked。仅修正该子资产的状态文字，acceptor/donor/CPEB3 的全部五种子值、Δ、Holm 和图形布局不变。
+- 更新后 source JSON SHA256=`53346872a22736a16f868079c352f7e917c214fff004bbc25dd09319ad667726`，PNG=`ee31a30ce0330a6bf28f0ab2940b5c7b2dade9a649292f762557c33cd79deb67`，PDF=`b8ca858fac04bd6376191a4d8917a64b015d202c32da8526c15289356e6ee62c`，绘图代码=`e408fe97a8189ee5d4fefeab0c178cdb071feda36e8aa7fd76122e763f9c2fc2`。
+- 独立复算确认新旧 `tasks` 对象完全相等，组合图 `original_tasks` 与子图 `tasks` 也完全相等；PNG 为 3840×1920，逐图检查无重叠或截断。active registry 升级为 `round34-working-v32`，SHA256=`5e2958cf2654f8f09b8d599c7d89e1e04d838c97542b25353fd1c9d6f8f2fefb`。PPT 使用的是已正确的组合图，因此本轮不修改 PPT；正式五种子结果仍待完成。
+
+## §15.179（2026-10-30）活跃图源三通道哈希复核与 UFold 官方通道再检索
+
+- 对 `round34-working-v32` 的全部直接文件引用逐项复核：本地 32 个文件和远端 7 个 `/home`/`/teams` 文件均存在且 SHA256 与清单一致，包括 RNAformer/MXfold2 工程脚本、失败日志、二级结构 data card 和 RiNALMo Spliceator cache。初次在本机遇到远端路径不可见不视为哈希失败，随后已在远端逐一实际读取验证。
+- working PPT 本地和远端备份 SHA256 均为 `912e4c82059e525cfa60bf47788a5559ad4cfb900be579ab52bf7f94afcf255d`，更新代码哈希也一致；本轮图 7 子资产更新没有改动 PPT。
+- 以官方文件名 `ufold_train_alldata.pt` 检索没有新增结果；扩展检索仅找到 MultiMolecule 页面，其明确标注为 **UNOFFICIAL implementation**。该实现不能替代官方 UFold 权重或协议，未下载、未入图。官方论文仍只指向 uci-cbcl/UFold 和既有官方渠道，因此 UFold 继续 blocked，正式测速不使用第三方模型或权重替代。
+
+## §15.180（2026-10-30）NucleicBERT 二级结构开跑前科学与 resume 硬门复核
+
+- 对照官方 `secstrmodule.py` 确认 training_step 同样只取 upper triangle 且注释掉 padding valid_positions，当前 `loss_train` 与官方实现一致，不将此项误判为缺陷。Nature 方法明确训练集就是 RNAStrAlign+TR0、测试为 ArchiveII600/TS0，因此不擅自删除原协议样本。
+- 实测精确序列重叠：train↔VL0=54、train↔TS0=79、train↔ArchiveII600=2,217 个唯一序列；部分重叠序列的标签集合不同。主实验只解释为**同一原论文协议下的 official head vs JEV head 配对比较**，不作为去污染独立泛化证据；聚合结果显式保留该边界。
+- `aggregate_nb_secstr_round34.py` SHA256=`1ab0e01f95f0738c2ef277b6f24b811adee6c376f90ce9e94fa32736238aada7`：paired delta SD=0 时强制 `undefined_zero_variance`，p/Holm=None 且禁止显著；任一 split 未定义则整个两测试集家族不宣称 Holm 通过。恒定非零差、正常有限 p 值两组测试通过，消除了 SciPy 在恒定非零差下 p=0 所致假阳性。
+- `nb_secstr_dual_round34.py` SHA256=`e148a7f511ed825c70fffaf3ae13c9a0c3dc495f7392f892d655486038fe184e`：训练/QA 读取任何缓存前，核对 JSONL、唯一序列、pretrained、extractor code、limit、manifest、metadata 和 shard 实际 SHA；合成正确缓存通过，错误 fingerprint 与篡改 shard 均被拒绝。
+- resume 现保存并核对 code/data-card/pretrained/batch/lr/patience/min-delta/max-epochs 及 train/validation cache evidence，且恢复 `early_stopped`；控制流测试证明已平台期 checkpoint 不再训练一个 epoch，身份变化立即拒绝。测试只验证控制流，不作为科学结果。
+- 二次独立审查确认零方差、缓存、resume 和重叠解释边界均闭环，未发现剩余确定性科学阻断缺陷。所有修改和测试完成时 official/JEV smoke 的 run.json 均不存在，队列仍在等待提取显存，未重跑或废弃任何科学训练。
+
+## §15.181（2026-10-30）主图 7 真实二级结构结果接入口与默认资产不变证明
+
+- `make_figure7_combined_round33.py` 新增可选 `NB_SECSTR_RESULT` 接入口：仅接受 `scientific_eligibility=true` 的正式五种子聚合，独立复算两 split 的 mean/sample SD/delta/p 与 Holm；零方差家族不得显示显著。未提供该变量时仍生成原 working 图。
+- 默认 working source JSON 与 PNG 逐字节不变，分别为 `06df2bc4...f9ae`、`fd6bc103...51fc4`。PDF 初次重导出出现哈希变化，但与旧版逐像素渲染及文本完全一致，确认只是元数据差异后已恢复清单原文件 `02de1023...f4ca`，未改变活跃图件。
+- 最终 2×2 接入口使用独立 final 文件名，不覆盖 working 资产。工程预览最初暴露右侧标签裁切，已增加任务面板横向余量并复验无裁切。正常统计和零方差两组门测试均通过；所有合成 final 文件仅位于临时目录，不进入清单、PPT 或科学结论。
+- 新绘图代码 SHA256=`49f6ee7ce050a4fb7ce3a91461f509bd9b40fb7df7b1fa1c9b80519ccf21c6b3`。active registry 升级为 `round34-working-v33`，SHA256=`94196a6bc291e8fbe4792b6ba65dd9736028d60054614c548792cef7f61586cd`，明确 final 接入口仍等待真实五种子结果。
+
+## §15.182（2026-10-30）正式 4090 全网格测速执行器与独占竞态防护
+
+- 新增 `run_speed_grid_round34.py` SHA256=`2bcaa62da9fdec4108bea8219fa78e8ecc62638f16a043d21092f60b76af8b00`。dry-run 实际复验 r2d/plana/xens2/RiNALMo-ft 四个 B=1 结果，确认 4/18 已验收、14 个任务缺失；已存在结果不会因文件名存在就直接跳过，还须通过 F1、有效计时和跨 batch 一致性检查。
+- 执行器在任务前拒绝其他 GPU compute 进程，测速期间持续监视；若出现入侵进程，只终止自己的测速子进程并停止，不自动重试。`ProcessLookupError` 不覆盖原始入侵错误。任何失败或受污染的新结果均移入 quarantine，下一轮不得作为已验收结果跳过。
+- 非独占实机检查证明未启动任何新测速；模拟测速中入侵、已退出进程 killpg 和已写 PASS 竞态均通过，quarantine 生效。跨 batch 不一致拒绝测试通过，第三轮独立审查未发现剩余阻断缺陷。
+- active registry 升级为 `round34-working-v34`，SHA256=`c8af01f05c29fbf752a80a72594e84299996f0a0f0864045b104f54045475384`，记录执行器、4/18 状态和独占/quarantine 合同。当前仍未启动正式测速，必须等真正独占 4090 窗口。
+
+## §15.183（2026-10-30）RiNALMo TS0+ArchiveII 十任务统计聚合门
+
+- 新增 `aggregate_rinalmo_structure_round34.py` SHA256=`534f2a8fdfb3b78f1584bad7fdc7677e3d192512216ae9894a1275965801d189`。聚合范围固定为 bpRNA TS0 加 ArchiveII 九家族，共 10 个任务；每个任务均要求 full、CUDA、五种子、收敛和独立 recheck。
+- 每项结果必须与 QA state 中的 result 路径、当前 result SHA256、full scope、10 runs 和 `scientific_eligibility=true` 回执绑定。tRNA/5s 读取既有 watcher 状态，其余七家族读取家族队列状态，防止路径或陈旧 QA 混用。
+- 五种子配对单侧 t 检验后在全部十任务内实施 Holm。任一任务 paired delta SD=0 或其他未定义情况，整个结构家族为 `undefined_zero_variance`，所有 p_Holm=None 且不得宣称显著；全部负结果和原始差值保留。
+- 正常十任务、单家族零方差和 stale-QA 三组工程测试通过；独立审查未发现阻断问题。当前只完成聚合门，尚未生成真实科学聚合结果。active registry 升级为 `round34-working-v35`，SHA256=`7b6d2aa3860ed6de9361f3785189a8fcef116b504ef366132a5aca2e1d85e5f3`。
+
+## §15.184（2026-10-30）HEK fold3 TE 全量结果与三通道验收
+
+- `rinalmo_te_HEK_fold3_round33_full_v4` 已生成 full PASS，result SHA256=`479a1dafd1e6b2d1e8145d1b2f849d2510da533f6ef2cb75fd0af0c41adbe90e`。外部 QA 于 2026-10-29 21:15 UTC 完成 official/JEV 各五种子、10/10 best checkpoint 在 RTX 4090 重推，QA log SHA256=`ed885084a8b354e309dbac47b830180947419b1a65dcb8b0af5bd0bbfca4e390`。
+- 本地独立复算：official/JEV Spearman 均值 0.4862841970/0.4366540244，Δ=-0.0496301726、delta SD=0.0159518679、单侧 p=0.9988783136；R² Δ=-0.0338816428、p=0.9200973799；PCC Δ=-0.0359689192。主指标与 R² 均不显著为正，作为 fold 级负结果完整保留。
+- 十个 run 均为 CUDA、early-stopping converged、best epoch=epochs_run−32，train/validation/test=11528/1441/1441。真实 `aggregate_te_el_cv_round33.load_fold` 再次核对当前 result/QA 哈希、checkpoint、预测、样本数及 Spearman/R²/PCC，全部通过。
+- 本结果只证明 HEK fold3 TE 单折完成，不能外推为十折或三细胞结论。fold3 EL 仍未产生 resume 进程或结果，续接队列保持等待；不修改正式图 8B。active registry 升级为 `round34-working-v36`，SHA256=`314104a166ed33236f1193b78b87c7ed3a0aeb2e812486081c122c5fb68f8979`。
+
+## §15.185（2026-10-30）HEK 真实聚合预检计数校正
+
+- `cv_aggregation.real_fold_preflight` 已更新为 HEK fold0/fold1/fold2 TE/EL 加 fold3 TE，共 70 个 run 的 checkpoint/prediction 哈希和独立指标全部通过。旧 60-run 文本不再作为当前状态。
+- 该计数仅是 fold 级预检覆盖范围，仍不生成十折 aggregate，也不改变 fold3 EL 和其他 folds 的待办。active registry 升级为 `round34-working-v37`。
+
+## §15.186（2026-10-30）working PPT 第19页 fold3 TE 状态同步与全门 QA
+
+- 仅将第19页 T-A129 状态从“fold3 起受门推进”改为“MRL 与 HEK fold0–2 TE/EL、fold3 TE 已 QA，均不显著为正；fold3 EL 待续接”。其他文本、页面、图件和 18 个媒体文件均未改变，markitdown 差异仅此一句。
+- `fix_pptx`、编辑页及全 21 页 `validate_layout` 均为 0 issues；ZIP 完整性通过。665 个非空文本 run 均为微软雅黑，665 个有效 1.5 倍行距段落通过。Aspose 第19页渲染无重叠、截断或字号不适配，评估水印仅存在于 QA 渲染。
+- 更新后 PPT SHA256=`3812233a5b71309575806a807403c6a012911b35d361ec55079fece433f626df`，可复现更新代码 SHA256=`3cd6dbd6fdc11a04a0d8dae2c316744785a8b421e35ae534ba3ff040e25f6806`。active registry 升级为 `round34-working-v38`，SHA256=`39595f2b0fe1bdacaed61620a2d16cca59487f7932b0cf1ecfae8fec72be1557`，updated_slides=[11,12,15,19]。
+
+## §15.187（2026-10-30）正式 4090 测速独占等待队列启动
+
+- 远端实际只有一次性 `run_speed_grid_round34.py`，没有可持续等待的队列；已补齐 `run_speed_grid_queue_round34.py` 并安装。runner SHA256=`2bcaa62da9fdec4108bea8219fa78e8ecc62638f16a043d21092f60b76af8b00`，queue SHA256=`70360bea57372665ec531557efa99eb298d0e0d4fd30f4a7575475ff0b28ad35`。
+- queue dry-run 通过：4 个已验证 B=1 结果，14 个待测 job；未启动 GPU 工作。本地 mock 测试覆盖等待后完成、非独占失败停止、独占竞争重试后完成，均通过。
+- 已以 `flock /tmp/rnajev_speed_grid_round34.lock` 启动 detached queue，PID=923399，日志为 `audits/round34_speed_grid_queue/queue.log`。当前仅 `WAIT_SPEED_EXCLUSIVE`，没有其他 GPU 进程时才启动正式测速；模型/CUDA/依赖/数据失败不盲目重试，只有明确独占竞争才重试。
+- active registry 升级为 `round34-working-v39`，记录 queue 路径、哈希、PID、日志和重试边界；尚无新的科学测速结果。
+
+## §15.188（2026-10-30）Muscle TE smoke32 工程门三通道验收（非科学结果）
+
+- `rinalmo_te_Muscle_fold0_round33_smoke32_v4` 已生成 PASS，result SHA256=`d0942f247bc46bfeda90f7c162476a9c2a1f0e4cda640f8a74f5b1f91a6961ce`。协议明确标记 `engineering_smoke_subset_not_scientific_result`，train/validation/test 均为 32 条；official/JEV 各五种子全部 CUDA、converged、early-stopped，且 epochs_run=best_epoch+32。
+- 独立 RTX 4090 QA 已完成 10/10 best checkpoint 重推，QA log SHA256=`c957ef55a9c6087d9303a3ff45082689f36e6ee236df630f9b56c5b098c46968`，回执绑定当前 result 哈希、scope=smoke 和 runs=10。本地下载后再次核对文件哈希、样本数、种子、收敛状态、均值和配对统计，全部一致。
+- 此项只解除 Muscle TE 的工程 smoke 门，不是 TE/EL 科学结果，不进入图 8B，也不单独放行 Muscle 全量十折。Muscle EL 与 pc3 TE/EL smoke 仍待各自 result 和当前哈希 GPU QA；同细胞 TE/EL 两项均通过后才允许 full 队列接续。active registry 升级为 `round34-working-v40`。
+
+## §15.189（2026-10-30）Muscle/pc3 四组 smoke32 全部验收与 full 队列哈希门修复
+
+- Muscle EL、pc3 TE、pc3 EL 的 result SHA256 分别为 `25b1fb77e80a6130aadf96e5d5dba83e82a797c12272045d45e051438859a52e`、`5959a303c485d43d393de5410c412122e6435a87e1ecb6278313c207a16691ae`、`49cb59b6d08fb1b1797a7872630231a60c504aa9341aeff0f5d10e4daa991ba2`；对应 QA log SHA256 为 `cb9f628bea7acc904ff1db08a614b4f9db03753ac5861eaac9f6faa155390449`、`d48b635d4a385c3686e5052b360a152b8dec756c2700221dd4b67ed77f9eac82`、`7825be6b690d35d5e015d9ed234ead347640745e25affff605a404844be4fbeb`。连同 §15.188 的 Muscle TE，四组均为 10/10 RTX 4090 best-checkpoint 重推通过。
+- 本地对四组原始 JSON 逐组复核：任务/细胞/fold、官方源数据哈希、engineering-only 标记、每组 train/validation/test=32/32/32、双头五种子、CUDA、converged/early-stopped、epochs_run=best_epoch+32、checkpoint/prediction 哈希、均值与配对统计均一致；QA 回执均绑定当前 result 哈希。四组仍仅为工程 smoke，不作为科学结果，不进入图 8B。
+- 复核 full 接续代码时发现 smoke/full QA 只检查 returncode、未绑定当前结果哈希。`run_te_el_cell_queue_round34.py` 已修复：当前哈希通过，篡改后返回 stale，当前哈希失败 QA 停止，主循环在 stale/failed smoke 下不启动训练；full QA state 同步写入 result_sha256。本地两项门测试和主循环拒绝测试通过，GitHub 代码提交=`2a13f0a75053aa3abb59173aede7d75a737fac53`。
+- 安装前再次确认没有任何 Muscle/pc3 full 子进程或 full result；随后替换队列并重启，代码 SHA256=`5077191b46562165096a926b2ca5da1ef0fcf796bb74b9834a6c23be8491073d`，新队列 PID=949848。使用远端真实四组回执调用新 `smoke_qa_status`，Muscle/pc3 TE/EL 全部返回 passed。full fold 仍须各自 result→当前哈希 GPU QA→下一折，不以 smoke 放行科学结论。active registry 升级为 `round34-working-v41`。
+
+## §15.190（2026-10-30）交接全审、PPT 备注一致性与图 8B seed-SD 纠错
+
+- 已完整复核本地交接根目录、`spec/`、`spec_sync/`、records/paper/tables/figs 文本与绘图源码，并对远端 `/home/rna_jev`、4090、CUDA 和在飞队列做只读交叉核验。导师要求已全部包含在 T-A133–T-A143，未新增重复实验；主图 3B/4/6 与七项已完成双头结果不重跑，当前剩余为正式 4090 全网格、NucleicBERT 二级结构五种子、RiNALMo 结构十任务与 TE/EL 全十折。
+- 三处 checklist 原停留在第 33 轮，现已同步第 34 轮事实并保留所有未完成总门未勾；本地 spec/tasks 与活跃 registry 唯一化为 `round34-working-v42`。第 11 页讲者备注旧的 secondary-structure blocked 已改为“数据门已过、五种子待验收”，封面/结论/末页版本标签同步 Round 34；所有科学数值和 pending 边界不变。
+- 新 working PPT SHA256=`bf12cfd338f3391ea912337a28e942b30943849134174cd77aefc457fc85512e`。markitdown 差异仅含预期状态与版本行；`fix_pptx`、21 页 layout、ZIP 均通过；665 个非空文本 run 均为微软雅黑，665 个段落有行距设置，Aspose 全 21 页重新渲染并逐页复核，无新增重叠或截断。评估水印只存在于 QA 渲染，不在 PPTX 内。
+- 图 8B 预检发现 TE/EL 误差棒误用 fold 间 SD，违反“每 seed 先十折平均，再做五 seed 配对”的展示合同。`make_figure8b_round33.py` 已改为以五个 seed-CV Spearman 均值计算 mean±sample SD，fold SD 单独保留；同时新增 paired delta mean/SD 的独立复算门。代码 SHA256=`0d2e4855aa80c6ebd0bd99f4b22601c456169f186b452ff523051a42628676e5`，测试覆盖 seed-SD、Holm、零方差、重复 fold 与非有限值拒绝，全部 PASS；本项只修正未来绘图，不改变任何已验收科学结果。
+- 远端快照仍只有既有 tRNA/5s/bpRNA 训练与受门队列；NucleicBERT 二级结构等待 8,192 MiB 提取门，正式测速等待真正独占 4090。未出现新的科学结果，未把等待、smoke、单 fold 或训练曲线写成结论。
+
+## §15.191（2026-10-30）图 8A 结构十任务最终接入口与默认资产不变证明
+
+- `make_figure8_round33.py` 新增可选 `RINALMO_STRUCTURE_RESULT` 接入口，仅接受 `scientific_eligibility=true` 的 TS0+ArchiveII 九家族十任务聚合。逐项复算双头 mean/seed-SD、paired delta/SD、单侧 p 与十任务 Holm；零方差只显示 NA 且禁止显著，篡改输入立即拒绝。
+- 有真实聚合时输出独立 final 文件：上方为十项 macro-F1，下方分置 Spliceator 与官方 88 类 ncRNA；图 8B 回归仍单独报告。首轮合成工程渲染发现图例与 tmRNA 标签碰撞，已将图例移至数据区上方并再次渲染通过。测试文件仅含 synthetic 工程数据，不进入 registry、PPT 或科学结论。
+- 未提供聚合变量时，working source 字段和图形分支保持原合同；实际重导出 PNG SHA256=`0dc049fcf3e2da99c270057b456d52ab236b978471ba1a57ac91ab052fa2edaa`，与注册 working PNG 逐字节一致。最终接入口代码 SHA256=`f7440a7a0f89ac6a1aea4708b472285605fdd8a60a035f01752ac54c10471681`，测试 SHA256=`877632b180a788b68f085e4c21a2c78311066f36085d6538042c06e73ed1084b`。
+- 真实十任务结果仍未齐全；tRNA/5s/bpRNA 继续按 early-stopping 训练，未生成新 aggregate，未把工程预览当作科学图。active registry 升级为 `round34-working-v43`。
+
+## §15.192（2026-10-30）图 8B 完成态命名与回归面板终审
+
+- 图 8B 的输入门本身已强制 MRL+六组 TE/EL 十折全部通过，继续把成功输出命名为 working 会与完成判据矛盾。现成功时输出 `fig08b_rinalmo_regression_final_source.json` 与 final PNG/PDF，状态为 `final_candidate_pending_visual_qa`；零方差时明确标为 Holm undefined，缺项/非有限值/重复 fold 仍硬失败。
+- 页脚改为全部正负回归结果保留、分类独立入图 8A，不再以其他面板未完成阻止本回归面板完成。合成工程渲染确认三面板无碰撞，mean±seed-SD、Holm 与图例清晰；测试数据不进入活跃资产。
+- 更新后绘图代码 SHA256=`e900d100a9496f28ecd3941957b3335adb8d2837a4e7e1aecccbcc56b0fa230c`，测试 SHA256=`76329a62a858be7693f8f4328a3e495a577168ceb5b5939a76b38694241a393d`，完整测试 PASS。真实 TE/EL 十折仍未齐全，未生成真实 final 图。active registry 升级为 `round34-working-v44`。
+
+## §15.193（2026-10-30）最终图件入片、8A/8B 分页与目录页码联动工程门
+
+- `update_round34_deck.py` 新增显式 `FIG05_FINAL/FIG07_FINAL/FIG08A_FINAL/FIG08B_FINAL` 与 `DECK_OUT` 接入口；不读取或自动发现任何 preview 文件。真实图 8A/8B 到位后分为两页，目录范围从 11–14/15–21 联动为 11–15/16–22，后续页码逐页更新，结束页 END 作为唯一非数字例外。
+- 首轮集成测试命中结束页无数字页码的断言，已修正后重新生成 22 页工程候选。markitdown、fix_pptx、layout=0、ZIP 全部通过；671 个文本 run 均为微软雅黑，671 个段落行距在 PowerPoint 舍入误差内等于 1.5 倍，Aspose 全页渲染复核无新增碰撞。测试只使用临时工程资产，未覆盖 active working deck。
+- 未提供任何 final 环境变量时重新生成 21 页默认稿，markitdown 与当前 working 文本逐字节一致；所有 pending 文案和科学数值不变。更新代码 SHA256=`f55655bb376fc5cf166803d24ad8b5f9517f601f6ce8fab3b83241fc42158f62`。active registry 升级为 `round34-working-v45`。
+
+## §15.194（2026-10-30）5s/Muscle TE fold0 三通道验收、NB 提取进展与共享缓存竞态修复
+
+- ArchiveII 5s full result SHA256=`582ac8258ce8ec3a3a6d78c9d70830cc6e1c7c73275f619676e20442de9efb14`；独立 QA log SHA256=`82dba0727e7aa147505caa9c28950a7f5f7813985f7b4f441193bb780b79b180`，回执为 full、10 runs、同一 result 哈希。official/JEV macro-F1=0.8263034585/0.4217063555，paired Δ=-0.4045971030、ΔSD=0.0461037349、单侧 p=0.9999801137；本地下载后再次复算 mean/SD/p 全部一致，明确负结果保留，十任务总门不关闭。
+- Muscle TE fold0 full result SHA256=`5fa2d583209b412805eb4d75bafd07afe41ff68950b8bdd0703c0038096754e4`；QA log SHA256=`a514815a9abfa6d484c5ba606805f85320b3ae231aac34c47d2a68d86edc5a52`，official/JEV 各五种子均在 RTX 4090 重推通过。official/JEV Spearman=0.5723727075/0.5914820348，Δ=+0.0191093273、ΔSD=0.0309855561、单侧 p=0.1199892318；R² Δ=+0.0288661196。正而不显著，且仅为 fold0，禁止写成十折结论或显著正结果。
+- Muscle EL fold0 首次失败日志显示 TE/EL 同时提取同一细胞 embedding，共用 `Muscle_official_tokens.embs.tmp.npy`；TE 完成 rename 后 EL 的临时路径消失，触发 FileNotFoundError。未接受该失败 run，也未改写成 CUDA 或科学失败。为避免改变既有 trainer 的 code_sha256 和十折 identity，只修改调度器：TE 先建缓存，metadata/embeddings/mask 三项齐全后 EL 才启动，之后允许并行；当前 Muscle cache=True、pc3 cache=False 的门已实测。
+- NucleicBERT 二级结构 train/validation/TS0/ArchiveII600 四个 smoke32 提取均 PASS，仍无 run.json/qa.json。原 batch=2、12,288 MiB 门在约 11 GiB 空闲时无法放行；现将双头统一改为 batch=1、训练门 8,192 MiB，不改变数据、优化器、早停或单变量对照。队列采用 dry-run 和编译检查后替换，未终止任何训练子进程，也未重复启动 run。
+- 两项调度修复已提交 GitHub `39c49ddf43eabf39f4fb5977805cc4e792de5ed6`；NB queue SHA256=`38266ab10f13c733041793fb498b514ba6029f726e31ec62805fb12eca567fb2`，TE/EL queue SHA256=`25dc0d0876e9cef8eaf11e65f1965fe3ec54bcd577cfa100b75607539bbed89e`。当前其他 GPU 作业继续占用显存，NB 等待安全门，正式测速继续等待独占；不把等待或 smoke 提取写成科学结果。active registry 升级为 `round34-working-v46`。

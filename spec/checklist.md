@@ -1,17 +1,61 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **当前执行覆盖（2026-10-30，第 35 轮：导师 round34 反馈闭环；活跃清单 `round35-working-v1`）**
+>
+> **本轮目标（按导师 round34 原话冻结）**：
+> 1. **主图 5**：全部改用 RTX 4090 同机同协议重测；A 重绘为共同 B=1 的精度-吞吐 Pareto；B 必须包含自有模型（r2d/plana/xens2），不得只放官方基线。
+> 2. **主图 6**：用 PPT 原生形状、文本、连接符与表格重绘 A/B/C，达到 Nature 正刊架构图质量；禁止简单拼贴、热图方块阵列与栅格截图。
+> 3. **主图 7**：在 NucleicBERT 原论文下游任务上补测 JEV，不只主 benchmark 8 split：二级结构、距离图/接触图、四物种 donor/acceptor、CPEB3 fitness、natural-vs-shuffled；逐项数据门、5 seeds、official probe vs JEV head、Holm；blocked 项必须写明来源缺失，不得声称全覆盖。
+> 4. **主图 8**：补充更多任务并按类型分图：8A 只放分类任务，8B 只放回归任务；优先补测有正结果潜力的任务，但全部负结果与预注册统计必须保留。
+>
+> **本轮新增任务（不改历史编号；T-A144–T-A150）**：
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A144 | 主图 5：4090 六模型×B=1/2/4 共同网格 | 18/18 原始 JSON；同机、TS0 n=1288、strict micro-F1、raw-sequence 端到端、三次重复、跨 batch 数值等价（≥99% 配对一致且 |ΔF1|≤1e-3，记录实测值）、峰值显存落盘；A/B 全部由同一协议生成，B 含 r2d/plana/xens2 | 15/18 已验证（r2d/plana/xens2/rinalmo_ft 各 B=1/2/4，MXfold2 各 B=1/2/4）；RNAformer 三格 blocked：1024-nt padding 未能在独占窗口完成 B=1，证据保存于 audits/round35_rnaformer_block；UFold 权重不可得 |
+> | T-A145 | 主图 6：原生矢量重绘 | 只用 PPT 原生形状/文本/连接符/表格；A/B/C 的输入输出、参数量、张量形状、先验与双输出与代码/checkpoint 一致；图内文本≥8 pt、无重叠、无栅格 | working 版已存在但视觉质量未过导师关，本轮重做 |
+> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 二级结构数据门 PASS、仅四个 smoke32；contact/distance/shuffle 待重建或 blocked；splice/CPEB3 已完成且均负 |
+> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE fold3/4 与 EL fold5 为 fold 级显著正；fold6–9 与 pc3 未跑；ArchiveII 5s/tRNA 强负；bpRNA TS0 在跑 |
+> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | 待执行（可与 CPU 工作并行） |
+> | T-A149 | 测速窗口协调 | `speed_window.py` 的 FD 租约接入 family / TE-EL / NB 队列；请求窗口→当前 run 结束→独占 4090→释放→各队列恢复；并发测试通过 | 本地脚本与测试已有，远端队列尚未接入；当前两个长任务需自然结束或人工暂停 |
+> | T-A150 | 文档、图源、归档与提交 | 三处 spec/tasks/checklist 同步；活跃源数据 JSON+哈希；废弃文件入 `archive_20261030/` 并建索引；确认代码提交并 push | 本轮贯穿执行 |
+>
+> **执行顺序（硬门）**：
+> 1. P0（CPU）：T-A150 文档同步 → T-A145 图 6 重绘 → 图 5/7/8 绘图脚本与源数据清单 → 归档盘点。
+> 2. P1（独占 4090）：T-A149 请求窗口 → T-A144 补 14 格 → 双重复核 → 图 5A/B 重绘入片。
+> 3. P2（单卡双进程并行）：T-A146 二级结构全量提取+五种子；T-A147 Muscle fold6–9 与 pc3 十折；bpRNA TS0 收尾。
+> 4. P3（统计与出图）：NB/RiNALMo 各任务 Holm、十折聚合、图 7/8 重绘入片、PPT 全页 QA。
+> 5. P4：归档、索引、GitHub push。
+>
+> **资源与停止规则**：测速必须独占；头训练按实测峰值放行并至少保留 1,500 MiB；提取保持 8,192 MiB 门；CUDA 不可用、CPU 降级、哈希不符或 QA 不一致立即停止并留证。smoke、proxy、单 fold、单 seed 不得写成最终科学结论。
+>
+> **已知缺陷（本轮必须修）**：
+> - TE/EL 队列在 Muscle fold5 EL 结束后误判“partial predictions without result”并退出，实际 `result.json=PASS`；修复为进程退出后 60 s 宽限复核，仍缺失才隔离 partial。
+> - 测速队列等待 `nvidia-smi` 零进程，而 family 队列持续占卡，形成事实死锁；改用 FD 租约协调，禁止靠反复轮询空窗。
+> - ArchiveII 的 JEV 头 F1 相对 official 崩塌 0.35–0.47；必须先跑 T-A148 归因，禁止直接写成架构负结论，也禁止据此选择性删任务。
+>
+> **协议修订（2026-10-31，主图 5 跨 batch）**：CUDA 在不同 batch 形状下选择不同归约顺序，logit 末位漂移可使边界配对翻转，逐位 SHA 相同不可达也不能作为科学判据。跨 B=1/2/4 改为数值等价验收：逐序配对一致率 ≥99%、F1 极差 ≤1e-3，并记录实测一致率与 F1；同一 batch 内三次重复仍要求逐位一致。r2d B1/B2 实测配对一致率 99.269%（38,316 对并集中 280 对对称差）、F1 0.668181/0.668318（Δ=1.37e-4），判定通过。
+
+> **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
+
+> **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
+
+
 > change-id: `build-rna-ss-decision-model`
 >
-> **第 34 轮接续验收（2026-10-28）**：
-> - [x] 已完成本地交接、PPT、原始 JSON 和远端 `/home/rna_jev` 三方审计；确认 3B/4/6 已修、5/7/8 未闭环，未重复启动已完成实验。
-> - [x] 已核实 RTX 4090 CUDA 可用，七项任务在训，审计快照显存 22,850/24,564 MiB；当前不超订，测速另设独占窗口。
-> - [x] 全部本地和远端 spec/tasks 镜像已写入统一执行顺序、原论文协议、统计口径与停止规则。
-> - [ ] 完成 4090 其余基线与共同 batch 网格，重绘主图 5A/B 并清除跨页旧速度/参数口径。
-> - [ ] 完成 ArchiveII、bpRNA、MRL 与 TE/EL 全协议，恢复 NucleicBERT 缺失官方资产；blocked 项不隐藏，fold0/smoke 不作最终结论。
-> - [ ] 完成主图 6 公式/字号修复及主图 5/7/8 最终入片，逐页通过微软雅黑、1.5 倍行距、图表同源、内容与布局 QA。
-> - [ ] 完成训练台账、确认代码提交/push、废弃交接文件与旧绘图源数据归档；活跃原始数据和哈希索引完整保留。
->
-> **历史边界**：本块是当前验收依据，下文第 33 轮及更早清单保留作追溯。
+> **第 34 轮当前验收（2026-10-30；覆盖下方第 33 轮状态，活跃图源唯一版本为 `round34-working-v46`）**：
+> - [x] 已复核全部交接文档、原论文任务注册表与远端 artifact；T-A133–T-A143 已包含导师全部补测要求，不新增重复实验。
+> - [x] 主图 3B 正值 performance drop 与图下同源表、主图 4 全颜色图例、主图 6 原生可编辑矢量均已完成内容验收（T-A134/T-A135/T-A137）。
+> - [ ] 主图 5：r2d/plana/xens2/RiNALMo-ft 的 4090 raw-sequence B=1 已验收；MXfold2/RNAformer 与六系统 B=1/2/4 正式共同网格仍待独占 4090，UFold 官方权重通道 blocked（T-A136）。
+> - [ ] NucleicBERT 二级结构数据门与四个 smoke32 split 提取已通过；official/JEV 统一 batch=1 的 smoke 训练/QA、双头五种子和独立 GPU QA 尚未完成。contact/distance 与 shuffle 仍 blocked，不得宣称五类任务全覆盖（T-A138/T-A139）。
+> - [x] NucleicBERT acceptor、donor、CPEB3 已完成全量五种子双头和 Holm；均不显著为正，结果完整保留。
+> - [x] RiNALMo Spliceator、官方 88 类 ncRNA clean/bn200 与 official varying-length MRL full_v3 已完成全量及外部 4090 QA；MRL R² Δ=-0.468847，负结果完整保留。
+> - [ ] RiNALMo TS0+ArchiveII 九家族与 bpRNA 尚未完成十任务五种子聚合；5s 全量与 10/10 QA 已完成且为负结果，tRNA/bpRNA 队列继续按 result→当前哈希 QA 门推进。
+> - [ ] TE/EL 三细胞×两任务×十折×双头×五种子共 600 run 未闭环；HEK fold0–2 TE/EL、fold3 TE 与 Muscle TE fold0 仅为 fold 级结果，Muscle TE fold0 正而不显著；fold3 EL OOM 后受门续接，Muscle EL 缓存竞态已修复，pc3 仍仅 smoke32 工程门通过，不得进入正式图 8B。
+> - [x] round34 working PPT 共 21 页已完成 665 个微软雅黑 run、有效 1.5 倍行距、越界 shape=0 与 Aspose 全页渲染检查；第 11 页讲者备注旧 blocked 状态已列入最终一致性修复。
+> - [ ] 最终图 5、图 7 二级结构面板和图 8B 入片后，再完成 markitdown/fix/layout/ZIP/逐页渲染及图文同源验收（T-A142）。
+> - [ ] 所有新训练须具备 CUDA、VL0 early-stopping、best checkpoint、plateau 停止原因和逐 run 台账；任何 NOT_CONVERGED、哈希变化或 GPU 复读不一致立即停止。
+> - [ ] 科学结果闭环后归档废弃文档、mock/旧绘图源数据并保留哈希索引；阶段代码确认后提交并 push（T-A143）。
 >
 > **第 33 轮增量验收（2026-10-28）**：
 > - [x] 已读取全部交接文档并交叉核对远端真实第 32 轮 artifact；已识别 preview_draft 中主图 3 与 matched 的 mock 数据，禁止科学引用。
