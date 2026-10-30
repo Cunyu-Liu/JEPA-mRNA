@@ -99,6 +99,11 @@ def free_memory_mib() -> int:
     return values[0]
 
 
+def cache_ready(cell: str) -> bool:
+    cache = BASE / "data/rinalmo" / f"{cell}_official_tokens.npz"
+    return all(cache.with_suffix(suffix).is_file() for suffix in (".json", ".embs.npy", ".mask.npy"))
+
+
 def external_process(task: str, cell: str, fold: int) -> int | None:
     marker = full_name(task, cell, fold)
     for proc in Path("/proc").iterdir():
@@ -195,6 +200,10 @@ def main() -> int:
                             raise RuntimeError(f"full training failed for {task}/{cell}/fold{fold}: {process.returncode}")
                         process = None
                     if process is not None or external is not None:
+                        continue
+                    if task == "el" and not cache_ready(cell):
+                        if statuses["te"] == "PASS" and external_process("te", cell, fold) is None:
+                            raise RuntimeError(f"TE completed but shared cache is incomplete for {cell}/fold{fold}")
                         continue
                     out_dir = RESULTS / full_name(task, cell, fold)
                     if out_dir.exists() and any(out_dir.glob("*_predictions.npz")):

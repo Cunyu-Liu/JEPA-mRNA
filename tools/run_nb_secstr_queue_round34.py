@@ -64,7 +64,7 @@ def training_job(head: str, seed: int, limit: int) -> list[str]:
     out = (SMOKE_OUT if limit else OUT) / f"{head}_s{seed}"
     return [
         PYTHON, str(TOOLS / "nb_secstr_dual_round34.py"), "--head", head, "--seed", str(seed),
-        "--out-dir", str(out), "--device", "cuda", "--batch-size", "2",
+        "--out-dir", str(out), "--device", "cuda", "--batch-size", "1",
         *(["--limit", str(limit)] if limit else []),
     ]
 
@@ -85,7 +85,7 @@ def next_action():
         if not result_pass(run):
             if run.is_file():
                 raise RuntimeError(f"smoke run exists but is not PASS: {run}")
-            return "train", training_job(head, 0, 32), SMOKE_OUT / f"{head}_s0.launch.log", 12288
+            return "train", training_job(head, 0, 32), SMOKE_OUT / f"{head}_s0.launch.log", 8192
         if not qa_pass(SMOKE_OUT / f"{head}_s0"):
             return "qa", qa_job(head, 0, 32), SMOKE_OUT / f"{head}_s0.qa.launch.log", 8192
     for role in ROLES:
@@ -97,7 +97,7 @@ def next_action():
         if not result_pass(run):
             if run.is_file():
                 raise RuntimeError(f"full run exists but is not PASS: {run}")
-            return "train", training_job(head, seed, 0), OUT / f"{head}_s{seed}.launch.log", 12288
+            return "train", training_job(head, seed, 0), OUT / f"{head}_s{seed}.launch.log", 8192
         if not qa_pass(OUT / f"{head}_s{seed}"): 
             return "qa", qa_job(head, seed, 0), OUT / f"{head}_s{seed}.qa.launch.log", 8192
     aggregate = OUT / "result.json"
