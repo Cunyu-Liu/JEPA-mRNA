@@ -69,10 +69,9 @@ def cache_split(role: str, limit: int) -> str:
 
 def load_records(role: str, limit: int) -> tuple[list[dict], dict]:
     path = DATA / "jsonl" / f"{SPLIT_FILES[role]}.jsonl"
-    records = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
-    if limit:
-        records = records[:limit]
-    unique = list(dict.fromkeys(str(r["seq"]).upper().replace("T", "U") for r in records))
+    all_records = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    records = all_records[:limit] if limit else all_records
+    unique = list(dict.fromkeys(str(r["seq"]).upper().replace("T", "U") for r in all_records))
     if limit:
         unique = unique[:limit]
     unique.sort(key=lambda s: (len(s), s))
@@ -80,7 +79,7 @@ def load_records(role: str, limit: int) -> tuple[list[dict], dict]:
     expected_fingerprint = {
         "jsonl": str(path), "jsonl_sha256": jsonl_sha256,
         "sequence_sha256": hashlib.sha256("".join(s + "\n" for s in unique).encode()).hexdigest(),
-        "n_input_records": len(records), "n_unique_sequences": len(unique), "max_length": 600,
+        "n_input_records": len(all_records), "n_unique_sequences": len(unique), "max_length": 600,
         "pretrained": str(PRETRAINED), "pretrained_sha256": sha256(PRETRAINED),
         "code_sha256": sha256(Path("/home/rna_jev/tools/extract_nb_secstr_round34.py")), "limit": limit,
     }
