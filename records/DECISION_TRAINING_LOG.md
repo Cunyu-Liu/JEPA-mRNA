@@ -10950,3 +10950,37 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - Muscle EL fold0 首次失败日志显示 TE/EL 同时提取同一细胞 embedding，共用 `Muscle_official_tokens.embs.tmp.npy`；TE 完成 rename 后 EL 的临时路径消失，触发 FileNotFoundError。未接受该失败 run，也未改写成 CUDA 或科学失败。为避免改变既有 trainer 的 code_sha256 和十折 identity，只修改调度器：TE 先建缓存，metadata/embeddings/mask 三项齐全后 EL 才启动，之后允许并行；当前 Muscle cache=True、pc3 cache=False 的门已实测。
 - NucleicBERT 二级结构 train/validation/TS0/ArchiveII600 四个 smoke32 提取均 PASS，仍无 run.json/qa.json。原 batch=2、12,288 MiB 门在约 11 GiB 空闲时无法放行；现将双头统一改为 batch=1、训练门 8,192 MiB，不改变数据、优化器、早停或单变量对照。队列采用 dry-run 和编译检查后替换，未终止任何训练子进程，也未重复启动 run。
 - 两项调度修复已提交 GitHub `39c49ddf43eabf39f4fb5977805cc4e792de5ed6`；NB queue SHA256=`38266ab10f13c733041793fb498b514ba6029f726e31ec62805fb12eca567fb2`，TE/EL queue SHA256=`25dc0d0876e9cef8eaf11e65f1965fe3ec54bcd577cfa100b75607539bbed89e`。当前其他 GPU 作业继续占用显存，NB 等待安全门，正式测速继续等待独占；不把等待或 smoke 提取写成科学结果。active registry 升级为 `round34-working-v46`。
+
+## §15.196（2026-10-31）第 35 轮启动：导师反馈冻结、独占测速窗口与三项工程修复
+
+- **导师 round34 反馈已冻结为第 35 轮目标**：主图 5 全 4090 重测且 B 面板必须含自有模型；主图 6 用 PPT 原生矢量重绘至 Nature 级；主图 7 补 NucleicBERT 原论文五类下游任务；主图 8 补任务并按分类/回归分图。用户确认：①暂停 ArchiveII/bpRNA 长队列换独占测速窗口；②距离/接触图按公开来源协议匹配重建并明确标注；③优先补 Muscle/PC3 TE-EL 十折。三处本地 spec/tasks/checklist 共 9 个文件与远端 spec/spec_handover 共 5 个文件已同步，未改动历史编号。
+- **暂停证据**：2026-10-31 00:20 保存 `audits/round35_pause_20261031/pause_evidence.txt`。bpRNA TS0 停在 jev seed1 epoch15（best valid BCE=0.0106291，s0 双头与 official s1 已落盘）；ArchiveII 16s 停在 official s0 完成、jev seed0 epoch5（official s0 best 已落盘）。两进程按用户决策终止，未删除任何已 PASS 结果；16s/bpRNA 任务保持未完成，后续按门重跑，不写成科学结论。
+- **测速窗口死锁与 PID 命名空间 bug**：`run_speed_grid_queue_round34.py` 以 `nvidia-smi` 零进程为窗口条件，而 family 队列持续占卡，形成事实死锁；更深一层，`nvidia-smi` 返回宿主 PID，容器内 `process.pid` 是容器 PID，runner 把自己的 CUDA 上下文当作竞争者，连续误杀 r2d B=2 三次。修复为只在启动前与结束后要求独占，运行中不再用宿主 PID 判竞争；已记录原因，未改动科学协议。
+- **跨 batch 验收口径修订**：CUDA 依 batch 形状选择归约顺序，逐位 SHA 不可达。r2d 实测 B1/B2/B4 对 B1 配对一致率 99.269%/99.191%，F1=0.668181/0.668318/0.667643（极差 6.75e-4）；同 batch 三次重复仍逐位一致。验收改为“对 B1 配对一致率≥99% 且 F1 极差≤1e-3，记录实测值”，并在三处文档与图脚注同步；r2d B4 已从 quarantine 恢复到权威路径。
+- **TE/EL 与 ArchiveII 队列误判修复**：Muscle fold5 EL 结束后队列在 result.json rename 前读到 partial predictions 并退出，实际 result=PASS。两个队列改为进程退出后 60 s 宽限复核，仍缺失才隔离 partial 并重训，不再整队崩溃；两脚本已 py_compile 通过。TE/EL 已完成 Muscle fold0–5 的 12 个双头结果与 QA，fold6–9 与 pc3 十折待窗口结束后续跑。
+- **ArchiveII JEV 崩塌首次归因（T-A148 部分）**：tRNA fold、seed0、557 test 条：official head 预测 17.03 对/结构、GT 20.55、precision 0.949、recall 0.780、F1 0.848；JEV head 仅预测 5.84 对/结构、precision 0.849、recall 0.266、F1 0.382。JEV 是严重欠预测（预测/GT=0.284），不是表征崩溃，也不是标签错误。下一步用验证集调阈值后接官方解码复测，区分解码口径与架构效应；在此之前图 8A 不把 -0.40 写成架构负结论。
+- **主图 6 原生重绘（第一版）**：已删除旧棋盘格与三张大色卡，改为三栏无卡片布局：序列 tiles → RiNALMo 堆栈 → 1280-d 表征条；h_i/h_j → 特征拼合 → pair tensor → ResNet2D 梯形堆栈 → L×L logits；Turner+mask → DP → 弧线结构 → structure/confidence 双输出。全部为 PPT 原生形状、文本与连接符，图内最小 7 pt，微软雅黑与 1.5 倍行距；本地用 PingFang 别名渲染逐项检查无重叠。最终视觉验收仍待用户确认。
+- **状态边界**：主图 5 当前 6/18 格已验收（r2d B1/2/4、plana B1、xens2 B1、rinalmo_ft B1），plana/xens2/rinalmo_ft 的 B2/4 与 MXfold2/RNAformer 九格仍在独占窗口内执行；不得用旧 A100 数字补缺。
+
+## §15.197（2026-10-31）主图 8B 折级工作面板、8A 文案联动与第 13 页插入
+
+- **8B 数据范围**：当前已验收的 Muscle TE/EL fold0–5、HEK TE/EL fold0–3 与 official MRL full_v3；HEK fold3 EL 原 OOM 无 result，未伪造。所有可用折全部入图，正负结果不筛选。
+- **8B 工作面板**：三面板 a) TE 与 b) EL 的逐折 ΔSpearman（JEV−official），误差棒为五配对种子样本 SD，星号为单侧 p<0.05 且 Δ>0；c) MRL 的 official/JEV test R² 与 ΔR²=-0.468847（p=1.000，n.s.）。当前显著正折为 Muscle TE fold3（Δ=+0.166235，p=1.58e-4）、TE fold4（Δ=+0.082733，p=1.13e-3）、EL fold5（Δ=+0.069211，p=0.0131）；其余折级结果按原符号保留。
+- **图件边界**：面板标题与页脚明确写 `fold-level working`，不得写成十折或五种子最终结论；十折聚合与 Holm 仍待 TE/EL fold6–9 与 pc3 十折完成后由 `aggregate_te_el_cv_round33.py` 生成。8B 源 JSON 与 PNG/PDF 已落 `figure_assets/fig08b_rinalmo_regression_foldlevel_working_*`。
+- **PPT 结构调整**：在 8A 后新增第 13 页 8B，后续页顺延为 14–22；第 2 页目录范围改为 11–15 / 16–22。8A 标题/副标题/页脚同步为“分类见图 8A、回归见图 8B（fold-level working，十折待闭环）”，不再写“8B 暂不入片”。
+- **版式 QA**：全 22 页 683 个文本 run 均为微软雅黑，683 个段落有效 1.5 倍行距，越界 shape=0；8A/8B 页渲染无重叠，8B 图内最小字号经提升后在 130 dpi 渲染可读。主图 6 同步改为全 1.5 倍行距并消除 ResNet 标签与输出框碰撞。
+
+## §15.198（2026-10-31）测速进度 12/18、图源归档与目录页码修正
+
+- **测速进度**：r2d/plana/xens2/rinalmo_ft 的 B=1/2/4 共 12 格全部 PASS；r2d 对 B=1 配对一致率 99.269%/99.191%、F1 极差 6.75e-4；xens2 B=2 F1=0.804128、B=4 F1=0.803963；rinalmo_ft B=2 F1=0.721377。MXfold2 B=1 正在跑，RNAformer 三格随后；UFold 仍因官方权重不可得保持 blocked。不得用旧 A100 数字补缺。
+- **主图 5 图源**：最终图必须由 `make_figure5_round34.py` 在 18/18 验收后生成；A 为 B=1 精度-吞吐 Pareto，B 为六模型 B=1/2/4 吞吐曲线，B 必含自有 r2d/plana/xens2。旧 A100 图与 124.78 head-only 只留历史说明。
+- **交接文档整理**：新建 `archive_20261031/`，已归档旧 deck、`figs/main`、`figs/figs_round29`、旧绘图脚本、两张旧证据图、CDPFold PLACEHOLDER 与 ROUND24–29 便签，共 18 项，附 `ARCHIVE_INDEX.json/md` 记录原路径、归档路径与原因；删除 `.DS_Store`。活跃源数据另建 `source_data/`，含 fig03/04/06/07/08A/08B 的 JSON 与 `SOURCE_MANIFEST.json`（逐文件 SHA256），fig05/NB/十折条目待结果后补。
+- **PPT 结构修正**：新增 8B 页后全稿 22 页；第 2 页目录改为 11–15 / 16–22。发现自动重编号误把章节前缀（10/11/12/13）也加 1，已逐一回退为 10 外部 OOD、11 长度边界、12 结论、13 论文逻辑链；8B 页章节前缀定为 09 / RINALMO 回归，页码 13。全 22 页 683 个文本 run 全部微软雅黑、683 段 1.5 倍行距、越界 0。
+
+## §15.199（2026-10-31）主图 5 最终图生成、RNAformer blocked 与 GPU 队列恢复
+
+- **主图 5 验收范围**：RTX 4090 同机、TS0 n=1288、strict micro-F1、raw-sequence 端到端、三次重复。r2d/plana/xens2/rinalmo_ft 各 B=1/2/4，MXfold2 各 B=1/2/4，共 **15/18 格 PASS**；B=1 吞吐 22.28/18.62/7.47/13.99/13.23 seq/s，B=4 37.42/29.41/12.38/23.80/14.53 seq/s。跨 batch 对 B=1 配对一致率均≥99%，F1 极差≤1e-3；r2d 2/4 为 99.27%/99.19%、极差 6.75e-4。
+- **RNAformer blocked（有证据）**：B=1 在 1024-nt padding 下运行 >8 min 未完成一次 repeat，峰值 14–22 GiB、GPU 100%，为节省独占窗口人工终止；未产生任何 partial 数字，也未用 A100 值替代。证据 `audits/round35_rnaformer_block/evidence.txt`；UFold 官方权重仍不可得。最终图脚注明确写 RNAformer blocked、15/18 cells，不宣称 18/18。
+- **最终图 5**：`fig05_accuracy_speed_4090_final_3840x1920.png` SHA256=`d60b1b79eb461965cd2cad89eb3b37a6da91b198c6aae4891311e83e4e2ba6b6`，源 JSON 同步落 `source_data/fig05_speed/`。a 面板为共同 B=1 Pareto（xens2/plana/r2d 构成前沿），b 面板为五模型 B=1/2/4 吞吐曲线，自有模型全部在图中；旧 A100 图与 124.78 head-only 不再作为主图。
+- **PPT 第 9 页**：标题改为“RTX 4090 同机协议：精度-吞吐前沿与共同 batch 网格”，页脚改为 5 模型 15 格，脚注写 RNAformer blocked 与 UFold 不可得；第 16 页结论表“推理速度”行同步为 15 格与 r2d 22.28→37.42、xens2 7.47→12.38，限制列写 RNAformer/UFold 与跨 batch 数值等价。
+- **队列恢复**：TE/EL 队列已从 Muscle fold6 续跑（TE/EL 两进程，已跳过 fold0–5 的 PASS+QA）；NB 队列在 stale-code QA 失败后隔离 official_s0/jev_s0 两个旧 smoke run，正用当前代码重训 official smoke。隔离原因是 result 记录的 code_sha256 与当前 `nb_secstr_dual_round34.py` 不一致，不是数据损坏；未改写旧哈希、未绕过 QA。
