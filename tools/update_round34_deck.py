@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Apply verified Round-33 figure replacements and rebuild Fig. 6 as native vectors."""
 from pathlib import Path
+from copy import deepcopy
+import os
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -9,7 +11,7 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.xmlchemy import OxmlElement
 
 SRC = Path("/private/tmp/rnajev_audit/RNA-JEV_论文逻辑重构_20261026_导师讨论_preview_draft.pptx")
-OUT = Path("/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261030_02/RNA-JEV_论文逻辑重构_20261030_导师讨论_round34_working.pptx")
+OUT = Path(os.environ.get("DECK_OUT", "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261030_02/RNA-JEV_论文逻辑重构_20261030_导师讨论_round34_working.pptx"))
 FIG = Path("/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets")
 FONT = "微软雅黑"
 C = {
@@ -327,6 +329,129 @@ def rebuild_fig6(slide):
     text(slide, "logits", 8.69, 3.55, 0.45, 0.22, 8.5, "teal", True, PP_ALIGN.CENTER)
 
 
+def final_asset(name):
+    value = os.environ.get(name)
+    if not value:
+        return None
+    path = Path(value)
+    assert path.is_file() and path.stat().st_size > 100_000, (name, path)
+    return path
+
+
+def replace_slide_and_notes(prs, slide_number, old, new):
+    replace_run_text(prs.slides[slide_number - 1], old, new, 1)
+    replace_run_text(prs.slides[slide_number - 1].notes_slide, old, new, 1)
+
+
+def clone_regression_slide(prs, image_path):
+    source = prs.slides[11]
+    picture = next(shape for shape in source.shapes if shape.shape_type == 13)
+    new_slide = prs.slides.add_slide(source.slide_layout)
+    for shape in list(new_slide.shapes):
+        remove(shape)
+    for shape in source.shapes:
+        if shape.shape_type != 13:
+            new_slide.shapes._spTree.insert_element_before(deepcopy(shape._element), "p:extLst")
+    new_slide.shapes.add_picture(str(image_path), picture.left, picture.top, picture.width, picture.height)
+    slide_ids = prs.slides._sldIdLst
+    new_id = slide_ids[-1]
+    slide_ids.remove(new_id)
+    slide_ids.insert(12, new_id)
+    return new_slide
+
+
+def renumber_after_regression_insert(prs):
+    replace_run_text(prs.slides[1], "11–14", "11–15", 1)
+    replace_run_text(prs.slides[1], "15–21", "16–22", 1)
+    for index, slide in enumerate(prs.slides):
+        if index < 12:
+            continue
+        matches = []
+        for shape in slide.shapes:
+            if (getattr(shape, "has_text_frame", False) and shape.left > prs.slide_width * 0.85
+                    and shape.top > prs.slide_height * 0.85 and shape.text.strip().isdigit()):
+                matches.append(shape)
+        if not matches and index == len(prs.slides) - 1:
+            assert any(getattr(shape, "has_text_frame", False) and shape.text.strip() == "END"
+                       for shape in slide.shapes)
+            continue
+        assert len(matches) == 1, (index + 1, len(matches))
+        runs = [run for paragraph in matches[0].text_frame.paragraphs for run in paragraph.runs if run.text.strip()]
+        assert len(runs) == 1
+        runs[0].text = f"{index + 1:02d}"
+
+
+def apply_final_assets(prs):
+    fig05 = final_asset("FIG05_FINAL")
+    fig07 = final_asset("FIG07_FINAL")
+    fig08a = final_asset("FIG08A_FINAL")
+    fig08b = final_asset("FIG08B_FINAL")
+    if fig05:
+        replace_picture(prs.slides[8], fig05)
+        replace_slide_and_notes(prs, 9, "主图 5｜历史 A100 帕累托集；4090 共同协议重测中",
+                                "主图 5｜RTX 4090：精度-吞吐与共同 batch 网格")
+        replace_run_text(prs.slides[8], "当前图仅作 A100 历史参照；正式版使用同一 4090、TS0、raw-sequence 端到端 B=1/2/4 结果。",
+                         "同一 RTX 4090、TS0、raw-sequence 端到端；A 为 B=1 精度-吞吐，B 为共同 B=1/2/4 网格。", 1)
+        replace_slide_and_notes(prs, 9,
+                                "旧 124.78 为 cached-embedding/head-only，不能混入 raw-sequence 前沿；当前仅四个系统 B=1 已通过，完整网格待验收。",
+                                "六系统均含自模型；预测跨 batch 一致，UFold 官方权重不可得，不混入 A100 或 head-only 数据。")
+        replace_slide_and_notes(prs, 9, "A100 baseline board + §15.79；Pareto 程序逐点判定",
+                                "speed_4090_round33/34 full JSON；共同 4090 协议与独立复核")
+        replace_run_text(prs.slides[14], "4090 raw-seq B=1：r2d 22.28 seq/s；旧 head-only 峰值 124.78",
+                         "4090 raw-seq 全网格：六系统 B=1/2/4；含 r2d/plana/xens2", 1)
+        replace_run_text(prs.slides[14], "共同 batch 网格未闭环；禁止跨口径拼接速度或 xens2 F1",
+                         "UFold 权重 blocked；不混用 A100、cached embedding 或跨协议结果", 1)
+        replace_run_text(prs.slides[19], "raw-seq B=1：r2d 22.28 seq/s", "4090 raw-seq B=1/2/4 全网格", 1)
+        replace_run_text(prs.slides[19], "旧 head-only 峰值 124.78；共同 batch 网格待验收",
+                         "预测跨 batch 一致；UFold blocked", 1)
+    if fig07:
+        replace_picture(prs.slides[10], fig07)
+        replace_slide_and_notes(prs, 11, "主图 7｜主 benchmark 8/8 正迁移；原论文三任务不显著为正",
+                                "主图 7｜主 benchmark 与原论文任务：五种子完整对照")
+        replace_run_text(prs.slides[10], "主 benchmark 与原论文任务分开展示；acceptor/donor/CPEB3 全量五种子均不显著为正。",
+                         "主 benchmark、二级结构、acceptor/donor 与 CPEB3 分区；全部正负结果及 Holm 保留。", 1)
+        replace_slide_and_notes(prs, 11,
+                                "8/8 仅指主 benchmark；secondary-structure 数据门已过、五种子待验收；contact-distance/shuffle 保持 blocked，不作全覆盖声明。",
+                                "二级结构五种子已入图；contact-distance/shuffle 仍 blocked，不作全覆盖或去污染泛化声明。")
+        replace_slide_and_notes(prs, 11, "ROUND26/T-A99 + round34 downstream QA；其余原论文任务待官方资产",
+                                "ROUND26/T-A99 + round34/35 full results + external QA")
+        replace_run_text(prs.slides[19], "原论文任务未显著为正", "原论文任务按完整证据呈现", 1)
+    if fig08a:
+        replace_picture(prs.slides[11], fig08a)
+        replace_slide_and_notes(prs, 12, "主图 8A｜官方分类未显著为正；MRL 已验收为负，十折回归待闭环",
+                                "主图 8A｜分类任务：结构、Spliceator 与官方 88 类 ncRNA")
+        replace_run_text(prs.slides[11], "MRL full_v3：R² Δ=-0.468847（不显著为正）；图 8B 待 TE/EL 十折，其余任务继续验收。",
+                         "十项结构任务与两项分类家族分置；五种子配对、任务内 Holm，全部正负结果保留。", 1)
+        replace_slide_and_notes(prs, 12, "working 面板保留全部负结果；旧 177 类只作敏感性，不替代官方 88 类；图 8B 暂不入片。",
+                                "分类结果已闭环；MRL 与 TE/EL 回归见下一页图 8B。")
+        replace_slide_and_notes(prs, 12, "round33/34 full results + external QA；分类与回归分图",
+                                "round33/34 full results + structure aggregate + external QA")
+    if fig08b:
+        assert fig08a, "Figure 8B requires the final Figure 8A slide"
+        new_slide = clone_regression_slide(prs, fig08b)
+        replace_run_text(new_slide, "主图 8A｜分类任务：结构、Spliceator 与官方 88 类 ncRNA",
+                         "主图 8B｜回归任务：official MRL 与三细胞 TE/EL", 1)
+        replace_run_text(new_slide, "十项结构任务与两项分类家族分置；五种子配对、任务内 Holm，全部正负结果保留。",
+                         "MRL 使用 R²；TE/EL 先在每 seed 内十折平均 Spearman，再做五 seed 配对。", 1)
+        replace_run_text(new_slide, "分类结果已闭环；MRL 与 TE/EL 回归见下一页图 8B。",
+                         "七项回归结果全部入图；所有负结果保留，分类结果见上一页图 8A。", 1)
+        replace_run_text(new_slide, "round33/34 full results + structure aggregate + external QA",
+                         "MRL full_v3 + six ten-fold CV aggregates + external QA", 1)
+        renumber_after_regression_insert(prs)
+        replace_run_text(prs.slides[19], "MRL 与 HEK fold0–2 TE/EL、fold3 TE 已 QA，均不显著为正；fold3 EL 待续接。",
+                         "MRL、TE/EL 十折与结构任务已聚合；全部正负结果保留。", 1)
+    if fig07 or fig08a or fig08b:
+        conclusion_slide = prs.slides[15 if fig08b else 14]
+        logic_slide = prs.slides[20 if fig08b else 19]
+        replace_run_text(conclusion_slide, "NB 主 benchmark 8/8 正迁移；原论文下游任务未显著为正",
+                         "NB 主 benchmark 8/8 正迁移；原论文任务按五种子证据报告", 1)
+        replace_run_text(conclusion_slide, "NB 二级结构待五种子；contact/distance/shuffle blocked；MRL 为负，TE/EL 未闭环",
+                         "contact/distance/shuffle blocked；已测正负结果完整保留，未覆盖任务不外推", 1)
+        replace_run_text(logic_slide, "官方资产与全协议未闭环；不外推",
+                         "已测结果完整保留；未覆盖任务不外推", 1)
+    return {"fig05": bool(fig05), "fig07": bool(fig07), "fig08a": bool(fig08a), "fig08b": bool(fig08b)}
+
+
 def main():
     prs = Presentation(SRC)
     replace_picture(prs.slides[4], FIG / "fig02_speed_benchmark_3840x1920.png")
@@ -349,8 +474,9 @@ def main():
     update_secondary_data_status(prs)
     update_fold3_te_status(prs)
     update_version_labels(prs)
+    applied = apply_final_assets(prs)
     prs.save(OUT)
-    print(f"ROUND34_DECK_WORKING_WRITTEN {OUT}")
+    print(f"ROUND34_DECK_WRITTEN {OUT} slides={len(prs.slides)} final_assets={applied}")
 
 
 if __name__ == "__main__":

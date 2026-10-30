@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v44",
+  "registry_version": "round34-working-v45",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -489,7 +489,15 @@
     "updated_slides": [1, 5, 6, 7, 8, 9, 10, 11, 12, 15, 17, 19, 20, 21],
     "content_update": "Round-34 labels and slide 11 speaker notes now match the verified secondary-structure data gate; all scientific values and pending boundaries are unchanged",
     "update_code": "/private/tmp/rnajev_audit/round34_ppt/update_round34_deck.py",
-    "update_code_sha256": "c206dbd52ef83b1b940d87d3d759b2d0b96cf0725ff98ba5f5ea57af8da6f7b3",
+    "update_code_sha256": "f55655bb376fc5cf166803d24ad8b5f9517f601f6ce8fab3b83241fc42158f62",
+    "final_asset_integration": {
+      "status": "engineering_gate_pass_pending_real_final_assets",
+      "activation": "explicit FIG05_FINAL, FIG07_FINAL, FIG08A_FINAL and FIG08B_FINAL paths plus optional DECK_OUT; no automatic use of preview files",
+      "layout": "Figure 8A and Figure 8B are inserted as separate slides; table-of-contents ranges and subsequent page numbers update automatically",
+      "default_output": "21-slide working markitdown is byte-identical to the current working text extraction",
+      "engineering_test": "22-slide integration candidate passed markitdown, fix_pptx, layout=0, ZIP, 671 Microsoft YaHei runs, 671 effective 1.5-spacing paragraphs and full Aspose render review",
+      "scope": "temporary engineering assets only; no preview result was written to the active working deck"
+    },
     "remote_backup": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/figure_assets/round34/RNA-JEV_论文逻辑重构_20261030_导师讨论_round34_working.pptx",
     "fold3_te_status": {
       "slide": 19,

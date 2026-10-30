@@ -10936,3 +10936,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 图 8B 的输入门本身已强制 MRL+六组 TE/EL 十折全部通过，继续把成功输出命名为 working 会与完成判据矛盾。现成功时输出 `fig08b_rinalmo_regression_final_source.json` 与 final PNG/PDF，状态为 `final_candidate_pending_visual_qa`；零方差时明确标为 Holm undefined，缺项/非有限值/重复 fold 仍硬失败。
 - 页脚改为全部正负回归结果保留、分类独立入图 8A，不再以其他面板未完成阻止本回归面板完成。合成工程渲染确认三面板无碰撞，mean±seed-SD、Holm 与图例清晰；测试数据不进入活跃资产。
 - 更新后绘图代码 SHA256=`e900d100a9496f28ecd3941957b3335adb8d2837a4e7e1aecccbcc56b0fa230c`，测试 SHA256=`76329a62a858be7693f8f4328a3e495a577168ceb5b5939a76b38694241a393d`，完整测试 PASS。真实 TE/EL 十折仍未齐全，未生成真实 final 图。active registry 升级为 `round34-working-v44`。
+
+## §15.193（2026-10-30）最终图件入片、8A/8B 分页与目录页码联动工程门
+
+- `update_round34_deck.py` 新增显式 `FIG05_FINAL/FIG07_FINAL/FIG08A_FINAL/FIG08B_FINAL` 与 `DECK_OUT` 接入口；不读取或自动发现任何 preview 文件。真实图 8A/8B 到位后分为两页，目录范围从 11–14/15–21 联动为 11–15/16–22，后续页码逐页更新，结束页 END 作为唯一非数字例外。
+- 首轮集成测试命中结束页无数字页码的断言，已修正后重新生成 22 页工程候选。markitdown、fix_pptx、layout=0、ZIP 全部通过；671 个文本 run 均为微软雅黑，671 个段落行距在 PowerPoint 舍入误差内等于 1.5 倍，Aspose 全页渲染复核无新增碰撞。测试只使用临时工程资产，未覆盖 active working deck。
+- 未提供任何 final 环境变量时重新生成 21 页默认稿，markitdown 与当前 working 文本逐字节一致；所有 pending 文案和科学数值不变。更新代码 SHA256=`f55655bb376fc5cf166803d24ad8b5f9517f601f6ce8fab3b83241fc42158f62`。active registry 升级为 `round34-working-v45`。
