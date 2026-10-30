@@ -2,6 +2,16 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
+> **当前执行补充（2026-10-30，第 34 轮：真实结果验收与队列恢复；活跃清单 `round34-working-v46`）**：
+>
+> | 任务 | 当前状态 | 下一动作与验收门 |
+> |---|---|---|
+> | T-A139 NB 二级结构 | 四个 smoke32 split 提取 PASS；无 smoke run/QA；双头统一 batch=1、训练门 8,192 MiB，调度提交 `39c49ddf` | 显存满足后依次 official/JEV smoke→独立 GPU QA→全量提取→双头五种子；任一失败停止，不自动重复 |
+> | T-A141 结构十任务 | ArchiveII 5s 全量与 10/10 QA 完成；official/JEV=0.826303/0.421706，Δ=-0.404597，负结果保留；tRNA/bpRNA 在训，其余待办 | 只接收 full+当前哈希 QA 的五种子结果；十项未齐不聚合、不出最终图 8A |
+> | T-A141 TE/EL | Muscle TE fold0 全量与 10/10 QA 完成；ΔSpearman=+0.019109、p=0.119989，正而不显著；Muscle EL 首次因共享缓存 rename 竞态失败 | 调度器先 TE 建缓存再放行 EL，训练器哈希不变；fold0 不外推十折，继续 result→当前哈希 QA→下一折 |
+> | T-A136 正式测速 | 独占等待队列仍存活；其他 GPU 任务存在时不启动 | 只有真正独占 4090 才执行共同 B=1/2/4 全网格 |
+> | T-A143 记录与提交 | NB/TE-EL 调度修复已提交 `39c49ddf43eabf39f4fb5977805cc4e792de5ed6`；5s/Muscle 原始结果与 QA 哈希已入 registry | 继续逐 run 记录 best epoch、收敛、预测与 QA；不得用 smoke、单 fold 或等待状态更新最终 PPT |
+>
 > **当前执行增补（2026-10-30，第 34 轮：NucleicBERT 二级结构）**：本块覆盖下方同任务的旧 blocked 状态，其他任务合同不变。
 >
 > | 任务 | 当前状态 | 下一动作与放行判据 |

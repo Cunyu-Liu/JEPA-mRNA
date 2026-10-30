@@ -1,0 +1,3 @@
+
+START 2026-10-30T06:28:33.748279+00:00 result=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/rinalmo_archiveii_5s_round33_full_v1/result.json
+ARCHIVEII_RESULT_EXTERNAL_QA_PASS {"scope": "full", "family": "5s", "runs": 10, "result_sha256": "582ac8258ce8ec3a3a6d78c9d70830cc6e1c7c73275f619676e20442de9efb14", "scientific_eligibility": true}

@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v45",
+  "registry_version": "round34-working-v46",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -208,7 +208,22 @@
         "data_card_sha256": "0863b15f833ed055fd981f591458f20a441e668f8bce2ef05228698f991b4096",
         "train_validation_test_rows": {"rnastralign_tr0": 47963, "vl0": 1300, "ts0": 1305, "archiveii600": 3911},
         "restored_archiveii_crossing_pairs": 14723,
-        "github_code_commit": "a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47"
+        "github_code_commit": "a9fdf295f7a9e0a4235c0ccd20ec75170b4bee47",
+        "smoke32_extraction": {
+          "status": "PASS_all_four_splits",
+          "splits": ["train", "validation", "ts0", "archiveii600"],
+          "scope": "32 records per split; engineering only, not scientific evidence",
+          "scientific_result": false
+        },
+        "training_queue": {
+          "status": "waiting_for_safe_memory_gate_no_smoke_run_or_qa_yet",
+          "path": "/home/rna_jev/tools/run_nb_secstr_queue_round34.py",
+          "sha256": "38266ab10f13c733041793fb498b514ba6029f726e31ec62805fb12eca567fb2",
+          "github_code_commit": "39c49ddf43eabf39f4fb5977805cc4e792de5ed6",
+          "batch_size": 1,
+          "required_free_mib": 8192,
+          "single_variable_contract": "official and JEV use the same batch size, data, optimizer and convergence gates"
+        }
       },
       "official_asset_audit": {
         "date": "2026-10-30",
@@ -256,7 +271,24 @@
         "scope": "TS0 plus nine ArchiveII leave-one-family-out holdouts; ten tasks total",
         "qa_binding": "each result requires matching state, current result SHA256, full scope, 10 runs and scientific_eligibility=true",
         "statistics": "five paired training seeds per task; one-sided paired t-test and Holm across all ten tasks; any zero-variance task makes the whole family undefined",
-        "tests": "normal ten-task Holm, zero-variance family and stale-QA rejection passed; no scientific aggregate generated"
+        "tests": "normal ten-task Holm, zero-variance family and stale-QA rejection passed; no scientific aggregate generated",
+        "completed_results": [
+          {
+            "task": "ArchiveII 5s leave-one-family-out",
+            "result": "/private/tmp/rnajev_audit/round35_results/rinalmo_archiveii_5s_result.json",
+            "result_sha256": "582ac8258ce8ec3a3a6d78c9d70830cc6e1c7c73275f619676e20442de9efb14",
+            "qa_log": "/private/tmp/rnajev_audit/round35_results/rinalmo_archiveii_5s_qa.log",
+            "qa_log_sha256": "82dba0727e7aa147505caa9c28950a7f5f7813985f7b4f441193bb780b79b180",
+            "gpu_reinference_runs": 10,
+            "official_macro_f1_mean": 0.8263034585014786,
+            "jev_macro_f1_mean": 0.4217063555246276,
+            "paired_delta_mean": -0.40459710297685103,
+            "paired_delta_sample_sd": 0.046103734918128,
+            "one_sided_p": 0.9999801137470072,
+            "significant_positive": false,
+            "scope": "one of ten structure tasks; negative result retained, no ten-task aggregate or final figure yet"
+          }
+        ]
       },
       "holm_status": "PASS",
       "note": "Official 88-class ncRNA and RiNALMo Spliceator acceptor/donor have external RTX 4090 QA; all values retained"
@@ -316,13 +348,14 @@
         "scope": "all four results are engineering smoke only; local protocol, convergence, means and paired statistics matched, but no scientific conclusion or figure update is permitted",
         "full_release_gate": "satisfied for Muscle and pc3; every full fold result still requires its own current-hash external RTX 4090 QA",
         "queue_gate": {
-          "status": "current_hash_gate_installed_and_real_receipts_verified",
+          "status": "current_hash_and_shared_cache_race_gates_installed",
           "path": "/home/rna_jev/tools/run_te_el_cell_queue_round34.py",
-          "sha256": "5077191b46562165096a926b2ca5da1ef0fcf796bb74b9834a6c23be8491073d",
-          "pid": 949848,
-          "github_code_commit": "2a13f0a75053aa3abb59173aede7d75a737fac53",
-          "tests": ["current smoke/full hashes pass", "tampered smoke/full results become stale", "current-hash failed QA stops", "main queue holds without launching on stale or failed smoke QA"],
-          "installation_safety": "no Muscle/pc3 full child or full result existed at installation; old queue was replaced and all four real smoke receipts return passed under the new gate"
+          "sha256": "25dc0d0876e9cef8eaf11e65f1965fe3ec54bcd577cfa100b75607539bbed89e",
+          "github_code_commit": "39c49ddf43eabf39f4fb5977805cc4e792de5ed6",
+          "cache_policy": "TE builds the shared cell cache first; EL launches only after metadata, embeddings and mask all exist, then both tasks can run in parallel",
+          "trainer_code": "unchanged to preserve code identity across ten-fold aggregates",
+          "failure_evidence": "Muscle EL fold0 initially failed because concurrent TE/EL extraction raced on Muscle_official_tokens.embs.tmp.npy; no scientific result was accepted from that failed run",
+          "tests": ["current smoke/full hashes pass", "tampered smoke/full results become stale", "current-hash failed QA stops", "Muscle cache complete and pc3 cache gate present", "queue resumed without duplicating completed TE"]
         }
       },
       "completed_full_results": [
@@ -433,6 +466,23 @@
           "paired_pcc_delta": -0.050261845349700206,
           "significant_positive": false,
           "scope": "fold2 only; 10/10 RTX 4090 re-inference, independent statistics and real load_fold preflight passed; not a ten-fold conclusion"
+        },
+        {
+          "task": "Muscle TE fold0",
+          "path": "/private/tmp/rnajev_audit/round35_results/rinalmo_te_Muscle_fold0_result.json",
+          "sha256": "5fa2d583209b412805eb4d75bafd07afe41ff68950b8bdd0703c0038096754e4",
+          "qa_log": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/round34_te_el_cell_queue/rinalmo_te_Muscle_fold0_round33_full_v4.qa.log",
+          "qa_log_sha256": "a514815a9abfa6d484c5ba606805f85320b3ae231aac34c47d2a68d86edc5a52",
+          "gpu_reinference_runs": 10,
+          "official_spearman_mean": 0.5723727075158702,
+          "jev_spearman_mean": 0.5914820348031719,
+          "paired_spearman_delta": 0.01910932728730157,
+          "paired_spearman_delta_sample_std": 0.030985556144730596,
+          "one_sided_p": 0.11998923182565778,
+          "paired_r2_delta": 0.02886611959188019,
+          "significant_positive": false,
+          "sample_counts": {"train": 1006, "validation": 125, "test": 126},
+          "scope": "fold0 only; positive but nonsignificant; not a ten-fold conclusion or final figure result"
         }
       ],
       "forbidden_source": "/private/tmp/rnajev_audit/round33/fig08b_synthetic_preview",

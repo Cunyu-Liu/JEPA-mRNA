@@ -10942,3 +10942,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `update_round34_deck.py` 新增显式 `FIG05_FINAL/FIG07_FINAL/FIG08A_FINAL/FIG08B_FINAL` 与 `DECK_OUT` 接入口；不读取或自动发现任何 preview 文件。真实图 8A/8B 到位后分为两页，目录范围从 11–14/15–21 联动为 11–15/16–22，后续页码逐页更新，结束页 END 作为唯一非数字例外。
 - 首轮集成测试命中结束页无数字页码的断言，已修正后重新生成 22 页工程候选。markitdown、fix_pptx、layout=0、ZIP 全部通过；671 个文本 run 均为微软雅黑，671 个段落行距在 PowerPoint 舍入误差内等于 1.5 倍，Aspose 全页渲染复核无新增碰撞。测试只使用临时工程资产，未覆盖 active working deck。
 - 未提供任何 final 环境变量时重新生成 21 页默认稿，markitdown 与当前 working 文本逐字节一致；所有 pending 文案和科学数值不变。更新代码 SHA256=`f55655bb376fc5cf166803d24ad8b5f9517f601f6ce8fab3b83241fc42158f62`。active registry 升级为 `round34-working-v45`。
+
+## §15.194（2026-10-30）5s/Muscle TE fold0 三通道验收、NB 提取进展与共享缓存竞态修复
+
+- ArchiveII 5s full result SHA256=`582ac8258ce8ec3a3a6d78c9d70830cc6e1c7c73275f619676e20442de9efb14`；独立 QA log SHA256=`82dba0727e7aa147505caa9c28950a7f5f7813985f7b4f441193bb780b79b180`，回执为 full、10 runs、同一 result 哈希。official/JEV macro-F1=0.8263034585/0.4217063555，paired Δ=-0.4045971030、ΔSD=0.0461037349、单侧 p=0.9999801137；本地下载后再次复算 mean/SD/p 全部一致，明确负结果保留，十任务总门不关闭。
+- Muscle TE fold0 full result SHA256=`5fa2d583209b412805eb4d75bafd07afe41ff68950b8bdd0703c0038096754e4`；QA log SHA256=`a514815a9abfa6d484c5ba606805f85320b3ae231aac34c47d2a68d86edc5a52`，official/JEV 各五种子均在 RTX 4090 重推通过。official/JEV Spearman=0.5723727075/0.5914820348，Δ=+0.0191093273、ΔSD=0.0309855561、单侧 p=0.1199892318；R² Δ=+0.0288661196。正而不显著，且仅为 fold0，禁止写成十折结论或显著正结果。
+- Muscle EL fold0 首次失败日志显示 TE/EL 同时提取同一细胞 embedding，共用 `Muscle_official_tokens.embs.tmp.npy`；TE 完成 rename 后 EL 的临时路径消失，触发 FileNotFoundError。未接受该失败 run，也未改写成 CUDA 或科学失败。为避免改变既有 trainer 的 code_sha256 和十折 identity，只修改调度器：TE 先建缓存，metadata/embeddings/mask 三项齐全后 EL 才启动，之后允许并行；当前 Muscle cache=True、pc3 cache=False 的门已实测。
+- NucleicBERT 二级结构 train/validation/TS0/ArchiveII600 四个 smoke32 提取均 PASS，仍无 run.json/qa.json。原 batch=2、12,288 MiB 门在约 11 GiB 空闲时无法放行；现将双头统一改为 batch=1、训练门 8,192 MiB，不改变数据、优化器、早停或单变量对照。队列采用 dry-run 和编译检查后替换，未终止任何训练子进程，也未重复启动 run。
+- 两项调度修复已提交 GitHub `39c49ddf43eabf39f4fb5977805cc4e792de5ed6`；NB queue SHA256=`38266ab10f13c733041793fb498b514ba6029f726e31ec62805fb12eca567fb2`，TE/EL queue SHA256=`25dc0d0876e9cef8eaf11e65f1965fe3ec54bcd577cfa100b75607539bbed89e`。当前其他 GPU 作业继续占用显存，NB 等待安全门，正式测速继续等待独占；不把等待或 smoke 提取写成科学结果。active registry 升级为 `round34-working-v46`。

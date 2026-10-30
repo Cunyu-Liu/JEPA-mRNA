@@ -2,6 +2,13 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
+> **当前交接（2026-10-30，第 34 轮补充：5s、Muscle TE fold0 与 GPU 队列竞态修复；活跃清单 `round34-working-v46`）**：
+> - **5s 全量结果与 QA**：ArchiveII 5s official/JEV macro-F1=0.826303/0.421706，paired Δ=-0.404597、单侧 p=0.999980；result SHA256=`582ac825...9efb14`，10/10 RTX 4090 QA 回执绑定同一哈希，作为十项结构任务之一的明确负结果保留。tRNA、bpRNA 与其余家族未闭环，禁止生成十任务聚合或最终图 8A。
+> - **Muscle TE fold0**：official/JEV Spearman=0.572373/0.591482，Δ=+0.019109、配对 SD=0.030986、单侧 p=0.119989；result SHA256=`5fa2d583...6754e4`，10/10 RTX 4090 QA PASS。仅为 fold0 的正而不显著结果，不能写成十折或三细胞结论。
+> - **共享缓存竞态**：Muscle EL fold0 首次失败是 TE/EL 并发写入同一 `Muscle_official_tokens.embs.tmp.npy` 导致 rename 竞争，不是 CUDA 不可用或科学失败。调度器改为 TE 先建完整缓存、EL 待 metadata/embeddings/mask 齐备后启动；训练器代码与代码哈希不变，避免十折身份漂移。调度修复提交=`39c49ddf43eabf39f4fb5977805cc4e792de5ed6`。
+> - **NB 二级结构 smoke 进展**：train/validation/TS0/ArchiveII600 四个 smoke32 提取均 PASS，仍无 smoke run/QA 或科学结果。official/JEV 双头统一 batch=1、训练显存门 8,192 MiB，其他数据、优化器与收敛合同不变；队列只在安全余量满足时启动，禁止重复运行。
+> - **执行边界**：本块是当前状态覆盖；下文同任务旧 pending 仅作历史。正式 4090 全网格、NB 双头五种子、结构十任务与 TE/EL 全十折未完成前，PPT 继续保持 working，不更新最终科学面板。
+>
 > **当前交接（2026-10-30，第 34 轮增补：NucleicBERT 二级结构数据门解冻）**：
 > - **数据门结论**：RNAStrAlign 37,149、TR0 10,814、VL0 1,300、TS0 1,305 与 ArchiveII600 3,911 已恢复并复核。TR0/TS0 的 ID 集合与 RNAErnie 官方清单完全一致；RNAStrAlign 的 26,069 条 <600 nt 样本名与官方 RNAStrAlign600 清单逐项一致；ArchiveII600 的 3,911 个 ID 与官方清单完全一致，排序 ID SHA256=`4f0c8813127810bcc597b6dc7cfe4d1e02b893550a9cfbad1563b7155c2b4713`。二级结构不再 blocked；接触/距离图和 shuffle 的数据门不变，仍不得宣称全覆盖。
 > - **原始标签纠偏**：旧 `archiveii600.jsonl` 仅用于历史项目协议，曾删除交叉配对，禁止用于本次 NucleicBERT 复现。现从 BPfold 原始 3,966 个 bpseq（压缩包 SHA256=`e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073`）和 RNAErnie 官方 ArchiveII600 清单重建，3,911 条序列与旧版完全一致，同时恢复旧版缺失的 14,723 个交叉配对，新标签共 212,021 对。
