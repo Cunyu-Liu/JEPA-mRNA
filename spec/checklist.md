@@ -14,9 +14,9 @@
 > |---|---|---|---|
 > | T-A144 | 主图 5：4090 六模型×B=1/2/4 共同网格 | 18/18 原始 JSON；同机、TS0 n=1288、strict micro-F1、raw-sequence 端到端、三次重复、跨 batch 数值等价（≥99% 配对一致且 |ΔF1|≤1e-3，记录实测值）、峰值显存落盘；A/B 全部由同一协议生成，B 含 r2d/plana/xens2 | 15/18 已验证（r2d/plana/xens2/rinalmo_ft 各 B=1/2/4，MXfold2 各 B=1/2/4）；RNAformer 三格 blocked：1024-nt padding 未能在独占窗口完成 B=1，证据保存于 audits/round35_rnaformer_block；UFold 权重不可得 |
 > | T-A145 | 主图 6：原生矢量重绘 | 只用 PPT 原生形状/文本/连接符/表格；A/B/C 的输入输出、参数量、张量形状、先验与双输出与代码/checkpoint 一致；图内文本≥8 pt、无重叠、无栅格 | working 版已存在但视觉质量未过导师关，本轮重做 |
-> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 二级结构数据门 PASS、仅四个 smoke32；contact/distance/shuffle 待重建或 blocked；splice/CPEB3 已完成且均负 |
-> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE fold3/4 与 EL fold5 为 fold 级显著正；fold6–9 与 pc3 未跑；ArchiveII 5s/tRNA 强负；bpRNA TS0 在跑 |
-> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | 待执行（可与 CPU 工作并行） |
+> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards）；batch=4 并行队列已启动 5+5 seeds（3 路并行），contact/distance blocked，shuffle 仅作分析线 |
+> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；TE 十折 Δ=+0.0246（5/10，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold4–9、pc3 未完成；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃 |
+> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 完成：train/valid 对目标家族 own=0（无同族泄漏）；as-trained F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 20.55；判为 OOD pair-density 崩溃，不得写成全局架构负结论；5s 诊断暂停，待重跑 |
 > | T-A149 | 测速窗口协调 | `speed_window.py` 的 FD 租约接入 family / TE-EL / NB 队列；请求窗口→当前 run 结束→独占 4090→释放→各队列恢复；并发测试通过 | 本地脚本与测试已有，远端队列尚未接入；当前两个长任务需自然结束或人工暂停 |
 > | T-A150 | 文档、图源、归档与提交 | 三处 spec/tasks/checklist 同步；活跃源数据 JSON+哈希；废弃文件入 `archive_20261030/` 并建索引；确认代码提交并 push | 本轮贯穿执行 |
 >
@@ -50,6 +50,13 @@
 
 
 > change-id: `build-rna-ss-decision-model`
+>
+> **第 34 轮最新验收（2026-10-30；活跃图源唯一版本为 `round34-working-v48`）**：
+> - [x] Muscle TE/EL fold1/2 四项 full 结果均完成双头五种子、10/10 CUDA 收敛与 early-stopping、10/10 best-checkpoint RTX 4090 QA；样本数 1005/126/126、结果/QA 哈希和独立统计一致。
+> - [x] 四项折级结论已保留：TE fold1/2 Δ=-0.000431/-0.004270，EL fold1/2 Δ=-0.074742/-0.029991，均不显著为正；未外推为十折结论。
+> - [x] NB 指纹与 batch mask 修复通过静态编译、4 项持久测试、真实四缓存加载和队列 dry-run；代码已提交并推送分支 `round34-nb-secstr-fix-20261030`。
+> - [ ] NB official/JEV smoke 训练及独立 QA 尚未完成；batch=1 的实际提取/训练门统一为 8,192 MiB，继续等待安全窗口，不得绕过门或提前全量训练。
+> - [ ] 最终图 5、图 7 二级结构、结构十任务图 8A 与十折回归图 8B 仍未闭环；working PPT 不标记为最终科学稿。
 >
 > **第 34 轮当前验收（2026-10-30；覆盖下方第 33 轮状态，活跃图源唯一版本为 `round34-working-v46`）**：
 > - [x] 已复核全部交接文档、原论文任务注册表与远端 artifact；T-A133–T-A143 已包含导师全部补测要求，不新增重复实验。

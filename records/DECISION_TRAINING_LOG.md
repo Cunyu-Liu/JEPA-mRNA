@@ -10984,3 +10984,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **最终图 5**：`fig05_accuracy_speed_4090_final_3840x1920.png` SHA256=`d60b1b79eb461965cd2cad89eb3b37a6da91b198c6aae4891311e83e4e2ba6b6`，源 JSON 同步落 `source_data/fig05_speed/`。a 面板为共同 B=1 Pareto（xens2/plana/r2d 构成前沿），b 面板为五模型 B=1/2/4 吞吐曲线，自有模型全部在图中；旧 A100 图与 124.78 head-only 不再作为主图。
 - **PPT 第 9 页**：标题改为“RTX 4090 同机协议：精度-吞吐前沿与共同 batch 网格”，页脚改为 5 模型 15 格，脚注写 RNAformer blocked 与 UFold 不可得；第 16 页结论表“推理速度”行同步为 15 格与 r2d 22.28→37.42、xens2 7.47→12.38，限制列写 RNAformer/UFold 与跨 batch 数值等价。
 - **队列恢复**：TE/EL 队列已从 Muscle fold6 续跑（TE/EL 两进程，已跳过 fold0–5 的 PASS+QA）；NB 队列在 stale-code QA 失败后隔离 official_s0/jev_s0 两个旧 smoke run，正用当前代码重训 official smoke。隔离原因是 result 记录的 code_sha256 与当前 `nb_secstr_dual_round34.py` 不一致，不是数据损坏；未改写旧哈希、未绕过 QA。
+
+## §15.200（2026-10-31）图 7 contact/distance 与 shuffle 的可执行性核查
+
+- **NucleicBERT 官方资产核查**：Zenodo 16989562 的文件清单为 `pretrained.pt`、`shuffle.ckpt`、`contactmap.ckpt`、`fitness.ckpt`、`secstr.ckpt`，**只有权重、没有 `ns_bgsu_contact_map` 数据或 split**。官方仓库 `configs/contactmap.yml` 只给出 `../data/ns_bgsu_contact_map/{train,val}/{inputs,targets}` 路径，README 只列数据集名称，无下载链接或样本清单。
+- **公开基准核查**：`sparks-lab-org/RNAcmap_standalone` 已克隆到 `third_party/RNAcmap_standalone`，`inputs/` 仅 `sample_seq.fasta`，不含 NucleoSeeker 408 / BGSU 467 的 benchmark 序列与距离图；SPOT-RNA 仓库克隆因 GitHub 连接超时未完成。没有官方 split 就无法逐样本复现，不能把近似重建写成原论文数据。
+- **决策**：contact/distance 保持 blocked，原因写为“官方 split 与样本列表未发布，公开仓库不含可复现清单”；若后续拿到原始清单，再按 8 Å、20 类、Top-L/5、Top-L/2、Top-L 做 protocol-matched reconstruction，并在图与表标注 reconstruction，不声称逐样本复现。
+- **Shuffle 可执行性**：官方 `ShuffleDetector` 是 attention-pooled 序列级分类头，输入为 NB 最后层 hidden state；JEV 头输出 `L×L` 配对 logits，没有序列级输出。若强行把 JEV 配对特征池化再接分类器，会引入新头，破坏“同一冻结骨干、仅换头”的单变量对照。故 shuffle 作为分析线单独记录，不伪装成 JEV 头任务；不新造头、不写正结果。
+- **图 7 当前范围**：主 benchmark 8/8、Spliceator acceptor/donor、CPEB3 已完成；二级结构五种子训练中；contact/distance/shuffle 以 blocked/分析线如实呈现。
+
+## 2026-10-31 Round 35 — T-A148 归因与 NB 二级结构 batch 决策
+
+- **ArchiveII fam-fold 协议核查**：九个 family 的 train/valid 对目标 family 的 `own=0`，即官方 leave-one-family-out（池化其余 family），因此 tRNA/5s 崩塌不是同族泄漏；`family` 字段在 pooled 行被重写为目标 family，仅元数据噪声。
+- **tRNA seed0 解码诊断**（`tools/diagnose_archiveii_jev_collapse_round35.py`，输出 `audits/archiveii_diag_round35/tRNA_s0.json`）：as-trained DP（b=0）macro-F1=0.3817，pairs 5.84 vs 真值 20.55；验证集上 bias b=1.0 仅把 test 提到 0.4710；JEV 分数 sigmoid + 阈值 0.05（对称化）可到 0.6230、pairs 10.80，仍远低于 official 0.8772。结论：解码校准只解释部分崩塌，主因是 held-out family 上 pair-density 崩溃（OOD 局限），不能写成全局架构负结论；5s 诊断因主图队列暂停，待重跑。
+- **NB 二级结构 batch 决策**：round34 队列用 batch=1；train_rnalign_tr0 共 47,963 条结构，实测约 0.16 s/step，约 2 h/epoch，10 个 paired run 在单卡上不可行。batch=8 在 5s 诊断占用 12 GiB 时 OOM；batch=4 在空卡上 16 步约 2 s、单 run 约 2.7 GB，smoke+QA 通过。新队列 `tools/run_nb_secstr_queue_round35.py` 采用 batch=4、3 路并行、无 step cap，收敛合同（VL0 BCE、patience=5、min_delta=1e-6）与数据/种子/QA/聚合不变；两个 head 完全同协议。
