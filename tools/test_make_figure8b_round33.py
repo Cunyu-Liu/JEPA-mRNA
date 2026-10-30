@@ -85,8 +85,8 @@ with tempfile.TemporaryDirectory(prefix='rnajev_fig8b_test_') as temporary:
     env['FIGURE_OUT_DIR'] = str(out)
     completed = subprocess.run([sys.executable, str(SCRIPT)], env=env, text=True, capture_output=True)
     assert completed.returncode == 0, completed.stderr
-    assert 'FIG08B_REGRESSION_WORKING_ASSET_PASS' in completed.stdout
-    payload = json.loads((out / 'fig08b_rinalmo_regression_working_source.json').read_text())
+    assert 'FIG08B_REGRESSION_FINAL_CANDIDATE_PASS' in completed.stdout
+    payload = json.loads((out / 'fig08b_rinalmo_regression_final_source.json').read_text())
     assert len(payload['tasks']) == 7 and payload['tasks']['te_HEK']['p_value'] is None
     assert payload['holm_status'] == 'undefined_zero_variance'
     assert payload['significant_positive_tasks_holm'] == []
@@ -96,8 +96,8 @@ with tempfile.TemporaryDirectory(prefix='rnajev_fig8b_test_') as temporary:
             for head in task_row['heads'].values():
                 assert np.isclose(head['sd'], np.std(head['runs'], ddof=1), rtol=0, atol=1e-12)
                 assert not np.isclose(head['sd'], head['fold_sd'], rtol=0, atol=1e-12)
-    assert (out / 'fig08b_rinalmo_regression_working_3840x1920.png').stat().st_size > 100000
-    assert (out / 'fig08b_rinalmo_regression_working_3840x1920.pdf').stat().st_size > 5000
+    assert (out / 'fig08b_rinalmo_regression_final_3840x1920.png').stat().st_size > 100000
+    assert (out / 'fig08b_rinalmo_regression_final_3840x1920.pdf').stat().st_size > 5000
     if os.environ.get('FIGURE8B_TEST_ARTIFACT'):
         shutil.copytree(out, os.environ['FIGURE8B_TEST_ARTIFACT'], dirs_exist_ok=True)
     finite_hek = root / 'te_HEK_finite.json'
@@ -108,7 +108,7 @@ with tempfile.TemporaryDirectory(prefix='rnajev_fig8b_test_') as temporary:
     finite_env['FIGURE_OUT_DIR'] = str(finite_out)
     completed = subprocess.run([sys.executable, str(SCRIPT)], env=finite_env, text=True, capture_output=True)
     assert completed.returncode == 0, completed.stderr
-    finite_payload = json.loads((finite_out / 'fig08b_rinalmo_regression_working_source.json').read_text())
+    finite_payload = json.loads((finite_out / 'fig08b_rinalmo_regression_final_source.json').read_text())
     assert finite_payload['holm_status'] == 'PASS'
     raw_p = np.array([row['p_value'] for row in finite_payload['tasks'].values()])
     order = np.argsort(raw_p)

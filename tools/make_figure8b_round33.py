@@ -157,7 +157,7 @@ def main():
             rows[f"{task}_{cell_line}"] = load_cv(task, cell_line)
     assert len(rows) == 7
     holm_status = apply_holm(rows)
-    payload = {"figure_status": "working_pending_remaining_classification_tasks" if holm_status == "PASS" else "working_holm_undefined_zero_variance",
+    payload = {"figure_status": "final_candidate_pending_visual_qa" if holm_status == "PASS" else "final_candidate_holm_undefined_pending_visual_qa",
                "protocol": "official MRL full_v3 R²; TE/EL complete ten-fold Spearman aggregation",
                "tasks": rows,
                "holm_status": holm_status,
@@ -165,7 +165,7 @@ def main():
                "significant_positive_tasks_holm": [key for key, row in rows.items() if row.get("significant_positive_holm")],
                "note": "Holm-adjusted paired p-values are shown" if holm_status == "PASS" else "Holm is undefined with zero-variance tasks; no final significance claims"}
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "fig08b_rinalmo_regression_working_source.json").write_text(
+    (OUT / "fig08b_rinalmo_regression_final_source.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
 
     fig, axes = plt.subplots(1, 3, figsize=(12.8, 6.4), gridspec_kw={"width_ratios": [0.9, 1.35, 1.35]})
@@ -179,22 +179,22 @@ def main():
                plt.Line2D([0], [0], marker="s", color=C["blue"], lw=0, markersize=7, label="JEV head")]
     axes[0].legend(handles=handles, loc="upper right", fontsize=8.5)
     if holm_status == "PASS":
-        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±SD and Holm-adjusted paired p-values are shown.\n"
-                  "Working panel: remaining classification/structure tasks are still required before final claims.")
+        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±seed SD and Holm-adjusted paired p-values are shown.\n"
+                  "All positive and negative regression results are retained; classification results are reported separately in Figure 8A.")
     else:
-        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±SD and raw paired p-values are shown.\n"
-                  "Working panel: Holm is undefined with zero-variance tasks; no final significance claims.")
+        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±seed SD and raw paired p-values are shown.\n"
+                  "Holm is undefined with zero-variance tasks; no significance claims are made.")
     fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.6, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.065, right=0.985, top=0.85, bottom=0.20, wspace=0.34)
-    png = OUT / "fig08b_rinalmo_regression_working_3840x1920.png"
-    pdf = OUT / "fig08b_rinalmo_regression_working_3840x1920.pdf"
+    png = OUT / "fig08b_rinalmo_regression_final_3840x1920.png"
+    pdf = OUT / "fig08b_rinalmo_regression_final_3840x1920.pdf"
     fig.savefig(png, dpi=300)
     fig.savefig(pdf)
     plt.close(fig)
     with Image.open(png) as image:
         assert image.size == (3840, 1920)
     assert png.stat().st_size > 100_000 and pdf.stat().st_size > 5_000
-    print("FIG08B_REGRESSION_WORKING_ASSET_PASS", png, common.sha256(png))
+    print("FIG08B_REGRESSION_FINAL_CANDIDATE_PASS", png, common.sha256(png))
 
 
 if __name__ == "__main__":

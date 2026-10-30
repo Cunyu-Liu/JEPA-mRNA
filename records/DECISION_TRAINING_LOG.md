@@ -10930,3 +10930,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 有真实聚合时输出独立 final 文件：上方为十项 macro-F1，下方分置 Spliceator 与官方 88 类 ncRNA；图 8B 回归仍单独报告。首轮合成工程渲染发现图例与 tmRNA 标签碰撞，已将图例移至数据区上方并再次渲染通过。测试文件仅含 synthetic 工程数据，不进入 registry、PPT 或科学结论。
 - 未提供聚合变量时，working source 字段和图形分支保持原合同；实际重导出 PNG SHA256=`0dc049fcf3e2da99c270057b456d52ab236b978471ba1a57ac91ab052fa2edaa`，与注册 working PNG 逐字节一致。最终接入口代码 SHA256=`f7440a7a0f89ac6a1aea4708b472285605fdd8a60a035f01752ac54c10471681`，测试 SHA256=`877632b180a788b68f085e4c21a2c78311066f36085d6538042c06e73ed1084b`。
 - 真实十任务结果仍未齐全；tRNA/5s/bpRNA 继续按 early-stopping 训练，未生成新 aggregate，未把工程预览当作科学图。active registry 升级为 `round34-working-v43`。
+
+## §15.192（2026-10-30）图 8B 完成态命名与回归面板终审
+
+- 图 8B 的输入门本身已强制 MRL+六组 TE/EL 十折全部通过，继续把成功输出命名为 working 会与完成判据矛盾。现成功时输出 `fig08b_rinalmo_regression_final_source.json` 与 final PNG/PDF，状态为 `final_candidate_pending_visual_qa`；零方差时明确标为 Holm undefined，缺项/非有限值/重复 fold 仍硬失败。
+- 页脚改为全部正负回归结果保留、分类独立入图 8A，不再以其他面板未完成阻止本回归面板完成。合成工程渲染确认三面板无碰撞，mean±seed-SD、Holm 与图例清晰；测试数据不进入活跃资产。
+- 更新后绘图代码 SHA256=`e900d100a9496f28ecd3941957b3335adb8d2837a4e7e1aecccbcc56b0fa230c`，测试 SHA256=`76329a62a858be7693f8f4328a3e495a577168ceb5b5939a76b38694241a393d`，完整测试 PASS。真实 TE/EL 十折仍未齐全，未生成真实 final 图。active registry 升级为 `round34-working-v44`。

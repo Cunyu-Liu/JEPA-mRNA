@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v43",
+  "registry_version": "round34-working-v44",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -265,10 +265,11 @@
       "status": "mrl_full_v3_gpu_qa_pass_pending_te_el_ten_fold_results",
       "errorbar_contract": "TE/EL means and error bars use the five seed-level ten-fold Spearman averages; fold SD is retained separately and is not substituted for seed SD",
       "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure8b_round33.py",
-      "plotting_code_sha256": "0d2e4855aa80c6ebd0bd99f4b22601c456169f186b452ff523051a42628676e5",
+      "plotting_code_sha256": "e900d100a9496f28ecd3941957b3335adb8d2837a4e7e1aecccbcc56b0fa230c",
       "plotting_gate_test": "/private/tmp/rnajev_audit/round33/test_make_figure8b_round33.py",
-      "plotting_gate_test_sha256": "fdadbf1e524d79ae62e4000c91aae99b3f78658e37807d44dfcded1594462172",
-      "plotting_gate_test_status": "PASS: seed-SD contract, Holm, data gate, duplicate-fold and nonfinite rejection",
+      "plotting_gate_test_sha256": "76329a62a858be7693f8f4328a3e495a577168ceb5b5939a76b38694241a393d",
+      "plotting_gate_test_status": "PASS: final-candidate contract, seed-SD, Holm, data gate, duplicate-fold and nonfinite rejection",
+      "final_output_contract": "once MRL and all six TE/EL ten-fold aggregates pass, write fig08b_rinalmo_regression_final_source.json and final PNG/PDF; missing or invalid inputs still hard-fail",
       "required_results": ["Muscle/pc3/HEK TE and EL complete ten-fold Spearman aggregation"],
       "engineering_smoke32": {
         "status": "all_four_gpu_qa_pass_full_ten_fold_results_pending",
