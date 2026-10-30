@@ -77,13 +77,16 @@ def load_cv(task, cell_line):
             seed_cv.append(recomputed)
         fold_means = [fold["heads"][result_head]["spearman_seed_mean"] for fold in data["fold_results"]]
         mean = float(np.mean(fold_means))
-        sd = float(np.std(fold_means, ddof=1))
+        fold_sd = float(np.std(fold_means, ddof=1))
+        seed_sd = float(np.std(seed_cv, ddof=1))
         assert np.isclose(mean, head["cv_spearman_mean"], rtol=0, atol=1e-12)
-        assert np.isclose(sd, head["cv_spearman_fold_sd"], rtol=0, atol=1e-12)
-        values[plot_head] = {"mean": mean, "sd": sd, "runs": seed_cv}
+        assert np.isclose(fold_sd, head["cv_spearman_fold_sd"], rtol=0, atol=1e-12)
+        values[plot_head] = {"mean": mean, "sd": seed_sd, "fold_sd": fold_sd, "runs": seed_cv}
     comparison = data["comparison"]
     expected_delta = np.array(values["jev_head"]["runs"]) - np.array(values["official_probe"]["runs"])
     assert np.allclose(expected_delta, comparison["seed_cv_delta_jev_minus_official"], rtol=0, atol=1e-12)
+    assert np.isclose(float(np.mean(expected_delta)), comparison["paired_delta_mean"], rtol=0, atol=1e-12)
+    assert np.isclose(float(np.std(expected_delta, ddof=1)), comparison["paired_delta_sample_sd"], rtol=0, atol=1e-12)
     test = stats.ttest_rel(values["jev_head"]["runs"], values["official_probe"]["runs"], alternative="greater")
     p_value = comparison["one_sided_ttest_rel_greater_p_value"]
     if p_value is None:

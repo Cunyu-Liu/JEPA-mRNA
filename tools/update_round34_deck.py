@@ -9,7 +9,7 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.xmlchemy import OxmlElement
 
 SRC = Path("/private/tmp/rnajev_audit/RNA-JEV_论文逻辑重构_20261026_导师讨论_preview_draft.pptx")
-OUT = Path("/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx")
+OUT = Path("/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261030_02/RNA-JEV_论文逻辑重构_20261030_导师讨论_round34_working.pptx")
 FIG = Path("/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/figure_assets")
 FONT = "微软雅黑"
 C = {
@@ -131,6 +131,18 @@ def update_secondary_data_status(prs):
         "NB 二级结构待五种子；contact/distance/shuffle blocked；MRL 为负，TE/EL 未闭环",
         1,
     )
+    replace_run_text(
+        prs.slides[10].notes_slide,
+        "8/8 仅指主 benchmark；secondary structure/contact-distance/shuffle 缺官方资产，保持 blocked，不作全覆盖声明。",
+        "8/8 仅指主 benchmark；secondary-structure 数据门已过、五种子待验收；contact-distance/shuffle 保持 blocked，不作全覆盖声明。",
+        1,
+    )
+
+
+def update_version_labels(prs):
+    replace_run_text(prs.slides[0], "2026-10-26 · Round 32", "2026-10-30 · Round 34", 1)
+    replace_run_text(prs.slides[14], "结论口径：Round 32 统一复核", "结论口径：Round 34 统一复核", 1)
+    replace_run_text(prs.slides[20], "RNA-JEV / ROUND 32", "RNA-JEV / ROUND 34", 1)
 
 
 def update_speed_provenance(prs):
@@ -336,6 +348,7 @@ def main():
     update_downstream_provenance(prs)
     update_secondary_data_status(prs)
     update_fold3_te_status(prs)
+    update_version_labels(prs)
     prs.save(OUT)
     print(f"ROUND34_DECK_WORKING_WRITTEN {OUT}")
 

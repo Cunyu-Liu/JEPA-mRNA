@@ -10915,3 +10915,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 本地对四组原始 JSON 逐组复核：任务/细胞/fold、官方源数据哈希、engineering-only 标记、每组 train/validation/test=32/32/32、双头五种子、CUDA、converged/early-stopped、epochs_run=best_epoch+32、checkpoint/prediction 哈希、均值与配对统计均一致；QA 回执均绑定当前 result 哈希。四组仍仅为工程 smoke，不作为科学结果，不进入图 8B。
 - 复核 full 接续代码时发现 smoke/full QA 只检查 returncode、未绑定当前结果哈希。`run_te_el_cell_queue_round34.py` 已修复：当前哈希通过，篡改后返回 stale，当前哈希失败 QA 停止，主循环在 stale/failed smoke 下不启动训练；full QA state 同步写入 result_sha256。本地两项门测试和主循环拒绝测试通过，GitHub 代码提交=`2a13f0a75053aa3abb59173aede7d75a737fac53`。
 - 安装前再次确认没有任何 Muscle/pc3 full 子进程或 full result；随后替换队列并重启，代码 SHA256=`5077191b46562165096a926b2ca5da1ef0fcf796bb74b9834a6c23be8491073d`，新队列 PID=949848。使用远端真实四组回执调用新 `smoke_qa_status`，Muscle/pc3 TE/EL 全部返回 passed。full fold 仍须各自 result→当前哈希 GPU QA→下一折，不以 smoke 放行科学结论。active registry 升级为 `round34-working-v41`。
+
+## §15.190（2026-10-30）交接全审、PPT 备注一致性与图 8B seed-SD 纠错
+
+- 已完整复核本地交接根目录、`spec/`、`spec_sync/`、records/paper/tables/figs 文本与绘图源码，并对远端 `/home/rna_jev`、4090、CUDA 和在飞队列做只读交叉核验。导师要求已全部包含在 T-A133–T-A143，未新增重复实验；主图 3B/4/6 与七项已完成双头结果不重跑，当前剩余为正式 4090 全网格、NucleicBERT 二级结构五种子、RiNALMo 结构十任务与 TE/EL 全十折。
+- 三处 checklist 原停留在第 33 轮，现已同步第 34 轮事实并保留所有未完成总门未勾；本地 spec/tasks 与活跃 registry 唯一化为 `round34-working-v42`。第 11 页讲者备注旧的 secondary-structure blocked 已改为“数据门已过、五种子待验收”，封面/结论/末页版本标签同步 Round 34；所有科学数值和 pending 边界不变。
+- 新 working PPT SHA256=`bf12cfd338f3391ea912337a28e942b30943849134174cd77aefc457fc85512e`。markitdown 差异仅含预期状态与版本行；`fix_pptx`、21 页 layout、ZIP 均通过；665 个非空文本 run 均为微软雅黑，665 个段落有行距设置，Aspose 全 21 页重新渲染并逐页复核，无新增重叠或截断。评估水印只存在于 QA 渲染，不在 PPTX 内。
+- 图 8B 预检发现 TE/EL 误差棒误用 fold 间 SD，违反“每 seed 先十折平均，再做五 seed 配对”的展示合同。`make_figure8b_round33.py` 已改为以五个 seed-CV Spearman 均值计算 mean±sample SD，fold SD 单独保留；同时新增 paired delta mean/SD 的独立复算门。代码 SHA256=`0d2e4855aa80c6ebd0bd99f4b22601c456169f186b452ff523051a42628676e5`，测试覆盖 seed-SD、Holm、零方差、重复 fold 与非有限值拒绝，全部 PASS；本项只修正未来绘图，不改变任何已验收科学结果。
+- 远端快照仍只有既有 tRNA/5s/bpRNA 训练与受门队列；NucleicBERT 二级结构等待 8,192 MiB 提取门，正式测速等待真正独占 4090。未出现新的科学结果，未把等待、smoke、单 fold 或训练曲线写成结论。

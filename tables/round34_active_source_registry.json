@@ -1,5 +1,5 @@
 {
-  "registry_version": "round34-working-v41",
+  "registry_version": "round34-working-v42",
   "generated_at": "2026-10-30",
   "scientific_status": "working_not_final",
   "rules": {
@@ -252,6 +252,12 @@
     },
     "fig08b": {
       "status": "mrl_full_v3_gpu_qa_pass_pending_te_el_ten_fold_results",
+      "errorbar_contract": "TE/EL means and error bars use the five seed-level ten-fold Spearman averages; fold SD is retained separately and is not substituted for seed SD",
+      "plotting_code": "/private/tmp/rnajev_audit/round33/make_figure8b_round33.py",
+      "plotting_code_sha256": "0d2e4855aa80c6ebd0bd99f4b22601c456169f186b452ff523051a42628676e5",
+      "plotting_gate_test": "/private/tmp/rnajev_audit/round33/test_make_figure8b_round33.py",
+      "plotting_gate_test_sha256": "fdadbf1e524d79ae62e4000c91aae99b3f78658e37807d44dfcded1594462172",
+      "plotting_gate_test_status": "PASS: seed-SD contract, Holm, data gate, duplicate-fold and nonfinite rejection",
       "required_results": ["Muscle/pc3/HEK TE and EL complete ten-fold Spearman aggregation"],
       "engineering_smoke32": {
         "status": "all_four_gpu_qa_pass_full_ten_fold_results_pending",
@@ -463,22 +469,22 @@
     "pending": []
   },
   "deck": {
-    "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261028_03/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
-    "sha256": "3812233a5b71309575806a807403c6a012911b35d361ec55079fece433f626df",
+    "path": "/Users/liucunyu/Documents/all_code/ZJU/mRNA_editflow/temp_20261030_02/RNA-JEV_论文逻辑重构_20261030_导师讨论_round34_working.pptx",
+    "sha256": "bf12cfd338f3391ea912337a28e942b30943849134174cd77aefc457fc85512e",
     "layout_issues": 0,
     "font": "微软雅黑",
     "line_spacing": 1.5,
-    "updated_slides": [11, 12, 15, 19],
-    "content_update": "Figures 7/8A retain family-wise Holm-adjusted results; Figure 7 and slide 15 now distinguish secondary-structure data-gate completion from pending five-seed evaluation; contact/distance and shuffle remain blocked",
+    "updated_slides": [1, 5, 6, 7, 8, 9, 10, 11, 12, 15, 17, 19, 20, 21],
+    "content_update": "Round-34 labels and slide 11 speaker notes now match the verified secondary-structure data gate; all scientific values and pending boundaries are unchanged",
     "update_code": "/private/tmp/rnajev_audit/round34_ppt/update_round34_deck.py",
-    "update_code_sha256": "3cd6dbd6fdc11a04a0d8dae2c316744785a8b421e35ae534ba3ff040e25f6806",
-    "remote_backup": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/figure_assets/round34/RNA-JEV_论文逻辑重构_20261028_导师讨论_round34_working.pptx",
+    "update_code_sha256": "c206dbd52ef83b1b940d87d3d759b2d0b96cf0725ff98ba5f5ea57af8da6f7b3",
+    "remote_backup": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/figure_assets/round34/RNA-JEV_论文逻辑重构_20261030_导师讨论_round34_working.pptx",
     "fold3_te_status": {
       "slide": 19,
       "text": "MRL 与 HEK fold0–2 TE/EL、fold3 TE 已 QA，均不显著为正；fold3 EL 待续接。",
       "qa": "markitdown only changes this line; full layout=0; ZIP passes; all 18 media byte-identical; 665 Microsoft YaHei runs and 665 effective 1.5-spacing paragraphs; Aspose slide 19 has no overlap or clipping"
     },
-    "qa": "all 21 current pages rendered through Aspose and inspected; ZIP, zero out-of-bounds shapes, 665 Microsoft YaHei runs and 665 effective 1.5-spacing paragraphs passed; no clipping, overlap or missing legends; Figure 7 numerical arrays are unchanged and only its status footer/media plus slides 11/15 status text changed"
+    "qa": "all 21 pages rendered through Aspose and inspected after the version-label and speaker-note corrections; markitdown diff contains only the intended status/version lines; fix_pptx and layout report zero issues; ZIP passes; 665 Microsoft YaHei runs and 665 spaced paragraphs pass; no new clipping, overlap or missing legends"
   },
   "legacy_source_snapshot": {
     "path": "/private/tmp/rnajev_audit/remote_current_20261028/round32_figure_source_data.merged.json",

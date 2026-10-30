@@ -63,6 +63,8 @@ def cv_payload(task, cell, zero_variance=False):
                          'n_fold_results': 10, 'n_runs_per_head': 50},
             'heads': output_heads,
             'comparison': {'seed_cv_delta_jev_minus_official': delta.tolist(),
+                           'paired_delta_mean': float(delta.mean()),
+                           'paired_delta_sample_sd': float(delta.std(ddof=1)),
                            'one_sided_ttest_rel_greater_p_value': p,
                            'significant_positive': bool(p is not None and p < 0.05 and delta.mean() > 0)},
             'fold_results': fold_results}
@@ -89,6 +91,11 @@ with tempfile.TemporaryDirectory(prefix='rnajev_fig8b_test_') as temporary:
     assert payload['holm_status'] == 'undefined_zero_variance'
     assert payload['significant_positive_tasks_holm'] == []
     assert payload['tasks']['mrl']['result_sha256'] == sha(mrl)
+    for task_name, task_row in payload['tasks'].items():
+        if task_name != 'mrl':
+            for head in task_row['heads'].values():
+                assert np.isclose(head['sd'], np.std(head['runs'], ddof=1), rtol=0, atol=1e-12)
+                assert not np.isclose(head['sd'], head['fold_sd'], rtol=0, atol=1e-12)
     assert (out / 'fig08b_rinalmo_regression_working_3840x1920.png').stat().st_size > 100000
     assert (out / 'fig08b_rinalmo_regression_working_3840x1920.pdf').stat().st_size > 5000
     if os.environ.get('FIGURE8B_TEST_ARTIFACT'):

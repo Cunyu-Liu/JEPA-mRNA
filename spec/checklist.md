@@ -2,16 +2,19 @@
 
 > change-id: `build-rna-ss-decision-model`
 >
-> **第 34 轮接续验收（2026-10-28）**：
-> - [x] 已完成本地交接、PPT、原始 JSON 和远端 `/home/rna_jev` 三方审计；确认 3B/4/6 已修、5/7/8 未闭环，未重复启动已完成实验。
-> - [x] 已核实 RTX 4090 CUDA 可用，七项任务在训，审计快照显存 22,850/24,564 MiB；当前不超订，测速另设独占窗口。
-> - [x] 全部本地和远端 spec/tasks 镜像已写入统一执行顺序、原论文协议、统计口径与停止规则。
-> - [ ] 完成 4090 其余基线与共同 batch 网格，重绘主图 5A/B 并清除跨页旧速度/参数口径。
-> - [ ] 完成 ArchiveII、bpRNA、MRL 与 TE/EL 全协议，恢复 NucleicBERT 缺失官方资产；blocked 项不隐藏，fold0/smoke 不作最终结论。
-> - [ ] 完成主图 6 公式/字号修复及主图 5/7/8 最终入片，逐页通过微软雅黑、1.5 倍行距、图表同源、内容与布局 QA。
-> - [ ] 完成训练台账、确认代码提交/push、废弃交接文件与旧绘图源数据归档；活跃原始数据和哈希索引完整保留。
->
-> **历史边界**：本块是当前验收依据，下文第 33 轮及更早清单保留作追溯。
+> **第 34 轮当前验收（2026-10-30；覆盖下方第 33 轮状态，活跃图源唯一版本为 `round34-working-v42`）**：
+> - [x] 已复核全部交接文档、原论文任务注册表与远端 artifact；T-A133–T-A143 已包含导师全部补测要求，不新增重复实验。
+> - [x] 主图 3B 正值 performance drop 与图下同源表、主图 4 全颜色图例、主图 6 原生可编辑矢量均已完成内容验收（T-A134/T-A135/T-A137）。
+> - [ ] 主图 5：r2d/plana/xens2/RiNALMo-ft 的 4090 raw-sequence B=1 已验收；MXfold2/RNAformer 与六系统 B=1/2/4 正式共同网格仍待独占 4090，UFold 官方权重通道 blocked（T-A136）。
+> - [ ] NucleicBERT 二级结构数据门已通过，train/VL0/TS0/ArchiveII600=47,963/1,300/1,305/3,911；smoke、双头五种子和独立 GPU QA 尚未完成。contact/distance 与 shuffle 仍 blocked，不得宣称五类任务全覆盖（T-A138/T-A139）。
+> - [x] NucleicBERT acceptor、donor、CPEB3 已完成全量五种子双头和 Holm；均不显著为正，结果完整保留。
+> - [x] RiNALMo Spliceator、官方 88 类 ncRNA clean/bn200 与 official varying-length MRL full_v3 已完成全量及外部 4090 QA；MRL R² Δ=-0.468847，负结果完整保留。
+> - [ ] RiNALMo TS0+ArchiveII 九家族与 bpRNA 尚未完成十任务五种子聚合；tRNA/5s/bpRNA 队列继续按 result→当前哈希 QA 门推进。
+> - [ ] TE/EL 三细胞×两任务×十折×双头×五种子共 600 run 未闭环；HEK fold0–2 TE/EL 和 fold3 TE 仅为 fold 级结果，fold3 EL OOM 后受门续接，Muscle/pc3 仅 smoke32 工程门通过，不得进入正式图 8B。
+> - [x] round34 working PPT 共 21 页已完成 665 个微软雅黑 run、有效 1.5 倍行距、越界 shape=0 与 Aspose 全页渲染检查；第 11 页讲者备注旧 blocked 状态已列入最终一致性修复。
+> - [ ] 最终图 5、图 7 二级结构面板和图 8B 入片后，再完成 markitdown/fix/layout/ZIP/逐页渲染及图文同源验收（T-A142）。
+> - [ ] 所有新训练须具备 CUDA、VL0 early-stopping、best checkpoint、plateau 停止原因和逐 run 台账；任何 NOT_CONVERGED、哈希变化或 GPU 复读不一致立即停止。
+> - [ ] 科学结果闭环后归档废弃文档、mock/旧绘图源数据并保留哈希索引；阶段代码确认后提交并 push（T-A143）。
 >
 > **第 33 轮增量验收（2026-10-28）**：
 > - [x] 已读取全部交接文档并交叉核对远端真实第 32 轮 artifact；已识别 preview_draft 中主图 3 与 matched 的 mock 数据，禁止科学引用。
