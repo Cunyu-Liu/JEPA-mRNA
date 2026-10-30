@@ -36,6 +36,14 @@
 >
 > **协议修订（2026-10-31，主图 5 跨 batch）**：CUDA 在不同 batch 形状下选择不同归约顺序，logit 末位漂移可使边界配对翻转，逐位 SHA 相同不可达也不能作为科学判据。跨 B=1/2/4 改为数值等价验收：逐序配对一致率 ≥99%、F1 极差 ≤1e-3，并记录实测一致率与 F1；同一 batch 内三次重复仍要求逐位一致。r2d B1/B2 实测配对一致率 99.269%（38,316 对并集中 280 对对称差）、F1 0.668181/0.668318（Δ=1.37e-4），判定通过。
 
+> **第 35 轮执行快照（2026-10-31 01:55）**：
+> - 主图 5 已重绘入片：RTX 4090 同机、TS0 n=1288、raw-sequence 端到端，r2d/plana/xens2/rinalmo_ft/MXfold2 各 B=1/2/4 共 15/18 格 PASS；RNAformer 三格因 1024-nt padding 未能在独占窗口完成 B=1 而 blocked，UFold 权重不可得；最终 PNG SHA256=`d60b1b79...ba6b6`。
+> - 主图 6 已用 PPT 原生形状/文本/连接符重绘三栏，删除旧棋盘格与色卡；全稿 22 页 683 个文本 run 均微软雅黑、683 段有效 1.5 倍行距、越界 0。
+> - 主图 8B 折级工作面板已新增为第 13 页：Muscle TE fold3/4、EL fold5 单侧显著正，MRL ΔR²=-0.468847；十折聚合与 Holm 待闭环，不得写成最终结论。
+> - NB 二级结构：旧 smoke 因 code_sha256 过期被隔离，official/JEV smoke 已用当前代码重训并通过独立 GPU QA；train_rnalign_tr0 全量特征提取进行中。
+> - TE/EL：Muscle fold0–5 已 PASS+QA，fold6 TE/EL 正在运行；fold6–9 与 pc3 十折、HEK fold4–9 尚未闭环。
+> - 交接文档已归档 23 项并建 `archive_20261031/ARCHIVE_INDEX.md`；活跃源数据入 `source_data/` 并生成 `SOURCE_MANIFEST.json`（逐文件 SHA256）。代码提交=`33c5833`，分支 `round35-speed-window-20261031` 已 push；台账追加后提交=`cdd00b1`。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
