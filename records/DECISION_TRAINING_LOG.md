@@ -11056,3 +11056,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `plana_b1_profile.json`：18.922 seq/s，F1=0.786870；encoder/head/mask/DP 占比=70.1%/16.9%/4.6%/8.2%。`plana_b4_profile.json`：37.211 seq/s，F1=0.786899，实际平均 batch=2.717；占比=54.5%/27.2%/8.9%/9.3%。
 - 四个结果均为全 TS0、三次重复、CUDA、raw-sequence，阶段汇总脚本独立复核 PASS。编码器是最大耗时项，支持先评估 r2d 编码器 bf16；不把 transfer 当作优化主因。
 - xens2 基线和 bf16 候选尚未完成，暂不更新最终图或速度 SOTA 判定。
+
+
+## §15.207（2026-11-01）bf16 负优化、B=4 OOM 与测速窗口竞态修复
+
+- **全部基线 profile 已完成**：xens2 B=1 中位约 7.27 seq/s、B=4 约 15.07 seq/s；编码器占比约 76%/62%。r2d/plana/xens2 的 B=1/4 六份原始 JSON 均已落盘，支持优先优化编码器路径。
+- **r2d bf16 B=1 是明确负优化**：三次重复 14.309/13.858/9.861 seq/s，低于 fp32 基线 22.777；F1=0.667743 满足参考容差，但速度不得入选。该候选只证明当前 bf16 路径无收益，不能外推为所有优化无效。
+- **B=4 候选 OOM**：在 `type_head.cross` 分配 4.33 GiB 时失败，GPU 同时存在 12.92 GiB 与 8.46 GiB 两个进程，未生成 B=4 结果，优化窗口停止且未自动重试。证据保存 `audits/round36_optimization_window/candidates_oom_first_attempt.log`。
+- **根因**：baseline 结束后 NB official_s2 已启动，但其 CUDA 上下文尚未出现在 `nvidia-smi`，优化脚本误判为空闲。这是调度竞态，不是科学性能问题。停止调度器与后启动的重复 official_s2，仅保留较早进程；重复前后进程证据已保存。
+- **修复**：两个未完成窗口现在先等待 `nb_secstr_dual/qa` 进程自然结束，再等待 GPU 上下文清空，最后做 CUDA 断言；不在初始化阶段启动测速。修正后的窗口已确认停在 `WAIT_NB_PROCESSES`，提交 `675ee01`。只有在该硬门通过后才重新执行候选，不静默跳过失败。
