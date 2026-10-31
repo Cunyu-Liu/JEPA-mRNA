@@ -208,6 +208,12 @@
    "archived_to": "archive_20261031/old_records/smoke_repro_mrfp_20ep.conclusion.md",
    "reason": "早期 mRFP 复现记录，非当前结构线活跃证据",
    "sha256": "b7a9033d405f3a074a68d89a72491dea9e108aaf7f35106fd49e0937b4ddc52e"
+  },
+  {
+   "archived_from": "records/COMMIT_MSG.txt",
+   "archived_to": "archive_20261031/old_records/COMMIT_MSG.txt",
+   "reason": "A100/MIG 时代提交说明，与当前单张 RTX 4090 工作流无关",
+   "sha256": "a0a1985c75f842d7576d6e814eb3d2291a64a595874406c4ddfcc4f2519aab11"
   }
  ]
 }
