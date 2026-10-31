@@ -69,6 +69,13 @@
 > - HEK fold3 EL 完成：Δ=-0.0255、p=0.917（不显著为正）；HEK 现为 TE 0–3 四折、EL 0–3 四折，未满十折、不入图。
 > - 交付稿、源数据与文档口径不变；图 7d 仍需 9 个 run 全部 PASS。
 
+> **第 35 轮执行快照（2026-10-31 23:25，official_s1 收尾段）**：
+> - official_s0 记为第 1 个 PASS：31 epochs、best epoch 26、best validation BCE 0.011026，`converged+early_stopped+scientific_eligibility` 均 True；run.json 17:57:58、QA 18:01:11 PASS；预测 macro-F1：VL0 0.2931、TS0 0.3049、ArchiveII600 0.6813（单 seed 过程值）。
+> - official_s1（seed 1）在 epoch26：epoch25 验证 BCE 0.0112446；独占 GPU 后稳定在 0.063 s/step、约 12 min/epoch（较并行期 20 min/epoch 提升），GPU 利用率 75–94%。
+> - 队列：official_s2–s4、jev_s0–s4 共 8 个 run 待跑；全部 PASS 后 aggregate 5+5 配对与 Holm，再回填图 7d。
+> - HEK fold3 EL 收敛：Δ=-0.0255、p=0.917（不显著为正）；HEK 现为 TE 0–3、EL 0–3 各 4 折，未满十折不进图；pc3 保持暂停；图 8 按用户决定不再加跑新任务。
+> - 交付 PPT/PDF 与 source_data 未变（deck `e53dcae9…`）。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **用户确认（2026-10-31 11:45，单卡资源优先级）**：保图 7d。①维持 NB 10 个 paired run 串行到收敛，aggregate PASS 后才入片；②HEK fold3 EL 继续作为 GPU 并行占位，pc3 fold1 保持暂停；③图 8 维持已完成的 Muscle 十折与分类面板，不再加跑 ArchiveII/bpRNA 新任务；如需扩图 8 任务，先等 NB 收口后再排期。
