@@ -11034,3 +11034,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 三个速度窗口均处于正常等待：raw-sequence profile 等 official_s1 结束后启动；优化候选等 profile；RNAformer 同机全网格等优化候选。未发生 CUDA 错误、CPU 静默降级或测速失败。
 - 主图 5 新入口 `make_figure5_round36.py` 已改为只接收 eligible 全量结果，跨 batch 使用配对一致率与 F1 差值，不再要求逐位 SHA；RNAformer 直接绑定验收源路径。静态检查与测试通过，提交 `44b46a6`、`aa085a7`。
 - 当前仍无 round36 新测速数值或优化结论，PPT 保持“未证明速度 SOTA”。
+
+
+## §15.204（2026-11-01）official_s1 epoch37 与速度自动链状态
+
+- official_s1 在 epoch34 达到当前最佳 validation BCE=0.01088370；epoch35/36/37 分别为 0.01099741/0.01094649/0.01092239，连续三次未刷新最佳值，但仍未达到 patience=5 的 early-stopping 条件。继续训练，不为测速提前截断。
+- 已安装完整自动链：NB 收敛 → raw-sequence 分段 profile → bf16/扩展 batch 与 head-only 复现 → RNAformer B=1/2/4 全 TS0 → eligible 聚合 → 主图 5 与源 JSON → 图像和数值等价 QA。最终收割脚本 `run_round36_finalize_speed.sh` 提交 `53e4258`，讲者备注同步提交 `3625ece`。
+- 废弃 MIG 提交说明已归档，索引含 SHA256，提交 `418f248`。当前没有 round36 新速度数值，速度 SOTA 仍未证明。
