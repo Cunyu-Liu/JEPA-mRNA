@@ -47,3 +47,4 @@
 | `records/factor_probe_control_analysis.md` | `archive_20261031/old_records/factor_probe_control_analysis.md` | 早期因子探针探索；SHA256=`e5ff2dcd…ed10` |
 | `records/smoke_repro_mrfp_20ep.conclusion.md` | `archive_20261031/old_records/smoke_repro_mrfp_20ep.conclusion.md` | 早期 mRFP 复现；SHA256=`b7a9033d…c52e` |
 | `records/COMMIT_MSG.txt` | `archive_20261031/old_records/COMMIT_MSG.txt` | A100/MIG 时代提交说明，与当前单张 RTX 4090 工作流无关；SHA256=`a0a1985c…ab11` |
+| `source_data/fig05_speed/r2d_b1--bf16-r2d-encoder_profile.json` | `archive_20261031/quarantined_speed_round36/r2d_b1--bf16-r2d-encoder_contaminated_profile.json` | official_s2 并发污染，禁止作为 bf16 结论或入图；SHA256=`861cde43…7111` |

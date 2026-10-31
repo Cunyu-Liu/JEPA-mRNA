@@ -8,7 +8,7 @@
 > | T-A152 | RNAformer TS2 公平性与双 GT 审计 | 固定 bprna 与 inter-family 分列；release-full 与 canonical-nested 分列；原文 quoted 与项目复测分列；主表与敏感性表的胜场可复算 | **已完成**：原文 TS2=0.802、项目 GT 复测=0.9043、固定 bprna=0.8590；xens2=0.8604，口径不可互换 |
 > | T-A153 | 速度口径与历史点复现 | PPT/台账统一定义 head-only/forward-only/raw-sequence；GPU 复现历史 B=256 head-only 工程点；给出编码器是否计入的证据 | 已定位 124.78 与 22.28 不是同协议；待独占 GPU 复现 |
 > | T-A154 | 4090 原始序列分段 profile | 全 TS0 记录 encoder/head/mask/transfer/DP 时间、289 长度 bucket、有效 batch、显存；三次重复；CUDA 强制 | **已完成**：r2d/plana/xens2 六份 B=1/4 JSON；编码器为主要耗时；xens2 三次前向占主导 |
-> | T-A155 | 无损速度优化与共同网格 | 依 profile 单变量优化；全 TS0 三次重复，同配置逐位一致，跨配置配对一致≥99% 且 |ΔF1|≤1e-3；扩展 batch 与同机 RNAformer/UFold 完整点；原始 JSON/显存落盘 | bf16 B=1 负优化；B=4 启动竞态 OOM 已修复并留证；候选与 RNAformer 待完成，未证明速度 SOTA |
+> | T-A155 | 无损速度优化与共同网格 | 依 profile 单变量优化；全 TS0 三次重复，同配置逐位一致，跨配置配对一致≥99% 且 |ΔF1|≤1e-3；扩展 batch 与同机 RNAformer/UFold 完整点；原始 JSON/显存落盘 | bf16 B=1 受 GPU 竞争污染，已隔离、不得作结论；B=4 启动竞态 OOM 已修复；有效候选与 RNAformer 待完成，未证明速度 SOTA |
 > | T-A156 | 4090 主 benchmark 精度复核 | 8 split 逐项绑定 A100/4090 原始结果、样本数、GT 和预测；报告 paired ΔF1，缺项才重跑；不以速度结果代替精度 | **已完成**：8/8 原始 JSON 复核，最大绝对 F1 差=0.0000903，无明显精度变化 |
 > | T-A157 | PPT 修复与叙事证据审计 | 第 5 页解释速度差异与当前非 SOTA 边界；第 18 页图解三口径；第 17 页后新增泄露感知完整表；每主张有 claim–evidence–limitation；不改用户其他调整 | **已完成**：23 页、890 run 微软雅黑/1.5 行距、全页渲染与总览复核；速度 SOTA 保持未证明 |
 > | T-A158 | 全稿 QA、归档与提交 | 微软雅黑、1.5 倍行距、无重叠/越界、逐页渲染、图表同源、页码联动；活跃源数据哈希；废弃件入 archive；确认代码 commit+push | 贯穿本轮；NB 长任务仅在独占测速窗口让路并恢复 |

@@ -11065,3 +11065,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **B=4 候选 OOM**：在 `type_head.cross` 分配 4.33 GiB 时失败，GPU 同时存在 12.92 GiB 与 8.46 GiB 两个进程，未生成 B=4 结果，优化窗口停止且未自动重试。证据保存 `audits/round36_optimization_window/candidates_oom_first_attempt.log`。
 - **根因**：baseline 结束后 NB official_s2 已启动，但其 CUDA 上下文尚未出现在 `nvidia-smi`，优化脚本误判为空闲。这是调度竞态，不是科学性能问题。停止调度器与后启动的重复 official_s2，仅保留较早进程；重复前后进程证据已保存。
 - **修复**：两个未完成窗口现在先等待 `nb_secstr_dual/qa` 进程自然结束，再等待 GPU 上下文清空，最后做 CUDA 断言；不在初始化阶段启动测速。修正后的窗口已确认停在 `WAIT_NB_PROCESSES`，提交 `675ee01`。只有在该硬门通过后才重新执行候选，不静默跳过失败。
+
+
+## §15.208（2026-11-01）撤回 bf16 B=1 的“负优化”判定：结果受 GPU 竞争污染
+
+- 时间线复核显示，baseline 结束后 NB official_s2 在 02:54:44 已被恢复，bf16 B=1 在 02:55:30 启动，因此 official_s2 在候选三次重复期间持续存在。B=1 的 14.309/13.858/9.861 seq/s 与 decode 增长发生在 GPU 竞争下，不能用于比较 bf16 与 fp32。
+- §15.207 中“bf16 是明确负优化”的表述据此撤回：该结果**无效，不是科学负结果，也不证明 bf16 有或没有收益**。B=4 OOM 仍证明启动竞态存在。
+- 受污染文件已从 `optimized/` 移至 `optimized_quarantine/r2d_b1--bf16-r2d-encoder_contaminated_profile.json`，本地活跃源副本也移入 `archive_20261031/quarantined_speed_round36/`。聚合器不会读取该文件，不更新主图。
+- 修正后的窗口只有在 NB 进程与 GPU 上下文都清空后才重跑候选；重跑结果与基线使用同一独占条件，才允许做 bf16 判定。
