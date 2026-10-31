@@ -11041,3 +11041,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - official_s1 在 epoch34 达到当前最佳 validation BCE=0.01088370；epoch35/36/37 分别为 0.01099741/0.01094649/0.01092239，连续三次未刷新最佳值，但仍未达到 patience=5 的 early-stopping 条件。继续训练，不为测速提前截断。
 - 已安装完整自动链：NB 收敛 → raw-sequence 分段 profile → bf16/扩展 batch 与 head-only 复现 → RNAformer B=1/2/4 全 TS0 → eligible 聚合 → 主图 5 与源 JSON → 图像和数值等价 QA。最终收割脚本 `run_round36_finalize_speed.sh` 提交 `53e4258`，讲者备注同步提交 `3625ece`。
 - 废弃 MIG 提交说明已归档，索引含 SHA256，提交 `418f248`。当前没有 round36 新速度数值，速度 SOTA 仍未证明。
+
+
+## §15.205（2026-11-01）official_s1 正式收敛与首个 raw-sequence profile 过程证据
+
+- **official_s1 已正式闭环**：`run.json` 为 PASS，`converged=True`、`early_stopped=True`、`scientific_eligibility=True`；39 epochs，best epoch=34，best validation BCE=0.010883701770141101。gradient coverage 无 missing/nonfinite，device=cuda，batch=4、冻结 NucleicBERT 骨干，符合训练合同。该 run 可进入后续 QA 和五种子聚合，但不单独构成五种子科学结论。
+- **首个 r2d B=1 profile 过程值**：repeat0 F1=0.668181、22.325 seq/s，encoder=36.624 s、head=12.187 s、mask=3.102 s、C-DP=5.576 s、transfer=0.075 s；repeat1 F1=0.668181、23.050 seq/s，encoder=36.414 s、head=10.966 s、mask=3.115 s、C-DP=5.182 s、transfer=0.074 s。编码器约占 64%、决策头约 21%、DP 约 10%，支持优先评估编码器 bf16，而非先改 DP。
+- 以上仅为已完成 repeat 的过程证据，r2d/plana/xens2 全 B=1/4 网格和三次重复未齐，暂不更新主图或宣称提速。
