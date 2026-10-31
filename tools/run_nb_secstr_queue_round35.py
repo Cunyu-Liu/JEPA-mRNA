@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Round 35 NucleicBERT secondary-structure queue: batch-4, 3-way parallel, fail-closed.
+"""Round 35 NucleicBERT secondary-structure queue: batch-4, resumable, fail-closed.
 
 Why this queue exists: the round-34 queue trained at batch=1, which is ~0.16 s/step
 over 47,963 structures (about 2 h per epoch; 10 paired runs would take days). A batch-4
@@ -45,6 +45,12 @@ def qa_pass(run_dir: Path) -> bool:
     run, qa = run_dir / "run.json", run_dir / "qa.json"
     return (result_pass(run) and result_pass(qa)
             and json.loads(qa.read_text()).get("run_sha256") == sha256(run))
+
+
+def completed_runs_needing_qa(out_root: Path) -> list[tuple[str, int]]:
+    return [(head, seed) for head in ("official", "jev") for seed in range(5)
+            if result_pass(out_root / f"{head}_s{seed}/run.json")
+            and not qa_pass(out_root / f"{head}_s{seed}")]
 
 
 def extraction_done() -> bool:
@@ -131,11 +137,18 @@ def main() -> int:
             run_qa(head, 0, SMOKE, SMOKE)
         print(f"SMOKE_PASS {head}", flush=True)
 
+    qa_backfill = completed_runs_needing_qa(OUT)
     pending = [(head, seed) for head in ("official", "jev") for seed in range(5)]
     pending = [item for item in pending if not result_pass(OUT / f"{item[0]}_s{item[1]}/run.json")]
     if args.dry_run:
+        print("DRY QA backfill", qa_backfill)
         print("DRY full pending", pending, "parallel", args.parallel)
         return 0
+    for head, seed in qa_backfill:
+        run_qa(head, seed, OUT, OUT)
+        record({"head": head, "seed": seed, "status": "PASS",
+                "finished_utc": datetime.now(timezone.utc).isoformat()})
+        print(f"RUN_QA_PASS {head}_s{seed}", flush=True)
 
     running: dict[tuple[str, int], subprocess.Popen] = {}
     while pending or running:
