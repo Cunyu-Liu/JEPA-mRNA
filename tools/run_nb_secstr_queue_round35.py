@@ -41,6 +41,14 @@ def result_pass(path: Path) -> bool:
     return path.is_file() and json.loads(path.read_text()).get("status") == "PASS"
 
 
+def full_result_pass(path: Path) -> bool:
+    if not result_pass(path):
+        return False
+    result = json.loads(path.read_text())
+    return bool(result.get("converged") and result.get("early_stopped")
+                and result.get("scientific_eligibility"))
+
+
 def qa_pass(run_dir: Path) -> bool:
     run, qa = run_dir / "run.json", run_dir / "qa.json"
     return (result_pass(run) and result_pass(qa)
@@ -49,7 +57,7 @@ def qa_pass(run_dir: Path) -> bool:
 
 def completed_runs_needing_qa(out_root: Path) -> list[tuple[str, int]]:
     return [(head, seed) for head in ("official", "jev") for seed in range(5)
-            if result_pass(out_root / f"{head}_s{seed}/run.json")
+            if full_result_pass(out_root / f"{head}_s{seed}/run.json")
             and not qa_pass(out_root / f"{head}_s{seed}")]
 
 
@@ -108,7 +116,7 @@ def record(entry: dict) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--parallel", type=int, default=3)
+    parser.add_argument("--parallel", type=int, default=1)
     parser.add_argument("--min-free-mib", type=int, default=8000)
     parser.add_argument("--interval", type=int, default=30)
     parser.add_argument("--dry-run", action="store_true")
@@ -139,7 +147,7 @@ def main() -> int:
 
     qa_backfill = completed_runs_needing_qa(OUT)
     pending = [(head, seed) for head in ("official", "jev") for seed in range(5)]
-    pending = [item for item in pending if not result_pass(OUT / f"{item[0]}_s{item[1]}/run.json")]
+    pending = [item for item in pending if not full_result_pass(OUT / f"{item[0]}_s{item[1]}/run.json")]
     if args.dry_run:
         print("DRY QA backfill", qa_backfill)
         print("DRY full pending", pending, "parallel", args.parallel)
