@@ -65,6 +65,8 @@
 
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
+> **用户确认（2026-10-31 11:45，单卡资源优先级）**：保图 7d。①维持 NB 10 个 paired run 串行到收敛，aggregate PASS 后才入片；②HEK fold3 EL 继续作为 GPU 并行占位，pc3 fold1 保持暂停；③图 8 维持已完成的 Muscle 十折与分类面板，不再加跑 ArchiveII/bpRNA 新任务；如需扩图 8 任务，先等 NB 收口后再排期。
+
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
 
 
