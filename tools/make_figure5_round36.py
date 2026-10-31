@@ -124,8 +124,8 @@ def main() -> None:
         upper = np.array([rows[model, batch]["throughput_max"] - rows[model, batch]["throughput"] for batch in batches])
         b.errorbar(batches, values, yerr=np.vstack([lower, upper]), marker=spec["marker"], markersize=6.5,
                    color=spec["color"], lw=1.6, elinewidth=0.9, capsize=3, label=spec["label"], zorder=3)
-    b.set_xticks([1, 2, 4], ["1", "2", "4"])
-    b.set_xlim(0.65, 4.35)
+    b.set_xticks([1, 2, 4, 8, 16], ["1", "2", "4", "8", "16"])
+    b.set_xlim(0.65, 16.65)
     b.set_ylim(0, max(row["throughput_max"] for row in rows.values()) * 1.18)
     b.set_xlabel("Common batch size", labelpad=8)
     b.set_ylabel("Throughput (sequences/s)", labelpad=8)
