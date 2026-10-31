@@ -56,7 +56,7 @@ def main() -> None:
         raise RuntimeError("no eligible Round-36 results")
     rows = {(model, batch): base.load_result(model, batch) for model in base.OLD_MODELS | {"mxfold2"} for batch in (1, 2, 4)}
     for row in summary["optimization_candidates"]:
-        if row["eligible"]:
+        if row["eligible"] and not row["r2d_encoder_autocast_bf16"]:
             rows[row["model"], row["batch_size"]] = load_profile(Path(row["source"]))
     if summary["reference_models"]:
         for row in summary["reference_models"]:
