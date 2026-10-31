@@ -240,6 +240,13 @@
    "status": "active"
   },
   {
+   "path": "round32_verified_source_data.json",
+   "sha256": "7d0cb98abfad77b3fba46e50d899de4fc4d9890c15756512224f03b52e017a95",
+   "bytes": 56043,
+   "description": "主图 1 主 benchmark、主图 2 历史速度与泄露审计的 round32 已验证汇总源",
+   "status": "active"
+  },
+  {
    "path": "appendix_leakage/leakage_aware_baseline_source.json",
    "sha256": "e5ca478111e0c703a245e2629b4b4426fbd33d918e392a558a9b37dc773b6e72",
    "bytes": 41876,

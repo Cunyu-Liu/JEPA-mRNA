@@ -5,6 +5,7 @@
 | 文件 | 说明 | 状态 | SHA256（前 12 位） |
 |---|---|---|---|
 | `fig03_ablation/fig03b_group_drops.json` | 主图 3B 核心三模块分组均值与 PDB/ID 比值 | active | `3e048a175cf8` |
+| `round32_verified_source_data.json` | 主图 1 主 benchmark、主图 2 历史速度与泄露审计的 round32 已验证汇总源 | active | `7d0cb98abfad` |
 | `fig04_calibration/fig04_ece_confidence_source.json` | 主图 4 ECE/Spearman/n 源数据 | active | `d12c6524197f` |
 | `fig05_speed/fig05_accuracy_speed_4090_final_3840x1920.pdf` | 主图 5 最终矢量 PDF（文字放大版） | active | `1014ceade7e5` |
 | `fig05_speed/fig05_accuracy_speed_4090_final_3840x1920.png` | 主图 5 最终 PNG（3840×1920，文字放大版） | active | `39e15b4795f3` |
@@ -29,15 +30,15 @@
 | `fig07_nucleicbert/fig07_nucleicbert_original_round35_3840x1920.pdf` | 主图 7 原论文任务工作版矢量 PDF | active | `f8d67d5aee82` |
 | `fig07_nucleicbert/fig07_nucleicbert_original_round35_3840x1920.png` | 主图 7 原论文任务（acceptor/donor/CPEB3）工作版 PNG（3840×1920） | active | `489971c2ad11` |
 | `fig07_nucleicbert/fig07_nucleicbert_original_tasks_working_source.json` | 主图 7 原论文任务 working 源数据 | active | `53346872a227` |
+| `fig08a_classification/archiveii_diag_5s_s0.json` | T-A148 ArchiveII 5s 崩塌归因诊断（as-trained/偏置/阈值解码） | active | `41b02b3ce3e1` |
 | `fig08a_classification/archiveii_diag_tRNA_s0.json` | T-A148 ArchiveII tRNA JEV 崩塌归因诊断（解码/偏置/泄漏） | active | `ca828f5ffe1b` |
 | `fig08a_classification/fig08a_rinalmo_classification_round35_3840x1920.pdf` | 主图 8A 分类任务工作版矢量 PDF | active | `32a97ca369c7` |
 | `fig08a_classification/fig08a_rinalmo_classification_round35_3840x1920.png` | 主图 8A 分类任务工作版 PNG（3840×1920） | active | `bda17a2dea7e` |
 | `fig08a_classification/fig08a_rinalmo_classification_working_source.json` | 主图 8A 分类任务 working 源数据（5 seeds、Holm） | active | `ee033ff585e9` |
 | `fig08b_regression/TE_EL_TENFOLD_AGGREGATE.json` | Muscle TE/EL 十折聚合（折级符号秩与 Holm） | active | `40bf2c2cc3b2` |
-| `fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.pdf` | 主图 8B 回归任务工作版矢量 PDF | active | `4ceb23dea2cd` |
-| `fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.png` | 主图 8B 回归任务工作版 PNG（3840×1920） | active | `932126e3f421` |
-| `fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_source.json` | 主图 8B 回归任务 fold-level working 源数据 | active | `1fc96cd08414` |
-
+| `fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.pdf` | 主图 8B 回归任务工作版矢量 PDF | active | `10239824a579` |
+| `fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.png` | 主图 8B 回归任务工作版 PNG（3840×1920） | active | `5167af18a163` |
+| `fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_source.json` | 主图 8B 回归任务 fold-level working 源数据 | active | `0849041bee44` |
 | `appendix_leakage/leakage_aware_baseline_source.json` | 附录 A2 泄露处理完整基线表（19 系统、clean-181、排除格与审计边界） | active | `e5ca478111e0` |
 | `appendix_leakage/rnaformer_protocol_audit.json` | RNAformer 原文/复测、固定/特殊 checkpoint 与双 GT 审计 | active | `e32d4875e601` |
 | `appendix_leakage/main_benchmark_4090_reproduction.json` | xens2 八 split 4090/A100 精度复现（最大绝对差 0.0000903） | active | `e6f4f51f85f5` |
