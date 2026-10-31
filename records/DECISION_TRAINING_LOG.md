@@ -11048,3 +11048,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **official_s1 已正式闭环**：`run.json` 为 PASS，`converged=True`、`early_stopped=True`、`scientific_eligibility=True`；39 epochs，best epoch=34，best validation BCE=0.010883701770141101。gradient coverage 无 missing/nonfinite，device=cuda，batch=4、冻结 NucleicBERT 骨干，符合训练合同。该 run 可进入后续 QA 和五种子聚合，但不单独构成五种子科学结论。
 - **首个 r2d B=1 profile 过程值**：repeat0 F1=0.668181、22.325 seq/s，encoder=36.624 s、head=12.187 s、mask=3.102 s、C-DP=5.576 s、transfer=0.075 s；repeat1 F1=0.668181、23.050 seq/s，encoder=36.414 s、head=10.966 s、mask=3.115 s、C-DP=5.182 s、transfer=0.074 s。编码器约占 64%、决策头约 21%、DP 约 10%，支持优先评估编码器 bf16，而非先改 DP。
 - 以上仅为已完成 repeat 的过程证据，r2d/plana/xens2 全 B=1/4 网格和三次重复未齐，暂不更新主图或宣称提速。
+
+
+## §15.206（2026-11-01）r2d 与 plana 全量基线 profile 完成
+
+- `r2d_b1_profile.json`：22.777 seq/s，F1=0.668181；encoder/head/mask/DP 占比=64.7%/19.7%/5.5%/9.9%。`r2d_b4_profile.json`：41.736 seq/s，F1=0.667643，实际平均 batch=2.717；占比=47.6%/31.3%/10.3%/10.7%。
+- `plana_b1_profile.json`：18.922 seq/s，F1=0.786870；encoder/head/mask/DP 占比=70.1%/16.9%/4.6%/8.2%。`plana_b4_profile.json`：37.211 seq/s，F1=0.786899，实际平均 batch=2.717；占比=54.5%/27.2%/8.9%/9.3%。
+- 四个结果均为全 TS0、三次重复、CUDA、raw-sequence，阶段汇总脚本独立复核 PASS。编码器是最大耗时项，支持先评估 r2d 编码器 bf16；不把 transfer 当作优化主因。
+- xens2 基线和 bf16 候选尚未完成，暂不更新最终图或速度 SOTA 判定。
