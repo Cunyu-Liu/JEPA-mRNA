@@ -42,15 +42,15 @@ assert y.device.type == 'cuda' and torch.isfinite(y).all()
 print('CUDA_ASSERT_PASS')
 PY
 run_candidate() {
-  local model=$1 batch=$2 extra=$3
-  printf 'CANDIDATE model=%s batch=%s extra=%s time=%s\n' "$model" "$batch" "$extra" "$(date -Is)" | tee -a "$AUDIT/window.log"
+  local model=$1 batch=$2 baseline_batch=$3 extra=$4
+  printf 'CANDIDATE model=%s batch=%s baseline_batch=%s extra=%s time=%s\n' "$model" "$batch" "$baseline_batch" "$extra" "$(date -Is)" | tee -a "$AUDIT/window.log"
   "$PY" tools/profile_speed_round36.py --model "$model" --batch-size "$batch" --repeats 3 \
-    --baseline "$BASE/${model}_b${batch}_profile.json" $extra \
+    --baseline "$BASE/${model}_b${baseline_batch}_profile.json" $extra \
     --out "$OUT/${model}_b${batch}${extra// /_}_profile.json" >> "$AUDIT/candidates.log" 2>&1
 }
-run_candidate r2d 16 ''
-run_candidate plana 16 ''
+run_candidate r2d 16 4 ''
+run_candidate plana 16 4 ''
 "$PY" tools/head_only_repro_round36.py --checkpoint "$W/weights/main_ablations/r2d.pt" --batch-size 256 \
   --out "$W/eval_decision/speed_round36/head_only_b256_fp16_repro.json" >> "$AUDIT/candidates.log" 2>&1
-run_candidate xens2 8 ''
+run_candidate xens2 8 4 ''
 printf 'OPTIMIZATION_COMPLETE time=%s\n' "$(date -Is)" | tee -a "$AUDIT/window.log"
