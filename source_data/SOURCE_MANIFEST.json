@@ -240,6 +240,55 @@
    "status": "active"
   },
   {
+   "path": "fig05_speed/r2d_b1_profile.json",
+   "sha256": "7ef14e1fe5a74e3d29723e5d2b2be45201ff3d06b64a556502c91649e41d6109",
+   "bytes": 1348952,
+   "description": "round36 r2d B=1 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b4_profile.json",
+   "sha256": "db08a49ceb8122e8c709867535c0cad02328812578213ff8cf50b7ed88d95327",
+   "bytes": 1286328,
+   "description": "round36 r2d B=4 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b1_profile.json",
+   "sha256": "e178b142da13979b6adc044d83fc9fb8acbe1b15dfd7332fc4a82d3ee9c8e199",
+   "bytes": 1152879,
+   "description": "round36 plana B=1 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b4_profile.json",
+   "sha256": "9344b0d92ec857af6b36c244042516b0541d97936d28aa4c2baeee320ca7104d",
+   "bytes": 1091165,
+   "description": "round36 plana B=4 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b1_profile.json",
+   "sha256": "d6fa8717a6e6b5addbe2d1c091adca2678859203fd4f0a5cca6a2fbdd59741c9",
+   "bytes": 1397381,
+   "description": "round36 xens2 B=1 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b4_profile.json",
+   "sha256": "bc7c195d4c57d6947ab237bf92f15606b9da0bd5030babcdffaf30f06c1f0570",
+   "bytes": 1211715,
+   "description": "round36 xens2 B=4 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/speed_round36_profile_summary.json",
+   "sha256": "84438d5f213db49037a6cbccee45fbd52f79876e527a1a2f15c141b9652cd901",
+   "bytes": 5603,
+   "description": "六份基线 profile 的阶段耗时与占比汇总",
+   "status": "active"
+  },
+  {
    "path": "round32_verified_source_data.json",
    "sha256": "7d0cb98abfad77b3fba46e50d899de4fc4d9890c15756512224f03b52e017a95",
    "bytes": 56043,

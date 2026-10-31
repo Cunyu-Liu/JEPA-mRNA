@@ -5,6 +5,13 @@
 | 文件 | 说明 | 状态 | SHA256（前 12 位） |
 |---|---|---|---|
 | `fig03_ablation/fig03b_group_drops.json` | 主图 3B 核心三模块分组均值与 PDB/ID 比值 | active | `3e048a175cf8` |
+| `fig05_speed/r2d_b1_profile.json` | round36 r2d B=1 全 TS0 分段测速原始结果 | active | `7ef14e1fe5a7` |
+| `fig05_speed/r2d_b4_profile.json` | round36 r2d B=4 全 TS0 分段测速原始结果 | active | `db08a49ceb81` |
+| `fig05_speed/plana_b1_profile.json` | round36 plana B=1 全 TS0 分段测速原始结果 | active | `e178b142da13` |
+| `fig05_speed/plana_b4_profile.json` | round36 plana B=4 全 TS0 分段测速原始结果 | active | `9344b0d92ec8` |
+| `fig05_speed/xens2_b1_profile.json` | round36 xens2 B=1 全 TS0 分段测速原始结果 | active | `d6fa8717a6e6` |
+| `fig05_speed/xens2_b4_profile.json` | round36 xens2 B=4 全 TS0 分段测速原始结果 | active | `bc7c195d4c57` |
+| `fig05_speed/speed_round36_profile_summary.json` | 六份基线 profile 的阶段耗时与占比汇总 | active | `84438d5f213d` |
 | `round32_verified_source_data.json` | 主图 1 主 benchmark、主图 2 历史速度与泄露审计的 round32 已验证汇总源 | active | `7d0cb98abfad` |
 | `fig04_calibration/fig04_ece_confidence_source.json` | 主图 4 ECE/Spearman/n 源数据 | active | `d12c6524197f` |
 | `fig05_speed/fig05_accuracy_speed_4090_final_3840x1920.pdf` | 主图 5 最终矢量 PDF（文字放大版） | active | `1014ceade7e5` |
