@@ -20,7 +20,7 @@
 >
 > **GPU 与停止规则**：非计时阶段按实测显存和 CPU 容量并行提交独立任务，有余量即接续，禁止为占满显存而超订；正式计时必须独占，避免其他作业污染。CUDA 不可用或 CPU 静默降级立即停止并留证。训练仍以 validation plateau、best checkpoint 和 early-stopping 判收敛，不设步数上限；纯推理优化不重训，不得伪称训练收敛。smoke、proxy、训练集、单 seed 和不完整计时不得写成最终科学结论。
 >
-> **NB 恢复合同补充**：official_s0/s1 均已收敛并通过独立 GPU QA，official_s1 未重训。队列已增加 run 哈希绑定的 QA backfill；official_s2 自然收敛后先补其 QA，再启动后续 seed。恢复器只停止调度器，不中断当前训练；缺 run.json 或收敛门失败时禁止自动重试。修复提交 `403c766`，恢复器三分支测试共 9/9 PASS。
+> **NB 恢复合同补充**：official_s0/s1 均已收敛并通过独立 GPU QA，official_s1 未重训。队列默认 parallel=1，只有 `PASS+converged+early_stopped+scientific_eligibility` 的 full run 才可跳过，QA 必须绑定 run 哈希；official_s2 自然收敛后先补其 QA，再启动后续 seed。恢复器只停止调度器，不中断当前训练；缺 run.json 或收敛门失败时禁止自动重试。相关测试共 10/10 PASS，最新修复提交 `4722af6`。
 >
 > **历史边界**：本块覆盖第 35 轮及更早的同主题状态；既有科学结果不返工，只修正口径、补齐缺失证据和推理工程。
 

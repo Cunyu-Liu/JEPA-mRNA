@@ -11140,3 +11140,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - validation/TS0/ArchiveII600 分别 1300/1305/3911 条，三组均逐名称、GT、pairs 和独立指标复算一致，`gpu_reinference_exact=True`；macro-F1=0.31439467/0.32593653/0.70474171。这些是 official seed1 的单 seed 工程验收值，不作五种子科学结论。
 - `qa.json`：status=PASS、device=cuda、scientific_eligibility=True，run SHA256=`a16ca2fe10fe521b7ef68ab0b98e6fc7d745e7d0bb65e08d1c71ba5b92b56276`；QA JSON SHA256=`cfa2d05b7da1bca4f5902b9e363e0ce80820ad848686600cc3517025bc042f97`，QA log SHA256=`ec34765d73fa8262bc38db1f6495d87d94f0534f7a5db851ebe51e04e9572bc3`。
 - 队列 dry-run 复核 `QA backfill=[]`，不再跳过任何已完成 run 的 QA；full pending 仅从 official_s2 起。official_s2 自然收敛后只需补自己的 QA，再进入 official_s3。
+
+
+## §15.217（2026-11-01）NB full-run 续跑门与默认并发加固
+
+- 默认 `--parallel` 从 3 改为 **1**，防止后续手工重启在单张 4090 上超订；并行 QA 仍只允许非计时、显存有余量的独立任务，不改变五种子配对协议。
+- 新增 `full_result_pass`：只有 `status=PASS`、`converged=True`、`early_stopped=True`、`scientific_eligibility=True` 才能被视为已完成 full run。仅写 PASS 但未收敛的结果不会被跳过，也不会被错误送入 QA backfill。
+- 新测试覆盖 nonconverged PASS，恢复器/队列/既有 NB 测试共 **10/10 PASS**；不带 `--parallel` 的真实 dry-run 显示 parallel=1、QA backfill=[]，pending 从 official_s2 起，official_s0/s1 不重复。
+- 代码与测试提交 `4722af6` 已 push。当前 watcher 在 official_s2 自然结束后将使用加固后的队列。
