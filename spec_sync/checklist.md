@@ -63,6 +63,12 @@
 > - jingmei-ppt 正式汇报配方复核：22 页缩略图、封面与全表页全尺寸，层级/密度/页脚安全区一致，无需改版。
 > - 提交 `e469213`、`55c12db` 已 push；文档三处与远端 `spec/`、`spec_sync/` 哈希一致。
 
+> **第 35 轮执行快照（2026-10-31 18:10，NB 首个 run 闭环）**：
+> - official_s0 完成：31 epochs（best epoch 26），best validation BCE=0.011026，`early_stopped=True`、`converged=True`、`scientific_eligibility=True`；batch=4、冻结骨干仅头训练。run.json 落盘 17:57:58、独立 QA 18:01:11 PASS，队列已启动 official_s1。单 run 用时约 10 h18 min（07:40→17:58，约 20 min/epoch），10 run 串行总窗口约 4 天。
+> - 该 run 预测 macro-F1：VL0 0.2931、TS0 0.3049、ArchiveII600 0.6813（official head）；五种子聚合前只作过程记录，不写成结论。
+> - HEK fold3 EL 完成：Δ=-0.0255、p=0.917（不显著为正）；HEK 现为 TE 0–3 四折、EL 0–3 四折，未满十折、不入图。
+> - 交付稿、源数据与文档口径不变；图 7d 仍需 9 个 run 全部 PASS。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **用户确认（2026-10-31 11:45，单卡资源优先级）**：保图 7d。①维持 NB 10 个 paired run 串行到收敛，aggregate PASS 后才入片；②HEK fold3 EL 继续作为 GPU 并行占位，pc3 fold1 保持暂停；③图 8 维持已完成的 Muscle 十折与分类面板，不再加跑 ArchiveII/bpRNA 新任务；如需扩图 8 任务，先等 NB 收口后再排期。
