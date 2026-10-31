@@ -51,6 +51,10 @@
 > - HEK fold3 TE 已出 result，fold3 EL seed1 续训；pc3 fold1 seed3；两条队列自动续跑。
 > - T-A148 5s 完成并写入 source_data（34 个活跃源文件，SHA256）；文档/代码提交 `71c7862`、`2eec3ab`、`6f22739` 已 push。
 
+> **第 35 轮执行快照（2026-10-31 10:15，图 6 字号达标）**：
+> - 图 6 页 37 个文本 run 由 6.4–7.8 pt 统一提升到 8.0 pt；为消除换行溢出，A 栏底注缩短为 “cached or recomputed on raw sequence”，B 栏 logits 框加宽 1.78→2.05 in，C 栏 ECE 框加宽 1.80→1.90 in，Output 标签下移 0.06 in。
+> - 复核：第 10 页 0 个 run <8 pt；全稿 QA 683 run 微软雅黑、683 段 1.5 倍行距、越界 0；130 dpi 渲染三栏无溢出/重叠。deck 哈希 `cd0625c3…`；旧版归档 `round35_pre_fig6_8pt.pptx`。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
