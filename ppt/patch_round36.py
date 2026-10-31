@@ -74,9 +74,9 @@ def patch_speed_pages(prs):
                  "主图 2｜124.78 是 head-only 峰值，不是 4090 复刻失败")
     replace_text(slide,
                  "124.78 属于 r2dtr1c-s0 的历史 head-only 峰值；当前 raw-sequence B=1 为 22.28 seq/s（F1=0.668181），二者不得混用。",
-                 "同 B=1：head-only 21.45、raw-sequence 22.28 seq/s，二者接近；124.78 主要来自 B=256+fp16 饱和加速及不同计时边界，并非 4090 变慢。当前未证明速度 SOTA。")
+                 "B=1 两者接近（21.45 vs 22.28）；4090 复现 head-only=117.735 seq/s，历史计数一致，证明非硬件失败。raw-sequence fp32 B=16/8 达 50.68/46.13/17.62，最终 SOTA 待同机基线闭环。")
     set_notes(slide,
-              "同 B=1 时，head-only=21.45、raw-sequence=22.28 seq/s，二者接近。124.78 主要来自 B=256+fp16 饱和加速和不同计时边界，不是 4090 复刻失败。当前只有已测五系统内部 Pareto，未证明全模型速度 SOTA。")
+              "同 B=1 时，head-only=21.45、raw-sequence=22.28 seq/s，二者接近。4090 复现 head-only=117.735 seq/s，TP/FP/FN 与历史一致，证明不是硬件复刻失败。fp32 扩展 batch 已达 r2d=50.679、plana=46.127、xens2=17.622 seq/s；最终 SOTA 待同机基线闭环。")
 
     slide = prs.slides[8]
     replace_text(slide,
@@ -108,7 +108,7 @@ def patch_protocol_page(prs):
         "模型、硬件、计时范围必须同时写": ("三种速度口径：输入、计时边界与当前判定", 20.5, True),
         "模型身份": ("head-only｜缓存表征", 11.5, True),
         "124.78 属于 r2dtr1c-s0 的历史 head-only 峰值，不是 xens2；F1=0.667971。": (
-            "cached embedding → 812,375 head → C 解码；不含编码器。124.78 为 B=256/fp16 峰值。", 9.5, False),
+            "cached embedding → 812,375 head → C 解码；不含编码器。4090 复现 117.735 seq/s，历史计数一致。", 9.5, False),
         "计时范围": ("forward-only｜仅前向", 11.5, True),
         "含 cached embedding、812,375 head 与 C 解码；不包含 raw-sequence 编码器前向。": (
             "raw sequence → 编码器 + 任务头 → 分数/概率；不含 DP。RiNALMo-ft 14.5 seq/s 属此类。", 9.5, False),
@@ -117,7 +117,7 @@ def patch_protocol_page(prs):
             "raw sequence → 编码器 + 任务头 + 必要 DP；r2d B=1 为 22.28 seq/s，三步全部计入。", 9.5, False),
         "参照限制": ("为何差这么多", 11.5, True),
         "RiNALMo-ft 14.5 seq/s 为 forward-only，单列，不能冒充完整系统延迟。": (
-            "B=1 两者已接近（21.45 vs 22.28）；124.78 主要来自 B=256/fp16 饱和加速与计时边界，并非硬件退化。", 9.5, False),
+            "B=1 两者已接近（21.45 vs 22.28）；4090 复现 117.735 seq/s，证明非硬件退化。", 9.5, False),
         "有效性": ("当前判定", 11.5, True),
         "tp/fp/fn=24406/13778/10485；批大小不改变预测，B=384/512 只作饱和检查。": (
             "已测五系统内部 Pareto ≠ 全模型速度 SOTA；同机基线未闭环，后续集中做无损推理优化。", 9.5, False),
@@ -129,7 +129,7 @@ def patch_protocol_page(prs):
     replace_text(slide, "本页为历史 head-only 阶梯；不得与 raw-sequence 或 forward-only 读数混用。",
                  "三种计时边界见右侧；124.78 与 22.28 不是同协议，不能称为 4090 复刻失败。")
     set_notes(slide,
-              "head-only：cached embedding→决策头→必要 DP，不含编码器；forward-only：raw sequence→编码器+任务头，不含 DP；raw-sequence：包含编码器、任务头和必要 DP。B=1 两者已接近，124.78 主要来自 B=256+fp16 饱和加速。当前未证明速度 SOTA。")
+              "head-only：cached embedding→决策头→必要 DP，不含编码器；forward-only：raw sequence→编码器+任务头，不含 DP；raw-sequence：包含编码器、任务头和必要 DP。4090 复现 head-only=117.735 seq/s，历史计数一致，证明不是硬件复刻失败。")
 
 
 def patch_leakage_page(prs, source):
