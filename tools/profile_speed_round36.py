@@ -65,13 +65,13 @@ def forward_profiled(models: dict, seqs: list[str], device: torch.device) -> tup
         return scores
 
     if name == "r2d":
-        scores = head_one("head", encode_one("encoder", False))
+        scores = head_one("head", encode_one("encoder", models.get("r2d_bf16", False)))
     elif name == "plana":
         scores = head_one("head", encode_one("encoder", True))
     elif name == "xens2":
         s0 = head_one("head0", encode_one("enc0", True))
         s1 = head_one("head1", encode_one("enc1", True))
-        sr = head_one("r2d_head", encode_one("base_encoder", False))
+        sr = head_one("r2d_head", encode_one("base_encoder", models.get("r2d_bf16", False)))
         scores = 0.7 * (0.5 * s0 + 0.5 * s1) + 0.3 * sr
     else:
         raise ValueError(name)
@@ -153,6 +153,8 @@ def main() -> int:
     parser.add_argument("--model", required=True, choices=["r2d", "plana", "xens2"])
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--bf16-r2d-encoder", action="store_true")
+    parser.add_argument("--baseline", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if not torch.cuda.is_available():
@@ -163,6 +165,7 @@ def main() -> int:
     if data_sha256 != speed.DEFAULT_DATA_SHA256:
         raise RuntimeError("TS0 identity mismatch")
     models = speed.load_models(args.model, device)
+    models["r2d_bf16"] = args.bf16_r2d_encoder
     runs = []
     for repeat in range(args.repeats):
         torch.cuda.empty_cache()
@@ -180,6 +183,29 @@ def main() -> int:
         raise RuntimeError("F1 gate failed")
     if len({run["predictions_sha256"] for run in runs}) != 1:
         raise RuntimeError("predictions differ across repeats")
+    equivalence = None
+    if args.baseline:
+        baseline = json.loads(args.baseline.read_text(encoding="utf-8"))
+        baseline_predictions = baseline["predictions"]
+        if len(baseline_predictions) != len(records):
+            raise RuntimeError("baseline prediction count mismatch")
+        union = symmetric_difference = 0
+        for row, baseline_row, pred in zip(records, baseline_predictions, predictions):
+            if row["name"] != baseline_row["name"]:
+                raise RuntimeError("baseline prediction order mismatch")
+            reference = {tuple(pair) for pair in baseline_row["pairs"]}
+            candidate = set(pred)
+            union += len(reference | candidate)
+            symmetric_difference += len(reference ^ candidate)
+        baseline_f1 = baseline["runs"][0]["strict_micro_f1"]
+        candidate_f1 = statistics.median(run["strict_micro_f1"] for run in runs)
+        equivalence = {
+            "baseline": str(args.baseline),
+            "pair_agreement": 1 - symmetric_difference / union,
+            "symmetric_difference_pairs": symmetric_difference,
+            "union_pairs": union,
+            "abs_delta_f1": abs(candidate_f1 - baseline_f1),
+        }
     payload = {
         "status": "PASS",
         "scope": "full_TS0_raw_sequence_profile_not_optimized_result",
@@ -193,14 +219,20 @@ def main() -> int:
             "cached_embeddings": False,
             "repeats": args.repeats,
             "batching": "exact_length_buckets",
+            "r2d_encoder_autocast_bf16": args.bf16_r2d_encoder,
             "batch_statistics": batch_statistics(records, args.batch_size),
         },
+        "cross_config_equivalence": equivalence,
         "throughput_median_seq_per_s": statistics.median(run["throughput_seq_per_s"] for run in runs),
         "runs": runs,
         "predictions": [{"name": row["name"], "pairs": pred} for row, pred in zip(records, predictions)],
     }
+    if equivalence and (equivalence["pair_agreement"] < 0.99 or equivalence["abs_delta_f1"] > 0.001):
+        payload["status"] = "FAIL_CROSS_CONFIG_EQUIVALENCE"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8")
+    if payload["status"] != "PASS":
+        raise RuntimeError(f"cross-config equivalence failed: {equivalence}")
     print(f"PROFILE_PASS out={args.out}", flush=True)
     return 0
 
