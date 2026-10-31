@@ -11185,3 +11185,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch13 train BCE=0.00045258，validation BCE=**0.011859104993047114**，相对 epoch12=0.011950184556014655 再降 9.10796e-5，继续刷新 best，bad=0。
 - 训练日志与进程复核正常，无异常退出或停滞；继续按原 early-stopping 合同训练。
+
+
+## §15.224（2026-11-01）official_s2 epoch14 验证节点
+
+- epoch14 train BCE=0.00043673，validation BCE=**0.011834594179564423**，相对 epoch13=0.011859104993047114 再降 2.45108e-5，继续刷新 best，bad=0。
+- 改善幅度较上一轮缩小，但仍超过 min_delta=1e-6；不将单轮趋缓当作 plateau，继续后续 epoch。
