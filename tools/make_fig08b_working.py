@@ -28,6 +28,10 @@ plt.rcParams.update({
 C = {"ink": "#17243A", "muted": "#667085", "light": "#E7EBF0", "teal": "#0E7C86",
      "teal_light": "#D7EEF0", "gray": "#7A8491", "coral": "#B64342", "amber": "#C8963E"}
 
+# HEK/pc3 ten-fold protocols are still running. Only draw series that are
+# complete, so one x-axis never mixes a ten-fold series with partial coverage.
+INCLUDE_HEK = False
+
 
 def load(task: str, cell: str, fold: int) -> dict:
     path = DATA / f"rinalmo_{task}_{cell}_fold{fold}_round33_full_v4/result.json"
@@ -66,6 +70,8 @@ def draw_panel(ax, title, muscle, hek, title_letter, hek_label="HEK"):
     width = 0.34
     for offset, rows, color, label in ((-width / 2, muscle, C["teal"], "Muscle"),
                                        (width / 2, hek, C["gray"], hek_label)):
+        if not rows:
+            continue
         xs, ys, errs, stars = [], [], [], []
         for row in rows:
             xs.append(row["fold"] + offset)
@@ -103,29 +109,12 @@ def main() -> int:
 
     aggregate_path = DATA / "TE_EL_TENFOLD_AGGREGATE.json"
     aggregate = json.loads(aggregate_path.read_text()) if aggregate_path.is_file() else None
-    muscle_parts, hek_parts = [], []
-    if aggregate:
-        for key, label in (("TE_Muscle", "Muscle TE"), ("EL_Muscle", "Muscle EL"),
-                           ("TE_HEK", "HEK TE"), ("EL_HEK", "HEK EL")):
-            entry = aggregate["series"].get(key)
-            if not entry:
-                continue
-            part = (f"{label} mean Δ={entry['mean_delta']:+.4f} "
-                    f"(+{entry['positive_folds']}/{entry['n_folds']}, "
-                    f"Holm {entry['holm_adjusted_p_across_present_series']:.2f})")
-            (muscle_parts if "Muscle" in label else hek_parts).append(part)
-    summary_text = ""
-    if muscle_parts or hek_parts:
-        lines = []
-        if muscle_parts:
-            lines.append("; ".join(muscle_parts) + ".")
-        if hek_parts:
-            lines.append("; ".join(hek_parts) + f". Fold coverage: {aggregate.get('status', 'INCOMPLETE')}.")
-        summary_text = "\n".join(lines)
 
     fig = plt.figure(figsize=(12.8, 6.4), dpi=300)
+    # The slide footnote carries the statistical caveats; no duplicated in-figure
+    # caption, so the panels can use the full height.
     gs = fig.add_gridspec(1, 3, width_ratios=[1.12, 1.12, 0.82], wspace=0.32,
-                          left=0.065, right=0.985, top=0.86, bottom=0.20)
+                          left=0.065, right=0.985, top=0.86, bottom=0.09)
     ax1 = fig.add_subplot(gs[0, 0])
     ax2 = fig.add_subplot(gs[0, 1])
     ax3 = fig.add_subplot(gs[0, 2])
@@ -134,8 +123,10 @@ def main() -> int:
                     if len(hek_te) < 10 else "HEK")
     hek_el_label = (f"HEK (folds 0–{max(row['fold'] for row in hek_el)})"
                     if len(hek_el) < 10 else "HEK")
-    draw_panel(ax1, "Translation efficiency (TE)", muscle_te, hek_te, "a", hek_te_label)
-    draw_panel(ax2, "Expression level (EL)", muscle_el, hek_el, "b", hek_el_label)
+    draw_panel(ax1, "Translation efficiency (TE)", muscle_te,
+               hek_te if INCLUDE_HEK else [], "a", hek_te_label)
+    draw_panel(ax2, "Expression level (EL)", muscle_el,
+               hek_el if INCLUDE_HEK else [], "b", hek_el_label)
 
     ax3.bar([0, 1], [mrl_official, mrl_jev], width=0.55, color=[C["gray"], C["teal"]], zorder=3)
     ax3.set_xticks([0, 1], ["Official\nprobe", "JEV head"])
@@ -149,15 +140,6 @@ def main() -> int:
              va="bottom", fontsize=10.2, color=C["coral"], transform=ax3.transAxes,
              bbox=dict(facecolor="white", edgecolor="none", alpha=0.95, pad=2.0))
     ax3.annotate("", xy=(1, 0.95), xytext=(0, 0.95), arrowprops=dict(arrowstyle="-", color=C["light"], lw=0.8))
-
-    caption = (
-        "All available folds are shown, including negative results; error bars are sample SD across five paired seeds; "
-        "Muscle tenfold is complete, HEK/pc3 remain incomplete.\n"
-        "Stars mark one-sided paired p<0.05. Cross-fold signed-rank and Holm are descriptive over the folds shown; "
-        "HEK/pc3 must not be read as a final ten-fold conclusion."
-        + ("\n" + summary_text if summary_text else ""))
-    fig.text(0.065, 0.015, caption, ha="left", va="bottom", fontsize=9.2,
-             color=C["muted"], linespacing=1.45)
 
     png = OUT / "fig08b_rinalmo_regression_foldlevel_working_3840x1920.png"
     pdf = OUT / "fig08b_rinalmo_regression_foldlevel_working_3840x1920.pdf"
@@ -174,7 +156,9 @@ def main() -> int:
         "EL": {"Muscle": muscle_el, "HEK": hek_el},
         "MRL": {"official_r2": mrl_official, "jev_r2": mrl_jev, "delta": mrl_delta, "p": mrl_p},
         "aggregate": aggregate,
-        "note": "All available folds shown; ten-fold mean and Holm correction not yet available.",
+        "rendered_series": ["Muscle"] if not INCLUDE_HEK else ["Muscle", "HEK"],
+        "note": ("HEK/pc3 folds are retained here for traceability but not drawn while incomplete; "
+                 "only complete ten-fold series are rendered."),
     }
     (OUT / "fig08b_rinalmo_regression_foldlevel_working_source.json").write_text(
         json.dumps(source, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
