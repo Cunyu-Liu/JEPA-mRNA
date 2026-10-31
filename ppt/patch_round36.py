@@ -62,6 +62,12 @@ def clone_slide(prs, source_index, insert_index):
     return prs.slides[insert_index]
 
 
+def set_notes(slide, text):
+    frame = slide.notes_slide.notes_text_frame
+    if frame is not None:
+        frame.text = text
+
+
 def patch_speed_pages(prs):
     slide = prs.slides[4]
     replace_text(slide, "主图 2｜历史 head-only 峰值 124.78 seq/s，禁止跨口径比较",
@@ -69,11 +75,15 @@ def patch_speed_pages(prs):
     replace_text(slide,
                  "124.78 属于 r2dtr1c-s0 的历史 head-only 峰值；当前 raw-sequence B=1 为 22.28 seq/s（F1=0.668181），二者不得混用。",
                  "同 B=1：head-only 21.45、raw-sequence 22.28 seq/s，二者接近；124.78 主要来自 B=256+fp16 饱和加速及不同计时边界，并非 4090 变慢。当前未证明速度 SOTA。")
+    set_notes(slide,
+              "同 B=1 时，head-only=21.45、raw-sequence=22.28 seq/s，二者接近。124.78 主要来自 B=256+fp16 饱和加速和不同计时边界，不是 4090 复刻失败。当前只有已测五系统内部 Pareto，未证明全模型速度 SOTA。")
 
     slide = prs.slides[8]
     replace_text(slide,
                  "RNAformer 因 1024-nt padding 未能在独占窗口完成 B=1，保持 blocked；UFold 官方权重不可得；旧 124.78 seq/s 仅历史值，禁止混入 raw-sequence 前沿。",
                  "当前仅为已测五系统内部 Pareto，不是全模型速度 SOTA；RNAformer/UFold 同机完整点补齐后再判定。旧 124.78 seq/s 为 head-only 历史值，禁止混入 raw-sequence 前沿。")
+    set_notes(slide,
+              "RTX 4090、TS0 n=1288、raw-sequence 端到端。当前 15/18 格只支持已测五系统内部比较，不能称为全模型速度 SOTA。RNAformer/UFold 同机完整点仍在补齐，旧 124.78 只作 head-only 历史参照。")
 
     slide = prs.slides[15]
     replace_text(slide,
@@ -118,6 +128,8 @@ def patch_protocol_page(prs):
             set_shape_text(shape, text, size=size, bold=bold)
     replace_text(slide, "本页为历史 head-only 阶梯；不得与 raw-sequence 或 forward-only 读数混用。",
                  "三种计时边界见右侧；124.78 与 22.28 不是同协议，不能称为 4090 复刻失败。")
+    set_notes(slide,
+              "head-only：cached embedding→决策头→必要 DP，不含编码器；forward-only：raw sequence→编码器+任务头，不含 DP；raw-sequence：包含编码器、任务头和必要 DP。B=1 两者已接近，124.78 主要来自 B=256+fp16 饱和加速。当前未证明速度 SOTA。")
 
 
 def patch_leakage_page(prs, source):
