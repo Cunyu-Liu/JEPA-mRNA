@@ -4,7 +4,7 @@
 >
 > - [x] T-A151 泄露感知完整基线表由原始 artifact 重算，TR0 系 TSB 全用 clean-181，未审计格标 NA。
 > - [x] T-A152 RNAformer 固定 bprna/inter-family、release-full/canonical-nested、原文/复测口径分列，TS2 公平性结论可复算。
-> - [ ] T-A153 三种速度边界已图解，历史 head-only B=256 点在 GPU 复现并留证。
+> - [x] T-A153 三种速度边界已图解，历史 head-only B=256 点在 GPU 复现并留证。
 > - [x] T-A154 全 TS0 分段 profile、有效 batch、三次重复和显存全部落盘。
 > - [ ] T-A155 优化通过全量预测等价门，同机关键基线闭环后才判定是否速度 SOTA；当前未证明。
 > - [x] T-A156 4090 八 split 主 benchmark 逐项复核，报告相对 A100 的真实 ΔF1，缺项才重跑。
