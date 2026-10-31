@@ -11,6 +11,12 @@
 | `fig05_speed/plana_b4_profile.json` | round36 plana B=4 全 TS0 分段测速原始结果 | active | `9344b0d92ec8` |
 | `fig05_speed/xens2_b1_profile.json` | round36 xens2 B=1 全 TS0 分段测速原始结果 | active | `d6fa8717a6e6` |
 | `fig05_speed/xens2_b4_profile.json` | round36 xens2 B=4 全 TS0 分段测速原始结果 | active | `bc7c195d4c57` |
+| `fig05_speed/r2d_b16_profile.json` | r2d B=16 fp32 扩展 batch 全量验收结果 | active | `289757842a95` |
+| `fig05_speed/plana_b16_profile.json` | plana B=16 fp32 扩展 batch 全量验收结果 | active | `47865dc1f409` |
+| `fig05_speed/xens2_b8_profile.json` | xens2 B=8 fp32 扩展 batch 全量验收结果 | active | `1e39284598ab` |
+| `fig05_speed/r2d_b1--bf16-r2d-encoder_profile.json` | r2d B=1 bf16 独占负优化结果，不得入选最快配置 | active | `7f0886b1fb40` |
+| `fig05_speed/r2d_b4--bf16-r2d-encoder_profile.json` | r2d B=4 bf16 负优化且等价门失败结果 | active | `660418765034` |
+| `fig05_speed/head_only_b256_fp16_repro.json` | 4090 历史 head-only 复现（117.735 seq/s、历史计数一致） | active | `028b41138490` |
 | `fig05_speed/speed_round36_profile_summary.json` | 六份基线 profile 的阶段耗时与占比汇总 | active | `84438d5f213d` |
 | `round32_verified_source_data.json` | 主图 1 主 benchmark、主图 2 历史速度与泄露审计的 round32 已验证汇总源 | active | `7d0cb98abfad` |
 | `fig04_calibration/fig04_ece_confidence_source.json` | 主图 4 ECE/Spearman/n 源数据 | active | `d12c6524197f` |

@@ -282,6 +282,48 @@
    "status": "active"
   },
   {
+   "path": "fig05_speed/r2d_b16_profile.json",
+   "sha256": "289757842a9511e639eebcbadcd9ae08fb286bfe12fe68d2c5d45377c4781da4",
+   "bytes": 1272769,
+   "description": "round36 r2d B=16 fp32 扩展 batch 全量验收结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b16_profile.json",
+   "sha256": "47865dc1f409ed345d9c98a16a7cfcd81bf4173f60d7bee12b0efc6cc0a93257",
+   "bytes": 1078153,
+   "description": "round36 plana B=16 fp32 扩展 batch 全量验收结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b8_profile.json",
+   "sha256": "1e39284598abce6fb576868d3325fa1e5f9cae82a62302e514d1aabd79f80f27",
+   "bytes": 1184266,
+   "description": "round36 xens2 B=8 fp32 扩展 batch 全量验收结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b1--bf16-r2d-encoder_profile.json",
+   "sha256": "7f0886b1fb40ca8c0a99ba2e2653ee8bb6f570b0ece600d2d556970c7227e8fd",
+   "bytes": 1347895,
+   "description": "round36 r2d B=1 bf16 独占负优化结果（不得入选最快配置）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b4--bf16-r2d-encoder_profile.json",
+   "sha256": "660418765034b8f823059f4d85506f96ffe6b89445fbb26544e8cfad5c7678e7",
+   "bytes": 1286532,
+   "description": "round36 r2d B=4 bf16 负优化且等价门失败结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/head_only_b256_fp16_repro.json",
+   "sha256": "028b41138490a99b0c8eb461f2344a1c5d0a21ed9c0353f6265d92c10846a4d8",
+   "bytes": 386,
+   "description": "4090 历史 head-only B=256 fp16 复现（117.735 seq/s、历史 TP/FP/FN 一致）",
+   "status": "active"
+  },
+  {
    "path": "fig05_speed/speed_round36_profile_summary.json",
    "sha256": "84438d5f213db49037a6cbccee45fbd52f79876e527a1a2f15c141b9652cd901",
    "bytes": 5603,
