@@ -11124,3 +11124,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **聚合合同复核**：`aggregate_nb_secstr_round34.py` 强制 official/JEV 各五 seed、run+QA PASS、run/QA 哈希绑定、head/seed/limit 身份、full 收敛与 scientific eligibility；指标为 TS0/ArchiveII600 的 per-structure macro-F1，同 seed 配对单侧 t 检验，并在这两个任务内做 Holm 校正。零方差时不伪造显著性。
 - **不完整输入必须失败**：对当前真实 runs-root 做聚合预检，程序在 official_s1 缺少 `qa.json` 处按预期失败，未生成 `premature_aggregate_should_not_exist.json`。日志保存 `audits/nb_secstr_round35_b4/preflight_incomplete_aggregate.log`。这不是科学失败，而是 QA 缺口被正确拦截。
 - official_s2 与恢复 watcher 继续运行；只有 10 个 full run 全部通过独立 GPU QA 后才允许生成 aggregate 和更新图 7d。
+
+
+## §15.215（2026-11-01）NB 恢复器三分支持久测试
+
+- 新增 `tests/test_nb_secstr_qa_recovery_round35.py`，直接执行生产恢复脚本，并用 fake flock 截获最后的队列调用，确保测试不启动真实 GPU 训练。
+- 三条分支均通过：①缺 `run.json` 时非零退出且不调用队列；②run 存在但未满足 converged/early_stopped/scientific_eligibility 时非零退出且不调用队列；③完整 PASS+收敛结果只调用一个 `--parallel 1 --min-free-mib 8000 --interval 30` 队列。
+- 首轮测试发现 fake flock 的 `/usr/bin/env python3` 在集群无该解释器，改为集群实际 Python 绝对路径后重跑；这是测试环境修复，生产脚本未改。最终恢复器、队列与既有 NB 测试共 **9/9 PASS**。测试提交 `7590307`。
+- official_s2 epoch7 validation BCE=**0.01281778**，相对 epoch6=0.01303951 继续下降并刷新 best；epoch8 已启动，watcher 正常等待，仍不提前停止。
