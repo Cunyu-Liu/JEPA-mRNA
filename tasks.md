@@ -50,6 +50,7 @@
 > - TE/EL：Muscle fold7/8 已 PASS+QA（fold8 TE/EL 均正）；9 折聚合 TE Δ=+0.0324（5/9 正，Holm 0.50），EL Δ=-0.0127（4/9 正，Holm 1.00）；fold9 在跑。图 8B 已加 9 折聚合脚注。
 > - T-A148 tRNA seed0：九个 family 的 train/valid 对目标家族 `own=0`，确认 leave-one-family-out、无同族泄漏；as-trained macro-F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 真值 20.55；判为 OOD pair-density 崩溃，不得写成全局架构负结论；5s 诊断在跑。
 > - 代码提交 `0894963`（T-A148 诊断脚本、NB batch=4 并行队列、文档同步）已 push；`source_data` 33 个活跃文件哈希已刷新；archive 追加 round35 中间稿/提取图，共 26 项。
+> - NB batch 决策：batch=1 在 47,963 条结构上约 0.16 s/step（约 2 h/epoch），10 个 paired run 不可行；改为 batch=4、单路顺序（两 head 完全同协议，收敛合同与数据不变），并去掉训练器里重复的 14 GB shard 哈希；smoke 已用新代码重训通过。
 
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
