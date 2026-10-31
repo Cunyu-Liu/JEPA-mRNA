@@ -11116,3 +11116,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **队列根因与修复**：旧 pending 只检查 `run.json=PASS`，会跳过缺少或哈希过期 QA 的已完成 run。新增 `completed_runs_needing_qa`，要求 QA 的 `run_sha256` 与当前 run 文件一致，并在任何新 seed 启动前串行补齐。静态编译、队列新测试与既有 NB 测试共 6 项 PASS；dry-run 明确显示 `QA backfill=[official_s1]`，full pending 从 official_s2 开始，不重复 official_s0/s1。
 - **无中断切换**：仅终止旧 scheduler/flock，official_s2 训练 PID 1426895 保持运行。恢复 watcher PID 1427521 等该 PID 自然结束后，先检查 `run.json` 的 PASS、converged、early_stopped 和 scientific_eligibility；任何一项缺失均停止且禁止自动重试。通过后由同一 flock 启动修复队列，依次补 official_s1/s2 QA，再启动 official_s3，避免训练与 QA 或重复训练并发。
 - 修复代码、恢复脚本和测试已提交并 push：`403c766`。最终 5+5 aggregate 与图 7d 总门继续保持未关闭。
+
+
+## §15.214（2026-11-01）NB 最终聚合 fail-closed 与 QA 资产预检
+
+- **静态资产预检**：official_s0/s1 的训练代码 SHA256 均为 `d36380d42fb2…`，与当前 `nb_secstr_dual_round34.py` 一致；两份 best checkpoint 存在且哈希匹配，validation/TS0/ArchiveII600 三组预测文件的行数和 SHA256 均匹配。该检查只排除资产损坏，不替代后续独立 GPU 复推 QA。
+- **聚合合同复核**：`aggregate_nb_secstr_round34.py` 强制 official/JEV 各五 seed、run+QA PASS、run/QA 哈希绑定、head/seed/limit 身份、full 收敛与 scientific eligibility；指标为 TS0/ArchiveII600 的 per-structure macro-F1，同 seed 配对单侧 t 检验，并在这两个任务内做 Holm 校正。零方差时不伪造显著性。
+- **不完整输入必须失败**：对当前真实 runs-root 做聚合预检，程序在 official_s1 缺少 `qa.json` 处按预期失败，未生成 `premature_aggregate_should_not_exist.json`。日志保存 `audits/nb_secstr_round35_b4/preflight_incomplete_aggregate.log`。这不是科学失败，而是 QA 缺口被正确拦截。
+- official_s2 与恢复 watcher 继续运行；只有 10 个 full run 全部通过独立 GPU QA 后才允许生成 aggregate 和更新图 7d。
