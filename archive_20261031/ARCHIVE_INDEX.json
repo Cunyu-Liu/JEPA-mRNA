@@ -1,0 +1,213 @@
+{
+ "created": "2026-10-31",
+ "items": [
+  {
+   "archived_from": "RNA-JEV_项目进展_20260924.pptx",
+   "archived_to": "archive_20261031/old_decks/RNA-JEV_项目进展_20260924.pptx",
+   "reason": "旧版 2026-09-24 汇报稿，已被 round34/35 working deck 取代"
+  },
+  {
+   "archived_from": "figs/main",
+   "archived_to": "archive_20261031/old_figures/figs_main",
+   "reason": "v1–v4 旧版主图与生成脚本，已被 figure_assets 与 round35 图源取代"
+  },
+  {
+   "archived_from": "figs/figs_round29",
+   "archived_to": "archive_20261031/old_figures/figs_round29",
+   "reason": "round29 图件，已被 round30+ 合并图取代"
+  },
+  {
+   "archived_from": "figs/make_round29_figs.py",
+   "archived_to": "archive_20261031/old_figures/make_round29_figs.py",
+   "reason": "round29 旧绘图脚本"
+  },
+  {
+   "archived_from": "figs/make_round29_length_archii.py",
+   "archived_to": "archive_20261031/old_figures/make_round29_length_archii.py",
+   "reason": "round29 旧绘图脚本"
+  },
+  {
+   "archived_from": "figs/make_round29_length_fig.py",
+   "archived_to": "archive_20261031/old_figures/make_round29_length_fig.py",
+   "reason": "round29 旧绘图脚本"
+  },
+  {
+   "archived_from": "figs/make_round29_splice_fig.py",
+   "archived_to": "archive_20261031/old_figures/make_round29_splice_fig.py",
+   "reason": "round29 旧绘图脚本"
+  },
+  {
+   "archived_from": "figs/make_round30_merged_downstream.py",
+   "archived_to": "archive_20261031/old_figures/make_round30_merged_downstream.py",
+   "reason": "round30 旧合并下游图脚本"
+  },
+  {
+   "archived_from": "figs/rnajev_evidence_panel.png",
+   "archived_to": "archive_20261031/old_figures/rnajev_evidence_panel.png",
+   "reason": "旧证据面板"
+  },
+  {
+   "archived_from": "figs/seed_family_pr.png",
+   "archived_to": "archive_20261031/old_figures/seed_family_pr.png",
+   "reason": "旧种子/家族 PR 图"
+  },
+  {
+   "archived_from": "records/CDPFold_calibration_verdict.PLACEHOLDER.json",
+   "archived_to": "archive_20261031/placeholders/CDPFold_calibration_verdict.PLACEHOLDER.json",
+   "reason": "占位文件，禁止作为科学数据"
+  },
+  {
+   "archived_from": "records/CDPFold_calibration_verdict.PLACEHOLDER.md",
+   "archived_to": "archive_20261031/placeholders/CDPFold_calibration_verdict.PLACEHOLDER.md",
+   "reason": "占位文件，禁止作为科学数据"
+  },
+  {
+   "archived_from": "spec_sync/ROUND24_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND24_NOTE.md",
+   "reason": "第 24 轮历史交接便签，内容已并入 spec.md"
+  },
+  {
+   "archived_from": "spec_sync/ROUND25_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND25_NOTE.md",
+   "reason": "第 25 轮历史交接便签，内容已并入 spec.md"
+  },
+  {
+   "archived_from": "spec_sync/ROUND26_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND26_NOTE.md",
+   "reason": "第 26 轮历史交接便签，内容已并入 spec.md"
+  },
+  {
+   "archived_from": "spec_sync/ROUND27_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND27_NOTE.md",
+   "reason": "第 27 轮历史交接便签，内容已并入 spec.md"
+  },
+  {
+   "archived_from": "spec_sync/ROUND28_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND28_NOTE.md",
+   "reason": "第 28 轮历史交接便签，内容已并入 spec.md"
+  },
+  {
+   "archived_from": "spec_sync/ROUND29_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND29_NOTE.md",
+   "reason": "第 29 轮历史交接便签，内容已并入 spec.md"
+  },
+  {
+   "archived_from": "paper/preprint_draft_v3.26_standalone.html",
+   "archived_to": "archive_20261031/old_paper_versions/preprint_draft_v3.26_standalone.html",
+   "reason": "旧稿 v3.26"
+  },
+  {
+   "archived_from": "paper/preprint_draft_v3.26.pdf",
+   "archived_to": "archive_20261031/old_paper_versions/preprint_draft_v3.26.pdf",
+   "reason": "旧稿 v3.26"
+  },
+  {
+   "archived_from": "paper/preprint_draft_v3.27.pdf",
+   "archived_to": "archive_20261031/old_paper_versions/preprint_draft_v3.27.pdf",
+   "reason": "旧稿 v3.27"
+  },
+  {
+   "archived_from": "paper/preprint_draft_v3.29.html",
+   "archived_to": "archive_20261031/old_paper_versions/preprint_draft_v3.29.html",
+   "reason": "旧稿 v3.29"
+  },
+  {
+   "archived_from": "paper/preprint_draft_v3.29.pdf",
+   "archived_to": "archive_20261031/old_paper_versions/preprint_draft_v3.29.pdf",
+   "reason": "旧稿 v3.29"
+  },
+  {
+   "archived_from": "RNA-JEV/ppt/RNA-JEV_论文逻辑重构_20261031_导师讨论_round35.pptx（视觉审校前）",
+   "archived_to": "archive_20261031/old_decks/round35_intermediate/RNA-JEV_论文逻辑重构_20261031_导师讨论_round35_pre_visualqa.pptx",
+   "reason": "逐页视觉审校与图 8B 改为仅完整十折系列之前的 round35 交付稿"
+  },
+  {
+   "archived_from": "RNA-JEV/ppt/RNA-JEV_论文逻辑重构_20261031_导师讨论_round35.pptx（图6字号提升前）",
+   "archived_to": "archive_20261031/old_decks/round35_intermediate/RNA-JEV_论文逻辑重构_20261031_导师讨论_round35_pre_fig6_8pt.pptx",
+   "reason": "图 6 全部文本提升到 8 pt 并修正溢出之前的 round35 交付稿"
+  },
+  {
+   "archived_from": "ppt/RNA-JEV_论文逻辑重构_20261031_导师讨论_round35.pptx（pc3/HEK 状态更正前，含 pdf）",
+   "archived_to": "archive_20261031/old_decks/round35_intermediate/RNA-JEV_论文逻辑重构_20261031_导师讨论_round35_pre_statusfix_20261031.pptx（+同名 .pdf）",
+   "reason": "图 8B 口径与 pc3 暂停状态更正前的交付稿"
+  },
+  {
+   "archived_from": "paper/preprint_draft.md",
+   "archived_to": "archive_20261031/old_paper_versions/preprint_draft.md",
+   "reason": "旧论文稿含已撤回的 7/8 与旧速度口径；保留追溯，禁止作为当前叙事源",
+   "sha256": "625ee2355df6a707480dcb716772089c8d47f0ae03ab30250a6b19cab55cec82"
+  },
+  {
+   "archived_from": "paper/preprint_draft_v330.md",
+   "archived_to": "archive_20261031/old_paper_versions/preprint_draft_v330.md",
+   "reason": "v3.30 旧论文稿，主 benchmark 与速度口径已被 round32/36 复核取代",
+   "sha256": "c38657be394f93b34ddcd30b0a74e8074fabac844001054a21b597d769cdd59e"
+  },
+  {
+   "archived_from": "paper/round29_patch.md",
+   "archived_to": "archive_20261031/old_paper_versions/round29_patch.md",
+   "reason": "round29 旧论文补丁",
+   "sha256": "e7e885c30b1178c3e996062ce96ebc409e3de016d2a8234fd16a1f2ecace7fc0"
+  },
+  {
+   "archived_from": "paper/round30_qa.md",
+   "archived_to": "archive_20261031/old_paper_versions/round30_qa.md",
+   "reason": "round30 旧问答，含把 head-only 误写为端到端的已作废表述",
+   "sha256": "f3a4e3e76867e74ad978d63739c093adce035d59ba21aafd268ca86cf2dded2a"
+  },
+  {
+   "archived_from": "spec_sync/ROUND30_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND30_NOTE.md",
+   "reason": "第 30 轮历史便签，速度口径已作废",
+   "sha256": "4264e945dac095ce56e06fbbb51b746798bf496d3cbab05f646f14f9d9d65838"
+  },
+  {
+   "archived_from": "spec_sync/ROUND31_NOTE.md",
+   "archived_to": "archive_20261031/old_round_notes/ROUND31_NOTE.md",
+   "reason": "第 31 轮历史便签，内容已并入交接主文档",
+   "sha256": "4d82b67e4e58fdf3db33fc9fca83f6c1592bbcee4c9ae46d9be4c6c4a244ad4b"
+  },
+  {
+   "archived_from": "tables_local_metrics_matrix.md",
+   "archived_to": "archive_20261031/old_tables/tables_local_metrics_matrix.md",
+   "reason": "不完整且过期的本地指标副本，权威表为 tables/metrics_matrix.md",
+   "sha256": "fd73ba39d171605c80ba44aef2fd06570a7800706d2b969e319ab73afb754aae"
+  },
+  {
+   "archived_from": "records/A3_latent_target_comparison.md",
+   "archived_to": "archive_20261031/old_records/A3_latent_target_comparison.md",
+   "reason": "早期 JEPA 探索记录，非当前 Jev 决策结构线活跃证据",
+   "sha256": "934c10a321070595fe02119b3c932de10202b7f84953f131e8af81698f14ae27"
+  },
+  {
+   "archived_from": "records/CORPUS_PREPARATION.md",
+   "archived_to": "archive_20261031/old_records/CORPUS_PREPARATION.md",
+   "reason": "早期 mRNA 语料工程记录，非当前结构 benchmark 活跃证据",
+   "sha256": "48ada9c142d530d7dcac1e569162c364d501ff7dbb4dd38fb8d172bda27d7b5e"
+  },
+  {
+   "archived_from": "records/INVESTIGATION_rbp_0_degenerate.md",
+   "archived_to": "archive_20261031/old_records/INVESTIGATION_rbp_0_degenerate.md",
+   "reason": "早期 RBP 任务排查记录，非当前结构线活跃证据",
+   "sha256": "9220cee5d9fc5ae70a295eab30f7224c1397181340d7e1e1dacbc1d1d285c7d1"
+  },
+  {
+   "archived_from": "records/R3_GATE_AND_LR_CALIBRATION.md",
+   "archived_to": "archive_20261031/old_records/R3_GATE_AND_LR_CALIBRATION.md",
+   "reason": "早期 mRNA 下游 R3 门记录，非当前结构线活跃证据",
+   "sha256": "98b7568dce24b8182931d7174e95171b5590f6d60d5bda9c72a2c7dba4a12542"
+  },
+  {
+   "archived_from": "records/factor_probe_control_analysis.md",
+   "archived_to": "archive_20261031/old_records/factor_probe_control_analysis.md",
+   "reason": "早期因子探针探索记录，非当前 Jev 决策结构线活跃证据",
+   "sha256": "e5ff2dcd69b7ab286ee98d48382bfcb6ad3ff8c88e16132c5604a3f394beed10"
+  },
+  {
+   "archived_from": "records/smoke_repro_mrfp_20ep.conclusion.md",
+   "archived_to": "archive_20261031/old_records/smoke_repro_mrfp_20ep.conclusion.md",
+   "reason": "早期 mRFP 复现记录，非当前结构线活跃证据",
+   "sha256": "b7a9033d405f3a074a68d89a72491dea9e108aaf7f35106fd49e0937b4ddc52e"
+  }
+ ]
+}

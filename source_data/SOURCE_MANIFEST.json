@@ -1,0 +1,271 @@
+{
+ "updated": "2026-10-31",
+ "files": [
+  {
+   "path": "fig03_ablation/fig03b_group_drops.json",
+   "sha256": "3e048a175cf851d09e1dd29f131329e5fd1df2b0242a412a780a494c4655caa6",
+   "bytes": 1021,
+   "description": "主图 3B 核心三模块分组均值与 PDB/ID 比值",
+   "status": "active"
+  },
+  {
+   "path": "fig04_calibration/fig04_ece_confidence_source.json",
+   "sha256": "d12c6524197f2457af041ce88ee41b869d1ffafd4e468bbbb8e65aee8be98af4",
+   "bytes": 715,
+   "description": "主图 4 ECE/Spearman/n 源数据",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_final_3840x1920.pdf",
+   "sha256": "1014ceade7e54d7337e9436c9dde75cd1aa55f99462fe8e8e97633c2b4f519e0",
+   "bytes": 33320,
+   "description": "主图 5 最终矢量 PDF（文字放大版）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_final_3840x1920.png",
+   "sha256": "39e15b4795f307cd095d33cadf726268e011522ed5fb2aa43e6b7b1a2da1a48a",
+   "bytes": 449958,
+   "description": "主图 5 最终 PNG（3840×1920，文字放大版）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_final_source.json",
+   "sha256": "6ead896ef80fe56a637ac356aea64c219feb09a5b2bc6cb00f11180a3f4ddbf9",
+   "bytes": 10806,
+   "description": "主图 5 最终源数据（15 格、Pareto、跨 batch 等价）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/mxfold2_b1_full.json",
+   "sha256": "74a31268f706956ba106d79b47c8efebf8b9d8be6bca58328b9ec4d00e5181dd",
+   "bytes": 1597493,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/mxfold2_b2_full.json",
+   "sha256": "9e7e9d86c2e8e9185390d58a514995b8b3ad04e271658e50ee798a7b48bd6968",
+   "bytes": 1597349,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/mxfold2_b4_full.json",
+   "sha256": "412551cc96f2229fa5c515d02857d85a4cc84d5ffd4586c4d30278f8e0d6eaf6",
+   "bytes": 1597351,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b1_full.json",
+   "sha256": "2414b2cee920ef973e641d77ab8942c51569f4322e1410ce8b47eda9af50f878",
+   "bytes": 1055163,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b2_full.json",
+   "sha256": "0491a2f9aeb8431ffeb4b32a7f64b25667f9071a2ac545efe1305da5833eb7ac",
+   "bytes": 1054985,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b4_full.json",
+   "sha256": "9927e19b3939ee78f1dc75610d245882806419773dc7b7c66404b86af212f107",
+   "bytes": 1055208,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b1_full.json",
+   "sha256": "c9915ccc5b11953a605f2c91d014da2f1600264be9d50af1d341c3d80c8dd1fc",
+   "bytes": 1249927,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b2_full.json",
+   "sha256": "5118d9420da257a2a150219fcfa0cf18dba5994e2b38529600b76ac5c01aeb24",
+   "bytes": 1250249,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b4_full.json",
+   "sha256": "3dbe91160395a1c311f1595f82b29dc4c701c034efae13ef50fe3730b72c13fb",
+   "bytes": 1250667,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rinalmo_ft_b1_full.json",
+   "sha256": "a2a4b885f12f420e05d5d01aadb6493b1c3c97755a724460835efab23f0445ba",
+   "bytes": 1193470,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rinalmo_ft_b2_full.json",
+   "sha256": "24b05d9f88788914204dabc2449a21e4f0dfbbe747320f174f86f1a5a11e00a6",
+   "bytes": 1194125,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rinalmo_ft_b4_full.json",
+   "sha256": "67189bffa7b7a123338acecdbae4738fb2b900f3ca6cfeeb2d6378a9a1f7bef5",
+   "bytes": 1194039,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b1_full.json",
+   "sha256": "18cbb013ba692c35600ce881f256971a0a5165970b90bac96bc7048ce96227b5",
+   "bytes": 1103664,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b2_full.json",
+   "sha256": "fe7b78f53e27e695fccac1389ee271ea67b56308b9c4827764ad17ad00c7f9b9",
+   "bytes": 1104112,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b4_full.json",
+   "sha256": "551a14149b632cd275ffacbc44bf6f0af7dc11c211abf18df325dd0853b74a31",
+   "bytes": 1104404,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig06_architecture/fig06_architecture_contract.json",
+   "sha256": "543fc71def6a2e14e8f4c4fb925d2dcd834ec264a75510ed50260e4f59c069d9",
+   "bytes": 1766,
+   "description": "主图 6 架构参数与张量合同（代码/配置复核）",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_combined_working_source.json",
+   "sha256": "06df2bc429d29160c6f2b04e8c0b301acbc0c943f201efba39d463f9a3789fae",
+   "bytes": 4181,
+   "description": "主图 7 主 benchmark + 原论文任务组合 working 源数据",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_original_round35_3840x1920.pdf",
+   "sha256": "f8d67d5aee82e95eb0028429cb477ad01b523bee00013edc5faf5747e3940177",
+   "bytes": 30375,
+   "description": "主图 7 原论文任务工作版矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_original_round35_3840x1920.png",
+   "sha256": "489971c2ad11d03c94acdb0cca21d9500a89cebc643d8eb7646f5f7a1e041a45",
+   "bytes": 289882,
+   "description": "主图 7 原论文任务（acceptor/donor/CPEB3）工作版 PNG（3840×1920）",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_original_tasks_working_source.json",
+   "sha256": "53346872a22736a16f868079c352f7e917c214fff004bbc25dd09319ad667726",
+   "bytes": 3597,
+   "description": "主图 7 原论文任务 working 源数据",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/archiveii_diag_5s_s0.json",
+   "sha256": "41b02b3ce3e192ec350e28c4ec02f0785e668afe6a2e7f44851b4aa9d5c7fbd4",
+   "bytes": 8195,
+   "description": "T-A148 ArchiveII 5s 崩塌归因诊断（as-trained/偏置/阈值三种解码）",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/archiveii_diag_tRNA_s0.json",
+   "sha256": "ca828f5ffe1bed1f43d131653d77ae5e2f58102b1c9e9b76d71f10de3e654144",
+   "bytes": 8159,
+   "description": "T-A148 ArchiveII tRNA JEV 崩塌归因诊断（解码/偏置/泄漏）",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/fig08a_rinalmo_classification_round35_3840x1920.pdf",
+   "sha256": "32a97ca369c7cb140d0a17deec21c340bf5f3fb89c2385c78559a342dc8de606",
+   "bytes": 29373,
+   "description": "主图 8A 分类任务工作版矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/fig08a_rinalmo_classification_round35_3840x1920.png",
+   "sha256": "bda17a2dea7e0c6d8e9b1d69adda4fed9f6c056a181407355d4b2312c8e8bd59",
+   "bytes": 306855,
+   "description": "主图 8A 分类任务工作版 PNG（3840×1920）",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/fig08a_rinalmo_classification_working_source.json",
+   "sha256": "ee033ff585e9c54f3061e3ac7be847a30563ea11ee42270b5ad4f663927cf2fd",
+   "bytes": 4775,
+   "description": "主图 8A 分类任务 working 源数据（5 seeds、Holm）",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/TE_EL_TENFOLD_AGGREGATE.json",
+   "sha256": "40bf2c2cc3b261643bd3896a5a9daf259249039496d2741cc12eab2e5624e09d",
+   "bytes": 9412,
+   "description": "Muscle TE/EL 十折聚合（折级符号秩与 Holm）",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.pdf",
+   "sha256": "10239824a579f5d067eb7896f41b15b4ebc78727d66ab3c2dce5a8ef37cc60e7",
+   "bytes": 26941,
+   "description": "主图 8B 回归任务工作版矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.png",
+   "sha256": "5167af18a163b41f069fca5b707a43563613c683dc2a374231ade1167c6febe7",
+   "bytes": 196958,
+   "description": "主图 8B 回归任务工作版 PNG（3840×1920）",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_source.json",
+   "sha256": "0849041bee4400330c2933e5713606abf104127644786daa0e4d1016bf89e45f",
+   "bytes": 13664,
+   "description": "主图 8B 回归任务 fold-level working 源数据",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/leakage_aware_baseline_source.json",
+   "sha256": "e5ca478111e0c703a245e2629b4b4426fbd33d918e392a558a9b37dc773b6e72",
+   "bytes": 41876,
+   "description": "附录 A2 泄露处理完整基线表（19 系统×8 split、clean-181 与排除格）",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/rnaformer_protocol_audit.json",
+   "sha256": "e32d4875e601bb6a6860da3676a8247ec6c5934b5263a56ce8d221721c083c34",
+   "bytes": 1550,
+   "description": "RNAformer 固定/特殊 checkpoint、双 GT 与原文/复测口径审计",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/main_benchmark_4090_reproduction.json",
+   "sha256": "e6f4f51f85f5f25ac5958e7703ba79c4a7ae4ff73167d8570cc08d06a8d4ec3a",
+   "bytes": 1812,
+   "description": "xens2 八 split RTX 4090 与 A100 主 benchmark 复现差值",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/build_source.py",
+   "sha256": "204d22a54a70c88058f19d899085d575c8fc9aeea6c50dd67ea62f0c8a6e0abb",
+   "bytes": 8635,
+   "description": "泄露处理表与两项审计源 JSON 的可复现构建脚本",
+   "status": "active"
+  }
+ ]
+}

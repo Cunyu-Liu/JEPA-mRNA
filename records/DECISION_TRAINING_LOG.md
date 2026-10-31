@@ -10951,6 +10951,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - NucleicBERT 二级结构 train/validation/TS0/ArchiveII600 四个 smoke32 提取均 PASS，仍无 run.json/qa.json。原 batch=2、12,288 MiB 门在约 11 GiB 空闲时无法放行；现将双头统一改为 batch=1、训练门 8,192 MiB，不改变数据、优化器、早停或单变量对照。队列采用 dry-run 和编译检查后替换，未终止任何训练子进程，也未重复启动 run。
 - 两项调度修复已提交 GitHub `39c49ddf43eabf39f4fb5977805cc4e792de5ed6`；NB queue SHA256=`38266ab10f13c733041793fb498b514ba6029f726e31ec62805fb12eca567fb2`，TE/EL queue SHA256=`25dc0d0876e9cef8eaf11e65f1965fe3ec54bcd577cfa100b75607539bbed89e`。当前其他 GPU 作业继续占用显存，NB 等待安全门，正式测速继续等待独占；不把等待或 smoke 提取写成科学结果。active registry 升级为 `round34-working-v46`。
 
+## §15.195（2026-10-30）Muscle fold1/2 三通道验收与 NB 指纹/mask 修复交付
+
+- **Muscle TE/EL fold1/2 全量结果**：四项均为 `full_official_protocol`、Muscle 对应 fold、双头五种子，train/validation/test=1005/126/126。源 CSV SHA256=`aebd90663a317c0cacd6ea3f359551946eef36ef041c80fad11fb919d74e5601`，按 `KFold(n_splits=10, shuffle=True, random_state=42)` 独立重建 fold 与样本数一致。每项 10/10 run 均为 CUDA、converged、early_stopped，`epochs_run=best_epoch+32`；10/10 best checkpoint 已在 RTX 4090 独立复推，QA 绑定当前 result SHA256。
+- **从原始 run 重算的折级结论**：TE fold1 official/JEV Spearman=0.5594251458/0.5589937952，Δ=-0.0004313506、ΔSD=0.0324102519、单侧 p=0.5111579435、R² Δ=-0.0157401078；TE fold2=0.6801210674/0.6758507116，Δ=-0.0042703559、ΔSD=0.0609782564、p=0.5584245329、R² Δ=-0.0548094776。EL fold1=0.5305058613/0.4557641314，Δ=-0.0747417300、ΔSD=0.0802039068、p=0.9472149520、R² Δ=-0.1348490597；EL fold2=0.6991669892/0.6691761982，Δ=-0.0299907910、ΔSD=0.0327575451、p=0.9449805580、R² Δ=-0.0158689182。均不显著为正，仅为折级结果，不能外推十折或进入最终图 8B。
+- **结果与 QA 哈希**：TE fold1 result/QA=`6d5873715e9dc7135dcce384e57d55abad21c6f428772e066a75aae2e80c2800`/`a8fcd28b4af15fad189a9febc6b77ead1d0a86dad895a414737b70d2b98a76b1`；TE fold2=`985a494ddb5ce1566055c8692205d0f84cfdd2f3274efb0999768fbc8bf22c77`/`5c23b8f4f5a058d2d457b27641abad47fd3e00e4d506b78efd0a415d959eff8a`；EL fold1=`c1fc195a6eb606c30204344c1f1927be08c3a5f3b43c302413927a1ced9c6378`/`e12fe60ae6741e0b2a6576e243caab9463510b7c0dd6b23c84fef992c2db25a4`；EL fold2=`624e7d1ec9c94d8b5711bd9cc50e24cf7cc8e55944e8a699fdf02e4f00b4d4f5`/`8fa91481ea9cc007318982911dc0d354aa65e715c9e2e252df0760a02c64f435`。八份文件已下载并复读哈希，注册表记录本地副本与远端权威路径。
+- **NB 指纹失败归因**：四个 smoke split 的 JSONL、序列、NPZ、manifest 和 metadata 独立重算一致；权重 SHA256=`f40630f4054b0bac255eb70fa1e2999d56749f4fc22919be041e5114bcbe11dc`，tokenizer SHA256=`9c0aebbd7e72afdf628a0045c12df28fcb7d4d524eb67954b60755f28e5529e2`，data card 不变。原失败是生成器与校验器的指纹实现不一致，不是科学资产损坏。修复后真实缓存加载越过指纹门，又暴露并修复 `[B,598,598]` 与二维 upper mask 的 batch 广播错误；未绕过指纹门、未重提特征。
+- **代码交付与验证**：`tools/nb_secstr_dual_round34.py` 同时包含缓存证据、resume 身份、early-stop 状态恢复与 checkpoint 身份修复；新增 `tests/test_nb_secstr_round34.py`。静态编译、4 项持久测试、四个真实缓存 `load_records` 和队列 dry-run 全部 PASS。生产代码 SHA256=`2cedb6647ac3eb6080c639beb4941d0340efae7020dbd9e57fde0a55834edd49`，测试 SHA256=`2020de2ed8140db43834efd3e1c74b5308fd91b7df25a6bd5ff3f91729c07130`；commit=`370c5f683a25140e482998ae5179b522dfedddb9`，已 push 新分支 `round34-nb-secstr-fix-20261030`，未 rebase、amend 或 force push。
+- **队列与门口径**：仅恢复失败的 official smoke 受门队列，当前仍等待安全显存窗口；实际 batch=1 的提取/训练空闲门均为 8,192 MiB，旧 batch=2 的 12,288 MiB 训练门退役。不得据此启动全量五种子或把工程修复写成科学结果。
+- **PPT 独立复核**：当前 round34 working PPT SHA256=`bf12cfd338f3391ea912337a28e942b30943849134174cd77aefc457fc85512e`，已重新提取 markitdown 并渲染 21 页总览及主图 3B/4/5/6/7/8A 页面；Fig3B 正值与同值表、Fig4 全图例、Fig6 原生三栏矢量、Fig7/8A 全量负结果与 pending 边界匹配。无科学数值改动，Aspose 水印仅在 QA 渲染，不在 PPTX 内。
+- active registry 升级为 `round34-working-v48`；三处 spec/tasks/checklist 最新块同步。主图 5、NB 二级结构、结构十任务与 TE/EL 十折仍未闭环，PPT 继续保持 working。
+
 ## §15.196（2026-10-31）第 35 轮启动：导师反馈冻结、独占测速窗口与三项工程修复
 
 - **导师 round34 反馈已冻结为第 35 轮目标**：主图 5 全 4090 重测且 B 面板必须含自有模型；主图 6 用 PPT 原生矢量重绘至 Nature 级；主图 7 补 NucleicBERT 原论文五类下游任务；主图 8 补任务并按分类/回归分图。用户确认：①暂停 ArchiveII/bpRNA 长队列换独占测速窗口；②距离/接触图按公开来源协议匹配重建并明确标注；③优先补 Muscle/PC3 TE-EL 十折。三处本地 spec/tasks/checklist 共 9 个文件与远端 spec/spec_handover 共 5 个文件已同步，未改动历史编号。
@@ -10993,8 +11004,15 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **Shuffle 可执行性**：官方 `ShuffleDetector` 是 attention-pooled 序列级分类头，输入为 NB 最后层 hidden state；JEV 头输出 `L×L` 配对 logits，没有序列级输出。若强行把 JEV 配对特征池化再接分类器，会引入新头，破坏“同一冻结骨干、仅换头”的单变量对照。故 shuffle 作为分析线单独记录，不伪装成 JEV 头任务；不新造头、不写正结果。
 - **图 7 当前范围**：主 benchmark 8/8、Spliceator acceptor/donor、CPEB3 已完成；二级结构五种子训练中；contact/distance/shuffle 以 blocked/分析线如实呈现。
 
-## 2026-10-31 Round 35 — T-A148 归因与 NB 二级结构 batch 决策
 
-- **ArchiveII fam-fold 协议核查**：九个 family 的 train/valid 对目标 family 的 `own=0`，即官方 leave-one-family-out（池化其余 family），因此 tRNA/5s 崩塌不是同族泄漏；`family` 字段在 pooled 行被重写为目标 family，仅元数据噪声。
-- **tRNA seed0 解码诊断**（`tools/diagnose_archiveii_jev_collapse_round35.py`，输出 `audits/archiveii_diag_round35/tRNA_s0.json`）：as-trained DP（b=0）macro-F1=0.3817，pairs 5.84 vs 真值 20.55；验证集上 bias b=1.0 仅把 test 提到 0.4710；JEV 分数 sigmoid + 阈值 0.05（对称化）可到 0.6230、pairs 10.80，仍远低于 official 0.8772。结论：解码校准只解释部分崩塌，主因是 held-out family 上 pair-density 崩溃（OOD 局限），不能写成全局架构负结论；5s 诊断因主图队列暂停，待重跑。
-- **NB 二级结构 batch 决策**：round34 队列用 batch=1；train_rnalign_tr0 共 47,963 条结构，实测约 0.16 s/step，约 2 h/epoch，10 个 paired run 在单卡上不可行。batch=8 在 5s 诊断占用 12 GiB 时 OOM；batch=4 在空卡上 16 步约 2 s、单 run 约 2.7 GB，smoke+QA 通过。新队列 `tools/run_nb_secstr_queue_round35.py` 采用 batch=4、3 路并行、无 step cap，收敛合同（VL0 BCE、patience=5、min_delta=1e-6）与数据/种子/QA/聚合不变；两个 head 完全同协议。
+## §15.201（2026-11-01）第 36 轮启动：速度口径定位、泄露处理全板与 4090 精度复核
+
+- **合同与提交**：T-A151–T-A158 已写入本地根目录/spec/spec_sync 与远端 spec_handover，执行顺序为泄露与权重公平性→速度 profile→单变量无损优化→同机基线→PPT→归档。提交 `04489be`、`4bc5fe3` 已推送 `round36-speed-benchmark-20261031`。
+- **速度差异的已证实原因**：124.78 seq/s 是 r2dtr1c-s0 的 cached-embedding/head-only、B=256、fp16 峰值，不含 650M 编码器；22.28 seq/s 是 r2d raw-sequence、B=1，包含编码器、任务头和必要 DP。二者不是同一计时任务，不能称为 4090 复刻失败。xens2 B=1 还需 plana s0/s1 与 r2d 三次编码器前向，当前 7.47 seq/s。已测五系统内部 Pareto 不等于全模型速度 SOTA。
+- **有效 batch**：TS0 1,288 条、289 种长度。精确长度 bucket 下 B=1/2/4/8/16/32 的平均实际 batch 分别为 1/1.741/2.717/3.659/4.337/4.457，B≥32 饱和于 4.457。名义 B=256 不代表实际 256，后续优化必须以分段 profile 为依据。
+- **4090 主 benchmark 没有明显精度变化**：直接读取 `xens2_board_4090` 八份原始 JSON，TS0/new/TS1/TS2/TS3/hard/ArchII/TSB 相对 A100 板值的差为 −0.0000011/−0.0000579/+0.0000365/−0.0000056/−0.0000323/+0.0000084/+0.0000903/+0.0000424，最大绝对差 0.0000903。结论仅为数值等价，不改 6/8 clean 主判定。
+- **泄露处理全板**：旧第 17 页确认为原始全板而非全去泄露。UFold 与 MXfold2 的 TestSetB 从原始 DBN 重算 clean-181，分别为 0.5330925 与 0.6268571（均剔除 247 条 TR0 重叠），旧全集值 0.5858/0.6504 不进入新表。RNAformer-bprna 的 PDB/TSB 污染格剔除，r2d_tr1 的 TS0/ArchII 旧 TR1 污染格剔除；未复算格留空，不写成零分。
+- **RNAformer TS2 公平性**：原文 inter-family Table 4 的 TS2=0.802 属全文配对口径；项目复测 0.9043 来自官方 inter-family 特殊微调 checkpoint + canonical-nested GT。固定 bprna checkpoint 的项目 GT 值为 0.8590，xens2 当前板值 0.8604。0.802 与 0.9043 不可互换；保留 TS2 负结果，同时展示特殊训练与 GT 边界，不用口径切换增加胜场。
+- **PPT 与源数据**：round36 候选稿 23 页，新增第 18 页泄露处理全板；第 5 页解释速度差异，第 19 页（原附录 B）定义 head-only/forward-only/raw-sequence。890 个非空文本 run 均为微软雅黑和 1.5 倍行距，越界 0、ZIP PASS，LibreOffice 显式 fontconfig 渲染 23 页与三张全页总览人工复核通过。PPT SHA256=`8d1f012b4aa5271c6d11633301a14995492476ff2208a99ebc9492011267a4fa`。
+- **测速调度**：只停止 NB 调度器，当前 official_s1 训练未中断；`run_round36_speed_window.sh` 等其 run.json 后检查独占、执行 CUDA 断言和 r2d/plana/xens2 的 B=1/4 全 TS0 分段 profile，trap 自动恢复 NB QA/队列。尚无 profile 或优化结果，未提前写速度提升。
+- **整理**：13 个旧论文稿、旧轮次便签、重复指标表和非活跃早期记录已移入 `archive_20261031/` 并写入哈希索引；活跃源数据新增泄露表、RNAformer 审计和 4090 复核 JSON。未删除原始结果，未把归档当作删除证据。
