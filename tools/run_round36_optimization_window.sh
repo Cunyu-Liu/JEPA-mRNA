@@ -24,6 +24,10 @@ resume_nb() {
   printf 'RESUME_NB queue_pid=%s time=%s\n' "$!" | tee -a "$AUDIT/window.log"
 }
 trap resume_nb EXIT
+printf 'WAIT_NB_PROCESSES time=%s\n' "$(date -Is)" | tee -a "$AUDIT/window.log"
+while ps -eo args= | grep -E '[n]b_secstr_dual_round34.py|[q]a_nb_secstr_round34.py' > /dev/null; do
+  sleep 60
+done
 printf 'WAIT_GPU_EXCLUSIVE time=%s\n' "$(date -Is)" | tee -a "$AUDIT/window.log"
 while nvidia-smi --query-compute-apps=pid --format=csv,noheader | grep -q '[0-9]'; do
   sleep 60
