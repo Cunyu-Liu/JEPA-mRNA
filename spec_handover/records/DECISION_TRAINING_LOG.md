@@ -11107,3 +11107,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **PPT 最终交付**：第 9 页原位替换新主图，第 5/9/16/19/22 页速度状态、备注与限制同步；PPT 嵌入 PNG 与源文件 SHA256 完全一致。23 页、890 个非空文本 run 均为微软雅黑，889 个非空段落均 1.5 倍行距，shape 越界 0、安全区越界 0、ZIP PASS；LibreOffice+显式 fontconfig 渲染 23 页，总览及第 9/16/22 页全尺寸复核无重叠、无截断。PPT SHA256=`e2f79a6f2fbc3beb3bcf2b67fbec3bf9ceb1e7ad544f72c188dde2544a03becf`，PDF SHA256=`13d1c322f3924e5a8f990fec49a190a421d448ba21fc9d4c2883c8269287c51a`。
 - **源数据与归档**：58 个活跃文件全部通过存在性、字节数、SHA256、README 前缀与实际目录一致性复核；新增图件、汇总、RNAformer 三份原始 JSON 和两个构建脚本。15 格旧主图三件移入 `archive_20261031/old_figures/round35_speed/`，OOM 日志移入 `quarantined_speed_round36/`，四项归档哈希通过，原始证据未删除。
 - **NB 训练状态**：official_s2 从 epoch3 的完整 resume checkpoint 恢复；epoch4 validation BCE=0.01374074，低于 epoch3 的 0.01428887，随后继续 epoch5。CUDA 训练进程与队列均保留，仍按 patience=5 等 validation plateau；暂停不写成收敛，五种子与独立 QA 总门不关闭。
+
+
+## §15.213（2026-11-01）NB 断点续训、QA 缺口与无重复恢复器
+
+- **现有验收状态**：official_s0 为 31 epochs、best epoch26、best validation BCE=0.01102600，`run.json+qa.json` 均 PASS。official_s1 为 39 epochs、best epoch34、best validation BCE=0.01088370，满足 `converged+early_stopped+scientific_eligibility`，但独立 `qa.json` 尚未生成；该缺口不重训、不隐藏。
+- **official_s2 续训进展**：epoch4/5/6 validation BCE=0.01374074/0.01334402/0.01303951，持续刷新 best，epoch7 正常训练。仍不满足 early-stopping，不写成收敛或五种子结论。
+- **队列根因与修复**：旧 pending 只检查 `run.json=PASS`，会跳过缺少或哈希过期 QA 的已完成 run。新增 `completed_runs_needing_qa`，要求 QA 的 `run_sha256` 与当前 run 文件一致，并在任何新 seed 启动前串行补齐。静态编译、队列新测试与既有 NB 测试共 6 项 PASS；dry-run 明确显示 `QA backfill=[official_s1]`，full pending 从 official_s2 开始，不重复 official_s0/s1。
+- **无中断切换**：仅终止旧 scheduler/flock，official_s2 训练 PID 1426895 保持运行。恢复 watcher PID 1427521 等该 PID 自然结束后，先检查 `run.json` 的 PASS、converged、early_stopped 和 scientific_eligibility；任何一项缺失均停止且禁止自动重试。通过后由同一 flock 启动修复队列，依次补 official_s1/s2 QA，再启动 official_s3，避免训练与 QA 或重复训练并发。
+- 修复代码、恢复脚本和测试已提交并 push：`403c766`。最终 5+5 aggregate 与图 7d 总门继续保持未关闭。
