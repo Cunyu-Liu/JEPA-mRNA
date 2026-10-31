@@ -1,5 +1,27 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
+> **当前执行覆盖（2026-10-31，第 36 轮：速度 SOTA 与 benchmark 公平性；活跃清单 `round36-working-v1`）**
+>
+> **本轮硬目标**：解释并修复 4090 原始序列推理吞吐，补齐泄露感知完整基线表和 RNAformer TS2 公平性证据；不把不同计时边界、不同 GT、不同 checkpoint 或未审计单元格拼成 SOTA。
+>
+> **已核实的口径事实**：
+> 1. 历史 124.78 seq/s 属于 r2dtr1c-s0 的 cached-embedding/head-only、B=256、fp16 工程峰值，不含 650M 编码器；当前 r2d 22.28 seq/s 是 raw-sequence 端到端、B=1，二者不是复现失败。TS0 有 289 种长度；精确长度 bucket 下 B=4 的实际平均 batch 仅 2.717，B≥32 也仅 4.457，不能拿 B=256 的饱和峰值解释当前小 batch。
+> 2. 当前 xens2 B=1 为 7.47 seq/s，包含三次编码器前向（plana s0/s1 与 r2d）；主图 5 的 Pareto 只限已测五系统，RNAformer/UFold 同机完整点未闭环，因此**当前未证明全模型速度 SOTA**。
+> 3. 4090 不意味着主 benchmark 精度明显改变。已有 TS0 复现为 plana 0.786839 vs A100 0.786563，xens2 0.804063 vs 板值 0.8039，属于数值舍入量级；已有交接记录称 4090 八 split 板值复现一致，本轮逐项绑定原始 artifact，缺项才重跑。
+> 4. 第 17 页是原始全板敏感性表，含训练/测试重叠结果，不是全部去泄露表。新表必须逐格记录训练语料、checkpoint、重叠数、GT 和指标；TR0 系模型的 TestSetB 只用 clean-181，未审计格标 `NA/not audited`。
+> 5. TS2 当前 RNAformer-if=0.9043 来自官方 inter-family 特殊微调 checkpoint + 项目 canonical-nested GT 复测；它不是 RNAformer 原文同一数值口径。固定 bprna checkpoint 与 inter-family 任务匹配 checkpoint 必须分列，release-full GT、canonical-nested GT、原文 quoted 与项目复测不得互换。主 benchmark 当前统一 xens2 对预注册 clean 参照为 6/8，负格是 bpRNA-new 与 TS2。
+>
+> **三种速度定义（PPT 与台账统一）**：
+> - `head-only`：输入已经算好的 cached embedding，只计决策头与必要解码，不含骨干编码器。
+> - `forward-only`：原始序列经过编码器和任务头得到分数/概率，但不含结构解码及后续输出处理。
+> - `raw-sequence end-to-end`：从原始 RNA 序列开始，包含 tokenization、编码器、任务头、必要解码和生成评分输入；主速度结论只用这一口径。
+>
+> **执行顺序（硬门）**：P0 文档与原始 artifact 审计 → P1 泄露感知表/RNAformer 双口径与既有 4090 精度复核（CPU 可并行）→ P2 当前 NB run 边界后独占 4090，复现 head-only 并做 raw-sequence 分段 profile → P3 单变量优化与全 TS0 等价门 → P4 补齐同机 RNAformer/UFold 和扩展 batch 网格 → P5 更新第 5/18 页、新增泄露感知表、逐页 QA → P6 归档、哈希与 GitHub。任何阶段未过对应验收门不得把结果推进为科学结论。
+>
+> **GPU 与停止规则**：非计时阶段按实测显存和 CPU 容量并行提交独立任务，有余量即接续，禁止为占满显存而超订；正式计时必须独占，避免其他作业污染。CUDA 不可用或 CPU 静默降级立即停止并留证。训练仍以 validation plateau、best checkpoint 和 early-stopping 判收敛，不设步数上限；纯推理优化不重训，不得伪称训练收敛。smoke、proxy、训练集、单 seed 和不完整计时不得写成最终科学结论。
+>
+> **历史边界**：本块覆盖第 35 轮及更早的同主题状态；既有科学结果不返工，只修正口径、补齐缺失证据和推理工程。
+
 > **当前执行覆盖（2026-10-30，第 35 轮：导师 round34 反馈闭环；活跃清单 `round35-working-v1`）**
 >
 > **本轮目标（按导师 round34 原话冻结）**：

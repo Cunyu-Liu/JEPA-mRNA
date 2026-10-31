@@ -1,5 +1,20 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **当前执行覆盖（2026-10-31，第 36 轮：速度 SOTA 与 benchmark 公平性；活跃清单 `round36-working-v1`）**
+>
+> - [ ] T-A151 泄露感知完整基线表由原始 artifact 重算，TR0 系 TSB 全用 clean-181，未审计格标 NA。
+> - [ ] T-A152 RNAformer 固定 bprna/inter-family、release-full/canonical-nested、原文/复测口径分列，TS2 公平性结论可复算。
+> - [ ] T-A153 三种速度边界已图解，历史 head-only B=256 点在 GPU 复现并留证。
+> - [ ] T-A154 全 TS0 分段 profile、有效 batch、三次重复和显存全部落盘。
+> - [ ] T-A155 优化通过全量预测等价门，同机关键基线闭环后才判定是否速度 SOTA；当前未证明。
+> - [ ] T-A156 4090 八 split 主 benchmark 逐项复核，报告相对 A100 的真实 ΔF1，缺项才重跑。
+> - [ ] T-A157 第 5/18 页和新增泄露感知表完成，所有叙事主张均有实验现象与限制支撑。
+> - [ ] T-A158 全稿字体/1.5 行距/布局/渲染/图表同源通过，废弃文档与旧图源可追溯归档，代码提交并 push。
+>
+> **资源与停止规则**：非计时任务按实测容量并行，正式测速独占 4090；CUDA 不可用或 CPU 静默降级立即停止留证。训练必须 validation plateau 收敛；推理优化不得冒充训练结论。未通过项不得勾选。
+>
+> **历史边界**：本块覆盖下方第 35 轮及更早状态，旧合同与历史结果保留。
+
 > **当前执行覆盖（2026-10-30，第 35 轮：导师 round34 反馈闭环；活跃清单 `round35-working-v1`）**
 >
 > **本轮目标（按导师 round34 原话冻结）**：
@@ -55,7 +70,30 @@
 > - 图 6 页 37 个文本 run 由 6.4–7.8 pt 统一提升到 8.0 pt；为消除换行溢出，A 栏底注缩短为 “cached or recomputed on raw sequence”，B 栏 logits 框加宽 1.78→2.05 in，C 栏 ECE 框加宽 1.80→1.90 in，Output 标签下移 0.06 in。
 > - 复核：第 10 页 0 个 run <8 pt；全稿 QA 683 run 微软雅黑、683 段 1.5 倍行距、越界 0；130 dpi 渲染三栏无溢出/重叠。deck 哈希 `cd0625c3…`；旧版归档 `round35_pre_fig6_8pt.pptx`。
 
+> **第 35 轮执行快照（2026-10-31 11:25，epoch3 收敛信号与资源再平衡）**：
+> - official_s0 epoch3 验证 BCE=0.01427747（0.01549006 → 0.01492676 → 0.01427747），连续两轮刷新 best、bad=0；改进 6.5e-4 远大于 min_delta，按 patience=5 继续训练，不人工截断。
+> - 资源：4 作业 × 12 torch 线程造成 12 核 load 36–46；暂停 pc3 fold1 TE/EL 两条长队列（证据 `audits/pc3_fold_pause_20261031/`），NB 由 0.42 降至 0.19 s/step，GPU util 15%→58%。
+> - 图 8B 口径：第 13/16/20 页改为“HEK/pc3 未满十折不并入（fold3 EL 续训、pc3 fold1 暂停）”；QA 683 run、字体/行距/越界 0；交付 deck `e53dcae9…`，旧稿归档为 `round35_pre_statusfix_20261031`。
+> - 图 7d 回填：`ppt/patch_fig7d.py` 仅接受 `status=PASS`+`scope=full_five_seed`，合成 aggregate 干跑命中 3 个文本目标并原位替换图片；未写盘。
+> - jingmei-ppt 正式汇报配方复核：22 页缩略图、封面与全表页全尺寸，层级/密度/页脚安全区一致，无需改版。
+> - 提交 `e469213`、`55c12db` 已 push；文档三处与远端 `spec/`、`spec_sync/` 哈希一致。
+
+> **第 35 轮执行快照（2026-10-31 18:10，NB 首个 run 闭环）**：
+> - official_s0 完成：31 epochs（best epoch 26），best validation BCE=0.011026，`early_stopped=True`、`converged=True`、`scientific_eligibility=True`；batch=4、冻结骨干仅头训练。run.json 落盘 17:57:58、独立 QA 18:01:11 PASS，队列已启动 official_s1。单 run 用时约 10 h18 min（07:40→17:58，约 20 min/epoch），10 run 串行总窗口约 4 天。
+> - 该 run 预测 macro-F1：VL0 0.2931、TS0 0.3049、ArchiveII600 0.6813（official head）；五种子聚合前只作过程记录，不写成结论。
+> - HEK fold3 EL 完成：Δ=-0.0255、p=0.917（不显著为正）；HEK 现为 TE 0–3 四折、EL 0–3 四折，未满十折、不入图。
+> - 交付稿、源数据与文档口径不变；图 7d 仍需 9 个 run 全部 PASS。
+
+> **第 35 轮执行快照（2026-10-31 23:25，official_s1 收尾段）**：
+> - official_s0 记为第 1 个 PASS：31 epochs、best epoch 26、best validation BCE 0.011026，`converged+early_stopped+scientific_eligibility` 均 True；run.json 17:57:58、QA 18:01:11 PASS；预测 macro-F1：VL0 0.2931、TS0 0.3049、ArchiveII600 0.6813（单 seed 过程值）。
+> - official_s1（seed 1）在 epoch26：epoch25 验证 BCE 0.0112446；独占 GPU 后稳定在 0.063 s/step、约 12 min/epoch（较并行期 20 min/epoch 提升），GPU 利用率 75–94%。
+> - 队列：official_s2–s4、jev_s0–s4 共 8 个 run 待跑；全部 PASS 后 aggregate 5+5 配对与 Holm，再回填图 7d。
+> - HEK fold3 EL 收敛：Δ=-0.0255、p=0.917（不显著为正）；HEK 现为 TE 0–3、EL 0–3 各 4 折，未满十折不进图；pc3 保持暂停；图 8 按用户决定不再加跑新任务。
+> - 交付 PPT/PDF 与 source_data 未变（deck `e53dcae9…`）。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
+
+> **用户确认（2026-10-31 11:45，单卡资源优先级）**：保图 7d。①维持 NB 10 个 paired run 串行到收敛，aggregate PASS 后才入片；②HEK fold3 EL 继续作为 GPU 并行占位，pc3 fold1 保持暂停；③图 8 维持已完成的 Muscle 十折与分类面板，不再加跑 ArchiveII/bpRNA 新任务；如需扩图 8 任务，先等 NB 收口后再排期。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
 

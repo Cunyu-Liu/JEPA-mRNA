@@ -1,5 +1,24 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **当前执行覆盖（2026-10-31，第 36 轮：速度 SOTA 与 benchmark 公平性；活跃清单 `round36-working-v1`）**
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A151 | 泄露感知完整基线表 | 保留第 17 页原始全板；新表逐格绑定训练语料/checkpoint/重叠/GT/指标；TR0 系 TSB 用 clean-181；未审计标 NA；独立重算与三遍对账 | 已确认旧页不是全去泄露；开始从原始 artifact 建表 |
+> | T-A152 | RNAformer TS2 公平性与双 GT 审计 | 固定 bprna 与 inter-family 分列；release-full 与 canonical-nested 分列；原文 quoted 与项目复测分列；主表与敏感性表的胜场可复算 | 已确认 0.9043 为 inter-family+项目 GT，非原文同口径；不据此虚增或删除我方负结果 |
+> | T-A153 | 速度口径与历史点复现 | PPT/台账统一定义 head-only/forward-only/raw-sequence；GPU 复现历史 B=256 head-only 工程点；给出编码器是否计入的证据 | 已定位 124.78 与 22.28 不是同协议；待独占 GPU 复现 |
+> | T-A154 | 4090 原始序列分段 profile | 全 TS0 记录 encoder/head/mask/transfer/DP 时间、289 长度 bucket、有效 batch、显存；三次重复；CUDA 强制 | 已算得 B=4 平均实际 batch=2.717、B≥32=4.457；待分段计时 |
+> | T-A155 | 无损速度优化与共同网格 | 依 profile 单变量优化；全 TS0 三次重复，同配置逐位一致，跨配置配对一致≥99% 且 |ΔF1|≤1e-3；扩展 batch 与同机 RNAformer/UFold 完整点；原始 JSON/显存落盘 | 当前仅 15/18 旧格；未证明速度 SOTA；优化未完成前不写第一 |
+> | T-A156 | 4090 主 benchmark 精度复核 | 8 split 逐项绑定 A100/4090 原始结果、样本数、GT 和预测；报告 paired ΔF1，缺项才重跑；不以速度结果代替精度 | TS0 已见约 1e-4 差异；交接称 8/8 一致，待逐 artifact 复核 |
+> | T-A157 | PPT 修复与叙事证据审计 | 第 5 页解释速度差异与当前非 SOTA 边界；第 18 页图解三口径；第 17 页后新增泄露感知完整表；每主张有 claim–evidence–limitation；不改用户其他调整 | 用户第 18 页疑问便签将替换为正式解释；速度优化结果未出前保持诚实状态 |
+> | T-A158 | 全稿 QA、归档与提交 | 微软雅黑、1.5 倍行距、无重叠/越界、逐页渲染、图表同源、页码联动；活跃源数据哈希；废弃件入 archive；确认代码 commit+push | 贯穿本轮；NB 长任务仅在独占测速窗口让路并恢复 |
+>
+> **执行顺序**：T-A151/T-A152/T-A156 与 CPU 工作可并行 → T-A153/T-A154 在 NB run 边界申请独占窗口 → T-A155 单变量优化与全量复验 → 同机基线闭环 → T-A157 → T-A158。非计时 GPU 任务按实测容量并行；计时期间不得用其他作业“占满显存”。
+>
+> **验收红线**：4090 换卡本身不改变科学结论；泄露处理不能只在标题写 clean；RNAformer 原文与复测不可混用；不同 batch/精度/padding 的加速必须通过预测等价门；smoke 或不完整计时不得进入主图；训练继续到 validation plateau，纯推理任务不虚报训练收敛。
+>
+> **历史边界**：T-A144–T-A150 的既有结果保留，本块只追加新任务并覆盖同主题旧状态。
+
 > **当前执行覆盖（2026-10-30，第 35 轮：导师 round34 反馈闭环；活跃清单 `round35-working-v1`）**
 >
 > **本轮目标（按导师 round34 原话冻结）**：
@@ -14,8 +33,8 @@
 > |---|---|---|---|
 > | T-A144 | 主图 5：4090 六模型×B=1/2/4 共同网格 | 18/18 原始 JSON；同机、TS0 n=1288、strict micro-F1、raw-sequence 端到端、三次重复、跨 batch 数值等价（≥99% 配对一致且 |ΔF1|≤1e-3，记录实测值）、峰值显存落盘；A/B 全部由同一协议生成，B 含 r2d/plana/xens2 | 15/18 已验证（r2d/plana/xens2/rinalmo_ft 各 B=1/2/4，MXfold2 各 B=1/2/4）；RNAformer 三格 blocked：1024-nt padding 未能在独占窗口完成 B=1，证据保存于 audits/round35_rnaformer_block；UFold 权重不可得 |
 > | T-A145 | 主图 6：原生矢量重绘 | 只用 PPT 原生形状/文本/连接符/表格；A/B/C 的输入输出、参数量、张量形状、先验与双输出与代码/checkpoint 一致；图内文本≥8 pt、无重叠、无栅格 | working 版已存在但视觉质量未过导师关，本轮重做 |
-> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards，manifest 02:36）；10 个 full run 已启动（official_s0 在训）；contact/distance blocked（官方 split 未发布；Zenodo 16989562 仅权重；RNAcmap 无 benchmark 清单）；shuffle 仅作分析线 |
-> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；Muscle TE 十折 +0.0246（5/10 正，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold4–9、pc3 十折未跑；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃；bpRNA TS0 已暂停待重排 |
+> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards，manifest 02:36）；10 个 full run 串行：official_s0 已 PASS（31 epoch，best val BCE 0.011026），official_s1 在 epoch26；实测 0.063 s/step、约 12 min/epoch；contact/distance blocked（官方 split 未发布；Zenodo 16989562 仅权重；RNAcmap 无 benchmark 清单）；shuffle 仅作分析线 |
+> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；Muscle TE 十折 +0.0246（5/10 正，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold3 EL 已完成（Δ=-0.0255，p=0.917；TE/EL 各 4 折，未满十折不进图）；pc3 fold1 暂停（证据已归档）；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃；bpRNA TS0 已暂停待重排 |
 > | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 已完成：九个 family 的 train/valid 对目标家族 `own=0`，确认官方 leave-one-family-out，无同族泄漏；as-trained macro-F1=0.3817、pairs=5.84 vs 真值 20.55；最佳阈值解码 F1=0.6230、pairs=10.80，仍远低于 official 0.8772；bias b=1.0 仅 0.4710。结论：解码校准只解释部分崩塌，主因是 held-out family 上 pair-density 崩溃（OOD 局限），不得写成全局架构负结论；5s s0 已完成：as-trained macro-F1=0.4159、pairs=10.10/33.61，最佳偏置 b=1.0 解码 0.4766、pairs=12.09，最佳阈值 t=0.05 解码 0.5910、pairs=16.27，仍远低于 official 0.8263；与 tRNA 同一 OOD pair-density 崩塌，结论限于 held-out family |
 > | T-A149 | 测速窗口协调 | `speed_window.py` 的 FD 租约接入 family / TE-EL / NB 队列；请求窗口→当前 run 结束→独占 4090→释放→各队列恢复；并发测试通过 | 本地脚本与测试已有，远端队列尚未接入；当前两个长任务需自然结束或人工暂停 |
 > | T-A150 | 文档、图源、归档与提交 | 三处 spec/tasks/checklist 同步；活跃源数据 JSON+哈希；废弃文件入 `archive_20261030/` 并建索引；确认代码提交并 push | 本轮贯穿执行 |
@@ -72,7 +91,34 @@
 > - 图 6 页 37 个文本 run 由 6.4–7.8 pt 统一提升到 8.0 pt；为消除换行溢出，A 栏底注缩短为 “cached or recomputed on raw sequence”，B 栏 logits 框加宽 1.78→2.05 in，C 栏 ECE 框加宽 1.80→1.90 in，Output 标签下移 0.06 in。
 > - 复核：第 10 页 0 个 run <8 pt；全稿 QA 683 run 微软雅黑、683 段 1.5 倍行距、越界 0；130 dpi 渲染三栏无溢出/重叠。deck 哈希 `cd0625c3…`；旧版归档 `round35_pre_fig6_8pt.pptx`。
 
+> **第 35 轮执行快照（2026-10-31 10:55，资源再平衡与状态更正）**：
+> - CPU 争抢是 NB 训练的真实瓶颈：4 个 python 作业各开 12 个 torch 线程，12 核 load average 36–46，official_s0 实测 0.42 s/step、GPU util 15%；这解释了记录值 0.318 s/step 与 smoke 0.125 s/step 的差距。
+> - 决策：暂停 pc3 fold1 TE/EL 两条长队列（进程 1260975/1260996 与队列 1141441/1141438 已 TERM；证据 `audits/pc3_fold_pause_20261031/{te,el}_fold1_{files,tail}.txt`）。理由：pc3 尚无完整折；HEK/pc3 已观测 Δ 全为负（TE_HEK 4 折 -0.029…-0.067，EL_HEK 3 折 -0.034…-0.057），补齐 33 个 fold-series 不可达且不进图；暂停释放约 6 核给主图 7d。恢复入口保留（`run_te_el_cell_queue_round34.py`），不属返工。
+> - 效果：official_s0 降至 0.19 s/step（epoch3 step 2600→2800 用 34 s、3100→3300 用 19 s/100 步），GPU util 15%→58%，显存 14.3/24.5 GiB；约 38 min/epoch，10 run 串行窗口由 60–100 h 收敛到约 40–55 h（按实测推算）。HEK fold3 EL 继续（epoch51，best 0.344008），保留为 GPU 并行占位与 fold3 闭环。
+> - 图 8B 口径更正：第 13 页副标题/英文页脚/备注、第 20 页 T-A129 卡改为“HEK/pc3 未满十折，不入图（fold3 EL 续训、pc3 fold1 暂停）”，不再写“十折进行中/完成后并入”。QA 683 run、683 段 1.5 倍行距、字体与越界 0；LibreOffice 渲染第 13/20 页无重叠。
+> - 图 7d 仍待 10 个 full run 全部 `converged+early_stopped` 后聚合；当前 official_s0 在 epoch3。修正后 deck 哈希 `e53dcae9…`，交付 PPT/PDF 已同步刷新。
+
+> **第 35 轮执行快照（2026-10-31 11:25，epoch3 收敛信号与图 7d 回填预演）**：
+> - official_s0 epoch3 验证 BCE=0.01427747（epoch1 0.01549006 → epoch2 0.01492676 → epoch3 0.01427747），连续两轮刷新 best、bad=0；改进幅度 6.5e-4 远大于 min_delta=1e-6，按 patience=5 合同继续训练，不人工截断。实测 0.18 s/step、约 36–38 min/epoch。
+> - 新增 `ppt/patch_fig7d.py`：只接受 `status=PASS` 且 `scope=full_five_seed` 的 aggregate；用合成 aggregate 干跑命中第 11 页 3 个文本目标并原位替换 10.6×5.3 in 图片，真数据未到前不写盘（deck 哈希仍 `e53dcae9…`）。
+> - jingmei-ppt 正式汇报配方复核：22 页缩略图 + 封面 + 全表页全尺寸，四层层级、密度与页脚安全区一致，未改任何已验收页面。
+
+> **第 35 轮执行快照（2026-10-31 18:10，NB 首个 run 闭环）**：
+> - official_s0 完成：31 epochs（best epoch 26），best validation BCE=0.011026，`early_stopped=True`、`converged=True`、`scientific_eligibility=True`；batch=4、冻结骨干仅头训练。run.json 落盘 17:57:58、独立 QA 18:01:11 PASS，队列已启动 official_s1。单 run 用时约 10 h18 min（07:40→17:58，约 20 min/epoch），10 run 串行总窗口约 4 天。
+> - 该 run 预测 macro-F1：VL0 0.2931、TS0 0.3049、ArchiveII600 0.6813（official head）；五种子聚合前只作过程记录，不写成结论。
+> - HEK fold3 EL 完成：Δ=-0.0255、p=0.917（不显著为正）；HEK 现为 TE 0–3 四折、EL 0–3 四折，未满十折、不入图。
+> - 交付稿、源数据与文档口径不变；图 7d 仍需 9 个 run 全部 PASS。
+
+> **第 35 轮执行快照（2026-10-31 23:25，official_s1 收尾段）**：
+> - official_s0 记为第 1 个 PASS：31 epochs、best epoch 26、best validation BCE 0.011026，`converged+early_stopped+scientific_eligibility` 均 True；run.json 17:57:58、QA 18:01:11 PASS；预测 macro-F1：VL0 0.2931、TS0 0.3049、ArchiveII600 0.6813（单 seed 过程值）。
+> - official_s1（seed 1）在 epoch26：epoch25 验证 BCE 0.0112446；独占 GPU 后稳定在 0.063 s/step、约 12 min/epoch（较并行期 20 min/epoch 提升），GPU 利用率 75–94%。
+> - 队列：official_s2–s4、jev_s0–s4 共 8 个 run 待跑；全部 PASS 后 aggregate 5+5 配对与 Holm，再回填图 7d。
+> - HEK fold3 EL 收敛：Δ=-0.0255、p=0.917（不显著为正）；HEK 现为 TE 0–3、EL 0–3 各 4 折，未满十折不进图；pc3 保持暂停；图 8 按用户决定不再加跑新任务。
+> - 交付 PPT/PDF 与 source_data 未变（deck `e53dcae9…`）。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
+
+> **用户确认（2026-10-31 11:45，单卡资源优先级）**：保图 7d。①维持 NB 10 个 paired run 串行到收敛，aggregate PASS 后才入片；②HEK fold3 EL 继续作为 GPU 并行占位，pc3 fold1 保持暂停；③图 8 维持已完成的 Muscle 十折与分类面板，不再加跑 ArchiveII/bpRNA 新任务；如需扩图 8 任务，先等 NB 收口后再排期。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
 
