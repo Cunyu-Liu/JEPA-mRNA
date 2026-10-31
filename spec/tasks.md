@@ -77,7 +77,7 @@
 > - 决策：暂停 pc3 fold1 TE/EL 两条长队列（进程 1260975/1260996 与队列 1141441/1141438 已 TERM；证据 `audits/pc3_fold_pause_20261031/{te,el}_fold1_{files,tail}.txt`）。理由：pc3 尚无完整折；HEK/pc3 已观测 Δ 全为负（TE_HEK 4 折 -0.029…-0.067，EL_HEK 3 折 -0.034…-0.057），补齐 33 个 fold-series 不可达且不进图；暂停释放约 6 核给主图 7d。恢复入口保留（`run_te_el_cell_queue_round34.py`），不属返工。
 > - 效果：official_s0 降至 0.19 s/step（epoch3 step 2600→2800 用 34 s、3100→3300 用 19 s/100 步），GPU util 15%→58%，显存 14.3/24.5 GiB；约 38 min/epoch，10 run 串行窗口由 60–100 h 收敛到约 40–55 h（按实测推算）。HEK fold3 EL 继续（epoch51，best 0.344008），保留为 GPU 并行占位与 fold3 闭环。
 > - 图 8B 口径更正：第 13 页副标题/英文页脚/备注、第 20 页 T-A129 卡改为“HEK/pc3 未满十折，不入图（fold3 EL 续训、pc3 fold1 暂停）”，不再写“十折进行中/完成后并入”。QA 683 run、683 段 1.5 倍行距、字体与越界 0；LibreOffice 渲染第 13/20 页无重叠。
-> - 图 7d 仍待 10 个 full run 全部 `converged+early_stopped` 后聚合；当前 official_s0 在 epoch3。修正后 deck 哈希 `01116996…`，交付 PPT/PDF 已同步刷新。
+> - 图 7d 仍待 10 个 full run 全部 `converged+early_stopped` 后聚合；当前 official_s0 在 epoch3。修正后 deck 哈希 `e53dcae9…`，交付 PPT/PDF 已同步刷新。
 
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
