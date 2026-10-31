@@ -6,7 +6,7 @@
 >
 > **已核实的口径事实**：
 > 1. 历史 124.78 seq/s 属于 r2dtr1c-s0 的 cached-embedding/head-only、B=256、fp16 工程峰值，不含 650M 编码器；当前 r2d 22.28 seq/s 是 raw-sequence 端到端、B=1，二者不是复现失败。同 B=1 时 head-only=21.45、raw-sequence=22.28 seq/s，二者接近，故大差距主要来自 B=256+fp16 饱和加速与计时边界，不能只归因于编码器或硬件。TS0 有 289 种长度；精确长度 bucket 下 B=4 的实际平均 batch 仅 2.717，B≥32 也仅 4.457，不能拿 B=256 的饱和峰值解释当前小 batch。
-> 2. 当前 xens2 B=1 为 7.47 seq/s，包含三次编码器前向（plana s0/s1 与 r2d）；主图 5 的 Pareto 只限已测五系统，RNAformer/UFold 同机完整点未闭环，因此**当前未证明全模型速度 SOTA**。
+> 2. 当前 xens2 B=1 为 7.47 seq/s，包含三次编码器前向（plana s0/s1 与 r2d）。六系统 B=1/2/4 共 18/18 格已闭环，RNAformer=2.56/2.72/2.73 seq/s；fp32 扩展 batch 最优为 r2d B=16=50.679、plana B=16=46.127、xens2 B=8=17.622 seq/s，均过预测等价门。**共同 4090 协议下三 JEV 均处精度-吞吐前沿，r2d 最快；UFold 未测，不作无限制绝对速度 SOTA。**
 > 3. 4090 不意味着主 benchmark 精度明显改变。已有 TS0 复现为 plana 0.786839 vs A100 0.786563，xens2 0.804063 vs 板值 0.8039，属于数值舍入量级；已有交接记录称 4090 八 split 板值复现一致，本轮逐项绑定原始 artifact，缺项才重跑。
 > 4. 第 17 页是原始全板敏感性表，含训练/测试重叠结果，不是全部去泄露表。新表必须逐格记录训练语料、checkpoint、重叠数、GT 和指标；TR0 系模型的 TestSetB 只用 clean-181，未审计格标 `NA/not audited`。
 > 5. TS2 当前 RNAformer-if=0.9043 来自官方 inter-family 特殊微调 checkpoint + 项目 canonical-nested GT 复测；它不是 RNAformer 原文同一数值口径。固定 bprna checkpoint 与 inter-family 任务匹配 checkpoint 必须分列，release-full GT、canonical-nested GT、原文 quoted 与项目复测不得互换。主 benchmark 当前统一 xens2 对预注册 clean 参照为 6/8，负格是 bpRNA-new 与 TS2。
