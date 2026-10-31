@@ -133,8 +133,9 @@ def main() -> None:
     b.legend(loc="upper left", ncol=2, fontsize=8.6)
     base.style(b)
     fig.text(0.5, 0.035,
-             "Only eligible full-TS0 results are plotted; cross-batch pair agreement >=99% and |delta F1| <= 1e-3. Median of three runs, range bars show repeat throughput. Raw sequence -> encoder -> head -> required decode; no cached embeddings.\n"
-             "UFold remains blocked because official weights are unavailable. Legacy 124.78 seq/s head-only is excluded.",
+             "Only eligible full-TS0 results are plotted; cross-batch pair agreement >=99% and |delta F1| <= 1e-3. Median of three runs; bars show repeat range.\n"
+             "Raw sequence -> encoder -> head -> required decode; no cached embeddings. Legacy 124.78 seq/s head-only is excluded.\n"
+             "UFold remains blocked because official weights are unavailable.",
              ha="center", va="bottom", fontsize=8.6, color=base.C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.075, right=0.985, top=0.86, bottom=0.20, wspace=0.27)
     png = args.out_dir / "fig05_accuracy_speed_4090_round36_3840x1920.png"
