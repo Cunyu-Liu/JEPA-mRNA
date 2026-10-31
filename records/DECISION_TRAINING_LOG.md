@@ -11073,3 +11073,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - §15.207 中“bf16 是明确负优化”的表述据此撤回：该结果**无效，不是科学负结果，也不证明 bf16 有或没有收益**。B=4 OOM 仍证明启动竞态存在。
 - 受污染文件已从 `optimized/` 移至 `optimized_quarantine/r2d_b1--bf16-r2d-encoder_contaminated_profile.json`，本地活跃源副本也移入 `archive_20261031/quarantined_speed_round36/`。聚合器不会读取该文件，不更新主图。
 - 修正后的窗口只有在 NB 进程与 GPU 上下文都清空后才重跑候选；重跑结果与基线使用同一独占条件，才允许做 bf16 判定。
+
+
+## §15.209（2026-11-01）去重后的 official_s2 与 46 个活跃源文件复核
+
+- 去重后仅保留一个 official_s2 进程。epoch1/2 validation BCE=0.01566471/0.01499596，训练正常，尚未到收敛停止点。修正后的优化窗口保持 `WAIT_NB_PROCESSES`，未再发生初始化误判或新的 OOM。
+- 六份基线 profile 与一份汇总已写入活跃清单。`/teams/.../active_source_data/source_data` 的 46 个文件逐一通过存在性、SHA256、字节数与 README 前缀三通道复核，提交 `7c3ec55`。
+- 受污染 bf16 B=1 文件已隔离，当前没有有效的 bf16 结论。优化候选与 RNAformer 全网格仍等待真正独占窗口，速度 SOTA 未证明。
