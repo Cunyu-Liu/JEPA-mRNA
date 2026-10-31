@@ -6,7 +6,7 @@
 | 统一模型在主 benchmark 达到 6/8 | 统一 xens2 对预注册 clean 参照为 6/8；最佳单 checkpoint 为 4/8；全板敏感性为 5/8 | 强支撑但仅限选定参照合同。bpRNA-new 与 TS2 是负格；旧 7/8 混用了其他集成，不能恢复 |
 | 4090 迁移不改变主精度 | 八 split 的 4090/A100 最大绝对 F1 差为 0.0000903 | 强支撑数值等价。不能据此宣称速度相同，速度必须单独同机测量 |
 | 当前模型是速度 SOTA | **不成立，暂不写入**。124.78 是 cached-embedding/head-only、B=256、fp16；raw-sequence B=1 的 r2d 为 22.28、xens2 为 7.47 seq/s | 目前只有已测五系统内部 Pareto，RNAformer/UFold 同机完整点未闭环。只有完成同协议全量复验后才能改写该叙事 |
-| 速度差异有明确工程来源 | head-only 不含 650M 编码器；raw-sequence 包含编码器、任务头与必要 DP；精确长度 bucket 使 B=4 的实际平均 batch 仅 2.717 | 已足以解释历史值与新值不可比。各阶段贡献比例仍待 round36 profile，不能提前指定优化瓶颈 |
+| 速度差异有明确工程来源 | 同 B=1 时 head-only=21.45、raw-sequence=22.28 seq/s，二者接近；124.78 主要来自 B=256+fp16 饱和加速与计时边界。精确长度 bucket 使 B=4 的实际平均 batch 仅 2.717 | 大差距不能归因于 4090 硬件退化，也不能只归因于编码器。各阶段贡献比例仍待 round36 profile，不能提前指定优化瓶颈 |
 | 结构先验支撑 OOD 机制 | Turner 与 2D scorer 在 PDB-OOD 的消融损失大于 ID；DP 的效应随任务改变；CHANRG OOD mean 与 OFoldNA-SS 并列 | 支撑“结构先验在多个 OOD 任务上承重”，不写所有组件统一单调签名。GenF 弱、TS2 未胜必须保留 |
 | 校准概率可用于质量分层 | 四个大样本 split 的 ECE 改善，结构置信度与质量排序为正 | 不推广到小 PDB split；TS2/TS3 过校正、样本量与家族敏感性必须同页报告 |
 | 决策头具有普遍跨骨干/跨任务优势 | NucleicBERT 主 benchmark 8/8 正迁移；但 acceptor/donor/CPEB3 全量不显著为正，RiNALMo 多个原论文任务亦为负 | 只能写“主 benchmark 上展示了迁移能力”，不能写普遍向下游任务提升。负结果和官方资产缺口是结论的一部分 |

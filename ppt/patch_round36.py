@@ -68,7 +68,7 @@ def patch_speed_pages(prs):
                  "主图 2｜124.78 是 head-only 峰值，不是 4090 复刻失败")
     replace_text(slide,
                  "124.78 属于 r2dtr1c-s0 的历史 head-only 峰值；当前 raw-sequence B=1 为 22.28 seq/s（F1=0.668181），二者不得混用。",
-                 "124.78 = cached embedding + B=256 + fp16，不含 650M 编码器；22.28 = raw-sequence + B=1，含编码器、决策头与 DP。差异来自计时范围、batch 和精度路径；当前未证明速度 SOTA。")
+                 "同 B=1：head-only 21.45、raw-sequence 22.28 seq/s，二者接近；124.78 主要来自 B=256+fp16 饱和加速及不同计时边界，并非 4090 变慢。当前未证明速度 SOTA。")
 
     slide = prs.slides[8]
     replace_text(slide,
@@ -107,7 +107,7 @@ def patch_protocol_page(prs):
             "raw sequence → 编码器 + 任务头 + 必要 DP；r2d B=1 为 22.28 seq/s，三步全部计入。", 9.5, False),
         "参照限制": ("为何差这么多", 11.5, True),
         "RiNALMo-ft 14.5 seq/s 为 forward-only，单列，不能冒充完整系统延迟。": (
-            "不是 4090 变慢：计时范围不同，且 B=256/fp16 与 B=1 不可比；xens2 还需三次编码器前向。", 9.5, False),
+            "B=1 两者已接近（21.45 vs 22.28）；124.78 主要来自 B=256/fp16 饱和加速与计时边界，并非硬件退化。", 9.5, False),
         "有效性": ("当前判定", 11.5, True),
         "tp/fp/fn=24406/13778/10485；批大小不改变预测，B=384/512 只作饱和检查。": (
             "已测五系统内部 Pareto ≠ 全模型速度 SOTA；同机基线未闭环，后续集中做无损推理优化。", 9.5, False),
