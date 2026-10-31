@@ -15,7 +15,7 @@ PY = "/root/miniconda3/envs/lucaone/bin/python"
 TOOLS = Path("/home/rna_jev/tools")
 BASE = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024")
 RESULTS = BASE / "eval_decision"
-STATE_DIR = BASE / "audits/round34_qa_watch"
+STATE_DIR = Path(os.environ.get("ROUND34_QA_STATE_DIR", str(BASE / "audits/round34_qa_watch")))
 STATE_FILE = STATE_DIR / "state.json"
 
 
@@ -37,22 +37,26 @@ def structure(job: str, family: str, smoke: bool = False) -> dict:
 
 
 def jobs() -> dict[str, dict]:
-    configs = {
-        "rinalmo_archiveii_tRNA_round33_full_v1": structure("rinalmo_archiveii_tRNA_round33_full_v1", "archiveii"),
-        "rinalmo_archiveii_5s_round33_full_v1": structure("rinalmo_archiveii_5s_round33_full_v1", "archiveii"),
-        "rinalmo_mrl_round33_full_v3": regression("rinalmo_mrl_round33_full_v3", "mrl", "HEK", 0,
-                                                   "rinalmo_regression_dual_round33.py"),
-        "rinalmo_bprna_TS0_round33_smoke_v1": structure("rinalmo_bprna_TS0_round33_smoke_v1", "bprna", True),
-        "rinalmo_bprna_TS0_round33_full_v1": structure("rinalmo_bprna_TS0_round33_full_v1", "bprna"),
-    }
-    for fold in (0, 1):
+    configs = {}
+    if "ROUND34_QA_FOLDS" not in os.environ:
+        configs = {
+            "rinalmo_archiveii_tRNA_round33_full_v1": structure("rinalmo_archiveii_tRNA_round33_full_v1", "archiveii"),
+            "rinalmo_archiveii_5s_round33_full_v1": structure("rinalmo_archiveii_5s_round33_full_v1", "archiveii"),
+            "rinalmo_mrl_round33_full_v3": regression("rinalmo_mrl_round33_full_v3", "mrl", "HEK", 0,
+                                                       "rinalmo_regression_dual_round33.py"),
+            "rinalmo_bprna_TS0_round33_smoke_v1": structure("rinalmo_bprna_TS0_round33_smoke_v1", "bprna", True),
+            "rinalmo_bprna_TS0_round33_full_v1": structure("rinalmo_bprna_TS0_round33_full_v1", "bprna"),
+        }
+    folds = tuple(int(value) for value in os.environ.get("ROUND34_QA_FOLDS", "0,1").split(",") if value)
+    for fold in folds:
         for task in ("te", "el"):
             job = f"rinalmo_{task}_HEK_fold{fold}_round33_full_v4"
             configs[job] = regression(job, task, "HEK", fold, "rinalmo_regression_dual_round33_v4.py")
-    for cell in ("Muscle", "pc3"):
-        for task in ("te", "el"):
-            job = f"rinalmo_{task}_{cell}_fold0_round33_smoke_v4"
-            configs[job] = regression(job, task, cell, 0, "rinalmo_regression_dual_round33_v4.py", 2)
+    if "ROUND34_QA_FOLDS" not in os.environ:
+        for cell in ("Muscle", "pc3"):
+            for task in ("te", "el"):
+                job = f"rinalmo_{task}_{cell}_fold0_round33_smoke32_v4"
+                configs[job] = regression(job, task, cell, 0, "rinalmo_regression_dual_round33_v4.py", 32)
     return configs
 
 

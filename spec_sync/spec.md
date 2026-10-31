@@ -47,8 +47,10 @@
 > **第 35 轮执行快照（2026-10-31 03:00）**：
 > - 主图 7 重建为两行工作版（a 主 benchmark 8/8；b acceptor/donor；c CPEB3），三任务全量负、Holm=1.00；已替换第 11 页旧图。二级结构五种子完成后自动补 d 面板。
 > - NB 二级结构：train_rnalign_tr0 20 shards 全量提取完成（manifest 02:36）；10 个 full run 启动，official_s0 在训；聚合后补图 7d。
-> - TE/EL：Muscle fold7/8 已 PASS+QA（fold8 TE/EL 均正）；9 折聚合 TE Δ=+0.0324（5/9 正，Holm 0.50），EL Δ=-0.0127（4/9 正，Holm 1.00）；fold9 在跑。图 8B 已加 9 折聚合脚注。
+> - TE/EL：Muscle fold0–9 全部 PASS+QA；十折聚合 TE Δ=+0.0246（5/10 正，Holm 0.86），EL Δ=-0.0033（5/10 正，Holm 1.00）；图 8B 已改为十折表述。HEK fold3 EL 已从 checkpoint 续接，fold4–9 队列启动；pc3 fold1 在跑。
 > - T-A148 tRNA seed0：九个 family 的 train/valid 对目标家族 `own=0`，确认 leave-one-family-out、无同族泄漏；as-trained macro-F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 真值 20.55；判为 OOD pair-density 崩溃，不得写成全局架构负结论；5s 诊断在跑。
+> - 代码提交 `0894963`（T-A148 诊断脚本、NB batch=4 并行队列、文档同步）已 push；`source_data` 33 个活跃文件哈希已刷新；archive 追加 round35 中间稿/提取图，共 26 项。
+> - NB batch 决策：batch=1 在 47,963 条结构上约 0.16 s/step（约 2 h/epoch），10 个 paired run 不可行；改为 batch=4、单路顺序（两 head 完全同协议，收敛合同与数据不变），并去掉训练器里重复的 14 GB shard 哈希；smoke 已用新代码重训通过。batch=4 实测 0.305 s/step，12k steps/epoch≈61 min/epoch；patience=5，单 run 至少 6 epochs。
 
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 

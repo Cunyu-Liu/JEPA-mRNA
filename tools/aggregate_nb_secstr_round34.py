@@ -55,29 +55,34 @@ def main() -> int:
     for split in ("ts0", "archiveii600"):
         official = np.array([r["predictions"][split]["macro_f1"] for r in runs["official"]])
         jev = np.array([r["predictions"][split]["macro_f1"] for r in runs["jev"]])
+        delta = jev - official
+        delta_sd = float(np.std(delta, ddof=1))
         test = stats.ttest_rel(jev, official, alternative="greater")
-        pvalue = float(test.pvalue)
-        finite = math.isfinite(pvalue)
+        statistics_ok = bool(delta_sd > 0 and math.isfinite(test.statistic) and math.isfinite(test.pvalue))
+        pvalue = float(test.pvalue) if statistics_ok else None
         comparisons[split] = {
             "official_seed_macro_f1": official.tolist(), "jev_seed_macro_f1": jev.tolist(),
             "official_mean": float(official.mean()), "official_sample_std": float(official.std(ddof=1)),
             "jev_mean": float(jev.mean()), "jev_sample_std": float(jev.std(ddof=1)),
-            "delta_mean": float(np.mean(jev - official)),
-            "paired_t_statistic": float(test.statistic) if math.isfinite(test.statistic) else None,
-            "one_sided_p_value": pvalue if finite else None,
-            "statistics_status": "ok" if finite else "undefined_zero_variance",
+            "delta_mean": float(np.mean(delta)), "paired_delta_sample_std": delta_sd,
+            "paired_t_statistic": float(test.statistic) if statistics_ok else None,
+            "one_sided_p_value": pvalue,
+            "statistics_status": "ok" if statistics_ok else "undefined_zero_variance",
         }
-        pvalues.append(pvalue if finite else None)
-    adjusted = holm(pvalues)
+        pvalues.append(pvalue)
+    statistics_complete = all(value is not None for value in pvalues)
+    adjusted = holm(pvalues) if statistics_complete else [None] * len(pvalues)
     for (split, comparison), p_holm in zip(comparisons.items(), adjusted):
         comparison["p_holm_within_secondary_structure_task"] = p_holm
         comparison["significant_positive_holm_0_05"] = bool(
-            comparison["delta_mean"] > 0 and p_holm is not None and p_holm < 0.05)
+            statistics_complete and comparison["delta_mean"] > 0 and p_holm is not None and p_holm < 0.05)
     payload = {
         "schema_version": 1, "status": "PASS", "task": "NucleicBERT original secondary-structure prediction",
         "scope": "full_five_seed" if args.limit == 0 else "engineering_smoke_not_scientific",
         "scientific_eligibility": args.limit == 0, "seeds": [0, 1, 2, 3, 4],
         "metric": "NucleicBERT per-structure macro-F1; paired same-seed one-sided t-test; Holm across TS0 and ArchiveII600",
+        "holm_status": "PASS" if statistics_complete else "undefined_zero_variance",
+        "interpretation_boundary": "original RNAStrAlign+TR0 protocol retains exact train/evaluation sequence overlap; paired head comparison only, not decontaminated generalization",
         "runs": runs, "comparisons": comparisons,
         "all_predictions_and_qa_retained": True,
     }

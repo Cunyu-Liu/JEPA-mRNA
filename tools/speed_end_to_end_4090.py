@@ -92,6 +92,8 @@ def load_models(name: str, device: torch.device) -> dict:
                 "report": report}
     if name == "mxfold2":
         from types import SimpleNamespace
+        from mxfold2_compat_round34 import patch_paired_layer_reshape
+        patch_paired_layer_reshape()
         from mxfold2.predict import Predict
         package = Path(__import__("mxfold2").__path__[0])
         weights = package / "models/TrainSetAB.pth"
@@ -111,6 +113,11 @@ def load_models(name: str, device: torch.device) -> dict:
         return {"name": name, "model": model.to(device).eval(), "report": report}
     if name == "rnaformer":
         from types import SimpleNamespace
+        torch.backends.cuda.matmul.allow_tf32 = False
+        torch.backends.cudnn.allow_tf32 = False
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        torch.set_float32_matmul_precision("highest")
         sys.path.insert(0, str(REPO / "third_party/RNAformer"))
         from ss.run_rnaformer import build_model
         weights = W / "rna_ssp_20261024/weights/baselines/rnaformer/RNAformer_32M_state_dict_bprna.pth"
@@ -119,7 +126,9 @@ def load_models(name: str, device: torch.device) -> dict:
         model, report = build_model(args)
         report.update({"weights": str(weights), "weights_sha256": sha256_file(weights),
                        "config": str(config), "config_sha256": sha256_file(config),
-                       "n_parameters": sum(p.numel() for p in model.parameters())})
+                       "n_parameters": sum(p.numel() for p in model.parameters()),
+                       "deterministic_inference": {"allow_tf32": False, "cudnn_deterministic": True,
+                                                   "cudnn_benchmark": False, "matmul_precision": "highest"}})
         return {"name": name, "model": model.to(device).eval(), "report": report}
     raise ValueError(name)
 
@@ -188,9 +197,9 @@ def forward_mxfold2(models: dict, seqs: list[str]) -> list[list[tuple[int, int]]
     _, _, partner_lists = models["model"](seqs)
     predictions = []
     for partners in partner_lists:
-        pairs = [(index - 1, int(partner) - 1)
+        pairs = [(index - 2, int(partner) - 1)
                  for index, partner in enumerate(partners, start=1)
-                 if int(partner) > index]
+                 if int(partner) >= index]
         predictions.append(pairs)
     return predictions
 
@@ -198,13 +207,14 @@ def forward_mxfold2(models: dict, seqs: list[str]) -> list[list[tuple[int, int]]
 @torch.no_grad()
 def forward_rnaformer(models: dict, seqs: list[str], device: torch.device) -> list[list[tuple[int, int]]]:
     from ss.run_rnaformer import SEQ_STOI, decode_pairs
+    # run_once buckets by exact sequence length, so a true batch needs no padding.
+    ids = torch.LongTensor([[SEQ_STOI.get(base, 4) for base in seq] for seq in seqs]).to(device)
+    src_len = torch.LongTensor([len(seq) for seq in seqs]).to(device)
+    pdb_sample = torch.ones((len(seqs), 1), dtype=torch.float32, device=device)
+    logits, _ = models["model"](ids, src_len, pdb_sample)
     predictions = []
-    for seq in seqs:
-        ids = torch.LongTensor([SEQ_STOI.get(base, 4) for base in seq])[None, :].to(device)
-        src_len = torch.LongTensor([len(seq)]).to(device)
-        pdb_sample = torch.ones((1, 1), dtype=torch.float32, device=device)
-        logits, _ = models["model"](ids, src_len, pdb_sample)
-        probability = torch.sigmoid(logits[0, :, :, -1]).float().cpu().numpy().astype(np.float64)
+    for index, seq in enumerate(seqs):
+        probability = torch.sigmoid(logits[index, :, :, -1]).float().cpu().numpy().astype(np.float64)
         probability = 0.5 * (probability + probability.T)
         np.fill_diagonal(probability, 0.0)
         predictions.append(decode_pairs(np.clip(probability, 0.0, 1.0), seq, threshold=0.5))

@@ -63,24 +63,30 @@ def load_cv(task, cell_line):
     assert protocol["task"] == task and protocol["cell_line"] == cell_line
     assert protocol["folds"] == list(range(10)) and protocol["n_fold_results"] == 10
     assert protocol["n_runs_per_head"] == 50 and len(data["fold_results"]) == 10
+    assert [fold["fold"] for fold in data["fold_results"]] == list(range(10)), "fold_results must contain each fold exactly once"
     values = {}
     for result_head, plot_head in (("official_head", "official_probe"), ("jev_head", "jev_head")):
         head = data["heads"][result_head]
         seed_cv = []
         for seed in range(5):
-            recomputed = float(np.mean([fold["heads"][result_head]["runs"][seed]["spearman"]
-                                        for fold in data["fold_results"]]))
+            per_fold = np.array([fold["heads"][result_head]["runs"][seed]["spearman"]
+                                 for fold in data["fold_results"]], dtype=float)
+            assert np.isfinite(per_fold).all(), f"non-finite Spearman in {task}/{cell_line}/seed{seed}"
+            recomputed = float(np.mean(per_fold))
             assert np.isclose(recomputed, head["seed_cv_spearman"][seed], rtol=0, atol=1e-12)
             seed_cv.append(recomputed)
         fold_means = [fold["heads"][result_head]["spearman_seed_mean"] for fold in data["fold_results"]]
         mean = float(np.mean(fold_means))
-        sd = float(np.std(fold_means, ddof=1))
+        fold_sd = float(np.std(fold_means, ddof=1))
+        seed_sd = float(np.std(seed_cv, ddof=1))
         assert np.isclose(mean, head["cv_spearman_mean"], rtol=0, atol=1e-12)
-        assert np.isclose(sd, head["cv_spearman_fold_sd"], rtol=0, atol=1e-12)
-        values[plot_head] = {"mean": mean, "sd": sd, "runs": seed_cv}
+        assert np.isclose(fold_sd, head["cv_spearman_fold_sd"], rtol=0, atol=1e-12)
+        values[plot_head] = {"mean": mean, "sd": seed_sd, "fold_sd": fold_sd, "runs": seed_cv}
     comparison = data["comparison"]
     expected_delta = np.array(values["jev_head"]["runs"]) - np.array(values["official_probe"]["runs"])
     assert np.allclose(expected_delta, comparison["seed_cv_delta_jev_minus_official"], rtol=0, atol=1e-12)
+    assert np.isclose(float(np.mean(expected_delta)), comparison["paired_delta_mean"], rtol=0, atol=1e-12)
+    assert np.isclose(float(np.std(expected_delta, ddof=1)), comparison["paired_delta_sample_sd"], rtol=0, atol=1e-12)
     test = stats.ttest_rel(values["jev_head"]["runs"], values["official_probe"]["runs"], alternative="greater")
     p_value = comparison["one_sided_ttest_rel_greater_p_value"]
     if p_value is None:
@@ -91,6 +97,26 @@ def load_cv(task, cell_line):
             "heads": values, "delta": float(np.mean(expected_delta)), "p_value": p_value,
             "significant_positive": comparison["significant_positive"],
             "result_sha256": common.sha256(path), "source_result": str(path), "protocol": "official ten-fold aggregation"}
+
+
+def holm(p_values):
+    p = np.asarray(p_values, dtype=float)
+    order = np.argsort(p)
+    adjusted_sorted = np.maximum.accumulate((len(p) - np.arange(len(p))) * p[order])
+    adjusted = np.empty(len(p), dtype=float)
+    adjusted[order] = np.minimum(adjusted_sorted, 1.0)
+    return adjusted
+
+
+def apply_holm(rows):
+    p_values = [row["p_value"] for row in rows.values()]
+    if any(value is None for value in p_values):
+        return "undefined_zero_variance"
+    adjusted = holm(p_values)
+    for row, p_holm in zip(rows.values(), adjusted):
+        row["holm_p_value"] = float(p_holm)
+        row["significant_positive_holm"] = bool(row["delta"] > 0 and p_holm < 0.05)
+    return "PASS"
 
 
 def draw_task(ax, rows):
@@ -114,8 +140,10 @@ def draw_task(ax, rows):
                     f"{values['mean']:.4f}", ha="right" if offset < 0 else "left", va="bottom",
                     fontsize=8.3, color=color, fontweight="bold")
         delta_color = TEAL if row["delta"] > 0 else C["red"]
-        p_text = "NA" if row["p_value"] is None else f"{row['p_value']:.3f}"
-        ax.text(x[index], low + (high - low) * 0.035, f"Δ={row['delta']:+.4f}\np={p_text}",
+        p_label = "p_Holm" if "holm_p_value" in row else "p"
+        p_value = row.get("holm_p_value", row["p_value"])
+        p_text = "NA" if p_value is None else f"{p_value:.3f}"
+        ax.text(x[index], low + (high - low) * 0.035, f"Δ={row['delta']:+.4f}\n{p_label}={p_text}",
                 ha="center", va="bottom", fontsize=8.2, color=delta_color, linespacing=1.35)
     ax.set_xticks(x, [row["label"] for row in rows], fontsize=8.8)
     ax.set_xlim(-0.38, len(rows) - 0.42)
@@ -128,13 +156,16 @@ def main():
         for cell_line in ("Muscle", "pc3", "HEK"):
             rows[f"{task}_{cell_line}"] = load_cv(task, cell_line)
     assert len(rows) == 7
-    payload = {"figure_status": "working_pending_global_holm_and_remaining_classification_tasks",
+    holm_status = apply_holm(rows)
+    payload = {"figure_status": "final_candidate_pending_visual_qa" if holm_status == "PASS" else "final_candidate_holm_undefined_pending_visual_qa",
                "protocol": "official MRL full_v3 R²; TE/EL complete ten-fold Spearman aggregation",
                "tasks": rows,
+               "holm_status": holm_status,
                "raw_significant_positive_tasks": [key for key, row in rows.items() if row["significant_positive"]],
-               "note": "Raw paired p-values are shown; global Holm correction is still required before final claims"}
+               "significant_positive_tasks_holm": [key for key, row in rows.items() if row.get("significant_positive_holm")],
+               "note": "Holm-adjusted paired p-values are shown" if holm_status == "PASS" else "Holm is undefined with zero-variance tasks; no final significance claims"}
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "fig08b_rinalmo_regression_working_source.json").write_text(
+    (OUT / "fig08b_rinalmo_regression_final_source.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
 
     fig, axes = plt.subplots(1, 3, figsize=(12.8, 6.4), gridspec_kw={"width_ratios": [0.9, 1.35, 1.35]})
@@ -147,20 +178,23 @@ def main():
     handles = [plt.Line2D([0], [0], marker="o", color=C["grey"], lw=0, markersize=7, label="Official head"),
                plt.Line2D([0], [0], marker="s", color=C["blue"], lw=0, markersize=7, label="JEV head")]
     axes[0].legend(handles=handles, loc="upper right", fontsize=8.5)
-    fig.text(0.5, 0.035,
-             "Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±SD and raw paired p-values are shown.\n"
-             "Working panel: global Holm correction and remaining classification/structure tasks are still required before final claims.",
-             ha="center", va="bottom", fontsize=8.6, color=C["muted"], linespacing=1.5)
+    if holm_status == "PASS":
+        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±seed SD and Holm-adjusted paired p-values are shown.\n"
+                  "All positive and negative regression results are retained; classification results are reported separately in Figure 8A.")
+    else:
+        footer = ("Full official MRL plus all six complete ten-fold TE/EL aggregations; mean±seed SD and raw paired p-values are shown.\n"
+                  "Holm is undefined with zero-variance tasks; no significance claims are made.")
+    fig.text(0.5, 0.035, footer, ha="center", va="bottom", fontsize=8.6, color=C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.065, right=0.985, top=0.85, bottom=0.20, wspace=0.34)
-    png = OUT / "fig08b_rinalmo_regression_working_3840x1920.png"
-    pdf = OUT / "fig08b_rinalmo_regression_working_3840x1920.pdf"
+    png = OUT / "fig08b_rinalmo_regression_final_3840x1920.png"
+    pdf = OUT / "fig08b_rinalmo_regression_final_3840x1920.pdf"
     fig.savefig(png, dpi=300)
     fig.savefig(pdf)
     plt.close(fig)
     with Image.open(png) as image:
         assert image.size == (3840, 1920)
     assert png.stat().st_size > 100_000 and pdf.stat().st_size > 5_000
-    print("FIG08B_REGRESSION_WORKING_ASSET_PASS", png, common.sha256(png))
+    print("FIG08B_REGRESSION_FINAL_CANDIDATE_PASS", png, common.sha256(png))
 
 
 if __name__ == "__main__":

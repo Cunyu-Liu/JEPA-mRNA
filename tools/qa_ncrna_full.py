@@ -132,7 +132,9 @@ def main():
     assert np.isclose(np.mean(jev_values - official_values), comparison["delta_weighted_f1_mean"], atol=1e-12)
     assert np.isclose(float(test.pvalue), comparison["one_sided_p_value"], atol=1e-12)
     assert comparison["significant_positive"] == bool(np.mean(jev_values - official_values) > 0 and test.pvalue < 0.05)
-    print("EXTERNAL_QA_PASS", args.noise, json.dumps({
+    receipt = {
+        "status": "PASS",
+        "result": str(result_path),
         "result_sha256": sha256(result_path),
         "training_data_card_sha256": protocol["data_card_sha256"],
         "current_validated_data_card_sha256": current_card_sha256,
@@ -141,7 +143,12 @@ def main():
         "significant_positive": comparison["significant_positive"],
         "cuda_device": torch.cuda.get_device_name(0),
         "gpu_reinference_runs": 10,
-    }), flush=True)
+    }
+    output = result_path.parent / "qa_result.json"
+    temporary = output.with_suffix(".tmp")
+    temporary.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temporary.replace(output)
+    print("EXTERNAL_QA_PASS", args.noise, json.dumps(receipt), flush=True)
 
 
 if __name__ == "__main__":

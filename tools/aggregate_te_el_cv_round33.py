@@ -37,7 +37,8 @@ def split_counts(frame: pd.DataFrame, fold: int) -> dict[str, int]:
 def verify_qa_log(path: Path, result_sha256: str) -> str:
     matches = []
     for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        if QA_MARKER in line and '"scope": "full"' in line and result_sha256 in line:
+        if (QA_MARKER in line and '"scope": "full"' in line and '"runs": 10' in line
+                and '"cuda_device": "NVIDIA GeForce RTX 4090"' in line and result_sha256 in line):
             matches.append(line)
     if not matches:
         raise RuntimeError(f"no current full GPU-QA record in {path}")
@@ -47,7 +48,8 @@ def verify_qa_log(path: Path, result_sha256: str) -> str:
 def load_fold(root: Path, task: str, cell_line: str, fold: int) -> tuple[dict, dict]:
     name = f"rinalmo_{task}_{cell_line}_fold{fold}_round33_full_v4"
     result_path = root / "eval_decision" / name / "result.json"
-    qa_log = root / "eval_decision" / f"{name}.launch.log"
+    qa_watch = "round34_qa_watch" if fold in (0, 1) else "round34_qa_watch_folds2_9"
+    qa_log = root / "audits" / qa_watch / f"{name}.qa.log"
     result_sha256 = sha256(result_path)
     result = json.loads(result_path.read_text(encoding="utf-8"))
     protocol = result["protocol"]

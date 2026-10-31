@@ -99,8 +99,10 @@ def load_records(role: str, limit: int) -> tuple[list[dict], dict]:
         metadata = json.loads(shard.with_suffix(".json").read_text())
         if metadata.get("fingerprint") != expected_fingerprint:
             raise RuntimeError(f"embedding fingerprint mismatch: {shard}")
-        if metadata.get("sha256") != entry.get("sha256") or sha256(shard) != entry["sha256"]:
-            raise RuntimeError(f"embedding shard hash mismatch: {shard}")
+        if metadata.get("sha256") != entry.get("sha256"):
+            raise RuntimeError(f"embedding shard manifest hash mismatch: {shard}")
+        # Content SHA is verified once by EmbeddingStore.from_dir below; do not
+        # re-read the 14 GB shard set here (it doubled NFS load per run).
         cached_sequences += int(entry["n_sequences"])
     if cached_sequences != expected_fingerprint["n_unique_sequences"]:
         raise RuntimeError(f"embedding sequence count mismatch for {cache_split(role, limit)}")
