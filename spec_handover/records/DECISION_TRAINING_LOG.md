@@ -11173,3 +11173,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch11 train BCE=0.00049041，validation BCE=**0.012150526581859730**，相对 epoch10=0.012302782760816013 再降 1.52256e-4，继续刷新 best，bad=0。
 - 当前 validation 改善重新扩大，远超过 min_delta，不支持提前收敛判断；继续原合同训练并等待后续节点。
+
+
+## §15.222（2026-11-01）official_s2 epoch12 验证节点
+
+- epoch12 train BCE=0.00047035，validation BCE=**0.011950184556014655**，相对 epoch11=0.012150526581859730 再降 2.00342e-4，继续刷新 best，bad=0。
+- 本轮改善进一步增大，首次低于 0.012；没有提前停止的依据，继续按 patience=5 等待真实 plateau。
