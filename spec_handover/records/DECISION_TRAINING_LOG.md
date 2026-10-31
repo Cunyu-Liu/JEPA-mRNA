@@ -11148,3 +11148,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `full_result_pass`：只有 `status=PASS`、`converged=True`、`early_stopped=True`、`scientific_eligibility=True` 才能被视为已完成 full run。仅写 PASS 但未收敛的结果不会被跳过，也不会被错误送入 QA backfill。
 - 新测试覆盖 nonconverged PASS，恢复器/队列/既有 NB 测试共 **10/10 PASS**；不带 `--parallel` 的真实 dry-run 显示 parallel=1、QA backfill=[]，pending 从 official_s2 起，official_s0/s1 不重复。
 - 代码与测试提交 `4722af6` 已 push。当前 watcher 在 official_s2 自然结束后将使用加固后的队列。
+
+
+## §15.218（2026-11-01）official_s2 真实 resume 状态独立核对
+
+- 直接读取生产 `resume.pt`，确认保存键为 model、optimizer、best_state、epoch、best_epoch、best_loss、bad、history、coverage、cuda_rng_state 与 run_identity；model/best_state 各 16 个张量，optimizer 含 state 和 param_groups，CUDA RNG 存在。
+- checkpoint 与 `validation_history.jsonl` 完全一致：epoch=8、best_epoch=8、best validation BCE=**0.012367032571418569**、bad=0、history 尾三项一致，early_stopped=False，gradient coverage 无 missing/nonfinite。run identity 仍为 batch=4、lr=1e-5、patience=5、min_delta=1e-6、代码哈希 `d36380d42fb2…`。
+- 以上证明断点恢复状态真实完整，不只是单元测试通过；epoch8 相比 epoch7=0.01281778 继续改善，epoch9 正常训练，不提前停止。
