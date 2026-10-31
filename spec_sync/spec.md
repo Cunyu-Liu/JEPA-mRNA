@@ -79,6 +79,11 @@
 > - 图 8B 口径更正：第 13 页副标题/英文页脚/备注、第 20 页 T-A129 卡改为“HEK/pc3 未满十折，不入图（fold3 EL 续训、pc3 fold1 暂停）”，不再写“十折进行中/完成后并入”。QA 683 run、683 段 1.5 倍行距、字体与越界 0；LibreOffice 渲染第 13/20 页无重叠。
 > - 图 7d 仍待 10 个 full run 全部 `converged+early_stopped` 后聚合；当前 official_s0 在 epoch3。修正后 deck 哈希 `e53dcae9…`，交付 PPT/PDF 已同步刷新。
 
+> **第 35 轮执行快照（2026-10-31 11:25，epoch3 收敛信号与图 7d 回填预演）**：
+> - official_s0 epoch3 验证 BCE=0.01427747（epoch1 0.01549006 → epoch2 0.01492676 → epoch3 0.01427747），连续两轮刷新 best、bad=0；改进幅度 6.5e-4 远大于 min_delta=1e-6，按 patience=5 合同继续训练，不人工截断。实测 0.18 s/step、约 36–38 min/epoch。
+> - 新增 `ppt/patch_fig7d.py`：只接受 `status=PASS` 且 `scope=full_five_seed` 的 aggregate；用合成 aggregate 干跑命中第 11 页 3 个文本目标并原位替换 10.6×5.3 in 图片，真数据未到前不写盘（deck 哈希仍 `e53dcae9…`）。
+> - jingmei-ppt 正式汇报配方复核：22 页缩略图 + 封面 + 全表页全尺寸，四层层级、密度与页脚安全区一致，未改任何已验收页面。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。

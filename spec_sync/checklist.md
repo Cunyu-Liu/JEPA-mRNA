@@ -55,6 +55,14 @@
 > - 图 6 页 37 个文本 run 由 6.4–7.8 pt 统一提升到 8.0 pt；为消除换行溢出，A 栏底注缩短为 “cached or recomputed on raw sequence”，B 栏 logits 框加宽 1.78→2.05 in，C 栏 ECE 框加宽 1.80→1.90 in，Output 标签下移 0.06 in。
 > - 复核：第 10 页 0 个 run <8 pt；全稿 QA 683 run 微软雅黑、683 段 1.5 倍行距、越界 0；130 dpi 渲染三栏无溢出/重叠。deck 哈希 `cd0625c3…`；旧版归档 `round35_pre_fig6_8pt.pptx`。
 
+> **第 35 轮执行快照（2026-10-31 11:25，epoch3 收敛信号与资源再平衡）**：
+> - official_s0 epoch3 验证 BCE=0.01427747（0.01549006 → 0.01492676 → 0.01427747），连续两轮刷新 best、bad=0；改进 6.5e-4 远大于 min_delta，按 patience=5 继续训练，不人工截断。
+> - 资源：4 作业 × 12 torch 线程造成 12 核 load 36–46；暂停 pc3 fold1 TE/EL 两条长队列（证据 `audits/pc3_fold_pause_20261031/`），NB 由 0.42 降至 0.19 s/step，GPU util 15%→58%。
+> - 图 8B 口径：第 13/16/20 页改为“HEK/pc3 未满十折不并入（fold3 EL 续训、pc3 fold1 暂停）”；QA 683 run、字体/行距/越界 0；交付 deck `e53dcae9…`，旧稿归档为 `round35_pre_statusfix_20261031`。
+> - 图 7d 回填：`ppt/patch_fig7d.py` 仅接受 `status=PASS`+`scope=full_five_seed`，合成 aggregate 干跑命中 3 个文本目标并原位替换图片；未写盘。
+> - jingmei-ppt 正式汇报配方复核：22 页缩略图、封面与全表页全尺寸，层级/密度/页脚安全区一致，无需改版。
+> - 提交 `e469213`、`55c12db` 已 push；文档三处与远端 `spec/`、`spec_sync/` 哈希一致。
+
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
