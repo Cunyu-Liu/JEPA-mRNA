@@ -11016,3 +11016,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **PPT 与源数据**：round36 候选稿 23 页，新增第 18 页泄露处理全板；第 5 页解释速度差异，第 19 页（原附录 B）定义 head-only/forward-only/raw-sequence。890 个非空文本 run 均为微软雅黑和 1.5 倍行距，越界 0、ZIP PASS，LibreOffice 显式 fontconfig 渲染 23 页与三张全页总览人工复核通过。PPT SHA256=`8d1f012b4aa5271c6d11633301a14995492476ff2208a99ebc9492011267a4fa`。
 - **测速调度**：只停止 NB 调度器，当前 official_s1 训练未中断；`run_round36_speed_window.sh` 等其 run.json 后检查独占、执行 CUDA 断言和 r2d/plana/xens2 的 B=1/4 全 TS0 分段 profile，trap 自动恢复 NB QA/队列。尚无 profile 或优化结果，未提前写速度提升。
 - **整理**：13 个旧论文稿、旧轮次便签、重复指标表和非活跃早期记录已移入 `archive_20261031/` 并写入哈希索引；活跃源数据新增泄露表、RNAformer 审计和 4090 复核 JSON。未删除原始结果，未把归档当作删除证据。
+
+
+## §15.202（2026-11-01）历史 B=1 对照、源数据闭环与三段受控速度队列
+
+- **对速度归因的重要校正**：历史 head-only 阶梯中 B=1 已为 21.45 seq/s，raw-sequence B=1 为 22.28 seq/s，二者接近。124.78 的峰值主要来自 B=256+fp16 饱和加速和不同计时边界，不能归因于 4090 硬件退化，也不能只归因于 650M 编码器。PPT、spec 与 `paper/round36_narrative_audit.md` 已同步这一证据，提交 `e722c87`。
+- **源数据**：主图 1/2 的 round32 已验证汇总源已原样保藏。全部 39 个活跃源文件已同步 `/teams/.../deliverables/round36/active_source_data/source_data`，逐文件存在性、SHA256、字节数与 README 前缀三通道 PASS；三处旧哈希已修正，提交 `699dffd`。
+- **三段队列**：第一段等待 official_s1 自然收敛后做 r2d/plana/xens2 B=1/4 全 TS0 profile；第二段做 bf16 与扩展 batch 候选及历史 head-only 严格复现；第三段做 RNAformer B=1/2/4 全量同机基线。每段均只停止调度器，不中断当前训练/QA，等待自然独占后执行，失败即停止并恢复 NB。提交 `f2c95b2`、`fbae97a`。
+- **聚合硬门**：`build_round36_speed_comparison.py` 仅选择全 TS0、三次重复、配对一致率≥99% 且绝对 F1 差≤0.001 的候选；失败配置保留但不能获胜，基线未闭环时速度 SOTA 自动为不可判定。三项测试通过，提交 `cf41d2d`。
+- **UFold**：官方 Drive 再次超时，错误为 `Timed out: no response from the server for None seconds`，证据保存 `audits/round36_ufold_download_failure.log`。未使用第三方权重，不用旧 A100 数值补缺。
+- **当前边界**：尚无 round36 profile、优化或 RNAformer 全量新结果；不得把队列安装、静态测试或历史数字写成速度提升。NB 到 epoch31 后出现一次未刷新 best，仍按 patience=5 继续，不能提前截断。
