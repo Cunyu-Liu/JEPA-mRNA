@@ -48,11 +48,9 @@ run_candidate() {
     --baseline "$BASE/${model}_b${batch}_profile.json" $extra \
     --out "$OUT/${model}_b${batch}${extra// /_}_profile.json" >> "$AUDIT/candidates.log" 2>&1
 }
-run_candidate r2d 1 '--bf16-r2d-encoder'
-run_candidate r2d 4 '--bf16-r2d-encoder'
-run_candidate xens2 1 '--bf16-r2d-encoder'
-run_candidate xens2 4 '--bf16-r2d-encoder'
+run_candidate r2d 16 ''
 run_candidate plana 16 ''
 "$PY" tools/head_only_repro_round36.py --checkpoint "$W/weights/main_ablations/r2d.pt" --batch-size 256 \
   --out "$W/eval_decision/speed_round36/head_only_b256_fp16_repro.json" >> "$AUDIT/candidates.log" 2>&1
+run_candidate xens2 8 ''
 printf 'OPTIMIZATION_COMPLETE time=%s\n' "$(date -Is)" | tee -a "$AUDIT/window.log"
