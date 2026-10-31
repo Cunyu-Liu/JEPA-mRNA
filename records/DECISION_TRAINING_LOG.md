@@ -11026,3 +11026,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **聚合硬门**：`build_round36_speed_comparison.py` 仅选择全 TS0、三次重复、配对一致率≥99% 且绝对 F1 差≤0.001 的候选；失败配置保留但不能获胜，基线未闭环时速度 SOTA 自动为不可判定。三项测试通过，提交 `cf41d2d`。
 - **UFold**：官方 Drive 再次超时，错误为 `Timed out: no response from the server for None seconds`，证据保存 `audits/round36_ufold_download_failure.log`。未使用第三方权重，不用旧 A100 数值补缺。
 - **当前边界**：尚无 round36 profile、优化或 RNAformer 全量新结果；不得把队列安装、静态测试或历史数字写成速度提升。NB 到 epoch31 后出现一次未刷新 best，仍按 patience=5 继续，不能提前截断。
+
+
+## §15.203（2026-11-01）official_s1 在 epoch34 刷新最佳值，速度队列继续等待
+
+- NucleicBERT 二级结构 official_s1 在 epoch30 达到 validation BCE=0.01102186，epoch31–33 未持续刷新，epoch34 进一步降至 **0.01088370**，为当前最佳。early-stopping 计数因此重置，`run.json` 尚未生成，不能记为收敛或科学结果。
+- 三个速度窗口均处于正常等待：raw-sequence profile 等 official_s1 结束后启动；优化候选等 profile；RNAformer 同机全网格等优化候选。未发生 CUDA 错误、CPU 静默降级或测速失败。
+- 主图 5 新入口 `make_figure5_round36.py` 已改为只接收 eligible 全量结果，跨 batch 使用配对一致率与 F1 差值，不再要求逐位 SHA；RNAformer 直接绑定验收源路径。静态检查与测试通过，提交 `44b46a6`、`aa085a7`。
+- 当前仍无 round36 新测速数值或优化结论，PPT 保持“未证明速度 SOTA”。
