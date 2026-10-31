@@ -11132,3 +11132,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 三条分支均通过：①缺 `run.json` 时非零退出且不调用队列；②run 存在但未满足 converged/early_stopped/scientific_eligibility 时非零退出且不调用队列；③完整 PASS+收敛结果只调用一个 `--parallel 1 --min-free-mib 8000 --interval 30` 队列。
 - 首轮测试发现 fake flock 的 `/usr/bin/env python3` 在集群无该解释器，改为集群实际 Python 绝对路径后重跑；这是测试环境修复，生产脚本未改。最终恢复器、队列与既有 NB 测试共 **9/9 PASS**。测试提交 `7590307`。
 - official_s2 epoch7 validation BCE=**0.01281778**，相对 epoch6=0.01303951 继续下降并刷新 best；epoch8 已启动，watcher 正常等待，仍不提前停止。
+
+
+## §15.216（2026-11-01）official_s1 独立 GPU QA 正式闭环
+
+- 在 official_s2 正常训练期间，利用缓存表征任务头的非计时 QA 可并行特性，完成 official_s1 独立 RTX 4090 复推；未启动重复训练，未影响正式速度数据。
+- validation/TS0/ArchiveII600 分别 1300/1305/3911 条，三组均逐名称、GT、pairs 和独立指标复算一致，`gpu_reinference_exact=True`；macro-F1=0.31439467/0.32593653/0.70474171。这些是 official seed1 的单 seed 工程验收值，不作五种子科学结论。
+- `qa.json`：status=PASS、device=cuda、scientific_eligibility=True，run SHA256=`a16ca2fe10fe521b7ef68ab0b98e6fc7d745e7d0bb65e08d1c71ba5b92b56276`；QA JSON SHA256=`cfa2d05b7da1bca4f5902b9e363e0ce80820ad848686600cc3517025bc042f97`，QA log SHA256=`ec34765d73fa8262bc38db1f6495d87d94f0534f7a5db851ebe51e04e9572bc3`。
+- 队列 dry-run 复核 `QA backfill=[]`，不再跳过任何已完成 run 的 QA；full pending 仅从 official_s2 起。official_s2 自然收敛后只需补自己的 QA，再进入 official_s3。
