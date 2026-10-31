@@ -60,6 +60,7 @@ def main() -> None:
             rows[row["model"], row["batch_size"]] = load_profile(Path(row["source"]))
     if summary["reference_models"]:
         for row in summary["reference_models"]:
+            base.ROUND34 = Path(row["source"]).parent
             rows[row["model"], row["batch_size"]] = base.load_result(row["model"], row["batch_size"])
     models = list(base.MODELS)
     if not all((model, 1) in rows for model in models):
