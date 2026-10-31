@@ -48,7 +48,7 @@ def panel_title(ax, letter, title):
     ax.set_title(f"{letter}  {title}", loc="left", fontweight="bold", pad=8, fontsize=11)
 
 
-def paired_panel(ax, tasks, metric, ylabel, ylim, letter, title):
+def paired_panel(ax, tasks, metric, ylabel, ylim, letter, title, annotate_delta=False):
     """tasks: list of dicts with label, official mean/sd/runs, jev mean/sd/runs, delta, holm."""
     bar_width = 0.24
     xs = np.arange(len(tasks))
@@ -65,10 +65,23 @@ def paired_panel(ax, tasks, metric, ylabel, ylim, letter, title):
                 jitter = np.linspace(-0.05, 0.05, len(runs))
                 ax.scatter(index + offset + jitter, runs, s=9, color="white",
                            edgecolor=color, linewidth=0.7, zorder=5)
-    notes = [f"Δ {task['label']} {task['delta']:+.4f} (Holm {task.get('holm_p_value'):.2f})"
-             for task in tasks]
-    ax.text(0.015, 0.985, "\n".join(notes), transform=ax.transAxes, ha="left", va="top",
-            fontsize=9.8, color=C["coral"], linespacing=1.35)
+    def holm_label(task):
+        p_value = task.get("holm_p_value")
+        return "Holm n/a" if p_value is None else f"Holm {p_value:.2f}"
+
+    if annotate_delta:
+        span = ylim[1] - ylim[0]
+        for index, task in enumerate(tasks):
+            top = max(task["heads"][head]["mean"] + task["heads"][head]["sd"]
+                      for head in ("official_probe", "jev_head"))
+            ax.text(index + bar_width / 2, top + span * 0.04,
+                    f"{task['delta']:+.3f}\n({holm_label(task)})", ha="center", va="bottom",
+                    fontsize=9.4, color=C["coral"], linespacing=1.2)
+    else:
+        notes = [f"Δ {task['label']} {task['delta']:+.4f} ({holm_label(task)})"
+                 for task in tasks]
+        ax.text(0.015, 0.985, "\n".join(notes), transform=ax.transAxes, ha="left", va="top",
+                fontsize=9.8, color=C["coral"], linespacing=1.35)
     ax.set_xticks(xs)
     ax.set_xticklabels([task["label"] for task in tasks], fontsize=10.5)
     ax.set_ylim(*ylim)
@@ -139,10 +152,8 @@ def main() -> int:
                                  "runs": entry["jev_seed_macro_f1"]},
                 },
             })
-        highest = max(max(row["heads"][head]["mean"] + row["heads"][head]["sd"]
-                          for head in ("official_probe", "jev_head")) for row in rows)
-        paired_panel(ax_d, rows, "Macro-F1", "Macro-F1", (0.0, highest + 0.12), "d",
-                     "Original secondary structure")
+        paired_panel(ax_d, rows, "Macro-F1", "Macro-F1", (0.0, 1.0), "d",
+                     "Original secondary structure", annotate_delta=True)
 
     fig.text(0.055, 0.025,
              "Five paired training seeds per head; bars are mean ± SD, dots are individual seeds. "
