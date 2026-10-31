@@ -118,7 +118,7 @@ def main() -> None:
     base.style(a)
 
     for model, spec in base.MODELS.items():
-        batches = np.array([batch for batch in (1, 2, 4) if (model, batch) in rows])
+        batches = np.array([batch for batch in (1, 2, 4, 8, 16) if (model, batch) in rows])
         values = np.array([rows[model, batch]["throughput"] for batch in batches])
         lower = np.array([rows[model, batch]["throughput"] - rows[model, batch]["throughput_min"] for batch in batches])
         upper = np.array([rows[model, batch]["throughput_max"] - rows[model, batch]["throughput"] for batch in batches])
