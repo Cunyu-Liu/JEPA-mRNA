@@ -15,8 +15,8 @@
 > | T-A144 | 主图 5：4090 六模型×B=1/2/4 共同网格 | 18/18 原始 JSON；同机、TS0 n=1288、strict micro-F1、raw-sequence 端到端、三次重复、跨 batch 数值等价（≥99% 配对一致且 |ΔF1|≤1e-3，记录实测值）、峰值显存落盘；A/B 全部由同一协议生成，B 含 r2d/plana/xens2 | 15/18 已验证（r2d/plana/xens2/rinalmo_ft 各 B=1/2/4，MXfold2 各 B=1/2/4）；RNAformer 三格 blocked：1024-nt padding 未能在独占窗口完成 B=1，证据保存于 audits/round35_rnaformer_block；UFold 权重不可得 |
 > | T-A145 | 主图 6：原生矢量重绘 | 只用 PPT 原生形状/文本/连接符/表格；A/B/C 的输入输出、参数量、张量形状、先验与双输出与代码/checkpoint 一致；图内文本≥8 pt、无重叠、无栅格 | working 版已存在但视觉质量未过导师关，本轮重做 |
 > | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards，manifest 02:36）；10 个 full run 已启动（official_s0 在训）；contact/distance blocked（官方 split 未发布；Zenodo 16989562 仅权重；RNAcmap 无 benchmark 清单）；shuffle 仅作分析线 |
-> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–8 全部 PASS+QA（fold8 TE/EL 均正）；fold9 在跑；Muscle TE 9 折均值 +0.0324（5/9 正，Holm 0.50），EL -0.0127（4/9 正，Holm 1.00）；HEK fold4–9、pc3 十折未跑；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃；bpRNA TS0 在跑 |
-> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 已完成：九个 family 的 train/valid 对目标家族 `own=0`，确认官方 leave-one-family-out，无同族泄漏；as-trained macro-F1=0.3817、pairs=5.84 vs 真值 20.55；最佳阈值解码 F1=0.6230、pairs=10.80，仍远低于 official 0.8772；bias b=1.0 仅 0.4710。结论：解码校准只解释部分崩塌，主因是 held-out family 上 pair-density 崩溃（OOD 局限），不得写成全局架构负结论；5s 诊断在跑 |
+> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；Muscle TE 十折 +0.0246（5/10 正，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold4–9、pc3 十折未跑；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃；bpRNA TS0 已暂停待重排 |
+> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 已完成：九个 family 的 train/valid 对目标家族 `own=0`，确认官方 leave-one-family-out，无同族泄漏；as-trained macro-F1=0.3817、pairs=5.84 vs 真值 20.55；最佳阈值解码 F1=0.6230、pairs=10.80，仍远低于 official 0.8772；bias b=1.0 仅 0.4710。结论：解码校准只解释部分崩塌，主因是 held-out family 上 pair-density 崩溃（OOD 局限），不得写成全局架构负结论；5s s0 已完成：as-trained macro-F1=0.4159、pairs=10.10/33.61，最佳偏置 b=1.0 解码 0.4766、pairs=12.09，最佳阈值 t=0.05 解码 0.5910、pairs=16.27，仍远低于 official 0.8263；与 tRNA 同一 OOD pair-density 崩塌，结论限于 held-out family |
 > | T-A149 | 测速窗口协调 | `speed_window.py` 的 FD 租约接入 family / TE-EL / NB 队列；请求窗口→当前 run 结束→独占 4090→释放→各队列恢复；并发测试通过 | 本地脚本与测试已有，远端队列尚未接入；当前两个长任务需自然结束或人工暂停 |
 > | T-A150 | 文档、图源、归档与提交 | 三处 spec/tasks/checklist 同步；活跃源数据 JSON+哈希；废弃文件入 `archive_20261030/` 并建索引；确认代码提交并 push | 本轮贯穿执行 |
 >
@@ -51,6 +51,22 @@
 > - T-A148 tRNA seed0：九个 family 的 train/valid 对目标家族 `own=0`，确认 leave-one-family-out、无同族泄漏；as-trained macro-F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 真值 20.55；判为 OOD pair-density 崩溃，不得写成全局架构负结论；5s 诊断在跑。
 > - 代码提交 `0894963`（T-A148 诊断脚本、NB batch=4 并行队列、文档同步）已 push；`source_data` 33 个活跃文件哈希已刷新；archive 追加 round35 中间稿/提取图，共 26 项。
 > - NB batch 决策：batch=1 在 47,963 条结构上约 0.16 s/step（约 2 h/epoch），10 个 paired run 不可行；改为 batch=4、单路顺序（两 head 完全同协议，收敛合同与数据不变），并去掉训练器里重复的 14 GB shard 哈希；smoke 已用新代码重训通过。batch=4 实测 0.305 s/step，12k steps/epoch≈61 min/epoch；patience=5，单 run 至少 6 epochs。
+
+> **第 35 轮执行快照（2026-10-31 08:45，单卡串行边界）**：
+> - NB 二级结构为**冻结骨干 + 仅头训练**：official=`SecStruct2DPredictionHead`（1024→128 二维头），JEV=`FlatDecisionHead`（成对特征头）。batch=4、598-nt 上限的 smoke 峰值显存 official 7.38 GiB、JEV 14.35 GiB；full run 实测 0.318 s/step，12k steps/epoch≈64 min/epoch。本机仅 1 张 RTX 4090（24.5 GB）、无 Slurm/多节点，两个头任一路都接近显存上限，**10 个 paired run 只能串行**，不能并行占卡。
+> - 收敛合同不变（patience=5、min_delta=1e-6、无步数上限）。单 run 至少 6 epochs≈6.4 h，10 run 合计约 60–100 h；这是本轮唯一长尾，不接受用减 seed、缩 epoch 或改 batch 换速度，以免破坏配对与收敛合同。
+> - 当前进度（08:40）：official_s0 epoch1 step 8400/12000；HEK fold3 EL 续训 epoch45 仍在改善（best 0.348595）；pc3 fold1 TE epoch141。NB 队列以 `--parallel 1`、显存门 8,000 MiB 守护。
+> - 决策：协议不动，队列持续；图 7d 待 aggregate PASS 后由 `make_fig07_round35.py` 自动补入；等待期间完成 8B 十折整合、全稿 QA、归档与提交。
+
+> **第 35 轮执行快照（2026-10-31 09:05，逐页视觉审校与图文对齐）**：
+> - 全 22 页用 LibreOffice + 显式 fontconfig（微软雅黑 Regular/Bold）逐页渲染复核；程序化 QA 仍为 683 run 全微软雅黑、683 段 1.5 倍行距、越界 0。LibreOffice 对粗体拉丁回退为衬线属渲染器行为，PPT XML 的 latin/ea/cs 三处均为微软雅黑，PowerPoint 内显示正常。
+> - 修复 4 处图文/状态不一致：①第 12 页副标题原写“acceptor/donor 均为负”，实际 donor Δ=+0.0006（Holm 1.00），改为“均不显著”；②第 12 页页脚“bpRNA TS0 在跑”与实况不符，改为“已暂停待重排”；③第 16 页结论表把 contact/distance 写成“重建中”，改为“官方 split 未发布（blocked）”，并把 TE/EL 十折改为“Muscle 已闭环、HEK/pc3 待跑”；④第 20 页状态把 fold3 EL 写成“待续接”，改为“续训中、fold4–9 待跑”，GitHub 状态补上 round35 分支。
+> - 主图 8B 改为**只画完整十折系列**：HEK/pc3 不完整折不再与 Muscle 十折混画于同一 x 轴；图内重复统计说明移除，误差棒/显著性/Holm 口径移入页脚。`source_data/fig08b_regression` 三件与 `SOURCE_MANIFEST.json` 哈希已刷新；旧版 deck 归档为 `round35_pre_visualqa.pptx`。
+> - ⑤第 11 页演讲备注误用了 8A 的 splice 数字（-0.0004/+0.0006），已改为图 7 的 acceptor -0.0052、donor -0.0043、CPEB3 -0.0026；第 12 页备注逐项核对无误。关键数字与 `fig05_…_final_source.json`、`fig07_…_source.json`、`TE_EL_TENFOLD_AGGREGATE.json`、MRL `result.json` 逐项复核一致。
+
+> **第 35 轮执行快照（2026-10-31 09:50，T-A148 5s 归因闭环）**：
+> - 5s seed0 三项解码完成：as-trained macro-F1=0.4159（pairs 10.10/33.61）、最佳偏置 b=1.0 → 0.4766（12.09）、最佳阈值 t=0.05 → 0.5910（16.27）；official 全量 0.8263±0.0355。两家族一致：校准只解释部分差距，主因仍是 held-out family 的 pair-density 崩溃（预测配对仅为真值的 30–48%）。
+> - 结果落 `audits/archiveii_diag_round35/5s_s0.json`，已复制到 `source_data/fig08a_classification/archiveii_diag_5s_s0.json` 并写入 `SOURCE_MANIFEST.json`；T-A148 结论仍限定为 OOD 诊断，不写成全局架构负结论。
 
 > **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
@@ -127,6 +143,8 @@
 > **阶段停止规则**：上一阶段未达到对应验收门不得进入下一阶段；不同任务的数据门相互独立，允许无依赖工作并行。CUDA 不可用、CPU 静默降级、样本数不符、权重/数据哈希不明或结果无法独立复算时，立即停止该任务并保留证据。smoke、proxy、quoted、训练集或单种子结果不得写成最终科学结论。
 >
 > **第 32 轮真实 artifact 验收快照（2026-10-28 复核）**：T-A126 三通道复核 PASS；T-A127 matched 六臂 **6/6、24/24 格**完成；T-A128 五类消融 **40/40 格**完成；T-A129 三组 MRL **30/30 run**完成，显著正 **0/3**。旧“3/6、25/40、在训/排队”仅为历史，不再作为执行依据；权威证据与统计口径见台账 §15.107–§15.109。
+>
+> 主 benchmark 统一按模型身份和参照报告：统一 xens2 对预注册 clean=**6/8**、全板干净敏感性=5/8、单模型=4/8；旧“7/8”在 bpRNA-new 混用了 r2d_tr1 集成，不能作为 xens2 结论。详细完成判据见 `spec/tasks.md` 第 32 轮块。
 
 
 > **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：
@@ -1268,22 +1286,9 @@ Related work / 基线全景的增量证据线，需要时可一并写入 v3.20�
 
 | # | 任务 | 完成判据 | 状态 |
 |---|---|---|---|
-| **T-A105** | GenF SOTA 臂（chanrg_r2d_s0，单变量=语料） | GenF ≥0.4035 + 4 split 完整读数 | ❌ 诚实负（0.2596；四 split 全线低于 zero-shot 板 → 见 T-A108/T-A109 递进归因） |
+| **T-A105** | GenF SOTA 臂（chanrg_r2d_s0，单变量=语料） | GenF ≥0.4035 + 4 split 完整读数 | 🔄 四阶段链在飞（嵌入 55%） |
 | **T-A106** | 正刊绘图三张 + PPT 图版化 | 300dpi PNG+PDF + 几何零越界 | ✅ 完成 |
 | **T-A103** | v3.30 合并（直接合并版） | em-dash 0 + 数字对账 + 接缝检查 | ✅ 完成（0d6ac14；本地交接文档 paper/ 有副本） |
-| **T-A107** | RiNALMo 下游扩展（MRL + splice 双头） | 双头结果 json×2 | 🔄 MRL 完成（meanpool 下头不显著）；splice 下载修正 URL 后重启 |
+| **T-A107** | RiNALMo 下游扩展（MRL + splice 双头） | 双头结果 json×2 | 🔄 MRL watcher 在飞；splice 数据下载 30% |
 
 **权威状态**：GitHub HEAD d276c11；台账 §15.98；PPT 38 slides（图版）；figs/round27 三图；v3.30 落地双端。
-
-### 第二十八轮交接（2026-10-24 凌晨，GT 对照臂 + 限流治理轮）T-A108/T-A109/T-A110
-
-**本轮一句话**：r27"监督口径错位"归因被 GT-teacher 对照臂证伪（两臂四 split 差 <0.002；nll 直接 GT 监督占 4 个数量级，distill 是小项）→ 真瓶颈 = 20k 单头 vs 板集成（家族互补 + 校准）；本地孤儿 rsync + 重试轰炸清零，SSH 限流治理；S39 刷新三系统对照图；s1 seed 臂启动组集成雏形并占满 GPU。
-
-| # | 任务 | 完成判据 | 状态 |
-|---|---|---|---|
-| **T-A108** | GT-teacher 对照臂（chanrg_r2d_s0_gt） | 4 split 完整读数 + teacher.name 验证 | ✅ 完成（0.6246/0.5106/0.2216/0.2611；与 MFE 臂差 <0.002；台账 §15.98d，commit 1b1e693） |
-| **T-A109** | 三轮归因链收官（语料→监督→集成差距） | 论文 §4.3k 双对照叙事 + fig_r27_4 v2 + S39 刷新 | ✅ 完成（本地 preprint_v330 已改写；PPT 39 slides） |
-| **T-A110** | SSH 限流治理 | 本地孤儿进程清零 + rex 单发模式 + 集群死循环 cron 移除 | ✅ 完成（根因：挂死 rsync + 8 连发重试 + monitor_r28 死循环） |
-| **T-A111**（新） | CHANRG 集成板（GenF SOTA 正确路径） | s0+s1(+r2d) 集成 + VL0 校准 → GenF ≥0.4035 | 🔄 s1_gt 臂在飞（04:53 启动，~2.5h）；集成评测器待写 |
-
-**权威状态**：GitHub HEAD 1b1e693（已 push）；台账 §15.98d；PPT 39 slides；figs/round27 四图；ROUND28_NOTE.md 落地。

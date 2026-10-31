@@ -14,9 +14,9 @@
 > |---|---|---|---|
 > | T-A144 | 主图 5：4090 六模型×B=1/2/4 共同网格 | 18/18 原始 JSON；同机、TS0 n=1288、strict micro-F1、raw-sequence 端到端、三次重复、跨 batch 数值等价（≥99% 配对一致且 |ΔF1|≤1e-3，记录实测值）、峰值显存落盘；A/B 全部由同一协议生成，B 含 r2d/plana/xens2 | 15/18 已验证（r2d/plana/xens2/rinalmo_ft 各 B=1/2/4，MXfold2 各 B=1/2/4）；RNAformer 三格 blocked：1024-nt padding 未能在独占窗口完成 B=1，证据保存于 audits/round35_rnaformer_block；UFold 权重不可得 |
 > | T-A145 | 主图 6：原生矢量重绘 | 只用 PPT 原生形状/文本/连接符/表格；A/B/C 的输入输出、参数量、张量形状、先验与双输出与代码/checkpoint 一致；图内文本≥8 pt、无重叠、无栅格 | working 版已存在但视觉质量未过导师关，本轮重做 |
-> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards）；batch=4 并行队列已启动 5+5 seeds（3 路并行），contact/distance blocked，shuffle 仅作分析线 |
-> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；TE 十折 Δ=+0.0246（5/10，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold4–9、pc3 未完成；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃 |
-> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 完成：train/valid 对目标家族 own=0（无同族泄漏）；as-trained F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 20.55；判为 OOD pair-density 崩溃，不得写成全局架构负结论；5s 诊断暂停，待重跑 |
+> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards）；batch=4 单路串行（JEV 头峰值 14.35 GiB、official 7.38 GiB，单卡 24.5 GB 两路无法共存），official_s0 训练中；contact/distance blocked，shuffle 仅作分析线 |
+> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；TE 十折 Δ=+0.0246（5/10，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold3 续训、fold4–9 待跑，pc3 fold1 在跑；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃；bpRNA TS0 已暂停待重排 |
+> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 完成：train/valid 对目标家族 own=0（无同族泄漏）；as-trained F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 20.55；5s s0 已完成：as-trained 0.4159→最佳偏置 0.4766→最佳阈值 0.5910（official 0.8263），pairs 10.10→16.27 vs 33.61；两家族一致，判为 OOD pair-density 崩溃，不得写成全局架构负结论 |
 > | T-A149 | 测速窗口协调 | `speed_window.py` 的 FD 租约接入 family / TE-EL / NB 队列；请求窗口→当前 run 结束→独占 4090→释放→各队列恢复；并发测试通过 | 本地脚本与测试已有，远端队列尚未接入；当前两个长任务需自然结束或人工暂停 |
 > | T-A150 | 文档、图源、归档与提交 | 三处 spec/tasks/checklist 同步；活跃源数据 JSON+哈希；废弃文件入 `archive_20261030/` 并建索引；确认代码提交并 push | 本轮贯穿执行 |
 >
@@ -44,7 +44,14 @@
 > - TE/EL：Muscle fold0–5 已 PASS+QA，fold6 TE/EL 正在运行；fold6–9 与 pc3 十折、HEK fold4–9 尚未闭环。
 > - 交接文档已归档 23 项并建 `archive_20261031/ARCHIVE_INDEX.md`；活跃源数据入 `source_data/` 并生成 `SOURCE_MANIFEST.json`（逐文件 SHA256）。代码提交=`33c5833`，分支 `round35-speed-window-20261031` 已 push；台账追加后提交=`cdd00b1`。
 
-> **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
+> **第 35 轮执行快照（2026-10-31 09:55）**：
+> - 主图 5/6/7(a–c)/8A/8B 已入片；全 22 页逐页渲染复核 + 程序化 QA（683 run 微软雅黑、683 段 1.5 倍行距、越界 0）；修复 8A 副标题、结论表状态、附录状态、图 7 备注共 5 处图文/状态不一致。
+> - 主图 8B 改为只画完整十折系列（Muscle），HEK/pc3 完成后并入；图 7 d 面板版式已用临时数据预演，Holm 为 None 的崩溃已修（提交 `6f22739`）。
+> - NB 二级结构：单卡串行（JEV 14.35 GiB / official 7.38 GiB 峰值），official_s0 epoch2 训练中；10 个 paired run 预计 60–100 h。
+> - HEK fold3 TE 已出 result，fold3 EL seed1 续训；pc3 fold1 seed3；两条队列自动续跑。
+> - T-A148 5s 完成并写入 source_data（34 个活跃源文件，SHA256）；文档/代码提交 `71c7862`、`2eec3ab`、`6f22739` 已 push。
+
+> **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
 

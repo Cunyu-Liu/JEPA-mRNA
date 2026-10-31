@@ -14,9 +14,9 @@
 > |---|---|---|---|
 > | T-A144 | 主图 5：4090 六模型×B=1/2/4 共同网格 | 18/18 原始 JSON；同机、TS0 n=1288、strict micro-F1、raw-sequence 端到端、三次重复、跨 batch 数值等价（≥99% 配对一致且 |ΔF1|≤1e-3，记录实测值）、峰值显存落盘；A/B 全部由同一协议生成，B 含 r2d/plana/xens2 | 15/18 已验证（r2d/plana/xens2/rinalmo_ft 各 B=1/2/4，MXfold2 各 B=1/2/4）；RNAformer 三格 blocked：1024-nt padding 未能在独占窗口完成 B=1，证据保存于 audits/round35_rnaformer_block；UFold 权重不可得 |
 > | T-A145 | 主图 6：原生矢量重绘 | 只用 PPT 原生形状/文本/连接符/表格；A/B/C 的输入输出、参数量、张量形状、先验与双输出与代码/checkpoint 一致；图内文本≥8 pt、无重叠、无栅格 | working 版已存在但视觉质量未过导师关，本轮重做 |
-> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards）；batch=4 并行队列已启动 5+5 seeds（3 路并行），contact/distance blocked，shuffle 仅作分析线 |
-> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；TE 十折 Δ=+0.0246（5/10，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold4–9、pc3 未完成；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃 |
-> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 完成：train/valid 对目标家族 own=0（无同族泄漏）；as-trained F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 20.55；判为 OOD pair-density 崩溃，不得写成全局架构负结论；5s 诊断暂停，待重跑 |
+> | T-A146 | 主图 7：NucleicBERT 原论文任务补测 | 五类任务逐项数据门→smoke→五种子→独立 GPU QA→Holm；每项 result/QA/prediction 哈希；blocked 项写明不可得来源 | 全量 train_rnalign_tr0 提取完成（20 shards）；batch=4 单路串行（JEV 头峰值 14.35 GiB、official 7.38 GiB，单卡 24.5 GB 两路无法共存），official_s0 训练中；contact/distance blocked，shuffle 仅作分析线 |
+> | T-A147 | 主图 8：RiNALMo 原论文任务补测与分图 | 8A 分类、8B 回归各自完整；TE/EL 每 seed 先求十折均值再五 seed 配对；ArchiveII 九家族、bpRNA、MRL、ncRNA、splice 全量；保留全部负结果 | Muscle TE/EL fold0–9 全部 PASS+QA；TE 十折 Δ=+0.0246（5/10，Holm 0.86），EL -0.0033（5/10，Holm 1.00）；HEK fold3 续训、fold4–9 待跑，pc3 fold1 在跑；ArchiveII 5s/tRNA 强负且归因为 OOD pair-density 崩溃；bpRNA TS0 已暂停待重排 |
+> | T-A148 | ArchiveII JEV 崩塌归因 | 在 tRNA/5s 上做三项离线诊断：①JEV score + official 阈值解码；②仅头 LR 扫描；③train/test 同族泄漏与样本核查；给出“工程 artifact”或“科学负结果”的明确结论 | tRNA s0 完成：train/valid 对目标家族 own=0（无同族泄漏）；as-trained F1 0.3817→阈值解码 0.6230（official 0.8772），pairs 5.84→10.80 vs 20.55；5s s0 已完成：as-trained 0.4159→最佳偏置 0.4766→最佳阈值 0.5910（official 0.8263），pairs 10.10→16.27 vs 33.61；两家族一致，判为 OOD pair-density 崩溃，不得写成全局架构负结论 |
 > | T-A149 | 测速窗口协调 | `speed_window.py` 的 FD 租约接入 family / TE-EL / NB 队列；请求窗口→当前 run 结束→独占 4090→释放→各队列恢复；并发测试通过 | 本地脚本与测试已有，远端队列尚未接入；当前两个长任务需自然结束或人工暂停 |
 > | T-A150 | 文档、图源、归档与提交 | 三处 spec/tasks/checklist 同步；活跃源数据 JSON+哈希；废弃文件入 `archive_20261030/` 并建索引；确认代码提交并 push | 本轮贯穿执行 |
 >
@@ -44,7 +44,14 @@
 > - TE/EL：Muscle fold0–5 已 PASS+QA，fold6 TE/EL 正在运行；fold6–9 与 pc3 十折、HEK fold4–9 尚未闭环。
 > - 交接文档已归档 23 项并建 `archive_20261031/ARCHIVE_INDEX.md`；活跃源数据入 `source_data/` 并生成 `SOURCE_MANIFEST.json`（逐文件 SHA256）。代码提交=`33c5833`，分支 `round35-speed-window-20261031` 已 push；台账追加后提交=`cdd00b1`。
 
-> **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议匹配重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
+> **第 35 轮执行快照（2026-10-31 09:55）**：
+> - 主图 5/6/7(a–c)/8A/8B 已入片；全 22 页逐页渲染复核 + 程序化 QA（683 run 微软雅黑、683 段 1.5 倍行距、越界 0）；修复 8A 副标题、结论表状态、附录状态、图 7 备注共 5 处图文/状态不一致。
+> - 主图 8B 改为只画完整十折系列（Muscle），HEK/pc3 完成后并入；图 7 d 面板版式已用临时数据预演，Holm 为 None 的崩溃已修（提交 `6f22739`）。
+> - NB 二级结构：单卡串行（JEV 14.35 GiB / official 7.38 GiB 峰值），official_s0 epoch2 训练中；10 个 paired run 预计 60–100 h。
+> - HEK fold3 TE 已出 result，fold3 EL seed1 续训；pc3 fold1 seed3；两条队列自动续跑。
+> - T-A148 5s 完成并写入 source_data（34 个活跃源文件，SHA256）；文档/代码提交 `71c7862`、`2eec3ab`、`6f22739` 已 push。
+
+> **用户确认（2026-10-31）**：①暂停 ArchiveII/bpRNA 长队列以换取独占 4090 测速窗口，主图 5 闭环后再恢复；②主图 7 距离/接触图按公开来源协议重建，图与表明确标注 protocol-matched reconstruction；③主图 8 优先补 Muscle/PC3 TE-EL 十折，ArchiveII/bpRNA 分类面板随后补齐。
 
 > **历史边界**：本块覆盖下方第 34 轮及更早状态；旧编号合同与已完成结果不变，不得用旧“待执行/在训”覆盖本轮新事实。
 
@@ -91,26 +98,8 @@
 > - [ ] PPT 仅改指定内容，微软雅黑、1.5 倍行距、无重叠，markitdown/fix/layout/ZIP/逐页渲染和图文匹配全部通过（T-A142）。
 > - [ ] 旧文档与旧绘图数据完成可追溯归档，活跃源数据无 mock，阶段代码已提交并 push（T-A143）。
 >
-> **第 32 轮真实 artifact 验收快照（2026-10-28 复核）**：
-> - [x] T-A126 三个新臂 12 格经 CUDA、样本数、micro/macro/INF、best checkpoint 与来源链三通道复核通过。
-> - [x] T-A127 matched 六臂 **6/6、24/24 格**及三种子配对统计完成；mixed_s0 未过门如实保留，不勾选 SOTA。
-> - [x] T-A128 五类消融 **40/40 格**完成，原始矩阵取代历史 25/40 与错误 DP-OOD=0.43。
-> - [x] T-A129 三组 MRL **30/30 run**完成且显著正 **0/3**，全部负/不显著结果保留。
-> - [x] T-A130/T-A132 21 页 PPT、图文、markitdown/fix/layout 与全页渲染检查完成。
-> - [x] T-A131 本地与远端 spec/tasks、训练台账和 GitHub 同步完成。
+> **第 32 轮真实 artifact 验收快照（2026-10-28 复核）**：T-A126 三通道复核 PASS；T-A127 matched 六臂 **6/6、24/24 格**及统计完成；T-A128 五类消融 **40/40 格**完成；T-A129 三组 MRL **30/30 run**完成且显著正 **0/3**；T-A130–T-A132 的 21 页 PPT、数值复核与同步已完成。主 benchmark 继续区分统一 xens2 的预注册 clean **6/8**、全板干净敏感性 5/8 与单模型 4/8；旧“7/8”在 bpRNA-new 混用 r2d_tr1 集成，不能通过模型身份复核。
 
-
-> **交接状态（2026-10-18 16:40，第二十二轮交接更新——新集群重建轮，细节 §15.59–§15.60）**：
-> - **集群迁移完成**：A100 集群关停（10-16 备份定格）后，新集群 `px2-jcy.matpool.com`（**1× RTX 4090 24GB**，12 核 64GB）已重建：
->   - 环境：miniconda3 `lucaone`（Python 3.10.22 + torch 2.5.1+cu121 + multimolecule **0.0.8** + transformers 4.49.0 + gcc 9.4）；CUDA 计算验证 PASS；
->   - 资产：代码 `/root/rna_jev`（HEAD 已推 GitHub 4ce74b9）、数据 `/root/rna_jepa_data/ss_data`（**9/9 冻结 split sha256 逐项 MATCH**）、权重 `weights_20261013`（106 ckpt）、骨干 rinalmo-giga（preflight 0.996 加载+前向 PASS）；
->   - **验证门**：pytest **337 passed**；plana_tr1c_s0 TS0 复现 F1 0.786839 vs 板值 0.786563——**数值等价非逐位**（fp16 量化帧 Ada vs Ampere 舍入差，75/1288 条 ±1-2 对漂移，已归因入台账 §15.59；板值维持 A100 数字）；
->   - **嵌入与 teacher 全量重建**：14 个 embedding shard（tr1c 42,564 + 13 split）+ ViennaRNA teacher 167 shard（42564 序列，备份恢复）。
-> - **速度线（§15.60）**：dp_decode_c 新集群重编译（gcc -O3 -fopenmp）；**4090 首读 B=64 = 101.0 seq/s**（同协议 A100 26.73 的 3.8×；超 UFold/RNAformer/MXfold2 的 A100 板读数 1.8×），F1 0.6681 全程无损，B=64 为 TS0 最优批。**诚实口径**：跨硬件对比必须同节点重测参照（排队），不得 4090 数字对 A100 参照直接宣称。
-> - **TS2 攻关已启动**：`rinalmo_r2dtr1c_b4_s1` 重训在跑（备份中该 ckpt 为悬空符号链接、实际缺失；seed=1，B=2 适配 24GB 卡，其余配方逐参数一致）——完成后 xens2 2-seed 板口径可复现 + TS2 集成重扫。watchdog cron（*/10 自愈 + 饱和审计）+ 3 小时巡检定时任务已装。
-> - **用户目标新增第三项**：Jev 式输出置信度调研与实现（排队）。
-> - **本地侧问题**：macOS Documents TCC 权限在会话中途被系统收紧，本地交接三件套暂缓同步（集群侧为权威，已推 GitHub）；权限恢复后需把本地副本对齐到第二十二轮。
->
 > 每项须可被第三方独立验证。未通过项不得勾选。
 
 ---
@@ -289,10 +278,10 @@
     `records/BASELINE_RESULTS.md` §4.2 与 `records/DECISION_TRAINING_LOG.md` §14.32）：
     **UFold 的权重一直就在集群本地**（`/home/cunyuliu/rna_baselines_src/UFold-main/models/ufold_train_alldata.pt`，
     且 `ufold_run.log` 显示它跑通过）；**RNAformer 的源码与 3 个 checkpoint 本轮已齐**
-    （`git clone` 成功 + 权重在 `/root/rna_jepa_data/refmodels/models/`）。
+    （`git clone` 成功 + 权重在 `/mnt/cunyuliu/rna-jepa/refmodels/models/`）。
     旧结论把「在少数探测主机上网络不可达」外推成了「资产不存在」。
   - （此条已被下方实测取代，保留以说明流程）：原计划是先产出 dot-bracket（给 F1）
-    与 **sigmoid 概率矩阵**（给 ECE/Brier），产物落 `/root/rna_jepa_data/eval_decision/`。
+    与 **sigmoid 概率矩阵**（给 ECE/Brier），产物落 `/mnt/cunyuliu/rna-jepa/eval_decision/`。
     **在概率矩阵真的落盘并通过校验之前，不得勾选本项**——该门槛**已通过**（见下）。
   - ❌ **判据 FAIL（2026-09-24 晚，见 `DECISION_TRAINING_LOG.md` §14.42）**。
     概率矩阵已全部产出（UFold + RNAformer），同一 `ref_bprna_ts0`、同一 **6,022,538** 个候选对、
@@ -409,7 +398,7 @@
 - [x] UFold 复现（**2026-09-24 晚**：`ref_bprna_ts0` 0.6598 / `ref_pdb_ts1` 0.6455 / `bprna_new` 0.6106；适配器 `eval/ss/run_ufold.py`，记录 `records/UFOLD_BASELINE_ADAPTER.md`）
 - [ ] SPOT-RNA 或 SPOT-RNA2 复现
 - [x] MXfold2 复现（TS0 0.5651；archiveii_clean 21:23 已跑，JSON 落 `eval_decision/`）
-- [ ] E2Efold 复现 ⏳ 已立案（台账 §15.58：官方 ml4bio/e2efold，方案 A 零样本/B 重训，待新集群执行）
+- [ ] E2Efold 复现
 - [ ] RNA-FM 复现
 - [ ] RiNALMo（650M）复现
 - [ ] mRNABERT 复现
