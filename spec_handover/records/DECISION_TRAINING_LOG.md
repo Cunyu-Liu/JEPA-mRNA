@@ -11155,3 +11155,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 直接读取生产 `resume.pt`，确认保存键为 model、optimizer、best_state、epoch、best_epoch、best_loss、bad、history、coverage、cuda_rng_state 与 run_identity；model/best_state 各 16 个张量，optimizer 含 state 和 param_groups，CUDA RNG 存在。
 - checkpoint 与 `validation_history.jsonl` 完全一致：epoch=8、best_epoch=8、best validation BCE=**0.012367032571418569**、bad=0、history 尾三项一致，early_stopped=False，gradient coverage 无 missing/nonfinite。run identity 仍为 batch=4、lr=1e-5、patience=5、min_delta=1e-6、代码哈希 `d36380d42fb2…`。
 - 以上证明断点恢复状态真实完整，不只是单元测试通过；epoch8 相比 epoch7=0.01281778 继续改善，epoch9 正常训练，不提前停止。
+
+
+## §15.219（2026-11-01）official_s2 epoch9 验证节点
+
+- epoch9 train BCE=0.00054100，validation BCE=**0.012357817081725368**，相对 epoch8=0.012367032571418569 再降 9.2155e-6，超过 min_delta=1e-6，继续刷新 best，bad=0。
+- 改善幅度已明显小于前一轮，但当前仍满足更新条件，不能把“趋缓”当作“ plateau”。按 patience=5 继续后续 epoch，不设置新的步数或 epoch 上限。
