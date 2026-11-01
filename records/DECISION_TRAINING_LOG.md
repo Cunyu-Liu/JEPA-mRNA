@@ -11504,3 +11504,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **RNAformer 官方训练集**：bprna_data.plk train=**38184**、intra-family train=**4824**、inter-family train=**3480**，均经 pandas 完整读取与长度校验。bprna 的 TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB clean n=1140/5386/11/9/2/3/2267/80；intra=1256/5386/60/39/0/19/1909/419；inter 的八份审计也全部完成。不得再用项目 TR0 替代这些官方训练集。
 - **RNAformer raw bpRNA-new**：三次均 TP=51372、FP=21605、FN=83812，F1=**0.49357948895326215**，SD=0。ArchiveII 因全长保护首次停止后，已用 `--allow-long` 重启剩余 split。
 - **源状态**：七套模型专属 clean 审计汇总 SHA256=`de6f0c0231022301aa4bdc4e41760feac5e89561888d9bbb181a99a40d9f787f`；MXfold2 状态改为 `PASS_TRAINSETAB_8x3`，RNAformer 三套 clean 标记 ready，待各自评测。
+
+
+## §15.267（2026-11-02）BPfold/eFold 新格与 xens2 教师独占窗口
+
+- **BPfold 官方六 checkpoint bpRNA-new**：三次均 TP=106998、FP=48176、FN=28186，F1=**0.7370074184282851**，SD=0，预测 SHA256=`e7fef653920d50a75723055adee7b80ea531baf9c87f128def119c58d8aa6cbb`，官方 commit=`d37d6aa10cbca13e590ff83917fc4d63fec2ddbc`，六个 checkpoint 哈希齐全。
+- **eFold ArchiveII**：三次均 TP=85032、FP=70489、FN=42490，F1=**0.6008415682422812**，SD=0，预测 SHA256=`bb8969360579892731a1a4462ce426d3847edff727331574a1676ce9f89e381b`；实际 `cpu_threads=1`。
+- **教师调度决策**：在 BPfold bpRNA-new、RNAformer bpRNA-new、eFold ArchiveII 的自然完成边界暂停三个后续队列，优先独占 GPU 生成 TR1c/VL0 教师，已完成结果均保留。
+- **远端进程管理纠错**：第一次教师 smoke 因旧基线显存未释放而 OOM。确认仅停止 SSH 不会自动终止远端子进程后，按明确 PID 清理暂停任务，GPU 从 22.6 GiB 降至 9 MiB，再启动教师；未误杀其他用户进程。后续恢复基线也按 split 明确启动，不依赖 TaskStop 管理远端生命周期。
