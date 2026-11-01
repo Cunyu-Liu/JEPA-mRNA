@@ -11389,3 +11389,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 当前最终 PPT SHA256=`7c054bd8c83aeba6f3ec1b618de4c08b93d6fd595129e2bae73591d42352fc6f`，PDF SHA256=`921da9924cc0fb82658b93ed6bde28f42c62c75410098b73d893e268b9137978`；以当前文件重新执行终检，不沿用上传前哈希。
 - NB official_s3 已从 epoch5 断点续训至 epoch7：epoch6/7 validation BCE=0.01320031417167464/0.01293881095190126；checkpoint epoch=7、best_epoch=7、best_loss=0.01293881095190126、bad=0、early_stopped=False。PID=1441690、device=cuda、batch=4，确认没有重训 official_s0–s2，也没有把恢复写成收敛。
 - 三处 spec/tasks/checklist 已清除旧 SSH blocked 状态，记录最终 commit 和 epoch7；全部种子与独立 GPU QA 总门仍未关闭。
+
+
+## §15.254（2026-11-01）第 39 轮实验合同、PPT 标题修复与 EternaFold bpRNA-new 三次复证
+
+- **第 39 轮合同已同步**：本地与远端三处 spec/tasks/checklist 均写入 25 系统×8 split×3 次评测=600 单元、逐模型精确+80% identity（及可用家族）去泄露、clean n 随模型变化、未知语料 fail-closed。固定官方权重做三次独立推理；新训练才要求三种子收敛与独立 GPU QA。
+- **主图 1 定点修复**：标题已逐字改为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先。”第 16/22/23 页仅作必要联动，其他 19 页文本和形状逐项比对未变。最终 23 页、906 个非空 run 全微软雅黑、889 段全 1.5 倍行距、越界 0、ZIP PASS；标题与附注渲染无裁切/重叠。PPT SHA256=`7656f5f8f692e17567b1f8fe4b143171a691fa9f03f05191dacad1fbc0126112`，PDF SHA256=`4117d183529a7f5f90d08ccff29ca2404d7e7eb1638751a32230d869b80a4265`，修改前稿已归档。
+- **八 split 工程门**：EternaFold 与 eFold 旧脚本均硬编码 `len(rows)==1288`，导致非 TS0 全量任务 fail-closed。已改为逐 split 样本数与 SHA256 验收；EternaFold 八 split CPU smoke、eFold 八 split CUDA smoke 均 PASS，未把 smoke 当科学结果。eFold/MXfold2/RNAformer 已进入全量三次复测，正式速度不共享 GPU。
+- **EternaFold bpRNA-new 亲自三次全量复测**：三次均为 TP=104470、FP=65197、FN=30714，strict micro-F1=**0.685384007269125**，mean=0.685384、SD=0；三次预测 SHA256 完全相同。独立从原始 JSONL GT 与逐序列预测重算得到相同计数和 F1。结果 SHA256=`aa2ef3577f150e42d90fb8954383d2ccc59169e8164209ef83cdcf48b073f04b`。因此原板 0.6854 数值复现成立，但它仍是全 split 原始集结果，不能替代后续按 EternaFold 训练语料单独去泄露后的 clean 结论。
+- **执行边界**：NB official_s3 保持原收敛训练；非计时任务利用剩余显存并行，正式速度实验必须独占 4090。BPfold/UFold/E2Efold 官方权重恢复仍在进行，未把下载失败写成模型不可用，也未采用第三方权重。

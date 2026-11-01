@@ -16,6 +16,23 @@ from efold.core.embeddings import sequence_to_int
 from efold.models import create_model
 
 
+EXPECTED_SPLIT_COUNTS = {
+    "bprna_ts0": 1288, "bprna_new": 5388, "archiveii_embok_clean": 2544,
+    "ref_pdb_ts1": 63, "ref_pdb_ts2": 39, "ref_pdb_ts3": 19,
+    "ref_pdb_ts_hard": 28, "testsetb": 428,
+}
+EXPECTED_SPLIT_SHA256 = {
+    "bprna_ts0": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+    "bprna_new": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "archiveii_embok_clean": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+    "ref_pdb_ts1": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+    "ref_pdb_ts2": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+    "ref_pdb_ts3": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+    "ref_pdb_ts_hard": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+    "testsetb": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+}
+
+
 def sha256(path):
     h = hashlib.sha256()
     with path.open("rb") as handle:
@@ -109,7 +126,9 @@ def main():
         rows = rows[:args.limit]
     assert rows and len({row["name"] for row in rows}) == len(rows)
     if not args.smoke:
-        assert len(rows) == 1288
+        assert args.data.stem in EXPECTED_SPLIT_COUNTS, f"unregistered split: {args.data.stem}"
+        assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
+        assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
     groups = defaultdict(list)
     for row in rows:
         groups[len(row["seq"])].append(row)

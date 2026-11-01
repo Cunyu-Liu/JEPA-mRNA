@@ -12,6 +12,28 @@ from pathlib import Path
 import numpy as np
 
 
+EXPECTED_SPLIT_COUNTS = {
+    "bprna_ts0": 1288,
+    "bprna_new": 5388,
+    "archiveii_embok_clean": 2544,
+    "ref_pdb_ts1": 63,
+    "ref_pdb_ts2": 39,
+    "ref_pdb_ts3": 19,
+    "ref_pdb_ts_hard": 28,
+    "testsetb": 428,
+}
+EXPECTED_SPLIT_SHA256 = {
+    "bprna_ts0": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+    "bprna_new": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "archiveii_embok_clean": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+    "ref_pdb_ts1": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+    "ref_pdb_ts2": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+    "ref_pdb_ts3": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+    "ref_pdb_ts_hard": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+    "testsetb": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+}
+
+
 def sha256(path):
     h = hashlib.sha256()
     with path.open("rb") as handle:
@@ -27,8 +49,10 @@ def canonical(value):
 def predict(binary, params, row, directory, env):
     path = directory / "input.seq"
     path.write_text(row["seq"] + "\n")
-    completed = subprocess.run([str(binary), "predict", str(path), "--params", str(params)],
-                               check=True, capture_output=True, text=True, env=env)
+    command = [str(binary), "predict", str(path)]
+    if params is not None:
+        command.extend(["--params", str(params)])
+    completed = subprocess.run(command, check=True, capture_output=True, text=True, env=env)
     lines = completed.stdout.splitlines()
     index = lines.index(">structure")
     structure = lines[index + 1].strip()
@@ -74,17 +98,20 @@ def main():
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--native-contrafold", action="store_true")
     args = parser.parse_args()
     if not args.smoke:
         assert args.repeats == 3 and args.limit is None
     binary = args.repo / "src/contrafold"
-    params = args.repo / "parameters/EternaFoldParams.v1"
-    assert binary.is_file() and params.is_file()
+    params = None if args.native_contrafold else args.repo / "parameters/EternaFoldParams.v1"
+    assert binary.is_file() and (params is None or params.is_file())
     rows = [json.loads(line) for line in args.data.open()]
     if args.limit is not None:
         rows = rows[:args.limit]
     if not args.smoke:
-        assert len(rows) == 1288
+        assert args.data.stem in EXPECTED_SPLIT_COUNTS, f"unregistered split: {args.data.stem}"
+        assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
+        assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
     env = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1")
     repeats = []
     reference = None
@@ -110,12 +137,15 @@ def main():
             print(json.dumps(repeats[-1]), flush=True)
     result = {
         "schema_version": 1, "status": "SMOKE_ONLY" if args.smoke else "PASS",
-        "system": "EternaFold", "repository": str(args.repo),
+        "system": "CONTRAfold" if args.native_contrafold else "EternaFold", "repository": str(args.repo),
         "commit": subprocess.check_output(["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True).strip(),
         "binary": str(binary), "binary_sha256": sha256(binary),
-        "parameters": str(params), "parameters_sha256": sha256(params),
+        "parameters": "native contrafold.params.*" if args.native_contrafold else str(params),
+        "parameters_sha256": ({name: sha256(args.repo / "src" / name) for name in
+                               ["contrafold.params.complementary", "contrafold.params.noncomplementary", "contrafold.params.profile"]}
+                              if args.native_contrafold else sha256(params)),
         "data": str(args.data), "data_sha256": sha256(args.data),
-        "protocol": "raw-sequence end-to-end; official serial CPU binary and MEA decode; single thread",
+        "protocol": "raw-sequence end-to-end; official serial CPU binary and MEA decode; single thread; " + ("native CONTRAfold" if args.native_contrafold else "EternaFold parameters"),
         "device": "CPU (native method; no GPU timing)", "batch_size": 1,
         "batch_note": "B=2/4 are not applicable to the official serial CLI and are not fabricated",
         "cpu_threads": 1, "n_sequences": len(rows), "repeats": repeats,

@@ -46,8 +46,8 @@ import numpy as np
 import torch
 
 # --- UFold's own code lives outside this repo; reuse it, do not fork it. -----
-UFOLD_SRC = "/root/rna_baselines_src/UFold-main"
-UFOLD_WEIGHTS = os.path.join(UFOLD_SRC, "models", "ufold_train_alldata.pt")
+UFOLD_SRC = os.environ.get("UFOLD_SRC", "/root/rna_baselines_src/UFold-main")
+UFOLD_WEIGHTS = os.environ.get("UFOLD_WEIGHTS", os.path.join(UFOLD_SRC, "models", "ufold_train_alldata.pt"))
 UFOLD_CONFIG = os.path.join(UFOLD_SRC, "ufold", "config.json")
 if UFOLD_SRC not in sys.path:
     sys.path.insert(0, UFOLD_SRC)
@@ -253,7 +253,9 @@ def main(argv=None) -> int:
                     help="use model.eval() instead of UFold's own model.train()")
     args = ap.parse_args(argv)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA is required; refusing CPU fallback")
+    device = torch.device("cuda:0")
     torch.cuda.set_device(0)
     os.makedirs(args.out_dir, exist_ok=True)
 

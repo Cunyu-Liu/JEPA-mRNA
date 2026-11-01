@@ -1,15 +1,51 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **当前执行覆盖（2026-11-01，第 39 轮：25 系统逐模型去泄露复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
+>
+> - [ ] T-A169 25 系统均有官方 commit/权重/训练语料/哈希与加载 smoke；BPfold/UFold/E2Efold 和新增四基线完成资产恢复，旧 blocked 不作借口。
+> - [ ] T-A170 每模型独立精确 + 80% identity（及可用家族）去泄露，25×8×3=600 单元结果齐全；EternaFold bpRNA-new 三次复测完成；未知语料只标 BLOCKED_PROVENANCE。
+> - [ ] T-A171 SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各 8 split×3 完整复测，原生后处理和概率输出保留。
+> - [ ] T-A172 xens2 编码共享/头部融合通过全 TS0 三次与预测等价门，全部 eligible baseline 同机 raw-sequence 终测证明速度第一；未证明不得写速度 SOTA。
+> - [ ] T-A173 新训练候选三种子均收敛并独立 GPU QA；统一 xens2 三次均值在真实去泄露主板上 8/8 超过最强 eligible baseline，三负格不以弱参照替代。
+> - [ ] T-A174 ECE 在同候选对/GT/分箱下全概率基线最低，Brier/NLL 同步报告；VL0-only 校准，risk–coverage 与 Spearman 证明结构质量排序最佳且跨 split 稳定。
+> - [ ] T-A175 主图 1 标题逐字改为指定 5/8、4/8 与三个未领先 split；其他用户调整不变，全 23 页微软雅黑、1.5 行距、图文匹配、表数正确、无重叠并逐页渲染通过。
+> - [ ] T-A176 每 run 训练/评测过程与结论完整；活跃绘图源数据、哈希和 manifest 齐全，废弃文档及旧源数据完成可追溯归档，未删除活跃原始数据。
+> - [ ] T-A177 原始 artifact、独立复算、图表/PPT 三通道验收通过；代码与大文件路径合规，确认代码已 commit+push，未提交秘密或既有未跟踪大资产。
+>
+> **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
+>
+> **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
+
+> **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**
+>
+> - [ ] T-A163 已纠正 SOTA 身份并完成 RNAformer 部分 clean 复算；其余模型完整审计未关闭。
+> - [x] T-A164 eFold 0.1.3 与 EternaFold 正式三次测速完成；BPfold/UFold/E2Efold 权重 blocked 已留证，不作绝对 SOTA。
+> - [x] T-A165 OOD 负向评估完成：GenA 领先、GenC/GenF 短板；无提升证据，不重复旧训练；零正确配对定义已纠正。
+> - [x] T-A166 文献与叙事审计已形成补图/补文结论，见 round38 专项文档。
+> - [x] T-A167 第 4/5/9/14/18 页及全稿 QA、76 个源文件和最终提交均完成；`01168f3` 已 push。
+> - [ ] T-A168 SSH 恢复后 official_s3 已到 epoch7、best_epoch=7、bad=0、early_stopped=False；继续至收敛与独立 QA。
+>
+> **历史边界**：第 37 轮及更早结果保留，本块覆盖新增问题和纠正项。
+>
+> **当前执行覆盖（2026-11-01，第 37 轮：端到端主图 2 与推理优化优先；活跃清单 `round37-speed-v1`）**
+>
+> - [x] T-A159 主图 2 只含 raw-sequence 端到端速度，六系统最优合格配置与源数据一致，PPT 渲染通过。
+> - [x] T-A160 新候选在独占 4090 完成全 TS0 三次重复和预测等价验收，B=32 最优，TF32 不替代。
+> - [x] T-A161 主图 2/5、PPT、源数据、manifest、台账一致，旧件归档，代码提交 `051b55c` 已 push。
+> - [ ] T-A162 NB 在测速结束后从 epoch40 checkpoint 恢复至收敛与独立 QA；暂停不得写成收敛。
+>
+> **历史边界**：第 36 轮及更早验收保留，本块只覆盖最新优先级和新增实验。
+>
 > **当前执行覆盖（2026-10-31，第 36 轮：速度 SOTA 与 benchmark 公平性；活跃清单 `round36-working-v1`）**
 >
 > - [x] T-A151 泄露感知完整基线表由原始 artifact 重算，TR0 系 TSB 全用 clean-181，未审计格标 NA。
 > - [x] T-A152 RNAformer 固定 bprna/inter-family、release-full/canonical-nested、原文/复测口径分列，TS2 公平性结论可复算。
 > - [x] T-A153 三种速度边界已图解，历史 head-only B=256 点在 GPU 复现并留证。
 > - [x] T-A154 全 TS0 分段 profile、有效 batch、三次重复和显存全部落盘。
-> - [ ] T-A155 优化通过全量预测等价门，同机关键基线闭环后才判定是否速度 SOTA；当前未证明。
+> - [x] T-A155 六系统 18/18 格与扩展 batch 全量等价门通过；共同协议三 JEV 均在前沿，UFold 未测，不作绝对 SOTA。
 > - [x] T-A156 4090 八 split 主 benchmark 逐项复核，报告相对 A100 的真实 ΔF1，缺项才重跑。
 > - [x] T-A157 第 5/18 页和新增泄露感知表完成，所有叙事主张均有实验现象与限制支撑。
-> - [ ] T-A158 全稿字体/1.5 行距/布局/渲染/图表同源通过，废弃文档与旧图源可追溯归档，代码提交并 push。
+> - [x] T-A158 全稿字体/1.5 行距/布局/渲染/图表同源通过；58 个活跃源文件与归档哈希通过，代码提交 `1ba8ccf` 已 push。
 >
 > **资源与停止规则**：非计时任务按实测容量并行，正式测速独占 4090；CUDA 不可用或 CPU 静默降级立即停止留证。训练必须 validation plateau 收敛；推理优化不得冒充训练结论。未通过项不得勾选。
 >

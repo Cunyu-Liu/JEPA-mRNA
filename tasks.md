@@ -1,5 +1,53 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **当前执行覆盖（2026-11-01，第 39 轮：25 系统逐模型去泄露复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A169 | 25 系统注册、官方权重与适配器恢复 | 原 19 系统 + SPOT-RNA/RNAstructure/ContextFold/CONTRAfold/BPfold/E2Efold；每项仓库 commit、权重 URL/SHA256、训练语料、加载 smoke 与输出协议齐全；BPfold 六 checkpoint、UFold 官方全数据权重、E2Efold 官方 checkpoint 不得再用旧 blocked 结论替代实际恢复 | 进行中：官方链接已核实；BPfold GitHub release、UFold Google Drive、E2Efold SharePoint、SPOT-RNA Dropbox/Nihao 进入恢复流程；历史 UFold 成功加载记录已找到 |
+> | T-A170 | 逐模型泄露矩阵与 600 单元复测 | 25×8×3；每模型独立精确 + 80% identity（及可用家族）去重叠，clean n/removed/TP/FP/FN/micro-F1/mean±SD/哈希全落盘；未知语料标 BLOCKED_PROVENANCE，不伪造 clean | 进行中：先冻结 split/GT/指标和逐模型语料注册表，再全量推理；EternaFold bpRNA-new=0.6854 必须亲自三次复测，不能沿用单次数值 |
+> | T-A171 | 新增四基线与三官方权重模型全板 | SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各自 8 split×3；同 strict micro-F1/canonical-nested GT；原生必要后处理保留，概率输出另存供 ECE | 待 T-A169 对应资产与 smoke 通过；缺失单格不阻塞其他 eligible 模型，但不得宣称完整全板 |
+> | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | 根因已证实：3 encoder+3 head，B=32=19.89 seq/s；先工程共享再决定是否重训蒸馏，正式计时必须独占 4090 |
+> | T-A173 | xens2 模型/数据候选攻关 8/8 | 只用 VL0 选候选；三训练种子均 validation plateau+best checkpoint+独立 GPU QA；统一 xens2 三次均值在 8 split 均超过最强 eligible baseline；ArchiveII/bpRNA-new/TS2 三负格优先但不得测试集调参 | 待 T-A170 形成真实强对手板后执行；不预设一定可达，所有负结果保留 |
+> | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | 当前 TS2/TS3 过校正，最低 ECE 未成立；先修校准协议，禁止用平均置信度高低替代排序质量 |
+> | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 标题与相关页待改；新实验未完成前只纠正已有事实，不把待测结果写成 SOTA |
+> | T-A176 | 训练台账、活跃源数据与可追溯归档 | 每 run 记录 commit/seed/配置/CUDA/数据权重哈希/best epoch/停止原因/结果与结论；活跃绘图 JSON+manifest 完整；废弃交接件和旧源数据只移动归档并保留哈希 | 贯穿执行；归档在 PPT 内容修复后，活跃原始数据不得删除 |
+> | T-A177 | 最终三通道验收与 GitHub | 原始 artifact→独立复算→图/表/PPT 三通道一致；相关测试/静态检查通过；代码留 /home，大 artifact 留 /teams，确认后及时 commit+push，本地只留核心结论 | 待各阶段验收；当前既有远端未跟踪资产不得误删或批量提交 |
+>
+> **执行顺序**：T-A169/T-A170 立即并行推进 → T-A171 全量新增基线 → T-A172 工程优化与 T-A173/T-A174 VL0 候选 → 独占终测 → T-A175 → T-A176/T-A177。NB T-A168 保持原收敛合同，非计时阶段余量即提交其他合格任务，正式测速例外独占。
+>
+> **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
+
+> **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A163 | 逐模型泄露与 SOTA 身份复核 | 每系统绑定训练语料/checkpoint/GT/重叠与原始证据；区分部分重算、未审计；纠正参照 | 部分完成：RNAformer 四格 clean 复算与第 4/18 页身份纠正已入片；其余模型不得称完整复测 |
+> | T-A164 | 五模型公平端到端测速 | 官方权重/协议、同 TS0、raw-sequence、三次重复、F1/显存/哈希；缺失项 blocked | **可执行范围已完成**：eFold 0.1.3 B1/2/4 中位=16.203/16.292/18.472，EternaFold CPU=10.656；三项官方权重 blocked 已留证，不作绝对 SOTA |
+> | T-A165 | GenA/GenC 与 OOD mean 提升评估 | 复核旧对照与失败归因；无新证据不写提升 | **负向评估已完成**：GenA 已领先；GenC/GenF 是短板，旧 GT/混合语料未超 xens2，不重复训练；家族级源 JSON 已验收 |
+> | T-A166 | 文献与论文图件/叙事审计 | 对照 UFold/BPfold/E2Efold/RNAformer/RiNALMo，形成补图/补文与限制 | **已完成**：`paper/round38_literature_and_narrative_audit.md`；优先速度、risk–coverage、家族失败与泄露敏感性 |
+> | T-A167 | 第 5/9/17/18 页及全稿修订 | 扩展速度、正确泄露与参照、图文一致、字体行距无重叠、源数据与提交 | **已完成**：23 页全检、76 个源文件及本地/远端哈希一致；`01168f3` 已 push |
+> | T-A168 | NB 后续种子与 QA | 非测速窗口继续；完整收敛+独立 GPU QA 后才聚合 | SSH 已恢复；official_s3 epoch7 validation BCE=0.01293881、best_epoch=7、bad=0、early_stopped=False，继续训练 |
+>
+> **关键定义纠错**：20.8%/39.2% 是 GenC/GenF 的**零正确配对率**，不是零输出率；空输出仅 1/3936、1/1734。GenC 的 RF03981 占 57.3% FN，GenF 主要看 RF03874/RF03662。
+>
+> **执行顺序**：先完成 T-A164 可执行测速并保留三项 blocked → 汇总速度与 PPT → 恢复 T-A168 → 逐模型泄露后续复测。OOD 不因用户期待而预设提升，新实验须从 VL0 锁定候选开始。
+>
+> **历史边界**：第 37 轮及更早结果保留，本块覆盖新增问题和纠正项。
+>
+> **当前执行覆盖（2026-11-01，第 37 轮：端到端主图 2 与推理优化优先；活跃清单 `round37-speed-v1`）**
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A159 | 主图 2 纯端到端重绘 | 只用 raw-sequence 全链路合格结果；六系统最优配置、三次重复范围、F1/bs/源哈希齐全；无 head-only；PPT 原位替换并渲染验收 | **已完成**：六系统端到端最优配置入片，B=32 新结果已更新 |
+> | T-A160 | 新一轮推理优化测评 | 独占 4090；xens2 B=16、三模型 B=32 与 r2d TF32 单变量候选；全 TS0 三次重复、预测等价门、原始 JSON 落盘；只在实测后更新最快配置 | **已完成**：r2d/plana/xens2 B=32=53.907/47.924/19.892；TF32=52.426 不替代 B=32，全部通过等价门 |
+> | T-A161 | 速度图件与源数据同步 | 主图 2/5、PPT 文案、源 JSON、manifest、训练台账数值一致；旧件可追溯归档，代码提交并 push | **已完成**：66 个活跃源文件本地/远端一致，round36 旧图三件归档，提交 `051b55c` 已 push |
+> | T-A162 | NB 下游任务恢复 | epoch40 完整 checkpoint 暂停，不自动启动 official_s3；测速结束后从断点恢复至 validation plateau 与独立 QA | **已恢复**：epoch40 checkpoint 续训，best_epoch=36、bad=4；不写成收敛，后续 QA/五种子总门未关闭 |
+>
+> **执行顺序**：T-A159 与 NB 安全暂停并行 → T-A160 独占测评 → T-A161 图件/源数据/提交 → T-A162 恢复。正式测速期间不得为占满显存而并发其他 GPU 作业。
+>
+> **历史边界**：第 36 轮及更早结果保留，本块只覆盖最新优先级和新增实验。
+>
 > **当前执行覆盖（2026-10-31，第 36 轮：速度 SOTA 与 benchmark 公平性；活跃清单 `round36-working-v1`）**
 >
 > | ID | 任务 | 完成判据 | 当前状态 |
@@ -8,12 +56,12 @@
 > | T-A152 | RNAformer TS2 公平性与双 GT 审计 | 固定 bprna 与 inter-family 分列；release-full 与 canonical-nested 分列；原文 quoted 与项目复测分列；主表与敏感性表的胜场可复算 | **已完成**：原文 TS2=0.802、项目 GT 复测=0.9043、固定 bprna=0.8590；xens2=0.8604，口径不可互换 |
 > | T-A153 | 速度口径与历史点复现 | PPT/台账统一定义 head-only/forward-only/raw-sequence；GPU 复现历史 B=256 head-only 工程点；给出编码器是否计入的证据 | **已完成**：4090 head-only=117.735 seq/s，TP/FP/FN 与历史完全一致，非硬件复刻失败 |
 > | T-A154 | 4090 原始序列分段 profile | 全 TS0 记录 encoder/head/mask/transfer/DP 时间、289 长度 bucket、有效 batch、显存；三次重复；CUDA 强制 | **已完成**：r2d/plana/xens2 六份 B=1/4 JSON；编码器为主要耗时；xens2 三次前向占主导 |
-> | T-A155 | 无损速度优化与共同网格 | 依 profile 单变量优化；全 TS0 三次重复，同配置逐位一致，跨配置配对一致≥99% 且 |ΔF1|≤1e-3；扩展 batch 与同机 RNAformer/UFold 完整点；原始 JSON/显存落盘 | fp32 B=16/8 全过等价门：r2d=50.679、plana=46.127、xens2=17.622；bf16 更慢；RNAformer 在跑，SOTA 待判定 |
+> | T-A155 | 无损速度优化与共同网格 | 依 profile 单变量优化；全 TS0 三次重复，同配置逐位一致，跨配置配对一致≥99% 且 |ΔF1|≤1e-3；扩展 batch 与同机 RNAformer/UFold 完整点；原始 JSON/显存落盘 | **可执行范围已验收**：18/18 格闭环；fp32 B=16/8 全过等价门，r2d=50.679、plana=46.127、xens2=17.622；bf16 更慢且 B=4 不过门；RNAformer=2.56/2.72/2.73。共同协议三 JEV 均在前沿，UFold 权重外部阻塞，不宣称绝对 SOTA |
 > | T-A156 | 4090 主 benchmark 精度复核 | 8 split 逐项绑定 A100/4090 原始结果、样本数、GT 和预测；报告 paired ΔF1，缺项才重跑；不以速度结果代替精度 | **已完成**：8/8 原始 JSON 复核，最大绝对 F1 差=0.0000903，无明显精度变化 |
-> | T-A157 | PPT 修复与叙事证据审计 | 第 5 页解释速度差异与当前非 SOTA 边界；第 18 页图解三口径；第 17 页后新增泄露感知完整表；每主张有 claim–evidence–limitation；不改用户其他调整 | **已完成**：23 页、890 run 微软雅黑/1.5 行距、全页渲染与总览复核；速度 SOTA 保持未证明 |
-> | T-A158 | 全稿 QA、归档与提交 | 微软雅黑、1.5 倍行距、无重叠/越界、逐页渲染、图表同源、页码联动；活跃源数据哈希；废弃件入 archive；确认代码 commit+push | 贯穿本轮；NB 长任务仅在独占测速窗口让路并恢复 |
+> | T-A157 | PPT 修复与叙事证据审计 | 第 5 页解释速度差异与速度边界；附录图解三口径；第 17 页后新增泄露感知完整表；每主张有 claim–evidence–limitation；不改用户其他调整 | **已完成**：23 页；主图 5 已含 B=16/8 优化点；890 run 微软雅黑/1.5 行距，全页渲染、重点页与图文一致性复核通过 |
+> | T-A158 | 全稿 QA、归档与提交 | 微软雅黑、1.5 倍行距、无重叠/越界、逐页渲染、图表同源、页码联动；活跃源数据哈希；废弃件入 archive；确认代码 commit+push | **已完成**：23 页终审；58 个活跃源文件和 4 项新归档本地/远端哈希通过；提交 `1ba8ccf` 已 push；NB 五种子总门另计，保持未关闭 |
 >
-> **执行顺序**：T-A151/T-A152/T-A156 与 CPU 工作可并行 → T-A153/T-A154 在 NB run 边界申请独占窗口 → T-A155 单变量优化与全量复验 → 同机基线闭环 → T-A157 → T-A158。非计时 GPU 任务按实测容量并行；计时期间不得用其他作业“占满显存”。
+> **执行顺序**：T-A151–T-A158 的可执行范围已验收 → NB 五种子继续到 validation plateau 与独立 QA。非计时 GPU 任务按实测容量并行；计时期间不得用其他作业“占满显存”。
 >
 > **验收红线**：4090 换卡本身不改变科学结论；泄露处理不能只在标题写 clean；RNAformer 原文与复测不可混用；不同 batch/精度/padding 的加速必须通过预测等价门；smoke 或不完整计时不得进入主图；训练继续到 validation plateau，纯推理任务不虚报训练收敛。
 >
