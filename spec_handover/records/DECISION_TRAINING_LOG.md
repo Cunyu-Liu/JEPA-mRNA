@@ -11197,3 +11197,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch15 train BCE=0.00042214，validation BCE=**0.011668735716230621**，相对 epoch14=0.011834594179564423 再降 1.65858e-4，继续刷新 best，bad=0。
 - 改善再次扩大，继续按原 early-stopping 合同训练，不提前截断。
+
+
+## §15.226（2026-11-01）official_s2 epoch16 验证节点
+
+- epoch16 train BCE=0.00040924，validation BCE=**0.011585955797570139**，相对 epoch15=0.011668735716230621 再降 8.27799e-5，继续刷新 best，bad=0。
+- 生产日志步数正常，validation 仍持续改善；继续原 early-stopping 合同，不提前结束。
