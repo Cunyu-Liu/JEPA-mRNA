@@ -285,6 +285,7 @@ class TrainConfig:
     #: driver without a GPU; a real training run must not set it.
     allow_cpu: bool = False
     resume: str = ""
+    init_weights: str = ""
     arm: str = "decision"
 
     def __post_init__(self) -> None:
@@ -1587,6 +1588,15 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     # checked before .to(): a CPU-only torch build raises from inside .to("cuda")
     _check_device_request(config.device, allow_cpu=config.allow_cpu)
     model = build_decision_model(config).to(config.device)
+    if config.resume and config.init_weights:
+        raise ConfigError("--resume and --init-weights are mutually exclusive")
+    if config.init_weights and not os.path.isfile(resume_path):
+        initial = torch.load(config.init_weights, map_location="cpu", weights_only=False)
+        initial_state = initial.get("model", initial) if isinstance(initial, dict) else initial
+        model.load_state_dict(initial_state, strict=True)
+        print(f"[train] model-only init from {config.init_weights} "
+              f"(sha256={sha256_file(config.init_weights)}); optimizer/scheduler start at step 0",
+              flush=True)
     # Start the learnable prior multiplier where a held-out split says it should be.
     # Only the initialisation: it stays a Parameter and training moves it from here.
     if config.prior_init != 1.0:
@@ -1995,6 +2005,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--validation-min-delta", type=float, default=0.0,
                    help="minimum validation-loss decrease that resets patience")
     p.add_argument("--resume", default="")
+    p.add_argument("--init-weights", default="",
+                   help="load model weights only; optimizer, scheduler and step start fresh")
     # objective
     p.add_argument("--lambda-nll", type=float, default=1.0)
     p.add_argument("--lambda-distill", type=float, default=1.0)
@@ -2113,7 +2125,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         tiny=args.tiny, encoder_size=args.encoder_size, device=args.device,
         d_z=args.d_z, hidden=args.hidden,
         allow_cpu=args.allow_cpu,
-        out_dir=args.out, resume=args.resume, arm=args.arm,
+        out_dir=args.out, resume=args.resume, init_weights=args.init_weights, arm=args.arm,
         embedding_dir=args.embedding_dir,
         embedding_d_model=args.embedding_d_model,
         head_chunk_size=args.head_chunk_size,

@@ -192,3 +192,34 @@ def test_cli_allow_cpu_is_limited_to_synthetic_tests(tmp_path, capsys):
         "--allow-cpu", "--out", str(tmp_path / "validation")])
     assert validation_code == 2
     assert "require CUDA" in capsys.readouterr().err
+
+
+def test_model_only_init_starts_fresh_and_later_resume_ignores_init(tmp_path):
+    train = TD.make_synthetic_dataset(4, 12, seed=19)
+    teacher = TD.TeacherLabelStore.from_mock()
+    source_dir = tmp_path / "source"
+    TD.run_training(_config(source_dir, steps=2), train, teacher)
+    source = torch.load(source_dir / "resume.pt", map_location="cpu")
+    assert source["step"] == 2
+    assert all(float(state["step"]) == 2 for state in source["optimizer"]["state"].values())
+
+    target_dir = tmp_path / "target"
+    target_config = _config(target_dir, steps=1, init_weights=str(source_dir / "resume.pt"))
+    first = TD.run_training(target_config, train, teacher)
+    assert first["steps_completed"] == 1
+    target = torch.load(target_dir / "resume.pt", map_location="cpu")
+    assert target["step"] == 1
+    assert all(float(state["step"]) == 1 for state in target["optimizer"]["state"].values())
+
+    resumed_config = _config(target_dir, steps=2, init_weights=str(source_dir / "resume.pt"))
+    second = TD.run_training(resumed_config, train, teacher)
+    assert second["steps_completed"] == 2
+    resumed = torch.load(target_dir / "resume.pt", map_location="cpu")
+    assert resumed["step"] == 2
+    assert all(float(state["step"]) == 2 for state in resumed["optimizer"]["state"].values())
+
+    conflicting = _config(tmp_path / "conflicting", steps=1,
+                          resume=str(source_dir / "resume.pt"),
+                          init_weights=str(source_dir / "resume.pt"))
+    with pytest.raises(TD.ConfigError, match="mutually exclusive"):
+        TD.run_training(conflicting, train, teacher)
