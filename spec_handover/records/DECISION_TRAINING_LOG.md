@@ -11210,3 +11210,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - epoch17 train BCE=0.00039718，validation BCE=**0.011633096410923770**，高于 epoch16 的当前 best=0.011585955797570139，首次未改善。
 - 生产 resume 独立核对：epoch=17、best_epoch=16、best_loss=0.011585955797570139、bad=**1**、early_stopped=False，history 与 validation_history.jsonl 完全一致，early-stop 计数正确。
 - patience=5，当前仅 1 次未改善，不能称为 plateau 或提前停止；继续后续 epoch，best checkpoint 仍保留 epoch16。
+
+
+## §15.228（2026-11-01）official_s2 epoch18 新 best 与计数复位
+
+- epoch18 train BCE=0.00038605，validation BCE=**0.011469275634844431**，相对 epoch16 的前 best=0.011585955797570139 下降 1.16680e-4，刷新 best。
+- 生产 resume 核对：epoch=18、best_epoch=18、bad=**0**、early_stopped=False，epoch17 的 bad=1 已正确复位。首次未改善只是波动，不是 plateau；继续原合同训练。
