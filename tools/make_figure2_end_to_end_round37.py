@@ -25,7 +25,7 @@ def main() -> None:
     source = json.loads(args.source.read_text(encoding="utf-8"))
     assert "raw sequence to required decode; cached_embeddings=false; repeats=3" in source["protocol"]
     rows = source["models"]
-    assert len(rows) == 21
+    assert len(rows) == 25
     for row in rows:
         result_path = Path(row["source_result"])
         result = json.loads(result_path.read_text(encoding="utf-8"))
@@ -43,7 +43,7 @@ def main() -> None:
         if model not in best or row["throughput"] > best[model]["throughput"]:
             best[model] = row
     assert set(best) == set(base.MODELS)
-    expected = {"r2d": 16, "plana": 16, "xens2": 8, "rinalmo_ft": 4, "mxfold2": 2, "rnaformer": 4}
+    expected = {"r2d": 32, "plana": 32, "xens2": 32, "rinalmo_ft": 4, "mxfold2": 2, "rnaformer": 4}
     assert {model: row["batch"] for model, row in best.items()} == expected
     ordered = sorted(best.values(), key=lambda row: row["throughput"])
     payload = {

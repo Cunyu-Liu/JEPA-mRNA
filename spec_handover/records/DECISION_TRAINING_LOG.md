@@ -11335,3 +11335,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **PPT**：第 5 页原位替换为纯端到端图，标题、脚注与备注同步，主图 2 不含 head-only；其他页面内容/几何保持不变。round37 PPT SHA256=`b26d76065b3d3d3dfd3a42f14e212efc1eef5d9b3bc157b450efac71f3bb7bae`，PDF SHA256=`eaa79b465f48506bf7b4c832568b440fc158f88e5cc86144e4991b09bac28ca0`。第 8 页用户原有便签文本框保持原样，不当作本轮新增问题。
 - **NB 暂停证据**：official_s2 已完成 epoch40，validation BCE=0.010985194820785266；checkpoint 为 epoch40、best_epoch=36、best_loss=0.010843943561498056、bad=4、early_stopped=False，run.json 不存在。已停止恢复 watcher，epoch40 后终止训练，official_s3 未启动；暂停仅为速度优先级，不是收敛，后续从完整 checkpoint 恢复。
 - 活跃源数据新增 fig02 三件，manifest/README 同步。后续 xens2 B=16、三模型 B=32 和 r2d TF32 尚未实测，不提前写提速。
+
+
+## §15.248（2026-11-01）B=32 最优端到端结果、主图 2/5 更新与 NB 恢复
+
+- **独占窗口完成**：NB epoch40 后无其他 GPU 作业，CUDA 断言通过。xens2 B=16=19.452 seq/s；三模型 B=32 分别为 r2d=**53.906663**、plana=**47.924270**、xens2=**19.891765 seq/s**，均全 TS0 三次重复且预测等价门通过。r2d TF32 B=16=52.425754 seq/s，虽通过但慢于 fp32 B=32，不扩展。
+- **等价证据**：r2d/plana/xens2 B=32 配对一致率=0.995479/0.998181/0.998924，绝对 F1 差=0.000502/0.000071/0.000181；xens2 B=16 一致率=0.999013、差=0.000170。TF32 一致率=0.999712、差=0.0000365。峰值显存约 8.62/9.85/13.60 GiB，均无 OOM 或 CPU 降级。
+- **主图与 PPT**：主图 2 最优更新为 B=32 的 53.91/47.92/19.89；主图 5 B 面板新增 xens2 B=16 与三模型 B=32，TF32 仅记录不选。两图和第 5/9 页渲染通过，PPT 嵌入图哈希一致。round37 PPT SHA256=`a6a6fdc4e9e6a6731c9ea60a1fadf14b8c3d776a0d58f6178773fcae088f6e9c`，PDF SHA256=`90be215c2464cc99fa61fe5192491eb8697ced6d043d6ab72f325603f449a18e`。
+- **源数据**：新增 round37 图件与五份原始 profile；round36 主图 5 三件已移入 `archive_20261031/old_figures/round36_speed/` 并哈希验收。当前 66 个活跃源文件全部通过本地 manifest/README/目录一致性复核。
+- **NB 恢复**：测速与图件完成后已启动修复队列，official_s2 从 epoch40 checkpoint 续训，训练 PID=1432966；未启动 official_s3，未把暂停写成收敛。恢复后仍需 validation plateau、独立 GPU QA 与五种子聚合。

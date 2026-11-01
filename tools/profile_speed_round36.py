@@ -154,11 +154,16 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--bf16-r2d-encoder", action="store_true")
+    parser.add_argument("--tf32", action="store_true")
     parser.add_argument("--baseline", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required; refusing CPU fallback")
+    if args.tf32:
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+        torch.set_float32_matmul_precision("high")
     device = torch.device("cuda:0")
     records = speed.read_records(speed.DEFAULT_DATA, 0)
     data_sha256 = speed.sha256_file(speed.DEFAULT_DATA)
@@ -220,6 +225,7 @@ def main() -> int:
             "repeats": args.repeats,
             "batching": "exact_length_buckets",
             "r2d_encoder_autocast_bf16": args.bf16_r2d_encoder,
+            "tf32": args.tf32,
             "batch_statistics": batch_statistics(records, args.batch_size),
         },
         "cross_config_equivalence": equivalence,

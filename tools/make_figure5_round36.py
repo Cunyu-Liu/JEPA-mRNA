@@ -49,6 +49,7 @@ def load_profile(path: Path) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--summary", type=Path, required=True)
+    parser.add_argument("--round37-dir", type=Path)
     parser.add_argument("--out-dir", type=Path, required=True)
     args = parser.parse_args()
     summary = json.loads(args.summary.read_text(encoding="utf-8"))
@@ -62,6 +63,19 @@ def main() -> None:
         for row in summary["reference_models"]:
             base.ROUND34 = Path(row["source"]).parent
             rows[row["model"], row["batch_size"]] = base.load_result(row["model"], row["batch_size"])
+    round37_candidates = []
+    if args.round37_dir:
+        for path in sorted(args.round37_dir.glob("*_profile.json")):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            equivalence = data["cross_config_equivalence"]
+            assert data["status"] == "PASS" and equivalence["pair_agreement"] >= 0.99
+            assert equivalence["abs_delta_f1"] <= 0.001
+            row = load_profile(path)
+            row["cross_config_equivalence"] = equivalence
+            row["tf32"] = data["protocol"].get("tf32", False)
+            round37_candidates.append(row)
+            if not row["tf32"]:
+                rows[row["model"], row["batch"]] = row
     models = list(base.MODELS)
     if not all((model, 1) in rows for model in models):
         raise RuntimeError("same-protocol baseline grid is incomplete")
@@ -92,9 +106,11 @@ def main() -> None:
         "ufold_status": "blocked: official Drive weights unavailable; no substitution used",
         "legacy_exclusion": "124.78 seq/s is cached-embedding head-only and is not plotted",
         "round36_summary": str(args.summary),
+        "round37_dir": str(args.round37_dir) if args.round37_dir else None,
+        "round37_candidates": round37_candidates,
     }
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    (args.out_dir / "fig05_accuracy_speed_4090_round36_source.json").write_text(
+    (args.out_dir / "fig05_accuracy_speed_4090_round37_source.json").write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     fig, (a, b) = plt.subplots(1, 2, figsize=(12.8, 6.4), gridspec_kw={"width_ratios": [1.15, 1.0]})
@@ -118,14 +134,14 @@ def main() -> None:
     base.style(a)
 
     for model, spec in base.MODELS.items():
-        batches = np.array([batch for batch in (1, 2, 4, 8, 16) if (model, batch) in rows])
+        batches = np.array([batch for batch in (1, 2, 4, 8, 16, 32) if (model, batch) in rows])
         values = np.array([rows[model, batch]["throughput"] for batch in batches])
         lower = np.array([rows[model, batch]["throughput"] - rows[model, batch]["throughput_min"] for batch in batches])
         upper = np.array([rows[model, batch]["throughput_max"] - rows[model, batch]["throughput"] for batch in batches])
         b.errorbar(batches, values, yerr=np.vstack([lower, upper]), marker=spec["marker"], markersize=6.5,
                    color=spec["color"], lw=1.6, elinewidth=0.9, capsize=3, label=spec["label"], zorder=3)
-    b.set_xticks([1, 2, 4, 8, 16], ["1", "2", "4", "8", "16"])
-    b.set_xlim(0.65, 16.65)
+    b.set_xticks([1, 2, 4, 8, 16, 32], ["1", "2", "4", "8", "16", "32"])
+    b.set_xlim(0.65, 32.65)
     b.set_ylim(0, max(row["throughput_max"] for row in rows.values()) * 1.18)
     b.set_xlabel("Common batch size", labelpad=8)
     b.set_ylabel("Throughput (sequences/s)", labelpad=8)
@@ -135,17 +151,17 @@ def main() -> None:
     fig.text(0.5, 0.035,
              "Only eligible full-TS0 results are plotted; cross-batch pair agreement >=99% and |delta F1| <= 1e-3. Median of three runs; bars show repeat range.\n"
              "Raw sequence -> encoder -> head -> required decode; no cached embeddings. Legacy 124.78 seq/s head-only is excluded.\n"
-             "UFold remains blocked because official weights are unavailable.",
+             "UFold remains blocked because official weights are unavailable; r2d TF32 is not selected over faster B=32.",
              ha="center", va="bottom", fontsize=8.6, color=base.C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.075, right=0.985, top=0.86, bottom=0.20, wspace=0.27)
-    png = args.out_dir / "fig05_accuracy_speed_4090_round36_3840x1920.png"
-    pdf = args.out_dir / "fig05_accuracy_speed_4090_round36_3840x1920.pdf"
+    png = args.out_dir / "fig05_accuracy_speed_4090_round37_3840x1920.png"
+    pdf = args.out_dir / "fig05_accuracy_speed_4090_round37_3840x1920.pdf"
     fig.savefig(png, dpi=300)
     fig.savefig(pdf)
     plt.close(fig)
     with Image.open(png) as image:
         assert image.size == (3840, 1920)
-    print("FIG05_ROUND36_CANDIDATE_PASS", png, base.sha256(png))
+    print("FIG05_ROUND37_CANDIDATE_PASS", png, base.sha256(png))
 
 
 if __name__ == "__main__":
