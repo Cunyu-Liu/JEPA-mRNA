@@ -11427,3 +11427,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **MXfold2 语料纠偏**：默认 `TrainSetAB.pth` 按论文和官方 README 使用 Rivas TrainSetA+B，不是 TR0/bpRNA-new。官方 `Rivas.tar.gz` SHA256=`4ec63e183ef21cdc7dc76561da5ad1543bdd53d1ec09c14d692cc0cd8da86db2`，训练并集=3166+1094=4260 条，bpseq 索引和序列逐行校验通过；八 split clean 审计已启动。额外下载的 TR0/bpRNA-new 只保留为其他 checkpoint 资产，不混用。
 - **Vienna/Nussinov 严格 TS0**：MFE/centroid/MEA/Nussinov-Turner 三次均值分别=0.5055256447/0.5392561730/0.5241050119/0.2124253868，三次预测哈希各自一致；逐序列独立汇总 TP/FP/FN 与每次 metrics 完全一致，并与旧汇总数值一致。其余 split 尚在运行。
 - **资源边界**：RiNALMo-ft 首次并行 B=1 因其他 GPU 作业占用而 OOM，未生成有效结果，后续在空闲窗口单队列重跑。eFold 已加入逐 batch/长序列进度，TS0 正常推进但未完成，不能把进度当 F1 结果。
+
+
+## §15.258（2026-11-01）基线新增单元、官方训练索引与蒸馏初始化
+
+- **SPOT-RNA 有效 TS0**：multiplet-free 后处理后的三次结果均为 TP=19765、FP=20451、FN=15126，strict micro-F1=**0.5263157894736842**，SD=0，逐序列独立汇总一致；其余 split 与 TR0+TR1 clean 结果未完成。
+- **UFold 新增 raw 单元**：bpRNA-new 三次均为 TP=80572、FP=84827、FN=54612，F1=**0.5361048362681855**；ArchiveII 三次均为 TP=71024、FP=68011、FN=56498，F1=**0.5328991547774022**。转换权重身份继续明确标注，不把论文其他口径数值当复现目标。
+- **MXfold2 clean 与 TS1**：TrainSetA+B 的 TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB clean n 分别=1188/5388/52/27/18/26/1041/373，八份审计全部数量守恒。raw TS1 三次均 F1=**0.7967298402081011**、TP=1072、FP=274、FN=273；其余 split 和 clean 复测未完成。
+- **BPfold 训练索引**：官方 `data_index.yaml` 的 train 为 PDB_669=669 + bpRNA=12114，共 12783；test=58631 不混入训练。官方包本地/远端 SHA256=`819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403`，六折联合训练语料 clean 审计已启动。
+- **RNAstructure 多 MEA 结构**：部分 MaxExpect 输出多个完整 CT 块，既有同分也有近优（如 17.6/17.5）。协议固定只取官方顺序的第一个结构，记录块数和能量跨度，禁止合并或按测试 GT 挑选；三次单序列复推一致，完整八 split 仍在运行。
+- **xens2 蒸馏前置**：TR1c=42564、VL0=196，序列均唯一且 r2d 嵌入缺失数均为 0。`r2d.pt` 已是 20000-step 完整训练状态，新增 `--init-weights` 仅加载模型并创建全新 optimizer/scheduler/step=0；后续 resume 不重复初始化，禁止与 `--resume` 同时指定。回归测试 **39 passed, 1 skipped**，提交 `2bb4e60` 已 push。教师全量生成和三种子训练尚未开始。

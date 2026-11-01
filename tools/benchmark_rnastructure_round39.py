@@ -52,8 +52,10 @@ def predict(binary, row, directory, env):
         assert len(current_pairs) == len({tuple(pair) for pair in current_pairs})
         if block_index == 0:
             pairs = current_pairs
-    assert len(set(energies)) == 1, (row["name"], energies)
-    return {"name": row["name"], "pairs": sorted(pairs), "ct_structures": len(blocks)}
+    energy_values = [float(value) for value in energies]
+    assert all(abs(value) != float("inf") and value == value for value in energy_values)
+    return {"name": row["name"], "pairs": sorted(pairs), "ct_structures": len(blocks),
+            "ct_energy_span": max(energy_values) - min(energy_values)}
 
 
 def main():
@@ -109,6 +111,7 @@ def main():
                                 "prediction_sha256": hashlib.sha256(canonical(identity).encode()).hexdigest(),
                                 "multi_ct_sequences": sum(p["ct_structures"] > 1 for p in predictions),
                                 "max_ct_structures": max(p["ct_structures"] for p in predictions),
+                                "max_ct_energy_span": max(p["ct_energy_span"] for p in predictions),
                                 "metrics": metrics})
             results[name] = {"binary": str(binary), "binary_sha256": sha256(binary),
                              "repeats": repeats, "per_sequence": per_sequence}
