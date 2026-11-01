@@ -11489,3 +11489,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **clean F1 均值**：TS0=**0.5338038315**（n=1230）、bpRNA-new=**0.6853840073**（n=5388）、TS1=**0.7659388646**（n=55）、TS2=**0.8816666667**（n=32）、TS3=**0.8004613610**（n=19）、hard=**0.7658291457**（n=28）、ArchiveII=**0.5700478608**（n=1033）、TestSetB=**0.5849604015**（n=428）。clean ArchiveII 与 raw=0.6156686410 不得混写。
 - **源与注册表**：`round39_eternafold_clean_train_union_summary.json` 已入活跃清单，SHA256=`6f2846d155221115975b27ad475ea9b25191770cf60ad70e6d05b62f3bf3b558`；EternaFold 状态改为 `PASS_TRAIN_UNION_8x3`，raw 与 tr1c 敏感性文件继续保留但不替代该 clean 结论。
 - **RiNALMo 与 eFold 边界**：RiNALMo 在 bpRNA-new 第二轮发生并行 OOM，未生成有效结果，TS0 完整值保留，后续等待安全窗口；eFold 官方 `efold_train/data.json` 镜像返回 404，改试官方直链，provenance 尚未闭环。
+
+
+## §15.265（2026-11-02）Vienna 全板与 MXfold2 clean bpRNA-new
+
+- **Vienna/Nussinov raw 全板完成**：四系统八 split 均完成三次严格复测，预测与计数独立重算通过。TS0 的 MFE/centroid/MEA/Nussinov=0.5055256447/0.5392561730/0.5241050119/0.2124253868；ArchiveII=0.5752066230/0.6180982114/0.6053716365/0.1999522395。其余 split 全值与 artifact 哈希写入 `round39_vienna_raw_summary.json`，标为非序列训练系统，不伪造训练集 clean 过滤。
+- **MXfold2 clean bpRNA-new**：clean n=5388，三次均 TP=100227、FP=64290、FN=34957，F1=**0.6688466171284047**，与 raw 相同，SD=0；clean TS0=0.5489548512、TS1=0.781250 已确认，其余 clean split 尚未完成。
+- **eFold 数据通道**：官方 HuggingFace 直链超时、镜像 404，改用官方 `rouskinhf.get_dataset("efold_train")` 客户端下载；成功前保持 `BLOCKED_PROVENANCE`。

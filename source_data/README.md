@@ -88,6 +88,7 @@
 | `appendix_leakage/round39_eternafold_clean_train_union_summary.json` | EternaFold 自身训练语料 clean 八 split 三次复测及独立计数重算 | active | `6f2846d15522` |
 | `appendix_leakage/round39_mxfold2_raw_summary.json` | MXfold2 八 split 原始集三次复测；ArchiveII 为完整 2544 条 | active | `9d690e989f18` |
 | `appendix_leakage/round39_ufold_raw_summary.json` | UFold 八 split 原始集三次复测；clean 训练并集 provenance 未闭环 | active | `e22f77455ae5` |
+| `appendix_leakage/round39_vienna_raw_summary.json` | Vienna 三系统与 Nussinov-Turner 八 split 三次复测；非序列训练系统 | active | `5769a0dd04f4` |
 | `appendix_leakage/round39_invalid_results.json` | UFold 通道错配、SPOT-RNA 空解码与 MXfold2 长度子集诊断索引 | active | `12b83fb4b77e` |
 | `appendix_leakage/round39_clean_audits/INDEX.json` | TR0/tr1c 各八 split clean n、删除数、数量守恒与审计哈希索引 | active | `699c259064ac` |
 

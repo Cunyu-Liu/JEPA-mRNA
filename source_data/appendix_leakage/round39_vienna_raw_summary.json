@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RAW_NOT_SEQUENCE_FITTED",
+  "systems": [
+    "vienna_mfe",
+    "vienna_centroid",
+    "vienna_mea",
+    "nussinov_turner"
+  ],
+  "protocol": "8 raw splits, 3 independent runs, strict micro-F1; physics/prior systems require no sequence-fitted training-clean filter",
+  "results": {
+    "bprna_ts0": {
+      "vienna_mfe": {
+        "n": 1288,
+        "tp": 22300,
+        "fp": 31034,
+        "fn": 12591,
+        "f1_mean": 0.5055256446585435,
+        "f1_sd": 0.0,
+        "prediction_sha256": "8b35248614f0c53612816eeb675817de2ab7f96e0b13b9c58d11bcf836f7155f",
+        "artifact_sha256": "d76865f8c8cfb630bc0335094fbe5f45a7cbf31e963857d0f87487fd5f073e32"
+      },
+      "vienna_centroid": {
+        "n": 1288,
+        "tp": 22003,
+        "fp": 24711,
+        "fn": 12888,
+        "f1_mean": 0.5392561730286134,
+        "f1_sd": 0.0,
+        "prediction_sha256": "c743639476bb8950a70f7f58fdb4bccd4d3413377966a1ca82604c563e1c61e6",
+        "artifact_sha256": "d76865f8c8cfb630bc0335094fbe5f45a7cbf31e963857d0f87487fd5f073e32"
+      },
+      "vienna_mea": {
+        "n": 1288,
+        "tp": 22509,
+        "fp": 28495,
+        "fn": 12382,
+        "f1_mean": 0.5241050119331743,
+        "f1_sd": 0.0,
+        "prediction_sha256": "40b7267c93b25e6c03d612fe3c4e651ca17dde714805ebd28f693aecb8de3645",
+        "artifact_sha256": "d76865f8c8cfb630bc0335094fbe5f45a7cbf31e963857d0f87487fd5f073e32"
+      },
+      "nussinov_turner": {
+        "n": 1288,
+        "tp": 8719,
+        "fp": 38480,
+        "fn": 26172,
+        "f1_mean": 0.21242538677061762,
+        "f1_sd": 0.0,
+        "prediction_sha256": "63f8a0140045698d250efbf80a9c942ac337dcab7a77a0a09831fd85ab4af6d6",
+        "artifact_sha256": "d76865f8c8cfb630bc0335094fbe5f45a7cbf31e963857d0f87487fd5f073e32"
+      }
+    },
+    "bprna_new": {
+      "vienna_mfe": {
+        "n": 5388,
+        "tp": 99112,
+        "fp": 76430,
+        "fn": 36072,
+        "f1_mean": 0.6379382478453686,
+        "f1_sd": 0.0,
+        "prediction_sha256": "d103ebc11fda4a36e4efd45804632f6a0b5ad772ce640dad98e8dc96157f0cb6",
+        "artifact_sha256": "615c47042b927f06d5870537ecc2d71ac3cbdabac03c14957d9e5c19ca42d86b"
+      },
+      "vienna_centroid": {
+        "n": 5388,
+        "tp": 97991,
+        "fp": 56297,
+        "fn": 37193,
+        "f1_mean": 0.677032666371877,
+        "f1_sd": 0.0,
+        "prediction_sha256": "d8015837857f96b9f93990b2908df5e10be1a639150c788f3158a9d204098515",
+        "artifact_sha256": "615c47042b927f06d5870537ecc2d71ac3cbdabac03c14957d9e5c19ca42d86b"
+      },
+      "vienna_mea": {
+        "n": 5388,
+        "tp": 100390,
+        "fp": 67724,
+        "fn": 34794,
+        "f1_mean": 0.6619891987418315,
+        "f1_sd": 0.0,
+        "prediction_sha256": "c13d9b4515f214b48e4f6d6185b0398725667a3c3a173d5310721ef5a6ce6d0b",
+        "artifact_sha256": "615c47042b927f06d5870537ecc2d71ac3cbdabac03c14957d9e5c19ca42d86b"
+      },
+      "nussinov_turner": {
+        "n": 5388,
+        "tp": 44046,
+        "fp": 112976,
+        "fn": 91138,
+        "f1_mean": 0.301472249029794,
+        "f1_sd": 0.0,
+        "prediction_sha256": "d836c3e6c81a905d16d888a1d4d667bf17634f60a3305bb7b9c538a1e9bf6e43",
+        "artifact_sha256": "615c47042b927f06d5870537ecc2d71ac3cbdabac03c14957d9e5c19ca42d86b"
+      }
+    },
+    "ref_pdb_ts1": {
+      "vienna_mfe": {
+        "n": 63,
+        "tp": 1002,
+        "fp": 433,
+        "fn": 343,
+        "f1_mean": 0.720863309352518,
+        "f1_sd": 0.0,
+        "prediction_sha256": "b8c6beeacf9b4f390944440d7a688a41821fe48cadb8acd7034acaf051ca92d4",
+        "artifact_sha256": "51b3d8dc4cbfccc369b7943071dbcb04a2c325660abf6ccc3cce6c48f86340c1"
+      },
+      "vienna_centroid": {
+        "n": 63,
+        "tp": 962,
+        "fp": 329,
+        "fn": 383,
+        "f1_mean": 0.7298937784522003,
+        "f1_sd": 0.0,
+        "prediction_sha256": "b07bd234ecd41b0265af28cc76a610f6dc25288fa3ea961a761d132cfdee52aa",
+        "artifact_sha256": "51b3d8dc4cbfccc369b7943071dbcb04a2c325660abf6ccc3cce6c48f86340c1"
+      },
+      "vienna_mea": {
+        "n": 63,
+        "tp": 985,
+        "fp": 409,
+        "fn": 360,
+        "f1_mean": 0.7192405987586711,
+        "f1_sd": 0.0,
+        "prediction_sha256": "ed419773d34c605d380fbb08c08efefa03d2301f7af94a38fe2f862f2b4eb65e",
+        "artifact_sha256": "51b3d8dc4cbfccc369b7943071dbcb04a2c325660abf6ccc3cce6c48f86340c1"
+      },
+      "nussinov_turner": {
+        "n": 63,
+        "tp": 484,
+        "fp": 766,
+        "fn": 861,
+        "f1_mean": 0.3730250481695568,
+        "f1_sd": 0.0,
+        "prediction_sha256": "ea3c934b4180abd2b7ac2d5ca472693cfa485b1bc6d3d292f40c7023f04ea6a7",
+        "artifact_sha256": "51b3d8dc4cbfccc369b7943071dbcb04a2c325660abf6ccc3cce6c48f86340c1"
+      }
+    },
+    "ref_pdb_ts2": {
+      "vienna_mfe": {
+        "n": 39,
+        "tp": 594,
+        "fp": 74,
+        "fn": 61,
+        "f1_mean": 0.8979591836734694,
+        "f1_sd": 0.0,
+        "prediction_sha256": "9868124c0a4ae528dc8bed04396216caf43fd9d16f5b4339cbfe0e8d7219815c",
+        "artifact_sha256": "43fdb68d1d2223a9f14b3a2d8e80527ab7770df8dba39aab16bb772766ac0ec8"
+      },
+      "vienna_centroid": {
+        "n": 39,
+        "tp": 584,
+        "fp": 69,
+        "fn": 71,
+        "f1_mean": 0.8929663608562691,
+        "f1_sd": 0.0,
+        "prediction_sha256": "19de0a5e5df847c5ccd688ae30e22660272d84c841b8bd485d8f2ab13a4414bd",
+        "artifact_sha256": "43fdb68d1d2223a9f14b3a2d8e80527ab7770df8dba39aab16bb772766ac0ec8"
+      },
+      "vienna_mea": {
+        "n": 39,
+        "tp": 589,
+        "fp": 74,
+        "fn": 66,
+        "f1_mean": 0.8937784522003035,
+        "f1_sd": 0.0,
+        "prediction_sha256": "332c48fd7758c2a3d7a76e37cb81dd7113d90d697a42c92d4caa095c1add81bf",
+        "artifact_sha256": "43fdb68d1d2223a9f14b3a2d8e80527ab7770df8dba39aab16bb772766ac0ec8"
+      },
+      "nussinov_turner": {
+        "n": 39,
+        "tp": 251,
+        "fp": 293,
+        "fn": 404,
+        "f1_mean": 0.4186822351959967,
+        "f1_sd": 0.0,
+        "prediction_sha256": "f3934391674bd63d8ac2dbc3930562285afc15ffa87d7608367d36f231eef97e",
+        "artifact_sha256": "43fdb68d1d2223a9f14b3a2d8e80527ab7770df8dba39aab16bb772766ac0ec8"
+      }
+    },
+    "ref_pdb_ts3": {
+      "vienna_mfe": {
+        "n": 19,
+        "tp": 359,
+        "fp": 99,
+        "fn": 58,
+        "f1_mean": 0.8205714285714286,
+        "f1_sd": 0.0,
+        "prediction_sha256": "5a7eee238669c93e23198e42d0e75fc0f8c0dbe1bd46e0b513089ee3fbe5ff6c",
+        "artifact_sha256": "e78838f070ddcdd417a65afaf119212ba8df98b2fb72e52c6fb94afedde3f941"
+      },
+      "vienna_centroid": {
+        "n": 19,
+        "tp": 350,
+        "fp": 83,
+        "fn": 67,
+        "f1_mean": 0.823529411764706,
+        "f1_sd": 0.0,
+        "prediction_sha256": "2fdd0bba8a08c8dce8c7fcbd1545073af60fe977f80870c3980d3a3af0709316",
+        "artifact_sha256": "e78838f070ddcdd417a65afaf119212ba8df98b2fb72e52c6fb94afedde3f941"
+      },
+      "vienna_mea": {
+        "n": 19,
+        "tp": 355,
+        "fp": 90,
+        "fn": 62,
+        "f1_mean": 0.8236658932714617,
+        "f1_sd": 0.0,
+        "prediction_sha256": "cefa4ea94ebd9fb1d52e64df541e0bee59fed3dc7201ba844dfcfcc5fad983b6",
+        "artifact_sha256": "e78838f070ddcdd417a65afaf119212ba8df98b2fb72e52c6fb94afedde3f941"
+      },
+      "nussinov_turner": {
+        "n": 19,
+        "tp": 170,
+        "fp": 236,
+        "fn": 247,
+        "f1_mean": 0.4131227217496962,
+        "f1_sd": 0.0,
+        "prediction_sha256": "94b5b489e1e66570bcc3a7109c3ff45ae5b135deb06dfbb01f8429d760109914",
+        "artifact_sha256": "e78838f070ddcdd417a65afaf119212ba8df98b2fb72e52c6fb94afedde3f941"
+      }
+    },
+    "ref_pdb_ts_hard": {
+      "vienna_mfe": {
+        "n": 28,
+        "tp": 382,
+        "fp": 140,
+        "fn": 93,
+        "f1_mean": 0.7662988966900702,
+        "f1_sd": 0.0,
+        "prediction_sha256": "b818749fbf96c8ebd256882925cf957ecb5bfb2e8367e338db035e0f467e156d",
+        "artifact_sha256": "14acba692fdc879724b75fff32019b002d5ac0bef817e74ea8db237c91a78619"
+      },
+      "vienna_centroid": {
+        "n": 28,
+        "tp": 376,
+        "fp": 94,
+        "fn": 99,
+        "f1_mean": 0.7957671957671958,
+        "f1_sd": 0.0,
+        "prediction_sha256": "7e979e45510ffad5d544f7184b74ec3ba079762dd897b67e764e9dbd1b50ef17",
+        "artifact_sha256": "14acba692fdc879724b75fff32019b002d5ac0bef817e74ea8db237c91a78619"
+      },
+      "vienna_mea": {
+        "n": 28,
+        "tp": 383,
+        "fp": 116,
+        "fn": 92,
+        "f1_mean": 0.7864476386036962,
+        "f1_sd": 0.0,
+        "prediction_sha256": "4a2f9ca013f20588719b3b02c9940da50f65a55276e26b9ef2fedd1b77d3ae67",
+        "artifact_sha256": "14acba692fdc879724b75fff32019b002d5ac0bef817e74ea8db237c91a78619"
+      },
+      "nussinov_turner": {
+        "n": 28,
+        "tp": 193,
+        "fp": 281,
+        "fn": 282,
+        "f1_mean": 0.4067439409905163,
+        "f1_sd": 0.0,
+        "prediction_sha256": "38b3ceb69199efe8c27547a341a262ee0e69de51ecc3218bf3dcdfc5ddd2e295",
+        "artifact_sha256": "14acba692fdc879724b75fff32019b002d5ac0bef817e74ea8db237c91a78619"
+      }
+    },
+    "archiveii_embok_clean": {
+      "vienna_mfe": {
+        "n": 2544,
+        "tp": 83063,
+        "fp": 78226,
+        "fn": 44459,
+        "f1_mean": 0.5752066230164363,
+        "f1_sd": 0.0,
+        "prediction_sha256": "5a6a52c0e04519ce29d1fa11184d37d386cb7345b1c45f4e50a083d1ca190bc2",
+        "artifact_sha256": "a0e7db2cb773d90329eeb7069e7a360c662936ba4f2fe479b6ab30d189b6b65f"
+      },
+      "vienna_centroid": {
+        "n": 2544,
+        "tp": 82263,
+        "fp": 56396,
+        "fn": 45259,
+        "f1_mean": 0.618098211367453,
+        "f1_sd": 0.0,
+        "prediction_sha256": "a90a1f43ce73ea7e95d9123cb2850a9f205893269c3522e0be6b1aed8211f852",
+        "artifact_sha256": "a0e7db2cb773d90329eeb7069e7a360c662936ba4f2fe479b6ab30d189b6b65f"
+      },
+      "vienna_mea": {
+        "n": 2544,
+        "tp": 85177,
+        "fp": 68705,
+        "fn": 42345,
+        "f1_mean": 0.6053716365083652,
+        "f1_sd": 0.0,
+        "prediction_sha256": "e4ddcb99e05243ac5a6ce16e721332c267c0e2476c73be87095541a8cca02732",
+        "artifact_sha256": "a0e7db2cb773d90329eeb7069e7a360c662936ba4f2fe479b6ab30d189b6b65f"
+      },
+      "nussinov_turner": {
+        "n": 2544,
+        "tp": 26794,
+        "fp": 113688,
+        "fn": 100728,
+        "f1_mean": 0.19995223951881316,
+        "f1_sd": 0.0,
+        "prediction_sha256": "a522958c936d6f8f7f7d626be28d6d1b8f3a13e226ee637dab4d055ed89e649e",
+        "artifact_sha256": "a0e7db2cb773d90329eeb7069e7a360c662936ba4f2fe479b6ab30d189b6b65f"
+      }
+    },
+    "testsetb": {
+      "vienna_mfe": {
+        "n": 428,
+        "tp": 6850,
+        "fp": 8113,
+        "fn": 4407,
+        "f1_mean": 0.5225019069412662,
+        "f1_sd": 0.0,
+        "prediction_sha256": "5d65c7b2e76902ac02411aa8547d374a5fa65760ab2315be865110363ca3fdca",
+        "artifact_sha256": "b11fa255ad74bd5c007b111e421ae69b5dedb068bbaf492660f089bbc4345d25"
+      },
+      "vienna_centroid": {
+        "n": 428,
+        "tp": 6634,
+        "fp": 6311,
+        "fn": 4623,
+        "f1_mean": 0.5482191554416991,
+        "f1_sd": 0.0,
+        "prediction_sha256": "5984e4567e0059290ec4e87263282a1b02ab43f79d3806ea8d630ef112526cea",
+        "artifact_sha256": "b11fa255ad74bd5c007b111e421ae69b5dedb068bbaf492660f089bbc4345d25"
+      },
+      "vienna_mea": {
+        "n": 428,
+        "tp": 6877,
+        "fp": 7370,
+        "fn": 4380,
+        "f1_mean": 0.5392879548306148,
+        "f1_sd": 0.0,
+        "prediction_sha256": "d60f31a156e51d185f8aed7c36f65455930e9181b36be89da9d4a56da0e09574",
+        "artifact_sha256": "b11fa255ad74bd5c007b111e421ae69b5dedb068bbaf492660f089bbc4345d25"
+      },
+      "nussinov_turner": {
+        "n": 428,
+        "tp": 2703,
+        "fp": 11020,
+        "fn": 8554,
+        "f1_mean": 0.21641313050440356,
+        "f1_sd": 0.0,
+        "prediction_sha256": "b9a7dc310603600495492681a04a1df61f8755d510171cf6cbd04fd6332e7a4c",
+        "artifact_sha256": "b11fa255ad74bd5c007b111e421ae69b5dedb068bbaf492660f089bbc4345d25"
+      }
+    }
+  }
+}

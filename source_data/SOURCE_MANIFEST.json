@@ -590,6 +590,13 @@
    "status": "active"
   },
   {
+   "path": "appendix_leakage/round39_vienna_raw_summary.json",
+   "sha256": "5769a0dd04f43604fd9e9a33eae14c9227ce2f496c190bd571e135a1a1617f6b",
+   "bytes": 12155,
+   "description": "Vienna MFE/centroid/MEA 与 Nussinov-Turner 的八 split 三次复测；非序列训练系统",
+   "status": "active"
+  },
+  {
    "path": "appendix_leakage/round39_invalid_results.json",
    "sha256": "12b83fb4b77ecf57449b8765612c4dfd0eb5b673b410c17adab34f2f46369a52",
    "bytes": 1024,
