@@ -11,23 +11,26 @@
     {"id": "mxfold2", "class": "official_fixed_weights", "leakage_status": "trainsetab_clean_ready", "raw_status": "PASS_8x3_FULL_LENGTH", "clean_status": "PASS_TRAINSETAB_8x3"},
     {"id": "eternafold", "class": "official_fixed_parameters", "leakage_status": "train_union_clean_ready", "raw_status": "PASS_8x3", "clean_status": "PASS_TRAIN_UNION_8x3"},
     {"id": "ufold", "class": "official_fixed_weights", "leakage_status": "BLOCKED_PROVENANCE_multicorpus_conflict", "raw_status": "PASS_8x3", "clean_status": "BLOCKED_PROVENANCE"},
-    {"id": "rnaformer_bprna", "class": "official_fixed_weights", "leakage_status": "official_bprna_train_clean_ready", "raw_status": "RUNNING_TS0_NEW_PASS", "clean_status": "ready"},
-    {"id": "rnaformer_interfam", "class": "official_fixed_weights", "leakage_status": "official_inter_train_clean_ready", "raw_status": "pending", "clean_status": "ready"},
-    {"id": "rnaformer_biophys", "class": "official_fixed_weights", "leakage_status": "pretraining_lineage_audit_pending", "raw_status": "pending", "clean_status": "pending"},
-    {"id": "rinalmo_ft", "class": "official_fixed_weights", "leakage_status": "bprna_tr0_clean_ready", "raw_status": "RUNNING_TS0_PASS", "clean_status": "pending"},
+    {"id": "rnaformer_bprna", "class": "official_fixed_weights", "leakage_status": "official_bprna_train_clean_ready", "raw_status": "TS0_NEW_PASS_REMAINDER_PENDING", "clean_status": "RETRY_AFTER_MEMORY_OVERSUBSCRIPTION"},
+    {"id": "rnaformer_interfam", "class": "official_fixed_weights", "leakage_status": "official_inter_train_clean_ready", "raw_status": "RUNNING_OFFICIAL_CHECKPOINT", "clean_status": "QUEUED_OFFICIAL_CLEAN"},
+    {"id": "rnaformer_biophys", "class": "official_fixed_weights", "leakage_status": "pretraining_lineage_audit_pending", "raw_status": "OFFICIAL_WEIGHTS_RESTORED_EVAL_PENDING", "clean_status": "pending"},
+    {"id": "rinalmo_ft", "class": "official_fixed_weights", "leakage_status": "bprna_tr0_clean_ready", "raw_status": "TS0_PASS_REMAINDER_AWAITING_MEMORY", "clean_status": "AWAITING_MEMORY"},
     {"id": "nucleicbert_frozen_official_head", "class": "project_head_official_backbone", "leakage_status": "downstream_tr1c_clean_pretraining_audit_pending", "raw_status": "pending", "clean_status": "pending"},
     {"id": "nucleicbert_finetuned", "class": "project_finetune", "leakage_status": "downstream_tr0_clean_pretraining_audit_pending", "raw_status": "pending", "clean_status": "pending"},
-    {"id": "efold", "class": "official_fixed_weights", "leakage_status": "BLOCKED_PROVENANCE_pretraining_composition_incomplete_public", "raw_status": "RUNNING_THREADS1_TS0_PASS", "clean_status": "BLOCKED_PROVENANCE"},
+    {"id": "efold", "class": "official_fixed_weights", "leakage_status": "BLOCKED_PROVENANCE_pretraining_composition_incomplete_public", "raw_status": "PASS_THREADS1_8x3", "clean_status": "BLOCKED_PROVENANCE"},
     {"id": "depfold", "class": "official_fixed_weights", "leakage_status": "training_corpus_audit_pending", "raw_status": "pending", "clean_status": "pending"},
     {"id": "rfold_tr0_retrain", "class": "project_retrain_official_recipe", "leakage_status": "bprna_tr0_clean_ready", "raw_status": "pending", "clean_status": "pending"},
     {"id": "kirigami", "class": "official_fixed_weights", "leakage_status": "training_corpus_audit_pending", "raw_status": "pending", "clean_status": "pending"},
     {"id": "xens2", "class": "project_ensemble", "leakage_status": "bprna_tr1c_clean_ready", "raw_status": "historical_raw_available", "raw_status_note": "not a final clean-board result", "clean_status": "PASS_TR1C_8x3"},
     {"id": "r2d_tr1_legacy", "class": "legacy_leaky_sensitivity_only", "leakage_status": "excluded_from_clean_main_board", "raw_status": "excluded", "clean_status": "excluded"},
-    {"id": "spotrna", "class": "official_fixed_weights", "distribution": "MultiMolecule converted checkpoint; not an original-author file", "leakage_status": "tr0_tr1_clean_ready", "raw_status": "TS0_NEW_PASS_REMAINDER_RETRY_AFTER_OOM", "clean_status": "READY_EMPTY_TS3_RECORDED"},
+    {"id": "spotrna", "class": "official_fixed_weights", "distribution": "MultiMolecule converted checkpoint; not an original-author file", "leakage_status": "tr0_tr1_clean_ready", "raw_status": "TS0_NEW_PASS_REMAINDER_AWAITING_ISOLATED_ENV_AND_MEMORY", "clean_status": "READY_EMPTY_TS3_RECORDED"},
     {"id": "rnastructure", "class": "physics", "leakage_status": "not_sequence_fitted", "raw_status": "RUNNING_STRICT_FIRST_MEA_TS0_PASS", "clean_status": "not_applicable"},
-    {"id": "contextfold", "class": "official_fixed_weights", "leakage_status": "training_corpus_audit_pending", "raw_status": "official_site_unreachable", "clean_status": "pending"},
-    {"id": "contrafold", "class": "official_fixed_parameters", "leakage_status": "training_corpus_audit_pending", "raw_status": "PASS_8x3", "clean_status": "TR1C_SENSITIVITY_PASS_PROVENANCE_PENDING"},
-    {"id": "bpfold", "class": "official_six_checkpoint_ensemble", "leakage_status": "release_train_union_clean_ready", "raw_status": "RUNNING_TS0_PASS", "clean_status": "ready"},
-    {"id": "e2efold", "class": "official_fixed_weights", "leakage_status": "rnastralign_clean_pending", "raw_status": "sharepoint_access_denied", "clean_status": "pending"}
+    {"id": "contextfold", "class": "official_fixed_weights", "leakage_status": "training_corpus_audit_pending", "raw_status": "BLOCKED_OFFICIAL_SITE_UNREACHABLE", "clean_status": "BLOCKED_PROVENANCE", "source_correction": "local PDF was unrelated and archived; correct DOI=10.1089/cmb.2011.0184"},
+    {"id": "contrafold", "class": "official_fixed_parameters", "leakage_status": "BLOCKED_PROVENANCE_original_training_corpus_unavailable", "raw_status": "PASS_8x3", "clean_status": "TR1C_SENSITIVITY_PASS_PROVENANCE_PENDING"},
+    {"id": "bpfold", "class": "official_six_checkpoint_ensemble", "leakage_status": "release_train_union_clean_ready", "raw_status": "TS0_NEW_PASS", "clean_status": "RUNNING_OFFICIAL_CLEAN"},
+    {"id": "e2efold", "class": "official_fixed_weights", "leakage_status": "rnastralign_clean_pending", "raw_status": "BLOCKED_SHAREPOINT_ACCESS_DENIED", "clean_status": "pending"}
+  ],
+  "supplementary_systems": [
+    {"id": "rnaformer_intrafam", "class": "official_fixed_weights", "leakage_status": "official_intra_train_clean_ready", "raw_status": "RUNNING_OFFICIAL_CHECKPOINT", "clean_status": "QUEUED_OFFICIAL_CLEAN", "contract": "additional 8x3; not counted in the core 600 cells"}
   ]
 }
