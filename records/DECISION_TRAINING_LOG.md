@@ -11464,3 +11464,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **MXfold2 全长 ArchiveII**：三次均 TP=102712、FP=47360、FN=24810，F1=**0.7400159945820155**，n=2544、`n_length_filtered=0`，与旧 2505 条结果严格区分。至此 MXfold2 raw 八 split 全部完成；其余七格均值依次为 TS0=0.5651344853、new=0.6688466171、TS1=0.7967298402、TS2=0.8990683230、TS3=0.8127208481、hard=0.8028455285、TSB=0.6503729959。
 - **源数据与注册表**：`round39_mxfold2_raw_summary.json` 已入活跃清单，MXfold2 raw 状态改为 `PASS_8x3_FULL_LENGTH`；clean 仍在运行，不把 raw 完成写成全合同完成。
 - **RiNALMo-ft TS0 三次**：TP=25682、FP=10629、FN=9209，F1=**0.7213842307800342**，SD=0；非独占吞吐不进入正式速度图。
+
+
+## §15.262（2026-11-02）MXfold2 clean TS0 与后续数据恢复
+
+- **MXfold2 TrainSetA+B clean TS0**：n=1188，三次均 TP=20445、FP=23752、FN=9845，F1=**0.5489548511820854**，SD=0，预测 SHA256=`80faed69560ec80c833754191231921a7a1301529db87f21dbf2f74307e97eb7`，clean audit 路径与样本数绑定通过。此前 clean TS1=0.781250，其他 clean split 未完成。
+- **eFold bpRNA-new 首轮**：TP=100583、FP=73955、FN=34601，F1=0.6495050400；三次未结束，不作为最终均值。EternaFold clean ArchiveII 首轮 F1=0.5700478608，同样只记过程值。
+- **RNAformer 数据与权重**：官方 `bprna_data.plk`、intra/inter-family、biophysical/pretrain 数据及三套对应 checkpoint 正在下载，用于逐模型 clean 审计；下载完成前不把 RNAformer 训练组成写成已知。
+- **交接文档纠偏**：source README 已更新 BPfold/UFold 权重恢复、E2Efold 仍 blocked、NB official_s3 epoch13 暂停及 EternaFold 自身 clean 状态，提交 `c8174bf`。历史 teacher 仅 ViennaRNA，xens2 全量教师仍需生成。
