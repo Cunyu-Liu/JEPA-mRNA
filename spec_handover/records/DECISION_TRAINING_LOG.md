@@ -11319,3 +11319,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch35 train BCE=0.00026860，validation BCE=**0.010949568377534014**，相对 epoch33 的前 best=0.010965557402982098 再降 1.59890e-5，超过 min_delta=1e-6，刷新 best，bad=0。
 - epoch34 的波动未形成 plateau，继续按原 early-stopping 合同训练。
+
+
+## §15.246（2026-11-01）official_s2 epoch36–39 原始节点补录
+
+- 中断交互期间生产训练持续运行，已从 `validation_history.jsonl` 逐行补录，而不是只保留最新值：epoch36 validation BCE=**0.010843943561498056**（新 best）；epoch37=0.010996150998841383；epoch38=0.010967191585468335；epoch39=0.011216970775417926，后三轮均未超过 epoch36 best。
+- 生产 resume 核对：epoch=39、best_epoch=36、best_loss=0.010843943561498056、bad=**3**、early_stopped=False，run.json 尚未生成，epoch40 正常训练。
+- 当前为 3/5 次未改善，继续按 patience=5 等待，不提前停止，也不把 epoch36–39 的中间状态写成收敛。epoch35 提交 `922aab8` 已 push 成功。
