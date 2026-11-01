@@ -11,7 +11,7 @@ REPO = Path("/home/rna_jev")
 for path in (REPO, REPO / "src", REPO / "tools", REPO / "eval"):
     sys.path.insert(0, str(path))
 
-from rnajepa.distill import generate_teacher_labels, verify_teacher_labels
+from rnajepa.distill import generate_teacher_labels, sha256_file, verify_teacher_labels
 from rnajepa.train_decision import EmbeddingStore
 import xens2_eval
 
@@ -49,21 +49,34 @@ def main():
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
-    if args.device == "cuda" and not torch.cuda.is_available():
+    if args.device != "cuda" or not torch.cuda.is_available():
         raise RuntimeError("CUDA is required; refusing CPU fallback")
     rows = [json.loads(line) for line in Path(args.data).open() if line.strip()]
     sequences = [str(row["seq"]).upper().replace("T", "U") for row in rows]
     if args.limit:
         sequences = sequences[:args.limit]
+    assert sequences and len(set(sequences)) == len(sequences)
     teacher = Xens2Teacher(args.plana_ckpt, args.plana_ckpt2, args.r2d_ckpt,
                            args.embedding_dir, args.embedding_split, args.device)
+    for module in (teacher.enc0, teacher.head0, teacher.enc1, teacher.head1, teacher.model):
+        assert next(module.parameters()).is_cuda
     probe = teacher.predict_probs(sequences[0])
     assert probe.shape == (len(sequences[0]), len(sequences[0]))
     assert np.isfinite(probe).all() and probe.min() >= 0 and probe.max() <= 1
     manifest = generate_teacher_labels(sequences, teacher, args.out_dir,
                                        shard_size=args.shard_size, resume=True,
                                        extra_meta={"data": args.data,
+                                                   "data_sha256": sha256_file(args.data),
+                                                   "plana_ckpt": args.plana_ckpt,
+                                                   "plana_ckpt_sha256": sha256_file(args.plana_ckpt),
+                                                   "plana_ckpt2": args.plana_ckpt2,
+                                                   "plana_ckpt2_sha256": sha256_file(args.plana_ckpt2),
+                                                   "r2d_ckpt": args.r2d_ckpt,
+                                                   "r2d_ckpt_sha256": sha256_file(args.r2d_ckpt),
+                                                   "embedding_dir": args.embedding_dir,
                                                    "embedding_split": args.embedding_split,
+                                                   "gpu_name": torch.cuda.get_device_name(0),
+                                                   "teacher_version_lock": Xens2Teacher.version_lock,
                                                    "teacher_forward": "raw plana encoders plus cached r2d embedding"})
     assert manifest["n_sequences"] == len(sequences)
     assert verify_teacher_labels(manifest, args.out_dir)

@@ -11512,3 +11512,4 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **eFold ArchiveII**：三次均 TP=85032、FP=70489、FN=42490，F1=**0.6008415682422812**，SD=0，预测 SHA256=`bb8969360579892731a1a4462ce426d3847edff727331574a1676ce9f89e381b`；实际 `cpu_threads=1`。
 - **教师调度决策**：在 BPfold bpRNA-new、RNAformer bpRNA-new、eFold ArchiveII 的自然完成边界暂停三个后续队列，优先独占 GPU 生成 TR1c/VL0 教师，已完成结果均保留。
 - **远端进程管理纠错**：第一次教师 smoke 因旧基线显存未释放而 OOM。确认仅停止 SSH 不会自动终止远端子进程后，按明确 PID 清理暂停任务，GPU 从 22.6 GiB 降至 9 MiB，再启动教师；未误杀其他用户进程。后续恢复基线也按 split 明确启动，不依赖 TaskStop 管理远端生命周期。
+- **教师 smoke 验收**：2 条真实序列完整生成通过；manifest 包含 RTX 4090、plana s0/s1/r2d 三 checkpoint SHA256、数据 SHA256 和 `plana_tr1c_s0+s1_w0.7_and_r2dtr1c_w0.3_sigmoid_scores` version lock。全量 TR1c 正在生成，尚未把 smoke 当科学结果。
