@@ -11479,4 +11479,5 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **RNAstructure Fold**：TS0 三次均 TP=22053、FP=30891、FN=12838，F1=**0.5021460693345478**，SD=0；所有 repeat 均为单 CT 结构。
 - **RNAstructure MaxExpect**：TS0 三次均 TP=22353、FP=28413、FN=12538，F1=**0.5219188157418542**，SD=0；仅 2 条序列有两个近优 CT 块，固定取官方顺序第一个结构，能量跨度约 0.1。两系统逐序列计数与预测哈希均独立复核通过，旧的合并异常未再出现。
 - **无效结果迁移**：UFold AUCG→ACGU 错配结果、SPOT-RNA 上三角互指空解码、MXfold2 的 2505 条长度子集已移至 diagnostics，迁移前后 SHA256 写入 `INVALID_RESULTS_INDEX.json`；有效 corrected/raw_postprocessed/raw_full 路径不变。该索引已入活跃源清单，防止后续误读。
-- **后续**：RNAstructure 其余 split、EternaFold clean ArchiveII 第三轮、eFold bpRNA-new 第三轮仍在运行，过程值不写成全板均值。
+- **eFold bpRNA-new 三次闭环**：TP=100583、FP=73955、FN=34601，F1=**0.6495050400036162**，SD=0，预测 SHA256=`567520183e007c2b3a50c67884162cf556190c6dc46ec03bf51aaa7aba2a70a2`；独立逐序列计数重算通过，artifact 记录 `cpu_threads=1`。
+- **后续**：RNAstructure 其余 split 与 EternaFold clean ArchiveII 第三轮仍在运行，过程值不写成全板均值。
