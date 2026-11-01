@@ -87,6 +87,7 @@
 | `appendix_leakage/round39_model_clean_audits.json` | SPOT-RNA、MXfold2、BPfold、EternaFold 各自训练并集的八 split clean 审计 | active | `ef283203d4bb` |
 | `appendix_leakage/round39_mxfold2_raw_summary.json` | MXfold2 八 split 原始集三次复测；ArchiveII 为完整 2544 条 | active | `9d690e989f18` |
 | `appendix_leakage/round39_ufold_raw_summary.json` | UFold 八 split 原始集三次复测；clean 训练并集 provenance 未闭环 | active | `e22f77455ae5` |
+| `appendix_leakage/round39_invalid_results.json` | UFold 通道错配、SPOT-RNA 空解码与 MXfold2 长度子集诊断索引 | active | `12b83fb4b77e` |
 | `appendix_leakage/round39_clean_audits/INDEX.json` | TR0/tr1c 各八 split clean n、删除数、数量守恒与审计哈希索引 | active | `699c259064ac` |
 
 ## 后续边界

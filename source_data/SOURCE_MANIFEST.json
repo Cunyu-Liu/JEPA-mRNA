@@ -583,6 +583,13 @@
    "status": "active"
   },
   {
+   "path": "appendix_leakage/round39_invalid_results.json",
+   "sha256": "12b83fb4b77ecf57449b8765612c4dfd0eb5b673b410c17adab34f2f46369a52",
+   "bytes": 1024,
+   "description": "已迁移至诊断区的 UFold 通道错配、SPOT-RNA 空解码与 MXfold2 长度子集结果索引",
+   "status": "active"
+  },
+  {
    "path": "appendix_leakage/round39_clean_audits/INDEX.json",
    "sha256": "699c259064ac6fda37c5e2b14484bc0a0bc80a67cbd331f66c9246e02c59d3b6",
    "bytes": 3971,

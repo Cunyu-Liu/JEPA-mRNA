@@ -1,0 +1,20 @@
+[
+  {
+    "source": "ufold_mm/raw/bprna_ts0.json",
+    "diagnostic": "ufold_mm/diagnostics/wrong_aucg_to_acgu/bprna_ts0.json",
+    "reason": "wrong UFold AUCG-to-ACGU input-channel permutation; corrected results are under ufold_mm_corrected/raw",
+    "sha256": "1eb073d15da2e69cd9c828721f7b994ba602050582a3ad32f12c4d08b0d99227"
+  },
+  {
+    "source": "spotrna/raw/bprna_ts0.json",
+    "diagnostic": "spotrna/diagnostics/empty_upper_triangle_decode/bprna_ts0.json",
+    "reason": "empty prediction from incorrect mutual decode of upper-triangular SPOT-RNA probabilities; valid results are under raw_postprocessed",
+    "sha256": "50a6f2c3d27fd987936fcf378fcc691cd9069e89df10dd2b4f97a8dcbd620320"
+  },
+  {
+    "source": "mxfold2/raw/archiveii_embok_clean.json",
+    "diagnostic": "mxfold2/diagnostics/length_filtered_2505/archiveii_embok_clean.json",
+    "reason": "length-filtered 2505/2544 subset; full-length result is under raw_full",
+    "sha256": "163ab5fae94bf3c6ad18103a4176a18f642efd05a340d0bd6b9d0c802aafbc26"
+  }
+]

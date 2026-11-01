@@ -11472,3 +11472,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **eFold bpRNA-new 首轮**：TP=100583、FP=73955、FN=34601，F1=0.6495050400；三次未结束，不作为最终均值。EternaFold clean ArchiveII 首轮 F1=0.5700478608，同样只记过程值。
 - **RNAformer 数据与权重**：官方 `bprna_data.plk`、intra/inter-family、biophysical/pretrain 数据及三套对应 checkpoint 正在下载，用于逐模型 clean 审计；下载完成前不把 RNAformer 训练组成写成已知。
 - **交接文档纠偏**：source README 已更新 BPfold/UFold 权重恢复、E2Efold 仍 blocked、NB official_s3 epoch13 暂停及 EternaFold 自身 clean 状态，提交 `c8174bf`。历史 teacher 仅 ViennaRNA，xens2 全量教师仍需生成。
+
+
+## §15.263（2026-11-02）RNAstructure 严格 TS0 与无效 artifact 归档
+
+- **RNAstructure Fold**：TS0 三次均 TP=22053、FP=30891、FN=12838，F1=**0.5021460693345478**，SD=0；所有 repeat 均为单 CT 结构。
+- **RNAstructure MaxExpect**：TS0 三次均 TP=22353、FP=28413、FN=12538，F1=**0.5219188157418542**，SD=0；仅 2 条序列有两个近优 CT 块，固定取官方顺序第一个结构，能量跨度约 0.1。两系统逐序列计数与预测哈希均独立复核通过，旧的合并异常未再出现。
+- **无效结果迁移**：UFold AUCG→ACGU 错配结果、SPOT-RNA 上三角互指空解码、MXfold2 的 2505 条长度子集已移至 diagnostics，迁移前后 SHA256 写入 `INVALID_RESULTS_INDEX.json`；有效 corrected/raw_postprocessed/raw_full 路径不变。该索引已入活跃源清单，防止后续误读。
+- **后续**：RNAstructure 其余 split、EternaFold clean ArchiveII 第三轮、eFold bpRNA-new 第三轮仍在运行，过程值不写成全板均值。
