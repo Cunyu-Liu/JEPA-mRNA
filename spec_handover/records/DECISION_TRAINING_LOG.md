@@ -11216,3 +11216,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch18 train BCE=0.00038605，validation BCE=**0.011469275634844431**，相对 epoch16 的前 best=0.011585955797570139 下降 1.16680e-4，刷新 best。
 - 生产 resume 核对：epoch=18、best_epoch=18、bad=**0**、early_stopped=False，epoch17 的 bad=1 已正确复位。首次未改善只是波动，不是 plateau；继续原合同训练。
+
+
+## §15.229（2026-11-01）official_s2 epoch19 验证节点
+
+- epoch19 train BCE=0.00037577，validation BCE=**0.011398172198141798**，相对 epoch18=0.011469275634844431 再降 7.11034e-5，继续刷新 best，bad=0。
+- validation 仍明显改善，继续按 patience=5 等真实 plateau，不提前结束。
