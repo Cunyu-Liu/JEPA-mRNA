@@ -17,8 +17,9 @@ def main():
     parser.add_argument("--result-root", type=Path, required=True)
     parser.add_argument("--data-root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--system", default="EternaFold")
     args = parser.parse_args()
-    output = {"schema_version": 1, "status": "PASS", "system": "EternaFold", "splits": {}}
+    output = {"schema_version": 1, "status": "PASS", "system": args.system, "splits": {}}
     for split in SPLITS:
         result_path = args.result_root / f"{split}.json"
         raw = result_path.read_bytes()

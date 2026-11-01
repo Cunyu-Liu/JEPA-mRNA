@@ -99,6 +99,7 @@ def main():
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--native-contrafold", action="store_true")
+    parser.add_argument("--clean-audit", type=Path)
     args = parser.parse_args()
     if not args.smoke:
         assert args.repeats == 3 and args.limit is None
@@ -110,8 +111,15 @@ def main():
         rows = rows[:args.limit]
     if not args.smoke:
         assert args.data.stem in EXPECTED_SPLIT_COUNTS, f"unregistered split: {args.data.stem}"
-        assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
-        assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
+        if args.clean_audit:
+            audit = json.loads(args.clean_audit.read_text())
+            assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[args.data.stem]
+            assert audit["clean_sha256"] == sha256(args.data) and len(rows) == audit["clean_n"]
+            assert audit["raw_n"] == EXPECTED_SPLIT_COUNTS[args.data.stem]
+            assert audit["raw_n"] == audit["clean_n"] + audit["removed_exact"] + audit["removed_homology_only"]
+        else:
+            assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
+            assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
     env = dict(os.environ, OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1")
     repeats = []
     reference = None

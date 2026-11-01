@@ -80,6 +80,8 @@
 | `fig05_speed/efold012_b1.json` | eFold 0.1.2 原生逐条状态重置三次版本核验 | active | `1e4f939ef692` |
 | `fig09_ood/build_ood_failure_source.py` | GenC/GenF 逐家族独立重算脚本 | active | `448bbc0039d4` |
 | `fig09_ood/round38_ood_failure_source.json` | 家族失败、零正确配对、配对密度与 OOD mean 边界 | active | `a6e4a343d7ff` |
+| `appendix_leakage/round39_eternafold_raw_summary.json` | EternaFold 八 split 原始集三次复测及独立计数重算；不是逐模型 clean 结论 | active | `d1310c1386b8` |
+| `appendix_leakage/round39_contrafold_raw_summary.json` | 原生 CONTRAfold 八 split 三次复测及独立计数重算；不是逐模型 clean 结论 | active | `d7cbdd7aa666` |
 
 ## 后续边界
 

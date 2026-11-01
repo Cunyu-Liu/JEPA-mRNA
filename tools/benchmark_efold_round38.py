@@ -114,6 +114,7 @@ def main():
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--clean-audit", type=Path)
     args = parser.parse_args()
     assert args.repeats >= 1
     if not args.smoke:
@@ -127,8 +128,15 @@ def main():
     assert rows and len({row["name"] for row in rows}) == len(rows)
     if not args.smoke:
         assert args.data.stem in EXPECTED_SPLIT_COUNTS, f"unregistered split: {args.data.stem}"
-        assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
-        assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
+        if args.clean_audit:
+            audit = json.loads(args.clean_audit.read_text())
+            assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[args.data.stem]
+            assert audit["clean_sha256"] == sha256(args.data) and len(rows) == audit["clean_n"]
+            assert audit["raw_n"] == EXPECTED_SPLIT_COUNTS[args.data.stem]
+            assert audit["raw_n"] == audit["clean_n"] + audit["removed_exact"] + audit["removed_homology_only"]
+        else:
+            assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
+            assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
     groups = defaultdict(list)
     for row in rows:
         groups[len(row["seq"])].append(row)

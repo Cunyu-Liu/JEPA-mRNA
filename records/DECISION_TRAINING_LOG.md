@@ -11398,3 +11398,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **八 split 工程门**：EternaFold 与 eFold 旧脚本均硬编码 `len(rows)==1288`，导致非 TS0 全量任务 fail-closed。已改为逐 split 样本数与 SHA256 验收；EternaFold 八 split CPU smoke、eFold 八 split CUDA smoke 均 PASS，未把 smoke 当科学结果。eFold/MXfold2/RNAformer 已进入全量三次复测，正式速度不共享 GPU。
 - **EternaFold bpRNA-new 亲自三次全量复测**：三次均为 TP=104470、FP=65197、FN=30714，strict micro-F1=**0.685384007269125**，mean=0.685384、SD=0；三次预测 SHA256 完全相同。独立从原始 JSONL GT 与逐序列预测重算得到相同计数和 F1。结果 SHA256=`aa2ef3577f150e42d90fb8954383d2ccc59169e8164209ef83cdcf48b073f04b`。因此原板 0.6854 数值复现成立，但它仍是全 split 原始集结果，不能替代后续按 EternaFold 训练语料单独去泄露后的 clean 结论。
 - **执行边界**：NB official_s3 保持原收敛训练；非计时任务利用剩余显存并行，正式速度实验必须独占 4090。BPfold/UFold/E2Efold 官方权重恢复仍在进行，未把下载失败写成模型不可用，也未采用第三方权重。
+
+
+## §15.255（2026-11-01）80% identity clean 清单、资源纠偏与 xens2 路线确认
+
+- **逐模型 clean 清单已完成首轮**：MMseqs2 18-8cc5c 官方静态二进制安装并验证；规则为规范化精确重复 + identity≥0.8、query coverage≥0.8、search-type=3。TR0 的 TestSetB clean n=116（247 精确 + 65 额外同源），不是旧 clean-181；tr1c 的 TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB clean n 分别=713/5386/18/29/4/10/1107/288。所有审计满足 raw_n=clean_n+removed_exact+removed_homology_only，删除索引与命令落盘。raw 全板及旧 clean-181 只能作历史敏感性，后续最终胜场必须逐模型重算。
+- **EternaFold 八 split raw 三次复测全闭环**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1 分别=0.54001085/0.68538401/0.74260995/0.86353468/0.80046136/0.76582915/0.61566864/0.58496040，均 SD=0；独立从逐序列预测与 GT 重算 TP/FP/FN 全部一致。汇总 `round39_eternafold_raw_summary.json` 已入 77 文件 manifest，仍不冒充其训练语料去泄露结论。
+- **资源异常处理**：MXfold2/RNAformer 全量首次尝试因并行超订 OOM，未生成有效结果；改为单队列重跑。eFold 首个全量进程超过一小时无 repeat 输出，已按停滞终止并保存进程、线程和日志证据 `audits/round39_efold_stall`，不把工程停滞写成模型失败。NB official_s3 已在完整 epoch13 checkpoint 安全暂停，best validation BCE=0.011949524802079076，optimizer/best/history/CUDA RNG 保留，后续恢复，未写成收敛。
+- **xens2 路线纠偏**：plana s0/s1 与 r2d 的骨干权重不同，不能无损共享一次编码。速度候选只能是多模型融合/批化或蒸馏为单骨干、单决策头学生；原 xens2 先完成 tr1c clean 八 split 三次复测，再生成教师并进入 VL0 候选。教师生成器两条真实序列 smoke 已通过分片与哈希验收，不把 smoke 当科学结果。
+- **权重与依赖边界**：UFold 转换候选虽经 156 键 strict 加载，但 TS0=0.4604，未复现官方 0.6598，已判定不合格，不进入主表；multimolecule/transformers 多版本组合不兼容，通道停止。ContextFold 官方站点、E2Efold SharePoint 当前不可访问；BPfold 官方 release 继续用 HTTP/1.1 恢复下载，未使用来源不明替代权重。
+- **代码与写作**：第一批第 39 轮代码、合同、PPT 与源数据已提交并 push `d437b4f`。`paper/round39_claim_evidence_audit.md` 已按现象—对照—限制审计八条叙事；所有最终 SOTA、速度与 ECE 结论继续 fail-closed。

@@ -532,6 +532,20 @@
    "bytes": 29073,
    "description": "GenC/GenF 家族失败、配对密度、零正确配对与 OOD mean 边界",
    "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_raw_summary.json",
+   "sha256": "d1310c1386b82c1cbf364329a585a91960374e69d24b1d6f79f8cb3858aeff21",
+   "bytes": 2810,
+   "description": "EternaFold 八 split 原始集三次复测及独立 TP/FP/FN 重算；非逐模型 clean 结论",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_raw_summary.json",
+   "sha256": "d7cbdd7aa6666571155b9bafb33d5383d8867cd8e14ffdf657d600e8b52d5dc7",
+   "bytes": 2808,
+   "description": "原生 CONTRAfold 八 split 三次复测及独立 TP/FP/FN 重算；非逐模型 clean 结论",
+   "status": "active"
   }
  ]
 }
