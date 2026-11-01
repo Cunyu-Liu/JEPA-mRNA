@@ -4,9 +4,6 @@
 
 | 文件 | 说明 | 状态 | SHA256（前 12 位） |
 |---|---|---|---|
-| `fig02_speed/fig02_end_to_end_speed_4090_round37_3840x1920.pdf` | 主图 2 round37 纯端到端速度矢量 PDF（B=32 最优） | active | `8ed44953188f` |
-| `fig02_speed/fig02_end_to_end_speed_4090_round37_3840x1920.png` | 主图 2 round37 纯端到端速度 PNG（PPT 嵌入同哈希） | active | `ef3c259ce65b` |
-| `fig02_speed/fig02_end_to_end_speed_4090_round37_source.json` | 六系统最优合格配置、batch、F1、范围与源哈希；视觉验收通过 | active | `23661ae92fd9` |
 | `fig03_ablation/fig03b_group_drops.json` | 主图 3B 核心三模块分组均值与 PDB/ID 比值 | active | `3e048a175cf8` |
 | `fig05_speed/r2d_b1_profile.json` | round36 r2d B=1 全 TS0 分段测速原始结果 | active | `7ef14e1fe5a7` |
 | `fig05_speed/r2d_b4_profile.json` | round36 r2d B=4 全 TS0 分段测速原始结果 | active | `db08a49ceb81` |
@@ -23,9 +20,6 @@
 | `fig05_speed/speed_round36_profile_summary.json` | 六份基线 profile 的阶段耗时与占比汇总 | active | `84438d5f213d` |
 | `round32_verified_source_data.json` | 主图 1 主 benchmark、主图 2 历史速度与泄露审计的 round32 已验证汇总源 | active | `7d0cb98abfad` |
 | `fig04_calibration/fig04_ece_confidence_source.json` | 主图 4 ECE/Spearman/n 源数据 | active | `d12c6524197f` |
-| `fig05_speed/fig05_accuracy_speed_4090_round37_3840x1920.pdf` | 主图 5 round37 矢量 PDF（B=16/32 新优化点） | active | `fd7c47b1fd94` |
-| `fig05_speed/fig05_accuracy_speed_4090_round37_3840x1920.png` | 主图 5 round37 PNG（PPT 嵌入同哈希） | active | `a8593b2d4320` |
-| `fig05_speed/fig05_accuracy_speed_4090_round37_source.json` | 主图 5 round37 绘图源（25 个合格配置、Pareto、B=32 与 TF32 评估） | active | `0c2ef982b202` |
 | `fig05_speed/plana_b32_profile.json` | plana B=32 fp32 全 TS0 三次原始结果与等价门 | active | `63b64d47d643` |
 | `fig05_speed/r2d_b32_profile.json` | r2d B=32 fp32 全 TS0 三次原始结果与等价门 | active | `d4d70a477b26` |
 | `fig05_speed/r2d_b16--tf32_profile.json` | r2d B=16 TF32 全 TS0 三次原始结果；通过但不优于 B=32 | active | `b74ef461f388` |
@@ -71,13 +65,25 @@
 | `appendix_leakage/main_benchmark_4090_reproduction.json` | xens2 八 split 4090/A100 精度复现（最大绝对差 0.0000903） | active | `e6f4f51f85f5` |
 | `appendix_leakage/build_source.py` | 泄露审计源表构建脚本；修复 clean split 键映射与版本身份 | active | `fe732350b7bb` |
 | `appendix_leakage/rnaformer_bprna_clean_recompute.json` | RNAformer 四 split clean 子集独立复算 | active | `8d2819355248` |
-| `fig05_speed/round38_baseline_assets.json` | 五扩展基线官方资产、smoke 与三项 blocked 证据 | active | `7f8346386a55` |
+| `fig05_speed/round38_baseline_assets.json` | 两项正式测速与三项官方权重 blocked 的资产和版本证据 | active | `20bab1641c3e` |
+| `fig02_speed/fig02_end_to_end_speed_4090_round38_3840x1920.pdf` | 主图 2 八系统端到端速度矢量 PDF | active | `780e64b34705` |
+| `fig02_speed/fig02_end_to_end_speed_4090_round38_3840x1920.png` | 主图 2 PNG（PPT 嵌入同哈希） | active | `347a8cb5d06c` |
+| `fig02_speed/fig02_end_to_end_speed_4090_round38_source.json` | 最优配置、范围、F1、版本与 blocked 边界 | active | `d9407460da16` |
+| `fig05_speed/fig05_accuracy_speed_4090_round38_3840x1920.pdf` | 主图 5 精度-吞吐与共同 batch 矢量 PDF | active | `0d80fb5dbe57` |
+| `fig05_speed/fig05_accuracy_speed_4090_round38_3840x1920.png` | 主图 5 PNG（PPT 嵌入同哈希） | active | `ce6425028ac0` |
+| `fig05_speed/fig05_accuracy_speed_4090_round38_source.json` | 29 个配置及 eFold 新旧协议审计 | active | `e43cf0b793d8` |
+| `fig05_speed/round38_speed_validation.json` | 数值等价、旧版 rounded F1 与计数差验收 | active | `baff5aea6754` |
+| `fig05_speed/efold_b1.json` | eFold 0.1.3 B=1 全 TS0 三次原始结果 | active | `f0bdb75396ac` |
+| `fig05_speed/efold_b2.json` | eFold 0.1.3 B=2 全 TS0 三次原始结果 | active | `96237cd5fbbf` |
+| `fig05_speed/efold_b4.json` | eFold 0.1.3 B=4 全 TS0 三次原始结果 | active | `009809fde033` |
+| `fig05_speed/eternafold_b1.json` | EternaFold 官方 serial CPU 全 TS0 三次原始结果 | active | `4eeba4000d35` |
+| `fig05_speed/efold012_b1.json` | eFold 0.1.2 原生逐条状态重置三次版本核验 | active | `1e4f939ef692` |
 | `fig09_ood/build_ood_failure_source.py` | GenC/GenF 逐家族独立重算脚本 | active | `448bbc0039d4` |
 | `fig09_ood/round38_ood_failure_source.json` | 家族失败、零正确配对、配对密度与 OOD mean 边界 | active | `a6e4a343d7ff` |
 
 ## 后续边界
 
-- `fig05_speed/`：eFold/EternaFold 正式测速队列运行中；BPfold/UFold/E2Efold 官方权重 blocked，不使用第三方权重补缺。
-- `fig07_nucleicbert/`：official_s3 在 epoch5 完整 checkpoint 暂停供独占计时，未收敛；测后恢复，总门未关闭。
+- `fig05_speed/`：eFold 0.1.3 与 EternaFold 正式三次测速完成；BPfold/UFold/E2Efold 官方权重 blocked，不作无限制速度 SOTA。round37 图件已归档。
+- `fig07_nucleicbert/`：official_s3 已从 epoch5 checkpoint 恢复，尚未收敛；全部种子与独立 QA 总门未关闭。
 - `fig08b_regression/`：Muscle 十折完成；HEK/pc3 未满十折不进图，本轮不新增任务。
 - `fig09_ood/`：GenA 已领先，GenC/GenF 是短板；20.8%/39.2% 是零正确配对率而非零输出率。无新提升证据，不重复旧训练。

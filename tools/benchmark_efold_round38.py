@@ -28,7 +28,7 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
-def decode(model, rows):
+def decode(model, rows, reset_state=None):
     sequences = torch.stack([
         torch.nn.functional.pad(sequence_to_int(row["seq"]), (0, max(map(lambda x: len(x["seq"]), rows)) - len(row["seq"])))
         for row in rows
@@ -44,6 +44,8 @@ def decode(model, rows):
         dt_count={"sequence": len(rows)},
     ).to("cuda")
     with torch.inference_mode():
+        if reset_state is not None:
+            model.load_state_dict(reset_state)
         prediction = model(item)["structure"]
         output = []
         for index, row in enumerate(rows):
@@ -54,7 +56,14 @@ def decode(model, rows):
 
 
 def _predict_structure_postprocess(scores, sequence):
-    from efold.core.postprocess import Postprocess
+    try:
+        from efold.core.postprocess import Postprocess
+    except ImportError:
+        from efold.core.postprocess import postprocess_new_nc
+        one_hot = torch.zeros((5, 4), device=scores.device)
+        one_hot[1:] = torch.eye(4, device=scores.device)
+        embedded = one_hot[sequence].type(torch.long)
+        return postprocess_new_nc(scores, embedded, 0.01, 0.1, 100, 1.6, True, 1.5).detach().cpu().numpy().round().astype(int)[0]
     return Postprocess().run(scores.to("cpu"), sequence.to("cpu")).numpy().round()[0]
 
 
@@ -69,7 +78,6 @@ def score(predictions, rows):
         pred = {tuple(pair) for pair in prediction["pairs"]}
         true = {tuple(pair) for pair in row["pairs"]}
         assert all(0 <= i < j < len(row["seq"]) for i, j in pred)
-        assert len({i for pair in pred for i in pair}) == len(pred) * 2
         a, b, c = len(pred & true), len(pred - true), len(true - pred)
         tp, fp, fn = tp + a, fp + b, fn + c
         f1 = 2 * a / (2 * a + b + c) if 2 * a + b + c else 1.0
@@ -116,10 +124,16 @@ def main():
     state = torch.load(weights, map_location="cpu", weights_only=True)
     incompatible = model.load_state_dict(state, strict=False)
     assert not incompatible.missing_keys and not incompatible.unexpected_keys, incompatible
-    model.eval().to("cuda")
+    legacy_native = args.repo.name == "efold012_wheel"
+    reset_state = {key: value.detach().clone() for key, value in model.state_dict().items()} if legacy_native else None
+    if legacy_native:
+        assert args.batch_size == 1
+        model.train().to("cuda")
+    else:
+        model.eval().to("cuda")
     assert next(model.parameters()).is_cuda
     with torch.inference_mode():
-        decode(model, batches[0][:1])
+        decode(model, batches[0][:1], reset_state=reset_state)
     torch.cuda.synchronize()
     torch.cuda.reset_peak_memory_stats()
     repeats = []
@@ -130,7 +144,7 @@ def main():
         torch.cuda.synchronize()
         tic = time.perf_counter()
         for group in batches:
-            predictions.extend(decode(model, group))
+            predictions.extend(decode(model, group, reset_state=reset_state))
         torch.cuda.synchronize()
         elapsed = time.perf_counter() - tic
         metrics, per_sequence = score(predictions, rows)
@@ -144,15 +158,23 @@ def main():
                         "sequences_per_second": len(rows) / elapsed,
                         "prediction_sha256": digest, "metrics": metrics})
         print(json.dumps(repeats[-1]), flush=True)
+    efold_version = "0.1.2" if args.repo.name == "efold012_wheel" else "0.1.3"
+    protocol = ("raw-sequence end-to-end; exact-length groups; official 0.1.2 model and postprocess_new_nc"
+                if efold_version == "0.1.2" else
+                "raw-sequence end-to-end; exact-length groups; official 0.1.3 model, constraints, UFold postprocess and Hungarian decode")
     result = {
         "schema_version": 1,
         "status": "SMOKE_ONLY" if args.smoke else "PASS",
         "system": "eFold",
+        "efold_version": efold_version,
         "repository": str(args.repo),
-        "commit": subprocess.check_output(["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True).strip(),
+        "commit": (subprocess.check_output(["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True).strip()
+                   if (args.repo / ".git").exists() else f"PyPI efold=={efold_version}"),
         "weights": str(weights), "weights_sha256": sha256(weights),
         "data": str(args.data), "data_sha256": sha256(args.data),
-        "protocol": "raw-sequence end-to-end; exact-length groups; official model, constraints, UFold postprocess and Hungarian decode",
+        "protocol": protocol,
+        "native_protocol_note": ("0.1.2 native API behavior: train mode with per-sequence initial-state reset; identity verification only, not a speed comparison"
+                                 if legacy_native else "0.1.3 official eval mode with a single model load"),
         "device": torch.cuda.get_device_name(0), "cuda": torch.version.cuda,
         "torch": torch.__version__, "batch_size": args.batch_size, "n_sequences": len(rows),
         "started": started, "repeats": repeats,

@@ -40,7 +40,7 @@ def main():
                  "r2d/plana/xens2 B=32 分别达 53.91/47.92/19.89 seq/s；共同协议三 JEV 均在精度-吞吐前沿。eFold/UFold/BPfold/E2Efold/EternaFold 扩展测速中，不作无限制绝对 SOTA。",
                  f"r2d 最快 53.91 seq/s；eFold 0.1.3 B=4={efold['throughput']:.2f}，EternaFold CPU={eterna['throughput']:.2f}。BPfold/UFold/E2Efold 权重 blocked，不作绝对 SOTA。")
     set_notes(slide,
-              f"eFold 0.1.3 B4 median={efold['throughput']:.6f} seq/s，F1={efold['f1']:.6f}；EternaFold 官方 serial CPU median={eterna['throughput']:.6f} seq/s，F1={eterna['f1']:.6f}。eFold 0.1.2 旧板 TP/FP/FN=23498/25358/11393 已独立复现；0.1.3 与 0.1.2 权重和预测不同，不能混称同一版本。BPfold/UFold/E2Efold 缺官方权重，保持 blocked。")
+              f"eFold 0.1.3 B4 median={efold['throughput']:.6f} seq/s，F1={efold['f1']:.6f}；EternaFold 官方 serial CPU median={eterna['throughput']:.6f} seq/s，F1={eterna['f1']:.6f}。eFold 0.1.2 原生协议复现 TP/FP/FN=23496/25354/11395，F1=0.5611588（rounded 0.5612）；相对旧板差 −2/−4/+2。0.1.3 与 0.1.2 的权重、后处理和加载方式不同，不能混称同一版本。BPfold/UFold/E2Efold 缺官方权重，保持 blocked。")
 
     slide = prs.slides[8]
     replace_picture(slide, root / "fig05_speed/fig05_accuracy_speed_4090_round38_3840x1920.png")

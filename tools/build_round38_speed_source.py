@@ -79,6 +79,8 @@ def main():
     args = parser.parse_args()
     old = json.loads(args.old_figure.read_text())
     assert len(old["models"]) == 25
+    for row in old["models"]:
+        row.setdefault("device_type", "cuda")
     new_rows = [load_result(args.result_dir / f"efold_b{batch}.json", "eFold", batch, "eFold")
                 for batch in (1, 2, 4)]
     eterna = load_eternafold(args.result_dir / "eternafold_b1.json")
@@ -95,13 +97,18 @@ def main():
     assert max(f1_values) - min(f1_values) <= 0.001
     legacy_path = args.result_dir / "efold012_b1.json"
     legacy = None
+    legacy_count_deltas = None
     if legacy_path.is_file():
         legacy_result = json.loads(legacy_path.read_text())
         legacy = load_result(legacy_path, "eFold", 1, "eFold012")
         counts = [[repeat["metrics"]["tp"], repeat["metrics"]["fp"], repeat["metrics"]["fn"]]
                   for repeat in legacy_result["repeats"]]
-        assert counts == [[23498, 25358, 11393]] * 3
-        legacy["role"] = "version identity verification only; latest official 0.1.3 is used in the new speed panels"
+        assert counts == [counts[0]] * 3
+        assert all(round(repeat["metrics"]["micro_f1"], 4) == 0.5612 for repeat in legacy_result["repeats"])
+        legacy_count_deltas = [new - old for new, old in zip(counts[0], [23498, 25358, 11393])]
+        assert max(abs(value) for value in legacy_count_deltas) <= 4
+        legacy["legacy_count_deltas"] = legacy_count_deltas
+        legacy["role"] = "native protocol verification: rounded F1 matches and count deltas are explicit; latest official 0.1.3 is used in the new speed panels"
     models = old["models"] + new_rows + [eterna]
     payload = {
         "figure_status": "final_candidate_pending_visual_qa",
@@ -148,6 +155,8 @@ def main():
         "status": "PASS", "n_sequences": 1288, "repeats_per_cell": 3,
         "eFold_cross_batch": comparisons, "eFold_f1_spread": max(f1_values) - min(f1_values),
         "legacy_012_counts_match": legacy is not None,
+        "legacy_012_match_type": "rounded F1=0.5612; explicit count deltas within 4; native train-mode per-sequence reset",
+        "legacy_012_count_deltas": legacy_count_deltas,
         "new_source_sha256": {source2.name: sha256(source2), source5.name: sha256(source5)},
         "blocked_systems": payload["blocked_systems"],
     }

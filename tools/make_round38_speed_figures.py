@@ -15,7 +15,7 @@ import make_figure5_round34 as base
 
 base.MODELS.update({
     "efold": {"label": "eFold 0.1.3", "color": "#6E59A5", "marker": "X", "offset": (8, -30)},
-    "eternafold": {"label": "EternaFold (CPU)", "color": "#8A5A44", "marker": "H", "offset": (8, 10)},
+    "eternafold": {"label": "EternaFold (CPU)", "color": "#8A5A44", "marker": "H", "offset": (-145, 10)},
 })
 
 
@@ -110,7 +110,7 @@ def figure5(source, out_dir):
     base.style(b)
     fig.text(0.5, 0.035,
              "Only full-TS0 three-repeat results are plotted; cross-batch pair agreement >=99% and |delta F1| <=1e-3. Median and repeat range shown.\n"
-             "EternaFold is CPU-only and appears only in panel a. eFold is official 0.1.3; the old 0.1.2 board identity was independently verified.\n"
+             "EternaFold is CPU-only and appears only in panel a. eFold is official 0.1.3; the old 0.1.2 board uses a different protocol and is checked separately.\n"
              "BPfold/UFold/E2Efold remain blocked by official weights; no unrestricted speed SOTA claim. Legacy head-only values are excluded.",
              ha="center", va="bottom", fontsize=8.2, color=base.C["muted"], linespacing=1.5)
     fig.subplots_adjust(left=0.075, right=0.985, top=0.86, bottom=0.21, wspace=0.27)

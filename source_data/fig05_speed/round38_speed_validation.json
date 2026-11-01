@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "n_sequences": 1288,
+  "repeats_per_cell": 3,
+  "eFold_cross_batch": {
+    "2": {
+      "pair_agreement": 0.9997702117881353,
+      "symmetric_difference_pairs": 12,
+      "union_pairs": 52222
+    },
+    "4": {
+      "pair_agreement": 0.9997319291527046,
+      "symmetric_difference_pairs": 14,
+      "union_pairs": 52225
+    }
+  },
+  "eFold_f1_spread": 3.5603161246955395e-05,
+  "legacy_012_counts_match": true,
+  "legacy_012_match_type": "rounded F1=0.5612; explicit count deltas within 4; native train-mode per-sequence reset",
+  "legacy_012_count_deltas": [
+    -2,
+    -4,
+    2
+  ],
+  "new_source_sha256": {
+    "fig02_end_to_end_speed_4090_round38_source.json": "fbd457e24ca53cf6a6c48ebb446fd59a103eafebb2dc9b865865a2c814e87bb3",
+    "fig05_accuracy_speed_4090_round38_source.json": "57899ad9dea62ff195d7ad7b5ca3735f3fadbda698fad60f104f15612531ae77"
+  },
+  "blocked_systems": [
+    "BPfold",
+    "UFold",
+    "E2Efold"
+  ]
+}

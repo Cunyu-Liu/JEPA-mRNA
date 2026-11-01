@@ -2,27 +2,6 @@
  "updated": "2026-11-01",
  "files": [
   {
-   "path": "fig02_speed/fig02_end_to_end_speed_4090_round37_3840x1920.pdf",
-   "sha256": "8ed44953188fc351902ed431ad17d622847544c7cf4f38f95a6e35f30abeb4a8",
-   "bytes": 26819,
-   "description": "主图 2 round37 纯端到端速度矢量 PDF",
-   "status": "active"
-  },
-  {
-   "path": "fig02_speed/fig02_end_to_end_speed_4090_round37_3840x1920.png",
-   "sha256": "ef3c259ce65b21670617f93e9e9df3a7a87b4a8c18c91d775f21ab1127f133ec",
-   "bytes": 287207,
-   "description": "主图 2 round37 纯端到端速度 PNG（PPT 嵌入同哈希）",
-   "status": "active"
-  },
-  {
-   "path": "fig02_speed/fig02_end_to_end_speed_4090_round37_source.json",
-   "sha256": "23661ae92fd94bb57456e8b068e86356a4df41e7ea553ac5b663caeafb375d15",
-   "bytes": 5184,
-   "description": "主图 2 六系统最优合格配置、batch、F1、范围与源哈希；视觉验收通过",
-   "status": "active"
-  },
-  {
    "path": "fig03_ablation/fig03b_group_drops.json",
    "sha256": "3e048a175cf851d09e1dd29f131329e5fd1df2b0242a412a780a494c4655caa6",
    "bytes": 1021,
@@ -34,27 +13,6 @@
    "sha256": "d12c6524197f2457af041ce88ee41b869d1ffafd4e468bbbb8e65aee8be98af4",
    "bytes": 715,
    "description": "主图 4 ECE/Spearman/n 源数据",
-   "status": "active"
-  },
-  {
-   "path": "fig05_speed/fig05_accuracy_speed_4090_round37_3840x1920.pdf",
-   "sha256": "fd7c47b1fd942b43407427d007c6305769be850cbd1aafdea0fec1157c11286a",
-   "bytes": 34843,
-   "description": "主图 5 round37 矢量 PDF（B=16/32 新优化点）",
-   "status": "active"
-  },
-  {
-   "path": "fig05_speed/fig05_accuracy_speed_4090_round37_3840x1920.png",
-   "sha256": "a8593b2d4320a99b6e37116b83ed3dbc98aa189d79ac0ca077b842ef1c9d8a5e",
-   "bytes": 474439,
-   "description": "主图 5 round37 PNG（3840×1920；PPT 嵌入同哈希）",
-   "status": "active"
-  },
-  {
-   "path": "fig05_speed/fig05_accuracy_speed_4090_round37_source.json",
-   "sha256": "0c2ef982b202511598f3111edd663a600c805994ca869b533d5e5dd990b6a155",
-   "bytes": 22940,
-   "description": "主图 5 round37 绘图源（25 个合格配置、Pareto、B=32 与 TF32 评估）",
    "status": "active"
   },
   {
@@ -472,9 +430,93 @@
   },
   {
    "path": "fig05_speed/round38_baseline_assets.json",
-   "sha256": "7f8346386a55e553befc6305ec31cb23d7522064d2884269d81d5b68302dfd1f",
-   "bytes": 2746,
-   "description": "五扩展基线官方 commit、权重、smoke 与三项权重 blocked 证据",
+   "sha256": "20bab1641c3e1ab6b080a27df98ef6d14ca5c3fd4371397ea573e500656c7a9e",
+   "bytes": 2890,
+   "description": "两项正式测速与三项官方权重 blocked 的资产和版本证据",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round38_3840x1920.pdf",
+   "sha256": "780e64b34705c15671c3fdd49ff8fa1999166b3151a065b8f93c333f3881baf7",
+   "bytes": 27796,
+   "description": "主图 2 round38 八系统端到端速度矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round38_3840x1920.png",
+   "sha256": "347a8cb5d06c05448987914471383f662a629085863c0eb2f61d4f66b5f156e3",
+   "bytes": 287853,
+   "description": "主图 2 round38 PNG（PPT 嵌入同哈希）",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round38_source.json",
+   "sha256": "d9407460da1635b59def3ecf2328da2e0e1976ccf85feedb559ed0ae7ac49b48",
+   "bytes": 6816,
+   "description": "主图 2 最优配置、范围、F1、版本与 blocked 边界",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round38_3840x1920.pdf",
+   "sha256": "0d80fb5dbe57d668bd7ec31e95e810a1b250c70504ef7185d6954a9669a51170",
+   "bytes": 35639,
+   "description": "主图 5 round38 精度-吞吐与共同 batch 矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round38_3840x1920.png",
+   "sha256": "ce6425028ac07a7684ac42f89375ed4c6d8a9d81bf370928e85935568cce258b",
+   "bytes": 462749,
+   "description": "主图 5 round38 PNG（PPT 嵌入同哈希）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round38_source.json",
+   "sha256": "e43cf0b793d864fba21daa1d653688a99a2d4ba878a275c55d2d170a8fb2d9c5",
+   "bytes": 22800,
+   "description": "主图 5 共 29 个配置及 eFold 新旧协议审计",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/round38_speed_validation.json",
+   "sha256": "baff5aea67540814c82c0eed3001cfeb08291971b6c8e4514310925e69934fd4",
+   "bytes": 956,
+   "description": "eFold 数值等价、旧版 rounded F1 与显式计数差验收",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold_b1.json",
+   "sha256": "f0bdb75396ac8b9a860b848e84c97ccd565cc0f1c2ab72b0408b853fb8059e06",
+   "bytes": 2738885,
+   "description": "eFold 0.1.3 B=1 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold_b2.json",
+   "sha256": "96237cd5fbbfb2be9db8ab62d6d2d6791b4a1da6476cb3b009717bb167405e82",
+   "bytes": 2738539,
+   "description": "eFold 0.1.3 B=2 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold_b4.json",
+   "sha256": "009809fde033231df81b64bc3cb60bcac97a9ebe9c76416950746f20cd7bfbfc",
+   "bytes": 2738748,
+   "description": "eFold 0.1.3 B=4 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/eternafold_b1.json",
+   "sha256": "4eeba4000d3549f2371161d67efa0b2a4bcb38e61e1d21848cec7533eb07bd04",
+   "bytes": 2716770,
+   "description": "EternaFold 官方 serial CPU 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold012_b1.json",
+   "sha256": "1e4f939ef6920cf14404bb5f8757f8237ca07c549217c83e2690ae2c1993e409",
+   "bytes": 2576364,
+   "description": "eFold 0.1.2 原生逐条状态重置三次版本核验",
    "status": "active"
   },
   {

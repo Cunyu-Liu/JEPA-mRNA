@@ -1,0 +1,146 @@
+{
+  "figure_status": "final_visual_qa_pass",
+  "protocol": "RTX 4090; project TS0 n=1288; raw sequence to required decode; cached_embeddings=false; repeats=3",
+  "selection_rule": "maximum eligible raw-sequence throughput per GPU model; official serial CPU EternaFold shown separately",
+  "models": [
+    {
+      "model": "rnaformer",
+      "batch": 4,
+      "f1": 0.7575434318805242,
+      "throughput": 2.7325776657989174,
+      "throughput_min": 2.731240394497105,
+      "throughput_max": 2.7326602443185193,
+      "peak_memory_mib": 10603.9560546875,
+      "predictions_sha256": "b0e097c504f124128645ac875caef6b2c68d87777ea596157506378a0d1ed076",
+      "result_sha256": "e49e5ba613c565102aa9ab512b0f2a886fb2b3cbdf78847cd06701bb5a7ed7c0",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b4_full.json",
+      "device_type": "cuda"
+    },
+    {
+      "model": "eternafold",
+      "batch": 1,
+      "f1": 0.5400108496173779,
+      "throughput": 10.656008840591145,
+      "throughput_min": 10.65125072447348,
+      "throughput_max": 10.661725142557964,
+      "peak_memory_mib": 53.44921875,
+      "predictions_sha256": "9003cc137c8b353bb824d04763d97258a4a86784f855b5c2ee5a3f747d12ab9d",
+      "result_sha256": "4eeba4000d3549f2371161d67efa0b2a4bcb38e61e1d21848cec7533eb07bd04",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round38/eternafold_b1.json",
+      "version": "official serial CPU",
+      "device_type": "cpu"
+    },
+    {
+      "model": "mxfold2",
+      "batch": 2,
+      "f1": 0.5650021319941252,
+      "throughput": 14.760384448621958,
+      "throughput_min": 14.3973947903603,
+      "throughput_max": 15.063127215126888,
+      "peak_memory_mib": 1074.95654296875,
+      "predictions_sha256": "50642addc0a28c3100d134e9708d760dae56335d51d050e406e50ca141c52bac",
+      "result_sha256": "9e7e9d86c2e8e9185390d58a514995b8b3ad04e271658e50ee798a7b48bd6968",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/mxfold2_b2_full.json",
+      "device_type": "cuda"
+    },
+    {
+      "model": "efold",
+      "batch": 4,
+      "f1": 0.5506956881113101,
+      "throughput": 18.472480722400874,
+      "throughput_min": 16.267366951362657,
+      "throughput_max": 18.983950549664847,
+      "peak_memory_mib": 683.3896484375,
+      "predictions_sha256": "624714f0b75352730c2d0d02d52dde13144122dcf829d40d2807f335a2bd8044",
+      "result_sha256": "009809fde033231df81b64bc3cb60bcac97a9ebe9c76416950746f20cd7bfbfc",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round38/efold_b4.json",
+      "version": "eFold",
+      "device_type": "cuda"
+    },
+    {
+      "model": "xens2",
+      "batch": 32,
+      "f1": 0.8037820906882117,
+      "throughput": 19.891765408165696,
+      "throughput_min": 19.507809127878424,
+      "throughput_max": 19.93220113967379,
+      "peak_memory_mib": 13595.57421875,
+      "predictions_sha256": "bf7d066218f4f4104cc52fcdd8c97c97ad2f23ea57efdea0060b6e141e8c6e07",
+      "result_sha256": "0919bf3fa17176696f25e0240605c691e89fc62f73604f5857854357259a6956",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/xens2_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+        "pair_agreement": 0.9989237668161435,
+        "symmetric_difference_pairs": 36,
+        "union_pairs": 33450,
+        "abs_delta_f1": 0.00018137749280811022
+      },
+      "tf32": false,
+      "device_type": "cuda"
+    },
+    {
+      "model": "rinalmo_ft",
+      "batch": 4,
+      "f1": 0.7214077069992135,
+      "throughput": 23.804429074865872,
+      "throughput_min": 22.065846461574708,
+      "throughput_max": 24.94174733197683,
+      "peak_memory_mib": 12016.9345703125,
+      "predictions_sha256": "8b066c3fe9ffc41108277745860f01cb957b10f5a5b219d6bdf1061359c54672",
+      "result_sha256": "67189bffa7b7a123338acecdbae4738fb2b900f3ca6cfeeb2d6378a9a1f7bef5",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/rinalmo_ft_b4_full.json",
+      "device_type": "cuda"
+    },
+    {
+      "model": "plana",
+      "batch": 32,
+      "f1": 0.7868282670901436,
+      "throughput": 47.92426985260479,
+      "throughput_min": 47.302839781187565,
+      "throughput_max": 48.76253966217526,
+      "peak_memory_mib": 9848.18212890625,
+      "predictions_sha256": "3bef65e532e8c67ce4be82d1bb7a05b4182cb24f0f149addf505daaae0ab351a",
+      "result_sha256": "63b64d47d643410ce94da0aa4a89f964b6ec5ccc5a0ef9ede97d4bf969a39224",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/plana_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b4_profile.json",
+        "pair_agreement": 0.9981809057834651,
+        "symmetric_difference_pairs": 58,
+        "union_pairs": 31884,
+        "abs_delta_f1": 7.073355411868487e-05
+      },
+      "tf32": false,
+      "device_type": "cuda"
+    },
+    {
+      "model": "r2d",
+      "batch": 32,
+      "f1": 0.6681447418842722,
+      "throughput": 53.906663162792036,
+      "throughput_min": 51.77877351859595,
+      "throughput_max": 54.007386799679345,
+      "peak_memory_mib": 8616.76904296875,
+      "predictions_sha256": "6eba56f24b721cc3da82d451ba23176fded9fbaf5d0b9529d7f0fdf1dc7b064c",
+      "result_sha256": "d4d70a477b26d32ef5002947f7130e69e10d09c1e1c15a2682b8bfa5972b507a",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/r2d_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+        "pair_agreement": 0.9954791334570257,
+        "symmetric_difference_pairs": 173,
+        "union_pairs": 38267,
+        "abs_delta_f1": 0.0005019091781484075
+      },
+      "tf32": false,
+      "device_type": "cuda"
+    }
+  ],
+  "source_figure": "/home/rna_jev/source_data/fig05_speed/fig05_accuracy_speed_4090_round38_source.json",
+  "source_figure_sha256": "57899ad9dea62ff195d7ad7b5ca3735f3fadbda698fad60f104f15612531ae77",
+  "blocked_systems": [
+    "BPfold",
+    "UFold",
+    "E2Efold"
+  ],
+  "blocked_reason": "official weights unavailable; no third-party weights, old A100 values, smoke values, or paper timings used",
+  "scope_conclusion": "No unrestricted speed SOTA claim while three requested baselines remain blocked"
+}

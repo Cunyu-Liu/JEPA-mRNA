@@ -1,0 +1,523 @@
+{
+  "figure_status": "final_visual_qa_pass",
+  "protocol": "RTX 4090; project TS0 n=1288; raw sequence to required decode; cached_embeddings=false; repeats=3",
+  "models": [
+    {
+      "model": "mxfold2",
+      "batch": 1,
+      "f1": 0.5651344853315646,
+      "throughput": 13.229425983734439,
+      "throughput_min": 12.932999696506721,
+      "throughput_max": 15.321488625258482,
+      "peak_memory_mib": 686.07080078125,
+      "predictions_sha256": "c1d8422ab01d0e3a422870dcea885cbc976bfc581e0276763bc72351627548a1",
+      "result_sha256": "74a31268f706956ba106d79b47c8efebf8b9d8be6bca58328b9ec4d00e5181dd",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/mxfold2_b1_full.json"
+    },
+    {
+      "model": "mxfold2",
+      "batch": 2,
+      "f1": 0.5650021319941252,
+      "throughput": 14.760384448621958,
+      "throughput_min": 14.3973947903603,
+      "throughput_max": 15.063127215126888,
+      "peak_memory_mib": 1074.95654296875,
+      "predictions_sha256": "50642addc0a28c3100d134e9708d760dae56335d51d050e406e50ca141c52bac",
+      "result_sha256": "9e7e9d86c2e8e9185390d58a514995b8b3ad04e271658e50ee798a7b48bd6968",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/mxfold2_b2_full.json"
+    },
+    {
+      "model": "mxfold2",
+      "batch": 4,
+      "f1": 0.5650021319941252,
+      "throughput": 14.534032260354653,
+      "throughput_min": 14.251018070015686,
+      "throughput_max": 14.96162732981852,
+      "peak_memory_mib": 1590.26318359375,
+      "predictions_sha256": "50642addc0a28c3100d134e9708d760dae56335d51d050e406e50ca141c52bac",
+      "result_sha256": "412551cc96f2229fa5c515d02857d85a4cc84d5ffd4586c4d30278f8e0d6eaf6",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/mxfold2_b4_full.json"
+    },
+    {
+      "model": "plana",
+      "batch": 1,
+      "f1": 0.7868700185773356,
+      "throughput": 18.621785118550733,
+      "throughput_min": 18.30756454300353,
+      "throughput_max": 18.951427621693682,
+      "peak_memory_mib": 5188.41162109375,
+      "predictions_sha256": "ab3b9ccb5136410014c04dbb3fe43ca8398fdccdad8cc7f2f2a3748c2661852b",
+      "result_sha256": "2414b2cee920ef973e641d77ab8942c51569f4322e1410ce8b47eda9af50f878",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round33/plana_b1_full.json"
+    },
+    {
+      "model": "plana",
+      "batch": 2,
+      "f1": 0.7868316950371613,
+      "throughput": 23.671368731928595,
+      "throughput_min": 23.50969836793408,
+      "throughput_max": 24.2618092132542,
+      "peak_memory_mib": 6092.8349609375,
+      "predictions_sha256": "898bf886ba00cc73c32ab48a8163b5730d6c3125e3c889f79a345fd7bb9e49b3",
+      "result_sha256": "0491a2f9aeb8431ffeb4b32a7f64b25667f9071a2ac545efe1305da5833eb7ac",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/plana_b2_full.json"
+    },
+    {
+      "model": "plana",
+      "batch": 4,
+      "f1": 0.7868990006442623,
+      "throughput": 29.41180409076183,
+      "throughput_min": 28.739071609763574,
+      "throughput_max": 32.02541597819664,
+      "peak_memory_mib": 7834.97607421875,
+      "predictions_sha256": "232d2b25c29e6480026b15d40f6177b6ec368ef876bc015e1bb42eda977d3cc4",
+      "result_sha256": "9927e19b3939ee78f1dc75610d245882806419773dc7b7c66404b86af212f107",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/plana_b4_full.json"
+    },
+    {
+      "model": "xens2",
+      "batch": 1,
+      "f1": 0.8040630534373491,
+      "throughput": 7.473774403152247,
+      "throughput_min": 7.156817745178025,
+      "throughput_max": 7.553877428493744,
+      "peak_memory_mib": 8946.99462890625,
+      "predictions_sha256": "5f79429c6f21a31f8e433b0f84c9242c2a7d0620290fc1cceb919920d457ff5f",
+      "result_sha256": "18cbb013ba692c35600ce881f256971a0a5165970b90bac96bc7048ce96227b5",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round33/xens2_b1_full.json"
+    },
+    {
+      "model": "xens2",
+      "batch": 2,
+      "f1": 0.8041279367635219,
+      "throughput": 9.217965988644742,
+      "throughput_min": 9.121991195823968,
+      "throughput_max": 9.517131563619818,
+      "peak_memory_mib": 9853.98095703125,
+      "predictions_sha256": "56020248291bc873349a7477a10cf6f3d80a5b5afb3fa6833b323ea91fde1813",
+      "result_sha256": "fe7b78f53e27e695fccac1389ee271ea67b56308b9c4827764ad17ad00c7f9b9",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/xens2_b2_full.json"
+    },
+    {
+      "model": "xens2",
+      "batch": 4,
+      "f1": 0.8039634681810198,
+      "throughput": 12.376101193239796,
+      "throughput_min": 12.31875600537635,
+      "throughput_max": 12.810362519111608,
+      "peak_memory_mib": 11603.44873046875,
+      "predictions_sha256": "082ba7ab49aeeef2d6d82a872a5af531f9d36b01dbf858b7cf2d1ba211b1b3dc",
+      "result_sha256": "551a14149b632cd275ffacbc44bf6f0af7dc11c211abf18df325dd0853b74a31",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/xens2_b4_full.json"
+    },
+    {
+      "model": "rinalmo_ft",
+      "batch": 1,
+      "f1": 0.7213842307800342,
+      "throughput": 13.994181892530495,
+      "throughput_min": 13.77502156694523,
+      "throughput_max": 14.022363448461771,
+      "peak_memory_mib": 8387.27197265625,
+      "predictions_sha256": "579e39d8dd7bbb9553014d8f1b25e1b44071c86b6debedefed6dfbee5da05a35",
+      "result_sha256": "a2a4b885f12f420e05d5d01aadb6493b1c3c97755a724460835efab23f0445ba",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round33/rinalmo_ft_b1_full.json"
+    },
+    {
+      "model": "rinalmo_ft",
+      "batch": 2,
+      "f1": 0.7213773153024111,
+      "throughput": 18.00940700955158,
+      "throughput_min": 17.649807849775257,
+      "throughput_max": 18.072625471714524,
+      "peak_memory_mib": 9648.36669921875,
+      "predictions_sha256": "923a0435fa85f7e937158fdd163840e79199449cfcbc9d9f65ffe9debbfd3d2b",
+      "result_sha256": "24b05d9f88788914204dabc2449a21e4f0dfbbe747320f174f86f1a5a11e00a6",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/rinalmo_ft_b2_full.json"
+    },
+    {
+      "model": "rinalmo_ft",
+      "batch": 4,
+      "f1": 0.7214077069992135,
+      "throughput": 23.804429074865872,
+      "throughput_min": 22.065846461574708,
+      "throughput_max": 24.94174733197683,
+      "peak_memory_mib": 12016.9345703125,
+      "predictions_sha256": "8b066c3fe9ffc41108277745860f01cb957b10f5a5b219d6bdf1061359c54672",
+      "result_sha256": "67189bffa7b7a123338acecdbae4738fb2b900f3ca6cfeeb2d6378a9a1f7bef5",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/rinalmo_ft_b4_full.json"
+    },
+    {
+      "model": "r2d",
+      "batch": 1,
+      "f1": 0.6681811339345586,
+      "throughput": 22.282095594719852,
+      "throughput_min": 21.87277687566808,
+      "throughput_max": 22.36752290876175,
+      "peak_memory_mib": 3951.6552734375,
+      "predictions_sha256": "8785b42176d66beaeb6746e9973d5346c2ba2615733e4e8b241ca0921a2e7aba",
+      "result_sha256": "c9915ccc5b11953a605f2c91d014da2f1600264be9d50af1d341c3d80c8dd1fc",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round33/r2d_b1_full.json"
+    },
+    {
+      "model": "r2d",
+      "batch": 2,
+      "f1": 0.6683182546091622,
+      "throughput": 26.635687277796087,
+      "throughput_min": 26.467914013170166,
+      "throughput_max": 29.60885885040906,
+      "peak_memory_mib": 4856.32080078125,
+      "predictions_sha256": "e703f52ecf529339b5892133c7ee458c4f5f70856e9b0da58cca0926bf11201f",
+      "result_sha256": "5118d9420da257a2a150219fcfa0cf18dba5994e2b38529600b76ac5c01aeb24",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/r2d_b2_full.json"
+    },
+    {
+      "model": "r2d",
+      "batch": 4,
+      "f1": 0.6676428327061238,
+      "throughput": 37.41862560992181,
+      "throughput_min": 33.84229380994329,
+      "throughput_max": 37.456243803928736,
+      "peak_memory_mib": 6600.70361328125,
+      "predictions_sha256": "dbdd32507c14a0642a4a53e1b6088de4088d5db0a6b5a356d3f25b01f6a8c4c6",
+      "result_sha256": "3dbe91160395a1c311f1595f82b29dc4c701c034efae13ef50fe3730b72c13fb",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/r2d_b4_full.json"
+    },
+    {
+      "model": "plana",
+      "batch": 16,
+      "f1": 0.7867801282435429,
+      "throughput": 46.12748484457258,
+      "throughput_min": 45.29977847668162,
+      "throughput_max": 46.795051504827185,
+      "peak_memory_mib": 9030.9384765625,
+      "predictions_sha256": "ba1ae6028da9b33e8f37775f71f4e86af54dc0cc1088df60c0f448019056059a",
+      "result_sha256": "47865dc1f409ed345d9c98a16a7cfcd81bf4173f60d7bee12b0efc6cc0a93257",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/plana_b16_profile.json"
+    },
+    {
+      "model": "r2d",
+      "batch": 16,
+      "f1": 0.6681356581720637,
+      "throughput": 50.678537569059166,
+      "throughput_min": 49.920690436184934,
+      "throughput_max": 52.30795396774928,
+      "peak_memory_mib": 7798.9638671875,
+      "predictions_sha256": "9a9d261f0d2e260fd6da80cee6f5291f94a6931cf61fc4c692f2e371b0e66720",
+      "result_sha256": "289757842a9511e639eebcbadcd9ae08fb286bfe12fe68d2c5d45377c4781da4",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/r2d_b16_profile.json"
+    },
+    {
+      "model": "xens2",
+      "batch": 8,
+      "f1": 0.8039631781527609,
+      "throughput": 17.62171209060639,
+      "throughput_min": 17.517637484623027,
+      "throughput_max": 17.681072873767327,
+      "peak_memory_mib": 11591.49560546875,
+      "predictions_sha256": "18837d51b91658a2cca74823de9a3ec5f9e02cfadb7a743c99ece3166d9e2502",
+      "result_sha256": "1e39284598abce6fb576868d3325fa1e5f9cae82a62302e514d1aabd79f80f27",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/xens2_b8_profile.json"
+    },
+    {
+      "model": "rnaformer",
+      "batch": 1,
+      "f1": 0.7575434318805242,
+      "throughput": 2.5564147580816594,
+      "throughput_min": 2.555580130557527,
+      "throughput_max": 2.5567667037471566,
+      "peak_memory_mib": 6109.93994140625,
+      "predictions_sha256": "b0e097c504f124128645ac875caef6b2c68d87777ea596157506378a0d1ed076",
+      "result_sha256": "22f42726ea0d3b760fa513be608b6a5607ae70a50d0e6d19069cf03211fff3d8",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b1_full.json"
+    },
+    {
+      "model": "rnaformer",
+      "batch": 2,
+      "f1": 0.7575434318805242,
+      "throughput": 2.7185949347645613,
+      "throughput_min": 2.717221231472785,
+      "throughput_max": 2.7201492356385195,
+      "peak_memory_mib": 7201.005859375,
+      "predictions_sha256": "b0e097c504f124128645ac875caef6b2c68d87777ea596157506378a0d1ed076",
+      "result_sha256": "5ae1e83147d230328626255507eb65919ed08e2aa72edc10f6d5d5275005e6f1",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b2_full.json"
+    },
+    {
+      "model": "rnaformer",
+      "batch": 4,
+      "f1": 0.7575434318805242,
+      "throughput": 2.7325776657989174,
+      "throughput_min": 2.731240394497105,
+      "throughput_max": 2.7326602443185193,
+      "peak_memory_mib": 10603.9560546875,
+      "predictions_sha256": "b0e097c504f124128645ac875caef6b2c68d87777ea596157506378a0d1ed076",
+      "result_sha256": "e49e5ba613c565102aa9ab512b0f2a886fb2b3cbdf78847cd06701bb5a7ed7c0",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b4_full.json"
+    },
+    {
+      "model": "plana",
+      "batch": 32,
+      "f1": 0.7868282670901436,
+      "throughput": 47.92426985260479,
+      "throughput_min": 47.302839781187565,
+      "throughput_max": 48.76253966217526,
+      "peak_memory_mib": 9848.18212890625,
+      "predictions_sha256": "3bef65e532e8c67ce4be82d1bb7a05b4182cb24f0f149addf505daaae0ab351a",
+      "result_sha256": "63b64d47d643410ce94da0aa4a89f964b6ec5ccc5a0ef9ede97d4bf969a39224",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/plana_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b4_profile.json",
+        "pair_agreement": 0.9981809057834651,
+        "symmetric_difference_pairs": 58,
+        "union_pairs": 31884,
+        "abs_delta_f1": 7.073355411868487e-05
+      },
+      "tf32": false
+    },
+    {
+      "model": "r2d",
+      "batch": 32,
+      "f1": 0.6681447418842722,
+      "throughput": 53.906663162792036,
+      "throughput_min": 51.77877351859595,
+      "throughput_max": 54.007386799679345,
+      "peak_memory_mib": 8616.76904296875,
+      "predictions_sha256": "6eba56f24b721cc3da82d451ba23176fded9fbaf5d0b9529d7f0fdf1dc7b064c",
+      "result_sha256": "d4d70a477b26d32ef5002947f7130e69e10d09c1e1c15a2682b8bfa5972b507a",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/r2d_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+        "pair_agreement": 0.9954791334570257,
+        "symmetric_difference_pairs": 173,
+        "union_pairs": 38267,
+        "abs_delta_f1": 0.0005019091781484075
+      },
+      "tf32": false
+    },
+    {
+      "model": "xens2",
+      "batch": 16,
+      "f1": 0.8037938554763543,
+      "throughput": 19.452252656801896,
+      "throughput_min": 19.428222133718357,
+      "throughput_max": 19.6855064480198,
+      "peak_memory_mib": 12777.56005859375,
+      "predictions_sha256": "91cfafd473653af452fb192e7e07ba97d7f95ac06f2ef482e1d21bc5256a0929",
+      "result_sha256": "419a26db79b32ac0a6b39c92e4d60cc5b41a4d1abcf67db0c5569335289f9c6b",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/xens2_b16_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+        "pair_agreement": 0.9990133939248983,
+        "symmetric_difference_pairs": 33,
+        "union_pairs": 33448,
+        "abs_delta_f1": 0.0001696127046655338
+      },
+      "tf32": false
+    },
+    {
+      "model": "xens2",
+      "batch": 32,
+      "f1": 0.8037820906882117,
+      "throughput": 19.891765408165696,
+      "throughput_min": 19.507809127878424,
+      "throughput_max": 19.93220113967379,
+      "peak_memory_mib": 13595.57421875,
+      "predictions_sha256": "bf7d066218f4f4104cc52fcdd8c97c97ad2f23ea57efdea0060b6e141e8c6e07",
+      "result_sha256": "0919bf3fa17176696f25e0240605c691e89fc62f73604f5857854357259a6956",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/xens2_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+        "pair_agreement": 0.9989237668161435,
+        "symmetric_difference_pairs": 36,
+        "union_pairs": 33450,
+        "abs_delta_f1": 0.00018137749280811022
+      },
+      "tf32": false
+    }
+  ],
+  "pareto_models": [
+    "xens2",
+    "plana",
+    "r2d"
+  ],
+  "cross_batch_numerical_equivalence": {
+    "r2d": {
+      "pairwise_vs_B1": {
+        "2": 0.9926923478442427,
+        "4": 0.9919140278574782
+      },
+      "f1_spread": 0.0006754219030383757,
+      "f1": [
+        0.6681811339345586,
+        0.6683182546091622,
+        0.6676428327061238
+      ]
+    },
+    "plana": {
+      "pairwise_vs_B1": {
+        "2": 0.9961144361232099,
+        "4": 0.995833463863914
+      },
+      "f1_spread": 6.730560710099809e-05,
+      "f1": [
+        0.7868700185773356,
+        0.7868316950371613,
+        0.7868990006442623
+      ]
+    },
+    "xens2": {
+      "pairwise_vs_B1": {
+        "2": 0.9988638741890155,
+        "4": 0.9960297322308128
+      },
+      "f1_spread": 0.0001644685825020753,
+      "f1": [
+        0.8040630534373491,
+        0.8041279367635219,
+        0.8039634681810198
+      ]
+    },
+    "rinalmo_ft": {
+      "pairwise_vs_B1": {
+        "2": 0.9957409391916028,
+        "4": 0.9956036709347694
+      },
+      "f1_spread": 3.039169680241205e-05,
+      "f1": [
+        0.7213842307800342,
+        0.7213773153024111,
+        0.7214077069992135
+      ]
+    },
+    "mxfold2": {
+      "pairwise_vs_B1": {
+        "2": 0.9993744324487943,
+        "4": 0.9993744324487943
+      },
+      "f1_spread": 0.00013235333743943922,
+      "f1": [
+        0.5651344853315646,
+        0.5650021319941252,
+        0.5650021319941252
+      ]
+    },
+    "rnaformer": {
+      "pairwise_vs_B1": {
+        "2": 1.0,
+        "4": 1.0
+      },
+      "f1_spread": 0.0,
+      "f1": [
+        0.7575434318805242,
+        0.7575434318805242,
+        0.7575434318805242
+      ]
+    }
+  },
+  "ufold_status": "blocked: official Drive weights unavailable; no substitution used",
+  "legacy_exclusion": "124.78 seq/s is cached-embedding head-only and is not plotted",
+  "round36_summary": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/speed_round36_summary.json",
+  "round37_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37",
+  "round37_candidates": [
+    {
+      "model": "plana",
+      "batch": 32,
+      "f1": 0.7868282670901436,
+      "throughput": 47.92426985260479,
+      "throughput_min": 47.302839781187565,
+      "throughput_max": 48.76253966217526,
+      "peak_memory_mib": 9848.18212890625,
+      "predictions_sha256": "3bef65e532e8c67ce4be82d1bb7a05b4182cb24f0f149addf505daaae0ab351a",
+      "result_sha256": "63b64d47d643410ce94da0aa4a89f964b6ec5ccc5a0ef9ede97d4bf969a39224",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/plana_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b4_profile.json",
+        "pair_agreement": 0.9981809057834651,
+        "symmetric_difference_pairs": 58,
+        "union_pairs": 31884,
+        "abs_delta_f1": 7.073355411868487e-05
+      },
+      "tf32": false
+    },
+    {
+      "model": "r2d",
+      "batch": 16,
+      "f1": 0.6681721754602067,
+      "throughput": 52.42575403158025,
+      "throughput_min": 51.793873318230844,
+      "throughput_max": 52.99652459819736,
+      "peak_memory_mib": 7798.9638671875,
+      "predictions_sha256": "c57579ad02606a3dd51ddc7116600d83dfbf7370dc5933e9cb13c2c878950d21",
+      "result_sha256": "b74ef461f388365b979beee4e8a068474e184b83b22edadf2cc2e5457c5a112f",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/r2d_b16--tf32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/r2d_b16_profile.json",
+        "pair_agreement": 0.9997118910424306,
+        "symmetric_difference_pairs": 11,
+        "union_pairs": 38180,
+        "abs_delta_f1": 3.651728814302313e-05
+      },
+      "tf32": true
+    },
+    {
+      "model": "r2d",
+      "batch": 32,
+      "f1": 0.6681447418842722,
+      "throughput": 53.906663162792036,
+      "throughput_min": 51.77877351859595,
+      "throughput_max": 54.007386799679345,
+      "peak_memory_mib": 8616.76904296875,
+      "predictions_sha256": "6eba56f24b721cc3da82d451ba23176fded9fbaf5d0b9529d7f0fdf1dc7b064c",
+      "result_sha256": "d4d70a477b26d32ef5002947f7130e69e10d09c1e1c15a2682b8bfa5972b507a",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/r2d_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+        "pair_agreement": 0.9954791334570257,
+        "symmetric_difference_pairs": 173,
+        "union_pairs": 38267,
+        "abs_delta_f1": 0.0005019091781484075
+      },
+      "tf32": false
+    },
+    {
+      "model": "xens2",
+      "batch": 16,
+      "f1": 0.8037938554763543,
+      "throughput": 19.452252656801896,
+      "throughput_min": 19.428222133718357,
+      "throughput_max": 19.6855064480198,
+      "peak_memory_mib": 12777.56005859375,
+      "predictions_sha256": "91cfafd473653af452fb192e7e07ba97d7f95ac06f2ef482e1d21bc5256a0929",
+      "result_sha256": "419a26db79b32ac0a6b39c92e4d60cc5b41a4d1abcf67db0c5569335289f9c6b",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/xens2_b16_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+        "pair_agreement": 0.9990133939248983,
+        "symmetric_difference_pairs": 33,
+        "union_pairs": 33448,
+        "abs_delta_f1": 0.0001696127046655338
+      },
+      "tf32": false
+    },
+    {
+      "model": "xens2",
+      "batch": 32,
+      "f1": 0.8037820906882117,
+      "throughput": 19.891765408165696,
+      "throughput_min": 19.507809127878424,
+      "throughput_max": 19.93220113967379,
+      "peak_memory_mib": 13595.57421875,
+      "predictions_sha256": "bf7d066218f4f4104cc52fcdd8c97c97ad2f23ea57efdea0060b6e141e8c6e07",
+      "result_sha256": "0919bf3fa17176696f25e0240605c691e89fc62f73604f5857854357259a6956",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/xens2_b32_profile.json",
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+        "pair_agreement": 0.9989237668161435,
+        "symmetric_difference_pairs": 36,
+        "union_pairs": 33450,
+        "abs_delta_f1": 0.00018137749280811022
+      },
+      "tf32": false
+    }
+  ]
+}
