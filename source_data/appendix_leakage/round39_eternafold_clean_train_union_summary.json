@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "system": "EternaFold",
+  "protocol": "model-specific StructureData+RiboswitchData+ChemMappingData clean splits; 3 independent CPU inferences; strict micro-F1",
+  "training_union_sha256": "968a7ee0b846936ff2bf5904032c752d0bf8f7c4bd617f65ad686ecd5fd711e6",
+  "splits": {
+    "bprna_ts0": {
+      "n": 1230,
+      "tp": 21859,
+      "fp": 27346,
+      "fn": 10835,
+      "f1_mean": 0.5338038315486148,
+      "f1_sd": 0.0,
+      "prediction_sha256": "8cd81f3f429e2acee3e437aa391a6ebf665519b4a2a8c9b970fa932d852efe87",
+      "artifact_sha256": "e7e726a12015f75f30cbfd879b86596ccd1175f34291952f566d453eb68ad97d"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 104470,
+      "fp": 65197,
+      "fn": 30714,
+      "f1_mean": 0.685384007269125,
+      "f1_sd": 0.0,
+      "prediction_sha256": "c9c0cdff003630d64bcabf92dc8ef421e13a88412d107ab384c53c700d2004fd",
+      "artifact_sha256": "4ff17530ec9f8c463d379e86e173ff1f84c267cca47fa064eece06f1ebea4d68"
+    },
+    "ref_pdb_ts1": {
+      "n": 55,
+      "tp": 877,
+      "fp": 303,
+      "fn": 233,
+      "f1_mean": 0.7659388646288209,
+      "f1_sd": 0.0,
+      "prediction_sha256": "a055a20b83f39f7883d6087ac4ea8e75839431bd814093f5793bff048d066d71",
+      "artifact_sha256": "f3764e7d331d050ffddbef4a38ee4c69da60f3489a58397d8417c71fcd910496"
+    },
+    "ref_pdb_ts2": {
+      "n": 32,
+      "tp": 529,
+      "fp": 83,
+      "fn": 59,
+      "f1_mean": 0.8816666666666667,
+      "f1_sd": 0.0,
+      "prediction_sha256": "3975bc9646306e5b0a4831aa8825eee16691284195b800574f4e93ec43ced061",
+      "artifact_sha256": "a88516cc8d6af78eb2f53be09b5f8f739fb8bcd2a6e4466cd964e409f20f6ae2"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 347,
+      "fp": 103,
+      "fn": 70,
+      "f1_mean": 0.8004613610149942,
+      "f1_sd": 0.0,
+      "prediction_sha256": "c97b73589f3c406ce0e6e89fedbb6687939dd36d37c7583ee6a304a0bb9226f6",
+      "artifact_sha256": "468c24c56e6686469c05f4d98043526a1b1705175a15d5d21587eb3a9e613acd"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 381,
+      "fp": 139,
+      "fn": 94,
+      "f1_mean": 0.7658291457286431,
+      "f1_sd": 0.0,
+      "prediction_sha256": "0098801fd15f80bc6b59ca06a59b722c18905c02fccd99106299d7c8dbfe71a9",
+      "artifact_sha256": "1b6f25e0c795c5148dad7523d44d0affa7faad599837aff021381323db52e3e1"
+    },
+    "archiveii_embok_clean": {
+      "n": 1033,
+      "tp": 42997,
+      "fp": 44910,
+      "fn": 19950,
+      "f1_mean": 0.5700478608455858,
+      "f1_sd": 0.0,
+      "prediction_sha256": "051c28eae2a9074c69d25d05b9a72b444a32a99a4f755788acd7a0c801dff1ac",
+      "artifact_sha256": "e5f530d6f17d03b15a7cd0b846e1937b9cc679aa57b2e4d3fea696f44c7a5456"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 7460,
+      "fp": 6789,
+      "fn": 3797,
+      "f1_mean": 0.584960401474163,
+      "f1_sd": 0.0,
+      "prediction_sha256": "51dac91d3ddbbe514bf0df4e0c115111e8913f9d1d31e65bfbdf013c877dba33",
+      "artifact_sha256": "9136d62e728419666ce6a6106b28cf09ebcc0a4ac64db1834c7cfe6c50c51165"
+    }
+  }
+}

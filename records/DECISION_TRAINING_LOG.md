@@ -11481,3 +11481,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **无效结果迁移**：UFold AUCG→ACGU 错配结果、SPOT-RNA 上三角互指空解码、MXfold2 的 2505 条长度子集已移至 diagnostics，迁移前后 SHA256 写入 `INVALID_RESULTS_INDEX.json`；有效 corrected/raw_postprocessed/raw_full 路径不变。该索引已入活跃源清单，防止后续误读。
 - **eFold bpRNA-new 三次闭环**：TP=100583、FP=73955、FN=34601，F1=**0.6495050400036162**，SD=0，预测 SHA256=`567520183e007c2b3a50c67884162cf556190c6dc46ec03bf51aaa7aba2a70a2`；独立逐序列计数重算通过，artifact 记录 `cpu_threads=1`。
 - **后续**：RNAstructure 其余 split 与 EternaFold clean ArchiveII 第三轮仍在运行，过程值不写成全板均值。
+
+
+## §15.264（2026-11-02）EternaFold 自身 clean 全板闭环
+
+- **训练并集与协议**：EternaFold 三类官方训练语料共 5430 条，逐 split 独立去泄露后完成 8 split×3 次 CPU 推理；三次预测哈希各自一致，SD 全为 0，逐序列独立 TP/FP/FN 重算全部通过。
+- **clean F1 均值**：TS0=**0.5338038315**（n=1230）、bpRNA-new=**0.6853840073**（n=5388）、TS1=**0.7659388646**（n=55）、TS2=**0.8816666667**（n=32）、TS3=**0.8004613610**（n=19）、hard=**0.7658291457**（n=28）、ArchiveII=**0.5700478608**（n=1033）、TestSetB=**0.5849604015**（n=428）。clean ArchiveII 与 raw=0.6156686410 不得混写。
+- **源与注册表**：`round39_eternafold_clean_train_union_summary.json` 已入活跃清单，SHA256=`6f2846d155221115975b27ad475ea9b25191770cf60ad70e6d05b62f3bf3b558`；EternaFold 状态改为 `PASS_TRAIN_UNION_8x3`，raw 与 tr1c 敏感性文件继续保留但不替代该 clean 结论。
+- **RiNALMo 与 eFold 边界**：RiNALMo 在 bpRNA-new 第二轮发生并行 OOM，未生成有效结果，TS0 完整值保留，后续等待安全窗口；eFold 官方 `efold_train/data.json` 镜像返回 404，改试官方直链，provenance 尚未闭环。

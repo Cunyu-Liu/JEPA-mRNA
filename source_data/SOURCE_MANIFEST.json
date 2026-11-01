@@ -569,6 +569,13 @@
    "status": "active"
   },
   {
+   "path": "appendix_leakage/round39_eternafold_clean_train_union_summary.json",
+   "sha256": "6f2846d155221115975b27ad475ea9b25191770cf60ad70e6d05b62f3bf3b558",
+   "bytes": 3056,
+   "description": "EternaFold 在自身三类训练语料 clean 子集上的八 split 三次复测及独立计数重算",
+   "status": "active"
+  },
+  {
    "path": "appendix_leakage/round39_mxfold2_raw_summary.json",
    "sha256": "9d690e989f180fa65491ac100af8866b749aba4af498ecb0c9cfdc9a4c617bc5",
    "bytes": 4186,

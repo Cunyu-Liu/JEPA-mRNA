@@ -85,6 +85,7 @@
 | `appendix_leakage/round39_eternafold_clean_tr1c_summary.json` | EternaFold 在 tr1c 80% identity clean 子集上的八 split 三次复测 | active | `4af21aeff828` |
 | `appendix_leakage/round39_contrafold_clean_tr1c_summary.json` | 原生 CONTRAfold 在 tr1c 80% identity clean 子集上的八 split 三次复测 | active | `195274ef57b0` |
 | `appendix_leakage/round39_model_clean_audits.json` | SPOT-RNA、MXfold2、BPfold、EternaFold 各自训练并集的八 split clean 审计 | active | `ef283203d4bb` |
+| `appendix_leakage/round39_eternafold_clean_train_union_summary.json` | EternaFold 自身训练语料 clean 八 split 三次复测及独立计数重算 | active | `6f2846d15522` |
 | `appendix_leakage/round39_mxfold2_raw_summary.json` | MXfold2 八 split 原始集三次复测；ArchiveII 为完整 2544 条 | active | `9d690e989f18` |
 | `appendix_leakage/round39_ufold_raw_summary.json` | UFold 八 split 原始集三次复测；clean 训练并集 provenance 未闭环 | active | `e22f77455ae5` |
 | `appendix_leakage/round39_invalid_results.json` | UFold 通道错配、SPOT-RNA 空解码与 MXfold2 长度子集诊断索引 | active | `12b83fb4b77e` |
@@ -96,4 +97,4 @@
 - `fig07_nucleicbert/`：official_s3 已在 epoch13 完整 checkpoint 安全暂停，best validation BCE=0.011949524802079076，尚未收敛；全部种子与独立 QA 总门未关闭。
 - `fig08b_regression/`：Muscle 十折完成；HEK/pc3 未满十折不进图，本轮不新增任务。
 - `fig09_ood/`：GenA 已领先，GenC/GenF 是短板；20.8%/39.2% 是零正确配对率而非零输出率。无新提升证据，不重复旧训练。
-- `appendix_leakage/`：SPOT-RNA、MXfold2、BPfold、EternaFold 的模型专属 clean 审计已完成；EternaFold 自身 clean 复测进行中，UFold/eFold/CONTRAfold provenance 未闭环。
+- `appendix_leakage/`：SPOT-RNA、MXfold2、BPfold、EternaFold 的模型专属 clean 审计已完成；EternaFold 自身 clean 八 split 三次复测已闭环，UFold/eFold/CONTRAfold provenance 未闭环。
