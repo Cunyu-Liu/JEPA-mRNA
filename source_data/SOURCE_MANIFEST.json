@@ -563,9 +563,9 @@
   },
   {
    "path": "appendix_leakage/round39_model_clean_audits.json",
-   "sha256": "aadb6d7dc57fd7e7bf3ec41e21380ede3a52dc2201b7e746a2201c580aac7df4",
-   "bytes": 10969,
-   "description": "SPOT-RNA、MXfold2、BPfold 各自训练并集的八 split clean n、删除数与审计哈希",
+   "sha256": "ef283203d4bb397af74eeb7cc9eb0b2a45298f537bcd537310f32f2dfb521986",
+   "bytes": 14453,
+   "description": "SPOT-RNA、MXfold2、BPfold、EternaFold 各自训练并集的八 split clean n、删除数与审计哈希",
    "status": "active"
   },
   {

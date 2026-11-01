@@ -258,6 +258,87 @@
           "audit_sha256": "e1a6ee1dfe5efdfe187db02fe1c8c4c81099e59f3ac4d89dac3089f2fa2e094d"
         }
       }
+    },
+    "eternafold_train_union": {
+      "description": "EternaFold multitask StructureData, RiboswitchData and ChemMappingData training union",
+      "training_union": {
+        "train_n": 5430,
+        "datasets": {
+          "ChemMappingData": 2603,
+          "RiboswitchData": 1295,
+          "StructureData": 1532
+        },
+        "sha256": "968a7ee0b846936ff2bf5904032c752d0bf8f7c4bd617f65ad686ecd5fd711e6",
+        "source_archive": "/home/rna_jev/third_party/EternaFold/input_data.zip",
+        "source_archive_sha256": "e9b1b8734e43b1211b9aca47b35dbaf82e9c91667fb1ff97ea8e0d41143ecbe6",
+        "purpose": "EternaFold multitask training union: StructureData, RiboswitchData and ChemMappingData"
+      },
+      "splits": {
+        "archiveii_embok_clean": {
+          "raw_n": 2544,
+          "clean_n": 1033,
+          "removed_exact": 399,
+          "removed_homology_only": 1112,
+          "clean_sha256": "4650fa903fba8f034504aa3aeda3afe3313cdcb69adde7e6b8da1680e6cca733",
+          "audit_sha256": "1fc5c584c0095f0a9c550b323e9770cfaf26b90f4aba03e76ba5483d6169225f"
+        },
+        "bprna_new": {
+          "raw_n": 5388,
+          "clean_n": 5388,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+          "audit_sha256": "84806d2cefa0c7312d72ef39c61dc3b933df93efd0e6b34dbf3cfe7c7a81c8f1"
+        },
+        "bprna_ts0": {
+          "raw_n": 1288,
+          "clean_n": 1230,
+          "removed_exact": 28,
+          "removed_homology_only": 30,
+          "clean_sha256": "a9a6af95bf0d30c053c16f98c143ca404fcb2b27171d6eb4c8e9e94d2498eb17",
+          "audit_sha256": "15bea9f168c275a20e22208953f78db3b318e69fe9fd087e039878b0979da2d8"
+        },
+        "ref_pdb_ts1": {
+          "raw_n": 63,
+          "clean_n": 55,
+          "removed_exact": 2,
+          "removed_homology_only": 6,
+          "clean_sha256": "f75fec9c1ed56861fdc591a52b303ec8801ee474118d12daeab65159ac617571",
+          "audit_sha256": "bdf7f75bfefb21ca6df9f8cdbf82ae5440ea6fc2c21c768a3b927226c6012f59"
+        },
+        "ref_pdb_ts2": {
+          "raw_n": 39,
+          "clean_n": 32,
+          "removed_exact": 5,
+          "removed_homology_only": 2,
+          "clean_sha256": "0b8c1d345d7eb0ab1f0b1368824bf28f5fa5239aa326d27eab6e53cc967f9ad4",
+          "audit_sha256": "0b1c78df1639787e783d39f11ddb94790e0e57c34977e63fc19afdb2daf3f902"
+        },
+        "ref_pdb_ts3": {
+          "raw_n": 19,
+          "clean_n": 19,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+          "audit_sha256": "90ac3e39b61c10ece7248bffa57c8177a18fc2952ca166da659caf47ecb6a098"
+        },
+        "ref_pdb_ts_hard": {
+          "raw_n": 28,
+          "clean_n": 28,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+          "audit_sha256": "c7063ad4e8f6cac623f47d5e8b23c6a7812afe7c9f2b60aaba9d791428f5bf96"
+        },
+        "testsetb": {
+          "raw_n": 428,
+          "clean_n": 428,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+          "audit_sha256": "e126df021ed1e0c8a81225de42119f95b547dc435d088898ba4e8e69296ef466"
+        }
+      }
     }
   }
 }
