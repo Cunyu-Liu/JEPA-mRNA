@@ -11344,3 +11344,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **主图与 PPT**：主图 2 最优更新为 B=32 的 53.91/47.92/19.89；主图 5 B 面板新增 xens2 B=16 与三模型 B=32，TF32 仅记录不选。两图和第 5/9 页渲染通过，PPT 嵌入图哈希一致。round37 PPT SHA256=`a6a6fdc4e9e6a6731c9ea60a1fadf14b8c3d776a0d58f6178773fcae088f6e9c`，PDF SHA256=`90be215c2464cc99fa61fe5192491eb8697ced6d043d6ab72f325603f449a18e`。
 - **源数据**：新增 round37 图件与五份原始 profile；round36 主图 5 三件已移入 `archive_20261031/old_figures/round36_speed/` 并哈希验收。当前 66 个活跃源文件全部通过本地 manifest/README/目录一致性复核。
 - **NB 恢复**：测速与图件完成后已启动修复队列，official_s2 从 epoch40 checkpoint 续训，训练 PID=1432966；未启动 official_s3，未把暂停写成收敛。恢复后仍需 validation plateau、独立 GPU QA 与五种子聚合。
+
+
+## §15.249（2026-11-01）official_s2 收敛与独立 QA 闭环，official_s3 启动
+
+- epoch41 validation BCE=0.010899689826143288，未超过 epoch36 best=0.010843943561498056，达到 bad=5 并触发 early-stopping。最终 `run.json`：41 epochs、best_epoch=36、best_validation_bce=0.010843943561498056，`status=PASS`、`converged=True`、`early_stopped=True`、`scientific_eligibility=True`。
+- 独立 RTX 4090 QA 通过：validation/TS0/ArchiveII600 macro-F1=0.32174510/0.33517723/0.71002914，三组预测均 `gpu_reinference_exact=True`；run SHA256=`7db29fcfd50676a6e3af8619272edeb89b3522e8ff80c5ee91b31ffafccf3bcd`，QA JSON SHA256=`63a143b211f5c8edde9a055a0296143c03ceb3d3361b707d9ed8ef17958d157a`。
+- official 头现有 **3/5 seeds** 完成收敛与独立 QA。队列已自动启动 official_s3（PID=1433306），batch=4、device=cuda；未重复 official_s0–s2，未提前生成五种子 aggregate。
