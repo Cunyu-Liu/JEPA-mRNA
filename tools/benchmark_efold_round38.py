@@ -112,6 +112,7 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--batch-size", type=int, choices=[1, 2, 4], required=True)
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--progress-every", type=int, default=100)
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--clean-audit", type=Path)
@@ -170,8 +171,11 @@ def main():
         predictions = []
         torch.cuda.synchronize()
         tic = time.perf_counter()
-        for group in batches:
+        for batch_index, group in enumerate(batches, start=1):
             predictions.extend(decode(model, group, reset_state=reset_state))
+            length = len(group[0]["seq"])
+            if batch_index % args.progress_every == 0 or length >= 400:
+                print(f"EFOLD_PROGRESS repeat={repeat} batch={batch_index}/{len(batches)} length={length}", flush=True)
         torch.cuda.synchronize()
         elapsed = time.perf_counter() - tic
         metrics, per_sequence = score(predictions, rows)

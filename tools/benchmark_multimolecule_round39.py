@@ -43,6 +43,16 @@ def main():
         else:
             assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
             assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
+    if not rows:
+        assert args.clean_audit is not None and not args.smoke
+        payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "system": args.model,
+                   "data": str(args.data), "data_sha256": sha256(args.data),
+                   "clean_audit": str(args.clean_audit), "n_sequences": 0,
+                   "f1_mean": None, "repeats": [], "per_sequence": []}
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+        print(f"EMPTY_AFTER_DELEAK model={args.model} out={args.out}")
+        return
     from transformers.activations import ACT2FN
     ACT2FN["elu"] = torch.nn.ELU
     from multimolecule import RnaTokenizer, SpotRnaModel, UfoldModel
@@ -72,7 +82,7 @@ def main():
             inputs = tokenizer(row["seq"], return_tensors="pt")
             inputs = {key: value.cuda() for key, value in inputs.items()}
             with torch.no_grad():
-                output = model(**inputs)
+                output = model(**inputs) if args.model == "ufold" else model(**inputs, use_postprocess=True)
                 contact = (output.logits if args.model == "ufold" else output.contact_map)[0].float().cpu()
             if args.model == "ufold":
                 _, seq_pad, length, padded_length = build_input(row["seq"], torch.device("cuda:0"))

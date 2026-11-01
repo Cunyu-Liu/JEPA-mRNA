@@ -28,21 +28,32 @@ def predict(binary, row, directory, env):
     subprocess.run(command, check=True, capture_output=True, text=True, env=env)
     lines = ct.read_text().splitlines()
     length = len(row["seq"])
-    assert len(lines) == length + 1, (binary.name, row["name"], length, len(lines))
-    assert lines[0].split()[0] == str(length)
+    block_size = length + 1
+    assert lines and len(lines) % block_size == 0, (binary.name, row["name"], length, len(lines))
+    blocks = [lines[start:start + block_size] for start in range(0, len(lines), block_size)]
+    if binary.name == "Fold":
+        assert len(blocks) == 1, (row["name"], len(blocks))
     pairs = []
-    for index, line in enumerate(lines[1:], start=1):
-        fields = line.split()
-        assert len(fields) == 6 and int(fields[0]) == index, (row["name"], index, line)
-        assert fields[1].replace("T", "U") == row["seq"][index - 1].replace("T", "U")
-        expected_next = 0 if index == length else index + 1
-        assert int(fields[2]) == index - 1 and int(fields[3]) == expected_next, (row["name"], index, fields)
-        j = int(fields[4]) - 1
-        assert -1 <= j < length and int(fields[5]) == index
-        if j > index - 1:
-            pairs.append([index - 1, j])
-    assert len(pairs) == len({tuple(pair) for pair in pairs})
-    return {"name": row["name"], "pairs": sorted(pairs)}
+    energies = []
+    for block_index, block in enumerate(blocks):
+        assert block[0].split()[0] == str(length)
+        energies.append(block[0].split()[3])
+        current_pairs = []
+        for index, line in enumerate(block[1:], start=1):
+            fields = line.split()
+            assert len(fields) == 6 and int(fields[0]) == index, (row["name"], index, line)
+            assert fields[1].replace("T", "U") == row["seq"][index - 1].replace("T", "U")
+            expected_next = 0 if index == length else index + 1
+            assert int(fields[2]) == index - 1 and int(fields[3]) == expected_next, (row["name"], index, fields)
+            j = int(fields[4]) - 1
+            assert -1 <= j < length and int(fields[5]) == index
+            if j > index - 1:
+                current_pairs.append([index - 1, j])
+        assert len(current_pairs) == len({tuple(pair) for pair in current_pairs})
+        if block_index == 0:
+            pairs = current_pairs
+    assert len(set(energies)) == 1, (row["name"], energies)
+    return {"name": row["name"], "pairs": sorted(pairs), "ct_structures": len(blocks)}
 
 
 def main():
@@ -96,6 +107,8 @@ def main():
                 repeats.append({"repeat": repeat, "elapsed_seconds": elapsed,
                                 "sequences_per_second": len(rows) / elapsed,
                                 "prediction_sha256": hashlib.sha256(canonical(identity).encode()).hexdigest(),
+                                "multi_ct_sequences": sum(p["ct_structures"] > 1 for p in predictions),
+                                "max_ct_structures": max(p["ct_structures"] for p in predictions),
                                 "metrics": metrics})
             results[name] = {"binary": str(binary), "binary_sha256": sha256(binary),
                              "repeats": repeats, "per_sequence": per_sequence}

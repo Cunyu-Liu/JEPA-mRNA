@@ -11418,3 +11418,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **UFold 转换根因与复证**：首层原 AUCG 碱基对通道误接到 ACGU 输入，且转换脚本混用官方与 MultiMolecule state-dict 命名。修正后 155 个非首层张量完全一致，同一输入下两编码器输出逐位一致；两条真实序列平均 logits 误差约 0.0038。全 TS0 三次均为 TP=18621、FP=27345、FN=16270，F1=**0.46059091977194305**，原官方实现为 0.4604254266633688；1271/1288 条预测完全一致。该差异属于跨实现数值边界，不能把论文中的 0.6598 当作本 split/本 GT 口径的既定真值。
 - **RNAstructure**：旧输出未严格校验 CT 结构，出现异常假阳性，已停止并移入 diagnostics；新适配器强制 `--MFE`/`--sequence`、DATAPATH、单结构行数、序列/索引、配对唯一性校验，8 条真实序列 smoke 通过。完整八 split 三次结果尚未完成，旧异常值不进入主表。
 - **资产与物理基线**：E2Efold 官方仓库及公开 fork 均无权重文件，当前官方 SharePoint 不可访问，继续标 blocked；不采用不明第三方权重。Vienna 旧 24 份结果只有汇总指标、没有逐序列预测和哈希，正在按 round39 合同补全；未把旧文件直接标为验收通过。
+
+
+## §15.257（2026-11-01）SPOT-RNA 解码、逐模型 clean 与物理基线复核
+
+- **SPOT-RNA 空预测根因**：转换模型输出本身正常，前两条序列真配对平均概率=0.832/0.866；原适配器误将单向上三角矩阵按对称互指解码，导致 TS0 三次空预测。改用 MultiMolecule multiplet-free 后处理后，8 条真实序列 smoke 为 TP=261、FP=102、FN=12、F1=0.8207547，才允许进入全量；空预测文件保留为诊断，不进入主表。
+- **SPOT-RNA 训练链 clean**：按官方 TR0 初始训练 + TR1 迁移训练构建 56,547 条并集，TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB clean n 分别=152/5386/10/9/0/3/580/64，全部满足 raw_n=clean_n+removed_exact+removed_homology_only。TS3 clean n=0，已生成 `EMPTY_AFTER_DELEAK` 和 `f1_mean=null`，不得当 0 分或胜负格。
+- **MXfold2 语料纠偏**：默认 `TrainSetAB.pth` 按论文和官方 README 使用 Rivas TrainSetA+B，不是 TR0/bpRNA-new。官方 `Rivas.tar.gz` SHA256=`4ec63e183ef21cdc7dc76561da5ad1543bdd53d1ec09c14d692cc0cd8da86db2`，训练并集=3166+1094=4260 条，bpseq 索引和序列逐行校验通过；八 split clean 审计已启动。额外下载的 TR0/bpRNA-new 只保留为其他 checkpoint 资产，不混用。
+- **Vienna/Nussinov 严格 TS0**：MFE/centroid/MEA/Nussinov-Turner 三次均值分别=0.5055256447/0.5392561730/0.5241050119/0.2124253868，三次预测哈希各自一致；逐序列独立汇总 TP/FP/FN 与每次 metrics 完全一致，并与旧汇总数值一致。其余 split 尚在运行。
+- **资源边界**：RiNALMo-ft 首次并行 B=1 因其他 GPU 作业占用而 OOM，未生成有效结果，后续在空闲窗口单队列重跑。eFold 已加入逐 batch/长序列进度，TS0 正常推进但未完成，不能把进度当 F1 结果。
