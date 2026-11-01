@@ -99,4 +99,4 @@
 - `fig07_nucleicbert/`：official_s3 已在 epoch13 完整 checkpoint 安全暂停，best validation BCE=0.011949524802079076，尚未收敛；全部种子与独立 QA 总门未关闭。
 - `fig08b_regression/`：Muscle 十折完成；HEK/pc3 未满十折不进图，本轮不新增任务。
 - `fig09_ood/`：GenA 已领先，GenC/GenF 是短板；20.8%/39.2% 是零正确配对率而非零输出率。无新提升证据，不重复旧训练。
-- `appendix_leakage/`：SPOT-RNA、MXfold2、BPfold、EternaFold 的模型专属 clean 审计已完成；EternaFold 自身 clean 八 split 三次复测已闭环，UFold/eFold/CONTRAfold provenance 未闭环。
+- `appendix_leakage/`：七套模型专属 clean 审计已完成；EternaFold 与 MXfold2 的自身 clean 八 split 三次复测均已闭环，UFold/eFold/CONTRAfold provenance 未闭环。
