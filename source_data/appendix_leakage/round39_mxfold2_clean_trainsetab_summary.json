@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "system": "MXfold2",
+  "protocol": "TrainSetA+B model-specific clean splits; 3 independent GPU inferences at B=1; strict micro-F1",
+  "training_union_sha256": "beda1c3c9b81deb90a4b603317db7bc7e57c109df96eb7be17bf69dda07bfde8",
+  "splits": {
+    "bprna_ts0": {
+      "n": 1188,
+      "tp": 20445,
+      "fp": 23752,
+      "fn": 9845,
+      "f1_mean": 0.5489548511820854,
+      "f1_sd": 0.0,
+      "prediction_sha256": "80faed69560ec80c833754191231921a7a1301529db87f21dbf2f74307e97eb7",
+      "artifact_sha256": "61571ef93db416042956d2dbd350731daf08fa6de5d3258c00c2d0f39a9d394d",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/bprna_ts0.audit.json"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 100227,
+      "fp": 64290,
+      "fn": 34957,
+      "f1_mean": 0.6688466171284047,
+      "f1_sd": 0.0,
+      "prediction_sha256": "44f448027bdb9a780ffbfca9be180bfdd7b76f118efa956763d46241f5cc3613",
+      "artifact_sha256": "214bf03a48011fbe05a1f8d8f0199eacdceb8a842c60505ed2e8b2ce09e774dd",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/bprna_new.audit.json"
+    },
+    "ref_pdb_ts1": {
+      "n": 52,
+      "tp": 850,
+      "fp": 240,
+      "fn": 236,
+      "f1_mean": 0.78125,
+      "f1_sd": 0.0,
+      "prediction_sha256": "4375fc55356908db5a209c4f39949722be9658658aebb650103c1ba89d8341f2",
+      "artifact_sha256": "397f3705f395849b6c2225fc2a852d49a6345f17c118cd921e6cb69255b1c877",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/ref_pdb_ts1.audit.json"
+    },
+    "ref_pdb_ts2": {
+      "n": 27,
+      "tp": 457,
+      "fp": 32,
+      "fn": 54,
+      "f1_mean": 0.914,
+      "f1_sd": 0.0,
+      "prediction_sha256": "d07a5adc0ffacd64eec53256e3a0dc32b84a9c2a6e4218dcc9c29b65a6774a95",
+      "artifact_sha256": "79f247bd612e0dbdc16cf877c0fe4bb57091d904adc48a57ed2a00e539fdde42",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/ref_pdb_ts2.audit.json"
+    },
+    "ref_pdb_ts3": {
+      "n": 18,
+      "tp": 328,
+      "fp": 81,
+      "fn": 69,
+      "f1_mean": 0.8138957816377171,
+      "f1_sd": 0.0,
+      "prediction_sha256": "bb63e18eb96b55742ed0ea6382024ef797aec1bb2efecb32b6eb06c59b8331d0",
+      "artifact_sha256": "9fd073f8edbe0f3d9e9379a663117ddf9082efcf54a1dcdeef324b99e68b1afc",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/ref_pdb_ts3.audit.json"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 26,
+      "tp": 366,
+      "fp": 109,
+      "fn": 76,
+      "f1_mean": 0.7982551799345693,
+      "f1_sd": 0.0,
+      "prediction_sha256": "e6a6b595b01c4d65561bdd876e047458d233ec16dbd151f6b3b3db66915cd046",
+      "artifact_sha256": "63038365a54605da0b5310ab145bd2524b231535da4d5a348d4177e248372ffa",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/ref_pdb_ts_hard.audit.json"
+    },
+    "archiveii_embok_clean": {
+      "n": 1041,
+      "tp": 37918,
+      "fp": 19181,
+      "fn": 10205,
+      "f1_mean": 0.7207238030069757,
+      "f1_sd": 0.0,
+      "prediction_sha256": "e7c3a2987d483d51d15fc581daacf9ecdaccdf7be8c8afb25aeb8abc8085f5cb",
+      "artifact_sha256": "e60d8df36b44ea3e1665e730264c14cdbe7bd55c5285e19674eedd33fd6585a2",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/archiveii_embok_clean.audit.json"
+    },
+    "testsetb": {
+      "n": 373,
+      "tp": 6687,
+      "fp": 4452,
+      "fn": 2854,
+      "f1_mean": 0.6467117988394584,
+      "f1_sd": 0.0,
+      "prediction_sha256": "dddddf6efd71ee50b81b6cc0ba55a5940920ae2e11d76a2a8d56b425ad7c741c",
+      "artifact_sha256": "50253aa0a9491fce0944e01c854253bf4d55fdde893a8d5cacb773002f728db1",
+      "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/mxfold2_trainsetab/audits/testsetb.audit.json"
+    }
+  }
+}

@@ -11496,3 +11496,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **Vienna/Nussinov raw 全板完成**：四系统八 split 均完成三次严格复测，预测与计数独立重算通过。TS0 的 MFE/centroid/MEA/Nussinov=0.5055256447/0.5392561730/0.5241050119/0.2124253868；ArchiveII=0.5752066230/0.6180982114/0.6053716365/0.1999522395。其余 split 全值与 artifact 哈希写入 `round39_vienna_raw_summary.json`，标为非序列训练系统，不伪造训练集 clean 过滤。
 - **MXfold2 clean bpRNA-new**：clean n=5388，三次均 TP=100227、FP=64290、FN=34957，F1=**0.6688466171284047**，与 raw 相同，SD=0；clean TS0=0.5489548512、TS1=0.781250 已确认，其余 clean split 尚未完成。
 - **eFold 数据通道**：官方 HuggingFace 直链超时、镜像 404，改用官方 `rouskinhf.get_dataset("efold_train")` 客户端下载；成功前保持 `BLOCKED_PROVENANCE`。
+
+
+## §15.266（2026-11-02）MXfold2 clean 全板与 RNAformer 三套训练审计
+
+- **MXfold2 TrainSetA+B clean 全板完成**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 clean n=1188/5388/52/27/18/26/1041/373，三次 F1 分别=**0.5489548512/0.6688466171/0.781250/0.914000/0.8138957816/0.7982551799/0.7207238030/0.6467117988**，SD 全为 0，三次预测和计数均独立复核通过。汇总 `round39_mxfold2_clean_trainsetab_summary.json` 已入清单。
+- **RNAformer 官方训练集**：bprna_data.plk train=**38184**、intra-family train=**4824**、inter-family train=**3480**，均经 pandas 完整读取与长度校验。bprna 的 TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB clean n=1140/5386/11/9/2/3/2267/80；intra=1256/5386/60/39/0/19/1909/419；inter 的八份审计也全部完成。不得再用项目 TR0 替代这些官方训练集。
+- **RNAformer raw bpRNA-new**：三次均 TP=51372、FP=21605、FN=83812，F1=**0.49357948895326215**，SD=0。ArchiveII 因全长保护首次停止后，已用 `--allow-long` 重启剩余 split。
+- **源状态**：七套模型专属 clean 审计汇总 SHA256=`de6f0c0231022301aa4bdc4e41760feac5e89561888d9bbb181a99a40d9f787f`；MXfold2 状态改为 `PASS_TRAINSETAB_8x3`，RNAformer 三套 clean 标记 ready，待各自评测。

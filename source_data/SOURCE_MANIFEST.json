@@ -563,9 +563,9 @@
   },
   {
    "path": "appendix_leakage/round39_model_clean_audits.json",
-   "sha256": "ef283203d4bb397af74eeb7cc9eb0b2a45298f537bcd537310f32f2dfb521986",
-   "bytes": 14453,
-   "description": "SPOT-RNA、MXfold2、BPfold、EternaFold 各自训练并集的八 split clean n、删除数与审计哈希",
+   "sha256": "de6f0c0231022301aa4bdc4e41760feac5e89561888d9bbb181a99a40d9f787f",
+   "bytes": 24769,
+   "description": "七套模型专属训练并集的八 split clean n、删除数与审计哈希",
    "status": "active"
   },
   {
@@ -580,6 +580,13 @@
    "sha256": "9d690e989f180fa65491ac100af8866b749aba4af498ecb0c9cfdc9a4c617bc5",
    "bytes": 4186,
    "description": "MXfold2 八 split 原始集三次复测；ArchiveII 使用完整 2544 条全长结果",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_clean_trainsetab_summary.json",
+   "sha256": "0b300329257372e4502ad845f538a08bd934c03e82e367e265d7690e3da8d92f",
+   "bytes": 4442,
+   "description": "MXfold2 在 TrainSetA+B 模型专属 clean 子集上的八 split 三次复测及独立计数重算",
    "status": "active"
   },
   {

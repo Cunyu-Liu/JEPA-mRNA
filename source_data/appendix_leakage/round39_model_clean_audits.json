@@ -260,7 +260,7 @@
       }
     },
     "eternafold_train_union": {
-      "description": "EternaFold multitask StructureData, RiboswitchData and ChemMappingData training union",
+      "description": "EternaFold multitask training union",
       "training_union": {
         "train_n": 5430,
         "datasets": {
@@ -337,6 +337,250 @@
           "removed_homology_only": 0,
           "clean_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
           "audit_sha256": "e126df021ed1e0c8a81225de42119f95b547dc435d088898ba4e8e69296ef466"
+        }
+      }
+    },
+    "rnaformer_bprna_train": {
+      "description": "RNAformer official bprna_data.plk train",
+      "training_union": {
+        "train_n": 38184,
+        "valid_n": 1184,
+        "bprna_ts0_n": 1305,
+        "sha256": "f41ce67e2f9ca1f3a84c62654ee442ce31153ee92508267e2c1c06fc8483cee0",
+        "source_archive": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/RNAformer/bprna_data.plk",
+        "source_archive_sha256": "3cc294e79a68df83f5886b3347eb159d2fad80e6f8bca3dfd8d134f1fdf3c456",
+        "purpose": "RNAformer official bprna_data.plk train split leakage audit"
+      },
+      "splits": {
+        "archiveii_embok_clean": {
+          "raw_n": 2544,
+          "clean_n": 2267,
+          "removed_exact": 0,
+          "removed_homology_only": 277,
+          "clean_sha256": "fac2333b7f15e5c3fcd43e53643b7cea9e05b009ddad8ad98394ee91ec49d1e6",
+          "audit_sha256": "2a0ccdb311cfc3b62753d9de35db5cb029b95616f5acef33c9d1b24827479fa6"
+        },
+        "bprna_new": {
+          "raw_n": 5388,
+          "clean_n": 5386,
+          "removed_exact": 0,
+          "removed_homology_only": 2,
+          "clean_sha256": "231ae0079c183d481e4f5d4518f77a41fa52f6a6544b2feb0a7d60f8f9b23595",
+          "audit_sha256": "9fad88888ddf19f640936e39dacf4c329d133578fd85dbe9219a2d43e8ae4194"
+        },
+        "bprna_ts0": {
+          "raw_n": 1288,
+          "clean_n": 1140,
+          "removed_exact": 0,
+          "removed_homology_only": 148,
+          "clean_sha256": "42192cfbb1cb429cdbd993ad8de78daa38fa862b9485dc6472be74460321027e",
+          "audit_sha256": "36e6a980984fcc013100185fe6b307293bf44013048b930b167fba61bc811f59"
+        },
+        "ref_pdb_ts1": {
+          "raw_n": 63,
+          "clean_n": 11,
+          "removed_exact": 38,
+          "removed_homology_only": 14,
+          "clean_sha256": "01b369ad0b29aa7a7426943d0925013d4d02121d3faeee5ca736d26011402079",
+          "audit_sha256": "b6961897344cc2120f173f1f93933f79b7b74d21ce18a8b3a85b2e132a3db082"
+        },
+        "ref_pdb_ts2": {
+          "raw_n": 39,
+          "clean_n": 9,
+          "removed_exact": 28,
+          "removed_homology_only": 2,
+          "clean_sha256": "6a3c99933c4049a69c9b1a23554c615c2e14ff3e734bc05022ac222dc8937c33",
+          "audit_sha256": "836e1162f1fa4fc4072d7796a32e13b65780621b6b21fc223fd0294c04fbe2da"
+        },
+        "ref_pdb_ts3": {
+          "raw_n": 19,
+          "clean_n": 2,
+          "removed_exact": 15,
+          "removed_homology_only": 2,
+          "clean_sha256": "04a547907dadba0169d28b5fd855667eac7449b3052a0db6f7760689c14c26d5",
+          "audit_sha256": "a0ea65bac098a0870a43559c4fe63bbf1f78e59b3a8afedf955e3c2a91799417"
+        },
+        "ref_pdb_ts_hard": {
+          "raw_n": 28,
+          "clean_n": 3,
+          "removed_exact": 20,
+          "removed_homology_only": 5,
+          "clean_sha256": "fa6a7287821bbad597248a87fe14149da32f8647939025261fbb9c181907b9ab",
+          "audit_sha256": "bf8fe27303ca8ca7a4c295ae5ce0729770da556d585f5a220f0a5957879dbc6d"
+        },
+        "testsetb": {
+          "raw_n": 428,
+          "clean_n": 80,
+          "removed_exact": 339,
+          "removed_homology_only": 9,
+          "clean_sha256": "a22a557b3d53ffd419e3c245a33bcdaf596dc864b881286a92608e224f873a57",
+          "audit_sha256": "36990278cfc21a80a1133fefec9fefec2be1cc5dc6fc913cb88e9c87d8c54172"
+        }
+      }
+    },
+    "rnaformer_intrafam_train": {
+      "description": "RNAformer intra-family official train",
+      "training_union": {
+        "train_n": 4824,
+        "set_counts": {
+          "train": 4824,
+          "valid": 1112,
+          "pdb_ts1": 67,
+          "pdb_ts2": 39
+        },
+        "sha256": "553e7efbca454b6c4d597cb0642831a3775f431469fd0d5cf82ad05c961a09db",
+        "source_archive": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/RNAformer/intra_family_experimental_data.plk",
+        "source_archive_sha256": "ae6e76e25d71650a8c38e21e335aae91d693c819d14b8cfb6c33aeb31bab71b8",
+        "purpose": "RNAformer intra-family official train split leakage audit"
+      },
+      "splits": {
+        "archiveii_embok_clean": {
+          "raw_n": 2544,
+          "clean_n": 1909,
+          "removed_exact": 49,
+          "removed_homology_only": 586,
+          "clean_sha256": "60bb7db4a6bb4a777398023bc1c1aed59a8c3426cd0615d63468db751ddf6090",
+          "audit_sha256": "de611705388e544b033bd22583672b7f5ad33a8a24acf53673b70136f0542aa0"
+        },
+        "bprna_new": {
+          "raw_n": 5388,
+          "clean_n": 5386,
+          "removed_exact": 0,
+          "removed_homology_only": 2,
+          "clean_sha256": "231ae0079c183d481e4f5d4518f77a41fa52f6a6544b2feb0a7d60f8f9b23595",
+          "audit_sha256": "d980ade0662042987e0b258e2d3a4e233bfa48bd951e411b7096ed166a0cee8f"
+        },
+        "bprna_ts0": {
+          "raw_n": 1288,
+          "clean_n": 1256,
+          "removed_exact": 2,
+          "removed_homology_only": 30,
+          "clean_sha256": "eb8bbc61e0ab86086486b891f6142b70532bb00c0b3b06e531e3a02820be0c69",
+          "audit_sha256": "ab4562f815ef0e659ecfda90511a987d712612b2a4a295f51f03be2ee7185e32"
+        },
+        "ref_pdb_ts1": {
+          "raw_n": 63,
+          "clean_n": 60,
+          "removed_exact": 0,
+          "removed_homology_only": 3,
+          "clean_sha256": "35b1670b9bd2bf08d0f80f2d538df09d7ef91d30446ede4d0cd27ed57b8a88ad",
+          "audit_sha256": "6c08a67c6d715fa771c4809a866cdea8c83537f6824c4503dbfffc6dbcc6c758"
+        },
+        "ref_pdb_ts2": {
+          "raw_n": 39,
+          "clean_n": 39,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+          "audit_sha256": "da5cce355054787fec651d3606df70831e46b4982b70e5eb257ba5813932a086"
+        },
+        "ref_pdb_ts3": {
+          "raw_n": 19,
+          "clean_n": 0,
+          "removed_exact": 18,
+          "removed_homology_only": 1,
+          "clean_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "audit_sha256": "2375d9f973e509638baef69ca9b375dfb4382b3996bf3a2353a0fdc1fdca3e53"
+        },
+        "ref_pdb_ts_hard": {
+          "raw_n": 28,
+          "clean_n": 19,
+          "removed_exact": 9,
+          "removed_homology_only": 0,
+          "clean_sha256": "e7b0c488a8350c3af639a7a36da1a316c0bad47cf767dc3c54791fcdc74d2f81",
+          "audit_sha256": "7cd061f4ff58594c87be86fe306a48dc877a8994dc0fc7801e2f56075242c51e"
+        },
+        "testsetb": {
+          "raw_n": 428,
+          "clean_n": 419,
+          "removed_exact": 1,
+          "removed_homology_only": 8,
+          "clean_sha256": "b2ce9b160d4a8c192d2becd03a274f38f5ed97239be6aa5fe2606accdcdb2da4",
+          "audit_sha256": "335657ea9d0e77c8d0e8e9df61ff9e673a92c16fe871089e21cefc8247370359"
+        }
+      }
+    },
+    "rnaformer_interfam_train": {
+      "description": "RNAformer inter-family official train",
+      "training_union": {
+        "train_n": 3480,
+        "set_counts": {
+          "train": 3480,
+          "valid": 1302,
+          "pdb_ts1": 67,
+          "pdb_ts2": 39,
+          "pdb_ts_hard": 28,
+          "pdb_ts3": 19
+        },
+        "sha256": "41e86e43e468e2b590c9f4ab98ecc64c1b3014e5c6052e112e75368c5e7b6a84",
+        "source_archive": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/RNAformer/inter_family_experimental_data.plk",
+        "source_archive_sha256": "78efb9daa91b8b961b6119950310d33e54aad215ce44fd5bdcc65c863c3de05e",
+        "purpose": "RNAformer inter-family official train split leakage audit"
+      },
+      "splits": {
+        "archiveii_embok_clean": {
+          "raw_n": 2544,
+          "clean_n": 2192,
+          "removed_exact": 14,
+          "removed_homology_only": 338,
+          "clean_sha256": "0dbfe2ab6bf28675ef87349bc96c46b296aa37565ec9631854603846aff9e9fd",
+          "audit_sha256": "3ac41a9cc356781931aa00121cbe868a89683586c3f7129494a856efaab98128"
+        },
+        "bprna_new": {
+          "raw_n": 5388,
+          "clean_n": 5386,
+          "removed_exact": 0,
+          "removed_homology_only": 2,
+          "clean_sha256": "231ae0079c183d481e4f5d4518f77a41fa52f6a6544b2feb0a7d60f8f9b23595",
+          "audit_sha256": "8eb1d184cdf95a153ee2e5cd362f4f38ec439b5344ada9ff382ec23d3070a9b3"
+        },
+        "bprna_ts0": {
+          "raw_n": 1288,
+          "clean_n": 1276,
+          "removed_exact": 0,
+          "removed_homology_only": 12,
+          "clean_sha256": "d8d260fc41c328cf2f7ae3e7f9b2614a6b53d2944d825bba80a8ec11f821fd95",
+          "audit_sha256": "9c42f72089e4a6c5659baed8f6634e99f5122e37d14035ea2f77f702743049c4"
+        },
+        "ref_pdb_ts1": {
+          "raw_n": 63,
+          "clean_n": 63,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+          "audit_sha256": "36dd0881c7c38bdca8f618299889d4e64f64a67ff349b93a9487a1648cb4f0bb"
+        },
+        "ref_pdb_ts2": {
+          "raw_n": 39,
+          "clean_n": 39,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+          "audit_sha256": "5df288dda368391d0f664faf2beb1b35e12b554a88dfbe196c56303b8768daeb"
+        },
+        "ref_pdb_ts3": {
+          "raw_n": 19,
+          "clean_n": 19,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+          "audit_sha256": "67da5225f37207d6734a67a9ef5ee31d3494127731993af5815c3096dd4b5885"
+        },
+        "ref_pdb_ts_hard": {
+          "raw_n": 28,
+          "clean_n": 28,
+          "removed_exact": 0,
+          "removed_homology_only": 0,
+          "clean_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+          "audit_sha256": "1d0b5bd9b9c7d2e9c8dcd0b37d83e023ad8fa750de186158c130012b0fc90cf6"
+        },
+        "testsetb": {
+          "raw_n": 428,
+          "clean_n": 421,
+          "removed_exact": 1,
+          "removed_homology_only": 6,
+          "clean_sha256": "86bcb3f35159a1690007f8888072cfa1cc02e9d2a724980e7913c24e0cefa6f9",
+          "audit_sha256": "2e9f73f62c01a04e791645f293398a29d0f95d5c65a3b64aedda2fb00a5eba12"
         }
       }
     }
