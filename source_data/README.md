@@ -84,6 +84,7 @@
 | `appendix_leakage/round39_contrafold_raw_summary.json` | 原生 CONTRAfold 八 split 三次复测及独立计数重算；不是逐模型 clean 结论 | active | `d7cbdd7aa666` |
 | `appendix_leakage/round39_eternafold_clean_tr1c_summary.json` | EternaFold 在 tr1c 80% identity clean 子集上的八 split 三次复测 | active | `4af21aeff828` |
 | `appendix_leakage/round39_contrafold_clean_tr1c_summary.json` | 原生 CONTRAfold 在 tr1c 80% identity clean 子集上的八 split 三次复测 | active | `195274ef57b0` |
+| `appendix_leakage/round39_model_clean_audits.json` | SPOT-RNA、MXfold2、BPfold 各自训练并集的八 split clean 审计 | active | `aadb6d7dc57f` |
 | `appendix_leakage/round39_ufold_raw_summary.json` | UFold 八 split 原始集三次复测；clean 训练并集 provenance 未闭环 | active | `e22f77455ae5` |
 | `appendix_leakage/round39_clean_audits/INDEX.json` | TR0/tr1c 各八 split clean n、删除数、数量守恒与审计哈希索引 | active | `699c259064ac` |
 

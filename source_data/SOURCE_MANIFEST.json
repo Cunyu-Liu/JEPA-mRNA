@@ -562,6 +562,13 @@
    "status": "active"
   },
   {
+   "path": "appendix_leakage/round39_model_clean_audits.json",
+   "sha256": "aadb6d7dc57fd7e7bf3ec41e21380ede3a52dc2201b7e746a2201c580aac7df4",
+   "bytes": 10969,
+   "description": "SPOT-RNA、MXfold2、BPfold 各自训练并集的八 split clean n、删除数与审计哈希",
+   "status": "active"
+  },
+  {
    "path": "appendix_leakage/round39_ufold_raw_summary.json",
    "sha256": "e22f77455ae5e3bf338f5d218899270ad58a171e97943b44151ed2eda970f4be",
    "bytes": 4722,
