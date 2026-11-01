@@ -5,11 +5,11 @@
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A163 | 逐模型泄露与 SOTA 身份复核 | 每系统绑定训练语料/checkpoint/GT/重叠与原始证据；区分部分重算、未审计；纠正参照 | 部分完成：RNAformer 四格 clean 复算与第 4/18 页身份纠正已入片；其余模型不得称完整复测 |
-> | T-A164 | 五模型公平端到端测速 | 官方权重/协议、同 TS0、raw-sequence、三次重复、F1/显存/哈希；缺失项 blocked | eFold B1/2/4 正式队列与 EternaFold CPU 队列已启动；BPfold/UFold/E2Efold 官方权重通道失败，证据入 `round38_baseline_assets.json` |
+> | T-A164 | 五模型公平端到端测速 | 官方权重/协议、同 TS0、raw-sequence、三次重复、F1/显存/哈希；缺失项 blocked | **可执行范围已完成**：eFold 0.1.3 B1/2/4 中位=16.203/16.292/18.472，EternaFold CPU=10.656；三项官方权重 blocked 已留证，不作绝对 SOTA |
 > | T-A165 | GenA/GenC 与 OOD mean 提升评估 | 复核旧对照与失败归因；无新证据不写提升 | **负向评估已完成**：GenA 已领先；GenC/GenF 是短板，旧 GT/混合语料未超 xens2，不重复训练；家族级源 JSON 已验收 |
 > | T-A166 | 文献与论文图件/叙事审计 | 对照 UFold/BPfold/E2Efold/RNAformer/RiNALMo，形成补图/补文与限制 | **已完成**：`paper/round38_literature_and_narrative_audit.md`；优先速度、risk–coverage、家族失败与泄露敏感性 |
-> | T-A167 | 第 5/9/17/18 页及全稿修订 | 扩展速度、正确泄露与参照、图文一致、字体行距无重叠、源数据与提交 | 第 4/18 页和逻辑页已修订并渲染；速度页待正式结果，manifest/提交待闭环 |
-> | T-A168 | NB 后续种子与 QA | 非测速窗口继续；完整收敛+独立 GPU QA 后才聚合 | official_s3 在 epoch5 完整 checkpoint 暂停供独占计时；未收敛，测后恢复 |
+> | T-A167 | 第 5/9/17/18 页及全稿修订 | 扩展速度、正确泄露与参照、图文一致、字体行距无重叠、源数据与提交 | **已完成**：23 页全检、76 个源文件及本地/远端哈希一致；`01168f3` 已 push |
+> | T-A168 | NB 后续种子与 QA | 非测速窗口继续；完整收敛+独立 GPU QA 后才聚合 | SSH 已恢复；official_s3 epoch7 validation BCE=0.01293881、best_epoch=7、bad=0、early_stopped=False，继续训练 |
 >
 > **关键定义纠错**：20.8%/39.2% 是 GenC/GenF 的**零正确配对率**，不是零输出率；空输出仅 1/3936、1/1734。GenC 的 RF03981 占 57.3% FN，GenF 主要看 RF03874/RF03662。
 >

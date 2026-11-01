@@ -11362,3 +11362,30 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **OOD 离线重算**：xens2 GenA=0.644258、GenC=0.379272、GenF=0.306568，OOD mean=0.443366，仅与 OFoldNA-SS 0.4410 并列。GenC 平均预测/真值配对=20.5399/31.1369，GenF=17.2111/26.0254，均为少预测。空输出仅 GenC 1/3936、GenF 1/1734；旧记录 20.8%/39.2% 实为**零正确配对率**，不是零输出率。GenC 的 RF03981 n=1702、micro-F1=0.12242，贡献 57.315% FN；GenF 的 RF03874/RF03662 合计贡献 74.566% FN。
 - **OOD 决策**：已有直接 GT、三种子集成、清洁 CHANRG 与混合语料均未超过 zero-shot xens2，本轮不重复训练、不预设 OOD mean 提升。GenC 若仅追平 OFoldNA-SS=0.3956，算术 mean 为 0.448809，但这不是实验预测。候选须从 VL0 锁定，禁止在 GenC/GenF 测试集调阈值。源 `fig09_ood/round38_ood_failure_source.json` 已三遍守恒、哈希与独立 micro-F1 复核。
 - **文献与写作**：`paper/round38_literature_and_narrative_audit.md` 已给出速度、risk–coverage、家族失败、泄露敏感性、代表结构与长度分层补图顺序。根目录 `preprint_draft.md` 仍有旧性能与训练中状态，不能局部改几句冒充当前论文；后续须从已验收源数据重建相关章节。
+
+
+## §15.251（2026-11-01）第 38 轮正式速度、版本身份、最终图件与 NB 恢复
+
+- **eFold 0.1.3 正式结果**：官方 commit `4e146fe92c574104b2518d7350e0fa4a39f32030`、权重 SHA256 `fcf06c6a7724501e0fb1c5f12bc21ab5bfe7d6131e643d41f139be776aa1dca9`。TS0 n=1288、raw-sequence、三次重复，B1/2/4 中位吞吐=16.203166/16.291735/18.472481 seq/s，B4 F1=0.55069569、峰值显存 683.39 MiB。B2/B4 对 B1 配对一致率=0.9997702/0.9997319，全网格 F1 极差=0.00003560，符合 ≥99% 与 |ΔF1|≤0.001 的数值等价门；三次同配置预测逐位一致。最初过严的跨 batch 逐位断言已按既定数值门纠正，不掩盖该工程错误。
+- **EternaFold 正式结果**：官方 serial CPU、单线程，三次=10.656009/10.651251/10.661725 seq/s，中位=10.656009，F1=0.54001085，预测哈希完全一致。B2/B4 不适用于官方 serial CLI，不伪造 batch/GPU 数字。第一次远端等待进程受 SSH 挂断影响，无 artifact；随后显式日志完整重跑，不以 smoke 值代替。
+- **eFold 0.1.2 版本身份**：官方 PyPI 0.1.2 权重 SHA256=`82870b3c25c76c924c2c6db47f6d8ad5b92960a56df3b63c144c395ec4f18d6f`，与 0.1.3 不同。其原生 API 使用 train mode、`postprocess_new_nc` 并逐条加载模型，不能用新版 eval/Hungarian 适配器核验。按原生逐条初始状态重置复推，三次 TP/FP/FN=23496/25354/11395、F1=0.5611588111（rounded 0.5612），相对旧板 23498/25358/11393 仅 −2/−4/+2；允许跨硬件边界差异，未篡改计数。附录标 0.1.2，速度图标 0.1.3。
+- **blocked**：BPfold/UFold/E2Efold 官方权重通道均实际失败，证据保存在 `round38_baseline_assets.json`；没有采用第三方权重、旧 A100、论文速度或 smoke 补缺。因此只能说当前已测共同协议三 JEV 位于前沿，不能宣称无限制绝对速度 SOTA。
+- **最终图件与 PPT**：主图 2 为 7 GPU+1 CPU 八系统；主图 5 为 29 个配置。eFold 最快 B4=18.472 seq/s，EternaFold CPU=10.656；三 JEV 前沿不变。round38 PPT SHA256=`7c054bd8c83aeba6f3ec1b618de4c08b93d6fd595129e2bae73591d42352fc6f`，PDF SHA256=`921da9924cc0fb82658b93ed6bde28f42c62c75410098b73d893e268b9137978`。23 页逐页渲染、890 run 微软雅黑、889 段 1.5 行距、越界 0；PPT 嵌入图与源 PNG 同哈希。76 个活跃源文件三轮哈希验收；round37 图件与 round36 叙事已归档并登记。
+- **NB 恢复**：测速与版本核验结束后，official_s3 已从 epoch5 完整 checkpoint 恢复，训练 PID=1441690，device=cuda、batch=4；未重训 official_s0–s2。恢复不是收敛结论，仍须 validation plateau、独立 GPU QA 和五种子聚合。
+- **代码**：前一轮泄露/OOD/协议审计提交 `d496241` 已推送；最终速度源、图件脚本和记录另行提交。
+
+
+## §15.252（2026-11-01）最终上传的 SSH 阻塞
+
+- 本地 round38 PPT/PDF、76 个活跃源文件、归档索引和台账均已完成三轮核验，无本地未完成科学结果。
+- 最终上传发生 `scp: Connection closed`；随后三次连接均为 `Connection refused`，无法核对哪些远端文件已写入，也无法执行最终 Git commit/push。不得把该任务写成已上传。
+- 最后确认的 GitHub 提交为 `d496241`。NB 最后确认从 epoch5 checkpoint 恢复（PID=1441690、未收敛），之后的运行状态未知，不断言仍在训练或已经停止。
+- 集群恢复后的接续：先检查远端文件和 NB checkpoint/进程，再只补缺失源文件，执行 `git diff --cached --check` 后提交并推送；不重跑已验收实验。
+
+
+## §15.253（2026-11-01）SSH 恢复、最终提交与 NB epoch7 复核
+
+- SSH 恢复后，round38 PPT/PDF 与全部速度源文件的本地/远端哈希一致，最终提交 **`01168f3`** 已推送至 `round35-speed-window-20261031`。
+- 当前最终 PPT SHA256=`7c054bd8c83aeba6f3ec1b618de4c08b93d6fd595129e2bae73591d42352fc6f`，PDF SHA256=`921da9924cc0fb82658b93ed6bde28f42c62c75410098b73d893e268b9137978`；以当前文件重新执行终检，不沿用上传前哈希。
+- NB official_s3 已从 epoch5 断点续训至 epoch7：epoch6/7 validation BCE=0.01320031417167464/0.01293881095190126；checkpoint epoch=7、best_epoch=7、best_loss=0.01293881095190126、bad=0、early_stopped=False。PID=1441690、device=cuda、batch=4，确认没有重训 official_s0–s2，也没有把恢复写成收敛。
+- 三处 spec/tasks/checklist 已清除旧 SSH blocked 状态，记录最终 commit 和 epoch7；全部种子与独立 GPU QA 总门仍未关闭。

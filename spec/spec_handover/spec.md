@@ -4,13 +4,15 @@
 >
 > **已落实纠正**：第 4 页改为“xens2 胜预注册 clean 参照 6/8，不等于全板 6/8 SOTA”；第 18 页改为“泄露审计与 clean 子集复算”。RNAformer-bprna 的 TS1/TS2/TS3/hard 已真实重算为 0.7830/0.8506/0.8296/0.6933（n=25/11/4/8），其余沿用原板格子不得解释为已去污染。
 >
-> **测速状态与边界**：eFold 官方 GPU smoke、官方 API 等价及 B1/B2/4 工程等价通过，正式全量队列运行中；EternaFold 官方 serial 版本通过 smoke，CPU 结果单列。BPfold/UFold/E2Efold 官方权重通道均实际失败，保留 blocked 证据，不用第三方权重、旧 A100 或论文速度补缺。NB official_s3 已在 epoch5 完整 checkpoint 暂停，测后恢复。
+> **测速闭环与边界**：eFold 0.1.3 的 B1/2/4 中位吞吐=16.203/16.292/18.472 seq/s，B2/B4 配对一致=99.977%/99.973%，F1 极差=0.0000356；EternaFold 官方 serial CPU 中位=10.656 seq/s、F1=0.54001085。eFold 0.1.2 原生逐条状态重置复现 F1=0.5611588，相对旧板 TP/FP/FN 差 −2/−4/+2。BPfold/UFold/E2Efold 官方权重 blocked，不作绝对 SOTA。NB official_s3 已从 epoch5 checkpoint 恢复（PID=1441690），未收敛。
 >
 > **OOD 审计结论**：GenA=0.6443 已领先；GenC=0.3793、GenF=0.3066 是短板，OOD mean=0.4434 仅并列。已有 GT/混合语料/种子实验未超 zero-shot xens2，本轮不重复训练。20.8%/39.2% 是 GenC/GenF 零正确配对率而非零输出率；空输出仅 1/3936、1/1734。GenC 的 RF03981 占 57.3% FN，GenF 主要为 RF03874/RF03662。
 >
 > **执行顺序**：P0 已完成已证实纠错与文献审计 → P1 完成 eFold/EternaFold 正式三次全量测速 → P2 更新第 5/9 页、manifest 与代码提交 → P3 恢复 NB → P4 逐模型泄露复测及 VL0 锁定的新候选。risk–coverage、GenC/GenF 家族失败图与长度边界为优先补图，详见 `paper/round38_literature_and_narrative_audit.md`。
 >
 > **公平性与停止规则**：只用官方权重和必要后处理；同数据、strict micro-F1、canonical-nested GT、raw-sequence 与三次重复。正式计时独占 GPU，CPU 方法不冒充 GPU。smoke 不进入主图。无新实验证据不得写 OOD 提升或绝对速度 SOTA；ViennaRNA 高值不自动等于泄露，任何模型都不能因高分推定污染。
+>
+> **最终提交闭环（2026-11-01）**：SSH 恢复后，round38 PPT/PDF 与全部速度源文件的本地/远端哈希一致，最终提交 `01168f3` 已 push。NB official_s3 已续训至 epoch7，validation BCE=0.01293881、best_epoch=7、bad=0、early_stopped=False；仍不得写成收敛，后续独立 QA 与五种子聚合未关闭。
 >
 > **历史边界**：第 37 轮及更早结果保留，本块覆盖新增问题和纠正项。
 >

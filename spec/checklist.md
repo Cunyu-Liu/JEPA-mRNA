@@ -3,11 +3,11 @@
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**
 >
 > - [ ] T-A163 已纠正 SOTA 身份并完成 RNAformer 部分 clean 复算；其余模型完整审计未关闭。
-> - [ ] T-A164 eFold/EternaFold 正式测速队列已启动；BPfold/UFold/E2Efold 权重 blocked 已留证。
+> - [x] T-A164 eFold 0.1.3 与 EternaFold 正式三次测速完成；BPfold/UFold/E2Efold 权重 blocked 已留证，不作绝对 SOTA。
 > - [x] T-A165 OOD 负向评估完成：GenA 领先、GenC/GenF 短板；无提升证据，不重复旧训练；零正确配对定义已纠正。
 > - [x] T-A166 文献与叙事审计已形成补图/补文结论，见 round38 专项文档。
-> - [ ] T-A167 第 4/18 页与逻辑页已修订渲染；速度页、源数据与提交待闭环。
-> - [ ] T-A168 official_s3 在 epoch5 checkpoint 暂停供计时，未收敛；测后恢复，全部 seed 未关闭。
+> - [x] T-A167 第 4/5/9/14/18 页及全稿 QA、76 个源文件和最终提交均完成；`01168f3` 已 push。
+> - [ ] T-A168 SSH 恢复后 official_s3 已到 epoch7、best_epoch=7、bad=0、early_stopped=False；继续至收敛与独立 QA。
 >
 > **历史边界**：第 37 轮及更早结果保留，本块覆盖新增问题和纠正项。
 >
