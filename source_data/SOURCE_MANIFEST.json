@@ -546,6 +546,34 @@
    "bytes": 2808,
    "description": "原生 CONTRAfold 八 split 三次复测及独立 TP/FP/FN 重算；非逐模型 clean 结论",
    "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_clean_tr1c_summary.json",
+   "sha256": "4af21aeff8284b420303c4af2e7a144c22156b5509a91c70a0d0e6579c7d4129",
+   "bytes": 2802,
+   "description": "EternaFold 在 tr1c 80% identity clean 子集上的八 split 三次复测",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_clean_tr1c_summary.json",
+   "sha256": "195274ef57b0bad89452f88e0e8b66e8171d61bcf9d3ce5a6053bbff39964ea4",
+   "bytes": 2801,
+   "description": "原生 CONTRAfold 在 tr1c 80% identity clean 子集上的八 split 三次复测",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_ufold_raw_summary.json",
+   "sha256": "e22f77455ae5e3bf338f5d218899270ad58a171e97943b44151ed2eda970f4be",
+   "bytes": 4722,
+   "description": "UFold 八 split 原始集三次复测及独立计数重算；clean 训练并集 provenance 未闭环",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_clean_audits/INDEX.json",
+   "sha256": "699c259064ac6fda37c5e2b14484bc0a0bc80a67cbd331f66c9246e02c59d3b6",
+   "bytes": 3971,
+   "description": "TR0/tr1c 各八 split 的 clean n、删除数、数量守恒与审计哈希索引",
+   "status": "active"
   }
  ]
 }

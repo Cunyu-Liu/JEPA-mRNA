@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RAW_NOT_CLEAN",
+  "system": "UFold",
+  "distribution": "MultiMolecule conversion of the recovered ufold_train_alldata.pt; converted file is not an original-author distribution",
+  "original_checkpoint_sha256": "1b554e1c98d770ced93939f3cdc02da0d7daabfe5a5b8d5ccad277b59d75d4d3",
+  "protocol": "8 raw splits, 3 independent GPU inferences, strict micro-F1; non-exclusive throughput is diagnostic only",
+  "clean_status": "BLOCKED_PROVENANCE: paper, code-default train_files and historical audit do not define one identical training union",
+  "splits": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 18621,
+      "fp": 27345,
+      "fn": 16270,
+      "f1_mean": 0.46059091977194305,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "87f7d1b05bcc1b6d02e3bd2574218f039297c40e8f2c49a2665c83b1e567e069"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/bprna_ts0.json",
+      "artifact_sha256": "6eb6e87623eff1196932672d6ae2a8a0a92c4e935971cf54c4977745d1eb5a42"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 80572,
+      "fp": 84827,
+      "fn": 54612,
+      "f1_mean": 0.5361048362681855,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "be76aa68ba24ba9b85db27bdf7c44c753f558cb4346b14c59103cc12ca2d6bb0"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/bprna_new.json",
+      "artifact_sha256": "f92b9ae16591efa055c84fd3e722128dd8a66e5e59fc7dddfae9c1fa08afe2eb"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 819,
+      "fp": 447,
+      "fn": 526,
+      "f1_mean": 0.6273458445040214,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "6f6bed89c0520b2f6dd6bae31da29725c273930743d6c0fd95773cb26fc8affd"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/ref_pdb_ts1.json",
+      "artifact_sha256": "590aaeba9f122acd11df13e6e409caeaa117ed0c6790f5b93fc44b845f337eb0"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 468,
+      "fp": 148,
+      "fn": 187,
+      "f1_mean": 0.7364280094413848,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "d32a039382555ccd59081fba28edc7e735d6fbdda2fcc2f83a458fd0e1af1ac1"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/ref_pdb_ts2.json",
+      "artifact_sha256": "19bd7467ad6a039c7abaa93633b0ad127c6bd05410475a245d89d0a9f20bdbf8"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 284,
+      "fp": 127,
+      "fn": 133,
+      "f1_mean": 0.6859903381642513,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "65d7d654ea11252222c28208faec646b0563a3208dfd9064abc298a4548e99d1"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/ref_pdb_ts3.json",
+      "artifact_sha256": "9be93da622975eb90f60579541d32624ec079a5988d093108f1d264774ad8720"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 306,
+      "fp": 175,
+      "fn": 169,
+      "f1_mean": 0.6401673640167364,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "18a105cee8b4597fc3e5d19358456023e1fe7522a79eb7fa21384fd3bac98b18"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/ref_pdb_ts_hard.json",
+      "artifact_sha256": "b8d03fc266d8f6f3963b8149894b36428d9f5cb9b3af25c363938a9094389dcb"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 71024,
+      "fp": 68011,
+      "fn": 56498,
+      "f1_mean": 0.5328991547774022,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "8b1250b875d702d4160783a849f4c55a9dc5f62bbdf1788aad256e37da2587b4"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/archiveii_embok_clean.json",
+      "artifact_sha256": "5ee57224b749e6428292158e63fe43118aab4dc1c55bffe45d003a8bf5ecc6eb"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 5432,
+      "fp": 7318,
+      "fn": 5825,
+      "f1_mean": 0.4525346773857624,
+      "f1_sd": 0.0,
+      "prediction_sha256": [
+        "8ccf7dcbb3e295039446a7b900937d854af528498876bd66c016361aaac104a8"
+      ],
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/testsetb.json",
+      "artifact_sha256": "790b372cb483b9a66738a479534d315a896e949e55feff0eec4de76d5db10dad"
+    }
+  }
+}
