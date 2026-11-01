@@ -11222,3 +11222,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch19 train BCE=0.00037577，validation BCE=**0.011398172198141798**，相对 epoch18=0.011469275634844431 再降 7.11034e-5，继续刷新 best，bad=0。
 - validation 仍明显改善，继续按 patience=5 等真实 plateau，不提前结束。
+
+
+## §15.230（2026-11-01）official_s2 epoch20 未改善计数
+
+- epoch20 train BCE=0.00036628，validation BCE=**0.011413348065992531**，高于 epoch19 的 best=0.011398172198141798，未刷新 best。
+- 生产 resume 核对：epoch=20、best_epoch=19、bad=**1**、early_stopped=False，计数正确。patience=5 下继续训练，不将单次小幅波动写成 plateau。
+- epoch19 提交 `acd097d` 已在网络恢复后 push 成功；22/443 端口超时只影响交付同步，不影响训练或原始结果。
