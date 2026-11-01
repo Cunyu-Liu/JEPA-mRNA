@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "two_ready_three_blocked",
+  "protocol": "Official repository and official weights only; no third-party weights, old A100 timings, smoke values, or paper timings may fill a missing result",
+  "systems": {
+    "eFold": {
+      "status": "READY_FOR_FULL_BENCHMARK",
+      "repository": "https://github.com/rouskinlab/eFold",
+      "commit": "4e146fe92c574104b2518d7350e0fa4a39f32030",
+      "weights_sha256": "fcf06c6a7724501e0fb1c5f12bc21ab5bfe7d6131e643d41f139be776aa1dca9",
+      "evidence": "Official GPU smoke passed; official API equality passed on four sequences; B1/B2/B4 prediction identity passed on 16 engineering sequences. These are not final speed results."
+    },
+    "EternaFold": {
+      "status": "READY_FOR_FULL_BENCHMARK_CPU",
+      "repository": "https://github.com/eternagame/EternaFold",
+      "commit": "87b9aac55cee14fd562049d08f7b92d3131f10ce",
+      "serial_binary_sha256": "5b834c29a9cc1ade835662ca70dfd8ea5f437f78e871e4855b22e9d9e0126caf",
+      "parameters_sha256": "1421e89cc8df24b53a320eff6c72b8acfdb2771faba29ab9c798f7bdfc853a8a",
+      "evidence": "MPI build failed because mpi.h is unavailable; the official serial make path built successfully and the official Hammerhead example passed. Full timing is CPU-only and explicitly separated from GPU timing."
+    },
+    "BPfold": {
+      "status": "BLOCKED_OFFICIAL_WEIGHTS_UNAVAILABLE",
+      "repository": "https://github.com/heqin-zhu/BPfold",
+      "commit": "d37d6aa10cbca13e590ff83917fc4d63fec2ddbc",
+      "official_url": "https://github.com/heqin-zhu/BPfold/releases/latest/download/model_predict.tar.gz",
+      "evidence": "Remote wget made four attempts and failed with connection timeouts/empty reply; local curl made two attempts and failed to connect to github.com:443. No valid archive exists."
+    },
+    "UFold": {
+      "status": "BLOCKED_OFFICIAL_WEIGHTS_UNAVAILABLE",
+      "repository": "https://github.com/uci-cbcl/UFold",
+      "commit": "75bd9acc83826059682dfca9d3659df66b132cd1",
+      "official_url": "https://drive.google.com/drive/folders/1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi",
+      "evidence": "The models directory contains only Readme.md. Browser page failed; official Drive folder curl failed to connect. Backup-weight search found no official checkpoint."
+    },
+    "E2Efold": {
+      "status": "BLOCKED_OFFICIAL_WEIGHTS_UNAVAILABLE",
+      "repository": "https://github.com/ml4bio/e2efold",
+      "commit": "2aab9e78326ddaa27d14c49eb34001c0003a1960",
+      "official_url": "https://drive.google.com/drive/folders/1m038Fw0HBGEzsvhS0mRxd0U7cGXqLAVt",
+      "evidence": "models_ckpt contains only the official download README. Browser and curl access to the official Drive folder failed."
+    }
+  }
+}

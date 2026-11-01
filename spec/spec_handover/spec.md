@@ -1,12 +1,38 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
+> **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**
+>
+> **已落实纠正**：第 4 页改为“xens2 胜预注册 clean 参照 6/8，不等于全板 6/8 SOTA”；第 18 页改为“泄露审计与 clean 子集复算”。RNAformer-bprna 的 TS1/TS2/TS3/hard 已真实重算为 0.7830/0.8506/0.8296/0.6933（n=25/11/4/8），其余沿用原板格子不得解释为已去污染。
+>
+> **测速状态与边界**：eFold 官方 GPU smoke、官方 API 等价及 B1/B2/4 工程等价通过，正式全量队列运行中；EternaFold 官方 serial 版本通过 smoke，CPU 结果单列。BPfold/UFold/E2Efold 官方权重通道均实际失败，保留 blocked 证据，不用第三方权重、旧 A100 或论文速度补缺。NB official_s3 已在 epoch5 完整 checkpoint 暂停，测后恢复。
+>
+> **OOD 审计结论**：GenA=0.6443 已领先；GenC=0.3793、GenF=0.3066 是短板，OOD mean=0.4434 仅并列。已有 GT/混合语料/种子实验未超 zero-shot xens2，本轮不重复训练。20.8%/39.2% 是 GenC/GenF 零正确配对率而非零输出率；空输出仅 1/3936、1/1734。GenC 的 RF03981 占 57.3% FN，GenF 主要为 RF03874/RF03662。
+>
+> **执行顺序**：P0 已完成已证实纠错与文献审计 → P1 完成 eFold/EternaFold 正式三次全量测速 → P2 更新第 5/9 页、manifest 与代码提交 → P3 恢复 NB → P4 逐模型泄露复测及 VL0 锁定的新候选。risk–coverage、GenC/GenF 家族失败图与长度边界为优先补图，详见 `paper/round38_literature_and_narrative_audit.md`。
+>
+> **公平性与停止规则**：只用官方权重和必要后处理；同数据、strict micro-F1、canonical-nested GT、raw-sequence 与三次重复。正式计时独占 GPU，CPU 方法不冒充 GPU。smoke 不进入主图。无新实验证据不得写 OOD 提升或绝对速度 SOTA；ViennaRNA 高值不自动等于泄露，任何模型都不能因高分推定污染。
+>
+> **历史边界**：第 37 轮及更早结果保留，本块覆盖新增问题和纠正项。
+>
+> **当前执行覆盖（2026-11-01，第 37 轮：端到端主图 2 与推理优化优先；活跃清单 `round37-speed-v1`）**
+>
+> **用户最新优先级**：主图 2 只画 raw-sequence 端到端速度，不使用 head-only；先做推理优化与测评，NucleicBERT 下游任务后移。历史口径仅保留在附录协议说明，不与主图混算。
+>
+> **实验顺序**：P0 用已验收源数据重绘主图 2 → P1 NB 在 epoch40 完整 checkpoint 后暂停并释放独占 4090 → P2 单变量扩展 batch/TF32 候选 → P3 全 TS0 三次重复与预测等价验收 → P4 更新主图 2/5、源数据和交接记录 → P5 恢复 NB 下游训练与 QA。
+>
+> **候选与验收**：先补 xens2 B=16 与三模型 B=32 饱和点，再以当前最快 r2d B=16 评估 encoder TF32；仅在明确收益且等价门通过时扩展至其他模型。正式计时必须独占 CUDA GPU；同配置三次预测逐位一致，跨配置配对一致率≥99% 且 |ΔF1|≤1e-3，任一失败不得入选。未实测不得提前写提速或绝对 SOTA，UFold 不使用第三方权重。
+>
+> **NB 边界**：official_s2 的暂停不是收敛；保留 model/optimizer/best/history/CUDA RNG。新测速窗口结束前禁止自动启动 official_s3，后续从完整 checkpoint 恢复，不重训已完成 seed。
+>
+> **历史边界**：第 36 轮及更早结果保留，本块只覆盖优先级和新增实验，不改写已有科学结论。
+>
 > **当前执行覆盖（2026-10-31，第 36 轮：速度 SOTA 与 benchmark 公平性；活跃清单 `round36-working-v1`）**
 >
 > **本轮硬目标**：解释并修复 4090 原始序列推理吞吐，补齐泄露感知完整基线表和 RNAformer TS2 公平性证据；不把不同计时边界、不同 GT、不同 checkpoint 或未审计单元格拼成 SOTA。
 >
 > **已核实的口径事实**：
 > 1. 历史 124.78 seq/s 属于 r2dtr1c-s0 的 cached-embedding/head-only、B=256、fp16 工程峰值，不含 650M 编码器；当前 r2d 22.28 seq/s 是 raw-sequence 端到端、B=1，二者不是复现失败。同 B=1 时 head-only=21.45、raw-sequence=22.28 seq/s，二者接近，故大差距主要来自 B=256+fp16 饱和加速与计时边界，不能只归因于编码器或硬件。TS0 有 289 种长度；精确长度 bucket 下 B=4 的实际平均 batch 仅 2.717，B≥32 也仅 4.457，不能拿 B=256 的饱和峰值解释当前小 batch。
-> 2. 当前 xens2 B=1 为 7.47 seq/s，包含三次编码器前向（plana s0/s1 与 r2d）；主图 5 的 Pareto 只限已测五系统，RNAformer/UFold 同机完整点未闭环，因此**当前未证明全模型速度 SOTA**。
+> 2. 当前 xens2 B=1 为 7.47 seq/s，包含三次编码器前向（plana s0/s1 与 r2d）。六系统 B=1/2/4 共 18/18 格已闭环，RNAformer=2.56/2.72/2.73 seq/s；fp32 扩展 batch 最优为 r2d B=16=50.679、plana B=16=46.127、xens2 B=8=17.622 seq/s，均过预测等价门。**共同 4090 协议下三 JEV 均处精度-吞吐前沿，r2d 最快；UFold 未测，不作无限制绝对速度 SOTA。**
 > 3. 4090 不意味着主 benchmark 精度明显改变。已有 TS0 复现为 plana 0.786839 vs A100 0.786563，xens2 0.804063 vs 板值 0.8039，属于数值舍入量级；已有交接记录称 4090 八 split 板值复现一致，本轮逐项绑定原始 artifact，缺项才重跑。
 > 4. 第 17 页是原始全板敏感性表，含训练/测试重叠结果，不是全部去泄露表。新表必须逐格记录训练语料、checkpoint、重叠数、GT 和指标；TR0 系模型的 TestSetB 只用 clean-181，未审计格标 `NA/not audited`。
 > 5. TS2 当前 RNAformer-if=0.9043 来自官方 inter-family 特殊微调 checkpoint + 项目 canonical-nested GT 复测；它不是 RNAformer 原文同一数值口径。固定 bprna checkpoint 与 inter-family 任务匹配 checkpoint 必须分列，release-full GT、canonical-nested GT、原文 quoted 与项目复测不得互换。主 benchmark 当前统一 xens2 对预注册 clean 参照为 6/8，负格是 bpRNA-new 与 TS2。
@@ -19,6 +45,8 @@
 > **执行顺序（硬门）**：P0 文档与原始 artifact 审计 → P1 泄露感知表/RNAformer 双口径与既有 4090 精度复核（CPU 可并行）→ P2 当前 NB run 边界后独占 4090，复现 head-only 并做 raw-sequence 分段 profile → P3 单变量优化与全 TS0 等价门 → P4 补齐同机 RNAformer/UFold 和扩展 batch 网格 → P5 更新第 5/18 页、新增泄露感知表、逐页 QA → P6 归档、哈希与 GitHub。任何阶段未过对应验收门不得把结果推进为科学结论。
 >
 > **GPU 与停止规则**：非计时阶段按实测显存和 CPU 容量并行提交独立任务，有余量即接续，禁止为占满显存而超订；正式计时必须独占，避免其他作业污染。CUDA 不可用或 CPU 静默降级立即停止并留证。训练仍以 validation plateau、best checkpoint 和 early-stopping 判收敛，不设步数上限；纯推理优化不重训，不得伪称训练收敛。smoke、proxy、训练集、单 seed 和不完整计时不得写成最终科学结论。
+>
+> **NB 恢复合同补充**：official_s0/s1 均已收敛并通过独立 GPU QA，official_s1 未重训。队列默认 parallel=1，只有 `PASS+converged+early_stopped+scientific_eligibility` 的 full run 才可跳过，QA 必须绑定 run 哈希；official_s2 自然收敛后先补其 QA，再启动后续 seed。恢复器只停止调度器，不中断当前训练；缺 run.json 或收敛门失败时禁止自动重试。相关测试共 10/10 PASS，最新修复提交 `4722af6`。
 >
 > **历史边界**：本块覆盖第 35 轮及更早的同主题状态；既有科学结果不返工，只修正口径、补齐缺失证据和推理工程。
 

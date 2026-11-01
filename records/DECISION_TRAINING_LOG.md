@@ -11097,3 +11097,268 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 与同一协议的 r2d/plana/xens2 B=1 相比，RNAformer 明显更慢；但 B=2/4 尚未完成，不能用 B=1 代替完整共同网格或最终 SOTA 结论。
 - PPT 已加入 4090 head-only=117.735 seq/s 的复现证据及历史计数一致性，两个修改页通过字体、行距、布局与独立端口渲染复核，提交 `5d9d0cf`。
 - 52 个活跃源文件已验证，fp32 B=16/8 有效候选全部保留，较慢 bf16 结果不入选最快配置。RNAformer 全网格完成后才生成最终图件。
+
+
+## §15.212（2026-11-01）共同速度网格、最终主图 5、交付稿与归档闭环
+
+- **RNAformer 全网格完成**：B=1/2/4 中位吞吐分别为 2.556415/2.718595/2.732578 seq/s，strict micro-F1 均为 0.757543；全 TS0、三次重复、CUDA、raw-sequence 端到端。六系统 B=1/2/4 共 18/18 格已闭环，不再沿用早期 RNAformer blocked 状态。
+- **最终速度结论及边界**：fp32 最优 eligible 为 r2d B=16=50.678538、plana B=16=46.127485、xens2 B=8=17.621712 seq/s，配对一致率=0.995375/0.998024/0.998954，绝对 F1 差=0.000493/0.000119/0.00000029。共同 4090 协议下三 JEV 均处精度-吞吐前沿，r2d 最快；UFold 官方权重不可得，不宣称无限制绝对速度 SOTA。较慢 bf16 及未过门结果不入选。
+- **主图 5 修复与验收**：绘图循环补齐 B=8/16，r2d/plana B=16 与 xens2 B=8 三点实际可见；图注改为三行并消除左右裁切。静态编译与 `test_make_figure5_round36.py` 2 项测试通过，提交 `105df7a`、`c12d0ec` 已推送。最终 PNG SHA256=`f22685cae8106e36cc87106f7bc89d41c21d86d6b2bb3d71bc396721052ac94f`，PDF SHA256=`816a2a7ca60905a552d58c21105d9ff24bc7e3704520d836b8112247af2d750d`。
+- **PPT 最终交付**：第 9 页原位替换新主图，第 5/9/16/19/22 页速度状态、备注与限制同步；PPT 嵌入 PNG 与源文件 SHA256 完全一致。23 页、890 个非空文本 run 均为微软雅黑，889 个非空段落均 1.5 倍行距，shape 越界 0、安全区越界 0、ZIP PASS；LibreOffice+显式 fontconfig 渲染 23 页，总览及第 9/16/22 页全尺寸复核无重叠、无截断。PPT SHA256=`e2f79a6f2fbc3beb3bcf2b67fbec3bf9ceb1e7ad544f72c188dde2544a03becf`，PDF SHA256=`13d1c322f3924e5a8f990fec49a190a421d448ba21fc9d4c2883c8269287c51a`。
+- **源数据与归档**：58 个活跃文件全部通过存在性、字节数、SHA256、README 前缀与实际目录一致性复核；新增图件、汇总、RNAformer 三份原始 JSON 和两个构建脚本。15 格旧主图三件移入 `archive_20261031/old_figures/round35_speed/`，OOM 日志移入 `quarantined_speed_round36/`，四项归档哈希通过，原始证据未删除。
+- **NB 训练状态**：official_s2 从 epoch3 的完整 resume checkpoint 恢复；epoch4 validation BCE=0.01374074，低于 epoch3 的 0.01428887，随后继续 epoch5。CUDA 训练进程与队列均保留，仍按 patience=5 等 validation plateau；暂停不写成收敛，五种子与独立 QA 总门不关闭。
+
+
+## §15.213（2026-11-01）NB 断点续训、QA 缺口与无重复恢复器
+
+- **现有验收状态**：official_s0 为 31 epochs、best epoch26、best validation BCE=0.01102600，`run.json+qa.json` 均 PASS。official_s1 为 39 epochs、best epoch34、best validation BCE=0.01088370，满足 `converged+early_stopped+scientific_eligibility`，但独立 `qa.json` 尚未生成；该缺口不重训、不隐藏。
+- **official_s2 续训进展**：epoch4/5/6 validation BCE=0.01374074/0.01334402/0.01303951，持续刷新 best，epoch7 正常训练。仍不满足 early-stopping，不写成收敛或五种子结论。
+- **队列根因与修复**：旧 pending 只检查 `run.json=PASS`，会跳过缺少或哈希过期 QA 的已完成 run。新增 `completed_runs_needing_qa`，要求 QA 的 `run_sha256` 与当前 run 文件一致，并在任何新 seed 启动前串行补齐。静态编译、队列新测试与既有 NB 测试共 6 项 PASS；dry-run 明确显示 `QA backfill=[official_s1]`，full pending 从 official_s2 开始，不重复 official_s0/s1。
+- **无中断切换**：仅终止旧 scheduler/flock，official_s2 训练 PID 1426895 保持运行。恢复 watcher PID 1427521 等该 PID 自然结束后，先检查 `run.json` 的 PASS、converged、early_stopped 和 scientific_eligibility；任何一项缺失均停止且禁止自动重试。通过后由同一 flock 启动修复队列，依次补 official_s1/s2 QA，再启动 official_s3，避免训练与 QA 或重复训练并发。
+- 修复代码、恢复脚本和测试已提交并 push：`403c766`。最终 5+5 aggregate 与图 7d 总门继续保持未关闭。
+
+
+## §15.214（2026-11-01）NB 最终聚合 fail-closed 与 QA 资产预检
+
+- **静态资产预检**：official_s0/s1 的训练代码 SHA256 均为 `d36380d42fb2…`，与当前 `nb_secstr_dual_round34.py` 一致；两份 best checkpoint 存在且哈希匹配，validation/TS0/ArchiveII600 三组预测文件的行数和 SHA256 均匹配。该检查只排除资产损坏，不替代后续独立 GPU 复推 QA。
+- **聚合合同复核**：`aggregate_nb_secstr_round34.py` 强制 official/JEV 各五 seed、run+QA PASS、run/QA 哈希绑定、head/seed/limit 身份、full 收敛与 scientific eligibility；指标为 TS0/ArchiveII600 的 per-structure macro-F1，同 seed 配对单侧 t 检验，并在这两个任务内做 Holm 校正。零方差时不伪造显著性。
+- **不完整输入必须失败**：对当前真实 runs-root 做聚合预检，程序在 official_s1 缺少 `qa.json` 处按预期失败，未生成 `premature_aggregate_should_not_exist.json`。日志保存 `audits/nb_secstr_round35_b4/preflight_incomplete_aggregate.log`。这不是科学失败，而是 QA 缺口被正确拦截。
+- official_s2 与恢复 watcher 继续运行；只有 10 个 full run 全部通过独立 GPU QA 后才允许生成 aggregate 和更新图 7d。
+
+
+## §15.215（2026-11-01）NB 恢复器三分支持久测试
+
+- 新增 `tests/test_nb_secstr_qa_recovery_round35.py`，直接执行生产恢复脚本，并用 fake flock 截获最后的队列调用，确保测试不启动真实 GPU 训练。
+- 三条分支均通过：①缺 `run.json` 时非零退出且不调用队列；②run 存在但未满足 converged/early_stopped/scientific_eligibility 时非零退出且不调用队列；③完整 PASS+收敛结果只调用一个 `--parallel 1 --min-free-mib 8000 --interval 30` 队列。
+- 首轮测试发现 fake flock 的 `/usr/bin/env python3` 在集群无该解释器，改为集群实际 Python 绝对路径后重跑；这是测试环境修复，生产脚本未改。最终恢复器、队列与既有 NB 测试共 **9/9 PASS**。测试提交 `7590307`。
+- official_s2 epoch7 validation BCE=**0.01281778**，相对 epoch6=0.01303951 继续下降并刷新 best；epoch8 已启动，watcher 正常等待，仍不提前停止。
+
+
+## §15.216（2026-11-01）official_s1 独立 GPU QA 正式闭环
+
+- 在 official_s2 正常训练期间，利用缓存表征任务头的非计时 QA 可并行特性，完成 official_s1 独立 RTX 4090 复推；未启动重复训练，未影响正式速度数据。
+- validation/TS0/ArchiveII600 分别 1300/1305/3911 条，三组均逐名称、GT、pairs 和独立指标复算一致，`gpu_reinference_exact=True`；macro-F1=0.31439467/0.32593653/0.70474171。这些是 official seed1 的单 seed 工程验收值，不作五种子科学结论。
+- `qa.json`：status=PASS、device=cuda、scientific_eligibility=True，run SHA256=`a16ca2fe10fe521b7ef68ab0b98e6fc7d745e7d0bb65e08d1c71ba5b92b56276`；QA JSON SHA256=`cfa2d05b7da1bca4f5902b9e363e0ce80820ad848686600cc3517025bc042f97`，QA log SHA256=`ec34765d73fa8262bc38db1f6495d87d94f0534f7a5db851ebe51e04e9572bc3`。
+- 队列 dry-run 复核 `QA backfill=[]`，不再跳过任何已完成 run 的 QA；full pending 仅从 official_s2 起。official_s2 自然收敛后只需补自己的 QA，再进入 official_s3。
+
+
+## §15.217（2026-11-01）NB full-run 续跑门与默认并发加固
+
+- 默认 `--parallel` 从 3 改为 **1**，防止后续手工重启在单张 4090 上超订；并行 QA 仍只允许非计时、显存有余量的独立任务，不改变五种子配对协议。
+- 新增 `full_result_pass`：只有 `status=PASS`、`converged=True`、`early_stopped=True`、`scientific_eligibility=True` 才能被视为已完成 full run。仅写 PASS 但未收敛的结果不会被跳过，也不会被错误送入 QA backfill。
+- 新测试覆盖 nonconverged PASS，恢复器/队列/既有 NB 测试共 **10/10 PASS**；不带 `--parallel` 的真实 dry-run 显示 parallel=1、QA backfill=[]，pending 从 official_s2 起，official_s0/s1 不重复。
+- 代码与测试提交 `4722af6` 已 push。当前 watcher 在 official_s2 自然结束后将使用加固后的队列。
+
+
+## §15.218（2026-11-01）official_s2 真实 resume 状态独立核对
+
+- 直接读取生产 `resume.pt`，确认保存键为 model、optimizer、best_state、epoch、best_epoch、best_loss、bad、history、coverage、cuda_rng_state 与 run_identity；model/best_state 各 16 个张量，optimizer 含 state 和 param_groups，CUDA RNG 存在。
+- checkpoint 与 `validation_history.jsonl` 完全一致：epoch=8、best_epoch=8、best validation BCE=**0.012367032571418569**、bad=0、history 尾三项一致，early_stopped=False，gradient coverage 无 missing/nonfinite。run identity 仍为 batch=4、lr=1e-5、patience=5、min_delta=1e-6、代码哈希 `d36380d42fb2…`。
+- 以上证明断点恢复状态真实完整，不只是单元测试通过；epoch8 相比 epoch7=0.01281778 继续改善，epoch9 正常训练，不提前停止。
+
+
+## §15.219（2026-11-01）official_s2 epoch9 验证节点
+
+- epoch9 train BCE=0.00054100，validation BCE=**0.012357817081725368**，相对 epoch8=0.012367032571418569 再降 9.2155e-6，超过 min_delta=1e-6，继续刷新 best，bad=0。
+- 改善幅度已明显小于前一轮，但当前仍满足更新条件，不能把“趋缓”当作“ plateau”。按 patience=5 继续后续 epoch，不设置新的步数或 epoch 上限。
+
+
+## §15.220（2026-11-01）official_s2 epoch10 验证节点
+
+- epoch10 train BCE=0.00051353，validation BCE=**0.012302782760816013**，相对 epoch9=0.012357817081725368 再降 5.5034e-5，继续刷新 best，bad=0。
+- epoch9 的短暂趋缓没有形成 plateau，epoch10 改善再次扩大；继续按原 early-stopping 合同训练，不调整学习率、batch 或种子。
+
+
+## §15.221（2026-11-01）official_s2 epoch11 验证节点
+
+- epoch11 train BCE=0.00049041，validation BCE=**0.012150526581859730**，相对 epoch10=0.012302782760816013 再降 1.52256e-4，继续刷新 best，bad=0。
+- 当前 validation 改善重新扩大，远超过 min_delta，不支持提前收敛判断；继续原合同训练并等待后续节点。
+
+
+## §15.222（2026-11-01）official_s2 epoch12 验证节点
+
+- epoch12 train BCE=0.00047035，validation BCE=**0.011950184556014655**，相对 epoch11=0.012150526581859730 再降 2.00342e-4，继续刷新 best，bad=0。
+- 本轮改善进一步增大，首次低于 0.012；没有提前停止的依据，继续按 patience=5 等待真实 plateau。
+
+
+## §15.223（2026-11-01）official_s2 epoch13 验证节点
+
+- epoch13 train BCE=0.00045258，validation BCE=**0.011859104993047114**，相对 epoch12=0.011950184556014655 再降 9.10796e-5，继续刷新 best，bad=0。
+- 训练日志与进程复核正常，无异常退出或停滞；继续按原 early-stopping 合同训练。
+
+
+## §15.224（2026-11-01）official_s2 epoch14 验证节点
+
+- epoch14 train BCE=0.00043673，validation BCE=**0.011834594179564423**，相对 epoch13=0.011859104993047114 再降 2.45108e-5，继续刷新 best，bad=0。
+- 改善幅度较上一轮缩小，但仍超过 min_delta=1e-6；不将单轮趋缓当作 plateau，继续后续 epoch。
+
+
+## §15.225（2026-11-01）official_s2 epoch15 验证节点
+
+- epoch15 train BCE=0.00042214，validation BCE=**0.011668735716230621**，相对 epoch14=0.011834594179564423 再降 1.65858e-4，继续刷新 best，bad=0。
+- 改善再次扩大，继续按原 early-stopping 合同训练，不提前截断。
+
+
+## §15.226（2026-11-01）official_s2 epoch16 验证节点
+
+- epoch16 train BCE=0.00040924，validation BCE=**0.011585955797570139**，相对 epoch15=0.011668735716230621 再降 8.27799e-5，继续刷新 best，bad=0。
+- 生产日志步数正常，validation 仍持续改善；继续原 early-stopping 合同，不提前结束。
+
+
+## §15.227（2026-11-01）official_s2 epoch17 首次未刷新 best
+
+- epoch17 train BCE=0.00039718，validation BCE=**0.011633096410923770**，高于 epoch16 的当前 best=0.011585955797570139，首次未改善。
+- 生产 resume 独立核对：epoch=17、best_epoch=16、best_loss=0.011585955797570139、bad=**1**、early_stopped=False，history 与 validation_history.jsonl 完全一致，early-stop 计数正确。
+- patience=5，当前仅 1 次未改善，不能称为 plateau 或提前停止；继续后续 epoch，best checkpoint 仍保留 epoch16。
+
+
+## §15.228（2026-11-01）official_s2 epoch18 新 best 与计数复位
+
+- epoch18 train BCE=0.00038605，validation BCE=**0.011469275634844431**，相对 epoch16 的前 best=0.011585955797570139 下降 1.16680e-4，刷新 best。
+- 生产 resume 核对：epoch=18、best_epoch=18、bad=**0**、early_stopped=False，epoch17 的 bad=1 已正确复位。首次未改善只是波动，不是 plateau；继续原合同训练。
+
+
+## §15.229（2026-11-01）official_s2 epoch19 验证节点
+
+- epoch19 train BCE=0.00037577，validation BCE=**0.011398172198141798**，相对 epoch18=0.011469275634844431 再降 7.11034e-5，继续刷新 best，bad=0。
+- validation 仍明显改善，继续按 patience=5 等真实 plateau，不提前结束。
+
+
+## §15.230（2026-11-01）official_s2 epoch20 未改善计数
+
+- epoch20 train BCE=0.00036628，validation BCE=**0.011413348065992531**，高于 epoch19 的 best=0.011398172198141798，未刷新 best。
+- 生产 resume 核对：epoch=20、best_epoch=19、bad=**1**、early_stopped=False，计数正确。patience=5 下继续训练，不将单次小幅波动写成 plateau。
+- epoch19 提交 `acd097d` 已在网络恢复后 push 成功；22/443 端口超时只影响交付同步，不影响训练或原始结果。
+
+
+## §15.231（2026-11-01）official_s2 epoch21 连续第二次未改善
+
+- epoch21 train BCE=0.00035719，validation BCE=**0.011492548347712971**，高于 epoch19 的 best=0.011398172198141798，连续第二轮未刷新 best。
+- 生产 resume 核对：epoch=21、best_epoch=19、bad=**2**、early_stopped=False，计数正确。当前为 2/5，继续训练并保留 epoch19 best checkpoint，不提前停止。
+
+
+## §15.232（2026-11-01）official_s2 epoch22 新 best 与计数复位
+
+- epoch22 train BCE=0.00034876，validation BCE=**0.011249867316879478**，相对 epoch19 的前 best=0.011398172198141798 下降 1.48305e-4，刷新 best。
+- 生产 resume 核对：epoch=22、best_epoch=22、bad=**0**、early_stopped=False，连续两次未改善已正确复位。epoch20–21 的波动不是 plateau，继续原合同训练。
+
+
+## §15.233（2026-11-01）official_s2 epoch23 验证节点
+
+- epoch23 train BCE=0.00034093，validation BCE=**0.011084574559197882**，相对 epoch22=0.011249867316879478 再降 1.65293e-4，继续刷新 best，bad=0。
+- validation 仍显著改善，继续按 patience=5 等真实 plateau，不提前结束。
+
+
+## §15.234（2026-11-01）official_s2 epoch24 未改善计数
+
+- epoch24 train BCE=0.00033321，validation BCE=**0.011271513923119850**，高于 epoch23 的 best=0.011084574559197882，未刷新 best。
+- 生产 resume 核对：epoch=24、best_epoch=23、bad=**1**、early_stopped=False，计数正确。patience=5 下继续训练，保留 epoch23 best checkpoint。
+
+
+## §15.235（2026-11-01）official_s2 epoch25 连续第二次未改善
+
+- epoch25 train BCE=0.00032608，validation BCE=**0.011160734535722708**，高于 epoch23 的 best=0.011084574559197882，连续第二轮未刷新 best。
+- 生产 resume 核对：epoch=25、best_epoch=23、bad=**2**、early_stopped=False，计数正确。当前为 2/5，继续训练并保留 epoch23 best checkpoint。
+
+
+## §15.236（2026-11-01）official_s2 epoch26 连续第三次未改善
+
+- epoch26 train BCE=0.00031929，validation BCE=**0.011193924845160776**，高于 epoch23 的 best=0.011084574559197882，连续第三轮未刷新 best。
+- 生产 resume 核对：epoch=26、best_epoch=23、bad=**3**、early_stopped=False，计数正确。当前为 3/5，继续训练，不提前停止，也不替换 best checkpoint。
+
+
+## §15.237（2026-11-01）official_s2 epoch27 新 best 与计数复位
+
+- epoch27 train BCE=0.00031273，validation BCE=**0.011076983409024356**，相对 epoch23 的前 best=0.011084574559197882 再降 7.59115e-6，超过 min_delta=1e-6，刷新 best。
+- 生产 resume 核对：epoch=27、best_epoch=27、bad=**0**、early_stopped=False，连续三次未改善已正确复位。改善虽小但仍满足更新条件，继续原合同训练。
+
+
+## §15.238（2026-11-01）official_s2 epoch28 未改善计数
+
+- epoch28 train BCE=0.00030662，validation BCE=**0.011145335678398090**，高于 epoch27 的 best=0.011076983409024356，未刷新 best。
+- 生产 resume 核对：epoch=28、best_epoch=27、bad=**1**、early_stopped=False，计数正确。当前为 1/5，继续训练并保留 epoch27 best checkpoint。
+
+
+## §15.239（2026-11-01）official_s2 epoch29 新 best
+
+- epoch29 train BCE=0.00030040，validation BCE=**0.011037763602789448**，相对 epoch27 的前 best=0.011076983409024356 再降 3.92198e-5，刷新 best，bad=0。
+- validation 仍超过 min_delta 地改善，继续按原 early-stopping 合同训练。
+
+
+## §15.240（2026-11-01）official_s2 epoch30 新 best
+
+- epoch30 train BCE=0.00029469，validation BCE=**0.011030967120397986**，相对 epoch29=0.011037763602789448 再降 6.79648e-6，超过 min_delta=1e-6，刷新 best，bad=0。
+- 改善虽小但仍满足更新条件，继续按 patience=5 等真实 plateau，不提前停止。
+
+
+## §15.241（2026-11-01）official_s2 epoch31 未改善计数
+
+- epoch31 train BCE=0.00028914，validation BCE=**0.011037677104493741**，高于 epoch30 的 best=0.011030967120397986，未刷新 best，bad=1。
+- 单轮小幅波动不构成 plateau；继续原 early-stopping 合同训练，保留 epoch30 best checkpoint。
+
+
+## §15.242（2026-11-01）official_s2 epoch32 新 best
+
+- epoch32 train BCE=0.00028370，validation BCE=**0.011021186757316778**，相对 epoch30 的前 best=0.011030967120397986 再降 9.78036e-6，超过 min_delta=1e-6，刷新 best，bad=0。
+- 前一轮波动未形成 plateau，继续按原 early-stopping 合同训练。
+
+
+## §15.243（2026-11-01）official_s2 epoch33 新 best
+
+- epoch33 train BCE=0.00027855，validation BCE=**0.010965557402982098**，相对 epoch32=0.011021186757316778 再降 5.56294e-5，刷新 best，bad=0，首次低于 0.011。
+- validation 仍明显改善，继续按 patience=5 等真实 plateau，不提前停止。
+
+
+## §15.244（2026-11-01）official_s2 epoch34 未改善计数
+
+- epoch34 train BCE=0.00027349，validation BCE=**0.011072319088253985**，高于 epoch33 的 best=0.010965557402982098，未刷新 best，bad=1。
+- 单轮波动不构成 plateau；继续原 early-stopping 合同训练，保留 epoch33 best checkpoint。
+
+
+## §15.245（2026-11-01）official_s2 epoch35 新 best
+
+- epoch35 train BCE=0.00026860，validation BCE=**0.010949568377534014**，相对 epoch33 的前 best=0.010965557402982098 再降 1.59890e-5，超过 min_delta=1e-6，刷新 best，bad=0。
+- epoch34 的波动未形成 plateau，继续按原 early-stopping 合同训练。
+
+
+## §15.246（2026-11-01）official_s2 epoch36–39 原始节点补录
+
+- 中断交互期间生产训练持续运行，已从 `validation_history.jsonl` 逐行补录，而不是只保留最新值：epoch36 validation BCE=**0.010843943561498056**（新 best）；epoch37=0.010996150998841383；epoch38=0.010967191585468335；epoch39=0.011216970775417926，后三轮均未超过 epoch36 best。
+- 生产 resume 核对：epoch=39、best_epoch=36、best_loss=0.010843943561498056、bad=**3**、early_stopped=False，run.json 尚未生成，epoch40 正常训练。
+- 当前为 3/5 次未改善，继续按 patience=5 等待，不提前停止，也不把 epoch36–39 的中间状态写成收敛。epoch35 提交 `922aab8` 已 push 成功。
+
+
+## §15.247（2026-11-01）第 37 轮优先级：主图 2 纯端到端与 NB 安全暂停
+
+- **用户最新决策**：主图 2 不再使用 head-only，只展示 raw-sequence 端到端；推理优化与测评优先于 NucleicBERT 下游任务。T-A159–T-A162 已写入三处 spec/tasks/checklist，执行顺序为主图 2→NB 完整 checkpoint 暂停→独占速度测评→图件与源数据→恢复 NB。
+- **主图 2 完成**：六系统最优合格配置为 r2d B=16=50.6785、plana B=16=46.1275、xens2 B=8=17.6217、RiNALMo-ft B=4=23.8044、MXfold2 B=2=14.7604、RNAformer B=4=2.7326 seq/s；全 TS0 三次重复，范围、batch、F1 与源哈希齐全。PNG SHA256=`48e3c26ca4554925ba189a562860e420c8ef7e50d70e3b071d988943c37b2001`，源 JSON 已标 `final_visual_qa_pass`。
+- **PPT**：第 5 页原位替换为纯端到端图，标题、脚注与备注同步，主图 2 不含 head-only；其他页面内容/几何保持不变。round37 PPT SHA256=`b26d76065b3d3d3dfd3a42f14e212efc1eef5d9b3bc157b450efac71f3bb7bae`，PDF SHA256=`eaa79b465f48506bf7b4c832568b440fc158f88e5cc86144e4991b09bac28ca0`。第 8 页用户原有便签文本框保持原样，不当作本轮新增问题。
+- **NB 暂停证据**：official_s2 已完成 epoch40，validation BCE=0.010985194820785266；checkpoint 为 epoch40、best_epoch=36、best_loss=0.010843943561498056、bad=4、early_stopped=False，run.json 不存在。已停止恢复 watcher，epoch40 后终止训练，official_s3 未启动；暂停仅为速度优先级，不是收敛，后续从完整 checkpoint 恢复。
+- 活跃源数据新增 fig02 三件，manifest/README 同步。后续 xens2 B=16、三模型 B=32 和 r2d TF32 尚未实测，不提前写提速。
+
+
+## §15.248（2026-11-01）B=32 最优端到端结果、主图 2/5 更新与 NB 恢复
+
+- **独占窗口完成**：NB epoch40 后无其他 GPU 作业，CUDA 断言通过。xens2 B=16=19.452 seq/s；三模型 B=32 分别为 r2d=**53.906663**、plana=**47.924270**、xens2=**19.891765 seq/s**，均全 TS0 三次重复且预测等价门通过。r2d TF32 B=16=52.425754 seq/s，虽通过但慢于 fp32 B=32，不扩展。
+- **等价证据**：r2d/plana/xens2 B=32 配对一致率=0.995479/0.998181/0.998924，绝对 F1 差=0.000502/0.000071/0.000181；xens2 B=16 一致率=0.999013、差=0.000170。TF32 一致率=0.999712、差=0.0000365。峰值显存约 8.62/9.85/13.60 GiB，均无 OOM 或 CPU 降级。
+- **主图与 PPT**：主图 2 最优更新为 B=32 的 53.91/47.92/19.89；主图 5 B 面板新增 xens2 B=16 与三模型 B=32，TF32 仅记录不选。两图和第 5/9 页渲染通过，PPT 嵌入图哈希一致。round37 PPT SHA256=`a6a6fdc4e9e6a6731c9ea60a1fadf14b8c3d776a0d58f6178773fcae088f6e9c`，PDF SHA256=`90be215c2464cc99fa61fe5192491eb8697ced6d043d6ab72f325603f449a18e`。
+- **源数据**：新增 round37 图件与五份原始 profile；round36 主图 5 三件已移入 `archive_20261031/old_figures/round36_speed/` 并哈希验收。当前 66 个活跃源文件全部通过本地 manifest/README/目录一致性复核。
+- **NB 恢复**：测速与图件完成后已启动修复队列，official_s2 从 epoch40 checkpoint 续训，训练 PID=1432966；未启动 official_s3，未把暂停写成收敛。恢复后仍需 validation plateau、独立 GPU QA 与五种子聚合。
+
+
+## §15.249（2026-11-01）official_s2 收敛与独立 QA 闭环，official_s3 启动
+
+- epoch41 validation BCE=0.010899689826143288，未超过 epoch36 best=0.010843943561498056，达到 bad=5 并触发 early-stopping。最终 `run.json`：41 epochs、best_epoch=36、best_validation_bce=0.010843943561498056，`status=PASS`、`converged=True`、`early_stopped=True`、`scientific_eligibility=True`。
+- 独立 RTX 4090 QA 通过：validation/TS0/ArchiveII600 macro-F1=0.32174510/0.33517723/0.71002914，三组预测均 `gpu_reinference_exact=True`；run SHA256=`7db29fcfd50676a6e3af8619272edeb89b3522e8ff80c5ee91b31ffafccf3bcd`，QA JSON SHA256=`63a143b211f5c8edde9a055a0296143c03ceb3d3361b707d9ed8ef17958d157a`。
+- official 头现有 **3/5 seeds** 完成收敛与独立 QA。队列已自动启动 official_s3（PID=1433306），batch=4、device=cuda；未重复 official_s0–s2，未提前生成五种子 aggregate。
+
+
+## §15.250（2026-11-01）第 38 轮泄露纠错、扩展基线、OOD 定义复核与 NB 安全暂停
+
+- **泄露与参照**：RNAformer-bprna 原始 DBN 经精确训练重叠剔除后，TS1/TS2/TS3/hard clean n=25/11/4/8，独立 micro-F1=0.7829787/0.8505747/0.8296296/0.6933333；全文复算与原结果一致，独立逐序列 TP/FP/FN 复核通过。第 18 页只称“泄露审计与 clean 子集复算”，不再冒充逐模型完整去泄露复测。bpRNA-new 的 UFold=0.6106 仅为预注册参照；EternaFold=0.6854、MXfold2=0.6688、eFold=0.6640 均更高。第 4 页改为预注册参照 6/8，不等于全板 6/8 SOTA。
+- **扩展基线**：eFold 使用官方 commit `4e146fe92c574104b2518d7350e0fa4a39f32030` 与权重 SHA256 `fcf06c6a7724501e0fb1c5f12bc21ab5bfe7d6131e643d41f139be776aa1dca9`；官方 GPU smoke、4 条官方 API 逐对等价、16 条 B1/B2/B4 预测一致通过。EternaFold 的 MPI 构建因缺 `mpi.h` 失败并留证，官方 serial 构建与 Hammerhead smoke 通过；binary SHA256=`5b834c29a9cc1ade835662ca70dfd8ea5f437f78e871e4855b22e9d9e0126caf`，参数 SHA256=`1421e89cc8df24b53a320eff6c72b8acfdb2771faba29ab9c798f7bdfc853a8a`。BPfold/UFold/E2Efold 官方权重通道均失败，blocked 证据写入 `source_data/fig05_speed/round38_baseline_assets.json`，不采用第三方权重或旧测速。
+- **正式计时协议**：TS0 n=1288、raw-sequence 全链路、B=1/2/4、三次重复、strict micro-F1、预测哈希与峰值显存。eFold 使用官方模型、约束、100 步后处理与 Hungarian 解码；EternaFold 为单线程官方 CPU CLI，B=2/4 不适用于原生 serial CLI，不伪造 GPU/batch 数字。smoke 值不进入主图。
+- **NB official_s3 过程记录**：epoch1–5 validation BCE=0.015494152791313316、0.015095271533301901、0.014391265003004756、0.013832932614817904、0.013348773338180898，持续刷新 best。为独占测速，已在 epoch5 完整 checkpoint 后停止队列与训练，证据 `speed_round38/nb_pause.json`；checkpoint best_epoch=5、best_loss=0.013348773338180898，未 early-stop、未收敛。测后从该 checkpoint 恢复，不重训 official_s0–s2。
+- **OOD 离线重算**：xens2 GenA=0.644258、GenC=0.379272、GenF=0.306568，OOD mean=0.443366，仅与 OFoldNA-SS 0.4410 并列。GenC 平均预测/真值配对=20.5399/31.1369，GenF=17.2111/26.0254，均为少预测。空输出仅 GenC 1/3936、GenF 1/1734；旧记录 20.8%/39.2% 实为**零正确配对率**，不是零输出率。GenC 的 RF03981 n=1702、micro-F1=0.12242，贡献 57.315% FN；GenF 的 RF03874/RF03662 合计贡献 74.566% FN。
+- **OOD 决策**：已有直接 GT、三种子集成、清洁 CHANRG 与混合语料均未超过 zero-shot xens2，本轮不重复训练、不预设 OOD mean 提升。GenC 若仅追平 OFoldNA-SS=0.3956，算术 mean 为 0.448809，但这不是实验预测。候选须从 VL0 锁定，禁止在 GenC/GenF 测试集调阈值。源 `fig09_ood/round38_ood_failure_source.json` 已三遍守恒、哈希与独立 micro-F1 复核。
+- **文献与写作**：`paper/round38_literature_and_narrative_audit.md` 已给出速度、risk–coverage、家族失败、泄露敏感性、代表结构与长度分层补图顺序。根目录 `preprint_draft.md` 仍有旧性能与训练中状态，不能局部改几句冒充当前论文；后续须从已验收源数据重建相关章节。

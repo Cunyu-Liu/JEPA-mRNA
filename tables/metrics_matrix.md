@@ -5,6 +5,17 @@ All values re-derived from result.json / baselines_*.json on disk
 rows carry their paper source and are flagged. '—' = the metric is
 not produced by that run's protocol (e.g. INF needs per-seq rows).
 
+## Round 38 clean-subset recomputation
+
+These rows remove exact normalized training-sequence overlaps before scoring the original RNAformer-bprna DBN. They are clean-subset sensitivity results, not a guarantee of complete pretraining decontamination. Source: `rnaformer_bprna_clean_recompute.json` (SHA256 `8d2819355248e9fa46141c1be93afb5ceef44f849dee741c16be02b0a3bf5ed8`). The appendix eFold board used official wheel 0.1.2; round38 speed uses official repository 0.1.3.
+
+| Method | Dataset | removed | clean n | micro P | micro R | micro F1 |
+|---|---|---:|---:|---:|---:|---:|
+| RNAformer-bprna | TS1 | 38 | 25 | 0.8519 | 0.7244 | 0.7830 |
+| RNAformer-bprna | TS2 | 28 | 11 | 0.9407 | 0.7762 | 0.8506 |
+| RNAformer-bprna | TS3 | 15 | 4 | 0.9032 | 0.7671 | 0.8296 |
+| RNAformer-bprna | TS-hard | 20 | 8 | 0.7761 | 0.6265 | 0.6933 |
+
 ## Measured cells
 
 | Method | Dataset | micro P | micro R | micro F1 | macro F1 | INF | n | source |

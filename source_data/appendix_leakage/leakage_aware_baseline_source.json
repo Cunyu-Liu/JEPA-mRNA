@@ -1,0 +1,1446 @@
+{
+  "schema_version": 1,
+  "status": "active_leakage_audit_and_clean_subset_table",
+  "scope": "same project splits, canonical nested GT and strict micro-F1; not a claim of absolute pretraining decontamination",
+  "markers": {
+    "†": "overlap rows removed and the remaining clean subset was rescored; TestSetB uses clean-181, other splits report their own n",
+    "×": "excluded because exact train/test overlap was measured and no clean-subset rescore is available",
+    "—": "not measured or clean-subset value not recomputed; never interpreted as zero",
+    "‡": "special checkpoint or audit limitation; see RNAformer protocol audit and eFold note"
+  },
+  "splits": [
+    "TS0",
+    "new",
+    "TS1",
+    "TS2",
+    "TS3",
+    "hard",
+    "ArchII",
+    "TSB"
+  ],
+  "rows": [
+    {
+      "system": "ViennaRNA mfe",
+      "cells": {
+        "TS0": {
+          "display": "0.5056",
+          "value": 0.5056,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.6379",
+          "value": 0.6379,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7209",
+          "value": 0.7209,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8980",
+          "value": 0.898,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.8206",
+          "value": 0.8206,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.7663",
+          "value": 0.7663,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.5752",
+          "value": 0.5752,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.5225",
+          "value": 0.5225,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "ViennaRNA centroid",
+      "cells": {
+        "TS0": {
+          "display": "0.5393",
+          "value": 0.5393,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.6770",
+          "value": 0.677,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7299",
+          "value": 0.7299,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8930",
+          "value": 0.893,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.8235",
+          "value": 0.8235,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.7958",
+          "value": 0.7958,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.6181",
+          "value": 0.6181,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.5482",
+          "value": 0.5482,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "ViennaRNA mea",
+      "cells": {
+        "TS0": {
+          "display": "0.5241",
+          "value": 0.5241,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.6620",
+          "value": 0.662,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7192",
+          "value": 0.7192,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8938",
+          "value": 0.8938,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.8237",
+          "value": 0.8237,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.7864",
+          "value": 0.7864,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.6054",
+          "value": 0.6054,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.5393",
+          "value": 0.5393,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "Nussinov+Turner",
+      "cells": {
+        "TS0": {
+          "display": "0.2126",
+          "value": 0.2126,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.3015",
+          "value": 0.3015,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.3730",
+          "value": 0.373,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.4187",
+          "value": 0.4187,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.4131",
+          "value": 0.4131,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.4067",
+          "value": 0.4067,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.2000",
+          "value": 0.2,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.2164",
+          "value": 0.2164,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "MXfold2",
+      "cells": {
+        "TS0": {
+          "display": "0.5651",
+          "value": 0.5651,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.6688",
+          "value": 0.6688,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7967",
+          "value": 0.7967,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8991",
+          "value": 0.8991,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.8127",
+          "value": 0.8127,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.8028",
+          "value": 0.8028,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.7400",
+          "value": 0.74,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.6269†",
+          "value": 0.6269,
+          "status": "clean181",
+          "n": 181,
+          "source": "leakage_round36_tsb_clean_missing.json"
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "leakage_round36_tsb_clean_missing.json"
+      ]
+    },
+    {
+      "system": "EternaFold",
+      "cells": {
+        "TS0": {
+          "display": "0.5400",
+          "value": 0.54,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.6854",
+          "value": 0.6854,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7426",
+          "value": 0.7426,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8635",
+          "value": 0.8635,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.8005",
+          "value": 0.8005,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.7658",
+          "value": 0.7658,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.6157",
+          "value": 0.6157,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "—",
+          "value": null,
+          "status": "clean181_not_recomputed",
+          "n": null,
+          "source": "round35 slide17 full-set value excluded from leakage-aware table"
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "round35 slide17 full-set value excluded from leakage-aware table"
+      ]
+    },
+    {
+      "system": "UFold",
+      "cells": {
+        "TS0": {
+          "display": "0.6598",
+          "value": 0.6598,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.6106",
+          "value": 0.6106,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.6455",
+          "value": 0.6455,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8792",
+          "value": 0.8792,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.6326",
+          "value": 0.6326,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.6388",
+          "value": 0.6388,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.4111",
+          "value": 0.4111,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.5331†",
+          "value": 0.5331,
+          "status": "clean181",
+          "n": 181,
+          "source": "leakage_round36_tsb_clean_missing.json"
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "leakage_round36_tsb_clean_missing.json"
+      ]
+    },
+    {
+      "system": "RNAformer (bprna)",
+      "cells": {
+        "TS0": {
+          "display": "0.7578",
+          "value": 0.7578,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.4936",
+          "value": 0.4936,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7830†",
+          "value": 0.783,
+          "status": "clean_subset_recomputed",
+          "n": 25,
+          "source": "leakage_clean_round38/rnaformer_bprna_clean_recompute.json"
+        },
+        "TS2": {
+          "display": "0.8506†",
+          "value": 0.8506,
+          "status": "clean_subset_recomputed",
+          "n": 11,
+          "source": "leakage_clean_round38/rnaformer_bprna_clean_recompute.json"
+        },
+        "TS3": {
+          "display": "0.8296†",
+          "value": 0.8296,
+          "status": "clean_subset_recomputed",
+          "n": 4,
+          "source": "leakage_clean_round38/rnaformer_bprna_clean_recompute.json"
+        },
+        "hard": {
+          "display": "0.6933†",
+          "value": 0.6933,
+          "status": "clean_subset_recomputed",
+          "n": 8,
+          "source": "leakage_clean_round38/rnaformer_bprna_clean_recompute.json"
+        },
+        "ArchII": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "×",
+          "value": null,
+          "status": "excluded_exact_overlap",
+          "n": 339,
+          "source": "rnaformer_bprna_leak_audit.json"
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "rnaformer_bprna_leak_audit.json",
+        "leakage_clean_round38/rnaformer_bprna_clean_recompute.json"
+      ]
+    },
+    {
+      "system": "RNAformer-if（项目GT复测）",
+      "cells": {
+        "TS0": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.8150‡",
+          "value": 0.815,
+          "status": "official_specialized_checkpoint_project_gt",
+          "n": null,
+          "source": "baselines_rnaformer_interfam_ref_pdb_ts1.json"
+        },
+        "TS2": {
+          "display": "0.9043‡",
+          "value": 0.9043,
+          "status": "official_specialized_checkpoint_project_gt",
+          "n": null,
+          "source": "baselines_rnaformer_interfam_ref_pdb_ts2.json"
+        },
+        "TS3": {
+          "display": "0.8245‡",
+          "value": 0.8245,
+          "status": "official_specialized_checkpoint_project_gt",
+          "n": null,
+          "source": "baselines_rnaformer_interfam_ref_pdb_ts3.json"
+        },
+        "hard": {
+          "display": "0.7709‡",
+          "value": 0.7709,
+          "status": "official_specialized_checkpoint_project_gt",
+          "n": null,
+          "source": "baselines_rnaformer_interfam_ref_pdb_ts_hard.json"
+        },
+        "ArchII": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "baselines_rnaformer_interfam_ref_pdb_ts1.json",
+        "baselines_rnaformer_interfam_ref_pdb_ts2.json",
+        "baselines_rnaformer_interfam_ref_pdb_ts3.json",
+        "baselines_rnaformer_interfam_ref_pdb_ts_hard.json"
+      ]
+    },
+    {
+      "system": "RNAformer-biophys（项目GT复测）",
+      "cells": {
+        "TS0": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.8265‡",
+          "value": 0.8265,
+          "status": "synthetic_distillation_checkpoint_project_gt",
+          "n": 19,
+          "source": "baselines_rnaformer_bio_ref_pdb_ts3.json"
+        },
+        "hard": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "baselines_rnaformer_bio_ref_pdb_ts3.json"
+      ]
+    },
+    {
+      "system": "RiNALMo-ft (Zenodo)",
+      "cells": {
+        "TS0": {
+          "display": "0.7214",
+          "value": 0.7214,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.4489",
+          "value": 0.4489,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7139",
+          "value": 0.7139,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.6702",
+          "value": 0.6702,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.6055",
+          "value": 0.6055,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.5556",
+          "value": 0.5556,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.7613",
+          "value": 0.7613,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.8177†",
+          "value": 0.8177,
+          "status": "clean181",
+          "n": 181,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "NucleicBERT frozen+官方头",
+      "cells": {
+        "TS0": {
+          "display": "0.1509",
+          "value": 0.1509,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.0955",
+          "value": 0.0955,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.2029",
+          "value": 0.2029,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.1541",
+          "value": 0.1541,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.1439",
+          "value": 0.1439,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.1343",
+          "value": 0.1343,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.2372",
+          "value": 0.2372,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.1210",
+          "value": 0.121,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "NucleicBERT fine-tuned（实测）",
+      "cells": {
+        "TS0": {
+          "display": "0.4609",
+          "value": 0.4609,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.3453",
+          "value": 0.3453,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.6049",
+          "value": 0.6049,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.6435",
+          "value": 0.6435,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.5175",
+          "value": 0.5175,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.4845",
+          "value": 0.4845,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.4735",
+          "value": 0.4735,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "—",
+          "value": null,
+          "status": "clean181_not_recomputed",
+          "n": null,
+          "source": "round35 slide17 full-set value excluded from leakage-aware table"
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "round35 slide17 full-set value excluded from leakage-aware table"
+      ]
+    },
+    {
+      "system": "eFold (Sci Adv 26)",
+      "cells": {
+        "TS0": {
+          "display": "0.5612",
+          "value": 0.5612,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.6640",
+          "value": 0.664,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7682",
+          "value": 0.7682,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8862",
+          "value": 0.8862,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.7354",
+          "value": 0.7354,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.7632",
+          "value": 0.7632,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.6618‡",
+          "value": 0.6618,
+          "status": "author_archiveii_holdout_known_overlap_audit_is_lower_bound",
+          "n": 2544,
+          "source": "efold_leak_audit.json"
+        },
+        "TSB": {
+          "display": "0.5661†",
+          "value": 0.5661,
+          "status": "clean181",
+          "n": 181,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "efold_leak_audit.json"
+      ],
+      "model_version": "0.1.2",
+      "version_note": "The appendix board used the official 0.1.2 wheel; round38 speed uses official repository 0.1.3 with a different weight hash"
+    },
+    {
+      "system": "DEPfold (ICLR 25)",
+      "cells": {
+        "TS0": {
+          "display": "0.4430",
+          "value": 0.443,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.1736",
+          "value": 0.1736,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.3735",
+          "value": 0.3735,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.3270",
+          "value": 0.327,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.2670",
+          "value": 0.267,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.2409",
+          "value": 0.2409,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.6216",
+          "value": 0.6216,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.5835†",
+          "value": 0.5835,
+          "status": "clean181",
+          "n": 181,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "RFold (ICML 24, TR0 重训)",
+      "cells": {
+        "TS0": {
+          "display": "0.5520",
+          "value": 0.552,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.5313",
+          "value": 0.5313,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.6578",
+          "value": 0.6578,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.7002",
+          "value": 0.7002,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.6495",
+          "value": 0.6495,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.6220",
+          "value": 0.622,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.6811",
+          "value": 0.6811,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.5740†",
+          "value": 0.574,
+          "status": "clean181",
+          "n": 181,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "Kirigami (arXiv 2406)",
+      "cells": {
+        "TS0": {
+          "display": "0.7386",
+          "value": 0.7386,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.5800",
+          "value": 0.58,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.7366",
+          "value": 0.7366,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.7061",
+          "value": 0.7061,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.7436",
+          "value": 0.7436,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.6782",
+          "value": 0.6782,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.7872",
+          "value": 0.7872,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.7514†",
+          "value": 0.7514,
+          "status": "clean181",
+          "n": 181,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "xens2（统一板协议）",
+      "cells": {
+        "TS0": {
+          "display": "0.8039",
+          "value": 0.8039,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "new": {
+          "display": "0.5532",
+          "value": 0.5532,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "0.8755",
+          "value": 0.8755,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "0.8604",
+          "value": 0.8604,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "0.8965",
+          "value": 0.8965,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "0.8732",
+          "value": 0.8732,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "0.7760",
+          "value": 0.776,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TSB": {
+          "display": "0.8370†",
+          "value": 0.837,
+          "status": "clean181",
+          "n": 181,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table"
+      ]
+    },
+    {
+      "system": "r2d_tr1 2-seed（历史集成）",
+      "cells": {
+        "TS0": {
+          "display": "×",
+          "value": null,
+          "status": "excluded_legacy_tr1_overlap",
+          "n": 1087,
+          "source": "tables/overlap_audit.md"
+        },
+        "new": {
+          "display": "0.6132",
+          "value": 0.6132,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS1": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS2": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "TS3": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "hard": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        },
+        "ArchII": {
+          "display": "×",
+          "value": null,
+          "status": "excluded_legacy_tr1_overlap",
+          "n": 843,
+          "source": "tables/overlap_audit.md"
+        },
+        "TSB": {
+          "display": "—",
+          "value": null,
+          "status": "measured",
+          "n": null,
+          "source": null
+        }
+      },
+      "evidence": [
+        "round35 slide17 raw table",
+        "tables/overlap_audit.md"
+      ]
+    }
+  ],
+  "source_files_sha256": {
+    "affine_probe_ff20000.json": "e98f0aaa2e0df17da3344a180043d270a2d1c60cc047c85cc20b365db133c5e7",
+    "archiveii_embok_clean.json": "1b8e98acf425786325614d58268d5db7c6b8b853a277d6f2c41c1a8c2348e81d",
+    "baselines_archiveii.json": "d194f26f373089c9e13cd6370c272bd31be089e722ba04d3116b7adf9d915508",
+    "baselines_archiveii_embok_clean.json": "8d4683ada06ad5cea635fa830f992b2c4aa430d0c4e4ecdb34c9f56385aee82e",
+    "baselines_archiveii_embok_clean_gt100_le200.json": "838256f8e6ace5695f87c934956e8416d0eba59acb2bb2b1dde74ec082156e93",
+    "baselines_archiveii_embok_clean_gt200_le400.json": "a6df2acb5194d614b6144d116b8ad5cc4666836cb3cfa93d443894a5132932fb",
+    "baselines_archiveii_embok_clean_gt400.json": "b0dffbc7e4a4d2fb92dcb1e904b1e5cb38117c11c53cac8fd3c513b1a7a39f0c",
+    "baselines_archiveii_embok_clean_le100.json": "b65969ef7d71cd9f0b5c36053a29e3f353136d4db2a7c5d9cf82c339bd6f96cd",
+    "baselines_archiveii_embok_gt100_le200.json": "1e6c31df7382f5cb60c4a3ddd641e17d22f94adb1a633917e8cbc6a53a497ba7",
+    "baselines_archiveii_embok_gt200_le400.json": "e8f836019efb47879c098b58a9c4ae76f9855c347c2bc86331625aab9a955e73",
+    "baselines_archiveii_embok_gt400.json": "548fbed97a30b9a9765b5a1a7ae112a81b88038ac1f46b9d1ac80844453999f1",
+    "baselines_archiveii_embok_le100.json": "6e51cd98759f47caf937ac4b92a3b667f57b189bcde60ee7220b6c4495248522",
+    "baselines_bprna_new.json": "26172ca352a5fee3b68eb19bea2392ffa6ee8256588f3802e6372da8cefff9ab",
+    "baselines_bprna_new_le100.json": "7b96ac00d7f2ea0a57b5ec37b65c1195e8572098ed75dc9de706fa7afc97d0d9",
+    "baselines_bprna_ts0.json": "0934eec8b54d6e6d1d4e6024ca1c80d12f14107767411a3c00a7450b0635f8f4",
+    "baselines_bprna_ts0_gt100_le200.json": "695b7dd8d6f7340366772c217d82520982833ffef642e5815527ab5b7cf3ff41",
+    "baselines_bprna_ts0_gt200_le400.json": "c51b68603ad6b11c2a281b42b491d3cc42a7f958060b3b3a4f9d795ccf6bc249",
+    "baselines_bprna_ts0_gt400.json": "d3815210bbef559d47dd7628efb819853e6725142b0e43d15d005851049abded",
+    "baselines_bprna_ts0_le100.json": "61713b3310c5166ac9383c5024ce7b1ab54d41b7482906717fbbd93a6b378144",
+    "baselines_eternafold_archiveii_embok_clean.json": "93a99d5d9c806ffe665939d8c088edb85123f73e421180f0bc71c6874f6f69a5",
+    "baselines_eternafold_bprna_new.json": "2a4968d81bc8a7570599214c519ca752457d1fdb075965d1afabb98dbecfa8d9",
+    "baselines_eternafold_bprna_ts0.json": "306f9c24779dce97c63be483d801397ce72e329b8be76b135cfd8ce40cc8c5c1",
+    "baselines_eternafold_ref_pdb_ts1.json": "c981deff8149926f5fb84626d964ebe131a5e990bc5913b2eecdc63197619b62",
+    "baselines_eternafold_ref_pdb_ts2.json": "22cc2d6eb90c2b260ccd3666a661667290b0d6d9db62d64fc8b6f99270363275",
+    "baselines_eternafold_ref_pdb_ts3.json": "89e6d6144002fa05f5c8e503e5b137c349bcea8e0f934f12f60b394bb0830b7d",
+    "baselines_eternafold_ref_pdb_ts_hard.json": "1374d908db4aa96745aa54b2f8d797522dcd9f4004d580d42afc0dbf570e3019",
+    "baselines_mxfold2_archiveii.json": "848a8ff927c9e12a3e906f25098307ff37f19090d20b40abfe509f27e6fc027a",
+    "baselines_mxfold2_archiveii_embok_clean.json": "7a2209212ce2792f5a386e910efd8983d005d2bd1ef9a2aea68d76bc6199c15d",
+    "baselines_mxfold2_bprna_new.json": "f6392d2685ef73619205215ad55b71feb1cf9b441d73fe4cbd1bdcf1d114bd9e",
+    "baselines_mxfold2_bprna_ts0.json": "c97146a6038f6e5c2d877012d4f048922008e1187a770e848f1274c983e5a7aa",
+    "baselines_mxfold2_ref_pdb_ts1.json": "2deffc1267d2e3a420defff9e05f3a9b53ecb83beea3f26bdb3fe0325d485f44",
+    "baselines_mxfold2_ref_pdb_ts2.json": "856ce3e3fe962c0680c5682a5007c91c9406b525028b6802bb47b35122f88c06",
+    "baselines_mxfold2_ref_pdb_ts3.json": "4a4ee08988e6e7c6c730bc79ec042815b220f0323f199d7482490315838c5174",
+    "baselines_mxfold2_ref_pdb_ts_hard.json": "f925dcd8f2d94921563fc683fa9b1dd7eb816258a4b527c5070ee24f58d8668c",
+    "baselines_mxfold2_testsetb.json": "797198648003fc08e0c4b5e4eb8452092eb474b3750ab8aca8c1c3b738a55f30",
+    "baselines_nucleicbert_archiveii_embok_clean.json": "0897ac4a5f65743f6089c7c6bff580ac8ce1309f72bc57d9f4cc9e938eab6a7d",
+    "baselines_nucleicbert_bprna_new.json": "3f37fbb54ca620bcae41193d897596d2358cf702f1e233df00771c60c1ca2b83",
+    "baselines_nucleicbert_bprna_ts0.json": "679f79456609fb72b1446954cfcb78544fd615fd53e0b295383f0b56b2898034",
+    "baselines_nucleicbert_ref_pdb_ts1.json": "5487053b0f061899253720866b521eee6348daa17aa17d44f6b822e389eaec6e",
+    "baselines_nucleicbert_ref_pdb_ts2.json": "6b858ee4c46f176e6e1cdec12172218c318905de09fa81f455469218317a01d5",
+    "baselines_nucleicbert_ref_pdb_ts3.json": "006f71fa5b5b433b46b41ef2d24653e11fcc11c0395edeca383cc1c1a9dc1637",
+    "baselines_nucleicbert_ref_pdb_ts_hard.json": "74c7e8f110a393be49fa5a89200efe8886f92f5b6e02a1dda962110283753cff",
+    "baselines_nucleicbert_testsetb.json": "473f84628ea67d3971671a9c0f8745dc8b8b21843e21071407ec348ddc695a88",
+    "baselines_ref_bprna_ts0.json": "5bcc53adb46c3b6a24b67a8c02f746621992b1e830ca3c8195058f8da0596b61",
+    "baselines_ref_pdb_ts1.json": "3c277bcba6c6dced95e369d1c86ab1f199695d4705375cdcaf4c1b1058afe493",
+    "baselines_ref_pdb_ts2.json": "63c6b9c74619f5295e9f315a941b460056fd00fe80ff9f3f2c16bfab6625676b",
+    "baselines_ref_pdb_ts3.json": "7483a3fa1c884a8b5b7605af00313bacd41ec21037285f4df4ed14dbd179840b",
+    "baselines_ref_pdb_ts_hard.json": "e4dbd1d2c558d439139a2e1263ebe8d11e76dda0b9bc106edbda0f3e258713aa",
+    "baselines_ref_synthetic_test.json": "da0bdf4a4ce6654f7c572b0c0a6ef84a996d18b776aa71b6aa3ffa2242b055a9",
+    "baselines_ref_synthetic_valid.json": "ec8fde182122c222d3b008d80c7e2ced7f8f6d78109e064e6cea63d0f989b371",
+    "baselines_rnaformer_bio_ref_pdb_ts3.json": "2c67f5827909a83d8b21529150bd6e3365da9035f465fbcaa46a1061d3732a69",
+    "baselines_rnaformer_bprna_new.json": "d1fde7eecac61ae58b82a844c87bbf32d30eeed73baf6f1e046c9187d88844d4",
+    "baselines_rnaformer_bprna_ref_pdb_ts1.json": "fd7e5c61a25f36985ed1b3d06e667fce912e376f741d7920fde386219584ec13",
+    "baselines_rnaformer_bprna_ref_pdb_ts_hard.json": "e9775298b663b38ab6beb546814b2dff131a8115c2ab140fa1d9b831e8c66999",
+    "baselines_rnaformer_interfam_ref_pdb_ts1.json": "3aadb5b36325234b6c8ed830e2ad4d9aa5ee99fcdabaa034aa1e64ffe2a56019",
+    "baselines_rnaformer_interfam_ref_pdb_ts2.json": "24e2782f2b1ad855a501fc3bd522e9d9a7435ffcbf0b27fdb090c684241d23e1",
+    "baselines_rnaformer_interfam_ref_pdb_ts3.json": "b5f2db761a9c8c3cfb9442472d2f0abdb99eb0800072d597ad952f4257f7d4e2",
+    "baselines_rnaformer_interfam_ref_pdb_ts_hard.json": "e5e9b12cab059b349514c1d0bb3ea49016a296bf58340d3020b69b6e9ec862d4",
+    "baselines_rnaformer_ref_bprna_ts0.json": "dab3ebdb6816820918b417139aeca98e73e9ac7e175b6c03a5733278a7cb1113",
+    "baselines_rnaformer_ref_pdb_ts2.json": "d1b4414c0a84c97e9763a87aaa9440aea8a75c5c10e3febb5bff5625edbea09b",
+    "baselines_rnaformer_ref_pdb_ts3.json": "eea9c8cc8bb13ecdd7a6034caadcae1c9ce01dd9e883451f3aeb616449d2847c",
+    "baselines_testsetb.json": "60e2c45bdd79361a024c39b9d307f329b63acd82700e893ee4c843afdac73cb0",
+    "baselines_ts0_crw_gt100_le200.json": "985d968ace5877cf36dcc5004ee823a7dcbd1c749681cb84ab5b5493970831ff",
+    "baselines_ts0_crw_le100.json": "96d6c0151ece1c85b2f036610a24ec274e6e079a14852cf797ae1db3eaf9311e",
+    "baselines_ts0_rfam_gt100_le200.json": "1ef6896deb1a79b8c70a46c4174109ddabc7f21e84c02881371d54213ea2f6ce",
+    "baselines_ts0_rfam_gt200_le400.json": "f1de2881f13072d39daf29daf6dade1ebf4e78d10a6b84416ad95f0fc65ae6d5",
+    "baselines_ts0_rfam_gt400.json": "d0ba8ee33aaea531df39da3c5f3724c789948304f9fa0a27d0f19c1ab49ff64f",
+    "baselines_ts0_rfam_le100.json": "2bda56f410f6960fc4823446714c542776299029970422af7e8e39e9a17c8eb2",
+    "baselines_ufold_archiveii_embok_clean.json": "7aa0236374b83a49b839e7dad31a8091de4aee07b4a7de632bf218bcc17031e1",
+    "baselines_ufold_bprna_new.json": "136a609a6d947ed8dc90f616b89eb8aee8d2f7f3ad7672fd9494473acd6e6f59",
+    "baselines_ufold_ref_bprna_ts0.json": "f0cdafff8aec8765ca363863a393ff91b3cf19fc3819551964692e7a30185106",
+    "baselines_ufold_ref_pdb_ts1.json": "498a41d271d0f35ff3c8aa12628fb0ad60e1139514fc67b4b7249dba813de7c5",
+    "baselines_ufold_ref_pdb_ts2.json": "455a4007c6631edf7b78bc25da57d503dfe98f4fe871257e14db5cc429b5aec6",
+    "baselines_ufold_ref_pdb_ts3.json": "dd48a29d4aeba6811e9a1ace1ef786ecba2388b033260565cf9453ec8873e75a",
+    "baselines_ufold_ref_pdb_ts_hard.json": "eca01d8f6326a7f898fc4b0f6504a30ed4661e58df89beae60bc68061f1e902f",
+    "baselines_ufold_testsetb.json": "548a13b541ed02974e5ec9c898a442751579cee26f23b382718e116332337a46",
+    "baselines_vl0_crw_le100.json": "90def00248fe13b98ea3cf82cf47a055eaf1c82fa4c1126cc0d2928c22ddf3d0",
+    "baselines_vl0_rfam_le100.json": "15e30bc9f96b8a4ff4bf551a711d3f39d6595b1d9f507181405d1a7fc02a4e0b",
+    "bprna_new.json": "22287fe819384e740b9c2f9920cbe23c579783d66360c699905c86a7cf79914a",
+    "bprna_ts0.json": "ffb01f6c5986835ed2a587f56eb10781218f6d5641e333c73044edb0019c3060",
+    "buckets_archiveii.json": "b436148d0920fb2290ed10d8136dbbf0b7680e62dff4e0937ec62ae7c0e2d7e8",
+    "buckets_archiveii_clean.json": "796225e059abfb1cc5909f3ec20cfe12ad92a10b86079940e506f6904d408492",
+    "buckets_bprna_ts0.json": "2fee76a024efa9a838a56b3f3af6f562da61d15bba5cda3132e89ed9c82b9647",
+    "c1a_rnaformer_ref_bprna_ts0.json": "f6b7569b31c9ccc0990b3a7ac336bdabadb8be798b019169a51c8c43033957a4",
+    "c1a_ufold_ref_bprna_ts0.json": "a1c7f501492cf724a8fb9025fb4ac8e2d692ce20ce6087ef5dfd5c3b68cbae34",
+    "cov_emergence_randinit.json": "70b660d51a487b18ec78c13b8ba60bac4225a5227ebbc33bf901413c440732a5",
+    "cov_emergence_rinalmo.json": "dbb9ae8a5c0f7e45f6d2d60eba96ae123d101f421d5663db09a010c4313be014",
+    "cov_v2_randinit.json": "df9c725b9115ea7fb636586c00d660da4a60e886ebeb284e6ae9e6d5b1f757ea",
+    "cov_v2_rinalmo.json": "ee5c6db63a6e2b045fdb8f303a88ea10d6b9c904bafc928be3a3b9799ef7f893",
+    "efold_board.json": "65541220fb37533ee59f3fbb0cc9375228e18c39747ed6bfd393f08ebd492ceb",
+    "efold_leak_audit.json": "432a2b09f12e1a2babcd79bfe816ae26d991e343ebfed1158574356a3c1dbfb9",
+    "eternafold_testsetb.json": "6ed900d69fa676bc6ff9f345ea5cc413571c9259d0bd8f8bab28a6945fac43b3",
+    "homology_vs_f1.json": "c7685995919009d7e85a32d37fdae52f789270c440549367927833cc73ce8227",
+    "kirigami_archii_perbucket.json": "881c5e536d49fa2ee6c35ec79e749d7fd5d64ae4e83977b572a89a9ed2f8cc7b",
+    "kirigami_archii_shard0.json": "e08b3c6bc01b18f8aa90a715f7d14bc276c0e443c18be083dec6016cd130aaea",
+    "kirigami_archii_shard1.json": "10650bbca1c20d36edbd2eaf087f704e5892b222238ee9eeccf00fcb3348635b",
+    "kirigami_archii_shard2.json": "98ac77c47c9afd5c56478f416d731d2a1d0e4aeeed9946bcf8ca20f72266d645",
+    "kirigami_board.json": "3f248ac79a1a05ec4e9377b596b4a5e98dbf20fe5ea8b9cecb7fd7052fef59ed",
+    "kirigami_leak_all8.json": "91caf5c92b9f2851605e6a8c69c8ded6ea4ccaaa2adcf0e2f7dcaf6df3afbfd8",
+    "kirigami_leak_audit.json": "c4f37170ed12f46574d5cbdf38c88d8e1193665c6b7d095f487cf2b4c49cd4c6",
+    "kirigami_tsb_clean.json": "ef55aa73252dc6ce26730bd41edc6de3f101df6dfdae62ce11749e36bc99cf5b",
+    "leak_matrix.json": "cd89a57e420ea0813c91cb89ae86dfd0fa2b1a0c50bf2cfc8757b04b018892c5",
+    "leak_matrix_ckpt_basis.json": "cd89a57e420ea0813c91cb89ae86dfd0fa2b1a0c50bf2cfc8757b04b018892c5",
+    "leakage_round36_tsb_clean_missing.json": "e0f0a1bac73edd07bd8e999603e0ee66300e7127807e8539a30dd28f0e2b13ee",
+    "offline_ablations_ff20000.json": "46ec56f7b70a8a03a5587fec59c62520bcec86844e993f107b9a6d2617f7688f",
+    "ours_archii_perbucket.json": "2c1147b3601f15484b45bc46b429621800a81c6ed04f40ce68ca28e128636607",
+    "plana_calib_probe.json": "c40109871d08f2e07933dd6de9ba1530e243a4104e28e87f6e4e6a5a7651f17c",
+    "probe_c1_ff2000.json": "bffef0cb614292ca37ebc8461d735a5595a38107bf2f4bc3813342c7ad595e22",
+    "probe_prior_weight_ff1000.json": "7eceb975cbc64d3313c9d3d286defcf45f23d5d6123ad9ed3d8b3ea6a6065a3b",
+    "probe_prior_weight_fs4000_vl0.json": "5471251ece192314b03169fbc94dcfb3664caf8d5d5928dc7aad01d2ce5d1012",
+    "probe_temperature_step750.json": "15c4ba7775ac97e7c0d5599e5183038e0b51eff3913894f2ee558ae0fe025e63",
+    "ref_pdb_ts1.json": "aedea5e355f12be6b3c9cec3f9d53f86c5e9ae598f47f875981f6259b5413780",
+    "ref_pdb_ts2.json": "fb59e03ac487ef572c73b7bcec68594defa3fe332f76bf82c536e846b65ae49b",
+    "ref_pdb_ts3.json": "b94b20dbd42202050901057cd21e8fb7a2dadf9a97f632ad3eddfec9473f6c65",
+    "ref_pdb_ts_hard.json": "082d593a2e0c305e72251204ad119c85a2ddf1c8374e725d6c8b30e766ae0025",
+    "ref_vienna_ts0.json": "5aa93e41021435cc8473509adae80ebf565d3731b82d4805349b0ba737b9f8ab",
+    "rfold_board.json": "0a81a2afb6ffe3bf0243e2fa1f0e82f63b55cafafa6ace92e183f63880eed190",
+    "rfold_tsb_clean.json": "e3bbb47ae87c515216429dde68c5dc013b8ac8615e84fd2f0fc1ddba64aad58f",
+    "rinalmo_ft_archiveii_embok_clean.json": "65e621cbe331834d61399cb3f473c93b4d94edfe09f55be7db052ba7a385462f",
+    "rinalmo_ft_bprna_new.json": "c9dfa2c35b1b8cb01cc35e55d49c0cf5f22ad37345aa69fbb08de92b594b18c7",
+    "rinalmo_ft_bprna_ts0.json": "82cb053f1b23cf04283ea179965cdb7d28b885f0cb963f2e771ee2681ef1a188",
+    "rinalmo_ft_official_ts0.json": "655e0e56dd25c0de84bca893b4d2294fea1ae41e43df6d26301cbf444ef395e1",
+    "rinalmo_ft_ref_pdb_ts1.json": "96b891fff56de5bfd7a9da742640a414e4292a1df5d5bf7bf3b2b1a8b5c77beb",
+    "rinalmo_ft_ref_pdb_ts2.json": "40a5b518b378d0a167c678a8e31ca0b3be807943d44586398dc5751792c42dc8",
+    "rinalmo_ft_ref_pdb_ts3.json": "f0002d9e806e7c15dcfd7f5b057a2cf679a7c6bacc50fe1db7fb264254bccb92",
+    "rinalmo_ft_ref_pdb_ts_hard.json": "fb8571664970bdf513777986ce01213b4253e4c1d2ad17021eaa47d0b3b82e2f",
+    "rinalmo_ft_testsetb.json": "f58f77d6ecb07ce346e2ecdb9440057077274c94ee5c3d69b6979092412b3dc6",
+    "rnaformer_bprna_leak_audit.json": "e29af103612db0d9f80a668a406dfaa97aff1e3078e85e4c8f33d33a4b12e499",
+    "rnaformer_leak.json": "e29af103612db0d9f80a668a406dfaa97aff1e3078e85e4c8f33d33a4b12e499",
+    "rnaformer_release_gt_bio_ref_pdb_ts3.json": "5520d32d195d96a28e5a9afc15d834597806c51cc92edf309333a70661326d6d",
+    "rnaformer_release_gt_interfam_ref_pdb_ts2.json": "0b3a4e50d66d424059b24db206bf75410a29dded6af8a337f028765bbdad2c21",
+    "rnaformer_release_gt_interfam_ref_pdb_ts3.json": "51ac97d1ca5b85292d5b0410d5cc447430ee324b96b572b99457f9e2c48ef137",
+    "rnaformer_release_gt_ref_bprna_ts0.json": "cf8eec1425b0149dbed795467eef63013c44cd834cf79946c4fd1b7e09bffadd",
+    "rnaformer_release_gt_ref_pdb_ts2.json": "1654a5dd32eca21b6b5ffe40f16f37e8138848c8912724aebefbbccf60bfb364",
+    "rnaformer_release_gt_ref_pdb_ts3.json": "dcb490a4c6c66d0ab76ca763c47d88f6283ae4dc2492762a3625d833b192ce67",
+    "rnaformer_release_gt_rnaformer_bprna_ref_pdb_ts1.json": "e02a31f7e9c0362da931a47bd35ab069af7e15a086e98e7400e5491f7a7fe253",
+    "rnaformer_release_gt_rnaformer_bprna_ref_pdb_ts_hard.json": "b52320ccdb76f7ea87f95ca1180b390cb3da1b4fdf7e526aa0a8d78d736b6cec",
+    "rnaformer_release_gt_rnaformer_interfam_ref_pdb_ts1.json": "27263975551cb4702e43bb1af29eeab1cbfc6ec69aae67430e0ef8d375ca7b64",
+    "rnaformer_release_gt_rnaformer_interfam_ref_pdb_ts_hard.json": "5da6d6d7d8f49f995a54097a3efd377e55f66fb177010b41983d98f305a20e99",
+    "solver_ablation_ts0.json": "20bd6e1b9738c69ef7d33a3231d8b6f971ffcb80e299bb2bb91e64991f3e206a",
+    "speed_batched_b8.json": "eb138e77a92c1d409b7871cc0f8f16bfe50e9ac53a76c7031af681682f6c44d4",
+    "speed_batched_exact.json": "13c7663b5b35d7cfd3fe2bf22cc222145df5e935dbed8d156f6bc5fa14b7e561",
+    "speed_batched_exact_b16.json": "15ed538acf0eb8f3e16b99daf7584a4f44ac82bfa6fc904e37eafb66013d318a",
+    "speed_batched_exact_b32.json": "02cef470775c26a89da7ac09d3557751ec4aa07e442c8330677106d908fa7ffb",
+    "speed_batched_v1_gpu1_b32.json": "1cf6e02dbe301d7d5f2bdf62ad621eb890798fa35e0ae0c598ea762d57984936",
+    "speed_batched_v2_c_b32.json": "e1fb3ea6ff4b6bf175b71663f776e8109e2a303ddc375bbe6e286d2d3e0c332e",
+    "speed_benchmark.json": "1e8a5c6893dcaea2e2cd446a2bdac40f4cea90f2b78a06d580a2aab64cb89a92",
+    "stratified_le100.json": "e82ed59d15fe37c1aa51df96c9868283dd7d8b362cdea1e7c80918a1cbfbe389",
+    "stratified_mfe_cells.json": "c9198a4daefaff8b55a1f19d802528b438de5b018f49d53c7e419c0bc603c19b",
+    "structrfm_bprna_new.json": "3243b141eed79a8c419bc737dece47943fd7708f2db5cd881523dcc9df1d6519",
+    "structrfm_official_ts0.json": "efceff485a3209a550c5dd3a7347e75bafcda05aa2b5579105fc51028de70a56",
+    "testsetb.json": "2116b8bab637cace67b93e8e69697a124f8f00191b2ea9d3e481d431b1ef2ff9",
+    "ufold_archiveii_embok_clean.json": "a05cd500de3c4f565ce7ba01f124e48fa6f8dc4a29bc6a17874a49108150daa9",
+    "ufold_archiveii_embok_clean_gt100_le200.json": "d345ed007d6840f336faa8466861280eb3339b2068014a2c6fe75b4295edbd53",
+    "ufold_archiveii_embok_clean_gt200_le400.json": "71856b400deb5663e70275110a392a5b6e3ad24533d8e04e8182348b4934ddba",
+    "ufold_archiveii_embok_clean_gt400.json": "1084c33740a82f481f7e820b342b41df5db31a27a43786d5f0ce4d5691ffed63",
+    "ufold_archiveii_embok_clean_le100.json": "0075c81f8b14e203fc39b7f1a8af0d418ed7af949c4c2b5cd2a71cf1493760e8",
+    "ufold_bprna_new.json": "3d28f2313a6bfc7268ec45843ac9e958042c02bf4b714bc78d493e861b2749fb",
+    "ufold_ref_bprna_ts0.json": "f414810b5a69311881472cd776a18aa1d96bfdf86a6b4ea6722d3beda491885e",
+    "ufold_ref_pdb_ts1.json": "143c23db51a0cab6bdbb16836d5988d7ec9d91020879032de3a43da0efd6e779",
+    "ufold_ref_pdb_ts2.json": "077f22f16671d2b76476a1feeba423470be635b707a28943fd6591ad8fb54185",
+    "ufold_ref_pdb_ts3.json": "4bdc619cac92ab185a24544601e002de47287d7fd2b9165aaf4c1cebfa055c51",
+    "ufold_ref_pdb_ts_hard.json": "6a252c4ab5bf177b5cf72c5ec6ce7adc2ad4c580241cabab34ce20143566bf24",
+    "ufold_testsetb.json": "de0ecc3a9a15eff23a7fb57c24fc43a3e4160a3fd795f06e24ba73f4d8d34bc2",
+    "xens2_2seed_archii_perbucket.json": "29cb975ce3419a30f0f04434796b219c0e24eaafb4fef49ff194576baf2ad247",
+    "xens2_archii_perbucket.json": "1c5d418d10315ebdf45f888b9bd2143ba7c7687a7b49b942e142646a1253f460"
+  },
+  "notes": [
+    "The Round-35 slide-17 table is retained separately as the raw full-board sensitivity table.",
+    "TR0-trained systems use clean-181 on TestSetB when a recomputation is available.",
+    "RNAformer-bprna TS1/TS2/TS3/hard are clean-subset rescores with n=25/11/4/8; TestSetB remains excluded because the original prediction is unavailable for a clean rescore.",
+    "UFold is a pre-registered reference, not the bpRNA-new full-board maximum: EternaFold=0.6854 and eFold=0.6640 exceed UFold=0.6106.",
+    "ViennaRNA has no learned sequence model; its high TS2 value is not leakage evidence. MXfold2=0.8991 is slightly above ViennaRNA mfe=0.8980.",
+    "eFold pretraining composition is incompletely public; its overlap audit is a lower bound, while ArchiveII is an author-declared holdout."
+  ],
+  "reference_corrections": {
+    "bpRNA_new": {
+      "UFold_pre_registered_reference": 0.6106,
+      "EternaFold": 0.6854,
+      "eFold_zero_shot": 0.664,
+      "MXfold2": 0.6688,
+      "xens2": 0.5532
+    },
+    "TS2": {
+      "MXfold2": 0.8991,
+      "ViennaRNA_mfe": 0.898,
+      "ViennaRNA_mea": 0.8938,
+      "ViennaRNA_centroid": 0.893,
+      "xens2": 0.8604
+    }
+  }
+}

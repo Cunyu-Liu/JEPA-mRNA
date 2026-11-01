@@ -1,6 +1,27 @@
 {
- "updated": "2026-10-31",
+ "updated": "2026-11-01",
  "files": [
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round37_3840x1920.pdf",
+   "sha256": "8ed44953188fc351902ed431ad17d622847544c7cf4f38f95a6e35f30abeb4a8",
+   "bytes": 26819,
+   "description": "主图 2 round37 纯端到端速度矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round37_3840x1920.png",
+   "sha256": "ef3c259ce65b21670617f93e9e9df3a7a87b4a8c18c91d775f21ab1127f133ec",
+   "bytes": 287207,
+   "description": "主图 2 round37 纯端到端速度 PNG（PPT 嵌入同哈希）",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round37_source.json",
+   "sha256": "23661ae92fd94bb57456e8b068e86356a4df41e7ea553ac5b663caeafb375d15",
+   "bytes": 5184,
+   "description": "主图 2 六系统最优合格配置、batch、F1、范围与源哈希；视觉验收通过",
+   "status": "active"
+  },
   {
    "path": "fig03_ablation/fig03b_group_drops.json",
    "sha256": "3e048a175cf851d09e1dd29f131329e5fd1df2b0242a412a780a494c4655caa6",
@@ -16,24 +37,101 @@
    "status": "active"
   },
   {
-   "path": "fig05_speed/fig05_accuracy_speed_4090_final_3840x1920.pdf",
-   "sha256": "1014ceade7e54d7337e9436c9dde75cd1aa55f99462fe8e8e97633c2b4f519e0",
-   "bytes": 33320,
-   "description": "主图 5 最终矢量 PDF（文字放大版）",
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round37_3840x1920.pdf",
+   "sha256": "fd7c47b1fd942b43407427d007c6305769be850cbd1aafdea0fec1157c11286a",
+   "bytes": 34843,
+   "description": "主图 5 round37 矢量 PDF（B=16/32 新优化点）",
    "status": "active"
   },
   {
-   "path": "fig05_speed/fig05_accuracy_speed_4090_final_3840x1920.png",
-   "sha256": "39e15b4795f307cd095d33cadf726268e011522ed5fb2aa43e6b7b1a2da1a48a",
-   "bytes": 449958,
-   "description": "主图 5 最终 PNG（3840×1920，文字放大版）",
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round37_3840x1920.png",
+   "sha256": "a8593b2d4320a99b6e37116b83ed3dbc98aa189d79ac0ca077b842ef1c9d8a5e",
+   "bytes": 474439,
+   "description": "主图 5 round37 PNG（3840×1920；PPT 嵌入同哈希）",
    "status": "active"
   },
   {
-   "path": "fig05_speed/fig05_accuracy_speed_4090_final_source.json",
-   "sha256": "6ead896ef80fe56a637ac356aea64c219feb09a5b2bc6cb00f11180a3f4ddbf9",
-   "bytes": 10806,
-   "description": "主图 5 最终源数据（15 格、Pareto、跨 batch 等价）",
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round37_source.json",
+   "sha256": "0c2ef982b202511598f3111edd663a600c805994ca869b533d5e5dd990b6a155",
+   "bytes": 22940,
+   "description": "主图 5 round37 绘图源（25 个合格配置、Pareto、B=32 与 TF32 评估）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b32_profile.json",
+   "sha256": "63b64d47d643410ce94da0aa4a89f964b6ec5ccc5a0ef9ede97d4bf969a39224",
+   "bytes": 1077604,
+   "description": "plana B=32 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b32_profile.json",
+   "sha256": "d4d70a477b26d32ef5002947f7130e69e10d09c1e1c15a2682b8bfa5972b507a",
+   "bytes": 1272208,
+   "description": "r2d B=32 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b16--tf32_profile.json",
+   "sha256": "b74ef461f388365b979beee4e8a068474e184b83b22edadf2cc2e5457c5a112f",
+   "bytes": 1272741,
+   "description": "r2d B=16 TF32 全 TS0 三次原始结果；通过但不优于 B=32",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b16_profile.json",
+   "sha256": "419a26db79b32ac0a6b39c92e4d60cc5b41a4d1abcf67db0c5569335289f9c6b",
+   "bytes": 1171477,
+   "description": "xens2 B=16 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b32_profile.json",
+   "sha256": "0919bf3fa17176696f25e0240605c691e89fc62f73604f5857854357259a6956",
+   "bytes": 1169644,
+   "description": "xens2 B=32 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/speed_round36_summary.json",
+   "sha256": "ba4cfd8ca1b5604f0547a840e93e12b35e3ebf01ac98f45cf043dd9445589232",
+   "bytes": 11001,
+   "description": "round36 基线 profile、优化候选、最优 eligible 与 RNAformer 汇总",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/build_round36_profile_summary.py",
+   "sha256": "db9da4148df8c0fb943cd850f4282e16f3cb6837fcd66412dfbcc09c5238eac6",
+   "bytes": 2208,
+   "description": "round36 六份基线 profile 汇总构建脚本",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/build_round36_speed_comparison.py",
+   "sha256": "d07b0a8e8c613900ef6d03a0417e13df394bb510f6ccdaca38412d5240668dd1",
+   "bytes": 3398,
+   "description": "round36 eligible 优化与参照模型汇总构建脚本",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rnaformer_b1_full.json",
+   "sha256": "22f42726ea0d3b760fa513be608b6a5607ae70a50d0e6d19069cf03211fff3d8",
+   "bytes": 1021847,
+   "description": "RNAformer RTX 4090 B=1 全 TS0 三次 raw-sequence 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rnaformer_b2_full.json",
+   "sha256": "5ae1e83147d230328626255507eb65919ed08e2aa72edc10f6d5d5275005e6f1",
+   "bytes": 1021841,
+   "description": "RNAformer RTX 4090 B=2 全 TS0 三次 raw-sequence 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rnaformer_b4_full.json",
+   "sha256": "e49e5ba613c565102aa9ab512b0f2a886fb2b3cbdf78847cd06701bb5a7ed7c0",
+   "bytes": 1021846,
+   "description": "RNAformer RTX 4090 B=4 全 TS0 三次 raw-sequence 测速原始 JSON",
    "status": "active"
   },
   {
@@ -339,9 +437,9 @@
   },
   {
    "path": "appendix_leakage/leakage_aware_baseline_source.json",
-   "sha256": "e5ca478111e0c703a245e2629b4b4426fbd33d918e392a558a9b37dc773b6e72",
-   "bytes": 41876,
-   "description": "附录 A2 泄露处理完整基线表（19 系统×8 split、clean-181 与排除格）",
+   "sha256": "997d2f5d68469ab338b70add197ff965a55029f6519f7df31b717b9b7dda4b54",
+   "bytes": 49387,
+   "description": "附录 A2 泄露审计与 clean 子集复算表；eFold 旧板标为 0.1.2",
    "status": "active"
   },
   {
@@ -360,9 +458,37 @@
   },
   {
    "path": "appendix_leakage/build_source.py",
-   "sha256": "204d22a54a70c88058f19d899085d575c8fc9aeea6c50dd67ea62f0c8a6e0abb",
-   "bytes": 8635,
-   "description": "泄露处理表与两项审计源 JSON 的可复现构建脚本",
+   "sha256": "fe732350b7bb9bfed533a75ce7c5eb81b8dd3cc1f21efeb3e37dc864c68b52e0",
+   "bytes": 10709,
+   "description": "泄露审计表构建脚本；clean split 键映射与 eFold 版本身份已修复",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/rnaformer_bprna_clean_recompute.json",
+   "sha256": "8d2819355248e9fa46141c1be93afb5ceef44f849dee741c16be02b0a3bf5ed8",
+   "bytes": 4288,
+   "description": "RNAformer-bprna 四 split 原始 DBN clean 子集复算与独立 TP/FP/FN 证据",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/round38_baseline_assets.json",
+   "sha256": "7f8346386a55e553befc6305ec31cb23d7522064d2884269d81d5b68302dfd1f",
+   "bytes": 2746,
+   "description": "五扩展基线官方 commit、权重、smoke 与三项权重 blocked 证据",
+   "status": "active"
+  },
+  {
+   "path": "fig09_ood/build_ood_failure_source.py",
+   "sha256": "448bbc0039d42a1e454d4627804bf064e9996da070ae754e9dec4353f5e40215",
+   "bytes": 4615,
+   "description": "GenC/GenF 原始预测逐家族独立重算脚本",
+   "status": "active"
+  },
+  {
+   "path": "fig09_ood/round38_ood_failure_source.json",
+   "sha256": "a6e4a343d7ffacaa847b29cd7f4b1fd1099b9a544714ef98902a29480f0b8d3a",
+   "bytes": 29073,
+   "description": "GenC/GenF 家族失败、配对密度、零正确配对与 OOD mean 边界",
    "status": "active"
   }
  ]
