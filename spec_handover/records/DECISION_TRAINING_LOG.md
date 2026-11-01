@@ -11253,3 +11253,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch24 train BCE=0.00033321，validation BCE=**0.011271513923119850**，高于 epoch23 的 best=0.011084574559197882，未刷新 best。
 - 生产 resume 核对：epoch=24、best_epoch=23、bad=**1**、early_stopped=False，计数正确。patience=5 下继续训练，保留 epoch23 best checkpoint。
+
+
+## §15.235（2026-11-01）official_s2 epoch25 连续第二次未改善
+
+- epoch25 train BCE=0.00032608，validation BCE=**0.011160734535722708**，高于 epoch23 的 best=0.011084574559197882，连续第二轮未刷新 best。
+- 生产 resume 核对：epoch=25、best_epoch=23、bad=**2**、early_stopped=False，计数正确。当前为 2/5，继续训练并保留 epoch23 best checkpoint。
