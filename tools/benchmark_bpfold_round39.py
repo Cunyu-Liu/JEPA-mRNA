@@ -52,7 +52,11 @@ def main():
     reference = None
     for repeat in range(args.repeats):
         tic = time.perf_counter()
-        raw = list(predictor.predict(input_seqs=[row["seq"] for row in rows], batch_size=1, num_workers=1))
+        raw = []
+        for index, result in enumerate(predictor.predict(input_seqs=[row["seq"] for row in rows], batch_size=1, num_workers=1), start=1):
+            raw.append(result)
+            if index % 250 == 0 or index == len(rows):
+                print(f"BPFOLD_PROGRESS repeat={repeat} predicted={index}/{len(rows)}", flush=True)
         predictions = []
         for row, result in zip(rows, raw):
             connects = result["connects"]

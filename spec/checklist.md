@@ -1,5 +1,21 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **当前执行覆盖（2026-11-01，第 39 轮：25 系统逐模型去泄露复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
+>
+> - [ ] T-A169 25 系统均有官方 commit/权重/训练语料/哈希与加载 smoke；BPfold/UFold/E2Efold 和新增四基线完成资产恢复，旧 blocked 不作借口。
+> - [ ] T-A170 每模型独立精确 + 80% identity（及可用家族）去泄露，25×8×3=600 单元结果齐全；EternaFold bpRNA-new 三次复测完成；未知语料只标 BLOCKED_PROVENANCE。
+> - [ ] T-A171 SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各 8 split×3 完整复测，原生后处理和概率输出保留。
+> - [ ] T-A172 xens2 编码共享/头部融合通过全 TS0 三次与预测等价门，全部 eligible baseline 同机 raw-sequence 终测证明速度第一；未证明不得写速度 SOTA。
+> - [ ] T-A173 新训练候选三种子均收敛并独立 GPU QA；统一 xens2 三次均值在真实去泄露主板上 8/8 超过最强 eligible baseline，三负格不以弱参照替代。
+> - [ ] T-A174 ECE 在同候选对/GT/分箱下全概率基线最低，Brier/NLL 同步报告；VL0-only 校准，risk–coverage 与 Spearman 证明结构质量排序最佳且跨 split 稳定。
+> - [x] T-A175 主图 1 标题逐字改为指定 5/8、4/8 与三个未领先 split；其他用户调整不变，全 23 页微软雅黑、1.5 行距、图文匹配、表数正确、无重叠并逐页渲染通过。
+> - [ ] T-A176 每 run 训练/评测过程与结论完整；活跃绘图源数据、哈希和 manifest 齐全，废弃文档及旧源数据完成可追溯归档，未删除活跃原始数据。
+> - [ ] T-A177 原始 artifact、独立复算、图表/PPT 三通道验收通过；代码与大文件路径合规，确认代码已 commit+push，未提交秘密或既有未跟踪大资产。
+>
+> **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
+>
+> **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
+
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**
 >
 > - [ ] T-A163 已纠正 SOTA 身份并完成 RNAformer 部分 clean 复算；其余模型完整审计未关闭。

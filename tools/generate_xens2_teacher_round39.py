@@ -38,20 +38,22 @@ class Xens2Teacher:
         return np.triu(probs, k=1)
 
     def predict_probs_batch(self, seqs):
-        output = []
+        output = [None] * len(seqs)
         for length in sorted({len(seq) for seq in seqs}):
-            group = [seq for seq in seqs if len(seq) == length]
-            for start in range(0, len(group), 32):
-                batch = group[start:start + 32]
-                h0 = encoder_hidden(self.enc0, batch, self.device, True)
-                h1 = encoder_hidden(self.enc1, batch, self.device, True)
-                s0 = decision_scores(self.head0, h0, batch, self.device)
-                s1 = decision_scores(self.head1, h1, batch, self.device)
-                for index, seq in enumerate(batch):
+            group = [(index, seq) for index, seq in enumerate(seqs) if len(seq) == length]
+            for start in range(0, len(group), 1):
+                batch = group[start:start + 1]
+                sequences = [seq for _, seq in batch]
+                h0 = encoder_hidden(self.enc0, sequences, self.device, True).float().to(torch.float16).to(torch.float32)
+                h1 = encoder_hidden(self.enc1, sequences, self.device, True).float().to(torch.float16).to(torch.float32)
+                s0 = decision_scores(self.head0, h0, sequences, self.device)
+                s1 = decision_scores(self.head1, h1, sequences, self.device)
+                for index, (original_index, seq) in enumerate(batch):
                     sr = xens2_eval.r2d_scores(self.model, seq, self.store.get(seq), self.device)
                     scores = 0.7 * (0.5 * s0[index] + 0.5 * s1[index]) + 0.3 * sr
                     probs = torch.sigmoid(scores).cpu().numpy().astype(np.float64)
-                    output.append(np.triu(probs, k=1))
+                    output[original_index] = np.triu(probs, k=1)
+        assert all(prob is not None for prob in output)
         return output
 
 
@@ -75,6 +77,9 @@ def main():
     if args.limit:
         sequences = sequences[:args.limit]
     assert sequences and len(set(sequences)) == len(sequences)
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
+    torch.set_float32_matmul_precision("highest")
     teacher = Xens2Teacher(args.plana_ckpt, args.plana_ckpt2, args.r2d_ckpt,
                            args.embedding_dir, args.embedding_split, args.device)
     for module in (teacher.enc0, teacher.head0, teacher.enc1, teacher.head1, teacher.model):
@@ -82,10 +87,11 @@ def main():
     probe = teacher.predict_probs(sequences[0])
     assert probe.shape == (len(sequences[0]), len(sequences[0]))
     assert np.isfinite(probe).all() and probe.min() >= 0 and probe.max() <= 1
-    equivalence = [sequences[0], next((seq for seq in sequences[1:] if len(seq) == len(sequences[0])), sequences[0])]
+    equivalence = sequences[:16]
     batch_probe = teacher.predict_probs_batch(equivalence)
     for seq, actual in zip(equivalence, batch_probe):
         expected = teacher.predict_probs(seq)
+        assert actual.shape == expected.shape, (len(seq), actual.shape, expected.shape)
         difference = np.abs(actual - expected)
         mask = valid_pair_mask(seq)
         actual_pairs = set(nussinov_map(np.where(mask, actual, -np.inf), mask))
@@ -110,7 +116,11 @@ def main():
                                                    "embedding_split": args.embedding_split,
                                                    "gpu_name": torch.cuda.get_device_name(0),
                                                    "teacher_version_lock": Xens2Teacher.version_lock,
-                                                   "teacher_forward": "raw plana encoders plus cached r2d embedding"})
+                                                   "teacher_batch_size": 1,
+                                                   "allow_tf32": False,
+                                                   "matmul_precision": "highest",
+                                                   "equivalence_probe": "first_16_bitwise_probability_and_pair_identity_1",
+                                                   "teacher_forward": "raw plana encoders with fp16 bridge plus cached r2d embedding"})
     assert manifest["n_sequences"] == len(sequences)
     assert verify_teacher_labels(manifest, args.out_dir)
     print(f"XENS2_TEACHER_PASS n={len(sequences)} out={args.out_dir}")

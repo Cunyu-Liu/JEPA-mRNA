@@ -4,15 +4,15 @@
 >
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
-> | T-A169 | 25 系统注册、官方权重与适配器恢复 | 原 19 系统 + SPOT-RNA/RNAstructure/ContextFold/CONTRAfold/BPfold/E2Efold；每项仓库 commit、权重 URL/SHA256、训练语料、加载 smoke 与输出协议齐全；BPfold 六 checkpoint、UFold 官方全数据权重、E2Efold 官方 checkpoint 不得再用旧 blocked 结论替代实际恢复 | 进行中：官方链接已核实；BPfold GitHub release、UFold Google Drive、E2Efold SharePoint、SPOT-RNA Dropbox/Nihao 进入恢复流程；历史 UFold 成功加载记录已找到 |
-> | T-A170 | 逐模型泄露矩阵与 600 单元复测 | 25×8×3；每模型独立精确 + 80% identity（及可用家族）去重叠，clean n/removed/TP/FP/FN/micro-F1/mean±SD/哈希全落盘；未知语料标 BLOCKED_PROVENANCE，不伪造 clean | 进行中：先冻结 split/GT/指标和逐模型语料注册表，再全量推理；EternaFold bpRNA-new=0.6854 必须亲自三次复测，不能沿用单次数值 |
-> | T-A171 | 新增四基线与三官方权重模型全板 | SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各自 8 split×3；同 strict micro-F1/canonical-nested GT；原生必要后处理保留，概率输出另存供 ECE | 待 T-A169 对应资产与 smoke 通过；缺失单格不阻塞其他 eligible 模型，但不得宣称完整全板 |
-> | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | 根因已证实：3 encoder+3 head，B=32=19.89 seq/s；先工程共享再决定是否重训蒸馏，正式计时必须独占 4090 |
-> | T-A173 | xens2 模型/数据候选攻关 8/8 | 只用 VL0 选候选；三训练种子均 validation plateau+best checkpoint+独立 GPU QA；统一 xens2 三次均值在 8 split 均超过最强 eligible baseline；ArchiveII/bpRNA-new/TS2 三负格优先但不得测试集调参 | 待 T-A170 形成真实强对手板后执行；不预设一定可达，所有负结果保留 |
-> | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | 当前 TS2/TS3 过校正，最低 ECE 未成立；先修校准协议，禁止用平均置信度高低替代排序质量 |
-> | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 标题与相关页待改；新实验未完成前只纠正已有事实，不把待测结果写成 SOTA |
-> | T-A176 | 训练台账、活跃源数据与可追溯归档 | 每 run 记录 commit/seed/配置/CUDA/数据权重哈希/best epoch/停止原因/结果与结论；活跃绘图 JSON+manifest 完整；废弃交接件和旧源数据只移动归档并保留哈希 | 贯穿执行；归档在 PPT 内容修复后，活跃原始数据不得删除 |
-> | T-A177 | 最终三通道验收与 GitHub | 原始 artifact→独立复算→图/表/PPT 三通道一致；相关测试/静态检查通过；代码留 /home，大 artifact 留 /teams，确认后及时 commit+push，本地只留核心结论 | 待各阶段验收；当前既有远端未跟踪资产不得误删或批量提交 |
+> | T-A169 | 25 系统注册、官方权重与适配器恢复 | 原 19 系统 + SPOT-RNA/RNAstructure/ContextFold/CONTRAfold/BPfold/E2Efold；每项仓库 commit、权重 URL/SHA256、训练语料、加载 smoke 与输出协议齐全；BPfold 六 checkpoint、UFold 官方全数据权重、E2Efold 官方 checkpoint 不得再用旧 blocked 结论替代实际恢复 | 进行中：BPfold 六官方 checkpoint 与 UFold 权重已恢复并实测；E2Efold 官方 SharePoint 不可达，保留 blocked 证据，不伪造恢复 |
+> | T-A170 | 逐模型泄露矩阵与 600 单元复测 | 25×8×3；每模型独立精确 + 80% identity（及可用家族）去重叠，clean n/removed/TP/FP/FN/micro-F1/mean±SD/哈希全落盘；未知语料标 BLOCKED_PROVENANCE，不伪造 clean | 进行中：七套模型专属审计已完成；EternaFold、MXfold2 自身训练语料 clean 八 split 三次完成，EternaFold new=0.6853840073；BPfold/RNAformer clean 正在跑，600 单元未齐 |
+> | T-A171 | 新增四基线与三官方权重模型全板 | SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各自 8 split×3；同 strict micro-F1/canonical-nested GT；原生必要后处理保留，概率输出另存供 ECE | 进行中：BPfold clean 与 RNAstructure 后续 split 已启动；SPOT-RNA、UFold、CONTRAfold 已有部分结果；E2Efold/ContextFold 外部资产仍 blocked，不得宣称完整全板 |
+> | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | 根因已证实：3 encoder+3 head，B=32=19.89 seq/s；教师 B=8 等价失败已拒绝，B=1 逐值通过并续跑，后续单 r2d 学生；正式速度仍未测 |
+> | T-A173 | xens2 模型/数据候选攻关 8/8 | 只用 VL0 选候选；三训练种子均 validation plateau+best checkpoint+独立 GPU QA；统一 xens2 三次均值在 8 split 均超过最强 eligible baseline；ArchiveII/bpRNA-new/TS2 三负格优先但不得测试集调参 | 待 TR1c/VL0 教师验收后启动三种子；不预设一定可达，所有负结果保留 |
+> | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | 当前 TS2/TS3 过校正，最低 ECE 未成立；待学生候选做 VL0-only 校准，禁止用平均置信度高低替代排序质量 |
+> | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 已完成：23 页字体/行距/越界/渲染/ZIP 验收通过；新实验完成后仅更新必要数字和图件 |
+> | T-A176 | 训练台账、活跃源数据与可追溯归档 | 每 run 记录 commit/seed/配置/CUDA/数据权重哈希/best epoch/停止原因/结果与结论；活跃绘图 JSON+manifest 完整；废弃交接件和旧源数据只移动归档并保留哈希 | 进行中：§15.268 已撤回批化过早结论并记录 B=1 证据；活跃原始数据未删除，最终归档待实验状态稳定 |
+> | T-A177 | 最终三通道验收与 GitHub | 原始 artifact→独立复算→图/表/PPT 三通道一致；相关测试/静态检查通过；代码留 /home，大 artifact 留 /teams，确认后及时 commit+push，本地只留核心结论 | 进行中：阶段性代码核验后提交；600 单元、三目标和最终归档未闭环，不作最终验收 |
 >
 > **执行顺序**：T-A169/T-A170 立即并行推进 → T-A171 全量新增基线 → T-A172 工程优化与 T-A173/T-A174 VL0 候选 → 独占终测 → T-A175 → T-A176/T-A177。NB T-A168 保持原收敛合同，非计时阶段余量即提交其他合格任务，正式测速例外独占。
 >

@@ -11515,8 +11515,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **教师 smoke 验收**：2 条真实序列完整生成通过；manifest 包含 RTX 4090、plana s0/s1/r2d 三 checkpoint SHA256、数据 SHA256 和 `plana_tr1c_s0+s1_w0.7_and_r2dtr1c_w0.3_sigmoid_scores` version lock。全量 TR1c 正在生成，尚未把 smoke 当科学结果。
 
 
-## §15.268（2026-11-02）xens2 教师批化等价验收
+## §15.268（2026-11-02）xens2 教师批化等价验收：批化拒绝、串行续跑
 
-- **串行进度保留**：原串行教师已产出 91 个分片并移入 `teacher_tr1c_serial_incomplete`，未删除；为避免数小时等待，改为按长度分组、每组 B≤32 的 plana 双编码器批化，r2d 继续使用缓存嵌入。
-- **等价证据**：同长度双序列 batch 与原单序列路径的 `pair_identity=1.0`、`f1_delta=0.0`，概率 max_abs=0.0033565462、mean_abs=0.0000140088；按既定 ≥99% 和 |ΔF1|≤1e-3 验收通过，而不是用不现实的逐位浮点相等作为门槛。
-- **执行状态**：`teacher_smoke_batched` manifest 与哈希通过，TR1c 以 shard=256 全量批化生成，VL0 随后；未把 smoke 或提速预期写成速度 SOTA。
+- **早期结论撤回**：双序列 smoke 曾满足等价门，但扩展到前 16 条后，B=8/TF32-off 在第 16 条 len=117 上仅 `pair_identity=0.9512195122`、`f1_delta=0.025`，明确失败。早期通过只代表所测样本，不能外推为全量等价；错误排序产物继续隔离于 `teacher_tr1c_ordering_invalid`，不得训练。
+- **逐项定位**：恢复原索引后仍失败；补回原 `plana_scores` 的 FP16 中间表示后，首条等部分序列达到逐值一致，但同一 len=117 样本仍失败，排除“仅靠顺序或 FP16 bridge 即可批化”的假设。所有失败配置均保留在独立 smoke 目录和日志，不放宽 ≥99% 配对一致、|ΔF1|≤1e-3 的合同。
+- **B=1 对照通过**：前 16 条批量路径相对原串行路径全部 `max_abs=0`、`pair_identity=1.0`、`f1_delta=0.0`；16 条 manifest/SHA256 验收通过。由此采用 B=1 安全路径，不把批量 CUDA 数值差异伪装成可忽略误差。
+- **有效工作复用**：91 个原串行分片共 1456 条经全分片 SHA256、序列顺序、矩阵 shape 和有限值复核后，目录改为 `teacher_tr1c` 并原位续跑，不重算已验收部分。manifest 新增 `teacher_batch_size=1`、TF32-off、FP16 bridge 与 16 条等价探针记录；TR1c 完成后串行生成 VL0，最终须满足 n=42564/196 与全分片哈希验收。
+- **并行恢复**：eFold raw 八 split 三次结果已核验齐全；BPfold 官方训练并集 clean 八 split、RNAformer-bprna 官方训练集 clean 八 split 已分别恢复三次评测。它们不与未来独占测速并行，当前仅为非计时精度评测。

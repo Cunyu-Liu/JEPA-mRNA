@@ -1,5 +1,23 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
+> **当前执行覆盖（2026-11-01，第 39 轮：逐模型去泄露全量复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
+>
+> **主结果口径立即纠正**：主图 1 标题固定为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”。预注册 clean 参照 6/8 只能放附注解释实验合同，不得作为 SOTA 主标题。当前 ArchiveII 全板最高 Kirigami=0.7872，高于 xens2=0.7760；bpRNA-new 与 TS2 也未领先。
+>
+> **本轮实验全集**：登记 25 个系统（原 19 个 + SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、E2Efold）× 8 split × 3 次独立评测，目标为 600 个单元结果。每个模型单独绑定训练语料、官方 checkpoint、版本、权重哈希与适配器；按模型分别计算规范化序列精确重叠、MMseqs2 80% identity 重叠及可用时的家族重叠，逐 split 剔除后重评。clean n 必须随模型和 split 变化，禁止统一套用 clean-181；训练语料或权重无法核验的格子标 `BLOCKED_PROVENANCE`，不得写成 clean 或 0 分。
+>
+> **三次评测与训练种子**：固定官方权重的确定性模型以 seed=0/1/2 独立重复完整推理和评分，报告 mean±SD，不重训、不做测试时增强；多次官方 checkpoint 仅在原协议明确对应种子时作为成员。新训练候选必须三个训练种子分别到 validation plateau、保存 best checkpoint 并独立 GPU QA，再取均值。任何单 seed、smoke、proxy、训练集结果不得进入最终主板。
+>
+> **xens2 速度根因与路线**：round38 B=32 的 xens2=19.89 seq/s，低于 r2d=53.91；当前实现是 3 次 RiNALMo 编码器前向 + 3 个决策头，encoder/head 约占 52%/39%。plana s0/s1 与 r2d 的骨干权重不同，不能无损共享一次编码；先在 VL0 和预测等价门内做多模型融合/批化，必要时把 xens2 蒸馏为单骨干、单决策头学生；不得用 cached embedding 冒充 raw-sequence，不得为速度牺牲超过 |ΔF1|=1e-3 或配对一致率 99%。正式计时独占 4090、全 TS0 三次；非计时推理和训练按实测显存并行，CUDA 不可用或 CPU 静默降级立即停止留证。
+>
+> **8/8、ECE 与置信度验收**：8/8 只有在统一 xens2 的三次评测均值于每个 split 都超过该 split 最强 eligible baseline 时才成立，不能换回预注册弱参照。ECE 必须在相同候选配对、相同 GT、相同分箱下与所有能输出概率的基线比较，同时报告 Brier/NLL；校准参数只由 VL0 拟合。当前 recalibrated 在 TS2/TS3 过校正，不能称最低 ECE。“置信度最高”解释为最佳结构质量排序与 risk–coverage/abstention 性能，并配 Spearman 和跨 split 稳定性，不以可被任意抬高的平均置信度作为目标。
+>
+> **执行硬顺序**：P0 三处 spec/tasks/checklist、25 系统注册表、官方权重与数据/指标预检 → P1 逐模型泄露矩阵与 600 单元全量复测（CPU/GPU 可并行，新增四基线和 BPfold/UFold/E2Efold 优先）→ P2 xens2 共享编码/头部工程与 VL0 锁定的模型、数据、校准候选 → P3 三次全量主板、独立复算、独占速度终测 → P4 定点 PPT、论文叙事 claim–evidence–limitation、源数据归档与 GitHub。每阶段未过验收不得把下一阶段结果写成科学结论。
+>
+> **2026-11-02 执行更新**：BPfold 六个官方 checkpoint、UFold 官方转换权重已恢复，不能再写为权重 blocked；E2Efold 仍因官方 SharePoint 不可达而保留证据。EternaFold 与 MXfold2 的自身训练语料 clean 八 split 三次已完成，eFold raw 八 split 三次已完成；BPfold 与 RNAformer-bprna clean 正在复测。xens2 教师 B=8 批化因 len=117 样本配对一致率 95.12% 被拒绝，B=1 的 16 条逐值等价通过，91 个串行分片验收后续跑。以上均不改变 8/8、速度和 ECE 尚未闭环的事实。
+>
+> **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
+
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**
 >
 > **已落实纠正**：第 4 页改为“xens2 胜预注册 clean 参照 6/8，不等于全板 6/8 SOTA”；第 18 页改为“泄露审计与 clean 子集复算”。RNAformer-bprna 的 TS1/TS2/TS3/hard 已真实重算为 0.7830/0.8506/0.8296/0.6933（n=25/11/4/8），其余沿用原板格子不得解释为已去污染。
