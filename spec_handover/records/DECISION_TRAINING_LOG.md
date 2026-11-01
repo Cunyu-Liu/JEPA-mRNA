@@ -11326,3 +11326,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 中断交互期间生产训练持续运行，已从 `validation_history.jsonl` 逐行补录，而不是只保留最新值：epoch36 validation BCE=**0.010843943561498056**（新 best）；epoch37=0.010996150998841383；epoch38=0.010967191585468335；epoch39=0.011216970775417926，后三轮均未超过 epoch36 best。
 - 生产 resume 核对：epoch=39、best_epoch=36、best_loss=0.010843943561498056、bad=**3**、early_stopped=False，run.json 尚未生成，epoch40 正常训练。
 - 当前为 3/5 次未改善，继续按 patience=5 等待，不提前停止，也不把 epoch36–39 的中间状态写成收敛。epoch35 提交 `922aab8` 已 push 成功。
+
+
+## §15.247（2026-11-01）第 37 轮优先级：主图 2 纯端到端与 NB 安全暂停
+
+- **用户最新决策**：主图 2 不再使用 head-only，只展示 raw-sequence 端到端；推理优化与测评优先于 NucleicBERT 下游任务。T-A159–T-A162 已写入三处 spec/tasks/checklist，执行顺序为主图 2→NB 完整 checkpoint 暂停→独占速度测评→图件与源数据→恢复 NB。
+- **主图 2 完成**：六系统最优合格配置为 r2d B=16=50.6785、plana B=16=46.1275、xens2 B=8=17.6217、RiNALMo-ft B=4=23.8044、MXfold2 B=2=14.7604、RNAformer B=4=2.7326 seq/s；全 TS0 三次重复，范围、batch、F1 与源哈希齐全。PNG SHA256=`48e3c26ca4554925ba189a562860e420c8ef7e50d70e3b071d988943c37b2001`，源 JSON 已标 `final_visual_qa_pass`。
+- **PPT**：第 5 页原位替换为纯端到端图，标题、脚注与备注同步，主图 2 不含 head-only；其他页面内容/几何保持不变。round37 PPT SHA256=`b26d76065b3d3d3dfd3a42f14e212efc1eef5d9b3bc157b450efac71f3bb7bae`，PDF SHA256=`eaa79b465f48506bf7b4c832568b440fc158f88e5cc86144e4991b09bac28ca0`。第 8 页用户原有便签文本框保持原样，不当作本轮新增问题。
+- **NB 暂停证据**：official_s2 已完成 epoch40，validation BCE=0.010985194820785266；checkpoint 为 epoch40、best_epoch=36、best_loss=0.010843943561498056、bad=4、early_stopped=False，run.json 不存在。已停止恢复 watcher，epoch40 后终止训练，official_s3 未启动；暂停仅为速度优先级，不是收敛，后续从完整 checkpoint 恢复。
+- 活跃源数据新增 fig02 三件，manifest/README 同步。后续 xens2 B=16、三模型 B=32 和 r2d TF32 尚未实测，不提前写提速。
