@@ -11446,3 +11446,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **MXfold2 raw 已确认范围**：TS0/new/TS1/TS2/TS3/hard/TSB 三次均值分别=0.5651344853/0.6688466171/0.7967298402/0.8990683230/0.8127208481/0.8028455285/0.6503729959；ArchiveII 等全长复测后才进入汇总。
 - **UFold clean 继续 blocked**：论文称 RNAStralign-train/TR0/增强/PDB 为训练集，代码默认 `train_files` 又包含 ArchiveII、TS0、bpnew、TS1/2/3，历史审计采用另一种组合。原始 checkpoint 训练 pickle 未恢复前，不把任一组合冒充完整 provenance；raw 八 split 已完成但 clean 主板未关闭。
 - **RNAformer 当前进度**：B=1 TS0 已完成前两次 repeat，F1 均=0.757543、峰值显存约 6110 MiB；第三次及后续 split 未完成，不写最终均值。RiNALMo-ft 等更大模型继续避开其显存增长窗口。
+
+
+## §15.260（2026-11-01）EternaFold 真实 clean、SPOT-RNA 新格与资产整理
+
+- **EternaFold 训练 provenance 闭环**：官方 `input_data.zip` 中 StructureData/RiboswitchData/ChemMappingData 的 train 分别=1532/1295/2603，共 **5430** 条；ZIP SHA256=`e9b1b8734e43b1211b9aca47b35dbaf82e9c91667fb1ff97ea8e0d41143ecbe6`。TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB clean n=1230/5388/55/32/19/28/1033/428，八份审计数量守恒并提交 `cd33d70`。
+- **EternaFold 自身 clean TS0**：三次均 TP=21859、FP=27346、FN=10835，F1=**0.5338038315486148**，预测 SHA256 完全一致；这替代的是“tr1c clean 敏感性”位置，不与 raw TS0=0.54001085 混写。其余 clean split 正在运行。
+- **SPOT-RNA bpRNA-new**：三次均 TP=77326、FP=52486、FN=57858，F1=**0.58360126190584**。ArchiveII 首次后续复测因并行 OOM 停止，未生成有效结果；TS0/new 保留，剩余 split 等待安全窗口，不再连续超订。
+- **RiNALMo-ft 恢复有效**：B=1 TS0 前两轮均 F1=**0.721384**、峰值约 8.39 GiB，第三次尚未确认，不写最终三次均值。RNAformer TS0 三次均 **0.757543**，独立复测链已完成。
+- **本地资产清理**：BPfold/MXfold2 官方压缩包已核对本地与 `/teams` SHA256 完全一致，删除本轮本地临时副本，释放约 190 MiB；远端原始包、训练索引、审计和小型结论文件全部保留。交接目录未发现 `.DS_Store`、AppleDouble 或 `__pycache__` 垃圾，未为形式整齐而移动活跃文件。
+- **教师生成待验**：已补充三 checkpoint、数据、GPU 和唯一序列 provenance 断言，仅做语法检查；真实 GPU smoke 尚未执行，代码不标已验收、不进入科学结果。
