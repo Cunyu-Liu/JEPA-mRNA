@@ -11313,3 +11313,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - epoch34 train BCE=0.00027349，validation BCE=**0.011072319088253985**，高于 epoch33 的 best=0.010965557402982098，未刷新 best，bad=1。
 - 单轮波动不构成 plateau；继续原 early-stopping 合同训练，保留 epoch33 best checkpoint。
+
+
+## §15.245（2026-11-01）official_s2 epoch35 新 best
+
+- epoch35 train BCE=0.00026860，validation BCE=**0.010949568377534014**，相对 epoch33 的前 best=0.010965557402982098 再降 1.59890e-5，超过 min_delta=1e-6，刷新 best，bad=0。
+- epoch34 的波动未形成 plateau，继续按原 early-stopping 合同训练。
