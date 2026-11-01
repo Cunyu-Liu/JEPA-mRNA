@@ -71,7 +71,8 @@ def load_plana_head(path: Path, device: torch.device):
     return encoder.to(device).eval(), head.to(device).eval()
 
 
-def load_models(name: str, device: torch.device) -> dict:
+def load_models(name: str, device: torch.device, rnaformer_weights: Path | None = None,
+                rnaformer_config: Path | None = None) -> dict:
     if name == "r2d":
         encoder, report = load_encoder(device=str(device), dtype=torch.bfloat16)
         return {"name": name, "encoder": encoder, "head": load_r2d_head(device), "report": report}
@@ -120,8 +121,10 @@ def load_models(name: str, device: torch.device) -> dict:
         torch.set_float32_matmul_precision("highest")
         sys.path.insert(0, str(REPO / "third_party/RNAformer"))
         from ss.run_rnaformer import build_model
-        weights = W / "rna_ssp_20261024/weights/baselines/rnaformer/RNAformer_32M_state_dict_bprna.pth"
-        config = W / "rna_ssp_20261024/weights/baselines/rnaformer/RNAformer_32M_config_bprna.yml"
+        if (rnaformer_weights is None) != (rnaformer_config is None):
+            raise ValueError("RNAformer weights and config must be supplied together")
+        weights = rnaformer_weights or W / "rna_ssp_20261024/weights/baselines/rnaformer/RNAformer_32M_state_dict_bprna.pth"
+        config = rnaformer_config or W / "rna_ssp_20261024/weights/baselines/rnaformer/RNAformer_32M_config_bprna.yml"
         args = SimpleNamespace(state_dict=str(weights), config=str(config), cycling=0)
         model, report = build_model(args)
         report.update({"weights": str(weights), "weights_sha256": sha256_file(weights),
@@ -312,6 +315,8 @@ def run_once(models: dict, records: list[dict], batch_size: int, device: torch.d
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", required=True, choices=list(EXPECTED_F1))
+    parser.add_argument("--rnaformer-weights", type=Path)
+    parser.add_argument("--rnaformer-config", type=Path)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--max-sequences", type=int, default=0)
@@ -344,7 +349,9 @@ def main() -> int:
     if args.data.resolve() == DEFAULT_DATA.resolve() and data_sha256 != DEFAULT_DATA_SHA256:
         raise RuntimeError(f"reference data identity mismatch: {args.data} sha256={data_sha256}")
     reference_protocol = (args.data.resolve() == DEFAULT_DATA.resolve()
-                          and data_sha256 == DEFAULT_DATA_SHA256 and not args.max_sequences)
+                          and data_sha256 == DEFAULT_DATA_SHA256 and not args.max_sequences
+                          and (args.model != "rnaformer" or
+                               (args.rnaformer_weights is None and args.rnaformer_config is None)))
     if not records:
         assert args.clean_audit is not None and not args.max_sequences
         payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "model": args.model,
@@ -355,7 +362,7 @@ def main() -> int:
         args.out.write_text(json.dumps(payload, indent=1) + "\n")
         print(f"EMPTY_AFTER_DELEAK model={args.model} out={args.out}")
         return 0
-    models = load_models(args.model, device)
+    models = load_models(args.model, device, args.rnaformer_weights, args.rnaformer_config)
     runs = []
     predictions = None
     for repeat in range(args.repeats):
