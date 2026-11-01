@@ -11408,3 +11408,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **xens2 路线纠偏**：plana s0/s1 与 r2d 的骨干权重不同，不能无损共享一次编码。速度候选只能是多模型融合/批化或蒸馏为单骨干、单决策头学生；原 xens2 先完成 tr1c clean 八 split 三次复测，再生成教师并进入 VL0 候选。教师生成器两条真实序列 smoke 已通过分片与哈希验收，不把 smoke 当科学结果。
 - **权重与依赖边界**：UFold 转换候选虽经 156 键 strict 加载，但 TS0=0.4604，未复现官方 0.6598，已判定不合格，不进入主表；multimolecule/transformers 多版本组合不兼容，通道停止。ContextFold 官方站点、E2Efold SharePoint 当前不可访问；BPfold 官方 release 继续用 HTTP/1.1 恢复下载，未使用来源不明替代权重。
 - **代码与写作**：第一批第 39 轮代码、合同、PPT 与源数据已提交并 push `d437b4f`。`paper/round39_claim_evidence_audit.md` 已按现象—对照—限制审计八条叙事；所有最终 SOTA、速度与 ECE 结论继续 fail-closed。
+
+
+## §15.256（2026-11-01）round39 基线协议修复与已完成单元
+
+- **xens2 tr1c-clean TestSetB**：B=1 三次均为 TP=5663、FP=650、FN=1696，strict micro-F1=**0.8284084259801053**；三次预测一致。B=1 是显存适配，不与独占速度实验混用。至此原 xens2 的 tr1c-clean 八 split 均有三次结果，但不代表最终 8/8。
+- **官方 BPfold 六 checkpoint**：TS0 三次均为 TP=29657、FP=14509、FN=5234，F1=**0.7502687934022287**；六个官方 release 权重及 SHA256 已恢复。其余 split 与官方训练数据泄露审计尚未闭环。
+- **MXfold2 B=1 单队列**：raw TS0/new 三次均值分别为 **0.565134 / 0.668847**，三次预测一致；此前并行 OOM 结果作废，其余 split 继续按同一队列运行，非独占吞吐不进入正式速度图。
+- **UFold 转换根因与复证**：首层原 AUCG 碱基对通道误接到 ACGU 输入，且转换脚本混用官方与 MultiMolecule state-dict 命名。修正后 155 个非首层张量完全一致，同一输入下两编码器输出逐位一致；两条真实序列平均 logits 误差约 0.0038。全 TS0 三次均为 TP=18621、FP=27345、FN=16270，F1=**0.46059091977194305**，原官方实现为 0.4604254266633688；1271/1288 条预测完全一致。该差异属于跨实现数值边界，不能把论文中的 0.6598 当作本 split/本 GT 口径的既定真值。
+- **RNAstructure**：旧输出未严格校验 CT 结构，出现异常假阳性，已停止并移入 diagnostics；新适配器强制 `--MFE`/`--sequence`、DATAPATH、单结构行数、序列/索引、配对唯一性校验，8 条真实序列 smoke 通过。完整八 split 三次结果尚未完成，旧异常值不进入主表。
+- **资产与物理基线**：E2Efold 官方仓库及公开 fork 均无权重文件，当前官方 SharePoint 不可访问，继续标 blocked；不采用不明第三方权重。Vienna 旧 24 份结果只有汇总指标、没有逐序列预测和哈希，正在按 round39 合同补全；未把旧文件直接标为验收通过。
