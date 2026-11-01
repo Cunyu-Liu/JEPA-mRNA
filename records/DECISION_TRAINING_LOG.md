@@ -11513,3 +11513,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **教师调度决策**：在 BPfold bpRNA-new、RNAformer bpRNA-new、eFold ArchiveII 的自然完成边界暂停三个后续队列，优先独占 GPU 生成 TR1c/VL0 教师，已完成结果均保留。
 - **远端进程管理纠错**：第一次教师 smoke 因旧基线显存未释放而 OOM。确认仅停止 SSH 不会自动终止远端子进程后，按明确 PID 清理暂停任务，GPU 从 22.6 GiB 降至 9 MiB，再启动教师；未误杀其他用户进程。后续恢复基线也按 split 明确启动，不依赖 TaskStop 管理远端生命周期。
 - **教师 smoke 验收**：2 条真实序列完整生成通过；manifest 包含 RTX 4090、plana s0/s1/r2d 三 checkpoint SHA256、数据 SHA256 和 `plana_tr1c_s0+s1_w0.7_and_r2dtr1c_w0.3_sigmoid_scores` version lock。全量 TR1c 正在生成，尚未把 smoke 当科学结果。
+
+
+## §15.268（2026-11-02）xens2 教师批化等价验收
+
+- **串行进度保留**：原串行教师已产出 91 个分片并移入 `teacher_tr1c_serial_incomplete`，未删除；为避免数小时等待，改为按长度分组、每组 B≤32 的 plana 双编码器批化，r2d 继续使用缓存嵌入。
+- **等价证据**：同长度双序列 batch 与原单序列路径的 `pair_identity=1.0`、`f1_delta=0.0`，概率 max_abs=0.0033565462、mean_abs=0.0000140088；按既定 ≥99% 和 |ΔF1|≤1e-3 验收通过，而不是用不现实的逐位浮点相等作为门槛。
+- **执行状态**：`teacher_smoke_batched` manifest 与哈希通过，TR1c 以 shard=256 全量批化生成，VL0 随后；未把 smoke 或提速预期写成速度 SOTA。

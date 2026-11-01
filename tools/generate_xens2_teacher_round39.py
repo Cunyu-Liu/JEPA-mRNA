@@ -12,7 +12,9 @@ for path in (REPO, REPO / "src", REPO / "tools", REPO / "eval"):
     sys.path.insert(0, str(path))
 
 from rnajepa.distill import generate_teacher_labels, sha256_file, verify_teacher_labels
+from rnajepa.harness import nussinov_map, valid_pair_mask
 from rnajepa.train_decision import EmbeddingStore
+from speed_end_to_end_4090 import decision_scores, encoder_hidden
 import xens2_eval
 
 
@@ -34,6 +36,23 @@ class Xens2Teacher:
         scores = 0.7 * (0.5 * s0 + 0.5 * s1) + 0.3 * sr
         probs = torch.sigmoid(scores).cpu().numpy().astype(np.float64)
         return np.triu(probs, k=1)
+
+    def predict_probs_batch(self, seqs):
+        output = []
+        for length in sorted({len(seq) for seq in seqs}):
+            group = [seq for seq in seqs if len(seq) == length]
+            for start in range(0, len(group), 32):
+                batch = group[start:start + 32]
+                h0 = encoder_hidden(self.enc0, batch, self.device, True)
+                h1 = encoder_hidden(self.enc1, batch, self.device, True)
+                s0 = decision_scores(self.head0, h0, batch, self.device)
+                s1 = decision_scores(self.head1, h1, batch, self.device)
+                for index, seq in enumerate(batch):
+                    sr = xens2_eval.r2d_scores(self.model, seq, self.store.get(seq), self.device)
+                    scores = 0.7 * (0.5 * s0[index] + 0.5 * s1[index]) + 0.3 * sr
+                    probs = torch.sigmoid(scores).cpu().numpy().astype(np.float64)
+                    output.append(np.triu(probs, k=1))
+        return output
 
 
 def main():
@@ -63,6 +82,20 @@ def main():
     probe = teacher.predict_probs(sequences[0])
     assert probe.shape == (len(sequences[0]), len(sequences[0]))
     assert np.isfinite(probe).all() and probe.min() >= 0 and probe.max() <= 1
+    equivalence = [sequences[0], next((seq for seq in sequences[1:] if len(seq) == len(sequences[0])), sequences[0])]
+    batch_probe = teacher.predict_probs_batch(equivalence)
+    for seq, actual in zip(equivalence, batch_probe):
+        expected = teacher.predict_probs(seq)
+        difference = np.abs(actual - expected)
+        mask = valid_pair_mask(seq)
+        actual_pairs = set(nussinov_map(np.where(mask, actual, -np.inf), mask))
+        expected_pairs = set(nussinov_map(np.where(mask, expected, -np.inf), mask))
+        union = actual_pairs | expected_pairs
+        identity = len(actual_pairs & expected_pairs) / len(union) if union else 1.0
+        f1_delta = abs(2 * len(actual_pairs & expected_pairs) / max(1, len(actual_pairs) + len(expected_pairs)) - 1.0)
+        print(f"BATCH_EQUIVALENCE length={len(seq)} max_abs={difference.max()} mean_abs={difference.mean()} "
+              f"pair_identity={identity} f1_delta={f1_delta}", flush=True)
+        assert identity >= 0.99 and f1_delta <= 1e-3, f"batch mismatch: {len(seq)}"
     manifest = generate_teacher_labels(sequences, teacher, args.out_dir,
                                        shard_size=args.shard_size, resume=True,
                                        extra_meta={"data": args.data,

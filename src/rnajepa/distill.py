@@ -585,7 +585,11 @@ def generate_teacher_labels(sequences: Sequence[str], teacher, out_dir: Union[st
             new_shards.append(prev)
             total += int(prev["n"])
             continue
-        probs = [np.asarray(teacher.predict_probs(s), dtype=np.float64) for s in seqs]
+        if hasattr(teacher, "predict_probs_batch"):
+            probs = [np.asarray(p, dtype=np.float64) for p in teacher.predict_probs_batch(seqs)]
+            assert len(probs) == len(seqs)
+        else:
+            probs = [np.asarray(teacher.predict_probs(s), dtype=np.float64) for s in seqs]
         if write:
             np.savez(path, sequences=np.array(seqs, dtype=object),
                      probs=np.array(probs, dtype=object))
