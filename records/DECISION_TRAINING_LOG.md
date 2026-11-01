@@ -11437,3 +11437,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **BPfold 训练索引**：官方 `data_index.yaml` 的 train 为 PDB_669=669 + bpRNA=12114，共 12783；test=58631 不混入训练。官方包本地/远端 SHA256=`819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403`，六折联合训练语料 clean 审计已启动。
 - **RNAstructure 多 MEA 结构**：部分 MaxExpect 输出多个完整 CT 块，既有同分也有近优（如 17.6/17.5）。协议固定只取官方顺序的第一个结构，记录块数和能量跨度，禁止合并或按测试 GT 挑选；三次单序列复推一致，完整八 split 仍在运行。
 - **xens2 蒸馏前置**：TR1c=42564、VL0=196，序列均唯一且 r2d 嵌入缺失数均为 0。`r2d.pt` 已是 20000-step 完整训练状态，新增 `--init-weights` 仅加载模型并创建全新 optimizer/scheduler/step=0；后续 resume 不重复初始化，禁止与 `--resume` 同时指定。回归测试 **39 passed, 1 skipped**，提交 `2bb4e60` 已 push。教师全量生成和三种子训练尚未开始。
+
+
+## §15.259（2026-11-01）全 split 长度门与 MXfold2 clean 首格
+
+- **长度过滤纠错**：通用 GPU 评测器历史上默认只评 ≤600 nt，导致 MXfold2 ArchiveII 实际 n=2505 而非 2544。该结果不得写成全 split；已新增 `--allow-long`，凡注册 split 发生静默长度过滤直接 fail-closed。ArchiveII raw 正以完整 2544 条重跑，其他七 split 无长度过滤，不需重跑。
+- **合同绑定增强**：同一评测器现在逐 split 校验原始 SHA256/n，clean 额外绑定对应模型训练语料审计与 clean SHA256/n；空 clean 输出 `EMPTY_AFTER_DELEAK`，不进入 F1 汇总。MXfold2 clean TS1 已实跑三次通过，n=52、F1=**0.781250**，预测一致；其余 clean split 在队列中。
+- **MXfold2 raw 已确认范围**：TS0/new/TS1/TS2/TS3/hard/TSB 三次均值分别=0.5651344853/0.6688466171/0.7967298402/0.8990683230/0.8127208481/0.8028455285/0.6503729959；ArchiveII 等全长复测后才进入汇总。
+- **UFold clean 继续 blocked**：论文称 RNAStralign-train/TR0/增强/PDB 为训练集，代码默认 `train_files` 又包含 ArchiveII、TS0、bpnew、TS1/2/3，历史审计采用另一种组合。原始 checkpoint 训练 pickle 未恢复前，不把任一组合冒充完整 provenance；raw 八 split 已完成但 clean 主板未关闭。
+- **RNAformer 当前进度**：B=1 TS0 已完成前两次 repeat，F1 均=0.757543、峰值显存约 6110 MiB；第三次及后续 split 未完成，不写最终均值。RiNALMo-ft 等更大模型继续避开其显存增长窗口。

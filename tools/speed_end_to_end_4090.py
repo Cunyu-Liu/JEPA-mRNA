@@ -237,7 +237,7 @@ def decode_rinalmo_ft(models: dict, probabilities: list[np.ndarray], seqs: list[
     return predictions
 
 
-def read_records(path: Path, max_sequences: int, return_source_count: bool = False):
+def read_records(path: Path, max_sequences: int, return_source_count: bool = False, max_length: int | None = 600):
     records = []
     with path.open(encoding="utf-8") as handle:
         for line in handle:
@@ -248,12 +248,11 @@ def read_records(path: Path, max_sequences: int, return_source_count: bool = Fal
             gt = {tuple(pair) for pair in row.get("gt_pairs") or row.get("pairs") or []}
             records.append({"seq": seq, "gt": gt, "name": str(row.get("name") or row.get("id") or len(records))})
     source_count = len(records)
-    records = [row for row in records if len(row["seq"]) <= 600]
+    if max_length is not None:
+        records = [row for row in records if len(row["seq"]) <= max_length]
     length_filtered_count = source_count - len(records)
     if max_sequences:
         records = records[:max_sequences]
-    if not records:
-        raise RuntimeError("no records")
     return (records, source_count, length_filtered_count) if return_source_count else records
 
 
@@ -318,17 +317,44 @@ def main() -> int:
     parser.add_argument("--max-sequences", type=int, default=0)
     parser.add_argument("--f1-tolerance", type=float, default=0.002)
     parser.add_argument("--data", type=Path, default=DEFAULT_DATA)
+    parser.add_argument("--allow-long", action="store_true")
+    parser.add_argument("--clean-audit", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is required; refusing CPU fallback")
     device = torch.device("cuda:0")
-    records, source_count, length_filtered_count = read_records(args.data, args.max_sequences, return_source_count=True)
+    records, source_count, length_filtered_count = read_records(
+        args.data, args.max_sequences, return_source_count=True,
+        max_length=None if args.allow_long else 600)
     data_sha256 = sha256_file(args.data)
+    from benchmark_eternafold_round38 import EXPECTED_SPLIT_COUNTS, EXPECTED_SPLIT_SHA256
+    if not args.max_sequences and args.data.stem in EXPECTED_SPLIT_COUNTS:
+        if length_filtered_count:
+            raise RuntimeError("full split requires --allow-long; refusing silent length filtering")
+        if args.clean_audit:
+            audit = json.loads(args.clean_audit.read_text())
+            assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[args.data.stem]
+            assert audit["clean_sha256"] == data_sha256 and len(records) == audit["clean_n"]
+            assert audit["raw_n"] == EXPECTED_SPLIT_COUNTS[args.data.stem]
+            assert audit["raw_n"] == audit["clean_n"] + audit["removed_exact"] + audit["removed_homology_only"]
+        else:
+            assert len(records) == EXPECTED_SPLIT_COUNTS[args.data.stem]
+            assert data_sha256 == EXPECTED_SPLIT_SHA256[args.data.stem]
     if args.data.resolve() == DEFAULT_DATA.resolve() and data_sha256 != DEFAULT_DATA_SHA256:
         raise RuntimeError(f"reference data identity mismatch: {args.data} sha256={data_sha256}")
     reference_protocol = (args.data.resolve() == DEFAULT_DATA.resolve()
                           and data_sha256 == DEFAULT_DATA_SHA256 and not args.max_sequences)
+    if not records:
+        assert args.clean_audit is not None and not args.max_sequences
+        payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "model": args.model,
+                   "protocol": {"data": str(args.data), "data_sha256": data_sha256,
+                                "clean_audit": str(args.clean_audit), "n_sequences": 0},
+                   "f1_runs": [], "runs": [], "predictions": []}
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(payload, indent=1) + "\n")
+        print(f"EMPTY_AFTER_DELEAK model={args.model} out={args.out}")
+        return 0
     models = load_models(args.model, device)
     runs = []
     predictions = None
@@ -364,6 +390,7 @@ def main() -> int:
             "device": torch.cuda.get_device_name(device), "device_type": device.type,
             "torch": torch.__version__, "cuda": torch.version.cuda,
             "data": str(args.data), "data_sha256": data_sha256,
+            "clean_audit": str(args.clean_audit) if args.clean_audit else None,
             "n_sequences": len(records), "n_source_records": source_count,
             "n_length_filtered": length_filtered_count, "batch_size": args.batch_size,
             "sample_scope": sample_scope,
