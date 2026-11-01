@@ -8,7 +8,7 @@
     {"id": "vienna_centroid", "class": "physics", "leakage_status": "not_sequence_fitted", "raw_status": "RUNNING_STRICT_TS0_PASS", "clean_status": "not_applicable"},
     {"id": "vienna_mea", "class": "physics", "leakage_status": "not_sequence_fitted", "raw_status": "RUNNING_STRICT_TS0_PASS", "clean_status": "not_applicable"},
     {"id": "nussinov_turner", "class": "physics_prior", "leakage_status": "not_sequence_fitted", "raw_status": "RUNNING_STRICT_TS0_PASS", "clean_status": "not_applicable"},
-    {"id": "mxfold2", "class": "official_fixed_weights", "leakage_status": "trainsetab_clean_ready", "raw_status": "PASS_7_SPLIT_ARCHIVE_FULL_RUNNING", "clean_status": "RUNNING_TS1_PASS"},
+    {"id": "mxfold2", "class": "official_fixed_weights", "leakage_status": "trainsetab_clean_ready", "raw_status": "PASS_8x3_FULL_LENGTH", "clean_status": "RUNNING_TS1_PASS"},
     {"id": "eternafold", "class": "official_fixed_parameters", "leakage_status": "train_union_clean_ready", "raw_status": "PASS_8x3", "clean_status": "RUNNING_TS0_NEW_PASS"},
     {"id": "ufold", "class": "official_fixed_weights", "leakage_status": "BLOCKED_PROVENANCE_multicorpus_conflict", "raw_status": "PASS_8x3", "clean_status": "BLOCKED_PROVENANCE"},
     {"id": "rnaformer_bprna", "class": "official_fixed_weights", "leakage_status": "ref_tr_bprna_audit_pending", "raw_status": "RUNNING_TS0_PASS", "clean_status": "pending"},

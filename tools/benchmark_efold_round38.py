@@ -208,6 +208,7 @@ def main():
                                  if legacy_native else "0.1.3 official eval mode with a single model load"),
         "device": torch.cuda.get_device_name(0), "cuda": torch.version.cuda,
         "torch": torch.__version__, "batch_size": args.batch_size, "n_sequences": len(rows),
+        "cpu_threads": torch.get_num_threads(), "cpu_interop_threads": torch.get_num_interop_threads(),
         "started": started, "repeats": repeats,
         "peak_memory_mib": torch.cuda.max_memory_allocated() / 2 ** 20,
         "per_sequence": per_sequence,

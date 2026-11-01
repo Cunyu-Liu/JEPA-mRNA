@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RAW_NOT_CLEAN",
+  "system": "MXfold2",
+  "protocol": "8 raw splits, 3 independent GPU inferences at B=1, strict micro-F1; non-exclusive throughput is diagnostic only",
+  "clean_protocol": "TrainSetA+B clean evaluation in progress",
+  "splits": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 23858,
+      "fp": 25684,
+      "fn": 11033,
+      "f1_mean": 0.5651344853315646,
+      "f1_sd": 0.0,
+      "prediction_sha256": "c1d8422ab01d0e3a422870dcea885cbc976bfc581e0276763bc72351627548a1",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/bprna_ts0.json",
+      "artifact_sha256": "a8d55b2e983f4477666c4475033ac84bd0ce3bcff42f1d53d13d530b67104938"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 100227,
+      "fp": 64290,
+      "fn": 34957,
+      "f1_mean": 0.6688466171284047,
+      "f1_sd": 0.0,
+      "prediction_sha256": "44f448027bdb9a780ffbfca9be180bfdd7b76f118efa956763d46241f5cc3613",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/bprna_new.json",
+      "artifact_sha256": "9cc688e0c57f188213c323f553039c76c896029b50e2446f8eeeceafc2b94e19"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 1072,
+      "fp": 274,
+      "fn": 273,
+      "f1_mean": 0.796729840208101,
+      "f1_sd": 0.0,
+      "prediction_sha256": "7563358238e520101af63a262df7d15c119304efa3f2d5545330c6402ee416ca",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/ref_pdb_ts1.json",
+      "artifact_sha256": "3bc8771aad603f1d41a9881deff725ff6e8c752c9d2745ed1e4dda9e440aeb75"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 579,
+      "fp": 54,
+      "fn": 76,
+      "f1_mean": 0.8990683229813664,
+      "f1_sd": 0.0,
+      "prediction_sha256": "3ed1cd8c19078297809254c9dc9cbc609bf5398883d22e97b49762f66d07c73a",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/ref_pdb_ts2.json",
+      "artifact_sha256": "fa07318ba9174f4627232cd0224c6ae22988f8aecd392572abc91b7c7b9866f3"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 345,
+      "fp": 87,
+      "fn": 72,
+      "f1_mean": 0.8127208480565371,
+      "f1_sd": 0.0,
+      "prediction_sha256": "07fa38cb86bde60dc8359dc0af8704441be3d25d2c48095218f577077b67ca93",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/ref_pdb_ts3.json",
+      "artifact_sha256": "e1d4d220a3f5e1cebac4ae9e8d8b98eb06633ae6763ad5a3233f34a51e44d5e5"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 395,
+      "fp": 114,
+      "fn": 80,
+      "f1_mean": 0.8028455284552846,
+      "f1_sd": 0.0,
+      "prediction_sha256": "8ab6c1289f0b0449bec78fc3bf26ae217aea920fd84fcd4402a01a57372a950d",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/ref_pdb_ts_hard.json",
+      "artifact_sha256": "99d1bd2762762ab0f19fae33d335ce7ef0a2dc7e380e60ebf5d38b61fbf94caa"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 102712,
+      "fp": 47360,
+      "fn": 24810,
+      "f1_mean": 0.7400159945820155,
+      "f1_sd": 0.0,
+      "prediction_sha256": "f25e0cebe011fd7f7d7c69b201dcb5433268ba4b330b1be57fa9a3752d986c63",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw_full/archiveii_embok_clean.json",
+      "artifact_sha256": "cdb9eccb6c62d9db11b8bd46bd979bb8f6d4781a985882821eb3e715212ffe8c"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 7890,
+      "fp": 5116,
+      "fn": 3367,
+      "f1_mean": 0.6503729959197131,
+      "f1_sd": 0.0,
+      "prediction_sha256": "e05e882389a9720064ff1de45d8575e13cfc237cb52e3e0f1fbb47eb552cb77a",
+      "artifact": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/testsetb.json",
+      "artifact_sha256": "921f9e5170726cb9f6f9014902a60446038fcac74c69e03c585f3fd384a1f452"
+    }
+  }
+}

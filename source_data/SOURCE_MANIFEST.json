@@ -569,6 +569,13 @@
    "status": "active"
   },
   {
+   "path": "appendix_leakage/round39_mxfold2_raw_summary.json",
+   "sha256": "9d690e989f180fa65491ac100af8866b749aba4af498ecb0c9cfdc9a4c617bc5",
+   "bytes": 4186,
+   "description": "MXfold2 八 split 原始集三次复测；ArchiveII 使用完整 2544 条全长结果",
+   "status": "active"
+  },
+  {
    "path": "appendix_leakage/round39_ufold_raw_summary.json",
    "sha256": "e22f77455ae5e3bf338f5d218899270ad58a171e97943b44151ed2eda970f4be",
    "bytes": 4722,
