@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import hashlib
+import importlib.metadata
 import json
 import time
 from pathlib import Path
@@ -71,6 +72,7 @@ def main():
     else:
         import sys
         sys.path.insert(0, "/home/rna_jev")
+        sys.path.insert(0, str(args.official_ufold_repo))
         from eval.ss.run_ufold import decode_dot, parse_dot_pairs
         threshold = float(model.config.threshold)
     repeats = []
@@ -106,6 +108,10 @@ def main():
                "system": args.model, "distribution": "multimolecule converted checkpoint; not an original-author file",
                "weights": str(args.weights), "weights_sha256": sha256(args.weights / "model.safetensors"),
                "device": "cuda", "threshold": threshold, "n_sequences": len(rows),
+               "environment": {"multimolecule": importlib.metadata.version("multimolecule"),
+                               "torch": importlib.metadata.version("torch"),
+                               "transformers": importlib.metadata.version("transformers"),
+                               "python": sys.executable},
                "repeats": repeats, "per_sequence": per_sequence}
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
