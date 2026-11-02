@@ -735,6 +735,13 @@
    "bytes": 879,
    "description": "Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速；ArchiveII/clean 加速复测中",
    "status": "active_engineering_validation"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json",
+   "sha256": "7cd2880394c07ec4c74a82ef58ec2266e5079e8b3c9818a94eacc0cfeef64e30",
+   "bytes": 1049,
+   "description": "Kirigami ArchiveII 加速完成及历史 F1 差异长度桶诊断；不作为无损替换证据",
+   "status": "active_diagnostic_not_exact_equivalence"
   }
  ]
 }

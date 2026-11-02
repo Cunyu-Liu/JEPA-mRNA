@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "FAST_COMPLETE_BUT_HISTORICAL_F1_MISMATCH",
+  "system": "kirigami",
+  "split": "archiveii_embok_clean",
+  "n": 2544,
+  "f1": 0.7689918891301571,
+  "tp": 96327,
+  "fp": 26679,
+  "fn": 31195,
+  "elapsed_seconds": [334.6977938003838, 329.41173560358584, 331.56731816008687],
+  "median_seconds": 331.56731816008687,
+  "result_sha256": "9c05abe7c1cc2ef5ff382566723e5aa9f9bfac654535a4faf7f915c8dde25343",
+  "decoder": "C_nussinov_with_pseudoknot_levels_round39",
+  "historical_reference_f1": 0.7872,
+  "bucket_f1": {
+    "le100": 0.9023946360153257,
+    "100-200": 0.8737616503678393,
+    "200-400": 0.7485362972415993,
+    "gt400": 0.5241175802973556
+  },
+  "historical_bucket_f1": {
+    "le100": 0.9027,
+    "100-200": 0.8742,
+    "200-400": 0.7750,
+    "gt400": 0.5472
+  },
+  "interpretation": "Fast full-length run is complete, but it is not yet an exact-equivalence replacement for the historical ArchiveII result. Original-vs-C comparisons are continuing to separate algorithm, hardware and protocol effects."
+}
