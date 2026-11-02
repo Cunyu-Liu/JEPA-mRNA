@@ -105,6 +105,7 @@
 | `appendix_leakage/round39_plana_calibration_three_seed_vl0_verification.json` | 三个 VL0 校准的原始数组独立复算；ECE 降低但排序退化，非跨 split 结论 | validation verified | `4c3a7071da3d` |
 | `appendix_leakage/round39_fusion_clean_ref_pdb_ts2.json` | VL0 锁定融合在双 clean TS2 的三次结果；n=1，未领先 BPfold | active partial | `22339a903029` |
 | `appendix_leakage/round39_fusion_clean_aggregate.json` | 融合在 6 个 clean split 上与 BPfold/student 的同源配对、校准与置信度聚合；旧 5/8 版已归档 | active partial | `1a1e2b0afc27` |
+| `appendix_leakage/round39_fusion_candidate_rejection.json` | 融合 TS2/TS3 负格使 8/8 不可达；停止剩余推理，非完整全板 | active rejected candidate | `5e094ea460ef` |
 | `appendix_leakage/round39_kirigami_fast_ts0_equivalence.json` | Kirigami C 解码 TS0 三次完整等价与 11.814 倍中位加速 | active engineering | `f6886f443c27` |
 | `appendix_leakage/round39_kirigami_fast_bprna_new_equivalence.json` | Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速 | active engineering | `87473ab44930` |
 | `appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json` | ArchiveII 当前算法对照完成；历史 F1 差异仍保留 | active current algorithm verified | `adfdeb4981a1` |

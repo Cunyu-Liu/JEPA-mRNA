@@ -763,6 +763,13 @@
    "bytes": 5904544,
    "description": "Kirigami ArchiveII 200–400 nt 全桶 728 条原 Python 与 C 解码逐对一致证据",
    "status": "active_complete_728_of_728_exact"
+  },
+  {
+   "path": "appendix_leakage/round39_fusion_candidate_rejection.json",
+   "sha256": "5e094ea460ef399d4127129d4ff27442526ecc2076a079755749f660ca186c9f",
+   "bytes": 1508,
+   "description": "VL0 融合 6 格后 8/8 硬门不可达的提前终止决策；不是完整融合全板",
+   "status": "active_rejected_candidate"
   }
  ]
 }

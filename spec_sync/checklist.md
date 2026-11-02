@@ -6,13 +6,13 @@
 > - [ ] T-A170 每模型独立精确 + 80% identity（及可用家族）去泄露，25×8×3=600 单元结果齐全；EternaFold bpRNA-new 三次复测完成；未知语料只标 BLOCKED_PROVENANCE。
 > - [ ] T-A171 SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各 8 split×3 完整复测，原生后处理和概率输出保留。
 > - [ ] T-A172 xens2 编码共享/头部融合通过全 TS0 三次与预测等价门，全部 eligible baseline 同机 raw-sequence 终测证明速度第一；未证明不得写速度 SOTA。
-> - [ ] T-A173 单学生 clean 8/8 三种子已完成但未达 SOTA；VL0 融合的泛化和最强基线对照未完成，8/8 未验收。
+> - [ ] T-A173 单学生 clean 8/8 三种子已完成但未达 SOTA；VL0 融合 6 格后 8/8 已不可达，候选终止，不生成新教师；8/8 未验收。
 > - [ ] T-A174 三个 VL0 校准已独立复算；ECE 降低但 Spearman/AURC 变差，跨 split 和全概率基线验收未完成，不能称最佳置信度。
 > - [x] T-A175 主图 1 标题逐字改为指定 5/8、4/8 与三个未领先 split；其他用户调整不变，全 23 页微软雅黑、1.5 行距、图文匹配、表数正确、无重叠并逐页渲染通过。
 > - [ ] T-A176 每 run 训练/评测过程与结论完整；活跃绘图源数据、哈希和 manifest 齐全，废弃文档及旧源数据完成可追溯归档，未删除活跃原始数据。
 > - [ ] T-A177 原始 artifact、独立复算、图表/PPT 三通道验收通过；代码与大文件路径合规，确认代码已 commit+push，未提交秘密或既有未跟踪大资产。
 >
-> **阶段证据**：NucleicBERT-ft 与 Kirigami 各 raw+clean 16 格已独立复算；Kirigami ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 一致，当前算法诊断完成。历史 F1 差异仍未解决，不能勾选历史复现或全板完成。融合缺 bpRNA-new/ArchiveII，RiNALMo-ft 按锁接续；SPOT-RNA 与 frozen NucleicBERT 资产未闭环；`9aee627` 已确认推送。
+> **阶段证据**：NucleicBERT-ft 与 Kirigami 各 raw+clean 16 格已独立复算；Kirigami ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 一致，当前算法诊断完成。历史 F1 差异仍未解决，不能勾选历史复现或全板完成。VL0 融合 6 格后 8/8 不可达，候选已终止，RiNALMo-ft 接续；SPOT-RNA 与 frozen NucleicBERT 资产未闭环；`21d50a8` 已确认推送。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >

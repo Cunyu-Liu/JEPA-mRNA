@@ -11774,3 +11774,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **源版本更新**：raw+clean 汇总重新独立聚合，SHA256=`890e2491b63db7255079ab8e5aab81ada9a529b9332ba4b9caee035c01e9e415`，bytes=11181；旧汇总 `db52fccd...` 和旧 ArchiveII 诊断均移入 `archive_20261102/superseded_round39/`，保留哈希，不删除。
 - **frozen NucleicBERT 官方身份**：Zenodo API 确认 size=**4970204510**、MD5=`b5b3d40fa07adc3cc8c1942e6ebfe1a5`。1 MiB Range 请求返回 206、`Content-Range: bytes 0-1048575/4970204510`，SHA256=`08723742d2afd369935bbeb048127b8541f1ff3c4bafa11050d5cb7b1ff75018`，吞吐约 12.18 KB/s。requests 的 TLS 主机名错误未绕过，改用已通过证书校验的 curl。
 - **续传策略**：保留已下载约 531 MB 的连续前缀，停止旧单连接脚本及其实际远端 curl PID，确认退出后启动 16 个独立 Range 分段续传；每段按实际大小续接、禁止超长，最终拼接后必须通过总字节数、官方 MD5 和 SHA256 才命名为 `secstr.ckpt`。当前仍是下载中，不得加载部分文件或用 fine-tuned 权重替代 frozen 头部。
+
+
+## §15.300（2026-11-02）VL0 融合候选提前否决与资源释放
+
+- **不可达的硬门**：已完成 6 格中，TS2 融合=0.9333333333，低于同交集 BPfold=0.9696969697；TS3 融合=0.8285714286，低于 BPfold=0.8496732026 和 student 三种子均值=0.8711899575。即使 bpRNA-new/ArchiveII 都获胜，对 BPfold 至多 6/8、对 student 至多 7/8，无法满足 8/8；继续剩余长 split 不会改变该结论。
+- **停止与证据边界**：停止本地任务及远端 flock、runner、实际 CUDA 推理进程，确认均退出；bpRNA-new 未写出完整结果，ArchiveII 未启动。六格完整原始结果和聚合 SHA256=`1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07` 保留，不能称为完整融合全板。
+- **决策记录**：新增 `round39_fusion_candidate_rejection.json`，逐值从 6 格聚合复核，SHA256=`5e094ea460ef399d4127129d4ff27442526ecc2076a079755749f660ca186c9f`。不生成该候选的新教师、不启动蒸馏；原 xens2 与 baseline 数值不变。释放显存后由既有 RiNALMo-ft 队列接续，不重复启动。

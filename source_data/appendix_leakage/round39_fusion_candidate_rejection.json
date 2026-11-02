@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "REJECTED_8_OF_8_GATE_UNREACHABLE",
+  "candidate": "VL0-locked xens2_BPfold_fusion",
+  "evaluation_complete": false,
+  "complete_split_count": 6,
+  "aggregate_sha256": "1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07",
+  "fit_sha256": "bfde5279469ffc411cb0c50c46ad08440e68380d3b6eb7aad65b55fc21540265",
+  "decisive_negative_cells": {
+    "ref_pdb_ts2": {
+      "n": 1,
+      "fused": 0.9333333333333333,
+      "bpfold_same_subset": 0.9696969696969697,
+      "student_same_subset_mean": 0.7364102564102564,
+      "fused_minus_bpfold": -0.0363636363636364
+    },
+    "ref_pdb_ts3": {
+      "n": 4,
+      "fused": 0.8285714285714286,
+      "bpfold_same_subset": 0.8496732026143791,
+      "student_same_subset_mean": 0.8711899574644673,
+      "fused_minus_bpfold": -0.0211017740429505,
+      "fused_minus_student_mean": -0.0426185288930387
+    }
+  },
+  "maximum_possible_paired_wins_if_both_remaining_cells_won": {
+    "against_bpfold": 6,
+    "against_student": 7,
+    "required": 8
+  },
+  "stopped_pending_splits": ["bprna_new", "archiveii_embok_clean"],
+  "decision": "Stop remaining inference and do not generate a new teacher or start distillation from this candidate. The six completed cells are retained; this is not a complete fusion benchmark.",
+  "scientific_boundary": "Early rejection is based on completed locked-protocol negative cells, not on pending results or a proxy. It does not change the original xens2 result or any baseline metric."
+}
