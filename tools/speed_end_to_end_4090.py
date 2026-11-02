@@ -52,13 +52,14 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def load_r2d_head(device: torch.device):
-    state = torch.load(R2D_CKPT, map_location="cpu", weights_only=False)
+def load_r2d_head(device: torch.device, weights: Path = R2D_CKPT):
+    state = torch.load(weights, map_location="cpu", weights_only=False)
     fields = TrainConfig.__dataclass_fields__
     cfg = TrainConfig(**{k: v for k, v in state["config"].items() if k in fields})
     model = build_decision_model(cfg)
     model.load_state_dict(state["model"], strict=True)
-    return model.to(device).eval()
+    report = {"weights": str(weights), "weights_sha256": sha256_file(weights), "strict_load": True}
+    return model.to(device).eval(), report
 
 
 def load_plana_head(path: Path, device: torch.device):
@@ -72,10 +73,13 @@ def load_plana_head(path: Path, device: torch.device):
 
 
 def load_models(name: str, device: torch.device, rnaformer_weights: Path | None = None,
-                rnaformer_config: Path | None = None) -> dict:
+                rnaformer_config: Path | None = None, r2d_weights: Path | None = None) -> dict:
+    if r2d_weights is not None and name != "r2d":
+        raise ValueError("--r2d-weights is only valid with --model r2d")
     if name == "r2d":
         encoder, report = load_encoder(device=str(device), dtype=torch.bfloat16)
-        return {"name": name, "encoder": encoder, "head": load_r2d_head(device), "report": report}
+        head, head_report = load_r2d_head(device, r2d_weights or R2D_CKPT)
+        return {"name": name, "encoder": encoder, "head": head, "report": {**report, **head_report}}
     if name == "plana":
         encoder, head = load_plana_head(PLANA_S0, device)
         return {"name": name, "encoder": encoder, "head": head}
@@ -83,8 +87,10 @@ def load_models(name: str, device: torch.device, rnaformer_weights: Path | None 
         enc0, head0 = load_plana_head(PLANA_S0, device)
         enc1, head1 = load_plana_head(PLANA_S1, device)
         base_encoder, report = load_encoder(device=str(device), dtype=torch.bfloat16)
+        r2d_head, r2d_report = load_r2d_head(device)
+        report["r2d_head"] = r2d_report
         return {"name": name, "enc0": enc0, "enc1": enc1, "head0": head0, "head1": head1,
-                "base_encoder": base_encoder, "r2d_head": load_r2d_head(device), "report": report}
+                "base_encoder": base_encoder, "r2d_head": r2d_head, "report": report}
     if name == "rinalmo_ft":
         from eval_rinalmo_ft import load_ft_model
         lm, head, alphabet, threshold = load_ft_model(str(RINALMO_FT), str(device))
@@ -317,6 +323,7 @@ def main() -> int:
     parser.add_argument("--model", required=True, choices=list(EXPECTED_F1))
     parser.add_argument("--rnaformer-weights", type=Path)
     parser.add_argument("--rnaformer-config", type=Path)
+    parser.add_argument("--r2d-weights", type=Path)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--max-sequences", type=int, default=0)
@@ -351,7 +358,8 @@ def main() -> int:
     reference_protocol = (args.data.resolve() == DEFAULT_DATA.resolve()
                           and data_sha256 == DEFAULT_DATA_SHA256 and not args.max_sequences
                           and (args.model != "rnaformer" or
-                               (args.rnaformer_weights is None and args.rnaformer_config is None)))
+                               (args.rnaformer_weights is None and args.rnaformer_config is None))
+                          and (args.model != "r2d" or args.r2d_weights is None))
     if not records:
         assert args.clean_audit is not None and not args.max_sequences
         payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "model": args.model,
@@ -362,7 +370,8 @@ def main() -> int:
         args.out.write_text(json.dumps(payload, indent=1) + "\n")
         print(f"EMPTY_AFTER_DELEAK model={args.model} out={args.out}")
         return 0
-    models = load_models(args.model, device, args.rnaformer_weights, args.rnaformer_config)
+    models = load_models(args.model, device, args.rnaformer_weights, args.rnaformer_config,
+                         args.r2d_weights)
     runs = []
     predictions = None
     for repeat in range(args.repeats):

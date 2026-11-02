@@ -40,7 +40,7 @@ common=(
   --hidden 64
   --init-weights "$INIT"
   --steps 1000000
-  --batch-size 4
+  --batch-size 2
   --lr 1e-4
   --warmup-steps 5
   --lambda-nll 1
@@ -64,7 +64,7 @@ common=(
 import json
 p = "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/distill_dry_run.json"
 d = json.load(open(p))
-assert d["dry_run"] and d["steps"] == 1000000 and d["batch_size"] == 4 and d["device"] == "cuda"
+assert d["dry_run"] and d["steps"] == 1000000 and d["batch_size"] == 2 and d["device"] == "cuda"
 assert d["data"]["n_examples"] == 42564
 v = d["validation"]
 assert v["data"]["n_examples"] == 196
@@ -75,7 +75,8 @@ print("DISTILL_DRY_RUN_PASS", d["steps_per_epoch"], d["epochs"], flush=True)
 PY
 
 pids=()
-for seed in 0 1 2; do
+read -r -a seeds <<< "${SEEDS:-0 1 2}"
+for seed in "${seeds[@]}"; do
   arm="xens2_distill_r2d_s${seed}"
   out="$ROOT/runs/$arm"
   test ! -e "$out/run_meta.json"
@@ -98,16 +99,17 @@ if [[ "$status" -ne 0 ]]; then
   exit "$status"
 fi
 
-"$PYTHON" - <<'PY'
+SEEDS="${SEEDS:-0 1 2}" "$PYTHON" - <<'PY'
 import json
+import os
 from pathlib import Path
 root = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/runs")
-for seed in range(3):
+for seed in map(int, os.environ["SEEDS"].split()):
     path = root / f"xens2_distill_r2d_s{seed}"
     meta = json.loads((path / "run_meta.json").read_text())
     assert meta["converged"] and meta["early_stopped"], (seed, meta.get("stop_reason"))
     assert (path / "best.pt").is_file() and (path / "resume.pt").is_file()
     assert meta["environment"]["resolved_device"].startswith("cuda")
     print("DISTILL_CONVERGED", seed, meta["steps_completed"], meta["best_step"], flush=True)
-print("DISTILL_THREE_SEEDS_READY_FOR_INDEPENDENT_GPU_QA")
+print("DISTILL_SEEDS_READY_FOR_INDEPENDENT_GPU_QA", os.environ["SEEDS"])
 PY

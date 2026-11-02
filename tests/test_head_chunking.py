@@ -175,3 +175,16 @@ def test_pair_representation_cross_is_symmetric_in_its_arguments() -> None:
         ab = rep.cross(a, b)
         ba = rep.cross(b, a)
     assert torch.equal(ab, ba.transpose(1, 2))
+
+
+def test_resnet_pair_type_column_chunks_match_full_projection() -> None:
+    head = FlatDecisionHead(d_model=D_MODEL, d_z=8, hidden=8,
+                            scorer="resnet2d").to(torch.float64)
+    h = torch.randn(1, 130, D_MODEL,
+                    generator=torch.Generator().manual_seed(7)).to(torch.float64)
+    with torch.no_grad():
+        _, actual = head.pair_scores_and_types(h)
+        expected = head.type_head.symmetrize(head.type_head.cross(h, h))
+    assert actual.shape == expected.shape == (1, 130, 130, 6)
+    assert torch.allclose(actual, expected, rtol=0.0, atol=1e-10)
+    assert torch.equal(actual, actual[..., [1, 0, 3, 2, 5, 4]].transpose(1, 2))

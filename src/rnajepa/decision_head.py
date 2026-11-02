@@ -418,7 +418,9 @@ class FlatDecisionHead(nn.Module):
                 chunks.append(self.pair_repr.cross(h, h[:, j0:j0 + zchunk]))
             z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
             s = self.resnet2d(z)
-            t = self.type_head.symmetrize(self.type_head.cross(h, h))
+            type_chunks = [self.type_head.cross(h, h[:, j0:j0 + zchunk])
+                           for j0 in range(0, L, zchunk)]
+            t = self.type_head.symmetrize(torch.cat(type_chunks, dim=2))
             return s, t
         chunk = self.chunk_size if 0 < self.chunk_size < L else L
         #: Checkpointing is only meaningful when there is more than one chunk; with
