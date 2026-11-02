@@ -73,16 +73,21 @@ def load_plana_head(path: Path, device: torch.device):
 
 
 def load_models(name: str, device: torch.device, rnaformer_weights: Path | None = None,
-                rnaformer_config: Path | None = None, r2d_weights: Path | None = None) -> dict:
+                rnaformer_config: Path | None = None, r2d_weights: Path | None = None,
+                plana_weights: Path | None = None) -> dict:
     if r2d_weights is not None and name != "r2d":
         raise ValueError("--r2d-weights is only valid with --model r2d")
+    if plana_weights is not None and name != "plana":
+        raise ValueError("--plana-weights is only valid with --model plana")
     if name == "r2d":
         encoder, report = load_encoder(device=str(device), dtype=torch.bfloat16)
         head, head_report = load_r2d_head(device, r2d_weights or R2D_CKPT)
         return {"name": name, "encoder": encoder, "head": head, "report": {**report, **head_report}}
     if name == "plana":
-        encoder, head = load_plana_head(PLANA_S0, device)
-        return {"name": name, "encoder": encoder, "head": head}
+        weights = plana_weights or PLANA_S0
+        encoder, head = load_plana_head(weights, device)
+        report = {"weights": str(weights), "weights_sha256": sha256_file(weights), "strict_load": True}
+        return {"name": name, "encoder": encoder, "head": head, "report": report}
     if name == "xens2":
         enc0, head0 = load_plana_head(PLANA_S0, device)
         enc1, head1 = load_plana_head(PLANA_S1, device)
@@ -324,6 +329,7 @@ def main() -> int:
     parser.add_argument("--rnaformer-weights", type=Path)
     parser.add_argument("--rnaformer-config", type=Path)
     parser.add_argument("--r2d-weights", type=Path)
+    parser.add_argument("--plana-weights", type=Path)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--max-sequences", type=int, default=0)
@@ -359,7 +365,8 @@ def main() -> int:
                           and data_sha256 == DEFAULT_DATA_SHA256 and not args.max_sequences
                           and (args.model != "rnaformer" or
                                (args.rnaformer_weights is None and args.rnaformer_config is None))
-                          and (args.model != "r2d" or args.r2d_weights is None))
+                          and (args.model != "r2d" or args.r2d_weights is None)
+                          and (args.model != "plana" or args.plana_weights is None))
     if not records:
         assert args.clean_audit is not None and not args.max_sequences
         payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "model": args.model,
@@ -371,7 +378,7 @@ def main() -> int:
         print(f"EMPTY_AFTER_DELEAK model={args.model} out={args.out}")
         return 0
     models = load_models(args.model, device, args.rnaformer_weights, args.rnaformer_config,
-                         args.r2d_weights)
+                         args.r2d_weights, args.plana_weights)
     runs = []
     predictions = None
     for repeat in range(args.repeats):

@@ -8,7 +8,8 @@ import numpy as np
 import torch
 
 from eval.ss.evaluate_decision import _forward_scores, BASE_TO_ID
-from rnajepa.distill import sha256_file
+from eval.ss.metrics import pooled_pair_calibration
+from rnajepa.distill import pair_indicator, sha256_file
 from rnajepa.harness import nussinov_map, valid_pair_mask
 from rnajepa.train_decision import EmbeddingStore, TeacherLabelStore, TrainConfig, build_decision_model
 
@@ -44,6 +45,7 @@ def main():
                  "gt_tp": 0, "gt_fp": 0, "gt_fn": 0,
                  "prob_abs": 0.0, "prob_sq": 0.0, "teacher_kl": 0.0, "n_prob": 0}
     per_sequence = []
+    student_probabilities, teacher_probabilities, label_matrices, mask_matrices = [], [], [], []
     with torch.no_grad():
         for row in rows:
             seq = row["seq"].upper().replace("T", "U")
@@ -62,6 +64,10 @@ def main():
             mask = valid_pair_mask(seq)
             student = np.where(mask, student, 0.0)
             expected = np.where(mask, expected, 0.0)
+            student_probabilities.append(student)
+            teacher_probabilities.append(expected)
+            label_matrices.append(pair_indicator(length, row["pairs"]))
+            mask_matrices.append(mask)
             pred = set(nussinov_map(np.where(mask, student, -np.inf), mask))
             reference = set(nussinov_map(np.where(mask, expected, -np.inf), mask))
             gt = {tuple(pair) for pair in row["pairs"]}
@@ -82,11 +88,17 @@ def main():
             aggregate["n_prob"] += int(selected.sum())
             per_sequence.append({"name": row["name"], "n_student": len(pred),
                                  "n_teacher": len(reference),
+                                 "student_pairs": [list(pair) for pair in sorted(pred)],
+                                 "teacher_pairs": [list(pair) for pair in sorted(reference)],
                                  "teacher_pair_identity": len(pred & reference) / max(1, len(pred | reference)),
                                  "student_gt_f1": 2 * len(pred & gt) / max(1, 2 * len(pred & gt) + len(pred - gt) + len(gt - pred))})
     def f1(tp, fp, fn):
         return 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 1.0
+    student_calibration = pooled_pair_calibration(student_probabilities, label_matrices, mask_matrices)
+    teacher_calibration = pooled_pair_calibration(teacher_probabilities, label_matrices, mask_matrices)
     result = {"schema_version": 1, "status": "CANDIDATE_DIAGNOSTIC_NOT_FINAL",
+              "student_calibration": student_calibration,
+              "teacher_calibration": teacher_calibration,
               "checkpoint": str(args.checkpoint), "checkpoint_sha256": sha256_file(args.checkpoint),
               "data": str(args.data), "data_sha256": sha256_file(args.data),
               "teacher_dir": str(args.teacher_dir), "teacher_manifest_sha256": sha256_file(args.teacher_dir / "manifest.json"),

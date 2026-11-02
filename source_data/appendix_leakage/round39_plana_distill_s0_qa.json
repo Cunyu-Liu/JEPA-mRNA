@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "status": "SINGLE_SEED_CANDIDATE_NOT_FINAL",
+  "run_meta": {
+    "arm": "xens2_plana_distill_s0",
+    "control_arm": "rinalmo_r2d_b4_s0",
+    "control_results": {
+      "ts0_micro_f1": 0.6629,
+      "bprna_new_micro_f1": 0.501
+    },
+    "backbone": "rinalmo-giga (pretrained safetensors, in-loop)",
+    "head": "FlatDecisionHead scorer=resnet2d d_z=128 (head params 811343)",
+    "objective": {
+      "lambda_nll": 0.0,
+      "lambda_distill": 1.0,
+      "lambda_rlcd": 0.0,
+      "lambda_cal": 0.0,
+      "teacher": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/teacher_tr1c",
+      "distill_kind": "kl",
+      "rlcd_reward": "brier",
+      "beta": 1.0,
+      "n_bins": 10,
+      "tau": 0.1,
+      "nll_normalization": "sum"
+    },
+    "validation": {
+      "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+      "teacher_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/teacher_vl0",
+      "every": 500,
+      "patience": 5,
+      "min_delta": 1e-06
+    },
+    "environment": {
+      "resolved_device": "cuda:0",
+      "gpu_name": "NVIDIA GeForce RTX 4090"
+    },
+    "best_step": 2500,
+    "best_validation_loss": 0.004294176770208689,
+    "early_stopped": true,
+    "converged": true,
+    "protocol_parity": [
+      "length-bucketed batch=1, iter_batches RNG (seed,epoch)",
+      "encoder frame <cls>+seq+<eos> + attention_mask, hidden[1:L+1]",
+      "encoder dropout p=0 (deterministic, matches cached features)",
+      "AdamW betas=(0.9,0.98) wd=0, 5-step warmup LambdaLR",
+      "NEG_BIG=-1e4, symmetric labels, sorted gt_pairs, valid_pair_mask"
+    ],
+    "schedule": {
+      "steps": 1000000,
+      "batch_size": 1,
+      "head_lr": 0.0001,
+      "backbone_lr": 1e-05,
+      "warmup_head_steps": 1600,
+      "unfreeze_every": 800,
+      "unfreeze_per_step": 2,
+      "n_blocks": 33
+    },
+    "seed": 0,
+    "backbone_report": {
+      "weights": "/root/rna_jepa_data/weights/rinalmo-giga",
+      "n_tensors_in_checkpoint": 504,
+      "n_encoder_tensors_loaded": 498,
+      "loaded_fraction_of_encoder": 0.996,
+      "expected_absent": {
+        "pooler.dense.weight": "pooler output is unused: we take per-residue states",
+        "pooler.dense.bias": "pooler output is unused: we take per-residue states"
+      },
+      "d_model": 1280,
+      "n_layers": 33,
+      "n_params": 650878731,
+      "license_note": "multimolecule/rinalmo-giga is AGPL-3.0"
+    },
+    "status": "completed",
+    "steps_completed": 5000,
+    "stop_reason": "early_stopping"
+  },
+  "vl0_qa": {
+    "schema_version": 1,
+    "status": "PASS",
+    "scope": "independent_gpu_qa_vl0_not_benchmark",
+    "run_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/runs/xens2_plana_distill_s0",
+    "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/runs/xens2_plana_distill_s0/best.pt",
+    "checkpoint_sha256": "2997254f2540e48edc4b42b63d705c470182014519ca9f27c6a9a366a8f0b9f3",
+    "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+    "data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+    "teacher_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/teacher_vl0",
+    "teacher_manifest_sha256": "9c2353b19699367f0f3de8014946ba544b819b2048517cd9b2f4463431a7dde6",
+    "n_sequences": 196,
+    "prediction_sha256": "951821565479d84f9d158a6cd1d55fe69b0d52dfa22ee0afdc66e394ef7f3660",
+    "gt_counts": {
+      "gt_tp": 4200,
+      "gt_fp": 3225,
+      "gt_fn": 418
+    },
+    "student_gt_f1_mean": 0.6975006227684132,
+    "student_gt_f1_sd": 0.0,
+    "teacher_pair_f1_mean": 0.8824242424242424,
+    "teacher_pair_f1_sd": 0.0,
+    "student_ece_mean": 0.0403145582915226,
+    "student_ece_sd": 0.0,
+    "student_brier_mean": 0.014053716223861043,
+    "student_nll_mean": 0.05686840056440702,
+    "teacher_ece": 0.03861115037051478,
+    "repeats": [
+      {
+        "repeat": 0,
+        "student_gt_f1": 0.6975006227684132,
+        "teacher_pair_f1": 0.8824242424242424,
+        "student_ece": 0.0403145582915226,
+        "result_sha256": "c58b2dcf05e613a24c1b14084751073b43cf628cbfce5f78dc84c13d84dc10f6"
+      },
+      {
+        "repeat": 1,
+        "student_gt_f1": 0.6975006227684132,
+        "teacher_pair_f1": 0.8824242424242424,
+        "student_ece": 0.0403145582915226,
+        "result_sha256": "c58b2dcf05e613a24c1b14084751073b43cf628cbfce5f78dc84c13d84dc10f6"
+      },
+      {
+        "repeat": 2,
+        "student_gt_f1": 0.6975006227684132,
+        "teacher_pair_f1": 0.8824242424242424,
+        "student_ece": 0.0403145582915226,
+        "result_sha256": "c58b2dcf05e613a24c1b14084751073b43cf628cbfce5f78dc84c13d84dc10f6"
+      }
+    ]
+  },
+  "ts0_f1_runs": [
+    0.7838143746462931,
+    0.7838143746462931,
+    0.7838143746462931
+  ],
+  "ts0_artifact_sha256": "5fd02d3487c86388fb60f56b65ad2570627d6caafdb7985543e9f1bcb25b1922"
+}
