@@ -945,6 +945,13 @@
    "bytes": 11804,
    "description": "EternaFold/BPfold/MXfold2 各八 split own-clean 数据、审计、三次预测与计数独立复算；异子集不作 SOTA 排名",
    "status": "active_24_cell_clean_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_four_clean_row_verification.json",
+   "sha256": "2a5eec62bde95d15d8158b1f32b6414485a93922571f4006bcfdcb1c47ad1869",
+   "bytes": 13720,
+   "description": "四套 RNAformer 共 32 个 clean 文件由 raw/removed indices 逐行重建一致；intra-family TS3 为空，非 GPU 评测结果",
+   "status": "active_clean_data_verified_gpu_pending"
   }
  ]
 }

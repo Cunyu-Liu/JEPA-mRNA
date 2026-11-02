@@ -141,6 +141,8 @@
 
 | `appendix_leakage/round39_three_baseline_clean_recompute.json` | EternaFold/BPfold/MXfold2 各八 split own-clean 数据、审计、三次预测与计数独立复算；异子集不作 SOTA 排名 | active 24-cell verified | `0786b475caa6` |
 
+| `appendix_leakage/round39_rnaformer_four_clean_row_verification.json` | 四套 RNAformer 共 32 个 clean 文件逐行重建核验；intra-family TS3 为空，GPU 评测未完成 | active clean data verified | `2a5eec62bde9` |
+
 ## 后续边界
 
 - `SOURCE_MANIFEST.json` 是活跃文件、字节数和 SHA256 的总清单；`appendix_leakage/round39_clean_audits/INDEX.json` 另行登记并覆盖 TR0/TR1c 的 16 份审计原件，二者均通过全量哈希复核。

@@ -12129,3 +12129,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **BPfold 与 MXfold2**：八格均通过。BPfold clean TS2=0.9494949495 仅 n=3，ArchiveII=0.8212189843 仅 n=731；这些数字必须连同 n 报告，不能当作大样本稳定提升。MXfold2 clean bpRNA-new=0.6688466171（n=5388）。
 - **独立验收**：三系统 24 格结果写入 `round39_three_baseline_clean_recompute.json`，SHA256=`0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。首次审计因 EternaFold 协议字符串末尾遗漏“EternaFold parameters”而拒绝，确认实际字段后修正校验，不是模型结果失败；其后全部通过。
 - **科学边界**：各系统 clean n 不同，不得把异子集 F1 直接排成 SOTA；最终主板需同名、同序列、同 GT 交集敏感性。24 格通过不表示其余模型或 600 单元总门完成。
+
+
+## §15.352（2026-11-03）RNAformer 四套 clean 数据逐行预验收
+
+- 在 raw bpRNA-new 后续重复运行期间，对 inter-family/bprna/intra-family/biophysical 的 32 个 clean 文件，从 raw JSONL 和 exact/homology removed indices 独立重建保留行，逐字段比对全部一致；训练并集、raw/clean SHA 和数量守恒均通过。
+- inter-family clean n=1276/5386/63/39/19/28/2192/421（TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB）；bprna clean n=1140/5386/11/9/2/3/2267/80。
+- intra-family 的 TS3 clean n=0，正式评测必须写 `EMPTY_AFTER_DELEAK`，禁止写 F1=0；biophysical 的八格 clean 与 raw 数量一致，由该训练语料审计决定，不人为删除数据。
+- 验收 SHA256=`2a5eec62bde95d15d8158b1f32b6414485a93922571f4006bcfdcb1c47ad1869`。这只是数据身份预验收，不替代 raw/clean GPU 三次推理；当前 inter-family 仍 raw 7/8。
