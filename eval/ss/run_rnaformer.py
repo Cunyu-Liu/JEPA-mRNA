@@ -129,6 +129,45 @@ def release_row(frames: Dict[str, object], split: str, name: str, seq: str):
     return hits[0]
 
 
+def install_query_chunked_attention(model, threshold=512, block_size=64):
+    import torch
+    patched = 0
+    for module in model.modules():
+        if type(module).__name__ != "AxialAttention":
+            continue
+        original = module._multihead_attn
+
+        def chunked(query, key, value, attention_mask, mask_bias, softmax_scale,
+                    batch_size, seqlen, num_head, head_dim, _original=original):
+            if seqlen <= threshold:
+                return _original(query, key, value, attention_mask, mask_bias, softmax_scale,
+                                 batch_size, seqlen, num_head, head_dim)
+            outputs = []
+            for start in range(0, seqlen, block_size):
+                stop = min(start + block_size, seqlen)
+                query_part = query[:, start:stop].view(
+                    batch_size, stop - start, seqlen, num_head, head_dim).permute(0, 1, 3, 2, 4)
+                key_part = key[:, start:stop].view(
+                    batch_size, stop - start, seqlen, num_head, head_dim).permute(0, 1, 3, 4, 2)
+                value_part = value[:, start:stop].view(
+                    batch_size, stop - start, seqlen, num_head, head_dim).permute(0, 1, 3, 2, 4)
+                attn_weights = torch.matmul(query_part, key_part)
+                if softmax_scale:
+                    attn_weights *= softmax_scale
+                if attention_mask is not None:
+                    mask = attention_mask[:, start:stop, None, None, :]
+                    attn_weights.masked_fill_(mask, mask_bias)
+                attn_weights = torch.nn.functional.softmax(attn_weights, dim=-1)
+                weighted_avg = torch.matmul(attn_weights, value_part).permute(0, 1, 3, 2, 4)
+                outputs.append(weighted_avg.reshape(batch_size, stop - start, seqlen, num_head * head_dim))
+            return torch.cat(outputs, dim=1)
+
+        module._multihead_attn = chunked
+        patched += 1
+    return {"threshold": threshold, "block_size": block_size, "modules": patched,
+            "mode": "exact_query_blocks_above_threshold"}
+
+
 def build_model(args):
     import torch
     from RNAformer.model.RNAformer import RiboFormer
@@ -162,6 +201,7 @@ def build_model(args):
     for module in rotary_modules:
         module.cache_if_possible = False
     load_info["rotary_cache_disabled_modules"] = len(rotary_modules)
+    load_info["query_chunked_attention"] = install_query_chunked_attention(model)
     return model, load_info
 
 
