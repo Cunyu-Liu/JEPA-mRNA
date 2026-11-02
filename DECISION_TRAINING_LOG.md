@@ -12144,3 +12144,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 将 §15.351 已执行的独立审计固化为 `tools/verify_three_baselines_clean_round39.py`，覆盖 EternaFold/BPfold/MXfold2 的 clean 数据、审计、协议、逐序列计数和三次 F1；不改模型、预测或结果。
 - `tools/test_verify_three_baselines_clean_round39.py` 通过，验证 TP/FP/FN、重复配对集合化、名称不匹配拒绝和行数不匹配拒绝；双端 `py_compile` 通过。
 - 在真实 24 格上重新执行脚本，生成文件与已验收审计 `round39_three_baseline_clean_recompute.json` 逐字节相同，SHA256 均为 `0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。这形成脚本、真实复算和字节一致性三路检查，仍不解除异 clean 子集不可直接排 SOTA 的边界。
+
+
+## §15.354（2026-11-03）RNAformer inter-family raw 8/8 验收与版本边界
+
+- **bpRNA-new**：n=5388，三次 F1=**0.6559981191591073**，TP/FP/FN=83707/36314/51477，SD=0；结果 SHA256=`ee69f1514a512ac4dfda538a8c9c39f3aeb479590205cd74d346a10a79043010`。逐序列计数、官方权重/config、CUDA、12 个 Rotary 缓存关闭、精确长序列分块和三次预测一致性均通过。
+- **raw 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 八格独立聚合通过，SHA256=`9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb`。inter-family 现为 raw 8/8；clean TS1/TS2 已完成，其余 clean 继续，不能写 raw+clean 完成。
+- **biophysical 元数据审计**：四个早期 raw 结果没有 `rotary_cache_disabled_modules`，但官方 config 明确 `rotary_emb:false`，三次预测哈希一致；该模型不使用出问题的 Rotary 模块，不套用 inter-family 缓存根因，也不无谓重跑。
+- **绘图源对账**：EternaFold/BPfold/MXfold2 新复算与现有 active source 的 24 格计数、SD、结果哈希完全一致；F1 均值仅两处有 <1e-15 的浮点求和舍入差，容差 1e-12 内，非科学结果变化。
+- **置信度边界**：BPfold 已保存的是 raw utility matrix，文件明确 `not a probability`；结构 CI 未保留在普通八 split 聚合中，不能把 utility 直接当概率算 ECE，也不能伪称已有 CI 的跨 split 排序结论。

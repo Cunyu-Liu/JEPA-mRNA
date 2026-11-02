@@ -44,6 +44,8 @@
 >
 > **2026-11-03 三系统 own-clean 独立复算**：EternaFold、BPfold、MXfold2 各八 split 的 clean 数据、逐模型审计、三次预测及 TP/FP/FN 均再次通过；审计 SHA256=`0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。EternaFold 自身训练并集 clean 的 bpRNA-new=**0.6853840073**（n=5388，3 次 SD=0），旧 TR1c 敏感性 0.6853675983 不得替代该口径。BPfold clean TS2=0.9494949495 仅 n=3，ArchiveII=0.8212189843 仅 n=731；不同模型的 clean n 不同，不允许直接以异子集 F1 宣称 SOTA，最终须给同名、同序列、同 GT 的配对敏感性。
 >
+> **2026-11-03 inter-family raw 8/8**：bpRNA-new 三次 F1=**0.6559981192**，TP/FP/FN=83707/36314/51477，SD=0，结果 SHA256=`ee69f1514a512ac4dfda538a8c9c39f3aeb479590205cd74d346a10a79043010`。raw 八格独立聚合 SHA256=`9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb`；clean 继续，不能提前写 raw+clean 完成。biophysical 四个早期结果虽无 Rotary 计数元数据，但其官方 config 明确 `rotary_emb:false`，三次预测一致，不按 inter-family 缓存问题误判。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

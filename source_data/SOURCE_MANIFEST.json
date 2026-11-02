@@ -952,6 +952,20 @@
    "bytes": 13720,
    "description": "四套 RNAformer 共 32 个 clean 文件由 raw/removed indices 逐行重建一致；intra-family TS3 为空，非 GPU 评测结果",
    "status": "active_clean_data_verified_gpu_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_bprna_new.json",
+   "sha256": "ee69f1514a512ac4dfda538a8c9c39f3aeb479590205cd74d346a10a79043010",
+   "bytes": 4022689,
+   "description": "RNAformer inter-family raw bpRNA-new 三次完整结果；F1=0.6559981192，独立复算通过",
+   "status": "active_complete_raw_bprna_new_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_summary.json",
+   "sha256": "9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb",
+   "bytes": 5667,
+   "description": "RNAformer inter-family raw 八 split 三次独立聚合；clean 继续",
+   "status": "active_complete_raw_8_of_8"
   }
  ]
 }
