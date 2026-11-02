@@ -11585,3 +11585,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TS0**：三次均 F1=**0.783814**，接近原 plana=0.7866，远好于 frozen r2d 纯 KL=0.6247。单 plana 可作为三种子速度/校准候选，但仍低于 xens2=0.8039，不能写成 8/8 或精度 SOTA。
 - **seed1/2**：seed1 已按同一纯 KL、B=1 和早停合同启动，seed2 待 seed1 完成后启动。正式速度必须独占 4090，当前任何并发吞吐均不用于宣称 SOTA。
 - **基线资源协调**：RNAformer bprna/intra 在 QA 期间显存接近上限，均按明确 PID 暂停且未写出新 PASS；待 QA 后单独恢复。两个失败 QA 启动均无部分结果，最终三次 QA 已完整通过。
+
+
+## §15.276（2026-11-02）plana seed1 收敛、QA 与 seed2 启动
+
+- **收敛**：seed1 在 step3500 early stopping，恢复 best step1000，best VL0 KL=0.004838547518009322；三次独立 QA 的预测 SHA256=`6cd771cf32ff29276de3601bc8723dc53b77ced2418d8cf1da3848975dc84ec7` 一致。
+- **QA 结果**：教师 micro-F1=**0.8687807177**、GT-F1=0.6940063091、ECE=**0.0282252193**、Brier=0.0091593189、NLL=0.0403835828，SD=0；best checkpoint SHA256=`4e8e9e687200cf3776764316e518b21380adbaa60555f31b3aac42dc668b00a7`。ECE 低于 seed0 和教师，但 GT-F1 仍不能外推为全板结果。
+- **seed2**：已按同一纯 KL、B=1、VL0 patience=5 合同启动。三种子完成后统一测 TS0/clean 八 split、独占速度和校准，不用单种子值代替均值。
