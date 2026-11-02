@@ -11890,3 +11890,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **当前曲线**：step1500 validation_loss=20.5438826092，高于 step500 的 18.3701138872 和 step1000 的 19.8212100565，best 仍 @500、bad_evaluations=2；train_log 已到 step1700，run_meta 仍为 running。不得把损失上升写成收敛或成功微调，也不在中途改变学习率/数据。
 - **QA 准备**：`qa_plana_student_round39.py` 支持该 plana best checkpoint，并保留原 xens2 教师作对照；已排队“验证 completed+converged+early_stopped 后执行三次 VL0 GPU QA，再跑 TR1c-clean 八格”。锁顺序与训练一致，不会提前执行。
 - **聚合兼容**：`aggregate_plana_clean_round39.py` 新增 run/qa/result prefix 参数，默认旧 `xens2_plana_distill/plana` 行为不变；后续 NLL 可复用同一独立计数验收，无需复制评分逻辑。
+
+
+## §15.317（2026-11-03）NLL step2000 与 frozen 权重分段进度
+
+- **VL0 曲线**：step2000 validation_loss=19.3955302339，较 step1500 的 20.5438826092 回落，但仍高于 best@500=18.3701138872，bad_evaluations=3，run_meta 仍 running。继续原合同，不因单次回落提前停止或宣称改善。
+- **frozen NucleicBERT**：16 个 Range 分段均在续传，已下载分段合计 1,594,139,610 bytes，加原前缀 538,312,248 bytes，合计 2,132,451,858/4,970,204,510 bytes（约 42.9%）；没有完整分段、receipt 或 final checkpoint。保持只下载不加载，最终仍需官方 MD5+SHA256 全量验收。
