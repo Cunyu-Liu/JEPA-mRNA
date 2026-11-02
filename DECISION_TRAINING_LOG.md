@@ -12153,3 +12153,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **biophysical 元数据审计**：四个早期 raw 结果没有 `rotary_cache_disabled_modules`，但官方 config 明确 `rotary_emb:false`，三次预测哈希一致；该模型不使用出问题的 Rotary 模块，不套用 inter-family 缓存根因，也不无谓重跑。
 - **绘图源对账**：EternaFold/BPfold/MXfold2 新复算与现有 active source 的 24 格计数、SD、结果哈希完全一致；F1 均值仅两处有 <1e-15 的浮点求和舍入差，容差 1e-12 内，非科学结果变化。
 - **置信度边界**：BPfold 已保存的是 raw utility matrix，文件明确 `not a probability`；结构 CI 未保留在普通八 split 聚合中，不能把 utility 直接当概率算 ECE，也不能伪称已有 CI 的跨 split 排序结论。
+
+
+## §15.355（2026-11-03）混合 NLL 否决后的长度分层归因
+
+- 对原 plana seed0 与混合 NLL seed0 的同一 clean 预测按 1–100/101–200/201–400/401+ nt 独立复算 TP/FP/FN、F1 和配对密度。两个输入均通过 clean 数据、审计、checkpoint 和三次结果身份验证；这是候选否决后的解释性诊断，不用于测试集调参。
+- bpRNA-new 四个长度桶的 ΔF1 分别为 −0.060767/−0.073327/−0.097803/−0.077811，均为负；前三个桶 NLL 同时减少 TP、增加 FP，401+ 亦如此，不是简单提高或降低统一解码阈值即可修复。
+- ArchiveII 的四桶 ΔF1=−0.000455/−0.005338/−0.017009/−0.044848，退化随长度增大。401+ 的 TP 从 7491 降至 6781、FP 从 7057 升至 7466，提示长序列结构泛化恶化。
+- 审计 SHA256=`ba1970dad2d19bff9b3d8d86c931c1254fb8780a8b64b69677fc88c397090777`。结论仅支持“下一候选需先解决结构泛化，不重复调阈值或加种子”，不构成新模型有效性的证据；P1 基线验收仍在进行。

@@ -966,6 +966,13 @@
    "bytes": 5667,
    "description": "RNAformer inter-family raw 八 split 三次独立聚合；clean 继续",
    "status": "active_complete_raw_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_error_stratification.json",
+   "sha256": "ba1970dad2d19bff9b3d8d86c931c1254fb8780a8b64b69677fc88c397090777",
+   "bytes": 22224,
+   "description": "混合 NLL seed0 否决后按长度与 TP/FP/FN 的离线归因；仅形成后续假设，不用于测试集调参",
+   "status": "active_post_rejection_diagnostic"
   }
  ]
 }

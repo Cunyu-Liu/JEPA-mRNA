@@ -146,6 +146,8 @@
 | `appendix_leakage/round39_rnaformer_interfam_raw_bprna_new.json` | inter-family raw bpRNA-new 三次完整结果；F1=0.6559981192，独立复算通过 | active raw bpRNA-new complete | `ee69f1514a51` |
 | `appendix_leakage/round39_rnaformer_interfam_raw_summary.json` | inter-family raw 八 split 三次独立聚合；clean 继续 | active raw 8/8 complete | `9b5ecf45afb5` |
 
+| `appendix_leakage/round39_mixed_nll_error_stratification.json` | 混合 NLL 否决后的长度分层 TP/FP/FN 归因；仅形成假设，不作测试集调参 | active diagnostic | `ba1970dad2d1` |
+
 ## 后续边界
 
 - `SOURCE_MANIFEST.json` 是活跃文件、字节数和 SHA256 的总清单；`appendix_leakage/round39_clean_audits/INDEX.json` 另行登记并覆盖 TR0/TR1c 的 16 份审计原件，二者均通过全量哈希复核。
