@@ -12,7 +12,7 @@
 > - [ ] T-A176 每 run 训练/评测过程与结论完整；活跃绘图源数据、哈希和 manifest 齐全，废弃文档及旧源数据完成可追溯归档，未删除活跃原始数据。
 > - [ ] T-A177 原始 artifact、独立复算、图表/PPT 三通道验收通过；代码与大文件路径合规，确认代码已 commit+push，未提交秘密或既有未跟踪大资产。
 >
-> **阶段证据**：NucleicBERT-ft 与 Kirigami 各 raw+clean 16 格已独立复算；Kirigami ArchiveII 历史 F1 差异和 200–400 nt 全桶诊断未关闭，不能据此勾选无损替换或全板完成。融合缺 bpRNA-new/ArchiveII，RiNALMo-ft 按锁接续；`e8c1982` 已确认推送。
+> **阶段证据**：NucleicBERT-ft 与 Kirigami 各 raw+clean 16 格已独立复算；Kirigami ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 一致，当前算法诊断完成。历史 F1 差异仍未解决，不能勾选历史复现或全板完成。融合缺 bpRNA-new/ArchiveII，RiNALMo-ft 按锁接续；SPOT-RNA 与 frozen NucleicBERT 资产未闭环；`9aee627` 已确认推送。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >

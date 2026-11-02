@@ -105,11 +105,12 @@
 | `appendix_leakage/round39_plana_calibration_three_seed_vl0_verification.json` | 三个 VL0 校准的原始数组独立复算；ECE 降低但排序退化，非跨 split 结论 | validation verified | `4c3a7071da3d` |
 | `appendix_leakage/round39_fusion_clean_ref_pdb_ts2.json` | VL0 锁定融合在双 clean TS2 的三次结果；n=1，未领先 BPfold | active partial | `22339a903029` |
 | `appendix_leakage/round39_fusion_clean_aggregate.json` | 融合在 6 个 clean split 上与 BPfold/student 的同源配对、校准与置信度聚合；旧 5/8 版已归档 | active partial | `1a1e2b0afc27` |
-| `appendix_leakage/round39_kirigami_fast_ts0_equivalence.json` | Kirigami C 解码 TS0 三次完整等价与 11.814 倍中位加速；其他 split 待验收 | active engineering | `f6886f443c27` |
-| `appendix_leakage/round39_kirigami_fast_bprna_new_equivalence.json` | Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速；ArchiveII/clean 复测中 | active engineering | `87473ab44930` |
-| `appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json` | ArchiveII 加速完成及历史 F1 差异长度桶诊断；不作无损替换证据 | active diagnostic | `7cd2880394c0` |
-| `appendix_leakage/round39_kirigami_fast_raw_clean_summary.json` | Kirigami C 解码 raw 与 clean 各八 split 独立聚合；保留 ArchiveII 历史差异 | active complete with boundary | `db52fccd701b` |
+| `appendix_leakage/round39_kirigami_fast_ts0_equivalence.json` | Kirigami C 解码 TS0 三次完整等价与 11.814 倍中位加速 | active engineering | `f6886f443c27` |
+| `appendix_leakage/round39_kirigami_fast_bprna_new_equivalence.json` | Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速 | active engineering | `87473ab44930` |
+| `appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json` | ArchiveII 当前算法对照完成；历史 F1 差异仍保留 | active current algorithm verified | `adfdeb4981a1` |
+| `appendix_leakage/round39_kirigami_fast_raw_clean_summary.json` | Kirigami C 解码 raw 与 clean 各八 split 独立聚合；当前算法对照完成，保留历史差异 | active complete with boundary | `890e2491b63d` |
 | `appendix_leakage/round39_kirigami_archive_protocol_reconcile.json` | ArchiveII 历史逐序列计数与当前预测对账；忽略假结不足以解释 F1 差异 | active diagnostic | `59701fd72ac3` |
+| `appendix_leakage/round39_kirigami_archive_200_400_original_vs_c.json` | ArchiveII 200–400 nt 全桶 728 条原 Python/C 配对完全一致 | active complete 728/728 | `891e2650344c` |
 | `appendix_leakage/bpfold_vl0.json` | BPfold 全 VL0 三次官方推理与原始 utility 哈希；仅供模型选择 | validation only | `ea21f21814ab` |
 | `appendix_leakage/round39_vl0_bpfold_fusion_fit.json` | VL0-only xens2+BPfold 非负 NLL 融合参数与对照；拟合集指标不作最终结论 | validation candidate | `bfde5279469f` |
 

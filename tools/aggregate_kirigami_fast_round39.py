@@ -60,8 +60,8 @@ def main():
     output["status"] = "PASS_RAW_CLEAN_8x3_WITH_ARCHIVE_HISTORICAL_MISMATCH"
     output["archive_historical_mismatch"] = {"current_f1": output["raw"]["archiveii_embok_clean"]["strict_micro_f1"]["mean"],
                                               "historical_f1": 0.7872,
-                                              "interpretation": "not an exact-equivalence replacement; original-vs-C and hardware/protocol diagnosis ongoing"}
-    output["exact_equivalence_boundary"] = "TS0 and bpRNA-new matched the original implementation exactly; ArchiveII mismatch is retained"
+                                              "interpretation": "current original-Python-vs-C checks passed; the historical artifact still differs and lacks complete prediction/environment provenance"}
+    output["exact_equivalence_boundary"] = "TS0 and bpRNA-new matched exactly; all 728 sequences in ArchiveII 200-400 nt and the longest four also matched original Python; historical F1 mismatch is retained"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.out.with_suffix(args.out.suffix + ".tmp")
     temporary.write_text(json.dumps(output, indent=2) + "\n")

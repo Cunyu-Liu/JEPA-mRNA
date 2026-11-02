@@ -378,7 +378,7 @@
   "archive_historical_mismatch": {
     "current_f1": 0.7689918891301571,
     "historical_f1": 0.7872,
-    "interpretation": "not an exact-equivalence replacement; original-vs-C and hardware/protocol diagnosis ongoing"
+    "interpretation": "current original-Python-vs-C checks passed; the historical artifact still differs and lacks complete prediction/environment provenance"
   },
-  "exact_equivalence_boundary": "TS0 and bpRNA-new matched the original implementation exactly; ArchiveII mismatch is retained"
+  "exact_equivalence_boundary": "TS0 and bpRNA-new matched exactly; all 728 sequences in ArchiveII 200-400 nt and the longest four also matched original Python; historical F1 mismatch is retained"
 }

@@ -1,0 +1,384 @@
+{
+  "schema_version": 1,
+  "system": "kirigami",
+  "decoder": "C_nussinov_with_pseudoknot_levels_round39",
+  "raw": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 25463,
+      "fp": 9384,
+      "fn": 9428,
+      "strict_micro_f1": {
+        "values": [
+          0.7302474977773954,
+          0.7302474977773954,
+          0.7302474977773954
+        ],
+        "mean": 0.7302474977773954,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        108.90604734607041,
+        105.81665483675897,
+        105.75873927213252
+      ],
+      "median_seconds": 105.81665483675897,
+      "result_sha256": "b207370f04c477d3cfa8c6da2a4add143054d2ffbc425cfc9e0873fd9c1507cd",
+      "probabilities_sha256": "6f80fb6e5d56510d250edfa21dca5db48a350c26d8c48ecf49d22ad130a87eea"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 64985,
+      "fp": 24551,
+      "fn": 70199,
+      "strict_micro_f1": {
+        "values": [
+          0.5783641865432538,
+          0.5783641865432538,
+          0.5783641865432538
+        ],
+        "mean": 0.5783641865432538,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        351.12605936452746,
+        347.9808416683227,
+        348.74975818023086
+      ],
+      "median_seconds": 348.74975818023086,
+      "result_sha256": "49be450227a67f6dd15580a10d1bfd7bfa9b1f754109343e1aa8b09ac58a3a4b",
+      "probabilities_sha256": "4aee5754c39993e852d4a56b838245f815aa9a555274ce44482fcc3872ee45d5"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 857,
+      "fp": 129,
+      "fn": 488,
+      "strict_micro_f1": {
+        "values": [
+          0.7353067353067353,
+          0.7353067353067353,
+          0.7353067353067353
+        ],
+        "mean": 0.7353067353067353,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        5.063913973048329,
+        2.3049069605767727,
+        2.2576233949512243
+      ],
+      "median_seconds": 2.3049069605767727,
+      "result_sha256": "6cae32fe9349c00cd7cc80b68c12da982678028522d1acf9cbabcc5b91c72f02",
+      "probabilities_sha256": "4126b6a48f11e795d416f2ed297712de7765474c7464238ad5c76a9bca98864f"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 388,
+      "fp": 62,
+      "fn": 267,
+      "strict_micro_f1": {
+        "values": [
+          0.702262443438914,
+          0.702262443438914,
+          0.702262443438914
+        ],
+        "mean": 0.702262443438914,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        3.839864481240511,
+        1.233068061992526,
+        1.379866225644946
+      ],
+      "median_seconds": 1.379866225644946,
+      "result_sha256": "34795a143401b0301fd1d671dd0aabe1dd17f99803fd6a6d39758f8547e220e2",
+      "probabilities_sha256": "cbfbeba9000960425b9071af0775e8e59c90390d0a760724e5bfcef1c5a66c51"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 278,
+      "fp": 58,
+      "fn": 139,
+      "strict_micro_f1": {
+        "values": [
+          0.7383798140770252,
+          0.7383798140770252,
+          0.7383798140770252
+        ],
+        "mean": 0.7383798140770252,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        3.2279975190758705,
+        0.8292544353753328,
+        0.8582017756998539
+      ],
+      "median_seconds": 0.8582017756998539,
+      "result_sha256": "d80130627a63aae178d06ab94a83af9b383dc937cff6c926b6656f719081d37c",
+      "probabilities_sha256": "6cfa36116983d1bf7bc52ae26d56e45b9b06a4e54f810a2225c8ae6dcb89ae15"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 274,
+      "fp": 62,
+      "fn": 201,
+      "strict_micro_f1": {
+        "values": [
+          0.6757090012330457,
+          0.6757090012330457,
+          0.6757090012330457
+        ],
+        "mean": 0.6757090012330457,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        3.5133876465260983,
+        1.2086762841790915,
+        1.1481732111424208
+      ],
+      "median_seconds": 1.2086762841790915,
+      "result_sha256": "8d67658035744e71100b222c4ba15055f6993375824183d2aed2ad6b34a185a8",
+      "probabilities_sha256": "529365ec4a2044c6a752ac211317ec01f263b714952b51f2ca62561421c953fa"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 96327,
+      "fp": 26679,
+      "fn": 31195,
+      "strict_micro_f1": {
+        "values": [
+          0.7689918891301571,
+          0.7689918891301571,
+          0.7689918891301571
+        ],
+        "mean": 0.7689918891301571,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        334.6977938003838,
+        329.41173560358584,
+        331.56731816008687
+      ],
+      "median_seconds": 331.56731816008687,
+      "result_sha256": "9c05abe7c1cc2ef5ff382566723e5aa9f9bfac654535a4faf7f915c8dde25343",
+      "probabilities_sha256": "e76f698d632d6196011eb95f2fd56449ed25a7494d9faa80fcdf9a3307b0adad"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 9102,
+      "fp": 1143,
+      "fn": 2155,
+      "strict_micro_f1": {
+        "values": [
+          0.8466189191703097,
+          0.8466189191703097,
+          0.8466189191703097
+        ],
+        "mean": 0.8466189191703097,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        28.34486446529627,
+        25.011852582916617,
+        25.493550058454275
+      ],
+      "median_seconds": 25.493550058454275,
+      "result_sha256": "a9d23096eb67904c2d6380f35eb8c70f050d9a0e9a818d2f6a001dfa451a42c8",
+      "probabilities_sha256": "5b9743ee6a99bbbf33ba48f871dd18d9a14c6f289c664bf7cc6d1730f9279537"
+    }
+  },
+  "clean_tr0": {
+    "bprna_ts0": {
+      "n": 1192,
+      "tp": 23400,
+      "fp": 9000,
+      "fn": 9152,
+      "strict_micro_f1": {
+        "values": [
+          0.7205320852321715,
+          0.7205320852321715,
+          0.7205320852321715
+        ],
+        "mean": 0.7205320852321715,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        95.05839955061674,
+        100.33285868912935,
+        99.70213613845408
+      ],
+      "median_seconds": 99.70213613845408,
+      "result_sha256": "13862d4b3f143d45fbc99242634fcff6df8b2c1f2275188396c659208aaad06b",
+      "probabilities_sha256": "408ea349946909a208bfd197b3f1ab2a2038ba0f425d1e32a292a3fdb71e3a04"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 64985,
+      "fp": 24551,
+      "fn": 70199,
+      "strict_micro_f1": {
+        "values": [
+          0.5783641865432538,
+          0.5783641865432538,
+          0.5783641865432538
+        ],
+        "mean": 0.5783641865432538,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        353.49817956984043,
+        358.5277319662273,
+        362.8526789881289
+      ],
+      "median_seconds": 358.5277319662273,
+      "result_sha256": "d8722dfc3eb56cdb88e4f63fca1ec052a36fcef493a1563e6879349dcfc60362",
+      "probabilities_sha256": "4aee5754c39993e852d4a56b838245f815aa9a555274ce44482fcc3872ee45d5"
+    },
+    "ref_pdb_ts1": {
+      "n": 61,
+      "tp": 832,
+      "fp": 110,
+      "fn": 476,
+      "strict_micro_f1": {
+        "values": [
+          0.7395555555555555,
+          0.7395555555555555,
+          0.7395555555555555
+        ],
+        "mean": 0.7395555555555555,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        5.05278554558754,
+        2.662624556571245,
+        2.8370442669838667
+      ],
+      "median_seconds": 2.8370442669838667,
+      "result_sha256": "bcda0ee2a40ec1ce7f585f20ca9b001551cd99f3933e8d081671a2496f0abee4",
+      "probabilities_sha256": "f03f4058816d3584b81b2820e6c0967261babb1fc139cf858c9952a7bcd8c4d6"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 388,
+      "fp": 62,
+      "fn": 267,
+      "strict_micro_f1": {
+        "values": [
+          0.702262443438914,
+          0.702262443438914,
+          0.702262443438914
+        ],
+        "mean": 0.702262443438914,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        3.8470300249755383,
+        1.6707116924226284,
+        1.4179213251918554
+      ],
+      "median_seconds": 1.6707116924226284,
+      "result_sha256": "e0ca5cdd47d8414b8e25fa4db13827980882af032b085c309384b628ab743900",
+      "probabilities_sha256": "cbfbeba9000960425b9071af0775e8e59c90390d0a760724e5bfcef1c5a66c51"
+    },
+    "ref_pdb_ts3": {
+      "n": 17,
+      "tp": 250,
+      "fp": 50,
+      "fn": 136,
+      "strict_micro_f1": {
+        "values": [
+          0.7288629737609329,
+          0.7288629737609329,
+          0.7288629737609329
+        ],
+        "mean": 0.7288629737609329,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        3.355799999088049,
+        0.7824879456311464,
+        0.9843709003180265
+      ],
+      "median_seconds": 0.9843709003180265,
+      "result_sha256": "87fe24e047ebe4bf4f2c5ebb1753a1de056cebb37f0e02368e3bdbd2f399128c",
+      "probabilities_sha256": "67be09fa7a7265460ae45e45477f6fc78f671285011b58f60b60ae384c135f3e"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 274,
+      "fp": 62,
+      "fn": 201,
+      "strict_micro_f1": {
+        "values": [
+          0.6757090012330457,
+          0.6757090012330457,
+          0.6757090012330457
+        ],
+        "mean": 0.6757090012330457,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        3.6582367345690727,
+        1.2699677851051092,
+        1.1991876605898142
+      ],
+      "median_seconds": 1.2699677851051092,
+      "result_sha256": "7a59d7f60d805aa517d9130559fc96b2b7efea57647465ca2531d65f7da2cb43",
+      "probabilities_sha256": "529365ec4a2044c6a752ac211317ec01f263b714952b51f2ca62561421c953fa"
+    },
+    "archiveii_embok_clean": {
+      "n": 1094,
+      "tp": 44161,
+      "fp": 15635,
+      "fn": 19991,
+      "strict_micro_f1": {
+        "values": [
+          0.7125730144899474,
+          0.7125730144899474,
+          0.7125730144899474
+        ],
+        "mean": 0.7125730144899474,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        219.89838287606835,
+        214.16092572174966,
+        214.12640917114913
+      ],
+      "median_seconds": 214.16092572174966,
+      "result_sha256": "483caca47ff34fcf092568eb0fa1f790ccb846300d3b8be9e0170d6892a7efd4",
+      "probabilities_sha256": "d54e1b0de80118c94d779c412f15f421695d4313483064cec4a8243ec2d006f6"
+    },
+    "testsetb": {
+      "n": 116,
+      "tp": 1917,
+      "fp": 611,
+      "fn": 971,
+      "strict_micro_f1": {
+        "values": [
+          0.7079025110782866,
+          0.7079025110782866,
+          0.7079025110782866
+        ],
+        "mean": 0.7079025110782866,
+        "sd": 0.0
+      },
+      "elapsed_seconds": [
+        10.927912544459105,
+        8.56047978810966,
+        8.47574221715331
+      ],
+      "median_seconds": 8.56047978810966,
+      "result_sha256": "08222d287d794558a20c2a912272cdb86e1e0500a40c496f814dee3ec27bec51",
+      "probabilities_sha256": "0305f3a43cdd7881f125e2dbc906cbab1b6f4d8a64179c4a1fbec0af3fb26776"
+    }
+  },
+  "status": "PASS_RAW_CLEAN_8x3_WITH_ARCHIVE_HISTORICAL_MISMATCH",
+  "archive_historical_mismatch": {
+    "current_f1": 0.7689918891301571,
+    "historical_f1": 0.7872,
+    "interpretation": "not an exact-equivalence replacement; original-vs-C and hardware/protocol diagnosis ongoing"
+  },
+  "exact_equivalence_boundary": "TS0 and bpRNA-new matched the original implementation exactly; ArchiveII mismatch is retained"
+}

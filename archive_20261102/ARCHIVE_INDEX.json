@@ -62,6 +62,24 @@
       "sha256": "168e46cedc5f06534adccebe68a58c7fb6f435e5ce517413dc8102f7d42b57c3",
       "bytes": 5689,
       "reason": "round36 plan completed and superseded by round39 clean/xens2 contract; historical reference only"
+    },
+    {
+      "active_path": "交接文档/source_data/appendix_leakage/round39_kirigami_fast_raw_clean_summary.json",
+      "archive_path": "交接文档/archive_20261102/superseded_round39/round39_kirigami_fast_raw_clean_summary.pre_full_bucket.json",
+      "old_sha256": "db52fccd701b8d265cbda3d14ef9a97b4968382e4945cf8d0bff1b0d88f7896c",
+      "old_bytes": 11069,
+      "reason": "superseded after complete 728/728 original-Python-vs-C mid-length diagnosis; historical mismatch retained",
+      "new_sha256": "890e2491b63db7255079ab8e5aab81ada9a529b9332ba4b9caee035c01e9e415",
+      "new_bytes": 11181
+    },
+    {
+      "active_path": "交接文档/source_data/appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json",
+      "archive_path": "交接文档/archive_20261102/superseded_round39/round39_kirigami_fast_archiveii_diagnostic.pre_full_bucket.json",
+      "old_sha256": "7cd2880394c07ec4c74a82ef58ec2266e5079e8b3c9818a94eacc0cfeef64e30",
+      "old_bytes": 1049,
+      "reason": "superseded by completed current-algorithm evidence; historical mismatch remains unresolved",
+      "new_sha256": "adfdeb4981a16bf5d8b9e0bf87d8c5659fcb071834145073ea163e219ace7dfd",
+      "new_bytes": 1290
     }
   ]
 }

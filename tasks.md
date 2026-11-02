@@ -16,7 +16,7 @@
 >
 > **执行顺序**：T-A169/T-A170 立即并行推进 → T-A171 全量新增基线 → T-A172 工程优化与 T-A173/T-A174 VL0 候选 → 独占终测 → T-A175 → T-A176/T-A177。NB T-A168 保持原收敛合同，非计时阶段余量即提交其他合格任务，正式测速例外独占。
 >
-> **2026-11-02 阶段状态**：NucleicBERT-ft raw+TR1c-clean 16 格和 Kirigami raw+TR0-clean 16 格均完成三次推理与独立复算。Kirigami TS0/new 精确等价，ArchiveII=0.7689918891 与历史约 0.7872 的差异保持未决，200–400 nt 全桶原 Python/C 对照完成前不得写无损。融合完成 6/8；bpRNA-new/ArchiveII 是下一道精度门，RiNALMo-ft 在融合后接续。`e8c1982` 已确认推送 GitHub；冻结 NucleicBERT 官方头部下载未完成前不纳入结果。
+> **2026-11-02 阶段状态**：NucleicBERT-ft raw+TR1c-clean 16 格和 Kirigami raw+TR0-clean 16 格均完成三次推理与独立复算。Kirigami TS0/new 精确等价；ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 均一致，当前算法诊断完成，但历史 F1=0.7871232718 仍未由当前 0.7689918891 复现，限制保留。融合完成 6/8；bpRNA-new/ArchiveII 是下一道精度门，RiNALMo-ft 在融合后接续。SPOT-RNA 全量溯源复测与 frozen NucleicBERT 16 段续传进行中，未完成不纳入结果。`9aee627` 已确认推送 GitHub。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 

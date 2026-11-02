@@ -726,28 +726,28 @@
    "path": "appendix_leakage/round39_kirigami_fast_ts0_equivalence.json",
    "sha256": "f6886f443c279dc76bccdbd08d5e8cdeaecf5697393b29a8cdbaa08a4f1e7d4b",
    "bytes": 881,
-   "description": "Kirigami C 解码 TS0 三次完整等价与 11.814 倍中位加速；bpRNA-new 与 ArchiveII 尚待验收",
+   "description": "Kirigami C 解码 TS0 三次完整等价与 11.814 倍中位加速",
    "status": "active_engineering_validation"
   },
   {
    "path": "appendix_leakage/round39_kirigami_fast_bprna_new_equivalence.json",
    "sha256": "87473ab44930ced208a4b0b520323364423881e3b1557a2fe4990e26b8141b4d",
    "bytes": 879,
-   "description": "Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速；ArchiveII/clean 加速复测中",
+   "description": "Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速",
    "status": "active_engineering_validation"
   },
   {
    "path": "appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json",
-   "sha256": "7cd2880394c07ec4c74a82ef58ec2266e5079e8b3c9818a94eacc0cfeef64e30",
-   "bytes": 1049,
-   "description": "Kirigami ArchiveII 加速完成及历史 F1 差异长度桶诊断；不作为无损替换证据",
-   "status": "active_diagnostic_not_exact_equivalence"
+   "sha256": "adfdeb4981a16bf5d8b9e0bf87d8c5659fcb071834145073ea163e219ace7dfd",
+   "bytes": 1290,
+   "description": "Kirigami ArchiveII 当前算法对照完成；历史 F1 差异仍保留，不宣称历史复现",
+   "status": "active_current_algorithm_verified_historical_mismatch"
   },
   {
    "path": "appendix_leakage/round39_kirigami_fast_raw_clean_summary.json",
-   "sha256": "db52fccd701b8d265cbda3d14ef9a97b4968382e4945cf8d0bff1b0d88f7896c",
-   "bytes": 11069,
-   "description": "Kirigami C 解码 raw 与 TR0-clean 各八 split 的独立计数、耗时和哈希；保留 ArchiveII 历史 F1 差异",
+   "sha256": "890e2491b63db7255079ab8e5aab81ada9a529b9332ba4b9caee035c01e9e415",
+   "bytes": 11181,
+   "description": "Kirigami C 解码 raw 与 TR0-clean 各八 split 独立计数；当前算法对照完成，保留历史 F1 差异",
    "status": "active_complete_with_archive_mismatch"
   },
   {
@@ -756,6 +756,13 @@
    "bytes": 226816,
    "description": "Kirigami ArchiveII 当前全配对、非交叉过滤和历史逐序列计数对账；排除仅忽略假结导致历史 F1 差异的解释",
    "status": "active_protocol_diagnostic"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_archive_200_400_original_vs_c.json",
+   "sha256": "891e2650344c855e096a39a24be097e50dced202d3e7f834f28f90ebb64fa7d1",
+   "bytes": 5904544,
+   "description": "Kirigami ArchiveII 200–400 nt 全桶 728 条原 Python 与 C 解码逐对一致证据",
+   "status": "active_complete_728_of_728_exact"
   }
  ]
 }

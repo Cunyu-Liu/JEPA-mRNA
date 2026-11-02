@@ -11765,4 +11765,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **raw TS0 完成**：n=1288，三次 F1 均为 **0.5263157894736842**，TP/FP/FN=19765/20451/15126，SD=0；结果 SHA256=`395b8fba54485ce8fe4dfb8080c67ce48d3a95ca148f95c598aa2d1db11cfe79`，概率 NPZ SHA256=`4855bf3aa8fb7fa4d83fd9bc98f34e0080259c7ef89a0bfb31d185298a75734e`。
 - **真实聚合验证**：新 `aggregate_spotrna_round39.py` 已在这份完整输出上独立重算计数/F1，并核对 raw 数据、权重、三次预测/概率哈希、NPZ 名称、逐条长度、float32、有限范围和上三角约束，全部通过。该单格不写成 raw 或 clean 全板完成，后续任务继续。
-- **Git 状态**：`b1cf3af` 本地提交已生成；第一次 push 工具超时后 `ls-remote` 仍为 `743dc71`，不得写成该提交已上传。后续重试有明确超时，避免阻塞实验队列。
+- **Git 状态**：`b1cf3af` 本地提交已生成；第一次 push 工具超时后 `ls-remote` 仍为 `743dc71`，不得写成该提交已上传。后续重试有明确超时，避免阻塞实验队列。随后 `9aee627` 已成功 push，覆盖上述两个提交。
+
+
+## §15.299（2026-11-02）Kirigami 全桶算法证据与 NucleicBERT 分段续传
+
+- **Kirigami 全桶闭环**：200–400 nt 共 **728/728** 条完成原 Python `mat2db` 与修复后 C 解码对照，所有条目的参考配对集合和 C 配对集合完全一致；名称顺序、长度范围、配对数与 raw ArchiveII 输入独立复核通过。证据 bytes=5904544，SHA256=`891e2650344c855e096a39a24be097e50dced202d3e7f834f28f90ebb64fa7d1`。结合最长 4 条一致，当前 C 算法不解释历史 F1 差异；历史 artifact 仍缺完整预测/环境身份，当前 F1=0.7689918891 与历史 0.7871232718 继续并列保留，不宣称历史复现。
+- **源版本更新**：raw+clean 汇总重新独立聚合，SHA256=`890e2491b63db7255079ab8e5aab81ada9a529b9332ba4b9caee035c01e9e415`，bytes=11181；旧汇总 `db52fccd...` 和旧 ArchiveII 诊断均移入 `archive_20261102/superseded_round39/`，保留哈希，不删除。
+- **frozen NucleicBERT 官方身份**：Zenodo API 确认 size=**4970204510**、MD5=`b5b3d40fa07adc3cc8c1942e6ebfe1a5`。1 MiB Range 请求返回 206、`Content-Range: bytes 0-1048575/4970204510`，SHA256=`08723742d2afd369935bbeb048127b8541f1ff3c4bafa11050d5cb7b1ff75018`，吞吐约 12.18 KB/s。requests 的 TLS 主机名错误未绕过，改用已通过证书校验的 curl。
+- **续传策略**：保留已下载约 531 MB 的连续前缀，停止旧单连接脚本及其实际远端 curl PID，确认退出后启动 16 个独立 Range 分段续传；每段按实际大小续接、禁止超长，最终拼接后必须通过总字节数、官方 MD5 和 SHA256 才命名为 `secstr.ckpt`。当前仍是下载中，不得加载部分文件或用 fine-tuned 权重替代 frozen 头部。
