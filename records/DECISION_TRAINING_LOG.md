@@ -11541,3 +11541,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **资源驱动配置调整**：batch 从 4 改为 2，其他科学配置不变（lr=1e-4、四项权重=1、nll=sum、同一教师、同一 VL0、patience=5、min_delta=1e-6、1,000,000 仅为安全上限）。seed0 已越过此前所有 OOM 点，step500 首次 VL0 `validation_loss=17.417371105454432`、`best_step=500`、`bad_evaluations=0`，best checkpoint 正常写入。此时尚未收敛，不进入最终主板。
 - **阶段性提交**：`a98d863` 包含类型头显存修复、测试、单种子启动与学生 raw-sequence 权重入口。后续 seed1/2 仍须各自完成 plateau 和独立 GPU QA。
 - **轻量基线边界**：SPOT-RNA 在 ArchiveII 长序列 BiLSTM 处另需 4.06 GiB，与训练 16.32 GiB 及 Kirigami 叠加后 OOM，未形成结果；SPOT-RNA、RNAformer 和 RiNALMo-ft 等待训练结束，Kirigami 轻量任务可继续。不得为并行数量再次制造可预见的 OOM。
+
+
+## §15.271（2026-11-02）训练回归、biophysical 审计与种子过程值
+
+- **回归验证**：`test_head_chunking`、`test_memory_bound_stores`、`test_train_decision_early_stopping`、`test_embedding_head`、`test_objectives` 合计 **52 passed**，覆盖分块等价、resume 元数据、模型仅载权重、早停与目标函数。
+- **biophysical 审计**：官方 `biophysical_model_data.plk` 的 `set=train` 共 410,408 条且全部唯一，JSONL SHA256=`22b89f59b7090ed250255762e996d35e7523b99abc01f524e9bbd9b4a4f2cfca`。八 split 在精确 + 80% identity/query coverage 合同下均无删除，clean 与 raw 相同；该结果只对应 biophysical checkpoint，不外推到其他模型。审计总表现有九套，SHA256=`cc3455b81232a1f020311e510072d81c304a185bab5fcbe3e2b384c913054b95`。
+- **seed0 过程曲线**：step500 VL0=17.417371，step1500=16.715882，step2500=16.649043；截至 step3750 时 best_step=2500、bad_evaluations=2，仍按 patience=5 继续。batch=2 训练已越过此前长序列 OOM 点，未发生 CPU 降级。
+- **独立 QA 准备**：`tools/qa_xens2_student_round39.py` 在 `converged+early_stopping` 硬门后，从 best.pt 启动三个独立 VL0 CUDA 评测并比较预测、TP/FP/FN、F1/ECE 均值和哈希；当前不得提前运行成 PASS。
+- **轻量基线恢复**：RiNALMo-ft raw/TR0-clean 已在 B=2 训练余量下恢复；两个 RNAformer 和 SPOT-RNA 长序列任务仍等待更安全窗口。GitHub 已推送至 `75c55b0`。
