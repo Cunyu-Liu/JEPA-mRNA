@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "BLOCKED_PROVENANCE_OFFICIAL_DEFAULT_INCLUDES_TEST_SPLITS",
+  "system": "ufold",
+  "repository": "https://github.com/uci-cbcl/UFold",
+  "commit": "75bd9acc83826059682dfca9d3659df66b132cd1",
+  "weights": "ufold_train_alldata.pt",
+  "weights_sha256": "1b554e1c98d770ced93939f3cdc02da0d7daabfe5a5b8d5ccad277b59d75d4d3",
+  "weights_bytes": 34640890,
+  "official_default_train_files": [
+    "RNAStralign",
+    "ArchiveII",
+    "TR0_with_data_augmentation",
+    "TS0",
+    "PDB_train",
+    "bpnew",
+    "TS1",
+    "TS2",
+    "TS3"
+  ],
+  "evidence": {
+    "file": "ufold/utils.py",
+    "lines": "65-66",
+    "description": "get_args default train_files; ufold_train.py loads each named dataset for training",
+    "readme": "README.md states that the default includes all datasets mentioned in the paper"
+  },
+  "asset_access": {
+    "official_folder": "https://drive.google.com/drive/folders/1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi?usp=sharing",
+    "gdown_result": "Timed out: no response from the server",
+    "direct_curl_result": "connection timed out after 20 seconds; no folder HTML obtained"
+  },
+  "raw_status": "PASS_8x3_RETAINED",
+  "clean_status": "BLOCKED_PROVENANCE",
+  "decision": "Do not run a purported clean benchmark from an assumed training-corpus subset. The official default training list itself includes most benchmark splits. Full original training pickles and sequence-level decontamination are required before any clean claim.",
+  "scientific_boundary": "The raw results are retained but cannot be used as clean SOTA evidence. This is a provenance limitation, not a zero-score or model-quality conclusion."
+}

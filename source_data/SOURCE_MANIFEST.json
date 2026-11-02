@@ -812,6 +812,20 @@
    "bytes": 13580,
    "description": "SPOT-RNA 与三个学生在 VL0 同 GT/候选配对的校准对照；置信度全部饱和为 1.0，不作最佳置信度结论",
    "status": "active_vl0_matched_not_generalization"
+  },
+  {
+   "path": "appendix_leakage/round39_ufold_provenance_audit.json",
+   "sha256": "45a055939aa7f0fca19e10a68f9d9f2159b9f3659dd7eafe0dee0d1e1928aeac",
+   "bytes": 1659,
+   "description": "UFold 官方默认训练列表覆盖测试 split 的直接代码证据；原始 pickle 未恢复，clean 继续 blocked",
+   "status": "active_blocked_provenance"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_raw_clean_summary.json",
+   "sha256": "51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3",
+   "bytes": 8095,
+   "description": "RiNALMo-ft raw+TR0-clean 16 格 full-length 三次推理与独立复算；NLL seed0 已启动但未收敛",
+   "status": "active_complete_raw_clean_8x3"
   }
  ]
 }

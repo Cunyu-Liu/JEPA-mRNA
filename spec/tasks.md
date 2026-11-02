@@ -22,9 +22,11 @@
 >
 > **2026-11-02 SPOT-RNA 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0`；旧 6/8 进度已归档。转换权重身份和并发测速边界保留；全模型 600 单元仍未完成。
 >
-> **2026-11-02 RiNALMo-ft 阶段**：raw 8/8 三次复测与独立聚合已通过，汇总 SHA256=`04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07`；TR0-clean 正在运行，最终 16 格验收未完成。
+> **2026-11-02 RiNALMo-ft 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`；NLL seed0 已实际启动，尚未收敛，不能写成三种子或 8/8。
 >
 > **2026-11-02 校准对照**：SPOT-RNA VL0 ECE=0.0044911093，高于学生校准后约 0.00058；全部 196 条结构置信度均为 1.0，Spearman 不可定义。只能作为拟合集负证据，不能写最佳置信度。结果 SHA256=`534ddea6ea41b722442e97ddc7fe176c0134d1a2f3decdce7e81ab69f48eb6b8`。
+>
+> **2026-11-02 UFold 资产审计**：官方默认训练列表直接覆盖多数测试 split；原始 pickle 未恢复前 clean 保持 provenance blocked，raw 结果不得进入 clean SOTA。审计 SHA256=`45a055939aa7f0fca19e10a68f9d9f2159b9f3659dd7eafe0dee0d1e1928aeac`。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 

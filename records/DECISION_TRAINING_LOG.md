@@ -11862,3 +11862,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **真实 bprna 验收**：TS0 n=1288，F1=0.7575434319；bpRNA-new n=5388，F1=0.4935794890，均三次一致。结果 SHA256 分别为 `66ab0d977f47cc1d620fd32e7de176f905945f1904b97486b53b69f5271d13b1`、`1559e6c4fbfcbb5e36debfe9c41b9ed0af6575a01100beac4b2c07780397c856`。官方 state_dict/config SHA256 与 `SHA256SUMS.round39` 一致，strict load 无 missing/unexpected。
 - **聚合合同**：新增 `aggregate_rnaformer_round39.py`，逐序列重算计数/F1，检查 raw/clean 数据守恒、官方权重/config、CUDA、B=1、full-length、三次预测哈希、参考 F1 门和空 clean split。四个变体分别排队到各自 runner 后执行，尚未形成最终全板。
 - **启动错误与修复**：首次聚合仅获取 variant 锁，而 runner 尚在等待 fusion 锁，导致读取尚不存在的 clean/raw 文件并立即退出。没有生成科学结果。已统一为 fusion→variant 锁顺序并重新排队；该错误不影响已完成的 bprna 两格独立验收。
+
+
+## §15.313（2026-11-02）UFold 官方默认训练集与 clean 阻塞定界
+
+- **直接代码证据**：官方 commit `75bd9acc83826059682dfca9d3659df66b132cd1` 的 `ufold/utils.py:65-66` 默认训练文件为 RNAStralign、ArchiveII、TR0_with_data_augmentation、TS0、PDB_train、bpnew、TS1、TS2、TS3；`ufold_train.py` 逐项加载训练。默认列表直接覆盖多数 benchmark split，不能把它当作普通独立测试。
+- **资产核查**：权重 `ufold_train_alldata.pt` SHA256=`1b554e1c98d770ced93939f3cdc02da0d7daabfe5a5b8d5ccad277b59d75d4d3`、bytes=34640890。官方 Drive 的 gdown 与直接 curl 均超时，没有恢复原始训练 pickle，无法做完整 exact+80% 同源剔除。
+- **结论**：raw 8/8 保留；clean 状态细化为 `BLOCKED_PROVENANCE_OFFICIAL_DEFAULT_INCLUDES_TEST_SPLITS`，不选择假设组合复测，不把 blocked 写成 0 分或 clean SOTA 证据。审计 SHA256=`45a055939aa7f0fca19e10a68f9d9f2159b9f3659dd7eafe0dee0d1e1928aeac`。
+
+
+## §15.314（2026-11-02）RiNALMo-ft 16 格闭环与 NLL 实际启动
+
+- **clean 全板**：TS0/new/ArchiveII/TS1/TS2/TS3/hard/TSB 的 n=1192/5388/1094/61/39/17/28/116，F1=0.7110963915/0.4489961557/0.7108895303/0.7169164882/0.6714413608/0.5800604230/0.5566265060/0.7894353370，三次 SD 全为 0。raw+clean 16 格独立聚合 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`，bytes=8095。
+- **NLL seed0 启动**：RiNALMo 释放资源后，预检 CUDA 空闲 **23.1247 GiB**，run_contract 已写入。数据/审计/init/trainer/launcher 哈希均通过，实际训练 step 1 loss=0.1834、terms 仅 `nll`，峰值 2.9 GB，未发生 CPU 降级。run_meta 尚未生成，不能写收敛、三种子或主板。
+- **同步故障处理**：UFold 审计和 RiNALMo 汇总同步时 SSH 两次断连，先核查实际上传状态再有限重试，未重复提交代码或重跑实验。最终文件已完整上传。

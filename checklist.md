@@ -18,9 +18,11 @@
 >
 > **SPOT-RNA 证据**：raw+clean 16 格三次复测与独立聚合通过，最终汇总 SHA256=`dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0`。TS3 去泄露后为空；其他基线未齐，不能勾选 T-A170/T-A171 总门。
 >
-> **RiNALMo-ft 证据**：raw 8/8 三次复测与独立聚合通过，汇总 SHA256=`04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07`；TR0-clean 未闭环，不能写成完整 16 格验收。
+> **RiNALMo-ft 证据**：raw+clean 16 格三次复测与独立聚合通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`。NLL 仅启动，未收敛，不能写成三种子或 8/8。
 >
 > **校准证据**：SPOT-RNA VL0 ECE=0.0044911093，高于学生校准后约 0.00058；全部置信度为 1.0，Spearman 不可定义，不能勾选最低 ECE 或最佳置信度。
+>
+> **UFold 边界**：官方默认训练列表覆盖多数测试 split，原始 pickle 未恢复，clean 必须保持 provenance blocked；raw 不得进入 clean SOTA。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >

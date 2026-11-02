@@ -28,11 +28,13 @@
 >
 > **2026-11-02 SPOT-RNA raw 闭环**：raw 8/8 均完成三次推理并独立复算，F1=0.5263157895/0.5836012619/0.7020802377/0.7884187082/0.6682188591/0.6890052356/0.6026481695/0.6183834650（TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB），SD 全为 0。汇总 SHA256=`dd752681b49ba620a6e76701da3f5f3b695316b7d43927822b6eab87876078e9`。这些是 MultiMolecule 转换权重而非原作者直接文件；并发耗时不作速度结论。clean 仍在运行，raw 完成不等于 raw+clean 16 格闭环。
 >
-> **2026-11-02 RiNALMo-ft raw 闭环**：raw 8/8 均完成三次 full-length raw-sequence 推理并独立复算，F1=0.7213842308/0.4489961557/0.7613027608/0.7135761589/0.6714413608/0.6035665295/0.5566265060/0.8715630190（TS0/new/ArchiveII/TS1/TS2/TS3/hard/TSB），SD 全为 0。汇总 SHA256=`04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07`。TS0/new 的代码哈希差异已逐行证明不影响 RiNALMo 路径。TR0-clean 正在运行，raw 完成不等于 16 格闭环；并发耗时不作正式速度结论。
+> **2026-11-02 RiNALMo-ft raw+clean 闭环**：raw 与 TR0-clean 共 16 格、48 次 full-length raw-sequence 推理全部独立验收。clean n=1192/5388/1094/61/39/17/28/116（TS0/new/ArchiveII/TS1/TS2/TS3/hard/TSB），F1=0.7110963915/0.4489961557/0.7108895303/0.7169164882/0.6714413608/0.5800604230/0.5566265060/0.7894353370，SD 全为 0。最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`。并发耗时不作正式速度结论；NLL seed0 已通过 23.12 GiB 空闲预检并实际开始 CUDA 训练，step 1 仅 NLL 项，尚未收敛。
 >
 > **2026-11-02 SPOT-RNA raw+clean 闭环**：raw 与 TR0+TR1-clean 共 16 格、48 次推理全部独立验收。clean n=152/5386/10/9/0/3/580/64（TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB），F1=0.6178470011/0.5836098496/0.7759336100/0.7686567164/EMPTY/0.6530612245/0.5212396624/0.5751833741，非空格 SD 全为 0。最终汇总 SHA256=`dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0`。TS3 去泄露后为空，不伪造指标；转换权重身份与并发测速边界不变。旧 6/8 进度已归档，600 单元全模型总门仍未关闭。
 >
 > **2026-11-02 SPOT-RNA VL0 校准负证据**：在相同 196 条、573,355 个严格有效配对和 10 分箱下，SPOT-RNA ECE=0.0044911093、Brier=0.0044911093、NLL=0.1209809658，低于学生未校准 ECE 但高于学生校准后约 0.00058。196 条 DP 所选配对的平均概率全部为 1.0，Spearman 不可定义，AURC=0.1621645221，不能用于结构质量排序。该结果仅是 VL0 拟合集对照，不是跨 split 最低 ECE 或最佳置信度结论。结果 SHA256=`534ddea6ea41b722442e97ddc7fe176c0134d1a2f3decdce7e81ab69f48eb6b8`。
+>
+> **2026-11-02 UFold provenance 定界**：官方 `ufold/utils.py` 默认训练列表为 RNAStralign、ArchiveII、TR0_with_data_augmentation、TS0、PDB_train、bpnew、TS1、TS2、TS3，覆盖多数 benchmark split。原始训练 pickle 当前无法从官方 Drive 恢复，不能假定组合做 clean。raw 8/8 保留，clean 继续 `BLOCKED_PROVENANCE_OFFICIAL_DEFAULT_INCLUDES_TEST_SPLITS`，不得把 blocked 写成 0 分或 clean SOTA 证据。审计 SHA256=`45a055939aa7f0fca19e10a68f9d9f2159b9f3659dd7eafe0dee0d1e1928aeac`。
 >
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
