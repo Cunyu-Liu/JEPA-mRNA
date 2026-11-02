@@ -11672,6 +11672,14 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 ## §15.286（2026-11-02）NucleicBERT raw 全板闭环与 clean 进度
 
 - **raw 8/8 三次复测**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1 均值=0.4608978024/0.3452771319/0.6048845768/0.6434540390/0.5175257732/0.4844720497/0.4734889601/0.4862142857，SD 全为 0。每格均从预测独立重算 TP/FP/FN 和 micro/macro-F1，并与原八份 artifact 在 1e-12 内一致；raw 8×3 验收完成。
-- **clean 进度**：tr1c-clean TS0 n=713，F1=0.4250956502；TS2 n=29，F1=0.6673228346，均三次一致。其余 clean split 正在运行，不与 raw n 或 raw F1 混写。
+- **clean 进度**：tr1c-clean TS0 n=713，F1=0.4250956502；bpRNA-new n=5386，F1=0.3463918229；TS2 n=29，F1=0.6673228346，均三次一致。其余 clean split 正在运行，不与 raw n 或 raw F1 混写。当前聚合 SHA256=`30cf1002d56a0b1cf307cc4c737d49baa22b7fff1779ec13fafe990935d54d4b`。
 - **协议边界**：固定历史 fine-tuned checkpoint、原 B=4 collate、前 598 nt 截断，所有源序列保留；该模型不宣称全长能力，也不把历史三 epoch checkpoint 写成新收敛训练。
 - **源与注册表**：聚合 SHA256=`c849591ed0ab15e2ffde6ff46df515de71e5f9ea3be441dcc081f22ebdcd62a3`。旧 raw 1/8 汇总已追加归档，注册表更新为 `PASS_ORIGINAL_B4_8x3_INDEPENDENT_RECOMPUTE`；clean 标记 TS0/TS2 完成、其余运行中。
+
+
+## §15.287（2026-11-02）NucleicBERT raw+clean 全量闭环
+
+- **clean 8/8 三次复测**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 clean n=713/5386/18/29/4/10/1107/288，F1=0.4250956502/0.3463918229/0.6796116505/0.6673228346/0.5028571429/0.5080645161/0.3738403804/0.4679376083，SD 全为 0；每格独立 TP/FP/FN 与 macro-F1 复核通过。raw+clean 共 16 格、48 次完整推理全部闭环。
+- **最终聚合**：状态 `PASS_RAW_8x3_CLEAN_8x3`，SHA256=`0baaec44a9351f1b39a6f75860b5b36943cfb2bd2ad58ad66785a44eb63339d3`。训练语料为 tr1c，raw 与 clean 样本数、指标分开保留；注册表已同步。
+- **frozen NB 资产边界**：本地没有 frozen 头部 checkpoint。官方 Zenodo `secstr.ckpt` 约 4.7 GB，首次下载仅完成约 1 MiB 后超时，不能作为有效权重；不得随机初始化头部或用 fine-tuned 结果替代 frozen 系统。
+- **后续资源顺序**：RiNALMo-ft raw/TR0-clean 已用文件锁排在融合任务后，避免与长序列融合和 Kirigami 叠加 OOM。

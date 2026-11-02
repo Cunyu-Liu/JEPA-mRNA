@@ -5,7 +5,7 @@
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A169 | 25 系统注册、官方权重与适配器恢复 | 原 19 系统 + SPOT-RNA/RNAstructure/ContextFold/CONTRAfold/BPfold/E2Efold；每项仓库 commit、权重 URL/SHA256、训练语料、加载 smoke 与输出协议齐全；BPfold 六 checkpoint、UFold 官方全数据权重、E2Efold 官方 checkpoint 不得再用旧 blocked 结论替代实际恢复 | 进行中：BPfold 六官方 checkpoint 与 UFold 权重已恢复并实测；E2Efold 官方 SharePoint 不可达，保留 blocked 证据，不伪造恢复 |
-> | T-A170 | 逐模型泄露矩阵与 600 单元复测 | 25×8×3；每模型独立精确 + 80% identity（及可用家族）去重叠，clean n/removed/TP/FP/FN/micro-F1/mean±SD/哈希全落盘；未知语料标 BLOCKED_PROVENANCE，不伪造 clean | 进行中：八套模型专属审计完成；EternaFold、MXfold2、BPfold 自身训练语料 clean 八 split 三次完成；RNAformer 等待训练窗口后恢复，600 单元未齐 |
+> | T-A170 | 逐模型泄露矩阵与 600 单元复测 | 25×8×3；每模型独立精确 + 80% identity（及可用家族）去重叠，clean n/removed/TP/FP/FN/micro-F1/mean±SD/哈希全落盘；未知语料标 BLOCKED_PROVENANCE，不伪造 clean | 进行中：EternaFold、MXfold2、BPfold、NucleicBERT-ft 自身训练语料 clean 八 split 三次完成；RNAformer/RiNALMo-ft 等继续，600 单元未齐 |
 > | T-A171 | 新增四基线与三官方权重模型全板 | SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各自 8 split×3；同 strict micro-F1/canonical-nested GT；原生必要后处理保留，概率输出另存供 ECE | 进行中：BPfold clean、RNAstructure raw 已完成；SPOT-RNA、UFold、CONTRAfold 已有部分结果；E2Efold/ContextFold 外部资产仍 blocked，不得宣称完整全板 |
 > | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | 根因已证实：3 encoder+3 head，B=32=19.89 seq/s；教师 B=1 全量与哈希已验收，seed0 独占训练；正式速度仍未测 |
 > | T-A173 | xens2 模型/数据候选攻关 8/8 | 只用 VL0 选候选；三训练种子均 validation plateau+best checkpoint+独立 GPU QA；统一 xens2 三次均值在 8 split 均超过最强 eligible baseline；ArchiveII/bpRNA-new/TS2 三负格优先但不得测试集调参 | 单学生 clean 8/8 三种子已闭环但未达 SOTA；VL0 融合正在做双 clean 三次泛化，TS2 尚未领先，未证明 8/8 |
