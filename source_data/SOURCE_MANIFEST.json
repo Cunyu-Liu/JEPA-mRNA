@@ -770,6 +770,20 @@
    "bytes": 1508,
    "description": "VL0 融合 6 格后 8/8 硬门不可达的提前终止决策；不是完整融合全板",
    "status": "active_rejected_candidate"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_data_audit.json",
+   "sha256": "ee6ddbb038d36238e374498dcba9b50e33ec2f2a29aa6bdb226e05db5f9d00e2",
+   "bytes": 9328,
+   "description": "混合 NLL 数据标签清理、base 去重及 VL0/八 split 的 80%/80% MMseqs2 去泄露审计",
+   "status": "active_data_gate_pass"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_independent_verification.json",
+   "sha256": "a3c6acbe139d9cd15be3b91733022e6ed804c4e02f4a5205e5ff83882290d966",
+   "bytes": 7344,
+   "description": "混合 NLL 数据 1657 条新增序列的独立标签与九组零泄露复扫",
+   "status": "active_independent_data_verification"
   }
  ]
 }

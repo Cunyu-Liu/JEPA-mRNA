@@ -24,6 +24,8 @@
 >
 > **2026-11-02 基线闭环与算法诊断**：NucleicBERT-ft 已固定原 B=4、前 598 nt 协议，完成 raw+TR1c-clean 共 16 格、48 次推理和独立复算；其训练语料是 TR1c，不是 TR0，完整权重不能替代仍在续传的 frozen 官方头部。Kirigami 修复 C 解码的反向配对残留后，完成 raw+TR0-clean 共 16 格、48 次推理，最新聚合 SHA256=`890e2491b63db7255079ab8e5aab81ada9a529b9332ba4b9caee035c01e9e415`。TS0 和 bpRNA-new 与原实现精确等价，中位加速分别为 11.814×和 5.813×；ArchiveII 的 200–400 nt 全桶 **728/728** 及最长 4 条均通过原 Python/C 逐对一致性，当前算法差异已排除。历史 F1=0.7871232718 与当前 0.7689918891 仍并列保留，历史缺少完整预测/环境身份，不宣称历史复现。SPOT-RNA 正以完整输入/概率溯源重测 raw+clean；frozen NucleicBERT 按官方 MD5 进行 16 段 Range 续传，未完成前不加载。RFold 全 11 个官方提交均无训练循环或权重，保持资产边界；VL0 融合完成 6 格后，TS2 未超 BPfold、TS3 未超 BPfold/student，8/8 门已不可达；已停止剩余推理并保留负证据，不生成新教师、不启动新蒸馏，RiNALMo-ft 接续。`21d50a8` 已确认推送 GitHub。
 >
+> **2026-11-02 混合数据 NLL 候选**：融合否决后不生成新教师，改从已收敛 plana seed0 best checkpoint 做真实标签 NLL 微调。新源 47,963 条经标签合法性、冲突/重复清理、base exact 和 VL0+八 split 的 80% identity/80% query coverage 去重，仅新增 1,657 条，混合集 44,221 条；独立复扫九组均无 exact/MMseqs 命中。数据 SHA256=`e398187dea8e4ffba5b574fb7c0ba6156490e4185b242002f8dad68a2dd5be9d`，独立验证 SHA256=`a3c6acbe139d9cd15be3b91733022e6ed804c4e02f4a5205e5ff83882290d966`。训练器只在显式 `lambda_distill=0` 时允许空教师目录，真实 CUDA smoke 仅有 NLL 项。seed0 排在 RiNALMo 后，须至少 18 GiB 空闲才启动；VL0 plateau+best checkpoint 未达前不进入三种子或主板。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

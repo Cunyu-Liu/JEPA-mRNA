@@ -11781,3 +11781,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **不可达的硬门**：已完成 6 格中，TS2 融合=0.9333333333，低于同交集 BPfold=0.9696969697；TS3 融合=0.8285714286，低于 BPfold=0.8496732026 和 student 三种子均值=0.8711899575。即使 bpRNA-new/ArchiveII 都获胜，对 BPfold 至多 6/8、对 student 至多 7/8，无法满足 8/8；继续剩余长 split 不会改变该结论。
 - **停止与证据边界**：停止本地任务及远端 flock、runner、实际 CUDA 推理进程，确认均退出；bpRNA-new 未写出完整结果，ArchiveII 未启动。六格完整原始结果和聚合 SHA256=`1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07` 保留，不能称为完整融合全板。
 - **决策记录**：新增 `round39_fusion_candidate_rejection.json`，逐值从 6 格聚合复核，SHA256=`5e094ea460ef399d4127129d4ff27442526ecc2076a079755749f660ca186c9f`。不生成该候选的新教师、不启动蒸馏；原 xens2 与 baseline 数值不变。释放显存后由既有 RiNALMo-ft 队列接续，不重复启动。
+
+
+## §15.301（2026-11-02）混合 NLL 数据门、训练器与真实 CUDA smoke
+
+- **数据清洗**：RNAStrAlign+TR0 源 47,963 条中，冲突重复 549、假结 3019、同标签重复 5092、短发夹环 624、非 ACGU 3567、截断导致括号不平衡 9511 均带原因剔除；抽查长 16S 截断样本确认不平衡拒绝不是解析误删。剩余 25,601 条，base exact 再去除 14,075，候选 11,526。经 VL0+八 split 的 exact 和 MMseqs2 80% identity/80% query coverage 去重后新增 **1657**，混合 TR1c 后共 **44221**。
+- **独立复扫**：最终数据 SHA256=`e398187dea8e4ffba5b574fb7c0ba6156490e4185b242002f8dad68a2dd5be9d`；base 前缀逐对象一致，所有新增标签合法非交叉且组合序列唯一，九组最终 MMseqs 均无命中。审计 SHA256=`ee6ddbb038d36238e374498dcba9b50e33ec2f2a29aa6bdb226e05db5f9d00e2`，独立验证 SHA256=`a3c6acbe139d9cd15be3b91733022e6ed804c4e02f4a5205e5ff83882290d966`。
+- **训练器**：`train_plan_a.py` 仅在显式 `lambda_distill=0` 时允许空教师目录，`optional_teacher=None`；非零蒸馏仍拒绝任何缺失教师。默认原蒸馏协议不变。真实 CUDA 一步 smoke 从 seed0 best checkpoint（SHA256=`2997254f...`）加载，训练日志仅 `nll=0.2013`，无教师项，best/resume 均落盘；smoke 不是科学结果。
+- **正式队列**：seed0 使用混合数据、纯 NLL、B=1、原 head/backbone LR 与渐进解冻，VL0 every500/patience5/min_delta1e-6，1,000,000 仅安全上限。排在 RiNALMo 后，启动前要求 CUDA 可用且至少 18 GiB 空闲；未满足则留证停止，不转 CPU。三种子、主板与测速尚未开始。
+
+
+## §15.302（2026-11-02）SPOT-RNA raw bpRNA-new 溯源复测
+
+- n=5388，三次 F1 均为 **0.58360126190584**，TP/FP/FN=77326/52486/57858，SD=0。新结果与旧值一致，但本次具有完整输入哈希、三次预测/概率哈希和概率 NPZ。结果 SHA256=`c76f473574fa0032213f49bc8e03e70406bf7cb2720d4a78a57d149b71ff5ec8`，概率 SHA256=`74cfd8e40369c84017e7ab9812020f49be38b0b76a31040ab4eabdbc4ddd3b97`。
+- `aggregate_spotrna_round39.py` 已对 raw TS0 与 bpRNA-new 两份完整结果独立复算通过；其余 raw/clean 格继续，不能写成全板完成。

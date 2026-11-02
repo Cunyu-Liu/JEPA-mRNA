@@ -114,6 +114,8 @@
 | `appendix_leakage/round39_kirigami_archive_200_400_original_vs_c.json` | ArchiveII 200–400 nt 全桶 728 条原 Python/C 配对完全一致 | active complete 728/728 | `891e2650344c` |
 | `appendix_leakage/bpfold_vl0.json` | BPfold 全 VL0 三次官方推理与原始 utility 哈希；仅供模型选择 | validation only | `ea21f21814ab` |
 | `appendix_leakage/round39_vl0_bpfold_fusion_fit.json` | VL0-only xens2+BPfold 非负 NLL 融合参数与对照；拟合集指标不作最终结论 | validation candidate | `bfde5279469f` |
+| `appendix_leakage/round39_mixed_nll_data_audit.json` | 混合 NLL 数据标签清理和 VL0/八 split 去泄露审计 | active data gate | `ee6ddbb038d3` |
+| `appendix_leakage/round39_mixed_nll_independent_verification.json` | 1657 条新增序列独立标签与九组零泄露复扫 | active independent verification | `a3c6acbe139d` |
 
 ## 后续边界
 

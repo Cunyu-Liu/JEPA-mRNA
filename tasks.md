@@ -18,6 +18,8 @@
 >
 > **2026-11-02 阶段状态**：NucleicBERT-ft raw+TR1c-clean 16 格和 Kirigami raw+TR0-clean 16 格均完成三次推理与独立复算。Kirigami TS0/new 精确等价；ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 均一致，当前算法诊断完成，但历史 F1=0.7871232718 仍未由当前 0.7689918891 复现，限制保留。VL0 融合 6 格后 8/8 已不可达，剩余推理已停止，不生成新教师；RiNALMo-ft 接续。SPOT-RNA 全量溯源复测与 frozen NucleicBERT 16 段续传进行中，未完成不纳入结果。`21d50a8` 已确认推送 GitHub。
 >
+> **2026-11-02 数据候选门**：TR1c+RNAStrAlign 合法去泄露混合集已验收（44,221 条，新增 1,657 条），九组独立复扫无 exact/MMseqs 命中。纯 NLL CUDA smoke 通过；seed0 已从已收敛 plana best checkpoint 排队，18 GiB 预检后训练到 VL0 plateau。当前仅数据门和 smoke 完成，不得写成收敛、三种子或 8/8。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**

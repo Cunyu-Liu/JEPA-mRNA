@@ -11,7 +11,9 @@ ways that would have confounded the backbone-adaptation axis; v2 corrects all:
    = 1.0 with the thermodynamic teacher (thermo:viennarna, 42 shards, strict
    sequence keying). v1 ran nll only: ObjectiveWeights() defaults
    lambda_distill = 0, and the smoke test "passing" with teacher_probs=None was
-   exactly the evidence of that gap.
+   exactly the evidence of that gap. A separately declared pure-NLL run may use
+   lambda_distill=0 with empty teacher directories; optional_teacher then returns
+   None and combined_loss never reads it. This does not change the default parity.
 2. batching: length-bucketed batch_size 4 with the exact iter_batches RNG
    (np.random.default_rng((seed, epoch)) permuting bucket order), so both arms
    see the same batch sequence. v1 used random pairing at batch 2: that changes
@@ -197,23 +199,28 @@ def main():
 
     records = load_records(args.data)
     print(f"[plan-a] {len(records)} sequences from {args.data}", flush=True)
-    teacher_map = load_teacher_map(args.teacher_dir)
+    weights = ObjectiveWeights(lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
+                               lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal)
+    teacher_map = load_teacher_map(args.teacher_dir) if args.teacher_dir else {}
     print(f"[plan-a] teacher: {len(teacher_map)} soft labels from {args.teacher_dir}",
           flush=True)
     missing = [s for s, _ in records if s not in teacher_map]
-    if missing:
+    if weights.lambda_distill and missing:
         raise SystemExit(f"FATAL: {len(missing)} sequences have no teacher label "
                          f"(first: len {len(missing[0])}); refusing to run a "
                          "distillation term over a partial teacher.")
-    weights = ObjectiveWeights(lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
-                               lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal)
-    if bool(args.validation_data) != bool(args.validation_teacher_dir):
+    if weights.lambda_distill and bool(args.validation_data) != bool(args.validation_teacher_dir):
         raise SystemExit("FATAL: validation data and teacher directory must be supplied together")
     validation_records = load_records(args.validation_data) if args.validation_data else []
     validation_teacher = load_teacher_map(args.validation_teacher_dir) if args.validation_teacher_dir else {}
     missing_validation = [seq for seq, _ in validation_records if seq not in validation_teacher]
-    if missing_validation:
+    if weights.lambda_distill and missing_validation:
         raise SystemExit(f"FATAL: {len(missing_validation)} validation sequences lack teacher labels")
+
+    def optional_teacher(mapping, seq, target_device):
+        if not weights.lambda_distill:
+            return None
+        return torch.as_tensor(mapping[seq], dtype=torch.float64, device=target_device)
     best_step = 0
     best_validation_loss = float("inf")
     bad_evaluations = 0
@@ -455,8 +462,7 @@ def main():
             mask_b = torch.as_tensor(masks[b], device=s.device)
             loss_b, terms_b = combined_loss(
                 s, mask_b, gts[b], weights,
-                teacher_probs=torch.as_tensor(teacher_map[seqs[b]],
-                                              dtype=torch.float64, device=s.device),
+                teacher_probs=optional_teacher(teacher_map, seqs[b], s.device),
                 student_probs=torch.sigmoid(s),
                 labels=torch.as_tensor(labels_all[b], dtype=torch.float64,
                                        device=s.device),
@@ -526,8 +532,7 @@ def main():
                     mask = valid_pair_mask(seq)
                     loss, _ = combined_loss(
                         scores, mask, gt_pairs, weights,
-                        teacher_probs=torch.as_tensor(validation_teacher[seq],
-                                                      dtype=torch.float64, device=device),
+                        teacher_probs=optional_teacher(validation_teacher, seq, device),
                         student_probs=torch.sigmoid(scores),
                         labels=torch.as_tensor(pair_indicator(len(seq), gt_pairs),
                                                dtype=torch.float64, device=device),
