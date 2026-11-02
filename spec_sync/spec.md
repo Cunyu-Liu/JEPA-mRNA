@@ -26,6 +26,8 @@
 >
 > **2026-11-02 混合数据 NLL 候选**：融合否决后不生成新教师，改从已收敛 plana seed0 best checkpoint 做真实标签 NLL 微调。新源 47,963 条经标签合法性、冲突/重复清理、base exact 和 VL0+八 split 的 80% identity/80% query coverage 去重，仅新增 1,657 条，混合集 44,221 条；独立复扫九组均无 exact/MMseqs 命中。数据 SHA256=`e398187dea8e4ffba5b574fb7c0ba6156490e4185b242002f8dad68a2dd5be9d`，独立验证 SHA256=`a3c6acbe139d9cd15be3b91733022e6ed804c4e02f4a5205e5ff83882290d966`。训练器只在显式 `lambda_distill=0` 时允许空教师目录，真实 CUDA smoke 仅有 NLL 项。seed0 排在 RiNALMo 后，须至少 18 GiB 空闲才启动；VL0 plateau+best checkpoint 未达前不进入三种子或主板。
 >
+> **2026-11-02 SPOT-RNA raw 闭环**：raw 8/8 均完成三次推理并独立复算，F1=0.5263157895/0.5836012619/0.7020802377/0.7884187082/0.6682188591/0.6890052356/0.6026481695/0.6183834650（TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB），SD 全为 0。汇总 SHA256=`dd752681b49ba620a6e76701da3f5f3b695316b7d43927822b6eab87876078e9`。这些是 MultiMolecule 转换权重而非原作者直接文件；并发耗时不作速度结论。clean 仍在运行，raw 完成不等于 raw+clean 16 格闭环。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

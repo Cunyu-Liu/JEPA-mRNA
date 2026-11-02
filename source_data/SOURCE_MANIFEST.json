@@ -784,6 +784,13 @@
    "bytes": 7344,
    "description": "混合 NLL 数据 1657 条新增序列的独立标签与九组零泄露复扫",
    "status": "active_independent_data_verification"
+  },
+  {
+   "path": "appendix_leakage/round39_spotrna_raw_summary.json",
+   "sha256": "dd752681b49ba620a6e76701da3f5f3b695316b7d43927822b6eab87876078e9",
+   "bytes": 4261,
+   "description": "SPOT-RNA 转换权重 raw 八 split 三次推理的独立计数与概率验收；clean 尚未闭环",
+   "status": "active_raw_complete_clean_pending"
   }
  ]
 }

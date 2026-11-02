@@ -73,15 +73,20 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--raw-only", action="store_true")
     args = parser.parse_args()
     output = {"schema_version": 1, "system": "spotrna",
               "distribution": "MultiMolecule converted checkpoint; not an original-author file",
               "timing_boundary": "concurrent inference timings are diagnostic; not an exclusive speed result",
-              "raw": {}, "clean_tr0_tr1": {}}
+              "raw": {}}
+    if not args.raw_only:
+        output["clean_tr0_tr1"] = {}
     for split in SPLITS:
         output["raw"][split] = validate(args.root / "raw_postprocessed" / f"{split}.json", split, False)
-        output["clean_tr0_tr1"][split] = validate(args.root / "clean_tr0_tr1" / f"{split}.json", split, True)
-    output["status"] = "PASS_RAW_CLEAN_8x3_INDEPENDENT_RECOMPUTE"
+        if not args.raw_only:
+            output["clean_tr0_tr1"][split] = validate(args.root / "clean_tr0_tr1" / f"{split}.json", split, True)
+    output["status"] = ("PASS_RAW_8x3_INDEPENDENT_RECOMPUTE" if args.raw_only else
+                        "PASS_RAW_CLEAN_8x3_INDEPENDENT_RECOMPUTE")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.out.with_suffix(args.out.suffix + ".tmp")
     temporary.write_text(json.dumps(output, indent=2) + "\n")

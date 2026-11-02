@@ -116,6 +116,7 @@
 | `appendix_leakage/round39_vl0_bpfold_fusion_fit.json` | VL0-only xens2+BPfold 非负 NLL 融合参数与对照；拟合集指标不作最终结论 | validation candidate | `bfde5279469f` |
 | `appendix_leakage/round39_mixed_nll_data_audit.json` | 混合 NLL 数据标签清理和 VL0/八 split 去泄露审计 | active data gate | `ee6ddbb038d3` |
 | `appendix_leakage/round39_mixed_nll_independent_verification.json` | 1657 条新增序列独立标签与九组零泄露复扫 | active independent verification | `a3c6acbe139d` |
+| `appendix_leakage/round39_spotrna_raw_summary.json` | SPOT-RNA 转换权重 raw 八 split 三次独立聚合；clean 待完成 | active raw complete | `dd752681b49b` |
 
 ## 后续边界
 

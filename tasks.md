@@ -20,6 +20,8 @@
 >
 > **2026-11-02 数据候选门**：TR1c+RNAStrAlign 合法去泄露混合集已验收（44,221 条，新增 1,657 条），九组独立复扫无 exact/MMseqs 命中。纯 NLL CUDA smoke 通过；seed0 已从已收敛 plana best checkpoint 排队，18 GiB 预检后训练到 VL0 plateau。当前仅数据门和 smoke 完成，不得写成收敛、三种子或 8/8。
 >
+> **2026-11-02 SPOT-RNA 阶段**：raw 8/8 三次复测与独立聚合已通过，汇总 SHA256=`dd752681b49ba620a6e76701da3f5f3b695316b7d43927822b6eab87876078e9`；clean 继续，最终 16 格验收未完成。转换权重身份和并发测速边界保留。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**

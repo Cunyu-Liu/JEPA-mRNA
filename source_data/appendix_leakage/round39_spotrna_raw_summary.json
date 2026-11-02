@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "system": "spotrna",
+  "distribution": "MultiMolecule converted checkpoint; not an original-author file",
+  "timing_boundary": "concurrent inference timings are diagnostic; not an exclusive speed result",
+  "raw": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 19765,
+      "fp": 20451,
+      "fn": 15126,
+      "strict_micro_f1": {
+        "values": [
+          0.5263157894736842,
+          0.5263157894736842,
+          0.5263157894736842
+        ],
+        "mean": 0.5263157894736842,
+        "sd": 0.0
+      },
+      "result_sha256": "395b8fba54485ce8fe4dfb8080c67ce48d3a95ca148f95c598aa2d1db11cfe79",
+      "probabilities_sha256": "4855bf3aa8fb7fa4d83fd9bc98f34e0080259c7ef89a0bfb31d185298a75734e"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 77326,
+      "fp": 52486,
+      "fn": 57858,
+      "strict_micro_f1": {
+        "values": [
+          0.58360126190584,
+          0.58360126190584,
+          0.58360126190584
+        ],
+        "mean": 0.58360126190584,
+        "sd": 0.0
+      },
+      "result_sha256": "c76f473574fa0032213f49bc8e03e70406bf7cb2720d4a78a57d149b71ff5ec8",
+      "probabilities_sha256": "74cfd8e40369c84017e7ab9812020f49be38b0b76a31040ab4eabdbc4ddd3b97"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 945,
+      "fp": 402,
+      "fn": 400,
+      "strict_micro_f1": {
+        "values": [
+          0.7020802377414561,
+          0.7020802377414561,
+          0.7020802377414561
+        ],
+        "mean": 0.7020802377414561,
+        "sd": 0.0
+      },
+      "result_sha256": "8333f838a2deef48105ed56a6fe8928fb4fbafb6d7d950b9e0ee89ba428b7e9f",
+      "probabilities_sha256": "f428c939b3c9368dba0e30577cd50dcb986dad25dcdaf0f5fb6e92de0f918120"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 531,
+      "fp": 161,
+      "fn": 124,
+      "strict_micro_f1": {
+        "values": [
+          0.7884187082405345,
+          0.7884187082405345,
+          0.7884187082405345
+        ],
+        "mean": 0.7884187082405345,
+        "sd": 0.0
+      },
+      "result_sha256": "d28d76714c34be56c4a0fd07c603a525f6e862e96f7fcb553949d1359d3951e9",
+      "probabilities_sha256": "6adc3f702435271dfdf4a7b9b73ef248544ab5b0456575d61bd648a9ec5c2dee"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 287,
+      "fp": 155,
+      "fn": 130,
+      "strict_micro_f1": {
+        "values": [
+          0.6682188591385332,
+          0.6682188591385332,
+          0.6682188591385332
+        ],
+        "mean": 0.6682188591385332,
+        "sd": 0.0
+      },
+      "result_sha256": "e35b5d09a735e8853f9b9ae7644a7693eee08b155f2d603dcf46a22ae2ee1845",
+      "probabilities_sha256": "dd1668ceb459bd3241b740fab5f03d4918e68bd5006f770ede0b647abb996a4f"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 329,
+      "fp": 151,
+      "fn": 146,
+      "strict_micro_f1": {
+        "values": [
+          0.6890052356020943,
+          0.6890052356020943,
+          0.6890052356020943
+        ],
+        "mean": 0.6890052356020943,
+        "sd": 0.0
+      },
+      "result_sha256": "16e2b24172525d1bdbd3de43e10c96fa533d81849610285713567387574c6fdb",
+      "probabilities_sha256": "71e251d16aa1ab8286d49d9c5bde1aa89a553835a3f8dba223e4b5fa145f6985"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 76282,
+      "fp": 49352,
+      "fn": 51240,
+      "strict_micro_f1": {
+        "values": [
+          0.6026481695081294,
+          0.6026481695081294,
+          0.6026481695081294
+        ],
+        "mean": 0.6026481695081294,
+        "sd": 0.0
+      },
+      "result_sha256": "aa7aff7bcc7767130140ef0b9fab7852e7b96f175dea3b202ef57430d8fe76cb",
+      "probabilities_sha256": "99bab1b6a435a82d4728fec1b0f209ffabf13a87de93356231eef3a3c1d65ffc"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 7360,
+      "fp": 5187,
+      "fn": 3897,
+      "strict_micro_f1": {
+        "values": [
+          0.6183834649638716,
+          0.6183834649638716,
+          0.6183834649638716
+        ],
+        "mean": 0.6183834649638716,
+        "sd": 0.0
+      },
+      "result_sha256": "4f1e55fff208ef40d3f8cad62e1131f2f7956c4e132865a01b7e5ff19a75d876",
+      "probabilities_sha256": "02f118c944a6f4355c611b9ec64f3885392df003a6c4a027cb6e3292c357a360"
+    }
+  },
+  "status": "PASS_RAW_8x3_INDEPENDENT_RECOMPUTE"
+}
