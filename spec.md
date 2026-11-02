@@ -14,7 +14,7 @@
 >
 > **执行硬顺序**：P0 三处 spec/tasks/checklist、25 系统注册表、官方权重与数据/指标预检 → P1 逐模型泄露矩阵与 600 单元全量复测（CPU/GPU 可并行，新增四基线和 BPfold/UFold/E2Efold 优先）→ P2 xens2 共享编码/头部工程与 VL0 锁定的模型、数据、校准候选 → P3 三次全量主板、独立复算、独占速度终测 → P4 定点 PPT、论文叙事 claim–evidence–limitation、源数据归档与 GitHub。每阶段未过验收不得把下一阶段结果写成科学结论。
 >
-> **2026-11-02 执行更新**：BPfold 六个官方 checkpoint、UFold 官方转换权重已恢复，不能再写为权重 blocked；E2Efold 仍因官方 SharePoint 不可达而保留证据。EternaFold 与 MXfold2 的自身训练语料 clean 八 split 三次已完成，eFold raw 八 split 三次已完成；BPfold 与 RNAformer-bprna clean 正在复测。xens2 教师 B=8 批化因 len=117 样本配对一致率 95.12% 被拒绝，B=1 的 16 条逐值等价通过，91 个串行分片验收后续跑。以上均不改变 8/8、速度和 ECE 尚未闭环的事实。
+> **2026-11-02 执行更新**：BPfold 六个官方 checkpoint、UFold 官方转换权重已恢复；E2Efold 仍因官方 SharePoint 不可达而保留证据。EternaFold、MXfold2、BPfold 自身训练语料 clean 八 split 三次已完成，RNAstructure 与 eFold raw 全板已完成；DEBFold 官方训练/验证集的八 split clean 审计完成。xens2 教师 B=8 批化因 len=117 样本配对一致率 95.12% 被拒绝，B=1 全量 TR1c=42564、VL0=196 及哈希已验收。第一次三种子并行与后续单种子均受其他任务峰值叠加影响而 OOM，失败目录保留；现已暂停可恢复基线，seed0 在独占窗口训练。8/8、速度和 ECE 尚未闭环。
 >
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 

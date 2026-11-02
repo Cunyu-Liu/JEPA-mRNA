@@ -630,6 +630,13 @@
    "bytes": 7612,
    "description": "RNAstructure Fold/MaxExpect 八 split 三次复算；固定取第一 MEA 结构，非序列训练系统",
    "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_efold_raw_summary.json",
+   "sha256": "4168671fd7575cb6654f488974ab9cbee11189addff6e0d1106efeb9c5e46106",
+   "bytes": 2807,
+   "description": "eFold 八 split 原始集三次复算；单线程修复后结果，clean provenance 未闭环",
+   "status": "active"
   }
  ]
 }

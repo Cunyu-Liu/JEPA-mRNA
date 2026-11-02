@@ -94,6 +94,7 @@
 | `appendix_leakage/round39_clean_audits/INDEX.json` | TR0/tr1c 各八 split clean n、删除数、数量守恒与审计哈希索引 | active | `699c259064ac` |
 | `appendix_leakage/round39_bpfold_clean_train_union_summary.json` | BPfold 官方六 checkpoint 在自身训练并集 clean 子集上的八 split 三次复算 | active | `4c071f0bc34f` |
 | `appendix_leakage/round39_rnastructure_raw_summary.json` | RNAstructure Fold/MaxExpect 八 split 三次复算；固定取第一 MEA 结构 | active | `50d181fec340` |
+| `appendix_leakage/round39_efold_raw_summary.json` | eFold 八 split 原始集三次复算；单线程修复后结果，clean provenance 未闭环 | active | `4168671fd757` |
 
 ## 后续边界
 

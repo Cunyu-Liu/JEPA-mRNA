@@ -11533,3 +11533,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **蒸馏 dry-run 合同**：教师与嵌入覆盖完整；B=4、lr=1e-4、四项权重均 1、nll=sum、VL0 validation_every=500、patience=5、min_delta=1e-6、1,000,000 steps 仅作安全上限。从 r2d 仅载模型权重，optimizer/scheduler/step=0。
 - **并行训练失败与调整**：第一次三种子并行时，seed1/2 被系统终止，seed0 在首个长序列 batch 上 CUDA OOM；均无 best checkpoint、无收敛结果。失败目录已移至 `failed_runs/parallel_oom_20261102`。改为 `SEEDS=0` 单种子串行，保持 B=4 与早停合同不变；后续种子必须逐个完成并独立 GPU QA。
 - **基线资源失败**：RNAformer bprna/intra/inter 在其他 GPU 作业峰值叠加时发生 OOM，未写出 PASS；已释放后按最多两个 RNAformer 加其他小任务恢复。Kirigami 的 ArchiveII 失败是 WUSS 伪结字符 `A/a、B/b` 解析遗漏，TS0/new 已 PASS；扩展解析器后续跑。所有 OOM 与解析失败均不记为模型零分。
+
+
+## §15.270（2026-11-02）蒸馏真实显存定位、B=2 与首次 VL0 验证
+
+- **独占 B=4 仍 OOM**：seed0 在前 25 step 后遇到长序列，type head 全矩阵投影额外申请 8.39 GiB；修复为列分块后，该处申请降到 2.29 GiB，但 ResNet 全矩阵激活已占 21.55 GiB，仍无法训练。类型头分块保持 ResNet/BatchNorm 全矩阵语义，不做会改变 BN 运行统计的盲目 checkpoint；15 项相关测试通过。
+- **资源驱动配置调整**：batch 从 4 改为 2，其他科学配置不变（lr=1e-4、四项权重=1、nll=sum、同一教师、同一 VL0、patience=5、min_delta=1e-6、1,000,000 仅为安全上限）。seed0 已越过此前所有 OOM 点，step500 首次 VL0 `validation_loss=17.417371105454432`、`best_step=500`、`bad_evaluations=0`，best checkpoint 正常写入。此时尚未收敛，不进入最终主板。
+- **阶段性提交**：`a98d863` 包含类型头显存修复、测试、单种子启动与学生 raw-sequence 权重入口。后续 seed1/2 仍须各自完成 plateau 和独立 GPU QA。
+- **轻量基线边界**：SPOT-RNA 在 ArchiveII 长序列 BiLSTM 处另需 4.06 GiB，与训练 16.32 GiB 及 Kirigami 叠加后 OOM，未形成结果；SPOT-RNA、RNAformer 和 RiNALMo-ft 等待训练结束，Kirigami 轻量任务可继续。不得为并行数量再次制造可预见的 OOM。
