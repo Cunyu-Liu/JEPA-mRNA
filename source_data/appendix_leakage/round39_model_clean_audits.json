@@ -603,6 +603,26 @@
         "ref_pdb_ts_hard": {"raw_n": 28, "clean_n": 25, "removed_exact": 0, "removed_homology_only": 3, "clean_sha256": "444a360bcf80a21d7aaff84fda0fead459831aeefe23794239988fb88f13cc22", "audit_sha256": "7dab7d780ad922ae493a746d2ad04358b37777c05b26553d727f6c4d750cafb4"},
         "testsetb": {"raw_n": 428, "clean_n": 385, "removed_exact": 29, "removed_homology_only": 14, "clean_sha256": "de86c2ff75fb757311bd47661119e12ab42ea0dd6f7276821d7e030b910bf178", "audit_sha256": "c572462c6a73127b7bb727e91b05900a801413201602e65ecb59426374f67cac"}
       }
+    },
+    "rnaformer_biophysical_train": {
+      "description": "RNAformer official biophysical_model_data.plk with set=train; no overlap detected under the frozen contract",
+      "training_union": {
+        "inputs": [{"path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/RNAformer/biophysical_train.jsonl", "n": 410408, "sha256": "22b89f59b7090ed250255762e996d35e7523b99abc01f524e9bbd9b4a4f2cfca"}],
+        "n_sequences": 410408,
+        "n_unique_sequences": 410408,
+        "source_archive_sha256": "81577dc5e06dfafb6fddd5e9b5d3f9e1a6ce92ceefb07cd67fb5a38fd570fc8b",
+        "purpose": "biophysical checkpoint train-only audit; checkpoint lineage restrictions remain separate"
+      },
+      "splits": {
+        "archiveii_embok_clean": {"raw_n": 2544, "clean_n": 2544, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399", "audit_sha256": "c960916fb7f67a94bc8f8f3409fab85383662b88923909eb503d2e8ec926f585"},
+        "bprna_new": {"raw_n": 5388, "clean_n": 5388, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9", "audit_sha256": "ac302a22bcdd2601dde3ec2ba08b480aa4ac0501bd0fe7860e0d5dbae3a8f89e"},
+        "bprna_ts0": {"raw_n": 1288, "clean_n": 1288, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882", "audit_sha256": "d5ee498a8bbc607859ae695aff9ca7d0f61ba8a10454089f0330e8931f1d5b5c"},
+        "ref_pdb_ts1": {"raw_n": 63, "clean_n": 63, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a", "audit_sha256": "0a92d9d7cebca9e504195401b8980286c9e50eb5475a89aae8b48fd161f1d296"},
+        "ref_pdb_ts2": {"raw_n": 39, "clean_n": 39, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d", "audit_sha256": "ebfea67fbcb6586c0af9b79840284f6d35fe1becb8d7a22b97b9d24cdfa4364d"},
+        "ref_pdb_ts3": {"raw_n": 19, "clean_n": 19, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a", "audit_sha256": "a63f5186fb7170151c04b311a656c4e314f7a85645d10f1cb4607ab9b5038505"},
+        "ref_pdb_ts_hard": {"raw_n": 28, "clean_n": 28, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806", "audit_sha256": "f8b0b85ed2ab6874f1c44ac54f1e26054a93c10ffb8873d63fe757709608162f"},
+        "testsetb": {"raw_n": 428, "clean_n": 428, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06", "audit_sha256": "883737419f0d31a1c7eb12470f98374510624c4a912405e32f8fdb0109310485"}
+      }
     }
   }
 }

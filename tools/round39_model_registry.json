@@ -13,7 +13,7 @@
     {"id": "ufold", "class": "official_fixed_weights", "leakage_status": "BLOCKED_PROVENANCE_multicorpus_conflict", "raw_status": "PASS_8x3", "clean_status": "BLOCKED_PROVENANCE"},
     {"id": "rnaformer_bprna", "class": "official_fixed_weights", "leakage_status": "official_bprna_train_clean_ready", "raw_status": "TS0_NEW_PASS_REMAINDER_PENDING", "clean_status": "RETRY_AFTER_MEMORY_OVERSUBSCRIPTION"},
     {"id": "rnaformer_interfam", "class": "official_fixed_weights", "leakage_status": "official_inter_train_clean_ready", "raw_status": "RUNNING_OFFICIAL_CHECKPOINT", "clean_status": "QUEUED_OFFICIAL_CLEAN"},
-    {"id": "rnaformer_biophys", "class": "official_fixed_weights", "leakage_status": "pretraining_lineage_audit_pending", "raw_status": "OFFICIAL_WEIGHTS_RESTORED_EVAL_PENDING", "clean_status": "pending"},
+    {"id": "rnaformer_biophys", "class": "official_fixed_weights", "leakage_status": "biophysical_train_clean_ready_lineage_separate", "raw_status": "OFFICIAL_WEIGHTS_RESTORED_EVAL_PENDING", "clean_status": "ready"},
     {"id": "rinalmo_ft", "class": "official_fixed_weights", "leakage_status": "bprna_tr0_clean_ready", "raw_status": "TS0_PASS_REMAINDER_AWAITING_MEMORY", "clean_status": "AWAITING_MEMORY"},
     {"id": "nucleicbert_frozen_official_head", "class": "project_head_official_backbone", "leakage_status": "downstream_tr1c_clean_pretraining_audit_pending", "raw_status": "pending", "clean_status": "pending"},
     {"id": "nucleicbert_finetuned", "class": "project_finetune", "leakage_status": "downstream_tr0_clean_pretraining_audit_pending", "raw_status": "pending", "clean_status": "pending"},

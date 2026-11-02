@@ -84,7 +84,7 @@
 | `appendix_leakage/round39_contrafold_raw_summary.json` | 原生 CONTRAfold 八 split 三次复测及独立计数重算；不是逐模型 clean 结论 | active | `d7cbdd7aa666` |
 | `appendix_leakage/round39_eternafold_clean_tr1c_summary.json` | EternaFold 在 tr1c 80% identity clean 子集上的八 split 三次复测 | active | `4af21aeff828` |
 | `appendix_leakage/round39_contrafold_clean_tr1c_summary.json` | 原生 CONTRAfold 在 tr1c 80% identity clean 子集上的八 split 三次复测 | active | `195274ef57b0` |
-| `appendix_leakage/round39_model_clean_audits.json` | 八套模型专属训练并集的八 split clean 审计（含 DEBFold 官方训练/验证集） | active | `17e14e5ef660` |
+| `appendix_leakage/round39_model_clean_audits.json` | 九套模型专属训练并集的八 split clean 审计（含 DEBFold、RNAformer-biophysical） | active | `cc3455b81232` |
 | `appendix_leakage/round39_eternafold_clean_train_union_summary.json` | EternaFold 自身训练语料 clean 八 split 三次复测及独立计数重算 | active | `6f2846d15522` |
 | `appendix_leakage/round39_mxfold2_raw_summary.json` | MXfold2 八 split 原始集三次复测；ArchiveII 为完整 2544 条 | active | `9d690e989f18` |
 | `appendix_leakage/round39_mxfold2_clean_trainsetab_summary.json` | MXfold2 在 TrainSetA+B clean 子集上的八 split 三次复测及独立计数重算 | active | `0b3003292573` |
@@ -102,4 +102,4 @@
 - `fig07_nucleicbert/`：official_s3 已在 epoch13 完整 checkpoint 安全暂停，best validation BCE=0.011949524802079076，尚未收敛；全部种子与独立 QA 总门未关闭。
 - `fig08b_regression/`：Muscle 十折完成；HEK/pc3 未满十折不进图，本轮不新增任务。
 - `fig09_ood/`：GenA 已领先，GenC/GenF 是短板；20.8%/39.2% 是零正确配对率而非零输出率。无新提升证据，不重复旧训练。
-- `appendix_leakage/`：八套模型专属 clean 审计已完成（新增 DEBFold）；EternaFold、MXfold2、BPfold 的自身 clean 八 split 三次复测均已闭环，UFold/eFold/CONTRAfold provenance 未闭环。
+- `appendix_leakage/`：九套模型专属 clean 审计已完成（含 DEBFold、RNAformer-biophysical）；EternaFold、MXfold2、BPfold 的自身 clean 八 split 三次复测均已闭环，UFold/eFold/CONTRAfold provenance 未闭环。
