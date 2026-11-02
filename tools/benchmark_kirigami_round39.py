@@ -76,7 +76,8 @@ def main():
         print(f"EMPTY_AFTER_DELEAK model=kirigami out={args.out}")
         return
     sys.path.insert(0, str(args.repo))
-    from kirigami.utils import _embed_fasta, mat2db, outer_concat
+    from kirigami.utils import _embed_fasta, outer_concat
+    from kirigami_fast_decode_round39 import mat2db
     model = torch.hub.load(str(args.repo), "kirigami", source="local", pretrained=True,
                            checkpoint_path=str(args.weights)).cuda().eval()
     assert next(model.parameters()).is_cuda
@@ -89,13 +90,17 @@ def main():
         predictions = []
         probabilities = []
         probability_hasher = hashlib.sha256()
-        for row in rows:
+        for row_index, row in enumerate(rows):
             seq = row["seq"].upper().replace("T", "U")
+            if args.smoke:
+                print(f"KIRIGAMI_SEQUENCE_START repeat={repeat} index={row_index} name={row['name']} length={len(seq)}", flush=True)
             feat = outer_concat(_embed_fasta(seq)).cuda()
             with torch.no_grad():
                 raw = model.model(feat)
                 processed = model.post_proc(raw, feat)
                 processed[processed < model.threshold.item()] = 0
+            if args.smoke:
+                print(f"KIRIGAMI_FORWARD_POSTPROC_DONE repeat={repeat} index={row_index}", flush=True)
             probability = raw.squeeze().float().cpu().numpy()
             assert probability.shape == (len(seq), len(seq))
             assert np.isfinite(probability).all() and probability.min() >= 0 and probability.max() <= 1
@@ -105,6 +110,8 @@ def main():
             dot = mat2db(processed)
             assert len(dot) == len(seq)
             predictions.append({"name": row["name"], "pairs": parse_dot_pairs(dot)})
+            if args.smoke or (row_index + 1) % 50 == 0 or row_index + 1 == len(rows):
+                print(f"KIRIGAMI_PROGRESS repeat={repeat} predicted={row_index + 1}/{len(rows)}", flush=True)
         elapsed = time.perf_counter() - tic
         metrics, per_sequence = score(predictions, rows)
         identity = [[p["name"], p["pairs"]] for p in predictions]
@@ -128,7 +135,8 @@ def main():
                "clean_audit": str(args.clean_audit) if args.clean_audit else None,
                "repository_commit": subprocess.check_output(["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True).strip(),
                "weights": str(args.weights), "weights_sha256": sha256(args.weights),
-               "device": "cuda", "threshold": float(model.threshold.item()), "n_sequences": len(rows),
+               "device": "cuda", "decoder": "C_nussinov_with_pseudoknot_levels_round39",
+               "threshold": float(model.threshold.item()), "n_sequences": len(rows),
                "environment": {"torch": importlib.metadata.version("torch"),
                                "pytorch-lightning": importlib.metadata.version("pytorch-lightning"),
                                "python": sys.executable},

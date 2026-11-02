@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "PASS_EXACT_PREDICTION_EQUIVALENCE",
+  "system": "kirigami",
+  "split": "bprna_ts0",
+  "n": 1288,
+  "f1": 0.7302474977773954,
+  "decoder": "C_nussinov_with_pseudoknot_levels_round39",
+  "old_elapsed_seconds": [1303.4695805814117, 1248.329804226756, 1250.1290305145085],
+  "fast_elapsed_seconds": [108.90604734607041, 105.81665483675897, 105.75873927213252],
+  "median_speedup": 11.814104617491973,
+  "old_result_sha256": "50caafe782d6e50a8bd4ab506729463fe6382160806154082af0fb4af678f445",
+  "new_result_sha256": "b207370f04c477d3cfa8c6da2a4add143054d2ffbc425cfc9e0873fd9c1507cd",
+  "equivalence_assertions": [
+    "per_sequence predictions and metrics exactly equal",
+    "prediction_sha256 identical across all three repeats",
+    "metrics identical across all three repeats",
+    "CUDA inference with upper-triangle pair normalization"
+  ]
+}
