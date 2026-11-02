@@ -12176,3 +12176,4 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `paper/round39_claim_evidence_audit.md`，按“实验现象→对照→限制”整理可写结论、不可升级主张和后续证据顺序。
 - 保留三个关键否定：单学生三种子完成不等于性能达标；VL0 融合在 6 格后已不能达到 8/8；混合 NLL 的局部涨点不是泛化改善。
 - 置信度部分明确区分 ECE 与结构质量排序，BPfold utility 不直接作为概率；速度部分继续使用独占 raw-sequence 合同，禁止并发或 cached embedding 结果进入主结论。该审计不修改已验收 PPT，待完整新证据后只做必要联动。
+- **版本纠正**：远端原有同名审计含 14 组完整叙事，初次简版同步覆盖后已按 `a8b2bfe^` 全部恢复，仅新增 own-clean/inter-family raw 两行并更新 NLL 与置信度两行。逐行核对除两处有意更新外旧内容全部保留，最终追加提交 `2d5d496eadc3b5b74adcf4ad09e9161fff844390`，未改写历史。
