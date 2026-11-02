@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "system": "rinalmo_ft",
+  "protocol": "raw-sequence B=1 full-length; three independent inference repeats",
+  "timing_boundary": "concurrent timings are diagnostic; not exclusive speed results",
+  "raw": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 25682,
+      "fp": 10629,
+      "fn": 9209,
+      "strict_micro_f1": {
+        "values": [
+          0.7213842307800342,
+          0.7213842307800342,
+          0.7213842307800342
+        ],
+        "mean": 0.7213842307800342,
+        "sd": 0.0
+      },
+      "result_sha256": "e2b1482e156724ddb7f5de1a1db2c4198c394756bb165231cf3bd43d9c7e24b7",
+      "code_sha256": "ffa3cf372f54bd6472c75e7e105a345175eaf09c0cff311330b35114096fac56"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 51448,
+      "fp": 42537,
+      "fn": 83736,
+      "strict_micro_f1": {
+        "values": [
+          0.4489961556755058,
+          0.4489961556755058,
+          0.4489961556755058
+        ],
+        "mean": 0.4489961556755058,
+        "sd": 0.0
+      },
+      "result_sha256": "6bf0080d656a3859e36492c7497e64f50fbcc5d7abf091e3546c8ce3c0e6baee",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 99905,
+      "fp": 35031,
+      "fn": 27617,
+      "strict_micro_f1": {
+        "values": [
+          0.761302760822684,
+          0.761302760822684,
+          0.761302760822684
+        ],
+        "mean": 0.761302760822684,
+        "sd": 0.0
+      },
+      "result_sha256": "73d9580142688e0c09bdf1f12e4b890a3d785e77acae9151ea409af4b1e2c6fe",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 862,
+      "fp": 209,
+      "fn": 483,
+      "strict_micro_f1": {
+        "values": [
+          0.7135761589403974,
+          0.7135761589403974,
+          0.7135761589403974
+        ],
+        "mean": 0.7135761589403974,
+        "sd": 0.0
+      },
+      "result_sha256": "8d462bb0fff4e0ab6af886aabd9850eac2f44e62c79ea56a2fe09659f9a1b0ee",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 375,
+      "fp": 87,
+      "fn": 280,
+      "strict_micro_f1": {
+        "values": [
+          0.6714413607878246,
+          0.6714413607878246,
+          0.6714413607878246
+        ],
+        "mean": 0.6714413607878246,
+        "sd": 0.0
+      },
+      "result_sha256": "50059113f789d8d105556e2eafe2ef9e129e1d5c556400cacc26c9ece5631eae",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 220,
+      "fp": 92,
+      "fn": 197,
+      "strict_micro_f1": {
+        "values": [
+          0.6035665294924554,
+          0.6035665294924554,
+          0.6035665294924554
+        ],
+        "mean": 0.6035665294924554,
+        "sd": 0.0
+      },
+      "result_sha256": "da1f39dadaea67c40613610baee883fe6f30e77f101cea4664d32191422cd742",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 231,
+      "fp": 124,
+      "fn": 244,
+      "strict_micro_f1": {
+        "values": [
+          0.5566265060240964,
+          0.5566265060240964,
+          0.5566265060240964
+        ],
+        "mean": 0.5566265060240964,
+        "sd": 0.0
+      },
+      "result_sha256": "36512164e12d3dec26c5e9c80da652a07a425df12820c1b613d9e9ef37738c0f",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 9446,
+      "fp": 973,
+      "fn": 1811,
+      "strict_micro_f1": {
+        "values": [
+          0.8715630190071969,
+          0.8715630190071969,
+          0.8715630190071969
+        ],
+        "mean": 0.8715630190071969,
+        "sd": 0.0
+      },
+      "result_sha256": "6e6da0da496919bd590182fe89d4a45ae5a1fea6ba30330c31ec3f44a4b11820",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52"
+    }
+  },
+  "status": "PASS_RAW_8x3_INDEPENDENT_RECOMPUTE"
+}

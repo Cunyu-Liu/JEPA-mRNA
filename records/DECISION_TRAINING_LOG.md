@@ -11821,3 +11821,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 再次请求 Hugging Face 与 hf-mirror 的 `multimolecule/e2efold` API，分别连接超时/无内容，未获得权重；当前 MultiMolecule 0.2.2 环境仅有 UFold 类，没有 E2Efold 模型类，不能套用其他架构加载。
 - 保持 `BLOCKED_SHAREPOINT_ACCESS_DENIED`，不伪造转换权重、不用 UFold 或其他模型替代 E2Efold。该外部资产未闭环不计入已测单元，也不据此宣称全基线 SOTA。
+
+
+## §15.307（2026-11-02）RiNALMo-ft raw 八格独立闭环
+
+- **raw 8/8 完成**：TS0/new/ArchiveII/TS1/TS2/TS3/hard/TSB 的 F1 分别为 **0.7213842308/0.4489961557/0.7613027608/0.7135761589/0.6714413608/0.6035665295/0.5566265060/0.8715630190**，三次 SD 全为 0。ArchiveII TP/FP/FN=99905/35031/27617，TestSetB F1=0.8715630190；所有格均从 predictions 独立复算计数、权重、数据和三次哈希。
+- **汇总与边界**：raw 汇总 SHA256=`04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07`，bytes=4178。raw 是 full-length B=1、CUDA、raw-sequence 协议；并发耗时不作正式速度结论。TR0-clean 已接续，raw 完成不等于 16 格闭环。

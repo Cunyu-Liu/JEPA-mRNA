@@ -117,6 +117,7 @@
 | `appendix_leakage/round39_mixed_nll_data_audit.json` | 混合 NLL 数据标签清理和 VL0/八 split 去泄露审计 | active data gate | `ee6ddbb038d3` |
 | `appendix_leakage/round39_mixed_nll_independent_verification.json` | 1657 条新增序列独立标签与九组零泄露复扫 | active independent verification | `a3c6acbe139d` |
 | `appendix_leakage/round39_spotrna_raw_summary.json` | SPOT-RNA 转换权重 raw 八 split 三次独立聚合；clean 待完成 | active raw complete | `dd752681b49b` |
+| `appendix_leakage/round39_rinalmo_ft_raw_summary.json` | RiNALMo-ft raw 八 split 三次 full-length 独立聚合；TR0-clean 待完成 | active raw complete | `04ac23a5369e` |
 
 ## 后续边界
 

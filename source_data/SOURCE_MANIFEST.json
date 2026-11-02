@@ -791,6 +791,13 @@
    "bytes": 4261,
    "description": "SPOT-RNA 转换权重 raw 八 split 三次推理的独立计数与概率验收；clean 尚未闭环",
    "status": "active_raw_complete_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_raw_summary.json",
+   "sha256": "04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07",
+   "bytes": 4178,
+   "description": "RiNALMo-ft raw 八 split 三次 full-length 推理的独立计数与协议验收；TR0-clean 尚未闭环",
+   "status": "active_raw_complete_clean_pending"
   }
  ]
 }
