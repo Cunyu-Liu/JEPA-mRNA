@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "independent_gpu_qa_vl0_not_benchmark",
+  "run_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_mixed_nll/runs/nll_s0",
+  "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_mixed_nll/runs/nll_s0/best.pt",
+  "checkpoint_sha256": "dc55a4b45ff05858f6c9f1eb2b96c309155226d035b5bdc392e81ce19d9499ab",
+  "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+  "data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+  "teacher_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/teacher_vl0",
+  "teacher_manifest_sha256": "9c2353b19699367f0f3de8014946ba544b819b2048517cd9b2f4463431a7dde6",
+  "n_sequences": 196,
+  "prediction_sha256": "5d58eeac94346bdbccafee3765dac5c413e65897a86c15ae4e7222be7d8ea894",
+  "gt_counts": {
+    "gt_tp": 4174,
+    "gt_fp": 3122,
+    "gt_fn": 444
+  },
+  "student_gt_f1_mean": 0.7006882659056572,
+  "student_gt_f1_sd": 0.0,
+  "teacher_pair_f1_mean": 0.8453230079478297,
+  "teacher_pair_f1_sd": 0.0,
+  "student_ece_mean": 0.035508367284564676,
+  "student_ece_sd": 0.0,
+  "student_brier_mean": 0.019242734440236595,
+  "student_nll_mean": 0.06876821198616401,
+  "teacher_ece": 0.03861115037051478,
+  "repeats": [
+    {
+      "repeat": 0,
+      "student_gt_f1": 0.7006882659056572,
+      "teacher_pair_f1": 0.8453230079478297,
+      "student_ece": 0.035508367284564676,
+      "result_sha256": "81aa8ddb91e5d30974dac1c11d53d2375ee57872b36a6b690d135eb98017c4da"
+    },
+    {
+      "repeat": 1,
+      "student_gt_f1": 0.7006882659056572,
+      "teacher_pair_f1": 0.8453230079478297,
+      "student_ece": 0.035508367284564676,
+      "result_sha256": "81aa8ddb91e5d30974dac1c11d53d2375ee57872b36a6b690d135eb98017c4da"
+    },
+    {
+      "repeat": 2,
+      "student_gt_f1": 0.7006882659056572,
+      "teacher_pair_f1": 0.8453230079478297,
+      "student_ece": 0.035508367284564676,
+      "result_sha256": "81aa8ddb91e5d30974dac1c11d53d2375ee57872b36a6b690d135eb98017c4da"
+    }
+  ]
+}

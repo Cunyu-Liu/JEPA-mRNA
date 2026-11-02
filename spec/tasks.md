@@ -18,11 +18,11 @@
 >
 > **2026-11-02 阶段状态**：NucleicBERT-ft raw+TR1c-clean 16 格和 Kirigami raw+TR0-clean 16 格均完成三次推理与独立复算。Kirigami TS0/new 精确等价；ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 均一致，当前算法诊断完成，但历史 F1=0.7871232718 仍未由当前 0.7689918891 复现，限制保留。VL0 融合 6 格后 8/8 已不可达，剩余推理已停止，不生成新教师；RiNALMo-ft 接续。SPOT-RNA 全量溯源复测与 frozen NucleicBERT 16 段续传进行中，未完成不纳入结果。`21d50a8` 已确认推送 GitHub。
 >
-> **2026-11-02 数据候选门**：TR1c+RNAStrAlign 合法去泄露混合集已验收（44,221 条，新增 1,657 条），九组独立复扫无 exact/MMseqs 命中。纯 NLL CUDA smoke 通过；seed0 已从已收敛 plana best checkpoint 排队，18 GiB 预检后训练到 VL0 plateau。当前仅数据门和 smoke 完成，不得写成收敛、三种子或 8/8。
+> **2026-11-02 数据候选门**：TR1c+RNAStrAlign 合法去泄露混合集已验收（44,221 条，新增 1,657 条），九组独立复扫无 exact/MMseqs 命中。纯 NLL CUDA smoke 通过；seed0 已在 step3000 early-stopping 收敛，best=500，三次独立 VL0 GPU QA 通过；clean、三种子、速度和最终置信度未验收，不能写成 8/8。
 >
 > **2026-11-02 SPOT-RNA 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0`；旧 6/8 进度已归档。转换权重身份和并发测速边界保留；全模型 600 单元仍未完成。
 >
-> **2026-11-02 RiNALMo-ft 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`；NLL seed0 已实际启动，尚未收敛，不能写成三种子或 8/8。
+> **2026-11-02 RiNALMo-ft 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`；NLL seed0 已收敛并通过三次 VL0 GPU QA，clean 未闭环，不能写成三种子或 8/8。
 >
 > **2026-11-02 校准对照**：SPOT-RNA VL0 ECE=0.0044911093，高于学生校准后约 0.00058；全部 196 条结构置信度均为 1.0，Spearman 不可定义。只能作为拟合集负证据，不能写最佳置信度。结果 SHA256=`534ddea6ea41b722442e97ddc7fe176c0134d1a2f3decdce7e81ab69f48eb6b8`。
 >

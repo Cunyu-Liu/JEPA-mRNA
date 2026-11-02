@@ -14,11 +14,11 @@
 >
 > **阶段证据**：NucleicBERT-ft 与 Kirigami 各 raw+clean 16 格已独立复算；Kirigami ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 一致，当前算法诊断完成。历史 F1 差异仍未解决，不能勾选历史复现或全板完成。VL0 融合 6 格后 8/8 不可达，候选已终止，RiNALMo-ft 接续；SPOT-RNA 与 frozen NucleicBERT 资产未闭环；`21d50a8` 已确认推送。
 >
-> **数据候选证据**：混合 NLL 数据 44,221 条（新增 1,657 条）及九组独立去泄露复扫已通过；纯 NLL CUDA smoke 通过。seed0 仍排队，VL0 收敛、三种子、主板和速度均未验收。
+> **数据候选证据**：混合 NLL 数据 44,221 条（新增 1,657 条）及九组独立去泄露复扫已通过；纯 NLL CUDA smoke 通过。seed0 已收敛并通过三次 VL0 GPU QA；clean、三种子、速度和最终置信度仍未验收。
 >
 > **SPOT-RNA 证据**：raw+clean 16 格三次复测与独立聚合通过，最终汇总 SHA256=`dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0`。TS3 去泄露后为空；其他基线未齐，不能勾选 T-A170/T-A171 总门。
 >
-> **RiNALMo-ft 证据**：raw+clean 16 格三次复测与独立聚合通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`。NLL 仅启动，未收敛，不能写成三种子或 8/8。
+> **RiNALMo-ft 证据**：raw+clean 16 格三次复测与独立聚合通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`。NLL 已收敛并通过三次 VL0 GPU QA，clean 未闭环，不能写成三种子或 8/8。
 >
 > **校准证据**：SPOT-RNA VL0 ECE=0.0044911093，高于学生校准后约 0.00058；全部置信度为 1.0，Spearman 不可定义，不能勾选最低 ECE 或最佳置信度。
 >

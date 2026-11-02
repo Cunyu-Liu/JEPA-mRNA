@@ -11896,3 +11896,30 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **VL0 曲线**：step2000 validation_loss=19.3955302339，较 step1500 的 20.5438826092 回落，但仍高于 best@500=18.3701138872，bad_evaluations=3，run_meta 仍 running。继续原合同，不因单次回落提前停止或宣称改善。
 - **frozen NucleicBERT**：16 个 Range 分段均在续传，已下载分段合计 1,594,139,610 bytes，加原前缀 538,312,248 bytes，合计 2,132,451,858/4,970,204,510 bytes（约 42.9%）；没有完整分段、receipt 或 final checkpoint。保持只下载不加载，最终仍需官方 MD5+SHA256 全量验收。
+
+
+## §15.318（2026-11-03）NLL seed0 early-stopping 收敛与 checkpoint 验收
+
+- **最终曲线**：step500/1000/1500/2000/2500/3000 的 VL0 loss=18.3701138872/19.8212100565/20.5438826092/19.3955302339/21.4805717374/21.7525678230；bad=5 触发 early-stopping，best 恢复 step500。run_meta=`completed + converged + early_stopped`，steps_completed=3000，stop_reason=early_stopping，未使用步数上限截断。
+- **checkpoint 身份**：best.pt bytes=2,606,955,456、SHA256=`dc55a4b45ff05858f6c9f1eb2b96c309155226d035b5bdc392e81ce19d9499ab`；resume.pt bytes=2,928,577,846、SHA256=`2e81b8c3d833242aa258c62d4920ee07ab1b5326bb389ceff69d4747d72c7d5f`。run_contract 的数据、初始化、trainer 和 launcher 哈希均通过，resolved_device=CUDA。
+- **边界**：收敛只表示 VL0 早停合同完成，不表示精度提升或 8/8。三次独立 GPU QA 与 TR1c-clean 仍按锁执行，未接受前不启动 seed1/2。
+
+
+## §15.319（2026-11-03）NLL QA 资源优先与 RNAformer 非确定性失败
+
+- **资源纠偏**：RNAformer-bprna 在 NLL 完成后先获得 fusion 锁，导致 QA 等待。先让 TestSetB 正常完成，再停止未写出结果的 ArchiveII 子进程与 runner；随后 inter/intra/biophysical 及其聚合器也暂停，NLL QA 日志已实际创建。bprna 已完成格保留，后续按同一断点恢复，不重跑。
+- **inter-family 失败**：TS1 三次 F1=0.841463/0.820199/0.820199，触发 `predictions are not invariant across repeated runs`，未写出有效 JSON。该格不能标 PASS 或纳入均值，后续单独排查模型确定性。
+- **边界**：bprna/inter/intra/biophysical 当前只是暂停，未完成全板；NLL QA 已优先开始，其他 GPU 任务暂不恢复。
+
+
+## §15.320（2026-11-03）NLL 独立 GPU QA 通过与 clean 启动
+
+- **QA 完成**：三次独立 VL0 CUDA 推理的预测 SHA256 均为 `5d58eeac94346bdbccafee3765dac5c413e65897a86c15ae4e7222be7d8ea894`，student GT-F1=**0.7006882659056572**、ECE=0.035508367284564676、Brier=0.019242734440236595、NLL=0.06876821198616401，SD 全为 0；best checkpoint SHA256=`dc55a4b45ff05858f6c9f1eb2b96c309155226d035b5bdc392e81ce19d9499ab` 一致。QA 汇总 SHA256=`452bd7591cdf0f79d822308e9fab73229a9c0b6bf00cf9e4c329d603168c4a26`。
+- **对照边界**：VL0 结果不能外推为 clean 主板提升或最佳校准；Brier/NLL 并非全面优于旧学生。clean TS0 已启动，首轮 F1=0.756005，仍需三次和全部八格验收。
+- **资源状态**：NLL QA 已优先完成，clean 继续；RNAformer 队列尚未恢复，不把暂停写成完成。
+
+
+## §15.321（2026-11-03）NLL clean TS0 三次复算与无提升对照
+
+- **clean TS0**：n=713，三次 F1 均为 **0.7560047250295314**，TP/FP/FN=14400/3918/5377，SD=0；预测 SHA256=`82e3327d15c732482e73cd1aee8b18837bd8008409d3c68bf2987c5ff857b030`，结果 SHA256=`090295bb60b4f5072a5c5c3d18dc1851bf2a8ce7c59e951ea66c9294727bef85`。clean audit、best checkpoint 和逐序列计数独立复算通过。
+- **对照**：原 plana seed0 clean TS0=0.7571563385，新模型 ΔF1=**−0.0011516134**，没有提升，不写涨点。源记录 SHA256=`a9dd3f34e4046563a7b1fe6baf5eb6f3d14cd632f1b7ddfdedc5b50c74f0c425`。其余七格继续，不能写成主板结论。

@@ -121,7 +121,9 @@
 | `appendix_leakage/round39_spotrna_raw_clean_summary.json` | SPOT-RNA raw+clean 16 格独立聚合；TS3 为空，旧 6/8 已归档 | active complete | `dfb80f51e014` |
 | `appendix_leakage/round39_spotrna_vl0_calibration.json` | SPOT-RNA 与三个学生 VL0 同掩码校准对照；置信度全部饱和，不作泛化结论 | active VL0 diagnostic | `534ddea6ea41` |
 | `appendix_leakage/round39_ufold_provenance_audit.json` | UFold 默认训练列表覆盖测试 split；clean 继续 blocked | active blocked provenance | `45a055939aa7` |
-| `appendix_leakage/round39_rinalmo_ft_raw_clean_summary.json` | RiNALMo-ft raw+TR0-clean 16 格独立聚合；NLL seed0 启动未收敛 | active complete | `51858ed34ab8` |
+| `appendix_leakage/round39_rinalmo_ft_raw_clean_summary.json` | RiNALMo-ft raw+TR0-clean 16 格独立聚合；NLL seed0 已收敛 | active complete | `51858ed34ab8` |
+| `appendix_leakage/round39_mixed_nll_seed0_qa.json` | NLL seed0 三次独立 VL0 GPU QA；clean 与三种子未闭环 | active QA pass | `452bd7591cdf` |
+| `appendix_leakage/round39_mixed_nll_clean_ts0.json` | NLL clean TS0 独立复算；相对原 plana seed0 下降 0.0011516，其他七格未完成 | active partial 1/8 | `a9dd3f34e404` |
 
 ## 后续边界
 

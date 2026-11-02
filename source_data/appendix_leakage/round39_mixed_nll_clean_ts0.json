@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "status": "PASS_CLEAN_TS0_ONLY",
+  "system": "mixed_nll_plana_seed0",
+  "clean_n": 713,
+  "tp": 14400,
+  "fp": 3918,
+  "fn": 5377,
+  "strict_micro_f1": 0.7560047250295314,
+  "strict_macro_f1": 0.7413799360589993,
+  "repeats_sd": 0.0,
+  "predictions_sha256": "82e3327d15c732482e73cd1aee8b18837bd8008409d3c68bf2987c5ff857b030",
+  "result_sha256": "090295bb60b4f5072a5c5c3d18dc1851bf2a8ce7c59e951ea66c9294727bef85",
+  "checkpoint_sha256": "dc55a4b45ff05858f6c9f1eb2b96c309155226d035b5bdc392e81ce19d9499ab",
+  "original_plana_seed0_clean_ts0_f1": 0.7571563384712173,
+  "delta_f1": -0.0011516134416859,
+  "interpretation": "No improvement over the original plana seed0 on clean TS0. This is one completed split, not a full-board or SOTA result."
+}

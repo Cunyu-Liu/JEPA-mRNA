@@ -826,6 +826,20 @@
    "bytes": 8095,
    "description": "RiNALMo-ft raw+TR0-clean 16 格 full-length 三次推理与独立复算；NLL seed0 已启动但未收敛",
    "status": "active_complete_raw_clean_8x3"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_seed0_qa.json",
+   "sha256": "452bd7591cdf0f79d822308e9fab73229a9c0b6bf00cf9e4c329d603168c4a26",
+   "bytes": 2099,
+   "description": "NLL seed0 三次独立 VL0 GPU QA；F1=0.7006882659，clean 与三种子未闭环",
+   "status": "active_qa_pass_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_clean_ts0.json",
+   "sha256": "a9dd3f34e4046563a7b1fe6baf5eb6f3d14cd632f1b7ddfdedc5b50c74f0c425",
+   "bytes": 770,
+   "description": "NLL clean TS0 三次独立复算；相对原 plana seed0 下降 0.0011516134，其他七格未完成",
+   "status": "active_partial_1_of_8"
   }
  ]
 }
