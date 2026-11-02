@@ -23,18 +23,18 @@ def validate(path):
     assert result["checkpoint"]["strict_load"] is True
     assert result["checkpoint"]["checkpoint_epoch"] == 99
     assert result["checkpoint"]["checkpoint_global_step"] == 258000
-    assert result["batch_size"] == 2 and result["input_max_length_with_special_tokens"] == 1024
-    assert result["sequence_core_max_length"] == 1022 and result["device"] == "cuda"
-    assert result["training_corpus"] == "official_downstream_training_corpus_not_recovered"
+    assert result["batch_size"] == 2 and result["input_max_length_with_special_tokens"] == 600
+    assert result["sequence_core_max_length"] == 598 and result["device"] == "cuda"
+    assert result["training_corpus"] == "rnastralign_tr0"
     rows = [json.loads(line) for line in Path(result["data"]).open() if line.strip()]
     assert len(rows) == result["n_sequences"] == EXPECTED_SPLIT_COUNTS[path.stem]
     assert result["data_sha256"] == EXPECTED_SPLIT_SHA256[path.stem] and result["clean_audit"] is None
-    assert result["n_truncated_sequences"] == sum(len(row["seq"]) > 1022 for row in rows)
+    assert result["n_truncated_sequences"] == sum(len(row["seq"]) > 598 for row in rows)
     tp = fp = fn = 0
     macro = []
     for row, prediction in zip(rows, result["predictions"]):
         assert prediction["name"] == row["name"]
-        length = min(len(row["seq"]), 1022)
+        length = min(len(row["seq"]), 598)
         gt = {(i, j) for i, j in row.get("gt_pairs") or row.get("pairs") or [] if 0 <= i < j < length}
         pred = {tuple(pair) for pair in prediction["pairs"]}
         assert len(pred) == len(prediction["pairs"])
@@ -67,8 +67,8 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     output = {"schema_version": 1, "system": "nucleicbert_frozen_official",
-              "evaluation_scope": "official B=2 first-1022-nt protocol; all source sequences retained",
-              "clean_status": "BLOCKED_PROVENANCE_official_downstream_training_corpus_not_recovered",
+              "evaluation_scope": "official B=2 first-598-nt protocol; all source sequences retained",
+              "clean_status": "PENDING_CLEAN_SPLIT_BUILD_official_rnastralign_tr0",
               "raw": {}}
     for split in SPLITS:
         path = args.root / "raw" / f"{split}.json"

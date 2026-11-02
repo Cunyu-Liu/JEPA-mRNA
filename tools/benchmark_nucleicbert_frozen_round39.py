@@ -81,7 +81,7 @@ def main():
     assert weights_sha == EXPECTED_CHECKPOINT_SHA256
     model, checkpoint_metadata = load_official_model(args.weights, torch.device("cuda:0"))
     get_tokenizer()
-    dataset = SecStrDataset(args.data, get_tokenizer(), 1024)
+    dataset = SecStrDataset(args.data, get_tokenizer(), 600)
     assert len(dataset) == len(rows)
     repeats = []
     reference = probability_reference = None
@@ -150,12 +150,12 @@ def main():
                "data": str(args.data), "data_sha256": sha256(args.data),
                "clean_audit": str(args.clean_audit) if args.clean_audit else None,
                "n_sequences": len(rows), "device": "cuda", "threshold": 0.5,
-               "training_corpus": "official_downstream_training_corpus_not_recovered",
-               "input_max_length_with_special_tokens": 1024,
-               "sequence_core_max_length": 1022,
-               "batch_size": 2, "batch_protocol": "official run_config B=2 and model_config max_length=1024",
-               "n_truncated_sequences": sum(len(row["seq"]) > 1022 for row in rows),
-               "evaluation_scope": "all source sequences; official B=2 first-1022-nt protocol; no length filtering",
+               "training_corpus": "rnastralign_tr0",
+               "input_max_length_with_special_tokens": 600,
+               "sequence_core_max_length": 598,
+               "batch_size": 2, "batch_protocol": "official run_config B=2 and train_data_config max_length=600",
+               "n_truncated_sequences": sum(len(row["seq"]) > 598 for row in rows),
+               "evaluation_scope": "all source sequences; official B=2 first-598-nt protocol; no length filtering",
                "concurrent_timing_eligible_for_speed_claim": False,
                "pair_probabilities": str(arrays_path), "pair_probabilities_sha256": sha256(arrays_path),
                "pair_probability_protocol": "float32 strict-upper valid-pair entries, sequence offsets in file order",
