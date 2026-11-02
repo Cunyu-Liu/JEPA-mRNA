@@ -65,8 +65,9 @@ import json
 p = "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/distill_dry_run.json"
 d = json.load(open(p))
 assert d["dry_run"] and d["steps"] == 1000000 and d["batch_size"] == 4 and d["device"] == "cuda"
-assert d["data"]["n_sequences"] == 42564
+assert d["data"]["n_examples"] == 42564
 v = d["validation"]
+assert v["data"]["n_examples"] == 196
 assert v["early_stopping"] and v["steps_are_safety_cap"]
 assert v["every"] == 500 and v["patience"] == 5 and v["min_delta"] == 1e-6
 assert d["objective"] == {"nll": 1.0, "distill": 1.0, "rlcd": 1.0, "cal": 1.0}

@@ -73,3 +73,28 @@ def test_main_reuses_one_teacher_store(tmp_path, monkeypatch, capsys):
     assert code == 0
     assert len(calls) == 1
     assert json.loads(capsys.readouterr().out)["dry_run"] is True
+
+
+def test_teacher_resume_merges_provenance_without_rewriting_shards(tmp_path):
+    from rnajepa.distill import generate_teacher_labels, sha256_file
+
+    class Teacher:
+        name = "test"
+        version_lock = "v1"
+
+        @staticmethod
+        def predict_probs(seq):
+            return np.zeros((len(seq), len(seq)))
+
+    out = tmp_path / "teacher"
+    first = generate_teacher_labels(["ACGU"], Teacher(), out, shard_size=1,
+                                    extra_meta={"teacher_batch_size": 8})
+    shard = out / first["shards"][0]["file"]
+    digest = sha256_file(shard)
+    second = generate_teacher_labels(["ACGU"], Teacher(), out, shard_size=1, resume=True,
+                                     extra_meta={"teacher_batch_size": 1, "allow_tf32": False})
+    assert second["meta"] == {"teacher_batch_size": 1, "allow_tf32": False}
+    assert second["shards"][0]["sha256"] == digest
+    assert sha256_file(shard) == digest
+    persisted = json.loads((out / "manifest.json").read_text())
+    assert persisted["meta"] == second["meta"]

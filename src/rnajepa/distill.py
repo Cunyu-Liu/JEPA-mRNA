@@ -572,6 +572,7 @@ def generate_teacher_labels(sequences: Sequence[str], teacher, out_dir: Union[st
     }
     if resume and manifest_path.exists():
         manifest = json.loads(manifest_path.read_text())
+        manifest["meta"].update(extra_meta or {})
 
     done = {int(sh["index"]): sh for sh in manifest.get("shards", [])}
     seq_list = list(sequences)

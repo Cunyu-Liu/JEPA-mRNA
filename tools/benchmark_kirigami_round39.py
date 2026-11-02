@@ -19,8 +19,9 @@ def sha256(path):
 
 
 def parse_dot_pairs(dot):
-    stacks = {opening: [] for opening in "([{<"}
+    stacks = {opening: [] for opening in "([{<ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
     closing = {")": "(", "]": "[", "}": "{", ">": "<"}
+    closing.update({chr(code + 32): chr(code) for code in range(ord("A"), ord("Z") + 1)})
     pairs = []
     for index, char in enumerate(dot):
         if char in stacks:
