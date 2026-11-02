@@ -800,11 +800,18 @@
    "status": "active_raw_complete_clean_pending"
   },
   {
-   "path": "appendix_leakage/round39_spotrna_clean_progress.json",
-   "sha256": "ff7db2831c9354133e79805e1a75cbe5f132d3a0d56c4ba124e4d1ebd03acd98",
-   "bytes": 2840,
-   "description": "SPOT-RNA clean 6/8 独立验收进度；ArchiveII/TestSetB 尚未完成，TS3 去泄露后为空",
-   "status": "active_partial_6_of_8"
+   "path": "appendix_leakage/round39_spotrna_raw_clean_summary.json",
+   "sha256": "dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0",
+   "bytes": 7921,
+   "description": "SPOT-RNA raw+clean 16 格三次推理与独立复算；TS3 去泄露后为空，旧 6/8 进度已归档",
+   "status": "active_complete_raw_clean_8x3"
+  },
+  {
+   "path": "appendix_leakage/round39_spotrna_vl0_calibration.json",
+   "sha256": "534ddea6ea41b722442e97ddc7fe176c0134d1a2f3decdce7e81ab69f48eb6b8",
+   "bytes": 13580,
+   "description": "SPOT-RNA 与三个学生在 VL0 同 GT/候选配对的校准对照；置信度全部饱和为 1.0，不作最佳置信度结论",
+   "status": "active_vl0_matched_not_generalization"
   }
  ]
 }

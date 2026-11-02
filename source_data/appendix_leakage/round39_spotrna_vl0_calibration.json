@@ -1,0 +1,470 @@
+{
+  "schema_version": 1,
+  "status": "PASS_VL0_MATCHED_CALIBRATION_NOT_GENERALIZATION",
+  "system": "spotrna",
+  "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+  "data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+  "n_sequences": 196,
+  "n_pairs": 573355,
+  "weights_sha256": "b7056fcad23a00d5bbaa21f91b54da779e87fa5e2185fb3ccc19c5440cadf0c5",
+  "device": "cuda",
+  "repeats": 3,
+  "probability_sha256": "38f90c3de55f6a7d64b053e036f339ab216bae75e8b209851e3bc6e639e21dc0",
+  "pair_arrays": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/vl0_calibration.npz",
+  "pair_arrays_sha256": "ddb9a18ea412cc057098eee8deda01ac38317e7eb598a5e2d191f5a3b4e92b52",
+  "protocol": "same names, GT, strict-upper valid-pair entries and 10 bins; no SPOT recalibration or threshold tuning",
+  "spotrna": {
+    "calibration": {
+      "n": 573355,
+      "ece": 0.004491109346611864,
+      "brier": 0.0044911093476028814,
+      "nll": 0.12098096577524824
+    },
+    "confidence": {
+      "spearman": null,
+      "aurc_macro": 0.1621645220723188,
+      "risk_coverage": [
+        {
+          "coverage": 0.10204081632653061,
+          "selective_macro_risk": 0.1934940007337287,
+          "n": 20
+        },
+        {
+          "coverage": 0.20408163265306123,
+          "selective_macro_risk": 0.11349835578076384,
+          "n": 40
+        },
+        {
+          "coverage": 0.3010204081632653,
+          "selective_macro_risk": 0.09352609301132542,
+          "n": 59
+        },
+        {
+          "coverage": 0.4030612244897959,
+          "selective_macro_risk": 0.07788917512709259,
+          "n": 79
+        },
+        {
+          "coverage": 0.5,
+          "selective_macro_risk": 0.10506873885554313,
+          "n": 98
+        },
+        {
+          "coverage": 0.6020408163265306,
+          "selective_macro_risk": 0.16717306858398662,
+          "n": 118
+        },
+        {
+          "coverage": 0.7040816326530612,
+          "selective_macro_risk": 0.1908458872366221,
+          "n": 138
+        },
+        {
+          "coverage": 0.8010204081632653,
+          "selective_macro_risk": 0.22858483383969763,
+          "n": 157
+        },
+        {
+          "coverage": 0.9030612244897959,
+          "selective_macro_risk": 0.2339408142334053,
+          "n": 177
+        },
+        {
+          "coverage": 1.0,
+          "selective_macro_risk": 0.252859516779642,
+          "n": 196
+        }
+      ]
+    }
+  },
+  "students": [
+    {
+      "seed": 0,
+      "raw": {
+        "n": 573355,
+        "ece": 0.04031455845013489,
+        "brier": 0.0140537162852256,
+        "nll": 0.0568684007305581
+      },
+      "calibrated": {
+        "n": 573355,
+        "ece": 0.0006107340493400576,
+        "brier": 0.0025974617496436737,
+        "nll": 0.01218870130551459
+      },
+      "raw_confidence": {
+        "spearman": 0.8583435032873776,
+        "aurc_macro": 0.027110881613343556,
+        "risk_coverage": [
+          {
+            "coverage": 0.10204081632653061,
+            "selective_macro_risk": 0.0,
+            "n": 20
+          },
+          {
+            "coverage": 0.20408163265306123,
+            "selective_macro_risk": 0.0,
+            "n": 40
+          },
+          {
+            "coverage": 0.3010204081632653,
+            "selective_macro_risk": 0.0,
+            "n": 59
+          },
+          {
+            "coverage": 0.4030612244897959,
+            "selective_macro_risk": 0.0030204770614168375,
+            "n": 79
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.008614100714760875,
+            "n": 98
+          },
+          {
+            "coverage": 0.6020408163265306,
+            "selective_macro_risk": 0.020848854560573837,
+            "n": 118
+          },
+          {
+            "coverage": 0.7040816326530612,
+            "selective_macro_risk": 0.03624665518645498,
+            "n": 138
+          },
+          {
+            "coverage": 0.8010204081632653,
+            "selective_macro_risk": 0.051243976555523374,
+            "n": 157
+          },
+          {
+            "coverage": 0.9030612244897959,
+            "selective_macro_risk": 0.08228905976886336,
+            "n": 177
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.14383617542422833,
+            "n": 196
+          }
+        ]
+      },
+      "calibrated_confidence": {
+        "spearman": 0.7417124532195188,
+        "aurc_macro": 0.03175158453259628,
+        "risk_coverage": [
+          {
+            "coverage": 0.10204081632653061,
+            "selective_macro_risk": 0.0,
+            "n": 20
+          },
+          {
+            "coverage": 0.20408163265306123,
+            "selective_macro_risk": 0.0,
+            "n": 40
+          },
+          {
+            "coverage": 0.3010204081632653,
+            "selective_macro_risk": 0.0,
+            "n": 59
+          },
+          {
+            "coverage": 0.4030612244897959,
+            "selective_macro_risk": 0.005855828590468848,
+            "n": 79
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.010115054945510682,
+            "n": 98
+          },
+          {
+            "coverage": 0.6020408163265306,
+            "selective_macro_risk": 0.025850776315181734,
+            "n": 118
+          },
+          {
+            "coverage": 0.7040816326530612,
+            "selective_macro_risk": 0.037570884523059234,
+            "n": 138
+          },
+          {
+            "coverage": 0.8010204081632653,
+            "selective_macro_risk": 0.07046783211516394,
+            "n": 157
+          },
+          {
+            "coverage": 0.9030612244897959,
+            "selective_macro_risk": 0.0941086398629698,
+            "n": 177
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.143836175424228,
+            "n": 196
+          }
+        ]
+      },
+      "result_sha256": "379422d5067576a98a348c75ce31e282d491253cd920562e84c1dfdaabfd08a1",
+      "arrays_sha256": "413e2963bf5fbf43db33c88e7f7508cdc4fe868f164f816654fcd5d3f27a3014"
+    },
+    {
+      "seed": 1,
+      "raw": {
+        "n": 573355,
+        "ece": 0.02822521944387328,
+        "brier": 0.009159318897394427,
+        "nll": 0.04038358290503089
+      },
+      "calibrated": {
+        "n": 573355,
+        "ece": 0.000527759459275599,
+        "brier": 0.0025685391182989382,
+        "nll": 0.011951018698164312
+      },
+      "raw_confidence": {
+        "spearman": 0.846123331771424,
+        "aurc_macro": 0.029244242735903963,
+        "risk_coverage": [
+          {
+            "coverage": 0.10204081632653061,
+            "selective_macro_risk": 0.0,
+            "n": 20
+          },
+          {
+            "coverage": 0.20408163265306123,
+            "selective_macro_risk": 0.0,
+            "n": 40
+          },
+          {
+            "coverage": 0.3010204081632653,
+            "selective_macro_risk": 0.0,
+            "n": 59
+          },
+          {
+            "coverage": 0.4030612244897959,
+            "selective_macro_risk": 0.0013270999435260888,
+            "n": 79
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.0064022162501874424,
+            "n": 98
+          },
+          {
+            "coverage": 0.6020408163265306,
+            "selective_macro_risk": 0.02060998598899,
+            "n": 118
+          },
+          {
+            "coverage": 0.7040816326530612,
+            "selective_macro_risk": 0.03540676204300641,
+            "n": 138
+          },
+          {
+            "coverage": 0.8010204081632653,
+            "selective_macro_risk": 0.06166712027946586,
+            "n": 157
+          },
+          {
+            "coverage": 0.9030612244897959,
+            "selective_macro_risk": 0.09174804047298468,
+            "n": 177
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.15188498156779773,
+            "n": 196
+          }
+        ]
+      },
+      "calibrated_confidence": {
+        "spearman": 0.7294119376694979,
+        "aurc_macro": 0.03452248996252693,
+        "risk_coverage": [
+          {
+            "coverage": 0.10204081632653061,
+            "selective_macro_risk": 0.0,
+            "n": 20
+          },
+          {
+            "coverage": 0.20408163265306123,
+            "selective_macro_risk": 0.0,
+            "n": 40
+          },
+          {
+            "coverage": 0.3010204081632653,
+            "selective_macro_risk": 0.0,
+            "n": 59
+          },
+          {
+            "coverage": 0.4030612244897959,
+            "selective_macro_risk": 0.005821853034867042,
+            "n": 79
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.015140693933253013,
+            "n": 98
+          },
+          {
+            "coverage": 0.6020408163265306,
+            "selective_macro_risk": 0.029626604758965946,
+            "n": 118
+          },
+          {
+            "coverage": 0.7040816326530612,
+            "selective_macro_risk": 0.04123855003128707,
+            "n": 138
+          },
+          {
+            "coverage": 0.8010204081632653,
+            "selective_macro_risk": 0.07991963129218926,
+            "n": 157
+          },
+          {
+            "coverage": 0.9030612244897959,
+            "selective_macro_risk": 0.10638098819241593,
+            "n": 177
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.15188498156779773,
+            "n": 196
+          }
+        ]
+      },
+      "result_sha256": "5fd25dbdc0bbe29c0c7b6d879f5f04da6aa2893636d6e0510bd1a91a135693a3",
+      "arrays_sha256": "16b5b2304e776c0e7ce2c937b1efb1e1d51fe907775ce5be22fca4239e43b199"
+    },
+    {
+      "seed": 2,
+      "raw": {
+        "n": 573355,
+        "ece": 0.03357625938601258,
+        "brier": 0.01174739824532944,
+        "nll": 0.048519306831299305
+      },
+      "calibrated": {
+        "n": 573355,
+        "ece": 0.0006000530506930298,
+        "brier": 0.0026918222709094437,
+        "nll": 0.012627793644447358
+      },
+      "raw_confidence": {
+        "spearman": 0.8484590497214263,
+        "aurc_macro": 0.029232416621798967,
+        "risk_coverage": [
+          {
+            "coverage": 0.10204081632653061,
+            "selective_macro_risk": 0.0,
+            "n": 20
+          },
+          {
+            "coverage": 0.20408163265306123,
+            "selective_macro_risk": 0.000581395348837277,
+            "n": 40
+          },
+          {
+            "coverage": 0.3010204081632653,
+            "selective_macro_risk": 0.0003941663381947791,
+            "n": 59
+          },
+          {
+            "coverage": 0.4030612244897959,
+            "selective_macro_risk": 0.0009133247284557333,
+            "n": 79
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.005252387829901117,
+            "n": 98
+          },
+          {
+            "coverage": 0.6020408163265306,
+            "selective_macro_risk": 0.021405947502085687,
+            "n": 118
+          },
+          {
+            "coverage": 0.7040816326530612,
+            "selective_macro_risk": 0.042441923396571046,
+            "n": 138
+          },
+          {
+            "coverage": 0.8010204081632653,
+            "selective_macro_risk": 0.056664514446549186,
+            "n": 157
+          },
+          {
+            "coverage": 0.9030612244897959,
+            "selective_macro_risk": 0.09146338005795052,
+            "n": 177
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.15669367822535962,
+            "n": 196
+          }
+        ]
+      },
+      "calibrated_confidence": {
+        "spearman": 0.7534571307562601,
+        "aurc_macro": 0.03340976767538675,
+        "risk_coverage": [
+          {
+            "coverage": 0.10204081632653061,
+            "selective_macro_risk": 0.0,
+            "n": 20
+          },
+          {
+            "coverage": 0.20408163265306123,
+            "selective_macro_risk": 0.000581395348837277,
+            "n": 40
+          },
+          {
+            "coverage": 0.3010204081632653,
+            "selective_macro_risk": 0.0003941663381947791,
+            "n": 59
+          },
+          {
+            "coverage": 0.4030612244897959,
+            "selective_macro_risk": 0.0043655686870285315,
+            "n": 79
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.009744973358058462,
+            "n": 98
+          },
+          {
+            "coverage": 0.6020408163265306,
+            "selective_macro_risk": 0.025979873340755466,
+            "n": 118
+          },
+          {
+            "coverage": 0.7040816326530612,
+            "selective_macro_risk": 0.038824744677369405,
+            "n": 138
+          },
+          {
+            "coverage": 0.8010204081632653,
+            "selective_macro_risk": 0.07282264341314992,
+            "n": 157
+          },
+          {
+            "coverage": 0.9030612244897959,
+            "selective_macro_risk": 0.10191433239574221,
+            "n": 177
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.15669367822535962,
+            "n": 196
+          }
+        ]
+      },
+      "result_sha256": "b3a1ab23315bb4d3eaa55a491d921bab090d505698fec6949297a0e4b93e213e",
+      "arrays_sha256": "9e2d88a6819a6cbb8e22c1503e07825452d8e7bf905d5b581f59b24532070ed2"
+    }
+  ],
+  "boundary": "VL0 fitting-set comparison only; not a final lowest-ECE or best-confidence claim"
+}

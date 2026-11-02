@@ -80,6 +80,15 @@
       "reason": "superseded by completed current-algorithm evidence; historical mismatch remains unresolved",
       "new_sha256": "adfdeb4981a16bf5d8b9e0bf87d8c5659fcb071834145073ea163e219ace7dfd",
       "new_bytes": 1290
+    },
+    {
+      "active_path": "交接文档/source_data/appendix_leakage/round39_spotrna_raw_clean_summary.json",
+      "archive_path": "交接文档/archive_20261102/superseded_round39/round39_spotrna_clean_progress_6of8.json",
+      "old_sha256": "ff7db2831c9354133e79805e1a75cbe5f132d3a0d56c4ba124e4d1ebd03acd98",
+      "old_bytes": 2840,
+      "reason": "superseded by complete SPOT-RNA raw+clean 16-cell independent aggregate",
+      "new_sha256": "dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0",
+      "new_bytes": 7921
     }
   ]
 }

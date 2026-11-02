@@ -118,7 +118,8 @@
 | `appendix_leakage/round39_mixed_nll_independent_verification.json` | 1657 条新增序列独立标签与九组零泄露复扫 | active independent verification | `a3c6acbe139d` |
 | `appendix_leakage/round39_spotrna_raw_summary.json` | SPOT-RNA 转换权重 raw 八 split 三次独立聚合；clean 待完成 | active raw complete | `dd752681b49b` |
 | `appendix_leakage/round39_rinalmo_ft_raw_summary.json` | RiNALMo-ft raw 八 split 三次 full-length 独立聚合；TR0-clean 待完成 | active raw complete | `04ac23a5369e` |
-| `appendix_leakage/round39_spotrna_clean_progress.json` | SPOT-RNA clean 6/8 独立验收进度；ArchiveII/TestSetB 待完成 | active partial 6/8 | `ff7db2831c93` |
+| `appendix_leakage/round39_spotrna_raw_clean_summary.json` | SPOT-RNA raw+clean 16 格独立聚合；TS3 为空，旧 6/8 已归档 | active complete | `dfb80f51e014` |
+| `appendix_leakage/round39_spotrna_vl0_calibration.json` | SPOT-RNA 与三个学生 VL0 同掩码校准对照；置信度全部饱和，不作泛化结论 | active VL0 diagnostic | `534ddea6ea41` |
 
 ## 后续边界
 
