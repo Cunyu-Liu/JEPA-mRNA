@@ -11752,3 +11752,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **复测器修复**：`benchmark_multimolecule_round39.py` 新增 raw/clean 输入与审计绑定、逐序列 float32 上三角候选概率 NPZ、三次预测与概率哈希一致性、原子写出；只改变证据保存，不改变 SPOT-RNA 转换权重、阈值 0.335 或原生后处理。权重 SHA256=`b7056fcad23a00d5bbaa21f91b54da779e87fa5e2185fb3ccc19c5440cadf0c5`，明确不是原作者直接发布的文件。
 - **真实 CUDA 工程门**：TS0 前 4 条两次完整推理 F1 均为 0.8534201954，逐对预测与旧结果相同，预测/概率哈希、NPZ 名称/形状/float32/范围全部通过；这是 smoke，不是科学结果。独立脚本 `aggregate_spotrna_round39.py` 已固定 16 格计数、clean 守恒、概率与空 split 验收合同。
 - **执行状态**：在约 17.7 GiB 可用显存窗口启动 raw+clean 16 格三次复测，使用 `flock` 防止重复，已运行任务不重复启动。并发耗时仅为诊断，正式速度必须独占 4090。完整聚合通过前注册表保持 running，不写成 8/8 或 SOTA。
+
+
+## §15.297（2026-11-02）ContextFold 官方资产来源复核
+
+- **原始来源已核实**：PubMed PMID=22035327、DOI=`10.1089/cmb.2011.0184`，论文题名 *Rich parameterization improves RNA structure prediction*；摘要明确写“trained models and source code”发布于 `www.cs.bgu.ac.il/~negevcb/contextfold`。该来源链取代此前错误归档的同名 PDF，不把第三方仓库当官方实现。
+- **本轮实际访问**：DOI 出版商页面遇到人机验证；官方站点 HTTP/HTTPS 均连接超时；Internet Archive CDX 也连接超时。AutoGLM 本地 token 服务不可用，桌面检索遇到 QUIC 错误，均未获得权重或代码，不产生任何实验结果。
+- **边界**：保持 `BLOCKED_OFFICIAL_SITE_UNREACHABLE` 和 clean provenance 未闭环，不用其他算法或自行重参数化冒充 ContextFold。后续资产恢复必须从上述官方 URL 的可验证存档/原始文件接续，并记录下载 URL、哈希和训练语料。
+
+
+## §15.298（2026-11-02）SPOT-RNA 首个全量格独立验收
+
+- **raw TS0 完成**：n=1288，三次 F1 均为 **0.5263157894736842**，TP/FP/FN=19765/20451/15126，SD=0；结果 SHA256=`395b8fba54485ce8fe4dfb8080c67ce48d3a95ca148f95c598aa2d1db11cfe79`，概率 NPZ SHA256=`4855bf3aa8fb7fa4d83fd9bc98f34e0080259c7ef89a0bfb31d185298a75734e`。
+- **真实聚合验证**：新 `aggregate_spotrna_round39.py` 已在这份完整输出上独立重算计数/F1，并核对 raw 数据、权重、三次预测/概率哈希、NPZ 名称、逐条长度、float32、有限范围和上三角约束，全部通过。该单格不写成 raw 或 clean 全板完成，后续任务继续。
+- **Git 状态**：`b1cf3af` 本地提交已生成；第一次 push 工具超时后 `ls-remote` 仍为 `743dc71`，不得写成该提交已上传。后续重试有明确超时，避免阻塞实验队列。
