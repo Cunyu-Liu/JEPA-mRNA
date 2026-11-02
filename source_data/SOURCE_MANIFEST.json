@@ -644,6 +644,13 @@
    "bytes": 1891,
    "description": "xens2 单学生 seed0 收敛后三次独立 VL0 CUDA QA；单种子过程证据，不是最终均值",
    "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_distill_objective_comparison.json",
+   "sha256": "b6ab2b0a12c6e21b0d72fd893dc33386177bc8bbc297063c8358012767ed6037",
+   "bytes": 1655,
+   "description": "旧四项目标与纯教师 KL 的 VL0 QA、教师保真度及 TS0 对照；否定直接投入纯 KL 三种子",
+   "status": "active"
   }
  ]
 }

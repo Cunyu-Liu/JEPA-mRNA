@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "OBJECTIVE_COMPARISON_NOT_FINAL",
+  "models": {
+    "four_term": {
+      "vl0_qa_f1": 0.8125067385444744,
+      "vl0_qa_ece": 0.0641396711893385,
+      "teacher_pair_micro_f1": 0.783595702993041,
+      "vl0_gt_micro_f1": 0.6706686676671669,
+      "probability_mae": 0.04754100584973803,
+      "teacher_kl_mean": 0.04278530788777015,
+      "qa_sha256": "b88f43b0d2ed03209307a28d8424a035078fc9a2118ae928f31f30577f1ec6fe",
+      "fidelity_sha256": "920b1614dce094887884e2464e27e6593f2ec47fc2570479ae13ed3d724c3a1e",
+      "ts0_f1_runs": [
+        0.6694091037602488,
+        0.6694091037602488,
+        0.6694091037602488
+      ],
+      "ts0_artifact_sha256": "6eb14040aa9a4b619ab0094cb1de7fc650ef4607dda3c88d2c6fd0ff9f5386fe"
+    },
+    "teacher_kl_only": {
+      "vl0_qa_f1": 0.8145748987854251,
+      "vl0_qa_ece": 0.03438739765268617,
+      "teacher_pair_micro_f1": 0.8028775043700417,
+      "vl0_gt_micro_f1": 0.6727438468550593,
+      "probability_mae": 0.0323788629752459,
+      "teacher_kl_mean": 0.028817002930668294,
+      "qa_sha256": "52ff8eee97d81bb2fa89d9f41c051fac5a1a28e754784fd69a6ab741604ed222",
+      "fidelity_sha256": "4e08c4bdc4eed60b6a299d27ecbbcc65006b8b6fe5b121e91a8fe6fb9ce01a8c",
+      "ts0_f1_runs": [
+        0.6247394957983193,
+        0.6247394957983193,
+        0.6247394957983193
+      ],
+      "ts0_artifact_sha256": "0f7a7bf69fceeaad91fedbc5e378a941c9e54e07044d9ba511744b297dd57226"
+    }
+  },
+  "conclusion": "Pure KL improves teacher fidelity and VL0 ECE but does not preserve TS0 accuracy; do not launch its three seeds. A single trainable plana backbone is a separate candidate."
+}

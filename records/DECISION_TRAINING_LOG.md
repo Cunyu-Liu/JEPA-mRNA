@@ -11566,3 +11566,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **决策**：停止仍处早期的旧目标 seed1，目录移至 `failed_runs/nll_dominates_teacher_s1_20261102`；旧 seed0 保留为负向对照，不将其 raw/clean 结果包装为主力模型。
 - **新候选**：`xens2_distill_only_r2d_s0` 从同一 r2d 模型权重初始化，B=2，直接以 xens2 教师 KL 为唯一目标（nll=0、distill=1、rlcd=0、cal=0），VL0 早停合同不变。先在 VL0/TS0 检验教师保真度，再决定是否三种子，不盲目重复旧目标。
 - **工程同步**：启动器支持 `ARM_PREFIX` 与四个 lambda 的环境配置，默认仍保留旧四项目标；每个候选独立 dry-run、run 目录和日志。
+
+
+## §15.274（2026-11-02）纯 KL 对照边界与单 plana 骨干候选
+
+- **纯 KL 收敛与 QA**：`xens2_distill_only_r2d_s0` 在 step5000 early stopping，恢复 best step2500。VL0 三次 QA：F1=0.8145748988、ECE=0.0343873977，SD=0；教师 micro-F1 从旧目标 0.7835957030 提至 0.8028775044，概率 MAE 从 0.0475410 降至 0.0323789，教师 KL 从 0.0427853 降至 0.0288170。
+- **精度否定证据**：VL0 GT-F1 仅从 0.6706686677 提至 0.6727438469；raw TS0 三次进一步降为 **0.6247394958**。因此纯 KL 只改善教师一致性和校准，不能保持结构精度，不投入其三种子，也不作为主力 8/8 候选。比较源文件 SHA256=`b6ab2b0a12c6e21b0d72fd893dc33386177bc8bbc297063c8358012767ed6037`。
+- **模型角度的新候选**：frozen r2d 表示限制教师迁移，改用单个可训练 plana 650M 骨干，从 `plana_giga_tr1c_s0_step20000.pt` 仅载 encoder/head，optimizer 从 0 开始，直接学习 xens2 教师 KL。单骨干推理仍保留速度潜力，不借用三编码器集成。
+- **plana 训练器验收**：复用逐步解冻与 BN-snapshot 机制，加入 VL0 early stopping、best/resume 和显式 snapshot-dir。真实 650M CUDA smoke 依次通过有限损失、早停、best 恢复、resume 状态一致和 `/teams` 快照；修复验证中 `-inf×0` 导致 NaN、验证前保存 patience 状态过期两处问题。
+- **正式候选**：`xens2_plana_distill_s0` 已启动，B=1、纯教师 KL、head-lr=1e-4、backbone-lr=1e-5、validation_every=500、patience=5、min_delta=1e-6、1,000,000 仅安全上限。需等待 VL0 与 TS0 实测后决定是否三种子。
