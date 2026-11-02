@@ -749,6 +749,13 @@
    "bytes": 11069,
    "description": "Kirigami C 解码 raw 与 TR0-clean 各八 split 的独立计数、耗时和哈希；保留 ArchiveII 历史 F1 差异",
    "status": "active_complete_with_archive_mismatch"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_archive_protocol_reconcile.json",
+   "sha256": "59701fd72ac325a4b42f23c04d5e9c65386f2402bd48537e333ce8426a8e5525",
+   "bytes": 226816,
+   "description": "Kirigami ArchiveII 当前全配对、非交叉过滤和历史逐序列计数对账；排除仅忽略假结导致历史 F1 差异的解释",
+   "status": "active_protocol_diagnostic"
   }
  ]
 }

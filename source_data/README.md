@@ -109,6 +109,7 @@
 | `appendix_leakage/round39_kirigami_fast_bprna_new_equivalence.json` | Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速；ArchiveII/clean 复测中 | active engineering | `87473ab44930` |
 | `appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json` | ArchiveII 加速完成及历史 F1 差异长度桶诊断；不作无损替换证据 | active diagnostic | `7cd2880394c0` |
 | `appendix_leakage/round39_kirigami_fast_raw_clean_summary.json` | Kirigami C 解码 raw 与 clean 各八 split 独立聚合；保留 ArchiveII 历史差异 | active complete with boundary | `db52fccd701b` |
+| `appendix_leakage/round39_kirigami_archive_protocol_reconcile.json` | ArchiveII 历史逐序列计数与当前预测对账；忽略假结不足以解释 F1 差异 | active diagnostic | `59701fd72ac3` |
 | `appendix_leakage/bpfold_vl0.json` | BPfold 全 VL0 三次官方推理与原始 utility 哈希；仅供模型选择 | validation only | `ea21f21814ab` |
 | `appendix_leakage/round39_vl0_bpfold_fusion_fit.json` | VL0-only xens2+BPfold 非负 NLL 融合参数与对照；拟合集指标不作最终结论 | validation candidate | `bfde5279469f` |
 

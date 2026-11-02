@@ -11736,3 +11736,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立验收**：`aggregate_kirigami_fast_round39.py` 从逐序列预测重算 TP/FP/FN 和 F1，并检查 clean audit、样本数、结果哈希与重复一致性，16/16 格通过。汇总 SHA256=`db52fccd701b8d265cbda3d14ef9a97b4968382e4945cf8d0bff1b0d88f7896c`。
 - **边界保持**：TS0/new 精确等价；ArchiveII 仍为历史 F1 差异诊断，不因 raw+clean 全量完成而改称无损替换。注册表 raw/clean 均标完成并保留 mismatch 说明。
 - **算法对照进展**：最长 4 条原 Python 与 C 全部一致；200–400 nt 全桶已超过 200 条一致，未发现算法分歧，仍需完成全桶证据后归因。
+
+
+## §15.295（2026-11-02）Kirigami 历史口径与预测差异对账
+
+- **身份核验**：新旧评测加载同一官方 `main.ckpt`，SHA256=`6f56ca8cc9a674d6741406845e09aa023e9ec423bfe9237dd2c9ca95bb9fe2fc`，bytes=95324126；官方仓库当前唯一提交 `49e61ffdb2a8434142645b09e0122c8e21041d12`。历史 `archii_kirigami_shard.py` 与当前 `model.forward` 的后处理顺序相同，不能先验归因于权重或前向接口变化。
+- **历史评分口径差异**：旧 `dbn_to_pairs` 只保留 `()`，当前 `parse_dot_pairs` 保留假结层级。用现有 2544 条预测直接做非交叉过滤后，TP/FP/FN=81715/13126/45807、F1=0.7349693969，反而低于当前全配对 F1=0.7689918891；历史原始 shard 逐序列计数聚合 TP/FP/FN=95249/19247/32273、F1=0.7871232718。因此“旧脚本忽略假结”不足以解释历史较高 F1，不能作为归因结论。
+- **差异边界**：过滤后有 856/2544 条计数与历史不一致，说明当前模型输出或历史协议还存在其他差异。历史 shard 只有长度和 TP/FP/FN，没有序列名、完整配对、代码/权重/设备环境哈希，不能据此宣称硬件差异或完成等价复现。当前旧 Python/C 200–400 nt 全桶仍独立运行，完成前保持 mismatch 状态。
+- **可追溯证据**：新增 `tools/diagnose_kirigami_archive_protocol_round39.py`，从现结果与三份历史 shard 逐位置核验长度、计数、长度桶和哈希。对账 JSON SHA256=`59701fd72ac325a4b42f23c04d5e9c65386f2402bd48537e333ce8426a8e5525`，bytes=226816；旧三份 shard 哈希均保存在 JSON。该离线复算没有触发 GPU/CPU 推理替代问题。
