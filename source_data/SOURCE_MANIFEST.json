@@ -742,6 +742,13 @@
    "bytes": 1049,
    "description": "Kirigami ArchiveII 加速完成及历史 F1 差异长度桶诊断；不作为无损替换证据",
    "status": "active_diagnostic_not_exact_equivalence"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_fast_raw_clean_summary.json",
+   "sha256": "db52fccd701b8d265cbda3d14ef9a97b4968382e4945cf8d0bff1b0d88f7896c",
+   "bytes": 11069,
+   "description": "Kirigami C 解码 raw 与 TR0-clean 各八 split 的独立计数、耗时和哈希；保留 ArchiveII 历史 F1 差异",
+   "status": "active_complete_with_archive_mismatch"
   }
  ]
 }
