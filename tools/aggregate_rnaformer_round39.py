@@ -35,6 +35,8 @@ def validate(path, split, clean, official):
     assert report["strict_load"] is True and not report["missing"] and not report["unexpected"]
     assert report["weights_sha256"] == official[Path(report["weights"]).name]
     assert report["config_sha256"] == official[Path(report["config"]).name]
+    if "inter_family_finetuned" in report["weights"] or "intra_family_finetuned" in report["weights"]:
+        assert report["rotary_cache_disabled_modules"] == 12
     assert report["deterministic_inference"] == {"allow_tf32": False, "cudnn_deterministic": True,
                                                   "cudnn_benchmark": False, "matmul_precision": "highest"}
     rows = [json.loads(line) for line in Path(protocol["data"]).open() if line.strip()]

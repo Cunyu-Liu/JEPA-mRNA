@@ -158,6 +158,10 @@ def build_model(args):
                  "lora": bool(getattr(cfg, "lora", False))}
     model.load_state_dict(sd, strict=True)
     load_info["strict_load"] = True
+    rotary_modules = [module for module in model.modules() if type(module).__name__ == "RotaryEmbedding"]
+    for module in rotary_modules:
+        module.cache_if_possible = False
+    load_info["rotary_cache_disabled_modules"] = len(rotary_modules)
     return model, load_info
 
 
