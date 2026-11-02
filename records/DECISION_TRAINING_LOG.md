@@ -11598,3 +11598,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **首次启动失败**：RNAformer 单进程峰值达到 19.76 GiB，seed2 在 650M encoder `.to(cuda)` 阶段仅余 5.06 MiB，发生 OOM；尚未形成 train_log 或 checkpoint，不是训练失败或科学负结果。
 - **处理**：暂停 RNAformer 后重启 seed2，并在三种子全部完成前不再恢复该高峰值基线。保留 `failed_runs/seed2_load_oom_20261102` 证据；不改变 B=1、教师、学习率或早停合同。
+
+
+## §15.278（2026-11-02）plana 三种子训练与 VL0/TS0 聚合
+
+- **seed2 终态**：step4000 early stopping，恢复 best step1500，best VL0 KL=0.004034427174637797。三次 QA：教师 F1=0.8696822833、GT-F1=0.6941654909、ECE=0.0335762593；best checkpoint SHA256=`21dd7d6d7cd77ecdf58288e76696497a27d3c1fec072ee14df0ed6a4e055c706`。TS0 三次均 F1=0.7781807147。
+- **三种子完成**：seed0/1/2 best step=2500/1000/1500，均满足 early-stopping、best checkpoint 和独立 GPU QA。教师 F1 均值=**0.8736290811±0.0076301607**，VL0 GT-F1=0.6952241409±0.0019730970，ECE=**0.0340386790±0.0060579207**，Brier=0.0116534778±0.0024485500，NLL=0.0485904300±0.0082426390。
+- **TS0 三种子**：F1 均值=**0.7801143096±0.0032054397**，三次训练种子均低于 xens2=0.8039；不能宣称精度 SOTA 或 8/8。汇总 SHA256=`938e1ae6e0562fc25028a051c3ac6b609ba7f23a4948a0a7e356d8d787da66c9`。
+- **下一阶段**：三种子 tr1c-clean 八 split 已并行启动，之后做独占 raw-sequence 速度、VL0-only 校准和 risk–coverage。所有当前并发吞吐只作诊断，不进入正式速度结论。
