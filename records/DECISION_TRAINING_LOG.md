@@ -11801,3 +11801,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **raw 8/8 完成**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1 分别为 **0.5263157895/0.5836012619/0.7020802377/0.7884187082/0.6682188591/0.6890052356/0.6026481695/0.6183834650**，三次 SD 全为 0。每格均从预测独立重算 TP/FP/FN，并核对 raw 数据、转换权重、预测/概率哈希、NPZ 形状/dtype/范围。
 - **汇总与边界**：raw 汇总 SHA256=`dd752681b49ba620a6e76701da3f5f3b695316b7d43927822b6eab87876078e9`，bytes=4261。MultiMolecule 转换权重不是原作者直接发布文件；并发耗时只作诊断。clean 继续运行，raw 闭环不等于 16 格验收或 SOTA。
+
+
+## §15.304（2026-11-02）RiNALMo-ft 两格复算与整板聚合准备
+
+- **raw TS0**：n=1288，三次 F1=**0.7213842307800342**，TP/FP/FN=25682/10629/9209，SD=0；独立结果 SHA256=`e2b1482e156724ddb7f5de1a1db2c4198c394756bb165231cf3bd43d9c7e24b7`。
+- **raw bpRNA-new**：n=5388，三次 F1=**0.4489961556755058**，TP/FP/FN=51448/42537/83736，SD=0；独立结果 SHA256=`6bf0080d656a3859e36492c7497e64f50fbcc5d7abf091e3546c8ce3c0e6baee`。两格预测、权重、数据和 strict 加载均复核通过。
+- **代码差异审查**：TS0 的 `speed_end_to_end_4090.py` 哈希 `ffa3cf37...`（commit `d497257`）与 bpRNA-new 的 `5295425b...`（commit `5834881`）不同。逐行 diff 仅涉及 RNAformer/r2d/plana 权重参数和协议元数据，`rinalmo_ft` 加载与解码路径未变，故不返工 TS0。
+- **后续**：新增 `aggregate_rinalmo_ft_round39.py`，从 predictions 重算计数/F1、验证 clean 守恒、三次哈希、full-length B=1 与 CUDA/raw-sequence 协议，已在上述两格实测通过。整板聚合排在现有 runner 后，ArchiveII 峰值 19.2 GiB，NLL 训练继续等待，不强行叠加。
