@@ -12168,3 +12168,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `tools/stratify_mixed_nll_round39.py`，固定 clean 数据、结果身份、四长度桶和逐对计数；额外核验原三种子汇总 SHA 与否决 gate 一致，不改变诊断输出。
 - 新增 `tools/test_stratify_mixed_nll_round39.py`，覆盖 1/100/101/200/201/400/401 nt 边界、计数、F1、配对密度和空桶。首次测试因把 7 个边界结果误写为 4 个桶名而失败，修正测试期望后通过；生产分桶未改。
 - 双端 `py_compile` 与测试通过；真实八 split 重新生成的诊断与已验收 JSON 逐字节一致，SHA256=`ba1970dad2d19bff9b3d8d86c931c1254fb8780a8b64b69677fc88c397090777`。
+- GitHub 正常 push 超时后，通过本地 bare mirror 推送同一 `3dbd3e196e2ef698a62f5666c078e2b3b4a15d2e`；镜像 cluster URL 修正为实际 SSH 端口 29744，HEAD/origin/GitHub 三路一致，无重复提交或历史改写。
+
+
+## §15.357（2026-11-03）round39 论文叙事证据审计
+
+- 新增 `paper/round39_claim_evidence_audit.md`，按“实验现象→对照→限制”整理可写结论、不可升级主张和后续证据顺序。
+- 保留三个关键否定：单学生三种子完成不等于性能达标；VL0 融合在 6 格后已不能达到 8/8；混合 NLL 的局部涨点不是泛化改善。
+- 置信度部分明确区分 ECE 与结构质量排序，BPfold utility 不直接作为概率；速度部分继续使用独占 raw-sequence 合同，禁止并发或 cached embedding 结果进入主结论。该审计不修改已验收 PPT，待完整新证据后只做必要联动。
