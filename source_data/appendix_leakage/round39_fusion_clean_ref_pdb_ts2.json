@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "status": "PASS_FUSION_CLEAN_INTERSECTION",
+  "system": "xens2_BPfold_VL0_fusion",
+  "split": "ref_pdb_ts2",
+  "fit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/vl0_fusion/fit.json",
+  "fit_sha256": "bfde5279469ffc411cb0c50c46ad08440e68380d3b6eb7aad65b55fc21540265",
+  "parameters": {
+    "a": 0.5106147897234236,
+    "b": 1.0869947454744493,
+    "bias": -5.806306217759413
+  },
+  "data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/xens2_bpfold_union/ref_pdb_ts2.jsonl",
+  "data_sha256": "26f911ec96614df5ff94cf19103ea0a36ed0de37a7c232c55460e985b5768489",
+  "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/xens2_bpfold_union/ref_pdb_ts2.audit.json",
+  "clean_audit_sha256": "1e433e7a2d6944bdeebc0f415ada2f7e3a398cb44518df6880dc0750281d42a2",
+  "n_sequences": 1,
+  "device": "cuda",
+  "teacher_manifest_sha256": "9c2353b19699367f0f3de8014946ba544b819b2048517cd9b2f4463431a7dde6",
+  "teacher_forward": "raw plana encoders with fp16 bridge plus cached r2d embedding",
+  "cached_r2d_embeddings_for_precision_only": true,
+  "timing_eligible_for_speed_claim": false,
+  "repeats": [
+    {
+      "repeat": 0,
+      "seed": 0,
+      "tp": 14,
+      "fp": 0,
+      "fn": 2,
+      "strict_micro_f1": 0.9333333333333333,
+      "predictions_sha256": "a4bad4ff501752266908bde7498579da2f7fc0da8e720feeeee585612f35ab51",
+      "source_arrays_sha256": "b0183ab85e3355d5fd51b88d43eb46ca2ae3d487212fd173be6eea9acdc9f2a3"
+    },
+    {
+      "repeat": 1,
+      "seed": 1,
+      "tp": 14,
+      "fp": 0,
+      "fn": 2,
+      "strict_micro_f1": 0.9333333333333333,
+      "predictions_sha256": "a4bad4ff501752266908bde7498579da2f7fc0da8e720feeeee585612f35ab51",
+      "source_arrays_sha256": "b0183ab85e3355d5fd51b88d43eb46ca2ae3d487212fd173be6eea9acdc9f2a3"
+    },
+    {
+      "repeat": 2,
+      "seed": 2,
+      "tp": 14,
+      "fp": 0,
+      "fn": 2,
+      "strict_micro_f1": 0.9333333333333333,
+      "predictions_sha256": "a4bad4ff501752266908bde7498579da2f7fc0da8e720feeeee585612f35ab51",
+      "source_arrays_sha256": "b0183ab85e3355d5fd51b88d43eb46ca2ae3d487212fd173be6eea9acdc9f2a3"
+    }
+  ],
+  "calibration": {
+    "ece": 0.007898869575394192,
+    "nll": 0.02109900355170302,
+    "brier": 0.005324326857363262,
+    "n": 400,
+    "mean_predicted": 0.03210113042460581,
+    "mean_observed": 0.04,
+    "marginal_calibration_error": 0.007898869575394193
+  },
+  "confidence": {
+    "spearman_confidence_vs_structure_f1": null,
+    "aurc_macro": 0.06666666666666665,
+    "risk_coverage": [
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.06666666666666665,
+        "n": 1
+      }
+    ]
+  },
+  "per_sequence": [
+    {
+      "name": "pdb_ts2#633071",
+      "structure_f1": 0.9333333333333333,
+      "mean_selected_pair_probability": 0.892729875564738,
+      "n_predicted_pairs": 14,
+      "n_gt_pairs": 16
+    }
+  ],
+  "pair_arrays": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/vl0_fusion/clean/ref_pdb_ts2.npz",
+  "pair_arrays_sha256": "3605c9c96bd7feafd118405bd94500e694f7ede300619eff2c7a5690834ae106",
+  "code_sha256": "bb3202d0d99af4ebcae4e4647326d1533153d822cd2c43622ea9f75691543f86",
+  "predictions": [
+    {
+      "name": "pdb_ts2#633071",
+      "pairs": [
+        [
+          0,
+          47
+        ],
+        [
+          1,
+          46
+        ],
+        [
+          2,
+          45
+        ],
+        [
+          3,
+          44
+        ],
+        [
+          4,
+          43
+        ],
+        [
+          8,
+          21
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          10,
+          19
+        ],
+        [
+          11,
+          18
+        ],
+        [
+          12,
+          17
+        ],
+        [
+          26,
+          37
+        ],
+        [
+          27,
+          36
+        ],
+        [
+          28,
+          35
+        ],
+        [
+          29,
+          34
+        ]
+      ]
+    }
+  ]
+}

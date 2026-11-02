@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "status": "PARTIAL_NOT_SCIENTIFIC_CONCLUSION",
+  "status": "PASS_8_SPLIT_3_TRAINING_SEEDS",
   "model": "single_plana_xens2_KL_student",
   "independent_evaluation": "three trained seeds; three deterministic inference repeats per seed",
   "n_training_seeds": 3,
   "n_inference_repeats_per_seed": 3,
-  "complete_split_count": 7,
+  "complete_split_count": 8,
   "required_split_count": 8,
   "concurrent_throughput_eligible_for_speed_claim": false,
   "per_split": {
@@ -398,6 +398,19 @@
         {
           "clean_n": 288,
           "status": "PASS",
+          "tp": 5224,
+          "fp": 581,
+          "fn": 2135,
+          "strict_micro_f1": 0.7936797326040718,
+          "strict_macro_f1": 0.7766695126183755,
+          "predictions_sha256": "89e6a7930951349a7a3b91d9d9844dc35d7ab476821bacd0216146940a5abb99",
+          "result_sha256": "8d9da7d8965ffa8665333211ed37dca86efad3e6e2c484b2f40ad4a069591ca0",
+          "seed": 1,
+          "checkpoint_sha256": "4e8e9e687200cf3776764316e518b21380adbaa60555f31b3aac42dc668b00a7"
+        },
+        {
+          "clean_n": 288,
+          "status": "PASS",
           "tp": 5289,
           "fp": 591,
           "fn": 2070,
@@ -409,10 +422,17 @@
           "checkpoint_sha256": "21dd7d6d7cd77ecdf58288e76696497a27d3c1fec072ee14df0ed6a4e055c706"
         }
       ],
-      "status": "INCOMPLETE_THREE_SEED"
+      "clean_n": 288,
+      "strict_micro_f1": {
+        "mean": 0.7979452807514333,
+        "sd": 0.0038473412993951226,
+        "values": [
+          0.8011531638083974,
+          0.7936797326040718,
+          0.799002945841831
+        ]
+      }
     }
   },
-  "missing": [
-    "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s1/clean/testsetb.json"
-  ]
+  "missing": []
 }

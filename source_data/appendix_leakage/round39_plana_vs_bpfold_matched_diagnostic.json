@@ -446,6 +446,24 @@
           "student_result_sha256": "32aeaaf1a423e3302a9fb6d948fc95f7f8c23b035a26793e2de1266825566fdc"
         },
         {
+          "seed": 1,
+          "n_matched": 59,
+          "student": {
+            "tp": 1041,
+            "fp": 183,
+            "fn": 549,
+            "strict_micro_f1": 0.7398720682302772
+          },
+          "bpfold": {
+            "tp": 1336,
+            "fp": 554,
+            "fn": 254,
+            "strict_micro_f1": 0.767816091954023
+          },
+          "student_minus_bpfold_f1": -0.027944023723745826,
+          "student_result_sha256": "8d9da7d8965ffa8665333211ed37dca86efad3e6e2c484b2f40ad4a069591ca0"
+        },
+        {
           "seed": 2,
           "n_matched": 59,
           "student": {
@@ -464,7 +482,7 @@
           "student_result_sha256": "878aa0fc11fa35f4aa4131de96d815cc8d3fce8f7f6ed8774d69a8d27f036075"
         }
       ],
-      "available_seed_mean_delta_f1": -0.022813877177099817
+      "available_seed_mean_delta_f1": -0.02452392602598182
     }
   },
   "available_seeds": [
@@ -472,5 +490,5 @@
     1,
     2
   ],
-  "complete_three_seed": false
+  "complete_three_seed": true
 }

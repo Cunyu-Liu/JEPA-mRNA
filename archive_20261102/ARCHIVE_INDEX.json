@@ -18,6 +18,24 @@
       "reason": "superseded by independently recomputed 7/8 three-seed progress; preserved, not deleted",
       "new_sha256": "9d69b446ab01a307ec7046206748001c070b73d53ce928b6556f91e3e38e4ad6",
       "new_bytes": 14523
+    },
+    {
+      "active_path": "\u4ea4\u63a5\u6587\u6863/source_data/appendix_leakage/round39_plana_clean_three_seed_progress.json",
+      "archive_path": "\u4ea4\u63a5\u6587\u6863/archive_20261102/superseded_round39/round39_plana_clean_three_seed_progress_7of8.json",
+      "old_sha256": "07e55f9b97643d3979d4ee876292ee836452544d698acbeb273b56a9c24aeea3",
+      "old_bytes": 15423,
+      "reason": "superseded by complete 8/8 three-seed aggregate; preserved, not deleted",
+      "new_sha256": "79520874a26c4da2ed15a254b9cf6c42001700209d8b631baf9c8c2e2b02e66e",
+      "new_bytes": 16058
+    },
+    {
+      "active_path": "\u4ea4\u63a5\u6587\u6863/source_data/appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json",
+      "archive_path": "\u4ea4\u63a5\u6587\u6863/archive_20261102/superseded_round39/round39_plana_vs_bpfold_matched_diagnostic_7of8.json",
+      "old_sha256": "9d69b446ab01a307ec7046206748001c070b73d53ce928b6556f91e3e38e4ad6",
+      "old_bytes": 14523,
+      "reason": "superseded by complete 8/8 three-seed aggregate; preserved, not deleted",
+      "new_sha256": "29655670693cb5a76287482158a7ef0c8e464389d76fd5ed8258d3e859ae61f9",
+      "new_bytes": 15062
     }
   ]
 }

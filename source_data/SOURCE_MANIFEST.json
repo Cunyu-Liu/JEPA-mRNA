@@ -668,10 +668,10 @@
   },
   {
    "path": "appendix_leakage/round39_plana_clean_three_seed_progress.json",
-   "sha256": "07e55f9b97643d3979d4ee876292ee836452544d698acbeb273b56a9c24aeea3",
-   "bytes": 15423,
-   "description": "plana clean 三训练种子独立聚合；当前 7/8 split，缺 TestSetB，不是完整主板结论，并发吞吐不可用于测速",
-   "status": "active_partial_7_of_8"
+   "sha256": "79520874a26c4da2ed15a254b9cf6c42001700209d8b631baf9c8c2e2b02e66e",
+   "bytes": 16058,
+   "description": "plana clean 8/8 split 三训练种子独立聚合；结果完整但未达 SOTA，并发吞吐不可用于测速",
+   "status": "active_complete_8_of_8_not_sota"
   },
   {
    "path": "appendix_leakage/round39_nucleicbert_ft_progress.json",
@@ -682,10 +682,10 @@
   },
   {
    "path": "appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json",
-   "sha256": "9d69b446ab01a307ec7046206748001c070b73d53ce928b6556f91e3e38e4ad6",
-   "bytes": 14523,
-   "description": "plana 学生与 BPfold 在同名、同序列、同 GT clean 交集上的独立配对复算；7/8 split 三种子，TSB 两种子，不作完整主板排名",
-   "status": "active_matched_diagnostic_7_of_8"
+   "sha256": "29655670693cb5a76287482158a7ef0c8e464389d76fd5ed8258d3e859ae61f9",
+   "bytes": 15062,
+   "description": "plana 学生与 BPfold 在同名、同序列、同 GT clean 交集上的完整三种子配对复算；负格保留",
+   "status": "active_matched_complete_8_of_8"
   },
   {
    "path": "appendix_leakage/bpfold_vl0.json",
@@ -700,6 +700,20 @@
    "bytes": 2020,
    "description": "VL0-only xens2+BPfold 非负 NLL 融合参数、教师/BPfold/融合对照；拟合集指标不作最终结论",
    "status": "active_validation_selected_candidate"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_calibration_three_seed_vl0_verification.json",
+   "sha256": "4c3a7071da3d7824a3770d4230dca82b4a099484b3f07007b8fdf07671a35083",
+   "bytes": 4710,
+   "description": "三个 VL0 校准的原始数组独立复算；ECE 降低但 Spearman/AURC 退化，非跨 split 结论",
+   "status": "active_validation_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_fusion_clean_ref_pdb_ts2.json",
+   "sha256": "22339a9030299ab1b285393ddead16e3f0af28bfae032940c583dc776e701b45",
+   "bytes": 5082,
+   "description": "VL0 锁定融合在双 clean TS2 的三次结果与校准/置信度；n=1，未领先 BPfold",
+   "status": "active_partial_1_of_8"
   }
  ]
 }
