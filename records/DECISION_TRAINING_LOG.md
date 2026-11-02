@@ -11592,3 +11592,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **收敛**：seed1 在 step3500 early stopping，恢复 best step1000，best VL0 KL=0.004838547518009322；三次独立 QA 的预测 SHA256=`6cd771cf32ff29276de3601bc8723dc53b77ced2418d8cf1da3848975dc84ec7` 一致。
 - **QA 结果**：教师 micro-F1=**0.8687807177**、GT-F1=0.6940063091、ECE=**0.0282252193**、Brier=0.0091593189、NLL=0.0403835828，SD=0；best checkpoint SHA256=`4e8e9e687200cf3776764316e518b21380adbaa60555f31b3aac42dc668b00a7`。ECE 低于 seed0 和教师，但 GT-F1 仍不能外推为全板结果。
 - **seed2**：已按同一纯 KL、B=1、VL0 patience=5 合同启动。三种子完成后统一测 TS0/clean 八 split、独占速度和校准，不用单种子值代替均值。
+
+
+## §15.277（2026-11-02）seed2 启动资源纠错
+
+- **首次启动失败**：RNAformer 单进程峰值达到 19.76 GiB，seed2 在 650M encoder `.to(cuda)` 阶段仅余 5.06 MiB，发生 OOM；尚未形成 train_log 或 checkpoint，不是训练失败或科学负结果。
+- **处理**：暂停 RNAformer 后重启 seed2，并在三种子全部完成前不再恢复该高峰值基线。保留 `failed_runs/seed2_load_oom_20261102` 证据；不改变 B=1、教师、学习率或早停合同。
