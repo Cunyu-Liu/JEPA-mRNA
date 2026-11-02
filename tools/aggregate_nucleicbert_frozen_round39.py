@@ -16,19 +16,32 @@ def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def validate(path):
+def validate(path, clean=False):
     result = json.loads(path.read_text())
-    assert result["status"] == "PASS" and result["system"] == "nucleicbert_frozen_official"
+    assert result["system"] == "nucleicbert_frozen_official"
     assert result["weights_sha256"] == EXPECTED_CHECKPOINT_SHA256
+    assert result["training_corpus"] == "rnastralign_tr0"
+    assert result["batch_size"] == 2 and result["input_max_length_with_special_tokens"] == 600
+    assert result["sequence_core_max_length"] == 598 and result["device"] == "cuda"
+    rows = [json.loads(line) for line in Path(result["data"]).open() if line.strip()]
+    assert len(rows) == result["n_sequences"]
+    if clean:
+        audit = json.loads(Path(result["clean_audit"]).read_text())
+        assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[path.stem]
+        assert audit["raw_n"] == EXPECTED_SPLIT_COUNTS[path.stem]
+        assert audit["raw_n"] == audit["clean_n"] + audit["removed_exact"] + audit["removed_homology_only"]
+        assert audit["clean_n"] == len(rows) and audit["clean_sha256"] == result["data_sha256"] == sha256(Path(result["data"]))
+    else:
+        assert len(rows) == EXPECTED_SPLIT_COUNTS[path.stem]
+        assert result["data_sha256"] == EXPECTED_SPLIT_SHA256[path.stem] and result["clean_audit"] is None
+    if result["status"] == "EMPTY_AFTER_DELEAK":
+        assert clean and not rows and result["repeats"] == [] and result["predictions"] == []
+        return {"n": 0, "status": "EMPTY_AFTER_DELEAK", "weights_sha256": result["weights_sha256"],
+                "result_sha256": sha256(path), "probabilities_sha256": None}
+    assert result["status"] == "PASS" and len(result["repeats"]) == 3
     assert result["checkpoint"]["strict_load"] is True
     assert result["checkpoint"]["checkpoint_epoch"] == 99
     assert result["checkpoint"]["checkpoint_global_step"] == 258000
-    assert result["batch_size"] == 2 and result["input_max_length_with_special_tokens"] == 600
-    assert result["sequence_core_max_length"] == 598 and result["device"] == "cuda"
-    assert result["training_corpus"] == "rnastralign_tr0"
-    rows = [json.loads(line) for line in Path(result["data"]).open() if line.strip()]
-    assert len(rows) == result["n_sequences"] == EXPECTED_SPLIT_COUNTS[path.stem]
-    assert result["data_sha256"] == EXPECTED_SPLIT_SHA256[path.stem] and result["clean_audit"] is None
     assert result["n_truncated_sequences"] == sum(len(row["seq"]) > 598 for row in rows)
     tp = fp = fn = 0
     macro = []
@@ -48,10 +61,9 @@ def validate(path):
         assert (run["tp"], run["fp"], run["fn"]) == (tp, fp, fn)
         assert abs(run["strict_micro_f1"] - f1) < 1e-12
         assert abs(run["strict_macro_f1"] - statistics.mean(macro)) < 1e-12
-    assert len(result["repeats"]) == 3
     assert len({run["predictions_sha256"] for run in result["repeats"]}) == 1
     assert len({run["probabilities_sha256"] for run in result["repeats"]}) == 1
-    return {"n": len(rows), "tp": tp, "fp": fp, "fn": fn,
+    return {"n": len(rows), "status": "PASS", "tp": tp, "fp": fp, "fn": fn,
             "strict_micro_f1": {"values": [run["strict_micro_f1"] for run in result["repeats"]],
                                 "mean": statistics.mean([run["strict_micro_f1"] for run in result["repeats"]]),
                                 "sd": statistics.stdev([run["strict_micro_f1"] for run in result["repeats"]])},
@@ -68,20 +80,26 @@ def main():
     args = parser.parse_args()
     output = {"schema_version": 1, "system": "nucleicbert_frozen_official",
               "evaluation_scope": "official B=2 first-598-nt protocol; all source sequences retained",
-              "clean_status": "PENDING_CLEAN_SPLIT_BUILD_official_rnastralign_tr0",
-              "raw": {}}
+              "clean_status": "official_rnastralign_tr0_clean_audit_ready", "raw": {}, "clean": {}}
     for split in SPLITS:
-        path = args.root / "raw" / f"{split}.json"
-        if path.is_file():
-            output["raw"][split] = validate(path)
+        raw_path = args.root / "raw" / f"{split}.json"
+        if raw_path.is_file():
+            output["raw"][split] = validate(raw_path)
+        clean_path = args.root / "clean" / f"{split}.json"
+        if clean_path.is_file():
+            output["clean"][split] = validate(clean_path, clean=True)
     output["raw_complete_split_count"] = len(output["raw"])
-    output["status"] = "PASS_RAW_8x3_INDEPENDENT_RECOMPUTE" if len(output["raw"]) == 8 else "PARTIAL_NOT_FULL_BOARD"
+    output["clean_complete_split_count"] = len(output["clean"])
+    output["status"] = ("PASS_RAW_CLEAN_8x3_INDEPENDENT_RECOMPUTE" if len(output["clean"]) == 8
+                        else "PASS_RAW_8x3_CLEAN_IN_PROGRESS" if len(output["raw"]) == 8
+                        else "PARTIAL_NOT_FULL_BOARD")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.out.with_suffix(args.out.suffix + ".tmp")
     temporary.write_text(json.dumps(output, indent=2) + "\n")
     temporary.replace(args.out)
     print(json.dumps({"status": output["status"], "raw": output["raw_complete_split_count"],
-                      "out": str(args.out), "sha256": sha256(args.out)}, indent=2))
+                      "clean": output["clean_complete_split_count"], "out": str(args.out),
+                      "sha256": sha256(args.out)}, indent=2))
 
 
 if __name__ == "__main__":

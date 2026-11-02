@@ -69,4 +69,6 @@ PY
             --repeats 3 --out "$out" > logs/round39_clean_benchmark/nucleicbert_frozen_clean_${split}.log 2>&1
     done
 '
+"$python" tools/aggregate_nucleicbert_frozen_round39.py \
+    --root "$out_root" --out "$out_root/raw_clean_summary.json"
 echo NUCLEICBERT_FROZEN_CLEAN_8_SPLIT_PASS

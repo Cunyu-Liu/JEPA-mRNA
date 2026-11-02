@@ -73,6 +73,11 @@ def main():
     if not rows:
         assert args.clean_audit is not None
         payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "system": "nucleicbert_frozen_official",
+                   "weights": str(args.weights), "weights_sha256": sha256(args.weights),
+                   "data": str(args.data), "data_sha256": sha256(args.data),
+                   "clean_audit": str(args.clean_audit), "training_corpus": "rnastralign_tr0",
+                   "batch_size": 2, "input_max_length_with_special_tokens": 600,
+                   "sequence_core_max_length": 598, "device": "cuda",
                    "n_sequences": 0, "repeats": [], "predictions": []}
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(payload, indent=2) + "\n")
