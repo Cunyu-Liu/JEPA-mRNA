@@ -137,6 +137,16 @@ def main():
     ap.add_argument("--teacher-dir", default=TEACHER_DIR)
     ap.add_argument("--out", required=True)
     ap.add_argument("--steps", type=int, default=20000)
+    ap.add_argument("--validation-data", default="")
+    ap.add_argument("--validation-teacher-dir", default="")
+    ap.add_argument("--validation-every", type=int, default=500)
+    ap.add_argument("--validation-patience", type=int, default=5)
+    ap.add_argument("--validation-min-delta", type=float, default=1e-6)
+    ap.add_argument("--init-checkpoint", default="")
+    ap.add_argument("--lambda-nll", type=float, default=1.0)
+    ap.add_argument("--lambda-distill", type=float, default=1.0)
+    ap.add_argument("--lambda-rlcd", type=float, default=1.0)
+    ap.add_argument("--lambda-cal", type=float, default=1.0)
     ap.add_argument("--batch-size", type=int, default=4)
     ap.add_argument("--head-lr", type=float, default=1e-4)
     ap.add_argument("--backbone-lr", type=float, default=1e-5)
@@ -147,6 +157,7 @@ def main():
     ap.add_argument("--warmup-steps", type=int, default=5)
     ap.add_argument("--save-every", type=int, default=500)
     ap.add_argument("--snapshot-every", type=int, default=2000)
+    ap.add_argument("--snapshot-dir", default=CKPT_DIR)
     ap.add_argument("--grad-clip", type=float, default=1.0)
     ap.add_argument("--zchunk", type=int, default=64, help="column width of the "
                     "checkpointed z construction (numerically exact; see docstring)")
@@ -158,6 +169,7 @@ def main():
     args = ap.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
+    os.makedirs(args.snapshot_dir, exist_ok=True)
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     device = "cuda"
@@ -193,8 +205,19 @@ def main():
         raise SystemExit(f"FATAL: {len(missing)} sequences have no teacher label "
                          f"(first: len {len(missing[0])}); refusing to run a "
                          "distillation term over a partial teacher.")
-    weights = ObjectiveWeights(lambda_nll=1.0, lambda_distill=1.0,
-                               lambda_rlcd=1.0, lambda_cal=1.0)
+    weights = ObjectiveWeights(lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
+                               lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal)
+    if bool(args.validation_data) != bool(args.validation_teacher_dir):
+        raise SystemExit("FATAL: validation data and teacher directory must be supplied together")
+    validation_records = load_records(args.validation_data) if args.validation_data else []
+    validation_teacher = load_teacher_map(args.validation_teacher_dir) if args.validation_teacher_dir else {}
+    missing_validation = [seq for seq, _ in validation_records if seq not in validation_teacher]
+    if missing_validation:
+        raise SystemExit(f"FATAL: {len(missing_validation)} validation sequences lack teacher labels")
+    best_step = 0
+    best_validation_loss = float("inf")
+    bad_evaluations = 0
+    early_stopped = False
 
     encoder, report = load_encoder(device="cpu", dtype=torch.float32)
     print(f"[plan-a] backbone: {report['n_params']/1e6:.0f}M params, "
@@ -203,6 +226,11 @@ def main():
                             scorer="resnet2d", chunk_size=0)
     encoder = encoder.to(device)
     head = head.to(device)
+    if args.init_checkpoint:
+        initial = torch.load(args.init_checkpoint, map_location="cpu", weights_only=False)
+        encoder.load_state_dict(initial["model"]["encoder"], strict=True)
+        head.load_state_dict(initial["model"]["head"], strict=True)
+        print(f"[plan-a] model-only init from {args.init_checkpoint}; optimizer starts at step 0", flush=True)
     if _reserve is not None:
         _rgb = _reserve.numel() * 4 / (1 << 30)
         _reserve = None  # freed into the caching allocator pool, not to the OS
@@ -257,13 +285,19 @@ def main():
         "backbone": "rinalmo-giga (pretrained safetensors, in-loop)",
         "head": "FlatDecisionHead scorer=resnet2d d_z=128 (head params "
                 f"{n_head})",
-        "objective": {"lambda_nll": 1.0, "lambda_distill": 1.0,
-                      "lambda_rlcd": 1.0, "lambda_cal": 1.0,
-                      "teacher": "thermo:viennarna (strict seq keying)",
+        "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
+                      "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
+                      "teacher": args.teacher_dir,
                       "distill_kind": "kl", "rlcd_reward": "brier", "beta": 1.0,
                       "n_bins": 10, "tau": 0.1, "nll_normalization": "sum"},
+        "validation": {"data": args.validation_data, "teacher_dir": args.validation_teacher_dir,
+                       "every": args.validation_every, "patience": args.validation_patience,
+                       "min_delta": args.validation_min_delta},
+        "environment": {"resolved_device": "cuda:0", "gpu_name": torch.cuda.get_device_name(0)},
+        "best_step": None, "best_validation_loss": None,
+        "early_stopped": False, "converged": False,
         "protocol_parity": [
-            "length-bucketed batch=4, iter_batches RNG (seed,epoch)",
+            f"length-bucketed batch={args.batch_size}, iter_batches RNG (seed,epoch)",
             "encoder frame <cls>+seq+<eos> + attention_mask, hidden[1:L+1]",
             "encoder dropout p=0 (deterministic, matches cached features)",
             "AdamW betas=(0.9,0.98) wd=0, 5-step warmup LambdaLR",
@@ -291,6 +325,9 @@ def main():
         n_unfrozen = int(state["n_unfrozen"])
         start_step = int(state["step"])
         stream.state = state["stream_state"]
+        best_step = int(state.get("best_step", 0))
+        best_validation_loss = float(state.get("best_validation_loss", float("inf")))
+        bad_evaluations = int(state.get("bad_evaluations", 0))
         print(f"[plan-a] resumed from step {start_step} "
               f"({n_unfrozen}/{n_blocks} blocks unfrozen)", flush=True)
 
@@ -465,20 +502,88 @@ def main():
                         "optimizer": opt.state_dict(),
                         "scheduler": sched.state_dict(),
                         "n_unfrozen": n_unfrozen,
+                        "best_step": best_step,
+                        "best_validation_loss": best_validation_loss,
+                        "bad_evaluations": bad_evaluations,
                         "stream_state": stream.state}, resume_path)
         if step % args.snapshot_every == 0 or step == args.steps:
             torch.save({"step": step,
                         "model": {"encoder": encoder.state_dict(),
                                   "head": head.state_dict()},
                         "meta": meta},
-                       os.path.join(CKPT_DIR,
+                       os.path.join(args.snapshot_dir,
                                     f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt"))
+        if validation_records and step % args.validation_every == 0:
+            import xens2_eval
+            encoder.eval()
+            head.eval()
+            validation_total = 0.0
+            with torch.no_grad():
+                for seq, gt_pairs in validation_records:
+                    scores = xens2_eval.plana_scores(encoder, head, seq, device)
+                    scores = torch.where(torch.isfinite(scores), scores,
+                                         torch.full_like(scores, NEG_BIG))
+                    mask = valid_pair_mask(seq)
+                    loss, _ = combined_loss(
+                        scores, mask, gt_pairs, weights,
+                        teacher_probs=torch.as_tensor(validation_teacher[seq],
+                                                      dtype=torch.float64, device=device),
+                        student_probs=torch.sigmoid(scores),
+                        labels=torch.as_tensor(pair_indicator(len(seq), gt_pairs),
+                                               dtype=torch.float64, device=device),
+                        distill_kind="kl", reward="brier", beta=1.0,
+                        n_bins=10, tau=0.1, nll_normalization="sum",
+                        return_terms=True)
+                    validation_total += float(loss)
+            validation_loss = validation_total / len(validation_records)
+            encoder.train()
+            head.train()
+            improved = validation_loss < best_validation_loss - args.validation_min_delta
+            if improved:
+                best_step = step
+                best_validation_loss = validation_loss
+                bad_evaluations = 0
+                torch.save({"step": step,
+                            "model": {"encoder": encoder.state_dict(),
+                                      "head": head.state_dict()},
+                            "validation_loss": validation_loss,
+                            "objective": meta["objective"]},
+                           os.path.join(args.out, "best.pt"))
+            else:
+                bad_evaluations += 1
+            with open(os.path.join(args.out, "validation_log.jsonl"), "a") as fh:
+                fh.write(json.dumps({"step": step, "validation_loss": validation_loss,
+                                     "best_step": best_step,
+                                     "best_validation_loss": best_validation_loss,
+                                     "improved": improved,
+                                     "bad_evaluations": bad_evaluations}) + "\n")
+            meta["best_step"] = best_step
+            meta["best_validation_loss"] = best_validation_loss
+            with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
+                json.dump(meta, fh, indent=1)
+            print(f"[plan-a] validation step={step} loss={validation_loss:.8f} "
+                  f"best={best_validation_loss:.8f}@{best_step} bad={bad_evaluations}", flush=True)
+            if bad_evaluations >= args.validation_patience:
+                early_stopped = True
+                break
 
+    if early_stopped:
+        best = torch.load(os.path.join(args.out, "best.pt"), map_location="cpu", weights_only=False)
+        encoder.load_state_dict(best["model"]["encoder"], strict=True)
+        head.load_state_dict(best["model"]["head"], strict=True)
+    torch.save({"step": step, "head": head.state_dict(),
+                "encoder": encoder.state_dict(), "optimizer": opt.state_dict(),
+                "scheduler": sched.state_dict(), "n_unfrozen": n_unfrozen,
+                "best_step": best_step, "best_validation_loss": best_validation_loss,
+                "bad_evaluations": bad_evaluations, "stream_state": stream.state}, resume_path)
     meta["status"] = "completed"
-    meta["steps_completed"] = int(args.steps)
+    meta["steps_completed"] = int(step)
+    meta["stop_reason"] = "early_stopping" if early_stopped else "step_cap"
+    meta["early_stopped"] = early_stopped
+    meta["converged"] = early_stopped
     with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
         json.dump(meta, fh, indent=1)
-    print("[plan-a] DONE", flush=True)
+    print(f"[plan-a] DONE step={step} early_stopped={early_stopped} best={best_step}", flush=True)
 
 
 if __name__ == "__main__":
