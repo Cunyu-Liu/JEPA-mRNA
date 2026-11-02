@@ -54,6 +54,14 @@
       "new_sha256": "1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07",
       "reason": "superseded by independently recomputed 6/8 fusion aggregate",
       "new_bytes": 16883
+    },
+    {
+      "type": "document_archive",
+      "original_path": "\u4ea4\u63a5\u6587\u6863/docs/plans/2026-10-31-round36-speed-benchmark.md",
+      "archive_path": "\u4ea4\u63a5\u6587\u6863/archive_20261102/old_plans/2026-10-31-round36-speed-benchmark.md",
+      "sha256": "168e46cedc5f06534adccebe68a58c7fb6f435e5ce517413dc8102f7d42b57c3",
+      "bytes": 5689,
+      "reason": "round36 plan completed and superseded by round39 clean/xens2 contract; historical reference only"
     }
   ]
 }
