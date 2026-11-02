@@ -11834,3 +11834,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **资产与输出隔离**：bprna/inter-family/intra-family/biophysical 四套官方 state_dict/config 均存在。bprna 缺 raw 6 格、clean 8 格；另外三个变体使用各自独立 `rnaformer/<variant>/{raw,clean}` 输出目录和对应 clean 审计，避免覆盖 bprna raw 结果。intra-family 仍为 supplementary，不计入核心 600 单元。
 - **资源合同**：全部按既有 fusion 锁排在 NLL 后串行执行，启动要求 CUDA 可用且至少 21 GiB 空闲；B=1、repeats=3、allow-long，不降低协议。当前未实际启动这些 GPU 任务，不写成 running 或完成。
 - **启动竞态**：inter/intra/biophysical 首次并行提交时，后两者在 variant runner 上传完成前退出，错误均为 `No such file or directory`，没有模型输出。确认脚本存在且 `bash -n` 通过后已重新排队；此为调度竞态，不是 CUDA 或科学失败。
+
+
+## §15.309（2026-11-02）RiNALMo/SPOT-RNA clean 阶段验收
+
+- **RiNALMo-ft clean TS0**：n=1192，三次 F1=**0.7110963915275416**，TP/FP/FN=23618/10257/8934，SD=0；clean audit、预测和计数独立复核通过，结果 SHA256=`dcd844a7b88bf212cfc01b6b4dd3c94fc494b4585aefc59683a5bc12d3010f76`。其余 clean 格继续。
+- **SPOT-RNA clean 6/8**：TS0/new/TS1/TS2/TS3/hard 的 n=152/5386/10/9/0/3，F1=0.6178470011/0.5836098496/0.7759336100/0.7686567164/EMPTY/0.6530612245，均三次一致；TS3 去泄露后为空，不伪造指标。进度聚合 SHA256=`ff7db2831c9354133e79805e1a75cbe5f132d3a0d56c4ba124e4d1ebd03acd98`，bytes=2840。
+- **边界**：SPOT-RNA 尚缺 ArchiveII/TestSetB，RiNALMo 尚缺其余七格；部分进度不写成 16 格或最终 clean 主板完成。

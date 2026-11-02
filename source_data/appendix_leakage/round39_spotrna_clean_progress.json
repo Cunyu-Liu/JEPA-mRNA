@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "system": "spotrna",
+  "status": "PASS_PARTIAL_6_OF_8",
+  "complete_split_count": 6,
+  "pending_splits": [
+    "archiveii_embok_clean",
+    "testsetb"
+  ],
+  "clean_tr0_tr1": {
+    "bprna_ts0": {
+      "n": 152,
+      "tp": 3590,
+      "fp": 2451,
+      "fn": 1990,
+      "strict_micro_f1": {
+        "values": [
+          0.6178470011186645,
+          0.6178470011186645,
+          0.6178470011186645
+        ],
+        "mean": 0.6178470011186645,
+        "sd": 0.0
+      },
+      "result_sha256": "3876e9dc062f5cd8f61e63ff0c64724c4b533dc271ff8e3cb9a8bdc270ebb208",
+      "probabilities_sha256": "ef9d52fba3d369dbc813637b90ae8ad9bdb5163904bce59b90aaaa114a67b7af"
+    },
+    "bprna_new": {
+      "n": 5386,
+      "tp": 77300,
+      "fp": 52462,
+      "fn": 57841,
+      "strict_micro_f1": {
+        "values": [
+          0.5836098496430769,
+          0.5836098496430769,
+          0.5836098496430769
+        ],
+        "mean": 0.5836098496430769,
+        "sd": 0.0
+      },
+      "result_sha256": "192569864fc53265f1d75f110024c7af08b5b8b53de3491c72738c341e6a41a0",
+      "probabilities_sha256": "fba9a95325f9052ff74f1f84492685490a6a05b14eb02cf50d0b258e4865955c"
+    },
+    "ref_pdb_ts1": {
+      "n": 10,
+      "tp": 187,
+      "fp": 62,
+      "fn": 46,
+      "strict_micro_f1": {
+        "values": [
+          0.7759336099585062,
+          0.7759336099585062,
+          0.7759336099585062
+        ],
+        "mean": 0.7759336099585062,
+        "sd": 0.0
+      },
+      "result_sha256": "4908140f03d5f9ba0f9a49ed0d14394897cb2de54d8ae5b1cf2ed8ccc6295e16",
+      "probabilities_sha256": "6b4e88d19a9bddb97547a86036acddd1383d54f47631c17a7c9ea56fe01cad75"
+    },
+    "ref_pdb_ts2": {
+      "n": 9,
+      "tp": 103,
+      "fp": 39,
+      "fn": 23,
+      "strict_micro_f1": {
+        "values": [
+          0.7686567164179104,
+          0.7686567164179104,
+          0.7686567164179104
+        ],
+        "mean": 0.7686567164179104,
+        "sd": 0.0
+      },
+      "result_sha256": "67d0e3bb2e8d6e9b1ba7a9bde404863e10fd8db5971e549c59e3f276467f7f15",
+      "probabilities_sha256": "af3a4350d17af1d120429306d8050f73415535e081eac59da2572887b13ff410"
+    },
+    "ref_pdb_ts3": {
+      "n": 0,
+      "status": "EMPTY_AFTER_DELEAK",
+      "result_sha256": "05fc7eb041fd0369d3af802b3c2311f24ead7269dd90be6a2a08dc461bf443f7"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 3,
+      "tp": 16,
+      "fp": 9,
+      "fn": 8,
+      "strict_micro_f1": {
+        "values": [
+          0.6530612244897959,
+          0.6530612244897959,
+          0.6530612244897959
+        ],
+        "mean": 0.6530612244897959,
+        "sd": 0.0
+      },
+      "result_sha256": "0a594721ed338752bf484d7a21f022f9414e0cef526ae4acc4367ad20959775a",
+      "probabilities_sha256": "265dd021d171e96504a1ce43496d43062683f3eba7a23ad9fc4bc5be9eacfeb6"
+    }
+  }
+}
