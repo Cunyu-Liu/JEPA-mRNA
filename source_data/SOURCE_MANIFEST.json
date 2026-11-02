@@ -668,10 +668,10 @@
   },
   {
    "path": "appendix_leakage/round39_plana_clean_three_seed_progress.json",
-   "sha256": "35eaae977ef1fe5fd07a65542f7d9929227e32b3f45d2932688217c57dae7a62",
-   "bytes": 4987,
-   "description": "plana clean 三训练种子独立聚合；当前仅 TS0 完成，不是主板科学结论，并发吞吐不可用于测速",
-   "status": "active_partial_1_of_8"
+   "sha256": "07e55f9b97643d3979d4ee876292ee836452544d698acbeb273b56a9c24aeea3",
+   "bytes": 15423,
+   "description": "plana clean 三训练种子独立聚合；当前 7/8 split，缺 TestSetB，不是完整主板结论，并发吞吐不可用于测速",
+   "status": "active_partial_7_of_8"
   },
   {
    "path": "appendix_leakage/round39_nucleicbert_ft_progress.json",
@@ -682,10 +682,10 @@
   },
   {
    "path": "appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json",
-   "sha256": "f803f1763ccd94f97f0ee139a794dec8b9d8a37bfb357fe3da40b0deb3e8a746",
-   "bytes": 11311,
-   "description": "plana 学生与 BPfold 在同名、同序列、同 GT clean 交集上的独立配对复算；未齐三种子，不作最终排名",
-   "status": "active_matched_diagnostic_partial_seeds"
+   "sha256": "9d69b446ab01a307ec7046206748001c070b73d53ce928b6556f91e3e38e4ad6",
+   "bytes": 14523,
+   "description": "plana 学生与 BPfold 在同名、同序列、同 GT clean 交集上的独立配对复算；7/8 split 三种子，TSB 两种子，不作完整主板排名",
+   "status": "active_matched_diagnostic_7_of_8"
   },
   {
    "path": "appendix_leakage/bpfold_vl0.json",

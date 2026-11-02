@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "active_path": "\u4ea4\u63a5\u6587\u6863/source_data/appendix_leakage/round39_plana_clean_three_seed_progress.json",
+      "archive_path": "\u4ea4\u63a5\u6587\u6863/archive_20261102/superseded_round39/round39_plana_clean_three_seed_progress.json",
+      "old_sha256": "35eaae977ef1fe5fd07a65542f7d9929227e32b3f45d2932688217c57dae7a62",
+      "old_bytes": 4987,
+      "reason": "superseded by independently recomputed 7/8 three-seed progress; preserved, not deleted",
+      "new_sha256": "07e55f9b97643d3979d4ee876292ee836452544d698acbeb273b56a9c24aeea3",
+      "new_bytes": 15423
+    },
+    {
+      "active_path": "\u4ea4\u63a5\u6587\u6863/source_data/appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json",
+      "archive_path": "\u4ea4\u63a5\u6587\u6863/archive_20261102/superseded_round39/round39_plana_vs_bpfold_matched_diagnostic.json",
+      "old_sha256": "f803f1763ccd94f97f0ee139a794dec8b9d8a37bfb357fe3da40b0deb3e8a746",
+      "old_bytes": 11311,
+      "reason": "superseded by independently recomputed 7/8 three-seed progress; preserved, not deleted",
+      "new_sha256": "9d69b446ab01a307ec7046206748001c070b73d53ce928b6556f91e3e38e4ad6",
+      "new_bytes": 14523
+    }
+  ]
+}
