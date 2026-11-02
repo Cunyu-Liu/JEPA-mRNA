@@ -11809,3 +11809,15 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **raw bpRNA-new**：n=5388，三次 F1=**0.4489961556755058**，TP/FP/FN=51448/42537/83736，SD=0；独立结果 SHA256=`6bf0080d656a3859e36492c7497e64f50fbcc5d7abf091e3546c8ce3c0e6baee`。两格预测、权重、数据和 strict 加载均复核通过。
 - **代码差异审查**：TS0 的 `speed_end_to_end_4090.py` 哈希 `ffa3cf37...`（commit `d497257`）与 bpRNA-new 的 `5295425b...`（commit `5834881`）不同。逐行 diff 仅涉及 RNAformer/r2d/plana 权重参数和协议元数据，`rinalmo_ft` 加载与解码路径未变，故不返工 TS0。
 - **后续**：新增 `aggregate_rinalmo_ft_round39.py`，从 predictions 重算计数/F1、验证 clean 守恒、三次哈希、full-length B=1 与 CUDA/raw-sequence 协议，已在上述两格实测通过。整板聚合排在现有 runner 后，ArchiveII 峰值 19.2 GiB，NLL 训练继续等待，不强行叠加。
+
+
+## §15.305（2026-11-02）论文叙事与归档边界复核
+
+- `paper/round39_claim_evidence_audit.md` 已把“主力候选转向融合”改为融合明确否决；融合仅完成 6 格，TS2/TS3 使 8/8 不可达，不再写成待完成成功路线。混合数据仅称“可审计的数据候选”，seed0 未训练前不得预设精度、速度或 ECE 收益。
+- 交接目录当前仅有 round39 活跃计划、活跃记录与既有归档；旧源版本已逐项入 `archive_20261102/`。本轮没有发现可安全追加归档的明显废弃文件，因此未移动任何活跃文件，避免为了整洁破坏证据链。
+
+
+## §15.306（2026-11-02）E2Efold 资产再核查
+
+- 再次请求 Hugging Face 与 hf-mirror 的 `multimolecule/e2efold` API，分别连接超时/无内容，未获得权重；当前 MultiMolecule 0.2.2 环境仅有 UFold 类，没有 E2Efold 模型类，不能套用其他架构加载。
+- 保持 `BLOCKED_SHAREPOINT_ACCESS_DENIED`，不伪造转换权重、不用 UFold 或其他模型替代 E2Efold。该外部资产未闭环不计入已测单元，也不据此宣称全基线 SOTA。
