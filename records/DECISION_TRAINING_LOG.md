@@ -11683,3 +11683,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **最终聚合**：状态 `PASS_RAW_8x3_CLEAN_8x3`，SHA256=`0baaec44a9351f1b39a6f75860b5b36943cfb2bd2ad58ad66785a44eb63339d3`。训练语料为 tr1c，raw 与 clean 样本数、指标分开保留；注册表已同步。
 - **frozen NB 资产边界**：本地没有 frozen 头部 checkpoint。官方 Zenodo `secstr.ckpt` 约 4.7 GB，首次下载仅完成约 1 MiB 后超时，不能作为有效权重；不得随机初始化头部或用 fine-tuned 结果替代 frozen 系统。
 - **后续资源顺序**：RiNALMo-ft raw/TR0-clean 已用文件锁排在融合任务后，避免与长序列融合和 Kirigami 叠加 OOM。
+
+
+## §15.288（2026-11-02）RFold 全历史核查与资产续传
+
+- **RFold 官方历史**：浅克隆只有 1 个提交，已用 `git fetch --unshallow` 补齐到 11 个提交。当前及初始 `main.py` 均只有 `exp.test()`，`checkpoints/` 只有 ArchiveII/RNAStralign/bpRNA 三份 JSON 配置；全历史文件清单没有训练循环或模型权重。由此保持 `OFFICIAL_REPO_NO_WEIGHTS_OR_TRAIN_ENTRY`，不伪造官方复现训练，也不把自行设计的近似配方称为官方 RFold。
+- **frozen NB 权重**：Zenodo API 确认 `secstr.ckpt` content-length=4,970,204,510 bytes。Range 请求虽受支持，但实测约 14 KB/s；首次 curl 续传因本机不支持 `--retry-all-errors` 而在请求前退出，移除不兼容参数后已恢复后台断点续传。partial 与完成文件分开，未完成时不作为有效权重。
+- **融合 TS0 过程值**：首轮 F1=0.798650711，高于同子集 student 与 BPfold；剩余重复尚未完成，过程值不写入主板或 SOTA 结论。
