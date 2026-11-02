@@ -11883,3 +11883,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **训练进展**：seed0 已到 step 1225，train_log 共 50 个记录点，仍只有 `nll` 项，未发生 CPU 降级。step 1 峰值 2.9 GB，后续记录峰值约 3–4.5 GB；混合数据共 44,221 条，模型初始化和优化器身份不变。
 - **VL0 曲线**：step500 validation_loss=18.3701138872（当前 best），step1000=19.8212100565，best 仍 @500、bad_evaluations=1。不能据此称改善或收敛；继续按 patience=5、min_delta=1e-6 运行，下一验证点不得人为截断。
 - **状态辨析**：`run_meta.json` 在训练开始时即以 `status=running` 写入，并不表示训练完成。后台任务仍 running；最终必须有 `status=completed + converged + early_stopped` 和 best/resume checkpoint，才可进入独立 QA。
+
+
+## §15.316（2026-11-03）NLL step1500 与收敛后 QA 队列
+
+- **当前曲线**：step1500 validation_loss=20.5438826092，高于 step500 的 18.3701138872 和 step1000 的 19.8212100565，best 仍 @500、bad_evaluations=2；train_log 已到 step1700，run_meta 仍为 running。不得把损失上升写成收敛或成功微调，也不在中途改变学习率/数据。
+- **QA 准备**：`qa_plana_student_round39.py` 支持该 plana best checkpoint，并保留原 xens2 教师作对照；已排队“验证 completed+converged+early_stopped 后执行三次 VL0 GPU QA，再跑 TR1c-clean 八格”。锁顺序与训练一致，不会提前执行。
+- **聚合兼容**：`aggregate_plana_clean_round39.py` 新增 run/qa/result prefix 参数，默认旧 `xens2_plana_distill/plana` 行为不变；后续 NLL 可复用同一独立计数验收，无需复制评分逻辑。

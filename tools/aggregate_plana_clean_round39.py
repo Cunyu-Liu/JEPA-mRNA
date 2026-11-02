@@ -90,6 +90,9 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--clean-root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--run-prefix", default="xens2_plana_distill")
+    parser.add_argument("--qa-prefix", default="xens2_plana_distill")
+    parser.add_argument("--result-prefix", default="plana")
     args = parser.parse_args()
     per_split = {}
     missing = []
@@ -97,12 +100,13 @@ def main():
     for split in SPLITS:
         rows = []
         for seed in range(3):
-            arm = f"xens2_plana_distill_s{seed}"
-            qa = json.loads((args.root / "qa" / f"{arm}_vl0" / "qa_summary.json").read_text())
+            arm = f"{args.run_prefix}_s{seed}"
+            qa_arm = f"{args.qa_prefix}_s{seed}"
+            qa = json.loads((args.root / "qa" / f"{qa_arm}_vl0" / "qa_summary.json").read_text())
             meta = json.loads((args.root / "runs" / arm / "run_meta.json").read_text())
             assert qa["status"] == "PASS" and meta["converged"] and meta["early_stopped"]
             checkpoint_sha = qa["checkpoint_sha256"]
-            result_path = args.root / f"plana_s{seed}" / "clean" / f"{split}.json"
+            result_path = args.root / f"{args.result_prefix}_s{seed}" / "clean" / f"{split}.json"
             if not result_path.is_file():
                 missing.append(str(result_path))
                 continue
