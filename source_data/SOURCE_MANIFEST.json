@@ -728,6 +728,13 @@
    "bytes": 881,
    "description": "Kirigami C 解码 TS0 三次完整等价与 11.814 倍中位加速；bpRNA-new 与 ArchiveII 尚待验收",
    "status": "active_engineering_validation"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_fast_bprna_new_equivalence.json",
+   "sha256": "87473ab44930ced208a4b0b520323364423881e3b1557a2fe4990e26b8141b4d",
+   "bytes": 879,
+   "description": "Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速；ArchiveII/clean 加速复测中",
+   "status": "active_engineering_validation"
   }
  ]
 }
