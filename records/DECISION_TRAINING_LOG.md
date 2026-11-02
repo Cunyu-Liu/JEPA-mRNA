@@ -11558,3 +11558,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **三次独立 VL0 CUDA QA**：从 `best.pt` 新进程三次加载与推理，预测 SHA256=`47c62405c5e45f7eaceb8acc401066a88ade4a5d99e381f4a4c51e1504e94a7a` 完全一致；TP/FP/FN=3768/889/850，F1=**0.8125067385**、ECE=**0.0641396712**，SD=0。best checkpoint SHA256=`7653e3e3cf12fa911e8b11522a037789d571da4e6d34283bd24a83411c9a8e00`，QA 汇总 SHA256=`b88f43b0d2ed03209307a28d8424a035078fc9a2118ae928f31f30577f1ec6fe`。
 - **后续启动**：seed1 已按相同 B=2 合同启动；seed0 同时开始 raw 与 tr1c-clean 八 split 三次评测，只作单种子候选诊断，不能替代三种子均值。
 - **RiNALMo-ft 资源失败**：bpRNA-new 前向时训练/Kirigami/RiNALMo-ft 合计约 23.46 GiB，最后 30 MiB 无法分配而停止，未写出新 PASS；待 seed 间隙或轻量任务结束后恢复，不重试同一峰值。
+
+
+## §15.273（2026-11-02）教师信号不足与纯 KL 候选
+
+- **现象**：旧四项目标 seed0 的 raw TS0 三次均 TP=23677、FP=12172、FN=11214，F1=**0.6694091038**，仅接近原 r2d=0.6679，远低于 xens2=0.8039。训练日志同段 NLL 约 20–30、distill 约 0.05–0.07，说明在该复合目标下教师 KL 对总目标的相对作用很小，收敛和 QA 通过并不等于学生继承了 xens2 能力。
+- **决策**：停止仍处早期的旧目标 seed1，目录移至 `failed_runs/nll_dominates_teacher_s1_20261102`；旧 seed0 保留为负向对照，不将其 raw/clean 结果包装为主力模型。
+- **新候选**：`xens2_distill_only_r2d_s0` 从同一 r2d 模型权重初始化，B=2，直接以 xens2 教师 KL 为唯一目标（nll=0、distill=1、rlcd=0、cal=0），VL0 早停合同不变。先在 VL0/TS0 检验教师保真度，再决定是否三种子，不盲目重复旧目标。
+- **工程同步**：启动器支持 `ARM_PREFIX` 与四个 lambda 的环境配置，默认仍保留旧四项目标；每个候选独立 dry-run、run 目录和日志。

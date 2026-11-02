@@ -8,6 +8,11 @@ ROOT=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round3
 DATA=/root/rna_jepa_data/ss_data/jsonl
 EMB=/root/rna_jepa_data/embeddings/rinalmo-giga
 INIT=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/main_ablations/r2d.pt
+export ARM_PREFIX=${ARM_PREFIX:-xens2_distill_r2d}
+export LAMBDA_NLL=${LAMBDA_NLL:-1}
+export LAMBDA_DISTILL=${LAMBDA_DISTILL:-1}
+export LAMBDA_RLCD=${LAMBDA_RLCD:-1}
+export LAMBDA_CAL=${LAMBDA_CAL:-1}
 mkdir -p logs/round39_xens2 "$ROOT/runs"
 
 "$PYTHON" - <<'PY'
@@ -43,10 +48,10 @@ common=(
   --batch-size 2
   --lr 1e-4
   --warmup-steps 5
-  --lambda-nll 1
-  --lambda-distill 1
-  --lambda-rlcd 1
-  --lambda-cal 1
+  --lambda-nll "$LAMBDA_NLL"
+  --lambda-distill "$LAMBDA_DISTILL"
+  --lambda-rlcd "$LAMBDA_RLCD"
+  --lambda-cal "$LAMBDA_CAL"
   --nll-normalization sum
   --validation-every 500
   --validation-patience 5
@@ -57,12 +62,13 @@ common=(
 )
 
 "$PYTHON" src/rnajepa/train_decision.py "${common[@]}" \
-  --seed 0 --arm xens2_distill_r2d_s0 \
-  --out "$ROOT/runs/xens2_distill_r2d_s0" \
-  --dry-run > "$ROOT/distill_dry_run.json"
+  --seed 0 --arm "${ARM_PREFIX}_s0" \
+  --out "$ROOT/runs/${ARM_PREFIX}_s0" \
+  --dry-run > "$ROOT/${ARM_PREFIX}_dry_run.json"
 "$PYTHON" - <<'PY'
 import json
-p = "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/distill_dry_run.json"
+import os
+p = f"/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/{os.environ['ARM_PREFIX']}_dry_run.json"
 d = json.load(open(p))
 assert d["dry_run"] and d["steps"] == 1000000 and d["batch_size"] == 2 and d["device"] == "cuda"
 assert d["data"]["n_examples"] == 42564
@@ -70,14 +76,14 @@ v = d["validation"]
 assert v["data"]["n_examples"] == 196
 assert v["early_stopping"] and v["steps_are_safety_cap"]
 assert v["every"] == 500 and v["patience"] == 5 and v["min_delta"] == 1e-6
-assert d["objective"] == {"nll": 1.0, "distill": 1.0, "rlcd": 1.0, "cal": 1.0}
-print("DISTILL_DRY_RUN_PASS", d["steps_per_epoch"], d["epochs"], flush=True)
+assert d["objective"] == {name: float(os.environ[f"LAMBDA_{name.upper()}"]) for name in ("nll", "distill", "rlcd", "cal")}
+print("DISTILL_DRY_RUN_PASS", d["steps_per_epoch"], d["epochs"], d["objective"], flush=True)
 PY
 
 pids=()
 read -r -a seeds <<< "${SEEDS:-0 1 2}"
 for seed in "${seeds[@]}"; do
-  arm="xens2_distill_r2d_s${seed}"
+  arm="${ARM_PREFIX}_s${seed}"
   out="$ROOT/runs/$arm"
   test ! -e "$out/run_meta.json"
   "$PYTHON" src/rnajepa/train_decision.py "${common[@]}" \
