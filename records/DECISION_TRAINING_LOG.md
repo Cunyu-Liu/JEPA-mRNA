@@ -11876,3 +11876,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **clean 全板**：TS0/new/ArchiveII/TS1/TS2/TS3/hard/TSB 的 n=1192/5388/1094/61/39/17/28/116，F1=0.7110963915/0.4489961557/0.7108895303/0.7169164882/0.6714413608/0.5800604230/0.5566265060/0.7894353370，三次 SD 全为 0。raw+clean 16 格独立聚合 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`，bytes=8095。
 - **NLL seed0 启动**：RiNALMo 释放资源后，预检 CUDA 空闲 **23.1247 GiB**，run_contract 已写入。数据/审计/init/trainer/launcher 哈希均通过，实际训练 step 1 loss=0.1834、terms 仅 `nll`，峰值 2.9 GB，未发生 CPU 降级。run_meta 尚未生成，不能写收敛、三种子或主板。
 - **同步故障处理**：UFold 审计和 RiNALMo 汇总同步时 SSH 两次断连，先核查实际上传状态再有限重试，未重复提交代码或重跑实验。最终文件已完整上传。
+
+
+## §15.315（2026-11-03）NLL 首轮 VL0 曲线与运行状态辨析
+
+- **训练进展**：seed0 已到 step 1225，train_log 共 50 个记录点，仍只有 `nll` 项，未发生 CPU 降级。step 1 峰值 2.9 GB，后续记录峰值约 3–4.5 GB；混合数据共 44,221 条，模型初始化和优化器身份不变。
+- **VL0 曲线**：step500 validation_loss=18.3701138872（当前 best），step1000=19.8212100565，best 仍 @500、bad_evaluations=1。不能据此称改善或收敛；继续按 patience=5、min_delta=1e-6 运行，下一验证点不得人为截断。
+- **状态辨析**：`run_meta.json` 在训练开始时即以 `status=running` 写入，并不表示训练完成。后台任务仍 running；最终必须有 `status=completed + converged + early_stopped` 和 best/resume checkpoint，才可进入独立 QA。
