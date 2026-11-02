@@ -99,6 +99,8 @@
 | `appendix_leakage/round39_xens2_distill_objective_comparison.json` | 旧四项目标与纯教师 KL 的 VL0 QA、教师保真度及 TS0 对照 | active | `b6ab2b0a12c6` |
 | `appendix_leakage/round39_plana_distill_s0_qa.json` | 单 plana 学生 seed0 收敛、三次 VL0 CUDA QA 与 TS0 结果 | active | `4f41f4b04b74` |
 | `appendix_leakage/round39_plana_distill_three_seed_vl0_ts0.json` | plana 三种子收敛、VL0 校准和 TS0 均值/SD；clean 主板待完成 | active | `938e1ae6e056` |
+| `appendix_leakage/round39_plana_clean_three_seed_progress.json` | clean TS0 三训练种子独立聚合；仅 1/8 split，不是主板结论，并发吞吐不可用于测速 | active partial | `35eaae977ef1` |
+| `appendix_leakage/round39_nucleicbert_ft_progress.json` | NucleicBERT fine-tuned 原 B=4 raw TS2 三次复测；仅 1/8 split，训练语料确认为 tr1c | active partial | `3cf09e66daf3` |
 
 ## 后续边界
 
@@ -106,4 +108,4 @@
 - `fig07_nucleicbert/`：official_s3 已在 epoch13 完整 checkpoint 安全暂停，best validation BCE=0.011949524802079076，尚未收敛；全部种子与独立 QA 总门未关闭。
 - `fig08b_regression/`：Muscle 十折完成；HEK/pc3 未满十折不进图，本轮不新增任务。
 - `fig09_ood/`：GenA 已领先，GenC/GenF 是短板；20.8%/39.2% 是零正确配对率而非零输出率。无新提升证据，不重复旧训练。
-- `appendix_leakage/`：九套模型专属 clean 审计已完成（含 DEBFold、RNAformer-biophysical）；EternaFold、MXfold2、BPfold 的自身 clean 八 split 三次复测均已闭环，UFold/eFold/CONTRAfold provenance 未闭环。
+- `appendix_leakage/`：九套模型专属 clean 审计已完成（含 DEBFold、RNAformer-biophysical）；EternaFold、MXfold2、BPfold 的自身 clean 八 split 三次复测均已闭环，UFold/eFold/CONTRAfold provenance 未闭环。plana 学生 clean TS0 已独立聚合，其他 7 split、独占测速和 VL0-only 校准未验收。

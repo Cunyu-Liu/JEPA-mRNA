@@ -672,6 +672,13 @@
    "bytes": 4987,
    "description": "plana clean 三训练种子独立聚合；当前仅 TS0 完成，不是主板科学结论，并发吞吐不可用于测速",
    "status": "active_partial_1_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_ft_progress.json",
+   "sha256": "3cf09e66daf3481e5fda880e64275c37ecc4777e88f04634093a0286e4fd0293",
+   "bytes": 934,
+   "description": "NucleicBERT fine-tuned 原 B=4 协议 raw TS2 三次复测与独立计数验收；仅 1/8 split，clean 待后续队列",
+   "status": "active_partial_raw_1_of_8"
   }
  ]
 }

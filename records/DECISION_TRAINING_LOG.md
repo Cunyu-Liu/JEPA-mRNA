@@ -11614,3 +11614,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立验收**：`tools/aggregate_plana_clean_round39.py` 从 clean JSONL 逐序列重算 TP/FP/FN、micro/macro-F1、规范化预测 SHA256，并绑定 clean audit、CUDA、全长协议和三个 best checkpoint 哈希。第二个独立实现再次核对三次 F1、计数、n、均值和 SD，均通过。阶段汇总 SHA256=`35eaae977ef1fe5fd07a65542f7d9929227e32b3f45d2932688217c57dae7a62`，状态为 `PARTIAL_NOT_SCIENTIFIC_CONCLUSION`（1/8 split），并发吞吐明确禁止用于速度声明。
 - **校准合同**：新增 `tools/calibrate_plana_round39.py`，固定使用 VL0 的 NLL 目标拟合 sigmoid(a*s+b)，锁定后才评测其他 split；同候选对计算 ECE/Brier/NLL，结构置信度定义为 DP 所选配对的平均校准概率，并计算 Spearman、macro-risk/AURC 和 risk–coverage。不得用拟合集 ECE 或平均置信度代替最终质量结论。
 - **首次校准未执行成功**：seed0 VL0 CUDA 模型加载时，三个 plana clean、Kirigami 与其他现存任务峰值叠加，仅余 10.44 MiB，申请 18 MiB 失败。未生成 calibration artifact，未发生 CPU 降级；错误记录于 `logs/round39_xens2/plana_s0_calibration_vl0_oom.log`。不立刻重复同一峰值，待运行中的任务自然释放余量后接续。
+
+
+## §15.280（2026-11-02）NucleicBERT 复测器接口、协议与资源验收
+
+- **训练语料纠错**：`nb_finetuned.pt` 的八份原始结果和训练器协议均明确为 `bprna_tr1c`，不是注册表旧写的 TR0。注册表已改为 tr1c clean；原始 checkpoint 保持固定，不重新训练。该模型按原协议只输入前 598 nt，所有序列保留，不能把截断评测写成全长能力。
+- **复测器**：`tools/benchmark_nucleicbert_round39.py` 强制 CUDA，三次完整推理并比较预测与概率哈希；保存 strict micro/macro-F1、TP/FP/FN、逐序列预测和 float32 候选配对概率。首次启动因 `flock` 子 shell 未继承权重变量而在读文件前退出；第二次因字符串替换误写 `torch.bfloat32` 在前向前退出，均无科学结果。启动命令已固化成 `tools/run_nucleicbert_ft_round39.sh`， autocast 恢复为 bfloat16，概率源数据保持 float32。
+- **B=1 与原 B=4 不等价**：新 B=1 TS2 三次均 F1=0.6218487395；原 `eval_nucleicbert_ft.py` 的 B=4 精确复现 TP=462、FP=319、FN=193、F1=**0.6434540390**。差异超过 0.001 等价门，停止整板并定位到原 SecStrDataset/collate 的 batch/padding 行为，未放宽门限。B=1 的 JSON/NPZ 已连哈希移入 `nucleicbert_ft/diagnostics/`；新复测器改为保留原 B=4 协议。
+- **资源失败与处理**：B=4 首次与其他两个 plana 长序列任务叠加时仅余 17.75 MiB、申请 20 MiB OOM，未产生新结果。保持科学配置不变，启动器加入 `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` 后，raw TS2 三次均 F1=**0.6434540390**、TP/FP/FN=462/319/193，与原结果在浮点尾数内一致；独立逐序列计数、micro/macro-F1、概率 NPZ 的 float32/offsets/SHA256 均通过。原始结果 SHA256=`287d0d29f605bac1d6dbedf8ace58e5a5dbcbd2bac9d0b565539f3e140558274`，阶段汇总 SHA256=`3cf09e66daf3481e5fda880e64275c37ecc4777e88f04634093a0286e4fd0293`。随后 TS0 模型加载时另一个 plana 长序列峰值达 16.41 GiB，仅余 11.75 MiB 而 OOM，未生成 TS0 结果；剩余 NB 队列改在全部 plana 作业自然结束后接续，不降批、不转 CPU。
+- **plana 队列与校准预检**：seed1 clean bpRNA-new 的并行 OOM 已留证，seed0/2 继续，seed1 在 seed2 父进程结束后串行补跑，再自动执行三个 VL0 校准。校准运行前接口复核发现 `apply_platt_scaling` 应接收 raw score，已修正，不再误传 sigmoid 概率；校准结果尚未生成，不标 PASS。
+- **阶段提交**：clean TS0 聚合、三处规范、台账与活跃源清单提交 `f3f1f46` 已确认推送 GitHub。
