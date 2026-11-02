@@ -45,6 +45,15 @@
       "new_sha256": "c849591ed0ab15e2ffde6ff46df515de71e5f9ea3be441dcc081f22ebdcd62a3",
       "reason": "superseded by independently recomputed raw 8/8 plus clean progress aggregate",
       "new_bytes": 7110
+    },
+    {
+      "active_path": "\u4ea4\u63a5\u6587\u6863/source_data/appendix_leakage/round39_fusion_clean_aggregate.json",
+      "archive_path": "\u4ea4\u63a5\u6587\u6863/archive_20261102/superseded_round39/round39_fusion_clean_aggregate_5of8.json",
+      "old_sha256": "354ed2413440992c4361dd5e9f3fba994379b8518b070899ed7f2a8b2f38f689",
+      "old_bytes": 14041,
+      "new_sha256": "1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07",
+      "reason": "superseded by independently recomputed 6/8 fusion aggregate",
+      "new_bytes": 16883
     }
   ]
 }

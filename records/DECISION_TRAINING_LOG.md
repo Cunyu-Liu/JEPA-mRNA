@@ -11690,3 +11690,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **RFold 官方历史**：浅克隆只有 1 个提交，已用 `git fetch --unshallow` 补齐到 11 个提交。当前及初始 `main.py` 均只有 `exp.test()`，`checkpoints/` 只有 ArchiveII/RNAStralign/bpRNA 三份 JSON 配置；全历史文件清单没有训练循环或模型权重。由此保持 `OFFICIAL_REPO_NO_WEIGHTS_OR_TRAIN_ENTRY`，不伪造官方复现训练，也不把自行设计的近似配方称为官方 RFold。
 - **frozen NB 权重**：Zenodo API 确认 `secstr.ckpt` content-length=4,970,204,510 bytes。Range 请求虽受支持，但实测约 14 KB/s；首次 curl 续传因本机不支持 `--retry-all-errors` 而在请求前退出，移除不兼容参数后已恢复后台断点续传。partial 与完成文件分开，未完成时不作为有效权重。
 - **融合 TS0 过程值**：首轮 F1=0.798650711，高于同子集 student 与 BPfold；剩余重复尚未完成，过程值不写入主板或 SOTA 结论。
+
+
+## §15.289（2026-11-02）融合 TS0 与六格配对聚合
+
+- **TS0 完整三次**：双 clean 交集 n=703，F1=**0.7986507108**。相对同子集 BPfold=0.7486626268 提升 +0.0499880840，相对 student 三种子均值=0.7542307932 提升 +0.0444199175。ECE=0.0005212231、Brier=0.0016907113、NLL=0.0070022690，Spearman=0.7140849026，AURC=0.1083518499。
+- **当前 6/8 配对结论**：融合对 BPfold 为 **4/6 胜**、对 student 为 **5/6 胜**；TS2 仍未超 BPfold，TS3 未超两者，bpRNA-new 与 ArchiveII 尚未完成。不能把 VL0 提升或 TS0 提升外推为全板 8/8。
+- **源与归档**：完整聚合 SHA256=`1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07`；5/8 旧版已追加归档。全量 F1、校准、risk–coverage、原始分数与结果哈希已独立复算。
+- **Kirigami 工程边界**：C 解码在 6,676 条旧预测上配对集合完全一致；生产复证正在运行，尚不宣称完成加速替换。额外假结层级保护已移除以保持原语义，后续队列增加每 250 条进度日志。

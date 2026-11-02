@@ -717,10 +717,10 @@
   },
   {
    "path": "appendix_leakage/round39_fusion_clean_aggregate.json",
-   "sha256": "354ed2413440992c4361dd5e9f3fba994379b8518b070899ed7f2a8b2f38f689",
-   "bytes": 14041,
-   "description": "融合在 5 个 clean split 上与 BPfold/student 的同源配对、校准与置信度聚合；尚缺 TS0/new/ArchiveII",
-   "status": "active_partial_5_of_8"
+   "sha256": "1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07",
+   "bytes": 16883,
+   "description": "融合在 6 个 clean split 上与 BPfold/student 的同源配对、校准与置信度聚合；尚缺 bpRNA-new/ArchiveII",
+   "status": "active_partial_6_of_8"
   }
  ]
 }

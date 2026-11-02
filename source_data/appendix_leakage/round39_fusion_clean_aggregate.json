@@ -3,6 +3,105 @@
   "status": "FUSION_CLEAN_AGGREGATE",
   "comparison_boundary": "same-name/sequence/GT paired BPfold and student sensitivity; not an all-baseline SOTA claim",
   "splits": {
+    "bprna_ts0": {
+      "n": 703,
+      "fused": {
+        "tp": 14916,
+        "fp": 2849,
+        "fn": 4672,
+        "strict_micro_f1": 0.7986507107862822
+      },
+      "fused_repeats": {
+        "mean": 0.7986507107862822,
+        "sd": 0.0,
+        "values": [
+          0.7986507107862822,
+          0.7986507107862822,
+          0.7986507107862822
+        ]
+      },
+      "calibration": {
+        "n": 3686190,
+        "ece": 0.0005212231336545418,
+        "brier": 0.0016907113228548465,
+        "nll": 0.007002269035774613
+      },
+      "confidence": {
+        "spearman_confidence_vs_structure_f1": 0.7140849025833632,
+        "aurc_macro": 0.10835184985023663,
+        "risk_coverage": [
+          {
+            "coverage": 0.10099573257467995,
+            "selective_macro_risk": 0.02447790521513904,
+            "n": 71
+          },
+          {
+            "coverage": 0.20056899004267426,
+            "selective_macro_risk": 0.043444803817622724,
+            "n": 141
+          },
+          {
+            "coverage": 0.30014224751066854,
+            "selective_macro_risk": 0.06586299225003445,
+            "n": 211
+          },
+          {
+            "coverage": 0.4011379800853485,
+            "selective_macro_risk": 0.09313879701862016,
+            "n": 282
+          },
+          {
+            "coverage": 0.5007112375533428,
+            "selective_macro_risk": 0.10921333848105919,
+            "n": 352
+          },
+          {
+            "coverage": 0.6002844950213371,
+            "selective_macro_risk": 0.127247847302549,
+            "n": 422
+          },
+          {
+            "coverage": 0.701280227596017,
+            "selective_macro_risk": 0.14469924658288935,
+            "n": 493
+          },
+          {
+            "coverage": 0.8008534850640113,
+            "selective_macro_risk": 0.16359666845493614,
+            "n": 563
+          },
+          {
+            "coverage": 0.9004267425320057,
+            "selective_macro_risk": 0.185378030132619,
+            "n": 633
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.23384874132256872,
+            "n": 703
+          }
+        ]
+      },
+      "bpfold_same_subset": {
+        "tp": 16864,
+        "fp": 8599,
+        "fn": 2724,
+        "strict_micro_f1": 0.7486626268007369
+      },
+      "student_same_subset": {
+        "mean": 0.7542307932447464,
+        "sd": 0.002848991221196926,
+        "values": [
+          0.7574434299325129,
+          0.7520113068058274,
+          0.753237642995899
+        ]
+      },
+      "fused_minus_bpfold": 0.04998808398554533,
+      "fused_minus_student_mean": 0.04441991754153585,
+      "result_sha256": "4883ab5c764310ae95a0117fa6a71ae341a0e05b3c8ddb7110d1ad5fe326b721",
+      "arrays_sha256": "617d9e093a879807abce7b525f1cf0424cbf0561592aa9f56537ba59d3419c27"
+    },
     "ref_pdb_ts1": {
       "n": 13,
       "fused": {
@@ -499,8 +598,8 @@
       "arrays_sha256": "455b1e020d521a295f0cdfb454048085ab8a0af2a31e9e26c279c120ea383395"
     }
   },
-  "complete_split_count": 5,
+  "complete_split_count": 6,
   "complete": false,
-  "bpfold_paired_win_count": 3,
-  "student_paired_win_count": 4
+  "bpfold_paired_win_count": 4,
+  "student_paired_win_count": 5
 }
