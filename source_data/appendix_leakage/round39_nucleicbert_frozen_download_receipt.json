@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "status": "PASS_OFFICIAL_SIZE_MD5_AND_SHA256",
+  "url": "https://zenodo.org/api/records/16989562/files/secstr.ckpt/content",
+  "bytes": 4970204510,
+  "official_md5": "b5b3d40fa07adc3cc8c1942e6ebfe1a5",
+  "sha256": "90b9af474693db3879830a455f4c25662d672dc0f4e9cdc61b90055e9b6d5e07",
+  "assembly": "stable prefix plus complete existing chunks; first chunk sliced at new prefix boundary",
+  "prefix": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/secstr.ckpt.part",
+    "bytes": 538312248,
+    "sha256": "2f1ed5b482a28481d289bda89fbcb7d3a5d8cc11fa6c7d52e9b3b6ffb36b825d"
+  },
+  "chunks": [
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.0535193700-0812381874.part",
+      "start": 535193700,
+      "end": 812381874,
+      "skip": 3118548
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.0812381875-1089570050.part",
+      "start": 812381875,
+      "end": 1089570050,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.1089570051-1366758225.part",
+      "start": 1089570051,
+      "end": 1366758225,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.1366758226-1643946401.part",
+      "start": 1366758226,
+      "end": 1643946401,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.1643946402-1921134577.part",
+      "start": 1643946402,
+      "end": 1921134577,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.1921134578-2198322752.part",
+      "start": 1921134578,
+      "end": 2198322752,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.2198322753-2475510928.part",
+      "start": 2198322753,
+      "end": 2475510928,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.2475510929-2752699104.part",
+      "start": 2475510929,
+      "end": 2752699104,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.2752699105-3029887279.part",
+      "start": 2752699105,
+      "end": 3029887279,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.3029887280-3307075455.part",
+      "start": 3029887280,
+      "end": 3307075455,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.3307075456-3584263630.part",
+      "start": 3307075456,
+      "end": 3584263630,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.3584263631-3861451806.part",
+      "start": 3584263631,
+      "end": 3861451806,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.3861451807-4138639982.part",
+      "start": 3861451807,
+      "end": 4138639982,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.4138639983-4415828157.part",
+      "start": 4138639983,
+      "end": 4415828157,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.4415828158-4693016333.part",
+      "start": 4415828158,
+      "end": 4693016333,
+      "skip": 0
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/chunks/secstr.4693016334-4970204509.part",
+      "start": 4693016334,
+      "end": 4970204509,
+      "skip": 0
+    }
+  ],
+  "completed_utc": "2026-11-02T17:53:46.704193+00:00"
+}

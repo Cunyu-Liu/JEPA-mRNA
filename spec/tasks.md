@@ -18,15 +18,23 @@
 >
 > **2026-11-02 阶段状态**：NucleicBERT-ft raw+TR1c-clean 16 格和 Kirigami raw+TR0-clean 16 格均完成三次推理与独立复算。Kirigami TS0/new 精确等价；ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 均一致，当前算法诊断完成，但历史 F1=0.7871232718 仍未由当前 0.7689918891 复现，限制保留。VL0 融合 6 格后 8/8 已不可达，剩余推理已停止，不生成新教师；RiNALMo-ft 接续。SPOT-RNA 全量溯源复测与 frozen NucleicBERT 16 段续传进行中，未完成不纳入结果。`21d50a8` 已确认推送 GitHub。
 >
-> **2026-11-02 数据候选门**：TR1c+RNAStrAlign 合法去泄露混合集已验收（44,221 条，新增 1,657 条），九组独立复扫无 exact/MMseqs 命中。纯 NLL CUDA smoke 通过；seed0 已在 step3000 early-stopping 收敛，best=500，三次独立 VL0 GPU QA 通过；clean、三种子、速度和最终置信度未验收，不能写成 8/8。
+> **2026-11-03 数据候选门**：TR1c+RNAStrAlign 合法去泄露混合集已验收（44,221 条，新增 1,657 条），九组独立复扫无 exact/MMseqs 命中。NLL seed0 已收敛，VL0 QA 和 clean 八格均通过独立复算；相对原学生 seed0 仅 TS2/TS3/TSB 上升，其余五格下降，明确未过泛化门。不启动 seed1/2，不进入速度或最终校准验收，负结果 SHA256=`403604bde954581882d0571bd1516ec01da9ff909f152acb23ea194efe7c0137`。
 >
 > **2026-11-02 SPOT-RNA 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0`；旧 6/8 进度已归档。转换权重身份和并发测速边界保留；全模型 600 单元仍未完成。
 >
-> **2026-11-02 RiNALMo-ft 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`；NLL seed0 已收敛并通过三次 VL0 GPU QA，clean 未闭环，不能写成三种子或 8/8。
+> **2026-11-02 RiNALMo-ft 阶段**：raw+clean 16 格三次复测与独立聚合已通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`。
 >
 > **2026-11-02 校准对照**：SPOT-RNA VL0 ECE=0.0044911093，高于学生校准后约 0.00058；全部 196 条结构置信度均为 1.0，Spearman 不可定义。只能作为拟合集负证据，不能写最佳置信度。结果 SHA256=`534ddea6ea41b722442e97ddc7fe176c0134d1a2f3decdce7e81ab69f48eb6b8`。
 >
 > **2026-11-02 UFold 资产审计**：官方默认训练列表直接覆盖多数测试 split；原始 pickle 未恢复前 clean 保持 provenance blocked，raw 结果不得进入 clean SOTA。审计 SHA256=`45a055939aa7f0fca19e10a68f9d9f2159b9f3659dd7eafe0dee0d1e1928aeac`。
+>
+> **2026-11-03 frozen NucleicBERT 资产与协议**：官方 checkpoint 和 strict 加载已验收，装配代码 `4195fc9` 已推送。实际协议为 B=2、首 598 nt；旧 1024 TS0 已归档排除。raw 8/8 已完成，汇总 SHA256=`84895a002691e504a3a254a39c5d2325ae74a3ad3fe454920b958644d45ed700`；RNAStrAlign+TR0 专属 clean split 8/8 已完成，审计 SHA256=`ca3f46abd681fc6a0ed8d0a6c2e3d6d925c37a86821f6e6cdaf4e83dc7888f5f`。raw 回归与空 clean 聚合测试通过，`41fdf7e` 已推送；clean GPU 仍排队，不标 raw+clean 完成。
+>
+> **2026-11-03 RNAformer 长序列显存修复**：L>512 的注意力按 64 行查询及对应 key/value 分块，已通过本地 mock、真实 GPU 逐元素等价和最长两条三次生产验证，峰值约 12.88GiB；代码 `f68c54d` 已推送，断点队列已恢复。
+>
+> **2026-11-03 RNAformer 修复与续跑**：关闭 12 个 RotaryEmbedding 错误缓存后，inter-family TS1 的生产三次 F1 均为 0.8414634146，原始 logits、预测和独立计数全部一致；bprna TS0/new 聚合回归通过。代码已推送 `f126deb`。按 inter-family→bprna→intra-family→biophysical 顺序断点续跑，每套 raw+clean 八格独立聚合后再进入下一套；当前不标四套完成。
+>
+> **2026-11-03 三系统 own-clean 复算**：EternaFold/BPfold/MXfold2 的 24 格 clean 数据、审计、三次预测和计数全部独立通过，SHA256=`0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。EternaFold bpRNA-new=0.6853840073（n=5388，SD=0）；BPfold TS2 n=3、ArchiveII n=731，跨模型异子集 F1 不得直接用于 SOTA 排名，最终保留同交集敏感性。该三系统复算不替代其余模型与 600 单元总门。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 

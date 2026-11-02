@@ -121,14 +121,31 @@
 | `appendix_leakage/round39_spotrna_raw_clean_summary.json` | SPOT-RNA raw+clean 16 格独立聚合；TS3 为空，旧 6/8 已归档 | active complete | `dfb80f51e014` |
 | `appendix_leakage/round39_spotrna_vl0_calibration.json` | SPOT-RNA 与三个学生 VL0 同掩码校准对照；置信度全部饱和，不作泛化结论 | active VL0 diagnostic | `534ddea6ea41` |
 | `appendix_leakage/round39_ufold_provenance_audit.json` | UFold 默认训练列表覆盖测试 split；clean 继续 blocked | active blocked provenance | `45a055939aa7` |
-| `appendix_leakage/round39_rinalmo_ft_raw_clean_summary.json` | RiNALMo-ft raw+TR0-clean 16 格独立聚合；NLL seed0 已收敛 | active complete | `51858ed34ab8` |
-| `appendix_leakage/round39_mixed_nll_seed0_qa.json` | NLL seed0 三次独立 VL0 GPU QA；clean 与三种子未闭环 | active QA pass | `452bd7591cdf` |
-| `appendix_leakage/round39_mixed_nll_clean_ts0.json` | NLL clean TS0 独立复算；相对原 plana seed0 下降 0.0011516，其他七格未完成 | active partial 1/8 | `a9dd3f34e404` |
+| `appendix_leakage/round39_rinalmo_ft_raw_clean_summary.json` | RiNALMo-ft raw+TR0-clean 16 格独立聚合 | active complete | `51858ed34ab8` |
+| `appendix_leakage/round39_mixed_nll_seed0_qa.json` | NLL seed0 三次独立 VL0 GPU QA；仅校准 QA，不是泛化结论 | active QA pass | `452bd7591cdf` |
+| `appendix_leakage/round39_mixed_nll_clean_ts0.json` | NLL clean TS0 独立复算；相对原 plana seed0 下降 0.0011516，八格结论见 gate | active complete negative | `a9dd3f34e404` |
+| `appendix_leakage/round39_mixed_nll_clean_seed0_gate.json` | NLL clean 八格完整对照；五格下降，停止 seed1/2 | active rejected candidate | `403604bde954` |
+| `appendix_leakage/round39_rnaformer_interfam_runonce_repeat_diagnostic.json` | 生产 run_once 原始 logits/预测差异诊断，不是验收结果 | active diagnostic | `6c1060549d7c` |
+| `appendix_leakage/round39_rnaformer_interfam_runonce_repeat_no_rotary_cache.json` | 关闭 12 个 Rotary 缓存后的单变量对照；三次原始输出和预测一致 | active root-cause control | `9f963e3ece07` |
+| `appendix_leakage/round39_rnaformer_interfam_raw_ts1.json` | 修复后的生产 inter-family TS1 三次结果与独立复算 | active complete TS1 | `0bd11b5aa7b8` |
+| `appendix_leakage/round39_nucleicbert_frozen_download_receipt.json` | frozen NucleicBERT 既有分段无重下装配与官方 MD5/SHA256 验收 | active asset verified | `8d28c09f1f8e` |
+| `appendix_leakage/round39_nucleicbert_frozen_SHA256SUMS` | frozen NucleicBERT secstr.ckpt 的 SHA256 校验行 | active asset verified | `05c729f21b20` |
+| `appendix_leakage/round39_nucleicbert_frozen_raw_summary.json` | frozen 官方 B=2/598 raw 八 split 三次结果与独立复算；ArchiveII 39 条截断 | active raw complete | `84895a002691` |
+| `appendix_leakage/round39_nucleicbert_frozen_clean_audit_summary.json` | RNAStrAlign+TR0 专属 clean 八 split 审计；clean 推理排队 | active clean splits complete | `ca3f46abd681` |
+| `appendix_leakage/round39_nucleicbert_frozen_clean_row_verification.json` | 从 raw/removed indices 独立重建 clean；名称、序列和 GT 逐行一致 | active row identity verified | `4a993f0d298b` |
+| `appendix_leakage/round39_e2efold_asset_recheck.json` | E2Efold 官方渠道再核查；SharePoint 拒绝访问，未获得可验证权重 | active blocked asset | `06050cc59122` |
+| `appendix_leakage/round39_contextfold_asset_recheck.json` | ContextFold GitHub/PubMed 再核查；无作者镜像或可验证模型下载 | active blocked asset | `704129e1d509` |
+| `appendix_leakage/round39_contrafold_provenance_recheck.json` | CONTRAfold 官方源码包 URL/MD5 与连接复核；训练语料未恢复 | active blocked provenance | `b88694f0f753` |
+| `appendix_leakage/round39_rnaformer_interfam_raw_archiveii.json` | inter-family raw ArchiveII 三次结果；F1=0.7390448979，精确分块后独立复算 | active raw ArchiveII complete | `002c77c4ae46` |
+| `appendix_leakage/round39_rnaformer_interfam_raw_ts0.json` | inter-family raw TS0 三次结果；F1=0.6389628494，独立复算 | active raw TS0 complete | `8f6657b41b4b` |
+
+| `appendix_leakage/round39_three_baseline_clean_recompute.json` | EternaFold/BPfold/MXfold2 各八 split own-clean 数据、审计、三次预测与计数独立复算；异子集不作 SOTA 排名 | active 24-cell verified | `0786b475caa6` |
 
 ## 后续边界
 
+- `SOURCE_MANIFEST.json` 是活跃文件、字节数和 SHA256 的总清单；`appendix_leakage/round39_clean_audits/INDEX.json` 另行登记并覆盖 TR0/TR1c 的 16 份审计原件，二者均通过全量哈希复核。
 - `fig05_speed/`：eFold 0.1.3 与 EternaFold 正式三次测速完成；BPfold/UFold 权重已恢复但正式速度待独占复测，E2Efold 权重仍 blocked，不作无限制速度 SOTA。round37 图件已归档。
 - `fig07_nucleicbert/`：official_s3 已在 epoch13 完整 checkpoint 安全暂停，best validation BCE=0.011949524802079076，尚未收敛；全部种子与独立 QA 总门未关闭。
 - `fig08b_regression/`：Muscle 十折完成；HEK/pc3 未满十折不进图，本轮不新增任务。
 - `fig09_ood/`：GenA 已领先，GenC/GenF 是短板；20.8%/39.2% 是零正确配对率而非零输出率。无新提升证据，不重复旧训练。
-- `appendix_leakage/`：九套模型专属 clean 审计已完成（含 DEBFold、RNAformer-biophysical）；EternaFold、MXfold2、BPfold 的自身 clean 八 split 三次复测均已闭环，UFold/eFold/CONTRAfold provenance 未闭环。plana 学生 clean TS0 已独立聚合，其他 7 split、独占测速和 VL0-only 校准未验收。
+- `appendix_leakage/`：plana 学生 clean 8/8 三种子已闭环但未达 SOTA；VL0 融合和 NLL seed0 均已凭负结果停止后续训练。RNAformer inter-family 当前 raw 7/8，长序列精确分块后四套继续断点评测。frozen NucleicBERT raw 8/8、clean splits 8/8 已完成，clean GPU 排队；E2Efold/ContextFold 资产及 UFold/eFold/CONTRAfold provenance 未闭环。

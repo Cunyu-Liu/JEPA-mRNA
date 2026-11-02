@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "system": "e2efold",
+  "status": "BLOCKED_SHAREPOINT_ACCESS_DENIED_NO_VERIFIED_WEIGHTS",
+  "repository": "https://github.com/ml4bio/e2efold",
+  "checks": [
+    {
+      "channel": "GitHub releases API",
+      "url": "https://api.github.com/repos/ml4bio/e2efold/releases?per_page=100",
+      "observed": "empty release list; no official release assets"
+    },
+    {
+      "channel": "official repository issues",
+      "url": "https://github.com/ml4bio/e2efold/issues/19",
+      "observed": "2025-05-01 user report: pretrained model Google Drive link returns 404; zero comments"
+    },
+    {
+      "channel": "official repository issues",
+      "url": "https://github.com/ml4bio/e2efold/issues/16",
+      "observed": "member liyu95 wrote 'Just updated' on 2024-04-07; this does not provide a currently accessible verified checkpoint"
+    },
+    {
+      "channel": "official pretrained-model SharePoint with download=1",
+      "url": "https://gocuhk-my.sharepoint.com/:f:/g/personal/yuli_cuhk_edu_hk/Ekuec1yiSc9Jp7leSEYtsvABJyhIVXAblV0wb-8PrTezMg?e=eqXvzd&download=1",
+      "observed": "Sorry, you cannot access this document. Please contact the person who shared it with you."
+    },
+    {
+      "channel": "OpenReview forum and API",
+      "url": "https://openreview.net/forum?id=S1eALyrYDH",
+      "observed": "browser verification challenge; attachment availability was not determined"
+    }
+  ],
+  "conclusion": "No new verifiable official checkpoint was obtained. Keep blocked; do not use third-party or retrained weights as the official E2Efold model and do not claim the weights are proven nonexistent."
+}

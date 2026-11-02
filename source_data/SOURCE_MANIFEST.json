@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-02",
+ "updated": "2026-11-03",
  "files": [
   {
    "path": "fig03_ablation/fig03b_group_drops.json",
@@ -824,22 +824,127 @@
    "path": "appendix_leakage/round39_rinalmo_ft_raw_clean_summary.json",
    "sha256": "51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3",
    "bytes": 8095,
-   "description": "RiNALMo-ft raw+TR0-clean 16 格 full-length 三次推理与独立复算；NLL seed0 已启动但未收敛",
+   "description": "RiNALMo-ft raw+TR0-clean 16 格 full-length 三次推理与独立复算",
    "status": "active_complete_raw_clean_8x3"
   },
   {
    "path": "appendix_leakage/round39_mixed_nll_seed0_qa.json",
    "sha256": "452bd7591cdf0f79d822308e9fab73229a9c0b6bf00cf9e4c329d603168c4a26",
    "bytes": 2099,
-   "description": "NLL seed0 三次独立 VL0 GPU QA；F1=0.7006882659，clean 与三种子未闭环",
-   "status": "active_qa_pass_clean_pending"
+   "description": "NLL seed0 三次独立 VL0 GPU QA；F1=0.7006882659，仅是校准 QA，不是泛化结论",
+   "status": "active_vl0_qa_pass"
   },
   {
    "path": "appendix_leakage/round39_mixed_nll_clean_ts0.json",
    "sha256": "a9dd3f34e4046563a7b1fe6baf5eb6f3d14cd632f1b7ddfdedc5b50c74f0c425",
    "bytes": 770,
-   "description": "NLL clean TS0 三次独立复算；相对原 plana seed0 下降 0.0011516134，其他七格未完成",
-   "status": "active_partial_1_of_8"
+   "description": "NLL clean TS0 三次独立复算；相对原 plana seed0 下降 0.0011516134，八格结论见 seed0 gate",
+   "status": "active_complete_ts0_negative"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_clean_seed0_gate.json",
+   "sha256": "403604bde954581882d0571bd1516ec01da9ff909f152acb23ea194efe7c0137",
+   "bytes": 3271,
+   "description": "NLL seed0 clean 八格同协议对照；仅三格上升、五格下降，不启动 seed1/2",
+   "status": "active_negative_complete_seed0_8_split"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_runonce_repeat_diagnostic.json",
+   "sha256": "6c1060549d7ccc3a291516155267ee35546fc08db2862f1b282da64e3cf5a00a",
+   "bytes": 583469,
+   "description": "RNAformer inter-family 生产 run_once 三次原始 logits 与预测诊断；62/63 原始输出变化，39/63 预测变化",
+   "status": "active_diagnostic_not_accepted_result"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_runonce_repeat_no_rotary_cache.json",
+   "sha256": "9f963e3ece07a25b5df562136befc29fce4a6c1c4ea141ae4aaa420f45cab625",
+   "bytes": 52699,
+   "description": "仅关闭 12 个 RotaryEmbedding 缓存后的生产 run_once 对照；63/63 原始 logits 和预测三次一致，F1 回到首轮 0.8414634146",
+   "status": "active_root_cause_control_pass"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_ts1.json",
+   "sha256": "0bd11b5aa7b8c6e6301151fdc3a67ff625a619c8b84cf59dc115db7fcbf9ebeb",
+   "bytes": 45004,
+   "description": "修复后的生产 RNAformer inter-family raw TS1 三次完整结果；F1=0.8414634146，独立聚合通过",
+   "status": "active_complete_raw_ts1_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_download_receipt.json",
+   "sha256": "8d28c09f1f8e37e38febbe865bda11ff013da6103db61a972a0b2e4ddf671726",
+   "bytes": 4281,
+   "description": "frozen NucleicBERT 稳定前缀与 16 个既有完整分段装配收据；官方 MD5 和独立 SHA256 通过",
+   "status": "active_asset_verified_raw_complete_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_SHA256SUMS",
+   "sha256": "05c729f21b2051160bf35544cf02c21c89c654ea3da8a8cd634bb76b0206f78e",
+   "bytes": 78,
+   "description": "frozen NucleicBERT secstr.ckpt 的 SHA256 校验行",
+   "status": "active_asset_verified_raw_complete_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_raw_summary.json",
+   "sha256": "84895a002691e504a3a254a39c5d2325ae74a3ad3fe454920b958644d45ed700",
+   "bytes": 5674,
+   "description": "frozen NucleicBERT 官方 B=2/598 raw 八 split 三次结果与独立复算；ArchiveII 39 条按协议截断",
+   "status": "active_complete_raw_8x3"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_clean_audit_summary.json",
+   "sha256": "ca3f46abd681fc6a0ed8d0a6c2e3d6d925c37a86821f6e6cdaf4e83dc7888f5f",
+   "bytes": 2921,
+   "description": "RNAStrAlign+TR0 专属 clean 八 split 审计；clean n=1044/5388/48/38/17/28/194/116",
+   "status": "active_clean_splits_complete_evaluation_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_clean_row_verification.json",
+   "sha256": "4a993f0d298b199fff86b658f8d7cb60109f80fa4b245a6dbb07b23659281d09",
+   "bytes": 2288,
+   "description": "从 raw 和 removed indices 独立重建 clean 八 split；名称、序列和 GT 逐行完全一致",
+   "status": "active_clean_row_identity_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_e2efold_asset_recheck.json",
+   "sha256": "06050cc59122b927bef8ec0f293e8453f50fa13676b8f404d7c50773bf2153d2",
+   "bytes": 1663,
+   "description": "E2Efold releases、官方 issues、SharePoint 直接下载和 OpenReview 再核查；仍无可验证权重",
+   "status": "active_blocked_asset_evidence"
+  },
+  {
+   "path": "appendix_leakage/round39_contextfold_asset_recheck.json",
+   "sha256": "704129e1d509d936166b0554cb30c2ce384b094c39363b31db4e132a6e2a09db",
+   "bytes": 1469,
+   "description": "ContextFold GitHub/PubMed 替代渠道再核查；无作者镜像或可验证模型下载",
+   "status": "active_blocked_asset_evidence"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_provenance_recheck.json",
+   "sha256": "b88694f0f7530bcf96d4561ebf320671a880fedf6beac1cdfb72215c929131e2",
+   "bytes": 1312,
+   "description": "CONTRAfold 官方 v2.02 源码包 URL/MD5 与连接复核；训练语料仍未恢复",
+   "status": "active_blocked_provenance"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_archiveii.json",
+   "sha256": "002c77c4ae46ea8bf2deed262be34de63346e35f262b43aff66269cff883d932",
+   "bytes": 3989294,
+   "description": "RNAformer inter-family raw ArchiveII 三次完整结果；F1=0.7390448979，精确分块后独立复算通过",
+   "status": "active_complete_raw_archiveii_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_ts0.json",
+   "sha256": "8f6657b41b4bcfab67c3fdd20d5f0d5dde900b86d59b3fc3e5b680af57e5b753",
+   "bytes": 1208981,
+   "description": "RNAformer inter-family raw TS0 三次完整结果；F1=0.6389628494，独立复算通过",
+   "status": "active_complete_raw_ts0_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_three_baseline_clean_recompute.json",
+   "sha256": "0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271",
+   "bytes": 11804,
+   "description": "EternaFold/BPfold/MXfold2 各八 split own-clean 数据、审计、三次预测与计数独立复算；异子集不作 SOTA 排名",
+   "status": "active_24_cell_clean_verified"
   }
  ]
 }

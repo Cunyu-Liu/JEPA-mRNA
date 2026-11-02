@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "system": "contrafold",
+  "status": "BLOCKED_PROVENANCE_ORIGINAL_TRAINING_CORPUS_UNRESOLVED",
+  "official_source_package": {
+    "url": "http://contra.stanford.edu/contrafold/contrafold_v2_02.tar.gz",
+    "https_variant_tested": "https://contra.stanford.edu/contrafold/contrafold_v2_02.tar.gz",
+    "md5_from_distribution": "cea66c63df835fe7f790c7f49ce83ef3",
+    "evidence_repository": "https://github.com/aur-archive/contrafold",
+    "evidence_blob": "https://api.github.com/repos/aur-archive/contrafold/git/blobs/7825243310b4aebecc06cbbad2b7ec0044407674",
+    "evidence_note": "AUR PKGBUILD identifies the official Stanford v2.02 source package and MD5; the mirror itself contains only PKGBUILD, not training data"
+  },
+  "connection_checks": [
+    {"url": "https://contra.stanford.edu/contrafold/contrafold_v2_02.tar.gz", "observed": "connection to port 443 failed"},
+    {"url": "http://contra.stanford.edu/contrafold/contrafold_v2_02.tar.gz", "observed": "connection to port 80 failed"}
+  ],
+  "conclusion": "The official package identity is better documented, but no original training corpus was recovered. Raw results remain usable; TR1c is only sensitivity, not official clean. Do not infer training sequences from the model name or parameter file."
+}

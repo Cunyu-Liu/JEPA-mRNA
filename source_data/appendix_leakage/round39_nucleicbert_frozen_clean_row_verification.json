@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "PASS_8_SPLIT_ROW_IDENTITY_RECONSTRUCTION",
+  "method": "rebuild clean rows from raw JSONL and removed exact/homology indices; compare name, sequence and GT in order",
+  "per_split": {
+    "bprna_ts0": {
+      "clean_n": 1044,
+      "row_identity": true,
+      "clean_sha256": "d3e20bd6e0115c382e3d7e2f4293ef0a556df7ecce3a535d90a1cc412515f4bc",
+      "audit_sha256": "814eab93a138a9dee51e362b0dd2ec12ad77eb1dcfe156c02756646eeac028c7"
+    },
+    "bprna_new": {
+      "clean_n": 5388,
+      "row_identity": true,
+      "clean_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+      "audit_sha256": "b3e328e5549c2e9e2da57907cda02dd9ac2a54262aa4d9baf634b41d15a46801"
+    },
+    "ref_pdb_ts1": {
+      "clean_n": 48,
+      "row_identity": true,
+      "clean_sha256": "2973e3762aa8eb9a47766d99473a4b6fc163ac8eeca6ecea104148e414800b93",
+      "audit_sha256": "65317d240da3f8b8ab48250d452b6e4c763ec3104e65de261346866e1ad073ce"
+    },
+    "ref_pdb_ts2": {
+      "clean_n": 38,
+      "row_identity": true,
+      "clean_sha256": "7171ec5625063560f77ab0e7785afc9857c80c9550b40bc857a885d6ab7f1eb8",
+      "audit_sha256": "36abbae883383af31b5bf030968ebef88275b177e5f5886a0b4de4a14ddb8451"
+    },
+    "ref_pdb_ts3": {
+      "clean_n": 17,
+      "row_identity": true,
+      "clean_sha256": "ff98f9df73cfe459ba0a09439bb7bc68c5e50ca7593a579133b121da80e9dfb7",
+      "audit_sha256": "95421dbed720d87093563a55912efb26f55288878dbfdf978fd123995f141c0a"
+    },
+    "ref_pdb_ts_hard": {
+      "clean_n": 28,
+      "row_identity": true,
+      "clean_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+      "audit_sha256": "7c8c9e999c127f21c440de991b57285461a58c1423ffc6f7184f602f0b8dc9b5"
+    },
+    "archiveii_embok_clean": {
+      "clean_n": 194,
+      "row_identity": true,
+      "clean_sha256": "ed08a4810722fdc052d5f4922adf305b392b25f846e6f2c9abdd8f750e94e6e6",
+      "audit_sha256": "43b711a2639660013f090cd949a21be331c42bb2521b3363f6c2d366de6bf55a"
+    },
+    "testsetb": {
+      "clean_n": 116,
+      "row_identity": true,
+      "clean_sha256": "146aafc7a10bcf9c87e4ce68f521a943139538fbae6fd136bdb926c7cf9481d2",
+      "audit_sha256": "08edd73e3a4c3aee68f3981032f56ed76ad314d8d4752057b82b5479601ef841"
+    }
+  }
+}

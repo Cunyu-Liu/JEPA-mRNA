@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "system": "contextfold",
+  "status": "BLOCKED_OFFICIAL_SITE_UNREACHABLE_NO_VERIFIED_ALTERNATIVE",
+  "correct_doi": "10.1089/cmb.2011.0184",
+  "pmid": "22035327",
+  "checks": [
+    {
+      "channel": "GitHub repository search: ContextFold",
+      "url": "https://api.github.com/search/repositories?q=ContextFold&per_page=50",
+      "observed": "eight repositories; inspected names/descriptions are unrelated Swift/OpenClaw or other same-name projects, not Zakov ContextFold RNA"
+    },
+    {
+      "channel": "GitHub repository search: ContextFold RNA Zakov",
+      "url": "https://api.github.com/search/repositories?q=ContextFold+RNA+Zakov&per_page=50",
+      "observed": "zero repositories; no author official mirror found"
+    },
+    {
+      "channel": "PubMed and NCBI E-utilities",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/22035327/",
+      "observed": "PubMed browser verification blocked interactive access; E-utilities XML browser rendering did not expose an official model download link"
+    }
+  ],
+  "prior_evidence": "Official www.cs.bgu.ac.il/~negevcb/contextfold HTTP/HTTPS and archive access were unreachable in earlier checks; unrelated local PDF was archived.",
+  "conclusion": "No verifiable official ContextFold model or alternative official distribution was obtained. Keep raw/clean blocked; do not substitute same-name repositories or claim the official model is proven unavailable forever."
+}

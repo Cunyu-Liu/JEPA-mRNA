@@ -12,13 +12,11 @@
 > - [ ] T-A176 每 run 训练/评测过程与结论完整；活跃绘图源数据、哈希和 manifest 齐全，废弃文档及旧源数据完成可追溯归档，未删除活跃原始数据。
 > - [ ] T-A177 原始 artifact、独立复算、图表/PPT 三通道验收通过；代码与大文件路径合规，确认代码已 commit+push，未提交秘密或既有未跟踪大资产。
 >
-> **阶段证据**：NucleicBERT-ft 与 Kirigami 各 raw+clean 16 格已独立复算；Kirigami ArchiveII 的 200–400 nt 全桶 728/728 及最长 4 条原 Python/C 一致，当前算法诊断完成。历史 F1 差异仍未解决，不能勾选历史复现或全板完成。VL0 融合 6 格后 8/8 不可达，候选已终止，RiNALMo-ft 接续；SPOT-RNA 与 frozen NucleicBERT 资产未闭环；`21d50a8` 已确认推送。
+> **阶段证据**：NucleicBERT-ft、Kirigami、SPOT-RNA、RiNALMo-ft 各 raw+clean 16 格已独立复算；Kirigami 历史 F1 差异仍保留。VL0 融合 6 格后 8/8 不可达，候选已终止。frozen NucleicBERT 官方资产及 raw 8/8、clean split 8/8 已完成，clean GPU 仍排队。
 >
-> **数据候选证据**：混合 NLL 数据 44,221 条（新增 1,657 条）及九组独立去泄露复扫已通过；纯 NLL CUDA smoke 通过。seed0 已收敛并通过三次 VL0 GPU QA；clean、三种子、速度和最终置信度仍未验收。
+> **数据候选证据**：混合 NLL 数据 44,221 条及九组去泄露复扫通过；seed0 已收敛并完成 VL0 QA 和 clean 八格，但相对原学生五格下降，泛化门失败，不启动 seed1/2，不进入速度或最终校准。
 >
-> **SPOT-RNA 证据**：raw+clean 16 格三次复测与独立聚合通过，最终汇总 SHA256=`dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0`。TS3 去泄露后为空；其他基线未齐，不能勾选 T-A170/T-A171 总门。
->
-> **RiNALMo-ft 证据**：raw+clean 16 格三次复测与独立聚合通过，最终汇总 SHA256=`51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3`。NLL 已收敛并通过三次 VL0 GPU QA，clean 未闭环，不能写成三种子或 8/8。
+> **三系统 own-clean 证据**：EternaFold/BPfold/MXfold2 共 24 格独立复算通过，SHA256=`0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。EternaFold bpRNA-new=0.6853840073（n=5388，3 次 SD=0）。BPfold TS2 n=3、ArchiveII n=731；不同 clean 子集不得直接排 SOTA，最终必须补同交集敏感性。
 >
 > **校准证据**：SPOT-RNA VL0 ECE=0.0044911093，高于学生校准后约 0.00058；全部置信度为 1.0，Spearman 不可定义，不能勾选最低 ECE 或最佳置信度。
 >

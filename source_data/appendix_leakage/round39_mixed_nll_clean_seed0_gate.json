@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "SEED0_GENERALIZATION_GATE_FAIL_NO_FURTHER_SEEDS",
+  "candidate": "mixed_nll_lambda_nll_1_lambda_distill_0",
+  "baseline": "original_xens2_KL_student_seed0",
+  "comparison": "same clean tr1c-decontaminated splits and strict micro-F1; matched seed0 diagnostic, not three-seed candidate claim",
+  "checkpoint_sha256": "dc55a4b45ff05858f6c9f1eb2b96c309155226d035b5bdc392e81ce19d9499ab",
+  "best_step": 500,
+  "steps_completed": 3000,
+  "vl0_qa": "PASS; calibration-only QA is not generalization evidence",
+  "improved_split_count": 3,
+  "required_improved_split_count": 8,
+  "improved_splits": [
+    "ref_pdb_ts2",
+    "ref_pdb_ts3",
+    "testsetb"
+  ],
+  "per_split": {
+    "bprna_ts0": {
+      "nll_seed0_f1": 0.7560047250295314,
+      "original_student_seed0_f1": 0.7571563384712173,
+      "delta": -0.0011516134416859058,
+      "clean_n": 713,
+      "nll_result_sha256": "090295bb60b4f5072a5c5c3d18dc1851bf2a8ce7c59e951ea66c9294727bef85"
+    },
+    "bprna_new": {
+      "nll_seed0_f1": 0.46364629211873815,
+      "original_student_seed0_f1": 0.5356531835634272,
+      "delta": -0.07200689144468903,
+      "clean_n": 5386,
+      "nll_result_sha256": "94bf2f6d8c16d8b581ab878dec17dabf92ba0cf173a70fe3912caddbb0b7e7fc"
+    },
+    "ref_pdb_ts1": {
+      "nll_seed0_f1": 0.8695652173913043,
+      "original_student_seed0_f1": 0.8774193548387097,
+      "delta": -0.007854137447405374,
+      "clean_n": 18,
+      "nll_result_sha256": "1f5e661dedbedae04b9dc9da175a63345cedb5d6d9ef7be31e0146cb388b8beb"
+    },
+    "ref_pdb_ts2": {
+      "nll_seed0_f1": 0.8024242424242424,
+      "original_student_seed0_f1": 0.8019680196801968,
+      "delta": 0.0004562227440455535,
+      "clean_n": 29,
+      "nll_result_sha256": "04c8465072f703c2049e73f7d77268b86cd25bbe484c2be405fe10a661c76a49"
+    },
+    "ref_pdb_ts3": {
+      "nll_seed0_f1": 0.8676470588235294,
+      "original_student_seed0_f1": 0.8571428571428571,
+      "delta": 0.010504201680672343,
+      "clean_n": 4,
+      "nll_result_sha256": "14256862771dc025e3e2d0060bc573c3ef0ce0a67a533e852392e8fcbe57c4a6"
+    },
+    "ref_pdb_ts_hard": {
+      "nll_seed0_f1": 0.7636363636363637,
+      "original_student_seed0_f1": 0.7951807228915663,
+      "delta": -0.0315443592552026,
+      "clean_n": 10,
+      "nll_result_sha256": "94b27366ba0797ea9e68cb4abf6ad6d213c01ef24353d98d810bca2c18febe21"
+    },
+    "archiveii_embok_clean": {
+      "nll_seed0_f1": 0.7029105574139494,
+      "original_student_seed0_f1": 0.7223119529163351,
+      "delta": -0.019401395502385732,
+      "clean_n": 1107,
+      "nll_result_sha256": "b18733c1c6489223d3469f50190814f94b18b19532ccc5a9f09e208e718ad493"
+    },
+    "testsetb": {
+      "nll_seed0_f1": 0.8040535542569717,
+      "original_student_seed0_f1": 0.8011531638083974,
+      "delta": 0.0029003904485742638,
+      "clean_n": 288,
+      "nll_result_sha256": "f175f910cadffbc1f6d7391613b01d4da041cf2a452d98b0117069c9194768ad"
+    }
+  },
+  "conclusion": "Do not train NLL seeds 1/2: seed0 fails clear across-board generalization improvement; retain negative result.",
+  "candidate_validated_sha256": "76a8534e8eba2f9a75702787cb03f96b6e16158f5119f8b58ae63abdc201b27f",
+  "baseline_summary_sha256": "79520874a26c4da2ed15a254b9cf6c42001700209d8b631baf9c8c2e2b02e66e"
+}
