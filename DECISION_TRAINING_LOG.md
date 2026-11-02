@@ -12184,3 +12184,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - clean TS1/TS2/TS3/hard 均保持 n=63/39/19/28，F1=0.8414634146/0.9117647059/0.7961630695/0.7843137255；这些 split 无删除样本，和 raw 数值一致。
 - clean TestSetB n=421，三次 F1=**0.6734647425683981**，SD=0；raw n=428 的 F1=0.6719065798，差异对应 7 条审计删除样本。
 - 五格均通过 clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、逐序列计数和三次预测一致性复核。clean ArchiveII 正在运行，TS0/new 后接续；当前 clean 5/8，不写 raw+clean 完成。
+- 补充核查 bprna 与 biophysical 官方 config 均为 `rotary_emb:false`，不使用 inter-family 出问题的 Rotary 模块；bprna 旧 bpRNA-new 三次预测哈希一致，不误套缓存根因。
+
+
+## §15.359（2026-11-03）inter-family clean ArchiveII 首个 repeat
+
+- clean ArchiveII repeat0 已完成，F1=**0.733486**，throughput=0.756 seq/s，峰值显存=12,880MiB；长序列精确分块路径未再 OOM，也没有 CPU 降级。
+- 当前 repeat1/2 继续，完整 JSON 尚未形成；保持 clean 5/8，不把单次 F1 纳入三次均值或 SOTA 判断。并发 throughput 仅作诊断，不用于速度结论。
