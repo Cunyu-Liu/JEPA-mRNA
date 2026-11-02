@@ -6,7 +6,7 @@
 > - [ ] T-A170 每模型独立精确 + 80% identity（及可用家族）去泄露，25×8×3=600 单元结果齐全；EternaFold bpRNA-new 三次复测完成；未知语料只标 BLOCKED_PROVENANCE。
 > - [ ] T-A171 SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各 8 split×3 完整复测，原生后处理和概率输出保留。
 > - [ ] T-A172 xens2 编码共享/头部融合通过全 TS0 三次与预测等价门，全部 eligible baseline 同机 raw-sequence 终测证明速度第一；未证明不得写速度 SOTA。
-> - [ ] T-A173 新训练候选三种子均收敛并独立 GPU QA；统一 xens2 三次均值在真实去泄露主板上 8/8 超过最强 eligible baseline，三负格不以弱参照替代。
+> - [ ] T-A173 三种子收敛与独立 GPU QA 已完成；clean TS0 三训练种子 F1=0.7539755107±0.0028195523（n=713），仅完成 1/8 split，主板 8/8 未验收。
 > - [ ] T-A174 ECE 在同候选对/GT/分箱下全概率基线最低，Brier/NLL 同步报告；VL0-only 校准，risk–coverage 与 Spearman 证明结构质量排序最佳且跨 split 稳定。
 > - [x] T-A175 主图 1 标题逐字改为指定 5/8、4/8 与三个未领先 split；其他用户调整不变，全 23 页微软雅黑、1.5 行距、图文匹配、表数正确、无重叠并逐页渲染通过。
 > - [ ] T-A176 每 run 训练/评测过程与结论完整；活跃绘图源数据、哈希和 manifest 齐全，废弃文档及旧源数据完成可追溯归档，未删除活跃原始数据。

@@ -11606,3 +11606,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **三种子完成**：seed0/1/2 best step=2500/1000/1500，均满足 early-stopping、best checkpoint 和独立 GPU QA。教师 F1 均值=**0.8736290811±0.0076301607**，VL0 GT-F1=0.6952241409±0.0019730970，ECE=**0.0340386790±0.0060579207**，Brier=0.0116534778±0.0024485500，NLL=0.0485904300±0.0082426390。
 - **TS0 三种子**：F1 均值=**0.7801143096±0.0032054397**，三次训练种子均低于 xens2=0.8039；不能宣称精度 SOTA 或 8/8。汇总 SHA256=`938e1ae6e0562fc25028a051c3ac6b609ba7f23a4948a0a7e356d8d787da66c9`。
 - **下一阶段**：三种子 tr1c-clean 八 split 已并行启动，之后做独占 raw-sequence 速度、VL0-only 校准和 risk–coverage。所有当前并发吞吐只作诊断，不进入正式速度结论。
+
+
+## §15.279（2026-11-02）clean TS0 独立聚合与校准资源边界
+
+- **三训练种子 clean TS0**：tr1c-clean n=713；seed0/1/2 各三次完整推理的 F1 分别为 **0.7571563385/0.7517837430/0.7529864507**，三训练种子均值=`0.7539755107±0.0028195523`。每种种子内的三次预测哈希、TP/FP/FN 和 F1 完全一致；九个推理重复不等于九个独立训练种子。
+- **独立验收**：`tools/aggregate_plana_clean_round39.py` 从 clean JSONL 逐序列重算 TP/FP/FN、micro/macro-F1、规范化预测 SHA256，并绑定 clean audit、CUDA、全长协议和三个 best checkpoint 哈希。第二个独立实现再次核对三次 F1、计数、n、均值和 SD，均通过。阶段汇总 SHA256=`35eaae977ef1fe5fd07a65542f7d9929227e32b3f45d2932688217c57dae7a62`，状态为 `PARTIAL_NOT_SCIENTIFIC_CONCLUSION`（1/8 split），并发吞吐明确禁止用于速度声明。
+- **校准合同**：新增 `tools/calibrate_plana_round39.py`，固定使用 VL0 的 NLL 目标拟合 sigmoid(a*s+b)，锁定后才评测其他 split；同候选对计算 ECE/Brier/NLL，结构置信度定义为 DP 所选配对的平均校准概率，并计算 Spearman、macro-risk/AURC 和 risk–coverage。不得用拟合集 ECE 或平均置信度代替最终质量结论。
+- **首次校准未执行成功**：seed0 VL0 CUDA 模型加载时，三个 plana clean、Kirigami 与其他现存任务峰值叠加，仅余 10.44 MiB，申请 18 MiB 失败。未生成 calibration artifact，未发生 CPU 降级；错误记录于 `logs/round39_xens2/plana_s0_calibration_vl0_oom.log`。不立刻重复同一峰值，待运行中的任务自然释放余量后接续。

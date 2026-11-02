@@ -16,6 +16,8 @@
 >
 > **2026-11-02 执行更新**：BPfold 六个官方 checkpoint、UFold 官方转换权重已恢复；E2Efold 仍因官方 SharePoint 不可达而保留证据。EternaFold、MXfold2、BPfold 自身训练语料 clean 八 split 三次已完成，RNAstructure 与 eFold raw 全板已完成；DEBFold 官方训练/验证集的八 split clean 审计完成。xens2 教师 B=8 批化因 len=117 样本配对一致率 95.12% 被拒绝，B=1 全量 TR1c=42564、VL0=196 及哈希已验收。第一次三种子并行与后续单种子均受显存峰值影响而 OOM，失败目录保留；改 B=2 后 seed0 在 step5000 收敛并恢复 best step2500，三次独立 VL0 CUDA QA 通过（F1=0.8125067385、ECE=0.0641396712）。旧四项目标 seed0 的 TS0=0.6694091038，接近 r2d 而远低于 xens2，已停止旧目标 seed1；纯教师 KL 虽提高教师一致性并降低 ECE，但 TS0=0.6247394958，已否定其三种子投入；单 plana seed0 已收敛，教师 F1=0.8824242424、TS0=0.783814、VL0 ECE=0.0403145583，三次独立 QA 通过；三种子均已收敛并通过独立 QA，TS0=0.7801143096±0.0032054397、VL0 ECE=0.0340386790±0.0060579207；tr1c-clean 八 split 正在评测。该候选保留单编码器速度潜力，但尚低于 xens2 精度，8/8、速度和最低 ECE 未闭环。
 >
+> **2026-11-02 clean TS0 阶段证据**：plana 三训练种子在 tr1c-clean TS0（n=713）各做三次确定性推理，F1=`0.7539755107±0.0028195523`，逐种子值为 0.7571563385/0.7517837430/0.7529864507；逐序列计数、预测哈希、clean 审计和 checkpoint 身份独立复核通过。聚合器 `tools/aggregate_plana_clean_round39.py` 已完成 1/8 split 的 PASS 部分验收，不能写成主板结论。VL0-only 校准/置信度脚本已固定 NLL-affine、Spearman 和 risk–coverage 合同；首次真实 VL0 CUDA 加载因并行峰值 OOM，无输出，待释放显存后运行，不转 CPU。所有并发吞吐均排除在正式速度结论之外。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

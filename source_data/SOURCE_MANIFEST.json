@@ -665,6 +665,13 @@
    "bytes": 3121,
    "description": "plana 三种子收敛、VL0 校准和 TS0 均值/SD；clean 主板待完成",
    "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_clean_three_seed_progress.json",
+   "sha256": "35eaae977ef1fe5fd07a65542f7d9929227e32b3f45d2932688217c57dae7a62",
+   "bytes": 4987,
+   "description": "plana clean 三训练种子独立聚合；当前仅 TS0 完成，不是主板科学结论，并发吞吐不可用于测速",
+   "status": "active_partial_1_of_8"
   }
  ]
 }
