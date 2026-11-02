@@ -12137,3 +12137,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - inter-family clean n=1276/5386/63/39/19/28/2192/421（TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB）；bprna clean n=1140/5386/11/9/2/3/2267/80。
 - intra-family 的 TS3 clean n=0，正式评测必须写 `EMPTY_AFTER_DELEAK`，禁止写 F1=0；biophysical 的八格 clean 与 raw 数量一致，由该训练语料审计决定，不人为删除数据。
 - 验收 SHA256=`2a5eec62bde95d15d8158b1f32b6414485a93922571f4006bcfdcb1c47ad1869`。这只是数据身份预验收，不替代 raw/clean GPU 三次推理；当前 inter-family 仍 raw 7/8。
+
+
+## §15.353（2026-11-03）三系统 clean 复算脚本化与逐字节复现
+
+- 将 §15.351 已执行的独立审计固化为 `tools/verify_three_baselines_clean_round39.py`，覆盖 EternaFold/BPfold/MXfold2 的 clean 数据、审计、协议、逐序列计数和三次 F1；不改模型、预测或结果。
+- `tools/test_verify_three_baselines_clean_round39.py` 通过，验证 TP/FP/FN、重复配对集合化、名称不匹配拒绝和行数不匹配拒绝；双端 `py_compile` 通过。
+- 在真实 24 格上重新执行脚本，生成文件与已验收审计 `round39_three_baseline_clean_recompute.json` 逐字节相同，SHA256 均为 `0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。这形成脚本、真实复算和字节一致性三路检查，仍不解除异 clean 子集不可直接排 SOTA 的边界。
