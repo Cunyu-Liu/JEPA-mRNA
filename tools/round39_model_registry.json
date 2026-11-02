@@ -11,9 +11,9 @@
     {"id": "mxfold2", "class": "official_fixed_weights", "leakage_status": "trainsetab_clean_ready", "raw_status": "PASS_8x3_FULL_LENGTH", "clean_status": "PASS_TRAINSETAB_8x3"},
     {"id": "eternafold", "class": "official_fixed_parameters", "leakage_status": "train_union_clean_ready", "raw_status": "PASS_8x3", "clean_status": "PASS_TRAIN_UNION_8x3"},
     {"id": "ufold", "class": "official_fixed_weights", "leakage_status": "BLOCKED_PROVENANCE_multicorpus_conflict", "raw_status": "PASS_8x3", "clean_status": "BLOCKED_PROVENANCE"},
-    {"id": "rnaformer_bprna", "class": "official_fixed_weights", "leakage_status": "official_bprna_train_clean_ready", "raw_status": "TS0_NEW_PASS_REMAINDER_PENDING", "clean_status": "RETRY_AFTER_MEMORY_OVERSUBSCRIPTION"},
-    {"id": "rnaformer_interfam", "class": "official_fixed_weights", "leakage_status": "official_inter_train_clean_ready", "raw_status": "RUNNING_OFFICIAL_CHECKPOINT", "clean_status": "QUEUED_OFFICIAL_CLEAN"},
-    {"id": "rnaformer_biophys", "class": "official_fixed_weights", "leakage_status": "biophysical_train_clean_ready_lineage_separate", "raw_status": "OFFICIAL_WEIGHTS_RESTORED_EVAL_PENDING", "clean_status": "ready"},
+    {"id": "rnaformer_bprna", "class": "official_fixed_weights", "leakage_status": "official_bprna_train_clean_ready", "raw_status": "TS0_NEW_PASS_REMAINDER_QUEUED_AFTER_NLL", "clean_status": "QUEUED_WITH_21_GIB_CUDA_PREFLIGHT"},
+    {"id": "rnaformer_interfam", "class": "official_fixed_weights", "leakage_status": "official_inter_train_clean_ready", "raw_status": "QUEUED_OFFICIAL_CHECKPOINT_WITH_ISOLATED_OUTPUT", "clean_status": "QUEUED_WITH_21_GIB_CUDA_PREFLIGHT"},
+    {"id": "rnaformer_biophys", "class": "official_fixed_weights", "leakage_status": "biophysical_train_clean_ready_lineage_separate", "raw_status": "OFFICIAL_WEIGHTS_RESTORED_EVAL_QUEUED", "clean_status": "QUEUED_WITH_21_GIB_CUDA_PREFLIGHT"},
     {"id": "rinalmo_ft", "class": "official_fixed_weights", "leakage_status": "bprna_tr0_clean_ready", "raw_status": "PASS_RAW_8x3_INDEPENDENT_RECOMPUTE", "raw_summary_sha256": "04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07", "clean_status": "RUNNING_TR0_CLEAN", "protocol_note": "TS0/new code-hash difference reviewed; only unrelated model weight arguments and metadata changed, RiNALMo path unchanged"},
     {"id": "nucleicbert_frozen_official_head", "class": "project_head_official_backbone", "leakage_status": "downstream_tr1c_clean_pretraining_audit_pending", "raw_status": "DOWNLOADING_OFFICIAL_CKPT_16_RANGE_CHUNKS", "clean_status": "pending", "asset_evidence": "existing prefix preserved; official size=4970204510 and MD5=b5b3d40fa07adc3cc8c1942e6ebfe1a5 verified from Zenodo metadata; no complete checkpoint yet"},
     {"id": "nucleicbert_finetuned", "class": "project_finetune", "leakage_status": "downstream_tr1c_clean_ready", "raw_status": "PASS_ORIGINAL_B4_8x3_INDEPENDENT_RECOMPUTE", "clean_status": "PASS_TR1C_8x3_INDEPENDENT_RECOMPUTE", "training_corpus_evidence": "original result mode and training protocol both specify bprna_tr1c; earlier tr0 registry entry was incorrect", "evaluation_length": "all sequences; original B=4 first-598-nt protocol, not full-length capability"},
@@ -31,6 +31,6 @@
     {"id": "e2efold", "class": "official_fixed_weights", "leakage_status": "rnastralign_clean_pending", "raw_status": "BLOCKED_SHAREPOINT_ACCESS_DENIED", "clean_status": "pending"}
   ],
   "supplementary_systems": [
-    {"id": "rnaformer_intrafam", "class": "official_fixed_weights", "leakage_status": "official_intra_train_clean_ready", "raw_status": "RUNNING_OFFICIAL_CHECKPOINT", "clean_status": "QUEUED_OFFICIAL_CLEAN", "contract": "additional 8x3; not counted in the core 600 cells"}
+    {"id": "rnaformer_intrafam", "class": "official_fixed_weights", "leakage_status": "official_intra_train_clean_ready", "raw_status": "QUEUED_OFFICIAL_CHECKPOINT_WITH_ISOLATED_OUTPUT", "clean_status": "QUEUED_WITH_21_GIB_CUDA_PREFLIGHT", "contract": "additional 8x3; not counted in the core 600 cells"}
   ]
 }

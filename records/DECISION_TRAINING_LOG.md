@@ -11827,3 +11827,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **raw 8/8 完成**：TS0/new/ArchiveII/TS1/TS2/TS3/hard/TSB 的 F1 分别为 **0.7213842308/0.4489961557/0.7613027608/0.7135761589/0.6714413608/0.6035665295/0.5566265060/0.8715630190**，三次 SD 全为 0。ArchiveII TP/FP/FN=99905/35031/27617，TestSetB F1=0.8715630190；所有格均从 predictions 独立复算计数、权重、数据和三次哈希。
 - **汇总与边界**：raw 汇总 SHA256=`04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07`，bytes=4178。raw 是 full-length B=1、CUDA、raw-sequence 协议；并发耗时不作正式速度结论。TR0-clean 已接续，raw 完成不等于 16 格闭环。
+
+
+## §15.308（2026-11-02）RNAformer 四 checkpoint 后续队列与启动竞态修复
+
+- **资产与输出隔离**：bprna/inter-family/intra-family/biophysical 四套官方 state_dict/config 均存在。bprna 缺 raw 6 格、clean 8 格；另外三个变体使用各自独立 `rnaformer/<variant>/{raw,clean}` 输出目录和对应 clean 审计，避免覆盖 bprna raw 结果。intra-family 仍为 supplementary，不计入核心 600 单元。
+- **资源合同**：全部按既有 fusion 锁排在 NLL 后串行执行，启动要求 CUDA 可用且至少 21 GiB 空闲；B=1、repeats=3、allow-long，不降低协议。当前未实际启动这些 GPU 任务，不写成 running 或完成。
+- **启动竞态**：inter/intra/biophysical 首次并行提交时，后两者在 variant runner 上传完成前退出，错误均为 `No such file or directory`，没有模型输出。确认脚本存在且 `bash -n` 通过后已重新排队；此为调度竞态，不是 CUDA 或科学失败。
