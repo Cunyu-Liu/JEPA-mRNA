@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-01",
+ "updated": "2026-11-02",
  "files": [
   {
    "path": "fig03_ablation/fig03b_group_drops.json",
@@ -563,9 +563,9 @@
   },
   {
    "path": "appendix_leakage/round39_model_clean_audits.json",
-   "sha256": "de6f0c0231022301aa4bdc4e41760feac5e89561888d9bbb181a99a40d9f787f",
-   "bytes": 24769,
-   "description": "七套模型专属训练并集的八 split clean n、删除数与审计哈希",
+   "sha256": "17e14e5ef6601c278ce48cda4a43aee21e551fafc9f07f685d4b08de6e93f021",
+   "bytes": 27620,
+   "description": "八套模型专属训练并集的八 split clean n、删除数与审计哈希",
    "status": "active"
   },
   {
@@ -615,6 +615,20 @@
    "sha256": "699c259064ac6fda37c5e2b14484bc0a0bc80a67cbd331f66c9246e02c59d3b6",
    "bytes": 3971,
    "description": "TR0/tr1c 各八 split 的 clean n、删除数、数量守恒与审计哈希索引",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_clean_train_union_summary.json",
+   "sha256": "4c071f0bc34f4fdd4733a025d16a22eea2c07dbfe77fa1bfe6e1486e923ac14f",
+   "bytes": 2792,
+   "description": "BPfold 官方六 checkpoint 在自身训练并集 clean 子集上的八 split 三次复算",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_rnastructure_raw_summary.json",
+   "sha256": "50d181fec340d671c629308933d1e313ed8b0e9843fd2d1e42245f1fc2cf2349",
+   "bytes": 7612,
+   "description": "RNAstructure Fold/MaxExpect 八 split 三次复算；固定取第一 MEA 结构，非序列训练系统",
    "status": "active"
   }
  ]

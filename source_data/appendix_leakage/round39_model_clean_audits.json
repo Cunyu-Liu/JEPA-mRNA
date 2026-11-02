@@ -583,6 +583,26 @@
           "audit_sha256": "2e9f73f62c01a04e791645f293398a29d0f95d5c65a3b64aedda2fb00a5eba12"
         }
       }
+    },
+    "debfold_train_validation": {
+      "description": "DEBFold official TrainingValidationSet.zip training and validation structures",
+      "training_union": {
+        "inputs": [{"path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/DEBFold/training_validation.jsonl", "n": 8782, "sha256": "ee89decb6ed3c6783c2a413425028736e63e61fea45157e5bd395fc4e5678460"}],
+        "n_sequences": 8782,
+        "n_unique_sequences": 8384,
+        "source_archive_sha256": "20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2",
+        "purpose": "DEBFold official training and validation leakage audit"
+      },
+      "splits": {
+        "archiveii_embok_clean": {"raw_n": 2544, "clean_n": 2399, "removed_exact": 11, "removed_homology_only": 134, "clean_sha256": "de8fc5b518d490e399a4be8fb3a22beed0d05b59feee1203070b44f247dc929e", "audit_sha256": "ba687e0e9d714bbe6316c4106864da4874beffbb85693db1152c03283d3981c8"},
+        "bprna_new": {"raw_n": 5388, "clean_n": 5388, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9", "audit_sha256": "7fe4db961bb42c6e3a2b6084214358b3f9eaa09ef3e9d74346eb591257a8f121"},
+        "bprna_ts0": {"raw_n": 1288, "clean_n": 870, "removed_exact": 368, "removed_homology_only": 50, "clean_sha256": "d7da4a9ea8cbba72adce7aca2b82b83dfe4c2fdca53b43cdb8a1de2934ded04a", "audit_sha256": "3e000cb14d9ee906bb96f5f16a50ca9f1386032109008a1d42304cc375399fde"},
+        "ref_pdb_ts1": {"raw_n": 63, "clean_n": 58, "removed_exact": 0, "removed_homology_only": 5, "clean_sha256": "c6d160d8bd80a3c9474669f6199cbb9a30ef83d585a5f0ae0bf9dd82d98a3f35", "audit_sha256": "b96139f806f35b780b7bf0c39009568bf66c76146bb5a5e2f41de5000c5c86ab"},
+        "ref_pdb_ts2": {"raw_n": 39, "clean_n": 38, "removed_exact": 0, "removed_homology_only": 1, "clean_sha256": "fe6b616662284a329af89c0eaf68eb0bf65a5a0666ac9a6fe7636cc95ca4f8fd", "audit_sha256": "605da43ecffb92e270c48019a7a1a744986972159abc2d98e927c62e88b4c1af"},
+        "ref_pdb_ts3": {"raw_n": 19, "clean_n": 19, "removed_exact": 0, "removed_homology_only": 0, "clean_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a", "audit_sha256": "ebc2a804a8a65d561e3cfca789046a522e369063b5d9803c5f2244401aab33cf"},
+        "ref_pdb_ts_hard": {"raw_n": 28, "clean_n": 25, "removed_exact": 0, "removed_homology_only": 3, "clean_sha256": "444a360bcf80a21d7aaff84fda0fead459831aeefe23794239988fb88f13cc22", "audit_sha256": "7dab7d780ad922ae493a746d2ad04358b37777c05b26553d727f6c4d750cafb4"},
+        "testsetb": {"raw_n": 428, "clean_n": 385, "removed_exact": 29, "removed_homology_only": 14, "clean_sha256": "de86c2ff75fb757311bd47661119e12ab42ea0dd6f7276821d7e030b910bf178", "audit_sha256": "c572462c6a73127b7bb727e91b05900a801413201602e65ecb59426374f67cac"}
+      }
     }
   }
 }

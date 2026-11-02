@@ -11522,3 +11522,14 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **B=1 对照通过**：前 16 条批量路径相对原串行路径全部 `max_abs=0`、`pair_identity=1.0`、`f1_delta=0.0`；16 条 manifest/SHA256 验收通过。由此采用 B=1 安全路径，不把批量 CUDA 数值差异伪装成可忽略误差。
 - **有效工作复用**：91 个原串行分片共 1456 条经全分片 SHA256、序列顺序、矩阵 shape 和有限值复核后，目录改为 `teacher_tr1c` 并原位续跑，不重算已验收部分。manifest 新增 `teacher_batch_size=1`、TF32-off、FP16 bridge 与 16 条等价探针记录；TR1c 完成后串行生成 VL0，最终须满足 n=42564/196 与全分片哈希验收。
 - **并行恢复**：eFold raw 八 split 三次结果已核验齐全；BPfold 官方训练并集 clean 八 split、RNAformer-bprna 官方训练集 clean 八 split 已分别恢复三次评测。它们不与未来独占测速并行，当前仅为非计时精度评测。
+
+
+## §15.269（2026-11-02）教师闭环、BPfold/RNAstructure 全板与蒸馏资源纠错
+
+- **教师全量完成**：TR1c=42,564 条/2,661 shards、VL0=196 条/13 shards，全部 SHA256、样本数、B=1/TF32-off provenance 复核通过。修复 `generate_teacher_labels` resume 时旧 manifest 不合并新 meta 的问题；回归测试 3 passed，确认原 shard 哈希不变。此前最终脚本的 `teacher_batch_size` KeyError 是元数据合并缺陷，不是教师数据缺失。
+- **BPfold 自身训练并集 clean 八 split 三次闭环**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 clean n=1178/5387/42/3/17/24/731/79，F1=**0.7454468330/0.7369936721/0.8598022106/0.9494949495/0.8366336634/0.8239795918/0.8212189843/0.7731282515**，SD=0。TS2 clean 仅 3 条，必须同时展示 n，不能只引用高 F1。汇总 SHA256=`4c071f0bc34f4fdd4733a025d16a22eea2c07dbfe77fa1bfe6e1486e923ac14f`。
+- **RNAstructure raw 全板闭环**：Fold 与 MaxExpect 各 8 split×3，严格单 MFE 或官方顺序第一 MEA 结构，预测与计数独立复算通过；不再合并多个近优 CT。汇总 SHA256=`50d181fec340d671c629308933d1e313ed8b0e9843fd2d1e42245f1fc2cf2349`。
+- **DEBFold 数据 provenance**：官方 `TrainingValidationSet.zip` 恢复，SHA256=`20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2`；8,782 结构/8,384 唯一序列，CT 配对列、互指和 Energy 行解析经首样本及全量校验。clean n=870/5388/58/38/19/25/2399/385，八套模型审计总数增至八套。官方仅找到网页预测入口，未找到本地权重，不能伪造本地全板复测。
+- **蒸馏 dry-run 合同**：教师与嵌入覆盖完整；B=4、lr=1e-4、四项权重均 1、nll=sum、VL0 validation_every=500、patience=5、min_delta=1e-6、1,000,000 steps 仅作安全上限。从 r2d 仅载模型权重，optimizer/scheduler/step=0。
+- **并行训练失败与调整**：第一次三种子并行时，seed1/2 被系统终止，seed0 在首个长序列 batch 上 CUDA OOM；均无 best checkpoint、无收敛结果。失败目录已移至 `failed_runs/parallel_oom_20261102`。改为 `SEEDS=0` 单种子串行，保持 B=4 与早停合同不变；后续种子必须逐个完成并独立 GPU QA。
+- **基线资源失败**：RNAformer bprna/intra/inter 在其他 GPU 作业峰值叠加时发生 OOM，未写出 PASS；已释放后按最多两个 RNAformer 加其他小任务恢复。Kirigami 的 ArchiveII 失败是 WUSS 伪结字符 `A/a、B/b` 解析遗漏，TS0/new 已 PASS；扩展解析器后续跑。所有 OOM 与解析失败均不记为模型零分。
