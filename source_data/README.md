@@ -101,6 +101,7 @@
 | `appendix_leakage/round39_plana_distill_three_seed_vl0_ts0.json` | plana 三种子收敛、VL0 校准和 TS0 均值/SD；clean 主板待完成 | active | `938e1ae6e056` |
 | `appendix_leakage/round39_plana_clean_three_seed_progress.json` | clean TS0 三训练种子独立聚合；仅 1/8 split，不是主板结论，并发吞吐不可用于测速 | active partial | `35eaae977ef1` |
 | `appendix_leakage/round39_nucleicbert_ft_progress.json` | NucleicBERT fine-tuned 原 B=4 raw TS2 三次复测；仅 1/8 split，训练语料确认为 tr1c | active partial | `3cf09e66daf3` |
+| `appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json` | 学生与 BPfold 同名、同序列、同 GT 的 clean 交集配对复算；未齐三种子 | active diagnostic | `f803f1763ccd` |
 
 ## 后续边界
 

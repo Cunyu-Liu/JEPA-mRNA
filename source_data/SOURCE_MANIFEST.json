@@ -679,6 +679,13 @@
    "bytes": 934,
    "description": "NucleicBERT fine-tuned 原 B=4 协议 raw TS2 三次复测与独立计数验收；仅 1/8 split，clean 待后续队列",
    "status": "active_partial_raw_1_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json",
+   "sha256": "f803f1763ccd94f97f0ee139a794dec8b9d8a37bfb357fe3da40b0deb3e8a746",
+   "bytes": 11311,
+   "description": "plana 学生与 BPfold 在同名、同序列、同 GT clean 交集上的独立配对复算；未齐三种子，不作最终排名",
+   "status": "active_matched_diagnostic_partial_seeds"
   }
  ]
 }

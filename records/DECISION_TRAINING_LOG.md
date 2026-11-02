@@ -11623,4 +11623,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **B=1 与原 B=4 不等价**：新 B=1 TS2 三次均 F1=0.6218487395；原 `eval_nucleicbert_ft.py` 的 B=4 精确复现 TP=462、FP=319、FN=193、F1=**0.6434540390**。差异超过 0.001 等价门，停止整板并定位到原 SecStrDataset/collate 的 batch/padding 行为，未放宽门限。B=1 的 JSON/NPZ 已连哈希移入 `nucleicbert_ft/diagnostics/`；新复测器改为保留原 B=4 协议。
 - **资源失败与处理**：B=4 首次与其他两个 plana 长序列任务叠加时仅余 17.75 MiB、申请 20 MiB OOM，未产生新结果。保持科学配置不变，启动器加入 `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` 后，raw TS2 三次均 F1=**0.6434540390**、TP/FP/FN=462/319/193，与原结果在浮点尾数内一致；独立逐序列计数、micro/macro-F1、概率 NPZ 的 float32/offsets/SHA256 均通过。原始结果 SHA256=`287d0d29f605bac1d6dbedf8ace58e5a5dbcbd2bac9d0b565539f3e140558274`，阶段汇总 SHA256=`3cf09e66daf3481e5fda880e64275c37ecc4777e88f04634093a0286e4fd0293`。随后 TS0 模型加载时另一个 plana 长序列峰值达 16.41 GiB，仅余 11.75 MiB 而 OOM，未生成 TS0 结果；剩余 NB 队列改在全部 plana 作业自然结束后接续，不降批、不转 CPU。
 - **plana 队列与校准预检**：seed1 clean bpRNA-new 的并行 OOM 已留证，seed0/2 继续，seed1 在 seed2 父进程结束后串行补跑，再自动执行三个 VL0 校准。校准运行前接口复核发现 `apply_platt_scaling` 应接收 raw score，已修正，不再误传 sigmoid 概率；校准结果尚未生成，不标 PASS。
-- **阶段提交**：clean TS0 聚合、三处规范、台账与活跃源清单提交 `f3f1f46` 已确认推送 GitHub。
+- **阶段提交**：clean TS0 聚合、三处规范、台账与活跃源清单提交 `f3f1f46` 已确认推送 GitHub。NucleicBERT 原 B=4 复测器、启动器、诊断与 TS2 阶段证据已本地提交 `a7a795b`；本轮 GitHub 22/443 端口连接均超时，尚未确认该提交在远端，不得写成已上传。
+- **plana seed2 clean 八格**：n=713/5386/18/29/4/10/1107/288（TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB），F1=0.7529864507/0.4982429101/0.8709677419/0.8039457460/0.8823529412/0.8023952096/0.7246198789/0.7990029458，三次预测均一致。bpRNA-new、ArchiveII、TS2 未超过现有强基线；其他两个训练种子未齐，不能作为三种子主板结论。
+
+
+## §15.281（2026-11-02）clean 交集公平性与校准续接
+
+- **两个种子的全板边界**：seed0/2 均已完成 clean 八 split 三次推理，seed1 继续补跑；三训练种子完整聚合仍只有 TS0 可计算，其余只作种子级诊断。
+- **同源交集工具**：`tools/compare_plana_bpfold_matched_round39.py` 按 name 取交集，逐名验证序列与 GT 完全一致，再从预测独立重算 strict micro-F1；不把 BPfold 的 n=3 与学生的 n=29 直接当作公平 TS2 对比。阶段源 SHA256=`f803f1763ccd94f97f0ee139a794dec8b9d8a37bfb357fe3da40b0deb3e8a746`，未齐三种子。
+- **关键配对负证据**：bpRNA-new 交集 n=5386，seed0/2 学生 F1=0.5356531836/0.4982429101，BPfold=0.7369940504；ArchiveII 交集 n=517，学生=0.6739043971/0.6744165330，BPfold=0.8163818038；共同 TS2 仅 n=1，学生=0.7692307692/0.7200000000，BPfold=0.9696969697。三个短板的差距不能归因于 clean n 不同，当前单学生蒸馏未解决 8/8。
+- **校准续接**：校准器新增代码/数据/checkpoint/NPZ 哈希一致的幂等跳过，防止串行队列重算。尝试利用 seed0 完成后的窗口先跑 seed0/2 VL0，但 seed0 仍在模型加载时遇到 CUDA OOM，未生成 artifact；循环立即停止，seed2 未重复尝试。保留 seed1 完成后的三次串行校准队列，不转 CPU。
