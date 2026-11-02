@@ -11633,3 +11633,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **同源交集工具**：`tools/compare_plana_bpfold_matched_round39.py` 按 name 取交集，逐名验证序列与 GT 完全一致，再从预测独立重算 strict micro-F1；不把 BPfold 的 n=3 与学生的 n=29 直接当作公平 TS2 对比。阶段源 SHA256=`f803f1763ccd94f97f0ee139a794dec8b9d8a37bfb357fe3da40b0deb3e8a746`，未齐三种子。
 - **关键配对负证据**：bpRNA-new 交集 n=5386，seed0/2 学生 F1=0.5356531836/0.4982429101，BPfold=0.7369940504；ArchiveII 交集 n=517，学生=0.6739043971/0.6744165330，BPfold=0.8163818038；共同 TS2 仅 n=1，学生=0.7692307692/0.7200000000，BPfold=0.9696969697。三个短板的差距不能归因于 clean n 不同，当前单学生蒸馏未解决 8/8。
 - **校准续接**：校准器新增代码/数据/checkpoint/NPZ 哈希一致的幂等跳过，防止串行队列重算。尝试利用 seed0 完成后的窗口先跑 seed0/2 VL0，但 seed0 仍在模型加载时遇到 CUDA OOM，未生成 artifact；循环立即停止，seed2 未重复尝试。保留 seed1 完成后的三次串行校准队列，不转 CPU。
+
+
+## §15.282（2026-11-02）VL0 锁定 xens2+BPfold 融合候选
+
+- **BPfold VL0 三次实测**：196 条、573,355 个共同候选配对，官方六 checkpoint 的 F1=**0.8396047510**，三次预测和原始 utility 分数哈希一致。contact map 是后处理前的未归一化 utility，不是概率；原始 float32 分数保存在 `/teams` 的 `vl0_fusion/bpfold_vl0.npz`，结果 SHA256=`ea21f21814aba3cd33cddb21ef9575fb19ecacf0e848734190ade4fb0d40c441`。
+- **融合合同**：只在 VL0 拟合 `sigmoid(a*logit(xens2_probability)+b*BPfold_utility+bias)`，a/b 非负、NLL 目标，不用任何测试 split。优化器正常收敛：a=0.5106147897、b=1.0869947455、bias=-5.8063062178、NLL=0.0058930485。fit SHA256=`bfde5279469ffc411cb0c50c46ad08440e68380d3b6eb7aad65b55fc21540265`。
+- **VL0 对照**：教师 F1=0.8788142982，BPfold 官方解码=0.8396047510，融合=**0.8912970618**，相对教师 +0.0124827636、相对 BPfold +0.0516923108。融合在拟合集的 ECE=0.000299、Brier=0.001398、NLL=0.005893 只作优化诊断，禁止写成最终最低 ECE 或跨 split 校准结论。
+- **后续硬顺序**：`evaluate_vl0_bpfold_fusion_round39.py` 只使用锁定参数，在 xens2 与 BPfold 两套训练语料的 clean 交集上做三次完整推理，保存 teacher/BPfold/fused 原始分数、GT、预测、ECE/Brier/NLL 和置信度。先小 split 验证，再长 split；未验证泛化前不生成 TR1c 融合教师、不启动新三种子蒸馏。若精度成立，再蒸馏为单骨干并独占测速。该融合推理使用 cached r2d 表征仅为保持教师精度，不能用于 raw-sequence 速度声明。

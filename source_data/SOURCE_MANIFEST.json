@@ -686,6 +686,20 @@
    "bytes": 11311,
    "description": "plana 学生与 BPfold 在同名、同序列、同 GT clean 交集上的独立配对复算；未齐三种子，不作最终排名",
    "status": "active_matched_diagnostic_partial_seeds"
+  },
+  {
+   "path": "appendix_leakage/bpfold_vl0.json",
+   "sha256": "ea21f21814aba3cd33cddb21ef9575fb19ecacf0e848734190ade4fb0d40c441",
+   "bytes": 293342,
+   "description": "BPfold 全 VL0 三次官方推理和原始 utility 分数哈希；仅供模型选择，不是测试集结果",
+   "status": "active_validation_only"
+  },
+  {
+   "path": "appendix_leakage/round39_vl0_bpfold_fusion_fit.json",
+   "sha256": "bfde5279469ffc411cb0c50c46ad08440e68380d3b6eb7aad65b55fc21540265",
+   "bytes": 2020,
+   "description": "VL0-only xens2+BPfold 非负 NLL 融合参数、教师/BPfold/融合对照；拟合集指标不作最终结论",
+   "status": "active_validation_selected_candidate"
   }
  ]
 }

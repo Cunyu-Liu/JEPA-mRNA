@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "status": "VL0_SELECTED_CANDIDATE_NOT_MAIN_RESULT",
+  "protocol": {
+    "fit_split": "bprna_vl0",
+    "objective": "binary NLL",
+    "model": "sigmoid(a*logit(teacher_probability)+b*BPfold_utility+bias)",
+    "constraints": "a>=0,b>=0; no test split used",
+    "teacher_probability_clip": 1e-07,
+    "n_bins": 10
+  },
+  "fit": {
+    "a": 0.5106147897234236,
+    "b": 1.0869947454744493,
+    "bias": -5.806306217759413,
+    "nll": 0.005893048478574922,
+    "optimizer_success": true,
+    "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+    "n_pairs": 573355
+  },
+  "teacher": {
+    "calibration": {
+      "n": 573355,
+      "ece": 0.03861115037051478,
+      "brier": 0.015110548915071046,
+      "nll": 0.05723426944841652
+    },
+    "structure": {
+      "tp": 4032,
+      "fp": 526,
+      "fn": 586,
+      "strict_micro_f1": 0.8788142981691369
+    }
+  },
+  "bpfold": {
+    "calibration": {
+      "n": 573355,
+      "ece": 0.48701422443577547,
+      "brier": 0.242492315821636,
+      "nll": 0.6862369304685334
+    },
+    "structure_same_dp": {
+      "tp": 4274,
+      "fp": 3187,
+      "fn": 344,
+      "strict_micro_f1": 0.7076744763639374
+    },
+    "official_decoder_f1": 0.839604750973151
+  },
+  "fused": {
+    "calibration": {
+      "n": 573355,
+      "ece": 0.0002990218790882591,
+      "brier": 0.0013977272995662653,
+      "nll": 0.005893048478574922
+    },
+    "structure": {
+      "tp": 3989,
+      "fp": 344,
+      "fn": 629,
+      "strict_micro_f1": 0.8912970617808066
+    }
+  },
+  "bpfold_result_sha256": "ea21f21814aba3cd33cddb21ef9575fb19ecacf0e848734190ade4fb0d40c441",
+  "bpfold_scores_sha256": "7298063c4a7d4235dce79f0286c7f62e82d602fcdb88d371ab67a7cb942b6e4a",
+  "data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+  "teacher_manifest_sha256": "9c2353b19699367f0f3de8014946ba544b819b2048517cd9b2f4463431a7dde6",
+  "fused_minus_teacher_f1": 0.012482763611669667,
+  "fused_minus_bpfold_official_f1": 0.05169231080765557
+}

@@ -18,6 +18,8 @@
 >
 > **2026-11-02 clean TS0 阶段证据**：plana 三训练种子在 tr1c-clean TS0（n=713）各做三次确定性推理，F1=`0.7539755107±0.0028195523`，逐种子值为 0.7571563385/0.7517837430/0.7529864507；逐序列计数、预测哈希、clean 审计和 checkpoint 身份独立复核通过。聚合器 `tools/aggregate_plana_clean_round39.py` 已完成 1/8 split 的 PASS 部分验收，不能写成主板结论。VL0-only 校准/置信度脚本已固定 NLL-affine、Spearman 和 risk–coverage 合同；首次真实 VL0 CUDA 加载因并行峰值 OOM，无输出，待释放显存后运行，不转 CPU。所有并发吞吐均排除在正式速度结论之外。
 >
+> **2026-11-02 VL0 融合候选与硬顺序**：单 plana 学生在 BPfold 同源 clean 交集上仍明显落后，不能继续包装为 8/8。新候选只在 VL0 拟合 `sigmoid(a*logit(xens2_probability)+b*BPfold_utility+bias)`，非负 a/b、NLL 目标；a=0.5106147897、b=1.0869947455、bias=-5.8063062178，n=573355。VL0 F1=0.8912970618，高于教师 0.8788142982 和 BPfold 0.8396047510；拟合集 ECE 不能作为最终校准结论。后续只在 xens2 与 BPfold 两套训练语料的 clean 交集做三次锁定推理并保存原始分数，再与最强 eligible baseline 比较；精度成立后才蒸馏回单骨干并独占测速。不同 clean n 必须附同名、同序列、同 GT 的交集敏感性，不能只比不同子集的 F1。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

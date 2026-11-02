@@ -102,6 +102,8 @@
 | `appendix_leakage/round39_plana_clean_three_seed_progress.json` | clean TS0 三训练种子独立聚合；仅 1/8 split，不是主板结论，并发吞吐不可用于测速 | active partial | `35eaae977ef1` |
 | `appendix_leakage/round39_nucleicbert_ft_progress.json` | NucleicBERT fine-tuned 原 B=4 raw TS2 三次复测；仅 1/8 split，训练语料确认为 tr1c | active partial | `3cf09e66daf3` |
 | `appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json` | 学生与 BPfold 同名、同序列、同 GT 的 clean 交集配对复算；未齐三种子 | active diagnostic | `f803f1763ccd` |
+| `appendix_leakage/bpfold_vl0.json` | BPfold 全 VL0 三次官方推理与原始 utility 哈希；仅供模型选择 | validation only | `ea21f21814ab` |
+| `appendix_leakage/round39_vl0_bpfold_fusion_fit.json` | VL0-only xens2+BPfold 非负 NLL 融合参数与对照；拟合集指标不作最终结论 | validation candidate | `bfde5279469f` |
 
 ## 后续边界
 

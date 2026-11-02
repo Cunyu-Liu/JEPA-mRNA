@@ -9,6 +9,7 @@
 | 蒸馏目标必须同时看教师与 GT | 纯 r2d KL 的教师 micro-F1=0.8029、VL0 ECE=0.0344，但 TS0=0.6247；旧四项目标 TS0=0.6694 | 纯 KL 提高教师一致性和校准，却不能保持结构精度，不投入其三种子 | 单 plana 可训练骨干是另一候选；教师 F1 提高不能代替真实结构的 clean 全板验收 |
 | 单 plana 蒸馏保留速度潜力但未继承教师精度 | 三种子均 early-stopping 并通过独立 VL0 CUDA QA；raw TS0=0.7801143096±0.0032054397，clean TS0=0.7539755107±0.0028195523（n=713） | 单骨干路线值得继续评估；其 raw TS0 低于 xens2=0.8039，不能称精度 SOTA | clean 主板目前仅完成 1/8 split；其余 split、独占速度、VL0-only 校准和置信度排序未闭环，不能称 8/8、速度 SOTA 或最低 ECE |
 | 不同 clean n 必须辅以同源交集 | 学生与 BPfold 同名、同序列、同 GT 配对复算：bpRNA-new n=5386，seed0/2 F1=0.5357/0.4982，BPfold=0.7370；ArchiveII n=517，学生=0.6739/0.6744，BPfold=0.8164；共同 TS2 仅 n=1，学生=0.7692/0.7200，BPfold=0.9697 | 学生在三个关键短板上的落后不能归因于 clean 样本集合不同；当前蒸馏路线没有解决 8/8 | 仅是 seed0/2 的诊断，不替代三种子主板；共同 TS2 只有 1 条，不能外推统计显著性；其他强基线仍需各自完整复测 |
+| 结构先验与语言模型可在 VL0 互补 | VL0 锁定非负 NLL 融合：教师 F1=0.8788142982、BPfold=0.8396047510、融合=0.8912970618；a=0.5106、b=1.0870 | 可以写“在 VL0 观察到互补信号，值得做锁定泛化验证” | 拟合集 ECE 不是最终校准；双 clean 三次评测未完成，融合包含 BPfold+三分支教师，速度反而更慢；只有泛化成立后才值得蒸馏回单骨干 |
 | 结构先验解释 OOD 收益 | 40/40 消融显示 Turner/2D 的 PDB-OOD 损失更大，DP 的 ID 损失更大；GenC/GenF 少预测且零正确配对率高 | 可以写组件作用依任务而变，Turner/2D 在 PDB-OOD 更重要 | 不能概括为所有组件都随 OOD 距离单调增强；GenC/GenF 失败机制不能被 OOD mean 掩盖 |
 | 置信度可用于质量分层 | 大样本 split 的 VL0 仿射降低 structure-level ECE，八 split Spearman 全为正；TS2/TS3 过校正 | 可以写“部分 split 改善且排序信号存在” | 最低 ECE 未证明；缺少统一概率基线、risk–coverage/abstention 和跨 split 稳定性，平均置信度高不等于更好 |
 | JEV 头可跨骨干迁移 | NB 主 benchmark 8/8 正迁移；原论文 acceptor/donor/CPEB3 不显著为正，其他下游也有负结果 | 只能说主 benchmark 迁移成立，原论文任务未显示普遍正迁移 | 不得写成 NucleicBERT 原论文任务全面提升；NB 二级结构五种子和独立 QA 未闭环，contact/distance blocked |
