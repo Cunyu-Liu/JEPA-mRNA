@@ -104,6 +104,7 @@
 | `appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json` | 学生与 BPfold 同名、同序列、同 GT 的 clean 交集配对复算；8/8 三种子，旧版已归档 | active diagnostic | `29655670693c` |
 | `appendix_leakage/round39_plana_calibration_three_seed_vl0_verification.json` | 三个 VL0 校准的原始数组独立复算；ECE 降低但排序退化，非跨 split 结论 | validation verified | `4c3a7071da3d` |
 | `appendix_leakage/round39_fusion_clean_ref_pdb_ts2.json` | VL0 锁定融合在双 clean TS2 的三次结果；n=1，未领先 BPfold | active partial | `22339a903029` |
+| `appendix_leakage/round39_fusion_clean_aggregate.json` | 融合在 5 个 clean split 上与 BPfold/student 的同源配对、校准与置信度聚合 | active partial | `354ed2413440` |
 | `appendix_leakage/bpfold_vl0.json` | BPfold 全 VL0 三次官方推理与原始 utility 哈希；仅供模型选择 | validation only | `ea21f21814ab` |
 | `appendix_leakage/round39_vl0_bpfold_fusion_fit.json` | VL0-only xens2+BPfold 非负 NLL 融合参数与对照；拟合集指标不作最终结论 | validation candidate | `bfde5279469f` |
 

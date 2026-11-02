@@ -1,0 +1,506 @@
+{
+  "schema_version": 1,
+  "status": "FUSION_CLEAN_AGGREGATE",
+  "comparison_boundary": "same-name/sequence/GT paired BPfold and student sensitivity; not an all-baseline SOTA claim",
+  "splits": {
+    "ref_pdb_ts1": {
+      "n": 13,
+      "fused": {
+        "tp": 190,
+        "fp": 6,
+        "fn": 36,
+        "strict_micro_f1": 0.9004739336492891
+      },
+      "fused_repeats": {
+        "mean": 0.9004739336492891,
+        "sd": 0.0,
+        "values": [
+          0.9004739336492891,
+          0.9004739336492891,
+          0.9004739336492891
+        ]
+      },
+      "calibration": {
+        "n": 11944,
+        "ece": 0.002850143856547625,
+        "brier": 0.003416797260784996,
+        "nll": 0.01851619241943784
+      },
+      "confidence": {
+        "spearman_confidence_vs_structure_f1": 0.616231669626417,
+        "aurc_macro": 0.09754238386671467,
+        "risk_coverage": [
+          {
+            "coverage": 0.15384615384615385,
+            "selective_macro_risk": 0.03997289972899731,
+            "n": 2
+          },
+          {
+            "coverage": 0.23076923076923078,
+            "selective_macro_risk": 0.08647765964839138,
+            "n": 3
+          },
+          {
+            "coverage": 0.3076923076923077,
+            "selective_macro_risk": 0.07485824473629354,
+            "n": 4
+          },
+          {
+            "coverage": 0.46153846153846156,
+            "selective_macro_risk": 0.10546105204641787,
+            "n": 6
+          },
+          {
+            "coverage": 0.5384615384615384,
+            "selective_macro_risk": 0.10338220045537116,
+            "n": 7
+          },
+          {
+            "coverage": 0.6153846153846154,
+            "selective_macro_risk": 0.10466397085299528,
+            "n": 8
+          },
+          {
+            "coverage": 0.7692307692307693,
+            "selective_macro_risk": 0.11269045270049571,
+            "n": 10
+          },
+          {
+            "coverage": 0.8461538461538461,
+            "selective_macro_risk": 0.12517313881863246,
+            "n": 11
+          },
+          {
+            "coverage": 0.9230769230769231,
+            "selective_macro_risk": 0.12307537725041306,
+            "n": 12
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.13283880976961204,
+            "n": 13
+          }
+        ]
+      },
+      "bpfold_same_subset": {
+        "tp": 202,
+        "fp": 34,
+        "fn": 24,
+        "strict_micro_f1": 0.8744588744588745
+      },
+      "student_same_subset": {
+        "mean": 0.8751027601548893,
+        "sd": 0.0034532722915575505,
+        "values": [
+          0.8755980861244019,
+          0.8714285714285714,
+          0.8782816229116945
+        ]
+      },
+      "fused_minus_bpfold": 0.02601505919041458,
+      "fused_minus_student_mean": 0.025371173494399768,
+      "result_sha256": "46e19bc860e8f35cbf5bf17de01b643d49d0c77b705bc97e0a2cab6cb7db702b",
+      "arrays_sha256": "e5b42a1671edbac91ddde07298b296c1eadb1a218fdb24efebb773870e94c57e"
+    },
+    "ref_pdb_ts2": {
+      "n": 1,
+      "fused": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 2,
+        "strict_micro_f1": 0.9333333333333333
+      },
+      "fused_repeats": {
+        "mean": 0.9333333333333333,
+        "sd": 0.0,
+        "values": [
+          0.9333333333333333,
+          0.9333333333333333,
+          0.9333333333333333
+        ]
+      },
+      "calibration": {
+        "n": 400,
+        "ece": 0.007898869773375738,
+        "brier": 0.005324326859716062,
+        "nll": 0.021099003755748233
+      },
+      "confidence": {
+        "spearman_confidence_vs_structure_f1": null,
+        "aurc_macro": 0.06666666666666665,
+        "risk_coverage": [
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.06666666666666665,
+            "n": 1
+          }
+        ]
+      },
+      "bpfold_same_subset": {
+        "tp": 16,
+        "fp": 1,
+        "fn": 0,
+        "strict_micro_f1": 0.9696969696969697
+      },
+      "student_same_subset": {
+        "mean": 0.7364102564102564,
+        "sd": 0.028423397867797,
+        "values": [
+          0.7692307692307693,
+          0.72,
+          0.72
+        ]
+      },
+      "fused_minus_bpfold": -0.036363636363636376,
+      "fused_minus_student_mean": 0.19692307692307698,
+      "result_sha256": "22339a9030299ab1b285393ddead16e3f0af28bfae032940c583dc776e701b45",
+      "arrays_sha256": "3605c9c96bd7feafd118405bd94500e694f7ede300619eff2c7a5690834ae106"
+    },
+    "ref_pdb_ts3": {
+      "n": 4,
+      "fused": {
+        "tp": 58,
+        "fp": 12,
+        "fn": 12,
+        "strict_micro_f1": 0.8285714285714286
+      },
+      "fused_repeats": {
+        "mean": 0.8285714285714286,
+        "sd": 0.0,
+        "values": [
+          0.8285714285714286,
+          0.8285714285714286,
+          0.8285714285714286
+        ]
+      },
+      "calibration": {
+        "n": 3499,
+        "ece": 0.004327732783046583,
+        "brier": 0.005126906837654133,
+        "nll": 0.02309644064919475
+      },
+      "confidence": {
+        "spearman_confidence_vs_structure_f1": 0.19999999999999998,
+        "aurc_macro": 0.18548812750032262,
+        "risk_coverage": [
+          {
+            "coverage": 0.25,
+            "selective_macro_risk": 0.2222222222222222,
+            "n": 1
+          },
+          {
+            "coverage": 0.25,
+            "selective_macro_risk": 0.2222222222222222,
+            "n": 1
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.18253968253968256,
+            "n": 2
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.18253968253968256,
+            "n": 2
+          },
+          {
+            "coverage": 0.5,
+            "selective_macro_risk": 0.18253968253968256,
+            "n": 2
+          },
+          {
+            "coverage": 0.75,
+            "selective_macro_risk": 0.12982320299393468,
+            "n": 3
+          },
+          {
+            "coverage": 0.75,
+            "selective_macro_risk": 0.12982320299393468,
+            "n": 3
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.20736740224545103,
+            "n": 4
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.20736740224545103,
+            "n": 4
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.20736740224545103,
+            "n": 4
+          }
+        ]
+      },
+      "bpfold_same_subset": {
+        "tp": 65,
+        "fp": 18,
+        "fn": 5,
+        "strict_micro_f1": 0.8496732026143791
+      },
+      "student_same_subset": {
+        "mean": 0.8711899574644673,
+        "sd": 0.012850123762393138,
+        "values": [
+          0.8571428571428571,
+          0.8740740740740741,
+          0.8823529411764706
+        ]
+      },
+      "fused_minus_bpfold": -0.02110177404295044,
+      "fused_minus_student_mean": -0.04261852889303863,
+      "result_sha256": "074daf8b93e4ba97848f651c961c22c9b53b4eb42d53fb8920dd1b7e11c4c494",
+      "arrays_sha256": "47b5d3a244c24dcef37070da809f98ffbd2bf5686325b99377acd4c14e405cc4"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 9,
+      "fused": {
+        "tp": 61,
+        "fp": 8,
+        "fn": 23,
+        "strict_micro_f1": 0.7973856209150327
+      },
+      "fused_repeats": {
+        "mean": 0.7973856209150327,
+        "sd": 0.0,
+        "values": [
+          0.7973856209150327,
+          0.7973856209150327,
+          0.7973856209150327
+        ]
+      },
+      "calibration": {
+        "n": 3098,
+        "ece": 0.007143720700430598,
+        "brier": 0.008165772777743587,
+        "nll": 0.03596814610580511
+      },
+      "confidence": {
+        "spearman_confidence_vs_structure_f1": 0.17647681943136376,
+        "aurc_macro": 0.21519412079488331,
+        "risk_coverage": [
+          {
+            "coverage": 0.1111111111111111,
+            "selective_macro_risk": 0.2222222222222222,
+            "n": 1
+          },
+          {
+            "coverage": 0.2222222222222222,
+            "selective_macro_risk": 0.2222222222222222,
+            "n": 2
+          },
+          {
+            "coverage": 0.3333333333333333,
+            "selective_macro_risk": 0.18518518518518512,
+            "n": 3
+          },
+          {
+            "coverage": 0.4444444444444444,
+            "selective_macro_risk": 0.24888888888888883,
+            "n": 4
+          },
+          {
+            "coverage": 0.5555555555555556,
+            "selective_macro_risk": 0.21087581699346403,
+            "n": 5
+          },
+          {
+            "coverage": 0.6666666666666666,
+            "selective_macro_risk": 0.21419138595609188,
+            "n": 6
+          },
+          {
+            "coverage": 0.7777777777777778,
+            "selective_macro_risk": 0.2193069022480787,
+            "n": 7
+          },
+          {
+            "coverage": 0.8888888888888888,
+            "selective_macro_risk": 0.20439353946706884,
+            "n": 8
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.2094609239707279,
+            "n": 9
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.2094609239707279,
+            "n": 9
+          }
+        ]
+      },
+      "bpfold_same_subset": {
+        "tp": 74,
+        "fp": 32,
+        "fn": 10,
+        "strict_micro_f1": 0.7789473684210526
+      },
+      "student_same_subset": {
+        "mean": 0.775698479923832,
+        "sd": 0.007051946923541734,
+        "values": [
+          0.7746478873239436,
+          0.7692307692307693,
+          0.7832167832167832
+        ]
+      },
+      "fused_minus_bpfold": 0.018438252493980123,
+      "fused_minus_student_mean": 0.021687140991200726,
+      "result_sha256": "18e86016924c03503624438dbdce136053738945c4c9ec36b55b6f8ba72e7da0",
+      "arrays_sha256": "54c7e0df39440656d11d9835b697090034a1f50f2d19bad95a7cddb318ba0f12"
+    },
+    "testsetb": {
+      "n": 59,
+      "fused": {
+        "tp": 1170,
+        "fp": 102,
+        "fn": 420,
+        "strict_micro_f1": 0.8176100628930818
+      },
+      "fused_repeats": {
+        "mean": 0.8176100628930818,
+        "sd": 0.0,
+        "values": [
+          0.8176100628930818,
+          0.8176100628930818,
+          0.8176100628930818
+        ]
+      },
+      "calibration": {
+        "n": 201683,
+        "ece": 0.0005317244122809272,
+        "brier": 0.0014923503996122323,
+        "nll": 0.005760142448954529
+      },
+      "confidence": {
+        "spearman_confidence_vs_structure_f1": 0.7624225626425707,
+        "aurc_macro": 0.09216866726144475,
+        "risk_coverage": [
+          {
+            "coverage": 0.1016949152542373,
+            "selective_macro_risk": 0.04231040277551912,
+            "n": 6
+          },
+          {
+            "coverage": 0.2033898305084746,
+            "selective_macro_risk": 0.054665899114143435,
+            "n": 12
+          },
+          {
+            "coverage": 0.3050847457627119,
+            "selective_macro_risk": 0.06569732481061985,
+            "n": 18
+          },
+          {
+            "coverage": 0.4067796610169492,
+            "selective_macro_risk": 0.06512115358732284,
+            "n": 24
+          },
+          {
+            "coverage": 0.5084745762711864,
+            "selective_macro_risk": 0.07597839257485728,
+            "n": 30
+          },
+          {
+            "coverage": 0.6101694915254238,
+            "selective_macro_risk": 0.0976638892850592,
+            "n": 36
+          },
+          {
+            "coverage": 0.711864406779661,
+            "selective_macro_risk": 0.11251457202994852,
+            "n": 42
+          },
+          {
+            "coverage": 0.8135593220338984,
+            "selective_macro_risk": 0.13054466721453417,
+            "n": 48
+          },
+          {
+            "coverage": 0.9152542372881356,
+            "selective_macro_risk": 0.15799172937756878,
+            "n": 54
+          },
+          {
+            "coverage": 1.0,
+            "selective_macro_risk": 0.192196497779745,
+            "n": 59
+          }
+        ]
+      },
+      "bpfold_same_subset": {
+        "tp": 1336,
+        "fp": 554,
+        "fn": 254,
+        "strict_micro_f1": 0.767816091954023
+      },
+      "student_same_subset": {
+        "mean": 0.7432921659280411,
+        "sd": 0.004746275026500005,
+        "values": [
+          0.748710897215538,
+          0.7398720682302772,
+          0.7412935323383084
+        ]
+      },
+      "fused_minus_bpfold": 0.049793970939058796,
+      "fused_minus_student_mean": 0.07431789696504065,
+      "result_sha256": "014571031b353f1316f9ef6303208a1925217b737da57c29cae84d03f0f03982",
+      "arrays_sha256": "455b1e020d521a295f0cdfb454048085ab8a0af2a31e9e26c279c120ea383395"
+    }
+  },
+  "complete_split_count": 5,
+  "complete": false,
+  "bpfold_paired_win_count": 3,
+  "student_paired_win_count": 4
+}

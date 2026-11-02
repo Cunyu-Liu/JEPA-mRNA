@@ -714,6 +714,13 @@
    "bytes": 5082,
    "description": "VL0 锁定融合在双 clean TS2 的三次结果与校准/置信度；n=1，未领先 BPfold",
    "status": "active_partial_1_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_fusion_clean_aggregate.json",
+   "sha256": "354ed2413440992c4361dd5e9f3fba994379b8518b070899ed7f2a8b2f38f689",
+   "bytes": 14041,
+   "description": "融合在 5 个 clean split 上与 BPfold/student 的同源配对、校准与置信度聚合；尚缺 TS0/new/ArchiveII",
+   "status": "active_partial_5_of_8"
   }
  ]
 }
