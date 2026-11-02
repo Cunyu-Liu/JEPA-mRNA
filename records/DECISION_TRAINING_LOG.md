@@ -11855,3 +11855,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **同协议对照**：196 条 VL0、573,355 个严格上三角有效配对、相同 GT/offsets/labels、10 分箱，SPOT-RNA 三次概率哈希一致。ECE=**0.004491109346611864**、Brier=0.0044911093476028814、NLL=0.12098096577524824；低于学生未校准 ECE，但高于学生校准后均值约 0.0005795。结果 SHA256=`534ddea6ea41b722442e97ddc7fe176c0134d1a2f3decdce7e81ab69f48eb6b8`，NPZ SHA256=`ddb9a18ea412cc057098eee8deda01ac38317e7eb598a5e2d191f5a3b4e92b52`。
 - **置信度失效**：196 条 DP 所选配对的平均概率**全部为 1.0**（unique=1），故 Spearman 不可定义；AURC=0.1621645220723188，F1 均值 0.7471404832、102 个不同值，证明 null 来自置信度恒定而非 F1 恒定。该置信度不能用于结构质量排序或“最高置信度”叙述。
 - **独立复算**：SPOT 的 ECE/Brier/NLL、AURC 和三个学生的全部校准指标均从 NPZ 重算通过。结果只限 VL0 拟合集，不是跨 split 最低 ECE 或最佳置信度结论。
+
+
+## §15.312（2026-11-02）RNAformer 独立聚合器与锁顺序修复
+
+- **真实 bprna 验收**：TS0 n=1288，F1=0.7575434319；bpRNA-new n=5388，F1=0.4935794890，均三次一致。结果 SHA256 分别为 `66ab0d977f47cc1d620fd32e7de176f905945f1904b97486b53b69f5271d13b1`、`1559e6c4fbfcbb5e36debfe9c41b9ed0af6575a01100beac4b2c07780397c856`。官方 state_dict/config SHA256 与 `SHA256SUMS.round39` 一致，strict load 无 missing/unexpected。
+- **聚合合同**：新增 `aggregate_rnaformer_round39.py`，逐序列重算计数/F1，检查 raw/clean 数据守恒、官方权重/config、CUDA、B=1、full-length、三次预测哈希、参考 F1 门和空 clean split。四个变体分别排队到各自 runner 后执行，尚未形成最终全板。
+- **启动错误与修复**：首次聚合仅获取 variant 锁，而 runner 尚在等待 fusion 锁，导致读取尚不存在的 clean/raw 文件并立即退出。没有生成科学结果。已统一为 fusion→variant 锁顺序并重新排队；该错误不影响已完成的 bprna 两格独立验收。
