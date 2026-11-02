@@ -36,6 +36,15 @@
       "reason": "superseded by complete 8/8 three-seed aggregate; preserved, not deleted",
       "new_sha256": "29655670693cb5a76287482158a7ef0c8e464389d76fd5ed8258d3e859ae61f9",
       "new_bytes": 15062
+    },
+    {
+      "active_path": "\u4ea4\u63a5\u6587\u6863/source_data/appendix_leakage/round39_nucleicbert_ft_progress.json",
+      "archive_path": "\u4ea4\u63a5\u6587\u6863/archive_20261102/superseded_round39/round39_nucleicbert_ft_progress_raw1of8.json",
+      "old_sha256": "3cf09e66daf3481e5fda880e64275c37ecc4777e88f04634093a0286e4fd0293",
+      "old_bytes": 934,
+      "new_sha256": "c849591ed0ab15e2ffde6ff46df515de71e5f9ea3be441dcc081f22ebdcd62a3",
+      "reason": "superseded by independently recomputed raw 8/8 plus clean progress aggregate",
+      "new_bytes": 7110
     }
   ]
 }

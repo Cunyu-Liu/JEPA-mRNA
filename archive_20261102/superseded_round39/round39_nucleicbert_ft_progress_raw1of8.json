@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL_RAW_1_OF_8_NOT_FULL_BOARD",
+  "system": "nucleicbert_ft",
+  "training_corpus": "bprna_tr1c",
+  "batch_size": 4,
+  "evaluation_scope": "all source sequences; original B=4 first-598-nt protocol; no length filtering",
+  "split": "ref_pdb_ts2",
+  "n_sequences": 39,
+  "strict_micro_f1": {
+    "values": [
+      0.6434540389972145,
+      0.6434540389972145,
+      0.6434540389972145
+    ],
+    "mean": 0.6434540389972145,
+    "sd": 0.0
+  },
+  "counts": {
+    "tp": 462,
+    "fp": 319,
+    "fn": 193
+  },
+  "weights_sha256": "127aab7b07ff024a4d0eb14dcd8183934374c2119d5740f73c072c6f10dfb77f",
+  "result_sha256": "287d0d29f605bac1d6dbedf8ace58e5a5dbcbd2bac9d0b565539f3e140558274",
+  "probabilities_sha256": "ba12440e00872a4db26bcde145d27c4daa83c6682752b77038ad1c34b57c3822",
+  "independent_recompute": "PASS: per-sequence counts/F1, NPZ offsets/dtype/hash, original B=4 reference equivalence"
+}

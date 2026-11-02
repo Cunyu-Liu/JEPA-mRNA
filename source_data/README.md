@@ -100,7 +100,7 @@
 | `appendix_leakage/round39_plana_distill_s0_qa.json` | 单 plana 学生 seed0 收敛、三次 VL0 CUDA QA 与 TS0 结果 | active | `4f41f4b04b74` |
 | `appendix_leakage/round39_plana_distill_three_seed_vl0_ts0.json` | plana 三种子收敛、VL0 校准和 TS0 均值/SD；clean 主板待完成 | active | `938e1ae6e056` |
 | `appendix_leakage/round39_plana_clean_three_seed_progress.json` | clean 8/8 三训练种子独立聚合；结果完整但未达 SOTA，旧版已归档 | active complete | `79520874a26c` |
-| `appendix_leakage/round39_nucleicbert_ft_progress.json` | NucleicBERT fine-tuned 原 B=4 raw TS2 三次复测；仅 1/8 split，训练语料确认为 tr1c | active partial | `3cf09e66daf3` |
+| `appendix_leakage/round39_nucleicbert_ft_progress.json` | NucleicBERT fine-tuned 原 B=4 raw 8/8 与 clean 2/8；独立计数，旧 1/8 汇总已归档 | active raw complete | `c849591ed0ab` |
 | `appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json` | 学生与 BPfold 同名、同序列、同 GT 的 clean 交集配对复算；8/8 三种子，旧版已归档 | active diagnostic | `29655670693c` |
 | `appendix_leakage/round39_plana_calibration_three_seed_vl0_verification.json` | 三个 VL0 校准的原始数组独立复算；ECE 降低但排序退化，非跨 split 结论 | validation verified | `4c3a7071da3d` |
 | `appendix_leakage/round39_fusion_clean_ref_pdb_ts2.json` | VL0 锁定融合在双 clean TS2 的三次结果；n=1，未领先 BPfold | active partial | `22339a903029` |

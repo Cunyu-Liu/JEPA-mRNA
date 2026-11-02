@@ -675,10 +675,10 @@
   },
   {
    "path": "appendix_leakage/round39_nucleicbert_ft_progress.json",
-   "sha256": "3cf09e66daf3481e5fda880e64275c37ecc4777e88f04634093a0286e4fd0293",
-   "bytes": 934,
-   "description": "NucleicBERT fine-tuned 原 B=4 协议 raw TS2 三次复测与独立计数验收；仅 1/8 split，clean 待后续队列",
-   "status": "active_partial_raw_1_of_8"
+   "sha256": "c849591ed0ab15e2ffde6ff46df515de71e5f9ea3be441dcc081f22ebdcd62a3",
+   "bytes": 7110,
+   "description": "NucleicBERT fine-tuned 原 B=4 raw 8/8 三次复测及 clean 2/8 进度；全部独立计数并与原 raw 结果一致",
+   "status": "active_raw_complete_clean_in_progress"
   },
   {
    "path": "appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json",

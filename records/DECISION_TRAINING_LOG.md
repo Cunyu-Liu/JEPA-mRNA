@@ -11667,3 +11667,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **同子集 student 三种子均值对照**：对应 F1=0.8751027602/0.7364102564/0.8711899575/0.7756984799/0.7432921659。融合对 student 当前为 **4/5 胜**，TS3 落后；这不是原 xens2 或全基线的最终胜场。
 - **校准与复算**：TS1/TS2/TS3/hard/TSB 的融合 ECE=0.0028501439/0.0078988698/0.0043277328/0.0071437207/0.0005317244，只作各 split 实测，不汇总成最低 ECE。NPZ 为 float32，聚合器对该精度使用 1e-8 数值容差；ECE/Brier/NLL、TP/FP/FN 和全部哈希复核通过。汇总 SHA256=`354ed2413440992c4361dd5e9f3fba994379b8518b070899ed7f2a8b2f38f689`。
 - **NB 与后续**：NucleicBERT raw bpRNA-new 三次 F1=0.3452771319，保留原始 B=4 结果。融合 TS0/new/ArchiveII 尚未完成，暂不生成融合训练教师或启动新蒸馏。
+
+
+## §15.286（2026-11-02）NucleicBERT raw 全板闭环与 clean 进度
+
+- **raw 8/8 三次复测**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1 均值=0.4608978024/0.3452771319/0.6048845768/0.6434540390/0.5175257732/0.4844720497/0.4734889601/0.4862142857，SD 全为 0。每格均从预测独立重算 TP/FP/FN 和 micro/macro-F1，并与原八份 artifact 在 1e-12 内一致；raw 8×3 验收完成。
+- **clean 进度**：tr1c-clean TS0 n=713，F1=0.4250956502；TS2 n=29，F1=0.6673228346，均三次一致。其余 clean split 正在运行，不与 raw n 或 raw F1 混写。
+- **协议边界**：固定历史 fine-tuned checkpoint、原 B=4 collate、前 598 nt 截断，所有源序列保留；该模型不宣称全长能力，也不把历史三 epoch checkpoint 写成新收敛训练。
+- **源与注册表**：聚合 SHA256=`c849591ed0ab15e2ffde6ff46df515de71e5f9ea3be441dcc081f22ebdcd62a3`。旧 raw 1/8 汇总已追加归档，注册表更新为 `PASS_ORIGINAL_B4_8x3_INDEPENDENT_RECOMPUTE`；clean 标记 TS0/TS2 完成、其余运行中。
