@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "independent_gpu_qa_vl0_not_benchmark",
+  "run_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/runs/xens2_distill_r2d_s0",
+  "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/runs/xens2_distill_r2d_s0/best.pt",
+  "checkpoint_sha256": "7653e3e3cf12fa911e8b11522a037789d571da4e6d34283bd24a83411c9a8e00",
+  "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+  "data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+  "n_sequences": 196,
+  "prediction_sha256": "47c62405c5e45f7eaceb8acc401066a88ade4a5d99e381f4a4c51e1504e94a7a",
+  "tp_fp_fn": [
+    3768,
+    889,
+    850
+  ],
+  "f1_mean": 0.8125067385444744,
+  "f1_sd": 0.0,
+  "ece_mean": 0.0641396711893385,
+  "ece_sd": 0.0,
+  "repeats": [
+    {
+      "repeat": 0,
+      "f1": 0.8125067385444744,
+      "ece": 0.0641396711893385,
+      "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_distill_r2d_s0_vl0/repeat_0/result.json",
+      "result_sha256": "ff835c7b2913f5328979d46d1d35fd7cf928e063d2aab32c58ab018d9b0dcc9b"
+    },
+    {
+      "repeat": 1,
+      "f1": 0.8125067385444744,
+      "ece": 0.0641396711893385,
+      "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_distill_r2d_s0_vl0/repeat_1/result.json",
+      "result_sha256": "b75a473a9880a6c872cbd13e0635815d38983dcbca1cff7a3d759293a0b69890"
+    },
+    {
+      "repeat": 2,
+      "f1": 0.8125067385444744,
+      "ece": 0.0641396711893385,
+      "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_distill_r2d_s0_vl0/repeat_2/result.json",
+      "result_sha256": "73d0984194a915fd021f7b4690d85abf237c7c80c47ed6df91dba0cab4666b81"
+    }
+  ]
+}

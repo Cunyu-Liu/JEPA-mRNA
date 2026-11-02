@@ -11550,3 +11550,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **seed0 过程曲线**：step500 VL0=17.417371，step1500=16.715882，step2500=16.649043；截至 step3750 时 best_step=2500、bad_evaluations=2，仍按 patience=5 继续。batch=2 训练已越过此前长序列 OOM 点，未发生 CPU 降级。
 - **独立 QA 准备**：`tools/qa_xens2_student_round39.py` 在 `converged+early_stopping` 硬门后，从 best.pt 启动三个独立 VL0 CUDA 评测并比较预测、TP/FP/FN、F1/ECE 均值和哈希；当前不得提前运行成 PASS。
 - **轻量基线恢复**：RiNALMo-ft raw/TR0-clean 已在 B=2 训练余量下恢复；两个 RNAformer 和 SPOT-RNA 长序列任务仍等待更安全窗口。GitHub 已推送至 `75c55b0`。
+
+
+## §15.272（2026-11-02）seed0 收敛与独立 QA 通过
+
+- **收敛合同完成**：seed0 在 step5000 触发 early stopping，恢复 best step2500；`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，best VL0=16.64904318949589。未使用 1,000,000 安全上限作为停止理由。
+- **三次独立 VL0 CUDA QA**：从 `best.pt` 新进程三次加载与推理，预测 SHA256=`47c62405c5e45f7eaceb8acc401066a88ade4a5d99e381f4a4c51e1504e94a7a` 完全一致；TP/FP/FN=3768/889/850，F1=**0.8125067385**、ECE=**0.0641396712**，SD=0。best checkpoint SHA256=`7653e3e3cf12fa911e8b11522a037789d571da4e6d34283bd24a83411c9a8e00`，QA 汇总 SHA256=`b88f43b0d2ed03209307a28d8424a035078fc9a2118ae928f31f30577f1ec6fe`。
+- **后续启动**：seed1 已按相同 B=2 合同启动；seed0 同时开始 raw 与 tr1c-clean 八 split 三次评测，只作单种子候选诊断，不能替代三种子均值。
+- **RiNALMo-ft 资源失败**：bpRNA-new 前向时训练/Kirigami/RiNALMo-ft 合计约 23.46 GiB，最后 30 MiB 无法分配而停止，未写出新 PASS；待 seed 间隙或轻量任务结束后恢复，不重试同一峰值。
