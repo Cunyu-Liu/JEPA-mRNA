@@ -20,18 +20,25 @@ def main():
     parser.add_argument("--teacher-dir", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--plana", action="store_true")
     args = parser.parse_args()
     if args.device != "cuda" or not torch.cuda.is_available():
         raise RuntimeError("CUDA_REQUIRED")
-    state = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
-    fields = TrainConfig.__dataclass_fields__
-    config = TrainConfig(**{key: value for key, value in state["config"].items() if key in fields})
-    model = build_decision_model(config).to(args.device)
-    model.load_state_dict(state["model"], strict=True)
-    model.eval()
-    assert next(model.parameters()).is_cuda
+    if args.plana:
+        import xens2_eval
+        model, head = xens2_eval.load_plana(args.checkpoint, args.device)
+        store = None
+        assert next(model.parameters()).is_cuda and next(head.parameters()).is_cuda
+    else:
+        state = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+        fields = TrainConfig.__dataclass_fields__
+        config = TrainConfig(**{key: value for key, value in state["config"].items() if key in fields})
+        model = build_decision_model(config).to(args.device)
+        model.load_state_dict(state["model"], strict=True)
+        model.eval()
+        assert next(model.parameters()).is_cuda
+        store = EmbeddingStore.from_dir(config.embedding_dir, split=args.data.stem)
     rows = [json.loads(line) for line in args.data.open() if line.strip()]
-    store = EmbeddingStore.from_dir(config.embedding_dir, split=args.data.stem)
     teacher = TeacherLabelStore.from_dir(args.teacher_dir)
     aggregate = {"teacher_tp": 0, "teacher_fp": 0, "teacher_fn": 0,
                  "gt_tp": 0, "gt_fp": 0, "gt_fn": 0,
@@ -41,12 +48,15 @@ def main():
         for row in rows:
             seq = row["seq"].upper().replace("T", "U")
             length = len(seq)
-            ids = torch.tensor([[BASE_TO_ID.get(base, 4) for base in seq]],
-                               dtype=torch.long, device=args.device)
-            lengths = torch.tensor([length], dtype=torch.long, device=args.device)
-            embedding = torch.as_tensor(store.get(seq), dtype=torch.float32,
-                                        device=args.device).unsqueeze(0)
-            scores = _forward_scores(model, ids, embedding, lengths)[0, :length, :length]
+            if args.plana:
+                scores = xens2_eval.plana_scores(model, head, seq, args.device)
+            else:
+                ids = torch.tensor([[BASE_TO_ID.get(base, 4) for base in seq]],
+                                   dtype=torch.long, device=args.device)
+                lengths = torch.tensor([length], dtype=torch.long, device=args.device)
+                embedding = torch.as_tensor(store.get(seq), dtype=torch.float32,
+                                            device=args.device).unsqueeze(0)
+                scores = _forward_scores(model, ids, embedding, lengths)[0, :length, :length]
             student = torch.sigmoid(scores).cpu().numpy().astype(np.float64)
             expected = np.asarray(teacher.probs_for(seq, strict=True), dtype=np.float64)
             mask = valid_pair_mask(seq)
@@ -80,7 +90,8 @@ def main():
               "checkpoint": str(args.checkpoint), "checkpoint_sha256": sha256_file(args.checkpoint),
               "data": str(args.data), "data_sha256": sha256_file(args.data),
               "teacher_dir": str(args.teacher_dir), "teacher_manifest_sha256": sha256_file(args.teacher_dir / "manifest.json"),
-              "device": args.device, "n_sequences": len(rows),
+              "device": args.device, "architecture": "plana" if args.plana else "r2d_frozen_embedding",
+              "n_sequences": len(rows),
               "teacher_pair_micro_f1": f1(aggregate["teacher_tp"], aggregate["teacher_fp"], aggregate["teacher_fn"]),
               "student_gt_micro_f1": f1(aggregate["gt_tp"], aggregate["gt_fp"], aggregate["gt_fn"]),
               "teacher_counts": {key: aggregate[key] for key in ("teacher_tp", "teacher_fp", "teacher_fn")},
