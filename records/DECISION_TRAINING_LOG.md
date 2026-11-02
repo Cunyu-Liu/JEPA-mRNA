@@ -11575,3 +11575,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **模型角度的新候选**：frozen r2d 表示限制教师迁移，改用单个可训练 plana 650M 骨干，从 `plana_giga_tr1c_s0_step20000.pt` 仅载 encoder/head，optimizer 从 0 开始，直接学习 xens2 教师 KL。单骨干推理仍保留速度潜力，不借用三编码器集成。
 - **plana 训练器验收**：复用逐步解冻与 BN-snapshot 机制，加入 VL0 early stopping、best/resume 和显式 snapshot-dir。真实 650M CUDA smoke 依次通过有限损失、早停、best 恢复、resume 状态一致和 `/teams` 快照；修复验证中 `-inf×0` 导致 NaN、验证前保存 patience 状态过期两处问题。
 - **正式候选**：`xens2_plana_distill_s0` 已启动，B=1、纯教师 KL、head-lr=1e-4、backbone-lr=1e-5、validation_every=500、patience=5、min_delta=1e-6、1,000,000 仅安全上限。需等待 VL0 与 TS0 实测后决定是否三种子。
+
+
+## §15.275（2026-11-02）plana 单骨干迁移成立与三种子启动
+
+- **收敛与 best**：plana seed0 在 step5000 early stopping，恢复 best step2500，best VL0 KL=0.004294176770208689；相比 frozen r2d 纯 KL 的 best 0.012839，单可训练骨干教师拟合明显更好。
+- **教师保真度**：正式 best 的教师 micro-F1=**0.8824242424**、VL0 GT-F1=0.6975006228、概率 MAE=0.0158002、teacher KL=0.00703961；均超过 frozen r2d 纯 KL 的对应保真度。
+- **三次独立 QA**：预测 SHA256=`951821565479d84f9d158a6cd1d55fe69b0d52dfa22ee0afdc66e394ef7f3660` 一致；学生 ECE=0.0403145583、Brier=0.0140537162、NLL=0.0568684006，教师 ECE=0.0386111504。best checkpoint SHA256=`2997254f2540e48edc4b42b63d705c470182014519ca9f27c6a9a366a8f0b9f3`，QA 源 SHA256=`4f41f4b04b740c7ad4c6a9f48481b0087733b03a53cee389df2a9903b1ec90e9`。
+- **TS0**：三次均 F1=**0.783814**，接近原 plana=0.7866，远好于 frozen r2d 纯 KL=0.6247。单 plana 可作为三种子速度/校准候选，但仍低于 xens2=0.8039，不能写成 8/8 或精度 SOTA。
+- **seed1/2**：seed1 已按同一纯 KL、B=1 和早停合同启动，seed2 待 seed1 完成后启动。正式速度必须独占 4090，当前任何并发吞吐均不用于宣称 SOTA。
+- **基线资源协调**：RNAformer bprna/intra 在 QA 期间显存接近上限，均按明确 PID 暂停且未写出新 PASS；待 QA 后单独恢复。两个失败 QA 启动均无部分结果，最终三次 QA 已完整通过。

@@ -97,6 +97,7 @@
 | `appendix_leakage/round39_efold_raw_summary.json` | eFold 八 split 原始集三次复算；单线程修复后结果，clean provenance 未闭环 | active | `4168671fd757` |
 | `appendix_leakage/round39_xens2_student_s0_qa.json` | xens2 单学生 seed0 三次独立 VL0 CUDA QA；单种子过程证据 | active | `b88f43b0d2ed` |
 | `appendix_leakage/round39_xens2_distill_objective_comparison.json` | 旧四项目标与纯教师 KL 的 VL0 QA、教师保真度及 TS0 对照 | active | `b6ab2b0a12c6` |
+| `appendix_leakage/round39_plana_distill_s0_qa.json` | 单 plana 学生 seed0 收敛、三次 VL0 CUDA QA 与 TS0 结果 | active | `4f41f4b04b74` |
 
 ## 后续边界
 

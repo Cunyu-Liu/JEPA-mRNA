@@ -651,6 +651,13 @@
    "bytes": 1655,
    "description": "旧四项目标与纯教师 KL 的 VL0 QA、教师保真度及 TS0 对照；否定直接投入纯 KL 三种子",
    "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_distill_s0_qa.json",
+   "sha256": "4f41f4b04b740c7ad4c6a9f48481b0087733b03a53cee389df2a9903b1ec90e9",
+   "bytes": 5001,
+   "description": "单 plana 学生 seed0 收敛、三次 VL0 CUDA QA 与 TS0 结果；单种子候选证据",
+   "status": "active"
   }
  ]
 }
