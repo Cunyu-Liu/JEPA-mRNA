@@ -59,6 +59,7 @@ def main():
     homology_only = sorted(homologous - set(exact))
     assert len(split) == len(kept) + len(exact) + len(homology_only)
     args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.audit.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w") as handle:
         for row in kept:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
