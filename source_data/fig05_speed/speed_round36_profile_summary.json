@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "full_TS0_raw_sequence_profile; not a speed-optimization result",
+  "rows": [
+    {
+      "model": "plana",
+      "batch_size": 1,
+      "mean_actual_batch_size": 1.0,
+      "throughput_median_seq_per_s": 18.921870798929323,
+      "strict_micro_f1": 0.7868700185773356,
+      "stage_seconds_median": {
+        "decode_s": 5.580203168094158,
+        "encoder_s": 47.51441247574985,
+        "head_s": 11.476759178563952,
+        "mask_s": 3.1162963677197695,
+        "transfer_s": 0.07518594339489937
+      },
+      "stage_fractions": {
+        "decode_s": 0.0823489947759833,
+        "encoder_s": 0.7011866749084319,
+        "head_s": 0.169366518238003,
+        "mask_s": 0.045988267017420696,
+        "transfer_s": 0.0011095450601610554
+      },
+      "dominant_stage": "encoder_s",
+      "source": "交接文档/source_data/fig05_speed/plana_b1_profile.json",
+      "result_sha256": "ab3b9ccb5136410014c04dbb3fe43ca8398fdccdad8cc7f2f2a3748c2661852b"
+    },
+    {
+      "model": "plana",
+      "batch_size": 4,
+      "mean_actual_batch_size": 2.717299578059072,
+      "throughput_median_seq_per_s": 37.210701452467106,
+      "strict_micro_f1": 0.7868990006442623,
+      "stage_seconds_median": {
+        "decode_s": 3.231857243925333,
+        "encoder_s": 18.874092696234584,
+        "head_s": 9.420041663572192,
+        "mask_s": 3.0930545162409544,
+        "transfer_s": 0.040458593517541885
+      },
+      "stage_fractions": {
+        "decode_s": 0.09324591538861168,
+        "encoder_s": 0.5445574843684414,
+        "head_s": 0.2717881210779566,
+        "mask_s": 0.08924116319057027,
+        "transfer_s": 0.0011673159744199717
+      },
+      "dominant_stage": "encoder_s",
+      "source": "交接文档/source_data/fig05_speed/plana_b4_profile.json",
+      "result_sha256": "232d2b25c29e6480026b15d40f6177b6ec368ef876bc015e1bb42eda977d3cc4"
+    },
+    {
+      "model": "r2d",
+      "batch_size": 1,
+      "mean_actual_batch_size": 1.0,
+      "throughput_median_seq_per_s": 22.77739371351726,
+      "strict_micro_f1": 0.6681811339345586,
+      "stage_seconds_median": {
+        "decode_s": 5.575654147192836,
+        "encoder_s": 36.438125701621175,
+        "head_s": 11.109055742621422,
+        "mask_s": 3.1137520764023066,
+        "transfer_s": 0.07485503703355789
+      },
+      "stage_fractions": {
+        "decode_s": 0.09901458530222502,
+        "encoder_s": 0.6470820840551657,
+        "head_s": 0.1972788337326761,
+        "mask_s": 0.055295192714587424,
+        "transfer_s": 0.0013293041953457616
+      },
+      "dominant_stage": "encoder_s",
+      "source": "交接文档/source_data/fig05_speed/r2d_b1_profile.json",
+      "result_sha256": "8785b42176d66beaeb6746e9973d5346c2ba2615733e4e8b241ca0921a2e7aba"
+    },
+    {
+      "model": "r2d",
+      "batch_size": 4,
+      "mean_actual_batch_size": 2.717299578059072,
+      "throughput_median_seq_per_s": 41.73554576383475,
+      "strict_micro_f1": 0.6676428327061238,
+      "stage_seconds_median": {
+        "decode_s": 3.2928705252707005,
+        "encoder_s": 14.643160663545132,
+        "head_s": 9.641298539936543,
+        "mask_s": 3.156202068552375,
+        "transfer_s": 0.03930426947772503
+      },
+      "stage_fractions": {
+        "decode_s": 0.10700575397485598,
+        "encoder_s": 0.47584696554347133,
+        "head_s": 0.3133054918634482,
+        "mask_s": 0.10256454951707605,
+        "transfer_s": 0.0012772391011484233
+      },
+      "dominant_stage": "encoder_s",
+      "source": "交接文档/source_data/fig05_speed/r2d_b4_profile.json",
+      "result_sha256": "dbdd32507c14a0642a4a53e1b6088de4088d5db0a6b5a356d3f25b01f6a8c4c6"
+    },
+    {
+      "model": "xens2",
+      "batch_size": 1,
+      "mean_actual_batch_size": 1.0,
+      "throughput_median_seq_per_s": 7.220611762533126,
+      "strict_micro_f1": 0.8040630534373491,
+      "stage_seconds_median": {
+        "decode_s": 5.751561077311635,
+        "encoder_s": 134.60591102950275,
+        "head_s": 34.17652486823499,
+        "mask_s": 3.1150453817099333,
+        "transfer_s": 0.07909274473786354
+      },
+      "stage_fractions": {
+        "decode_s": 0.032361567705794174,
+        "encoder_s": 0.7573697375074119,
+        "head_s": 0.1922966493105744,
+        "mask_s": 0.017527024519393003,
+        "transfer_s": 0.0004450209568265327
+      },
+      "dominant_stage": "encoder_s",
+      "source": "交接文档/source_data/fig05_speed/xens2_b1_profile.json",
+      "result_sha256": "5f79429c6f21a31f8e433b0f84c9242c2a7d0620290fc1cceb919920d457ff5f"
+    },
+    {
+      "model": "xens2",
+      "batch_size": 4,
+      "mean_actual_batch_size": 2.717299578059072,
+      "throughput_median_seq_per_s": 15.071625598402484,
+      "strict_micro_f1": 0.8039634681810198,
+      "stage_seconds_median": {
+        "decode_s": 3.192929858341813,
+        "encoder_s": 52.15676908753812,
+        "head_s": 26.867054281756282,
+        "mask_s": 3.0329686496406794,
+        "transfer_s": 0.04070846922695637
+      },
+      "stage_fractions": {
+        "decode_s": 0.03743596843596762,
+        "encoder_s": 0.6115195910683559,
+        "head_s": 0.3150066680705591,
+        "mask_s": 0.035560480083390786,
+        "transfer_s": 0.0004772923417266478
+      },
+      "dominant_stage": "encoder_s",
+      "source": "交接文档/source_data/fig05_speed/xens2_b4_profile.json",
+      "result_sha256": "082ba7ab49aeeef2d6d82a872a5af531f9d36b01dbf858b7cf2d1ba211b1b3dc"
+    }
+  ],
+  "interpretation": "Stage fractions identify measured bottlenecks; any optimization must separately pass the prediction-equivalence gate."
+}

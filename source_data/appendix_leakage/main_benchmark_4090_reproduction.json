@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "model": "xens2 unified board protocol",
+  "max_abs_delta": 9.026603415096535e-05,
+  "conclusion": "No material main-benchmark accuracy change after moving to RTX 4090; differences are numerical-rounding scale.",
+  "splits": {
+    "TS0": {
+      "rtx4090": 0.8038988979466388,
+      "n": 1288,
+      "source": "bprna_ts0.json",
+      "a100_board": 0.8039,
+      "delta_4090_minus_a100": -1.1020533611239003e-06
+    },
+    "new": {
+      "rtx4090": 0.553142073575729,
+      "n": 5388,
+      "source": "bprna_new.json",
+      "a100_board": 0.5532,
+      "delta_4090_minus_a100": -5.792642427104866e-05
+    },
+    "TS1": {
+      "rtx4090": 0.8755364806866952,
+      "n": 63,
+      "source": "ref_pdb_ts1.json",
+      "a100_board": 0.8755,
+      "delta_4090_minus_a100": 3.648068669526161e-05
+    },
+    "TS2": {
+      "rtx4090": 0.8587943848059455,
+      "n": 39,
+      "source": "ref_pdb_ts2.json",
+      "a100_board": 0.8588,
+      "delta_4090_minus_a100": -5.615194054509054e-06
+    },
+    "TS3": {
+      "rtx4090": 0.8964677222898904,
+      "n": 19,
+      "source": "ref_pdb_ts3.json",
+      "a100_board": 0.8965,
+      "delta_4090_minus_a100": -3.227771010960723e-05
+    },
+    "hard": {
+      "rtx4090": 0.8732083792723264,
+      "n": 28,
+      "source": "ref_pdb_ts_hard.json",
+      "a100_board": 0.8732,
+      "delta_4090_minus_a100": 8.379272326441978e-06
+    },
+    "ArchII": {
+      "rtx4090": 0.776090266034151,
+      "n": 2544,
+      "source": "archiveii_embok_clean.json",
+      "a100_board": 0.776,
+      "delta_4090_minus_a100": 9.026603415096535e-05
+    },
+    "TSB": {
+      "rtx4090": 0.8448423659396133,
+      "n": 428,
+      "source": "testsetb.json",
+      "a100_board": 0.8448,
+      "delta_4090_minus_a100": 4.2365939613264736e-05
+    }
+  }
+}

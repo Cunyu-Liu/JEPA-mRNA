@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "entries": [
+    {
+      "path": "tr0/archiveii_embok_clean.audit.json",
+      "raw_n": 2544,
+      "clean_n": 1094,
+      "removed_exact": 0,
+      "removed_homology_only": 1450,
+      "sha256": "f72c7ecb8205929fca98817953ac972193eafca046ac461f4ca8d6496a94555a"
+    },
+    {
+      "path": "tr0/bprna_new.audit.json",
+      "raw_n": 5388,
+      "clean_n": 5388,
+      "removed_exact": 0,
+      "removed_homology_only": 0,
+      "sha256": "316a04e69eba7bba54c6263ae397c32ea021e647679670ec8ccf954f24443618"
+    },
+    {
+      "path": "tr0/bprna_ts0.audit.json",
+      "raw_n": 1288,
+      "clean_n": 1192,
+      "removed_exact": 0,
+      "removed_homology_only": 96,
+      "sha256": "c8b3b4722b651bd937f528bfcbf842811abbda64ba74d1c79f1e45305057820b"
+    },
+    {
+      "path": "tr0/ref_pdb_ts1.audit.json",
+      "raw_n": 63,
+      "clean_n": 61,
+      "removed_exact": 0,
+      "removed_homology_only": 2,
+      "sha256": "6c3a152c1d68569a46bdfa0b23bb89d0330f895ccf82051ba5f789601d20bfd1"
+    },
+    {
+      "path": "tr0/ref_pdb_ts2.audit.json",
+      "raw_n": 39,
+      "clean_n": 39,
+      "removed_exact": 0,
+      "removed_homology_only": 0,
+      "sha256": "5adb30dea3ff8fda61f6fc35a1c862ac24c180d3547fe77bcf36160653958990"
+    },
+    {
+      "path": "tr0/ref_pdb_ts3.audit.json",
+      "raw_n": 19,
+      "clean_n": 17,
+      "removed_exact": 0,
+      "removed_homology_only": 2,
+      "sha256": "4100227d1c85cf4c05c4fdbc498082237eb7cf1830ef6e0c399b1cc7e1b4899b"
+    },
+    {
+      "path": "tr0/ref_pdb_ts_hard.audit.json",
+      "raw_n": 28,
+      "clean_n": 28,
+      "removed_exact": 0,
+      "removed_homology_only": 0,
+      "sha256": "85362b4fe4d7407a92d4d7e9b4ac8cc56ccfbd782be858dacfa9057137e539cf"
+    },
+    {
+      "path": "tr0/testsetb.audit.json",
+      "raw_n": 428,
+      "clean_n": 116,
+      "removed_exact": 247,
+      "removed_homology_only": 65,
+      "sha256": "0253e0c4a45f8084ca874f6f8661eaf7a12372faf27fa5b9ada72277b930001c"
+    },
+    {
+      "path": "tr1c/archiveii_embok_clean.audit.json",
+      "raw_n": 2544,
+      "clean_n": 1107,
+      "removed_exact": 0,
+      "removed_homology_only": 1437,
+      "sha256": "fc34586cb11ab32ea4d32661393ed6288ac2a4b6039bec9829a8e9b6dd244eb1"
+    },
+    {
+      "path": "tr1c/bprna_new.audit.json",
+      "raw_n": 5388,
+      "clean_n": 5386,
+      "removed_exact": 0,
+      "removed_homology_only": 2,
+      "sha256": "d3a08efbf512c72074baaf1af9bc9f3e6eb1660a7ea1e24c08509d6c21dc61ee"
+    },
+    {
+      "path": "tr1c/bprna_ts0.audit.json",
+      "raw_n": 1288,
+      "clean_n": 713,
+      "removed_exact": 0,
+      "removed_homology_only": 575,
+      "sha256": "dfad153f2708e69efb4e442512ac94f0f358936a19e9c0271100d4a1ee1b5f2c"
+    },
+    {
+      "path": "tr1c/ref_pdb_ts1.audit.json",
+      "raw_n": 63,
+      "clean_n": 18,
+      "removed_exact": 0,
+      "removed_homology_only": 45,
+      "sha256": "f340a7fa45ae133c1b2016d39ba4694966be764f7f56e60f55f6b9cb551e55c5"
+    },
+    {
+      "path": "tr1c/ref_pdb_ts2.audit.json",
+      "raw_n": 39,
+      "clean_n": 29,
+      "removed_exact": 0,
+      "removed_homology_only": 10,
+      "sha256": "77a3ebb9b14c0b33518c6e36ca4b45a5de2419b25805f282d7489dbe7057208e"
+    },
+    {
+      "path": "tr1c/ref_pdb_ts3.audit.json",
+      "raw_n": 19,
+      "clean_n": 4,
+      "removed_exact": 0,
+      "removed_homology_only": 15,
+      "sha256": "88b6417a9cddf16bdbcab6f7d841014566002c2cfcf84847553a2386ab3af04c"
+    },
+    {
+      "path": "tr1c/ref_pdb_ts_hard.audit.json",
+      "raw_n": 28,
+      "clean_n": 10,
+      "removed_exact": 0,
+      "removed_homology_only": 18,
+      "sha256": "e7fa6ac91ea386a5c9d12d4616936e79a80970f501a6ce24a7310aab1aab89ab"
+    },
+    {
+      "path": "tr1c/testsetb.audit.json",
+      "raw_n": 428,
+      "clean_n": 288,
+      "removed_exact": 0,
+      "removed_homology_only": 140,
+      "sha256": "007028f067bf032d7b7ec23e939c98025f1ee43f8490a2c7c98042ebfc4193cd"
+    }
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "baseline_profiles": [
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b1_profile.json",
+      "status": "PASS",
+      "model": "plana",
+      "batch_size": 1,
+      "mean_actual_batch_size": 1.0,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 18.921870798929323,
+      "strict_micro_f1": 0.7868700185773356,
+      "peak_memory_mib": 5188.41162109375,
+      "cross_config_equivalence": null,
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b4_profile.json",
+      "status": "PASS",
+      "model": "plana",
+      "batch_size": 4,
+      "mean_actual_batch_size": 2.717299578059072,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 37.210701452467106,
+      "strict_micro_f1": 0.7868990006442623,
+      "peak_memory_mib": 7834.97607421875,
+      "cross_config_equivalence": null,
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b1_profile.json",
+      "status": "PASS",
+      "model": "r2d",
+      "batch_size": 1,
+      "mean_actual_batch_size": 1.0,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 22.77739371351726,
+      "strict_micro_f1": 0.6681811339345586,
+      "peak_memory_mib": 3951.6552734375,
+      "cross_config_equivalence": null,
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+      "status": "PASS",
+      "model": "r2d",
+      "batch_size": 4,
+      "mean_actual_batch_size": 2.717299578059072,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 41.73554576383475,
+      "strict_micro_f1": 0.6676428327061238,
+      "peak_memory_mib": 6600.70361328125,
+      "cross_config_equivalence": null,
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b1_profile.json",
+      "status": "PASS",
+      "model": "xens2",
+      "batch_size": 1,
+      "mean_actual_batch_size": 1.0,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 7.220611762533126,
+      "strict_micro_f1": 0.8040630534373491,
+      "peak_memory_mib": 8941.97705078125,
+      "cross_config_equivalence": null,
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+      "status": "PASS",
+      "model": "xens2",
+      "batch_size": 4,
+      "mean_actual_batch_size": 2.717299578059072,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 15.071625598402484,
+      "strict_micro_f1": 0.8039634681810198,
+      "peak_memory_mib": 11591.49560546875,
+      "cross_config_equivalence": null,
+      "eligible": true
+    }
+  ],
+  "optimization_candidates": [
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/plana_b16_profile.json",
+      "status": "PASS",
+      "model": "plana",
+      "batch_size": 16,
+      "mean_actual_batch_size": 4.3367003367003365,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 46.12748484457258,
+      "strict_micro_f1": 0.7867801282435429,
+      "peak_memory_mib": 9030.9384765625,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b4_profile.json",
+        "pair_agreement": 0.9980242112525873,
+        "symmetric_difference_pairs": 63,
+        "union_pairs": 31886,
+        "abs_delta_f1": 0.0001188724007193942
+      },
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/r2d_b1--bf16-r2d-encoder_profile.json",
+      "status": "PASS",
+      "model": "r2d",
+      "batch_size": 1,
+      "mean_actual_batch_size": 1.0,
+      "r2d_encoder_autocast_bf16": true,
+      "throughput_median_seq_per_s": 20.64862100581645,
+      "strict_micro_f1": 0.6677432598877788,
+      "peak_memory_mib": 3948.88330078125,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b1_profile.json",
+        "pair_agreement": 0.9917836089519537,
+        "symmetric_difference_pairs": 315,
+        "union_pairs": 38338,
+        "abs_delta_f1": 0.0004378740467797515
+      },
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/r2d_b16_profile.json",
+      "status": "PASS",
+      "model": "r2d",
+      "batch_size": 16,
+      "mean_actual_batch_size": 4.3367003367003365,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 50.678537569059166,
+      "strict_micro_f1": 0.6681356581720637,
+      "peak_memory_mib": 7798.9638671875,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+        "pair_agreement": 0.9953747256193164,
+        "symmetric_difference_pairs": 177,
+        "union_pairs": 38268,
+        "abs_delta_f1": 0.0004928254659398723
+      },
+      "eligible": true
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/r2d_b4--bf16-r2d-encoder_profile.json",
+      "status": "FAIL_CROSS_CONFIG_EQUIVALENCE",
+      "model": "r2d",
+      "batch_size": 4,
+      "mean_actual_batch_size": 2.717299578059072,
+      "r2d_encoder_autocast_bf16": true,
+      "throughput_median_seq_per_s": 36.90527741160816,
+      "strict_micro_f1": 0.6678617367744054,
+      "peak_memory_mib": 6597.15087890625,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+        "pair_agreement": 0.9894498280712722,
+        "symmetric_difference_pairs": 405,
+        "union_pairs": 38388,
+        "abs_delta_f1": 0.00021890406828162234
+      },
+      "eligible": false
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/xens2_b8_profile.json",
+      "status": "PASS",
+      "model": "xens2",
+      "batch_size": 8,
+      "mean_actual_batch_size": 3.659090909090909,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 17.62171209060639,
+      "strict_micro_f1": 0.8039631781527609,
+      "peak_memory_mib": 11591.49560546875,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+        "pair_agreement": 0.9989537560159029,
+        "symmetric_difference_pairs": 35,
+        "union_pairs": 33453,
+        "abs_delta_f1": 2.9002825896462525e-07
+      },
+      "eligible": true
+    }
+  ],
+  "best_eligible_by_model": {
+    "plana": {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/plana_b16_profile.json",
+      "status": "PASS",
+      "model": "plana",
+      "batch_size": 16,
+      "mean_actual_batch_size": 4.3367003367003365,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 46.12748484457258,
+      "strict_micro_f1": 0.7867801282435429,
+      "peak_memory_mib": 9030.9384765625,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b4_profile.json",
+        "pair_agreement": 0.9980242112525873,
+        "symmetric_difference_pairs": 63,
+        "union_pairs": 31886,
+        "abs_delta_f1": 0.0001188724007193942
+      },
+      "eligible": true
+    },
+    "r2d": {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/r2d_b16_profile.json",
+      "status": "PASS",
+      "model": "r2d",
+      "batch_size": 16,
+      "mean_actual_batch_size": 4.3367003367003365,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 50.678537569059166,
+      "strict_micro_f1": 0.6681356581720637,
+      "peak_memory_mib": 7798.9638671875,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+        "pair_agreement": 0.9953747256193164,
+        "symmetric_difference_pairs": 177,
+        "union_pairs": 38268,
+        "abs_delta_f1": 0.0004928254659398723
+      },
+      "eligible": true
+    },
+    "xens2": {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/optimized/xens2_b8_profile.json",
+      "status": "PASS",
+      "model": "xens2",
+      "batch_size": 8,
+      "mean_actual_batch_size": 3.659090909090909,
+      "r2d_encoder_autocast_bf16": false,
+      "throughput_median_seq_per_s": 17.62171209060639,
+      "strict_micro_f1": 0.8039631781527609,
+      "peak_memory_mib": 11591.49560546875,
+      "cross_config_equivalence": {
+        "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+        "pair_agreement": 0.9989537560159029,
+        "symmetric_difference_pairs": 35,
+        "union_pairs": 33453,
+        "abs_delta_f1": 2.9002825896462525e-07
+      },
+      "eligible": true
+    }
+  },
+  "reference_models": [
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b1_full.json",
+      "model": "rnaformer",
+      "batch_size": 1,
+      "throughput_median_seq_per_s": 2.5564147580816594,
+      "strict_micro_f1": 0.7575434318805242
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b2_full.json",
+      "model": "rnaformer",
+      "batch_size": 2,
+      "throughput_median_seq_per_s": 2.7185949347645613,
+      "strict_micro_f1": 0.7575434318805242
+    },
+    {
+      "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b4_full.json",
+      "model": "rnaformer",
+      "batch_size": 4,
+      "throughput_median_seq_per_s": 2.7325776657989174,
+      "strict_micro_f1": 0.7575434318805242
+    }
+  ],
+  "speed_sota_claim": "requires_independent_pareto_review",
+  "selection_rule": "Only full-TS0 PASS results with >=99% pair agreement and <=0.001 absolute F1 delta are eligible; failed candidates remain recorded but cannot win."
+}

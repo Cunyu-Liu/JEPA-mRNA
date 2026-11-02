@@ -1,0 +1,53 @@
+{
+  "splits": [
+    "TS0",
+    "TestSetB",
+    "bpRNA-new",
+    "ArchiveII-clean",
+    "TS1",
+    "TS2",
+    "TS3",
+    "TS-hard"
+  ],
+  "n": [
+    1281,
+    428,
+    5375,
+    2505,
+    62,
+    39,
+    19,
+    27
+  ],
+  "raw": [
+    0.1604,
+    0.1004,
+    0.2011,
+    0.1176,
+    0.121,
+    0.0821,
+    0.1088,
+    0.1243
+  ],
+  "recalibrated": [
+    0.0315,
+    0.0445,
+    0.0677,
+    0.0605,
+    0.1111,
+    0.1851,
+    0.1841,
+    0.1219
+  ],
+  "spearman": [
+    0.708,
+    0.694,
+    0.416,
+    0.716,
+    0.559,
+    0.337,
+    0.362,
+    0.676
+  ],
+  "note": "Structure-level ECE, 10-bin weighted absolute confidence-versus-F1 gap; VL0 affine parameters a=1.6 and b=-1.9 are frozen for every test split."
+}

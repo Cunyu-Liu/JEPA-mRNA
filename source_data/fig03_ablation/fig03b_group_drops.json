@@ -1,0 +1,46 @@
+{
+  "definition": "performance_drop = matched_control_strict_micro_f1 - ablated_strict_micro_f1",
+  "groups": [
+    {
+      "name": "ID",
+      "splits": [
+        "bprna_ts0",
+        "archiveii_embok_clean"
+      ]
+    },
+    {
+      "name": "External",
+      "splits": [
+        "bprna_new",
+        "testsetb"
+      ]
+    },
+    {
+      "name": "PDB-OOD",
+      "splits": [
+        "ref_pdb_ts1",
+        "ref_pdb_ts2",
+        "ref_pdb_ts3",
+        "ref_pdb_ts_hard"
+      ]
+    }
+  ],
+  "drop": {
+    "DP off (greedy)": {
+      "ID": 0.2683565125938437,
+      "External": 0.23479949362678584,
+      "PDB-OOD": 0.18955594969470269
+    },
+    "Turner prior = 0": {
+      "ID": 0.2031333851980556,
+      "External": 0.30504869058399464,
+      "PDB-OOD": 0.39088831839574
+    },
+    "2D scorer -> pair MLP": {
+      "ID": 0.07775415053086243,
+      "External": 0.0652453351624685,
+      "PDB-OOD": 0.11129438841657399
+    }
+  },
+  "source": "/private/tmp/rnajev_audit/remote_current_20261028/main_ablation_5x8.json"
+}

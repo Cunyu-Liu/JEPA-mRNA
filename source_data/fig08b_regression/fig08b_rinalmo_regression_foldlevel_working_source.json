@@ -1,0 +1,560 @@
+{
+ "figure_status": "fold_level_working_muscle_tenfold_complete_hek_pc3_pending",
+ "protocol": "frozen RiNALMo; JEV head vs official head; paired five seeds per fold; ΔSpearman = JEV − official",
+ "TE": {
+  "Muscle": [
+   {
+    "fold": 0,
+    "delta": 0.01910932728730157,
+    "sd": 0.030985556144730596,
+    "p": 0.11998923182565778
+   },
+   {
+    "fold": 1,
+    "delta": -0.0004313506103594822,
+    "sd": 0.03241025194834444,
+    "p": 0.5111579435093285
+   },
+   {
+    "fold": 2,
+    "delta": -0.004270355883161048,
+    "sd": 0.060978256423500646,
+    "p": 0.5584245329479705
+   },
+   {
+    "fold": 3,
+    "delta": 0.16623546475035525,
+    "sd": 0.03208017493052893,
+    "p": 0.00015847853015829323
+   },
+   {
+    "fold": 4,
+    "delta": 0.08273319574764226,
+    "sd": 0.026643087478129518,
+    "p": 0.001129829306862326
+   },
+   {
+    "fold": 5,
+    "delta": -0.009881646422465274,
+    "sd": 0.0479753109819389,
+    "p": 0.665483531067141
+   },
+   {
+    "fold": 6,
+    "delta": 0.016459764736250417,
+    "sd": 0.042469371586862883,
+    "p": 0.2175184226465107
+   },
+   {
+    "fold": 7,
+    "delta": -0.02800784652675068,
+    "sd": 0.03914903401584242,
+    "p": 0.9075448153296475
+   },
+   {
+    "fold": 8,
+    "delta": 0.0498006897149076,
+    "sd": 0.02669258326791817,
+    "p": 0.007005053475905849
+   },
+   {
+    "fold": 9,
+    "delta": -0.04557517366158444,
+    "sd": 0.021890187477283937,
+    "p": 0.99518898794694
+   }
+  ],
+  "HEK": [
+   {
+    "fold": 0,
+    "delta": -0.06732825377193769,
+    "sd": 0.02376219571516691,
+    "p": 0.9984112872877138
+   },
+   {
+    "fold": 1,
+    "delta": -0.02956970157468929,
+    "sd": 0.020408850064767284,
+    "p": 0.984159483563283
+   },
+   {
+    "fold": 2,
+    "delta": -0.037985706856926635,
+    "sd": 0.023385702187352864,
+    "p": 0.9889403949050133
+   },
+   {
+    "fold": 3,
+    "delta": -0.049630172594040844,
+    "sd": 0.01595186786748217,
+    "p": 0.9988783136176845
+   }
+  ]
+ },
+ "EL": {
+  "Muscle": [
+   {
+    "fold": 0,
+    "delta": -0.05100452505440445,
+    "sd": 0.026897061119052167,
+    "p": 0.9933694149450509
+   },
+   {
+    "fold": 1,
+    "delta": -0.07474172996066977,
+    "sd": 0.08020390683318279,
+    "p": 0.9472149519646276
+   },
+   {
+    "fold": 2,
+    "delta": -0.02999079098752342,
+    "sd": 0.03275754513423993,
+    "p": 0.9449805580342376
+   },
+   {
+    "fold": 3,
+    "delta": -0.02363732898278219,
+    "sd": 0.026633931745260415,
+    "p": 0.9409032835759663
+   },
+   {
+    "fold": 4,
+    "delta": 0.028040399677360696,
+    "sd": 0.066822436825307,
+    "p": 0.20060434380029593
+   },
+   {
+    "fold": 5,
+    "delta": 0.06921112113623085,
+    "sd": 0.04494626565962877,
+    "p": 0.013107968803285802
+   },
+   {
+    "fold": 6,
+    "delta": -0.1146434452906822,
+    "sd": 0.028231494792403205,
+    "p": 0.9995922479766955
+   },
+   {
+    "fold": 7,
+    "delta": 0.012399595079413527,
+    "sd": 0.04869560405756809,
+    "p": 0.2997741485530294
+   },
+   {
+    "fold": 8,
+    "delta": 0.06967303896548793,
+    "sd": 0.03259225032250839,
+    "p": 0.004387500817339024
+   },
+   {
+    "fold": 9,
+    "delta": 0.08212747393813255,
+    "sd": 0.030522202044355237,
+    "p": 0.0019216003938227414
+   }
+  ],
+  "HEK": [
+   {
+    "fold": 0,
+    "delta": -0.055355054531507984,
+    "sd": 0.04245852797130124,
+    "p": 0.9782755695850012
+   },
+   {
+    "fold": 1,
+    "delta": -0.03441078612953123,
+    "sd": 0.03895083899145316,
+    "p": 0.940288045244299
+   },
+   {
+    "fold": 2,
+    "delta": -0.056675263209203096,
+    "sd": 0.04286545298144612,
+    "p": 0.9791494920319417
+   }
+  ]
+ },
+ "MRL": {
+  "official_r2": 0.6822061253727428,
+  "jev_r2": 0.21335915844303646,
+  "delta": -0.46884696692970634,
+  "p": 0.9999999931429375
+ },
+ "aggregate": {
+  "schema_version": 1,
+  "generated_utc": "2026-10-30T23:02:14.167833+00:00",
+  "scope": "fold-level summary of official ten-fold TE/EL protocols on frozen RiNALMo; per-fold p is a paired training-seed contrast; cross-fold signed-rank is descriptive",
+  "status": "INCOMPLETE",
+  "missing": [
+   {
+    "series": "TE_HEK",
+    "folds": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ]
+   },
+   {
+    "series": "EL_HEK",
+    "folds": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ]
+   },
+   {
+    "series": "TE_pc3",
+    "folds": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ]
+   },
+   {
+    "series": "EL_pc3",
+    "folds": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ]
+   }
+  ],
+  "series": {
+   "TE_Muscle": {
+    "cell": "Muscle",
+    "task": "te",
+    "rows": [
+     {
+      "fold": 0,
+      "delta": 0.01910932728730157,
+      "delta_sd": 0.030985556144730596,
+      "fold_p": 0.11998923182565778,
+      "official_spearman": 0.5723727075158702,
+      "jev_spearman": 0.5914820348031719,
+      "significant_positive": false
+     },
+     {
+      "fold": 1,
+      "delta": -0.0004313506103594822,
+      "delta_sd": 0.03241025194834444,
+      "fold_p": 0.5111579435093285,
+      "official_spearman": 0.5594251458264663,
+      "jev_spearman": 0.558993795216107,
+      "significant_positive": false
+     },
+     {
+      "fold": 2,
+      "delta": -0.004270355883161048,
+      "delta_sd": 0.060978256423500646,
+      "fold_p": 0.5584245329479705,
+      "official_spearman": 0.6801210674365287,
+      "jev_spearman": 0.6758507115533676,
+      "significant_positive": false
+     },
+     {
+      "fold": 3,
+      "delta": 0.16623546475035525,
+      "delta_sd": 0.03208017493052893,
+      "fold_p": 0.00015847853015829323,
+      "official_spearman": 0.5285290690236673,
+      "jev_spearman": 0.6947645337740224,
+      "significant_positive": true
+     },
+     {
+      "fold": 4,
+      "delta": 0.08273319574764226,
+      "delta_sd": 0.026643087478129518,
+      "fold_p": 0.001129829306862326,
+      "official_spearman": 0.5231701903002088,
+      "jev_spearman": 0.605903386047851,
+      "significant_positive": true
+     },
+     {
+      "fold": 5,
+      "delta": -0.009881646422465274,
+      "delta_sd": 0.0479753109819389,
+      "fold_p": 0.665483531067141,
+      "official_spearman": 0.680370944296482,
+      "jev_spearman": 0.6704892978740167,
+      "significant_positive": false
+     },
+     {
+      "fold": 6,
+      "delta": 0.016459764736250417,
+      "delta_sd": 0.042469371586862883,
+      "fold_p": 0.2175184226465107,
+      "official_spearman": 0.6545360192345917,
+      "jev_spearman": 0.6709957839708421,
+      "significant_positive": false
+     },
+     {
+      "fold": 7,
+      "delta": -0.02800784652675068,
+      "delta_sd": 0.03914903401584242,
+      "fold_p": 0.9075448153296475,
+      "official_spearman": 0.6911102953571083,
+      "jev_spearman": 0.6631024488303577,
+      "significant_positive": false
+     },
+     {
+      "fold": 8,
+      "delta": 0.0498006897149076,
+      "delta_sd": 0.02669258326791817,
+      "fold_p": 0.007005053475905849,
+      "official_spearman": 0.5038858977560123,
+      "jev_spearman": 0.55368658747092,
+      "significant_positive": true
+     },
+     {
+      "fold": 9,
+      "delta": -0.04557517366158444,
+      "delta_sd": 0.021890187477283937,
+      "fold_p": 0.99518898794694,
+      "official_spearman": 0.6768114829177801,
+      "jev_spearman": 0.6312363092561957,
+      "significant_positive": false
+     }
+    ],
+    "n_folds": 10,
+    "mean_delta": 0.02461720691321362,
+    "min_delta": -0.04557517366158444,
+    "max_delta": 0.16623546475035525,
+    "positive_folds": 5,
+    "test": "scipy.wilcoxon exact one-sided greater",
+    "one_sided_p": 0.2158203125,
+    "holm_adjusted_p_across_present_series": 0.86328125,
+    "complete_ten_folds": true
+   },
+   "EL_Muscle": {
+    "cell": "Muscle",
+    "task": "el",
+    "rows": [
+     {
+      "fold": 0,
+      "delta": -0.05100452505440445,
+      "delta_sd": 0.026897061119052167,
+      "fold_p": 0.9933694149450509,
+      "official_spearman": 0.5857541175186786,
+      "jev_spearman": 0.534749592464274,
+      "significant_positive": false
+     },
+     {
+      "fold": 1,
+      "delta": -0.07474172996066977,
+      "delta_sd": 0.08020390683318279,
+      "fold_p": 0.9472149519646276,
+      "official_spearman": 0.5305058613296337,
+      "jev_spearman": 0.4557641313689639,
+      "significant_positive": false
+     },
+     {
+      "fold": 2,
+      "delta": -0.02999079098752342,
+      "delta_sd": 0.03275754513423993,
+      "fold_p": 0.9449805580342376,
+      "official_spearman": 0.6991669891824921,
+      "jev_spearman": 0.6691761981949688,
+      "significant_positive": false
+     },
+     {
+      "fold": 3,
+      "delta": -0.02363732898278219,
+      "delta_sd": 0.026633931745260415,
+      "fold_p": 0.9409032835759663,
+      "official_spearman": 0.6491392472913432,
+      "jev_spearman": 0.6255019183085612,
+      "significant_positive": false
+     },
+     {
+      "fold": 4,
+      "delta": 0.028040399677360696,
+      "delta_sd": 0.066822436825307,
+      "fold_p": 0.20060434380029593,
+      "official_spearman": 0.5956654637980539,
+      "jev_spearman": 0.6237058634754146,
+      "significant_positive": false
+     },
+     {
+      "fold": 5,
+      "delta": 0.06921112113623085,
+      "delta_sd": 0.04494626565962877,
+      "fold_p": 0.013107968803285802,
+      "official_spearman": 0.6751334497139962,
+      "jev_spearman": 0.7443445708502271,
+      "significant_positive": true
+     },
+     {
+      "fold": 6,
+      "delta": -0.1146434452906822,
+      "delta_sd": 0.028231494792403205,
+      "fold_p": 0.9995922479766955,
+      "official_spearman": 0.6571015475251298,
+      "jev_spearman": 0.5424581022344476,
+      "significant_positive": false
+     },
+     {
+      "fold": 7,
+      "delta": 0.012399595079413527,
+      "delta_sd": 0.04869560405756809,
+      "fold_p": 0.2997741485530294,
+      "official_spearman": 0.6053386463615475,
+      "jev_spearman": 0.617738241440961,
+      "significant_positive": false
+     },
+     {
+      "fold": 8,
+      "delta": 0.06967303896548793,
+      "delta_sd": 0.03259225032250839,
+      "fold_p": 0.004387500817339024,
+      "official_spearman": 0.5955505034776541,
+      "jev_spearman": 0.665223542443142,
+      "significant_positive": true
+     },
+     {
+      "fold": 9,
+      "delta": 0.08212747393813255,
+      "delta_sd": 0.030522202044355237,
+      "fold_p": 0.0019216003938227414,
+      "official_spearman": 0.590142061034933,
+      "jev_spearman": 0.6722695349730656,
+      "significant_positive": true
+     }
+    ],
+    "n_folds": 10,
+    "mean_delta": -0.003256619147943648,
+    "min_delta": -0.1146434452906822,
+    "max_delta": 0.08212747393813255,
+    "positive_folds": 5,
+    "test": "scipy.wilcoxon exact one-sided greater",
+    "one_sided_p": 0.5771484375,
+    "holm_adjusted_p_across_present_series": 1.0,
+    "complete_ten_folds": true
+   },
+   "TE_HEK": {
+    "cell": "HEK",
+    "task": "te",
+    "rows": [
+     {
+      "fold": 0,
+      "delta": -0.06732825377193769,
+      "delta_sd": 0.02376219571516691,
+      "fold_p": 0.9984112872877138,
+      "official_spearman": 0.5557093799525393,
+      "jev_spearman": 0.48838112618060175,
+      "significant_positive": false
+     },
+     {
+      "fold": 1,
+      "delta": -0.02956970157468929,
+      "delta_sd": 0.020408850064767284,
+      "fold_p": 0.984159483563283,
+      "official_spearman": 0.5064286877714659,
+      "jev_spearman": 0.4768589861967766,
+      "significant_positive": false
+     },
+     {
+      "fold": 2,
+      "delta": -0.037985706856926635,
+      "delta_sd": 0.023385702187352864,
+      "fold_p": 0.9889403949050133,
+      "official_spearman": 0.531963902891208,
+      "jev_spearman": 0.4939781960342815,
+      "significant_positive": false
+     },
+     {
+      "fold": 3,
+      "delta": -0.049630172594040844,
+      "delta_sd": 0.01595186786748217,
+      "fold_p": 0.9988783136176845,
+      "official_spearman": 0.4862841969849848,
+      "jev_spearman": 0.4366540243909439,
+      "significant_positive": false
+     }
+    ],
+    "n_folds": 4,
+    "mean_delta": -0.04612845869939861,
+    "min_delta": -0.06732825377193769,
+    "max_delta": -0.02956970157468929,
+    "positive_folds": 0,
+    "test": "scipy.wilcoxon exact one-sided greater",
+    "one_sided_p": 1.0,
+    "holm_adjusted_p_across_present_series": 1.0,
+    "complete_ten_folds": false
+   },
+   "EL_HEK": {
+    "cell": "HEK",
+    "task": "el",
+    "rows": [
+     {
+      "fold": 0,
+      "delta": -0.055355054531507984,
+      "delta_sd": 0.04245852797130124,
+      "fold_p": 0.9782755695850012,
+      "official_spearman": 0.5098189926601774,
+      "jev_spearman": 0.4544639381286693,
+      "significant_positive": false
+     },
+     {
+      "fold": 1,
+      "delta": -0.03441078612953123,
+      "delta_sd": 0.03895083899145316,
+      "fold_p": 0.940288045244299,
+      "official_spearman": 0.5378991256382686,
+      "jev_spearman": 0.5034883395087373,
+      "significant_positive": false
+     },
+     {
+      "fold": 2,
+      "delta": -0.056675263209203096,
+      "delta_sd": 0.04286545298144612,
+      "fold_p": 0.9791494920319417,
+      "official_spearman": 0.5275318498609295,
+      "jev_spearman": 0.47085658665172636,
+      "significant_positive": false
+     }
+    ],
+    "n_folds": 3,
+    "mean_delta": -0.04881370129008077,
+    "min_delta": -0.056675263209203096,
+    "max_delta": -0.03441078612953123,
+    "positive_folds": 0,
+    "test": "scipy.wilcoxon exact one-sided greater",
+    "one_sided_p": 1.0,
+    "holm_adjusted_p_across_present_series": 1.0,
+    "complete_ten_folds": false
+   }
+  },
+  "holm_family": [
+   "TE_Muscle",
+   "EL_Muscle",
+   "TE_HEK",
+   "EL_HEK"
+  ]
+ },
+ "rendered_series": [
+  "Muscle"
+ ],
+ "note": "HEK/pc3 folds are retained here for traceability but not drawn while incomplete; only complete ten-fold series are rendered."
+}

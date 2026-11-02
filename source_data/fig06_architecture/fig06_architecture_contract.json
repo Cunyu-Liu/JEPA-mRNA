@@ -1,0 +1,57 @@
+{
+  "figure": "main_figure_6_architecture",
+  "verified_at": "2026-10-31",
+  "sources": {
+    "backbone_config": "/root/rna_jepa_data/weights/rinalmo-giga/config.json",
+    "backbone_config_sha256": "04fb8fad8cf6f7a89ca0c6008ecc872a82c9bb27b054a1043b327614fbe06e9d",
+    "head_code": "/home/rna_jev/src/rnajepa/decision_head.py",
+    "mask_code": "/home/rna_jev/src/rnajepa/harness.py",
+    "decoder": "/home/rna_jev/tools/dp_decode_c_wrapper.py"
+  },
+  "backbone": {
+    "name": "RiNALMo-giga",
+    "parameters_approx": "650M",
+    "hidden_size": 1280,
+    "num_hidden_layers": 33,
+    "num_attention_heads": 20,
+    "output_per_nucleotide": "1280-d contextual state",
+    "frozen_during_head_training": true,
+    "trainable_parameters": 0
+  },
+  "pair_head": {
+    "class": "FlatDecisionHead",
+    "d_model": 1280,
+    "d_z": 128,
+    "hidden": 64,
+    "scorer": "ResNet2D",
+    "resnet_blocks": 4,
+    "resnet_kernel_size": 3,
+    "chunk_size": 64,
+    "min_loop": 3,
+    "pair_types": ["AU", "UA", "GC", "CG", "GU", "UG"],
+    "trainable_parameters": 812375,
+    "tensor_shapes": {
+      "h": "L x 1280",
+      "pair_representation": "L x L x 128",
+      "logits": "L x L"
+    },
+    "objectives": ["NLL", "KL distillation", "RLCD", "soft-ECE"]
+  },
+  "decoder": {
+    "mask": "canonical pairs + min loop >= 3",
+    "algorithm": "non-crossing max-product DP",
+    "complexity": "O(L^3)",
+    "batched": "C-batched exact decode",
+    "partition_function": false,
+    "legal_by_construction": true
+  },
+  "calibration": {
+    "input": "sigmoid(logit)",
+    "fit": "VL0 two-parameter logit affine",
+    "outputs": ["dot-bracket structure", "per-structure confidence", "ECE"]
+  },
+  "sequence_scope": {
+    "max_length_nt": 600,
+    "truncation_residues": 598
+  }
+}

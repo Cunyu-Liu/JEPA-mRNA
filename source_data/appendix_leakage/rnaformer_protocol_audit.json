@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "active_protocol_audit",
+  "paper": {
+    "source": "RNAformer bioRxiv 2024 Table 4; arXiv:2307.10073 for TS0",
+    "gt": "full pair set including pseudoknots and non-canonical pairs",
+    "f1": {
+      "TS0": 0.728,
+      "TS1": 0.739,
+      "TS2": 0.802,
+      "TS3": 0.702,
+      "hard": 0.662
+    }
+  },
+  "project_remeasurement": {
+    "gt": "canonical nested pairs only",
+    "metric": "strict micro-F1 with the project scorer",
+    "values": {
+      "TS0": {
+        "bprna": 0.7578,
+        "inter_family": null
+      },
+      "TS1": {
+        "bprna": 0.7658,
+        "inter_family": 0.815
+      },
+      "TS2": {
+        "bprna": 0.859,
+        "inter_family": 0.9043
+      },
+      "TS3": {
+        "bprna": 0.941,
+        "inter_family": 0.8245
+      },
+      "hard": {
+        "bprna": 0.7845,
+        "inter_family": 0.7709
+      }
+    }
+  },
+  "ts2_interpretation": {
+    "paper_inter_family": 0.802,
+    "project_inter_family": 0.9043,
+    "project_bprna_fixed_checkpoint": 0.859,
+    "ours_xens2_round35_board": 0.8604,
+    "conclusion": "TS2 remains a loss to the specialized inter-family checkpoint under project GT; the paper's 0.802 cannot replace 0.9043 because GT differs. The fixed bprna checkpoint is shown separately for fairness."
+  },
+  "source_files": [
+    "baselines_rnaformer_ref_pdb_ts2.json",
+    "baselines_rnaformer_interfam_ref_pdb_ts2.json",
+    "rnaformer_release_gt_interfam_ref_pdb_ts2.json",
+    "rnaformer_bprna_leak_audit.json",
+    "leak_matrix_ckpt_basis.json"
+  ]
+}

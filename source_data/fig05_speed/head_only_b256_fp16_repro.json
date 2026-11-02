@@ -1,0 +1,16 @@
+{
+ "status": "PASS",
+ "scope": "cached_embedding_head_only_not_raw_sequence",
+ "n_seq": 1288,
+ "batch_size": 256,
+ "mode": "fp16",
+ "device": "NVIDIA GeForce RTX 4090",
+ "f1": 0.6679712624016422,
+ "tp": 24406,
+ "fp": 13778,
+ "fn": 10485,
+ "forward_wall_s": 7.7198284063488245,
+ "decode_wall_s": 3.219984645023942,
+ "total_wall_s": 10.939813051372766,
+ "seq_per_s": 117.73510150051213
+}
