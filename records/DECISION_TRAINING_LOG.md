@@ -12329,3 +12329,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 在同一 matched-clean 快照中，xens2 对 EternaFold 的共同 n=22，F1=0.8289290680<0.8817733990；对 MXfold2 的共同 n=20，F1=0.8390804598<0.9066666667；对 RNAformer-interfam 的共同 n=29，F1=0.8362779740<0.9209100758。
 - xens2 对 BPfold 的共同 n=1，F1=0.8965517241<0.9696969697；该格只记录直接观测，不外推统计结论。对其他系统的两两集合不得拼接成统一 TS2 排名。
 - 结论限于“TS2 落后在多个独立两两交集中重复出现，不只是单一 clean 子集造成”。这支持保留 TS2 攻关，但不用于测试集调参，也不替代尚未闭环的全长主板。
+
+
+## §15.379（2026-11-03）xens2 全长 ArchiveII clean 排程
+
+- 新增 `tools/run_xens2_full_archive_round39.sh`：核验 clean 数据/审计和 1107 条全覆盖，先保存现有 len≤600 的 1068 条结果，再以 B=1、`--allow-long`、`--resume-runs` 做三次 raw-sequence 评测。
+- 任务已放入远端持久锁队列，不与当前 NB+RNAformer 形成第三高显存任务。旧结果只有在新全长结果原子写出后才被替换，失败时仍保留原文件和逐 repeat sidecar。
+- bash 语法检查通过；全长 GPU 结果尚未开始，不更新 matched-clean 数值，不写 8/8 或全长 SOTA。
