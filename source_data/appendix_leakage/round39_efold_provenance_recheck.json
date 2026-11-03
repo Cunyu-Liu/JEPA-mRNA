@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "BLOCKED_PROVENANCE_TRAINING_SEQUENCE_UNION_NOT_RECOVERED",
+  "system": "eFold",
+  "official_training_code": {
+    "repository": "https://github.com/rouskinlab/eFold",
+    "commit": "4e146fe92c574104b2518d7350e0fa4a39f32030",
+    "script": "scripts/efold_training.py",
+    "dataset_name": "efold_train"
+  },
+  "official_data_index": {
+    "repository": "https://github.com/rouskinlab/efold_data",
+    "commit": "f5c89cc26d743a8e5d09f4b7b29699912849396c",
+    "archive": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/eFold/efold_data.zip",
+    "archive_sha256": "08865de40e343364a1c0e0f672278c1398d15d04ed26a1e1d34b9a91aab3b3eb",
+    "pretraining_components_from_readme": [
+      {"name": "rnacentral_synthetic", "n_sequences": 226729},
+      {"name": "ribo500-blast", "n_sequences": 46060},
+      {"name": "bpRNA-1m", "n_sequences": 66715}
+    ],
+    "composition_caveat": "The README lists pretraining components but does not prove that an unverified local concatenation is identical to the efold_train dataset used by the official training script."
+  },
+  "local_cache": {
+    "source_corpora_efold_files_recovered": 0,
+    "huggingface_efold_train_cached": false
+  },
+  "network_recheck": [
+    {"channel": "local Hugging Face API", "result": "fetch failed"},
+    {"channel": "cluster Hugging Face API", "result": "Errno 99 cannot assign requested address"},
+    {"channel": "cluster hf-mirror API", "result": "TLS handshake timeout"},
+    {"channel": "local direct data.json", "result": "connection timeout"}
+  ],
+  "conclusion": "Official dataset identity and data-index commit are confirmed, but exact training sequences and the efold_train composition manifest are not recovered. Do not substitute TR1c or another model's clean set. eFold raw 8x3 remains valid; own-training-union clean remains blocked pending sequence recovery.",
+  "next_action": "Recover efold_train or a verifiable composition manifest and all component sequences from Hugging Face or the official Drive, then build exact plus 80% identity clean splits and run 8 split x 3 evaluation."
+}

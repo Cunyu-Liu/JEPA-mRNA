@@ -62,7 +62,7 @@
 >
 > **2026-11-03 持久恢复与 matched-clean 口径**：bprna raw ArchiveII 的 OOM 来自三任务并发显存超订，无半成品结果；证据 SHA256=`1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6`，frozen clean 后由远端持久锁断点恢复。NB official_s3 的 SSH 255 中断不记训练失败或收敛；epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，队列仅续剩余 7 个 run。新增 matched-clean 工具分别输出全局和两两交集，名称、序列及实际评分 GT 必须一致，原生截断分组，空交集不得写 F1=0；统一 xens2 已接入，长度排除与原生截断分组，6 项测试通过，阶段复算 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`；TS2 全交集为空，最终主板与 SOTA 门不变。
 >
-> **2026-11-03 断点与代码身份合同**：`--resume-runs` 仅用于诊断性去泄露评测，逐 repeat 原子保存并绑定数据、审计、模型、batch 与代码身份；正式独占测速不得使用跨窗口续跑。代码 commit/SHA 在模块加载时固定。旧 HEK 队列作为第三 GPU 任务导致第二次 OOM，已在其子进程结束后暂停；新 ArchiveII 进程带逐 repeat 断点并固定新代码身份，无需旧进程校正，第二次错误栈 SHA256=`45d8f14ee090d2313986aa442f19e817f64f3c52778e0b87f1c8de04bb0c5e4e`。xens2 全长 ArchiveII 1107 条三次评测已排入同一锁队列，旧 len≤600 结果保留至新结果完整验收。
+> **2026-11-03 断点与代码身份合同**：`--resume-runs` 仅用于诊断性去泄露评测，逐 repeat 原子保存并绑定数据、审计、模型、batch 与代码身份；正式独占测速不得使用跨窗口续跑。代码 commit/SHA 在模块加载时固定。旧 HEK 队列作为第三 GPU 任务导致第二次 OOM，已在其子进程结束后暂停；新 ArchiveII 进程带逐 repeat 断点并固定新代码身份，无需旧进程校正，第二次错误栈 SHA256=`45d8f14ee090d2313986aa442f19e817f64f3c52778e0b87f1c8de04bb0c5e4e`。xens2 全长 ArchiveII 1107 条三次评测已排入同一锁队列，旧 len≤600 结果保留至新结果完整验收。eFold 的 `efold_train` 和数据索引 commit 已确认，训练序列并集未恢复前 own-clean 保持 `BLOCKED_PROVENANCE`，不得套用 TR1c。
 >
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 

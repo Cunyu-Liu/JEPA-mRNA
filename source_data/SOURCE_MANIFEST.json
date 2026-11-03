@@ -1043,6 +1043,13 @@
    "bytes": 6137,
    "description": "旧 HEK 队列作为第三 GPU 任务进入导致第二次 ArchiveII OOM；HEK 已暂停，RNAformer 带逐 repeat 断点恢复",
    "status": "active_failure_evidence_resumable_retry"
+  },
+  {
+   "path": "appendix_leakage/round39_efold_provenance_recheck.json",
+   "sha256": "719ad0974f3b514bac1051dace14e967574a11fc1302b0ae91603cf3b215ed7e",
+   "bytes": 2128,
+   "description": "eFold 官方 efold_train 与数据索引 commit 已确认；训练序列并集未恢复，own-clean 保持 provenance blocked",
+   "status": "active_blocked_provenance"
   }
  ]
 }

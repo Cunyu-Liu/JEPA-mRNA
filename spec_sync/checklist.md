@@ -39,7 +39,7 @@
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >
-> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。xens2 全长 ArchiveII 仍在锁队列，len≤600 不得冒充全长覆盖。
+> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。xens2 全长 ArchiveII 仍在锁队列，len≤600 不得冒充全长覆盖。eFold 训练序列并集未恢复，own-clean 不得勾选或套用 TR1c。
 >
 > **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
 

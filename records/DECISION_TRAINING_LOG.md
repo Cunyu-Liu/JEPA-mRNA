@@ -12343,3 +12343,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - epoch16 train BCE=0.00041378461464000593，validation BCE=**0.011539480104608644**，较 epoch15 的 0.011631950499488883 继续改善。
 - checkpoint 复核为 epoch=16、best_epoch=16、best_loss=0.011539480104608644、bad=0、early_stopped=False，模型、优化器和 CUDA RNG 齐全；validation history 共 16 个 epoch。
 - 仍未达到 patience=5 的 validation plateau，继续训练，不生成最终 QA 或五种子结论。RNAformer 与 xens2 全长 ArchiveII 的队列顺序不变。
+
+
+## §15.381（2026-11-03）eFold 训练 provenance 复核
+
+- 官方 `scripts/efold_training.py` 明确使用 `efold_train`；官方 `efold_data` 固定 commit=`f5c89cc26d743a8e5d09f4b7b29699912849396c` 已恢复，zip SHA256=`08865de40e343364a1c0e0f672278c1398d15d04ed26a1e1d34b9a91aab3b3eb`。
+- 数据 README 列出预训练组件 rnacentral_synthetic=226,729、ribo500-blast=46,060、bpRNA-1m=66,715，但没有证明本地简单拼接与官方 `efold_train` 完全等价。集群缓存没有对应序列文件。
+- Hugging Face 主站、镜像和直接 data.json 通道均实际失败，错误已记录；不能把 TR1c 或其他模型 clean 套给 eFold。raw 8×3 保留，own-training-union clean 继续 `BLOCKED_PROVENANCE_TRAINING_SEQUENCE_UNION_NOT_RECOVERED`，审计 SHA256=`719ad0974f3b514bac1051dace14e967574a11fc1302b0ae91603cf3b215ed7e`。后续需从官方 HF/Drive 恢复精确序列与组成清单后再跑 8×3。
