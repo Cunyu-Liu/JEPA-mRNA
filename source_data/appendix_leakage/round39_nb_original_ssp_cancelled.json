@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "CANCELLED_BY_USER_ORIGINAL_NB_SSP",
+  "run": "official_s3",
+  "last_complete_checkpoint_epoch": 19,
+  "best_epoch": 19,
+  "best_validation_bce": 0.011365990138513294,
+  "bad": 0,
+  "early_stopped": false,
+  "converged": false,
+  "run_json_exists": false,
+  "qa_json_exists": false,
+  "cancelled_pending_runs": [
+    "official_s4",
+    "jev_s0",
+    "jev_s1",
+    "jev_s2",
+    "jev_s3",
+    "jev_s4"
+  ],
+  "retained_completed_runs": [
+    "official_s0",
+    "official_s1",
+    "official_s2"
+  ],
+  "artifacts_deleted": false,
+  "timestamp_unix": 1793699382.007119
+}

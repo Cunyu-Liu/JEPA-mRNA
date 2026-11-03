@@ -1,6 +1,12 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
-> **当前执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
+> **当前执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
+>
+> 新测评合同：`docs/plans/2026-11-03-bpfold-fig4-7-evaluation-review.md`。可借鉴的是评测设计，不是照搬 motif 模块：P0 为 Rfam 全模型与无需重训的 Turner/DP 消融、完整 INF/P/R 和 macro-F1 分布；P1 为 Pearson/Spearman/95%CI 与 risk–coverage；P2 为按预注册分位数选样的结构案例。Rfam 实际可评测 10,790 条，原始 10,791 条中 1 条因 partner asymmetry 被拒绝。
+>
+> CHANRG 复测继续，未完成前不将 Rfam 新结果写入 PPT。canonical-nested、非规范配对能力、PDB 小样本和置信度/校准边界不得混淆。
+
+> **历史执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
 >
 > 本轮唯一合同：`docs/plans/2026-11-03-prism-round38-revision.md`。名称改为 **PRISM = Physics-guided RNA Interaction Structure Model**。以 round38 原 PPT 副本修改，保留原图形式和原绘图代码，不沿用上一版新模板。所有图只保留 xens2 一条汇报主线，不展示 plana/r2d；但不得把含三个成员的 xens2 错写成单 checkpoint。
 >
@@ -72,7 +78,9 @@
 >
 > **2026-11-03 own-clean 主榜合同**：最终 8/8 和 SOTA 只由各系统自己的完整 clean 集及 clean n 决定，不要求共同 n。主榜逐格保存 F1 均值/SD、TP/FP/FN、删除数、结果/审计/权重哈希；80/104 格完成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。matched-clean 仅用于附加验证差距不是样本集合差异，不能替代主榜。
 >
-> **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
+> **2026-11-03 用户取消 NB 原论文下游任务**：official/JEV 五种子训练线立即取消，official_s3 止于 epoch19 完整 checkpoint（best validation BCE=0.0113659901、early_stopped=False、未 QA），official_s4/JEV s0–s4 不再启动。既有 official_s0–s2、checkpoint、数据和日志全部保留，T-A168 状态改为 `CANCELLED_BY_USER`，不再作为最终验收前置。取消范围不包括主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线。
+>
+> **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。NB 原论文下游继续至收敛的旧要求由用户最新取消指令覆盖。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**
 >

@@ -12411,3 +12411,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - epoch18 train BCE=0.0003899520853928481，validation BCE=**0.011594461825958784**，仍高于 epoch16 最佳值 0.011539480104608644。
 - checkpoint 复核为 epoch=18、best_epoch=16、best_loss=0.011539480104608644、bad=2、early_stopped=False，模型、优化器和 CUDA RNG 齐全；epoch19 正在接近本轮结束，不提前停止。
 - 外部 BPfold 父进程已结束，MXfold2 尚未退出；RNAformer 保持等待，不抢占或终止外部任务。
+
+
+## §15.390（2026-11-03）用户取消 NucleicBERT 原论文下游二级结构任务
+
+- 按用户最新指令，取消 NB 原论文下游 official/JEV 五种子训练：official_s3 已停止，official_s4 与 JEV s0–s4 不再启动。队列与训练进程扫描为空，取消确认 SHA256=`03b8d64b81ea6c30104036f76ef411b4d5e5e8ba93cc261a77f326a87ddb4fcf`。
+- official_s3 最后完整 checkpoint 已推进到 epoch19：best_epoch=19、best_validation_BCE=0.011365990138513294、bad=0、early_stopped=False；run.json/qa.json 不存在，未收敛、未 QA。用户取消优先于继续训练合同，不将未收敛写成失败或完成。
+- official_s0–s2 的既有 PASS 结果、全部 checkpoint、embedding 和日志均保留，不删除数据或权重。T-A168 及 NB 原论文五种子聚合后续状态统一为 `CANCELLED_BY_USER`，不再列为待办或最终验收前置条件。
+- **范围区分**：取消的是原论文下游训练/评测线；主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线结果及后续对照保留，不因本次取消删除或排除。

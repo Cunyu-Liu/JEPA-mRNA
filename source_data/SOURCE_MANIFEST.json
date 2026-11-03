@@ -1092,6 +1092,13 @@
    "bytes": 6227,
    "description": "外部 round41 BPfold/MXfold2 与 NB 并发导致 pair_transition OOM；不终止外部任务，RNAformer 等待恢复",
    "status": "active_failure_evidence_waiting_external_queue"
+  },
+  {
+   "path": "appendix_leakage/round39_nb_original_ssp_cancelled.json",
+   "sha256": "03b8d64b81ea6c30104036f76ef411b4d5e5e8ba93cc261a77f326a87ddb4fcf",
+   "bytes": 605,
+   "description": "用户取消 NucleicBERT 原论文下游二级结构训练；official_s3 epoch19 断点保留，official_s4/JEV 五种子取消，主 benchmark 基线保留",
+   "status": "active_cancelled_by_user"
   }
  ]
 }
