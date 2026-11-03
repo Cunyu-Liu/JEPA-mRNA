@@ -1046,8 +1046,8 @@
   },
   {
    "path": "appendix_leakage/round39_efold_provenance_recheck.json",
-   "sha256": "719ad0974f3b514bac1051dace14e967574a11fc1302b0ae91603cf3b215ed7e",
-   "bytes": 2128,
+   "sha256": "cd166702ec3689876537db2d205afdc675515e751e1d571bbc79c8bffa457109",
+   "bytes": 2232,
    "description": "eFold 官方 efold_train 与数据索引 commit 已确认；训练序列并集未恢复，own-clean 保持 provenance blocked",
    "status": "active_blocked_provenance"
   }

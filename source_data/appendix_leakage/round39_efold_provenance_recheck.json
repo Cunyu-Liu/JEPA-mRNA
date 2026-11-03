@@ -28,7 +28,8 @@
     {"channel": "local Hugging Face API", "result": "fetch failed"},
     {"channel": "cluster Hugging Face API", "result": "Errno 99 cannot assign requested address"},
     {"channel": "cluster hf-mirror API", "result": "TLS handshake timeout"},
-    {"channel": "local direct data.json", "result": "connection timeout"}
+    {"channel": "local direct data.json", "result": "connection timeout"},
+    {"channel": "local official Google Drive folder", "result": "connection timeout after 60 seconds"}
   ],
   "conclusion": "Official dataset identity and data-index commit are confirmed, but exact training sequences and the efold_train composition manifest are not recovered. Do not substitute TR1c or another model's clean set. eFold raw 8x3 remains valid; own-training-union clean remains blocked pending sequence recovery.",
   "next_action": "Recover efold_train or a verifiable composition manifest and all component sequences from Hugging Face or the official Drive, then build exact plus 80% identity clean splits and run 8 split x 3 evaluation."
