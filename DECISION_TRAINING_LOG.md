@@ -12214,3 +12214,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - clean ArchiveII repeat0/1 均完成，F1 均为 **0.733486**，throughput 均约 0.756 seq/s，峰值显存均约 12,880MiB；未再 OOM 或发生 CPU 降级。
 - 当前仅剩 repeat2，完整 JSON 尚未形成；保持 clean 5/8，不把前两次一致当成三次验收完成。
+
+
+## §15.363（2026-11-03）inter-family clean ArchiveII 三次完整验收，clean 6/8
+
+- clean ArchiveII n=2192，三次 F1=**0.7334860511130188**，TP/FP/FN=79888/26863/31192，SD=0；结果 SHA256=`f55c76ac4d9124b60de1c370e207e8789a21a6d54b2788c36eac7372e2b84758`。
+- clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、长序列精确分块、逐序列计数和三次预测一致性全部通过；raw F1=0.7390448979，clean 与 raw 的样本集合不同，差值仅作敏感性对照。
+- 当前 clean 6/8，TS0 正在接续，bpRNA-new 后运行；raw+clean 与 SOTA 仍未验收。
