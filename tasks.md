@@ -1,6 +1,18 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型、主图与大组会；活跃清单 `round40-prism-group-meeting-v1`）**
+> **当前执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
+>
+> 唯一合同：`docs/plans/2026-11-03-prism-round38-revision.md`。
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A184 | 名称、BPfold 对照与事实边界 | PRISM=Physics-guided RNA Interaction Structure Model；BPfold 仅称强基线；只展示 xens2，不虚构单 checkpoint | 规范已冻结 |
+> | T-A185 | CHANRG baseline 补测 | BPfold/MXfold2/EternaFold 四 split×3 推理与独立计数；预测、哈希、mean/SD 齐全 | 待执行 |
+> | T-A186 | 原图代码重绘主图 1/2/5/9 | 保留原形式；删 plana/r2d；主图 1 用新 BPfold，主图 9 加新 baseline；数值回溯源 | 待执行 |
+> | T-A187 | 复制 round38 修改与补充 | 原稿不覆盖；背景/架构/损失/数据/结论完整；删除迁移和 TODO；每页中文演讲备注 | 待执行 |
+> | T-A188 | 最终验收与同步 | 原始预测→复算→图→PPT 一致；manifest、字体、备注、渲染、PPT/PDF 页数全通过 | 待执行 |
+>
+> **历史执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型、主图与大组会；活跃清单 `round40-prism-group-meeting-v1`）**
 >
 > 唯一详细合同：`docs/plans/2026-11-03-prism-group-meeting.md`。
 >
@@ -54,6 +66,8 @@
 > **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 6 项测试和真实逐字节复算，统一 xens2 已接入，阶段 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；ArchiveII 的 len≤600 结果单列，TS2 全交集为空，保留两两 n，不排最终 SOTA。
 >
 > **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。xens2 全长 ArchiveII 1107 条三次已完成，F1=0.7333353700、SD=0；Attention2d 分块经 GPU 零误差验证后 RNAformer 已恢复，NB 从 epoch16 续训且未收敛。eFold 官方 `efold_train` 与数据索引已确认，但训练序列未恢复，own-clean 保持 provenance blocked。NB 已到 epoch16 完整 checkpoint，best validation BCE=0.0115394801、bad=0，仍未收敛。
+>
+> **2026-11-03 own-clean 主榜**：新增逐系统原生主榜，80/104 格完成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。每格保留各自 clean n、三次 F1/SD、TP/FP/FN、删除数与哈希；缺项 PENDING、blocked 不写 0 分。最终 8/8 只由完整原生 clean 主榜决定，matched-clean 仅作附加敏感性。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 

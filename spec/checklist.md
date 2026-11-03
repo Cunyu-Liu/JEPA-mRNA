@@ -1,6 +1,14 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型、主图与大组会；活跃清单 `round40-prism-group-meeting-v1`）**
+> **当前执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
+>
+> - [x] T-A184 PRISM 全称与缩写一致；BPfold 只称强基线；只展示 xens2 但不把集成配置虚构成单 checkpoint；合同见 `docs/plans/2026-11-03-prism-round38-revision.md`。
+> - [ ] T-A185 BPfold/MXfold2/EternaFold 的 CHANRG 四 split×3 推理与独立计数复核完成，预测、哈希和 mean/SD 齐全。
+> - [ ] T-A186 主图 1/2/5/9 用原绘图代码重绘，删除 plana/r2d，主图 1 与主图 9 新值逐项回溯源。
+> - [ ] T-A187 round38 原稿复制后修改，背景/架构/损失/数据/结论完整，迁移和 TODO 删除，每页有中文演讲备注。
+> - [ ] T-A188 原始预测→复算→图→PPT 一致；manifest、字体、备注、渲染和 PPT/PDF 页数全部通过。
+>
+> **历史执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型、主图与大组会；活跃清单 `round40-prism-group-meeting-v1`）**
 >
 > - [x] T-A178 PRISM 独立模型定位、四部分架构贡献与 NucleicBERT/迁移退出主线的规范已写入 `docs/plans/2026-11-03-prism-group-meeting.md`。
 > - [x] T-A179 研究背景、12 页科学故事、训练/测评数据表、四项损失公式和辅助项证据边界已写入规范。
@@ -40,6 +48,8 @@
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >
 > **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。xens2 全长 ArchiveII 三次已验收，len≤600 仅保留为历史敏感性；Attention2d 分块已通过 GPU 零误差验证，但 bprna 全板仍未完成。eFold 训练序列并集未恢复，own-clean 不得勾选或套用 TR1c。
+>
+> **own-clean 主榜证据**：80/104 格原生 clean 结果已形成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`；每格 clean n、F1/SD、TP/FP/FN、删除数和哈希齐全。共同 n 仅作敏感性，主榜未全部闭环前不勾选 8/8 或 SOTA。
 >
 > **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
 

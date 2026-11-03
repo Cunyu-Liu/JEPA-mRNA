@@ -4,6 +4,7 @@
 |---|---|---|---|
 | 去污染是主结果的前提 | TR0 的 TestSetB 从旧 clean-181 变为 clean-116；tr1c 的 TS0/ArchiveII 经 80% identity+query coverage 过滤后分别为 713/1107 | 精确重复不足以覆盖同源泄露；逐模型、逐 split 的 clean 集合必须分别构建 | 600 单元和全模型训练语料审计未完成；不能把 raw 复测称为完整 clean，不能用旧 6/8 或 5/8 推断最终胜场 |
 | 三系统 own-clean 已独立复算 | EternaFold、BPfold、MXfold2 各八 split 的数据、审计、三次预测和计数通过；EternaFold bpRNA-new=0.6853840073（n=5388，SD=0） | 可以写 EternaFold 的 0.6854 是三次完整推理均值，不是单次结果或旧 TR1c 敏感性值 | 各模型 clean n 不同，异子集 F1 不直接排 SOTA；最终补同名、同序列、同 GT 的配对敏感性 |
+| 逐系统 own-clean 主榜是唯一主对比 | 主榜 JSON 已有 80/104 格：bpRNA-new xens2=0.553058（n=5386）、BPfold=0.736994（n=5387）、EternaFold=0.685384（n=5388）；ArchiveII xens2=0.733335（n=1107）、BPfold=0.821219（n=731）、EternaFold=0.570048（n=1033）。SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9` | 主榜按各系统自己的 clean 集和 clean n 独立比较，最终 8/8 与 SOTA 只能由完整原生 clean 主板决定 | 仍有 24 格 PENDING，不能提前宣称最终胜场；共同 n 只用于辅助验证差距不是样本集合差异造成 |
 | RNAformer inter-family raw 8/8 | bpRNA-new 三次 F1=0.6559981192，raw 八格独立聚合 SHA256=`9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb`；Rotary 缓存与长序列分块修复均通过验证 | 可以写重复性与长序列工程问题已定位、修复并完成 raw 全板复测 | raw 8/8 不等于 raw+clean 完成；biophysical config 为 `rotary_emb:false`，不套用 inter-family 根因 |
 | xens2 是当前主力 | raw 全板敏感性 5/8、最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先 | 只能作为当前敏感性与短板陈述 | 预注册 clean 参照 6/8 仅是实验合同附注；最终 SOTA 必须由逐模型 clean 三次均值判定 |
 | 新强对手改变攻关门槛 | BPfold 自身训练并集 clean 三次复算：ArchiveII=0.8212189843（n=731）、TS2=0.9494949495（n=3） | ArchiveII 必须面对显著强于旧 xens2 的对照；TS2 可记录直接观测值 | TS2 仅 3 条，禁止只报高 F1 而隐藏 n；其他模型 clean 未齐，暂不写最终排名 |

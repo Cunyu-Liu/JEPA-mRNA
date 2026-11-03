@@ -12373,3 +12373,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 使用与生产一致的 bf16 autocast，对 Attention2d 查询分块和原实现比较 L=100/520/954 的输出，三者均 `torch.equal=True`、max_abs=0.0。
 - GPU 审计 SHA256=`11243db66ab4785eb7dbb443af20a29b6b9cfe6c0b3f5efb73fce266cf53b14c`。该结果补齐此前 fp32 证据，覆盖生产精度路径；不改变预测协议、模型权重或评测阈值。
 - NB persistent 日志已确认 epoch17 正常步进，未再截断；RNAformer 的完整 ArchiveII 结果仍待形成。
+
+
+## §15.385（2026-11-03）逐系统 own-clean 主榜合同落地
+
+- 新增 `aggregate_own_clean_leaderboard_round39.py`，直接读取各系统原生 clean 结果，每格记录 raw_n、clean_n、removed_exact、removed_homology_only、三次 F1/SD、TP/FP/FN、clean/audit/result SHA 和可用权重身份。缺项为 PENDING，blocked 系统单列，绝不写 0 分。
+- 当前 80/104 格完成，状态 `PARTIAL_OWN_CLEAN_LEADERBOARD_NOT_FINAL`；两次逐字节复算 SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。matched-clean 文件仅作附加敏感性，不能替代该主榜。
+- bpRNA-new：xens2 n=5386、F1=0.5530578045；BPfold n=5387、0.7369936721；EternaFold n=5388、0.6853840073；RNAformer-interfam n=5386、0.6560129820。
+- ArchiveII：xens2 n=1107、F1=0.7333353700；BPfold n=731、0.8212189843；EternaFold n=1033、0.5700478608；RNAformer-interfam n=2192、0.7334860511。不同 clean n 是逐模型训练语料去泄露的正常结果，不要求相同。
+- 最终 8/8 与 SOTA 只由完整原生 clean 主榜决定；共同交集仅用于辅助验证差距不是样本集合差异造成。

@@ -1,6 +1,12 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
-> **当前执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型叙事、主图更新与大组会汇报；活跃清单 `round40-prism-group-meeting-v1`）**
+> **当前执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
+>
+> 本轮唯一合同：`docs/plans/2026-11-03-prism-round38-revision.md`。名称改为 **PRISM = Physics-guided RNA Interaction Structure Model**。以 round38 原 PPT 副本修改，保留原图形式和原绘图代码，不沿用上一版新模板。所有图只保留 xens2 一条汇报主线，不展示 plana/r2d；但不得把含三个成员的 xens2 错写成单 checkpoint。
+>
+> BPfold 仅作为当前薄弱项的强基线，不是所有 split 的统一最佳。主图 1 限定为与 BPfold 对照；主图 9 新增 BPfold/MXfold2/EternaFold 的 CHANRG 三次复测。研究背景、完整架构、四项损失、数据集、科学故事和逐页中文演讲备注必须进入最终 PPT。
+
+> **历史执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型叙事、主图更新与大组会汇报；活跃清单 `round40-prism-group-meeting-v1`）**
 >
 > **本轮唯一设计与执行依据**：`docs/plans/2026-11-03-prism-group-meeting.md`。模型工作名为 **PRISM（Physics-informed RNA Structure Model）**，作为完整的序列到结构模型介绍；RiNALMo 仅是表征输入模块，配对交互场、ResNet2D、Turner 先验、约束解码和联合损失共同构成模型主体。对应配置的任务特定可学习参数仍为 812,375，冻结事实如实保留，不再用“只训练一个决策头”概括项目。
 >
@@ -63,6 +69,8 @@
 > **2026-11-03 持久恢复与 matched-clean 口径**：bprna raw ArchiveII 的 OOM 来自三任务并发显存超订，无半成品结果；证据 SHA256=`1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6`，frozen clean 后由远端持久锁断点恢复。NB official_s3 的 SSH 255 中断不记训练失败或收敛；epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，队列仅续剩余 7 个 run。新增 matched-clean 工具分别输出全局和两两交集，名称、序列及实际评分 GT 必须一致，原生截断分组，空交集不得写 F1=0；统一 xens2 已接入，长度排除与原生截断分组，6 项测试通过，阶段复算 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；TS2 全交集为空，最终主板与 SOTA 门不变。
 >
 > **2026-11-03 断点与代码身份合同**：`--resume-runs` 仅用于诊断性去泄露评测，逐 repeat 原子保存并绑定数据、审计、模型、batch 与代码身份；正式独占测速不得使用跨窗口续跑。代码 commit/SHA 在模块加载时固定。旧 HEK 队列作为第三 GPU 任务导致第二次 OOM，已在其子进程结束后暂停；新 ArchiveII 进程带逐 repeat 断点并固定新代码身份，无需旧进程校正，第二次错误栈 SHA256=`45d8f14ee090d2313986aa442f19e817f64f3c52778e0b87f1c8de04bb0c5e4e`。xens2 全长 ArchiveII 1107 条三次已验收，F1=0.7333353700、SD=0；Attention2d 查询分块在 GPU L=100/520/954 与原实现逐元素完全相等，审计 SHA256=`1b266475d92fed3b6b0cb5a8d19344846d4db38d733783b85d4920e74ae0eae1`。eFold 的 `efold_train` 和数据索引 commit 已确认，训练序列并集未恢复前 own-clean 保持 `BLOCKED_PROVENANCE`，不得套用 TR1c。
+>
+> **2026-11-03 own-clean 主榜合同**：最终 8/8 和 SOTA 只由各系统自己的完整 clean 集及 clean n 决定，不要求共同 n。主榜逐格保存 F1 均值/SD、TP/FP/FN、删除数、结果/审计/权重哈希；80/104 格完成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。matched-clean 仅用于附加验证差距不是样本集合差异，不能替代主榜。
 >
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
