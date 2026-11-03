@@ -12454,3 +12454,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - bprna clean TS1/TS2/TS3/hard/TestSetB 已完成三次并独立复算，clean n=11/9/2/3/80，F1=0.8427947598/0.8484848485/0.8157894737/0.3783783784/0.7037363931，SD 全为 0。
 - TS-hard 仅 clean n=3，F1=0.3783783784，TP/FP/FN=7/6/17；必须连同样本量保留，不能隐藏或外推。
 - own-clean 主榜现为 85/104 格，两次逐字节复算 SHA256=`4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1`。clean ArchiveII 正在长序列阶段，TS0/new 尚未完成，不将 bprna 标为 raw+clean 全板。
+
+
+## §15.396（2026-11-04）剩余实验长期监控链
+
+- 新增 `tools/monitor_round39_remaining.sh` 并以 `nohup+flock` 常驻，PID=2793894，日志 `logs/round39_remaining_monitor.log`。仅等待当前 RNAformer 队列，不重复启动 bprna/intra/biophysical。
+- 阶段门：biophysical raw+clean 验收后，own-clean 主榜与 matched-clean 各自动复算两次并逐字节比较；共同交集只作附加敏感性。
+- xens2 全 TS0 B=32 三次正式测速要求无其他 GPU 进程；每 30 秒检查，若外部进程闯入则仅终止自身测速并保存 `xens2_b32_exclusive.interference.log`，不终止其他会话。禁止 resume 拼接正式计时。
+- 独立概率数组不存在时只记 `CALIBRATION_PENDING_INDEPENDENT_PROBABILITY_ARRAYS`，不输出 ECE 或最佳置信度结论。NB 已取消，NLL/融合/单学生已否决，均不进入后续训练队列。

@@ -84,6 +84,8 @@
 >
 > **2026-11-03 bprna raw 8/8**：raw 八 split 三次独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`；raw ArchiveII F1=0.7607306049、SD=0。clean 5/8 已完成，主榜 85/104，SHA256=`4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1`；raw+clean 全板仍未闭环。
 >
+> **2026-11-04 长期监控链**：`tools/monitor_round39_remaining.sh` 常驻，PID=2793894。全变体验收后自动复算 own-clean 与 matched-clean；xens2 全 TS0 B=32 三次测速仅在无其他 GPU 进程时执行，外部闯入仅停止自身并留证。独立概率数组未齐时 ECE 保持 PENDING；NB 和已否决候选不重复训练。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**
