@@ -997,9 +997,9 @@
   },
   {
    "path": "appendix_leakage/round39_matched_clean_sensitivity.json",
-   "sha256": "25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8",
-   "bytes": 271873,
-   "description": "统一 xens2+9 基线八 split 阶段快照：同 GT 全局与两两交集；ArchiveII 的 len≤600 单列，TS2 全交集为空",
+   "sha256": "ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd",
+   "bytes": 253987,
+   "description": "统一 xens2+9 基线八 split 阶段快照：全长 ArchiveII 已覆盖，同 GT 全局与两两交集，TS2 全交集为空",
    "status": "active_partial_matched_sensitivity_not_leaderboard"
   },
   {
@@ -1050,6 +1050,27 @@
    "bytes": 3011,
    "description": "eFold 官方 efold_train 与数据索引 commit 已确认；训练序列并集未恢复，own-clean 保持 provenance blocked",
    "status": "active_blocked_provenance"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_full_archiveii.json",
+   "sha256": "4e9442d42e47de4c294f9ec4264b1c1c18a4640be9d7494504f3c8e3a72ba717",
+   "bytes": 2099085,
+   "description": "统一 xens2 全长 ArchiveII clean 1107 条三次 raw-sequence 结果；F1=0.73333536995，SD=0",
+   "status": "active_complete_full_length_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu.json",
+   "sha256": "1b266475d92fed3b6b0cb5a8d19344846d4db38d733783b85d4920e74ae0eae1",
+   "bytes": 630,
+   "description": "RNAformer Attention2d 查询分块在 RTX4090 L=100/520/954 与原实现逐元素完全相等",
+   "status": "active_gpu_exactness_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_attention2d.log",
+   "sha256": "e8e94f1f6fd1ddba85e26aea3c99811109f3e3e8a94d8f825298622c5a41a610",
+   "bytes": 6166,
+   "description": "Attention2d 未分块导致 12.78GiB 单次申请 OOM 的错误栈；随后查询分块通过 GPU 零误差验证",
+   "status": "active_failure_evidence_fixed_gpu_verified"
   }
  ]
 }

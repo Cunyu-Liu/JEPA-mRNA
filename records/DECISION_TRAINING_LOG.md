@@ -12357,3 +12357,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 固定 `rouskinhf` commit=`955460bd83afe001ac88f1f37a34b0a05f7db320`，源码直接请求 `rouskinlab/efold_train` 的 `data.json`；上传函数默认 `private=True`。镜像在限流重试后返回 HTTP 404 `RepoNotFound`，与私有或撤回数据集边界一致，不能推断为可用公开资产。
 - loader zip SHA256=`8960be38534cea9b63ffa04c6bc5334d0f6deca3b7ae5531523f0a040c762855`，已存 `/teams`。更新 provenance 审计 SHA256=`fbea92305b4a4e172ad57956e903100773a64a5496205cb926344f75d839a117`。
 - 结论不升级为“数据不存在”，只确认当前无未授权公开恢复路径；需要作者授权或官方可验证镜像。停止重复网络尝试，raw 结果保留，own-clean 不伪造。
+
+
+## §15.383（2026-11-03）xens2 全长 ArchiveII 与 Attention2d 分块验收
+
+- **xens2 全长结果**：1107 条 clean ArchiveII 三次 raw-sequence 均完成，F1=**0.7333353699517321**，SD=0，TP/FP/FN=48010/16723/18193，峰值 10,283.427MiB；结果 SHA256=`4e9442d42e47de4c294f9ec4264b1c1c18a4640be9d7494504f3c8e3a72ba717`。逐 repeat sidecar 在最终 PASS 后自动删除，生产断点机制验收通过；并发耗时不作正式速度结论。
+- **全长 matched-clean**：两次逐字节复算 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`。八系统全长共同 n=96，xens2=0.6143929504，低于 BPfold=0.7541611185 和 RNAformer-interfam=0.6418859120；覆盖问题已修复，性能差距仍存在，不写 8/8。
+- **第三次 OOM 根因**：错误栈位于此前未分块的 `Attention2d`，单次申请 12.78GiB；不是旧 AxialAttention 的 64 行块。错误证据 SHA256=`e8e94f1f6fd1ddba85e26aea3c99811109f3e3e8a94d8f825298622c5a41a610`。新增 Attention2d 查询分块，键值对应行且 N_res 完整，输出投影整块执行。
+- **数值与 GPU 验收**：初次实现经单测发现行批维错误，随后 CPU 强制分块/短路径零误差通过；RTX4090 上 L=100/520/954 均与原实现逐元素完全相等，GPU 审计 SHA256=`1b266475d92fed3b6b0cb5a8d19344846d4db38d733783b85d4920e74ae0eae1`。验证通过后 RNAformer 已恢复，未降低长度或精度。
+- **NB**：official_s3 在 epoch16 后训练失败，run.json/QA 均不存在，最后完整 checkpoint 仍为 epoch16、未收敛。旧日志未保留可确认的失败根因，不归因；后续队列改用新的 persistent launch/QA 日志并从 epoch16 恢复，其余 7 个 run 合同不变。

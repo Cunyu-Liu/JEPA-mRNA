@@ -164,7 +164,40 @@ def install_query_chunked_attention(model, threshold=512, block_size=64):
 
         module._multihead_attn = chunked
         patched += 1
+    attention2d_patched = 0
+    for module in model.modules():
+        if type(module).__name__ != "Attention2d":
+            continue
+        original = module.forward
+
+        def chunked_attention2d(pair_act, attention_mask, _original=original, _module=module):
+            if pair_act.size(1) <= threshold:
+                return _original(pair_act, attention_mask)
+            batch_size, n_seq, n_res = pair_act.shape[:3]
+            query, key, value = _module.Wqkv(pair_act).split(_module.model_dim, dim=3)
+            key = key.view(batch_size, n_seq, n_res, _module.num_head, _module.value_dim).permute(0, 1, 3, 4, 2)
+            value = value.view(batch_size, n_seq, n_res, _module.num_head, _module.value_dim).permute(0, 1, 3, 2, 4)
+            outputs = []
+            for start in range(0, n_seq, block_size):
+                stop = min(start + block_size, n_seq)
+                query_part = query[:, start:stop].view(
+                    batch_size, stop - start, n_res, _module.num_head, _module.key_dim).permute(0, 1, 3, 2, 4)
+                attn_weights = torch.matmul(query_part, key[:, start:stop])
+                if _module.softmax_scale:
+                    attn_weights = attn_weights / _module.softmax_scale.to(pair_act.device)
+                if attention_mask is not None:
+                    mask = attention_mask[:, start:stop, None, None, :]
+                    attn_weights = attn_weights.masked_fill(mask, _module.mask_bias)
+                attn_weights = torch.nn.functional.softmax(attn_weights, dim=-1)
+                weighted_avg = torch.matmul(attn_weights, value[:, start:stop]).permute(0, 1, 3, 2, 4)
+                outputs.append(weighted_avg.reshape(
+                    batch_size, stop - start, n_res, _module.num_head * _module.value_dim))
+            return _module.out_proj(torch.cat(outputs, dim=1))
+
+        module.forward = chunked_attention2d
+        attention2d_patched += 1
     return {"threshold": threshold, "block_size": block_size, "modules": patched,
+            "attention2d_modules": attention2d_patched,
             "mode": "exact_query_blocks_above_threshold"}
 
 

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "PASS_ATTENTION2D_QUERY_CHUNK_GPU_EXACT",
+  "device": "NVIDIA GeForce RTX 4090",
+  "device_type": "cuda",
+  "rows": [
+    {
+      "length": 100,
+      "max_abs": 0.0,
+      "exact": true,
+      "attention2d_modules": 1
+    },
+    {
+      "length": 520,
+      "max_abs": 0.0,
+      "exact": true,
+      "attention2d_modules": 1
+    },
+    {
+      "length": 954,
+      "max_abs": 0.0,
+      "exact": true,
+      "attention2d_modules": 1
+    }
+  ],
+  "code_sha256": "f270467ad4aa09c476aabfe64818829a90f49f92f94fb01bea9f84d2fababc95",
+  "code_commit": "06f6dd47ef2351ee4baccc2aad48c189e39a12e4"
+}

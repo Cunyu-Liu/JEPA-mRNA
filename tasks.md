@@ -51,9 +51,9 @@
 >
 > **2026-11-03 当前队列**：inter-family raw+clean 16 格已闭环，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`；RNAformer-bprna 接续。BPfold raw 8/8 已完成，汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`；frozen clean 按锁等待。NB official_s3 已从 epoch 13 完整断点恢复训练，后续独立 CUDA QA，未收敛前不晋级。四套 RNAformer 的 32 个 clean 数据已逐行预验收；并发耗时均非正式速度。
 >
-> **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 6 项测试和真实逐字节复算，统一 xens2 已接入，阶段 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`；ArchiveII 的 len≤600 结果单列，TS2 全交集为空，保留两两 n，不排最终 SOTA。
+> **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 6 项测试和真实逐字节复算，统一 xens2 已接入，阶段 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；ArchiveII 的 len≤600 结果单列，TS2 全交集为空，保留两两 n，不排最终 SOTA。
 >
-> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。xens2 全长 ArchiveII 1107 条三次评测已排入同一高显存锁队列，尚未执行。eFold 官方 `efold_train` 与数据索引已确认，但训练序列未恢复，own-clean 保持 provenance blocked。NB 已到 epoch16 完整 checkpoint，best validation BCE=0.0115394801、bad=0，仍未收敛。
+> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。xens2 全长 ArchiveII 1107 条三次已完成，F1=0.7333353700、SD=0；Attention2d 分块经 GPU 零误差验证后 RNAformer 已恢复，NB 从 epoch16 续训且未收敛。eFold 官方 `efold_train` 与数据索引已确认，但训练序列未恢复，own-clean 保持 provenance blocked。NB 已到 epoch16 完整 checkpoint，best validation BCE=0.0115394801、bad=0，仍未收敛。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 

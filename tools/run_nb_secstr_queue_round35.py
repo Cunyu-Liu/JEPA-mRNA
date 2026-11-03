@@ -87,7 +87,7 @@ def launch(head: str, seed: int, limit: int, out_root: Path, log_dir: Path) -> s
     if limit:
         command.extend(["--limit", str(limit)])
     log_dir.mkdir(parents=True, exist_ok=True)
-    log_path = log_dir / f"{head}_s{seed}.launch.log"
+    log_path = log_dir / f"{head}_s{seed}.persistent.launch.log"
     handle = log_path.open("a")
     _LOG_HANDLES.append(handle)
     handle.write(f"\nSTART {datetime.now(timezone.utc).isoformat()} cmd={' '.join(command)}\n")
@@ -96,7 +96,7 @@ def launch(head: str, seed: int, limit: int, out_root: Path, log_dir: Path) -> s
 
 def run_qa(head: str, seed: int, out_root: Path, log_dir: Path) -> None:
     run_dir = out_root / f"{head}_s{seed}"
-    log_path = log_dir / f"{head}_s{seed}.qa.log"
+    log_path = log_dir / f"{head}_s{seed}.persistent.qa.log"
     with log_path.open("a") as handle:
         completed = subprocess.run(
             [PY, str(TOOLS / "qa_nb_secstr_round34.py"), "--run-dir", str(run_dir), "--device", "cuda"],

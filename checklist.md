@@ -35,11 +35,11 @@
 >
 > **BPfold raw 证据**：raw 8/8 独立复算完成，TestSetB=0.7900305273（三次 SD=0），汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`；own-clean 已完成，但不同 clean 子集不得直接排 SOTA。
 >
-> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch16 完整断点 best validation BCE=0.0115394801、bad=0，未收敛，剩余 7 个 run 续训。xens2+9 基线 matched-clean 阶段 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`；ArchiveII len≤600 单列，TS2 全交集为空，不勾选最终主板或 SOTA。
+> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch16 完整断点 best validation BCE=0.0115394801、bad=0，未收敛，剩余 7 个 run 续训。xens2+9 基线 matched-clean 阶段 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；ArchiveII len≤600 单列，TS2 全交集为空，不勾选最终主板或 SOTA。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >
-> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。xens2 全长 ArchiveII 仍在锁队列，len≤600 不得冒充全长覆盖。eFold 训练序列并集未恢复，own-clean 不得勾选或套用 TR1c。
+> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。xens2 全长 ArchiveII 三次已验收，len≤600 仅保留为历史敏感性；Attention2d 分块已通过 GPU 零误差验证，但 bprna 全板仍未完成。eFold 训练序列并集未恢复，own-clean 不得勾选或套用 TR1c。
 >
 > **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
 
