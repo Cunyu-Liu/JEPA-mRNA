@@ -47,7 +47,7 @@
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >
-> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。xens2 全长 ArchiveII 三次已验收，len≤600 仅保留为历史敏感性；Attention2d 分块已通过 GPU 零误差验证，但 bprna 全板仍未完成。eFold 训练序列并集未恢复，own-clean 不得勾选或套用 TR1c。
+> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。xens2 全长 ArchiveII 三次已验收，len≤600 仅保留为历史敏感性；Attention2d 分块已通过 GPU 零误差验证；外部 round41 并发导致 pair_transition OOM，RNAformer 等待外部队列结束，bprna 全板仍未完成。eFold 训练序列并集未恢复，own-clean 不得勾选或套用 TR1c。
 >
 > **own-clean 主榜证据**：80/104 格原生 clean 结果已形成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`；每格 clean n、F1/SD、TP/FP/FN、删除数和哈希齐全。共同 n 仅作敏感性，主榜未全部闭环前不勾选 8/8 或 SOTA。
 >

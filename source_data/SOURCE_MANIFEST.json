@@ -1085,6 +1085,13 @@
    "bytes": 84946,
    "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；80/104 格完成，交集仅作敏感性",
    "status": "active_partial_own_clean_leaderboard_not_final"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_pair_transition.log",
+   "sha256": "880cef7990e599522dc5f4357c81a2f80e158cd3d5de9a7129f2782fdd16555c",
+   "bytes": 6227,
+   "description": "外部 round41 BPfold/MXfold2 与 NB 并发导致 pair_transition OOM；不终止外部任务，RNAformer 等待恢复",
+   "status": "active_failure_evidence_waiting_external_queue"
   }
  ]
 }

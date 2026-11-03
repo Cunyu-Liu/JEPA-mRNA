@@ -12382,3 +12382,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - bpRNA-new：xens2 n=5386、F1=0.5530578045；BPfold n=5387、0.7369936721；EternaFold n=5388、0.6853840073；RNAformer-interfam n=5386、0.6560129820。
 - ArchiveII：xens2 n=1107、F1=0.7333353700；BPfold n=731、0.8212189843；EternaFold n=1033、0.5700478608；RNAformer-interfam n=2192、0.7334860511。不同 clean n 是逐模型训练语料去泄露的正常结果，不要求相同。
 - 最终 8/8 与 SOTA 只由完整原生 clean 主榜决定；共同交集仅用于辅助验证差距不是样本集合差异造成。
+
+
+## §15.386（2026-11-03）外部 round41 并发与 pair_transition OOM
+
+- Attention2d 修复后，ArchiveII 在后续 `pair_transition` 再次 OOM。错误时 NB 占 10.27GiB，外部 round41 BPfold 占 9.21GiB、MXfold2 占 0.70GiB，当前 RNAformer 已分配 8.73GiB 并再需 3.44GiB。错误栈 SHA256=`880cef7990e599522dc5f4357c81a2f80e158cd3d5de9a7129f2782fdd16555c`，无结果 JSON。
+- 这次不是 Attention2d 数值问题，也不能只排查 HEK。确认外部 round41 父队列仍在运行，不终止其他会话任务；RNAformer 改为等待 BPfold 父进程 2619409 和 MXfold2 父进程 2619411 全部退出后，再由持久锁恢复。
+- NB official_s3 已完成 step 11900 并进入验证阶段，最新完整 checkpoint 仍是 epoch16；epoch17 validation 尚未原子写盘，不提前记录验证值或收敛。own-clean 主榜继续 80/104 格。
