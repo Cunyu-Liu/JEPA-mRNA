@@ -12278,3 +12278,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - frozen NucleicBERT 官方 B=2、首 598nt 的 raw+RNAStrAlign/TR0 专属 clean 共 16 格均完成三次推理；非空格 SD=0，clean ArchiveII n=194、38 条截断、F1=0.3301548739750987。raw+clean 独立聚合两次逐字节一致，SHA256=`ad16e32289ab282ac2b85df1d70f1dcf47684abe33b397f7f23188ffcc9b30a8`。原 shell 在 `exec flock` 后未执行聚合行，按预定手动命令生成正式汇总，不重跑 GPU。
 - frozen 释放显存后，RNAformer 旧 21GiB 预检在 free=12.850GiB 时 fail-closed，未启动计算。实测当时仅一个 NB 进程占 10,516MiB、空闲 13,550MiB，而已验收 RNAformer 三次峰值均为 12,879.656MiB；将 bprna/variant 预检改为 12GiB，CUDA 不可用仍硬失败。恢复后 inter-family 聚合哈希保持一致，bprna 仅补缺失格，不重算已完成结果。
 - 当前最多 NB 与 RNAformer 两个 GPU 计算任务并行；不再引入第三个高显存任务。该调整只针对资源调度，正式独占测速合同不变。
+
+
+## §15.372（2026-11-03）逐 repeat 断点与运行时代码身份保护
+
+- `speed_end_to_end_4090.py` 新增显式 `--resume-runs`：每个 repeat 原子保存 runs 与预测，sidecar 标为 `PARTIAL_RUNS_NOT_SCIENTIFIC_RESULT`；数据、clean 审计、batch、模型报告、代码 SHA 或预测哈希不一致均硬失败，最终 PASS 后删除 sidecar。仅在 round39 去泄露诊断队列启用，正式独占测速不跨窗口拼接计时。
+- 4 项断点测试及其与 matched-clean 的 9 项组合测试通过；旧 inter-family TS1 预测重新计算 digest=`1c5a3d42d86be63ac8ee69970cf1f1e68be4021bc36ef48aada6f099d9f0a1fc`，与历史三次哈希完全一致。生产 GPU 断点恢复尚未形成完整新结果，不提前写工程验收闭环。
+- 评测器现改为模块加载时固定 `CODE_SHA256/CODE_COMMIT`，避免长任务运行期间磁盘编辑改变执行身份。当前 bprna raw ArchiveII 旧进程启动于 resume 功能之前，已固定实际运行 commit=`2708e774b2d5f76559e984a80eb8e71bcb749ebe`、code SHA256=`5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52`，pin 审计 SHA256=`0496632ac2937f57af2970972737e4ba84c94bf1de67518529d07e99fceb66f5`。结果形成后只校正 protocol 两项代码身份，原文件备份且其余字段逐项不变；校正前不进入全板汇总。
+- NB official_s3 的 checkpoint 仍为 epoch14、未 early-stop；进程有 CPU/GPU 活动，但日志截断不能作为收敛或 epoch 进度证据，继续以原子 checkpoint/history 验收。

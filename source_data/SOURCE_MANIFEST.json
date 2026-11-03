@@ -1015,6 +1015,13 @@
    "bytes": 11451,
    "description": "frozen NucleicBERT 官方 B=2 首598nt raw+专属 clean 各八 split 三次独立聚合",
    "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_execution_identity.json",
+   "sha256": "0496632ac2937f57af2970972737e4ba84c94bf1de67518529d07e99fceb66f5",
+   "bytes": 875,
+   "description": "运行中 bprna ArchiveII 的启动 commit/code SHA 固定；后续仅允许校正两项代码身份元数据",
+   "status": "active_running_process_identity_pinned"
   }
  ]
 }

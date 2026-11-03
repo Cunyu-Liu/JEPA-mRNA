@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "status": "RUNNING_PROCESS_CODE_IDENTITY_PINNED",
+  "pid": 2567520,
+  "process_command": "2567520 /root/miniconda3/envs/lucaone/bin/python tools/speed_end_to_end_4090.py --model rnaformer --batch-size 1 --repeats 3 --allow-long --data /root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl --out /teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/raw/archiveii_embok_clean.json",
+  "code_commit": "2708e774b2d5f76559e984a80eb8e71bcb749ebe",
+  "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52",
+  "reason": "process loaded pre-resume implementation; later disk edits must not change its execution identity",
+  "correction_scope": "protocol.code_sha256 and protocol.code_commit only; predictions/runs/timing immutable",
+  "created_unix": 1793681174.6448746
+}

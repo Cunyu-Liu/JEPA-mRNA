@@ -52,6 +52,43 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+CODE_SHA256 = sha256_file(Path(__file__).resolve())
+CODE_COMMIT = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
+
+
+def atomic_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    temporary.replace(path)
+
+
+def prediction_digest(records: list[dict], predictions: list) -> str:
+    canonical = json.dumps([{"name": row["name"], "pairs": pred}
+                            for row, pred in zip(records, predictions)], separators=(",", ":")).encode()
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def save_partial_runs(path: Path, identity: dict, runs: list[dict], prediction_runs: list) -> None:
+    assert len(runs) == len(prediction_runs) and runs
+    atomic_json(path, {"schema_version": 1, "status": "PARTIAL_RUNS_NOT_SCIENTIFIC_RESULT",
+                       "identity": identity, "runs": runs, "prediction_runs": prediction_runs})
+
+
+def load_partial_runs(path: Path, identity: dict, records: list[dict]) -> tuple[list[dict], list]:
+    if not path.is_file():
+        return [], []
+    payload = json.loads(path.read_text())
+    assert payload["status"] == "PARTIAL_RUNS_NOT_SCIENTIFIC_RESULT"
+    assert payload["identity"] == identity, f"partial run identity mismatch: {path}"
+    runs, prediction_runs = payload["runs"], payload["prediction_runs"]
+    assert 0 < len(runs) == len(prediction_runs) <= identity["repeats"]
+    for repeat, (run, predictions) in enumerate(zip(runs, prediction_runs)):
+        assert run["repeat"] == repeat and len(predictions) == len(records)
+        assert run["predictions_sha256"] == prediction_digest(records, predictions)
+    return runs, prediction_runs
+
+
 def load_r2d_head(device: torch.device, weights: Path = R2D_CKPT):
     state = torch.load(weights, map_location="cpu", weights_only=False)
     fields = TrainConfig.__dataclass_fields__
@@ -313,13 +350,11 @@ def run_once(models: dict, records: list[dict], batch_size: int, device: torch.d
     for row, pred_list in zip(records, predictions):
         pred, gt = set(pred_list), row["gt"]
         macro.append(2 * len(pred & gt) / max(1, 2 * len(pred & gt) + len(pred - gt) + len(gt - pred)))
-    canonical = json.dumps([{"name": row["name"], "pairs": pred} for row, pred in zip(records, predictions)],
-                           separators=(",", ":")).encode()
     return {"n_sequences": len(records), "n_timed": n_timed, "timed_wall_s": timed_s,
             "throughput_seq_per_s": n_timed / timed_s if timed_s else 0.0,
             "strict_micro_f1": f1, "strict_macro_f1": float(np.mean(macro)),
             "tp": tp, "fp": fp, "fn": fn,
-            "predictions_sha256": hashlib.sha256(canonical).hexdigest(),
+            "predictions_sha256": prediction_digest(records, predictions),
             "predictions": predictions}
 
 
@@ -337,6 +372,7 @@ def main() -> int:
     parser.add_argument("--data", type=Path, default=DEFAULT_DATA)
     parser.add_argument("--allow-long", action="store_true")
     parser.add_argument("--clean-audit", type=Path)
+    parser.add_argument("--resume-runs", action="store_true")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if not torch.cuda.is_available():
@@ -379,9 +415,16 @@ def main() -> int:
         return 0
     models = load_models(args.model, device, args.rnaformer_weights, args.rnaformer_config,
                          args.r2d_weights, args.plana_weights)
-    runs = []
-    predictions = None
-    for repeat in range(args.repeats):
+    identity = {"model": args.model, "batch_size": args.batch_size, "repeats": args.repeats,
+                "data_sha256": data_sha256,
+                "clean_audit_sha256": sha256_file(args.clean_audit) if args.clean_audit else None,
+                "n_sequences": len(records), "model_report": models.get("report"),
+                "code_sha256": CODE_SHA256}
+    partial_path = args.out.with_suffix(args.out.suffix + ".partial.json")
+    runs, prediction_runs = load_partial_runs(partial_path, identity, records) if args.resume_runs else ([], [])
+    if runs:
+        print(f"RESUME_RUNS model={args.model} completed={len(runs)} total={args.repeats}", flush=True)
+    for repeat in range(len(runs), args.repeats):
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats()
         result = run_once(models, records, args.batch_size, device)
@@ -389,9 +432,13 @@ def main() -> int:
         result["repeat"] = repeat
         result["peak_memory_mib"] = torch.cuda.max_memory_allocated() / 2**20
         runs.append(result)
+        prediction_runs.append(predictions)
+        if args.resume_runs:
+            save_partial_runs(partial_path, identity, runs, prediction_runs)
         print(f"RUN model={args.model} B={args.batch_size} repeat={repeat} "
               f"F1={result['strict_micro_f1']:.6f} seq/s={result['throughput_seq_per_s']:.3f} "
               f"peakMiB={result['peak_memory_mib']:.0f}", flush=True)
+    predictions = prediction_runs[-1]
     expected = EXPECTED_F1[args.model]
     if reference_protocol:
         for run in runs:
@@ -400,7 +447,6 @@ def main() -> int:
     if len({run["predictions_sha256"] for run in runs}) != 1:
         raise RuntimeError("predictions are not invariant across repeated runs")
     throughput = statistics.median(run["throughput_seq_per_s"] for run in runs)
-    commit = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
     if args.max_sequences:
         sample_scope = "engineering_smoke_subset_not_scientific_result"
     elif length_filtered_count:
@@ -418,14 +464,15 @@ def main() -> int:
             "n_length_filtered": length_filtered_count, "batch_size": args.batch_size,
             "sample_scope": sample_scope,
             "repeats": args.repeats, "warmup_batches_per_repeat": 1,
+            "resume_runs": args.resume_runs,
             "scope": "raw sequence -> tokenization -> encoder -> task head -> required decode -> prediction scoring input",
             "cached_embeddings": False,
             "expected_f1": expected if reference_protocol else None,
             "f1_tolerance": args.f1_tolerance if reference_protocol else None,
             "f1_gate": "reference_TS0" if reference_protocol else "not_applicable_custom_or_smoke",
-            "code_sha256": sha256_file(Path(__file__).resolve()),
+            "code_sha256": CODE_SHA256,
             "model_report": models.get("report"),
-            "code_commit": commit,
+            "code_commit": CODE_COMMIT,
         },
         "throughput_median_seq_per_s": throughput,
         "throughput_runs_seq_per_s": [run["throughput_seq_per_s"] for run in runs],
@@ -433,11 +480,12 @@ def main() -> int:
         "runs": runs,
         "predictions": [{"name": row["name"], "pairs": pred} for row, pred in zip(records, predictions)],
     }
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    atomic_json(args.out, payload)
     checked = json.loads(args.out.read_text(encoding="utf-8"))
     assert checked["status"] == "PASS" and checked["protocol"]["device_type"] == "cuda"
     assert checked["protocol"]["cached_embeddings"] is False
+    if args.resume_runs:
+        partial_path.unlink()
     print(f"SPEED_E2E_PASS model={args.model} B={args.batch_size} median_seq_per_s={throughput:.3f} out={args.out}", flush=True)
     return 0
 

@@ -40,6 +40,8 @@
 >
 > **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 5 项测试和真实逐字节复算，阶段 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`；TS2 全交集为空，保留两两 n，不排最终 SOTA。
 >
+> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。bprna ArchiveII 旧进程已固定启动 commit/SHA，结果只校正两项代码身份并保留原件，校正前不聚合。NB checkpoint 仍为 epoch14，未收敛。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**

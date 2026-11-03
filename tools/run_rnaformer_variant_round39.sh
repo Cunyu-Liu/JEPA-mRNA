@@ -53,7 +53,7 @@ PY
         fi
         "$python" tools/speed_end_to_end_4090.py --model rnaformer \
             --rnaformer-weights "$weights" --rnaformer-config "$config" \
-            --batch-size 1 --repeats 3 --allow-long --data "$data" "${audit[@]}" --out "$out" \
+            --batch-size 1 --repeats 3 --resume-runs --allow-long --data "$data" "${audit[@]}" --out "$out" \
             > "logs/round39_clean_benchmark/rnaformer_${variant}_${mode}_${split}.log" 2>&1
     done
 done
