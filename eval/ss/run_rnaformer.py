@@ -234,7 +234,7 @@ def build_model(args):
     for module in rotary_modules:
         module.cache_if_possible = False
     load_info["rotary_cache_disabled_modules"] = len(rotary_modules)
-    load_info["query_chunked_attention"] = install_query_chunked_attention(model, block_size=16)
+    load_info["query_chunked_attention"] = install_query_chunked_attention(model, threshold=256, block_size=16)
     return model, load_info
 
 

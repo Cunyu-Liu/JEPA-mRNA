@@ -1060,7 +1060,7 @@
   },
   {
    "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu.json",
-   "sha256": "2e77c19fa402d9b79f8be6f0b86b75e70805456ad0cb26ad951d38d14c0cc28f",
+   "sha256": "d193701b3c657a177ba5b83ea85ce1fbe0f1efc3a964333a135041717ecaaec6",
    "bytes": 630,
    "description": "RNAformer Attention2d 查询分块在 RTX4090 L=100/520/954 与原实现逐元素完全相等",
    "status": "active_gpu_exactness_verified"
@@ -1074,7 +1074,7 @@
   },
   {
    "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu_bf16.json",
-   "sha256": "c39cb8cf2a607b357baa5e47a9766cf3fa1b7049dcd564010a57458c904670f7",
+   "sha256": "132c43f756c2c6a924e7eb6a1c23ec8c00bf592bb9a42862fa6be13346f6d76c",
    "bytes": 667,
    "description": "Attention2d 查询分块在生产 bf16 autocast 下 L=100/520/954 与原实现逐元素完全相等",
    "status": "active_gpu_bf16_exactness_verified"
@@ -1113,6 +1113,13 @@
    "bytes": 3605679,
    "description": "旧 64 行配置的 ArchiveII 单次诊断 F1=0.7607306；不与 16 行新协议混合，不纳入主榜",
    "status": "active_legacy_diagnostic_not_final"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_short_path.log",
+   "sha256": "bf3453591ff45f1b457f8ea4d3b4c931a17f5b861cc7920c69716eb84c8fd7f1",
+   "bytes": 6281,
+   "description": "256–512nt 原路径 OOM；阈值降至 256nt 后 fp32/bf16 分块均通过零误差验证",
+   "status": "active_failure_evidence_threshold256_verified"
   }
  ]
 }

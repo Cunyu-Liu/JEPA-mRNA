@@ -28,7 +28,7 @@ def main():
         with torch.no_grad(), torch.autocast(device_type="cuda", dtype=torch.bfloat16):
             expected = original(pair_act, mask)
         wrapper = type("Wrapper", (), {"modules": lambda self: [attention]})()
-        report = install_query_chunked_attention(wrapper, block_size=16)
+        report = install_query_chunked_attention(wrapper, threshold=256, block_size=16)
         with torch.no_grad(), torch.autocast(device_type="cuda", dtype=torch.bfloat16):
             actual = attention(pair_act, mask)
         max_abs = float((actual - expected).abs().max())

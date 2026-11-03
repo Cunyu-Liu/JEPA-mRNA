@@ -12433,3 +12433,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 发现一个已完成 ArchiveII repeat：F1=0.7607306048550984、TP/FP/FN=92649/23408/34873，峰值 12,573.081MiB，证明全长序列可以跑通。
 - sidecar 的 `model_report.block_size=64`，与当前 16 行实现不同，不能混合组成同一三次协议。已归档为 `diagnostics/archiveii_block64_repeat0.json`，SHA256=`949d0213f70fba6643a0ef75271df985ac144565379117412b83be35a5a48039`，状态仅为旧配置诊断，不纳入 own-clean 主榜。
 - 16 行实现将从 repeat0 开始，避免跨配置拼接；动态显存门尚未放行，尚无新三次结果。
+
+
+## §15.393（2026-11-03）分块阈值降至 256nt 覆盖短路径 OOM
+
+- 16 行实现随后在原 `pair_act.size(1)<=512` 路径发生 OOM，单次再需 1.96GiB，证明仅缩小 block_size 仍不能覆盖 256–512nt 区间。错误证据 SHA256=`bf3453591ff45f1b457f8ea4d3b4c931a17f5b861cc7920c69716eb84c8fd7f1`。
+- 将分块阈值降为 256nt，block_size=16 不变。CPU 单测及 RTX4090 fp32/bf16 在 L=100/520/954 均与原实现逐元素完全相等，审计 SHA256=`d193701b3c657a177ba5b83ea85ce1fbe0f1efc3a964333a135041717ecaaec6`、`132c43f756c2c6a924e7eb6a1c23ec8c00bf592bb9a42862fa6be13346f6d76c`。
+- 动态显存门已恢复，仍要求空闲≥12GiB 才启动；新协议尚未形成完整三次结果，不把旧 64 行 repeat 或单次诊断并入主榜。
