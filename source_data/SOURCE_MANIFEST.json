@@ -1060,7 +1060,7 @@
   },
   {
    "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu.json",
-   "sha256": "1b266475d92fed3b6b0cb5a8d19344846d4db38d733783b85d4920e74ae0eae1",
+   "sha256": "2e77c19fa402d9b79f8be6f0b86b75e70805456ad0cb26ad951d38d14c0cc28f",
    "bytes": 630,
    "description": "RNAformer Attention2d 查询分块在 RTX4090 L=100/520/954 与原实现逐元素完全相等",
    "status": "active_gpu_exactness_verified"
@@ -1074,7 +1074,7 @@
   },
   {
    "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu_bf16.json",
-   "sha256": "11243db66ab4785eb7dbb443af20a29b6b9cfe6c0b3f5efb73fce266cf53b14c",
+   "sha256": "c39cb8cf2a607b357baa5e47a9766cf3fa1b7049dcd564010a57458c904670f7",
    "bytes": 667,
    "description": "Attention2d 查询分块在生产 bf16 autocast 下 L=100/520/954 与原实现逐元素完全相等",
    "status": "active_gpu_bf16_exactness_verified"
@@ -1099,6 +1099,13 @@
    "bytes": 605,
    "description": "用户取消 NucleicBERT 原论文下游二级结构训练；official_s3 epoch19 断点保留，official_s4/JEV 五种子取消，主 benchmark 基线保留",
    "status": "active_cancelled_by_user"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_outproj.log",
+   "sha256": "9cd03a4e00e9b9412eed8a244b55979791cffec3f712bec9de9e35fe32b72836",
+   "bytes": 6570,
+   "description": "外部任务动态抬升显存导致 out_proj 882MiB 缺口；Attention2d 已改为 16 行查询分块并通过零误差验证",
+   "status": "active_failure_evidence_block16_verified"
   }
  ]
 }

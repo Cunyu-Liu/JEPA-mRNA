@@ -12419,3 +12419,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - official_s3 最后完整 checkpoint 已推进到 epoch19：best_epoch=19、best_validation_BCE=0.011365990138513294、bad=0、early_stopped=False；run.json/qa.json 不存在，未收敛、未 QA。用户取消优先于继续训练合同，不将未收敛写成失败或完成。
 - official_s0–s2 的既有 PASS 结果、全部 checkpoint、embedding 和日志均保留，不删除数据或权重。T-A168 及 NB 原论文五种子聚合后续状态统一为 `CANCELLED_BY_USER`，不再列为待办或最终验收前置条件。
 - **范围区分**：取消的是原论文下游训练/评测线；主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线结果及后续对照保留，不因本次取消删除或排除。
+
+
+## §15.391（2026-11-03）动态并行门与 16 行 Attention2d 分块
+
+- NB 取消后实测空闲显存一度为 20.73GiB，满足 12GiB 硬门，RNAformer 已并行恢复；随后其他会话的两个 xens2 任务动态抬升占用，生产在 out_proj 处出现 882MiB 缺口，未生成结果。不能据一次 preflight 假设后续资源不变。
+- 将 Attention2d 查询块从 64 降为 16 以降低中间显存，输出投影仍整块执行。CPU 单测及 RTX4090 fp32/bf16 在 L=100/520/954 均与原实现逐元素完全相等，审计 SHA256=`2e77c19fa402d9b79f8be6f0b86b75e70805456ad0cb26ad951d38d14c0cc28f`、`c39cb8cf2a607b357baa5e47a9766cf3fa1b7049dcd564010a57458c904670f7`。
+- out_proj 错误证据 SHA256=`9cd03a4e00e9b9412eed8a244b55979791cffec3f712bec9de9e35fe32b72836`。最新一次启动预检时空闲仅 1.47GiB，确实无法安全并行；改为动态显存门，达到 12GiB 即启动，不再等待固定 PID，也不终止其他会话任务。

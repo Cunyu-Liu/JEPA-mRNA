@@ -6,12 +6,12 @@
 >
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
-> | T-A189 | Rfam 全模型与无需重训消融 | 10,790 条三次预测；Turner=0/DP→greedy；INF、micro/macro F1、P/R、n、mean/SD 与哈希齐全 | 合同已写，未启动 |
-> | T-A190 | macro-F1 分布与完整指标 | median/IQR、INF/P/R 与 micro/macro 分列；PDB 小样本不合并 | 合同已写，未启动 |
-> | T-A191 | 置信度与风险覆盖 | Pearson、Spearman、95%CI、ECE、risk–coverage；VL0 决定阈值；不复制 BPfold CI 系数 | 合同已写，未启动 |
-> | T-A192 | 预注册结构案例 | 按中位数和 10%/90% 分位选样；GT/PRISM/BPfold 的 TP/FP/FN 与长程配对一致；不挑样 | 合同已写，未启动 |
-> | T-A193 | 新证据入图与汇报 | 仅独立复算通过的结果入图；源数据、图、PPT 和备注一致；不与 CHANRG 混写 | 待前序实验完成 |
-> | T-A194 | 八任务及后续 OOD 的分组表图 | A=TS0/ArchiveII/TestSetB；B=bpRNA-new+Rfam+CHANRG OOD；C=PDB TS1/2/3/hard；分组表图同源，Rfam 与 CHANRG 分表，raw/clean 不混 | 设计已写入合同，待结果完成后实施 |
+> | T-A189 | Rfam 全模型与无需重训消融 | 10,790 条三次预测；Turner=0/DP→greedy；INF、micro/macro F1、P/R、n、mean/SD 与哈希齐全 | GPU 队列执行中；初次 OOM 已留档，失败项串行补跑；尚无验收结果 |
+> | T-A190 | macro-F1 分布与完整指标 | median/IQR、INF/P/R 与 micro/macro 分列；PDB 小样本不合并 | 八 split 与 BPfold 指标已复算；待加入 Rfam |
+> | T-A191 | 置信度与风险覆盖 | Pearson、Spearman、95%CI、ECE、risk–coverage；VL0 决定阈值；不复制 BPfold CI 系数 | 八 split 已完成；AURC 升序积分修正并复核；不虚构 Rfam confidence |
+> | T-A192 | 预注册结构案例 | 按中位数和 10%/90% 分位选样；GT/PRISM/BPfold 的 TP/FP/FN 与长程配对一致；不挑样 | 分位选样与弧坐标已修正，源数据和渲染 QA 通过 |
+> | T-A193 | 新证据入图与汇报 | 仅独立复算通过的结果入图；源数据、图、PPT 和备注一致；不与 CHANRG 混写 | A/C、置信度与案例图完成；B 组与 PPT 待新结果验收 |
+> | T-A194 | 八任务及后续 OOD 的分组表图 | A=TS0/ArchiveII/TestSetB；B=bpRNA-new+Rfam+CHANRG OOD；C=PDB TS1/2/3/hard；分组表图同源，Rfam 与 CHANRG 分表，raw/clean 不混 | A/C 图和同源表图脚本完成；B 组待结果 |
 >
 > **历史执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
 >
@@ -20,9 +20,9 @@
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A184 | 名称、BPfold 对照与事实边界 | PRISM=Physics-guided RNA Interaction Structure Model；BPfold 仅称强基线；只展示 xens2，不虚构单 checkpoint | 规范已冻结 |
-> | T-A185 | CHANRG baseline 补测 | BPfold/MXfold2/EternaFold 四 split×3 推理与独立计数；预测、哈希、mean/SD 齐全 | 待执行 |
-> | T-A186 | 原图代码重绘主图 1/2/5/9 | 保留原形式；删 plana/r2d；主图 1 用新 BPfold，主图 9 加新 baseline；数值回溯源 | 待执行 |
-> | T-A187 | 复制 round38 修改与补充 | 原稿不覆盖；背景/架构/损失/数据/结论完整；删除迁移和 TODO；每页中文演讲备注 | 待执行 |
+> | T-A185 | CHANRG baseline 补测 | BPfold/MXfold2/EternaFold 四 split×3 推理与独立计数；预测、哈希、mean/SD 齐全 | EternaFold 4/4；MXfold2 GenF 完成、其余续跑；BPfold GPU 排队；ID bug 已修复 |
+> | T-A186 | 原图代码重绘主图 1/2/5/9 | 保留原形式；删 plana/r2d；主图 1 用新 BPfold，主图 9 加新 baseline；数值回溯源 | 主图 1/2/5 完成；主图 9 待基线齐全 |
+> | T-A187 | 复制 round38 修改与补充 | 原稿不覆盖；背景/架构/损失/数据/结论完整；删除迁移和 TODO；每页中文演讲备注 | 16 页预览稿与逐页备注完成；待 Rfam 页和最终主图 9 |
 > | T-A188 | 最终验收与同步 | 原始预测→复算→图→PPT 一致；manifest、字体、备注、渲染、PPT/PDF 页数全通过 | 待执行 |
 >
 > **历史执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型、主图与大组会；活跃清单 `round40-prism-group-meeting-v1`）**
@@ -78,7 +78,7 @@
 >
 > **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 6 项测试和真实逐字节复算，统一 xens2 已接入，阶段 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；ArchiveII 的 len≤600 结果单列，TS2 全交集为空，保留两两 n，不排最终 SOTA。
 >
-> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。xens2 全长 ArchiveII 1107 条三次已完成，F1=0.7333353700、SD=0；Attention2d 分块经 GPU 零误差验证后，外部 round41 并发又致 pair_transition OOM；RNAformer 改为等待外部 BPfold/MXfold2 父进程结束，不终止其他会话。NB 从 epoch16 续训且未收敛。eFold 官方 `efold_train` 与数据索引已确认，但训练序列未恢复，own-clean 保持 provenance blocked。按用户最新指令，NB 原论文下游 official/JEV 五种子任务已取消：official_s3 止于 epoch19 完整 checkpoint（best validation BCE=0.0113659901、未收敛），official_s4/JEV s0–s4 不再启动；既有结果保留，T-A168 不再作为验收前置。主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线保留。
+> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。xens2 全长 ArchiveII 1107 条三次已完成，F1=0.7333353700、SD=0；Attention2d 已改为 16 行查询分块，fp32/bf16 均 GPU 零误差；外部任务动态抬升显存导致 out_proj OOM，RNAformer 改为空闲≥12GiB 即启动的动态并行门，不终止其他会话。NB 原论文下游已按用户指令取消。eFold 官方 `efold_train` 与数据索引已确认，但训练序列未恢复，own-clean 保持 provenance blocked。按用户最新指令，NB 原论文下游 official/JEV 五种子任务已取消：official_s3 止于 epoch19 完整 checkpoint（best validation BCE=0.0113659901、未收敛），official_s4/JEV s0–s4 不再启动；既有结果保留，T-A168 不再作为验收前置。主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线保留。
 >
 > **2026-11-03 own-clean 主榜**：新增逐系统原生主榜，80/104 格完成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。每格保留各自 clean n、三次 F1/SD、TP/FP/FN、删除数与哈希；缺项 PENDING、blocked 不写 0 分。最终 8/8 只由完整原生 clean 主榜决定，matched-clean 仅作附加敏感性。
 >

@@ -28,7 +28,7 @@ def main():
         with torch.no_grad():
             expected = original(pair_act, mask)
         wrapper = type("Wrapper", (), {"modules": lambda self: [attention]})()
-        report = install_query_chunked_attention(wrapper)
+        report = install_query_chunked_attention(wrapper, block_size=16)
         with torch.no_grad():
             actual = attention(pair_act, mask)
         max_abs = float((actual - expected).abs().max())
