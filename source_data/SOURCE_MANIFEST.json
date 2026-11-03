@@ -1081,9 +1081,9 @@
   },
   {
    "path": "appendix_leakage/round39_own_clean_leaderboard.json",
-   "sha256": "4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1",
-   "bytes": 89602,
-   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；85/104 格完成，交集仅作敏感性",
+   "sha256": "865a819e2e596b68fe9bb79a47f405ba75cd25b165960caed7fbcfd891a4b797",
+   "bytes": 92433,
+   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；88/104 格完成，交集仅作敏感性",
    "status": "active_partial_own_clean_leaderboard_not_final"
   },
   {
@@ -1134,6 +1134,13 @@
    "bytes": 3774818,
    "description": "RNAformer-bprna raw ArchiveII 三次结果 F1=0.7607306048550984，SD=0",
    "status": "active_complete_raw_archiveii_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_raw_clean_summary.json",
+   "sha256": "4de2c471653dc749c639b2d38c1a2fdd2ae2143d2e41e934ad4d65f5be1026c3",
+   "bytes": 11026,
+   "description": "RNAformer-bprna raw+clean 各八 split 三次独立聚合；256nt/16 行分块协议，16 格全部通过",
+   "status": "active_complete_raw_clean_8_of_8"
   }
  ]
 }

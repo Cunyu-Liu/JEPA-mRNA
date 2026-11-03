@@ -80,7 +80,7 @@
 >
 > **2026-11-03 用户取消 NB 原论文下游任务**：official/JEV 五种子训练线立即取消，official_s3 止于 epoch19 完整 checkpoint（best validation BCE=0.0113659901、early_stopped=False、未 QA），official_s4/JEV s0–s4 不再启动。既有 official_s0–s2、checkpoint、数据和日志全部保留，T-A168 状态改为 `CANCELLED_BY_USER`，不再作为最终验收前置。取消范围不包括主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线。
 >
-> **2026-11-03 bprna raw 8/8**：raw 八 split 三次独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`；raw ArchiveII F1=0.7607306049、SD=0。clean 5/8 已完成，主榜 85/104，SHA256=`4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1`；raw+clean 全板仍未闭环。
+> **2026-11-03 bprna raw 8/8**：raw 八 split 三次独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`；raw ArchiveII F1=0.7607306049、SD=0。bprna raw+clean 16 格已闭环，SHA256=`4de2c471653dc749c639b2d38c1a2fdd2ae2143d2e41e934ad4d65f5be1026c3`；主榜 88/104，SHA256=`865a819e2e596b68fe9bb79a47f405ba75cd25b165960caed7fbcfd891a4b797`。intra/biophysical 接续。
 >
 > **2026-11-04 长期监控合同**：`tools/monitor_round39_remaining.sh` 只监视不重复启动现有 RNAformer 队列，完成后自动进行两次主榜/敏感性复算。正式 xens2 B=32 测速必须无其他 GPU 进程，外部闯入仅停止自身并留证；独立概率数组缺失时 ECE 不得输出结论。NB 和已否决候选不排队。
 >

@@ -6,7 +6,7 @@
 >
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
-> | T-A189 | Rfam 全模型与无需重训消融 | 10,790 条三次预测；Turner=0/DP→greedy；INF、micro/macro F1、P/R、n、mean/SD 与哈希齐全 | GPU 队列执行中；初次 OOM 已留档，失败项串行补跑；尚无验收结果 |
+> | T-A189 | Rfam 全模型与无需重训消融 | 10,790 条三次预测；Turner=0/DP→greedy；INF、micro/macro F1、P/R、n、mean/SD 与哈希齐全 | 已完成：9/9 结果、三次预测一致、INF/F1/P/R 独立复算及两项消融均通过 |
 > | T-A190 | macro-F1 分布与完整指标 | median/IQR、INF/P/R 与 micro/macro 分列；PDB 小样本不合并 | 八 split 与 BPfold 指标已复算；待加入 Rfam |
 > | T-A191 | 置信度与风险覆盖 | Pearson、Spearman、95%CI、ECE、risk–coverage；VL0 决定阈值；不复制 BPfold CI 系数 | 八 split 已完成；AURC 升序积分修正并复核；不虚构 Rfam confidence |
 > | T-A192 | 预注册结构案例 | 按中位数和 10%/90% 分位选样；GT/PRISM/BPfold 的 TP/FP/FN 与长程配对一致；不挑样 | 分位选样与弧坐标已修正，源数据和渲染 QA 通过 |
@@ -20,7 +20,7 @@
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A184 | 名称、BPfold 对照与事实边界 | PRISM=Physics-guided RNA Interaction Structure Model；BPfold 仅称强基线；只展示 xens2，不虚构单 checkpoint | 规范已冻结 |
-> | T-A185 | CHANRG baseline 补测 | BPfold/MXfold2/EternaFold 四 split×3 推理与独立计数；预测、哈希、mean/SD 齐全 | EternaFold 4/4；MXfold2 GenF 完成、其余续跑；BPfold GPU 排队；ID bug 已修复 |
+> | T-A185 | CHANRG baseline 补测 | BPfold/MXfold2/EternaFold 四 split×3 推理与独立计数；预测、哈希、mean/SD 齐全 | EternaFold 4/4、MXfold2 4/4；BPfold GenF 完成、GenC 运行；ID bug 已修复 |
 > | T-A186 | 原图代码重绘主图 1/2/5/9 | 保留原形式；删 plana/r2d；主图 1 用新 BPfold，主图 9 加新 baseline；数值回溯源 | 主图 1/2/5 完成；主图 9 待基线齐全 |
 > | T-A187 | 复制 round38 修改与补充 | 原稿不覆盖；背景/架构/损失/数据/结论完整；删除迁移和 TODO；每页中文演讲备注 | 16 页预览稿与逐页备注完成；待 Rfam 页和最终主图 9 |
 > | T-A188 | 最终验收与同步 | 原始预测→复算→图→PPT 一致；manifest、字体、备注、渲染、PPT/PDF 页数全通过 | 待执行 |
@@ -82,7 +82,7 @@
 >
 > **2026-11-03 own-clean 主榜**：新增逐系统原生主榜，80/104 格完成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。每格保留各自 clean n、三次 F1/SD、TP/FP/FN、删除数与哈希；缺项 PENDING、blocked 不写 0 分。最终 8/8 只由完整原生 clean 主榜决定，matched-clean 仅作附加敏感性。
 >
-> **2026-11-03 bprna raw 8/8**：raw 八 split 三次独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`；raw ArchiveII F1=0.7607306049、SD=0。clean 5/8 已完成，主榜 85/104，SHA256=`4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1`；raw+clean 全板仍未闭环。
+> **2026-11-03 bprna raw 8/8**：raw 八 split 三次独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`；raw ArchiveII F1=0.7607306049、SD=0。bprna raw+clean 16 格已闭环，SHA256=`4de2c471653dc749c639b2d38c1a2fdd2ae2143d2e41e934ad4d65f5be1026c3`；主榜 88/104，SHA256=`865a819e2e596b68fe9bb79a47f405ba75cd25b165960caed7fbcfd891a4b797`。intra/biophysical 接续。
 >
 > **2026-11-04 长期监控链**：`tools/monitor_round39_remaining.sh` 常驻，PID=2793894。全变体验收后自动复算 own-clean 与 matched-clean；xens2 全 TS0 B=32 三次测速仅在无其他 GPU 进程时执行，外部闯入仅停止自身并留证。独立概率数组未齐时 ECE 保持 PENDING；NB 和已否决候选不重复训练。
 >

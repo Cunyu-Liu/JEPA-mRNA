@@ -12462,3 +12462,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 阶段门：biophysical raw+clean 验收后，own-clean 主榜与 matched-clean 各自动复算两次并逐字节比较；共同交集只作附加敏感性。
 - xens2 全 TS0 B=32 三次正式测速要求无其他 GPU 进程；每 30 秒检查，若外部进程闯入则仅终止自身测速并保存 `xens2_b32_exclusive.interference.log`，不终止其他会话。禁止 resume 拼接正式计时。
 - 独立概率数组不存在时只记 `CALIBRATION_PENDING_INDEPENDENT_PROBABILITY_ARRAYS`，不输出 ECE 或最佳置信度结论。NB 已取消，NLL/融合/单学生已否决，均不进入后续训练队列。
+
+
+## §15.397（2026-11-04）bprna raw+clean 16 格闭环与主榜 88/104
+
+- bprna raw+clean 八 split 三次全部通过，汇总 SHA256=`4de2c471653dc749c639b2d38c1a2fdd2ae2143d2e41e934ad4d65f5be1026c3`。clean ArchiveII n=2267、F1=0.7497180603，clean bpRNA-new n=5386、F1=0.4935027488；clean TS0 n=1140、F1=0.7452371612。
+- own-clean 主榜现为 88/104 格，两次逐字节复算 SHA256=`865a819e2e596b68fe9bb79a47f405ba75cd25b165960caed7fbcfd891a4b797`。所有 clean n、TP/FP/FN、SD 和结果哈希均保留，matched-clean 仍仅作附加敏感性。
+- intra-family 与 biophysical 已在原队列接续，长期监控不重复启动；剩余全变体、正式测速和独立概率数组验收未完成。
