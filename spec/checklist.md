@@ -5,9 +5,9 @@
 > - [x] T-A178 PRISM 独立模型定位、四部分架构贡献与 NucleicBERT/迁移退出主线的规范已写入 `docs/plans/2026-11-03-prism-group-meeting.md`。
 > - [x] T-A179 研究背景、12 页科学故事、训练/测评数据表、四项损失公式和辅助项证据边界已写入规范。
 > - [x] T-A180 论文架构图提示词与统一低饱和配色已写入规范；不含层级级联、System-1/2、NucleicBERT 或虚构模块。
-> - [ ] T-A181 主图 1 由 round39 BPfold raw 8 split×3 与 PRISM-xens2 重绘；16 值逐项核对，raw 5/8、单 checkpoint 4/8，三负格及非 matched-clean 边界明确。
-> - [ ] T-A182 交接文档内生成 12 页组会 PPT/PDF；每页一个核心问题，微软雅黑、无溢出/遮挡，研究背景/架构/损失/数据/结果/边界完整，逐页渲染通过。
-> - [ ] T-A183 源 JSON→图→PPT 三通道一致；嵌图与源 PNG 哈希、manifest、三处规范镜像、PPT/PDF 页数及 ZIP 全部通过。
+> - [x] T-A181 主图 1 由 round39 BPfold raw 8 split×3 与 PRISM-xens2 重绘；16 值逐项核对，raw 5/8、单 checkpoint 4/8，三负格及非 matched-clean 边界明确。
+> - [x] T-A182 交接文档内生成 12 页组会 PPT/PDF；每页一个核心问题，微软雅黑、无溢出/遮挡，研究背景/架构/损失/数据/结果/边界完整，逐页渲染通过。
+> - [x] T-A183 源 JSON→图→PPT 三通道一致；嵌图与源 PNG 哈希、manifest、三处规范镜像、PPT/PDF 页数及 ZIP 全部通过；QA 222/222。
 >
 > **历史执行覆盖（2026-11-01，第 39 轮：25 系统逐模型去泄露复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
 >
@@ -39,7 +39,7 @@
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >
-> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。ArchiveII 旧进程启动身份已 pin，代码身份校正与原件逐字段审计未完成前不得聚合或勾选 bprna raw 8/8。
+> **断点与身份证据**：逐 repeat sidecar 的 4 项测试和旧预测 digest 回归通过；正式测速不得拼接续跑。第三 GPU 的旧 HEK 队列已暂停；新 ArchiveII 进程带逐 repeat 断点，完整三次结果与独立复算通过前不得勾选 bprna raw 8/8。
 >
 > **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
 

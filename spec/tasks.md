@@ -9,9 +9,9 @@
 > | T-A178 | PRISM 独立模型定位与范围切换 | 完整模型四部分讲清；RiNALMo 仅作输入；不再称“只训练 head”；NucleicBERT 迁移和下游测评退出主线 | 规范已冻结 |
 > | T-A179 | 科学故事、研究背景、数据集与损失函数 | 12 页顺序与论文顺序一致；四项公式与代码一致；说明架构/损失设计理由及辅助项边界 | 规范已冻结 |
 > | T-A180 | 架构图提示词与统一主图配色 | 提示词含完整张量流、训练/推理边界、颜色与禁用模块；主图共用 PRISM 蓝/物理青绿/对照橙/灰 | 规范已冻结 |
-> | T-A181 | 主图 1 最新数据重绘 | 只用 PRISM-xens2 与 BPfold；16 值回溯源；raw 5/8、单 checkpoint 4/8；三负格与 raw/matched-clean 边界明确 | 待制图与复核 |
-> | T-A182 | 12 页大组会 PPT/PDF | 放交接文档；背景、架构、损失、数据、主结果、消融、速度、置信度、边界齐全；无迁移/TODO/AI 式宣传；逐页渲染通过 | 待制作 |
-> | T-A183 | 三通道验收与交接同步 | 源 JSON→图→PPT 数值一致；嵌图哈希、manifest、三处规范镜像、PPT/PDF 页数与 ZIP/渲染全通过 | 待执行 |
+> | T-A181 | 主图 1 最新数据重绘 | 只用 PRISM-xens2 与 BPfold；16 值回溯源；raw 5/8、单 checkpoint 4/8；三负格与 raw/matched-clean 边界明确 | 已完成：新图与统一源已验收 |
+> | T-A182 | 12 页大组会 PPT/PDF | 放交接文档；背景、架构、损失、数据、主结果、消融、速度、置信度、边界齐全；无迁移/TODO/AI 式宣传；逐页渲染通过 | 已完成：`PRISM_大组会汇报_20261103.pptx/.pdf` |
+> | T-A183 | 三通道验收与交接同步 | 源 JSON→图→PPT 数值一致；嵌图哈希、manifest、三处规范镜像、PPT/PDF 页数与 ZIP/渲染全通过 | 已完成：QA 222/222，报告 `source_data/group_meeting/qa_report.json` |
 >
 > **历史执行覆盖（2026-11-01，第 39 轮：25 系统逐模型去泄露复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
 >
@@ -53,7 +53,7 @@
 >
 > **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 6 项测试和真实逐字节复算，统一 xens2 已接入，阶段 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`；ArchiveII 的 len≤600 结果单列，TS2 全交集为空，保留两两 n，不排最终 SOTA。
 >
-> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。bprna ArchiveII 旧进程已固定启动 commit/SHA，结果只校正两项代码身份并保留原件，校正前不聚合。NB 已到 epoch15 完整 checkpoint，best validation BCE=0.0116319505、bad=0，仍未收敛。
+> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。NB 已到 epoch15 完整 checkpoint，best validation BCE=0.0116319505、bad=0，仍未收敛。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 

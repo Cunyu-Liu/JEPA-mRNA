@@ -1022,6 +1022,27 @@
    "bytes": 875,
    "description": "运行中 bprna ArchiveII 的启动 commit/code SHA 固定；后续仅允许校正两项代码身份元数据",
    "status": "active_running_process_identity_pinned"
+  },
+  {
+   "path": "group_meeting/prism_main_figure_source.json",
+   "sha256": "5ec110149035d6b3e62cded706fa62ef16e06f23d6681b472fa999eda612f221",
+   "bytes": 48337,
+   "description": "PRISM 独立模型与组会主图统一源；主图 1 使用最新 BPfold raw 8 split×3 对照",
+   "status": "active_verified"
+  },
+  {
+   "path": "group_meeting/qa_report.json",
+   "sha256": "2078b4c10d3d830b4753e2fb6b865a67357e4a7be5e11bd0660fd42972b5b42e",
+   "bytes": 23936,
+   "description": "PRISM 组会 PPT/PDF 222 项自动验收报告，全部通过",
+   "status": "active_pass_222_of_222"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_concurrent.log",
+   "sha256": "45d8f14ee090d2313986aa442f19e817f64f3c52778e0b87f1c8de04bb0c5e4e",
+   "bytes": 6137,
+   "description": "旧 HEK 队列作为第三 GPU 任务进入导致第二次 ArchiveII OOM；HEK 已暂停，RNAformer 带逐 repeat 断点恢复",
+   "status": "active_failure_evidence_resumable_retry"
   }
  ]
 }

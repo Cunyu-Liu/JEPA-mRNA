@@ -1,0 +1,1125 @@
+{
+  "status": "PASS",
+  "checks_passed": 222,
+  "checks_total": 222,
+  "font_runs": 164,
+  "paragraphs_1_5_spacing": 164,
+  "minimum_font_pt": 8.0,
+  "slides": 12,
+  "pdf_pages": 12,
+  "pptx_sha256": "f8b56c9cf357b405f146db03634cace555db98e65fdad40932cf853593f728a5",
+  "pdf_sha256": "54af7902115e1e3ce5e8935599294c1a632fa107157bd1147309f6d44381d74e",
+  "source_sha256": "5ec110149035d6b3e62cded706fa62ef16e06f23d6681b472fa999eda612f221",
+  "checks": [
+    {
+      "name": "main_prism_bprna_ts0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_bprna_ts0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_bprna_ts0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_prism_bprna_new",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_bprna_new",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_bprna_new",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_prism_archiveii_embok_clean",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_archiveii_embok_clean",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_archiveii_embok_clean",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_prism_ref_pdb_ts1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_ref_pdb_ts1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_ref_pdb_ts1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_prism_ref_pdb_ts2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_ref_pdb_ts2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_ref_pdb_ts2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_prism_ref_pdb_ts3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_ref_pdb_ts3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_ref_pdb_ts3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_5",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_prism_ref_pdb_ts_hard",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_ref_pdb_ts_hard",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_ref_pdb_ts_hard",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_6",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_prism_testsetb",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_bpfold_testsetb",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_n_testsetb",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_key_order_7",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "main_5_of_8",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "single_4_of_8",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pptx_zip_integrity",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "slide_count_12",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "font_1_1",
+      "pass": true,
+      "detail": "PRISM"
+    },
+    {
+      "name": "font_1_2",
+      "pass": true,
+      "detail": "Physics-informed RNA Structure Model"
+    },
+    {
+      "name": "font_1_3",
+      "pass": true,
+      "detail": "物理信息 RNA 结构决策模型"
+    },
+    {
+      "name": "font_1_4",
+      "pass": true,
+      "detail": "从序列表征到合法结构与置信度：模型、证据与边界"
+    },
+    {
+      "name": "font_1_5",
+      "pass": true,
+      "detail": "大组会汇报  ·  2026-11-03"
+    },
+    {
+      "name": "font_1_6",
+      "pass": true,
+      "detail": "集成配置在实验记录中对应 xens2"
+    },
+    {
+      "name": "font_1_7",
+      "pass": true,
+      "detail": "SEQUENCE → STRUCTURE"
+    },
+    {
+      "name": "font_1_8",
+      "pass": true,
+      "detail": "pair interaction field"
+    },
+    {
+      "name": "font_1_9",
+      "pass": true,
+      "detail": "physics-guided decoding"
+    },
+    {
+      "name": "font_2_10",
+      "pass": true,
+      "detail": "01  研究背景"
+    },
+    {
+      "name": "font_2_11",
+      "pass": true,
+      "detail": "RNA 二级结构预测需要同时解决精度、约束与可信度"
+    },
+    {
+      "name": "font_2_12",
+      "pass": true,
+      "detail": "核心问题：如何把预训练序列表征转化为满足物理规律和全局约束的结构？"
+    },
+    {
+      "name": "font_2_13",
+      "pass": true,
+      "detail": "02"
+    },
+    {
+      "name": "font_2_14",
+      "pass": true,
+      "detail": "热力学方法"
+    },
+    {
+      "name": "font_2_15",
+      "pass": true,
+      "detail": "有物理约束"
+    },
+    {
+      "name": "font_2_16",
+      "pass": true,
+      "detail": "但拟合能力受限"
+    },
+    {
+      "name": "font_2_17",
+      "pass": true,
+      "detail": "Turner 能量与非交叉结构空间提供可解释的归纳偏置。"
+    },
+    {
+      "name": "font_2_18",
+      "pass": true,
+      "detail": "深度学习方法"
+    },
+    {
+      "name": "font_2_19",
+      "pass": true,
+      "detail": "拟合能力强"
+    },
+    {
+      "name": "font_2_20",
+      "pass": true,
+      "detail": "但结构一致性不足"
+    },
+    {
+      "name": "font_2_21",
+      "pass": true,
+      "detail": "逐对独立打分难以表达茎区相关性，跨家族退化也更明显。"
+    },
+    {
+      "name": "font_2_22",
+      "pass": true,
+      "detail": "评测可信度"
+    },
+    {
+      "name": "font_2_23",
+      "pass": true,
+      "detail": "同源重叠会放大成绩"
+    },
+    {
+      "name": "font_2_24",
+      "pass": true,
+      "detail": "不同协议不能直接排名"
+    },
+    {
+      "name": "font_2_25",
+      "pass": true,
+      "detail": "必须先固定训练/测试身份、GT、评分器和模型 checkpoint。"
+    },
+    {
+      "name": "font_2_26",
+      "pass": true,
+      "detail": "PRISM 的研究目标"
+    },
+    {
+      "name": "font_2_27",
+      "pass": true,
+      "detail": "学习配对交互与茎区上下文，同时把物理先验、合法结构和置信度纳入同一个模型。"
+    },
+    {
+      "name": "font_3_28",
+      "pass": true,
+      "detail": "02  模型架构"
+    },
+    {
+      "name": "font_3_29",
+      "pass": true,
+      "detail": "PRISM：表征只是输入，结构决策由完整模型完成"
+    },
+    {
+      "name": "font_3_30",
+      "pass": true,
+      "detail": "架构设计的三个理由：配对间相关性、物理归纳偏置、全局合法性。"
+    },
+    {
+      "name": "font_3_31",
+      "pass": true,
+      "detail": "03"
+    },
+    {
+      "name": "font_3_32",
+      "pass": true,
+      "detail": "PRISM / independent structure decision m"
+    },
+    {
+      "name": "font_3_33",
+      "pass": true,
+      "detail": "A"
+    },
+    {
+      "name": "font_3_34",
+      "pass": true,
+      "detail": "上下文化表征"
+    },
+    {
+      "name": "font_3_35",
+      "pass": true,
+      "detail": "RiNALMo-giga"
+    },
+    {
+      "name": "font_3_36",
+      "pass": true,
+      "detail": "33 layers · 1280-d states"
+    },
+    {
+      "name": "font_3_37",
+      "pass": true,
+      "detail": "输出 h：L × 1280"
+    },
+    {
+      "name": "font_3_38",
+      "pass": true,
+      "detail": "对应配置中冻结"
+    },
+    {
+      "name": "font_3_39",
+      "pass": true,
+      "detail": "B"
+    },
+    {
+      "name": "font_3_40",
+      "pass": true,
+      "detail": "配对交互与二维上下文"
+    },
+    {
+      "name": "font_3_41",
+      "pass": true,
+      "detail": "h_i+h_j · h_i⊙h_j · |h_i−h_j|"
+    },
+    {
+      "name": "font_3_42",
+      "pass": true,
+      "detail": "+ relative offset"
+    },
+    {
+      "name": "font_3_43",
+      "pass": true,
+      "detail": "L × L × 128 pair tensor"
+    },
+    {
+      "name": "font_3_44",
+      "pass": true,
+      "detail": "ResNet2D · 4 blocks"
+    },
+    {
+      "name": "font_3_45",
+      "pass": true,
+      "detail": "single forward"
+    },
+    {
+      "name": "font_3_46",
+      "pass": true,
+      "detail": "C"
+    },
+    {
+      "name": "font_3_47",
+      "pass": true,
+      "detail": "物理引导约束解码"
+    },
+    {
+      "name": "font_3_48",
+      "pass": true,
+      "detail": "learned Turner prior"
+    },
+    {
+      "name": "font_3_49",
+      "pass": true,
+      "detail": "canonical mask · min loop ≥3"
+    },
+    {
+      "name": "font_3_50",
+      "pass": true,
+      "detail": "non-crossing max-product DP"
+    },
+    {
+      "name": "font_3_51",
+      "pass": true,
+      "detail": "→ dot-bracket + confidence"
+    },
+    {
+      "name": "font_3_52",
+      "pass": true,
+      "detail": "任务特定可学习模块 812,375 参数；RiNALMo 是输入编码器，不是 P"
+    },
+    {
+      "name": "font_3_53",
+      "pass": true,
+      "detail": "配对交互场"
+    },
+    {
+      "name": "font_3_54",
+      "pass": true,
+      "detail": "茎区堆叠与局部配对上下文"
+    },
+    {
+      "name": "font_3_55",
+      "pass": true,
+      "detail": "Turner 先验 + 非交叉 DP"
+    },
+    {
+      "name": "font_3_56",
+      "pass": true,
+      "detail": "合法结构 + 配对概率"
+    },
+    {
+      "name": "font_4_57",
+      "pass": true,
+      "detail": "03  联合训练目标"
+    },
+    {
+      "name": "font_4_58",
+      "pass": true,
+      "detail": "四项损失分别约束结构、物理知识、概率评分与校准"
+    },
+    {
+      "name": "font_4_59",
+      "pass": true,
+      "detail": "训练期使用结构分布信息；推理期用 max-product 解码，不计算配分函数。"
+    },
+    {
+      "name": "font_4_60",
+      "pass": true,
+      "detail": "04"
+    },
+    {
+      "name": "font_4_61",
+      "pass": true,
+      "detail": "L = L_NLL + λ_d L_KL + λ_r L_RLCD + λ_c "
+    },
+    {
+      "name": "font_4_62",
+      "pass": true,
+      "detail": "结构 NLL"
+    },
+    {
+      "name": "font_4_63",
+      "pass": true,
+      "detail": "[ log Z(s) − Σ_(i,j∈M_gt) s_ij ] / L"
+    },
+    {
+      "name": "font_4_64",
+      "pass": true,
+      "detail": "优化整条非交叉结构的条件似然；不是独立二分类。"
+    },
+    {
+      "name": "font_4_65",
+      "pass": true,
+      "detail": "热力学蒸馏"
+    },
+    {
+      "name": "font_4_66",
+      "pass": true,
+      "detail": "mean D_KL( p^teacher || σ(s) )"
+    },
+    {
+      "name": "font_4_67",
+      "pass": true,
+      "detail": "学习 ViennaRNA 软配对概率与不确定性；属于辅助项。"
+    },
+    {
+      "name": "font_4_68",
+      "pass": true,
+      "detail": "RLCD 启发目标"
+    },
+    {
+      "name": "font_4_69",
+      "pass": true,
+      "detail": "−mean R(a,p) + β ECE_soft"
+    },
+    {
+      "name": "font_4_70",
+      "pass": true,
+      "detail": "Brier 恰当评分 + 可微分箱，约束概率与真实频率一致。"
+    },
+    {
+      "name": "font_4_71",
+      "pass": true,
+      "detail": "校准 NLL"
+    },
+    {
+      "name": "font_4_72",
+      "pass": true,
+      "detail": "−mean[ y log p_T + (1−y)log(1−p_T) ]"
+    },
+    {
+      "name": "font_4_73",
+      "pass": true,
+      "detail": "优化温度缩放后的概率尺度；与训练后 VL0 仿射分开。"
+    },
+    {
+      "name": "font_4_74",
+      "pass": true,
+      "detail": "训练与推理的边界"
+    },
+    {
+      "name": "font_4_75",
+      "pass": true,
+      "detail": "训练期"
+    },
+    {
+      "name": "font_4_76",
+      "pass": true,
+      "detail": "Z(s) / 精确边际可提供结构分布信息与软教师。"
+    },
+    {
+      "name": "font_4_77",
+      "pass": true,
+      "detail": "推理期"
+    },
+    {
+      "name": "font_4_78",
+      "pass": true,
+      "detail": "canonical mask + 非交叉 max-product DP；无配分函"
+    },
+    {
+      "name": "font_4_79",
+      "pass": true,
+      "detail": "证据边界：蒸馏和 RLCD 的消融效应小且混合，不包装成主要增益来源。"
+    },
+    {
+      "name": "font_5_80",
+      "pass": true,
+      "detail": "04  数据与评测"
+    },
+    {
+      "name": "font_5_81",
+      "pass": true,
+      "detail": "先去污染和固定协议，再比较模型"
+    },
+    {
+      "name": "font_5_82",
+      "pass": true,
+      "detail": "固定 strict micro-F1、canonical-nested GT 与"
+    },
+    {
+      "name": "font_5_83",
+      "pass": true,
+      "detail": "05"
+    },
+    {
+      "name": "font_5_84",
+      "pass": true,
+      "detail": "42,564"
+    },
+    {
+      "name": "font_5_85",
+      "pass": true,
+      "detail": "TR1c 训练序列"
+    },
+    {
+      "name": "font_5_86",
+      "pass": true,
+      "detail": "196"
+    },
+    {
+      "name": "font_5_87",
+      "pass": true,
+      "detail": "VL0 验证序列"
+    },
+    {
+      "name": "font_5_88",
+      "pass": true,
+      "detail": "规范化精确匹配 + MMseqs2"
+    },
+    {
+      "name": "font_5_89",
+      "pass": true,
+      "detail": "identity ≥0.8 · query coverage ≥0.8"
+    },
+    {
+      "name": "font_5_90",
+      "pass": true,
+      "detail": "模型选择只用 VL0；测试集不用于调参或校准。"
+    },
+    {
+      "name": "font_5_91",
+      "pass": true,
+      "detail": "同分布"
+    },
+    {
+      "name": "font_5_92",
+      "pass": true,
+      "detail": "TS0"
+    },
+    {
+      "name": "font_5_93",
+      "pass": true,
+      "detail": "1,288"
+    },
+    {
+      "name": "font_5_94",
+      "pass": true,
+      "detail": "跨家族"
+    },
+    {
+      "name": "font_5_95",
+      "pass": true,
+      "detail": "bpRNA-new"
+    },
+    {
+      "name": "font_5_96",
+      "pass": true,
+      "detail": "5,388"
+    },
+    {
+      "name": "font_5_97",
+      "pass": true,
+      "detail": "传统外部"
+    },
+    {
+      "name": "font_5_98",
+      "pass": true,
+      "detail": "ArchiveII"
+    },
+    {
+      "name": "font_5_99",
+      "pass": true,
+      "detail": "2,544"
+    },
+    {
+      "name": "font_5_100",
+      "pass": true,
+      "detail": "实验结构"
+    },
+    {
+      "name": "font_5_101",
+      "pass": true,
+      "detail": "TS1 / TS2 / TS3 / TS-hard"
+    },
+    {
+      "name": "font_5_102",
+      "pass": true,
+      "detail": "63 / 39 / 19 / 28"
+    },
+    {
+      "name": "font_5_103",
+      "pass": true,
+      "detail": "外部测试"
+    },
+    {
+      "name": "font_5_104",
+      "pass": true,
+      "detail": "TestSetB"
+    },
+    {
+      "name": "font_5_105",
+      "pass": true,
+      "detail": "428"
+    },
+    {
+      "name": "font_5_106",
+      "pass": true,
+      "detail": "评测任务：同分布拟合、未见家族、传统外部集、实验 PDB 结构和独立外部测试。"
+    },
+    {
+      "name": "font_6_107",
+      "pass": true,
+      "detail": "05  主结果"
+    },
+    {
+      "name": "font_6_108",
+      "pass": true,
+      "detail": "PRISM 对最新 BPfold：优势与三个未领先 split"
+    },
+    {
+      "name": "font_6_109",
+      "pass": true,
+      "detail": "结论：raw 全板 5/8 领先；bpRNA-new、TS2、ArchiveII"
+    },
+    {
+      "name": "font_6_110",
+      "pass": true,
+      "detail": "06"
+    },
+    {
+      "name": "font_7_111",
+      "pass": true,
+      "detail": "06  机制消融"
+    },
+    {
+      "name": "font_7_112",
+      "pass": true,
+      "detail": "物理先验与二维上下文解释了主要结构收益"
+    },
+    {
+      "name": "font_7_113",
+      "pass": true,
+      "detail": "结论：Turner/2D 更偏 PDB-OOD；DP 在 ID 的损失更大。"
+    },
+    {
+      "name": "font_7_114",
+      "pass": true,
+      "detail": "07"
+    },
+    {
+      "name": "font_8_115",
+      "pass": true,
+      "detail": "07  精度与效率"
+    },
+    {
+      "name": "font_8_116",
+      "pass": true,
+      "detail": "单模型吞吐更高，集成配置需要三次前向"
+    },
+    {
+      "name": "font_8_117",
+      "pass": true,
+      "detail": "结论：PRISM 位于精度—吞吐前沿，但 xens2 的单模型保真提速尚未解决。"
+    },
+    {
+      "name": "font_8_118",
+      "pass": true,
+      "detail": "08"
+    },
+    {
+      "name": "font_9_119",
+      "pass": true,
+      "detail": "08  置信度"
+    },
+    {
+      "name": "font_9_120",
+      "pass": true,
+      "detail": "校准误差和结构质量排序必须分别验证"
+    },
+    {
+      "name": "font_9_121",
+      "pass": true,
+      "detail": "结论：大样本 ECE 多改善，TS2/TS3 过校正；不能据此宣称最佳置信度。"
+    },
+    {
+      "name": "font_9_122",
+      "pass": true,
+      "detail": "09"
+    },
+    {
+      "name": "font_10_123",
+      "pass": true,
+      "detail": "09  适用边界"
+    },
+    {
+      "name": "font_10_124",
+      "pass": true,
+      "detail": "弱家族与长序列是当前最明确的限制"
+    },
+    {
+      "name": "font_10_125",
+      "pass": true,
+      "detail": "结论：GenC/GenF 与 >400 nt 不能由主 benchmark 的平"
+    },
+    {
+      "name": "font_10_126",
+      "pass": true,
+      "detail": "10"
+    },
+    {
+      "name": "font_11_127",
+      "pass": true,
+      "detail": "10  项目进度"
+    },
+    {
+      "name": "font_11_128",
+      "pass": true,
+      "detail": "模型与核心证据已成型，三个问题仍未闭环"
+    },
+    {
+      "name": "font_11_129",
+      "pass": true,
+      "detail": "下一步不再扩展任务面，集中完成 matched-clean、保真提速和弱家族/长"
+    },
+    {
+      "name": "font_11_130",
+      "pass": true,
+      "detail": "11"
+    },
+    {
+      "name": "font_11_131",
+      "pass": true,
+      "detail": "已经形成"
+    },
+    {
+      "name": "font_11_132",
+      "pass": true,
+      "detail": "✓"
+    },
+    {
+      "name": "font_11_133",
+      "pass": true,
+      "detail": "完整 PRISM 架构与四项训练目标已实现"
+    },
+    {
+      "name": "font_11_134",
+      "pass": true,
+      "detail": "✓"
+    },
+    {
+      "name": "font_11_135",
+      "pass": true,
+      "detail": "40/40 消融解释 DP、Turner、2D scorer 的任务依赖贡献"
+    },
+    {
+      "name": "font_11_136",
+      "pass": true,
+      "detail": "✓"
+    },
+    {
+      "name": "font_11_137",
+      "pass": true,
+      "detail": "BPfold raw 8 split × 3 复测形成最新对照"
+    },
+    {
+      "name": "font_11_138",
+      "pass": true,
+      "detail": "✓"
+    },
+    {
+      "name": "font_11_139",
+      "pass": true,
+      "detail": "4090 raw-sequence 精度—吞吐协议已建立"
+    },
+    {
+      "name": "font_11_140",
+      "pass": true,
+      "detail": "尚未解决"
+    },
+    {
+      "name": "font_11_141",
+      "pass": true,
+      "detail": "—"
+    },
+    {
+      "name": "font_11_142",
+      "pass": true,
+      "detail": "全系统 matched-clean 最终榜单仍在形成"
+    },
+    {
+      "name": "font_11_143",
+      "pass": true,
+      "detail": "—"
+    },
+    {
+      "name": "font_11_144",
+      "pass": true,
+      "detail": "单学生蒸馏未保留 xens2 全板精度"
+    },
+    {
+      "name": "font_11_145",
+      "pass": true,
+      "detail": "—"
+    },
+    {
+      "name": "font_11_146",
+      "pass": true,
+      "detail": "bpRNA-new、GenC/GenF 泛化不足"
+    },
+    {
+      "name": "font_11_147",
+      "pass": true,
+      "detail": "—"
+    },
+    {
+      "name": "font_11_148",
+      "pass": true,
+      "detail": ">400 nt 与精确 O(L³) DP 的部署边界"
+    },
+    {
+      "name": "font_11_149",
+      "pass": true,
+      "detail": "单学生三种子结果：bpRNA-new 0.5096、TS2 0.7985、Arc"
+    },
+    {
+      "name": "font_12_150",
+      "pass": true,
+      "detail": "11  结论与下一步"
+    },
+    {
+      "name": "font_12_151",
+      "pass": true,
+      "detail": "PRISM：完整模型已建立，证据与边界同样明确"
+    },
+    {
+      "name": "font_12_152",
+      "pass": true,
+      "detail": "12"
+    },
+    {
+      "name": "font_12_153",
+      "pass": true,
+      "detail": "01"
+    },
+    {
+      "name": "font_12_154",
+      "pass": true,
+      "detail": "模型"
+    },
+    {
+      "name": "font_12_155",
+      "pass": true,
+      "detail": "配对交互场 + 二维上下文 + Turner 先验 + 非交叉解码，构成独立结构"
+    },
+    {
+      "name": "font_12_156",
+      "pass": true,
+      "detail": "02"
+    },
+    {
+      "name": "font_12_157",
+      "pass": true,
+      "detail": "结果"
+    },
+    {
+      "name": "font_12_158",
+      "pass": true,
+      "detail": "对最新 BPfold raw 全板 5/8；消融支持结构组件作用，单模型位于精度"
+    },
+    {
+      "name": "font_12_159",
+      "pass": true,
+      "detail": "03"
+    },
+    {
+      "name": "font_12_160",
+      "pass": true,
+      "detail": "边界"
+    },
+    {
+      "name": "font_12_161",
+      "pass": true,
+      "detail": "bpRNA-new、TS2、ArchiveII、弱家族和长序列仍是主要问题；校准"
+    },
+    {
+      "name": "font_12_162",
+      "pass": true,
+      "detail": "下一步"
+    },
+    {
+      "name": "font_12_163",
+      "pass": true,
+      "detail": "① 完成 matched-clean 与同 GT 敏感性  →  ② 单模型保真"
+    },
+    {
+      "name": "font_12_164",
+      "pass": true,
+      "detail": "后续工作只围绕 RNA 二级结构主任务展开。"
+    },
+    {
+      "name": "absent_NucleicBERT",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "absent_TODO",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "absent_mock",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "absent_只训练一个决策头",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "absent_跨骨干迁移",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no_out_of_bounds",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "name": "min_font_at_least_8pt",
+      "pass": true,
+      "detail": "8.0"
+    },
+    {
+      "name": "all_text_runs_present",
+      "pass": true,
+      "detail": "164"
+    },
+    {
+      "name": "all_paragraphs_1_5_spacing",
+      "pass": true,
+      "detail": "164"
+    },
+    {
+      "name": "architecture_native_vector",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "embedded_fig01_main_benchmark.png",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "embedded_fig03_ablation.png",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "embedded_fig04_calibration.png",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "embedded_fig05_accuracy_speed.png",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "embedded_fig10_ood_length.png",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pdf_pages_12",
+      "pass": true,
+      "detail": "12"
+    },
+    {
+      "name": "pdf_text_PRISM",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pdf_text_四项损失分别约束结构",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pdf_text_42,564",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pdf_text_BPfold",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pdf_text_模型与核心证据已成型",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "pdf_no_nucleicbert",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

@@ -1,0 +1,1493 @@
+{
+  "schema_version": 1,
+  "model": {
+    "name": "PRISM",
+    "expanded": "Physics-informed RNA Structure Model",
+    "independent_model": true,
+    "representation_module": "RiNALMo-giga",
+    "task_specific_trainable_parameters": 812375
+  },
+  "main_benchmark": {
+    "protocol": "raw full-board sensitivity; strict pair-level micro-F1; canonical-nested GT; not a final matched-clean leaderboard",
+    "prism_wins": 5,
+    "best_single_checkpoint_wins": 4,
+    "rows": [
+      {
+        "split": "TS0",
+        "key": "bprna_ts0",
+        "n": 1288,
+        "prism_xens2": 0.8039,
+        "bpfold": 0.7502687934022287,
+        "winner": "PRISM"
+      },
+      {
+        "split": "bpRNA-new",
+        "key": "bprna_new",
+        "n": 5388,
+        "prism_xens2": 0.5532,
+        "bpfold": 0.7370074184282851,
+        "winner": "BPfold"
+      },
+      {
+        "split": "ArchiveII",
+        "key": "archiveii_embok_clean",
+        "n": 2544,
+        "prism_xens2": 0.776,
+        "bpfold": 0.8521505875709153,
+        "winner": "BPfold"
+      },
+      {
+        "split": "TS1",
+        "key": "ref_pdb_ts1",
+        "n": 63,
+        "prism_xens2": 0.8755,
+        "bpfold": 0.8418421992145663,
+        "winner": "PRISM"
+      },
+      {
+        "split": "TS2",
+        "key": "ref_pdb_ts2",
+        "n": 39,
+        "prism_xens2": 0.8604,
+        "bpfold": 0.9131075110456554,
+        "winner": "BPfold"
+      },
+      {
+        "split": "TS3",
+        "key": "ref_pdb_ts3",
+        "n": 19,
+        "prism_xens2": 0.8965,
+        "bpfold": 0.8337129840546698,
+        "winner": "PRISM"
+      },
+      {
+        "split": "TS-hard",
+        "key": "ref_pdb_ts_hard",
+        "n": 28,
+        "prism_xens2": 0.8732,
+        "bpfold": 0.8220255653883972,
+        "winner": "PRISM"
+      },
+      {
+        "split": "TestSetB",
+        "key": "testsetb",
+        "n": 428,
+        "prism_xens2": 0.837,
+        "bpfold": 0.7900305273282315,
+        "winner": "PRISM"
+      }
+    ],
+    "sources": {
+      "prism": {
+        "path": "交接文档/source_data/round32_verified_source_data.json",
+        "sha256": "7d0cb98abfad77b3fba46e50d899de4fc4d9890c15756512224f03b52e017a95"
+      },
+      "bpfold": {
+        "path": "交接文档/source_data/appendix_leakage/round39_bpfold_raw_summary.json",
+        "sha256": "709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb"
+      }
+    }
+  },
+  "datasets": {
+    "train": {
+      "name": "bpRNA TR1c",
+      "n": 42564
+    },
+    "validation": {
+      "name": "bpRNA VL0",
+      "n": 196
+    },
+    "decontamination": "normalized exact + MMseqs2 identity>=0.8, query coverage>=0.8",
+    "evaluation": [
+      {
+        "split": "TS0",
+        "key": "bprna_ts0",
+        "n": 1288,
+        "prism_xens2": 0.8039,
+        "bpfold": 0.7502687934022287,
+        "winner": "PRISM"
+      },
+      {
+        "split": "bpRNA-new",
+        "key": "bprna_new",
+        "n": 5388,
+        "prism_xens2": 0.5532,
+        "bpfold": 0.7370074184282851,
+        "winner": "BPfold"
+      },
+      {
+        "split": "ArchiveII",
+        "key": "archiveii_embok_clean",
+        "n": 2544,
+        "prism_xens2": 0.776,
+        "bpfold": 0.8521505875709153,
+        "winner": "BPfold"
+      },
+      {
+        "split": "TS1",
+        "key": "ref_pdb_ts1",
+        "n": 63,
+        "prism_xens2": 0.8755,
+        "bpfold": 0.8418421992145663,
+        "winner": "PRISM"
+      },
+      {
+        "split": "TS2",
+        "key": "ref_pdb_ts2",
+        "n": 39,
+        "prism_xens2": 0.8604,
+        "bpfold": 0.9131075110456554,
+        "winner": "BPfold"
+      },
+      {
+        "split": "TS3",
+        "key": "ref_pdb_ts3",
+        "n": 19,
+        "prism_xens2": 0.8965,
+        "bpfold": 0.8337129840546698,
+        "winner": "PRISM"
+      },
+      {
+        "split": "TS-hard",
+        "key": "ref_pdb_ts_hard",
+        "n": 28,
+        "prism_xens2": 0.8732,
+        "bpfold": 0.8220255653883972,
+        "winner": "PRISM"
+      },
+      {
+        "split": "TestSetB",
+        "key": "testsetb",
+        "n": 428,
+        "prism_xens2": 0.837,
+        "bpfold": 0.7900305273282315,
+        "winner": "PRISM"
+      }
+    ]
+  },
+  "ablation": {
+    "definition": "performance_drop = matched_control_strict_micro_f1 - ablated_strict_micro_f1",
+    "groups": [
+      {
+        "name": "ID",
+        "splits": [
+          "bprna_ts0",
+          "archiveii_embok_clean"
+        ]
+      },
+      {
+        "name": "External",
+        "splits": [
+          "bprna_new",
+          "testsetb"
+        ]
+      },
+      {
+        "name": "PDB-OOD",
+        "splits": [
+          "ref_pdb_ts1",
+          "ref_pdb_ts2",
+          "ref_pdb_ts3",
+          "ref_pdb_ts_hard"
+        ]
+      }
+    ],
+    "drop": {
+      "DP off (greedy)": {
+        "ID": 0.2683565125938437,
+        "External": 0.23479949362678584,
+        "PDB-OOD": 0.18955594969470269
+      },
+      "Turner prior = 0": {
+        "ID": 0.2031333851980556,
+        "External": 0.30504869058399464,
+        "PDB-OOD": 0.39088831839574
+      },
+      "2D scorer -> pair MLP": {
+        "ID": 0.07775415053086243,
+        "External": 0.0652453351624685,
+        "PDB-OOD": 0.11129438841657399
+      }
+    },
+    "source": "/private/tmp/rnajev_audit/remote_current_20261028/main_ablation_5x8.json"
+  },
+  "calibration": {
+    "splits": [
+      "TS0",
+      "TestSetB",
+      "bpRNA-new",
+      "ArchiveII-clean",
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS-hard"
+    ],
+    "n": [
+      1281,
+      428,
+      5375,
+      2505,
+      62,
+      39,
+      19,
+      27
+    ],
+    "raw": [
+      0.1604,
+      0.1004,
+      0.2011,
+      0.1176,
+      0.121,
+      0.0821,
+      0.1088,
+      0.1243
+    ],
+    "recalibrated": [
+      0.0315,
+      0.0445,
+      0.0677,
+      0.0605,
+      0.1111,
+      0.1851,
+      0.1841,
+      0.1219
+    ],
+    "spearman": [
+      0.708,
+      0.694,
+      0.416,
+      0.716,
+      0.559,
+      0.337,
+      0.362,
+      0.676
+    ],
+    "note": "Structure-level ECE, 10-bin weighted absolute confidence-versus-F1 gap; VL0 affine parameters a=1.6 and b=-1.9 are frozen for every test split."
+  },
+  "speed": {
+    "figure_status": "final_visual_qa_pass",
+    "protocol": "RTX 4090; project TS0 n=1288; raw sequence to required decode; cached_embeddings=false; repeats=3",
+    "selection_rule": "maximum eligible raw-sequence throughput per GPU model; official serial CPU EternaFold shown separately",
+    "models": [
+      {
+        "model": "rnaformer",
+        "batch": 4,
+        "f1": 0.7575434318805242,
+        "throughput": 2.7325776657989174,
+        "throughput_min": 2.731240394497105,
+        "throughput_max": 2.7326602443185193,
+        "peak_memory_mib": 10603.9560546875,
+        "predictions_sha256": "b0e097c504f124128645ac875caef6b2c68d87777ea596157506378a0d1ed076",
+        "result_sha256": "e49e5ba613c565102aa9ab512b0f2a886fb2b3cbdf78847cd06701bb5a7ed7c0",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/baselines/rnaformer_b4_full.json",
+        "device_type": "cuda"
+      },
+      {
+        "model": "eternafold",
+        "batch": 1,
+        "f1": 0.5400108496173779,
+        "throughput": 10.656008840591145,
+        "throughput_min": 10.65125072447348,
+        "throughput_max": 10.661725142557964,
+        "peak_memory_mib": 53.44921875,
+        "predictions_sha256": "9003cc137c8b353bb824d04763d97258a4a86784f855b5c2ee5a3f747d12ab9d",
+        "result_sha256": "4eeba4000d3549f2371161d67efa0b2a4bcb38e61e1d21848cec7533eb07bd04",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round38/eternafold_b1.json",
+        "version": "official serial CPU",
+        "device_type": "cpu"
+      },
+      {
+        "model": "mxfold2",
+        "batch": 2,
+        "f1": 0.5650021319941252,
+        "throughput": 14.760384448621958,
+        "throughput_min": 14.3973947903603,
+        "throughput_max": 15.063127215126888,
+        "peak_memory_mib": 1074.95654296875,
+        "predictions_sha256": "50642addc0a28c3100d134e9708d760dae56335d51d050e406e50ca141c52bac",
+        "result_sha256": "9e7e9d86c2e8e9185390d58a514995b8b3ad04e271658e50ee798a7b48bd6968",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/mxfold2_b2_full.json",
+        "device_type": "cuda"
+      },
+      {
+        "model": "efold",
+        "batch": 4,
+        "f1": 0.5506956881113101,
+        "throughput": 18.472480722400874,
+        "throughput_min": 16.267366951362657,
+        "throughput_max": 18.983950549664847,
+        "peak_memory_mib": 683.3896484375,
+        "predictions_sha256": "624714f0b75352730c2d0d02d52dde13144122dcf829d40d2807f335a2bd8044",
+        "result_sha256": "009809fde033231df81b64bc3cb60bcac97a9ebe9c76416950746f20cd7bfbfc",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round38/efold_b4.json",
+        "version": "eFold",
+        "device_type": "cuda"
+      },
+      {
+        "model": "xens2",
+        "batch": 32,
+        "f1": 0.8037820906882117,
+        "throughput": 19.891765408165696,
+        "throughput_min": 19.507809127878424,
+        "throughput_max": 19.93220113967379,
+        "peak_memory_mib": 13595.57421875,
+        "predictions_sha256": "bf7d066218f4f4104cc52fcdd8c97c97ad2f23ea57efdea0060b6e141e8c6e07",
+        "result_sha256": "0919bf3fa17176696f25e0240605c691e89fc62f73604f5857854357259a6956",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/xens2_b32_profile.json",
+        "cross_config_equivalence": {
+          "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/xens2_b4_profile.json",
+          "pair_agreement": 0.9989237668161435,
+          "symmetric_difference_pairs": 36,
+          "union_pairs": 33450,
+          "abs_delta_f1": 0.00018137749280811022
+        },
+        "tf32": false,
+        "device_type": "cuda"
+      },
+      {
+        "model": "rinalmo_ft",
+        "batch": 4,
+        "f1": 0.7214077069992135,
+        "throughput": 23.804429074865872,
+        "throughput_min": 22.065846461574708,
+        "throughput_max": 24.94174733197683,
+        "peak_memory_mib": 12016.9345703125,
+        "predictions_sha256": "8b066c3fe9ffc41108277745860f01cb957b10f5a5b219d6bdf1061359c54672",
+        "result_sha256": "67189bffa7b7a123338acecdbae4738fb2b900f3ca6cfeeb2d6378a9a1f7bef5",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_4090_round34/rinalmo_ft_b4_full.json",
+        "device_type": "cuda"
+      },
+      {
+        "model": "plana",
+        "batch": 32,
+        "f1": 0.7868282670901436,
+        "throughput": 47.92426985260479,
+        "throughput_min": 47.302839781187565,
+        "throughput_max": 48.76253966217526,
+        "peak_memory_mib": 9848.18212890625,
+        "predictions_sha256": "3bef65e532e8c67ce4be82d1bb7a05b4182cb24f0f149addf505daaae0ab351a",
+        "result_sha256": "63b64d47d643410ce94da0aa4a89f964b6ec5ccc5a0ef9ede97d4bf969a39224",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/plana_b32_profile.json",
+        "cross_config_equivalence": {
+          "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/plana_b4_profile.json",
+          "pair_agreement": 0.9981809057834651,
+          "symmetric_difference_pairs": 58,
+          "union_pairs": 31884,
+          "abs_delta_f1": 7.073355411868487e-05
+        },
+        "tf32": false,
+        "device_type": "cuda"
+      },
+      {
+        "model": "r2d",
+        "batch": 32,
+        "f1": 0.6681447418842722,
+        "throughput": 53.906663162792036,
+        "throughput_min": 51.77877351859595,
+        "throughput_max": 54.007386799679345,
+        "peak_memory_mib": 8616.76904296875,
+        "predictions_sha256": "6eba56f24b721cc3da82d451ba23176fded9fbaf5d0b9529d7f0fdf1dc7b064c",
+        "result_sha256": "d4d70a477b26d32ef5002947f7130e69e10d09c1e1c15a2682b8bfa5972b507a",
+        "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round37/r2d_b32_profile.json",
+        "cross_config_equivalence": {
+          "baseline": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/speed_round36/profile/r2d_b4_profile.json",
+          "pair_agreement": 0.9954791334570257,
+          "symmetric_difference_pairs": 173,
+          "union_pairs": 38267,
+          "abs_delta_f1": 0.0005019091781484075
+        },
+        "tf32": false,
+        "device_type": "cuda"
+      }
+    ],
+    "source_figure": "/home/rna_jev/source_data/fig05_speed/fig05_accuracy_speed_4090_round38_source.json",
+    "source_figure_sha256": "57899ad9dea62ff195d7ad7b5ca3735f3fadbda698fad60f104f15612531ae77",
+    "blocked_systems": [
+      "BPfold",
+      "UFold",
+      "E2Efold"
+    ],
+    "blocked_reason": "official weights unavailable; no third-party weights, old A100 values, smoke values, or paper timings used",
+    "scope_conclusion": "No unrestricted speed SOTA claim while three requested baselines remain blocked"
+  },
+  "ood": {
+    "schema_version": 1,
+    "status": "descriptive_offline_reanalysis_not_new_model_evidence",
+    "protocol": "Original xens2 predictions and CHANRG JSONL aligned in file order; micro-F1 recomputed from pair sets",
+    "splits": {
+      "genc": {
+        "n": 3936,
+        "tp": 38572,
+        "fp": 42273,
+        "fn": 83983,
+        "zero_prediction": 1,
+        "zero_correct_prediction": 818,
+        "n_pred": 80845,
+        "n_gt": 122555,
+        "micro_f1": 0.37927236971484757,
+        "zero_prediction_fraction": 0.00025406504065040653,
+        "zero_correct_prediction_fraction": 0.20782520325203252,
+        "predicted_pairs_per_sequence": 20.539888211382113,
+        "true_pairs_per_sequence": 31.13694105691057,
+        "families": [
+          {
+            "family": "RF03981",
+            "n": 1702,
+            "tp": 5189,
+            "fp": 26261,
+            "fn": 48135,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 674,
+            "n_pred": 31450,
+            "n_gt": 53324,
+            "micro_f1": 0.1224196097860193,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.39600470035252644,
+            "predicted_pairs_per_sequence": 18.47826086956522,
+            "true_pairs_per_sequence": 31.330199764982375,
+            "fn_fraction_of_split": 0.573151709274496
+          },
+          {
+            "family": "RF02001",
+            "n": 654,
+            "tp": 10809,
+            "fp": 6328,
+            "fn": 15800,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 30,
+            "n_pred": 17137,
+            "n_gt": 26609,
+            "micro_f1": 0.4941708956247428,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.045871559633027525,
+            "predicted_pairs_per_sequence": 26.20336391437309,
+            "true_pairs_per_sequence": 40.686544342507645,
+            "fn_fraction_of_split": 0.18813331269423575
+          },
+          {
+            "family": "RF02012",
+            "n": 295,
+            "tp": 5219,
+            "fp": 2103,
+            "fn": 4372,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 7,
+            "n_pred": 7322,
+            "n_gt": 9591,
+            "micro_f1": 0.6171583988647785,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.023728813559322035,
+            "predicted_pairs_per_sequence": 24.82033898305085,
+            "true_pairs_per_sequence": 32.51186440677966,
+            "fn_fraction_of_split": 0.05205815462653156
+          },
+          {
+            "family": "RF02004",
+            "n": 138,
+            "tp": 1715,
+            "fp": 1467,
+            "fn": 4115,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 8,
+            "n_pred": 3182,
+            "n_gt": 5830,
+            "micro_f1": 0.38060363959165555,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.057971014492753624,
+            "predicted_pairs_per_sequence": 23.057971014492754,
+            "true_pairs_per_sequence": 42.2463768115942,
+            "fn_fraction_of_split": 0.048998011502327854
+          },
+          {
+            "family": "RF01998",
+            "n": 419,
+            "tp": 4302,
+            "fp": 1646,
+            "fn": 3525,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 6,
+            "n_pred": 5948,
+            "n_gt": 7827,
+            "micro_f1": 0.6246098003629764,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.014319809069212411,
+            "predicted_pairs_per_sequence": 14.195704057279237,
+            "true_pairs_per_sequence": 18.68019093078759,
+            "fn_fraction_of_split": 0.041972780205517785
+          },
+          {
+            "family": "RF01999",
+            "n": 242,
+            "tp": 5292,
+            "fp": 1257,
+            "fn": 2886,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 2,
+            "n_pred": 6549,
+            "n_gt": 8178,
+            "micro_f1": 0.7186799755551029,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.008264462809917356,
+            "predicted_pairs_per_sequence": 27.06198347107438,
+            "true_pairs_per_sequence": 33.79338842975206,
+            "fn_fraction_of_split": 0.03436409749592179
+          },
+          {
+            "family": "RF02005",
+            "n": 53,
+            "tp": 719,
+            "fp": 528,
+            "fn": 993,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 1,
+            "n_pred": 1247,
+            "n_gt": 1712,
+            "micro_f1": 0.4859749915511997,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.018867924528301886,
+            "predicted_pairs_per_sequence": 23.528301886792452,
+            "true_pairs_per_sequence": 32.301886792452834,
+            "fn_fraction_of_split": 0.01182382148768203
+          },
+          {
+            "family": "RF02003",
+            "n": 90,
+            "tp": 1371,
+            "fp": 512,
+            "fn": 800,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 1,
+            "n_pred": 1883,
+            "n_gt": 2171,
+            "micro_f1": 0.6763690182535768,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.011111111111111112,
+            "predicted_pairs_per_sequence": 20.92222222222222,
+            "true_pairs_per_sequence": 24.122222222222224,
+            "fn_fraction_of_split": 0.009525737351606873
+          },
+          {
+            "family": "RF03158",
+            "n": 43,
+            "tp": 76,
+            "fp": 269,
+            "fn": 548,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 28,
+            "n_pred": 345,
+            "n_gt": 624,
+            "micro_f1": 0.1568627450980392,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.6511627906976745,
+            "predicted_pairs_per_sequence": 8.023255813953488,
+            "true_pairs_per_sequence": 14.511627906976743,
+            "fn_fraction_of_split": 0.006525130085850708
+          },
+          {
+            "family": "RF03155",
+            "n": 47,
+            "tp": 1035,
+            "fp": 256,
+            "fn": 544,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 1291,
+            "n_gt": 1579,
+            "micro_f1": 0.7212543554006968,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 27.46808510638298,
+            "true_pairs_per_sequence": 33.59574468085106,
+            "fn_fraction_of_split": 0.006477501399092674
+          },
+          {
+            "family": "RF03129",
+            "n": 35,
+            "tp": 60,
+            "fp": 328,
+            "fn": 443,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 23,
+            "n_pred": 388,
+            "n_gt": 503,
+            "micro_f1": 0.13468013468013468,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.6571428571428571,
+            "predicted_pairs_per_sequence": 11.085714285714285,
+            "true_pairs_per_sequence": 14.371428571428572,
+            "fn_fraction_of_split": 0.005274877058452306
+          },
+          {
+            "family": "RF03157",
+            "n": 36,
+            "tp": 55,
+            "fp": 201,
+            "fn": 379,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 27,
+            "n_pred": 256,
+            "n_gt": 434,
+            "micro_f1": 0.15942028985507245,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.75,
+            "predicted_pairs_per_sequence": 7.111111111111111,
+            "true_pairs_per_sequence": 12.055555555555555,
+            "fn_fraction_of_split": 0.004512818070323756
+          },
+          {
+            "family": "RF03140",
+            "n": 34,
+            "tp": 214,
+            "fp": 147,
+            "fn": 243,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 4,
+            "n_pred": 361,
+            "n_gt": 457,
+            "micro_f1": 0.5232273838630807,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.11764705882352941,
+            "predicted_pairs_per_sequence": 10.617647058823529,
+            "true_pairs_per_sequence": 13.441176470588236,
+            "fn_fraction_of_split": 0.0028934427205505875
+          },
+          {
+            "family": "RF04280",
+            "n": 21,
+            "tp": 280,
+            "fp": 166,
+            "fn": 190,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 1,
+            "n_pred": 446,
+            "n_gt": 470,
+            "micro_f1": 0.611353711790393,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.047619047619047616,
+            "predicted_pairs_per_sequence": 21.238095238095237,
+            "true_pairs_per_sequence": 22.38095238095238,
+            "fn_fraction_of_split": 0.0022623626210066324
+          },
+          {
+            "family": "RF03162",
+            "n": 28,
+            "tp": 649,
+            "fp": 76,
+            "fn": 187,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 725,
+            "n_gt": 836,
+            "micro_f1": 0.8315182575272262,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 25.892857142857142,
+            "true_pairs_per_sequence": 29.857142857142858,
+            "fn_fraction_of_split": 0.0022266411059381065
+          },
+          {
+            "family": "RF03133",
+            "n": 12,
+            "tp": 88,
+            "fp": 54,
+            "fn": 113,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 142,
+            "n_gt": 201,
+            "micro_f1": 0.5131195335276968,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 11.833333333333334,
+            "true_pairs_per_sequence": 16.75,
+            "fn_fraction_of_split": 0.0013455104009144707
+          },
+          {
+            "family": "RF04286",
+            "n": 11,
+            "tp": 205,
+            "fp": 90,
+            "fn": 104,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 295,
+            "n_gt": 309,
+            "micro_f1": 0.6788079470198676,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 26.818181818181817,
+            "true_pairs_per_sequence": 28.09090909090909,
+            "fn_fraction_of_split": 0.0012383458557088936
+          },
+          {
+            "family": "RF03860",
+            "n": 16,
+            "tp": 136,
+            "fp": 192,
+            "fn": 103,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 4,
+            "n_pred": 328,
+            "n_gt": 239,
+            "micro_f1": 0.47971781305114636,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.25,
+            "predicted_pairs_per_sequence": 20.5,
+            "true_pairs_per_sequence": 14.9375,
+            "fn_fraction_of_split": 0.0012264386840193848
+          },
+          {
+            "family": "RF04216",
+            "n": 10,
+            "tp": 149,
+            "fp": 102,
+            "fn": 77,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 251,
+            "n_gt": 226,
+            "micro_f1": 0.6247379454926625,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 25.1,
+            "true_pairs_per_sequence": 22.6,
+            "fn_fraction_of_split": 0.0009168522200921615
+          },
+          {
+            "family": "RF04273",
+            "n": 4,
+            "tp": 63,
+            "fp": 38,
+            "fn": 59,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 1,
+            "n_pred": 101,
+            "n_gt": 122,
+            "micro_f1": 0.5650224215246636,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.25,
+            "predicted_pairs_per_sequence": 25.25,
+            "true_pairs_per_sequence": 30.5,
+            "fn_fraction_of_split": 0.0007025231296810069
+          },
+          {
+            "family": "RF04276",
+            "n": 3,
+            "tp": 128,
+            "fp": 13,
+            "fn": 55,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 141,
+            "n_gt": 183,
+            "micro_f1": 0.7901234567901234,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 47.0,
+            "true_pairs_per_sequence": 61.0,
+            "fn_fraction_of_split": 0.0006548944429229725
+          },
+          {
+            "family": "RF03692",
+            "n": 7,
+            "tp": 132,
+            "fp": 71,
+            "fn": 47,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 203,
+            "n_gt": 179,
+            "micro_f1": 0.6910994764397905,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 29.0,
+            "true_pairs_per_sequence": 25.571428571428573,
+            "fn_fraction_of_split": 0.0005596370694069038
+          },
+          {
+            "family": "RF03118",
+            "n": 1,
+            "tp": 10,
+            "fp": 10,
+            "fn": 41,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 20,
+            "n_gt": 51,
+            "micro_f1": 0.28169014084507044,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 20.0,
+            "true_pairs_per_sequence": 51.0,
+            "fn_fraction_of_split": 0.00048819403926985224
+          },
+          {
+            "family": "RF04251",
+            "n": 3,
+            "tp": 81,
+            "fp": 18,
+            "fn": 40,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 99,
+            "n_gt": 121,
+            "micro_f1": 0.7363636363636363,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 33.0,
+            "true_pairs_per_sequence": 40.333333333333336,
+            "fn_fraction_of_split": 0.00047628686758034364
+          },
+          {
+            "family": "RF04272",
+            "n": 5,
+            "tp": 75,
+            "fp": 47,
+            "fn": 34,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 122,
+            "n_gt": 109,
+            "micro_f1": 0.6493506493506493,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 24.4,
+            "true_pairs_per_sequence": 21.8,
+            "fn_fraction_of_split": 0.0004048438374432921
+          },
+          {
+            "family": "RF03120",
+            "n": 1,
+            "tp": 25,
+            "fp": 10,
+            "fn": 28,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 35,
+            "n_gt": 53,
+            "micro_f1": 0.5681818181818182,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 35.0,
+            "true_pairs_per_sequence": 53.0,
+            "fn_fraction_of_split": 0.00033340080730624055
+          },
+          {
+            "family": "RF04071",
+            "n": 2,
+            "tp": 80,
+            "fp": 7,
+            "fn": 22,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 87,
+            "n_gt": 102,
+            "micro_f1": 0.8465608465608465,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 43.5,
+            "true_pairs_per_sequence": 51.0,
+            "fn_fraction_of_split": 0.00026195777716918903
+          },
+          {
+            "family": "RF04282",
+            "n": 3,
+            "tp": 67,
+            "fp": 10,
+            "fn": 20,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 77,
+            "n_gt": 87,
+            "micro_f1": 0.8170731707317073,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 25.666666666666668,
+            "true_pairs_per_sequence": 29.0,
+            "fn_fraction_of_split": 0.00023814343379017182
+          },
+          {
+            "family": "RF03081",
+            "n": 6,
+            "tp": 23,
+            "fp": 5,
+            "fn": 16,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 28,
+            "n_gt": 39,
+            "micro_f1": 0.6865671641791045,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 4.666666666666667,
+            "true_pairs_per_sequence": 6.5,
+            "fn_fraction_of_split": 0.00019051474703213746
+          },
+          {
+            "family": "RF04281",
+            "n": 1,
+            "tp": 15,
+            "fp": 4,
+            "fn": 14,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 19,
+            "n_gt": 29,
+            "micro_f1": 0.625,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 19.0,
+            "true_pairs_per_sequence": 29.0,
+            "fn_fraction_of_split": 0.00016670040365312027
+          },
+          {
+            "family": "RF03141",
+            "n": 1,
+            "tp": 0,
+            "fp": 0,
+            "fn": 11,
+            "zero_prediction": 1,
+            "zero_correct_prediction": 1,
+            "n_pred": 0,
+            "n_gt": 11,
+            "micro_f1": 0.0,
+            "zero_prediction_fraction": 1.0,
+            "zero_correct_prediction_fraction": 1.0,
+            "predicted_pairs_per_sequence": 0.0,
+            "true_pairs_per_sequence": 11.0,
+            "fn_fraction_of_split": 0.00013097888858459451
+          },
+          {
+            "family": "RF03464",
+            "n": 3,
+            "tp": 55,
+            "fp": 8,
+            "fn": 9,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 63,
+            "n_gt": 64,
+            "micro_f1": 0.8661417322834646,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 21.0,
+            "true_pairs_per_sequence": 21.333333333333332,
+            "fn_fraction_of_split": 0.00010716454520557732
+          },
+          {
+            "family": "RF04279",
+            "n": 2,
+            "tp": 44,
+            "fp": 11,
+            "fn": 9,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 55,
+            "n_gt": 53,
+            "micro_f1": 0.8148148148148148,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 27.5,
+            "true_pairs_per_sequence": 26.5,
+            "fn_fraction_of_split": 0.00010716454520557732
+          },
+          {
+            "family": "RF03610",
+            "n": 2,
+            "tp": 42,
+            "fp": 3,
+            "fn": 6,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 45,
+            "n_gt": 48,
+            "micro_f1": 0.9032258064516129,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 22.5,
+            "true_pairs_per_sequence": 24.0,
+            "fn_fraction_of_split": 7.144303013705155e-05
+          },
+          {
+            "family": "RF04270",
+            "n": 2,
+            "tp": 40,
+            "fp": 7,
+            "fn": 6,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 47,
+            "n_gt": 46,
+            "micro_f1": 0.8602150537634409,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 23.5,
+            "true_pairs_per_sequence": 23.0,
+            "fn_fraction_of_split": 7.144303013705155e-05
+          },
+          {
+            "family": "RF04278",
+            "n": 1,
+            "tp": 24,
+            "fp": 7,
+            "fn": 5,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 31,
+            "n_gt": 29,
+            "micro_f1": 0.8,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 31.0,
+            "true_pairs_per_sequence": 29.0,
+            "fn_fraction_of_split": 5.9535858447542955e-05
+          },
+          {
+            "family": "RF03116",
+            "n": 1,
+            "tp": 13,
+            "fp": 5,
+            "fn": 4,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 18,
+            "n_gt": 17,
+            "micro_f1": 0.7428571428571429,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 18.0,
+            "true_pairs_per_sequence": 17.0,
+            "fn_fraction_of_split": 4.7628686758034364e-05
+          },
+          {
+            "family": "RF04151",
+            "n": 2,
+            "tp": 92,
+            "fp": 16,
+            "fn": 0,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 108,
+            "n_gt": 92,
+            "micro_f1": 0.92,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 54.0,
+            "true_pairs_per_sequence": 46.0,
+            "fn_fraction_of_split": 0.0
+          }
+        ]
+      },
+      "genf": {
+        "n": 1734,
+        "tp": 11492,
+        "fp": 18352,
+        "fn": 33636,
+        "zero_prediction": 1,
+        "zero_correct_prediction": 680,
+        "n_pred": 29844,
+        "n_gt": 45128,
+        "micro_f1": 0.3065677853065144,
+        "zero_prediction_fraction": 0.0005767012687427913,
+        "zero_correct_prediction_fraction": 0.39215686274509803,
+        "predicted_pairs_per_sequence": 17.21107266435986,
+        "true_pairs_per_sequence": 26.025374855824683,
+        "families": [
+          {
+            "family": "RF03874",
+            "n": 525,
+            "tp": 1270,
+            "fp": 6371,
+            "fn": 14058,
+            "zero_prediction": 1,
+            "zero_correct_prediction": 336,
+            "n_pred": 7641,
+            "n_gt": 15328,
+            "micro_f1": 0.11058383038007749,
+            "zero_prediction_fraction": 0.0019047619047619048,
+            "zero_correct_prediction_fraction": 0.64,
+            "predicted_pairs_per_sequence": 14.554285714285715,
+            "true_pairs_per_sequence": 29.196190476190477,
+            "fn_fraction_of_split": 0.41794505886550126
+          },
+          {
+            "family": "RF03662",
+            "n": 532,
+            "tp": 2783,
+            "fp": 5901,
+            "fn": 11023,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 261,
+            "n_pred": 8684,
+            "n_gt": 13806,
+            "micro_f1": 0.24748777234326366,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.4906015037593985,
+            "predicted_pairs_per_sequence": 16.32330827067669,
+            "true_pairs_per_sequence": 25.951127819548873,
+            "fn_fraction_of_split": 0.3277143536686883
+          },
+          {
+            "family": "RF01912",
+            "n": 340,
+            "tp": 3998,
+            "fp": 3600,
+            "fn": 4019,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 54,
+            "n_pred": 7598,
+            "n_gt": 8017,
+            "micro_f1": 0.512071725904579,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.1588235294117647,
+            "predicted_pairs_per_sequence": 22.347058823529412,
+            "true_pairs_per_sequence": 23.57941176470588,
+            "fn_fraction_of_split": 0.11948507551432988
+          },
+          {
+            "family": "RF01924",
+            "n": 198,
+            "tp": 1523,
+            "fp": 632,
+            "fn": 2067,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 12,
+            "n_pred": 2155,
+            "n_gt": 3590,
+            "micro_f1": 0.5302001740644038,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.06060606060606061,
+            "predicted_pairs_per_sequence": 10.883838383838384,
+            "true_pairs_per_sequence": 18.13131313131313,
+            "fn_fraction_of_split": 0.061452015697467
+          },
+          {
+            "family": "RF04156",
+            "n": 18,
+            "tp": 351,
+            "fp": 434,
+            "fn": 922,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 2,
+            "n_pred": 785,
+            "n_gt": 1273,
+            "micro_f1": 0.34110787172011664,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.1111111111111111,
+            "predicted_pairs_per_sequence": 43.611111111111114,
+            "true_pairs_per_sequence": 70.72222222222223,
+            "fn_fraction_of_split": 0.027411107147104295
+          },
+          {
+            "family": "RF02894",
+            "n": 14,
+            "tp": 217,
+            "fp": 176,
+            "fn": 536,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 0,
+            "n_pred": 393,
+            "n_gt": 753,
+            "micro_f1": 0.3787085514834206,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0,
+            "predicted_pairs_per_sequence": 28.071428571428573,
+            "true_pairs_per_sequence": 53.785714285714285,
+            "fn_fraction_of_split": 0.015935307408728745
+          },
+          {
+            "family": "RF04223",
+            "n": 13,
+            "tp": 238,
+            "fp": 474,
+            "fn": 387,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 6,
+            "n_pred": 712,
+            "n_gt": 625,
+            "micro_f1": 0.35602094240837695,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.46153846153846156,
+            "predicted_pairs_per_sequence": 54.76923076923077,
+            "true_pairs_per_sequence": 48.07692307692308,
+            "fn_fraction_of_split": 0.011505529789511238
+          },
+          {
+            "family": "RF04163",
+            "n": 51,
+            "tp": 653,
+            "fp": 366,
+            "fn": 255,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 1,
+            "n_pred": 1019,
+            "n_gt": 908,
+            "micro_f1": 0.677737415672029,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.0196078431372549,
+            "predicted_pairs_per_sequence": 19.980392156862745,
+            "true_pairs_per_sequence": 17.80392156862745,
+            "fn_fraction_of_split": 0.007581163039600428
+          },
+          {
+            "family": "RF00825",
+            "n": 29,
+            "tp": 329,
+            "fp": 316,
+            "fn": 241,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 4,
+            "n_pred": 645,
+            "n_gt": 570,
+            "micro_f1": 0.5415637860082304,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.13793103448275862,
+            "predicted_pairs_per_sequence": 22.24137931034483,
+            "true_pairs_per_sequence": 19.655172413793103,
+            "fn_fraction_of_split": 0.007164942323700797
+          },
+          {
+            "family": "RF04072",
+            "n": 14,
+            "tp": 130,
+            "fp": 82,
+            "fn": 128,
+            "zero_prediction": 0,
+            "zero_correct_prediction": 4,
+            "n_pred": 212,
+            "n_gt": 258,
+            "micro_f1": 0.5531914893617021,
+            "zero_prediction_fraction": 0.0,
+            "zero_correct_prediction_fraction": 0.2857142857142857,
+            "predicted_pairs_per_sequence": 15.142857142857142,
+            "true_pairs_per_sequence": 18.428571428571427,
+            "fn_fraction_of_split": 0.003805446545368058
+          }
+        ]
+      }
+    },
+    "sources": {
+      "genc": {
+        "data_sha256": "f5c4406736a8324c73bf8ac6b406dd7cf4246999bf2ea05057aff5c86f95de7b",
+        "result_sha256": "94b73a5f83e4ac31ebe0cc2a86480e1ed06fb50b66f6d95b62c943d4e1c1b8f9"
+      },
+      "genf": {
+        "data_sha256": "2623970d59f009856f3aad69e9c262512852b7a65592f6d1f10b4e18c6134bae",
+        "result_sha256": "e273fc750d0d580b2edd06ba8621b0f2946e82b1737483006521e2e633d331ad"
+      }
+    },
+    "ood_context": {
+      "gena_micro_f1": 0.644258,
+      "current_ood_mean": 0.44336605167378734,
+      "ofoldna_ss": {
+        "GenA": 0.5695,
+        "GenC": 0.3956,
+        "GenF": 0.4035,
+        "ood_mean": 0.441
+      },
+      "arithmetic_if_genc_matched_ofoldna_not_a_prediction": 0.44880859510217147,
+      "conclusion": "Both splits underpredict pairs. Empty outputs are rare, but 20.8% of GenC and 39.2% of GenF have no correct predicted pair. No improvement is claimed by this reanalysis.",
+      "log_correction": "The older 20.8%/39.2% values are zero-correct-pair fractions, not zero-output fractions; the terms must not be interchanged."
+    }
+  },
+  "architecture": {
+    "figure": "main_figure_6_architecture",
+    "verified_at": "2026-10-31",
+    "sources": {
+      "backbone_config": "/root/rna_jepa_data/weights/rinalmo-giga/config.json",
+      "backbone_config_sha256": "04fb8fad8cf6f7a89ca0c6008ecc872a82c9bb27b054a1043b327614fbe06e9d",
+      "head_code": "/home/rna_jev/src/rnajepa/decision_head.py",
+      "mask_code": "/home/rna_jev/src/rnajepa/harness.py",
+      "decoder": "/home/rna_jev/tools/dp_decode_c_wrapper.py"
+    },
+    "backbone": {
+      "name": "RiNALMo-giga",
+      "parameters_approx": "650M",
+      "hidden_size": 1280,
+      "num_hidden_layers": 33,
+      "num_attention_heads": 20,
+      "output_per_nucleotide": "1280-d contextual state",
+      "frozen_during_head_training": true,
+      "trainable_parameters": 0
+    },
+    "pair_head": {
+      "class": "FlatDecisionHead",
+      "d_model": 1280,
+      "d_z": 128,
+      "hidden": 64,
+      "scorer": "ResNet2D",
+      "resnet_blocks": 4,
+      "resnet_kernel_size": 3,
+      "chunk_size": 64,
+      "min_loop": 3,
+      "pair_types": [
+        "AU",
+        "UA",
+        "GC",
+        "CG",
+        "GU",
+        "UG"
+      ],
+      "trainable_parameters": 812375,
+      "tensor_shapes": {
+        "h": "L x 1280",
+        "pair_representation": "L x L x 128",
+        "logits": "L x L"
+      },
+      "objectives": [
+        "NLL",
+        "KL distillation",
+        "RLCD",
+        "soft-ECE"
+      ]
+    },
+    "decoder": {
+      "mask": "canonical pairs + min loop >= 3",
+      "algorithm": "non-crossing max-product DP",
+      "complexity": "O(L^3)",
+      "batched": "C-batched exact decode",
+      "partition_function": false,
+      "legal_by_construction": true
+    },
+    "calibration": {
+      "input": "sigmoid(logit)",
+      "fit": "VL0 two-parameter logit affine",
+      "outputs": [
+        "dot-bracket structure",
+        "per-structure confidence",
+        "ECE"
+      ]
+    },
+    "sequence_scope": {
+      "max_length_nt": 600,
+      "truncation_residues": 598
+    }
+  },
+  "chanrg": {
+    "splits": [
+      "Test",
+      "GenA",
+      "GenC",
+      "GenF"
+    ],
+    "models": [
+      {
+        "name": "xens2",
+        "values": [
+          0.5656,
+          0.6443,
+          0.3793,
+          0.3066
+        ],
+        "ood_mean": 0.4434,
+        "evidence": "measured"
+      },
+      {
+        "name": "r2d",
+        "values": [
+          0.4935,
+          0.5772,
+          0.2769,
+          0.3037
+        ],
+        "ood_mean": 0.3859,
+        "evidence": "measured"
+      },
+      {
+        "name": "OFoldNA-SS",
+        "values": [
+          0.4899,
+          0.5695,
+          0.3504,
+          0.4031
+        ],
+        "ood_mean": 0.441,
+        "evidence": "quoted"
+      },
+      {
+        "name": "RiNALMo-Giga ft",
+        "values": [
+          0.7832,
+          0.3565,
+          0.1525,
+          0.2298
+        ],
+        "ood_mean": 0.2463,
+        "evidence": "quoted"
+      }
+    ],
+    "note": "OFoldNA Table 3 length-controlled protocol, 50-200 nt, pseudoknots excluded. OOD mean is the unweighted mean of GenA, GenC and GenF."
+  },
+  "length": {
+    "buckets": [
+      "<=100",
+      "100-200",
+      "200-400",
+      ">400"
+    ],
+    "ts0_n": [
+      580,
+      516,
+      164,
+      28
+    ],
+    "ts0": {
+      "ViennaRNA MFE": [
+        0.5999,
+        0.5045,
+        0.4305,
+        0.4561
+      ],
+      "ViennaRNA centroid": [
+        0.6277,
+        0.5375,
+        0.469,
+        0.4854
+      ],
+      "RiNALMo-ft": [
+        0.8187,
+        0.7182,
+        0.6745,
+        0.5692
+      ],
+      "xens2": [
+        0.8787,
+        0.7974,
+        0.7697,
+        0.6792
+      ]
+    },
+    "archiveii_n": [
+      484,
+      1136,
+      728,
+      196
+    ],
+    "archiveii": {
+      "ViennaRNA centroid": [
+        0.7212,
+        0.6865,
+        0.5868,
+        0.5345
+      ],
+      "xens2": [
+        0.8993,
+        0.8733,
+        0.7548,
+        0.5692
+      ]
+    }
+  },
+  "palette": {
+    "prism": "#0072B2",
+    "physics": "#009E73",
+    "baseline": "#D55E00",
+    "neutral": "#6B7280",
+    "sky": "#56B4E9",
+    "text": "#202124",
+    "grid": "#C8CDD3",
+    "pale_blue": "#DCEAF3",
+    "pale_teal": "#DDF0E8",
+    "pale_orange": "#F7E4D7"
+  }
+}
