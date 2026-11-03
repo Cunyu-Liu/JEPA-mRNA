@@ -1106,6 +1106,13 @@
    "bytes": 6570,
    "description": "外部任务动态抬升显存导致 out_proj 882MiB 缺口；Attention2d 已改为 16 行查询分块并通过零误差验证",
    "status": "active_failure_evidence_block16_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_archiveii_block64_repeat0.json",
+   "sha256": "949d0213f70fba6643a0ef75271df985ac144565379117412b83be35a5a48039",
+   "bytes": 3605679,
+   "description": "旧 64 行配置的 ArchiveII 单次诊断 F1=0.7607306；不与 16 行新协议混合，不纳入主榜",
+   "status": "active_legacy_diagnostic_not_final"
   }
  ]
 }

@@ -12426,3 +12426,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - NB 取消后实测空闲显存一度为 20.73GiB，满足 12GiB 硬门，RNAformer 已并行恢复；随后其他会话的两个 xens2 任务动态抬升占用，生产在 out_proj 处出现 882MiB 缺口，未生成结果。不能据一次 preflight 假设后续资源不变。
 - 将 Attention2d 查询块从 64 降为 16 以降低中间显存，输出投影仍整块执行。CPU 单测及 RTX4090 fp32/bf16 在 L=100/520/954 均与原实现逐元素完全相等，审计 SHA256=`2e77c19fa402d9b79f8be6f0b86b75e70805456ad0cb26ad951d38d14c0cc28f`、`c39cb8cf2a607b357baa5e47a9766cf3fa1b7049dcd564010a57458c904670f7`。
 - out_proj 错误证据 SHA256=`9cd03a4e00e9b9412eed8a244b55979791cffec3f712bec9de9e35fe32b72836`。最新一次启动预检时空闲仅 1.47GiB，确实无法安全并行；改为动态显存门，达到 12GiB 即启动，不再等待固定 PID，也不终止其他会话任务。
+
+
+## §15.392（2026-11-03）旧 64 行 repeat 归档与新协议隔离
+
+- 发现一个已完成 ArchiveII repeat：F1=0.7607306048550984、TP/FP/FN=92649/23408/34873，峰值 12,573.081MiB，证明全长序列可以跑通。
+- sidecar 的 `model_report.block_size=64`，与当前 16 行实现不同，不能混合组成同一三次协议。已归档为 `diagnostics/archiveii_block64_repeat0.json`，SHA256=`949d0213f70fba6643a0ef75271df985ac144565379117412b83be35a5a48039`，状态仅为旧配置诊断，不纳入 own-clean 主榜。
+- 16 行实现将从 repeat0 开始，避免跨配置拼接；动态显存门尚未放行，尚无新三次结果。
