@@ -20,6 +20,15 @@
     ],
     "composition_caveat": "The README lists pretraining components but does not prove that an unverified local concatenation is identical to the efold_train dataset used by the official training script."
   },
+  "official_loader": {
+    "repository": "https://github.com/rouskinlab/rouskinhf",
+    "commit": "955460bd83afe001ac88f1f37a34b0a05f7db320",
+    "archive": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/eFold/rouskinhf.zip",
+    "archive_sha256": "8960be38534cea9b63ffa04c6bc5334d0f6deca3b7ae5531523f0a040c762855",
+    "download_repo_id": "rouskinlab/efold_train",
+    "upload_private_default": true,
+    "evidence": "rouskinhf.upload_dataset uses private=True by default; the public mirror returns RepoNotFound. The dataset may be private or withdrawn, so unauthenticated recovery is not available."
+  },
   "local_cache": {
     "source_corpora_efold_files_recovered": 0,
     "huggingface_efold_train_cached": false
@@ -29,8 +38,9 @@
     {"channel": "cluster Hugging Face API", "result": "Errno 99 cannot assign requested address"},
     {"channel": "cluster hf-mirror API", "result": "TLS handshake timeout"},
     {"channel": "local direct data.json", "result": "connection timeout"},
-    {"channel": "local official Google Drive folder", "result": "connection timeout after 60 seconds"}
+    {"channel": "local official Google Drive folder", "result": "connection timeout after 60 seconds"},
+    {"channel": "local hf-mirror data.json", "result": "HTTP 404 RepoNotFound after rate-limit retry"}
   ],
-  "conclusion": "Official dataset identity and data-index commit are confirmed, but exact training sequences and the efold_train composition manifest are not recovered. Do not substitute TR1c or another model's clean set. eFold raw 8x3 remains valid; own-training-union clean remains blocked pending sequence recovery.",
+  "conclusion": "Official dataset identity, loader behavior and data-index commit are confirmed, but exact training sequences and the efold_train composition manifest are not publicly recovered. Do not substitute TR1c or another model's clean set. eFold raw 8x3 remains valid; own-training-union clean remains blocked pending author-authorized sequence recovery.",
   "next_action": "Recover efold_train or a verifiable composition manifest and all component sequences from Hugging Face or the official Drive, then build exact plus 80% identity clean splits and run 8 split x 3 evaluation."
 }

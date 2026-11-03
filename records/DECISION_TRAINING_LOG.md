@@ -12350,3 +12350,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 官方 `scripts/efold_training.py` 明确使用 `efold_train`；官方 `efold_data` 固定 commit=`f5c89cc26d743a8e5d09f4b7b29699912849396c` 已恢复，zip SHA256=`08865de40e343364a1c0e0f672278c1398d15d04ed26a1e1d34b9a91aab3b3eb`。
 - 数据 README 列出预训练组件 rnacentral_synthetic=226,729、ribo500-blast=46,060、bpRNA-1m=66,715，但没有证明本地简单拼接与官方 `efold_train` 完全等价。集群缓存没有对应序列文件。
 - Hugging Face 主站、镜像和直接 data.json 通道均实际失败，官方 Google Drive 文件夹也在 60 秒连接超时后失败，错误已记录；不能把 TR1c 或其他模型 clean 套给 eFold。raw 8×3 保留，own-training-union clean 继续 `BLOCKED_PROVENANCE_TRAINING_SEQUENCE_UNION_NOT_RECOVERED`，更新审计 SHA256=`cd166702ec3689876537db2d205afdc675515e751e1d571bbc79c8bffa457109`。后续需从官方 HF/Drive 恢复精确序列与组成清单后再跑 8×3。
+
+
+## §15.382（2026-11-03）eFold 数据加载器私有边界确认
+
+- 固定 `rouskinhf` commit=`955460bd83afe001ac88f1f37a34b0a05f7db320`，源码直接请求 `rouskinlab/efold_train` 的 `data.json`；上传函数默认 `private=True`。镜像在限流重试后返回 HTTP 404 `RepoNotFound`，与私有或撤回数据集边界一致，不能推断为可用公开资产。
+- loader zip SHA256=`8960be38534cea9b63ffa04c6bc5334d0f6deca3b7ae5531523f0a040c762855`，已存 `/teams`。更新 provenance 审计 SHA256=`fbea92305b4a4e172ad57956e903100773a64a5496205cb926344f75d839a117`。
+- 结论不升级为“数据不存在”，只确认当前无未授权公开恢复路径；需要作者授权或官方可验证镜像。停止重复网络尝试，raw 结果保留，own-clean 不伪造。
