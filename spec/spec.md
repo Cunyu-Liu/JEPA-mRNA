@@ -1,6 +1,16 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
-> **当前执行覆盖（2026-11-01，第 39 轮：逐模型去泄露全量复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
+> **当前执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型叙事、主图更新与大组会汇报；活跃清单 `round40-prism-group-meeting-v1`）**
+>
+> **本轮唯一设计与执行依据**：`docs/plans/2026-11-03-prism-group-meeting.md`。模型工作名为 **PRISM（Physics-informed RNA Structure Model）**，作为完整的序列到结构模型介绍；RiNALMo 仅是表征输入模块，配对交互场、ResNet2D、Turner 先验、约束解码和联合损失共同构成模型主体。对应配置的任务特定可学习参数仍为 812,375，冻结事实如实保留，不再用“只训练一个决策头”概括项目。
+>
+> **主线范围**：删除 NucleicBERT 迁移与其原论文下游测评，不进入组会或后续论文主线；历史结果只作归档。新增研究背景、训练/测评数据集、四项损失及设计理由，科学故事按背景→架构→损失→数据→主结果→消融→效率→置信度→边界→下一步展开。
+>
+> **主图 1 纠错**：round38 只改标题，图片仍用 round32 源。新主图 1 改用 round39 已验收的 BPfold raw 8 split×3 结果，仅比较 PRISM-xens2 与 BPfold；标题为 raw 全板 5/8、最佳单 checkpoint 4/8，bpRNA-new、TS2、ArchiveII 未领先。不同 own-clean n 不直接排名，该面板不是最终 matched-clean SOTA。
+>
+> **视觉与交付**：主图采用白底、低饱和 PRISM 蓝/物理青绿/对照橙和中性灰；组会稿 12 页，放在交接文档，保留 round38 原稿。架构图提示词、四项损失公式、数据集表、12 页大纲、配色常量和验收命令见上述计划。
+
+> **历史执行覆盖（2026-11-01，第 39 轮：逐模型去泄露全量复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
 >
 > **主结果口径立即纠正**：主图 1 标题固定为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”。预注册 clean 参照 6/8 只能放附注解释实验合同，不得作为 SOTA 主标题。当前 ArchiveII 全板最高 Kirigami=0.7872，高于 xens2=0.7760；bpRNA-new 与 TS2 也未领先。
 >
@@ -50,7 +60,7 @@
 >
 > **2026-11-03 BPfold raw 8/8**：TestSetB 三次 F1=**0.7900305273282315**，TP/FP/FN=9446/3210/1811，SD=0；raw 八格汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`。own-clean 已先行完成，raw+clean 现已齐套；异 clean 子集仍不得直接用于跨模型 SOTA 排名。
 >
-> **2026-11-03 持久恢复与 matched-clean 口径**：bprna raw ArchiveII 的 OOM 来自三任务并发显存超订，无半成品结果；证据 SHA256=`1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6`，frozen clean 后由远端持久锁断点恢复。NB official_s3 的 SSH 255 中断不记训练失败或收敛；epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，队列仅续剩余 7 个 run。新增 matched-clean 工具分别输出全局和两两交集，名称、序列及实际评分 GT 必须一致，原生截断分组，空交集不得写 F1=0；阶段复算 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`，TS2 全交集为空，最终主板与 SOTA 门不变。
+> **2026-11-03 持久恢复与 matched-clean 口径**：bprna raw ArchiveII 的 OOM 来自三任务并发显存超订，无半成品结果；证据 SHA256=`1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6`，frozen clean 后由远端持久锁断点恢复。NB official_s3 的 SSH 255 中断不记训练失败或收敛；epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，队列仅续剩余 7 个 run。新增 matched-clean 工具分别输出全局和两两交集，名称、序列及实际评分 GT 必须一致，原生截断分组，空交集不得写 F1=0；统一 xens2 已接入，长度排除与原生截断分组，6 项测试通过，阶段复算 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`；TS2 全交集为空，最终主板与 SOTA 门不变。
 >
 > **2026-11-03 断点与代码身份合同**：`--resume-runs` 仅用于诊断性去泄露评测，逐 repeat 原子保存并绑定数据、审计、模型、batch 与代码身份；正式独占测速不得使用跨窗口续跑。代码 commit/SHA 在模块加载时固定。当前 ArchiveII 旧进程 pin=`0496632ac2937f57af2970972737e4ba84c94bf1de67518529d07e99fceb66f5`，只允许校正 protocol 的 code commit/SHA，其余字段不变且原件保留，校正前不得聚合。
 >

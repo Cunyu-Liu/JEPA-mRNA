@@ -12300,3 +12300,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 原子 `resume.pt` 与 `validation_history.jsonl` 均为 15 个 epoch：epoch15 train BCE=0.0004274684014875623，validation BCE=**0.011631950499488883**，较 epoch14 的 0.011871916332246218 继续下降。
 - checkpoint 复核为 epoch=15、best_epoch=15、best_loss=0.011631950499488883、bad=0、early_stopped=False；模型、优化器和 CUDA RNG 状态齐全。训练仍在继续，未到 validation plateau，不生成 best.pt/run.json 科学结论，也不做 QA 晋级。
 - RNAformer-bprna raw ArchiveII 进程持续计算，尚无最终或逐 repeat sidecar；当前结果门不变。
+
+
+## §15.375（2026-11-03）统一 xens2 接入 matched-clean 对照
+
+- 将统一 xens2 的 TR1c-clean 八 split 三次结果接入同一汇总器。ArchiveII 原始 clean 为 1107 条，现有 xens2 结果仅覆盖 len≤600 的 1068 条（过滤 39 条），因此单列 `len_le600`，不得冒充全长结果；全长模型只在相同短序列上参与该组。
+- 6 项测试及同一输入快照两次逐字节复算通过，统一 xens2+9 基线的阶段快照 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`。所有系统原生 TP/FP/FN/F1 在构造交集前先行独立复核。
+- 全长共同交集中，xens2 在 TS0（n=69）=0.9198092761、TS1（n=3）=0.7142857143、TS3（n=4）=0.8840579710、hard（n=3）=0.7142857143 领先；bpRNA-new n=5386 时 xens2=0.5530578045，低于 BPfold=0.7369940504；TestSetB n=23 时 xens2=0.8371174729，低于 RiNALMo-ft=0.8554455446。小 n 必须随数值展示，不作显著性外推。
+- ArchiveII len≤600 的共同 n=74，xens2=0.7084489281，低于 BPfold=0.8030162413 和 RNAformer-interfam=0.7219416040；TS2 全交集仍为空。该快照证明当前短板不能仅归因于 clean n 差异，但不替代未完成的全长主板，也不修改 5/8、4/8 标题或宣称 8/8。

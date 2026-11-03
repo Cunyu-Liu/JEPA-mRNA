@@ -1,6 +1,15 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-01，第 39 轮：25 系统逐模型去泄露复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
+> **当前执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型、主图与大组会；活跃清单 `round40-prism-group-meeting-v1`）**
+>
+> - [x] T-A178 PRISM 独立模型定位、四部分架构贡献与 NucleicBERT/迁移退出主线的规范已写入 `docs/plans/2026-11-03-prism-group-meeting.md`。
+> - [x] T-A179 研究背景、12 页科学故事、训练/测评数据表、四项损失公式和辅助项证据边界已写入规范。
+> - [x] T-A180 论文架构图提示词与统一低饱和配色已写入规范；不含层级级联、System-1/2、NucleicBERT 或虚构模块。
+> - [ ] T-A181 主图 1 由 round39 BPfold raw 8 split×3 与 PRISM-xens2 重绘；16 值逐项核对，raw 5/8、单 checkpoint 4/8，三负格及非 matched-clean 边界明确。
+> - [ ] T-A182 交接文档内生成 12 页组会 PPT/PDF；每页一个核心问题，微软雅黑、无溢出/遮挡，研究背景/架构/损失/数据/结果/边界完整，逐页渲染通过。
+> - [ ] T-A183 源 JSON→图→PPT 三通道一致；嵌图与源 PNG 哈希、manifest、三处规范镜像、PPT/PDF 页数及 ZIP 全部通过。
+>
+> **历史执行覆盖（2026-11-01，第 39 轮：25 系统逐模型去泄露复测与 xens2 三目标攻关；活跃清单 `round39-clean-xens2-v1`）**
 >
 > - [ ] T-A169 25 系统均有官方 commit/权重/训练语料/哈希与加载 smoke；BPfold/UFold/E2Efold 和新增四基线完成资产恢复，旧 blocked 不作借口。
 > - [ ] T-A170 每模型独立精确 + 80% identity（及可用家族）去泄露，25×8×3=600 单元结果齐全；EternaFold bpRNA-new 三次复测完成；未知语料只标 BLOCKED_PROVENANCE。
@@ -26,7 +35,7 @@
 >
 > **BPfold raw 证据**：raw 8/8 独立复算完成，TestSetB=0.7900305273（三次 SD=0），汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`；own-clean 已完成，但不同 clean 子集不得直接排 SOTA。
 >
-> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch15 完整断点 best validation BCE=0.0116319505、bad=0，未收敛，剩余 7 个 run 续训。matched-clean 阶段 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`；TS2 全交集为空、两两 n=1–39，不勾选最终主板或 SOTA。
+> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch15 完整断点 best validation BCE=0.0116319505、bad=0，未收敛，剩余 7 个 run 续训。xens2+9 基线 matched-clean 阶段 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`；ArchiveII len≤600 单列，TS2 全交集为空，不勾选最终主板或 SOTA。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >

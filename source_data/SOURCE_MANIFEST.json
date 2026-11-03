@@ -997,9 +997,9 @@
   },
   {
    "path": "appendix_leakage/round39_matched_clean_sensitivity.json",
-   "sha256": "5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df",
-   "bytes": 209115,
-   "description": "9 系统八 split 阶段快照：own-clean 同名同序列同实际 GT 的全局与两两交集；TS2 全交集为空，不排最终 SOTA",
+   "sha256": "25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8",
+   "bytes": 271873,
+   "description": "统一 xens2+9 基线八 split 阶段快照：同 GT 全局与两两交集；ArchiveII 的 len≤600 单列，TS2 全交集为空",
    "status": "active_partial_matched_sensitivity_not_leaderboard"
   },
   {

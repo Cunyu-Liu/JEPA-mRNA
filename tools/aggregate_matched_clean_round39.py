@@ -22,6 +22,7 @@ SPECS = {
     "kirigami_fast": ("kirigami_fast/clean_tr0", "tr0", None),
     "nucleicbert_ft": ("nucleicbert_ft/clean_tr1c", "tr1c", "input_max_length_with_special_tokens"),
     "nucleicbert_frozen": ("nucleicbert_frozen/clean", "nucleicbert_rnastralign_tr0", 598),
+    "xens2": ("xens2/clean_tr1c", "tr1c", None),
 }
 
 
@@ -125,6 +126,12 @@ def load_system_split(root, system, split):
     hashes = [run.get("predictions_sha256", run.get("prediction_sha256")) for run in runs]
     assert all(hashes) and len(set(hashes)) == 1
     limit = native_limit(result, limit_spec)
+    n_length_filtered = protocol.get("n_length_filtered", 0)
+    if n_length_filtered:
+        assert protocol["sample_scope"] == "full_source_file_len_le600"
+        assert protocol["n_source_records"] == len(rows)
+        rows = [row for row in rows if len(row["seq"]) <= 600]
+        assert len(rows) + n_length_filtered == protocol["n_source_records"]
     predictions = result.get("predictions", result.get("per_sequence"))
     assert len(predictions) == len(rows)
     entries = {}
@@ -144,11 +151,20 @@ def load_system_split(root, system, split):
         assert (tp, fp, fn) == (native["tp"], native["fp"], native["fn"]), (system, split)
         assert abs(f1 - native["f1"]) < 1e-12
     truncated = limit is not None and any(len(entry["sequence"]) > limit for entry in entries.values())
-    return {"scope": f"first_{limit}_nt" if truncated else "full_length",
-            "native_limit": limit, "entries": entries, "n": len(entries),
+    scope = "len_le600" if n_length_filtered else f"first_{limit}_nt" if truncated else "full_length"
+    return {"scope": scope, "native_limit": limit, "entries": entries, "n": len(entries),
             "n_truncated": sum(len(entry["sequence"]) > limit for entry in entries.values()) if limit else 0,
+            "n_length_filtered": n_length_filtered,
             "result_sha256": sha256(result_path), "clean_sha256": audit["clean_sha256"],
             "audit_sha256": sha256(audit_path), "native": native}
+
+
+def scoped_entries(value, scope):
+    if value["scope"] == scope:
+        return value["entries"]
+    if scope == "len_le600" and value["scope"] == "full_length":
+        return {name: entry for name, entry in value["entries"].items() if len(entry["sequence"]) <= 600}
+    return None
 
 
 def aggregate_split(root, split):
@@ -159,7 +175,11 @@ def aggregate_split(root, split):
     for scope in scopes:
         if scope == "EMPTY_AFTER_DELEAK":
             continue
-        members = {system: value["entries"] for system, value in available.items() if value["scope"] == scope}
+        members = {}
+        for system, value in available.items():
+            entries = scoped_entries(value, scope)
+            if entries is not None:
+                members[system] = entries
         matched = matched_group(members)
         n = next(iter(matched.values()))["n"]
         systems = {}

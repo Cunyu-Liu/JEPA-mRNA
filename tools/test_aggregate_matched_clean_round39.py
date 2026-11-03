@@ -1,6 +1,6 @@
 import unittest
 
-from aggregate_matched_clean_round39 import canonical_pairs, matched_group, matched_pairs, native_limit, score_entries
+from aggregate_matched_clean_round39 import canonical_pairs, matched_group, matched_pairs, native_limit, score_entries, scoped_entries
 
 
 class MatchedCleanTest(unittest.TestCase):
@@ -40,6 +40,13 @@ class MatchedCleanTest(unittest.TestCase):
         self.assertEqual(native_limit({"input_max_length_with_special_tokens": 1024},
                                       "input_max_length_with_special_tokens"), 1022)
         self.assertIsNone(native_limit({}, None))
+
+    def test_length_excluded_scope(self):
+        entries = {"short": self.entry(sequence="A" * 600), "long": self.entry(sequence="A" * 601)}
+        value = {"scope": "full_length", "entries": entries}
+        self.assertEqual(set(scoped_entries(value, "len_le600")), {"short"})
+        self.assertEqual(scoped_entries(value, "full_length"), entries)
+        self.assertIsNone(scoped_entries(value, "first_598_nt"))
 
 
 if __name__ == "__main__":

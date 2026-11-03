@@ -13,14 +13,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -196,6 +197,25 @@
               "audit_sha256": "814eab93a138a9dee51e362b0dd2ec12ad77eb1dcfe156c02756646eeac028c7",
               "native_n": 1044,
               "n_truncated": 0
+            },
+            "xens2": {
+              "n": 69,
+              "tp": 2122,
+              "fp": 221,
+              "fn": 149,
+              "f1": 0.9198092761161681,
+              "f1_values": [
+                0.9198092761161681,
+                0.9198092761161681,
+                0.9198092761161681
+              ],
+              "f1_mean": 0.9198092761161681,
+              "f1_sd": 0.0,
+              "result_sha256": "09066c3d73642540c7cec7f8cc2a3cef0db2f61d6a20ed76a9ef97122a869048",
+              "clean_sha256": "a2ec92fdc9851f5ed282bc70931aaa13627a48acc3260214bae1f43211db7bb8",
+              "audit_sha256": "dfad153f2708e69efb4e442512ac94f0f358936a19e9c0271100d4a1ee1b5f2c",
+              "native_n": 713,
+              "n_truncated": 0
             }
           },
           "pairwise": {
@@ -359,6 +379,26 @@
                 }
               }
             },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 703,
+              "systems": {
+                "bpfold": {
+                  "n": 703,
+                  "tp": 16864,
+                  "fp": 8599,
+                  "fn": 2724,
+                  "f1": 0.7486626268007369
+                },
+                "xens2": {
+                  "n": 703,
+                  "tp": 14838,
+                  "fp": 3911,
+                  "fn": 4750,
+                  "f1": 0.7740824790672196
+                }
+              }
+            },
             "eternafold|kirigami_fast": {
               "status": "PASS_MATCHED",
               "n": 1144,
@@ -499,6 +539,26 @@
                 }
               }
             },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 684,
+              "systems": {
+                "eternafold": {
+                  "n": 684,
+                  "tp": 12238,
+                  "fp": 16269,
+                  "fn": 6184,
+                  "f1": 0.5215538366468495
+                },
+                "xens2": {
+                  "n": 684,
+                  "tp": 13823,
+                  "fp": 3897,
+                  "fn": 4599,
+                  "f1": 0.7649272314758453
+                }
+              }
+            },
             "kirigami_fast|mxfold2": {
               "status": "PASS_MATCHED",
               "n": 1105,
@@ -619,6 +679,26 @@
                 }
               }
             },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 709,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 709,
+                  "tp": 14777,
+                  "fp": 5737,
+                  "fn": 4933,
+                  "f1": 0.7347354813046937
+                },
+                "xens2": {
+                  "n": 709,
+                  "tp": 14918,
+                  "fp": 3946,
+                  "fn": 4792,
+                  "f1": 0.7734743609685281
+                }
+              }
+            },
             "mxfold2|nucleicbert_frozen": {
               "status": "PASS_MATCHED",
               "n": 1002,
@@ -719,6 +799,26 @@
                 }
               }
             },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 666,
+              "systems": {
+                "mxfold2": {
+                  "n": 666,
+                  "tp": 11801,
+                  "fp": 14448,
+                  "fn": 5686,
+                  "f1": 0.5396469727455643
+                },
+                "xens2": {
+                  "n": 666,
+                  "tp": 13157,
+                  "fp": 3727,
+                  "fn": 4330,
+                  "f1": 0.7655872683366792
+                }
+              }
+            },
             "nucleicbert_frozen|nucleicbert_ft": {
               "status": "PASS_MATCHED",
               "n": 609,
@@ -799,6 +899,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 609,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 609,
+                  "tp": 3943,
+                  "fp": 2686,
+                  "fn": 11005,
+                  "f1": 0.36548176298836726
+                },
+                "xens2": {
+                  "n": 609,
+                  "tp": 11360,
+                  "fp": 3202,
+                  "fn": 3588,
+                  "f1": 0.769908505591325
+                }
+              }
+            },
             "nucleicbert_ft|rinalmo_ft": {
               "status": "PASS_MATCHED",
               "n": 709,
@@ -859,6 +979,26 @@
                 }
               }
             },
+            "nucleicbert_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 713,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 713,
+                  "tp": 11444,
+                  "fp": 22621,
+                  "fn": 8333,
+                  "f1": 0.42509565023587537
+                },
+                "xens2": {
+                  "n": 713,
+                  "tp": 14979,
+                  "fp": 3955,
+                  "fn": 4798,
+                  "f1": 0.7738885588075741
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_interfam": {
               "status": "PASS_MATCHED",
               "n": 1181,
@@ -899,6 +1039,26 @@
                 }
               }
             },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 709,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 709,
+                  "tp": 15087,
+                  "fp": 6218,
+                  "fn": 4623,
+                  "f1": 0.7356820675362672
+                },
+                "xens2": {
+                  "n": 709,
+                  "tp": 14918,
+                  "fp": 3946,
+                  "fn": 4792,
+                  "f1": 0.7734743609685281
+                }
+              }
+            },
             "rnaformer_interfam|spotrna": {
               "status": "PASS_MATCHED",
               "n": 152,
@@ -918,6 +1078,46 @@
                   "f1": 0.6178470011186645
                 }
               }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 713,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 713,
+                  "tp": 13025,
+                  "fp": 8314,
+                  "fn": 6752,
+                  "f1": 0.6335733047961865
+                },
+                "xens2": {
+                  "n": 713,
+                  "tp": 14979,
+                  "fp": 3955,
+                  "fn": 4798,
+                  "f1": 0.7738885588075741
+                }
+              }
+            },
+            "spotrna|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 152,
+              "systems": {
+                "spotrna": {
+                  "n": 152,
+                  "tp": 3590,
+                  "fp": 2451,
+                  "fn": 1990,
+                  "f1": 0.6178470011186645
+                },
+                "xens2": {
+                  "n": 152,
+                  "tp": 4940,
+                  "fp": 433,
+                  "fn": 640,
+                  "f1": 0.9020359718798503
+                }
+              }
             }
           }
         }
@@ -933,14 +1133,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -1116,6 +1317,25 @@
               "audit_sha256": "b3e328e5549c2e9e2da57907cda02dd9ac2a54262aa4d9baf634b41d15a46801",
               "native_n": 5388,
               "n_truncated": 0
+            },
+            "xens2": {
+              "n": 5386,
+              "tp": 64520,
+              "fp": 33660,
+              "fn": 70621,
+              "f1": 0.5530578044839513,
+              "f1_values": [
+                0.5530578044839513,
+                0.5530578044839513,
+                0.5530578044839513
+              ],
+              "f1_mean": 0.5530578044839513,
+              "f1_sd": 0.0,
+              "result_sha256": "8b098f80865e711ebbee6fd68c3bd542918f5f873aaf71c6c19873abfaa132f7",
+              "clean_sha256": "231ae0079c183d481e4f5d4518f77a41fa52f6a6544b2feb0a7d60f8f9b23595",
+              "audit_sha256": "d3a08efbf512c72074baaf1af9bc9f3e6eb1660a7ea1e24c08509d6c21dc61ee",
+              "native_n": 5386,
+              "n_truncated": 0
             }
           },
           "pairwise": {
@@ -1279,6 +1499,26 @@
                 }
               }
             },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "bpfold": {
+                  "n": 5386,
+                  "tp": 106964,
+                  "fp": 48166,
+                  "fn": 28177,
+                  "f1": 0.7369940503873966
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
             "eternafold|kirigami_fast": {
               "status": "PASS_MATCHED",
               "n": 5388,
@@ -1419,6 +1659,26 @@
                 }
               }
             },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "eternafold": {
+                  "n": 5386,
+                  "tp": 104437,
+                  "fp": 65184,
+                  "fn": 30704,
+                  "f1": 0.6853675983226255
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
             "kirigami_fast|mxfold2": {
               "status": "PASS_MATCHED",
               "n": 5388,
@@ -1539,6 +1799,26 @@
                 }
               }
             },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 5386,
+                  "tp": 64954,
+                  "fp": 24550,
+                  "fn": 70187,
+                  "f1": 0.5782812882548021
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
             "mxfold2|nucleicbert_frozen": {
               "status": "PASS_MATCHED",
               "n": 5388,
@@ -1639,6 +1919,26 @@
                 }
               }
             },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "mxfold2": {
+                  "n": 5386,
+                  "tp": 100192,
+                  "fp": 64282,
+                  "fn": 34949,
+                  "f1": 0.6688049663735127
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
             "nucleicbert_frozen|nucleicbert_ft": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -1719,6 +2019,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 5386,
+                  "tp": 15922,
+                  "fp": 15749,
+                  "fn": 119219,
+                  "f1": 0.19089753734743303
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
             "nucleicbert_ft|rinalmo_ft": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -1779,6 +2099,26 @@
                 }
               }
             },
+            "nucleicbert_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 5386,
+                  "tp": 60966,
+                  "fp": 155899,
+                  "fn": 74175,
+                  "f1": 0.3463918228666557
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_interfam": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -1819,6 +2159,26 @@
                 }
               }
             },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 5386,
+                  "tp": 51424,
+                  "fp": 42526,
+                  "fn": 83717,
+                  "f1": 0.4489395043890856
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
             "rnaformer_interfam|spotrna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -1838,6 +2198,46 @@
                   "f1": 0.5836098496430769
                 }
               }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 5386,
+                  "tp": 83682,
+                  "fp": 36300,
+                  "fn": 51459,
+                  "f1": 0.6560129819734011
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
+            "spotrna|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "spotrna": {
+                  "n": 5386,
+                  "tp": 77300,
+                  "fp": 52462,
+                  "fn": 57841,
+                  "f1": 0.5836098496430769
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
             }
           }
         }
@@ -1853,14 +2253,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -2036,6 +2437,25 @@
               "audit_sha256": "65317d240da3f8b8ab48250d452b6e4c763ec3104e65de261346866e1ad073ce",
               "native_n": 48,
               "n_truncated": 0
+            },
+            "xens2": {
+              "n": 3,
+              "tp": 15,
+              "fp": 3,
+              "fn": 9,
+              "f1": 0.7142857142857143,
+              "f1_values": [
+                0.7142857142857143,
+                0.7142857142857143,
+                0.7142857142857143
+              ],
+              "f1_mean": 0.7142857142857143,
+              "f1_sd": 0.0,
+              "result_sha256": "efdf410588584aa7dc901d3b4b85b00580217c3fc4bdc67c02b9473b326d12a3",
+              "clean_sha256": "ae30efb7fd3f29cef5f630f289aa5150ce435c57a151884d6cf3c2d6f7403763",
+              "audit_sha256": "f340a7fa45ae133c1b2016d39ba4694966be764f7f56e60f55f6b9cb551e55c5",
+              "native_n": 18,
+              "n_truncated": 0
             }
           },
           "pairwise": {
@@ -2199,6 +2619,26 @@
                 }
               }
             },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 13,
+              "systems": {
+                "bpfold": {
+                  "n": 13,
+                  "tp": 202,
+                  "fp": 34,
+                  "fn": 24,
+                  "f1": 0.8744588744588745
+                },
+                "xens2": {
+                  "n": 13,
+                  "tp": 189,
+                  "fp": 11,
+                  "fn": 37,
+                  "f1": 0.8873239436619719
+                }
+              }
+            },
             "eternafold|kirigami_fast": {
               "status": "PASS_MATCHED",
               "n": 54,
@@ -2339,6 +2779,26 @@
                 }
               }
             },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 14,
+              "systems": {
+                "eternafold": {
+                  "n": 14,
+                  "tp": 176,
+                  "fp": 47,
+                  "fn": 39,
+                  "f1": 0.8036529680365296
+                },
+                "xens2": {
+                  "n": 14,
+                  "tp": 173,
+                  "fp": 11,
+                  "fn": 42,
+                  "f1": 0.8671679197994987
+                }
+              }
+            },
             "kirigami_fast|mxfold2": {
               "status": "PASS_MATCHED",
               "n": 50,
@@ -2459,6 +2919,26 @@
                 }
               }
             },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 18,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 18,
+                  "tp": 244,
+                  "fp": 20,
+                  "fn": 94,
+                  "f1": 0.8106312292358804
+                },
+                "xens2": {
+                  "n": 18,
+                  "tp": 282,
+                  "fp": 12,
+                  "fn": 56,
+                  "f1": 0.8924050632911392
+                }
+              }
+            },
             "mxfold2|nucleicbert_frozen": {
               "status": "PASS_MATCHED",
               "n": 40,
@@ -2559,6 +3039,26 @@
                 }
               }
             },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 15,
+              "systems": {
+                "mxfold2": {
+                  "n": 15,
+                  "tp": 226,
+                  "fp": 43,
+                  "fn": 41,
+                  "f1": 0.8432835820895522
+                },
+                "xens2": {
+                  "n": 15,
+                  "tp": 219,
+                  "fp": 8,
+                  "fn": 48,
+                  "f1": 0.8866396761133604
+                }
+              }
+            },
             "nucleicbert_frozen|nucleicbert_ft": {
               "status": "PASS_MATCHED",
               "n": 12,
@@ -2639,6 +3139,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 12,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 12,
+                  "tp": 18,
+                  "fp": 20,
+                  "fn": 130,
+                  "f1": 0.1935483870967742
+                },
+                "xens2": {
+                  "n": 12,
+                  "tp": 109,
+                  "fp": 4,
+                  "fn": 39,
+                  "f1": 0.8352490421455939
+                }
+              }
+            },
             "nucleicbert_ft|rinalmo_ft": {
               "status": "PASS_MATCHED",
               "n": 18,
@@ -2699,6 +3219,26 @@
                 }
               }
             },
+            "nucleicbert_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 18,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 18,
+                  "tp": 245,
+                  "fp": 138,
+                  "fn": 93,
+                  "f1": 0.6796116504854369
+                },
+                "xens2": {
+                  "n": 18,
+                  "tp": 282,
+                  "fp": 12,
+                  "fn": 56,
+                  "f1": 0.8924050632911392
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_interfam": {
               "status": "PASS_MATCHED",
               "n": 61,
@@ -2739,6 +3279,26 @@
                 }
               }
             },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 18,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 18,
+                  "tp": 269,
+                  "fp": 36,
+                  "fn": 69,
+                  "f1": 0.8367029548989113
+                },
+                "xens2": {
+                  "n": 18,
+                  "tp": 282,
+                  "fp": 12,
+                  "fn": 56,
+                  "f1": 0.8924050632911392
+                }
+              }
+            },
             "rnaformer_interfam|spotrna": {
               "status": "PASS_MATCHED",
               "n": 10,
@@ -2758,6 +3318,46 @@
                   "f1": 0.7759336099585062
                 }
               }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 18,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 18,
+                  "tp": 302,
+                  "fp": 19,
+                  "fn": 36,
+                  "f1": 0.9165402124430956
+                },
+                "xens2": {
+                  "n": 18,
+                  "tp": 282,
+                  "fp": 12,
+                  "fn": 56,
+                  "f1": 0.8924050632911392
+                }
+              }
+            },
+            "spotrna|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "spotrna": {
+                  "n": 10,
+                  "tp": 187,
+                  "fp": 62,
+                  "fn": 46,
+                  "f1": 0.7759336099585062
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 203,
+                  "fp": 11,
+                  "fn": 30,
+                  "f1": 0.9082774049217002
+                }
+              }
             }
           }
         }
@@ -2773,14 +3373,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "full_length": {
           "status": "EMPTY_INTERSECTION",
@@ -2819,6 +3420,10 @@
               "status": "EMPTY_INTERSECTION"
             },
             "nucleicbert_frozen": {
+              "n": 0,
+              "status": "EMPTY_INTERSECTION"
+            },
+            "xens2": {
               "n": 0,
               "status": "EMPTY_INTERSECTION"
             }
@@ -2976,6 +3581,26 @@
                 }
               }
             },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 1,
+              "systems": {
+                "bpfold": {
+                  "n": 1,
+                  "tp": 16,
+                  "fp": 1,
+                  "fn": 0,
+                  "f1": 0.9696969696969697
+                },
+                "xens2": {
+                  "n": 1,
+                  "tp": 13,
+                  "fp": 0,
+                  "fn": 3,
+                  "f1": 0.896551724137931
+                }
+              }
+            },
             "eternafold|kirigami_fast": {
               "status": "PASS_MATCHED",
               "n": 32,
@@ -3116,6 +3741,26 @@
                 }
               }
             },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 22,
+              "systems": {
+                "eternafold": {
+                  "n": 22,
+                  "tp": 358,
+                  "fp": 55,
+                  "fn": 41,
+                  "f1": 0.8817733990147784
+                },
+                "xens2": {
+                  "n": 22,
+                  "tp": 298,
+                  "fp": 22,
+                  "fn": 101,
+                  "f1": 0.8289290681502086
+                }
+              }
+            },
             "kirigami_fast|mxfold2": {
               "status": "PASS_MATCHED",
               "n": 27,
@@ -3236,6 +3881,26 @@
                 }
               }
             },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 29,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 29,
+                  "tp": 277,
+                  "fp": 43,
+                  "fn": 189,
+                  "f1": 0.7048346055979644
+                },
+                "xens2": {
+                  "n": 29,
+                  "tp": 355,
+                  "fp": 28,
+                  "fn": 111,
+                  "f1": 0.8362779740871613
+                }
+              }
+            },
             "mxfold2|nucleicbert_frozen": {
               "status": "PASS_MATCHED",
               "n": 27,
@@ -3336,6 +4001,26 @@
                 }
               }
             },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 20,
+              "systems": {
+                "mxfold2": {
+                  "n": 20,
+                  "tp": 340,
+                  "fp": 26,
+                  "fn": 44,
+                  "f1": 0.9066666666666666
+                },
+                "xens2": {
+                  "n": 20,
+                  "tp": 292,
+                  "fp": 20,
+                  "fn": 92,
+                  "f1": 0.8390804597701149
+                }
+              }
+            },
             "nucleicbert_frozen|nucleicbert_ft": {
               "status": "PASS_MATCHED",
               "n": 28,
@@ -3416,6 +4101,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 28,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 28,
+                  "tp": 89,
+                  "fp": 28,
+                  "fn": 363,
+                  "f1": 0.31282952548330406
+                },
+                "xens2": {
+                  "n": 28,
+                  "tp": 344,
+                  "fp": 28,
+                  "fn": 108,
+                  "f1": 0.8349514563106796
+                }
+              }
+            },
             "nucleicbert_ft|rinalmo_ft": {
               "status": "PASS_MATCHED",
               "n": 29,
@@ -3476,6 +4181,26 @@
                 }
               }
             },
+            "nucleicbert_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 29,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 29,
+                  "tp": 339,
+                  "fp": 211,
+                  "fn": 127,
+                  "f1": 0.6673228346456693
+                },
+                "xens2": {
+                  "n": 29,
+                  "tp": 355,
+                  "fp": 28,
+                  "fn": 111,
+                  "f1": 0.8362779740871613
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_interfam": {
               "status": "PASS_MATCHED",
               "n": 39,
@@ -3516,6 +4241,26 @@
                 }
               }
             },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 29,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 29,
+                  "tp": 288,
+                  "fp": 55,
+                  "fn": 178,
+                  "f1": 0.7119901112484549
+                },
+                "xens2": {
+                  "n": 29,
+                  "tp": 355,
+                  "fp": 28,
+                  "fn": 111,
+                  "f1": 0.8362779740871613
+                }
+              }
+            },
             "rnaformer_interfam|spotrna": {
               "status": "PASS_MATCHED",
               "n": 9,
@@ -3535,6 +4280,46 @@
                   "f1": 0.7686567164179104
                 }
               }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 29,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 29,
+                  "tp": 425,
+                  "fp": 32,
+                  "fn": 41,
+                  "f1": 0.9209100758396533
+                },
+                "xens2": {
+                  "n": 29,
+                  "tp": 355,
+                  "fp": 28,
+                  "fn": 111,
+                  "f1": 0.8362779740871613
+                }
+              }
+            },
+            "spotrna|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 9,
+              "systems": {
+                "spotrna": {
+                  "n": 9,
+                  "tp": 103,
+                  "fp": 39,
+                  "fn": 23,
+                  "f1": 0.7686567164179104
+                },
+                "xens2": {
+                  "n": 9,
+                  "tp": 92,
+                  "fp": 8,
+                  "fn": 34,
+                  "f1": 0.8141592920353983
+                }
+              }
             }
           }
         }
@@ -3550,14 +4335,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -3714,6 +4500,25 @@
               "audit_sha256": "95421dbed720d87093563a55912efb26f55288878dbfdf978fd123995f141c0a",
               "native_n": 17,
               "n_truncated": 0
+            },
+            "xens2": {
+              "n": 4,
+              "tp": 61,
+              "fp": 7,
+              "fn": 9,
+              "f1": 0.8840579710144928,
+              "f1_values": [
+                0.8840579710144928,
+                0.8840579710144928,
+                0.8840579710144928
+              ],
+              "f1_mean": 0.8840579710144928,
+              "f1_sd": 0.0,
+              "result_sha256": "2516c4bd3f27818500628ac3404518935cb9ef6b9e71c6358a0f6c6ba9dea155",
+              "clean_sha256": "42188a0ae21d860c034d323f3c83ff4e33d20a1d52b4914c1eb5f3a4e07d7dd3",
+              "audit_sha256": "88b6417a9cddf16bdbcab6f7d841014566002c2cfcf84847553a2386ab3af04c",
+              "native_n": 4,
+              "n_truncated": 0
             }
           },
           "pairwise": {
@@ -3857,6 +4662,26 @@
                 }
               }
             },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "bpfold": {
+                  "n": 4,
+                  "tp": 65,
+                  "fp": 18,
+                  "fn": 5,
+                  "f1": 0.8496732026143791
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
             "eternafold|kirigami_fast": {
               "status": "PASS_MATCHED",
               "n": 17,
@@ -3977,6 +4802,26 @@
                 }
               }
             },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "eternafold": {
+                  "n": 4,
+                  "tp": 59,
+                  "fp": 18,
+                  "fn": 11,
+                  "f1": 0.8027210884353742
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
             "kirigami_fast|mxfold2": {
               "status": "PASS_MATCHED",
               "n": 17,
@@ -4077,6 +4922,26 @@
                 }
               }
             },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 4,
+                  "tp": 53,
+                  "fp": 10,
+                  "fn": 17,
+                  "f1": 0.7969924812030075
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
             "mxfold2|nucleicbert_frozen": {
               "status": "PASS_MATCHED",
               "n": 17,
@@ -4157,6 +5022,26 @@
                 }
               }
             },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "mxfold2": {
+                  "n": 4,
+                  "tp": 59,
+                  "fp": 18,
+                  "fn": 11,
+                  "f1": 0.8027210884353742
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
             "nucleicbert_frozen|nucleicbert_ft": {
               "status": "PASS_MATCHED",
               "n": 4,
@@ -4217,6 +5102,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 4,
+                  "tp": 8,
+                  "fp": 3,
+                  "fn": 62,
+                  "f1": 0.19753086419753085
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
             "nucleicbert_ft|rinalmo_ft": {
               "status": "PASS_MATCHED",
               "n": 4,
@@ -4257,6 +5162,26 @@
                 }
               }
             },
+            "nucleicbert_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 4,
+                  "tp": 44,
+                  "fp": 61,
+                  "fn": 26,
+                  "f1": 0.5028571428571429
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_interfam": {
               "status": "PASS_MATCHED",
               "n": 17,
@@ -4276,6 +5201,46 @@
                   "f1": 0.8067444876783398
                 }
               }
+            },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 4,
+                  "tp": 41,
+                  "fp": 13,
+                  "fn": 29,
+                  "f1": 0.6612903225806451
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 4,
+                  "tp": 60,
+                  "fp": 16,
+                  "fn": 10,
+                  "f1": 0.821917808219178
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
             }
           }
         }
@@ -4291,14 +5256,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -4474,6 +5440,25 @@
               "audit_sha256": "7c8c9e999c127f21c440de991b57285461a58c1423ffc6f7184f602f0b8dc9b5",
               "native_n": 28,
               "n_truncated": 0
+            },
+            "xens2": {
+              "n": 3,
+              "tp": 15,
+              "fp": 3,
+              "fn": 9,
+              "f1": 0.7142857142857143,
+              "f1_values": [
+                0.7142857142857143,
+                0.7142857142857143,
+                0.7142857142857143
+              ],
+              "f1_mean": 0.7142857142857143,
+              "f1_sd": 0.0,
+              "result_sha256": "eb8156a3a5fbf130f9f672d1819e8ee4cb1a90f952eb4a46787eac124a5cdc2a",
+              "clean_sha256": "aa9c904d158bef81a0ea2cdd991d1955b25af4afd65430bdbc88b13c1997fcdf",
+              "audit_sha256": "e7fa6ac91ea386a5c9d12d4616936e79a80970f501a6ce24a7310aab1aab89ab",
+              "native_n": 10,
+              "n_truncated": 0
             }
           },
           "pairwise": {
@@ -4637,6 +5622,26 @@
                 }
               }
             },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 9,
+              "systems": {
+                "bpfold": {
+                  "n": 9,
+                  "tp": 74,
+                  "fp": 32,
+                  "fn": 10,
+                  "f1": 0.7789473684210526
+                },
+                "xens2": {
+                  "n": 9,
+                  "tp": 62,
+                  "fp": 6,
+                  "fn": 22,
+                  "f1": 0.8157894736842105
+                }
+              }
+            },
             "eternafold|kirigami_fast": {
               "status": "PASS_MATCHED",
               "n": 28,
@@ -4777,6 +5782,26 @@
                 }
               }
             },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "eternafold": {
+                  "n": 10,
+                  "tp": 80,
+                  "fp": 29,
+                  "fn": 17,
+                  "f1": 0.7766990291262136
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 73,
+                  "fp": 6,
+                  "fn": 24,
+                  "f1": 0.8295454545454546
+                }
+              }
+            },
             "kirigami_fast|mxfold2": {
               "status": "PASS_MATCHED",
               "n": 26,
@@ -4897,6 +5922,26 @@
                 }
               }
             },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 10,
+                  "tp": 66,
+                  "fp": 14,
+                  "fn": 31,
+                  "f1": 0.7457627118644068
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 73,
+                  "fp": 6,
+                  "fn": 24,
+                  "f1": 0.8295454545454546
+                }
+              }
+            },
             "mxfold2|nucleicbert_frozen": {
               "status": "PASS_MATCHED",
               "n": 26,
@@ -4997,6 +6042,26 @@
                 }
               }
             },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 9,
+              "systems": {
+                "mxfold2": {
+                  "n": 9,
+                  "tp": 69,
+                  "fp": 29,
+                  "fn": 15,
+                  "f1": 0.7582417582417582
+                },
+                "xens2": {
+                  "n": 9,
+                  "tp": 62,
+                  "fp": 6,
+                  "fn": 22,
+                  "f1": 0.8157894736842105
+                }
+              }
+            },
             "nucleicbert_frozen|nucleicbert_ft": {
               "status": "PASS_MATCHED",
               "n": 10,
@@ -5077,6 +6142,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 10,
+                  "tp": 20,
+                  "fp": 9,
+                  "fn": 77,
+                  "f1": 0.31746031746031744
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 73,
+                  "fp": 6,
+                  "fn": 24,
+                  "f1": 0.8295454545454546
+                }
+              }
+            },
             "nucleicbert_ft|rinalmo_ft": {
               "status": "PASS_MATCHED",
               "n": 10,
@@ -5137,6 +6222,26 @@
                 }
               }
             },
+            "nucleicbert_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 10,
+                  "tp": 63,
+                  "fp": 88,
+                  "fn": 34,
+                  "f1": 0.5080645161290323
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 73,
+                  "fp": 6,
+                  "fn": 24,
+                  "f1": 0.8295454545454546
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_interfam": {
               "status": "PASS_MATCHED",
               "n": 28,
@@ -5177,6 +6282,26 @@
                 }
               }
             },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 10,
+                  "tp": 57,
+                  "fp": 33,
+                  "fn": 40,
+                  "f1": 0.6096256684491979
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 73,
+                  "fp": 6,
+                  "fn": 24,
+                  "f1": 0.8295454545454546
+                }
+              }
+            },
             "rnaformer_interfam|spotrna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -5196,6 +6321,46 @@
                   "f1": 0.6530612244897959
                 }
               }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 10,
+                  "tp": 74,
+                  "fp": 18,
+                  "fn": 23,
+                  "f1": 0.783068783068783
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 73,
+                  "fp": 6,
+                  "fn": 24,
+                  "f1": 0.8295454545454546
+                }
+              }
+            },
+            "spotrna|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 3,
+              "systems": {
+                "spotrna": {
+                  "n": 3,
+                  "tp": 16,
+                  "fp": 9,
+                  "fn": 8,
+                  "f1": 0.6530612244897959
+                },
+                "xens2": {
+                  "n": 3,
+                  "tp": 15,
+                  "fp": 3,
+                  "fn": 9,
+                  "f1": 0.7142857142857143
+                }
+              }
             }
           }
         }
@@ -5211,14 +6376,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "first_598_nt": {
           "status": "PASS_MATCHED",
@@ -5846,6 +7012,726 @@
               }
             }
           }
+        },
+        "len_le600": {
+          "status": "PASS_MATCHED",
+          "n": 74,
+          "systems": {
+            "eternafold": {
+              "n": 74,
+              "tp": 2781,
+              "fp": 2857,
+              "fn": 1312,
+              "f1": 0.5715753776590279,
+              "f1_values": [
+                0.5715753776590279,
+                0.5715753776590279,
+                0.5715753776590279
+              ],
+              "f1_mean": 0.5715753776590279,
+              "f1_sd": 0.0,
+              "result_sha256": "e5f530d6f17d03b15a7cd0b846e1937b9cc679aa57b2e4d3fea696f44c7a5456",
+              "clean_sha256": "4650fa903fba8f034504aa3aeda3afe3313cdcb69adde7e6b8da1680e6cca733",
+              "audit_sha256": "1fc5c584c0095f0a9c550b323e9770cfaf26b90f4aba03e76ba5483d6169225f",
+              "native_n": 1033,
+              "n_truncated": 0
+            },
+            "bpfold": {
+              "n": 74,
+              "tp": 3461,
+              "fp": 1066,
+              "fn": 632,
+              "f1": 0.8030162412993039,
+              "f1_values": [
+                0.8030162412993039,
+                0.8030162412993039,
+                0.8030162412993039
+              ],
+              "f1_mean": 0.8030162412993039,
+              "f1_sd": 0.0,
+              "result_sha256": "c6f8e1684d9927db9557ade04a8add626523a6a3404af30bff2d0bb96d2f243f",
+              "clean_sha256": "e47ec296eda856b3ee8538497f52e27ab34e906469f3750928889d5feb7d974a",
+              "audit_sha256": "e7257dce5c384595977bfeb4a51bd459cf555ad2225eb2237564730db9e08b9f",
+              "native_n": 731,
+              "n_truncated": 0
+            },
+            "mxfold2": {
+              "n": 74,
+              "tp": 2984,
+              "fp": 2438,
+              "fn": 1109,
+              "f1": 0.6272201786652654,
+              "f1_values": [
+                0.6272201786652654,
+                0.6272201786652654,
+                0.6272201786652654
+              ],
+              "f1_mean": 0.6272201786652654,
+              "f1_sd": 0.0,
+              "result_sha256": "e60d8df36b44ea3e1665e730264c14cdbe7bd55c5285e19674eedd33fd6585a2",
+              "clean_sha256": "496bf1c4c62d43cbf21e6834737c6a84e12d8c4049b354f8545e0a6d6fe7cbc4",
+              "audit_sha256": "dee3db32d983f891016937365fbdf740da8a84d117e2405b1fc9aa8e6ab20793",
+              "native_n": 1041,
+              "n_truncated": 0
+            },
+            "rnaformer_interfam": {
+              "n": 74,
+              "tp": 2930,
+              "fp": 1094,
+              "fn": 1163,
+              "f1": 0.7219416040409018,
+              "f1_values": [
+                0.7219416040409018,
+                0.7219416040409018,
+                0.7219416040409018
+              ],
+              "f1_mean": 0.7219416040409018,
+              "f1_sd": 0.0,
+              "result_sha256": "f55c76ac4d9124b60de1c370e207e8789a21a6d54b2788c36eac7372e2b84758",
+              "clean_sha256": "0dbfe2ab6bf28675ef87349bc96c46b296aa37565ec9631854603846aff9e9fd",
+              "audit_sha256": "3ac41a9cc356781931aa00121cbe868a89683586c3f7129494a856efaab98128",
+              "native_n": 2192,
+              "n_truncated": 0
+            },
+            "rinalmo_ft": {
+              "n": 74,
+              "tp": 2955,
+              "fp": 1588,
+              "fn": 1138,
+              "f1": 0.6843446039833256,
+              "f1_values": [
+                0.6843446039833256,
+                0.6843446039833256,
+                0.6843446039833256
+              ],
+              "f1_mean": 0.6843446039833256,
+              "f1_sd": 0.0,
+              "result_sha256": "236263f28a815970e8341da249ec00dc90c5b1f28758fe949ffd3aa3d41c6976",
+              "clean_sha256": "20f5e4a0c235498ae092d341991fff40f6db134f240db7d107de766f0dc784eb",
+              "audit_sha256": "f72c7ecb8205929fca98817953ac972193eafca046ac461f4ca8d6496a94555a",
+              "native_n": 1094,
+              "n_truncated": 0
+            },
+            "spotrna": {
+              "n": 74,
+              "tp": 2338,
+              "fp": 1863,
+              "fn": 1755,
+              "f1": 0.5637810465396672,
+              "f1_values": [
+                0.5637810465396672,
+                0.5637810465396672,
+                0.5637810465396672
+              ],
+              "f1_mean": 0.5637810465396672,
+              "f1_sd": 0.0,
+              "result_sha256": "df6da8b5052318b4db3caf2d097e1f1fa19cc8e4bf53395cdc3f83d9258063ee",
+              "clean_sha256": "ba166c7d491d31cf61e12c7df26f4407340c6629d043bd6b6d1f6d08ae8385ac",
+              "audit_sha256": "e023af84fb8b7b200a25ece19d226d856d98fc8e9a7813808927843741047602",
+              "native_n": 580,
+              "n_truncated": 0
+            },
+            "kirigami_fast": {
+              "n": 74,
+              "tp": 2691,
+              "fp": 1071,
+              "fn": 1402,
+              "f1": 0.6851686823679185,
+              "f1_values": [
+                0.6851686823679185,
+                0.6851686823679185,
+                0.6851686823679185
+              ],
+              "f1_mean": 0.6851686823679185,
+              "f1_sd": 0.0,
+              "result_sha256": "483caca47ff34fcf092568eb0fa1f790ccb846300d3b8be9e0170d6892a7efd4",
+              "clean_sha256": "20f5e4a0c235498ae092d341991fff40f6db134f240db7d107de766f0dc784eb",
+              "audit_sha256": "f72c7ecb8205929fca98817953ac972193eafca046ac461f4ca8d6496a94555a",
+              "native_n": 1094,
+              "n_truncated": 0
+            },
+            "xens2": {
+              "n": 74,
+              "tp": 2809,
+              "fp": 1028,
+              "fn": 1284,
+              "f1": 0.7084489281210593,
+              "f1_values": [
+                0.7084489281210593,
+                0.7084489281210593,
+                0.7084489281210593
+              ],
+              "f1_mean": 0.7084489281210593,
+              "f1_sd": 0.0,
+              "result_sha256": "9e179db80a7978dd5fe67a93592150a2516cd08161cf569a30405c5ff8b69039",
+              "clean_sha256": "2ee519190c6ebab33359dbed020b60570da4ae4c5b9f554e2cc8612d25f7524d",
+              "audit_sha256": "fc34586cb11ab32ea4d32661393ed6288ac2a4b6039bec9829a8e9b6dd244eb1",
+              "native_n": 1068,
+              "n_truncated": 0
+            }
+          },
+          "pairwise": {
+            "bpfold|eternafold": {
+              "status": "PASS_MATCHED",
+              "n": 358,
+              "systems": {
+                "bpfold": {
+                  "n": 358,
+                  "tp": 21139,
+                  "fp": 7958,
+                  "fn": 3031,
+                  "f1": 0.7936996639570466
+                },
+                "eternafold": {
+                  "n": 358,
+                  "tp": 17042,
+                  "fp": 16773,
+                  "fn": 7128,
+                  "f1": 0.587807191515047
+                }
+              }
+            },
+            "bpfold|kirigami_fast": {
+              "status": "PASS_MATCHED",
+              "n": 689,
+              "systems": {
+                "bpfold": {
+                  "n": 689,
+                  "tp": 38637,
+                  "fp": 11082,
+                  "fn": 4404,
+                  "f1": 0.8330530401034929
+                },
+                "kirigami_fast": {
+                  "n": 689,
+                  "tp": 28746,
+                  "fp": 9559,
+                  "fn": 14295,
+                  "f1": 0.7067587834681484
+                }
+              }
+            },
+            "bpfold|mxfold2": {
+              "status": "PASS_MATCHED",
+              "n": 333,
+              "systems": {
+                "bpfold": {
+                  "n": 333,
+                  "tp": 15539,
+                  "fp": 3559,
+                  "fn": 2099,
+                  "f1": 0.8459821428571429
+                },
+                "mxfold2": {
+                  "n": 333,
+                  "tp": 13245,
+                  "fp": 7764,
+                  "fn": 4393,
+                  "f1": 0.685434833234145
+                }
+              }
+            },
+            "bpfold|rinalmo_ft": {
+              "status": "PASS_MATCHED",
+              "n": 689,
+              "systems": {
+                "bpfold": {
+                  "n": 689,
+                  "tp": 38637,
+                  "fp": 11082,
+                  "fn": 4404,
+                  "f1": 0.8330530401034929
+                },
+                "rinalmo_ft": {
+                  "n": 689,
+                  "tp": 30855,
+                  "fp": 13534,
+                  "fn": 12186,
+                  "f1": 0.7058218002973807
+                }
+              }
+            },
+            "bpfold|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 637,
+              "systems": {
+                "bpfold": {
+                  "n": 637,
+                  "tp": 36447,
+                  "fp": 10642,
+                  "fn": 4088,
+                  "f1": 0.8318953711311969
+                },
+                "rnaformer_interfam": {
+                  "n": 637,
+                  "tp": 26480,
+                  "fp": 11148,
+                  "fn": 14055,
+                  "f1": 0.6775584355769354
+                }
+              }
+            },
+            "bpfold|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 336,
+              "systems": {
+                "bpfold": {
+                  "n": 336,
+                  "tp": 21139,
+                  "fp": 4593,
+                  "fn": 1789,
+                  "f1": 0.8688450472667488
+                },
+                "spotrna": {
+                  "n": 336,
+                  "tp": 10973,
+                  "fp": 9372,
+                  "fn": 11955,
+                  "f1": 0.507152265847064
+                }
+              }
+            },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 482,
+              "systems": {
+                "bpfold": {
+                  "n": 482,
+                  "tp": 29268,
+                  "fp": 8637,
+                  "fn": 3155,
+                  "f1": 0.8323285178022978
+                },
+                "xens2": {
+                  "n": 482,
+                  "tp": 22493,
+                  "fp": 8110,
+                  "fn": 9930,
+                  "f1": 0.7137689207628598
+                }
+              }
+            },
+            "eternafold|kirigami_fast": {
+              "status": "PASS_MATCHED",
+              "n": 487,
+              "systems": {
+                "eternafold": {
+                  "n": 487,
+                  "tp": 23174,
+                  "fp": 22051,
+                  "fn": 9526,
+                  "f1": 0.5947770291947385
+                },
+                "kirigami_fast": {
+                  "n": 487,
+                  "tp": 21288,
+                  "fp": 9212,
+                  "fn": 11412,
+                  "f1": 0.6736708860759494
+                }
+              }
+            },
+            "eternafold|mxfold2": {
+              "status": "PASS_MATCHED",
+              "n": 323,
+              "systems": {
+                "eternafold": {
+                  "n": 323,
+                  "tp": 11653,
+                  "fp": 12595,
+                  "fn": 6255,
+                  "f1": 0.5528513141664294
+                },
+                "mxfold2": {
+                  "n": 323,
+                  "tp": 13271,
+                  "fp": 9619,
+                  "fn": 4637,
+                  "f1": 0.6505711064267856
+                }
+              }
+            },
+            "eternafold|rinalmo_ft": {
+              "status": "PASS_MATCHED",
+              "n": 487,
+              "systems": {
+                "eternafold": {
+                  "n": 487,
+                  "tp": 23174,
+                  "fp": 22051,
+                  "fn": 9526,
+                  "f1": 0.5947770291947385
+                },
+                "rinalmo_ft": {
+                  "n": 487,
+                  "tp": 24125,
+                  "fp": 13282,
+                  "fn": 8575,
+                  "f1": 0.6882336999158429
+                }
+              }
+            },
+            "eternafold|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 909,
+              "systems": {
+                "eternafold": {
+                  "n": 909,
+                  "tp": 36799,
+                  "fp": 34639,
+                  "fn": 16403,
+                  "f1": 0.59048459563543
+                },
+                "rnaformer_interfam": {
+                  "n": 909,
+                  "tp": 33588,
+                  "fp": 15434,
+                  "fn": 19614,
+                  "f1": 0.6571450931288152
+                }
+              }
+            },
+            "eternafold|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 217,
+              "systems": {
+                "eternafold": {
+                  "n": 217,
+                  "tp": 10257,
+                  "fp": 8944,
+                  "fn": 3708,
+                  "f1": 0.618524995477296
+                },
+                "spotrna": {
+                  "n": 217,
+                  "tp": 6986,
+                  "fp": 6182,
+                  "fn": 6979,
+                  "f1": 0.5149449010430104
+                }
+              }
+            },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 536,
+              "systems": {
+                "eternafold": {
+                  "n": 536,
+                  "tp": 24128,
+                  "fp": 23890,
+                  "fn": 10626,
+                  "f1": 0.5829990818151065
+                },
+                "xens2": {
+                  "n": 536,
+                  "tp": 23931,
+                  "fp": 9520,
+                  "fn": 10823,
+                  "f1": 0.7017374092808445
+                }
+              }
+            },
+            "kirigami_fast|mxfold2": {
+              "status": "PASS_MATCHED",
+              "n": 465,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 465,
+                  "tp": 17265,
+                  "fp": 4330,
+                  "fn": 5313,
+                  "f1": 0.7816992280352252
+                },
+                "mxfold2": {
+                  "n": 465,
+                  "tp": 17243,
+                  "fp": 9240,
+                  "fn": 5335,
+                  "f1": 0.7029208536311938
+                }
+              }
+            },
+            "kirigami_fast|rinalmo_ft": {
+              "status": "PASS_MATCHED",
+              "n": 1055,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 1055,
+                  "tp": 42769,
+                  "fp": 13010,
+                  "fn": 18370,
+                  "f1": 0.7316067671359414
+                },
+                "rinalmo_ft": {
+                  "n": 1055,
+                  "tp": 46043,
+                  "fp": 18002,
+                  "fn": 15096,
+                  "f1": 0.7356051891615542
+                }
+              }
+            },
+            "kirigami_fast|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 985,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 985,
+                  "tp": 40403,
+                  "fp": 12439,
+                  "fn": 17220,
+                  "f1": 0.7315077173765446
+                },
+                "rnaformer_interfam": {
+                  "n": 985,
+                  "tp": 38769,
+                  "fp": 14871,
+                  "fn": 18854,
+                  "f1": 0.6968893522554668
+                }
+              }
+            },
+            "kirigami_fast|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 536,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 536,
+                  "tp": 24065,
+                  "fp": 6240,
+                  "fn": 8912,
+                  "f1": 0.7605638254163901
+                },
+                "spotrna": {
+                  "n": 536,
+                  "tp": 17104,
+                  "fp": 12980,
+                  "fn": 15873,
+                  "f1": 0.5424588890122263
+                }
+              }
+            },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 726,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 726,
+                  "tp": 31184,
+                  "fp": 9783,
+                  "fn": 14197,
+                  "f1": 0.7222865613563719
+                },
+                "xens2": {
+                  "n": 726,
+                  "tp": 33035,
+                  "fp": 10477,
+                  "fn": 12346,
+                  "f1": 0.7432531245429899
+                }
+              }
+            },
+            "mxfold2|rinalmo_ft": {
+              "status": "PASS_MATCHED",
+              "n": 465,
+              "systems": {
+                "mxfold2": {
+                  "n": 465,
+                  "tp": 17243,
+                  "fp": 9240,
+                  "fn": 5335,
+                  "f1": 0.7029208536311938
+                },
+                "rinalmo_ft": {
+                  "n": 465,
+                  "tp": 18048,
+                  "fp": 5658,
+                  "fn": 4530,
+                  "f1": 0.7798807363235676
+                }
+              }
+            },
+            "mxfold2|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 841,
+              "systems": {
+                "mxfold2": {
+                  "n": 841,
+                  "tp": 30694,
+                  "fp": 13915,
+                  "fn": 8632,
+                  "f1": 0.7313754691130041
+                },
+                "rnaformer_interfam": {
+                  "n": 841,
+                  "tp": 30561,
+                  "fp": 7716,
+                  "fn": 8765,
+                  "f1": 0.7876241897864773
+                }
+              }
+            },
+            "mxfold2|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 257,
+              "systems": {
+                "mxfold2": {
+                  "n": 257,
+                  "tp": 10558,
+                  "fp": 5487,
+                  "fn": 3280,
+                  "f1": 0.7066224943948064
+                },
+                "spotrna": {
+                  "n": 257,
+                  "tp": 8827,
+                  "fp": 4784,
+                  "fn": 5011,
+                  "f1": 0.6431563991402237
+                }
+              }
+            },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 435,
+              "systems": {
+                "mxfold2": {
+                  "n": 435,
+                  "tp": 17836,
+                  "fp": 9450,
+                  "fn": 5363,
+                  "f1": 0.706586114687531
+                },
+                "xens2": {
+                  "n": 435,
+                  "tp": 17450,
+                  "fp": 3767,
+                  "fn": 5749,
+                  "f1": 0.7857528818443804
+                }
+              }
+            },
+            "rinalmo_ft|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 985,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 985,
+                  "tp": 43397,
+                  "fp": 17299,
+                  "fn": 14226,
+                  "f1": 0.7335592761940178
+                },
+                "rnaformer_interfam": {
+                  "n": 985,
+                  "tp": 38769,
+                  "fp": 14871,
+                  "fn": 18854,
+                  "f1": 0.6968893522554668
+                }
+              }
+            },
+            "rinalmo_ft|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 536,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 536,
+                  "tp": 25448,
+                  "fp": 8621,
+                  "fn": 7529,
+                  "f1": 0.7591206037645796
+                },
+                "spotrna": {
+                  "n": 536,
+                  "tp": 17104,
+                  "fp": 12980,
+                  "fn": 15873,
+                  "f1": 0.5424588890122263
+                }
+              }
+            },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 726,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 726,
+                  "tp": 33853,
+                  "fp": 13847,
+                  "fn": 11528,
+                  "f1": 0.7273879739151922
+                },
+                "xens2": {
+                  "n": 726,
+                  "tp": 33035,
+                  "fp": 10477,
+                  "fn": 12346,
+                  "f1": 0.7432531245429899
+                }
+              }
+            },
+            "rnaformer_interfam|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 540,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 540,
+                  "tp": 22509,
+                  "fp": 7960,
+                  "fn": 10577,
+                  "f1": 0.7083313665329243
+                },
+                "spotrna": {
+                  "n": 540,
+                  "tp": 17175,
+                  "fp": 13037,
+                  "fn": 15911,
+                  "f1": 0.5426711744446902
+                }
+              }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 1047,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 1047,
+                  "tp": 41351,
+                  "fp": 15723,
+                  "fn": 20608,
+                  "f1": 0.6947821192442432
+                },
+                "xens2": {
+                  "n": 1047,
+                  "tp": 45357,
+                  "fp": 13450,
+                  "fn": 16602,
+                  "f1": 0.751155126442873
+                }
+              }
+            },
+            "spotrna|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 526,
+              "systems": {
+                "spotrna": {
+                  "n": 526,
+                  "tp": 16688,
+                  "fp": 12812,
+                  "fn": 15723,
+                  "f1": 0.5390964448967066
+                },
+                "xens2": {
+                  "n": 526,
+                  "tp": 24215,
+                  "fp": 6586,
+                  "fn": 8196,
+                  "f1": 0.766151996456369
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -5859,14 +7745,15 @@
         "nucleicbert_ft",
         "rinalmo_ft",
         "rnaformer_interfam",
-        "spotrna"
+        "spotrna",
+        "xens2"
       ],
       "missing_systems": [
         "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_intrafam"
       ],
-      "complete_system_count": 9,
+      "complete_system_count": 10,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -6042,6 +7929,25 @@
               "audit_sha256": "08edd73e3a4c3aee68f3981032f56ed76ad314d8d4752057b82b5479601ef841",
               "native_n": 116,
               "n_truncated": 0
+            },
+            "xens2": {
+              "n": 23,
+              "tp": 424,
+              "fp": 58,
+              "fn": 107,
+              "f1": 0.8371174728529122,
+              "f1_values": [
+                0.8371174728529122,
+                0.8371174728529122,
+                0.8371174728529122
+              ],
+              "f1_mean": 0.8371174728529122,
+              "f1_sd": 0.0,
+              "result_sha256": "2774cd4b9738cc31cb82b64289d55bff14abb301ce8e40f3bb9a89321e30ab64",
+              "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+              "audit_sha256": "007028f067bf032d7b7ec23e939c98025f1ee43f8490a2c7c98042ebfc4193cd",
+              "native_n": 288,
+              "n_truncated": 0
             }
           },
           "pairwise": {
@@ -6205,6 +8111,26 @@
                 }
               }
             },
+            "bpfold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 59,
+              "systems": {
+                "bpfold": {
+                  "n": 59,
+                  "tp": 1336,
+                  "fp": 554,
+                  "fn": 254,
+                  "f1": 0.767816091954023
+                },
+                "xens2": {
+                  "n": 59,
+                  "tp": 1112,
+                  "fp": 192,
+                  "fn": 478,
+                  "f1": 0.7684865238424327
+                }
+              }
+            },
             "eternafold|kirigami_fast": {
               "status": "PASS_MATCHED",
               "n": 116,
@@ -6345,6 +8271,26 @@
                 }
               }
             },
+            "eternafold|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 288,
+              "systems": {
+                "eternafold": {
+                  "n": 288,
+                  "tp": 4959,
+                  "fp": 4324,
+                  "fn": 2400,
+                  "f1": 0.5959620237952169
+                },
+                "xens2": {
+                  "n": 288,
+                  "tp": 5663,
+                  "fp": 650,
+                  "fn": 1696,
+                  "f1": 0.8284084259801053
+                }
+              }
+            },
             "kirigami_fast|mxfold2": {
               "status": "PASS_MATCHED",
               "n": 103,
@@ -6465,6 +8411,26 @@
                 }
               }
             },
+            "kirigami_fast|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 95,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 95,
+                  "tp": 1596,
+                  "fp": 527,
+                  "fn": 819,
+                  "f1": 0.7033935654473337
+                },
+                "xens2": {
+                  "n": 95,
+                  "tp": 1764,
+                  "fp": 266,
+                  "fn": 651,
+                  "f1": 0.7937007874015748
+                }
+              }
+            },
             "mxfold2|nucleicbert_frozen": {
               "status": "PASS_MATCHED",
               "n": 103,
@@ -6565,6 +8531,26 @@
                 }
               }
             },
+            "mxfold2|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 278,
+              "systems": {
+                "mxfold2": {
+                  "n": 278,
+                  "tp": 5009,
+                  "fp": 3237,
+                  "fn": 2109,
+                  "f1": 0.6520437386097371
+                },
+                "xens2": {
+                  "n": 278,
+                  "tp": 5475,
+                  "fp": 628,
+                  "fn": 1643,
+                  "f1": 0.8282278193782618
+                }
+              }
+            },
             "nucleicbert_frozen|nucleicbert_ft": {
               "status": "PASS_MATCHED",
               "n": 95,
@@ -6645,6 +8631,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 95,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 95,
+                  "tp": 552,
+                  "fp": 284,
+                  "fn": 1863,
+                  "f1": 0.3395878191325746
+                },
+                "xens2": {
+                  "n": 95,
+                  "tp": 1764,
+                  "fp": 266,
+                  "fn": 651,
+                  "f1": 0.7937007874015748
+                }
+              }
+            },
             "nucleicbert_ft|rinalmo_ft": {
               "status": "PASS_MATCHED",
               "n": 95,
@@ -6705,6 +8711,26 @@
                 }
               }
             },
+            "nucleicbert_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 288,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 288,
+                  "tp": 4320,
+                  "fp": 6785,
+                  "fn": 3039,
+                  "f1": 0.4679376083188908
+                },
+                "xens2": {
+                  "n": 288,
+                  "tp": 5663,
+                  "fp": 650,
+                  "fn": 1696,
+                  "f1": 0.8284084259801053
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_interfam": {
               "status": "PASS_MATCHED",
               "n": 113,
@@ -6745,6 +8771,26 @@
                 }
               }
             },
+            "rinalmo_ft|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 95,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 95,
+                  "tp": 1781,
+                  "fp": 382,
+                  "fn": 634,
+                  "f1": 0.7780690257754478
+                },
+                "xens2": {
+                  "n": 95,
+                  "tp": 1764,
+                  "fp": 266,
+                  "fn": 651,
+                  "f1": 0.7937007874015748
+                }
+              }
+            },
             "rnaformer_interfam|spotrna": {
               "status": "PASS_MATCHED",
               "n": 64,
@@ -6762,6 +8808,46 @@
                   "fp": 845,
                   "fn": 545,
                   "f1": 0.5751833740831296
+                }
+              }
+            },
+            "rnaformer_interfam|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 288,
+              "systems": {
+                "rnaformer_interfam": {
+                  "n": 288,
+                  "tp": 4940,
+                  "fp": 2270,
+                  "fn": 2419,
+                  "f1": 0.6781522410597844
+                },
+                "xens2": {
+                  "n": 288,
+                  "tp": 5663,
+                  "fp": 650,
+                  "fn": 1696,
+                  "f1": 0.8284084259801053
+                }
+              }
+            },
+            "spotrna|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 64,
+              "systems": {
+                "spotrna": {
+                  "n": 64,
+                  "tp": 941,
+                  "fp": 845,
+                  "fn": 545,
+                  "f1": 0.5751833740831296
+                },
+                "xens2": {
+                  "n": 64,
+                  "tp": 1188,
+                  "fp": 142,
+                  "fn": 298,
+                  "f1": 0.84375
                 }
               }
             }
