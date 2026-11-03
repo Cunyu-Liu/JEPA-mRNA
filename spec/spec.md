@@ -80,6 +80,8 @@
 >
 > **2026-11-03 用户取消 NB 原论文下游任务**：official/JEV 五种子训练线立即取消，official_s3 止于 epoch19 完整 checkpoint（best validation BCE=0.0113659901、early_stopped=False、未 QA），official_s4/JEV s0–s4 不再启动。既有 official_s0–s2、checkpoint、数据和日志全部保留，T-A168 状态改为 `CANCELLED_BY_USER`，不再作为最终验收前置。取消范围不包括主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线。
 >
+> **2026-11-03 bprna raw 8/8**：raw 八 split 三次独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`；raw ArchiveII F1=0.7607306049、SD=0。clean TS1 已完成，raw+clean 与 own-clean 主榜仍未闭环。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。NB 原论文下游继续至收敛的旧要求由用户最新取消指令覆盖。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

@@ -1120,6 +1120,20 @@
    "bytes": 6281,
    "description": "256–512nt 原路径 OOM；阈值降至 256nt 后 fp32/bf16 分块均通过零误差验证",
    "status": "active_failure_evidence_threshold256_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_raw_summary.json",
+   "sha256": "f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a",
+   "bytes": 5663,
+   "description": "RNAformer-bprna 官方权重 raw 八 split 三次独立聚合；256nt/16 行分块协议",
+   "status": "active_complete_raw_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_raw_archiveii.json",
+   "sha256": "c689c550a115f8478b9cf3e4303d9943314a4a8dd2c056ac206e8b9e7725f219",
+   "bytes": 3774818,
+   "description": "RNAformer-bprna raw ArchiveII 三次结果 F1=0.7607306048550984，SD=0",
+   "status": "active_complete_raw_archiveii_3_repeats"
   }
  ]
 }

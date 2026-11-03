@@ -12440,3 +12440,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 16 行实现随后在原 `pair_act.size(1)<=512` 路径发生 OOM，单次再需 1.96GiB，证明仅缩小 block_size 仍不能覆盖 256–512nt 区间。错误证据 SHA256=`bf3453591ff45f1b457f8ea4d3b4c931a17f5b861cc7920c69716eb84c8fd7f1`。
 - 将分块阈值降为 256nt，block_size=16 不变。CPU 单测及 RTX4090 fp32/bf16 在 L=100/520/954 均与原实现逐元素完全相等，审计 SHA256=`d193701b3c657a177ba5b83ea85ce1fbe0f1efc3a964333a135041717ecaaec6`、`132c43f756c2c6a924e7eb6a1c23ec8c00bf592bb9a42862fa6be13346f6d76c`。
 - 动态显存门已恢复，仍要求空闲≥12GiB 才启动；新协议尚未形成完整三次结果，不把旧 64 行 repeat 或单次诊断并入主榜。
+
+
+## §15.394（2026-11-03）RNAformer-bprna raw 8/8 闭环
+
+- 第三次 ArchiveII 已完成，raw 三次 F1 均为 **0.7607306048550984**，SD=0，峰值 12,573.081MiB；结果 SHA256=`c689c550a115f8478b9cf3e4303d9943314a4a8dd2c056ac206e8b9e7725f219`。
+- raw 八 split 三次数据、官方权重/config、CUDA、逐序列计数和预测哈希均独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`。旧 64 行 repeat 未混入，当前协议为 threshold=256、block_size=16。
+- clean TS1 已接续完成三次 F1=0.842795，队列继续后续 split；raw 8/8 不等于 raw+clean 完成，own-clean 主榜暂不更新 bprna。
