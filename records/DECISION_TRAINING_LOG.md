@@ -12447,3 +12447,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第三次 ArchiveII 已完成，raw 三次 F1 均为 **0.7607306048550984**，SD=0，峰值 12,573.081MiB；结果 SHA256=`c689c550a115f8478b9cf3e4303d9943314a4a8dd2c056ac206e8b9e7725f219`。
 - raw 八 split 三次数据、官方权重/config、CUDA、逐序列计数和预测哈希均独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`。旧 64 行 repeat 未混入，当前协议为 threshold=256、block_size=16。
 - clean TS1 已接续完成三次 F1=0.842795，队列继续后续 split；raw 8/8 不等于 raw+clean 完成，own-clean 主榜暂不更新 bprna。
+
+
+## §15.395（2026-11-03）bprna clean 5/8 与主榜 85/104
+
+- bprna clean TS1/TS2/TS3/hard/TestSetB 已完成三次并独立复算，clean n=11/9/2/3/80，F1=0.8427947598/0.8484848485/0.8157894737/0.3783783784/0.7037363931，SD 全为 0。
+- TS-hard 仅 clean n=3，F1=0.3783783784，TP/FP/FN=7/6/17；必须连同样本量保留，不能隐藏或外推。
+- own-clean 主榜现为 85/104 格，两次逐字节复算 SHA256=`4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1`。clean ArchiveII 正在长序列阶段，TS0/new 尚未完成，不将 bprna 标为 raw+clean 全板。

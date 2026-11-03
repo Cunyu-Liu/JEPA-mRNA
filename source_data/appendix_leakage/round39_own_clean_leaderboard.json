@@ -4,7 +4,7 @@
   "protocol": "each system has its own training-union-specific clean sets and clean n; three complete deterministic inference repeats; no common-n requirement",
   "main_ranking_rule": "when complete, compare xens2 with the strongest eligible baseline independently per split and report each system's clean n",
   "sensitivity_rule": "matched name+sequence+evaluated-GT intersections are auxiliary only and never substitute for this native own-clean leaderboard",
-  "complete_cell_count": 80,
+  "complete_cell_count": 85,
   "required_cell_count": 104,
   "systems": {
     "eternafold": {
@@ -951,22 +951,142 @@
         "status": "PENDING"
       },
       "ref_pdb_ts1": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 63,
+        "clean_n": 11,
+        "removed_exact": 38,
+        "removed_homology_only": 14,
+        "evaluation_scope": "full_length",
+        "result_sha256": "755921ef63859e698367d0def3b19ea00b89674ca623092551cb1c415d25cab8",
+        "clean_sha256": "01b369ad0b29aa7a7426943d0925013d4d02121d3faeee5ca736d26011402079",
+        "audit_sha256": "b6961897344cc2120f173f1f93933f79b7b74d21ce18a8b3a85b2e132a3db082",
+        "asset_identity": {
+          "weights_sha256": "b2775613e9addafe30d17f7152dc985e8381826842d5d5056030006adfad6769",
+          "repository_commit": "12a6d63a0fddfa8725c8fe1f6dcce8e20d3928c1"
+        },
+        "tp": 193,
+        "fp": 21,
+        "fn": 51,
+        "f1_values": [
+          0.8427947598253275,
+          0.8427947598253275,
+          0.8427947598253275
+        ],
+        "f1_mean": 0.8427947598253275,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts2": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 39,
+        "clean_n": 9,
+        "removed_exact": 28,
+        "removed_homology_only": 2,
+        "evaluation_scope": "full_length",
+        "result_sha256": "911773d3fee8a2443c1e0198cb70d1088f731a0758cd711abedab9c00b77cbe1",
+        "clean_sha256": "6a3c99933c4049a69c9b1a23554c615c2e14ff3e734bc05022ac222dc8937c33",
+        "audit_sha256": "836e1162f1fa4fc4072d7796a32e13b65780621b6b21fc223fd0294c04fbe2da",
+        "asset_identity": {
+          "weights_sha256": "b2775613e9addafe30d17f7152dc985e8381826842d5d5056030006adfad6769",
+          "repository_commit": "12a6d63a0fddfa8725c8fe1f6dcce8e20d3928c1"
+        },
+        "tp": 98,
+        "fp": 7,
+        "fn": 28,
+        "f1_values": [
+          0.8484848484848485,
+          0.8484848484848485,
+          0.8484848484848485
+        ],
+        "f1_mean": 0.8484848484848485,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts3": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 19,
+        "clean_n": 2,
+        "removed_exact": 15,
+        "removed_homology_only": 2,
+        "evaluation_scope": "full_length",
+        "result_sha256": "a209cc50f893f0a2dc197c203034079af751029158671f111e79066bbe5e3ffb",
+        "clean_sha256": "04a547907dadba0169d28b5fd855667eac7449b3052a0db6f7760689c14c26d5",
+        "audit_sha256": "a0ea65bac098a0870a43559c4fe63bbf1f78e59b3a8afedf955e3c2a91799417",
+        "asset_identity": {
+          "weights_sha256": "b2775613e9addafe30d17f7152dc985e8381826842d5d5056030006adfad6769",
+          "repository_commit": "12a6d63a0fddfa8725c8fe1f6dcce8e20d3928c1"
+        },
+        "tp": 31,
+        "fp": 0,
+        "fn": 14,
+        "f1_values": [
+          0.8157894736842105,
+          0.8157894736842105,
+          0.8157894736842105
+        ],
+        "f1_mean": 0.8157894736842105,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts_hard": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 28,
+        "clean_n": 3,
+        "removed_exact": 20,
+        "removed_homology_only": 5,
+        "evaluation_scope": "full_length",
+        "result_sha256": "8460255309909e4a1ce2af73f0ebcca3ce28bb17183ae062b2d906a683f33e5b",
+        "clean_sha256": "fa6a7287821bbad597248a87fe14149da32f8647939025261fbb9c181907b9ab",
+        "audit_sha256": "bf8fe27303ca8ca7a4c295ae5ce0729770da556d585f5a220f0a5957879dbc6d",
+        "asset_identity": {
+          "weights_sha256": "b2775613e9addafe30d17f7152dc985e8381826842d5d5056030006adfad6769",
+          "repository_commit": "12a6d63a0fddfa8725c8fe1f6dcce8e20d3928c1"
+        },
+        "tp": 7,
+        "fp": 6,
+        "fn": 17,
+        "f1_values": [
+          0.3783783783783784,
+          0.3783783783783784,
+          0.3783783783783784
+        ],
+        "f1_mean": 0.3783783783783784,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "archiveii_embok_clean": {
         "status": "PENDING"
       },
       "testsetb": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 428,
+        "clean_n": 80,
+        "removed_exact": 339,
+        "removed_homology_only": 9,
+        "evaluation_scope": "full_length",
+        "result_sha256": "6a45593cd1ab9b2333b49e22665b3b8a3ac675d7a35610bc300690751c82758b",
+        "clean_sha256": "a22a557b3d53ffd419e3c245a33bcdaf596dc864b881286a92608e224f873a57",
+        "audit_sha256": "36990278cfc21a80a1133fefec9fefec2be1cc5dc6fc913cb88e9c87d8c54172",
+        "asset_identity": {
+          "weights_sha256": "b2775613e9addafe30d17f7152dc985e8381826842d5d5056030006adfad6769",
+          "repository_commit": "12a6d63a0fddfa8725c8fe1f6dcce8e20d3928c1"
+        },
+        "tp": 1196,
+        "fp": 294,
+        "fn": 713,
+        "f1_values": [
+          0.7037363930567814,
+          0.7037363930567814,
+          0.7037363930567814
+        ],
+        "f1_mean": 0.7037363930567814,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       }
     },
     "rnaformer_intrafam": {
