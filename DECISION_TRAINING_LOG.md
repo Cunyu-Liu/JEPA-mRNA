@@ -12208,3 +12208,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - TS1：raw n=63、F1=0.8418421992；clean n=42、F1=0.8598022106。TS2：raw n=39、F1=0.9131075110；clean 仅 n=3、F1=0.9494949495。
 - TS3：raw n=19、F1=0.8337129841；clean n=17、F1=0.8366336634。hard：raw n=28、F1=0.8220255654；clean n=24、F1=0.8239795918。
 - 这些差值是不同子集上的泄露敏感性，不是训练改进，也不能用来证明性能提升；TS2 的 n=3 必须与数值同时展示。ArchiveII/TSB 未齐，保持 raw 6/8。
+
+
+## §15.362（2026-11-03）inter-family clean ArchiveII 前两次 repeat 一致
+
+- clean ArchiveII repeat0/1 均完成，F1 均为 **0.733486**，throughput 均约 0.756 seq/s，峰值显存均约 12,880MiB；未再 OOM 或发生 CPU 降级。
+- 当前仅剩 repeat2，完整 JSON 尚未形成；保持 clean 5/8，不把前两次一致当成三次验收完成。
