@@ -980,6 +980,13 @@
    "bytes": 11049,
    "description": "RNAformer inter-family raw+clean 各八 split 三次独立聚合；16 格全部通过",
    "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_raw_summary.json",
+   "sha256": "709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb",
+   "bytes": 2806,
+   "description": "BPfold 官方六 checkpoint raw 八 split 三次独立聚合",
+   "status": "active_complete_raw_8_of_8"
   }
  ]
 }

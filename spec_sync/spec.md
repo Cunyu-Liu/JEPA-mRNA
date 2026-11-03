@@ -48,6 +48,8 @@
 >
 > **2026-11-03 inter-family raw+clean 16 格闭环**：clean bpRNA-new 三次 F1=**0.6560129819734011**，TP/FP/FN=83682/36300/51459，SD=0。raw+clean 八 split 全部独立复算通过，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`。该结果只完成一个 RNAformer 变体，后续 bprna/intra/biophysical、其余 baseline 与 xens2 三目标仍未闭环。
 >
+> **2026-11-03 BPfold raw 8/8**：TestSetB 三次 F1=**0.7900305273282315**，TP/FP/FN=9446/3210/1811，SD=0；raw 八格汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`。own-clean 已先行完成，raw+clean 现已齐套；异 clean 子集仍不得直接用于跨模型 SOTA 排名。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

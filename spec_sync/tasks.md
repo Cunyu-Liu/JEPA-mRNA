@@ -36,7 +36,7 @@
 >
 > **2026-11-03 三系统 own-clean 复算**：EternaFold/BPfold/MXfold2 的 24 格 clean 数据、审计、三次预测和计数全部独立通过，SHA256=`0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。EternaFold bpRNA-new=0.6853840073（n=5388，SD=0）；BPfold TS2 n=3、ArchiveII n=731，跨模型异子集 F1 不得直接用于 SOTA 排名，最终保留同交集敏感性。该三系统复算不替代其余模型与 600 单元总门。
 >
-> **2026-11-03 当前队列**：inter-family raw+clean 16 格已闭环，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`；RNAformer-bprna 接续。BPfold raw 7/8，TestSetB 最后一次 repeat 续跑；frozen clean 按锁等待。NB official_s3 在 BPfold raw 汇总后从 epoch 13 完整断点恢复并做独立 CUDA QA，不重训已完成种子，未收敛前不晋级。四套 RNAformer 的 32 个 clean 数据已逐行预验收；并发耗时均非正式速度。
+> **2026-11-03 当前队列**：inter-family raw+clean 16 格已闭环，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`；RNAformer-bprna 接续。BPfold raw 8/8 已完成，汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`；frozen clean 按锁等待。NB official_s3 已从 epoch 13 完整断点恢复训练，后续独立 CUDA QA，未收敛前不晋级。四套 RNAformer 的 32 个 clean 数据已逐行预验收；并发耗时均非正式速度。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 

@@ -12243,3 +12243,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **clean 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=0.6379106661/0.6560129820/0.8414634146/0.9117647059/0.7961630695/0.7843137255/0.7334860511/0.6734647426，非空格 SD 全为 0。
 - **独立验收**：raw+clean 16 格的数据/审计、官方权重/config、CUDA、逐序列计数、预测哈希和三次重复一致性全部通过，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`。
 - **边界**：仅 inter-family 一个变体闭环，后续 bprna/intra/biophysical、其余 baseline 和 xens2 三目标仍未完成；不将这一结果写成全基线 SOTA。
+
+
+## §15.367（2026-11-03）BPfold raw 8/8 闭环与 NB 恢复
+
+- **TestSetB**：n=428，三次 F1=**0.7900305273282315**，TP/FP/FN=9446/3210/1811，SD=0；结果 SHA256=`b1024d3af6f90d316a495e76a0338691539f791b0d1ee4d305207ff1bf1c36c2`。
+- **raw 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 八格全部独立复算通过，汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`。own-clean 已先行完成，raw+clean 齐套，但异 clean 子集仍不得直接排 SOTA。
+- **NB 恢复**：raw 汇总形成后，official_s3 已从 epoch 13 的完整断点恢复 `--device cuda --batch-size 4` 训练；未重训已完成种子。后续必须到 validation plateau 并做独立 CUDA QA，启动不等于收敛。
