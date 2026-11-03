@@ -12322,3 +12322,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `run_hek_fold_queue_round34.py` 的新训练与 resume 启动命令统一接入 `/tmp/rna_round39_fusion_clean.lock`，与 RNAformer/frozen 高显存工作互斥，防止旧队列再次成为第三 GPU 任务。
 - mock 测试确认仅命令前缀改变，HEK 的 fold、task、batch=64、min-free-mib、输出目录和恢复脚本均不变；未实际启动 HEK。与其他断点、身份和 matched-clean 测试共 15 项通过。
 - 该调度改动不改变任何科学结果或恢复合同；本轮 HEK 仍保持暂停，只有未来显式恢复时才等待高显存锁。
+
+
+## §15.378（2026-11-03）TS2 两两同 GT 对照归因
+
+- 在同一 matched-clean 快照中，xens2 对 EternaFold 的共同 n=22，F1=0.8289290680<0.8817733990；对 MXfold2 的共同 n=20，F1=0.8390804598<0.9066666667；对 RNAformer-interfam 的共同 n=29，F1=0.8362779740<0.9209100758。
+- xens2 对 BPfold 的共同 n=1，F1=0.8965517241<0.9696969697；该格只记录直接观测，不外推统计结论。对其他系统的两两集合不得拼接成统一 TS2 排名。
+- 结论限于“TS2 落后在多个独立两两交集中重复出现，不只是单一 clean 子集造成”。这支持保留 TS2 攻关，但不用于测试集调参，也不替代尚未闭环的全长主板。
