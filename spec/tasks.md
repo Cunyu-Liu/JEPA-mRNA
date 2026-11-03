@@ -65,7 +65,7 @@
 >
 > **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 6 项测试和真实逐字节复算，统一 xens2 已接入，阶段 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；ArchiveII 的 len≤600 结果单列，TS2 全交集为空，保留两两 n，不排最终 SOTA。
 >
-> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。xens2 全长 ArchiveII 1107 条三次已完成，F1=0.7333353700、SD=0；Attention2d 分块经 GPU 零误差验证后，外部 round41 并发又致 pair_transition OOM；RNAformer 改为等待外部 BPfold/MXfold2 父进程结束，不终止其他会话。NB 从 epoch16 续训且未收敛。eFold 官方 `efold_train` 与数据索引已确认，但训练序列未恢复，own-clean 保持 provenance blocked。NB 已到 epoch16 完整 checkpoint，best validation BCE=0.0115394801、bad=0，仍未收敛。
+> **2026-11-03 断点与执行身份**：去泄露诊断评测启用逐 repeat 原子 sidecar，身份或预测哈希不符即失败；正式独占测速禁止拼接跨窗口计时。4 项测试及旧预测 digest 回归通过，生产恢复尚未闭环。旧 HEK 作为第三 GPU 任务导致再次 OOM，已安全暂停；新 ArchiveII 进程带逐 repeat 断点，无需旧进程身份校正。xens2 全长 ArchiveII 1107 条三次已完成，F1=0.7333353700、SD=0；Attention2d 分块经 GPU 零误差验证后，外部 round41 并发又致 pair_transition OOM；RNAformer 改为等待外部 BPfold/MXfold2 父进程结束，不终止其他会话。NB 从 epoch16 续训且未收敛。eFold 官方 `efold_train` 与数据索引已确认，但训练序列未恢复，own-clean 保持 provenance blocked。NB 已到 epoch17 完整 checkpoint，best 仍在 epoch16，bad=1、early_stopped=False，已进入 epoch18。
 >
 > **2026-11-03 own-clean 主榜**：新增逐系统原生主榜，80/104 格完成，SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。每格保留各自 clean n、三次 F1/SD、TP/FP/FN、删除数与哈希；缺项 PENDING、blocked 不写 0 分。最终 8/8 只由完整原生 clean 主榜决定，matched-clean 仅作附加敏感性。
 >
