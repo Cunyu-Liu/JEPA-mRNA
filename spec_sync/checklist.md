@@ -1,6 +1,15 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
+> **当前执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
+>
+> - [x] T-A189–T-A193 的候选实验、数据来源、优先级和不执行边界已写入 `docs/plans/2026-11-03-bpfold-fig4-7-evaluation-review.md`；未提前启动实验。
+> - [ ] T-A189 Rfam 全模型与无需重训消融完成三次预测和独立 INF/P/R/F1 复算。
+> - [ ] T-A190 macro-F1 分布、median/IQR 和完整指标由真实预测复算，PDB 小样本保留 n。
+> - [ ] T-A191 Pearson/Spearman/95%CI、ECE 和 risk–coverage 由原始 confidence 独立复算，阈值只由 VL0 决定。
+> - [ ] T-A192 结构案例按预注册分位数选样，GT/PRISM/BPfold 与原始预测逐对一致。
+> - [ ] T-A193 仅验收结果进入图件和 PPT，原始预测→复算→图→备注四通道一致。
+>
+> **历史执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
 >
 > - [x] T-A184 PRISM 全称与缩写一致；BPfold 只称强基线；只展示 xens2 但不把集成配置虚构成单 checkpoint；合同见 `docs/plans/2026-11-03-prism-round38-revision.md`。
 > - [ ] T-A185 BPfold/MXfold2/EternaFold 的 CHANRG 四 split×3 推理与独立计数复核完成，预测、哈希和 mean/SD 齐全。
@@ -43,7 +52,7 @@
 >
 > **BPfold raw 证据**：raw 8/8 独立复算完成，TestSetB=0.7900305273（三次 SD=0），汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`；own-clean 已完成，但不同 clean 子集不得直接排 SOTA。
 >
-> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch17 完整断点 best 仍在 epoch16，bad=1、early_stopped=False，已进入 epoch18，剩余 7 个 run 续训。xens2+9 基线 matched-clean 阶段 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；ArchiveII len≤600 单列，TS2 全交集为空，不勾选最终主板或 SOTA。
+> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch18 完整断点 best 仍在 epoch16，bad=2、early_stopped=False，已进入 epoch19，剩余 7 个 run 续训。xens2+9 基线 matched-clean 阶段 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`；ArchiveII len≤600 单列，TS2 全交集为空，不勾选最终主板或 SOTA。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >

@@ -12389,3 +12389,25 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - Attention2d 修复后，ArchiveII 在后续 `pair_transition` 再次 OOM。错误时 NB 占 10.27GiB，外部 round41 BPfold 占 9.21GiB、MXfold2 占 0.70GiB，当前 RNAformer 已分配 8.73GiB 并再需 3.44GiB。错误栈 SHA256=`880cef7990e599522dc5f4357c81a2f80e158cd3d5de9a7129f2782fdd16555c`，无结果 JSON。
 - 这次不是 Attention2d 数值问题，也不能只排查 HEK。确认外部 round41 父队列仍在运行，不终止其他会话任务；RNAformer 改为等待 BPfold 父进程 2619409 和 MXfold2 父进程 2619411 全部退出后，再由持久锁恢复。
 - NB official_s3 已完成 step 11900 并进入验证阶段，最新完整 checkpoint 仍是 epoch16；epoch17 validation 尚未原子写盘，不提前记录验证值或收敛。own-clean 主榜继续 80/104 格。
+
+
+## §15.387（2026-11-03）NB official_s3 epoch17 验证回退与 epoch18 续训
+
+- epoch17 train BCE=0.00040113898338133355，validation BCE=**0.011589324650464352**，高于 epoch16 的最佳 0.011539480104608644。
+- 原子 checkpoint 复核为 epoch=17、best_epoch=16、best_loss=0.011539480104608644、bad=1、early_stopped=False，模型、优化器和 CUDA RNG 齐全；patience=5 合同下已进入 epoch18，不提前停止。
+- 外部 round41 父进程仍在，RNAformer 继续等待；own-clean 主榜不变。
+
+
+## §15.388（2026-11-03）epoch17 文档同步待恢复
+
+- epoch17 的 checkpoint、bad=1 和 epoch18 续训已在集群直接复核，本地三处合同和本台账已更新。
+- 随后多次 SCP/SSH 建连失败，单包传输也未完成；截至本条，远端 Git commit 与 GitHub push 尚未形成。已准备 `epoch17_docs.tar`，恢复后一次解包、逐文件比对再提交，不把本地记录冒充远端同步。
+- 该网络问题不改变 GPU 训练或外部队列状态，不重复实验。
+- **恢复补记**：SSH 恢复后已一次解包、逐文件比对并推送，最终 commit=`803022675183925357bfd45d8ca34a633c03c4f0`，HEAD/origin/GitHub 一致，同步待恢复状态已解除。
+
+
+## §15.389（2026-11-03）NB official_s3 epoch18 验证与 epoch19 续训
+
+- epoch18 train BCE=0.0003899520853928481，validation BCE=**0.011594461825958784**，仍高于 epoch16 最佳值 0.011539480104608644。
+- checkpoint 复核为 epoch=18、best_epoch=16、best_loss=0.011539480104608644、bad=2、early_stopped=False，模型、优化器和 CUDA RNG 齐全；epoch19 正在接近本轮结束，不提前停止。
+- 外部 BPfold 父进程已结束，MXfold2 尚未退出；RNAformer 保持等待，不抢占或终止外部任务。
