@@ -12221,3 +12221,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - clean ArchiveII n=2192，三次 F1=**0.7334860511130188**，TP/FP/FN=79888/26863/31192，SD=0；结果 SHA256=`f55c76ac4d9124b60de1c370e207e8789a21a6d54b2788c36eac7372e2b84758`。
 - clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、长序列精确分块、逐序列计数和三次预测一致性全部通过；raw F1=0.7390448979，clean 与 raw 的样本集合不同，差值仅作敏感性对照。
 - 当前 clean 6/8，TS0 正在接续，bpRNA-new 后运行；raw+clean 与 SOTA 仍未验收。
+
+
+## §15.364（2026-11-03）inter-family clean TS0 三次完整验收，clean 7/8
+
+- clean TS0 n=1276，三次 F1=**0.6379106660666066**，TP/FP/FN=22679/13846/11900，SD=0；结果 SHA256=`b170bef43cb43d0e61d7103d9c1d3407abafe6e68f33917886e2eb826e768565`。
+- clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、逐序列计数和三次预测一致性全部通过。
+- 当前 clean 7/8，仅剩 bpRNA-new；raw+clean 全板和 SOTA 仍未验收。
