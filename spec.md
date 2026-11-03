@@ -50,6 +50,8 @@
 >
 > **2026-11-03 BPfold raw 8/8**：TestSetB 三次 F1=**0.7900305273282315**，TP/FP/FN=9446/3210/1811，SD=0；raw 八格汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`。own-clean 已先行完成，raw+clean 现已齐套；异 clean 子集仍不得直接用于跨模型 SOTA 排名。
 >
+> **2026-11-03 持久恢复与 matched-clean 口径**：bprna raw ArchiveII 的 OOM 来自三任务并发显存超订，无半成品结果；证据 SHA256=`1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6`，frozen clean 后由远端持久锁断点恢复。NB official_s3 的 SSH 255 中断不记训练失败或收敛；epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，队列仅续剩余 7 个 run。新增 matched-clean 工具分别输出全局和两两交集，名称、序列及实际评分 GT 必须一致，原生截断分组，空交集不得写 F1=0；阶段复算 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`，TS2 全交集为空，最终主板与 SOTA 门不变。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

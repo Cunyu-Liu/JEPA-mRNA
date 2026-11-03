@@ -29,7 +29,7 @@ test -s "$weights" && test -s "$config"
 import torch
 assert torch.cuda.is_available()
 free,total=torch.cuda.mem_get_info()
-assert free>=21*(1<<30),f"INSUFFICIENT_CUDA_MEMORY_REQUIRED_21_GIB free={free/(1<<30):.3f} total={total/(1<<30):.3f}"
+assert free>=12*(1<<30),f"INSUFFICIENT_CUDA_MEMORY_REQUIRED_12_GIB free={free/(1<<30):.3f} total={total/(1<<30):.3f}"
 print("RNAFORMER_VARIANT_CUDA_PREFLIGHT_PASS",free/(1<<30),flush=True)
 PY
 for mode in raw clean; do

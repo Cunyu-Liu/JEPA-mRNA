@@ -11923,3 +11923,358 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **clean TS0**：n=713，三次 F1 均为 **0.7560047250295314**，TP/FP/FN=14400/3918/5377，SD=0；预测 SHA256=`82e3327d15c732482e73cd1aee8b18837bd8008409d3c68bf2987c5ff857b030`，结果 SHA256=`090295bb60b4f5072a5c5c3d18dc1851bf2a8ce7c59e951ea66c9294727bef85`。clean audit、best checkpoint 和逐序列计数独立复算通过。
 - **对照**：原 plana seed0 clean TS0=0.7571563385，新模型 ΔF1=**−0.0011516134**，没有提升，不写涨点。源记录 SHA256=`a9dd3f34e4046563a7b1fe6baf5eb6f3d14cd632f1b7ddfdedc5b50c74f0c425`。其余七格继续，不能写成主板结论。
+
+
+## §15.322（2026-11-03）NLL clean 八格闭环与 seed0 泛化门失败
+
+- **完整 seed0 验收**：TR1c-clean 八格全部通过数据/审计/权重身份、逐序列预测和三次推理一致性复算。TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=0.7560047250/0.4636462921/0.8695652174/0.8024242424/0.8676470588/0.7636363636/0.7029105574/0.8040535543；验证汇总 SHA256=`76a8534e8eba2f9a75702787cb03f96b6e16158f5119f8b58ae63abdc201b27f`。
+- **同 seed0 对照**：相对原 KL 学生仅 TS2/TS3/TSB 三格数值上升；TS0/new/TS1/hard/ArchiveII 五格下降，其中 new Δ=−0.0720068914、ArchiveII Δ=−0.0194013955、hard Δ=−0.0315443593。TS3 仅 4 条，+0.0105042017 不能单独支撑泛化结论。
+- **决策**：seed0 未通过明确泛化收益门，不启动 NLL seed1/2，避免无效训练；不把 VL0 QA 或局部涨点包装为 8/8/三种子/SOTA。负结果汇总 SHA256=`403604bde954581882d0571bd1516ec01da9ff909f152acb23ea194efe7c0137`。
+
+## §15.323（2026-11-03）RNAformer inter-family 生产路径重复性定位
+
+- **生产路径复现**：新增只读抓取诊断，复用生产 `load_models/read_records/run_once`，同一模型实例、逐长度分桶、三次调用及 `empty_cache` 均不变。63 条中 62 条原始 logits 跨 repeat 不同，39 条预测不同；F1 精确复现 0.8414634146/0.8201989288/0.8201989288，后两次哈希一致。最大 |Δlogit|=7.8784079552，不是可忽略的浮点误差。
+- **证据保存**：诊断 JSON SHA256=`6c1060549d7ccc3a291516155267ee35546fc08db2862f1b282da64e3cf5a00a`；不一致原始数组 NPZ bytes=4,238,886。此前逐条连续三次前向稳定，不能覆盖跨长度整板后的状态依赖。
+- **当前根因假设**：官方 `rotary-embedding-torch==0.5.3` 在 `freqs_for != pixel` 时缓存并截取 `cached_freqs`，而 RNAformer 输入是随长度重新归一化的 `linspace(-1,1,L)`；长短序列切换后截取旧缓存可能改变位置编码。先用诊断开关关闭全部 RotaryEmbedding 缓存做三次整板对照，未通过前不修改生产权重、解码或验收阈值。
+
+
+## §15.324（2026-11-03）RNAformer Rotary 缓存根因对照通过
+
+- **单变量对照**：在同一生产 `run_once` 诊断中仅将 12 个 RotaryEmbedding 模块的 `cache_if_possible=False`，其余模型、权重、数据、分桶、解码、三次 repeat 和 empty_cache 不变。63/63 原始 logits 与预测三次完全一致，raw/prediction mismatch 均为 0。
+- **正确参照**：三次 F1 均为 **0.8414634146341463**，TP/FP/FN=1104/175/241，预测 SHA256 均为 `1c5a3d42d86be63ac8ee69970cf1f1e68be4021bc36ef48aada6f099d9f0a1fc`，精确等于未修复首轮而非错误的后两轮。该结果支持“长度归一化位置被旧缓存切片污染”的根因，不采信 0.8201989288。
+- **修复范围**：仅在 `eval/ss/run_rnaformer.py::build_model` strict load 后关闭所有 RotaryEmbedding 缓存并报告模块数；不改权重、位置公式、解码、GT 或容差。无缓存对照 SHA256=`9f963e3ece07a25b5df562136befc29fce4a6c1c4ea141ae4aaa420f45cab625`。生产 runner 全 TS1 三次验收及后续 raw/clean 八 split 仍需通过，当前不写全板完成。
+
+
+## §15.325（2026-11-03）RNAformer 生产 TS1 验收、GitHub 与全板恢复
+
+- **生产验收**：未修改的 `speed_end_to_end_4090.py` 使用已修复适配器跑完整 inter-family raw TS1，三次 F1 均为 **0.8414634146341463**，TP/FP/FN=1104/175/241，SD=0；独立聚合器逐序列复算通过，`rotary_cache_disabled_modules=12`。结果 SHA256=`0bd11b5aa7b8c6e6301151fdc3a67ff625a619c8b84cf59dc115db7fcbf9ebeb`。
+- **回归与提交**：bprna 既有 TS0/new 独立聚合回归通过，F1 保持 0.7575434319/0.4935794890。聚合器新增 family checkpoint 的 12 模块缓存关闭硬门；三个相关文件已提交并推送 GitHub `f126debd6eaab1e6a2a824654fe55f2e6b9a260c`。
+- **断点续跑**：TS1 硬门后依次恢复 inter-family→bprna→intra-family→biophysical，每套 raw+clean 八格完成并独立聚合后再进入下一套。已接受结果跳过，不重复计算；该队列启动不等于四套已完成。
+
+
+## §15.326（2026-11-03）RNAformer inter-family raw 4/8 独立复算
+
+- **当前完整格**：TS1/TS2/TS3/hard 的 n=63/39/19/28，F1=0.8414634146/0.9117647059/0.7961630695/0.7843137255，均三次 SD=0、12 个 Rotary 缓存关闭、官方权重/config 与逐序列计数独立复算通过。
+- **结果身份**：四格结果 SHA256 依次为 `0bd11b5aa7b8c6e6301151fdc3a67ff625a619c8b84cf59dc115db7fcbf9ebeb`、`1f9af83eecee3cb22602368ad2bed8d09091ffb9b611655c0b8f3179baa0aea8`、`19d497e3d9fe27c3afe9d7eafcb405aefef68365246ed1804252f0e7b29f71b2`、`4b048ee39bfc1a5997a687c0eca2a1a13983b45701713d1494c8c698f4d71fe0`。
+- **边界**：raw 仅 4/8，TestSetB/ArchiveII/TS0/bpRNA-new 和全部 clean 尚未完成；不得把这些值与历史缓存污染结果混用，也不写成 inter-family 全板或 SOTA 结论。
+
+
+## §15.327（2026-11-03）交接目录与源数据整理核验
+
+- **活跃源数据**：README 124 行与 SOURCE_MANIFEST 124 个文件逐一对应，全部字节数/SHA256 通过；TR0/TR1c 的 16 份 clean 审计由 INDEX 独立覆盖，哈希和 raw=clean+exact+homology 数量守恒全部通过。NLL 和 RNAformer 新证据已登记，旧“clean 未齐”描述已清除。
+- **归档原件**：`archive_20261102` 的 10 项旧文件全部按原 SHA256/bytes 复核；`archive_20261031` 的 51 个索引项（52 条实际路径，含同名 PDF）全部存在。三份 active 文件在首次归档后继续升级属于后续进展，旧归档哈希不变，未覆盖历史。
+- **整理决策**：交接根目录没有散落 PPT/log/tmp/旧 JSON；两个 `*_progress.json` 实为完整 16 格和完整三种子结果，不能按名称误归档。当前没有可安全移动且未登记的旧源文件，不为整理制造重复副本；后续新产生的 superseded 文件仍按同一哈希合同归档。
+
+
+## §15.328（2026-11-03）GitHub 推送恢复与 inter-family raw 5/8
+
+- **推送闭环**：`764fded` 的首次 push 超过 10 分钟无响应，取消的是网络操作而非提交；使用 BatchMode、ConnectTimeout 和进程 timeout 重试后成功。HEAD 与 origin 均为 `764fded2666572fb84e9d6c109485edbaab1b9cb`，没有重复提交或改写历史。
+- **TestSetB**：inter-family raw n=428，三次 F1=**0.6719065798338199**，TP/FP/FN=7480/3528/3777，SD=0；12 个 Rotary 缓存关闭，逐序列计数与官方身份独立复算通过。结果 SHA256=`717e03ba7baaadcea7e8f4aa4e03bc29e9fb6ad80ee63db7ebff1a7e1a19f1a5`。
+- **进度边界**：inter-family raw 5/8，ArchiveII/TS0/bpRNA-new 和全部 clean 未完成。frozen NucleicBERT 已下载约 99.01%、14/16 分段完整，但最终 checkpoint/receipt 尚不存在，不加载、不写成权重恢复完成。
+
+
+## §15.329（2026-11-03）frozen NucleicBERT 前缀竞态与无重下装配重试
+
+- **失败定位**：16 个 Range 分段最终均达到预期 bytes，但第一次装配在 `assert prefix.stat().st_size == prefix_size and digest(prefix) == prefix_sha256` 失败，说明下载期间原始前缀身份发生变化；没有生成 assembling/final/receipt，不是官方 MD5 失败，也未加载权重。
+- **资产核验**：失败后前缀 size 仍为 538,312,248，mtime=2026-11-02 22:18:00 +0800；`lsof` 无打开写句柄，pgrep 无旧下载/curl 写进程。16/16 分段逐一 size==expected。当前前缀独立 SHA256=`2f1ed5b482a28481d289bda89fbcb7d3a5d8cc11fa6c7d52e9b3b6ffb36b825d`。
+- **处理**：仅重启既有下载器的分段哈希、前缀一致性、顺序装配和官方 MD5/SHA256 验收，不重下数据。最终 size=4,970,204,510、MD5=`b5b3d40fa07adc3cc8c1942e6ebfe1a5` 未通过前继续保持不可加载；重试运行中不写成恢复完成。
+
+
+## §15.330（2026-11-03）frozen NucleicBERT 官方权重恢复闭环
+
+- **避免重复下载**：首轮分段起点为 535,193,700，前缀在首轮期间增长至 538,312,248；重启按新边界产生冗余分段。停止冗余任务并保留所有文件，使用稳定前缀 + 首轮 16 个完整分段，从首段跳过 3,118,548 bytes 后顺序装配。
+- **三级验收**：装配器语法/双端 SHA、带切片 mock 字节级测试通过；真实 assembling size=4,970,204,510 后，第二路独立 `md5sum`=`b5b3d40fa07adc3cc8c1942e6ebfe1a5` 与官方一致，`sha256sum`=`90b9af474693db3879830a455f4c25662d672dc0f4e9cdc61b90055e9b6d5e07`。收据确认 16 段连续覆盖、首段 skip 和前缀 SHA 均正确。
+- **交付**：装配器已提交并推送 `4195fc9eaa81866ebc7e3bec138da9d06e81a210`；receipt SHA256=`8d28c09f1f8e37e38febbe865bda11ff013da6103db61a972a0b2e4ddf671726`。资产恢复完成不等于模型评测完成；后续先核查 checkpoint 结构，再按 GPU 队列做独立加载/QA，不与当前 RNAformer 正式复测争卡。
+
+
+## §15.331（2026-11-03）frozen NucleicBERT checkpoint 结构与官方协议核查
+
+- **checkpoint 身份**：PyTorch Lightning 2.5.0.post0，epoch=99、global_step=258000，state_dict 共 794 项；含 `model.bert.encoder.*` 与 `model.pred_head.*`。模型配置 hidden=1024、32 layers、32 heads、max_length=1024，head 为 1 个 ResNet block；optimizer states 解释了 4.97GB 文件大小。
+- **安全读取**：`weights_only=True` 依次遇到 tokenizer 类白名单边界；在官方 URL、size 和 MD5 已核验后才以 `weights_only=False + mmap` 读取结构，未关闭哈希门、未做 CPU 推理。
+- **协议定界**：官方 `BERTWithSecStr2D` 对全部层 embedding 取均值、去 CLS/SEP 后进入对称 pair head，默认 threshold=0.5；不得复用 fine-tuned 的 checkpoint 或把 frozen 当作其训练配置 `frozen:false` 进行训练。正式 adapter 须 strict load `model.*` 对应权重，并单独确定官方 1024 协议与本 benchmark 全长保留的关系；当前 GPU QA 尚未开始。
+
+
+## §15.332（2026-11-03）frozen NucleicBERT 官方评测适配器与 clean 定界
+
+- **适配器**：新增独立 `benchmark_nucleicbert_frozen_round39.py`、raw 聚合器和八 split runner，不改已验收的 fine-tuned 路径。运行时重算 checkpoint SHA，strict 提取 `model.bert.encoder.*` 与 `model.pred_head.*`，使用官方 B=2、max_length=1024（核心 1022 nt）、threshold=0.5；所有源序列保留并记录截断数，概率与预测三次哈希一致后才写 PASS。
+- **预检**：三文件本地/远端语法与 SHA 一致，bash -n 通过。真实 CPU 结构加载严格通过，encoder 387 项、404,153,344 参数，head 16 项、9,972,737 参数；这是结构预检，不是 GPU 前向或科学结果。raw 八格已排 fusion 锁，待 RNAformer 队列释放。
+- **clean 与注册表**：官方 checkpoint 自带官方训练 head，注册类别改为 `official_fixed_weights`，不再称项目头；官方下游训练语料尚未恢复，clean 保持 `BLOCKED_PROVENANCE`，不得套用 TR1c-clean。注册表同时更新 inter-family raw 5/8 续跑和 NLL seed0 全板负结果，25 核心+1 补充系统 JSON 校验通过。
+
+
+## §15.333（2026-11-03）frozen NucleicBERT 代码提交与运行边界
+
+- **GitHub**：官方 frozen 评测、独立 raw 聚合、八 split runner 和注册表修正已提交并推送 `075280b779893a18bf63d0ec68e5b5c32bdf71ee`；HEAD 与 origin 一致。提交依据是双端静态检查与真实 strict 结构加载，尚不表示 GPU 八格通过。
+- **当前运行**：raw 任务仍在 fusion 锁后等待，未产出科学结果。RNAformer inter-family ArchiveII 首轮仍在计算，日志只有加载警告，没有异常或最终 RUN；不据此判完成或失败，也不启动重复 ArchiveII。
+- **交接同步**：三处 spec/tasks 已明确官方训练 head、B=2/1024 协议、clean provenance blocked；126 个活跃源文件和 README 哈希复核通过。
+
+
+## §15.334（2026-11-03）frozen 协议纠正与 RNAformer 长序列 OOM 修复
+
+- **frozen 协议纠正**：`model_config.max_length=1024` 只是模型上限，官方 `train_data_config.max_length=600` 才是下游训练/验证协议。已在任何 accepted 结果前把 frozen 改为 B=2、首 598 nt；旧 1024 TS0 JSON/NPZ/log 已移到 `diagnostics/pre_protocol_1024/`，不计入结果。纠正后 TS0 三次 F1=**0.402943042995399**，TP/FP/FN=10159/5374/24732，SD=0，独立复算 SHA256=`ba2d5abceac02e2e32ecbc806bec1eaeb4163ab5c6653d46a0e722a69e204f77`。代码推送 `5a54c9b`。
+- **训练语料与 clean**：NucleicBERT Methods 明确训练为 RNAStrAlign+TR0、测试为 ArchiveII/TS0；既有 `train_rnalign_tr0.jsonl` 恰为 37,149+10,814=47,963 条，SHA256=`948729bd9a2af887ee81ff9553dffa8181f8747e1e95dd853c4156621e4ea0d8`。统一 MMseqs2 clean split 构建已启动，禁止把 ArchiveII 当训练集或把 NLL 新增 1,657 条当整个训练并集。
+- **RNAformer OOM 根因与修复**：inter-family ArchiveII 长序列 recycling 在 softmax 前另需 12.78GiB 而 OOM；官方 `flash_attn:true` 但环境无 flash-attn。适配器对 L>512 的 AxialAttention 按 64 个查询行及其对应 key/value 行分块，短路径不变。本地 mock 与真实 GPU L=100/520 均 `torch.equal`、max|Δ|=0；最长 950/954 nt 三次生产预测一致，峰值 12.88GiB，smoke SHA256=`3d2d6a24609ae33bb47563752be912f79f4d30892a7f46acaabc2f1e1150cbbf`。修复已推送 `f68c54d`，队列按 frozen raw→RNAformer→frozen clean 恢复。
+
+
+## §15.335（2026-11-03）frozen NucleicBERT raw 8/8 闭环与 clean 构建
+
+- **raw 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的三次 F1=0.4029430430/0.1908859910/0.3323943662/0.2443324937/0.2366412214/0.1783876501/0.5001226686/0.3679381308，SD 全为 0；逐序列计数、官方权重、B=2/598 协议、概率和预测哈希独立复算通过。汇总 SHA256=`84895a002691e504a3a254a39c5d2325ae74a3ad3fe454920b958644d45ed700`。
+- **边界**：ArchiveII 有 39 条超过 598 nt 并按官方协议截断，其余 split 无截断；这些 strict micro-F1 不与论文的 shifted/macro 口径混用，也不用于 SOTA 包装。旧 1024 TS0 继续只留诊断。
+- **clean 进展**：RNAStrAlign+TR0 专属 clean 已完成 7/8 构建：TS0/new/TS1/TS2/TS3/hard/ArchiveII 的 n=1044/5388/48/38/17/28/194；TestSetB 待完成，clean GPU 推理尚未开始。ArchiveII 仅 194 条是该训练并集 exact+80%/80% 同源剔除的直接结果，不能套用其他模型 clean n。
+
+
+## §15.336（2026-11-03）frozen clean 审计闭环与执行顺序
+
+- **clean splits 8/8**：RNAStrAlign+TR0 专属 clean 的 TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB n=1044/5388/48/38/17/28/194/116，全部 raw=clean+exact+homology、数据/审计 SHA 和训练并集身份通过。汇总 SHA256=`ca3f46abd681fc6a0ed8d0a6c2e3d6d925c37a86821f6e6cdaf4e83dc7888f5f`。
+- **工程修复**：builder 首次仅因未创建 audits 父目录失败，已在源码补上 `args.audit.parent.mkdir` 并断点复验；clean 推理没有提前启动。builder 与 clean runner 已推送 `9d8cf0dec0a85e188443efe59dc2cdafa12f664b`。
+- **执行状态**：frozen raw 8/8 已完成，RNAformer 正在使用精确分块恢复全板，frozen clean 推理排在其后。源数据 manifest/README 已登记 raw 汇总和 clean 审计，128 项哈希全部通过；clean 结果仍未产生，不写 raw+clean 闭环。
+
+
+## §15.337（2026-11-03）frozen clean 独立聚合器验收
+
+- **聚合合同**：raw/clean 分开验证，clean 必须绑定各 split 的审计、clean SHA、raw/clean 数量和 removed 守恒；EMPTY_AFTER_DELEAK 只接受空预测和空 repeats，不写成 F1=0。非空格继续检查官方 checkpoint、epoch/global_step、B=2/598、三次预测与概率哈希及逐序列计数。
+- **验证结果**：raw 八格逐项回归全部保持原 F1/SD；人工空 clean 审计通过并返回 status=EMPTY、probabilities=None。empty payload 已补齐数据、审计、权重和协议字段，clean runner 末尾接入 raw+clean 聚合。代码提交并推送 `41fdf7e174a483d7d1978f27943ceaff735ddab0`。
+- **当前边界**：frozen raw 8/8 与 clean split 8/8 已完成，clean GPU 结果仍等待 RNAformer 队列；聚合器就绪不等于 clean 结果完成。
+
+
+## §15.338（2026-11-03）frozen clean 逐行独立重建复核
+
+- **方法**：不依赖 clean_n 或现成 clean 文件本身，逐 split 从原始 JSONL 和 audit 的 exact/homology removed indices 重建行序列，再逐一比较 clean 文件的 name、seq 和 GT pairs。
+- **结果**：八 split 全部通过，clean n=1044/5388/48/38/17/28/194/116；无错位、无名称或 GT 污染。独立验证 SHA256=`4a993f0d298b199fff86b658f8d7cb60109f80fa4b245a6dbb07b23659281d09`。
+- **边界**：这证明 clean 数据与审计一致，不替代 clean GPU 结果；frozen 和 RNAformer 队列继续按锁执行。
+
+
+## §15.339（2026-11-03）E2Efold 官方权重再核查仍 blocked
+
+- **新证据**：GitHub releases 为空；官方 issue #19 在 2025-05 仍报告 pretrained link 404，issue #16 的 2024 年“Just updated”不能保证当前可用。官方 SharePoint 加 `download=1` 实测明确返回“cannot access this document”；OpenReview 受浏览器验证挑战，附件是否可得未确定。
+- **结论边界**：没有获得新的可验证官方 checkpoint，但也不证明权重不存在。raw/clean 保持 blocked，不使用第三方或重训权重冒充，不纳入全基线 SOTA 分母。审计 SHA256=`06050cc59122b927bef8ec0f293e8453f50fa13676b8f404d7c50773bf2153d2`。
+- **整理**：证据已加入 manifest/README 和模型注册表，130 个活跃源文件哈希复核通过；RNAformer/frozen clean GPU 队列不受影响。
+
+
+## §15.340（2026-11-03）GitHub 集群网络故障的本地传输闭环
+
+- **问题**：`dc2b0d7` 从集群连续三次 `git push` 均在 120 秒超时，HEAD 已存在但 origin 未更新；没有重复提交或改写历史。
+- **替代通道**：在本地 `ppt/.round39_work/github_transport.git` 建仅传输 bare mirror，通过既有 SSH control 从 `/home/rna_jev` fetch 精确分支，核对 FETCH_HEAD=dc2b0d7 后用本机已认证 HTTPS 推送。GitHub `ls-remote` 确认 branch=`dc2b0d7d94dc3a7aba382b7c98e2f652d181e8d1`。
+- **边界**：主代码和提交仍在 `/home/rna_jev`，本地只作网络传输；已同步集群 origin 跟踪引用，HEAD/origin 一致。后续优先正常集群 push，网络再失败时复用同一传输镜像，不重复创建提交。
+
+
+## §15.341（2026-11-03）ContextFold 替代官方渠道再核查
+
+- **核查结果**：GitHub `ContextFold` 搜索只有同名 Swift/OpenClaw 等无关项目，`ContextFold RNA Zakov` 为 0 结果，没有作者官方镜像；PubMed 受浏览器验证，E-utilities 渲染未提供官方模型下载链接。此前作者站点与 archive 不可达的边界不变。
+- **结论**：未获得可验证的 ContextFold 模型或替代官方分发，raw/clean 继续 blocked；不使用同名第三方项目，也不宣称模型永久不可得。正确 DOI=10.1089/cmb.2011.0184，审计 SHA256=`704129e1d509d936166b0554cb30c2ce384b094c39363b31db4e132a6e2a09db`。
+- **整理**：注册表、manifest、README 已更新，131 个活跃源文件哈希复核通过；不影响正在运行的 RNAformer 和 frozen clean 队列。
+
+
+## §15.342（2026-11-03）CONTRAfold 官方源码包身份与 provenance 边界
+
+- **新增身份**：AUR PKGBUILD 的 GitHub Blob 明确给出 Stanford 官方 `contrafold_v2_02.tar.gz` 和 MD5=`cea66c63df835fe7f790c7f49ce83ef3`；镜像只有构建文件，不含训练数据。
+- **连接复核**：官方包的 HTTPS/443 与 HTTP/80 均连接失败，未获得训练语料；不能从参数文件或名称猜测训练序列。raw 结果保留，TR1c 仍只是 sensitivity，不标官方 clean。
+- **整理**：审计 SHA256=`b88694f0f7530bcf96d4561ebf320671a880fedf6beac1cdfb72215c929131e2` 已加入 manifest/README/注册表，132 项源文件哈希通过。GPU 队列继续。
+
+
+## §15.343（2026-11-03）CONTRAfold 提交通过本机 SSH 推送
+
+- `393caf6be320ab80eae748c7312df0c9c7825b3b` 在集群/本地传输镜像完整保留后，HTTPS 多次连接失败；改用本机 SSH 推送成功，GitHub `ls-remote` 确认同一 SHA，集群 origin 已同步。
+- 后续传输镜像的 GitHub remote 保持 SSH；API 仅用于查询，不再用 API 直接更新缺少 pack objects 的 ref。正常代码提交仍在集群完成。
+
+
+## §15.344（2026-11-03）RNAformer 分块补丁短路径独立回归
+
+- 对既有 TS1/TS2/TS3/hard/TestSetB 五格重新从预测独立计算 TP/FP/FN 和 F1，均与修复前接受值及结果 SHA256 完全一致，三次 SD 全为 0。
+- 结果依次为 0.8414634146/0.9117647059/0.7961630695/0.7843137255/0.6719065798；对应 SHA 为 `0bd11b5a…ebeb`、`1f9af83e…aea8`、`19d497e3…71b2`、`4b048ee3…1fe0`、`717e03ba…f1a5`。
+- 这补充证明 L≤512 的原路径没有行为变化；ArchiveII 全量仍运行中，raw 5/8 不提前晋级。
+
+
+## §15.345（2026-11-03）RNAformer ArchiveII 分块后首个 repeat 完成
+
+- inter-family raw ArchiveII 的 repeat0 已写出日志：F1=**0.739045**、throughput=0.887 seq/s、峰值显存=12,880MiB，长序列精确分块后未再 OOM，也未发生 CPU 降级。
+- 当前 repeat1/2 继续运行，完整 JSON 尚未形成；该 F1 只记录阶段进展，不纳入三次均值、raw 完整格或 SOTA 结论。保持 raw 5/8，待三次预测一致后独立复算。
+
+
+## §15.346（2026-11-03）RNAformer ArchiveII 前两次 repeat 一致
+
+- repeat0/1 均完成，F1 均为 **0.739045**，throughput 均约 0.887 seq/s，峰值均 12,880MiB；分块后长序列计算未再 OOM。
+- 当前仅剩 repeat2，完整 JSON 尚未生成；继续保持 raw 5/8，不把前两次一致当成三次验收完成，也不提前形成最终均值。
+
+
+## §15.347（2026-11-03）RNAformer ArchiveII 三次完整验收，raw 6/8
+
+- **最终结果**：inter-family raw ArchiveII n=2544，三次 F1 均为 **0.7390448978614556**，TP/FP/FN=92599/30470/34923，SD=0；结果 SHA256=`002c77c4ae46ea8bf2deed262be34de63346e35f262b43aff66269cff883d932`。
+- **独立验收**：逐序列计数、预测哈希、官方权重/config、CUDA、full-length 和三次一致性全部通过；query_chunked_attention={threshold=512, block_size=64, modules=12, mode=exact_query_blocks_above_threshold}，峰值约 12.88GiB，未再 OOM。
+- **边界**：inter-family 现为 raw 6/8，TS0/bpRNA-new 继续，clean 尚未开始；0.887 seq/s 是并发诊断吞吐，不用于独占速度结论。
+
+
+## §15.348（2026-11-03）RNAformer TS0 首个 repeat 完成
+
+- inter-family raw TS0 的 repeat0 已完成，F1=**0.638963**、throughput=2.205 seq/s、峰值显存=6,676MiB，未发生 OOM 或 CPU 降级。
+- repeat1/2 继续运行，完整 JSON 尚未形成；保持 raw 6/8，不用单次 F1 形成三次均值或最终结论。
+
+
+## §15.349（2026-11-03）RNAformer TS0 前两次 repeat 一致
+
+- TS0 的 repeat0/1 均完成，F1 均为 **0.638963**，throughput 约 2.205/2.206 seq/s，峰值均 6,676MiB；无 OOM 或 CPU 降级。
+- 当前仅剩 repeat2，完整 JSON 尚未形成；保持 raw 6/8，不把前两次一致当成三次验收完成。
+
+
+## §15.350（2026-11-03）RNAformer TS0 三次完整验收，raw 7/8
+
+- inter-family raw TS0 n=1288，三次 F1 均为 **0.6389628493761762**，TP/FP/FN=22918/13926/11973，SD=0；结果 SHA256=`8f6657b41b4bcfab67c3fdd20d5f0d5dde900b86d59b3fc3e5b680af57e5b753`。
+- 逐序列计数、预测哈希、官方权重/config、CUDA 和三次一致性独立复算通过；query chunk 12 模块元数据一致，峰值约 6.68GiB，未再 OOM。
+- 当前仅剩 bpRNA-new，clean 尚未开始；2.206 seq/s 是并发诊断吞吐，不用于独占速度结论。
+
+
+## §15.351（2026-11-03）EternaFold/BPfold/MXfold2 自身训练并集 clean 独立复算
+
+- **审计方式**：重新从 24 个 clean JSONL 和对应审计核对 raw/clean SHA、raw=clean+exact+homology 数量守恒，再从逐序列预测独立计算 TP/FP/FN、三次 F1 mean/SD 和结果哈希；不是沿用现成 summary 数值。
+- **EternaFold**：自身训练并集 clean 的 bpRNA-new n=5388，三次 F1=**0.685384007269125**，TP/FP/FN=104470/65197/30714，SD=0；回答此前 0.6854 的复测问题，该值是三次完整推理均值。旧 TR1c 敏感性 0.6853675983 不可替代 own-clean 口径。
+- **BPfold 与 MXfold2**：八格均通过。BPfold clean TS2=0.9494949495 仅 n=3，ArchiveII=0.8212189843 仅 n=731；这些数字必须连同 n 报告，不能当作大样本稳定提升。MXfold2 clean bpRNA-new=0.6688466171（n=5388）。
+- **独立验收**：三系统 24 格结果写入 `round39_three_baseline_clean_recompute.json`，SHA256=`0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。首次审计因 EternaFold 协议字符串末尾遗漏“EternaFold parameters”而拒绝，确认实际字段后修正校验，不是模型结果失败；其后全部通过。
+- **科学边界**：各系统 clean n 不同，不得把异子集 F1 直接排成 SOTA；最终主板需同名、同序列、同 GT 交集敏感性。24 格通过不表示其余模型或 600 单元总门完成。
+
+
+## §15.352（2026-11-03）RNAformer 四套 clean 数据逐行预验收
+
+- 在 raw bpRNA-new 后续重复运行期间，对 inter-family/bprna/intra-family/biophysical 的 32 个 clean 文件，从 raw JSONL 和 exact/homology removed indices 独立重建保留行，逐字段比对全部一致；训练并集、raw/clean SHA 和数量守恒均通过。
+- inter-family clean n=1276/5386/63/39/19/28/2192/421（TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB）；bprna clean n=1140/5386/11/9/2/3/2267/80。
+- intra-family 的 TS3 clean n=0，正式评测必须写 `EMPTY_AFTER_DELEAK`，禁止写 F1=0；biophysical 的八格 clean 与 raw 数量一致，由该训练语料审计决定，不人为删除数据。
+- 验收 SHA256=`2a5eec62bde95d15d8158b1f32b6414485a93922571f4006bcfdcb1c47ad1869`。这只是数据身份预验收，不替代 raw/clean GPU 三次推理；当前 inter-family 仍 raw 7/8。
+
+
+## §15.353（2026-11-03）三系统 clean 复算脚本化与逐字节复现
+
+- 将 §15.351 已执行的独立审计固化为 `tools/verify_three_baselines_clean_round39.py`，覆盖 EternaFold/BPfold/MXfold2 的 clean 数据、审计、协议、逐序列计数和三次 F1；不改模型、预测或结果。
+- `tools/test_verify_three_baselines_clean_round39.py` 通过，验证 TP/FP/FN、重复配对集合化、名称不匹配拒绝和行数不匹配拒绝；双端 `py_compile` 通过。
+- 在真实 24 格上重新执行脚本，生成文件与已验收审计 `round39_three_baseline_clean_recompute.json` 逐字节相同，SHA256 均为 `0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271`。这形成脚本、真实复算和字节一致性三路检查，仍不解除异 clean 子集不可直接排 SOTA 的边界。
+
+
+## §15.354（2026-11-03）RNAformer inter-family raw 8/8 验收与版本边界
+
+- **bpRNA-new**：n=5388，三次 F1=**0.6559981191591073**，TP/FP/FN=83707/36314/51477，SD=0；结果 SHA256=`ee69f1514a512ac4dfda538a8c9c39f3aeb479590205cd74d346a10a79043010`。逐序列计数、官方权重/config、CUDA、12 个 Rotary 缓存关闭、精确长序列分块和三次预测一致性均通过。
+- **raw 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 八格独立聚合通过，SHA256=`9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb`。inter-family 现为 raw 8/8；clean TS1/TS2 已完成，其余 clean 继续，不能写 raw+clean 完成。
+- **biophysical 元数据审计**：四个早期 raw 结果没有 `rotary_cache_disabled_modules`，但官方 config 明确 `rotary_emb:false`，三次预测哈希一致；该模型不使用出问题的 Rotary 模块，不套用 inter-family 缓存根因，也不无谓重跑。
+- **绘图源对账**：EternaFold/BPfold/MXfold2 新复算与现有 active source 的 24 格计数、SD、结果哈希完全一致；F1 均值仅两处有 <1e-15 的浮点求和舍入差，容差 1e-12 内，非科学结果变化。
+- **置信度边界**：BPfold 已保存的是 raw utility matrix，文件明确 `not a probability`；结构 CI 未保留在普通八 split 聚合中，不能把 utility 直接当概率算 ECE，也不能伪称已有 CI 的跨 split 排序结论。
+
+
+## §15.355（2026-11-03）混合 NLL 否决后的长度分层归因
+
+- 对原 plana seed0 与混合 NLL seed0 的同一 clean 预测按 1–100/101–200/201–400/401+ nt 独立复算 TP/FP/FN、F1 和配对密度。两个输入均通过 clean 数据、审计、checkpoint 和三次结果身份验证；这是候选否决后的解释性诊断，不用于测试集调参。
+- bpRNA-new 四个长度桶的 ΔF1 分别为 −0.060767/−0.073327/−0.097803/−0.077811，均为负；前三个桶 NLL 同时减少 TP、增加 FP，401+ 亦如此，不是简单提高或降低统一解码阈值即可修复。
+- ArchiveII 的四桶 ΔF1=−0.000455/−0.005338/−0.017009/−0.044848，退化随长度增大。401+ 的 TP 从 7491 降至 6781、FP 从 7057 升至 7466，提示长序列结构泛化恶化。
+- 审计 SHA256=`ba1970dad2d19bff9b3d8d86c931c1254fb8780a8b64b69677fc88c397090777`。结论仅支持“下一候选需先解决结构泛化，不重复调阈值或加种子”，不构成新模型有效性的证据；P1 基线验收仍在进行。
+
+
+## §15.356（2026-11-03）NLL 分层归因脚本化复现
+
+- 新增 `tools/stratify_mixed_nll_round39.py`，固定 clean 数据、结果身份、四长度桶和逐对计数；额外核验原三种子汇总 SHA 与否决 gate 一致，不改变诊断输出。
+- 新增 `tools/test_stratify_mixed_nll_round39.py`，覆盖 1/100/101/200/201/400/401 nt 边界、计数、F1、配对密度和空桶。首次测试因把 7 个边界结果误写为 4 个桶名而失败，修正测试期望后通过；生产分桶未改。
+- 双端 `py_compile` 与测试通过；真实八 split 重新生成的诊断与已验收 JSON 逐字节一致，SHA256=`ba1970dad2d19bff9b3d8d86c931c1254fb8780a8b64b69677fc88c397090777`。
+- GitHub 正常 push 超时后，通过本地 bare mirror 推送同一 `3dbd3e196e2ef698a62f5666c078e2b3b4a15d2e`；镜像 cluster URL 修正为实际 SSH 端口 29744，HEAD/origin/GitHub 三路一致，无重复提交或历史改写。
+
+
+## §15.357（2026-11-03）round39 论文叙事证据审计
+
+- 新增 `paper/round39_claim_evidence_audit.md`，按“实验现象→对照→限制”整理可写结论、不可升级主张和后续证据顺序。
+- 保留三个关键否定：单学生三种子完成不等于性能达标；VL0 融合在 6 格后已不能达到 8/8；混合 NLL 的局部涨点不是泛化改善。
+- 置信度部分明确区分 ECE 与结构质量排序，BPfold utility 不直接作为概率；速度部分继续使用独占 raw-sequence 合同，禁止并发或 cached embedding 结果进入主结论。该审计不修改已验收 PPT，待完整新证据后只做必要联动。
+- **版本纠正**：远端原有同名审计含 14 组完整叙事，初次简版同步覆盖后已按 `a8b2bfe^` 全部恢复，仅新增 own-clean/inter-family raw 两行并更新 NLL 与置信度两行。逐行核对除两处有意更新外旧内容全部保留，最终追加提交 `2d5d496eadc3b5b74adcf4ad09e9161fff844390`，未改写历史。
+
+
+## §15.358（2026-11-03）inter-family clean 5/8 独立复算
+
+- clean TS1/TS2/TS3/hard 均保持 n=63/39/19/28，F1=0.8414634146/0.9117647059/0.7961630695/0.7843137255；这些 split 无删除样本，和 raw 数值一致。
+- clean TestSetB n=421，三次 F1=**0.6734647425683981**，SD=0；raw n=428 的 F1=0.6719065798，差异对应 7 条审计删除样本。
+- 五格均通过 clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、逐序列计数和三次预测一致性复核。clean ArchiveII 正在运行，TS0/new 后接续；当前 clean 5/8，不写 raw+clean 完成。
+- 补充核查 bprna 与 biophysical 官方 config 均为 `rotary_emb:false`，不使用 inter-family 出问题的 Rotary 模块；bprna 旧 bpRNA-new 三次预测哈希一致，不误套缓存根因。
+
+
+## §15.359（2026-11-03）inter-family clean ArchiveII 首个 repeat
+
+- clean ArchiveII repeat0 已完成，F1=**0.733486**，throughput=0.756 seq/s，峰值显存=12,880MiB；长序列精确分块路径未再 OOM，也没有 CPU 降级。
+- 当前 repeat1/2 继续，完整 JSON 尚未形成；保持 clean 5/8，不把单次 F1 纳入三次均值或 SOTA 判断。并发 throughput 仅作诊断，不用于速度结论。
+
+
+## §15.360（2026-11-03）BPfold 六格 raw 独立复核
+
+- 对已完成 raw TS0/new/TS1/TS2/TS3/hard 逐序列重算 strict micro-F1，并核对 CUDA、六个官方 checkpoint、raw 数据 SHA 和三次预测一致性。
+- F1 依次为 **0.7502687934/0.7370074184/0.8418421992/0.9131075110/0.8337129841/0.8220255654**。
+- 结果 SHA256 依次为 `89f6ecdb87141dbd11fc8e8c390e7649fc2edffee3497c5351a01eabca2db50c`、`9832e97bcb5e6879e57a317ef560dd1ca364b11a48575b3f89cd9c94c773255a`、`332ff7937115abf13b1d26df020974645daea85a587ace4baa3d0384b07a266a`、`080119591c2c27f33b6ee8443d3d7a431a4f0ff0f10a9b722fc7fb1a7be828c2`、`9de5934ab49a4a00f2a68c3b08edb7e8d69771b9fa49e6322768ce0a551e09c8`、`dc5ee89d6c5c5bfbf6b813f19930213c55aa3a07314c838b3426536f1879ae57`。
+- ArchiveII 已进入 repeat1，TestSetB 后接续；raw 仍为 6/8，不提前生成全板汇总。
+
+
+## §15.361（2026-11-03）BPfold 六组 raw/clean 敏感性对照
+
+- TS0：raw n=1288、F1=0.7502687934；own-clean n=1178、F1=0.7454468330。
+- bpRNA-new：raw n=5388、F1=0.7370074184；clean 仅少 1 条，n=5387、F1=0.7369936721。
+- TS1：raw n=63、F1=0.8418421992；clean n=42、F1=0.8598022106。TS2：raw n=39、F1=0.9131075110；clean 仅 n=3、F1=0.9494949495。
+- TS3：raw n=19、F1=0.8337129841；clean n=17、F1=0.8366336634。hard：raw n=28、F1=0.8220255654；clean n=24、F1=0.8239795918。
+- 这些差值是不同子集上的泄露敏感性，不是训练改进，也不能用来证明性能提升；TS2 的 n=3 必须与数值同时展示。ArchiveII/TSB 未齐，保持 raw 6/8。
+
+
+## §15.362（2026-11-03）inter-family clean ArchiveII 前两次 repeat 一致
+
+- clean ArchiveII repeat0/1 均完成，F1 均为 **0.733486**，throughput 均约 0.756 seq/s，峰值显存均约 12,880MiB；未再 OOM 或发生 CPU 降级。
+- 当前仅剩 repeat2，完整 JSON 尚未形成；保持 clean 5/8，不把前两次一致当成三次验收完成。
+
+
+## §15.363（2026-11-03）inter-family clean ArchiveII 三次完整验收，clean 6/8
+
+- clean ArchiveII n=2192，三次 F1=**0.7334860511130188**，TP/FP/FN=79888/26863/31192，SD=0；结果 SHA256=`f55c76ac4d9124b60de1c370e207e8789a21a6d54b2788c36eac7372e2b84758`。
+- clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、长序列精确分块、逐序列计数和三次预测一致性全部通过；raw F1=0.7390448979，clean 与 raw 的样本集合不同，差值仅作敏感性对照。
+- 当前 clean 6/8，TS0 正在接续，bpRNA-new 后运行；raw+clean 与 SOTA 仍未验收。
+
+
+## §15.364（2026-11-03）inter-family clean TS0 三次完整验收，clean 7/8
+
+- clean TS0 n=1276，三次 F1=**0.6379106660666066**，TP/FP/FN=22679/13846/11900，SD=0；结果 SHA256=`b170bef43cb43d0e61d7103d9c1d3407abafe6e68f33917886e2eb826e768565`。
+- clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、逐序列计数和三次预测一致性全部通过。
+- 当前 clean 7/8，仅剩 bpRNA-new；raw+clean 全板和 SOTA 仍未验收。
+
+
+## §15.365（2026-11-03）BPfold raw ArchiveII 三次完整验收，raw 7/8
+
+- BPfold raw ArchiveII n=2544，三次 F1=**0.8521505875709153**，TP/FP/FN=114682/26955/12840，SD=0；结果 SHA256=`e47f901ddafd60722787b4ed39d450d8e03ef721fc46afd04faf9fcd40ac2ab2`。
+- CUDA、六个官方 checkpoint、raw 数据 SHA、逐序列计数和三次预测一致性全部通过。TestSetB 已接续，raw 7/8，尚未形成全板汇总。
+- 本地 SSH 任务在 4 小时达到连接超时，但远端 BPfold 进程与父 shell 均继续运行，没有重复启动或重算已完成的 repeat。
+
+
+## §15.366（2026-11-03）RNAformer inter-family raw+clean 16 格闭环
+
+- **最后一格**：clean bpRNA-new n=5386，三次 F1=**0.6560129819734011**，TP/FP/FN=83682/36300/51459，SD=0；结果 SHA256=`d2b45b3f5bef15560c0daf4b13f160ec8644ea12860c76fa20ecd3a619a6f6fe`。
+- **clean 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=0.6379106661/0.6560129820/0.8414634146/0.9117647059/0.7961630695/0.7843137255/0.7334860511/0.6734647426，非空格 SD 全为 0。
+- **独立验收**：raw+clean 16 格的数据/审计、官方权重/config、CUDA、逐序列计数、预测哈希和三次重复一致性全部通过，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`。
+- **边界**：仅 inter-family 一个变体闭环，后续 bprna/intra/biophysical、其余 baseline 和 xens2 三目标仍未完成；不将这一结果写成全基线 SOTA。
+
+
+## §15.367（2026-11-03）BPfold raw 8/8 闭环与 NB 恢复
+
+- **TestSetB**：n=428，三次 F1=**0.7900305273282315**，TP/FP/FN=9446/3210/1811，SD=0；结果 SHA256=`b1024d3af6f90d316a495e76a0338691539f791b0d1ee4d305207ff1bf1c36c2`。
+- **raw 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 八格全部独立复算通过，汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`。own-clean 已先行完成，raw+clean 齐套，但异 clean 子集仍不得直接排 SOTA。
+- **NB 恢复**：raw 汇总形成后，official_s3 已从 epoch 13 的完整断点恢复 `--device cuda --batch-size 4` 训练；未重训已完成种子。后续必须到 validation plateau 并做独立 CUDA QA，启动不等于收敛。
+
+
+## §15.368（2026-11-03）BPfold raw+own-clean 16 格总账
+
+- 将独立验收的 raw 八格与 own-clean 八格合并，逐项保留 n、TP/FP/FN、F1 mean/SD 和原始结果哈希；汇总 SHA256=`2becebcdfee94ddb0d226570c40150361441d981637854cdb85b9407973dc902`。
+- raw 与 clean 来源汇总分别固定为 `709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb` 和 `4c071f0bc34f4f778d90b8ba4703e4bd566d421de2494fc1bb609d0baf9b1b05b0`。
+- 总账明确 own-training-union clean 和不同系统 clean n 不同，不直接用于跨模型 SOTA 排名；NB official_s3 正在 epoch14 训练，尚无收敛或 QA 结论。
+
+
+## §15.369（2026-11-03）并发 OOM、SSH 断连与持久队列恢复
+
+- **RNAformer-bprna raw ArchiveII**：长序列 softmax 再需 4.67GiB 时，其他两个进程分别占用 8.84/10.27GiB，CUDA OOM；失败前未生成结果 JSON，无半成品被纳入汇总。完整错误栈另存 `rnaformer_bprna_raw_archiveii_embok_clean.oom_20261103.log`，SHA256=`1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6`。不修改模型、精度或数据，不以缩小序列规避；改为 frozen NucleicBERT 完成后再由持久锁恢复，已完成的 inter-family 16 格和 bprna raw 7/8 均跳过，不重跑。
+- **NB official_s3**：本地 SSH 以 255 断开，日志无训练异常；最后完整 checkpoint 为 epoch14，best_epoch=14、best_validation_BCE=0.011871916332246218、bad=0、early_stopped=False，较 epoch13 的 0.011949524802079076 继续改善。模型、优化器、CUDA RNG 和历史均完整，best.pt/run.json 尚未生成，未收敛、未 QA。
+- 队列 dry-run 确认仅剩 official_s3/s4 与 JEV s0–s4 共 7 个 run，QA backfill 为空；使用 `nohup+flock` 从 epoch14 checkpoint 续接，后续仍按 batch=4、patience=5、min_delta=1e-6 和独立 CUDA QA 验收。RNAformer 同样改为远端持久锁，避免本地监控超时或断连终止远端计算。
+
+
+## §15.370（2026-11-03）同名同序列同实际 GT 的 clean 交集复算
+
+- 新增 `tools/aggregate_matched_clean_round39.py` 与持久测试，逐系统绑定 own-clean 数据、审计、三次预测哈希和原生指标；先独立重算每系统原生 TP/FP/FN/F1，再构造共同交集。原生截断模型只在实际参与评分的 GT 完全一致时比较，空交集写 `EMPTY_INTERSECTION`，不写 F1=0。
+- 5 项单元测试、真实全板加载及同一输入快照的两次逐字节复算通过。九系统八 split 阶段快照 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`；每格均有 9 个完成系统，状态明确为 `PARTIAL_MATCHED_SENSITIVITY_NOT_LEADERBOARD`，因为其余 eligible 系统尚未齐。
+- 九系统全长共同 TS2 交集为 0，但保留 35 个非空两两比较，n=1–39；这些样本量必须与数值同时展示，不能用两两小样本替代完整 own-clean 主板。ArchiveII 全长七系统共同 n=99，首 598nt 组两系统共同 n=172，不与全长 GT 混排。该工具只提供敏感性证据，不改变三目标尚未闭环的结论。
+
+
+## §15.371（2026-11-03）frozen NucleicBERT 16 格闭环与 RNAformer 并行资源门
+
+- frozen NucleicBERT 官方 B=2、首 598nt 的 raw+RNAStrAlign/TR0 专属 clean 共 16 格均完成三次推理；非空格 SD=0，clean ArchiveII n=194、38 条截断、F1=0.3301548739750987。raw+clean 独立聚合两次逐字节一致，SHA256=`ad16e32289ab282ac2b85df1d70f1dcf47684abe33b397f7f23188ffcc9b30a8`。原 shell 在 `exec flock` 后未执行聚合行，按预定手动命令生成正式汇总，不重跑 GPU。
+- frozen 释放显存后，RNAformer 旧 21GiB 预检在 free=12.850GiB 时 fail-closed，未启动计算。实测当时仅一个 NB 进程占 10,516MiB、空闲 13,550MiB，而已验收 RNAformer 三次峰值均为 12,879.656MiB；将 bprna/variant 预检改为 12GiB，CUDA 不可用仍硬失败。恢复后 inter-family 聚合哈希保持一致，bprna 仅补缺失格，不重算已完成结果。
+- 当前最多 NB 与 RNAformer 两个 GPU 计算任务并行；不再引入第三个高显存任务。该调整只针对资源调度，正式独占测速合同不变。

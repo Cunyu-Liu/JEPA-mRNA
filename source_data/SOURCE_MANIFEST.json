@@ -994,6 +994,27 @@
    "bytes": 6040,
    "description": "BPfold raw+own-clean 16 格总账；保留异 clean 子集边界",
    "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_matched_clean_sensitivity.json",
+   "sha256": "5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df",
+   "bytes": 209115,
+   "description": "9 系统八 split 阶段快照：own-clean 同名同序列同实际 GT 的全局与两两交集；TS2 全交集为空，不排最终 SOTA",
+   "status": "active_partial_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom.log",
+   "sha256": "1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6",
+   "bytes": 6152,
+   "description": "RNAformer-bprna raw ArchiveII 三任务并发显存不足证据；无半成品 JSON，已改持久锁队列",
+   "status": "active_failure_evidence_retry_queued"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_raw_clean_summary.json",
+   "sha256": "ad16e32289ab282ac2b85df1d70f1dcf47684abe33b397f7f23188ffcc9b30a8",
+   "bytes": 11451,
+   "description": "frozen NucleicBERT 官方 B=2 首598nt raw+专属 clean 各八 split 三次独立聚合",
+   "status": "active_complete_raw_clean_8_of_8"
   }
  ]
 }

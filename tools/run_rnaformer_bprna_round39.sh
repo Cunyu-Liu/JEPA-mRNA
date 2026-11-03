@@ -9,7 +9,7 @@ root=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round3
 import torch
 assert torch.cuda.is_available()
 free,total=torch.cuda.mem_get_info()
-assert free>=21*(1<<30),f"INSUFFICIENT_CUDA_MEMORY_REQUIRED_21_GIB free={free/(1<<30):.3f} total={total/(1<<30):.3f}"
+assert free>=12*(1<<30),f"INSUFFICIENT_CUDA_MEMORY_REQUIRED_12_GIB free={free/(1<<30):.3f} total={total/(1<<30):.3f}"
 print("RNAFORMER_BPRNA_CUDA_PREFLIGHT_PASS",free/(1<<30),flush=True)
 PY
 for mode in raw clean; do

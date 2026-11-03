@@ -38,6 +38,8 @@
 >
 > **2026-11-03 当前队列**：inter-family raw+clean 16 格已闭环，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`；RNAformer-bprna 接续。BPfold raw 8/8 已完成，汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`；frozen clean 按锁等待。NB official_s3 已从 epoch 13 完整断点恢复训练，后续独立 CUDA QA，未收敛前不晋级。四套 RNAformer 的 32 个 clean 数据已逐行预验收；并发耗时均非正式速度。
 >
+> **2026-11-03 持久恢复与交集门**：bprna raw ArchiveII 因三任务并发 OOM，无结果 JSON；保留错误栈并在 frozen clean 后断点续跑，不重算完成格。NB official_s3 因 SSH 255 中断，epoch14 完整 checkpoint 的 best validation BCE=0.0118719163、bad=0，未收敛；持久队列仅续 official_s3/s4 与 JEV 五种。交集工具经 5 项测试和真实逐字节复算，阶段 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`；TS2 全交集为空，保留两两 n，不排最终 SOTA。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**
