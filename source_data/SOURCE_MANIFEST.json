@@ -1071,6 +1071,13 @@
    "bytes": 6166,
    "description": "Attention2d 未分块导致 12.78GiB 单次申请 OOM 的错误栈；随后查询分块通过 GPU 零误差验证",
    "status": "active_failure_evidence_fixed_gpu_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu_bf16.json",
+   "sha256": "11243db66ab4785eb7dbb443af20a29b6b9cfe6c0b3f5efb73fce266cf53b14c",
+   "bytes": 667,
+   "description": "Attention2d 查询分块在生产 bf16 autocast 下 L=100/520/954 与原实现逐元素完全相等",
+   "status": "active_gpu_bf16_exactness_verified"
   }
  ]
 }

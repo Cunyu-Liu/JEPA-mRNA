@@ -12366,3 +12366,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **第三次 OOM 根因**：错误栈位于此前未分块的 `Attention2d`，单次申请 12.78GiB；不是旧 AxialAttention 的 64 行块。错误证据 SHA256=`e8e94f1f6fd1ddba85e26aea3c99811109f3e3e8a94d8f825298622c5a41a610`。新增 Attention2d 查询分块，键值对应行且 N_res 完整，输出投影整块执行。
 - **数值与 GPU 验收**：初次实现经单测发现行批维错误，随后 CPU 强制分块/短路径零误差通过；RTX4090 上 L=100/520/954 均与原实现逐元素完全相等，GPU 审计 SHA256=`1b266475d92fed3b6b0cb5a8d19344846d4db38d733783b85d4920e74ae0eae1`。验证通过后 RNAformer 已恢复，未降低长度或精度。
 - **NB**：official_s3 在 epoch16 后训练失败，run.json/QA 均不存在，最后完整 checkpoint 仍为 epoch16、未收敛。旧日志未保留可确认的失败根因，不归因；后续队列改用新的 persistent launch/QA 日志并从 epoch16 恢复，其余 7 个 run 合同不变。
+
+
+## §15.384（2026-11-03）Attention2d bf16 生产精度等价
+
+- 使用与生产一致的 bf16 autocast，对 Attention2d 查询分块和原实现比较 L=100/520/954 的输出，三者均 `torch.equal=True`、max_abs=0.0。
+- GPU 审计 SHA256=`11243db66ab4785eb7dbb443af20a29b6b9cfe6c0b3f5efb73fce266cf53b14c`。该结果补齐此前 fp32 证据，覆盖生产精度路径；不改变预测协议、模型权重或评测阈值。
+- NB persistent 日志已确认 epoch17 正常步进，未再截断；RNAformer 的完整 ArchiveII 结果仍待形成。
