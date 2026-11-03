@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RAW_CLEAN_8x3_INDEPENDENT_RECOMPUTE",
+  "system": "BPfold",
+  "protocol": "six official checkpoints; raw-sequence B=1; three deterministic repeats",
+  "timing_boundary": "concurrent timings are diagnostic; not exclusive speed results",
+  "raw_summary_sha256": "709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb",
+  "clean_summary_sha256": "4c071f0bc34f4fdd4733a025d16a22eea2c07dbfe77fa1bfe6e1486e923ac14f",
+  "comparison_boundary": "own-training-union clean; unequal n across systems; no direct cross-system SOTA ranking",
+  "raw": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 29657,
+      "fp": 14509,
+      "fn": 5234,
+      "f1_mean": 0.7502687934022287,
+      "f1_sd": 0.0,
+      "prediction_sha256": "92476a437d85b54677bb25f96fed8e58eb0c5c2bba9202402fc40acc96a5b478",
+      "result_sha256": "89f6ecdb87141dbd11fc8e8c390e7649fc2edffee3497c5351a01eabca2db50c"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 106998,
+      "fp": 48176,
+      "fn": 28186,
+      "f1_mean": 0.7370074184282851,
+      "f1_sd": 0.0,
+      "prediction_sha256": "e7fef653920d50a75723055adee7b80ea531baf9c87f128def119c58d8aa6cbb",
+      "result_sha256": "9832e97bcb5e6879e57a317ef560dd1ca364b11a48575b3f89cd9c94c773255a"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 1179,
+      "fp": 277,
+      "fn": 166,
+      "f1_mean": 0.8418421992145663,
+      "f1_sd": 0.0,
+      "prediction_sha256": "fe30c5583d0087cd03830406ed9fc3f7d8ad89f51b08d41e2cd236f99d5b0161",
+      "result_sha256": "332ff7937115abf13b1d26df020974645daea85a587ace4baa3d0384b07a266a"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 620,
+      "fp": 83,
+      "fn": 35,
+      "f1_mean": 0.9131075110456554,
+      "f1_sd": 0.0,
+      "prediction_sha256": "07777bcdec0f4e248e646e4d458429cb20d852428895d56ad21b66a1e08a6b38",
+      "result_sha256": "080119591c2c27f33b6ee8443d3d7a431a4f0ff0f10a9b722fc7fb1a7be828c2"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 366,
+      "fp": 95,
+      "fn": 51,
+      "f1_mean": 0.8337129840546698,
+      "f1_sd": 0.0,
+      "prediction_sha256": "4a3ac85e0962fad2bf377f399bb2504776ae559d63f1c32bce46bff18e9f1a05",
+      "result_sha256": "9de5934ab49a4a00f2a68c3b08edb7e8d69771b9fa49e6322768ce0a551e09c8"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 418,
+      "fp": 124,
+      "fn": 57,
+      "f1_mean": 0.8220255653883972,
+      "f1_sd": 0.0,
+      "prediction_sha256": "098ae7ebb9ca5773d7e26c6c41d40fe0724c9dfc5ce5b0afcb16dcf33270572f",
+      "result_sha256": "dc5ee89d6c5c5bfbf6b813f19930213c55aa3a07314c838b3426536f1879ae57"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 114682,
+      "fp": 26955,
+      "fn": 12840,
+      "f1_mean": 0.8521505875709153,
+      "f1_sd": 0.0,
+      "prediction_sha256": "ca08919e9857675fd6d9607a3aec1f22dedd8e47adae64f6df08d9e7b4597e7b",
+      "result_sha256": "e47f901ddafd60722787b4ed39d450d8e03ef721fc46afd04faf9fcd40ac2ab2"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 9446,
+      "fp": 3210,
+      "fn": 1811,
+      "f1_mean": 0.7900305273282315,
+      "f1_sd": 0.0,
+      "prediction_sha256": "d259930ef8d822d23cdbaf7a0d699a2078fce42ce75e8adfbbd558306074776b",
+      "result_sha256": "b1024d3af6f90d316a495e76a0338691539f791b0d1ee4d305207ff1bf1c36c2"
+    }
+  },
+  "clean": {
+    "bprna_ts0": {
+      "n": 1178,
+      "tp": 27239,
+      "fp": 13636,
+      "fn": 4967,
+      "f1_mean": 0.7454468329661609,
+      "f1_sd": 0.0,
+      "prediction_sha256": "bb34bd60099a330e177d2c457db1396da5e7f59bfb77da7d377f188701bc0af5",
+      "result_sha256": "46601f0d15fdd9b91388965d4bbefcb841cc957200e543be1ed2db56f13ec3e3"
+    },
+    "bprna_new": {
+      "n": 5387,
+      "tp": 106975,
+      "fp": 48168,
+      "fn": 28183,
+      "f1_mean": 0.7369936720851805,
+      "f1_sd": 0.0,
+      "prediction_sha256": "55bad1c686a79b94530a67aaacff9439c94d19c628a5a657d89ccb622c2f8b9b",
+      "result_sha256": "7fd825f6d06e941bf842d967e24391f57f5310db52da4b94afcaeb183caa8cfd"
+    },
+    "ref_pdb_ts1": {
+      "n": 42,
+      "tp": 739,
+      "fp": 145,
+      "fn": 96,
+      "f1_mean": 0.8598022105875509,
+      "f1_sd": 0.0,
+      "prediction_sha256": "08cfe10ed0f6a8b42f6aed29010ee6f8307d1963b90f08c5144e0518523d62b4",
+      "result_sha256": "82547281af242ca961ec5ea52c31032a6c2e55b331db9f8421cc9cbf6185a392"
+    },
+    "ref_pdb_ts2": {
+      "n": 3,
+      "tp": 47,
+      "fp": 3,
+      "fn": 2,
+      "f1_mean": 0.9494949494949495,
+      "f1_sd": 0.0,
+      "prediction_sha256": "1399ca6fc243ea5939e8bf046e974205e3112f0fc4ac6bda12a841d4e92b7199",
+      "result_sha256": "3d15170acc3d860e202e87edc07e6b27745df754a51401b322e43ecf2ef44e54"
+    },
+    "ref_pdb_ts3": {
+      "n": 17,
+      "tp": 338,
+      "fp": 84,
+      "fn": 48,
+      "f1_mean": 0.8366336633663366,
+      "f1_sd": 0.0,
+      "prediction_sha256": "140c2f4594a801d9bb65d0e5e2bc906de26ef4240c40d58b3cc63d159269add8",
+      "result_sha256": "e1d93e1d846a31399d48c83bb81eb7368271b69fcec138e8f2e7f309966e0a12"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 24,
+      "tp": 323,
+      "fp": 96,
+      "fn": 42,
+      "f1_mean": 0.8239795918367347,
+      "f1_sd": 0.0,
+      "prediction_sha256": "0b8728d07a61eaf03a476ad1cf8ec26ec58c02698ac0140512f91de36475dec4",
+      "result_sha256": "f3e840dd5cc8356f8413d42cbc31866594ee4be82d4cbd31a726634efabc44b5"
+    },
+    "archiveii_embok_clean": {
+      "n": 731,
+      "tp": 40792,
+      "fp": 12485,
+      "fn": 5276,
+      "f1_mean": 0.821218984347476,
+      "f1_sd": 0.0,
+      "prediction_sha256": "8d6a59559178f74e4737943ee4064cba2fd1de3071efc763d5051b62360ed19d",
+      "result_sha256": "c6f8e1684d9927db9557ade04a8add626523a6a3404af30bff2d0bb96d2f243f"
+    },
+    "testsetb": {
+      "n": 79,
+      "tp": 1709,
+      "fp": 685,
+      "fn": 318,
+      "f1_mean": 0.7731282515268039,
+      "f1_sd": 0.0,
+      "prediction_sha256": "fd6e1c78f58d7a64d75f49cf94736fd53b6d4305f387f525644996f009f39d11",
+      "result_sha256": "c85d1d65d0fa73dd5bf15787c48b161d3561ecf740fc423d12e74b3118031734"
+    }
+  }
+}

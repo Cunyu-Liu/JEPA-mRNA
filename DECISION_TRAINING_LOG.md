@@ -12250,3 +12250,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TestSetB**：n=428，三次 F1=**0.7900305273282315**，TP/FP/FN=9446/3210/1811，SD=0；结果 SHA256=`b1024d3af6f90d316a495e76a0338691539f791b0d1ee4d305207ff1bf1c36c2`。
 - **raw 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 八格全部独立复算通过，汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`。own-clean 已先行完成，raw+clean 齐套，但异 clean 子集仍不得直接排 SOTA。
 - **NB 恢复**：raw 汇总形成后，official_s3 已从 epoch 13 的完整断点恢复 `--device cuda --batch-size 4` 训练；未重训已完成种子。后续必须到 validation plateau 并做独立 CUDA QA，启动不等于收敛。
+
+
+## §15.368（2026-11-03）BPfold raw+own-clean 16 格总账
+
+- 将独立验收的 raw 八格与 own-clean 八格合并，逐项保留 n、TP/FP/FN、F1 mean/SD 和原始结果哈希；汇总 SHA256=`2becebcdfee94ddb0d226570c40150361441d981637854cdb85b9407973dc902`。
+- raw 与 clean 来源汇总分别固定为 `709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb` 和 `4c071f0bc34f4f778d90b8ba4703e4bd566d421de2494fc1bb609d0baf9b1b05b0`。
+- 总账明确 own-training-union clean 和不同系统 clean n 不同，不直接用于跨模型 SOTA 排名；NB official_s3 正在 epoch14 训练，尚无收敛或 QA 结论。

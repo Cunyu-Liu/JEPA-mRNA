@@ -152,6 +152,8 @@
 
 | `appendix_leakage/round39_bpfold_raw_summary.json` | BPfold 官方六 checkpoint raw 八 split 三次独立聚合 | active complete | `709b565e395b` |
 
+| `appendix_leakage/round39_bpfold_raw_clean_summary.json` | BPfold raw+own-clean 16 格总账；保留异 clean 子集边界 | active complete | `2becebcdfee9` |
+
 ## 后续边界
 
 - `SOURCE_MANIFEST.json` 是活跃文件、字节数和 SHA256 的总清单；`appendix_leakage/round39_clean_audits/INDEX.json` 另行登记并覆盖 TR0/TR1c 的 16 份审计原件，二者均通过全量哈希复核。
