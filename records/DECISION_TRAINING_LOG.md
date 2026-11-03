@@ -12336,3 +12336,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `tools/run_xens2_full_archive_round39.sh`：核验 clean 数据/审计和 1107 条全覆盖，先保存现有 len≤600 的 1068 条结果，再以 B=1、`--allow-long`、`--resume-runs` 做三次 raw-sequence 评测。
 - 任务已放入远端持久锁队列，不与当前 NB+RNAformer 形成第三高显存任务。旧结果只有在新全长结果原子写出后才被替换，失败时仍保留原文件和逐 repeat sidecar。
 - bash 语法检查通过；全长 GPU 结果尚未开始，不更新 matched-clean 数值，不写 8/8 或全长 SOTA。
+
+
+## §15.380（2026-11-03）NB official_s3 epoch16 完整 checkpoint
+
+- epoch16 train BCE=0.00041378461464000593，validation BCE=**0.011539480104608644**，较 epoch15 的 0.011631950499488883 继续改善。
+- checkpoint 复核为 epoch=16、best_epoch=16、best_loss=0.011539480104608644、bad=0、early_stopped=False，模型、优化器和 CUDA RNG 齐全；validation history 共 16 个 epoch。
+- 仍未达到 patience=5 的 validation plateau，继续训练，不生成最终 QA 或五种子结论。RNAformer 与 xens2 全长 ArchiveII 的队列顺序不变。
