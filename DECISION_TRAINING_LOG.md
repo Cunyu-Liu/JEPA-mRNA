@@ -12191,3 +12191,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - clean ArchiveII repeat0 已完成，F1=**0.733486**，throughput=0.756 seq/s，峰值显存=12,880MiB；长序列精确分块路径未再 OOM，也没有 CPU 降级。
 - 当前 repeat1/2 继续，完整 JSON 尚未形成；保持 clean 5/8，不把单次 F1 纳入三次均值或 SOTA 判断。并发 throughput 仅作诊断，不用于速度结论。
+
+
+## §15.360（2026-11-03）BPfold 六格 raw 独立复核
+
+- 对已完成 raw TS0/new/TS1/TS2/TS3/hard 逐序列重算 strict micro-F1，并核对 CUDA、六个官方 checkpoint、raw 数据 SHA 和三次预测一致性。
+- F1 依次为 **0.7502687934/0.7370074184/0.8418421992/0.9131075110/0.8337129841/0.8220255654**。
+- 结果 SHA256 依次为 `89f6ecdb87141dbd11fc8e8c390e7649fc2edffee3497c5351a01eabca2db50c`、`9832e97bcb5e6879e57a317ef560dd1ca364b11a48575b3f89cd9c94c773255a`、`332ff7937115abf13b1d26df020974645daea85a587ace4baa3d0384b07a266a`、`080119591c2c27f33b6ee8443d3d7a431a4f0ff0f10a9b722fc7fb1a7be828c2`、`9de5934ab49a4a00f2a68c3b08edb7e8d69771b9fa49e6322768ce0a551e09c8`、`dc5ee89d6c5c5bfbf6b813f19930213c55aa3a07314c838b3426536f1879ae57`。
+- ArchiveII 已进入 repeat1，TestSetB 后接续；raw 仍为 6/8，不提前生成全板汇总。
