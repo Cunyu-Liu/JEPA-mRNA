@@ -12315,3 +12315,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - bprna raw ArchiveII 再次在 softmax OOM；当时 NB 占 10.27GiB，旧 HEK fold3 EL 恢复任务占 8.84GiB，当前 RNAformer 已分配 8.31GiB 并再需 4.67GiB。确认此前“只有 NB 一个并发任务”的条件已被旧队列自动恢复打破，不是模型或数据变化。结果 JSON 未生成，不纳入任何汇总。
 - 第二份完整错误栈 SHA256=`45d8f14ee090d2313986aa442f19e817f64f3c52778e0b87f1c8de04bb0c5e4e`。HEK 子进程已结束时，仅终止其旧队列父进程，fold 结果和恢复入口保留；没有杀死训练中的 HEK 子进程，也不删除资产。
 - RNAformer 已带 `--resume-runs` 从缺失格重启，运行时代码身份固定为新提交；后续每个完成 repeat 原子保存。当前只允许 NB 与 RNAformer 两个高显存任务并行，正式测速仍独占。旧进程 pin 仅适用于其未产生的输出，新进程无需元数据校正。
+
+
+## §15.377（2026-11-03）HEK 高显存互斥锁持久化
+
+- `run_hek_fold_queue_round34.py` 的新训练与 resume 启动命令统一接入 `/tmp/rna_round39_fusion_clean.lock`，与 RNAformer/frozen 高显存工作互斥，防止旧队列再次成为第三 GPU 任务。
+- mock 测试确认仅命令前缀改变，HEK 的 fold、task、batch=64、min-free-mib、输出目录和恢复脚本均不变；未实际启动 HEK。与其他断点、身份和 matched-clean 测试共 15 项通过。
+- 该调度改动不改变任何科学结果或恢复合同；本轮 HEK 仍保持暂停，只有未来显式恢复时才等待高显存锁。
