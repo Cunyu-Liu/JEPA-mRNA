@@ -12228,3 +12228,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - clean TS0 n=1276，三次 F1=**0.6379106660666066**，TP/FP/FN=22679/13846/11900，SD=0；结果 SHA256=`b170bef43cb43d0e61d7103d9c1d3407abafe6e68f33917886e2eb826e768565`。
 - clean 数据/审计、官方权重/config、CUDA、12 个 Rotary 缓存关闭、逐序列计数和三次预测一致性全部通过。
 - 当前 clean 7/8，仅剩 bpRNA-new；raw+clean 全板和 SOTA 仍未验收。
+
+
+## §15.365（2026-11-03）BPfold raw ArchiveII 三次完整验收，raw 7/8
+
+- BPfold raw ArchiveII n=2544，三次 F1=**0.8521505875709153**，TP/FP/FN=114682/26955/12840，SD=0；结果 SHA256=`e47f901ddafd60722787b4ed39d450d8e03ef721fc46afd04faf9fcd40ac2ab2`。
+- CUDA、六个官方 checkpoint、raw 数据 SHA、逐序列计数和三次预测一致性全部通过。TestSetB 已接续，raw 7/8，尚未形成全板汇总。
+- 本地 SSH 任务在 4 小时达到连接超时，但远端 BPfold 进程与父 shell 均继续运行，没有重复启动或重算已完成的 repeat。
