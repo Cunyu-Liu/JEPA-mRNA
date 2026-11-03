@@ -12286,3 +12286,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 4 项断点测试及其与 matched-clean 的 9 项组合测试通过；旧 inter-family TS1 预测重新计算 digest=`1c5a3d42d86be63ac8ee69970cf1f1e68be4021bc36ef48aada6f099d9f0a1fc`，与历史三次哈希完全一致。生产 GPU 断点恢复尚未形成完整新结果，不提前写工程验收闭环。
 - 评测器现改为模块加载时固定 `CODE_SHA256/CODE_COMMIT`，避免长任务运行期间磁盘编辑改变执行身份。当前 bprna raw ArchiveII 旧进程启动于 resume 功能之前，已固定实际运行 commit=`2708e774b2d5f76559e984a80eb8e71bcb749ebe`、code SHA256=`5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52`，pin 审计 SHA256=`0496632ac2937f57af2970972737e4ba84c94bf1de67518529d07e99fceb66f5`。结果形成后只校正 protocol 两项代码身份，原文件备份且其余字段逐项不变；校正前不进入全板汇总。
 - NB official_s3 的 checkpoint 仍为 epoch14、未 early-stop；进程有 CPU/GPU 活动，但日志截断不能作为收敛或 epoch 进度证据，继续以原子 checkpoint/history 验收。
+
+
+## §15.373（2026-11-03）代码身份校正工具验收
+
+- 新增 `tools/finalize_running_code_identity_round39.py` 与测试：校验 pin 的进程输出路径、原始 PASS/三次 runs 和校正范围；原件必须存在，递归比较只允许 `protocol.code_commit` 与 `protocol.code_sha256` 两项变化，支持幂等复验。
+- 与断点、matched-clean 共 12 项测试通过。错误输出路径和嵌套字段差异均 fail-closed；校正不改变预测、TP/FP/FN、F1 或计时。
+- 本地提交 `1fd7d7edd54cc4d096f620fafd54da5bba64b745` 已形成。集群直接 push 超过 10 分钟无输出后停止；通过既有 bare mirror fetch 到同一 SHA 并推送 GitHub，cluster/github/集群 origin 三路均为该提交，无重复提交或历史改写。ArchiveII 尚无最终 JSON，未执行校正、未聚合 bprna raw 8/8。
