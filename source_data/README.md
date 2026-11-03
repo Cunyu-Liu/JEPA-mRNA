@@ -148,6 +148,8 @@
 
 | `appendix_leakage/round39_mixed_nll_error_stratification.json` | 混合 NLL 否决后的长度分层 TP/FP/FN 归因；仅形成假设，不作测试集调参 | active diagnostic | `ba1970dad2d1` |
 
+| `appendix_leakage/round39_rnaformer_interfam_raw_clean_summary.json` | RNAformer inter-family raw+clean 各八 split 三次独立聚合；16 格完整通过 | active complete | `aa58c7209e3a` |
+
 ## 后续边界
 
 - `SOURCE_MANIFEST.json` 是活跃文件、字节数和 SHA256 的总清单；`appendix_leakage/round39_clean_audits/INDEX.json` 另行登记并覆盖 TR0/TR1c 的 16 份审计原件，二者均通过全量哈希复核。

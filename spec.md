@@ -46,6 +46,8 @@
 >
 > **2026-11-03 inter-family raw 8/8**：bpRNA-new 三次 F1=**0.6559981192**，TP/FP/FN=83707/36314/51477，SD=0，结果 SHA256=`ee69f1514a512ac4dfda538a8c9c39f3aeb479590205cd74d346a10a79043010`。raw 八格独立聚合 SHA256=`9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb`；clean 继续，不能提前写 raw+clean 完成。biophysical 四个早期结果虽无 Rotary 计数元数据，但其官方 config 明确 `rotary_emb:false`，三次预测一致，不按 inter-family 缓存问题误判。
 >
+> **2026-11-03 inter-family raw+clean 16 格闭环**：clean bpRNA-new 三次 F1=**0.6560129819734011**，TP/FP/FN=83682/36300/51459，SD=0。raw+clean 八 split 全部独立复算通过，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`。该结果只完成一个 RNAformer 变体，后续 bprna/intra/biophysical、其余 baseline 与 xens2 三目标仍未闭环。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。已有 NB official_s3 继续至收敛，不与正式测速争卡。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

@@ -973,6 +973,13 @@
    "bytes": 22224,
    "description": "混合 NLL seed0 否决后按长度与 TP/FP/FN 的离线归因；仅形成后续假设，不用于测试集调参",
    "status": "active_post_rejection_diagnostic"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_clean_summary.json",
+   "sha256": "aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104",
+   "bytes": 11049,
+   "description": "RNAformer inter-family raw+clean 各八 split 三次独立聚合；16 格全部通过",
+   "status": "active_complete_raw_clean_8_of_8"
   }
  ]
 }

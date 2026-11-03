@@ -12235,3 +12235,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - BPfold raw ArchiveII n=2544，三次 F1=**0.8521505875709153**，TP/FP/FN=114682/26955/12840，SD=0；结果 SHA256=`e47f901ddafd60722787b4ed39d450d8e03ef721fc46afd04faf9fcd40ac2ab2`。
 - CUDA、六个官方 checkpoint、raw 数据 SHA、逐序列计数和三次预测一致性全部通过。TestSetB 已接续，raw 7/8，尚未形成全板汇总。
 - 本地 SSH 任务在 4 小时达到连接超时，但远端 BPfold 进程与父 shell 均继续运行，没有重复启动或重算已完成的 repeat。
+
+
+## §15.366（2026-11-03）RNAformer inter-family raw+clean 16 格闭环
+
+- **最后一格**：clean bpRNA-new n=5386，三次 F1=**0.6560129819734011**，TP/FP/FN=83682/36300/51459，SD=0；结果 SHA256=`d2b45b3f5bef15560c0daf4b13f160ec8644ea12860c76fa20ecd3a619a6f6fe`。
+- **clean 全板**：TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=0.6379106661/0.6560129820/0.8414634146/0.9117647059/0.7961630695/0.7843137255/0.7334860511/0.6734647426，非空格 SD 全为 0。
+- **独立验收**：raw+clean 16 格的数据/审计、官方权重/config、CUDA、逐序列计数、预测哈希和三次重复一致性全部通过，汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`。
+- **边界**：仅 inter-family 一个变体闭环，后续 bprna/intra/biophysical、其余 baseline 和 xens2 三目标仍未完成；不将这一结果写成全基线 SOTA。

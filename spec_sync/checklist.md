@@ -22,7 +22,7 @@
 >
 > **UFold 边界**：官方默认训练列表覆盖多数测试 split，原始 pickle 未恢复，clean 必须保持 provenance blocked；raw 不得进入 clean SOTA。
 >
-> **inter-family raw 证据**：raw 8/8 独立复算通过，bpRNA-new=0.6559981192（三次 SD=0），汇总 SHA256=`9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb`；clean 未齐，不能勾选 raw+clean 或 600 单元总门。
+> **inter-family raw+clean 证据**：16 格独立复算全部通过，clean bpRNA-new=0.6560129820（三次 SD=0），汇总 SHA256=`aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104`；其余变体和 600 单元总门仍未完成。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >
