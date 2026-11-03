@@ -26,7 +26,7 @@
 >
 > **BPfold raw 证据**：raw 8/8 独立复算完成，TestSetB=0.7900305273（三次 SD=0），汇总 SHA256=`709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb`；own-clean 已完成，但不同 clean 子集不得直接排 SOTA。
 >
-> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch14 完整断点未收敛，剩余 7 个 run 续训。matched-clean 阶段 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`；TS2 全交集为空、两两 n=1–39，不勾选最终主板或 SOTA。
+> **恢复与交集证据**：bprna ArchiveII 并发 OOM 无半成品，已留证并排入持久锁；NB official_s3 epoch15 完整断点 best validation BCE=0.0116319505、bad=0，未收敛，剩余 7 个 run 续训。matched-clean 阶段 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`；TS2 全交集为空、两两 n=1–39，不勾选最终主板或 SOTA。
 >
 > **停止规则**：任何 CUDA 不可用、CPU 静默降级、样本/权重哈希不明、缺 seed、未收敛、clean 身份不清或无法独立复算，均停止对应任务并留证。正式计时独占 GPU；其他阶段按实测余量并行，禁止为占显存而超订。smoke、proxy、单 seed、训练集结果不得勾选为科学结论。
 >

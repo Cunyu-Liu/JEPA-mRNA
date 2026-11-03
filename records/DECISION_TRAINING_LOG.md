@@ -12293,3 +12293,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 `tools/finalize_running_code_identity_round39.py` 与测试：校验 pin 的进程输出路径、原始 PASS/三次 runs 和校正范围；原件必须存在，递归比较只允许 `protocol.code_commit` 与 `protocol.code_sha256` 两项变化，支持幂等复验。
 - 与断点、matched-clean 共 12 项测试通过。错误输出路径和嵌套字段差异均 fail-closed；校正不改变预测、TP/FP/FN、F1 或计时。
 - 本地提交 `1fd7d7edd54cc4d096f620fafd54da5bba64b745` 已形成。集群直接 push 超过 10 分钟无输出后停止；通过既有 bare mirror fetch 到同一 SHA 并推送 GitHub，cluster/github/集群 origin 三路均为该提交，无重复提交或历史改写。ArchiveII 尚无最终 JSON，未执行校正、未聚合 bprna raw 8/8。
+
+
+## §15.374（2026-11-03）NB official_s3 epoch15 完整 checkpoint
+
+- 原子 `resume.pt` 与 `validation_history.jsonl` 均为 15 个 epoch：epoch15 train BCE=0.0004274684014875623，validation BCE=**0.011631950499488883**，较 epoch14 的 0.011871916332246218 继续下降。
+- checkpoint 复核为 epoch=15、best_epoch=15、best_loss=0.011631950499488883、bad=0、early_stopped=False；模型、优化器和 CUDA RNG 状态齐全。训练仍在继续，未到 validation plateau，不生成 best.pt/run.json 科学结论，也不做 QA 晋级。
+- RNAformer-bprna raw ArchiveII 进程持续计算，尚无最终或逐 repeat sidecar；当前结果门不变。
