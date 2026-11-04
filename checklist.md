@@ -65,6 +65,8 @@
 >
 > **intra-family 证据**：raw 8/8 已闭环，clean 6 格和主榜 94/104 已复算；TS3 去泄露后为空，clean TS0 尚未满三次，biophysical 继续，不能标全变体完成。
 >
+> **intra-family 完整证据**：16 格独立复算通过，汇总=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`；主榜 96/104=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`，两次复算逐字节一致。TS3 保持 EMPTY_AFTER_DELEAK，空集无 CUDA 字段合理，非空格仍严格验证 CUDA、raw-sequence、官方权重和三次一致性。biophysical、独占测速与独立概率校准未完成，不勾选最终门。
+>
 > **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**

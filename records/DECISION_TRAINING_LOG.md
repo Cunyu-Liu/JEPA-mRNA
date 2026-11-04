@@ -12476,3 +12476,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - intra-family raw 八 split 三次独立复算通过，汇总 SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`。raw ArchiveII=0.7393174262，raw bpRNA-new=0.6542818164。
 - clean TS1/TS2/TS3/hard/ArchiveII/TestSetB 已验收，其中 TS3=`EMPTY_AFTER_DELEAK`，不写 F1=0；clean ArchiveII n=1909、F1=0.7150771074。clean TS0 已完成两个 repeat，第三次在跑，bpRNA-new 尚未完成。
 - own-clean 主榜现为 94/104 格，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。biophysical raw 已完成 4/8，继续断点队列。
+
+
+## §15.399（2026-11-04）intra-family raw+clean 16 格闭环与空集聚合修复
+
+- intra-family clean 八格全部完成，TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=**0.6343541037/0.6542908054/0.8388364780/0.9145962733/EMPTY_AFTER_DELEAK/0.7557117750/0.7150771074/0.6693933197**，非空格 SD 全为 0。raw+clean 16 格独立复算通过，汇总 SHA256=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`。
+- 首次聚合报 `KeyError: device_type`，原因不是 legacy GPU 记录，而是 TS3 clean 为空且没有模型推理协议；原代码在空集返回前读取 CUDA 字段。修复仅在空集分支提前核验 clean 数据 SHA、删除审计、零样本、零运行与零预测，非空格仍强制 CUDA、raw-sequence、三次一致性、官方权重/config 及逐序列计数，不伪造 GPU 元数据或 F1=0。
+- 新增 5 项空集边界测试，包含空 raw 拒绝、clean_n 不一致拒绝、非空预测拒绝及非空推理缺 CUDA 拒绝；在 `ResourceWarning` 作为错误的条件下全部通过。数据读取改用 `read_text().splitlines()`，测试无资源泄漏警告。汇总增加 source_result/source_data 及其 SHA 以便回溯。
+- own-clean 主榜现为 **96/104**，SHA256=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`；matched-clean 附加敏感性 SHA256=`fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5`。两者各独立复算两次并逐字节一致，主板仍 `PARTIAL_OWN_CLEAN_LEADERBOARD_NOT_FINAL`，不写全板 SOTA。
+- 旧队列在空集聚合失败处停止，已新增 `tools/resume_rnaformer_biophysical_round39.sh`，以独立 flock 断点续跑 biophysical 并在结束后独立聚合。既有 raw 4/8 不重算，长期监控继续负责最终两次主榜/敏感性复算及无干扰测速；独立概率数组和校准门未完成。

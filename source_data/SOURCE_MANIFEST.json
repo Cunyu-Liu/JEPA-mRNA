@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-03",
+ "updated": "2026-11-04",
  "files": [
   {
    "path": "fig03_ablation/fig03b_group_drops.json",
@@ -997,9 +997,9 @@
   },
   {
    "path": "appendix_leakage/round39_matched_clean_sensitivity.json",
-   "sha256": "ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd",
-   "bytes": 253987,
-   "description": "统一 xens2+9 基线八 split 阶段快照：全长 ArchiveII 已覆盖，同 GT 全局与两两交集，TS2 全交集为空",
+   "sha256": "fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5",
+   "bytes": 347201,
+   "description": "统一 xens2+12 系统八 split 阶段快照：同名同序列同 GT 全局与两两交集，仅作附加敏感性，不替代主榜",
    "status": "active_partial_matched_sensitivity_not_leaderboard"
   },
   {
@@ -1081,9 +1081,9 @@
   },
   {
    "path": "appendix_leakage/round39_own_clean_leaderboard.json",
-   "sha256": "f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8",
-   "bytes": 97577,
-   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；94/104 格完成，交集仅作敏感性",
+   "sha256": "ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07",
+   "bytes": 99460,
+   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；96/104 格完成，交集仅作敏感性",
    "status": "active_partial_own_clean_leaderboard_not_final"
   },
   {
@@ -1148,6 +1148,13 @@
    "bytes": 5663,
    "description": "RNAformer intra-family 官方权重 raw 八 split 三次独立聚合；clean 继续",
    "status": "active_complete_raw_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_intrafam_raw_clean_summary.json",
+   "sha256": "1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745",
+   "bytes": 16594,
+   "description": "RNAformer intra-family raw+clean 各八 split 三次独立聚合；TS3 clean 为空，保留源数据与结果哈希",
+   "status": "active_complete_raw_clean_8_of_8"
   }
  ]
 }

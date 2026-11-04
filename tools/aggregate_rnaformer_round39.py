@@ -28,9 +28,21 @@ def validate(path, split, clean, official):
     result = json.loads(path.read_text())
     assert result["model"] == "rnaformer" and result["schema_version"] == 1
     protocol = result["protocol"]
+    rows = [json.loads(line) for line in Path(protocol["data"]).read_text().splitlines() if line.strip()]
+    assert protocol["data_sha256"] == sha256(Path(protocol["data"]))
+    if not rows:
+        assert clean and protocol["n_sequences"] == 0
+        assert result["status"] == "EMPTY_AFTER_DELEAK" and not result["runs"] and not result["predictions"]
+        audit = json.loads(Path(protocol["clean_audit"]).read_text())
+        assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[split]
+        assert audit["clean_sha256"] == protocol["data_sha256"] and audit["clean_n"] == 0
+        assert audit["raw_n"] == EXPECTED_SPLIT_COUNTS[split]
+        assert audit["raw_n"] == audit["removed_exact"] + audit["removed_homology_only"]
+        return {"n": 0, "status": "EMPTY_AFTER_DELEAK", "source_result": str(path),
+                "result_sha256": sha256(path), "source_data": protocol["data"],
+                "data_sha256": protocol["data_sha256"]}
     assert protocol["device_type"] == "cuda" and protocol["cached_embeddings"] is False
     assert protocol["batch_size"] == 1 and protocol["repeats"] == 3
-    assert protocol["data_sha256"] == sha256(Path(protocol["data"]))
     report = protocol["model_report"]
     assert report["strict_load"] is True and not report["missing"] and not report["unexpected"]
     assert report["weights_sha256"] == official[Path(report["weights"]).name]
@@ -39,7 +51,6 @@ def validate(path, split, clean, official):
         assert report["rotary_cache_disabled_modules"] == 12
     assert report["deterministic_inference"] == {"allow_tf32": False, "cudnn_deterministic": True,
                                                   "cudnn_benchmark": False, "matmul_precision": "highest"}
-    rows = [json.loads(line) for line in Path(protocol["data"]).open() if line.strip()]
     assert len(rows) == protocol["n_sequences"] == protocol["n_source_records"]
     assert protocol["n_length_filtered"] == 0
     if clean:
@@ -51,9 +62,6 @@ def validate(path, split, clean, official):
     else:
         assert protocol["data_sha256"] == EXPECTED_SPLIT_SHA256[split]
         assert len(rows) == EXPECTED_SPLIT_COUNTS[split]
-    if not rows:
-        assert clean and result["status"] == "EMPTY_AFTER_DELEAK" and not result["runs"]
-        return {"n": 0, "status": "EMPTY_AFTER_DELEAK", "result_sha256": sha256(path)}
     assert result["status"] == "PASS" and len(result["runs"]) == 3
     predictions = result["predictions"]
     assert len(predictions) == len(rows)
@@ -77,7 +85,9 @@ def validate(path, split, clean, official):
     return {"n": len(rows), "tp": tp, "fp": fp, "fn": fn,
             "strict_micro_f1": {"values": result["f1_runs"], "mean": statistics.mean(result["f1_runs"]),
                                 "sd": statistics.stdev(result["f1_runs"])},
-            "result_sha256": sha256(path), "code_sha256": protocol["code_sha256"],
+            "source_result": str(path), "result_sha256": sha256(path),
+            "source_data": protocol["data"], "data_sha256": protocol["data_sha256"],
+            "code_sha256": protocol["code_sha256"],
             "weights_sha256": report["weights_sha256"], "config_sha256": report["config_sha256"]}
 
 

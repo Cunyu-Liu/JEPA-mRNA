@@ -4,7 +4,7 @@
   "protocol": "each system has its own training-union-specific clean sets and clean n; three complete deterministic inference repeats; no common-n requirement",
   "main_ranking_rule": "when complete, compare xens2 with the strongest eligible baseline independently per split and report each system's clean n",
   "sensitivity_rule": "matched name+sequence+evaluated-GT intersections are auxiliary only and never substitute for this native own-clean leaderboard",
-  "complete_cell_count": 94,
+  "complete_cell_count": 96,
   "required_cell_count": 104,
   "systems": {
     "eternafold": {
@@ -1163,10 +1163,58 @@
     },
     "rnaformer_intrafam": {
       "bprna_ts0": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 1288,
+        "clean_n": 1256,
+        "removed_exact": 2,
+        "removed_homology_only": 30,
+        "evaluation_scope": "full_length",
+        "result_sha256": "8cf3c5a3ec4cbc8f7fc2023c7f0659a79d97ed96e51848331cf1823fd73fbeac",
+        "clean_sha256": "eb8bbc61e0ab86086486b891f6142b70532bb00c0b3b06e531e3a02820be0c69",
+        "audit_sha256": "ab4562f815ef0e659ecfda90511a987d712612b2a4a295f51f03be2ee7185e32",
+        "asset_identity": {
+          "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+          "repository_commit": "52fcac9a18179edc81ca261e0fdad2e4f73c14ec"
+        },
+        "tp": 22341,
+        "fp": 13993,
+        "fn": 11762,
+        "f1_values": [
+          0.6343541036671068,
+          0.6343541036671068,
+          0.6343541036671068
+        ],
+        "f1_mean": 0.6343541036671068,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "bprna_new": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 5388,
+        "clean_n": 5386,
+        "removed_exact": 0,
+        "removed_homology_only": 2,
+        "evaluation_scope": "full_length",
+        "result_sha256": "4f256124ae36fe4e3d5215fe7a47e890b0798847529aa8c205d7152e8c91b47f",
+        "clean_sha256": "231ae0079c183d481e4f5d4518f77a41fa52f6a6544b2feb0a7d60f8f9b23595",
+        "audit_sha256": "d980ade0662042987e0b258e2d3a4e233bfa48bd951e411b7096ed166a0cee8f",
+        "asset_identity": {
+          "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+          "repository_commit": "52fcac9a18179edc81ca261e0fdad2e4f73c14ec"
+        },
+        "tp": 83902,
+        "fp": 37424,
+        "fn": 51239,
+        "f1_values": [
+          0.654290805444755,
+          0.654290805444755,
+          0.654290805444755
+        ],
+        "f1_mean": 0.654290805444755,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts1": {
         "status": "PASS",

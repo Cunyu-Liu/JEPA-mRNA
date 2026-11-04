@@ -88,6 +88,8 @@
 >
 > **2026-11-04 intra-family 进度**：raw 8/8 已闭环，SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`；clean 6 格已验收，主榜 94/104，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。TS3=`EMPTY_AFTER_DELEAK`，clean TS0 两个 repeat 完成，biophysical raw 4/8。
 >
+> **2026-11-04 intra-family 验收与续跑**：raw+clean 16 格独立复算通过，汇总 SHA256=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`；主榜 96/104=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`，附加敏感性=`fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5`，两次输出逐字节一致。空 TS3 分支经 5 项测试且 ResourceWarning 作为错误检查通过；不放宽非空格的 CUDA/raw-sequence 门。biophysical 以独立锁断点续跑，后续主榜复算、独占测速和真实概率校准保持未完成。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**

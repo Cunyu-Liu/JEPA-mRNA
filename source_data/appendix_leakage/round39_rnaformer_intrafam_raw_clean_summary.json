@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "system": "rnaformer_intrafam",
+  "protocol": "official checkpoint; raw-sequence B=1 full-length; three deterministic repeats",
+  "timing_boundary": "concurrent timings are diagnostic; not exclusive speed results",
+  "raw": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 23037,
+      "fp": 14127,
+      "fn": 11854,
+      "strict_micro_f1": {
+        "values": [
+          0.6394282145583235,
+          0.6394282145583235,
+          0.6394282145583235
+        ],
+        "mean": 0.6394282145583235,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/bprna_ts0.json",
+      "result_sha256": "60d37dcdc320c63fd89c1b3f93c5e7cb3f01909d658abde8ce092a0de71bb113",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+      "data_sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 83928,
+      "fp": 37438,
+      "fn": 51256,
+      "strict_micro_f1": {
+        "values": [
+          0.6542818164100566,
+          0.6542818164100566,
+          0.6542818164100566
+        ],
+        "mean": 0.6542818164100566,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/bprna_new.json",
+      "result_sha256": "a30d4afdf0f0d53202d5c51a270423bcaf8973e932ee163f6f1ae34a15f4148e",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+      "data_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 1108,
+      "fp": 175,
+      "fn": 237,
+      "strict_micro_f1": {
+        "values": [
+          0.8432267884322678,
+          0.8432267884322678,
+          0.8432267884322678
+        ],
+        "mean": 0.8432267884322678,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/ref_pdb_ts1.json",
+      "result_sha256": "13e2e593b9b13590aed858298a1d13e214961863153bd4d98367beb09da6eb63",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl",
+      "data_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 589,
+      "fp": 44,
+      "fn": 66,
+      "strict_micro_f1": {
+        "values": [
+          0.9145962732919255,
+          0.9145962732919255,
+          0.9145962732919255
+        ],
+        "mean": 0.9145962732919255,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/ref_pdb_ts2.json",
+      "result_sha256": "5589fb35fbfa7eff524d525dfcbfb604ea7e1cc0c53eba1d6b33d8cc348d9a52",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl",
+      "data_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 347,
+      "fp": 75,
+      "fn": 70,
+      "strict_micro_f1": {
+        "values": [
+          0.8271752085816448,
+          0.8271752085816448,
+          0.8271752085816448
+        ],
+        "mean": 0.8271752085816448,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/ref_pdb_ts3.json",
+      "result_sha256": "d78d6d2613275ce1d5648f6e250d51a6ab12ef20af20a904cf5eb07fd48e3c0b",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl",
+      "data_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 366,
+      "fp": 80,
+      "fn": 109,
+      "strict_micro_f1": {
+        "values": [
+          0.7947882736156352,
+          0.7947882736156352,
+          0.7947882736156352
+        ],
+        "mean": 0.7947882736156352,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/ref_pdb_ts_hard.json",
+      "result_sha256": "d69878a5999af46e20feca292454de8efb0f421bd6979935bbccdeb8e95587e2",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
+      "data_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 93171,
+      "fp": 31353,
+      "fn": 34351,
+      "strict_micro_f1": {
+        "values": [
+          0.7393174261841092,
+          0.7393174261841092,
+          0.7393174261841092
+        ],
+        "mean": 0.7393174261841092,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/archiveii_embok_clean.json",
+      "result_sha256": "22e66b0e6d1f5addb80f91307fb72e31fe342a973767c6fbb12403633edd0790",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl",
+      "data_sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 7484,
+      "fp": 3651,
+      "fn": 3773,
+      "strict_micro_f1": {
+        "values": [
+          0.668453018935334,
+          0.668453018935334,
+          0.668453018935334
+        ],
+        "mean": 0.668453018935334,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/testsetb.json",
+      "result_sha256": "28a90f95b0d20829f842ca694c21d7dca3261eb59437b818cf81ec86bbd89697",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "data_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    }
+  },
+  "clean": {
+    "bprna_ts0": {
+      "n": 1256,
+      "tp": 22341,
+      "fp": 13993,
+      "fn": 11762,
+      "strict_micro_f1": {
+        "values": [
+          0.6343541036671068,
+          0.6343541036671068,
+          0.6343541036671068
+        ],
+        "mean": 0.6343541036671068,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/bprna_ts0.json",
+      "result_sha256": "8cf3c5a3ec4cbc8f7fc2023c7f0659a79d97ed96e51848331cf1823fd73fbeac",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/bprna_ts0.jsonl",
+      "data_sha256": "eb8bbc61e0ab86086486b891f6142b70532bb00c0b3b06e531e3a02820be0c69",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "bprna_new": {
+      "n": 5386,
+      "tp": 83902,
+      "fp": 37424,
+      "fn": 51239,
+      "strict_micro_f1": {
+        "values": [
+          0.654290805444755,
+          0.654290805444755,
+          0.654290805444755
+        ],
+        "mean": 0.654290805444755,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/bprna_new.json",
+      "result_sha256": "4f256124ae36fe4e3d5215fe7a47e890b0798847529aa8c205d7152e8c91b47f",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/bprna_new.jsonl",
+      "data_sha256": "231ae0079c183d481e4f5d4518f77a41fa52f6a6544b2feb0a7d60f8f9b23595",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts1": {
+      "n": 60,
+      "tp": 1067,
+      "fp": 173,
+      "fn": 237,
+      "strict_micro_f1": {
+        "values": [
+          0.8388364779874213,
+          0.8388364779874213,
+          0.8388364779874213
+        ],
+        "mean": 0.8388364779874213,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/ref_pdb_ts1.json",
+      "result_sha256": "38db66cc94bee2a7e72989cc60ccbe5ff25dcf62e46037e23a3407396771f8ca",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/ref_pdb_ts1.jsonl",
+      "data_sha256": "35b1670b9bd2bf08d0f80f2d538df09d7ef91d30446ede4d0cd27ed57b8a88ad",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 589,
+      "fp": 44,
+      "fn": 66,
+      "strict_micro_f1": {
+        "values": [
+          0.9145962732919255,
+          0.9145962732919255,
+          0.9145962732919255
+        ],
+        "mean": 0.9145962732919255,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/ref_pdb_ts2.json",
+      "result_sha256": "428f76627f67a30204cd0f129f176cb3b1f9572d18e37365757052ce7b0ad0e9",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/ref_pdb_ts2.jsonl",
+      "data_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts3": {
+      "n": 0,
+      "status": "EMPTY_AFTER_DELEAK",
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/ref_pdb_ts3.json",
+      "result_sha256": "68782affae9146c62ba3445340908f07a839a14e5f2ac1ec98500488b8cf99cc",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/ref_pdb_ts3.jsonl",
+      "data_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 19,
+      "tp": 215,
+      "fp": 57,
+      "fn": 82,
+      "strict_micro_f1": {
+        "values": [
+          0.7557117750439367,
+          0.7557117750439367,
+          0.7557117750439367
+        ],
+        "mean": 0.7557117750439367,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/ref_pdb_ts_hard.json",
+      "result_sha256": "b63605370d9b40d813d7c4132f502308e388aa149669b70c8f8728dfb7c5a582",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/ref_pdb_ts_hard.jsonl",
+      "data_sha256": "e7b0c488a8350c3af639a7a36da1a316c0bad47cf767dc3c54791fcdc74d2f81",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "archiveii_embok_clean": {
+      "n": 1909,
+      "tp": 71640,
+      "fp": 26802,
+      "fn": 30288,
+      "strict_micro_f1": {
+        "values": [
+          0.7150771073514,
+          0.7150771073514,
+          0.7150771073514
+        ],
+        "mean": 0.7150771073514,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/archiveii_embok_clean.json",
+      "result_sha256": "46dcdfa1c497fa30487106819ccfcade449fd760a21da77e4b5c7058bb52bfef",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/archiveii_embok_clean.jsonl",
+      "data_sha256": "60bb7db4a6bb4a777398023bc1c1aed59a8c3426cd0615d63468db751ddf6090",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "testsetb": {
+      "n": 419,
+      "tp": 7365,
+      "fp": 3606,
+      "fn": 3669,
+      "strict_micro_f1": {
+        "values": [
+          0.6693933197000682,
+          0.6693933197000682,
+          0.6693933197000682
+        ],
+        "mean": 0.6693933197000682,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/clean/testsetb.json",
+      "result_sha256": "3474b7b27b4b8346f70066e3de991501f92266f2f9235c04b1437f11f7e85118",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_intrafam_train/splits/testsetb.jsonl",
+      "data_sha256": "b2ce9b160d4a8c192d2becd03a274f38f5ed97239be6aa5fe2606accdcdb2da4",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    }
+  },
+  "status": "PASS_RAW_CLEAN_8x3_INDEPENDENT_RECOMPUTE"
+}

@@ -86,6 +86,8 @@
 >
 > **2026-11-04 intra-family 进度**：raw 8/8 已闭环，SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`；clean 6 格已验收，主榜 94/104，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。TS3=`EMPTY_AFTER_DELEAK`，clean TS0 两个 repeat 完成，biophysical raw 4/8。
 >
+> **2026-11-04 intra-family raw+clean 16 格闭环**：独立复算 SHA256=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`。clean TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=0.6343541037/0.6542908054/0.8388364780/0.9145962733/EMPTY_AFTER_DELEAK/0.7557117750/0.7150771074/0.6693933197。空集没有运行推理，聚合器先核验 clean 数据与删除审计再返回 EMPTY；非空格仍强制 CUDA、raw-sequence、官方权重及三次一致性，不能为补字段伪造设备或 F1=0。主榜 96/104，SHA256=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`，敏感性 SHA256=`fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5`，两者独立复算逐字节一致。biophysical 队列已恢复；全板、速度与置信度仍未验收。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。NB 原论文下游继续至收敛的旧要求由用户最新取消指令覆盖。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**
