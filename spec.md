@@ -84,6 +84,8 @@
 >
 > **2026-11-04 长期监控合同**：`tools/monitor_round39_remaining.sh` 只监视不重复启动现有 RNAformer 队列，完成后自动进行两次主榜/敏感性复算。正式 xens2 B=32 测速必须无其他 GPU 进程，外部闯入仅停止自身并留证；独立概率数组缺失时 ECE 不得输出结论。NB 和已否决候选不排队。
 >
+> **2026-11-04 intra-family 进度**：raw 8/8 已闭环，SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`；clean 6 格已验收，主榜 94/104，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。TS3=`EMPTY_AFTER_DELEAK`，clean TS0 两个 repeat 完成，biophysical raw 4/8。
+>
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。NB 原论文下游继续至收敛的旧要求由用户最新取消指令覆盖。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：扩展 baseline、泄露审计与 OOD 归因；活跃清单 `round38-audit-v2`）**

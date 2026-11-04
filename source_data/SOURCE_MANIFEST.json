@@ -1081,9 +1081,9 @@
   },
   {
    "path": "appendix_leakage/round39_own_clean_leaderboard.json",
-   "sha256": "865a819e2e596b68fe9bb79a47f405ba75cd25b165960caed7fbcfd891a4b797",
-   "bytes": 92433,
-   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；88/104 格完成，交集仅作敏感性",
+   "sha256": "f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8",
+   "bytes": 97577,
+   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；94/104 格完成，交集仅作敏感性",
    "status": "active_partial_own_clean_leaderboard_not_final"
   },
   {
@@ -1141,6 +1141,13 @@
    "bytes": 11026,
    "description": "RNAformer-bprna raw+clean 各八 split 三次独立聚合；256nt/16 行分块协议，16 格全部通过",
    "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_intrafam_raw_summary.json",
+   "sha256": "a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e",
+   "bytes": 5663,
+   "description": "RNAformer intra-family 官方权重 raw 八 split 三次独立聚合；clean 继续",
+   "status": "active_complete_raw_8_of_8"
   }
  ]
 }

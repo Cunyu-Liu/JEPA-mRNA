@@ -12469,3 +12469,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - bprna raw+clean 八 split 三次全部通过，汇总 SHA256=`4de2c471653dc749c639b2d38c1a2fdd2ae2143d2e41e934ad4d65f5be1026c3`。clean ArchiveII n=2267、F1=0.7497180603，clean bpRNA-new n=5386、F1=0.4935027488；clean TS0 n=1140、F1=0.7452371612。
 - own-clean 主榜现为 88/104 格，两次逐字节复算 SHA256=`865a819e2e596b68fe9bb79a47f405ba75cd25b165960caed7fbcfd891a4b797`。所有 clean n、TP/FP/FN、SD 和结果哈希均保留，matched-clean 仍仅作附加敏感性。
 - intra-family 与 biophysical 已在原队列接续，长期监控不重复启动；剩余全变体、正式测速和独立概率数组验收未完成。
+
+
+## §15.398（2026-11-04）intra-family raw 8/8 与 clean 6 格
+
+- intra-family raw 八 split 三次独立复算通过，汇总 SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`。raw ArchiveII=0.7393174262，raw bpRNA-new=0.6542818164。
+- clean TS1/TS2/TS3/hard/ArchiveII/TestSetB 已验收，其中 TS3=`EMPTY_AFTER_DELEAK`，不写 F1=0；clean ArchiveII n=1909、F1=0.7150771074。clean TS0 已完成两个 repeat，第三次在跑，bpRNA-new 尚未完成。
+- own-clean 主榜现为 94/104 格，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。biophysical raw 已完成 4/8，继续断点队列。

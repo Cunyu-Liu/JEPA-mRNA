@@ -86,6 +86,8 @@
 >
 > **2026-11-04 长期监控链**：`tools/monitor_round39_remaining.sh` 常驻，PID=2793894。全变体验收后自动复算 own-clean 与 matched-clean；xens2 全 TS0 B=32 三次测速仅在无其他 GPU 进程时执行，外部闯入仅停止自身并留证。独立概率数组未齐时 ECE 保持 PENDING；NB 和已否决候选不重复训练。
 >
+> **2026-11-04 intra-family 进度**：raw 8/8 已闭环，SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`；clean 6 格已验收，主榜 94/104，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。TS3=`EMPTY_AFTER_DELEAK`，clean TS0 两个 repeat 完成，biophysical raw 4/8。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**

@@ -4,7 +4,7 @@
   "protocol": "each system has its own training-union-specific clean sets and clean n; three complete deterministic inference repeats; no common-n requirement",
   "main_ranking_rule": "when complete, compare xens2 with the strongest eligible baseline independently per split and report each system's clean n",
   "sensitivity_rule": "matched name+sequence+evaluated-GT intersections are auxiliary only and never substitute for this native own-clean leaderboard",
-  "complete_cell_count": 88,
+  "complete_cell_count": 94,
   "required_cell_count": 104,
   "systems": {
     "eternafold": {
@@ -1169,22 +1169,151 @@
         "status": "PENDING"
       },
       "ref_pdb_ts1": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 63,
+        "clean_n": 60,
+        "removed_exact": 0,
+        "removed_homology_only": 3,
+        "evaluation_scope": "full_length",
+        "result_sha256": "38db66cc94bee2a7e72989cc60ccbe5ff25dcf62e46037e23a3407396771f8ca",
+        "clean_sha256": "35b1670b9bd2bf08d0f80f2d538df09d7ef91d30446ede4d0cd27ed57b8a88ad",
+        "audit_sha256": "6c08a67c6d715fa771c4809a866cdea8c83537f6824c4503dbfffc6dbcc6c758",
+        "asset_identity": {
+          "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+          "repository_commit": "52fcac9a18179edc81ca261e0fdad2e4f73c14ec"
+        },
+        "tp": 1067,
+        "fp": 173,
+        "fn": 237,
+        "f1_values": [
+          0.8388364779874213,
+          0.8388364779874213,
+          0.8388364779874213
+        ],
+        "f1_mean": 0.8388364779874213,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts2": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 39,
+        "clean_n": 39,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "428f76627f67a30204cd0f129f176cb3b1f9572d18e37365757052ce7b0ad0e9",
+        "clean_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+        "audit_sha256": "da5cce355054787fec651d3606df70831e46b4982b70e5eb257ba5813932a086",
+        "asset_identity": {
+          "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+          "repository_commit": "52fcac9a18179edc81ca261e0fdad2e4f73c14ec"
+        },
+        "tp": 589,
+        "fp": 44,
+        "fn": 66,
+        "f1_values": [
+          0.9145962732919255,
+          0.9145962732919255,
+          0.9145962732919255
+        ],
+        "f1_mean": 0.9145962732919255,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts3": {
-        "status": "PENDING"
+        "status": "EMPTY_AFTER_DELEAK",
+        "raw_n": 19,
+        "clean_n": 0,
+        "removed_exact": 18,
+        "removed_homology_only": 1,
+        "evaluation_scope": "EMPTY_AFTER_DELEAK",
+        "result_sha256": "68782affae9146c62ba3445340908f07a839a14e5f2ac1ec98500488b8cf99cc",
+        "clean_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "audit_sha256": "2375d9f973e509638baef69ca9b375dfb4382b3996bf3a2353a0fdc1fdca3e53",
+        "asset_identity": {}
       },
       "ref_pdb_ts_hard": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 28,
+        "clean_n": 19,
+        "removed_exact": 9,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "b63605370d9b40d813d7c4132f502308e388aa149669b70c8f8728dfb7c5a582",
+        "clean_sha256": "e7b0c488a8350c3af639a7a36da1a316c0bad47cf767dc3c54791fcdc74d2f81",
+        "audit_sha256": "7cd061f4ff58594c87be86fe306a48dc877a8994dc0fc7801e2f56075242c51e",
+        "asset_identity": {
+          "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+          "repository_commit": "52fcac9a18179edc81ca261e0fdad2e4f73c14ec"
+        },
+        "tp": 215,
+        "fp": 57,
+        "fn": 82,
+        "f1_values": [
+          0.7557117750439367,
+          0.7557117750439367,
+          0.7557117750439367
+        ],
+        "f1_mean": 0.7557117750439367,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "archiveii_embok_clean": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 2544,
+        "clean_n": 1909,
+        "removed_exact": 49,
+        "removed_homology_only": 586,
+        "evaluation_scope": "full_length",
+        "result_sha256": "46dcdfa1c497fa30487106819ccfcade449fd760a21da77e4b5c7058bb52bfef",
+        "clean_sha256": "60bb7db4a6bb4a777398023bc1c1aed59a8c3426cd0615d63468db751ddf6090",
+        "audit_sha256": "de611705388e544b033bd22583672b7f5ad33a8a24acf53673b70136f0542aa0",
+        "asset_identity": {
+          "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+          "repository_commit": "52fcac9a18179edc81ca261e0fdad2e4f73c14ec"
+        },
+        "tp": 71640,
+        "fp": 26802,
+        "fn": 30288,
+        "f1_values": [
+          0.7150771073514,
+          0.7150771073514,
+          0.7150771073514
+        ],
+        "f1_mean": 0.7150771073514,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "testsetb": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 428,
+        "clean_n": 419,
+        "removed_exact": 1,
+        "removed_homology_only": 8,
+        "evaluation_scope": "full_length",
+        "result_sha256": "3474b7b27b4b8346f70066e3de991501f92266f2f9235c04b1437f11f7e85118",
+        "clean_sha256": "b2ce9b160d4a8c192d2becd03a274f38f5ed97239be6aa5fe2606accdcdb2da4",
+        "audit_sha256": "335657ea9d0e77c8d0e8e9df61ff9e673a92c16fe871089e21cefc8247370359",
+        "asset_identity": {
+          "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+          "repository_commit": "52fcac9a18179edc81ca261e0fdad2e4f73c14ec"
+        },
+        "tp": 7365,
+        "fp": 3606,
+        "fn": 3669,
+        "f1_values": [
+          0.6693933197000682,
+          0.6693933197000682,
+          0.6693933197000682
+        ],
+        "f1_mean": 0.6693933197000682,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       }
     },
     "rnaformer_biophysical": {

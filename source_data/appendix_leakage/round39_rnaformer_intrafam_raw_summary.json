@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "system": "rnaformer_intrafam",
+  "protocol": "official checkpoint; raw-sequence B=1 full-length; three deterministic repeats",
+  "timing_boundary": "concurrent timings are diagnostic; not exclusive speed results",
+  "raw": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 23037,
+      "fp": 14127,
+      "fn": 11854,
+      "strict_micro_f1": {
+        "values": [
+          0.6394282145583235,
+          0.6394282145583235,
+          0.6394282145583235
+        ],
+        "mean": 0.6394282145583235,
+        "sd": 0.0
+      },
+      "result_sha256": "60d37dcdc320c63fd89c1b3f93c5e7cb3f01909d658abde8ce092a0de71bb113",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 83928,
+      "fp": 37438,
+      "fn": 51256,
+      "strict_micro_f1": {
+        "values": [
+          0.6542818164100566,
+          0.6542818164100566,
+          0.6542818164100566
+        ],
+        "mean": 0.6542818164100566,
+        "sd": 0.0
+      },
+      "result_sha256": "a30d4afdf0f0d53202d5c51a270423bcaf8973e932ee163f6f1ae34a15f4148e",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 1108,
+      "fp": 175,
+      "fn": 237,
+      "strict_micro_f1": {
+        "values": [
+          0.8432267884322678,
+          0.8432267884322678,
+          0.8432267884322678
+        ],
+        "mean": 0.8432267884322678,
+        "sd": 0.0
+      },
+      "result_sha256": "13e2e593b9b13590aed858298a1d13e214961863153bd4d98367beb09da6eb63",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 589,
+      "fp": 44,
+      "fn": 66,
+      "strict_micro_f1": {
+        "values": [
+          0.9145962732919255,
+          0.9145962732919255,
+          0.9145962732919255
+        ],
+        "mean": 0.9145962732919255,
+        "sd": 0.0
+      },
+      "result_sha256": "5589fb35fbfa7eff524d525dfcbfb604ea7e1cc0c53eba1d6b33d8cc348d9a52",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 347,
+      "fp": 75,
+      "fn": 70,
+      "strict_micro_f1": {
+        "values": [
+          0.8271752085816448,
+          0.8271752085816448,
+          0.8271752085816448
+        ],
+        "mean": 0.8271752085816448,
+        "sd": 0.0
+      },
+      "result_sha256": "d78d6d2613275ce1d5648f6e250d51a6ab12ef20af20a904cf5eb07fd48e3c0b",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 366,
+      "fp": 80,
+      "fn": 109,
+      "strict_micro_f1": {
+        "values": [
+          0.7947882736156352,
+          0.7947882736156352,
+          0.7947882736156352
+        ],
+        "mean": 0.7947882736156352,
+        "sd": 0.0
+      },
+      "result_sha256": "d69878a5999af46e20feca292454de8efb0f421bd6979935bbccdeb8e95587e2",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 93171,
+      "fp": 31353,
+      "fn": 34351,
+      "strict_micro_f1": {
+        "values": [
+          0.7393174261841092,
+          0.7393174261841092,
+          0.7393174261841092
+        ],
+        "mean": 0.7393174261841092,
+        "sd": 0.0
+      },
+      "result_sha256": "22e66b0e6d1f5addb80f91307fb72e31fe342a973767c6fbb12403633edd0790",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 7484,
+      "fp": 3651,
+      "fn": 3773,
+      "strict_micro_f1": {
+        "values": [
+          0.668453018935334,
+          0.668453018935334,
+          0.668453018935334
+        ],
+        "mean": 0.668453018935334,
+        "sd": 0.0
+      },
+      "result_sha256": "28a90f95b0d20829f842ca694c21d7dca3261eb59437b818cf81ec86bbd89697",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "d357c43e991cb44617e2f2733cbb090abfcaf56f63ef7b2142013232e07bf9c3",
+      "config_sha256": "7f2e2a76aec247f3e467a54c173e02d1758f1b9ac14875f492219b5106e751d8"
+    }
+  },
+  "status": "PASS_RAW_8x3_INDEPENDENT_RECOMPUTE"
+}
