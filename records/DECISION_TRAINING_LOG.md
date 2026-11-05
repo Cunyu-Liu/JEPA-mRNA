@@ -12574,3 +12574,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立合同**：每个变体单独绑定官方权重/config、clean corpus、原始主榜 F1、三次概率哈希和 NPZ。原生结构置信度为官方解码配对的 sigmoid 均值，ECE 仍使用统一严格有效配对；空 split 不生成指标。
 - **执行顺序**：bprna→intrafam→interfam→biophysical，每个变体先做真实 GPU 单条预检，再跑八 split 三次并独立验证。队列等待自适应测速完成，启动前空闲显存≥12GiB，避免与 clean 大任务或独占测速冲突。代码静态检查已通过，尚无 RNAformer 概率科学结果。
 - **边界**：SPOT 已验收不等于全 eligible 基线最低 ECE；xens2 大 split、BPfold 其余大 split、RNAformer 四变体和自适应速度结果仍待完成。
+
+
+## §15.410（2026-11-05）大 split 验证效率与 ArchiveII 概率验收
+
+- **性能根因**：旧验证器对上千条序列逐条重复 Python DP，SSH 超时且没有比较输出；不是 CUDA 或模型故障。改用生产 C 解码后，TS1 等价验证通过。为避免无效重复计算，最终合同为：全部候选标签、概率、ECE、TP/FP/FN、F1 和结构置信度独立复算，另对首三条与最后一条序列检查 C 解码与保存预测一致。不得把该合同写成全量 DP 重跑。
+- **ArchiveII**：xens2 clean n=1107，18,490,293 个严格有效候选配对，TP/FP/FN=48010/16723/18193，三次 F1=0.7333353699517321。结果 SHA256=`3b5aa1d4ac3694d3094e63d9885afc05926c460d5d64a09b04cdf748776f0050`，NPZ SHA256=`b0f1c01f05c376327edc9bcb3fe3388c672dc134bfb078a4bb5382d6ee171e99`，RiNALMo 目录 manifest=`91aca33cecb5e34a949aae452d2cd92a67db3cdb9e2da871a0478fcf00bb2442`。
+- **旧进程处理**：旧的逐条 DP 验证 SSH 会话已超时；新合同独立验收通过后，仅停止对应的旧冗余验证进程，不终止训练、生产推理或其他会话任务。没有科学结果被删除。
+- **持久比较**：`run_round39_calibration_comparisons.sh` 已启动，复用已完成的小 split，补齐 ArchiveII/TS0/bpRNA-new 的 BPfold 与 SPOT 交集，SPOT TS3 保持 EMPTY。末尾汇总只称 BPfold/SPOT 已比较，不覆盖其他 eligible 基线，也不把交集替代主榜。
+- **比较器扩展**：RNAformer 可绑定相应 raw+clean 汇总逐格校验 F1 后进入同一比较器；TS1 BPfold 数值回归通过，旧合同未改变。
