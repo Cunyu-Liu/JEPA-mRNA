@@ -12653,3 +12653,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **bpRNA-new 比较**：共同 n=5386、15,343,073 个候选配对。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；RNAformer raw ECE=0.0018442078、Brier=0.0065276438、NLL=0.0342053039。RNAformer 的 ECE 和 Brier 更低，NLL 接近。结果 SHA256=`45537abd651bc5662b7e3a2c6b9abcef4c9e934a40ee2552c228170457458955`。
 - **结构置信度**：xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，RNAformer=0.4778740657/0.4400606599，xens2 的结构排序更好。低 ECE 不等于最佳结构排序，两个叙事必须分开呈现。
 - **后续**：bprna 全板已完成，intra-family、inter-family、biophysical 继续后台队列；后续比较只在各变体独立验收后执行。当前不能写 xens2 全板最低 ECE 或最佳置信度，8/8 与速度 SOTA 仍未达成。
+
+
+## §15.419（2026-11-06）RNAformer intra-family 概率比较
+
+- **TS1**：共同 n=18，原生 clean n=18/60。xens2 calibrated ECE=0.0060269154、Spearman=0.6284829721、AURC=0.0931743294；RNAformer raw ECE=0.0056890263、Spearman=0.3793286213、AURC=0.0609442208。结果 SHA256=`aa46928022771d6e858926a3c5b8b9df586684db41f2b0be42348c765eab7ddd`。
+- **TS2**：双方 clean n=29/39，共同 n=29。xens2 calibrated ECE=0.0177234890、Spearman=0.2800052940、AURC=0.1256063700；RNAformer raw ECE=0.0080718655、Spearman=0.4391062198、AURC=0.0639662011。结果 SHA256=`90805f2c49629f710500b8adfa5edd46e5a7bd918b77a8beda17aa22357bf466`。
+- **TS-hard**：原生 clean n=10/19，共同 n=8。xens2 calibrated ECE=0.0227386561、Spearman=0.6904761905、AURC=0.1421414712；RNAformer raw ECE=0.0128039447、Spearman=0.8383383833、AURC=0.0791469435。结果 SHA256=`930dcb4764cc4dd7e3b5ac86d2a8edba75e738cca15f7ecb1bdea90c4dddbfed`。
+- **TestSetB**：原生 clean n=288/419，共同 n=288。xens2 calibrated ECE=0.0021597920、Spearman=0.6862948022、AURC=0.0815347264；RNAformer raw ECE=0.0058129588、Spearman=0.7505724306、AURC=0.1869490182。结果 SHA256=`151ddb43f46988d3cf8589d737caee147a14207b5d170fd44c6cdcf4a0b02e4e`。
+- **结论**：intra-family 原生 ECE 在 TS1/TS2/TS-hard 更低，xens2 在 TestSetB 的 ECE 更低；但四个 split 的 AURC 均为 RNAformer 更低，xens2 不具备全面最佳置信度。TS3 clean 为空，不生成概率指标。ArchiveII 和 TS0/bpRNA-new 继续后台队列，独立验收后才汇总。

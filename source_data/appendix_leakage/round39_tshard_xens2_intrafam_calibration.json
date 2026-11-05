@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+  "split": "ref_pdb_ts_hard",
+  "matched_n": 8,
+  "baseline_system": "rnaformer",
+  "xens2_clean_n": 10,
+  "baseline_clean_n": 19,
+  "bpfold_clean_n": 19,
+  "candidate_pairs": "same name+sequence+evaluated GT, strict upper valid_pair_mask, 10 bins",
+  "main_ranking_boundary": "native own-clean leaderboard is primary; this matched analysis is auxiliary only",
+  "postprocess_boundary": "native rnaformer pair probabilities; official native decode retained; common valid-pair mask only for comparable ECE",
+  "xens2_result_sha256": "b271a9ca06ca632abdca2eb33d946c5668563517dc7f7c66890d1c7616f02c7e",
+  "baseline_result_sha256": "5a36f313a2c761404732af3739ac3e4ece5d90d20288fb76847ec1ffba2f545a",
+  "bpfold_result_sha256": "5a36f313a2c761404732af3739ac3e4ece5d90d20288fb76847ec1ffba2f545a",
+  "xens2_independent_audit": {
+    "split": "ref_pdb_ts_hard",
+    "n_sequences": 10,
+    "n_pairs": 3303,
+    "tp": 73,
+    "fp": 6,
+    "fn": 24,
+    "strict_micro_f1": 0.8295454545454546,
+    "result_sha256": "b271a9ca06ca632abdca2eb33d946c5668563517dc7f7c66890d1c7616f02c7e",
+    "base_weights_manifest_sha256": "91aca33cecb5e34a949aae452d2cd92a67db3cdb9e2da871a0478fcf00bb2442",
+    "dp_verification": "C-decoder equivalence on first three and last sequences; all-pair metrics independently recomputed",
+    "pair_arrays_sha256": "7794a8b4fe339f5eca525e3328aa48c929e68fe6b17e3f9957c61b1966b095ab"
+  },
+  "baseline_independent_audit": {
+    "split": "ref_pdb_ts_hard",
+    "n_sequences": 19,
+    "n_pairs": 17152,
+    "tp": 215,
+    "fp": 57,
+    "fn": 82,
+    "strict_micro_f1": 0.7557117750439367,
+    "result_sha256": "5a36f313a2c761404732af3739ac3e4ece5d90d20288fb76847ec1ffba2f545a",
+    "pair_arrays_sha256": "3d3795bcbf46d54942f4d8b281352b958aacb491e5e6b3fd221e7cac410468e0"
+  },
+  "bpfold_independent_audit": {
+    "split": "ref_pdb_ts_hard",
+    "n_sequences": 19,
+    "n_pairs": 17152,
+    "tp": 215,
+    "fp": 57,
+    "fn": 82,
+    "strict_micro_f1": 0.7557117750439367,
+    "result_sha256": "5a36f313a2c761404732af3739ac3e4ece5d90d20288fb76847ec1ffba2f545a",
+    "pair_arrays_sha256": "3d3795bcbf46d54942f4d8b281352b958aacb491e5e6b3fd221e7cac410468e0"
+  },
+  "calibration": {
+    "xens2_raw": {
+      "n": 2335,
+      "ece": 0.02161266895881862,
+      "brier": 0.01580840076886529,
+      "nll": 0.06587290778449716
+    },
+    "xens2_calibrated": {
+      "n": 2335,
+      "ece": 0.02273865606527163,
+      "brier": 0.020786371875635437,
+      "nll": 0.09549732684030351
+    },
+    "rnaformer_raw": {
+      "n": 2335,
+      "ece": 0.012803944669371008,
+      "brier": 0.011533950171304989,
+      "nll": 0.04448605432217619
+    }
+  },
+  "structure_confidence": {
+    "xens2_raw": {
+      "spearman_confidence_vs_structure_f1": 0.6904761904761906,
+      "aurc_macro": 0.1421414711718021,
+      "risk_coverage": [
+        {
+          "coverage": 0.125,
+          "selective_macro_risk": 0.08333333333333337,
+          "n": 1
+        },
+        {
+          "coverage": 0.25,
+          "selective_macro_risk": 0.1527777777777778,
+          "n": 2
+        },
+        {
+          "coverage": 0.375,
+          "selective_macro_risk": 0.13888888888888895,
+          "n": 3
+        },
+        {
+          "coverage": 0.5,
+          "selective_macro_risk": 0.10416666666666674,
+          "n": 4
+        },
+        {
+          "coverage": 0.5,
+          "selective_macro_risk": 0.10416666666666674,
+          "n": 4
+        },
+        {
+          "coverage": 0.625,
+          "selective_macro_risk": 0.1233333333333334,
+          "n": 5
+        },
+        {
+          "coverage": 0.75,
+          "selective_macro_risk": 0.16527777777777786,
+          "n": 6
+        },
+        {
+          "coverage": 0.875,
+          "selective_macro_risk": 0.17738095238095242,
+          "n": 7
+        },
+        {
+          "coverage": 1.0,
+          "selective_macro_risk": 0.19197303921568631,
+          "n": 8
+        },
+        {
+          "coverage": 1.0,
+          "selective_macro_risk": 0.19197303921568631,
+          "n": 8
+        }
+      ]
+    },
+    "xens2_calibrated": {
+      "spearman_confidence_vs_structure_f1": 0.6904761904761906,
+      "aurc_macro": 0.1421414711718021,
+      "risk_coverage": [
+        {
+          "coverage": 0.125,
+          "selective_macro_risk": 0.08333333333333337,
+          "n": 1
+        },
+        {
+          "coverage": 0.25,
+          "selective_macro_risk": 0.1527777777777778,
+          "n": 2
+        },
+        {
+          "coverage": 0.375,
+          "selective_macro_risk": 0.13888888888888895,
+          "n": 3
+        },
+        {
+          "coverage": 0.5,
+          "selective_macro_risk": 0.10416666666666674,
+          "n": 4
+        },
+        {
+          "coverage": 0.5,
+          "selective_macro_risk": 0.10416666666666674,
+          "n": 4
+        },
+        {
+          "coverage": 0.625,
+          "selective_macro_risk": 0.1233333333333334,
+          "n": 5
+        },
+        {
+          "coverage": 0.75,
+          "selective_macro_risk": 0.16527777777777786,
+          "n": 6
+        },
+        {
+          "coverage": 0.875,
+          "selective_macro_risk": 0.17738095238095242,
+          "n": 7
+        },
+        {
+          "coverage": 1.0,
+          "selective_macro_risk": 0.19197303921568631,
+          "n": 8
+        },
+        {
+          "coverage": 1.0,
+          "selective_macro_risk": 0.19197303921568631,
+          "n": 8
+        }
+      ]
+    },
+    "rnaformer_native": {
+      "spearman_confidence_vs_structure_f1": 0.8383383833392813,
+      "aurc_macro": 0.07914694349962208,
+      "risk_coverage": [
+        {
+          "coverage": 0.125,
+          "selective_macro_risk": 0.0,
+          "n": 1
+        },
+        {
+          "coverage": 0.25,
+          "selective_macro_risk": 0.02777777777777779,
+          "n": 2
+        },
+        {
+          "coverage": 0.375,
+          "selective_macro_risk": 0.03439153439153442,
+          "n": 3
+        },
+        {
+          "coverage": 0.5,
+          "selective_macro_risk": 0.0535714285714286,
+          "n": 4
+        },
+        {
+          "coverage": 0.5,
+          "selective_macro_risk": 0.0535714285714286,
+          "n": 4
+        },
+        {
+          "coverage": 0.625,
+          "selective_macro_risk": 0.05238095238095242,
+          "n": 5
+        },
+        {
+          "coverage": 0.75,
+          "selective_macro_risk": 0.06365079365079362,
+          "n": 6
+        },
+        {
+          "coverage": 0.875,
+          "selective_macro_risk": 0.19741496598639452,
+          "n": 7
+        },
+        {
+          "coverage": 1.0,
+          "selective_macro_risk": 0.20398809523809525,
+          "n": 8
+        },
+        {
+          "coverage": 1.0,
+          "selective_macro_risk": 0.20398809523809525,
+          "n": 8
+        }
+      ]
+    }
+  }
+}

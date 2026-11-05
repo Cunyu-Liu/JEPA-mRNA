@@ -1386,6 +1386,34 @@
    "bytes": 7353,
    "description": "bpRNA-new 双方 clean n=5386；RNAformer ECE/Brier 更低，xens2 结构排序更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_xens2_intrafam_calibration.json",
+   "sha256": "aa46928022771d6e858926a3c5b8b9df586684db41f2b0be42348c765eab7ddd",
+   "bytes": 7244,
+   "description": "TS1 xens2/RNAformer-intrafam 概率与结构置信度交集，n=18",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_intrafam_calibration.json",
+   "sha256": "90805f2c49629f710500b8adfa5edd46e5a7bd918b77a8beda17aa22357bf466",
+   "bytes": 7302,
+   "description": "TS2 xens2/RNAformer-intrafam 概率与结构置信度交集，n=29",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tshard_xens2_intrafam_calibration.json",
+   "sha256": "930dcb4764cc4dd7e3b5ac86d2a8edba75e738cca15f7ecb1bdea90c4dddbfed",
+   "bytes": 6881,
+   "description": "TS-hard xens2/RNAformer-intrafam 概率与结构置信度交集，n=8",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tsb_xens2_intrafam_calibration.json",
+   "sha256": "151ddb43f46988d3cf8589d737caee147a14207b5d170fd44c6cdcf4a0b02e4e",
+   "bytes": 7294,
+   "description": "TestSetB xens2/RNAformer-intrafam 概率与结构置信度交集，n=288",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
