@@ -1,6 +1,10 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
-> **当前执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
+> **当前执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解版；活跃清单 `round43-prism-grouped-physics-v1`）**
+>
+> 合同：`docs/plans/2026-11-04-prism-grouped-physics-revision.md`。数据页后必须依次出现 A/B/C 三组同源表图；新增物理先验、训练角色、ECE/仿射和 Rfam 读图说明。物理先验仅为 Turner 最近邻 stacking，不能写成完整 ViennaRNA MFE；测试集不得参与调参或校准。所有重绘图删除底部说明小字，图和页面可见型号统一 PRISM。主图 2 的 BPfold 必须等 CHANRG 结束后独占 4090 测量 TS0 三次 raw-sequence 全链路。末页保留项目阶段性不足并请老师批评。CHANRG 未完成前继续留空。
+>
+> **历史执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
 >
 > 新测评合同：`docs/plans/2026-11-03-bpfold-fig4-7-evaluation-review.md`。可借鉴的是评测设计，不是照搬 motif 模块：P0 为 Rfam 全模型与无需重训的 Turner/DP 消融、完整 INF/P/R 和 macro-F1 分布；P1 为 Pearson/Spearman/95%CI 与 risk–coverage；P2 为按预注册分位数选样的结构案例。Rfam 实际可评测 10,790 条，原始 10,791 条中 1 条因 partner asymmetry 被拒绝。
 >
@@ -87,6 +91,8 @@
 > **2026-11-04 intra-family 进度**：raw 8/8 已闭环，SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`；clean 6 格已验收，主榜 94/104，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。TS3=`EMPTY_AFTER_DELEAK`，clean TS0 两个 repeat 完成，biophysical raw 4/8。
 >
 > **2026-11-04 intra-family raw+clean 16 格闭环**：独立复算 SHA256=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`。clean TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=0.6343541037/0.6542908054/0.8388364780/0.9145962733/EMPTY_AFTER_DELEAK/0.7557117750/0.7150771074/0.6693933197。空集没有运行推理，聚合器先核验 clean 数据与删除审计再返回 EMPTY；非空格仍强制 CUDA、raw-sequence、官方权重及三次一致性，不能为补字段伪造设备或 F1=0。主榜 96/104，SHA256=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`，敏感性 SHA256=`fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5`，两者独立复算逐字节一致。biophysical 队列已恢复；全板、速度与置信度仍未验收。
+>
+> **2026-11-05 xens2 独立概率工具链与队列**：复用生产三路 raw-sequence 前向，保存严格有效配对分数、标签、原始/校准概率和三次概率哈希；校准仅由完整 VL0 拟合，八个 clean split 冻结参数评测，原始 DP 结构不因校准改变。独立验证器重读 NPZ，按生产 float64 路径复算 ECE/Brier/NLL、预测、F1 与置信度。4 项测试含完整模拟流程、独立复算和断点跳过均通过，但不是科学结果。队列只在 104/104 主板与独占测速通过后执行真实 GPU 预检和 9 组推理；所有 eligible 基线的 clean 概率未齐前仍不写最低 ECE 或最佳置信度。
 >
 > **历史边界**：第 38 轮及更早结果保留作对照；本块覆盖“权重 blocked 即不补”“clean-181 通用”“预注册 6/8 可作全板标题”等旧执行口径。NB 原论文下游继续至收敛的旧要求由用户最新取消指令覆盖。
 

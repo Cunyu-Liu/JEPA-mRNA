@@ -1,5 +1,16 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **当前执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解版；合同 `docs/plans/2026-11-04-prism-grouped-physics-revision.md`）**
+>
+> - [x] T-A195 A/B/C 分组结果表图已生成，含同源完整指标、PRISM/BPfold 和 Rfam 消融。
+> - [x] T-A196 物理先验、训练流程、ECE/仿射与 Rfam 左图读法已写成独立页面和中文备注。
+> - [x] T-A197 重绘图无底部说明小字，图与页面可见型号统一 PRISM。
+> - [ ] T-A198 BPfold 在 CHANRG 结束后独占 4090 完成 TS0 三次测速并进入主图 2。
+> - [ ] T-A199 22 页分组讲解版完成重排、PPT/PDF、字体/边界/备注/嵌图 QA；末页为阶段性不足与请老师批评。
+> - [ ] T-A200 CHANRG 12/12 后完成主图 9、总表和最终 manifest；未完成页继续留空。
+>
+> **历史执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
+>
 > **当前执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
 >
 > - [x] T-A189–T-A193 的候选实验、数据来源、优先级和不执行边界已写入 `docs/plans/2026-11-03-bpfold-fig4-7-evaluation-review.md`；未提前启动实验。
@@ -66,6 +77,8 @@
 > **intra-family 证据**：raw 8/8 已闭环，clean 6 格和主榜 94/104 已复算；TS3 去泄露后为空，clean TS0 尚未满三次，biophysical 继续，不能标全变体完成。
 >
 > **intra-family 完整证据**：16 格独立复算通过，汇总=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`；主榜 96/104=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`，两次复算逐字节一致。TS3 保持 EMPTY_AFTER_DELEAK，空集无 CUDA 字段合理，非空格仍严格验证 CUDA、raw-sequence、官方权重和三次一致性。biophysical、独占测速与独立概率校准未完成，不勾选最终门。
+>
+> **xens2 概率资产进展**：生产 raw-sequence 校准、NPZ 独立复算和持久队列已实现；4 项工具测试通过，覆盖配对坐标、空预测、VL0/CUDA 身份、float64 指标复算与断点跳过。真实 GPU 预检、VL0 拟合、八 clean split 与全概率基线比较未完成，T-A174 不勾选。
 >
 > **历史边界**：第 38 轮及更早验收保留，本块只追加第 39 轮硬门，不提前勾选任何未完成项。
 

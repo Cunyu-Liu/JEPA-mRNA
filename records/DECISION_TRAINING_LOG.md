@@ -12485,3 +12485,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增 5 项空集边界测试，包含空 raw 拒绝、clean_n 不一致拒绝、非空预测拒绝及非空推理缺 CUDA 拒绝；在 `ResourceWarning` 作为错误的条件下全部通过。数据读取改用 `read_text().splitlines()`，测试无资源泄漏警告。汇总增加 source_result/source_data 及其 SHA 以便回溯。
 - own-clean 主榜现为 **96/104**，SHA256=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`；matched-clean 附加敏感性 SHA256=`fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5`。两者各独立复算两次并逐字节一致，主板仍 `PARTIAL_OWN_CLEAN_LEADERBOARD_NOT_FINAL`，不写全板 SOTA。
 - 旧队列在空集聚合失败处停止，已新增 `tools/resume_rnaformer_biophysical_round39.sh`，以独立 flock 断点续跑 biophysical 并在结束后独立聚合。既有 raw 4/8 不重算，长期监控继续负责最终两次主榜/敏感性复算及无干扰测速；独立概率数组和校准门未完成。
+
+
+## §15.400（2026-11-05）xens2 clean 独立概率工具链与持久队列
+
+- **预检**：biophysical 八份 clean 数据与审计全部独立通过，其训练语料没有删除样本，clean n 与 raw n 相同。此结论只针对数据门，raw+clean 推理未完成，不能提前并入主板。
+- **资产边界**：round42 旧置信度采用缓存 embedding、len≤600 截断及不同结构评分，不能充当本轮 raw-sequence clean 独立概率数组。旧结果保留作原始集敏感性，不设置独立概率就绪 flag。
+- **实现**：`calibrate_xens2_round39.py` 复用生产三路 raw-sequence 前向，逐序列保存严格上三角有效配对的原始分数、标签、概率、预测及 offsets。三次完整推理同时比较概率哈希和预测哈希；校准参数只由完整 VL0 的 NLL 拟合，八个 clean split 锁定参数，原始 DP 结构不因校准改变。
+- **独立复算**：`verify_xens2_calibration_round39.py` 重读 NPZ 和 JSON，逐对检查标签、DP、F1、ECE/Brier/NLL、置信度与 risk–coverage；生产原始分数恢复 float64 后复算，不能直接用 float32 存储概率要求 float64 指标逐位相等。
+- **测试**：4 项测试通过，覆盖严格有效配对、坐标映射与空预测、VL0/CUDA 身份、完整模拟流程、独立 NPZ 复算及有效结果断点跳过。修复了 NPZ 临时文件未原子重命名、测试手算期望错误和 float32/float64 复核路径差异；模拟结果不作为科学证据。
+- **排队**：`run_xens2_calibration_round39.sh` 已以独立 flock 常驻，等待 104/104 主板与正式独占测速后，才进行真实 GPU 单条预检、完整 VL0 拟合及八 clean split 三次推理。xens2 资产验收仍不等于全 eligible 基线最低 ECE 或最佳置信度，不设置全局校准完成结论。

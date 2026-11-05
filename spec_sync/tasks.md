@@ -1,18 +1,31 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
+> **当前执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解、物理/训练/ECE 说明与速度补充；活跃清单 `round43-prism-grouped-physics-v1`）**
+>
+> 唯一合同：`docs/plans/2026-11-04-prism-grouped-physics-revision.md`。
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A195 | A/B/C 分组表图紧跟数据页 | 同源 n、INF、micro/macro-F1、P/R；PRISM/BPfold 与 Rfam 消融齐全 | 图件与页面构建已完成 |
+> | T-A196 | 物理先验、训练流程、ECE 与 Rfam 读图说明 | 公式与代码一致；TR1c/VL0/测试角色清楚；ECE≠排序；左图读法明确 | 解释页与备注已完成 |
+> | T-A197 | 图底小字与型号清理 | 所有重绘图无底部说明文字；图与页面可见型号统一 PRISM | 已完成并通过 PDF 文本检查 |
+> | T-A198 | 主图 2 补 BPfold | TS0 n=1,288、4090 独占、raw-sequence 三次、F1/吞吐/哈希齐全 | 等 CHANRG 结束后独占测速，自动更新 |
+> | T-A199 | 22 页重排与阶段性结尾 | 背景→模型→物理→训练/数据→A/B/C→机制/效率/ECE→边界；末页请老师批评 | 构建与 QA 脚本完成，待 BPfold 速度后出稿 |
+> | T-A200 | CHANRG 最终主图 9 与交接验收 | 12/12 复测、独立聚合、主图 9、最终 manifest | 最后一个 Test 运行中；先行版继续留空 |
+>
+> **历史执行覆盖（2026-11-03，第 42 轮：BPfold Fig.4–7/Table 2 测评设计转化；活跃清单 `round42-bpfold-evaluation-review-v1`）**
 >
 > 唯一合同：`docs/plans/2026-11-03-bpfold-fig4-7-evaluation-review.md`。
 >
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A189 | Rfam 全模型与无需重训消融 | 10,790 条三次预测；Turner=0/DP→greedy；INF、micro/macro F1、P/R、n、mean/SD 与哈希齐全 | 已完成：9/9 结果、三次预测一致、INF/F1/P/R 独立复算及两项消融均通过 |
-> | T-A190 | macro-F1 分布与完整指标 | median/IQR、INF/P/R 与 micro/macro 分列；PDB 小样本不合并 | 八 split 与 BPfold 指标已复算；待加入 Rfam |
+> | T-A190 | macro-F1 分布与完整指标 | median/IQR、INF/P/R 与 micro/macro 分列；PDB 小样本不合并 | 已完成：八 split、BPfold 与 Rfam 均已复算 |
 > | T-A191 | 置信度与风险覆盖 | Pearson、Spearman、95%CI、ECE、risk–coverage；VL0 决定阈值；不复制 BPfold CI 系数 | 八 split 已完成；AURC 升序积分修正并复核；不虚构 Rfam confidence |
 > | T-A192 | 预注册结构案例 | 按中位数和 10%/90% 分位选样；GT/PRISM/BPfold 的 TP/FP/FN 与长程配对一致；不挑样 | 分位选样与弧坐标已修正，源数据和渲染 QA 通过 |
-> | T-A193 | 新证据入图与汇报 | 仅独立复算通过的结果入图；源数据、图、PPT 和备注一致；不与 CHANRG 混写 | A/C、置信度与案例图完成；B 组与 PPT 待新结果验收 |
-> | T-A194 | 八任务及后续 OOD 的分组表图 | A=TS0/ArchiveII/TestSetB；B=bpRNA-new+Rfam+CHANRG OOD；C=PDB TS1/2/3/hard；分组表图同源，Rfam 与 CHANRG 分表，raw/clean 不混 | A/C 图和同源表图脚本完成；B 组待结果 |
->
+> | T-A193 | 新证据入图与汇报 | 仅独立复算通过的结果入图；源数据、图、PPT 和备注一致；不与 CHANRG 混写 | Rfam 已进入先行版与分组讲解版构建；最终验收待 CHANRG |
+> | T-A194 | 八任务及后续 OOD 的分组表图 | A=TS0/ArchiveII/TestSetB；B=bpRNA-new+Rfam+CHANRG OOD；C=PDB TS1/2/3/hard；分组表图同源，Rfam 与 CHANRG 分表，raw/clean 不混 | A/B/C 图件完成；总表待 CHANRG 聚合 |
+
 > **历史执行覆盖（2026-11-03，第 41 轮：round38 原稿复制修订、单 xens2 主线与 CHANRG 基线补充；活跃清单 `round41-prism-round38-revision-v1`）**
 >
 > 唯一合同：`docs/plans/2026-11-03-prism-round38-revision.md`。
@@ -20,9 +33,9 @@
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A184 | 名称、BPfold 对照与事实边界 | PRISM=Physics-guided RNA Interaction Structure Model；BPfold 仅称强基线；只展示 xens2，不虚构单 checkpoint | 规范已冻结 |
-> | T-A185 | CHANRG baseline 补测 | BPfold/MXfold2/EternaFold 四 split×3 推理与独立计数；预测、哈希、mean/SD 齐全 | EternaFold 4/4、MXfold2 4/4；BPfold GenF 完成、GenC 运行；ID bug 已修复 |
+> | T-A185 | CHANRG baseline 补测 | BPfold/MXfold2/EternaFold 四 split×3 推理与独立计数；预测、哈希、mean/SD 齐全 | 总计 11/12；BPfold 仅剩 Test，repeat 0 已运行；其余 split 完成，ID bug 已修复 |
 > | T-A186 | 原图代码重绘主图 1/2/5/9 | 保留原形式；删 plana/r2d；主图 1 用新 BPfold，主图 9 加新 baseline；数值回溯源 | 主图 1/2/5 完成；主图 9 待基线齐全 |
-> | T-A187 | 复制 round38 修改与补充 | 原稿不覆盖；背景/架构/损失/数据/结论完整；删除迁移和 TODO；每页中文演讲备注 | 16 页预览稿与逐页备注完成；待 Rfam 页和最终主图 9 |
+> | T-A187 | 复制 round38 修改与补充 | 原稿不覆盖；背景/架构/损失/数据/结论完整；删除迁移和 TODO；每页中文演讲备注 | 17 页先行版 PPT/PDF 与逐页备注已交付；CHANRG 留空，待最终主图 9 |
 > | T-A188 | 最终验收与同步 | 原始预测→复算→图→PPT 一致；manifest、字体、备注、渲染、PPT/PDF 页数全通过 | 待执行 |
 >
 > **历史执行覆盖（2026-11-03，第 40 轮：PRISM 独立模型、主图与大组会；活跃清单 `round40-prism-group-meeting-v1`）**
@@ -89,6 +102,8 @@
 > **2026-11-04 intra-family 进度**：raw 8/8 已闭环，SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`；clean 6 格已验收，主榜 94/104，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。TS3=`EMPTY_AFTER_DELEAK`，clean TS0 两个 repeat 完成，biophysical raw 4/8。
 >
 > **2026-11-04 intra-family 验收与续跑**：raw+clean 16 格独立复算通过，汇总 SHA256=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`；主榜 96/104=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`，附加敏感性=`fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5`，两次输出逐字节一致。空 TS3 分支经 5 项测试且 ResourceWarning 作为错误检查通过；不放宽非空格的 CUDA/raw-sequence 门。biophysical 以独立锁断点续跑，后续主榜复算、独占测速和真实概率校准保持未完成。
+>
+> **2026-11-05 校准后续顺序**：biophysical 16 格→104/104 own-clean 两次复算→xens2 独占全 TS0 三次测速→真实 GPU 单条预检→完整 VL0 拟合→八 clean split 三次独立概率推理与 NPZ 复算。`calibrate_xens2_round39.py`、`verify_xens2_calibration_round39.py` 和持久队列已落地，4 项工具测试通过；尚未产生真实 GPU 校准结论，所有概率基线的比较继续排队。
 >
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
