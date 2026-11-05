@@ -35,7 +35,9 @@ def main():
     assert Path(xens2["data"]).stem == Path(bpfold["data"]).stem
     raw_key = f"{system}_raw"
     confidence_key = "bpfold_CI" if system == "bpfold" else f"{system}_native"
-    with np.load(xens2["pair_arrays"], allow_pickle=False) as xa, np.load(bpfold["pair_arrays"], allow_pickle=False) as ba:
+    with np.load(xens2["pair_arrays"], allow_pickle=False) as x_archive, np.load(bpfold["pair_arrays"], allow_pickle=False) as b_archive:
+        xa = {key: x_archive[key] for key in x_archive.files}
+        ba = {key: b_archive[key] for key in b_archive.files}
         x_names, b_names = xa["names"].tolist(), ba["names"].tolist()
         b_name_set = set(b_names)
         common = [name for name in x_names if name in b_name_set]

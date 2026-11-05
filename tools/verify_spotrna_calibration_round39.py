@@ -25,7 +25,8 @@ def validate_result(path):
     assert len(rows) == result["n_sequences"] and sha256(Path(result["data"])) == result["data_sha256"]
     arrays_path = Path(result["pair_arrays"])
     assert sha256(arrays_path) == result["pair_arrays_sha256"]
-    with np.load(arrays_path, allow_pickle=False) as arrays, np.load(result["source_probabilities"], allow_pickle=True) as native:
+    with np.load(arrays_path, allow_pickle=False) as archive, np.load(result["source_probabilities"], allow_pickle=True) as native:
+        arrays = {key: archive[key] for key in archive.files}
         assert arrays["names"].tolist() == [row["name"] for row in rows]
         offsets = arrays["offsets"]
         assert offsets[0] == 0 and np.all(np.diff(offsets) > 0)

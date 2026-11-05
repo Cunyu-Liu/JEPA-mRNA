@@ -1260,6 +1260,20 @@
    "bytes": 2337,
    "description": "SPOT-RNA 八 clean split 既有原生概率与转换数组独立验收；TS3 为空",
    "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_bpfold_calibration.json",
+   "sha256": "5aa5b6f1e33b30aae5576fa57e1295969a9b39d0f4e63b14e378093feda9da20",
+   "bytes": 7594,
+   "description": "ArchiveII clean n=1107/731、交集 n=517；xens2 概率指标较优，BPfold CI 的 AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_spotrna_calibration.json",
+   "sha256": "cd1448e9f54fd2447b322f22f950c6acc248547b029d692e6c9cb73e5d680186",
+   "bytes": 7033,
+   "description": "ArchiveII clean n=1107/580、交集 n=565；xens2 ECE 较低，SPOT 的 Spearman 更高",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

@@ -43,7 +43,8 @@ def validate_result(path, summary_path=None, allow_smoke=False):
         assert cell["n"] == result["n_sequences"]
     assert len(result["f1_runs"]) == 3 and len(set(result["f1_runs"])) == 1
     tp = fp = fn = 0
-    with np.load(result["pair_arrays"], allow_pickle=False) as arrays:
+    with np.load(result["pair_arrays"], allow_pickle=False) as archive:
+        arrays = {key: archive[key] for key in archive.files}
         assert sha256(Path(result["pair_arrays"])) == result["pair_arrays_sha256"]
         assert arrays["names"].tolist() == [row["name"] for row in rows]
         offsets = arrays["offsets"]

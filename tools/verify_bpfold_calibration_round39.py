@@ -32,7 +32,8 @@ def validate_result(path, allow_smoke=False):
     assert sha256(arrays_path) == result["pair_arrays_sha256"]
     assert len(result["f1_runs"]) == 3 and len(set(result["f1_runs"])) == 1
     tp = fp = fn = 0
-    with np.load(arrays_path, allow_pickle=False) as arrays:
+    with np.load(arrays_path, allow_pickle=False) as archive:
+        arrays = {key: archive[key] for key in archive.files}
         assert arrays["names"].tolist() == [row["name"] for row in rows]
         offsets = arrays["offsets"]
         assert offsets[0] == 0 and np.all(np.diff(offsets) > 0)

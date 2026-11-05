@@ -84,7 +84,8 @@ def validate_result(path, require_full_vl0=True):
     assert len(result["f1_runs"]) == 3 and len(set(result["f1_runs"])) == 1
     assert len(result["per_sequence"]) == len(rows)
     tp = fp = fn = 0
-    with np.load(arrays_path, allow_pickle=False) as arrays:
+    with np.load(arrays_path, allow_pickle=False) as archive:
+        arrays = {key: archive[key] for key in archive.files}
         names, offsets = arrays["names"].tolist(), arrays["offsets"]
         assert names == [row[0] for row in rows]
         assert offsets[0] == 0 and np.all(np.diff(offsets) > 0)

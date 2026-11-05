@@ -12583,3 +12583,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **旧进程处理**：旧的逐条 DP 验证 SSH 会话已超时；新合同独立验收通过后，仅停止对应的旧冗余验证进程，不终止训练、生产推理或其他会话任务。没有科学结果被删除。
 - **持久比较**：`run_round39_calibration_comparisons.sh` 已启动，复用已完成的小 split，补齐 ArchiveII/TS0/bpRNA-new 的 BPfold 与 SPOT 交集，SPOT TS3 保持 EMPTY。末尾汇总只称 BPfold/SPOT 已比较，不覆盖其他 eligible 基线，也不把交集替代主榜。
 - **比较器扩展**：RNAformer 可绑定相应 raw+clean 汇总逐格校验 F1 后进入同一比较器；TS1 BPfold 数值回归通过，旧合同未改变。
+
+
+## §15.411（2026-11-05）NPZ 重复解压 OOM 根因与 ArchiveII 比较闭环
+
+- **根因**：`NpzFile` 对压缩成员惰性解压，逐序列切片会反复读取整个数组；切片又保留解压后大数组的引用，RSS 一度超过 57GB，比较进程被系统 `Killed`。这不是 DP 单独导致的内存问题。xens2/BPfold 独立验证峰值约 2.08/1.48GiB，异常发生在逐切片交集处理。
+- **修复**：xens2、BPfold、SPOT、RNAformer 验证器和交集比较器均先一次性读取每个 NPZ 成员，再切片计算。新增回归测试要求每个 NPZ 成员只读取一次；xens2/BPfold 共 7 项测试通过。旧的冗余验证和调试进程仅在本任务内停止，未终止其他会话任务。
+- **BPfold 交集**：原生 clean n=1107/731，共同 n=517、11,874,869 个候选配对。xens2 calibrated ECE=0.0012179065、Brier=0.0020327015、NLL=0.0103964856；BPfold raw/post ECE=0.4962204990/0.0012656140。xens2 calibrated Spearman=0.7228776832、AURC=0.1494799831；BPfold CI=0.6984234800/0.0968275690。xens2 概率指标更好，但 BPfold CI 的 AURC 更好。结果 SHA256=`5aa5b6f1e33b30aae5576fa57e1295969a9b39d0f4e63b14e378093feda9da20`。
+- **SPOT 交集**：原生 clean n=1107/580，共同 n=565、10,959,298 个候选配对。xens2 calibrated ECE=0.0014767614、Brier=0.0020567773、NLL=0.0105594849；SPOT=0.0022242301/0.0022242301/0.0599160393。xens2 calibrated Spearman=0.7532826126、AURC=0.1059320699，SPOT 为 0.8750720674/0.2573330047；SPOT 的 Spearman 明显更高。结果 SHA256=`cd1448e9f54fd2447b322f22f950c6acc248547b029d692e6c9cb73e5d680186`。
+- **效率与边界**：两组比较各约 1m43s，未再出现重复解压导致的内存爆炸。BPfold `_post` 仍是后处理诊断而非独立边际概率。xens2 不能写成全面最佳置信度；TS0/bpRNA-new 与其他 eligible 基线继续排队。

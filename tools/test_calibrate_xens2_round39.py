@@ -86,9 +86,17 @@ class Xens2CalibrationTest(unittest.TestCase):
                 self.assertTrue(np.array_equal(arrays["raw_probabilities"], arrays["calibrated_probabilities"]))
                 self.assertEqual(arrays["labels"].sum(), 1)
             from verify_xens2_calibration_round39 import validate_result
-            verified = validate_result(out, require_full_vl0=False)
+            from numpy.lib.npyio import NpzFile
+            original_getitem = NpzFile.__getitem__
+            reads = {}
+            def counted_getitem(archive, key):
+                reads[key] = reads.get(key, 0) + 1
+                return original_getitem(archive, key)
+            with patch.object(NpzFile, "__getitem__", counted_getitem):
+                verified = validate_result(out, require_full_vl0=False)
             self.assertEqual(verified["n_sequences"], 1)
             self.assertEqual(verified["strict_micro_f1"], 1.0)
+            self.assertTrue(all(count == 1 for count in reads.values()))
 
 
 if __name__ == "__main__":
