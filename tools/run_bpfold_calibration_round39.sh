@@ -7,7 +7,7 @@ flock -n 9 || exit 0
 python=/root/miniconda3/envs/lucaone/bin/python
 root=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark
 out_root=$root/bpfold/calibration
-weights=$root/../weights/round39/BPfold/model_predict
+weights=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/BPfold/model_predict
 mkdir -p logs/round39_clean_benchmark
 "$python" - <<'PY'
 import torch

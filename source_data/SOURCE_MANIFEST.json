@@ -1183,6 +1183,20 @@
    "bytes": 5858,
    "description": "BPfold 真实 GPU 单条三次 logit/sigmoid/后处理概率预检与独立复算；非科学结论",
    "status": "active_smoke_only_not_final"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_xens2_bpfold_calibration.json",
+   "sha256": "49ed320b5c64624434296bd198670497928b4aebfce042bfb7f73530bfa3a2fe",
+   "bytes": 6799,
+   "description": "TS1 xens2/BPfold clean 独立复算与 n=13 同 GT 概率交集；原生 clean n=18/42，后处理仅作诊断",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_bpfold_calibration.json",
+   "sha256": "e603e0090dd0316f90e2362d5df303e0144eb23b88fc7dc96eb3d0a5ae61e000",
+   "bytes": 6317,
+   "description": "TS2 xens2/BPfold clean 独立复算与 n=1 同 GT 概率交集；不计算 Spearman，后处理仅作诊断",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

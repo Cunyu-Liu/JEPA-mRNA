@@ -12522,3 +12522,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立验证**：`verify_bpfold_calibration_round39.py` 逐条复核有效配对、GT、原始/后处理概率、CI、TP/FP/FN、strict micro-F1、risk–coverage、6 个官方 checkpoint 和原始 contact map 路径。预检通过；完整 clean 全板尚未验收。
 - **队列恢复**：xens2 首次 clean 运行因 TR1c 平铺目录误写为 splits/audits 子目录而退出，已修复实际路径，无模型或 CUDA 故障。BPfold 使用 `bpfold_train_union` 的独立 clean 数据，xens2 使用 `tr1c` 的独立 clean 数据；两队列已并行启动，分别有 flock、断点身份与独立输出，不相互套用 clean n。
 - **边界**：原始 map、NPZ 和大 artifacts 保留 /teams；代码留 /home。完整八 split 与所有 eligible 概率基线未齐前，不设置最低 ECE 或最佳置信度结论。
+
+
+## §15.404（2026-11-05）TS1/TS2 双系统 clean 概率交集复算
+
+- **xens2 独立验收**：TS1 clean n=18，三次 F1=0.8924050632911392，TP/FP/FN=282/12/56，结果 SHA256=`e3c7c3b6973d36445cf3946f120987009c54b9d6e213276a03742ab4a8957c91`；TS2 clean n=29，三次 F1=0.8362779740871613，TP/FP/FN=355/28/111，结果 SHA256=`a62aab5be736d7cabeb375f79f639ee0cb5930ff47570104abce6989ee23bd6d`。两格的原始概率、校准参数、DP、GT 和 F1 均通过 NPZ 独立复算。
+- **BPfold 队列修复**：相对权重路径少退一层导致目录不存在，已改为实测绝对路径并恢复，未发生 CUDA 或模型故障。TS1/TS2 的 clean n=42/3，三次 F1=0.8598022106/0.9494949495。
+- **TS1 交集敏感性**：共同 n=13，原生 clean n=18/42。xens2 raw ECE=0.0380801117、calibrated ECE=0.0051649751；BPfold raw sigmoid ECE=0.4730557632，post 诊断 ECE=0.0046048225。xens2 calibrated Spearman=0.6538461538、AURC=0.0987316568，BPfold CI 为 0.3259718259/0.1225194785。结果 SHA256=`49ed320b5c64624434296bd198670497928b4aebfce042bfb7f73530bfa3a2fe`。
+- **TS2 小样本边界**：共同 n=1，原生 clean n=29/3。xens2 raw/calibrated ECE=0.0430138598/0.0288706420；BPfold raw/post=0.4471364886/~0。只有一条不能计算 Spearman，不能用该格证明置信度优势。结果 SHA256=`e603e0090dd0316f90e2362d5df303e0144eb23b88fc7dc96eb3d0a5ae61e000`。
+- **后处理边界**：BPfold `_post.npy` 经结构约束/后处理，可能退化为 0/1，近零 ECE 只是诊断，不能作为独立边际概率优于 xens2 的证据。原生 own-clean 主榜与 matched-clean 交集敏感性继续分列；其他 split 和 eligible 概率基线继续队列，不宣称最低 ECE。
