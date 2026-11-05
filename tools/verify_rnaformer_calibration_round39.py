@@ -29,10 +29,14 @@ def validate_result(path, summary_path=None, allow_smoke=False):
         rows = rows[:len(result["per_sequence"])]
     assert len(rows) == result["n_sequences"] and sha256(Path(result["data"])) == result["data_sha256"]
     report = result["model_report"]
-    assert report["strict_load"] is True and not report["missing"] and not report["unexpected"]
-    official = checksums(Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/baselines/rnaformer/SHA256SUMS.round39"))
-    assert report["weights_sha256"] == official[Path(report["weights"]).name]
-    assert report["config_sha256"] == official[Path(report["config"]).name]
+    if result["system"] == "rinalmo_ft":
+        assert report["strict_load"] is True
+        assert report["weights_sha256"] == sha256(Path(report["weights"]))
+    else:
+        assert report["strict_load"] is True and not report["missing"] and not report["unexpected"]
+        official = checksums(Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/baselines/rnaformer/SHA256SUMS.round39"))
+        assert report["weights_sha256"] == official[Path(report["weights"]).name]
+        assert report["config_sha256"] == official[Path(report["config"]).name]
     if result["clean_audit"]:
         audit = json.loads(Path(result["clean_audit"]).read_text())
         assert audit["status"] == "PASS" and audit["clean_sha256"] == result["data_sha256"] and audit["clean_n"] == len(rows)
@@ -89,7 +93,8 @@ def main():
     cells = [validate_result(args.root / f"{split}.json", args.summary) for split in
              ["bprna_ts0", "bprna_new", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3",
               "ref_pdb_ts_hard", "archiveii_embok_clean", "testsetb"]]
-    payload = {"schema_version": 1, "status": "PASS_RNAFORMER_INDEPENDENT_PROBABILITY_ARRAYS",
+    status = "PASS_RINALMO_FT_INDEPENDENT_PROBABILITY_ARRAYS" if args.variant == "rinalmo_ft" else "PASS_RNAFORMER_INDEPENDENT_PROBABILITY_ARRAYS"
+    payload = {"schema_version": 1, "status": status,
                "variant": args.variant, "cells": cells,
                "comparison_status": "PENDING_ALL_ELIGIBLE_BASELINES_MATCHED_CLEAN_PROBABILITIES"}
     temporary = args.out.with_suffix(args.out.suffix + ".tmp")

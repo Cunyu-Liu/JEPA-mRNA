@@ -1302,6 +1302,13 @@
    "bytes": 7143,
    "description": "bpRNA-new 双方 clean n=5386；xens2 ECE 略低，SPOT Brier/Spearman/AURC 更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_ts1_smoke.json",
+   "sha256": "b827ecb0e40d1bc11ef1274e6969d25031e584be44c8674f0af849cdc0f7b958",
+   "bytes": 3891,
+   "description": "RiNALMo-ft TS1 单条三次原生概率与严格权重加载预检；非科学结论",
+   "status": "active_smoke_only_not_final"
   }
  ]
 }

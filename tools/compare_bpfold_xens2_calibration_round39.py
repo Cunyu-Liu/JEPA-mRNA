@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--xens2", type=Path, required=True)
     parser.add_argument("--bpfold", "--baseline", dest="bpfold", type=Path, required=True)
-    parser.add_argument("--baseline-system", choices=["bpfold", "spotrna", "rnaformer"], default="bpfold")
+    parser.add_argument("--baseline-system", choices=["bpfold", "spotrna", "rnaformer", "rinalmo_ft"], default="bpfold")
     parser.add_argument("--baseline-summary", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
@@ -26,7 +26,7 @@ def main():
     if system == "spotrna":
         from verify_spotrna_calibration_round39 import validate_result
         bpfold_audit = validate_result(args.bpfold)
-    elif system == "rnaformer":
+    elif system in {"rnaformer", "rinalmo_ft"}:
         from verify_rnaformer_calibration_round39 import validate_result
         assert args.baseline_summary is not None
         bpfold_audit = validate_result(args.bpfold, args.baseline_summary)
@@ -83,7 +83,7 @@ def main():
                "main_ranking_boundary": "native own-clean leaderboard is primary; this matched analysis is auxiliary only",
                "postprocess_boundary": ("BPfold _post.npy is constrained/postprocessed and may be binary; its ECE is diagnostic, not evidence of independently calibrated marginal probabilities" if system == "bpfold" else
                                         "native SPOT contact map; common ECE mask excludes noncanonical pairs but native confidence retains them" if system == "spotrna" else
-                                        "native RNAformer sigmoid probabilities; official decode_pairs retained; common valid-pair mask only for comparable ECE"),
+                                        f"native {system} pair probabilities; official native decode retained; common valid-pair mask only for comparable ECE"),
                "xens2_result_sha256": sha256(args.xens2), "baseline_result_sha256": sha256(args.bpfold),
                "bpfold_result_sha256": sha256(args.bpfold),
                "xens2_independent_audit": xens2_audit, "baseline_independent_audit": bpfold_audit,

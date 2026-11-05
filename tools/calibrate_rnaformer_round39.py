@@ -17,7 +17,8 @@ import speed_end_to_end_4090 as production
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights", type=Path, required=True)
-    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--config", type=Path)
+    parser.add_argument("--system", choices=["rnaformer", "rinalmo_ft"], default="rnaformer")
     parser.add_argument("--variant", required=True)
     parser.add_argument("--data", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
@@ -43,16 +44,22 @@ def main():
             assert len(rows) == EXPECTED_SPLIT_COUNTS[args.data.stem]
             assert sha256(args.data) == EXPECTED_SPLIT_SHA256[args.data.stem]
     if not rows:
-        payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "model": "rnaformer",
+        payload = {"schema_version": 1, "status": "EMPTY_AFTER_DELEAK", "model": args.system,
                    "variant": args.variant, "data": str(args.data), "data_sha256": sha256(args.data)}
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(payload, indent=2) + "\n")
         return
     assert torch.cuda.is_available(), "CUDA_REQUIRED"
     device = torch.device("cuda")
-    models = production.load_models("rnaformer", device, args.weights, args.config)
-    assert next(models["model"].parameters()).is_cuda
-    from ss.run_rnaformer import SEQ_STOI, decode_pairs
+    if args.system == "rinalmo_ft":
+        assert args.weights.resolve() == production.RINALMO_FT.resolve()
+        models = production.load_models("rinalmo_ft", device)
+        assert next(models["encoder"].parameters()).is_cuda
+    else:
+        assert args.config is not None
+        models = production.load_models("rnaformer", device, args.weights, args.config)
+        assert next(models["model"].parameters()).is_cuda
+        from ss.run_rnaformer import SEQ_STOI, decode_pairs
     reference = None
     reference_probability_sha = None
     f1_runs = []
@@ -61,16 +68,20 @@ def main():
         predictions, per_sequence, probability_hashes = [], [], []
         for row in rows:
             seq = row["seq"].upper().replace("T", "U")
-            ids = torch.LongTensor([[SEQ_STOI.get(base, 4) for base in seq]]).to(device)
-            src_len = torch.LongTensor([len(seq)]).to(device)
-            pdb_sample = torch.ones((1, 1), dtype=torch.float32, device=device)
-            with torch.no_grad():
-                logits, _ = models["model"](ids, src_len, pdb_sample)
-            probability = torch.sigmoid(logits[0, :, :, -1]).float().cpu().numpy().astype(np.float64)
-            probability = 0.5 * (probability + probability.T)
-            np.fill_diagonal(probability, 0.0)
+            if args.system == "rinalmo_ft":
+                probability = production.forward_rinalmo_ft(models, [seq], device)[0]
+                pairs = production.decode_rinalmo_ft(models, [probability], [seq])[0]
+            else:
+                ids = torch.LongTensor([[SEQ_STOI.get(base, 4) for base in seq]]).to(device)
+                src_len = torch.LongTensor([len(seq)]).to(device)
+                pdb_sample = torch.ones((1, 1), dtype=torch.float32, device=device)
+                with torch.no_grad():
+                    logits, _ = models["model"](ids, src_len, pdb_sample)
+                probability = torch.sigmoid(logits[0, :, :, -1]).float().cpu().numpy().astype(np.float64)
+                probability = 0.5 * (probability + probability.T)
+                np.fill_diagonal(probability, 0.0)
+                pairs = decode_pairs(np.clip(probability, 0.0, 1.0), seq, threshold=0.5)
             flat_probability, flat_labels = flatten_probability(row, probability)
-            pairs = decode_pairs(np.clip(probability, 0.0, 1.0), seq, threshold=0.5)
             truth = {tuple(pair) for pair in row["pairs"]}
             pred = {tuple(pair) for pair in pairs}
             confidence = float(np.mean([probability[i, j] for i, j in pred])) if pred else 0.0
@@ -101,11 +112,11 @@ def main():
     saved_confidence = [row["mean_selected_pair_probability"] for row in first_per_sequence]
     saved_f1 = [row["structure_f1"] for row in first_per_sequence]
     result = {"schema_version": 1, "status": "SMOKE_ONLY" if args.smoke else "PASS_NATIVE_PROBABILITY_EVALUATION",
-              "system": "rnaformer", "variant": args.variant,
+              "system": args.system, "variant": args.variant,
               "data": str(args.data), "data_sha256": sha256(args.data), "n_sequences": len(rows),
               "clean_audit": str(args.clean_audit) if args.clean_audit else None,
               "protocol": {"device_type": "cuda", "cached_embeddings": False, "repeats": 3,
-                           "scope": "raw sequence -> official RNAformer -> sigmoid pair probabilities -> official decode_pairs",
+                           "scope": f"raw sequence -> official {args.system} -> native pair probabilities -> official native decode",
                            "candidate_pairs": "strict upper valid_pair_mask", "n_bins": 10,
                            "structure_confidence": "mean native sigmoid probability of official decoded pairs; zero if none"},
               "model_report": models["report"], "code_sha256": sha256(Path(__file__).resolve()),

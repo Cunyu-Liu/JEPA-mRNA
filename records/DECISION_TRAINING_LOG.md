@@ -12609,3 +12609,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **SPOT 交集**：共同 n=5386、15,343,073 个候选配对，双方 clean n 均为 5386。xens2 calibrated ECE=0.0048310272，略低于 SPOT=0.0050347802；但 Brier=0.0072889935 高于 SPOT=0.0050347802，NLL=0.0338954187 低于 SPOT=0.1356262975。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，SPOT=0.7428125157/0.3102083913，SPOT 结构排序明显更好。结果 SHA256=`2f8f97a2b4424621c72e4834c28de3bc68386075c27599e1db4ffcb4e28034bc`。
 - **结论**：bpRNA-new 的校准与结构排序短板与主榜未领先一致。即使 ECE 略低，也不能称最佳置信度或全板最低 ECE；后续须从模型与数据机制改进，而不是只调整展示口径。
 - **后续**：BPfold 的 bpRNA-new 尚未完成，完成其独立验收后才放行自适应测速；RNAformer 概率队列随后接续。
+
+
+## §15.414（2026-11-05）RiNALMo-ft 原生概率分支与真实预检
+
+- **实现**：在已检查的 `calibrate_rnaformer_round39.py` 增加独立 `--system rinalmo_ft` 分支，默认 RNAformer 行为不变。RiNALMo-ft 使用生产固定权重 `rinalmo_giga_ss_bprna_ft.pt`、`forward_rinalmo_ft` 的原生概率及 `prob_mat_to_sec_struct` 解码，不借用 RNAformer 阈值/config。
+- **真实 GPU 预检**：TS1 单条三次完成，1101 个严格有效候选配对，TP/FP/FN=18/0/5，F1=0.8780487804878049。结果 SHA256=`b827ecb0e40d1bc11ef1274e6969d25031e584be44c8674f0af849cdc0f7b958`，NPZ SHA256=`7a3eba20ad9e5d6e03d5783c0546e93bc995ab280493563d7d1480da75813e6a`。严格权重加载、数据、概率、置信度和 F1 均通过独立复核；单条不作科学结论。
+- **比较与验收**：`verify_rnaformer_calibration_round39.py` 分别处理 RiNALMo-ft 的严格权重加载与 RNAformer 官方权重/config；比较器新增 `rinalmo_ft`，保留原生概率、结构置信度与既有主榜 F1 对照。NPZ 一次性读取修复覆盖该分支。
+- **队列**：`run_rinalmo_ft_calibration_round39.sh` 已挂起，等待 bprna/intrafam/interfam/biophysical 四个 RNAformer 变体独立验收，再做 RiNALMo-ft 的 TR0-clean 八 split 三次。真实预检已完成，完整全板和全基线校准排名未完成。
+- **当前等待**：BPfold 的 bpRNA-new 第三次仍在运行，未影响新预检；自适应测速继续等待其独立验收，不跳过门限。

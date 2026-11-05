@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "status": "SMOKE_ONLY",
+  "system": "rinalmo_ft",
+  "variant": "rinalmo_ft",
+  "data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl",
+  "data_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+  "n_sequences": 1,
+  "clean_audit": null,
+  "protocol": {
+    "device_type": "cuda",
+    "cached_embeddings": false,
+    "repeats": 3,
+    "scope": "raw sequence -> official rinalmo_ft -> native pair probabilities -> official native decode",
+    "candidate_pairs": "strict upper valid_pair_mask",
+    "n_bins": 10,
+    "structure_confidence": "mean native sigmoid probability of official decoded pairs; zero if none"
+  },
+  "model_report": {
+    "weights": "/root/rna_baselines_src/rinalmo_giga_ss_bprna_ft.pt",
+    "weights_sha256": "44e377cb0c92f7b9cff8db8a38e33e5c0363d2f9a19831c6342346bb788a5e55",
+    "strict_load": true
+  },
+  "code_sha256": "dce104b842b5fcabad10665d257ab1b202468626aad2169d47a749b44b62c174",
+  "probability_sha256": "511b187cefc2ad7f2ae3461a8f59ead18dc7dd8b467448f1d4f36dc5ea7c3d18",
+  "f1_runs": [
+    0.8780487804878049,
+    0.8780487804878049,
+    0.8780487804878049
+  ],
+  "calibration": {
+    "n": 1101,
+    "ece": 0.006405014203435383,
+    "brier": 0.005878426314037297,
+    "nll": 0.05230036113728187
+  },
+  "confidence": {
+    "spearman_confidence_vs_structure_f1": null,
+    "aurc_macro": 0.12195121951219512,
+    "risk_coverage": [
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.12195121951219512,
+        "n": 1
+      }
+    ]
+  },
+  "per_sequence": [
+    {
+      "name": "pdb_ts1#632970",
+      "structure_f1": 0.8780487804878049,
+      "mean_selected_pair_probability": 0.8830400705337524,
+      "pred_pairs": [
+        [
+          0,
+          76
+        ],
+        [
+          1,
+          75
+        ],
+        [
+          2,
+          74
+        ],
+        [
+          3,
+          73
+        ],
+        [
+          4,
+          72
+        ],
+        [
+          5,
+          71
+        ],
+        [
+          6,
+          70
+        ],
+        [
+          9,
+          25
+        ],
+        [
+          10,
+          24
+        ],
+        [
+          11,
+          23
+        ],
+        [
+          28,
+          39
+        ],
+        [
+          30,
+          37
+        ],
+        [
+          31,
+          36
+        ],
+        [
+          53,
+          69
+        ],
+        [
+          54,
+          68
+        ],
+        [
+          55,
+          67
+        ],
+        [
+          56,
+          66
+        ],
+        [
+          57,
+          65
+        ]
+      ],
+      "n_predicted_pairs": 18,
+      "n_gt_pairs": 23
+    }
+  ],
+  "pair_arrays": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/preflight_smoke.npz",
+  "pair_arrays_sha256": "7a3eba20ad9e5d6e03d5783c0546e93bc995ab280493563d7d1480da75813e6a"
+}
