@@ -12539,3 +12539,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TS-hard**：原生 clean n=10/24，共同 n=9。xens2 raw/calibrated ECE=0.0369685838/0.0188273844，BPfold raw/post=0.4721926288/0.0132343447。xens2 calibrated Spearman=0.4874121680、AURC=0.1695230819，BPfold CI=0.1305582420/0.2008068104；xens2 排序更好，但校准 ECE 未优于 post 诊断值。结果 SHA256=`f6e4e880ccc99d955f2ab6a22fc8cda912bcb780d367df3190e16d83070d84f8`。
 - **TestSetB**：原生 clean n=288/79，共同 n=59、201683 个严格有效候选配对。xens2 raw/calibrated ECE=0.0309937541/0.0019682804，Brier=0.0032738386、NLL=0.0153324497；BPfold raw/post ECE=0.4884683028/0.0035253343。xens2 calibrated Spearman=0.8067293672、AURC=0.0889156665，优于 BPfold CI 的 0.6889476773/0.1462427946。结果 SHA256=`1e00df2019fedcd1a49493491645bdb4e6c63a3df1a29c3809d84926fad0cdfc`。
 - **结论**：校准降低 ECE 的作用在多个 split 可复现，但结构排序并不总改善，TS3 还出现负相关。post 是约束后处理诊断，不与独立边际概率混为一谈。五格已验收，ArchiveII、TS0、bpRNA-new 和其他 eligible 概率基线未完成，不能写全板最低 ECE 或最佳置信度。
+
+
+## §15.406（2026-11-05）xens2 自适应长度批次速度候选排队
+
+- **现状**：正式 B=32 全 TS0 中位吞吐 13.5802438348 seq/s，不是速度 SOTA。生产实现已按精确长度分组，但短序列也受统一 B=32 限制；三个不同权重骨干不能无损共享编码，不做伪共享优化。
+- **候选**：新增独立 `speed_xens2_adaptive_round39.py`，不修改生产前向。计划 len≤256 用 B=64、257–384 用 B=32、385–600 用 B=16，原始记录顺序和 DP 解码不变。全 TS0 三次、raw-sequence、无 resume；与已验收 B=32 逐序列比较，要求 pair identity≥99%、|ΔF1|≤0.001。
+- **测试**：2 项逻辑测试通过，覆盖计划边界、非法计划和批处理后的原始顺序恢复。模拟测试只验证逻辑，不是 GPU 性能或科学结论。
+- **队列**：`run_xens2_adaptive_speed_round39.sh` 已常驻，等待 xens2 与 BPfold 两套 clean 校准独立验收后，再等待 GPU 无其他进程。外部干扰仅停止自身、保存带时间戳日志并重试；真实 OOM 或等价门失败停止，不通过降低精度、截断或缓存 embedding 换速度。
+- **边界**：候选尚无真实吞吐结果，不写速度提升或 SOTA。其运行不影响正在进行的 clean 校准和生产代码身份。
