@@ -1176,6 +1176,13 @@
    "bytes": 284448,
    "description": "xens2 完整 VL0 196 条、573355 配对的三次概率拟合与独立验证；不是泛化结果",
    "status": "active_vl0_fit_only_not_generalization"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_vl0_smoke.json",
+   "sha256": "9ae7074eccca2969c51475ba2b04baed4c52d634103d47eae72a32d22bc67a6a",
+   "bytes": 5858,
+   "description": "BPfold 真实 GPU 单条三次 logit/sigmoid/后处理概率预检与独立复算；非科学结论",
+   "status": "active_smoke_only_not_final"
   }
  ]
 }

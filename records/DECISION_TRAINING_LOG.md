@@ -12513,3 +12513,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立验证修复**：RiNALMo 权重以整个目录的文件名+文件内容哈希记录，base manifest=`91aca33cecb5e34a949aae452d2cd92a67db3cdb9e2da871a0478fcf00bb2442`；加载证据严格核对 504 个 checkpoint 张量、498 个已加载 encoder 张量及仅两个 pooler 参数的预期缺失。原始与校准指标均从保存的分数恢复 float64 复算，另逐位验证 float32 存储，避免混淆生产精度与存储精度。
 - **完整 VL0**：196 条、573,355 个候选配对、三次推理及 NPZ 独立复算通过，F1=0.8787185354691075；fit JSON SHA256=`a54cc2acd22800a4346b8d7c8b04f69c100394659a2ae7f97e4873d80d92504d`，NPZ SHA256=`2fab29fe90ed1502628579835be1a91280323d30c548afd31740aaa33b86856a`。该集合仅用于拟合校准参数，不是跨 split 泛化或最低 ECE 证据。
 - **接续**：八 clean split 正由持久队列运行，全部完成后再做统一独立验证；全 eligible 概率基线未齐前仍不声称最低 ECE 或最佳置信度。
+
+
+## §15.403（2026-11-05）BPfold 原生概率链路与双队列恢复
+
+- **logit 纠错**：BPfold 官方原始 contact map 不是概率，真实范围为 -0.78069127 至 9.06287；`_post.npy` 才位于 [0,1]。新 `calibrate_bpfold_round39.py` 分别保存原始 logit、float64→float32 sigmoid 概率和官方后处理概率，三次同时检查 logit/概率哈希。不得将未解释的矩阵直接用于 ECE。
+- **测试与预检**：3 项单元测试通过；真实 VL0 单条三次 F1 均为 0.9210526315789473，TP/FP/FN=35/6/0。结果 SHA256=`9ae7074eccca2969c51475ba2b04baed4c52d634103d47eae72a32d22bc67a6a`，NPZ SHA256=`3213367f4c7d778424a9ca082027629237115efd6d3cec3d1f7284e9e63eb39e`。单条 ECE 只验证计算链路，不作校准优劣结论。
+- **独立验证**：`verify_bpfold_calibration_round39.py` 逐条复核有效配对、GT、原始/后处理概率、CI、TP/FP/FN、strict micro-F1、risk–coverage、6 个官方 checkpoint 和原始 contact map 路径。预检通过；完整 clean 全板尚未验收。
+- **队列恢复**：xens2 首次 clean 运行因 TR1c 平铺目录误写为 splits/audits 子目录而退出，已修复实际路径，无模型或 CUDA 故障。BPfold 使用 `bpfold_train_union` 的独立 clean 数据，xens2 使用 `tr1c` 的独立 clean 数据；两队列已并行启动，分别有 flock、断点身份与独立输出，不相互套用 clean n。
+- **边界**：原始 map、NPZ 和大 artifacts 保留 /teams；代码留 /home。完整八 split 与所有 eligible 概率基线未齐前，不设置最低 ECE 或最佳置信度结论。

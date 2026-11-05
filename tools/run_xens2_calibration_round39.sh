@@ -46,8 +46,8 @@ fit=$out_root/bprna_vl0_fit.json
     --data /root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl --out "$fit" \
     > logs/round39_xens2/calibration_vl0_fit.log 2>&1
 for split in ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb archiveii_embok_clean bprna_ts0 bprna_new; do
-    data=$root/clean_splits/tr1c/splits/$split.jsonl
-    audit=$root/clean_splits/tr1c/audits/$split.audit.json
+    data=$root/clean_splits/tr1c/$split.jsonl
+    audit=$root/clean_splits/tr1c/$split.audit.json
     test -s "$data" && test -s "$audit"
     "$python" tools/calibrate_xens2_round39.py --calibration "$fit" --data "$data" \
         --clean-audit "$audit" --out "$out_root/$split.json" \

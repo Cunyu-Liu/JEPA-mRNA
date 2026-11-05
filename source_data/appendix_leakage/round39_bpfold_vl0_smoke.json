@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "status": "SMOKE_ONLY",
+  "system": "BPfold",
+  "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+  "data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+  "n_sequences": 1,
+  "clean_audit": null,
+  "repository_commit": "d37d6aa10cbca13e590ff83917fc4d63fec2ddbc",
+  "checkpoint_root": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/BPfold/model_predict",
+  "checkpoint_sha256": {
+    "BPfold_1-6.pth": "35d81cc5180380ce5d6604cd8032305ade7d3f667991f2d34d1ed2e0532e127e",
+    "BPfold_2-6.pth": "d77a46384e86fcd098e6c3f93218a048173874e030a3f9698edf884311351c7d",
+    "BPfold_3-6.pth": "887f2b9ca2fc1ca948c8f29834fa5583bb6edd1c6265dd6caa97eee46b42d890",
+    "BPfold_4-6.pth": "92c8f00ad71845c6ef9c48f2e4c78dde7b72e39dc42587dfde48cd3d85975032",
+    "BPfold_5-6.pth": "cb6cc816ded023b4c200c64c72e6e9daa82c03ea9949630dc28ca98595cb7b30",
+    "BPfold_6-6.pth": "c2696b8fa39daef2d74d0bcd43a5e99e13e2a3370fa185bde35bee06d080e667"
+  },
+  "protocol": {
+    "device_type": "cuda",
+    "cached_embeddings": false,
+    "repeats": 3,
+    "scope": "raw sequence -> official six-checkpoint BPfold -> pre-postprocess contact map",
+    "candidate_pairs": "strict upper valid_pair_mask",
+    "n_bins": 10,
+    "structure_confidence": "native BPfold CI"
+  },
+  "official_contact_map_root": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/preflight/official_contact_maps/contact_map",
+  "code_sha256": "10d7d427665fc5d011747c7785e2ad38158af68deb449eb3cd67e46bea525cbb",
+  "probability_sha256": "1065edb51147a2ad0eb87df8803a393223bcfe050c8da6df9cf0dfb1f8404132",
+  "score_sha256": "6a65ccdbc9b59e239fd857e01a33008c2411451108ad4af247274ea5ab07676b",
+  "f1_runs": [
+    0.9210526315789473,
+    0.9210526315789473,
+    0.9210526315789473
+  ],
+  "calibration": {
+    "n": 3619,
+    "ece": 0.48355796412724616,
+    "brier": 0.23850117174187097,
+    "nll": 0.674214156281531
+  },
+  "postprocess_calibration": {
+    "n": 3619,
+    "ece": 0.0019342359777659573,
+    "brier": 0.0019342359767852999,
+    "nll": 0.05210422629843294
+  },
+  "confidence": {
+    "spearman_confidence_vs_structure_f1": null,
+    "aurc_macro": 0.07894736842105265,
+    "risk_coverage": [
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.07894736842105265,
+        "n": 1
+      }
+    ]
+  },
+  "per_sequence": [
+    {
+      "name": "bpRNA_CRW_15576.bpseq",
+      "structure_f1": 0.9210526315789473,
+      "CI": 0.8975649144376135,
+      "pred_pairs": [
+        [
+          1,
+          130
+        ],
+        [
+          2,
+          129
+        ],
+        [
+          3,
+          128
+        ],
+        [
+          4,
+          127
+        ],
+        [
+          5,
+          126
+        ],
+        [
+          7,
+          124
+        ],
+        [
+          8,
+          123
+        ],
+        [
+          9,
+          122
+        ],
+        [
+          10,
+          121
+        ],
+        [
+          11,
+          120
+        ],
+        [
+          12,
+          119
+        ],
+        [
+          13,
+          118
+        ],
+        [
+          14,
+          117
+        ],
+        [
+          15,
+          116
+        ],
+        [
+          16,
+          115
+        ],
+        [
+          17,
+          114
+        ],
+        [
+          22,
+          74
+        ],
+        [
+          23,
+          73
+        ],
+        [
+          24,
+          71
+        ],
+        [
+          25,
+          70
+        ],
+        [
+          26,
+          69
+        ],
+        [
+          27,
+          68
+        ],
+        [
+          28,
+          67
+        ],
+        [
+          29,
+          66
+        ],
+        [
+          34,
+          62
+        ],
+        [
+          35,
+          61
+        ],
+        [
+          36,
+          60
+        ],
+        [
+          37,
+          57
+        ],
+        [
+          38,
+          56
+        ],
+        [
+          39,
+          55
+        ],
+        [
+          40,
+          54
+        ],
+        [
+          76,
+          111
+        ],
+        [
+          77,
+          110
+        ],
+        [
+          79,
+          108
+        ],
+        [
+          80,
+          107
+        ],
+        [
+          85,
+          102
+        ],
+        [
+          86,
+          101
+        ],
+        [
+          88,
+          99
+        ],
+        [
+          89,
+          98
+        ],
+        [
+          90,
+          97
+        ],
+        [
+          91,
+          96
+        ]
+      ],
+      "n_predicted_pairs": 41,
+      "n_gt_pairs": 35
+    }
+  ],
+  "pair_arrays": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/preflight_smoke.npz",
+  "pair_arrays_sha256": "3213367f4c7d778424a9ca082027629237115efd6d3cec3d1f7284e9e63eb39e"
+}
