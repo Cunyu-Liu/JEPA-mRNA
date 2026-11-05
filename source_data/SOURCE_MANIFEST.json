@@ -1309,6 +1309,20 @@
    "bytes": 3891,
    "description": "RiNALMo-ft TS1 单条三次原生概率与严格权重加载预检；非科学结论",
    "status": "active_smoke_only_not_final"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_calibration_verification.json",
+   "sha256": "7628a236afa9ce288efc50f7811624ae421b7c0425e1539fa6dc3598dc17a7dc",
+   "bytes": 3203,
+   "description": "BPfold 八 clean split 原生概率、后处理概率、CI 和三次 F1 独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_bpfold_calibration.json",
+   "sha256": "dbf6989ddf783819a9d0c878d7c7c1309b1c95833512a50d631682cea06ee23e",
+   "bytes": 7533,
+   "description": "bpRNA-new clean n=5386/5387、交集 n=5386；BPfold CI 的 Spearman/AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

@@ -12618,3 +12618,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **比较与验收**：`verify_rnaformer_calibration_round39.py` 分别处理 RiNALMo-ft 的严格权重加载与 RNAformer 官方权重/config；比较器新增 `rinalmo_ft`，保留原生概率、结构置信度与既有主榜 F1 对照。NPZ 一次性读取修复覆盖该分支。
 - **队列**：`run_rinalmo_ft_calibration_round39.sh` 已挂起，等待 bprna/intrafam/interfam/biophysical 四个 RNAformer 变体独立验收，再做 RiNALMo-ft 的 TR0-clean 八 split 三次。真实预检已完成，完整全板和全基线校准排名未完成。
 - **当前等待**：BPfold 的 bpRNA-new 第三次仍在运行，未影响新预检；自适应测速继续等待其独立验收，不跳过门限。
+
+
+## §15.415（2026-11-05）BPfold 全板概率验收与 bpRNA-new 比较
+
+- **BPfold 验收**：八个 clean split 的原生 logit、sigmoid 概率、后处理概率、CI、GT、TP/FP/FN 与三次预测均通过独立复核。汇总 SHA256=`7628a236afa9ce288efc50f7811624ae421b7c0425e1539fa6dc3598dc17a7dc`。
+- **bpRNA-new 三次结果**：BPfold clean n=5387，三次 F1=0.7369936720851805，概率 SHA256=`11e01974778793ec534f423a4a43b447599750bc341f0ea570ff3fcc18017cf0`。xens2 clean n=5386，三次 F1=0.5531599341608943，双方各自 clean n 保留。
+- **交集敏感性**：共同 n=5386、15,343,073 个候选配对。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；BPfold raw/post ECE=0.4872850096/0.0052058672，post Brier=0.0052058672、NLL=0.1402350314。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，BPfold CI=0.5937702468/0.1627122940，BPfold CI 结构排序更好。结果 SHA256=`dbf6989ddf783819a9d0c878d7c7c1309b1c95833512a50d631682cea06ee23e`。
+- **结论**：xens2 的 ECE 略低于 post 诊断值，但 Brier 高于 post，CI 的 Spearman/AURC 明显优于 xens2。与主榜未领先一致，不支持最佳置信度；后处理仍不作为独立边际概率证据。
+- **测速状态**：自适应 B=64/32/16 队列已获得启动门，但其他 GPU 进程仍占用设备，日志持续 `ADAPTIVE_SPEED_WAIT_EXCLUSIVE`，尚无有效吞吐。保持无干扰合同，不 kill 其他会话、不用并发值替代正式测速。
