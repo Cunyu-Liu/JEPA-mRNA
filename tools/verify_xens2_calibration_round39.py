@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import argparse
+import functools
+import hashlib
 import json
 from pathlib import Path
 
@@ -26,6 +28,20 @@ def assert_mapping(actual, expected):
             assert actual[key] == expected[key], key
         else:
             assert np.isclose(actual[key], expected[key], rtol=0, atol=1e-12), key
+
+
+@functools.lru_cache(maxsize=None)
+def asset_sha256(path_string):
+    path = Path(path_string)
+    if path.is_file():
+        return sha256(path)
+    digest = hashlib.sha256()
+    files = sorted(item for item in path.rglob("*") if item.is_file())
+    assert files, path
+    for item in files:
+        digest.update(str(item.relative_to(path)).encode())
+        digest.update(bytes.fromhex(sha256(item)))
+    return digest.hexdigest()
 
 
 def validate_result(path, require_full_vl0=True):
@@ -57,8 +73,12 @@ def validate_result(path, require_full_vl0=True):
         assert fit_result["data_sha256"] == fit["fit_data_sha256"]
         assert fit_result["vl0_fit"] == fit
     report = result["model_report"]
-    assert report["strict_load"] is True and report["r2d_head"]["strict_load"] is True
-    for key in ["weights", "plana_s0", "plana_s1"]:
+    assert result["production_code_sha256"] == "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc"
+    assert report["n_tensors_in_checkpoint"] == 504 and report["n_encoder_tensors_loaded"] == 498
+    assert set(report["expected_absent"]) == {"pooler.dense.weight", "pooler.dense.bias"}
+    assert report["r2d_head"]["strict_load"] is True
+    base_weights_sha = asset_sha256(report["weights"])
+    for key in ["plana_s0", "plana_s1"]:
         assert sha256(Path(report[key])) == report[key + "_sha256"]
     assert len(result["f1_runs"]) == 3 and len(set(result["f1_runs"])) == 1
     assert len(result["per_sequence"]) == len(rows)
@@ -69,7 +89,8 @@ def validate_result(path, require_full_vl0=True):
         assert offsets[0] == 0 and np.all(np.diff(offsets) > 0)
         raw = arrays["raw_probabilities"]
         calibrated = arrays["calibrated_probabilities"]
-        assert np.array_equal(raw, 1 / (1 + np.exp(-np.clip(arrays["scores"], -700, 700))))
+        expected_raw = (1 / (1 + np.exp(-np.clip(arrays["scores"].astype(np.float64), -700, 700)))).astype(np.float32)
+        assert np.array_equal(raw, expected_raw)
         assert np.allclose(calibrated, apply_platt_scaling(arrays["scores"], fit["a"], fit["b"]), rtol=0, atol=1e-7)
         raw_float64 = 1 / (1 + np.exp(-np.clip(arrays["scores"].astype(np.float64), -700, 700)))
         assert_mapping(metrics(raw_float64, arrays["labels"]), result["raw_calibration"])
@@ -96,8 +117,8 @@ def validate_result(path, require_full_vl0=True):
             fn += len(gt - pred)
             f1 = 2 * len(pred & gt) / max(1, 2 * len(pred & gt) + len(pred - gt) + len(gt - pred))
             assert row["structure_f1"] == f1
-            raw_value = confidence_for_pairs(pred, raw[start:stop], mask)
-            calibrated_value = confidence_for_pairs(pred, calibrated[start:stop], mask)
+            raw_value = confidence_for_pairs(pred, raw_float64[start:stop], mask)
+            calibrated_value = confidence_for_pairs(pred, calibrated_float64[start:stop], mask)
             assert np.isclose(row["mean_selected_pair_probability"], raw_value, rtol=0, atol=1e-7)
             assert np.isclose(row["calibrated_confidence"], calibrated_value, rtol=0, atol=1e-7)
             raw_confidence.append(raw_value)
@@ -110,6 +131,7 @@ def validate_result(path, require_full_vl0=True):
     return {"split": Path(result["data"]).stem, "n_sequences": len(rows),
             "n_pairs": int(offsets[-1]), "tp": tp, "fp": fp, "fn": fn,
             "strict_micro_f1": f1, "result_sha256": sha256(path),
+            "base_weights_manifest_sha256": base_weights_sha,
             "pair_arrays_sha256": result["pair_arrays_sha256"]}
 
 

@@ -12504,3 +12504,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **科学结论**：xens2 在原生 own-clean 主板领先 5/8；bpRNA-new=0.5530578045（n=5386）对 BPfold=0.7369936721（n=5387），Δ=-0.1839358676；TS2=0.8362779741（n=29）对 BPfold=0.9494949495（n=3），Δ=-0.1132169754；ArchiveII=0.7333353700（n=1107）对 BPfold=0.8212189843（n=731），Δ=-0.0878836144。TS2 必须同时展示 n=3，不能隐藏小样本边界。
 - **测速**：首次 xens2 B=32 独占测速在外部 GPU 进程闯入后已停止自身并保存 `xens2_b32_exclusive.interference.log`，没有正式速度结果。新增 `monitor_round39_exclusive_speed_retry.sh`，仅在 GPU 无其他进程时启动完整三次，外部干扰保存独立证据并重试，真实失败退出；不 kill 其他会话任务，不用 resume 拼接计时。
 - **后续**：测速有效 JSON 形成后，校准队列才会运行真实 GPU 预检和完整 VL0/八 clean 推理。8/8、速度 SOTA、最低 ECE 与最佳结构置信度仍未达成。
+
+
+## §15.402（2026-11-05）xens2 独占测速与真实 GPU 校准预检
+
+- **正式测速**：xens2 B=32 全 TS0 三次完成，n=1288、n_length_filtered=0、raw-sequence、CUDA、resume_runs=false。三次 F1 均为 **0.8037820906882117**，throughput=13.7815358503/13.5802438348/12.8495987982 seq/s，中位 **13.5802438348**，峰值 13,608.412MiB。结果 SHA256=`0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0`。测速有效不等于速度 SOTA，继续保留优化目标。
+- **真实 GPU 预检**：完整 VL0 的第一条序列完成三次 raw-sequence 推理，概率 SHA256 均为 `5747cf2a57bfba35de3dccf25cf3243bd16fcd463384a9dec0b672ce6d252274`，F1=0.9714285714。该单条只验证工程链路，不作科学结论。
+- **独立验证修复**：RiNALMo 权重以整个目录的文件名+文件内容哈希记录，base manifest=`91aca33cecb5e34a949aae452d2cd92a67db3cdb9e2da871a0478fcf00bb2442`；加载证据严格核对 504 个 checkpoint 张量、498 个已加载 encoder 张量及仅两个 pooler 参数的预期缺失。原始与校准指标均从保存的分数恢复 float64 复算，另逐位验证 float32 存储，避免混淆生产精度与存储精度。
+- **完整 VL0**：196 条、573,355 个候选配对、三次推理及 NPZ 独立复算通过，F1=0.8787185354691075；fit JSON SHA256=`a54cc2acd22800a4346b8d7c8b04f69c100394659a2ae7f97e4873d80d92504d`，NPZ SHA256=`2fab29fe90ed1502628579835be1a91280323d30c548afd31740aaa33b86856a`。该集合仅用于拟合校准参数，不是跨 split 泛化或最低 ECE 证据。
+- **接续**：八 clean split 正由持久队列运行，全部完成后再做统一独立验证；全 eligible 概率基线未齐前仍不声称最低 ECE 或最佳置信度。

@@ -63,7 +63,9 @@ class Xens2CalibrationTest(unittest.TestCase):
             weights = calibration.production.R2D_CKPT
             weights_sha = calibration.sha256(weights)
             models.update({"name": "xens2", "report": {
-                "strict_load": True, "weights": str(weights), "weights_sha256": weights_sha,
+                "weights": str(weights), "weights_sha256": weights_sha,
+                "n_tensors_in_checkpoint": 504, "n_encoder_tensors_loaded": 498,
+                "expected_absent": {"pooler.dense.weight": "unused", "pooler.dense.bias": "unused"},
                 "r2d_head": {"strict_load": True}}})
             scores = np.full((6, 6), -1.0)
             scores[0, 5] = scores[5, 0] = 3.0

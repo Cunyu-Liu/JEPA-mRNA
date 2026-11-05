@@ -1162,6 +1162,20 @@
    "bytes": 17078,
    "description": "RNAformer biophysical raw+clean 八 split 三次独立聚合；clean 与 raw 样本集合相同",
    "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_b32_full_ts0.json",
+   "sha256": "0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0",
+   "bytes": 1104623,
+   "description": "xens2 B=32 全 TS0 三次独占 raw-sequence 测速；中位 13.5802 seq/s，F1=0.8037820907，不是速度 SOTA",
+   "status": "active_exclusive_speed_not_sota"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_vl0_calibration_fit.json",
+   "sha256": "a54cc2acd22800a4346b8d7c8b04f69c100394659a2ae7f97e4873d80d92504d",
+   "bytes": 284448,
+   "description": "xens2 完整 VL0 196 条、573355 配对的三次概率拟合与独立验证；不是泛化结果",
+   "status": "active_vl0_fit_only_not_generalization"
   }
  ]
 }
