@@ -1253,6 +1253,13 @@
    "bytes": 6679,
    "description": "TestSetB xens2/SPOT clean n=288/64、交集 n=64；xens2 ECE/Spearman/AURC 更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_spotrna_calibration_verification.json",
+   "sha256": "481c997584742268908c46099337d2ff09e37777e47d15c16186a5312699c7b5",
+   "bytes": 2337,
+   "description": "SPOT-RNA 八 clean split 既有原生概率与转换数组独立验收；TS3 为空",
+   "status": "active_complete_probability_assets"
   }
  ]
 }

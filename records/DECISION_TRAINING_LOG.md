@@ -12565,3 +12565,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TS-hard**：原生 clean n=10/3，共同 n=3。xens2 calibrated ECE=0.0248381630，SPOT=0.0175182482；xens2 calibrated Spearman=0.5、AURC=0.2677469136，SPOT 为 0.8660254038/0.2782446312。SPOT 的 Spearman 更好但 AURC 略差，小样本不能外推。比较 SHA256=`5414ffa10b21c51b886b5e5cd9de0b9f9848ae293c99016b4921a0062d18e8c1`。
 - **TestSetB**：原生 clean n=288/64，共同 n=64、178,165 个候选配对。xens2 calibrated ECE=0.0020023106、Brier=0.0029581708、NLL=0.0124032872，SPOT 为 0.0056857407/0.0056857407/0.1531618077；xens2 calibrated Spearman=0.7050309335、AURC=0.0817653054，SPOT 为 0.6920302359/0.2804982169，xens2 三项均更优。比较 SHA256=`8df1ed84fd6ca28d322304b1364a2486ad3110d66756817dded2f7eda39e142e`。
 - **结论**：不同 split 的 ECE 与结构排序优势不统一，不能写全板最低 ECE 或最佳置信度。SPOT 八个 split 已转换，TS3 保持 EMPTY；最终独立验证尚未形成。BPfold ArchiveII 已完成，等待 xens2 对应结果；其余 eligible 概率基线与自适应测速继续排队。
+
+
+## §15.409（2026-11-05）SPOT 全板资产验收与 RNAformer 概率队列
+
+- **SPOT 验收**：八个 clean split 的原生结果、概率矩阵、转换 NPZ、GT、原生非 canonical 置信度和 risk–coverage 均完成独立复核，TS3 保持 `EMPTY_AFTER_DELEAK`。汇总 SHA256=`481c997584742268908c46099337d2ff09e37777e47d15c16186a5312699c7b5`。这些来自既有三次 GPU 推理的 CPU 转换，不重复计为新 GPU 实验。
+- **RNAformer 输出确认**：生产前向返回配对 logits，经 sigmoid 和对称化后调用官方 `decode_pairs`。旧 benchmark 只保存配对，新增 `calibrate_rnaformer_round39.py` 复用同一加载与前向补存概率，不改变 F1 协议。
+- **独立合同**：每个变体单独绑定官方权重/config、clean corpus、原始主榜 F1、三次概率哈希和 NPZ。原生结构置信度为官方解码配对的 sigmoid 均值，ECE 仍使用统一严格有效配对；空 split 不生成指标。
+- **执行顺序**：bprna→intrafam→interfam→biophysical，每个变体先做真实 GPU 单条预检，再跑八 split 三次并独立验证。队列等待自适应测速完成，启动前空闲显存≥12GiB，避免与 clean 大任务或独占测速冲突。代码静态检查已通过，尚无 RNAformer 概率科学结果。
+- **边界**：SPOT 已验收不等于全 eligible 基线最低 ECE；xens2 大 split、BPfold 其余大 split、RNAformer 四变体和自适应速度结果仍待完成。

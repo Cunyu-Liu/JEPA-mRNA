@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "PASS_SPOTRNA_EXISTING_PROBABILITY_ASSETS_INDEPENDENT_RECOMPUTE",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "n_sequences": 152,
+      "n_pairs": 997301,
+      "result_sha256": "81880c8d6f48032c49bebfcf4b4f3003cd3e7c5d6942958af70bb73f9289bc33",
+      "pair_arrays_sha256": "c81f0e1f3ece06caa2958c26a6d0535bb2dfd79b94406b7e92476f2b663757a9"
+    },
+    {
+      "split": "bprna_new",
+      "n_sequences": 5386,
+      "n_pairs": 15343073,
+      "result_sha256": "9ac38b33cc8b1ad08b6acf59c6415646be38ad23479e24496ffa72380dd487f4",
+      "pair_arrays_sha256": "7dbfe943238dd346f7fb2e40ffe3df7a75923b8811730a9935a8bec4752ea41c"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "n_sequences": 10,
+      "n_pairs": 13596,
+      "result_sha256": "c0af568ea0c4fa0a05353681a6293f2f9fda7effa467c4f098ad71cb48e3a48f",
+      "pair_arrays_sha256": "4a38bc62dc3379430057af3bdce16f7b8176bc0adf26e3c6b37df5f19a99a27e"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "n_sequences": 9,
+      "n_pairs": 3514,
+      "result_sha256": "ab5599f9db9848b92d1039ac4d255a6c8bef572790f2a532b66c3ecc59feaf1c",
+      "pair_arrays_sha256": "62c664b776ecc252188d46b6757899e8a27e2ee18b543811de0f1eee938fd6ec"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "status": "EMPTY_AFTER_DELEAK",
+      "result_sha256": "f1989e96ac1c7e1d0c8b87ef88538cf4973e37d730047276a41a485526c103c2"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "n_sequences": 3,
+      "n_pairs": 685,
+      "result_sha256": "5d35f7d22da5055b0be6e62d0397117cc24a43c1879ca4027829934a01f774a5",
+      "pair_arrays_sha256": "eb0cce1d870f7aaafeac957de9d701148bbf70563864cffaff4afe4834cf032a"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "n_sequences": 580,
+      "n_pairs": 11063339,
+      "result_sha256": "99c1dc978739763edfc3fb4beb3b8c910e2cc62403192453630352fc834e83a0",
+      "pair_arrays_sha256": "17f6885fd9be2d0ea5635576af5f44b39c7950cecaaeb0c915ec0b478d6516f9"
+    },
+    {
+      "split": "testsetb",
+      "n_sequences": 64,
+      "n_pairs": 178165,
+      "result_sha256": "699de7ad547278797e2052384b7bef4a2a7e192f72768a38e9ca2e603fc7c8af",
+      "pair_arrays_sha256": "b001f56a996b2cd5806ffd198ca166bfbc470e5897dd50699d13e6d7f20f9cca"
+    }
+  ],
+  "comparison_status": "PENDING_ALL_ELIGIBLE_BASELINES_MATCHED_CLEAN_PROBABILITIES"
+}
