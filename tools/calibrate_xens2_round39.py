@@ -9,7 +9,7 @@ import torch
 
 from calibrate_plana_round39 import load_rows, selective_metrics, sha256
 from evaluate_spotrna_vl0_calibration_round39 import metrics
-from rnajepa.harness import nussinov_map, valid_pair_mask
+from rnajepa.harness import valid_pair_mask
 from rnajepa.rlcd import apply_platt_scaling, fit_platt_scaling
 import speed_end_to_end_4090 as production
 
@@ -101,7 +101,7 @@ def main():
             flat_scores, flat_labels, mask = flatten_example(seq, gt, scores)
             probabilities = 1 / (1 + np.exp(-np.clip(flat_scores, -700, 700)))
             probability_hasher.update(probabilities.astype(np.float32).tobytes())
-            pred = set(nussinov_map(np.where(mask, scores, -np.inf), mask))
+            pred = set(production.decode_our(scores[np.newaxis, :, :], [seq])[0])
             tp = len(pred & gt)
             f1 = 2 * tp / max(1, 2 * tp + len(pred - gt) + len(gt - pred))
             confidence = confidence_for_pairs(pred, probabilities, mask)
