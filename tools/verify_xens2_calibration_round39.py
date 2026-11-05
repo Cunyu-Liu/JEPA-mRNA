@@ -10,8 +10,9 @@ import numpy as np
 from calibrate_plana_round39 import load_rows, selective_metrics, sha256
 from calibrate_xens2_round39 import confidence_for_pairs
 from evaluate_spotrna_vl0_calibration_round39 import metrics
-from rnajepa.harness import nussinov_map, valid_pair_mask
+from rnajepa.harness import valid_pair_mask
 from rnajepa.rlcd import apply_platt_scaling
+import speed_end_to_end_4090 as production
 
 
 def assert_mapping(actual, expected):
@@ -111,7 +112,7 @@ def validate_result(path, require_full_vl0=True):
             scores = np.full((len(seq), len(seq)), -np.inf)
             selected = np.triu(mask, k=1)
             scores[selected] = arrays["scores"][start:stop]
-            assert pred == set(nussinov_map(scores, mask))
+            assert pred == set(production.decode_our(scores[np.newaxis, :, :], [seq])[0])
             tp += len(pred & gt)
             fp += len(pred - gt)
             fn += len(gt - pred)
