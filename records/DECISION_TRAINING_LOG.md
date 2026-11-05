@@ -12557,3 +12557,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TS1 独立复核**：SPOT clean n=10，三次 F1=0.7759336099585062，ECE=0.0035304501、Spearman=0.8125186030、AURC=0.1548574876。转换结果 SHA256=`c0af568ea0c4fa0a05353681a6293f2f9fda7effa467c4f098ad71cb48e3a48f`，NPZ SHA256=`4a38bc62dc3379430057af3bdce16f7b8176bc0adf26e3c6b37df5f19a99a27e`。
 - **TS1 xens2 交集**：共同 n=10、13,596 个候选配对，原生 clean n=18/10。xens2 calibrated ECE=0.0029157673、Brier=0.0051083814、NLL=0.0272062087，低于 SPOT ECE=0.0035304501；xens2 calibrated Spearman=0.7696969697、AURC=0.0890369049，SPOT 为 0.8125186030/0.1548574876。ECE 与 AURC 较优，但 Spearman 并非最高，不写全面最佳置信度。比较 SHA256=`adbc19fc6d546ff0b1cd9395b1a52ff7ec815ae4b27de50512b57f2a161ccc23`。
 - **队列**：其余 SPOT split 正由独立 CPU 队列转换和复核；BPfold/xens2 大 split 与自适应速度候选仍按原顺序等待。所有 eligible 概率基线未齐，不写最低 ECE 总结。
+
+
+## §15.408（2026-11-05）SPOT-RNA TS2/TS-hard/TestSetB 比较与指标边界
+
+- **TS2**：原生 clean n=29/9，共同 n=9。xens2 calibrated ECE=0.0205688097、Brier=0.0201816814、NLL=0.0915757060，SPOT 为 0.0076835515/0.0076835515/0.2069785828；ECE 较高但 NLL 较低。xens2 calibrated Spearman=-0.1166666667、AURC=0.1928340744，SPOT 为 0.7276068751/0.1386581875，SPOT 结构排序更好。比较 SHA256=`fee36e411477a979602031418a2757e3342e43b54ed9a828e4a6c7eef6e07d8c`。
+- **TS-hard**：原生 clean n=10/3，共同 n=3。xens2 calibrated ECE=0.0248381630，SPOT=0.0175182482；xens2 calibrated Spearman=0.5、AURC=0.2677469136，SPOT 为 0.8660254038/0.2782446312。SPOT 的 Spearman 更好但 AURC 略差，小样本不能外推。比较 SHA256=`5414ffa10b21c51b886b5e5cd9de0b9f9848ae293c99016b4921a0062d18e8c1`。
+- **TestSetB**：原生 clean n=288/64，共同 n=64、178,165 个候选配对。xens2 calibrated ECE=0.0020023106、Brier=0.0029581708、NLL=0.0124032872，SPOT 为 0.0056857407/0.0056857407/0.1531618077；xens2 calibrated Spearman=0.7050309335、AURC=0.0817653054，SPOT 为 0.6920302359/0.2804982169，xens2 三项均更优。比较 SHA256=`8df1ed84fd6ca28d322304b1364a2486ad3110d66756817dded2f7eda39e142e`。
+- **结论**：不同 split 的 ECE 与结构排序优势不统一，不能写全板最低 ECE 或最佳置信度。SPOT 八个 split 已转换，TS3 保持 EMPTY；最终独立验证尚未形成。BPfold ArchiveII 已完成，等待 xens2 对应结果；其余 eligible 概率基线与自适应测速继续排队。

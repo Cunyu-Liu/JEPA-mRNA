@@ -1232,6 +1232,27 @@
    "bytes": 6553,
    "description": "TS1 xens2/SPOT-RNA clean n=18/10、交集 n=10；ECE 与结构排序指标分列",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_spotrna_calibration.json",
+   "sha256": "fee36e411477a979602031418a2757e3342e43b54ed9a828e4a6c7eef6e07d8c",
+   "bytes": 6902,
+   "description": "TS2 xens2/SPOT clean n=29/9、交集 n=9；SPOT ECE 和结构排序更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tshard_xens2_spotrna_calibration.json",
+   "sha256": "5414ffa10b21c51b886b5e5cd9de0b9f9848ae293c99016b4921a0062d18e8c1",
+   "bytes": 6776,
+   "description": "TS-hard xens2/SPOT clean n=10/3、交集 n=3；Spearman 与 AURC 方向不同",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tsb_xens2_spotrna_calibration.json",
+   "sha256": "8df1ed84fd6ca28d322304b1364a2486ad3110d66756817dded2f7eda39e142e",
+   "bytes": 6679,
+   "description": "TestSetB xens2/SPOT clean n=288/64、交集 n=64；xens2 ECE/Spearman/AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
