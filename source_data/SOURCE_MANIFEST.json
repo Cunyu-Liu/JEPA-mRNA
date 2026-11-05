@@ -1330,6 +1330,48 @@
    "bytes": 1723299,
    "description": "xens2 自适应 B=64/32/16 全 TS0 三次独占测速；配对一致率 1.0，提升 1.045×，不是速度 SOTA",
    "status": "active_exclusive_speed_not_sota"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_xens2_rnaformer_bprna_calibration.json",
+   "sha256": "793ff6337428ba1c4bcdc8310ff98a33dbaa6568837e649b3bbbd2dad83638bd",
+   "bytes": 6876,
+   "description": "TS1 xens2/RNAformer-bprna 概率与结构置信度交集，n=10",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_rnaformer_bprna_calibration.json",
+   "sha256": "6f33ea6b9895217e6ff8115b27430b8418e14fad3867555aed9fb354dc460f04",
+   "bytes": 7199,
+   "description": "TS2 xens2/RNAformer-bprna 概率与结构置信度交集，n=9",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts3_xens2_rnaformer_bprna_calibration.json",
+   "sha256": "7f549a584ef17725598b1cd1f6a55446dac6b6e08062c49cb34400c4c99f06f4",
+   "bytes": 583,
+   "description": "TS3 两套 clean 无共同序列，EMPTY_MATCHED_CALIBRATION_INTERSECTION，不计算指标",
+   "status": "active_empty_matched_intersection"
+  },
+  {
+   "path": "appendix_leakage/round39_tshard_xens2_rnaformer_bprna_calibration.json",
+   "sha256": "7d7838f8f268819ec6665d473fe69023b4094d0dee3e8d734cde57b9ed3a8e18",
+   "bytes": 7080,
+   "description": "TS-hard xens2/RNAformer-bprna 概率与结构置信度交集，n=3",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tsb_xens2_rnaformer_bprna_calibration.json",
+   "sha256": "fb876700922143295ddce9bc310f31fbeb9f5834aba11a17e955bae9c4646e97",
+   "bytes": 7271,
+   "description": "TestSetB xens2/RNAformer-bprna 概率与结构置信度交集，n=74",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_rnaformer_bprna_calibration.json",
+   "sha256": "c96d98f497120be20c3f34380db8c6c7922d30c097925c6e4168613a67d4b420",
+   "bytes": 7435,
+   "description": "ArchiveII clean n=1107/2267、交集 n=1087；xens2 结构排序优于 RNAformer",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

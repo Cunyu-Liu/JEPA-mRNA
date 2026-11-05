@@ -12635,3 +12635,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **资源与身份**：peak_memory=13,608.412MiB，raw-sequence、n=1288、n_length_filtered=0、resume=false，生产代码身份和模型权重未变。结果 SHA256=`659e03b7069133b48df1188656c7306686fee9639115a8af08176a997c535d22`。
 - **结论**：短序列增大 batch 仅带来约 4.5% 增益，统一 B=32 的瓶颈并未由该分桶策略解决。后续速度优化须针对三个不同权重骨干的实际计算量，不伪称共享编码，也不以牺牲精度换速度。
 - **RNAformer-bprna**：真实 GPU 单条预检通过；clean TS1 n=11，三次原生概率 F1=0.8427947598253275，与既有主榜一致。四变体将依次完成各自 clean 概率并逐格对照 F1，随后接续 RiNALMo-ft。
+
+
+## §15.417（2026-11-06）RNAformer-bprna 比较与长期监控
+
+- **路径与队列**：bprna 总账使用 `bprna_raw_clean_summary.json`，与其他变体的 `variant/raw_clean_summary.json` 不同；已修正原始概率队列。新增 `run_rnaformer_comparisons_round39.sh`，四变体只有各自独立验收后才进入比较，flock 防重复，缺文件等待，空交集记录而不中止。
+- **TS1/TS2**：共同 n=10/9。TS1 xens2 calibrated ECE=0.0029157673、RNAformer=0.0026599898，Spearman=0.7696969697/0.4376919914，AURC=0.0890369049/0.1417594109，结果 SHA256=`793ff6337428ba1c4bcdc8310ff98a33dbaa6568837e649b3bbbd2dad83638bd`。TS2 xens2 calibrated ECE=0.0205688097、RNAformer=0.0060799107，Spearman=-0.1166666667/-0.3598357858，AURC=0.1928340744/0.3624995990，结果 SHA256=`6f33ea6b9895217e6ff8115b27430b8418e14fad3867555aed9fb354dc460f04`。
+- **TS-hard/TestSetB**：TS-hard 共同 n=3，xens2 calibrated Spearman=0.5、AURC=0.2677469136，RNAformer=0.8660254038/0.5246913580，小样本 RNAformer 更差，结果 SHA256=`7d7838f8f268819ec6665d473fe69023b4094d0dee3e8d734cde57b9ed3a8e18`。TestSetB 共同 n=74，xens2 calibrated ECE=0.0019748620、Spearman=0.7491833653、AURC=0.0800234387，RNAformer=0.0016900716/0.6585985665/0.1836995472，结果 SHA256=`fb876700922143295ddce9bc310f31fbeb9f5834aba11a17e955bae9c4646e97`。
+- **ArchiveII**：共同 n=1087，原生 clean n=1107/2267。xens2 calibrated ECE=0.0009986423、Brier=0.0022248452、NLL=0.0112990287，RNAformer raw ECE=0.0029301462、Brier=0.0018506168、NLL=0.0108653248。xens2 calibrated Spearman=0.7175607517、AURC=0.1202645505，RNAformer=0.5716262525/0.1714758343。结果 SHA256=`c96d98f497120be20c3f34380db8c6c7922d30c097925c6e4168613a67d4b420`。
+- **空交集**：TS3 xens2 clean n=4、RNAformer-bprna clean n=2，共同 n=0，状态 `EMPTY_MATCHED_CALIBRATION_INTERSECTION`，不计算 F1、ECE 或置信度，结果 SHA256=`7f549a584ef17725598b1cd1f6a55446dac6b6e08062c49cb34400c4c99f06f4`。
+- **结论**：RNAformer 原生概率在若干 split 的 ECE 更低，xens2 的结构排序更强，不能写全板最低 ECE 或最佳置信度。bpRNA-new 和后续三变体继续后台运行，未齐套前不汇总为最终全基线结论。

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "EMPTY_MATCHED_CALIBRATION_INTERSECTION",
+  "split": "ref_pdb_ts3",
+  "matched_n": 0,
+  "baseline_system": "rnaformer",
+  "xens2_clean_n": 4,
+  "baseline_clean_n": 2,
+  "bpfold_clean_n": 2,
+  "main_ranking_boundary": "no shared name+sequence+evaluated-GT samples; no ECE or confidence metric is defined",
+  "xens2_result_sha256": "ee757ba7ed007dcc8e92bd95ca3a16e4fca1c1620651082227f9312622dbc6a9",
+  "baseline_result_sha256": "5e07ff7c01cf315b18e2e63c7313a160c8d229a2dd4f305b8b2c8bfdf1a7ff2c",
+  "calibration": {},
+  "structure_confidence": {}
+}

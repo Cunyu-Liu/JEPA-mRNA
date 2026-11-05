@@ -41,7 +41,21 @@ def main():
         x_names, b_names = xa["names"].tolist(), ba["names"].tolist()
         b_name_set = set(b_names)
         common = [name for name in x_names if name in b_name_set]
-        assert common, "EMPTY_MATCHED_CALIBRATION_INTERSECTION"
+        if not common:
+            payload = {"schema_version": 1, "status": "EMPTY_MATCHED_CALIBRATION_INTERSECTION",
+                       "split": Path(xens2["data"]).stem, "matched_n": 0, "baseline_system": system,
+                       "xens2_clean_n": xens2["n_sequences"], "baseline_clean_n": bpfold["n_sequences"],
+                       "bpfold_clean_n": bpfold["n_sequences"],
+                       "main_ranking_boundary": "no shared name+sequence+evaluated-GT samples; no ECE or confidence metric is defined",
+                       "xens2_result_sha256": sha256(args.xens2), "baseline_result_sha256": sha256(args.bpfold),
+                       "calibration": {}, "structure_confidence": {}}
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            temporary = args.out.with_suffix(args.out.suffix + ".tmp")
+            temporary.write_text(json.dumps(payload, indent=2) + "\n")
+            temporary.replace(args.out)
+            print(json.dumps({"status": payload["status"], "split": payload["split"],
+                              "out": str(args.out), "sha256": sha256(args.out)}, indent=2))
+            return
         x_lookup = {name: index for index, name in enumerate(x_names)}
         b_lookup = {name: index for index, name in enumerate(b_names)}
         probabilities = {key: [] for key in ["xens2_raw", "xens2_calibrated", raw_key]}

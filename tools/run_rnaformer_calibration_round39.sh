@@ -13,10 +13,10 @@ while [[ ! -s "$root/speed_round39/xens2_adaptive_64_32_16_full_ts0.json" ]]; do
 done
 for variant in bprna intrafam interfam biophysical; do
     case "$variant" in
-        bprna) suffix=bprna; corpus=rnaformer_bprna_train ;;
-        intrafam) suffix=intra_family_finetuned; corpus=rnaformer_intrafam_train ;;
-        interfam) suffix=inter_family_finetuned; corpus=rnaformer_interfam_train ;;
-        biophysical) suffix=biophysical; corpus=rnaformer_biophysical_train ;;
+        bprna) suffix=bprna; corpus=rnaformer_bprna_train; summary=$root/rnaformer/bprna_raw_clean_summary.json ;;
+        intrafam) suffix=intra_family_finetuned; corpus=rnaformer_intrafam_train; summary=$root/rnaformer/$variant/raw_clean_summary.json ;;
+        interfam) suffix=inter_family_finetuned; corpus=rnaformer_interfam_train; summary=$root/rnaformer/$variant/raw_clean_summary.json ;;
+        biophysical) suffix=biophysical; corpus=rnaformer_biophysical_train; summary=$root/rnaformer/$variant/raw_clean_summary.json ;;
     esac
     weights=$weights_root/RNAformer_32M_state_dict_${suffix}.pth
     config=$weights_root/RNAformer_32M_config_${suffix}.yml
@@ -58,5 +58,5 @@ PY
             > "logs/round39_clean_benchmark/rnaformer_${variant}_calibration_${split}.log" 2>&1
     done
     "$python" tools/verify_rnaformer_calibration_round39.py --root "$out_root" --variant "$variant" \
-        --summary "$root/rnaformer/$variant/raw_clean_summary.json" --out "$out_root/independent_verification.json"
+        --summary "$summary" --out "$out_root/independent_verification.json"
 done
