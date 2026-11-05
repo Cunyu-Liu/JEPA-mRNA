@@ -1274,6 +1274,20 @@
    "bytes": 7033,
    "description": "ArchiveII clean n=1107/580、交集 n=565；xens2 ECE 较低，SPOT 的 Spearman 更高",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_bpfold_calibration.json",
+   "sha256": "80bc79e91e690cf0bca8c8f1fea37548e457f08fe68f7fdafa98de174e621b53",
+   "bytes": 7540,
+   "description": "TS0 clean n=713/1178、交集 n=703；xens2 校准与结构排序优于 BPfold CI",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_spotrna_calibration.json",
+   "sha256": "49d6d043d7c022e699cc67f253a8513c9e140d274898cf18f379b7f0b4f5723c",
+   "bytes": 7118,
+   "description": "TS0 clean n=713/152、交集 n=152；xens2 校准与结构排序优于 SPOT",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

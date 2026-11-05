@@ -12592,3 +12592,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **BPfold 交集**：原生 clean n=1107/731，共同 n=517、11,874,869 个候选配对。xens2 calibrated ECE=0.0012179065、Brier=0.0020327015、NLL=0.0103964856；BPfold raw/post ECE=0.4962204990/0.0012656140。xens2 calibrated Spearman=0.7228776832、AURC=0.1494799831；BPfold CI=0.6984234800/0.0968275690。xens2 概率指标更好，但 BPfold CI 的 AURC 更好。结果 SHA256=`5aa5b6f1e33b30aae5576fa57e1295969a9b39d0f4e63b14e378093feda9da20`。
 - **SPOT 交集**：原生 clean n=1107/580，共同 n=565、10,959,298 个候选配对。xens2 calibrated ECE=0.0014767614、Brier=0.0020567773、NLL=0.0105594849；SPOT=0.0022242301/0.0022242301/0.0599160393。xens2 calibrated Spearman=0.7532826126、AURC=0.1059320699，SPOT 为 0.8750720674/0.2573330047；SPOT 的 Spearman 明显更高。结果 SHA256=`cd1448e9f54fd2447b322f22f950c6acc248547b029d692e6c9cb73e5d680186`。
 - **效率与边界**：两组比较各约 1m43s，未再出现重复解压导致的内存爆炸。BPfold `_post` 仍是后处理诊断而非独立边际概率。xens2 不能写成全面最佳置信度；TS0/bpRNA-new 与其他 eligible 基线继续排队。
+
+
+## §15.412（2026-11-05）TS0 双基线概率比较完成
+
+- **BPfold**：原生 clean n=713/1178，共同 n=703、3,686,190 个候选配对。xens2 calibrated ECE=0.0006095697、Brier=0.0028072205、NLL=0.0131423427；BPfold raw/post ECE=0.4914361441/0.0032095470。xens2 calibrated Spearman=0.7349854543、AURC=0.1017711394，BPfold CI=0.5875088908/0.1620792758。结果 SHA256=`80bc79e91e690cf0bca8c8f1fea37548e457f08fe68f7fdafa98de174e621b53`。
+- **SPOT**：原生 clean n=713/152，共同 n=152、997,301 个候选配对。xens2 calibrated ECE=0.0008865089、Brier=0.0018962461、NLL=0.0091357871；SPOT=0.0029680107/0.0029680107/0.0799519137。xens2 calibrated Spearman=0.7309488975、AURC=0.0246299537，SPOT=0.6830944637/0.2336232174。xens2 两项结构指标均更好。结果 SHA256=`49d6d043d7c022e699cc67f253a8513c9e140d274898cf18f379b7f0b4f5723c`。
+- **结论**：TS0 的校准与结构排序证据支持 xens2，但不外推到 TS2/TS3 等负格。BPfold `_post` 继续只作诊断，matched-clean 只作附加敏感性。
+- **后续**：xens2 与 BPfold 的 bpRNA-new 尚未完成，完成两套独立验收后自适应测速才允许启动；RNAformer 概率队列在其后接续。
