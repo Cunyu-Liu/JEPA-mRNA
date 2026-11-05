@@ -1414,6 +1414,13 @@
    "bytes": 7294,
    "description": "TestSetB xens2/RNAformer-intrafam 概率与结构置信度交集，n=288",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_spot_calibration_summary.json",
+   "sha256": "effb91018ac3ddc2c49f508fe46fd82c6ab94a470cbec7031d77c4a7a09a0c5e",
+   "bytes": 5166,
+   "description": "BPfold/SPOT 比较汇总 16 单元，包含一个 EMPTY；不覆盖其他 eligible 基线",
+   "status": "active_complete_bpfold_spot_comparisons"
   }
  ]
 }

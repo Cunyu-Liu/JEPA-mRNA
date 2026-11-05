@@ -43,7 +43,7 @@ for split in ["bprna_ts0","bprna_new","ref_pdb_ts1","ref_pdb_ts2","ref_pdb_ts3",
   x=json.loads(p.read_text())
   assert x["status"]=="PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD"
   cells.append({"split":split,"baseline":system,"status":x["status"],"matched_n":x["matched_n"],
-                "xens2_clean_n":x["xens2_clean_n"],"baseline_clean_n":x["baseline_clean_n"],
+                "xens2_clean_n":x["xens2_clean_n"],"baseline_clean_n":x.get("baseline_clean_n",x["bpfold_clean_n"]),
                 "result_sha256":hashlib.sha256(p.read_bytes()).hexdigest()})
 out=root/"calibration_comparisons/summary.json"
 payload={"schema_version":1,"status":"PASS_BPFOLD_SPOTRNA_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE",

@@ -12662,3 +12662,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TS-hard**：原生 clean n=10/19，共同 n=8。xens2 calibrated ECE=0.0227386561、Spearman=0.6904761905、AURC=0.1421414712；RNAformer raw ECE=0.0128039447、Spearman=0.8383383833、AURC=0.0791469435。结果 SHA256=`930dcb4764cc4dd7e3b5ac86d2a8edba75e738cca15f7ecb1bdea90c4dddbfed`。
 - **TestSetB**：原生 clean n=288/419，共同 n=288。xens2 calibrated ECE=0.0021597920、Spearman=0.6862948022、AURC=0.0815347264；RNAformer raw ECE=0.0058129588、Spearman=0.7505724306、AURC=0.1869490182。结果 SHA256=`151ddb43f46988d3cf8589d737caee147a14207b5d170fd44c6cdcf4a0b02e4e`。
 - **结论**：intra-family 原生 ECE 在 TS1/TS2/TS-hard 更低，xens2 在 TestSetB 的 ECE 更低；但四个 split 的 AURC 均为 RNAformer 更低，xens2 不具备全面最佳置信度。TS3 clean 为空，不生成概率指标。ArchiveII 和 TS0/bpRNA-new 继续后台队列，独立验收后才汇总。
+
+
+## §15.420（2026-11-06）BPfold/SPOT 比较汇总闭环与旧 schema 兼容
+
+- **问题**：BPfold/SPOT 的所有 split 比较已经完成，但汇总脚本因早期 JSON 只有 `bpfold_clean_n`、没有后期新增的 `baseline_clean_n` 而报 `KeyError`，导致缺少总账；不是实验或 GPU 故障。
+- **修复**：汇总读取优先 `baseline_clean_n`，旧记录回退 `bpfold_clean_n`，保留原始文件不重跑。现生成 16 个单元：8 个 BPfold split、7 个 SPOT 非空 split、1 个 `EMPTY_AFTER_DELEAK`。
+- **汇总**：状态 `PASS_BPFOLD_SPOTRNA_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE`，SHA256=`effb91018ac3ddc2c49f508fe46fd82c6ab94a470cbec7031d77c4a7a09a0c5e`。只表示这两类基线的比较闭环，其他 eligible 概率基线仍待完成，matched-clean 继续只作附加敏感性。
+- **后续**：RNAformer intra-family 的 ArchiveII 日志没有异常栈，首轮长序列推理仍在运行；inter-family、biophysical 与 RiNALMo-ft 按原队列等待。
