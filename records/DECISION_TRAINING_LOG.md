@@ -12548,3 +12548,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **测试**：2 项逻辑测试通过，覆盖计划边界、非法计划和批处理后的原始顺序恢复。模拟测试只验证逻辑，不是 GPU 性能或科学结论。
 - **队列**：`run_xens2_adaptive_speed_round39.sh` 已常驻，等待 xens2 与 BPfold 两套 clean 校准独立验收后，再等待 GPU 无其他进程。外部干扰仅停止自身、保存带时间戳日志并重试；真实 OOM 或等价门失败停止，不通过降低精度、截断或缓存 embedding 换速度。
 - **边界**：候选尚无真实吞吐结果，不写速度提升或 SOTA。其运行不影响正在进行的 clean 校准和生产代码身份。
+
+
+## §15.407（2026-11-05）SPOT-RNA 既有 clean 概率资产复用与 TS1 比较
+
+- **避免重复 GPU**：SPOT-RNA 的 clean 三次原生概率矩阵已由 `benchmark_multimolecule_round39.py` 完整保存，并通过既有独立聚合。新增 CPU 转换器复用 `use_postprocess=True` 的 contact map，统一为严格有效配对 offsets、labels 和概率数组，不将转换写成新的 GPU 实验。
+- **原生非 canonical 置信度**：统一 ECE 使用 canonical valid-pair mask；SPOT 官方预测可包含非 canonical/短环配对，原生结构置信度直接从完整 contact map 对全部官方预测配对取均值，不能因 mask 丢弃这些预测。空 clean split 保持 EMPTY，不写 ECE=0。
+- **TS1 独立复核**：SPOT clean n=10，三次 F1=0.7759336099585062，ECE=0.0035304501、Spearman=0.8125186030、AURC=0.1548574876。转换结果 SHA256=`c0af568ea0c4fa0a05353681a6293f2f9fda7effa467c4f098ad71cb48e3a48f`，NPZ SHA256=`4a38bc62dc3379430057af3bdce16f7b8176bc0adf26e3c6b37df5f19a99a27e`。
+- **TS1 xens2 交集**：共同 n=10、13,596 个候选配对，原生 clean n=18/10。xens2 calibrated ECE=0.0029157673、Brier=0.0051083814、NLL=0.0272062087，低于 SPOT ECE=0.0035304501；xens2 calibrated Spearman=0.7696969697、AURC=0.0890369049，SPOT 为 0.8125186030/0.1548574876。ECE 与 AURC 较优，但 Spearman 并非最高，不写全面最佳置信度。比较 SHA256=`adbc19fc6d546ff0b1cd9395b1a52ff7ec815ae4b27de50512b57f2a161ccc23`。
+- **队列**：其余 SPOT split 正由独立 CPU 队列转换和复核；BPfold/xens2 大 split 与自适应速度候选仍按原顺序等待。所有 eligible 概率基线未齐，不写最低 ECE 总结。

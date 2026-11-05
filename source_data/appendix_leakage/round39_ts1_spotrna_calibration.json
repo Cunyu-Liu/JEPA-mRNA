@@ -1,0 +1,1200 @@
+{
+  "schema_version": 1,
+  "status": "PASS_NATIVE_PROBABILITY_EVALUATION",
+  "system": "spotrna",
+  "distribution": "MultiMolecule converted checkpoint; not an original-author file",
+  "data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/spotrna_tr0_tr1/splits/ref_pdb_ts1.jsonl",
+  "data_sha256": "6f0d8bce30de73483fc2b3f6c950ae2dc4d3d9f2cdd47dfa6ee0724f5dd240f9",
+  "n_sequences": 10,
+  "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/spotrna_tr0_tr1/audits/ref_pdb_ts1.audit.json",
+  "protocol": {
+    "device_type": "cuda",
+    "cached_embeddings": false,
+    "repeats": 3,
+    "scope": "existing verified raw-sequence official MultiMolecule use_postprocess=True contact_map; CPU conversion only",
+    "candidate_pairs": "strict upper valid_pair_mask",
+    "n_bins": 10,
+    "structure_confidence": "mean native contact-map probability of all official threshold-selected pairs, including noncanonical pairs excluded from the common ECE mask; zero if none"
+  },
+  "weights": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/multimolecule/spotrna",
+  "weights_sha256": "b7056fcad23a00d5bbaa21f91b54da779e87fa5e2185fb3ccc19c5440cadf0c5",
+  "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/clean_tr0_tr1/ref_pdb_ts1.json",
+  "source_result_sha256": "4908140f03d5f9ba0f9a49ed0d14394897cb2de54d8ae5b1cf2ed8ccc6295e16",
+  "source_probabilities": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/clean_tr0_tr1/ref_pdb_ts1.probabilities.npz",
+  "source_probabilities_sha256": "6b4e88d19a9bddb97547a86036acddd1383d54f47631c17a7c9ea56fe01cad75",
+  "f1_runs": [
+    0.7759336099585062,
+    0.7759336099585062,
+    0.7759336099585062
+  ],
+  "calibration": {
+    "n": 13596,
+    "ece": 0.0035304501313918844,
+    "brier": 0.0035304501323848193,
+    "nll": 0.09510283605878173
+  },
+  "confidence": {
+    "spearman_confidence_vs_structure_f1": 0.8125186029787134,
+    "aurc_macro": 0.1548574875787546,
+    "risk_coverage": [
+      {
+        "coverage": 0.1,
+        "selective_macro_risk": 0.1282051282051282,
+        "n": 1
+      },
+      {
+        "coverage": 0.2,
+        "selective_macro_risk": 0.09137529137529143,
+        "n": 2
+      },
+      {
+        "coverage": 0.4,
+        "selective_macro_risk": 0.13767898767898767,
+        "n": 4
+      },
+      {
+        "coverage": 0.4,
+        "selective_macro_risk": 0.13767898767898767,
+        "n": 4
+      },
+      {
+        "coverage": 0.5,
+        "selective_macro_risk": 0.13871461871461876,
+        "n": 5
+      },
+      {
+        "coverage": 0.6,
+        "selective_macro_risk": 0.138802266650368,
+        "n": 6
+      },
+      {
+        "coverage": 0.8,
+        "selective_macro_risk": 0.17980502479596006,
+        "n": 8
+      },
+      {
+        "coverage": 0.8,
+        "selective_macro_risk": 0.17980502479596006,
+        "n": 8
+      },
+      {
+        "coverage": 0.9,
+        "selective_macro_risk": 0.21167854055937196,
+        "n": 9
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.2552165688563759,
+        "n": 10
+      }
+    ]
+  },
+  "per_sequence": [
+    {
+      "name": "pdb_ts1#632976",
+      "structure_f1": 0.8717948717948718,
+      "mean_selected_pair_probability": 1.0,
+      "pred_pairs": [
+        [
+          24,
+          27
+        ],
+        [
+          23,
+          28
+        ],
+        [
+          22,
+          29
+        ],
+        [
+          21,
+          30
+        ],
+        [
+          20,
+          31
+        ],
+        [
+          19,
+          32
+        ],
+        [
+          7,
+          37
+        ],
+        [
+          6,
+          38
+        ],
+        [
+          5,
+          39
+        ],
+        [
+          4,
+          40
+        ],
+        [
+          3,
+          41
+        ],
+        [
+          2,
+          42
+        ],
+        [
+          1,
+          43
+        ],
+        [
+          0,
+          44
+        ],
+        [
+          50,
+          58
+        ],
+        [
+          49,
+          59
+        ],
+        [
+          48,
+          60
+        ],
+        [
+          47,
+          61
+        ],
+        [
+          46,
+          62
+        ],
+        [
+          45,
+          63
+        ]
+      ],
+      "n_predicted_pairs": 20,
+      "n_gt_pairs": 19
+    },
+    {
+      "name": "pdb_ts1#632977",
+      "structure_f1": 0.5333333333333333,
+      "mean_selected_pair_probability": 0.5,
+      "pred_pairs": [
+        [
+          12,
+          13
+        ],
+        [
+          18,
+          22
+        ],
+        [
+          14,
+          23
+        ],
+        [
+          11,
+          24
+        ],
+        [
+          10,
+          25
+        ],
+        [
+          31,
+          39
+        ],
+        [
+          30,
+          40
+        ],
+        [
+          29,
+          41
+        ],
+        [
+          28,
+          42
+        ],
+        [
+          27,
+          43
+        ],
+        [
+          26,
+          44
+        ],
+        [
+          9,
+          48
+        ],
+        [
+          54,
+          56
+        ],
+        [
+          53,
+          58
+        ],
+        [
+          52,
+          61
+        ],
+        [
+          51,
+          62
+        ],
+        [
+          50,
+          63
+        ],
+        [
+          49,
+          64
+        ],
+        [
+          7,
+          65
+        ],
+        [
+          6,
+          66
+        ],
+        [
+          5,
+          67
+        ],
+        [
+          4,
+          68
+        ],
+        [
+          3,
+          69
+        ],
+        [
+          2,
+          70
+        ],
+        [
+          1,
+          71
+        ],
+        [
+          0,
+          72
+        ]
+      ],
+      "n_predicted_pairs": 26,
+      "n_gt_pairs": 19
+    },
+    {
+      "name": "pdb_ts1#632980",
+      "structure_f1": 0.35294117647058826,
+      "mean_selected_pair_probability": 0.3333333432674408,
+      "pred_pairs": [
+        [
+          14,
+          22
+        ],
+        [
+          13,
+          23
+        ],
+        [
+          27,
+          28
+        ],
+        [
+          26,
+          29
+        ],
+        [
+          11,
+          32
+        ],
+        [
+          10,
+          33
+        ],
+        [
+          2,
+          36
+        ],
+        [
+          1,
+          37
+        ],
+        [
+          0,
+          38
+        ]
+      ],
+      "n_predicted_pairs": 9,
+      "n_gt_pairs": 8
+    },
+    {
+      "name": "pdb_ts1#632982",
+      "structure_f1": 0.782608695652174,
+      "mean_selected_pair_probability": 0.7599999904632568,
+      "pred_pairs": [
+        [
+          12,
+          19
+        ],
+        [
+          11,
+          20
+        ],
+        [
+          10,
+          21
+        ],
+        [
+          9,
+          22
+        ],
+        [
+          8,
+          23
+        ],
+        [
+          7,
+          24
+        ],
+        [
+          30,
+          38
+        ],
+        [
+          29,
+          39
+        ],
+        [
+          28,
+          40
+        ],
+        [
+          27,
+          41
+        ],
+        [
+          26,
+          42
+        ],
+        [
+          25,
+          43
+        ],
+        [
+          53,
+          57
+        ],
+        [
+          52,
+          60
+        ],
+        [
+          51,
+          61
+        ],
+        [
+          50,
+          62
+        ],
+        [
+          49,
+          63
+        ],
+        [
+          48,
+          64
+        ],
+        [
+          6,
+          65
+        ],
+        [
+          5,
+          66
+        ],
+        [
+          4,
+          67
+        ],
+        [
+          3,
+          68
+        ],
+        [
+          2,
+          69
+        ],
+        [
+          1,
+          70
+        ],
+        [
+          0,
+          71
+        ]
+      ],
+      "n_predicted_pairs": 25,
+      "n_gt_pairs": 21
+    },
+    {
+      "name": "pdb_ts1#632994",
+      "structure_f1": 0.9454545454545454,
+      "mean_selected_pair_probability": 1.0,
+      "pred_pairs": [
+        [
+          13,
+          21
+        ],
+        [
+          12,
+          22
+        ],
+        [
+          11,
+          23
+        ],
+        [
+          10,
+          24
+        ],
+        [
+          9,
+          25
+        ],
+        [
+          32,
+          36
+        ],
+        [
+          31,
+          37
+        ],
+        [
+          30,
+          38
+        ],
+        [
+          29,
+          39
+        ],
+        [
+          28,
+          40
+        ],
+        [
+          27,
+          41
+        ],
+        [
+          26,
+          42
+        ],
+        [
+          46,
+          51
+        ],
+        [
+          45,
+          52
+        ],
+        [
+          44,
+          53
+        ],
+        [
+          43,
+          54
+        ],
+        [
+          62,
+          66
+        ],
+        [
+          61,
+          69
+        ],
+        [
+          60,
+          70
+        ],
+        [
+          59,
+          71
+        ],
+        [
+          58,
+          72
+        ],
+        [
+          57,
+          73
+        ],
+        [
+          6,
+          74
+        ],
+        [
+          5,
+          75
+        ],
+        [
+          4,
+          76
+        ],
+        [
+          3,
+          77
+        ],
+        [
+          2,
+          78
+        ],
+        [
+          1,
+          79
+        ],
+        [
+          0,
+          80
+        ]
+      ],
+      "n_predicted_pairs": 29,
+      "n_gt_pairs": 26
+    },
+    {
+      "name": "pdb_ts1#633006",
+      "structure_f1": 0.611764705882353,
+      "mean_selected_pair_probability": 0.7631579041481018,
+      "pred_pairs": [
+        [
+          8,
+          14
+        ],
+        [
+          7,
+          15
+        ],
+        [
+          6,
+          16
+        ],
+        [
+          5,
+          17
+        ],
+        [
+          4,
+          18
+        ],
+        [
+          23,
+          28
+        ],
+        [
+          22,
+          29
+        ],
+        [
+          21,
+          30
+        ],
+        [
+          20,
+          31
+        ],
+        [
+          74,
+          76
+        ],
+        [
+          73,
+          77
+        ],
+        [
+          72,
+          82
+        ],
+        [
+          71,
+          83
+        ],
+        [
+          67,
+          84
+        ],
+        [
+          101,
+          109
+        ],
+        [
+          100,
+          110
+        ],
+        [
+          99,
+          111
+        ],
+        [
+          125,
+          128
+        ],
+        [
+          124,
+          129
+        ],
+        [
+          123,
+          130
+        ],
+        [
+          122,
+          131
+        ],
+        [
+          121,
+          132
+        ],
+        [
+          120,
+          133
+        ],
+        [
+          119,
+          134
+        ],
+        [
+          118,
+          135
+        ],
+        [
+          66,
+          136
+        ],
+        [
+          60,
+          137
+        ],
+        [
+          59,
+          138
+        ],
+        [
+          58,
+          139
+        ],
+        [
+          43,
+          142
+        ],
+        [
+          42,
+          143
+        ],
+        [
+          41,
+          144
+        ],
+        [
+          40,
+          147
+        ],
+        [
+          39,
+          148
+        ],
+        [
+          3,
+          151
+        ],
+        [
+          2,
+          152
+        ],
+        [
+          1,
+          153
+        ],
+        [
+          0,
+          154
+        ]
+      ],
+      "n_predicted_pairs": 38,
+      "n_gt_pairs": 47
+    },
+    {
+      "name": "pdb_ts1#633007",
+      "structure_f1": 0.9047619047619048,
+      "mean_selected_pair_probability": 1.0,
+      "pred_pairs": [
+        [
+          33,
+          47
+        ],
+        [
+          32,
+          48
+        ],
+        [
+          31,
+          49
+        ],
+        [
+          30,
+          50
+        ],
+        [
+          29,
+          53
+        ],
+        [
+          28,
+          54
+        ],
+        [
+          27,
+          55
+        ],
+        [
+          26,
+          56
+        ],
+        [
+          23,
+          58
+        ],
+        [
+          22,
+          59
+        ],
+        [
+          21,
+          60
+        ],
+        [
+          20,
+          61
+        ],
+        [
+          19,
+          62
+        ],
+        [
+          18,
+          63
+        ],
+        [
+          17,
+          64
+        ],
+        [
+          16,
+          66
+        ],
+        [
+          15,
+          67
+        ],
+        [
+          85,
+          89
+        ],
+        [
+          84,
+          90
+        ],
+        [
+          83,
+          91
+        ],
+        [
+          82,
+          92
+        ],
+        [
+          81,
+          93
+        ],
+        [
+          80,
+          94
+        ],
+        [
+          79,
+          95
+        ],
+        [
+          78,
+          96
+        ],
+        [
+          77,
+          97
+        ],
+        [
+          76,
+          98
+        ],
+        [
+          75,
+          99
+        ],
+        [
+          74,
+          100
+        ],
+        [
+          73,
+          101
+        ],
+        [
+          72,
+          102
+        ],
+        [
+          71,
+          103
+        ],
+        [
+          70,
+          104
+        ],
+        [
+          69,
+          105
+        ],
+        [
+          68,
+          106
+        ],
+        [
+          9,
+          109
+        ],
+        [
+          8,
+          110
+        ],
+        [
+          7,
+          111
+        ],
+        [
+          6,
+          112
+        ],
+        [
+          5,
+          113
+        ],
+        [
+          4,
+          114
+        ],
+        [
+          3,
+          115
+        ],
+        [
+          2,
+          116
+        ],
+        [
+          1,
+          117
+        ],
+        [
+          0,
+          118
+        ]
+      ],
+      "n_predicted_pairs": 45,
+      "n_gt_pairs": 39
+    },
+    {
+      "name": "pdb_ts1#633009",
+      "structure_f1": 0.7272727272727273,
+      "mean_selected_pair_probability": 1.0,
+      "pred_pairs": [
+        [
+          17,
+          22
+        ],
+        [
+          16,
+          23
+        ],
+        [
+          14,
+          24
+        ],
+        [
+          13,
+          25
+        ],
+        [
+          12,
+          26
+        ],
+        [
+          11,
+          27
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 5
+    },
+    {
+      "name": "pdb_ts1#633019",
+      "structure_f1": 0.8571428571428571,
+      "mean_selected_pair_probability": 1.0,
+      "pred_pairs": [
+        [
+          11,
+          14
+        ],
+        [
+          10,
+          15
+        ],
+        [
+          9,
+          16
+        ],
+        [
+          8,
+          17
+        ],
+        [
+          7,
+          18
+        ],
+        [
+          6,
+          19
+        ],
+        [
+          5,
+          20
+        ],
+        [
+          4,
+          21
+        ],
+        [
+          1,
+          26
+        ],
+        [
+          0,
+          27
+        ]
+      ],
+      "n_predicted_pairs": 10,
+      "n_gt_pairs": 11
+    },
+    {
+      "name": "pdb_ts1#633021",
+      "structure_f1": 0.8607594936708861,
+      "mean_selected_pair_probability": 1.0,
+      "pred_pairs": [
+        [
+          34,
+          48
+        ],
+        [
+          33,
+          49
+        ],
+        [
+          32,
+          50
+        ],
+        [
+          31,
+          51
+        ],
+        [
+          30,
+          54
+        ],
+        [
+          29,
+          55
+        ],
+        [
+          28,
+          56
+        ],
+        [
+          27,
+          57
+        ],
+        [
+          24,
+          59
+        ],
+        [
+          23,
+          60
+        ],
+        [
+          22,
+          61
+        ],
+        [
+          21,
+          62
+        ],
+        [
+          20,
+          63
+        ],
+        [
+          19,
+          64
+        ],
+        [
+          18,
+          65
+        ],
+        [
+          17,
+          67
+        ],
+        [
+          16,
+          68
+        ],
+        [
+          87,
+          90
+        ],
+        [
+          86,
+          91
+        ],
+        [
+          85,
+          92
+        ],
+        [
+          84,
+          93
+        ],
+        [
+          83,
+          94
+        ],
+        [
+          82,
+          95
+        ],
+        [
+          75,
+          102
+        ],
+        [
+          74,
+          103
+        ],
+        [
+          73,
+          104
+        ],
+        [
+          72,
+          105
+        ],
+        [
+          71,
+          106
+        ],
+        [
+          70,
+          107
+        ],
+        [
+          69,
+          108
+        ],
+        [
+          10,
+          111
+        ],
+        [
+          9,
+          112
+        ],
+        [
+          8,
+          113
+        ],
+        [
+          7,
+          114
+        ],
+        [
+          6,
+          115
+        ],
+        [
+          5,
+          116
+        ],
+        [
+          4,
+          117
+        ],
+        [
+          3,
+          118
+        ],
+        [
+          2,
+          119
+        ],
+        [
+          1,
+          120
+        ],
+        [
+          0,
+          121
+        ]
+      ],
+      "n_predicted_pairs": 41,
+      "n_gt_pairs": 38
+    }
+  ],
+  "independent_audit": {
+    "n": 10,
+    "tp": 187,
+    "fp": 62,
+    "fn": 46,
+    "strict_micro_f1": {
+      "values": [
+        0.7759336099585062,
+        0.7759336099585062,
+        0.7759336099585062
+      ],
+      "mean": 0.7759336099585062,
+      "sd": 0.0
+    },
+    "result_sha256": "4908140f03d5f9ba0f9a49ed0d14394897cb2de54d8ae5b1cf2ed8ccc6295e16",
+    "probabilities_sha256": "6b4e88d19a9bddb97547a86036acddd1383d54f47631c17a7c9ea56fe01cad75"
+  },
+  "code_sha256": "d7ae0bff065b60f1e353b6770978e8b7c2bd15077b0e15aa32537838d77dafa1",
+  "pair_arrays": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/ref_pdb_ts1.npz",
+  "pair_arrays_sha256": "4a38bc62dc3379430057af3bdce16f7b8176bc0adf26e3c6b37df5f19a99a27e"
+}

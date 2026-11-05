@@ -1218,6 +1218,20 @@
    "bytes": 6821,
    "description": "TestSetB clean n=288/79、交集 n=59；xens2 校准 ECE=0.0019682804，Spearman/AURC 优于 BPfold CI",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_spotrna_calibration.json",
+   "sha256": "c0af568ea0c4fa0a05353681a6293f2f9fda7effa467c4f098ad71cb48e3a48f",
+   "bytes": 18261,
+   "description": "SPOT-RNA TS1 既有三次 clean 原生概率转换与独立复核；非 canonical 原生置信度保留",
+   "status": "active_native_probability_evaluation"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_xens2_spotrna_calibration.json",
+   "sha256": "adbc19fc6d546ff0b1cd9395b1a52ff7ec815ae4b27de50512b57f2a161ccc23",
+   "bytes": 6553,
+   "description": "TS1 xens2/SPOT-RNA clean n=18/10、交集 n=10；ECE 与结构排序指标分列",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
