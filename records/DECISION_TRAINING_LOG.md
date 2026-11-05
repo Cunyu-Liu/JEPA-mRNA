@@ -12645,3 +12645,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **ArchiveII**：共同 n=1087，原生 clean n=1107/2267。xens2 calibrated ECE=0.0009986423、Brier=0.0022248452、NLL=0.0112990287，RNAformer raw ECE=0.0029301462、Brier=0.0018506168、NLL=0.0108653248。xens2 calibrated Spearman=0.7175607517、AURC=0.1202645505，RNAformer=0.5716262525/0.1714758343。结果 SHA256=`c96d98f497120be20c3f34380db8c6c7922d30c097925c6e4168613a67d4b420`。
 - **空交集**：TS3 xens2 clean n=4、RNAformer-bprna clean n=2，共同 n=0，状态 `EMPTY_MATCHED_CALIBRATION_INTERSECTION`，不计算 F1、ECE 或置信度，结果 SHA256=`7f549a584ef17725598b1cd1f6a55446dac6b6e08062c49cb34400c4c99f06f4`。
 - **结论**：RNAformer 原生概率在若干 split 的 ECE 更低，xens2 的结构排序更强，不能写全板最低 ECE 或最佳置信度。bpRNA-new 和后续三变体继续后台运行，未齐套前不汇总为最终全基线结论。
+
+
+## §15.418（2026-11-06）RNAformer-bprna 全板验收与 bpRNA-new 定界
+
+- **全板验收**：RNAformer-bprna 八 split 原生概率、GT、F1 和结构置信度独立复核完成，汇总 SHA256=`31b725b924e1608565135902f1321869d92d7cdcc9ac4638cfc9721ca3d43a40`。bpRNA-new clean n=5386，三次 F1=0.4935027488370305，与既有主榜一致。
+- **bpRNA-new 比较**：共同 n=5386、15,343,073 个候选配对。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；RNAformer raw ECE=0.0018442078、Brier=0.0065276438、NLL=0.0342053039。RNAformer 的 ECE 和 Brier 更低，NLL 接近。结果 SHA256=`45537abd651bc5662b7e3a2c6b9abcef4c9e934a40ee2552c228170457458955`。
+- **结构置信度**：xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，RNAformer=0.4778740657/0.4400606599，xens2 的结构排序更好。低 ECE 不等于最佳结构排序，两个叙事必须分开呈现。
+- **后续**：bprna 全板已完成，intra-family、inter-family、biophysical 继续后台队列；后续比较只在各变体独立验收后执行。当前不能写 xens2 全板最低 ECE 或最佳置信度，8/8 与速度 SOTA 仍未达成。
