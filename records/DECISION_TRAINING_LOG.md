@@ -12531,3 +12531,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TS1 交集敏感性**：共同 n=13，原生 clean n=18/42。xens2 raw ECE=0.0380801117、calibrated ECE=0.0051649751；BPfold raw sigmoid ECE=0.4730557632，post 诊断 ECE=0.0046048225。xens2 calibrated Spearman=0.6538461538、AURC=0.0987316568，BPfold CI 为 0.3259718259/0.1225194785。结果 SHA256=`49ed320b5c64624434296bd198670497928b4aebfce042bfb7f73530bfa3a2fe`。
 - **TS2 小样本边界**：共同 n=1，原生 clean n=29/3。xens2 raw/calibrated ECE=0.0430138598/0.0288706420；BPfold raw/post=0.4471364886/~0。只有一条不能计算 Spearman，不能用该格证明置信度优势。结果 SHA256=`e603e0090dd0316f90e2362d5df303e0144eb23b88fc7dc96eb3d0a5ae61e000`。
 - **后处理边界**：BPfold `_post.npy` 经结构约束/后处理，可能退化为 0/1，近零 ECE 只是诊断，不能作为独立边际概率优于 xens2 的证据。原生 own-clean 主榜与 matched-clean 交集敏感性继续分列；其他 split 和 eligible 概率基线继续队列，不宣称最低 ECE。
+
+
+## §15.405（2026-11-05）TS3/TS-hard/TestSetB 校准分化证据
+
+- **TS3**：原生 clean n=4/17，共同 n=4。xens2 raw/calibrated ECE=0.0585838516/0.0082137013，BPfold raw sigmoid/post=0.4689300675/0.0068591026。xens2 calibrated Spearman=-0.8、AURC=0.1718395800，BPfold CI=0.6/0.1377217554；xens2 结构置信度排序在该小样本格明显更差。结果 SHA256=`464eccc2f19ffe78cc5ee4fa4c229170ff78703543e508c4ecdce4f27db2984d`。
+- **TS-hard**：原生 clean n=10/24，共同 n=9。xens2 raw/calibrated ECE=0.0369685838/0.0188273844，BPfold raw/post=0.4721926288/0.0132343447。xens2 calibrated Spearman=0.4874121680、AURC=0.1695230819，BPfold CI=0.1305582420/0.2008068104；xens2 排序更好，但校准 ECE 未优于 post 诊断值。结果 SHA256=`f6e4e880ccc99d955f2ab6a22fc8cda912bcb780d367df3190e16d83070d84f8`。
+- **TestSetB**：原生 clean n=288/79，共同 n=59、201683 个严格有效候选配对。xens2 raw/calibrated ECE=0.0309937541/0.0019682804，Brier=0.0032738386、NLL=0.0153324497；BPfold raw/post ECE=0.4884683028/0.0035253343。xens2 calibrated Spearman=0.8067293672、AURC=0.0889156665，优于 BPfold CI 的 0.6889476773/0.1462427946。结果 SHA256=`1e00df2019fedcd1a49493491645bdb4e6c63a3df1a29c3809d84926fad0cdfc`。
+- **结论**：校准降低 ECE 的作用在多个 split 可复现，但结构排序并不总改善，TS3 还出现负相关。post 是约束后处理诊断，不与独立边际概率混为一谈。五格已验收，ArchiveII、TS0、bpRNA-new 和其他 eligible 概率基线未完成，不能写全板最低 ECE 或最佳置信度。

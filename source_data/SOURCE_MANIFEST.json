@@ -1197,6 +1197,27 @@
    "bytes": 6317,
    "description": "TS2 xens2/BPfold clean 独立复算与 n=1 同 GT 概率交集；不计算 Spearman，后处理仅作诊断",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts3_xens2_bpfold_calibration.json",
+   "sha256": "464eccc2f19ffe78cc5ee4fa4c229170ff78703543e508c4ecdce4f27db2984d",
+   "bytes": 6362,
+   "description": "TS3 clean n=4/17、交集 n=4；xens2 置信度 Spearman=-0.8，BPfold CI 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tshard_xens2_bpfold_calibration.json",
+   "sha256": "f6e4e880ccc99d955f2ab6a22fc8cda912bcb780d367df3190e16d83070d84f8",
+   "bytes": 6735,
+   "description": "TS-hard clean n=10/24、交集 n=9；xens2 排序较优，post 仅作诊断",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tsb_xens2_bpfold_calibration.json",
+   "sha256": "1e00df2019fedcd1a49493491645bdb4e6c63a3df1a29c3809d84926fad0cdfc",
+   "bytes": 6821,
+   "description": "TestSetB clean n=288/79、交集 n=59；xens2 校准 ECE=0.0019682804，Spearman/AURC 优于 BPfold CI",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
