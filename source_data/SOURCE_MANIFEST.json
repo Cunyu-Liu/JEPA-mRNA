@@ -1288,6 +1288,20 @@
    "bytes": 7118,
    "description": "TS0 clean n=713/152、交集 n=152；xens2 校准与结构排序优于 SPOT",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_calibration_verification.json",
+   "sha256": "42ceb53cd02b5b155a49284318d9e8b061f87e3611442e8831bd7dafa40e6a08",
+   "bytes": 5798,
+   "description": "xens2 完整 VL0 与八 clean split 概率数组独立验收；全指标复算与首尾 DP 抽查",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_spotrna_calibration.json",
+   "sha256": "2f8f97a2b4424621c72e4834c28de3bc68386075c27599e1db4ffcb4e28034bc",
+   "bytes": 7143,
+   "description": "bpRNA-new 双方 clean n=5386；xens2 ECE 略低，SPOT Brier/Spearman/AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

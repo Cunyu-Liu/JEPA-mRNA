@@ -12600,3 +12600,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **SPOT**：原生 clean n=713/152，共同 n=152、997,301 个候选配对。xens2 calibrated ECE=0.0008865089、Brier=0.0018962461、NLL=0.0091357871；SPOT=0.0029680107/0.0029680107/0.0799519137。xens2 calibrated Spearman=0.7309488975、AURC=0.0246299537，SPOT=0.6830944637/0.2336232174。xens2 两项结构指标均更好。结果 SHA256=`49d6d043d7c022e699cc67f253a8513c9e140d274898cf18f379b7f0b4f5723c`。
 - **结论**：TS0 的校准与结构排序证据支持 xens2，但不外推到 TS2/TS3 等负格。BPfold `_post` 继续只作诊断，matched-clean 只作附加敏感性。
 - **后续**：xens2 与 BPfold 的 bpRNA-new 尚未完成，完成两套独立验收后自适应测速才允许启动；RNAformer 概率队列在其后接续。
+
+
+## §15.413（2026-11-05）xens2 八 split 独立验收与 bpRNA-new SPOT 比较
+
+- **xens2 验收**：完整 VL0 与八个 clean split 的概率数组、候选标签、F1、ECE/Brier/NLL、结构置信度及 risk–coverage 全部通过独立复核；首尾 DP 抽查与全部指标复算并列记录，不写成全量 DP 重跑。汇总 SHA256=`42ceb53cd02b5b155a49284318d9e8b061f87e3611442e8831bd7dafa40e6a08`。
+- **bpRNA-new 三次结果**：xens2 clean n=5386，三次 F1 均为 0.5531599341608943，概率 SHA256=`3d660548a5163d642b8d5eee1144aee56f9863a9aae2ecd2cc4da044affa2150`。最终 NPZ 约 168MB，已完成原子落盘与独立复算。
+- **SPOT 交集**：共同 n=5386、15,343,073 个候选配对，双方 clean n 均为 5386。xens2 calibrated ECE=0.0048310272，略低于 SPOT=0.0050347802；但 Brier=0.0072889935 高于 SPOT=0.0050347802，NLL=0.0338954187 低于 SPOT=0.1356262975。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，SPOT=0.7428125157/0.3102083913，SPOT 结构排序明显更好。结果 SHA256=`2f8f97a2b4424621c72e4834c28de3bc68386075c27599e1db4ffcb4e28034bc`。
+- **结论**：bpRNA-new 的校准与结构排序短板与主榜未领先一致。即使 ECE 略低，也不能称最佳置信度或全板最低 ECE；后续须从模型与数据机制改进，而不是只调整展示口径。
+- **后续**：BPfold 的 bpRNA-new 尚未完成，完成其独立验收后才放行自适应测速；RNAformer 概率队列随后接续。
