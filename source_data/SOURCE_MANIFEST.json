@@ -1323,6 +1323,13 @@
    "bytes": 7533,
    "description": "bpRNA-new clean n=5386/5387、交集 n=5386；BPfold CI 的 Spearman/AURC 更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_adaptive_full_ts0.json",
+   "sha256": "659e03b7069133b48df1188656c7306686fee9639115a8af08176a997c535d22",
+   "bytes": 1723299,
+   "description": "xens2 自适应 B=64/32/16 全 TS0 三次独占测速；配对一致率 1.0，提升 1.045×，不是速度 SOTA",
+   "status": "active_exclusive_speed_not_sota"
   }
  ]
 }
