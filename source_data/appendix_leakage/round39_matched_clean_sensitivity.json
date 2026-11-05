@@ -12,16 +12,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -139,6 +138,25 @@
               "clean_sha256": "eb8bbc61e0ab86086486b891f6142b70532bb00c0b3b06e531e3a02820be0c69",
               "audit_sha256": "ab4562f815ef0e659ecfda90511a987d712612b2a4a295f51f03be2ee7185e32",
               "native_n": 1256,
+              "n_truncated": 0
+            },
+            "rnaformer_biophysical": {
+              "n": 69,
+              "tp": 1347,
+              "fp": 1781,
+              "fn": 924,
+              "f1": 0.49898129283200593,
+              "f1_values": [
+                0.49898129283200593,
+                0.49898129283200593,
+                0.49898129283200593
+              ],
+              "f1_mean": 0.49898129283200593,
+              "f1_sd": 0.0,
+              "result_sha256": "0cfb212511e1a3faa541b1021056f0a8b98f341bbcd6c800bd144806f5a83bd0",
+              "clean_sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+              "audit_sha256": "d5ee498a8bbc607859ae695aff9ca7d0f61ba8a10454089f0330e8931f1d5b5c",
+              "native_n": 1288,
               "n_truncated": 0
             },
             "rinalmo_ft": {
@@ -377,6 +395,26 @@
                 }
               }
             },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1178,
+              "systems": {
+                "bpfold": {
+                  "n": 1178,
+                  "tp": 27239,
+                  "fp": 13636,
+                  "fn": 4967,
+                  "f1": 0.7454468329661609
+                },
+                "rnaformer_biophysical": {
+                  "n": 1178,
+                  "tp": 20165,
+                  "fp": 28780,
+                  "fn": 12041,
+                  "f1": 0.49697477541866397
+                }
+              }
+            },
             "bpfold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 1114,
@@ -577,6 +615,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1230,
+              "systems": {
+                "eternafold": {
+                  "n": 1230,
+                  "tp": 21859,
+                  "fp": 27346,
+                  "fn": 10835,
+                  "f1": 0.5338038315486148
+                },
+                "rnaformer_biophysical": {
+                  "n": 1230,
+                  "tp": 20777,
+                  "fp": 29411,
+                  "fn": 11917,
+                  "f1": 0.5013633840882218
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 1090,
@@ -757,6 +815,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1192,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 1192,
+                  "tp": 23400,
+                  "fp": 9000,
+                  "fn": 9152,
+                  "f1": 0.7205320852321715
+                },
+                "rnaformer_biophysical": {
+                  "n": 1192,
+                  "tp": 20416,
+                  "fp": 29022,
+                  "fn": 12136,
+                  "f1": 0.49801195267715576
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 1125,
@@ -917,6 +995,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1188,
+              "systems": {
+                "mxfold2": {
+                  "n": 1188,
+                  "tp": 20445,
+                  "fp": 23752,
+                  "fn": 9845,
+                  "f1": 0.5489548511820854
+                },
+                "rnaformer_biophysical": {
+                  "n": 1188,
+                  "tp": 19204,
+                  "fp": 27761,
+                  "fn": 11086,
+                  "f1": 0.49715875995081227
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 1059,
@@ -1057,6 +1155,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1044,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 1044,
+                  "tp": 6501,
+                  "fp": 4331,
+                  "fn": 19007,
+                  "f1": 0.3577875619152449
+                },
+                "rnaformer_biophysical": {
+                  "n": 1044,
+                  "tp": 16269,
+                  "fp": 24061,
+                  "fn": 9239,
+                  "f1": 0.4942130684407181
+                }
+              }
+            },
             "nucleicbert_frozen|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 994,
@@ -1177,6 +1295,26 @@
                 }
               }
             },
+            "nucleicbert_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 713,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 713,
+                  "tp": 11444,
+                  "fp": 22621,
+                  "fn": 8333,
+                  "f1": 0.42509565023587537
+                },
+                "rnaformer_biophysical": {
+                  "n": 713,
+                  "tp": 12245,
+                  "fp": 18402,
+                  "fn": 7532,
+                  "f1": 0.48568142154529587
+                }
+              }
+            },
             "nucleicbert_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 708,
@@ -1277,6 +1415,26 @@
                 }
               }
             },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1192,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 1192,
+                  "tp": 23618,
+                  "fp": 10257,
+                  "fn": 8934,
+                  "f1": 0.7110963915275416
+                },
+                "rnaformer_biophysical": {
+                  "n": 1192,
+                  "tp": 20416,
+                  "fp": 29022,
+                  "fn": 12136,
+                  "f1": 0.49801195267715576
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 1125,
@@ -1374,6 +1532,106 @@
                   "fp": 3946,
                   "fn": 4792,
                   "f1": 0.7734743609685281
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 1140,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 1140,
+                  "tp": 19628,
+                  "fp": 28003,
+                  "fn": 11714,
+                  "f1": 0.49708128094412013
+                },
+                "rnaformer_bprna": {
+                  "n": 1140,
+                  "tp": 21847,
+                  "fp": 5442,
+                  "fn": 9495,
+                  "f1": 0.7452371612287015
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 1276,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 1276,
+                  "tp": 21950,
+                  "fp": 30310,
+                  "fn": 12629,
+                  "f1": 0.5055332281578554
+                },
+                "rnaformer_interfam": {
+                  "n": 1276,
+                  "tp": 22679,
+                  "fp": 13846,
+                  "fn": 11900,
+                  "f1": 0.6379106660666066
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_intrafam": {
+              "status": "PASS_MATCHED",
+              "n": 1256,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 1256,
+                  "tp": 21606,
+                  "fp": 30109,
+                  "fn": 12497,
+                  "f1": 0.5035307278193386
+                },
+                "rnaformer_intrafam": {
+                  "n": 1256,
+                  "tp": 22341,
+                  "fp": 13993,
+                  "fn": 11762,
+                  "f1": 0.6343541036671068
+                }
+              }
+            },
+            "rnaformer_biophysical|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 152,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 152,
+                  "tp": 3478,
+                  "fp": 3527,
+                  "fn": 2102,
+                  "f1": 0.5527214938418753
+                },
+                "spotrna": {
+                  "n": 152,
+                  "tp": 3590,
+                  "fp": 2451,
+                  "fn": 1990,
+                  "f1": 0.6178470011186645
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 713,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 713,
+                  "tp": 12245,
+                  "fp": 18402,
+                  "fn": 7532,
+                  "f1": 0.48568142154529587
+                },
+                "xens2": {
+                  "n": 713,
+                  "tp": 14979,
+                  "fp": 3955,
+                  "fn": 4798,
+                  "f1": 0.7738885588075741
                 }
               }
             },
@@ -1590,16 +1848,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -1717,6 +1974,25 @@
               "clean_sha256": "231ae0079c183d481e4f5d4518f77a41fa52f6a6544b2feb0a7d60f8f9b23595",
               "audit_sha256": "d980ade0662042987e0b258e2d3a4e233bfa48bd951e411b7096ed166a0cee8f",
               "native_n": 5386,
+              "n_truncated": 0
+            },
+            "rnaformer_biophysical": {
+              "n": 5386,
+              "tp": 99186,
+              "fp": 75379,
+              "fn": 35955,
+              "f1": 0.6405171356060264,
+              "f1_values": [
+                0.6405171356060264,
+                0.6405171356060264,
+                0.6405171356060264
+              ],
+              "f1_mean": 0.6405171356060264,
+              "f1_sd": 0.0,
+              "result_sha256": "be15170429255b9b25378fcdf090e5f1c664eca6b50288ab2135e15422017ca7",
+              "clean_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+              "audit_sha256": "ac302a22bcdd2601dde3ec2ba08b480aa4ac0501bd0fe7860e0d5dbae3a8f89e",
+              "native_n": 5388,
               "n_truncated": 0
             },
             "rinalmo_ft": {
@@ -1955,6 +2231,26 @@
                 }
               }
             },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 5387,
+              "systems": {
+                "bpfold": {
+                  "n": 5387,
+                  "tp": 106975,
+                  "fp": 48168,
+                  "fn": 28183,
+                  "f1": 0.7369936720851805
+                },
+                "rnaformer_biophysical": {
+                  "n": 5387,
+                  "tp": 99200,
+                  "fp": 75381,
+                  "fn": 35958,
+                  "f1": 0.6405392927593877
+                }
+              }
+            },
             "bpfold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -2155,6 +2451,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 5388,
+              "systems": {
+                "eternafold": {
+                  "n": 5388,
+                  "tp": 104470,
+                  "fp": 65197,
+                  "fn": 30714,
+                  "f1": 0.685384007269125
+                },
+                "rnaformer_biophysical": {
+                  "n": 5388,
+                  "tp": 99226,
+                  "fp": 75386,
+                  "fn": 35958,
+                  "f1": 0.6405892910173147
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -2335,6 +2651,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 5388,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 5388,
+                  "tp": 64985,
+                  "fp": 24551,
+                  "fn": 70199,
+                  "f1": 0.5783641865432538
+                },
+                "rnaformer_biophysical": {
+                  "n": 5388,
+                  "tp": 99226,
+                  "fp": 75386,
+                  "fn": 35958,
+                  "f1": 0.6405892910173147
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -2495,6 +2831,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 5388,
+              "systems": {
+                "mxfold2": {
+                  "n": 5388,
+                  "tp": 100227,
+                  "fp": 64290,
+                  "fn": 34957,
+                  "f1": 0.6688466171284047
+                },
+                "rnaformer_biophysical": {
+                  "n": 5388,
+                  "tp": 99226,
+                  "fp": 75386,
+                  "fn": 35958,
+                  "f1": 0.6405892910173147
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -2635,6 +2991,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 5388,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 5388,
+                  "tp": 15926,
+                  "fp": 15754,
+                  "fn": 119258,
+                  "f1": 0.19088599098667178
+                },
+                "rnaformer_biophysical": {
+                  "n": 5388,
+                  "tp": 99226,
+                  "fp": 75386,
+                  "fn": 35958,
+                  "f1": 0.6405892910173147
+                }
+              }
+            },
             "nucleicbert_frozen|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -2755,6 +3131,26 @@
                 }
               }
             },
+            "nucleicbert_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 5386,
+                  "tp": 60966,
+                  "fp": 155899,
+                  "fn": 74175,
+                  "f1": 0.3463918228666557
+                },
+                "rnaformer_biophysical": {
+                  "n": 5386,
+                  "tp": 99186,
+                  "fp": 75379,
+                  "fn": 35955,
+                  "f1": 0.6405171356060264
+                }
+              }
+            },
             "nucleicbert_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -2855,6 +3251,26 @@
                 }
               }
             },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 5388,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 5388,
+                  "tp": 51448,
+                  "fp": 42537,
+                  "fn": 83736,
+                  "f1": 0.4489961556755058
+                },
+                "rnaformer_biophysical": {
+                  "n": 5388,
+                  "tp": 99226,
+                  "fp": 75386,
+                  "fn": 35958,
+                  "f1": 0.6405892910173147
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5386,
@@ -2945,6 +3361,106 @@
                   "fp": 42526,
                   "fn": 83717,
                   "f1": 0.4489395043890856
+                },
+                "xens2": {
+                  "n": 5386,
+                  "tp": 64520,
+                  "fp": 33660,
+                  "fn": 70621,
+                  "f1": 0.5530578044839513
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 5386,
+                  "tp": 99186,
+                  "fp": 75379,
+                  "fn": 35955,
+                  "f1": 0.6405171356060264
+                },
+                "rnaformer_bprna": {
+                  "n": 5386,
+                  "tp": 51346,
+                  "fp": 21601,
+                  "fn": 83795,
+                  "f1": 0.4935027488370305
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 5386,
+                  "tp": 99186,
+                  "fp": 75379,
+                  "fn": 35955,
+                  "f1": 0.6405171356060264
+                },
+                "rnaformer_interfam": {
+                  "n": 5386,
+                  "tp": 83682,
+                  "fp": 36300,
+                  "fn": 51459,
+                  "f1": 0.6560129819734011
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_intrafam": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 5386,
+                  "tp": 99186,
+                  "fp": 75379,
+                  "fn": 35955,
+                  "f1": 0.6405171356060264
+                },
+                "rnaformer_intrafam": {
+                  "n": 5386,
+                  "tp": 83902,
+                  "fp": 37424,
+                  "fn": 51239,
+                  "f1": 0.654290805444755
+                }
+              }
+            },
+            "rnaformer_biophysical|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 5386,
+                  "tp": 99186,
+                  "fp": 75379,
+                  "fn": 35955,
+                  "f1": 0.6405171356060264
+                },
+                "spotrna": {
+                  "n": 5386,
+                  "tp": 77300,
+                  "fp": 52462,
+                  "fn": 57841,
+                  "f1": 0.5836098496430769
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 5386,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 5386,
+                  "tp": 99186,
+                  "fp": 75379,
+                  "fn": 35955,
+                  "f1": 0.6405171356060264
                 },
                 "xens2": {
                   "n": 5386,
@@ -3168,16 +3684,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -3295,6 +3810,25 @@
               "clean_sha256": "35b1670b9bd2bf08d0f80f2d538df09d7ef91d30446ede4d0cd27ed57b8a88ad",
               "audit_sha256": "6c08a67c6d715fa771c4809a866cdea8c83537f6824c4503dbfffc6dbcc6c758",
               "native_n": 60,
+              "n_truncated": 0
+            },
+            "rnaformer_biophysical": {
+              "n": 3,
+              "tp": 22,
+              "fp": 9,
+              "fn": 2,
+              "f1": 0.8,
+              "f1_values": [
+                0.8,
+                0.8,
+                0.8
+              ],
+              "f1_mean": 0.8,
+              "f1_sd": 0.0,
+              "result_sha256": "6dcc547a63587bdbe9866b38879053c95e6adfdfd0906665a01d4c8e503785c6",
+              "clean_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+              "audit_sha256": "0a92d9d7cebca9e504195401b8980286c9e50eb5475a89aae8b48fd161f1d296",
+              "native_n": 63,
               "n_truncated": 0
             },
             "rinalmo_ft": {
@@ -3533,6 +4067,26 @@
                 }
               }
             },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 42,
+              "systems": {
+                "bpfold": {
+                  "n": 42,
+                  "tp": 739,
+                  "fp": 145,
+                  "fn": 96,
+                  "f1": 0.8598022105875509
+                },
+                "rnaformer_biophysical": {
+                  "n": 42,
+                  "tp": 639,
+                  "fp": 249,
+                  "fn": 196,
+                  "f1": 0.7417295414973882
+                }
+              }
+            },
             "bpfold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 9,
@@ -3733,6 +4287,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 55,
+              "systems": {
+                "eternafold": {
+                  "n": 55,
+                  "tp": 877,
+                  "fp": 303,
+                  "fn": 233,
+                  "f1": 0.765938864628821
+                },
+                "rnaformer_biophysical": {
+                  "n": 55,
+                  "tp": 848,
+                  "fp": 341,
+                  "fn": 262,
+                  "f1": 0.7377120487168334
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 8,
@@ -3913,6 +4487,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 61,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 61,
+                  "tp": 832,
+                  "fp": 110,
+                  "fn": 476,
+                  "f1": 0.7395555555555555
+                },
+                "rnaformer_biophysical": {
+                  "n": 61,
+                  "tp": 972,
+                  "fp": 414,
+                  "fn": 336,
+                  "f1": 0.7216035634743875
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 11,
@@ -4073,6 +4667,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 52,
+              "systems": {
+                "mxfold2": {
+                  "n": 52,
+                  "tp": 850,
+                  "fp": 240,
+                  "fn": 236,
+                  "f1": 0.78125
+                },
+                "rnaformer_biophysical": {
+                  "n": 52,
+                  "tp": 806,
+                  "fp": 359,
+                  "fn": 280,
+                  "f1": 0.7161261661483785
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 9,
@@ -4213,6 +4827,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 48,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 48,
+                  "tp": 122,
+                  "fp": 96,
+                  "fn": 814,
+                  "f1": 0.21143847487001732
+                },
+                "rnaformer_biophysical": {
+                  "n": 48,
+                  "tp": 738,
+                  "fp": 254,
+                  "fn": 198,
+                  "f1": 0.7655601659751037
+                }
+              }
+            },
             "nucleicbert_frozen|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 5,
@@ -4333,6 +4967,26 @@
                 }
               }
             },
+            "nucleicbert_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 18,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 18,
+                  "tp": 245,
+                  "fp": 138,
+                  "fn": 93,
+                  "f1": 0.6796116504854369
+                },
+                "rnaformer_biophysical": {
+                  "n": 18,
+                  "tp": 247,
+                  "fp": 100,
+                  "fn": 91,
+                  "f1": 0.7211678832116788
+                }
+              }
+            },
             "nucleicbert_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 10,
@@ -4433,6 +5087,26 @@
                 }
               }
             },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 61,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 61,
+                  "tp": 837,
+                  "fp": 190,
+                  "fn": 471,
+                  "f1": 0.716916488222698
+                },
+                "rnaformer_biophysical": {
+                  "n": 61,
+                  "tp": 972,
+                  "fp": 414,
+                  "fn": 336,
+                  "f1": 0.7216035634743875
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 11,
@@ -4523,6 +5197,106 @@
                   "fp": 36,
                   "fn": 69,
                   "f1": 0.8367029548989113
+                },
+                "xens2": {
+                  "n": 18,
+                  "tp": 282,
+                  "fp": 12,
+                  "fn": 56,
+                  "f1": 0.8924050632911392
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 11,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 11,
+                  "tp": 164,
+                  "fp": 94,
+                  "fn": 80,
+                  "f1": 0.6533864541832669
+                },
+                "rnaformer_bprna": {
+                  "n": 11,
+                  "tp": 193,
+                  "fp": 21,
+                  "fn": 51,
+                  "f1": 0.8427947598253275
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 63,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 63,
+                  "tp": 991,
+                  "fp": 445,
+                  "fn": 354,
+                  "f1": 0.7126932758000719
+                },
+                "rnaformer_interfam": {
+                  "n": 63,
+                  "tp": 1104,
+                  "fp": 175,
+                  "fn": 241,
+                  "f1": 0.8414634146341463
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_intrafam": {
+              "status": "PASS_MATCHED",
+              "n": 60,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 60,
+                  "tp": 951,
+                  "fp": 438,
+                  "fn": 353,
+                  "f1": 0.7062755291496472
+                },
+                "rnaformer_intrafam": {
+                  "n": 60,
+                  "tp": 1067,
+                  "fp": 173,
+                  "fn": 237,
+                  "f1": 0.8388364779874213
+                }
+              }
+            },
+            "rnaformer_biophysical|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 10,
+                  "tp": 153,
+                  "fp": 93,
+                  "fn": 80,
+                  "f1": 0.6388308977035491
+                },
+                "spotrna": {
+                  "n": 10,
+                  "tp": 187,
+                  "fp": 62,
+                  "fn": 46,
+                  "f1": 0.7759336099585062
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 18,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 18,
+                  "tp": 247,
+                  "fp": 100,
+                  "fn": 91,
+                  "f1": 0.7211678832116788
                 },
                 "xens2": {
                   "n": 18,
@@ -4746,16 +5520,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "full_length": {
           "status": "EMPTY_INTERSECTION",
@@ -4782,6 +5555,10 @@
               "status": "EMPTY_INTERSECTION"
             },
             "rnaformer_intrafam": {
+              "n": 0,
+              "status": "EMPTY_INTERSECTION"
+            },
+            "rnaformer_biophysical": {
               "n": 0,
               "status": "EMPTY_INTERSECTION"
             },
@@ -4928,6 +5705,26 @@
                   "fp": 7,
                   "fn": 22,
                   "f1": 0.6506024096385542
+                }
+              }
+            },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 3,
+              "systems": {
+                "bpfold": {
+                  "n": 3,
+                  "tp": 47,
+                  "fp": 3,
+                  "fn": 2,
+                  "f1": 0.9494949494949495
+                },
+                "rnaformer_biophysical": {
+                  "n": 3,
+                  "tp": 48,
+                  "fp": 1,
+                  "fn": 1,
+                  "f1": 0.9795918367346939
                 }
               }
             },
@@ -5115,6 +5912,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 32,
+              "systems": {
+                "eternafold": {
+                  "n": 32,
+                  "tp": 529,
+                  "fp": 83,
+                  "fn": 59,
+                  "f1": 0.8816666666666667
+                },
+                "rnaformer_biophysical": {
+                  "n": 32,
+                  "tp": 534,
+                  "fp": 63,
+                  "fn": 54,
+                  "f1": 0.9012658227848102
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 6,
@@ -5295,6 +6112,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 39,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 39,
+                  "tp": 388,
+                  "fp": 62,
+                  "fn": 267,
+                  "f1": 0.702262443438914
+                },
+                "rnaformer_biophysical": {
+                  "n": 39,
+                  "tp": 584,
+                  "fp": 81,
+                  "fn": 71,
+                  "f1": 0.8848484848484849
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 9,
@@ -5455,6 +6292,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 27,
+              "systems": {
+                "mxfold2": {
+                  "n": 27,
+                  "tp": 457,
+                  "fp": 32,
+                  "fn": 54,
+                  "f1": 0.914
+                },
+                "rnaformer_biophysical": {
+                  "n": 27,
+                  "tp": 463,
+                  "fp": 55,
+                  "fn": 48,
+                  "f1": 0.8999028182701652
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 4,
@@ -5595,6 +6452,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 38,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 38,
+                  "tp": 108,
+                  "fp": 38,
+                  "fn": 533,
+                  "f1": 0.2744599745870394
+                },
+                "rnaformer_biophysical": {
+                  "n": 38,
+                  "tp": 572,
+                  "fp": 81,
+                  "fn": 69,
+                  "f1": 0.884080370942813
+                }
+              }
+            },
             "nucleicbert_frozen|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 8,
@@ -5715,6 +6592,26 @@
                 }
               }
             },
+            "nucleicbert_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 29,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 29,
+                  "tp": 339,
+                  "fp": 211,
+                  "fn": 127,
+                  "f1": 0.6673228346456693
+                },
+                "rnaformer_biophysical": {
+                  "n": 29,
+                  "tp": 416,
+                  "fp": 54,
+                  "fn": 50,
+                  "f1": 0.8888888888888888
+                }
+              }
+            },
             "nucleicbert_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 9,
@@ -5815,6 +6712,26 @@
                 }
               }
             },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 39,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 39,
+                  "tp": 375,
+                  "fp": 87,
+                  "fn": 280,
+                  "f1": 0.6714413607878246
+                },
+                "rnaformer_biophysical": {
+                  "n": 39,
+                  "tp": 584,
+                  "fp": 81,
+                  "fn": 71,
+                  "f1": 0.8848484848484849
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 9,
@@ -5905,6 +6822,106 @@
                   "fp": 55,
                   "fn": 178,
                   "f1": 0.7119901112484549
+                },
+                "xens2": {
+                  "n": 29,
+                  "tp": 355,
+                  "fp": 28,
+                  "fn": 111,
+                  "f1": 0.8362779740871613
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 9,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 9,
+                  "tp": 111,
+                  "fp": 14,
+                  "fn": 15,
+                  "f1": 0.8844621513944223
+                },
+                "rnaformer_bprna": {
+                  "n": 9,
+                  "tp": 98,
+                  "fp": 7,
+                  "fn": 28,
+                  "f1": 0.8484848484848485
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 39,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 39,
+                  "tp": 584,
+                  "fp": 81,
+                  "fn": 71,
+                  "f1": 0.8848484848484849
+                },
+                "rnaformer_interfam": {
+                  "n": 39,
+                  "tp": 589,
+                  "fp": 48,
+                  "fn": 66,
+                  "f1": 0.9117647058823529
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_intrafam": {
+              "status": "PASS_MATCHED",
+              "n": 39,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 39,
+                  "tp": 584,
+                  "fp": 81,
+                  "fn": 71,
+                  "f1": 0.8848484848484849
+                },
+                "rnaformer_intrafam": {
+                  "n": 39,
+                  "tp": 589,
+                  "fp": 44,
+                  "fn": 66,
+                  "f1": 0.9145962732919255
+                }
+              }
+            },
+            "rnaformer_biophysical|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 9,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 9,
+                  "tp": 111,
+                  "fp": 14,
+                  "fn": 15,
+                  "f1": 0.8844621513944223
+                },
+                "spotrna": {
+                  "n": 9,
+                  "tp": 103,
+                  "fp": 39,
+                  "fn": 23,
+                  "f1": 0.7686567164179104
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 29,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 29,
+                  "tp": 416,
+                  "fp": 54,
+                  "fn": 50,
+                  "f1": 0.8888888888888888
                 },
                 "xens2": {
                   "n": 29,
@@ -6128,16 +7145,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "full_length": {
           "status": "EMPTY_INTERSECTION",
@@ -6160,6 +7176,10 @@
               "status": "EMPTY_INTERSECTION"
             },
             "rnaformer_bprna": {
+              "n": 0,
+              "status": "EMPTY_INTERSECTION"
+            },
+            "rnaformer_biophysical": {
               "n": 0,
               "status": "EMPTY_INTERSECTION"
             },
@@ -6302,6 +7322,26 @@
                   "fp": 84,
                   "fn": 194,
                   "f1": 0.5800604229607251
+                }
+              }
+            },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 17,
+              "systems": {
+                "bpfold": {
+                  "n": 17,
+                  "tp": 338,
+                  "fp": 84,
+                  "fn": 48,
+                  "f1": 0.8366336633663366
+                },
+                "rnaformer_biophysical": {
+                  "n": 17,
+                  "tp": 334,
+                  "fp": 87,
+                  "fn": 52,
+                  "f1": 0.8277571251548946
                 }
               }
             },
@@ -6465,6 +7505,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 19,
+              "systems": {
+                "eternafold": {
+                  "n": 19,
+                  "tp": 347,
+                  "fp": 103,
+                  "fn": 70,
+                  "f1": 0.8004613610149942
+                },
+                "rnaformer_biophysical": {
+                  "n": 19,
+                  "tp": 362,
+                  "fp": 97,
+                  "fn": 55,
+                  "f1": 0.8264840182648402
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 2,
@@ -6605,6 +7665,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 17,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 17,
+                  "tp": 250,
+                  "fp": 50,
+                  "fn": 136,
+                  "f1": 0.7288629737609329
+                },
+                "rnaformer_biophysical": {
+                  "n": 17,
+                  "tp": 334,
+                  "fp": 87,
+                  "fn": 52,
+                  "f1": 0.8277571251548946
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 2,
@@ -6725,6 +7805,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 18,
+              "systems": {
+                "mxfold2": {
+                  "n": 18,
+                  "tp": 328,
+                  "fp": 81,
+                  "fn": 69,
+                  "f1": 0.8138957816377171
+                },
+                "rnaformer_biophysical": {
+                  "n": 18,
+                  "tp": 345,
+                  "fp": 91,
+                  "fn": 52,
+                  "f1": 0.8283313325330132
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 2,
@@ -6825,6 +7925,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 17,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 17,
+                  "tp": 46,
+                  "fp": 44,
+                  "fn": 340,
+                  "f1": 0.19327731092436976
+                },
+                "rnaformer_biophysical": {
+                  "n": 17,
+                  "tp": 334,
+                  "fp": 87,
+                  "fn": 52,
+                  "f1": 0.8277571251548946
+                }
+              }
+            },
             "nucleicbert_frozen|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 2,
@@ -6905,6 +8025,26 @@
                 }
               }
             },
+            "nucleicbert_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 4,
+                  "tp": 44,
+                  "fp": 61,
+                  "fn": 26,
+                  "f1": 0.5028571428571429
+                },
+                "rnaformer_biophysical": {
+                  "n": 4,
+                  "tp": 57,
+                  "fp": 21,
+                  "fn": 13,
+                  "f1": 0.7702702702702703
+                }
+              }
+            },
             "nucleicbert_ft|rnaformer_bprna": {
               "status": "EMPTY_INTERSECTION",
               "n": 0,
@@ -6954,6 +8094,26 @@
                   "fp": 7,
                   "fn": 9,
                   "f1": 0.8840579710144928
+                }
+              }
+            },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 17,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 17,
+                  "tp": 192,
+                  "fp": 84,
+                  "fn": 194,
+                  "f1": 0.5800604229607251
+                },
+                "rnaformer_biophysical": {
+                  "n": 17,
+                  "tp": 334,
+                  "fp": 87,
+                  "fn": 52,
+                  "f1": 0.8277571251548946
                 }
               }
             },
@@ -7007,6 +8167,66 @@
                   "fp": 13,
                   "fn": 29,
                   "f1": 0.6612903225806451
+                },
+                "xens2": {
+                  "n": 4,
+                  "tp": 61,
+                  "fp": 7,
+                  "fn": 9,
+                  "f1": 0.8840579710144928
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 2,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 2,
+                  "tp": 43,
+                  "fp": 8,
+                  "fn": 2,
+                  "f1": 0.8958333333333334
+                },
+                "rnaformer_bprna": {
+                  "n": 2,
+                  "tp": 31,
+                  "fp": 0,
+                  "fn": 14,
+                  "f1": 0.8157894736842105
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 19,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 19,
+                  "tp": 362,
+                  "fp": 97,
+                  "fn": 55,
+                  "f1": 0.8264840182648402
+                },
+                "rnaformer_interfam": {
+                  "n": 19,
+                  "tp": 332,
+                  "fp": 85,
+                  "fn": 85,
+                  "f1": 0.7961630695443646
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 4,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 4,
+                  "tp": 57,
+                  "fp": 21,
+                  "fn": 13,
+                  "f1": 0.7702702702702703
                 },
                 "xens2": {
                   "n": 4,
@@ -7082,16 +8302,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -7209,6 +8428,25 @@
               "clean_sha256": "e7b0c488a8350c3af639a7a36da1a316c0bad47cf767dc3c54791fcdc74d2f81",
               "audit_sha256": "7cd061f4ff58594c87be86fe306a48dc877a8994dc0fc7801e2f56075242c51e",
               "native_n": 19,
+              "n_truncated": 0
+            },
+            "rnaformer_biophysical": {
+              "n": 3,
+              "tp": 22,
+              "fp": 9,
+              "fn": 2,
+              "f1": 0.8,
+              "f1_values": [
+                0.8,
+                0.8,
+                0.8
+              ],
+              "f1_mean": 0.8,
+              "f1_sd": 0.0,
+              "result_sha256": "f90bc8f1da94f295f1d30d38f91bd0fb59fc41abcaad417b1bd483aa5522cbd2",
+              "clean_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+              "audit_sha256": "f8b0b85ed2ab6874f1c44ac54f1e26054a93c10ffb8873d63fe757709608162f",
+              "native_n": 28,
               "n_truncated": 0
             },
             "rinalmo_ft": {
@@ -7447,6 +8685,26 @@
                 }
               }
             },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 24,
+              "systems": {
+                "bpfold": {
+                  "n": 24,
+                  "tp": 323,
+                  "fp": 96,
+                  "fn": 42,
+                  "f1": 0.8239795918367347
+                },
+                "rnaformer_biophysical": {
+                  "n": 24,
+                  "tp": 310,
+                  "fp": 90,
+                  "fn": 55,
+                  "f1": 0.8104575163398693
+                }
+              }
+            },
             "bpfold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -7647,6 +8905,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 28,
+              "systems": {
+                "eternafold": {
+                  "n": 28,
+                  "tp": 381,
+                  "fp": 139,
+                  "fn": 94,
+                  "f1": 0.7658291457286432
+                },
+                "rnaformer_biophysical": {
+                  "n": 28,
+                  "tp": 391,
+                  "fp": 134,
+                  "fn": 84,
+                  "f1": 0.782
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -7827,6 +9105,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 28,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 28,
+                  "tp": 274,
+                  "fp": 62,
+                  "fn": 201,
+                  "f1": 0.6757090012330457
+                },
+                "rnaformer_biophysical": {
+                  "n": 28,
+                  "tp": 391,
+                  "fp": 134,
+                  "fn": 84,
+                  "f1": 0.782
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -7987,6 +9285,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 26,
+              "systems": {
+                "mxfold2": {
+                  "n": 26,
+                  "tp": 366,
+                  "fp": 109,
+                  "fn": 76,
+                  "f1": 0.7982551799345693
+                },
+                "rnaformer_biophysical": {
+                  "n": 26,
+                  "tp": 362,
+                  "fp": 128,
+                  "fn": 80,
+                  "f1": 0.776824034334764
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -8127,6 +9445,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 28,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 28,
+                  "tp": 52,
+                  "fp": 56,
+                  "fn": 423,
+                  "f1": 0.1783876500857633
+                },
+                "rnaformer_biophysical": {
+                  "n": 28,
+                  "tp": 391,
+                  "fp": 134,
+                  "fn": 84,
+                  "f1": 0.782
+                }
+              }
+            },
             "nucleicbert_frozen|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -8247,6 +9585,26 @@
                 }
               }
             },
+            "nucleicbert_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 10,
+                  "tp": 63,
+                  "fp": 88,
+                  "fn": 34,
+                  "f1": 0.5080645161290323
+                },
+                "rnaformer_biophysical": {
+                  "n": 10,
+                  "tp": 86,
+                  "fp": 25,
+                  "fn": 11,
+                  "f1": 0.8269230769230769
+                }
+              }
+            },
             "nucleicbert_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -8347,6 +9705,26 @@
                 }
               }
             },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 28,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 28,
+                  "tp": 231,
+                  "fp": 124,
+                  "fn": 244,
+                  "f1": 0.5566265060240964
+                },
+                "rnaformer_biophysical": {
+                  "n": 28,
+                  "tp": 391,
+                  "fp": 134,
+                  "fn": 84,
+                  "f1": 0.782
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 3,
@@ -8437,6 +9815,106 @@
                   "fp": 33,
                   "fn": 40,
                   "f1": 0.6096256684491979
+                },
+                "xens2": {
+                  "n": 10,
+                  "tp": 73,
+                  "fp": 6,
+                  "fn": 24,
+                  "f1": 0.8295454545454546
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 3,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 3,
+                  "tp": 22,
+                  "fp": 9,
+                  "fn": 2,
+                  "f1": 0.8
+                },
+                "rnaformer_bprna": {
+                  "n": 3,
+                  "tp": 7,
+                  "fp": 6,
+                  "fn": 17,
+                  "f1": 0.3783783783783784
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 28,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 28,
+                  "tp": 391,
+                  "fp": 134,
+                  "fn": 84,
+                  "f1": 0.782
+                },
+                "rnaformer_interfam": {
+                  "n": 28,
+                  "tp": 360,
+                  "fp": 83,
+                  "fn": 115,
+                  "f1": 0.7843137254901961
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_intrafam": {
+              "status": "PASS_MATCHED",
+              "n": 19,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 19,
+                  "tp": 232,
+                  "fp": 96,
+                  "fn": 65,
+                  "f1": 0.7424
+                },
+                "rnaformer_intrafam": {
+                  "n": 19,
+                  "tp": 215,
+                  "fp": 57,
+                  "fn": 82,
+                  "f1": 0.7557117750439367
+                }
+              }
+            },
+            "rnaformer_biophysical|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 3,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 3,
+                  "tp": 22,
+                  "fp": 9,
+                  "fn": 2,
+                  "f1": 0.8
+                },
+                "spotrna": {
+                  "n": 3,
+                  "tp": 16,
+                  "fp": 9,
+                  "fn": 8,
+                  "f1": 0.6530612244897959
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 10,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 10,
+                  "tp": 86,
+                  "fp": 25,
+                  "fn": 11,
+                  "f1": 0.8269230769230769
                 },
                 "xens2": {
                   "n": 10,
@@ -8660,16 +10138,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "first_598_nt": {
           "status": "PASS_MATCHED",
@@ -8855,6 +10332,25 @@
               "native_n": 1909,
               "n_truncated": 0
             },
+            "rnaformer_biophysical": {
+              "n": 95,
+              "tp": 3602,
+              "fp": 5989,
+              "fn": 2106,
+              "f1": 0.47088044970259496,
+              "f1_values": [
+                0.47088044970259496,
+                0.47088044970259496,
+                0.47088044970259496
+              ],
+              "f1_mean": 0.47088044970259496,
+              "f1_sd": 0.0,
+              "result_sha256": "d50cc0a6c31b4bb96d4952e4805753f50a980da16d9549b00e8c53665f7dfd01",
+              "clean_sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+              "audit_sha256": "c960916fb7f67a94bc8f8f3409fab85383662b88923909eb503d2e8ec926f585",
+              "native_n": 2544,
+              "n_truncated": 0
+            },
             "rinalmo_ft": {
               "n": 95,
               "tp": 3730,
@@ -9010,6 +10506,26 @@
                   "fp": 17109,
                   "fn": 13578,
                   "f1": 0.6764783401684712
+                }
+              }
+            },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 731,
+              "systems": {
+                "bpfold": {
+                  "n": 731,
+                  "tp": 40792,
+                  "fp": 12485,
+                  "fn": 5276,
+                  "f1": 0.821218984347476
+                },
+                "rnaformer_biophysical": {
+                  "n": 731,
+                  "tp": 29103,
+                  "fp": 31840,
+                  "fn": 16965,
+                  "f1": 0.5439253908476699
                 }
               }
             },
@@ -9173,6 +10689,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1033,
+              "systems": {
+                "eternafold": {
+                  "n": 1033,
+                  "tp": 42997,
+                  "fp": 44910,
+                  "fn": 19950,
+                  "f1": 0.5700478608455858
+                },
+                "rnaformer_biophysical": {
+                  "n": 1033,
+                  "tp": 41260,
+                  "fp": 43631,
+                  "fn": 21687,
+                  "f1": 0.5581785467877001
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 960,
@@ -9313,6 +10849,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1094,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 1094,
+                  "tp": 44161,
+                  "fp": 15635,
+                  "fn": 19991,
+                  "f1": 0.7125730144899474
+                },
+                "rnaformer_biophysical": {
+                  "n": 1094,
+                  "tp": 40611,
+                  "fp": 42190,
+                  "fn": 23541,
+                  "f1": 0.552707328193368
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 993,
@@ -9433,6 +10989,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1041,
+              "systems": {
+                "mxfold2": {
+                  "n": 1041,
+                  "tp": 37918,
+                  "fp": 19181,
+                  "fn": 10205,
+                  "f1": 0.7207238030069757
+                },
+                "rnaformer_biophysical": {
+                  "n": 1041,
+                  "tp": 30951,
+                  "fp": 27978,
+                  "fn": 17172,
+                  "f1": 0.5782423495123865
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 889,
@@ -9533,6 +11109,26 @@
                 }
               }
             },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 1094,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 1094,
+                  "tp": 47411,
+                  "fp": 21822,
+                  "fn": 16741,
+                  "f1": 0.7108895303070061
+                },
+                "rnaformer_biophysical": {
+                  "n": 1094,
+                  "tp": 40611,
+                  "fp": 42190,
+                  "fn": 23541,
+                  "f1": 0.552707328193368
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 993,
@@ -9630,6 +11226,106 @@
                   "fp": 13635,
                   "fn": 13647,
                   "f1": 0.7180912622964372
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 2267,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 2267,
+                  "tp": 76305,
+                  "fp": 67319,
+                  "fn": 40938,
+                  "f1": 0.585010752605734
+                },
+                "rnaformer_bprna": {
+                  "n": 2267,
+                  "tp": 83763,
+                  "fp": 22446,
+                  "fn": 33480,
+                  "f1": 0.7497180602545513
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 2192,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 2192,
+                  "tp": 71747,
+                  "fp": 64368,
+                  "fn": 39333,
+                  "f1": 0.5804890875624507
+                },
+                "rnaformer_interfam": {
+                  "n": 2192,
+                  "tp": 79888,
+                  "fp": 26863,
+                  "fn": 31192,
+                  "f1": 0.7334860511130188
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_intrafam": {
+              "status": "PASS_MATCHED",
+              "n": 1909,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 1909,
+                  "tp": 66380,
+                  "fp": 60051,
+                  "fn": 35548,
+                  "f1": 0.5813653063816184
+                },
+                "rnaformer_intrafam": {
+                  "n": 1909,
+                  "tp": 71640,
+                  "fp": 26802,
+                  "fn": 30288,
+                  "f1": 0.7150771073514
+                }
+              }
+            },
+            "rnaformer_biophysical|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 580,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 580,
+                  "tp": 22437,
+                  "fp": 24569,
+                  "fn": 13683,
+                  "f1": 0.5398310997762433
+                },
+                "spotrna": {
+                  "n": 580,
+                  "tp": 18467,
+                  "fp": 16271,
+                  "fn": 17653,
+                  "f1": 0.5212396624234384
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 1107,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 1107,
+                  "tp": 42241,
+                  "fp": 43196,
+                  "fn": 23962,
+                  "f1": 0.5571221313637562
+                },
+                "xens2": {
+                  "n": 1107,
+                  "tp": 48010,
+                  "fp": 16723,
+                  "fn": 18193,
+                  "f1": 0.7333353699517321
                 }
               }
             },
@@ -9846,16 +11542,15 @@
         "nucleicbert_frozen",
         "nucleicbert_ft",
         "rinalmo_ft",
+        "rnaformer_biophysical",
         "rnaformer_bprna",
         "rnaformer_interfam",
         "rnaformer_intrafam",
         "spotrna",
         "xens2"
       ],
-      "missing_systems": [
-        "rnaformer_biophysical"
-      ],
-      "complete_system_count": 12,
+      "missing_systems": [],
+      "complete_system_count": 13,
       "groups": {
         "full_length": {
           "status": "PASS_MATCHED",
@@ -9973,6 +11668,25 @@
               "clean_sha256": "b2ce9b160d4a8c192d2becd03a274f38f5ed97239be6aa5fe2606accdcdb2da4",
               "audit_sha256": "335657ea9d0e77c8d0e8e9df61ff9e673a92c16fe871089e21cefc8247370359",
               "native_n": 419,
+              "n_truncated": 0
+            },
+            "rnaformer_biophysical": {
+              "n": 23,
+              "tp": 291,
+              "fp": 519,
+              "fn": 240,
+              "f1": 0.43400447427293065,
+              "f1_values": [
+                0.43400447427293065,
+                0.43400447427293065,
+                0.43400447427293065
+              ],
+              "f1_mean": 0.43400447427293065,
+              "f1_sd": 0.0,
+              "result_sha256": "7965ac69a370d394220c62f64579edcc0f84026577876a74b15d1b3069fed5b5",
+              "clean_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+              "audit_sha256": "883737419f0d31a1c7eb12470f98374510624c4a912405e32f8fdb0109310485",
+              "native_n": 428,
               "n_truncated": 0
             },
             "rinalmo_ft": {
@@ -10211,6 +11925,26 @@
                 }
               }
             },
+            "bpfold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 79,
+              "systems": {
+                "bpfold": {
+                  "n": 79,
+                  "tp": 1709,
+                  "fp": 685,
+                  "fn": 318,
+                  "f1": 0.7731282515268039
+                },
+                "rnaformer_biophysical": {
+                  "n": 79,
+                  "tp": 1219,
+                  "fp": 1631,
+                  "fn": 808,
+                  "f1": 0.4998974779577609
+                }
+              }
+            },
             "bpfold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 44,
@@ -10411,6 +12145,26 @@
                 }
               }
             },
+            "eternafold|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 428,
+              "systems": {
+                "eternafold": {
+                  "n": 428,
+                  "tp": 7460,
+                  "fp": 6789,
+                  "fn": 3797,
+                  "f1": 0.584960401474163
+                },
+                "rnaformer_biophysical": {
+                  "n": 428,
+                  "tp": 6738,
+                  "fp": 8258,
+                  "fn": 4519,
+                  "f1": 0.5133127642555136
+                }
+              }
+            },
             "eternafold|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 80,
@@ -10591,6 +12345,26 @@
                 }
               }
             },
+            "kirigami_fast|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 116,
+              "systems": {
+                "kirigami_fast": {
+                  "n": 116,
+                  "tp": 1917,
+                  "fp": 611,
+                  "fn": 971,
+                  "f1": 0.7079025110782866
+                },
+                "rnaformer_biophysical": {
+                  "n": 116,
+                  "tp": 1664,
+                  "fp": 2413,
+                  "fn": 1224,
+                  "f1": 0.47781765972720747
+                }
+              }
+            },
             "kirigami_fast|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 80,
@@ -10751,6 +12525,26 @@
                 }
               }
             },
+            "mxfold2|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 373,
+              "systems": {
+                "mxfold2": {
+                  "n": 373,
+                  "tp": 6687,
+                  "fp": 4452,
+                  "fn": 2854,
+                  "f1": 0.6467117988394584
+                },
+                "rnaformer_biophysical": {
+                  "n": 373,
+                  "tp": 5730,
+                  "fp": 7091,
+                  "fn": 3811,
+                  "f1": 0.5124765226723906
+                }
+              }
+            },
             "mxfold2|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 70,
@@ -10891,6 +12685,26 @@
                 }
               }
             },
+            "nucleicbert_frozen|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 116,
+              "systems": {
+                "nucleicbert_frozen": {
+                  "n": 116,
+                  "tp": 689,
+                  "fp": 341,
+                  "fn": 2199,
+                  "f1": 0.3517100561510975
+                },
+                "rnaformer_biophysical": {
+                  "n": 116,
+                  "tp": 1664,
+                  "fp": 2413,
+                  "fn": 1224,
+                  "f1": 0.47781765972720747
+                }
+              }
+            },
             "nucleicbert_frozen|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 80,
@@ -11011,6 +12825,26 @@
                 }
               }
             },
+            "nucleicbert_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 288,
+              "systems": {
+                "nucleicbert_ft": {
+                  "n": 288,
+                  "tp": 4320,
+                  "fp": 6785,
+                  "fn": 3039,
+                  "f1": 0.4679376083188908
+                },
+                "rnaformer_biophysical": {
+                  "n": 288,
+                  "tp": 4429,
+                  "fp": 5343,
+                  "fn": 2930,
+                  "f1": 0.5170743097308972
+                }
+              }
+            },
             "nucleicbert_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 74,
@@ -11111,6 +12945,26 @@
                 }
               }
             },
+            "rinalmo_ft|rnaformer_biophysical": {
+              "status": "PASS_MATCHED",
+              "n": 116,
+              "systems": {
+                "rinalmo_ft": {
+                  "n": 116,
+                  "tp": 2167,
+                  "fp": 435,
+                  "fn": 721,
+                  "f1": 0.7894353369763206
+                },
+                "rnaformer_biophysical": {
+                  "n": 116,
+                  "tp": 1664,
+                  "fp": 2413,
+                  "fn": 1224,
+                  "f1": 0.47781765972720747
+                }
+              }
+            },
             "rinalmo_ft|rnaformer_bprna": {
               "status": "PASS_MATCHED",
               "n": 80,
@@ -11208,6 +13062,106 @@
                   "fp": 266,
                   "fn": 651,
                   "f1": 0.7937007874015748
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_bprna": {
+              "status": "PASS_MATCHED",
+              "n": 80,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 80,
+                  "tp": 1029,
+                  "fp": 1787,
+                  "fn": 880,
+                  "f1": 0.43555555555555553
+                },
+                "rnaformer_bprna": {
+                  "n": 80,
+                  "tp": 1196,
+                  "fp": 294,
+                  "fn": 713,
+                  "f1": 0.7037363930567814
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_interfam": {
+              "status": "PASS_MATCHED",
+              "n": 421,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 421,
+                  "tp": 6689,
+                  "fp": 7997,
+                  "fn": 4394,
+                  "f1": 0.5191509177694129
+                },
+                "rnaformer_interfam": {
+                  "n": 421,
+                  "tp": 7397,
+                  "fp": 3487,
+                  "fn": 3686,
+                  "f1": 0.6734647425683981
+                }
+              }
+            },
+            "rnaformer_biophysical|rnaformer_intrafam": {
+              "status": "PASS_MATCHED",
+              "n": 419,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 419,
+                  "tp": 6682,
+                  "fp": 7949,
+                  "fn": 4352,
+                  "f1": 0.5207091369569452
+                },
+                "rnaformer_intrafam": {
+                  "n": 419,
+                  "tp": 7365,
+                  "fp": 3606,
+                  "fn": 3669,
+                  "f1": 0.6693933197000682
+                }
+              }
+            },
+            "rnaformer_biophysical|spotrna": {
+              "status": "PASS_MATCHED",
+              "n": 64,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 64,
+                  "tp": 808,
+                  "fp": 1381,
+                  "fn": 678,
+                  "f1": 0.4397278911564626
+                },
+                "spotrna": {
+                  "n": 64,
+                  "tp": 941,
+                  "fp": 845,
+                  "fn": 545,
+                  "f1": 0.5751833740831296
+                }
+              }
+            },
+            "rnaformer_biophysical|xens2": {
+              "status": "PASS_MATCHED",
+              "n": 288,
+              "systems": {
+                "rnaformer_biophysical": {
+                  "n": 288,
+                  "tp": 4429,
+                  "fp": 5343,
+                  "fn": 2930,
+                  "f1": 0.5170743097308972
+                },
+                "xens2": {
+                  "n": 288,
+                  "tp": 5663,
+                  "fp": 650,
+                  "fn": 1696,
+                  "f1": 0.8284084259801053
                 }
               }
             },
@@ -11416,5 +13370,5 @@
       }
     }
   },
-  "status": "PARTIAL_MATCHED_SENSITIVITY_NOT_LEADERBOARD"
+  "status": "PASS_COMPLETE_MATCHED_SENSITIVITY"
 }

@@ -105,6 +105,8 @@
 >
 > **2026-11-05 校准后续顺序**：biophysical 16 格→104/104 own-clean 两次复算→xens2 独占全 TS0 三次测速→真实 GPU 单条预检→完整 VL0 拟合→八 clean split 三次独立概率推理与 NPZ 复算。`calibrate_xens2_round39.py`、`verify_xens2_calibration_round39.py` 和持久队列已落地，4 项工具测试通过；尚未产生真实 GPU 校准结论，所有概率基线的比较继续排队。
 >
+> **2026-11-05 主榜完成与测速恢复**：13 系统 own-clean 104/104 和 matched-clean 均已两次复算一致，主榜=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。xens2 5/8 领先，三负格与 clean n 记录于 §15.401。`monitor_round39_exclusive_speed_retry.sh` 已启动，干扰只终止自身并留证重试，真实失败停止；有效测速完成前校准继续等待。
+>
 > **历史边界**：第 38 轮及更早结果保留，本块覆盖新增任务和旧 blocked/clean/SOTA 口径；不得为追求 8/8、速度或 ECE 而更换弱参照、减少 seed、缩 epoch 或隐藏负结果。
 
 > **当前执行覆盖（2026-11-01，第 38 轮：逐模型泄露复核、扩展 baseline 与 OOD 证据；活跃清单 `round38-audit-v2`）**

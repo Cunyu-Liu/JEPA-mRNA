@@ -12495,3 +12495,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立复算**：`verify_xens2_calibration_round39.py` 重读 NPZ 和 JSON，逐对检查标签、DP、F1、ECE/Brier/NLL、置信度与 risk–coverage；生产原始分数恢复 float64 后复算，不能直接用 float32 存储概率要求 float64 指标逐位相等。
 - **测试**：4 项测试通过，覆盖严格有效配对、坐标映射与空预测、VL0/CUDA 身份、完整模拟流程、独立 NPZ 复算及有效结果断点跳过。修复了 NPZ 临时文件未原子重命名、测试手算期望错误和 float32/float64 复核路径差异；模拟结果不作为科学证据。
 - **排队**：`run_xens2_calibration_round39.sh` 已以独立 flock 常驻，等待 104/104 主板与正式独占测速后，才进行真实 GPU 单条预检、完整 VL0 拟合及八 clean split 三次推理。xens2 资产验收仍不等于全 eligible 基线最低 ECE 或最佳置信度，不设置全局校准完成结论。
+
+
+## §15.401（2026-11-05）104/104 原生 clean 主榜闭环与测速干扰恢复
+
+- **biophysical**：raw+clean 16 格独立聚合通过，SHA256=`9d4ae0519d7763965e58c307c9a134c0c29dace59224977fb3253f69a5836178`。其 clean 八格与 raw 样本数相同，F1 均为 TS0=0.5059660421、new=0.6405892910、TS1=0.7126932758、TS2=0.8848484848、TS3=0.8264840183、hard=0.782、ArchiveII=0.5882707022、TSB=0.5133127643，三次 SD 全为 0。
+- **主榜**：13 系统×8 split 达到 **104/104**，状态 `PASS_COMPLETE_OWN_CLEAN_LEADERBOARD`，两次逐字节复算 SHA256=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。matched-clean 附加敏感性两次 SHA256=`30f443c3bc021ed78a7b053d6bcaa1a4bc002642af8617241788f47d5cfa6910`；交集不替代主板。
+- **科学结论**：xens2 在原生 own-clean 主板领先 5/8；bpRNA-new=0.5530578045（n=5386）对 BPfold=0.7369936721（n=5387），Δ=-0.1839358676；TS2=0.8362779741（n=29）对 BPfold=0.9494949495（n=3），Δ=-0.1132169754；ArchiveII=0.7333353700（n=1107）对 BPfold=0.8212189843（n=731），Δ=-0.0878836144。TS2 必须同时展示 n=3，不能隐藏小样本边界。
+- **测速**：首次 xens2 B=32 独占测速在外部 GPU 进程闯入后已停止自身并保存 `xens2_b32_exclusive.interference.log`，没有正式速度结果。新增 `monitor_round39_exclusive_speed_retry.sh`，仅在 GPU 无其他进程时启动完整三次，外部干扰保存独立证据并重试，真实失败退出；不 kill 其他会话任务，不用 resume 拼接计时。
+- **后续**：测速有效 JSON 形成后，校准队列才会运行真实 GPU 预检和完整 VL0/八 clean 推理。8/8、速度 SOTA、最低 ECE 与最佳结构置信度仍未达成。

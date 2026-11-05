@@ -1,0 +1,363 @@
+{
+  "schema_version": 1,
+  "system": "rnaformer_biophysical",
+  "protocol": "official checkpoint; raw-sequence B=1 full-length; three deterministic repeats",
+  "timing_boundary": "concurrent timings are diagnostic; not exclusive speed results",
+  "raw": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 22156,
+      "fp": 30532,
+      "fn": 12735,
+      "strict_micro_f1": {
+        "values": [
+          0.5059660420877151,
+          0.5059660420877151,
+          0.5059660420877151
+        ],
+        "mean": 0.5059660420877151,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/bprna_ts0.json",
+      "result_sha256": "1dafec6883c30fde07fade0aa652d0fcd40b913b00b00ad99d927c14720501fa",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+      "data_sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 99226,
+      "fp": 75386,
+      "fn": 35958,
+      "strict_micro_f1": {
+        "values": [
+          0.6405892910173147,
+          0.6405892910173147,
+          0.6405892910173147
+        ],
+        "mean": 0.6405892910173147,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/bprna_new.json",
+      "result_sha256": "d72544f8181ec893452abe0d4649fb4fa9f4fda6fca8a8b0b36b9496bc3d7a23",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+      "data_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 991,
+      "fp": 445,
+      "fn": 354,
+      "strict_micro_f1": {
+        "values": [
+          0.7126932758000719,
+          0.7126932758000719,
+          0.7126932758000719
+        ],
+        "mean": 0.7126932758000719,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/ref_pdb_ts1.json",
+      "result_sha256": "0db57c942075f97e838a79842713cf555e0ccc74cfc5b05db6aa5be3b26237c4",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl",
+      "data_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 584,
+      "fp": 81,
+      "fn": 71,
+      "strict_micro_f1": {
+        "values": [
+          0.8848484848484849,
+          0.8848484848484849,
+          0.8848484848484849
+        ],
+        "mean": 0.8848484848484849,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/ref_pdb_ts2.json",
+      "result_sha256": "06ddf750e82bcb0c550702a277102970893073775375fa458533a885d334e246",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl",
+      "data_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 362,
+      "fp": 97,
+      "fn": 55,
+      "strict_micro_f1": {
+        "values": [
+          0.8264840182648402,
+          0.8264840182648402,
+          0.8264840182648402
+        ],
+        "mean": 0.8264840182648402,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/ref_pdb_ts3.json",
+      "result_sha256": "b30b450f951e60dfd802ef13f3b5a6e7ffbc803d4ad0c83552b6a5bfa84f3897",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl",
+      "data_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 391,
+      "fp": 134,
+      "fn": 84,
+      "strict_micro_f1": {
+        "values": [
+          0.782,
+          0.782,
+          0.782
+        ],
+        "mean": 0.782,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/ref_pdb_ts_hard.json",
+      "result_sha256": "6137947cffd0d8b8000807288b2f67559d41fe1f7114328a52d4a7481437cf8d",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
+      "data_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+      "code_sha256": "5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 83070,
+      "fp": 71829,
+      "fn": 44452,
+      "strict_micro_f1": {
+        "values": [
+          0.5882707022494786,
+          0.5882707022494786,
+          0.5882707022494786
+        ],
+        "mean": 0.5882707022494786,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/archiveii_embok_clean.json",
+      "result_sha256": "de5602a768f81990e9dec95f06cf6cf34cc550164b32e310ab49f2d7684c9d2c",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl",
+      "data_sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 6738,
+      "fp": 8258,
+      "fn": 4519,
+      "strict_micro_f1": {
+        "values": [
+          0.5133127642555136,
+          0.5133127642555136,
+          0.5133127642555136
+        ],
+        "mean": 0.5133127642555136,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/testsetb.json",
+      "result_sha256": "b2c9cd5912a784ab072afc52b150fc8509617c4e64984af205d18b8bb1448a2d",
+      "source_data": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "data_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    }
+  },
+  "clean": {
+    "bprna_ts0": {
+      "n": 1288,
+      "tp": 22156,
+      "fp": 30532,
+      "fn": 12735,
+      "strict_micro_f1": {
+        "values": [
+          0.5059660420877151,
+          0.5059660420877151,
+          0.5059660420877151
+        ],
+        "mean": 0.5059660420877151,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/bprna_ts0.json",
+      "result_sha256": "0cfb212511e1a3faa541b1021056f0a8b98f341bbcd6c800bd144806f5a83bd0",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/bprna_ts0.jsonl",
+      "data_sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "bprna_new": {
+      "n": 5388,
+      "tp": 99226,
+      "fp": 75386,
+      "fn": 35958,
+      "strict_micro_f1": {
+        "values": [
+          0.6405892910173147,
+          0.6405892910173147,
+          0.6405892910173147
+        ],
+        "mean": 0.6405892910173147,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/bprna_new.json",
+      "result_sha256": "be15170429255b9b25378fcdf090e5f1c664eca6b50288ab2135e15422017ca7",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/bprna_new.jsonl",
+      "data_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts1": {
+      "n": 63,
+      "tp": 991,
+      "fp": 445,
+      "fn": 354,
+      "strict_micro_f1": {
+        "values": [
+          0.7126932758000719,
+          0.7126932758000719,
+          0.7126932758000719
+        ],
+        "mean": 0.7126932758000719,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/ref_pdb_ts1.json",
+      "result_sha256": "6dcc547a63587bdbe9866b38879053c95e6adfdfd0906665a01d4c8e503785c6",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/ref_pdb_ts1.jsonl",
+      "data_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts2": {
+      "n": 39,
+      "tp": 584,
+      "fp": 81,
+      "fn": 71,
+      "strict_micro_f1": {
+        "values": [
+          0.8848484848484849,
+          0.8848484848484849,
+          0.8848484848484849
+        ],
+        "mean": 0.8848484848484849,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/ref_pdb_ts2.json",
+      "result_sha256": "974f4c1c6c9cc017cbdd0a8095aa1de9fdd7ee4ade46691fba17af491f6f7205",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/ref_pdb_ts2.jsonl",
+      "data_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts3": {
+      "n": 19,
+      "tp": 362,
+      "fp": 97,
+      "fn": 55,
+      "strict_micro_f1": {
+        "values": [
+          0.8264840182648402,
+          0.8264840182648402,
+          0.8264840182648402
+        ],
+        "mean": 0.8264840182648402,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/ref_pdb_ts3.json",
+      "result_sha256": "8cd603e8837cb27d324d3ddde6bd1b2023404c7b19347942f7a931dc1e3ffebb",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/ref_pdb_ts3.jsonl",
+      "data_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "ref_pdb_ts_hard": {
+      "n": 28,
+      "tp": 391,
+      "fp": 134,
+      "fn": 84,
+      "strict_micro_f1": {
+        "values": [
+          0.782,
+          0.782,
+          0.782
+        ],
+        "mean": 0.782,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/ref_pdb_ts_hard.json",
+      "result_sha256": "f90bc8f1da94f295f1d30d38f91bd0fb59fc41abcaad417b1bd483aa5522cbd2",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/ref_pdb_ts_hard.jsonl",
+      "data_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "archiveii_embok_clean": {
+      "n": 2544,
+      "tp": 83070,
+      "fp": 71829,
+      "fn": 44452,
+      "strict_micro_f1": {
+        "values": [
+          0.5882707022494786,
+          0.5882707022494786,
+          0.5882707022494786
+        ],
+        "mean": 0.5882707022494786,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/archiveii_embok_clean.json",
+      "result_sha256": "d50cc0a6c31b4bb96d4952e4805753f50a980da16d9549b00e8c53665f7dfd01",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/archiveii_embok_clean.jsonl",
+      "data_sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    },
+    "testsetb": {
+      "n": 428,
+      "tp": 6738,
+      "fp": 8258,
+      "fn": 4519,
+      "strict_micro_f1": {
+        "values": [
+          0.5133127642555136,
+          0.5133127642555136,
+          0.5133127642555136
+        ],
+        "mean": 0.5133127642555136,
+        "sd": 0.0
+      },
+      "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/clean/testsetb.json",
+      "result_sha256": "7965ac69a370d394220c62f64579edcc0f84026577876a74b15d1b3069fed5b5",
+      "source_data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/rnaformer_biophysical_train/splits/testsetb.jsonl",
+      "data_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+      "code_sha256": "d63e6b97c9df2b5517945071b8cb1ff852d5524da841451b1b64fa95906e4cfc",
+      "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+      "config_sha256": "c4cb93a4fbe29edf737beb35cd92fc8373fe731624b59105bb94714c03b7203f"
+    }
+  },
+  "status": "PASS_RAW_CLEAN_8x3_INDEPENDENT_RECOMPUTE"
+}

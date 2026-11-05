@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "status": "PARTIAL_OWN_CLEAN_LEADERBOARD_NOT_FINAL",
+  "status": "PASS_COMPLETE_OWN_CLEAN_LEADERBOARD",
   "protocol": "each system has its own training-union-specific clean sets and clean n; three complete deterministic inference repeats; no common-n requirement",
   "main_ranking_rule": "when complete, compare xens2 with the strongest eligible baseline independently per split and report each system's clean n",
   "sensitivity_rule": "matched name+sequence+evaluated-GT intersections are auxiliary only and never substitute for this native own-clean leaderboard",
-  "complete_cell_count": 96,
+  "complete_cell_count": 104,
   "required_cell_count": 104,
   "systems": {
     "eternafold": {
@@ -1366,28 +1366,220 @@
     },
     "rnaformer_biophysical": {
       "bprna_ts0": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 1288,
+        "clean_n": 1288,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "0cfb212511e1a3faa541b1021056f0a8b98f341bbcd6c800bd144806f5a83bd0",
+        "clean_sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+        "audit_sha256": "d5ee498a8bbc607859ae695aff9ca7d0f61ba8a10454089f0330e8931f1d5b5c",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 22156,
+        "fp": 30532,
+        "fn": 12735,
+        "f1_values": [
+          0.5059660420877151,
+          0.5059660420877151,
+          0.5059660420877151
+        ],
+        "f1_mean": 0.5059660420877151,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "bprna_new": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 5388,
+        "clean_n": 5388,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "be15170429255b9b25378fcdf090e5f1c664eca6b50288ab2135e15422017ca7",
+        "clean_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+        "audit_sha256": "ac302a22bcdd2601dde3ec2ba08b480aa4ac0501bd0fe7860e0d5dbae3a8f89e",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 99226,
+        "fp": 75386,
+        "fn": 35958,
+        "f1_values": [
+          0.6405892910173147,
+          0.6405892910173147,
+          0.6405892910173147
+        ],
+        "f1_mean": 0.6405892910173147,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts1": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 63,
+        "clean_n": 63,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "6dcc547a63587bdbe9866b38879053c95e6adfdfd0906665a01d4c8e503785c6",
+        "clean_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+        "audit_sha256": "0a92d9d7cebca9e504195401b8980286c9e50eb5475a89aae8b48fd161f1d296",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 991,
+        "fp": 445,
+        "fn": 354,
+        "f1_values": [
+          0.7126932758000719,
+          0.7126932758000719,
+          0.7126932758000719
+        ],
+        "f1_mean": 0.7126932758000719,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts2": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 39,
+        "clean_n": 39,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "974f4c1c6c9cc017cbdd0a8095aa1de9fdd7ee4ade46691fba17af491f6f7205",
+        "clean_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+        "audit_sha256": "ebfea67fbcb6586c0af9b79840284f6d35fe1becb8d7a22b97b9d24cdfa4364d",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 584,
+        "fp": 81,
+        "fn": 71,
+        "f1_values": [
+          0.8848484848484849,
+          0.8848484848484849,
+          0.8848484848484849
+        ],
+        "f1_mean": 0.8848484848484849,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts3": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 19,
+        "clean_n": 19,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "8cd603e8837cb27d324d3ddde6bd1b2023404c7b19347942f7a931dc1e3ffebb",
+        "clean_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+        "audit_sha256": "a63f5186fb7170151c04b311a656c4e314f7a85645d10f1cb4607ab9b5038505",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 362,
+        "fp": 97,
+        "fn": 55,
+        "f1_values": [
+          0.8264840182648402,
+          0.8264840182648402,
+          0.8264840182648402
+        ],
+        "f1_mean": 0.8264840182648402,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "ref_pdb_ts_hard": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 28,
+        "clean_n": 28,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "f90bc8f1da94f295f1d30d38f91bd0fb59fc41abcaad417b1bd483aa5522cbd2",
+        "clean_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+        "audit_sha256": "f8b0b85ed2ab6874f1c44ac54f1e26054a93c10ffb8873d63fe757709608162f",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 391,
+        "fp": 134,
+        "fn": 84,
+        "f1_values": [
+          0.782,
+          0.782,
+          0.782
+        ],
+        "f1_mean": 0.782,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "archiveii_embok_clean": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 2544,
+        "clean_n": 2544,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "d50cc0a6c31b4bb96d4952e4805753f50a980da16d9549b00e8c53665f7dfd01",
+        "clean_sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+        "audit_sha256": "c960916fb7f67a94bc8f8f3409fab85383662b88923909eb503d2e8ec926f585",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 83070,
+        "fp": 71829,
+        "fn": 44452,
+        "f1_values": [
+          0.5882707022494786,
+          0.5882707022494786,
+          0.5882707022494786
+        ],
+        "f1_mean": 0.5882707022494786,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       },
       "testsetb": {
-        "status": "PENDING"
+        "status": "PASS",
+        "raw_n": 428,
+        "clean_n": 428,
+        "removed_exact": 0,
+        "removed_homology_only": 0,
+        "evaluation_scope": "full_length",
+        "result_sha256": "7965ac69a370d394220c62f64579edcc0f84026577876a74b15d1b3069fed5b5",
+        "clean_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+        "audit_sha256": "883737419f0d31a1c7eb12470f98374510624c4a912405e32f8fdb0109310485",
+        "asset_identity": {
+          "weights_sha256": "bd3c90c97893bc47597305f20400adf87a4a352907598d12556000a9a6b6cc8f",
+          "repository_commit": "680b5405c0fd52239472a845c2b9aab41d142be2"
+        },
+        "tp": 6738,
+        "fp": 8258,
+        "fn": 4519,
+        "f1_values": [
+          0.5133127642555136,
+          0.5133127642555136,
+          0.5133127642555136
+        ],
+        "f1_mean": 0.5133127642555136,
+        "f1_sd": 0.0,
+        "n_truncated": 0,
+        "n_length_filtered": 0
       }
     },
     "rinalmo_ft": {

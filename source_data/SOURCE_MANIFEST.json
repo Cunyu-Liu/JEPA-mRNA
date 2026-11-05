@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-04",
+ "updated": "2026-11-05",
  "files": [
   {
    "path": "fig03_ablation/fig03b_group_drops.json",
@@ -997,10 +997,10 @@
   },
   {
    "path": "appendix_leakage/round39_matched_clean_sensitivity.json",
-   "sha256": "fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5",
-   "bytes": 347201,
-   "description": "统一 xens2+12 系统八 split 阶段快照：同名同序列同 GT 全局与两两交集，仅作附加敏感性，不替代主榜",
-   "status": "active_partial_matched_sensitivity_not_leaderboard"
+   "sha256": "30f443c3bc021ed78a7b053d6bcaa1a4bc002642af8617241788f47d5cfa6910",
+   "bytes": 407470,
+   "description": "统一 xens2+13 系统同名同序列同 GT 全局与两两交集；完整附加敏感性，不替代原生 clean 主榜",
+   "status": "active_complete_matched_sensitivity_not_leaderboard"
   },
   {
    "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom.log",
@@ -1081,10 +1081,10 @@
   },
   {
    "path": "appendix_leakage/round39_own_clean_leaderboard.json",
-   "sha256": "ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07",
-   "bytes": 99460,
-   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；96/104 格完成，交集仅作敏感性",
-   "status": "active_partial_own_clean_leaderboard_not_final"
+   "sha256": "9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326",
+   "bytes": 106899,
+   "description": "逐系统原生 clean 主榜 104/104 完成；各自 clean n、三次 F1/SD、TP/FP/FN、删除数与结果哈希齐全",
+   "status": "active_complete_own_clean_leaderboard"
   },
   {
    "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_pair_transition.log",
@@ -1154,6 +1154,13 @@
    "sha256": "1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745",
    "bytes": 16594,
    "description": "RNAformer intra-family raw+clean 各八 split 三次独立聚合；TS3 clean 为空，保留源数据与结果哈希",
+   "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_biophysical_raw_clean_summary.json",
+   "sha256": "9d4ae0519d7763965e58c307c9a134c0c29dace59224977fb3253f69a5836178",
+   "bytes": 17078,
+   "description": "RNAformer biophysical raw+clean 八 split 三次独立聚合；clean 与 raw 样本集合相同",
    "status": "active_complete_raw_clean_8_of_8"
   }
  ]
