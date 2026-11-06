@@ -1617,6 +1617,27 @@
    "bytes": 6891,
    "description": "MXfold2 MixC 原生 float32 概率首格；clean n=27，matched n=20",
    "status": "active_first_cell_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_vienna_mfe_calibration.json",
+   "sha256": "630070e7d1ae1bd7f90e22cd3c858d13e04b21b3181964dc2765946e017dc601",
+   "bytes": 7397,
+   "description": "TS2 ViennaRNA-MFE；共享 float64 BPP，F1=0.8979591837",
+   "status": "active_first_cell_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_vienna_centroid_calibration.json",
+   "sha256": "e7c9bf05e26d64e73c42d458c71aa84f712f59db1603eaf9335fd02473e2a7d9",
+   "bytes": 7425,
+   "description": "TS2 ViennaRNA-centroid；共享 float64 BPP，F1=0.8929663609",
+   "status": "active_first_cell_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_vienna_mea_calibration.json",
+   "sha256": "3193d55209da93343a0417576ecd6133007e8bf4264b0f6052d78dce0e73a56d",
+   "bytes": 7398,
+   "description": "TS2 ViennaRNA-MEA；共享 float64 BPP，F1=0.8937784522",
+   "status": "active_first_cell_not_full_board"
   }
  ]
 }

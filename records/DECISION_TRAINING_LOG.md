@@ -12732,3 +12732,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **大 split 结果**：bpRNA-new 的 Kirigami/xens2 ECE=0.0043999537/0.0048310272，ArchiveII=0.0009723210/0.0012167945，Kirigami 均更低；TS0=0.0017787631/0.0006199985，xens2 更低。ArchiveII 的 Kirigami Spearman=0.8108105242，高于 xens2=0.7179665733，但 AURC=0.1320936692，高于 xens2=0.1225071918（更差）。bpRNA-new 的 xens2 AURC=0.3486543793，略低于 Kirigami=0.3509156876。ECE、相关性和风险覆盖不能合并成单一最佳置信度。
 - **MXfold2 原生概率**：官方包实际架构为 `MixC`，`TrainSetAB.pth` 严格加载、802,642 参数一致；使用官方 `return_partfunc=True` 的 float32 概率，不采用五位小数 CLI 文本。TS2 clean n=27，三次 GPU 推理 F1 均为 0.914，逐条预测与原主榜一致；共同 n=20，MXfold2 ECE=0.0077294563，低于 xens2=0.0168951314。MXfold2 Spearman=-0.1478444135、AURC=0.0666676556，xens2 分别为 0.0737674539/0.1298499081，方向不同。
 - **工程验收**：Kirigami 与既有校准测试共 9 项通过；Kirigami 代码提交 `ef854f8b73408850869a90291b247908a8dd89d4`，MXfold2 代码提交 `67fe5cc045473bbdc6eed15ce39c65180a8143ea`。MXfold2 其余七格继续 GPU 队列，未齐套前只记首格。EternaFold/CONTRAfold 原生结果无逐对概率，保持 NOT_AVAILABLE，不用 one-hot 冒充概率。
+
+
+## §15.428（2026-11-06）ViennaRNA 原生 BPP 合同与 TS2 三格
+
+- **合同**：新增 `docs/plans/2026-11-06-round39-vienna-native-probability-design.md`。每条序列每轮一次 `fold_compound.pf()`，共享 float64 BPP，分别保留 MFE/centroid/MEA 原生解码。无训练拟合的 ViennaRNA 使用八个完整测试集，不套用其他模型 clean n；原生 CPU 计算不冒充 GPU 结果。代码提交 `8ace0faef304288da2b548311dcd5ad3b5e9abd9`。
+- **环境核验**：旧 `/root/rna_jepa_data/pylibs` 不存在，已定位并固定 `/root/miniconda3/envs/codonflow/lib/python3.10/site-packages` 中的 ViennaRNA 2.7.2；仍用 lucaone 评测环境运行项目指标，不安装新依赖。`codonflow` 缺 scikit-learn，未把它当作替代评测环境。
+- **真实 TS2**：39 条完整推理三次，MFE/centroid/MEA F1 分别为 **0.8979591837/0.8929663609/0.8937784522**，逐条预测和 TP/FP/FN 均与原 `raw_strict` 一致。共同 n=29，三者共享 BPP 的 ECE=**0.0033891481**、Brier=0.0055268471、NLL=0.0263440530，低于 xens2 ECE=0.0177234890；比较 SHA256 分别为 `630070e7d1ae1bd7f90e22cd3c858d13e04b21b3181964dc2765946e017dc601`、`e7c9bf05e26d64e73c42d458c71aa84f712f59db1603eaf9335fd02473e2a7d9`、`3193d55209da93343a0417576ecd6133007e8bf4264b0f6052d78dce0e73a56d`。
+- **QA 与边界**：新增原生 roundtrip 测试，连同 Kirigami/BPfold/xens2 共 10 项通过。首次单元测试发现计数容器类型错误，真实比较又发现集合遍历导致均值最后浮点位不一致；均修复后重跑，最终采用固定配对顺序精确相等，不放宽容差。其余 21 格后台 CPU 队列进行中，24 格未齐前只记 TS2；EternaFold/CONTRAfold 继续 `NOT_AVAILABLE_NATIVE_PAIR_PROBABILITIES`。
