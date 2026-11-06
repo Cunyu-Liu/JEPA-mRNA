@@ -13089,3 +13089,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **收敛**：S2 seed1 在 step8500 达到 patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复 best step5500，best validation loss=20.6924657196。训练已完成 12/12 层解冻，无固定步数截断。
 - **checkpoint**：`runs/structrfm_jev_s1/best.pt` SHA256=`425cf71a3868911c728ff54d7157263dc15f4d94f066052d3425e6d7f0fee668`。
 - **边界**：seed0 仍在训练，seed2 待启动；单种子 best loss 不是模型效果或 SOTA 结论，三个全参种子齐全后才执行 13 split、置信度和独立对照。
+
+
+## §15.475（2026-11-07）S2 seed0 自然早停与 seed2 接续
+
+- **seed0 收敛**：step21500 达到 patience=6，恢复 best step18500，best validation loss=16.9408737972；`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`。checkpoint SHA256=`b37b844cd0dad6698a81314b7977d3edc6dc3a8e6cab4cca9fe45885e8e2d693`。
+- **seed2 接续**：已读取 42,564 条 TR1c 并进入真实 CUDA 训练，step1/25 均有日志，未发生 OOM 或 CPU 静默降级。
+- **边界**：seed0/1 已完成，seed2 在训；仍不把 VL0 loss 当作主榜效果，不提前进入 RIPE 或写最终 SOTA。
