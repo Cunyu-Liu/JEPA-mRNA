@@ -60,7 +60,7 @@
 > | T-A171 | 新增四基线与三官方权重模型全板 | SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各自 8 split×3；同 strict micro-F1/canonical-nested GT；原生必要后处理保留，概率输出另存供 ECE | 进行中：BPfold clean、RNAstructure raw 已完成；SPOT-RNA、UFold、CONTRAfold 已有部分结果；E2Efold/ContextFold 外部资产仍 blocked，不得宣称完整全板 |
 > | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | 根因已证实：3 encoder+3 head，B=32=19.89 seq/s；教师 B=1 全量与哈希已验收，seed0 独占训练；正式速度仍未测 |
 > | T-A173 | xens2 模型/数据候选攻关 8/8 | 只用 VL0 选候选；三训练种子均 validation plateau+best checkpoint+独立 GPU QA；统一 xens2 三次均值在 8 split 均超过最强 eligible baseline；ArchiveII/bpRNA-new/TS2 三负格优先但不得测试集调参 | 单学生 clean 8/8 三种子已闭环但未达 SOTA；VL0 融合 6 格后因 TS2/TS3 负格使 8/8 不可达，已停止剩余推理，不生成新教师 |
-> | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | 三个 VL0 校准及原始数组独立复算完成；ECE 降低但 Spearman/AURC 变差，跨 split 与全基线验收未完成，不能称最佳置信度 |
+> | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | xens2/BPfold/SPOT-RNA/NucleicBERT/Kirigami 已分系统验收；MXfold2、RNAformer-biophysical、RiNALMo-ft 队列中；ViennaRNA 24 格按 `docs/plans/2026-11-06-round39-vienna-native-probability-design.md` 补测；多 split 已有更低 ECE 反例，不能称最佳置信度 |
 > | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 已完成：23 页字体/行距/越界/渲染/ZIP 验收通过；新实验完成后仅更新必要数字和图件 |
 > | T-A176 | 训练台账、活跃源数据与可追溯归档 | 每 run 记录 commit/seed/配置/CUDA/数据权重哈希/best epoch/停止原因/结果与结论；活跃绘图 JSON+manifest 完整；废弃交接件和旧源数据只移动归档并保留哈希 | 进行中：§15.268 已撤回批化过早结论并记录 B=1 证据；活跃原始数据未删除，最终归档待实验状态稳定 |
 > | T-A177 | 最终三通道验收与 GitHub | 原始 artifact→独立复算→图/表/PPT 三通道一致；相关测试/静态检查通过；代码留 /home，大 artifact 留 /teams，确认后及时 commit+push，本地只留核心结论 | 进行中：阶段性代码核验后提交；600 单元、三目标和最终归档未闭环，不作最终验收 |
@@ -105,9 +105,9 @@
 >
 > **2026-11-05 校准后续顺序**：biophysical 16 格→104/104 own-clean 两次复算→xens2 独占全 TS0 三次测速→真实 GPU 单条预检→完整 VL0 拟合→八 clean split 三次独立概率推理与 NPZ 复算。`calibrate_xens2_round39.py`、`verify_xens2_calibration_round39.py` 和持久队列已落地，4 项工具测试通过；尚未产生真实 GPU 校准结论，所有概率基线的比较继续排队。
 >
-> **2026-11-05 主榜完成与测速恢复**：13 系统 own-clean 104/104 和 matched-clean 均已两次复算一致，主榜=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。xens2 5/8 领先，三负格与 clean n 记录于 §15.401。`monitor_round39_exclusive_speed_retry.sh` 已启动，干扰只终止自身并留证重试，真实失败停止；有效测速完成前校准继续等待。
+> **2026-11-05 主榜完成与测速恢复**：13 系统 own-clean 104/104 和 matched-clean 均已两次复算一致，主榜 SHA256=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。xens2 5/8 领先，三负格与 clean n 已记录 §15.401；不将主板完成写成 8/8。`monitor_round39_exclusive_speed_retry.sh` 已启动，干扰只终止自身测速并留证重试，真实失败停止；有效测速完成前校准继续等待。
 >
-> **2026-11-05 测速与校准进展**：独占 xens2 B=32 全 TS0 三次已完成，中位 13.5802 seq/s、F1=0.8037820907，速度 SOTA 未达成。完整 VL0 拟合经独立复算通过，八 clean 继续队列推理；随后统一验证 NPZ、补齐 eligible 概率基线比较，最后定点更新图件与叙事。详见 §15.402。
+> **2026-11-05 测速与校准进展**：独占 xens2 B=32 全 TS0 三次已完成，中位 13.5802 seq/s、F1=0.8037820907，速度 SOTA 未达成。完整 VL0 拟合经独立复算通过，八 clean split 继续队列推理；随后统一验证 NPZ、补齐 eligible 概率基线比较，最后定点更新图件与叙事。详见 §15.402。
 >
 > **2026-11-05 双概率队列**：BPfold 原始 logit/概率/后处理三路输出和独立验证已实现，真实预检通过；xens2 的 TR1c 平铺路径错误已修复。两系统按各自 clean 数据并行评测，随后分别复算八 split，再做同 GT/候选对比较；不把 smoke 当最终结论。
 >
