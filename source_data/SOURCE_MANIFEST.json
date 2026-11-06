@@ -2002,6 +2002,13 @@
    "bytes": 614,
    "description": "104 格 own-clean 逐值核对、31 页原生渲染、字体行距与 EMPTY 验收",
    "status": "active_verified_qa"
+  },
+  {
+   "path": "appendix_leakage/round39_e2efold_provenance_recovery.json",
+   "sha256": "a8b84121991f520ba62e6eb6c85cf73b34ac879a253af3c3d05fd9f09a185633",
+   "bytes": 1524,
+   "description": "E2Efold 官方链接、Drive 超时、SharePoint 错误页和 19 个 fork 复核；仍 provenance blocked",
+   "status": "active_blocked_provenance"
   }
  ]
 }

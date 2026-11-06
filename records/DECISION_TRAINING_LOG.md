@@ -12853,3 +12853,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **空值与协议**：RNAformer-intrafam 和 SPOT-RNA 的 TS3 为 `EMPTY_AFTER_DELEAK`，F1 与 TP/FP/FN 显示 `—`，clean n=0，不记 0 分。ArchiveII 页注明 NucleicBERT-ft/frozen 原生首 598 nt，分别截断 39/38 条。其他系统各自 clean n 不强行对齐。
 - **文件**：PPT 共 31 页，SHA256=`89447e5c35ddfa4addd72f04e549593cf154aeb115f5d1c50e2303c149d6ef19`；PDF 共 31 页，SHA256=`ce31bfb3a3788b8bae0342c24963123a836960ec78ffb277c8a63fc81f9f45f7`。新增页均有中文备注、微软雅黑和 1.5 倍行距。
 - **QA**：原生 PowerPoint 导出后检查第 8、24、28、30 页，表格无越界、遮挡或缺字；EMPTY 和 598 nt 说明正确。前 23 页文字逐项一致。QA 状态 `PASS_OWN_CLEAN_104_TABLES_NATIVE_RENDER`，设计合同见 `docs/plans/2026-11-06-round38-ownclean-table-appendix-design.md`。
+
+
+## §15.443（2026-11-06）E2Efold 官方资产替代源复核仍 blocked
+
+- **官方身份**：仓库 commit=`2aab9e78326ddaa27d14c49eb34001c0003a1960`。`models_ckpt/README.md` 指向 Google Drive 文件夹 `1m038Fw0HBGEzsvhS0mRxd0U7cGXqLAVt`，本地 `models_ckpt` 只有 README，无权重本体。
+- **下载证据**：SharePoint 返回 HTTP 200 但页面标题为 `Error`，不是权重包；保存 HTML SHA256=`3bb40255d48972c4693206b46f7dfc097a0f041d8e989c9241d836ced5d050f2`。gdown 超时且零文件，日志 SHA256=`aebfbbe00214ea9e6b1c42348bd649fcb32b22ca10e68f7cc083535cad52eed5`。Drive 文件夹、embeddedfolderview、usercontent 三个接口均连接超时。
+- **替代源边界**：作者 liyu95 在 issue #16 回复“Just updated”，但当前 Drive 仍不可达。检查官方及 19 个 fork 的递归文件树，未发现可核验的官方基础 checkpoint；其他 fork 只有改版 E2Efold-FM，不能冒充官方 E2Efold。
+- **结论**：保持 `BLOCKED_PROVENANCE`，证据 JSON SHA256=`a8b84121991f520ba62e6eb6c85cf73b34ac879a253af3c3d05fd9f09a185633`。没有官方权重哈希、strict GPU load 与完整训练语料合同，不能用替代模型、其他 clean 集或 0 分补齐 600 单元。双 stream 测速仍因其他 GPU 进程无有效结果。

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "BLOCKED_PROVENANCE",
+  "system": "E2Efold",
+  "repository": "https://github.com/ml4bio/e2efold",
+  "repository_commit": "2aab9e78326ddaa27d14c49eb34001c0003a1960",
+  "official_readme": "models_ckpt/README.md points to Google Drive folder 1m038Fw0HBGEzsvhS0mRxd0U7cGXqLAVt",
+  "sharepoint": {
+    "url": "https://gocuhk-my.sharepoint.com/:f:/g/personal/yuli_cuhk_edu_hk/Ekuec1yiSc9Jp7leSEYtsvABJyhIVXAblV0wb-8PrTezMg?e=eqXvzd",
+    "http_status": 200,
+    "page_title": "Error",
+    "interpretation": "SharePoint error page, not a downloadable checkpoint archive"
+  },
+  "google_drive": {
+    "folder_id": "1m038Fw0HBGEzsvhS0mRxd0U7cGXqLAVt",
+    "gdown": "Timed out: no response from the server; zero files downloaded",
+    "folder_page": "connection timeout",
+    "embeddedfolderview": "connection timeout",
+    "usercontent_folder": "connection timeout",
+    "author_issue_16": "liyu95: Just updated. Feel free to check."
+  },
+  "fork_audit": {
+    "repositories_checked": 19,
+    "official_base_checkpoints_found": 0,
+    "note": "Only modified E2Efold-FM checkpoints were found in other forks; these are not accepted as the official E2Efold model"
+  },
+  "local_checkpoint_directory": "/home/rna_jev/third_party/e2efold/models_ckpt contains only README.md",
+  "scientific_boundary": "No official weight hash, strict GPU load, or recoverable training corpus contract is available. Do not use another model, do not substitute clean sets, and do not report E2Efold as zero or clean"
+}
