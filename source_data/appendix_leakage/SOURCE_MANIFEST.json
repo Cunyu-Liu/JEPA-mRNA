@@ -1,0 +1,1139 @@
+{
+ "updated": "2026-11-03",
+ "files": [
+  {
+   "path": "fig03_ablation/fig03b_group_drops.json",
+   "sha256": "3e048a175cf851d09e1dd29f131329e5fd1df2b0242a412a780a494c4655caa6",
+   "bytes": 1021,
+   "description": "主图 3B 核心三模块分组均值与 PDB/ID 比值",
+   "status": "active"
+  },
+  {
+   "path": "fig04_calibration/fig04_ece_confidence_source.json",
+   "sha256": "d12c6524197f2457af041ce88ee41b869d1ffafd4e468bbbb8e65aee8be98af4",
+   "bytes": 715,
+   "description": "主图 4 ECE/Spearman/n 源数据",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b32_profile.json",
+   "sha256": "63b64d47d643410ce94da0aa4a89f964b6ec5ccc5a0ef9ede97d4bf969a39224",
+   "bytes": 1077604,
+   "description": "plana B=32 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b32_profile.json",
+   "sha256": "d4d70a477b26d32ef5002947f7130e69e10d09c1e1c15a2682b8bfa5972b507a",
+   "bytes": 1272208,
+   "description": "r2d B=32 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b16--tf32_profile.json",
+   "sha256": "b74ef461f388365b979beee4e8a068474e184b83b22edadf2cc2e5457c5a112f",
+   "bytes": 1272741,
+   "description": "r2d B=16 TF32 全 TS0 三次原始结果；通过但不优于 B=32",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b16_profile.json",
+   "sha256": "419a26db79b32ac0a6b39c92e4d60cc5b41a4d1abcf67db0c5569335289f9c6b",
+   "bytes": 1171477,
+   "description": "xens2 B=16 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b32_profile.json",
+   "sha256": "0919bf3fa17176696f25e0240605c691e89fc62f73604f5857854357259a6956",
+   "bytes": 1169644,
+   "description": "xens2 B=32 fp32 全 TS0 三次原始结果与等价门",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/speed_round36_summary.json",
+   "sha256": "ba4cfd8ca1b5604f0547a840e93e12b35e3ebf01ac98f45cf043dd9445589232",
+   "bytes": 11001,
+   "description": "round36 基线 profile、优化候选、最优 eligible 与 RNAformer 汇总",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/build_round36_profile_summary.py",
+   "sha256": "db9da4148df8c0fb943cd850f4282e16f3cb6837fcd66412dfbcc09c5238eac6",
+   "bytes": 2208,
+   "description": "round36 六份基线 profile 汇总构建脚本",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/build_round36_speed_comparison.py",
+   "sha256": "d07b0a8e8c613900ef6d03a0417e13df394bb510f6ccdaca38412d5240668dd1",
+   "bytes": 3398,
+   "description": "round36 eligible 优化与参照模型汇总构建脚本",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rnaformer_b1_full.json",
+   "sha256": "22f42726ea0d3b760fa513be608b6a5607ae70a50d0e6d19069cf03211fff3d8",
+   "bytes": 1021847,
+   "description": "RNAformer RTX 4090 B=1 全 TS0 三次 raw-sequence 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rnaformer_b2_full.json",
+   "sha256": "5ae1e83147d230328626255507eb65919ed08e2aa72edc10f6d5d5275005e6f1",
+   "bytes": 1021841,
+   "description": "RNAformer RTX 4090 B=2 全 TS0 三次 raw-sequence 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rnaformer_b4_full.json",
+   "sha256": "e49e5ba613c565102aa9ab512b0f2a886fb2b3cbdf78847cd06701bb5a7ed7c0",
+   "bytes": 1021846,
+   "description": "RNAformer RTX 4090 B=4 全 TS0 三次 raw-sequence 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/mxfold2_b1_full.json",
+   "sha256": "74a31268f706956ba106d79b47c8efebf8b9d8be6bca58328b9ec4d00e5181dd",
+   "bytes": 1597493,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/mxfold2_b2_full.json",
+   "sha256": "9e7e9d86c2e8e9185390d58a514995b8b3ad04e271658e50ee798a7b48bd6968",
+   "bytes": 1597349,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/mxfold2_b4_full.json",
+   "sha256": "412551cc96f2229fa5c515d02857d85a4cc84d5ffd4586c4d30278f8e0d6eaf6",
+   "bytes": 1597351,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b1_full.json",
+   "sha256": "2414b2cee920ef973e641d77ab8942c51569f4322e1410ce8b47eda9af50f878",
+   "bytes": 1055163,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b2_full.json",
+   "sha256": "0491a2f9aeb8431ffeb4b32a7f64b25667f9071a2ac545efe1305da5833eb7ac",
+   "bytes": 1054985,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b4_full.json",
+   "sha256": "9927e19b3939ee78f1dc75610d245882806419773dc7b7c66404b86af212f107",
+   "bytes": 1055208,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b1_full.json",
+   "sha256": "c9915ccc5b11953a605f2c91d014da2f1600264be9d50af1d341c3d80c8dd1fc",
+   "bytes": 1249927,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b2_full.json",
+   "sha256": "5118d9420da257a2a150219fcfa0cf18dba5994e2b38529600b76ac5c01aeb24",
+   "bytes": 1250249,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b4_full.json",
+   "sha256": "3dbe91160395a1c311f1595f82b29dc4c701c034efae13ef50fe3730b72c13fb",
+   "bytes": 1250667,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rinalmo_ft_b1_full.json",
+   "sha256": "a2a4b885f12f420e05d5d01aadb6493b1c3c97755a724460835efab23f0445ba",
+   "bytes": 1193470,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rinalmo_ft_b2_full.json",
+   "sha256": "24b05d9f88788914204dabc2449a21e4f0dfbbe747320f174f86f1a5a11e00a6",
+   "bytes": 1194125,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/rinalmo_ft_b4_full.json",
+   "sha256": "67189bffa7b7a123338acecdbae4738fb2b900f3ca6cfeeb2d6378a9a1f7bef5",
+   "bytes": 1194039,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b1_full.json",
+   "sha256": "18cbb013ba692c35600ce881f256971a0a5165970b90bac96bc7048ce96227b5",
+   "bytes": 1103664,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b2_full.json",
+   "sha256": "fe7b78f53e27e695fccac1389ee271ea67b56308b9c4827764ad17ad00c7f9b9",
+   "bytes": 1104112,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b4_full.json",
+   "sha256": "551a14149b632cd275ffacbc44bf6f0af7dc11c211abf18df325dd0853b74a31",
+   "bytes": 1104404,
+   "description": "RTX 4090 测速原始 JSON",
+   "status": "active"
+  },
+  {
+   "path": "fig06_architecture/fig06_architecture_contract.json",
+   "sha256": "543fc71def6a2e14e8f4c4fb925d2dcd834ec264a75510ed50260e4f59c069d9",
+   "bytes": 1766,
+   "description": "主图 6 架构参数与张量合同（代码/配置复核）",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_combined_working_source.json",
+   "sha256": "06df2bc429d29160c6f2b04e8c0b301acbc0c943f201efba39d463f9a3789fae",
+   "bytes": 4181,
+   "description": "主图 7 主 benchmark + 原论文任务组合 working 源数据",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_original_round35_3840x1920.pdf",
+   "sha256": "f8d67d5aee82e95eb0028429cb477ad01b523bee00013edc5faf5747e3940177",
+   "bytes": 30375,
+   "description": "主图 7 原论文任务工作版矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_original_round35_3840x1920.png",
+   "sha256": "489971c2ad11d03c94acdb0cca21d9500a89cebc643d8eb7646f5f7a1e041a45",
+   "bytes": 289882,
+   "description": "主图 7 原论文任务（acceptor/donor/CPEB3）工作版 PNG（3840×1920）",
+   "status": "active"
+  },
+  {
+   "path": "fig07_nucleicbert/fig07_nucleicbert_original_tasks_working_source.json",
+   "sha256": "53346872a22736a16f868079c352f7e917c214fff004bbc25dd09319ad667726",
+   "bytes": 3597,
+   "description": "主图 7 原论文任务 working 源数据",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/archiveii_diag_5s_s0.json",
+   "sha256": "41b02b3ce3e192ec350e28c4ec02f0785e668afe6a2e7f44851b4aa9d5c7fbd4",
+   "bytes": 8195,
+   "description": "T-A148 ArchiveII 5s 崩塌归因诊断（as-trained/偏置/阈值三种解码）",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/archiveii_diag_tRNA_s0.json",
+   "sha256": "ca828f5ffe1bed1f43d131653d77ae5e2f58102b1c9e9b76d71f10de3e654144",
+   "bytes": 8159,
+   "description": "T-A148 ArchiveII tRNA JEV 崩塌归因诊断（解码/偏置/泄漏）",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/fig08a_rinalmo_classification_round35_3840x1920.pdf",
+   "sha256": "32a97ca369c7cb140d0a17deec21c340bf5f3fb89c2385c78559a342dc8de606",
+   "bytes": 29373,
+   "description": "主图 8A 分类任务工作版矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/fig08a_rinalmo_classification_round35_3840x1920.png",
+   "sha256": "bda17a2dea7e0c6d8e9b1d69adda4fed9f6c056a181407355d4b2312c8e8bd59",
+   "bytes": 306855,
+   "description": "主图 8A 分类任务工作版 PNG（3840×1920）",
+   "status": "active"
+  },
+  {
+   "path": "fig08a_classification/fig08a_rinalmo_classification_working_source.json",
+   "sha256": "ee033ff585e9c54f3061e3ac7be847a30563ea11ee42270b5ad4f663927cf2fd",
+   "bytes": 4775,
+   "description": "主图 8A 分类任务 working 源数据（5 seeds、Holm）",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/TE_EL_TENFOLD_AGGREGATE.json",
+   "sha256": "40bf2c2cc3b261643bd3896a5a9daf259249039496d2741cc12eab2e5624e09d",
+   "bytes": 9412,
+   "description": "Muscle TE/EL 十折聚合（折级符号秩与 Holm）",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.pdf",
+   "sha256": "10239824a579f5d067eb7896f41b15b4ebc78727d66ab3c2dce5a8ef37cc60e7",
+   "bytes": 26941,
+   "description": "主图 8B 回归任务工作版矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_3840x1920.png",
+   "sha256": "5167af18a163b41f069fca5b707a43563613c683dc2a374231ade1167c6febe7",
+   "bytes": 196958,
+   "description": "主图 8B 回归任务工作版 PNG（3840×1920）",
+   "status": "active"
+  },
+  {
+   "path": "fig08b_regression/fig08b_rinalmo_regression_foldlevel_working_source.json",
+   "sha256": "0849041bee4400330c2933e5713606abf104127644786daa0e4d1016bf89e45f",
+   "bytes": 13664,
+   "description": "主图 8B 回归任务 fold-level working 源数据",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b1_profile.json",
+   "sha256": "7ef14e1fe5a74e3d29723e5d2b2be45201ff3d06b64a556502c91649e41d6109",
+   "bytes": 1348952,
+   "description": "round36 r2d B=1 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b4_profile.json",
+   "sha256": "db08a49ceb8122e8c709867535c0cad02328812578213ff8cf50b7ed88d95327",
+   "bytes": 1286328,
+   "description": "round36 r2d B=4 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b1_profile.json",
+   "sha256": "e178b142da13979b6adc044d83fc9fb8acbe1b15dfd7332fc4a82d3ee9c8e199",
+   "bytes": 1152879,
+   "description": "round36 plana B=1 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b4_profile.json",
+   "sha256": "9344b0d92ec857af6b36c244042516b0541d97936d28aa4c2baeee320ca7104d",
+   "bytes": 1091165,
+   "description": "round36 plana B=4 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b1_profile.json",
+   "sha256": "d6fa8717a6e6b5addbe2d1c091adca2678859203fd4f0a5cca6a2fbdd59741c9",
+   "bytes": 1397381,
+   "description": "round36 xens2 B=1 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b4_profile.json",
+   "sha256": "bc7c195d4c57d6947ab237bf92f15606b9da0bd5030babcdffaf30f06c1f0570",
+   "bytes": 1211715,
+   "description": "round36 xens2 B=4 全 TS0 分段测速原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b16_profile.json",
+   "sha256": "289757842a9511e639eebcbadcd9ae08fb286bfe12fe68d2c5d45377c4781da4",
+   "bytes": 1272769,
+   "description": "round36 r2d B=16 fp32 扩展 batch 全量验收结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/plana_b16_profile.json",
+   "sha256": "47865dc1f409ed345d9c98a16a7cfcd81bf4173f60d7bee12b0efc6cc0a93257",
+   "bytes": 1078153,
+   "description": "round36 plana B=16 fp32 扩展 batch 全量验收结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/xens2_b8_profile.json",
+   "sha256": "1e39284598abce6fb576868d3325fa1e5f9cae82a62302e514d1aabd79f80f27",
+   "bytes": 1184266,
+   "description": "round36 xens2 B=8 fp32 扩展 batch 全量验收结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b1--bf16-r2d-encoder_profile.json",
+   "sha256": "7f0886b1fb40ca8c0a99ba2e2653ee8bb6f570b0ece600d2d556970c7227e8fd",
+   "bytes": 1347895,
+   "description": "round36 r2d B=1 bf16 独占负优化结果（不得入选最快配置）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/r2d_b4--bf16-r2d-encoder_profile.json",
+   "sha256": "660418765034b8f823059f4d85506f96ffe6b89445fbb26544e8cfad5c7678e7",
+   "bytes": 1286532,
+   "description": "round36 r2d B=4 bf16 负优化且等价门失败结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/head_only_b256_fp16_repro.json",
+   "sha256": "028b41138490a99b0c8eb461f2344a1c5d0a21ed9c0353f6265d92c10846a4d8",
+   "bytes": 386,
+   "description": "4090 历史 head-only B=256 fp16 复现（117.735 seq/s、历史 TP/FP/FN 一致）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/speed_round36_profile_summary.json",
+   "sha256": "84438d5f213db49037a6cbccee45fbd52f79876e527a1a2f15c141b9652cd901",
+   "bytes": 5603,
+   "description": "六份基线 profile 的阶段耗时与占比汇总",
+   "status": "active"
+  },
+  {
+   "path": "round32_verified_source_data.json",
+   "sha256": "7d0cb98abfad77b3fba46e50d899de4fc4d9890c15756512224f03b52e017a95",
+   "bytes": 56043,
+   "description": "主图 1 主 benchmark、主图 2 历史速度与泄露审计的 round32 已验证汇总源",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/leakage_aware_baseline_source.json",
+   "sha256": "997d2f5d68469ab338b70add197ff965a55029f6519f7df31b717b9b7dda4b54",
+   "bytes": 49387,
+   "description": "附录 A2 泄露审计与 clean 子集复算表；eFold 旧板标为 0.1.2",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/rnaformer_protocol_audit.json",
+   "sha256": "e32d4875e601bb6a6860da3676a8247ec6c5934b5263a56ce8d221721c083c34",
+   "bytes": 1550,
+   "description": "RNAformer 固定/特殊 checkpoint、双 GT 与原文/复测口径审计",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/main_benchmark_4090_reproduction.json",
+   "sha256": "e6f4f51f85f5f25ac5958e7703ba79c4a7ae4ff73167d8570cc08d06a8d4ec3a",
+   "bytes": 1812,
+   "description": "xens2 八 split RTX 4090 与 A100 主 benchmark 复现差值",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/build_source.py",
+   "sha256": "fe732350b7bb9bfed533a75ce7c5eb81b8dd3cc1f21efeb3e37dc864c68b52e0",
+   "bytes": 10709,
+   "description": "泄露审计表构建脚本；clean split 键映射与 eFold 版本身份已修复",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/rnaformer_bprna_clean_recompute.json",
+   "sha256": "8d2819355248e9fa46141c1be93afb5ceef44f849dee741c16be02b0a3bf5ed8",
+   "bytes": 4288,
+   "description": "RNAformer-bprna 四 split 原始 DBN clean 子集复算与独立 TP/FP/FN 证据",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/round38_baseline_assets.json",
+   "sha256": "20bab1641c3e1ab6b080a27df98ef6d14ca5c3fd4371397ea573e500656c7a9e",
+   "bytes": 2890,
+   "description": "两项正式测速与三项官方权重 blocked 的资产和版本证据",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round38_3840x1920.pdf",
+   "sha256": "780e64b34705c15671c3fdd49ff8fa1999166b3151a065b8f93c333f3881baf7",
+   "bytes": 27796,
+   "description": "主图 2 round38 八系统端到端速度矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round38_3840x1920.png",
+   "sha256": "347a8cb5d06c05448987914471383f662a629085863c0eb2f61d4f66b5f156e3",
+   "bytes": 287853,
+   "description": "主图 2 round38 PNG（PPT 嵌入同哈希）",
+   "status": "active"
+  },
+  {
+   "path": "fig02_speed/fig02_end_to_end_speed_4090_round38_source.json",
+   "sha256": "d9407460da1635b59def3ecf2328da2e0e1976ccf85feedb559ed0ae7ac49b48",
+   "bytes": 6816,
+   "description": "主图 2 最优配置、范围、F1、版本与 blocked 边界",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round38_3840x1920.pdf",
+   "sha256": "0d80fb5dbe57d668bd7ec31e95e810a1b250c70504ef7185d6954a9669a51170",
+   "bytes": 35639,
+   "description": "主图 5 round38 精度-吞吐与共同 batch 矢量 PDF",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round38_3840x1920.png",
+   "sha256": "ce6425028ac07a7684ac42f89375ed4c6d8a9d81bf370928e85935568cce258b",
+   "bytes": 462749,
+   "description": "主图 5 round38 PNG（PPT 嵌入同哈希）",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/fig05_accuracy_speed_4090_round38_source.json",
+   "sha256": "e43cf0b793d864fba21daa1d653688a99a2d4ba878a275c55d2d170a8fb2d9c5",
+   "bytes": 22800,
+   "description": "主图 5 共 29 个配置及 eFold 新旧协议审计",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/round38_speed_validation.json",
+   "sha256": "baff5aea67540814c82c0eed3001cfeb08291971b6c8e4514310925e69934fd4",
+   "bytes": 956,
+   "description": "eFold 数值等价、旧版 rounded F1 与显式计数差验收",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold_b1.json",
+   "sha256": "f0bdb75396ac8b9a860b848e84c97ccd565cc0f1c2ab72b0408b853fb8059e06",
+   "bytes": 2738885,
+   "description": "eFold 0.1.3 B=1 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold_b2.json",
+   "sha256": "96237cd5fbbfb2be9db8ab62d6d2d6791b4a1da6476cb3b009717bb167405e82",
+   "bytes": 2738539,
+   "description": "eFold 0.1.3 B=2 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold_b4.json",
+   "sha256": "009809fde033231df81b64bc3cb60bcac97a9ebe9c76416950746f20cd7bfbfc",
+   "bytes": 2738748,
+   "description": "eFold 0.1.3 B=4 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/eternafold_b1.json",
+   "sha256": "4eeba4000d3549f2371161d67efa0b2a4bcb38e61e1d21848cec7533eb07bd04",
+   "bytes": 2716770,
+   "description": "EternaFold 官方 serial CPU 全 TS0 三次原始结果",
+   "status": "active"
+  },
+  {
+   "path": "fig05_speed/efold012_b1.json",
+   "sha256": "1e4f939ef6920cf14404bb5f8757f8237ca07c549217c83e2690ae2c1993e409",
+   "bytes": 2576364,
+   "description": "eFold 0.1.2 原生逐条状态重置三次版本核验",
+   "status": "active"
+  },
+  {
+   "path": "fig09_ood/build_ood_failure_source.py",
+   "sha256": "448bbc0039d42a1e454d4627804bf064e9996da070ae754e9dec4353f5e40215",
+   "bytes": 4615,
+   "description": "GenC/GenF 原始预测逐家族独立重算脚本",
+   "status": "active"
+  },
+  {
+   "path": "fig09_ood/round38_ood_failure_source.json",
+   "sha256": "a6e4a343d7ffacaa847b29cd7f4b1fd1099b9a544714ef98902a29480f0b8d3a",
+   "bytes": 29073,
+   "description": "GenC/GenF 家族失败、配对密度、零正确配对与 OOD mean 边界",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_raw_summary.json",
+   "sha256": "d1310c1386b82c1cbf364329a585a91960374e69d24b1d6f79f8cb3858aeff21",
+   "bytes": 2810,
+   "description": "EternaFold 八 split 原始集三次复测及独立 TP/FP/FN 重算；非逐模型 clean 结论",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_raw_summary.json",
+   "sha256": "d7cbdd7aa6666571155b9bafb33d5383d8867cd8e14ffdf657d600e8b52d5dc7",
+   "bytes": 2808,
+   "description": "原生 CONTRAfold 八 split 三次复测及独立 TP/FP/FN 重算；非逐模型 clean 结论",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_clean_tr1c_summary.json",
+   "sha256": "4af21aeff8284b420303c4af2e7a144c22156b5509a91c70a0d0e6579c7d4129",
+   "bytes": 2802,
+   "description": "EternaFold 在 tr1c 80% identity clean 子集上的八 split 三次复测",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_clean_tr1c_summary.json",
+   "sha256": "195274ef57b0bad89452f88e0e8b66e8171d61bcf9d3ce5a6053bbff39964ea4",
+   "bytes": 2801,
+   "description": "原生 CONTRAfold 在 tr1c 80% identity clean 子集上的八 split 三次复测",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_model_clean_audits.json",
+   "sha256": "cc3455b81232a1f020311e510072d81c304a185bab5fcbe3e2b384c913054b95",
+   "bytes": 30537,
+   "description": "九套模型专属训练并集的八 split clean n、删除数与审计哈希",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_clean_train_union_summary.json",
+   "sha256": "6f2846d155221115975b27ad475ea9b25191770cf60ad70e6d05b62f3bf3b558",
+   "bytes": 3056,
+   "description": "EternaFold 在自身三类训练语料 clean 子集上的八 split 三次复测及独立计数重算",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_raw_summary.json",
+   "sha256": "9d690e989f180fa65491ac100af8866b749aba4af498ecb0c9cfdc9a4c617bc5",
+   "bytes": 4186,
+   "description": "MXfold2 八 split 原始集三次复测；ArchiveII 使用完整 2544 条全长结果",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_clean_trainsetab_summary.json",
+   "sha256": "0b300329257372e4502ad845f538a08bd934c03e82e367e265d7690e3da8d92f",
+   "bytes": 4442,
+   "description": "MXfold2 在 TrainSetA+B 模型专属 clean 子集上的八 split 三次复测及独立计数重算",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_ufold_raw_summary.json",
+   "sha256": "e22f77455ae5e3bf338f5d218899270ad58a171e97943b44151ed2eda970f4be",
+   "bytes": 4722,
+   "description": "UFold 八 split 原始集三次复测及独立计数重算；clean 训练并集 provenance 未闭环",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_vienna_raw_summary.json",
+   "sha256": "5769a0dd04f43604fd9e9a33eae14c9227ce2f496c190bd571e135a1a1617f6b",
+   "bytes": 12155,
+   "description": "Vienna MFE/centroid/MEA 与 Nussinov-Turner 的八 split 三次复测；非序列训练系统",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_invalid_results.json",
+   "sha256": "12b83fb4b77ecf57449b8765612c4dfd0eb5b673b410c17adab34f2f46369a52",
+   "bytes": 1024,
+   "description": "已迁移至诊断区的 UFold 通道错配、SPOT-RNA 空解码与 MXfold2 长度子集结果索引",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_clean_audits/INDEX.json",
+   "sha256": "699c259064ac6fda37c5e2b14484bc0a0bc80a67cbd331f66c9246e02c59d3b6",
+   "bytes": 3971,
+   "description": "TR0/tr1c 各八 split 的 clean n、删除数、数量守恒与审计哈希索引",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_clean_train_union_summary.json",
+   "sha256": "4c071f0bc34f4fdd4733a025d16a22eea2c07dbfe77fa1bfe6e1486e923ac14f",
+   "bytes": 2792,
+   "description": "BPfold 官方六 checkpoint 在自身训练并集 clean 子集上的八 split 三次复算",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_rnastructure_raw_summary.json",
+   "sha256": "50d181fec340d671c629308933d1e313ed8b0e9843fd2d1e42245f1fc2cf2349",
+   "bytes": 7612,
+   "description": "RNAstructure Fold/MaxExpect 八 split 三次复算；固定取第一 MEA 结构，非序列训练系统",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_efold_raw_summary.json",
+   "sha256": "4168671fd7575cb6654f488974ab9cbee11189addff6e0d1106efeb9c5e46106",
+   "bytes": 2807,
+   "description": "eFold 八 split 原始集三次复算；单线程修复后结果，clean provenance 未闭环",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_student_s0_qa.json",
+   "sha256": "b88f43b0d2ed03209307a28d8424a035078fc9a2118ae928f31f30577f1ec6fe",
+   "bytes": 1891,
+   "description": "xens2 单学生 seed0 收敛后三次独立 VL0 CUDA QA；单种子过程证据，不是最终均值",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_distill_objective_comparison.json",
+   "sha256": "b6ab2b0a12c6e21b0d72fd893dc33386177bc8bbc297063c8358012767ed6037",
+   "bytes": 1655,
+   "description": "旧四项目标与纯教师 KL 的 VL0 QA、教师保真度及 TS0 对照；否定直接投入纯 KL 三种子",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_distill_s0_qa.json",
+   "sha256": "4f41f4b04b740c7ad4c6a9f48481b0087733b03a53cee389df2a9903b1ec90e9",
+   "bytes": 5001,
+   "description": "单 plana 学生 seed0 收敛、三次 VL0 CUDA QA 与 TS0 结果；单种子候选证据",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_distill_three_seed_vl0_ts0.json",
+   "sha256": "938e1ae6e0562fc25028a051c3ac6b609ba7f23a4948a0a7e356d8d787da66c9",
+   "bytes": 3121,
+   "description": "plana 三种子收敛、VL0 校准和 TS0 均值/SD；clean 主板待完成",
+   "status": "active"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_clean_three_seed_progress.json",
+   "sha256": "79520874a26c4da2ed15a254b9cf6c42001700209d8b631baf9c8c2e2b02e66e",
+   "bytes": 16058,
+   "description": "plana clean 8/8 split 三训练种子独立聚合；结果完整但未达 SOTA，并发吞吐不可用于测速",
+   "status": "active_complete_8_of_8_not_sota"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_ft_progress.json",
+   "sha256": "0baaec44a9351f1b39a6f75860b5b36943cfb2bd2ad58ad66785a44eb63339d3",
+   "bytes": 11103,
+   "description": "NucleicBERT fine-tuned 原 B=4 raw 与 tr1c-clean 各 8/8 三次复测；全部独立计数，raw 与原结果一致",
+   "status": "active_raw_clean_complete_16_cells"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_vs_bpfold_matched_diagnostic.json",
+   "sha256": "29655670693cb5a76287482158a7ef0c8e464389d76fd5ed8258d3e859ae61f9",
+   "bytes": 15062,
+   "description": "plana 学生与 BPfold 在同名、同序列、同 GT clean 交集上的完整三种子配对复算；负格保留",
+   "status": "active_matched_complete_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/bpfold_vl0.json",
+   "sha256": "ea21f21814aba3cd33cddb21ef9575fb19ecacf0e848734190ade4fb0d40c441",
+   "bytes": 293342,
+   "description": "BPfold 全 VL0 三次官方推理和原始 utility 分数哈希；仅供模型选择，不是测试集结果",
+   "status": "active_validation_only"
+  },
+  {
+   "path": "appendix_leakage/round39_vl0_bpfold_fusion_fit.json",
+   "sha256": "bfde5279469ffc411cb0c50c46ad08440e68380d3b6eb7aad65b55fc21540265",
+   "bytes": 2020,
+   "description": "VL0-only xens2+BPfold 非负 NLL 融合参数、教师/BPfold/融合对照；拟合集指标不作最终结论",
+   "status": "active_validation_selected_candidate"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_calibration_three_seed_vl0_verification.json",
+   "sha256": "4c3a7071da3d7824a3770d4230dca82b4a099484b3f07007b8fdf07671a35083",
+   "bytes": 4710,
+   "description": "三个 VL0 校准的原始数组独立复算；ECE 降低但 Spearman/AURC 退化，非跨 split 结论",
+   "status": "active_validation_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_fusion_clean_ref_pdb_ts2.json",
+   "sha256": "22339a9030299ab1b285393ddead16e3f0af28bfae032940c583dc776e701b45",
+   "bytes": 5082,
+   "description": "VL0 锁定融合在双 clean TS2 的三次结果与校准/置信度；n=1，未领先 BPfold",
+   "status": "active_partial_1_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_fusion_clean_aggregate.json",
+   "sha256": "1a1e2b0afc2748ba1e2325819bf056008bf268a46119f5cafc9cbafd5c6b6e07",
+   "bytes": 16883,
+   "description": "融合在 6 个 clean split 上与 BPfold/student 的同源配对、校准与置信度聚合；尚缺 bpRNA-new/ArchiveII",
+   "status": "active_partial_6_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_fast_ts0_equivalence.json",
+   "sha256": "f6886f443c279dc76bccdbd08d5e8cdeaecf5697393b29a8cdbaa08a4f1e7d4b",
+   "bytes": 881,
+   "description": "Kirigami C 解码 TS0 三次完整等价与 11.814 倍中位加速",
+   "status": "active_engineering_validation"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_fast_bprna_new_equivalence.json",
+   "sha256": "87473ab44930ced208a4b0b520323364423881e3b1557a2fe4990e26b8141b4d",
+   "bytes": 879,
+   "description": "Kirigami C 解码 bpRNA-new 三次完整等价与 5.813 倍中位加速",
+   "status": "active_engineering_validation"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_fast_archiveii_diagnostic.json",
+   "sha256": "adfdeb4981a16bf5d8b9e0bf87d8c5659fcb071834145073ea163e219ace7dfd",
+   "bytes": 1290,
+   "description": "Kirigami ArchiveII 当前算法对照完成；历史 F1 差异仍保留，不宣称历史复现",
+   "status": "active_current_algorithm_verified_historical_mismatch"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_fast_raw_clean_summary.json",
+   "sha256": "890e2491b63db7255079ab8e5aab81ada9a529b9332ba4b9caee035c01e9e415",
+   "bytes": 11181,
+   "description": "Kirigami C 解码 raw 与 TR0-clean 各八 split 独立计数；当前算法对照完成，保留历史 F1 差异",
+   "status": "active_complete_with_archive_mismatch"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_archive_protocol_reconcile.json",
+   "sha256": "59701fd72ac325a4b42f23c04d5e9c65386f2402bd48537e333ce8426a8e5525",
+   "bytes": 226816,
+   "description": "Kirigami ArchiveII 当前全配对、非交叉过滤和历史逐序列计数对账；排除仅忽略假结导致历史 F1 差异的解释",
+   "status": "active_protocol_diagnostic"
+  },
+  {
+   "path": "appendix_leakage/round39_kirigami_archive_200_400_original_vs_c.json",
+   "sha256": "891e2650344c855e096a39a24be097e50dced202d3e7f834f28f90ebb64fa7d1",
+   "bytes": 5904544,
+   "description": "Kirigami ArchiveII 200–400 nt 全桶 728 条原 Python 与 C 解码逐对一致证据",
+   "status": "active_complete_728_of_728_exact"
+  },
+  {
+   "path": "appendix_leakage/round39_fusion_candidate_rejection.json",
+   "sha256": "5e094ea460ef399d4127129d4ff27442526ecc2076a079755749f660ca186c9f",
+   "bytes": 1508,
+   "description": "VL0 融合 6 格后 8/8 硬门不可达的提前终止决策；不是完整融合全板",
+   "status": "active_rejected_candidate"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_data_audit.json",
+   "sha256": "ee6ddbb038d36238e374498dcba9b50e33ec2f2a29aa6bdb226e05db5f9d00e2",
+   "bytes": 9328,
+   "description": "混合 NLL 数据标签清理、base 去重及 VL0/八 split 的 80%/80% MMseqs2 去泄露审计",
+   "status": "active_data_gate_pass"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_independent_verification.json",
+   "sha256": "a3c6acbe139d9cd15be3b91733022e6ed804c4e02f4a5205e5ff83882290d966",
+   "bytes": 7344,
+   "description": "混合 NLL 数据 1657 条新增序列的独立标签与九组零泄露复扫",
+   "status": "active_independent_data_verification"
+  },
+  {
+   "path": "appendix_leakage/round39_spotrna_raw_summary.json",
+   "sha256": "dd752681b49ba620a6e76701da3f5f3b695316b7d43927822b6eab87876078e9",
+   "bytes": 4261,
+   "description": "SPOT-RNA 转换权重 raw 八 split 三次推理的独立计数与概率验收；clean 尚未闭环",
+   "status": "active_raw_complete_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_raw_summary.json",
+   "sha256": "04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07",
+   "bytes": 4178,
+   "description": "RiNALMo-ft raw 八 split 三次 full-length 推理的独立计数与协议验收；TR0-clean 尚未闭环",
+   "status": "active_raw_complete_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_spotrna_raw_clean_summary.json",
+   "sha256": "dfb80f51e014cc40023d4d2d7c38f0448e395f1726b9f66eae2437db770acca0",
+   "bytes": 7921,
+   "description": "SPOT-RNA raw+clean 16 格三次推理与独立复算；TS3 去泄露后为空，旧 6/8 进度已归档",
+   "status": "active_complete_raw_clean_8x3"
+  },
+  {
+   "path": "appendix_leakage/round39_spotrna_vl0_calibration.json",
+   "sha256": "534ddea6ea41b722442e97ddc7fe176c0134d1a2f3decdce7e81ab69f48eb6b8",
+   "bytes": 13580,
+   "description": "SPOT-RNA 与三个学生在 VL0 同 GT/候选配对的校准对照；置信度全部饱和为 1.0，不作最佳置信度结论",
+   "status": "active_vl0_matched_not_generalization"
+  },
+  {
+   "path": "appendix_leakage/round39_ufold_provenance_audit.json",
+   "sha256": "45a055939aa7f0fca19e10a68f9d9f2159b9f3659dd7eafe0dee0d1e1928aeac",
+   "bytes": 1659,
+   "description": "UFold 官方默认训练列表覆盖测试 split 的直接代码证据；原始 pickle 未恢复，clean 继续 blocked",
+   "status": "active_blocked_provenance"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_raw_clean_summary.json",
+   "sha256": "51858ed34ab8f66b0ff1db9f6619bb8f5a741a11ccba025ff4c7bd4d0e225cd3",
+   "bytes": 8095,
+   "description": "RiNALMo-ft raw+TR0-clean 16 格 full-length 三次推理与独立复算",
+   "status": "active_complete_raw_clean_8x3"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_seed0_qa.json",
+   "sha256": "452bd7591cdf0f79d822308e9fab73229a9c0b6bf00cf9e4c329d603168c4a26",
+   "bytes": 2099,
+   "description": "NLL seed0 三次独立 VL0 GPU QA；F1=0.7006882659，仅是校准 QA，不是泛化结论",
+   "status": "active_vl0_qa_pass"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_clean_ts0.json",
+   "sha256": "a9dd3f34e4046563a7b1fe6baf5eb6f3d14cd632f1b7ddfdedc5b50c74f0c425",
+   "bytes": 770,
+   "description": "NLL clean TS0 三次独立复算；相对原 plana seed0 下降 0.0011516134，八格结论见 seed0 gate",
+   "status": "active_complete_ts0_negative"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_clean_seed0_gate.json",
+   "sha256": "403604bde954581882d0571bd1516ec01da9ff909f152acb23ea194efe7c0137",
+   "bytes": 3271,
+   "description": "NLL seed0 clean 八格同协议对照；仅三格上升、五格下降，不启动 seed1/2",
+   "status": "active_negative_complete_seed0_8_split"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_runonce_repeat_diagnostic.json",
+   "sha256": "6c1060549d7ccc3a291516155267ee35546fc08db2862f1b282da64e3cf5a00a",
+   "bytes": 583469,
+   "description": "RNAformer inter-family 生产 run_once 三次原始 logits 与预测诊断；62/63 原始输出变化，39/63 预测变化",
+   "status": "active_diagnostic_not_accepted_result"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_runonce_repeat_no_rotary_cache.json",
+   "sha256": "9f963e3ece07a25b5df562136befc29fce4a6c1c4ea141ae4aaa420f45cab625",
+   "bytes": 52699,
+   "description": "仅关闭 12 个 RotaryEmbedding 缓存后的生产 run_once 对照；63/63 原始 logits 和预测三次一致，F1 回到首轮 0.8414634146",
+   "status": "active_root_cause_control_pass"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_ts1.json",
+   "sha256": "0bd11b5aa7b8c6e6301151fdc3a67ff625a619c8b84cf59dc115db7fcbf9ebeb",
+   "bytes": 45004,
+   "description": "修复后的生产 RNAformer inter-family raw TS1 三次完整结果；F1=0.8414634146，独立聚合通过",
+   "status": "active_complete_raw_ts1_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_download_receipt.json",
+   "sha256": "8d28c09f1f8e37e38febbe865bda11ff013da6103db61a972a0b2e4ddf671726",
+   "bytes": 4281,
+   "description": "frozen NucleicBERT 稳定前缀与 16 个既有完整分段装配收据；官方 MD5 和独立 SHA256 通过",
+   "status": "active_asset_verified_raw_complete_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_SHA256SUMS",
+   "sha256": "05c729f21b2051160bf35544cf02c21c89c654ea3da8a8cd634bb76b0206f78e",
+   "bytes": 78,
+   "description": "frozen NucleicBERT secstr.ckpt 的 SHA256 校验行",
+   "status": "active_asset_verified_raw_complete_clean_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_raw_summary.json",
+   "sha256": "84895a002691e504a3a254a39c5d2325ae74a3ad3fe454920b958644d45ed700",
+   "bytes": 5674,
+   "description": "frozen NucleicBERT 官方 B=2/598 raw 八 split 三次结果与独立复算；ArchiveII 39 条按协议截断",
+   "status": "active_complete_raw_8x3"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_clean_audit_summary.json",
+   "sha256": "ca3f46abd681fc6a0ed8d0a6c2e3d6d925c37a86821f6e6cdaf4e83dc7888f5f",
+   "bytes": 2921,
+   "description": "RNAStrAlign+TR0 专属 clean 八 split 审计；clean n=1044/5388/48/38/17/28/194/116",
+   "status": "active_clean_splits_complete_evaluation_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_clean_row_verification.json",
+   "sha256": "4a993f0d298b199fff86b658f8d7cb60109f80fa4b245a6dbb07b23659281d09",
+   "bytes": 2288,
+   "description": "从 raw 和 removed indices 独立重建 clean 八 split；名称、序列和 GT 逐行完全一致",
+   "status": "active_clean_row_identity_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_e2efold_asset_recheck.json",
+   "sha256": "06050cc59122b927bef8ec0f293e8453f50fa13676b8f404d7c50773bf2153d2",
+   "bytes": 1663,
+   "description": "E2Efold releases、官方 issues、SharePoint 直接下载和 OpenReview 再核查；仍无可验证权重",
+   "status": "active_blocked_asset_evidence"
+  },
+  {
+   "path": "appendix_leakage/round39_contextfold_asset_recheck.json",
+   "sha256": "704129e1d509d936166b0554cb30c2ce384b094c39363b31db4e132a6e2a09db",
+   "bytes": 1469,
+   "description": "ContextFold GitHub/PubMed 替代渠道再核查；无作者镜像或可验证模型下载",
+   "status": "active_blocked_asset_evidence"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_provenance_recheck.json",
+   "sha256": "b88694f0f7530bcf96d4561ebf320671a880fedf6beac1cdfb72215c929131e2",
+   "bytes": 1312,
+   "description": "CONTRAfold 官方 v2.02 源码包 URL/MD5 与连接复核；训练语料仍未恢复",
+   "status": "active_blocked_provenance"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_archiveii.json",
+   "sha256": "002c77c4ae46ea8bf2deed262be34de63346e35f262b43aff66269cff883d932",
+   "bytes": 3989294,
+   "description": "RNAformer inter-family raw ArchiveII 三次完整结果；F1=0.7390448979，精确分块后独立复算通过",
+   "status": "active_complete_raw_archiveii_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_ts0.json",
+   "sha256": "8f6657b41b4bcfab67c3fdd20d5f0d5dde900b86d59b3fc3e5b680af57e5b753",
+   "bytes": 1208981,
+   "description": "RNAformer inter-family raw TS0 三次完整结果；F1=0.6389628494，独立复算通过",
+   "status": "active_complete_raw_ts0_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_three_baseline_clean_recompute.json",
+   "sha256": "0786b475caa6754a934f69e6d69c40a29daa9bb3deec0860686880e2eb4c0271",
+   "bytes": 11804,
+   "description": "EternaFold/BPfold/MXfold2 各八 split own-clean 数据、审计、三次预测与计数独立复算；异子集不作 SOTA 排名",
+   "status": "active_24_cell_clean_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_four_clean_row_verification.json",
+   "sha256": "2a5eec62bde95d15d8158b1f32b6414485a93922571f4006bcfdcb1c47ad1869",
+   "bytes": 13720,
+   "description": "四套 RNAformer 共 32 个 clean 文件由 raw/removed indices 逐行重建一致；intra-family TS3 为空，非 GPU 评测结果",
+   "status": "active_clean_data_verified_gpu_pending"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_bprna_new.json",
+   "sha256": "ee69f1514a512ac4dfda538a8c9c39f3aeb479590205cd74d346a10a79043010",
+   "bytes": 4022689,
+   "description": "RNAformer inter-family raw bpRNA-new 三次完整结果；F1=0.6559981192，独立复算通过",
+   "status": "active_complete_raw_bprna_new_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_summary.json",
+   "sha256": "9b5ecf45afb5b91a750bf5aaac46660a2e9bf1505eebdf033e53d6b2855fd0cb",
+   "bytes": 5667,
+   "description": "RNAformer inter-family raw 八 split 三次独立聚合；clean 继续",
+   "status": "active_complete_raw_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_mixed_nll_error_stratification.json",
+   "sha256": "ba1970dad2d19bff9b3d8d86c931c1254fb8780a8b64b69677fc88c397090777",
+   "bytes": 22224,
+   "description": "混合 NLL seed0 否决后按长度与 TP/FP/FN 的离线归因；仅形成后续假设，不用于测试集调参",
+   "status": "active_post_rejection_diagnostic"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_raw_clean_summary.json",
+   "sha256": "aa58c7209e3a9f1d23339db37935261f84ef9eac10149b0ea8911b8861992104",
+   "bytes": 11049,
+   "description": "RNAformer inter-family raw+clean 各八 split 三次独立聚合；16 格全部通过",
+   "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_raw_summary.json",
+   "sha256": "709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb",
+   "bytes": 2806,
+   "description": "BPfold 官方六 checkpoint raw 八 split 三次独立聚合",
+   "status": "active_complete_raw_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_bpfold_raw_clean_summary.json",
+   "sha256": "2becebcdfee94ddb0d226570c40150361441d981637854cdb85b9407973dc902",
+   "bytes": 6040,
+   "description": "BPfold raw+own-clean 16 格总账；保留异 clean 子集边界",
+   "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_matched_clean_sensitivity.json",
+   "sha256": "ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd",
+   "bytes": 253987,
+   "description": "统一 xens2+9 基线八 split 阶段快照：全长 ArchiveII 已覆盖，同 GT 全局与两两交集，TS2 全交集为空",
+   "status": "active_partial_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom.log",
+   "sha256": "1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6",
+   "bytes": 6152,
+   "description": "RNAformer-bprna raw ArchiveII 三任务并发显存不足证据；无半成品 JSON，已改持久锁队列",
+   "status": "active_failure_evidence_retry_queued"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_raw_clean_summary.json",
+   "sha256": "ad16e32289ab282ac2b85df1d70f1dcf47684abe33b397f7f23188ffcc9b30a8",
+   "bytes": 11451,
+   "description": "frozen NucleicBERT 官方 B=2 首598nt raw+专属 clean 各八 split 三次独立聚合",
+   "status": "active_complete_raw_clean_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_execution_identity.json",
+   "sha256": "0496632ac2937f57af2970972737e4ba84c94bf1de67518529d07e99fceb66f5",
+   "bytes": 875,
+   "description": "运行中 bprna ArchiveII 的启动 commit/code SHA 固定；后续仅允许校正两项代码身份元数据",
+   "status": "active_running_process_identity_pinned"
+  },
+  {
+   "path": "group_meeting/prism_main_figure_source.json",
+   "sha256": "5ec110149035d6b3e62cded706fa62ef16e06f23d6681b472fa999eda612f221",
+   "bytes": 48337,
+   "description": "PRISM 独立模型与组会主图统一源；主图 1 使用最新 BPfold raw 8 split×3 对照",
+   "status": "active_verified"
+  },
+  {
+   "path": "group_meeting/qa_report.json",
+   "sha256": "2078b4c10d3d830b4753e2fb6b865a67357e4a7be5e11bd0660fd42972b5b42e",
+   "bytes": 23936,
+   "description": "PRISM 组会 PPT/PDF 222 项自动验收报告，全部通过",
+   "status": "active_pass_222_of_222"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_concurrent.log",
+   "sha256": "45d8f14ee090d2313986aa442f19e817f64f3c52778e0b87f1c8de04bb0c5e4e",
+   "bytes": 6137,
+   "description": "旧 HEK 队列作为第三 GPU 任务进入导致第二次 ArchiveII OOM；HEK 已暂停，RNAformer 带逐 repeat 断点恢复",
+   "status": "active_failure_evidence_resumable_retry"
+  },
+  {
+   "path": "appendix_leakage/round39_efold_provenance_recheck.json",
+   "sha256": "fbea92305b4a4e172ad57956e903100773a64a5496205cb926344f75d839a117",
+   "bytes": 3011,
+   "description": "eFold 官方 efold_train 与数据索引 commit 已确认；训练序列并集未恢复，own-clean 保持 provenance blocked",
+   "status": "active_blocked_provenance"
+  },
+  {
+   "path": "appendix_leakage/round39_xens2_full_archiveii.json",
+   "sha256": "4e9442d42e47de4c294f9ec4264b1c1c18a4640be9d7494504f3c8e3a72ba717",
+   "bytes": 2099085,
+   "description": "统一 xens2 全长 ArchiveII clean 1107 条三次 raw-sequence 结果；F1=0.73333536995，SD=0",
+   "status": "active_complete_full_length_3_repeats"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu.json",
+   "sha256": "d193701b3c657a177ba5b83ea85ce1fbe0f1efc3a964333a135041717ecaaec6",
+   "bytes": 630,
+   "description": "RNAformer Attention2d 查询分块在 RTX4090 L=100/520/954 与原实现逐元素完全相等",
+   "status": "active_gpu_exactness_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_attention2d.log",
+   "sha256": "e8e94f1f6fd1ddba85e26aea3c99811109f3e3e8a94d8f825298622c5a41a610",
+   "bytes": 6166,
+   "description": "Attention2d 未分块导致 12.78GiB 单次申请 OOM 的错误栈；随后查询分块通过 GPU 零误差验证",
+   "status": "active_failure_evidence_fixed_gpu_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_attention2d_chunk_gpu_bf16.json",
+   "sha256": "132c43f756c2c6a924e7eb6a1c23ec8c00bf592bb9a42862fa6be13346f6d76c",
+   "bytes": 667,
+   "description": "Attention2d 查询分块在生产 bf16 autocast 下 L=100/520/954 与原实现逐元素完全相等",
+   "status": "active_gpu_bf16_exactness_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_own_clean_leaderboard.json",
+   "sha256": "4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1",
+   "bytes": 89602,
+   "description": "逐系统原生 clean 主榜：各自 clean n、三次 F1/SD、TP/FP/FN、删除数、权重与结果哈希；85/104 格完成，交集仅作敏感性",
+   "status": "active_partial_own_clean_leaderboard_not_final"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_pair_transition.log",
+   "sha256": "880cef7990e599522dc5f4357c81a2f80e158cd3d5de9a7129f2782fdd16555c",
+   "bytes": 6227,
+   "description": "外部 round41 BPfold/MXfold2 与 NB 并发导致 pair_transition OOM；不终止外部任务，RNAformer 等待恢复",
+   "status": "active_failure_evidence_waiting_external_queue"
+  },
+  {
+   "path": "appendix_leakage/round39_nb_original_ssp_cancelled.json",
+   "sha256": "03b8d64b81ea6c30104036f76ef411b4d5e5e8ba93cc261a77f326a87ddb4fcf",
+   "bytes": 605,
+   "description": "用户取消 NucleicBERT 原论文下游二级结构训练；official_s3 epoch19 断点保留，official_s4/JEV 五种子取消，主 benchmark 基线保留",
+   "status": "active_cancelled_by_user"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_outproj.log",
+   "sha256": "9cd03a4e00e9b9412eed8a244b55979791cffec3f712bec9de9e35fe32b72836",
+   "bytes": 6570,
+   "description": "外部任务动态抬升显存导致 out_proj 882MiB 缺口；Attention2d 已改为 16 行查询分块并通过零误差验证",
+   "status": "active_failure_evidence_block16_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_archiveii_block64_repeat0.json",
+   "sha256": "949d0213f70fba6643a0ef75271df985ac144565379117412b83be35a5a48039",
+   "bytes": 3605679,
+   "description": "旧 64 行配置的 ArchiveII 单次诊断 F1=0.7607306；不与 16 行新协议混合，不纳入主榜",
+   "status": "active_legacy_diagnostic_not_final"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_archiveii_oom_short_path.log",
+   "sha256": "bf3453591ff45f1b457f8ea4d3b4c931a17f5b861cc7920c69716eb84c8fd7f1",
+   "bytes": 6281,
+   "description": "256–512nt 原路径 OOM；阈值降至 256nt 后 fp32/bf16 分块均通过零误差验证",
+   "status": "active_failure_evidence_threshold256_verified"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_raw_summary.json",
+   "sha256": "f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a",
+   "bytes": 5663,
+   "description": "RNAformer-bprna 官方权重 raw 八 split 三次独立聚合；256nt/16 行分块协议",
+   "status": "active_complete_raw_8_of_8"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_bprna_raw_archiveii.json",
+   "sha256": "c689c550a115f8478b9cf3e4303d9943314a4a8dd2c056ac206e8b9e7725f219",
+   "bytes": 3774818,
+   "description": "RNAformer-bprna raw ArchiveII 三次结果 F1=0.7607306048550984，SD=0",
+   "status": "active_complete_raw_archiveii_3_repeats"
+  }
+ ]
+}

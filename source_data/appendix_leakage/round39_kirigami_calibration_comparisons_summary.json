@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "PASS_KIRIGAMI_COMPARISONS_NOT_ALL_ELIGIBLE",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 709,
+      "result_sha256": "9ecfe5ee42594293a10223e972da07b83b958d56c0172c23ed5d32bdc058fee9"
+    },
+    {
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "b9b8e60882a40903b596ae1aa2dc5f45cb6805ab521f3211c1b05f2ce274d6c4"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "9314e2e5de6f82d17875b4996001dd365d4b8a3c8210bc989f7bb95d76bc4c12"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "f253da475658ab0858c43dd94cd40a8e9691bd49d4280182ca1ed96578ef74bb"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "e4087bcb07d00aff53a65051afd47f12a886d095510a1f4645bf931f1cdce106"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "32b8cfeaf8982ee7ae3396a7a96d0d6ddd700378404413071c24f591245b3504"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 765,
+      "result_sha256": "179d881d2bb2db307e84151394669613703d7fc079f7145271719fecf795ab9f"
+    },
+    {
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 95,
+      "result_sha256": "2c50788defe268ffc6f001d2a9bf3cea1c91e78c3fc6cf2c9477678969f02a3f"
+    }
+  ],
+  "boundary": "native pseudoknot decode retained; auxiliary matched sensitivity only; other baselines pending"
+}

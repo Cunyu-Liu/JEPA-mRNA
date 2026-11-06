@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "train": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl",
+  "train_sha256": "93d328a49998435333413c61b8c1c530010d195a658f7a008e59bbfd3644a4cc",
+  "split": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl",
+  "split_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+  "protocol": "normalized exact identity plus MMseqs2 nucleotide hits with identity>=0.8 and query coverage>=0.8",
+  "command": [
+    "/home/rna_jev/tools/bin/mmseqs",
+    "easy-search",
+    "/home/rna_jev/scratch/round39/tr0_ref_pdb_ts3/split.fa",
+    "/home/rna_jev/scratch/round39/tr0_ref_pdb_ts3/train.fa",
+    "/home/rna_jev/scratch/round39/tr0_ref_pdb_ts3/alignment.tsv",
+    "/home/rna_jev/scratch/round39/tr0_ref_pdb_ts3/tmp",
+    "--min-seq-id",
+    "0.8",
+    "--cov-mode",
+    "2",
+    "-c",
+    "0.8",
+    "--max-seqs",
+    "1",
+    "--threads",
+    "2",
+    "--search-type",
+    "3"
+  ],
+  "raw_n": 19,
+  "clean_n": 17,
+  "removed_exact": 0,
+  "removed_homology_only": 2,
+  "removed_exact_indices": [],
+  "removed_homology_only_indices": [
+    1,
+    8
+  ],
+  "clean_sha256": "ff98f9df73cfe459ba0a09439bb7bc68c5e50ca7593a579133b121da80e9dfb7"
+}

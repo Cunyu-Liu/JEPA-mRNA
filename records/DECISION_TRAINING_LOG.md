@@ -12724,3 +12724,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **协议边界**：保留原生 598 nt 截断和预测协议；与 xens2 比较时逐条要求名称、序列和实际评分 GT 相同，GT 协议不同者单独剔除。该汇总只是 matched-clean 附加敏感性，不替代 own-clean 主榜。
 - **frozen 结论勘误**：ArchiveII、TS0、bpRNA-new 的 frozen AURC 均高于 xens2（风险覆盖表现更差）；仅 ArchiveII 的 Spearman 更高，不能写 frozen 在大 split 结构排序更好。§15.425 已按原 JSON 数值修正，概率误差与结构排序分开陈述。
 - **后续**：biophysical 的 ArchiveII、TS0、bpRNA-new 尚未全部通过独立验收，RiNALMo-ft 保持门控等待；其他 eligible 基线概率也未齐套，不能写全板最低 ECE 或最佳置信度。
+
+
+## §15.427（2026-11-06）Kirigami 全板概率闭环与 MXfold2 首格
+
+- **Kirigami 独立验收**：直接复用八个 clean split 已保存的原生 GPU 概率矩阵，逐条重算标签、F1、含假结预测的置信度和三次概率哈希；汇总 SHA256=`e0d409edac0f6ccee9e31862a0fb4d54243491b7c88670bc84f16ade9f02fa30`。八格 matched-clean 比较汇总 SHA256=`40ef066287626af42a918313df65e8749c9ee7b0384b24282967badb25a49340`。假结预测保留，ECE 使用共同合法配对掩码，两种口径不混用。
+- **大 split 结果**：bpRNA-new 的 Kirigami/xens2 ECE=0.0043999537/0.0048310272，ArchiveII=0.0009723210/0.0012167945，Kirigami 均更低；TS0=0.0017787631/0.0006199985，xens2 更低。ArchiveII 的 Kirigami Spearman=0.8108105242，高于 xens2=0.7179665733，但 AURC=0.1320936692，高于 xens2=0.1225071918（更差）。bpRNA-new 的 xens2 AURC=0.3486543793，略低于 Kirigami=0.3509156876。ECE、相关性和风险覆盖不能合并成单一最佳置信度。
+- **MXfold2 原生概率**：官方包实际架构为 `MixC`，`TrainSetAB.pth` 严格加载、802,642 参数一致；使用官方 `return_partfunc=True` 的 float32 概率，不采用五位小数 CLI 文本。TS2 clean n=27，三次 GPU 推理 F1 均为 0.914，逐条预测与原主榜一致；共同 n=20，MXfold2 ECE=0.0077294563，低于 xens2=0.0168951314。MXfold2 Spearman=-0.1478444135、AURC=0.0666676556，xens2 分别为 0.0737674539/0.1298499081，方向不同。
+- **工程验收**：Kirigami 与既有校准测试共 9 项通过；Kirigami 代码提交 `ef854f8b73408850869a90291b247908a8dd89d4`，MXfold2 代码提交 `67fe5cc045473bbdc6eed15ce39c65180a8143ea`。MXfold2 其余七格继续 GPU 队列，未齐套前只记首格。EternaFold/CONTRAfold 原生结果无逐对概率，保持 NOT_AVAILABLE，不用 one-hot 冒充概率。

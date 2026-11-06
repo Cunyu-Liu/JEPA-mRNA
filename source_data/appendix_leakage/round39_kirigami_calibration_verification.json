@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "status": "PASS_KIRIGAMI_EXISTING_PROBABILITY_ARRAYS_INDEPENDENT_RECOMPUTE",
+  "system": "kirigami",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "n_sequences": 1192,
+      "n_pairs": 5765340,
+      "tp": 23400,
+      "fp": 9000,
+      "fn": 9152,
+      "strict_micro_f1": 0.7205320852321715,
+      "result_sha256": "9688b758f0a577239d4374726ea2c2ffee19f7fe6140a3bddc6100fa68bdbda1",
+      "pair_arrays_sha256": "c1c9aab688d8053fe8ddef1fa6374b82f80502fb921d149b2de0a6d570166ef0"
+    },
+    {
+      "split": "bprna_new",
+      "n_sequences": 5388,
+      "n_pairs": 15345324,
+      "tp": 64985,
+      "fp": 24551,
+      "fn": 70199,
+      "strict_micro_f1": 0.5783641865432538,
+      "result_sha256": "4d876dac632f971c8382792f950bbacfdd688d5cb22a46658e43385cd022e0ee",
+      "pair_arrays_sha256": "6b3786567615ac1a3378b9b2ab58dcee9ce325ac55c6f10b47b5b721af3212e4"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "n_sequences": 61,
+      "n_pairs": 72455,
+      "tp": 832,
+      "fp": 110,
+      "fn": 476,
+      "strict_micro_f1": 0.7395555555555555,
+      "result_sha256": "8fd08cd98debb7a8bd0cfd06195a74da5acc4deb15065c7d58693692c2073479",
+      "pair_arrays_sha256": "f1fbd1b9cc52cf11f71dbb4367f7e019bf3e15d409681b3c417251eb8d90c4c1"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "n_sequences": 39,
+      "n_pairs": 22139,
+      "tp": 388,
+      "fp": 62,
+      "fn": 267,
+      "strict_micro_f1": 0.702262443438914,
+      "result_sha256": "3ffd48d447ecd78eaf5a14aa5553e2141f512256efcce4e7f46e6b53684a8b7e",
+      "pair_arrays_sha256": "2d6f4c790d71de10ea084d744a8e6774a6bfc2e4f27d0eb2484da19cfe5ca1b3"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "n_sequences": 17,
+      "n_pairs": 22967,
+      "tp": 250,
+      "fp": 50,
+      "fn": 136,
+      "strict_micro_f1": 0.7288629737609329,
+      "result_sha256": "9815d60df32d3857cce2d5f5ff81d5b127d4f3334aa7a646dfdb81f5699d35f3",
+      "pair_arrays_sha256": "ecb795b3467e8510fcdc6fe7a981bc6b7f740e2ed47a9fa34ce61024564dcb7e"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "n_sequences": 28,
+      "n_pairs": 27005,
+      "tp": 274,
+      "fp": 62,
+      "fn": 201,
+      "strict_micro_f1": 0.6757090012330457,
+      "result_sha256": "12e18c1d566d5da67d79dd6d1093994884c6720395762b30745be9681b7dea97",
+      "pair_arrays_sha256": "c9ad52255c56fde5afbb88daa14c42cf3d65ca429e9c88b06c3ef74dfca691c1"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "n_sequences": 1094,
+      "n_pairs": 18023580,
+      "tp": 44161,
+      "fp": 15635,
+      "fn": 19991,
+      "strict_micro_f1": 0.7125730144899474,
+      "result_sha256": "fcaaf3865bc040cc3d0972a875827a6d3f6b6d907cdf8f20ac5e694b152c325e",
+      "pair_arrays_sha256": "b0102af08eae4108c26411927e3b9b3a6e4ae55d4bf6e22073e3144441fa8434"
+    },
+    {
+      "split": "testsetb",
+      "n_sequences": 116,
+      "n_pairs": 345901,
+      "tp": 1917,
+      "fp": 611,
+      "fn": 971,
+      "strict_micro_f1": 0.7079025110782866,
+      "result_sha256": "2e81cab4f3726276c7c476f80f7edfa1f0d94f4513cc80ee3966bed5d6dd54b5",
+      "pair_arrays_sha256": "7a850a233a258c10f200be1595f9392ce3ca6031f7cb19940e23df255f3179e4"
+    }
+  ],
+  "comparison_status": "PENDING_ALL_ELIGIBLE_BASELINES_MATCHED_CLEAN_PROBABILITIES"
+}
