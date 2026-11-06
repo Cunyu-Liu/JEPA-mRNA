@@ -12921,3 +12921,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **范围修正**：P0 从主八 split 扩为 13 split，新增 `rfam_fam` 及 CHANRG Test/GenA/GenC/GenF；全部使用 structRFM 预训练语料的同一精确+80% identity 审计。汇总状态为 `PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS`，未完成前不启动 S2。
 - **评测覆盖**：自动评测同样扩为 13 split×3 seed×3 repeat；聚合状态为 `PASS_STRUCTRFM_FROZEN_ABC_13_SPLITS_3_SEEDS_3_REPEATS`。合成测试已改为 13 split 并通过，没有遗漏 B 类外部 OOD。
 - **当前状态**：训练仍在收敛，预训练语料以 2MB×48 路续传；S2 与正式评测均未开始，无科学结果。代码提交 `cfbfbb8` 已推送。
+
+
+## §15.452（2026-11-06）RIPE 四通道静态实现与数值验收
+
+- **实现**：`src/rnajepa/ripe.py` 提供 log、R1、R2、R3、R5、R6 六种模式；连续 log 距离基、{11,22} 双周期、ν>1 的 log 远场、互补内容及随机对照均由同一模块生成，不使用结构标签拟合初始化。
+- **测试**：4/4 通过，覆盖远场公式、距离基归一、Δ=0/Δ<4/特殊 token 门控、4096 nt 有限值、随机周期/互补表可复现及全部 RIPE 参数有限梯度。测试中还修正了距离基维数、互补二维索引和“特殊 token 只关闭内容项而非全部位置偏置”的口径。
+- **边界**：仅完成静态实现验收，未启动 RIPE 训练，未产生架构效果结论。代码提交 `769c3a4` 已推送。
