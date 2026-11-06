@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "PASS_PARTIAL_6_OF_8_NOT_FULL_BOARD",
+  "system": "contrafold",
+  "cells": [
+    {
+      "split": "ref_pdb_ts1",
+      "system": "contrafold",
+      "n_sequences": 18,
+      "n_pairs": 16595,
+      "tp": 266,
+      "fp": 73,
+      "fn": 72,
+      "strict_micro_f1": 0.7858197932053176,
+      "result_sha256": "293452a7eb0aff297f08e2d79badb5872b12c40594814b935524da2c20a39fbf",
+      "pair_arrays_sha256": "4208c34756978d2e1d7c029a641cbab036eb41d039f4f82211166c4aa7996059"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "system": "contrafold",
+      "n_sequences": 29,
+      "n_pairs": 15180,
+      "tp": 416,
+      "fp": 74,
+      "fn": 50,
+      "strict_micro_f1": 0.8702928870292888,
+      "result_sha256": "b1962662fed0f9b81a8b0db139e076fd43bfbc6fd11842f33e32f811a71aa697",
+      "pair_arrays_sha256": "9f5fedc9b177120b04ca281278db2dc735520700de5ebbce2755cf0429855e96"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "system": "contrafold",
+      "n_sequences": 4,
+      "n_pairs": 3499,
+      "tp": 59,
+      "fp": 18,
+      "fn": 11,
+      "strict_micro_f1": 0.8027210884353742,
+      "result_sha256": "4189230b985ab09666cd5ed337bed66e84a7ba452f71dd0d8e4861a1076e9c42",
+      "pair_arrays_sha256": "2144983ce25d1eef138df615a522c53c7dab25fbe2a30d992c1a653f61396221"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "system": "contrafold",
+      "n_sequences": 10,
+      "n_pairs": 3303,
+      "tp": 78,
+      "fp": 27,
+      "fn": 19,
+      "strict_micro_f1": 0.7722772277227723,
+      "result_sha256": "9f285dc4869424c967968d7806b9e4edbe23195cb34d3936ea6d222daeed79cd",
+      "pair_arrays_sha256": "5cf5a1b513118a41c5ffe3c095c73fac32569a169791a21726f4dde5a18ce6d2"
+    },
+    {
+      "split": "testsetb",
+      "system": "contrafold",
+      "n_sequences": 288,
+      "n_pairs": 788507,
+      "tp": 4623,
+      "fp": 4283,
+      "fn": 2736,
+      "strict_micro_f1": 0.5684598831847525,
+      "result_sha256": "f2f15c9265eebe1f3e753249c89f0bcefeea3cc1bcca26b2040256d1645026c8",
+      "pair_arrays_sha256": "73a6d42a6646bf48befb3c8ed83d662309311df6196735df00f5aa3ddcbd59b0"
+    },
+    {
+      "split": "bprna_ts0",
+      "system": "contrafold",
+      "n_sequences": 713,
+      "n_pairs": 3708091,
+      "tp": 12731,
+      "fp": 16164,
+      "fn": 7046,
+      "strict_micro_f1": 0.5231344510190664,
+      "result_sha256": "680476018e79c7e87b8d7df2944ca6d207b4df8036c7837e5314aa9a41e02bd6",
+      "pair_arrays_sha256": "3e67aec7448e3a5394fa10d6d5983182d4e16a0f07d4afa5dca33e65da27851a"
+    }
+  ],
+  "pending": [
+    "archiveii_embok_clean",
+    "bprna_new"
+  ]
+}

@@ -1855,6 +1855,48 @@
    "bytes": 7385,
    "description": "bpRNA-new MXfold2 ECE/Brier/NLL/Spearman/AURC 均优于 xens2",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_partial_verification_6.json",
+   "sha256": "a234735b050773bc8d953c66890ec08cbf3e80f42a3ae4fd93a8ac02fc486c46",
+   "bytes": 2608,
+   "description": "EternaFold 六格原生 posterior 独立复核",
+   "status": "active_partial_6_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_partial_6_comparisons_summary.json",
+   "sha256": "28577fa77e1ec472a30a3063bfbf888401f660c5a9eb78eef20b86b746ca37ff",
+   "bytes": 1825,
+   "description": "EternaFold 六格附加敏感性；TS0 xens2 ECE 更低，其余五格 EternaFold 更低",
+   "status": "active_partial_6_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_partial_verification_6.json",
+   "sha256": "37ddd15191bdcf93e8deeb1c7b3a7f7f2d2ce2e8e1fc9610845f22ee37aa64e6",
+   "bytes": 2607,
+   "description": "CONTRAfold 六格原生 posterior 独立复核",
+   "status": "active_partial_6_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_partial_6_comparisons_summary.json",
+   "sha256": "1fda0ad85d2d68f9b84149c71526767e0f684697f7321fe4f83173e033136501",
+   "bytes": 1826,
+   "description": "CONTRAfold 六格附加敏感性；TS0 xens2 ECE 更低，其余五格 CONTRAfold 更低",
+   "status": "active_partial_6_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_eternafold_calibration.json",
+   "sha256": "22048c8e50c93311f76e63fc131a75f4e7b6fffd875bb89879b5d1929414017f",
+   "bytes": 7459,
+   "description": "TS0 EternaFold posterior；xens2 ECE 更低",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_contrafold_calibration.json",
+   "sha256": "265cb527ffc04296026282a00fad68a180c1beabf1d47822f898e4f7c55a0d48",
+   "bytes": 7462,
+   "description": "TS0 CONTRAfold posterior；xens2 ECE 更低",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

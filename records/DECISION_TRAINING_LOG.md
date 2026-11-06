@@ -12812,3 +12812,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **bpRNA-new**：共同 n=5386，MXfold2 ECE=0.0022590028、Brier=0.0044315361、NLL=0.0167012585，均低于 xens2=0.0048310272/0.0072889935/0.0338954187。MXfold2 Spearman=0.6236330205、AURC=0.1861707741，也优于 xens2=0.5176421505/0.3486543793。比较 SHA256=`19dc49a86905d322c58545c6649b9649ad6c67664222cc02e8bf290f706bc72d`。
 - **工程闭环**：混合有效性汇总 initially 因有效单元格缺 `status` 触发 KeyError，已改为安全读取并用真实八格复算验证；相关 11 项测试通过，提交 `f0f252f51fccae34c5c1bdfbf1a67bdf97544f78`。没有通过降低断言或夹紧 BPP 获得假 PASS。
 - **边界**：MXfold2 七格有效比较均显示低于 xens2 的 ECE，但 ArchiveII 不能纳入概率排名。CONTRAfold 家族后验 16 格仍在原生 CPU 队列，双 stream 测速等待独占；不宣称全 eligible 最低 ECE 或速度 SOTA。
+
+
+## §15.438（2026-11-06）CONTRAfold 家族 12 格与测速基线修复
+
+- **EternaFold 六格**：独立复核 SHA256=`a234735b050773bc8d953c66890ec08cbf3e80f42a3ae4fd93a8ac02fc486c46`，比较汇总 SHA256=`28577fa77e1ec472a30a3063bfbf888401f660c5a9eb78eef20b86b746ca37ff`。TS0 F1=0.5290589203，xens2 ECE=0.0006256100 低于 EternaFold=0.0016484854；其余五格 EternaFold ECE 更低。TS0 比较 SHA256=`22048c8e50c93311f76e63fc131a75f4e7b6fffd875bb89879b5d1929414017f`。
+- **CONTRAfold 六格**：独立复核 SHA256=`37ddd15191bdcf93e8deeb1c7b3a7f7f2d2ce2e8e1fc9610845f22ee37aa64e6`，比较汇总 SHA256=`1fda0ad85d2d68f9b84149c71526767e0f684697f7321fe4f83173e033136501`。TS0 F1=0.5231344510，xens2 ECE=0.0006256100 低于 CONTRAfold=0.0012549405；其余五格 CONTRAfold ECE 更低。TS0 比较 SHA256=`265cb527ffc04296026282a00fad68a180c1beabf1d47822f898e4f7c55a0d48`。
+- **测速基线修复**：双 stream 在独占窗口启动后发现误写 `xens2_b32_exclusive.json`，实际已验收文件为 `xens2_b32_full_ts0.json`。已固定真实基线 SHA256=`0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0`，检查 n=1288、三次、raw-sequence、无缓存、无 resume；4 项测速测试通过，提交 `760de37fad6af24429a8f6afae25c985d1afbec6`。后续外部 GPU 进程进入，当前没有有效双流吞吐。
+- **边界**：CONTRAfold 家族各完成 6/8，ArchiveII 与 bpRNA-new 继续，不能称 16 格闭环。TS0 与其他 split 的 ECE 方向不同，不支持跨 split 统一最佳置信度。

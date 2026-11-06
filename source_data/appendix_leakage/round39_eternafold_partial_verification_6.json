@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "PASS_PARTIAL_6_OF_8_NOT_FULL_BOARD",
+  "system": "eternafold",
+  "cells": [
+    {
+      "split": "ref_pdb_ts1",
+      "system": "eternafold",
+      "n_sequences": 18,
+      "n_pairs": 16595,
+      "tp": 241,
+      "fp": 112,
+      "fn": 97,
+      "strict_micro_f1": 0.6975397973950795,
+      "result_sha256": "2650e53a94f822bfc79d82da450dad376f6b15bc29b567c5b918eb1dcfb29739",
+      "pair_arrays_sha256": "49aa6f6fbeea2b5f7d4018493fe37b0c0849f9d4f9d5406f871c8b2609112981"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "system": "eternafold",
+      "n_sequences": 29,
+      "n_pairs": 15180,
+      "tp": 408,
+      "fp": 79,
+      "fn": 58,
+      "strict_micro_f1": 0.8562434417628542,
+      "result_sha256": "17dad5b4c2a00991591e4a804f7daa98170a5230160568c53db1c5d72de92f58",
+      "pair_arrays_sha256": "d7895a1f0b4462e06fabad4fa72344ad71e0a6198e641039c33d1e3c91addc00"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "system": "eternafold",
+      "n_sequences": 4,
+      "n_pairs": 3499,
+      "tp": 59,
+      "fp": 18,
+      "fn": 11,
+      "strict_micro_f1": 0.8027210884353742,
+      "result_sha256": "f4785bde323d07a5a590c3ae75151a9769e9edb2a979748f568e72357bdc956b",
+      "pair_arrays_sha256": "13d55f1264f6d76d692d03a85a6ecf011ba3328cdcfeaeea5c2d5f9bf3a81589"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "system": "eternafold",
+      "n_sequences": 10,
+      "n_pairs": 3303,
+      "tp": 80,
+      "fp": 29,
+      "fn": 17,
+      "strict_micro_f1": 0.7766990291262136,
+      "result_sha256": "7c32be9312f1eecd1aee3845095b9e52f0c17c26cde60d2607f1aa7eb55f1852",
+      "pair_arrays_sha256": "2055b3a710373e7cd79ef10a1467175ef709d2916eab769e4579173225afee12"
+    },
+    {
+      "split": "testsetb",
+      "system": "eternafold",
+      "n_sequences": 288,
+      "n_pairs": 788507,
+      "tp": 4959,
+      "fp": 4324,
+      "fn": 2400,
+      "strict_micro_f1": 0.5959620237952169,
+      "result_sha256": "2c2e566a16c01bfa77b848ce56de6c0168d6bf858157a5dc55067d7bb4219542",
+      "pair_arrays_sha256": "5c3ced4e8477f0b073b08540827096e43af1994e474659bcfc890b00dd648ab9"
+    },
+    {
+      "split": "bprna_ts0",
+      "system": "eternafold",
+      "n_sequences": 713,
+      "n_pairs": 3708091,
+      "tp": 13186,
+      "fp": 16884,
+      "fn": 6591,
+      "strict_micro_f1": 0.5290589202961061,
+      "result_sha256": "10fa9c19f58ac45d1c7ba31c7ad089835012cb0025e7fccb2942d327f0157da6",
+      "pair_arrays_sha256": "567106153255ae541956156cd2029afe2b23905ac0e350a9dae017adf0eb1c7e"
+    }
+  ],
+  "pending": [
+    "archiveii_embok_clean",
+    "bprna_new"
+  ]
+}
