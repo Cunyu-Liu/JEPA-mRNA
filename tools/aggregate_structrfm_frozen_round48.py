@@ -28,6 +28,15 @@ def length_breakdown(result):
     return output
 
 
+def span_breakdown(result, minimum_span):
+    key = f"span_{minimum_span}"
+    counts = {name: sum(row[key][name] for row in result["per_sequence"])
+              for name in ("tp", "fp", "fn")}
+    denominator = 2 * counts["tp"] + counts["fp"] + counts["fn"]
+    return {**counts, "micro_f1": 2 * counts["tp"] / denominator if denominator else None,
+            "macro_f1": float(np.mean([row[key]["f1"] for row in result["per_sequence"]]))}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, required=True)
@@ -78,6 +87,7 @@ def main():
                           "micro_inf": result["micro_inf"], "macro_inf": macro_inf,
                           "ece": result["calibration"]["ece"], "brier": result["calibration"]["brier"],
                           "nll": result["calibration"]["nll"], "length_buckets": length_breakdown(result),
+                          "span_30": span_breakdown(result, 30), "span_100": span_breakdown(result, 100),
                           "precision": result["micro"]["precision"],
                           "recall": result["micro"]["recall"],
                           "result_sha256": sha256(path), "checkpoint_sha256": result["checkpoint_sha256"],

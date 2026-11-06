@@ -28,8 +28,10 @@ def test_aggregate_three_seed_three_repeat(tmp_path, full_model):
             checkpoint.write_bytes(b"checkpoint")
             out = root / f"eval_decision/{experiment}/s{seed}/{split}.json"
             out.parent.mkdir(parents=True, exist_ok=True)
+            span = {"tp": 1, "fp": 0, "fn": 0, "f1": 1.0}
             row = {"name": "toy", "length": 6, "f1": 1.0, "inf": 1.0,
-                   "structure_conf": 1.0, "tp": 1, "fp": 0, "fn": 0}
+                   "structure_conf": 1.0, "span_30": span, "span_100": span,
+                   "tp": 1, "fp": 0, "fn": 0}
             prediction = [{"name": "toy", "pred_pairs": [[0, 4]]}]
             out.write_text(json.dumps({
                 "status": "PASS", "device": "cuda",

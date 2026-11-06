@@ -11,7 +11,8 @@ from rnajepa.harness import nussinov_map, valid_pair_mask
 from rnajepa.train_decision import EmbeddingStore, TrainConfig, build_decision_model
 from eval.ss.metrics import PairLevelMetrics
 from xens2_eval import r2d_scores
-from structrfm_metrics_round48 import PairCalibrationAccumulator, inf_value, structure_confidence
+from structrfm_metrics_round48 import (PairCalibrationAccumulator, inf_value,
+                                       span_metrics, structure_confidence)
 
 
 def sha256(path):
@@ -73,6 +74,8 @@ def main():
                 per_sequence.append({"name": row.get("name", ""), "length": len(sequence),
                                      "f1": metrics.f1, "inf": inf_value(pairs, gt_pairs),
                                      "structure_conf": structure_confidence(scores, pairs),
+                                     "span_30": span_metrics(pairs, gt_pairs, 30),
+                                     "span_100": span_metrics(pairs, gt_pairs, 100),
                                      "tp": metrics.tp, "fp": metrics.fp, "fn": metrics.fn})
         if any(pairs != repeat_pairs[0] for pairs in repeat_pairs[1:]):
             raise RuntimeError(f"nondeterministic prediction at sequence {index}")

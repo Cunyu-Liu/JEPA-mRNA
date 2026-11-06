@@ -34,6 +34,16 @@ def inf_value(pred_pairs, gt_pairs):
     return StructureLevelMetrics.from_pairs(pred_pairs, gt_pairs).inf
 
 
+def span_metrics(pred_pairs, gt_pairs, minimum_span):
+    pred = {tuple(pair) for pair in pred_pairs if abs(pair[1] - pair[0]) >= minimum_span}
+    gt = {tuple(pair) for pair in gt_pairs if abs(pair[1] - pair[0]) >= minimum_span}
+    tp = len(pred & gt)
+    fp = len(pred - gt)
+    fn = len(gt - pred)
+    return {"tp": tp, "fp": fp, "fn": fn,
+            "f1": 2 * tp / (2 * tp + fp + fn) if tp + fp + fn else 1.0}
+
+
 class PairCalibrationAccumulator:
     def __init__(self, n_bins=10):
         self.n_bins = n_bins

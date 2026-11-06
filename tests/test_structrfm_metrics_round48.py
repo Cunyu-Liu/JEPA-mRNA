@@ -2,7 +2,7 @@ import numpy as np
 
 from eval.ss.metrics import CalibrationMetrics
 from tools.structrfm_metrics_round48 import (PairCalibrationAccumulator, inf_value,
-                                             length_bucket, structure_confidence)
+                                             length_bucket, span_metrics, structure_confidence)
 
 
 def test_accumulator_matches_existing_calibration_metrics():
@@ -52,4 +52,8 @@ def test_confidence_inf_and_length_boundaries():
     assert structure_confidence(scores, []) == 0.0
     assert inf_value([(0, 4)], [(0, 4)]) == 1.0
     assert inf_value([(0, 4)], [(1, 5)]) == 0.0
+    assert span_metrics([(0, 30), (0, 100), (1, 105)], [(0, 30), (0, 100)], 30) == {
+        "tp": 2, "fp": 1, "fn": 0, "f1": 0.8}
+    assert span_metrics([(0, 30), (0, 100), (1, 105)], [(0, 30), (0, 100)], 100) == {
+        "tp": 1, "fp": 1, "fn": 0, "f1": 2 / 3}
     assert [length_bucket(value) for value in (100, 101, 200, 201, 400, 401)] == [0, 1, 1, 2, 2, 3]
