@@ -1491,6 +1491,48 @@
    "bytes": 7403,
    "description": "bpRNA-new xens2/NB-ft；xens2 ECE/Spearman/AURC 更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_xens2_biophysical_calibration.json",
+   "sha256": "b6f237ec20543f950d6923f4cbfd7324aaa3cc792c7e380dc58f55d8e4a8f2f0",
+   "bytes": 7281,
+   "description": "biophysical TS1 概率与结构置信度交集，n=18",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_biophysical_calibration.json",
+   "sha256": "c883464ef5c88fcc10e5682a7492dff74697f8af6c894d703f7c2a40bd007579",
+   "bytes": 7338,
+   "description": "biophysical TS2 概率与结构置信度交集，n=29",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts3_xens2_biophysical_calibration.json",
+   "sha256": "4bb48a3e90835fddb441376d50edeecc09dcec9a7debada919464e767437a644",
+   "bytes": 6862,
+   "description": "biophysical TS3 共同 n=4；xens2 Spearman=-0.8，biophysical=0.4",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tshard_xens2_biophysical_calibration.json",
+   "sha256": "e83c09139bee0238667646864ecb7ce0ab4ed5d91a811afb91fb4951ce42134e",
+   "bytes": 6874,
+   "description": "biophysical TS-hard 概率与结构置信度交集，n=10",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_tsb_xens2_biophysical_calibration.json",
+   "sha256": "d815b8cf6e6c67bf371aae66d3cf6861d535720bd451f5b0fa3bbf10789de08a",
+   "bytes": 7335,
+   "description": "biophysical TestSetB 概率与结构置信度交集，n=288",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_interfam_calibration.json",
+   "sha256": "2e690c03b3103375f20fa4410488e187140b528c5e8e6302e6062bdb5ff7e1ca",
+   "bytes": 7395,
+   "description": "inter-family bpRNA-new；xens2 ECE 略低，inter-family Brier/Spearman/AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
