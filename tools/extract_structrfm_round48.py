@@ -27,8 +27,8 @@ def main():
     model, tokenizer, report = load_structrfm_encoder(args.pretrained, device="cuda")
     model.eval()
     rows = [json.loads(line) for line in data_path.read_text().splitlines() if line.strip()]
-    if any(len(row["seq"]) > model.config.max_position_embeddings for row in rows):
-        raise ValueError("strict structRFM length boundary violated")
+    excluded_lengths = [len(row["seq"]) for row in rows
+                        if len(row["seq"]) > model.config.max_position_embeddings]
     hidden_parts = []
     lengths = []
     sequences = []
@@ -36,6 +36,8 @@ def main():
     with torch.no_grad():
         for index, row in enumerate(rows):
             sequence = row["seq"].upper().replace("T", "U")
+            if len(sequence) > model.config.max_position_embeddings:
+                continue
             inputs = tokenizer(sequence, return_tensors="pt")
             inputs = {key: value.cuda() for key, value in inputs.items()}
             with torch.autocast("cuda", dtype=torch.bfloat16):
@@ -60,7 +62,10 @@ def main():
         "shard": 0,
         "shards": 1,
         "path": str(output),
-        "n_sequences": len(rows),
+        "n_sequences": len(sequences),
+        "n_input_sequences": len(rows),
+        "n_excluded_over_max_len": len(excluded_lengths),
+        "excluded_lengths": excluded_lengths,
         "n_residues": int(offsets[-1]),
         "d_model": 768,
         "dtype": "float16",
