@@ -1897,6 +1897,20 @@
    "bytes": 7462,
    "description": "TS0 CONTRAfold posterior；xens2 ECE 更低",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_eternafold_calibration.json",
+   "sha256": "135e0d2586df516d206807cc91b803c2b223a5b6a8b7937cf8ddfb745c94e746",
+   "bytes": 7519,
+   "description": "ArchiveII EternaFold posterior ECE/Brier/NLL 更低，xens2 结构置信度更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_contrafold_calibration.json",
+   "sha256": "c61f53c87aab5cdf9e611654d1ce1c7bf16647e9a3e9f7d5f18d897efad4b9fd",
+   "bytes": 7517,
+   "description": "ArchiveII CONTRAfold posterior ECE/Brier/NLL 更低，xens2 结构置信度更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

@@ -12820,3 +12820,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **CONTRAfold 六格**：独立复核 SHA256=`37ddd15191bdcf93e8deeb1c7b3a7f7f2d2ce2e8e1fc9610845f22ee37aa64e6`，比较汇总 SHA256=`1fda0ad85d2d68f9b84149c71526767e0f684697f7321fe4f83173e033136501`。TS0 F1=0.5231344510，xens2 ECE=0.0006256100 低于 CONTRAfold=0.0012549405；其余五格 CONTRAfold ECE 更低。TS0 比较 SHA256=`265cb527ffc04296026282a00fad68a180c1beabf1d47822f898e4f7c55a0d48`。
 - **测速基线修复**：双 stream 在独占窗口启动后发现误写 `xens2_b32_exclusive.json`，实际已验收文件为 `xens2_b32_full_ts0.json`。已固定真实基线 SHA256=`0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0`，检查 n=1288、三次、raw-sequence、无缓存、无 resume；4 项测速测试通过，提交 `760de37fad6af24429a8f6afae25c985d1afbec6`。后续外部 GPU 进程进入，当前没有有效双流吞吐。
 - **边界**：CONTRAfold 家族各完成 6/8，ArchiveII 与 bpRNA-new 继续，不能称 16 格闭环。TS0 与其他 split 的 ECE 方向不同，不支持跨 split 统一最佳置信度。
+
+
+## §15.439（2026-11-06）CONTRAfold 家族 ArchiveII 后验比较
+
+- **EternaFold**：ArchiveII 原生 F1=0.5800338761，matched n=1107。ECE=0.0005542792、Brier=0.0019691170、NLL=0.0076273511，均低于 xens2 calibrated=0.0010307683/0.0022205656/0.0112838144；xens2 Spearman=0.7254523612、AURC=0.1170770953，优于 EternaFold=0.4482825969/0.2905113517。比较 SHA256=`135e0d2586df516d206807cc91b803c2b223a5b6a8b7937cf8ddfb745c94e746`。
+- **CONTRAfold**：ArchiveII 原生 F1=0.5986366563，matched n=1107。ECE=0.0004912362、Brier=0.0019319073、NLL=0.0074755159，均低于 xens2；xens2 Spearman/AURC 优于 CONTRAfold=0.3991815701/0.2732475161。比较 SHA256=`c61f53c87aab5cdf9e611654d1ce1c7bf16647e9a3e9f7d5f18d897efad4b9fd`。
+- **边界**：两套后验各完成 7/8，bpRNA-new 接续。原生后验在 ArchiveII 的概率误差更低，但结构排序并未超过 xens2；不把 ECE 与最佳结构置信度混为一谈。
