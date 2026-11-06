@@ -12987,3 +12987,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **等价实现**：`audit_structrfm_clean_all_round48.py` 保留每条序列的 split 与原索引，将全部 A/B/C 查询拼接后只运行一次 MMseqs；精确匹配、identity≥0.8、query coverage≥0.8 和 attrition 公式与逐 split 审计相同。正式输出仍为各 split 独立 clean/audit，最后写 13 split 总结。
 - **真实 MMseqs 验证**：13 个 toy split 分别运行旧独立实现和新联合实现，逐 split clean 文件 SHA256、raw/clean n、exact/homology-only 删除索引全部一致；联合与既有适配器回归共 3/3 通过。测试不是正式 clean 证据。
 - **队列**：仅在等待语料阶段替换 S2 队列，未中断 seed2；清除本会话此前留下的重复 flock 等待者后只启动一个持久队列。提交 `80b8d8acd4256424c56440b3cc9f345ca1e4243b` 已推送。语料整包 MD5/SHA256 和正式 13 split clean 仍未完成。
+
+
+## §15.461（2026-11-07）structRFM 全参三种子自动评测链
+
+- **放行条件**：`run_structrfm_full_evaluation_round48.sh` 等待 S2 三个 run 均 `converged+early_stopped`、13 split clean 总结和 ≥12,000MiB 空闲显存。逐 seed 使用各自 best checkpoint，检查 `meta.ripe`，没有 run_meta 时不把训练中的快照误判为收敛。
+- **独立复核**：13 split×3 seed×3 repeat；全参评测强制官方权重严格身份、CUDA、checkpoint 哈希与 clean 哈希。聚合器增加 `--full-model`，默认冻结路径不变；现同时复算 micro TP/FP/FN、macro-F1、三次预测一致和 raw_n=n+long_unsupported，并输出 macro mean±SD。
+- **验证与边界**：冻结/全参合成聚合 2/2 通过，shell/python 静态检查通过，提交 `e968ee61fbd57383bceb3f0378603b060b4ffedf` 已推送。持久队列只处于等待状态；S2 尚未开始，不能把该工程链当作全板结果。
