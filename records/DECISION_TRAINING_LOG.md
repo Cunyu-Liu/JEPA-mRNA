@@ -12928,3 +12928,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **实现**：`src/rnajepa/ripe.py` 提供 log、R1、R2、R3、R5、R6 六种模式；连续 log 距离基、{11,22} 双周期、ν>1 的 log 远场、互补内容及随机对照均由同一模块生成，不使用结构标签拟合初始化。
 - **测试**：4/4 通过，覆盖远场公式、距离基归一、Δ=0/Δ<4/特殊 token 门控、4096 nt 有限值、随机周期/互补表可复现及全部 RIPE 参数有限梯度。测试中还修正了距离基维数、互补二维索引和“特殊 token 只关闭内容项而非全部位置偏置”的口径。
 - **边界**：仅完成静态实现验收，未启动 RIPE 训练，未产生架构效果结论。代码提交 `769c3a4` 已推送。
+
+
+## §15.453（2026-11-06）RIPE 与 JEV 头兼容性接入
+
+- **接入**：`FlatDecisionHead` 新增可选 `ripe_mode`，在 ResNet2D 输出后按头均值加入 RIPE 偏置；`score_pair_matrix` 统一生产与全参训练路径。未提供 seq_ids 时若开启 RIPE 会明确报错，不允许静默丢失先验。
+- **默认兼容**：`ripe_mode=None` 时 `score_pair_matrix(z)==resnet2d(z)`，既有 checkpoint、训练、早停和分块路径不变。TrainConfig 与 plan-a 均可显式选择 log/r1/r2/r3/r5/r6，尚未启动对应训练。
+- **验证**：默认等价、RIPE 输出/梯度、TrainConfig 构建、RIPE 数值、head 分块与早停回归共 26/26 通过。代码提交 `f693d8f` 已推送。
