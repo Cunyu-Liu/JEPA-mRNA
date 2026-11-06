@@ -17,7 +17,7 @@ def validate_result(path, summary_path=None, allow_smoke=False):
     if result["status"] == "EMPTY_AFTER_DELEAK":
         assert summary_path is not None
         summary = json.loads(Path(summary_path).read_text())
-        cell = summary["clean"][Path(result["data"]).stem]
+        cell = (summary["clean"] if "clean" in summary else summary["clean_tr0"])[Path(result["data"]).stem]
         assert cell["status"] == "EMPTY_AFTER_DELEAK" and cell["n"] == 0
         return {"split": Path(result["data"]).stem, "status": "EMPTY_AFTER_DELEAK",
                 "result_sha256": sha256(path)}
@@ -42,7 +42,7 @@ def validate_result(path, summary_path=None, allow_smoke=False):
         assert audit["status"] == "PASS" and audit["clean_sha256"] == result["data_sha256"] and audit["clean_n"] == len(rows)
     if summary_path is not None:
         summary = json.loads(Path(summary_path).read_text())
-        cell = summary["clean"][Path(result["data"]).stem]
+        cell = (summary["clean"] if "clean" in summary else summary["clean_tr0"])[Path(result["data"]).stem]
         assert cell["strict_micro_f1"]["values"] == result["f1_runs"]
         assert cell["n"] == result["n_sequences"]
     assert len(result["f1_runs"]) == 3 and len(set(result["f1_runs"])) == 1
