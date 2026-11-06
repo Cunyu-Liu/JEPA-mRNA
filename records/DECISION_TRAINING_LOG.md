@@ -12689,3 +12689,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **inter-family 验收**：八 split 独立复核通过，汇总 SHA256=`92e1ecb8fe183722d34d51cc1bbc525c234bd2166ddf78240e5cb0341f12ffda`。bpRNA-new 三次 F1=0.6560129820，与既有主榜一致。
 - **队列纠错**：EMPTY 的 Bash 判断必须为 `status != EMPTY_AFTER_DELEAK`，因为 `SystemExit(True)` 返回 1，不能触发 empty 分支。已用真实 EMPTY/非空文件验证分支，恢复 RNAformer 与 NucleicBERT 队列，未删除或伪造任何结果。
 - **后续**：intra/inter-family 的 bpRNA-new 与 ArchiveII 比较继续后台计算；biophysical 和 RiNALMo-ft 随后接续，全 eligible 概率基线未齐前不写最终 ECE 排名。
+
+
+## §15.423（2026-11-06）intra-family 与 NucleicBERT-ft 大 split 比较
+
+- **intra-family bpRNA-new**：双方 clean n=5386，xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；intra-family raw ECE=0.0054356234、Brier=0.0053091424、NLL=0.0225463147。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，intra-family=0.5449351410/0.2568142282。xens2 ECE 略低，intra-family 的 Brier 和结构排序更好。结果 SHA256=`3ea5df4b67f9aaa2ba9abb35147e5a6e0b975342166bb9d7722844b1cafba565`。
+- **NucleicBERT-ft TS0**：共同 n=713、3,708,091 个候选配对。xens2 calibrated ECE=0.0006256100、Brier=0.0028185810、NLL=0.0131960998；NB-ft raw ECE=0.0690028472、Brier=0.0354033297、NLL=0.1201669678。xens2 calibrated Spearman=0.7304944246、AURC=0.1020572843，NB-ft=0.7875970835/0.2749072822，NB-ft 的 Spearman 更高但 AURC 更差。结果 SHA256=`79adccd47771c6178b7e676d120bd0354c4ba980f14f3efdb10cce22ae3c566a`。
+- **NucleicBERT-ft bpRNA-new**：共同 n=5386。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；NB-ft raw ECE=0.1110871835、Brier=0.0587439902、NLL=0.1982033329。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，NB-ft=0.4065609723/0.5647986277，xens2 三项均更优。结果 SHA256=`9edbf59b8690d55285939f9b4f9307bf5df27cd0a87b298baf4d1779bacc2073`。
+- **结论**：intra-family 的概率拟合误差和结构筛选各有优势；NB-ft 原生置信度整体弱于 xens2，但个别 split 的 Spearman 更高，不合并成“最佳置信度”。inter-family 和 NucleicBERT-frozen 继续队列，biophysical 已完成 PDB 小 split，等待大 split。

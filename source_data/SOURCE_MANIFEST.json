@@ -1470,6 +1470,27 @@
    "bytes": 7429,
    "description": "ArchiveII GT 协议过滤后共同 n=1068；NB-ft Spearman 更高但 AURC 更差",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_intrafam_calibration.json",
+   "sha256": "3ea5df4b67f9aaa2ba9abb35147e5a6e0b975342166bb9d7722844b1cafba565",
+   "bytes": 7390,
+   "description": "intra-family bpRNA-new；xens2 ECE 略低，intra-family Brier/Spearman/AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_nucleicbert_ft_calibration.json",
+   "sha256": "79adccd47771c6178b7e676d120bd0354c4ba980f14f3efdb10cce22ae3c566a",
+   "bytes": 7422,
+   "description": "TS0 xens2/NB-ft；NB-ft Spearman 更高但 AURC 更差",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_nucleicbert_ft_calibration.json",
+   "sha256": "9edbf59b8690d55285939f9b4f9307bf5df27cd0a87b298baf4d1779bacc2073",
+   "bytes": 7403,
+   "description": "bpRNA-new xens2/NB-ft；xens2 ECE/Spearman/AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
