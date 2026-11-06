@@ -13073,3 +13073,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **验证**：真实官方 structRFM+FlatDecisionHead+Turner 的 CUDA 前向通过，相关回归 3/3；提交 `ecb530bb66f6325c6088b2b765c8d6ecd3dbdd52` 已推送。两个 run 从 step500 恢复模型、优化器、scheduler、batch stream 与验证状态，保持每 500 step 验证，不重训前 500 步。
 - **日志边界**：恢复 launcher 使用 `>` 覆盖了首次 stdout 中的设备 traceback，但 checkpoint 和 `train_log.jsonl` 仍在，故障文本已在本节及会话证据中保留。后续 S2 日志改为追加，避免再次覆盖。
 - **首格过程证据**：冻结 seed0 的 TS0 clean n=79、TP/FP/FN=837/1055/1053、micro-F1=0.4426229508、macro-F1=0.4481751004，结果 SHA256=`b2801beb833815d7dec874cc94b88f8fa0f02f93918ae47275d776c19c6cbd6c`。单种子单 split 不是全板结论，当前数值不支持 SOTA。
+
+
+## §15.473（2026-11-07）structRFM 冻结 JEV 13 split 三种子完整负结果
+
+- **完整性**：S1 三个独立 checkpoint×13 split×3 repeat 全部完成，聚合状态 `PASS_STRUCTRFM_FROZEN_ABC_13_SPLITS_3_SEEDS_3_REPEATS`，summary SHA256=`9e5d4fd8ebcb63109129ec82a49debb85769cca10c1bb3dfd1e8f0234d586eaa`。聚合逐格复核 clean/checkpoint 哈希、TP/FP/FN、macro-F1、三次预测一致和长序列守恒。
+- **主榜 micro-F1 mean±SD**：TS0=0.4060484541±0.0314396381（n=79）、bpRNA-new=0.4482151560±0.0157859021（74）、ArchiveII=0.4589259091±0.0115996535（raw clean=90）、TS1=0.6997244303±0.0178951577（3）、TS2=0.8750000000±0（1）、TS3=0.5265109381±0.1352781508（1）、TS-hard=0.3617777228±0.0764351449（2）、TestSetB=0.3038443957±0.0157886073（21）。**all-baseline 与 external-single 均为 0/8 SOTA**，多样本格很小，TS2/TS3 不作强结论。
+- **外部 OOD**：Rfam=0.5491246680±0.0148215038，低于 BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.3825690956/0.4320640948/0.3044238748/0.2381884665，measured wins=0。比较 SHA256=`66d3cd1c0da8c670f33900b3f34503b79f7f6d0d38ba43541a54b3316919ddb7`。
+- **长序列边界**：ArchiveII 三个种子合计 unsupported=171（每 seed 57），Rfam=420（每 seed 140），来自官方 514nt 限制，聚合保留，不以删长序列提高 F1。冻结路线没有证明长序列能力或最佳置信度。
+- **裁决**：S1 冻结 structRFM+JEV 明确否决为最终单模型，保留作 S2/RIPE 对照。完整 risk–coverage 已写 `confidence_summary.json`（SHA256=`92d9145ccce5b60245fbd3e025253184026e665e9d12c4bc34a0cc435fafca9f`）。旧组合 confidence launcher 的全参分支失败不影响独立全参 watcher 和本结果。S2 继续训练，PPT 暂不把过程结果包装成最终成功。
