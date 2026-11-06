@@ -330,6 +330,8 @@ class FlatDecisionHead(nn.Module):
         resnet_blocks: int = 4,
         resnet_kernel_size: int = 3,
         ripe_mode: Optional[str] = None,
+        jepa_use_ema: bool = True,
+        jepa_random_target: bool = False,
     ) -> None:
         super().__init__()
         self.min_loop = min_loop
@@ -352,6 +354,14 @@ class FlatDecisionHead(nn.Module):
             self.ripe = RipePositionalBias(RipeConfig(mode=ripe_mode))
         else:
             self.ripe = None
+        if scorer in {"pairjepa", "pairmlp"}:
+            from rnajepa.pair_jepa import PairJEPA
+            self.pair_jepa = PairJEPA(d_z=d_z, use_ema=jepa_use_ema,
+                                      random_target=jepa_random_target)
+            self.resnet2d = None
+            self.turner = None
+        else:
+            self.pair_jepa = None
         if scorer == "resnet2d":
             #: In the 2D path the ResNet *is* the pair scorer; the per-pair MLP_T
             #: is replaced (not added to), so it is not constructed at all and the
@@ -361,7 +371,7 @@ class FlatDecisionHead(nn.Module):
             self.resnet2d = ResNet2DScorer(d_z, n_blocks=resnet_blocks,
                                            kernel_size=resnet_kernel_size)
             self.turner = None
-        else:
+        elif scorer not in {"pairjepa", "pairmlp"}:
             self.resnet2d = None
             self.turner = TurnerResidual(d_z, hidden)
         self.type_head = PairTypeHead(d_model, n_types)
@@ -408,12 +418,20 @@ class FlatDecisionHead(nn.Module):
         return DecisionScores(scores=s, pair_types=types, mask=mask)
 
     def score_pair_matrix(self, z: torch.Tensor, seq_ids: Optional[torch.Tensor] = None):
-        scores = self.resnet2d(z)
+        if self.pair_jepa is not None:
+            scores = self.pair_jepa(z)
+        else:
+            scores = self.resnet2d(z)
         if self.ripe is not None:
             if seq_ids is None:
                 raise ValueError("seq_ids are required when RIPE is enabled")
             scores = scores + self.ripe(seq_ids).mean(dim=1)
         return scores
+
+    def masked_pair_latent_loss(self, z: torch.Tensor, mask: torch.Tensor):
+        if self.pair_jepa is None:
+            raise ValueError("Pair-JEPA is not enabled")
+        return self.pair_jepa.masked_latent_loss(z, mask)
 
     def pair_scores_and_types(self, h: torch.Tensor, seq_ids: Optional[torch.Tensor] = None):
         """``(scores, pair_types)`` for every ``(i, j)``, chunked along ``j``.
@@ -421,7 +439,7 @@ class FlatDecisionHead(nn.Module):
         chunked per-pair MLP path (BatchNorm over the full matrix is what makes
         chunking wrong there); the flat path is untouched. """
         B, L, _ = h.shape
-        if self.resnet2d is not None:
+        if self.resnet2d is not None or self.pair_jepa is not None:
             #: Build z column-chunked: the (B, L, L, 3d) intermediate of
             #: PairRepresentation.cross is the peak-memory offender; chunking the
             #: projection bounds it at (B, L, chunk, 3d) while keeping the exact
