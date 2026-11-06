@@ -12935,3 +12935,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **接入**：`FlatDecisionHead` 新增可选 `ripe_mode`，在 ResNet2D 输出后按头均值加入 RIPE 偏置；`score_pair_matrix` 统一生产与全参训练路径。未提供 seq_ids 时若开启 RIPE 会明确报错，不允许静默丢失先验。
 - **默认兼容**：`ripe_mode=None` 时 `score_pair_matrix(z)==resnet2d(z)`，既有 checkpoint、训练、早停和分块路径不变。TrainConfig 与 plan-a 均可显式选择 log/r1/r2/r3/r5/r6，尚未启动对应训练。
 - **验证**：默认等价、RIPE 输出/梯度、TrainConfig 构建、RIPE 数值、head 分块与早停回归共 26/26 通过。代码提交 `f693d8f` 已推送。
+
+
+## §15.454（2026-11-06）Pair-JEPA 静态 scorer 与退化目标修正
+
+- **实现**：`src/rnajepa/pair_jepa.py` 包含对称轻量 PairMLP、被掩 pair latent、训练期 EMA、noEMA 和随机 target 对照；推理只调用 scorer，不调用 teacher。
+- **设计纠错**：逐对 LayerNorm 使损失退化为常数且随机 target 不可区分，已移除；随机 target 改为展平全部配对位置后排列，确保破坏对应关系。空 mask 明确失败，target/prediction 方差与范数保留防坍塌诊断。
+- **验证**：3/3 通过，覆盖零初始化推理无 teacher、EMA 仅训练更新、noEMA 冻结、有限诊断、随机 target 可复现且改变损失及空目标拒绝。未启动 Pair-JEPA 训练。代码提交 `2754585` 已推送。
