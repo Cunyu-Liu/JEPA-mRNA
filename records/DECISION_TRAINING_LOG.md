@@ -12875,3 +12875,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **逐张量检查**：两个 plan a checkpoint 共 500 个编码器张量，使用 `torch.equal` 并同时检查 shape/dtype。仅 embedding、最终 layer_norm 和 pooler 共 5 个张量完全相同；33 个 Transformer 层的 495 个张量全部不同。不能合并 enc0/enc1 或缓存共享编码，同架构不等于同权重。证据 SHA256=`2caf286104aadf707031ba09f23aa09618cd19d52379a8a62bb97e6c53221ef1`。
 - **权重身份**：s0 SHA256=`bd917b6380738e65ce46020eb52ab12333d2cd7a475ab066ed37379dc71828cd`；s1 SHA256=`c10fb303b589346b806ff15ba1f4bb789af1ada3ac78a8010246f6d85c3296c8`。
 - **用户决定**：暂停测速，停止本会话的 `run_xens2_stream_speed_round39.sh` 重试队列，不终止其他会话任务。已有 B=32=13.5802438348、自适应=14.1949071622 seq/s，双 stream 没有有效吞吐，速度 SOTA 未达成。
+
+
+## §15.446（2026-11-06）round48 独立单模型合同与 structRFM 真实 CUDA 预检
+
+- **执行合同**：`docs/plans/2026-11-06-round48-single-model-architecture.md` 已写入根目录/spec/spec_sync 三处 spec/tasks/checklist。顺序固定 structRFM+JEV→RIPE→Pair-JEPA；每个冻结候选三种子收敛后做 A/B/C。主模型必须单骨干、单头、单 checkpoint；旧区域均值 JEPA 继续否决，Pair-JEPA 仅作 scorer 消融且推理无 teacher。
+- **官方资产**：structRFM commit=`f0c1add19f8dfc786f16bc4abb7aa775dbadddbf`，HF commit=`5fca714bd82815c65a83d12d008a7b217ae57224`，`model.safetensors` SHA256=`f6fb2c0770e5d4f5b19bdc899572d36b0d0873776b720c973ca508de6b56adfb`。Nature 版语料 Zenodo 18272040，5,654,000,185 bytes，MD5=`651db6dc7b6d6aadece06a252831d1fe`；24 路分块下载与八 split 污染审计队列已启动，未通过前不放行正式训练。
+- **真实预检**：RTX 4090/CUDA 12.1，86,050,560 参数、197 个 checkpoint BERT 张量、197 个梯度张量；仅未使用的 `pooler.dense.weight/bias` 按白名单缺失，其他键完全匹配。官方 tokenizer 不加 CLS/SEP，24 nt 输入输出 `[1,24,768]`；515 输入明确报错，无 CPU 静默降级。结果=`audits/round48/structrfm_cuda_preflight.json`，状态 `PASS_CUDA_PREFLIGHT`。
+- **工程修正**：旧驱动的 RiNALMo 特殊 token 帧已改为显式配置，structRFM 走官方无特殊 token 路径，原 RiNALMo 默认不变。`--steps 0` 支持只由 validation plateau 停止。VL0 从教师清单精确重建为 196 条，SHA256=`bb15c17a5875613407dcd140044de9a266b5d3ab62e2b5440a36697097dcc778`。
+- **测试与边界**：适配器测试 2/2；污染管线 toy 端到端通过，raw=2、exact=1、clean=1，MMseqs 临时索引放本机 `/tmp`。TR1c/VL0 冻结表征 GPU 提取与 P0→三种子训练持久队列已启动。上述均为工程证据，尚无新模型科学结果，未改 PPT。
+- **代码**：首个合同与适配器提交 `acea314` 已推送 `round48-single-model-20261106`。
