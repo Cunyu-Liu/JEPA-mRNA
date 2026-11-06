@@ -13082,3 +13082,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **外部 OOD**：Rfam=0.5491246680±0.0148215038，低于 BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.3825690956/0.4320640948/0.3044238748/0.2381884665，measured wins=0。比较 SHA256=`66d3cd1c0da8c670f33900b3f34503b79f7f6d0d38ba43541a54b3316919ddb7`。
 - **长序列边界**：ArchiveII 三个种子合计 unsupported=171（每 seed 57），Rfam=420（每 seed 140），来自官方 514nt 限制，聚合保留，不以删长序列提高 F1。冻结路线没有证明长序列能力或最佳置信度。
 - **裁决**：S1 冻结 structRFM+JEV 明确否决为最终单模型，保留作 S2/RIPE 对照。完整 risk–coverage 已写 `confidence_summary.json`（SHA256=`92d9145ccce5b60245fbd3e025253184026e665e9d12c4bc34a0cc435fafca9f`）。旧组合 confidence launcher 的全参分支失败不影响独立全参 watcher 和本结果。S2 继续训练，PPT 暂不把过程结果包装成最终成功。
+
+
+## §15.474（2026-11-07）S2 seed1 自然早停与 checkpoint 身份
+
+- **收敛**：S2 seed1 在 step8500 达到 patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复 best step5500，best validation loss=20.6924657196。训练已完成 12/12 层解冻，无固定步数截断。
+- **checkpoint**：`runs/structrfm_jev_s1/best.pt` SHA256=`425cf71a3868911c728ff54d7157263dc15f4d94f066052d3425e6d7f0fee668`。
+- **边界**：seed0 仍在训练，seed2 待启动；单种子 best loss 不是模型效果或 SOTA 结论，三个全参种子齐全后才执行 13 split、置信度和独立对照。
