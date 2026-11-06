@@ -12670,3 +12670,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **修复**：汇总读取优先 `baseline_clean_n`，旧记录回退 `bpfold_clean_n`，保留原始文件不重跑。现生成 16 个单元：8 个 BPfold split、7 个 SPOT 非空 split、1 个 `EMPTY_AFTER_DELEAK`。
 - **汇总**：状态 `PASS_BPFOLD_SPOTRNA_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE`，SHA256=`effb91018ac3ddc2c49f508fe46fd82c6ab94a470cbec7031d77c4a7a09a0c5e`。只表示这两类基线的比较闭环，其他 eligible 概率基线仍待完成，matched-clean 继续只作附加敏感性。
 - **后续**：RNAformer intra-family 的 ArchiveII 日志没有异常栈，首轮长序列推理仍在运行；inter-family、biophysical 与 RiNALMo-ft 按原队列等待。
+
+
+## §15.421（2026-11-06）NucleicBERT-ft/frozen 原生概率复用与 TS1 比较
+
+- **资产复用**：两种 NucleicBERT 的 clean 三次概率数组、预测和 offsets 已完整保存，新增 CPU 转换和独立复核，不重复 GPU 推理。统一计算 ECE/Brier/NLL、原生置信度和 risk–coverage，保留原始 598 nt 截断协议、对应 GT、clean n 与权重哈希。
+- **NucleicBERT-ft**：TS1 clean n=18，TP/FP/FN=245/138/93，F1=0.6796116505，转换结果 SHA256=`487afe650c8d1581e6e7e02fa4b5b1680785dcb741d238734b96784419e25bdb`。与 xens2 的共同 n=18，xens2 calibrated ECE=0.0060269154、Spearman=0.6284829721、AURC=0.0931743294，NB-ft raw ECE=0.0725879730、Spearman=0.8285128388、AURC=0.1844278457；NB-ft 的 Spearman 较高但 AURC 较差，比较 SHA256=`b3e0c0dd715a76443da5c2cc32bf71f02d39f36ca23360c1384201a56d8eaa5e`。
+- **NucleicBERT-frozen**：TS1 clean n=48，TP/FP/FN=122/96/814，F1=0.2114384749，转换结果 SHA256=`6c57ca2251173612bb6a8d8f77ef3bf268dd6944e7d9cea64f866316d0c76b98`。与 xens2 的共同 n=12，xens2 calibrated ECE=0.0203573607、Brier=0.0192663923、NLL=0.0893804337，frozen raw ECE=0.0254344110、Brier=0.0308914495、NLL=0.2022029027。frozen 的 ECE 较低但 Brier 更高；xens2 Spearman=0.6153846154、AURC=0.1336065682，frozen=0.3066543204/0.7739970243，比较 SHA256=`f8061ea1439adb0fdb2e61c3ce8d143db8fd0474d1ca66dd6e34d3e0337497d4`。
+- **队列**：`run_nucleicbert_calibration_round39.sh` 已启动，后续 split 复用既有概率、CPU 转换和独立复核，不恢复已取消的原论文下游训练。原始下游任务取消不影响本主 benchmark 的 ft/frozen 基线。
+- **边界**：ECE、Brier、Spearman、AURC 方向不一致，不写最佳置信度。其余 NucleicBERT split 与 RNAformer 大 split 继续后台推进。

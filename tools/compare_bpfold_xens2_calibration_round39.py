@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--xens2", type=Path, required=True)
     parser.add_argument("--bpfold", "--baseline", dest="bpfold", type=Path, required=True)
-    parser.add_argument("--baseline-system", choices=["bpfold", "spotrna", "rnaformer", "rinalmo_ft"], default="bpfold")
+    parser.add_argument("--baseline-system", choices=["bpfold", "spotrna", "rnaformer", "rinalmo_ft", "nucleicbert_ft", "nucleicbert_frozen"], default="bpfold")
     parser.add_argument("--baseline-summary", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
@@ -30,6 +30,9 @@ def main():
         from verify_rnaformer_calibration_round39 import validate_result
         assert args.baseline_summary is not None
         bpfold_audit = validate_result(args.bpfold, args.baseline_summary)
+    elif system in {"nucleicbert_ft", "nucleicbert_frozen"}:
+        from verify_nucleicbert_calibration_round39 import validate_result
+        bpfold_audit = validate_result(args.bpfold)
     else:
         bpfold_audit = validate_bpfold(args.bpfold)
     assert Path(xens2["data"]).stem == Path(bpfold["data"]).stem

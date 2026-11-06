@@ -1,0 +1,1415 @@
+{
+  "schema_version": 1,
+  "status": "PASS_NATIVE_PROBABILITY_EVALUATION",
+  "system": "nucleicbert_frozen",
+  "data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/nucleicbert_rnastralign_tr0/splits/ref_pdb_ts1.jsonl",
+  "data_sha256": "2973e3762aa8eb9a47766d99473a4b6fc163ac8eeca6ecea104148e414800b93",
+  "n_sequences": 48,
+  "clean_audit": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/clean_splits/nucleicbert_rnastralign_tr0/audits/ref_pdb_ts1.audit.json",
+  "weights": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/secstr.ckpt",
+  "weights_sha256": "90b9af474693db3879830a455f4c25662d672dc0f4e9cdc61b90055e9b6d5e07",
+  "protocol": {
+    "device_type": "cuda",
+    "cached_embeddings": false,
+    "repeats": 3,
+    "evaluation_scope": "all source sequences; official B=2 first-598-nt protocol; no length filtering",
+    "candidate_pairs": "strict upper valid_pair_mask",
+    "n_bins": 10,
+    "structure_confidence": "mean native probability of decoded pairs"
+  },
+  "n_truncated_sequences": 0,
+  "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/clean/ref_pdb_ts1.json",
+  "source_result_sha256": "506a5a8926df237db26f8abdcd7caad08a4b79a63c282860588b133aa3c6c9db",
+  "source_probabilities": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/clean/ref_pdb_ts1.npz",
+  "source_probabilities_sha256": "98f0be3c6176c772af2b453415f3d2dce97d86a8c2df64bd1284b4340bff812a",
+  "f1_runs": [
+    0.21143847487001732,
+    0.21143847487001732,
+    0.21143847487001732
+  ],
+  "calibration": {
+    "n": 49895,
+    "ece": 0.013527073242535641,
+    "brier": 0.016899471814112086,
+    "nll": 0.12506621307497665
+  },
+  "confidence": {
+    "spearman_confidence_vs_structure_f1": 0.442388574619265,
+    "aurc_macro": 0.6889668309602667,
+    "risk_coverage": [
+      {
+        "coverage": 0.10416666666666667,
+        "selective_macro_risk": 0.4878532299127265,
+        "n": 5
+      },
+      {
+        "coverage": 0.20833333333333334,
+        "selective_macro_risk": 0.6093373758819983,
+        "n": 10
+      },
+      {
+        "coverage": 0.3125,
+        "selective_macro_risk": 0.6968790209428595,
+        "n": 15
+      },
+      {
+        "coverage": 0.4166666666666667,
+        "selective_macro_risk": 0.7141275196753984,
+        "n": 20
+      },
+      {
+        "coverage": 0.5,
+        "selective_macro_risk": 0.7422313635212625,
+        "n": 24
+      },
+      {
+        "coverage": 0.6041666666666666,
+        "selective_macro_risk": 0.7485859541512079,
+        "n": 29
+      },
+      {
+        "coverage": 0.7083333333333334,
+        "selective_macro_risk": 0.7501783019839596,
+        "n": 34
+      },
+      {
+        "coverage": 0.8125,
+        "selective_macro_risk": 0.7473731373413625,
+        "n": 39
+      },
+      {
+        "coverage": 0.9166666666666666,
+        "selective_macro_risk": 0.7691936830291553,
+        "n": 44
+      },
+      {
+        "coverage": 1.0,
+        "selective_macro_risk": 0.7884275427767257,
+        "n": 48
+      }
+    ]
+  },
+  "per_sequence": [
+    {
+      "name": "pdb_ts1#632971",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.0,
+      "pred_pairs": [],
+      "n_predicted_pairs": 0,
+      "n_gt_pairs": 32
+    },
+    {
+      "name": "pdb_ts1#632972",
+      "structure_f1": 0.30303030303030304,
+      "mean_selected_pair_probability": 0.6307001709938049,
+      "pred_pairs": [
+        [
+          3,
+          92
+        ],
+        [
+          4,
+          91
+        ],
+        [
+          5,
+          90
+        ],
+        [
+          7,
+          88
+        ],
+        [
+          9,
+          86
+        ],
+        [
+          40,
+          57
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 27
+    },
+    {
+      "name": "pdb_ts1#632973",
+      "structure_f1": 0.3076923076923077,
+      "mean_selected_pair_probability": 0.8373820781707764,
+      "pred_pairs": [
+        [
+          1,
+          67
+        ],
+        [
+          2,
+          66
+        ],
+        [
+          3,
+          65
+        ],
+        [
+          4,
+          64
+        ],
+        [
+          21,
+          31
+        ],
+        [
+          35,
+          55
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 20
+    },
+    {
+      "name": "pdb_ts1#632974",
+      "structure_f1": 0.16216216216216217,
+      "mean_selected_pair_probability": 0.7204285264015198,
+      "pred_pairs": [
+        [
+          32,
+          56
+        ],
+        [
+          71,
+          93
+        ],
+        [
+          72,
+          92
+        ],
+        [
+          76,
+          88
+        ]
+      ],
+      "n_predicted_pairs": 4,
+      "n_gt_pairs": 33
+    },
+    {
+      "name": "pdb_ts1#632976",
+      "structure_f1": 0.18181818181818182,
+      "mean_selected_pair_probability": 0.720958411693573,
+      "pred_pairs": [
+        [
+          22,
+          29
+        ],
+        [
+          23,
+          28
+        ],
+        [
+          35,
+          43
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 19
+    },
+    {
+      "name": "pdb_ts1#632979",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.6709659099578857,
+      "pred_pairs": [
+        [
+          1,
+          22
+        ],
+        [
+          9,
+          40
+        ]
+      ],
+      "n_predicted_pairs": 2,
+      "n_gt_pairs": 8
+    },
+    {
+      "name": "pdb_ts1#632980",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.6473351716995239,
+      "pred_pairs": [
+        [
+          4,
+          28
+        ],
+        [
+          8,
+          21
+        ],
+        [
+          10,
+          23
+        ],
+        [
+          26,
+          33
+        ],
+        [
+          27,
+          32
+        ]
+      ],
+      "n_predicted_pairs": 5,
+      "n_gt_pairs": 8
+    },
+    {
+      "name": "pdb_ts1#632981",
+      "structure_f1": 0.25,
+      "mean_selected_pair_probability": 0.7551270127296448,
+      "pred_pairs": [
+        [
+          2,
+          56
+        ],
+        [
+          3,
+          55
+        ],
+        [
+          4,
+          54
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 21
+    },
+    {
+      "name": "pdb_ts1#632983",
+      "structure_f1": 0.3466666666666667,
+      "mean_selected_pair_probability": 0.7391011118888855,
+      "pred_pairs": [
+        [
+          1,
+          12
+        ],
+        [
+          30,
+          61
+        ],
+        [
+          31,
+          60
+        ],
+        [
+          32,
+          59
+        ],
+        [
+          33,
+          58
+        ],
+        [
+          34,
+          57
+        ],
+        [
+          35,
+          56
+        ],
+        [
+          36,
+          55
+        ],
+        [
+          85,
+          137
+        ],
+        [
+          94,
+          124
+        ],
+        [
+          95,
+          123
+        ],
+        [
+          143,
+          158
+        ],
+        [
+          144,
+          157
+        ],
+        [
+          145,
+          156
+        ],
+        [
+          146,
+          155
+        ],
+        [
+          147,
+          154
+        ],
+        [
+          148,
+          153
+        ],
+        [
+          166,
+          170
+        ]
+      ],
+      "n_predicted_pairs": 18,
+      "n_gt_pairs": 57
+    },
+    {
+      "name": "pdb_ts1#632984",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.796299934387207,
+      "pred_pairs": [
+        [
+          5,
+          85
+        ],
+        [
+          7,
+          84
+        ],
+        [
+          8,
+          83
+        ],
+        [
+          10,
+          81
+        ],
+        [
+          11,
+          80
+        ],
+        [
+          12,
+          79
+        ],
+        [
+          13,
+          78
+        ],
+        [
+          14,
+          77
+        ],
+        [
+          18,
+          71
+        ],
+        [
+          27,
+          61
+        ],
+        [
+          31,
+          62
+        ],
+        [
+          32,
+          53
+        ]
+      ],
+      "n_predicted_pairs": 12,
+      "n_gt_pairs": 24
+    },
+    {
+      "name": "pdb_ts1#632986",
+      "structure_f1": 0.21739130434782608,
+      "mean_selected_pair_probability": 0.8266966938972473,
+      "pred_pairs": [
+        [
+          1,
+          106
+        ],
+        [
+          2,
+          105
+        ],
+        [
+          3,
+          104
+        ],
+        [
+          6,
+          107
+        ],
+        [
+          11,
+          101
+        ],
+        [
+          21,
+          100
+        ],
+        [
+          80,
+          90
+        ],
+        [
+          81,
+          89
+        ],
+        [
+          83,
+          88
+        ]
+      ],
+      "n_predicted_pairs": 9,
+      "n_gt_pairs": 37
+    },
+    {
+      "name": "pdb_ts1#632987",
+      "structure_f1": 0.3157894736842105,
+      "mean_selected_pair_probability": 0.8548667430877686,
+      "pred_pairs": [
+        [
+          1,
+          16
+        ],
+        [
+          2,
+          24
+        ],
+        [
+          3,
+          23
+        ],
+        [
+          25,
+          34
+        ],
+        [
+          26,
+          33
+        ],
+        [
+          27,
+          32
+        ],
+        [
+          35,
+          43
+        ],
+        [
+          36,
+          42
+        ]
+      ],
+      "n_predicted_pairs": 8,
+      "n_gt_pairs": 11
+    },
+    {
+      "name": "pdb_ts1#632988",
+      "structure_f1": 0.17391304347826086,
+      "mean_selected_pair_probability": 0.7269646525382996,
+      "pred_pairs": [
+        [
+          2,
+          56
+        ],
+        [
+          3,
+          55
+        ],
+        [
+          7,
+          19
+        ],
+        [
+          8,
+          18
+        ],
+        [
+          10,
+          16
+        ],
+        [
+          25,
+          38
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 17
+    },
+    {
+      "name": "pdb_ts1#632989",
+      "structure_f1": 0.12903225806451613,
+      "mean_selected_pair_probability": 0.8034915328025818,
+      "pred_pairs": [
+        [
+          17,
+          32
+        ],
+        [
+          22,
+          31
+        ],
+        [
+          23,
+          30
+        ],
+        [
+          35,
+          45
+        ],
+        [
+          36,
+          44
+        ],
+        [
+          37,
+          43
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 25
+    },
+    {
+      "name": "pdb_ts1#632990",
+      "structure_f1": 0.5,
+      "mean_selected_pair_probability": 0.651053249835968,
+      "pred_pairs": [
+        [
+          9,
+          20
+        ],
+        [
+          10,
+          19
+        ],
+        [
+          30,
+          40
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 5
+    },
+    {
+      "name": "pdb_ts1#632991",
+      "structure_f1": 0.5714285714285714,
+      "mean_selected_pair_probability": 0.6613190174102783,
+      "pred_pairs": [
+        [
+          27,
+          41
+        ],
+        [
+          29,
+          39
+        ]
+      ],
+      "n_predicted_pairs": 2,
+      "n_gt_pairs": 5
+    },
+    {
+      "name": "pdb_ts1#632992",
+      "structure_f1": 0.3076923076923077,
+      "mean_selected_pair_probability": 0.7042712569236755,
+      "pred_pairs": [
+        [
+          15,
+          40
+        ],
+        [
+          16,
+          39
+        ],
+        [
+          91,
+          105
+        ],
+        [
+          92,
+          104
+        ],
+        [
+          93,
+          103
+        ],
+        [
+          94,
+          102
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 33
+    },
+    {
+      "name": "pdb_ts1#632993",
+      "structure_f1": 0.18181818181818182,
+      "mean_selected_pair_probability": 0.6656525731086731,
+      "pred_pairs": [
+        [
+          1,
+          63
+        ],
+        [
+          2,
+          62
+        ],
+        [
+          4,
+          25
+        ],
+        [
+          9,
+          22
+        ]
+      ],
+      "n_predicted_pairs": 4,
+      "n_gt_pairs": 18
+    },
+    {
+      "name": "pdb_ts1#632996",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.0,
+      "pred_pairs": [],
+      "n_predicted_pairs": 0,
+      "n_gt_pairs": 8
+    },
+    {
+      "name": "pdb_ts1#632997",
+      "structure_f1": 0.18181818181818182,
+      "mean_selected_pair_probability": 0.7463271617889404,
+      "pred_pairs": [
+        [
+          1,
+          84
+        ],
+        [
+          2,
+          83
+        ],
+        [
+          3,
+          82
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 30
+    },
+    {
+      "name": "pdb_ts1#632999",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.0,
+      "pred_pairs": [],
+      "n_predicted_pairs": 0,
+      "n_gt_pairs": 19
+    },
+    {
+      "name": "pdb_ts1#633000",
+      "structure_f1": 0.24,
+      "mean_selected_pair_probability": 0.7356079816818237,
+      "pred_pairs": [
+        [
+          1,
+          60
+        ],
+        [
+          2,
+          59
+        ],
+        [
+          3,
+          24
+        ],
+        [
+          4,
+          23
+        ],
+        [
+          5,
+          22
+        ],
+        [
+          9,
+          25
+        ],
+        [
+          12,
+          17
+        ]
+      ],
+      "n_predicted_pairs": 7,
+      "n_gt_pairs": 18
+    },
+    {
+      "name": "pdb_ts1#633001",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.6169357895851135,
+      "pred_pairs": [
+        [
+          7,
+          15
+        ]
+      ],
+      "n_predicted_pairs": 1,
+      "n_gt_pairs": 10
+    },
+    {
+      "name": "pdb_ts1#633002",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.0,
+      "pred_pairs": [],
+      "n_predicted_pairs": 0,
+      "n_gt_pairs": 14
+    },
+    {
+      "name": "pdb_ts1#633003",
+      "structure_f1": 0.47619047619047616,
+      "mean_selected_pair_probability": 0.7932125926017761,
+      "pred_pairs": [
+        [
+          2,
+          19
+        ],
+        [
+          3,
+          18
+        ],
+        [
+          4,
+          17
+        ],
+        [
+          5,
+          16
+        ],
+        [
+          22,
+          54
+        ]
+      ],
+      "n_predicted_pairs": 5,
+      "n_gt_pairs": 16
+    },
+    {
+      "name": "pdb_ts1#633004",
+      "structure_f1": 0.23529411764705882,
+      "mean_selected_pair_probability": 0.8071457147598267,
+      "pred_pairs": [
+        [
+          4,
+          23
+        ],
+        [
+          12,
+          19
+        ],
+        [
+          13,
+          18
+        ],
+        [
+          32,
+          37
+        ]
+      ],
+      "n_predicted_pairs": 4,
+      "n_gt_pairs": 13
+    },
+    {
+      "name": "pdb_ts1#633005",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.7490872144699097,
+      "pred_pairs": [
+        [
+          21,
+          79
+        ]
+      ],
+      "n_predicted_pairs": 1,
+      "n_gt_pairs": 31
+    },
+    {
+      "name": "pdb_ts1#633009",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.7179160118103027,
+      "pred_pairs": [
+        [
+          5,
+          18
+        ],
+        [
+          6,
+          17
+        ],
+        [
+          7,
+          16
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 5
+    },
+    {
+      "name": "pdb_ts1#633011",
+      "structure_f1": 0.16216216216216217,
+      "mean_selected_pair_probability": 0.8390673995018005,
+      "pred_pairs": [
+        [
+          59,
+          66
+        ],
+        [
+          80,
+          90
+        ],
+        [
+          81,
+          89
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 34
+    },
+    {
+      "name": "pdb_ts1#633012",
+      "structure_f1": 0.15384615384615385,
+      "mean_selected_pair_probability": 0.7551146149635315,
+      "pred_pairs": [
+        [
+          5,
+          72
+        ],
+        [
+          14,
+          66
+        ],
+        [
+          15,
+          65
+        ],
+        [
+          16,
+          64
+        ],
+        [
+          21,
+          48
+        ],
+        [
+          23,
+          46
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 20
+    },
+    {
+      "name": "pdb_ts1#633013",
+      "structure_f1": 0.4666666666666667,
+      "mean_selected_pair_probability": 0.7088829874992371,
+      "pred_pairs": [
+        [
+          1,
+          72
+        ],
+        [
+          2,
+          71
+        ],
+        [
+          10,
+          68
+        ],
+        [
+          11,
+          66
+        ],
+        [
+          12,
+          65
+        ],
+        [
+          15,
+          63
+        ],
+        [
+          20,
+          36
+        ],
+        [
+          21,
+          35
+        ],
+        [
+          22,
+          34
+        ],
+        [
+          23,
+          33
+        ]
+      ],
+      "n_predicted_pairs": 10,
+      "n_gt_pairs": 20
+    },
+    {
+      "name": "pdb_ts1#633014",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.8193588256835938,
+      "pred_pairs": [
+        [
+          75,
+          92
+        ],
+        [
+          77,
+          90
+        ],
+        [
+          78,
+          89
+        ],
+        [
+          80,
+          87
+        ]
+      ],
+      "n_predicted_pairs": 4,
+      "n_gt_pairs": 27
+    },
+    {
+      "name": "pdb_ts1#633015",
+      "structure_f1": 0.9090909090909091,
+      "mean_selected_pair_probability": 0.9397884607315063,
+      "pred_pairs": [
+        [
+          46,
+          59
+        ],
+        [
+          47,
+          58
+        ],
+        [
+          48,
+          57
+        ],
+        [
+          49,
+          56
+        ],
+        [
+          50,
+          55
+        ]
+      ],
+      "n_predicted_pairs": 5,
+      "n_gt_pairs": 6
+    },
+    {
+      "name": "pdb_ts1#633016",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.774713933467865,
+      "pred_pairs": [
+        [
+          14,
+          26
+        ],
+        [
+          15,
+          25
+        ],
+        [
+          16,
+          24
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 11
+    },
+    {
+      "name": "pdb_ts1#633018",
+      "structure_f1": 0.34285714285714286,
+      "mean_selected_pair_probability": 0.8390355110168457,
+      "pred_pairs": [
+        [
+          5,
+          12
+        ],
+        [
+          64,
+          80
+        ],
+        [
+          65,
+          79
+        ],
+        [
+          66,
+          78
+        ],
+        [
+          67,
+          77
+        ],
+        [
+          68,
+          76
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 29
+    },
+    {
+      "name": "pdb_ts1#633019",
+      "structure_f1": 0.42857142857142855,
+      "mean_selected_pair_probability": 0.7137079238891602,
+      "pred_pairs": [
+        [
+          6,
+          19
+        ],
+        [
+          7,
+          18
+        ],
+        [
+          9,
+          16
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 11
+    },
+    {
+      "name": "pdb_ts1#633020",
+      "structure_f1": 0.4444444444444444,
+      "mean_selected_pair_probability": 0.7553860545158386,
+      "pred_pairs": [
+        [
+          2,
+          18
+        ],
+        [
+          5,
+          15
+        ],
+        [
+          16,
+          39
+        ],
+        [
+          17,
+          38
+        ]
+      ],
+      "n_predicted_pairs": 4,
+      "n_gt_pairs": 5
+    },
+    {
+      "name": "pdb_ts1#633022",
+      "structure_f1": 0.631578947368421,
+      "mean_selected_pair_probability": 0.858633816242218,
+      "pred_pairs": [
+        [
+          1,
+          36
+        ],
+        [
+          2,
+          35
+        ],
+        [
+          3,
+          34
+        ],
+        [
+          4,
+          33
+        ],
+        [
+          6,
+          31
+        ],
+        [
+          7,
+          30
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 13
+    },
+    {
+      "name": "pdb_ts1#633023",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.8243587613105774,
+      "pred_pairs": [
+        [
+          15,
+          31
+        ],
+        [
+          16,
+          30
+        ]
+      ],
+      "n_predicted_pairs": 2,
+      "n_gt_pairs": 11
+    },
+    {
+      "name": "pdb_ts1#633025",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.0,
+      "pred_pairs": [],
+      "n_predicted_pairs": 0,
+      "n_gt_pairs": 12
+    },
+    {
+      "name": "pdb_ts1#633026",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.0,
+      "pred_pairs": [],
+      "n_predicted_pairs": 0,
+      "n_gt_pairs": 9
+    },
+    {
+      "name": "pdb_ts1#633028",
+      "structure_f1": 0.10526315789473684,
+      "mean_selected_pair_probability": 0.6410859227180481,
+      "pred_pairs": [
+        [
+          3,
+          38
+        ],
+        [
+          5,
+          12
+        ],
+        [
+          25,
+          35
+        ]
+      ],
+      "n_predicted_pairs": 3,
+      "n_gt_pairs": 16
+    },
+    {
+      "name": "pdb_ts1#633029",
+      "structure_f1": 0.27586206896551724,
+      "mean_selected_pair_probability": 0.8112508058547974,
+      "pred_pairs": [
+        [
+          20,
+          51
+        ],
+        [
+          22,
+          49
+        ],
+        [
+          23,
+          48
+        ],
+        [
+          25,
+          46
+        ]
+      ],
+      "n_predicted_pairs": 4,
+      "n_gt_pairs": 25
+    },
+    {
+      "name": "pdb_ts1#633031",
+      "structure_f1": 0.13333333333333333,
+      "mean_selected_pair_probability": 0.7399635910987854,
+      "pred_pairs": [
+        [
+          3,
+          22
+        ],
+        [
+          4,
+          21
+        ],
+        [
+          40,
+          88
+        ],
+        [
+          41,
+          87
+        ],
+        [
+          70,
+          86
+        ],
+        [
+          71,
+          85
+        ],
+        [
+          72,
+          84
+        ],
+        [
+          97,
+          120
+        ],
+        [
+          104,
+          118
+        ],
+        [
+          105,
+          116
+        ],
+        [
+          106,
+          115
+        ],
+        [
+          107,
+          114
+        ]
+      ],
+      "n_predicted_pairs": 12,
+      "n_gt_pairs": 33
+    },
+    {
+      "name": "pdb_ts1#633032",
+      "structure_f1": 0.0,
+      "mean_selected_pair_probability": 0.0,
+      "pred_pairs": [],
+      "n_predicted_pairs": 0,
+      "n_gt_pairs": 11
+    },
+    {
+      "name": "pdb_ts1#633033",
+      "structure_f1": 0.43478260869565216,
+      "mean_selected_pair_probability": 0.9200525283813477,
+      "pred_pairs": [
+        [
+          1,
+          45
+        ],
+        [
+          2,
+          44
+        ],
+        [
+          3,
+          43
+        ],
+        [
+          4,
+          42
+        ],
+        [
+          16,
+          33
+        ]
+      ],
+      "n_predicted_pairs": 5,
+      "n_gt_pairs": 18
+    },
+    {
+      "name": "pdb_ts1#633034",
+      "structure_f1": 0.10909090909090909,
+      "mean_selected_pair_probability": 0.8910391330718994,
+      "pred_pairs": [
+        [
+          10,
+          31
+        ],
+        [
+          11,
+          30
+        ],
+        [
+          12,
+          29
+        ],
+        [
+          13,
+          28
+        ],
+        [
+          14,
+          27
+        ],
+        [
+          78,
+          85
+        ],
+        [
+          177,
+          186
+        ],
+        [
+          178,
+          185
+        ],
+        [
+          179,
+          184
+        ]
+      ],
+      "n_predicted_pairs": 9,
+      "n_gt_pairs": 46
+    },
+    {
+      "name": "pdb_ts1#633035",
+      "structure_f1": 0.47619047619047616,
+      "mean_selected_pair_probability": 0.9409417510032654,
+      "pred_pairs": [
+        [
+          5,
+          43
+        ],
+        [
+          7,
+          41
+        ],
+        [
+          9,
+          40
+        ],
+        [
+          13,
+          36
+        ],
+        [
+          14,
+          35
+        ],
+        [
+          15,
+          34
+        ]
+      ],
+      "n_predicted_pairs": 6,
+      "n_gt_pairs": 15
+    }
+  ],
+  "independent_audit": {
+    "n": 48,
+    "status": "PASS",
+    "tp": 122,
+    "fp": 96,
+    "fn": 814,
+    "strict_micro_f1": {
+      "values": [
+        0.21143847487001732,
+        0.21143847487001732,
+        0.21143847487001732
+      ],
+      "mean": 0.21143847487001732,
+      "sd": 0.0
+    },
+    "strict_macro_f1": 0.2115724572232743,
+    "n_truncated_sequences": 0,
+    "weights_sha256": "90b9af474693db3879830a455f4c25662d672dc0f4e9cdc61b90055e9b6d5e07",
+    "result_sha256": "506a5a8926df237db26f8abdcd7caad08a4b79a63c282860588b133aa3c6c9db",
+    "probabilities_sha256": "98f0be3c6176c772af2b453415f3d2dce97d86a8c2df64bd1284b4340bff812a"
+  },
+  "code_sha256": "281802b83966b9247e27d5c3e59cf52a6dbb59cf56810d611bb97eaa9fe99cb2",
+  "pair_arrays": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/ref_pdb_ts1.npz",
+  "pair_arrays_sha256": "527443cc76afdc1b130a5d395b2f3022d8715caa939394601af67848d20f0db5"
+}

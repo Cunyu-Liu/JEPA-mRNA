@@ -1421,6 +1421,34 @@
    "bytes": 5166,
    "description": "BPfold/SPOT 比较汇总 16 单元，包含一个 EMPTY；不覆盖其他 eligible 基线",
    "status": "active_complete_bpfold_spot_comparisons"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_nucleicbert_ft_calibration.json",
+   "sha256": "487afe650c8d1581e6e7e02fa4b5b1680785dcb741d238734b96784419e25bdb",
+   "bytes": 26585,
+   "description": "NucleicBERT-ft TS1 既有三次原生概率转换与独立复核，598 nt 协议",
+   "status": "active_native_probability_evaluation"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_nucleicbert_frozen_calibration.json",
+   "sha256": "6c57ca2251173612bb6a8d8f77ef3bf268dd6944e7d9cea64f866316d0c76b98",
+   "bytes": 25304,
+   "description": "NucleicBERT-frozen TS1 既有三次原生概率转换与独立复核，598 nt 协议",
+   "status": "active_native_probability_evaluation"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_xens2_nucleicbert_ft_calibration.json",
+   "sha256": "b3e0c0dd715a76443da5c2cc32bf71f02d39f36ca23360c1384201a56d8eaa5e",
+   "bytes": 7254,
+   "description": "TS1 xens2/NB-ft 比较；NB-ft Spearman 更高但 AURC 更差",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts1_xens2_nucleicbert_frozen_calibration.json",
+   "sha256": "f8061ea1439adb0fdb2e61c3ce8d143db8fd0474d1ca66dd6e34d3e0337497d4",
+   "bytes": 7170,
+   "description": "TS1 xens2/NB-frozen 比较；ECE 较低但 Brier 更高，原生置信度较弱",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
