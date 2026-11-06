@@ -7,7 +7,8 @@ flock -n 9 || exit 0
 python=/root/miniconda3/envs/lucaone/bin/python
 root=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark
 out=$root/speed_round39/xens2_two_stream_b32_exclusive.json
-baseline=$root/speed_round39/xens2_b32_exclusive.json
+baseline=$root/speed_round39/xens2_b32_full_ts0.json
+test -s "$baseline"
 while [[ ! -s "$out" ]]; do
     set +e
     "$python" tools/speed_xens2_stream_round39.py \

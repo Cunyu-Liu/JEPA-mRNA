@@ -76,6 +76,7 @@ def main():
     assert len(records) == source_count == 1288 and filtered == 0
     assert production.sha256_file(args.data) == production.DEFAULT_DATA_SHA256
     baseline = json.loads(args.baseline.read_text())
+    assert hashlib.sha256(args.baseline.read_bytes()).hexdigest() == "0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0"
     assert baseline["status"] == "PASS" and baseline["protocol"]["cached_embeddings"] is False
     assert baseline["protocol"]["n_sequences"] == 1288 and baseline["protocol"]["resume_runs"] is False
     baseline_predictions = {row["name"]: {tuple(pair) for pair in row["pairs"]} for row in baseline["predictions"]}
