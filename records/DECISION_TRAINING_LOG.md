@@ -13014,4 +13014,4 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **现象**：冻结和全参 confidence watcher 首次并行启动均在约 0.13s 返回 `Connection closed by 125.71.97.44 port 29744`；后续单次连接在等待后也返回相同错误。尚未获得远端脚本执行日志，因此不能把 watcher 写成已启动，也没有证据把问题归因于 CUDA、训练或脚本断言。
 - **处置**：保留连接错误，不重复提交训练或下载任务；已有持久 SSH 任务在本地任务面板仍为 running，但这不等于远端健康证明。连接恢复后先查进程、run_meta 与日志，只补缺失 watcher，再提交本节及 §15.463 的远端台账。
-- **部分恢复**：随后 SSH 单次查询成功，seed2 日志继续推进；冻结 confidence watcher 已确认运行（脚本 PID=3247925）。全参 watcher 尚未确认，之后一次新连接又被关闭，因此不写成两者均恢复。
+- **恢复**：随后 SSH 单次查询成功，seed2 日志继续推进；冻结 confidence watcher 已确认运行（脚本 PID=3247925）。全参 watcher 经单独连接补启动后确认运行（脚本 PID=3248297）。§15.463–15.464 已同步远端并随提交 `17c078ccb3fc9ce9ffbaa739c2c63f2ffef0bbf6` 推送。早期组合 launcher 的全参分支未保留，以单独 watcher 为准，不影响训练与正式评测。
