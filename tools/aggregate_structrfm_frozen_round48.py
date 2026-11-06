@@ -17,7 +17,8 @@ def main():
     args = parser.parse_args()
     clean = args.root / "data/structrfm_pretrain_clean"
     splits = ["bprna_ts0", "bprna_new", "archiveii", "ref_pdb_ts1",
-              "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb"]
+              "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb",
+              "rfam_fam", "chanrg_test", "chanrg_gena", "chanrg_genc", "chanrg_genf"]
     results = {}
     for split in splits:
         audit = json.loads((clean / f"{split}.audit.json").read_text())
@@ -50,7 +51,7 @@ def main():
                           "f1_mean": float(np.mean(f1_values)),
                           "f1_sd": float(np.std(f1_values)),
                           "n_long_unsupported": sum(cell["n_long_unsupported"] for cell in cells)}
-    summary = {"status": "PASS_STRUCTRFM_FROVEN_8_SPLITS_3_SEEDS_3_REPEATS",
+    summary = {"status": "PASS_STRUCTRFM_FROZEN_ABC_13_SPLITS_3_SEEDS_3_REPEATS",
                "protocol": "own-clean; each seed independently decoded three times; not an ensemble",
                "splits": results}
     args.out.parent.mkdir(parents=True, exist_ok=True)

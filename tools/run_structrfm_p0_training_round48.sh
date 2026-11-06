@@ -32,7 +32,12 @@ run_audit ref_pdb_ts2 /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl
 run_audit ref_pdb_ts3 /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl
 run_audit ref_pdb_ts_hard /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl
 run_audit testsetb /root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl
-$PY -c 'import json,pathlib; p=pathlib.Path("'"$CLEAN"'"); names=["bprna_ts0","bprna_new","archiveii","ref_pdb_ts1","ref_pdb_ts2","ref_pdb_ts3","ref_pdb_ts_hard","testsetb"]; out={"status":"PASS_STRUCTRFM_PRETRAIN_CLEAN_8_SPLITS","splits":{n:json.load(open(p/(n+".audit.json"))) for n in names}}; (p/"summary.json").write_text(json.dumps(out,indent=2)+"\n")'
+run_audit rfam_fam /root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl
+run_audit chanrg_test /root/rna_jepa_data/ss_data/jsonl/chanrg_test.jsonl
+run_audit chanrg_gena /root/rna_jepa_data/ss_data/jsonl/chanrg_gena.jsonl
+run_audit chanrg_genc /root/rna_jepa_data/ss_data/jsonl/chanrg_genc.jsonl
+run_audit chanrg_genf /root/rna_jepa_data/ss_data/jsonl/chanrg_genf.jsonl
+$PY -c 'import json,pathlib; p=pathlib.Path("'"$CLEAN"'"); names=["bprna_ts0","bprna_new","archiveii","ref_pdb_ts1","ref_pdb_ts2","ref_pdb_ts3","ref_pdb_ts_hard","testsetb","rfam_fam","chanrg_test","chanrg_gena","chanrg_genc","chanrg_genf"]; out={"status":"PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS","splits":{n:json.load(open(p/(n+".audit.json"))) for n in names}}; (p/"summary.json").write_text(json.dumps(out,indent=2)+"\n")'
 while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 16000 ]; do sleep 60; done
 start_seed() {
   local seed=$1
