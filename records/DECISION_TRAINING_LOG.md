@@ -12740,3 +12740,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **环境核验**：旧 `/root/rna_jepa_data/pylibs` 不存在，已定位并固定 `/root/miniconda3/envs/codonflow/lib/python3.10/site-packages` 中的 ViennaRNA 2.7.2；仍用 lucaone 评测环境运行项目指标，不安装新依赖。`codonflow` 缺 scikit-learn，未把它当作替代评测环境。
 - **真实 TS2**：39 条完整推理三次，MFE/centroid/MEA F1 分别为 **0.8979591837/0.8929663609/0.8937784522**，逐条预测和 TP/FP/FN 均与原 `raw_strict` 一致。共同 n=29，三者共享 BPP 的 ECE=**0.0033891481**、Brier=0.0055268471、NLL=0.0263440530，低于 xens2 ECE=0.0177234890；比较 SHA256 分别为 `630070e7d1ae1bd7f90e22cd3c858d13e04b21b3181964dc2765946e017dc601`、`e7c9bf05e26d64e73c42d458c71aa84f712f59db1603eaf9335fd02473e2a7d9`、`3193d55209da93343a0417576ecd6133007e8bf4264b0f6052d78dce0e73a56d`。
 - **QA 与边界**：新增原生 roundtrip 测试，连同 Kirigami/BPfold/xens2 共 10 项通过。首次单元测试发现计数容器类型错误，真实比较又发现集合遍历导致均值最后浮点位不一致；均修复后重跑，最终采用固定配对顺序精确相等，不放宽容差。其余 21 格后台 CPU 队列进行中，24 格未齐前只记 TS2；EternaFold/CONTRAfold 继续 `NOT_AVAILABLE_NATIVE_PAIR_PROBABILITIES`。
+
+
+## §15.429（2026-11-06）xens2 双 stream 候选与独占干扰留证
+
+- **候选机制**：生产路径 `forward_our` 依次计算 enc0、enc1、RiNALMo 三个独立编码器。新增候选仅把两个 plan a 编码器放到两个 CUDA stream，RiNALMo 在主 stream，汇合后按原顺序计算三个头、0.7/0.3 融合和 C 解码；不改权重、精度、序列或批次。代码提交 `1963b5c42ba790b6a0aa1ba6f7f0e1afeff32bac`。
+- **硬门**：固定 B=32，全 TS0 三次、raw-sequence 全链路；相对既有 B=32 要求逐序列一致率 **1.0**、绝对 ΔF1=0，比通用 99%/1e-3 门更严格。每轮前后检查 GPU compute PID，有干扰即放弃整个窗口，不拼接 partial timing，不与 MXfold2/RNAformer 并发计时。
+- **首次工程修正**：启动前的独占检查起初未被重试分支捕获，其他会话 GPU 进程导致 status=1 退出，无有效结果。已增加 `abort_interference`，统一留下 `ABORTED_EXCLUSIVE_SPEED_INTERFERENCE` JSON 和 status=2，持久队列每 600 秒重试。两项干扰/自身 PID 测试加两项自适应回归均通过，修复提交 `7a4fb88770c31461427d0a8477490f9d20b00b80`。
+- **当前证据**：干扰记录 SHA256=`8a087bcc45a418ae08802667e74b02b3e2f4155c4593986472863adbccd8d128`，尚无双流有效吞吐。既有 B=32=13.5802438348、自适应=14.1949071622 seq/s，不能预写新倍率或速度 SOTA。`spec/tasks.md` 与 `spec_sync/tasks.md` 的过期“正式速度仍未测”已同步更正。

@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "status": "ABORTED_EXCLUSIVE_SPEED_INTERFERENCE",
+  "error": "EXCLUSIVE_SPEED_INTERFERENCE:3651030,3668467",
+  "note": "no partial or cross-window timing is accepted"
+}
