@@ -1,6 +1,28 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解版；合同 `docs/plans/2026-11-04-prism-grouped-physics-revision.md`）**
+> **当前执行覆盖（2026-11-06，第 48 轮：独立单模型架构攻关；合同 `docs/plans/2026-11-06-round48-single-model-architecture.md`）**
+>
+> - [ ] T-A209 structRFM 官方 commit/权重严格加载与 Nature 版预训练精确+80% identity 污染审计完成；专属 clean 和 512 nt 边界可复现。
+> - [ ] T-A210 structRFM 冻结/全参与 RiNALMo 对照均三种子收敛并完成 A/B/C、长度、速度和置信度验收。
+> - [ ] T-A211 RIPE log/R1/R2/R3/R5/R6、等参数和 QK-norm 对照完成；合成边界、梯度、随机杀手与长序列门全过。
+> - [ ] T-A212 RIPE 三种子 A/B/C 完成，长程及 200–400/>400 nt 结论不依赖短序列平均提升。
+> - [ ] T-A213 Pair-JEPA 与 J-mlp/noEMA/random-target 完成；无区域均值饱和或常数坍塌，推理无 teacher 前向。
+> - [ ] T-A214 独立单模型主 clean 8/8、Rfam/CHANRG、独占 raw-sequence 速度、最佳结构置信度均经独立复算；未达标项不得勾选。
+> - [ ] T-A215 每 run 台账完整；PPT 副本仅含验收结果，微软雅黑、1.5 行距、无重叠、图文同源、逐页渲染通过，其他页面不改。
+> - [ ] T-A216 确认代码已 push；活跃图源保留、旧件归档有索引；论文每主张均有实验现象和限制支撑。
+
+> **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据与最终讲稿；合同 `docs/plans/2026-11-06-round47-current-status.md`）**
+>
+> - [x] T-A201 Rfam 全模型、BPfold、Turner/DP 消融及独立复算完成。
+> - [x] T-A202 A/B/C 分组表图、同页原生表格与最优加粗完成。
+> - [x] T-A203 CHANRG 与 RiNALMo 四 split 三次重测完成，旧值不再混用。
+> - [x] T-A204 BPfold batch 网格完成；非等价结果被否决，仅 B=1 入图。
+> - [x] T-A205 校准、Spearman、bootstrap、分箱和 risk–coverage 完成，负结果保留。
+> - [x] T-A206 两行原生矢量架构与 Turner 英文提示词完成。
+> - [x] T-A207 19 页讲稿完整版完成，极简标题、自然口语、置信度递进和阶段性不足。
+> - [x] T-A208 最新 manifest、源数据索引、QA 和哈希同步完成：345 文件、QA 477/477、2 个 archived_missing。
+>
+> **历史执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解版；合同 `docs/plans/2026-11-04-prism-grouped-physics-revision.md`）**
 >
 > - [x] T-A195 A/B/C 分组结果表图已生成，含同源完整指标、PRISM/BPfold 和 Rfam 消融。
 > - [x] T-A196 物理先验、训练流程、ECE/仿射与 Rfam 左图读法已写成独立页面和中文备注。
@@ -80,7 +102,7 @@
 >
 > **xens2 概率资产进展**：生产 raw-sequence 校准、NPZ 独立复算和持久队列已实现；4 项工具测试通过，覆盖配对坐标、空预测、VL0/CUDA 身份、float64 指标复算与断点跳过。真实 GPU 预检、VL0 拟合、八 clean split 与全概率基线比较未完成，T-A174 不勾选。
 >
-> **104/104 主榜证据**：四个 RNAformer 变体均完成 raw+clean 16 格；13 系统主榜两次复算=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`，附加敏感性=`30f443c3bc021ed78a7b053d6bcaa1a4bc002642af8617241788f47d5cfa6910`。xens2 仅 5/8 领先，T-A173 不勾选；25 系统总门与 blocked provenance 不因 104 格完成而消失。测速干扰已留证，尚无有效结果，T-A172/T-A174 不勾选。
+> **104/104 主榜证据**：四个 RNAformer 变体均完成 raw+clean 16 格；13 系统主榜两次复算=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`，附加敏感性=`30f443c3bc021ed78a7b053d6bcaa1a4bc002642af8617241788f47d5cfa6910`。xens2 仅 5/8 领先，T-A173 不勾选；25 系统总门与 blocked provenance 不因 104 格完成而消失。测速干扰已留证，恢复队列运行但尚无有效结果，T-A172/T-A174 不勾选。
 >
 > **测速与 VL0 证据**：独占全 TS0 三次中位 13.5802 seq/s、F1=0.8037820907，测速有效但不是 SOTA，T-A172 不勾选。真实 GPU 预检和完整 VL0 196 条/573355 配对已独立验证；VL0 不是泛化证据，八 clean 与全基线比较未完成，T-A174 不勾选。
 >

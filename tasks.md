@@ -1,6 +1,36 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解、物理/训练/ECE 说明与速度补充；活跃清单 `round43-prism-grouped-physics-v1`）**
+> **当前执行覆盖（2026-11-06，第 48 轮：独立单模型架构攻关；合同 `docs/plans/2026-11-06-round48-single-model-architecture.md`）**
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A209 | structRFM 官方资产与预训练污染门 | commit/权重哈希/严格加载确认；Zenodo 18272040 精确+80% identity 审计与专属 clean；512 nt 边界明确 | 进行中：官方 commit 与语料 MD5 已锁定，权重/语料下载中 |
+> | T-A210 | structRFM+JEV 单模型 | S1 冻结/S2 全参与 RiNALMo 对照；三种子收敛、独立 CUDA QA、A/B/C、长度/速度/置信度齐全 | 待 P0 通过 |
+> | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 待路线一裁决 |
+> | T-A212 | RIPE+JEV 三种子 A/B/C | 同配方收敛；长程与 200–400/>400 nt 为主判定，全板与外部 OOD 完整 | 待路线一裁决 |
+> | T-A213 | Pair-JEPA scorer 与防坍塌对照 | J-mlp/J1/noEMA/random-target；被掩 pair latent、方差/有效秩、推理无 teacher | 待路线二裁决 |
+> | T-A214 | 独立单模型终榜与速度/置信度 | 单骨干单头单 checkpoint；主 clean 8/8、Rfam/CHANRG、独占 raw-sequence、ECE/Spearman/AURC 与长度桶独立复算 | 未达成；不得以 xens2 集成替代 |
+> | T-A215 | 台账、PPT 副本与图源三通道 | 每 run 完整；仅验收结果入副本，微软雅黑/1.5 行距/无重叠/逐页渲染；源数据与图表一致 | 贯穿本轮，原稿和用户其他调整不动 |
+> | T-A216 | GitHub、归档与论文证据链 | 确认代码及时 push；活跃源保留、旧件可追溯归档；每主张有 claim–evidence–limitation | 贯穿本轮，最终未完成 |
+>
+> **硬顺序**：T-A209→T-A210→T-A211/T-A212→T-A213→T-A214；T-A215/T-A216 贯穿。每条路线完成验收并作正/负裁决后进入下一条，禁止以 smoke 或未收敛单 seed 跳级。
+
+> **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
+>
+> 唯一权威状态文档：`docs/plans/2026-11-06-round47-current-status.md`。
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A201 | Rfam 全模型、BPfold 与无需重训消融 | 10,790 条三次预测、INF/F1/P/R、macro 分布、Turner/DP 消融与 BPfold 结果齐全 | 已完成：PRISM=0.6514、BPfold=0.7872、Turner=0.4722、greedy=0.5231 |
+> | T-A202 | A/B/C 分组表图与原生表格 | 同源完整指标、同页图片与原生表格、最优加粗、raw/clean 不混 | 已完成；`tables/round42_grouped_evaluation.md` |
+> | T-A203 | CHANRG 与 RiNALMo 重测 | CHANRG 12/12 与 RiNALMo 四 split 三次复测、独立 F1 复算 | 已完成：RiNALMo=0.5553/0.6221/0.4121/0.2891，旧值不混用 |
+> | T-A204 | BPfold batch 网格与等价验收 | B=1/2/4/8/16/32 三次、配对一致率和 F1 差检查 | 已完成并否决非等价吞吐；B=2 一致率 93.07%，仅 B=1 入图 |
+> | T-A205 | 校准、排序与风险筛选 | 共享 VL0、ECE、Spearman、bootstrap、分箱和 risk–coverage | 已完成；仿射前后 Spearman 不变，TS2/TS3 负结果保留 |
+> | T-A206 | 两行架构与 Turner 图解/提示词 | 原生矢量两行六模块、公式/mask/DP 图解、英文生图提示词 | 已完成；损失面板不进入生图提示词 |
+> | T-A207 | 19 页最终讲稿与逐页逻辑 | 极简标题、自然口语、架构细节、置信度递进、阶段性不足 | 已完成：`PRISM_组会汇报_20261107_完整版.pptx/.pdf` |
+> | T-A208 | 最新 manifest 与交接同步 | 最新源、QA、PPT/PDF、提示词和哈希全部一致 | 已完成：345 文件、QA 477/477、2 个 archived_missing |
+>
+> **历史执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解、物理/训练/ECE 说明与速度补充；活跃清单 `round43-prism-grouped-physics-v1`）**
 >
 > 唯一合同：`docs/plans/2026-11-04-prism-grouped-physics-revision.md`。
 >
@@ -105,9 +135,9 @@
 >
 > **2026-11-05 校准后续顺序**：biophysical 16 格→104/104 own-clean 两次复算→xens2 独占全 TS0 三次测速→真实 GPU 单条预检→完整 VL0 拟合→八 clean split 三次独立概率推理与 NPZ 复算。`calibrate_xens2_round39.py`、`verify_xens2_calibration_round39.py` 和持久队列已落地，4 项工具测试通过；尚未产生真实 GPU 校准结论，所有概率基线的比较继续排队。
 >
-> **2026-11-05 主榜完成与测速恢复**：13 系统 own-clean 104/104 和 matched-clean 均已两次复算一致，主榜=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。xens2 5/8 领先，三负格与 clean n 记录于 §15.401。`monitor_round39_exclusive_speed_retry.sh` 已启动，干扰只终止自身并留证重试，真实失败停止；有效测速完成前校准继续等待。
+> **2026-11-05 主榜完成与测速恢复**：13 系统 own-clean 104/104 和 matched-clean 均已两次复算一致，主榜 SHA256=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。xens2 5/8 领先，三负格与 clean n 已记录 §15.401；不将主板完成写成 8/8。`monitor_round39_exclusive_speed_retry.sh` 已启动，干扰只终止自身测速并留证重试，真实失败停止；有效测速完成前校准继续等待。
 >
-> **2026-11-05 测速与校准进展**：独占 xens2 B=32 全 TS0 三次已完成，中位 13.5802 seq/s、F1=0.8037820907，速度 SOTA 未达成。完整 VL0 拟合经独立复算通过，八 clean 继续队列推理；随后统一验证 NPZ、补齐 eligible 概率基线比较，最后定点更新图件与叙事。详见 §15.402。
+> **2026-11-05 测速与校准进展**：独占 xens2 B=32 全 TS0 三次已完成，中位 13.5802 seq/s、F1=0.8037820907，速度 SOTA 未达成。完整 VL0 拟合经独立复算通过，八 clean split 继续队列推理；随后统一验证 NPZ、补齐 eligible 概率基线比较，最后定点更新图件与叙事。详见 §15.402。
 >
 > **2026-11-05 双概率队列**：BPfold 原始 logit/概率/后处理三路输出和独立验证已实现，真实预检通过；xens2 的 TR1c 平铺路径错误已修复。两系统按各自 clean 数据并行评测，随后分别复算八 split，再做同 GT/候选对比较；不把 smoke 当最终结论。
 >

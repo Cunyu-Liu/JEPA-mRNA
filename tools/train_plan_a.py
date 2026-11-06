@@ -48,6 +48,7 @@ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True is set by the launcher.
 """
 
 import argparse
+import itertools
 import json
 import os
 import sys
@@ -71,6 +72,7 @@ from rinalmo_preflight import VOCAB, load_encoder  # noqa: E402
 from torch.utils.checkpoint import checkpoint as _grad_ckpt  # noqa: E402
 
 NEG_BIG = -1.0e4
+ENCODER_SPECIAL_TOKENS = True
 
 TEACHER_DIR = "/root/rna_jepa_data/ss_data/teacher/bprna_tr0"
 CKPT_DIR = "/root/rna_jepa_data/ckpts"
@@ -342,7 +344,9 @@ def main():
     t0 = time.time()
     trainable = lambda: [p for p in head_params + enc_params if p.requires_grad]
 
-    for step in range(start_step + 1, args.steps + 1):
+    step_iterator = (range(start_step + 1, args.steps + 1) if args.steps > 0
+                     else itertools.count(start_step + 1))
+    for step in step_iterator:
         if step > args.warmup_head_steps and n_unfrozen < n_blocks:
             due = ((step - args.warmup_head_steps) // args.unfreeze_every) \
                 * args.unfreeze_per_step
@@ -363,13 +367,15 @@ def main():
         max_len = max(lengths)
         B = len(seqs)
 
-        enc_ids = torch.zeros(B, max_len + 2, dtype=torch.long)
-        attn = torch.zeros(B, max_len + 2, dtype=torch.long)
+        frame_extra = 2 if ENCODER_SPECIAL_TOKENS else 0
+        enc_ids = torch.zeros(B, max_len + frame_extra, dtype=torch.long)
+        attn = torch.zeros(B, max_len + frame_extra, dtype=torch.long)
         head_ids = torch.zeros(B, max_len, dtype=torch.long)
         masks, labels_all = [], []
         for bi, s in enumerate(seqs):
-            ids = [VOCAB["<cls>"]] + [VOCAB.get(c, VOCAB["<unk>"]) for c in s] \
-                + [VOCAB["<eos>"]]
+            token_ids = [VOCAB.get(c, VOCAB["<unk>"]) for c in s]
+            ids = ([VOCAB["<cls>"]] + token_ids + [VOCAB["<eos>"]]
+                   if ENCODER_SPECIAL_TOKENS else token_ids)
             enc_ids[bi, :len(ids)] = torch.tensor(ids, dtype=torch.long)
             attn[bi, :len(ids)] = 1
             head_ids[bi, :len(s)] = torch.tensor(
@@ -384,7 +390,8 @@ def main():
         with torch.autocast("cuda", dtype=torch.bfloat16):
             out = encoder(input_ids=enc_ids, attention_mask=attn)
             h = out.last_hidden_state if hasattr(out, "last_hidden_state") else out[0]
-        h = h[:, 1:max_len + 1, :].float()
+        h = (h[:, 1:max_len + 1, :] if ENCODER_SPECIAL_TOKENS
+             else h[:, :max_len, :]).float()
         # quantise to the control arm's cached-feature precision (extraction wrote
         # float16; the control's head consumed fp32-cast fp16 values). Doing the
         # same here keeps the frozen-phase forward numerically aligned with the

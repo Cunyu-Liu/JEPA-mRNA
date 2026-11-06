@@ -1,6 +1,20 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
-> **当前执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解版；活跃清单 `round43-prism-grouped-physics-v1`）**
+> **当前执行覆盖（2026-11-06，第 48 轮：独立单模型 structRFM→RIPE→Pair-JEPA；活跃清单 `round48-single-model-architecture-v1`）**
+>
+> 唯一执行合同：`docs/plans/2026-11-06-round48-single-model-architecture.md`。按用户指定顺序依次完成 structRFM+JEV、RIPE 思想迁移、JEPA 式 scorer，每个冻结候选均做 A/B/C 消融。主模型必须单骨干、单任务头、单 checkpoint；xens2 仅作历史集成对照。主去泄露八 split 目标 8/8 SOTA，Rfam/CHANRG 尽可能多领先，并同时验收 raw-sequence 速度、结构置信度和 200–400/>400 nt 长序列。
+>
+> **范围修订**：旧“禁止 JEPA”仅继续否定已饱和的区域均值 JEPA 预训练与 EMA 双前向部署；本轮允许 I-JEPA 思想的 Pair-JEPA 替代 ResNet2D scorer，EMA 仅训练期存在。不得恢复旧区域均值目标，也不得把 Pair-JEPA 与视频 V-JEPA 混称。
+>
+> **新污染门**：structRFM 使用 Nature 版 Zenodo 18272040 的 21M MUSES 语料重新计算精确与 80% identity 重叠，形成 structRFM 专属 clean；TR1c downstream clean 不能替代预训练 clean。官方 SSP 微调权重不得作为干净主模型初始化。原文 512 nt 限制与 23S 退化必须保留，不得随机扩展绝对位置 embedding 后冒充官方模型。
+>
+> **阶段顺序**：P0 资产/合同 → P1 structRFM 冻结与全参两臂 → P2 RIPE 的 log/R1/R2/R3/随机周期/随机互补分解 → P3 Pair-JEPA 与近参数 MLP/noEMA/random-target 对照 → P4 独立复算、PPT 副本、归档与论文。每路线三种子收敛并完成 A/B/C 后无论正负均作裁决再进入下一路线，不反复测试集调参。
+
+> **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
+>
+> 权威状态：`docs/plans/2026-11-06-round47-current-status.md`。Rfam 完成 PRISM 与 BPfold 三次复测及 Turner/DP 消融，A/B/C 使用同页图片与原生表格。RiNALMo 四 split 已全部重测，旧 Test=0.7832 不再作为主结论。BPfold batch 网格已完成但非等价吞吐被否决，主图仅用 B=1。最新交付为 23 页 `PRISM_大组会汇报_20261106_讲稿修订版.pptx/.pdf`，含极简标题、自然口语备注、两行架构与 19–21 的“校准→排序→筛选”逻辑。最终 manifest、QA 和哈希必须同步到该版本。
+>
+> **历史执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解版；活跃清单 `round43-prism-grouped-physics-v1`）**
 >
 > 合同：`docs/plans/2026-11-04-prism-grouped-physics-revision.md`。数据页后必须依次出现 A/B/C 三组同源表图；新增物理先验、训练角色、ECE/仿射和 Rfam 读图说明。物理先验仅为 Turner 最近邻 stacking，不能写成完整 ViennaRNA MFE；测试集不得参与调参或校准。所有重绘图删除底部说明小字，图和页面可见型号统一 PRISM。主图 2 的 BPfold 必须等 CHANRG 结束后独占 4090 测量 TS0 三次 raw-sequence 全链路。末页保留项目阶段性不足并请老师批评。CHANRG 未完成前继续留空。
 >
@@ -94,11 +108,11 @@
 >
 > **2026-11-05 xens2 独立概率工具链与队列**：复用生产三路 raw-sequence 前向，保存严格有效配对分数、标签、原始/校准概率和三次概率哈希；校准仅由完整 VL0 拟合，八个 clean split 冻结参数评测，原始 DP 结构不因校准改变。独立验证器重读 NPZ，按生产 float64 路径复算 ECE/Brier/NLL、预测、F1 与置信度。4 项测试含完整模拟流程、独立复算和断点跳过均通过，但不是科学结果。队列只在 104/104 主板与独占测速通过后执行真实 GPU 预检和 9 组推理；所有 eligible 基线的 clean 概率未齐前仍不写最低 ECE 或最佳置信度。
 >
-> **2026-11-05 原生 clean 主榜闭环**：RNAformer 四个变体均完成 raw+clean 16 格；biophysical 汇总=`9d4ae0519d7763965e58c307c9a134c0c29dace59224977fb3253f69a5836178`。13 系统×8 split 达到 104/104，两次主榜复算=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`，附加敏感性=`30f443c3bc021ed78a7b053d6bcaa1a4bc002642af8617241788f47d5cfa6910`。xens2 为 5/8 领先，bpRNA-new、TS2、ArchiveII 对 BPfold 分别低 0.1839358676、0.1132169754、0.0878836144；TS2 的 BPfold clean n=3。首次测速受干扰已停止留证，恢复队列只等待无干扰窗口，详见 §15.401。
+> **2026-11-05 原生 clean 主榜闭环**：RNAformer 四个变体均完成 raw+clean 16 格；biophysical 汇总 SHA256=`9d4ae0519d7763965e58c307c9a134c0c29dace59224977fb3253f69a5836178`。13 系统×8 split 达到 104/104，两次主榜复算 SHA256=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`，附加敏感性 SHA256=`30f443c3bc021ed78a7b053d6bcaa1a4bc002642af8617241788f47d5cfa6910`。xens2 实际为 5/8 领先，bpRNA-new、TS2、ArchiveII 对 BPfold 分别低 0.1839358676、0.1132169754、0.0878836144；TS2 的 BPfold clean n=3，必须并列展示。首次独占测速受外部 GPU 任务干扰已留证停止，恢复队列只等待无干扰窗口，不拼接计时。
 >
-> **2026-11-05 独占测速与 VL0 校准**：xens2 B=32 全 TS0 三次 F1=0.8037820907，中位 13.5802438348 seq/s，结果=`0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0`，不是速度 SOTA。真实 GPU 预检和完整 VL0 的 196 条、573355 配对均通过独立 NPZ 复算，fit=`a54cc2acd22800a4346b8d7c8b04f69c100394659a2ae7f97e4873d80d92504d`。VL0 仅用于拟合，八 clean 与全概率基线比较未完成。
+> **2026-11-05 独占测速与 VL0 校准**：xens2 B=32 全 TS0 三次 F1=0.8037820907，中位 13.5802438348 seq/s，结果=`0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0`，不是速度 SOTA。真实 GPU 单条预检和完整 VL0 的 196 条、573355 配对均通过独立 NPZ 复算，fit=`a54cc2acd22800a4346b8d7c8b04f69c100394659a2ae7f97e4873d80d92504d`。VL0 仅用于拟合，八 clean split 和全概率基线比较未完成，不写最低 ECE 或最佳置信度。
 >
-> **2026-11-05 BPfold 概率合同**：官方原始 contact map 是 logit，不是概率；分别保存 logit、sigmoid 概率与后处理概率。真实 GPU 单条三次预检及独立 TP/FP/FN、CI、F1、NPZ 复算通过，结果=`9ae7074eccca2969c51475ba2b04baed4c52d634103d47eae72a32d22bc67a6a`。双 clean 队列已启动；全板与全概率基线未齐，不写最低 ECE。
+> **2026-11-05 BPfold 概率合同**：官方原始 contact map 是 logit，不是概率；分别保存 logit、sigmoid 概率与后处理概率。真实 GPU 单条三次预检及独立 TP/FP/FN、CI、F1、NPZ 复算通过，结果=`9ae7074eccca2969c51475ba2b04baed4c52d634103d47eae72a32d22bc67a6a`。BPfold 与 xens2 已按各自 clean 数据并行排队；全板与全概率基线未齐，不写最低 ECE。
 >
 > **2026-11-05 自适应速度候选**：计划 len≤256/257–384/385–600 分别使用 B=64/32/16，不修改生产模型或解码。须在全 TS0 三次、无干扰 raw-sequence 下达到 pair identity≥99%、|ΔF1|≤0.001；队列等待两套 clean 校准完成。2 项逻辑测试通过，但无真实 GPU 提升结论，速度 SOTA 仍未达成。
 >
@@ -2117,9 +2131,9 @@ L = L_NLL  +  λ_distill · L_distill  +  λ_RLCD · L_RLCD  +  λ_1 · L_cal
 
 # REMOVED Requirements
 
-### Requirement: 隐空间预测性预训练（JEPA 式）
-**Reason**：既有实验记录（`records/A3_latent_target_comparison.md`、`records/factor_probe_control_analysis.md`）给出三条否定性证据——区域均值摘要目标几乎立即饱和（cos 0.993 / L_JEPA 0.02–0.05）；因子探针的原始对照是空操作（学习基与随机基数值完全相同）；改用秩匹配随机子空间后学习因子相对随机子空间无优势。原假设 C3 不被证据支持。且用户明确要求聚焦纯血 Jev 架构。
-**Migration**：由「热力学决策蒸馏预训练」（§5.7）替代。蒸馏直接对齐决策空间，目标不易饱和，且与 Jev 的 System-1/System-2 分工一致。
+### Requirement: 区域均值隐空间预测性预训练（旧 JEPA 式）
+**Reason**：既有实验记录（`records/A3_latent_target_comparison.md`、`records/factor_probe_control_analysis.md`）给出三条否定性证据——区域均值摘要目标几乎立即饱和（cos 0.993 / L_JEPA 0.02–0.05）；因子探针的原始对照是空操作（学习基与随机基数值完全相同）；改用秩匹配随机子空间后学习因子相对随机子空间无优势。原假设 C3 不被证据支持。
+**Migration**：监督主线继续采用「热力学决策蒸馏预训练」（§5.7）。第 48 轮仅新增 Pair-JEPA scorer 消融：被掩 pair/token latent、训练期 EMA、推理单 scorer；不恢复旧区域均值目标。
 
 ---
 
@@ -2127,20 +2141,21 @@ L = L_NLL  +  λ_distill · L_distill  +  λ_RLCD · L_RLCD  +  λ_1 · L_cal
 
 **研究重心（已确认）**
 - 以 **RNA 二级结构预测为主任务**，纯血 Jev 决策范式用于替代慢速求解与自回归解码
-- **不引入 JEPA 线**（隐空间预测 / EMA teacher / 区域因子分解）
+- **不恢复旧 JEPA 预训练线**（区域均值隐空间预测 / 区域因子分解）；Pair-JEPA 仅限第 48 轮的 scorer 对照，EMA 不进入推理
 - 「替代 decoder 下词预测」**不作为独立研究线**
 - 论文的唯一成功判据是**可发表**，不以"必须涨点"为前提；负结果 + 机制分析同样计入产出
 
 **In-scope**
 - RNA 二级结构（含假结）预测
 - 决策模型架构设计与定制
+- structRFM+JEV、RIPE 思想迁移与 Pair-JEPA scorer 的受控消融
 - 热力学决策蒸馏预训练
 - 数据获取、清洗与审计
 - 测评、消融、速度基准
 - 论文撰写与投稿
 
 **Out-of-scope（明确不做）**
-- JEPA / 隐空间预测性预训练
+- 旧区域均值 JEPA / 隐空间预测性预训练、视频 V-JEPA 及推理期 EMA 双前向
 - RNA 三级结构从头预测（仅作补充对比引用）
 - RNA 序列设计 / 生成式设计
 - 湿实验验证

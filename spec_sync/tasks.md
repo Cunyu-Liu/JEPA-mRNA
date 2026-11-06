@@ -1,6 +1,21 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
+> **当前执行覆盖（2026-11-06，第 48 轮：独立单模型架构攻关；合同 `docs/plans/2026-11-06-round48-single-model-architecture.md`）**
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A209 | structRFM 官方资产与预训练污染门 | commit/权重哈希/严格加载确认；Zenodo 18272040 精确+80% identity 审计与专属 clean；512 nt 边界明确 | 进行中：官方 commit 与语料 MD5 已锁定，权重/语料下载中 |
+> | T-A210 | structRFM+JEV 单模型 | S1 冻结/S2 全参与 RiNALMo 对照；三种子收敛、独立 CUDA QA、A/B/C、长度/速度/置信度齐全 | 待 P0 通过 |
+> | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 待路线一裁决 |
+> | T-A212 | RIPE+JEV 三种子 A/B/C | 同配方收敛；长程与 200–400/>400 nt 为主判定，全板与外部 OOD 完整 | 待路线一裁决 |
+> | T-A213 | Pair-JEPA scorer 与防坍塌对照 | J-mlp/J1/noEMA/random-target；被掩 pair latent、方差/有效秩、推理无 teacher | 待路线二裁决 |
+> | T-A214 | 独立单模型终榜与速度/置信度 | 单骨干单头单 checkpoint；主 clean 8/8、Rfam/CHANRG、独占 raw-sequence、ECE/Spearman/AURC 与长度桶独立复算 | 未达成；不得以 xens2 集成替代 |
+> | T-A215 | 台账、PPT 副本与图源三通道 | 每 run 完整；仅验收结果入副本，微软雅黑/1.5 行距/无重叠/逐页渲染；源数据与图表一致 | 贯穿本轮，原稿和用户其他调整不动 |
+> | T-A216 | GitHub、归档与论文证据链 | 确认代码及时 push；活跃源保留、旧件可追溯归档；每主张有 claim–evidence–limitation | 贯穿本轮，最终未完成 |
+>
+> **硬顺序**：T-A209→T-A210→T-A211/T-A212→T-A213→T-A214；T-A215/T-A216 贯穿。每条路线完成验收并作正/负裁决后进入下一条，禁止以 smoke 或未收敛单 seed 跳级。
+
+> **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
 >
 > 唯一权威状态文档：`docs/plans/2026-11-06-round47-current-status.md`。
 >
