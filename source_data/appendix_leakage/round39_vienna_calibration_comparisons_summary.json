@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "status": "PASS_VIENNA_COMPARISONS_NOT_ALL_ELIGIBLE",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 713,
+      "result_sha256": "4326260270aec63cb4d1c1331fe07e5a874e3420b872975f89353903cc7d9327"
+    },
+    {
+      "split": "bprna_ts0",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 713,
+      "result_sha256": "d737741112994e2f57ba4ffee831000f621c49f9acadaf34648945aba7323146"
+    },
+    {
+      "split": "bprna_ts0",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 713,
+      "result_sha256": "68d0aefc5032e37d00e4011113608e0c59ba2b7fece74b48372bb5501272f843"
+    },
+    {
+      "split": "bprna_new",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "3e54d52523c4ed56658465b5b6700433e5ff21648e00fc52b6c71b0836f5b5af"
+    },
+    {
+      "split": "bprna_new",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "fc64120e40fd8bf9e91f3e8d904bfc879cdff9077bbaf8592d8b21697dc30d0d"
+    },
+    {
+      "split": "bprna_new",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "6e8e492808c573a38c09b458416a1a0675d5674c651e6b40d60418a4f37d432b"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "0294b88a2c41f2af5a741b09ca0abb556e0dd6be2b3681595d483cef92dd9b96"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "d2049f6f7e1da9980a6708bacccca1e9be120200c4071ec94a530f762f3be3bf"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "15bea6fcef6d77018c56b4e31c421060afb88ec859e576b384e8ec452d556531"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "630070e7d1ae1bd7f90e22cd3c858d13e04b21b3181964dc2765946e017dc601"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "e7c9bf05e26d64e73c42d458c71aa84f712f59db1603eaf9335fd02473e2a7d9"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "3193d55209da93343a0417576ecd6133007e8bf4264b0f6052d78dce0e73a56d"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "667d76212de497b39ed801d03b5bbe91fcfee0d248f0d4cda4f55d147acff992"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "fca5cb47529b346e76a7e54cb11b370330cc13023f60d936c3a0e57ee7292393"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "0170c983052b1815447b3e293a4b8572da72bed74ad3ae4e9123ad858ed65e39"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "c1141f79703eb9faf62d86e8b3b8405664552e556b63dfae2f700c5833bd508c"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "0248aa5f6afb03b1c18203754b22f26f75837e039f9650b891436909f4680b56"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "b3aff0afabaa0e2bd89eb1cc9e478ea305ec7018e7aefe4384537f23dbaa7ca8"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1107,
+      "result_sha256": "a904d449451789d742df409aaaa99bb5ec73d0eeb20d07f1b7b72362973e2186"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1107,
+      "result_sha256": "d385db0485bcadb033aea403e1786fd90c4175ff08fdf7b029130ecacf26d6c4"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1107,
+      "result_sha256": "803660039fcd740772d11427e88c69c1fe3bb8bc66459e1f4dc3207720568052"
+    },
+    {
+      "split": "testsetb",
+      "system": "vienna_mfe",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "e8afa1bff702b47fb15e49a9a05154a2c062db374c2f7e038f3aa4cd8ff94a36"
+    },
+    {
+      "split": "testsetb",
+      "system": "vienna_centroid",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "4e668802112c1c7903298b244dbcec0926e2c97cf8929e1abe7160dd422298d6"
+    },
+    {
+      "split": "testsetb",
+      "system": "vienna_mea",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "e66d096dc7d5ce0630a65bd7eaef95316837e060d680e48a9afd905d82fd9305"
+    }
+  ],
+  "boundary": "native float64 partition-function BPP; auxiliary matched sensitivity only; other baselines pending"
+}

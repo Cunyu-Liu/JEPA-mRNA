@@ -1736,6 +1736,41 @@
    "bytes": 7521,
    "description": "ArchiveII ViennaRNA-MEA；共享 BPP，F1=0.6053716365",
    "status": "active_matched_sensitivity_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_vienna_calibration_comparisons_summary.json",
+   "sha256": "4c0b5d365f11d61492372fc3874fa205c47a15f2ab797bb705e6d8dcf9c3d6bc",
+   "bytes": 6603,
+   "description": "ViennaRNA 三种解码共 24 格附加敏感性汇总",
+   "status": "active_complete_vienna_not_all_eligible"
+  },
+  {
+   "path": "appendix_leakage/round39_vienna_calibration_verification.json",
+   "sha256": "509939b2b1bf8d09792e6dad6d978b43aeeb5e456bb9fe00e7ba6dce9260032a",
+   "bytes": 10207,
+   "description": "ViennaRNA 24 格原生 BPP 与 F1 独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_vienna_mfe_calibration.json",
+   "sha256": "3e54d52523c4ed56658465b5b6700433e5ff21648e00fc52b6c71b0836f5b5af",
+   "bytes": 7453,
+   "description": "bpRNA-new ViennaRNA-MFE；共享 BPP，F1=0.6379382478",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_vienna_centroid_calibration.json",
+   "sha256": "fc64120e40fd8bf9e91f3e8d904bfc879cdff9077bbaf8592d8b21697dc30d0d",
+   "bytes": 7481,
+   "description": "bpRNA-new ViennaRNA-centroid；共享 BPP，F1=0.6770326664",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_vienna_mea_calibration.json",
+   "sha256": "6e8e492808c573a38c09b458416a1a0675d5674c651e6b40d60418a4f37d432b",
+   "bytes": 7455,
+   "description": "bpRNA-new ViennaRNA-MEA；共享 BPP，F1=0.6619891987",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
