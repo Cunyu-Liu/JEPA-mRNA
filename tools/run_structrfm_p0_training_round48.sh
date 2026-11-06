@@ -10,6 +10,7 @@ CLEAN=$ROOT/data/structrfm_pretrain_clean
 FASTA=$ROOT/source_corpora/structrfm_round48/pretraining.fasta
 export PYTHONPATH=$REPO/src:$REPO/tools
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 mkdir -p "$AUDITS" "$CLEAN" "$ROOT/logs/round48" "$ROOT/weights/round48"
 while [ ! -f "$CORPUS" ] || [ ! -f "$AUDITS/structrfm_cuda_preflight.json" ]; do sleep 60; done
 $PY -c 'import json; d=json.load(open("'"$AUDITS"'/structrfm_cuda_preflight.json")); assert d["status"]=="PASS_CUDA_PREFLIGHT" and d["strict_identity"]'
