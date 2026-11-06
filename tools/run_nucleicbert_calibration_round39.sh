@@ -40,7 +40,7 @@ PY
         --out "$out_root/independent_verification.json"
     for split in ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb archiveii_embok_clean bprna_ts0 bprna_new; do
         baseline=$out_root/$split.json
-        if [[ "$(basename "$baseline")" == ref_pdb_ts3.json ]] && "$python" - "$baseline" <<'PY'
+        if "$python" - "$baseline" <<'PY'
 import json,sys
 x=json.load(open(sys.argv[1]))
 raise SystemExit(x["status"]!="EMPTY_AFTER_DELEAK")
@@ -64,7 +64,11 @@ for system in ["nucleicbert_ft","nucleicbert_frozen"]:
  for split in ["bprna_ts0","bprna_new","ref_pdb_ts1","ref_pdb_ts2","ref_pdb_ts3","ref_pdb_ts_hard","archiveii_embok_clean","testsetb"]:
   p=root/"calibration_comparisons"/f"{split}.xens2_{system}.json"
   if not p.exists():
-   cells.append({"split":split,"system":system,"status":"EMPTY_AFTER_DELEAK"})
+   raw_path=root/system/"calibration"/f"{split}.json"
+   raw=json.loads(raw_path.read_text())
+   assert raw["status"]=="EMPTY_AFTER_DELEAK",f"missing nonempty comparison: {p}"
+   cells.append({"split":split,"system":system,"status":"EMPTY_AFTER_DELEAK","matched_n":0,
+                 "result_sha256":hashlib.sha256(raw_path.read_bytes()).hexdigest()})
    continue
   x=json.loads(p.read_text())
   cells.append({"split":split,"system":system,"status":x["status"],"matched_n":x["matched_n"],
