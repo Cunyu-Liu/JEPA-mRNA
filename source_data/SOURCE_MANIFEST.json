@@ -1645,6 +1645,27 @@
    "bytes": 196,
    "description": "双 stream 测速启动前发现其他 GPU 进程；无部分计时或有效吞吐",
    "status": "active_aborted_interference_not_speed_result"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_vienna_mfe_calibration.json",
+   "sha256": "4326260270aec63cb4d1c1331fe07e5a874e3420b872975f89353903cc7d9327",
+   "bytes": 7469,
+   "description": "TS0 ViennaRNA-MFE；xens2 概率误差和结构置信度均更优",
+   "status": "active_matched_sensitivity_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_vienna_centroid_calibration.json",
+   "sha256": "d737741112994e2f57ba4ffee831000f621c49f9acadaf34648945aba7323146",
+   "bytes": 7497,
+   "description": "TS0 ViennaRNA-centroid；共享 BPP，xens2 概率误差和结构置信度均更优",
+   "status": "active_matched_sensitivity_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_vienna_mea_calibration.json",
+   "sha256": "68d0aefc5032e37d00e4011113608e0c59ba2b7fece74b48372bb5501272f843",
+   "bytes": 7472,
+   "description": "TS0 ViennaRNA-MEA；共享 BPP，xens2 概率误差和结构置信度均更优",
+   "status": "active_matched_sensitivity_not_full_board"
   }
  ]
 }
