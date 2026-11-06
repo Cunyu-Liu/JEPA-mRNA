@@ -12781,3 +12781,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **bpRNA-new**：MFE/centroid/MEA F1=0.6379382478/0.6770326664/0.6619891987；共享 BPP ECE=0.0036135936，低于 xens2=0.0048310272，Brier=0.0047753881、NLL=0.0191478739 也更低。三者 Spearman=0.6000648096/0.5477101503/0.5727635605，AURC=0.2098846401/0.2024108637/0.2011006357，均优于 xens2=0.5176421505/0.3486543793。比较 SHA256=`3e54d52523c4ed56658465b5b6700433e5ff21648e00fc52b6c71b0836f5b5af`、`fc64120e40fd8bf9e91f3e8d904bfc879cdff9077bbaf8592d8b21697dc30d0d`、`6e8e492808c573a38c09b458416a1a0675d5674c651e6b40d60418a4f37d432b`。与 TS0 的方向不同，按 split 保留差异。
 - **RiNALMo-ft 工程故障**：真实 CUDA 单条三次预检通过，但正式 TS1 因误写 `clean_splits/tr0/splits/...` 与 `.../audits/...` 路径停止，不是模型或 CUDA 失败。现从八个 `clean_tr0/<split>.json` 读取真实 `protocol.data/clean_audit`，并校验主榜结果、官方权重、clean n、数据与审计 SHA；汇总路径修正为 `summary_raw_clean.json`。八 split 路径检查全部通过，提交 `06a258ac1ccb328c8fa039cc7619b02ab786d7cf`，队列已恢复，不重复 smoke。
 - **边界**：RNAformer 32 格和 ViennaRNA 24 格已闭环；MXfold2 为七格有效加 ArchiveII 原生 BPP 超界；RiNALMo-ft 正式全板仍在运行，其他无原生概率系统不能补 0。全 eligible 校准排名仍未完成。
+
+
+## §15.434（2026-11-06）MXfold2 六格比较与 RiNALMo-ft 大 split 进度
+
+- **六格比较**：TS1/TS2/TS3/hard/TestSetB/TS0 均完成 xens2 与 MXfold2 的同 GT、同候选配对附加敏感性。六格 MXfold2 ECE 均更低，分别为 0.0059572692/0.0077294563/0.0049607567/0.0064225447/0.0017417502/0.0004637529，xens2 分别为 0.0069049068/0.0168951314/0.0082137013/0.0188273844/0.0021666147/0.0007326793。六格汇总 SHA256=`a45a6d271600371450aa061a74f0f13dcacca10b30b8d8f8da901a15b7aabceb`，状态明确为 6/8。
+- **TS0 证据**：MXfold2 clean n=1188、matched n=666、F1=0.5489548512，与主榜一致；比较 SHA256=`3cc267bd33cea34cf6a0762f5629120224558da6a9beb504c0bdba9e0deb8846`。ArchiveII 原生概率无效，bpRNA-new 三次推理继续，不能将六格方向外推为全板最佳置信度。
+- **RiNALMo-ft**：ArchiveII clean 概率前两次 F1 均为 0.7108895303，TS0 首轮 F1=0.7110963915，与主榜一致；完整三次、独立验收和八格比较仍按门控等待，不将 repeat 数当成全板完成。

@@ -1771,6 +1771,20 @@
    "bytes": 7455,
    "description": "bpRNA-new ViennaRNA-MEA；共享 BPP，F1=0.6619891987",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_partial_6_comparisons_summary.json",
+   "sha256": "a45a6d271600371450aa061a74f0f13dcacca10b30b8d8f8da901a15b7aabceb",
+   "bytes": 1950,
+   "description": "MXfold2 六格附加敏感性汇总；六格 ECE 均低于 xens2，非全板",
+   "status": "active_partial_6_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_mxfold2_calibration.json",
+   "sha256": "3cc267bd33cea34cf6a0762f5629120224558da6a9beb504c0bdba9e0deb8846",
+   "bytes": 7344,
+   "description": "TS0 MXfold2 clean n=1188、matched n=666，ECE=0.0004637529",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }
