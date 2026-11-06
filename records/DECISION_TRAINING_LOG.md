@@ -12907,3 +12907,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立复核**：`aggregate_structrfm_frozen_round48.py` 强制 clean 数据/审计/checkpoint 哈希、raw_n=clean_n、long unsupported 数量守恒、逐序列 TP/FP/FN、三次预测完全一致及结果 SHA；输出逐 seed mean±SD 和位置边界。
 - **回归与恢复**：合成测试 1/1 通过，覆盖 8 split×3 seed×3 repeat 聚合。旧输出只有 checkpoint 哈希和 repeat 数匹配才复用，否则改名 `.stale` 保留；运行中的 run_meta 不会误判为收敛。长序列只按显式 `PARTIAL_STRUCTRFM_POSITION_LIMIT` 记录，不静默丢弃。
 - **当前边界**：训练仍未收敛，污染语料仍在下载，尚无全板科学结果。代码提交 `ed4794b` 已推送。
+
+
+## §15.450（2026-11-06）step2000 复测 OOM 与显存门加固
+
+- **训练状态**：S1 的 validation loss 在 step500/1000/1500/2000 为 38.1344/29.9274/27.6863/26.6736，仍持续改善，bad=0，未收敛。step2000 的三次 VL0 复测在处理到第 75 条时因两个训练进程占用 22.5GiB 加评测进程而 OOM，未写出结果文件，不得拼接为三次有效结果。
+- **处理**：不减少序列、不截断、不降低精度，也不停止正在正常收敛的训练。S2 启动前要求空闲显存≥16,000MiB，S1 自动评测前要求≥12,000MiB；已重启两个持久队列使新门生效。全参独立评测器 `eval_structrfm_full_round48.py` 已实现并通过静态检查，待资源窗口执行。
+- **代码**：提交 `f352288` 已推送。当前仍无新科学结论。
