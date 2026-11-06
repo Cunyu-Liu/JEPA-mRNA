@@ -1,6 +1,21 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解、物理/训练/ECE 说明与速度补充；活跃清单 `round43-prism-grouped-physics-v1`）**
+> **当前执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
+>
+> 唯一权威状态文档：`docs/plans/2026-11-06-round47-current-status.md`。
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A201 | Rfam 全模型、BPfold 与无需重训消融 | 10,790 条三次预测、INF/F1/P/R、macro 分布、Turner/DP 消融与 BPfold 结果齐全 | 已完成：PRISM=0.6514、BPfold=0.7872、Turner=0.4722、greedy=0.5231 |
+> | T-A202 | A/B/C 分组表图与原生表格 | 同源完整指标、同页图片与原生表格、最优加粗、raw/clean 不混 | 已完成；`tables/round42_grouped_evaluation.md` |
+> | T-A203 | CHANRG 与 RiNALMo 重测 | CHANRG 12/12 与 RiNALMo 四 split 三次复测、独立 F1 复算 | 已完成：RiNALMo=0.5553/0.6221/0.4121/0.2891，旧值不混用 |
+> | T-A204 | BPfold batch 网格与等价验收 | B=1/2/4/8/16/32 三次、配对一致率和 F1 差检查 | 已完成并否决非等价吞吐；B=2 一致率 93.07%，仅 B=1 入图 |
+> | T-A205 | 校准、排序与风险筛选 | 共享 VL0、ECE、Spearman、bootstrap、分箱和 risk–coverage | 已完成；仿射前后 Spearman 不变，TS2/TS3 负结果保留 |
+> | T-A206 | 两行架构与 Turner 图解/提示词 | 原生矢量两行六模块、公式/mask/DP 图解、英文生图提示词 | 已完成；损失面板不进入生图提示词 |
+> | T-A207 | 19 页最终讲稿与逐页逻辑 | 极简标题、自然口语、架构细节、置信度递进、阶段性不足 | 已完成：`PRISM_组会汇报_20261107_完整版.pptx/.pdf` |
+> | T-A208 | 最新 manifest 与交接同步 | 最新源、QA、PPT/PDF、提示词和哈希全部一致 | 已完成：345 文件、QA 477/477、2 个 archived_missing |
+>
+> **历史执行覆盖（2026-11-04，第 43 轮：PRISM 分组讲解、物理/训练/ECE 说明与速度补充；活跃清单 `round43-prism-grouped-physics-v1`）**
 >
 > 唯一合同：`docs/plans/2026-11-04-prism-grouped-physics-revision.md`。
 >
@@ -61,7 +76,7 @@
 > | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | B=32 独占 13.5802 seq/s；自适应 B=64/32/16 为 14.1949 seq/s、1.045×、预测完全一致；双 plan a CUDA stream 候选已排队，要求 100% 一致和 ΔF1=0，尚无有效新吞吐，速度 SOTA 未达成 |
 > | T-A173 | xens2 模型/数据候选攻关 8/8 | 只用 VL0 选候选；三训练种子均 validation plateau+best checkpoint+独立 GPU QA；统一 xens2 三次均值在 8 split 均超过最强 eligible baseline；ArchiveII/bpRNA-new/TS2 三负格优先但不得测试集调参 | 单学生 clean 8/8 三种子已闭环但未达 SOTA；VL0 融合 6 格后因 TS2/TS3 负格使 8/8 不可达，已停止剩余推理，不生成新教师 |
 > | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | 注册概率证据 128 格已闭环：124 有效交集、2 EMPTY、1 空交集、1 个 MXfold2 ArchiveII 原生 BPP 无效；NucleicBERT TS3 已纠错；多 split 有更低 ECE 反例，不宣称全板最低 ECE/最佳置信度 |
-> | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 已完成：23 页字体/行距/越界/渲染/ZIP 验收通过；新实验完成后仅更新必要数字和图件 |
+> | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 原 23 页保持；第 8 页更新 128 格校准证据；新增 8 页 own-clean 表格附录，共 31 页，104 格逐值与原生渲染均通过 |
 > | T-A176 | 训练台账、活跃源数据与可追溯归档 | 每 run 记录 commit/seed/配置/CUDA/数据权重哈希/best epoch/停止原因/结果与结论；活跃绘图 JSON+manifest 完整；废弃交接件和旧源数据只移动归档并保留哈希 | 进行中：§15.268 已撤回批化过早结论并记录 B=1 证据；活跃原始数据未删除，最终归档待实验状态稳定 |
 > | T-A177 | 最终三通道验收与 GitHub | 原始 artifact→独立复算→图/表/PPT 三通道一致；相关测试/静态检查通过；代码留 /home，大 artifact 留 /teams，确认后及时 commit+push，本地只留核心结论 | 进行中：阶段性代码核验后提交；600 单元、三目标和最终归档未闭环，不作最终验收 |
 >

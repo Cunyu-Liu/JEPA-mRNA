@@ -1,0 +1,15 @@
+{
+  "status": "PASS_OWN_CLEAN_104_TABLES_NATIVE_RENDER",
+  "slides": 31,
+  "pdf_pages": 31,
+  "pdf_sha256": "ce31bfb3a3788b8bae0342c24963123a836960ec78ffb277c8a63fc81f9f45f7",
+  "native_render_pages_checked": [8, 24, 28, 30],
+  "appendix_fonts": ["微软雅黑"],
+  "appendix_line_spacing": 1.5,
+  "appendix_bounds_and_notes_pass": true,
+  "original_23_slide_text_unchanged": true,
+  "table_cells_verified": 104,
+  "empty_cells_as_dash": 2,
+  "source_sha256": "9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326",
+  "deck_sha256": "89447e5c35ddfa4addd72f04e549593cf154aeb115f5d1c50e2303c149d6ef19"
+}

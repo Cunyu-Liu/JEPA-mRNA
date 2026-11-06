@@ -1995,6 +1995,13 @@
    "bytes": 1314,
    "description": "第 8 页定点修改、23 页原生渲染、字体行距和文件身份验收",
    "status": "active_verified_qa"
+  },
+  {
+   "path": "round38_ownclean_tables_qa.json",
+   "sha256": "184ba69da06f2e1eb51323ba3e9b966d1b5967b66f862dc71cf97ab45f42a987",
+   "bytes": 614,
+   "description": "104 格 own-clean 逐值核对、31 页原生渲染、字体行距与 EMPTY 验收",
+   "status": "active_verified_qa"
   }
  ]
 }

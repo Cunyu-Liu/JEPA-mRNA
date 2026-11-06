@@ -12845,3 +12845,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **最终文件**：PPT SHA256=`09cb7c6292cc2e81245d8f298413c96a1db2eb225acd3dd7ce4e2a26a3877b4e`，PDF SHA256=`f3fdb739e8ba0118798c452d88697d5160181b3d8d7b5b8af76808386c921f99`。PDF 23 页，第 8 页全部文字为微软雅黑、1.5 倍行距。
 - **渲染 QA**：初版右侧副注重叠与标签裁切已修复；LibreOffice/Poppler 中文缺字改为原生 PowerPoint 验收。导出时曾误命中另一个打开文稿，未交付该 PDF；随后用唯一 `_round38.pptx` 后缀定位并关闭旧内存副本重载，最终第 8 页中文、标签、页脚和文件身份均通过。QA 状态 `PASS_ROUND38_ECE_PAGE_ONLY_NATIVE_RENDER`。
 - **叙事边界**：本页同时证明 VL0 校准有效与多基线 ECE 更低，避免把校准改善写成全板最优。速度候选和 8/8 目标不因本页更新而宣称完成。
+
+
+## §15.442（2026-11-06）104 格 own-clean 表格附录完整入片
+
+- **交付形式**：原 23 页不变，新增 24–31 共 8 页，每 split 一页、13 系统。每格列 clean n、strict micro-F1 三次均值、TP/FP/FN、精确删除数和同源删除数；共 104 格与 `own_clean_leaderboard.json` 逐值一致，源 SHA256=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。
+- **空值与协议**：RNAformer-intrafam 和 SPOT-RNA 的 TS3 为 `EMPTY_AFTER_DELEAK`，F1 与 TP/FP/FN 显示 `—`，clean n=0，不记 0 分。ArchiveII 页注明 NucleicBERT-ft/frozen 原生首 598 nt，分别截断 39/38 条。其他系统各自 clean n 不强行对齐。
+- **文件**：PPT 共 31 页，SHA256=`89447e5c35ddfa4addd72f04e549593cf154aeb115f5d1c50e2303c149d6ef19`；PDF 共 31 页，SHA256=`ce31bfb3a3788b8bae0342c24963123a836960ec78ffb277c8a63fc81f9f45f7`。新增页均有中文备注、微软雅黑和 1.5 倍行距。
+- **QA**：原生 PowerPoint 导出后检查第 8、24、28、30 页，表格无越界、遮挡或缺字；EMPTY 和 598 nt 说明正确。前 23 页文字逐项一致。QA 状态 `PASS_OWN_CLEAN_104_TABLES_NATIVE_RENDER`，设计合同见 `docs/plans/2026-11-06-round38-ownclean-table-appendix-design.md`。
