@@ -13001,3 +13001,17 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **口径**：两条评测器现在只从 repeat0 累计合法 strict-upper pair 概率，输出全局 10-bin ECE/Brier/NLL、可靠性和边际误差；结构置信度为 DP 解码配对概率的几何均值，无配对时为 0。同步输出每序列 INF、长度和结构置信度。AURC 不在测试集拟合阈值，后续只用 VL0 冻结阈值。
 - **独立验证**：`PairCalibrationAccumulator` 与既有 `CalibrationMetrics` 的 ECE/Brier/NLL、边际误差和每 bin 数值一致；聚合器复算 micro/macro-INF、概率字段和 ≤100/100–200/200–400/>400nt 桶的 TP/FP/FN 与 F1，长序列不支持数继续保留。相关测试 4/4 通过。
 - **seed0 VL0 扩展复测**：TP/FP/FN 和 micro/macro-F1 与 §15.459 完全一致；micro-INF=0.7511213411、macro-INF=0.7567285681。合法 pair n=573355，ECE=0.0891816679、Brier=0.0290322408、NLL=0.1190333569。新结果 SHA256=`dc80fbbb3d014f019b08d897586803ebeebd6f807ac912350a718a72dac2d544`，取代同内容扩展前的结果哈希 `dd0bdc…`。该校准结果没有证明最佳置信度，仍仅属 VL0。
+
+
+## §15.463（2026-11-07）structRFM VL0 冻结 risk–coverage 阈值
+
+- **协议**：三种子中选择 best validation loss 最低者为参考，仅从其 VL0 structure_conf 计算 coverage={1,0.95,0.90,0.75,0.50,0.25} 的分位阈值；相同阈值应用于其他种子和 13 split。Spearman 与 AURC 都不在测试集拟合，常数输入导致无定义时写 `null`。
+- **自动链**：冻结/全参各有独立 confidence watcher；三种子早停后先补齐各自 VL0 三次推理，写阈值与 VL0 结果，随后等待对应 13 split 总结再计算全板 risk–coverage。checkpoint 哈希、CUDA、repeat=3 和 calibration 字段是复用硬门。
+- **验证**：风险曲线与既有 round42 协议逐值一致，参考种子与阈值来源测试 2/2 通过；提交 `c45b17289af33485f070e2a9e78b84dcdbf9e3ce` 已推送。尚未到三种子齐全阶段，没有 AURC 科学结果。
+
+
+## §15.464（2026-11-07）confidence watcher 初次启动遇到 SSH 拒绝
+
+- **现象**：冻结和全参 confidence watcher 首次并行启动均在约 0.13s 返回 `Connection closed by 125.71.97.44 port 29744`；后续单次连接在等待后也返回相同错误。尚未获得远端脚本执行日志，因此不能把 watcher 写成已启动，也没有证据把问题归因于 CUDA、训练或脚本断言。
+- **处置**：保留连接错误，不重复提交训练或下载任务；已有持久 SSH 任务在本地任务面板仍为 running，但这不等于远端健康证明。连接恢复后先查进程、run_meta 与日志，只补缺失 watcher，再提交本节及 §15.463 的远端台账。
+- **部分恢复**：随后 SSH 单次查询成功，seed2 日志继续推进；冻结 confidence watcher 已确认运行（脚本 PID=3247925）。全参 watcher 尚未确认，之后一次新连接又被关闭，因此不写成两者均恢复。
