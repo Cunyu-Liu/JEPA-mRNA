@@ -12861,3 +12861,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **下载证据**：SharePoint 返回 HTTP 200 但页面标题为 `Error`，不是权重包；保存 HTML SHA256=`3bb40255d48972c4693206b46f7dfc097a0f041d8e989c9241d836ced5d050f2`。gdown 超时且零文件，日志 SHA256=`aebfbbe00214ea9e6b1c42348bd649fcb32b22ca10e68f7cc083535cad52eed5`。Drive 文件夹、embeddedfolderview、usercontent 三个接口均连接超时。
 - **替代源边界**：作者 liyu95 在 issue #16 回复“Just updated”，但当前 Drive 仍不可达。检查官方及 19 个 fork 的递归文件树，未发现可核验的官方基础 checkpoint；其他 fork 只有改版 E2Efold-FM，不能冒充官方 E2Efold。
 - **结论**：保持 `BLOCKED_PROVENANCE`，证据 JSON SHA256=`a8b84121991f520ba62e6eb6c85cf73b34ac879a253af3c3d05fd9f09a185633`。没有官方权重哈希、strict GPU load 与完整训练语料合同，不能用替代模型、其他 clean 集或 0 分补齐 600 单元。双 stream 测速仍因其他 GPU 进程无有效结果。
+
+
+## §15.444（2026-11-06）源清单交付完整性复核
+
+- 本地 `SOURCE_MANIFEST.json` 共 347 个唯一条目，其中 345 个现有文件的路径、字节数和 SHA256 全部一致，无空文件、无占位符、无 hash mismatch。
+- 两个 PRISM 文件已被其他整理步骤明确标为 `archived_missing`，不视为意外缺失，不覆盖或改写其他会话的归档决定。除此之外没有缺失路径。
+- 本项只验证清单与文件一致性，不代表 600 单元、速度 SOTA 或 E2Efold 资产已经恢复；这些未完成边界继续保留。
