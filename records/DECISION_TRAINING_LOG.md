@@ -12980,3 +12980,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **输入与收敛**：恢复 seed0 的 best step12000，checkpoint SHA256=`2dfa4f9f030d4c766839a6264df5f48b2af6eb756606fd75d5a3a7d19976e75a`；VL0=196 全部完成，raw_n=clean_n=196，无截断或缺失。
 - **结果**：三次预测逐对一致，TP/FP/FN=3358/970/1260，micro-F1=**0.7507265817**、macro-F1=**0.7527701980**。由 TP/FP/FN 独立复算 F1 一致，结果 SHA256=`dd0bdc2f950da45c9d3c93be0881508eea46db3d1fb203549aeb5d7eed453db7`。
 - **边界**：高于本路线 seed1 的 VL0，但两者是不同训练种子，不能平均预测或挑选测试集结果；仍需 seed2 收敛、13 split 污染审计和完整 A/B/C。该验证集结果不入 PPT、不声称 SOTA。
+
+
+## §15.460（2026-11-07）13 split 联合预训练污染审计等价门
+
+- **等价实现**：`audit_structrfm_clean_all_round48.py` 保留每条序列的 split 与原索引，将全部 A/B/C 查询拼接后只运行一次 MMseqs；精确匹配、identity≥0.8、query coverage≥0.8 和 attrition 公式与逐 split 审计相同。正式输出仍为各 split 独立 clean/audit，最后写 13 split 总结。
+- **真实 MMseqs 验证**：13 个 toy split 分别运行旧独立实现和新联合实现，逐 split clean 文件 SHA256、raw/clean n、exact/homology-only 删除索引全部一致；联合与既有适配器回归共 3/3 通过。测试不是正式 clean 证据。
+- **队列**：仅在等待语料阶段替换 S2 队列，未中断 seed2；清除本会话此前留下的重复 flock 等待者后只启动一个持久队列。提交 `80b8d8acd4256424c56440b3cc9f345ca1e4243b` 已推送。语料整包 MD5/SHA256 和正式 13 split clean 仍未完成。

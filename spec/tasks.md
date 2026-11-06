@@ -4,9 +4,9 @@
 >
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
-> | T-A209 | structRFM 官方资产与预训练污染门 | commit/权重哈希/严格加载确认；Zenodo 18272040 精确+80% identity 审计与专属 clean；512 nt 边界明确 | 进行中：官方 commit 与语料 MD5 已锁定，权重/语料下载中 |
-> | T-A210 | structRFM+JEV 单模型 | S1 冻结/S2 全参与 RiNALMo 对照；三种子收敛、独立 CUDA QA、A/B/C、长度/速度/置信度齐全 | 待 P0 通过 |
-> | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 待路线一裁决 |
+> | T-A209 | structRFM 官方资产与预训练污染门 | commit/权重哈希/严格加载确认；Zenodo 18272040 精确+80% identity 审计与专属 clean；512 nt 边界明确 | 权重与 CUDA 严格加载已通过；语料安全续传中，13 split 联合 MMseqs 已通过 toy 等价门，正式 clean 未完成 |
+> | T-A210 | structRFM+JEV 单模型 | S1 冻结/S2 全参与 RiNALMo 对照；三种子收敛、独立 CUDA QA、A/B/C、长度/速度/置信度齐全 | S1 seed0/1 已自然早停并完成三次 VL0；seed2 在训；S2 等专属 clean，A/B/C 未完成 |
+> | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 六模式/JEV 头/BERT 接入、官方 token 映射和 515nt CUDA 已验收，34 项回归通过；正式消融待路线一裁决 |
 > | T-A212 | RIPE+JEV 三种子 A/B/C | 同配方收敛；长程与 200–400/>400 nt 为主判定，全板与外部 OOD 完整 | 待路线一裁决 |
 > | T-A213 | Pair-JEPA scorer 与防坍塌对照 | J-mlp/J1/noEMA/random-target；被掩 pair latent、方差/有效秩、推理无 teacher | 待路线二裁决 |
 > | T-A214 | 独立单模型终榜与速度/置信度 | 单骨干单头单 checkpoint；主 clean 8/8、Rfam/CHANRG、独占 raw-sequence、ECE/Spearman/AURC 与长度桶独立复算 | 未达成；不得以 xens2 集成替代 |
