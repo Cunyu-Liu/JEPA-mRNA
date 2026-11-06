@@ -12892,3 +12892,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **嵌入验收**：TR1c 为 42,564 条、`h=(5,284,025,768)` fp16，VL0 为 196 条、`h=(21,682,768)`；offsets 与长度守恒、全部有限值、首末序列独立 CUDA 前向逐值一致，状态 `EMBEDDING_QA_PASS`。未重提特征。
 - **队列纠错**：`set -u` 下同一条 `local` 同时赋值并引用变量导致首次退出；拆成两行后修复。第二次因驱动按 `vl0_196` 文件名寻找嵌入而退出，现用同一 196 条数据建立 `bprna_vl0.jsonl` 兼容命名并恢复。早停回归与适配器测试合计 9/9 通过。
 - **科学边界**：S1 的 seed0/seed1 已进入实际训练流程，S2 仍等待八 split 污染审计；启动、数据加载和工程 QA 均不是模型效果结论。预训练语料改为 4MB 小块 32 路续传以应对服务端频繁断流，审计硬门不变。代码提交 `737b295` 已推送。
+
+
+## §15.448（2026-11-06）structRFM step500 工程评测与 CPU 瓶颈恢复
+
+- **工程评测**：`eval_structrfm_frozen_round48.py` 复用生产 checkpoint/嵌入/DP，VL0=196 全量 CUDA 运行，TP/FP/FN=2366/2278/2252，micro-F1=0.5109047722、macro-F1=0.5457654851，checkpoint step=500、SHA256=`7a9e756760f2db257de584b19c8aa2c3890447bc433fbbfbab7fb2b4ad0c916b`。这是未收敛工程检查，不是科学结果，不入 PPT。
+- **资源诊断**：两个训练进程的 GPU 利用率一度约 1%、12 核负载约 90，GPU 显存接近上限但不是计算瓶颈。step 500 完整 checkpoint 后仅停止两个训练进程，限制每进程 OMP/MKL/OpenBLAS=2 并从 `resume.pt` 恢复，保留模型、优化器、scheduler、batch stream 与验证状态；最多损失 75 个未保存步骤，不重训前 500 步。
+- **资产与提交**：VL0 split 命名兼容文件与 checkpoint 均保留；独立评测器、断点恢复和队列修复提交 `2c0d7f6` 已推送。重复 GitHub release 权重下载已停止，官方 HF 权重不变，释放预训练语料带宽。
