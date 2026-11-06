@@ -79,7 +79,8 @@ def install_structrfm_training(base, xens2_eval, pretrained_path):
             device=device)
         scores_ = head.pair_scores_and_types(hidden)[0][0]
         if head.use_turner_prior:
-            scores_ = scores_ + head.prior_weight.to(scores_.dtype) * base.turner_phys_scores(head_ids)[0]
+            prior = base.turner_phys_scores(head_ids)[0].to(device)
+            scores_ = scores_ + head.prior_weight.to(scores_.dtype) * prior
         lengths = torch.tensor([len(sequence)], device=device)
         scores_ = head.calibration(scores_.unsqueeze(0), lengths)[0]
         mask = base.pair_mask_from_ids(head_ids, head.min_loop).to(device)[0]

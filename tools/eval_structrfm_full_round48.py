@@ -67,7 +67,8 @@ def main():
             with torch.no_grad():
                 scores = head.pair_scores_and_types(hidden)[0][0]
                 if head.use_turner_prior:
-                    scores = scores + head.prior_weight.to(scores.dtype) * turner_phys_scores(head_ids)[0]
+                    prior = turner_phys_scores(head_ids)[0].to(scores.device)
+                    scores = scores + head.prior_weight.to(scores.dtype) * prior
                 scores = head.calibration(scores.unsqueeze(0), torch.tensor([len(sequence)], device="cuda"))[0]
                 valid = pair_mask_from_ids(head_ids, head.min_loop).cuda()[0]
                 scores = torch.where(valid, scores, torch.full_like(scores, float("-inf")))
