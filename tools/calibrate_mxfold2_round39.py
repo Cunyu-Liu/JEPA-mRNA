@@ -244,7 +244,7 @@ def main():
                           "result_sha256": sha256(path), "failure": result["failure"]})
         else:
             cells.append(validate_result(path))
-    invalid = [cell for cell in cells if cell["status"] == "FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE"]
+    invalid = [cell for cell in cells if cell.get("status") == "FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE"]
     status = ("COMPLETE_MXFOLD2_NATIVE_PROBABILITY_ASSESSMENT_7_VALID_1_INVALID" if len(invalid) == 1
               else "PASS_MXFOLD2_NATIVE_CUDA_PROBABILITY_ARRAYS_INDEPENDENT_RECOMPUTE")
     assert len(cells) == 8 and (not invalid or (len(invalid) == 1 and invalid[0]["split"] == "archiveii_embok_clean"))
