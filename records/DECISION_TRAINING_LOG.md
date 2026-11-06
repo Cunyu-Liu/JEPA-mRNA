@@ -12914,3 +12914,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **训练状态**：S1 的 validation loss 在 step500/1000/1500/2000 为 38.1344/29.9274/27.6863/26.6736，仍持续改善，bad=0，未收敛。step2000 的三次 VL0 复测在处理到第 75 条时因两个训练进程占用 22.5GiB 加评测进程而 OOM，未写出结果文件，不得拼接为三次有效结果。
 - **处理**：不减少序列、不截断、不降低精度，也不停止正在正常收敛的训练。S2 启动前要求空闲显存≥16,000MiB，S1 自动评测前要求≥12,000MiB；已重启两个持久队列使新门生效。全参独立评测器 `eval_structrfm_full_round48.py` 已实现并通过静态检查，待资源窗口执行。
 - **代码**：提交 `f352288` 已推送。当前仍无新科学结论。
+
+
+## §15.451（2026-11-06）Rfam/CHANRG 纳入 structRFM A/B/C 验收
+
+- **范围修正**：P0 从主八 split 扩为 13 split，新增 `rfam_fam` 及 CHANRG Test/GenA/GenC/GenF；全部使用 structRFM 预训练语料的同一精确+80% identity 审计。汇总状态为 `PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS`，未完成前不启动 S2。
+- **评测覆盖**：自动评测同样扩为 13 split×3 seed×3 repeat；聚合状态为 `PASS_STRUCTRFM_FROZEN_ABC_13_SPLITS_3_SEEDS_3_REPEATS`。合成测试已改为 13 split 并通过，没有遗漏 B 类外部 OOD。
+- **当前状态**：训练仍在收敛，预训练语料以 2MB×48 路续传；S2 与正式评测均未开始，无科学结果。代码提交 `cfbfbb8` 已推送。
