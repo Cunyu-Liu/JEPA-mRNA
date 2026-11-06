@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--xens2", type=Path, required=True)
     parser.add_argument("--bpfold", "--baseline", dest="bpfold", type=Path, required=True)
-    parser.add_argument("--baseline-system", choices=["bpfold", "spotrna", "rnaformer", "rinalmo_ft", "nucleicbert_ft", "nucleicbert_frozen", "kirigami"], default="bpfold")
+    parser.add_argument("--baseline-system", choices=["bpfold", "spotrna", "rnaformer", "rinalmo_ft", "nucleicbert_ft", "nucleicbert_frozen", "kirigami", "mxfold2"], default="bpfold")
     parser.add_argument("--baseline-summary", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
@@ -35,6 +35,9 @@ def main():
         bpfold_audit = validate_result(args.bpfold)
     elif system == "kirigami":
         from calibrate_kirigami_round39 import validate_result
+        bpfold_audit = validate_result(args.bpfold)
+    elif system == "mxfold2":
+        from calibrate_mxfold2_round39 import validate_result
         bpfold_audit = validate_result(args.bpfold)
     else:
         bpfold_audit = validate_bpfold(args.bpfold)
