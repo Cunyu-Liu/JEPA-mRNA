@@ -15,7 +15,7 @@ start_seed() {
   $PY "$REPO/src/rnajepa/train_decision.py" --arm "structrfm_frozen_jev_s$seed" --out "$out" \
     --data /root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl \
     --teacher-dir /root/rna_jepa_data/ss_data/teacher/bprna_tr1c \
-    --validation-data "$ROOT/data/validation/vl0_196.jsonl" \
+    --validation-data "$ROOT/data/validation/bprna_vl0.jsonl" \
     --validation-teacher-dir "$ROOT/data/teacher_vl0" --validation-max-examples 196 \
     --embedding-dir "$EMB" --embedding-d-model 768 --scorer resnet2d --head-chunk-size 0 \
     --device cuda --steps 0 --batch-size 2 --seed "$seed" --lr 1e-4 --weight-decay 0 \
