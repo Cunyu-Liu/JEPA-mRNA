@@ -13051,3 +13051,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **后续放行**：FASTA 生成进程已启动，随后执行已证明等价的 13 split 联合 MMseqs；clean 完成前 S2 和正式全板仍不放行。
 - **对照源**：own-clean、Rfam BPfold、CHANRG 三份源文件已保存至 `source_data/round48`，本地/远端 SHA256 分别为 `9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`、`7e2f6a2f900c2c241d212493bee647e74e28d8484f20837ead7142223a0a67e9`、`bacb83d94a6825eb6164d3eaf8ab888a21f16a42c52bb6640c37484ab170b570`。
 - **比较器**：主榜同时保留 all-baseline 与 external-single，CHANRG measured/quoted 分开，测试通过，代码提交 `61c8b1ff9e927b2520a6f87a342e10e6a259d744`。尚无新模型 SOTA 计数。
+
+
+## §15.470（2026-11-07）structRFM 预训练 FASTA 元数据与正式联合审计启动
+
+- **FASTA 验收**：官方压缩包流式解析完成，唯一 CSV、合法 A/C/G/U/N 检查通过；n_sequences=21,477,078，正式 FASTA 约 6.1GB，SHA256=`739369d31df4a828adba040d9f88eb5c3bc6dbf010d7d22279333e694a9f3a40`，元数据=`audits/round48/structrfm_corpus.json`。临时文件未提前用于审计。
+- **联合审计**：13 split 的 `audit_structrfm_clean_all_round48.py` 已启动（PID=3254342），使用相同 exact+80% identity/query coverage 口径和 12 threads；工作目录与大资产均在 `/teams`。当前只有进程和输入元数据证据，尚无正式 clean n、删除清单或 summary，不启动 S2。
