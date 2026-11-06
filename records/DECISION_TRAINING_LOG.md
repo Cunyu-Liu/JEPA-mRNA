@@ -12899,3 +12899,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **工程评测**：`eval_structrfm_frozen_round48.py` 复用生产 checkpoint/嵌入/DP，VL0=196 全量 CUDA 运行，TP/FP/FN=2366/2278/2252，micro-F1=0.5109047722、macro-F1=0.5457654851，checkpoint step=500、SHA256=`7a9e756760f2db257de584b19c8aa2c3890447bc433fbbfbab7fb2b4ad0c916b`。这是未收敛工程检查，不是科学结果，不入 PPT。
 - **资源诊断**：两个训练进程的 GPU 利用率一度约 1%、12 核负载约 90，GPU 显存接近上限但不是计算瓶颈。step 500 完整 checkpoint 后仅停止两个训练进程，限制每进程 OMP/MKL/OpenBLAS=2 并从 `resume.pt` 恢复，保留模型、优化器、scheduler、batch stream 与验证状态；最多损失 75 个未保存步骤，不重训前 500 步。
 - **资产与提交**：VL0 split 命名兼容文件与 checkpoint 均保留；独立评测器、断点恢复和队列修复提交 `2c0d7f6` 已推送。重复 GitHub release 权重下载已停止，官方 HF 权重不变，释放预训练语料带宽。
+
+
+## §15.449（2026-11-06）structRFM 三种子全板自动验收链
+
+- **队列**：`run_structrfm_frozen_evaluation_round48.sh` 只在三个 run 均 `converged+early_stopped` 且预训练 clean 总账完成后放行。逐 split 提取缺失嵌入，执行八 split×三训练种子×三次确定性推理；每个 seed 独立解码，不平均预测、不形成集成。
+- **独立复核**：`aggregate_structrfm_frozen_round48.py` 强制 clean 数据/审计/checkpoint 哈希、raw_n=clean_n、long unsupported 数量守恒、逐序列 TP/FP/FN、三次预测完全一致及结果 SHA；输出逐 seed mean±SD 和位置边界。
+- **回归与恢复**：合成测试 1/1 通过，覆盖 8 split×3 seed×3 repeat 聚合。旧输出只有 checkpoint 哈希和 repeat 数匹配才复用，否则改名 `.stale` 保留；运行中的 run_meta 不会误判为收敛。长序列只按显式 `PARTIAL_STRUCTRFM_POSITION_LIMIT` 记录，不静默丢弃。
+- **当前边界**：训练仍未收敛，污染语料仍在下载，尚无全板科学结果。代码提交 `ed4794b` 已推送。
