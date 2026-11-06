@@ -10,6 +10,7 @@ for seed in 0 1 2; do
   while ! $PY -c 'import json,sys,pathlib; p=pathlib.Path(sys.argv[1]); d=json.loads(p.read_text()) if p.exists() else {}; assert d.get("converged") and d.get("early_stopped")' "$ROOT/runs/structrfm_frozen_jev_s${seed}/run_meta.json" 2>/dev/null; do sleep 60; done
 done
 while [ ! -f "$ROOT/data/structrfm_pretrain_clean/summary.json" ]; do sleep 60; done
+while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 12000 ]; do sleep 60; done
 for split in "${splits[@]}"; do
   if [ ! -f "$ROOT/data/embeddings_structrfm_round48/${split}.shard0of1.npz" ]; then
     $PY "$REPO/tools/extract_structrfm_round48.py" --pretrained "$ROOT/weights/structrfm_round48" \
