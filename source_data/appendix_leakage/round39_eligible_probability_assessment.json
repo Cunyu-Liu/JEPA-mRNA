@@ -1,0 +1,4641 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETE_REGISTERED_PROBABILITY_ASSESSMENT_WITH_NATIVE_INVALID",
+  "cell_count": 128,
+  "status_counts": {
+    "COMPLETE_MATCHED_SENSITIVITY": 124,
+    "EMPTY_AFTER_DELEAK": 2,
+    "EMPTY_MATCHED_CALIBRATION_INTERSECTION": 1,
+    "NATIVE_BPP_INVALID_NO_CALIBRATION": 1
+  },
+  "pending": [],
+  "ranking_boundary": "own-clean F1 remains primary; own-clean ECE uses each native n; matched comparisons are per-baseline sensitivity, not a universal common-n ECE leaderboard",
+  "native_invalid_boundary": "MXfold2 ArchiveII native BPP is invalid; no ECE. Empty clean/intersection values are null, never zero",
+  "systems": [
+    "bpfold",
+    "spotrna",
+    "rnaformer_bprna",
+    "rnaformer_intrafam",
+    "rnaformer_interfam",
+    "rnaformer_biophysical",
+    "rinalmo_ft",
+    "nucleicbert_ft",
+    "nucleicbert_frozen",
+    "kirigami",
+    "mxfold2",
+    "vienna_mfe",
+    "vienna_centroid",
+    "vienna_mea",
+    "eternafold",
+    "contrafold"
+  ],
+  "cells": [
+    {
+      "system": "bpfold",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1178,
+      "own_clean_f1": 0.7454468329661609,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.4911477962264117,
+        "brier": 0.24646729399753844,
+        "nll": 0.6965495295525149,
+        "spearman": 0.5826456188525445,
+        "aurc": 0.166625721155659
+      },
+      "matched_n": 703,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1178,
+      "matched_xens2": {
+        "ece": 0.0006095697420851058,
+        "brier": 0.0028072205251577866,
+        "nll": 0.01314234271594699,
+        "spearman": 0.7349854542590557,
+        "aurc": 0.10177113943573768
+      },
+      "matched_baseline": {
+        "ece": 0.49143614406809405,
+        "brier": 0.24655520730976868,
+        "nll": 0.6965811173819513,
+        "spearman": 0.5875088907501508,
+        "aurc": 0.16207927575139194
+      },
+      "result_sha256": "1e493890978cefd3810f9c6610c4e2473ed2ce449b73bcdcd98b766368a0126b",
+      "comparison_sha256": "80bc79e91e690cf0bca8c8f1fea37548e457f08fe68f7fdafa98de174e621b53"
+    },
+    {
+      "system": "bpfold",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5387,
+      "own_clean_f1": 0.7369936720851805,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.4872839637258438,
+        "brier": 0.24421972918993276,
+        "nll": 0.693996980040728,
+        "spearman": 0.593711339450984,
+        "aurc": 0.16272431998455172
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5387,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.48728500964097315,
+        "brier": 0.24422049339827467,
+        "nll": 0.6939983786919822,
+        "spearman": 0.5937702468415886,
+        "aurc": 0.16271229403544507
+      },
+      "result_sha256": "6f390b10cdc24133dec28c136e0deb1027f64dde6de7b2807e6550181e6beba2",
+      "comparison_sha256": "dbf6989ddf783819a9d0c878d7c7c1309b1c95833512a50d631682cea06ee23e"
+    },
+    {
+      "system": "bpfold",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 42,
+      "own_clean_f1": 0.8598022105875509,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.47246057945215664,
+        "brier": 0.23290791350065868,
+        "nll": 0.6702459498094249,
+        "spearman": 0.5010536701854218,
+        "aurc": 0.1221003243747807
+      },
+      "matched_n": 13,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": null,
+      "matched_xens2": {
+        "ece": 0.005164975071601379,
+        "brier": 0.007372587632787312,
+        "nll": 0.03585547837377304,
+        "spearman": 0.6538461538461539,
+        "aurc": 0.09873165678242223
+      },
+      "matched_baseline": {
+        "ece": 0.47305576319382714,
+        "brier": 0.2328302443104186,
+        "nll": 0.6660662754200124,
+        "spearman": 0.3259718258647996,
+        "aurc": 0.12251947849393802
+      },
+      "result_sha256": "70dc30e850c1ef2f95d6ede9cc2fb7421e6ad041e608557c9b076ec8ea5c0f91",
+      "comparison_sha256": "49ed320b5c64624434296bd198670497928b4aebfce042bfb7f73530bfa3a2fe"
+    },
+    {
+      "system": "bpfold",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 3,
+      "own_clean_f1": 0.9494949494949495,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.4343639781117922,
+        "brier": 0.2048926872350862,
+        "nll": 0.6057493593391293,
+        "spearman": -0.5,
+        "aurc": 0.0558361391694725
+      },
+      "matched_n": 1,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": null,
+      "matched_xens2": {
+        "ece": 0.02887064195050357,
+        "brier": 0.025212307920497726,
+        "nll": 0.09783316232633778,
+        "spearman": null,
+        "aurc": 0.10344827586206895
+      },
+      "matched_baseline": {
+        "ece": 0.44713648855686194,
+        "brier": 0.21451030575611874,
+        "nll": 0.6210500193745006,
+        "spearman": null,
+        "aurc": 0.030303030303030276
+      },
+      "result_sha256": "d744d37deae12a19f69be776e80df6807f1d2652f5c291f321ad20aac91e63ce",
+      "comparison_sha256": "e603e0090dd0316f90e2362d5df303e0144eb23b88fc7dc96eb3d0a5ae61e000"
+    },
+    {
+      "system": "bpfold",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 17,
+      "own_clean_f1": 0.8366336633663366,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.47474130972549655,
+        "brier": 0.2345889254303622,
+        "nll": 0.67520911361868,
+        "spearman": 0.3801349580222765,
+        "aurc": 0.16270734536402431
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": null,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.4689300674631038,
+        "brier": 0.22956020760329615,
+        "nll": 0.6720654265132031,
+        "spearman": 0.6000000000000001,
+        "aurc": 0.1377217553688142
+      },
+      "result_sha256": "08989252062513dbf10b6cad839d18075b821490afdfe588f020817688283872",
+      "comparison_sha256": "464eccc2f19ffe78cc5ee4fa4c229170ff78703543e508c4ecdce4f27db2984d"
+    },
+    {
+      "system": "bpfold",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 24,
+      "own_clean_f1": 0.8239795918367347,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.4737217404080314,
+        "brier": 0.2352196123233411,
+        "nll": 0.6810414031836363,
+        "spearman": 0.438876832867483,
+        "aurc": 0.15237295832405306
+      },
+      "matched_n": 9,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": null,
+      "matched_xens2": {
+        "ece": 0.018827384367795387,
+        "brier": 0.018295257590578685,
+        "nll": 0.07661735629587899,
+        "spearman": 0.4874121679532904,
+        "aurc": 0.16952308186649143
+      },
+      "matched_baseline": {
+        "ece": 0.47219262882499563,
+        "brier": 0.23988634856438382,
+        "nll": 0.7032237739120843,
+        "spearman": 0.13055824196677338,
+        "aurc": 0.20080681037847242
+      },
+      "result_sha256": "f8c0cb85f3cdb275e3f82e35fe809bd3d08602fd2c6a656894f716beabf021d0",
+      "comparison_sha256": "f6e4e880ccc99d955f2ab6a22fc8cda912bcb780d367df3190e16d83070d84f8"
+    },
+    {
+      "system": "bpfold",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 731,
+      "own_clean_f1": 0.821218984347476,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.49561976492535326,
+        "brier": 0.24999334859169275,
+        "nll": 0.6993917579150426,
+        "spearman": 0.6749743661193757,
+        "aurc": 0.09388534675118479
+      },
+      "matched_n": 517,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 731,
+      "matched_xens2": {
+        "ece": 0.0012179064782794546,
+        "brier": 0.002032701522262905,
+        "nll": 0.010396485615166994,
+        "spearman": 0.7228776831964306,
+        "aurc": 0.1494799831294697
+      },
+      "matched_baseline": {
+        "ece": 0.49622049900352655,
+        "brier": 0.250594108618994,
+        "nll": 0.7005881863907519,
+        "spearman": 0.6984234800241746,
+        "aurc": 0.09682756900526827
+      },
+      "result_sha256": "597d016f98d4b86f9df14909a3acea4b851fff48ac0cd015757881244b201942",
+      "comparison_sha256": "5aa5b6f1e33b30aae5576fa57e1295969a9b39d0f4e63b14e378093feda9da20"
+    },
+    {
+      "system": "bpfold",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_bpfold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 79,
+      "own_clean_f1": 0.7731282515268039,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.4882240125480983,
+        "brier": 0.24347368423127486,
+        "nll": 0.6893338086315299,
+        "spearman": 0.5110200881846674,
+        "aurc": 0.15348768967059537
+      },
+      "matched_n": 59,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": null,
+      "matched_xens2": {
+        "ece": 0.0019682804031013485,
+        "brier": 0.0032738386258471656,
+        "nll": 0.015332449747362498,
+        "spearman": 0.8067293672451933,
+        "aurc": 0.08891566649000827
+      },
+      "matched_baseline": {
+        "ece": 0.48846830284451914,
+        "brier": 0.24365747158336473,
+        "nll": 0.6895609948124706,
+        "spearman": 0.6889476772876703,
+        "aurc": 0.14624279459016737
+      },
+      "result_sha256": "f68c6565774645e1c49d68c380fa78a07b091e5b6f7fef0f68ec2efb3f2db0cf",
+      "comparison_sha256": "1e00df2019fedcd1a49493491645bdb4e6c63a3df1a29c3809d84926fad0cdfc"
+    },
+    {
+      "system": "spotrna",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_spotrna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 152,
+      "own_clean_f1": 0.6178470011186645,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002968010659773428,
+        "brier": 0.0029680106607674907,
+        "nll": 0.0799519136993912,
+        "spearman": 0.6830944636600744,
+        "aurc": 0.23362321743740636
+      },
+      "matched_n": 152,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 152,
+      "matched_xens2": {
+        "ece": 0.000886508928303549,
+        "brier": 0.0018962461193152245,
+        "nll": 0.009135787096475168,
+        "spearman": 0.7309488974710958,
+        "aurc": 0.024629953733018912
+      },
+      "matched_baseline": {
+        "ece": 0.002968010659773428,
+        "brier": 0.0029680106607674907,
+        "nll": 0.0799519136993912,
+        "spearman": 0.6830944636600744,
+        "aurc": 0.23362321743740636
+      },
+      "result_sha256": "81880c8d6f48032c49bebfcf4b4f3003cd3e7c5d6942958af70bb73f9289bc33",
+      "comparison_sha256": "49d6d043d7c022e699cc67f253a8513c9e140d274898cf18f379b7f0b4f5723c"
+    },
+    {
+      "system": "spotrna",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_spotrna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5386,
+      "own_clean_f1": 0.5836098496430769,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005034780189382982,
+        "brier": 0.005034780190372929,
+        "nll": 0.13562629748596408,
+        "spearman": 0.7428125156621765,
+        "aurc": 0.31020839133591743
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5386,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.005034780189382982,
+        "brier": 0.005034780190372929,
+        "nll": 0.13562629748596408,
+        "spearman": 0.7428125156621765,
+        "aurc": 0.31020839133591743
+      },
+      "result_sha256": "9ac38b33cc8b1ad08b6acf59c6415646be38ad23479e24496ffa72380dd487f4",
+      "comparison_sha256": "2f8f97a2b4424621c72e4834c28de3bc68386075c27599e1db4ffcb4e28034bc"
+    },
+    {
+      "system": "spotrna",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_spotrna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 10,
+      "own_clean_f1": 0.7759336099585062,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0035304501313918844,
+        "brier": 0.0035304501323848193,
+        "nll": 0.09510283605878173,
+        "spearman": 0.8125186029787134,
+        "aurc": 0.1548574875787546
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 10,
+      "matched_xens2": {
+        "ece": 0.0029157672832081675,
+        "brier": 0.00510838140826196,
+        "nll": 0.027206208712891908,
+        "spearman": 0.7696969696969697,
+        "aurc": 0.08903690494499239
+      },
+      "matched_baseline": {
+        "ece": 0.0035304501313918844,
+        "brier": 0.0035304501323848193,
+        "nll": 0.09510283605878173,
+        "spearman": 0.8125186029787134,
+        "aurc": 0.1548574875787546
+      },
+      "result_sha256": "c0af568ea0c4fa0a05353681a6293f2f9fda7effa467c4f098ad71cb48e3a48f",
+      "comparison_sha256": "adbc19fc6d546ff0b1cd9395b1a52ff7ec815ae4b27de50512b57f2a161ccc23"
+    },
+    {
+      "system": "spotrna",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_spotrna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 9,
+      "own_clean_f1": 0.7686567164179104,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0076835515072527115,
+        "brier": 0.007683551508237337,
+        "nll": 0.20697858282496537,
+        "spearman": 0.727606875108999,
+        "aurc": 0.13865818751479128
+      },
+      "matched_n": 9,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 9,
+      "matched_xens2": {
+        "ece": 0.020568809725274743,
+        "brier": 0.020181681391624372,
+        "nll": 0.09157570601733472,
+        "spearman": -0.11666666666666665,
+        "aurc": 0.19283407442624942
+      },
+      "matched_baseline": {
+        "ece": 0.0076835515072527115,
+        "brier": 0.007683551508237337,
+        "nll": 0.20697858282496537,
+        "spearman": 0.727606875108999,
+        "aurc": 0.13865818751479128
+      },
+      "result_sha256": "ab5599f9db9848b92d1039ac4d255a6c8bef572790f2a532b66c3ecc59feaf1c",
+      "comparison_sha256": "fee36e411477a979602031418a2757e3342e43b54ed9a828e4a6c7eef6e07d8c"
+    },
+    {
+      "system": "spotrna",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_spotrna.json",
+      "status": "EMPTY_AFTER_DELEAK",
+      "own_clean_n": 0,
+      "own_clean_f1": null,
+      "own_clean_f1_sd": null,
+      "own_clean": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "matched_n": null,
+      "xens2_clean_n": null,
+      "baseline_clean_n": null,
+      "matched_xens2": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "matched_baseline": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "result_sha256": "f1989e96ac1c7e1d0c8b87ef88538cf4973e37d730047276a41a485526c103c2"
+    },
+    {
+      "system": "spotrna",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_spotrna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 3,
+      "own_clean_f1": 0.6530612244897959,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.01751824817418248,
+        "brier": 0.01751824817514745,
+        "nll": 0.4719044577955484,
+        "spearman": 0.8660254037844387,
+        "aurc": 0.27824463118580767
+      },
+      "matched_n": 3,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 3,
+      "matched_xens2": {
+        "ece": 0.024838162957751098,
+        "brier": 0.023473156395357624,
+        "nll": 0.11296215188023288,
+        "spearman": 0.5,
+        "aurc": 0.26774691358024694
+      },
+      "matched_baseline": {
+        "ece": 0.01751824817418248,
+        "brier": 0.01751824817514745,
+        "nll": 0.4719044577955484,
+        "spearman": 0.8660254037844387,
+        "aurc": 0.27824463118580767
+      },
+      "result_sha256": "5d35f7d22da5055b0be6e62d0397117cc24a43c1879ca4027829934a01f774a5",
+      "comparison_sha256": "5414ffa10b21c51b886b5e5cd9de0b9f9848ae293c99016b4921a0062d18e8c1"
+    },
+    {
+      "system": "spotrna",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_spotrna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 580,
+      "own_clean_f1": 0.5212396624234384,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002223108230610728,
+        "brier": 0.0022231082316062863,
+        "nll": 0.05988581975752145,
+        "spearman": 0.8763863288568543,
+        "aurc": 0.25405926719589406
+      },
+      "matched_n": 565,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 580,
+      "matched_xens2": {
+        "ece": 0.0014767613733996379,
+        "brier": 0.0020567772565847284,
+        "nll": 0.010559484911950716,
+        "spearman": 0.7532826126200389,
+        "aurc": 0.10593206994144876
+      },
+      "matched_baseline": {
+        "ece": 0.0022242300546112263,
+        "brier": 0.002224230055606784,
+        "nll": 0.05991603932160171,
+        "spearman": 0.8750720674395712,
+        "aurc": 0.2573330046854369
+      },
+      "result_sha256": "99c1dc978739763edfc3fb4beb3b8c910e2cc62403192453630352fc834e83a0",
+      "comparison_sha256": "cd1448e9f54fd2447b322f22f950c6acc248547b029d692e6c9cb73e5d680186"
+    },
+    {
+      "system": "spotrna",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/spotrna/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_spotrna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 64,
+      "own_clean_f1": 0.5751833740831296,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0056857407449377555,
+        "brier": 0.005685740745926383,
+        "nll": 0.15316180773477547,
+        "spearman": 0.6920302359356904,
+        "aurc": 0.280498216941964
+      },
+      "matched_n": 64,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 64,
+      "matched_xens2": {
+        "ece": 0.0020023105911101415,
+        "brier": 0.002958170798880419,
+        "nll": 0.012403287241073379,
+        "spearman": 0.7050309334557275,
+        "aurc": 0.08176530542397861
+      },
+      "matched_baseline": {
+        "ece": 0.0056857407449377555,
+        "brier": 0.005685740745926383,
+        "nll": 0.15316180773477547,
+        "spearman": 0.6920302359356904,
+        "aurc": 0.280498216941964
+      },
+      "result_sha256": "699de7ad547278797e2052384b7bef4a2a7e192f72768a38e9ca2e603fc7c8af",
+      "comparison_sha256": "8df1ed84fd6ca28d322304b1364a2486ad3110d66756817dded2f7eda39e142e"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_bprna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1140,
+      "own_clean_f1": 0.7452371612287015,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0015394864308405217,
+        "brier": 0.0024656006248115624,
+        "nll": 0.013342512109745235,
+        "spearman": 0.6462403244248893,
+        "aurc": 0.13951937218326757
+      },
+      "matched_n": 708,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1140,
+      "matched_xens2": {
+        "ece": 0.0006247415409251114,
+        "brier": 0.00282118834167571,
+        "nll": 0.013219095261148558,
+        "spearman": 0.731414677208411,
+        "aurc": 0.10211077800169432
+      },
+      "matched_baseline": {
+        "ece": 0.0016088415155006363,
+        "brier": 0.0022298326149495533,
+        "nll": 0.01207857912405918,
+        "spearman": 0.6553743374877907,
+        "aurc": 0.12614401835952696
+      },
+      "result_sha256": "3311c93ca248750d75152ce3aada4f17358562f801d4f8d8712b708283276afe",
+      "comparison_sha256": "d588e9666d33b153f0da31a78df51b555d6fb65998317955730e0f770b2d2bfd"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_bprna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5386,
+      "own_clean_f1": 0.4935027488370305,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0018442077941064478,
+        "brier": 0.006527643831365785,
+        "nll": 0.03420530393406238,
+        "spearman": 0.47787406568525487,
+        "aurc": 0.4400606598922477
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5386,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.0018442077941064478,
+        "brier": 0.006527643831365785,
+        "nll": 0.03420530393406238,
+        "spearman": 0.47787406568525487,
+        "aurc": 0.4400606598922477
+      },
+      "result_sha256": "97cab985b5a2498a1c4706b29af4f745083f02012ef534b23312ecb1f0483522",
+      "comparison_sha256": "45537abd651bc5662b7e3a2c6b9abcef4c9e934a40ee2552c228170457458955"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_bprna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 11,
+      "own_clean_f1": 0.8427947598253275,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0039363288046894524,
+        "brier": 0.005085433055546016,
+        "nll": 0.02634186891068535,
+        "spearman": 0.5137830903923016,
+        "aurc": 0.17107335870687673
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 11,
+      "matched_xens2": {
+        "ece": 0.0029157672832081675,
+        "brier": 0.00510838140826196,
+        "nll": 0.027206208712891908,
+        "spearman": 0.7696969696969697,
+        "aurc": 0.08903690494499239
+      },
+      "matched_baseline": {
+        "ece": 0.0026599897552396883,
+        "brier": 0.0038213766259652194,
+        "nll": 0.020474919027546327,
+        "spearman": 0.43769199144964654,
+        "aurc": 0.14175941087536206
+      },
+      "result_sha256": "a5929be0eb643f1dbddab302b1263a1edf49639fcf7dc50566f95ab28b045b7a",
+      "comparison_sha256": "793ff6337428ba1c4bcdc8310ff98a33dbaa6568837e649b3bbbd2dad83638bd"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_bprna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 9,
+      "own_clean_f1": 0.8484848484848485,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.006079910719971386,
+        "brier": 0.007932204321440327,
+        "nll": 0.04273771211537027,
+        "spearman": -0.35983578576496095,
+        "aurc": 0.36249959895418443
+      },
+      "matched_n": 9,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 9,
+      "matched_xens2": {
+        "ece": 0.020568809725274743,
+        "brier": 0.020181681391624372,
+        "nll": 0.09157570601733472,
+        "spearman": -0.11666666666666665,
+        "aurc": 0.19283407442624942
+      },
+      "matched_baseline": {
+        "ece": 0.006079910719971386,
+        "brier": 0.007932204321440327,
+        "nll": 0.04273771211537027,
+        "spearman": -0.35983578576496095,
+        "aurc": 0.36249959895418443
+      },
+      "result_sha256": "eaf10d60e2dfc50fa8dc74a21823b2f473eedf60f27c0ff0ae6155edff51c454",
+      "comparison_sha256": "6f33ea6b9895217e6ff8115b27430b8418e14fad3867555aed9fb354dc460f04"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_bprna.json",
+      "status": "EMPTY_MATCHED_CALIBRATION_INTERSECTION",
+      "own_clean_n": 2,
+      "own_clean_f1": 0.8157894736842105,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0047892384071849745,
+        "brier": 0.005693986738808512,
+        "nll": 0.024124445692268064,
+        "spearman": 0.9999999999999999,
+        "aurc": 0.048611111111111105
+      },
+      "matched_n": 0,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 2,
+      "matched_xens2": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "matched_baseline": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "result_sha256": "5e07ff7c01cf315b18e2e63c7313a160c8d229a2dd4f305b8b2c8bfdf1a7ff2c",
+      "comparison_sha256": "7f549a584ef17725598b1cd1f6a55446dac6b6e08062c49cb34400c4c99f06f4"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_bprna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 3,
+      "own_clean_f1": 0.3783783783783784,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.028754912541132334,
+        "brier": 0.02964907046856132,
+        "nll": 0.13670754719673378,
+        "spearman": 0.8660254037844387,
+        "aurc": 0.5246913580246914
+      },
+      "matched_n": 3,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 3,
+      "matched_xens2": {
+        "ece": 0.024838162957751098,
+        "brier": 0.023473156395357624,
+        "nll": 0.11296215188023288,
+        "spearman": 0.5,
+        "aurc": 0.26774691358024694
+      },
+      "matched_baseline": {
+        "ece": 0.028754912541132334,
+        "brier": 0.02964907046856132,
+        "nll": 0.13670754719673378,
+        "spearman": 0.8660254037844387,
+        "aurc": 0.5246913580246914
+      },
+      "result_sha256": "71a3ac58577456c9842f2d0469571b3c4a1f78fbc57d1db3f6dbabd491d7cfec",
+      "comparison_sha256": "7d7838f8f268819ec6665d473fe69023b4094d0dee3e8d734cde57b9ed3a8e18"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_bprna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 2267,
+      "own_clean_f1": 0.7497180602545513,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0022859707526841026,
+        "brier": 0.0020302173073709936,
+        "nll": 0.011667861783831729,
+        "spearman": 0.4257853469264386,
+        "aurc": 0.16165364490610745
+      },
+      "matched_n": 1087,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 2267,
+      "matched_xens2": {
+        "ece": 0.0009986423171011124,
+        "brier": 0.0022248451624874675,
+        "nll": 0.011299028711580006,
+        "spearman": 0.7175607517320501,
+        "aurc": 0.12026455052869159
+      },
+      "matched_baseline": {
+        "ece": 0.0029301461905266576,
+        "brier": 0.001850616827593921,
+        "nll": 0.010865324768462118,
+        "spearman": 0.571626252546142,
+        "aurc": 0.17147583433928665
+      },
+      "result_sha256": "6ad3fb4770e56574852d164eaa995ab4dc9b0390091cdaad41d2722250de6efb",
+      "comparison_sha256": "c96d98f497120be20c3f34380db8c6c7922d30c097925c6e4168613a67d4b420"
+    },
+    {
+      "system": "rnaformer_bprna",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/bprna/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_bprna.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 80,
+      "own_clean_f1": 0.7037363930567814,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0016590515231795402,
+        "brier": 0.003344214095740154,
+        "nll": 0.017538273434808342,
+        "spearman": 0.6381721754339135,
+        "aurc": 0.18217321749232335
+      },
+      "matched_n": 74,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 80,
+      "matched_xens2": {
+        "ece": 0.0019748620319095726,
+        "brier": 0.003053487750295965,
+        "nll": 0.013191300194213053,
+        "spearman": 0.7491833652649333,
+        "aurc": 0.08002343868080188
+      },
+      "matched_baseline": {
+        "ece": 0.0016900716342137163,
+        "brier": 0.0034185769065148914,
+        "nll": 0.017917576614607984,
+        "spearman": 0.65859856652135,
+        "aurc": 0.18369954722308593
+      },
+      "result_sha256": "552e68c869a849cee5e1ebd25d06a01427af5d69d885d6d01920aabd49cc5dbb",
+      "comparison_sha256": "fb876700922143295ddce9bc310f31fbeb9f5834aba11a17e955bae9c4646e97"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_intrafam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1256,
+      "own_clean_f1": 0.6343541036671068,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004587423200547101,
+        "brier": 0.004077835924340054,
+        "nll": 0.017410115448417533,
+        "spearman": 0.6331320569381091,
+        "aurc": 0.21465820396048796
+      },
+      "matched_n": 710,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1256,
+      "matched_xens2": {
+        "ece": 0.0006260979156462226,
+        "brier": 0.0028209563618077967,
+        "nll": 0.013206605840622573,
+        "spearman": 0.7279947429629086,
+        "aurc": 0.10320724324285283
+      },
+      "matched_baseline": {
+        "ece": 0.0046089306136771644,
+        "brier": 0.0038692307348775386,
+        "nll": 0.016486319407110272,
+        "spearman": 0.6512475914102357,
+        "aurc": 0.21465043923144136
+      },
+      "result_sha256": "66cab1f49465cb852b0587129fef020261ceb4a76465072649b6c59d1c5d2052",
+      "comparison_sha256": "ba943377b059b3ae2763f7cec8af74c21dda4e94b502fd2283c9e0fe66ad916d"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_intrafam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5386,
+      "own_clean_f1": 0.654290805444755,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005435623372667915,
+        "brier": 0.005309142359879723,
+        "nll": 0.022546314690522724,
+        "spearman": 0.5449351410414157,
+        "aurc": 0.25681422818184174
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5386,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.005435623372667915,
+        "brier": 0.005309142359879723,
+        "nll": 0.022546314690522724,
+        "spearman": 0.5449351410414157,
+        "aurc": 0.25681422818184174
+      },
+      "result_sha256": "84d5bea01f6ad8c2025ad1ab9568aedcaa981abf39c1620b8bb6f300e1d11d07",
+      "comparison_sha256": "3ea5df4b67f9aaa2ba9abb35147e5a6e0b975342166bb9d7722844b1cafba565"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_intrafam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 60,
+      "own_clean_f1": 0.8388364779874213,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.007201299475199199,
+        "brier": 0.006605374051141159,
+        "nll": 0.02823208510174057,
+        "spearman": 0.4488559667470681,
+        "aurc": 0.09975557899817306
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 60,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.005689026292756854,
+        "brier": 0.004318368721253839,
+        "nll": 0.018264872804452725,
+        "spearman": 0.37932862127137706,
+        "aurc": 0.06094422078401123
+      },
+      "result_sha256": "1c3ef54aabf0f731f3d83e795244db7256459dc681978063438ca5b07c06d0f9",
+      "comparison_sha256": "aa46928022771d6e858926a3c5b8b9df586684db41f2b0be42348c765eab7ddd"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_intrafam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.9145962732919255,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.008146373723055203,
+        "brier": 0.005467770002084406,
+        "nll": 0.0259599827230183,
+        "spearman": 0.5414558404046187,
+        "aurc": 0.06111021906489501
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.008071865527017155,
+        "brier": 0.005566969115505616,
+        "nll": 0.02744699323208902,
+        "spearman": 0.43910621980007036,
+        "aurc": 0.0639662010539937
+      },
+      "result_sha256": "69f48347fe4b62bd06f2a2ac45484e26cf8274c2b1d1bc304136f87728103655",
+      "comparison_sha256": "90805f2c49629f710500b8adfa5edd46e5a7bd918b77a8beda17aa22357bf466"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_intrafam.json",
+      "status": "EMPTY_AFTER_DELEAK",
+      "own_clean_n": 0,
+      "own_clean_f1": null,
+      "own_clean_f1_sd": null,
+      "own_clean": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "matched_n": 0,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 0,
+      "matched_xens2": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "matched_baseline": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "result_sha256": "a037708e96d27f28ff0a685871d152c8f13a992371482309fa74bfba3004d40c",
+      "comparison_sha256": "d45eb9b71759b5da0ae2f3abe6a1ebe8e7fd3c71086c7786cf4bd849b94325d5"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_intrafam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 19,
+      "own_clean_f1": 0.7557117750439367,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.008206575161025645,
+        "brier": 0.00779626376141697,
+        "nll": 0.03301580568744597,
+        "spearman": 0.670482721932972,
+        "aurc": 0.09829357701435482
+      },
+      "matched_n": 8,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 19,
+      "matched_xens2": {
+        "ece": 0.02273865606527163,
+        "brier": 0.020786371875635437,
+        "nll": 0.09549732684030351,
+        "spearman": 0.6904761904761906,
+        "aurc": 0.1421414711718021
+      },
+      "matched_baseline": {
+        "ece": 0.012803944669371008,
+        "brier": 0.011533950171304989,
+        "nll": 0.04448605432217619,
+        "spearman": 0.8383383833392813,
+        "aurc": 0.07914694349962208
+      },
+      "result_sha256": "5a36f313a2c761404732af3739ac3e4ece5d90d20288fb76847ec1ffba2f545a",
+      "comparison_sha256": "930dcb4764cc4dd7e3b5ac86d2a8edba75e738cca15f7ecb1bdea90c4dddbfed"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_intrafam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1909,
+      "own_clean_f1": 0.7150771073514,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.003209928156132532,
+        "brier": 0.0023383412573987003,
+        "nll": 0.01023581531330189,
+        "spearman": 0.7370416358697942,
+        "aurc": 0.1314702232878534
+      },
+      "matched_n": 1054,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 1909,
+      "matched_xens2": {
+        "ece": 0.0010710922049287576,
+        "brier": 0.002225387859373167,
+        "nll": 0.011308016880656628,
+        "spearman": 0.7109564902436087,
+        "aurc": 0.1251816687943614
+      },
+      "matched_baseline": {
+        "ece": 0.003171634509673273,
+        "brier": 0.0022215090917059263,
+        "nll": 0.009673113942938887,
+        "spearman": 0.770750252647842,
+        "aurc": 0.152479332213675
+      },
+      "result_sha256": "0797a7e3c39f930614ab5bb150072e409b23512c1697a3cf07b170e710d22697",
+      "comparison_sha256": "4deea7c71300ba3d31582cdf548fbf57ec3565df255191f0b5c05782a1eea631"
+    },
+    {
+      "system": "rnaformer_intrafam",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_intrafam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 419,
+      "own_clean_f1": 0.6693933197000682,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00569478998144164,
+        "brier": 0.0049843846095998234,
+        "nll": 0.020761337605527536,
+        "spearman": 0.7125665346115858,
+        "aurc": 0.1978687145326873
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 419,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.005812958839048102,
+        "brier": 0.005081122113580987,
+        "nll": 0.021217198528778996,
+        "spearman": 0.750572430561719,
+        "aurc": 0.1869490182069777
+      },
+      "result_sha256": "364ecc76811550ed123990129c6442d7a5e7bb37e180026ad5a1aa88c067f4ab",
+      "comparison_sha256": "151ddb43f46988d3cf8589d737caee147a14207b5d170fd44c6cdcf4a0b02e4e"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1276,
+      "own_clean_f1": 0.6379106660666066,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004572457099613215,
+        "brier": 0.004025060920558874,
+        "nll": 0.017322958764390533,
+        "spearman": 0.6785031623021855,
+        "aurc": 0.2050468344591291
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1276,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.004641739427646924,
+        "brier": 0.0038262929729958634,
+        "nll": 0.01646237654362834,
+        "spearman": 0.6903649642214558,
+        "aurc": 0.20875445021701275
+      },
+      "result_sha256": "de43b1a64a103b713e502c6b52b4586b221d4a4d04cd48f726e1824dd6d3d01c",
+      "comparison_sha256": "e8d0549a3d0475128bea852e0f8e37550948e57ae1ef95f96d22352b61c56d42"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5386,
+      "own_clean_f1": 0.6560129819734011,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005256078210232145,
+        "brier": 0.0052377172974546644,
+        "nll": 0.022259323752127285,
+        "spearman": 0.5474306355883988,
+        "aurc": 0.25838871597108914
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5386,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.005256078210232145,
+        "brier": 0.0052377172974546644,
+        "nll": 0.022259323752127285,
+        "spearman": 0.5474306355883988,
+        "aurc": 0.25838871597108914
+      },
+      "result_sha256": "f4a6e34e4587163236e7a4e37915a07efb38b95e1e156c680c86711cb3d59a64",
+      "comparison_sha256": "2e690c03b3103375f20fa4410488e187140b528c5e8e6302e6062bdb5ff7e1ca"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 63,
+      "own_clean_f1": 0.8414634146341463,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.007841956016679271,
+        "brier": 0.006528661144389312,
+        "nll": 0.02813955952456127,
+        "spearman": 0.4547861056183338,
+        "aurc": 0.09330502851558893
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 63,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.006597136260136497,
+        "brier": 0.0045104148641134465,
+        "nll": 0.01909933868063065,
+        "spearman": 0.35348879693408974,
+        "aurc": 0.06173252184892259
+      },
+      "result_sha256": "51991b8b6d0f144e44d4940e595dcd37f7113fafccd70fea447dad96c0c91acb",
+      "comparison_sha256": "0ec99c7474a6799671d24b1f234c87916f0e2aab0aae869bb01de80d85d239c7"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.9117647058823529,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00811863785311347,
+        "brier": 0.005619528434043691,
+        "nll": 0.026631387257744648,
+        "spearman": 0.3869466781756211,
+        "aurc": 0.07654278456134392
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.007795037731882379,
+        "brier": 0.00565110616780001,
+        "nll": 0.027917173824064428,
+        "spearman": 0.2654876017481163,
+        "aurc": 0.09004334489723385
+      },
+      "result_sha256": "f24bb237216a627d2b398c76d6ae275c4e69d3e39f82690d9505dd43a46d9a99",
+      "comparison_sha256": "3b46b83671efc0625623471bb5d5b46bc5bae937f21098770ac1f803492fa973"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 19,
+      "own_clean_f1": 0.7961630695443646,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.008200510437197009,
+        "brier": 0.006441153666290851,
+        "nll": 0.0296601101922284,
+        "spearman": 0.12988153948893946,
+        "aurc": 0.327078276357479
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 19,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.009365053406833081,
+        "brier": 0.006649882711965937,
+        "nll": 0.030555812272455237,
+        "spearman": -0.6000000000000001,
+        "aurc": 0.2622243188721157
+      },
+      "result_sha256": "d7bf16f0d4a1d0cbef533d417d2d6b2129d864fcb517336022b19b7d38cfb091",
+      "comparison_sha256": "a9681aa068d8f25d5222108deb60f4a3b02faec95d58474630e4183bfdefc090"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.7843137254901961,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.007684401116395843,
+        "brier": 0.006884963539422159,
+        "nll": 0.030065064151999266,
+        "spearman": 0.45784417073335176,
+        "aurc": 0.13054486213790187
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.017212068497437345,
+        "brier": 0.012979392669359838,
+        "nll": 0.05438556975735453,
+        "spearman": 0.38905954795524134,
+        "aurc": 0.17796883345930964
+      },
+      "result_sha256": "f0ad84f055fc06e240d137bb7b614b7b1445ddb824fdd13c03dbbfd71ac9ec40",
+      "comparison_sha256": "6615f2a9273ccfae85639666dda7ea1cd116f4279048c680d126df4584f60bf7"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 2192,
+      "own_clean_f1": 0.7334860511130188,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00331342125953182,
+        "brier": 0.002297930348755013,
+        "nll": 0.010143925665842417,
+        "spearman": 0.7299175856371731,
+        "aurc": 0.11766629902306669
+      },
+      "matched_n": 1086,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 2192,
+      "matched_xens2": {
+        "ece": 0.0010610564401917172,
+        "brier": 0.002223810574236357,
+        "nll": 0.01131101472610488,
+        "spearman": 0.7281692425906539,
+        "aurc": 0.11746772628646941
+      },
+      "matched_baseline": {
+        "ece": 0.0032512989827372164,
+        "brier": 0.0021544102372958963,
+        "nll": 0.00949142658269505,
+        "spearman": 0.7856169777985116,
+        "aurc": 0.14491221188370768
+      },
+      "result_sha256": "f54aed50704cb4f9e135094e28b5187c6f3a21352ac7e59ea9120a37e1d735e8",
+      "comparison_sha256": "4e0fecd677618770b533f9877781945634230440526693f78ae146fe4d1336f4"
+    },
+    {
+      "system": "rnaformer_interfam",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_interfam.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 421,
+      "own_clean_f1": 0.6734647425683981,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005535698084819995,
+        "brier": 0.004897643876594319,
+        "nll": 0.020472614664862256,
+        "spearman": 0.6929979941103849,
+        "aurc": 0.19604654711081612
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 421,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.005649525931885347,
+        "brier": 0.005008979223834914,
+        "nll": 0.021000446617484007,
+        "spearman": 0.7100735249127129,
+        "aurc": 0.1859133107664634
+      },
+      "result_sha256": "9c7254a60a8200e351ba553fad49b05b678d4a9b818b216988f36bb2f8b0947b",
+      "comparison_sha256": "18dd9f7fe63f576349ba94bd91fdcb835e880bccc6c4fb876e8939ff025eb6f2"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1288,
+      "own_clean_f1": 0.5059660420877151,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005748872575435269,
+        "brier": 0.00668263991696324,
+        "nll": 0.032165534034131305,
+        "spearman": 0.36907962174806463,
+        "aurc": 0.38297774732819234
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1288,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.0055883281457479485,
+        "brier": 0.006470036595721756,
+        "nll": 0.03075275738271689,
+        "spearman": 0.33273771157668885,
+        "aurc": 0.40806001204860043
+      },
+      "result_sha256": "ce20e70585c1980d7f1b0c720f6052d1c51f987111143c2ec6c92c67c095187c",
+      "comparison_sha256": "0c07e1d3d9910eb3b46855e38296a4ed080e9c5fdcd669861b4450549d3f8103"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.6405892910173147,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005705344644182131,
+        "brier": 0.006690302223570278,
+        "nll": 0.030472307044950134,
+        "spearman": 0.485300151267642,
+        "aurc": 0.22671083108964676
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.005705651842703014,
+        "brier": 0.006690509462536055,
+        "nll": 0.030474137905009933,
+        "spearman": 0.4858119225572903,
+        "aurc": 0.22670027164172685
+      },
+      "result_sha256": "76f4667e200e62c1149b0a373361db284d1301d01c2fc5c16fa6d7110d6d95f3",
+      "comparison_sha256": "00365dca5d1d021783d94e3aa3f1b97b6d5c9bcdd1f99ad489dfd060cb16c137"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 63,
+      "own_clean_f1": 0.7126932758000719,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.009357973716586029,
+        "brier": 0.010183620318566886,
+        "nll": 0.051237234450408446,
+        "spearman": 0.306547116654519,
+        "aurc": 0.21542845002111086
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 63,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.010288212367987591,
+        "brier": 0.011203056193053333,
+        "nll": 0.056066860722850734,
+        "spearman": 0.4434113856278494,
+        "aurc": 0.13371603261097276
+      },
+      "result_sha256": "23e0c12721163dc44f49b6a4886d86848997bfa442ff2b7c00007cef0f25dd2b",
+      "comparison_sha256": "b6f237ec20543f950d6923f4cbfd7324aaa3cc792c7e380dc58f55d8e4a8f2f0"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.8848484848484849,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005492122087460401,
+        "brier": 0.006359652416153424,
+        "nll": 0.033715186727208094,
+        "spearman": 0.2987230318901036,
+        "aurc": 0.10450095941710981
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.005573377670014557,
+        "brier": 0.0065337442158714225,
+        "nll": 0.035640464088804044,
+        "spearman": 0.10037151830746067,
+        "aurc": 0.1410900905909791
+      },
+      "result_sha256": "26023cccc6009c086f51c60c13a62a3aa8ecc6f23e5a5769e6061e14372638c5",
+      "comparison_sha256": "c883464ef5c88fcc10e5682a7492dff74697f8af6c894d703f7c2a40bd007579"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 19,
+      "own_clean_f1": 0.8264840182648402,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005155281605431781,
+        "brier": 0.005921553876919544,
+        "nll": 0.031576261006127565,
+        "spearman": 0.19938532896017702,
+        "aurc": 0.18806391925815177
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 19,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.008880593880081951,
+        "brier": 0.00926425007214876,
+        "nll": 0.04920089578035533,
+        "spearman": 0.39999999999999997,
+        "aurc": 0.18717282116581777
+      },
+      "result_sha256": "12590e9abfad065b4a56531ac3bdc69ebaa8159407d3a8651750cdb4aa705430",
+      "comparison_sha256": "4bb48a3e90835fddb441376d50edeecc09dcec9a7debada919464e767437a644"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.782,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.007179124205430304,
+        "brier": 0.007482408291778105,
+        "nll": 0.03877250655415047,
+        "spearman": 0.21849532888014203,
+        "aurc": 0.2061180436810219
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.011017620637407726,
+        "brier": 0.0112193623284349,
+        "nll": 0.058835633938642246,
+        "spearman": 0.15853953266296708,
+        "aurc": 0.13886775022200462
+      },
+      "result_sha256": "d88d852997b5328daf5927bc09061c8cfcf95c8a33b6c219a7ca26191db818fe",
+      "comparison_sha256": "e83c09139bee0238667646864ecb7ce0ab4ed5d91a811afb91fb4951ce42134e"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 2544,
+      "own_clean_f1": 0.5882707022494786,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0050353878222171465,
+        "brier": 0.003843341080322519,
+        "nll": 0.016802471005930426,
+        "spearman": 0.42428749780549674,
+        "aurc": 0.2837931966906943
+      },
+      "matched_n": 1107,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 2544,
+      "matched_xens2": {
+        "ece": 0.0010307682973914782,
+        "brier": 0.0022205656475770288,
+        "nll": 0.011283814429221356,
+        "spearman": 0.7254523611726262,
+        "aurc": 0.11707709526109103
+      },
+      "matched_baseline": {
+        "ece": 0.005000552874391744,
+        "brier": 0.0033393679730930903,
+        "nll": 0.01433521278521921,
+        "spearman": 0.34857181169858736,
+        "aurc": 0.3520588261345101
+      },
+      "result_sha256": "bb90f55d08bad2fe18f1e6708cfb9027386d50e44f035f36f2137e4886657c53",
+      "comparison_sha256": "96fce499c9716943dbde73f61452f287bd95ab2c78ee23dd4387388f5a56671e"
+    },
+    {
+      "system": "rnaformer_biophysical",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_biophysical.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 428,
+      "own_clean_f1": 0.5133127642555136,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0077172547491282766,
+        "brier": 0.008792290004868879,
+        "nll": 0.04250979410933497,
+        "spearman": 0.3927111720083786,
+        "aurc": 0.36334273936757394
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 428,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.008018565130386044,
+        "brier": 0.009015183854973758,
+        "nll": 0.04362824266407138,
+        "spearman": 0.42522760571716256,
+        "aurc": 0.35479888881008387
+      },
+      "result_sha256": "2521bac41d85259a064a34e3b4bc451029c93683f44972518ed6ef665561b226",
+      "comparison_sha256": "d815b8cf6e6c67bf371aae66d3cf6861d535720bd451f5b0fa3bbf10789de08a"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1192,
+      "own_clean_f1": 0.7110963915275416,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0018064000373500034,
+        "brier": 0.00251367557093168,
+        "nll": 0.013928954357260529,
+        "spearman": 0.8253233744481833,
+        "aurc": 0.11530098950271714
+      },
+      "matched_n": 709,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1192,
+      "matched_xens2": {
+        "ece": 0.0006199985200578379,
+        "brier": 0.002815380834623777,
+        "nll": 0.013192443758863763,
+        "spearman": 0.7326400294073189,
+        "aurc": 0.10202629258049771
+      },
+      "matched_baseline": {
+        "ece": 0.0015298908299664245,
+        "brier": 0.0021640034514170906,
+        "nll": 0.011838660072947461,
+        "spearman": 0.8427999526676933,
+        "aurc": 0.10180481692977898
+      },
+      "result_sha256": "9e64c665085d2ea80e877a4e55fba1a9de764905257a687a8c280d770a532fea",
+      "comparison_sha256": "9a68d9dc83cc873bcf0f55101cf4c95d3c12864c96ab18242a0e7e99fc7d7a1a"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.4489961556755058,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005684633313331682,
+        "brier": 0.006830364640066696,
+        "nll": 0.042596253739208556,
+        "spearman": 0.6354352567189688,
+        "aurc": 0.41921692754993334
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.005684055075438517,
+        "brier": 0.006829653883165508,
+        "nll": 0.042592958619337165,
+        "spearman": 0.6353006941949838,
+        "aurc": 0.41936285664759343
+      },
+      "result_sha256": "2ff1490caafebad90b670f5d5e7a0e71cca6e7cd68d02bfe9cc42e0ae4365009",
+      "comparison_sha256": "483fe6e198fb2c38e34a85c46b52062b1584743c8b5d0bf2728fb5b1799d5109"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 61,
+      "own_clean_f1": 0.716916488222698,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.007616016165738506,
+        "brier": 0.008528639556091663,
+        "nll": 0.06034593326188921,
+        "spearman": 0.6463035783798337,
+        "aurc": 0.19470024392132895
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 61,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.005290514332857124,
+        "brier": 0.0058304454136936315,
+        "nll": 0.03841344312642456,
+        "spearman": 0.5338152492484992,
+        "aurc": 0.16846506242587578
+      },
+      "result_sha256": "f4332a53f48423e2718697e7d66ec16cf70e7d95a97e635564986b2fc9c42f8b",
+      "comparison_sha256": "d3e5070c0aa397808e068171faca699f7e6dc55ed3ebf83f80a4adcdbc163e8d"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.6714413607878246,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.015844604571090094,
+        "brier": 0.016891407011458474,
+        "nll": 0.100113809836795,
+        "spearman": 0.5179559231598994,
+        "aurc": 0.2378247216038861
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.014891815449246795,
+        "brier": 0.016013128910854234,
+        "nll": 0.0917991771815508,
+        "spearman": 0.5058581544125677,
+        "aurc": 0.2193556077523139
+      },
+      "result_sha256": "a6467cf613383128f6be8db2f811e778fd2e5876f95ccf55ae4d4cd48bac4e32",
+      "comparison_sha256": "e968e52dabb02ac031a20f15950c10ca835c53979f3fc19c61003bd0d2705b5d"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 17,
+      "own_clean_f1": 0.5800604229607251,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.010326502784435521,
+        "brier": 0.011000674384894627,
+        "nll": 0.08083282047276226,
+        "spearman": 0.3357843137254902,
+        "aurc": 0.4161246016797104
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 17,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.010915572537177936,
+        "brier": 0.011180084749143324,
+        "nll": 0.08869829659835843,
+        "spearman": 0.7999999999999999,
+        "aurc": 0.30995801716272253
+      },
+      "result_sha256": "7e7fd9633eb029ddd78c5a2f4fa9de80cfaa4350454aa7c425e48df7c2a8f145",
+      "comparison_sha256": "ae1da873aeaa3e1c24ce295eaa39c750a65050e8ee7c035ffb1c76948defcadc"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.5566265060240964,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.010854385199012875,
+        "brier": 0.012057933875279482,
+        "nll": 0.08222474678980517,
+        "spearman": 0.5110168379591656,
+        "aurc": 0.3444337838794306
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.015749642384349363,
+        "brier": 0.017346048833336784,
+        "nll": 0.09761289098824512,
+        "spearman": 0.5272727272727272,
+        "aurc": 0.35468033526507314
+      },
+      "result_sha256": "0389ba2fca67ae4ae873a99eb8bd447cea3cab3f4df47704c3813d0ad7c279e5",
+      "comparison_sha256": "e39391905e14a6c57d41c9e0110550311430d2407a73a7613e4de17eec371513"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1094,
+      "own_clean_f1": 0.7108895303070061,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0012453338926488222,
+        "brier": 0.0017510715197394944,
+        "nll": 0.010152951852611811,
+        "spearman": 0.8487550171304965,
+        "aurc": 0.1044253466803095
+      },
+      "matched_n": 765,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 1094,
+      "matched_xens2": {
+        "ece": 0.0012167945182449944,
+        "brier": 0.002131098323653835,
+        "nll": 0.010846530116876904,
+        "spearman": 0.7179665732962743,
+        "aurc": 0.1225071918034985
+      },
+      "matched_baseline": {
+        "ece": 0.0011956814575793877,
+        "brier": 0.001692078059110783,
+        "nll": 0.009692649017278968,
+        "spearman": 0.8669919959305953,
+        "aurc": 0.11244581699461588
+      },
+      "result_sha256": "e0b59e2b4d816dc3b80aafb08cc9c4102cd84b34b7b1de41fc3a5bbf10fcf4a2",
+      "comparison_sha256": "93960d6e0aae6fffcad258cdb8278238734eb799b2a0f216ac80866762a8c158"
+    },
+    {
+      "system": "rinalmo_ft",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_rinalmo_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 116,
+      "own_clean_f1": 0.7894353369763206,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0015944058070686941,
+        "brier": 0.002090815376187748,
+        "nll": 0.012305666143360618,
+        "spearman": 0.7970435383628979,
+        "aurc": 0.08623982595571265
+      },
+      "matched_n": 95,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 116,
+      "matched_xens2": {
+        "ece": 0.0021670520687927424,
+        "brier": 0.0033170417674898774,
+        "nll": 0.014886734349833418,
+        "spearman": 0.763717349787331,
+        "aurc": 0.08771664333666482
+      },
+      "matched_baseline": {
+        "ece": 0.0016509607587685772,
+        "brier": 0.002121145724086915,
+        "nll": 0.012761260884967065,
+        "spearman": 0.7813060945834606,
+        "aurc": 0.08675191172720789
+      },
+      "result_sha256": "467668003fef68a5e19e3485fee6d10a4231f33e4aaf6b2d448cc7aded987c19",
+      "comparison_sha256": "3c8afe2bcf8d2c7c2f80b135458326fa076189b30f5f4053ecab8ed8e98a0e10"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 713,
+      "own_clean_f1": 0.42509565023587537,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.06900284720110575,
+        "brier": 0.03540332966348321,
+        "nll": 0.12016696780083244,
+        "spearman": 0.7875970835180135,
+        "aurc": 0.27490728216840693
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 713,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.06900284720110575,
+        "brier": 0.03540332966348321,
+        "nll": 0.12016696780083244,
+        "spearman": 0.7875970835180135,
+        "aurc": 0.27490728216840693
+      },
+      "result_sha256": "08c5e176026bde47babe463cf3396ea6ad05be9d98db706d006b80e70a767c76",
+      "comparison_sha256": "79adccd47771c6178b7e676d120bd0354c4ba980f14f3efdb10cce22ae3c566a"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5386,
+      "own_clean_f1": 0.3463918228666557,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.1110871834802756,
+        "brier": 0.05874399023938519,
+        "nll": 0.198203332856173,
+        "spearman": 0.40656097228310917,
+        "aurc": 0.5647986276983411
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5386,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.1110871834802756,
+        "brier": 0.05874399023938519,
+        "nll": 0.198203332856173,
+        "spearman": 0.40656097228310917,
+        "aurc": 0.5647986276983411
+      },
+      "result_sha256": "ae661b981478f56f453d817a685b048ae6d8af8851c447766e052cc7050a80f4",
+      "comparison_sha256": "9edbf59b8690d55285939f9b4f9307bf5df27cd0a87b298baf4d1779bacc2073"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 18,
+      "own_clean_f1": 0.6796116504854369,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.07258797298861684,
+        "brier": 0.045248128260238066,
+        "nll": 0.1508003680048562,
+        "spearman": 0.8285128387923145,
+        "aurc": 0.18442784573085955
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 18,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.07258797298861684,
+        "brier": 0.045248128260238066,
+        "nll": 0.1508003680048562,
+        "spearman": 0.8285128387923145,
+        "aurc": 0.18442784573085955
+      },
+      "result_sha256": "487afe650c8d1581e6e7e02fa4b5b1680785dcb741d238734b96784419e25bdb",
+      "comparison_sha256": "b3e0c0dd715a76443da5c2cc32bf71f02d39f36ca23360c1384201a56d8eaa5e"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 29,
+      "own_clean_f1": 0.6673228346456693,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.1278653641742677,
+        "brier": 0.08028217638520915,
+        "nll": 0.2675557733036929,
+        "spearman": 0.5664285502290428,
+        "aurc": 0.22896982917486147
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 29,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.1278653641742677,
+        "brier": 0.08028217638520915,
+        "nll": 0.2675557733036929,
+        "spearman": 0.5664285502290428,
+        "aurc": 0.22896982917486147
+      },
+      "result_sha256": "709197f9b74bf14bfd844f1f1a2bedcc529fa23443fa70998e11be592faa9eef",
+      "comparison_sha256": "f03c27cbdc22dca28d9d5f23a1593a618759d3ccdc72e00f292525a4ceb2f1ad"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 4,
+      "own_clean_f1": 0.5028571428571429,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.13873325710836584,
+        "brier": 0.08198565418030943,
+        "nll": 0.26868582113183653,
+        "spearman": 0.39999999999999997,
+        "aurc": 0.4630753018910915
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 4,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.13873325710836584,
+        "brier": 0.08198565418030943,
+        "nll": 0.26868582113183653,
+        "spearman": 0.39999999999999997,
+        "aurc": 0.4630753018910915
+      },
+      "result_sha256": "263305fce56219fa3d1fe930ca82b1490632a0cbb0bfb0b85ad05385d6450922",
+      "comparison_sha256": "df93d5522023b6e63f2a9aa7635ad4aa3ce62456891a534833b006e86e1d4e92"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 10,
+      "own_clean_f1": 0.5080645161290323,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.15330803593042736,
+        "brier": 0.09709529634697407,
+        "nll": 0.3230742917483199,
+        "spearman": -0.07294866524160776,
+        "aurc": 0.5013389118499523
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 10,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.15330803593042736,
+        "brier": 0.09709529634697407,
+        "nll": 0.3230742917483199,
+        "spearman": -0.07294866524160776,
+        "aurc": 0.5013389118499523
+      },
+      "result_sha256": "2893c03ac7926a2478197a37be097911107ca15f8c5e1cda8a0bf9bcd48b65ae",
+      "comparison_sha256": "5ebcac7717018ff3b4210459d0a989590a9654374411a0790a64f4c0d305e122"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1107,
+      "own_clean_f1": 0.3738403804018461,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0683275910237503,
+        "brier": 0.032765760987732664,
+        "nll": 0.11124372335074963,
+        "spearman": 0.8476355269016445,
+        "aurc": 0.2394791648736613
+      },
+      "matched_n": 1068,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 1107,
+      "matched_xens2": {
+        "ece": 0.0010178611659875827,
+        "brier": 0.002509330056906222,
+        "nll": 0.0127487286560156,
+        "spearman": 0.7226829296761016,
+        "aurc": 0.11071451665867721
+      },
+      "matched_baseline": {
+        "ece": 0.06950589357692692,
+        "brier": 0.033595879392048535,
+        "nll": 0.11383675241163006,
+        "spearman": 0.8631483951132713,
+        "aurc": 0.22942661040517537
+      },
+      "result_sha256": "791405802c1c0455d925e8b549bb62325b72bdd1d074ed5fd57b165ce1ca9c07",
+      "comparison_sha256": "d0f47d5d480be2f1415c4f7b2409472a582f9246beac433457e7ed45468d32fe"
+    },
+    {
+      "system": "nucleicbert_ft",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_nucleicbert_ft.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 288,
+      "own_clean_f1": 0.4679376083188908,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.07436167894444808,
+        "brier": 0.040814349213800435,
+        "nll": 0.13697082372396518,
+        "spearman": 0.7999385612158388,
+        "aurc": 0.31718640718704694
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 288,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.07436167894444808,
+        "brier": 0.040814349213800435,
+        "nll": 0.13697082372396518,
+        "spearman": 0.7999385612158388,
+        "aurc": 0.31718640718704694
+      },
+      "result_sha256": "5c25163ae89817aa5aff67513f1569e3cbe6f0b1e80f7525e06c197ab32dc597",
+      "comparison_sha256": "e378df623c21d7b3666bf7723c9bdbf05387800a81c183e704702929c04176a6"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1044,
+      "own_clean_f1": 0.3577875619152449,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.003979159481944805,
+        "brier": 0.005258633845667186,
+        "nll": 0.04039305025886965,
+        "spearman": 0.7005150283564398,
+        "aurc": 0.43003572998668305
+      },
+      "matched_n": 609,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1044,
+      "matched_xens2": {
+        "ece": 0.000962069611672449,
+        "brier": 0.003164434270992679,
+        "nll": 0.014373343255952228,
+        "spearman": 0.7063701015954371,
+        "aurc": 0.11626047043123017
+      },
+      "matched_baseline": {
+        "ece": 0.00373915012732659,
+        "brier": 0.0049504729819571875,
+        "nll": 0.037935812266190805,
+        "spearman": 0.6998895968415803,
+        "aurc": 0.44015764939977253
+      },
+      "result_sha256": "49f6282d4aa20223c6559f2cb1d1f891be2bcdbecfe4c83d30995c07e0687196",
+      "comparison_sha256": "ed5038c0044901fbc83c3558cebf4e1296a908ea33d4731bbd01dab24de82434"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.19088599098667178,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.006129224447252775,
+        "brier": 0.008160080017414488,
+        "nll": 0.05869232022440043,
+        "spearman": 0.5109183204464381,
+        "aurc": 0.7254093472878839
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.006127971885374058,
+        "brier": 0.008158596647158053,
+        "nll": 0.05867586771162922,
+        "spearman": 0.511027301224554,
+        "aurc": 0.7253953808776844
+      },
+      "result_sha256": "83d5f34442667ed8eab14aad3b21f7637c3ac76a619bdbac9bd218a63af4c37f",
+      "comparison_sha256": "e1d6cfc147107753e142343259921bf143d07e3d982ac57633ea7cd29fb14a4b"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 48,
+      "own_clean_f1": 0.21143847487001732,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.013527073242535641,
+        "brier": 0.016899471814112086,
+        "nll": 0.12506621307497665,
+        "spearman": 0.442388574619265,
+        "aurc": 0.6889668309602667
+      },
+      "matched_n": 12,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 48,
+      "matched_xens2": {
+        "ece": 0.02035736071611079,
+        "brier": 0.01926639231491427,
+        "nll": 0.08938043369589942,
+        "spearman": 0.6153846153846154,
+        "aurc": 0.13360656822671943
+      },
+      "matched_baseline": {
+        "ece": 0.02543441103408659,
+        "brier": 0.030891449480910653,
+        "nll": 0.20220290270430313,
+        "spearman": 0.30665432039788776,
+        "aurc": 0.7739970243432812
+      },
+      "result_sha256": "6c57ca2251173612bb6a8d8f77ef3bf268dd6944e7d9cea64f866316d0c76b98",
+      "comparison_sha256": "f8061ea1439adb0fdb2e61c3ce8d143db8fd0474d1ca66dd6e34d3e0337497d4"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 38,
+      "own_clean_f1": 0.2744599745870394,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.019609724482693304,
+        "brier": 0.024037312253078605,
+        "nll": 0.15148512650661383,
+        "spearman": 0.314675893634902,
+        "aurc": 0.6848296690255792
+      },
+      "matched_n": 28,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 38,
+      "matched_xens2": {
+        "ece": 0.017458677172062995,
+        "brier": 0.017998108144630064,
+        "nll": 0.07554775332733228,
+        "spearman": 0.2991094536902223,
+        "aurc": 0.12551659893503048
+      },
+      "matched_baseline": {
+        "ece": 0.019805542538516883,
+        "brier": 0.024001140225065026,
+        "nll": 0.14895294781687368,
+        "spearman": 0.2661364900646172,
+        "aurc": 0.6551698422543767
+      },
+      "result_sha256": "bad865b5d4c5645057f92dbb7a1954ae57c4284add56c04769c0f25fba1a16a6",
+      "comparison_sha256": "35499b4165e08d2d550fff7407ef319bc95759ec47e10d11786864570af60dda"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 17,
+      "own_clean_f1": 0.19327731092436976,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.01273526640626762,
+        "brier": 0.015491918899150506,
+        "nll": 0.11540103174290149,
+        "spearman": 0.574960747846826,
+        "aurc": 0.7824341432493422
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 17,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.01340627282428408,
+        "brier": 0.016809512326661023,
+        "nll": 0.09809016102123189,
+        "spearman": 0.7378647873726218,
+        "aurc": 0.7423406862745098
+      },
+      "result_sha256": "d2ed5d43b28f8988e332340fd6c8b489abc8cc4ba4823c786f9b602ae5a3f124",
+      "comparison_sha256": "1f0b5462b1f14c11a2e43eb41da71cd3a5f26a60ba9c907a49c3d59fa32b8c71"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.1783876500857633,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.013221014352146399,
+        "brier": 0.016396984116737318,
+        "nll": 0.11289724991418917,
+        "spearman": 0.3560863113684176,
+        "aurc": 0.7146729408729918
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.02149009688881245,
+        "brier": 0.024594916063428028,
+        "nll": 0.15581319037019492,
+        "spearman": 0.4321316985341955,
+        "aurc": 0.5522477120866476
+      },
+      "result_sha256": "5d71106e39d57e4c16c81c7a71a773995a2046eff33e75c1809555222f20dd26",
+      "comparison_sha256": "1363194b15efcc7bea6b0bbe796c6a90ea4470d49d438d9ed21e7550ef2b9008"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 194,
+      "own_clean_f1": 0.3301548739750987,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0012944851070739543,
+        "brier": 0.0017842042902619253,
+        "nll": 0.013277362236581528,
+        "spearman": 0.7415336904630466,
+        "aurc": 0.5599393963572282
+      },
+      "matched_n": 134,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 194,
+      "matched_xens2": {
+        "ece": 0.0008800907229003926,
+        "brier": 0.0017835898082905852,
+        "nll": 0.009211227088151345,
+        "spearman": 0.5452371245013626,
+        "aurc": 0.23066622676551668
+      },
+      "matched_baseline": {
+        "ece": 0.0017598593518176066,
+        "brier": 0.0022952141910667183,
+        "nll": 0.018254459097206386,
+        "spearman": 0.7292572494104926,
+        "aurc": 0.5511853179197299
+      },
+      "result_sha256": "748bc937cd3054112565ceb1158f512c3e9e399adc0489c03dc189991b393fb9",
+      "comparison_sha256": "ab540cfa0742f7c6c5797e0827d475b6bb3376dcdabac93e17288ac87ad9a193"
+    },
+    {
+      "system": "nucleicbert_frozen",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_nucleicbert_frozen.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 116,
+      "own_clean_f1": 0.3517100561510975,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004399121038822937,
+        "brier": 0.006116719848074691,
+        "nll": 0.043785229128275004,
+        "spearman": 0.7073944285828914,
+        "aurc": 0.4738116445098676
+      },
+      "matched_n": 95,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 116,
+      "matched_xens2": {
+        "ece": 0.0021670520687927424,
+        "brier": 0.0033170417674898774,
+        "nll": 0.014886734349833418,
+        "spearman": 0.763717349787331,
+        "aurc": 0.08771664333666482
+      },
+      "matched_baseline": {
+        "ece": 0.004304006069938415,
+        "brier": 0.006029247082871183,
+        "nll": 0.04280756288774016,
+        "spearman": 0.6911879341933579,
+        "aurc": 0.4792370303671153
+      },
+      "result_sha256": "5fd19181dc4704937e72a9bc5fbf31b714766c06856f9fb1b3079f47b2e88004",
+      "comparison_sha256": "cfd0c64ca14ec259394cc5fe2d3cb6e336dfc6a46b3f5c2931b3b5774a8dbae4"
+    },
+    {
+      "system": "kirigami",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1192,
+      "own_clean_f1": 0.7205320852321715,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0019784984804357125,
+        "brier": 0.0026121087753859995,
+        "nll": 0.01720099457853424,
+        "spearman": 0.684264923330645,
+        "aurc": 0.14588607038838527
+      },
+      "matched_n": 709,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1192,
+      "matched_xens2": {
+        "ece": 0.0006199985200578379,
+        "brier": 0.002815380834623777,
+        "nll": 0.013192443758863763,
+        "spearman": 0.7326400294073189,
+        "aurc": 0.10202629258049771
+      },
+      "matched_baseline": {
+        "ece": 0.0017787630743992724,
+        "brier": 0.0023394438759610577,
+        "nll": 0.014929541498075898,
+        "spearman": 0.7150949578475381,
+        "aurc": 0.13259315063263685
+      },
+      "result_sha256": "9688b758f0a577239d4374726ea2c2ffee19f7fe6140a3bddc6100fa68bdbda1",
+      "comparison_sha256": "9ecfe5ee42594293a10223e972da07b83b958d56c0172c23ed5d32bdc058fee9"
+    },
+    {
+      "system": "kirigami",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.5783641865432538,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004399927596939993,
+        "brier": 0.005427510278264682,
+        "nll": 0.04403058788760505,
+        "spearman": 0.5072903960689359,
+        "aurc": 0.3507730305077841
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.004399953690707758,
+        "brier": 0.005427536382268169,
+        "nll": 0.04403099386955309,
+        "spearman": 0.5070413428256841,
+        "aurc": 0.35091568760706476
+      },
+      "result_sha256": "4d876dac632f971c8382792f950bbacfdd688d5cb22a46658e43385cd022e0ee",
+      "comparison_sha256": "b9b8e60882a40903b596ae1aa2dc5f45cb6805ab521f3211c1b05f2ce274d6c4"
+    },
+    {
+      "system": "kirigami",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 61,
+      "own_clean_f1": 0.7395555555555555,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.007110469382511171,
+        "brier": 0.007673637968261328,
+        "nll": 0.08384810643962545,
+        "spearman": 0.4058143897065657,
+        "aurc": 0.2175450915004027
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 61,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.006275357772064374,
+        "brier": 0.006586082262713748,
+        "nll": 0.07294048846749197,
+        "spearman": 0.5172948546876172,
+        "aurc": 0.16443080591117287
+      },
+      "result_sha256": "8fd08cd98debb7a8bd0cfd06195a74da5acc4deb15065c7d58693692c2073479",
+      "comparison_sha256": "9314e2e5de6f82d17875b4996001dd365d4b8a3c8210bc989f7bb95d76bc4c12"
+    },
+    {
+      "system": "kirigami",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.702262443438914,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.012976650965897231,
+        "brier": 0.01364335233716578,
+        "nll": 0.13947475351399255,
+        "spearman": 0.11471431262582549,
+        "aurc": 0.3863573779081162
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.01376959661674097,
+        "brier": 0.014206691736096073,
+        "nll": 0.15246679708811617,
+        "spearman": 0.09580276117331867,
+        "aurc": 0.4100568739030362
+      },
+      "result_sha256": "3ffd48d447ecd78eaf5a14aa5553e2141f512256efcce4e7f46e6b53684a8b7e",
+      "comparison_sha256": "f253da475658ab0858c43dd94cd40a8e9691bd49d4280182ca1ed96578ef74bb"
+    },
+    {
+      "system": "kirigami",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 17,
+      "own_clean_f1": 0.7288629737609329,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.007208975963704229,
+        "brier": 0.007386245436043135,
+        "nll": 0.07575064518158554,
+        "spearman": 0.27099943781588093,
+        "aurc": 0.31181031384891295
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 17,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.00801552254602133,
+        "brier": 0.007676429359186943,
+        "nll": 0.12265197435101352,
+        "spearman": -0.19999999999999998,
+        "aurc": 0.21369403772636292
+      },
+      "result_sha256": "9815d60df32d3857cce2d5f5ff81d5b127d4f3334aa7a646dfdb81f5699d35f3",
+      "comparison_sha256": "e4087bcb07d00aff53a65051afd47f12a886d095510a1f4645bf931f1cdce106"
+    },
+    {
+      "system": "kirigami",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.6757090012330457,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.008046840813780005,
+        "brier": 0.00894591733083037,
+        "nll": 0.09372612533955675,
+        "spearman": 0.4650403880553627,
+        "aurc": 0.23453653199250038
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.013702305812180581,
+        "brier": 0.013404204908450278,
+        "nll": 0.1696311660503077,
+        "spearman": 0.23100410659842457,
+        "aurc": 0.23073047328961657
+      },
+      "result_sha256": "12e18c1d566d5da67d79dd6d1093994884c6720395762b30745be9681b7dea97",
+      "comparison_sha256": "32b8cfeaf8982ee7ae3396a7a96d0d6ddd700378404413071c24f591245b3504"
+    },
+    {
+      "system": "kirigami",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1094,
+      "own_clean_f1": 0.7125730144899474,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0009959158651902827,
+        "brier": 0.0016689599779489395,
+        "nll": 0.008535039991138279,
+        "spearman": 0.8077635454865877,
+        "aurc": 0.11787590601393862
+      },
+      "matched_n": 765,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 1094,
+      "matched_xens2": {
+        "ece": 0.0012167945182449944,
+        "brier": 0.002131098323653835,
+        "nll": 0.010846530116876904,
+        "spearman": 0.7179665732962743,
+        "aurc": 0.1225071918034985
+      },
+      "matched_baseline": {
+        "ece": 0.0009723210069526077,
+        "brier": 0.0016232898160989592,
+        "nll": 0.0079797774028822,
+        "spearman": 0.8108105242185588,
+        "aurc": 0.13209366919694068
+      },
+      "result_sha256": "fcaaf3865bc040cc3d0972a875827a6d3f6b6d907cdf8f20ac5e694b152c325e",
+      "comparison_sha256": "179d881d2bb2db307e84151394669613703d7fc079f7145271719fecf795ab9f"
+    },
+    {
+      "system": "kirigami",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_kirigami.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 116,
+      "own_clean_f1": 0.7079025110782866,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002729452099527621,
+        "brier": 0.003262278452723384,
+        "nll": 0.024266038249920324,
+        "spearman": 0.7754403781177883,
+        "aurc": 0.1543171098267841
+      },
+      "matched_n": 95,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 116,
+      "matched_xens2": {
+        "ece": 0.0021670520687927424,
+        "brier": 0.0033170417674898774,
+        "nll": 0.014886734349833418,
+        "spearman": 0.763717349787331,
+        "aurc": 0.08771664333666482
+      },
+      "matched_baseline": {
+        "ece": 0.002736174937036512,
+        "brier": 0.0032206629165730575,
+        "nll": 0.024071768232297522,
+        "spearman": 0.7818307919637201,
+        "aurc": 0.15577940010257513
+      },
+      "result_sha256": "2e81cab4f3726276c7c476f80f7edfa1f0d94f4513cc80ee3966bed5d6dd54b5",
+      "comparison_sha256": "2c50788defe268ffc6f001d2a9bf3cea1c91e78c3fc6cf2c9477678969f02a3f"
+    },
+    {
+      "system": "mxfold2",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_mxfold2.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1188,
+      "own_clean_f1": 0.5489548511820854,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0005386590299139865,
+        "brier": 0.0038889972699009613,
+        "nll": 0.016663557990159807,
+        "spearman": 0.5647104020953937,
+        "aurc": 0.29982132850042753
+      },
+      "matched_n": 666,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1188,
+      "matched_xens2": {
+        "ece": 0.0007326793174470188,
+        "brier": 0.002845073849360596,
+        "nll": 0.013274966264317706,
+        "spearman": 0.7221757973084602,
+        "aurc": 0.10787828120756823
+      },
+      "matched_baseline": {
+        "ece": 0.0004637528884392847,
+        "brier": 0.0035945765349480194,
+        "nll": 0.015570997475359335,
+        "spearman": 0.5697878515608039,
+        "aurc": 0.30612600667966067
+      },
+      "result_sha256": "6a7b17c6a65b8b06682907870bd710a3b2ec40b767bb62c0bc20586054894ba9",
+      "comparison_sha256": "3cc267bd33cea34cf6a0762f5629120224558da6a9beb504c0bdba9e0deb8846"
+    },
+    {
+      "system": "mxfold2",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_mxfold2.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.6688466171284047,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002259347792635493,
+        "brier": 0.004431720014499791,
+        "nll": 0.01670189146202871,
+        "spearman": 0.6236440148354382,
+        "aurc": 0.1861439012191291
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.002259002766177854,
+        "brier": 0.004431536090189471,
+        "nll": 0.016701258538908012,
+        "spearman": 0.623633020535437,
+        "aurc": 0.18617077407840202
+      },
+      "result_sha256": "1a8ec6fb5a5012c2cd874cf4c51e26fdd0cb2fb40f88ffadd49f8e1d57931a6f",
+      "comparison_sha256": "19dc49a86905d322c58545c6649b9649ad6c67664222cc02e8bf290f706bc72d"
+    },
+    {
+      "system": "mxfold2",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_mxfold2.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 52,
+      "own_clean_f1": 0.78125,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004915149809358595,
+        "brier": 0.008313508068761516,
+        "nll": 0.03193012301186717,
+        "spearman": 0.4267782489014621,
+        "aurc": 0.14295276747885527
+      },
+      "matched_n": 15,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 52,
+      "matched_xens2": {
+        "ece": 0.006904906754229382,
+        "brier": 0.008785391329292042,
+        "nll": 0.04237547724033469,
+        "spearman": 0.7071428571428571,
+        "aurc": 0.08929466536954904
+      },
+      "matched_baseline": {
+        "ece": 0.005957269236216402,
+        "brier": 0.008532497790281859,
+        "nll": 0.031121411559847774,
+        "spearman": 0.19124225688321828,
+        "aurc": 0.12457062776418479
+      },
+      "result_sha256": "d8cd1f7175e79ae1a7add03c39fd0b56e34ceb520b32d68b38bd3119630f0eac",
+      "comparison_sha256": "355b728d6f880f5d76666be3ebb8ea4d7bbfcfee3b551ecfc1bec402a0c7e94d"
+    },
+    {
+      "system": "mxfold2",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_mxfold2.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 27,
+      "own_clean_f1": 0.914,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0074952049724778275,
+        "brier": 0.007969117874617786,
+        "nll": 0.028791630504193925,
+        "spearman": 0.04558235393350063,
+        "aurc": 0.06385585777581683
+      },
+      "matched_n": 20,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 27,
+      "matched_xens2": {
+        "ece": 0.01689513140880475,
+        "brier": 0.017150354784969898,
+        "nll": 0.07144498955813494,
+        "spearman": 0.07376745387109872,
+        "aurc": 0.1298499081213938
+      },
+      "matched_baseline": {
+        "ece": 0.007729456302411178,
+        "brier": 0.008213798663616633,
+        "nll": 0.029846640891456347,
+        "spearman": -0.1478444135387263,
+        "aurc": 0.06666765559259333
+      },
+      "result_sha256": "4934811cda82ed3a50605f78f559aae40b408013f82f80c51391c61b7ad1e644",
+      "comparison_sha256": "e315539fedb9c92b11f9b62a5f7e15f5650d292f23a494d5dcfc760108a06da6"
+    },
+    {
+      "system": "mxfold2",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_mxfold2.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 18,
+      "own_clean_f1": 0.8138957816377171,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0038657695680140406,
+        "brier": 0.007193266776164073,
+        "nll": 0.02711034567567477,
+        "spearman": 0.41425641939615726,
+        "aurc": 0.17488168743880886
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 18,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.004960756715816204,
+        "brier": 0.008870000518774188,
+        "nll": 0.033909921737325384,
+        "spearman": 0.39999999999999997,
+        "aurc": 0.1708482676224612
+      },
+      "result_sha256": "7c3b484b8469369e76558264695ad2b44a9de5c665e4e95817549c05e7c7ab32",
+      "comparison_sha256": "6ce4348f24dd08d5729c760a059cfa7002d09a6fe74cc1a0d69edd18f6ebe124"
+    },
+    {
+      "system": "mxfold2",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_mxfold2.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 26,
+      "own_clean_f1": 0.7982551799345693,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.003811274821443357,
+        "brier": 0.0073160183521639175,
+        "nll": 0.02820502316043243,
+        "spearman": 0.5681515178620729,
+        "aurc": 0.11243265303094192
+      },
+      "matched_n": 9,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 26,
+      "matched_xens2": {
+        "ece": 0.018827384367795387,
+        "brier": 0.018295257590578685,
+        "nll": 0.07661735629587899,
+        "spearman": 0.4874121679532904,
+        "aurc": 0.16952308186649143
+      },
+      "matched_baseline": {
+        "ece": 0.00642254473395225,
+        "brier": 0.012815509268770663,
+        "nll": 0.04686024163491611,
+        "spearman": 0.3,
+        "aurc": 0.18809116005331766
+      },
+      "result_sha256": "0e0e994485118e2ad334051bfea9c9fca04347f46f1b9c8edc527e32a3f02aea",
+      "comparison_sha256": "31bd4569e9d590950f00c3350282f538545850d7343c245c1cad7e718a6ccae5"
+    },
+    {
+      "system": "mxfold2",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_mxfold2.json",
+      "status": "NATIVE_BPP_INVALID_NO_CALIBRATION",
+      "own_clean_n": 1041,
+      "own_clean_f1": 0.7207238030069757,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "matched_n": null,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 1041,
+      "matched_xens2": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "matched_baseline": {
+        "ece": null,
+        "brier": null,
+        "nll": null,
+        "spearman": null,
+        "aurc": null
+      },
+      "result_sha256": "5a4fc7a48cc8c22ede727c65261cc71930222b0d7fbdc4444134c2ac344bd047",
+      "comparison_sha256": "1dbfe2366bc7254e6d3386c8cb4ab6d684d7a2dc53ee1e23a9452e362b919922"
+    },
+    {
+      "system": "mxfold2",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_mxfold2.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 373,
+      "own_clean_f1": 0.6467117988394584,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0017112090924898927,
+        "brier": 0.005039095330139343,
+        "nll": 0.02020963912553871,
+        "spearman": 0.44447827322058636,
+        "aurc": 0.2296898004032646
+      },
+      "matched_n": 278,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 373,
+      "matched_xens2": {
+        "ece": 0.0021666146542486885,
+        "brier": 0.003542454396272532,
+        "nll": 0.015127128644762698,
+        "spearman": 0.6761073653216878,
+        "aurc": 0.08248826207203955
+      },
+      "matched_baseline": {
+        "ece": 0.0017417501851191095,
+        "brier": 0.005199520700163399,
+        "nll": 0.020717227550894945,
+        "spearman": 0.431699687648906,
+        "aurc": 0.23073015697348043
+      },
+      "result_sha256": "c6a09596f437f9f8dafdffac8c3ea9620c5a70c700259dba3a3d5667c7250a2f",
+      "comparison_sha256": "7e2ea54d144d7e13aa9520dedfb24e2d434cbc6d69e54fb1d706dc9ca1275d4a"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/bprna_ts0/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1288,
+      "own_clean_f1": 0.5055256446585435,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004769914796672956,
+        "brier": 0.00511763993182974,
+        "nll": 0.025864160135374376,
+        "spearman": 0.5199824601123637,
+        "aurc": 0.3553207887663645
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1288,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.004590828519701257,
+        "brier": 0.004904336297759183,
+        "nll": 0.02488415143148943,
+        "spearman": 0.4906940138004138,
+        "aurc": 0.37980058576086556
+      },
+      "result_sha256": "a8a2b16de075b3fb1df2b0329eb3901d6b88f808d1392b5167b0e6da0273f4b5",
+      "comparison_sha256": "4326260270aec63cb4d1c1331fe07e5a874e3420b872975f89353903cc7d9327"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/bprna_new/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.6379382478453686,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00361307578742343,
+        "brier": 0.0047752202005401975,
+        "nll": 0.019146952127425888,
+        "spearman": 0.6000429956954618,
+        "aurc": 0.20985724025225763
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.003613593582590356,
+        "brier": 0.004775388121971485,
+        "nll": 0.01914787387948872,
+        "spearman": 0.6000648096260616,
+        "aurc": 0.20988464010748234
+      },
+      "result_sha256": "3e947014c4478e28dbf3ebe0025c8f99e4f240bcad58c52add0f44342ea36391",
+      "comparison_sha256": "3e54d52523c4ed56658465b5b6700433e5ff21648e00fc52b6c71b0836f5b5af"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts1/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 63,
+      "own_clean_f1": 0.720863309352518,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00557703947573401,
+        "brier": 0.007940139816787163,
+        "nll": 0.03733898362423627,
+        "spearman": 0.5086866770491407,
+        "aurc": 0.16899706091961708
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 63,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.00774082858006701,
+        "brier": 0.009492709618552739,
+        "nll": 0.040788735911899486,
+        "spearman": 0.6849177208470132,
+        "aurc": 0.11548685650912047
+      },
+      "result_sha256": "80c2abd2ef490ef0e9143fc2ac4936ff83d4ec5c4784329e917f392fb8f973c9",
+      "comparison_sha256": "0294b88a2c41f2af5a741b09ca0abb556e0dd6be2b3681595d483cef92dd9b96"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts2/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.8979591836734694,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.003282817283035838,
+        "brier": 0.005254396379935809,
+        "nll": 0.02371697325661846,
+        "spearman": 0.14189277875124087,
+        "aurc": 0.11725279984680266
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.003389148107717719,
+        "brier": 0.005526847112134262,
+        "nll": 0.02634405304067564,
+        "spearman": 0.07504760496184153,
+        "aurc": 0.1320416529819333
+      },
+      "result_sha256": "73671fe1eb411ee31ddfae3a7f67ef961c1b7989b6d21121e671e05701f17818",
+      "comparison_sha256": "630070e7d1ae1bd7f90e22cd3c858d13e04b21b3181964dc2765946e017dc601"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts3/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 19,
+      "own_clean_f1": 0.8205714285714286,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0034081329695673287,
+        "brier": 0.004931764647666693,
+        "nll": 0.021787683654693933,
+        "spearman": 0.3759335717839461,
+        "aurc": 0.15053934974256436
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 19,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.006984900896401448,
+        "brier": 0.008347744124896382,
+        "nll": 0.035748608659133915,
+        "spearman": 0.7999999999999999,
+        "aurc": 0.16099163679808845
+      },
+      "result_sha256": "271294bacda1f5f3a67ee4dc302fd45c7e8270690450af15c2bc0bd1017fbd8e",
+      "comparison_sha256": "667d76212de497b39ed801d03b5bbe91fcfee0d248f0d4cda4f55d147acff992"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts_hard/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.7662988966900702,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004801390138745663,
+        "brier": 0.006057233206056483,
+        "nll": 0.028337058279460776,
+        "spearman": 0.5417622488902867,
+        "aurc": 0.12956016236959148
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.007788200493701413,
+        "brier": 0.00996436906672383,
+        "nll": 0.03828017595603014,
+        "spearman": 0.5835893219328621,
+        "aurc": 0.10752391712489895
+      },
+      "result_sha256": "a8aecd28c16e1b0fd7d2047eabc05ea4f9f3fe9ed0459d4bee606003fa54367a",
+      "comparison_sha256": "c1141f79703eb9faf62d86e8b3b8405664552e556b63dfae2f700c5833bd508c"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/archiveii_embok_clean/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 2544,
+      "own_clean_f1": 0.5752066230164363,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002160081286653526,
+        "brier": 0.0028797751279024085,
+        "nll": 0.012087501318240913,
+        "spearman": 0.5098653975368128,
+        "aurc": 0.2742087414326343
+      },
+      "matched_n": 1107,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 2544,
+      "matched_xens2": {
+        "ece": 0.0010307682973914782,
+        "brier": 0.0022205656475770288,
+        "nll": 0.011283814429221356,
+        "spearman": 0.7254523611726262,
+        "aurc": 0.11707709526109103
+      },
+      "matched_baseline": {
+        "ece": 0.001976236765715341,
+        "brier": 0.002495393667659409,
+        "nll": 0.010432715793253229,
+        "spearman": 0.48703748253442514,
+        "aurc": 0.32497796084718844
+      },
+      "result_sha256": "387beecdd7ac6edcf7bc73b111c92514a47df3e030fe1f2bfe19e21154373bbf",
+      "comparison_sha256": "a904d449451789d742df409aaaa99bb5ec73d0eeb20d07f1b7b72362973e2186"
+    },
+    {
+      "system": "vienna_mfe",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/testsetb/vienna_mfe.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_vienna_mfe.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 428,
+      "own_clean_f1": 0.5225019069412662,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005474706453520552,
+        "brier": 0.006466657507098901,
+        "nll": 0.02933102649981096,
+        "spearman": 0.4517668141521916,
+        "aurc": 0.3506968032769561
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 428,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.005508452028161569,
+        "brier": 0.0065736705503462904,
+        "nll": 0.03020654203432041,
+        "spearman": 0.4847814477515538,
+        "aurc": 0.34096536943494193
+      },
+      "result_sha256": "6a9d1ccdbb6d9673872acf96c0cc39e1815aceab294ff8beb1bf63cd57fc310c",
+      "comparison_sha256": "e8afa1bff702b47fb15e49a9a05154a2c062db374c2f7e038f3aa4cd8ff94a36"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/bprna_ts0/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1288,
+      "own_clean_f1": 0.5392561730286134,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004769914796672956,
+        "brier": 0.00511763993182974,
+        "nll": 0.025864160135374376,
+        "spearman": 0.47079863614888534,
+        "aurc": 0.3526250397003587
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1288,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.004590828519701257,
+        "brier": 0.004904336297759183,
+        "nll": 0.02488415143148943,
+        "spearman": 0.4247677855937587,
+        "aurc": 0.3758731073300318
+      },
+      "result_sha256": "ee90816324957fc516b1aa9ca08fc40897499745100eaa9fb1d26ef8c4da3383",
+      "comparison_sha256": "d737741112994e2f57ba4ffee831000f621c49f9acadaf34648945aba7323146"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/bprna_new/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.6770326663718771,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00361307578742343,
+        "brier": 0.0047752202005401975,
+        "nll": 0.019146952127425888,
+        "spearman": 0.547733415264095,
+        "aurc": 0.2023486377185334
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.003613593582590356,
+        "brier": 0.004775388121971485,
+        "nll": 0.01914787387948872,
+        "spearman": 0.54771015034079,
+        "aurc": 0.20241086369344197
+      },
+      "result_sha256": "f97d4eb2834297f6a36ec02b7c731fc8ca29526a5f1607144647f11e8525c2c0",
+      "comparison_sha256": "fc64120e40fd8bf9e91f3e8d904bfc879cdff9077bbaf8592d8b21697dc30d0d"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts1/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 63,
+      "own_clean_f1": 0.7298937784522003,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00557703947573401,
+        "brier": 0.007940139816787163,
+        "nll": 0.03733898362423627,
+        "spearman": 0.49903350590731815,
+        "aurc": 0.18223619483479
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 63,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.00774082858006701,
+        "brier": 0.009492709618552739,
+        "nll": 0.040788735911899486,
+        "spearman": 0.6835588560224471,
+        "aurc": 0.11281982418603241
+      },
+      "result_sha256": "f6cc8e5eaf8664dc249a84ddf990135f3b872d8b5b5e6572e20956a2c8bb2234",
+      "comparison_sha256": "d2049f6f7e1da9980a6708bacccca1e9be120200c4071ec94a530f762f3be3bf"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts2/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.8929663608562691,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.003282817283035838,
+        "brier": 0.005254396379935809,
+        "nll": 0.02371697325661846,
+        "spearman": 0.1800899342715159,
+        "aurc": 0.11942229661695965
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.003389148107717719,
+        "brier": 0.005526847112134262,
+        "nll": 0.02634405304067564,
+        "spearman": 0.09814653391148247,
+        "aurc": 0.1343809019583169
+      },
+      "result_sha256": "76f0ea6bb21b89e062e22bb3062b1b96176c34061df5e4cfae513264dde22fa6",
+      "comparison_sha256": "e7c9bf05e26d64e73c42d458c71aa84f712f59db1603eaf9335fd02473e2a7d9"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts3/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 19,
+      "own_clean_f1": 0.8235294117647058,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0034081329695673287,
+        "brier": 0.004931764647666693,
+        "nll": 0.021787683654693933,
+        "spearman": 0.5852381621606897,
+        "aurc": 0.1416601536005222
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 19,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.006984900896401448,
+        "brier": 0.008347744124896382,
+        "nll": 0.035748608659133915,
+        "spearman": 1.0,
+        "aurc": 0.13766925527678217
+      },
+      "result_sha256": "d4581ab1d77843702ef0bda30dbe24e2b3087fe71d5b3a0810e73bcf9d95d305",
+      "comparison_sha256": "fca5cb47529b346e76a7e54cb11b370330cc13023f60d936c3a0e57ee7292393"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts_hard/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.7957671957671958,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004801390138745663,
+        "brier": 0.006057233206056483,
+        "nll": 0.028337058279460776,
+        "spearman": 0.6942610897782862,
+        "aurc": 0.1125955357406732
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.007788200493701413,
+        "brier": 0.00996436906672383,
+        "nll": 0.03828017595603014,
+        "spearman": 0.7301163117764201,
+        "aurc": 0.0902493599590374
+      },
+      "result_sha256": "cc59c4bbe8d914f2e119c285904b629529b0f8ef5bc4593fd383497ad3a001bf",
+      "comparison_sha256": "0248aa5f6afb03b1c18203754b22f26f75837e039f9650b891436909f4680b56"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/archiveii_embok_clean/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 2544,
+      "own_clean_f1": 0.618098211367453,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002160081286653526,
+        "brier": 0.0028797751279024085,
+        "nll": 0.012087501318240913,
+        "spearman": 0.4235774996386779,
+        "aurc": 0.27914111302424116
+      },
+      "matched_n": 1107,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 2544,
+      "matched_xens2": {
+        "ece": 0.0010307682973914782,
+        "brier": 0.0022205656475770288,
+        "nll": 0.011283814429221356,
+        "spearman": 0.7254523611726262,
+        "aurc": 0.11707709526109103
+      },
+      "matched_baseline": {
+        "ece": 0.001976236765715341,
+        "brier": 0.002495393667659409,
+        "nll": 0.010432715793253229,
+        "spearman": 0.43880721618080004,
+        "aurc": 0.30988568181512505
+      },
+      "result_sha256": "0685bd07eca00bff6ae58cdd1f7ddebf640fc400c265fe438319a90dc6402fc3",
+      "comparison_sha256": "d385db0485bcadb033aea403e1786fd90c4175ff08fdf7b029130ecacf26d6c4"
+    },
+    {
+      "system": "vienna_centroid",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/testsetb/vienna_centroid.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_vienna_centroid.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 428,
+      "own_clean_f1": 0.5482191554416991,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005474706453520552,
+        "brier": 0.006466657507098901,
+        "nll": 0.02933102649981096,
+        "spearman": 0.37895680597558756,
+        "aurc": 0.35297162792277154
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 428,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.005508452028161569,
+        "brier": 0.0065736705503462904,
+        "nll": 0.03020654203432041,
+        "spearman": 0.3982584485484844,
+        "aurc": 0.3449172478168933
+      },
+      "result_sha256": "4915bb4a352518ee8e653993457b8bf4a62507ff45a29df158939719d02391ff",
+      "comparison_sha256": "4e668802112c1c7903298b244dbcec0926e2c97cf8929e1abe7160dd422298d6"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/bprna_ts0/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1288,
+      "own_clean_f1": 0.5241050119331743,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004769914796672956,
+        "brier": 0.00511763993182974,
+        "nll": 0.025864160135374376,
+        "spearman": 0.5049953308097702,
+        "aurc": 0.3508294119280321
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 1288,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.004590828519701257,
+        "brier": 0.004904336297759183,
+        "nll": 0.02488415143148943,
+        "spearman": 0.4611966760673191,
+        "aurc": 0.37618403280922497
+      },
+      "result_sha256": "4468e6013d6393076314ccbe351a5a5b56dd4174351deb75d5c0ab3e7db5a613",
+      "comparison_sha256": "68d0aefc5032e37d00e4011113608e0c59ba2b7fece74b48372bb5501272f843"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/bprna_new/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5388,
+      "own_clean_f1": 0.6619891987418315,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00361307578742343,
+        "brier": 0.0047752202005401975,
+        "nll": 0.019146952127425888,
+        "spearman": 0.5727926444986803,
+        "aurc": 0.2010481999479179
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5388,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.003613593582590356,
+        "brier": 0.004775388121971485,
+        "nll": 0.01914787387948872,
+        "spearman": 0.5727635605290932,
+        "aurc": 0.201100635683688
+      },
+      "result_sha256": "79bdcfd753b9fb7bedfc96f4feadd5cf4cf2db84554deec04974aba1b73ff943",
+      "comparison_sha256": "6e8e492808c573a38c09b458416a1a0675d5674c651e6b40d60418a4f37d432b"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts1/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 63,
+      "own_clean_f1": 0.7192405987586711,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00557703947573401,
+        "brier": 0.007940139816787163,
+        "nll": 0.03733898362423627,
+        "spearman": 0.5229188612466458,
+        "aurc": 0.17012698981790395
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 63,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.00774082858006701,
+        "brier": 0.009492709618552739,
+        "nll": 0.040788735911899486,
+        "spearman": 0.6415292679426776,
+        "aurc": 0.11629801837376452
+      },
+      "result_sha256": "af4bb8da32f621b3e9b643f7f7e03ae82cbd13f5fcdd171710a870b5044688ec",
+      "comparison_sha256": "15bea6fcef6d77018c56b4e31c421060afb88ec859e576b384e8ec452d556531"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts2/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 39,
+      "own_clean_f1": 0.8937784522003035,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.003282817283035838,
+        "brier": 0.005254396379935809,
+        "nll": 0.02371697325661846,
+        "spearman": 0.17550165147201716,
+        "aurc": 0.1180168146175772
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 39,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.003389148107717719,
+        "brier": 0.005526847112134262,
+        "nll": 0.02634405304067564,
+        "spearman": 0.09114692615827617,
+        "aurc": 0.13228240346131154
+      },
+      "result_sha256": "53b35c46639eb8f1cae829532f707f309310c6af17707694d6e59bfb9efee4f5",
+      "comparison_sha256": "3193d55209da93343a0417576ecd6133007e8bf4264b0f6052d78dce0e73a56d"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts3/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 19,
+      "own_clean_f1": 0.8236658932714617,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0034081329695673287,
+        "brier": 0.004931764647666693,
+        "nll": 0.021787683654693933,
+        "spearman": 0.5467310750108735,
+        "aurc": 0.14091130067547553
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 19,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.006984900896401448,
+        "brier": 0.008347744124896382,
+        "nll": 0.035748608659133915,
+        "spearman": 1.0,
+        "aurc": 0.14133437873357227
+      },
+      "result_sha256": "9604f791351c517a419f623c508dbfe4b04261467648ae8d5d4c61f37488ea83",
+      "comparison_sha256": "0170c983052b1815447b3e293a4b8572da72bed74ad3ae4e9123ad858ed65e39"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/ref_pdb_ts_hard/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 28,
+      "own_clean_f1": 0.7864476386036962,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004801390138745663,
+        "brier": 0.006057233206056483,
+        "nll": 0.028337058279460776,
+        "spearman": 0.6137616827476547,
+        "aurc": 0.12145925992475294
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 28,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.007788200493701413,
+        "brier": 0.00996436906672383,
+        "nll": 0.03828017595603014,
+        "spearman": 0.5592731001856595,
+        "aurc": 0.1028780074789893
+      },
+      "result_sha256": "f8caf041b6b9e70e566f2fecef27ef7d341731a555478a2d04c11444356e7670",
+      "comparison_sha256": "b3aff0afabaa0e2bd89eb1cc9e478ea305ec7018e7aefe4384537f23dbaa7ca8"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/archiveii_embok_clean/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 2544,
+      "own_clean_f1": 0.6053716365083652,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002160081286653526,
+        "brier": 0.0028797751279024085,
+        "nll": 0.012087501318240913,
+        "spearman": 0.45741201006027715,
+        "aurc": 0.2681382877521898
+      },
+      "matched_n": 1107,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 2544,
+      "matched_xens2": {
+        "ece": 0.0010307682973914782,
+        "brier": 0.0022205656475770288,
+        "nll": 0.011283814429221356,
+        "spearman": 0.7254523611726262,
+        "aurc": 0.11707709526109103
+      },
+      "matched_baseline": {
+        "ece": 0.001976236765715341,
+        "brier": 0.002495393667659409,
+        "nll": 0.010432715793253229,
+        "spearman": 0.4380046053134571,
+        "aurc": 0.31551054912031895
+      },
+      "result_sha256": "fb994c1fac7f2ae7b9e3c4b6398993064d1d47ed7f1ad03ab87f9b9376a161a4",
+      "comparison_sha256": "803660039fcd740772d11427e88c69c1fe3bb8bc66459e1f4dc3207720568052"
+    },
+    {
+      "system": "vienna_mea",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/calibration/testsetb/vienna_mea.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_vienna_mea.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 428,
+      "own_clean_f1": 0.5392879548306148,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005474706453520552,
+        "brier": 0.006466657507098901,
+        "nll": 0.02933102649981096,
+        "spearman": 0.403184920441632,
+        "aurc": 0.3521459556818567
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 428,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.005508452028161569,
+        "brier": 0.0065736705503462904,
+        "nll": 0.03020654203432041,
+        "spearman": 0.43661694363327896,
+        "aurc": 0.3419277904393948
+      },
+      "result_sha256": "9a886fc0337e3ce50beebb6bdfba935c4f2e0e06746e8fe3653ec9b2d0da254b",
+      "comparison_sha256": "e66d096dc7d5ce0630a65bd7eaef95316837e060d680e48a9afd905d82fd9305"
+    },
+    {
+      "system": "eternafold",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 713,
+      "own_clean_f1": 0.5290589202961061,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.001648485439456298,
+        "brier": 0.003612200615405815,
+        "nll": 0.0171509481611707,
+        "spearman": 0.49323979218797354,
+        "aurc": 0.356782622608928
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 713,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.001648485439456298,
+        "brier": 0.003612200615405815,
+        "nll": 0.0171509481611707,
+        "spearman": 0.49323979218797354,
+        "aurc": 0.356782622608928
+      },
+      "result_sha256": "10fa9c19f58ac45d1c7ba31c7ad089835012cb0025e7fccb2942d327f0157da6",
+      "comparison_sha256": "22048c8e50c93311f76e63fc131a75f4e7b6fffd875bb89879b5d1929414017f"
+    },
+    {
+      "system": "eternafold",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5386,
+      "own_clean_f1": 0.6853675983226255,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0009544108672734339,
+        "brier": 0.0036599585614596583,
+        "nll": 0.013581682894118256,
+        "spearman": 0.5846564769440359,
+        "aurc": 0.17944148236060825
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5386,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.0009544108672734339,
+        "brier": 0.0036599585614596583,
+        "nll": 0.013581682894118256,
+        "spearman": 0.5846564769440359,
+        "aurc": 0.17944148236060825
+      },
+      "result_sha256": "79bfb72b3189b75b1891089134d7f71c212117ad496001a3d13672667f796440",
+      "comparison_sha256": "e51a8532ea089906198ba80753603464f8013f531661628110449a88cbffa9e6"
+    },
+    {
+      "system": "eternafold",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 18,
+      "own_clean_f1": 0.6975397973950795,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.002913351441706114,
+        "brier": 0.008126699602366843,
+        "nll": 0.03115020366940149,
+        "spearman": 0.806401759503052,
+        "aurc": 0.10190225368941246
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 18,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.002913351441706114,
+        "brier": 0.008126699602366843,
+        "nll": 0.03115020366940149,
+        "spearman": 0.806401759503052,
+        "aurc": 0.10190225368941246
+      },
+      "result_sha256": "2650e53a94f822bfc79d82da450dad376f6b15bc29b567c5b918eb1dcfb29739",
+      "comparison_sha256": "2d05ec8b14acdeb0b8b0a6194e6974678014e8a6fbd9e2ea5c30bbb0ac27aa91"
+    },
+    {
+      "system": "eternafold",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 29,
+      "own_clean_f1": 0.8562434417628542,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0028017543984566566,
+        "brier": 0.006179834119110685,
+        "nll": 0.025628360246900354,
+        "spearman": 0.27925523012352305,
+        "aurc": 0.197477570585368
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 29,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.0028017543984566566,
+        "brier": 0.006179834119110685,
+        "nll": 0.025628360246900354,
+        "spearman": 0.27925523012352305,
+        "aurc": 0.197477570585368
+      },
+      "result_sha256": "17dad5b4c2a00991591e4a804f7daa98170a5230160568c53db1c5d72de92f58",
+      "comparison_sha256": "5895f8d0fc5ffefae09126c6ac647c012f09c9e084504bb8819f1af7195dbec3"
+    },
+    {
+      "system": "eternafold",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 4,
+      "own_clean_f1": 0.8027210884353742,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004664494972386398,
+        "brier": 0.00530821681461855,
+        "nll": 0.021950992797329552,
+        "spearman": 0.39999999999999997,
+        "aurc": 0.17620585701981054
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 4,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.004664494972386398,
+        "brier": 0.00530821681461855,
+        "nll": 0.021950992797329552,
+        "spearman": 0.39999999999999997,
+        "aurc": 0.17620585701981054
+      },
+      "result_sha256": "f4785bde323d07a5a590c3ae75151a9769e9edb2a979748f568e72357bdc956b",
+      "comparison_sha256": "33d5c3a6c3e9c33a412074ca923e2b0b9f27e2008bbb2a6e5074ca135044bcd1"
+    },
+    {
+      "system": "eternafold",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 10,
+      "own_clean_f1": 0.7766990291262136,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.006311465382874661,
+        "brier": 0.007932842650961048,
+        "nll": 0.030093664557297162,
+        "spearman": 0.735565707852878,
+        "aurc": 0.10016594230284706
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 10,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.006311465382874661,
+        "brier": 0.007932842650961048,
+        "nll": 0.030093664557297162,
+        "spearman": 0.735565707852878,
+        "aurc": 0.10016594230284706
+      },
+      "result_sha256": "7c32be9312f1eecd1aee3845095b9e52f0c17c26cde60d2607f1aa7eb55f1852",
+      "comparison_sha256": "25bbb07e6e233531a4af4d371dda759fc0403bc728a51daa29e3e1e76e0d93d1"
+    },
+    {
+      "system": "eternafold",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1107,
+      "own_clean_f1": 0.5800338760862088,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0005542791874126112,
+        "brier": 0.0019691169703764983,
+        "nll": 0.007627351072380718,
+        "spearman": 0.4482825969243163,
+        "aurc": 0.2905113517298353
+      },
+      "matched_n": 1107,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 1107,
+      "matched_xens2": {
+        "ece": 0.0010307682973914782,
+        "brier": 0.0022205656475770288,
+        "nll": 0.011283814429221356,
+        "spearman": 0.7254523611726262,
+        "aurc": 0.11707709526109103
+      },
+      "matched_baseline": {
+        "ece": 0.0005542791874126112,
+        "brier": 0.0019691169703764983,
+        "nll": 0.007627351072380718,
+        "spearman": 0.4482825969243163,
+        "aurc": 0.2905113517298353
+      },
+      "result_sha256": "d882b87396b9ad1fc97082f7b886c4369e53b9251cf6b492ebc47f29637b03a8",
+      "comparison_sha256": "135e0d2586df516d206807cc91b803c2b223a5b6a8b7937cf8ddfb745c94e746"
+    },
+    {
+      "system": "eternafold",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_eternafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 288,
+      "own_clean_f1": 0.5959620237952169,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.001542456893950356,
+        "brier": 0.004835931999324907,
+        "nll": 0.019814378052830463,
+        "spearman": 0.3316012202624163,
+        "aurc": 0.3151653718809566
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 288,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.001542456893950356,
+        "brier": 0.004835931999324907,
+        "nll": 0.019814378052830463,
+        "spearman": 0.3316012202624163,
+        "aurc": 0.3151653718809566
+      },
+      "result_sha256": "2c2e566a16c01bfa77b848ce56de6c0168d6bf858157a5dc55067d7bb4219542",
+      "comparison_sha256": "26e501e8d04b036ba081bf84ada89f2cc20e20bd8ae4a135d4a316661cd69bee"
+    },
+    {
+      "system": "contrafold",
+      "split": "bprna_ts0",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/bprna_ts0.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_ts0.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 713,
+      "own_clean_f1": 0.5231344510190664,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0012549404519572687,
+        "brier": 0.003618792093992176,
+        "nll": 0.0167195917708083,
+        "spearman": 0.4707331334451025,
+        "aurc": 0.36364645469488666
+      },
+      "matched_n": 713,
+      "xens2_clean_n": 713,
+      "baseline_clean_n": 713,
+      "matched_xens2": {
+        "ece": 0.0006256100051534543,
+        "brier": 0.0028185810091334042,
+        "nll": 0.01319609984408961,
+        "spearman": 0.7304944245523508,
+        "aurc": 0.1020572842903555
+      },
+      "matched_baseline": {
+        "ece": 0.0012549404519572687,
+        "brier": 0.003618792093992176,
+        "nll": 0.0167195917708083,
+        "spearman": 0.4707331334451025,
+        "aurc": 0.36364645469488666
+      },
+      "result_sha256": "680476018e79c7e87b8d7df2944ca6d207b4df8036c7837e5314aa9a41e02bd6",
+      "comparison_sha256": "265cb527ffc04296026282a00fad68a180c1beabf1d47822f898e4f7c55a0d48"
+    },
+    {
+      "system": "contrafold",
+      "split": "bprna_new",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/bprna_new.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/bprna_new.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 5386,
+      "own_clean_f1": 0.6967482718508912,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0014770288772624626,
+        "brier": 0.0036509706429764272,
+        "nll": 0.013513582159738963,
+        "spearman": 0.5612591418721593,
+        "aurc": 0.17454241614665678
+      },
+      "matched_n": 5386,
+      "xens2_clean_n": 5386,
+      "baseline_clean_n": 5386,
+      "matched_xens2": {
+        "ece": 0.0048310271866463285,
+        "brier": 0.007288993477777637,
+        "nll": 0.03389541869809273,
+        "spearman": 0.5176421504776187,
+        "aurc": 0.3486543792702401
+      },
+      "matched_baseline": {
+        "ece": 0.0014770288772624626,
+        "brier": 0.0036509706429764272,
+        "nll": 0.013513582159738963,
+        "spearman": 0.5612591418721593,
+        "aurc": 0.17454241614665678
+      },
+      "result_sha256": "d218ffdd5a1f4a3751d55cbaf605a2d8bc385874a1c1fa9d0754e1a4c7f3a9b3",
+      "comparison_sha256": "1200fe5ec030e271c83f6b5a034581057ecd8e19c7fa594b64db68fe4764b73d"
+    },
+    {
+      "system": "contrafold",
+      "split": "ref_pdb_ts1",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/ref_pdb_ts1.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts1.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 18,
+      "own_clean_f1": 0.7858197932053176,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.004146602087856401,
+        "brier": 0.008050204811577926,
+        "nll": 0.030360409980483394,
+        "spearman": 0.48293795122917216,
+        "aurc": 0.10102517891299011
+      },
+      "matched_n": 18,
+      "xens2_clean_n": 18,
+      "baseline_clean_n": 18,
+      "matched_xens2": {
+        "ece": 0.006026915359553816,
+        "brier": 0.007695891515125164,
+        "nll": 0.038557914720662216,
+        "spearman": 0.6284829721362228,
+        "aurc": 0.09317432941060783
+      },
+      "matched_baseline": {
+        "ece": 0.004146602087856401,
+        "brier": 0.008050204811577926,
+        "nll": 0.030360409980483394,
+        "spearman": 0.48293795122917216,
+        "aurc": 0.10102517891299011
+      },
+      "result_sha256": "293452a7eb0aff297f08e2d79badb5872b12c40594814b935524da2c20a39fbf",
+      "comparison_sha256": "6faae8afb62f0644b5d07a9947f0141936b2aeaa32937e011b78c1a424e0faaa"
+    },
+    {
+      "system": "contrafold",
+      "split": "ref_pdb_ts2",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/ref_pdb_ts2.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts2.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 29,
+      "own_clean_f1": 0.8702928870292888,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0032803148098295787,
+        "brier": 0.006405759338125874,
+        "nll": 0.024687202052307247,
+        "spearman": 0.29587173628214086,
+        "aurc": 0.22146424681483004
+      },
+      "matched_n": 29,
+      "xens2_clean_n": 29,
+      "baseline_clean_n": 29,
+      "matched_xens2": {
+        "ece": 0.017723488985506256,
+        "brier": 0.01812901349551775,
+        "nll": 0.07625378920012957,
+        "spearman": 0.28000529400796587,
+        "aurc": 0.125606369977668
+      },
+      "matched_baseline": {
+        "ece": 0.0032803148098295787,
+        "brier": 0.006405759338125874,
+        "nll": 0.024687202052307247,
+        "spearman": 0.29587173628214086,
+        "aurc": 0.22146424681483004
+      },
+      "result_sha256": "b1962662fed0f9b81a8b0db139e076fd43bfbc6fd11842f33e32f811a71aa697",
+      "comparison_sha256": "e2d248daf36a2850e539cefcf9f7130e4160327f6ab1a8155ef5e2e6d2ebf783"
+    },
+    {
+      "system": "contrafold",
+      "split": "ref_pdb_ts3",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/ref_pdb_ts3.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts3.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 4,
+      "own_clean_f1": 0.8027210884353742,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.00393530757125893,
+        "brier": 0.005749969022673792,
+        "nll": 0.024044969464150866,
+        "spearman": 0.7999999999999999,
+        "aurc": 0.12543859649122804
+      },
+      "matched_n": 4,
+      "xens2_clean_n": 4,
+      "baseline_clean_n": 4,
+      "matched_xens2": {
+        "ece": 0.008213701263478302,
+        "brier": 0.009244917254880901,
+        "nll": 0.03469992092516927,
+        "spearman": -0.7999999999999999,
+        "aurc": 0.17183958003102037
+      },
+      "matched_baseline": {
+        "ece": 0.00393530757125893,
+        "brier": 0.005749969022673792,
+        "nll": 0.024044969464150866,
+        "spearman": 0.7999999999999999,
+        "aurc": 0.12543859649122804
+      },
+      "result_sha256": "4189230b985ab09666cd5ed337bed66e84a7ba452f71dd0d8e4861a1076e9c42",
+      "comparison_sha256": "0ad3c82926894f54582d523b1613b748f2e548ef7ab29a7997800886dca198c0"
+    },
+    {
+      "system": "contrafold",
+      "split": "ref_pdb_ts_hard",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/ref_pdb_ts_hard.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/ref_pdb_ts_hard.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 10,
+      "own_clean_f1": 0.7722772277227723,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.005482626737676963,
+        "brier": 0.009693294673353458,
+        "nll": 0.035015762100505665,
+        "spearman": 0.6933037246280291,
+        "aurc": 0.09726221307236341
+      },
+      "matched_n": 10,
+      "xens2_clean_n": 10,
+      "baseline_clean_n": 10,
+      "matched_xens2": {
+        "ece": 0.018861770340978645,
+        "brier": 0.018066005573257497,
+        "nll": 0.0789387897793938,
+        "spearman": 0.5183023183212385,
+        "aurc": 0.14160508740533256
+      },
+      "matched_baseline": {
+        "ece": 0.005482626737676963,
+        "brier": 0.009693294673353458,
+        "nll": 0.035015762100505665,
+        "spearman": 0.6933037246280291,
+        "aurc": 0.09726221307236341
+      },
+      "result_sha256": "9f285dc4869424c967968d7806b9e4edbe23195cb34d3936ea6d222daeed79cd",
+      "comparison_sha256": "53b5822c2dbff4de5c28b114cc66e82d95f2e2330414bfadf2cd6bb1daa0aeb5"
+    },
+    {
+      "system": "contrafold",
+      "split": "archiveii_embok_clean",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/archiveii_embok_clean.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/archiveii_embok_clean.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 1107,
+      "own_clean_f1": 0.5986366562900325,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0004912361802863819,
+        "brier": 0.0019319072579049676,
+        "nll": 0.007475515916017509,
+        "spearman": 0.39918157013988315,
+        "aurc": 0.2732475161131506
+      },
+      "matched_n": 1107,
+      "xens2_clean_n": 1107,
+      "baseline_clean_n": 1107,
+      "matched_xens2": {
+        "ece": 0.0010307682973914782,
+        "brier": 0.0022205656475770288,
+        "nll": 0.011283814429221356,
+        "spearman": 0.7254523611726262,
+        "aurc": 0.11707709526109103
+      },
+      "matched_baseline": {
+        "ece": 0.0004912361802863819,
+        "brier": 0.0019319072579049676,
+        "nll": 0.007475515916017509,
+        "spearman": 0.39918157013988315,
+        "aurc": 0.2732475161131506
+      },
+      "result_sha256": "bf969a1499f6ce81e44134ec2f36a3442646be7bb3e9c9c12bd6c9323780e083",
+      "comparison_sha256": "c61f53c87aab5cdf9e611654d1ce1c7bf16647e9a3e9f7d5f18d897efad4b9fd"
+    },
+    {
+      "system": "contrafold",
+      "split": "testsetb",
+      "result_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/calibration/testsetb.json",
+      "comparison_path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/calibration_comparisons/testsetb.xens2_contrafold.json",
+      "status": "COMPLETE_MATCHED_SENSITIVITY",
+      "own_clean_n": 288,
+      "own_clean_f1": 0.5684598831847525,
+      "own_clean_f1_sd": 0.0,
+      "own_clean": {
+        "ece": 0.0015387199971766807,
+        "brier": 0.005192135064278812,
+        "nll": 0.020809846562924398,
+        "spearman": 0.2591730687620192,
+        "aurc": 0.35117019864237486
+      },
+      "matched_n": 288,
+      "xens2_clean_n": 288,
+      "baseline_clean_n": 288,
+      "matched_xens2": {
+        "ece": 0.0021597919788835483,
+        "brier": 0.0035129487178771307,
+        "nll": 0.01499138815748864,
+        "spearman": 0.6862948022242308,
+        "aurc": 0.08153472637113418
+      },
+      "matched_baseline": {
+        "ece": 0.0015387199971766807,
+        "brier": 0.005192135064278812,
+        "nll": 0.020809846562924398,
+        "spearman": 0.2591730687620192,
+        "aurc": 0.35117019864237486
+      },
+      "result_sha256": "f2f15c9265eebe1f3e753249c89f0bcefeea3cc1bcca26b2040256d1645026c8",
+      "comparison_sha256": "fc237680146b91e7ea77e5ee3245917f3b8a70507d21ce473bc05f6bfcc066cb"
+    }
+  ]
+}

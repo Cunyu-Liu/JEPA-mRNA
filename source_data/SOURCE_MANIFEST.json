@@ -1564,9 +1564,9 @@
   },
   {
    "path": "appendix_leakage/round39_nucleicbert_calibration_comparisons_summary.json",
-   "sha256": "f3c973df93ab179fb1eb079d1f804c7f59e68c139065c4ca12fc7749b7575961",
-   "bytes": 4238,
-   "description": "NucleicBERT-ft/frozen 共 16 格比较；各 7 个有效交集，TS3 为空",
+   "sha256": "f265294c4df687eab1839f5211da81680e4ee8518a3211c7fe2aa058095df867",
+   "bytes": 4542,
+   "description": "NucleicBERT-ft/frozen 共 16 个有效比较格；TS3 非空已纠正",
    "status": "active_matched_sensitivity_not_all_eligible"
   },
   {
@@ -1911,6 +1911,69 @@
    "bytes": 7517,
    "description": "ArchiveII CONTRAfold posterior ECE/Brier/NLL 更低，xens2 结构置信度更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_calibration_verification.json",
+   "sha256": "6e212ee035d1fc14e3cc309dd02dc91020fa0acfdf753e6b20044b5cebceacae",
+   "bytes": 3494,
+   "description": "EternaFold 八 split 原生 posterior 独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_eternafold_calibration_comparisons_summary.json",
+   "sha256": "77ca92c5276a753808854b547cb22a928834a66440ae36b1764773caadeaa5e5",
+   "bytes": 2125,
+   "description": "EternaFold 八格附加敏感性汇总",
+   "status": "active_complete_contrafold_family"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_eternafold_calibration.json",
+   "sha256": "e51a8532ea089906198ba80753603464f8013f531661628110449a88cbffa9e6",
+   "bytes": 7456,
+   "description": "bpRNA-new EternaFold posterior；ECE/Brier/NLL/Spearman/AURC 优于 xens2",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_calibration_verification.json",
+   "sha256": "4d28169e53d2131a5988366f1f3182927f4849c6fa4558373847602c16f8a6b6",
+   "bytes": 3493,
+   "description": "CONTRAfold 八 split 原生 posterior 独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_contrafold_calibration_comparisons_summary.json",
+   "sha256": "7e96865f4e1f3a8f84d3c366e4579c90b36a7e15e609f5938c64edf608cbdbf4",
+   "bytes": 2125,
+   "description": "CONTRAfold 八格附加敏感性汇总",
+   "status": "active_complete_contrafold_family"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_contrafold_calibration.json",
+   "sha256": "1200fe5ec030e271c83f6b5a034581057ecd8e19c7fa594b64db68fe4764b73d",
+   "bytes": 7459,
+   "description": "bpRNA-new CONTRAfold posterior；ECE/Brier/NLL/Spearman/AURC 优于 xens2",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts3_xens2_nucleicbert_ft_calibration.json",
+   "sha256": "df93d5522023b6e63f2a9aa7635ad4aa3ce62456891a534833b006e86e1d4e92",
+   "bytes": 6904,
+   "description": "TS3 NucleicBERT-ft 非空 clean n=4，matched n=4",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts3_xens2_nucleicbert_frozen_calibration.json",
+   "sha256": "1f0b5462b1f14c11a2e43eb41da71cd3a5f26a60ba9c907a49c3d59fa32b8c71",
+   "bytes": 6897,
+   "description": "TS3 NucleicBERT-frozen clean n=17，GT 协议过滤后 matched n=4",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_eligible_probability_assessment.json",
+   "sha256": "3839a281dae9eedba95de4abb69b7fee925a95108b10dae5b3ee644df665c143",
+   "bytes": 191369,
+   "description": "注册概率证据 128 格统一索引；pending=0，保留 EMPTY 与原生无效",
+   "status": "active_complete_registered_assessment_with_native_invalid"
   }
  ]
 }

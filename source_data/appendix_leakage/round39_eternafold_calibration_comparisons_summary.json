@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "PASS_CONTRAFOLD_FAMILY_COMPARISONS_NOT_ALL_ELIGIBLE",
+  "system": "eternafold",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 713,
+      "result_sha256": "22048c8e50c93311f76e63fc131a75f4e7b6fffd875bb89879b5d1929414017f"
+    },
+    {
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "e51a8532ea089906198ba80753603464f8013f531661628110449a88cbffa9e6"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "2d05ec8b14acdeb0b8b0a6194e6974678014e8a6fbd9e2ea5c30bbb0ac27aa91"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "5895f8d0fc5ffefae09126c6ac647c012f09c9e084504bb8819f1af7195dbec3"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "33d5c3a6c3e9c33a412074ca923e2b0b9f27e2008bbb2a6e5074ca135044bcd1"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "25bbb07e6e233531a4af4d371dda759fc0403bc728a51daa29e3e1e76e0d93d1"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1107,
+      "result_sha256": "135e0d2586df516d206807cc91b803c2b223a5b6a8b7937cf8ddfb745c94e746"
+    },
+    {
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "26e501e8d04b036ba081bf84ada89f2cc20e20bd8ae4a135d4a316661cd69bee"
+    }
+  ],
+  "boundary": "native posterior MEA probabilities; auxiliary matched sensitivity only; other baselines pending"
+}

@@ -33,7 +33,9 @@
     {
       "split": "ref_pdb_ts3",
       "system": "nucleicbert_ft",
-      "status": "EMPTY_AFTER_DELEAK"
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "df93d5522023b6e63f2a9aa7635ad4aa3ce62456891a534833b006e86e1d4e92"
     },
     {
       "split": "ref_pdb_ts_hard",
@@ -87,7 +89,9 @@
     {
       "split": "ref_pdb_ts3",
       "system": "nucleicbert_frozen",
-      "status": "EMPTY_AFTER_DELEAK"
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "1f0b5462b1f14c11a2e43eb41da71cd3a5f26a60ba9c907a49c3d59fa32b8c71"
     },
     {
       "split": "ref_pdb_ts_hard",

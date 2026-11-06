@@ -12827,3 +12827,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **EternaFold**：ArchiveII 原生 F1=0.5800338761，matched n=1107。ECE=0.0005542792、Brier=0.0019691170、NLL=0.0076273511，均低于 xens2 calibrated=0.0010307683/0.0022205656/0.0112838144；xens2 Spearman=0.7254523612、AURC=0.1170770953，优于 EternaFold=0.4482825969/0.2905113517。比较 SHA256=`135e0d2586df516d206807cc91b803c2b223a5b6a8b7937cf8ddfb745c94e746`。
 - **CONTRAfold**：ArchiveII 原生 F1=0.5986366563，matched n=1107。ECE=0.0004912362、Brier=0.0019319073、NLL=0.0074755159，均低于 xens2；xens2 Spearman/AURC 优于 CONTRAfold=0.3991815701/0.2732475161。比较 SHA256=`c61f53c87aab5cdf9e611654d1ce1c7bf16647e9a3e9f7d5f18d897efad4b9fd`。
 - **边界**：两套后验各完成 7/8，bpRNA-new 接续。原生后验在 ArchiveII 的概率误差更低，但结构排序并未超过 xens2；不把 ECE 与最佳结构置信度混为一谈。
+
+
+## §15.440（2026-11-06）CONTRAfold 16 格、NucleicBERT TS3 纠错与 128 格索引
+
+- **EternaFold 全板**：八 split 原生 posterior 独立验收 SHA256=`6e212ee035d1fc14e3cc309dd02dc91020fa0acfdf753e6b20044b5cebceacae`，比较汇总 SHA256=`77ca92c5276a753808854b547cb22a928834a66440ae36b1764773caadeaa5e5`。bpRNA-new clean n=5386、F1=0.6853675983，ECE=0.0009544109、Brier=0.0036599586、NLL=0.0135816829，均低于 xens2；Spearman=0.5846564769、AURC=0.1794414824 也更好。比较 SHA256=`e51a8532ea089906198ba80753603464f8013f531661628110449a88cbffa9e6`。
+- **CONTRAfold 全板**：独立验收 SHA256=`4d28169e53d2131a5988366f1f3182927f4849c6fa4558373847602c16f8a6b6`，比较汇总 SHA256=`7e96865f4e1f3a8f84d3c366e4579c90b36a7e15e609f5938c64edf608cbdbf4`。bpRNA-new F1=0.6967482719，ECE=0.0014770289、Brier=0.0036509706、NLL=0.0135135822，均低于 xens2；Spearman=0.5612591419、AURC=0.1745424161 也更好。比较 SHA256=`1200fe5ec030e271c83f6b5a034581057ecd8e19c7fa594b64db68fe4764b73d`。
+- **NucleicBERT TS3 纠错**：旧脚本无条件跳过 TS3，并把缺失比较文件写成 EMPTY；实际 ft clean n=4、frozen clean n=17，均有原生概率。已补两格 matched n=4 的比较，SHA256=`df93d5522023b6e63f2a9aa7635ad4aa3ce62456891a534833b006e86e1d4e92`、`1f0b5462b1f14c11a2e43eb41da71cd3a5f26a60ba9c907a49c3d59fa32b8c71`。新 16 格总账均为有效比较，SHA256=`f265294c4df687eab1839f5211da81680e4ee8518a3211c7fe2aa058095df867`，取代旧 `f3c973df…` 空值口径。修复提交 `0360efaa41a31171d3f8b3a1b6403a0826c16ef0`。
+- **128 格统一索引**：状态 `COMPLETE_REGISTERED_PROBABILITY_ASSESSMENT_WITH_NATIVE_INVALID`，共 124 个有效交集、2 个 EMPTY、1 个空交集、1 个原生 BPP 无效，pending=0，SHA256=`3839a281dae9eedba95de4abb69b7fee925a95108b10dae5b3ee644df665c143`。索引提交 `a8e7336648e570c568608f2c86a01ce235005cea`。
+- **科学边界**：不同系统的 own-clean/matched n 不强行统一；own-clean F1 主榜不变，ECE 交集只作附加敏感性。多个系统在 bpRNA-new 等指标上优于 xens2，最低 ECE/最佳置信度目标已有实测反例，不能宣称达成。双 stream 速度验收仍等待无干扰窗口。
