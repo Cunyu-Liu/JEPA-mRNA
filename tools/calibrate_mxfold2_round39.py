@@ -71,7 +71,37 @@ def prepare(source_path, out):
                 matrix = np.asarray(bpp[0], dtype=np.float32)
                 length = len(row["seq"])
                 assert matrix.shape == (length + 1, length + 1)
-                assert np.isfinite(matrix).all() and matrix.min() >= 0 and matrix.max() <= 1
+                valid_probability = np.isfinite(matrix).all() and matrix.min() >= 0 and matrix.max() <= 1
+                if not valid_probability:
+                    mask = valid_pair_mask(row["seq"])
+                    entries = [{"i": int(i) - 1, "j": int(j) - 1, "value": float(matrix[i, j]),
+                                "in_scored_pair_mask": bool(1 <= i <= length and 1 <= j <= length and mask[i - 1, j - 1])}
+                               for i, j in np.argwhere(matrix > 1)]
+                    failure = {"repeat": repeat, "index": index, "name": row["name"], "length": length,
+                               "minimum": float(matrix.min()) if np.isfinite(matrix.min()) else None,
+                               "maximum": float(matrix.max()) if np.isfinite(matrix.max()) else None,
+                               "nan": int(np.isnan(matrix).sum()), "infinite": int(np.isinf(matrix).sum()),
+                               "above_one": len(entries), "above_one_in_scored_mask": sum(e["in_scored_pair_mask"] for e in entries),
+                               "entries": entries}
+                    payload = {"schema_version": 1, "status": "FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE",
+                               "system": "mxfold2", "data": str(data), "data_sha256": protocol["data_sha256"],
+                               "n_sequences": len(rows), "clean_audit": protocol["clean_audit"],
+                               "source_result": str(source_path), "source_result_sha256": sha256(source_path),
+                               "source_structure_f1_runs": source["f1_runs"], "failure": failure,
+                               "protocol": {"device_type": "cuda", "repeats_completed": repeat,
+                                            "reason": "native BPP outside [0,1]; no clipping or normalization; ECE undefined"},
+                               "calibration": {}, "confidence": {}, "pair_arrays": None,
+                               "code_sha256": sha256(Path(__file__).resolve())}
+                    diagnostic = out.parent.parent / "diagnostics" / f"native_bpp_range_{data.stem}_index{index}.json"
+                    if diagnostic.is_file():
+                        payload["diagnostic"] = str(diagnostic)
+                        payload["diagnostic_sha256"] = sha256(diagnostic)
+                    out.parent.mkdir(parents=True, exist_ok=True)
+                    temporary = out.with_suffix(out.suffix + ".tmp")
+                    temporary.write_text(json.dumps(payload, indent=2) + "\n")
+                    temporary.replace(out)
+                    print(json.dumps({"status": payload["status"], "out": str(out), "sha256": sha256(out)}, indent=2))
+                    return
                 matrix = matrix[1:, 1:]
                 mask = valid_pair_mask(row["seq"])
                 probability = matrix[np.triu(mask, k=1)]
@@ -205,10 +235,23 @@ def main():
         prepare(args.source, args.out)
         return
     assert args.root is not None
-    cells = [validate_result(args.root / f"{split}.json") for split in SPLITS]
-    payload = {"schema_version": 1, "status": "PASS_MXFOLD2_NATIVE_CUDA_PROBABILITY_ARRAYS_INDEPENDENT_RECOMPUTE",
+    cells = []
+    for split in SPLITS:
+        path = args.root / f"{split}.json"
+        result = json.loads(path.read_text())
+        if result["status"] == "FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE":
+            cells.append({"split": split, "status": result["status"],
+                          "result_sha256": sha256(path), "failure": result["failure"]})
+        else:
+            cells.append(validate_result(path))
+    invalid = [cell for cell in cells if cell["status"] == "FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE"]
+    status = ("COMPLETE_MXFOLD2_NATIVE_PROBABILITY_ASSESSMENT_7_VALID_1_INVALID" if len(invalid) == 1
+              else "PASS_MXFOLD2_NATIVE_CUDA_PROBABILITY_ARRAYS_INDEPENDENT_RECOMPUTE")
+    assert len(cells) == 8 and (not invalid or (len(invalid) == 1 and invalid[0]["split"] == "archiveii_embok_clean"))
+    payload = {"schema_version": 1, "status": status,
                "system": "mxfold2", "cells": cells,
-               "comparison_status": "PENDING_ALL_ELIGIBLE_BASELINES_MATCHED_CLEAN_PROBABILITIES"}
+               "comparison_status": "PENDING_ALL_ELIGIBLE_BASELINES_MATCHED_CLEAN_PROBABILITIES",
+               "boundary": "ArchiveII native BPP above one is not clipped or assigned ECE; other seven splits independently recomputed" if invalid else None}
     args.out.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.out.with_suffix(args.out.suffix + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n")
