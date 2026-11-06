@@ -12994,3 +12994,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **放行条件**：`run_structrfm_full_evaluation_round48.sh` 等待 S2 三个 run 均 `converged+early_stopped`、13 split clean 总结和 ≥12,000MiB 空闲显存。逐 seed 使用各自 best checkpoint，检查 `meta.ripe`，没有 run_meta 时不把训练中的快照误判为收敛。
 - **独立复核**：13 split×3 seed×3 repeat；全参评测强制官方权重严格身份、CUDA、checkpoint 哈希与 clean 哈希。聚合器增加 `--full-model`，默认冻结路径不变；现同时复算 micro TP/FP/FN、macro-F1、三次预测一致和 raw_n=n+long_unsupported，并输出 macro mean±SD。
 - **验证与边界**：冻结/全参合成聚合 2/2 通过，shell/python 静态检查通过，提交 `e968ee61fbd57383bceb3f0378603b060b4ffedf` 已推送。持久队列只处于等待状态；S2 尚未开始，不能把该工程链当作全板结果。
+
+
+## §15.462（2026-11-07）structRFM 置信度、INF 与长度桶一次评测产出
+
+- **口径**：两条评测器现在只从 repeat0 累计合法 strict-upper pair 概率，输出全局 10-bin ECE/Brier/NLL、可靠性和边际误差；结构置信度为 DP 解码配对概率的几何均值，无配对时为 0。同步输出每序列 INF、长度和结构置信度。AURC 不在测试集拟合阈值，后续只用 VL0 冻结阈值。
+- **独立验证**：`PairCalibrationAccumulator` 与既有 `CalibrationMetrics` 的 ECE/Brier/NLL、边际误差和每 bin 数值一致；聚合器复算 micro/macro-INF、概率字段和 ≤100/100–200/200–400/>400nt 桶的 TP/FP/FN 与 F1，长序列不支持数继续保留。相关测试 4/4 通过。
+- **seed0 VL0 扩展复测**：TP/FP/FN 和 micro/macro-F1 与 §15.459 完全一致；micro-INF=0.7511213411、macro-INF=0.7567285681。合法 pair n=573355，ECE=0.0891816679、Brier=0.0290322408、NLL=0.1190333569。新结果 SHA256=`dc80fbbb3d014f019b08d897586803ebeebd6f807ac912350a718a72dac2d544`，取代同内容扩展前的结果哈希 `dd0bdc…`。该校准结果没有证明最佳置信度，仍仅属 VL0。
