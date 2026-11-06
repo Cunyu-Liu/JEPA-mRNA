@@ -8,7 +8,7 @@ WEIGHTS=$ROOT/weights/structrfm_round48
 AUDITS=$ROOT/audits/round48
 CLEAN=$ROOT/data/structrfm_pretrain_clean
 FASTA=$ROOT/source_corpora/structrfm_round48/pretraining.fasta
-export PYTHONPATH=$REPO/src:$REPO/tools
+export PYTHONPATH=$REPO:$REPO/src:$REPO/tools:$REPO/eval
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 mkdir -p "$AUDITS" "$CLEAN" "$ROOT/logs/round48" "$ROOT/weights/round48"
