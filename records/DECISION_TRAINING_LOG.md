@@ -13043,3 +13043,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **设计**：从 TR1c 选两条最长 500nt 序列，batch=2，warmup_head_steps=0，在 step1 直接解冻 12/12 层；两个独立进程并发，各运行两个 optimizer steps。该设置专门覆盖正式 S2 双并发全层反向的显存风险，不是科学训练。
 - **结果**：两进程第一步均完成全层反向，日志 peak 各约 4.4GB；第二步完成后 launcher 报告 seed0=0、seed1=0，未发生 OOM 或 CPU 静默降级。正式双并发方案保留，原有 ≥16,000MiB 放行门不变。
 - **边界**：两步 step-cap 只作工程证据，不写成收敛、验证集提升或 SOTA。脚本和精确 VL0 记录提交 `429e89d` 已推送；895 块替代下载继续运行。
+
+
+## §15.469（2026-11-07）structRFM 官方语料整包验收通过与 SOTA 对照源冻结
+
+- **最终通过**：895 块替代下载后 2697 块完整，整包 bytes=5,654,000,185，MD5=`651db6dc7b6d6aadece06a252831d1fe` 与官方一致，SHA256=`27b97f9e7224119560bd148636c5528116f20bda3566f1793781a06ca1572533`。其余 1802 块未重下，旧失败组装和 895 个污染块仍隔离保留。
+- **后续放行**：FASTA 生成进程已启动，随后执行已证明等价的 13 split 联合 MMseqs；clean 完成前 S2 和正式全板仍不放行。
+- **对照源**：own-clean、Rfam BPfold、CHANRG 三份源文件已保存至 `source_data/round48`，本地/远端 SHA256 分别为 `9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`、`7e2f6a2f900c2c241d212493bee647e74e28d8484f20837ead7142223a0a67e9`、`bacb83d94a6825eb6164d3eaf8ab888a21f16a42c52bb6640c37484ab170b570`。
+- **比较器**：主榜同时保留 all-baseline 与 external-single，CHANRG measured/quoted 分开，测试通过，代码提交 `61c8b1ff9e927b2520a6f87a342e10e6a259d744`。尚无新模型 SOTA 计数。
