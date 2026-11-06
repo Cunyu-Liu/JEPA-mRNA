@@ -1680,6 +1680,62 @@
    "bytes": 2387,
    "description": "MXfold2 已完成的六格独立 NPZ 复核；ArchiveII 与 bpRNA-new 未计入",
    "status": "active_partial_6_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_all_variants_calibration_summary.json",
+   "sha256": "6bac2a69d98119f7d38e21ed95dc942275ea0ad6f3b6f93bc3291a96204ce4ab",
+   "bytes": 8606,
+   "description": "RNAformer 四变体共 32 格附加敏感性比较汇总",
+   "status": "active_complete_rnaformer_not_all_eligible"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_biophysical_calibration_verification.json",
+   "sha256": "3786541f0377a9675391b40c2b7c9c35e94f71f38562716cab057e1b937f0fa6",
+   "bytes": 3236,
+   "description": "RNAformer-biophysical 八 split 原生概率独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_biophysical_calibration.json",
+   "sha256": "96fce499c9716943dbde73f61452f287bd95ab2c78ee23dd4387388f5a56671e",
+   "bytes": 7459,
+   "description": "ArchiveII biophysical；xens2 概率误差与结构置信度更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_biophysical_calibration.json",
+   "sha256": "0c07e1d3d9910eb3b46855e38296a4ed080e9c5fdcd669861b4450549d3f8103",
+   "bytes": 7410,
+   "description": "TS0 biophysical；xens2 概率误差与结构置信度更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_biophysical_calibration.json",
+   "sha256": "00365dca5d1d021783d94e3aa3f1b97b6d5c9bcdd1f99ad489dfd060cb16c137",
+   "bytes": 7393,
+   "description": "bpRNA-new xens2 ECE 更低，biophysical Brier/NLL/AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_vienna_mfe_calibration.json",
+   "sha256": "a904d449451789d742df409aaaa99bb5ec73d0eeb20d07f1b7b72362973e2186",
+   "bytes": 7518,
+   "description": "ArchiveII ViennaRNA-MFE；共享 BPP，F1=0.5752066230",
+   "status": "active_matched_sensitivity_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_vienna_centroid_calibration.json",
+   "sha256": "d385db0485bcadb033aea403e1786fd90c4175ff08fdf7b029130ecacf26d6c4",
+   "bytes": 7548,
+   "description": "ArchiveII ViennaRNA-centroid；共享 BPP，F1=0.6180982114",
+   "status": "active_matched_sensitivity_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_vienna_mea_calibration.json",
+   "sha256": "803660039fcd740772d11427e88c69c1fe3bb8bc66459e1f4dc3207720568052",
+   "bytes": 7521,
+   "description": "ArchiveII ViennaRNA-MEA；共享 BPP，F1=0.6053716365",
+   "status": "active_matched_sensitivity_not_full_board"
   }
  ]
 }

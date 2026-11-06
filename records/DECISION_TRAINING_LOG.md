@@ -12765,3 +12765,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **ArchiveII 根因**：前一轮只在第 600 条进度后给出无上下文范围断言。定向排查到 index=658、`grp2_a.I2.c.N.tabacum.B.pD.i1.bpseq`、759 nt：15 个 BPP>1，最大 **1.0047545433**，全部在评分掩码内，非浮点舍入误差。三次独立前向概率 SHA 均为 `d001dc7af895cb8e6c545630a05f7c6808813c1072cb3009bb893f2313f80e9d`；异常证据 SHA256=`399be8427578c55987ddf3ce9aa040871cd569d856a0829859809cb632bfc023`。
 - **科学处理**：MXfold2 0.1.2 原生 BPP 在该 split 不满足概率定义，ArchiveII 标 `FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE`，不计算 ECE、不用 one-hot/夹紧/归一化、不用共同 n=0 掩盖；原生三次结构 F1 仍保留在 own-clean 主榜。其余七格继续正式概率评测，最终口径为七格有效、ArchiveII 原生概率无效，不宣称全基线校准完成。
 - **工程与 QA**：已加入带序列名、长度、坐标和评分类型的终止失败产物、原子写入、比较汇总边界和单元回归；11 项相关测试通过。代码 `129fd37e4230af70d2b7fa871612dfe7db5cd8ac`，测试修正 `ac5b54dc3da6c71bab8f500a007266fa8fa2d4a5`。初次测试命令漏传 ViennaRNA 路径及人工序列过短均已暴露并重跑，未记为通过。定位后终止了本会话遗留的冗余全 split 诊断，正式队列从断点策略继续，未强杀其他会话任务。
+
+
+## §15.432（2026-11-06）RNAformer 32 格闭环与 ViennaRNA ArchiveII
+
+- **RNAformer 全变体**：bprna/intrafam/interfam/biophysical 四变体共 32 格 matched-clean 比较完成，状态 `PASS_RNAFORMER_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE`，汇总 SHA256=`6bac2a69d98119f7d38e21ed95dc942275ea0ad6f3b6f93bc3291a96204ce4ab`。biophysical 八 split 原生概率独立验收 SHA256=`3786541f0377a9675391b40c2b7c9c35e94f71f38562716cab057e1b937f0fa6`。
+- **biophysical 大 split**：bpRNA-new F1=0.6405892910，xens2 ECE=0.0048310272 低于 RNAformer=0.0057056518；RNAformer Brier=0.0066905095、NLL=0.0304741379、AURC=0.2267002716 优于 xens2=0.0072889935/0.0338954187/0.3486543793，比较 SHA256=`00365dca5d1d021783d94e3aa3f1b97b6d5c9bcdd1f99ad489dfd060cb16c137`。ArchiveII 和 TS0 的 xens2 ECE/Brier/NLL 均更低，Spearman/AURC 更好；不同指标方向仍不一致。
+- **ViennaRNA ArchiveII**：MFE/centroid/MEA F1=0.5752066230/0.6180982114/0.6053716365。共同 n=1107，共享 BPP ECE=0.0019762368、Brier=0.0024953937、NLL=0.0104327158；xens2 calibrated ECE=0.0010307683、Brier=0.0022205656、NLL=0.0112838144。xens2 的 ECE/Brier 更低，ViennaRNA 的 NLL 略低；xens2 Spearman=0.7254523612、AURC=0.1170770953，优于三种 ViennaRNA。比较 SHA256=`a904d449451789d742df409aaaa99bb5ec73d0eeb20d07f1b7b72362973e2186`、`d385db0485bcadb033aea403e1786fd90c4175ff08fdf7b029130ecacf26d6c4`、`803660039fcd740772d11427e88c69c1fe3bb8bc66459e1f4dc3207720568052`。
+- **后续**：ViennaRNA 已完成 9/24 个有效比较格，其余继续；RiNALMo-ft 真实 CUDA 预检通过，完整八 split 正在接续，未验收前不计入。MXfold2 的 ArchiveII 原生 BPP 无效不被 RNAformer/ViennaRNA 证据覆盖。

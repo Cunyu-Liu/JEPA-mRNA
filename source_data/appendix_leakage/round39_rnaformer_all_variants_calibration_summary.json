@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RNAFORMER_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE",
+  "cells": [
+    {
+      "variant": "bprna",
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 708,
+      "result_sha256": "d588e9666d33b153f0da31a78df51b555d6fb65998317955730e0f770b2d2bfd"
+    },
+    {
+      "variant": "bprna",
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "45537abd651bc5662b7e3a2c6b9abcef4c9e934a40ee2552c228170457458955"
+    },
+    {
+      "variant": "bprna",
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "793ff6337428ba1c4bcdc8310ff98a33dbaa6568837e649b3bbbd2dad83638bd"
+    },
+    {
+      "variant": "bprna",
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 9,
+      "result_sha256": "6f33ea6b9895217e6ff8115b27430b8418e14fad3867555aed9fb354dc460f04"
+    },
+    {
+      "variant": "bprna",
+      "split": "ref_pdb_ts3",
+      "status": "EMPTY_MATCHED_CALIBRATION_INTERSECTION",
+      "matched_n": 0,
+      "result_sha256": "7f549a584ef17725598b1cd1f6a55446dac6b6e08062c49cb34400c4c99f06f4"
+    },
+    {
+      "variant": "bprna",
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 3,
+      "result_sha256": "7d7838f8f268819ec6665d473fe69023b4094d0dee3e8d734cde57b9ed3a8e18"
+    },
+    {
+      "variant": "bprna",
+      "split": "archiveii_embok_clean",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1087,
+      "result_sha256": "c96d98f497120be20c3f34380db8c6c7922d30c097925c6e4168613a67d4b420"
+    },
+    {
+      "variant": "bprna",
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 74,
+      "result_sha256": "fb876700922143295ddce9bc310f31fbeb9f5834aba11a17e955bae9c4646e97"
+    },
+    {
+      "variant": "intrafam",
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 710,
+      "result_sha256": "ba943377b059b3ae2763f7cec8af74c21dda4e94b502fd2283c9e0fe66ad916d"
+    },
+    {
+      "variant": "intrafam",
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "3ea5df4b67f9aaa2ba9abb35147e5a6e0b975342166bb9d7722844b1cafba565"
+    },
+    {
+      "variant": "intrafam",
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "aa46928022771d6e858926a3c5b8b9df586684db41f2b0be42348c765eab7ddd"
+    },
+    {
+      "variant": "intrafam",
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "90805f2c49629f710500b8adfa5edd46e5a7bd918b77a8beda17aa22357bf466"
+    },
+    {
+      "variant": "intrafam",
+      "split": "ref_pdb_ts3",
+      "status": "EMPTY_AFTER_DELEAK",
+      "matched_n": 0,
+      "result_sha256": "d45eb9b71759b5da0ae2f3abe6a1ebe8e7fd3c71086c7786cf4bd849b94325d5"
+    },
+    {
+      "variant": "intrafam",
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 8,
+      "result_sha256": "930dcb4764cc4dd7e3b5ac86d2a8edba75e738cca15f7ecb1bdea90c4dddbfed"
+    },
+    {
+      "variant": "intrafam",
+      "split": "archiveii_embok_clean",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1054,
+      "result_sha256": "4deea7c71300ba3d31582cdf548fbf57ec3565df255191f0b5c05782a1eea631"
+    },
+    {
+      "variant": "intrafam",
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "151ddb43f46988d3cf8589d737caee147a14207b5d170fd44c6cdcf4a0b02e4e"
+    },
+    {
+      "variant": "interfam",
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 713,
+      "result_sha256": "e8d0549a3d0475128bea852e0f8e37550948e57ae1ef95f96d22352b61c56d42"
+    },
+    {
+      "variant": "interfam",
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "2e690c03b3103375f20fa4410488e187140b528c5e8e6302e6062bdb5ff7e1ca"
+    },
+    {
+      "variant": "interfam",
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "0ec99c7474a6799671d24b1f234c87916f0e2aab0aae869bb01de80d85d239c7"
+    },
+    {
+      "variant": "interfam",
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "3b46b83671efc0625623471bb5d5b46bc5bae937f21098770ac1f803492fa973"
+    },
+    {
+      "variant": "interfam",
+      "split": "ref_pdb_ts3",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "a9681aa068d8f25d5222108deb60f4a3b02faec95d58474630e4183bfdefc090"
+    },
+    {
+      "variant": "interfam",
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "6615f2a9273ccfae85639666dda7ea1cd116f4279048c680d126df4584f60bf7"
+    },
+    {
+      "variant": "interfam",
+      "split": "archiveii_embok_clean",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1086,
+      "result_sha256": "4e0fecd677618770b533f9877781945634230440526693f78ae146fe4d1336f4"
+    },
+    {
+      "variant": "interfam",
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "18dd9f7fe63f576349ba94bd91fdcb835e880bccc6c4fb876e8939ff025eb6f2"
+    },
+    {
+      "variant": "biophysical",
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 713,
+      "result_sha256": "0c07e1d3d9910eb3b46855e38296a4ed080e9c5fdcd669861b4450549d3f8103"
+    },
+    {
+      "variant": "biophysical",
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "00365dca5d1d021783d94e3aa3f1b97b6d5c9bcdd1f99ad489dfd060cb16c137"
+    },
+    {
+      "variant": "biophysical",
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "b6f237ec20543f950d6923f4cbfd7324aaa3cc792c7e380dc58f55d8e4a8f2f0"
+    },
+    {
+      "variant": "biophysical",
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "c883464ef5c88fcc10e5682a7492dff74697f8af6c894d703f7c2a40bd007579"
+    },
+    {
+      "variant": "biophysical",
+      "split": "ref_pdb_ts3",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "4bb48a3e90835fddb441376d50edeecc09dcec9a7debada919464e767437a644"
+    },
+    {
+      "variant": "biophysical",
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "e83c09139bee0238667646864ecb7ce0ab4ed5d91a811afb91fb4951ce42134e"
+    },
+    {
+      "variant": "biophysical",
+      "split": "archiveii_embok_clean",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1107,
+      "result_sha256": "96fce499c9716943dbde73f61452f287bd95ab2c78ee23dd4387388f5a56671e"
+    },
+    {
+      "variant": "biophysical",
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "d815b8cf6e6c67bf371aae66d3cf6861d535720bd451f5b0fa3bbf10789de08a"
+    }
+  ],
+  "boundary": "auxiliary matched sensitivity; empty intersections never assigned F1=0 or ECE=0; other baselines pending"
+}
