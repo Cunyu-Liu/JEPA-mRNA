@@ -26,17 +26,30 @@ def download_part(url, path, start, end, retries=10):
             have = path.stat().st_size if path.exists() else 0
             if have > expected:
                 raise RuntimeError(f"oversize part {path}: {have}>{expected}")
-            with requests.get(url, headers={"Range": f"bytes={start + have}-{end}"},
+            requested_start = start + have
+            with requests.get(url, headers={"Range": f"bytes={requested_start}-{end}"},
                               stream=True, timeout=(20, 90)) as response:
                 if response.status_code not in (200, 206):
                     raise RuntimeError(f"HTTP {response.status_code}: {response.text[:200]}")
-                if response.status_code == 200 and have:
-                    raise RuntimeError("range resume ignored by server")
+                if response.status_code == 200:
+                    if requested_start:
+                        raise RuntimeError("range resume ignored by server")
+                else:
+                    content_range = response.headers.get("Content-Range", "")
+                    prefix = f"bytes {requested_start}-"
+                    if not content_range.startswith(prefix):
+                        raise RuntimeError(f"invalid Content-Range: {content_range!r}; "
+                                           f"expected prefix {prefix!r}")
                 mode = "ab" if have else "wb"
+                remaining = expected - have
                 with open(path, mode) as fh:
                     for block in response.iter_content(1 << 20):
-                        if block:
-                            fh.write(block)
+                        if block and remaining:
+                            write = block[:remaining]
+                            fh.write(write)
+                            remaining -= len(write)
+                        if not remaining:
+                            break
             if path.stat().st_size == expected:
                 return {"part": path.name, "bytes": expected, "status": "downloaded"}
             raise RuntimeError(f"short part {path}: {path.stat().st_size}/{expected}")

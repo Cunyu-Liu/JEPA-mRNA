@@ -166,6 +166,7 @@ def main():
     ap.add_argument("--zchunk", type=int, default=64, help="column width of the "
                     "checkpointed z construction (numerically exact; see docstring)")
     ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
+    ap.add_argument("--ripe-encoder", action="store_true")
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
                     help="hold this much GPU memory from process start so "
                          "co-tenants cannot claim the card during the CPU-bound "
@@ -230,6 +231,11 @@ def main():
     early_stopped = False
 
     encoder, report = load_encoder(device="cpu", dtype=torch.float32)
+    if args.ripe_encoder:
+        from ripe_structrfm import enable_ripe_structrfm
+        if not args.ripe_mode:
+            raise SystemExit("--ripe-encoder requires --ripe-mode")
+        encoder = enable_ripe_structrfm(encoder, args.ripe_mode)
     print(f"[plan-a] backbone: {report['n_params']/1e6:.0f}M params, "
           f"d={report['d_model']}, layers={report['n_layers']}", flush=True)
     head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=128, hidden=64,
@@ -293,6 +299,7 @@ def main():
         "arm": os.path.basename(args.out.rstrip("/")),
         "control_arm": "rinalmo_r2d_b4_s0",
         "control_results": {"ts0_micro_f1": 0.6629, "bprna_new_micro_f1": 0.5010},
+        "ripe": {"mode": args.ripe_mode or None, "encoder": args.ripe_encoder},
         "backbone": "rinalmo-giga (pretrained safetensors, in-loop)",
         "head": "FlatDecisionHead scorer=resnet2d d_z=128 (head params "
                 f"{n_head})",

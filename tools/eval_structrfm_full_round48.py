@@ -26,9 +26,14 @@ def main():
         raise RuntimeError("CUDA required for structRFM full-model evaluation")
     encoder, tokenizer, load_report = load_structrfm_encoder(args.pretrained, device="cuda")
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+    ripe = checkpoint.get("meta", {}).get("ripe", {})
+    if ripe.get("encoder"):
+        from ripe_structrfm import enable_ripe_structrfm
+        encoder = enable_ripe_structrfm(encoder, ripe["mode"])
     encoder.load_state_dict(checkpoint["model"]["encoder"], strict=True)
     head = FlatDecisionHead(d_model=768, d_z=128, hidden=64,
-                            scorer="resnet2d", chunk_size=0).cuda()
+                            scorer="resnet2d", chunk_size=0,
+                            ripe_mode=ripe.get("mode")).cuda()
     head.load_state_dict(checkpoint["model"]["head"], strict=True)
     encoder.eval()
     head.eval()
@@ -40,7 +45,7 @@ def main():
     started = time.time()
     for index, row in enumerate(rows):
         sequence = row["seq"].upper().replace("T", "U")
-        if len(sequence) > encoder.config.max_position_embeddings:
+        if len(sequence) > encoder.config.max_position_embeddings and not ripe.get("encoder"):
             long_unsupported.append({"index": index, "name": row.get("name", ""),
                                      "length": len(sequence)})
             continue
