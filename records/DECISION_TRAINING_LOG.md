@@ -12707,3 +12707,20 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **biophysical TS-hard/TestSetB**：TS-hard 共同 n=10，xens2 calibrated Spearman=0.5183023183、AURC=0.1416050874，biophysical=0.1585395327/0.1388677502，结果 SHA256=`e83c09139bee0238667646864ecb7ce0ab4ed5d91a811afb91fb4951ce42134e`。TestSetB 共同 n=288，xens2 calibrated ECE=0.0021597920、Spearman=0.6862948022、AURC=0.0815347264，biophysical raw ECE=0.0080185651、Spearman=0.4252276057、AURC=0.3547988888，结果 SHA256=`d815b8cf6e6c67bf371aae66d3cf6861d535720bd451f5b0fa3bbf10789de08a`。
 - **inter-family bpRNA-new**：双方 clean n=5386。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；inter-family raw ECE=0.0052560782、Brier=0.0052377173、NLL=0.0222593238。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，inter-family=0.5474306356/0.2583887160，inter-family 的 Brier 和结构排序更好。结果 SHA256=`2e690c03b3103375f20fa4410488e187140b528c5e8e6302e6062bdb5ff7e1ca`。
 - **边界**：biophysical 大 split 和 NucleicBERT-frozen 大 split 继续后台队列，未齐套前不写全基线 ECE 或最佳置信度结论。
+
+
+## §15.425（2026-11-06）NucleicBERT-frozen 大 split 概率比较
+
+- **独立验收**：NucleicBERT-frozen 八 split 的原始 598 nt 协议、概率、GT 和结构置信度独立复核完成，汇总 SHA256=`743b0a0db2a6a722e9411f1a9fb021d58936389d92d34d5e64d7d1af00f5918d`。bpRNA-new 三次 F1=0.1908859910，保留官方原生协议，不恢复已取消的下游训练。
+- **ArchiveII**：共同 n=134、2,898,976 个候选配对。xens2 calibrated ECE=0.0008800907、Brier=0.0017835898、NLL=0.0092112271；frozen raw ECE=0.0017598594、Brier=0.0022952142、NLL=0.0182544591。xens2 calibrated Spearman=0.5452371245、AURC=0.2306662268，frozen=0.7292572494/0.5511853179。frozen 的 Spearman 更高，但 xens2 的 AURC 更低（更优）。结果 SHA256=`ab540cfa0742f7c6c5797e0827d475b6bb3376dcdabac93e17288ac87ad9a193`。
+- **TS0**：共同 n=609、2,541,035 个候选配对。xens2 calibrated ECE=0.0009620696、Brier=0.0031644343、NLL=0.0143733433；frozen raw ECE=0.0037391501、Brier=0.0049504730、NLL=0.0379358123。xens2 calibrated Spearman=0.7063701016、AURC=0.1162604704，frozen=0.6998895968/0.4401576494，xens2 三项均更优。结果 SHA256=`ed5038c0044901fbc83c3558cebf4e1296a908ea33d4731bbd01dab24de82434`。
+- **bpRNA-new**：共同 n=5386。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；frozen raw ECE=0.0061279719、Brier=0.0081585966、NLL=0.0586758677。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，frozen=0.5110273012/0.7253953809。frozen 的 Spearman 接近且略低、AURC 更高（更差），xens2 两项均更好。结果 SHA256=`e1d6cfc147107753e142343259921bf143d07e3d982ac57633ea7cd29fb14a4b`。
+- **结论**：xens2 在这三个大 split 的概率误差均更低；frozen 仅在 ArchiveII 的 Spearman 更高，AURC 未胜出。biophysical 大 split 与 RiNALMo-ft 继续后台队列，仍不将局部结果写成全板最佳置信度。
+
+
+## §15.426（2026-11-06）NucleicBERT-ft/frozen 16 格比较闭环
+
+- **汇总**：ft/frozen 各八个 split，均为 7 个有效 matched-clean 比较和 1 个 TS3 `EMPTY_AFTER_DELEAK`；共 16 格，状态 `PASS_NUCLEICBERT_COMPARISONS_NOT_ALL_ELIGIBLE`，SHA256=`f3c973df93ab179fb1eb079d1f804c7f59e68c139065c4ca12fc7749b7575961`。
+- **协议边界**：保留原生 598 nt 截断和预测协议；与 xens2 比较时逐条要求名称、序列和实际评分 GT 相同，GT 协议不同者单独剔除。该汇总只是 matched-clean 附加敏感性，不替代 own-clean 主榜。
+- **frozen 结论勘误**：ArchiveII、TS0、bpRNA-new 的 frozen AURC 均高于 xens2（风险覆盖表现更差）；仅 ArchiveII 的 Spearman 更高，不能写 frozen 在大 split 结构排序更好。§15.425 已按原 JSON 数值修正，概率误差与结构排序分开陈述。
+- **后续**：biophysical 的 ArchiveII、TS0、bpRNA-new 尚未全部通过独立验收，RiNALMo-ft 保持门控等待；其他 eligible 基线概率也未齐套，不能写全板最低 ECE 或最佳置信度。

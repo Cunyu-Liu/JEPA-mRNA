@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "status": "PASS_NUCLEICBERT_COMPARISONS_NOT_ALL_ELIGIBLE",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "system": "nucleicbert_ft",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 713,
+      "result_sha256": "79adccd47771c6178b7e676d120bd0354c4ba980f14f3efdb10cce22ae3c566a"
+    },
+    {
+      "split": "bprna_new",
+      "system": "nucleicbert_ft",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "9edbf59b8690d55285939f9b4f9307bf5df27cd0a87b298baf4d1779bacc2073"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "system": "nucleicbert_ft",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "b3e0c0dd715a76443da5c2cc32bf71f02d39f36ca23360c1384201a56d8eaa5e"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "system": "nucleicbert_ft",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "f03c27cbdc22dca28d9d5f23a1593a618759d3ccdc72e00f292525a4ceb2f1ad"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "system": "nucleicbert_ft",
+      "status": "EMPTY_AFTER_DELEAK"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "system": "nucleicbert_ft",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "5ebcac7717018ff3b4210459d0a989590a9654374411a0790a64f4c0d305e122"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "system": "nucleicbert_ft",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 1068,
+      "result_sha256": "d0f47d5d480be2f1415c4f7b2409472a582f9246beac433457e7ed45468d32fe"
+    },
+    {
+      "split": "testsetb",
+      "system": "nucleicbert_ft",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 288,
+      "result_sha256": "e378df623c21d7b3666bf7723c9bdbf05387800a81c183e704702929c04176a6"
+    },
+    {
+      "split": "bprna_ts0",
+      "system": "nucleicbert_frozen",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 609,
+      "result_sha256": "ed5038c0044901fbc83c3558cebf4e1296a908ea33d4731bbd01dab24de82434"
+    },
+    {
+      "split": "bprna_new",
+      "system": "nucleicbert_frozen",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "e1d6cfc147107753e142343259921bf143d07e3d982ac57633ea7cd29fb14a4b"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "system": "nucleicbert_frozen",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 12,
+      "result_sha256": "f8061ea1439adb0fdb2e61c3ce8d143db8fd0474d1ca66dd6e34d3e0337497d4"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "system": "nucleicbert_frozen",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 28,
+      "result_sha256": "35499b4165e08d2d550fff7407ef319bc95759ec47e10d11786864570af60dda"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "system": "nucleicbert_frozen",
+      "status": "EMPTY_AFTER_DELEAK"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "system": "nucleicbert_frozen",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "1363194b15efcc7bea6b0bbe796c6a90ea4470d49d438d9ed21e7550ef2b9008"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "system": "nucleicbert_frozen",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 134,
+      "result_sha256": "ab540cfa0742f7c6c5797e0827d475b6bb3376dcdabac93e17288ac87ad9a193"
+    },
+    {
+      "split": "testsetb",
+      "system": "nucleicbert_frozen",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 95,
+      "result_sha256": "cfd0c64ca14ec259394cc5fe2d3cb6e336dfc6a46b3f5c2931b3b5774a8dbae4"
+    }
+  ],
+  "boundary": "original 598-nt protocol retained; auxiliary matched sensitivity only; other baselines pending"
+}

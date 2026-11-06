@@ -1533,6 +1533,41 @@
    "bytes": 7395,
    "description": "inter-family bpRNA-new；xens2 ECE 略低，inter-family Brier/Spearman/AURC 更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_frozen_calibration_verification.json",
+   "sha256": "743b0a0db2a6a722e9411f1a9fb021d58936389d92d34d5e64d7d1af00f5918d",
+   "bytes": 3269,
+   "description": "NucleicBERT-frozen 八 split 原生概率、GT 与 F1 独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_nucleicbert_frozen_calibration.json",
+   "sha256": "ab540cfa0742f7c6c5797e0827d475b6bb3376dcdabac93e17288ac87ad9a193",
+   "bytes": 7418,
+   "description": "ArchiveII frozen 原生 598 nt 协议；GT 过滤后 n=134，Spearman 更高但 AURC 更差",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_ts0_xens2_nucleicbert_frozen_calibration.json",
+   "sha256": "ed5038c0044901fbc83c3558cebf4e1296a908ea33d4731bbd01dab24de82434",
+   "bytes": 7432,
+   "description": "TS0 xens2/frozen 概率交集；xens2 ECE、Spearman 和 AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_nucleicbert_frozen_calibration.json",
+   "sha256": "e1d6cfc147107753e142343259921bf143d07e3d982ac57633ea7cd29fb14a4b",
+   "bytes": 7425,
+   "description": "bpRNA-new xens2/frozen 概率交集；xens2 ECE、Spearman 和 AURC 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_nucleicbert_calibration_comparisons_summary.json",
+   "sha256": "f3c973df93ab179fb1eb079d1f804c7f59e68c139065c4ca12fc7749b7575961",
+   "bytes": 4238,
+   "description": "NucleicBERT-ft/frozen 共 16 格比较；各 7 个有效交集，TS3 为空",
+   "status": "active_matched_sensitivity_not_all_eligible"
   }
  ]
 }
