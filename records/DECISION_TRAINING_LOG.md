@@ -13057,3 +13057,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **FASTA 验收**：官方压缩包流式解析完成，唯一 CSV、合法 A/C/G/U/N 检查通过；n_sequences=21,477,078，正式 FASTA 约 6.1GB，SHA256=`739369d31df4a828adba040d9f88eb5c3bc6dbf010d7d22279333e694a9f3a40`，元数据=`audits/round48/structrfm_corpus.json`。临时文件未提前用于审计。
 - **联合审计**：13 split 的 `audit_structrfm_clean_all_round48.py` 已启动（PID=3254342），使用相同 exact+80% identity/query coverage 口径和 12 threads；工作目录与大资产均在 `/teams`。当前只有进程和输入元数据证据，尚无正式 clean n、删除清单或 summary，不启动 S2。
+
+
+## §15.471（2026-11-07）13 split 正式 clean 守恒、S2 导入修复与真实启动
+
+- **审计通过**：`summary.json` 状态 `PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS`，SHA256=`b51ae12eba9c814b355e0c70063624c40b2bc776c7e52f3e599b7801801eee0c`。13 个 train_sha256 均等于正式 FASTA，clean 文件行数与 SHA256 逐 split 复核通过，raw_n=clean_n+removed_exact+removed_homology_only，无 EMPTY split。
+- **raw→clean**：TS0 1288→79、bpRNA-new 5388→74、ArchiveII 3950→90、TS1 63→3、TS2 39→1、TS3 19→1、TS-hard 28→2、TestSetB 428→21；Rfam 10790→388；CHANRG Test/GenA/GenC/GenF=10597→2727、5337→1709、3936→1192、1734→342。主榜多样本格极小，后续必须保留 n、置信区间和小样本限制，不把 8/8 计数包装成强统计证据。
+- **启动故障**：第一次 S2 因队列 `PYTHONPATH` 缺仓库根目录，`xens2_eval` 导入 `eval.ss.metrics` 失败，未发生训练，不是 CUDA OOM。已修为 repo/src/tools/eval 完整路径，提交 `e59852cdb40d0eff9fbe4b00baba90be966d5fd4`；从 clean 后恢复，不重跑审计。
+- **当前进程**：S2 seed0/1 均读取 42,564 条 TR1c 并在 CUDA 保留显存进入初始化；冻结全板嵌入提取同步进行。训练刚启动，尚无全参收敛或主榜结论。
