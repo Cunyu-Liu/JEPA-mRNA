@@ -43,7 +43,7 @@ PY
         if [[ "$(basename "$baseline")" == ref_pdb_ts3.json ]] && "$python" - "$baseline" <<'PY'
 import json,sys
 x=json.load(open(sys.argv[1]))
-raise SystemExit(x["status"]=="EMPTY_AFTER_DELEAK")
+raise SystemExit(x["status"]!="EMPTY_AFTER_DELEAK")
 PY
         then
             continue

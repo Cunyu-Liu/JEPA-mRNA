@@ -1449,6 +1449,27 @@
    "bytes": 7170,
    "description": "TS1 xens2/NB-frozen 比较；ECE 较低但 Brier 更高，原生置信度较弱",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_intrafam_calibration_verification.json",
+   "sha256": "fea5be0210d688aa979676b561ababefa4b1d39d89ddcab91153b10e82d11590",
+   "bytes": 3041,
+   "description": "RNAformer intra-family 八 split 原生概率与 F1 独立验收；TS3 为空",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_rnaformer_interfam_calibration_verification.json",
+   "sha256": "92e1ecb8fe183722d34d51cc1bbc525c234bd2166ddf78240e5cb0341f12ffda",
+   "bytes": 3247,
+   "description": "RNAformer inter-family 八 split 原生概率与 F1 独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_archiveii_xens2_nucleicbert_ft_calibration.json",
+   "sha256": "d0f47d5d480be2f1415c4f7b2409472a582f9246beac433457e7ed45468d32fe",
+   "bytes": 7429,
+   "description": "ArchiveII GT 协议过滤后共同 n=1068；NB-ft Spearman 更高但 AURC 更差",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

@@ -19,7 +19,29 @@ for variant in bprna intrafam interfam biophysical; do
     done
     for split in ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb archiveii_embok_clean bprna_ts0 bprna_new; do
         out=$root/calibration_comparisons/$split.xens2_${variant}.json
+        baseline=$root/rnaformer/$variant/calibration/$split.json
         if [[ -s "$out" ]]; then
+            continue
+        fi
+        if "$python" - "$baseline" <<'PY'
+import json,sys
+x=json.load(open(sys.argv[1]))
+raise SystemExit(x.get("status")!="EMPTY_AFTER_DELEAK")
+PY
+        then
+            "$python" - "$out" "$baseline" "$root/xens2/calibration/$split.json" "$variant" <<'PY'
+import hashlib,json,sys
+from pathlib import Path
+out,baseline,xens2,variant=map(Path,sys.argv[1:])
+base=json.loads(baseline.read_text());ours=json.loads(xens2.read_text())
+payload={"schema_version":1,"status":"EMPTY_AFTER_DELEAK","matched_n":0,"baseline_system":"rnaformer",
+         "baseline_clean_n":0,"xens2_clean_n":ours["n_sequences"],
+         "baseline_result_sha256":hashlib.sha256(baseline.read_bytes()).hexdigest(),
+         "xens2_result_sha256":hashlib.sha256(xens2.read_bytes()).hexdigest(),
+         "calibration":{},"structure_confidence":{}}
+out.write_text(json.dumps(payload,indent=2)+"\n")
+print("EMPTY_AFTER_DELEAK",variant,out)
+PY
             continue
         fi
         "$python" tools/compare_bpfold_xens2_calibration_round39.py --baseline-system rnaformer \
@@ -35,7 +57,7 @@ for variant in ["bprna","intrafam","interfam","biophysical"]:
  for split in ["bprna_ts0","bprna_new","ref_pdb_ts1","ref_pdb_ts2","ref_pdb_ts3","ref_pdb_ts_hard","archiveii_embok_clean","testsetb"]:
   p=root/"calibration_comparisons"/f"{split}.xens2_{variant}.json"
   x=json.loads(p.read_text())
-  assert x["status"] in {"PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD","EMPTY_MATCHED_CALIBRATION_INTERSECTION"}
+  assert x["status"] in {"PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD","EMPTY_MATCHED_CALIBRATION_INTERSECTION","EMPTY_AFTER_DELEAK"}
   cells.append({"variant":variant,"split":split,"status":x["status"],"matched_n":x["matched_n"],
                 "result_sha256":hashlib.sha256(p.read_bytes()).hexdigest()})
 out=root/"calibration_comparisons/rnaformer_all_variants_summary.json"

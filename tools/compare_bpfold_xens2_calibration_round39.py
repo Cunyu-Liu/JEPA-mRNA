@@ -44,11 +44,26 @@ def main():
         x_names, b_names = xa["names"].tolist(), ba["names"].tolist()
         b_name_set = set(b_names)
         common = [name for name in x_names if name in b_name_set]
+        x_lookup = {name: index for index, name in enumerate(x_names)}
+        b_lookup = {name: index for index, name in enumerate(b_names)}
+        gt_protocol_mismatch_excluded = 0
+        if system in {"nucleicbert_ft", "nucleicbert_frozen"}:
+            matched = []
+            for name in common:
+                xi, bi = x_lookup[name], b_lookup[name]
+                xs, xe = xa["offsets"][xi:xi + 2]
+                bs, be = ba["offsets"][bi:bi + 2]
+                if xe - xs == be - bs and np.array_equal(xa["labels"][xs:xe], ba["labels"][bs:be]):
+                    matched.append(name)
+                else:
+                    gt_protocol_mismatch_excluded += 1
+            common = matched
         if not common:
             payload = {"schema_version": 1, "status": "EMPTY_MATCHED_CALIBRATION_INTERSECTION",
                        "split": Path(xens2["data"]).stem, "matched_n": 0, "baseline_system": system,
                        "xens2_clean_n": xens2["n_sequences"], "baseline_clean_n": bpfold["n_sequences"],
                        "bpfold_clean_n": bpfold["n_sequences"],
+                       "gt_protocol_mismatch_excluded": gt_protocol_mismatch_excluded,
                        "main_ranking_boundary": "no shared name+sequence+evaluated-GT samples; no ECE or confidence metric is defined",
                        "xens2_result_sha256": sha256(args.xens2), "baseline_result_sha256": sha256(args.bpfold),
                        "calibration": {}, "structure_confidence": {}}
@@ -96,6 +111,7 @@ def main():
                "split": Path(xens2["data"]).stem, "matched_n": len(common), "baseline_system": system,
                "xens2_clean_n": xens2["n_sequences"], "baseline_clean_n": bpfold["n_sequences"],
                "bpfold_clean_n": bpfold["n_sequences"],
+               "gt_protocol_mismatch_excluded": gt_protocol_mismatch_excluded,
                "candidate_pairs": "same name+sequence+evaluated GT, strict upper valid_pair_mask, 10 bins",
                "main_ranking_boundary": "native own-clean leaderboard is primary; this matched analysis is auxiliary only",
                "postprocess_boundary": ("BPfold _post.npy is constrained/postprocessed and may be binary; its ECE is diagnostic, not evidence of independently calibrated marginal probabilities" if system == "bpfold" else

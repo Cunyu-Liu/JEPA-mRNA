@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RNAFORMER_INDEPENDENT_PROBABILITY_ARRAYS",
+  "variant": "interfam",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "n_sequences": 1276,
+      "n_pairs": 5980764,
+      "tp": 22679,
+      "fp": 13846,
+      "fn": 11900,
+      "strict_micro_f1": 0.6379106660666066,
+      "result_sha256": "de43b1a64a103b713e502c6b52b4586b221d4a4d04cd48f726e1824dd6d3d01c",
+      "pair_arrays_sha256": "d826a5d33d2fa2ad5949180d2bba13359d3d1729deb1a22d203a6933b152a51b"
+    },
+    {
+      "split": "bprna_new",
+      "n_sequences": 5386,
+      "n_pairs": 15343073,
+      "tp": 83682,
+      "fp": 36300,
+      "fn": 51459,
+      "strict_micro_f1": 0.6560129819734011,
+      "result_sha256": "f4a6e34e4587163236e7a4e37915a07efb38b95e1e156c680c86711cb3d59a64",
+      "pair_arrays_sha256": "2a889d0e4887cb162c1808e3d0f74cb9a35ada47c0366c1148f99073baac01b6"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "n_sequences": 63,
+      "n_pairs": 74518,
+      "tp": 1104,
+      "fp": 175,
+      "fn": 241,
+      "strict_micro_f1": 0.8414634146341463,
+      "result_sha256": "51991b8b6d0f144e44d4940e595dcd37f7113fafccd70fea447dad96c0c91acb",
+      "pair_arrays_sha256": "eed37c38ceaa7e62759067eccd3881be6cc5847fb5090a0b50aae8da9a2f1407"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "n_sequences": 39,
+      "n_pairs": 22139,
+      "tp": 589,
+      "fp": 48,
+      "fn": 66,
+      "strict_micro_f1": 0.9117647058823529,
+      "result_sha256": "f24bb237216a627d2b398c76d6ae275c4e69d3e39f82690d9505dd43a46d9a99",
+      "pair_arrays_sha256": "8bd76bfab38e44f24837ae2d635595af4e267059eb76298ba9837c2bd59fbad0"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "n_sequences": 19,
+      "n_pairs": 24449,
+      "tp": 332,
+      "fp": 85,
+      "fn": 85,
+      "strict_micro_f1": 0.7961630695443646,
+      "result_sha256": "d7bf16f0d4a1d0cbef533d417d2d6b2129d864fcb517336022b19b7d38cfb091",
+      "pair_arrays_sha256": "75fcd4e5b2e528d3e858fdb88692bcfd3b921b4cc1139403c824f38e86c7f798"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "n_sequences": 28,
+      "n_pairs": 27005,
+      "tp": 360,
+      "fp": 83,
+      "fn": 115,
+      "strict_micro_f1": 0.7843137254901961,
+      "result_sha256": "f0ad84f055fc06e240d137bb7b614b7b1445ddb824fdd13c03dbbfd71ac9ec40",
+      "pair_arrays_sha256": "23868a7f05f530b0c44d1c16c10a8e1464ba64d5582ce97cba244657c00c6d0e"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "n_sequences": 2192,
+      "n_pairs": 24980259,
+      "tp": 79888,
+      "fp": 26863,
+      "fn": 31192,
+      "strict_micro_f1": 0.7334860511130188,
+      "result_sha256": "f54aed50704cb4f9e135094e28b5187c6f3a21352ac7e59ea9120a37e1d735e8",
+      "pair_arrays_sha256": "daacd141b1a801e7204bb4b9d9654eeec73513995d787ea257f87b2cb10fb5c1"
+    },
+    {
+      "split": "testsetb",
+      "n_sequences": 421,
+      "n_pairs": 1218757,
+      "tp": 7397,
+      "fp": 3487,
+      "fn": 3686,
+      "strict_micro_f1": 0.6734647425683981,
+      "result_sha256": "9c7254a60a8200e351ba553fad49b05b678d4a9b818b216988f36bb2f8b0947b",
+      "pair_arrays_sha256": "b9d79947cd8d549e029a5e21681d88c02bb93e82919b4fb4e637149c2fa6062c"
+    }
+  ],
+  "comparison_status": "PENDING_ALL_ELIGIBLE_BASELINES_MATCHED_CLEAN_PROBABILITIES"
+}

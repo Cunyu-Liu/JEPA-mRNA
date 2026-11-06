@@ -12679,3 +12679,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **NucleicBERT-frozen**：TS1 clean n=48，TP/FP/FN=122/96/814，F1=0.2114384749，转换结果 SHA256=`6c57ca2251173612bb6a8d8f77ef3bf268dd6944e7d9cea64f866316d0c76b98`。与 xens2 的共同 n=12，xens2 calibrated ECE=0.0203573607、Brier=0.0192663923、NLL=0.0893804337，frozen raw ECE=0.0254344110、Brier=0.0308914495、NLL=0.2022029027。frozen 的 ECE 较低但 Brier 更高；xens2 Spearman=0.6153846154、AURC=0.1336065682，frozen=0.3066543204/0.7739970243，比较 SHA256=`f8061ea1439adb0fdb2e61c3ce8d143db8fd0474d1ca66dd6e34d3e0337497d4`。
 - **队列**：`run_nucleicbert_calibration_round39.sh` 已启动，后续 split 复用既有概率、CPU 转换和独立复核，不恢复已取消的原论文下游训练。原始下游任务取消不影响本主 benchmark 的 ft/frozen 基线。
 - **边界**：ECE、Brier、Spearman、AURC 方向不一致，不写最佳置信度。其余 NucleicBERT split 与 RNAformer 大 split 继续后台推进。
+
+
+## §15.422（2026-11-06）NucleicBERT GT 协议过滤与 intra/inter-family 全板验收
+
+- **GT 过滤**：NucleicBERT 原生 598 nt 与 xens2 全长评分 GT 在长序列上可不同，不能仅按名称取交集。比较器现在只保留名称、序列和实际评分 GT 完全一致的样本，`gt_protocol_mismatch_excluded` 单独计数，其他系统合同不变。
+- **ArchiveII 证据**：双方 clean n=1107，39 条因评分 GT 不同排除，实际共同 n=1068、15,097,569 个候选配对。xens2 calibrated ECE=0.0010178612、Brier=0.0025093301、NLL=0.0127487287；NB-ft raw ECE=0.0695058936、Brier=0.0335958794、NLL=0.1138367524。xens2 calibrated Spearman=0.7226829297、AURC=0.1107145167，NB-ft=0.8631483951/0.2294266104，NB-ft 的 Spearman 更高但 AURC 更差。结果 SHA256=`d0f47d5d480be2f1415c4f7b2409472a582f9246beac433457e7ed45468d32fe`。
+- **intra-family 验收**：八 split 的原始概率、F1 和独立数组复核通过，TS3 为 EMPTY；汇总 SHA256=`fea5be0210d688aa979676b561ababefa4b1d39d89ddcab91153b10e82d11590`。bpRNA-new 三次 F1=0.6542908054，与既有主榜一致。
+- **inter-family 验收**：八 split 独立复核通过，汇总 SHA256=`92e1ecb8fe183722d34d51cc1bbc525c234bd2166ddf78240e5cb0341f12ffda`。bpRNA-new 三次 F1=0.6560129820，与既有主榜一致。
+- **队列纠错**：EMPTY 的 Bash 判断必须为 `status != EMPTY_AFTER_DELEAK`，因为 `SystemExit(True)` 返回 1，不能触发 empty 分支。已用真实 EMPTY/非空文件验证分支，恢复 RNAformer 与 NucleicBERT 队列，未删除或伪造任何结果。
+- **后续**：intra/inter-family 的 bpRNA-new 与 ArchiveII 比较继续后台计算；biophysical 和 RiNALMo-ft 随后接续，全 eligible 概率基线未齐前不写最终 ECE 排名。
