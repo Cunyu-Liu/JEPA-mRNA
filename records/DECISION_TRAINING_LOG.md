@@ -12942,3 +12942,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **实现**：`src/rnajepa/pair_jepa.py` 包含对称轻量 PairMLP、被掩 pair latent、训练期 EMA、noEMA 和随机 target 对照；推理只调用 scorer，不调用 teacher。
 - **设计纠错**：逐对 LayerNorm 使损失退化为常数且随机 target 不可区分，已移除；随机 target 改为展平全部配对位置后排列，确保破坏对应关系。空 mask 明确失败，target/prediction 方差与范数保留防坍塌诊断。
 - **验证**：3/3 通过，覆盖零初始化推理无 teacher、EMA 仅训练更新、noEMA 冻结、有限诊断、随机 target 可复现且改变损失及空目标拒绝。未启动 Pair-JEPA 训练。代码提交 `2754585` 已推送。
+
+
+## §15.455（2026-11-06）structRFM seed1 自然早停与三次 VL0 复测
+
+- **收敛**：seed1 在 step8000 达到 patience=6 并恢复 best step5000，`status=completed`、`converged=True`、`early_stopped=True`，best validation loss=22.9369190953。seed0 在 step8000 刷新 best 后继续训练，第三种子尚未启动。
+- **三次复测**：seed1 VL0=196 三次预测逐对一致，TP/FP/FN=3359/1366/1259，micro-F1=**0.7190409933**、macro-F1=**0.7354470215**，checkpoint SHA256=`083ffec63a3a44ce25722e9f0e746d564c63939a59338592b5aea53c97fd23b5`，结果 SHA256=`8f728406adc1e76e6509be805ee5f14673a4d4f5dfe9a05bfc475968ba3938dd`。
+- **边界**：该结果仅属验证集证据，不是 A/B/C 或 SOTA 结论，不入 PPT。S2 已预置 OMP/MKL/OpenBLAS=2，提交 `80cfd43`。
