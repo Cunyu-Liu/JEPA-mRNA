@@ -12949,3 +12949,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **收敛**：seed1 在 step8000 达到 patience=6 并恢复 best step5000，`status=completed`、`converged=True`、`early_stopped=True`，best validation loss=22.9369190953。seed0 在 step8000 刷新 best 后继续训练，第三种子尚未启动。
 - **三次复测**：seed1 VL0=196 三次预测逐对一致，TP/FP/FN=3359/1366/1259，micro-F1=**0.7190409933**、macro-F1=**0.7354470215**，checkpoint SHA256=`083ffec63a3a44ce25722e9f0e746d564c63939a59338592b5aea53c97fd23b5`，结果 SHA256=`8f728406adc1e76e6509be805ee5f14673a4d4f5dfe9a05bfc475968ba3938dd`。
 - **边界**：该结果仅属验证集证据，不是 A/B/C 或 SOTA 结论，不入 PPT。S2 已预置 OMP/MKL/OpenBLAS=2，提交 `80cfd43`。
+
+
+## §15.456（2026-11-06）Pair-JEPA/PairMLP 与 JEV 头兼容接入
+
+- **接入**：`FlatDecisionHead` 新增 `pairjepa` 与近参数 `pairmlp`，复用 PairRepresentation、RIPE 可选偏置、Turner 先验、合法 mask 和 DP；pairmlp 不使用 EMA。`masked_pair_latent_loss` 作为训练期辅助目标接口，推理仍只有单一 scorer。
+- **默认兼容**：resnet2d/mlp 默认路径不变；Pair-JEPA 输出层零初始化，未训练时分数为零，与既有零残差起点一致。TrainConfig 支持 `jepa_use_ema/noEMA/random_target`。
+- **验证**：零初始化、latent 损失、梯度、配置构建、RIPE 兼容、分块与早停共 28/28 通过。代码提交 `b5304dd` 已推送，尚未启动 Pair-JEPA 训练。
