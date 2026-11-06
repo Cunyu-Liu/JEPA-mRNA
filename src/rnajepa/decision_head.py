@@ -329,6 +329,7 @@ class FlatDecisionHead(nn.Module):
         scorer: str = "mlp",
         resnet_blocks: int = 4,
         resnet_kernel_size: int = 3,
+        ripe_mode: Optional[str] = None,
     ) -> None:
         super().__init__()
         self.min_loop = min_loop
@@ -346,6 +347,11 @@ class FlatDecisionHead(nn.Module):
         #: ``tools/patch_head_checkpointing.py`` for the measurement.
         self.grad_checkpoint = bool(grad_checkpoint)
         self.pair_repr = PairRepresentation(d_model, d_z)
+        if ripe_mode:
+            from rnajepa.ripe import RipeConfig, RipePositionalBias
+            self.ripe = RipePositionalBias(RipeConfig(mode=ripe_mode))
+        else:
+            self.ripe = None
         if scorer == "resnet2d":
             #: In the 2D path the ResNet *is* the pair scorer; the per-pair MLP_T
             #: is replaced (not added to), so it is not constructed at all and the
@@ -392,7 +398,7 @@ class FlatDecisionHead(nn.Module):
     ) -> DecisionScores:
         B, L, _ = h.shape
         mask = pair_mask_from_ids(seq_ids, self.min_loop).to(h.device)
-        s, types = self.pair_scores_and_types(h)
+        s, types = self.pair_scores_and_types(h, seq_ids)
         if self.use_turner_prior:
             s = s + self.prior_weight.to(s.dtype) * turner_phys_scores(seq_ids).to(h.device)
         if calibrate and lengths is not None:
@@ -401,7 +407,15 @@ class FlatDecisionHead(nn.Module):
         self.last_flops = flat_flops_estimate(L, self.pair_repr.d_z)
         return DecisionScores(scores=s, pair_types=types, mask=mask)
 
-    def pair_scores_and_types(self, h: torch.Tensor):
+    def score_pair_matrix(self, z: torch.Tensor, seq_ids: Optional[torch.Tensor] = None):
+        scores = self.resnet2d(z)
+        if self.ripe is not None:
+            if seq_ids is None:
+                raise ValueError("seq_ids are required when RIPE is enabled")
+            scores = scores + self.ripe(seq_ids).mean(dim=1)
+        return scores
+
+    def pair_scores_and_types(self, h: torch.Tensor, seq_ids: Optional[torch.Tensor] = None):
         """``(scores, pair_types)`` for every ``(i, j)``, chunked along ``j``.
         With ``scorer == 'resnet2d'`` the whole-matrix 2D path replaces the
         chunked per-pair MLP path (BatchNorm over the full matrix is what makes
@@ -417,7 +431,7 @@ class FlatDecisionHead(nn.Module):
             for j0 in range(0, L, zchunk):
                 chunks.append(self.pair_repr.cross(h, h[:, j0:j0 + zchunk]))
             z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
-            s = self.resnet2d(z)
+            s = self.score_pair_matrix(z, seq_ids)
             type_chunks = [self.type_head.cross(h, h[:, j0:j0 + zchunk])
                            for j0 in range(0, L, zchunk)]
             t = self.type_head.symmetrize(torch.cat(type_chunks, dim=2))

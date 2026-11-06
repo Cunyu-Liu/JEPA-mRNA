@@ -244,6 +244,7 @@ class TrainConfig:
     #: Pair-scorer architecture: 'mlp' (per-pair, all existing arms) or
     #: 'resnet2d' (Plan B: 2D-context scorer over the pairing matrix).
     scorer: str = "mlp"
+    ripe_mode: str = ""
     resnet_blocks: int = 4
     #: Conv kernel of the resnet2d scorer blocks (single-variable ablation knob:
     #  receptive field = kernel * 4 * n_blocks + 1; default 3 = historical value,
@@ -778,7 +779,8 @@ def build_decision_model(config: TrainConfig):
         return FlatDecisionHead(d_model=d_model, d_z=config.d_z, hidden=config.hidden,
             scorer=config.scorer, resnet_blocks=config.resnet_blocks,
                                 resnet_kernel_size=config.resnet_kernel_size,
-                                chunk_size=config.head_chunk_size)
+                                chunk_size=config.head_chunk_size,
+                                ripe_mode=config.ripe_mode or None)
 
     if config.embedding_dir:
         if not config.embedding_d_model:
@@ -2069,6 +2071,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
                         "lower it when 3*d_model makes the chunk transient too big")
     p.add_argument("--scorer", default="mlp", choices=["mlp", "resnet2d"],
                    help="pair-scorer architecture (Plan B: resnet2d)")
+    p.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
     p.add_argument("--resnet-blocks", type=int, default=4)
     p.add_argument("--resnet-kernel-size", type=int, default=3,
                    help="conv kernel of the resnet2d scorer blocks (receptive "
@@ -2130,6 +2133,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         embedding_d_model=args.embedding_d_model,
         head_chunk_size=args.head_chunk_size,
         scorer=args.scorer, resnet_blocks=args.resnet_blocks,
+        ripe_mode=args.ripe_mode,
         resnet_kernel_size=args.resnet_kernel_size,
         prior_init=args.prior_init,
         lr_calibrate=args.lr_calibrate,

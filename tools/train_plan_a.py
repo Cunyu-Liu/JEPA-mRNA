@@ -165,6 +165,7 @@ def main():
     ap.add_argument("--grad-clip", type=float, default=1.0)
     ap.add_argument("--zchunk", type=int, default=64, help="column width of the "
                     "checkpointed z construction (numerically exact; see docstring)")
+    ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
                     help="hold this much GPU memory from process start so "
                          "co-tenants cannot claim the card during the CPU-bound "
@@ -232,7 +233,8 @@ def main():
     print(f"[plan-a] backbone: {report['n_params']/1e6:.0f}M params, "
           f"d={report['d_model']}, layers={report['n_layers']}", flush=True)
     head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=128, hidden=64,
-                            scorer="resnet2d", chunk_size=0)
+                            scorer="resnet2d", chunk_size=0,
+                            ripe_mode=args.ripe_mode or None)
     encoder = encoder.to(device)
     head = head.to(device)
     if args.init_checkpoint:
@@ -449,7 +451,7 @@ def main():
             chunks.append(_grad_ckpt(_z_chunk, h, h[:, j0:j0 + zc],
                                      use_reentrant=False))
         z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
-        s_raw = _grad_ckpt(head.resnet2d, z, use_reentrant=False)
+        s_raw = _grad_ckpt(head.score_pair_matrix, z, head_ids, use_reentrant=False)
         bn_after_fwd = _snap()  # stats after exactly one update
         s = s_raw
         if head.use_turner_prior:
