@@ -10,6 +10,7 @@ class RipeConfig:
     mode: str = "r3"
     random_period_seed: int = 0
     random_complement_seed: int = 0
+    token_id_map: tuple = ()
 
 
 class RipePositionalBias(nn.Module):
@@ -33,6 +34,8 @@ class RipePositionalBias(nn.Module):
         self.register_buffer("centers", centers)
         self.register_buffer("focal", focal)
         self.register_buffer("periods", torch.tensor([11.0, 22.0]))
+        if config.token_id_map:
+            self.register_buffer("token_id_map", torch.tensor(config.token_id_map, dtype=torch.long))
         complement = torch.zeros(8, 8)
         for first, second in ((0, 3), (3, 0), (1, 2), (2, 1)):
             complement[first, second] = 1.0
@@ -74,6 +77,10 @@ class RipePositionalBias(nn.Module):
     def forward(self, seq_ids):
         if seq_ids.ndim != 2:
             raise ValueError("seq_ids must be [batch, length]")
+        if self.config.token_id_map:
+            if torch.any((seq_ids < 0) | (seq_ids >= len(self.token_id_map))):
+                raise ValueError("token id exceeds explicit RIPE vocabulary mapping")
+            seq_ids = self.token_id_map[seq_ids]
         length = seq_ids.shape[1]
         delta = torch.arange(length, device=seq_ids.device)
         delta = (delta[:, None] - delta[None, :]).abs().float()

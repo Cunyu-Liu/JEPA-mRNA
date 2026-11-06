@@ -235,7 +235,7 @@ def main():
         from ripe_structrfm import enable_ripe_structrfm
         if not args.ripe_mode:
             raise SystemExit("--ripe-encoder requires --ripe-mode")
-        encoder = enable_ripe_structrfm(encoder, args.ripe_mode)
+        encoder = enable_ripe_structrfm(encoder, args.ripe_mode, vocab=VOCAB)
     print(f"[plan-a] backbone: {report['n_params']/1e6:.0f}M params, "
           f"d={report['d_model']}, layers={report['n_layers']}", flush=True)
     head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=128, hidden=64,
@@ -568,7 +568,7 @@ def main():
                             "model": {"encoder": encoder.state_dict(),
                                       "head": head.state_dict()},
                             "validation_loss": validation_loss,
-                            "objective": meta["objective"]},
+                            "objective": meta["objective"], "meta": meta},
                            os.path.join(args.out, "best.pt"))
             else:
                 bad_evaluations += 1

@@ -58,16 +58,28 @@ def _forward_ripe(self, *args, **kwargs):
     return self._original_forward(*args, **kwargs)
 
 
-def enable_ripe_structrfm(model, mode):
+def enable_ripe_structrfm(model, mode, vocab=None):
     if mode not in {"log", "r1", "r2", "r3", "r5", "r6"}:
         raise ValueError(mode)
+    token_id_map = ()
+    if mode in {"r3", "r6"}:
+        if vocab is None:
+            raise ValueError("explicit nucleotide vocab is required for RIPE content bias")
+        token_id_map = [7] * model.config.vocab_size
+        for base, index in (("A", 0), ("C", 1), ("G", 2), ("U", 3), ("T", 3)):
+            token_id = vocab[base]
+            if not 0 <= token_id < len(token_id_map):
+                raise ValueError(f"token {base} has out-of-range id {token_id}")
+            token_id_map[token_id] = index
+        token_id_map = tuple(token_id_map)
     model._original_forward = model.forward
     model.forward = types.MethodType(_forward_ripe, model)
     model.embeddings.forward = types.MethodType(_embedding_without_position, model.embeddings)
     for layer in model.encoder.layer:
         attention = layer.attention.self
         attention.ripe = RipePositionalBias(RipeConfig(
-            n_heads=model.config.num_attention_heads, mode=mode)).to(
+            n_heads=model.config.num_attention_heads, mode=mode,
+            token_id_map=token_id_map)).to(
                 device=attention.query.weight.device, dtype=attention.query.weight.dtype)
         attention.forward = types.MethodType(_attention_with_ripe, attention)
     model.config.position_embedding_type = "ripe"

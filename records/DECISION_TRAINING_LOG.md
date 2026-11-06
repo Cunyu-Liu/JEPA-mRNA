@@ -12963,3 +12963,20 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **接线**：TrainConfig 新增 `lambda_jepa`（默认 0）与 `jepa_mask_prob`，训练时从同一 PairRepresentation 采样合法 pair，latent loss 加入总目标；EMA 仅在 optimizer step 后更新，推理不使用 teacher。非 pairjepa 或非冻结嵌入时明确拒绝。
 - **工程纠错**：辅助 loss 必须读取模型所在设备，不能沿用 `objective_terms` 之前的原始 CPU batch。随机 target 可复现，空目标拒绝，早停和 resume 保持兼容。
 - **真实验收**：2-step CUDA 小数据运行通过，日志含 `jepa` 项，checkpoint 中 scorer 与 EMA teacher 参数分化；相关测试合计 14/14 通过。该小运行仅作工程证据，不是科学结果。代码提交 `0912460` 已推送。
+
+
+## §15.458（2026-11-07）RIPE-structRFM 长序列 CUDA 验收、seed0 收敛与续传纠错
+
+- **S1 seed0**：step15000 达到 patience=6，恢复 best step12000；best validation loss=21.1785112411，`converged=True`、`early_stopped=True`。seed1 的既有结论不变，seed2 已进入训练；三者齐全后才会放行 13 split 正式评测。
+- **RIPE-BERT 实现**：移除 BERT 绝对位置嵌入，在每层 self-attention 的 QK 分数注入相同四通道 RIPE；训练 checkpoint 显式记录 `meta.ripe={mode,encoder}`，全参评测据此同时恢复 encoder 和 JEV 头 RIPE，不把两种增益混为一个消融臂。
+- **故障与复核**：首次官方 515nt CUDA 前向发现后加 RIPE 参数留在 CPU，已按对应 attention 权重的 device/dtype 初始化。修复后官方 structRFM 515nt 输出 `[1,515,768]`，三次推理逐值一致且全部有限；证据=`audits/round48/ripe_structrfm_515.json`，SHA256=`103f4fcac693af13ac9c8e39e41d34d044baf427c49772ed825d40f659477513`。这是长序列工程能力验收，不代表长序列 F1 或 SOTA。
+- **语料续传**：旧下载器未核对 `Content-Range` 且未限制响应写入长度，断流后续传产生 oversized 分块。已停止该下载进程，保留 895 个完整块及 48 个可续传短块，将 1332 个 oversized 块移入隔离目录，422 块尚缺失；已确认完整/可续传字节=1,905,262,592，不把 oversized 字节算作进度。修复后严格校验响应起点、限制写入上限，最终仍以整包 MD5/SHA256 验收；语料尚未完成。
+- **tokenizer 纠错**：独立复核发现 structRFM 官方 A/C/G/U 编号为 5/7/8/6，并非 RIPE 内部 0/1/2/3。现 R3/R6 强制显式提供碱基词表，A/C/G/U/T 映射至 0/1/2/3/3，其余为未知；官方与规范编号的 RIPE 输出逐值一致，缺少词表会明确失败。更新后的 515nt ACGU 序列三次复测 SHA256=`c89ec6c325eeffce1e217edc48986ab1f7fa911be026761d891b82ff8317ef9f`，取代修复前的工程证据 `103f4f…`。
+- **测试与提交**：RIPE、JEV 头、分块、早停、真实 CUDA 设备继承、官方 token 映射及续传共 34/34 通过。基础修复提交 `92ce2f7ce813a9bfa04cd40cb63f11e490c635eb` 已推送，tokenizer 修正随后单独提交。PPT 尚未修改。
+
+
+## §15.459（2026-11-07）structRFM 冻结 JEV seed0 三次 VL0 复测
+
+- **输入与收敛**：恢复 seed0 的 best step12000，checkpoint SHA256=`2dfa4f9f030d4c766839a6264df5f48b2af6eb756606fd75d5a3a7d19976e75a`；VL0=196 全部完成，raw_n=clean_n=196，无截断或缺失。
+- **结果**：三次预测逐对一致，TP/FP/FN=3358/970/1260，micro-F1=**0.7507265817**、macro-F1=**0.7527701980**。由 TP/FP/FN 独立复算 F1 一致，结果 SHA256=`dd0bdc2f950da45c9d3c93be0881508eea46db3d1fb203549aeb5d7eed453db7`。
+- **边界**：高于本路线 seed1 的 VL0，但两者是不同训练种子，不能平均预测或挑选测试集结果；仍需 seed2 收敛、13 split 污染审计和完整 A/B/C。该验证集结果不入 PPT、不声称 SOTA。

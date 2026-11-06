@@ -29,7 +29,8 @@ def main():
     ripe = checkpoint.get("meta", {}).get("ripe", {})
     if ripe.get("encoder"):
         from ripe_structrfm import enable_ripe_structrfm
-        encoder = enable_ripe_structrfm(encoder, ripe["mode"])
+        vocab = {base: tokenizer.convert_tokens_to_ids(base) for base in "ACGUT"}
+        encoder = enable_ripe_structrfm(encoder, ripe["mode"], vocab=vocab)
     encoder.load_state_dict(checkpoint["model"]["encoder"], strict=True)
     head = FlatDecisionHead(d_model=768, d_z=128, hidden=64,
                             scorer="resnet2d", chunk_size=0,
