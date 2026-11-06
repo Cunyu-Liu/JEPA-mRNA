@@ -1785,6 +1785,34 @@
    "bytes": 7344,
    "description": "TS0 MXfold2 clean n=1188、matched n=666，ECE=0.0004637529",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_partial_verification_7.json",
+   "sha256": "a1295d56fa2cbc00f626f6e72f3f430c77473239b6b24317395a48770f2c04d6",
+   "bytes": 2776,
+   "description": "RiNALMo-ft 七格独立 NPZ 复核；bpRNA-new 未计入",
+   "status": "active_partial_7_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_partial_7_comparisons_summary.json",
+   "sha256": "22e62860c8992c6b58224cadf9023749d16e6a6118bafd6050b2a1e14e69fbb1",
+   "bytes": 2048,
+   "description": "RiNALMo-ft 七格附加敏感性；TS0 xens2 ECE 更低，其余六格 RiNALMo-ft 更低",
+   "status": "active_partial_7_of_8_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_eternafold_calibration.json",
+   "sha256": "5895f8d0fc5ffefae09126c6ac647c012f09c9e084504bb8819f1af7195dbec3",
+   "bytes": 7398,
+   "description": "TS2 EternaFold 原生 posterior MEA，F1=0.8562434418，ECE=0.0028017544",
+   "status": "active_first_cell_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_ts2_xens2_contrafold_calibration.json",
+   "sha256": "e2d248daf36a2850e539cefcf9f7130e4160327f6ab1a8155ef5e2e6d2ebf783",
+   "bytes": 7400,
+   "description": "TS2 CONTRAfold 原生 posterior MEA，F1=0.8702928870，ECE=0.0032803148",
+   "status": "active_first_cell_not_full_board"
   }
  ]
 }

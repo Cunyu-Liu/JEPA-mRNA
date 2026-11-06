@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "PASS_PARTIAL_7_OF_8_NOT_FULL_BOARD",
+  "cells": [
+    {
+      "split": "ref_pdb_ts1",
+      "matched_n": 18,
+      "f1": 0.716916488222698,
+      "xens2_ece": 0.006026915359553816,
+      "rinalmo_ece": 0.005290514332857124,
+      "result_sha256": "d3e5070c0aa397808e068171faca699f7e6dc55ed3ebf83f80a4adcdbc163e8d"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "matched_n": 29,
+      "f1": 0.6714413607878246,
+      "xens2_ece": 0.017723488985506256,
+      "rinalmo_ece": 0.014891815449246795,
+      "result_sha256": "e968e52dabb02ac031a20f15950c10ca835c53979f3fc19c61003bd0d2705b5d"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "matched_n": 4,
+      "f1": 0.5800604229607251,
+      "xens2_ece": 0.008213701263478302,
+      "rinalmo_ece": 0.010915572537177936,
+      "result_sha256": "ae1da873aeaa3e1c24ce295eaa39c750a65050e8ee7c035ffb1c76948defcadc"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "matched_n": 10,
+      "f1": 0.5566265060240964,
+      "xens2_ece": 0.018861770340978645,
+      "rinalmo_ece": 0.015749642384349363,
+      "result_sha256": "e39391905e14a6c57d41c9e0110550311430d2407a73a7613e4de17eec371513"
+    },
+    {
+      "split": "testsetb",
+      "matched_n": 95,
+      "f1": 0.7894353369763206,
+      "xens2_ece": 0.0021670520687927424,
+      "rinalmo_ece": 0.0016509607587685772,
+      "result_sha256": "3c8afe2bcf8d2c7c2f80b135458326fa076189b30f5f4053ecab8ed8e98a0e10"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "matched_n": 765,
+      "f1": 0.7108895303070061,
+      "xens2_ece": 0.0012167945182449944,
+      "rinalmo_ece": 0.0011956814575793877,
+      "result_sha256": "93960d6e0aae6fffcad258cdb8278238734eb799b2a0f216ac80866762a8c158"
+    },
+    {
+      "split": "bprna_ts0",
+      "matched_n": 709,
+      "f1": 0.7110963915275416,
+      "xens2_ece": 0.0006199985200578379,
+      "rinalmo_ece": 0.0015298908299664245,
+      "result_sha256": "9a68d9dc83cc873bcf0f55101cf4c95d3c12864c96ab18242a0e7e99fc7d7a1a"
+    }
+  ],
+  "pending": [
+    "bprna_new"
+  ]
+}

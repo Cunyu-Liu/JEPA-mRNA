@@ -49,7 +49,7 @@
 
 **Risk:** High — 交集与原生主榜混淆、把单格较低 ECE 外推为全板最佳，都会造成错误科学叙事。
 
-**Implementation:** 按名称、序列和实际评分 GT 对齐，输出 24 格 matched-clean 敏感性；空交集不写 0 分。EternaFold/CONTRAfold 未保存原生逐对后验概率，保留 `NOT_AVAILABLE_NATIVE_PAIR_PROBABILITIES`。大数组留 `/teams`，核心 JSON 和代码提交 GitHub，最终仅定点更新必要图件。
+**Implementation:** 按名称、序列和实际评分 GT 对齐，输出 24 格 matched-clean 敏感性；空交集不写 0 分。后续源码核验已确认 EternaFold/CONTRAfold 支持 `--bpseq` 与 `--posteriors 0`，另按原生 posterior MEA 合同补测，不再标为概率不可用。大数组留 `/teams`，核心 JSON 和代码提交 GitHub，最终仅定点更新必要图件。
 
 **Minimum verification:** 24 个独立验收单元、24 个比较单元及清单哈希全部通过；源 JSON→台账→图表一致。多 split 已存在低于 xens2 的 ECE，不宣称全板最低 ECE 或最佳置信度。并发运行时间不作为速度证据。
 

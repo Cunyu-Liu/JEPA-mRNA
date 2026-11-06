@@ -12788,3 +12788,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **六格比较**：TS1/TS2/TS3/hard/TestSetB/TS0 均完成 xens2 与 MXfold2 的同 GT、同候选配对附加敏感性。六格 MXfold2 ECE 均更低，分别为 0.0059572692/0.0077294563/0.0049607567/0.0064225447/0.0017417502/0.0004637529，xens2 分别为 0.0069049068/0.0168951314/0.0082137013/0.0188273844/0.0021666147/0.0007326793。六格汇总 SHA256=`a45a6d271600371450aa061a74f0f13dcacca10b30b8d8f8da901a15b7aabceb`，状态明确为 6/8。
 - **TS0 证据**：MXfold2 clean n=1188、matched n=666、F1=0.5489548512，与主榜一致；比较 SHA256=`3cc267bd33cea34cf6a0762f5629120224558da6a9beb504c0bdba9e0deb8846`。ArchiveII 原生概率无效，bpRNA-new 三次推理继续，不能将六格方向外推为全板最佳置信度。
 - **RiNALMo-ft**：ArchiveII clean 概率前两次 F1 均为 0.7108895303，TS0 首轮 F1=0.7110963915，与主榜一致；完整三次、独立验收和八格比较仍按门控等待，不将 repeat 数当成全板完成。
+
+
+## §15.435（2026-11-06）RiNALMo-ft 七格与 CONTRAfold 后验能力纠正
+
+- **RiNALMo-ft 七格**：独立 NPZ 复核 SHA256=`a1295d56fa2cbc00f626f6e72f3f430c77473239b6b24317395a48770f2c04d6`，七格比较汇总 SHA256=`22e62860c8992c6b58224cadf9023749d16e6a6118bafd6050b2a1e14e69fbb1`。ArchiveII F1=0.7108895303，TS0 F1=0.7110963915。TS0 的 xens2 ECE=0.0006199985，低于 RiNALMo-ft=0.0015298908；其余六格 RiNALMo-ft ECE 更低，不能外推为统一胜者。
+- **schema 修复**：验证器现兼容 RNAformer `clean` 与 RiNALMo-ft `clean_tr0`，条件表达式先选字典再按 split 取单元格；两种真实 schema 均通过。提交 `cdad4bad81418442dda5239fbb75c9dc7b4703dd`。
+- **CONTRAfold 能力勘误**：官方源码明确支持 `--posteriors CUTOFF OUTFILEORDIR`，此前“无原生逐对概率”是“现有结果未保存”，不是模型能力缺失，相关旧结论撤回。`--bpseq` 与 `--posteriors 0` 联合调用保留原生 MEA 结构并输出后验，真实单条逐对一致。实现和队列提交 `aca6089361cf71c8ab5bed5c58ec224e9b3c4f0a`，13 项测试通过。
+- **TS2 首格**：EternaFold F1=0.8562434418、ECE=0.0028017544、Brier=0.0061798341、NLL=0.0256283602，比较 SHA256=`5895f8d0fc5ffefae09126c6ac647c012f09c9e084504bb8819f1af7195dbec3`。CONTRAfold F1=0.8702928870、ECE=0.0032803148、Brier=0.0064057593、NLL=0.0246872021，比较 SHA256=`e2d248daf36a2850e539cefcf9f7130e4160327f6ab1a8155ef5e2e6d2ebf783`。两者均低于同交集 xens2 ECE=0.0177234890，八 split 未齐前不称全板最低。
+- **队列**：EternaFold 与 CONTRAfold 各自 clean 八 split×3 后验计算已并行启动。Vienna 实施文档同步纠正；不恢复 NucleicBERT 原论文下游训练，不把后验与 one-hot 混用。
