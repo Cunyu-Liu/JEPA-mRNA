@@ -1,0 +1,17 @@
+{
+  "status": "PASS_ROUND38_ECE_PAGE_ONLY_NATIVE_RENDER",
+  "changed_slide": 8,
+  "other_22_slide_text_unchanged": true,
+  "pdf_pages": 23,
+  "pdf_sha256": "f3fdb739e8ba0118798c452d88697d5160181b3d8d7b5b8af76808386c921f99",
+  "slide8_fonts": ["微软雅黑"],
+  "slide8_line_spacing": 1.5,
+  "native_pdf_page8_identity_verified": true,
+  "visual_overlap_clipping_check": "pass after native PowerPoint reload",
+  "deck": "/Users/liucunyu/Documents/\u8bfe\u9898idea \u6570\u636e \u7ed3\u8bba/\u6d59\u6c5f\u5927\u5b66/RNA \u76f8\u5173\u6a21\u578b/RNA-JEV/ppt/RNA-JEV_\u8bba\u6587\u903b\u8f91\u91cd\u6784_20261031_\u5bfc\u5e08\u8ba8\u8bba_round38.pptx",
+  "deck_sha256": "09cb7c6292cc2e81245d8f298413c96a1db2eb225acd3dd7ce4e2a26a3877b4e",
+  "figure": "/Users/liucunyu/Documents/\u8bfe\u9898idea \u6570\u636e \u7ed3\u8bba/\u6d59\u6c5f\u5927\u5b66/RNA \u76f8\u5173\u6a21\u578b/RNA-JEV/ppt/figures/round38_ece_evidence.png",
+  "figure_sha256": "833aa2cb220a15b9b998c41e34a8a4ce918529dccaf2ca3a1816bb5b148bbba4",
+  "source": "/Users/liucunyu/Documents/\u8bfe\u9898idea \u6570\u636e \u7ed3\u8bba/\u6d59\u6c5f\u5927\u5b66/RNA \u76f8\u5173\u6a21\u578b/RNA-JEV/ppt/.round39_work/source_data/appendix_leakage/round39_ece_ppt_source.json",
+  "source_sha256": "128e9e6cfaa4409e502c424ce89f13b9052c8ec043230871de0ece59a78082d5"
+}

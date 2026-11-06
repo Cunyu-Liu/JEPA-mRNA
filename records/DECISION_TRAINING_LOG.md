@@ -12836,3 +12836,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **NucleicBERT TS3 纠错**：旧脚本无条件跳过 TS3，并把缺失比较文件写成 EMPTY；实际 ft clean n=4、frozen clean n=17，均有原生概率。已补两格 matched n=4 的比较，SHA256=`df93d5522023b6e63f2a9aa7635ad4aa3ce62456891a534833b006e86e1d4e92`、`1f0b5462b1f14c11a2e43eb41da71cd3a5f26a60ba9c907a49c3d59fa32b8c71`。新 16 格总账均为有效比较，SHA256=`f265294c4df687eab1839f5211da81680e4ee8518a3211c7fe2aa058095df867`，取代旧 `f3c973df…` 空值口径。修复提交 `0360efaa41a31171d3f8b3a1b6403a0826c16ef0`。
 - **128 格统一索引**：状态 `COMPLETE_REGISTERED_PROBABILITY_ASSESSMENT_WITH_NATIVE_INVALID`，共 124 个有效交集、2 个 EMPTY、1 个空交集、1 个原生 BPP 无效，pending=0，SHA256=`3839a281dae9eedba95de4abb69b7fee925a95108b10dae5b3ee644df665c143`。索引提交 `a8e7336648e570c568608f2c86a01ce235005cea`。
 - **科学边界**：不同系统的 own-clean/matched n 不强行统一；own-clean F1 主榜不变，ECE 交集只作附加敏感性。多个系统在 bpRNA-new 等指标上优于 xens2，最低 ECE/最佳置信度目标已有实测反例，不能宣称达成。双 stream 速度验收仍等待无干扰窗口。
+
+
+## §15.441（2026-11-06）round38 第 8 页校准证据定点更新
+
+- **页面改动**：仅第 8 页，标题改为“主图 4｜VL0 校准改善，但不构成全板最低 ECE”。左图保留 own-clean 校准前后，右图新增各 split 最优基线 dumbbell 与 matched n；页脚明确 128 格注册概率证据和 matched 仅作敏感性。其余 22 页文字逐项一致，用户已有布局不改。
+- **图源**：`round39_ece_ppt_source.json` SHA256=`128e9e6cfaa4409e502c424ce89f13b9052c8ec043230871de0ece59a78082d5`。TS0=MXfold2 0.0004637529（n=666）、TestSetB=CONTRAfold 0.0015387200（n=288）、bpRNA-new=EternaFold 0.0009544109（n=5386）、ArchiveII=CONTRAfold 0.0004912362（n=1107），均低于同交集 xens2。图件 SHA256=`833aa2cb220a15b9b998c41e34a8a4ce918529dccaf2ca3a1816bb5b148bbba4`。
+- **最终文件**：PPT SHA256=`09cb7c6292cc2e81245d8f298413c96a1db2eb225acd3dd7ce4e2a26a3877b4e`，PDF SHA256=`f3fdb739e8ba0118798c452d88697d5160181b3d8d7b5b8af76808386c921f99`。PDF 23 页，第 8 页全部文字为微软雅黑、1.5 倍行距。
+- **渲染 QA**：初版右侧副注重叠与标签裁切已修复；LibreOffice/Poppler 中文缺字改为原生 PowerPoint 验收。导出时曾误命中另一个打开文稿，未交付该 PDF；随后用唯一 `_round38.pptx` 后缀定位并关闭旧内存副本重载，最终第 8 页中文、标签、页脚和文件身份均通过。QA 状态 `PASS_ROUND38_ECE_PAGE_ONLY_NATIVE_RENDER`。
+- **叙事边界**：本页同时证明 VL0 校准有效与多基线 ECE 更低，避免把校准改善写成全板最优。速度候选和 8/8 目标不因本页更新而宣称完成。

@@ -1974,6 +1974,27 @@
    "bytes": 191369,
    "description": "注册概率证据 128 格统一索引；pending=0，保留 EMPTY 与原生无效",
    "status": "active_complete_registered_assessment_with_native_invalid"
+  },
+  {
+   "path": "appendix_leakage/round39_ece_ppt_source.json",
+   "sha256": "128e9e6cfaa4409e502c424ce89f13b9052c8ec043230871de0ece59a78082d5",
+   "bytes": 21923,
+   "description": "round38 第 8 页 own-clean 与 matched ECE 图源及 n",
+   "status": "active_verified_figure_source"
+  },
+  {
+   "path": "figures/round38_ece_evidence.png",
+   "sha256": "833aa2cb220a15b9b998c41e34a8a4ce918529dccaf2ca3a1816bb5b148bbba4",
+   "bytes": 270398,
+   "description": "round38 第 8 页校准改善与基线反例双面板图",
+   "status": "active_verified_figure"
+  },
+  {
+   "path": "round38_ece_update_qa.json",
+   "sha256": "d0d934fe85a2e4028b627b8a59ce81814a5637e772742c7091fefd57e4f199f0",
+   "bytes": 1314,
+   "description": "第 8 页定点修改、23 页原生渲染、字体行距和文件身份验收",
+   "status": "active_verified_qa"
   }
  ]
 }
