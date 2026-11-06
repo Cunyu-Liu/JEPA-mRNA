@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RINALMO_FT_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 709,
+      "result_sha256": "9a68d9dc83cc873bcf0f55101cf4c95d3c12864c96ab18242a0e7e99fc7d7a1a"
+    },
+    {
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "483fe6e198fb2c38e34a85c46b52062b1584743c8b5d0bf2728fb5b1799d5109"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 18,
+      "result_sha256": "d3e5070c0aa397808e068171faca699f7e6dc55ed3ebf83f80a4adcdbc163e8d"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 29,
+      "result_sha256": "e968e52dabb02ac031a20f15950c10ca835c53979f3fc19c61003bd0d2705b5d"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "ae1da873aeaa3e1c24ce295eaa39c750a65050e8ee7c035ffb1c76948defcadc"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 10,
+      "result_sha256": "e39391905e14a6c57d41c9e0110550311430d2407a73a7613e4de17eec371513"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 765,
+      "result_sha256": "93960d6e0aae6fffcad258cdb8278238734eb799b2a0f216ac80866762a8c158"
+    },
+    {
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 95,
+      "result_sha256": "3c8afe2bcf8d2c7c2f80b135458326fa076189b30f5f4053ecab8ed8e98a0e10"
+    }
+  ],
+  "boundary": "auxiliary matched sensitivity; empty intersections never assigned F1=0 or ECE=0; other baselines pending"
+}

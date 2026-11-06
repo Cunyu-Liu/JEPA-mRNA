@@ -1813,6 +1813,27 @@
    "bytes": 7400,
    "description": "TS2 CONTRAfold 原生 posterior MEA，F1=0.8702928870，ECE=0.0032803148",
    "status": "active_first_cell_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_calibration_verification.json",
+   "sha256": "e62ab70f2cef14f72981c2686ceb972327faa44ddf8e29cae0d1dee45368f8aa",
+   "bytes": 3247,
+   "description": "RiNALMo-ft 八 split 原生 CUDA 概率独立验收",
+   "status": "active_complete_probability_assets"
+  },
+  {
+   "path": "appendix_leakage/round39_rinalmo_ft_calibration_comparisons_summary.json",
+   "sha256": "a5449f369c646b4b26be6ba28365782ce8a44e57eb2b50c76896ed8052deaf1b",
+   "bytes": 2111,
+   "description": "RiNALMo-ft 八格附加敏感性汇总",
+   "status": "active_complete_rinalmo_not_all_eligible"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_rinalmo_ft_calibration.json",
+   "sha256": "483fe6e198fb2c38e34a85c46b52062b1584743c8b5d0bf2728fb5b1799d5109",
+   "bytes": 7396,
+   "description": "bpRNA-new RiNALMo-ft；xens2 ECE/NLL/AURC 更优，RiNALMo-ft Brier/Spearman 更优",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

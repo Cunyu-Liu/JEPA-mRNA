@@ -12797,3 +12797,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **CONTRAfold 能力勘误**：官方源码明确支持 `--posteriors CUTOFF OUTFILEORDIR`，此前“无原生逐对概率”是“现有结果未保存”，不是模型能力缺失，相关旧结论撤回。`--bpseq` 与 `--posteriors 0` 联合调用保留原生 MEA 结构并输出后验，真实单条逐对一致。实现和队列提交 `aca6089361cf71c8ab5bed5c58ec224e9b3c4f0a`，13 项测试通过。
 - **TS2 首格**：EternaFold F1=0.8562434418、ECE=0.0028017544、Brier=0.0061798341、NLL=0.0256283602，比较 SHA256=`5895f8d0fc5ffefae09126c6ac647c012f09c9e084504bb8819f1af7195dbec3`。CONTRAfold F1=0.8702928870、ECE=0.0032803148、Brier=0.0064057593、NLL=0.0246872021，比较 SHA256=`e2d248daf36a2850e539cefcf9f7130e4160327f6ab1a8155ef5e2e6d2ebf783`。两者均低于同交集 xens2 ECE=0.0177234890，八 split 未齐前不称全板最低。
 - **队列**：EternaFold 与 CONTRAfold 各自 clean 八 split×3 后验计算已并行启动。Vienna 实施文档同步纠正；不恢复 NucleicBERT 原论文下游训练，不把后验与 one-hot 混用。
+
+
+## §15.436（2026-11-06）RiNALMo-ft 八格校准闭环
+
+- **全板验收**：八 split 原生 CUDA 概率、GT、三次 F1 与置信度均通过独立复算，SHA256=`e62ab70f2cef14f72981c2686ceb972327faa44ddf8e29cae0d1dee45368f8aa`。八格 matched-clean 比较汇总 SHA256=`a5449f369c646b4b26be6ba28365782ce8a44e57eb2b50c76896ed8052deaf1b`，不改 own-clean 主榜。
+- **bpRNA-new**：RiNALMo-ft clean n=5388、matched n=5386，F1=0.4489961557。xens2 ECE=0.0048310272、NLL=0.0338954187，低于 RiNALMo-ft=0.0056840551/0.0425929586；RiNALMo-ft Brier=0.0068296539，低于 xens2=0.0072889935。RiNALMo-ft Spearman=0.6353006942 高于 xens2=0.5176421505，但 AURC=0.4193628566 高于 xens2=0.3486543793（更差）。比较 SHA256=`483fe6e198fb2c38e34a85c46b52062b1584743c8b5d0bf2728fb5b1799d5109`。
+- **结论**：RiNALMo-ft 从路径故障恢复到全板闭环，未把 smoke 或前两次 repeat 当成最终结果。当前 RNAformer 32 格、ViennaRNA 24 格、RiNALMo-ft 8 格已完成；MXfold2 bpRNA-new 和 CONTRAfold 家族 16 格继续。ECE、Brier/NLL、Spearman、AURC 分开陈述，不宣称全板最佳置信度。
