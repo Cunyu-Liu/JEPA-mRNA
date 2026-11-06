@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "NO_TRANSFORMER_WEIGHT_SHARING_ALLOWED",
+  "method": "torch.equal on every encoder state_dict tensor, including shapes and dtypes",
+  "plana_s0": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s0_step20000.pt",
+    "sha256": "bd917b6380738e65ce46020eb52ab12333d2cd7a475ab066ed37379dc71828cd"
+  },
+  "plana_s1": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s1_step20000.pt",
+    "sha256": "c10fb303b589346b806ff15ba1f4bb789af1ada3ac78a8010246f6d85c3296c8"
+  },
+  "tensor_count": 500,
+  "identical_tensor_count": 5,
+  "different_tensor_count": 495,
+  "transformer_layers": 33,
+  "all_transformer_tensors_different": true,
+  "identical_tensors": [
+    "embeddings.word_embeddings.weight",
+    "encoder.layer_norm.weight",
+    "encoder.layer_norm.bias",
+    "pooler.dense.weight",
+    "pooler.dense.bias"
+  ],
+  "conclusion": "Only embedding/final normalization/pooler weights match. No Transformer layer can be shared or cached between enc0 and enc1. Same architecture is not same weights."
+}

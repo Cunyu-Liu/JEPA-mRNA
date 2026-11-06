@@ -12868,3 +12868,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 本地 `SOURCE_MANIFEST.json` 共 347 个唯一条目，其中 345 个现有文件的路径、字节数和 SHA256 全部一致，无空文件、无占位符、无 hash mismatch。
 - 两个 PRISM 文件已被其他整理步骤明确标为 `archived_missing`，不视为意外缺失，不覆盖或改写其他会话的归档决定。除此之外没有缺失路径。
 - 本项只验证清单与文件一致性，不代表 600 单元、速度 SOTA 或 E2Efold 资产已经恢复；这些未完成边界继续保留。
+
+
+## §15.445（2026-11-06）plana 权重同一性检查与暂停测速
+
+- **逐张量检查**：两个 plan a checkpoint 共 500 个编码器张量，使用 `torch.equal` 并同时检查 shape/dtype。仅 embedding、最终 layer_norm 和 pooler 共 5 个张量完全相同；33 个 Transformer 层的 495 个张量全部不同。不能合并 enc0/enc1 或缓存共享编码，同架构不等于同权重。证据 SHA256=`2caf286104aadf707031ba09f23aa09618cd19d52379a8a62bb97e6c53221ef1`。
+- **权重身份**：s0 SHA256=`bd917b6380738e65ce46020eb52ab12333d2cd7a475ab066ed37379dc71828cd`；s1 SHA256=`c10fb303b589346b806ff15ba1f4bb789af1ada3ac78a8010246f6d85c3296c8`。
+- **用户决定**：暂停测速，停止本会话的 `run_xens2_stream_speed_round39.sh` 重试队列，不终止其他会话任务。已有 B=32=13.5802438348、自适应=14.1949071622 seq/s，双 stream 没有有效吞吐，速度 SOTA 未达成。

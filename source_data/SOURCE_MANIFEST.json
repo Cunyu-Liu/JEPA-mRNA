@@ -2009,6 +2009,13 @@
    "bytes": 1524,
    "description": "E2Efold 官方链接、Drive 超时、SharePoint 错误页和 19 个 fork 复核；仍 provenance blocked",
    "status": "active_blocked_provenance"
+  },
+  {
+   "path": "appendix_leakage/round39_plana_encoder_weight_identity.json",
+   "sha256": "2caf286104aadf707031ba09f23aa09618cd19d52379a8a62bb97e6c53221ef1",
+   "bytes": 1145,
+   "description": "两个 plan a 编码器 500 张量逐一比对；Transformer 权重全部不同，禁止共享编码",
+   "status": "active_verified_no_weight_sharing"
   }
  ]
 }
