@@ -10,6 +10,24 @@ def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def length_breakdown(result):
+    from structrfm_metrics_round48 import length_bucket
+    buckets = [{"n": 0, "tp": 0, "fp": 0, "fn": 0, "f1_values": []} for _ in range(4)]
+    for row in result["per_sequence"]:
+        bucket = buckets[length_bucket(row["length"])]
+        bucket["n"] += 1
+        for key in ("tp", "fp", "fn"):
+            bucket[key] += row[key]
+        bucket["f1_values"].append(row["f1"])
+    output = []
+    for bucket in buckets:
+        denominator = 2 * bucket["tp"] + bucket["fp"] + bucket["fn"]
+        output.append({"n": bucket["n"], "tp": bucket["tp"], "fp": bucket["fp"],
+                       "fn": bucket["fn"], "micro_f1": 2 * bucket["tp"] / denominator if denominator else None,
+                       "macro_f1": float(np.mean(bucket["f1_values"])) if bucket["n"] else None})
+    return output
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, required=True)
@@ -44,12 +62,22 @@ def main():
             fn = sum(row["fn"] for row in result["per_sequence"])
             assert (tp, fp, fn) == tuple(result["micro"][key] for key in ("tp", "fp", "fn"))
             macro = float(np.mean([row["f1"] for row in result["per_sequence"]]))
+            macro_inf = float(np.mean([row["inf"] for row in result["per_sequence"]]))
             assert abs(macro - result["macro_f1"]) < 1e-12
+            assert abs(macro_inf - result["macro_inf"]) < 1e-12
+            expected_inf = float(np.sqrt(result["micro"]["precision"] * result["micro"]["recall"]))
+            assert abs(expected_inf - result["micro_inf"]) < 1e-12
+            assert result["calibration"]["n"] > 0
+            assert all(np.isfinite(result["calibration"][key]) for key in ("ece", "brier", "nll"))
+            assert all(0.0 <= row["structure_conf"] <= 1.0 for row in result["per_sequence"])
             expected = result["predictions"][0]
             assert result["predictions"][1] == expected and result["predictions"][2] == expected
             assert len(expected) == result["n"]
             cells.append({"seed": seed, "f1": result["micro"]["f1"],
                           "macro_f1": macro, "tp": tp, "fp": fp, "fn": fn,
+                          "micro_inf": result["micro_inf"], "macro_inf": macro_inf,
+                          "ece": result["calibration"]["ece"], "brier": result["calibration"]["brier"],
+                          "nll": result["calibration"]["nll"], "length_buckets": length_breakdown(result),
                           "precision": result["micro"]["precision"],
                           "recall": result["micro"]["recall"],
                           "result_sha256": sha256(path), "checkpoint_sha256": result["checkpoint_sha256"],
@@ -62,6 +90,11 @@ def main():
                           "f1_sd": float(np.std(f1_values)),
                           "macro_f1_mean": float(np.mean(macro_values)),
                           "macro_f1_sd": float(np.std(macro_values)),
+                          "macro_inf_mean": float(np.mean([cell["macro_inf"] for cell in cells])),
+                          "micro_inf_mean": float(np.mean([cell["micro_inf"] for cell in cells])),
+                          "ece_mean": float(np.mean([cell["ece"] for cell in cells])),
+                          "brier_mean": float(np.mean([cell["brier"] for cell in cells])),
+                          "nll_mean": float(np.mean([cell["nll"] for cell in cells])),
                           "n_long_unsupported": sum(cell["n_long_unsupported"] for cell in cells)}
     status = "FULL" if args.full_model else "FROZEN"
     summary = {"status": f"PASS_STRUCTRFM_{status}_ABC_13_SPLITS_3_SEEDS_3_REPEATS",

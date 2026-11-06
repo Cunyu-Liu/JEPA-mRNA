@@ -11,6 +11,7 @@ from rnajepa.harness import nussinov_map, valid_pair_mask
 from rnajepa.train_decision import EmbeddingStore, TrainConfig, build_decision_model
 from eval.ss.metrics import PairLevelMetrics
 from xens2_eval import r2d_scores
+from structrfm_metrics_round48 import PairCalibrationAccumulator, inf_value, structure_confidence
 
 
 def sha256(path):
@@ -44,6 +45,7 @@ def main():
     per_sequence = []
     tp = fp = fn = 0
     long_unsupported = []
+    calibration = PairCalibrationAccumulator()
     started = time.time()
     for index, row in enumerate(rows):
         sequence = row["seq"].upper().replace("T", "U")
@@ -63,11 +65,14 @@ def main():
             repeat_pairs.append(pairs)
             predictions[repeat].append({"name": row.get("name", ""), "pred_pairs": [list(pair) for pair in pairs]})
             if repeat == 0:
+                calibration.add(scores, mask, gt_pairs)
                 metrics = PairLevelMetrics.from_pairs(pairs, gt_pairs, L=len(sequence), mask=mask)
                 tp += metrics.tp
                 fp += metrics.fp
                 fn += metrics.fn
-                per_sequence.append({"name": row.get("name", ""), "f1": metrics.f1,
+                per_sequence.append({"name": row.get("name", ""), "length": len(sequence),
+                                     "f1": metrics.f1, "inf": inf_value(pairs, gt_pairs),
+                                     "structure_conf": structure_confidence(scores, pairs),
                                      "tp": metrics.tp, "fp": metrics.fp, "fn": metrics.fn})
         if any(pairs != repeat_pairs[0] for pairs in repeat_pairs[1:]):
             raise RuntimeError(f"nondeterministic prediction at sequence {index}")
@@ -95,6 +100,10 @@ def main():
         "micro": {"f1": f1, "precision": precision, "recall": recall,
                   "tp": tp, "fp": fp, "fn": fn},
         "macro_f1": float(np.mean([row["f1"] for row in per_sequence])) if per_sequence else None,
+        "micro_inf": float(np.sqrt(precision * recall)),
+        "macro_inf": float(np.mean([row["inf"] for row in per_sequence])) if per_sequence else None,
+        "calibration": calibration.finalize(),
+        "confidence_protocol": "legal strict-upper pairs; global 10-bin pair calibration; geometric mean of decoded-pair probabilities; AURC thresholds must be VL0-frozen",
         "per_sequence": per_sequence,
         "predictions": predictions,
         "wall_seconds": time.time() - started,

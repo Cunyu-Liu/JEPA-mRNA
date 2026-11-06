@@ -28,7 +28,8 @@ def test_aggregate_three_seed_three_repeat(tmp_path, full_model):
             checkpoint.write_bytes(b"checkpoint")
             out = root / f"eval_decision/{experiment}/s{seed}/{split}.json"
             out.parent.mkdir(parents=True, exist_ok=True)
-            row = {"name": "toy", "f1": 1.0, "tp": 1, "fp": 0, "fn": 0}
+            row = {"name": "toy", "length": 6, "f1": 1.0, "inf": 1.0,
+                   "structure_conf": 1.0, "tp": 1, "fp": 0, "fn": 0}
             prediction = [{"name": "toy", "pred_pairs": [[0, 4]]}]
             out.write_text(json.dumps({
                 "status": "PASS", "device": "cuda",
@@ -38,6 +39,8 @@ def test_aggregate_three_seed_three_repeat(tmp_path, full_model):
                 "repeats": 3, "raw_n": 1, "n": 1, "n_long_unsupported": 0,
                 "micro": {"f1": 1.0, "precision": 1.0, "recall": 1.0,
                           "tp": 1, "fp": 0, "fn": 0}, "macro_f1": 1.0,
+                "micro_inf": 1.0, "macro_inf": 1.0,
+                "calibration": {"n": 10, "ece": 0.0, "brier": 0.0, "nll": 0.0},
                 "per_sequence": [row], "predictions": [prediction, prediction, prediction]}))
     out = root / f"eval_decision/{experiment}/summary.json"
     sys.argv = ["aggregate", "--root", str(root), "--out", str(out)]
@@ -52,3 +55,6 @@ def test_aggregate_three_seed_three_repeat(tmp_path, full_model):
     assert summary["splits"]["bprna_ts0"]["f1_sd"] == 0.0
     assert summary["splits"]["bprna_ts0"]["macro_f1_mean"] == 1.0
     assert summary["splits"]["bprna_ts0"]["cells"][0]["tp"] == 1
+    assert summary["splits"]["bprna_ts0"]["cells"][0]["length_buckets"][0] == {
+        "n": 1, "tp": 1, "fp": 0, "fn": 0, "micro_f1": 1.0, "macro_f1": 1.0}
+    assert summary["splits"]["bprna_ts0"]["ece_mean"] == 0.0
