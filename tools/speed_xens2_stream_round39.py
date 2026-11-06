@@ -47,6 +47,15 @@ def assert_exclusive():
         raise RuntimeError("EXCLUSIVE_SPEED_INTERFERENCE:" + ",".join(map(str, sorted(others))))
 
 
+def abort_interference(error, out):
+    payload = {"schema_version": 1, "status": "ABORTED_EXCLUSIVE_SPEED_INTERFERENCE",
+               "error": str(error), "note": "no partial or cross-window timing is accepted"}
+    interference = out.with_suffix(f".interference_{time.time_ns()}.json")
+    interference.write_text(json.dumps(payload, indent=2) + "\n")
+    print(json.dumps(payload), flush=True)
+    raise SystemExit(2)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, required=True)
@@ -57,7 +66,12 @@ def main():
     assert args.repeats == 3
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA_REQUIRED_NO_CPU_FALLBACK")
-    assert_exclusive()
+    try:
+        assert_exclusive()
+    except RuntimeError as error:
+        if not str(error).startswith("EXCLUSIVE_SPEED_INTERFERENCE"):
+            raise
+        abort_interference(error, args.out)
     records, source_count, filtered = production.read_records(args.data, 0, return_source_count=True, max_length=600)
     assert len(records) == source_count == 1288 and filtered == 0
     assert production.sha256_file(args.data) == production.DEFAULT_DATA_SHA256
