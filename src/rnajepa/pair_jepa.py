@@ -1,0 +1,69 @@
+import copy
+
+import torch
+from torch import nn
+
+
+class SymmetricPairMLP(nn.Module):
+    def __init__(self, d_z=128, latent_dim=64):
+        super().__init__()
+        self.norm = nn.LayerNorm(d_z)
+        self.input_projection = nn.Linear(d_z, latent_dim)
+        self.hidden = nn.Sequential(nn.GELU(), nn.Linear(latent_dim, latent_dim), nn.GELU())
+        self.logit = nn.Linear(latent_dim, 1)
+        nn.init.zeros_(self.logit.weight)
+        nn.init.zeros_(self.logit.bias)
+
+    def forward(self, z):
+        z = 0.5 * (z + z.transpose(1, 2))
+        return self.hidden(self.input_projection(self.norm(z)))
+
+    def score(self, z):
+        return self.logit(self.forward(z)).squeeze(-1)
+
+
+class PairJEPA(nn.Module):
+    def __init__(self, d_z=128, latent_dim=64, use_ema=True, random_target=False, seed=0):
+        super().__init__()
+        self.scorer = SymmetricPairMLP(d_z, latent_dim)
+        self.use_ema = use_ema
+        self.random_target = random_target
+        self.seed = seed
+        self.teacher = copy.deepcopy(self.scorer)
+        for parameter in self.teacher.parameters():
+            parameter.requires_grad_(False)
+        self.teacher.eval()
+
+    @torch.no_grad()
+    def ema_update(self, momentum=0.999):
+        if not self.use_ema:
+            return
+        for target, source in zip(self.teacher.parameters(), self.scorer.parameters()):
+            target.mul_(momentum).add_(source.detach(), alpha=1.0 - momentum)
+        for target, source in zip(self.teacher.buffers(), self.scorer.buffers()):
+            target.copy_(source)
+
+    def masked_latent_loss(self, z, mask):
+        if mask.dtype != torch.bool:
+            raise TypeError("mask must be bool")
+        prediction = self.scorer(z)
+        with torch.no_grad():
+            target = self.teacher(z)
+            if self.random_target:
+                generator = torch.Generator(device=z.device).manual_seed(self.seed)
+                shape = target.shape
+                flat = target.reshape(-1, shape[-1])
+                target = flat[torch.randperm(flat.shape[0], generator=generator)].reshape(shape)
+        if not mask.any():
+            raise ValueError("empty masked-pair target")
+        loss = torch.nn.functional.mse_loss(prediction[mask], target[mask])
+        diagnostics = {
+            "target_variance": target[mask].var(unbiased=False).detach(),
+            "prediction_variance": prediction[mask].var(unbiased=False).detach(),
+            "target_mean_norm": target[mask].norm(dim=-1).mean().detach(),
+            "prediction_mean_norm": prediction[mask].norm(dim=-1).mean().detach(),
+        }
+        return loss, diagnostics
+
+    def forward(self, z):
+        return self.scorer.score(z)
