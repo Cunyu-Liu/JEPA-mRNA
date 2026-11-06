@@ -34,7 +34,8 @@ run_audit ref_pdb_ts_hard /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.json
 run_audit testsetb /root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl
 $PY -c 'import json,pathlib; p=pathlib.Path("'"$CLEAN"'"); names=["bprna_ts0","bprna_new","archiveii","ref_pdb_ts1","ref_pdb_ts2","ref_pdb_ts3","ref_pdb_ts_hard","testsetb"]; out={"status":"PASS_STRUCTRFM_PRETRAIN_CLEAN_8_SPLITS","splits":{n:json.load(open(p/(n+".audit.json"))) for n in names}}; (p/"summary.json").write_text(json.dumps(out,indent=2)+"\n")'
 start_seed() {
-  local seed=$1 out=$ROOT/runs/structrfm_jev_s$seed
+  local seed=$1
+  local out=$ROOT/runs/structrfm_jev_s$seed
   mkdir -p "$out"
   $PY "$REPO/tools/train_structrfm_round48.py" --pretrained-structrfm "$WEIGHTS" \
     --data /root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl \

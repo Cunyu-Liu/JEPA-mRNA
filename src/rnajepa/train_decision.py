@@ -302,8 +302,8 @@ class TrainConfig:
 
     def validate(self) -> None:
         """Reject an inconsistent configuration before anything is built."""
-        if self.steps <= 0:
-            raise ConfigError(f"steps must be positive, got {self.steps}")
+        if self.steps < 0:
+            raise ConfigError(f"steps must be nonnegative, got {self.steps}")
         if self.batch_size <= 0:
             raise ConfigError(f"batch_size must be positive, got {self.batch_size}")
         if self.lr <= 0.0:
@@ -1803,7 +1803,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     final_loss: Optional[float] = None
 
     try:
-        while step < config.steps and not early_stopped:
+        while (config.steps == 0 or step < config.steps) and not early_stopped:
             batch = next(stream)
             optimizer.zero_grad(set_to_none=True)
             loss, terms = objective_terms(
@@ -1881,7 +1881,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                       f"loss={validation_loss:.6g} best={best_validation_loss:.6g} "
                       f"bad_evaluations={bad_evaluations}", flush=True)
                 if (bad_evaluations >= config.validation_patience
-                        and step < config.steps):
+                        and (config.steps == 0 or step < config.steps)):
                     stop_reason = "early_stopping"
                     early_stopped = True
                     break
@@ -1915,7 +1915,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
             json.dump(meta, fh, indent=1, sort_keys=True)
         raise
 
-    if step >= config.steps and not early_stopped:
+    if config.steps > 0 and step >= config.steps and not early_stopped:
         stop_reason = "step_cap"
     elif stop_reason is None:
         stop_reason = "step_cap"
