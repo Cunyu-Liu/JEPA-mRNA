@@ -51,7 +51,7 @@ start_seed() {
     --save-every 500 --snapshot-every 2000 --snapshot-dir "$ROOT/weights/round48" \
     --warmup-head-steps 1600 --unfreeze-every 800 --unfreeze-per-step 2 \
     --head-lr 1e-4 --backbone-lr 1e-5 --zchunk 64 --gpu-reserve-gb 5 \
-    > "$ROOT/logs/round48/structrfm_jev_s${seed}.log" 2>&1
+    >> "$ROOT/logs/round48/structrfm_jev_s${seed}.log" 2>&1
 }
 start_seed 0 & pid0=$!
 start_seed 1 & pid1=$!

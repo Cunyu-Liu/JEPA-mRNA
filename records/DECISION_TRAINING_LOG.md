@@ -13065,3 +13065,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **raw→clean**：TS0 1288→79、bpRNA-new 5388→74、ArchiveII 3950→90、TS1 63→3、TS2 39→1、TS3 19→1、TS-hard 28→2、TestSetB 428→21；Rfam 10790→388；CHANRG Test/GenA/GenC/GenF=10597→2727、5337→1709、3936→1192、1734→342。主榜多样本格极小，后续必须保留 n、置信区间和小样本限制，不把 8/8 计数包装成强统计证据。
 - **启动故障**：第一次 S2 因队列 `PYTHONPATH` 缺仓库根目录，`xens2_eval` 导入 `eval.ss.metrics` 失败，未发生训练，不是 CUDA OOM。已修为 repo/src/tools/eval 完整路径，提交 `e59852cdb40d0eff9fbe4b00baba90be966d5fd4`；从 clean 后恢复，不重跑审计。
 - **当前进程**：S2 seed0/1 均读取 42,564 条 TR1c 并在 CUDA 保留显存进入初始化；冻结全板嵌入提取同步进行。训练刚启动，尚无全参收敛或主榜结论。
+
+
+## §15.472（2026-11-07）S2 step500 Turner 设备故障与断点恢复
+
+- **故障**：两个 S2 run 均完成 step500 并写入 resume checkpoint，首次 VL0 时 `turner_phys_scores` 返回 CPU 张量，与 CUDA scores 相加报错。不是 OOM，也不是验证集损失恶化。全参评测器发现同一风险并同步修复为显式 `.to(device)`。
+- **验证**：真实官方 structRFM+FlatDecisionHead+Turner 的 CUDA 前向通过，相关回归 3/3；提交 `ecb530bb66f6325c6088b2b765c8d6ecd3dbdd52` 已推送。两个 run 从 step500 恢复模型、优化器、scheduler、batch stream 与验证状态，保持每 500 step 验证，不重训前 500 步。
+- **日志边界**：恢复 launcher 使用 `>` 覆盖了首次 stdout 中的设备 traceback，但 checkpoint 和 `train_log.jsonl` 仍在，故障文本已在本节及会话证据中保留。后续 S2 日志改为追加，避免再次覆盖。
+- **首格过程证据**：冻结 seed0 的 TS0 clean n=79、TP/FP/FN=837/1055/1053、micro-F1=0.4426229508、macro-F1=0.4481751004，结果 SHA256=`b2801beb833815d7dec874cc94b88f8fa0f02f93918ae47275d776c19c6cbd6c`。单种子单 split 不是全板结论，当前数值不支持 SOTA。
