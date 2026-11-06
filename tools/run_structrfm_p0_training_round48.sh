@@ -17,28 +17,25 @@ $PY -c 'import json; d=json.load(open("'"$AUDITS"'/structrfm_cuda_preflight.json
 if [ ! -f "$FASTA" ]; then
   $PY "$REPO/tools/prepare_structrfm_corpus_round48.py" --archive "$CORPUS" --output "$FASTA" --metadata "$AUDITS/structrfm_corpus.json"
 fi
-run_audit() {
-  local name=$1 split=$2 work=$CLEAN/work_$name
-  if [ ! -f "$CLEAN/$name.audit.json" ]; then
-    $PY "$REPO/tools/audit_structrfm_clean_round48.py" --train-fasta "$FASTA" --split "$split" \
-      --out "$CLEAN/$name.jsonl" --audit "$CLEAN/$name.audit.json" --work-dir "$work" --threads 12
-  fi
-  $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["status"]=="PASS" and d["raw_n"]==d["clean_n"]+d["removed_exact"]+d["removed_homology_only"]' "$CLEAN/$name.audit.json"
-}
-run_audit bprna_ts0 /root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl
-run_audit bprna_new /root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl
-run_audit archiveii /root/rna_jepa_data/ss_data/jsonl/archiveii_embok.jsonl
-run_audit ref_pdb_ts1 /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl
-run_audit ref_pdb_ts2 /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl
-run_audit ref_pdb_ts3 /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl
-run_audit ref_pdb_ts_hard /root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl
-run_audit testsetb /root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl
-run_audit rfam_fam /root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl
-run_audit chanrg_test /root/rna_jepa_data/ss_data/jsonl/chanrg_test.jsonl
-run_audit chanrg_gena /root/rna_jepa_data/ss_data/jsonl/chanrg_gena.jsonl
-run_audit chanrg_genc /root/rna_jepa_data/ss_data/jsonl/chanrg_genc.jsonl
-run_audit chanrg_genf /root/rna_jepa_data/ss_data/jsonl/chanrg_genf.jsonl
-$PY -c 'import json,pathlib; p=pathlib.Path("'"$CLEAN"'"); names=["bprna_ts0","bprna_new","archiveii","ref_pdb_ts1","ref_pdb_ts2","ref_pdb_ts3","ref_pdb_ts_hard","testsetb","rfam_fam","chanrg_test","chanrg_gena","chanrg_genc","chanrg_genf"]; out={"status":"PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS","splits":{n:json.load(open(p/(n+".audit.json"))) for n in names}}; (p/"summary.json").write_text(json.dumps(out,indent=2)+"\n")'
+if [ ! -f "$CLEAN/summary.json" ]; then
+  $PY "$REPO/tools/audit_structrfm_clean_all_round48.py" --train-fasta "$FASTA" \
+    --split bprna_ts0=/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl \
+    --split bprna_new=/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl \
+    --split archiveii=/root/rna_jepa_data/ss_data/jsonl/archiveii_embok.jsonl \
+    --split ref_pdb_ts1=/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl \
+    --split ref_pdb_ts2=/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl \
+    --split ref_pdb_ts3=/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl \
+    --split ref_pdb_ts_hard=/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl \
+    --split testsetb=/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl \
+    --split rfam_fam=/root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl \
+    --split chanrg_test=/root/rna_jepa_data/ss_data/jsonl/chanrg_test.jsonl \
+    --split chanrg_gena=/root/rna_jepa_data/ss_data/jsonl/chanrg_gena.jsonl \
+    --split chanrg_genc=/root/rna_jepa_data/ss_data/jsonl/chanrg_genc.jsonl \
+    --split chanrg_genf=/root/rna_jepa_data/ss_data/jsonl/chanrg_genf.jsonl \
+    --out-dir "$CLEAN" --work-dir "$CLEAN/work_joint" --threads 12 \
+    > "$ROOT/logs/round48/structrfm_joint_clean.log" 2>&1
+fi
+$PY -c 'import json,pathlib; p=pathlib.Path("'"$CLEAN"'"); d=json.load(open(p/"summary.json")); assert d["status"]=="PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS" and len(d["splits"])==13; assert all(a["status"]=="PASS" and a["raw_n"]==a["clean_n"]+a["removed_exact"]+a["removed_homology_only"] for a in d["splits"].values())'
 while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 16000 ]; do sleep 60; done
 start_seed() {
   local seed=$1
