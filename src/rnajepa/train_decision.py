@@ -199,6 +199,8 @@ class TrainConfig:
     lambda_distill: float = 1.0
     lambda_rlcd: float = 1.0
     lambda_cal: float = 1.0
+    lambda_jepa: float = 0.0
+    jepa_mask_prob: float = 0.15
     distill_kind: str = "kl"
     rlcd_reward: str = "brier"
     beta: float = 1.0
@@ -339,6 +341,14 @@ class TrainConfig:
             raise ConfigError("all four objective weights are zero; there is nothing to optimise")
         if any(w < 0.0 for w in weights):
             raise ConfigError(f"objective weights must be non-negative, got {weights}")
+        if not 0.0 < self.jepa_mask_prob < 1.0:
+            raise ConfigError("jepa_mask_prob must be in (0,1)")
+        if self.lambda_jepa < 0.0:
+            raise ConfigError("lambda_jepa must be nonnegative")
+        if self.lambda_jepa and self.scorer != "pairjepa":
+            raise ConfigError("lambda_jepa requires scorer='pairjepa'")
+        if self.lambda_jepa and not self.embedding_dir:
+            raise ConfigError("Pair-JEPA auxiliary loss currently requires frozen embeddings")
         if self.lr_calibrate and not self.lr_candidates:
             raise ConfigError("lr_calibrate requires a non-empty lr_candidates grid")
         if self.head not in ("flat", "cascade"):
@@ -1425,7 +1435,8 @@ def plan(config: TrainConfig, dataset: DecisionDataset, teacher: TeacherLabelSto
     active = [name for name, value in (("nll", weights.lambda_nll),
                                        ("distill", weights.lambda_distill),
                                        ("rlcd", weights.lambda_rlcd),
-                                       ("cal", weights.lambda_cal)) if value != 0.0]
+                                       ("cal", weights.lambda_cal),
+                                       ("jepa", config.lambda_jepa)) if value != 0.0]
     steps_per_epoch = max(1, math.ceil(len(dataset) / config.batch_size))
     artifacts = ["run_meta.json", "train_log.jsonl", "ledger.jsonl", "resume.pt"]
     validation = None
@@ -1765,7 +1776,8 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                                    (("nll", weights.lambda_nll),
                                     ("distill", weights.lambda_distill),
                                     ("rlcd", weights.lambda_rlcd),
-                                    ("cal", weights.lambda_cal)) if value != 0.0],
+                                    ("cal", weights.lambda_cal),
+                                       ("jepa", config.lambda_jepa)) if value != 0.0],
         "environment": {"python": sys.version.split()[0], "torch": torch.__version__,
                         "numpy": np.__version__, "host": socket.gethostname(),
                         "device": config.device, "resolved_device": resolved_device,
@@ -1820,6 +1832,20 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                 cascade=config.head == "cascade",
                 cascade_weights=config.layered_weights(),
                 cascade_block_size=config.cascade_block_size)
+            if config.lambda_jepa:
+                from rnajepa.decision_head import pair_mask_from_ids
+                seq_ids = batch["seq_ids"]
+                device = next(model.parameters()).device
+                hidden = _stack_embeddings(batch["embeddings"], int(seq_ids.shape[1]),
+                                           device=device)
+                z = model.head.pair_repr(hidden)
+                valid = pair_mask_from_ids(seq_ids, model.head.min_loop).to(device)
+                generator = torch.Generator(device=device).manual_seed(config.seed + step)
+                mask = (torch.rand(valid.shape, device=valid.device, generator=generator)
+                        < config.jepa_mask_prob) & valid
+                latent_loss, _diagnostics = model.head.masked_pair_latent_loss(z, mask)
+                loss = loss + config.lambda_jepa * latent_loss
+                terms["jepa"] = float(latent_loss.detach())
             value = _finite(loss.detach(), f"loss at step {step + 1}")
             loss.backward()
             norm = _grad_norm(model.parameters())
@@ -1839,6 +1865,8 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                 torch.nn.utils.clip_grad_norm_(
                     [p for p in model.parameters() if p.requires_grad], config.grad_clip)
             optimizer.step()
+            if config.lambda_jepa:
+                model.head.pair_jepa.ema_update()
             scheduler.step()
             step += 1
             running.append(value)
@@ -2018,6 +2046,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     p.add_argument("--lambda-distill", type=float, default=1.0)
     p.add_argument("--lambda-rlcd", type=float, default=1.0)
     p.add_argument("--lambda-cal", type=float, default=1.0)
+    p.add_argument("--lambda-jepa", type=float, default=0.0)
+    p.add_argument("--jepa-mask-prob", type=float, default=0.15)
     p.add_argument("--distill-kind", default="kl", choices=["kl", "l2"])
     p.add_argument("--rlcd-reward", default="brier", choices=["brier", "log"])
     p.add_argument("--beta", type=float, default=1.0)
@@ -2121,6 +2151,7 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         validation_min_delta=args.validation_min_delta,
         lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
         lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal,
+        lambda_jepa=args.lambda_jepa, jepa_mask_prob=args.jepa_mask_prob,
         distill_kind=args.distill_kind, rlcd_reward=args.rlcd_reward, beta=args.beta,
         nll_normalization=args.nll_normalization,
         head=args.head, cascade_block_size=args.cascade_block_size,
