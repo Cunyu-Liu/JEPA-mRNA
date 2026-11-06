@@ -12804,3 +12804,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **全板验收**：八 split 原生 CUDA 概率、GT、三次 F1 与置信度均通过独立复算，SHA256=`e62ab70f2cef14f72981c2686ceb972327faa44ddf8e29cae0d1dee45368f8aa`。八格 matched-clean 比较汇总 SHA256=`a5449f369c646b4b26be6ba28365782ce8a44e57eb2b50c76896ed8052deaf1b`，不改 own-clean 主榜。
 - **bpRNA-new**：RiNALMo-ft clean n=5388、matched n=5386，F1=0.4489961557。xens2 ECE=0.0048310272、NLL=0.0338954187，低于 RiNALMo-ft=0.0056840551/0.0425929586；RiNALMo-ft Brier=0.0068296539，低于 xens2=0.0072889935。RiNALMo-ft Spearman=0.6353006942 高于 xens2=0.5176421505，但 AURC=0.4193628566 高于 xens2=0.3486543793（更差）。比较 SHA256=`483fe6e198fb2c38e34a85c46b52062b1584743c8b5d0bf2728fb5b1799d5109`。
 - **结论**：RiNALMo-ft 从路径故障恢复到全板闭环，未把 smoke 或前两次 repeat 当成最终结果。当前 RNAformer 32 格、ViennaRNA 24 格、RiNALMo-ft 8 格已完成；MXfold2 bpRNA-new 和 CONTRAfold 家族 16 格继续。ECE、Brier/NLL、Spearman、AURC 分开陈述，不宣称全板最佳置信度。
+
+
+## §15.437（2026-11-06）MXfold2 七格有效与 ArchiveII 无效总账
+
+- **完整评估**：MXfold2 bpRNA-new 三次 F1=0.6688466171，与主榜一致。七格有效概率与 ArchiveII 原生 BPP 超界汇总完成，独立验收 SHA256=`a3500e3726d1bc7d408d26af5f0096a1c82b667c697199fc5a544c5d7c310fba`，比较汇总 SHA256=`1b72a3254fe59fe400e5c7c04ac1581f9dbef15fb2db2320266a73595c5d0b33`。ArchiveII `matched_n=null`，无 ECE，不把无效概率或空交集写成 0。
+- **bpRNA-new**：共同 n=5386，MXfold2 ECE=0.0022590028、Brier=0.0044315361、NLL=0.0167012585，均低于 xens2=0.0048310272/0.0072889935/0.0338954187。MXfold2 Spearman=0.6236330205、AURC=0.1861707741，也优于 xens2=0.5176421505/0.3486543793。比较 SHA256=`19dc49a86905d322c58545c6649b9649ad6c67664222cc02e8bf290f706bc72d`。
+- **工程闭环**：混合有效性汇总 initially 因有效单元格缺 `status` 触发 KeyError，已改为安全读取并用真实八格复算验证；相关 11 项测试通过，提交 `f0f252f51fccae34c5c1bdfbf1a67bdf97544f78`。没有通过降低断言或夹紧 BPP 获得假 PASS。
+- **边界**：MXfold2 七格有效比较均显示低于 xens2 的 ECE，但 ArchiveII 不能纳入概率排名。CONTRAfold 家族后验 16 格仍在原生 CPU 队列，双 stream 测速等待独占；不宣称全 eligible 最低 ECE 或速度 SOTA。

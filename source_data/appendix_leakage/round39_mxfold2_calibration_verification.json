@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETE_MXFOLD2_NATIVE_PROBABILITY_ASSESSMENT_7_VALID_1_INVALID",
+  "system": "mxfold2",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "n_sequences": 1188,
+      "n_pairs": 5109659,
+      "tp": 20445,
+      "fp": 23752,
+      "fn": 9845,
+      "strict_micro_f1": 0.5489548511820854,
+      "result_sha256": "6a7b17c6a65b8b06682907870bd710a3b2ec40b767bb62c0bc20586054894ba9",
+      "pair_arrays_sha256": "b95176dfc794aa1ec616b2776e2c6abd079fbbefcb3ab54f585dae2a67018393"
+    },
+    {
+      "split": "bprna_new",
+      "n_sequences": 5388,
+      "n_pairs": 15345324,
+      "tp": 100227,
+      "fp": 64290,
+      "fn": 34957,
+      "strict_micro_f1": 0.6688466171284047,
+      "result_sha256": "1a8ec6fb5a5012c2cd874cf4c51e26fdd0cb2fb40f88ffadd49f8e1d57931a6f",
+      "pair_arrays_sha256": "918591d15d6f9d86930a4481e023d74fa16ed49871d054206cc6e733252efafd"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "n_sequences": 52,
+      "n_pairs": 60940,
+      "tp": 850,
+      "fp": 240,
+      "fn": 236,
+      "strict_micro_f1": 0.78125,
+      "result_sha256": "d8cd1f7175e79ae1a7add03c39fd0b56e34ceb520b32d68b38bd3119630f0eac",
+      "pair_arrays_sha256": "fe9d581701c36c794c3b62f23ca0ec42c0202bf9bef64dd318fe6b7994d84f84"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "n_sequences": 27,
+      "n_pairs": 17961,
+      "tp": 457,
+      "fp": 32,
+      "fn": 54,
+      "strict_micro_f1": 0.914,
+      "result_sha256": "4934811cda82ed3a50605f78f559aae40b408013f82f80c51391c61b7ad1e644",
+      "pair_arrays_sha256": "bd85d6d9ec263ec04e11019da19ebf25beedf49e167f8f7ddd59da9375826cf7"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "n_sequences": 18,
+      "n_pairs": 23415,
+      "tp": 328,
+      "fp": 81,
+      "fn": 69,
+      "strict_micro_f1": 0.8138957816377171,
+      "result_sha256": "7c3b484b8469369e76558264695ad2b44a9de5c665e4e95817549c05e7c7ab32",
+      "pair_arrays_sha256": "ec9c8d92cab3a150e6ac3543d83e1752875d434c3c373fa26e99f42dffdb7c52"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "n_sequences": 26,
+      "n_pairs": 25888,
+      "tp": 366,
+      "fp": 109,
+      "fn": 76,
+      "strict_micro_f1": 0.7982551799345693,
+      "result_sha256": "0e0e994485118e2ad334051bfea9c9fca04347f46f1b9c8edc527e32a3f02aea",
+      "pair_arrays_sha256": "0eb3daf851ea59f66428553a25ab695537082b2c24a5258353653779d28c556e"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "status": "FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE",
+      "result_sha256": "5a4fc7a48cc8c22ede727c65261cc71930222b0d7fbdc4444134c2ac344bd047",
+      "failure": {
+        "repeat": 0,
+        "index": 658,
+        "name": "grp2_a.I2.c.N.tabacum.B.pD.i1.bpseq",
+        "length": 759,
+        "minimum": 0.0,
+        "maximum": 1.0047545433044434,
+        "nan": 0,
+        "infinite": 0,
+        "above_one": 15,
+        "above_one_in_scored_mask": 15,
+        "entries": [
+          {
+            "i": 208,
+            "j": 255,
+            "value": 1.0000320672988892,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 209,
+            "j": 254,
+            "value": 1.0047545433044434,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 210,
+            "j": 253,
+            "value": 1.0032291412353516,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 211,
+            "j": 252,
+            "value": 1.0042022466659546,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 212,
+            "j": 251,
+            "value": 1.0035877227783203,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 213,
+            "j": 250,
+            "value": 1.0029163360595703,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 214,
+            "j": 249,
+            "value": 1.004068374633789,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 215,
+            "j": 248,
+            "value": 1.0038042068481445,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 216,
+            "j": 247,
+            "value": 1.0029728412628174,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 217,
+            "j": 246,
+            "value": 1.0028276443481445,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 218,
+            "j": 245,
+            "value": 1.0012797117233276,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 221,
+            "j": 242,
+            "value": 1.0001962184906006,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 222,
+            "j": 241,
+            "value": 1.0016862154006958,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 223,
+            "j": 240,
+            "value": 1.0037906169891357,
+            "in_scored_pair_mask": true
+          },
+          {
+            "i": 224,
+            "j": 239,
+            "value": 1.0045301914215088,
+            "in_scored_pair_mask": true
+          }
+        ]
+      }
+    },
+    {
+      "split": "testsetb",
+      "n_sequences": 373,
+      "n_pairs": 1050592,
+      "tp": 6687,
+      "fp": 4452,
+      "fn": 2854,
+      "strict_micro_f1": 0.6467117988394584,
+      "result_sha256": "c6a09596f437f9f8dafdffac8c3ea9620c5a70c700259dba3a3d5667c7250a2f",
+      "pair_arrays_sha256": "ed720a86079957c99f2009d25a01082ede9efeaff69ce0d5a2f7f145affa22c2"
+    }
+  ],
+  "comparison_status": "PENDING_ALL_ELIGIBLE_BASELINES_MATCHED_CLEAN_PROBABILITIES",
+  "boundary": "ArchiveII native BPP above one is not clipped or assigned ECE; other seven splits independently recomputed"
+}

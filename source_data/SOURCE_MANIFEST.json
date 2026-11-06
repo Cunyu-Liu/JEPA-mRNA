@@ -1834,6 +1834,27 @@
    "bytes": 7396,
    "description": "bpRNA-new RiNALMo-ft；xens2 ECE/NLL/AURC 更优，RiNALMo-ft Brier/Spearman 更优",
    "status": "active_matched_sensitivity_not_leaderboard"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_calibration_verification.json",
+   "sha256": "a3500e3726d1bc7d408d26af5f0096a1c82b667c697199fc5a544c5d7c310fba",
+   "bytes": 5774,
+   "description": "MXfold2 七格有效与 ArchiveII 原生 BPP 无效独立验收",
+   "status": "active_complete_mixed_validity_assessment"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_calibration_comparisons_summary.json",
+   "sha256": "1b72a3254fe59fe400e5c7c04ac1581f9dbef15fb2db2320266a73595c5d0b33",
+   "bytes": 2113,
+   "description": "MXfold2 七格有效比较与 ArchiveII 无合法 ECE 总账",
+   "status": "active_complete_mixed_validity_assessment"
+  },
+  {
+   "path": "appendix_leakage/round39_bpnew_xens2_mxfold2_calibration.json",
+   "sha256": "19dc49a86905d322c58545c6649b9649ad6c67664222cc02e8bf290f706bc72d",
+   "bytes": 7385,
+   "description": "bpRNA-new MXfold2 ECE/Brier/NLL/Spearman/AURC 均优于 xens2",
+   "status": "active_matched_sensitivity_not_leaderboard"
   }
  ]
 }

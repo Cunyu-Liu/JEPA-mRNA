@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETE_MXFOLD2_COMPARISONS_7_VALID_1_NATIVE_BPP_INVALID",
+  "cells": [
+    {
+      "split": "bprna_ts0",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 666,
+      "result_sha256": "3cc267bd33cea34cf6a0762f5629120224558da6a9beb504c0bdba9e0deb8846"
+    },
+    {
+      "split": "bprna_new",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 5386,
+      "result_sha256": "19dc49a86905d322c58545c6649b9649ad6c67664222cc02e8bf290f706bc72d"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 15,
+      "result_sha256": "355b728d6f880f5d76666be3ebb8ea4d7bbfcfee3b551ecfc1bec402a0c7e94d"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 20,
+      "result_sha256": "e315539fedb9c92b11f9b62a5f7e15f5650d292f23a494d5dcfc760108a06da6"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 4,
+      "result_sha256": "6ce4348f24dd08d5729c760a059cfa7002d09a6fe74cc1a0d69edd18f6ebe124"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 9,
+      "result_sha256": "31bd4569e9d590950f00c3350282f538545850d7343c245c1cad7e718a6ccae5"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "status": "NATIVE_BPP_INVALID_NO_CALIBRATION",
+      "matched_n": null,
+      "result_sha256": "1dbfe2366bc7254e6d3386c8cb4ab6d684d7a2dc53ee1e23a9452e362b919922"
+    },
+    {
+      "split": "testsetb",
+      "status": "PASS_MATCHED_CALIBRATION_SENSITIVITY_NOT_MAIN_LEADERBOARD",
+      "matched_n": 278,
+      "result_sha256": "7e2ea54d144d7e13aa9520dedfb24e2d434cbc6d69e54fb1d706dc9ca1275d4a"
+    }
+  ],
+  "boundary": "seven valid native probability splits; ArchiveII native BPP above one in scored mask, no ECE; auxiliary matched sensitivity only"
+}
