@@ -1666,6 +1666,20 @@
    "bytes": 7472,
    "description": "TS0 ViennaRNA-MEA；共享 BPP，xens2 概率误差和结构置信度均更优",
    "status": "active_matched_sensitivity_not_full_board"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_native_bpp_range_archiveii.json",
+   "sha256": "399be8427578c55987ddf3ce9aa040871cd569d856a0829859809cb632bfc023",
+   "bytes": 4001,
+   "description": "MXfold2 ArchiveII index658 三次 BPP 超界证据；15 个值均在评分掩码内",
+   "status": "active_native_probability_invalid_no_ece"
+  },
+  {
+   "path": "appendix_leakage/round39_mxfold2_partial_verification_6.json",
+   "sha256": "c2c003004a4130d0bc00c400a55b121d2ff0fafb00a4eb19ab7359d31abeac77",
+   "bytes": 2387,
+   "description": "MXfold2 已完成的六格独立 NPZ 复核；ArchiveII 与 bpRNA-new 未计入",
+   "status": "active_partial_6_of_8_not_full_board"
   }
  ]
 }

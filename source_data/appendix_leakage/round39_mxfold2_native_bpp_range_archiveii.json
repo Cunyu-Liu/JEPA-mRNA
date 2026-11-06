@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "status": "NATIVE_BPP_ABOVE_ONE_IN_SCORED_MASK",
+  "system": "mxfold2",
+  "split": "archiveii_embok_clean",
+  "index": 658,
+  "name": "grp2_a.I2.c.N.tabacum.B.pD.i1.bpseq",
+  "length": 759,
+  "mxfold2_version": "0.1.2",
+  "weights": "/root/miniconda3/envs/lucaone/lib/python3.10/site-packages/mxfold2/models/TrainSetAB.pth",
+  "weights_sha256": "8ba1283e70c1c073033161adc120f67cdc467176476358d26a12cadaf63262ec",
+  "source_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/clean_trainsetab/archiveii_embok_clean.json",
+  "source_result_sha256": "e60d8df36b44ea3e1665e730264c14cdbe7bd55c5285e19674eedd33fd6585a2",
+  "device": "NVIDIA GeForce RTX 4090",
+  "repeat_probability_sha256": [
+    "d001dc7af895cb8e6c545630a05f7c6808813c1072cb3009bb893f2313f80e9d",
+    "d001dc7af895cb8e6c545630a05f7c6808813c1072cb3009bb893f2313f80e9d",
+    "d001dc7af895cb8e6c545630a05f7c6808813c1072cb3009bb893f2313f80e9d"
+  ],
+  "above_one_count": 15,
+  "above_one_in_scored_mask_count": 15,
+  "entries": [
+    {
+      "bpp_i": 209,
+      "bpp_j": 256,
+      "value": 1.0000320672988892,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 47,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 210,
+      "bpp_j": 255,
+      "value": 1.0047545433044434,
+      "base_i": "G",
+      "base_j": "C",
+      "span": 45,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 211,
+      "bpp_j": 254,
+      "value": 1.0032291412353516,
+      "base_i": "U",
+      "base_j": "A",
+      "span": 43,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 212,
+      "bpp_j": 253,
+      "value": 1.0042022466659546,
+      "base_i": "G",
+      "base_j": "C",
+      "span": 41,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 213,
+      "bpp_j": 252,
+      "value": 1.0035877227783203,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 39,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 214,
+      "bpp_j": 251,
+      "value": 1.0029163360595703,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 37,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 215,
+      "bpp_j": 250,
+      "value": 1.004068374633789,
+      "base_i": "C",
+      "base_j": "G",
+      "span": 35,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 216,
+      "bpp_j": 249,
+      "value": 1.0038042068481445,
+      "base_i": "U",
+      "base_j": "A",
+      "span": 33,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 217,
+      "bpp_j": 248,
+      "value": 1.0029728412628174,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 31,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 218,
+      "bpp_j": 247,
+      "value": 1.0028276443481445,
+      "base_i": "G",
+      "base_j": "C",
+      "span": 29,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 219,
+      "bpp_j": 246,
+      "value": 1.0012797117233276,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 27,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 222,
+      "bpp_j": 243,
+      "value": 1.0001962184906006,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 21,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 223,
+      "bpp_j": 242,
+      "value": 1.0016862154006958,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 19,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 224,
+      "bpp_j": 241,
+      "value": 1.0037906169891357,
+      "base_i": "A",
+      "base_j": "U",
+      "span": 17,
+      "in_scored_pair_mask": true
+    },
+    {
+      "bpp_i": 225,
+      "bpp_j": 240,
+      "value": 1.0045301914215088,
+      "base_i": "C",
+      "base_j": "G",
+      "span": 15,
+      "in_scored_pair_mask": true
+    }
+  ],
+  "row_sum_min": 0.0,
+  "row_sum_max": 1.0048280954360962,
+  "note": "diagnostic only; no clipping or normalization applied; native structure F1 remains separate from probability availability"
+}
