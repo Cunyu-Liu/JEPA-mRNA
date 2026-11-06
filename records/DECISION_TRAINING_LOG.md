@@ -12956,3 +12956,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **接入**：`FlatDecisionHead` 新增 `pairjepa` 与近参数 `pairmlp`，复用 PairRepresentation、RIPE 可选偏置、Turner 先验、合法 mask 和 DP；pairmlp 不使用 EMA。`masked_pair_latent_loss` 作为训练期辅助目标接口，推理仍只有单一 scorer。
 - **默认兼容**：resnet2d/mlp 默认路径不变；Pair-JEPA 输出层零初始化，未训练时分数为零，与既有零残差起点一致。TrainConfig 支持 `jepa_use_ema/noEMA/random_target`。
 - **验证**：零初始化、latent 损失、梯度、配置构建、RIPE 兼容、分块与早停共 28/28 通过。代码提交 `b5304dd` 已推送，尚未启动 Pair-JEPA 训练。
+
+
+## §15.457（2026-11-07）Pair-JEPA 辅助损失真实 CUDA 训练验收
+
+- **接线**：TrainConfig 新增 `lambda_jepa`（默认 0）与 `jepa_mask_prob`，训练时从同一 PairRepresentation 采样合法 pair，latent loss 加入总目标；EMA 仅在 optimizer step 后更新，推理不使用 teacher。非 pairjepa 或非冻结嵌入时明确拒绝。
+- **工程纠错**：辅助 loss 必须读取模型所在设备，不能沿用 `objective_terms` 之前的原始 CPU batch。随机 target 可复现，空目标拒绝，早停和 resume 保持兼容。
+- **真实验收**：2-step CUDA 小数据运行通过，日志含 `jepa` 项，checkpoint 中 scorer 与 EMA teacher 参数分化；相关测试合计 14/14 通过。该小运行仅作工程证据，不是科学结果。代码提交 `0912460` 已推送。
