@@ -10,7 +10,7 @@ def test_native_bpp_above_one_is_terminal_failure_without_ece(tmp_path, monkeypa
     import torch
     from mxfold2.predict import Predict
 
-    row = {"name": "x", "seq": "AUGC", "pairs": []}
+    row = {"name": "x", "seq": "AUGCAUGC", "pairs": []}
     data = tmp_path / "data.jsonl"
     data.write_text(json.dumps(row) + "\n")
     weights = tmp_path / "weights.pth"
@@ -40,7 +40,8 @@ def test_native_bpp_above_one_is_terminal_failure_without_ece(tmp_path, monkeypa
             return self
 
         def __call__(self, seqs, return_partfunc):
-            return [0.0], ["...."], [[]], [0.0], [np.full((5, 5), 1.1)]
+            length = len(seqs[0])
+            return [0.0], ["." * length], [[]], [0.0], [np.full((length + 1, length + 1), 1.1)]
 
     model = FakeModel()
     monkeypatch.setattr(Predict, "build_model", lambda self, args: (model, {}))
