@@ -10,7 +10,7 @@
 > | T-A212 | RIPE+JEV 三种子 A/B/C | 同配方收敛；长程与 200–400/>400 nt 为主判定，全板与外部 OOD 完整 | R0已按VL0均值选为S3 PairMLP-490，log-head三种子真实CUDA在训；其余六臂、全板与独立裁决未完成 |
 > | T-A213 | Pair-JEPA scorer 与防坍塌对照 | J-mlp/J1/noEMA/random-target；被掩 pair latent、方差/有效秩、推理无 teacher | 全参辅助目标及EMA/fixed/random CUDA工程路径已验收，29项回归通过；仍待路线二裁决，正式三种子A/B/C与防坍塌结论未完成 |
 > | T-A217 | RNA 复合物数据扩充与 B 组消融 | RCSB/mmCIF/DSSR 身份与标签守恒；exact+80% identity 去泄露；D0/D1 三种子 A/B/C 与 complex holdout | 官方DSSR v1.9.10-2020apr23已安装并通过1EHZ mmCIF/JSON验收（34对）；版本/哈希与非商业许可已记录，P4仍需完整实体清单、去泄露和D0/D1，待P3后启动 |
-> | T-A218 | LinearDesign 下游设计验证 | 官方算法身份、编码约束、λ=0/联合目标、独立 PRISM+热力学复算；无湿实验边界 | 官方 `LinearDesignSoftware/LinearDesign` 已固定commit=f0126ca8并核对DOI/学术许可；只存third_party不再分发；待P4裁决后启动 |
+> | T-A218 | LinearDesign 下游设计验证 | 官方算法身份、编码约束、λ=0/联合目标、独立 PRISM+热力学复算；无湿实验边界 | 官方commit=f0126ca8已固定，隔离Python2.7.18编译成功，λ=0/3官方示例的序列/结构/MFE/CAI逐项一致；只存third_party不再分发；待P4裁决后启动正式设计 |
 > | T-A214 | 独立单模型终榜与速度/置信度 | 单骨干单头单 checkpoint；主 clean 8/8、Rfam/CHANRG、独占 raw-sequence、ECE/Spearman/AURC 与长度桶独立复算 | 未达成；不得以 xens2 集成替代 |
 > | T-A215 | 台账、PPT 副本与图源三通道 | 每 run 完整；仅验收结果入副本，微软雅黑/1.5 行距/无重叠/逐页渲染；源数据与图表一致 | 贯穿本轮，原稿和用户其他调整不动 |
 > | T-A216 | GitHub、归档与论文证据链 | 确认代码及时 push；活跃源保留、旧件可追溯归档；每主张有 claim–evidence–limitation | 贯穿本轮，最终未完成 |

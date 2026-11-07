@@ -38,7 +38,7 @@ P4 的首要问题是：真实 RNA 复合物中的链内结构监督能否改善
 
 ### 3.2 实施与验收
 
-- 固定官方代码/权重或算法复现的 commit、输入蛋白、遗传密码表、宿主密码子偏好和 λ；先在小蛋白上验证氨基酸序列逐位不变、合法终止和密码子映射。官方实现已定位为 `LinearDesignSoftware/LinearDesign`，commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be`；只保留在 `third_party`，其许可禁止未经书面许可的代码再分发，不提交或镜像到本项目仓库。
+- 固定官方代码/权重或算法复现的 commit、输入蛋白、遗传密码表、宿主密码子偏好和 λ；先在小蛋白上验证氨基酸序列逐位不变、合法终止和密码子映射。官方实现已定位为 `LinearDesignSoftware/LinearDesign`，commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be`；只保留在 `third_party`，其许可禁止未经书面许可的代码再分发，不提交或镜像到本项目仓库。已用隔离 Python 2.7.18 编译成功，README 的 MNDTEAI（λ=0）和 testseq（λ=3）在序列、结构、MFE、CAI 上逐项一致；编译二进制 SHA256=`f1f22901967cb3e0f569ff2332c326800ac355727ab58e377b14514db4fe9688`，官方库 SHA256=`5707cd7d7950a711af74350c94956d1b0212eae37cc5bd04872967597cb3d330`。该工程示例不代表下游设计效果。
 - λ=0 的 MFE-only 与联合优化分开；λ 网格只在 design-dev 锁定，测试蛋白不得参与调参。野生型、常规 codon-optimized 和 LinearDesign 候选分开报告。
 - 评价 MFE/CAI/GC、PRISM 结构 F1/INF/置信度、长程配对、运行时间和合法性；独立 ViennaRNA/RNAfold 作热力学参照。PRISM 不替代实验稳定性、表达量或免疫原性证据。
 - 最终输出设计序列、输入蛋白、参数、代码哈希、预测结构和独立复算。无湿实验时不写“半衰期延长、表达提高或免疫增强”。

@@ -13350,3 +13350,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **DSSR官方来源**：从 `https://docs.x3dna-dssr.org/download.php?pkg=linux` 获取官方预许可发布版，完整ZIP通过CRC校验，SHA256=`602b2d0dfda969999204a570e848c3dfb0203c9d3b12436e7d0275a5b4ea78aa`。首次120秒下载不完整且服务器不支持断点续传，重新完整下载后才解压，未使用损坏包或第三方镜像。
 - **版本与许可**：二进制SHA256=`c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a`，`--version`确认 `v1.9.10-2020apr23`，仅用于非商业研究；存于 `/home/rna_jev/third_party/DSSR-v1.9.10`，不推送到项目GitHub。
 - **mmCIF/JSON工程门**：公开1EHZ mmCIF SHA256=`3021dd2b6461f850bb66d6748d3c22a5e1bb6cc891c625c15d793f38215b28ab`，固定命令 `x3dna-dssr -i=1EHZ.cif --json --pair-only -o=1EHZ.dssr.json` 输出34对，含 `A.G1–A.C72`、WC、cWW等字段；JSON SHA256=`0828a38b70938b170745e938c394b5ad2e18b01f5aeeffc2b0c0518ea413eda1`。该结果只证明工具可用，不是复合物扩充科学结果。P4仍待P3裁决、精确RCSB实体清单、去泄露和D0/D1；PPT未修改。
+
+
+## §15.506（2026-11-07）LinearDesign 编译与官方示例等价验收
+
+- **编译**：官方commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be` 使用g++编译成功，生成二进制SHA256=`f1f22901967cb3e0f569ff2332c326800ac355727ab58e377b14514db4fe9688`，官方 `LinearDesign_linux64.so` SHA256=`5707cd7d7950a711af74350c94956d1b0212eae37cc5bd04872967597cb3d330`。
+- **依赖修复**：首次运行因无 `python2` 失败，直接Python3又因官方gflags的Python2专属语法失败，未修改第三方源码。集群阿里Conda镜像404后，显式使用Anaconda官方channel创建隔离 `/home/rna_jev/envs/lineardesign-py27`，版本Python2.7.18；未改全局channel或项目运行环境。
+- **λ=0官方示例**：MNDTEAI输出序列 `AUGAACGAUACGGAGGCGAUC`、结构 `......(((.((....)))))`、MFE=-1.10、CAI=0.695，与README逐项一致；输出SHA256=`ee16d5dda332676df3cb003509f74b99d51d4450e0981473db9580f54139a71a`。
+- **λ=3官方示例**：testseq两条序列、结构、MFE=-6.00/-13.50和CAI=0.910/0.979均与README一致；输出SHA256=`dd032a0e367c886646b686a1dc48c243dbdd9e4bb009c8221c0b04662520cf51`。`qa.json` 状态 `PASS_LINEARDESIGN_OFFICIAL_EXAMPLES`、scientific_conclusion=false。
+- **边界**：官方示例只证明工具身份与等价性，不证明设计增益、表达、稳定性或免疫原性。正式P5仍等待P4的D0/D1裁决；源码和库不再分发，PPT未修改。
