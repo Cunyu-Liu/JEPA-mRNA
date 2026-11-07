@@ -12,3 +12,5 @@ cd /home/rna_jev
   --vl0-jsonl "$ROOT/data/validation/vl0_196.jsonl" \
   --out-dir "$DATA/decontamination" \
   --threads 8 > "$ROOT/logs/round48/rna_complex_decontamination.log" 2>&1
+/root/miniconda3/envs/lucaone/bin/python tools/verify_rna_complex_decontamination_round49.py \
+  --out-dir "$DATA/decontamination" > "$ROOT/logs/round48/rna_complex_verification.log" 2>&1
