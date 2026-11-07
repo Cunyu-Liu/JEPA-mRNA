@@ -16,7 +16,7 @@ P4 的首要问题是：真实 RNA 复合物中的链内结构监督能否改善
 
 ### 2.2 数据来源与标签
 
-- 主源为 RCSB PDB 条目和 mmCIF；NDB 仅作补充，需独立记录来源与许可。全文检索只可作候选预筛，最终必须按条目/实体类型精确过滤，不能用全文命中数冒充复合物数。
+- 主源为 RCSB PDB 条目和 mmCIF；NDB 仅作补充，需独立记录来源与许可。全文检索只可作候选预筛，最终必须按条目/实体类型精确过滤，不能用全文命中数冒充复合物数。2026-11-07 已用 `rcsb_entry_info.polymer_entity_count_RNA>0` AND `polymer_entity_count_protein>0` 获取8,157个去重entry，清单SHA256=`9b0d5045d2b5cdabd5cbc769827e6cb037adf9de2dc21773524ef7b761e74f2d`；当前API属性查询使用 `service="text"`。该数仅为entry级候选，不代表可用RNA链数或训练样本数。
 - 保存 PDB ID、entity/chain、实验方法、分辨率、发布日期、来源物种、伴侣类型、RNA 长度、原始 mmCIF 哈希和解析错误。大文件放 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49`，代码留 `/home/rna_jev`。
 - 链内配对使用固定版本 DSSR 的原始输出；记录软件版本、命令、Raw 配对、canonical-nested 子集和假 knot。D2 界面接触另存距离阈值与链映射，不进入 D1 的配对标签。
 - DSSR 不可用、链映射不一致或标签无法独立复核时停止，不安装来路不明替代物，不用经验规则补标签。2026-11-07 后续已从官方 `docs.x3dna-dssr.org/download.php?pkg=linux` 固定安装 DSSR v1.9.10-2020apr23，ZIP SHA256=`602b2d0dfda969999204a570e848c3dfb0203c9d3b12436e7d0275a5b4ea78aa`，二进制 SHA256=`c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a`；仅限非商业用途，不推送到项目仓库。1EHZ mmCIF工程验收输出34对，JSON SHA256=`0828a38b70938b170745e938c394b5ad2e18b01f5aeeffc2b0c0518ea413eda1`。P4仍须逐条目核验链映射和标签一致性。
