@@ -37,7 +37,11 @@ def collect(pdb_id, root, python, dssr):
     directory.mkdir(exist_ok=True)
     output = directory / "labels.json"
     if output.is_file():
-        return pdb_id, "cached"
+        if json.loads(output.read_text()).get("dssr_seq_id_mode") == "observed_nts_v1":
+            return pdb_id, "cached"
+        backup = directory / "labels.auth_seq.json"
+        if not backup.exists():
+            backup.write_bytes(output.read_bytes())
     try:
         cif = directory / f"{pdb_id}.cif"
         if not cif.is_file():
@@ -46,8 +50,10 @@ def collect(pdb_id, root, python, dssr):
                         "--cif", str(cif), "--output", str(directory / "parents.json")],
                        check=True, capture_output=True, text=True)
         dssr_json = directory / "dssr.json"
-        completed = subprocess.run([dssr, f"-i={cif}", "--json", "--pair-only",
-                                    f"-o={dssr_json}"], capture_output=True, text=True, timeout=300)
+        if dssr_json.is_file() and not (directory / "dssr.auth_seq.json").exists():
+            (directory / "dssr.auth_seq.json").write_bytes(dssr_json.read_bytes())
+        completed = subprocess.run([dssr, f"-i={cif}", "--json",
+                                    f"-o={dssr_json}"], capture_output=True, text=True, timeout=600)
         (directory / "dssr.log").write_text(completed.stdout + completed.stderr)
         if completed.returncode or not dssr_json.is_file():
             raise RuntimeError(f"DSSR failed: {completed.returncode}")

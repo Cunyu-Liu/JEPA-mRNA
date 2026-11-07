@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+from bisect import bisect_left, bisect_right
+from functools import lru_cache
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 
 import gemmi
@@ -41,19 +44,73 @@ def parse_nt(value):
 
 
 def nested_canonical(pairs):
-    ordered = sorted(pairs)
-    crossing = False
-    for left, right in ordered:
-        for other_left, other_right in ordered:
-            if left < other_left < right < other_right:
-                crossing = True
-    conflict = crossing or len({i for pair in pairs for i in pair}) != 2 * len(pairs)
-    return [] if conflict else ordered
+    ordered = sorted(tuple(pair) for pair in pairs)
+    if any(left >= right for left, right in ordered):
+        raise ValueError("invalid base-pair interval")
+    starts = [left for left, _ in ordered]
+    sys.setrecursionlimit(max(sys.getrecursionlimit(), 4 * len(ordered) + 100))
+
+    @lru_cache(maxsize=None)
+    def best(index, limit):
+        if index >= len(ordered):
+            return 0
+        excluded = best(index + 1, limit)
+        left, right = ordered[index]
+        if right > limit:
+            return excluded
+        inside = best(bisect_right(starts, left), right - 1)
+        following = bisect_left(starts, right + 1)
+        return max(excluded, 1 + inside + best(following, limit))
+
+    result = []
+    pending = [(0, max((right for _, right in ordered), default=0))]
+    while pending:
+        index, limit = pending.pop()
+        if index >= len(ordered):
+            continue
+        left, right = ordered[index]
+        excluded = best(index + 1, limit)
+        following = bisect_left(starts, right + 1)
+        included = (1 + best(bisect_right(starts, left), right - 1) +
+                    best(following, limit)) if right <= limit else -1
+        if included >= excluded:
+            result.append([left, right])
+            pending.append((following, limit))
+            pending.append((bisect_right(starts, left), right - 1))
+        else:
+            pending.append((index + 1, limit))
+    return result
 
 
 def value(block, category, tag):
     result = block.find_value(f"{category}.{tag}")
     return result.strip() if result else None
+
+
+def observed_residue_map(dssr, mapping, parents):
+    if not dssr.get("nts"):
+        raise ValueError("DSSR full nts list is required")
+    nucleotides = sorted((nt for nt in dssr["nts"] if nt.get("nt_type") == "RNA"),
+                         key=lambda nt: nt["index"])
+    by_chain = {}
+    for nt in nucleotides:
+        chain = parse_nt(nt["nt_id"])[0]
+        by_chain.setdefault(chain, []).append(nt)
+    lookup = {}
+    for chain, nts in by_chain.items():
+        if chain not in mapping:
+            continue
+        observed = sorted((row for row in mapping[chain].values() if row["observed"]),
+                          key=lambda row: row["seq_id"])
+        if len(observed) != len(nts):
+            raise ValueError(f"DSSR/mmCIF observed residue count mismatch: {chain}")
+        for nt, row in zip(nts, observed):
+            if one_letter(nt["nt_name"], parents) != row["letter"]:
+                raise ValueError(f"DSSR/mmCIF observed base mismatch: {nt['nt_id']}")
+            if nt["nt_id"] in lookup:
+                raise ValueError(f"duplicate DSSR nucleotide id: {nt['nt_id']}")
+            lookup[nt["nt_id"]] = row
+    return lookup
 
 
 def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
@@ -75,14 +132,15 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
         try:
             if entity_types.get(entity) != "polyribonucleotide":
                 raise ValueError("not a pure RNA polymer entity")
-            key = (int(auth_seq), "" if insertion == "." else insertion)
+            key = int(seq_id)
             letter = one_letter(monomer, parents)
         except (ValueError, TypeError) as error:
             rejected.append({"auth_chain": auth_chain, "reason": str(error)})
             continue
         if key in chains.setdefault(auth_chain, {}):
             raise ValueError(f"duplicate residue mapping: {key}")
-        chains[auth_chain][key] = {"asym_id": asym, "entity_id": entity, "seq_id": int(seq_id), "letter": letter, "monomer": monomer}
+        chains[auth_chain][key] = {"asym_id": asym, "entity_id": entity, "seq_id": int(seq_id),
+                                   "observed": auth_seq != "?", "letter": letter, "monomer": monomer}
     dssr = json.loads(dssr_path.read_text())
     raw_by_chain = {chain: [] for chain in chains}
     raw_records = {chain: [] for chain in chains}
@@ -96,9 +154,8 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
             rejected.append({"auth_chain": chain, "reason": "no mapped RNA residues; non-RNA DSSR chain excluded"})
             continue
         try:
-            left, right = chains[chain][nt1[1:3]], chains[chain][nt2[1:3]]
-            if one_letter(nt1[3], parents) != left["letter"] or one_letter(nt2[3], parents) != right["letter"]:
-                raise ValueError("DSSR/mmCIF base identity mismatch")
+            nt_lookup = observed_residue_map(dssr, {chain: chains[chain]}, parents)
+            left, right = nt_lookup[pair["nt1"]], nt_lookup[pair["nt2"]]
             a, b = sorted((left["seq_id"], right["seq_id"]))
             if (a, b) in raw_by_chain[chain]:
                 raise ValueError("duplicate DSSR pair")
@@ -118,8 +175,9 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
         sequence = "".join(row["letter"] for row in ordered)
         raw = sorted(raw_by_chain[chain])
         canonical_pairs = []
+        nt_lookup = observed_residue_map(dssr, {chain: mapping}, parents)
         for pair in raw_records[chain]:
-            a, b = sorted((mapping[parse_nt(pair["nt1"])[1:3]]["seq_id"], mapping[parse_nt(pair["nt2"])[1:3]]["seq_id"]))
+            a, b = sorted((nt_lookup[pair["nt1"]]["seq_id"], nt_lookup[pair["nt2"]]["seq_id"]))
             base_pair = sequence[a - 1] + "-" + sequence[b - 1]
             if base_pair in CANONICAL and pair.get("LW") == "cWW":
                 canonical_pairs.append([a, b])
@@ -140,6 +198,7 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
             "cif_sha256": sha256(cif_path), "dssr_json_sha256": sha256(dssr_path),
             "parent_map_sha256": sha256(parent_path), "modified_parent_map": parents,
             "dssr_binary_sha256": dssr_sha256, "dssr_program": dssr.get("program"),
+            "dssr_seq_id_mode": "observed_nts_v1",
             "n_dssr_pairs": dssr.get("num_pairs"), "chains": output, "rejected_chains": rejected}
 
 
