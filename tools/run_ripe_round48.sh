@@ -92,7 +92,14 @@ for ARM in ripe_head_log ripe_head_r1 ripe_head_r2 ripe_head_r3 ripe_head_r5 rip
   while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 21000 ]; do sleep 60; done
   pids=()
   for seed in 0 1 2; do train_seed "$seed" & pids+=("$!"); done
-  wait_three "${pids[@]}"
+  if ! wait_three "${pids[@]}"; then
+    for seed in 0 1 2; do
+      if ! $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["converged"] and d["early_stopped"] and d["status"]=="completed"' "$ROOT/runs/${ARM}_s${seed}/run_meta.json" 2>/dev/null; then
+        echo "serial resume for incomplete $ARM seed $seed with unchanged training configuration"
+        train_seed "$seed"
+      fi
+    done
+  fi
   pids=()
   for seed in 0 1 2; do eval_seed "$seed" & pids+=("$!"); done
   wait_three "${pids[@]}"
