@@ -58,12 +58,14 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--bootstrap", type=int, default=10000)
+    parser.add_argument("--manifest", default="audits/round48/ripe_preregistered.json")
+    parser.add_argument("--status", default="PASS_RIPE_PAIRED_MICRO_F1_BOOTSTRAP")
     args = parser.parse_args()
     assert args.bootstrap >= 1000
-    manifest_path = args.root / "audits/round48/ripe_preregistered.json"
+    manifest_path = args.root / args.manifest
     manifest = json.loads(manifest_path.read_text())
-    baseline = manifest["selected"]
-    output = {"status": "PASS_RIPE_PAIRED_MICRO_F1_BOOTSTRAP",
+    baseline = manifest.get("selected") or manifest["baseline"]
+    output = {"status": args.status,
               "n_bootstrap": args.bootstrap,
               "manifest_sha256": sha256(manifest_path),
               "baseline": {"experiment": baseline["experiment"], "run_prefix": baseline["run_prefix"]},
@@ -71,6 +73,8 @@ def main():
               "unsupported_rule": "right-only supported sequences are counted separately and never imputed as zero left F1",
               "comparisons": {}, "long_subsets": {}, "source_hashes": {}}
     for arm in manifest["arms"]:
+        if arm.get("reuse_baseline"):
+            continue
         name = arm["arm"]
         comparison_rows = []
         long_rows = []
