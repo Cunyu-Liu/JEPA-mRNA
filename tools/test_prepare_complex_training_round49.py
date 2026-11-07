@@ -40,6 +40,7 @@ class ComplexTrainingPreparationTests(unittest.TestCase):
                 run = root / "runs" / f"j_s{seed}"
                 run.mkdir(parents=True)
                 meta = {"converged": True, "early_stopped": True, "status": "completed",
+                        "best_validation_loss": 20.0 + seed,
                         "schedule": {"steps": 0, "batch_size": 2}, "validation": {"patience": 6},
                         "objective": {"lambda_jepa": 0.0}, "scorer": "pairmlp",
                         "pair_latent_dim": 490, "ripe": {"mode": "log", "encoder": False}}
@@ -53,7 +54,7 @@ class ComplexTrainingPreparationTests(unittest.TestCase):
             config = json.loads((out / "d1_config.json").read_text())
             self.assertEqual(config["d1"]["n_complex_train"], 1)
             self.assertEqual(config["d1"]["n_tr1c"], 2)
-            self.assertEqual(sum(1 for _ in (out / "train_d1.jsonl").open()), 3)
+            self.assertEqual(len((out / "train_d1.jsonl").read_text().splitlines()), 3)
             teacher = json.loads((out / "teacher/manifest.json").read_text())
             self.assertEqual(teacher["n_sequences"], 3)
             self.assertEqual(len(teacher["shards"]), 2)

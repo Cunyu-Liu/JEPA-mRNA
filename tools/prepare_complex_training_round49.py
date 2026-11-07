@@ -106,6 +106,11 @@ def main():
                                 str(args.teacher_tr1c / "manifest.json"): sha256(args.teacher_tr1c / "manifest.json"),
                                 str(args.teacher_complex / "manifest.json"): sha256(args.teacher_complex / "manifest.json")}}
     atomic_json(args.out / "d1_config.json", config)
+    comparison = {"selected": {"experiment": selected["experiment"], "run_prefix": selected["run_prefix"],
+                                "mean_best_vl0": sum(meta["best_validation_loss"] for meta in metas) / 3},
+                  "arms": [{"arm": "complex_d1"}],
+                  "d1_config_sha256": sha256(args.out / "d1_config.json")}
+    atomic_json(args.out / "comparison_manifest.json", comparison)
     print(json.dumps(config, indent=2, sort_keys=True))
 
 
