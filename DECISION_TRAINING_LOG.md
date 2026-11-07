@@ -13164,3 +13164,14 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **逐值等价**：S2 seed0 VL0的新旧预测、micro/macro-F1、校准、逐序列F1/INF/confidence/TP/FP/FN全部一致，状态 `PASS_SINGLE_FORWARD_REPEAT_EQUIVALENCE`。未使用缓存embedding代替raw-sequence前向，也未改变checkpoint、tokenizer、精度、mask或解码。
 - **耗时边界**：同一并发开发环境的VL0耗时57.8727603s→34.3062685s，仅说明去除重复前向有效；不是RTX4090独占全TS0测速，不宣称推理速度SOTA。
 - **部署边界**：优化只进入独立消融脚本，正在运行的S2主评测仍用原脚本；S3主评测的优化部署须在S2主评测结束后另行等价验收。
+
+
+## §15.484（2026-11-07）S2 全参 structRFM+JEV 13 split 完整负结果
+
+- **完整性**：S2三枚独立best checkpoint×13 split×3 repeat全部完成，聚合状态 `PASS_STRUCTRFM_FULL_ABC_13_SPLITS_3_SEEDS_3_REPEATS`；第二次聚合逐字节一致。summary SHA256=`4a893068b9e7cdd8ca284a27fb3cdb0057f0b4b0454b8f75e52cd747b97f4a4b`。
+- **主榜 micro-F1 mean±SD**：TS0=0.4532140830±0.0330766729（n=79）、bpRNA-new=0.4380730957±0.0178170495（74）、ArchiveII=0.5128516538±0.0345912923（raw clean=90）、TS1=0.7574455574±0.0656932406（3）、TS2=0.8250000000±0.0353553391（1）、TS3=0.4410256410±0.0290095090（1）、TS-hard=0.3791175791±0.0167568020（2）、TestSetB=0.3030090741±0.0090498777（21）。all-baseline与external-single均**0/8 SOTA**，小split不作强统计结论。
+- **外部OOD**：Rfam=0.5232902658±0.0156290816，低于BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.4078324722/0.4532342829/0.3339871009/0.3037661483，measured wins=0。比较文件 SHA256=`b4e78beb6e3afaaf3d2848776409cef699161d67a58def5850ca7e20b9cadf4c`，独立核对主榜与CHANRG所有win字段均为0。
+- **长序列边界**：ArchiveII每seed 57条、Rfam每seed 140条超过官方位置上限而未支持，三种子合计171/420；与S1相同，未截断或删长序列制造提升。S2没有证明200–400/>400nt优势。
+- **置信度**：13 split均按seed0 VL0冻结阈值复算，confidence SHA256=`13a9091e34d96056fcf1cb98bb26b1810e613cc5e357c8c8f5f02cf5bf3dc66f`。多数split在高选择覆盖率阈值下为空，AURC=null；仅CHANRG Test seed0/1得到0.2888476321/0.2932648656，不能声称最佳置信度，空桶不改阈值、不插值。
+- **裁决**：S2全参微调否决为最终独立单模型，保留为S3近参数PairMLP对照；路线一仍需S3三种子、全板、配对bootstrap与greedy/Turner0消融全部关闭后才作最终裁决并进入RIPE。当前未修改PPT。
+- **优化部署**：S2总结后备份旧评测器SHA256=`03a6d0d132f990c33646ccfd15773ab51853ed62446df544d44ed58c264b08cf`；新主评测器与已验证消融器均为SHA256=`f73223c81ee73e7ac0bbdb90e9f991307cdd222c748422e100abda93441bad9f`，后续S3自动使用单次分数前向实现。
