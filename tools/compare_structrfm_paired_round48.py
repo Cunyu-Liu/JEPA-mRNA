@@ -71,16 +71,25 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--bootstrap", type=int, default=10000)
+    comparison_names = [f"{right}_minus_{left}" for right, left in COMPARISONS]
+    parser.add_argument("--comparisons", nargs="+", choices=comparison_names,
+                        default=comparison_names)
     args = parser.parse_args()
     if args.bootstrap < 1000:
         raise ValueError("at least 1000 bootstrap resamples required")
-    output = {"status": "PASS_STRUCTRFM_S1_S2_S3_PAIRED_MICRO_F1_BOOTSTRAP",
+    status = ("PASS_STRUCTRFM_S1_S2_S3_PAIRED_MICRO_F1_BOOTSTRAP"
+              if args.comparisons == comparison_names else
+              "PASS_STRUCTRFM_SELECTED_PAIRED_MICRO_F1_BOOTSTRAP")
+    output = {"status": status,
               "protocol": "within-seed paired sequence bootstrap; right minus left; percentile 95%CI; two-sided sign probability with +1 correction; Holm across main8",
               "n_bootstrap": args.bootstrap,
+              "selected_comparisons": args.comparisons,
               "small_sample_rule": "n<30 is descriptive; raw n, supported n and unsupported n are retained",
               "comparisons": {}}
     for right_arm, left_arm in COMPARISONS:
         name = f"{right_arm}_minus_{left_arm}"
+        if name not in args.comparisons:
+            continue
         comparison_rows = []
         for split in MAIN_SPLITS:
             for seed in range(3):
