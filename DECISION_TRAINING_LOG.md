@@ -13260,3 +13260,18 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立复核**：`ripe_cuda_gate.json` 与recheck逐字节一致，SHA256=`53c3e69616b8c92242556c84b80581b7ec1e7cab4b03c78d9100dbf3d86eac13`。19项回归通过，续训/配置门另独立复跑4项；SOTA工具泛化实验名后，S2既有比较文件SHA256仍为 `b4e78beb6e3afaaf3d2848776409cef699161d67a58def5850ca7e20b9cadf4c`。
 - **冻结队列**：路线一完整裁决后，以S2/S3各三种子best VL0 loss均值为唯一基座配置选择依据，不读取测试榜选臂。六个head臂log/R1/R2/R3/R5/R6及独立encoder-only R3均三种子并行自然收敛，再做13 split、VL0 confidence、SOTA及greedy/Turner0。head-only不越过512nt，encoder臂要求全部raw序列被支持。容量对照复用另一已完成S2/S3臂；RIPE+ResNet2D整头608,759与PairMLP-490整头608,817仅差58参数。
 - **代码与边界**：提交 `8f8fdc0` 已推送GitHub。现有远端锁定队列只等待route1_decision，不重复启动训练；合成门不是长序列性能结论，尚无RIPE科学结果，PPT未修改。
+
+
+## §15.495（2026-11-07）S3 三种子全部自然收敛
+
+- **seed2收敛**：step22000达到patience=6并自然早停，恢复best step19000，best validation loss=18.8899386721；最终实际可训练参数=85,663,281。checkpoint SHA256=`8da0738356f9fef673152af2790fdb52ef0d8e762ddfc71ad7d98172955a17ee`。
+- **三枚独立核验**：seed0/1/2 best step=17000/19500/19000，loss=18.8644125285/18.7388141224/18.8899386721，checkpoint均PairMLP-490、无teacher张量、无种子平均；SHA256分别为 `dc0b9191…1544ff07`、`81551292…3733acd`、`8da07383…17ee`。三种子best VL0 loss均值=18.8310551077，仅用于后续冻结基座配置选择，不是测试表现。
+- **评测衔接**：原队列已进入13 split×3 seed×3 repeat正式全参评测；VL0 confidence也已启动。seed0 TS0已生成CUDA结果，但单split、单seed不作S3科学结论，须等待全板聚合、SOTA、配对bootstrap、greedy/Turner0和route1_decision。
+
+
+## §15.496（2026-11-07）全参 Pair-JEPA 辅助目标与防坍塌诊断工程验收
+
+- **接口**：全参 `train_plan_a` 新增显式 `lambda_jepa`、EMA/fixed/random target、非空masked-pair采样、原始辅助损失及target/prediction方差、范数、有效秩；默认 `lambda_jepa=0`，PairMLP/ResNet2D默认路径不变。有效秩以中心化latent协方差特征值的熵指数计算，最多等距抽样512个masked latent，避免全矩阵SVD开销。
+- **回归**：28项相关回归通过。测试构造曾误用每行和恒为1的one-hot样本期待满秩4，中心化后真实秩为3；改用以零为均值且四方向独立的正负基向量后通过，未修改算法迎合错误测试。
+- **CUDA工程smoke**：真实structRFM、4条8nt合成序列、两步、全12层解冻；193个encoder张量更新，EMA teacher与student分离。step1辅助损失=0（初始teacher=student），step2原始值=1.2728533505e-16；诊断日志独立于通用25步日志门，避免漏写及四舍五入掩盖正值。`qa.json` 状态 `PASS_PAIRJEPA_FULL_CUDA_ENGINEERING_SMOKE`。
+- **边界**：该run明确 `steps=2`、`stop_reason=step_cap`、`converged=false`、`scientific_conclusion=false`，极小掩码下有效秩约1不构成防坍塌或性能证据。未启动P3正式训练，仍待路线二裁决、三种子自然收敛和完整A/B/C。代码提交 `f10969e056b5429465072eaabf94aa51b7a54085` 已推送GitHub；PPT未修改。
