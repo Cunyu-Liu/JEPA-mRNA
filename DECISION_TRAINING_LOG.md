@@ -13342,3 +13342,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **路线一裁决**：六项greedy/Turner0总结、三臂主榜/SOTA/confidence及paired bootstrap齐套，`route1_decision.json` 状态 `PASS_ROUTE1_ADJUDICATION_WITH_NEGATIVE_SOTA`、complete=true、allow_ripe=true，SHA256=`a9cc5c0e66c8d3cfb7ff2d660378d0ce8dcd8db39c9dcc36acaca60a29d798a9`。S1/S2/S3均0/8并否决为最终模型，负结果不掩饰。
 - **RIPE基座与启动**：按三种子best VL0均值选择S3 PairMLP-490（18.8310551077，S2=19.5281032939），不按测试榜选臂。预注册与recheck SHA256=`03e9462be68a0e3d168a89ad123e13d34da3ca7e4ce8e30c637522404ccc7a4a`。log-head seed0/1/2已读取42,564条TR1c并进入真实CUDA，steps=0、patience=6，不设固定终点。
 - **调度异常边界**：首次RIPE调度在预注册双跑阶段退出且未启动训练，未捕获的错误不归因；手动补跑两份配置一致后，以同一锁定脚本重新挂接并保存 `ripe_queue.log`。未重复任何已开始的RIPE训练。路线二全板与机制结论尚未产生，PPT未修改。
+
+
+## §15.505（2026-11-07）P3 队列闭环与 DSSR 官方资产验收
+
+- **P3配置与执行链**：J0由路线二VL0选择，J-mlp/J1/J1-noEMA/J-random保持同骨干及RIPE状态，`lambda_jepa=0.1`预注册，训练两路并发。相同MLP若与J0一致则复用，不重复训练；主评测/消融强制teacher-forward guard。统计与裁决包括有限masked loss、方差、有效秩和全部39个guard结果，低秩如实保留，不设任意合格阈值。相关提交 `5e84b2a`、`6ea6900`、`a50fbe3` 已推送GitHub，正式P3仍等待RIPE裁决。
+- **DSSR官方来源**：从 `https://docs.x3dna-dssr.org/download.php?pkg=linux` 获取官方预许可发布版，完整ZIP通过CRC校验，SHA256=`602b2d0dfda969999204a570e848c3dfb0203c9d3b12436e7d0275a5b4ea78aa`。首次120秒下载不完整且服务器不支持断点续传，重新完整下载后才解压，未使用损坏包或第三方镜像。
+- **版本与许可**：二进制SHA256=`c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a`，`--version`确认 `v1.9.10-2020apr23`，仅用于非商业研究；存于 `/home/rna_jev/third_party/DSSR-v1.9.10`，不推送到项目GitHub。
+- **mmCIF/JSON工程门**：公开1EHZ mmCIF SHA256=`3021dd2b6461f850bb66d6748d3c22a5e1bb6cc891c625c15d793f38215b28ab`，固定命令 `x3dna-dssr -i=1EHZ.cif --json --pair-only -o=1EHZ.dssr.json` 输出34对，含 `A.G1–A.C72`、WC、cWW等字段；JSON SHA256=`0828a38b70938b170745e938c394b5ad2e18b01f5aeeffc2b0c0518ea413eda1`。该结果只证明工具可用，不是复合物扩充科学结果。P4仍待P3裁决、精确RCSB实体清单、去泄露和D0/D1；PPT未修改。
