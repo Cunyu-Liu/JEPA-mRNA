@@ -13366,3 +13366,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **查询修正**：schema确认 `rcsb_entry_info.polymer_entity_count_RNA/protein` 存在；手工请求因当前API要求属性查询 `service="text"` 而反复400，最小1EHZ查询验证该合同后返回total_count=1。此前 `service="attribute"` 的错误响应保留，不把400误写成字段不存在。
 - **精确候选**：RNA>0 AND protein>0返回8,157个entry，完整清单去重且total_count与ID数一致，首/末ID可复核。清单SHA256=`9b0d5045d2b5cdabd5cbc769827e6cb037adf9de2dc21773524ef7b761e74f2d`。
 - **边界**：8,157是entry级候选，不是RNA链数、复合物链内配对数或最终训练样本数。P4仍需mmCIF实体/链过滤、实验元数据、DSSR标签、entry+序列簇去泄露及独立holdout，待P3裁决后执行。官方Python客户端安装于隔离环境，仅作API合同参考，不进入项目依赖。PPT未修改。
+
+
+## §15.508（2026-11-07）RIPE log-head step5500 训练节点
+
+- **三枚种子均刷新best VL0**：seed0 step5500=25.6400560916（此前best step4500=26.3062378816）；seed1 step5500=25.3830595520（此前step5000=25.4139357017）；seed2 step5500=24.6396191359（此前best step4500=25.9202607221）。seed0/2在step5000的一次未改善后均恢复下降，bad重置为0。
+- **训练状态**：三枚种子均按预定节奏解冻10/12层，真实CUDA、steps=0、patience=6，无OOM或CPU降级。当前仍是log-head过程损失，不是R1/R2/R3或A/B/C证据，不据此调整后续臂或选择测试集。P3/P4/P5继续按门控等待，PPT未修改。
