@@ -9,11 +9,13 @@
 > | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 六模式/JEV 头/BERT 接入、官方 token 映射和 515nt CUDA 已验收，34 项回归通过；正式消融待路线一裁决 |
 > | T-A212 | RIPE+JEV 三种子 A/B/C | 同配方收敛；长程与 200–400/>400 nt 为主判定，全板与外部 OOD 完整 | 待路线一裁决 |
 > | T-A213 | Pair-JEPA scorer 与防坍塌对照 | J-mlp/J1/noEMA/random-target；被掩 pair latent、方差/有效秩、推理无 teacher | 待路线二裁决 |
+> | T-A217 | RNA 复合物数据扩充与 B 组消融 | RCSB/mmCIF/DSSR 身份与标签守恒；exact+80% identity 去泄露；D0/D1 三种子 A/B/C 与 complex holdout | 新合同 `docs/plans/2026-11-07-rna-complex-lineardesign.md`；待 P3 后启动，不把界面接触冒充配对 |
+> | T-A218 | LinearDesign 下游设计验证 | 官方算法身份、编码约束、λ=0/联合目标、独立 PRISM+热力学复算；无湿实验边界 | 已核实 DOI=10.1038/s41586-023-06127-z；待 P4 裁决后启动，不用于一般非编码 RNA |
 > | T-A214 | 独立单模型终榜与速度/置信度 | 单骨干单头单 checkpoint；主 clean 8/8、Rfam/CHANRG、独占 raw-sequence、ECE/Spearman/AURC 与长度桶独立复算 | 未达成；不得以 xens2 集成替代 |
 > | T-A215 | 台账、PPT 副本与图源三通道 | 每 run 完整；仅验收结果入副本，微软雅黑/1.5 行距/无重叠/逐页渲染；源数据与图表一致 | 贯穿本轮，原稿和用户其他调整不动 |
 > | T-A216 | GitHub、归档与论文证据链 | 确认代码及时 push；活跃源保留、旧件可追溯归档；每主张有 claim–evidence–limitation | 贯穿本轮，最终未完成 |
 >
-> **硬顺序**：T-A209→T-A210→T-A211/T-A212→T-A213→T-A214；T-A215/T-A216 贯穿。每条路线完成验收并作正/负裁决后进入下一条，禁止以 smoke 或未收敛单 seed 跳级。
+> **硬顺序**：T-A209→T-A210→T-A211/T-A212→T-A213→T-A217→T-A218→T-A214；T-A215/T-A216 贯穿。每条路线完成验收并作正/负裁决后进入下一条，禁止以 smoke 或未收敛单 seed 跳级。
 
 > **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
 >

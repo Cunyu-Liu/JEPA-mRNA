@@ -13224,3 +13224,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **seed0**：step15500曾达到bad=5，但未满足patience=6；继续训练后step16000 validation loss=19.5165950016，刷新best，bad=0。此前best step13000=19.8579217512，不能手动提前终止。
 - **seed1**：step16000 validation loss=19.0811047168，刷新best，bad=0；此前best step14500=19.8316712450。
 - **运行状态**：两枚种子均完成12/12 Transformer blocks训练并继续自然收敛，日志与compute ledger持续更新；无固定步数终点、无CPU静默降级。seed2尚未启动，当前loss仍不是A/B/C或SOTA结论。
+
+
+## §15.491（2026-11-07）新增 RNA 复合物扩充与 LinearDesign 路线合同
+
+- **执行顺序**：用户新增数据扩充和下游设计任务已纳入P4/P5，排在structRFM→RIPE→Pair-JEPA之后，最终独立复算/PPT/论文调整为P6。当前S3及路线一配置不变，不提前混入新数据。
+- **P4复合物**：D0不加新数据，D1以真实RNA复合物链内DSSR配对做纯数据扩充；RNA–蛋白界面接触独立保存，只有D1验收后才可单独评估D2界面辅助任务。不得以界面接触伪造RNA–RNA配对，也不得把D1写成模型理解蛋白界面。主判定为B组改善且A/C不显著退化，三种子A/B/C与complex holdout必需。
+- **去泄露**：RCSB/mmCIF保留entry/chain、实验方法、分辨率、日期、物种、原始哈希；exact+80% identity/query-coverage审计TR1c、VL0、13 split和structRFM预训练语料，按entry+序列簇切分，任何同源簇不得跨训练/验证/holdout。DSSR版本与Raw/canonical-nested/假knot标签分别保存。
+- **LinearDesign**：官方论文 Zhang et al., Nature 621, 396–403 (2023)，DOI=`10.1038/s41586-023-06127-z`。原文采用DFA/lattice representation与lattice parsing，目标 `MFE – λ|p|log(CAI)`，只针对编码区。采用“LinearDesign生成候选+冻结PRISM与独立热力学评价”，不把输出当真实标签蒸馏，不用于一般非编码Rfam RNA，不把结构指标写成湿实验稳定性/表达/免疫效果。
+- **RCSB初步调研**：两个常见属性路径在当前Search API返回search not enabled；全文 `RNA protein complex` 返回76,305个宽泛候选，不能当作复合物数。最终数据门要求条目/实体类型精确过滤与mmCIF核验，未形成数据规模结论。
+- **文档**：新合同 `docs/plans/2026-11-07-rna-complex-lineardesign.md`，三处spec/tasks/checklist增加T-A217/T-A218并同步硬顺序。未启动P4/P5训练，PPT未修改。
