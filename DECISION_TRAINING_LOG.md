@@ -13147,3 +13147,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **默认回归**：S1 seed0 VL0默认DP三次预测、micro/macro、校准和逐序列字段与既有验收结果完全一致。完整依赖下解码、包装器、S3和RIPE回归7/7通过。
 - **VL0机制预检**：同一S1 seed0，greedy micro-F1=0.5858959035，crossing_pairs=15,775、conflict_pairs=958；Turner=0+DP micro-F1=0.6500789889，crossing/conflict=0。原DP默认micro-F1=0.7507265817。它们只验证机制与物理先验贡献，不能替代13 split消融或声称最终结论。
 - **训练进度**：S3 seed0/1在step2500的VL0 loss=28.9818689266/29.4733664044，仍持续改善，未收敛。S2主评测未结束前不部署全参消融输出schema；全参消融与完整队列随后统一验收。
+
+
+## §15.482（2026-11-07）全参独立消融脚本与 VL0 等价验收
+
+- **隔离部署**：全参消融使用独立 `eval_structrfm_full_ablation_round48.py`，进行中的S2主评测继续调用原脚本，不改变主结果schema或运行路径。完整消融队列只等待S1/S2/S3主总结齐套，不读取部分测试榜调参。
+- **默认等价**：S2 seed0 VL0默认DP三次预测、micro/macro、校准和逐序列指标与原全参评测完全一致；状态 `PASS_FULL_DECODE_CUDA_REGRESSION`。
+- **机制预检**：同一S2 seed0，greedy micro-F1=0.6034077003，crossing_pairs=38,735、conflict_pairs=1,661；Turner=0+DP micro-F1=0.7256295939，crossing/conflict=0。原默认DP micro-F1=0.7966266623。以上仅属VL0机制证据，不能替代13 split×3 seed消融。
+- **断点与聚合**：greedy/Turner0分别核对decoder和prior override，逐split保留checkpoint、clean、三次预测、长度/长程指标，再复用独立聚合器；旧或身份不符输出改名 `.stale`，不拼接结果。
+- **训练边界**：S3 seed0在step3500 bad=1、best step3000；seed1 step3500仍改善，二者均未达早停条件。S2主评测继续，未提前进入RIPE科学实验。
