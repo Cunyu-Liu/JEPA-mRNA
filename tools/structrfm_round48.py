@@ -66,7 +66,8 @@ def install_structrfm_training(base, xens2_eval, pretrained_path):
         load_structrfm_encoder(pretrained_path, device=device, dtype=dtype)[::2])
 
     def scores(encoder, head, sequence, device):
-        if len(sequence) > encoder.config.max_position_embeddings:
+        if (len(sequence) > encoder.config.max_position_embeddings
+                and encoder.config.position_embedding_type != "ripe"):
             raise ValueError(f"sequence length {len(sequence)} exceeds strict structRFM boundary")
         inputs = tokenizer(sequence, return_tensors="pt")
         input_ids = inputs["input_ids"].to(device)

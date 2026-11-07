@@ -167,6 +167,7 @@ def main():
                     "checkpointed z construction (numerically exact; see docstring)")
     ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
     ap.add_argument("--ripe-encoder", action="store_true")
+    ap.add_argument("--ripe-encoder-only", action="store_true")
     ap.add_argument("--scorer", choices=["resnet2d", "pairmlp"], default="resnet2d")
     ap.add_argument("--pair-latent-dim", type=int, default=64)
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
@@ -175,6 +176,8 @@ def main():
                          "data-loading phase; freed into the allocator pool "
                          "once the model is on device (shared-cluster race fix)")
     args = ap.parse_args()
+    if args.ripe_encoder_only and not (args.ripe_encoder and args.ripe_mode):
+        raise SystemExit("--ripe-encoder-only requires --ripe-encoder and --ripe-mode")
 
     os.makedirs(args.out, exist_ok=True)
     os.makedirs(args.snapshot_dir, exist_ok=True)
@@ -244,7 +247,7 @@ def main():
                             scorer=args.scorer, chunk_size=0,
                             pair_latent_dim=args.pair_latent_dim,
                             jepa_use_ema=False,
-                            ripe_mode=args.ripe_mode or None)
+                            ripe_mode=None if args.ripe_encoder_only else args.ripe_mode or None)
     encoder = encoder.to(device)
     head = head.to(device)
     if args.init_checkpoint:
@@ -303,7 +306,9 @@ def main():
         "arm": os.path.basename(args.out.rstrip("/")),
         "control_arm": "rinalmo_r2d_b4_s0",
         "control_results": {"ts0_micro_f1": 0.6629, "bprna_new_micro_f1": 0.5010},
-        "ripe": {"mode": args.ripe_mode or None, "encoder": args.ripe_encoder},
+        "ripe": {"mode": None if args.ripe_encoder_only else args.ripe_mode or None,
+                 "encoder": args.ripe_encoder,
+                 "encoder_mode": args.ripe_mode if args.ripe_encoder else None},
         "backbone": report["backbone"],
         "scorer": args.scorer,
         "pair_latent_dim": args.pair_latent_dim,

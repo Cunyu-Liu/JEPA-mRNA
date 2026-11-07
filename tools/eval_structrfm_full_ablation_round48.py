@@ -38,7 +38,7 @@ def main():
     if ripe.get("encoder"):
         from ripe_structrfm import enable_ripe_structrfm
         vocab = {base: tokenizer.convert_tokens_to_ids(base) for base in "ACGUT"}
-        encoder = enable_ripe_structrfm(encoder, ripe["mode"], vocab=vocab)
+        encoder = enable_ripe_structrfm(encoder, ripe.get("encoder_mode") or ripe["mode"], vocab=vocab)
     encoder.load_state_dict(checkpoint["model"]["encoder"], strict=True)
     head = FlatDecisionHead(d_model=768, d_z=128, hidden=64,
                             scorer=scorer, chunk_size=0,
