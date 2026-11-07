@@ -13333,3 +13333,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **S2**：39/39 greedy完成并双跑一致，summary SHA256=`d0d1b0bb3dc396536affaf088951521e2a80b9d400598b373cc63a5b81fab0e5`。TS0=0.4532140830→0.2212504275，bpRNA-new=0.4380730957→0.1219899697，Rfam=0.5232902658→0.2366868866。
 - **S3**：39/39 greedy完成并双跑一致，summary SHA256=`6c0cdc203c27b3c6577cbe3f5d236a348056c01836c8e4dcf0b7a68521e974ab`。TS0=0.4750360183→0.2073732258，bpRNA-new=0.3904187883→0.1367539341，Rfam=0.4826468164→0.2045584377。
 - **机制边界**：三臂默认DP均在全部13 split明显优于greedy，支持合法DP解码是性能关键组成，不能把结果解释为简单贪心打分。当前仅关闭DP→greedy门，Turner=0及route1_decision未完成，RIPE仍未启动，PPT未修改。
+
+
+## §15.504（2026-11-07）路线一最终裁决与 RIPE 正式启动
+
+- **Turner=0独立复算**：S1 summary SHA256=`58645ef4ddcffbffb79edec7af2bc58add4e8720e90f53fd00868fdbf8bba3c1`；S2=`fc71443428e0bf58ab2bcd1e1deb694b6936742a59a8f6e1cb5b82da6caccc90`；S3=`a0da02db43ee6beb7b0931f20a4ba25ae7747c26376e389811b7606c8da91fbf`。三臂双跑均一致，Turner=0保持DP且交叉/冲突为0。
+- **物理先验机制**：S1 TS0/Rfam=0.4060484541/0.5491246680，Turner=0降至0.2455985528/0.2652132997；S2对应0.4532140830/0.5232902658→0.2397278430/0.2076715300；S3对应0.4750360183/0.4826468164→0.4532272097/0.4331204421。S3降幅较小，但其prior weight三种子=0.3233455122/0.2942570448/0.3030517101，低于S2的0.6843111515/0.8007776737/0.7943384647，不能据此宣称不需要物理先验。
+- **路线一裁决**：六项greedy/Turner0总结、三臂主榜/SOTA/confidence及paired bootstrap齐套，`route1_decision.json` 状态 `PASS_ROUTE1_ADJUDICATION_WITH_NEGATIVE_SOTA`、complete=true、allow_ripe=true，SHA256=`a9cc5c0e66c8d3cfb7ff2d660378d0ce8dcd8db39c9dcc36acaca60a29d798a9`。S1/S2/S3均0/8并否决为最终模型，负结果不掩饰。
+- **RIPE基座与启动**：按三种子best VL0均值选择S3 PairMLP-490（18.8310551077，S2=19.5281032939），不按测试榜选臂。预注册与recheck SHA256=`03e9462be68a0e3d168a89ad123e13d34da3ca7e4ce8e30c637522404ccc7a4a`。log-head seed0/1/2已读取42,564条TR1c并进入真实CUDA，steps=0、patience=6，不设固定终点。
+- **调度异常边界**：首次RIPE调度在预注册双跑阶段退出且未启动训练，未捕获的错误不归因；手动补跑两份配置一致后，以同一锁定脚本重新挂接并保存 `ripe_queue.log`。未重复任何已开始的RIPE训练。路线二全板与机制结论尚未产生，PPT未修改。
