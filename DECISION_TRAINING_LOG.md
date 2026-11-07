@@ -13202,3 +13202,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **S3 seed1**：best step8000 validation loss=22.0595713793，step8500=22.8679872025，bad=1；仍未达到patience=6。seed2尚未启动，三者齐全前不生成S3科学结论。
 - **RIPE接口**：新增encoder-only开关，checkpoint分别记录JEV头 `ripe.mode` 与encoder `ripe.encoder_mode`，旧checkpoint按原字段兼容。默认structRFM位置边界不变，仅显式RIPE encoder允许长序列；R3-head与R3-encoder不再被强制混合。主/消融评测器同步，现有回归7/7通过。
 - **边界**：该接口提交 `927b81733855522cabe67770ac97f27d80136f64` 已推送，但尚未进行RIPE正式三种子训练或A/B/C，不构成效果证据。路线一未裁决前不启动RIPE科学实验。
+
+
+## §15.488（2026-11-07）S3 step9500 轨迹与路线一完整裁决门
+
+- **seed0**：best step8500、validation loss=22.1045517380，step9500=22.8535986939，bad=2；尚未满足早停。
+- **seed1**：best step9000、validation loss=21.6738515200，step9500=21.7901956110，bad=1；尚未满足早停。seed2未启动。
+- **裁决门**：新增 `adjudicate_structrfm_route1_round48.py`，只在三臂主榜/SOTA/confidence、配对bootstrap和六项greedy/Turner0总结全部存在时，核验checkpoint、早停、输入哈希和比较项后生成 `route1_decision.json`。执行两次并逐字节一致，负结果也按合同允许RIPE，未完成前不放行。
+- **选择边界**：VL0参照只取最低best validation loss，不按测试榜选种子；长序列、最佳置信度、独占速度均默认不可主张。合成集成测试与既有统计/解码/S3/RIPE回归11/11通过，提交 `5921b20cae045ab298688f3e1d4c22f57aaca99d` 已推送。
