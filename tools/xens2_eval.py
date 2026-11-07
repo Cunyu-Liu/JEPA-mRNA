@@ -76,13 +76,17 @@ def plana_scores(encoder, head, seq, device):
 
 
 @torch.no_grad()
-def r2d_scores(model, seq, emb, device):
+def r2d_scores(model, seq, emb, device, prior_weight_override=None):
     from eval.ss.evaluate_decision import _forward_scores, BASE_TO_ID
     L = len(seq)
     h = torch.as_tensor(emb, dtype=torch.float32, device=device).unsqueeze(0)
     ids = torch.tensor([[BASE_TO_ID.get(c, 0) for c in seq]], dtype=torch.long, device=device)
     lengths = torch.tensor([L], dtype=torch.long, device=device)
-    s = _forward_scores(model, ids, h, lengths)
+    if prior_weight_override is None:
+        s = _forward_scores(model, ids, h, lengths)
+    else:
+        s = model(h, ids, lengths=lengths,
+                  prior_weight_override=prior_weight_override).scores
     return s[0, :L, :L]
 
 

@@ -408,12 +408,15 @@ class FlatDecisionHead(nn.Module):
         seq_ids: torch.Tensor,
         lengths: Optional[torch.Tensor] = None,
         calibrate: bool = True,
+        prior_weight_override: Optional[float] = None,
     ) -> DecisionScores:
         B, L, _ = h.shape
         mask = pair_mask_from_ids(seq_ids, self.min_loop).to(h.device)
         s, types = self.pair_scores_and_types(h, seq_ids)
         if self.use_turner_prior:
-            s = s + self.prior_weight.to(s.dtype) * turner_phys_scores(seq_ids).to(h.device)
+            prior_weight = (self.prior_weight if prior_weight_override is None else
+                            torch.as_tensor(prior_weight_override, device=h.device))
+            s = s + prior_weight.to(s.dtype) * turner_phys_scores(seq_ids).to(h.device)
         if calibrate and lengths is not None:
             s = self.calibration(s, lengths)
         s = torch.where(mask, s, torch.full_like(s, float("-inf")))
@@ -959,8 +962,10 @@ class HeadOnlyModel(nn.Module):
         self.head = head
 
     def forward(self, h: torch.Tensor, seq_ids: torch.Tensor,
-                lengths: Optional[torch.Tensor] = None) -> DecisionScores:
-        return self.head(h, seq_ids, lengths=lengths)
+                lengths: Optional[torch.Tensor] = None,
+                prior_weight_override: Optional[float] = None) -> DecisionScores:
+        return self.head(h, seq_ids, lengths=lengths,
+                         prior_weight_override=prior_weight_override)
 
     def forward_gated(self, h: torch.Tensor, seq_ids: torch.Tensor):
         """Cascade path over cached embeddings; see :meth:`DecisionModel.forward_gated`."""

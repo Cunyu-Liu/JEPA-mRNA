@@ -13,6 +13,7 @@ from eval.ss.metrics import PairLevelMetrics
 from xens2_eval import r2d_scores
 from structrfm_metrics_round48 import (PairCalibrationAccumulator, inf_value,
                                        span_metrics, structure_confidence)
+from structrfm_decode_round48 import decode_scores
 
 
 def sha256(path):
@@ -31,6 +32,8 @@ def main():
     parser.add_argument("--embedding-split", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--repeats", type=int, default=1)
+    parser.add_argument("--decoder", choices=["nussinov", "greedy"], default="nussinov")
+    parser.add_argument("--prior-weight-override", type=float, default=None)
     args = parser.parse_args()
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA required for structRFM evaluation")
@@ -45,6 +48,7 @@ def main():
     predictions = [[] for _ in range(args.repeats)]
     per_sequence = []
     tp = fp = fn = 0
+    crossing_pairs = conflict_pairs = 0
     long_unsupported = []
     calibration = PairCalibrationAccumulator()
     started = time.time()
@@ -60,12 +64,15 @@ def main():
         mask = valid_pair_mask(sequence)
         repeat_pairs = []
         for repeat in range(args.repeats):
-            scores = r2d_scores(model, sequence, embedding, "cuda").cpu().numpy()
+            scores = r2d_scores(model, sequence, embedding, "cuda",
+                                prior_weight_override=args.prior_weight_override).cpu().numpy()
             scores = np.where(mask, scores, -np.inf)
-            pairs = [tuple(pair) for pair in nussinov_map(scores, mask)]
+            pairs, crossings, conflicts = decode_scores(scores, mask, args.decoder)
             repeat_pairs.append(pairs)
             predictions[repeat].append({"name": row.get("name", ""), "pred_pairs": [list(pair) for pair in pairs]})
             if repeat == 0:
+                crossing_pairs += crossings
+                conflict_pairs += conflicts
                 calibration.add(scores, mask, gt_pairs)
                 metrics = PairLevelMetrics.from_pairs(pairs, gt_pairs, L=len(sequence), mask=mask)
                 tp += metrics.tp
@@ -76,6 +83,7 @@ def main():
                                      "structure_conf": structure_confidence(scores, pairs),
                                      "span_30": span_metrics(pairs, gt_pairs, 30),
                                      "span_100": span_metrics(pairs, gt_pairs, 100),
+                                     "crossing_pairs": crossings, "conflict_pairs": conflicts,
                                      "tp": metrics.tp, "fp": metrics.fp, "fn": metrics.fn})
         if any(pairs != repeat_pairs[0] for pairs in repeat_pairs[1:]):
             raise RuntimeError(f"nondeterministic prediction at sequence {index}")
@@ -99,6 +107,10 @@ def main():
         "n": len(per_sequence),
         "n_long_unsupported": len(long_unsupported),
         "long_unsupported": long_unsupported,
+        "decoder": args.decoder,
+        "prior_weight_override": args.prior_weight_override,
+        "prior_weight_trained": float(model.head.prior_weight.detach().cpu()) if model.head.use_turner_prior else None,
+        "crossing_pairs": crossing_pairs, "conflict_pairs": conflict_pairs,
         "repeats": args.repeats,
         "micro": {"f1": f1, "precision": precision, "recall": recall,
                   "tp": tp, "fp": fp, "fn": fn},

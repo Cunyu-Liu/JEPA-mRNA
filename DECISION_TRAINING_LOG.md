@@ -13138,3 +13138,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **正式训练**：S3 PairMLP-490 seed0/1 均已读取42,564条TR1c并进入真实CUDA训练，逐步compute ledger持续落盘；独立confidence与SOTA watcher只等待最终齐套，不提前评测部分测试榜。
 - **step500 VL0**：seed0/1 validation loss=34.6156205917/33.9992232057，均为各自当前best，bad=0。两枚种子继续训练至validation plateau和patience=6，当前既不是收敛证据也不是A/B/C或SOTA结果。
 - **代码**：S3对照、参数/FLOPs账与文档提交 `b82f20e7a1cbc4e6fb99ee7865f79bdadbf04b18`；按臂SOTA watcher提交 `3a885b3643b8436adff9cc1557f90520ba71d7d6`，均已推送GitHub。PPT未修改。
+
+
+## §15.481（2026-11-07）路线一配对统计与冻结解码机制预检
+
+- **配对统计**：新增同种子、同clean序列的micro-F1 bootstrap，S2−S1/S3−S1/S3−S2各自主八split做Holm校正，raw n、supported/unsupported与n<30描述性标记保留。工具7项回归通过，真实S1 TS0逐序列自对照差值=0、CI=[0,0]、p=1；正式计算须S1/S2/S3全齐后运行两次10,000 resamples并逐字节一致。
+- **解码实现**：冻结/全参共用DP/greedy模块，greedy记录交叉与共享碱基冲突；Turner override在校准前生效，checkpoint不改。修复了HeadOnlyModel包装器未透传override及结果写出访问包装器属性的问题，不把失败运行计入结果。
+- **默认回归**：S1 seed0 VL0默认DP三次预测、micro/macro、校准和逐序列字段与既有验收结果完全一致。完整依赖下解码、包装器、S3和RIPE回归7/7通过。
+- **VL0机制预检**：同一S1 seed0，greedy micro-F1=0.5858959035，crossing_pairs=15,775、conflict_pairs=958；Turner=0+DP micro-F1=0.6500789889，crossing/conflict=0。原DP默认micro-F1=0.7507265817。它们只验证机制与物理先验贡献，不能替代13 split消融或声称最终结论。
+- **训练进度**：S3 seed0/1在step2500的VL0 loss=28.9818689266/29.4733664044，仍持续改善，未收敛。S2主评测未结束前不部署全参消融输出schema；全参消融与完整队列随后统一验收。
