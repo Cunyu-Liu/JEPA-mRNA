@@ -41,7 +41,7 @@ def evaluate(sequence, protein, table_path):
     if "*" in translated[:-1]:
         raise ValueError("internal stop codon")
     weights = [table[codon]["frequency"] / maxima[table[codon]["amino_acid"]]
-               for codon in codons if table[codon]["amino_acid"] != "*"]
+               for codon in codons]
     if not weights or any(weight <= 0 for weight in weights):
         raise ValueError("cannot calculate CAI")
     structure, mfe = RNA.fold(sequence)

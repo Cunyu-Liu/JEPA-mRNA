@@ -14,6 +14,13 @@ class LinearDesignEvaluationTests(unittest.TestCase):
         self.assertAlmostEqual(result["cai"], 0.695, places=3)
         self.assertEqual(result["rna_version"], "2.7.2")
 
+    def test_official_terminal_stop_example(self):
+        result = evaluate("AUGCUGGAUCAGGUGAACAAGCUGAAGUACCCAGAGGUGAGCCUGACCUGA",
+                          "MLDQVNKLKYPEVSLT*", TABLE)
+        self.assertEqual(result["translated"], "MLDQVNKLKYPEVSLT*")
+        self.assertAlmostEqual(result["cai"], 0.979, places=3)
+        self.assertTrue(result["terminal_stop"])
+
     def test_translation_and_internal_stop_fail_closed(self):
         with self.assertRaises(ValueError):
             evaluate("AUGAACGAUACGGAGGCGAUC", "MNDTEAA", TABLE)
