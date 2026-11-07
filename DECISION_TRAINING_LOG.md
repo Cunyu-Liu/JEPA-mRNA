@@ -13234,3 +13234,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **LinearDesign**：官方论文 Zhang et al., Nature 621, 396–403 (2023)，DOI=`10.1038/s41586-023-06127-z`。原文采用DFA/lattice representation与lattice parsing，目标 `MFE – λ|p|log(CAI)`，只针对编码区。采用“LinearDesign生成候选+冻结PRISM与独立热力学评价”，不把输出当真实标签蒸馏，不用于一般非编码Rfam RNA，不把结构指标写成湿实验稳定性/表达/免疫效果。
 - **RCSB初步调研**：两个常见属性路径在当前Search API返回search not enabled；全文 `RNA protein complex` 返回76,305个宽泛候选，不能当作复合物数。最终数据门要求条目/实体类型精确过滤与mmCIF核验，未形成数据规模结论。
 - **文档**：新合同 `docs/plans/2026-11-07-rna-complex-lineardesign.md`，三处spec/tasks/checklist增加T-A217/T-A218并同步硬顺序。未启动P4/P5训练，PPT未修改。
+
+
+## §15.492（2026-11-07）S3 seed0 自然早停与 checkpoint 验收
+
+- **seed0收敛**：step20000达到patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复best step17000，best validation loss=18.8644125285。不是固定步数截断。
+- **独立核验**：best checkpoint step=17000、scorer=pairmlp、latent_dim=490，无teacher张量；最终实际可训练参数=85,663,281。checkpoint SHA256=`dc0b9191919e5059ddf9964394f9b13ea09b754614dcf5c281ca039e1544ff07`。
+- **seed1**：step20000 validation loss=19.5192861763，best step19500=18.7388141224，bad=1，继续训练；seed2待其完成后接续。
+- **后续**：S3三种子与A/B/C未齐，不能根据当前较低VL0 loss宣称优于S1/S2或SOTA；全板、confidence、配对统计、greedy/Turner0和route1_decision继续按合同等待。新增P4/P5顺序不变。
