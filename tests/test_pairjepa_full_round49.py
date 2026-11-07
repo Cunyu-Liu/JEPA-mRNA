@@ -28,3 +28,15 @@ def test_effective_rank_detects_collapse_and_full_rank():
     assert diagnostics["prediction_effective_rank"] > 0
     _, default_diagnostics = model.masked_latent_loss(z, mask)
     assert "target_effective_rank" not in default_diagnostics
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA required")
+def test_random_target_uses_cuda_generator_and_tensor_on_same_device():
+    model = PairJEPA(d_z=8, latent_dim=4, random_target=True).cuda()
+    z = torch.randn(1, 5, 5, 8, device="cuda")
+    mask = torch.ones(1, 5, 5, dtype=torch.bool, device="cuda")
+    first, diagnostics = model.masked_latent_loss(z, mask, rank_samples=8)
+    second, _ = model.masked_latent_loss(z, mask, rank_samples=8)
+    assert torch.isfinite(first) and first > 0
+    torch.testing.assert_close(first, second)
+    assert torch.isfinite(diagnostics["target_effective_rank"])

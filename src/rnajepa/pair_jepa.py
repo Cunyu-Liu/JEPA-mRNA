@@ -78,7 +78,8 @@ class PairJEPA(nn.Module):
                 generator = torch.Generator(device=z.device).manual_seed(self.seed)
                 shape = target.shape
                 flat = target.reshape(-1, shape[-1])
-                target = flat[torch.randperm(flat.shape[0], generator=generator)].reshape(shape)
+                permutation = torch.randperm(flat.shape[0], generator=generator, device=flat.device)
+                target = flat[permutation].reshape(shape)
         if not mask.any():
             raise ValueError("empty masked-pair target")
         loss = torch.nn.functional.mse_loss(prediction[mask], target[mask])
