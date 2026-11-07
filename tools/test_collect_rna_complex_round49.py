@@ -81,6 +81,8 @@ class CollectRnaComplexTests(unittest.TestCase):
 
             with patch("collect_rna_complex_round49.subprocess.run", side_effect=run):
                 collect("1EHZ", root, "python", "dssr")
+                _, second = collect("1EHZ", root, "python", "dssr")
+            self.assertNotEqual(second, "cached")
             self.assertFalse((entry / "dssr.pair_only.json").exists())
 
     def test_no_nucleotide_warning_is_a_valid_empty_result(self):

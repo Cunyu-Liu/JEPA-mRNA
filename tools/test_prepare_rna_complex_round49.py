@@ -64,6 +64,18 @@ class RnaComplexTests(unittest.TestCase):
         result = observed_residue_map(dssr, mapping, {})
         self.assertEqual([result[nt["nt_id"]]["seq_id"] for nt in dssr["nts"]], [2, 3, 4])
 
+    def test_full_polymer_alignment_precedes_partial_author_exclusion(self):
+        mapping = {"A": {1: {"seq_id": 1, "letter": "A", "observed": True, "auth_seq": "557", "insertion": ""},
+                         2: {"seq_id": 2, "letter": "G", "observed": True, "auth_seq": "2", "insertion": ""},
+                         3: {"seq_id": 3, "letter": "U", "observed": True, "auth_seq": "3", "insertion": ""}}}
+        dssr = {"nts": [{"index": 1, "nt_type": "RNA", "nt_id": "A.A1", "nt_name": "A"},
+                        {"index": 2, "nt_type": "RNA", "nt_id": "A.G2", "nt_name": "G"},
+                        {"index": 3, "nt_type": "RNA", "nt_id": "A.U3", "nt_name": "U"}]}
+        excluded = []
+        result = observed_residue_map(dssr, mapping, {}, {}, excluded)
+        self.assertEqual([result[nt["nt_id"]]["seq_id"] for nt in dssr["nts"]], [1, 2, 3])
+        self.assertEqual(excluded, [])
+
     def test_nonpolymer_endpoint_and_chain_scoped_failure(self):
         mapping = {"A": {1: {"seq_id": 1, "letter": "C", "observed": True, "auth_seq": "74", "insertion": ""},
                          2: {"seq_id": 2, "letter": "C", "observed": True, "auth_seq": "75", "insertion": ""}},

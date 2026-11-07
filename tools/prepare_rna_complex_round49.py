@@ -152,14 +152,21 @@ def observed_residue_map(dssr, mapping, parents, chain_errors=None, excluded_nuc
                 if row is not None and one_letter(nt["nt_name"], parents) != row["letter"]:
                     raise ValueError(f"DSSR/mmCIF author-residue base mismatch: {nt['nt_id']}")
                 direct.append(row)
-            if any(row is not None for row in direct) and not all(row is not None for row in direct):
-                for nt, row in zip(nts, direct):
-                    if row is None and excluded_nucleotides is not None:
-                        excluded_nucleotides.append({"nt_id": nt["nt_id"],
-                                                     "reason": "not in the observed RNA polymer scheme"})
-                nts = [nt for nt, row in zip(nts, direct) if row is not None]
-                direct = [row for row in direct if row is not None]
-            aligned = direct if all(row is not None for row in direct) else align_observed_nucleotides(nts, observed, parents, chain)
+            if all(row is not None for row in direct):
+                aligned = direct
+            else:
+                try:
+                    aligned = align_observed_nucleotides(nts, observed, parents, chain)
+                except ValueError:
+                    if not any(row is not None for row in direct):
+                        raise
+                    for nt, row in zip(nts, direct):
+                        if row is None and excluded_nucleotides is not None:
+                            excluded_nucleotides.append({"nt_id": nt["nt_id"],
+                                                         "reason": "not in the observed RNA polymer scheme"})
+                    nts = [nt for nt, row in zip(nts, direct) if row is not None]
+                    direct = [row for row in direct if row is not None]
+                    aligned = direct
             for nt, row in zip(nts, aligned):
                 if nt["nt_id"] in lookup:
                     raise ValueError(f"duplicate DSSR nucleotide id: {nt['nt_id']}")
@@ -277,7 +284,7 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
             "parent_map_failures": parent_document["failures"],
             "dssr_binary_sha256": dssr_sha256, "dssr_program": dssr.get("program"),
             "dssr_seq_id_mode": "observed_nts_v1",
-            "observed_alignment": "author_chain_residue_bridge_else_unique_ordered_base_subsequence",
+            "observed_alignment": "author_bridge_or_full_polymer_alignment_before_nonpolymer_exclusion",
             "n_dssr_pairs": dssr.get("num_pairs", len(pairs)),
             "mapping_failures": mapping_failures, "rejected_nucleotides": rejected_nucleotides,
             "rejected_pairs": rejected_pairs, "chains": output, "rejected_chains": rejected}

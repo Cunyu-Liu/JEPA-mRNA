@@ -37,7 +37,9 @@ def collect(pdb_id, root, python, dssr):
     directory.mkdir(exist_ok=True)
     output = directory / "labels.json"
     if output.is_file():
-        if json.loads(output.read_text()).get("dssr_seq_id_mode") == "observed_nts_v1":
+        cached_label = json.loads(output.read_text())
+        if (cached_label.get("dssr_seq_id_mode") == "observed_nts_v1" and
+                cached_label.get("observed_alignment") == "author_bridge_or_full_polymer_alignment_before_nonpolymer_exclusion"):
             return pdb_id, "cached"
         backup = directory / "labels.auth_seq.json"
         if not backup.exists():
