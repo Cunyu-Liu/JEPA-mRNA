@@ -64,6 +64,23 @@ class RnaComplexTests(unittest.TestCase):
         result = observed_residue_map(dssr, mapping, {})
         self.assertEqual([result[nt["nt_id"]]["seq_id"] for nt in dssr["nts"]], [2, 3, 4])
 
+    def test_nonpolymer_endpoint_and_chain_scoped_failure(self):
+        mapping = {"A": {1: {"seq_id": 1, "letter": "C", "observed": True, "auth_seq": "74", "insertion": ""},
+                         2: {"seq_id": 2, "letter": "C", "observed": True, "auth_seq": "75", "insertion": ""}},
+                   "B": {1: {"seq_id": 1, "letter": "A", "observed": True}}}
+        dssr = {"nts": [{"index": 1, "nt_type": "RNA", "nt_id": "A.C74", "nt_name": "C"},
+                        {"index": 2, "nt_type": "RNA", "nt_id": "A.C75", "nt_name": "C"},
+                        {"index": 3, "nt_type": "RNA", "nt_id": "A.PPU76", "nt_name": "PPU"},
+                        {"index": 4, "nt_type": "RNA", "nt_id": "B.A1", "nt_name": "A"},
+                        {"index": 5, "nt_type": "RNA", "nt_id": "B.A2", "nt_name": "A"}]}
+        errors, excluded = {}, []
+        result = observed_residue_map(dssr, mapping, {"PPU": {"parent": "U"}}, errors, excluded)
+        self.assertEqual(set(result), {"A.C74", "A.C75"})
+        self.assertEqual(excluded[0]["nt_id"], "A.PPU76")
+        self.assertIn("B", errors)
+        with self.assertRaises(ValueError):
+            observed_residue_map(dssr, mapping, {"PPU": {"parent": "U"}})
+
     def test_observed_subset_must_be_unique(self):
         mapping = {"A": {index: {"seq_id": index, "letter": letter, "observed": True}
                          for index, letter in enumerate("AGCUA", 1)}}

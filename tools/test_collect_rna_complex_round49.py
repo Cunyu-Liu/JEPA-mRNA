@@ -83,6 +83,29 @@ class CollectRnaComplexTests(unittest.TestCase):
                 collect("1EHZ", root, "python", "dssr")
             self.assertFalse((entry / "dssr.pair_only.json").exists())
 
+    def test_no_nucleotide_warning_is_a_valid_empty_result(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            entry = root / "1GSG"
+            entry.mkdir()
+            (entry / "1GSG.cif").write_text("mmCIF fixture")
+            (entry / "dssr.json.part").write_text('{"warning": "no nucleotides found"}')
+
+            def run(command, **kwargs):
+                if command[0] == "dssr":
+                    Path(command[-1].split("=", 1)[1]).write_text('{"warning": "no nucleotides found"}')
+                if "prepare_rna_complex_round49.py" in command[1]:
+                    output = Path(command[command.index("--output") + 1])
+                    output.write_text(json.dumps({"chains": [], "rejected_chains": [{"auth_chain": "T"}],
+                                                  "dssr_seq_id_mode": "observed_nts_v1"}))
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            with patch("collect_rna_complex_round49.subprocess.run", side_effect=run):
+                _, result = collect("1GSG", root, "python", "dssr")
+            self.assertNotIn("error", result)
+            self.assertTrue((entry / "dssr.json").is_file())
+            self.assertFalse((entry / "error.txt").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

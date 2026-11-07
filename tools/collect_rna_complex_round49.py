@@ -51,6 +51,8 @@ def collect(pdb_id, root, python, dssr):
                        check=True, capture_output=True, text=True)
         dssr_json = directory / "dssr.json"
         cached_dssr = json.loads(dssr_json.read_text()) if dssr_json.is_file() else None
+        if cached_dssr is not None and cached_dssr.get("warning") == "no nucleotides found":
+            cached_dssr.update({"nts": [], "pairs": []})
         if cached_dssr is not None and not isinstance(cached_dssr.get("nts"), list):
             backup = directory / "dssr.pair_only.json"
             if not backup.exists():
@@ -66,6 +68,8 @@ def collect(pdb_id, root, python, dssr):
             if completed.returncode or not temporary_json.is_file():
                 raise RuntimeError(f"DSSR failed: {completed.returncode}")
             cached_dssr = json.loads(temporary_json.read_text())
+            if cached_dssr.get("warning") == "no nucleotides found":
+                cached_dssr.update({"nts": [], "pairs": []})
             if not isinstance(cached_dssr.get("nts"), list):
                 raise RuntimeError("DSSR output is missing the full nts list")
             temporary_json.replace(dssr_json)

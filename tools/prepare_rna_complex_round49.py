@@ -122,7 +122,7 @@ def align_observed_nucleotides(nts, observed, parents, chain):
     return aligned
 
 
-def observed_residue_map(dssr, mapping, parents):
+def observed_residue_map(dssr, mapping, parents, chain_errors=None, excluded_nucleotides=None):
     if not isinstance(dssr.get("nts"), list) or not dssr["nts"]:
         raise ValueError("DSSR full nts list is required")
     nucleotides = sorted((nt for nt in dssr["nts"] if nt.get("nt_type") == "RNA"),
@@ -135,27 +135,39 @@ def observed_residue_map(dssr, mapping, parents):
     for chain, nts in by_chain.items():
         if chain not in mapping:
             continue
-        observed = sorted((row for row in mapping[chain].values() if row["observed"]),
-                          key=lambda row: row["seq_id"])
-        by_author = {}
-        for row in observed:
-            key = (row.get("auth_seq"), row.get("insertion", ""))
-            if key[0] is not None:
-                if key in by_author:
-                    raise ValueError(f"duplicate mmCIF author residue mapping: {chain}")
-                by_author[key] = row
-        direct = []
-        for nt in nts:
-            _, seq_id, insertion, _ = parse_nt(nt["nt_id"])
-            row = by_author.get((str(seq_id), insertion.lstrip("^").upper()))
-            if row is not None and one_letter(nt["nt_name"], parents) != row["letter"]:
-                raise ValueError(f"DSSR/mmCIF author-residue base mismatch: {nt['nt_id']}")
-            direct.append(row)
-        aligned = direct if all(row is not None for row in direct) else align_observed_nucleotides(nts, observed, parents, chain)
-        for nt, row in zip(nts, aligned):
-            if nt["nt_id"] in lookup:
-                raise ValueError(f"duplicate DSSR nucleotide id: {nt['nt_id']}")
-            lookup[nt["nt_id"]] = row
+        try:
+            observed = sorted((row for row in mapping[chain].values() if row["observed"]),
+                              key=lambda row: row["seq_id"])
+            by_author = {}
+            for row in observed:
+                key = (row.get("auth_seq"), row.get("insertion", ""))
+                if key[0] is not None:
+                    if key in by_author:
+                        raise ValueError(f"duplicate mmCIF author residue mapping: {chain}")
+                    by_author[key] = row
+            direct = []
+            for nt in nts:
+                _, seq_id, insertion, _ = parse_nt(nt["nt_id"])
+                row = by_author.get((str(seq_id), insertion.lstrip("^").upper()))
+                if row is not None and one_letter(nt["nt_name"], parents) != row["letter"]:
+                    raise ValueError(f"DSSR/mmCIF author-residue base mismatch: {nt['nt_id']}")
+                direct.append(row)
+            if any(row is not None for row in direct) and not all(row is not None for row in direct):
+                for nt, row in zip(nts, direct):
+                    if row is None and excluded_nucleotides is not None:
+                        excluded_nucleotides.append({"nt_id": nt["nt_id"],
+                                                     "reason": "not in the observed RNA polymer scheme"})
+                nts = [nt for nt, row in zip(nts, direct) if row is not None]
+                direct = [row for row in direct if row is not None]
+            aligned = direct if all(row is not None for row in direct) else align_observed_nucleotides(nts, observed, parents, chain)
+            for nt, row in zip(nts, aligned):
+                if nt["nt_id"] in lookup:
+                    raise ValueError(f"duplicate DSSR nucleotide id: {nt['nt_id']}")
+                lookup[nt["nt_id"]] = row
+        except (KeyError, ValueError) as error:
+            if chain_errors is None:
+                raise
+            chain_errors[chain] = str(error)
     return lookup
 
 
@@ -202,7 +214,9 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
     raw_by_chain = {chain: [] for chain in chains}
     raw_records = {chain: [] for chain in chains}
     errors, rejected_pairs = [], []
-    nt_lookup = observed_residue_map(dssr, chains, parents) if pairs else {}
+    mapping_failures, rejected_nucleotides = {}, []
+    nt_lookup = observed_residue_map(dssr, chains, parents, mapping_failures,
+                                     rejected_nucleotides) if pairs else {}
     for pair in pairs:
         nt1, nt2 = parse_nt(pair["nt1"]), parse_nt(pair["nt2"])
         if nt1[0] != nt2[0]:
@@ -228,6 +242,9 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
         raise ValueError("DSSR mapping failed: " + "; ".join(errors[:12]))
     output = []
     for chain, mapping in sorted(chains.items()):
+        if chain in mapping_failures:
+            rejected.append({"auth_chain": chain, "reason": mapping_failures[chain]})
+            continue
         ordered = sorted(mapping.values(), key=lambda row: row["seq_id"])
         seq_ids = [row["seq_id"] for row in ordered]
         if seq_ids != list(range(1, len(seq_ids) + 1)):
@@ -262,6 +279,7 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
             "dssr_seq_id_mode": "observed_nts_v1",
             "observed_alignment": "author_chain_residue_bridge_else_unique_ordered_base_subsequence",
             "n_dssr_pairs": dssr.get("num_pairs", len(pairs)),
+            "mapping_failures": mapping_failures, "rejected_nucleotides": rejected_nucleotides,
             "rejected_pairs": rejected_pairs, "chains": output, "rejected_chains": rejected}
 
 
