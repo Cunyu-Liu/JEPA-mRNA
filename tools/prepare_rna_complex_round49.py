@@ -145,6 +145,7 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
     raw_by_chain = {chain: [] for chain in chains}
     raw_records = {chain: [] for chain in chains}
     errors = []
+    nt_lookup = observed_residue_map(dssr, chains, parents)
     for pair in dssr.get("pairs", []):
         nt1, nt2 = parse_nt(pair["nt1"]), parse_nt(pair["nt2"])
         if nt1[0] != nt2[0]:
@@ -154,7 +155,6 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
             rejected.append({"auth_chain": chain, "reason": "no mapped RNA residues; non-RNA DSSR chain excluded"})
             continue
         try:
-            nt_lookup = observed_residue_map(dssr, {chain: chains[chain]}, parents)
             left, right = nt_lookup[pair["nt1"]], nt_lookup[pair["nt2"]]
             a, b = sorted((left["seq_id"], right["seq_id"]))
             if (a, b) in raw_by_chain[chain]:
@@ -175,7 +175,6 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
         sequence = "".join(row["letter"] for row in ordered)
         raw = sorted(raw_by_chain[chain])
         canonical_pairs = []
-        nt_lookup = observed_residue_map(dssr, {chain: mapping}, parents)
         for pair in raw_records[chain]:
             a, b = sorted((nt_lookup[pair["nt1"]]["seq_id"], nt_lookup[pair["nt2"]]["seq_id"]))
             base_pair = sequence[a - 1] + "-" + sequence[b - 1]

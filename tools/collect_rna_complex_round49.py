@@ -50,18 +50,31 @@ def collect(pdb_id, root, python, dssr):
                         "--cif", str(cif), "--output", str(directory / "parents.json")],
                        check=True, capture_output=True, text=True)
         dssr_json = directory / "dssr.json"
-        if dssr_json.is_file() and not (directory / "dssr.auth_seq.json").exists():
-            (directory / "dssr.auth_seq.json").write_bytes(dssr_json.read_bytes())
-        completed = subprocess.run([dssr, f"-i={cif}", "--json",
-                                    f"-o={dssr_json}"], capture_output=True, text=True, timeout=600)
-        (directory / "dssr.log").write_text(completed.stdout + completed.stderr)
-        if completed.returncode or not dssr_json.is_file():
-            raise RuntimeError(f"DSSR failed: {completed.returncode}")
+        cached_dssr = json.loads(dssr_json.read_text()) if dssr_json.is_file() else None
+        if cached_dssr is not None and not ("nts" in cached_dssr and "pairs" in cached_dssr):
+            backup = directory / "dssr.pair_only.json"
+            if not backup.exists():
+                backup.write_bytes(dssr_json.read_bytes())
+            dssr_json.unlink()
+            cached_dssr = None
+        if cached_dssr is None:
+            temporary_json = directory / "dssr.json.part"
+            temporary_json.unlink(missing_ok=True)
+            completed = subprocess.run([dssr, f"-i={cif}", "--json", "--more",
+                                        f"-o={temporary_json}"], capture_output=True, text=True, timeout=600)
+            (directory / "dssr.log").write_text(completed.stdout + completed.stderr)
+            if completed.returncode or not temporary_json.is_file():
+                raise RuntimeError(f"DSSR failed: {completed.returncode}")
+            cached_dssr = json.loads(temporary_json.read_text())
+            if not ("nts" in cached_dssr and "pairs" in cached_dssr):
+                raise RuntimeError("DSSR output is missing the full nts or pairs list")
+            temporary_json.replace(dssr_json)
         subprocess.run([python, "/home/rna_jev/tools/prepare_rna_complex_round49.py",
                         "--cif", str(cif), "--dssr-json", str(dssr_json),
                         "--dssr-binary-sha256", DSSR_SHA256, "--output", str(output)],
                        check=True, capture_output=True, text=True)
         result = json.loads(output.read_text())
+        (directory / "error.txt").unlink(missing_ok=True)
         return pdb_id, {"accepted_chains": len(result["chains"]),
                         "rejected_chains": len(result["rejected_chains"]),
                         "labels_sha256": hashlib.sha256(output.read_bytes()).hexdigest()}
