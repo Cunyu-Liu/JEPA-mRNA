@@ -43,6 +43,10 @@ class AuditIntegrationTests(unittest.TestCase):
                 completed = subprocess.run(command, capture_output=True, text=True)
                 if completed.returncode:
                     self.fail(completed.stdout + "\n" + completed.stderr)
+                verification = subprocess.run([sys.executable, "/home/rna_jev/tools/verify_rna_complex_decontamination_round49.py",
+                                               "--out-dir", str(output)], capture_output=True, text=True)
+                if verification.returncode:
+                    self.fail(verification.stdout + "\n" + verification.stderr)
                 manifest = json.loads((output / "decontamination.json").read_text())
                 self.assertEqual(manifest["n_unique_sequences"], 10)
                 self.assertEqual(manifest["n_removed"], 3)

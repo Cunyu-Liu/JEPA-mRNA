@@ -135,7 +135,7 @@ def main():
             removed.append({"id": row["id"], "sequence_sha256": hashlib.sha256(row["sequence"].encode()).hexdigest(),
                             "exact": index in exact, "homologous_matches": homology.get(index, [])})
         else:
-            kept.append(row)
+            kept.append(dict(row, candidate_index=len(kept)))
     if len(chain_rows) != len(kept) + len(removed):
         raise RuntimeError("candidate attrition does not balance")
     clean_path = args.out_dir / "decontaminated.fasta"
@@ -177,7 +177,7 @@ def main():
                 for row in groups[group]:
                     record = {"name": row["id"], "seq": row["sequence"],
                               "pairs": row["raw_pairs"], "canonical_nested_pairs": row["canonical_nested_pairs"],
-                              "group": group, "source": row}
+                              "group": group, "candidate_index": row["candidate_index"], "source": row}
                     handle.write(json.dumps(record, sort_keys=True) + "\n")
     print(json.dumps({key: manifest[key] for key in ["n_label_chains", "n_unique_sequences", "n_removed", "n_clean", "n_holdout"]}))
 
