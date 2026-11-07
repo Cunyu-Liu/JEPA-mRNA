@@ -13194,3 +13194,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **TS0**：≤100/100–200/200–400nt micro-F1=0.5330756117/0.3793477713/0.4823311636，clean中>400nt为空，≥100nt长程micro-F1=0.2876763464；不能用200–400相对100–200的回升证明整体长度鲁棒。
 - **CHANRG**：Test只含≤200nt，200–400/>400桶为空，不能为长序列主张提供证据。所有空桶保留null，不以0或均值代替。
 - **叙事边界**：structRFM官方位置上限与长程配对弱项必须在论文Limitations中保留；RIPE路线需要独立证明>512工程能力和200–400/>400nt、长程配对效果，当前尚未开始其正式科学实验。
+
+
+## §15.487（2026-11-07）S3 训练续记与 RIPE 独立臂接口
+
+- **S3 seed0**：step8000刷新best validation loss=23.2018600019，bad=0，尚未平台化；此前step6500后曾出现两次未改善，但继续训练获得新低，未提前停止。
+- **S3 seed1**：best step8000 validation loss=22.0595713793，step8500=22.8679872025，bad=1；仍未达到patience=6。seed2尚未启动，三者齐全前不生成S3科学结论。
+- **RIPE接口**：新增encoder-only开关，checkpoint分别记录JEV头 `ripe.mode` 与encoder `ripe.encoder_mode`，旧checkpoint按原字段兼容。默认structRFM位置边界不变，仅显式RIPE encoder允许长序列；R3-head与R3-encoder不再被强制混合。主/消融评测器同步，现有回归7/7通过。
+- **边界**：该接口提交 `927b81733855522cabe67770ac97f27d80136f64` 已推送，但尚未进行RIPE正式三种子训练或A/B/C，不构成效果证据。路线一未裁决前不启动RIPE科学实验。
