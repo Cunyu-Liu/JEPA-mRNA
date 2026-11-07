@@ -13275,3 +13275,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **回归**：28项相关回归通过。测试构造曾误用每行和恒为1的one-hot样本期待满秩4，中心化后真实秩为3；改用以零为均值且四方向独立的正负基向量后通过，未修改算法迎合错误测试。
 - **CUDA工程smoke**：真实structRFM、4条8nt合成序列、两步、全12层解冻；193个encoder张量更新，EMA teacher与student分离。step1辅助损失=0（初始teacher=student），step2原始值=1.2728533505e-16；诊断日志独立于通用25步日志门，避免漏写及四舍五入掩盖正值。`qa.json` 状态 `PASS_PAIRJEPA_FULL_CUDA_ENGINEERING_SMOKE`。
 - **边界**：该run明确 `steps=2`、`stop_reason=step_cap`、`converged=false`、`scientific_conclusion=false`，极小掩码下有效秩约1不构成防坍塌或性能证据。未启动P3正式训练，仍待路线二裁决、三种子自然收敛和完整A/B/C。代码提交 `f10969e056b5429465072eaabf94aa51b7a54085` 已推送GitHub；PPT未修改。
+
+
+## §15.497（2026-11-07）Pair-JEPA fixed/random CUDA 工程对照关闭
+
+- **random-target故障**：首次CUDA运行因 `torch.randperm` 默认CPU而generator为CUDA，按合同停止并保留 `train_random.cuda_generator_failure.log`，没有生成科学结果。现显式在latent同设备采样，新增CUDA回归，修复后两步辅助损失=0.0090133324/0.0065957122，encoder张量正常更新。
+- **fixed-target与真实续训**：前两步辅助损失均为0，原因是零初始化direct logit第一步只更新logit、latent尚未变化；从现有resume续到第三步后为2.2097208330e-07。该续程实际恢复12/12层并继续更新encoder，验证 §15.494 的续训修复，而非重跑一套新实验。
+- **验收**：fixed三步、random两步均明确 `converged=false`、`scientific_conclusion=false`，`qa_fixed.json`/`qa_random.json` 只证明工程路径、非空掩码和有限诊断。极小合成样本的有效秩与损失不能外推防坍塌或基准效果。
+- **回归与提交**：29项相关回归通过；random设备修复提交 `67b9899b2df77921f49863fd6d842287ddbc398f` 已推送GitHub。正式P3仍等待RIPE路线裁决，S3全板继续原队列，PPT未修改。

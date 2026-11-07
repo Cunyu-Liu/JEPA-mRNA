@@ -14,7 +14,7 @@
 >
 > **RIPE 启动门**：路线一裁决后，按 S2/S3 各自三种子 best VL0 loss 的均值选择基座配置，不读取测试榜选臂。冻结六个 head 臂 log/R1/R2/R3/R5/R6 与独立 encoder-only R3，每臂三种子自然收敛、13 split、VL0 confidence、greedy/Turner0。1024nt CUDA 合成门与128列分块 head 已通过，两次 SHA256=`53c3e696…6eac13`；encoder attention score 保持BF16，autocast softmax保持FP32。续训已恢复全部历史解冻层；现有S3进程不重写、不重启。合成门不构成效果结论，head-only仍保留512nt边界，encoder臂须逐条支持全部raw序列。
 >
-> **Pair-JEPA 工程接口（非科学放行）**：全参训练已接入显式 `lambda_jepa`、非空 masked-pair target、EMA/fixed/random target、原始辅助损失、target/prediction方差及有效秩；默认 `lambda_jepa=0`，P3前不得启用正式训练。两步真实CUDA smoke确认193个encoder张量更新和EMA分离，但 `converged=false`，有效秩近似1只来自极小合成掩码，不能证明防坍塌。P3仍须路线二裁决、三种子自然收敛、完整A/B/C与无teacher前向验收。
+> **Pair-JEPA 工程接口（非科学放行）**：全参训练已接入显式 `lambda_jepa`、非空 masked-pair target、EMA/fixed/random target、原始辅助损失、target/prediction方差及有效秩；默认 `lambda_jepa=0`，P3前不得启用正式训练。真实CUDA smoke确认encoder张量更新、EMA分离、fixed-target续训和random-target同设备采样，但均为 `converged=false`，有效秩近似1只来自极小合成掩码，不能证明防坍塌。P3仍须路线二裁决、三种子自然收敛、完整A/B/C与无teacher前向验收。
 
 > **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
 >
