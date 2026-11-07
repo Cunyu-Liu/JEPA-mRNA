@@ -13310,3 +13310,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **置信度**：13 split×3 seed的AURC全部为null，因VL0冻结阈值下至少一个风险桶为空；不得在测试集改阈值或插值。全板confidence双跑一致，SHA256=`34b280a50c951572112daa4db35c03b78edcb49426ce00a2d01e9d783915debd`，不能称最佳置信度。
 - **配对统计**：S3−S1在TS0 seed1/2和ArchiveII seed1/2经Holm显著为正，但bpRNA-new seed0/2显著为负；S3−S2仅TS0 seed1、ArchiveII seed1显著为正，bpRNA-new seed1/2显著为负。说明近参数PairMLP存在种子与split异质性，不能宣称普遍容量增益。统计双跑SHA256=`a239854a1bbf8bb06fa9d14b1426785916e84120ab8e598d3e4af062eea8e4c3`。
 - **裁决**：S3否决为最终独立单模型，保留为近参数对照。路线一仍需三臂greedy/Turner0全部完成才生成最终route1_decision并启动RIPE；原消融队列已接续，PPT未修改。
+
+
+## §15.501（2026-11-07）路线一解码消融三臂并行调度
+
+- **原因**：主结果齐套后原脚本以单进程依次执行三臂×两种解码，造成GPU等待。改为S1/S2/S3三个独立worker并行，评测器、checkpoint、clean数据、三次repeat、DP/greedy与Turner=0参数均不变。
+- **连续性**：停止的是旧串行bash orchestrator，不是模型评测逻辑；当时正在运行的frozen子任务继续至正常结束。已有输出全部保留，worker逐cell核对checkpoint SHA256、CUDA、repeat、decoder和prior override后跳过，不重算有效结果。
+- **验证**：新脚本 `run_structrfm_decoding_arm_round48.sh` 通过 `bash -n`，提交 `f244387d80b6c549ea64b457b1bbc95354eaf752` 已推送GitHub。三个worker均已进入真实CUDA评测；旧任务的通知属于主动调度替换，不是科学运行失败。路线一裁决仍等待六项总结齐套，RIPE未提前启动。
