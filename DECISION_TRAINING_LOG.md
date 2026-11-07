@@ -13123,3 +13123,18 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **参数账纠错**：12/12层解冻实际训练85,054,464个骨干参数，embedding/pooler等996,096个参数保持冻结。S2/S3最终可训练参数分别85,663,055/85,663,281，仍只差226；不能将骨干总参数86,050,560全部写成可训练。旧FLOPs文件已保留为 `structrfm_s3_flops.pre_block_scope.json`，最终报告已改用真实block scope。
 - **运维证据**：前三次预检启动均在SSH建连时退出，未产生训练日志；建立本地复用SSH通道后才实际运行，没有重复训练。confidence脚本曾在flock等待后读到不完整文件并报引号错误，已改为临时文件校验后原子替换并恢复watcher。
 - **放行边界**：参数/默认路径/RIPE回归、CUDA双并发、compute ledger、checkpoint身份和三次推理均已独立复核，允许启动S3正式三种子自然收敛训练；尚无S3 A/B/C或SOTA结论，PPT未修改。
+
+
+## §15.479（2026-11-07）S2 三种子 VL0 与冻结风险覆盖独立复核
+
+- **完整性与身份**：三枚 best checkpoint 的 step=18500/5500/5500、SHA256 与训练终账一致；每个 VL0 均为 raw_n=n=196、unsupported=0、CUDA、三次预测逐对一致。独立从逐序列与全局 TP/FP/FN 复算通过。
+- **VL0 过程证据**：seed0/1/2 micro-F1=0.7966266623/0.7501842299/0.7505801746，mean±SD=0.7657970223±0.0218004468；macro-F1=0.8157206200/0.7774897265/0.7541353539，mean±SD=0.7824485668±0.0253854134。结果 SHA256 分别为 `4a317058615b6185daf5ecc41a81c0d9c3e6ba2a0a4578c25f315b9f4dfa9e6f`、`fc8f561ad2c4ae3715ca8ca333a3e84f18a288c350f8a5e81d4e58641e7873c4`、`1d82df4eb37c53361416edcb3337afea557d99b2785696091643ed49101b86cf`。
+- **冻结阈值**：参考为最低 validation loss 的 seed0，coverage={1,.95,.90,.75,.50,.25} 对应 thresholds={0,0.6914277109,0.7272327312,0.8061006871,0.9679122366,0.9896435352}。三种子 Spearman=0.7982269256/0.8247561495/0.8433404241，seed0/1 AURC=0.0462939532/0.0632532608。
+- **空覆盖边界**：seed2 的最高 structure_conf=0.9863868455，低于25%覆盖阈值0.9896435352，该桶保留数=0，risk=`nan`、AURC=`null`。不得在测试集改阈值、插值或伪造AURC，也不能声称最佳置信度。全板 confidence 仍等待13 split总结，当前文件 split_n=0 只代表VL0完成。
+
+
+## §15.480（2026-11-07）S3 正式双种子启动与首次 VL0
+
+- **正式训练**：S3 PairMLP-490 seed0/1 均已读取42,564条TR1c并进入真实CUDA训练，逐步compute ledger持续落盘；独立confidence与SOTA watcher只等待最终齐套，不提前评测部分测试榜。
+- **step500 VL0**：seed0/1 validation loss=34.6156205917/33.9992232057，均为各自当前best，bad=0。两枚种子继续训练至validation plateau和patience=6，当前既不是收敛证据也不是A/B/C或SOTA结果。
+- **代码**：S3对照、参数/FLOPs账与文档提交 `b82f20e7a1cbc4e6fb99ee7865f79bdadbf04b18`；按臂SOTA watcher提交 `3a885b3643b8436adff9cc1557f90520ba71d7d6`，均已推送GitHub。PPT未修改。
