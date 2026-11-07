@@ -22,15 +22,17 @@ def main():
     kept = train + holdout
     assert train and holdout
     assert len(kept) == manifest["n_clean"]
-    assert manifest["n_unique_sequences"] == manifest["n_clean"] + manifest["n_removed"]
+    assert manifest["n_unique_sequences"] == manifest["n_clean"] + manifest["n_removed"] + manifest["n_unsupported_nested"]
+    assert manifest["n_decontaminated"] == manifest["n_clean"] + manifest["n_unsupported_nested"]
     assert len({row["seq"] for row in kept}) == len(kept)
     assert not ({row["seq"] for row in kept} & protected)
     assert not ({row["group"] for row in train} & {row["group"] for row in holdout})
     assert not ({row["source"]["pdb_id"] for row in train} & {row["source"]["pdb_id"] for row in holdout})
     assert {row["name"] for row in kept} == {name for group in manifest["groups"].values() for name in group["ids"]}
     for row in kept:
-        assert row["source"]["canonical_nested_pairs"] == row["canonical_nested_pairs"]
-        assert row["source"]["raw_pairs"] == row["pairs"]
+        assert row["source"]["canonical_nested_pairs"] == row["canonical_nested_pairs"] == row["pairs"]
+        assert row["pairs"]
+        assert row["source"]["raw_pairs"] == row["raw_pairs"]
         assert row["source"]["source_json_sha256"] == sha256(Path(row["source"]["source_json"]))
         assert row["source"]["sequence"] == normalise(row["seq"])
     membership = {}
@@ -38,6 +40,8 @@ def main():
         representative, member = line.rstrip().split("\t")[:2]
         membership[member] = representative
     by_id = {row["name"]: row for row in kept}
+    expected_indices = {str(row["candidate_index"]) for row in kept}
+    assert set(membership) == expected_indices, {"membership": sorted(membership), "expected": sorted(expected_indices)}
     for name, row in by_id.items():
         for other_name, other in by_id.items():
             same_cluster = membership[str(row["candidate_index"])] == membership[str(other["candidate_index"])]

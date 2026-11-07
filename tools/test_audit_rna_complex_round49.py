@@ -18,9 +18,10 @@ class AuditIntegrationTests(unittest.TestCase):
             clean = ["".join(random.choice("ACGU") for _ in range(120)) for _ in range(8)]
             exact = "ACGU" * 30
             homologous = "".join("A" if i % 12 == 0 else base for i, base in enumerate(clean[0]))
-            sequences = [exact, homologous] + clean
+            sequences = [exact, homologous] + clean + ["G" * 120]
             labels = [{"id": f"P{i}_A", "pdb_id": f"P{i}", "sequence": sequence,
-                       "raw_pairs": [[1, 120]], "canonical_nested_pairs": [[1, 120]]}
+                       "raw_pairs": [[1, 120]],
+                       "canonical_nested_pairs": [] if i == len(sequences) - 1 else [[1, 120]]}
                       for i, sequence in enumerate(sequences)]
             for i, chain in enumerate(labels):
                 directory = root / "entries" / f"P{i}"
@@ -48,8 +49,9 @@ class AuditIntegrationTests(unittest.TestCase):
                 if verification.returncode:
                     self.fail(verification.stdout + "\n" + verification.stderr)
                 manifest = json.loads((output / "decontamination.json").read_text())
-                self.assertEqual(manifest["n_unique_sequences"], 10)
+                self.assertEqual(manifest["n_unique_sequences"], 11)
                 self.assertEqual(manifest["n_removed"], 3)
+                self.assertEqual(manifest["n_unsupported_nested"], 1)
                 self.assertEqual(manifest["n_clean"], 7)
                 self.assertGreater(manifest["n_holdout"], 0)
                 train = [json.loads(line) for line in (output / "complex_train.jsonl").read_text().splitlines()]
@@ -63,6 +65,9 @@ class AuditIntegrationTests(unittest.TestCase):
             first_command, second_command = first.pop("search_command"), second.pop("search_command")
             second_command = [part.replace("out.recheck", "out") for part in second_command]
             self.assertEqual(first_command[:5] + first_command[6:], second_command[:5] + second_command[6:])
+            first_cluster, second_cluster = first.pop("cluster_search_command"), second.pop("cluster_search_command")
+            second_cluster = [part.replace("out.recheck", "out") for part in second_cluster]
+            self.assertEqual(first_cluster[:5] + first_cluster[6:], second_cluster[:5] + second_cluster[6:])
             self.assertEqual(first, second)
             self.assertEqual((root / "out/complex_train.jsonl").read_bytes(),
                              (root / "out.recheck/complex_train.jsonl").read_bytes())

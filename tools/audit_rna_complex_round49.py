@@ -138,13 +138,29 @@ def main():
             kept.append(dict(row, candidate_index=len(kept)))
     if len(chain_rows) != len(kept) + len(removed):
         raise RuntimeError("candidate attrition does not balance")
+    unsupported_nested = [{"id": row["id"], "raw_pairs": row["raw_pairs"]}
+                          for row in kept if not row["canonical_nested_pairs"]]
+    n_decontaminated = len(kept)
+    kept = [row for row in kept if row["canonical_nested_pairs"]]
+    for candidate_index, row in enumerate(kept):
+        row["candidate_index"] = candidate_index
     clean_path = args.out_dir / "decontaminated.fasta"
     fasta([(str(i), row["sequence"]) for i, row in enumerate(kept)], clean_path)
-    cluster_prefix = args.out_dir / "clusters"
-    subprocess.run([str(args.mmseqs), "easy-cluster", str(clean_path), str(cluster_prefix),
-                    tempfile.mkdtemp(prefix="complex_cluster_"), "--min-seq-id", "0.8",
-                    "--cov-mode", "1", "-c", "0.8", "--threads", str(args.threads),
-                    "--cluster-mode", "2"], check=True)
+    cluster_command = [str(args.mmseqs), "easy-search", str(clean_path), str(clean_path),
+                       str(args.out_dir / "self_alignment.tsv"), tempfile.mkdtemp(prefix="complex_self_"),
+                       "--min-seq-id", "0.8", "--cov-mode", "2", "-c", "0.8",
+                       "--max-seqs", str(max(1, len(kept))), "--threads", str(args.threads),
+                       "--search-type", "3", "--mask", "0", "--comp-bias-corr", "0"]
+    subprocess.run(cluster_command, check=True)
+    with (args.out_dir / "clusters_cluster.tsv").open("w") as output:
+        for index in range(len(kept)):
+            output.write(f"{index}\t{index}\n")
+        self_alignment = args.out_dir / "self_alignment.tsv"
+        if self_alignment.exists():
+            for line in self_alignment.open():
+                query, target = line.rstrip().split("\t")[:2]
+                if query != target:
+                    output.write(f"{query}\t{target}\n")
     groups = group_rows(kept, args.out_dir / "clusters_cluster.tsv")
     if not kept:
         raise RuntimeError("no decontaminated complex chains; refusing to fabricate a holdout")
@@ -162,9 +178,12 @@ def main():
         raise RuntimeError("holdout split is empty or consumes all chains")
     manifest = {"seed": args.seed, "protocol": "normalized exact plus MMseqs2 identity>=0.8/query-coverage>=0.8 against TR1c, VL0, 13 clean splits and structRFM corpus; joint PDB entry+80% sequence clusters",
                 "pretrain_sha256": expected_pretrain, "reference_sha256": sha256(reference_path),
-                "search_command": command, "sources": sources,
+                "search_command": command, "cluster_search_command": cluster_command, "sources": sources,
                 "n_label_chains": sum(len(json.loads(path.read_text())["chains"]) for path in args.entries_root.glob("*/labels.json")),
                 "n_unique_sequences": len(chain_rows), "n_removed": len(removed), "n_clean": len(kept),
+                "n_decontaminated": n_decontaminated, "n_unsupported_nested": len(unsupported_nested),
+                "supervision": "pairs=canonical_nested_pairs; raw_pairs retained for stratified analysis; no-crossing/no-shared-endpoint subset required",
+                "unsupported_nested": unsupported_nested,
                 "n_holdout": current, "groups": {name: {"assignment": assignments[name],
                   "ids": sorted(row["id"] for row in rows)} for name, rows in groups.items()},
                 "removed": removed}
@@ -176,7 +195,8 @@ def main():
                     continue
                 for row in groups[group]:
                     record = {"name": row["id"], "seq": row["sequence"],
-                              "pairs": row["raw_pairs"], "canonical_nested_pairs": row["canonical_nested_pairs"],
+                              "pairs": row["canonical_nested_pairs"], "raw_pairs": row["raw_pairs"],
+                              "canonical_nested_pairs": row["canonical_nested_pairs"],
                               "group": group, "candidate_index": row["candidate_index"], "source": row}
                     handle.write(json.dumps(record, sort_keys=True) + "\n")
     print(json.dumps({key: manifest[key] for key in ["n_label_chains", "n_unique_sequences", "n_removed", "n_clean", "n_holdout"]}))
