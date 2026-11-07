@@ -13372,3 +13372,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **三枚种子均刷新best VL0**：seed0 step5500=25.6400560916（此前best step4500=26.3062378816）；seed1 step5500=25.3830595520（此前step5000=25.4139357017）；seed2 step5500=24.6396191359（此前best step4500=25.9202607221）。seed0/2在step5000的一次未改善后均恢复下降，bad重置为0。
 - **训练状态**：三枚种子均按预定节奏解冻10/12层，真实CUDA、steps=0、patience=6，无OOM或CPU降级。当前仍是log-head过程损失，不是R1/R2/R3或A/B/C证据，不据此调整后续臂或选择测试集。P3/P4/P5继续按门控等待，PPT未修改。
+
+
+## §15.509（2026-11-07）RIPE log-head 全解冻进展与 seed2 OOM 错峰恢复
+
+- **进展**：step9000时seed0/1 best VL0=22.2219787160/22.3086430235，seed2在step8500 best仍为step7000=23.3092125098、bad=3。三枚种子随后均进入12/12层训练，验证波动不提前终止。
+- **OOM证据**：seed2在step9000验证backward申请928MiB时，与另外两进程峰值重叠，GPU仅剩831.06MiB而OOM；失败日志已单独保存为 `ripe_head_log_s2.oom_step9000.log`。不是CPU静默降级，不把该次运行写成收敛或科学结果。
+- **恢复方案**：seed2的 `resume.pt` 已保存至step9000，seed0/1继续自然训练。恢复队列等待两枚种子结束及原调度退出后，从step9000恢复seed2；利用已修复的历史解冻层恢复逻辑，不重启seed0/1、不删除旧日志、不改batch、LR、数据或patience。后续七臂继续使用同一冻结队列，OOM恢复完成前不进入A/B/C。
