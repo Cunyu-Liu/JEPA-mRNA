@@ -112,8 +112,11 @@ def main():
             results[pdb_id] = result
             print(json.dumps({"completed": index, "total": len(ids), "pdb_id": pdb_id,
                               "result": result}, sort_keys=True), flush=True)
-    (root / "collection.json").write_text(json.dumps({"n_entries": len(ids), "results": results},
-                                                       indent=2, sort_keys=True) + "\n")
+    manifest = {"complete": True, "dssr_seq_id_mode": "observed_nts_v1",
+                "n_entries": len(ids), "results": results}
+    temporary = root / "collection.json.tmp"
+    temporary.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    temporary.replace(root / "collection.json")
 
 
 if __name__ == "__main__":

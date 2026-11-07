@@ -85,9 +85,40 @@ def group_rows(rows, cluster_path):
     return groups
 
 
+def validate_collection(entries_root, ids_path):
+    document = json.loads((entries_root / "collection.json").read_text())
+    source = json.loads(ids_path.read_text())
+    if isinstance(source, dict):
+        source = source.get("result_set", source.get("identifier", source.get("ids", [])))
+    expected = {row["identifier"] if isinstance(row, dict) else row for row in source}
+    results = document.get("results", {})
+    assert document.get("complete") is True
+    assert document.get("dssr_seq_id_mode") == "observed_nts_v1"
+    assert document["n_entries"] == len(expected) == len(results)
+    assert set(results) == expected
+    labels = []
+    for pdb_id, result in sorted(results.items()):
+        path = entries_root / pdb_id / "labels.json"
+        if isinstance(result, dict) and "error" in result:
+            assert result["error"] and (path.with_name("error.txt")).is_file()
+            continue
+        assert path.is_file(), pdb_id
+        label = json.loads(path.read_text())
+        assert label["pdb_id"] == pdb_id
+        assert label["dssr_seq_id_mode"] == "observed_nts_v1"
+        if isinstance(result, dict):
+            assert result["accepted_chains"] == len(label["chains"])
+            assert result["rejected_chains"] == len(label["rejected_chains"])
+            assert result["labels_sha256"] == sha256(path)
+        labels.append(path)
+    assert labels, "no usable complex labels"
+    return document, labels
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--entries-root", type=Path, required=True)
+    parser.add_argument("--expected-ids-json", type=Path, required=True)
     parser.add_argument("--pretrain-fasta", type=Path, required=True)
     parser.add_argument("--clean-splits", type=Path, required=True)
     parser.add_argument("--train-jsonl", type=Path, required=True)
@@ -97,13 +128,19 @@ def main():
     parser.add_argument("--threads", type=int, default=8)
     parser.add_argument("--seed", type=int, default=20261107)
     parser.add_argument("--pretrain-sha256", default="739369d31df4a828adba040d9f88eb5c3bc6dbf010d7d22279333e694a9f3a40")
+    parser.add_argument("--validate-collection-only", action="store_true")
     args = parser.parse_args()
+    collection, label_paths = validate_collection(args.entries_root, args.expected_ids_json)
+    if args.validate_collection_only:
+        print(json.dumps({"status": "PASS_COMPLETE_COMPLEX_COLLECTION",
+                          "n_entries": collection["n_entries"], "n_label_files": len(label_paths)}))
+        return
     args.out_dir.mkdir(parents=True, exist_ok=True)
     expected_pretrain = args.pretrain_sha256
     if sha256(args.pretrain_fasta) != expected_pretrain:
         raise ValueError("pretraining corpus identity mismatch")
     sources, chain_rows, seen = [], [], {}
-    for path in sorted(args.entries_root.glob("*/labels.json")):
+    for path in label_paths:
         document = json.loads(path.read_text())
         for chain in document["chains"]:
             sequence = normalise(chain["sequence"])
@@ -117,6 +154,7 @@ def main():
             if sequence in seen:
                 seen[sequence]["duplicate_chain_ids"].append(chain["id"])
             else:
+                row["duplicate_chain_ids"] = [chain["id"]]
                 seen[sequence] = row
                 chain_rows.append(row)
     references = [(f"pretrain_{index}", line.strip())
@@ -201,8 +239,11 @@ def main():
         raise RuntimeError("holdout split is empty or consumes all chains")
     manifest = {"seed": args.seed, "protocol": "normalized exact plus MMseqs2 identity>=0.8/query-coverage>=0.8 against TR1c, VL0, 13 clean splits and structRFM corpus; joint PDB entry+80% sequence clusters",
                 "pretrain_sha256": expected_pretrain, "reference_sha256": sha256(reference_path),
+                "collection_path": str(args.entries_root / "collection.json"),
+                "collection_sha256": sha256(args.entries_root / "collection.json"),
                 "search_command": command, "cluster_search_command": cluster_command, "sources": sources,
-                "n_label_chains": sum(len(json.loads(path.read_text())["chains"]) for path in args.entries_root.glob("*/labels.json")),
+                "n_label_chains": sum(len(json.loads(path.read_text())["chains"]) for path in label_paths),
+                "n_duplicate_chains": sum(len(row["duplicate_chain_ids"]) - 1 for row in chain_rows),
                 "n_unique_sequences": len(chain_rows), "n_removed": len(removed), "n_clean": len(kept),
                 "n_decontaminated": n_decontaminated, "n_unsupported_nested": len(unsupported_nested),
                 "supervision": "pairs=canonical_nested_pairs; raw_pairs retained for stratified analysis; no-crossing/no-shared-endpoint subset required",

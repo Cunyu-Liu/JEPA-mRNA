@@ -12,6 +12,7 @@ def main():
     parser.add_argument("--out-dir", type=Path, required=True)
     args = parser.parse_args()
     manifest = json.loads((args.out_dir / "decontamination.json").read_text())
+    assert sha256(Path(manifest["collection_path"])) == manifest["collection_sha256"]
     for source in manifest["sources"]:
         assert sha256(Path(source["path"])) == source["sha256"], source["name"]
     assert sha256(args.out_dir / "protected_references.fasta") == manifest["reference_sha256"]
@@ -22,6 +23,9 @@ def main():
     kept = train + holdout
     assert train and holdout
     assert len(kept) == manifest["n_clean"]
+    assert manifest["n_label_chains"] == manifest["n_unique_sequences"] + manifest["n_duplicate_chains"]
+    duplicate_ids = [name for row in kept for name in row["source"]["duplicate_chain_ids"]]
+    assert len(duplicate_ids) == len(set(duplicate_ids))
     assert manifest["n_unique_sequences"] == manifest["n_clean"] + manifest["n_removed"] + manifest["n_unsupported_nested"]
     assert manifest["n_decontaminated"] == manifest["n_clean"] + manifest["n_unsupported_nested"]
     assert len({row["seq"] for row in kept}) == len(kept)

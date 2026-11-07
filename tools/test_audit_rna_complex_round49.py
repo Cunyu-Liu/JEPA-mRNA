@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from audit_rna_complex_round49 import SPLITS, sha256, source_metadata
+from audit_rna_complex_round49 import SPLITS, sha256, source_metadata, validate_collection
 
 
 class AuditIntegrationTests(unittest.TestCase):
@@ -23,10 +23,29 @@ class AuditIntegrationTests(unittest.TestCase):
                        "raw_pairs": [[1, 120]],
                        "canonical_nested_pairs": [] if i == len(sequences) - 1 else [[1, 120]]}
                       for i, sequence in enumerate(sequences)]
+            duplicate = dict(labels[4], id="P4_B")
+            labels.append(duplicate)
+            results = {}
             for i, chain in enumerate(labels):
                 directory = root / "entries" / f"P{i}"
                 directory.mkdir(parents=True)
-                (directory / "labels.json").write_text(json.dumps({"chains": [chain]}))
+                label_path = directory / "labels.json"
+                label_path.write_text(json.dumps({"pdb_id": f"P{i}", "chains": [chain],
+                                                  "rejected_chains": [], "dssr_seq_id_mode": "observed_nts_v1"}))
+                results[f"P{i}"] = {"accepted_chains": 1, "rejected_chains": 0,
+                                    "labels_sha256": sha256(label_path)}
+            collection_path = root / "entries" / "collection.json"
+            collection_path.write_text(json.dumps({"complete": True, "dssr_seq_id_mode": "observed_nts_v1",
+                                                   "n_entries": len(labels), "results": results}))
+            ids_path = root / "ids.json"
+            ids_path.write_text(json.dumps({"result_set": [f"P{i}" for i in range(len(labels))]}))
+            _, label_paths = validate_collection(root / "entries", ids_path)
+            self.assertEqual(len(label_paths), len(labels))
+            collection_path.write_text(json.dumps({"complete": False, "n_entries": len(labels), "results": results}))
+            with self.assertRaises(AssertionError):
+                validate_collection(root / "entries", ids_path)
+            collection_path.write_text(json.dumps({"complete": True, "dssr_seq_id_mode": "observed_nts_v1",
+                                                   "n_entries": len(labels), "results": results}))
             pretrain = root / "pretrain.fa"
             pretrain.write_text(">exact\n" + exact + "\n")
             protected = root / "protected"
@@ -37,7 +56,8 @@ class AuditIntegrationTests(unittest.TestCase):
             for suffix in ["", ".recheck"]:
                 output = root / f"out{suffix}"
                 command = [sys.executable, "/home/rna_jev/tools/audit_rna_complex_round49.py",
-                           "--entries-root", str(root / "entries"), "--pretrain-fasta", str(pretrain),
+                           "--entries-root", str(root / "entries"), "--expected-ids-json", str(ids_path),
+                           "--pretrain-fasta", str(pretrain),
                            "--pretrain-sha256", sha256(pretrain), "--clean-splits", str(protected),
                            "--train-jsonl", str(root / "train.jsonl"), "--vl0-jsonl", str(root / "vl0.jsonl"),
                            "--out-dir", str(output)]

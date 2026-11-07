@@ -43,6 +43,26 @@ class CollectRnaComplexTests(unittest.TestCase):
             self.assertFalse((entry / "dssr.json.part").exists())
             self.assertFalse((entry / "error.txt").exists())
 
+    def test_incomplete_dssr_is_not_promoted(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            entry = root / "1EHZ"
+            entry.mkdir()
+            (entry / "1EHZ.cif").write_text("mmCIF fixture")
+
+            def run(command, **kwargs):
+                if command[0] == "dssr":
+                    Path(command[-1].split("=", 1)[1]).write_text('{"pairs": []}')
+                    return subprocess.CompletedProcess(command, 0, "", "")
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            with patch("collect_rna_complex_round49.subprocess.run", side_effect=run):
+                _, result = collect("1EHZ", root, "python", "dssr")
+            self.assertIn("full nts or pairs", result["error"])
+            self.assertFalse((entry / "dssr.json").exists())
+            self.assertTrue((entry / "dssr.json.part").is_file())
+            self.assertTrue((entry / "error.txt").is_file())
+
     def test_full_dssr_cache_is_reused(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
