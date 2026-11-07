@@ -13299,3 +13299,14 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **VL0阈值**：三枚VL0均196条、CUDA、三次预测一致；confidence阈值reference_seed=1，对应最低best validation loss=18.7388141224，没有测试集拟合。VL0 micro-F1三种子均值=0.7913461135，仅作过程核验，不外推全板或最佳置信度。
 - **DSSR资产门**：集群PATH、`tools/bin`、`/opt`及限定深度资产搜索均未发现DSSR。P4前必须取得固定官方版本、许可与标签一致性证据；不使用经验配对或来路不明替代物，当前未生成复合物标签。
 - **LinearDesign官方资产**：官方仓库确认为 `LinearDesignSoftware/LinearDesign`，commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be`，README引用DOI=`10.1038/s41586-023-06127-z`。源码仅放 `/home/rna_jev/third_party/LinearDesign`，许可允许学术研究但禁止未经书面许可的再分发，因此不提交到本项目GitHub。README声明GCC≥4.8.5/Clang≥11及python2.7，正式P5前仍需编译和官方示例等价验收；未提前运行P5设计实验，PPT未修改。
+
+
+## §15.500（2026-11-07）S3 PairMLP-490 三种子 13 split 完整负结果
+
+- **完整性与复算**：39/39单元格完成，聚合双跑逐字节一致，summary SHA256=`cdae12f3069340936a7dbd9b67ab7c4e1b8d5c4070e1d9676baead7db3c5eabf`。seed2独立QA SHA256=`c618baf6e95414d83dad27fd2d12a1e06bb9368eddb33886d95429f8cff60725`，三枚seed现均通过哈希、样本守恒和指标复算。
+- **主榜**：TS0=0.4750360183±0.0164410583（n=79）、bpRNA-new=0.3904187883±0.0040866013（74）、ArchiveII=0.5362893530±0.0211192255（raw90）、TS1=0.7243737131±0.0252385177（3）、TS2=0.5549707602±0.0558533110（1）、TS3=0.5706093190±0.1209580509（1）、TS-hard=0.3810386473±0.0931557995（2）、TestSetB=0.3124962088±0.0141189524（21）。all-baseline与external-single均**0/8 SOTA**，小split保持描述性。
+- **外部OOD**：Rfam=0.4826468164±0.0056530168，低于BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.4037508683/0.4475214271/0.3662707435/0.2929328290，measured wins=0。SOTA双跑一致，SHA256=`fd3b85f64a1dac18fb7ec7967ba03c8f38042f8f8f79127f4c1853c8203bebf7`。
+- **长序列与长程**：ArchiveII三种子共171条不受支持，Rfam共420条不受支持；Rfam仅≤100/100–200/200–400nt有支持，micro-F1均值=0.5635798138/0.5669664499/0.4129541032，>400桶为空。ArchiveII >400桶仅9条/seed且限于400–514nt，每seed另有57条未支持，不能据此称无长度衰减。Rfam跨度≥30/≥100nt micro-F1=0.3581262402/0.1221373579。
+- **置信度**：13 split×3 seed的AURC全部为null，因VL0冻结阈值下至少一个风险桶为空；不得在测试集改阈值或插值。全板confidence双跑一致，SHA256=`34b280a50c951572112daa4db35c03b78edcb49426ce00a2d01e9d783915debd`，不能称最佳置信度。
+- **配对统计**：S3−S1在TS0 seed1/2和ArchiveII seed1/2经Holm显著为正，但bpRNA-new seed0/2显著为负；S3−S2仅TS0 seed1、ArchiveII seed1显著为正，bpRNA-new seed1/2显著为负。说明近参数PairMLP存在种子与split异质性，不能宣称普遍容量增益。统计双跑SHA256=`a239854a1bbf8bb06fa9d14b1426785916e84120ab8e598d3e4af062eea8e4c3`。
+- **裁决**：S3否决为最终独立单模型，保留为近参数对照。路线一仍需三臂greedy/Turner0全部完成才生成最终route1_decision并启动RIPE；原消融队列已接续，PPT未修改。
