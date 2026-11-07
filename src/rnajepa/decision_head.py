@@ -434,10 +434,10 @@ class FlatDecisionHead(nn.Module):
             scores = scores + self.ripe(seq_ids).mean(dim=1)
         return scores
 
-    def masked_pair_latent_loss(self, z: torch.Tensor, mask: torch.Tensor):
+    def masked_pair_latent_loss(self, z: torch.Tensor, mask: torch.Tensor, rank_samples: int = 0):
         if self.pair_jepa is None:
             raise ValueError("Pair-JEPA is not enabled")
-        return self.pair_jepa.masked_latent_loss(z, mask)
+        return self.pair_jepa.masked_latent_loss(z, mask, rank_samples=rank_samples)
 
     def pair_scores_and_types(self, h: torch.Tensor, seq_ids: Optional[torch.Tensor] = None):
         """``(scores, pair_types)`` for every ``(i, j)``, chunked along ``j``.

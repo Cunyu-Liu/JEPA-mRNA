@@ -143,6 +143,22 @@ def restore_unfrozen_blocks(blocks, n_unfrozen):
         block.requires_grad_(index >= first)
 
 
+def masked_pair_target(valid, probability, seed):
+    if valid.dtype != torch.bool:
+        raise TypeError("valid pair mask must be bool")
+    generator = torch.Generator(device=valid.device).manual_seed(seed)
+    mask = (torch.rand(valid.shape, device=valid.device, generator=generator)
+            < probability) & valid
+    if not mask.any():
+        indices = valid.reshape(-1).nonzero(as_tuple=False).squeeze(1)
+        if indices.numel() == 0:
+            raise ValueError("no legal pairs available for Pair-JEPA target")
+        selected = indices[torch.randint(indices.numel(), (1,), device=valid.device,
+                                        generator=generator)]
+        mask.reshape(-1)[selected] = True
+    return mask
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl")
@@ -176,8 +192,13 @@ def main():
     ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
     ap.add_argument("--ripe-encoder", action="store_true")
     ap.add_argument("--ripe-encoder-only", action="store_true")
-    ap.add_argument("--scorer", choices=["resnet2d", "pairmlp"], default="resnet2d")
+    ap.add_argument("--scorer", choices=["resnet2d", "pairmlp", "pairjepa"], default="resnet2d")
     ap.add_argument("--pair-latent-dim", type=int, default=64)
+    ap.add_argument("--lambda-jepa", type=float, default=0.0)
+    ap.add_argument("--jepa-target", choices=["ema", "fixed", "random"], default="ema")
+    ap.add_argument("--jepa-mask-prob", type=float, default=0.15)
+    ap.add_argument("--jepa-log-every", type=int, default=25)
+    ap.add_argument("--jepa-rank-samples", type=int, default=512)
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
                     help="hold this much GPU memory from process start so "
                          "co-tenants cannot claim the card during the CPU-bound "
@@ -186,6 +207,13 @@ def main():
     args = ap.parse_args()
     if args.ripe_encoder_only and not (args.ripe_encoder and args.ripe_mode):
         raise SystemExit("--ripe-encoder-only requires --ripe-encoder and --ripe-mode")
+    if args.lambda_jepa < 0 or (args.lambda_jepa and args.scorer != "pairjepa"):
+        raise SystemExit("--lambda-jepa is nonnegative and requires --scorer pairjepa")
+    if args.scorer == "pairjepa" and args.lambda_jepa <= 0:
+        raise SystemExit("Pair-JEPA training requires a positive --lambda-jepa")
+    if (not 0 < args.jepa_mask_prob <= 1 or args.jepa_rank_samples < 0
+            or args.jepa_log_every <= 0):
+        raise SystemExit("invalid Pair-JEPA mask, rank sample or logging configuration")
 
     os.makedirs(args.out, exist_ok=True)
     os.makedirs(args.snapshot_dir, exist_ok=True)
@@ -254,7 +282,8 @@ def main():
     head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=128, hidden=64,
                             scorer=args.scorer, chunk_size=0,
                             pair_latent_dim=args.pair_latent_dim,
-                            jepa_use_ema=False,
+                            jepa_use_ema=args.scorer == "pairjepa" and args.jepa_target == "ema",
+                            jepa_random_target=args.scorer == "pairjepa" and args.jepa_target == "random",
                             ripe_mode=None if args.ripe_encoder_only else args.ripe_mode or None)
     encoder = encoder.to(device)
     head = head.to(device)
@@ -326,7 +355,11 @@ def main():
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
                       "teacher": args.teacher_dir,
                       "distill_kind": "kl", "rlcd_reward": "brier", "beta": 1.0,
-                      "n_bins": 10, "tau": 0.1, "nll_normalization": "sum"},
+                      "n_bins": 10, "tau": 0.1, "nll_normalization": "sum",
+                      "lambda_jepa": args.lambda_jepa,
+                      "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
+                      "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
+                      "jepa_rank_samples": args.jepa_rank_samples},
         "validation": {"data": args.validation_data, "teacher_dir": args.validation_teacher_dir,
                        "every": args.validation_every, "patience": args.validation_patience,
                        "min_delta": args.validation_min_delta},
@@ -515,6 +548,19 @@ def main():
         for k in terms_agg:
             terms_agg[k] /= B
 
+        jepa_record = None
+        if args.lambda_jepa:
+            log_latent = step % args.jepa_log_every == 0 or step == 1
+            latent_mask = masked_pair_target(mask_full, args.jepa_mask_prob, args.seed + step)
+            latent_loss, latent_diagnostics = head.masked_pair_latent_loss(
+                z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0)
+            total = total + args.lambda_jepa * latent_loss
+            terms_agg["jepa"] = float(latent_loss.detach())
+            if log_latent:
+                jepa_record = {"step": step, "masked_pairs": int(latent_mask.sum()),
+                               "loss": float(latent_loss.detach()),
+                               **{name: float(value) for name, value in latent_diagnostics.items()}}
+
         opt.zero_grad(set_to_none=True)
         total.backward()
         # restore the one-update BN statistics (see (c) above): the backward's
@@ -523,13 +569,15 @@ def main():
         gnorm = float(torch.nn.utils.clip_grad_norm_(
             trainable(), args.grad_clip))
         opt.step()
+        if args.lambda_jepa:
+            head.pair_jepa.ema_update()
         sched.step()
         with open(os.path.join(args.out, "compute_ledger.jsonl"), "a") as fh:
             fh.write(json.dumps({"step": step, "lengths": lengths,
                                  "unfrozen": n_unfrozen,
                                  "trainable_params": sum(p.numel() for p in trainable())}) + "\n")
 
-        if step % 25 == 0 or step == 1:
+        if step % 25 == 0 or step == 1 or jepa_record is not None:
             rec = {"step": step, "loss": round(float(total), 4),
                    "terms": {k: round(v, 4) for k, v in terms_agg.items()},
                    "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
@@ -539,6 +587,9 @@ def main():
                    "sec": round(time.time() - t0, 1)}
             with open(log_path, "a") as fh:
                 fh.write(json.dumps(rec) + "\n")
+            if jepa_record is not None:
+                with open(os.path.join(args.out, "jepa_diagnostics.jsonl"), "a") as fh:
+                    fh.write(json.dumps(jepa_record) + "\n")
             print(f"[plan-a] step {step}/{args.steps} loss={float(total):.4f} "
                   f"terms={ {k: round(v, 3) for k, v in terms_agg.items()} } "
                   f"unfrozen={n_unfrozen}/{n_blocks} gnorm={rec['gnorm']} "

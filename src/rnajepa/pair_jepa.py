@@ -4,6 +4,25 @@ import torch
 from torch import nn
 
 
+@torch.no_grad()
+def latent_effective_rank(features, max_samples=512):
+    if features.ndim != 2 or features.shape[0] == 0:
+        raise ValueError("features must be a nonempty [sample, latent] matrix")
+    if features.shape[0] > max_samples:
+        indices = torch.linspace(0, features.shape[0] - 1, max_samples,
+                                 device=features.device).round().long()
+        features = features[indices]
+    centered = features.float() - features.float().mean(dim=0, keepdim=True)
+    covariance = centered.T @ centered / features.shape[0]
+    eigenvalues = torch.linalg.eigvalsh(covariance).clamp_min(0)
+    total = eigenvalues.sum()
+    if not torch.isfinite(total) or total <= 0:
+        return features.new_zeros((), dtype=torch.float32)
+    probabilities = eigenvalues / total
+    entropy = -(probabilities * probabilities.clamp_min(1e-12).log()).sum()
+    return entropy.exp()
+
+
 class SymmetricPairMLP(nn.Module):
     def __init__(self, d_z=128, latent_dim=64):
         super().__init__()
@@ -47,7 +66,7 @@ class PairJEPA(nn.Module):
         for target, source in zip(self.teacher.buffers(), self.scorer.buffers()):
             target.copy_(source)
 
-    def masked_latent_loss(self, z, mask):
+    def masked_latent_loss(self, z, mask, rank_samples=0):
         if self.teacher is None:
             raise ValueError("latent target requested without a target encoder")
         if mask.dtype != torch.bool:
@@ -69,6 +88,11 @@ class PairJEPA(nn.Module):
             "target_mean_norm": target[mask].norm(dim=-1).mean().detach(),
             "prediction_mean_norm": prediction[mask].norm(dim=-1).mean().detach(),
         }
+        if rank_samples:
+            diagnostics["target_effective_rank"] = latent_effective_rank(
+                target[mask], max_samples=rank_samples)
+            diagnostics["prediction_effective_rank"] = latent_effective_rank(
+                prediction[mask].detach(), max_samples=rank_samples)
         return loss, diagnostics
 
     def forward(self, z):
