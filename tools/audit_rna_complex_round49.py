@@ -7,6 +7,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+import gemmi
+
 from audit_structrfm_clean_round48 import normalise, sha256
 
 SPLITS = ["bprna_ts0", "bprna_new", "archiveii", "ref_pdb_ts1", "ref_pdb_ts2",
@@ -24,6 +26,23 @@ def fasta(records, path):
     with path.open("w") as handle:
         for name, sequence in records:
             handle.write(f">{name}\n{normalise(sequence)}\n")
+
+
+def source_metadata(cif_path, entity_ids):
+    if not cif_path.is_file():
+        return {"source_organisms": [], "partner_entity_types": []}
+    block = gemmi.cif.read(str(cif_path)).sole_block()
+    fields = [("_entity_src_gen", "pdbx_gene_src_scientific_name"),
+              ("_entity_src_nat", "pdbx_organism_scientific"),
+              ("_rcsb_entity_source_organism", "scientific_name")]
+    organisms = set()
+    for category, field in fields:
+        for row in block.find(f"{category}.", ["entity_id", field]):
+            if str(row[0]) in entity_ids and str(row[1]) not in {".", "?", ""}:
+                organisms.add(str(row[1]).strip("'"))
+    partners = {str(row[0]) for row in block.find("_entity_poly.", ["type"])}
+    partners.discard("polyribonucleotide")
+    return {"source_organisms": sorted(organisms), "partner_entity_types": sorted(partners)}
 
 
 def group_rows(rows, cluster_path):
@@ -89,8 +108,12 @@ def main():
         for chain in document["chains"]:
             sequence = normalise(chain["sequence"])
             row = dict(chain)
+            metadata = source_metadata(path.with_name(f"{chain['pdb_id']}.cif"), set(chain.get("entity_ids", [])))
             row.update({"sequence": sequence, "source_json": str(path),
-                        "source_json_sha256": sha256(path)})
+                        "source_json_sha256": sha256(path),
+                        "experimental_method": document.get("experimental_method"),
+                        "resolution_angstrom": document.get("resolution_angstrom"),
+                        "deposition_date": document.get("deposition_date"), **metadata})
             if sequence in seen:
                 seen[sequence]["duplicate_chain_ids"].append(chain["id"])
             else:

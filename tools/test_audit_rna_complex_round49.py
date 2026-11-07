@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from audit_rna_complex_round49 import SPLITS, sha256
+from audit_rna_complex_round49 import SPLITS, sha256, source_metadata
 
 
 class AuditIntegrationTests(unittest.TestCase):
@@ -73,6 +73,14 @@ class AuditIntegrationTests(unittest.TestCase):
                              (root / "out.recheck/complex_train.jsonl").read_bytes())
             self.assertEqual((root / "out/complex_holdout.jsonl").read_bytes(),
                              (root / "out.recheck/complex_holdout.jsonl").read_bytes())
+
+    def test_real_mmcif_source_metadata(self):
+        path = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/asset_gate/1EHZ.cif")
+        if not path.is_file():
+            self.skipTest("real asset gate is unavailable")
+        metadata = source_metadata(path, {"1"})
+        self.assertIn("Saccharomyces cerevisiae", metadata["source_organisms"])
+        self.assertEqual(metadata["partner_entity_types"], [])
 
 
 if __name__ == "__main__":
