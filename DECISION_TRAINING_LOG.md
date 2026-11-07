@@ -13210,3 +13210,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **seed1**：best step9000、validation loss=21.6738515200，step9500=21.7901956110，bad=1；尚未满足早停。seed2未启动。
 - **裁决门**：新增 `adjudicate_structrfm_route1_round48.py`，只在三臂主榜/SOTA/confidence、配对bootstrap和六项greedy/Turner0总结全部存在时，核验checkpoint、早停、输入哈希和比较项后生成 `route1_decision.json`。执行两次并逐字节一致，负结果也按合同允许RIPE，未完成前不放行。
 - **选择边界**：VL0参照只取最低best validation loss，不按测试榜选种子；长序列、最佳置信度、独占速度均默认不可主张。合成集成测试与既有统计/解码/S3/RIPE回归11/11通过，提交 `5921b20cae045ab298688f3e1d4c22f57aaca99d` 已推送。
+
+
+## §15.489（2026-11-07）S3 step11500 持续改善
+
+- **seed0**：step10500/11000/11500 validation loss=21.1341829184/21.7180840325/21.0531325398，best step11500，bad=0。
+- **seed1**：step10500/11000/11500 validation loss=20.9570972516/22.0050099293/20.5451347529，best step11500，bad=0。
+- **判定**：step11000的一次未改善没有形成平台，继续训练后两枚种子均创新低；不设置固定步数终点，不提前恢复旧checkpoint。seed2仍未启动，S3全板、配对统计与路线裁决保持等待。
