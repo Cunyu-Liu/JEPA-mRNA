@@ -85,6 +85,32 @@ class CollectRnaComplexTests(unittest.TestCase):
             self.assertNotEqual(second, "cached")
             self.assertFalse((entry / "dssr.pair_only.json").exists())
 
+    def test_timeout_retries_once_with_extended_budget(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            entry = root / "4U3M"
+            entry.mkdir()
+            (entry / "4U3M.cif").write_text("mmCIF fixture")
+            timeouts = []
+
+            def run(command, **kwargs):
+                if command[0] == "dssr":
+                    timeouts.append(kwargs["timeout"])
+                    if len(timeouts) == 1:
+                        raise subprocess.TimeoutExpired(command, 600)
+                    Path(command[-1].split("=", 1)[1]).write_text('{"nts": []}')
+                if "prepare_rna_complex_round49.py" in command[1]:
+                    output = Path(command[command.index("--output") + 1])
+                    output.write_text(json.dumps({"chains": [], "rejected_chains": [],
+                                                  "dssr_seq_id_mode": "observed_nts_v1"}))
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            with patch("collect_rna_complex_round49.subprocess.run", side_effect=run):
+                _, result = collect("4U3M", root, "python", "dssr")
+            self.assertEqual(timeouts, [600, 1800])
+            self.assertNotIn("error", result)
+            self.assertTrue((entry / "dssr.timeout600.log").is_file())
+
     def test_no_nucleotide_warning_is_a_valid_empty_result(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

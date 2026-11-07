@@ -64,8 +64,14 @@ def collect(pdb_id, root, python, dssr):
         if cached_dssr is None:
             temporary_json = directory / "dssr.json.part"
             temporary_json.unlink(missing_ok=True)
-            completed = subprocess.run([dssr, f"-i={cif}", "--json", "--more",
-                                        f"-o={temporary_json}"], capture_output=True, text=True, timeout=600)
+            try:
+                completed = subprocess.run([dssr, f"-i={cif}", "--json", "--more",
+                                            f"-o={temporary_json}"], capture_output=True, text=True, timeout=600)
+            except subprocess.TimeoutExpired as error:
+                (directory / "dssr.timeout600.log").write_text(
+                    f"{error}\n{error.stdout or ''}{error.stderr or ''}")
+                completed = subprocess.run([dssr, f"-i={cif}", "--json", "--more",
+                                            f"-o={temporary_json}"], capture_output=True, text=True, timeout=1800)
             (directory / "dssr.log").write_text(completed.stdout + completed.stderr)
             if completed.returncode or not temporary_json.is_file():
                 raise RuntimeError(f"DSSR failed: {completed.returncode}")
