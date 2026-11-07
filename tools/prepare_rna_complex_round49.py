@@ -10,7 +10,7 @@ from pathlib import Path
 
 import gemmi
 
-NT_RE = re.compile(r"^(?P<chain>[^.]+)\.(?P<name>.+?)(?P<seq>-?\d+)(?P<ins>[A-Za-z]?)$")
+NT_RE = re.compile(r"^(?P<chain>[^.]+)\.(?P<name>.+?)(?P<seq>-?\d+)(?P<ins>(?:\^[A-Za-z]|[A-Za-z])?)$")
 STANDARD = {"A", "C", "G", "U"}
 CANONICAL = {"G-C", "C-G", "A-U", "U-A", "G-U", "U-G"}
 

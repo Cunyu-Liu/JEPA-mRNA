@@ -9,6 +9,7 @@ class RnaComplexTests(unittest.TestCase):
     def test_dssr_modified_and_negative_insertion_ids(self):
         self.assertEqual(parse_nt("A.5MC40"), ("A", 40, "", "5MC"))
         self.assertEqual(parse_nt("B.2MG-3A"), ("B", -3, "A", "2MG"))
+        self.assertEqual(parse_nt("A.G129^A"), ("A", 129, "^A", "G"))
         with self.assertRaises(ValueError):
             parse_nt("A.C?")
 
