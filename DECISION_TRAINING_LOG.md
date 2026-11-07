@@ -13317,3 +13317,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **原因**：主结果齐套后原脚本以单进程依次执行三臂×两种解码，造成GPU等待。改为S1/S2/S3三个独立worker并行，评测器、checkpoint、clean数据、三次repeat、DP/greedy与Turner=0参数均不变。
 - **连续性**：停止的是旧串行bash orchestrator，不是模型评测逻辑；当时正在运行的frozen子任务继续至正常结束。已有输出全部保留，worker逐cell核对checkpoint SHA256、CUDA、repeat、decoder和prior override后跳过，不重算有效结果。
 - **验证**：新脚本 `run_structrfm_decoding_arm_round48.sh` 通过 `bash -n`，提交 `f244387d80b6c549ea64b457b1bbc95354eaf752` 已推送GitHub。三个worker均已进入真实CUDA评测；旧任务的通知属于主动调度替换，不是科学运行失败。路线一裁决仍等待六项总结齐套，RIPE未提前启动。
+
+
+## §15.502（2026-11-07）Pair-JEPA 推理 teacher-forward 硬约束
+
+- **实现**：主全参评测与greedy/Turner0消融在checkpoint加载后将Pair-JEPA teacher forward替换为直接报错，并记录 `pairjepa_teacher_forward_guard`。任何意外teacher调用都会使评测失败，不能只凭代码审查声称无teacher前向。
+- **默认回归**：S3 seed0 VL0在主评测和消融评测中除新增guard字段及wall time外与原结果逐值一致；PairMLP无teacher时guard=false，既有科学结果不变。
+- **真实Pair-JEPA路径**：使用EMA smoke checkpoint在4条8nt合成序列上完成CUDA三次确定性推理，guard=true且未触发teacher报错。该smoke的结构数值不构成科学结果，也不用于PPT。
+- **测试与提交**：相关7项测试通过，提交 `e59bf7056f02e2c1bfd1acb93a5e4a1dd05548f0` 已推送GitHub。正式P3仍需路线二裁决、三种子收敛与A/B/C；路线一消融worker继续运行。
