@@ -23,7 +23,7 @@ def best(rows):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--experiment", choices=["structrfm_frozen", "structrfm_full", "structrfm_s3"], required=True)
+    parser.add_argument("--experiment", required=True)
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--rfam-baseline", type=Path, required=True)
     parser.add_argument("--chanrg-baseline", type=Path, required=True)

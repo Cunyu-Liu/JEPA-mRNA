@@ -34,11 +34,14 @@ def _attention_with_ripe(self, hidden_states, attention_mask=None, head_mask=Non
         key_layer = torch.cat([past_key_value[0], key_layer], dim=2)
         value_layer = torch.cat([past_key_value[1], value_layer], dim=2)
     attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
-    attention_scores = attention_scores + self.ripe(self._ripe_input_ids)
+    positional_bias = self.ripe(self._ripe_input_ids).to(dtype=attention_scores.dtype)
+    attention_scores = attention_scores + positional_bias
     attention_scores = attention_scores / math.sqrt(self.attention_head_size)
     if attention_mask is not None:
         attention_scores = attention_scores + attention_mask
+    self._ripe_attention_score_dtype = attention_scores.dtype
     attention_probs = torch.nn.functional.softmax(attention_scores, dim=-1)
+    self._ripe_softmax_dtype = attention_probs.dtype
     attention_probs = self.dropout(attention_probs)
     if head_mask is not None:
         attention_probs = attention_probs * head_mask

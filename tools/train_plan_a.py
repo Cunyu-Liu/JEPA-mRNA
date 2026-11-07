@@ -135,6 +135,14 @@ class BatchStream:
         return self.state["queue"].pop(0)
 
 
+def restore_unfrozen_blocks(blocks, n_unfrozen):
+    if not 0 <= n_unfrozen <= len(blocks):
+        raise ValueError(f"invalid unfrozen block count: {n_unfrozen}/{len(blocks)}")
+    first = len(blocks) - n_unfrozen
+    for index, block in enumerate(blocks):
+        block.requires_grad_(index >= first)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl")
@@ -354,6 +362,7 @@ def main():
         opt.load_state_dict(state["optimizer"])
         sched.load_state_dict(state["scheduler"])
         n_unfrozen = int(state["n_unfrozen"])
+        restore_unfrozen_blocks(blocks, n_unfrozen)
         start_step = int(state["step"])
         stream.state = state["stream_state"]
         best_step = int(state.get("best_step", 0))
