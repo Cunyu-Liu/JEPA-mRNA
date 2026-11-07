@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 
 
@@ -76,7 +77,10 @@ def main():
             link = teacher_dir / item["file"]
             if link.exists() or link.is_symlink():
                 link.unlink()
-            link.symlink_to(os.path.relpath(target, teacher_dir))
+            try:
+                os.link(target, link)
+            except OSError:
+                shutil.copy2(target, link)
             shards.append(item)
     atomic_json(teacher_dir / "manifest.json", {"teacher": "thermo:viennarna",
                 "version_lock": "ViennaRNA 2.7.2", "n_sequences": len(complex_rows) + teacher_old["n_sequences"],

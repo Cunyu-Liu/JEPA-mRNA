@@ -96,8 +96,17 @@ def _write_part(path: str, sequences: Sequence[str]) -> None:
             fh.write(json.dumps({"seq": seq}) + "\n")
 
 
+def link_or_copy(source: str, destination: str) -> None:
+    if os.path.lexists(destination):
+        os.remove(destination)
+    try:
+        os.link(source, destination)
+    except OSError:
+        shutil.copy2(source, destination)
+
+
 def merge_parts(out_dir: str, part_names: Sequence[str], *, worker_meta: Dict) -> Dict:
-    """Symlink every part shard into ``out_dir`` and write the merged manifest."""
+    """Link or copy every part shard into ``out_dir`` and write the merged manifest."""
     merged_shards: List[Dict] = []
     index = 0
     teacher = version_lock = None
@@ -122,9 +131,7 @@ def merge_parts(out_dir: str, part_names: Sequence[str], *, worker_meta: Dict) -
             src = os.path.join(part, str(shard["file"]))
             dst_name = f"shard_{index:05d}.npz"
             dst = os.path.join(out_dir, dst_name)
-            if os.path.islink(dst) or os.path.exists(dst):
-                os.remove(dst)
-            os.symlink(src, dst)
+            link_or_copy(os.path.join(out_dir, src), dst)
             merged_shards.append({
                 "index": index,
                 "file": dst_name,
