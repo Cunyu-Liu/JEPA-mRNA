@@ -60,8 +60,11 @@ def collect(pdb_id, root, python, dssr):
                         "rejected_chains": len(result["rejected_chains"]),
                         "labels_sha256": hashlib.sha256(output.read_bytes()).hexdigest()}
     except Exception as error:
-        (directory / "error.txt").write_text(f"{type(error).__name__}: {error}\n")
-        return pdb_id, {"error": f"{type(error).__name__}: {error}"}
+        detail = f"{type(error).__name__}: {error}"
+        if isinstance(error, subprocess.CalledProcessError):
+            detail += "\n" + (error.stdout or "") + (error.stderr or "")
+        (directory / "error.txt").write_text(detail + "\n")
+        return pdb_id, {"error": detail}
 
 
 def main():

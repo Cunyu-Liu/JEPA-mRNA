@@ -16,7 +16,10 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     block = gemmi.cif.read(str(args.cif)).sole_block()
-    monomers = sorted({str(row[0]) for row in block.find("_entity_poly_seq.", ["mon_id"])} - STANDARD)
+    rna_entities = {str(row[0]) for row in block.find("_entity_poly.", ["entity_id", "type"])
+                    if str(row[1]) == "polyribonucleotide"}
+    monomers = sorted({str(row[1]) for row in block.find("_pdbx_poly_seq_scheme.", ["entity_id", "mon_id"])
+                       if str(row[0]) in rna_entities} - STANDARD)
     parents, failures = {}, []
     for monomer in monomers:
         info = gemmi.find_tabulated_residue(monomer)
