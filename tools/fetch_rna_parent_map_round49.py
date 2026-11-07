@@ -42,6 +42,9 @@ def main():
     result = {"parents": parents, "failures": failures,
               "cif_sha256": hashlib.sha256(Path(args.cif).read_bytes()).hexdigest()}
     Path(args.output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
+    transient = [failure for failure in failures if "status" in failure]
+    if transient:
+        raise SystemExit(f"transient chemical-component lookup failures: {transient}")
     print(json.dumps(result, sort_keys=True))
 
 
