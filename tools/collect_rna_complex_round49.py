@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+import argparse
+import concurrent.futures
+import hashlib
+import json
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+import requests
+
+DSSR_SHA256 = "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a"
+
+
+def download(url, path):
+    temporary = path.with_suffix(path.suffix + ".part")
+    for attempt in range(3):
+        try:
+            with requests.get(url, stream=True, timeout=(30, 180)) as response:
+                if response.status_code == 404:
+                    raise FileNotFoundError(url)
+                response.raise_for_status()
+                with temporary.open("wb") as handle:
+                    for chunk in response.iter_content(4 << 20):
+                        handle.write(chunk)
+            temporary.replace(path)
+            return
+        except (requests.RequestException, OSError):
+            if attempt == 2:
+                raise
+            time.sleep(2 ** attempt)
+
+
+def collect(pdb_id, root, python, dssr):
+    directory = root / pdb_id
+    directory.mkdir(exist_ok=True)
+    output = directory / "labels.json"
+    if output.is_file():
+        return pdb_id, "cached"
+    try:
+        cif = directory / f"{pdb_id}.cif"
+        if not cif.is_file():
+            download(f"https://files.rcsb.org/download/{pdb_id}.cif", cif)
+        subprocess.run([python, "/home/rna_jev/tools/fetch_rna_parent_map_round49.py",
+                        "--cif", str(cif), "--output", str(directory / "parents.json")],
+                       check=True, capture_output=True, text=True)
+        dssr_json = directory / "dssr.json"
+        completed = subprocess.run([dssr, f"-i={cif}", "--json", "--pair-only",
+                                    f"-o={dssr_json}"], capture_output=True, text=True, timeout=300)
+        (directory / "dssr.log").write_text(completed.stdout + completed.stderr)
+        if completed.returncode or not dssr_json.is_file():
+            raise RuntimeError(f"DSSR failed: {completed.returncode}")
+        subprocess.run([python, "/home/rna_jev/tools/prepare_rna_complex_round49.py",
+                        "--cif", str(cif), "--dssr-json", str(dssr_json),
+                        "--dssr-binary-sha256", DSSR_SHA256, "--output", str(output)],
+                       check=True, capture_output=True, text=True)
+        result = json.loads(output.read_text())
+        return pdb_id, {"accepted_chains": len(result["chains"]),
+                        "rejected_chains": len(result["rejected_chains"]),
+                        "labels_sha256": hashlib.sha256(output.read_bytes()).hexdigest()}
+    except Exception as error:
+        (directory / "error.txt").write_text(f"{type(error).__name__}: {error}\n")
+        return pdb_id, {"error": f"{type(error).__name__}: {error}"}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ids-json", required=True)
+    parser.add_argument("--root", required=True)
+    parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--limit", type=int)
+    parser.add_argument("--python", default=sys.executable)
+    parser.add_argument("--dssr", default="/home/rna_jev/third_party/DSSR-v1.9.10/x3dna-dssr")
+    args = parser.parse_args()
+    document = json.loads(Path(args.ids_json).read_text())
+    if isinstance(document, dict):
+        ids = document.get("result_set", document.get("identifier", document.get("ids", [])))
+    else:
+        ids = document
+    ids = [row["identifier"] if isinstance(row, dict) else row for row in ids]
+    ids = sorted(set(ids))[:args.limit]
+    root = Path(args.root)
+    root.mkdir(parents=True, exist_ok=True)
+    results = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
+        futures = [executor.submit(collect, pdb_id, root, args.python, args.dssr) for pdb_id in ids]
+        for index, future in enumerate(concurrent.futures.as_completed(futures), 1):
+            pdb_id, result = future.result()
+            results[pdb_id] = result
+            print(json.dumps({"completed": index, "total": len(ids), "pdb_id": pdb_id,
+                              "result": result}, sort_keys=True), flush=True)
+    (root / "collection.json").write_text(json.dumps({"n_entries": len(ids), "results": results},
+                                                       indent=2, sort_keys=True) + "\n")
+
+
+if __name__ == "__main__":
+    main()
