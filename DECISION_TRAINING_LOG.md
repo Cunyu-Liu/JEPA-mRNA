@@ -13242,3 +13242,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立核验**：best checkpoint step=17000、scorer=pairmlp、latent_dim=490，无teacher张量；最终实际可训练参数=85,663,281。checkpoint SHA256=`dc0b9191919e5059ddf9964394f9b13ea09b754614dcf5c281ca039e1544ff07`。
 - **seed1**：step20000 validation loss=19.5192861763，best step19500=18.7388141224，bad=1，继续训练；seed2待其完成后接续。
 - **后续**：S3三种子与A/B/C未齐，不能根据当前较低VL0 loss宣称优于S1/S2或SOTA；全板、confidence、配对统计、greedy/Turner0和route1_decision继续按合同等待。新增P4/P5顺序不变。
+
+
+## §15.493（2026-11-07）S3 seed1 自然早停与 seed2 接续
+
+- **seed1收敛**：step22500达到patience=6，恢复best step19500，best validation loss=18.7388141224；`status=completed`、`converged=True`、`early_stopped=True`、实际可训练参数=85,663,281。checkpoint SHA256=`8155129295fc2f2bd03bda338b7e17c2993c21d6fdc36b106c71162be3733acd`。
+- **独立核验**：best checkpoint step=19500、PairMLP-490、无teacher张量，与seed0的checkpoint SHA256=`dc0b9191919e5059ddf9964394f9b13ea09b754614dcf5c281ca039e1544ff07` 区分，未平均种子或形成集成。
+- **seed2**：已读取42,564条TR1c并保留5.0GB CUDA显存进入初始化；目录出现时run_meta尚未写完，未把目录存在误记为训练已开始。
+- **后续**：S3 seed0/1完成，seed2继续自然收敛；三枚best齐全后自动运行优化后的单次分数前向13 split评测、VL0 confidence、SOTA、配对bootstrap和route1_decision。P4/P5顺序不变，PPT未修改。
