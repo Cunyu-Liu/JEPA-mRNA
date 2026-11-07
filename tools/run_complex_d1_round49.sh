@@ -26,7 +26,8 @@ wait_jobs() { local fail=0 status; set +e; for pid in "$@"; do wait "$pid"; stat
 train_seed() {
   local seed=$1 out=$ROOT/runs/complex_d1_s${seed}
   mkdir -p "$out"
-  if [ -f "$out/run_meta.json" ] && $PY -c 'import json,os,sys; d=json.load(open(sys.argv[1])); assert d["data"]==os.environ["DATA"]; assert d["seed"]==int(sys.argv[2]) and d["scorer"]==os.environ["SCORER"] and d["pair_latent_dim"]==int(os.environ["PAIR_LATENT_DIM"]); assert d["objective"]["lambda_jepa"]==float(os.environ["LAMBDA_JEPA"])' "$out/run_meta.json" "$seed" 2>/dev/null; then
+  if [ -f "$out/run_meta.json" ]; then
+    $PY -c 'import json,os,sys; d=json.load(open(sys.argv[1])); assert d["data"]==os.environ["DATA"]; assert d["seed"]==int(sys.argv[2]) and d["scorer"]==os.environ["SCORER"] and d["pair_latent_dim"]==int(os.environ["PAIR_LATENT_DIM"]); assert d["objective"]["lambda_jepa"]==float(os.environ["LAMBDA_JEPA"]); assert d["objective"]["jepa_target"]==(None if os.environ["TARGET"]=="none" else os.environ["TARGET"]); assert d["ripe"]["mode"]==(None if os.environ["RIPE_ENCODER"]=="1" else (os.environ["RIPE_MODE"] or None)) and d["ripe"]["encoder"]==(os.environ["RIPE_ENCODER"]=="1")' "$out/run_meta.json" "$seed"
     if $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["converged"] and d["early_stopped"] and d["status"]=="completed"' "$out/run_meta.json" 2>/dev/null; then return 0; fi
   fi
   local extra=(--lambda-jepa "$LAMBDA_JEPA" --jepa-target "$TARGET")
@@ -45,7 +46,7 @@ train_seed() {
 }
 eval_checkpoint() {
   local checkpoint=$1 experiment=$2 seed=$3 split=$4 input=$5 out=$ROOT/eval_decision/$experiment/s${seed}/${split}.json
-  if [ -f "$out" ] && $PY -c 'import hashlib,json,sys; d=json.load(open(sys.argv[1])); assert d["checkpoint_sha256"]==hashlib.sha256(open(sys.argv[2],"rb").read()).hexdigest() and d["data_sha256"]==hashlib.sha256(open(sys.argv[3],"rb").read()).hexdigest() and d["repeats"]==3 and d["device"]=="cuda"' "$out" "$checkpoint" "$input" 2>/dev/null; then return 0; fi
+  if [ -f "$out" ] && $PY -c 'import hashlib,json,os,sys; d=json.load(open(sys.argv[1])); assert d["checkpoint_sha256"]==hashlib.sha256(open(sys.argv[2],"rb").read()).hexdigest() and d["data_sha256"]==hashlib.sha256(open(sys.argv[3],"rb").read()).hexdigest() and d["repeats"]==3 and d["device"]=="cuda" and d["score_forward_count_per_sequence"]==1; assert d["pairjepa_teacher_forward_guard"]==(os.environ["SCORER"]=="pairjepa"); assert os.environ["RIPE_ENCODER"]!="1" or d["n"]==d["raw_n"]' "$out" "$checkpoint" "$input" 2>/dev/null; then return 0; fi
   if [ -f "$out" ]; then mv "$out" "$out.stale"; fi
   $PY "$REPO/tools/eval_structrfm_full_round48.py" --checkpoint "$checkpoint" \
     --pretrained "$ROOT/weights/structrfm_round48" --data "$input" --out "$out" --repeats 3 \
@@ -59,7 +60,14 @@ wait_jobs "${pids[@]}"
 while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 16000 ]; do sleep 60; done
 pids=()
 for seed in 0 1; do train_seed "$seed" & pids+=("$!"); done
-wait_jobs "${pids[@]}"
+if ! wait_jobs "${pids[@]}"; then
+  for seed in 0 1; do
+    if ! $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["converged"] and d["early_stopped"] and d["status"]=="completed"' "$ROOT/runs/complex_d1_s${seed}/run_meta.json" 2>/dev/null; then
+      echo "serial resume for incomplete complex_d1 seed $seed with unchanged training configuration"
+      train_seed "$seed"
+    fi
+  done
+fi
 train_seed 2
 pids=()
 for seed in 0 1 2; do
@@ -81,11 +89,15 @@ for ABLATION in greedy turner0; do
   pids=()
   for seed in 0 1 2; do
     for split in "${SPLITS[@]}"; do
-      extra=(--decoder greedy)
-      if [ "$ABLATION" = turner0 ]; then extra=(--prior-weight-override 0); fi
-      $PY "$REPO/tools/eval_structrfm_full_ablation_round48.py" --checkpoint "$ROOT/runs/complex_d1_s${seed}/best.pt" \
+      checkpoint=$ROOT/runs/complex_d1_s${seed}/best.pt
+      out=$ROOT/eval_decision/complex_d1_${ABLATION}/s${seed}/${split}.json
+      extra=(--decoder greedy) expected_decoder=greedy expected_prior=none
+      if [ "$ABLATION" = turner0 ]; then extra=(--prior-weight-override 0); expected_decoder=nussinov; expected_prior=zero; fi
+      if [ -f "$out" ] && $PY -c 'import hashlib,json,sys; d=json.load(open(sys.argv[1])); assert d["checkpoint_sha256"]==hashlib.sha256(open(sys.argv[2],"rb").read()).hexdigest() and d["repeats"]==3 and d["device"]=="cuda" and d["decoder"]==sys.argv[3] and d["prior_weight_override"]==(None if sys.argv[4]=="none" else 0.0)' "$out" "$checkpoint" "$expected_decoder" "$expected_prior" 2>/dev/null; then continue; fi
+      if [ -f "$out" ]; then mv "$out" "$out.stale"; fi
+      $PY "$REPO/tools/eval_structrfm_full_ablation_round48.py" --checkpoint "$checkpoint" \
         --pretrained "$ROOT/weights/structrfm_round48" --data "$ROOT/data/structrfm_pretrain_clean/${split}.jsonl" \
-        --out "$ROOT/eval_decision/complex_d1_${ABLATION}/s${seed}/${split}.json" --repeats 3 "${extra[@]}" \
+        --out "$out" --repeats 3 "${extra[@]}" \
         > "$ROOT/logs/round48/eval_complex_d1_${ABLATION}_s${seed}_${split}.log" 2>&1
     done & pids+=("$!")
   done
