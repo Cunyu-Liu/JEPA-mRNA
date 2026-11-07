@@ -13291,3 +13291,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **encoder新增支持**：同名同clean数据且共同支持的序列才进入paired bootstrap；encoder额外支持的序列单列计数，不把R0的不支持当作0分，也不删除右端新增样本来伪造提升。右端丢失R0已支持序列会直接失败。
 - **路线裁决**：七臂主总结/SOTA/confidence/greedy/Turner0、三种子收敛、checkpoint哈希及统计源哈希全部齐套后才放行P3。R0与七臂共同按三种子best VL0 loss均值选择下一基座，测试F1不参与选择；长序列SOTA、最佳置信度和独占速度默认不可主张。
 - **验证与部署**：7项统计/裁决回归通过，包含encoder新增支持和R0优先于测试高分的反例。代码提交 `7df7e6abbf9a84624bc6d26e20ab681d1673b9b1` 已推送GitHub；双重10,000次bootstrap及双重裁决watcher已部署，等待真实七臂结果。S3目前仍在13 split评测，PPT未修改。
+
+
+## §15.499（2026-11-07）S3 单种子独立 QA 与后续官方资产边界
+
+- **S3 seed0/1 QA**：两枚种子的13 split均完成独立checkpoint/clean哈希、raw→supported守恒、三次预测一致、单次score前向及TP/FP/FN→micro/macro复算。QA SHA256分别为 `d113b5b44beffb0ec2afa41e07bb315769d6018ff04a1d9546387ffb6e851c6d`、`fa11607cbe5c560c75ab43b6b89d694798a6d6beb920dc3c673660030b04e3d4`。它们不是三种子全板结论，seed2仍在评测。
+- **VL0阈值**：三枚VL0均196条、CUDA、三次预测一致；confidence阈值reference_seed=1，对应最低best validation loss=18.7388141224，没有测试集拟合。VL0 micro-F1三种子均值=0.7913461135，仅作过程核验，不外推全板或最佳置信度。
+- **DSSR资产门**：集群PATH、`tools/bin`、`/opt`及限定深度资产搜索均未发现DSSR。P4前必须取得固定官方版本、许可与标签一致性证据；不使用经验配对或来路不明替代物，当前未生成复合物标签。
+- **LinearDesign官方资产**：官方仓库确认为 `LinearDesignSoftware/LinearDesign`，commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be`，README引用DOI=`10.1038/s41586-023-06127-z`。源码仅放 `/home/rna_jev/third_party/LinearDesign`，许可允许学术研究但禁止未经书面许可的再分发，因此不提交到本项目GitHub。README声明GCC≥4.8.5/Clang≥11及python2.7，正式P5前仍需编译和官方示例等价验收；未提前运行P5设计实验，PPT未修改。
