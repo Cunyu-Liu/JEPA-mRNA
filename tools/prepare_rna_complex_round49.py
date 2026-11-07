@@ -93,7 +93,7 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
             continue
         chain = nt1[0]
         if chain not in chains:
-            errors.append(f"unknown chain: {chain}")
+            rejected.append({"auth_chain": chain, "reason": "no mapped RNA residues; non-RNA DSSR chain excluded"})
             continue
         try:
             left, right = chains[chain][nt1[1:3]], chains[chain][nt2[1:3]]
