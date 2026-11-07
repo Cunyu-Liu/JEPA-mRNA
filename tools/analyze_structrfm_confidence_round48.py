@@ -44,9 +44,11 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--full-model", action="store_true")
     parser.add_argument("--vl0-only", action="store_true")
+    parser.add_argument("--experiment", default="")
+    parser.add_argument("--run-prefix", default="")
     args = parser.parse_args()
-    experiment = "structrfm_full" if args.full_model else "structrfm_frozen"
-    run_prefix = "structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s"
+    experiment = args.experiment or ("structrfm_full" if args.full_model else "structrfm_frozen")
+    run_prefix = args.run_prefix or ("structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s")
     output = args.root / f"eval_decision/{experiment}"
     metadata = [json.loads((args.root / f"runs/{run_prefix}{seed}/run_meta.json").read_text())
                 for seed in range(3)]

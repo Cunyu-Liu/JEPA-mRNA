@@ -12257,3 +12257,869 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 将独立验收的 raw 八格与 own-clean 八格合并，逐项保留 n、TP/FP/FN、F1 mean/SD 和原始结果哈希；汇总 SHA256=`2becebcdfee94ddb0d226570c40150361441d981637854cdb85b9407973dc902`。
 - raw 与 clean 来源汇总分别固定为 `709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb` 和 `4c071f0bc34f4f778d90b8ba4703e4bd566d421de2494fc1bb609d0baf9b1b05b0`。
 - 总账明确 own-training-union clean 和不同系统 clean n 不同，不直接用于跨模型 SOTA 排名；NB official_s3 正在 epoch14 训练，尚无收敛或 QA 结论。
+
+
+## §15.369（2026-11-03）并发 OOM、SSH 断连与持久队列恢复
+
+- **RNAformer-bprna raw ArchiveII**：长序列 softmax 再需 4.67GiB 时，其他两个进程分别占用 8.84/10.27GiB，CUDA OOM；失败前未生成结果 JSON，无半成品被纳入汇总。完整错误栈另存 `rnaformer_bprna_raw_archiveii_embok_clean.oom_20261103.log`，SHA256=`1f2fff007f43393a97b5351b27edb794b8ee96de88559d545a19ff67fa7ffff6`。不修改模型、精度或数据，不以缩小序列规避；改为 frozen NucleicBERT 完成后再由持久锁恢复，已完成的 inter-family 16 格和 bprna raw 7/8 均跳过，不重跑。
+- **NB official_s3**：本地 SSH 以 255 断开，日志无训练异常；最后完整 checkpoint 为 epoch14，best_epoch=14、best_validation_BCE=0.011871916332246218、bad=0、early_stopped=False，较 epoch13 的 0.011949524802079076 继续改善。模型、优化器、CUDA RNG 和历史均完整，best.pt/run.json 尚未生成，未收敛、未 QA。
+- 队列 dry-run 确认仅剩 official_s3/s4 与 JEV s0–s4 共 7 个 run，QA backfill 为空；使用 `nohup+flock` 从 epoch14 checkpoint 续接，后续仍按 batch=4、patience=5、min_delta=1e-6 和独立 CUDA QA 验收。RNAformer 同样改为远端持久锁，避免本地监控超时或断连终止远端计算。
+
+
+## §15.370（2026-11-03）同名同序列同实际 GT 的 clean 交集复算
+
+- 新增 `tools/aggregate_matched_clean_round39.py` 与持久测试，逐系统绑定 own-clean 数据、审计、三次预测哈希和原生指标；先独立重算每系统原生 TP/FP/FN/F1，再构造共同交集。原生截断模型只在实际参与评分的 GT 完全一致时比较，空交集写 `EMPTY_INTERSECTION`，不写 F1=0。
+- 5 项单元测试、真实全板加载及同一输入快照的两次逐字节复算通过。九系统八 split 阶段快照 SHA256=`5d4c5d5829d1de5043f8dc6d1e8d6665c0d56fcb38c2b166f445ee0b8b8426df`；每格均有 9 个完成系统，状态明确为 `PARTIAL_MATCHED_SENSITIVITY_NOT_LEADERBOARD`，因为其余 eligible 系统尚未齐。
+- 九系统全长共同 TS2 交集为 0，但保留 35 个非空两两比较，n=1–39；这些样本量必须与数值同时展示，不能用两两小样本替代完整 own-clean 主板。ArchiveII 全长七系统共同 n=99，首 598nt 组两系统共同 n=172，不与全长 GT 混排。该工具只提供敏感性证据，不改变三目标尚未闭环的结论。
+
+
+## §15.371（2026-11-03）frozen NucleicBERT 16 格闭环与 RNAformer 并行资源门
+
+- frozen NucleicBERT 官方 B=2、首 598nt 的 raw+RNAStrAlign/TR0 专属 clean 共 16 格均完成三次推理；非空格 SD=0，clean ArchiveII n=194、38 条截断、F1=0.3301548739750987。raw+clean 独立聚合两次逐字节一致，SHA256=`ad16e32289ab282ac2b85df1d70f1dcf47684abe33b397f7f23188ffcc9b30a8`。原 shell 在 `exec flock` 后未执行聚合行，按预定手动命令生成正式汇总，不重跑 GPU。
+- frozen 释放显存后，RNAformer 旧 21GiB 预检在 free=12.850GiB 时 fail-closed，未启动计算。实测当时仅一个 NB 进程占 10,516MiB、空闲 13,550MiB，而已验收 RNAformer 三次峰值均为 12,879.656MiB；将 bprna/variant 预检改为 12GiB，CUDA 不可用仍硬失败。恢复后 inter-family 聚合哈希保持一致，bprna 仅补缺失格，不重算已完成结果。
+- 当前最多 NB 与 RNAformer 两个 GPU 计算任务并行；不再引入第三个高显存任务。该调整只针对资源调度，正式独占测速合同不变。
+
+
+## §15.372（2026-11-03）逐 repeat 断点与运行时代码身份保护
+
+- `speed_end_to_end_4090.py` 新增显式 `--resume-runs`：每个 repeat 原子保存 runs 与预测，sidecar 标为 `PARTIAL_RUNS_NOT_SCIENTIFIC_RESULT`；数据、clean 审计、batch、模型报告、代码 SHA 或预测哈希不一致均硬失败，最终 PASS 后删除 sidecar。仅在 round39 去泄露诊断队列启用，正式独占测速不跨窗口拼接计时。
+- 4 项断点测试及其与 matched-clean 的 9 项组合测试通过；旧 inter-family TS1 预测重新计算 digest=`1c5a3d42d86be63ac8ee69970cf1f1e68be4021bc36ef48aada6f099d9f0a1fc`，与历史三次哈希完全一致。生产 GPU 断点恢复尚未形成完整新结果，不提前写工程验收闭环。
+- 评测器现改为模块加载时固定 `CODE_SHA256/CODE_COMMIT`，避免长任务运行期间磁盘编辑改变执行身份。当前 bprna raw ArchiveII 旧进程启动于 resume 功能之前，已固定实际运行 commit=`2708e774b2d5f76559e984a80eb8e71bcb749ebe`、code SHA256=`5295425be413ff654b3a13ee15ffa2e263eb39ac1237fd9e65b944d91902aa52`，pin 审计 SHA256=`0496632ac2937f57af2970972737e4ba84c94bf1de67518529d07e99fceb66f5`。结果形成后只校正 protocol 两项代码身份，原文件备份且其余字段逐项不变；校正前不进入全板汇总。
+- NB official_s3 的 checkpoint 仍为 epoch14、未 early-stop；进程有 CPU/GPU 活动，但日志截断不能作为收敛或 epoch 进度证据，继续以原子 checkpoint/history 验收。
+
+
+## §15.373（2026-11-03）代码身份校正工具验收
+
+- 新增 `tools/finalize_running_code_identity_round39.py` 与测试：校验 pin 的进程输出路径、原始 PASS/三次 runs 和校正范围；原件必须存在，递归比较只允许 `protocol.code_commit` 与 `protocol.code_sha256` 两项变化，支持幂等复验。
+- 与断点、matched-clean 共 12 项测试通过。错误输出路径和嵌套字段差异均 fail-closed；校正不改变预测、TP/FP/FN、F1 或计时。
+- 本地提交 `1fd7d7edd54cc4d096f620fafd54da5bba64b745` 已形成。集群直接 push 超过 10 分钟无输出后停止；通过既有 bare mirror fetch 到同一 SHA 并推送 GitHub，cluster/github/集群 origin 三路均为该提交，无重复提交或历史改写。ArchiveII 尚无最终 JSON，未执行校正、未聚合 bprna raw 8/8。
+
+
+## §15.374（2026-11-03）NB official_s3 epoch15 完整 checkpoint
+
+- 原子 `resume.pt` 与 `validation_history.jsonl` 均为 15 个 epoch：epoch15 train BCE=0.0004274684014875623，validation BCE=**0.011631950499488883**，较 epoch14 的 0.011871916332246218 继续下降。
+- checkpoint 复核为 epoch=15、best_epoch=15、best_loss=0.011631950499488883、bad=0、early_stopped=False；模型、优化器和 CUDA RNG 状态齐全。训练仍在继续，未到 validation plateau，不生成 best.pt/run.json 科学结论，也不做 QA 晋级。
+- RNAformer-bprna raw ArchiveII 进程持续计算，尚无最终或逐 repeat sidecar；当前结果门不变。
+
+
+## §15.375（2026-11-03）统一 xens2 接入 matched-clean 对照
+
+- 将统一 xens2 的 TR1c-clean 八 split 三次结果接入同一汇总器。ArchiveII 原始 clean 为 1107 条，现有 xens2 结果仅覆盖 len≤600 的 1068 条（过滤 39 条），因此单列 `len_le600`，不得冒充全长结果；全长模型只在相同短序列上参与该组。
+- 6 项测试及同一输入快照两次逐字节复算通过，统一 xens2+9 基线的阶段快照 SHA256=`25f2d1c69d88e5623eba4c2de0bf9d70dc6a8bcca301264c73cb9c59477e56b8`。所有系统原生 TP/FP/FN/F1 在构造交集前先行独立复核。
+- 全长共同交集中，xens2 在 TS0（n=69）=0.9198092761、TS1（n=3）=0.7142857143、TS3（n=4）=0.8840579710、hard（n=3）=0.7142857143 领先；bpRNA-new n=5386 时 xens2=0.5530578045，低于 BPfold=0.7369940504；TestSetB n=23 时 xens2=0.8371174729，低于 RiNALMo-ft=0.8554455446。小 n 必须随数值展示，不作显著性外推。
+- ArchiveII len≤600 的共同 n=74，xens2=0.7084489281，低于 BPfold=0.8030162413 和 RNAformer-interfam=0.7219416040；TS2 全交集仍为空。该快照证明当前短板不能仅归因于 clean n 差异，但不替代未完成的全长主板，也不修改 5/8、4/8 标题或宣称 8/8。
+
+
+## §15.376（2026-11-03）第三 GPU 队列识别与 ArchiveII 可恢复重启
+
+- bprna raw ArchiveII 再次在 softmax OOM；当时 NB 占 10.27GiB，旧 HEK fold3 EL 恢复任务占 8.84GiB，当前 RNAformer 已分配 8.31GiB 并再需 4.67GiB。确认此前“只有 NB 一个并发任务”的条件已被旧队列自动恢复打破，不是模型或数据变化。结果 JSON 未生成，不纳入任何汇总。
+- 第二份完整错误栈 SHA256=`45d8f14ee090d2313986aa442f19e817f64f3c52778e0b87f1c8de04bb0c5e4e`。HEK 子进程已结束时，仅终止其旧队列父进程，fold 结果和恢复入口保留；没有杀死训练中的 HEK 子进程，也不删除资产。
+- RNAformer 已带 `--resume-runs` 从缺失格重启，运行时代码身份固定为新提交；后续每个完成 repeat 原子保存。当前只允许 NB 与 RNAformer 两个高显存任务并行，正式测速仍独占。旧进程 pin 仅适用于其未产生的输出，新进程无需元数据校正。
+
+
+## §15.377（2026-11-03）HEK 高显存互斥锁持久化
+
+- `run_hek_fold_queue_round34.py` 的新训练与 resume 启动命令统一接入 `/tmp/rna_round39_fusion_clean.lock`，与 RNAformer/frozen 高显存工作互斥，防止旧队列再次成为第三 GPU 任务。
+- mock 测试确认仅命令前缀改变，HEK 的 fold、task、batch=64、min-free-mib、输出目录和恢复脚本均不变；未实际启动 HEK。与其他断点、身份和 matched-clean 测试共 15 项通过。
+- 该调度改动不改变任何科学结果或恢复合同；本轮 HEK 仍保持暂停，只有未来显式恢复时才等待高显存锁。
+
+
+## §15.378（2026-11-03）TS2 两两同 GT 对照归因
+
+- 在同一 matched-clean 快照中，xens2 对 EternaFold 的共同 n=22，F1=0.8289290680<0.8817733990；对 MXfold2 的共同 n=20，F1=0.8390804598<0.9066666667；对 RNAformer-interfam 的共同 n=29，F1=0.8362779740<0.9209100758。
+- xens2 对 BPfold 的共同 n=1，F1=0.8965517241<0.9696969697；该格只记录直接观测，不外推统计结论。对其他系统的两两集合不得拼接成统一 TS2 排名。
+- 结论限于“TS2 落后在多个独立两两交集中重复出现，不只是单一 clean 子集造成”。这支持保留 TS2 攻关，但不用于测试集调参，也不替代尚未闭环的全长主板。
+
+
+## §15.379（2026-11-03）xens2 全长 ArchiveII clean 排程
+
+- 新增 `tools/run_xens2_full_archive_round39.sh`：核验 clean 数据/审计和 1107 条全覆盖，先保存现有 len≤600 的 1068 条结果，再以 B=1、`--allow-long`、`--resume-runs` 做三次 raw-sequence 评测。
+- 任务已放入远端持久锁队列，不与当前 NB+RNAformer 形成第三高显存任务。旧结果只有在新全长结果原子写出后才被替换，失败时仍保留原文件和逐 repeat sidecar。
+- bash 语法检查通过；全长 GPU 结果尚未开始，不更新 matched-clean 数值，不写 8/8 或全长 SOTA。
+
+
+## §15.380（2026-11-03）NB official_s3 epoch16 完整 checkpoint
+
+- epoch16 train BCE=0.00041378461464000593，validation BCE=**0.011539480104608644**，较 epoch15 的 0.011631950499488883 继续改善。
+- checkpoint 复核为 epoch=16、best_epoch=16、best_loss=0.011539480104608644、bad=0、early_stopped=False，模型、优化器和 CUDA RNG 齐全；validation history 共 16 个 epoch。
+- 仍未达到 patience=5 的 validation plateau，继续训练，不生成最终 QA 或五种子结论。RNAformer 与 xens2 全长 ArchiveII 的队列顺序不变。
+
+
+## §15.381（2026-11-03）eFold 训练 provenance 复核
+
+- 官方 `scripts/efold_training.py` 明确使用 `efold_train`；官方 `efold_data` 固定 commit=`f5c89cc26d743a8e5d09f4b7b29699912849396c` 已恢复，zip SHA256=`08865de40e343364a1c0e0f672278c1398d15d04ed26a1e1d34b9a91aab3b3eb`。
+- 数据 README 列出预训练组件 rnacentral_synthetic=226,729、ribo500-blast=46,060、bpRNA-1m=66,715，但没有证明本地简单拼接与官方 `efold_train` 完全等价。集群缓存没有对应序列文件。
+- Hugging Face 主站、镜像和直接 data.json 通道均实际失败，官方 Google Drive 文件夹也在 60 秒连接超时后失败，错误已记录；不能把 TR1c 或其他模型 clean 套给 eFold。raw 8×3 保留，own-training-union clean 继续 `BLOCKED_PROVENANCE_TRAINING_SEQUENCE_UNION_NOT_RECOVERED`，更新审计 SHA256=`cd166702ec3689876537db2d205afdc675515e751e1d571bbc79c8bffa457109`。后续需从官方 HF/Drive 恢复精确序列与组成清单后再跑 8×3。
+
+
+## §15.382（2026-11-03）eFold 数据加载器私有边界确认
+
+- 固定 `rouskinhf` commit=`955460bd83afe001ac88f1f37a34b0a05f7db320`，源码直接请求 `rouskinlab/efold_train` 的 `data.json`；上传函数默认 `private=True`。镜像在限流重试后返回 HTTP 404 `RepoNotFound`，与私有或撤回数据集边界一致，不能推断为可用公开资产。
+- loader zip SHA256=`8960be38534cea9b63ffa04c6bc5334d0f6deca3b7ae5531523f0a040c762855`，已存 `/teams`。更新 provenance 审计 SHA256=`fbea92305b4a4e172ad57956e903100773a64a5496205cb926344f75d839a117`。
+- 结论不升级为“数据不存在”，只确认当前无未授权公开恢复路径；需要作者授权或官方可验证镜像。停止重复网络尝试，raw 结果保留，own-clean 不伪造。
+
+
+## §15.383（2026-11-03）xens2 全长 ArchiveII 与 Attention2d 分块验收
+
+- **xens2 全长结果**：1107 条 clean ArchiveII 三次 raw-sequence 均完成，F1=**0.7333353699517321**，SD=0，TP/FP/FN=48010/16723/18193，峰值 10,283.427MiB；结果 SHA256=`4e9442d42e47de4c294f9ec4264b1c1c18a4640be9d7494504f3c8e3a72ba717`。逐 repeat sidecar 在最终 PASS 后自动删除，生产断点机制验收通过；并发耗时不作正式速度结论。
+- **全长 matched-clean**：两次逐字节复算 SHA256=`ab03c93433a790fe581793e54577c8bc07024445cf449a0e150415ef448037fd`。八系统全长共同 n=96，xens2=0.6143929504，低于 BPfold=0.7541611185 和 RNAformer-interfam=0.6418859120；覆盖问题已修复，性能差距仍存在，不写 8/8。
+- **第三次 OOM 根因**：错误栈位于此前未分块的 `Attention2d`，单次申请 12.78GiB；不是旧 AxialAttention 的 64 行块。错误证据 SHA256=`e8e94f1f6fd1ddba85e26aea3c99811109f3e3e8a94d8f825298622c5a41a610`。新增 Attention2d 查询分块，键值对应行且 N_res 完整，输出投影整块执行。
+- **数值与 GPU 验收**：初次实现经单测发现行批维错误，随后 CPU 强制分块/短路径零误差通过；RTX4090 上 L=100/520/954 均与原实现逐元素完全相等，GPU 审计 SHA256=`1b266475d92fed3b6b0cb5a8d19344846d4db38d733783b85d4920e74ae0eae1`。验证通过后 RNAformer 已恢复，未降低长度或精度。
+- **NB**：official_s3 在 epoch16 后训练失败，run.json/QA 均不存在，最后完整 checkpoint 仍为 epoch16、未收敛。旧日志未保留可确认的失败根因，不归因；后续队列改用新的 persistent launch/QA 日志并从 epoch16 恢复，其余 7 个 run 合同不变。
+
+
+## §15.384（2026-11-03）Attention2d bf16 生产精度等价
+
+- 使用与生产一致的 bf16 autocast，对 Attention2d 查询分块和原实现比较 L=100/520/954 的输出，三者均 `torch.equal=True`、max_abs=0.0。
+- GPU 审计 SHA256=`11243db66ab4785eb7dbb443af20a29b6b9cfe6c0b3f5efb73fce266cf53b14c`。该结果补齐此前 fp32 证据，覆盖生产精度路径；不改变预测协议、模型权重或评测阈值。
+- NB persistent 日志已确认 epoch17 正常步进，未再截断；RNAformer 的完整 ArchiveII 结果仍待形成。
+
+
+## §15.385（2026-11-03）逐系统 own-clean 主榜合同落地
+
+- 新增 `aggregate_own_clean_leaderboard_round39.py`，直接读取各系统原生 clean 结果，每格记录 raw_n、clean_n、removed_exact、removed_homology_only、三次 F1/SD、TP/FP/FN、clean/audit/result SHA 和可用权重身份。缺项为 PENDING，blocked 系统单列，绝不写 0 分。
+- 当前 80/104 格完成，状态 `PARTIAL_OWN_CLEAN_LEADERBOARD_NOT_FINAL`；两次逐字节复算 SHA256=`882a4c86695904bbbf47c48e0fad2e64e56fd4f23e884795e3526da6b6ccfea9`。matched-clean 文件仅作附加敏感性，不能替代该主榜。
+- bpRNA-new：xens2 n=5386、F1=0.5530578045；BPfold n=5387、0.7369936721；EternaFold n=5388、0.6853840073；RNAformer-interfam n=5386、0.6560129820。
+- ArchiveII：xens2 n=1107、F1=0.7333353700；BPfold n=731、0.8212189843；EternaFold n=1033、0.5700478608；RNAformer-interfam n=2192、0.7334860511。不同 clean n 是逐模型训练语料去泄露的正常结果，不要求相同。
+- 最终 8/8 与 SOTA 只由完整原生 clean 主榜决定；共同交集仅用于辅助验证差距不是样本集合差异造成。
+
+
+## §15.386（2026-11-03）外部 round41 并发与 pair_transition OOM
+
+- Attention2d 修复后，ArchiveII 在后续 `pair_transition` 再次 OOM。错误时 NB 占 10.27GiB，外部 round41 BPfold 占 9.21GiB、MXfold2 占 0.70GiB，当前 RNAformer 已分配 8.73GiB 并再需 3.44GiB。错误栈 SHA256=`880cef7990e599522dc5f4357c81a2f80e158cd3d5de9a7129f2782fdd16555c`，无结果 JSON。
+- 这次不是 Attention2d 数值问题，也不能只排查 HEK。确认外部 round41 父队列仍在运行，不终止其他会话任务；RNAformer 改为等待 BPfold 父进程 2619409 和 MXfold2 父进程 2619411 全部退出后，再由持久锁恢复。
+- NB official_s3 已完成 step 11900 并进入验证阶段，最新完整 checkpoint 仍是 epoch16；epoch17 validation 尚未原子写盘，不提前记录验证值或收敛。own-clean 主榜继续 80/104 格。
+
+
+## §15.387（2026-11-03）NB official_s3 epoch17 验证回退与 epoch18 续训
+
+- epoch17 train BCE=0.00040113898338133355，validation BCE=**0.011589324650464352**，高于 epoch16 的最佳 0.011539480104608644。
+- 原子 checkpoint 复核为 epoch=17、best_epoch=16、best_loss=0.011539480104608644、bad=1、early_stopped=False，模型、优化器和 CUDA RNG 齐全；patience=5 合同下已进入 epoch18，不提前停止。
+- 外部 round41 父进程仍在，RNAformer 继续等待；own-clean 主榜不变。
+
+
+## §15.388（2026-11-03）epoch17 文档同步待恢复
+
+- epoch17 的 checkpoint、bad=1 和 epoch18 续训已在集群直接复核，本地三处合同和本台账已更新。
+- 随后多次 SCP/SSH 建连失败，单包传输也未完成；截至本条，远端 Git commit 与 GitHub push 尚未形成。已准备 `epoch17_docs.tar`，恢复后一次解包、逐文件比对再提交，不把本地记录冒充远端同步。
+- 该网络问题不改变 GPU 训练或外部队列状态，不重复实验。
+- **恢复补记**：SSH 恢复后已一次解包、逐文件比对并推送，最终 commit=`803022675183925357bfd45d8ca34a633c03c4f0`，HEAD/origin/GitHub 一致，同步待恢复状态已解除。
+
+
+## §15.389（2026-11-03）NB official_s3 epoch18 验证与 epoch19 续训
+
+- epoch18 train BCE=0.0003899520853928481，validation BCE=**0.011594461825958784**，仍高于 epoch16 最佳值 0.011539480104608644。
+- checkpoint 复核为 epoch=18、best_epoch=16、best_loss=0.011539480104608644、bad=2、early_stopped=False，模型、优化器和 CUDA RNG 齐全；epoch19 正在接近本轮结束，不提前停止。
+- 外部 BPfold 父进程已结束，MXfold2 尚未退出；RNAformer 保持等待，不抢占或终止外部任务。
+
+
+## §15.390（2026-11-03）用户取消 NucleicBERT 原论文下游二级结构任务
+
+- 按用户最新指令，取消 NB 原论文下游 official/JEV 五种子训练：official_s3 已停止，official_s4 与 JEV s0–s4 不再启动。队列与训练进程扫描为空，取消确认 SHA256=`03b8d64b81ea6c30104036f76ef411b4d5e5e8ba93cc261a77f326a87ddb4fcf`。
+- official_s3 最后完整 checkpoint 已推进到 epoch19：best_epoch=19、best_validation_BCE=0.011365990138513294、bad=0、early_stopped=False；run.json/qa.json 不存在，未收敛、未 QA。用户取消优先于继续训练合同，不将未收敛写成失败或完成。
+- official_s0–s2 的既有 PASS 结果、全部 checkpoint、embedding 和日志均保留，不删除数据或权重。T-A168 及 NB 原论文五种子聚合后续状态统一为 `CANCELLED_BY_USER`，不再列为待办或最终验收前置条件。
+- **范围区分**：取消的是原论文下游训练/评测线；主 benchmark 的 frozen NucleicBERT 与 NucleicBERT-ft 基线结果及后续对照保留，不因本次取消删除或排除。
+
+
+## §15.391（2026-11-03）动态并行门与 16 行 Attention2d 分块
+
+- NB 取消后实测空闲显存一度为 20.73GiB，满足 12GiB 硬门，RNAformer 已并行恢复；随后其他会话的两个 xens2 任务动态抬升占用，生产在 out_proj 处出现 882MiB 缺口，未生成结果。不能据一次 preflight 假设后续资源不变。
+- 将 Attention2d 查询块从 64 降为 16 以降低中间显存，输出投影仍整块执行。CPU 单测及 RTX4090 fp32/bf16 在 L=100/520/954 均与原实现逐元素完全相等，审计 SHA256=`2e77c19fa402d9b79f8be6f0b86b75e70805456ad0cb26ad951d38d14c0cc28f`、`c39cb8cf2a607b357baa5e47a9766cf3fa1b7049dcd564010a57458c904670f7`。
+- out_proj 错误证据 SHA256=`9cd03a4e00e9b9412eed8a244b55979791cffec3f712bec9de9e35fe32b72836`。最新一次启动预检时空闲仅 1.47GiB，确实无法安全并行；改为动态显存门，达到 12GiB 即启动，不再等待固定 PID，也不终止其他会话任务。
+
+
+## §15.392（2026-11-03）旧 64 行 repeat 归档与新协议隔离
+
+- 发现一个已完成 ArchiveII repeat：F1=0.7607306048550984、TP/FP/FN=92649/23408/34873，峰值 12,573.081MiB，证明全长序列可以跑通。
+- sidecar 的 `model_report.block_size=64`，与当前 16 行实现不同，不能混合组成同一三次协议。已归档为 `diagnostics/archiveii_block64_repeat0.json`，SHA256=`949d0213f70fba6643a0ef75271df985ac144565379117412b83be35a5a48039`，状态仅为旧配置诊断，不纳入 own-clean 主榜。
+- 16 行实现将从 repeat0 开始，避免跨配置拼接；动态显存门尚未放行，尚无新三次结果。
+
+
+## §15.393（2026-11-03）分块阈值降至 256nt 覆盖短路径 OOM
+
+- 16 行实现随后在原 `pair_act.size(1)<=512` 路径发生 OOM，单次再需 1.96GiB，证明仅缩小 block_size 仍不能覆盖 256–512nt 区间。错误证据 SHA256=`bf3453591ff45f1b457f8ea4d3b4c931a17f5b861cc7920c69716eb84c8fd7f1`。
+- 将分块阈值降为 256nt，block_size=16 不变。CPU 单测及 RTX4090 fp32/bf16 在 L=100/520/954 均与原实现逐元素完全相等，审计 SHA256=`d193701b3c657a177ba5b83ea85ce1fbe0f1efc3a964333a135041717ecaaec6`、`132c43f756c2c6a924e7eb6a1c23ec8c00bf592bb9a42862fa6be13346f6d76c`。
+- 动态显存门已恢复，仍要求空闲≥12GiB 才启动；新协议尚未形成完整三次结果，不把旧 64 行 repeat 或单次诊断并入主榜。
+
+
+## §15.394（2026-11-03）RNAformer-bprna raw 8/8 闭环
+
+- 第三次 ArchiveII 已完成，raw 三次 F1 均为 **0.7607306048550984**，SD=0，峰值 12,573.081MiB；结果 SHA256=`c689c550a115f8478b9cf3e4303d9943314a4a8dd2c056ac206e8b9e7725f219`。
+- raw 八 split 三次数据、官方权重/config、CUDA、逐序列计数和预测哈希均独立复算通过，汇总 SHA256=`f88bd266df466b6f486b6f6960665e2e8fe84758dd11f6b6a03efd9c6ba2002a`。旧 64 行 repeat 未混入，当前协议为 threshold=256、block_size=16。
+- clean TS1 已接续完成三次 F1=0.842795，队列继续后续 split；raw 8/8 不等于 raw+clean 完成，own-clean 主榜暂不更新 bprna。
+
+
+## §15.395（2026-11-03）bprna clean 5/8 与主榜 85/104
+
+- bprna clean TS1/TS2/TS3/hard/TestSetB 已完成三次并独立复算，clean n=11/9/2/3/80，F1=0.8427947598/0.8484848485/0.8157894737/0.3783783784/0.7037363931，SD 全为 0。
+- TS-hard 仅 clean n=3，F1=0.3783783784，TP/FP/FN=7/6/17；必须连同样本量保留，不能隐藏或外推。
+- own-clean 主榜现为 85/104 格，两次逐字节复算 SHA256=`4946f069b73c03db2b29aba3b36267d4c18dd348e0d9cde61d9c2362ec206dc1`。clean ArchiveII 正在长序列阶段，TS0/new 尚未完成，不将 bprna 标为 raw+clean 全板。
+
+
+## §15.396（2026-11-04）剩余实验长期监控链
+
+- 新增 `tools/monitor_round39_remaining.sh` 并以 `nohup+flock` 常驻，PID=2793894，日志 `logs/round39_remaining_monitor.log`。仅等待当前 RNAformer 队列，不重复启动 bprna/intra/biophysical。
+- 阶段门：biophysical raw+clean 验收后，own-clean 主榜与 matched-clean 各自动复算两次并逐字节比较；共同交集只作附加敏感性。
+- xens2 全 TS0 B=32 三次正式测速要求无其他 GPU 进程；每 30 秒检查，若外部进程闯入则仅终止自身测速并保存 `xens2_b32_exclusive.interference.log`，不终止其他会话。禁止 resume 拼接正式计时。
+- 独立概率数组不存在时只记 `CALIBRATION_PENDING_INDEPENDENT_PROBABILITY_ARRAYS`，不输出 ECE 或最佳置信度结论。NB 已取消，NLL/融合/单学生已否决，均不进入后续训练队列。
+
+
+## §15.397（2026-11-04）bprna raw+clean 16 格闭环与主榜 88/104
+
+- bprna raw+clean 八 split 三次全部通过，汇总 SHA256=`4de2c471653dc749c639b2d38c1a2fdd2ae2143d2e41e934ad4d65f5be1026c3`。clean ArchiveII n=2267、F1=0.7497180603，clean bpRNA-new n=5386、F1=0.4935027488；clean TS0 n=1140、F1=0.7452371612。
+- own-clean 主榜现为 88/104 格，两次逐字节复算 SHA256=`865a819e2e596b68fe9bb79a47f405ba75cd25b165960caed7fbcfd891a4b797`。所有 clean n、TP/FP/FN、SD 和结果哈希均保留，matched-clean 仍仅作附加敏感性。
+- intra-family 与 biophysical 已在原队列接续，长期监控不重复启动；剩余全变体、正式测速和独立概率数组验收未完成。
+
+
+## §15.398（2026-11-04）intra-family raw 8/8 与 clean 6 格
+
+- intra-family raw 八 split 三次独立复算通过，汇总 SHA256=`a88196bf2dd2c9985e01579be8f12cf7079f0768019fb1e25bfdf3b09a23440e`。raw ArchiveII=0.7393174262，raw bpRNA-new=0.6542818164。
+- clean TS1/TS2/TS3/hard/ArchiveII/TestSetB 已验收，其中 TS3=`EMPTY_AFTER_DELEAK`，不写 F1=0；clean ArchiveII n=1909、F1=0.7150771074。clean TS0 已完成两个 repeat，第三次在跑，bpRNA-new 尚未完成。
+- own-clean 主榜现为 94/104 格，SHA256=`f63c38cb30ef60bdd6ea1526435c310fd53eceb5ba3812cd4eff307dfe5d11a8`。biophysical raw 已完成 4/8，继续断点队列。
+
+
+## §15.399（2026-11-04）intra-family raw+clean 16 格闭环与空集聚合修复
+
+- intra-family clean 八格全部完成，TS0/new/TS1/TS2/TS3/hard/ArchiveII/TSB 的 F1=**0.6343541037/0.6542908054/0.8388364780/0.9145962733/EMPTY_AFTER_DELEAK/0.7557117750/0.7150771074/0.6693933197**，非空格 SD 全为 0。raw+clean 16 格独立复算通过，汇总 SHA256=`1cf4fb3d225434a4de22afd4c525071ac6542164927f2562ab0d1110fe212745`。
+- 首次聚合报 `KeyError: device_type`，原因不是 legacy GPU 记录，而是 TS3 clean 为空且没有模型推理协议；原代码在空集返回前读取 CUDA 字段。修复仅在空集分支提前核验 clean 数据 SHA、删除审计、零样本、零运行与零预测，非空格仍强制 CUDA、raw-sequence、三次一致性、官方权重/config 及逐序列计数，不伪造 GPU 元数据或 F1=0。
+- 新增 5 项空集边界测试，包含空 raw 拒绝、clean_n 不一致拒绝、非空预测拒绝及非空推理缺 CUDA 拒绝；在 `ResourceWarning` 作为错误的条件下全部通过。数据读取改用 `read_text().splitlines()`，测试无资源泄漏警告。汇总增加 source_result/source_data 及其 SHA 以便回溯。
+- own-clean 主榜现为 **96/104**，SHA256=`ad190e90b2c10b5d18425b7ab4584553b33e130c2ace184d859fe1d493612f07`；matched-clean 附加敏感性 SHA256=`fa15884a80714fb8e43262dc5d52d02c8f9521b6e5972f5dd5d8347c897b5ae5`。两者各独立复算两次并逐字节一致，主板仍 `PARTIAL_OWN_CLEAN_LEADERBOARD_NOT_FINAL`，不写全板 SOTA。
+- 旧队列在空集聚合失败处停止，已新增 `tools/resume_rnaformer_biophysical_round39.sh`，以独立 flock 断点续跑 biophysical 并在结束后独立聚合。既有 raw 4/8 不重算，长期监控继续负责最终两次主榜/敏感性复算及无干扰测速；独立概率数组和校准门未完成。
+
+
+## §15.400（2026-11-05）xens2 clean 独立概率工具链与持久队列
+
+- **预检**：biophysical 八份 clean 数据与审计全部独立通过，其训练语料没有删除样本，clean n 与 raw n 相同。此结论只针对数据门，raw+clean 推理未完成，不能提前并入主板。
+- **资产边界**：round42 旧置信度采用缓存 embedding、len≤600 截断及不同结构评分，不能充当本轮 raw-sequence clean 独立概率数组。旧结果保留作原始集敏感性，不设置独立概率就绪 flag。
+- **实现**：`calibrate_xens2_round39.py` 复用生产三路 raw-sequence 前向，逐序列保存严格上三角有效配对的原始分数、标签、概率、预测及 offsets。三次完整推理同时比较概率哈希和预测哈希；校准参数只由完整 VL0 的 NLL 拟合，八个 clean split 锁定参数，原始 DP 结构不因校准改变。
+- **独立复算**：`verify_xens2_calibration_round39.py` 重读 NPZ 和 JSON，逐对检查标签、DP、F1、ECE/Brier/NLL、置信度与 risk–coverage；生产原始分数恢复 float64 后复算，不能直接用 float32 存储概率要求 float64 指标逐位相等。
+- **测试**：4 项测试通过，覆盖严格有效配对、坐标映射与空预测、VL0/CUDA 身份、完整模拟流程、独立 NPZ 复算及有效结果断点跳过。修复了 NPZ 临时文件未原子重命名、测试手算期望错误和 float32/float64 复核路径差异；模拟结果不作为科学证据。
+- **排队**：`run_xens2_calibration_round39.sh` 已以独立 flock 常驻，等待 104/104 主板与正式独占测速后，才进行真实 GPU 单条预检、完整 VL0 拟合及八 clean split 三次推理。xens2 资产验收仍不等于全 eligible 基线最低 ECE 或最佳置信度，不设置全局校准完成结论。
+
+
+## §15.401（2026-11-05）104/104 原生 clean 主榜闭环与测速干扰恢复
+
+- **biophysical**：raw+clean 16 格独立聚合通过，SHA256=`9d4ae0519d7763965e58c307c9a134c0c29dace59224977fb3253f69a5836178`。其 clean 八格与 raw 样本数相同，F1 均为 TS0=0.5059660421、new=0.6405892910、TS1=0.7126932758、TS2=0.8848484848、TS3=0.8264840183、hard=0.782、ArchiveII=0.5882707022、TSB=0.5133127643，三次 SD 全为 0。
+- **主榜**：13 系统×8 split 达到 **104/104**，状态 `PASS_COMPLETE_OWN_CLEAN_LEADERBOARD`，两次逐字节复算 SHA256=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。matched-clean 附加敏感性两次 SHA256=`30f443c3bc021ed78a7b053d6bcaa1a4bc002642af8617241788f47d5cfa6910`；交集不替代主板。
+- **科学结论**：xens2 在原生 own-clean 主板领先 5/8；bpRNA-new=0.5530578045（n=5386）对 BPfold=0.7369936721（n=5387），Δ=-0.1839358676；TS2=0.8362779741（n=29）对 BPfold=0.9494949495（n=3），Δ=-0.1132169754；ArchiveII=0.7333353700（n=1107）对 BPfold=0.8212189843（n=731），Δ=-0.0878836144。TS2 必须同时展示 n=3，不能隐藏小样本边界。
+- **测速**：首次 xens2 B=32 独占测速在外部 GPU 进程闯入后已停止自身并保存 `xens2_b32_exclusive.interference.log`，没有正式速度结果。新增 `monitor_round39_exclusive_speed_retry.sh`，仅在 GPU 无其他进程时启动完整三次，外部干扰保存独立证据并重试，真实失败退出；不 kill 其他会话任务，不用 resume 拼接计时。
+- **后续**：测速有效 JSON 形成后，校准队列才会运行真实 GPU 预检和完整 VL0/八 clean 推理。8/8、速度 SOTA、最低 ECE 与最佳结构置信度仍未达成。
+
+
+## §15.402（2026-11-05）xens2 独占测速与真实 GPU 校准预检
+
+- **正式测速**：xens2 B=32 全 TS0 三次完成，n=1288、n_length_filtered=0、raw-sequence、CUDA、resume_runs=false。三次 F1 均为 **0.8037820906882117**，throughput=13.7815358503/13.5802438348/12.8495987982 seq/s，中位 **13.5802438348**，峰值 13,608.412MiB。结果 SHA256=`0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0`。测速有效不等于速度 SOTA，继续保留优化目标。
+- **真实 GPU 预检**：完整 VL0 的第一条序列完成三次 raw-sequence 推理，概率 SHA256 均为 `5747cf2a57bfba35de3dccf25cf3243bd16fcd463384a9dec0b672ce6d252274`，F1=0.9714285714。该单条只验证工程链路，不作科学结论。
+- **独立验证修复**：RiNALMo 权重以整个目录的文件名+文件内容哈希记录，base manifest=`91aca33cecb5e34a949aae452d2cd92a67db3cdb9e2da871a0478fcf00bb2442`；加载证据严格核对 504 个 checkpoint 张量、498 个已加载 encoder 张量及仅两个 pooler 参数的预期缺失。原始与校准指标均从保存的分数恢复 float64 复算，另逐位验证 float32 存储，避免混淆生产精度与存储精度。
+- **完整 VL0**：196 条、573,355 个候选配对、三次推理及 NPZ 独立复算通过，F1=0.8787185354691075；fit JSON SHA256=`a54cc2acd22800a4346b8d7c8b04f69c100394659a2ae7f97e4873d80d92504d`，NPZ SHA256=`2fab29fe90ed1502628579835be1a91280323d30c548afd31740aaa33b86856a`。该集合仅用于拟合校准参数，不是跨 split 泛化或最低 ECE 证据。
+- **接续**：八 clean split 正由持久队列运行，全部完成后再做统一独立验证；全 eligible 概率基线未齐前仍不声称最低 ECE 或最佳置信度。
+
+
+## §15.403（2026-11-05）BPfold 原生概率链路与双队列恢复
+
+- **logit 纠错**：BPfold 官方原始 contact map 不是概率，真实范围为 -0.78069127 至 9.06287；`_post.npy` 才位于 [0,1]。新 `calibrate_bpfold_round39.py` 分别保存原始 logit、float64→float32 sigmoid 概率和官方后处理概率，三次同时检查 logit/概率哈希。不得将未解释的矩阵直接用于 ECE。
+- **测试与预检**：3 项单元测试通过；真实 VL0 单条三次 F1 均为 0.9210526315789473，TP/FP/FN=35/6/0。结果 SHA256=`9ae7074eccca2969c51475ba2b04baed4c52d634103d47eae72a32d22bc67a6a`，NPZ SHA256=`3213367f4c7d778424a9ca082027629237115efd6d3cec3d1f7284e9e63eb39e`。单条 ECE 只验证计算链路，不作校准优劣结论。
+- **独立验证**：`verify_bpfold_calibration_round39.py` 逐条复核有效配对、GT、原始/后处理概率、CI、TP/FP/FN、strict micro-F1、risk–coverage、6 个官方 checkpoint 和原始 contact map 路径。预检通过；完整 clean 全板尚未验收。
+- **队列恢复**：xens2 首次 clean 运行因 TR1c 平铺目录误写为 splits/audits 子目录而退出，已修复实际路径，无模型或 CUDA 故障。BPfold 使用 `bpfold_train_union` 的独立 clean 数据，xens2 使用 `tr1c` 的独立 clean 数据；两队列已并行启动，分别有 flock、断点身份与独立输出，不相互套用 clean n。
+- **边界**：原始 map、NPZ 和大 artifacts 保留 /teams；代码留 /home。完整八 split 与所有 eligible 概率基线未齐前，不设置最低 ECE 或最佳置信度结论。
+
+
+## §15.404（2026-11-05）TS1/TS2 双系统 clean 概率交集复算
+
+- **xens2 独立验收**：TS1 clean n=18，三次 F1=0.8924050632911392，TP/FP/FN=282/12/56，结果 SHA256=`e3c7c3b6973d36445cf3946f120987009c54b9d6e213276a03742ab4a8957c91`；TS2 clean n=29，三次 F1=0.8362779740871613，TP/FP/FN=355/28/111，结果 SHA256=`a62aab5be736d7cabeb375f79f639ee0cb5930ff47570104abce6989ee23bd6d`。两格的原始概率、校准参数、DP、GT 和 F1 均通过 NPZ 独立复算。
+- **BPfold 队列修复**：相对权重路径少退一层导致目录不存在，已改为实测绝对路径并恢复，未发生 CUDA 或模型故障。TS1/TS2 的 clean n=42/3，三次 F1=0.8598022106/0.9494949495。
+- **TS1 交集敏感性**：共同 n=13，原生 clean n=18/42。xens2 raw ECE=0.0380801117、calibrated ECE=0.0051649751；BPfold raw sigmoid ECE=0.4730557632，post 诊断 ECE=0.0046048225。xens2 calibrated Spearman=0.6538461538、AURC=0.0987316568，BPfold CI 为 0.3259718259/0.1225194785。结果 SHA256=`49ed320b5c64624434296bd198670497928b4aebfce042bfb7f73530bfa3a2fe`。
+- **TS2 小样本边界**：共同 n=1，原生 clean n=29/3。xens2 raw/calibrated ECE=0.0430138598/0.0288706420；BPfold raw/post=0.4471364886/~0。只有一条不能计算 Spearman，不能用该格证明置信度优势。结果 SHA256=`e603e0090dd0316f90e2362d5df303e0144eb23b88fc7dc96eb3d0a5ae61e000`。
+- **后处理边界**：BPfold `_post.npy` 经结构约束/后处理，可能退化为 0/1，近零 ECE 只是诊断，不能作为独立边际概率优于 xens2 的证据。原生 own-clean 主榜与 matched-clean 交集敏感性继续分列；其他 split 和 eligible 概率基线继续队列，不宣称最低 ECE。
+
+
+## §15.405（2026-11-05）TS3/TS-hard/TestSetB 校准分化证据
+
+- **TS3**：原生 clean n=4/17，共同 n=4。xens2 raw/calibrated ECE=0.0585838516/0.0082137013，BPfold raw sigmoid/post=0.4689300675/0.0068591026。xens2 calibrated Spearman=-0.8、AURC=0.1718395800，BPfold CI=0.6/0.1377217554；xens2 结构置信度排序在该小样本格明显更差。结果 SHA256=`464eccc2f19ffe78cc5ee4fa4c229170ff78703543e508c4ecdce4f27db2984d`。
+- **TS-hard**：原生 clean n=10/24，共同 n=9。xens2 raw/calibrated ECE=0.0369685838/0.0188273844，BPfold raw/post=0.4721926288/0.0132343447。xens2 calibrated Spearman=0.4874121680、AURC=0.1695230819，BPfold CI=0.1305582420/0.2008068104；xens2 排序更好，但校准 ECE 未优于 post 诊断值。结果 SHA256=`f6e4e880ccc99d955f2ab6a22fc8cda912bcb780d367df3190e16d83070d84f8`。
+- **TestSetB**：原生 clean n=288/79，共同 n=59、201683 个严格有效候选配对。xens2 raw/calibrated ECE=0.0309937541/0.0019682804，Brier=0.0032738386、NLL=0.0153324497；BPfold raw/post ECE=0.4884683028/0.0035253343。xens2 calibrated Spearman=0.8067293672、AURC=0.0889156665，优于 BPfold CI 的 0.6889476773/0.1462427946。结果 SHA256=`1e00df2019fedcd1a49493491645bdb4e6c63a3df1a29c3809d84926fad0cdfc`。
+- **结论**：校准降低 ECE 的作用在多个 split 可复现，但结构排序并不总改善，TS3 还出现负相关。post 是约束后处理诊断，不与独立边际概率混为一谈。五格已验收，ArchiveII、TS0、bpRNA-new 和其他 eligible 概率基线未完成，不能写全板最低 ECE 或最佳置信度。
+
+
+## §15.406（2026-11-05）xens2 自适应长度批次速度候选排队
+
+- **现状**：正式 B=32 全 TS0 中位吞吐 13.5802438348 seq/s，不是速度 SOTA。生产实现已按精确长度分组，但短序列也受统一 B=32 限制；三个不同权重骨干不能无损共享编码，不做伪共享优化。
+- **候选**：新增独立 `speed_xens2_adaptive_round39.py`，不修改生产前向。计划 len≤256 用 B=64、257–384 用 B=32、385–600 用 B=16，原始记录顺序和 DP 解码不变。全 TS0 三次、raw-sequence、无 resume；与已验收 B=32 逐序列比较，要求 pair identity≥99%、|ΔF1|≤0.001。
+- **测试**：2 项逻辑测试通过，覆盖计划边界、非法计划和批处理后的原始顺序恢复。模拟测试只验证逻辑，不是 GPU 性能或科学结论。
+- **队列**：`run_xens2_adaptive_speed_round39.sh` 已常驻，等待 xens2 与 BPfold 两套 clean 校准独立验收后，再等待 GPU 无其他进程。外部干扰仅停止自身、保存带时间戳日志并重试；真实 OOM 或等价门失败停止，不通过降低精度、截断或缓存 embedding 换速度。
+- **边界**：候选尚无真实吞吐结果，不写速度提升或 SOTA。其运行不影响正在进行的 clean 校准和生产代码身份。
+
+
+## §15.407（2026-11-05）SPOT-RNA 既有 clean 概率资产复用与 TS1 比较
+
+- **避免重复 GPU**：SPOT-RNA 的 clean 三次原生概率矩阵已由 `benchmark_multimolecule_round39.py` 完整保存，并通过既有独立聚合。新增 CPU 转换器复用 `use_postprocess=True` 的 contact map，统一为严格有效配对 offsets、labels 和概率数组，不将转换写成新的 GPU 实验。
+- **原生非 canonical 置信度**：统一 ECE 使用 canonical valid-pair mask；SPOT 官方预测可包含非 canonical/短环配对，原生结构置信度直接从完整 contact map 对全部官方预测配对取均值，不能因 mask 丢弃这些预测。空 clean split 保持 EMPTY，不写 ECE=0。
+- **TS1 独立复核**：SPOT clean n=10，三次 F1=0.7759336099585062，ECE=0.0035304501、Spearman=0.8125186030、AURC=0.1548574876。转换结果 SHA256=`c0af568ea0c4fa0a05353681a6293f2f9fda7effa467c4f098ad71cb48e3a48f`，NPZ SHA256=`4a38bc62dc3379430057af3bdce16f7b8176bc0adf26e3c6b37df5f19a99a27e`。
+- **TS1 xens2 交集**：共同 n=10、13,596 个候选配对，原生 clean n=18/10。xens2 calibrated ECE=0.0029157673、Brier=0.0051083814、NLL=0.0272062087，低于 SPOT ECE=0.0035304501；xens2 calibrated Spearman=0.7696969697、AURC=0.0890369049，SPOT 为 0.8125186030/0.1548574876。ECE 与 AURC 较优，但 Spearman 并非最高，不写全面最佳置信度。比较 SHA256=`adbc19fc6d546ff0b1cd9395b1a52ff7ec815ae4b27de50512b57f2a161ccc23`。
+- **队列**：其余 SPOT split 正由独立 CPU 队列转换和复核；BPfold/xens2 大 split 与自适应速度候选仍按原顺序等待。所有 eligible 概率基线未齐，不写最低 ECE 总结。
+
+
+## §15.408（2026-11-05）SPOT-RNA TS2/TS-hard/TestSetB 比较与指标边界
+
+- **TS2**：原生 clean n=29/9，共同 n=9。xens2 calibrated ECE=0.0205688097、Brier=0.0201816814、NLL=0.0915757060，SPOT 为 0.0076835515/0.0076835515/0.2069785828；ECE 较高但 NLL 较低。xens2 calibrated Spearman=-0.1166666667、AURC=0.1928340744，SPOT 为 0.7276068751/0.1386581875，SPOT 结构排序更好。比较 SHA256=`fee36e411477a979602031418a2757e3342e43b54ed9a828e4a6c7eef6e07d8c`。
+- **TS-hard**：原生 clean n=10/3，共同 n=3。xens2 calibrated ECE=0.0248381630，SPOT=0.0175182482；xens2 calibrated Spearman=0.5、AURC=0.2677469136，SPOT 为 0.8660254038/0.2782446312。SPOT 的 Spearman 更好但 AURC 略差，小样本不能外推。比较 SHA256=`5414ffa10b21c51b886b5e5cd9de0b9f9848ae293c99016b4921a0062d18e8c1`。
+- **TestSetB**：原生 clean n=288/64，共同 n=64、178,165 个候选配对。xens2 calibrated ECE=0.0020023106、Brier=0.0029581708、NLL=0.0124032872，SPOT 为 0.0056857407/0.0056857407/0.1531618077；xens2 calibrated Spearman=0.7050309335、AURC=0.0817653054，SPOT 为 0.6920302359/0.2804982169，xens2 三项均更优。比较 SHA256=`8df1ed84fd6ca28d322304b1364a2486ad3110d66756817dded2f7eda39e142e`。
+- **结论**：不同 split 的 ECE 与结构排序优势不统一，不能写全板最低 ECE 或最佳置信度。SPOT 八个 split 已转换，TS3 保持 EMPTY；最终独立验证尚未形成。BPfold ArchiveII 已完成，等待 xens2 对应结果；其余 eligible 概率基线与自适应测速继续排队。
+
+
+## §15.409（2026-11-05）SPOT 全板资产验收与 RNAformer 概率队列
+
+- **SPOT 验收**：八个 clean split 的原生结果、概率矩阵、转换 NPZ、GT、原生非 canonical 置信度和 risk–coverage 均完成独立复核，TS3 保持 `EMPTY_AFTER_DELEAK`。汇总 SHA256=`481c997584742268908c46099337d2ff09e37777e47d15c16186a5312699c7b5`。这些来自既有三次 GPU 推理的 CPU 转换，不重复计为新 GPU 实验。
+- **RNAformer 输出确认**：生产前向返回配对 logits，经 sigmoid 和对称化后调用官方 `decode_pairs`。旧 benchmark 只保存配对，新增 `calibrate_rnaformer_round39.py` 复用同一加载与前向补存概率，不改变 F1 协议。
+- **独立合同**：每个变体单独绑定官方权重/config、clean corpus、原始主榜 F1、三次概率哈希和 NPZ。原生结构置信度为官方解码配对的 sigmoid 均值，ECE 仍使用统一严格有效配对；空 split 不生成指标。
+- **执行顺序**：bprna→intrafam→interfam→biophysical，每个变体先做真实 GPU 单条预检，再跑八 split 三次并独立验证。队列等待自适应测速完成，启动前空闲显存≥12GiB，避免与 clean 大任务或独占测速冲突。代码静态检查已通过，尚无 RNAformer 概率科学结果。
+- **边界**：SPOT 已验收不等于全 eligible 基线最低 ECE；xens2 大 split、BPfold 其余大 split、RNAformer 四变体和自适应速度结果仍待完成。
+
+
+## §15.410（2026-11-05）大 split 验证效率与 ArchiveII 概率验收
+
+- **性能根因**：旧验证器对上千条序列逐条重复 Python DP，SSH 超时且没有比较输出；不是 CUDA 或模型故障。改用生产 C 解码后，TS1 等价验证通过。为避免无效重复计算，最终合同为：全部候选标签、概率、ECE、TP/FP/FN、F1 和结构置信度独立复算，另对首三条与最后一条序列检查 C 解码与保存预测一致。不得把该合同写成全量 DP 重跑。
+- **ArchiveII**：xens2 clean n=1107，18,490,293 个严格有效候选配对，TP/FP/FN=48010/16723/18193，三次 F1=0.7333353699517321。结果 SHA256=`3b5aa1d4ac3694d3094e63d9885afc05926c460d5d64a09b04cdf748776f0050`，NPZ SHA256=`b0f1c01f05c376327edc9bcb3fe3388c672dc134bfb078a4bb5382d6ee171e99`，RiNALMo 目录 manifest=`91aca33cecb5e34a949aae452d2cd92a67db3cdb9e2da871a0478fcf00bb2442`。
+- **旧进程处理**：旧的逐条 DP 验证 SSH 会话已超时；新合同独立验收通过后，仅停止对应的旧冗余验证进程，不终止训练、生产推理或其他会话任务。没有科学结果被删除。
+- **持久比较**：`run_round39_calibration_comparisons.sh` 已启动，复用已完成的小 split，补齐 ArchiveII/TS0/bpRNA-new 的 BPfold 与 SPOT 交集，SPOT TS3 保持 EMPTY。末尾汇总只称 BPfold/SPOT 已比较，不覆盖其他 eligible 基线，也不把交集替代主榜。
+- **比较器扩展**：RNAformer 可绑定相应 raw+clean 汇总逐格校验 F1 后进入同一比较器；TS1 BPfold 数值回归通过，旧合同未改变。
+
+
+## §15.411（2026-11-05）NPZ 重复解压 OOM 根因与 ArchiveII 比较闭环
+
+- **根因**：`NpzFile` 对压缩成员惰性解压，逐序列切片会反复读取整个数组；切片又保留解压后大数组的引用，RSS 一度超过 57GB，比较进程被系统 `Killed`。这不是 DP 单独导致的内存问题。xens2/BPfold 独立验证峰值约 2.08/1.48GiB，异常发生在逐切片交集处理。
+- **修复**：xens2、BPfold、SPOT、RNAformer 验证器和交集比较器均先一次性读取每个 NPZ 成员，再切片计算。新增回归测试要求每个 NPZ 成员只读取一次；xens2/BPfold 共 7 项测试通过。旧的冗余验证和调试进程仅在本任务内停止，未终止其他会话任务。
+- **BPfold 交集**：原生 clean n=1107/731，共同 n=517、11,874,869 个候选配对。xens2 calibrated ECE=0.0012179065、Brier=0.0020327015、NLL=0.0103964856；BPfold raw/post ECE=0.4962204990/0.0012656140。xens2 calibrated Spearman=0.7228776832、AURC=0.1494799831；BPfold CI=0.6984234800/0.0968275690。xens2 概率指标更好，但 BPfold CI 的 AURC 更好。结果 SHA256=`5aa5b6f1e33b30aae5576fa57e1295969a9b39d0f4e63b14e378093feda9da20`。
+- **SPOT 交集**：原生 clean n=1107/580，共同 n=565、10,959,298 个候选配对。xens2 calibrated ECE=0.0014767614、Brier=0.0020567773、NLL=0.0105594849；SPOT=0.0022242301/0.0022242301/0.0599160393。xens2 calibrated Spearman=0.7532826126、AURC=0.1059320699，SPOT 为 0.8750720674/0.2573330047；SPOT 的 Spearman 明显更高。结果 SHA256=`cd1448e9f54fd2447b322f22f950c6acc248547b029d692e6c9cb73e5d680186`。
+- **效率与边界**：两组比较各约 1m43s，未再出现重复解压导致的内存爆炸。BPfold `_post` 仍是后处理诊断而非独立边际概率。xens2 不能写成全面最佳置信度；TS0/bpRNA-new 与其他 eligible 基线继续排队。
+
+
+## §15.412（2026-11-05）TS0 双基线概率比较完成
+
+- **BPfold**：原生 clean n=713/1178，共同 n=703、3,686,190 个候选配对。xens2 calibrated ECE=0.0006095697、Brier=0.0028072205、NLL=0.0131423427；BPfold raw/post ECE=0.4914361441/0.0032095470。xens2 calibrated Spearman=0.7349854543、AURC=0.1017711394，BPfold CI=0.5875088908/0.1620792758。结果 SHA256=`80bc79e91e690cf0bca8c8f1fea37548e457f08fe68f7fdafa98de174e621b53`。
+- **SPOT**：原生 clean n=713/152，共同 n=152、997,301 个候选配对。xens2 calibrated ECE=0.0008865089、Brier=0.0018962461、NLL=0.0091357871；SPOT=0.0029680107/0.0029680107/0.0799519137。xens2 calibrated Spearman=0.7309488975、AURC=0.0246299537，SPOT=0.6830944637/0.2336232174。xens2 两项结构指标均更好。结果 SHA256=`49d6d043d7c022e699cc67f253a8513c9e140d274898cf18f379b7f0b4f5723c`。
+- **结论**：TS0 的校准与结构排序证据支持 xens2，但不外推到 TS2/TS3 等负格。BPfold `_post` 继续只作诊断，matched-clean 只作附加敏感性。
+- **后续**：xens2 与 BPfold 的 bpRNA-new 尚未完成，完成两套独立验收后自适应测速才允许启动；RNAformer 概率队列在其后接续。
+
+
+## §15.413（2026-11-05）xens2 八 split 独立验收与 bpRNA-new SPOT 比较
+
+- **xens2 验收**：完整 VL0 与八个 clean split 的概率数组、候选标签、F1、ECE/Brier/NLL、结构置信度及 risk–coverage 全部通过独立复核；首尾 DP 抽查与全部指标复算并列记录，不写成全量 DP 重跑。汇总 SHA256=`42ceb53cd02b5b155a49284318d9e8b061f87e3611442e8831bd7dafa40e6a08`。
+- **bpRNA-new 三次结果**：xens2 clean n=5386，三次 F1 均为 0.5531599341608943，概率 SHA256=`3d660548a5163d642b8d5eee1144aee56f9863a9aae2ecd2cc4da044affa2150`。最终 NPZ 约 168MB，已完成原子落盘与独立复算。
+- **SPOT 交集**：共同 n=5386、15,343,073 个候选配对，双方 clean n 均为 5386。xens2 calibrated ECE=0.0048310272，略低于 SPOT=0.0050347802；但 Brier=0.0072889935 高于 SPOT=0.0050347802，NLL=0.0338954187 低于 SPOT=0.1356262975。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，SPOT=0.7428125157/0.3102083913，SPOT 结构排序明显更好。结果 SHA256=`2f8f97a2b4424621c72e4834c28de3bc68386075c27599e1db4ffcb4e28034bc`。
+- **结论**：bpRNA-new 的校准与结构排序短板与主榜未领先一致。即使 ECE 略低，也不能称最佳置信度或全板最低 ECE；后续须从模型与数据机制改进，而不是只调整展示口径。
+- **后续**：BPfold 的 bpRNA-new 尚未完成，完成其独立验收后才放行自适应测速；RNAformer 概率队列随后接续。
+
+
+## §15.414（2026-11-05）RiNALMo-ft 原生概率分支与真实预检
+
+- **实现**：在已检查的 `calibrate_rnaformer_round39.py` 增加独立 `--system rinalmo_ft` 分支，默认 RNAformer 行为不变。RiNALMo-ft 使用生产固定权重 `rinalmo_giga_ss_bprna_ft.pt`、`forward_rinalmo_ft` 的原生概率及 `prob_mat_to_sec_struct` 解码，不借用 RNAformer 阈值/config。
+- **真实 GPU 预检**：TS1 单条三次完成，1101 个严格有效候选配对，TP/FP/FN=18/0/5，F1=0.8780487804878049。结果 SHA256=`b827ecb0e40d1bc11ef1274e6969d25031e584be44c8674f0af849cdc0f7b958`，NPZ SHA256=`7a3eba20ad9e5d6e03d5783c0546e93bc995ab280493563d7d1480da75813e6a`。严格权重加载、数据、概率、置信度和 F1 均通过独立复核；单条不作科学结论。
+- **比较与验收**：`verify_rnaformer_calibration_round39.py` 分别处理 RiNALMo-ft 的严格权重加载与 RNAformer 官方权重/config；比较器新增 `rinalmo_ft`，保留原生概率、结构置信度与既有主榜 F1 对照。NPZ 一次性读取修复覆盖该分支。
+- **队列**：`run_rinalmo_ft_calibration_round39.sh` 已挂起，等待 bprna/intrafam/interfam/biophysical 四个 RNAformer 变体独立验收，再做 RiNALMo-ft 的 TR0-clean 八 split 三次。真实预检已完成，完整全板和全基线校准排名未完成。
+- **当前等待**：BPfold 的 bpRNA-new 第三次仍在运行，未影响新预检；自适应测速继续等待其独立验收，不跳过门限。
+
+
+## §15.415（2026-11-05）BPfold 全板概率验收与 bpRNA-new 比较
+
+- **BPfold 验收**：八个 clean split 的原生 logit、sigmoid 概率、后处理概率、CI、GT、TP/FP/FN 与三次预测均通过独立复核。汇总 SHA256=`7628a236afa9ce288efc50f7811624ae421b7c0425e1539fa6dc3598dc17a7dc`。
+- **bpRNA-new 三次结果**：BPfold clean n=5387，三次 F1=0.7369936720851805，概率 SHA256=`11e01974778793ec534f423a4a43b447599750bc341f0ea570ff3fcc18017cf0`。xens2 clean n=5386，三次 F1=0.5531599341608943，双方各自 clean n 保留。
+- **交集敏感性**：共同 n=5386、15,343,073 个候选配对。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；BPfold raw/post ECE=0.4872850096/0.0052058672，post Brier=0.0052058672、NLL=0.1402350314。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，BPfold CI=0.5937702468/0.1627122940，BPfold CI 结构排序更好。结果 SHA256=`dbf6989ddf783819a9d0c878d7c7c1309b1c95833512a50d631682cea06ee23e`。
+- **结论**：xens2 的 ECE 略低于 post 诊断值，但 Brier 高于 post，CI 的 Spearman/AURC 明显优于 xens2。与主榜未领先一致，不支持最佳置信度；后处理仍不作为独立边际概率证据。
+- **测速状态**：自适应 B=64/32/16 队列已获得启动门，但其他 GPU 进程仍占用设备，日志持续 `ADAPTIVE_SPEED_WAIT_EXCLUSIVE`，尚无有效吞吐。保持无干扰合同，不 kill 其他会话、不用并发值替代正式测速。
+
+
+## §15.416（2026-11-06）自适应速度等价验收与 RNAformer 概率启动
+
+- **自适应测速**：在 GPU 无其他进程的窗口完成 xens2 len≤256/257–384/385–600 分别 B=64/32/16 的全 TS0 三次。三次 F1 均为 **0.8037820906882117**，与固定 B=32 配对一致率 **1.0**，绝对 ΔF1=0。中位吞吐 **14.1949071622 seq/s**，三次为 14.1949071622/14.2800060365/14.0039870866；固定 B=32 为 13.5802438348，提升 **1.0452615825×**，不是速度 SOTA。
+- **资源与身份**：peak_memory=13,608.412MiB，raw-sequence、n=1288、n_length_filtered=0、resume=false，生产代码身份和模型权重未变。结果 SHA256=`659e03b7069133b48df1188656c7306686fee9639115a8af08176a997c535d22`。
+- **结论**：短序列增大 batch 仅带来约 4.5% 增益，统一 B=32 的瓶颈并未由该分桶策略解决。后续速度优化须针对三个不同权重骨干的实际计算量，不伪称共享编码，也不以牺牲精度换速度。
+- **RNAformer-bprna**：真实 GPU 单条预检通过；clean TS1 n=11，三次原生概率 F1=0.8427947598253275，与既有主榜一致。四变体将依次完成各自 clean 概率并逐格对照 F1，随后接续 RiNALMo-ft。
+
+
+## §15.417（2026-11-06）RNAformer-bprna 比较与长期监控
+
+- **路径与队列**：bprna 总账使用 `bprna_raw_clean_summary.json`，与其他变体的 `variant/raw_clean_summary.json` 不同；已修正原始概率队列。新增 `run_rnaformer_comparisons_round39.sh`，四变体只有各自独立验收后才进入比较，flock 防重复，缺文件等待，空交集记录而不中止。
+- **TS1/TS2**：共同 n=10/9。TS1 xens2 calibrated ECE=0.0029157673、RNAformer=0.0026599898，Spearman=0.7696969697/0.4376919914，AURC=0.0890369049/0.1417594109，结果 SHA256=`793ff6337428ba1c4bcdc8310ff98a33dbaa6568837e649b3bbbd2dad83638bd`。TS2 xens2 calibrated ECE=0.0205688097、RNAformer=0.0060799107，Spearman=-0.1166666667/-0.3598357858，AURC=0.1928340744/0.3624995990，结果 SHA256=`6f33ea6b9895217e6ff8115b27430b8418e14fad3867555aed9fb354dc460f04`。
+- **TS-hard/TestSetB**：TS-hard 共同 n=3，xens2 calibrated Spearman=0.5、AURC=0.2677469136，RNAformer=0.8660254038/0.5246913580，小样本 RNAformer 更差，结果 SHA256=`7d7838f8f268819ec6665d473fe69023b4094d0dee3e8d734cde57b9ed3a8e18`。TestSetB 共同 n=74，xens2 calibrated ECE=0.0019748620、Spearman=0.7491833653、AURC=0.0800234387，RNAformer=0.0016900716/0.6585985665/0.1836995472，结果 SHA256=`fb876700922143295ddce9bc310f31fbeb9f5834aba11a17e955bae9c4646e97`。
+- **ArchiveII**：共同 n=1087，原生 clean n=1107/2267。xens2 calibrated ECE=0.0009986423、Brier=0.0022248452、NLL=0.0112990287，RNAformer raw ECE=0.0029301462、Brier=0.0018506168、NLL=0.0108653248。xens2 calibrated Spearman=0.7175607517、AURC=0.1202645505，RNAformer=0.5716262525/0.1714758343。结果 SHA256=`c96d98f497120be20c3f34380db8c6c7922d30c097925c6e4168613a67d4b420`。
+- **空交集**：TS3 xens2 clean n=4、RNAformer-bprna clean n=2，共同 n=0，状态 `EMPTY_MATCHED_CALIBRATION_INTERSECTION`，不计算 F1、ECE 或置信度，结果 SHA256=`7f549a584ef17725598b1cd1f6a55446dac6b6e08062c49cb34400c4c99f06f4`。
+- **结论**：RNAformer 原生概率在若干 split 的 ECE 更低，xens2 的结构排序更强，不能写全板最低 ECE 或最佳置信度。bpRNA-new 和后续三变体继续后台运行，未齐套前不汇总为最终全基线结论。
+
+
+## §15.418（2026-11-06）RNAformer-bprna 全板验收与 bpRNA-new 定界
+
+- **全板验收**：RNAformer-bprna 八 split 原生概率、GT、F1 和结构置信度独立复核完成，汇总 SHA256=`31b725b924e1608565135902f1321869d92d7cdcc9ac4638cfc9721ca3d43a40`。bpRNA-new clean n=5386，三次 F1=0.4935027488370305，与既有主榜一致。
+- **bpRNA-new 比较**：共同 n=5386、15,343,073 个候选配对。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；RNAformer raw ECE=0.0018442078、Brier=0.0065276438、NLL=0.0342053039。RNAformer 的 ECE 和 Brier 更低，NLL 接近。结果 SHA256=`45537abd651bc5662b7e3a2c6b9abcef4c9e934a40ee2552c228170457458955`。
+- **结构置信度**：xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，RNAformer=0.4778740657/0.4400606599，xens2 的结构排序更好。低 ECE 不等于最佳结构排序，两个叙事必须分开呈现。
+- **后续**：bprna 全板已完成，intra-family、inter-family、biophysical 继续后台队列；后续比较只在各变体独立验收后执行。当前不能写 xens2 全板最低 ECE 或最佳置信度，8/8 与速度 SOTA 仍未达成。
+
+
+## §15.419（2026-11-06）RNAformer intra-family 概率比较
+
+- **TS1**：共同 n=18，原生 clean n=18/60。xens2 calibrated ECE=0.0060269154、Spearman=0.6284829721、AURC=0.0931743294；RNAformer raw ECE=0.0056890263、Spearman=0.3793286213、AURC=0.0609442208。结果 SHA256=`aa46928022771d6e858926a3c5b8b9df586684db41f2b0be42348c765eab7ddd`。
+- **TS2**：双方 clean n=29/39，共同 n=29。xens2 calibrated ECE=0.0177234890、Spearman=0.2800052940、AURC=0.1256063700；RNAformer raw ECE=0.0080718655、Spearman=0.4391062198、AURC=0.0639662011。结果 SHA256=`90805f2c49629f710500b8adfa5edd46e5a7bd918b77a8beda17aa22357bf466`。
+- **TS-hard**：原生 clean n=10/19，共同 n=8。xens2 calibrated ECE=0.0227386561、Spearman=0.6904761905、AURC=0.1421414712；RNAformer raw ECE=0.0128039447、Spearman=0.8383383833、AURC=0.0791469435。结果 SHA256=`930dcb4764cc4dd7e3b5ac86d2a8edba75e738cca15f7ecb1bdea90c4dddbfed`。
+- **TestSetB**：原生 clean n=288/419，共同 n=288。xens2 calibrated ECE=0.0021597920、Spearman=0.6862948022、AURC=0.0815347264；RNAformer raw ECE=0.0058129588、Spearman=0.7505724306、AURC=0.1869490182。结果 SHA256=`151ddb43f46988d3cf8589d737caee147a14207b5d170fd44c6cdcf4a0b02e4e`。
+- **结论**：intra-family 原生 ECE 在 TS1/TS2/TS-hard 更低，xens2 在 TestSetB 的 ECE 更低；但四个 split 的 AURC 均为 RNAformer 更低，xens2 不具备全面最佳置信度。TS3 clean 为空，不生成概率指标。ArchiveII 和 TS0/bpRNA-new 继续后台队列，独立验收后才汇总。
+
+
+## §15.420（2026-11-06）BPfold/SPOT 比较汇总闭环与旧 schema 兼容
+
+- **问题**：BPfold/SPOT 的所有 split 比较已经完成，但汇总脚本因早期 JSON 只有 `bpfold_clean_n`、没有后期新增的 `baseline_clean_n` 而报 `KeyError`，导致缺少总账；不是实验或 GPU 故障。
+- **修复**：汇总读取优先 `baseline_clean_n`，旧记录回退 `bpfold_clean_n`，保留原始文件不重跑。现生成 16 个单元：8 个 BPfold split、7 个 SPOT 非空 split、1 个 `EMPTY_AFTER_DELEAK`。
+- **汇总**：状态 `PASS_BPFOLD_SPOTRNA_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE`，SHA256=`effb91018ac3ddc2c49f508fe46fd82c6ab94a470cbec7031d77c4a7a09a0c5e`。只表示这两类基线的比较闭环，其他 eligible 概率基线仍待完成，matched-clean 继续只作附加敏感性。
+- **后续**：RNAformer intra-family 的 ArchiveII 日志没有异常栈，首轮长序列推理仍在运行；inter-family、biophysical 与 RiNALMo-ft 按原队列等待。
+
+
+## §15.421（2026-11-06）NucleicBERT-ft/frozen 原生概率复用与 TS1 比较
+
+- **资产复用**：两种 NucleicBERT 的 clean 三次概率数组、预测和 offsets 已完整保存，新增 CPU 转换和独立复核，不重复 GPU 推理。统一计算 ECE/Brier/NLL、原生置信度和 risk–coverage，保留原始 598 nt 截断协议、对应 GT、clean n 与权重哈希。
+- **NucleicBERT-ft**：TS1 clean n=18，TP/FP/FN=245/138/93，F1=0.6796116505，转换结果 SHA256=`487afe650c8d1581e6e7e02fa4b5b1680785dcb741d238734b96784419e25bdb`。与 xens2 的共同 n=18，xens2 calibrated ECE=0.0060269154、Spearman=0.6284829721、AURC=0.0931743294，NB-ft raw ECE=0.0725879730、Spearman=0.8285128388、AURC=0.1844278457；NB-ft 的 Spearman 较高但 AURC 较差，比较 SHA256=`b3e0c0dd715a76443da5c2cc32bf71f02d39f36ca23360c1384201a56d8eaa5e`。
+- **NucleicBERT-frozen**：TS1 clean n=48，TP/FP/FN=122/96/814，F1=0.2114384749，转换结果 SHA256=`6c57ca2251173612bb6a8d8f77ef3bf268dd6944e7d9cea64f866316d0c76b98`。与 xens2 的共同 n=12，xens2 calibrated ECE=0.0203573607、Brier=0.0192663923、NLL=0.0893804337，frozen raw ECE=0.0254344110、Brier=0.0308914495、NLL=0.2022029027。frozen 的 ECE 较低但 Brier 更高；xens2 Spearman=0.6153846154、AURC=0.1336065682，frozen=0.3066543204/0.7739970243，比较 SHA256=`f8061ea1439adb0fdb2e61c3ce8d143db8fd0474d1ca66dd6e34d3e0337497d4`。
+- **队列**：`run_nucleicbert_calibration_round39.sh` 已启动，后续 split 复用既有概率、CPU 转换和独立复核，不恢复已取消的原论文下游训练。原始下游任务取消不影响本主 benchmark 的 ft/frozen 基线。
+- **边界**：ECE、Brier、Spearman、AURC 方向不一致，不写最佳置信度。其余 NucleicBERT split 与 RNAformer 大 split 继续后台推进。
+
+
+## §15.422（2026-11-06）NucleicBERT GT 协议过滤与 intra/inter-family 全板验收
+
+- **GT 过滤**：NucleicBERT 原生 598 nt 与 xens2 全长评分 GT 在长序列上可不同，不能仅按名称取交集。比较器现在只保留名称、序列和实际评分 GT 完全一致的样本，`gt_protocol_mismatch_excluded` 单独计数，其他系统合同不变。
+- **ArchiveII 证据**：双方 clean n=1107，39 条因评分 GT 不同排除，实际共同 n=1068、15,097,569 个候选配对。xens2 calibrated ECE=0.0010178612、Brier=0.0025093301、NLL=0.0127487287；NB-ft raw ECE=0.0695058936、Brier=0.0335958794、NLL=0.1138367524。xens2 calibrated Spearman=0.7226829297、AURC=0.1107145167，NB-ft=0.8631483951/0.2294266104，NB-ft 的 Spearman 更高但 AURC 更差。结果 SHA256=`d0f47d5d480be2f1415c4f7b2409472a582f9246beac433457e7ed45468d32fe`。
+- **intra-family 验收**：八 split 的原始概率、F1 和独立数组复核通过，TS3 为 EMPTY；汇总 SHA256=`fea5be0210d688aa979676b561ababefa4b1d39d89ddcab91153b10e82d11590`。bpRNA-new 三次 F1=0.6542908054，与既有主榜一致。
+- **inter-family 验收**：八 split 独立复核通过，汇总 SHA256=`92e1ecb8fe183722d34d51cc1bbc525c234bd2166ddf78240e5cb0341f12ffda`。bpRNA-new 三次 F1=0.6560129820，与既有主榜一致。
+- **队列纠错**：EMPTY 的 Bash 判断必须为 `status != EMPTY_AFTER_DELEAK`，因为 `SystemExit(True)` 返回 1，不能触发 empty 分支。已用真实 EMPTY/非空文件验证分支，恢复 RNAformer 与 NucleicBERT 队列，未删除或伪造任何结果。
+- **后续**：intra/inter-family 的 bpRNA-new 与 ArchiveII 比较继续后台计算；biophysical 和 RiNALMo-ft 随后接续，全 eligible 概率基线未齐前不写最终 ECE 排名。
+
+
+## §15.423（2026-11-06）intra-family 与 NucleicBERT-ft 大 split 比较
+
+- **intra-family bpRNA-new**：双方 clean n=5386，xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；intra-family raw ECE=0.0054356234、Brier=0.0053091424、NLL=0.0225463147。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，intra-family=0.5449351410/0.2568142282。xens2 ECE 略低，intra-family 的 Brier 和结构排序更好。结果 SHA256=`3ea5df4b67f9aaa2ba9abb35147e5a6e0b975342166bb9d7722844b1cafba565`。
+- **NucleicBERT-ft TS0**：共同 n=713、3,708,091 个候选配对。xens2 calibrated ECE=0.0006256100、Brier=0.0028185810、NLL=0.0131960998；NB-ft raw ECE=0.0690028472、Brier=0.0354033297、NLL=0.1201669678。xens2 calibrated Spearman=0.7304944246、AURC=0.1020572843，NB-ft=0.7875970835/0.2749072822，NB-ft 的 Spearman 更高但 AURC 更差。结果 SHA256=`79adccd47771c6178b7e676d120bd0354c4ba980f14f3efdb10cce22ae3c566a`。
+- **NucleicBERT-ft bpRNA-new**：共同 n=5386。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；NB-ft raw ECE=0.1110871835、Brier=0.0587439902、NLL=0.1982033329。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，NB-ft=0.4065609723/0.5647986277，xens2 三项均更优。结果 SHA256=`9edbf59b8690d55285939f9b4f9307bf5df27cd0a87b298baf4d1779bacc2073`。
+- **结论**：intra-family 的概率拟合误差和结构筛选各有优势；NB-ft 原生置信度整体弱于 xens2，但个别 split 的 Spearman 更高，不合并成“最佳置信度”。inter-family 和 NucleicBERT-frozen 继续队列，biophysical 已完成 PDB 小 split，等待大 split。
+
+
+## §15.424（2026-11-06）biophysical 小 split 与 inter-family bpRNA-new 比较
+
+- **biophysical TS1**：共同 n=18，xens2 calibrated ECE=0.0060269154、Spearman=0.6284829721、AURC=0.0931743294；biophysical raw ECE=0.0102882124、Spearman=0.4434113856、AURC=0.1337160326，结果 SHA256=`b6f237ec20543f950d6923f4cbfd7324aaa3cc792c7e380dc58f55d8e4a8f2f0`。
+- **biophysical TS2**：共同 n=29，xens2 calibrated ECE=0.0177234890、Spearman=0.2800052940、AURC=0.1256063700；biophysical raw ECE=0.0055733777、Spearman=0.1003715183、AURC=0.1410900906，结果 SHA256=`c883464ef5c88fcc10e5682a7492dff74697f8af6c894d703f7c2a40bd007579`。
+- **biophysical TS3**：共同 n=4，xens2 calibrated ECE=0.0082137013、Spearman=-0.8、AURC=0.1718395800；biophysical raw ECE=0.0088805939、Spearman=0.4、AURC=0.1871728212，结果 SHA256=`4bb48a3e90835fddb441376d50edeecc09dcec9a7debada919464e767437a644`。xens2 的 Spearman 仍为负，不能写最佳置信度。
+- **biophysical TS-hard/TestSetB**：TS-hard 共同 n=10，xens2 calibrated Spearman=0.5183023183、AURC=0.1416050874，biophysical=0.1585395327/0.1388677502，结果 SHA256=`e83c09139bee0238667646864ecb7ce0ab4ed5d91a811afb91fb4951ce42134e`。TestSetB 共同 n=288，xens2 calibrated ECE=0.0021597920、Spearman=0.6862948022、AURC=0.0815347264，biophysical raw ECE=0.0080185651、Spearman=0.4252276057、AURC=0.3547988888，结果 SHA256=`d815b8cf6e6c67bf371aae66d3cf6861d535720bd451f5b0fa3bbf10789de08a`。
+- **inter-family bpRNA-new**：双方 clean n=5386。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；inter-family raw ECE=0.0052560782、Brier=0.0052377173、NLL=0.0222593238。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，inter-family=0.5474306356/0.2583887160，inter-family 的 Brier 和结构排序更好。结果 SHA256=`2e690c03b3103375f20fa4410488e187140b528c5e8e6302e6062bdb5ff7e1ca`。
+- **边界**：biophysical 大 split 和 NucleicBERT-frozen 大 split 继续后台队列，未齐套前不写全基线 ECE 或最佳置信度结论。
+
+
+## §15.425（2026-11-06）NucleicBERT-frozen 大 split 概率比较
+
+- **独立验收**：NucleicBERT-frozen 八 split 的原始 598 nt 协议、概率、GT 和结构置信度独立复核完成，汇总 SHA256=`743b0a0db2a6a722e9411f1a9fb021d58936389d92d34d5e64d7d1af00f5918d`。bpRNA-new 三次 F1=0.1908859910，保留官方原生协议，不恢复已取消的下游训练。
+- **ArchiveII**：共同 n=134、2,898,976 个候选配对。xens2 calibrated ECE=0.0008800907、Brier=0.0017835898、NLL=0.0092112271；frozen raw ECE=0.0017598594、Brier=0.0022952142、NLL=0.0182544591。xens2 calibrated Spearman=0.5452371245、AURC=0.2306662268，frozen=0.7292572494/0.5511853179。frozen 的 Spearman 更高，但 xens2 的 AURC 更低（更优）。结果 SHA256=`ab540cfa0742f7c6c5797e0827d475b6bb3376dcdabac93e17288ac87ad9a193`。
+- **TS0**：共同 n=609、2,541,035 个候选配对。xens2 calibrated ECE=0.0009620696、Brier=0.0031644343、NLL=0.0143733433；frozen raw ECE=0.0037391501、Brier=0.0049504730、NLL=0.0379358123。xens2 calibrated Spearman=0.7063701016、AURC=0.1162604704，frozen=0.6998895968/0.4401576494，xens2 三项均更优。结果 SHA256=`ed5038c0044901fbc83c3558cebf4e1296a908ea33d4731bbd01dab24de82434`。
+- **bpRNA-new**：共同 n=5386。xens2 calibrated ECE=0.0048310272、Brier=0.0072889935、NLL=0.0338954187；frozen raw ECE=0.0061279719、Brier=0.0081585966、NLL=0.0586758677。xens2 calibrated Spearman=0.5176421505、AURC=0.3486543793，frozen=0.5110273012/0.7253953809。frozen 的 Spearman 接近且略低、AURC 更高（更差），xens2 两项均更好。结果 SHA256=`e1d6cfc147107753e142343259921bf143d07e3d982ac57633ea7cd29fb14a4b`。
+- **结论**：xens2 在这三个大 split 的概率误差均更低；frozen 仅在 ArchiveII 的 Spearman 更高，AURC 未胜出。biophysical 大 split 与 RiNALMo-ft 继续后台队列，仍不将局部结果写成全板最佳置信度。
+
+
+## §15.426（2026-11-06）NucleicBERT-ft/frozen 16 格比较闭环
+
+- **汇总**：ft/frozen 各八个 split，均为 7 个有效 matched-clean 比较和 1 个 TS3 `EMPTY_AFTER_DELEAK`；共 16 格，状态 `PASS_NUCLEICBERT_COMPARISONS_NOT_ALL_ELIGIBLE`，SHA256=`f3c973df93ab179fb1eb079d1f804c7f59e68c139065c4ca12fc7749b7575961`。
+- **协议边界**：保留原生 598 nt 截断和预测协议；与 xens2 比较时逐条要求名称、序列和实际评分 GT 相同，GT 协议不同者单独剔除。该汇总只是 matched-clean 附加敏感性，不替代 own-clean 主榜。
+- **frozen 结论勘误**：ArchiveII、TS0、bpRNA-new 的 frozen AURC 均高于 xens2（风险覆盖表现更差）；仅 ArchiveII 的 Spearman 更高，不能写 frozen 在大 split 结构排序更好。§15.425 已按原 JSON 数值修正，概率误差与结构排序分开陈述。
+- **后续**：biophysical 的 ArchiveII、TS0、bpRNA-new 尚未全部通过独立验收，RiNALMo-ft 保持门控等待；其他 eligible 基线概率也未齐套，不能写全板最低 ECE 或最佳置信度。
+
+
+## §15.427（2026-11-06）Kirigami 全板概率闭环与 MXfold2 首格
+
+- **Kirigami 独立验收**：直接复用八个 clean split 已保存的原生 GPU 概率矩阵，逐条重算标签、F1、含假结预测的置信度和三次概率哈希；汇总 SHA256=`e0d409edac0f6ccee9e31862a0fb4d54243491b7c88670bc84f16ade9f02fa30`。八格 matched-clean 比较汇总 SHA256=`40ef066287626af42a918313df65e8749c9ee7b0384b24282967badb25a49340`。假结预测保留，ECE 使用共同合法配对掩码，两种口径不混用。
+- **大 split 结果**：bpRNA-new 的 Kirigami/xens2 ECE=0.0043999537/0.0048310272，ArchiveII=0.0009723210/0.0012167945，Kirigami 均更低；TS0=0.0017787631/0.0006199985，xens2 更低。ArchiveII 的 Kirigami Spearman=0.8108105242，高于 xens2=0.7179665733，但 AURC=0.1320936692，高于 xens2=0.1225071918（更差）。bpRNA-new 的 xens2 AURC=0.3486543793，略低于 Kirigami=0.3509156876。ECE、相关性和风险覆盖不能合并成单一最佳置信度。
+- **MXfold2 原生概率**：官方包实际架构为 `MixC`，`TrainSetAB.pth` 严格加载、802,642 参数一致；使用官方 `return_partfunc=True` 的 float32 概率，不采用五位小数 CLI 文本。TS2 clean n=27，三次 GPU 推理 F1 均为 0.914，逐条预测与原主榜一致；共同 n=20，MXfold2 ECE=0.0077294563，低于 xens2=0.0168951314。MXfold2 Spearman=-0.1478444135、AURC=0.0666676556，xens2 分别为 0.0737674539/0.1298499081，方向不同。
+- **工程验收**：Kirigami 与既有校准测试共 9 项通过；Kirigami 代码提交 `ef854f8b73408850869a90291b247908a8dd89d4`，MXfold2 代码提交 `67fe5cc045473bbdc6eed15ce39c65180a8143ea`。MXfold2 其余七格继续 GPU 队列，未齐套前只记首格。EternaFold/CONTRAfold 原生结果无逐对概率，保持 NOT_AVAILABLE，不用 one-hot 冒充概率。
+
+
+## §15.428（2026-11-06）ViennaRNA 原生 BPP 合同与 TS2 三格
+
+- **合同**：新增 `docs/plans/2026-11-06-round39-vienna-native-probability-design.md`。每条序列每轮一次 `fold_compound.pf()`，共享 float64 BPP，分别保留 MFE/centroid/MEA 原生解码。无训练拟合的 ViennaRNA 使用八个完整测试集，不套用其他模型 clean n；原生 CPU 计算不冒充 GPU 结果。代码提交 `8ace0faef304288da2b548311dcd5ad3b5e9abd9`。
+- **环境核验**：旧 `/root/rna_jepa_data/pylibs` 不存在，已定位并固定 `/root/miniconda3/envs/codonflow/lib/python3.10/site-packages` 中的 ViennaRNA 2.7.2；仍用 lucaone 评测环境运行项目指标，不安装新依赖。`codonflow` 缺 scikit-learn，未把它当作替代评测环境。
+- **真实 TS2**：39 条完整推理三次，MFE/centroid/MEA F1 分别为 **0.8979591837/0.8929663609/0.8937784522**，逐条预测和 TP/FP/FN 均与原 `raw_strict` 一致。共同 n=29，三者共享 BPP 的 ECE=**0.0033891481**、Brier=0.0055268471、NLL=0.0263440530，低于 xens2 ECE=0.0177234890；比较 SHA256 分别为 `630070e7d1ae1bd7f90e22cd3c858d13e04b21b3181964dc2765946e017dc601`、`e7c9bf05e26d64e73c42d458c71aa84f712f59db1603eaf9335fd02473e2a7d9`、`3193d55209da93343a0417576ecd6133007e8bf4264b0f6052d78dce0e73a56d`。
+- **QA 与边界**：新增原生 roundtrip 测试，连同 Kirigami/BPfold/xens2 共 10 项通过。首次单元测试发现计数容器类型错误，真实比较又发现集合遍历导致均值最后浮点位不一致；均修复后重跑，最终采用固定配对顺序精确相等，不放宽容差。其余 21 格后台 CPU 队列进行中，24 格未齐前只记 TS2；EternaFold/CONTRAfold 继续 `NOT_AVAILABLE_NATIVE_PAIR_PROBABILITIES`。
+
+
+## §15.429（2026-11-06）xens2 双 stream 候选与独占干扰留证
+
+- **候选机制**：生产路径 `forward_our` 依次计算 enc0、enc1、RiNALMo 三个独立编码器。新增候选仅把两个 plan a 编码器放到两个 CUDA stream，RiNALMo 在主 stream，汇合后按原顺序计算三个头、0.7/0.3 融合和 C 解码；不改权重、精度、序列或批次。代码提交 `1963b5c42ba790b6a0aa1ba6f7f0e1afeff32bac`。
+- **硬门**：固定 B=32，全 TS0 三次、raw-sequence 全链路；相对既有 B=32 要求逐序列一致率 **1.0**、绝对 ΔF1=0，比通用 99%/1e-3 门更严格。每轮前后检查 GPU compute PID，有干扰即放弃整个窗口，不拼接 partial timing，不与 MXfold2/RNAformer 并发计时。
+- **首次工程修正**：启动前的独占检查起初未被重试分支捕获，其他会话 GPU 进程导致 status=1 退出，无有效结果。已增加 `abort_interference`，统一留下 `ABORTED_EXCLUSIVE_SPEED_INTERFERENCE` JSON 和 status=2，持久队列每 600 秒重试。两项干扰/自身 PID 测试加两项自适应回归均通过，修复提交 `7a4fb88770c31461427d0a8477490f9d20b00b80`。
+- **当前证据**：干扰记录 SHA256=`8a087bcc45a418ae08802667e74b02b3e2f4155c4593986472863adbccd8d128`，尚无双流有效吞吐。既有 B=32=13.5802438348、自适应=14.1949071622 seq/s，不能预写新倍率或速度 SOTA。`spec/tasks.md` 与 `spec_sync/tasks.md` 的过期“正式速度仍未测”已同步更正。
+
+
+## §15.430（2026-11-06）ViennaRNA TS0 三格与跨 split 校准反例
+
+- **完整复算**：TS0 的 1,288 条均完成三次原生 CPU 推理，三种解码逐条预测、BPP 和 F1 与 `raw_strict` 一致。与 xens2 的共同 n=713，三份比较均通过独立 NPZ 指标复算，未等待其余 split 才验收已完成格。
+- **F1**：MFE/centroid/MEA 分别为 **0.5055256447/0.5392561730/0.5241050119**，保留各自完整 n=1288；matched n 只用于附加敏感性，不改主榜。
+- **概率校准**：三者共享 BPP，ECE=0.0045908285、Brier=0.0049043363、NLL=0.0248841514；xens2 calibrated ECE=0.0006256100、Brier=0.0028185810、NLL=0.0131960998，xens2 三项均更低。结果 SHA256 依次为 `4326260270aec63cb4d1c1331fe07e5a874e3420b872975f89353903cc7d9327`、`d737741112994e2f57ba4ffee831000f621c49f9acadaf34648945aba7323146`、`68d0aefc5032e37d00e4011113608e0c59ba2b7fece74b48372bb5501272f843`。
+- **结构置信度**：xens2 calibrated Spearman=0.7304944246、AURC=0.1020572843；MFE/centroid/MEA 的 Spearman=0.4906940138/0.4247677856/0.4611966761，AURC=0.3798005858/0.3758731073/0.3761840328，xens2 均更优。TS2 的 ViennaRNA ECE 更低，TS0 的 xens2 更低，不能跨 split 合并成“全板最佳”。
+- **进度与合同**：ViennaRNA 已完成 6/24 个有效比较格，其余 18 格继续队列，24 格总账尚未形成。实施文档已按功能批次补齐文件、风险、最小验证与独立复核要求，实施状态保留在原文档，不另建重复计划。
+
+
+## §15.431（2026-11-06）MXfold2 原生 BPP 超界定界与七格有效方案
+
+- **已完成的六格独立复核**：TS1/TS2/TS3/hard/TestSetB/TS0 均重新读取 NPZ，F1=0.78125/0.914/0.8138957816/0.7982551799/0.6467117988/0.5489548512，与 own-clean 主榜一致。partial SHA256=`c2c003004a4130d0bc00c400a55b121d2ff0fafb00a4eb19ab7359d31abeac77`，不冒充八格完成。
+- **ArchiveII 根因**：前一轮只在第 600 条进度后给出无上下文范围断言。定向排查到 index=658、`grp2_a.I2.c.N.tabacum.B.pD.i1.bpseq`、759 nt：15 个 BPP>1，最大 **1.0047545433**，全部在评分掩码内，非浮点舍入误差。三次独立前向概率 SHA 均为 `d001dc7af895cb8e6c545630a05f7c6808813c1072cb3009bb893f2313f80e9d`；异常证据 SHA256=`399be8427578c55987ddf3ce9aa040871cd569d856a0829859809cb632bfc023`。
+- **科学处理**：MXfold2 0.1.2 原生 BPP 在该 split 不满足概率定义，ArchiveII 标 `FAIL_NATIVE_BPP_RANGE_NOT_PROBABILITY_ELIGIBLE`，不计算 ECE、不用 one-hot/夹紧/归一化、不用共同 n=0 掩盖；原生三次结构 F1 仍保留在 own-clean 主榜。其余七格继续正式概率评测，最终口径为七格有效、ArchiveII 原生概率无效，不宣称全基线校准完成。
+- **工程与 QA**：已加入带序列名、长度、坐标和评分类型的终止失败产物、原子写入、比较汇总边界和单元回归；11 项相关测试通过。代码 `129fd37e4230af70d2b7fa871612dfe7db5cd8ac`，测试修正 `ac5b54dc3da6c71bab8f500a007266fa8fa2d4a5`。初次测试命令漏传 ViennaRNA 路径及人工序列过短均已暴露并重跑，未记为通过。定位后终止了本会话遗留的冗余全 split 诊断，正式队列从断点策略继续，未强杀其他会话任务。
+
+
+## §15.432（2026-11-06）RNAformer 32 格闭环与 ViennaRNA ArchiveII
+
+- **RNAformer 全变体**：bprna/intrafam/interfam/biophysical 四变体共 32 格 matched-clean 比较完成，状态 `PASS_RNAFORMER_CALIBRATION_COMPARISONS_NOT_ALL_ELIGIBLE`，汇总 SHA256=`6bac2a69d98119f7d38e21ed95dc942275ea0ad6f3b6f93bc3291a96204ce4ab`。biophysical 八 split 原生概率独立验收 SHA256=`3786541f0377a9675391b40c2b7c9c35e94f71f38562716cab057e1b937f0fa6`。
+- **biophysical 大 split**：bpRNA-new F1=0.6405892910，xens2 ECE=0.0048310272 低于 RNAformer=0.0057056518；RNAformer Brier=0.0066905095、NLL=0.0304741379、AURC=0.2267002716 优于 xens2=0.0072889935/0.0338954187/0.3486543793，比较 SHA256=`00365dca5d1d021783d94e3aa3f1b97b6d5c9bcdd1f99ad489dfd060cb16c137`。ArchiveII 和 TS0 的 xens2 ECE/Brier/NLL 均更低，Spearman/AURC 更好；不同指标方向仍不一致。
+- **ViennaRNA ArchiveII**：MFE/centroid/MEA F1=0.5752066230/0.6180982114/0.6053716365。共同 n=1107，共享 BPP ECE=0.0019762368、Brier=0.0024953937、NLL=0.0104327158；xens2 calibrated ECE=0.0010307683、Brier=0.0022205656、NLL=0.0112838144。xens2 的 ECE/Brier 更低，ViennaRNA 的 NLL 略低；xens2 Spearman=0.7254523612、AURC=0.1170770953，优于三种 ViennaRNA。比较 SHA256=`a904d449451789d742df409aaaa99bb5ec73d0eeb20d07f1b7b72362973e2186`、`d385db0485bcadb033aea403e1786fd90c4175ff08fdf7b029130ecacf26d6c4`、`803660039fcd740772d11427e88c69c1fe3bb8bc66459e1f4dc3207720568052`。
+- **后续**：ViennaRNA 已完成 9/24 个有效比较格，其余继续；RiNALMo-ft 真实 CUDA 预检通过，完整八 split 正在接续，未验收前不计入。MXfold2 的 ArchiveII 原生 BPP 无效不被 RNAformer/ViennaRNA 证据覆盖。
+
+
+## §15.433（2026-11-06）ViennaRNA 24 格闭环与 RiNALMo-ft 路径恢复
+
+- **ViennaRNA 全板**：MFE/centroid/MEA 共 24 格原生 float64 BPP、逐条 F1、三次概率哈希和独立指标复算通过，验收 SHA256=`509939b2b1bf8d09792e6dad6d978b43aeeb5e456bb9fe00e7ba6dce9260032a`。24 格 matched-clean 附加比较汇总 SHA256=`4c0b5d365f11d61492372fc3874fa205c47a15f2ab797bb705e6d8dcf9c3d6bc`，不改 own-clean 主榜。
+- **bpRNA-new**：MFE/centroid/MEA F1=0.6379382478/0.6770326664/0.6619891987；共享 BPP ECE=0.0036135936，低于 xens2=0.0048310272，Brier=0.0047753881、NLL=0.0191478739 也更低。三者 Spearman=0.6000648096/0.5477101503/0.5727635605，AURC=0.2098846401/0.2024108637/0.2011006357，均优于 xens2=0.5176421505/0.3486543793。比较 SHA256=`3e54d52523c4ed56658465b5b6700433e5ff21648e00fc52b6c71b0836f5b5af`、`fc64120e40fd8bf9e91f3e8d904bfc879cdff9077bbaf8592d8b21697dc30d0d`、`6e8e492808c573a38c09b458416a1a0675d5674c651e6b40d60418a4f37d432b`。与 TS0 的方向不同，按 split 保留差异。
+- **RiNALMo-ft 工程故障**：真实 CUDA 单条三次预检通过，但正式 TS1 因误写 `clean_splits/tr0/splits/...` 与 `.../audits/...` 路径停止，不是模型或 CUDA 失败。现从八个 `clean_tr0/<split>.json` 读取真实 `protocol.data/clean_audit`，并校验主榜结果、官方权重、clean n、数据与审计 SHA；汇总路径修正为 `summary_raw_clean.json`。八 split 路径检查全部通过，提交 `06a258ac1ccb328c8fa039cc7619b02ab786d7cf`，队列已恢复，不重复 smoke。
+- **边界**：RNAformer 32 格和 ViennaRNA 24 格已闭环；MXfold2 为七格有效加 ArchiveII 原生 BPP 超界；RiNALMo-ft 正式全板仍在运行，其他无原生概率系统不能补 0。全 eligible 校准排名仍未完成。
+
+
+## §15.434（2026-11-06）MXfold2 六格比较与 RiNALMo-ft 大 split 进度
+
+- **六格比较**：TS1/TS2/TS3/hard/TestSetB/TS0 均完成 xens2 与 MXfold2 的同 GT、同候选配对附加敏感性。六格 MXfold2 ECE 均更低，分别为 0.0059572692/0.0077294563/0.0049607567/0.0064225447/0.0017417502/0.0004637529，xens2 分别为 0.0069049068/0.0168951314/0.0082137013/0.0188273844/0.0021666147/0.0007326793。六格汇总 SHA256=`a45a6d271600371450aa061a74f0f13dcacca10b30b8d8f8da901a15b7aabceb`，状态明确为 6/8。
+- **TS0 证据**：MXfold2 clean n=1188、matched n=666、F1=0.5489548512，与主榜一致；比较 SHA256=`3cc267bd33cea34cf6a0762f5629120224558da6a9beb504c0bdba9e0deb8846`。ArchiveII 原生概率无效，bpRNA-new 三次推理继续，不能将六格方向外推为全板最佳置信度。
+- **RiNALMo-ft**：ArchiveII clean 概率前两次 F1 均为 0.7108895303，TS0 首轮 F1=0.7110963915，与主榜一致；完整三次、独立验收和八格比较仍按门控等待，不将 repeat 数当成全板完成。
+
+
+## §15.435（2026-11-06）RiNALMo-ft 七格与 CONTRAfold 后验能力纠正
+
+- **RiNALMo-ft 七格**：独立 NPZ 复核 SHA256=`a1295d56fa2cbc00f626f6e72f3f430c77473239b6b24317395a48770f2c04d6`，七格比较汇总 SHA256=`22e62860c8992c6b58224cadf9023749d16e6a6118bafd6050b2a1e14e69fbb1`。ArchiveII F1=0.7108895303，TS0 F1=0.7110963915。TS0 的 xens2 ECE=0.0006199985，低于 RiNALMo-ft=0.0015298908；其余六格 RiNALMo-ft ECE 更低，不能外推为统一胜者。
+- **schema 修复**：验证器现兼容 RNAformer `clean` 与 RiNALMo-ft `clean_tr0`，条件表达式先选字典再按 split 取单元格；两种真实 schema 均通过。提交 `cdad4bad81418442dda5239fbb75c9dc7b4703dd`。
+- **CONTRAfold 能力勘误**：官方源码明确支持 `--posteriors CUTOFF OUTFILEORDIR`，此前“无原生逐对概率”是“现有结果未保存”，不是模型能力缺失，相关旧结论撤回。`--bpseq` 与 `--posteriors 0` 联合调用保留原生 MEA 结构并输出后验，真实单条逐对一致。实现和队列提交 `aca6089361cf71c8ab5bed5c58ec224e9b3c4f0a`，13 项测试通过。
+- **TS2 首格**：EternaFold F1=0.8562434418、ECE=0.0028017544、Brier=0.0061798341、NLL=0.0256283602，比较 SHA256=`5895f8d0fc5ffefae09126c6ac647c012f09c9e084504bb8819f1af7195dbec3`。CONTRAfold F1=0.8702928870、ECE=0.0032803148、Brier=0.0064057593、NLL=0.0246872021，比较 SHA256=`e2d248daf36a2850e539cefcf9f7130e4160327f6ab1a8155ef5e2e6d2ebf783`。两者均低于同交集 xens2 ECE=0.0177234890，八 split 未齐前不称全板最低。
+- **队列**：EternaFold 与 CONTRAfold 各自 clean 八 split×3 后验计算已并行启动。Vienna 实施文档同步纠正；不恢复 NucleicBERT 原论文下游训练，不把后验与 one-hot 混用。
+
+
+## §15.436（2026-11-06）RiNALMo-ft 八格校准闭环
+
+- **全板验收**：八 split 原生 CUDA 概率、GT、三次 F1 与置信度均通过独立复算，SHA256=`e62ab70f2cef14f72981c2686ceb972327faa44ddf8e29cae0d1dee45368f8aa`。八格 matched-clean 比较汇总 SHA256=`a5449f369c646b4b26be6ba28365782ce8a44e57eb2b50c76896ed8052deaf1b`，不改 own-clean 主榜。
+- **bpRNA-new**：RiNALMo-ft clean n=5388、matched n=5386，F1=0.4489961557。xens2 ECE=0.0048310272、NLL=0.0338954187，低于 RiNALMo-ft=0.0056840551/0.0425929586；RiNALMo-ft Brier=0.0068296539，低于 xens2=0.0072889935。RiNALMo-ft Spearman=0.6353006942 高于 xens2=0.5176421505，但 AURC=0.4193628566 高于 xens2=0.3486543793（更差）。比较 SHA256=`483fe6e198fb2c38e34a85c46b52062b1584743c8b5d0bf2728fb5b1799d5109`。
+- **结论**：RiNALMo-ft 从路径故障恢复到全板闭环，未把 smoke 或前两次 repeat 当成最终结果。当前 RNAformer 32 格、ViennaRNA 24 格、RiNALMo-ft 8 格已完成；MXfold2 bpRNA-new 和 CONTRAfold 家族 16 格继续。ECE、Brier/NLL、Spearman、AURC 分开陈述，不宣称全板最佳置信度。
+
+
+## §15.437（2026-11-06）MXfold2 七格有效与 ArchiveII 无效总账
+
+- **完整评估**：MXfold2 bpRNA-new 三次 F1=0.6688466171，与主榜一致。七格有效概率与 ArchiveII 原生 BPP 超界汇总完成，独立验收 SHA256=`a3500e3726d1bc7d408d26af5f0096a1c82b667c697199fc5a544c5d7c310fba`，比较汇总 SHA256=`1b72a3254fe59fe400e5c7c04ac1581f9dbef15fb2db2320266a73595c5d0b33`。ArchiveII `matched_n=null`，无 ECE，不把无效概率或空交集写成 0。
+- **bpRNA-new**：共同 n=5386，MXfold2 ECE=0.0022590028、Brier=0.0044315361、NLL=0.0167012585，均低于 xens2=0.0048310272/0.0072889935/0.0338954187。MXfold2 Spearman=0.6236330205、AURC=0.1861707741，也优于 xens2=0.5176421505/0.3486543793。比较 SHA256=`19dc49a86905d322c58545c6649b9649ad6c67664222cc02e8bf290f706bc72d`。
+- **工程闭环**：混合有效性汇总 initially 因有效单元格缺 `status` 触发 KeyError，已改为安全读取并用真实八格复算验证；相关 11 项测试通过，提交 `f0f252f51fccae34c5c1bdfbf1a67bdf97544f78`。没有通过降低断言或夹紧 BPP 获得假 PASS。
+- **边界**：MXfold2 七格有效比较均显示低于 xens2 的 ECE，但 ArchiveII 不能纳入概率排名。CONTRAfold 家族后验 16 格仍在原生 CPU 队列，双 stream 测速等待独占；不宣称全 eligible 最低 ECE 或速度 SOTA。
+
+
+## §15.438（2026-11-06）CONTRAfold 家族 12 格与测速基线修复
+
+- **EternaFold 六格**：独立复核 SHA256=`a234735b050773bc8d953c66890ec08cbf3e80f42a3ae4fd93a8ac02fc486c46`，比较汇总 SHA256=`28577fa77e1ec472a30a3063bfbf888401f660c5a9eb78eef20b86b746ca37ff`。TS0 F1=0.5290589203，xens2 ECE=0.0006256100 低于 EternaFold=0.0016484854；其余五格 EternaFold ECE 更低。TS0 比较 SHA256=`22048c8e50c93311f76e63fc131a75f4e7b6fffd875bb89879b5d1929414017f`。
+- **CONTRAfold 六格**：独立复核 SHA256=`37ddd15191bdcf93e8deeb1c7b3a7f7f2d2ce2e8e1fc9610845f22ee37aa64e6`，比较汇总 SHA256=`1fda0ad85d2d68f9b84149c71526767e0f684697f7321fe4f83173e033136501`。TS0 F1=0.5231344510，xens2 ECE=0.0006256100 低于 CONTRAfold=0.0012549405；其余五格 CONTRAfold ECE 更低。TS0 比较 SHA256=`265cb527ffc04296026282a00fad68a180c1beabf1d47822f898e4f7c55a0d48`。
+- **测速基线修复**：双 stream 在独占窗口启动后发现误写 `xens2_b32_exclusive.json`，实际已验收文件为 `xens2_b32_full_ts0.json`。已固定真实基线 SHA256=`0d3747d275993a598ef2d3c8b4910be66eaf821b6db47103fcc8c8a502f185e0`，检查 n=1288、三次、raw-sequence、无缓存、无 resume；4 项测速测试通过，提交 `760de37fad6af24429a8f6afae25c985d1afbec6`。后续外部 GPU 进程进入，当前没有有效双流吞吐。
+- **边界**：CONTRAfold 家族各完成 6/8，ArchiveII 与 bpRNA-new 继续，不能称 16 格闭环。TS0 与其他 split 的 ECE 方向不同，不支持跨 split 统一最佳置信度。
+
+
+## §15.439（2026-11-06）CONTRAfold 家族 ArchiveII 后验比较
+
+- **EternaFold**：ArchiveII 原生 F1=0.5800338761，matched n=1107。ECE=0.0005542792、Brier=0.0019691170、NLL=0.0076273511，均低于 xens2 calibrated=0.0010307683/0.0022205656/0.0112838144；xens2 Spearman=0.7254523612、AURC=0.1170770953，优于 EternaFold=0.4482825969/0.2905113517。比较 SHA256=`135e0d2586df516d206807cc91b803c2b223a5b6a8b7937cf8ddfb745c94e746`。
+- **CONTRAfold**：ArchiveII 原生 F1=0.5986366563，matched n=1107。ECE=0.0004912362、Brier=0.0019319073、NLL=0.0074755159，均低于 xens2；xens2 Spearman/AURC 优于 CONTRAfold=0.3991815701/0.2732475161。比较 SHA256=`c61f53c87aab5cdf9e611654d1ce1c7bf16647e9a3e9f7d5f18d897efad4b9fd`。
+- **边界**：两套后验各完成 7/8，bpRNA-new 接续。原生后验在 ArchiveII 的概率误差更低，但结构排序并未超过 xens2；不把 ECE 与最佳结构置信度混为一谈。
+
+
+## §15.440（2026-11-06）CONTRAfold 16 格、NucleicBERT TS3 纠错与 128 格索引
+
+- **EternaFold 全板**：八 split 原生 posterior 独立验收 SHA256=`6e212ee035d1fc14e3cc309dd02dc91020fa0acfdf753e6b20044b5cebceacae`，比较汇总 SHA256=`77ca92c5276a753808854b547cb22a928834a66440ae36b1764773caadeaa5e5`。bpRNA-new clean n=5386、F1=0.6853675983，ECE=0.0009544109、Brier=0.0036599586、NLL=0.0135816829，均低于 xens2；Spearman=0.5846564769、AURC=0.1794414824 也更好。比较 SHA256=`e51a8532ea089906198ba80753603464f8013f531661628110449a88cbffa9e6`。
+- **CONTRAfold 全板**：独立验收 SHA256=`4d28169e53d2131a5988366f1f3182927f4849c6fa4558373847602c16f8a6b6`，比较汇总 SHA256=`7e96865f4e1f3a8f84d3c366e4579c90b36a7e15e609f5938c64edf608cbdbf4`。bpRNA-new F1=0.6967482719，ECE=0.0014770289、Brier=0.0036509706、NLL=0.0135135822，均低于 xens2；Spearman=0.5612591419、AURC=0.1745424161 也更好。比较 SHA256=`1200fe5ec030e271c83f6b5a034581057ecd8e19c7fa594b64db68fe4764b73d`。
+- **NucleicBERT TS3 纠错**：旧脚本无条件跳过 TS3，并把缺失比较文件写成 EMPTY；实际 ft clean n=4、frozen clean n=17，均有原生概率。已补两格 matched n=4 的比较，SHA256=`df93d5522023b6e63f2a9aa7635ad4aa3ce62456891a534833b006e86e1d4e92`、`1f0b5462b1f14c11a2e43eb41da71cd3a5f26a60ba9c907a49c3d59fa32b8c71`。新 16 格总账均为有效比较，SHA256=`f265294c4df687eab1839f5211da81680e4ee8518a3211c7fe2aa058095df867`，取代旧 `f3c973df…` 空值口径。修复提交 `0360efaa41a31171d3f8b3a1b6403a0826c16ef0`。
+- **128 格统一索引**：状态 `COMPLETE_REGISTERED_PROBABILITY_ASSESSMENT_WITH_NATIVE_INVALID`，共 124 个有效交集、2 个 EMPTY、1 个空交集、1 个原生 BPP 无效，pending=0，SHA256=`3839a281dae9eedba95de4abb69b7fee925a95108b10dae5b3ee644df665c143`。索引提交 `a8e7336648e570c568608f2c86a01ce235005cea`。
+- **科学边界**：不同系统的 own-clean/matched n 不强行统一；own-clean F1 主榜不变，ECE 交集只作附加敏感性。多个系统在 bpRNA-new 等指标上优于 xens2，最低 ECE/最佳置信度目标已有实测反例，不能宣称达成。双 stream 速度验收仍等待无干扰窗口。
+
+
+## §15.441（2026-11-06）round38 第 8 页校准证据定点更新
+
+- **页面改动**：仅第 8 页，标题改为“主图 4｜VL0 校准改善，但不构成全板最低 ECE”。左图保留 own-clean 校准前后，右图新增各 split 最优基线 dumbbell 与 matched n；页脚明确 128 格注册概率证据和 matched 仅作敏感性。其余 22 页文字逐项一致，用户已有布局不改。
+- **图源**：`round39_ece_ppt_source.json` SHA256=`128e9e6cfaa4409e502c424ce89f13b9052c8ec043230871de0ece59a78082d5`。TS0=MXfold2 0.0004637529（n=666）、TestSetB=CONTRAfold 0.0015387200（n=288）、bpRNA-new=EternaFold 0.0009544109（n=5386）、ArchiveII=CONTRAfold 0.0004912362（n=1107），均低于同交集 xens2。图件 SHA256=`833aa2cb220a15b9b998c41e34a8a4ce918529dccaf2ca3a1816bb5b148bbba4`。
+- **最终文件**：PPT SHA256=`09cb7c6292cc2e81245d8f298413c96a1db2eb225acd3dd7ce4e2a26a3877b4e`，PDF SHA256=`f3fdb739e8ba0118798c452d88697d5160181b3d8d7b5b8af76808386c921f99`。PDF 23 页，第 8 页全部文字为微软雅黑、1.5 倍行距。
+- **渲染 QA**：初版右侧副注重叠与标签裁切已修复；LibreOffice/Poppler 中文缺字改为原生 PowerPoint 验收。导出时曾误命中另一个打开文稿，未交付该 PDF；随后用唯一 `_round38.pptx` 后缀定位并关闭旧内存副本重载，最终第 8 页中文、标签、页脚和文件身份均通过。QA 状态 `PASS_ROUND38_ECE_PAGE_ONLY_NATIVE_RENDER`。
+- **叙事边界**：本页同时证明 VL0 校准有效与多基线 ECE 更低，避免把校准改善写成全板最优。速度候选和 8/8 目标不因本页更新而宣称完成。
+
+
+## §15.442（2026-11-06）104 格 own-clean 表格附录完整入片
+
+- **交付形式**：原 23 页不变，新增 24–31 共 8 页，每 split 一页、13 系统。每格列 clean n、strict micro-F1 三次均值、TP/FP/FN、精确删除数和同源删除数；共 104 格与 `own_clean_leaderboard.json` 逐值一致，源 SHA256=`9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`。
+- **空值与协议**：RNAformer-intrafam 和 SPOT-RNA 的 TS3 为 `EMPTY_AFTER_DELEAK`，F1 与 TP/FP/FN 显示 `—`，clean n=0，不记 0 分。ArchiveII 页注明 NucleicBERT-ft/frozen 原生首 598 nt，分别截断 39/38 条。其他系统各自 clean n 不强行对齐。
+- **文件**：PPT 共 31 页，SHA256=`89447e5c35ddfa4addd72f04e549593cf154aeb115f5d1c50e2303c149d6ef19`；PDF 共 31 页，SHA256=`ce31bfb3a3788b8bae0342c24963123a836960ec78ffb277c8a63fc81f9f45f7`。新增页均有中文备注、微软雅黑和 1.5 倍行距。
+- **QA**：原生 PowerPoint 导出后检查第 8、24、28、30 页，表格无越界、遮挡或缺字；EMPTY 和 598 nt 说明正确。前 23 页文字逐项一致。QA 状态 `PASS_OWN_CLEAN_104_TABLES_NATIVE_RENDER`，设计合同见 `docs/plans/2026-11-06-round38-ownclean-table-appendix-design.md`。
+
+
+## §15.443（2026-11-06）E2Efold 官方资产替代源复核仍 blocked
+
+- **官方身份**：仓库 commit=`2aab9e78326ddaa27d14c49eb34001c0003a1960`。`models_ckpt/README.md` 指向 Google Drive 文件夹 `1m038Fw0HBGEzsvhS0mRxd0U7cGXqLAVt`，本地 `models_ckpt` 只有 README，无权重本体。
+- **下载证据**：SharePoint 返回 HTTP 200 但页面标题为 `Error`，不是权重包；保存 HTML SHA256=`3bb40255d48972c4693206b46f7dfc097a0f041d8e989c9241d836ced5d050f2`。gdown 超时且零文件，日志 SHA256=`aebfbbe00214ea9e6b1c42348bd649fcb32b22ca10e68f7cc083535cad52eed5`。Drive 文件夹、embeddedfolderview、usercontent 三个接口均连接超时。
+- **替代源边界**：作者 liyu95 在 issue #16 回复“Just updated”，但当前 Drive 仍不可达。检查官方及 19 个 fork 的递归文件树，未发现可核验的官方基础 checkpoint；其他 fork 只有改版 E2Efold-FM，不能冒充官方 E2Efold。
+- **结论**：保持 `BLOCKED_PROVENANCE`，证据 JSON SHA256=`a8b84121991f520ba62e6eb6c85cf73b34ac879a253af3c3d05fd9f09a185633`。没有官方权重哈希、strict GPU load 与完整训练语料合同，不能用替代模型、其他 clean 集或 0 分补齐 600 单元。双 stream 测速仍因其他 GPU 进程无有效结果。
+
+
+## §15.444（2026-11-06）源清单交付完整性复核
+
+- 本地 `SOURCE_MANIFEST.json` 共 347 个唯一条目，其中 345 个现有文件的路径、字节数和 SHA256 全部一致，无空文件、无占位符、无 hash mismatch。
+- 两个 PRISM 文件已被其他整理步骤明确标为 `archived_missing`，不视为意外缺失，不覆盖或改写其他会话的归档决定。除此之外没有缺失路径。
+- 本项只验证清单与文件一致性，不代表 600 单元、速度 SOTA 或 E2Efold 资产已经恢复；这些未完成边界继续保留。
+
+
+## §15.445（2026-11-06）plana 权重同一性检查与暂停测速
+
+- **逐张量检查**：两个 plan a checkpoint 共 500 个编码器张量，使用 `torch.equal` 并同时检查 shape/dtype。仅 embedding、最终 layer_norm 和 pooler 共 5 个张量完全相同；33 个 Transformer 层的 495 个张量全部不同。不能合并 enc0/enc1 或缓存共享编码，同架构不等于同权重。证据 SHA256=`2caf286104aadf707031ba09f23aa09618cd19d52379a8a62bb97e6c53221ef1`。
+- **权重身份**：s0 SHA256=`bd917b6380738e65ce46020eb52ab12333d2cd7a475ab066ed37379dc71828cd`；s1 SHA256=`c10fb303b589346b806ff15ba1f4bb789af1ada3ac78a8010246f6d85c3296c8`。
+- **用户决定**：暂停测速，停止本会话的 `run_xens2_stream_speed_round39.sh` 重试队列，不终止其他会话任务。已有 B=32=13.5802438348、自适应=14.1949071622 seq/s，双 stream 没有有效吞吐，速度 SOTA 未达成。
+
+
+## §15.446（2026-11-06）round48 独立单模型合同与 structRFM 真实 CUDA 预检
+
+- **执行合同**：`docs/plans/2026-11-06-round48-single-model-architecture.md` 已写入根目录/spec/spec_sync 三处 spec/tasks/checklist。顺序固定 structRFM+JEV→RIPE→Pair-JEPA；每个冻结候选三种子收敛后做 A/B/C。主模型必须单骨干、单头、单 checkpoint；旧区域均值 JEPA 继续否决，Pair-JEPA 仅作 scorer 消融且推理无 teacher。
+- **官方资产**：structRFM commit=`f0c1add19f8dfc786f16bc4abb7aa775dbadddbf`，HF commit=`5fca714bd82815c65a83d12d008a7b217ae57224`，`model.safetensors` SHA256=`f6fb2c0770e5d4f5b19bdc899572d36b0d0873776b720c973ca508de6b56adfb`。Nature 版语料 Zenodo 18272040，5,654,000,185 bytes，MD5=`651db6dc7b6d6aadece06a252831d1fe`；24 路分块下载与八 split 污染审计队列已启动，未通过前不放行正式训练。
+- **真实预检**：RTX 4090/CUDA 12.1，86,050,560 参数、197 个 checkpoint BERT 张量、197 个梯度张量；仅未使用的 `pooler.dense.weight/bias` 按白名单缺失，其他键完全匹配。官方 tokenizer 不加 CLS/SEP，24 nt 输入输出 `[1,24,768]`；515 输入明确报错，无 CPU 静默降级。结果=`audits/round48/structrfm_cuda_preflight.json`，状态 `PASS_CUDA_PREFLIGHT`。
+- **工程修正**：旧驱动的 RiNALMo 特殊 token 帧已改为显式配置，structRFM 走官方无特殊 token 路径，原 RiNALMo 默认不变。`--steps 0` 支持只由 validation plateau 停止。VL0 从教师清单精确重建为 196 条，SHA256=`bb15c17a5875613407dcd140044de9a266b5d3ab62e2b5440a36697097dcc778`。
+- **测试与边界**：适配器测试 2/2；污染管线 toy 端到端通过，raw=2、exact=1、clean=1，MMseqs 临时索引放本机 `/tmp`。TR1c/VL0 冻结表征 GPU 提取与 P0→三种子训练持久队列已启动。上述均为工程证据，尚无新模型科学结果，未改 PPT。
+- **代码**：首个合同与适配器提交 `acea314` 已推送 `round48-single-model-20261106`。
+
+
+## §15.447（2026-11-06）structRFM 冻结表征独立 QA 与训练队列纠错
+
+- **嵌入验收**：TR1c 为 42,564 条、`h=(5,284,025,768)` fp16，VL0 为 196 条、`h=(21,682,768)`；offsets 与长度守恒、全部有限值、首末序列独立 CUDA 前向逐值一致，状态 `EMBEDDING_QA_PASS`。未重提特征。
+- **队列纠错**：`set -u` 下同一条 `local` 同时赋值并引用变量导致首次退出；拆成两行后修复。第二次因驱动按 `vl0_196` 文件名寻找嵌入而退出，现用同一 196 条数据建立 `bprna_vl0.jsonl` 兼容命名并恢复。早停回归与适配器测试合计 9/9 通过。
+- **科学边界**：S1 的 seed0/seed1 已进入实际训练流程，S2 仍等待八 split 污染审计；启动、数据加载和工程 QA 均不是模型效果结论。预训练语料改为 4MB 小块 32 路续传以应对服务端频繁断流，审计硬门不变。代码提交 `737b295` 已推送。
+
+
+## §15.448（2026-11-06）structRFM step500 工程评测与 CPU 瓶颈恢复
+
+- **工程评测**：`eval_structrfm_frozen_round48.py` 复用生产 checkpoint/嵌入/DP，VL0=196 全量 CUDA 运行，TP/FP/FN=2366/2278/2252，micro-F1=0.5109047722、macro-F1=0.5457654851，checkpoint step=500、SHA256=`7a9e756760f2db257de584b19c8aa2c3890447bc433fbbfbab7fb2b4ad0c916b`。这是未收敛工程检查，不是科学结果，不入 PPT。
+- **资源诊断**：两个训练进程的 GPU 利用率一度约 1%、12 核负载约 90，GPU 显存接近上限但不是计算瓶颈。step 500 完整 checkpoint 后仅停止两个训练进程，限制每进程 OMP/MKL/OpenBLAS=2 并从 `resume.pt` 恢复，保留模型、优化器、scheduler、batch stream 与验证状态；最多损失 75 个未保存步骤，不重训前 500 步。
+- **资产与提交**：VL0 split 命名兼容文件与 checkpoint 均保留；独立评测器、断点恢复和队列修复提交 `2c0d7f6` 已推送。重复 GitHub release 权重下载已停止，官方 HF 权重不变，释放预训练语料带宽。
+
+
+## §15.449（2026-11-06）structRFM 三种子全板自动验收链
+
+- **队列**：`run_structrfm_frozen_evaluation_round48.sh` 只在三个 run 均 `converged+early_stopped` 且预训练 clean 总账完成后放行。逐 split 提取缺失嵌入，执行八 split×三训练种子×三次确定性推理；每个 seed 独立解码，不平均预测、不形成集成。
+- **独立复核**：`aggregate_structrfm_frozen_round48.py` 强制 clean 数据/审计/checkpoint 哈希、raw_n=clean_n、long unsupported 数量守恒、逐序列 TP/FP/FN、三次预测完全一致及结果 SHA；输出逐 seed mean±SD 和位置边界。
+- **回归与恢复**：合成测试 1/1 通过，覆盖 8 split×3 seed×3 repeat 聚合。旧输出只有 checkpoint 哈希和 repeat 数匹配才复用，否则改名 `.stale` 保留；运行中的 run_meta 不会误判为收敛。长序列只按显式 `PARTIAL_STRUCTRFM_POSITION_LIMIT` 记录，不静默丢弃。
+- **当前边界**：训练仍未收敛，污染语料仍在下载，尚无全板科学结果。代码提交 `ed4794b` 已推送。
+
+
+## §15.450（2026-11-06）step2000 复测 OOM 与显存门加固
+
+- **训练状态**：S1 的 validation loss 在 step500/1000/1500/2000 为 38.1344/29.9274/27.6863/26.6736，仍持续改善，bad=0，未收敛。step2000 的三次 VL0 复测在处理到第 75 条时因两个训练进程占用 22.5GiB 加评测进程而 OOM，未写出结果文件，不得拼接为三次有效结果。
+- **处理**：不减少序列、不截断、不降低精度，也不停止正在正常收敛的训练。S2 启动前要求空闲显存≥16,000MiB，S1 自动评测前要求≥12,000MiB；已重启两个持久队列使新门生效。全参独立评测器 `eval_structrfm_full_round48.py` 已实现并通过静态检查，待资源窗口执行。
+- **代码**：提交 `f352288` 已推送。当前仍无新科学结论。
+
+
+## §15.451（2026-11-06）Rfam/CHANRG 纳入 structRFM A/B/C 验收
+
+- **范围修正**：P0 从主八 split 扩为 13 split，新增 `rfam_fam` 及 CHANRG Test/GenA/GenC/GenF；全部使用 structRFM 预训练语料的同一精确+80% identity 审计。汇总状态为 `PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS`，未完成前不启动 S2。
+- **评测覆盖**：自动评测同样扩为 13 split×3 seed×3 repeat；聚合状态为 `PASS_STRUCTRFM_FROZEN_ABC_13_SPLITS_3_SEEDS_3_REPEATS`。合成测试已改为 13 split 并通过，没有遗漏 B 类外部 OOD。
+- **当前状态**：训练仍在收敛，预训练语料以 2MB×48 路续传；S2 与正式评测均未开始，无科学结果。代码提交 `cfbfbb8` 已推送。
+
+
+## §15.452（2026-11-06）RIPE 四通道静态实现与数值验收
+
+- **实现**：`src/rnajepa/ripe.py` 提供 log、R1、R2、R3、R5、R6 六种模式；连续 log 距离基、{11,22} 双周期、ν>1 的 log 远场、互补内容及随机对照均由同一模块生成，不使用结构标签拟合初始化。
+- **测试**：4/4 通过，覆盖远场公式、距离基归一、Δ=0/Δ<4/特殊 token 门控、4096 nt 有限值、随机周期/互补表可复现及全部 RIPE 参数有限梯度。测试中还修正了距离基维数、互补二维索引和“特殊 token 只关闭内容项而非全部位置偏置”的口径。
+- **边界**：仅完成静态实现验收，未启动 RIPE 训练，未产生架构效果结论。代码提交 `769c3a4` 已推送。
+
+
+## §15.453（2026-11-06）RIPE 与 JEV 头兼容性接入
+
+- **接入**：`FlatDecisionHead` 新增可选 `ripe_mode`，在 ResNet2D 输出后按头均值加入 RIPE 偏置；`score_pair_matrix` 统一生产与全参训练路径。未提供 seq_ids 时若开启 RIPE 会明确报错，不允许静默丢失先验。
+- **默认兼容**：`ripe_mode=None` 时 `score_pair_matrix(z)==resnet2d(z)`，既有 checkpoint、训练、早停和分块路径不变。TrainConfig 与 plan-a 均可显式选择 log/r1/r2/r3/r5/r6，尚未启动对应训练。
+- **验证**：默认等价、RIPE 输出/梯度、TrainConfig 构建、RIPE 数值、head 分块与早停回归共 26/26 通过。代码提交 `f693d8f` 已推送。
+
+
+## §15.454（2026-11-06）Pair-JEPA 静态 scorer 与退化目标修正
+
+- **实现**：`src/rnajepa/pair_jepa.py` 包含对称轻量 PairMLP、被掩 pair latent、训练期 EMA、noEMA 和随机 target 对照；推理只调用 scorer，不调用 teacher。
+- **设计纠错**：逐对 LayerNorm 使损失退化为常数且随机 target 不可区分，已移除；随机 target 改为展平全部配对位置后排列，确保破坏对应关系。空 mask 明确失败，target/prediction 方差与范数保留防坍塌诊断。
+- **验证**：3/3 通过，覆盖零初始化推理无 teacher、EMA 仅训练更新、noEMA 冻结、有限诊断、随机 target 可复现且改变损失及空目标拒绝。未启动 Pair-JEPA 训练。代码提交 `2754585` 已推送。
+
+
+## §15.455（2026-11-06）structRFM seed1 自然早停与三次 VL0 复测
+
+- **收敛**：seed1 在 step8000 达到 patience=6 并恢复 best step5000，`status=completed`、`converged=True`、`early_stopped=True`，best validation loss=22.9369190953。seed0 在 step8000 刷新 best 后继续训练，第三种子尚未启动。
+- **三次复测**：seed1 VL0=196 三次预测逐对一致，TP/FP/FN=3359/1366/1259，micro-F1=**0.7190409933**、macro-F1=**0.7354470215**，checkpoint SHA256=`083ffec63a3a44ce25722e9f0e746d564c63939a59338592b5aea53c97fd23b5`，结果 SHA256=`8f728406adc1e76e6509be805ee5f14673a4d4f5dfe9a05bfc475968ba3938dd`。
+- **边界**：该结果仅属验证集证据，不是 A/B/C 或 SOTA 结论，不入 PPT。S2 已预置 OMP/MKL/OpenBLAS=2，提交 `80cfd43`。
+
+
+## §15.456（2026-11-06）Pair-JEPA/PairMLP 与 JEV 头兼容接入
+
+- **接入**：`FlatDecisionHead` 新增 `pairjepa` 与近参数 `pairmlp`，复用 PairRepresentation、RIPE 可选偏置、Turner 先验、合法 mask 和 DP；pairmlp 不使用 EMA。`masked_pair_latent_loss` 作为训练期辅助目标接口，推理仍只有单一 scorer。
+- **默认兼容**：resnet2d/mlp 默认路径不变；Pair-JEPA 输出层零初始化，未训练时分数为零，与既有零残差起点一致。TrainConfig 支持 `jepa_use_ema/noEMA/random_target`。
+- **验证**：零初始化、latent 损失、梯度、配置构建、RIPE 兼容、分块与早停共 28/28 通过。代码提交 `b5304dd` 已推送，尚未启动 Pair-JEPA 训练。
+
+
+## §15.457（2026-11-07）Pair-JEPA 辅助损失真实 CUDA 训练验收
+
+- **接线**：TrainConfig 新增 `lambda_jepa`（默认 0）与 `jepa_mask_prob`，训练时从同一 PairRepresentation 采样合法 pair，latent loss 加入总目标；EMA 仅在 optimizer step 后更新，推理不使用 teacher。非 pairjepa 或非冻结嵌入时明确拒绝。
+- **工程纠错**：辅助 loss 必须读取模型所在设备，不能沿用 `objective_terms` 之前的原始 CPU batch。随机 target 可复现，空目标拒绝，早停和 resume 保持兼容。
+- **真实验收**：2-step CUDA 小数据运行通过，日志含 `jepa` 项，checkpoint 中 scorer 与 EMA teacher 参数分化；相关测试合计 14/14 通过。该小运行仅作工程证据，不是科学结果。代码提交 `0912460` 已推送。
+
+
+## §15.458（2026-11-07）RIPE-structRFM 长序列 CUDA 验收、seed0 收敛与续传纠错
+
+- **S1 seed0**：step15000 达到 patience=6，恢复 best step12000；best validation loss=21.1785112411，`converged=True`、`early_stopped=True`。seed1 的既有结论不变，seed2 已进入训练；三者齐全后才会放行 13 split 正式评测。
+- **RIPE-BERT 实现**：移除 BERT 绝对位置嵌入，在每层 self-attention 的 QK 分数注入相同四通道 RIPE；训练 checkpoint 显式记录 `meta.ripe={mode,encoder}`，全参评测据此同时恢复 encoder 和 JEV 头 RIPE，不把两种增益混为一个消融臂。
+- **故障与复核**：首次官方 515nt CUDA 前向发现后加 RIPE 参数留在 CPU，已按对应 attention 权重的 device/dtype 初始化。修复后官方 structRFM 515nt 输出 `[1,515,768]`，三次推理逐值一致且全部有限；证据=`audits/round48/ripe_structrfm_515.json`，SHA256=`103f4fcac693af13ac9c8e39e41d34d044baf427c49772ed825d40f659477513`。这是长序列工程能力验收，不代表长序列 F1 或 SOTA。
+- **语料续传**：旧下载器未核对 `Content-Range` 且未限制响应写入长度，断流后续传产生 oversized 分块。已停止该下载进程，保留 895 个完整块及 48 个可续传短块，将 1332 个 oversized 块移入隔离目录，422 块尚缺失；已确认完整/可续传字节=1,905,262,592，不把 oversized 字节算作进度。修复后严格校验响应起点、限制写入上限，最终仍以整包 MD5/SHA256 验收；语料尚未完成。
+- **tokenizer 纠错**：独立复核发现 structRFM 官方 A/C/G/U 编号为 5/7/8/6，并非 RIPE 内部 0/1/2/3。现 R3/R6 强制显式提供碱基词表，A/C/G/U/T 映射至 0/1/2/3/3，其余为未知；官方与规范编号的 RIPE 输出逐值一致，缺少词表会明确失败。更新后的 515nt ACGU 序列三次复测 SHA256=`c89ec6c325eeffce1e217edc48986ab1f7fa911be026761d891b82ff8317ef9f`，取代修复前的工程证据 `103f4f…`。
+- **测试与提交**：RIPE、JEV 头、分块、早停、真实 CUDA 设备继承、官方 token 映射及续传共 34/34 通过。基础修复提交 `92ce2f7ce813a9bfa04cd40cb63f11e490c635eb` 已推送，tokenizer 修正随后单独提交。PPT 尚未修改。
+
+
+## §15.459（2026-11-07）structRFM 冻结 JEV seed0 三次 VL0 复测
+
+- **输入与收敛**：恢复 seed0 的 best step12000，checkpoint SHA256=`2dfa4f9f030d4c766839a6264df5f48b2af6eb756606fd75d5a3a7d19976e75a`；VL0=196 全部完成，raw_n=clean_n=196，无截断或缺失。
+- **结果**：三次预测逐对一致，TP/FP/FN=3358/970/1260，micro-F1=**0.7507265817**、macro-F1=**0.7527701980**。由 TP/FP/FN 独立复算 F1 一致，结果 SHA256=`dd0bdc2f950da45c9d3c93be0881508eea46db3d1fb203549aeb5d7eed453db7`。
+- **边界**：高于本路线 seed1 的 VL0，但两者是不同训练种子，不能平均预测或挑选测试集结果；仍需 seed2 收敛、13 split 污染审计和完整 A/B/C。该验证集结果不入 PPT、不声称 SOTA。
+
+
+## §15.460（2026-11-07）13 split 联合预训练污染审计等价门
+
+- **等价实现**：`audit_structrfm_clean_all_round48.py` 保留每条序列的 split 与原索引，将全部 A/B/C 查询拼接后只运行一次 MMseqs；精确匹配、identity≥0.8、query coverage≥0.8 和 attrition 公式与逐 split 审计相同。正式输出仍为各 split 独立 clean/audit，最后写 13 split 总结。
+- **真实 MMseqs 验证**：13 个 toy split 分别运行旧独立实现和新联合实现，逐 split clean 文件 SHA256、raw/clean n、exact/homology-only 删除索引全部一致；联合与既有适配器回归共 3/3 通过。测试不是正式 clean 证据。
+- **队列**：仅在等待语料阶段替换 S2 队列，未中断 seed2；清除本会话此前留下的重复 flock 等待者后只启动一个持久队列。提交 `80b8d8acd4256424c56440b3cc9f345ca1e4243b` 已推送。语料整包 MD5/SHA256 和正式 13 split clean 仍未完成。
+
+
+## §15.461（2026-11-07）structRFM 全参三种子自动评测链
+
+- **放行条件**：`run_structrfm_full_evaluation_round48.sh` 等待 S2 三个 run 均 `converged+early_stopped`、13 split clean 总结和 ≥12,000MiB 空闲显存。逐 seed 使用各自 best checkpoint，检查 `meta.ripe`，没有 run_meta 时不把训练中的快照误判为收敛。
+- **独立复核**：13 split×3 seed×3 repeat；全参评测强制官方权重严格身份、CUDA、checkpoint 哈希与 clean 哈希。聚合器增加 `--full-model`，默认冻结路径不变；现同时复算 micro TP/FP/FN、macro-F1、三次预测一致和 raw_n=n+long_unsupported，并输出 macro mean±SD。
+- **验证与边界**：冻结/全参合成聚合 2/2 通过，shell/python 静态检查通过，提交 `e968ee61fbd57383bceb3f0378603b060b4ffedf` 已推送。持久队列只处于等待状态；S2 尚未开始，不能把该工程链当作全板结果。
+
+
+## §15.462（2026-11-07）structRFM 置信度、INF 与长度桶一次评测产出
+
+- **口径**：两条评测器现在只从 repeat0 累计合法 strict-upper pair 概率，输出全局 10-bin ECE/Brier/NLL、可靠性和边际误差；结构置信度为 DP 解码配对概率的几何均值，无配对时为 0。同步输出每序列 INF、长度和结构置信度。AURC 不在测试集拟合阈值，后续只用 VL0 冻结阈值。
+- **独立验证**：`PairCalibrationAccumulator` 与既有 `CalibrationMetrics` 的 ECE/Brier/NLL、边际误差和每 bin 数值一致；聚合器复算 micro/macro-INF、概率字段和 ≤100/100–200/200–400/>400nt 桶的 TP/FP/FN 与 F1，长序列不支持数继续保留。相关测试 4/4 通过。
+- **seed0 VL0 扩展复测**：TP/FP/FN 和 micro/macro-F1 与 §15.459 完全一致；micro-INF=0.7511213411、macro-INF=0.7567285681。合法 pair n=573355，ECE=0.0891816679、Brier=0.0290322408、NLL=0.1190333569。新结果 SHA256=`dc80fbbb3d014f019b08d897586803ebeebd6f807ac912350a718a72dac2d544`，取代同内容扩展前的结果哈希 `dd0bdc…`。该校准结果没有证明最佳置信度，仍仅属 VL0。
+
+
+## §15.463（2026-11-07）structRFM VL0 冻结 risk–coverage 阈值
+
+- **协议**：三种子中选择 best validation loss 最低者为参考，仅从其 VL0 structure_conf 计算 coverage={1,0.95,0.90,0.75,0.50,0.25} 的分位阈值；相同阈值应用于其他种子和 13 split。Spearman 与 AURC 都不在测试集拟合，常数输入导致无定义时写 `null`。
+- **自动链**：冻结/全参各有独立 confidence watcher；三种子早停后先补齐各自 VL0 三次推理，写阈值与 VL0 结果，随后等待对应 13 split 总结再计算全板 risk–coverage。checkpoint 哈希、CUDA、repeat=3 和 calibration 字段是复用硬门。
+- **验证**：风险曲线与既有 round42 协议逐值一致，参考种子与阈值来源测试 2/2 通过；提交 `c45b17289af33485f070e2a9e78b84dcdbf9e3ce` 已推送。尚未到三种子齐全阶段，没有 AURC 科学结果。
+
+
+## §15.464（2026-11-07）confidence watcher 初次启动遇到 SSH 拒绝
+
+- **现象**：冻结和全参 confidence watcher 首次并行启动均在约 0.13s 返回 `Connection closed by 125.71.97.44 port 29744`；后续单次连接在等待后也返回相同错误。尚未获得远端脚本执行日志，因此不能把 watcher 写成已启动，也没有证据把问题归因于 CUDA、训练或脚本断言。
+- **处置**：保留连接错误，不重复提交训练或下载任务；已有持久 SSH 任务在本地任务面板仍为 running，但这不等于远端健康证明。连接恢复后先查进程、run_meta 与日志，只补缺失 watcher，再提交本节及 §15.463 的远端台账。
+- **恢复**：随后 SSH 单次查询成功，seed2 日志继续推进；冻结 confidence watcher 已确认运行（脚本 PID=3247925）。全参 watcher 经单独连接补启动后确认运行（脚本 PID=3248297）。§15.463–15.464 已同步远端并随提交 `17c078ccb3fc9ce9ffbaa739c2c63f2ffef0bbf6` 推送。早期组合 launcher 的全参分支未保留，以单独 watcher 为准，不影响训练与正式评测。恢复补充记录随后由 `c4ca0f499fb8eaefff8c3749c09381accef06497` 推送。
+
+
+## §15.465（2026-11-07）长程配对指标实现与待部署边界
+
+- **实现**：冻结/全参评测器新增跨度 ≥30nt、≥100nt 的逐序列 TP/FP/FN 和 F1；聚合器按种子复算 micro/macro-F1，空桶为 `null`。长度桶与 `n_long_unsupported` 继续独立保留，不能用长程指标替代全长评测。
+- **部署验收**：连接恢复后已部署远端，相关回归 4/4 通过，提交 `a006c48017d5405cfc9cb6975ac8c30f86d972da` 已推送。测试曾发现预期值将 `(1,105)` 错算为跨度<100，实际为 104；实现给出的 TP/FP=1/1、F1=2/3 正确，修正测试预期后通过。此前 SSH 失败期间没有把本地实现写成已验收。
+
+
+## §15.466（2026-11-07）structRFM 冻结三种子收敛与 VL0 risk–coverage
+
+- **seed2 收敛**：step9500 达到 patience=6，恢复 best step6500，best validation loss=21.7523146997；至此 S1 的 seed0/1/2 全部自然早停，分别恢复 best step12000/5000/6500，没有以固定步数截断。
+- **三次 VL0**：seed0/1/2 micro-F1=0.7507265817/0.7190409933/0.7438251366，macro-F1=0.7527701980/0.7354470215/0.7504285092；每格 196 条、三次预测独立复核。三种子 micro mean±SD=0.7378642372±0.0136049837，macro mean±SD=0.7462152429±0.0076740611。ECE=0.0891816679/0.1418186603/0.1102386372，没有证明最佳校准。
+- **固定阈值**：参考为 best validation loss 最低的 seed0；coverage={1,0.95,0.90,0.75,0.50,0.25} 的阈值={0,0.6260677993,0.7035344589,0.7607511092,0.8933625488,0.9716985447}。seed0/1/2 Spearman=0.8765668057/0.8883897724/0.8489019206，AURC=0.0661888305/0.0806782411/0.0774866285。阈值只在 VL0 计算，测试集尚未参与。
+- **边界**：上述都是 VL0 过程证据，不能据此选择测试集最优种子或声称主榜 SOTA；正式 13 split 仍等待预训练 clean。
+
+
+## §15.467（2026-11-07）预训练整包 MD5 失败定位与 895 块隔离重下
+
+- **失败证据**：修复后 1802 块与最初 895 块组装得到正确总字节数，但 MD5=`7198040efa67ec02ac696e6929d6ef48`，不等于官方 `651db6dc7b6d6aadece06a252831d1fe`。因此旧下载器遗留的“长度正确”不能作为内容正确证明。
+- **独立抽样**：旧块 281/289/292 与官方 Range 新下载的 SHA256 全部不同；修复后块 2694/2695/2696 全部一致。修复后日志能证明的 1802 块保留，最初 895 块全部隔离至 `quarantined_legacy_895_md5_mismatch`，仅重下这些块而非整包。
+- **保留与边界**：失败组装保留为 `RNAcentral_512_MUSES_connects.md5_7198040efa67ec02ac696e6929d6ef48.failed.assembling`；审计=`md5_mismatch_quarantine_audit.json`。895 块替代下载已启动，正式输出仍需整包 MD5/SHA256 通过，污染审计和 S2 尚未放行。
+
+
+## §15.468（2026-11-07）S2 双并发全参最坏情况 CUDA 预检
+
+- **设计**：从 TR1c 选两条最长 500nt 序列，batch=2，warmup_head_steps=0，在 step1 直接解冻 12/12 层；两个独立进程并发，各运行两个 optimizer steps。该设置专门覆盖正式 S2 双并发全层反向的显存风险，不是科学训练。
+- **结果**：两进程第一步均完成全层反向，日志 peak 各约 4.4GB；第二步完成后 launcher 报告 seed0=0、seed1=0，未发生 OOM 或 CPU 静默降级。正式双并发方案保留，原有 ≥16,000MiB 放行门不变。
+- **边界**：两步 step-cap 只作工程证据，不写成收敛、验证集提升或 SOTA。脚本和精确 VL0 记录提交 `429e89d` 已推送；895 块替代下载继续运行。
+
+
+## §15.469（2026-11-07）structRFM 官方语料整包验收通过与 SOTA 对照源冻结
+
+- **最终通过**：895 块替代下载后 2697 块完整，整包 bytes=5,654,000,185，MD5=`651db6dc7b6d6aadece06a252831d1fe` 与官方一致，SHA256=`27b97f9e7224119560bd148636c5528116f20bda3566f1793781a06ca1572533`。其余 1802 块未重下，旧失败组装和 895 个污染块仍隔离保留。
+- **后续放行**：FASTA 生成进程已启动，随后执行已证明等价的 13 split 联合 MMseqs；clean 完成前 S2 和正式全板仍不放行。
+- **对照源**：own-clean、Rfam BPfold、CHANRG 三份源文件已保存至 `source_data/round48`，本地/远端 SHA256 分别为 `9da97573e4049122dc63f5e2323685c571dbb5e51e5e677cc7cdaaef93f7b326`、`7e2f6a2f900c2c241d212493bee647e74e28d8484f20837ead7142223a0a67e9`、`bacb83d94a6825eb6164d3eaf8ab888a21f16a42c52bb6640c37484ab170b570`。
+- **比较器**：主榜同时保留 all-baseline 与 external-single，CHANRG measured/quoted 分开，测试通过，代码提交 `61c8b1ff9e927b2520a6f87a342e10e6a259d744`。尚无新模型 SOTA 计数。
+
+
+## §15.470（2026-11-07）structRFM 预训练 FASTA 元数据与正式联合审计启动
+
+- **FASTA 验收**：官方压缩包流式解析完成，唯一 CSV、合法 A/C/G/U/N 检查通过；n_sequences=21,477,078，正式 FASTA 约 6.1GB，SHA256=`739369d31df4a828adba040d9f88eb5c3bc6dbf010d7d22279333e694a9f3a40`，元数据=`audits/round48/structrfm_corpus.json`。临时文件未提前用于审计。
+- **联合审计**：13 split 的 `audit_structrfm_clean_all_round48.py` 已启动（PID=3254342），使用相同 exact+80% identity/query coverage 口径和 12 threads；工作目录与大资产均在 `/teams`。当前只有进程和输入元数据证据，尚无正式 clean n、删除清单或 summary，不启动 S2。
+
+
+## §15.471（2026-11-07）13 split 正式 clean 守恒、S2 导入修复与真实启动
+
+- **审计通过**：`summary.json` 状态 `PASS_STRUCTRFM_PRETRAIN_CLEAN_ABC_13_SPLITS`，SHA256=`b51ae12eba9c814b355e0c70063624c40b2bc776c7e52f3e599b7801801eee0c`。13 个 train_sha256 均等于正式 FASTA，clean 文件行数与 SHA256 逐 split 复核通过，raw_n=clean_n+removed_exact+removed_homology_only，无 EMPTY split。
+- **raw→clean**：TS0 1288→79、bpRNA-new 5388→74、ArchiveII 3950→90、TS1 63→3、TS2 39→1、TS3 19→1、TS-hard 28→2、TestSetB 428→21；Rfam 10790→388；CHANRG Test/GenA/GenC/GenF=10597→2727、5337→1709、3936→1192、1734→342。主榜多样本格极小，后续必须保留 n、置信区间和小样本限制，不把 8/8 计数包装成强统计证据。
+- **启动故障**：第一次 S2 因队列 `PYTHONPATH` 缺仓库根目录，`xens2_eval` 导入 `eval.ss.metrics` 失败，未发生训练，不是 CUDA OOM。已修为 repo/src/tools/eval 完整路径，提交 `e59852cdb40d0eff9fbe4b00baba90be966d5fd4`；从 clean 后恢复，不重跑审计。
+- **当前进程**：S2 seed0/1 均读取 42,564 条 TR1c 并在 CUDA 保留显存进入初始化；冻结全板嵌入提取同步进行。训练刚启动，尚无全参收敛或主榜结论。
+
+
+## §15.472（2026-11-07）S2 step500 Turner 设备故障与断点恢复
+
+- **故障**：两个 S2 run 均完成 step500 并写入 resume checkpoint，首次 VL0 时 `turner_phys_scores` 返回 CPU 张量，与 CUDA scores 相加报错。不是 OOM，也不是验证集损失恶化。全参评测器发现同一风险并同步修复为显式 `.to(device)`。
+- **验证**：真实官方 structRFM+FlatDecisionHead+Turner 的 CUDA 前向通过，相关回归 3/3；提交 `ecb530bb66f6325c6088b2b765c8d6ecd3dbdd52` 已推送。两个 run 从 step500 恢复模型、优化器、scheduler、batch stream 与验证状态，保持每 500 step 验证，不重训前 500 步。
+- **日志边界**：恢复 launcher 使用 `>` 覆盖了首次 stdout 中的设备 traceback，但 checkpoint 和 `train_log.jsonl` 仍在，故障文本已在本节及会话证据中保留。后续 S2 日志改为追加，避免再次覆盖。
+- **首格过程证据**：冻结 seed0 的 TS0 clean n=79、TP/FP/FN=837/1055/1053、micro-F1=0.4426229508、macro-F1=0.4481751004，结果 SHA256=`b2801beb833815d7dec874cc94b88f8fa0f02f93918ae47275d776c19c6cbd6c`。单种子单 split 不是全板结论，当前数值不支持 SOTA。
+
+
+## §15.473（2026-11-07）structRFM 冻结 JEV 13 split 三种子完整负结果
+
+- **完整性**：S1 三个独立 checkpoint×13 split×3 repeat 全部完成，聚合状态 `PASS_STRUCTRFM_FROZEN_ABC_13_SPLITS_3_SEEDS_3_REPEATS`，summary SHA256=`9e5d4fd8ebcb63109129ec82a49debb85769cca10c1bb3dfd1e8f0234d586eaa`。聚合逐格复核 clean/checkpoint 哈希、TP/FP/FN、macro-F1、三次预测一致和长序列守恒。
+- **主榜 micro-F1 mean±SD**：TS0=0.4060484541±0.0314396381（n=79）、bpRNA-new=0.4482151560±0.0157859021（74）、ArchiveII=0.4589259091±0.0115996535（raw clean=90）、TS1=0.6997244303±0.0178951577（3）、TS2=0.8750000000±0（1）、TS3=0.5265109381±0.1352781508（1）、TS-hard=0.3617777228±0.0764351449（2）、TestSetB=0.3038443957±0.0157886073（21）。**all-baseline 与 external-single 均为 0/8 SOTA**，多样本格很小，TS2/TS3 不作强结论。
+- **外部 OOD**：Rfam=0.5491246680±0.0148215038，低于 BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.3825690956/0.4320640948/0.3044238748/0.2381884665，measured wins=0。比较 SHA256=`66d3cd1c0da8c670f33900b3f34503b79f7f6d0d38ba43541a54b3316919ddb7`。
+- **长序列边界**：ArchiveII 三个种子合计 unsupported=171（每 seed 57），Rfam=420（每 seed 140），来自官方 514nt 限制，聚合保留，不以删长序列提高 F1。冻结路线没有证明长序列能力或最佳置信度。
+- **裁决**：S1 冻结 structRFM+JEV 明确否决为最终单模型，保留作 S2/RIPE 对照。完整 risk–coverage 已写 `confidence_summary.json`（SHA256=`92d9145ccce5b60245fbd3e025253184026e665e9d12c4bc34a0cc435fafca9f`）。旧组合 confidence launcher 的全参分支失败不影响独立全参 watcher 和本结果。S2 继续训练，PPT 暂不把过程结果包装成最终成功。
+
+
+## §15.474（2026-11-07）S2 seed1 自然早停与 checkpoint 身份
+
+- **收敛**：S2 seed1 在 step8500 达到 patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复 best step5500，best validation loss=20.6924657196。训练已完成 12/12 层解冻，无固定步数截断。
+- **checkpoint**：`runs/structrfm_jev_s1/best.pt` SHA256=`425cf71a3868911c728ff54d7157263dc15f4d94f066052d3425e6d7f0fee668`。
+- **边界**：seed0 仍在训练，seed2 待启动；单种子 best loss 不是模型效果或 SOTA 结论，三个全参种子齐全后才执行 13 split、置信度和独立对照。
+
+
+## §15.475（2026-11-07）S2 seed0 自然早停与 seed2 接续
+
+- **seed0 收敛**：step21500 达到 patience=6，恢复 best step18500，best validation loss=16.9408737972；`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`。checkpoint SHA256=`b37b844cd0dad6698a81314b7977d3edc6dc3a8e6cab4cca9fe45885e8e2d693`。
+- **seed2 接续**：已读取 42,564 条 TR1c 并进入真实 CUDA 训练，step1/25 均有日志，未发生 OOM 或 CPU 静默降级。
+- **边界**：seed0/1 已完成，seed2 在训；仍不把 VL0 loss 当作主榜效果，不提前进入 RIPE 或写最终 SOTA。
+
+
+## §15.476（2026-11-07）S2 全参三种子全部自然早停
+
+- **seed2 收敛**：step8500 达到 patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复 best step5500，best validation loss=20.95097036492489。step6500/7000/7500/8000/8500 均未再改善，bad=2/3/4/5/6；没有固定步数截断或 CPU 静默降级。
+- **checkpoint**：`runs/structrfm_jev_s2/best.pt` SHA256=`e2bab1cbddacea7487a6bbb1b9b9fc42b66fed02e2482ce47aac65d387968c07`。S2 三个种子的 best step 分别为18500/5500/5500，best validation loss=16.9408737972/20.6924657196/20.9509703649。
+- **元数据边界**：旧驱动的 `backbone=rinalmo-giga` 与特殊 token parity 字符串是通用模板遗留；该 run 的 `backbone_report`、官方权重 SHA256 和实际适配器均明确为 structRFM，不能据模板字符串误称 RiNALMo。后续驱动已按真实 report 记录，旧 run_meta 不作事后改写。
+- **下一步**：既有 13 split×3 seed×3 repeat、VL0 confidence 和 SOTA 比较队列继续执行；训练收敛不等于全板提升，尚无 S2 A/B/C 结论。
+
+
+## §15.477（2026-11-07）S3 近参数 PairMLP 对照预注册与实现审计
+
+- **对照冻结**：S2 全板读出前确定 S3 为全参 structRFM+JEV，仅将 ResNet2D 换为 PairMLP，不使用 RIPE、EMA 或 latent 辅助损失；数据、batch 顺序、学习率、解冻、VL0、patience=6 与 S2 相同。三种子收敛后复用完整 13 split 全参评测，不把工程预检当科学结果。
+- **参数纠错**：实测独立 ResNet2D scorer=304,321，608,591 是原 ResNet 整头而不是 scorer。PairMLP-490=304,547，差 +226（+0.074%）；纯 PairMLP 不再保存无用 teacher 后，整头=608,817，对照整头=608,591，差值仍为 +226。此前 PairMLP-717 的设计未启动训练，已全部撤回，不留下错误 run。
+- **实现**：`FlatDecisionHead` 支持独立 pair latent 宽度；全参驱动新增显式 scorer 配置、真实 backbone/scorer 元数据及逐步长度与可训练参数账。全参评测从 checkpoint 恢复 scorer，聚合与置信度工具支持 S3 而不改变默认路径。CUDA FLOPs 网格固定128/256/500nt，只作 forward 计算账，不冒充独占速度。
+- **Pair-JEPA 边界纠正**：当前 `train_plan_a.py` 没有 `lambda-jepa` 接口，PairJEPA 模块与此前小运行不能证明全参辅助目标已接线。P3 前必须另行补齐并做真实 CUDA 验收，当前不宣称 Pair-JEPA 全参训练链完成。
+- **验证**：远端完整依赖下 S3 参数/零初始化/默认路径与 RIPE 回归 4/4 通过；本地独立真实模型类参数与前向复核 2/2 通过。旧 RIPE 测试缺少新要求的显式 vocab，已修正测试而非放宽模型约束。S3 CUDA 预检两次启动均在 SSH 建连时退出，尚无远端运行日志，不能写成已在集群排队；尚未产生训练或 A/B/C 科学结果，PPT 未修改。
+
+
+## §15.478（2026-11-07）S3 PairMLP-490 CUDA/FLOPs 预检与参数账终审
+
+- **真实 CUDA**：两个独立进程均完成500nt、batch=2、12/12 Transformer blocks解冻的两个 optimizer steps，单进程峰值约6.3GB；seed0/1均正常退出。两次步上限只作工程预检，不是收敛或模型效果证据。随后 seed0 checkpoint 在两条500nt训练序列上完成三次全参确定性推理，n=2、unsupported=0，预测逐对一致。
+- **独立身份**：checkpoint `meta.scorer=pairmlp`、`pair_latent_dim=490`、`backbone=structRFM`，head中无teacher张量。checkpoint SHA256=`4c29bbade871480c680886343da18e3f4ee6cbe44cc04597103b68ceb23135d6`，推理结果 SHA256=`f1b0afd394c6035819e8bd14d4b00017bb37d217588d887b88a503a466dbbfc3`。
+- **FLOPs**：128/256/500nt下，PairMLP头部aten forward FLOPs=19,904,528,384/79,618,113,536/303,719,000,000；ResNet2D=19,901,972,480/79,607,889,920/303,680,000,000，差约0.0013%。报告状态 `PASS_STRUCTRFM_S3_CUDA_FLOPS_PROFILE`，SHA256=`058ec5dfa2e23db4b562f6c043df71f8bdb2c54fd9b3a91abd8132ed69a6e3f0`。这不是延迟或独占速度结果。
+- **参数账纠错**：12/12层解冻实际训练85,054,464个骨干参数，embedding/pooler等996,096个参数保持冻结。S2/S3最终可训练参数分别85,663,055/85,663,281，仍只差226；不能将骨干总参数86,050,560全部写成可训练。旧FLOPs文件已保留为 `structrfm_s3_flops.pre_block_scope.json`，最终报告已改用真实block scope。
+- **运维证据**：前三次预检启动均在SSH建连时退出，未产生训练日志；建立本地复用SSH通道后才实际运行，没有重复训练。confidence脚本曾在flock等待后读到不完整文件并报引号错误，已改为临时文件校验后原子替换并恢复watcher。
+- **放行边界**：参数/默认路径/RIPE回归、CUDA双并发、compute ledger、checkpoint身份和三次推理均已独立复核，允许启动S3正式三种子自然收敛训练；尚无S3 A/B/C或SOTA结论，PPT未修改。

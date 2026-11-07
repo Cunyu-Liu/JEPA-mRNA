@@ -42,9 +42,11 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--full-model", action="store_true")
+    parser.add_argument("--experiment", default="")
+    parser.add_argument("--run-prefix", default="")
     args = parser.parse_args()
-    experiment = "structrfm_full" if args.full_model else "structrfm_frozen"
-    run_prefix = "structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s"
+    experiment = args.experiment or ("structrfm_full" if args.full_model else "structrfm_frozen")
+    run_prefix = args.run_prefix or ("structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s")
     clean = args.root / "data/structrfm_pretrain_clean"
     splits = ["bprna_ts0", "bprna_new", "archiveii", "ref_pdb_ts1",
               "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb",

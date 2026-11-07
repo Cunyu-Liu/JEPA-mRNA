@@ -23,16 +23,20 @@ class SymmetricPairMLP(nn.Module):
 
 
 class PairJEPA(nn.Module):
-    def __init__(self, d_z=128, latent_dim=64, use_ema=True, random_target=False, seed=0):
+    def __init__(self, d_z=128, latent_dim=64, use_ema=True, random_target=False, seed=0,
+                 use_teacher=True):
         super().__init__()
+        if use_ema and not use_teacher:
+            raise ValueError("EMA requires a target encoder")
         self.scorer = SymmetricPairMLP(d_z, latent_dim)
         self.use_ema = use_ema
         self.random_target = random_target
         self.seed = seed
-        self.teacher = copy.deepcopy(self.scorer)
-        for parameter in self.teacher.parameters():
-            parameter.requires_grad_(False)
-        self.teacher.eval()
+        self.teacher = copy.deepcopy(self.scorer) if use_teacher else None
+        if self.teacher is not None:
+            for parameter in self.teacher.parameters():
+                parameter.requires_grad_(False)
+            self.teacher.eval()
 
     @torch.no_grad()
     def ema_update(self, momentum=0.999):
@@ -44,6 +48,8 @@ class PairJEPA(nn.Module):
             target.copy_(source)
 
     def masked_latent_loss(self, z, mask):
+        if self.teacher is None:
+            raise ValueError("latent target requested without a target encoder")
         if mask.dtype != torch.bool:
             raise TypeError("mask must be bool")
         prediction = self.scorer(z)

@@ -28,14 +28,18 @@ def main():
         raise RuntimeError("CUDA required for structRFM full-model evaluation")
     encoder, tokenizer, load_report = load_structrfm_encoder(args.pretrained, device="cuda")
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
-    ripe = checkpoint.get("meta", {}).get("ripe", {})
+    meta = checkpoint.get("meta", {})
+    ripe = meta.get("ripe", {})
+    scorer = meta.get("scorer", "resnet2d")
+    pair_latent_dim = meta.get("pair_latent_dim", 64)
     if ripe.get("encoder"):
         from ripe_structrfm import enable_ripe_structrfm
         vocab = {base: tokenizer.convert_tokens_to_ids(base) for base in "ACGUT"}
         encoder = enable_ripe_structrfm(encoder, ripe["mode"], vocab=vocab)
     encoder.load_state_dict(checkpoint["model"]["encoder"], strict=True)
     head = FlatDecisionHead(d_model=768, d_z=128, hidden=64,
-                            scorer="resnet2d", chunk_size=0,
+                            scorer=scorer, chunk_size=0,
+                            pair_latent_dim=pair_latent_dim, jepa_use_ema=False,
                             ripe_mode=ripe.get("mode")).cuda()
     head.load_state_dict(checkpoint["model"]["head"], strict=True)
     encoder.eval()
@@ -65,7 +69,7 @@ def main():
             head_ids = torch.tensor([[BASE_TO_INDEX.get(char, UNK_INDEX) for char in sequence]],
                                     device="cuda")
             with torch.no_grad():
-                scores = head.pair_scores_and_types(hidden)[0][0]
+                scores = head.pair_scores_and_types(hidden, head_ids)[0][0]
                 if head.use_turner_prior:
                     prior = turner_phys_scores(head_ids)[0].to(scores.device)
                     scores = scores + head.prior_weight.to(scores.dtype) * prior

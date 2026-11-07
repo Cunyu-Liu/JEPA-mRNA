@@ -6,18 +6,30 @@ PY=/root/miniconda3/envs/lucaone/bin/python
 EXPERIMENT=${1:-structrfm_frozen}
 export PYTHONPATH=$REPO:$REPO/src:$REPO/tools:$REPO/eval
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
-if [ "$EXPERIMENT" = structrfm_frozen ]; then
-  RUN_PREFIX=structrfm_frozen_jev_s
-elif [ "$EXPERIMENT" = structrfm_full ]; then
-  RUN_PREFIX=structrfm_jev_s
-  while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 12000 ]; do sleep 60; done
-else
-  echo "unknown experiment: $EXPERIMENT" >&2
-  exit 2
-fi
+case "$EXPERIMENT" in
+  structrfm_frozen)
+    RUN_PREFIX=structrfm_frozen_jev_s
+    EXTRA=()
+    ;;
+  structrfm_full)
+    RUN_PREFIX=structrfm_jev_s
+    EXTRA=(--full-model)
+    ;;
+  structrfm_s3)
+    RUN_PREFIX=structrfm_s3_pairmlp490_s
+    EXTRA=(--full-model --experiment "$EXPERIMENT" --run-prefix "$RUN_PREFIX")
+    ;;
+  *)
+    echo "unknown experiment: $EXPERIMENT" >&2
+    exit 2
+    ;;
+esac
 for seed in 0 1 2; do
   while ! $PY -c 'import json,sys,pathlib; p=pathlib.Path(sys.argv[1]); d=json.loads(p.read_text()) if p.exists() else {}; assert d.get("converged") and d.get("early_stopped")' "$ROOT/runs/${RUN_PREFIX}${seed}/run_meta.json" 2>/dev/null; do sleep 60; done
 done
+if [ "$EXPERIMENT" != structrfm_frozen ]; then
+  while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 12000 ]; do sleep 60; done
+fi
 for seed in 0 1 2; do
   checkpoint=$ROOT/runs/${RUN_PREFIX}${seed}/best.pt
   out=$ROOT/eval_decision/$EXPERIMENT/vl0_s${seed}.json
@@ -35,8 +47,6 @@ for seed in 0 1 2; do
       --out "$out" --repeats 3 > "$ROOT/logs/round48/eval_${EXPERIMENT}_s${seed}_vl0_confidence.log" 2>&1
   fi
 done
-EXTRA=()
-if [ "$EXPERIMENT" = structrfm_full ]; then EXTRA=(--full-model); fi
 $PY "$REPO/tools/analyze_structrfm_confidence_round48.py" --root "$ROOT" --vl0-only "${EXTRA[@]}" \
   > "$ROOT/logs/round48/${EXPERIMENT}_confidence_vl0.log" 2>&1
 while [ ! -f "$ROOT/eval_decision/$EXPERIMENT/summary.json" ]; do sleep 60; done

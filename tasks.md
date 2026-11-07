@@ -5,7 +5,7 @@
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A209 | structRFM 官方资产与预训练污染门 | commit/权重哈希/严格加载确认；Zenodo 18272040 精确+80% identity 审计与专属 clean；512 nt 边界明确 | 已完成：官方资产/整包/FASTA 哈希及 13 split clean 全部守恒，summary SHA256=b51ae12e…eee0c |
-> | T-A210 | structRFM+JEV 单模型 | S1 冻结/S2 全参与 RiNALMo 对照；三种子收敛、独立 CUDA QA、A/B/C、长度/速度/置信度齐全 | S1 三种子与 VL0 已完成；S2 seed0/1 在训且 seed0 已通过 step1000 VL0，冻结 A/B/C 进行中，完整结论未形成 |
+> | T-A210 | structRFM+JEV 单模型 | S1 冻结/S2 全参与 RiNALMo 对照；三种子收敛、独立 CUDA QA、A/B/C、长度/速度/置信度齐全；S3 近参数/等 FLOPs 对照关闭 | S1 三种子与 13 split 已完成，all-baseline/external-single 均 0/8，否决为最终模型；S2 三种子均已自然早停，13 split 评测进行中；S3 PairMLP-490 已冻结并通过参数回归，CUDA/FLOPs 预检已通过，正式三种子、全板与路线裁决未完成 |
 > | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 六模式/JEV 头/BERT 接入、官方 token 映射和 515nt CUDA 已验收，34 项回归通过；正式消融待路线一裁决 |
 > | T-A212 | RIPE+JEV 三种子 A/B/C | 同配方收敛；长程与 200–400/>400 nt 为主判定，全板与外部 OOD 完整 | 待路线一裁决 |
 > | T-A213 | Pair-JEPA scorer 与防坍塌对照 | J-mlp/J1/noEMA/random-target；被掩 pair latent、方差/有效秩、推理无 teacher | 待路线二裁决 |
@@ -88,10 +88,10 @@
 > | T-A169 | 25 系统注册、官方权重与适配器恢复 | 原 19 系统 + SPOT-RNA/RNAstructure/ContextFold/CONTRAfold/BPfold/E2Efold；每项仓库 commit、权重 URL/SHA256、训练语料、加载 smoke 与输出协议齐全；BPfold 六 checkpoint、UFold 官方全数据权重、E2Efold 官方 checkpoint 不得再用旧 blocked 结论替代实际恢复 | 进行中：BPfold 六官方 checkpoint 与 UFold 权重已恢复并实测；E2Efold 官方 SharePoint 不可达，保留 blocked 证据，不伪造恢复 |
 > | T-A170 | 逐模型泄露矩阵与 600 单元复测 | 25×8×3；每模型独立精确 + 80% identity（及可用家族）去重叠，clean n/removed/TP/FP/FN/micro-F1/mean±SD/哈希全落盘；未知语料标 BLOCKED_PROVENANCE，不伪造 clean | 进行中：EternaFold、MXfold2、BPfold、NucleicBERT-ft 自身训练语料 clean 八 split 三次完成；RNAformer/RiNALMo-ft 等继续，600 单元未齐 |
 > | T-A171 | 新增四基线与三官方权重模型全板 | SPOT-RNA、RNAstructure、ContextFold、CONTRAfold、BPfold、UFold、E2Efold 各自 8 split×3；同 strict micro-F1/canonical-nested GT；原生必要后处理保留，概率输出另存供 ECE | 进行中：BPfold clean、RNAstructure raw 已完成；SPOT-RNA、UFold、CONTRAfold 已有部分结果；E2Efold/ContextFold 外部资产仍 blocked，不得宣称完整全板 |
-> | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | 根因已证实：3 encoder+3 head，B=32=19.89 seq/s；教师 B=1 全量与哈希已验收，seed0 独占训练；正式速度仍未测 |
+> | T-A172 | xens2 无损速度优化与速度 SOTA 复测 | 骨干权重不同，禁止伪称无损共享；多模型融合/批化，必要时 VL0 蒸馏为单骨干单头学生；全 TS0 三次、同配置逐位一致、跨配置配对一致≥99% 且 \|ΔF1\|≤1e-3；与全部 eligible baseline 同机 raw-sequence 比较 | B=32 独占 13.5802 seq/s；自适应 B=64/32/16 为 14.1949 seq/s、1.045×、预测完全一致；双 plan a CUDA stream 候选已排队，要求 100% 一致和 ΔF1=0，尚无有效新吞吐，速度 SOTA 未达成 |
 > | T-A173 | xens2 模型/数据候选攻关 8/8 | 只用 VL0 选候选；三训练种子均 validation plateau+best checkpoint+独立 GPU QA；统一 xens2 三次均值在 8 split 均超过最强 eligible baseline；ArchiveII/bpRNA-new/TS2 三负格优先但不得测试集调参 | 单学生 clean 8/8 三种子已闭环但未达 SOTA；VL0 融合 6 格后因 TS2/TS3 负格使 8/8 不可达，已停止剩余推理，不生成新教师 |
-> | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | 三个 VL0 校准及原始数组独立复算完成；ECE 降低但 Spearman/AURC 变差，跨 split 与全基线验收未完成，不能称最佳置信度 |
-> | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 已完成：23 页字体/行距/越界/渲染/ZIP 验收通过；新实验完成后仅更新必要数字和图件 |
+> | T-A174 | 最低 ECE 与最佳置信度 | 同候选对/GT/分箱比较概率基线；VL0-only 校准；ECE/Brier/NLL、Spearman、risk–coverage/abstention 与跨 split 稳定性齐全；三重复与独立复算通过 | 注册概率证据 128 格已闭环：124 有效交集、2 EMPTY、1 空交集、1 个 MXfold2 ArchiveII 原生 BPP 无效；NucleicBERT TS3 已纠错；多 split 有更低 ECE 反例，不宣称全板最低 ECE/最佳置信度 |
+> | T-A175 | round38 PPT 定点修复与全页 QA | 主图 1 标题逐字为“统一 xens2：全板敏感性 5/8；最佳单 checkpoint 4/8；bpRNA-new、TS2、ArchiveII 未领先”；联动仅必要页；图风格一致、微软雅黑、1.5 行距、无重叠、表图同源、逐页渲染；其他用户调整不变 | 原 23 页保持；第 8 页更新 128 格校准证据；新增 8 页 own-clean 表格附录，共 31 页，104 格逐值与原生渲染均通过 |
 > | T-A176 | 训练台账、活跃源数据与可追溯归档 | 每 run 记录 commit/seed/配置/CUDA/数据权重哈希/best epoch/停止原因/结果与结论；活跃绘图 JSON+manifest 完整；废弃交接件和旧源数据只移动归档并保留哈希 | 进行中：§15.268 已撤回批化过早结论并记录 B=1 证据；活跃原始数据未删除，最终归档待实验状态稳定 |
 > | T-A177 | 最终三通道验收与 GitHub | 原始 artifact→独立复算→图/表/PPT 三通道一致；相关测试/静态检查通过；代码留 /home，大 artifact 留 /teams，确认后及时 commit+push，本地只留核心结论 | 进行中：阶段性代码核验后提交；600 单元、三目标和最终归档未闭环，不作最终验收 |
 >

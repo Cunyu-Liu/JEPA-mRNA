@@ -9,6 +9,8 @@
 > **新污染门**：structRFM 使用 Nature 版 Zenodo 18272040 的 21M MUSES 语料重新计算精确与 80% identity 重叠，形成 structRFM 专属 clean；TR1c downstream clean 不能替代预训练 clean。官方 SSP 微调权重不得作为干净主模型初始化。原文 512 nt 限制与 23S 退化必须保留，不得随机扩展绝对位置 embedding 后冒充官方模型。
 >
 > **阶段顺序**：P0 资产/合同 → P1 structRFM 冻结与全参两臂 → P2 RIPE 的 log/R1/R2/R3/随机周期/随机互补分解 → P3 Pair-JEPA 与近参数 MLP/noEMA/random-target 对照 → P4 独立复算、PPT 副本、归档与论文。每路线三种子收敛并完成 A/B/C 后无论正负均作裁决再进入下一路线，不反复测试集调参。
+>
+> **S3 冻结对照**：全参 structRFM+JEV 仅替换为无 teacher 的 PairMLP-490，scorer=304,547 对 ResNet2D=304,321，整头=608,817 对608,591；其余训练配方与 S2 相同。S2 三种子已全部自然早停，完整 A/B/C 尚未完成。S3 须先过 CUDA/FLOPs 预检，再三种子自然收敛与13 split复算；近参数 scorer 不冒充全骨干等参数，Pair-JEPA 全参辅助目标在 P3 前另行接线验收。
 
 > **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
 >

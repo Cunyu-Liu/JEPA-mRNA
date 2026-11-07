@@ -77,7 +77,7 @@ def install_structrfm_training(base, xens2_eval, pretrained_path):
         head_ids = torch.tensor(
             [[base.BASE_TO_INDEX.get(char, base.UNK_INDEX) for char in sequence]],
             device=device)
-        scores_ = head.pair_scores_and_types(hidden)[0][0]
+        scores_ = head.pair_scores_and_types(hidden, head_ids)[0][0]
         if head.use_turner_prior:
             prior = base.turner_phys_scores(head_ids)[0].to(device)
             scores_ = scores_ + head.prior_weight.to(scores_.dtype) * prior

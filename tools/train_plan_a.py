@@ -167,6 +167,8 @@ def main():
                     "checkpointed z construction (numerically exact; see docstring)")
     ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
     ap.add_argument("--ripe-encoder", action="store_true")
+    ap.add_argument("--scorer", choices=["resnet2d", "pairmlp"], default="resnet2d")
+    ap.add_argument("--pair-latent-dim", type=int, default=64)
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
                     help="hold this much GPU memory from process start so "
                          "co-tenants cannot claim the card during the CPU-bound "
@@ -239,7 +241,9 @@ def main():
     print(f"[plan-a] backbone: {report['n_params']/1e6:.0f}M params, "
           f"d={report['d_model']}, layers={report['n_layers']}", flush=True)
     head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=128, hidden=64,
-                            scorer="resnet2d", chunk_size=0,
+                            scorer=args.scorer, chunk_size=0,
+                            pair_latent_dim=args.pair_latent_dim,
+                            jepa_use_ema=False,
                             ripe_mode=args.ripe_mode or None)
     encoder = encoder.to(device)
     head = head.to(device)
@@ -300,9 +304,11 @@ def main():
         "control_arm": "rinalmo_r2d_b4_s0",
         "control_results": {"ts0_micro_f1": 0.6629, "bprna_new_micro_f1": 0.5010},
         "ripe": {"mode": args.ripe_mode or None, "encoder": args.ripe_encoder},
-        "backbone": "rinalmo-giga (pretrained safetensors, in-loop)",
-        "head": "FlatDecisionHead scorer=resnet2d d_z=128 (head params "
-                f"{n_head})",
+        "backbone": report["backbone"],
+        "scorer": args.scorer,
+        "pair_latent_dim": args.pair_latent_dim,
+        "head": f"FlatDecisionHead scorer={args.scorer} d_z=128 "
+                f"pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
         "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
                       "teacher": args.teacher_dir,
@@ -316,7 +322,9 @@ def main():
         "early_stopped": False, "converged": False,
         "protocol_parity": [
             f"length-bucketed batch={args.batch_size}, iter_batches RNG (seed,epoch)",
-            "encoder frame <cls>+seq+<eos> + attention_mask, hidden[1:L+1]",
+            ("encoder frame <cls>+seq+<eos> + attention_mask, hidden[1:L+1]"
+             if ENCODER_SPECIAL_TOKENS else
+             "official encoder tokenization without added special tokens, full sequence hidden"),
             "encoder dropout p=0 (deterministic, matches cached features)",
             "AdamW betas=(0.9,0.98) wd=0, 5-step warmup LambdaLR",
             "NEG_BIG=-1e4, symmetric labels, sorted gt_pairs, valid_pair_mask",
@@ -435,8 +443,9 @@ def main():
         #     arm applied). The gamma/beta gradients are unaffected -- they come
         #     from the batch-statistics normalisation, which is identical in
         #     both passes.
-        bns = [m for m in head.resnet2d.modules()
-               if isinstance(m, torch.nn.BatchNorm2d)]
+        bns = ([] if head.resnet2d is None else
+               [m for m in head.resnet2d.modules()
+                if isinstance(m, torch.nn.BatchNorm2d)])
 
         def _snap():
             return [(bn.running_mean.clone(), bn.running_var.clone(),
@@ -501,6 +510,10 @@ def main():
             trainable(), args.grad_clip))
         opt.step()
         sched.step()
+        with open(os.path.join(args.out, "compute_ledger.jsonl"), "a") as fh:
+            fh.write(json.dumps({"step": step, "lengths": lengths,
+                                 "unfrozen": n_unfrozen,
+                                 "trainable_params": sum(p.numel() for p in trainable())}) + "\n")
 
         if step % 25 == 0 or step == 1:
             rec = {"step": step, "loss": round(float(total), 4),
@@ -597,6 +610,10 @@ def main():
                 "scheduler": sched.state_dict(), "n_unfrozen": n_unfrozen,
                 "best_step": best_step, "best_validation_loss": best_validation_loss,
                 "bad_evaluations": bad_evaluations, "stream_state": stream.state}, resume_path)
+    meta["final_trainable_params"] = sum(p.numel() for p in trainable())
+    meta["trainable_parameter_scope"] = (
+        f"{n_unfrozen}/{n_blocks} transformer blocks plus head; "
+        "embeddings and pooler remain frozen")
     meta["status"] = "completed"
     meta["steps_completed"] = int(step)
     meta["stop_reason"] = "early_stopping" if early_stopped else "step_cap"

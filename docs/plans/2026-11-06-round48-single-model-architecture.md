@@ -57,6 +57,8 @@
 - S1：structRFM 冻结骨干+JEV 头，负责分离表征质量与训练成本。
 - S2：structRFM 全参微调+JEV 头，同一 TR1c、VL0、目标、batch 顺序、DP/Turner 与早停规则。
 - S3：近参数/等 FLOPs 对照，解释 S1/S2 是否仅由优化预算差异造成。
+- **S3 冻结定义（在 S2 A/B/C 读出前）**：全参 structRFM+JEV，仅将 ResNet2D scorer 换为 PairMLP-490，不使用 EMA、latent 辅助损失或 RIPE；其余数据、batch 顺序、目标、解冻、学习率、VL0 和 patience=6 与 S2 相同。实测独立 scorer 参数量 PairMLP=304,547、ResNet2D=304,321，差 +226（+0.074%）；608,591 是包含共有组件的原 ResNet 整头参数，不能误作独立 scorer 参数。共有 pair representation、type head、校准和 Turner 参数保持一致；纯 PairMLP 不保存 EMA teacher，S3 整头 608,817，对照整头 608,591，差值同为 +226。S3 三个训练种子自然早停后复用 13 split×3 repeat 全参链。
+- S3 只支持近参数 scorer 归因，不冒充全模型等参数：S1 仅头部可训练；S2/S3 解冻12/12 Transformer blocks，实际训练85,054,464个骨干参数，其余996,096个embedding/pooler等参数保持冻结，必须分开报告。保存各 run 的长度/步数账，并在冻结长度网格实测 forward FLOPs；训练期预算比较不得写成精度冻结后的独占速度结论。
 - 若官方 pairwise attention 接入：只能作为 S4 独立臂，与 S2 分开，不与骨干替换混为一个归因结论。
 
 ### 4.3 出门条件
