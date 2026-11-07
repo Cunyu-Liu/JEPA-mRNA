@@ -13283,3 +13283,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **fixed-target与真实续训**：前两步辅助损失均为0，原因是零初始化direct logit第一步只更新logit、latent尚未变化；从现有resume续到第三步后为2.2097208330e-07。该续程实际恢复12/12层并继续更新encoder，验证 §15.494 的续训修复，而非重跑一套新实验。
 - **验收**：fixed三步、random两步均明确 `converged=false`、`scientific_conclusion=false`，`qa_fixed.json`/`qa_random.json` 只证明工程路径、非空掩码和有限诊断。极小合成样本的有效秩与损失不能外推防坍塌或基准效果。
 - **回归与提交**：29项相关回归通过；random设备修复提交 `67b9899b2df77921f49863fd6d842287ddbc398f` 已推送GitHub。正式P3仍等待RIPE路线裁决，S3全板继续原队列，PPT未修改。
+
+
+## §15.498（2026-11-07）RIPE 配对统计与路线二独立裁决门
+
+- **配对口径**：七个RIPE臂分别与同训练seed的VL0-selected R0比较13 split；主八split逐seed Holm，Rfam/CHANRG单独保留未校正区间与P值。ArchiveII/Rfam另做200–400/>400nt和跨度≥30/≥100nt子集，n<30只描述。
+- **encoder新增支持**：同名同clean数据且共同支持的序列才进入paired bootstrap；encoder额外支持的序列单列计数，不把R0的不支持当作0分，也不删除右端新增样本来伪造提升。右端丢失R0已支持序列会直接失败。
+- **路线裁决**：七臂主总结/SOTA/confidence/greedy/Turner0、三种子收敛、checkpoint哈希及统计源哈希全部齐套后才放行P3。R0与七臂共同按三种子best VL0 loss均值选择下一基座，测试F1不参与选择；长序列SOTA、最佳置信度和独占速度默认不可主张。
+- **验证与部署**：7项统计/裁决回归通过，包含encoder新增支持和R0优先于测试高分的反例。代码提交 `7df7e6abbf9a84624bc6d26e20ab681d1673b9b1` 已推送GitHub；双重10,000次bootstrap及双重裁决watcher已部署，等待真实七臂结果。S3目前仍在13 split评测，PPT未修改。
