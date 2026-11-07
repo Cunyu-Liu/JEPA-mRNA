@@ -72,10 +72,10 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
         raise ValueError("missing entity polymer metadata")
     for row in block.find("_pdbx_poly_seq_scheme.", columns):
         asym, entity, seq_id, monomer, auth_seq, auth_chain, insertion = map(str, row)
-        key = (int(auth_seq), "" if insertion == "." else insertion)
         try:
             if entity_types.get(entity) != "polyribonucleotide":
                 raise ValueError("not a pure RNA polymer entity")
+            key = (int(auth_seq), "" if insertion == "." else insertion)
             letter = one_letter(monomer, parents)
         except (ValueError, TypeError) as error:
             rejected.append({"auth_chain": auth_chain, "reason": str(error)})
