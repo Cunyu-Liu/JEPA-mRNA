@@ -58,7 +58,7 @@ class CollectRnaComplexTests(unittest.TestCase):
 
             with patch("collect_rna_complex_round49.subprocess.run", side_effect=run):
                 _, result = collect("1EHZ", root, "python", "dssr")
-            self.assertIn("full nts or pairs", result["error"])
+            self.assertIn("full nts list", result["error"])
             self.assertFalse((entry / "dssr.json").exists())
             self.assertTrue((entry / "dssr.json.part").is_file())
             self.assertTrue((entry / "error.txt").is_file())
@@ -69,7 +69,7 @@ class CollectRnaComplexTests(unittest.TestCase):
             entry = root / "1EHZ"
             entry.mkdir()
             (entry / "1EHZ.cif").write_text("mmCIF fixture")
-            (entry / "dssr.json").write_text('{"nts": [], "pairs": []}')
+            (entry / "dssr.json").write_text('{"nts": []}')
 
             def run(command, **kwargs):
                 self.assertNotEqual(command[0], "dssr")

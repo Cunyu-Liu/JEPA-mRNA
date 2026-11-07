@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+from array import array
 from bisect import bisect_left, bisect_right
 from functools import lru_cache
 import hashlib
@@ -87,8 +88,42 @@ def value(block, category, tag):
     return result.strip() if result else None
 
 
+def align_observed_nucleotides(nts, observed, parents, chain):
+    if len(nts) > len(observed):
+        raise ValueError(f"DSSR/mmCIF observed residue count mismatch: {chain}")
+    letters = [one_letter(nt["nt_name"], parents) for nt in nts]
+    if len(nts) == len(observed):
+        if letters != [row["letter"] for row in observed]:
+            raise ValueError(f"DSSR/mmCIF observed base mismatch: {chain}")
+        return list(observed)
+    counts = [array("b", [1] + [0] * len(nts))]
+    for row in observed:
+        previous = counts[-1]
+        current = previous[:]
+        for index in range(1, len(nts) + 1):
+            if row["letter"] == letters[index - 1]:
+                current[index] = min(2, current[index] + previous[index - 1])
+        counts.append(current)
+    if counts[-1][len(nts)] != 1:
+        raise ValueError(f"DSSR/mmCIF observed mapping is absent or ambiguous: {chain}")
+    aligned = [None] * len(nts)
+    index = len(nts)
+    for row_index in range(len(observed), 0, -1):
+        if index == 0:
+            break
+        if counts[row_index - 1][index] == 1:
+            continue
+        if observed[row_index - 1]["letter"] != letters[index - 1] or counts[row_index - 1][index - 1] != 1:
+            raise ValueError(f"DSSR/mmCIF alignment reconstruction failed: {chain}")
+        aligned[index - 1] = observed[row_index - 1]
+        index -= 1
+    if index != 0 or any(row is None for row in aligned):
+        raise ValueError(f"DSSR/mmCIF incomplete observed alignment: {chain}")
+    return aligned
+
+
 def observed_residue_map(dssr, mapping, parents):
-    if not dssr.get("nts"):
+    if not isinstance(dssr.get("nts"), list) or not dssr["nts"]:
         raise ValueError("DSSR full nts list is required")
     nucleotides = sorted((nt for nt in dssr["nts"] if nt.get("nt_type") == "RNA"),
                          key=lambda nt: nt["index"])
@@ -102,11 +137,22 @@ def observed_residue_map(dssr, mapping, parents):
             continue
         observed = sorted((row for row in mapping[chain].values() if row["observed"]),
                           key=lambda row: row["seq_id"])
-        if len(observed) != len(nts):
-            raise ValueError(f"DSSR/mmCIF observed residue count mismatch: {chain}")
-        for nt, row in zip(nts, observed):
-            if one_letter(nt["nt_name"], parents) != row["letter"]:
-                raise ValueError(f"DSSR/mmCIF observed base mismatch: {nt['nt_id']}")
+        by_author = {}
+        for row in observed:
+            key = (row.get("auth_seq"), row.get("insertion", ""))
+            if key[0] is not None:
+                if key in by_author:
+                    raise ValueError(f"duplicate mmCIF author residue mapping: {chain}")
+                by_author[key] = row
+        direct = []
+        for nt in nts:
+            _, seq_id, insertion, _ = parse_nt(nt["nt_id"])
+            row = by_author.get((str(seq_id), insertion.lstrip("^").upper()))
+            if row is not None and one_letter(nt["nt_name"], parents) != row["letter"]:
+                raise ValueError(f"DSSR/mmCIF author-residue base mismatch: {nt['nt_id']}")
+            direct.append(row)
+        aligned = direct if all(row is not None for row in direct) else align_observed_nucleotides(nts, observed, parents, chain)
+        for nt, row in zip(nts, aligned):
             if nt["nt_id"] in lookup:
                 raise ValueError(f"duplicate DSSR nucleotide id: {nt['nt_id']}")
             lookup[nt["nt_id"]] = row
@@ -117,38 +163,50 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
     cif_path, dssr_path = Path(cif_path), Path(dssr_path)
     parent_path = dssr_path.with_name("parents.json")
     parent_document = json.loads(parent_path.read_text())
-    if parent_document["failures"] or parent_document["cif_sha256"] != sha256(cif_path):
-        raise ValueError("parent map is incomplete or belongs to another mmCIF")
+    if parent_document["cif_sha256"] != sha256(cif_path):
+        raise ValueError("parent map belongs to another mmCIF")
     parents = parent_document["parents"]
     block = gemmi.cif.read(str(cif_path)).sole_block()
     pdb_id = value(block, "_entry", "id").upper()
     columns = ["asym_id", "entity_id", "seq_id", "mon_id", "auth_seq_num", "pdb_strand_id", "pdb_ins_code"]
     chains, rejected = {}, []
+    excluded_chains = set()
     entity_types = {str(row[0]): str(row[1]) for row in block.find("_entity_poly.", ["entity_id", "type"])}
     if not entity_types:
         raise ValueError("missing entity polymer metadata")
     for row in block.find("_pdbx_poly_seq_scheme.", columns):
         asym, entity, seq_id, monomer, auth_seq, auth_chain, insertion = map(str, row)
+        if auth_chain in excluded_chains:
+            continue
+        if entity_types.get(entity) != "polyribonucleotide":
+            rejected.append({"auth_chain": auth_chain, "reason": "not a pure RNA polymer entity"})
+            continue
         try:
-            if entity_types.get(entity) != "polyribonucleotide":
-                raise ValueError("not a pure RNA polymer entity")
             key = int(seq_id)
             letter = one_letter(monomer, parents)
         except (ValueError, TypeError) as error:
+            excluded_chains.add(auth_chain)
+            chains.pop(auth_chain, None)
             rejected.append({"auth_chain": auth_chain, "reason": str(error)})
             continue
         if key in chains.setdefault(auth_chain, {}):
             raise ValueError(f"duplicate residue mapping: {key}")
         chains[auth_chain][key] = {"asym_id": asym, "entity_id": entity, "seq_id": int(seq_id),
-                                   "observed": auth_seq != "?", "letter": letter, "monomer": monomer}
+                                   "observed": auth_seq != "?", "letter": letter, "monomer": monomer,
+                                   "auth_seq": None if auth_seq in {"?", "."} else auth_seq,
+                                   "insertion": "" if insertion in {"?", "."} else insertion.upper()}
     dssr = json.loads(dssr_path.read_text())
+    pairs = dssr.get("pairs", [])
+    if not isinstance(pairs, list):
+        raise ValueError("DSSR pairs must be a list when present")
     raw_by_chain = {chain: [] for chain in chains}
     raw_records = {chain: [] for chain in chains}
-    errors = []
-    nt_lookup = observed_residue_map(dssr, chains, parents)
-    for pair in dssr.get("pairs", []):
+    errors, rejected_pairs = [], []
+    nt_lookup = observed_residue_map(dssr, chains, parents) if pairs else {}
+    for pair in pairs:
         nt1, nt2 = parse_nt(pair["nt1"]), parse_nt(pair["nt2"])
         if nt1[0] != nt2[0]:
+            rejected_pairs.append({"nt1": pair["nt1"], "nt2": pair["nt2"], "reason": "interchain pair"})
             continue
         chain = nt1[0]
         if chain not in chains:
@@ -161,7 +219,10 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
                 raise ValueError("duplicate DSSR pair")
             raw_by_chain[chain].append((a, b))
             raw_records[chain].append(pair)
-        except (KeyError, ValueError) as error:
+        except KeyError:
+            rejected_pairs.append({"nt1": pair["nt1"], "nt2": pair["nt2"],
+                                   "reason": "endpoint outside the observed pure-RNA map"})
+        except ValueError as error:
             errors.append(f"{pair['nt1']}--{pair['nt2']}: {error}")
     if errors:
         raise ValueError("DSSR mapping failed: " + "; ".join(errors[:12]))
@@ -196,9 +257,12 @@ def extract(cif_path, dssr_path, dssr_sha256, min_length=30):
             "deposition_date": value(block, "_pdbx_database_status", "recvd_initial_deposition_date"),
             "cif_sha256": sha256(cif_path), "dssr_json_sha256": sha256(dssr_path),
             "parent_map_sha256": sha256(parent_path), "modified_parent_map": parents,
+            "parent_map_failures": parent_document["failures"],
             "dssr_binary_sha256": dssr_sha256, "dssr_program": dssr.get("program"),
             "dssr_seq_id_mode": "observed_nts_v1",
-            "n_dssr_pairs": dssr.get("num_pairs"), "chains": output, "rejected_chains": rejected}
+            "observed_alignment": "author_chain_residue_bridge_else_unique_ordered_base_subsequence",
+            "n_dssr_pairs": dssr.get("num_pairs", len(pairs)),
+            "rejected_pairs": rejected_pairs, "chains": output, "rejected_chains": rejected}
 
 
 def main():

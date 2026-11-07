@@ -42,8 +42,6 @@ def main():
     result = {"parents": parents, "failures": failures,
               "cif_sha256": hashlib.sha256(Path(args.cif).read_bytes()).hexdigest()}
     Path(args.output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
-    if failures:
-        raise SystemExit(f"unresolved RNA parents: {failures}")
     print(json.dumps(result, sort_keys=True))
 
 

@@ -49,8 +49,34 @@ class RnaComplexTests(unittest.TestCase):
                         {"index": 2, "nt_type": "RNA", "nt_id": "A.U1476", "nt_name": "U"}]}
         result = observed_residue_map(dssr, mapping, {})
         self.assertEqual(result["A.A1475"]["seq_id"], 1475)
+        subset = observed_residue_map({"nts": dssr["nts"][:1]}, mapping, {})
+        self.assertEqual(subset["A.A1475"]["seq_id"], 1475)
         with self.assertRaises(ValueError):
-            observed_residue_map({"nts": dssr["nts"][:1]}, mapping, {})
+            observed_residue_map({"nts": []}, mapping, {})
+
+    def test_author_residue_bridge_disambiguates_terminal_bases(self):
+        mapping = {"A": {index: {"seq_id": index, "letter": letter, "observed": True,
+                                  "auth_seq": str(index + 9), "insertion": ""}
+                         for index, letter in enumerate("AGAA", 1)}}
+        dssr = {"nts": [{"index": 1, "nt_type": "RNA", "nt_id": "A.G11", "nt_name": "G"},
+                        {"index": 2, "nt_type": "RNA", "nt_id": "A.A12", "nt_name": "A"},
+                        {"index": 3, "nt_type": "RNA", "nt_id": "A.A13", "nt_name": "A"}]}
+        result = observed_residue_map(dssr, mapping, {})
+        self.assertEqual([result[nt["nt_id"]]["seq_id"] for nt in dssr["nts"]], [2, 3, 4])
+
+    def test_observed_subset_must_be_unique(self):
+        mapping = {"A": {index: {"seq_id": index, "letter": letter, "observed": True}
+                         for index, letter in enumerate("AGCUA", 1)}}
+        dssr = {"nts": [{"index": 1, "nt_type": "RNA", "nt_id": "A.G4", "nt_name": "G"},
+                        {"index": 2, "nt_type": "RNA", "nt_id": "A.C5", "nt_name": "C"}]}
+        result = observed_residue_map(dssr, mapping, {})
+        self.assertEqual([result[nt["nt_id"]]["seq_id"] for nt in dssr["nts"]], [2, 3])
+        ambiguous = {"A": {index: {"seq_id": index, "letter": "A", "observed": True}
+                           for index in range(1, 4)}}
+        repeated = {"nts": [{"index": 1, "nt_type": "RNA", "nt_id": "A.A8", "nt_name": "A"},
+                            {"index": 2, "nt_type": "RNA", "nt_id": "A.A9", "nt_name": "A"}]}
+        with self.assertRaisesRegex(ValueError, "ambiguous"):
+            observed_residue_map(repeated, ambiguous, {})
 
 
 if __name__ == "__main__":
