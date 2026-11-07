@@ -19,10 +19,10 @@ Honesty / provenance (read before citing anything here)
   peer-reviewed paper** (its numbers are vendor self-reported, spec §0.3).  The
   calibration objective lives in ``rnajepa.rlcd`` and is an *RLCD-inspired,
   self-designed* objective; nothing here reproduces or matches Jev's RLCD.
-* The real thermodynamic teacher (ViennaRNA / RNAstructure / LinearPartition) is
-  **not installed and cannot be downloaded in this environment**.  We therefore
-  ship a clean interface plus an explicit :class:`ThermodynamicTeacher` stub that
-  raises an actionable error, and a :class:`MockTeacher` used only in tests.
+* ViennaRNA is available out-of-tree at the fixed project asset path and is
+  verified against version 2.7.2. RNAstructure and LinearPartition remain
+  unavailable; the :class:`ThermodynamicTeacher` interface raises an actionable
+  error for them, and :class:`MockTeacher` is used only in tests.
 
 Why the saturation diagnostic exists
 ------------------------------------
@@ -438,10 +438,10 @@ class ThermodynamicTeacher:
             import RNA  # noqa: PLC0415 - optional dependency, imported lazily
         except ImportError as exc:  # pragma: no cover - depends on the host
             raise ThermodynamicUnavailableError(
-                "ViennaRNA is not importable in this interpreter. It is installed "
-                "out-of-tree at /root/rna_jepa_data/pylibs (the /home quota is full), so "
-                "run with PYTHONPATH=/root/rna_jepa_data/pylibs, or install it into the "
-                "active environment. Teacher soft labels cannot be produced without it."
+                "ViennaRNA is not importable in this interpreter. The fixed installation is "
+                "under /teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/pylibs; "
+                "add that directory to PYTHONPATH and verify version 2.7.2 before "
+                "producing teacher labels."
             ) from exc
         return RNA
 

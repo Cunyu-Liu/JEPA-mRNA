@@ -3,6 +3,8 @@ set -euo pipefail
 ROOT=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024
 DATA="$ROOT/data/rna_complex_round49"
 PY=/root/miniconda3/envs/lucaone/bin/python
+export PYTHONPATH=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/pylibs:/home/rna_jev/src:/home/rna_jev/tools
+$PY -c 'import RNA; assert RNA.__version__=="2.7.2"; print("ViennaRNA",RNA.__version__)'
 while [[ ! -f "$DATA/decontamination/verification.json" ]]; do sleep 60; done
 $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["status"]=="PASS_COMPLEX_DECONTAMINATION_INDEPENDENT_AUDIT" and d["n_train"]>0' "$DATA/decontamination/verification.json"
 cd /home/rna_jev
