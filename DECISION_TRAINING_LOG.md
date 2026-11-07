@@ -13156,3 +13156,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **机制预检**：同一S2 seed0，greedy micro-F1=0.6034077003，crossing_pairs=38,735、conflict_pairs=1,661；Turner=0+DP micro-F1=0.7256295939，crossing/conflict=0。原默认DP micro-F1=0.7966266623。以上仅属VL0机制证据，不能替代13 split×3 seed消融。
 - **断点与聚合**：greedy/Turner0分别核对decoder和prior override，逐split保留checkpoint、clean、三次预测、长度/长程指标，再复用独立聚合器；旧或身份不符输出改名 `.stale`，不拼接结果。
 - **训练边界**：S3 seed0在step3500 bad=1、best step3000；seed1 step3500仍改善，二者均未达早停条件。S2主评测继续，未提前进入RIPE科学实验。
+
+
+## §15.483（2026-11-07）确定性 repeat 的单次分数前向等价优化
+
+- **问题**：全参评测旧实现对每条序列的每个repeat都重复tokenizer、structRFM和JEV前向；确定性评测不需要三次相同分数计算。独立消融脚本改为每条raw sequence计算一次分数，随后三次DP/greedy解码，结果显式记录 `score_forward_count_per_sequence=1`。
+- **逐值等价**：S2 seed0 VL0的新旧预测、micro/macro-F1、校准、逐序列F1/INF/confidence/TP/FP/FN全部一致，状态 `PASS_SINGLE_FORWARD_REPEAT_EQUIVALENCE`。未使用缓存embedding代替raw-sequence前向，也未改变checkpoint、tokenizer、精度、mask或解码。
+- **耗时边界**：同一并发开发环境的VL0耗时57.8727603s→34.3062685s，仅说明去除重复前向有效；不是RTX4090独占全TS0测速，不宣称推理速度SOTA。
+- **部署边界**：优化只进入独立消融脚本，正在运行的S2主评测仍用原脚本；S3主评测的优化部署须在S2主评测结束后另行等价验收。

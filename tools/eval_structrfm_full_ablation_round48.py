@@ -64,26 +64,26 @@ def main():
         gt_pairs = [tuple(pair) for pair in row["pairs"]]
         mask = valid_pair_mask(sequence)
         repeat_pairs = []
+        inputs = tokenizer(sequence, return_tensors="pt")
+        inputs = {key: value.cuda() for key, value in inputs.items()}
+        with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
+            output = encoder(**inputs)
+        hidden = output.last_hidden_state.float().half().float()
+        head_ids = torch.tensor([[BASE_TO_INDEX.get(char, UNK_INDEX) for char in sequence]],
+                                device="cuda")
+        with torch.no_grad():
+            scores = head.pair_scores_and_types(hidden, head_ids)[0][0]
+            if head.use_turner_prior:
+                prior = turner_phys_scores(head_ids)[0].to(scores.device)
+                prior_weight = (head.prior_weight if args.prior_weight_override is None else
+                                torch.as_tensor(args.prior_weight_override, device=scores.device))
+                scores = scores + prior_weight.to(scores.dtype) * prior
+            scores = head.calibration(scores.unsqueeze(0), torch.tensor([len(sequence)], device="cuda"))[0]
+            valid = pair_mask_from_ids(head_ids, head.min_loop).cuda()[0]
+            scores = torch.where(valid, scores, torch.full_like(scores, float("-inf")))
+        scores_np = scores.cpu().numpy()
+        scores_np = np.where(mask, scores_np, -np.inf)
         for repeat in range(args.repeats):
-            inputs = tokenizer(sequence, return_tensors="pt")
-            inputs = {key: value.cuda() for key, value in inputs.items()}
-            with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
-                output = encoder(**inputs)
-            hidden = output.last_hidden_state.float().half().float()
-            head_ids = torch.tensor([[BASE_TO_INDEX.get(char, UNK_INDEX) for char in sequence]],
-                                    device="cuda")
-            with torch.no_grad():
-                scores = head.pair_scores_and_types(hidden, head_ids)[0][0]
-                if head.use_turner_prior:
-                    prior = turner_phys_scores(head_ids)[0].to(scores.device)
-                    prior_weight = (head.prior_weight if args.prior_weight_override is None else
-                                    torch.as_tensor(args.prior_weight_override, device=scores.device))
-                    scores = scores + prior_weight.to(scores.dtype) * prior
-                scores = head.calibration(scores.unsqueeze(0), torch.tensor([len(sequence)], device="cuda"))[0]
-                valid = pair_mask_from_ids(head_ids, head.min_loop).cuda()[0]
-                scores = torch.where(valid, scores, torch.full_like(scores, float("-inf")))
-            scores_np = scores.cpu().numpy()
-            scores_np = np.where(mask, scores_np, -np.inf)
             pairs, crossings, conflicts = decode_scores(scores_np, mask, args.decoder)
             repeat_pairs.append(pairs)
             predictions[repeat].append({"name": row.get("name", ""),
@@ -124,6 +124,8 @@ def main():
         "prior_weight_override": args.prior_weight_override,
         "prior_weight_trained": float(head.prior_weight.detach().cpu()) if head.use_turner_prior else None,
         "crossing_pairs": crossing_pairs, "conflict_pairs": conflict_pairs,
+        "score_forward_count_per_sequence": 1,
+        "repeat_protocol": "one raw-sequence score forward; deterministic decoding repeated",
         "repeats": args.repeats,
         "micro": {"f1": f1, "precision": precision, "recall": recall,
                   "tp": tp, "fp": fp, "fn": fn},
