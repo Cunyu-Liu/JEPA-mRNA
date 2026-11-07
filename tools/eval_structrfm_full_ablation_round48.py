@@ -11,7 +11,7 @@ from rnajepa.decision_head import FlatDecisionHead, pair_mask_from_ids, turner_p
 from rnajepa.encoder import BASE_TO_INDEX, UNK_INDEX
 from rnajepa.harness import nussinov_map, valid_pair_mask
 from eval.ss.metrics import PairLevelMetrics
-from structrfm_round48 import file_sha256, load_structrfm_encoder
+from structrfm_round48 import file_sha256, forbid_pairjepa_teacher_forward, load_structrfm_encoder
 from structrfm_metrics_round48 import (PairCalibrationAccumulator, inf_value,
                                        span_metrics, structure_confidence)
 from structrfm_decode_round48 import decode_scores
@@ -45,6 +45,7 @@ def main():
                             pair_latent_dim=pair_latent_dim, jepa_use_ema=False,
                             ripe_mode=ripe.get("mode")).cuda()
     head.load_state_dict(checkpoint["model"]["head"], strict=True)
+    teacher_forward_guard = forbid_pairjepa_teacher_forward(head)
     encoder.eval()
     head.eval()
     rows = [json.loads(line) for line in open(args.data) if line.strip()]
@@ -125,6 +126,7 @@ def main():
         "prior_weight_trained": float(head.prior_weight.detach().cpu()) if head.use_turner_prior else None,
         "crossing_pairs": crossing_pairs, "conflict_pairs": conflict_pairs,
         "score_forward_count_per_sequence": 1,
+        "pairjepa_teacher_forward_guard": teacher_forward_guard,
         "repeat_protocol": "one raw-sequence score forward; deterministic decoding repeated",
         "repeats": args.repeats,
         "micro": {"f1": f1, "precision": precision, "recall": recall,

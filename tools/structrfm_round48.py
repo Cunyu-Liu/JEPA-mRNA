@@ -50,6 +50,19 @@ def load_structrfm_encoder(pretrained_path, device="cpu", dtype=torch.float32):
     return model, tokenizer, report
 
 
+def forbid_pairjepa_teacher_forward(head):
+    pair_jepa = getattr(head, "pair_jepa", None)
+    teacher = getattr(pair_jepa, "teacher", None) if pair_jepa is not None else None
+    if teacher is None:
+        return False
+
+    def blocked(*args, **kwargs):
+        raise RuntimeError("Pair-JEPA teacher forward is forbidden during inference")
+
+    teacher.forward = blocked
+    return True
+
+
 def install_structrfm_training(base, xens2_eval, pretrained_path):
     _model, tokenizer, _report = load_structrfm_encoder(pretrained_path)
     vocab = {

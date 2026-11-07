@@ -40,3 +40,21 @@ def test_random_target_uses_cuda_generator_and_tensor_on_same_device():
     assert torch.isfinite(first) and first > 0
     torch.testing.assert_close(first, second)
     assert torch.isfinite(diagnostics["target_effective_rank"])
+
+
+def test_inference_teacher_forward_guard_is_fail_closed():
+    from rnajepa.decision_head import FlatDecisionHead
+    from tools.structrfm_round48 import forbid_pairjepa_teacher_forward
+
+    head = FlatDecisionHead(d_model=8, d_z=4, scorer="pairjepa", chunk_size=0)
+    assert forbid_pairjepa_teacher_forward(head)
+    z = torch.randn(1, 3, 3, 4)
+    assert head.score_pair_matrix(z).shape == (1, 3, 3)
+    with pytest.raises(RuntimeError, match="teacher forward is forbidden"):
+        head.pair_jepa.teacher(z)
+    mask = torch.ones(1, 3, 3, dtype=torch.bool)
+    with pytest.raises(RuntimeError, match="teacher forward is forbidden"):
+        head.masked_pair_latent_loss(z, mask)
+    assert not forbid_pairjepa_teacher_forward(
+        FlatDecisionHead(d_model=8, d_z=4, scorer="pairmlp", chunk_size=0,
+                         jepa_use_ema=False))
