@@ -13217,3 +13217,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **seed0**：step10500/11000/11500 validation loss=21.1341829184/21.7180840325/21.0531325398，best step11500，bad=0。
 - **seed1**：step10500/11000/11500 validation loss=20.9570972516/22.0050099293/20.5451347529，best step11500，bad=0。
 - **判定**：step11000的一次未改善没有形成平台，继续训练后两枚种子均创新低；不设置固定步数终点，不提前恢复旧checkpoint。seed2仍未启动，S3全板、配对统计与路线裁决保持等待。
+
+
+## §15.490（2026-11-07）S3 seed0 bad=5 后恢复改善
+
+- **seed0**：step15500曾达到bad=5，但未满足patience=6；继续训练后step16000 validation loss=19.5165950016，刷新best，bad=0。此前best step13000=19.8579217512，不能手动提前终止。
+- **seed1**：step16000 validation loss=19.0811047168，刷新best，bad=0；此前best step14500=19.8316712450。
+- **运行状态**：两枚种子均完成12/12 Transformer blocks训练并继续自然收敛，日志与compute ledger持续更新；无固定步数终点、无CPU静默降级。seed2尚未启动，当前loss仍不是A/B/C或SOTA结论。
