@@ -13325,3 +13325,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **默认回归**：S3 seed0 VL0在主评测和消融评测中除新增guard字段及wall time外与原结果逐值一致；PairMLP无teacher时guard=false，既有科学结果不变。
 - **真实Pair-JEPA路径**：使用EMA smoke checkpoint在4条8nt合成序列上完成CUDA三次确定性推理，guard=true且未触发teacher报错。该smoke的结构数值不构成科学结果，也不用于PPT。
 - **测试与提交**：相关7项测试通过，提交 `e59bf7056f02e2c1bfd1acb93a5e4a1dd05548f0` 已推送GitHub。正式P3仍需路线二裁决、三种子收敛与A/B/C；路线一消融worker继续运行。
+
+
+## §15.503（2026-11-07）三臂 DP→greedy 完整机制消融
+
+- **S1**：39/39 greedy完成并双跑一致，summary SHA256=`a9cf9c635da7ac15fdc46a19109dd6cf14ff6ee75b297e38a5c1e79e19d7a8fa`。TS0默认DP/greedy=0.4060484541/0.2041445908，Rfam=0.5491246680/0.2440775059；多个split出现大量交叉与共享碱基冲突。
+- **S2**：39/39 greedy完成并双跑一致，summary SHA256=`d0d1b0bb3dc396536affaf088951521e2a80b9d400598b373cc63a5b81fab0e5`。TS0=0.4532140830→0.2212504275，bpRNA-new=0.4380730957→0.1219899697，Rfam=0.5232902658→0.2366868866。
+- **S3**：39/39 greedy完成并双跑一致，summary SHA256=`6c0cdc203c27b3c6577cbe3f5d236a348056c01836c8e4dcf0b7a68521e974ab`。TS0=0.4750360183→0.2073732258，bpRNA-new=0.3904187883→0.1367539341，Rfam=0.4826468164→0.2045584377。
+- **机制边界**：三臂默认DP均在全部13 split明显优于greedy，支持合法DP解码是性能关键组成，不能把结果解释为简单贪心打分。当前仅关闭DP→greedy门，Turner=0及route1_decision未完成，RIPE仍未启动，PPT未修改。
