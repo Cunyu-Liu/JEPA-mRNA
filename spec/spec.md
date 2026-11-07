@@ -11,6 +11,8 @@
 > **阶段顺序**：P0 资产/合同 → P1 structRFM 冻结与全参两臂 → P2 RIPE 的 log/R1/R2/R3/随机周期/随机互补分解 → P3 Pair-JEPA 与近参数 MLP/noEMA/random-target 对照 → P4 RNA 复合物数据扩充与 B 组消融 → P5 LinearDesign 编码区设计验证 → P6 独立复算、PPT 副本、归档与论文。新增合同 `docs/plans/2026-11-07-rna-complex-lineardesign.md`。每路线三种子收敛并完成 A/B/C 后无论正负均作裁决再进入下一路线，不反复测试集调参。
 >
 > **S3 冻结对照**：全参 structRFM+JEV 仅替换为无 teacher 的 PairMLP-490，scorer=304,547 对 ResNet2D=304,321，整头=608,817 对608,591；其余训练配方与 S2 相同。S2 三种子与13 split已完成，all-baseline/external-single均0/8并否决为最终模型。S3 已通过 CUDA/FLOPs 预检，须三种子自然收敛与13 split复算；近参数 scorer 不冒充全骨干等参数，Pair-JEPA 全参辅助目标在 P3 前另行接线验收。
+>
+> **RIPE 启动门**：路线一裁决后，按 S2/S3 各自三种子 best VL0 loss 的均值选择基座配置，不读取测试榜选臂。冻结六个 head 臂 log/R1/R2/R3/R5/R6 与独立 encoder-only R3，每臂三种子自然收敛、13 split、VL0 confidence、greedy/Turner0。1024nt CUDA 合成门与128列分块 head 已通过，两次 SHA256=`53c3e696…6eac13`；encoder attention score 保持BF16，autocast softmax保持FP32。续训已恢复全部历史解冻层；现有S3进程不重写、不重启。合成门不构成效果结论，head-only仍保留512nt边界，encoder臂须逐条支持全部raw序列。
 
 > **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
 >

@@ -13250,3 +13250,13 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立核验**：best checkpoint step=19500、PairMLP-490、无teacher张量，与seed0的checkpoint SHA256=`dc0b9191919e5059ddf9964394f9b13ea09b754614dcf5c281ca039e1544ff07` 区分，未平均种子或形成集成。
 - **seed2**：已读取42,564条TR1c并保留5.0GB CUDA显存进入初始化；目录出现时run_meta尚未写完，未把目录存在误记为训练已开始。
 - **后续**：S3 seed0/1完成，seed2继续自然收敛；三枚best齐全后自动运行优化后的单次分数前向13 split评测、VL0 confidence、SOTA、配对bootstrap和route1_decision。P4/P5顺序不变，PPT未修改。
+
+
+## §15.494（2026-11-07）RIPE 真实 CUDA 启动门、续训修复与预注册队列
+
+- **训练续训缺陷**：代码审查发现恢复 `resume.pt` 后只恢复了解冻层数，未重新打开此前层的 `requires_grad`。现按保存的层数恢复全部历史顶层，后续新增解冻逻辑不变；以4层模块验证0/3/4层及非法计数，未重写或重启正在运行的S3进程。
+- **精度归因**：RIPE encoder偏置显式转为原attention score dtype，实测score=BF16、autocast softmax=FP32、最终hidden=FP32；避免把新增偏置误变成额外精度对照。QK-norm未改变。
+- **CUDA门**：真实RTX4090上515/1024nt的R3 encoder均前向有限，515nt的60个RIPE参数张量均有有限梯度；JEV head同长度经既有128列分块路径前向有限，515nt全部RIPE参数有梯度。首次1024nt未分块pair representation临时张量申请9GB而OOM，证据保留于 `ripe_cuda_gate.unchunked_pair_repr_oom.log`；只修正预检以复用正式分块路径，未缩短序列或丢弃样本。
+- **独立复核**：`ripe_cuda_gate.json` 与recheck逐字节一致，SHA256=`53c3e69616b8c92242556c84b80581b7ec1e7cab4b03c78d9100dbf3d86eac13`。19项回归通过，续训/配置门另独立复跑4项；SOTA工具泛化实验名后，S2既有比较文件SHA256仍为 `b4e78beb6e3afaaf3d2848776409cef699161d67a58def5850ca7e20b9cadf4c`。
+- **冻结队列**：路线一完整裁决后，以S2/S3各三种子best VL0 loss均值为唯一基座配置选择依据，不读取测试榜选臂。六个head臂log/R1/R2/R3/R5/R6及独立encoder-only R3均三种子并行自然收敛，再做13 split、VL0 confidence、SOTA及greedy/Turner0。head-only不越过512nt，encoder臂要求全部raw序列被支持。容量对照复用另一已完成S2/S3臂；RIPE+ResNet2D整头608,759与PairMLP-490整头608,817仅差58参数。
+- **代码与边界**：提交 `8f8fdc0` 已推送GitHub。现有远端锁定队列只等待route1_decision，不重复启动训练；合成门不是长序列性能结论，尚无RIPE科学结果，PPT未修改。

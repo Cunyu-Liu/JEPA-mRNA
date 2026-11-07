@@ -6,7 +6,7 @@
 > |---|---|---|---|
 > | T-A209 | structRFM 官方资产与预训练污染门 | commit/权重哈希/严格加载确认；Zenodo 18272040 精确+80% identity 审计与专属 clean；512 nt 边界明确 | 已完成：官方资产/整包/FASTA 哈希及 13 split clean 全部守恒，summary SHA256=b51ae12e…eee0c |
 > | T-A210 | structRFM+JEV 单模型 | S1 冻结/S2 全参与 RiNALMo 对照；三种子收敛、独立 CUDA QA、A/B/C、长度/速度/置信度齐全；S3 近参数/等 FLOPs 对照关闭 | S1 三种子与 13 split 已完成，all-baseline/external-single 均 0/8，否决为最终模型；S2 三种子与13 split已完成，all-baseline/external-single均0/8，否决为最终模型；S3 PairMLP-490 CUDA/FLOPs预检已通过，正式双种子在训，第三种子、全板、配对统计与路线裁决未完成 |
-> | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 六模式/JEV 头/BERT 接入、官方 token 映射和 515nt CUDA 已验收，34 项回归通过；正式消融待路线一裁决 |
+> | T-A211 | RIPE 合成与表达力分解门 | log/R1/R2/R3/R5/R6、等参数与 QK-norm 对照；边界/梯度/长序列无 NaN、随机杀手对照齐全 | 六模式/JEV头/BERT接入、515/1024nt CUDA及128列分块head已验收，19项回归、SOTA不变与双跑哈希一致；续训解冻层已修复；七臂队列待路线一裁决，正式消融未完成 |
 > | T-A212 | RIPE+JEV 三种子 A/B/C | 同配方收敛；长程与 200–400/>400 nt 为主判定，全板与外部 OOD 完整 | 待路线一裁决 |
 > | T-A213 | Pair-JEPA scorer 与防坍塌对照 | J-mlp/J1/noEMA/random-target；被掩 pair latent、方差/有效秩、推理无 teacher | 待路线二裁决 |
 > | T-A217 | RNA 复合物数据扩充与 B 组消融 | RCSB/mmCIF/DSSR 身份与标签守恒；exact+80% identity 去泄露；D0/D1 三种子 A/B/C 与 complex holdout | 新合同 `docs/plans/2026-11-07-rna-complex-lineardesign.md`；待 P3 后启动，不把界面接触冒充配对 |
