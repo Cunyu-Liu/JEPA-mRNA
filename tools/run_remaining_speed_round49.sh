@@ -6,7 +6,7 @@ PY=/root/miniconda3/envs/lucaone/bin/python
 DATA=$ROOT/data/structrfm_pretrain_clean/bprna_ts0.jsonl
 export PYTHONPATH=$REPO:$REPO/src:$REPO/tools:$REPO/eval
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-while [[ ! -f "$ROOT/eval_decision/speed_round49/eternafold_clean_ts0.json" ]]; do sleep 60; done
+while [[ ! -f "$ROOT/eval_decision/speed_round49/eternafold_clean_ts0.json" || ! -f "$ROOT/eval_decision/speed_round49/nucleicbert_ft_reference_clean_ts0.json" ]]; do sleep 60; done
 DATA_SHA=$($PY -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' "$DATA")
 wait_exclusive() {
   while [[ -n "$(nvidia-smi --query-compute-apps=pid --format=csv,noheader)" ]]; do sleep 60; done
