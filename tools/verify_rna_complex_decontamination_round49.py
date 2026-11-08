@@ -7,6 +7,38 @@ from pathlib import Path
 from audit_structrfm_clean_round48 import normalise, sha256
 
 
+def validate_group_partition(kept, cluster_path, manifest):
+    parents = {}
+
+    def find(node):
+        parents.setdefault(node, node)
+        while parents[node] != node:
+            parents[node] = parents[parents[node]]
+            node = parents[node]
+        return node
+
+    def union(left, right):
+        left, right = find(left), find(right)
+        if left != right:
+            parents[right] = left
+
+    expected_indices = {str(row["candidate_index"]) for row in kept}
+    assert len(expected_indices) == len(kept)
+    with cluster_path.open() as handle:
+        for line in handle:
+            query, target = line.rstrip().split("\t")[:2]
+            assert query in expected_indices and target in expected_indices
+            union(query, target)
+    for row in kept:
+        union(str(row["candidate_index"]), f"entry:{row['source']['pdb_id']}")
+    components = {}
+    for row in kept:
+        components.setdefault(find(str(row["candidate_index"])), set()).add(row["name"])
+    actual = {frozenset(detail["ids"]) for detail in manifest["groups"].values()}
+    assert {frozenset(names) for names in components.values()} == actual
+    assert sum(len(names) for names in actual) == len(kept)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--out-dir", type=Path, required=True)
@@ -39,19 +71,8 @@ def main():
         assert row["source"]["raw_pairs"] == row["raw_pairs"]
         assert row["source"]["source_json_sha256"] == sha256(Path(row["source"]["source_json"]))
         assert row["source"]["sequence"] == normalise(row["seq"])
-    membership = {}
-    for line in (args.out_dir / "clusters_cluster.tsv").open():
-        representative, member = line.rstrip().split("\t")[:2]
-        membership[member] = representative
+    validate_group_partition(kept, args.out_dir / "clusters_cluster.tsv", manifest)
     by_id = {row["name"]: row for row in kept}
-    expected_indices = {str(row["candidate_index"]) for row in kept}
-    assert set(membership) == expected_indices, {"membership": sorted(membership), "expected": sorted(expected_indices)}
-    for name, row in by_id.items():
-        for other_name, other in by_id.items():
-            same_cluster = membership[str(row["candidate_index"])] == membership[str(other["candidate_index"])]
-            same_entry = row["source"]["pdb_id"] == other["source"]["pdb_id"]
-            if same_cluster or same_entry:
-                assert row["group"] == other["group"]
     for group, detail in manifest["groups"].items():
         assert all(by_id[name]["group"] == group for name in detail["ids"])
     ordered = sorted(manifest["groups"], key=lambda group: hashlib.sha256(

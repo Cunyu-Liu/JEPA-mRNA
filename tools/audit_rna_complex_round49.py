@@ -40,8 +40,8 @@ def source_metadata(cif_path, entity_ids):
         for row in block.find(f"{category}.", ["entity_id", field]):
             if str(row[0]) in entity_ids and str(row[1]) not in {".", "?", ""}:
                 organisms.add(str(row[1]).strip("'"))
-    partners = {str(row[0]) for row in block.find("_entity_poly.", ["type"])}
-    partners.discard("polyribonucleotide")
+    partners = {str(row[1]) for row in block.find("_entity_poly.", ["entity_id", "type"])
+                if str(row[0]) not in entity_ids and str(row[1]) != "polyribonucleotide"}
     return {"source_organisms": sorted(organisms), "partner_entity_types": sorted(partners)}
 
 
