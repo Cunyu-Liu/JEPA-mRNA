@@ -31,12 +31,15 @@ def main():
     parser.add_argument("--clean-audit", type=Path)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--max-length", type=int, default=600)
+    from clean_speed_round49 import add_clean_speed_args, validate_clean_speed_rows
+    add_clean_speed_args(parser)
     args = parser.parse_args()
     assert args.repeats == 3 and args.max_length == 600
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA_REQUIRED")
     rows = [json.loads(line) for line in args.data.open() if line.strip()]
-    if args.data.stem in EXPECTED_SPLIT_COUNTS:
+    clean_speed = validate_clean_speed_rows(rows, args)
+    if args.data.stem in EXPECTED_SPLIT_COUNTS and not clean_speed:
         if args.clean_audit:
             audit = json.loads(args.clean_audit.read_text())
             assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[args.data.stem]

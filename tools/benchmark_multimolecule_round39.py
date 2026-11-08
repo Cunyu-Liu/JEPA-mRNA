@@ -27,14 +27,17 @@ def main():
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--clean-audit", type=Path)
+    from clean_speed_round49 import add_clean_speed_args, validate_clean_speed_rows
+    add_clean_speed_args(parser)
     args = parser.parse_args()
-    if not args.smoke:
+    if not args.smoke and not args.clean_speed_protocol:
         assert args.repeats == 3 and args.limit is None
         assert args.data.stem in EXPECTED_SPLIT_COUNTS
     rows = [json.loads(line) for line in args.data.open()]
     if args.limit is not None:
         rows = rows[:args.limit]
-    if not args.smoke:
+    clean_speed = validate_clean_speed_rows(rows, args)
+    if not args.smoke and not clean_speed:
         if args.clean_audit:
             audit = json.loads(args.clean_audit.read_text())
             assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[args.data.stem]
@@ -80,11 +83,14 @@ def main():
     probability_reference = None
     probabilities = []
     for repeat in range(args.repeats):
+        elapsed = 0.0
+        if clean_speed:
+            torch.cuda.synchronize()
         tic = time.perf_counter()
         predictions = []
         probabilities = []
         probability_hasher = hashlib.sha256()
-        for row in rows:
+        for row_index, row in enumerate(rows):
             inputs = tokenizer(row["seq"], return_tensors="pt")
             inputs = {key: value.cuda() for key, value in inputs.items()}
             with torch.no_grad():
@@ -104,7 +110,14 @@ def main():
                 probability = np.triu(0.5 * (raw_probability + raw_probability.T), k=1).astype(np.float32)
                 probabilities.append(probability)
                 probability_hasher.update(probability.tobytes())
-        elapsed = time.perf_counter() - tic
+            if clean_speed:
+                torch.cuda.synchronize()
+                batch_end = time.perf_counter()
+                if row_index:
+                    elapsed += batch_end - tic
+                tic = batch_end
+        if not clean_speed:
+            elapsed = time.perf_counter() - tic
         metrics, per_sequence = score(predictions, rows)
         identity = [[p["name"], p["pairs"]] for p in predictions]
         probability_hash = probability_hasher.hexdigest() if args.model == "spotrna" else None
@@ -113,8 +126,9 @@ def main():
             probability_reference = probability_hash
         else:
             assert identity == reference and probability_hash == probability_reference
-        repeats.append({"repeat": repeat, "elapsed_seconds": elapsed,
-                        "sequences_per_second": len(rows) / elapsed,
+        n_timed = len(rows) - 1 if clean_speed else len(rows)
+        repeats.append({"repeat": repeat, "elapsed_seconds": elapsed, "n_timed": n_timed,
+                        "sequences_per_second": n_timed / elapsed,
                         "prediction_sha256": hashlib.sha256(canonical(identity).encode()).hexdigest(),
                         "probability_sha256": probability_hash,
                         "metrics": metrics})
@@ -128,8 +142,12 @@ def main():
                "data": str(args.data), "data_sha256": sha256(args.data),
                "clean_audit": str(args.clean_audit) if args.clean_audit else None,
                "weights": str(args.weights), "weights_sha256": sha256(args.weights / "model.safetensors"),
-               "device": "cuda", "threshold": threshold, "n_sequences": len(rows),
-               "protocol": "raw-sequence inference; concurrent timings are diagnostic, not exclusive speed benchmarks",
+               "device": "cuda", "gpu_name": torch.cuda.get_device_name(0),
+               "threshold": threshold, "n_sequences": len(rows), "batch_size": 1,
+               "warmup_sequences_per_repeat": 1 if clean_speed else 0,
+               "clean_speed_protocol": clean_speed, "cached_embeddings": False,
+               "protocol": ("raw-sequence inference; exclusive clean TS0 timing with one warmup per repeat" if clean_speed else
+                            "raw-sequence inference; concurrent timings are diagnostic, not exclusive speed benchmarks"),
                "environment": {"multimolecule": importlib.metadata.version("multimolecule"),
                                "torch": importlib.metadata.version("torch"),
                                "transformers": importlib.metadata.version("transformers"),

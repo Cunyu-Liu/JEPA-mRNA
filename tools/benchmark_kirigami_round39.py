@@ -46,14 +46,17 @@ def main():
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--clean-audit", type=Path)
+    from clean_speed_round49 import add_clean_speed_args, validate_clean_speed_rows
+    add_clean_speed_args(parser)
     args = parser.parse_args()
-    if not args.smoke:
+    if not args.smoke and not args.clean_speed_protocol:
         assert args.repeats == 3 and args.limit is None
         assert args.data.stem in EXPECTED_SPLIT_COUNTS
     rows = [json.loads(line) for line in args.data.open()]
     if args.limit is not None:
         rows = rows[:args.limit]
-    if not args.smoke:
+    clean_speed = validate_clean_speed_rows(rows, args)
+    if not args.smoke and not clean_speed:
         if args.clean_audit:
             audit = json.loads(args.clean_audit.read_text())
             assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[args.data.stem]
@@ -86,6 +89,9 @@ def main():
     probability_reference = None
     probabilities = []
     for repeat in range(args.repeats):
+        elapsed = 0.0
+        if clean_speed:
+            torch.cuda.synchronize()
         tic = time.perf_counter()
         predictions = []
         probabilities = []
@@ -110,9 +116,16 @@ def main():
             dot = mat2db(processed)
             assert len(dot) == len(seq)
             predictions.append({"name": row["name"], "pairs": parse_dot_pairs(dot)})
+            if clean_speed:
+                torch.cuda.synchronize()
+                batch_end = time.perf_counter()
+                if row_index:
+                    elapsed += batch_end - tic
+                tic = batch_end
             if args.smoke or (row_index + 1) % 50 == 0 or row_index + 1 == len(rows):
                 print(f"KIRIGAMI_PROGRESS repeat={repeat} predicted={row_index + 1}/{len(rows)}", flush=True)
-        elapsed = time.perf_counter() - tic
+        if not clean_speed:
+            elapsed = time.perf_counter() - tic
         metrics, per_sequence = score(predictions, rows)
         identity = [[p["name"], p["pairs"]] for p in predictions]
         probability_hash = probability_hasher.hexdigest()
@@ -121,8 +134,9 @@ def main():
             probability_reference = probability_hash
         else:
             assert identity == reference and probability_hash == probability_reference
-        repeats.append({"repeat": repeat, "elapsed_seconds": elapsed,
-                        "sequences_per_second": len(rows) / elapsed,
+        n_timed = len(rows) - 1 if clean_speed else len(rows)
+        repeats.append({"repeat": repeat, "elapsed_seconds": elapsed, "n_timed": n_timed,
+                        "sequences_per_second": n_timed / elapsed,
                         "prediction_sha256": hashlib.sha256(canonical(identity).encode()).hexdigest(),
                         "probability_sha256": probability_hash,
                         "metrics": metrics})
@@ -135,8 +149,11 @@ def main():
                "clean_audit": str(args.clean_audit) if args.clean_audit else None,
                "repository_commit": subprocess.check_output(["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True).strip(),
                "weights": str(args.weights), "weights_sha256": sha256(args.weights),
-               "device": "cuda", "decoder": "C_nussinov_with_pseudoknot_levels_round39",
+               "device": "cuda", "gpu_name": torch.cuda.get_device_name(0),
+               "decoder": "C_nussinov_with_pseudoknot_levels_round39",
                "threshold": float(model.threshold.item()), "n_sequences": len(rows),
+               "batch_size": 1, "warmup_sequences_per_repeat": 1 if clean_speed else 0,
+               "clean_speed_protocol": clean_speed, "cached_embeddings": False,
                "environment": {"torch": importlib.metadata.version("torch"),
                                "pytorch-lightning": importlib.metadata.version("pytorch-lightning"),
                                "python": sys.executable},
