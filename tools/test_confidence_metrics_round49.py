@@ -32,6 +32,13 @@ class ConfidenceMetricTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             evaluate_structure_confidence(rows, [0.0, 0.5, 0.8])
 
+    def test_single_structure_keeps_metrics_but_not_correlation(self):
+        result = evaluate_structure_confidence([{"structure_conf": 0.4, "f1": 0.6}],
+                                               [0.0, 0.2, 0.4, 0.6, 0.8, 0.95])
+        self.assertEqual(result["n"], 1)
+        self.assertIsNone(result["pearson"]["value"])
+        self.assertIsNone(result["spearman"]["value"])
+
     def test_bootstrap_count_is_frozen(self):
         with self.assertRaises(ValueError):
             correlation_with_ci([0.1, 0.2], [0.2, 0.4], pearsonr, 100)

@@ -44,8 +44,8 @@ def correlation_with_ci(confidence, f1, method, bootstrap):
 
 
 def evaluate_structure_confidence(rows, thresholds, bootstrap=2000):
-    if len(rows) < 2:
-        raise ValueError("at least two structures are required")
+    if not rows:
+        raise ValueError("at least one structure is required")
     thresholds = np.asarray(thresholds, dtype=np.float64)
     if thresholds.shape != COVERAGE.shape:
         raise ValueError("thresholds must match the six preregistered coverage points")
