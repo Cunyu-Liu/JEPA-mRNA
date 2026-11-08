@@ -70,6 +70,7 @@ class AuditIntegrationTests(unittest.TestCase):
                     self.fail(verification.stdout + "\n" + verification.stderr)
                 manifest = json.loads((output / "decontamination.json").read_text())
                 self.assertEqual(manifest["n_unique_sequences"], 11)
+                self.assertEqual(manifest["n_duplicate_chains"], 1)
                 self.assertEqual(manifest["n_removed"], 3)
                 self.assertEqual(manifest["n_unsupported_nested"], 1)
                 self.assertEqual(manifest["n_clean"], 7)

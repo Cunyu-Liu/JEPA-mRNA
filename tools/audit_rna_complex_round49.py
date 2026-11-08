@@ -152,7 +152,7 @@ def main():
                         "resolution_angstrom": document.get("resolution_angstrom"),
                         "deposition_date": document.get("deposition_date"), **metadata})
             if sequence in seen:
-                seen[sequence]["duplicate_chain_ids"].append(chain["id"])
+                seen[sequence].setdefault("duplicate_chain_ids", [seen[sequence]["id"]]).append(chain["id"])
             else:
                 row["duplicate_chain_ids"] = [chain["id"]]
                 seen[sequence] = row
