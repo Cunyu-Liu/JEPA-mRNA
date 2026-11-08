@@ -46,6 +46,10 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+def record_name(row):
+    return row.get("name") or row["id"]
+
+
 def predict(binary, params, row, directory, env):
     path = directory / "input.seq"
     path.write_text(row["seq"] + "\n")
@@ -68,7 +72,7 @@ def predict(binary, params, row, directory, env):
         else:
             assert token == "."
     assert not stack
-    return {"name": row["name"], "pairs": sorted(pairs)}
+    return {"name": record_name(row), "pairs": sorted(pairs)}
 
 
 def score(predictions, rows):
@@ -77,12 +81,13 @@ def score(predictions, rows):
     tp = fp = fn = 0
     output = []
     for row in rows:
-        prediction = by_name[row["name"]]
+        name = record_name(row)
+        prediction = by_name[name]
         pred = {tuple(pair) for pair in prediction["pairs"]}
         true = {tuple(pair) for pair in row["pairs"]}
         a, b, c = len(pred & true), len(pred - true), len(true - pred)
         tp, fp, fn = tp + a, fp + b, fn + c
-        output.append({"name": row["name"], "tp": a, "fp": b, "fn": c,
+        output.append({"name": name, "tp": a, "fp": b, "fn": c,
                        "f1": 2 * a / (2 * a + b + c) if 2 * a + b + c else 1.0,
                        "pred_pairs": prediction["pairs"]})
     return {"n_sequences": len(rows), "tp": tp, "fp": fp, "fn": fn,
@@ -91,6 +96,8 @@ def score(predictions, rows):
 
 
 def main():
+    from clean_speed_round49 import add_clean_speed_args, validate_clean_speed_rows
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path("/home/rna_jev/third_party/EternaFold"))
     parser.add_argument("--data", type=Path, default=Path("/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl"))
@@ -100,8 +107,9 @@ def main():
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--native-contrafold", action="store_true")
     parser.add_argument("--clean-audit", type=Path)
+    add_clean_speed_args(parser)
     args = parser.parse_args()
-    if not args.smoke:
+    if not args.smoke and not args.clean_speed_protocol:
         assert args.repeats == 3 and args.limit is None
     binary = args.repo / "src/contrafold"
     params = None if args.native_contrafold else args.repo / "parameters/EternaFoldParams.v1"
@@ -109,7 +117,8 @@ def main():
     rows = [json.loads(line) for line in args.data.open()]
     if args.limit is not None:
         rows = rows[:args.limit]
-    if not args.smoke:
+    clean_speed = validate_clean_speed_rows(rows, args)
+    if not args.smoke and not clean_speed:
         assert args.data.stem in EXPECTED_SPLIT_COUNTS, f"unregistered split: {args.data.stem}"
         if args.clean_audit:
             audit = json.loads(args.clean_audit.read_text())
@@ -127,9 +136,10 @@ def main():
         directory = Path(tmp)
         predict(binary, params, rows[0], directory, env)
         for repeat in range(args.repeats):
-            predictions = []
+            predictions = [predict(binary, params, rows[0], directory, env)] if clean_speed else []
+            timed_rows = rows[1:] if clean_speed else rows
             tic = time.perf_counter()
-            for row in rows:
+            for row in timed_rows:
                 predictions.append(predict(binary, params, row, directory, env))
             elapsed = time.perf_counter() - tic
             metrics, per_sequence = score(predictions, rows)
@@ -139,7 +149,8 @@ def main():
             else:
                 assert identity == reference
             repeats.append({"repeat": repeat, "elapsed_seconds": elapsed,
-                            "sequences_per_second": len(rows) / elapsed,
+                            "n_timed": len(timed_rows),
+                            "sequences_per_second": len(timed_rows) / elapsed,
                             "prediction_sha256": hashlib.sha256(canonical(identity).encode()).hexdigest(),
                             "metrics": metrics})
             print(json.dumps(repeats[-1]), flush=True)
@@ -155,6 +166,8 @@ def main():
         "data": str(args.data), "data_sha256": sha256(args.data),
         "protocol": "raw-sequence end-to-end; official serial CPU binary and MEA decode; single thread; " + ("native CONTRAfold" if args.native_contrafold else "EternaFold parameters"),
         "device": "CPU (native method; no GPU timing)", "batch_size": 1,
+        "warmup_sequences_per_repeat": 1 if clean_speed else 0, "clean_speed_protocol": clean_speed,
+        "cross_device_gpu_rankable": False,
         "batch_note": "B=2/4 are not applicable to the official serial CLI and are not fabricated",
         "cpu_threads": 1, "n_sequences": len(rows), "repeats": repeats,
         "peak_child_rss_mib": resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss / 1024,

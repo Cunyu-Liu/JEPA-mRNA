@@ -116,9 +116,11 @@ def main():
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--clean-audit", type=Path)
+    from clean_speed_round49 import add_clean_speed_args, validate_clean_speed_rows
+    add_clean_speed_args(parser)
     args = parser.parse_args()
     assert args.repeats >= 1
-    if not args.smoke:
+    if not args.smoke and not args.clean_speed_protocol:
         assert args.repeats == 3 and args.limit is None
     assert torch.cuda.is_available(), "CUDA_REQUIRED"
     torch.cuda.set_device(0)
@@ -127,7 +129,8 @@ def main():
     if args.limit is not None:
         rows = rows[:args.limit]
     assert rows and len({row["name"] for row in rows}) == len(rows)
-    if not args.smoke:
+    clean_speed = validate_clean_speed_rows(rows, args)
+    if not args.smoke and not clean_speed:
         assert args.data.stem in EXPECTED_SPLIT_COUNTS, f"unregistered split: {args.data.stem}"
         if args.clean_audit:
             audit = json.loads(args.clean_audit.read_text())
@@ -169,15 +172,23 @@ def main():
     started = time.strftime("%Y-%m-%dT%H:%M:%S%z")
     for repeat in range(args.repeats):
         predictions = []
+        elapsed = 0.0
         torch.cuda.synchronize()
         tic = time.perf_counter()
         for batch_index, group in enumerate(batches, start=1):
             predictions.extend(decode(model, group, reset_state=reset_state))
+            if clean_speed:
+                torch.cuda.synchronize()
+                batch_end = time.perf_counter()
+                if batch_index > 1:
+                    elapsed += batch_end - tic
+                tic = batch_end
             length = len(group[0]["seq"])
             if batch_index % args.progress_every == 0 or length >= 400:
                 print(f"EFOLD_PROGRESS repeat={repeat} batch={batch_index}/{len(batches)} length={length}", flush=True)
-        torch.cuda.synchronize()
-        elapsed = time.perf_counter() - tic
+        if not clean_speed:
+            torch.cuda.synchronize()
+            elapsed = time.perf_counter() - tic
         metrics, per_sequence = score(predictions, rows)
         digest = hashlib.sha256(canonical(predictions).encode()).hexdigest()
         pair_identity = [[p["name"], p["pairs"]] for p in predictions]
@@ -185,8 +196,9 @@ def main():
             reference_pairs = pair_identity
         else:
             assert pair_identity == reference_pairs, "REPEAT_PREDICTION_MISMATCH"
-        repeats.append({"repeat": repeat, "elapsed_seconds": elapsed,
-                        "sequences_per_second": len(rows) / elapsed,
+        n_timed = len(rows) - len(batches[0]) if clean_speed else len(rows)
+        repeats.append({"repeat": repeat, "elapsed_seconds": elapsed, "n_timed": n_timed,
+                        "sequences_per_second": n_timed / elapsed,
                         "prediction_sha256": digest, "metrics": metrics})
         print(json.dumps(repeats[-1]), flush=True)
     efold_version = "0.1.2" if args.repo.name == "efold012_wheel" else "0.1.3"
@@ -203,7 +215,9 @@ def main():
                    if (args.repo / ".git").exists() else f"PyPI efold=={efold_version}"),
         "weights": str(weights), "weights_sha256": sha256(weights),
         "data": str(args.data), "data_sha256": sha256(args.data),
-        "protocol": protocol,
+        "protocol": protocol, "clean_speed_protocol": clean_speed,
+        "warmup_sequences_per_repeat": len(batches[0]) if clean_speed else 0,
+        "cached_embeddings": False,
         "native_protocol_note": ("0.1.2 native API behavior: train mode with per-sequence initial-state reset; identity verification only, not a speed comparison"
                                  if legacy_native else "0.1.3 official eval mode with a single model load"),
         "device": torch.cuda.get_device_name(0), "cuda": torch.version.cuda,

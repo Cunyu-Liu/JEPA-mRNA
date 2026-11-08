@@ -14,6 +14,8 @@ def sha256(path):
 
 
 def main():
+    from clean_speed_round49 import add_clean_speed_args, validate_clean_speed_rows
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path("/home/rna_jev/third_party/BPfold"))
     parser.add_argument("--checkpoints", type=Path, required=True)
@@ -23,14 +25,16 @@ def main():
     parser.add_argument("--limit", type=int)
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--clean-audit", type=Path)
+    add_clean_speed_args(parser)
     args = parser.parse_args()
-    if not args.smoke:
+    if not args.smoke and not args.clean_speed_protocol:
         assert args.repeats == 3 and args.limit is None
         assert args.data.stem in EXPECTED_SPLIT_COUNTS
     rows = [json.loads(line) for line in args.data.open()]
     if args.limit is not None:
         rows = rows[:args.limit]
-    if not args.smoke:
+    clean_speed = validate_clean_speed_rows(rows, args)
+    if not args.smoke and not clean_speed:
         if args.clean_audit:
             audit = json.loads(args.clean_audit.read_text())
             assert audit["status"] == "PASS" and audit["split_sha256"] == EXPECTED_SPLIT_SHA256[args.data.stem]
@@ -51,9 +55,13 @@ def main():
     repeats = []
     reference = None
     for repeat in range(args.repeats):
-        tic = time.perf_counter()
         raw = []
-        for index, result in enumerate(predictor.predict(input_seqs=[row["seq"] for row in rows], batch_size=1, num_workers=1), start=1):
+        timed_rows = rows
+        if clean_speed:
+            raw = list(predictor.predict(input_seqs=[rows[0]["seq"]], batch_size=1, num_workers=1))
+            timed_rows = rows[1:]
+        tic = time.perf_counter()
+        for index, result in enumerate(predictor.predict(input_seqs=[row["seq"] for row in timed_rows], batch_size=1, num_workers=1), start=len(raw) + 1):
             raw.append(result)
             if index % 250 == 0 or index == len(rows):
                 print(f"BPFOLD_PROGRESS repeat={repeat} predicted={index}/{len(rows)}", flush=True)
@@ -70,7 +78,8 @@ def main():
         else:
             assert identity == reference
         repeats.append({"repeat": repeat, "elapsed_seconds": elapsed,
-                        "sequences_per_second": len(rows) / elapsed,
+                        "n_timed": len(timed_rows) if clean_speed else len(rows),
+                        "sequences_per_second": len(timed_rows) / elapsed if clean_speed else len(rows) / elapsed,
                         "prediction_sha256": hashlib.sha256(canonical(identity).encode()).hexdigest(),
                         "metrics": metrics})
     checkpoint_files = sorted(args.checkpoints.glob("*.pth"))
@@ -79,7 +88,10 @@ def main():
                "system": "BPfold", "data": str(args.data), "data_sha256": sha256(args.data),
                "repository_commit": subprocess.check_output(["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True).strip(),
                "checkpoint_sha256": {path.name: sha256(path) for path in checkpoint_files},
-               "device": "cuda", "n_sequences": len(rows), "repeats": repeats,
+               "device": "cuda", "gpu_name": torch.cuda.get_device_name(0),
+               "n_sequences": len(rows), "batch_size": 1, "cached_embeddings": False,
+               "warmup_sequences_per_repeat": 1 if clean_speed else 0,
+               "clean_speed_protocol": clean_speed, "repeats": repeats,
                "per_sequence": per_sequence}
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
