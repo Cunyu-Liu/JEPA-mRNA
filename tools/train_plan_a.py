@@ -78,6 +78,27 @@ TEACHER_DIR = "/root/rna_jepa_data/ss_data/teacher/bprna_tr0"
 CKPT_DIR = "/root/rna_jepa_data/ckpts"
 
 
+def restore_validation_state(state, validation_log_path):
+    restored = (int(state.get("best_step", 0)),
+                float(state.get("best_validation_loss", float("inf"))),
+                int(state.get("bad_evaluations", 0)))
+    if not os.path.isfile(validation_log_path):
+        return restored
+    with open(validation_log_path, encoding="utf-8") as fh:
+        records = [json.loads(line) for line in fh if line.strip()]
+    if not records:
+        return restored
+    latest = records[-1]
+    validation_step = int(latest["step"])
+    if validation_step > int(state["step"]):
+        raise ValueError("validation log is ahead of the resume checkpoint")
+    if validation_step == int(state["step"]):
+        restored = (int(latest["best_step"]),
+                    float(latest["best_validation_loss"]),
+                    int(latest["bad_evaluations"]))
+    return restored
+
+
 def load_records(path):
     """(seq, sorted pairs) per line -- the control arm's load_dataset_from_jsonl."""
     records = []
@@ -341,6 +362,7 @@ def main():
 
     meta = {
         "arm": os.path.basename(args.out.rstrip("/")),
+        "data": args.data,
         "control_arm": "rinalmo_r2d_b4_s0",
         "control_results": {"ts0_micro_f1": 0.6629, "bprna_new_micro_f1": 0.5010},
         "ripe": {"mode": None if args.ripe_encoder_only else args.ripe_mode or None,
@@ -398,9 +420,12 @@ def main():
         restore_unfrozen_blocks(blocks, n_unfrozen)
         start_step = int(state["step"])
         stream.state = state["stream_state"]
-        best_step = int(state.get("best_step", 0))
-        best_validation_loss = float(state.get("best_validation_loss", float("inf")))
-        bad_evaluations = int(state.get("bad_evaluations", 0))
+        best_step, best_validation_loss, bad_evaluations = restore_validation_state(
+            state, os.path.join(args.out, "validation_log.jsonl"))
+        meta["best_step"] = best_step
+        meta["best_validation_loss"] = best_validation_loss
+        with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
+            json.dump(meta, fh, indent=1)
         print(f"[plan-a] resumed from step {start_step} "
               f"({n_unfrozen}/{n_blocks} blocks unfrozen)", flush=True)
 
