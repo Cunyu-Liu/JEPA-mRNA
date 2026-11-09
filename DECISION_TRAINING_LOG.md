@@ -15478,3 +15478,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **关键诊断**：length/sum的shadow update RMS在6个批次中均增大，head/backbone范围分别为8.0182–80.1575/8.0182–80.1575倍，中位均约28.8024倍；因此在恢复的终态优化器状态下，不支持“length自然降低更新幅度”的假设，必须由独立L-length训练裁决。backbone LR=1e-6使对应shadow update RMS变为原来的0.1（数值范围约0.09999999–0.10000000），只证明更新尺度，不证明VL0或F1改善。
 - **冲突与长度边界**：5/6批次至少一种归一化下NLL与辅助项梯度cosine为负，seed2四批中三批、seed0两批均为负；不允许据此混改aux权重。seed2的NLL-sum损失长度斜率=0.5187364389、length=0.0009671870，NLL-sum梯度范数斜率=3.0157800088、length=0.0027694849；seed0仅两个长度点且斜率方向不同，不能外推为普遍长度定律。全解冻重放不能隔离解冻ramp效应，U-ramp不放行。
 - **阶段门**：决策双跑逐字节一致，SHA256=`b776ff27ac16ab91afe1d0faa39c8a785ba2243003accdfbee19de7ab80aeb07`。R-replay三轮检查完成；允许分别启动L-length与O-LR单因子正式实验，禁止L+O交互、U-ramp和容量阶段。当前尚未启动这些训练，所有精度、稳定性、SOTA和速度结论仍未验证，PPT未修改。
+
+
+## §15.798（2026-11-10）L-length/O-LR实现、恢复保护与CUDA工程预检（非科学结果）
+
+- **唯一改动**：`train_plan_a.py`新增`--nll-normalization={sum,length}`，训练与VL0均读取同一配置，run_meta明确记录；O-LR沿用现有`--backbone-lr`。恢复时新增NLL normalization/backbone LR/seed身份拒绝，并按保存的optimizer参数组恢复scheduler对应LR，避免LambdaLR构造覆盖为warmup初值。默认NLL=sum保持既有行为。
+- **合同与静态检查**：新增scheduler LR恢复和resume身份反例，相关29项测试连续三次通过；`bash -n tools/run_loss_optimizer_round51.sh`与py_compile通过，CLI含nll-normalization。初次测试路径及两处测试构造错误已修正，未放宽生产断言。
+- **真实CUDA预检**：两种配置各2步、batch=2、seed42、RTX4090、0/12 warmup，均`stop_reason=step_cap/converged=false`，只作工程证据。L-length step1 NLL=0.8049、total=1.7648、gnorm=3.49，O-LR step1 NLL=88.5346、total=89.4945、gnorm=97.7；三者辅助项逐值相同distill=0.6839、rlcd=-0.4216、cal=0.6976，NLL sum/length四舍五入比=109.9945334824，符合该批长度约110。O-LR backbone LR=1e-6、NLL=sum，L-length backbone LR=1e-5、NLL=length，未混改。QA=`audits/round51/loss_optimizer_smoke_qa.json`。
+- **队列边界**：`tools/run_loss_optimizer_round51.sh`只含L-length与O-LR，seed42/2026/3407，steps=0、500步VL0、patience=6，三任务并行、失败仅按最近resume同配置串行恢复，不自动进入测试评测或后续阶段。正式训练尚未启动，PPT未修改。

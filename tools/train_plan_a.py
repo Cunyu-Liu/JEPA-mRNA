@@ -174,6 +174,28 @@ def restore_unfrozen_blocks(blocks, n_unfrozen):
         block.requires_grad_(index >= first)
 
 
+def restore_scheduler_state(scheduler, scheduler_state, optimizer_state):
+    scheduler.load_state_dict(scheduler_state)
+    for group, saved in zip(scheduler.optimizer.param_groups, optimizer_state["param_groups"]):
+        group["lr"] = saved["lr"]
+    restored = [group["lr"] for group in scheduler.optimizer.param_groups]
+    if list(scheduler._last_lr) != restored:
+        raise ValueError(f"scheduler LR mismatch: {scheduler._last_lr} vs {restored}")
+
+
+def validate_resume_identity(previous_meta, args):
+    if not previous_meta:
+        return
+    expected = previous_meta.get("objective", {}).get("nll_normalization", "sum")
+    if expected != args.nll_normalization:
+        raise ValueError(f"resume NLL normalization mismatch: {expected} vs {args.nll_normalization}")
+    expected_lr = previous_meta.get("schedule", {}).get("backbone_lr", args.backbone_lr)
+    if float(expected_lr) != float(args.backbone_lr):
+        raise ValueError(f"resume backbone LR mismatch: {expected_lr} vs {args.backbone_lr}")
+    if int(previous_meta.get("seed", args.seed)) != int(args.seed):
+        raise ValueError("resume seed mismatch")
+
+
 def masked_pair_target(valid, probability, seed):
     if valid.dtype != torch.bool:
         raise TypeError("valid pair mask must be bool")
@@ -206,6 +228,7 @@ def main():
     ap.add_argument("--lambda-distill", type=float, default=1.0)
     ap.add_argument("--lambda-rlcd", type=float, default=1.0)
     ap.add_argument("--lambda-cal", type=float, default=1.0)
+    ap.add_argument("--nll-normalization", choices=["sum", "length"], default="sum")
     ap.add_argument("--batch-size", type=int, default=4)
     ap.add_argument("--head-lr", type=float, default=1e-4)
     ap.add_argument("--backbone-lr", type=float, default=1e-5)
@@ -369,6 +392,8 @@ def main():
     stream = BatchStream(records, args.batch_size, args.seed)
     n_unfrozen = 0
     start_step = 0
+    meta_path = os.path.join(args.out, "run_meta.json")
+    previous_meta = json.load(open(meta_path)) if os.path.isfile(meta_path) else {}
 
     meta = {
         "arm": os.path.basename(args.out.rstrip("/")),
@@ -387,7 +412,7 @@ def main():
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
                       "teacher": args.teacher_dir,
                       "distill_kind": "kl", "rlcd_reward": "brier", "beta": 1.0,
-                      "n_bins": 10, "tau": 0.1, "nll_normalization": "sum",
+                      "n_bins": 10, "tau": 0.1, "nll_normalization": args.nll_normalization,
                       "lambda_jepa": args.lambda_jepa,
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
@@ -428,11 +453,12 @@ def main():
 
     resume_path = os.path.join(args.out, "resume.pt")
     if os.path.isfile(resume_path):
+        validate_resume_identity(previous_meta, args)
         state = torch.load(resume_path, map_location="cpu")
         head.load_state_dict(state["head"])
         encoder.load_state_dict(state["encoder"])
         opt.load_state_dict(state["optimizer"])
-        sched.load_state_dict(state["scheduler"])
+        restore_scheduler_state(sched, state["scheduler"], state["optimizer"])
         n_unfrozen = int(state["n_unfrozen"])
         restore_unfrozen_blocks(blocks, n_unfrozen)
         start_step = int(state["step"])
@@ -581,7 +607,7 @@ def main():
                 labels=torch.as_tensor(labels_all[b], dtype=torch.float64,
                                        device=s.device),
                 distill_kind="kl", reward="brier", beta=1.0,
-                n_bins=10, tau=0.1, nll_normalization="sum",
+                n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
                 return_terms=True)
             total = loss_b if total is None else total + loss_b
             for k, v in terms_b.items():
@@ -674,7 +700,7 @@ def main():
                         labels=torch.as_tensor(pair_indicator(len(seq), gt_pairs),
                                                dtype=torch.float64, device=device),
                         distill_kind="kl", reward="brier", beta=1.0,
-                        n_bins=10, tau=0.1, nll_normalization="sum",
+                        n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
                         return_terms=True)
                     validation_total += float(loss)
             validation_loss = validation_total / len(validation_records)
