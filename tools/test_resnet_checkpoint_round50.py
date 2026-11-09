@@ -32,3 +32,30 @@ def test_checkpoint_preserves_scores_gradients_and_single_batch_norm_update():
             assert torch.equal(plain_bn.running_var, optimized_bn.running_var)
             assert plain_bn.num_batches_tracked == optimized_bn.num_batches_tracked == 1
     torch.testing.assert_close(z_optimized.grad, z_plain.grad, rtol=0, atol=0)
+
+
+def test_pair_type_checkpoint_preserves_outputs_and_gradients():
+    torch.manual_seed(23)
+    plain = FlatDecisionHead(d_model=8, d_z=4, hidden=4, scorer="resnet2d",
+                             resnet_blocks=1, chunk_size=0, grad_checkpoint=False)
+    optimized = FlatDecisionHead(d_model=8, d_z=4, hidden=4, scorer="resnet2d",
+                                 resnet_blocks=1, chunk_size=0, grad_checkpoint=True)
+    optimized.load_state_dict(plain.state_dict())
+    plain.train()
+    optimized.train()
+    h_plain = torch.randn(1, 129, 8, requires_grad=True)
+    h_optimized = h_plain.detach().clone().requires_grad_(True)
+    ids = torch.zeros(1, 129, dtype=torch.long)
+    plain_scores, plain_types = plain.pair_scores_and_types(h_plain, ids)
+    optimized_scores, optimized_types = optimized.pair_scores_and_types(h_optimized, ids)
+    torch.testing.assert_close(optimized_scores, plain_scores, rtol=0, atol=0)
+    torch.testing.assert_close(optimized_types, plain_types, rtol=0, atol=0)
+    loss_plain = plain_scores.square().mean() + plain_types.square().mean()
+    loss_optimized = optimized_scores.square().mean() + optimized_types.square().mean()
+    plain_state = _resnet_batch_norm_state(plain)
+    optimized_state = _resnet_batch_norm_state(optimized)
+    loss_plain.backward()
+    loss_optimized.backward()
+    _restore_resnet_batch_norm_state(plain_state)
+    _restore_resnet_batch_norm_state(optimized_state)
+    torch.testing.assert_close(h_optimized.grad, h_plain.grad, rtol=0, atol=0)

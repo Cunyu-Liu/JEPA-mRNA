@@ -464,8 +464,13 @@ class FlatDecisionHead(nn.Module):
                 chunks.append(self.pair_repr.cross(h, h[:, j0:j0 + zchunk]))
             z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
             s = self.score_pair_matrix(z, seq_ids)
-            type_chunks = [self.type_head.cross(h, h[:, j0:j0 + zchunk])
-                           for j0 in range(0, L, zchunk)]
+            if self.training and self.grad_checkpoint and torch.is_grad_enabled() and L > 128:
+                type_chunks = [checkpoint(self.type_head.cross, h, h[:, j0:j0 + zchunk],
+                                          use_reentrant=False)
+                               for j0 in range(0, L, zchunk)]
+            else:
+                type_chunks = [self.type_head.cross(h, h[:, j0:j0 + zchunk])
+                               for j0 in range(0, L, zchunk)]
             t = self.type_head.symmetrize(torch.cat(type_chunks, dim=2))
             return s, t
         chunk = self.chunk_size if 0 < self.chunk_size < L else L
