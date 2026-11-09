@@ -158,6 +158,12 @@ def merge_parts(out_dir: str, part_names: Sequence[str], *, worker_meta: Dict) -
             "merged manifest has no version_lock; the soft labels would not be "
             "reproducible (spec §8.1 G5). Check that the part manifests carry "
             "'teacher_version_lock'.")
+    expected = len(read_sequences(worker_meta["corpus"],
+                                  max_length=worker_meta.get("max_length_filter", 0)))
+    if manifest["n_sequences"] != expected:
+        raise RuntimeError(
+            f"teacher sequence conservation failed: expected {expected}, "
+            f"merged {manifest['n_sequences']}")
     with open(os.path.join(out_dir, "manifest.json"), "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=1, sort_keys=True)
     return manifest
@@ -214,7 +220,8 @@ def run(data: str, out_dir: str, *, workers: int, shard_size: int,
         log = open(os.path.join(log_dir, f"{part}.log"), "w", encoding="utf-8")
         cmd = [python, WORKER, "--data", part_corpus,
                "--out", os.path.join(out_dir, part),
-               "--shard-size", str(shard_size)]
+               "--shard-size", str(shard_size),
+               "--max-length", str(max_length)]
         env = dict(os.environ)
         # each worker starts from scratch inside its own part dir; the part dir
         # is the resume unit, so a relaunch reuses finished parts
