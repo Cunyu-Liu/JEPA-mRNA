@@ -61,7 +61,8 @@ def main():
     for role, seed in SEEDS.items():
         run = Path(recipe["members"][role])
         meta = json.loads((run / "run_meta.json").read_text())
-        assert meta["seed"] == seed and meta["converged"] and meta["early_stopped"]
+        assert meta.get("seed", meta.get("config", {}).get("seed")) == seed
+        assert meta["converged"] and meta["early_stopped"]
         assert meta["status"] == "completed" and meta["environment"]["resolved_device"].startswith("cuda")
         checkpoint = run / "best.pt"
         sources[str(checkpoint.relative_to(args.root))] = sha256(checkpoint)

@@ -71,7 +71,7 @@ root=Path(os.environ["ROOT"])
 for role,seed in [("plana_a",42),("plana_b",2026),("r2d",3407)]:
     path=root/f"runs/xens2_complex_{role}_s{seed}"
     meta=json.loads((path/"run_meta.json").read_text())
-    assert meta["seed"]==seed and meta["converged"] and meta["early_stopped"] and meta["status"]=="completed"
+    assert meta.get("seed",meta.get("config",{}).get("seed"))==seed and meta["converged"] and meta["early_stopped"] and meta["status"]=="completed"
     assert (path/"best.pt").is_file() and meta["environment"]["resolved_device"].startswith("cuda")
     print("CONVERGED",role,seed,meta["best_step"],meta["best_validation_loss"],flush=True)
 PY
