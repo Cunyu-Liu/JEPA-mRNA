@@ -78,6 +78,16 @@ TEACHER_DIR = "/root/rna_jepa_data/ss_data/teacher/bprna_tr0"
 CKPT_DIR = "/root/rna_jepa_data/ckpts"
 
 
+def atomic_torch_save(value, path):
+    temporary = f"{path}.tmp.{os.getpid()}"
+    try:
+        torch.save(value, temporary)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
 def restore_validation_state(state, validation_log_path):
     restored = (int(state.get("best_step", 0)),
                 float(state.get("best_validation_loss", float("inf"))),
@@ -666,7 +676,7 @@ def main():
             torch.cuda.reset_peak_memory_stats()
 
         if step % args.save_every == 0 or step == args.steps:
-            torch.save({"step": step, "head": head.state_dict(),
+            atomic_torch_save({"step": step, "head": head.state_dict(),
                         "encoder": encoder.state_dict(),
                         "optimizer": opt.state_dict(),
                         "scheduler": sched.state_dict(),
@@ -676,7 +686,7 @@ def main():
                         "bad_evaluations": bad_evaluations,
                         "stream_state": stream.state}, resume_path)
         if step % args.snapshot_every == 0 or step == args.steps:
-            torch.save({"step": step,
+            atomic_torch_save({"step": step,
                         "model": {"encoder": encoder.state_dict(),
                                   "head": head.state_dict()},
                         "meta": meta},
@@ -711,7 +721,7 @@ def main():
                 best_step = step
                 best_validation_loss = validation_loss
                 bad_evaluations = 0
-                torch.save({"step": step,
+                atomic_torch_save({"step": step,
                             "model": {"encoder": encoder.state_dict(),
                                       "head": head.state_dict()},
                             "validation_loss": validation_loss,
@@ -739,7 +749,7 @@ def main():
         best = torch.load(os.path.join(args.out, "best.pt"), map_location="cpu", weights_only=False)
         encoder.load_state_dict(best["model"]["encoder"], strict=True)
         head.load_state_dict(best["model"]["head"], strict=True)
-    torch.save({"step": step, "head": head.state_dict(),
+    atomic_torch_save({"step": step, "head": head.state_dict(),
                 "encoder": encoder.state_dict(), "optimizer": opt.state_dict(),
                 "scheduler": sched.state_dict(), "n_unfrozen": n_unfrozen,
                 "best_step": best_step, "best_validation_loss": best_validation_loss,

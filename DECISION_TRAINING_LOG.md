@@ -15486,3 +15486,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **合同与静态检查**：新增scheduler LR恢复和resume身份反例，相关29项测试连续三次通过；`bash -n tools/run_loss_optimizer_round51.sh`与py_compile通过，CLI含nll-normalization。初次测试路径及两处测试构造错误已修正，未放宽生产断言。
 - **真实CUDA预检**：两种配置各2步、batch=2、seed42、RTX4090、0/12 warmup，均`stop_reason=step_cap/converged=false`，只作工程证据。L-length step1 NLL=0.8049、total=1.7648、gnorm=3.49，O-LR step1 NLL=88.5346、total=89.4945、gnorm=97.7；三者辅助项逐值相同distill=0.6839、rlcd=-0.4216、cal=0.6976，NLL sum/length四舍五入比=109.9945334824，符合该批长度约110。O-LR backbone LR=1e-6、NLL=sum，L-length backbone LR=1e-5、NLL=length，未混改。QA=`audits/round51/loss_optimizer_smoke_qa.json`。
 - **队列边界**：`tools/run_loss_optimizer_round51.sh`只含L-length与O-LR，seed42/2026/3407，steps=0、500步VL0、patience=6，三任务并行、失败仅按最近resume同配置串行恢复，不自动进入测试评测或后续阶段。正式训练尚未启动，PPT未修改。
+
+
+## §15.799（2026-11-10）L-length/O-LR正式队列启动与首轮VL0身份验收（训练中）
+
+- **正式运行**：实现提交`d17dd1d39e1761b275836c3b2f9888af6e51304e`已push。持久队列PID=3702995，首批L-length 42/2026与O-LR 42三任务真实RTX4090并行，约15.5GiB、利用率96%；剩余L-length 3407与O-LR 2026/3407按队列接续。三者均steps=0、batch=2、500步VL0、patience=6，seed和loss/LR身份与合同一致，无CPU降级或测试集读取。
+- **首个VL0**：L-length 42=-0.33736506058479404，L-length 2026=-0.3090656052765778，O-LR 42=41.117491009075174，均best step500/bad=0。不同NLL归一化的VL0绝对值不能直接作性能比较，单点、单种子不作科学结论。
+- **后段过程快照**：QA完成时L-length 42 best step3000=-0.5006376565074406，L-length 2026 best step2500=-0.48626602186444784，O-LR 42 best step3000=30.847339705376772；训练仍running，未自然收敛，不外推稳定性或精度提升。
+- **artifact问题与修复**：首次QA读到正在重写的checkpoint并出现`PytorchStreamReader failed reading file`，第二次固定2秒检查仍遇到文件变化，第三次读取又发生竞争；训练未报错，原始run保留。随后以源文件元数据前后一致的稳定副本完成QA，确认best内部step/VL0、resume LR、stream、CUDA和训练日志一致。为后续写盘新增`atomic_torch_save`（临时文件+os.replace+失败清理），31项相关测试连续三次通过；正在运行的旧进程不重启、不改变科学配置，后续恢复使用原子写实现。
+- **证据与边界**：`audits/round51/loss_optimizer_first_vl0_qa.json`记录首轮及快照哈希。三种子/两臂尚未齐套，未启动测试评测、交互臂、容量或Pair-JEPA，PPT未修改。

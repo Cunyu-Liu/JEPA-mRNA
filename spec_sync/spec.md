@@ -4,7 +4,7 @@
 >
 > 用户明确批准恢复阶段0。R-replay已以seed2主诊断、seed0复核、真实CUDA无更新、独立QA及双跑完成。合法身份为R6 best权重+终态optimizer/scheduler/stream，不是best时刻optimizer历史重放。length/sum shadow update RMS在6批次均增大，中位28.8024倍、范围8.0182–80.1575，不支持终态自然稳定假设；backbone LR=1e-6仅将对应更新缩至0.1。5/6批次NLL与辅助项梯度存在负cosine，不能混改aux权重；全解冻诊断不能隔离U-ramp。
 >
-> 阶段门：允许分别启动L-length和O-LR单因子，统一seed42/2026/3407、steps=0、每500步VL0、patience=6；禁止L+O交互、U-ramp和容量阶段。decision SHA256=`b776ff27ac16ab91afe1d0faa39c8a785ba2243003accdfbee19de7ab80aeb07`。尚未启动后续训练，所有精度、SOTA、置信度与速度结论未验证，PPT不改。
+> 阶段门：允许分别启动L-length和O-LR单因子，统一seed42/2026/3407、steps=0、每500步VL0、patience=6；禁止L+O交互、U-ramp和容量阶段。decision SHA256=`b776ff27ac16ab91afe1d0faa39c8a785ba2243003accdfbee19de7ab80aeb07`。首批length42/2026与olr42真实CUDA及首轮VL0身份已通过，其余种子按队列接续；两臂未齐套不作结论，所有精度、SOTA、置信度与速度结论未验证，PPT不改。
 
 > **历史执行覆盖（2026-11-06，第 48 轮：独立单模型 structRFM→RIPE→Pair-JEPA；活跃清单 `round48-single-model-architecture-v1`）**
 >
