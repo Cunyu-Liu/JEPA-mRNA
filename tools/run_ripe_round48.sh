@@ -89,6 +89,24 @@ for ARM in ripe_head_log ripe_head_r1 ripe_head_r2 ripe_head_r3 ripe_head_r5 rip
   ENCODER=0
   if [[ "$ARM" == ripe_encoder_* ]]; then ENCODER=1; fi
   export ROOT ARM MODE ENCODER SCORER PAIR_LATENT_DIM
+  if $PY - "$ROOT" "$ARM" <<'PY'
+import json
+import sys
+from pathlib import Path
+root, arm = Path(sys.argv[1]), sys.argv[2]
+for seed in range(3):
+    meta = json.loads((root / "runs" / f"{arm}_s{seed}" / "run_meta.json").read_text())
+    assert meta["status"] == "completed" and meta["converged"] and meta["early_stopped"]
+for suffix in ("", "_greedy", "_turner0"):
+    summary = json.loads((root / "eval_decision" / f"{arm}{suffix}" / "summary.json").read_text())
+    assert summary["status"] == "PASS_STRUCTRFM_FULL_ABC_13_SPLITS_3_SEEDS_3_REPEATS"
+    assert len(summary["splits"]) == 13
+    assert all(len(split["cells"]) == 3 for split in summary["splits"].values())
+PY
+  then
+    echo "skip closed $ARM: three converged seeds and three complete summaries"
+    continue
+  fi
   while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 21000 ]; do sleep 60; done
   pids=()
   for seed in 0 1 2; do train_seed "$seed" & pids+=("$!"); done
