@@ -141,7 +141,7 @@ class BatchStream:
         self.buckets = [order[i:i + batch_size]
                         for i in range(0, len(order), batch_size)]
         self.seed = seed
-        self.state = {"epoch": 0, "queue": []}
+        self.state = {"epoch": 0, "queue": [], "batch_size": batch_size}
 
     def _permute(self):
         rng = np.random.default_rng((self.seed, self.state["epoch"]))
@@ -154,6 +154,16 @@ class BatchStream:
             self.state["queue"] = self._permute()
             self.state["epoch"] += 1
         return self.state["queue"].pop(0)
+
+
+def restore_batch_stream(stream, saved_state, batch_size):
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive")
+    remaining = [index for bucket in saved_state["queue"] for index in bucket]
+    stream.state = {"epoch": saved_state["epoch"],
+                    "queue": [remaining[index:index + batch_size]
+                              for index in range(0, len(remaining), batch_size)],
+                    "batch_size": batch_size}
 
 
 def restore_unfrozen_blocks(blocks, n_unfrozen):
@@ -426,7 +436,7 @@ def main():
         n_unfrozen = int(state["n_unfrozen"])
         restore_unfrozen_blocks(blocks, n_unfrozen)
         start_step = int(state["step"])
-        stream.state = state["stream_state"]
+        restore_batch_stream(stream, state["stream_state"], args.batch_size)
         best_step, best_validation_loss, bad_evaluations = restore_validation_state(
             state, os.path.join(args.out, "validation_log.jsonl"))
         meta["best_step"] = best_step
