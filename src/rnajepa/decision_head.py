@@ -430,7 +430,10 @@ class FlatDecisionHead(nn.Module):
         if self.pair_jepa is not None:
             scores = self.pair_jepa(z)
         else:
-            scores = self.resnet2d(z)
+            if self.training and self.grad_checkpoint and torch.is_grad_enabled():
+                scores = checkpoint(self.resnet2d, z, use_reentrant=False)
+            else:
+                scores = self.resnet2d(z)
         if self.ripe is not None:
             if seq_ids is None:
                 raise ValueError("seq_ids are required when RIPE is enabled")

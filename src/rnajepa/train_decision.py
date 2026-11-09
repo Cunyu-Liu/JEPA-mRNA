@@ -1564,6 +1564,23 @@ def _pad_optimizer_groups(saved: Dict[str, object], optimizer,
     return saved
 
 
+def _resnet_batch_norm_state(model):
+    resnet = getattr(getattr(model, "head", model), "resnet2d", None)
+    if resnet is None:
+        return []
+    return [(bn, bn.running_mean.clone(), bn.running_var.clone(),
+             bn.num_batches_tracked.clone())
+            for bn in resnet.modules() if isinstance(bn, torch.nn.BatchNorm2d)]
+
+
+def _restore_resnet_batch_norm_state(state):
+    with torch.no_grad():
+        for bn, mean, var, count in state:
+            bn.running_mean.copy_(mean)
+            bn.running_var.copy_(var)
+            bn.num_batches_tracked.copy_(count)
+
+
 def run_training(config: TrainConfig, dataset: DecisionDataset,
                  teacher: TeacherLabelStore, *, dry_run: bool = False,
                  validation_dataset: Optional[DecisionDataset] = None,
@@ -1849,7 +1866,9 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                 loss = loss + config.lambda_jepa * latent_loss
                 terms["jepa"] = float(latent_loss.detach())
             value = _finite(loss.detach(), f"loss at step {step + 1}")
+            batch_norm_state = _resnet_batch_norm_state(model)
             loss.backward()
+            _restore_resnet_batch_norm_state(batch_norm_state)
             norm = _grad_norm(model.parameters())
             if not math.isfinite(norm):
                 raise DivergenceError(
