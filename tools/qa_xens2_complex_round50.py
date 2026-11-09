@@ -10,13 +10,20 @@ SEEDS = {"plana_a": 42, "plana_b": 2026, "r2d": 3407}
 
 
 def sha256(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def counts(predicted, truth):
     pred = {tuple(pair) for pair in predicted}
     gt = {tuple(pair) for pair in truth}
     return len(pred & gt), len(pred - gt), len(gt - pred)
+
+
+def micro_score(tp, fp, fn):
+    precision = tp / (tp + fp) if tp + fp else 0.0
+    recall = tp / (tp + fn) if tp + fn else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+    return precision, recall, f1
 
 
 def close(left, right):
@@ -48,9 +55,7 @@ def main():
         expected = 2 * a / (2 * a + b + c) if a + b + c else 1.0
         close(row["f1"], expected)
         macro.append(expected)
-    precision = tp / (tp + fp) if tp + fp else 0.0
-    recall = tp / (tp + fn) if tp + fn else 0.0
-    f1 = 2 * precision * recall if precision + recall else 0.0
+    precision, recall, f1 = micro_score(tp, fp, fn)
     micro = result["pair_level"]["micro"]
     assert (micro["tp"], micro["fp"], micro["fn"]) == (tp, fp, fn)
     close(micro["f1"], f1)
