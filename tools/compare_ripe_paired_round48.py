@@ -20,16 +20,24 @@ def sha256(path):
 def common_rows(left, right):
     assert left["data_sha256"] == right["data_sha256"]
     assert left["raw_n"] == right["raw_n"]
-    left_rows = left["per_sequence"]
-    right_rows = right["per_sequence"]
-    assert len({row["name"] for row in left_rows}) == len(left_rows)
-    assert len({row["name"] for row in right_rows}) == len(right_rows)
-    right_by_name = {row["name"]: row for row in right_rows}
-    missing = [row["name"] for row in left_rows if row["name"] not in right_by_name]
+    def keyed(rows):
+        occurrences = {}
+        keyed_rows = []
+        for row in rows:
+            name = row["name"]
+            occurrence = occurrences.get(name, 0)
+            occurrences[name] = occurrence + 1
+            keyed_rows.append(((name, occurrence), row))
+        return keyed_rows
+
+    left_rows = keyed(left["per_sequence"])
+    right_rows = keyed(right["per_sequence"])
+    right_by_key = dict(right_rows)
+    missing = [key for key, _ in left_rows if key not in right_by_key]
     assert not missing, f"right arm lost supported sequences: {missing[:3]}"
-    left_names = {row["name"] for row in left_rows}
-    extra = [row["name"] for row in right_rows if row["name"] not in left_names]
-    return left_rows, [right_by_name[row["name"]] for row in left_rows], extra
+    left_keys = {key for key, _ in left_rows}
+    extra = [key for key, _ in right_rows if key not in left_keys]
+    return [row for _, row in left_rows], [right_by_key[key] for key, _ in left_rows], extra
 
 
 def subset(rows, scope):
