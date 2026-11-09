@@ -34,7 +34,7 @@ train_plana() {
   $PY tools/train_plan_a.py --data "$DATA/train_d1.jsonl" --teacher-dir "$DATA/teacher_d1" \
     --validation-data /root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl \
     --validation-teacher-dir $ROOT/data/teacher_vl0 \
-    --out "$out" --steps 0 --batch-size 4 --seed "$seed" \
+    --out "$out" --steps 0 --batch-size 2 --seed "$seed" \
     --validation-every 500 --validation-patience 6 --validation-min-delta 1e-6 \
     --save-every 500 --snapshot-every 2000 --snapshot-dir "$ROOT/weights/round50" \
     --warmup-head-steps 1600 --unfreeze-every 800 --unfreeze-per-step 2 \

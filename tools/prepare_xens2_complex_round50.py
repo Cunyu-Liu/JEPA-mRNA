@@ -70,7 +70,7 @@ def main():
         "rfam_embedding_split": "rfam_fam",
         "w_plana": 0.7,
         "plana_s1_weight": 0.5,
-        "plana": {"steps": 0, "batch_size": 4, "patience": 6,
+        "plana": {"steps": 0, "batch_size": 2, "patience": 6,
                   "head_lr": 0.0001, "backbone_lr": 1e-05,
                   "warmup_head_steps": 1600, "unfreeze_every": 800,
                   "unfreeze_per_step": 2, "n_blocks": 33, "scorer": "resnet2d"},
