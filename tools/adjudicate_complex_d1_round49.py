@@ -62,7 +62,7 @@ def main():
         assert json.loads(path.read_text())["status"].startswith("PASS_")
         sources[str(path.relative_to(args.root))] = sha256(path)
     losses = []
-    for seed in range(3):
+    for seed in manifest.get("seeds", [42, 2026, 3407]):
         meta_path = args.root / f"runs/complex_d1_s{seed}/run_meta.json"
         meta = json.loads(meta_path.read_text())
         assert meta["converged"] and meta["early_stopped"] and meta["status"] == "completed"
@@ -76,7 +76,7 @@ def main():
                     result = json.loads((args.root / split).read_text())
                     assert result["pairjepa_teacher_forward_guard"] is True
     holdout = []
-    for seed in range(3):
+    for seed in manifest.get("seeds", [42, 2026, 3407]):
         paths = [args.root / f"eval_decision/{name}/s{seed}/complex_holdout.json"
                  for name in ["complex_d0", "complex_d1"]]
         left, right = [json.loads(path.read_text()) for path in paths]

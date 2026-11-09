@@ -131,7 +131,7 @@ def main():
     output = {"status": "PASS_PAIRJEPA_ROUTE_COMPLETE", "complete": True,
               "allow_complex_data_route": True,
               "selection_rule": "J0 and newly trained controls ranked only by three-seed mean best VL0; test metrics excluded",
-              "candidates": candidates, "next_base": selected, "arms": arm_rows,
+              "seeds": seeds, "candidates": candidates, "next_base": selected, "arms": arm_rows,
               "source_hashes": sources,
               "anti_collapse_rule": "finite masked losses, variances and effective ranks required; low ranks retained without an arbitrary pass threshold",
               "inference_rule": "all Pair-JEPA main results passed fail-closed teacher-forward guard",

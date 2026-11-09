@@ -17,6 +17,7 @@ RIPE_MODE=${C[6]}
 RIPE_ENCODER=${C[7]}
 LAMBDA_JEPA=${C[8]}
 TARGET=${C[9]}
+readarray -t SEEDS < <($PY -c 'import json,sys; d=json.load(open(sys.argv[1])); [print(s) for s in d.get("seeds",[42,2026,3407])]' "$CONFIG")
 export ROOT DATA TEACHER HOLDOUT SCORER PAIR_LATENT_DIM RIPE_MODE RIPE_ENCODER LAMBDA_JEPA TARGET D0_PREFIX
 export PYTHONPATH=$REPO:$REPO/src:$REPO/tools:$REPO/eval
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
@@ -53,33 +54,33 @@ eval_checkpoint() {
     > "$ROOT/logs/round48/eval_${experiment}_s${seed}_${split}.log" 2>&1
 }
 pids=()
-for seed in 0 1 2; do
+for seed in "${SEEDS[@]}"; do
   eval_checkpoint "$ROOT/runs/${D0_PREFIX}${seed}/best.pt" complex_d0 "$seed" complex_holdout "$HOLDOUT" & pids+=("$!")
 done
 wait_jobs "${pids[@]}"
 while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 16000 ]; do sleep 60; done
 pids=()
-for seed in 0 1; do train_seed "$seed" & pids+=("$!"); done
+for seed in "${SEEDS[@]:0:2}"; do train_seed "$seed" & pids+=("$!"); done
 if ! wait_jobs "${pids[@]}"; then
-  for seed in 0 1; do
+  for seed in "${SEEDS[@]:0:2}"; do
     if ! $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["converged"] and d["early_stopped"] and d["status"]=="completed"' "$ROOT/runs/complex_d1_s${seed}/run_meta.json" 2>/dev/null; then
       echo "serial resume for incomplete complex_d1 seed $seed with unchanged training configuration"
       train_seed "$seed"
     fi
   done
 fi
-train_seed 2
+train_seed "${SEEDS[2]}"
 pids=()
-for seed in 0 1 2; do
+for seed in "${SEEDS[@]}"; do
   for split in "${SPLITS[@]}"; do eval_checkpoint "$ROOT/runs/complex_d1_s${seed}/best.pt" complex_d1 "$seed" "$split" "$ROOT/data/structrfm_pretrain_clean/${split}.jsonl"; done &
   eval_checkpoint "$ROOT/runs/complex_d1_s${seed}/best.pt" complex_d1 "$seed" complex_holdout "$HOLDOUT"
   pids+=("$!")
 done
 wait_jobs "${pids[@]}"
 $PY "$REPO/tools/aggregate_structrfm_frozen_round48.py" --root "$ROOT" --full-model \
-  --experiment complex_d1 --run-prefix complex_d1_s --out "$ROOT/eval_decision/complex_d1/summary.json" > "$ROOT/logs/round48/complex_d1_aggregate.log" 2>&1
+  --experiment complex_d1 --run-prefix complex_d1_s --seeds "${SEEDS[@]}" --out "$ROOT/eval_decision/complex_d1/summary.json" > "$ROOT/logs/round48/complex_d1_aggregate.log" 2>&1
 $PY "$REPO/tools/analyze_structrfm_confidence_round48.py" --root "$ROOT" --full-model \
-  --experiment complex_d1 --run-prefix complex_d1_s > "$ROOT/logs/round48/complex_d1_confidence.log" 2>&1
+  --experiment complex_d1 --run-prefix complex_d1_s --seeds "${SEEDS[@]}" > "$ROOT/logs/round48/complex_d1_confidence.log" 2>&1
 $PY "$REPO/tools/compare_structrfm_sota_round48.py" --root "$ROOT" --experiment complex_d1 \
   --baseline "$ROOT/source_data/round48/round39_own_clean_leaderboard.json" \
   --rfam-baseline "$ROOT/source_data/round48/round43_bpfold_rfam.json" \
@@ -87,7 +88,7 @@ $PY "$REPO/tools/compare_structrfm_sota_round48.py" --root "$ROOT" --experiment 
 for ABLATION in greedy turner0; do
   export ABLATION
   pids=()
-  for seed in 0 1 2; do
+  for seed in "${SEEDS[@]}"; do
     for split in "${SPLITS[@]}"; do
       checkpoint=$ROOT/runs/complex_d1_s${seed}/best.pt
       out=$ROOT/eval_decision/complex_d1_${ABLATION}/s${seed}/${split}.json
@@ -103,11 +104,11 @@ for ABLATION in greedy turner0; do
   done
   wait_jobs "${pids[@]}"
   $PY "$REPO/tools/aggregate_structrfm_frozen_round48.py" --root "$ROOT" --full-model \
-    --experiment "complex_d1_${ABLATION}" --run-prefix complex_d1_s \
+    --experiment "complex_d1_${ABLATION}" --run-prefix complex_d1_s --seeds "${SEEDS[@]}" \
     --out "$ROOT/eval_decision/complex_d1_${ABLATION}/summary.json" > "$ROOT/logs/round48/complex_d1_${ABLATION}_aggregate.log" 2>&1
 done
 $PY "$REPO/tools/compare_ripe_paired_round48.py" --root "$ROOT" \
-  --manifest data/rna_complex_round49/d1_preparation/comparison_manifest.json \
+  --manifest data/rna_complex_round49/d1_preparation/comparison_manifest.json --seeds "${SEEDS[@]}" \
   --status PASS_COMPLEX_D1_PAIRED_MICRO_F1_BOOTSTRAP \
   --out "$ROOT/eval_decision/complex_d1_paired_bootstrap.json" > "$ROOT/logs/round48/complex_d1_paired.log" 2>&1
 $PY "$REPO/tools/adjudicate_complex_d1_round49.py" --root "$ROOT" \

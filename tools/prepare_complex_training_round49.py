@@ -45,8 +45,9 @@ def main():
     decision = json.loads(args.decision.read_text())
     assert decision["complete"] and decision["allow_complex_data_route"]
     selected = decision["next_base"]
+    seeds = decision.get("seeds", [42, 2026, 3407])
     metas = []
-    for seed in range(3):
+    for seed in seeds:
         path = Path("runs") / f"{selected['run_prefix']}{seed}" / "run_meta.json"
         if not path.is_absolute():
             path = args.decision.parents[2] / path
@@ -95,6 +96,7 @@ def main():
     sequences = {json.loads(line)["seq"] for line in train_path.open()}
     assert len(sequences) == sum(1 for _ in train_path.open())
     config = {"status": "PASS_COMPLEX_D1_PRECONFIGURED",
+              "seeds": seeds,
               "d0": {"experiment": selected["experiment"], "run_prefix": selected["run_prefix"],
                      "reuse_existing_three_seed_results": True},
               "d1": {"data": str(train_path), "data_sha256": sha256(train_path),
@@ -110,7 +112,8 @@ def main():
                                 str(args.teacher_tr1c / "manifest.json"): sha256(args.teacher_tr1c / "manifest.json"),
                                 str(args.teacher_complex / "manifest.json"): sha256(args.teacher_complex / "manifest.json")}}
     atomic_json(args.out / "d1_config.json", config)
-    comparison = {"selected": {"experiment": selected["experiment"], "run_prefix": selected["run_prefix"],
+    comparison = {"seeds": seeds,
+                  "selected": {"experiment": selected["experiment"], "run_prefix": selected["run_prefix"],
                                 "mean_best_vl0": sum(meta["best_validation_loss"] for meta in metas) / 3},
                   "arms": [{"arm": "complex_d1"}],
                   "d1_config_sha256": sha256(args.out / "d1_config.json")}
