@@ -103,14 +103,14 @@ def valid_pair_mask(seq: str, min_loop: int = MIN_LOOP) -> np.ndarray:
     Legal means ``j - i > min_loop`` **and** ``seq[i] + seq[j] in PAIRS``.  The
     result is symmetric; the diagonal is False.
     """
-    L = len(seq)
-    mask = np.zeros((L, L), dtype=bool)
-    for i in range(L):
-        for j in range(i + min_loop + 1, L):
-            if (seq[i], seq[j]) in PAIRS:
-                mask[i, j] = True
-                mask[j, i] = True
-    return mask
+    codes = np.frombuffer(seq.encode("ascii"), dtype=np.uint8)
+    table = np.zeros((256, 256), dtype=bool)
+    for first, second in PAIRS:
+        table[ord(first), ord(second)] = True
+    positions = np.arange(len(seq))
+    upper = table[codes[:, None], codes[None, :]] & (
+        positions[None, :] - positions[:, None] > min_loop)
+    return upper | upper.T
 
 
 def enumerate_legal_structures(L: int, min_loop: int = MIN_LOOP,
@@ -712,15 +712,25 @@ class _DifferentiableInside(torch.autograd.Function):
 
     @staticmethod
     def forward(ctx, scores: torch.Tensor, mask):
+        if scores.is_cuda and os.environ.get("RN_CUDA_INSIDE", "1") == "1":
+            from rnajepa.harness_cuda import cuda_inside_outside
+            mask = torch.as_tensor(mask, dtype=torch.bool, device=scores.device)
+            logZ, p_hat = cuda_inside_outside(scores, mask)
+            ctx.p_hat = torch.triu(p_hat, diagonal=1)
+            ctx.cuda_path = True
+            return logZ
         s_np = _to_numpy_float(scores)
         m_np = _to_numpy_bool(mask)
         logZ, p_hat = inside_outside(s_np, m_np)
         ctx.p_hat = np.triu(p_hat, k=1)
+        ctx.cuda_path = False
         ctx.save_for_backward(scores)
         return torch.as_tensor(logZ, dtype=scores.dtype, device=scores.device)
 
     @staticmethod
     def backward(ctx, grad_out: torch.Tensor):
+        if ctx.cuda_path:
+            return ctx.p_hat * grad_out, None
         scores, = ctx.saved_tensors
         g = torch.as_tensor(ctx.p_hat, dtype=scores.dtype, device=scores.device) * grad_out
         return g, None

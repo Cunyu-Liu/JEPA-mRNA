@@ -386,6 +386,12 @@ def main():
                        "every": args.validation_every, "patience": args.validation_patience,
                        "min_delta": args.validation_min_delta},
         "environment": {"resolved_device": "cuda:0", "gpu_name": torch.cuda.get_device_name(0)},
+        "compute_kernels": {
+            "inside_outside": ("triton_cuda_float64" if os.environ.get("RN_CUDA_INSIDE", "1") == "1"
+                               else "numpy_cpu_float64"),
+            "pair_mask": "torch_device_vectorized",
+            "turner_prior": "torch_device_gather",
+        },
         "best_step": None, "best_validation_loss": None,
         "early_stopped": False, "converged": False,
         "protocol_parity": [

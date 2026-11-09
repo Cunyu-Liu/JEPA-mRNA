@@ -79,15 +79,18 @@ N_BASES_LOCAL = 4
 def pair_mask_from_ids(seq_ids: torch.Tensor, min_loop: int = MIN_LOOP) -> torch.Tensor:
     """``(B, L, L)`` bool candidate mask ``1[j-i>min_loop] * 1[x_i x_j in PAIRS]``.
 
-    Delegates to :func:`rnajepa.harness.valid_pair_mask` so the head and the
-    deterministic harness agree on what "legal candidate" means by construction.
+    Uses the same pair set and minimum-loop rule as
+    :func:`rnajepa.harness.valid_pair_mask`, without host transfers.
     """
-    arr = seq_ids.detach().cpu().numpy()
-    masks = []
-    for row in arr:
-        seq = "".join(_BASE_CHARS[int(c)] if int(c) < N_BASES_LOCAL else "N" for c in row)
-        masks.append(valid_pair_mask(seq, min_loop))
-    return torch.as_tensor(np.stack(masks), dtype=torch.bool)
+    pairing = torch.zeros((N_BASES_LOCAL + 1, N_BASES_LOCAL + 1),
+                          dtype=torch.bool, device=seq_ids.device)
+    for first, second in ((0, 3), (3, 0), (1, 2), (2, 1), (2, 3), (3, 2)):
+        pairing[first, second] = True
+    ids = seq_ids.clamp(min=0, max=N_BASES_LOCAL)
+    positions = torch.arange(seq_ids.shape[1], device=seq_ids.device)
+    separated = positions[None, :] - positions[:, None] > min_loop
+    upper = pairing[ids.unsqueeze(2), ids.unsqueeze(1)] & separated.unsqueeze(0)
+    return upper | upper.transpose(1, 2)
 
 
 def turner_phys_scores(seq_ids: torch.Tensor) -> torch.Tensor:
@@ -98,17 +101,17 @@ def turner_phys_scores(seq_ids: torch.Tensor) -> torch.Tensor:
     pairs and stacks without a nearest-neighbour parameter get ``0`` (they are
     later overwritten with ``-inf`` by the candidate mask).
     """
-    idx = torch.as_tensor(seq_ids.detach().cpu().numpy(), dtype=torch.long)
+    idx = seq_ids.detach().to(dtype=torch.long)
     B, L = idx.shape
-    table = torch.from_numpy(nn_dg_lookup_table()).to(torch.float32)
-    unk = torch.full((B, 1), UNK_INDEX, dtype=torch.long)
+    table = (-torch.from_numpy(nn_dg_lookup_table()).to(torch.float32) / RT_KCAL).to(
+        idx.device)
+    unk = torch.full((B, 1), UNK_INDEX, dtype=torch.long, device=idx.device)
     xi = idx
     xi1 = torch.cat([idx[:, 1:], unk], dim=1)
     xj = idx
     xj1 = torch.cat([unk, idx[:, :-1]], dim=1)
-    dg = table[xi[:, :, None], xi1[:, :, None], xj[:, None, :], xj1[:, None, :]]
-    phys = -dg / RT_KCAL
-    upper = torch.triu(torch.ones(L, L, dtype=torch.bool), diagonal=1)
+    phys = table[xi[:, :, None], xi1[:, :, None], xj[:, None, :], xj1[:, None, :]]
+    upper = torch.triu(torch.ones(L, L, dtype=torch.bool, device=idx.device), diagonal=1)
     phys = torch.where(upper[None], phys, torch.zeros_like(phys))
     return phys + phys.transpose(1, 2)
 
