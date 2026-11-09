@@ -16,6 +16,18 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def validate_independent_qa(root, experiment, sources):
+    for suffix in ("", "_greedy", "_turner0"):
+        name = experiment + suffix
+        path = root / f"audits/round49/{name}_independent_qa.json"
+        qa = json.loads(path.read_text())
+        assert qa["status"] == "PASS_PAIRJEPA_INDEPENDENT_QA"
+        assert qa["complete"] and qa["experiment"] == name and qa["n_cells"] == 39
+        relative = f"eval_decision/{name}/summary.json"
+        assert qa["file_sha256"][relative] == sha256(root / relative)
+        sources[str(path.relative_to(root))] = sha256(path)
+
+
 def validate_artifacts(root, experiment, sources):
     base = root / "eval_decision" / experiment
     summary_path = base / "summary.json"
@@ -82,6 +94,7 @@ def main():
         name = arm["arm"]
         assert name in paired["comparisons"] and name in paired["long_subsets"]
         summary, sota = validate_artifacts(root, name, sources)
+        validate_independent_qa(root, name, sources)
         losses = []
         diagnostic_rows = {}
         for seed in range(3):

@@ -13,6 +13,16 @@ for arm in "${ARMS[@]}"; do
   for ablation in greedy turner0; do
     while [ ! -f "$ROOT/eval_decision/${arm}_${ablation}/summary.json" ]; do sleep 60; done
   done
+  for suffix in "" "_greedy" "_turner0"; do
+    $PY "$REPO/tools/qa_pairjepa_round49.py" --root "$ROOT" --experiment "${arm}${suffix}" \
+      --out "$ROOT/audits/round49/${arm}${suffix}_independent_qa.json" \
+      > "$ROOT/logs/round48/${arm}${suffix}_independent_qa.log" 2>&1
+    $PY "$REPO/tools/qa_pairjepa_round49.py" --root "$ROOT" --experiment "${arm}${suffix}" \
+      --out "$ROOT/audits/round49/${arm}${suffix}_independent_qa.recheck.json" \
+      >> "$ROOT/logs/round48/${arm}${suffix}_independent_qa.log" 2>&1
+    cmp "$ROOT/audits/round49/${arm}${suffix}_independent_qa.json" \
+      "$ROOT/audits/round49/${arm}${suffix}_independent_qa.recheck.json"
+  done
 done
 $PY "$REPO/tools/compare_ripe_paired_round48.py" --root "$ROOT" --bootstrap 10000 \
   --manifest audits/round48/pairjepa_preregistered.json --status PASS_PAIRJEPA_PAIRED_MICRO_F1_BOOTSTRAP \
