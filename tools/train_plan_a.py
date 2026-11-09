@@ -177,7 +177,7 @@ def masked_pair_target(valid, probability, seed):
         selected = indices[torch.randint(indices.numel(), (1,), device=valid.device,
                                         generator=generator)]
         mask.reshape(-1)[selected] = True
-    return mask
+    return mask | mask.transpose(1, 2)
 
 
 def main():
@@ -381,7 +381,8 @@ def main():
                       "lambda_jepa": args.lambda_jepa,
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
-                      "jepa_rank_samples": args.jepa_rank_samples},
+                      "jepa_rank_samples": args.jepa_rank_samples,
+                      "jepa_context": "context_v1" if args.scorer == "pairjepa" else None},
         "validation": {"data": args.validation_data, "teacher_dir": args.validation_teacher_dir,
                        "every": args.validation_every, "patience": args.validation_patience,
                        "min_delta": args.validation_min_delta},
@@ -584,7 +585,8 @@ def main():
             log_latent = step % args.jepa_log_every == 0 or step == 1
             latent_mask = masked_pair_target(mask_full, args.jepa_mask_prob, args.seed + step)
             latent_loss, latent_diagnostics = head.masked_pair_latent_loss(
-                z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0)
+                z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0,
+                valid_mask=mask_full)
             total = total + args.lambda_jepa * latent_loss
             terms_agg["jepa"] = float(latent_loss.detach())
             if log_latent:

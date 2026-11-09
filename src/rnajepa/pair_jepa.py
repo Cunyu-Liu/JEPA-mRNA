@@ -23,22 +23,49 @@ def latent_effective_rank(features, max_samples=512):
     return entropy.exp()
 
 
-class SymmetricPairMLP(nn.Module):
+class LatentPairMLP(nn.Module):
     def __init__(self, d_z=128, latent_dim=64):
         super().__init__()
         self.norm = nn.LayerNorm(d_z)
         self.input_projection = nn.Linear(d_z, latent_dim)
         self.hidden = nn.Sequential(nn.GELU(), nn.Linear(latent_dim, latent_dim), nn.GELU())
-        self.logit = nn.Linear(latent_dim, 1)
-        nn.init.zeros_(self.logit.weight)
-        nn.init.zeros_(self.logit.bias)
 
     def forward(self, z):
         z = 0.5 * (z + z.transpose(1, 2))
         return self.hidden(self.input_projection(self.norm(z)))
 
+
+class SymmetricPairMLP(LatentPairMLP):
+    def __init__(self, d_z=128, latent_dim=64):
+        super().__init__(d_z, latent_dim)
+        self.logit = nn.Linear(latent_dim, 1)
+        nn.init.zeros_(self.logit.weight)
+        nn.init.zeros_(self.logit.bias)
+
     def score(self, z):
         return self.logit(self.forward(z)).squeeze(-1)
+
+
+def masked_neighbor_context(z, mask, valid_mask=None, kernel_size=3):
+    if z.ndim != 4 or mask.shape != z.shape[:-1] or mask.dtype != torch.bool:
+        raise ValueError("mask must be a bool [batch, length, length] tensor")
+    if kernel_size < 3 or kernel_size % 2 == 0:
+        raise ValueError("context kernel must be odd and at least 3")
+    if valid_mask is None:
+        valid_mask = torch.ones_like(mask)
+    if valid_mask.shape != mask.shape or valid_mask.dtype != torch.bool:
+        raise ValueError("valid_mask must have the same bool shape as mask")
+    known = valid_mask & ~mask
+    kernel = torch.ones((1, 1, kernel_size, kernel_size), dtype=z.dtype, device=z.device)
+    kernel[0, 0, kernel_size // 2, kernel_size // 2] = 0
+    padding = kernel_size // 2
+    known_map = known.unsqueeze(1).to(z.dtype)
+    numerator = torch.nn.functional.conv2d(
+        (z * known.unsqueeze(-1)).permute(0, 3, 1, 2),
+        kernel.expand(z.shape[-1], -1, -1, -1), padding=padding, groups=z.shape[-1])
+    denominator = torch.nn.functional.conv2d(known_map, kernel, padding=padding)
+    context = (numerator / denominator.clamp_min(1)).permute(0, 2, 3, 1)
+    return context, denominator.squeeze(1)
 
 
 class PairJEPA(nn.Module):
@@ -52,7 +79,11 @@ class PairJEPA(nn.Module):
         self.random_target = random_target
         self.seed = seed
         self.teacher = copy.deepcopy(self.scorer) if use_teacher else None
+        self.context_predictor = LatentPairMLP(d_z, latent_dim) if use_teacher else None
         if self.teacher is not None:
+            latent_state = {key: value for key, value in self.scorer.state_dict().items()
+                            if not key.startswith("logit.")}
+            self.context_predictor.load_state_dict(latent_state, strict=True)
             for parameter in self.teacher.parameters():
                 parameter.requires_grad_(False)
             self.teacher.eval()
@@ -66,12 +97,16 @@ class PairJEPA(nn.Module):
         for target, source in zip(self.teacher.buffers(), self.scorer.buffers()):
             target.copy_(source)
 
-    def masked_latent_loss(self, z, mask, rank_samples=0):
+    def masked_latent_loss(self, z, mask, rank_samples=0, valid_mask=None):
         if self.teacher is None:
             raise ValueError("latent target requested without a target encoder")
         if mask.dtype != torch.bool:
             raise TypeError("mask must be bool")
-        prediction = self.scorer(z)
+        mask = mask | mask.transpose(1, 2)
+        if not mask.any():
+            raise ValueError("empty masked-pair target")
+        context, context_counts = masked_neighbor_context(z, mask, valid_mask)
+        prediction = self.context_predictor(context)
         with torch.no_grad():
             target = self.teacher(z)
             if self.random_target:
@@ -80,14 +115,13 @@ class PairJEPA(nn.Module):
                 flat = target.reshape(-1, shape[-1])
                 permutation = torch.randperm(flat.shape[0], generator=generator, device=flat.device)
                 target = flat[permutation].reshape(shape)
-        if not mask.any():
-            raise ValueError("empty masked-pair target")
         loss = torch.nn.functional.mse_loss(prediction[mask], target[mask])
         diagnostics = {
             "target_variance": target[mask].var(unbiased=False).detach(),
             "prediction_variance": prediction[mask].var(unbiased=False).detach(),
             "target_mean_norm": target[mask].norm(dim=-1).mean().detach(),
             "prediction_mean_norm": prediction[mask].norm(dim=-1).mean().detach(),
+            "contextless_pairs": (context_counts[mask] == 0).sum().detach(),
         }
         if rank_samples:
             diagnostics["target_effective_rank"] = latent_effective_rank(

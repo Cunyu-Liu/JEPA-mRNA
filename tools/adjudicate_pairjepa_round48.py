@@ -92,6 +92,8 @@ def main():
             assert meta["scorer"] == arm["scorer"]
             assert meta["objective"]["lambda_jepa"] == arm["lambda_jepa"]
             assert meta["objective"]["jepa_target"] == arm["target"]
+            assert meta["objective"].get("jepa_context") == (
+                "context_v1" if arm["scorer"] == "pairjepa" else None)
             assert meta["ripe"]["encoder"] == manifest["ripe_encoder"]
             expected_mode = None if manifest["ripe_encoder"] else manifest["ripe_mode"]
             assert meta["ripe"]["mode"] == expected_mode

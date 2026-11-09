@@ -28,6 +28,8 @@ def test_pairjepa_reuses_identical_mlp_baseline(tmp_path):
     assert [arm["target"] for arm in result["arms"][1:]] == ["ema", "fixed", "random"]
     assert result["training"]["steps"] == 0 and result["training"]["seeds"] == [0, 1, 2]
     assert result["training"]["max_parallel_training"] == 2
+    assert result["training"]["jepa_objective_version"] == "context_v1"
+    assert result["training"]["jepa_context"].startswith("training_only_normalized_3x3")
 
 
 def test_resnet_baseline_requires_mlp_control_and_hash_failure_closes(tmp_path):

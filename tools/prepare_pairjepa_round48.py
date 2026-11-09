@@ -41,6 +41,8 @@ def prepare(root):
                          "seeds": [0, 1, 2], "head_lr": 1e-4, "backbone_lr": 1e-5,
                          "pair_latent_dim": latent_dim, "jepa_mask_prob": 0.15,
                          "jepa_rank_samples": 512, "jepa_log_every": 25,
+                         "jepa_objective_version": "context_v1",
+                         "jepa_context": "training_only_normalized_3x3_excluding_center_and_masked_pairs",
                          "max_parallel_training": 2},
             "ripe_mode": base["ripe_mode"], "ripe_encoder": base["ripe_encoder"],
             "arms": arms, "repeats": 3, "splits": 13,

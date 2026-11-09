@@ -1843,7 +1843,9 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
                 generator = torch.Generator(device=device).manual_seed(config.seed + step)
                 mask = (torch.rand(valid.shape, device=valid.device, generator=generator)
                         < config.jepa_mask_prob) & valid
-                latent_loss, _diagnostics = model.head.masked_pair_latent_loss(z, mask)
+                mask = mask | mask.transpose(1, 2)
+                latent_loss, _diagnostics = model.head.masked_pair_latent_loss(
+                    z, mask, valid_mask=valid)
                 loss = loss + config.lambda_jepa * latent_loss
                 terms["jepa"] = float(latent_loss.detach())
             value = _finite(loss.detach(), f"loss at step {step + 1}")
