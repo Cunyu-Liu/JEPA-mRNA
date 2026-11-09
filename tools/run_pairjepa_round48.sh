@@ -23,7 +23,8 @@ wait_jobs() {
   if [ "$fail" -ne 0 ]; then echo "parallel job failed" >&2; return 1; fi
 }
 train_seed() {
-  local seed=$1 out=$ROOT/runs/${ARM}_s${seed}
+  local seed=$1
+  local out=$ROOT/runs/${ARM}_s${seed}
   mkdir -p "$out"
   if [ -f "$out/run_meta.json" ]; then
     SEED=$seed $PY -c 'import json,os,pathlib; d=json.loads((pathlib.Path(os.environ["ROOT"])/"runs"/(os.environ["ARM"]+"_s"+os.environ["SEED"])/"run_meta.json").read_text()); assert d["arm"]==os.environ["ARM"]+"_s"+os.environ["SEED"] and d["seed"]==int(os.environ["SEED"]); assert d["scorer"]==os.environ["SCORER"] and d["pair_latent_dim"]==int(os.environ["PAIR_LATENT_DIM"]); assert d["objective"]["jepa_target"]==(None if os.environ["TARGET"]=="none" else os.environ["TARGET"]); assert d["ripe"]["mode"]==(None if os.environ["RIPE_ENCODER"]=="1" else (os.environ["RIPE_MODE"] or None)) and d["ripe"]["encoder"]==(os.environ["RIPE_ENCODER"]=="1")'
@@ -47,7 +48,8 @@ train_seed() {
     >> "$ROOT/logs/round48/${ARM}_s${seed}.log" 2>&1
 }
 eval_seed() {
-  local seed=$1 checkpoint=$ROOT/runs/${ARM}_s${seed}/best.pt
+  local seed=$1
+  local checkpoint=$ROOT/runs/${ARM}_s${seed}/best.pt
   for split in "${SPLITS[@]}"; do
     local out=$ROOT/eval_decision/$ARM/s${seed}/${split}.json
     if [ -f "$out" ] && $PY -c 'import hashlib,json,os,sys; d=json.load(open(sys.argv[1])); h=hashlib.sha256(open(sys.argv[2],"rb").read()).hexdigest(); assert d["checkpoint_sha256"]==h and d["repeats"]==3 and d["device"]=="cuda" and d["score_forward_count_per_sequence"]==1; assert d["pairjepa_teacher_forward_guard"]==(os.environ["SCORER"]=="pairjepa"); assert os.environ["RIPE_ENCODER"]!="1" or d["n"]==d["raw_n"]' "$out" "$checkpoint" 2>/dev/null; then continue; fi
@@ -61,7 +63,8 @@ eval_seed() {
     --out "$ROOT/eval_decision/$ARM/vl0_s${seed}.json" --repeats 3 > "$ROOT/logs/round48/eval_${ARM}_s${seed}_vl0.log" 2>&1
 }
 ablation_seed() {
-  local seed=$1 checkpoint=$ROOT/runs/${ARM}_s${seed}/best.pt experiment=${ARM}_${ABLATION}
+  local seed=$1
+  local checkpoint=$ROOT/runs/${ARM}_s${seed}/best.pt experiment=${ARM}_${ABLATION}
   local extra=(--decoder greedy) expected_decoder=greedy expected_prior=none
   if [ "$ABLATION" = turner0 ]; then extra=(--prior-weight-override 0); expected_decoder=nussinov; expected_prior=zero; fi
   for split in "${SPLITS[@]}"; do

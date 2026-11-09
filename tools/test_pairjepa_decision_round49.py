@@ -1,4 +1,6 @@
 import json
+import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -44,3 +46,35 @@ def test_independent_qa_is_required_and_bound_to_summary(tmp_path):
     (tmp_path / "eval_decision/arm_greedy/summary.json").write_text("tampered")
     with pytest.raises(AssertionError):
         validate_independent_qa(tmp_path, "arm", {})
+
+
+def test_seed_two_paths_use_new_local_seed_in_all_queue_functions(tmp_path):
+    script = Path("tools/run_pairjepa_round48.sh").read_text()
+    functions = "train_seed() {" + script.split("train_seed() {", 1)[1].split("readarray -t ARMS", 1)[0]
+    (tmp_path / "logs/round48").mkdir(parents=True)
+    command = f"""
+set -e
+seed=1
+ROOT={tmp_path}
+REPO=/home/rna_jev
+PY=/bin/echo
+ARM=pairjepa_ema
+SCORER=pairjepa
+TARGET=ema
+RIPE_MODE=r5
+RIPE_ENCODER=0
+PAIR_LATENT_DIM=490
+ABLATION=greedy
+SPLITS=(bprna_ts0)
+{functions}
+train_seed 2
+eval_seed 2
+ablation_seed 2
+"""
+    subprocess.run(["bash", "-c", command], check=True, capture_output=True, text=True)
+    assert (tmp_path / "runs/pairjepa_ema_s2").is_dir()
+    train = (tmp_path / "logs/round48/pairjepa_ema_s2.log").read_text()
+    assert "--seed 2" in train and "/runs/pairjepa_ema_s2" in train
+    for log in ["eval_pairjepa_ema_s2_bprna_ts0.log",
+                "eval_pairjepa_ema_greedy_s2_bprna_ts0.log"]:
+        assert "/runs/pairjepa_ema_s2/best.pt" in (tmp_path / "logs/round48" / log).read_text()
