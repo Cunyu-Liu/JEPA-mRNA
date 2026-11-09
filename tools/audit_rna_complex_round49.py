@@ -115,6 +115,47 @@ def validate_collection(entries_root, ids_path):
     return document, labels
 
 
+def load_or_build_chain_rows(label_paths, collection_path, out_dir):
+    cache_path = out_dir / "chain_rows.json"
+    collection_hash = sha256(collection_path)
+    n_label_chains = sum(len(json.loads(path.read_text())["chains"]) for path in label_paths)
+    if cache_path.is_file():
+        cached = json.loads(cache_path.read_text())
+        assert cached["version"] == 1 and cached["collection_sha256"] == collection_hash
+        assert cached["n_label_chains"] == n_label_chains
+        rows = cached["chain_rows"]
+        assert len(rows) == cached["n_unique_sequences"]
+        assert n_label_chains == len(rows) + sum(len(row["duplicate_chain_ids"]) - 1 for row in rows)
+        print(json.dumps({"status": "RESUME_CHAIN_ROWS_CACHE", "n_unique_sequences": len(rows)}), flush=True)
+        return rows, n_label_chains
+    chain_rows, seen = [], {}
+    metadata_cache = {}
+    for path in label_paths:
+        document = json.loads(path.read_text())
+        for chain in document["chains"]:
+            sequence = normalise(chain["sequence"])
+            row = dict(chain)
+            key = (chain["pdb_id"], tuple(sorted(chain.get("entity_ids", []))))
+            if key not in metadata_cache:
+                metadata_cache[key] = source_metadata(path.with_name(f"{chain['pdb_id']}.cif"), set(key[1]))
+            row.update({"sequence": sequence, "source_json": str(path),
+                        "source_json_sha256": sha256(path),
+                        "experimental_method": document.get("experimental_method"),
+                        "resolution_angstrom": document.get("resolution_angstrom"),
+                        "deposition_date": document.get("deposition_date"), **metadata_cache[key]})
+            if sequence in seen:
+                seen[sequence]["duplicate_chain_ids"].append(chain["id"])
+            else:
+                row["duplicate_chain_ids"] = [chain["id"]]
+                seen[sequence] = row
+                chain_rows.append(row)
+    assert n_label_chains == len(chain_rows) + sum(len(row["duplicate_chain_ids"]) - 1 for row in chain_rows)
+    atomic_json(cache_path, {"version": 1, "collection_sha256": collection_hash,
+                            "n_label_chains": n_label_chains, "n_unique_sequences": len(chain_rows),
+                            "chain_rows": chain_rows})
+    return chain_rows, n_label_chains
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--entries-root", type=Path, required=True)
@@ -126,6 +167,7 @@ def main():
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--mmseqs", type=Path, default=Path("/home/rna_jev/tools/bin/mmseqs"))
     parser.add_argument("--threads", type=int, default=8)
+    parser.add_argument("--split-memory-limit", default="12G")
     parser.add_argument("--seed", type=int, default=20261107)
     parser.add_argument("--pretrain-sha256", default="739369d31df4a828adba040d9f88eb5c3bc6dbf010d7d22279333e694a9f3a40")
     parser.add_argument("--validate-collection-only", action="store_true")
@@ -139,24 +181,9 @@ def main():
     expected_pretrain = args.pretrain_sha256
     if sha256(args.pretrain_fasta) != expected_pretrain:
         raise ValueError("pretraining corpus identity mismatch")
-    sources, chain_rows, seen = [], [], {}
-    for path in label_paths:
-        document = json.loads(path.read_text())
-        for chain in document["chains"]:
-            sequence = normalise(chain["sequence"])
-            row = dict(chain)
-            metadata = source_metadata(path.with_name(f"{chain['pdb_id']}.cif"), set(chain.get("entity_ids", [])))
-            row.update({"sequence": sequence, "source_json": str(path),
-                        "source_json_sha256": sha256(path),
-                        "experimental_method": document.get("experimental_method"),
-                        "resolution_angstrom": document.get("resolution_angstrom"),
-                        "deposition_date": document.get("deposition_date"), **metadata})
-            if sequence in seen:
-                seen[sequence].setdefault("duplicate_chain_ids", [seen[sequence]["id"]]).append(chain["id"])
-            else:
-                row["duplicate_chain_ids"] = [chain["id"]]
-                seen[sequence] = row
-                chain_rows.append(row)
+    sources = []
+    chain_rows, n_label_chains = load_or_build_chain_rows(
+        label_paths, args.entries_root / "collection.json", args.out_dir)
     references = [(f"pretrain_{index}", line.strip())
                   for index, line in enumerate(args.pretrain_fasta.open()) if not line.startswith(">")]
     for path in [args.train_jsonl, args.vl0_jsonl]:
@@ -180,7 +207,7 @@ def main():
     command = [str(args.mmseqs), "easy-search", str(query_path), str(reference_path),
                str(alignment), tempfile.mkdtemp(prefix="complex_mmseqs_"), "--min-seq-id", "0.8",
                "--cov-mode", "2", "-c", "0.8", "--max-seqs", "10000", "--threads",
-               str(args.threads), "--search-type", "3"]
+               str(args.threads), "--search-type", "3", "--split-memory-limit", args.split_memory_limit]
     subprocess.run(command, check=True)
     homology = collections.defaultdict(list)
     if alignment.exists():
@@ -242,7 +269,8 @@ def main():
                 "collection_path": str(args.entries_root / "collection.json"),
                 "collection_sha256": sha256(args.entries_root / "collection.json"),
                 "search_command": command, "cluster_search_command": cluster_command, "sources": sources,
-                "n_label_chains": sum(len(json.loads(path.read_text())["chains"]) for path in label_paths),
+                "chain_rows_sha256": sha256(args.out_dir / "chain_rows.json"),
+                "n_label_chains": n_label_chains,
                 "n_duplicate_chains": sum(len(row["duplicate_chain_ids"]) - 1 for row in chain_rows),
                 "n_unique_sequences": len(chain_rows), "n_removed": len(removed), "n_clean": len(kept),
                 "n_decontaminated": n_decontaminated, "n_unsupported_nested": len(unsupported_nested),

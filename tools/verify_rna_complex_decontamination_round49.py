@@ -45,6 +45,12 @@ def main():
     args = parser.parse_args()
     manifest = json.loads((args.out_dir / "decontamination.json").read_text())
     assert sha256(Path(manifest["collection_path"])) == manifest["collection_sha256"]
+    cache_path = args.out_dir / "chain_rows.json"
+    cache = json.loads(cache_path.read_text())
+    assert cache["version"] == 1 and cache["collection_sha256"] == manifest["collection_sha256"]
+    assert cache["n_label_chains"] == manifest["n_label_chains"]
+    assert cache["n_unique_sequences"] == manifest["n_unique_sequences"] == len(cache["chain_rows"])
+    assert sha256(cache_path) == manifest["chain_rows_sha256"]
     for source in manifest["sources"]:
         assert sha256(Path(source["path"])) == source["sha256"], source["name"]
     assert sha256(args.out_dir / "protected_references.fasta") == manifest["reference_sha256"]

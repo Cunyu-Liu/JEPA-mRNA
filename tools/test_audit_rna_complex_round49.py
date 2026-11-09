@@ -81,6 +81,19 @@ class AuditIntegrationTests(unittest.TestCase):
                 self.assertTrue(train and holdout)
                 self.assertFalse({row["group"] for row in train} & {row["group"] for row in holdout})
                 self.assertFalse({row["source"]["pdb_id"] for row in train} & {row["source"]["pdb_id"] for row in holdout})
+            cache_before = (root / "out/chain_rows.json").read_bytes()
+            for stale in ["alignment.tsv", "self_alignment.tsv", "clusters_cluster.tsv",
+                          "decontamination.json", "complex_train.jsonl", "complex_holdout.jsonl"]:
+                (root / "out" / stale).unlink()
+            retry = command.copy()
+            retry[retry.index("--out-dir") + 1] = str(root / "out")
+            recovered = subprocess.run(retry, capture_output=True, text=True)
+            self.assertEqual(recovered.returncode, 0, recovered.stdout + "\n" + recovered.stderr)
+            self.assertIn("RESUME_CHAIN_ROWS_CACHE", recovered.stdout)
+            self.assertEqual(cache_before, (root / "out/chain_rows.json").read_bytes())
+            verification = subprocess.run([sys.executable, "/home/rna_jev/tools/verify_rna_complex_decontamination_round49.py",
+                                           "--out-dir", str(root / "out")], capture_output=True, text=True)
+            self.assertEqual(verification.returncode, 0, verification.stdout + "\n" + verification.stderr)
             first = json.loads((root / "out/decontamination.json").read_text())
             second = json.loads((root / "out.recheck/decontamination.json").read_text())
             first_command, second_command = first.pop("search_command"), second.pop("search_command")
