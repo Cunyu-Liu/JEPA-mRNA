@@ -51,7 +51,7 @@ train_r2d() {
     --validation-teacher-dir $ROOT/data/teacher_vl0 \
     --embedding-dir "$DATA/embeddings" --validation-embedding-dir "$DATA/embeddings" \
     --embedding-d-model 1280 --head-chunk-size 0 --scorer resnet2d --resnet-blocks 4 \
-    --d-z 128 --hidden 64 --steps 1000000 --batch-size 2 --lr 1e-4 --warmup-steps 5 \
+    --d-z 128 --hidden 64 --steps 1000000 --batch-size 1 --lr 1e-4 --warmup-steps 5 \
     --lambda-nll 1 --lambda-distill 1 --lambda-rlcd 1 --lambda-cal 1 --nll-normalization sum \
     --validation-every 500 --validation-patience 6 --validation-min-delta 1e-6 \
     --log-every 25 --save-every 500 --device cuda --seed "$seed" \

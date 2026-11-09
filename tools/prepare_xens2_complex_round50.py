@@ -74,7 +74,7 @@ def main():
                   "head_lr": 0.0001, "backbone_lr": 1e-05,
                   "warmup_head_steps": 1600, "unfreeze_every": 800,
                   "unfreeze_per_step": 2, "n_blocks": 33, "scorer": "resnet2d"},
-        "r2d": {"steps_safety_cap": 1000000, "batch_size": 2, "patience": 6,
+        "r2d": {"steps_safety_cap": 1000000, "batch_size": 1, "patience": 6,
                 "lr": 0.0001, "scorer": "resnet2d", "resnet_blocks": 4,
                 "d_z": 128, "hidden": 64, "head_chunk_size": 0},
         "members": {role: str(args.root / f"runs/xens2_complex_{role}_s{seed}")
