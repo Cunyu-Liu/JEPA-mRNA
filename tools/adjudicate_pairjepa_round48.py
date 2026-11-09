@@ -81,12 +81,11 @@ def main():
                str(paired_path.relative_to(root)): sha256(paired_path)}
     baseline = manifest["baseline"]
     _, baseline_sota = validate_artifacts(root, baseline["experiment"], sources)
-    candidates = [{"experiment": baseline["experiment"], "run_prefix": baseline["run_prefix"],
-                   "mean_best_vl0": baseline["mean_best_vl0"],
-                   "ripe_mode": baseline["ripe_mode"], "ripe_encoder": baseline["ripe_encoder"]}]
-    arm_rows = {"J0": {"experiment": baseline["experiment"],
+    candidates = []
+    arm_rows = {"architecture_reference": {"experiment": baseline["experiment"],
                         "main_sota_any_wins": baseline_sota["main_sota_any_wins"],
                         "rfam_f1": baseline_sota["rfam"]["ours_f1_mean"]}}
+    seeds = manifest["training"]["seeds"]
     for arm in manifest["arms"]:
         if arm.get("reuse_baseline"):
             arm_rows[arm["arm"]] = {"reuse_J0": True}
@@ -97,7 +96,7 @@ def main():
         validate_independent_qa(root, name, sources)
         losses = []
         diagnostic_rows = {}
-        for seed in range(3):
+        for seed in seeds:
             run = root / "runs" / f"{name}_s{seed}"
             meta = json.loads((run / "run_meta.json").read_text())
             assert meta["converged"] and meta["early_stopped"] and meta["status"] == "completed"

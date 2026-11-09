@@ -20,13 +20,14 @@ def fixture(tmp_path, scorer="pairmlp"):
     path.write_text(json.dumps(decision))
 
 
-def test_pairjepa_reuses_identical_mlp_baseline(tmp_path):
+def test_pairjepa_trains_mlp_baseline_with_new_fixed_seeds(tmp_path):
     fixture(tmp_path)
     result = prepare(tmp_path)
     assert result["baseline"]["ripe_mode"] == "r3"
-    assert result["arms"][0]["reuse_baseline"] is True
+    assert result["baseline"]["experiment"] == "pairjepa_mlp"
+    assert result["arms"][0]["reuse_baseline"] is False
     assert [arm["target"] for arm in result["arms"][1:]] == ["ema", "fixed", "random"]
-    assert result["training"]["steps"] == 0 and result["training"]["seeds"] == [0, 1, 2]
+    assert result["training"]["steps"] == 0 and result["training"]["seeds"] == [42, 2026, 3407]
     assert result["training"]["max_parallel_training"] == 2
     assert result["training"]["jepa_objective_version"] == "context_v1"
     assert result["training"]["jepa_context"].startswith("training_only_normalized_3x3")

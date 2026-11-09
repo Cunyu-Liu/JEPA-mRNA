@@ -46,12 +46,13 @@ def main():
     parser.add_argument("--vl0-only", action="store_true")
     parser.add_argument("--experiment", default="")
     parser.add_argument("--run-prefix", default="")
+    parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     args = parser.parse_args()
     experiment = args.experiment or ("structrfm_full" if args.full_model else "structrfm_frozen")
     run_prefix = args.run_prefix or ("structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s")
     output = args.root / f"eval_decision/{experiment}"
     metadata = [json.loads((args.root / f"runs/{run_prefix}{seed}/run_meta.json").read_text())
-                for seed in range(3)]
+                for seed in args.seeds]
     reference_seed = int(np.argmin([meta["best_validation_loss"] for meta in metadata]))
     reference = json.loads((output / f"vl0_s{reference_seed}.json").read_text())["per_sequence"]
     thresholds = np.quantile([row["structure_conf"] for row in reference], 1 - COVERAGE)
@@ -62,14 +63,14 @@ def main():
     write_json(output / "confidence_vl0_thresholds.json", threshold_record)
     summary = {"status": "PASS_STRUCTRFM_CONFIDENCE_VL0_FROZEN_THRESHOLDS",
                "experiment": experiment, "thresholds": threshold_record, "vl0": {}, "splits": {}}
-    for seed in range(3):
+    for seed in args.seeds:
         result = json.loads((output / f"vl0_s{seed}.json").read_text())
         assert result["repeats"] == 3
         summary["vl0"][f"s{seed}"] = evaluate(result["per_sequence"], thresholds)
     if not args.vl0_only:
         for split in SPLITS:
             cells = {}
-            for seed in range(3):
+            for seed in args.seeds:
                 result = json.loads((output / f"s{seed}/{split}.json").read_text())
                 assert result["repeats"] == 3
                 cells[f"s{seed}"] = evaluate(result["per_sequence"], thresholds)

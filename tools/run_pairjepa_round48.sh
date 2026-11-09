@@ -77,29 +77,32 @@ ablation_seed() {
   done
 }
 readarray -t ARMS < <($PY -c 'import json; d=json.load(open("'"$ROOT"'/audits/round48/pairjepa_preregistered.json")); [print(a["arm"],a["scorer"],a["target"] or "none",int(a["reuse_baseline"])) for a in d["arms"]]')
+readarray -t SEEDS < <($PY -c 'import json; d=json.load(open("'"$ROOT"'/audits/round48/pairjepa_preregistered.json")); [print(s) for s in d["training"]["seeds"]]')
 for row in "${ARMS[@]}"; do
   read -r ARM SCORER TARGET REUSE <<< "$row"
   if [ "$REUSE" = 1 ]; then continue; fi
   export ROOT ARM SCORER TARGET RIPE_MODE RIPE_ENCODER PAIR_LATENT_DIM
-  while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 16000 ]; do sleep 60; done
+  while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 14000 ]; do sleep 60; done
+  TRAIN_PARALLEL=2
+  if pgrep -f "tools/xens2_eval.py" >/dev/null; then TRAIN_PARALLEL=1; fi
   pids=()
-  for seed in 0 1; do train_seed "$seed" & pids+=("$!"); done
+  for seed in "${SEEDS[@]:0:TRAIN_PARALLEL}"; do train_seed "$seed" & pids+=("$!"); done
   if ! wait_jobs "${pids[@]}"; then
-    for seed in 0 1; do
+    for seed in "${SEEDS[@]:0:TRAIN_PARALLEL}"; do
       if ! $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["converged"] and d["early_stopped"] and d["status"]=="completed"' "$ROOT/runs/${ARM}_s${seed}/run_meta.json" 2>/dev/null; then
         echo "serial resume for incomplete $ARM seed $seed with unchanged training configuration"
         train_seed "$seed"
       fi
     done
   fi
-  train_seed 2
+  for seed in "${SEEDS[@]:TRAIN_PARALLEL}"; do train_seed "$seed"; done
   pids=()
-  for seed in 0 1 2; do eval_seed "$seed" & pids+=("$!"); done
+  for seed in "${SEEDS[@]}"; do eval_seed "$seed" & pids+=("$!"); done
   wait_jobs "${pids[@]}"
   $PY "$REPO/tools/aggregate_structrfm_frozen_round48.py" --root "$ROOT" --full-model \
-    --experiment "$ARM" --run-prefix "${ARM}_s" --out "$ROOT/eval_decision/$ARM/summary.json" > "$ROOT/logs/round48/${ARM}_aggregate.log" 2>&1
+    --experiment "$ARM" --run-prefix "${ARM}_s" --seeds "${SEEDS[@]}" --out "$ROOT/eval_decision/$ARM/summary.json" > "$ROOT/logs/round48/${ARM}_aggregate.log" 2>&1
   $PY "$REPO/tools/analyze_structrfm_confidence_round48.py" --root "$ROOT" --full-model \
-    --experiment "$ARM" --run-prefix "${ARM}_s" > "$ROOT/logs/round48/${ARM}_confidence.log" 2>&1
+    --experiment "$ARM" --run-prefix "${ARM}_s" --seeds "${SEEDS[@]}" > "$ROOT/logs/round48/${ARM}_confidence.log" 2>&1
   $PY "$REPO/tools/compare_structrfm_sota_round48.py" --root "$ROOT" --experiment "$ARM" \
     --baseline "$ROOT/source_data/round48/round39_own_clean_leaderboard.json" \
     --rfam-baseline "$ROOT/source_data/round48/round43_bpfold_rfam.json" \
@@ -107,10 +110,10 @@ for row in "${ARMS[@]}"; do
   for ABLATION in greedy turner0; do
     export ABLATION
     pids=()
-    for seed in 0 1 2; do ablation_seed "$seed" & pids+=("$!"); done
+    for seed in "${SEEDS[@]}"; do ablation_seed "$seed" & pids+=("$!"); done
     wait_jobs "${pids[@]}"
     $PY "$REPO/tools/aggregate_structrfm_frozen_round48.py" --root "$ROOT" --full-model \
-      --experiment "${ARM}_${ABLATION}" --run-prefix "${ARM}_s" \
+      --experiment "${ARM}_${ABLATION}" --run-prefix "${ARM}_s" --seeds "${SEEDS[@]}" \
       --out "$ROOT/eval_decision/${ARM}_${ABLATION}/summary.json" > "$ROOT/logs/round48/${ARM}_${ABLATION}_aggregate.log" 2>&1
   done
 done

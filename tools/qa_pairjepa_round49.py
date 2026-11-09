@@ -69,11 +69,12 @@ def length_bucket(length):
     return 0 if length <= 100 else 1 if length <= 200 else 2 if length <= 400 else 3
 
 
-def validate_result(result, raw_rows, decoder="nussinov", prior_override=None):
+def validate_result(result, raw_rows, decoder="nussinov", prior_override=None,
+                    require_pairjepa=True):
     assert result["device"] == "cuda" and result["gpu_name"]
     assert result["encoder_load"]["strict_identity"]
     assert result["repeats"] == 3 and result["score_forward_count_per_sequence"] == 1
-    assert result["pairjepa_teacher_forward_guard"] is True
+    assert result["pairjepa_teacher_forward_guard"] is require_pairjepa
     assert result["decoder"] == decoder and result["prior_weight_override"] == prior_override
     assert result["raw_n"] == len(raw_rows)
     assert result["n"] + result["n_long_unsupported"] == result["raw_n"]
@@ -168,7 +169,8 @@ def validate_cell(root, experiment, split, seed, run_meta, checkpoint_hash, chec
     assert result["checkpoint_step"] == checkpoint_step == run_meta["best_step"]
     decoder = "greedy" if experiment.endswith("_greedy") else "nussinov"
     prior = 0.0 if experiment.endswith("_turner0") else None
-    stats = validate_result(result, load_jsonl(data_path), decoder, prior)
+    stats = validate_result(result, load_jsonl(data_path), decoder, prior,
+                            require_pairjepa=run_meta["scorer"] == "pairjepa")
     return path, result, stats
 
 
@@ -176,23 +178,27 @@ def qa_experiment(root, experiment):
     root = Path(root)
     base = experiment.removesuffix("_greedy").removesuffix("_turner0")
     sources, runs = {}, {}
-    for seed in range(3):
+    manifest = json.loads((root / "audits/round48/pairjepa_preregistered.json").read_text())
+    seeds = manifest["training"].get("seeds", [0, 1, 2])
+    for seed in seeds:
         run = root / f"runs/{base}_s{seed}"
         meta = json.loads((run / "run_meta.json").read_text())
         assert meta["status"] == "completed" and meta["converged"] and meta["early_stopped"]
         assert meta["schedule"]["steps"] == 0 and meta["validation"]["patience"] == 6
-        assert meta["scorer"] == "pairjepa" and meta["objective"]["jepa_context"] == "context_v1"
+        assert meta["seed"] == seed and meta["scorer"] in {"pairjepa", "pairmlp"}
+        expected_context = "context_v1" if meta["scorer"] == "pairjepa" else None
+        assert meta["objective"].get("jepa_context") == expected_context
         assert meta["environment"]["resolved_device"].startswith("cuda")
         checkpoint = run / "best.pt"
         checkpoint_hash = sha256(checkpoint)
         payload = torch.load(checkpoint, map_location="cpu", weights_only=False)
-        assert payload["meta"]["objective"]["jepa_context"] == "context_v1"
+        assert payload["meta"]["objective"].get("jepa_context") == expected_context
         runs[seed] = meta, checkpoint_hash, payload["step"]
         sources[str(checkpoint.relative_to(root))] = checkpoint_hash
     split_stats = {}
     for split in SPLITS:
         cells = []
-        for seed in range(3):
+        for seed in seeds:
             path, result, stats = validate_cell(root, experiment, split, seed, *runs[seed])
             sources[str(path.relative_to(root))] = sha256(path)
             cells.append({"seed": seed, **stats, "n": result["n"],

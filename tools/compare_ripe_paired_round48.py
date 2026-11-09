@@ -68,6 +68,7 @@ def main():
     parser.add_argument("--bootstrap", type=int, default=10000)
     parser.add_argument("--manifest", default="audits/round48/ripe_preregistered.json")
     parser.add_argument("--status", default="PASS_RIPE_PAIRED_MICRO_F1_BOOTSTRAP")
+    parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     args = parser.parse_args()
     assert args.bootstrap >= 1000
     manifest_path = args.root / args.manifest
@@ -87,7 +88,7 @@ def main():
         comparison_rows = []
         long_rows = []
         for split in SPLITS:
-            for seed in range(3):
+            for seed in args.seeds:
                 left_path = args.root / f"eval_decision/{baseline['experiment']}/s{seed}/{split}.json"
                 right_path = args.root / f"eval_decision/{name}/s{seed}/{split}.json"
                 for path in (left_path, right_path):
@@ -112,7 +113,7 @@ def main():
                                       "right_only_supported_n_full_split": len(extra),
                                       **compare_scope(subset(left_rows, scope), subset(right_rows, scope),
                                                       int.from_bytes(scope_digest[:8], "little"), args.bootstrap)})
-        for seed in range(3):
+        for seed in args.seeds:
             holm_adjust([row for row in comparison_rows
                          if row["seed"] == seed and row["split"] in MAIN8 and row["status"] == "PASS"])
         output["comparisons"][name] = comparison_rows

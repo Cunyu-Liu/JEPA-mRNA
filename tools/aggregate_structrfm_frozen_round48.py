@@ -44,6 +44,7 @@ def main():
     parser.add_argument("--full-model", action="store_true")
     parser.add_argument("--experiment", default="")
     parser.add_argument("--run-prefix", default="")
+    parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     args = parser.parse_args()
     experiment = args.experiment or ("structrfm_full" if args.full_model else "structrfm_frozen")
     run_prefix = args.run_prefix or ("structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s")
@@ -55,7 +56,7 @@ def main():
     for split in splits:
         audit = json.loads((clean / f"{split}.audit.json").read_text())
         cells = []
-        for seed in range(3):
+        for seed in args.seeds:
             path = args.root / f"eval_decision/{experiment}/s{seed}/{split}.json"
             result = json.loads(path.read_text())
             checkpoint = args.root / f"runs/{run_prefix}{seed}/best.pt"

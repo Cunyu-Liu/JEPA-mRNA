@@ -69,3 +69,11 @@ def test_decoder_prior_and_pair_validity_fail_closed():
     changed["predictions"][0][0]["pred_pairs"].append([5, 5])
     with pytest.raises(AssertionError):
         validate_result(changed, raw)
+
+
+def test_pairmlp_teacher_guard_false_is_explicitly_supported():
+    result, raw = result_fixture()
+    result["pairjepa_teacher_forward_guard"] = False
+    validate_result(result, raw, require_pairjepa=False)
+    with pytest.raises(AssertionError):
+        validate_result(result, raw, require_pairjepa=True)
