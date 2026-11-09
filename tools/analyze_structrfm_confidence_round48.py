@@ -53,7 +53,7 @@ def main():
     output = args.root / f"eval_decision/{experiment}"
     metadata = [json.loads((args.root / f"runs/{run_prefix}{seed}/run_meta.json").read_text())
                 for seed in args.seeds]
-    reference_seed = int(np.argmin([meta["best_validation_loss"] for meta in metadata]))
+    reference_seed = args.seeds[int(np.argmin([meta["best_validation_loss"] for meta in metadata]))]
     reference = json.loads((output / f"vl0_s{reference_seed}.json").read_text())["per_sequence"]
     thresholds = np.quantile([row["structure_conf"] for row in reference], 1 - COVERAGE)
     threshold_record = {"reference_seed": reference_seed,
