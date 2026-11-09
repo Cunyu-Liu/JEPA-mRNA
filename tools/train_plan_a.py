@@ -368,7 +368,7 @@ def main():
         "ripe": {"mode": None if args.ripe_encoder_only else args.ripe_mode or None,
                  "encoder": args.ripe_encoder,
                  "encoder_mode": args.ripe_mode if args.ripe_encoder else None},
-        "backbone": report["backbone"],
+        "backbone": report.get("backbone", report.get("weights")),
         "scorer": args.scorer,
         "pair_latent_dim": args.pair_latent_dim,
         "head": f"FlatDecisionHead scorer={args.scorer} d_z=128 "

@@ -60,19 +60,8 @@ train_r2d() {
 }
 
 while [ "$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits)" -lt 20000 ]; do sleep 60; done
-train_plana 42 plana_a & plana_pid=$!
-train_r2d & r2d_pid=$!
-status=0
-wait "$plana_pid" || status=1
-wait "$r2d_pid" || status=1
-if [ "$status" -ne 0 ]; then
-  if ! $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["converged"] and d["early_stopped"]' "$ROOT/runs/xens2_complex_plana_a_s42/run_meta.json" 2>/dev/null; then
-    train_plana 42 plana_a
-  fi
-  if ! $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["converged"] and d["early_stopped"]' "$ROOT/runs/xens2_complex_r2d_s3407/run_meta.json" 2>/dev/null; then
-    train_r2d
-  fi
-fi
+train_r2d
+train_plana 42 plana_a
 train_plana 2026 plana_b
 
 $PY - <<'PY'
