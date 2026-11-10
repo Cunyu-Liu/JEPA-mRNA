@@ -15598,3 +15598,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **可复核序列**：提取COVID A–H共8条CDS（各3819nt）、VZV A–E/Ther/WT共7条CDS（各1869nt）及4条UTR。FASTA SHA256=`412b9288dee41837859a4dc32eceebb9ebf7e6d319a8a60ec085b7b54a86178b`，双跑逐字节一致；独立原文对照要求CDS出现一次，COVID/VZV共享3′UTR出现两次，全部通过。BNT PDF文本3712nt，与3819nt且非三倍数，和wild-type均不纳入已验证序列。
 - **UniProt**：以表头/标题锚点而非分页行号独立解析到114个唯一ID，长度78–3333aa，与原文一致。此前111个是错误切片，未记为资产缺口；ID清单不等于蛋白序列，114条实际蛋白序列仍需从UniProt获取。
 - **边界**：当前为`PARTIAL_SUPPLEMENT_RECOVERED_FIGSHARE_BLOCKED`，原始QA=`source_data/round52/lineardesign_supplement_qa.json`。COVID BNT/wild-type、114条蛋白序列及figshare原包未恢复，全量LD1仍不放行，LD2未启动。R0训练继续，PPT未修改。
+
+## §15.814（2026-11-10）R0三种子完整训练QA与长序列优先级（训练阶段完成）
+
+- **三种子齐套**：seed42 steps=6500/best3500/VL0=24.13491243153436，seed2026 steps=7000/best4000/VL0=21.167809661189136，seed3407 steps=7000/best4000/VL0=22.250467982560117，均steps=0、500步VL0、patience=6自然早停。mean best VL0=22.517730025094536，population SD=1.2259680425368162。三run后段均爆炸，末次VL0=744503.736589/3549645.555944/2227267.145752，不将best曲线截断为“稳定收敛”。
+- **三轮QA**：逐run身份、完整验证曲线、有限值、best step、resume、stream、scheduler、官方RiNALMo和真实CUDA通过；best/resume权重逐张量一致。QA双跑逐字节一致，SHA256=`c4ba8f5e311d0397261d02c2303bf9ae08245dca7dbbebf6928600527eeacd95`。允许固定终态做R-replay，但不放行L/O或测试结论。
+- **长序列优先**：PairMLP latent与type head是主要O(L²)显存点。实现列分块scorer和推理`include_types=False`，不改变部署scorer、Turner、RIPE、校准或DP；R6 bias按第4维列切片，PairRepresentation已对称的z显式标记presymmetrized。初次对称化、bias维度与浮点末位差异均留证，前向最大误差7.152557373046875e-7、梯度误差0，type省略前后score逐位一致，相关测试连续三次通过。
+- **下一步**：用R0 seed42 best做512/1022/1024/1500/1869/3819nt真实CUDA全长探测，OOM即停并留证；该工程结果不替代长程精度。正式R-replay执行链已就绪，长序列探测后启动。PPT未修改。
