@@ -15842,3 +15842,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 新增容量诊断守候队列：逐run核验自然早停、steps=0、500步VL0、patience=6、seed与CUDA身份，六run未齐每300秒等待；齐套后先双跑完整L/O训练QA并`cmp`，显存>14GB继续等待。随后按length/olr×42/2026/3407逐臂执行训练/VL0误差probe、独立QA、冻结表征probe、独立QA，禁止覆盖未评审artifact。
 - 队列为空等消除而设，不改变科学阶段门；所有probe完成前`allow_capacity_expansion=false`、`allow_j_gate=false`，容量裁决和独立重复仍需后续执行。bash语法检查通过。首次任务`bash-kg4rsoyj`因SSH关闭未在远端启动，已确认无队列日志/probe后恢复为`bash-yk7cznpi`守候；尚未运行真实容量probe。PPT未修改。
+
+## §15.855（2026-11-11）容量误差QA的VL0浮点容差一致性
+
+- 静态复核发现probe本身要求复算VL0与best差异`<1e-6`，独立QA却要求逐位相等，可能将合法求和顺序差异误判失败。统一为`rel_tol=0, abs_tol=1e-6`，不改变checkpoint/run_meta/data/code SHA、逐序列均值和其他身份检查。
+- 容量误差QA与均值篡改失败注入连续三轮通过；当前仍在六run齐套前守候，未运行真实容量probe，PPT未修改。

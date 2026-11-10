@@ -31,7 +31,8 @@ def validate_probe(input_path, probe_code):
     assert probe["run_meta_sha256"] == sha256_file(run_meta_path)
     assert run_meta["arm"] == probe["arm"] and run_meta["seed"] == probe["training_seed"]
     assert run_meta["best_step"] == probe["best_step"]
-    assert run_meta["best_validation_loss"] == probe["validation"]["mean_losses"]["total"]
+    assert math.isclose(run_meta["best_validation_loss"], probe["validation"]["mean_losses"]["total"],
+                        rel_tol=0, abs_tol=1e-6)
     assert probe["validation_data_sha256"] == sha256_file(run_meta["validation"]["data"])
     assert probe["train"]["n_sequences"] == probe["validation"]["n_sequences"] == 196
     assert len(probe["train"]["per_sequence"]) == len(probe["train_lengths"]) == 196
