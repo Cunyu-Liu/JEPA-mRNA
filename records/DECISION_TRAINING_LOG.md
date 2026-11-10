@@ -15858,3 +15858,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 容量裁决要求六run完整训练QA、六组误差+表征独立QA和独立CUDA复现全部齐套。仅当两臂全部种子的目标误差和冻结表征均支持欠拟合时，才分别允许C-wide/C-local，默认不扩参；不混改loss、optimizer和容量。
 - 基座规则在第三种子结果前固定：以每个run `log1p((max_vl0-best_vl0)/abs(best_vl0))`的三次中位数最小者优先，best VL0的seed SD次之，arm名称最终破并列；不使用测试指标，不直接比较length/sum绝对VL0，也不把best checkpoint称为后段稳定。合成逻辑三轮通过，尚无真实`next_base`或容量裁决。PPT未修改。
+
+## §15.858（2026-11-11）容量独立复现协议与阶段门修正
+
+- 新增两臂seed42误差+表征独立CUDA复现：逐项比较sequence/length/loss、pair/label/logit、checkpoint/data/code/protocol身份，线性weight/bias SHA必须完全一致；误差最大差≤1e-8、logit最大差≤1e-5。复现与裁决各双跑`cmp`，范围必须覆盖length_s42和olr_s42。
+- 修正阶段门：欠拟合成立时`allow_c_wide/allow_c_local=true`且`allow_j_gate=false`，须先完成容量臂；欠拟合不成立时才`allow_j_gate=true`。任何情况`allow_pairjepa_training=false`，J-mlp仍是必要对照。
+- 合成复现容差、失败注入和阶段门连续三轮通过；浮点差值断言改`math.isclose`，不改变验收容差。`bash-rgx3n1sv`仅等待首轮诊断完成，尚无真实复现、next_base或容量裁决，PPT未修改。

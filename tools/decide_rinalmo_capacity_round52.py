@@ -16,6 +16,7 @@ def adjudicate(training, diagnostics, replication, error_reports, representation
     assert diagnostics["status"] == "PASS_ALL_L_O_ERROR_AND_REPRESENTATION_PROBES"
     assert replication["status"] == "PASS_RINALMO_CAPACITY_INDEPENDENT_CUDA_REPLICATION"
     assert replication["equivalent"]
+    assert set(replication["arms"]) == {"length_s42", "olr_s42"}
     arms = {}
     for arm in ("length", "olr"):
         errors = [error_reports[f"{arm}_s{seed}"] for seed in (42, 2026, 3407)]
@@ -45,7 +46,7 @@ def adjudicate(training, diagnostics, replication, error_reports, representation
         "scientific_conclusion": False,
         "capacity_insufficiency_supported": capacity_supported,
         "allow_c_wide": capacity_supported, "allow_c_local": capacity_supported,
-        "allow_j_gate": True, "allow_pairjepa_training": False,
+        "allow_j_gate": not capacity_supported, "allow_pairjepa_training": False,
         "next_base": next_base, "next_base_rule": (
             "Lowest median log1p((max_vl0-best_vl0)/abs(best_vl0)); best-VL0 SD then arm name tie-break; no test metric"),
         "arms": arms,
