@@ -54,6 +54,8 @@ def main():
     chanrg_source = json.loads(args.chanrg_baseline.read_text())
     chanrg = {}
     for index, split in enumerate(CHANRG):
+        if split not in ours["splits"]:
+            continue
         f1 = ours["splits"][split]["f1_mean"]
         measured_name, measured_f1 = best((model["name"], model["values"][index])
             for model in chanrg_source["models"] if model["evidence"] != "quoted")

@@ -12,6 +12,7 @@ flock -n 9 || { echo "another L/O evaluation queue is active"; exit 1; }
 $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["status"]=="PASS_LOSS_OPTIMIZER_TRAINING_THREE_CHECK_QA"' "$ROOT/audits/round51/loss_optimizer_training_qa.json"
 SPLITS=(bprna_ts0 bprna_new archiveii ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb rfam_fam)
 SEEDS=(42 2026 3407)
+export ARMS=${ARMS:-length olr}
 mkdir -p "$ROOT/logs/round51" "$ROOT/audits/round51"
 
 wait_three() {
@@ -58,7 +59,7 @@ ablation_seed() {
   done
 }
 
-for ARM in length olr; do
+for ARM in ${ARMS:-length olr}; do
   pids=()
   for seed in "${SEEDS[@]}"; do eval_seed "$ARM" "$seed" & pids+=("$!"); done
   wait_three "${pids[@]}"
@@ -96,7 +97,7 @@ import hashlib,json,os
 from pathlib import Path
 root=Path(os.environ["ROOT"])
 files={}
-for arm in ("length","olr"):
+for arm in os.environ["ARMS"].split():
     for suffix in ("","_greedy","_turner0"):
         experiment=f"loss_{arm}{suffix}"
         qa=root/"audits/round51"/f"{experiment}_qa.json"
