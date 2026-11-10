@@ -57,7 +57,7 @@ def main():
     reference = json.loads((output / f"vl0_s{reference_seed}.json").read_text())["per_sequence"]
     thresholds = np.quantile([row["structure_conf"] for row in reference], 1 - COVERAGE)
     threshold_record = {"reference_seed": reference_seed,
-                        "reference_best_validation_loss": metadata[reference_seed]["best_validation_loss"],
+                        "reference_best_validation_loss": metadata[args.seeds.index(reference_seed)]["best_validation_loss"],
                         "coverage": COVERAGE.tolist(), "thresholds": thresholds.tolist(),
                         "protocol": "reference seed has minimum VL0 validation loss; thresholds use only its VL0 structure confidence; no test fitting"}
     write_json(output / "confidence_vl0_thresholds.json", threshold_record)
