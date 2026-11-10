@@ -15787,3 +15787,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **真实J1 smoke**：1步、batch=1、真实CUDA，peak=4.8GB。masked_pairs=40，anti-diagonal=10、off-anti=30；checkpoint存在context_mixer参数，EMA改变6个张量，推理teacher=0、student=1。direct NLL/JEPA梯度范数=47.0251898226/0.1213346092，cosine=0，共享元素491648。QA双跑逐字节一致，SHA256=`70875eb4d33adba46409de161d27c72c6a0365b62fedc894426f887d9d3d6092`，artifact=`source_data/round52/rinalmo_pairjepa_block_gate_smoke_qa.json`。resume SHA=`767f698817e5f910e9b617aae8c70d9ee59edb70a321cd54a15c6393408fcbb6`，diagnostics=`c66dde8fae4d99169122deca0df0c76d4dc099039dd3a611baa9e257c0aa000a`。
 - **限制**：J1工程路径通过不等于完整J-gate、JEPA有效或不坍塌；`allow_pairjepa_training=false`，L/O与容量门未齐，未启动J-mlp/J1正式训练。
 - **LD1故障**：主矩阵在Q9UFB7(747aa)生成时收到SIGKILL，日志`lineardesign_ld1_matrix_energy_checked.log`保留，297格不是持续运行中的状态。没有取得内核OOM记录，不将原因写成已证实内存/显存结论；只调整CPU并发为1，λ/beam/序列不变，从既有JSON断点恢复并记录新日志`lineardesign_ld1_matrix_serial_resume.log`。对照ViennaRNA已观察717/798条。PPT未修改。
+
+## §15.845（2026-11-11）RiNALMo容量误差probe独立QA工具验收
+
+- 新增容量误差独立QA：逐序列用`math.fsum`重算train/VL0各项均值，核验VL0 total等于run_meta best、train/validation条数与长度、sequence SHA、checkpoint/run_meta/probe代码SHA、数据/教师身份、真实CUDA声明与train-minus-VL0差值；明确`allow_capacity_expansion=false`，不访问测试集。
+- 合成196+196条记录通过三轮独立QA与均值篡改失败注入；首次测试合成字典括号SyntaxError已定位修正，不是探针科学结果。工具已准备但尚未对真实checkpoint运行误差probe，不能据此放行C-wide/C-local。
+- O-LR seed2026过程改善至step4000 VL0=23.43162070，仍按steps=0、500步VL0、patience=6训练，其他run未齐；LD1主矩阵单进程恢复中，对照评价未完成。PPT未修改。
