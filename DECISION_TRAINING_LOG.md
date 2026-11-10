@@ -15612,3 +15612,16 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **全长结果**：512/1022/1024/1500/1869/3819nt均真实RTX4090 CUDA、输入长度完整、输出形状L×L、合法候选score有限，未截断、未过滤、未CPU回退。峰值allocated依次4.71/6.80/6.81/8.76/10.28/18.31GB，3819nt峰值reserved=21.32GB，未OOM。artifact=`source_data/round52/rinalmo_long_sequence_probe.json`，status=PASS_LONG_SEQUENCE_ENGINEERING_PROBE。
 - **边界**：探测使用固定seed42合成序列和R0 seed42 best checkpoint，非生物benchmark，非正式测速。证明当前实现可以全长前向，不证明长程配对准确、校准可靠或DP质量；后续真实结构、span≥30/≥100、预测等价和D1长链训练仍需独立验收。
 - **阶段衔接**：R0三种子训练QA已通过，正式R-replay已启动。长序列工程结果不跳过loss/optimizer阶段门，PPT未修改。
+
+## §15.816（2026-11-10）UniProt 114条蛋白序列完整恢复与版本验收
+
+- **完整资产**：分批UniProt REST获取后，114个ID全部唯一且长度与补充表逐条一致，字符集合法。合并FASTA SHA256=`13cdfb767e96017f4f1fc0a0bc7930cf34a93cdc9e012fa38597bc3f9f1d16d0`，manifest=`source_data/round52/uniprot_114_manifest.json`。初次空响应和整组400保留，改为小批次后完成，未把空文件计为资产。
+- **版本处理**：P01707重定向到P01706，119aa与原文一致，保留accession映射。P01860现版446aa且2023-05-03更新，不能替代论文377aa；通过UniProt历史表取得entryVersion=191/sequenceVersion=2，长度377aa，与论文一致，未混用现版。
+- **边界**：114蛋白LD1所需序列已齐套，可在design-dev/test与配置QA后执行；COVID BNT/wild-type及figshare原包仍缺失，相关对照保持PARTIAL。LD1/LD2尚未启动。正式R-replay正在独立QA，PPT未修改。
+
+## §15.817（2026-11-10）RiNALMo正式R-replay裁决与L/O放行
+
+- **真实replay**：R0三种子训练QA通过后，seed42主诊断和2026复核均以best权重+终态optimizer/scheduler/stream完成，参数、scheduler和stream不变，optimizer.step未调用。终态均n_unfrozen=12/33，不作全33层归因。两路并行首次OOM现场已保留，改串行后完成，单任务峰值约23.7GB；已通过的训练QA未重复计算。
+- **独立QA**：seed42结果SHA=`fc6d106eb8fa0bf2c36ac10242d4c05e50a6b48c3a02f74bf4a80ca88ee5f4c6`，QA=`0eb936e903471e19a2c65e8a968d1ed87e45c4dcd30b93ea143bb6ed3119a3d5`；seed2026结果=`d1b3b72da85e3b3d9dd40dfc30ce99097281845ac057894a92798b1daf171986`，QA=`4a1e725c8713dd724c67bf36140e5773425b00378140570c84d0ef8dc75fd9bf`。逐项loss、梯度、shadow Adam和不变量双跑通过。
+- **关键诊断**：length/sum shadow update RMS在6个批次均增大，head/backbone中位42.6831047/42.6831076倍，范围14.5821–334.9544，不支持“length在终态自然降低更新幅度”的假设，必须独立训练验证。backbone LR=1e-6仅将shadow update缩至0.1，不能证明VL0或F1改善。seed2026两批NLL与辅助项cosine为负，不能混改aux、loss和LR。
+- **阶段门**：decision双跑SHA256=`091802d5545a7129603b75b93750b01e4cac86066b02c7058090206a1d7a6494`，允许L-length和O-LR独立单因子，禁止交互、U-ramp和容量提前放行。正式L/O队列按length42→olr42→length2026→olr2026→length3407→olr3407串行，steps=0、500步VL0、patience=6，其他R0配置不变，不自动进入测试或后续实验，PPT未修改。

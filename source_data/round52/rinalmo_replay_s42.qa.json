@@ -1,0 +1,23 @@
+{
+  "status": "PASS_INDEPENDENT_R_REPLAY_QA",
+  "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/round52/rinalmo_replay_s42.json",
+  "result_sha256": "fc6d106eb8fa0bf2c36ac10242d4c05e50a6b48c3a02f74bf4a80ca88ee5f4c6",
+  "seed": 42,
+  "backbone": "rinalmo",
+  "n_unfrozen": 12,
+  "best_step": 3500,
+  "resume_step": 6500,
+  "batches": 4,
+  "sequences": 8,
+  "code_commit": "bcf9b0243b6f5c8a662c660c518b5514d0e1417e",
+  "code_sha256": "343a7606386e97784f655451a2602b46a16eed23b56ef8de0ebc3f7bb8439926",
+  "max_nll_length_gradient_error": 0.0927734375,
+  "max_aux_gradient_difference": 0.0,
+  "length_slopes": {
+    "nll_loss_sum_vs_length": 0.28786826047620995,
+    "nll_loss_length_normalized_vs_length": -0.0005161815373858281,
+    "nll_grad_norm_sum_vs_length": 0.31608860635283204,
+    "nll_grad_norm_length_normalized_vs_length": -0.027704623916302566
+  },
+  "scientific_conclusion": false
+}

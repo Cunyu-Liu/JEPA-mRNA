@@ -1,0 +1,94 @@
+{
+  "status": "PASS_R_REPLAY_THREE_CHECK_QA",
+  "experiment": "R-replay",
+  "backbone": "rinalmo",
+  "evidence_scope": "best_weights_with_terminal_optimizer_scheduler_and_stream_no_parameter_update",
+  "training_qa_sha256": "c4ba8f5e311d0397261d02c2303bf9ae08245dca7dbbebf6928600527eeacd95",
+  "result_sha256": {
+    "42": "fc6d106eb8fa0bf2c36ac10242d4c05e50a6b48c3a02f74bf4a80ca88ee5f4c6",
+    "2026": "d1b3b72da85e3b3d9dd40dfc30ce99097281845ac057894a92798b1daf171986"
+  },
+  "qa_sha256": {
+    "42": "0eb936e903471e19a2c65e8a968d1ed87e45c4dcd30b93ea143bb6ed3119a3d5",
+    "2026": "4a1e725c8713dd724c67bf36140e5773425b00378140570c84d0ef8dc75fd9bf"
+  },
+  "code_commit": "bcf9b0243b6f5c8a662c660c518b5514d0e1417e",
+  "code_sha256": "343a7606386e97784f655451a2602b46a16eed23b56ef8de0ebc3f7bb8439926",
+  "n_unfrozen": {
+    "42": 12,
+    "2026": 12
+  },
+  "length_over_sum_update_rms": {
+    "head": {
+      "min": 14.582088780886487,
+      "median": 42.68310470751678,
+      "max": 334.9544352859411,
+      "n": 6
+    },
+    "backbone": {
+      "min": 14.582087452273617,
+      "median": 42.68310762285327,
+      "max": 334.95442075760303,
+      "n": 6
+    }
+  },
+  "shadow_backbone_1e-6_over_original_update_rms": {
+    "min": 0.09999999342713081,
+    "median": 0.1,
+    "max": 0.1000000040153444,
+    "n": 6
+  },
+  "negative_nll_aux_cosine_batches": 2,
+  "total_batches": 6,
+  "cosines": [
+    {
+      "seed": 42,
+      "queue_offset": 0,
+      "nll_sum_aux": 0.5182864392676138,
+      "nll_length_aux": 0.5182438242945803
+    },
+    {
+      "seed": 42,
+      "queue_offset": 1,
+      "nll_sum_aux": 0.9662289584996813,
+      "nll_length_aux": 0.9662064664564478
+    },
+    {
+      "seed": 42,
+      "queue_offset": 5,
+      "nll_sum_aux": 0.558058383236615,
+      "nll_length_aux": 0.5579963739529433
+    },
+    {
+      "seed": 42,
+      "queue_offset": 37,
+      "nll_sum_aux": 0.1416905507477152,
+      "nll_length_aux": 0.14173744449759632
+    },
+    {
+      "seed": 2026,
+      "queue_offset": 0,
+      "nll_sum_aux": -0.8588307008812676,
+      "nll_length_aux": -0.8588105761037326
+    },
+    {
+      "seed": 2026,
+      "queue_offset": 25,
+      "nll_sum_aux": -0.8646180662039407,
+      "nll_length_aux": -0.8645833717845732
+    }
+  ],
+  "interpretation": [
+    "Length normalization requires an independent L-length training arm; shadow updates alone do not establish stabilization or structure gains.",
+    "Backbone LR 1e-6 only diagnoses the corresponding shadow update scale, not validation or F1 improvements.",
+    "Negative NLL-auxiliary cosine is batch-dependent and does not justify jointly changing auxiliary weights, loss, or LR.",
+    "Replay is limited to each run's actual terminal unfreezing state and cannot by itself isolate an unfreezing-ramp effect."
+  ],
+  "allow_l_length_single_factor": true,
+  "allow_o_lr_single_factor": true,
+  "allow_loss_optimizer_interaction": false,
+  "allow_u_ramp": false,
+  "allow_capacity_stage": false,
+  "scientific_effect_conclusion": false,
+  "test_data_used": false
+}

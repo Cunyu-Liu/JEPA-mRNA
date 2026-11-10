@@ -25,9 +25,13 @@
     "paper_reported_count": 114,
     "min_protein_length": 78,
     "max_protein_length": 3333,
-    "protein_sequences_recovered": false
+    "protein_sequences_recovered": true,
+    "fasta_sha256": "13cdfb767e96017f4f1fc0a0bc7930cf34a93cdc9e012fa38597bc3f9f1d16d0",
+    "manifest": "uniprot_114_manifest.json",
+    "accession_aliases": {"P01707": "P01706"},
+    "historical_sequence_versions": {"P01860": {"entry_version": 191, "sequence_version": 2}}
   },
   "qa": "lineardesign_supplement_qa.json",
   "scientific_conclusion": false,
-  "note": "The Nature supplement is verified. COVID BNT/wild-type and all 114 UniProt protein sequences remain unrecovered. LD1 cannot start its full matrix until those assets are restored and independently hashed."
+  "note": "All 114 UniProt sequences are recovered and length-verified. COVID BNT/wild-type and figshare original archives remain unrecovered. The 114-protein LD1 matrix can proceed after split/config QA; COVID controls remain PARTIAL."
 }
