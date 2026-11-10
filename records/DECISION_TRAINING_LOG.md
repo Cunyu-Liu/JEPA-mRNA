@@ -15708,3 +15708,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立复算smoke**：已观察259个单元时，抽取Q9BY21的全部7条对照，以独立标准遗传密码、CAI公式及直接ViennaRNA调用复算，7/7通过。max-CAI MFE=`-366.1000061035156`，普通随机seed42/2026/3407=`-231.60000610351562`/`-228.60000610351562`/`-222.60000610351562`，GC匹配随机=`-338.0400085449219`/`-348.8999938964844`/`-336.70001220703125`。这只是QA smoke，不是全114蛋白比较或生物结论。
 - **全量QA准备**：新增完整798条重折叠/翻译/CAI复核与聚合脚本，按蛋白先平均seed再以蛋白为独立单位，dev/test分开，禁止用test选择λ/beam/约束/校准；798格未齐前不执行最终聚合。
 - **O-LR seed42**：best仍step4500、VL0=22.218715002193022；step5000/5500/6000 VL0=24.25219692580855/30.446523855998354/4037.9793442300547，bad=1/2/3。训练日志step6475出现gnorm=189462.59，step6500 total=37559.7504、NLL=37527.036、distill=15.857、RLCD=0.971、cal=15.887，后段明显失稳，继续按patience=6，不篡改曲线或宣称O-LR稳定。其余run未齐，容量门未开，PPT未修改。
+
+## §15.832（2026-11-10）J1结构化mask独立实现与CUDA反事实（未训练）
+
+- **实现边界**：新增独立`structured_pair_mask`，输入合法pair布尔矩阵，按block_size=8形成sequence-block cross-product与反对角线候选，block选择概率与少量随机pair分开，最终强制对称、合法、非空、固定seed可复现。尚未接入`train_plan_a`，未改student、直接scorer、DP、Turner或当前L/O训练，未启动J-mlp/J1训练。
+- **三轮检查**：静态检查覆盖非法dtype/shape、概率、block大小、无合法pair与fallback；CPU/CUDA单测验证对称/合法/非空/复现、不同seed、纯结构mask的反对角线约束、masked梯度为零、unmasked梯度非零和direct scorer无梯度。真实CUDA失败注入将masked表示增加1000，prediction均值范数完全不变、target范数和loss改变，证明直接信息断裂而不是仅检查输出形状。增强后的4项测试连续三轮均4/4通过。
+- **边界**：这只是J1-gate的一个基础组件，不等于完整J-gate通过；仍需轻量mixer、完整context→target、stop-gradient、optimizer-step后EMA、teacher_calls=0/student_score_calls=1、逐通道坍塌和真实RiNALMo门。L/O与容量阶段顺序不变。
+- **过程状态**：LD1对照评价已观察520/798条，尚未全量聚合；O-LR seed42在step7000 VL0=296797.15854863916、bad=5，best仍step4500，尚未读取到完成状态，不提前验收。PPT未修改。
