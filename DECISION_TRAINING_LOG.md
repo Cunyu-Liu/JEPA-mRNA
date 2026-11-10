@@ -15585,3 +15585,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **资产索引**：figshare DOI=`10.6084/m9.figshare.22193251`确认5个文件：COVID/VZV FASTA、uniprot_114.zip、raw_data.xlsx和p_value_summary.xlsx，许可CC BY 4.0。整包和单文件下载均返回403，实际下载0个文件，证据=`source_data/round52/lineardesign_asset_access.json`。原始资产未恢复并核验SHA前不得启动LD1，不得用论文图读数或文件名伪造数据。
 - **R0 seed2026**：step500/1000 VL0=33.303607435575735/31.176433418090834，best step1000、bad=0，仍在训练；seed3407未启动。当前不能与seed42拼成三种子结论，也不能启动正式R-replay。PPT未修改。
+
+## §15.812（2026-11-10）RiNALMo R-replay执行链与fail-closed验收（准备阶段）
+
+- **执行链**：`run_rinalmo_replay_round52.sh`先双跑三种子训练QA，再并行seed42主诊断与2026复核，逐run双跑独立QA，最后双跑裁决。各run按实际n_unfrozen验收，不默认全33层。
+- **裁决硬门**：新增`decide_rinalmo_replay_round52.py`，强制RiNALMo身份、42/2026种子、42/2026/3407完整训练QA、best/resume SHA和实际解冻状态一致；只允许独立L-length/O-LR，禁止交互、U-ramp和容量提前放行。length与LR只作shadow诊断，结构效果必须独立训练验证。
+- **反事实**：以smoke replay配合不完整训练QA调用裁决器，明确拒绝且不产生decision文件；脚本语法和py_compile通过。R0 seed2026仍训练，step1500 VL0=29.09801551264604，step2000验证时尚未解冻，seed3407未启动。正式replay、L/O和后续实验未启动，PPT未修改。
