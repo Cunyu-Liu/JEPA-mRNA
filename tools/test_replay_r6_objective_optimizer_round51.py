@@ -107,3 +107,16 @@ def test_scheduler_restore_preserves_saved_group_lrs():
     assert restored_optimizer.param_groups[0]["lr"] != groups[0]["lr"]
     restore_scheduler_and_group_lrs(restored_scheduler, state, groups)
     assert [group["lr"] for group in restored_optimizer.param_groups] == [1e-4, 1e-5]
+
+
+def test_autograd_preserves_frozen_parameter_slots():
+    frozen = torch.tensor([2.0], requires_grad=False)
+    trainable = torch.tensor([3.0], requires_grad=True)
+    grads = autograd_terms(trainable.sum() * 4, [frozen, trainable])
+    assert grads[0] is None
+    assert torch.equal(grads[1], torch.tensor([4.0]))
+    assert not frozen.requires_grad and trainable.requires_grad
+    unused = torch.tensor([7.0], requires_grad=True)
+    grads = autograd_terms(trainable.sum(), [frozen, trainable, unused])
+    assert grads[0] is None and grads[2] is None
+    assert torch.equal(grads[1], torch.tensor([1.0]))

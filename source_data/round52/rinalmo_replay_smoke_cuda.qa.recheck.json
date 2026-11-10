@@ -1,0 +1,23 @@
+{
+  "status": "PASS_INDEPENDENT_R_REPLAY_QA",
+  "result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/audits/round52/rinalmo_replay_smoke_cuda.json",
+  "result_sha256": "430dee6ca2d23155181d0c92bbcd5599c5442b077db0085337e65b5345450a5e",
+  "seed": 42,
+  "backbone": "rinalmo",
+  "n_unfrozen": 0,
+  "best_step": 2,
+  "resume_step": 2,
+  "batches": 4,
+  "sequences": 8,
+  "code_commit": "aa64ac4aecb31f09b34db551895d5683632301fc",
+  "code_sha256": "343a7606386e97784f655451a2602b46a16eed23b56ef8de0ebc3f7bb8439926",
+  "max_nll_length_gradient_error": 0.0028268801979720592,
+  "max_aux_gradient_difference": 0.0,
+  "length_slopes": {
+    "nll_loss_sum_vs_length": 0.7964585695306785,
+    "nll_loss_length_normalized_vs_length": 0.0005314547324014653,
+    "nll_grad_norm_sum_vs_length": 0.7979686990682956,
+    "nll_grad_norm_length_normalized_vs_length": 0.0007647183702191374
+  },
+  "scientific_conclusion": false
+}

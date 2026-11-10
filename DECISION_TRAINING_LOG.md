@@ -15560,3 +15560,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **真实artifact QA**：`stable_load`固定best/resume，best step/VL0一致，resume step不早于best、stream完整，scheduler base LR=[1e-4,1e-5]且optimizer组LR一致；训练中的resume不要求等于best。run保持steps=0、batch=2、NLL=sum、PairMLP490+R6、RiNALMo官方权重和真实CUDA。进度QA SHA256=`31b15073bb4a9427c75ed12fab2f14709c53a6996329cea7e7e59984a4f6d6eb`，独立复算确认逐行best及resume关系。
 - **replay实现**：旧诊断脚本新增`--backbone rinalmo`和`--run-id-prefix`，默认structRFM历史行为保留；RiNALMo严格要求官方权重路径，identity不符即拒绝。既有梯度/optimizer回归连续三次通过。固定R0 smoke checkpoint双跑preflight一致，选择4个保存批次，长度86/141/216/391，代码SHA256=`30a4e97aade6686043c2a48479d97f68f5a87ee820c3b3c8cda4f7da45aa44ae`。首次默认R0前缀拒绝smoke是正确身份门，显式smoke前缀后通过。
 - **边界**：当前只完成R0进度验收和replay工程准备，未对R0完成态做真实梯度重放，未启动L/O或测试评测。R-replay必须等三种子完成并固定best权重+终态optimizer/scheduler/stream，不读取活动checkpoint。PPT未修改。
+
+## §15.808（2026-11-10）RiNALMo真实CUDA replay工程验收与R0解冻初期观测
+
+- **replay工程结果**：固定R0 smoke best step2+终态optimizer/scheduler/stream，真实RTX4090重放4批/8条，长度86/141/216/391，n_unfrozen=0，权重、scheduler和stream不变，optimizer.step未调用。最大NLL-length全局尺度梯度误差=0.0028268801979720592，辅助项梯度差=0。独立QA双跑一致，SHA256=`c9a3c674d139c8f0a4608d4b5c152778d94cc7b19b64ce2b58f554c0a8941ac5`，结果SHA256=`430dee6ca2d23155181d0c92bbcd5599c5442b077db0085337e65b5345450a5e`。
+- **失败与修复**：首次0层解冻时autograd收到冻结骨干参数而失败；随后未连接但可训练的type head返回None又触发detach错误。现autograd只对requires_grad参数求导，并将冻结/未连接参数的None对齐回原槽位，不改变optimizer全参数或shadow-Adam索引。新增冻结和未连接反事实，7项测试连续三次通过，两个失败日志均保留。QA也区分smoke warmup head LR=6e-5与shadow backbone基准LR=1e-5，未把终态LR假设强加给smoke。
+- **证据边界**：该结果仅证明RiNALMo replay的梯度、逐项损失、shadow-Adam和状态不变量工程链可用，不是R0科学重放或length/LR效果结论。正式replay仍需R0三种子自然收敛后的固定状态。
+- **R0过程曲线**：seed42 step2000/2500/3000/3500/4000 VL0=27.0499081674/25.2006935872/28.2201775866/24.1349124315/27.6716682268，best step3500=24.1349124315，step4000 bad=1。已解冻6/33层；step3350训练total=723.9225、gnorm=2858.1，尖峰完整保留，不提前改loss/LR或终止。全解冻及自然早停未完成，不启动L/O或测试评测，PPT未修改。

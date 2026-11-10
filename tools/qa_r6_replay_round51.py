@@ -29,10 +29,12 @@ def slope(xs, ys):
     return sum((x - mean_x) * (y - mean_y) for x, y in zip(xs, ys)) / sum((x - mean_x) ** 2 for x in xs)
 
 
-def verify(result_path, data_path):
+def verify(result_path, data_path, expected_unfrozen=12, backbone="structrfm",
+           expected_head_lr=1e-4, expected_backbone_lr=1e-5):
     result_path = Path(result_path)
     raw = json.loads(result_path.read_text())
     assert raw["status"] == "PASS_R_REPLAY_CUDA"
+    assert raw.get("backbone", "structrfm") == backbone
     assert raw["scope"] == "best_weights_with_terminal_optimizer_scheduler_and_stream_not_best_time_optimizer"
     assert raw["scientific_conclusion"] is False
     assert raw["device"].startswith("cuda")
@@ -41,7 +43,7 @@ def verify(result_path, data_path):
     assert raw["optimizer_step_called"] is False
     assert raw["scheduler_unchanged"] is True
     assert raw["stream_unchanged"] is True
-    assert raw["n_unfrozen"] == 12
+    assert raw["n_unfrozen"] == expected_unfrozen
     assert raw["data_sha256"] == sha256_file(data_path)
     assert raw["best_sha256"] == sha256_file(Path(raw["run_dir"]) / "best.pt")
     assert raw["resume_sha256"] == sha256_file(Path(raw["run_dir"]) / "resume.pt")
@@ -82,9 +84,9 @@ def verify(result_path, data_path):
                 if variant.endswith("shadow_backbone_1e-6") and group["role"] == "backbone":
                     assert group["lr"] == 1e-6
                 elif group["role"] == "backbone":
-                    assert group["lr"] == 1e-5
+                    assert group["lr"] == expected_backbone_lr
                 else:
-                    assert group["lr"] == 1e-4
+                    assert group["lr"] == expected_head_lr
     expected_slopes = {
         "nll_loss_sum_vs_length": slope([r["length"] for r in all_rows], [r["sum"]["nll"] for r in all_rows]),
         "nll_loss_length_normalized_vs_length": slope([r["length"] for r in all_rows], [r["length_normalized"]["nll"] for r in all_rows]),
@@ -101,6 +103,8 @@ def verify(result_path, data_path):
         "result": str(result_path),
         "result_sha256": sha256_file(result_path),
         "seed": raw["seed"],
+        "backbone": backbone,
+        "n_unfrozen": raw["n_unfrozen"],
         "best_step": raw["best_step"],
         "resume_step": raw["resume_step"],
         "batches": len(raw["batches"]),
@@ -119,8 +123,13 @@ def main():
     parser.add_argument("--result", required=True)
     parser.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--expected-unfrozen", type=int, default=12)
+    parser.add_argument("--backbone", choices=("structrfm", "rinalmo"), default="structrfm")
+    parser.add_argument("--head-lr", type=float, default=1e-4)
+    parser.add_argument("--backbone-lr", type=float, default=1e-5)
     args = parser.parse_args()
-    report = verify(args.result, args.data)
+    report = verify(args.result, args.data, args.expected_unfrozen, args.backbone,
+                    args.head_lr, args.backbone_lr)
     temporary = Path(args.output).with_suffix(".tmp")
     temporary.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
     temporary.replace(args.output)

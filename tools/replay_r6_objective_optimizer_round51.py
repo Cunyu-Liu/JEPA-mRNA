@@ -102,8 +102,17 @@ def select_saved_batches(stream_state, records, long_thresholds=(100, 200, 300),
 
 
 def autograd_terms(loss, params):
-    values = torch.autograd.grad(loss, params, retain_graph=True, allow_unused=True)
-    return [None if value is None else value.detach() for value in values]
+    params = list(params)
+    trainable = [parameter for parameter in params if parameter.requires_grad]
+    values = iter(torch.autograd.grad(loss, trainable, retain_graph=True, allow_unused=True))
+    output = []
+    for parameter in params:
+        if not parameter.requires_grad:
+            output.append(None)
+            continue
+        value = next(values)
+        output.append(None if value is None else value.detach())
+    return output
 
 
 def flat_norm(grads):
