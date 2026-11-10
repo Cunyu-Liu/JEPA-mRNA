@@ -10,6 +10,7 @@
 > | T-A226 | D0/D1、motif与长序列 | RiNALMo同初始化纯数据扩充、去泄露/标签守恒；motif/shuffle/Turner0；全长与span验收 | 未启动；常规评测仅主八+Rfam，不删除长链 |
 > | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | LD0已闭环；Nature补充PDF恢复15条CDS+4 UTR和114个UniProt ID，BNT/wild-type及蛋白序列未恢复，figshare仍403；资产PARTIAL，全量LD1不放行，LD2未启动 |
 > | T-A228 | 最终主八+Rfam、置信度、raw速度与交付 | 单骨干/头/checkpoint、3seed×3repeat、独立QA、独占raw三轮、负结果/PARTIAL完整、PPT逐页复核 | 未达成；所有前轮阶段门通过前不启动 |
+> | T-A229 | RiNALMo长序列工程门 | 分块等价、无type推理、真实CUDA全长与峰值，禁止截断/CPU回退 | 已通过：512–3819nt完整前向，3819nt allocated=18.31GB/reserved=21.32GB，未OOM；仅工程可运行，长程精度/DP和D1长链训练未验收 |
 >
 > 统一合同：`docs/plans/2026-11-10-rinalmo-full-replay-and-downstream-expansion.md`。非计时任务按实测安全并行提高显存与利用率，禁止为占满而OOM或改科学配置；正式测速独占。
 

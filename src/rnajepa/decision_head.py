@@ -412,10 +412,11 @@ class FlatDecisionHead(nn.Module):
         lengths: Optional[torch.Tensor] = None,
         calibrate: bool = True,
         prior_weight_override: Optional[float] = None,
+        include_types: bool = True,
     ) -> DecisionScores:
         B, L, _ = h.shape
         mask = pair_mask_from_ids(seq_ids, self.min_loop).to(h.device)
-        s, types = self.pair_scores_and_types(h, seq_ids)
+        s, types = self.pair_scores_and_types(h, seq_ids, include_types=include_types)
         if self.use_turner_prior:
             prior_weight = (self.prior_weight if prior_weight_override is None else
                             torch.as_tensor(prior_weight_override, device=h.device))
@@ -426,9 +427,10 @@ class FlatDecisionHead(nn.Module):
         self.last_flops = flat_flops_estimate(L, self.pair_repr.d_z)
         return DecisionScores(scores=s, pair_types=types, mask=mask)
 
-    def score_pair_matrix(self, z: torch.Tensor, seq_ids: Optional[torch.Tensor] = None):
+    def score_pair_matrix(self, z: torch.Tensor, seq_ids: Optional[torch.Tensor] = None,
+                          presymmetrized: bool = False, column_start: Optional[int] = None):
         if self.pair_jepa is not None:
-            scores = self.pair_jepa(z)
+            scores = self.pair_jepa(z, presymmetrized=presymmetrized)
         else:
             if self.training and self.grad_checkpoint and torch.is_grad_enabled():
                 scores = checkpoint(self.resnet2d, z, use_reentrant=False)
@@ -437,7 +439,10 @@ class FlatDecisionHead(nn.Module):
         if self.ripe is not None:
             if seq_ids is None:
                 raise ValueError("seq_ids are required when RIPE is enabled")
-            scores = scores + self.ripe(seq_ids).mean(dim=1)
+            bias = self.ripe(seq_ids)
+            if column_start is not None:
+                bias = bias[:, :, :, column_start:column_start + scores.shape[2]]
+            scores = scores + bias.mean(dim=1)
         return scores
 
     def masked_pair_latent_loss(self, z: torch.Tensor, mask: torch.Tensor, rank_samples: int = 0,
@@ -447,23 +452,29 @@ class FlatDecisionHead(nn.Module):
         return self.pair_jepa.masked_latent_loss(z, mask, rank_samples=rank_samples,
                                                 valid_mask=valid_mask)
 
-    def pair_scores_and_types(self, h: torch.Tensor, seq_ids: Optional[torch.Tensor] = None):
+    def pair_scores_and_types(self, h: torch.Tensor, seq_ids: Optional[torch.Tensor] = None,
+                              include_types: bool = True):
         """``(scores, pair_types)`` for every ``(i, j)``, chunked along ``j``.
         With ``scorer == 'resnet2d'`` the whole-matrix 2D path replaces the
         chunked per-pair MLP path (BatchNorm over the full matrix is what makes
         chunking wrong there); the flat path is untouched. """
         B, L, _ = h.shape
         if self.resnet2d is not None or self.pair_jepa is not None:
-            #: Build z column-chunked: the (B, L, L, 3d) intermediate of
-            #: PairRepresentation.cross is the peak-memory offender; chunking the
-            #: projection bounds it at (B, L, chunk, 3d) while keeping the exact
-            #: same tensor (torch.cat of slices == whole-matrix result).
-            chunks = []
             zchunk = 128 if L > 128 else L
-            for j0 in range(0, L, zchunk):
-                chunks.append(self.pair_repr.cross(h, h[:, j0:j0 + zchunk]))
-            z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
-            s = self.score_pair_matrix(z, seq_ids)
+            if self.pair_jepa is not None:
+                score_chunks = []
+                for j0 in range(0, L, zchunk):
+                    z = self.pair_repr.cross(h, h[:, j0:j0 + zchunk])
+                    score_chunks.append(self.score_pair_matrix(
+                        z, seq_ids, presymmetrized=True, column_start=j0))
+                s = score_chunks[0] if len(score_chunks) == 1 else torch.cat(score_chunks, dim=2)
+            else:
+                chunks = [self.pair_repr.cross(h, h[:, j0:j0 + zchunk])
+                          for j0 in range(0, L, zchunk)]
+                z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
+                s = self.score_pair_matrix(z, seq_ids)
+            if not include_types:
+                return s, None
             if self.training and self.grad_checkpoint and torch.is_grad_enabled() and L > 128:
                 type_chunks = [checkpoint(self.type_head.cross, h, h[:, j0:j0 + zchunk],
                                           use_reentrant=False)
@@ -489,6 +500,8 @@ class FlatDecisionHead(nn.Module):
                 score_chunks.append(self._chunk_scores(h, hj))
                 type_chunks.append(self._chunk_types(h, hj))
         s = score_chunks[0] if len(score_chunks) == 1 else torch.cat(score_chunks, dim=2)
+        if not include_types:
+            return s, None
         t = type_chunks[0] if len(type_chunks) == 1 else torch.cat(type_chunks, dim=2)
         return s, self.type_head.symmetrize(t)
 

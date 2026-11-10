@@ -1,0 +1,114 @@
+{
+  "status": "PASS_LONG_SEQUENCE_ENGINEERING_PROBE",
+  "scientific_conclusion": false,
+  "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/runs/round52_rinalmo_r0_s42/best.pt",
+  "checkpoint_sha256": "c57e369aed52aed68d93112f19e93a7b8e0fc353d5e17ce8caf97142a4cc9415",
+  "backbone": {
+    "weights": "/root/rna_jepa_data/weights/rinalmo-giga",
+    "n_tensors_in_checkpoint": 504,
+    "n_encoder_tensors_loaded": 498,
+    "loaded_fraction_of_encoder": 0.996,
+    "expected_absent": {
+      "pooler.dense.weight": "pooler output is unused: we take per-residue states",
+      "pooler.dense.bias": "pooler output is unused: we take per-residue states"
+    },
+    "d_model": 1280,
+    "n_layers": 33,
+    "n_params": 650878731,
+    "license_note": "multimolecule/rinalmo-giga is AGPL-3.0"
+  },
+  "resolved_device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "sequence_source": "deterministic synthetic ACGU, seed42; engineering only, not a biological benchmark",
+  "rows": [
+    {
+      "length": 512,
+      "status": "PASS_FULL_LENGTH_CUDA",
+      "input_length_preserved": true,
+      "output_shape": [
+        512,
+        512
+      ],
+      "valid_pairs": 95518,
+      "score_sha256": "926db1f96d99fb0887bfcc053cb6e9931786fd0bfa20056eeb4ae3a7e1edcd56",
+      "peak_allocated_bytes": 4711768064,
+      "peak_reserved_bytes": 5077204992,
+      "wall_seconds_nonformal": 0.7826266288757324
+    },
+    {
+      "length": 1022,
+      "status": "PASS_FULL_LENGTH_CUDA",
+      "input_length_preserved": true,
+      "output_shape": [
+        1022,
+        1022
+      ],
+      "valid_pairs": 394406,
+      "score_sha256": "1c5149316fb236c57376a7679ba2148c6e4d719df77ff9b4aae625171184ebce",
+      "peak_allocated_bytes": 6801003008,
+      "peak_reserved_bytes": 7495221248,
+      "wall_seconds_nonformal": 0.2794508934020996
+    },
+    {
+      "length": 1024,
+      "status": "PASS_FULL_LENGTH_CUDA",
+      "input_length_preserved": true,
+      "output_shape": [
+        1024,
+        1024
+      ],
+      "valid_pairs": 396480,
+      "score_sha256": "f3f685227c3ef683f9b590909740a74078e25a2dd6afab3a4de267af6bd93857",
+      "peak_allocated_bytes": 6809718784,
+      "peak_reserved_bytes": 7495221248,
+      "wall_seconds_nonformal": 0.27832603454589844
+    },
+    {
+      "length": 1500,
+      "status": "PASS_FULL_LENGTH_CUDA",
+      "input_length_preserved": true,
+      "output_shape": [
+        1500,
+        1500
+      ],
+      "valid_pairs": 849264,
+      "score_sha256": "6229be77890e4b41ac7f45c38671ce5d11dc98cf6eff4aa880f832be43e11fab",
+      "peak_allocated_bytes": 8761956864,
+      "peak_reserved_bytes": 9772728320,
+      "wall_seconds_nonformal": 0.5465190410614014
+    },
+    {
+      "length": 1869,
+      "status": "PASS_FULL_LENGTH_CUDA",
+      "input_length_preserved": true,
+      "output_shape": [
+        1869,
+        1869
+      ],
+      "valid_pairs": 1311856,
+      "score_sha256": "0b30bc9612b97169e8a6503942e1963711a8c14bac09dfcf8c25fc55652f9897",
+      "peak_allocated_bytes": 10277331968,
+      "peak_reserved_bytes": 11567890432,
+      "wall_seconds_nonformal": 0.8602359294891357
+    },
+    {
+      "length": 3819,
+      "status": "PASS_FULL_LENGTH_CUDA",
+      "input_length_preserved": true,
+      "output_shape": [
+        3819,
+        3819
+      ],
+      "valid_pairs": 5432326,
+      "score_sha256": "5cd7cea8afc89b69513b7ca4d2fc8c6c9638151041d8ee34d176e47530c387c4",
+      "peak_allocated_bytes": 18306996224,
+      "peak_reserved_bytes": 21323841536,
+      "wall_seconds_nonformal": 4.420932769775391
+    }
+  ],
+  "limitations": [
+    "This tests full-length forward and memory, not long-range structure accuracy or DP quality.",
+    "No truncation, filtering, CPU fallback, teacher forward, or ensemble is used.",
+    "The final long-sequence gate still requires real structures, span metrics, and independent prediction equivalence."
+  ]
+}

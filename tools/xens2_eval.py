@@ -71,7 +71,7 @@ def plana_scores(encoder, head, seq, device):
     head_ids = torch.tensor(
         [[BASE_TO_INDEX.get(c, UNK_INDEX) for c in seq]], dtype=torch.long, device=device)
     lengths = torch.tensor([L], dtype=torch.long, device=device)
-    s = head(h, head_ids, lengths=lengths).scores
+    s = head(h, head_ids, lengths=lengths, include_types=False).scores
     return s[0, :L, :L].float()
 
 

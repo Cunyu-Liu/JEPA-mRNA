@@ -15605,3 +15605,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **三轮QA**：逐run身份、完整验证曲线、有限值、best step、resume、stream、scheduler、官方RiNALMo和真实CUDA通过；best/resume权重逐张量一致。QA双跑逐字节一致，SHA256=`c4ba8f5e311d0397261d02c2303bf9ae08245dca7dbbebf6928600527eeacd95`。允许固定终态做R-replay，但不放行L/O或测试结论。
 - **长序列优先**：PairMLP latent与type head是主要O(L²)显存点。实现列分块scorer和推理`include_types=False`，不改变部署scorer、Turner、RIPE、校准或DP；R6 bias按第4维列切片，PairRepresentation已对称的z显式标记presymmetrized。初次对称化、bias维度与浮点末位差异均留证，前向最大误差7.152557373046875e-7、梯度误差0，type省略前后score逐位一致，相关测试连续三次通过。
 - **下一步**：用R0 seed42 best做512/1022/1024/1500/1869/3819nt真实CUDA全长探测，OOM即停并留证；该工程结果不替代长程精度。正式R-replay执行链已就绪，长序列探测后启动。PPT未修改。
+
+## §15.815（2026-11-10）RiNALMo全长CUDA工程门通过（非长程精度结论）
+
+- **实现验收**：PairMLP列分块scorer、R6 bias第4维切片及推理`include_types=False`均通过回归；完整矩阵/分块前向最大绝对差7.152557373046875e-7，梯度误差0，省略type head前后最终score逐位一致。首次mask类型错误的日志已保留并修正。该数值差为浮点末位差异，不宣称逐位一致。
+- **全长结果**：512/1022/1024/1500/1869/3819nt均真实RTX4090 CUDA、输入长度完整、输出形状L×L、合法候选score有限，未截断、未过滤、未CPU回退。峰值allocated依次4.71/6.80/6.81/8.76/10.28/18.31GB，3819nt峰值reserved=21.32GB，未OOM。artifact=`source_data/round52/rinalmo_long_sequence_probe.json`，status=PASS_LONG_SEQUENCE_ENGINEERING_PROBE。
+- **边界**：探测使用固定seed42合成序列和R0 seed42 best checkpoint，非生物benchmark，非正式测速。证明当前实现可以全长前向，不证明长程配对准确、校准可靠或DP质量；后续真实结构、span≥30/≥100、预测等价和D1长链训练仍需独立验收。
+- **阶段衔接**：R0三种子训练QA已通过，正式R-replay已启动。长序列工程结果不跳过loss/optimizer阶段门，PPT未修改。

@@ -30,8 +30,9 @@ class LatentPairMLP(nn.Module):
         self.input_projection = nn.Linear(d_z, latent_dim)
         self.hidden = nn.Sequential(nn.GELU(), nn.Linear(latent_dim, latent_dim), nn.GELU())
 
-    def forward(self, z):
-        z = 0.5 * (z + z.transpose(1, 2))
+    def forward(self, z, presymmetrized=False):
+        if not presymmetrized:
+            z = 0.5 * (z + z.transpose(1, 2))
         return self.hidden(self.input_projection(self.norm(z)))
 
 
@@ -42,8 +43,8 @@ class SymmetricPairMLP(LatentPairMLP):
         nn.init.zeros_(self.logit.weight)
         nn.init.zeros_(self.logit.bias)
 
-    def score(self, z):
-        return self.logit(self.forward(z)).squeeze(-1)
+    def score(self, z, presymmetrized=False):
+        return self.logit(self.forward(z, presymmetrized)).squeeze(-1)
 
 
 def masked_neighbor_context(z, mask, valid_mask=None, kernel_size=3):
@@ -130,5 +131,5 @@ class PairJEPA(nn.Module):
                 prediction[mask].detach(), max_samples=rank_samples)
         return loss, diagnostics
 
-    def forward(self, z):
-        return self.scorer.score(z)
+    def forward(self, z, presymmetrized=False):
+        return self.scorer.score(z, presymmetrized)
