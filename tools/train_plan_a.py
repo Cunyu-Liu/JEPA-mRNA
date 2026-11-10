@@ -206,6 +206,24 @@ def validate_resume_identity(previous_meta, args):
         raise ValueError(f"resume backbone LR mismatch: {expected_lr} vs {args.backbone_lr}")
     if int(previous_meta.get("seed", args.seed)) != int(args.seed):
         raise ValueError("resume seed mismatch")
+    if previous_meta.get("scorer") != args.scorer:
+        raise ValueError("resume scorer mismatch")
+    if previous_meta.get("pair_latent_dim") != args.pair_latent_dim:
+        raise ValueError("resume pair latent dimension mismatch")
+    if args.scorer == "pairjepa":
+        objective = previous_meta.get("objective", {})
+        expected = {
+            "lambda_jepa": objective.get("lambda_jepa", 0.1),
+            "jepa_target": objective.get("jepa_target", "ema"),
+            "jepa_context": objective.get("jepa_context", "context_v1"),
+            "jepa_mask_prob": objective.get("jepa_mask_prob", 0.15),
+        }
+        current = {
+            "lambda_jepa": args.lambda_jepa, "jepa_target": args.jepa_target,
+            "jepa_context": args.jepa_context, "jepa_mask_prob": args.jepa_mask_prob,
+        }
+        if expected != current:
+            raise ValueError(f"resume Pair-JEPA objective mismatch: {expected} vs {current}")
 
 
 def masked_pair_target(valid, probability, seed):
@@ -278,6 +296,8 @@ def main():
         raise SystemExit("--lambda-jepa is nonnegative and requires --scorer pairjepa")
     if args.scorer == "pairjepa" and args.lambda_jepa <= 0:
         raise SystemExit("Pair-JEPA training requires a positive --lambda-jepa")
+    if args.scorer != "pairjepa" and args.jepa_context != "context_v1":
+        raise SystemExit("structured Pair-JEPA context requires --scorer pairjepa")
     if (not 0 < args.jepa_mask_prob <= 1 or args.jepa_rank_samples < 0
             or args.jepa_log_every <= 0):
         raise SystemExit("invalid Pair-JEPA mask, rank sample or logging configuration")
@@ -351,7 +371,8 @@ def main():
                             pair_latent_dim=args.pair_latent_dim,
                             jepa_use_ema=args.scorer == "pairjepa" and args.jepa_target == "ema",
                             jepa_random_target=args.scorer == "pairjepa" and args.jepa_target == "random",
-                            jepa_block_context=args.jepa_context == "structured_block",
+                            jepa_block_context=(args.scorer == "pairjepa"
+                                                and args.jepa_context == "structured_block"),
                             ripe_mode=None if args.ripe_encoder_only else args.ripe_mode or None)
     encoder = encoder.to(device)
     head = head.to(device)

@@ -15827,3 +15827,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **固定快照验收**：298格三次完整独立ViennaRNA复算逐字节一致，QA SHA256=`e10e14a13ee742a7113901a854c0b68194fd0a1347d253f24bb05e8ae34ecb97`，artifact=`source_data/round52/lineardesign_ld1_snapshot298_qa.json`。22格结构不同、最大次优差距0.9000244140625 kcal/mol、报告结构能量最大绝对差4.8828125045474735e-05、CAI最大显示差0.0004971888351339437全部保留。`complete=false`，456格未完成，不能外推全矩阵结论。
 - **比较器**：新增逐蛋白exact/beam=0/500在λ=0/4下的MFE差、相对差、序列/报告结构/独立结构一致性、各自次优差距及非正式耗时比较；dev/test分开，test不选参。旧130格缺少新增字段时在内存中用ViennaRNA `-d0`重算，不回写原始JSON或改变固定SHA。正式聚合要求完整456格QA和逐文件SHA一致。
 - **测试与纠错**：初次相对差断言忽略浮点表示，第二次忽略λ=4时exact=-96而非-100；分别改容差和按`1/(100-λ)`求期望后，连续三轮通过。非正式耗时始终不作正式速度结论。spec/tasks已同步三轮QA状态，PPT未修改。
+
+## §15.852（2026-11-11）PairJEPA resume防混改合同
+
+- `validate_resume_identity`新增scorer、pair_latent_dim及PairJEPA λ/target/context/mask一致性检查，防止EMA→fixed/random、context_v1→structured_block或权重配置变化被静默恢复。非PairJEPA传structured-block直接拒绝，避免PairMLP创建无用mixer；现有L/O默认配置不受影响。
+- 构造配对配置逐项篡改target/context/λ/mask/scorer/latent/seed均拒绝，PairMLP匹配恢复兼容；相关PairJEPA/梯度/head回归连续三轮16/16通过。正式JEPA训练仍未放行，容量诊断未完成，PPT未修改。
