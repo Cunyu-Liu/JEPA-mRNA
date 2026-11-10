@@ -15715,3 +15715,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **三轮检查**：静态检查覆盖非法dtype/shape、概率、block大小、无合法pair与fallback；CPU/CUDA单测验证对称/合法/非空/复现、不同seed、纯结构mask的反对角线约束、masked梯度为零、unmasked梯度非零和direct scorer无梯度。真实CUDA失败注入将masked表示增加1000，prediction均值范数完全不变、target范数和loss改变，证明直接信息断裂而不是仅检查输出形状。增强后的4项测试连续三轮均4/4通过。
 - **边界**：这只是J1-gate的一个基础组件，不等于完整J-gate通过；仍需轻量mixer、完整context→target、stop-gradient、optimizer-step后EMA、teacher_calls=0/student_score_calls=1、逐通道坍塌和真实RiNALMo门。L/O与容量阶段顺序不变。
 - **过程状态**：LD1对照评价已观察520/798条，尚未全量聚合；O-LR seed42在step7000 VL0=296797.15854863916、bad=5，best仍step4500，尚未读取到完成状态，不提前验收。PPT未修改。
+
+## §15.833（2026-11-10）O-LR seed42完整早停QA与L-length seed2026接续
+
+- **O-LR完成**：seed42在step7500达到patience=6自然早停，best step4500、best VL0=22.218715002193022。step5000/5500/6000/6500/7000/7500 VL0=`24.25219692580855`/`30.446523855998354`/`4037.9793442300547`/`67931.42619112045`/`296797.15854863916`/`832854.171146579`，最大训练绝对loss=4505082.1374、最大gnorm=4550285.0。final step7500的total/NLL/distill/RLCD/cal=`449652.5263`/`449621.8663`/`14.8493`/`0.8565`/`14.9542`，gnorm=1394222.0，14/33层解冻，peak=8.5GB；低backbone LR未阻止后段失稳。
+- **三轮证据**：配置仅NLL-sum、backbone LR=1e-6与R0不同，其余RiNALMo-giga/PairMLP490/R6、batch2、steps=0、500步VL0、patience=6不变。best SHA256=`9b653a0bc8cfa025b6cf1b9da9c6e4844b9de052104a87b0b07c398f0acaa8bc`，resume=`0a6481be5681a7c3227d7b09367116933498d8e3e7f74dc0f1d228705b23afb6`，run_meta=`849a4e9050649b95cf80918b6dd033f3b78a08dd6c234c69a9572d4e149d7fbf`。best/resume逐张量一致，scheduler/stream、完整后段曲线与CUDA身份通过；QA双跑逐字节一致，artifact=`source_data/round52/rinalmo_olr_s42_completed_qa.json`，SHA256=`68a3ee57ec5a1b86cdd8ee862c5c86dfdd21dae465207c0342cd3f1de61b9127`。单run不放行容量，不与NLL-length绝对值直接比较，不宣称结构F1改善。
+- **队列接续**：L-length seed2026已加载同一TR1c/教师并真实CUDA训练，过程读到step650，保持原配置，无OOM或CPU回退。length2026/3407、olr2026/3407四个run仍未齐，容量与后续依赖门均关闭。
+- **LD1过程**：对照独立ViennaRNA已观察545/798条，主生成矩阵218/456格；全量QA未完成，不写统计或生物学结论。PPT未修改。
