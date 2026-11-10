@@ -59,7 +59,7 @@ def load_r2d(ckpt_path, device):
 
 
 @torch.no_grad()
-def plana_scores(encoder, head, seq, device):
+def plana_scores(encoder, head, seq, device, prior_weight_override=None):
     L = len(seq)
     ids = [VOCAB["<cls>"]] + [VOCAB.get(c, VOCAB["<unk>"]) for c in seq] + [VOCAB["<eos>"]]
     enc_ids = torch.tensor([ids], dtype=torch.long, device=device)
@@ -71,7 +71,8 @@ def plana_scores(encoder, head, seq, device):
     head_ids = torch.tensor(
         [[BASE_TO_INDEX.get(c, UNK_INDEX) for c in seq]], dtype=torch.long, device=device)
     lengths = torch.tensor([L], dtype=torch.long, device=device)
-    s = head(h, head_ids, lengths=lengths, include_types=False).scores
+    s = head(h, head_ids, lengths=lengths, include_types=False,
+             prior_weight_override=prior_weight_override).scores
     return s[0, :L, :L].float()
 
 

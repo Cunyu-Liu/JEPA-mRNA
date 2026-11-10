@@ -15646,3 +15646,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **smoke验收**：P15421在λ=0/4时MFE=-148.7/-124.3，Q9HA90为-1512.3/-1287.9；exact与beam=500在这两个蛋白和λ下输出相同。独立ViennaRNA复算翻译、CAI、MFE和结构均一致，QA SHA256=`76f1ec452e1f59e54a7109db275bca80215cac1ccdc2088393472a6a35a11761`。首次验证蛋白误加终止子失败已保留并修正，未改写生成序列。
 - **边界**：两例相同不能证明beam对所有蛋白无损；并行时间非正式，598aa约6分钟不能外推全部114条或正式速度。未选择λ、beam或最终候选，不启动LD2。L-length best step4000=`-0.7460312473710404`、bad=0，仍未自然收敛，PPT未修改。
+
+## §15.822（2026-11-10）RiNALMo评测器工程smoke与L-length后段改善
+
+- **评测实现**：新增`eval_rinalmo_full_round52.py`，复用既有DP/metrics/calibration，但使用RiNALMo官方加载、PairMLP全长分块与`include_types=False`，不再按位置上限过滤长链；实际CUDA OOM显式记录为PARTIAL。greedy/Turner=0通过同一prior override实现，单checkpoint、无集成。
+- **工程结果**：R0 seed42 best在2条VL0上三次确定性预测完全一致，TP/FP/FN=66/5/3，micro-F1=0.9428571429、macro-F1=0.9443079443，纯PairMLP无teacher。QA SHA256=`1efa76cb48353bd6391c7d1d8c49847c957cdadda02b7bca528260c69e96a836`。该小样本仅验证工程链，不用于选型或精度结论。
+- **训练过程**：L-length step5500 VL0=-0.7813807313011751，best step5500、bad=0，已解冻10/33层，尚未自然早停。O-LR和其他seed未启动，正式主八+Rfam评测未开始，PPT未修改。
