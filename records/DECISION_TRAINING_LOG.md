@@ -15803,3 +15803,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 新增容量诊断工具：合法pair分层采样固定seed42/2026/3407，正负类均必需；对称特征为`h_i+h_j`与`|h_i-h_j|`。线性probe固定200步、Adam lr=0.01、weight_decay=1e-4、batch1024，仅训练集拟合，VL0只在固定终点评价，不用于早停/调参/测试选择；模型和拟合强制CUDA，禁止CPU静默降级。
 - 初次测试发现项目`valid_pair_mask`返回NumPy而非Torch，显式修正`np.asarray(..., dtype=bool)`后，采样合法性、确定性、不同seed、特征对称、CUDA优化下降和CPU拒绝连续三轮2/2通过。尚未对真实checkpoint提取表征或运行probe，不能据此放行扩参。298格固定快照QA仍在后台执行，L/O继续训练，PPT未修改。
+
+## §15.848（2026-11-11）冻结表征probe主脚本与独立logits QA准备
+
+- 主脚本固定使用完成run的best RiNALMo encoder，训练子集196条与VL0各提取残基表征，每条序列采样256个合法pair，构造对称特征并仅用训练集均值/标准差归一化；200个固定全量优化轮次后评价，不用VL0早停或调参。保存全部pair、label、logit、优化历史、线性权重/偏差SHA、checkpoint/run_meta/code/data SHA和真实CUDA峰值，明确`allow_capacity_expansion=false`。
+- 独立QA逐logit以稳定logistic公式重算加权NLL与Brier，核验pair/label/logit数量、类别、索引、协议和身份；算术篡改失败注入三轮通过。主脚本仅静态编译通过，尚未对真实checkpoint执行，不把线性probe结果或容量结论写成已存在。
+- O-LR seed2026后段出现尖峰，step7500 total=104198.5651、NLL=104168.013、gnorm=219120.84，仍按patience=6保留完整曲线。298格快照QA和LD1长链任务继续运行，PPT未修改。
