@@ -15837,3 +15837,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 真实196+196条输入预检发现无合法正pair及候选不足256的序列，未启动GPU probe。采样协议明确为每序列**最多256个合法pair、无放回**，允许negative-only序列，不全局平衡每条的标签；模型拟合和指标按全局正负计数加权。不得删短序列或重复pair凑数。
 - 修正后预检通过：train 196条中negative-only=2、below_cap=2；VL0 196条中negative-only=1、below_cap=0。QA由固定256改为`0<n≤256`，算术篡改失败注入三轮通过；采样/CUDA测试连续三轮2/2通过。真实checkpoint probe仍未运行，容量阶段未放行，PPT未修改。
+
+## §15.854（2026-11-11）六run齐套后的容量诊断自动阶段门
+
+- 新增容量诊断守候队列：逐run核验自然早停、steps=0、500步VL0、patience=6、seed与CUDA身份，六run未齐每300秒等待；齐套后先双跑完整L/O训练QA并`cmp`，显存>14GB继续等待。随后按length/olr×42/2026/3407逐臂执行训练/VL0误差probe、独立QA、冻结表征probe、独立QA，禁止覆盖未评审artifact。
+- 队列为空等消除而设，不改变科学阶段门；所有probe完成前`allow_capacity_expansion=false`、`allow_j_gate=false`，容量裁决和独立重复仍需后续执行。bash语法检查通过。首次任务`bash-kg4rsoyj`因SSH关闭未在远端启动，已确认无队列日志/probe后恢复为`bash-yk7cznpi`守候；尚未运行真实容量probe。PPT未修改。
