@@ -1,0 +1,7 @@
+{
+  "status": "PRESERVED_SMOKE_WITHOUT_VALIDATION",
+  "reason": "steps=2 and validation_every=500 cannot produce best.pt in train_plan_a",
+  "archived_run": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/runs/round52_rinalmo_r0_smoke_s42_no_validation",
+  "repair": "Use validation_every=2 only for the two-step engineering smoke; formal R0 remains every=500.",
+  "scientific_conclusion": false
+}

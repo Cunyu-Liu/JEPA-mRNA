@@ -1,0 +1,42 @@
+{
+ "weights": "/root/rna_jepa_data/weights/rinalmo-giga",
+ "n_tensors_in_checkpoint": 504,
+ "n_encoder_tensors_loaded": 498,
+ "loaded_fraction_of_encoder": 0.996,
+ "expected_absent": {
+  "pooler.dense.weight": "pooler output is unused: we take per-residue states",
+  "pooler.dense.bias": "pooler output is unused: we take per-residue states"
+ },
+ "d_model": 1280,
+ "n_layers": 33,
+ "n_params": 650878731,
+ "license_note": "multimolecule/rinalmo-giga is AGPL-3.0"
+}
+{
+ "top5": [
+  [
+   "<pad>",
+   6.0
+  ],
+  [
+   "<pad>",
+   22.0
+  ],
+  [
+   "<pad>",
+   8.0
+  ],
+  [
+   "<pad>",
+   9.0
+  ],
+  [
+   "<pad>",
+   7.0
+  ]
+ ],
+ "unmapped_missing": [
+  "lm_head.bias"
+ ],
+ "matches_model_card_top1": false
+}

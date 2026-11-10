@@ -26,8 +26,8 @@ This module therefore loads explicitly and asserts exactly what it expects:
 * the tokenizer is not used at all: the vocabulary is 28 tokens and hand-built ids
   are checked against ``len(seq)``.
 
-Verified independently: with the MLM head attached, the model reproduces the
-scores published on the model card for its own fill-mask example.
+With the MLM head attached, the model-card fill-mask comparison is reported
+explicitly, including any top-1 mismatch.
 """
 
 from __future__ import annotations
@@ -143,10 +143,15 @@ def verify_against_model_card(device: str = "cuda") -> Dict[str, object]:
     with torch.no_grad():
         out = mlm(input_ids=ids)
     probs = torch.softmax(out.logits[0, 12].float(), dim=-1)
-    top = torch.topk(probs, 5)
-    inv = {v: k for k, v in VOCAB.items()}
-    got = [(inv[int(i)], round(float(s), 6)) for s, i in zip(top.indices, top.values)]
+    values, indices = torch.topk(probs, 5)
+    vocabulary = open(f"{WEIGHTS}/vocab.txt", encoding="utf-8").read().splitlines()
+    got = [(vocabulary[int(index)], round(float(score), 6))
+           for score, index in zip(values, indices)]
     return {"top5": got, "unmapped_missing": sorted(info.missing_keys),
+            "unexpected": sorted(info.unexpected_keys),
+            "model_card_expected_top1": "G",
+            "model_card_check": ("MATCH" if got[0][0] == "G"
+                                 else "PARTIAL_TOP1_MISMATCH"),
             "matches_model_card_top1": got[0][0] == "G"}
 
 

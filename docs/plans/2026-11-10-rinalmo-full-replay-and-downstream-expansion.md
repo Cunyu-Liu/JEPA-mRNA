@@ -48,9 +48,9 @@ R0 三种子自然收敛后，固定 seed42 best 权重+终态 optimizer/schedul
 
 D0 复用届时按 VL0 选出的 RiNALMo 稳定基座；D1 从同一 RiNALMo 官方初始化，只新增审计通过的 canonical-nested 复合物链，不能从 D0 续训后仍称纯数据单变量。去泄露对象改为 RiNALMo 下游训练、VL0、主八+Rfam 及 RiNALMo 预训练语料风险；structRFM 预训练审计不再作为新模型的替代证明。
 
-D1 数据门包括 exact+80% identity/query-coverage≥0.8、PDB entry+序列簇连通分量联合隔离、raw→canonical_nested 守恒、冲突/多构象、教师、manifest 和 SHA256。RNA–蛋白接触不得转成 RNA–RNA 配对。主八+Rfam 分表，complex holdout 独立报告。
+D1 数据门包括 exact+80% identity/query-coverage≥0.8、PDB entry+序列簇连通分量联合隔离、raw→canonical_nested 守恒、冲突/多构象、教师、manifest 和 SHA256。RNA–蛋白接触不得转成 RNA–RNA 配对。主八+Rfam 分表，complex holdout 独立报告。RiNALMo 原文明确预训练来源为 RNAcentral、nt、Rfam、Ensembl，36M唯一序列经MMseqs `--min-seq-id 0.7 -c 0.8`形成17M簇；因此Rfam必须披露预训练接触风险，不得写成绝对无预训练污染的clean OOD。
 
-P-motif-input 只新增 outer/inner motif energy 输入，保留 Turner 与 DP，对照 PairMLP、shuffled-motif 和 Turner=0。长序列分别验证位置边界、完整覆盖、span≥30/≥100、O(L²) 显存、训练长度分布与 DP；只有长度不足经审计成立才单独做 L-balance。不得截断或删除长链制造优势。
+P-motif-input 只新增 outer/inner motif energy 输入，保留 Turner 与 DP，对照 PairMLP、shuffled-motif 和 Turner=0。长序列分别验证位置边界、完整覆盖、span≥30/≥100、O(L²) 显存、训练长度分布与 DP；只有长度不足经审计成立才单独做 L-balance。RiNALMo原文训练输入上限1024 tokens，微调对超过1022 nt的序列随机裁剪；新实验禁止沿用该裁剪来制造全长结果，超过当前支持边界必须标PARTIAL。
 
 ## 4. 调研目录的可借鉴内容：结构感知对比扩展
 

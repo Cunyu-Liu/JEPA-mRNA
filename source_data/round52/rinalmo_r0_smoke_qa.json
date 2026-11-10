@@ -1,0 +1,79 @@
+{
+  "status": "PASS_R0_SMOKE_THREE_CHECK_QA",
+  "scientific_conclusion": false,
+  "run": "round52_rinalmo_r0_smoke_s42",
+  "best_step": 2,
+  "best_vl0": 70.23955965333478,
+  "train": [
+    {
+      "step": 1,
+      "loss": 89.4945,
+      "terms": {
+        "nll": 88.5346,
+        "distill": 0.6839,
+        "rlcd": -0.4216,
+        "cal": 0.6976
+      },
+      "unfrozen": 0,
+      "gnorm": 95.64,
+      "lr_head": 4e-05,
+      "lr_backbone": 4.000000000000001e-06,
+      "peak_gb": 5.8,
+      "sec": 4.7
+    }
+  ],
+  "validation": [
+    {
+      "step": 2,
+      "validation_loss": 70.23955965333478,
+      "best_step": 2,
+      "best_validation_loss": 70.23955965333478,
+      "improved": true,
+      "bad_evaluations": 0
+    }
+  ],
+  "resume_n_unfrozen": 0,
+  "scheduler_last_lr": [
+    6e-05,
+    6e-06
+  ],
+  "best_resume_weights_equal": true,
+  "model_card_top1": [
+    "A",
+    0.235066
+  ],
+  "backbone_report": {
+    "weights": "/root/rna_jepa_data/weights/rinalmo-giga",
+    "n_tensors_in_checkpoint": 504,
+    "n_encoder_tensors_loaded": 498,
+    "loaded_fraction_of_encoder": 0.996,
+    "expected_absent": {
+      "pooler.dense.weight": "pooler output is unused: we take per-residue states",
+      "pooler.dense.bias": "pooler output is unused: we take per-residue states"
+    },
+    "d_model": 1280,
+    "n_layers": 33,
+    "n_params": 650878731,
+    "license_note": "multimolecule/rinalmo-giga is AGPL-3.0"
+  },
+  "hashes": {
+    "best": "907a059e37cce7cddc8663c610ba25eb9c5b0825c9c7a3fe81f1d8974d4d9cbb",
+    "resume": "ccb5b4d6f992623a77ca3fdf381eb3caf2896e29b9e1ae442e82e9b74e09c0e4",
+    "run_meta": "b05e5d46c8cde690b0710678e61ad2a4488d9e5a7326c24e5830517d4a3e3694",
+    "train_log": "96c5f9b4083dace9d66c1141e8a11851a17475d6da363a60597c7d39bdb2987e",
+    "validation_log": "4d1da23edb0aa55138acc83f8c3aaca3a36a3f00fbe5c851ff57378e88aae545",
+    "train_code": "9d4ca4ab8a6be75796a30025b78a60da3a73c8b333f4750cacabdaddfc1c5e73",
+    "weights": "0b3f73b5c80d267f0b7e92655b28f16088e3d5a595c6dae631b52142aa38bcda",
+    "weights_config": "04fb8fad8cf6f7a89ca0c6008ecc872a82c9bb27b054a1043b327614fbe06e9d",
+    "train_data": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+    "validation_data": "bb15c17a5875613407dcd140044de9a266b5d3ab62e2b5440a36697097dcc778",
+    "teacher_manifest": "7a91d011b84bd0fb3e5e0d71b0c4a451f18d85a90a66562cde8782a832a2b255",
+    "validation_teacher_manifest": "8702148528f32195753a0b8196f32db203e5430aa92f9365c65fbc54c818422f"
+  },
+  "limitations": [
+    "Two steps validate engineering only, not convergence, capacity, architecture efficacy, or SOTA.",
+    "R0 formal training remains steps=0 with 500-step VL0 and patience=6.",
+    "No structRFM checkpoint, optimizer, result, or test-set selection is used.",
+    "The official MLM head loads with no unexpected keys, but model-card top1 is A rather than G; retain PARTIAL_TOP1_MISMATCH and do not claim exact model-card reproduction."
+  ]
+}
