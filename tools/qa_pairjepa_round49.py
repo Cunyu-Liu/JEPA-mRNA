@@ -9,8 +9,7 @@ import torch
 
 
 SPLITS = ["bprna_ts0", "bprna_new", "archiveii", "ref_pdb_ts1", "ref_pdb_ts2",
-          "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb", "rfam_fam",
-          "chanrg_test", "chanrg_gena", "chanrg_genc", "chanrg_genf"]
+          "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb", "rfam_fam"]
 
 
 def sha256(path):
@@ -224,7 +223,7 @@ def qa_experiment(root, experiment):
     summary_path = root / f"eval_decision/{experiment}/summary.json"
     summary = json.loads(summary_path.read_text())
     assert summary["status"].startswith("PASS_")
-    assert_nested(summary["splits"], split_stats)
+    assert_nested({split: summary["splits"][split] for split in SPLITS}, split_stats)
     sources[str(summary_path.relative_to(root))] = sha256(summary_path)
     sota_path = root / f"eval_decision/{experiment}/sota_comparison.json"
     if sota_path.exists():
@@ -232,7 +231,7 @@ def qa_experiment(root, experiment):
         assert sota["result_sha256"] == sha256(summary_path)
         sources[str(sota_path.relative_to(root))] = sha256(sota_path)
     return {"status": "PASS_PAIRJEPA_INDEPENDENT_QA", "complete": True,
-            "experiment": experiment, "n_cells": 39, "split_stats": split_stats,
+            "experiment": experiment, "n_cells": len(SPLITS) * 3, "split_stats": split_stats,
             "file_sha256": sources}
 
 

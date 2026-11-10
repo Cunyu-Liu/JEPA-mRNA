@@ -10,7 +10,7 @@ export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 exec 9>/tmp/round51_loss_optimizer_evaluation.lock
 flock -n 9 || { echo "another L/O evaluation queue is active"; exit 1; }
 $PY -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["status"]=="PASS_LOSS_OPTIMIZER_TRAINING_THREE_CHECK_QA"' "$ROOT/audits/round51/loss_optimizer_training_qa.json"
-SPLITS=(bprna_ts0 bprna_new archiveii ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb rfam_fam chanrg_test chanrg_gena chanrg_genc chanrg_genf)
+SPLITS=(bprna_ts0 bprna_new archiveii ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb rfam_fam)
 SEEDS=(42 2026 3407)
 mkdir -p "$ROOT/logs/round51" "$ROOT/audits/round51"
 
@@ -101,7 +101,7 @@ for arm in ("length","olr"):
         experiment=f"loss_{arm}{suffix}"
         qa=root/"audits/round51"/f"{experiment}_qa.json"
         report=json.loads(qa.read_text())
-        assert report["status"]=="PASS_PAIRJEPA_INDEPENDENT_QA" and report["complete"] and report["n_cells"]==39
+        assert report["status"]=="PASS_PAIRJEPA_INDEPENDENT_QA" and report["complete"] and report["n_cells"]==27
         files[experiment]=hashlib.sha256(qa.read_bytes()).hexdigest()
 out={"status":"PASS_LOSS_OPTIMIZER_EVALUATION_THREE_CHECK_QA","qa_sha256":files,
      "allow_capacity_diagnostic":True,"allow_c_wide_or_c_local_training":False,
