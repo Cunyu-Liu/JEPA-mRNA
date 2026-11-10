@@ -49,6 +49,17 @@ for arm in length olr; do
     error_qa="$ROOT/audits/round52/rinalmo_capacity_error_${arm}_s${seed}_qa.json"
     representation="$ROOT/audits/round52/rinalmo_capacity_representation_${arm}_s${seed}.json"
     representation_qa="$ROOT/audits/round52/rinalmo_capacity_representation_${arm}_s${seed}_qa.json"
+    if [[ -e "$error" && -e "$error_qa" && -e "$representation" && -e "$representation_qa" ]]; then
+      "$PY" "$REPO/tools/qa_rinalmo_capacity_error_round52.py" \
+        --input "$error" --probe-code "$REPO/tools/probe_rinalmo_capacity_error_round52.py" \
+        --output "$error_qa" > "$ROOT/logs/round52/rinalmo_capacity_error_${arm}_s${seed}_qa.log" 2>&1
+      "$PY" "$REPO/tools/qa_rinalmo_frozen_representation_round52.py" \
+        --input "$representation" --probe-code "$REPO/tools/probe_rinalmo_frozen_representation_round52.py" \
+        --output "$representation_qa" \
+        > "$ROOT/logs/round52/rinalmo_capacity_representation_${arm}_s${seed}_qa.log" 2>&1
+      echo "skip validated capacity artifacts for $arm $seed"
+      continue
+    fi
     if [[ -e "$error" || -e "$error_qa" || -e "$representation" || -e "$representation_qa" ]]; then
       echo "refusing to overwrite unreviewed capacity artifacts for $arm $seed" >&2
       exit 1

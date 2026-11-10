@@ -15887,3 +15887,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 六个L/O run的best/resume权重、scheduler/stream、完整后段曲线、配置和CUDA身份全部通过，训练QA双跑逐字节一致，SHA256=`81f0bf715698e7e873334b94d61eca334bbf1de213d1288968ce6b835503d5e7`，artifact=`source_data/round52/rinalmo_loss_optimizer_training_qa.json`及recheck。
 - L-length三种子best VL0 mean=`-0.8094783431093082`、population SD=0.007747091215165112；O-LR mean=22.683147846897707、SD=0.8084860914182952。归一化不同，不直接比较绝对VL0，后段失稳不隐藏。
 - 首个L-length seed42误差probe已按门在真实CUDA运行；其余误差/表征probe、独立复现和容量裁决未齐，不能提前宣布扩参或JEPA训练。spec/tasks已同步，PPT未修改。
+
+## §15.863（2026-11-11）首个L-length误差/表征probe与对称pair QA恢复
+
+- **真实probe**：L-length seed42误差train total/NLL=`-0.6864644859`/`0.2337923506`，VL0=`-0.7997258096`/`0.1370186242`；train NLL高于VL0，不支持训练欠拟合。独立QA SHA256=`71e0637c50538101fece9d36b14b750295500dffd9cbd9299b79353914457a6f`。
+- **冻结表征**：train weighted NLL=0.2600841559948285、Brier=0.0433187207，VL0 weighted NLL=0.7350422693939843、Brier=0.0398478052；train/VL0 pairs=50108/50176，train NLL更低，不支持欠拟合扩参。真实CUDA峰值3.94GB，独立QA双跑一致，SHA256=`64224bf1ddf48e993c081c578221da09bb9111e2bb735196c6ab38b8b311f94e`。
+- **QA故障与恢复**：合法对称候选包含`(j,i)`，原QA只允许`i<j`导致失败，原始logits不变。改为`0≤min(i,j)<max(i,j)<L`，三轮含反向pair测试通过，现有表征QA双跑一致。队列仅在raw+两类QA齐全时复核并跳过，缺件仍拒绝覆盖，恢复任务`bash-og0lbsas`继续后续臂。其他run未齐，不能将单臂结果写成全局容量结论，PPT未修改。

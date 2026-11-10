@@ -17,7 +17,8 @@ def recompute_split(split):
         assert len(row["pairs"]) == len(row["labels"]) == len(row["logits"])
         assert 0 < len(row["pairs"]) <= 256
         assert all(label in (0.0, 1.0) for label in row["labels"])
-        assert all(len(pair) == 2 and 0 <= pair[0] < pair[1] < row["length"] for pair in row["pairs"])
+        assert all(len(pair) == 2 and 0 <= min(pair) < max(pair) < row["length"]
+                   for pair in row["pairs"])
         assert all(math.isfinite(value) for value in row["logits"])
         logits.extend(row["logits"])
         labels.extend(row["labels"])

@@ -16,7 +16,7 @@ brier = sum((1 / (1 + math.exp(-logit)) - label) ** 2
 split = {"weighted_nll": nll, "brier": brier, "n_pairs": 256,
          "n_positive": int(positives), "n_negative": int(negatives),
          "records": [{"sequence_sha256": hashlib.sha256(b"test").hexdigest(), "length": 300,
-                      "pairs": [[index, index + 1] for index in range(256)],
+                      "pairs": [[1, 0]] + [[index, index + 1] for index in range(1, 256)],
                       "labels": labels, "logits": logits}]}
 result = recompute_split(split)
 assert result["n_pairs"] == 256
