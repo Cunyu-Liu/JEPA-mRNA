@@ -1,0 +1,598 @@
+{
+  "status": "PASS_LD1_DESIGN_SPLIT_AND_SMOKE_CONFIG",
+  "selection_seed": 42,
+  "selection_rule": "Sort by (length, UniProt ID); every fifth entry is design-test.",
+  "n_design_dev": 91,
+  "n_design_test": 23,
+  "records": [
+    {
+      "id": "P15421",
+      "length": 78,
+      "split": "design-test"
+    },
+    {
+      "id": "P13501",
+      "length": 91,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q99525",
+      "length": 98,
+      "split": "design-dev"
+    },
+    {
+      "id": "P31949",
+      "length": 105,
+      "split": "design-dev"
+    },
+    {
+      "id": "P0CE72",
+      "length": 109,
+      "split": "design-dev"
+    },
+    {
+      "id": "P0CL80",
+      "length": 117,
+      "split": "design-test"
+    },
+    {
+      "id": "P01707",
+      "length": 119,
+      "split": "design-dev"
+    },
+    {
+      "id": "O95867",
+      "length": 125,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9GZQ8",
+      "length": 125,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8NC38",
+      "length": 126,
+      "split": "design-dev"
+    },
+    {
+      "id": "P15382",
+      "length": 129,
+      "split": "design-test"
+    },
+    {
+      "id": "Q9NV29",
+      "length": 134,
+      "split": "design-dev"
+    },
+    {
+      "id": "O14880",
+      "length": 152,
+      "split": "design-dev"
+    },
+    {
+      "id": "P54852",
+      "length": 163,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q14442",
+      "length": 188,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q15669",
+      "length": 191,
+      "split": "design-test"
+    },
+    {
+      "id": "Q9HAE3",
+      "length": 211,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q7RTU1",
+      "length": 214,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q5T7N8",
+      "length": 215,
+      "split": "design-dev"
+    },
+    {
+      "id": "P49755",
+      "length": 219,
+      "split": "design-dev"
+    },
+    {
+      "id": "P98173",
+      "length": 230,
+      "split": "design-test"
+    },
+    {
+      "id": "P26436",
+      "length": 265,
+      "split": "design-dev"
+    },
+    {
+      "id": "P78345",
+      "length": 283,
+      "split": "design-dev"
+    },
+    {
+      "id": "P57076",
+      "length": 290,
+      "split": "design-dev"
+    },
+    {
+      "id": "A6NH11",
+      "length": 291,
+      "split": "design-dev"
+    },
+    {
+      "id": "P30281",
+      "length": 292,
+      "split": "design-test"
+    },
+    {
+      "id": "Q8NH43",
+      "length": 312,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9HC38",
+      "length": 313,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8NGJ5",
+      "length": 315,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q6PF06",
+      "length": 316,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q13155",
+      "length": 320,
+      "split": "design-test"
+    },
+    {
+      "id": "Q9BYB4",
+      "length": 327,
+      "split": "design-dev"
+    },
+    {
+      "id": "P78382",
+      "length": 337,
+      "split": "design-dev"
+    },
+    {
+      "id": "A6NFE2",
+      "length": 343,
+      "split": "design-dev"
+    },
+    {
+      "id": "P47211",
+      "length": 349,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q3MIR4",
+      "length": 351,
+      "split": "design-test"
+    },
+    {
+      "id": "Q9BY21",
+      "length": 358,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8TDG2",
+      "length": 376,
+      "split": "design-dev"
+    },
+    {
+      "id": "P01860",
+      "length": 377,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q96DV4",
+      "length": 380,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q16690",
+      "length": 384,
+      "split": "design-test"
+    },
+    {
+      "id": "Q92734",
+      "length": 400,
+      "split": "design-dev"
+    },
+    {
+      "id": "A6NKF1",
+      "length": 404,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q5VV16",
+      "length": 416,
+      "split": "design-dev"
+    },
+    {
+      "id": "P15086",
+      "length": 417,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9BY11",
+      "length": 444,
+      "split": "design-test"
+    },
+    {
+      "id": "Q5SWX8",
+      "length": 454,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q6NT16",
+      "length": 456,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q05901",
+      "length": 458,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9NWZ3",
+      "length": 460,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q15465",
+      "length": 462,
+      "split": "design-test"
+    },
+    {
+      "id": "Q9Y512",
+      "length": 469,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q6B0B8",
+      "length": 471,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9UBM8",
+      "length": 478,
+      "split": "design-dev"
+    },
+    {
+      "id": "P47974",
+      "length": 494,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8IW19",
+      "length": 511,
+      "split": "design-test"
+    },
+    {
+      "id": "Q8TAA9",
+      "length": 524,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q13087",
+      "length": 525,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q86TJ5",
+      "length": 538,
+      "split": "design-dev"
+    },
+    {
+      "id": "P07947",
+      "length": 543,
+      "split": "design-dev"
+    },
+    {
+      "id": "P40222",
+      "length": 546,
+      "split": "design-test"
+    },
+    {
+      "id": "Q494X3",
+      "length": 552,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q5T749",
+      "length": 579,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8N1G4",
+      "length": 583,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9HA90",
+      "length": 598,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8N6Q8",
+      "length": 603,
+      "split": "design-test"
+    },
+    {
+      "id": "P31645",
+      "length": 630,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q6PI48",
+      "length": 645,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9UNN5",
+      "length": 650,
+      "split": "design-dev"
+    },
+    {
+      "id": "O75509",
+      "length": 655,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q06187",
+      "length": 659,
+      "split": "design-test"
+    },
+    {
+      "id": "P05160",
+      "length": 661,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q7Z340",
+      "length": 670,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9H461",
+      "length": 694,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q92542",
+      "length": 709,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q96NI6",
+      "length": 719,
+      "split": "design-test"
+    },
+    {
+      "id": "P78563",
+      "length": 741,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9BXB4",
+      "length": 747,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9UFB7",
+      "length": 747,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9UKQ2",
+      "length": 775,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9HCI6",
+      "length": 787,
+      "split": "design-test"
+    },
+    {
+      "id": "C9J798",
+      "length": 803,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9QC07",
+      "length": 812,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9H3R1",
+      "length": 872,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8TF61",
+      "length": 875,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8NB90",
+      "length": 893,
+      "split": "design-test"
+    },
+    {
+      "id": "Q9Y5G9",
+      "length": 962,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q6UXY8",
+      "length": 1006,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q6ZRS4",
+      "length": 1044,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q8IZA0",
+      "length": 1049,
+      "split": "design-dev"
+    },
+    {
+      "id": "O75151",
+      "length": 1096,
+      "split": "design-test"
+    },
+    {
+      "id": "O60721",
+      "length": 1099,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q15147",
+      "length": 1175,
+      "split": "design-dev"
+    },
+    {
+      "id": "P54098",
+      "length": 1239,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q6VMQ6",
+      "length": 1270,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q5TZJ5",
+      "length": 1347,
+      "split": "design-test"
+    },
+    {
+      "id": "Q96HA7",
+      "length": 1378,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q5VYS8",
+      "length": 1495,
+      "split": "design-dev"
+    },
+    {
+      "id": "P51805",
+      "length": 1871,
+      "split": "design-dev"
+    },
+    {
+      "id": "K4DIA1",
+      "length": 1962,
+      "split": "design-dev"
+    },
+    {
+      "id": "A7TUB1",
+      "length": 2142,
+      "split": "design-test"
+    },
+    {
+      "id": "E7EVM7",
+      "length": 2703,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q75N90",
+      "length": 2809,
+      "split": "design-dev"
+    },
+    {
+      "id": "B2RWP4",
+      "length": 2826,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q9NR99",
+      "length": 2828,
+      "split": "design-dev"
+    },
+    {
+      "id": "P50851",
+      "length": 2863,
+      "split": "design-test"
+    },
+    {
+      "id": "Q3L8U1",
+      "length": 2897,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q59FF8",
+      "length": 2966,
+      "split": "design-dev"
+    },
+    {
+      "id": "H9A532",
+      "length": 3038,
+      "split": "design-dev"
+    },
+    {
+      "id": "O75962",
+      "length": 3097,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q96L91",
+      "length": 3159,
+      "split": "design-test"
+    },
+    {
+      "id": "Q6ZRS2",
+      "length": 3230,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q96JQ0",
+      "length": 3298,
+      "split": "design-dev"
+    },
+    {
+      "id": "Q16787",
+      "length": 3333,
+      "split": "design-dev"
+    }
+  ],
+  "fasta_sha256": "13cdfb767e96017f4f1fc0a0bc7930cf34a93cdc9e012fa38597bc3f9f1d16d0",
+  "manifest_sha256": "102b2d138f334c97589c1c9ad456fe8b13fb1bdccbdbc222bad30bfe0a51966d",
+  "exact_and_beam500": true,
+  "lambda_candidates_for_design_dev_only": [
+    0,
+    1,
+    4,
+    10
+  ],
+  "lambda_smoke_only": [
+    0,
+    4
+  ],
+  "allow_ld1_smoke": true,
+  "allow_ld2": false,
+  "limitations": [
+    "Design-test proteins cannot tune lambda, beam size, constraints, or model calibration.",
+    "No generator result, PRISM result, or biological validation exists yet."
+  ]
+}

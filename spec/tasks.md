@@ -8,7 +8,7 @@
 > | T-A224 | RiNALMo核心优化、容量与Pair-JEPA | L/O独立单因子→容量证据门→J-gate/J-mlp/J1-block-EMA/fixed/random；42/2026/3407、steps=0、500步VL0、patience=6 | L-length seed42首个VL0=-0.4794495255@500、bad=0；其他run未齐，容量/JEPA未放行，structRFM只作历史诊断 |
 > | T-A225 | 结构感知对比CL0–CL5 | tr1c-v2/同源家族审计、视图split继承、负池、CL1/2/3/4、条件CL5、三种子与同算力对照 | 仅计划；Pair-JEPA裁决和数据门后执行，不照搬第二宿主或未验证增强 |
 > | T-A226 | D0/D1、motif与长序列 | RiNALMo同初始化纯数据扩充、去泄露/标签守恒；motif/shuffle/Turner0；全长与span验收 | 未启动；常规评测仅主八+Rfam，不删除长链 |
-> | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | LD0闭环；114蛋白序列已全部验收，FASTA=13cdfb76…16d0；P01707 accession映射、P01860历史v191/v2保留；COVID BNT/wild-type仍PARTIAL；LD1待split/config，LD2未启动 |
+> | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | LD0闭环；114蛋白序列已验收；design-dev/test=91/23双跑一致；exact/beam、λ=0/4工程smoke运行中，未选参；COVID BNT/wild-type仍PARTIAL，LD2未启动 |
 > | T-A228 | 最终主八+Rfam、置信度、raw速度与交付 | 单骨干/头/checkpoint、3seed×3repeat、独立QA、独占raw三轮、负结果/PARTIAL完整、PPT逐页复核 | 未达成；所有前轮阶段门通过前不启动 |
 > | T-A229 | RiNALMo长序列工程门 | 分块等价、无type推理、真实CUDA全长与峰值，禁止截断/CPU回退 | 已通过：512–3819nt完整前向，3819nt allocated=18.31GB/reserved=21.32GB，未OOM；仅工程可运行，长程精度/DP和D1长链训练未验收 |
 >

@@ -15635,3 +15635,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **过程点**：L-length seed42 step500 VL0=-0.47944952549853137，best step500、bad=0；训练已到step1000验证窗口，尚未自然收敛。NLL-length与NLL-sum的VL0绝对值不能直接比较，不作F1或稳定性最终结论。
 - **QA准备**：完整训练QA参数化arm、normalization和backbone LR，L-length要求length/1e-5，O-LR要求sum/1e-6，并分别核验scheduler。三臂自然早停后才进行六run best/resume、完整曲线、SHA和独立复算，容量诊断尚未放行，PPT未修改。
+
+## §15.820（2026-11-10）L-length过程曲线与LinearDesign LD1划分/工程smoke
+
+- **L-length**：seed42 step1000/1500/2000 VL0=-0.5318994743347659/-0.49302383986601606/-0.5263852301512667，best step1000，step1500/2000 bad=1/2，按patience=6继续，未提前停止或改参。O-LR与其他seed未齐，不启动容量或测试结论。
+- **LD1数据与配置**：114条蛋白按(length, ID)排序每五条取一条design-test，冻结design-dev=91、design-test=23，双跑逐字节一致，split=`audits/round52/lineardesign_ld1_design_split.json`。design-test不得调λ、beam、约束或校准。
+- **工程smoke**：仅用design-dev的P15421(78aa)与Q9HA90(598aa)，exact/beam=0/500、λ=0/4并行CPU运行，核验翻译、结构、CAI/GC和`dangling_ends=0`。结果未出，不选择λ/beam，不做正式速度或生物效果结论，PPT未修改。
