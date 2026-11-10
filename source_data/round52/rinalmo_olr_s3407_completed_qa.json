@@ -1,0 +1,170 @@
+{
+  "status": "PASS_SINGLE_RUN_THREE_CHECK_QA",
+  "allow_capacity_diagnostic": false,
+  "scientific_conclusion": false,
+  "runs": {
+    "olr_s3407": {
+      "run": "round52_rinalmo_olr_s3407",
+      "seed": 3407,
+      "steps_completed": 7000,
+      "best_step": 4000,
+      "best_vl0": 23.820185378417428,
+      "n_unfrozen": 12,
+      "validation_curve": [
+        {
+          "step": 500,
+          "validation_loss": 32.5730205524635,
+          "best_step": 500,
+          "best_validation_loss": 32.5730205524635,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 1000,
+          "validation_loss": 29.553702734890077,
+          "best_step": 1000,
+          "best_validation_loss": 29.553702734890077,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 1500,
+          "validation_loss": 29.32664700938303,
+          "best_step": 1500,
+          "best_validation_loss": 29.32664700938303,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 2000,
+          "validation_loss": 27.047774112330067,
+          "best_step": 2000,
+          "best_validation_loss": 27.047774112330067,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 2500,
+          "validation_loss": 25.936188548620372,
+          "best_step": 2500,
+          "best_validation_loss": 25.936188548620372,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 3000,
+          "validation_loss": 25.65400414703252,
+          "best_step": 3000,
+          "best_validation_loss": 25.65400414703252,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 3500,
+          "validation_loss": 24.66461003163001,
+          "best_step": 3500,
+          "best_validation_loss": 24.66461003163001,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 4000,
+          "validation_loss": 23.820185378417428,
+          "best_step": 4000,
+          "best_validation_loss": 23.820185378417428,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 4500,
+          "validation_loss": 25.067974395656513,
+          "best_step": 4000,
+          "best_validation_loss": 23.820185378417428,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 5000,
+          "validation_loss": 26.217850372808723,
+          "best_step": 4000,
+          "best_validation_loss": 23.820185378417428,
+          "improved": false,
+          "bad_evaluations": 2
+        },
+        {
+          "step": 5500,
+          "validation_loss": 62.12000303783342,
+          "best_step": 4000,
+          "best_validation_loss": 23.820185378417428,
+          "improved": false,
+          "bad_evaluations": 3
+        },
+        {
+          "step": 6000,
+          "validation_loss": 36010.40565592422,
+          "best_step": 4000,
+          "best_validation_loss": 23.820185378417428,
+          "improved": false,
+          "bad_evaluations": 4
+        },
+        {
+          "step": 6500,
+          "validation_loss": 203059.62624794565,
+          "best_step": 4000,
+          "best_validation_loss": 23.820185378417428,
+          "improved": false,
+          "bad_evaluations": 5
+        },
+        {
+          "step": 7000,
+          "validation_loss": 652661.9335887963,
+          "best_step": 4000,
+          "best_validation_loss": 23.820185378417428,
+          "improved": false,
+          "bad_evaluations": 6
+        }
+      ],
+      "max_vl0": 652661.9335887963,
+      "max_abs_train_loss": 2737318.2678,
+      "max_gnorm": 2502463.75,
+      "final_train": {
+        "step": 7000,
+        "loss": 2737318.2678,
+        "terms": {
+          "nll": 2737285.5075,
+          "distill": 15.8718,
+          "rlcd": 0.975,
+          "cal": 15.9135
+        },
+        "unfrozen": 12,
+        "gnorm": 2502463.75,
+        "lr_head": 0.0001,
+        "lr_backbone": 1e-06,
+        "peak_gb": 7.1,
+        "sec": 2846.5
+      },
+      "best_sha256": "251420694b2a08fc35614c39127389bc4b583e5aab584ca1bd5da6457d2e8a4f",
+      "resume_sha256": "553b35acff217df47d844d8dc2068e1becd3f9379c0c134310dde797e7bbd514",
+      "run_meta_sha256": "73cdef41d44fdb9383a60f182e1a67357c961771db9fff5805fe8db8eb7b12b4",
+      "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+      "best_resume_weights_equal": true
+    }
+  },
+  "aggregates": {
+    "olr": {
+      "mean_best_vl0": 23.820185378417428,
+      "population_sd_best_vl0": 0.0,
+      "best_vl0_values": [
+        23.820185378417428
+      ]
+    }
+  },
+  "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+  "teacher_manifest_sha256": "7a91d011b84bd0fb3e5e0d71b0c4a451f18d85a90a66562cde8782a832a2b255",
+  "limitations": [
+    "Natural early stopping and complete late curves are verified; this is not a test-set result.",
+    "VL0 values under different NLL normalizations are not direct structure-performance comparisons.",
+    "A partial run report does not open capacity or any dependent stage.",
+    "No interaction, capacity, Pair-JEPA, contrastive, D0/D1, or final-speed claim is allowed yet."
+  ]
+}
