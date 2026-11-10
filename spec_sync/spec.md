@@ -5,6 +5,8 @@
 > 用户明确批准恢复阶段0。R-replay已以seed2主诊断、seed0复核、真实CUDA无更新、独立QA及双跑完成。合法身份为R6 best权重+终态optimizer/scheduler/stream，不是best时刻optimizer历史重放。length/sum shadow update RMS在6批次均增大，中位28.8024倍、范围8.0182–80.1575，不支持终态自然稳定假设；backbone LR=1e-6仅将对应更新缩至0.1。5/6批次NLL与辅助项梯度存在负cosine，不能混改aux权重；全解冻诊断不能隔离U-ramp。
 >
 > 阶段门：L-length/O-LR六种子均自然早停。按用户最新协议只先测主benchmark八任务和Rfam，表现好的模型再跑CHANRG；原13 split结果保留。两臂主榜均0/8，length Rfam=0.4481232036、O-LR=0.3603944671，length为稳定基座但未达后续测评标准，禁止交互和U-ramp。完成标志SHA256=`2953bd1656e626c251bb2e68f22808d8c422d8471649179fc465346536dc8fc3`，允许离线容量诊断，不允许直接启动C-wide/C-local或Pair-JEPA，PPT不改。
+>
+> 容量诊断：PairMLP latent490/1024两步CUDA工程预检通过，scorer参数304547/1182977，不作科学效果证据。L-length三best在同一固定TR1c子集196条与完整VL0=196上逐项复核，平均NLL=0.2142123153/0.1483827333，total=-0.7025514467/-0.7826199695；v2/v3独立CUDA逐字段一致，QA双跑一致。未获训练欠拟合证据，不证明理论容量足够；C-wide/C-local关闭，只放行J-gate，Pair-JEPA训练未放行。decision SHA256=`d0f7a464ee57296319d6b569c36ce558c6513f0a74818b78533c8908a454c943`。
 
 > **历史执行覆盖（2026-11-06，第 48 轮：独立单模型 structRFM→RIPE→Pair-JEPA；活跃清单 `round48-single-model-architecture-v1`）**
 >

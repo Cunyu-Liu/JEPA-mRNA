@@ -1,0 +1,23 @@
+{
+  "status": "PASS_INDEPENDENT_CUDA_REPLICATION",
+  "excluded_fields": [
+    "peak_cuda_bytes"
+  ],
+  "reports": {
+    "42": {
+      "exact_match_excluding_peak_memory": true,
+      "v2_sha256": "8c7e21874853548502d848c2a7432b89f80dfab83cd8b7c328b6dc5400226241",
+      "v3_sha256": "8c7e21874853548502d848c2a7432b89f80dfab83cd8b7c328b6dc5400226241"
+    },
+    "2026": {
+      "exact_match_excluding_peak_memory": true,
+      "v2_sha256": "86c27ac6c6ac14b0f614ba06b3ad12a9489172ca294891197740c3da65495091",
+      "v3_sha256": "86c27ac6c6ac14b0f614ba06b3ad12a9489172ca294891197740c3da65495091"
+    },
+    "3407": {
+      "exact_match_excluding_peak_memory": true,
+      "v2_sha256": "669ece7e5f58ad16661aa843aa075a5e9a967f8214d609934c709b96ceea29b1",
+      "v3_sha256": "669ece7e5f58ad16661aa843aa075a5e9a967f8214d609934c709b96ceea29b1"
+    }
+  }
+}

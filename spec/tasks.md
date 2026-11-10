@@ -8,6 +8,7 @@
 > |---|---|---|---|
 > | T-A220 | R6 R-replay | best权重+终态optimizer/scheduler/stream；真实CUDA无更新；sum/length与shadow Adam、独立QA及双跑 | 已完成：seed2主诊断+seed0复核；length/sum更新RMS中位28.8024倍且范围8.0182–80.1575，不支持终态自然稳定假设；LR=1e-6仅缩放更新0.1；decision SHA256=b776ff27…aeb07 |
 > | T-A221 | L-length与O-LR单因子 | 仅分别改变NLL sum→length或backbone LR 1e-5→1e-6；seed42/2026/3407、steps=0、500步验证、patience=6、VL0选臂 | 已完成：六种子自然早停；按用户新协议主8+Rfam各27格及QA齐套。length主榜0/8、Rfam=0.4481，O-LR主榜0/8、Rfam=0.3604；length为稳定基座但未达后续测评标准，禁止交互和U-ramp |
+> | T-A222 | 容量诊断与C-wide/C-local门 | 冻结表征误差、两步真实CUDA接口、三种子逐项损失、独立复算和重复一致性 | 已完成：latent490/1024仅工程通过；同TR1c196/VL0196平均NLL=0.2142123153/0.1483827333，训练欠拟合未获支持，不证明容量足够；C-wide/C-local关闭，放行J-gate但不放行JEPA训练；decision SHA256=d0f7a464…c943 |
 >
 > **历史停止边界**：2026-11-10早些时候的停止记录仍用于标识未齐套结果；本轮仅按用户新批准的阶段门恢复，不把该恢复外推为全部矩阵或最终结果。
 

@@ -1,0 +1,68 @@
+{
+  "status": "PASS_CAPACITY_DIAGNOSTIC_THREE_CHECK_QA",
+  "capacity_insufficiency_supported": false,
+  "allow_c_wide": false,
+  "allow_c_local": false,
+  "allow_j_gate": true,
+  "allow_pairjepa_training": false,
+  "decision_scope": "Capacity diagnostic only; no test-set selection or architecture training.",
+  "evidence": {
+    "smoke_sha256": "aebf0a9df0fd301e9c87fee0e9fa1a00a3421265173b59fe787962bdde29524d",
+    "error_qa_sha256": "30ade00581ea3f08d096718aef440338929ab467ec15326de05f3e9fa3c65f9c",
+    "repeat_qa_sha256": "bec37d9e7b638bb2bd820f3c01710280cae85c61b9c77a824f68339ecc59e7f0",
+    "repeat_equivalence_sha256": "bacdbfa52112a2fc6365dd7836411d8973c774a444e5bf4048e3a4a36f220a1c",
+    "training_qa_sha256": "277dfb93efef64c3d411f4e8d3fed46fb08d814c0734f4b7292f2a7771c37f7a",
+    "error_three_seed_mean": {
+      "train": {
+        "cal": 0.02583988150330949,
+        "distill": 0.03964834071562228,
+        "nll": 0.21421231526153503,
+        "rlcd": -0.9822519841892685,
+        "total": -0.7025514467088018
+      },
+      "validation": {
+        "cal": 0.015587038381834112,
+        "distill": 0.04225960497013829,
+        "nll": 0.1483827333388578,
+        "rlcd": -0.9888493461565675,
+        "total": -0.7826199694657374
+      }
+    },
+    "per_seed": {
+      "42": {
+        "train_nll": 0.2114154677430553,
+        "validation_nll": 0.14865416198189113,
+        "train_total": -0.7052464584201024,
+        "validation_total": -0.7811064888180501
+      },
+      "2026": {
+        "train_nll": 0.20641465017055352,
+        "validation_nll": 0.14473156150300165,
+        "train_total": -0.7096041734037627,
+        "validation_total": -0.7856174261502565
+      },
+      "3407": {
+        "train_nll": 0.22480682787099626,
+        "validation_nll": 0.1517624765316806,
+        "train_total": -0.6928037083025401,
+        "validation_total": -0.7811359934289054
+      }
+    },
+    "scorer_parameters": {
+      "490": 304547,
+      "1024": 1182977
+    }
+  },
+  "rationale": [
+    "All three stable L-length checkpoints have higher sampled TR1c NLL than VL0 NLL; the anticipated training-underfitting gap is absent.",
+    "The two-step width smoke validates only CUDA and parameter plumbing, not capacity efficacy.",
+    "Existing near-parameter PairMLP/ResNet comparisons did not establish that parameter count is the bottleneck.",
+    "Therefore C-wide and C-local are not licensed. This does not prove that the current capacity is theoretically sufficient."
+  ],
+  "next_gate": "Implement and independently validate J-gate before any Pair-JEPA training.",
+  "unchanged_boundaries": [
+    "L-length remains the stable base but has not met the good-performance threshold for CHANRG.",
+    "No SOTA, final confidence, long-sequence, or raw-sequence speed claim is made.",
+    "PPT remains unchanged until independently reviewed stage results are eligible."
+  ]
+}

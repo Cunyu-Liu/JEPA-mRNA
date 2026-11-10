@@ -1,0 +1,7 @@
+{
+  "status": "PRESERVED_MIXED_LEDGER_SEPARATED",
+  "archived_sha256": "23ff40b96e31d803da324fbac0a81cb3841fa1f149b76e513ce7d6556e372fad",
+  "live_ledger_sha256": "cccce2be8605777a76952f27f9943a9ef53edb9261b2648beed7bc874f15ce10",
+  "rows_retained": 2,
+  "values_changed": false
+}

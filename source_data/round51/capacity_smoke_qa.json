@@ -1,0 +1,188 @@
+{
+  "status": "PASS_CAPACITY_SMOKE_THREE_CHECK_QA",
+  "scientific_conclusion": false,
+  "evidence_level": "two_step_engineering_smoke_only",
+  "reports": {
+    "490": {
+      "latent": 490,
+      "n_params": 1217420,
+      "n_learnable_params": 912873,
+      "scorer_n_params": 304547,
+      "best_step": 2,
+      "best_validation_loss": 2.8038569278654246,
+      "final_loss": 3.048331727355648,
+      "ledger": [
+        {
+          "status": "start",
+          "arm": "decision",
+          "steps": 2,
+          "lr": 0.0001,
+          "batch_size": 2,
+          "resume_from": 0,
+          "active_terms": [
+            "nll",
+            "distill",
+            "rlcd",
+            "cal"
+          ],
+          "teacher": "thermo:viennarna",
+          "data_version": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+          "early_stopping": true,
+          "validation_data_version": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+          "ts": "2026-11-10T15:27:45+0800",
+          "host": "Z9aXpr"
+        },
+        {
+          "status": "start",
+          "arm": "decision",
+          "steps": 2,
+          "lr": 0.0001,
+          "batch_size": 2,
+          "resume_from": 0,
+          "active_terms": [
+            "nll",
+            "distill",
+            "rlcd",
+            "cal"
+          ],
+          "teacher": "thermo:viennarna",
+          "data_version": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+          "early_stopping": true,
+          "validation_data_version": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+          "ts": "2026-11-10T15:36:38+0800",
+          "host": "Z9aXpr"
+        },
+        {
+          "status": "completed",
+          "arm": "decision",
+          "step": 2,
+          "lr": 0.0001,
+          "final_loss": 3.048331727355648,
+          "stop_reason": "step_cap",
+          "best_step": 2,
+          "best_validation_loss": 2.8038569278654246,
+          "early_stopped": false,
+          "converged": false,
+          "ts": "2026-11-10T15:36:52+0800",
+          "host": "Z9aXpr"
+        }
+      ],
+      "validation": [
+        {
+          "ts": 1794296211.9249167,
+          "step": 2,
+          "validation_loss": 2.8038569278654246,
+          "best_step": 2,
+          "best_validation_loss": 2.8038569278654246,
+          "improved": true,
+          "bad_evaluations": 0
+        }
+      ],
+      "environment": {
+        "cuda_visible_devices": "",
+        "device": "cuda",
+        "gpu_name": "NVIDIA GeForce RTX 4090",
+        "host": "Z9aXpr",
+        "numpy": "2.2.6",
+        "python": "3.10.22",
+        "resolved_device": "cuda:0",
+        "torch": "2.5.1+cu121"
+      },
+      "git_commit": "d79069754d102b496f7b2b4447be0ccf3865b641",
+      "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+      "validation_data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+      "best_resume_weights_equal": true,
+      "stale_optimizer_excluded_from_live_run": true,
+      "hashes": {
+        "run_meta.json": "08fb5e0b763e3dac8c20e6b69f8c852a0a34c5621f5f9da4f89c7fb0eb4353da",
+        "best.pt": "b7eef7e318d389baab2ea7cceeea283783b78f0cdf02548b4cdffa1ea1edc5e0",
+        "resume.pt": "b10969c9bcbe1b6b327ce3f2a3dc43c92a55c702d79a1d70132630c978655b20",
+        "ledger.jsonl": "b084a9628a7a5c6649a6e724757d9dc6a1a4d049cefbeb0d7abc223c6c9e2e9a",
+        "validation_log.jsonl": "c99b29c66a32038355988432b987427ca080b08aa492ce94f2ccd0215a99d0e4"
+      }
+    },
+    "1024": {
+      "latent": 1024,
+      "n_params": 3852176,
+      "n_learnable_params": 2669199,
+      "scorer_n_params": 1182977,
+      "best_step": 2,
+      "best_validation_loss": 2.8005251967707525,
+      "final_loss": 3.0471784287435533,
+      "ledger": [
+        {
+          "status": "start",
+          "arm": "decision",
+          "steps": 2,
+          "lr": 0.0001,
+          "batch_size": 2,
+          "resume_from": 0,
+          "active_terms": [
+            "nll",
+            "distill",
+            "rlcd",
+            "cal"
+          ],
+          "teacher": "thermo:viennarna",
+          "data_version": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+          "early_stopping": true,
+          "validation_data_version": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+          "ts": "2026-11-10T15:51:19+0800",
+          "host": "Z9aXpr"
+        },
+        {
+          "status": "completed",
+          "arm": "decision",
+          "step": 2,
+          "lr": 0.0001,
+          "final_loss": 3.0471784287435533,
+          "stop_reason": "step_cap",
+          "best_step": 2,
+          "best_validation_loss": 2.8005251967707525,
+          "early_stopped": false,
+          "converged": false,
+          "ts": "2026-11-10T15:51:35+0800",
+          "host": "Z9aXpr"
+        }
+      ],
+      "validation": [
+        {
+          "ts": 1794297093.9365788,
+          "step": 2,
+          "validation_loss": 2.8005251967707525,
+          "best_step": 2,
+          "best_validation_loss": 2.8005251967707525,
+          "improved": true,
+          "bad_evaluations": 0
+        }
+      ],
+      "environment": {
+        "cuda_visible_devices": "",
+        "device": "cuda",
+        "gpu_name": "NVIDIA GeForce RTX 4090",
+        "host": "Z9aXpr",
+        "numpy": "2.2.6",
+        "python": "3.10.22",
+        "resolved_device": "cuda:0",
+        "torch": "2.5.1+cu121"
+      },
+      "git_commit": "d79069754d102b496f7b2b4447be0ccf3865b641",
+      "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+      "validation_data_sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+      "best_resume_weights_equal": true,
+      "stale_optimizer_excluded_from_live_run": true,
+      "hashes": {
+        "run_meta.json": "330361a2c34d35d46d3ef6c38be9c7c676c16ef3bcc6d3710c3f630d22323b9b",
+        "best.pt": "edb614d5f88643a05bd0a0bde3253c289b8d55fb44dbeebb92ba444da882bdd9",
+        "resume.pt": "fb6d9e74acbd0b340347a8a0a609552273c57741647415c60ce8e688ed3d41b0",
+        "ledger.jsonl": "cccce2be8605777a76952f27f9943a9ef53edb9261b2648beed7bc874f15ce10",
+        "validation_log.jsonl": "7a2088ecf0ecca99e6371a707934491c1f549dac572150b879025a9b8ab7d7f2"
+      }
+    }
+  },
+  "limitations": [
+    "Two steps cannot diagnose underfitting, convergence, VL0 improvement, or test performance.",
+    "The old hidden64/hidden1024 PairMLP control is not a capacity comparison.",
+    "The stale pre-exclusion run and its optimizer are preserved but excluded from this QA."
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "status": "PRESERVED_MIXED_VALIDATION_LOG_SEPARATED",
+  "reason": "The first validation row belonged to the stale pre-exclusion run; no numeric result was changed or deleted.",
+  "archived_file": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/runs/capacity_probe_latent1024_s42/stale_pre_exclusion/validation_log.mixed_pre_exclusion.jsonl",
+  "archived_sha256": "bc99161af39fb97f3b6787913c1f494e68a3b317d885595277255c428cfdba0a",
+  "live_validation_sha256": "7a2088ecf0ecca99e6371a707934491c1f549dac572150b879025a9b8ab7d7f2"
+}

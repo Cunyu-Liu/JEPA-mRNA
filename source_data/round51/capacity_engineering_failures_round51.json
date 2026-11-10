@@ -1,0 +1,35 @@
+{
+  "status": "PRESERVED_CAPACITY_ENGINEERING_FAILURES_AND_REPAIRS",
+  "scientific_conclusion": false,
+  "events": [
+    {
+      "issue": "The first latent1024 run reused a stale pre-gradient-exclusion checkpoint and optimizer (28 model entries versus 20 optimizer slots).",
+      "action": "Preserved all stale files under runs/capacity_probe_latent1024_s42/stale_pre_exclusion and started from consistent initialization.",
+      "mixed_ledger_archive_sha256": "23ff40b96e31d803da324fbac0a81cb3841fa1f149b76e513ce7d6556e372fad",
+      "mixed_validation_archive_sha256": "bc99161af39fb97f3b6787913c1f494e68a3b317d885595277255c428cfdba0a"
+    },
+    {
+      "issue": "Initial frozen-probe checks incorrectly assumed checkpoint-internal best metadata and smoke validation fields matched the completed run schema.",
+      "action": "Used external completed run_meta for best identity; used validation_log for the two-step smoke. No error result was accepted."
+    },
+    {
+      "issue": "A shell background operator had lower precedence than intended, so a failed QA chain could print a PID without launching the intended independent queue.",
+      "action": "Replaced compound inline launching with run_capacity_error_round51.sh and an flock; verified actual child processes and outputs."
+    },
+    {
+      "issue": "The structRFM adapter is installed only by the training wrapper main entry, and the old PairMLP checkpoint lacks the newer EMA teacher.",
+      "action": "Explicitly installed structRFM and disabled EMA. Verified missing=[] and unexpected=[] with teacher=None before CUDA evaluation."
+    },
+    {
+      "issue": "Initial independent QA used a set for loss names, producing different JSON key order across Python processes.",
+      "action": "Sorted loss keys and retained capacity_error_v2_qa.json/recheck.json as the mismatch evidence; final capacity_error_qa.json/recheck.json are byte-identical."
+    },
+    {
+      "issue": "Intermittent SSH connection closure/reset interrupted local-to-remote commands.",
+      "action": "No failed connection was counted as a scientific failure; commands were checked before retrying and no duplicate completed runs were created."
+    }
+  ],
+  "final_smoke_qa_sha256": "aebf0a9df0fd301e9c87fee0e9fa1a00a3421265173b59fe787962bdde29524d",
+  "final_error_qa_sha256": "30ade00581ea3f08d096718aef440338929ab467ec15326de05f3e9fa3c65f9c",
+  "capacity_decision_sha256": "d0f7a464ee57296319d6b569c36ce558c6513f0a74818b78533c8908a454c943"
+}
