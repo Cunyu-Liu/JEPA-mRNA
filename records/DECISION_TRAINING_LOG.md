@@ -15762,3 +15762,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **三轮检查**：同向/反向/零范数/unused参数/无参数拒绝/CUDA参数不变均通过；原PairJEPA、train_decision训练、结构mask、mixer、block-context、扩展诊断和新梯度helper连续三轮均23/23通过。仅既有`torch.load(weights_only=False)` FutureWarning。CPU辅助检查与真实CUDA结果一致，不再处于未验收helper状态。
 - **集成限制**：复核发现既有`test_pairjepa_training_round48.py`调用的是`rnajepa.train_decision.run_training`，不是`train_plan_a.py`。因此23/23不能证明RiNALMo训练循环已实际写入`direct_nll_gradient`。该字段已在train_plan_a按直接NLL张量、每25步、无额外optimizer step接入并通过编译，但全RiNALMo训练smoke仍需在不影响当前run的显存条件下单独执行，完整J-gate尚未通过。
 - **过程**：L-length seed2026在step12000取得best VL0=`-0.8100311620900924`，约step14500仍有后段尖峰，继续自然训练；LD1对照712/798、主矩阵297/456（该次快照）。容量门未开，PPT未修改。
+
+## §15.841（2026-11-11）全RiNALMo PairJEPA工程smoke准备与显存反事实
+
+- 新增1步、batch=1、seed42、NLL-sum、PairJEPA490+R6、λJEPA=0.1、EMA、mask=0.15的工程smoke，仅使用VL0资产做接口验证，不做验证选型或结构性能结论。QA要求`jepa_diagnostics.jsonl`实际包含490通道方差、跨位置/序列相关、teacher–student距离及direct NLL梯度，检查EMA在optimizer step后改变、stream/checkpoint身份和真实CUDA。
+- 推理QA实例化同一checkpoint head，fail-closed禁止teacher forward，hook确认student scorer仅1次；超过14GB显存占用时launcher拒绝启动并保留输出目录不存在。实测当前16536MiB时返回42、`PASS_MEMORY_GUARD`，未创建run或checkpoint，未强行与L-length seed2026峰值叠加。
+- 当前尚未执行完整全模型1步smoke，`allow_pairjepa_training=false`；需等待安全显存窗口。L-length seed2026 step14500 VL0=14745.25901369、bad=5，尚未完成，容量门未开，PPT未修改。
