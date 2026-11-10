@@ -1,0 +1,24 @@
+{
+  "status": "PASS_INDEPENDENT_LINEARDESIGN_MFE_RECOMPUTE",
+  "reports": [
+    {
+      "name": "official_lambda0",
+      "cli_mfe": -1.1,
+      "python_mfe": -1.100000023841858,
+      "structure_match": true
+    },
+    {
+      "name": "official_seq1_lambda3",
+      "cli_mfe": -6.0,
+      "python_mfe": -6.0,
+      "structure_match": true
+    },
+    {
+      "name": "official_seq2_lambda3",
+      "cli_mfe": -13.5,
+      "python_mfe": -13.5,
+      "structure_match": true
+    }
+  ],
+  "diagnostic_sha256": "a92b4c959e1ba57349ae309aef9e8e5e0937aa4ae9730e221d2af9ec0226b52d"
+}

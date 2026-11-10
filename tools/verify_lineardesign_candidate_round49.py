@@ -44,9 +44,11 @@ def evaluate(sequence, protein, table_path):
                for codon in codons]
     if not weights or any(weight <= 0 for weight in weights):
         raise ValueError("cannot calculate CAI")
-    structure, mfe = RNA.fold(sequence)
+    model = RNA.md()
+    model.dangles = 0
+    structure, mfe = RNA.fold_compound(sequence, model).mfe()
     return {"sequence": sequence, "protein": protein, "translated": translated,
-            "structure": structure, "mfe_kcal_mol": float(mfe),
+            "structure": structure, "mfe_kcal_mol": float(mfe), "dangling_ends": 0,
             "cai": float(math.exp(sum(math.log(weight) for weight in weights) / len(weights))),
             "gc_fraction": (sequence.count("G") + sequence.count("C")) / len(sequence),
             "terminal_stop": translated.endswith("*"), "rna_version": RNA.__version__,

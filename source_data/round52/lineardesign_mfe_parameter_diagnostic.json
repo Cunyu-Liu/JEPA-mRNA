@@ -1,0 +1,95 @@
+{
+  "status": "PASS_LINEARDESIGN_MFE_PARAMETER_DIAGNOSTIC",
+  "scientific_conclusion": false,
+  "official_binary_sha256": "f1f22901967cb3e0f569ff2332c326800ac355727ab58e377b14514db4fe9688",
+  "codon_table_sha256": "e6c4a49036fe21f3266e7e53130011bd7725c62ebeabbe442f7f8f1cdf5890c4",
+  "viennarna_python_version": "2.7.2",
+  "rows": [
+    {
+      "name": "official_lambda0",
+      "protein": "MNDTEAI",
+      "lambda": 0.0,
+      "sequence": "AUGAACGAUACGGAGGCGAUC",
+      "official_structure": "......(((.((....)))))",
+      "official_mfe_kcal_mol": -1.1,
+      "official_cai": 0.695,
+      "variants": {
+        "full_with_terminal_stop_dangles0": {
+          "structure": "......(((.((....)))))",
+          "mfe_kcal_mol": -1.100000023841858
+        },
+        "full_with_terminal_stop_dangles2": {
+          "structure": "......(((.((....)))))",
+          "mfe_kcal_mol": -1.399999976158142
+        },
+        "cds_without_terminal_stop_dangles0": {
+          "structure": "..................",
+          "mfe_kcal_mol": 0.0
+        },
+        "cds_without_terminal_stop_dangles2": {
+          "structure": "..................",
+          "mfe_kcal_mol": 0.0
+        }
+      }
+    },
+    {
+      "name": "official_seq1_lambda3",
+      "protein": "MPNTLACP",
+      "lambda": 3.0,
+      "sequence": "AUGCCAAACACCCUGGCAUGCCCC",
+      "official_structure": "((((((.......)))))).....",
+      "official_mfe_kcal_mol": -6.0,
+      "official_cai": 0.91,
+      "variants": {
+        "full_with_terminal_stop_dangles0": {
+          "structure": "((((((.......)))))).....",
+          "mfe_kcal_mol": -6.0
+        },
+        "full_with_terminal_stop_dangles2": {
+          "structure": "((((((.......)))))).....",
+          "mfe_kcal_mol": -6.699999809265137
+        },
+        "cds_without_terminal_stop_dangles0": {
+          "structure": "((((((.......))))))..",
+          "mfe_kcal_mol": -6.0
+        },
+        "cds_without_terminal_stop_dangles2": {
+          "structure": "((((((.......))))))..",
+          "mfe_kcal_mol": -6.699999809265137
+        }
+      }
+    },
+    {
+      "name": "official_seq2_lambda3",
+      "protein": "MLDQVNKLKYPEVSLT*",
+      "lambda": 3.0,
+      "sequence": "AUGCUGGAUCAGGUGAACAAGCUGAAGUACCCAGAGGUGAGCCUGACCUGA",
+      "official_structure": ".....((.((((((..((...(((.......)))..))..))))))))...",
+      "official_mfe_kcal_mol": -13.5,
+      "official_cai": 0.979,
+      "variants": {
+        "full_with_terminal_stop_dangles0": {
+          "structure": ".....((.((((((..((...(((.......)))..))..))))))))...",
+          "mfe_kcal_mol": -13.5
+        },
+        "full_with_terminal_stop_dangles2": {
+          "structure": ".....((.((((((..((...(((.......)))..))..))))))))...",
+          "mfe_kcal_mol": -14.699999809265137
+        },
+        "cds_without_terminal_stop_dangles0": {
+          "structure": ".....((.((((((..((...(((.......)))..))..))))))))",
+          "mfe_kcal_mol": -13.5
+        },
+        "cds_without_terminal_stop_dangles2": {
+          "structure": ".....((.((((((..((...(((.......)))..))..))))))))",
+          "mfe_kcal_mol": -13.5
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Engineering parameter diagnostic only; no new protein design or PRISM evaluation.",
+    "The original paper used ViennaRNA 2.4.14; this run uses the installed Python ViennaRNA version.",
+    "No wet-lab or biological stability claim is supported."
+  ]
+}

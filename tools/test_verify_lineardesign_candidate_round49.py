@@ -10,7 +10,8 @@ class LinearDesignEvaluationTests(unittest.TestCase):
         result = evaluate("AUGAACGAUACGGAGGCGAUC", "MNDTEAI", TABLE)
         self.assertEqual(result["translated"], "MNDTEAI")
         self.assertEqual(result["structure"], "......(((.((....)))))")
-        self.assertAlmostEqual(result["mfe_kcal_mol"], -1.40, places=2)
+        self.assertAlmostEqual(result["mfe_kcal_mol"], -1.10, places=2)
+        self.assertEqual(result["dangling_ends"], 0)
         self.assertAlmostEqual(result["cai"], 0.695, places=3)
         self.assertEqual(result["rna_version"], "2.7.2")
 

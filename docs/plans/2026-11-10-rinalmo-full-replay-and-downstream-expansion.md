@@ -91,7 +91,7 @@ P-motif-input 只新增 outer/inner motif energy 输入，保留 Turner 与 DP�
 
 保留官方 commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be`、编译和三条官方示例，不重复已通过的工程验收。官方代码/库继续只在 third_party，不违反再分发限制。
 
-正式扩展前必须解释生成器 MFE 与 ViennaRNA 2.7.2 独立复算差异：逐项固定 Vienna 版本、dangling 参数、终止密码子、能量模型和输入序列；至少对照原文 ViennaRNA 2.4.14、`-d0` 与当前环境。差异未闭合不得声称 MFE 一致。
+生成器 MFE 与 ViennaRNA 2.7.2 独立复算差异已完成参数归因：旧默认 `dangles=2` 为−1.4/−6.7/−14.7，论文对应 `dangles=0` 为−1.1/−6.0/−13.5，与 LinearDesign 完全一致，结构逐字符一致；独立 RNAfold CLI 复算一致，诊断 SHA256=`a92b4c959e1ba57349ae309aef9e8e5e0937aa4ae9730e221d2af9ec0226b52d`。该工程协议保留完整终止密码子，后续验证显式记录 `dangling_ends=0`，不得回退默认值。原文 ViennaRNA 2.4.14 与当前2.7.2的版本身份分栏记录，不把参数一致外推为所有蛋白或生物稳定性结论。
 
 ### 5.2 LD1：计算设计空间与对照
 
