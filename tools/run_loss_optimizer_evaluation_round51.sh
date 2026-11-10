@@ -63,7 +63,7 @@ for ARM in length olr; do
   for seed in "${SEEDS[@]}"; do eval_seed "$ARM" "$seed" & pids+=("$!"); done
   wait_three "${pids[@]}"
   $PY "$REPO/tools/aggregate_structrfm_frozen_round48.py" --root "$ROOT" --full-model \
-    --experiment "loss_${ARM}" --run-prefix "loss_${ARM}_s" --seeds "${SEEDS[@]}" \
+    --experiment "loss_${ARM}" --run-prefix "loss_${ARM}_s" --seeds "${SEEDS[@]}" --splits "${SPLITS[@]}" \
     --out "$ROOT/eval_decision/loss_${ARM}/summary.json" > "$ROOT/logs/round51/loss_${ARM}_aggregate.log" 2>&1
   $PY "$REPO/tools/analyze_structrfm_confidence_round48.py" --root "$ROOT" --full-model \
     --experiment "loss_${ARM}" --run-prefix "loss_${ARM}_s" --seeds "${SEEDS[@]}" \
@@ -78,7 +78,7 @@ for ARM in length olr; do
     for seed in "${SEEDS[@]}"; do ablation_seed "$ARM" "$ABLATION" "$seed" & pids+=("$!"); done
     wait_three "${pids[@]}"
     $PY "$REPO/tools/aggregate_structrfm_frozen_round48.py" --root "$ROOT" --full-model \
-      --experiment "loss_${ARM}_${ABLATION}" --run-prefix "loss_${ARM}_s" --seeds "${SEEDS[@]}" \
+      --experiment "loss_${ARM}_${ABLATION}" --run-prefix "loss_${ARM}_s" --seeds "${SEEDS[@]}" --splits "${SPLITS[@]}" \
       --out "$ROOT/eval_decision/loss_${ARM}_${ABLATION}/summary.json" \
       > "$ROOT/logs/round51/loss_${ARM}_${ABLATION}_aggregate.log" 2>&1
   done

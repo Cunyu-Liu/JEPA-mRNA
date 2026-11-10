@@ -45,13 +45,14 @@ def main():
     parser.add_argument("--experiment", default="")
     parser.add_argument("--run-prefix", default="")
     parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
+    parser.add_argument("--splits", nargs="+", default=[])
     args = parser.parse_args()
     experiment = args.experiment or ("structrfm_full" if args.full_model else "structrfm_frozen")
     run_prefix = args.run_prefix or ("structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s")
     clean = args.root / "data/structrfm_pretrain_clean"
-    splits = ["bprna_ts0", "bprna_new", "archiveii", "ref_pdb_ts1",
-              "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb",
-              "rfam_fam", "chanrg_test", "chanrg_gena", "chanrg_genc", "chanrg_genf"]
+    splits = args.splits or ["bprna_ts0", "bprna_new", "archiveii", "ref_pdb_ts1",
+                             "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb",
+                             "rfam_fam", "chanrg_test", "chanrg_gena", "chanrg_genc", "chanrg_genf"]
     results = {}
     for split in splits:
         audit = json.loads((clean / f"{split}.audit.json").read_text())
@@ -110,7 +111,7 @@ def main():
                           "nll_mean": float(np.mean([cell["nll"] for cell in cells])),
                           "n_long_unsupported": sum(cell["n_long_unsupported"] for cell in cells)}
     status = "FULL" if args.full_model else "FROZEN"
-    summary = {"status": f"PASS_STRUCTRFM_{status}_ABC_13_SPLITS_3_SEEDS_3_REPEATS",
+    summary = {"status": f"PASS_STRUCTRFM_{status}_ABC_{len(splits)}_SPLITS_3_SEEDS_3_REPEATS",
                "protocol": "own-clean; each seed independently decoded three times; not an ensemble",
                "splits": results}
     args.out.parent.mkdir(parents=True, exist_ok=True)
