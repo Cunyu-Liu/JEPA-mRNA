@@ -15722,3 +15722,15 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **三轮证据**：配置仅NLL-sum、backbone LR=1e-6与R0不同，其余RiNALMo-giga/PairMLP490/R6、batch2、steps=0、500步VL0、patience=6不变。best SHA256=`9b653a0bc8cfa025b6cf1b9da9c6e4844b9de052104a87b0b07c398f0acaa8bc`，resume=`0a6481be5681a7c3227d7b09367116933498d8e3e7f74dc0f1d228705b23afb6`，run_meta=`849a4e9050649b95cf80918b6dd033f3b78a08dd6c234c69a9572d4e149d7fbf`。best/resume逐张量一致，scheduler/stream、完整后段曲线与CUDA身份通过；QA双跑逐字节一致，artifact=`source_data/round52/rinalmo_olr_s42_completed_qa.json`，SHA256=`68a3ee57ec5a1b86cdd8ee862c5c86dfdd21dae465207c0342cd3f1de61b9127`。单run不放行容量，不与NLL-length绝对值直接比较，不宣称结构F1改善。
 - **队列接续**：L-length seed2026已加载同一TR1c/教师并真实CUDA训练，过程读到step650，保持原配置，无OOM或CPU回退。length2026/3407、olr2026/3407四个run仍未齐，容量与后续依赖门均关闭。
 - **LD1过程**：对照独立ViennaRNA已观察545/798条，主生成矩阵218/456格；全量QA未完成，不写统计或生物学结论。PPT未修改。
+
+## §15.834（2026-11-10）J1局部mixer静态准备与SSH暂断（未验收）
+
+- 新增独立`LocalContextMixer`候选实现：LayerNorm、按通道depthwise 3×3卷积、pointwise残差，pointwise零初始化保证初始恒等；测试代码覆盖恒等/输入边界、随机权重梯度及与结构mask组合的masked直接信息断裂。仅本地`py_compile`通过。
+- 上传时连续三次SSH/SCP连接关闭或重置，未能取得新的远端训练/评价状态，未在真实CUDA执行该组件，未提交或宣称通过。不得用本地CPU结果替代CUDA验收；恢复连接后需先核对原L/O与LD1进程，再上传测试，避免重复启动。
+
+## §15.835（2026-11-10）J1局部mixer与可选PairJEPA集成CUDA验收
+
+- **连接恢复后复核**：L-length seed2026仍按原配置训练，best step1500、VL0=`-0.5721802533494521`；LD1对照与主矩阵为573/798、226/456（该次快照），没有重复启动任何已有任务。
+- **mixer三轮检查**：零初始化恒等、非法输入、随机权重有限前向/梯度、结构mask下masked梯度为零和直接信息断裂，CPU+真实CUDA测试连续三轮均7/7通过。上传前的SSH失败已保留在§15.834，不以本地静态检查替代CUDA。
+- **可选集成**：`PairJEPA(block_context=True)`才创建mixer，默认False不产生新参数；teacher不创建mixer，target仍读取完整z且stop-gradient。默认旧state dict严格加载，零mixer时base/block loss逐值相同；mixer随机改变后部署`model(z)`逐值不变。masked z增加1000时prediction范数不变、target范数与loss改变，masked输入梯度为零，scorer无辅助loss梯度。
+- **回归**：原PairJEPA全量测试、结构mask、mixer及可选集成连续三轮均16/16通过。尚未接入训练参数或启动J-mlp/J1，完整EMA时序、逐通道坍塌、跨位置/序列相关和真实RiNALMo门仍未验收；L/O与容量阶段门不变，PPT未修改。

@@ -3,6 +3,8 @@ import copy
 import torch
 from torch import nn
 
+from .context_mixer import LocalContextMixer
+
 
 @torch.no_grad()
 def latent_effective_rank(features, max_samples=512):
@@ -71,7 +73,7 @@ def masked_neighbor_context(z, mask, valid_mask=None, kernel_size=3):
 
 class PairJEPA(nn.Module):
     def __init__(self, d_z=128, latent_dim=64, use_ema=True, random_target=False, seed=0,
-                 use_teacher=True):
+                 use_teacher=True, block_context=False):
         super().__init__()
         if use_ema and not use_teacher:
             raise ValueError("EMA requires a target encoder")
@@ -81,6 +83,7 @@ class PairJEPA(nn.Module):
         self.seed = seed
         self.teacher = copy.deepcopy(self.scorer) if use_teacher else None
         self.context_predictor = LatentPairMLP(d_z, latent_dim) if use_teacher else None
+        self.context_mixer = LocalContextMixer(d_z) if block_context else None
         if self.teacher is not None:
             latent_state = {key: value for key, value in self.scorer.state_dict().items()
                             if not key.startswith("logit.")}
@@ -107,6 +110,8 @@ class PairJEPA(nn.Module):
         if not mask.any():
             raise ValueError("empty masked-pair target")
         context, context_counts = masked_neighbor_context(z, mask, valid_mask)
+        if self.context_mixer is not None:
+            context = self.context_mixer(context)
         prediction = self.context_predictor(context)
         with torch.no_grad():
             target = self.teacher(z)
