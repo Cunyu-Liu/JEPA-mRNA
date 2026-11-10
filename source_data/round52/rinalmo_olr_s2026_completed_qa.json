@@ -1,0 +1,186 @@
+{
+  "status": "PASS_SINGLE_RUN_THREE_CHECK_QA",
+  "allow_capacity_diagnostic": false,
+  "scientific_conclusion": false,
+  "runs": {
+    "olr_s2026": {
+      "run": "round52_rinalmo_olr_s2026",
+      "seed": 2026,
+      "steps_completed": 8000,
+      "best_step": 5000,
+      "best_vl0": 22.010543160082673,
+      "n_unfrozen": 16,
+      "validation_curve": [
+        {
+          "step": 500,
+          "validation_loss": 33.30360742739808,
+          "best_step": 500,
+          "best_validation_loss": 33.30360742739808,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 1000,
+          "validation_loss": 31.176433320155983,
+          "best_step": 1000,
+          "best_validation_loss": 31.176433320155983,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 1500,
+          "validation_loss": 29.098015563338247,
+          "best_step": 1500,
+          "best_validation_loss": 29.098015563338247,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 2000,
+          "validation_loss": 26.919027876632143,
+          "best_step": 2000,
+          "best_validation_loss": 26.919027876632143,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 2500,
+          "validation_loss": 27.127096520594822,
+          "best_step": 2000,
+          "best_validation_loss": 26.919027876632143,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 3000,
+          "validation_loss": 24.880174678693695,
+          "best_step": 3000,
+          "best_validation_loss": 24.880174678693695,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 3500,
+          "validation_loss": 25.199649171205696,
+          "best_step": 3000,
+          "best_validation_loss": 24.880174678693695,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 4000,
+          "validation_loss": 23.43162069569996,
+          "best_step": 4000,
+          "best_validation_loss": 23.43162069569996,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 4500,
+          "validation_loss": 22.182827968530574,
+          "best_step": 4500,
+          "best_validation_loss": 22.182827968530574,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 5000,
+          "validation_loss": 22.010543160082673,
+          "best_step": 5000,
+          "best_validation_loss": 22.010543160082673,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 5500,
+          "validation_loss": 25.69054657205491,
+          "best_step": 5000,
+          "best_validation_loss": 22.010543160082673,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 6000,
+          "validation_loss": 25.537796494907234,
+          "best_step": 5000,
+          "best_validation_loss": 22.010543160082673,
+          "improved": false,
+          "bad_evaluations": 2
+        },
+        {
+          "step": 6500,
+          "validation_loss": 35.64200450528738,
+          "best_step": 5000,
+          "best_validation_loss": 22.010543160082673,
+          "improved": false,
+          "bad_evaluations": 3
+        },
+        {
+          "step": 7000,
+          "validation_loss": 10155.58727598981,
+          "best_step": 5000,
+          "best_validation_loss": 22.010543160082673,
+          "improved": false,
+          "bad_evaluations": 4
+        },
+        {
+          "step": 7500,
+          "validation_loss": 102450.02957308167,
+          "best_step": 5000,
+          "best_validation_loss": 22.010543160082673,
+          "improved": false,
+          "bad_evaluations": 5
+        },
+        {
+          "step": 8000,
+          "validation_loss": 389604.41719429765,
+          "best_step": 5000,
+          "best_validation_loss": 22.010543160082673,
+          "improved": false,
+          "bad_evaluations": 6
+        }
+      ],
+      "max_vl0": 389604.41719429765,
+      "max_abs_train_loss": 1478416.4497,
+      "max_gnorm": 2208091.25,
+      "final_train": {
+        "step": 8000,
+        "loss": 135358.0147,
+        "terms": {
+          "nll": 135327.6733,
+          "distill": 14.7312,
+          "rlcd": 0.8377,
+          "cal": 14.7724
+        },
+        "unfrozen": 16,
+        "gnorm": 2208091.25,
+        "lr_head": 0.0001,
+        "lr_backbone": 1e-06,
+        "peak_gb": 7.7,
+        "sec": 3310.3
+      },
+      "best_sha256": "afedf76ad5cea244212ed5a99b6b9db99e450d18c5797197f686eba69e2b53eb",
+      "resume_sha256": "ff9f77fbf09d159acb819acd30ca8c5ae1725c0f831d593bba321f954ac271c8",
+      "run_meta_sha256": "a1dda91e0c564f3404dd6cf8cb6ed7c460dc3df466ab4a1644ef399380d28297",
+      "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+      "best_resume_weights_equal": true
+    }
+  },
+  "aggregates": {
+    "olr": {
+      "mean_best_vl0": 22.010543160082673,
+      "population_sd_best_vl0": 0.0,
+      "best_vl0_values": [
+        22.010543160082673
+      ]
+    }
+  },
+  "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+  "teacher_manifest_sha256": "7a91d011b84bd0fb3e5e0d71b0c4a451f18d85a90a66562cde8782a832a2b255",
+  "limitations": [
+    "Natural early stopping and complete late curves are verified; this is not a test-set result.",
+    "VL0 values under different NLL normalizations are not direct structure-performance comparisons.",
+    "A partial run report does not open capacity or any dependent stage.",
+    "No interaction, capacity, Pair-JEPA, contrastive, D0/D1, or final-speed claim is allowed yet."
+  ]
+}

@@ -15809,3 +15809,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 主脚本固定使用完成run的best RiNALMo encoder，训练子集196条与VL0各提取残基表征，每条序列采样256个合法pair，构造对称特征并仅用训练集均值/标准差归一化；200个固定全量优化轮次后评价，不用VL0早停或调参。保存全部pair、label、logit、优化历史、线性权重/偏差SHA、checkpoint/run_meta/code/data SHA和真实CUDA峰值，明确`allow_capacity_expansion=false`。
 - 独立QA逐logit以稳定logistic公式重算加权NLL与Brier，核验pair/label/logit数量、类别、索引、协议和身份；算术篡改失败注入三轮通过。主脚本仅静态编译通过，尚未对真实checkpoint执行，不把线性probe结果或容量结论写成已存在。
 - O-LR seed2026后段出现尖峰，step7500 total=104198.5651、NLL=104168.013、gnorm=219120.84，仍按patience=6保留完整曲线。298格快照QA和LD1长链任务继续运行，PPT未修改。
+
+## §15.849（2026-11-11）O-LR seed2026完整早停QA与L-length seed3407接续
+
+- **O-LR完成**：seed2026在step8000达到patience=6自然早停，best step5000、best VL0=22.010543160082673；step5500/6000/6500/7000/7500/8000 bad=1/2/3/4/5/6，末次VL0=389604.41719429765。最大训练绝对loss=1478416.4497、最大gnorm=2208091.25；final total/NLL/distill/RLCD/cal=`135358.0147`/`135327.6733`/`14.7312`/`0.8377`/`14.7724`，16/33层解冻，peak=7.7GB。低backbone LR仍出现后段失稳，不作稳定性宣称。
+- **三轮证据**：best SHA256=`afedf76ad5cea244212ed5a99b6b9db99e450d18c5797197f686eba69e2b53eb`，resume=`ff9f77fbf09d159acb819acd30ca8c5ae1725c0f831d593bba321f954ac271c8`，run_meta=`a1dda91e0c564f3404dd6cf8cb6ed7c460dc3df466ab4a1644ef399380d28297`。best/resume逐张量一致，scheduler/stream、完整曲线、配置和CUDA身份通过。QA双跑逐字节一致，artifact=`source_data/round52/rinalmo_olr_s2026_completed_qa.json`，SHA256=`0487d05abe704b2ad9286a7626a34d4e00495d45141944d36eaf5605c8c3e024`。QA启动前的SSH失败未执行任何命令，不是run失败。
+- **队列**：L-length seed3407已真实CUDA接续至约step1000，保持NLL-length、steps=0、500步VL0、patience=6。剩余length3407与olr3407未齐，容量门仍未开放。
+- **LD1**：298格首轮QA统计为22格结构不同、最大次优差距0.9000244140625 kcal/mol，第二轮固定SHA复算尚未完成，不作为最终双跑验收。PPT未修改。
