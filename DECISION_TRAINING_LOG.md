@@ -15625,3 +15625,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **独立QA**：seed42结果SHA=`fc6d106eb8fa0bf2c36ac10242d4c05e50a6b48c3a02f74bf4a80ca88ee5f4c6`，QA=`0eb936e903471e19a2c65e8a968d1ed87e45c4dcd30b93ea143bb6ed3119a3d5`；seed2026结果=`d1b3b72da85e3b3d9dd40dfc30ce99097281845ac057894a92798b1daf171986`，QA=`4a1e725c8713dd724c67bf36140e5773425b00378140570c84d0ef8dc75fd9bf`。逐项loss、梯度、shadow Adam和不变量双跑通过。
 - **关键诊断**：length/sum shadow update RMS在6个批次均增大，head/backbone中位42.6831047/42.6831076倍，范围14.5821–334.9544，不支持“length在终态自然降低更新幅度”的假设，必须独立训练验证。backbone LR=1e-6仅将shadow update缩至0.1，不能证明VL0或F1改善。seed2026两批NLL与辅助项cosine为负，不能混改aux、loss和LR。
 - **阶段门**：decision双跑SHA256=`091802d5545a7129603b75b93750b01e4cac86066b02c7058090206a1d7a6494`，允许L-length和O-LR独立单因子，禁止交互、U-ramp和容量提前放行。正式L/O队列按length42→olr42→length2026→olr2026→length3407→olr3407串行，steps=0、500步VL0、patience=6，其他R0配置不变，不自动进入测试或后续实验，PPT未修改。
+
+## §15.818（2026-11-10）L-length/O-LR正式队列启动（训练中）
+
+- **启动**：实现与replay提交`a1999402fdc57f60a14a01110279e128606b3b28`已push，正式队列PID=4086325，当前首个L-length seed42。使用真实RiNALMo、NLL-length对照；后续O-LR保持NLL-sum且仅backbone LR=1e-6。六种run均独立目录`round52_rinalmo_{length,olr}_s{42,2026,3407}`，不读取structRFM状态。
+- **边界**：steps=0、batch=2、500步VL0、patience=6、best checkpoint和完整后段曲线。串行避免650M模型峰值叠加OOM，失败仅按最近有效resume原配置恢复。尚无首个VL0，不启动测试、容量或后续阶段，PPT未修改。
