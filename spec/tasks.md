@@ -1,14 +1,14 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **最新执行覆盖（2026-11-10：RiNALMo全量重跑与下游扩展）**
+> **最新执行覆盖（2026-11-11：RiNALMo全量重跑与下游扩展）**
 >
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A223 | RiNALMo资产、历史隔离与R0/R-replay | RiNALMo权重/预训练风险、R6对应配置、独立run命名空间核验；R0三种子自然收敛后做同状态无更新重放与独立QA | 已完成：R0三种子齐套、正式replay及独立QA通过；length/sum update RMS中位42.68倍，LR=1e-6仅缩放0.1；decision=091802d5…6494，允许独立L/O，禁止交互/U-ramp |
-> | T-A224 | RiNALMo核心优化、容量与Pair-JEPA | L/O独立单因子→容量证据门→J-gate/J-mlp/J1-block-EMA/fixed/random；42/2026/3407、steps=0、500步VL0、patience=6 | L-length best=-0.7997258096@8000；其他run未齐，容量/JEPA未放行；既有TR0-clean八split已按审计重建，Rfam单列预训练风险，不混用structRFM clean |
+> | T-A224 | RiNALMo核心优化、容量与Pair-JEPA | L/O独立单因子→容量证据门→J-gate/J-mlp/J1-block-EMA/fixed/random；42/2026/3407、steps=0、500步VL0、patience=6 | length42/2026与olr42/2026四个run已自然早停并双跑QA；length3407在训、olr3407未启，容量未放行。普通与J1 structured-block一步CUDA工程smoke均通过，teacher=0/student=1，`allow_pairjepa_training=false`；容量误差/表征probe仅工具验收，真实诊断待六run齐套。TR0-clean八split已重建，Rfam单列预训练风险 |
 > | T-A225 | 结构感知对比CL0–CL5 | tr1c-v2/同源家族审计、视图split继承、负池、CL1/2/3/4、条件CL5、三种子与同算力对照 | 仅计划；Pair-JEPA裁决和数据门后执行，不照搬第二宿主或未验证增强 |
 > | T-A226 | D0/D1、motif与长序列 | RiNALMo同初始化纯数据扩充、去泄露/标签守恒；motif/shuffle/Turner0；全长与span验收 | 未启动；常规评测仅主八+Rfam，不删除长链 |
-> | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | LD0与smoke闭环；114蛋白exact/beam、λ=0/4共456单元断点续跑中；design-test不调参，非正式并发耗时不作速度；COVID BNT/wild-type仍PARTIAL，LD2未启动 |
+> | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | 798条max-CAI/同义/GC匹配对照已生成并独立QA，ViennaRNA评价进行中；主矩阵SIGKILL后单进程断点恢复至303/456，298格首轮22格结构不同、最大次优0.900024kcal/mol，双跑复核未完成。design-test不调参，COVID BNT/wild-type仍PARTIAL，LD2未启动 |
 > | T-A228 | 最终主八+Rfam、置信度、raw速度与交付 | 单骨干/头/checkpoint、3seed×3repeat、独立QA、独占raw三轮、负结果/PARTIAL完整、PPT逐页复核 | 未达成；所有前轮阶段门通过前不启动 |
 > | T-A229 | RiNALMo长序列工程门 | 分块等价、无type推理、真实CUDA全长与峰值，禁止截断/CPU回退 | 已通过：512–3819nt完整前向，3819nt allocated=18.31GB/reserved=21.32GB，未OOM；仅工程可运行，长程精度/DP和D1长链训练未验收 |
 >
