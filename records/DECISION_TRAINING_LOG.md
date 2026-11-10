@@ -15864,3 +15864,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增两臂seed42误差+表征独立CUDA复现：逐项比较sequence/length/loss、pair/label/logit、checkpoint/data/code/protocol身份，线性weight/bias SHA必须完全一致；误差最大差≤1e-8、logit最大差≤1e-5。复现与裁决各双跑`cmp`，范围必须覆盖length_s42和olr_s42。
 - 修正阶段门：欠拟合成立时`allow_c_wide/allow_c_local=true`且`allow_j_gate=false`，须先完成容量臂；欠拟合不成立时才`allow_j_gate=true`。任何情况`allow_pairjepa_training=false`，J-mlp仍是必要对照。
 - 合成复现容差、失败注入和阶段门连续三轮通过；浮点差值断言改`math.isclose`，不改变验收容差。`bash-rgx3n1sv`仅等待首轮诊断完成，尚无真实复现、next_base或容量裁决，PPT未修改。
+
+## §15.859（2026-11-11）L-length seed3407中段曲线与LD1进度
+
+- seed3407在step7500/8000 VL0=`-0.7906595175068449`/`-0.7892491171301513`，随后step8500/9000改善至`-0.8039350774837563`/`-0.8083357605318948`；step9500/10000小幅回升、bad=1/2，step10500进一步改善至best=`-0.8113490310396216`、bad=0。全程steps=0、500步VL0、patience=6，未人工提前停止；约step10850时已解冻22/33层，尚未自然早停。
+- LD1对照ViennaRNA评价747/798条，主矩阵单进程恢复至314/456格；两个容量队列仍只守候，未运行真实probe/复现，olr3407未启动。无新增科学结论，PPT未修改。
