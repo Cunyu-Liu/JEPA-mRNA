@@ -1,0 +1,105 @@
+{
+  "status": "PASS_RINALMO_TR0_CLEAN_ASSETS",
+  "n_splits": 8,
+  "rows": [
+    {
+      "split": "bprna_ts0",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+      "source_sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/bprna_ts0.audit.json",
+      "audit_sha256": "c8b3b4722b651bd937f528bfcbf842811abbda64ba74d1c79f1e45305057820b",
+      "raw_n": 1288,
+      "clean_n": 1192,
+      "removed_exact": 0,
+      "removed_homology_only": 96,
+      "clean_sha256": "d2477d5296a6ebf34a90df4e040d17b42525d296fe3521633af52f6712e96174"
+    },
+    {
+      "split": "bprna_new",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+      "source_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/bprna_new.audit.json",
+      "audit_sha256": "316a04e69eba7bba54c6263ae397c32ea021e647679670ec8ccf954f24443618",
+      "raw_n": 5388,
+      "clean_n": 5388,
+      "removed_exact": 0,
+      "removed_homology_only": 0,
+      "clean_sha256": "66fd3c367e11b9e570ca67bbfe08ddf546d223fcb5662394bdf419bc788ba558"
+    },
+    {
+      "split": "archiveii_embok_clean",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl",
+      "source_sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/archiveii_embok_clean.audit.json",
+      "audit_sha256": "f72c7ecb8205929fca98817953ac972193eafca046ac461f4ca8d6496a94555a",
+      "raw_n": 2544,
+      "clean_n": 1094,
+      "removed_exact": 0,
+      "removed_homology_only": 1450,
+      "clean_sha256": "132150279b53862a2d1b98fb80cd42067aa427151d40b81babd96f459630436c"
+    },
+    {
+      "split": "ref_pdb_ts1",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl",
+      "source_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/ref_pdb_ts1.audit.json",
+      "audit_sha256": "6c3a152c1d68569a46bdfa0b23bb89d0330f895ccf82051ba5f789601d20bfd1",
+      "raw_n": 63,
+      "clean_n": 61,
+      "removed_exact": 0,
+      "removed_homology_only": 2,
+      "clean_sha256": "dd6ebcb8f335edeba25eb28a1f246df70ae89d19f4802148d65c0b6d5f7f78a2"
+    },
+    {
+      "split": "ref_pdb_ts2",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl",
+      "source_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/ref_pdb_ts2.audit.json",
+      "audit_sha256": "5adb30dea3ff8fda61f6fc35a1c862ac24c180d3547fe77bcf36160653958990",
+      "raw_n": 39,
+      "clean_n": 39,
+      "removed_exact": 0,
+      "removed_homology_only": 0,
+      "clean_sha256": "adaa8dea4919ed3d913d188ae68ad2c5b992913be8898ce91929d8d56dde3d5a"
+    },
+    {
+      "split": "ref_pdb_ts3",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl",
+      "source_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/ref_pdb_ts3.audit.json",
+      "audit_sha256": "4100227d1c85cf4c05c4fdbc498082237eb7cf1830ef6e0c399b1cc7e1b4899b",
+      "raw_n": 19,
+      "clean_n": 17,
+      "removed_exact": 0,
+      "removed_homology_only": 2,
+      "clean_sha256": "9e39a0a4cc1768c2ffd911f3dc9002ab0d6d333606bcbcda8044bdb43ad0b6e4"
+    },
+    {
+      "split": "ref_pdb_ts_hard",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
+      "source_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/ref_pdb_ts_hard.audit.json",
+      "audit_sha256": "85362b4fe4d7407a92d4d7e9b4ac8cc56ccfbd782be858dacfa9057137e539cf",
+      "raw_n": 28,
+      "clean_n": 28,
+      "removed_exact": 0,
+      "removed_homology_only": 0,
+      "clean_sha256": "2e95fa687f9bfa8673332328d3af688ec3e7e98b60f6c5e598d66f336d36a2e6"
+    },
+    {
+      "split": "testsetb",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "source_sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06",
+      "audit": "source_data/appendix_leakage/round39_clean_audits/tr0/testsetb.audit.json",
+      "audit_sha256": "0253e0c4a45f8084ca874f6f8661eaf7a12372faf27fa5b9ada72277b930001c",
+      "raw_n": 428,
+      "clean_n": 116,
+      "removed_exact": 247,
+      "removed_homology_only": 65,
+      "clean_sha256": "ad01070679093c734eaac5e81c28c9a6e3d968e87d71b3479b098a9f39864e8b"
+    }
+  ],
+  "protocol": "Rebuilt from previously accepted exact+80% identity/query-coverage>=0.8 audit indices; original order and GT preserved.",
+  "pretrain_overlap_risk": "RiNALMo pretraining also includes RNAcentral/nt/Rfam/Ensembl; these are TR0-clean downstream sets, not a guarantee of zero pretraining overlap.",
+  "rfam_protocol": "Rfam remains a separate raw official evaluation with explicit pretraining-overlap risk, not silently relabeled TR0-clean."
+}

@@ -15673,3 +15673,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **生成QA**：已完成68个生成单元的翻译、CAI、MFE和结构独立复核，全部通过，QA SHA256=`dc718fc1a87f9353513a99ea4827049b83a6bb2773e3214dc4a301bf00b21fb4`。只统计通过单元，不把456格写成完成；design-test未用于调参。
 - **L-length**：step8500 VL0=-0.7892488905659882，best仍step8000=-0.7997258095787299、bad=1，波动保留并继续patience=6，未出现R0式爆炸。O-LR尚未启动，PPT未修改。
+
+## §15.827（2026-11-10）既有RiNALMo TR0-clean审计定位与数据重建
+
+- **纠错**：用户指出RiNALMo clean此前已完成，回查确认`source_data/appendix_leakage/round39_clean_audits/tr0/`保存了exact+80% identity/query-coverage≥0.8的正式审计与删除索引，无需重新运行MMseqs。此前“只能使用原始split”的判断已修正，不重复已验收审计。
+- **重建**：8个JSONL按原顺序/GT/删除索引重建并双跑一致，计数为TS0=1288→1192、bpRNA-new=5388→5388、ArchiveII=2544→1094、TS1=63→61、TS2=39→39、TS3=19→17、TS-hard=28→28、TestSetB=428→116。manifest=`source_data/round52/rinalmo_tr0_clean_manifest.json`及recheck一致，原始数据与审计SHA均通过。
+- **边界**：这些是TR0下游clean，不等于RiNALMo全部预训练语料零重叠；RiNALMo仍包含RNAcentral/nt/Rfam/Ensembl。Rfam继续单列原始官方评测并标pretrain_overlap_risk，不把TR0-clean外推为预训练无污染证明。structRFM专属clean仍不混用。
+- **当前状态**：L-length继续训练，O-LR未启动；主八已有合法TR0-clean数据可用于冻结后评测，Rfam单列风险。PPT未修改。
