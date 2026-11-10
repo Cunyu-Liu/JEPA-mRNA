@@ -1,0 +1,32 @@
+{
+  "status": "PASS_RINALMO_J1_BLOCK_ONE_STEP_ENGINEERING_GATE",
+  "scientific_conclusion": false,
+  "allow_pairjepa_training": false,
+  "run_meta_sha256": "894edf5b9424990144d1b13766d36f369210b969d0cbef55da05c580bde1bb9c",
+  "resume_sha256": "767f698817e5f910e9b617aae8c70d9ee59edb70a321cd54a15c6393408fcbb6",
+  "train_log_sha256": "fb39b3de3eafec9b30e8f6456969b24f3beae8c90b8fd017f6b6de1d818a3359",
+  "diagnostics_sha256": "c66dde8fae4d99169122deca0df0c76d4dc099039dd3a611baa9e257c0aa000a",
+  "qa_sha256": "11d72a6b9b85b7e5db04f06eddd3da45bd9300c176c9ab80911c7397a7f59890",
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "masked_pairs": 40,
+  "anti_diagonal_masked_pairs": 10,
+  "off_anti_diagonal_masked_pairs": 30,
+  "direct_nll_gradient": {
+    "cosine": 0.0,
+    "nll_gradient_norm": 47.02518982256596,
+    "jepa_gradient_norm": 0.12133460923142425,
+    "nll_gradient_elements": 796371,
+    "jepa_gradient_elements": 813496,
+    "shared_gradient_elements": 491648
+  },
+  "ema_changed_tensors": 6,
+  "teacher_forward_calls_at_inference": 0,
+  "student_score_calls": 1,
+  "peak_gb": 4.8,
+  "limitations": [
+    "One-step J1 engineering smoke on VL0 assets only; no convergence, model selection, or structure-performance claim.",
+    "This does not establish JEPA efficacy, absence of collapse, or superiority to J-mlp.",
+    "L/O and capacity gates must complete before formal J-mlp or J1 training."
+  ]
+}

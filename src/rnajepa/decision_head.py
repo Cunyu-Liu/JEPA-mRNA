@@ -336,6 +336,7 @@ class FlatDecisionHead(nn.Module):
         jepa_use_ema: bool = True,
         jepa_random_target: bool = False,
         pair_latent_dim: int = 64,
+        jepa_block_context: bool = False,
     ) -> None:
         super().__init__()
         self.min_loop = min_loop
@@ -363,7 +364,8 @@ class FlatDecisionHead(nn.Module):
             self.pair_jepa = PairJEPA(d_z=d_z, latent_dim=pair_latent_dim,
                                       use_ema=jepa_use_ema,
                                       random_target=jepa_random_target,
-                                      use_teacher=scorer != "pairmlp" or jepa_use_ema)
+                                      use_teacher=scorer != "pairmlp" or jepa_use_ema,
+                                      block_context=jepa_block_context)
             self.resnet2d = None
             self.turner = None
         else:

@@ -43,6 +43,8 @@ def main():
     head = FlatDecisionHead(d_model=1280, d_z=128, hidden=64,
                             scorer=scorer, chunk_size=0,
                             pair_latent_dim=pair_latent_dim, jepa_use_ema=False,
+                            jepa_block_context=(meta.get("objective", {}).get("jepa_context")
+                                                == "structured_block"),
                             ripe_mode=ripe.get("mode")).cuda()
     head.load_state_dict(checkpoint["model"]["head"], strict=True)
     teacher_forward_guard = forbid_pairjepa_teacher_forward(head)

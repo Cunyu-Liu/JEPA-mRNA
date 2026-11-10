@@ -24,7 +24,9 @@ def main():
     parser.add_argument("--fasta", required=True)
     parser.add_argument("--split", required=True)
     parser.add_argument("--out-dir", required=True)
+    parser.add_argument("--max-workers", type=int, default=1)
     args = parser.parse_args()
+    assert args.max_workers >= 1
     repository = Path(args.lineardesign).resolve()
     split = json.loads(Path(args.split).read_text())
     assert split["allow_ld1_smoke"] and not split["allow_ld2"]
@@ -90,7 +92,7 @@ def main():
 
     for name in sorted(sequences, key=lambda x: (len(sequences[x]), x)):
         protein_jobs = [job for job in jobs if job[0] == name]
-        workers = 1 if len(sequences[name]) > 700 else 4
+        workers = min(args.max_workers, 1 if len(sequences[name]) > 700 else 4)
         with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
             list(executor.map(run, protein_jobs))
     cells = [json.loads((out_dir / f"{name}.lambda{weight}.beam{beam}.json").read_text())

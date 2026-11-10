@@ -69,6 +69,7 @@ from rnajepa.rlcd import ObjectiveWeights, combined_loss  # noqa: E402
 from rnajepa.harness import valid_pair_mask  # noqa: E402
 from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
 from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
+from rnajepa.structured_mask import structured_pair_mask  # noqa: E402
 from rinalmo_preflight import VOCAB, load_encoder  # noqa: E402
 from torch.utils.checkpoint import checkpoint as _grad_ckpt  # noqa: E402
 
@@ -261,6 +262,7 @@ def main():
     ap.add_argument("--pair-latent-dim", type=int, default=64)
     ap.add_argument("--lambda-jepa", type=float, default=0.0)
     ap.add_argument("--jepa-target", choices=["ema", "fixed", "random"], default="ema")
+    ap.add_argument("--jepa-context", choices=["context_v1", "structured_block"], default="context_v1")
     ap.add_argument("--jepa-mask-prob", type=float, default=0.15)
     ap.add_argument("--jepa-log-every", type=int, default=25)
     ap.add_argument("--jepa-rank-samples", type=int, default=512)
@@ -349,6 +351,7 @@ def main():
                             pair_latent_dim=args.pair_latent_dim,
                             jepa_use_ema=args.scorer == "pairjepa" and args.jepa_target == "ema",
                             jepa_random_target=args.scorer == "pairjepa" and args.jepa_target == "random",
+                            jepa_block_context=args.jepa_context == "structured_block",
                             ripe_mode=None if args.ripe_encoder_only else args.ripe_mode or None)
     encoder = encoder.to(device)
     head = head.to(device)
@@ -428,7 +431,7 @@ def main():
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
                       "jepa_rank_samples": args.jepa_rank_samples,
-                      "jepa_context": "context_v1" if args.scorer == "pairjepa" else None},
+                      "jepa_context": args.jepa_context if args.scorer == "pairjepa" else None},
         "validation": {"data": args.validation_data, "teacher_dir": args.validation_teacher_dir,
                        "every": args.validation_every, "patience": args.validation_patience,
                        "min_delta": args.validation_min_delta},
@@ -633,7 +636,10 @@ def main():
         jepa_record = None
         if args.lambda_jepa:
             log_latent = step % args.jepa_log_every == 0 or step == 1
-            latent_mask = masked_pair_target(mask_full, args.jepa_mask_prob, args.seed + step)
+            if args.jepa_context == "structured_block":
+                latent_mask = structured_pair_mask(mask_full, args.jepa_mask_prob, args.seed + step)
+            else:
+                latent_mask = masked_pair_target(mask_full, args.jepa_mask_prob, args.seed + step)
             latent_loss, latent_diagnostics = head.masked_pair_latent_loss(
                 z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0,
                 valid_mask=mask_full)
@@ -641,9 +647,15 @@ def main():
             terms_agg["jepa"] = float(latent_loss.detach())
             if log_latent:
                 jepa_record = {"step": step, "masked_pairs": int(latent_mask.sum()),
-                               "loss": float(latent_loss.detach()),
+                               "context": args.jepa_context, "loss": float(latent_loss.detach()),
                                **{name: float(value) if isinstance(value, torch.Tensor) else value
                                   for name, value in latent_diagnostics.items()}}
+                if args.jepa_context == "structured_block":
+                    coordinates = torch.arange(mask_full.shape[-1], device=mask_full.device) // 8
+                    n_blocks = (mask_full.shape[-1] + 7) // 8
+                    anti = (coordinates[:, None] + coordinates[None, :]) == n_blocks - 1
+                    jepa_record["anti_diagonal_masked_pairs"] = int((latent_mask & anti).sum())
+                    jepa_record["off_anti_diagonal_masked_pairs"] = int((latent_mask & ~anti).sum())
                 jepa_record["direct_nll_gradient"] = loss_gradient_cosine(
                     direct_nll, latent_loss, trainable())
 
