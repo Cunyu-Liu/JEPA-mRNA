@@ -15580,3 +15580,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **失稳保留**：最大训练绝对loss=1358607.3201，最大gnorm=4102410.5，step6000 VL0=252327.85919811975，step6500进一步上升；不隐藏best之后的爆炸，不以自然早停等同训练稳定。
 - **完成态QA**：best/resume逐张量一致，resume step=6500，scheduler LR=[1e-4,1e-5]，stream完整，steps=0、batch=2、NLL=sum、官方RiNALMo、真实CUDA及数据SHA通过。QA SHA256=`720fad6a6bb6c72e6f3d0d7b90b9da287dd7d0b1109fc97da7edc7c883398d8d`。辅助QA模块的torch导入作用域已修复并重验。
 - **后续**：seed2026已开始数据加载，seed3407未启动；三种子完整QA前不执行正式R-replay。replay QA改为读取各run实际n_unfrozen，不硬编码33层。L/O、测试评测和后续实验未启动，PPT未修改。
+
+## §15.811（2026-11-10）LinearDesign补充资产索引与下载阻塞、R0 seed2026过程点
+
+- **资产索引**：figshare DOI=`10.6084/m9.figshare.22193251`确认5个文件：COVID/VZV FASTA、uniprot_114.zip、raw_data.xlsx和p_value_summary.xlsx，许可CC BY 4.0。整包和单文件下载均返回403，实际下载0个文件，证据=`source_data/round52/lineardesign_asset_access.json`。原始资产未恢复并核验SHA前不得启动LD1，不得用论文图读数或文件名伪造数据。
+- **R0 seed2026**：step500/1000 VL0=33.303607435575735/31.176433418090834，best step1000、bad=0，仍在训练；seed3407未启动。当前不能与seed42拼成三种子结论，也不能启动正式R-replay。PPT未修改。
