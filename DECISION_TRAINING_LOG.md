@@ -15658,3 +15658,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **过程**：L-length step7000 VL0=-0.7982564702902243，best step7000、bad=0，已解冻14/33层；step6000曾回升至-0.7747083575并保留。O-LR及其他seed未启动，未自然早停，不作最终稳定性结论。
 - **数据口径**：RiNALMo官方预处理来源为RNAcentral、nt、Rfam、Ensembl，36M唯一序列/17M簇，不能用structRFM_pretrain_clean替代。完整语料审计未完成前，正式主八+Rfam使用原始官方split并标记pretrain_overlap_unresolved，不把原始split包装成clean SOTA；若后续需要clean主张，必须补充RiNALMo专属exact+80%审计。测试集不参与训练、早停或选臂。
 - **状态**：L/O其余run未齐，正式评测未启动；长序列全长前向已通过但长程精度未验收，PPT未修改。
+
+## §15.824（2026-11-10）L-length后段尖峰独立复算（训练中）
+
+- **过程复算**：seed42共15个验证点，best step7000/VL0=-0.7982564702902243，step7500=-0.795118348699924、bad=1。最大训练绝对loss=1.7648、最大gnorm=16.7、已解冻14/33层，未出现R0式百万级loss/梯度爆炸。原始train/validation SHA=`9dcd9f6bb2fc5e59b8d1070e22a21efdb0d80c024aadd79611dc4fbb2f36c5e5`/`455f18cc97cc26500677cdfb3ade02f95a8761e4a00f75fa44622048f6bcfb55`。
+- **边界**：这只是当前单种子过程证据，不证明三种子稳定、F1提升或最终收敛；O-LR和其他seed未启动，继续按patience=6，PPT未修改。

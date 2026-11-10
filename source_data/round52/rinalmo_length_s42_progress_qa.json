@@ -1,0 +1,26 @@
+{
+  "status": "PASS_L_LENGTH_PROGRESS_RECOMPUTE",
+  "scientific_conclusion": false,
+  "points": 15,
+  "best": {
+    "step": 7000,
+    "validation_loss": -0.7982564702902243,
+    "best_step": 7000,
+    "best_validation_loss": -0.7982564702902243,
+    "improved": true,
+    "bad_evaluations": 0
+  },
+  "last": {
+    "step": 7500,
+    "validation_loss": -0.795118348699924,
+    "best_step": 7000,
+    "best_validation_loss": -0.7982564702902243,
+    "improved": false,
+    "bad_evaluations": 1
+  },
+  "max_abs_train_loss": 1.7648,
+  "max_gnorm": 16.7,
+  "max_unfrozen": 14,
+  "train_log_sha256": "9dcd9f6bb2fc5e59b8d1070e22a21efdb0d80c024aadd79611dc4fbb2f36c5e5",
+  "validation_log_sha256": "455f18cc97cc26500677cdfb3ade02f95a8761e4a00f75fa44622048f6bcfb55"
+}
