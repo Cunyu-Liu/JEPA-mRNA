@@ -47,7 +47,7 @@ def atomic_json(path, value):
     os.replace(temporary, path)
 
 
-def load_r6_state(run_dir):
+def load_r6_state(run_dir, run_prefix="ripe_head_r6_s", backbone="structrfm"):
     run_dir = Path(run_dir)
     meta = json.loads((run_dir / "run_meta.json").read_text())
     best = torch.load(run_dir / "best.pt", map_location="cpu", weights_only=False)
@@ -55,9 +55,11 @@ def load_r6_state(run_dir):
     required = {"encoder", "head", "optimizer", "scheduler", "stream_state", "step", "n_unfrozen"}
     missing = required - set(resume)
     if missing:
-        raise ValueError(f"incomplete R6 resume state: {sorted(missing)}")
-    if meta.get("arm") != f"ripe_head_r6_s{meta.get('seed')}":
-        raise ValueError("unexpected R6 run identity")
+        raise ValueError(f"incomplete replay resume state: {sorted(missing)}")
+    if meta.get("arm") != f"{run_prefix}{meta.get('seed')}":
+        raise ValueError("unexpected replay run identity")
+    if backbone == "rinalmo" and meta.get("backbone_report", {}).get("weights") != "/root/rna_jepa_data/weights/rinalmo-giga":
+        raise ValueError("R0 requires the official RiNALMo-giga weights")
     if meta.get("objective", {}).get("nll_normalization") != "sum":
         raise ValueError("R6 control must use NLL sum")
     if resume["best_step"] != best["step"] or meta.get("best_step") != best["step"]:
@@ -195,10 +197,12 @@ def restore_scheduler_and_group_lrs(scheduler, scheduler_state, optimizer_groups
         raise ValueError(f"scheduler LR mismatch: {scheduler._last_lr} vs {restored}")
 
 
-def build_model(pretrained, resume):
+def build_model(pretrained, resume, backbone="structrfm"):
     encoder, report = train_plan_a.load_encoder(device="cpu", dtype=torch.float32)
-    if report.get("backbone") != "structRFM":
+    if backbone == "structrfm" and report.get("backbone") != "structRFM":
         raise ValueError("R6 requires the structRFM encoder")
+    if backbone == "rinalmo" and report.get("weights") != pretrained:
+        raise ValueError("R0 requires the selected RiNALMo-giga weights")
     head = FlatDecisionHead(
         d_model=int(report["d_model"]), d_z=128, hidden=64, scorer="pairmlp",
         chunk_size=0, pair_latent_dim=490, jepa_use_ema=False,
@@ -414,16 +418,25 @@ def main():
     parser.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl")
     parser.add_argument("--teacher-dir", default="/root/rna_jepa_data/ss_data/teacher/bprna_tr1c")
     parser.add_argument("--pretrained", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/structrfm_round48")
+    parser.add_argument("--backbone", choices=("structrfm", "rinalmo"), default="structrfm")
+    parser.add_argument("--run-id-prefix")
     parser.add_argument("--output", required=True)
     parser.add_argument("--preflight-only", action="store_true")
     args = parser.parse_args()
-    meta, best, resume = load_r6_state(args.run_dir)
-    install_structrfm_training(train_plan_a, xens2_eval, args.pretrained)
+    run_prefix = args.run_id_prefix or ("round52_rinalmo_r0_s" if args.backbone == "rinalmo" else "ripe_head_r6_s")
+    meta, best, resume = load_r6_state(args.run_dir, run_prefix, args.backbone)
+    if args.backbone == "structrfm":
+        install_structrfm_training(train_plan_a, xens2_eval, args.pretrained)
+    else:
+        import rinalmo_preflight
+        rinalmo_preflight.WEIGHTS = args.pretrained
     records = train_plan_a.load_records(args.data)
     selections = select_saved_batches(resume["stream_state"], records)
     base = {
         "status": "PREFLIGHT_R_REPLAY_READY" if args.preflight_only else "PASS_R_REPLAY_CUDA",
         "experiment": "R-replay",
+        "backbone": args.backbone,
+        "run_id_prefix": run_prefix,
         "scope": "best_weights_with_terminal_optimizer_scheduler_and_stream_not_best_time_optimizer",
         "scientific_conclusion": False,
         "run_dir": str(Path(args.run_dir).resolve()),
@@ -449,7 +462,8 @@ def main():
         print(json.dumps(base, indent=2), flush=True)
         return
     teacher_map = train_plan_a.load_teacher_map(args.teacher_dir)
-    encoder, head, params, optimizer, scheduler, report = build_model(args.pretrained, resume)
+    encoder, head, params, optimizer, scheduler, report = build_model(
+        args.pretrained, resume, args.backbone)
     before = [parameter.detach().clone() for parameter in params]
     stream_before = sha256_json(resume["stream_state"])
     scheduler_before = sha256_json({key: value for key, value in scheduler.state_dict().items() if key != "lr_lambdas"})

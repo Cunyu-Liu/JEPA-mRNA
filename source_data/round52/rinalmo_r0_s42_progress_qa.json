@@ -1,0 +1,47 @@
+{
+  "status": "PASS_R0_PROGRESS_THREE_CHECK_QA",
+  "scientific_conclusion": false,
+  "seed": 42,
+  "best_step": 1500,
+  "best_vl0": 28.433802097627474,
+  "resume_step": 1500,
+  "validation_curve": [
+    {
+      "step": 500,
+      "validation_loss": 32.37983624613044,
+      "best_step": 500,
+      "best_validation_loss": 32.37983624613044,
+      "improved": true,
+      "bad_evaluations": 0
+    },
+    {
+      "step": 1000,
+      "validation_loss": 29.054267892479807,
+      "best_step": 1000,
+      "best_validation_loss": 29.054267892479807,
+      "improved": true,
+      "bad_evaluations": 0
+    },
+    {
+      "step": 1500,
+      "validation_loss": 28.433802097627474,
+      "best_step": 1500,
+      "best_validation_loss": 28.433802097627474,
+      "improved": true,
+      "bad_evaluations": 0
+    }
+  ],
+  "run_status_at_read": "running",
+  "scheduler_base_lrs": [
+    0.0001,
+    1e-05
+  ],
+  "best_sha256": "1c0724d553b935f6e0d3b0c65ee805197810c9b822dad24f262a16f716169100",
+  "resume_sha256": "ffadb323ab42b3993ecad37634cb847cb4545fda88ff063eae1ad772612a0b47",
+  "run_meta_sha256": "5c3760cc4021a04498a31e0fd25863151d87fc68a3c40ba262ffbc9d6aa6852b",
+  "validation_log_sha256": "7e5e9429d402a66f156f52093006767bdba91b3bfc43247da333c84e9d5ef79d",
+  "notes": [
+    "Progress evidence only; training has not naturally converged.",
+    "The current resume need not equal best before early stopping restores best weights."
+  ]
+}

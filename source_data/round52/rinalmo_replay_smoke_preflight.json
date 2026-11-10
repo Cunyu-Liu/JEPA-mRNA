@@ -1,0 +1,87 @@
+{
+  "status": "PREFLIGHT_R_REPLAY_READY",
+  "experiment": "R-replay",
+  "backbone": "rinalmo",
+  "run_id_prefix": "round52_rinalmo_r0_smoke_s",
+  "scope": "best_weights_with_terminal_optimizer_scheduler_and_stream_not_best_time_optimizer",
+  "scientific_conclusion": false,
+  "run_dir": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/runs/round52_rinalmo_r0_smoke_s42",
+  "seed": 42,
+  "best_step": 2,
+  "resume_step": 2,
+  "best_validation_loss": 70.23955965333478,
+  "n_unfrozen": 0,
+  "resume_weights_equal_best": true,
+  "best_sha256": "907a059e37cce7cddc8663c610ba25eb9c5b0825c9c7a3fe81f1d8974d4d9cbb",
+  "resume_sha256": "ccb5b4d6f992623a77ca3fdf381eb3caf2896e29b9e1ae442e82e9b74e09c0e4",
+  "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+  "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+  "teacher_dir": "/root/rna_jepa_data/ss_data/teacher/bprna_tr1c",
+  "stream_state_sha256": "eb825d914e98eb31c18cee9d6a5470548cae862d9f496382b382aea620d9d3c4",
+  "scheduler_state": {
+    "base_lrs": [
+      0.0001,
+      1e-05
+    ],
+    "last_epoch": 2,
+    "verbose": false,
+    "_step_count": 3,
+    "_get_lr_called_within_step": false,
+    "_last_lr": [
+      6e-05,
+      6e-06
+    ]
+  },
+  "selected_batches": [
+    {
+      "queue_offset": 0,
+      "selection": "next_saved_stream_batch",
+      "record_indices": [
+        32591,
+        32610
+      ],
+      "lengths": [
+        86,
+        86
+      ]
+    },
+    {
+      "queue_offset": 2,
+      "selection": "first_saved_batch_max_length_gte_100",
+      "record_indices": [
+        23046,
+        23066
+      ],
+      "lengths": [
+        141,
+        141
+      ]
+    },
+    {
+      "queue_offset": 14,
+      "selection": "first_saved_batch_max_length_gte_200",
+      "record_indices": [
+        32606,
+        34340
+      ],
+      "lengths": [
+        216,
+        216
+      ]
+    },
+    {
+      "queue_offset": 103,
+      "selection": "first_saved_batch_max_length_gte_300",
+      "record_indices": [
+        5060,
+        7807
+      ],
+      "lengths": [
+        391,
+        391
+      ]
+    }
+  ],
+  "code_commit": "a41c0697c8938c4b7b6e9fc047aff5ef77ec09c2",
+  "code_sha256": "30a4e97aade6686043c2a48479d97f68f5a87ee820c3b3c8cda4f7da45aa44ae"
+}

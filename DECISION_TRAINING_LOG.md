@@ -15553,3 +15553,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **启动身份**：实现与QA提交`6d051026bc25e4d997e02af2a50aa89b2ace1641`及远端分支一致，smoke QA SHA256=`8061cddebec532bc376fdc36c88bb82b09c0495088e89731f94ebb7fe120e65b`通过硬门。远端setsid训练脚本PID=4082710，日志=`logs/round52/rinalmo_r0_s42.log`及`rinalmo_r0_queue.log`，run根目录=`runs/round52_rinalmo_r0_s{42,2026,3407}`。
 - **冻结配置**：RiNALMo-giga+PairMLP490+R6 head，NLL-sum、四目标、batch=2、steps=0、每500步VL0、patience=6、min_delta=1e-6，head/backbone LR=1e-4/1e-5，1600步head warmup后每800步解冻2层，seed=42/2026/3407串行。保存best VL0、resume、stream、optimizer/scheduler和完整后段曲线，失败只按最近有效resume原配置恢复。
 - **当前事实**：已确认数据加载与真实CUDA预留，尚未产生首个500步VL0或自然收敛结果；本地SSH等待已结束但远端独立训练未停止。R-replay、L/O和后续实验未启动，PPT未修改。
+
+## §15.807（2026-11-10）R0前三个VL0与RiNALMo replay工程预检（训练中）
+
+- **过程曲线**：seed42 step500/1000/1500 VL0=32.37983624613044/29.054267892479807/28.433802097627474，均连续刷新best、bad=0。固定checkpoint时best step=1500，训练仍running，未自然收敛，不能用best代替完整后段曲线。
+- **真实artifact QA**：`stable_load`固定best/resume，best step/VL0一致，resume step不早于best、stream完整，scheduler base LR=[1e-4,1e-5]且optimizer组LR一致；训练中的resume不要求等于best。run保持steps=0、batch=2、NLL=sum、PairMLP490+R6、RiNALMo官方权重和真实CUDA。进度QA SHA256=`31b15073bb4a9427c75ed12fab2f14709c53a6996329cea7e7e59984a4f6d6eb`，独立复算确认逐行best及resume关系。
+- **replay实现**：旧诊断脚本新增`--backbone rinalmo`和`--run-id-prefix`，默认structRFM历史行为保留；RiNALMo严格要求官方权重路径，identity不符即拒绝。既有梯度/optimizer回归连续三次通过。固定R0 smoke checkpoint双跑preflight一致，选择4个保存批次，长度86/141/216/391，代码SHA256=`30a4e97aade6686043c2a48479d97f68f5a87ee820c3b3c8cda4f7da45aa44ae`。首次默认R0前缀拒绝smoke是正确身份门，显式smoke前缀后通过。
+- **边界**：当前只完成R0进度验收和replay工程准备，未对R0完成态做真实梯度重放，未启动L/O或测试评测。R-replay必须等三种子完成并固定best权重+终态optimizer/scheduler/stream，不读取活动checkpoint。PPT未修改。
