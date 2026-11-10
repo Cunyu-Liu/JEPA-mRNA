@@ -1,0 +1,132 @@
+{
+  "status": "PASS_FOUR_RUN_STABILITY_ANALYSIS",
+  "scientific_conclusion": false,
+  "complete_l_o_matrix": false,
+  "allow_capacity_expansion": false,
+  "allow_pairjepa_training": false,
+  "runs": {
+    "r0_s42": {
+      "arm": "r0",
+      "seed": 42,
+      "best_step": 3500,
+      "best_vl0": 24.13491243153436,
+      "steps_completed": 6500,
+      "final_vl0": 744503.7365890241,
+      "final_minus_best_vl0": 744479.6016765925,
+      "max_vl0": 744503.7365890241,
+      "max_abs_train_loss": 1358607.3201,
+      "max_gnorm": 4102410.5,
+      "trainable_parameter_scope": "12/33 transformer blocks plus head; embeddings and pooler remain frozen",
+      "run_meta_sha256": "1a396d41dec776796a0d8926e136f2d9b190ed46b72c047134298b7db2358db8",
+      "validation_log_sha256": "0d87544dadf38986b3161dcca2d84736b413f78627209bf73701888362def13e",
+      "train_log_sha256": "6348241d5d2ccfc5367d3d82e032f057e89c2b274afa4ca6b554bdc007abcde2",
+      "completed_qa_sha256": "c4ba8f5e311d0397261d02c2303bf9ae08245dca7dbbebf6928600527eeacd95"
+    },
+    "r0_s2026": {
+      "arm": "r0",
+      "seed": 2026,
+      "best_step": 4000,
+      "best_vl0": 21.167809661189136,
+      "steps_completed": 7000,
+      "final_vl0": 3549645.5559440665,
+      "final_minus_best_vl0": 3549624.3881344055,
+      "max_vl0": 3549645.5559440665,
+      "max_abs_train_loss": 11963246.5971,
+      "max_gnorm": 12289257.0,
+      "trainable_parameter_scope": "12/33 transformer blocks plus head; embeddings and pooler remain frozen",
+      "run_meta_sha256": "c99d2554a8c01c421808f6ae80a378aa1096373a2c83ddc7631244af157e4f7c",
+      "validation_log_sha256": "83940dd61faba807bbb470b526888146862f478c08cee59fc1a43a9320f9c5c7",
+      "train_log_sha256": "e043721641b026fbe361ed30e311df46af4d2d26ca3108145919596f63a94b2f",
+      "completed_qa_sha256": "c4ba8f5e311d0397261d02c2303bf9ae08245dca7dbbebf6928600527eeacd95"
+    },
+    "length_s42": {
+      "arm": "length",
+      "seed": 42,
+      "best_step": 8000,
+      "best_vl0": -0.7997258095787299,
+      "steps_completed": 11000,
+      "final_vl0": 216.2957956593632,
+      "final_minus_best_vl0": 217.0955214689419,
+      "max_vl0": 216.2957956593632,
+      "max_abs_train_loss": 416.473,
+      "max_gnorm": 2015.54,
+      "trainable_parameter_scope": "22/33 transformer blocks plus head; embeddings and pooler remain frozen",
+      "run_meta_sha256": "db8115c04c947b895cd8ffe837f33fec25573afca761499e7ab0b75b0d6acfaf",
+      "validation_log_sha256": "264cc07e9b937a8f3a285294e479c472a9bc437d4571c17658f1d3f35b220016",
+      "train_log_sha256": "a2eddb71eaf179b5c44ceef3e1672eaa7e4fa472140f512266d7175c78fbc492",
+      "completed_qa_sha256": "f6191ffad8efedd1b635973b1d873d81b9fcbb3283316f77c4f3e9a0c6b83fa4"
+    },
+    "length_s2026": {
+      "arm": "length",
+      "seed": 2026,
+      "best_step": 12000,
+      "best_vl0": -0.8100311620900924,
+      "steps_completed": 15000,
+      "final_vl0": 29579.95086827981,
+      "final_minus_best_vl0": 29580.760899441902,
+      "max_vl0": 29579.95086827981,
+      "max_abs_train_loss": 37442.3184,
+      "max_gnorm": 90401.96,
+      "trainable_parameter_scope": "32/33 transformer blocks plus head; embeddings and pooler remain frozen",
+      "run_meta_sha256": "ab8905110228b6ec85a81fae98ad96f70b2568f057a4dec5ce6f4a711f220efa",
+      "validation_log_sha256": "e618960620a5dc1d6b0ab7412c016d10e3b465880c61a8c1773e9d28b1b3630b",
+      "train_log_sha256": "74c73063c5f34787fb6d8ef08310e41295db73ced3ae29f62c4f18b58f55c960",
+      "completed_qa_sha256": "529f901378fea4a1aa7b38f0e2f259bdc650701da0b81aac49b7aa033915b804"
+    },
+    "olr_s42": {
+      "arm": "olr",
+      "seed": 42,
+      "best_step": 4500,
+      "best_vl0": 22.218715002193022,
+      "steps_completed": 7500,
+      "final_vl0": 832854.171146579,
+      "final_minus_best_vl0": 832831.9524315768,
+      "max_vl0": 832854.171146579,
+      "max_abs_train_loss": 4505082.1374,
+      "max_gnorm": 4550285.0,
+      "trainable_parameter_scope": "14/33 transformer blocks plus head; embeddings and pooler remain frozen",
+      "run_meta_sha256": "849a4e9050649b95cf80918b6dd033f3b78a08dd6c234c69a9572d4e149d7fbf",
+      "validation_log_sha256": "a1185bdbbdc991989010e71403e777d2e769d24bd20e8a92080e75618b7c3d48",
+      "train_log_sha256": "72355fb1963fb3f5b68fbcc31dc6e6aa2eaf6f47844eb4fef40827a44e6f5ed8",
+      "completed_qa_sha256": "68a3ee57ec5a1b86cdd8ee862c5c86dfdd21dae465207c0342cd3f1de61b9127"
+    },
+    "olr_s2026": {
+      "arm": "olr",
+      "seed": 2026,
+      "best_step": 5000,
+      "best_vl0": 22.010543160082673,
+      "steps_completed": 8000,
+      "final_vl0": 389604.41719429765,
+      "final_minus_best_vl0": 389582.4066511376,
+      "max_vl0": 389604.41719429765,
+      "max_abs_train_loss": 1478416.4497,
+      "max_gnorm": 2208091.25,
+      "trainable_parameter_scope": "16/33 transformer blocks plus head; embeddings and pooler remain frozen",
+      "run_meta_sha256": "a1dda91e0c564f3404dd6cf8cb6ed7c460dc3df466ab4a1644ef399380d28297",
+      "validation_log_sha256": "c62447dd00043af9788e2c8dbaf8f80da6553ca710275de1930adcfe2d1ae9a8",
+      "train_log_sha256": "18c76fd6dd875453151834f48214bc3133668cf3487adfd4253d5a32002d24f2",
+      "completed_qa_sha256": "0487d05abe704b2ad9286a7626a34d4e00495d45141944d36eaf5605c8c3e024"
+    }
+  },
+  "same_nll_sum_two_seed_exploratory": {
+    "seeds": [
+      42,
+      2026
+    ],
+    "r0_mean_best_vl0": 22.65136104636175,
+    "olr_mean_best_vl0": 22.11462908113785,
+    "olr_minus_r0_mean_best_vl0": -0.5367319652239004,
+    "warning": "Two-seed descriptive comparison only; seed3407 is missing and both arms have late spikes."
+  },
+  "normalization_boundary": "NLL-length and NLL-sum absolute VL0 values are not directly compared.",
+  "missing_runs": [
+    "round52_rinalmo_length_s3407",
+    "round52_rinalmo_olr_s3407"
+  ],
+  "code_sha256": "797d157ec4655b2400b96cecdd020bb47ee8b3aa751db736be478be4683069b2",
+  "limitations": [
+    "Raw JSONL arithmetic and completed-QA identity only; no test set, structure-F1, or final arm selection.",
+    "Late curves are retained in full; no claim of stable convergence is made from best checkpoints.",
+    "Capacity diagnostics still require all six runs and their independent probes."
+  ]
+}

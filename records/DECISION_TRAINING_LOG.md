@@ -15847,3 +15847,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - 静态复核发现probe本身要求复算VL0与best差异`<1e-6`，独立QA却要求逐位相等，可能将合法求和顺序差异误判失败。统一为`rel_tol=0, abs_tol=1e-6`，不改变checkpoint/run_meta/data/code SHA、逐序列均值和其他身份检查。
 - 容量误差QA与均值篡改失败注入连续三轮通过；当前仍在六run齐套前守候，未运行真实容量probe，PPT未修改。
+
+## §15.856（2026-11-11）四run稳定性独立分析（非最终选型）
+
+- 从原始train/validation JSONL与已完成QA独立复算R0/length/olr的42/2026四组对照，双跑逐字节一致，artifact=`source_data/round52/rinalmo_l_o_four_run_stability.json`，SHA256=`542845feae3b09946190ab5ca7228e480a10fcdabc620658098116030b0b7c43`。R0 QA与L/O单run QA命名/键结构不同已分别处理，未混用过程文件。
+- 同NLL-sum两种子best VL0均值R0=22.65136104636175、O-LR=22.11462908113785，O-LR−R0=`-0.5367319652239004`。这是第三种子缺失时的描述性差异，且R0/O-LR后段均爆炸，不能据此选择O-LR。R0 seed42/2026 final VL0=744503.736589/3549645.555944，O-LR=832854.171147/389604.417194，完整保留。
+- length seed42/2026 best=-0.7997258096/-0.8100311621，final=216.295796/29579.950868；NLL-length与sum不直接比较绝对值。`complete_l_o_matrix=false`、`allow_capacity_expansion=false`、`allow_pairjepa_training=false`，需length3407/olr3407和容量probe齐套。PPT未修改。
