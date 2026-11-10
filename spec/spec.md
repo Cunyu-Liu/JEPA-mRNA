@@ -4,7 +4,7 @@
 >
 > 用户明确批准恢复阶段0。R-replay已以seed2主诊断、seed0复核、真实CUDA无更新、独立QA及双跑完成。合法身份为R6 best权重+终态optimizer/scheduler/stream，不是best时刻optimizer历史重放。length/sum shadow update RMS在6批次均增大，中位28.8024倍、范围8.0182–80.1575，不支持终态自然稳定假设；backbone LR=1e-6仅将对应更新缩至0.1。5/6批次NLL与辅助项梯度存在负cosine，不能混改aux权重；全解冻诊断不能隔离U-ramp。
 >
-> 阶段门：L-length/O-LR六种子均已自然早停，训练QA双跑一致SHA256=`277dfb93efef64c3d411f4e8d3fed46fb08d814c0734f4b7292f2a7771c37f7a`。length未出现R6/O-LR式爆炸，O-LR三种子仍有后段尖峰；VL0不同归一化不直接比较精度。同阶段13 split、greedy/Turner0、confidence和独立QA已放行；禁止L+O交互和U-ramp，容量仅允许离线诊断，所有精度、SOTA、置信度与速度结论未验证，PPT不改。
+> 阶段门：L-length/O-LR六种子均自然早停。按用户最新协议只先测主benchmark八任务和Rfam，表现好的模型再跑CHANRG；原13 split结果保留。两臂主榜均0/8，length Rfam=0.4481232036、O-LR=0.3603944671，length为稳定基座但未达后续测评标准，禁止交互和U-ramp。完成标志SHA256=`2953bd1656e626c251bb2e68f22808d8c422d8471649179fc465346536dc8fc3`，允许离线容量诊断，不允许直接启动C-wide/C-local或Pair-JEPA，PPT不改。
 
 > **历史执行覆盖（2026-11-06，第 48 轮：独立单模型 structRFM→RIPE→Pair-JEPA；活跃清单 `round48-single-model-architecture-v1`）**
 >

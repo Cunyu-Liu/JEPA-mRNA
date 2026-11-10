@@ -15510,3 +15510,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **稳定性对照**：L-length三种子最大训练绝对loss=1.7648/1.6246/1.7108、最大gnorm=21.88/17.04/21.72，后段最大VL0均为各自首验证点，未出现R6/O-LR式爆炸。O-LR三种子最大训练绝对loss=26180.2365/3654.8934/1633.7124、最大gnorm=77068.83/40176.6/36776.55，末次VL0=75.2729473858714/49.396910658951015/390.17401863901733，明确保留全部尖峰。训练证据支持length在此配方下显著改善优化稳定性，O-LR单独降低backbone LR不能解决失稳；但VL0不同归一化不能直接比较精度，必须等待冻结测试。
 - **三轮检查**：训练QA双跑逐字节一致，SHA256=`277dfb93efef64c3d411f4e8d3fed46fb08d814c0734f4b7292f2a7771c37f7a`，覆盖六run身份、完整曲线、有限值、best内部step/VL0、resume scheduler、数据/教师SHA和CUDA。`loss_optimizer_training_complete.json`与独立QA均已落盘。
 - **同阶段评测放行**：`run_loss_optimizer_evaluation_round51.sh`已在QA通过后启动（PID=3979802），仅L-length/O-LR的13 split×3 seed×3 repeat、greedy/Turner0、confidence、SOTA和双独立QA；测试不参与此前训练、早停或配置选择。容量仅允许离线诊断，不允许C-wide/C-local训练，Pair-JEPA未放行，PPT未修改。
+
+
+## §15.802（2026-11-10）用户缩减测评范围与L/O完整裁决：主benchmark+Rfam
+
+- **用户新协议**：后续只先测主benchmark八任务与Rfam，表现好的模型再跑CHANRG等后续测评。原13 split结果全部保留；不再需要的CHANRG进程已停止并记录`audits/round51/chanrg_stop_scope_change.json`。新独立验收为9 split×3 seed=27格，聚合器、SOTA比较器、QA均参数化同一split列表，默认旧13 split行为不破坏历史结果。
+- **L-length结果**：主benchmark all-baseline/external-single均0/8。TS0=0.5000043683671659（n=79）、bpRNA-new=0.39931044529574694（74）、ArchiveII=0.5242681510048763（90）、TestSetB=0.31589806153504635（21）；Rfam=0.44812320363719244，低于BPfold=0.7871860033232333。主/greedy/Turner0及独立QA均完成。
+- **O-LR结果**：主benchmark两种口径均0/8。TS0=0.24816246345873863、bpRNA-new=0.26717851264576503、ArchiveII=0.3176565438196221、TestSetB=0.17337039516824257；Rfam=0.36039446708005946。O-LR在主benchmark与Rfam均明显弱于L-length，与训练稳定性负证据一致，不启动交互臂。
+- **并行与最终QA**：Turner=0按split并行并补充独立seed worker，27格全部完成；完成标志SHA256=`2953bd1656e626c251bb2e68f22808d8c422d8471649179fc465346536dc8fc3`。O-LR主/greedy/Turner0 QA SHA256分别为`5824a4ec519e55c6529771beb586c860c57e1800ccd7f4a7f843f7af9a242147`、`5865ec7842135d25912a75f9ecb61e065f9260a46ec0f1b6c0032f0d2ed5488a`、`eae7564055d59886d0976cd3e6f61ca4d892a9a3b2d0bc1b71f00a876263b155`。
+- **裁决**：L-length为当前稳定基座，但主benchmark与Rfam未达“表现不错/继续后续测评”的标准，故不继续CHANRG。允许进入离线容量诊断，不允许直接启动C-wide/C-local或Pair-JEPA；最终SOTA、最佳置信度和raw速度仍未验证，PPT未修改。
