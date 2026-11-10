@@ -15591,3 +15591,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **执行链**：`run_rinalmo_replay_round52.sh`先双跑三种子训练QA，再并行seed42主诊断与2026复核，逐run双跑独立QA，最后双跑裁决。各run按实际n_unfrozen验收，不默认全33层。
 - **裁决硬门**：新增`decide_rinalmo_replay_round52.py`，强制RiNALMo身份、42/2026种子、42/2026/3407完整训练QA、best/resume SHA和实际解冻状态一致；只允许独立L-length/O-LR，禁止交互、U-ramp和容量提前放行。length与LR只作shadow诊断，结构效果必须独立训练验证。
 - **反事实**：以smoke replay配合不完整训练QA调用裁决器，明确拒绝且不产生decision文件；脚本语法和py_compile通过。R0 seed2026仍训练，step1500 VL0=29.09801551264604，step2000验证时尚未解冻，seed3407未启动。正式replay、L/O和后续实验未启动，PPT未修改。
+
+## §15.813（2026-11-10）LinearDesign官方补充PDF与部分序列恢复（资产PARTIAL）
+
+- **官方补充**：Nature静态补充PDF 25页，SHA256=`11972295bb6751bd4505d6f59edc1ac054d609b8a4e1d022dd0b506ebe2b04fd29ca3`。figshare整包/单文件403原件保留为`lineardesign_asset_access.initial_403.json`，未重试伪造成功。
+- **可复核序列**：提取COVID A–H共8条CDS（各3819nt）、VZV A–E/Ther/WT共7条CDS（各1869nt）及4条UTR。FASTA SHA256=`412b9288dee41837859a4dc32eceebb9ebf7e6d319a8a60ec085b7b54a86178b`，双跑逐字节一致；独立原文对照要求CDS出现一次，COVID/VZV共享3′UTR出现两次，全部通过。BNT PDF文本3712nt，与3819nt且非三倍数，和wild-type均不纳入已验证序列。
+- **UniProt**：以表头/标题锚点而非分页行号独立解析到114个唯一ID，长度78–3333aa，与原文一致。此前111个是错误切片，未记为资产缺口；ID清单不等于蛋白序列，114条实际蛋白序列仍需从UniProt获取。
+- **边界**：当前为`PARTIAL_SUPPLEMENT_RECOVERED_FIGSHARE_BLOCKED`，原始QA=`source_data/round52/lineardesign_supplement_qa.json`。COVID BNT/wild-type、114条蛋白序列及figshare原包未恢复，全量LD1仍不放行，LD2未启动。R0训练继续，PPT未修改。

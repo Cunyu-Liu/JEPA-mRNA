@@ -1,0 +1,115 @@
+{
+  "status": "PASS_LINEARDESIGN_SUPPLEMENT_SEQUENCE_EXTRACTION",
+  "n_coding_sequences": 15,
+  "n_utr_sequences": 4,
+  "records": [
+    {
+      "name": "covid_A",
+      "length": 3819,
+      "sequence_sha256": "e94b9bd408f585d444a25843914fdab1fe91838db3f1f39106418ab702068853"
+    },
+    {
+      "name": "covid_B",
+      "length": 3819,
+      "sequence_sha256": "e8192bbd56b941889affa39628c6783509b5f214bbe8c38ea3f34381606c00da"
+    },
+    {
+      "name": "covid_C",
+      "length": 3819,
+      "sequence_sha256": "75b73970897df4efcb12416bb4b7ad92ed55e5aff5c624de3edc5dce92eb09a4"
+    },
+    {
+      "name": "covid_D",
+      "length": 3819,
+      "sequence_sha256": "ad5d81d4f9014561f618530192af7b541741e7a6bb5607b3f3e5a795fee67b2d"
+    },
+    {
+      "name": "covid_E",
+      "length": 3819,
+      "sequence_sha256": "56f017b3b8c581b9043ac9979864d8d089342754bd43978a2bb2b53edcfa19ca"
+    },
+    {
+      "name": "covid_F",
+      "length": 3819,
+      "sequence_sha256": "dd970ba7e28689225a719625ce91d7b0b283d2291cc225a116f5c8a6bb09930a"
+    },
+    {
+      "name": "covid_G",
+      "length": 3819,
+      "sequence_sha256": "303166892fbf495faac7ce3d09bb4f8a45e7bdafdd9ab921550a0ba29a9ea6a8"
+    },
+    {
+      "name": "covid_H",
+      "length": 3819,
+      "sequence_sha256": "5b84ec24a47a86cb38c443348da1b58b1b1f40509f6276ace5221db1f96e1947"
+    },
+    {
+      "name": "covid_5\u2019_UTR",
+      "length": 43,
+      "sequence_sha256": "470b64597181162d4f4d085ff5600d28d44cf2b81843112ca8490136ebcbc5ae"
+    },
+    {
+      "name": "covid_3\u2019_UTR",
+      "length": 94,
+      "sequence_sha256": "2e678a55f403e11d6f08a0684a51cd8f6d676b3dd0fd37ea7f81ee3c4d528fe1"
+    },
+    {
+      "name": "vzv_gE-A",
+      "length": 1869,
+      "sequence_sha256": "161a5c09d4641eea072ac5cbd0789ab00ec9b32545df16f8f08cf90d760ce507"
+    },
+    {
+      "name": "vzv_gE-B",
+      "length": 1869,
+      "sequence_sha256": "006e4ff2afd921e4b175245bdfbf0127587d1aa27d2d3a944ae0db2fa9b995af"
+    },
+    {
+      "name": "vzv_gE-C",
+      "length": 1869,
+      "sequence_sha256": "73652e2f160d95f7f02dc5b889f56b9cf7390664adaa0443cf8ef2684760bf6d"
+    },
+    {
+      "name": "vzv_gE-D",
+      "length": 1869,
+      "sequence_sha256": "4b326eb60e633ae4fde03bff988264534aceb5b08968f3ff2ef629a6d046a9ad"
+    },
+    {
+      "name": "vzv_gE-E",
+      "length": 1869,
+      "sequence_sha256": "d16cda121009e1fb39dedd4fead34fb952e3a9e347098a560d94e8c61675da2c"
+    },
+    {
+      "name": "vzv_gE-Ther",
+      "length": 1869,
+      "sequence_sha256": "990f04d819d98ecf6d8c308878b3c52cd0c84e1b27a200449c3dfa812a6d5b24"
+    },
+    {
+      "name": "vzv_gE-WT",
+      "length": 1869,
+      "sequence_sha256": "5524599b36e41fceb8ab45659cf09c78e8a06383c261580cd919dfaa797a1469"
+    },
+    {
+      "name": "vzv_5\u2019_UTR",
+      "length": 64,
+      "sequence_sha256": "d17a43421e36c452cbaa0126aadd6f33022e9a90eaae109bb1589fd28c7145eb"
+    },
+    {
+      "name": "vzv_3\u2019_UTR",
+      "length": 94,
+      "sequence_sha256": "2e678a55f403e11d6f08a0684a51cd8f6d676b3dd0fd37ea7f81ee3c4d528fe1"
+    }
+  ],
+  "fasta_sha256": "412b9288dee41837859a4dc32eceebb9ebf7e6d319a8a60ec085b7b54a86178b",
+  "skipped": [
+    {
+      "name": "covid_BNT",
+      "length": 3712,
+      "reason": "coding sequence is incomplete or not triplet-preserving"
+    }
+  ],
+  "limitations": [
+    "COVID wild-type and the length-inconsistent BNT text are not accepted as verified coding sequences.",
+    "The figshare FASTA and uniprot_114.zip remain unavailable; this is a partial asset recovery.",
+    "No new design or biological validation has been performed."
+  ]
+}

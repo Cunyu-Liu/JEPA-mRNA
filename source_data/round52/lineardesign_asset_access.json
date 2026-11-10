@@ -1,19 +1,33 @@
 {
-  "status": "BLOCKED_DOWNLOAD_403_ASSET_INDEX_CONFIRMED",
+  "status": "PARTIAL_SUPPLEMENT_RECOVERED_FIGSHARE_BLOCKED",
   "article_doi": "10.6084/m9.figshare.22193251",
   "license": "CC BY 4.0",
-  "files": [
-    {"name": "sequences_for_covid_experiments.fasta", "size_bytes": 34140},
-    {"name": "sequences_for_vzv_experiments.fasta", "size_bytes": 13240},
-    {"name": "uniprot_114.zip", "size_bytes": 91500},
-    {"name": "raw_data.xlsx", "size_bytes": 59130},
-    {"name": "p_value_summary.xlsx", "size_bytes": 24330}
-  ],
-  "all_archive_url": "https://springernature.figshare.com/ndownloader/articles/22193251/versions/1",
-  "all_archive_status": 403,
-  "example_file_url": "https://springernature.figshare.com/ndownloader/files/39444253",
-  "example_file_status": 403,
-  "files_downloaded": 0,
+  "figshare_downloads": {
+    "all_archive_status": 403,
+    "individual_file_status": 403,
+    "files_downloaded": 0
+  },
+  "nature_supplement": {
+    "url": "https://static-content.springer.com/esm/art%3A10.1038%2Fs41586-023-06127-z/MediaObjects/41586_2023_6127_MOESM1_ESM.pdf",
+    "sha256": "11972295bb6751bd4505d6f59edc1ac054d609b8a4e1d022dd0b506ebe2b04fd29ca3",
+    "pages": 25,
+    "coding_sequences_recovered": 15,
+    "utr_sequences_recovered": 4,
+    "fasta_sha256": "412b9288dee41837859a4dc32eceebb9ebf7e6d319a8a60ec085b7b54a86178b",
+    "covid_cds_length": 3819,
+    "vzv_cds_length": 1869,
+    "covid_bnt_length_inconsistent": 3712,
+    "covid_wildtype_verified": false,
+    "covid_bnt_verified": false
+  },
+  "uniprot": {
+    "ids_recovered": 114,
+    "paper_reported_count": 114,
+    "min_protein_length": 78,
+    "max_protein_length": 3333,
+    "protein_sequences_recovered": false
+  },
+  "qa": "lineardesign_supplement_qa.json",
   "scientific_conclusion": false,
-  "note": "The public index and license were verified in the built-in browser, but both archive and individual file download returned 403. LD1 cannot start until original assets are recovered and independently hashed."
+  "note": "The Nature supplement is verified. COVID BNT/wild-type and all 114 UniProt protein sequences remain unrecovered. LD1 cannot start its full matrix until those assets are restored and independently hashed."
 }

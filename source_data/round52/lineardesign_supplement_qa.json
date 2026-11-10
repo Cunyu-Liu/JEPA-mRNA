@@ -1,0 +1,225 @@
+{
+  "status": "PASS_LINEARDESIGN_SUPPLEMENT_INDEPENDENT_QA_WITH_ASSET_GAPS",
+  "fasta_records": [
+    {
+      "name": "covid_A",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_B",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_C",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_D",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_E",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_F",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_G",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_H",
+      "length": 3819,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_5\u2019_UTR",
+      "length": 43,
+      "source_occurrences": 1
+    },
+    {
+      "name": "covid_3\u2019_UTR",
+      "length": 94,
+      "source_occurrences": 2
+    },
+    {
+      "name": "vzv_gE-A",
+      "length": 1869,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_gE-B",
+      "length": 1869,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_gE-C",
+      "length": 1869,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_gE-D",
+      "length": 1869,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_gE-E",
+      "length": 1869,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_gE-Ther",
+      "length": 1869,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_gE-WT",
+      "length": 1869,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_5\u2019_UTR",
+      "length": 64,
+      "source_occurrences": 1
+    },
+    {
+      "name": "vzv_3\u2019_UTR",
+      "length": 94,
+      "source_occurrences": 2
+    }
+  ],
+  "n_uniprot_ids_parsed": 114,
+  "paper_reported_uniprot_count": 114,
+  "unaccounted_uniprot_ids": 0,
+  "uniprot_ids": [
+    "P15421",
+    "Q6PF06",
+    "Q86TJ5",
+    "Q6UXY8",
+    "P13501",
+    "Q13155",
+    "P07947",
+    "Q6ZRS4",
+    "Q99525",
+    "Q9BYB4",
+    "P40222",
+    "Q8IZA0",
+    "P31949",
+    "P78382",
+    "Q494X3",
+    "O75151",
+    "P0CE72",
+    "A6NFE2",
+    "Q5T749",
+    "O60721",
+    "P0CL80",
+    "P47211",
+    "Q8N1G4",
+    "Q15147",
+    "P01707",
+    "Q3MIR4",
+    "Q9HA90",
+    "P54098",
+    "O95867",
+    "Q9BY21",
+    "Q8N6Q8",
+    "Q6VMQ6",
+    "Q9GZQ8",
+    "Q8TDG2",
+    "P31645",
+    "Q5TZJ5",
+    "Q8NC38",
+    "P01860",
+    "Q6PI48",
+    "Q96HA7",
+    "P15382",
+    "Q96DV4",
+    "Q9UNN5",
+    "Q5VYS8",
+    "Q9NV29",
+    "Q16690",
+    "O75509",
+    "P51805",
+    "O14880",
+    "Q92734",
+    "Q06187",
+    "K4DIA1",
+    "P54852",
+    "A6NKF1",
+    "P05160",
+    "A7TUB1",
+    "Q14442",
+    "Q5VV16",
+    "Q7Z340",
+    "E7EVM7",
+    "Q15669",
+    "P15086",
+    "Q9H461",
+    "Q75N90",
+    "Q9HAE3",
+    "Q9BY11",
+    "Q92542",
+    "B2RWP4",
+    "Q7RTU1",
+    "Q5SWX8",
+    "Q96NI6",
+    "Q9NR99",
+    "Q5T7N8",
+    "Q6NT16",
+    "P78563",
+    "P50851",
+    "P49755",
+    "Q05901",
+    "Q9BXB4",
+    "Q3L8U1",
+    "P98173",
+    "Q9NWZ3",
+    "Q9UFB7",
+    "Q59FF8",
+    "P26436",
+    "Q15465",
+    "Q9UKQ2",
+    "H9A532",
+    "P78345",
+    "Q9Y512",
+    "Q9HCI6",
+    "O75962",
+    "P57076",
+    "Q6B0B8",
+    "C9J798",
+    "Q96L91",
+    "A6NH11",
+    "Q9UBM8",
+    "Q9QC07",
+    "Q6ZRS2",
+    "P30281",
+    "P47974",
+    "Q9H3R1",
+    "Q96JQ0",
+    "Q8NH43",
+    "Q8IW19",
+    "Q8TF61",
+    "Q16787",
+    "Q9HC38",
+    "Q8TAA9",
+    "Q8NB90",
+    "Q8NGJ5",
+    "Q13087",
+    "Q9Y5G9"
+  ],
+  "min_protein_length": 78,
+  "max_protein_length": 3333,
+  "supplement_pdf_sha256": "295bb6751bd4505d6f59edc1ac054d609b8a4e1d022dd0b506ebe2b04fd29ca3",
+  "fasta_sha256": "412b9288dee41837859a4dc32eceebb9ebf7e6d319a8a60ec085b7b54a86178b",
+  "uniprot_protein_sequences_recovered": false,
+  "figshare_fastas_recovered": false
+}
