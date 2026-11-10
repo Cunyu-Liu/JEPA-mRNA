@@ -47,16 +47,20 @@ ablation_seed() {
   local experiment=loss_${arm}_${ablation}
   local extra=(--decoder greedy) expected_decoder=greedy expected_prior=none
   if [ "$ablation" = turner0 ]; then extra=(--prior-weight-override 0); expected_decoder=nussinov; expected_prior=zero; fi
+  local pids=()
   for split in "${SPLITS[@]}"; do
-    local out=$ROOT/eval_decision/$experiment/s${seed}/${split}.json
-    if [ -f "$out" ] && $PY -c 'import hashlib,json,sys; d=json.load(open(sys.argv[1])); h=hashlib.sha256(open(sys.argv[2],"rb").read()).hexdigest(); assert d["checkpoint_sha256"]==h and d["repeats"]==3 and d["device"]=="cuda" and d["decoder"]==sys.argv[3] and d["prior_weight_override"]==(None if sys.argv[4]=="none" else 0.0)' "$out" "$checkpoint" "$expected_decoder" "$expected_prior" 2>/dev/null; then continue; fi
-    if [ -f "$out" ]; then mv "$out" "$out.stale"; fi
-    $PY "$REPO/tools/eval_structrfm_full_ablation_round48.py" --checkpoint "$checkpoint" \
-      --pretrained "$ROOT/weights/structrfm_round48" \
-      --data "$ROOT/data/structrfm_pretrain_clean/${split}.jsonl" \
-      --out "$out" --repeats 3 "${extra[@]}" \
-      > "$ROOT/logs/round51/eval_${experiment}_s${seed}_${split}.log" 2>&1
+    (
+      out=$ROOT/eval_decision/$experiment/s${seed}/${split}.json
+      if [ -f "$out" ] && $PY -c 'import hashlib,json,sys; d=json.load(open(sys.argv[1])); h=hashlib.sha256(open(sys.argv[2],"rb").read()).hexdigest(); assert d["checkpoint_sha256"]==h and d["repeats"]==3 and d["device"]=="cuda" and d["decoder"]==sys.argv[3] and d["prior_weight_override"]==(None if sys.argv[4]=="none" else 0.0)' "$out" "$checkpoint" "$expected_decoder" "$expected_prior" 2>/dev/null; then exit 0; fi
+      if [ -f "$out" ]; then mv "$out" "$out.stale"; fi
+      $PY "$REPO/tools/eval_structrfm_full_ablation_round48.py" --checkpoint "$checkpoint" \
+        --pretrained "$ROOT/weights/structrfm_round48" \
+        --data "$ROOT/data/structrfm_pretrain_clean/${split}.jsonl" \
+        --out "$out" --repeats 3 "${extra[@]}" \
+        > "$ROOT/logs/round51/eval_${experiment}_s${seed}_${split}.log" 2>&1
+    ) & pids+=("$!")
   done
+  wait_three "${pids[@]}"
 }
 
 for ARM in ${ARMS:-length olr}; do
@@ -75,9 +79,7 @@ for ARM in ${ARMS:-length olr}; do
     --chanrg-baseline "$ROOT/source_data/round48/round40_baseline_ood_summary.json" \
     > "$ROOT/logs/round51/loss_${ARM}_sota.log" 2>&1
   for ABLATION in greedy turner0; do
-    pids=()
-    for seed in "${SEEDS[@]}"; do ablation_seed "$ARM" "$ABLATION" "$seed" & pids+=("$!"); done
-    wait_three "${pids[@]}"
+    for seed in "${SEEDS[@]}"; do ablation_seed "$ARM" "$ABLATION" "$seed"; done
     $PY "$REPO/tools/aggregate_structrfm_frozen_round48.py" --root "$ROOT" --full-model \
       --experiment "loss_${ARM}_${ABLATION}" --run-prefix "loss_${ARM}_s" --seeds "${SEEDS[@]}" --splits "${SPLITS[@]}" \
       --out "$ROOT/eval_decision/loss_${ARM}_${ABLATION}/summary.json" \
