@@ -1,5 +1,18 @@
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
+> **最新执行覆盖（2026-11-10：RiNALMo全量重跑与下游扩展）**
+>
+> | ID | 任务 | 完成判据 | 当前状态 |
+> |---|---|---|---|
+> | T-A223 | RiNALMo资产、历史隔离与R0/R-replay | RiNALMo权重/预训练风险、R6对应配置、独立run命名空间核验；R0三种子自然收敛后做同状态无更新重放与独立QA | 文档已完成，未启动；不得读取structRFM R6状态充当RiNALMo证据 |
+> | T-A224 | RiNALMo核心优化、容量与Pair-JEPA | L/O独立单因子→容量证据门→J-gate/J-mlp/J1-block-EMA/fixed/random；42/2026/3407、steps=0、500步VL0、patience=6 | 未启动；structRFM旧结果只作历史诊断，不直接放行 |
+> | T-A225 | 结构感知对比CL0–CL5 | tr1c-v2/同源家族审计、视图split继承、负池、CL1/2/3/4、条件CL5、三种子与同算力对照 | 仅计划；Pair-JEPA裁决和数据门后执行，不照搬第二宿主或未验证增强 |
+> | T-A226 | D0/D1、motif与长序列 | RiNALMo同初始化纯数据扩充、去泄露/标签守恒；motif/shuffle/Turner0；全长与span验收 | 未启动；常规评测仅主八+Rfam，不删除长链 |
+> | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | 官方三例工程保留；新扩展未启动，无湿实验外推 |
+> | T-A228 | 最终主八+Rfam、置信度、raw速度与交付 | 单骨干/头/checkpoint、3seed×3repeat、独立QA、独占raw三轮、负结果/PARTIAL完整、PPT逐页复核 | 未达成；所有前轮阶段门通过前不启动 |
+>
+> 统一合同：`docs/plans/2026-11-10-rinalmo-full-replay-and-downstream-expansion.md`。非计时任务按实测安全并行提高显存与利用率，禁止为占满而OOM或改科学配置；正式测速独占。
+
 > **当前优化执行覆盖（2026-11-10：loss/optimizer 解耦；合同 `docs/plans/2026-11-10-prism-optimization-execution-prompt.md`）**
 >
 > 用户已明确批准按新优化计划恢复阶段0，覆盖此前停止记录的恢复边界，但不重复已验收实验。顺序固定为R-replay→L-length/O-LR→容量诊断→J-gate/J-mlp/J1-block-EMA/fixed/random→D0/D1→motif-input→最终冻结评测。

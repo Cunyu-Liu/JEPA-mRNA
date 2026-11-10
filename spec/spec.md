@@ -1,5 +1,7 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
+> **最新执行覆盖（2026-11-10：RiNALMo全量重跑与下游扩展）**：用户固定后续骨干为RiNALMo，structRFM全部结果仅作historical_structRFM_diagnostic，不删除、不混入新对照。全部科学实验以`round52_rinalmo_*`重跑，seed=42/2026/3407、steps=0、500步VL0、patience=6，常规评测仅主benchmark八任务+Rfam。顺序为R0/R-replay→L-length/O-LR→容量→J-gate/J-mlp/J1-block-EMA/fixed/random→结构对比CL0–CL5→D0/D1→motif/长序列→冻结精度/置信度/raw速度→LinearDesign。调研借鉴限同序列视图、随机/困难负样本、距离控制、预算对齐与失败分析；不照搬第二宿主或未验证正对。LinearDesign扩展114蛋白计算基准、λ/exact/beam、密码子约束、UTR–CDS、全长结构与风险评价，禁止湿实验外推。统一合同=`docs/plans/2026-11-10-rinalmo-full-replay-and-downstream-expansion.md`。当前只完成文档，未启动新训练；旧structRFM容量门不放行新J-gate。
+
 > **当前优化执行覆盖（2026-11-10：loss/optimizer 解耦；合同 `docs/plans/2026-11-10-prism-optimization-execution-prompt.md`）**
 >
 > 用户明确批准恢复阶段0。R-replay已以seed2主诊断、seed0复核、真实CUDA无更新、独立QA及双跑完成。合法身份为R6 best权重+终态optimizer/scheduler/stream，不是best时刻optimizer历史重放。length/sum shadow update RMS在6批次均增大，中位28.8024倍、范围8.0182–80.1575，不支持终态自然稳定假设；backbone LR=1e-6仅将对应更新缩至0.1。5/6批次NLL与辅助项梯度存在负cosine，不能混改aux权重；全解冻诊断不能隔离U-ramp。
