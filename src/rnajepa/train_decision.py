@@ -1138,6 +1138,12 @@ def evaluate_validation(model, dataset: DecisionDataset, config: TrainConfig, *,
 # ---------------------------------------------------------------------------
 # gradient coverage
 # ---------------------------------------------------------------------------
+def gradient_exclusions(config):
+    if config.lambda_jepa:
+        return DEFAULT_EXCLUDED_GRAD_BLOCKS
+    return DEFAULT_EXCLUDED_GRAD_BLOCKS + ("head.pair_jepa.context_predictor",)
+
+
 def gradient_coverage(model, *, excluded: Sequence[str] = DEFAULT_EXCLUDED_GRAD_BLOCKS
                       ) -> Dict[str, List[str]]:
     """Classify every learnable parameter by the gradient it currently holds.
@@ -1881,7 +1887,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
             # blocks the gradient (see the module docstring).  After one optimizer
             # step the last layer is non-zero and coverage is complete.
             if coverage is None and step >= 1:
-                coverage = assert_gradient_coverage(model)
+                coverage = assert_gradient_coverage(model, excluded=gradient_exclusions(config))
                 meta["gradient_coverage"] = coverage
 
             if config.grad_clip:
@@ -1988,7 +1994,7 @@ def run_training(config: TrainConfig, dataset: DecisionDataset,
     if coverage is None:
         # Very short runs (a single step) never reach the second backward pass, so
         # the dead-gradient window is still open; assert connectivity only.
-        coverage = assert_gradient_coverage(model, require_nonzero=False)
+        coverage = assert_gradient_coverage(model, excluded=gradient_exclusions(config), require_nonzero=False)
         meta["gradient_coverage"] = coverage
         meta["gradient_coverage_note"] = ("require_nonzero=False: the run was too short "
                                          "to leave the zero-init dead-gradient window")
