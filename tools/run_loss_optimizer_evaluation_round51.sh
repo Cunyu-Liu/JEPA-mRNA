@@ -23,7 +23,8 @@ wait_three() {
 }
 
 eval_seed() {
-  local arm=$1 seed=$2 checkpoint=$ROOT/runs/loss_${arm}_s${seed}/best.pt
+  local arm=$1 seed=$2
+  local checkpoint=$ROOT/runs/loss_${arm}_s${seed}/best.pt
   for split in "${SPLITS[@]}"; do
     local out=$ROOT/eval_decision/loss_${arm}/s${seed}/${split}.json
     if [ -f "$out" ] && $PY -c 'import hashlib,json,sys; d=json.load(open(sys.argv[1])); h=hashlib.sha256(open(sys.argv[2],"rb").read()).hexdigest(); assert d["checkpoint_sha256"]==h and d["repeats"]==3 and d["device"]=="cuda" and d["score_forward_count_per_sequence"]==1' "$out" "$checkpoint" 2>/dev/null; then continue; fi
@@ -40,7 +41,8 @@ eval_seed() {
 }
 
 ablation_seed() {
-  local arm=$1 ablation=$2 seed=$3 checkpoint=$ROOT/runs/loss_${arm}_s${seed}/best.pt
+  local arm=$1 ablation=$2 seed=$3
+  local checkpoint=$ROOT/runs/loss_${arm}_s${seed}/best.pt
   local experiment=loss_${arm}_${ablation}
   local extra=(--decoder greedy) expected_decoder=greedy expected_prior=none
   if [ "$ablation" = turner0 ]; then extra=(--prior-weight-override 0); expected_decoder=nussinov; expected_prior=zero; fi
