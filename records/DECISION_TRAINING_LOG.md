@@ -15881,3 +15881,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **完成曲线**：seed3407在step4000取得best VL0=23.820185378417428，step4500/5000/5500/6000/6500/7000 VL0=`25.0679743957`/`26.2178503728`/`62.1200030378`/`36010.40565592`/`203059.62624795`/`652661.93358880`，bad=1/2/3/4/5/6，step7000自然早停。最大训练绝对loss=2737318.2678、最大gnorm=2502463.75；final total/NLL/distill/RLCD/cal=`2737318.2678`/`2737285.5075`/`15.8718`/`0.975`/`15.9135`，gnorm=2502463.75，12/33层解冻，peak=7.1GB。低backbone LR未避免后段失稳。
 - **三轮证据**：best SHA256=`251420694b2a08fc35614c39127389bc4b583e5aab584ca1bd5da6457d2e8a4f`，resume=`553b35acff217df47d844d8dc2068e1becd3f9379c0c134310dde797e7bbd514`，run_meta=`73cdef41d44fdb9383a60f182e1a67357c961771db9fff5805fe8db8eb7b12b4`。best/resume逐张量一致，scheduler/stream、完整曲线、配置和CUDA身份通过。QA双跑逐字节一致，artifact=`source_data/round52/rinalmo_olr_s3407_completed_qa.json`，SHA256=`a11fe659be905d919e6fa010ba80def06cdcbae96e070b88aa6cc3ba27beb3fa`。
 - **阶段**：六个核心run已齐套，容量守候尚在进行周期检查与全量训练QA，尚无probe结果；不提前宣布容量或JEPA阶段通过。LD1对照771/798、主矩阵331/456（该次快照），PPT未修改。
+
+## §15.862（2026-11-11）六run完整训练QA通过与容量probe启动
+
+- 六个L/O run的best/resume权重、scheduler/stream、完整后段曲线、配置和CUDA身份全部通过，训练QA双跑逐字节一致，SHA256=`81f0bf715698e7e873334b94d61eca334bbf1de213d1288968ce6b835503d5e7`，artifact=`source_data/round52/rinalmo_loss_optimizer_training_qa.json`及recheck。
+- L-length三种子best VL0 mean=`-0.8094783431093082`、population SD=0.007747091215165112；O-LR mean=22.683147846897707、SD=0.8084860914182952。归一化不同，不直接比较绝对VL0，后段失稳不隐藏。
+- 首个L-length seed42误差probe已按门在真实CUDA运行；其余误差/表征probe、独立复现和容量裁决未齐，不能提前宣布扩参或JEPA训练。spec/tasks已同步，PPT未修改。
