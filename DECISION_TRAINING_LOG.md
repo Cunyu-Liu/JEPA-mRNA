@@ -15668,3 +15668,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **任务**：在已验收114条蛋白与91/23 split上执行exact/beam=0/500、λ=0/4，共456个生成单元。小蛋白最多4并发，>700aa串行，避免CPU内存叠加；每个单元独立JSON、翻译/结构/CAI/GC和`dangling_ends=0`验收，可断点续跑。
 - **边界**：design-test不参与λ、beam、约束或校准选择；并发耗时不作正式速度。生成矩阵不代表PRISM选型或生物效果，不启动LD2。L-length已解冻16/33层，继续自然训练，PPT未修改。
+
+## §15.826（2026-11-10）LinearDesign已完成单元独立QA与L-length波动
+
+- **生成QA**：已完成68个生成单元的翻译、CAI、MFE和结构独立复核，全部通过，QA SHA256=`dc718fc1a87f9353513a99ea4827049b83a6bb2773e3214dc4a301bf00b21fb4`。只统计通过单元，不把456格写成完成；design-test未用于调参。
+- **L-length**：step8500 VL0=-0.7892488905659882，best仍step8000=-0.7997258095787299、bad=1，波动保留并继续patience=6，未出现R0式爆炸。O-LR尚未启动，PPT未修改。
