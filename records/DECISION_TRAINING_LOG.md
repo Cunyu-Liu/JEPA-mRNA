@@ -15793,3 +15793,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增容量误差独立QA：逐序列用`math.fsum`重算train/VL0各项均值，核验VL0 total等于run_meta best、train/validation条数与长度、sequence SHA、checkpoint/run_meta/probe代码SHA、数据/教师身份、真实CUDA声明与train-minus-VL0差值；明确`allow_capacity_expansion=false`，不访问测试集。
 - 合成196+196条记录通过三轮独立QA与均值篡改失败注入；首次测试合成字典括号SyntaxError已定位修正，不是探针科学结果。工具已准备但尚未对真实checkpoint运行误差probe，不能据此放行C-wide/C-local。
 - O-LR seed2026过程改善至step4000 VL0=23.43162070，仍按steps=0、500步VL0、patience=6训练，其他run未齐；LD1主矩阵单进程恢复中，对照评价未完成。PPT未修改。
+
+## §15.846（2026-11-11）O-LR seed2026过程改善与LD1恢复快照QA（进行中）
+
+- O-LR seed2026在step4000/4500/5000 VL0=`23.43162069569996`/`22.182827968530574`/`22.010543160082673`，均连续改善、bad=0；这只是单run过程，尚未自然早停，不能与NLL-length直接比绝对值或宣称最终稳定。length3407与olr3407仍未开始，容量门未开。
+- SIGKILL恢复后的主矩阵已生成Q9H461与Q92542等后续单元，观察到结构不同但次优差距0.0的并列结构，继续保留而非强制DBN一致。对当前298格冻结逐文件SHA并执行三次完整ViennaRNA独立QA，任务尚在运行，不提前写成298格全部通过；对照ViennaRNA评价721/798条（该次快照），长蛋白单元仍在计算。PPT未修改。
