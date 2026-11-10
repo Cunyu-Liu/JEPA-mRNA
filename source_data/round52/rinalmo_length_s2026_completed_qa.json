@@ -1,0 +1,298 @@
+{
+  "status": "PASS_SINGLE_RUN_THREE_CHECK_QA",
+  "allow_capacity_diagnostic": false,
+  "scientific_conclusion": false,
+  "runs": {
+    "length_s2026": {
+      "run": "round52_rinalmo_length_s2026",
+      "seed": 2026,
+      "steps_completed": 15000,
+      "best_step": 12000,
+      "best_vl0": -0.8100311620900924,
+      "n_unfrozen": 32,
+      "validation_curve": [
+        {
+          "step": 500,
+          "validation_loss": -0.4730925645659394,
+          "best_step": 500,
+          "best_validation_loss": -0.4730925645659394,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 1000,
+          "validation_loss": -0.5043348778632923,
+          "best_step": 1000,
+          "best_validation_loss": -0.5043348778632923,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 1500,
+          "validation_loss": -0.5721802533494521,
+          "best_step": 1500,
+          "best_validation_loss": -0.5721802533494521,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 2000,
+          "validation_loss": -0.5883171382092451,
+          "best_step": 2000,
+          "best_validation_loss": -0.5883171382092451,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 2500,
+          "validation_loss": -0.575910833249883,
+          "best_step": 2000,
+          "best_validation_loss": -0.5883171382092451,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 3000,
+          "validation_loss": -0.6745977820648962,
+          "best_step": 3000,
+          "best_validation_loss": -0.6745977820648962,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 3500,
+          "validation_loss": -0.7336337461064864,
+          "best_step": 3500,
+          "best_validation_loss": -0.7336337461064864,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 4000,
+          "validation_loss": -0.758096212384796,
+          "best_step": 4000,
+          "best_validation_loss": -0.758096212384796,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 4500,
+          "validation_loss": -0.7448532520473043,
+          "best_step": 4000,
+          "best_validation_loss": -0.758096212384796,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 5000,
+          "validation_loss": -0.7699773276340334,
+          "best_step": 5000,
+          "best_validation_loss": -0.7699773276340334,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 5500,
+          "validation_loss": -0.7769812315971397,
+          "best_step": 5500,
+          "best_validation_loss": -0.7769812315971397,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 6000,
+          "validation_loss": -0.7839519937079359,
+          "best_step": 6000,
+          "best_validation_loss": -0.7839519937079359,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 6500,
+          "validation_loss": -0.7869176429652684,
+          "best_step": 6500,
+          "best_validation_loss": -0.7869176429652684,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 7000,
+          "validation_loss": -0.785705304848474,
+          "best_step": 6500,
+          "best_validation_loss": -0.7869176429652684,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 7500,
+          "validation_loss": -0.7985710837224095,
+          "best_step": 7500,
+          "best_validation_loss": -0.7985710837224095,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 8000,
+          "validation_loss": -0.79884377021092,
+          "best_step": 8000,
+          "best_validation_loss": -0.79884377021092,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 8500,
+          "validation_loss": -0.8057938829764192,
+          "best_step": 8500,
+          "best_validation_loss": -0.8057938829764192,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 9000,
+          "validation_loss": -0.8053514597145812,
+          "best_step": 8500,
+          "best_validation_loss": -0.8057938829764192,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 9500,
+          "validation_loss": -0.80725934534484,
+          "best_step": 9500,
+          "best_validation_loss": -0.80725934534484,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 10000,
+          "validation_loss": -0.8011432173489732,
+          "best_step": 9500,
+          "best_validation_loss": -0.80725934534484,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 10500,
+          "validation_loss": -0.8025490219757723,
+          "best_step": 9500,
+          "best_validation_loss": -0.80725934534484,
+          "improved": false,
+          "bad_evaluations": 2
+        },
+        {
+          "step": 11000,
+          "validation_loss": -0.8083773328780212,
+          "best_step": 11000,
+          "best_validation_loss": -0.8083773328780212,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 11500,
+          "validation_loss": -0.8100165337506344,
+          "best_step": 11500,
+          "best_validation_loss": -0.8100165337506344,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 12000,
+          "validation_loss": -0.8100311620900924,
+          "best_step": 12000,
+          "best_validation_loss": -0.8100311620900924,
+          "improved": true,
+          "bad_evaluations": 0
+        },
+        {
+          "step": 12500,
+          "validation_loss": 5.196913741753029,
+          "best_step": 12000,
+          "best_validation_loss": -0.8100311620900924,
+          "improved": false,
+          "bad_evaluations": 1
+        },
+        {
+          "step": 13000,
+          "validation_loss": 202.04913129571727,
+          "best_step": 12000,
+          "best_validation_loss": -0.8100311620900924,
+          "improved": false,
+          "bad_evaluations": 2
+        },
+        {
+          "step": 13500,
+          "validation_loss": 2168.3100648948002,
+          "best_step": 12000,
+          "best_validation_loss": -0.8100311620900924,
+          "improved": false,
+          "bad_evaluations": 3
+        },
+        {
+          "step": 14000,
+          "validation_loss": 5474.161753283289,
+          "best_step": 12000,
+          "best_validation_loss": -0.8100311620900924,
+          "improved": false,
+          "bad_evaluations": 4
+        },
+        {
+          "step": 14500,
+          "validation_loss": 14745.259013692143,
+          "best_step": 12000,
+          "best_validation_loss": -0.8100311620900924,
+          "improved": false,
+          "bad_evaluations": 5
+        },
+        {
+          "step": 15000,
+          "validation_loss": 29579.95086827981,
+          "best_step": 12000,
+          "best_validation_loss": -0.8100311620900924,
+          "improved": false,
+          "bad_evaluations": 6
+        }
+      ],
+      "max_vl0": 29579.95086827981,
+      "max_abs_train_loss": 37442.3184,
+      "max_gnorm": 90401.96,
+      "final_train": {
+        "step": 15000,
+        "loss": 26766.7182,
+        "terms": {
+          "nll": 26751.4164,
+          "distill": 7.6157,
+          "rlcd": -0.0374,
+          "cal": 7.7234
+        },
+        "unfrozen": 32,
+        "gnorm": 25909.87,
+        "lr_head": 0.0001,
+        "lr_backbone": 1e-05,
+        "peak_gb": 13.2,
+        "sec": 8784.1
+      },
+      "best_sha256": "abeb3e37ff9bea995461584820f54c16700eff147518fbd25e65390412cbc210",
+      "resume_sha256": "45e1a38a9193a7bbf78c40313d71fb757c2fcc78ef3e8789e5aae747956261ed",
+      "run_meta_sha256": "ab8905110228b6ec85a81fae98ad96f70b2568f057a4dec5ce6f4a711f220efa",
+      "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+      "best_resume_weights_equal": true
+    }
+  },
+  "aggregates": {
+    "length": {
+      "mean_best_vl0": -0.8100311620900924,
+      "population_sd_best_vl0": 0.0,
+      "best_vl0_values": [
+        -0.8100311620900924
+      ]
+    }
+  },
+  "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+  "teacher_manifest_sha256": "7a91d011b84bd0fb3e5e0d71b0c4a451f18d85a90a66562cde8782a832a2b255",
+  "limitations": [
+    "Natural early stopping and complete late curves are verified; this is not a test-set result.",
+    "VL0 values under different NLL normalizations are not direct structure-performance comparisons.",
+    "A partial run report does not open capacity or any dependent stage.",
+    "No interaction, capacity, Pair-JEPA, contrastive, D0/D1, or final-speed claim is allowed yet."
+  ]
+}

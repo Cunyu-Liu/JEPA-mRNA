@@ -15768,3 +15768,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增1步、batch=1、seed42、NLL-sum、PairJEPA490+R6、λJEPA=0.1、EMA、mask=0.15的工程smoke，仅使用VL0资产做接口验证，不做验证选型或结构性能结论。QA要求`jepa_diagnostics.jsonl`实际包含490通道方差、跨位置/序列相关、teacher–student距离及direct NLL梯度，检查EMA在optimizer step后改变、stream/checkpoint身份和真实CUDA。
 - 推理QA实例化同一checkpoint head，fail-closed禁止teacher forward，hook确认student scorer仅1次；超过14GB显存占用时launcher拒绝启动并保留输出目录不存在。实测当前16536MiB时返回42、`PASS_MEMORY_GUARD`，未创建run或checkpoint，未强行与L-length seed2026峰值叠加。
 - 当前尚未执行完整全模型1步smoke，`allow_pairjepa_training=false`；需等待安全显存窗口。L-length seed2026 step14500 VL0=14745.25901369、bad=5，尚未完成，容量门未开，PPT未修改。
+
+## §15.842（2026-11-11）L-length seed2026完整早停QA与PairJEPA smoke启动
+
+- **L-length完成**：seed2026在step15000达到patience=6自然早停，best step12000、best VL0=`-0.8100311620900924`；末次VL0=29579.95086827981，最大训练绝对loss=37442.3184、最大gnorm=90401.96。final step15000的total/NLL/distill/RLCD/cal=`26766.7182`/`26751.4164`/`7.6157`/`-0.0374`/`7.7234`，gnorm=25909.87，32/33层解冻，peak=13.2GB。后段失稳完整保留，单run不作三种子稳定性结论。
+- **三轮证据**：best SHA256=`abeb3e37ff9bea995461584820f54c16700eff147518fbd25e65390412cbc210`，resume=`45e1a38a9193a7bbf78c40313d71fb757c2fcc78ef3e8789e5aae747956261ed`，run_meta=`ab8905110228b6ec85a81fae98ad96f70b2568f057a4dec5ce6f4a711f220efa`；best/resume逐张量一致，scheduler/stream、完整曲线、配置和CUDA身份通过。QA双跑逐字节一致，artifact=`source_data/round52/rinalmo_length_s2026_completed_qa.json`，SHA256=`529f901378fea4a1aa7b38f0e2f259bdc650701da0b81aac49b7aa033915b804`。容量阶段仍需length3407与olr2026/3407齐套。
+- **安全窗口**：O-LR seed2026接续至step500时GPU占用约8650MiB，低于14GB保护阈值，启动全RiNALMo PairJEPA一步工程smoke及QA；该smoke不用于收敛或选型。结果尚未读取，不提前标记通过。PPT未修改。
