@@ -246,6 +246,7 @@ class TrainConfig:
     #: Pair-scorer architecture: 'mlp' (per-pair, all existing arms) or
     #: 'resnet2d' (Plan B: 2D-context scorer over the pairing matrix).
     scorer: str = "mlp"
+    pair_latent_dim: int = 64
     ripe_mode: str = ""
     jepa_use_ema: bool = True
     jepa_random_target: bool = False
@@ -791,6 +792,7 @@ def build_decision_model(config: TrainConfig):
         return FlatDecisionHead(d_model=d_model, d_z=config.d_z, hidden=config.hidden,
             scorer=config.scorer, resnet_blocks=config.resnet_blocks,
                                 resnet_kernel_size=config.resnet_kernel_size,
+                                pair_latent_dim=config.pair_latent_dim,
                                 chunk_size=config.head_chunk_size,
                                 ripe_mode=config.ripe_mode or None,
                                 jepa_use_ema=config.jepa_use_ema,
@@ -2126,6 +2128,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
                         "lower it when 3*d_model makes the chunk transient too big")
     p.add_argument("--scorer", default="mlp", choices=["mlp", "resnet2d", "pairjepa", "pairmlp"],
                    help="pair-scorer architecture (Plan B: resnet2d; Pair-JEPA or near-parameter PairMLP)")
+    p.add_argument("--pair-latent-dim", type=int, default=64)
     p.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
     p.add_argument("--jepa-no-ema", action="store_true")
     p.add_argument("--jepa-random-target", action="store_true")
@@ -2190,7 +2193,8 @@ def _config_from_args(args: argparse.Namespace) -> TrainConfig:
         embedding_dir=args.embedding_dir,
         embedding_d_model=args.embedding_d_model,
         head_chunk_size=args.head_chunk_size,
-        scorer=args.scorer, resnet_blocks=args.resnet_blocks,
+        scorer=args.scorer, pair_latent_dim=args.pair_latent_dim,
+        resnet_blocks=args.resnet_blocks,
         ripe_mode=args.ripe_mode,
         jepa_use_ema=not args.jepa_no_ema,
         jepa_random_target=args.jepa_random_target,
