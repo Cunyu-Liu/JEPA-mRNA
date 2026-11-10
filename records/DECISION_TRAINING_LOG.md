@@ -15740,3 +15740,25 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **新增诊断**：仅在`rank_samples>0`的每25步诊断中计算target/prediction逐通道方差、跨位置与跨序列off-diagonal cosine、teacher–student MSE和逐masked-pair cosine均值；保留原有总方差、均值范数、有效秩和contextless数量。相关性按序列等权，单序列cross-sequence记0，零范数由clamp处理，采样上限遵循`jepa_rank_samples`，不改变MSE loss、target、student或部署scorer。
 - **训练兼容**：训练日志对标量tensor继续`float()`，对逐通道Python列表原样写入，确保JSON可序列化；`rank_samples=0`不新增扩展字段，也不付出相关性计算开销。直接NLL–JEPA梯度cosine仍未实现，不能宣称完整J-gate。
 - **三轮检查**：独立单测覆盖恒定特征相关性=1、单样本边界、空mask拒绝、batch内不同mask、字段长度/范围、MSE与loss一致及扩展字段JSON序列化；真实CUDA验证block-context模型。原PairJEPA、训练、结构mask、mixer、block集成和新诊断连续三轮均19/19通过，仅有既有`torch.load(weights_only=False)` FutureWarning，无失败。未启动JEPA训练，L/O与容量门不变，PPT未修改。
+
+## §15.837（2026-11-11）direct NLL–JEPA梯度诊断候选实现（CUDA待验）
+
+- 新增`loss_gradient_cosine`候选实现：对当前所有可训练共享参数分别autograd求direct NLL与latent loss梯度，float64累计dot/norm，记录梯度元素数、共享元素数与两侧范数；零范数cosine记0而非NaN，`retain_graph=True`且不做optimizer step。训练循环单独累计`terms_b["nll"]`，仅在每25步扩展诊断时计算，不把distill/RLCD/cal混入direct NLL。
+- 测试代码覆盖同向=1、反向=-1、零范数、无训练参数拒绝、unused参数和CUDA参数不变。SSH上传连续失败，尚未在远端编译或执行这些新测试，未提交、未宣称通过；已在远端运行的L/O进程使用其启动时加载的代码，未被人为重启。恢复后先核对任务状态，再上传做三轮CUDA/训练回归。
+
+## §15.838（2026-11-11）远端SSH持续阻塞（待外部恢复）
+
+- 连续三个goal turn上传`gradient_diagnostics.py`、更新后的`train_plan_a.py`及测试均在SSH/SCP建连阶段被`125.71.97.44:29744`关闭，退避与等待后仍未恢复；不是CUDA、训练损失或测试失败。新代码仅本地静态编译通过，未完成真实CUDA、训练回归、日志远端同步或Git提交。
+- 最后成功推送为`cc32bd4d5ff387cca55ae27738629f040bfda0c0`；最后成功读取状态为L-length seed2026约step4000、LD1对照617/798、主矩阵242/456。此后远端状态未知，不能假定后台任务完成或失败。恢复条件为SSH可连接并能读取`/home/rna_jev`与`/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024`；首先运行TaskList和远端run状态检查，再续传梯度诊断并验收，禁止重复启动现有任务。
+
+## §15.839（2026-11-11）梯度helper的本地CPU辅助数值检查（非CUDA验收）
+
+- SSH恢复重试仍在建连阶段失败。辅助检查环境为本地PyTorch 2.8.0、`torch.cuda.is_available()=False`，仅验证数学逻辑，不替代远端CUDA或真实训练。
+- 向量参数同向cosine=`0.9999999999999998`、反向=`-0.9999999999999998`，NLL/JEPA梯度范数分别为4.47213595499958/8.94427190999916；零NLL梯度时cosine=0且范数=0，参数未更新且无`.grad`写入。第一次辅助命令将非标量`p*0`直接作为loss导致autograd拒绝，改为标量`(p*0).sum()`后通过；正式单元测试原本即使用标量参数，不是实现bug。远端上传仍未成功，继续保留CUDA待验状态。
+
+## §15.840（2026-11-11）direct NLL–JEPA梯度helper CUDA回归与集成边界
+
+- **连接恢复**：只读核对远端HEAD=`cc32bd4d5ff387cca55ae27738629f040bfda0c0`，随后成功上传梯度helper、train_plan_a和测试，未重启现有L/O或LD1任务。
+- **三轮检查**：同向/反向/零范数/unused参数/无参数拒绝/CUDA参数不变均通过；原PairJEPA、train_decision训练、结构mask、mixer、block-context、扩展诊断和新梯度helper连续三轮均23/23通过。仅既有`torch.load(weights_only=False)` FutureWarning。CPU辅助检查与真实CUDA结果一致，不再处于未验收helper状态。
+- **集成限制**：复核发现既有`test_pairjepa_training_round48.py`调用的是`rnajepa.train_decision.run_training`，不是`train_plan_a.py`。因此23/23不能证明RiNALMo训练循环已实际写入`direct_nll_gradient`。该字段已在train_plan_a按直接NLL张量、每25步、无额外optimizer step接入并通过编译，但全RiNALMo训练smoke仍需在不影响当前run的显存条件下单独执行，完整J-gate尚未通过。
+- **过程**：L-length seed2026在step12000取得best VL0=`-0.8100311620900924`，约step14500仍有后段尖峰，继续自然训练；LD1对照712/798、主矩阵297/456（该次快照）。容量门未开，PPT未修改。

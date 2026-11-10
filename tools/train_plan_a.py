@@ -68,6 +68,7 @@ from rnajepa.decision_head import (  # noqa: E402
 from rnajepa.rlcd import ObjectiveWeights, combined_loss  # noqa: E402
 from rnajepa.harness import valid_pair_mask  # noqa: E402
 from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
+from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
 from rinalmo_preflight import VOCAB, load_encoder  # noqa: E402
 from torch.utils.checkpoint import checkpoint as _grad_ckpt  # noqa: E402
 
@@ -604,6 +605,7 @@ def main():
         matrix = s
 
         total = None
+        direct_nll = None
         terms_agg = {}
         for b in range(B):
             L = lengths[b]
@@ -620,9 +622,11 @@ def main():
                 n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
                 return_terms=True)
             total = loss_b if total is None else total + loss_b
+            direct_nll = terms_b["nll"] if direct_nll is None else direct_nll + terms_b["nll"]
             for k, v in terms_b.items():
                 terms_agg[k] = terms_agg.get(k, 0.0) + float(v.detach())
         total = total / B
+        direct_nll = direct_nll / B
         for k in terms_agg:
             terms_agg[k] /= B
 
@@ -640,6 +644,8 @@ def main():
                                "loss": float(latent_loss.detach()),
                                **{name: float(value) if isinstance(value, torch.Tensor) else value
                                   for name, value in latent_diagnostics.items()}}
+                jepa_record["direct_nll_gradient"] = loss_gradient_cosine(
+                    direct_nll, latent_loss, trainable())
 
         opt.zero_grad(set_to_none=True)
         total.backward()
