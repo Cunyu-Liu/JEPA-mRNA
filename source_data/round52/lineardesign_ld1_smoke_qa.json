@@ -1,0 +1,78 @@
+{
+  "status": "PASS_LD1_SMOKE_INDEPENDENT_RECOMPUTE",
+  "source_sha256": "76f1ec452e1f59e54a7109db275bca80215cac1ccdc2088393472a6a35a11761",
+  "rows": [
+    {
+      "id": "P15421",
+      "lambda": 0,
+      "beam": 0,
+      "reported_mfe": -148.7,
+      "independent_mfe": -148.6999969482422,
+      "cai": 0.7336732944877193,
+      "seconds": 4.966585874557495
+    },
+    {
+      "id": "P15421",
+      "lambda": 0,
+      "beam": 500,
+      "reported_mfe": -148.7,
+      "independent_mfe": -148.6999969482422,
+      "cai": 0.7336732944877193,
+      "seconds": 5.1457531452178955
+    },
+    {
+      "id": "P15421",
+      "lambda": 4,
+      "beam": 0,
+      "reported_mfe": -124.3,
+      "independent_mfe": -124.30000305175781,
+      "cai": 0.9563800202477474,
+      "seconds": 4.965774774551392
+    },
+    {
+      "id": "P15421",
+      "lambda": 4,
+      "beam": 500,
+      "reported_mfe": -124.3,
+      "independent_mfe": -124.30000305175781,
+      "cai": 0.9563800202477474,
+      "seconds": 5.144922256469727
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 0,
+      "beam": 0,
+      "reported_mfe": -1512.3,
+      "independent_mfe": -1512.300048828125,
+      "cai": 0.7264021368328227,
+      "seconds": 379.8364236354828
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 0,
+      "beam": 500,
+      "reported_mfe": -1512.3,
+      "independent_mfe": -1512.300048828125,
+      "cai": 0.7264021368328227,
+      "seconds": 371.567724943161
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 4,
+      "beam": 0,
+      "reported_mfe": -1287.9,
+      "independent_mfe": -1287.9000244140625,
+      "cai": 0.9496776240102333,
+      "seconds": 371.350133895874
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 4,
+      "beam": 500,
+      "reported_mfe": -1287.9,
+      "independent_mfe": -1287.9000244140625,
+      "cai": 0.9496776240102333,
+      "seconds": 363.1349015235901
+    }
+  ]
+}

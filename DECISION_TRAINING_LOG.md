@@ -15641,3 +15641,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **L-length**：seed42 step1000/1500/2000 VL0=-0.5318994743347659/-0.49302383986601606/-0.5263852301512667，best step1000，step1500/2000 bad=1/2，按patience=6继续，未提前停止或改参。O-LR与其他seed未齐，不启动容量或测试结论。
 - **LD1数据与配置**：114条蛋白按(length, ID)排序每五条取一条design-test，冻结design-dev=91、design-test=23，双跑逐字节一致，split=`audits/round52/lineardesign_ld1_design_split.json`。design-test不得调λ、beam、约束或校准。
 - **工程smoke**：仅用design-dev的P15421(78aa)与Q9HA90(598aa)，exact/beam=0/500、λ=0/4并行CPU运行，核验翻译、结构、CAI/GC和`dangling_ends=0`。结果未出，不选择λ/beam，不做正式速度或生物效果结论，PPT未修改。
+
+## §15.821（2026-11-10）LinearDesign exact/beam工程smoke通过、L-length持续改善
+
+- **smoke验收**：P15421在λ=0/4时MFE=-148.7/-124.3，Q9HA90为-1512.3/-1287.9；exact与beam=500在这两个蛋白和λ下输出相同。独立ViennaRNA复算翻译、CAI、MFE和结构均一致，QA SHA256=`76f1ec452e1f59e54a7109db275bca80215cac1ccdc2088393472a6a35a11761`。首次验证蛋白误加终止子失败已保留并修正，未改写生成序列。
+- **边界**：两例相同不能证明beam对所有蛋白无损；并行时间非正式，598aa约6分钟不能外推全部114条或正式速度。未选择λ、beam或最终候选，不启动LD2。L-length best step4000=`-0.7460312473710404`、bad=0，仍未自然收敛，PPT未修改。
