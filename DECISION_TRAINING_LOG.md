@@ -15630,3 +15630,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **启动**：实现与replay提交`a1999402fdc57f60a14a01110279e128606b3b28`已push，正式队列PID=4086325，当前首个L-length seed42。使用真实RiNALMo、NLL-length对照；后续O-LR保持NLL-sum且仅backbone LR=1e-6。六种run均独立目录`round52_rinalmo_{length,olr}_s{42,2026,3407}`，不读取structRFM状态。
 - **边界**：steps=0、batch=2、500步VL0、patience=6、best checkpoint和完整后段曲线。串行避免650M模型峰值叠加OOM，失败仅按最近有效resume原配置恢复。尚无首个VL0，不启动测试、容量或后续阶段，PPT未修改。
+
+## §15.819（2026-11-10）L-length首个VL0与分臂完整QA准备（训练中）
+
+- **过程点**：L-length seed42 step500 VL0=-0.47944952549853137，best step500、bad=0；训练已到step1000验证窗口，尚未自然收敛。NLL-length与NLL-sum的VL0绝对值不能直接比较，不作F1或稳定性最终结论。
+- **QA准备**：完整训练QA参数化arm、normalization和backbone LR，L-length要求length/1e-5，O-LR要求sum/1e-6，并分别核验scheduler。三臂自然早停后才进行六run best/resume、完整曲线、SHA和独立复算，容量诊断尚未放行，PPT未修改。

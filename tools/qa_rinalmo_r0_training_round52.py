@@ -9,17 +9,17 @@ import torch
 from qa_loss_optimizer_training_round51 import read_jsonl, sha256_file, stable_load
 
 
-def validate_run(root, seed, data_sha256):
+def validate_run(root, seed, data_sha256, arm="r0", normalization="sum", backbone_lr=1e-5):
     meta = json.loads((root / "run_meta.json").read_text())
-    expected_arm = f"round52_rinalmo_r0_s{seed}"
+    expected_arm = f"round52_rinalmo_{arm}_s{seed}"
     assert meta["arm"] == expected_arm and meta["seed"] == seed
     assert meta["status"] == "completed" and meta["converged"] and meta["early_stopped"]
     assert meta["stop_reason"] == "early_stopping"
     assert meta["schedule"]["steps"] == 0 and meta["schedule"]["batch_size"] == 2
-    assert meta["schedule"]["head_lr"] == 1e-4 and meta["schedule"]["backbone_lr"] == 1e-5
+    assert meta["schedule"]["head_lr"] == 1e-4 and meta["schedule"]["backbone_lr"] == backbone_lr
     assert meta["schedule"]["n_blocks"] == 33
     assert meta["validation"]["every"] == 500 and meta["validation"]["patience"] == 6
-    assert meta["objective"]["nll_normalization"] == "sum"
+    assert meta["objective"]["nll_normalization"] == normalization
     assert all(meta["objective"][name] == 1.0 for name in
                ("lambda_nll", "lambda_distill", "lambda_rlcd", "lambda_cal"))
     assert meta["scorer"] == "pairmlp" and meta["pair_latent_dim"] == 490
@@ -43,7 +43,7 @@ def validate_run(root, seed, data_sha256):
     assert best["step"] == meta["best_step"]
     assert best["validation_loss"] == meta["best_validation_loss"]
     assert resume["step"] == meta["steps_completed"]
-    assert resume["scheduler"]["_last_lr"] == [1e-4, 1e-5]
+    assert resume["scheduler"]["_last_lr"] == [1e-4, backbone_lr]
     assert resume["stream_state"]
     for part in ("encoder", "head"):
         left = best["model"][part]
