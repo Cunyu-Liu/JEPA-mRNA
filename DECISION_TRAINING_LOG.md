@@ -15663,3 +15663,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **过程复算**：seed42共15个验证点，best step7000/VL0=-0.7982564702902243，step7500=-0.795118348699924、bad=1。最大训练绝对loss=1.7648、最大gnorm=16.7、已解冻14/33层，未出现R0式百万级loss/梯度爆炸。原始train/validation SHA=`9dcd9f6bb2fc5e59b8d1070e22a21efdb0d80c024aadd79611dc4fbb2f36c5e5`/`455f18cc97cc26500677cdfb3ade02f95a8761e4a00f75fa44622048f6bcfb55`。
 - **边界**：这只是当前单种子过程证据，不证明三种子稳定、F1提升或最终收敛；O-LR和其他seed未启动，继续按patience=6，PPT未修改。
+
+## §15.825（2026-11-10）LinearDesign 114蛋白生成矩阵启动（可断点续跑）
+
+- **任务**：在已验收114条蛋白与91/23 split上执行exact/beam=0/500、λ=0/4，共456个生成单元。小蛋白最多4并发，>700aa串行，避免CPU内存叠加；每个单元独立JSON、翻译/结构/CAI/GC和`dangling_ends=0`验收，可断点续跑。
+- **边界**：design-test不参与λ、beam、约束或校准选择；并发耗时不作正式速度。生成矩阵不代表PRISM选型或生物效果，不启动LD2。L-length已解冻16/33层，继续自然训练，PPT未修改。
