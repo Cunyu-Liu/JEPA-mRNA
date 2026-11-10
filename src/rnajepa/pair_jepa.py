@@ -4,6 +4,7 @@ import torch
 from torch import nn
 
 from .context_mixer import LocalContextMixer
+from .pair_diagnostics import masked_latent_correlations
 
 
 @torch.no_grad()
@@ -134,6 +135,18 @@ class PairJEPA(nn.Module):
                 target[mask], max_samples=rank_samples)
             diagnostics["prediction_effective_rank"] = latent_effective_rank(
                 prediction[mask].detach(), max_samples=rank_samples)
+            diagnostics["teacher_student_mse"] = loss.detach()
+            diagnostics["teacher_student_cosine"] = torch.nn.functional.cosine_similarity(
+                prediction[mask].detach(), target[mask], dim=-1).mean().detach()
+            for prefix, features in (("target", target[mask]),
+                                     ("prediction", prediction[mask].detach())):
+                diagnostics[f"{prefix}_channel_variance"] = features.var(
+                    dim=0, unbiased=False).cpu().tolist()
+                position, sequence = masked_latent_correlations(
+                    target if prefix == "target" else prediction.detach(), mask,
+                    max_samples=rank_samples)
+                diagnostics[f"{prefix}_cross_position_cosine"] = position
+                diagnostics[f"{prefix}_cross_sequence_cosine"] = sequence
         return loss, diagnostics
 
     def forward(self, z, presymmetrized=False):

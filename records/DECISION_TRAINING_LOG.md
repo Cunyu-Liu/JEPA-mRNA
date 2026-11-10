@@ -15734,3 +15734,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **mixer三轮检查**：零初始化恒等、非法输入、随机权重有限前向/梯度、结构mask下masked梯度为零和直接信息断裂，CPU+真实CUDA测试连续三轮均7/7通过。上传前的SSH失败已保留在§15.834，不以本地静态检查替代CUDA。
 - **可选集成**：`PairJEPA(block_context=True)`才创建mixer，默认False不产生新参数；teacher不创建mixer，target仍读取完整z且stop-gradient。默认旧state dict严格加载，零mixer时base/block loss逐值相同；mixer随机改变后部署`model(z)`逐值不变。masked z增加1000时prediction范数不变、target范数与loss改变，masked输入梯度为零，scorer无辅助loss梯度。
 - **回归**：原PairJEPA全量测试、结构mask、mixer及可选集成连续三轮均16/16通过。尚未接入训练参数或启动J-mlp/J1，完整EMA时序、逐通道坍塌、跨位置/序列相关和真实RiNALMo门仍未验收；L/O与容量阶段门不变，PPT未修改。
+
+## §15.836（2026-11-11）PairJEPA扩展坍塌诊断与训练日志兼容
+
+- **新增诊断**：仅在`rank_samples>0`的每25步诊断中计算target/prediction逐通道方差、跨位置与跨序列off-diagonal cosine、teacher–student MSE和逐masked-pair cosine均值；保留原有总方差、均值范数、有效秩和contextless数量。相关性按序列等权，单序列cross-sequence记0，零范数由clamp处理，采样上限遵循`jepa_rank_samples`，不改变MSE loss、target、student或部署scorer。
+- **训练兼容**：训练日志对标量tensor继续`float()`，对逐通道Python列表原样写入，确保JSON可序列化；`rank_samples=0`不新增扩展字段，也不付出相关性计算开销。直接NLL–JEPA梯度cosine仍未实现，不能宣称完整J-gate。
+- **三轮检查**：独立单测覆盖恒定特征相关性=1、单样本边界、空mask拒绝、batch内不同mask、字段长度/范围、MSE与loss一致及扩展字段JSON序列化；真实CUDA验证block-context模型。原PairJEPA、训练、结构mask、mixer、block集成和新诊断连续三轮均19/19通过，仅有既有`torch.load(weights_only=False)` FutureWarning，无失败。未启动JEPA训练，L/O与容量门不变，PPT未修改。

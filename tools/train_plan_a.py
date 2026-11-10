@@ -638,7 +638,8 @@ def main():
             if log_latent:
                 jepa_record = {"step": step, "masked_pairs": int(latent_mask.sum()),
                                "loss": float(latent_loss.detach()),
-                               **{name: float(value) for name, value in latent_diagnostics.items()}}
+                               **{name: float(value) if isinstance(value, torch.Tensor) else value
+                                  for name, value in latent_diagnostics.items()}}
 
         opt.zero_grad(set_to_none=True)
         total.backward()
