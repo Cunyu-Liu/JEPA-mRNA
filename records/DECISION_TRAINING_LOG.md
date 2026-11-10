@@ -15832,3 +15832,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - `validate_resume_identity`新增scorer、pair_latent_dim及PairJEPA λ/target/context/mask一致性检查，防止EMA→fixed/random、context_v1→structured_block或权重配置变化被静默恢复。非PairJEPA传structured-block直接拒绝，避免PairMLP创建无用mixer；现有L/O默认配置不受影响。
 - 构造配对配置逐项篡改target/context/λ/mask/scorer/latent/seed均拒绝，PairMLP匹配恢复兼容；相关PairJEPA/梯度/head回归连续三轮16/16通过。正式JEPA训练仍未放行，容量诊断未完成，PPT未修改。
+
+## §15.853（2026-11-11）冻结表征probe全量输入预检与短序列修正
+
+- 真实196+196条输入预检发现无合法正pair及候选不足256的序列，未启动GPU probe。采样协议明确为每序列**最多256个合法pair、无放回**，允许negative-only序列，不全局平衡每条的标签；模型拟合和指标按全局正负计数加权。不得删短序列或重复pair凑数。
+- 修正后预检通过：train 196条中negative-only=2、below_cap=2；VL0 196条中negative-only=1、below_cap=0。QA由固定256改为`0<n≤256`，算术篡改失败注入三轮通过；采样/CUDA测试连续三轮2/2通过。真实checkpoint probe仍未运行，容量阶段未放行，PPT未修改。

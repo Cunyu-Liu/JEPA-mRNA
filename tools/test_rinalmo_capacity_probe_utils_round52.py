@@ -22,6 +22,8 @@ def test_pair_sampling_is_legal_reproducible_and_symmetric_features_are_exact():
     pairs = np.asarray([[0, 5]])
     assert np.array_equal(symmetric_pair_features(hidden, pairs),
                           symmetric_pair_features(hidden, pairs[:, ::-1]))
+    negative_pairs, negative_labels = sample_pair_indices(sequence, [], 6, 42)
+    assert len(negative_pairs) == 6 and not negative_labels.any()
     with pytest.raises(ValueError):
         sample_pair_indices(sequence, gt, 0, 42)
 

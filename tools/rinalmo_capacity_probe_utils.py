@@ -14,8 +14,8 @@ def sample_pair_indices(sequence, gt_pairs, n_samples, seed):
     if len(negative):
         keep = np.asarray([tuple(pair) not in gt for pair in negative])
         negative = negative[keep]
-    if not len(positive) or not len(negative):
-        raise ValueError("both positive and negative legal pairs are required")
+    if not len(positive) and not len(negative):
+        raise ValueError("at least one legal pair is required")
     rng = np.random.default_rng(seed)
     n_positive = min(len(positive), n_samples // 2)
     n_negative = min(len(negative), n_samples - n_positive)
