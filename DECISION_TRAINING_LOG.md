@@ -15547,3 +15547,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **模型卡PARTIAL**：初版验证器交换top.indices/top.values且只有11/28 token映射，已修复并保留旧错误输出。官方MLM head缺失仅`lm_head.bias`、unexpected为空；fp32/bf16对比中当前top-5为A/U/G/X/C，模型卡为G/U/X/A/C，真实masked字符A能预测但top-1不一致，标`PARTIAL_TOP1_MISMATCH`，不宣称精确复现模型卡。严格权重SHA、有限输出和R0 checkpoint身份均通过，未隐藏该差异。
 - **预训练/长序列边界**：RiNALMo原文预训练含RNAcentral、nt、Rfam、Ensembl，36M唯一序列经70% identity、0.8 coverage聚成17M簇，Rfam须披露预训练接触风险。原训练/微调1024 token限制及>1022nt随机裁剪不得用于新全长验收；超限标PARTIAL，禁止截断。此内容已补入统一合同。
 - **下一步**：只允许按已验收命令启动R0三种子正式训练，串行以避免650M模型峰值叠加OOM；steps=0、每500步VL0、patience=6。R-replay、L/O、J-gate、CL及后续实验均未放行，PPT未修改。
+
+## §15.806（2026-11-10）R0三种子正式队列启动（训练中）
+
+- **启动身份**：实现与QA提交`6d051026bc25e4d997e02af2a50aa89b2ace1641`及远端分支一致，smoke QA SHA256=`8061cddebec532bc376fdc36c88bb82b09c0495088e89731f94ebb7fe120e65b`通过硬门。远端setsid训练脚本PID=4082710，日志=`logs/round52/rinalmo_r0_s42.log`及`rinalmo_r0_queue.log`，run根目录=`runs/round52_rinalmo_r0_s{42,2026,3407}`。
+- **冻结配置**：RiNALMo-giga+PairMLP490+R6 head，NLL-sum、四目标、batch=2、steps=0、每500步VL0、patience=6、min_delta=1e-6，head/backbone LR=1e-4/1e-5，1600步head warmup后每800步解冻2层，seed=42/2026/3407串行。保存best VL0、resume、stream、optimizer/scheduler和完整后段曲线，失败只按最近有效resume原配置恢复。
+- **当前事实**：已确认数据加载与真实CUDA预留，尚未产生首个500步VL0或自然收敛结果；本地SSH等待已结束但远端独立训练未停止。R-replay、L/O和后续实验未启动，PPT未修改。
