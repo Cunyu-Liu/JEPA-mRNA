@@ -15495,3 +15495,18 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **后段过程快照**：QA完成时L-length 42 best step3000=-0.5006376565074406，L-length 2026 best step2500=-0.48626602186444784，O-LR 42 best step3000=30.847339705376772；训练仍running，未自然收敛，不外推稳定性或精度提升。
 - **artifact问题与修复**：首次QA读到正在重写的checkpoint并出现`PytorchStreamReader failed reading file`，第二次固定2秒检查仍遇到文件变化，第三次读取又发生竞争；训练未报错，原始run保留。随后以源文件元数据前后一致的稳定副本完成QA，确认best内部step/VL0、resume LR、stream、CUDA和训练日志一致。为后续写盘新增`atomic_torch_save`（临时文件+os.replace+失败清理），31项相关测试连续三次通过；正在运行的旧进程不重启、不改变科学配置，后续恢复使用原子写实现。
 - **证据与边界**：`audits/round51/loss_optimizer_first_vl0_qa.json`记录首轮及快照哈希。三种子/两臂尚未齐套，未启动测试评测、交互臂、容量或Pair-JEPA，PPT未修改。
+
+
+## §15.800（2026-11-10）O-LR 42单run自然早停与独立验收（单种子，非全臂结论）
+
+- **收敛与后段**：O-LR 42在step10500达到bad=6并自然早停，`status=completed/converged=True/early_stopped=True/stop_reason=early_stopping`；best step7500、VL0=26.06010442244561，step10500 VL0=75.2729473858714，完整21个验证点保留。最大训练日志绝对loss=26180.2365、最大gnorm=77068.83，说明低backbone LR并未消除所有后段尖峰，不能宣称O-LR已解决稳定性。
+- **独立QA**：`validate_run`核验steps=0、500步验证、patience=6、NLL=sum、backbone LR=1e-6、best/resume权重逐张量一致、resume scheduler LR=[1e-4,1e-6]、全部有限值及数据SHA。best SHA256=`fe5aba82a247668a51bd912cac66598446096ac064a3a2298302bf8747a0635f`，resume=`987f02769c598ac5a39d4c70392316bfbfe6ba769b1c04a763f7ad8f3fcf0adb`，证据=`audits/round51/loss_olr_s42_completed_qa.json`。
+- **边界**：这是O-LR首个完成种子的训练验收，不是三种子结论，也没有测试集精度证据。L-length 42/2026仍训练，第二批与后续评测按门等待，容量阶段未放行，PPT未修改。
+
+
+## §15.801（2026-11-10）L-length/O-LR六种子自然收敛、完整训练QA与评测放行
+
+- **六种子齐套**：L-length 42/2026/3407分别step30500/32500/28000自然早停，best step27500/29500/25000，best VL0=-0.7811064888180498/-0.7856174261502568/-0.7811359934289053，均值=-0.7826199694657373、population SD=0.0021195561740127503。O-LR分别step10500/9500/7500自然早停，best step7500/6500/4500，best VL0=26.06010442244561/25.645122854695654/28.020228774390237，均值=26.575152017177167、population SD=1.0357726748893419。所有run均steps=0、500步VL0、patience=6，best/resume权重一致，无固定步数截断。
+- **稳定性对照**：L-length三种子最大训练绝对loss=1.7648/1.6246/1.7108、最大gnorm=21.88/17.04/21.72，后段最大VL0均为各自首验证点，未出现R6/O-LR式爆炸。O-LR三种子最大训练绝对loss=26180.2365/3654.8934/1633.7124、最大gnorm=77068.83/40176.6/36776.55，末次VL0=75.2729473858714/49.396910658951015/390.17401863901733，明确保留全部尖峰。训练证据支持length在此配方下显著改善优化稳定性，O-LR单独降低backbone LR不能解决失稳；但VL0不同归一化不能直接比较精度，必须等待冻结测试。
+- **三轮检查**：训练QA双跑逐字节一致，SHA256=`277dfb93efef64c3d411f4e8d3fed46fb08d814c0734f4b7292f2a7771c37f7a`，覆盖六run身份、完整曲线、有限值、best内部step/VL0、resume scheduler、数据/教师SHA和CUDA。`loss_optimizer_training_complete.json`与独立QA均已落盘。
+- **同阶段评测放行**：`run_loss_optimizer_evaluation_round51.sh`已在QA通过后启动（PID=3979802），仅L-length/O-LR的13 split×3 seed×3 repeat、greedy/Turner0、confidence、SOTA和双独立QA；测试不参与此前训练、早停或配置选择。容量仅允许离线诊断，不允许C-wide/C-local训练，Pair-JEPA未放行，PPT未修改。
