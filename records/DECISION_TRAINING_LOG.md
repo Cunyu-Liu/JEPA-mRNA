@@ -13014,7 +13014,7 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - **现象**：冻结和全参 confidence watcher 首次并行启动均在约 0.13s 返回 `Connection closed by 125.71.97.44 port 29744`；后续单次连接在等待后也返回相同错误。尚未获得远端脚本执行日志，因此不能把 watcher 写成已启动，也没有证据把问题归因于 CUDA、训练或脚本断言。
 - **处置**：保留连接错误，不重复提交训练或下载任务；已有持久 SSH 任务在本地任务面板仍为 running，但这不等于远端健康证明。连接恢复后先查进程、run_meta 与日志，只补缺失 watcher，再提交本节及 §15.463 的远端台账。
-- **恢复**：随后 SSH 单次查询成功，seed2 日志继续推进；冻结 confidence watcher 已确认运行（脚本 PID=3247925）。全参 watcher 经单独连接补启动后确认运行（脚本 PID=3248297）。§15.463–15.464 已同步远端并随提交 `17c078ccb3fc9ce9ffbaa739c2c63f2ffef0bbf6` 推送。早期组合 launcher 的全参分支未保留，以单独 watcher 为准，不影响训练与正式评测。
+- **恢复**：随后 SSH 单次查询成功，seed2 日志继续推进；冻结 confidence watcher 已确认运行（脚本 PID=3247925）。全参 watcher 经单独连接补启动后确认运行（脚本 PID=3248297）。§15.463–15.464 已同步远端并随提交 `17c078ccb3fc9ce9ffbaa739c2c63f2ffef0bbf6` 推送。早期组合 launcher 的全参分支未保留，以单独 watcher 为准，不影响训练与正式评测。恢复补充记录随后由 `c4ca0f499fb8eaefff8c3749c09381accef06497` 推送。
 
 
 ## §15.465（2026-11-07）长程配对指标实现与待部署边界
@@ -13096,3 +13096,2597 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **seed0 收敛**：step21500 达到 patience=6，恢复 best step18500，best validation loss=16.9408737972；`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`。checkpoint SHA256=`b37b844cd0dad6698a81314b7977d3edc6dc3a8e6cab4cca9fe45885e8e2d693`。
 - **seed2 接续**：已读取 42,564 条 TR1c 并进入真实 CUDA 训练，step1/25 均有日志，未发生 OOM 或 CPU 静默降级。
 - **边界**：seed0/1 已完成，seed2 在训；仍不把 VL0 loss 当作主榜效果，不提前进入 RIPE 或写最终 SOTA。
+
+
+## §15.476（2026-11-07）S2 全参三种子全部自然早停
+
+- **seed2 收敛**：step8500 达到 patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复 best step5500，best validation loss=20.95097036492489。step6500/7000/7500/8000/8500 均未再改善，bad=2/3/4/5/6；没有固定步数截断或 CPU 静默降级。
+- **checkpoint**：`runs/structrfm_jev_s2/best.pt` SHA256=`e2bab1cbddacea7487a6bbb1b9b9fc42b66fed02e2482ce47aac65d387968c07`。S2 三个种子的 best step 分别为18500/5500/5500，best validation loss=16.9408737972/20.6924657196/20.9509703649。
+- **元数据边界**：旧驱动的 `backbone=rinalmo-giga` 与特殊 token parity 字符串是通用模板遗留；该 run 的 `backbone_report`、官方权重 SHA256 和实际适配器均明确为 structRFM，不能据模板字符串误称 RiNALMo。后续驱动已按真实 report 记录，旧 run_meta 不作事后改写。
+- **下一步**：既有 13 split×3 seed×3 repeat、VL0 confidence 和 SOTA 比较队列继续执行；训练收敛不等于全板提升，尚无 S2 A/B/C 结论。
+
+
+## §15.477（2026-11-07）S3 近参数 PairMLP 对照预注册与实现审计
+
+- **对照冻结**：S2 全板读出前确定 S3 为全参 structRFM+JEV，仅将 ResNet2D 换为 PairMLP，不使用 RIPE、EMA 或 latent 辅助损失；数据、batch 顺序、学习率、解冻、VL0、patience=6 与 S2 相同。三种子收敛后复用完整 13 split 全参评测，不把工程预检当科学结果。
+- **参数纠错**：实测独立 ResNet2D scorer=304,321，608,591 是原 ResNet 整头而不是 scorer。PairMLP-490=304,547，差 +226（+0.074%）；纯 PairMLP 不再保存无用 teacher 后，整头=608,817，对照整头=608,591，差值仍为 +226。此前 PairMLP-717 的设计未启动训练，已全部撤回，不留下错误 run。
+- **实现**：`FlatDecisionHead` 支持独立 pair latent 宽度；全参驱动新增显式 scorer 配置、真实 backbone/scorer 元数据及逐步长度与可训练参数账。全参评测从 checkpoint 恢复 scorer，聚合与置信度工具支持 S3 而不改变默认路径。CUDA FLOPs 网格固定128/256/500nt，只作 forward 计算账，不冒充独占速度。
+- **Pair-JEPA 边界纠正**：当前 `train_plan_a.py` 没有 `lambda-jepa` 接口，PairJEPA 模块与此前小运行不能证明全参辅助目标已接线。P3 前必须另行补齐并做真实 CUDA 验收，当前不宣称 Pair-JEPA 全参训练链完成。
+- **验证**：远端完整依赖下 S3 参数/零初始化/默认路径与 RIPE 回归 4/4 通过；本地独立真实模型类参数与前向复核 2/2 通过。旧 RIPE 测试缺少新要求的显式 vocab，已修正测试而非放宽模型约束。S3 CUDA 预检两次启动均在 SSH 建连时退出，尚无远端运行日志，不能写成已在集群排队；尚未产生训练或 A/B/C 科学结果，PPT 未修改。
+
+
+## §15.478（2026-11-07）S3 PairMLP-490 CUDA/FLOPs 预检与参数账终审
+
+- **真实 CUDA**：两个独立进程均完成500nt、batch=2、12/12 Transformer blocks解冻的两个 optimizer steps，单进程峰值约6.3GB；seed0/1均正常退出。两次步上限只作工程预检，不是收敛或模型效果证据。随后 seed0 checkpoint 在两条500nt训练序列上完成三次全参确定性推理，n=2、unsupported=0，预测逐对一致。
+- **独立身份**：checkpoint `meta.scorer=pairmlp`、`pair_latent_dim=490`、`backbone=structRFM`，head中无teacher张量。checkpoint SHA256=`4c29bbade871480c680886343da18e3f4ee6cbe44cc04597103b68ceb23135d6`，推理结果 SHA256=`f1b0afd394c6035819e8bd14d4b00017bb37d217588d887b88a503a466dbbfc3`。
+- **FLOPs**：128/256/500nt下，PairMLP头部aten forward FLOPs=19,904,528,384/79,618,113,536/303,719,000,000；ResNet2D=19,901,972,480/79,607,889,920/303,680,000,000，差约0.0013%。报告状态 `PASS_STRUCTRFM_S3_CUDA_FLOPS_PROFILE`，SHA256=`058ec5dfa2e23db4b562f6c043df71f8bdb2c54fd9b3a91abd8132ed69a6e3f0`。这不是延迟或独占速度结果。
+- **参数账纠错**：12/12层解冻实际训练85,054,464个骨干参数，embedding/pooler等996,096个参数保持冻结。S2/S3最终可训练参数分别85,663,055/85,663,281，仍只差226；不能将骨干总参数86,050,560全部写成可训练。旧FLOPs文件已保留为 `structrfm_s3_flops.pre_block_scope.json`，最终报告已改用真实block scope。
+- **运维证据**：前三次预检启动均在SSH建连时退出，未产生训练日志；建立本地复用SSH通道后才实际运行，没有重复训练。confidence脚本曾在flock等待后读到不完整文件并报引号错误，已改为临时文件校验后原子替换并恢复watcher。
+- **放行边界**：参数/默认路径/RIPE回归、CUDA双并发、compute ledger、checkpoint身份和三次推理均已独立复核，允许启动S3正式三种子自然收敛训练；尚无S3 A/B/C或SOTA结论，PPT未修改。
+
+
+## §15.479（2026-11-07）S2 三种子 VL0 与冻结风险覆盖独立复核
+
+- **完整性与身份**：三枚 best checkpoint 的 step=18500/5500/5500、SHA256 与训练终账一致；每个 VL0 均为 raw_n=n=196、unsupported=0、CUDA、三次预测逐对一致。独立从逐序列与全局 TP/FP/FN 复算通过。
+- **VL0 过程证据**：seed0/1/2 micro-F1=0.7966266623/0.7501842299/0.7505801746，mean±SD=0.7657970223±0.0218004468；macro-F1=0.8157206200/0.7774897265/0.7541353539，mean±SD=0.7824485668±0.0253854134。结果 SHA256 分别为 `4a317058615b6185daf5ecc41a81c0d9c3e6ba2a0a4578c25f315b9f4dfa9e6f`、`fc8f561ad2c4ae3715ca8ca333a3e84f18a288c350f8a5e81d4e58641e7873c4`、`1d82df4eb37c53361416edcb3337afea557d99b2785696091643ed49101b86cf`。
+- **冻结阈值**：参考为最低 validation loss 的 seed0，coverage={1,.95,.90,.75,.50,.25} 对应 thresholds={0,0.6914277109,0.7272327312,0.8061006871,0.9679122366,0.9896435352}。三种子 Spearman=0.7982269256/0.8247561495/0.8433404241，seed0/1 AURC=0.0462939532/0.0632532608。
+- **空覆盖边界**：seed2 的最高 structure_conf=0.9863868455，低于25%覆盖阈值0.9896435352，该桶保留数=0，risk=`nan`、AURC=`null`。不得在测试集改阈值、插值或伪造AURC，也不能声称最佳置信度。全板 confidence 仍等待13 split总结，当前文件 split_n=0 只代表VL0完成。
+
+
+## §15.480（2026-11-07）S3 正式双种子启动与首次 VL0
+
+- **正式训练**：S3 PairMLP-490 seed0/1 均已读取42,564条TR1c并进入真实CUDA训练，逐步compute ledger持续落盘；独立confidence与SOTA watcher只等待最终齐套，不提前评测部分测试榜。
+- **step500 VL0**：seed0/1 validation loss=34.6156205917/33.9992232057，均为各自当前best，bad=0。两枚种子继续训练至validation plateau和patience=6，当前既不是收敛证据也不是A/B/C或SOTA结果。
+- **代码**：S3对照、参数/FLOPs账与文档提交 `b82f20e7a1cbc4e6fb99ee7865f79bdadbf04b18`；按臂SOTA watcher提交 `3a885b3643b8436adff9cc1557f90520ba71d7d6`，均已推送GitHub。PPT未修改。
+
+
+## §15.481（2026-11-07）路线一配对统计与冻结解码机制预检
+
+- **配对统计**：新增同种子、同clean序列的micro-F1 bootstrap，S2−S1/S3−S1/S3−S2各自主八split做Holm校正，raw n、supported/unsupported与n<30描述性标记保留。工具7项回归通过，真实S1 TS0逐序列自对照差值=0、CI=[0,0]、p=1；正式计算须S1/S2/S3全齐后运行两次10,000 resamples并逐字节一致。
+- **解码实现**：冻结/全参共用DP/greedy模块，greedy记录交叉与共享碱基冲突；Turner override在校准前生效，checkpoint不改。修复了HeadOnlyModel包装器未透传override及结果写出访问包装器属性的问题，不把失败运行计入结果。
+- **默认回归**：S1 seed0 VL0默认DP三次预测、micro/macro、校准和逐序列字段与既有验收结果完全一致。完整依赖下解码、包装器、S3和RIPE回归7/7通过。
+- **VL0机制预检**：同一S1 seed0，greedy micro-F1=0.5858959035，crossing_pairs=15,775、conflict_pairs=958；Turner=0+DP micro-F1=0.6500789889，crossing/conflict=0。原DP默认micro-F1=0.7507265817。它们只验证机制与物理先验贡献，不能替代13 split消融或声称最终结论。
+- **训练进度**：S3 seed0/1在step2500的VL0 loss=28.9818689266/29.4733664044，仍持续改善，未收敛。S2主评测未结束前不部署全参消融输出schema；全参消融与完整队列随后统一验收。
+
+
+## §15.482（2026-11-07）全参独立消融脚本与 VL0 等价验收
+
+- **隔离部署**：全参消融使用独立 `eval_structrfm_full_ablation_round48.py`，进行中的S2主评测继续调用原脚本，不改变主结果schema或运行路径。完整消融队列只等待S1/S2/S3主总结齐套，不读取部分测试榜调参。
+- **默认等价**：S2 seed0 VL0默认DP三次预测、micro/macro、校准和逐序列指标与原全参评测完全一致；状态 `PASS_FULL_DECODE_CUDA_REGRESSION`。
+- **机制预检**：同一S2 seed0，greedy micro-F1=0.6034077003，crossing_pairs=38,735、conflict_pairs=1,661；Turner=0+DP micro-F1=0.7256295939，crossing/conflict=0。原默认DP micro-F1=0.7966266623。以上仅属VL0机制证据，不能替代13 split×3 seed消融。
+- **断点与聚合**：greedy/Turner0分别核对decoder和prior override，逐split保留checkpoint、clean、三次预测、长度/长程指标，再复用独立聚合器；旧或身份不符输出改名 `.stale`，不拼接结果。
+- **训练边界**：S3 seed0在step3500 bad=1、best step3000；seed1 step3500仍改善，二者均未达早停条件。S2主评测继续，未提前进入RIPE科学实验。
+
+
+## §15.483（2026-11-07）确定性 repeat 的单次分数前向等价优化
+
+- **问题**：全参评测旧实现对每条序列的每个repeat都重复tokenizer、structRFM和JEV前向；确定性评测不需要三次相同分数计算。独立消融脚本改为每条raw sequence计算一次分数，随后三次DP/greedy解码，结果显式记录 `score_forward_count_per_sequence=1`。
+- **逐值等价**：S2 seed0 VL0的新旧预测、micro/macro-F1、校准、逐序列F1/INF/confidence/TP/FP/FN全部一致，状态 `PASS_SINGLE_FORWARD_REPEAT_EQUIVALENCE`。未使用缓存embedding代替raw-sequence前向，也未改变checkpoint、tokenizer、精度、mask或解码。
+- **耗时边界**：同一并发开发环境的VL0耗时57.8727603s→34.3062685s，仅说明去除重复前向有效；不是RTX4090独占全TS0测速，不宣称推理速度SOTA。
+- **部署边界**：优化只进入独立消融脚本，正在运行的S2主评测仍用原脚本；S3主评测的优化部署须在S2主评测结束后另行等价验收。
+
+
+## §15.484（2026-11-07）S2 全参 structRFM+JEV 13 split 完整负结果
+
+- **完整性**：S2三枚独立best checkpoint×13 split×3 repeat全部完成，聚合状态 `PASS_STRUCTRFM_FULL_ABC_13_SPLITS_3_SEEDS_3_REPEATS`；第二次聚合逐字节一致。summary SHA256=`4a893068b9e7cdd8ca284a27fb3cdb0057f0b4b0454b8f75e52cd747b97f4a4b`。
+- **主榜 micro-F1 mean±SD**：TS0=0.4532140830±0.0330766729（n=79）、bpRNA-new=0.4380730957±0.0178170495（74）、ArchiveII=0.5128516538±0.0345912923（raw clean=90）、TS1=0.7574455574±0.0656932406（3）、TS2=0.8250000000±0.0353553391（1）、TS3=0.4410256410±0.0290095090（1）、TS-hard=0.3791175791±0.0167568020（2）、TestSetB=0.3030090741±0.0090498777（21）。all-baseline与external-single均**0/8 SOTA**，小split不作强统计结论。
+- **外部OOD**：Rfam=0.5232902658±0.0156290816，低于BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.4078324722/0.4532342829/0.3339871009/0.3037661483，measured wins=0。比较文件 SHA256=`b4e78beb6e3afaaf3d2848776409cef699161d67a58def5850ca7e20b9cadf4c`，独立核对主榜与CHANRG所有win字段均为0。
+- **长序列边界**：ArchiveII每seed 57条、Rfam每seed 140条超过官方位置上限而未支持，三种子合计171/420；与S1相同，未截断或删长序列制造提升。S2没有证明200–400/>400nt优势。
+- **置信度**：13 split均按seed0 VL0冻结阈值复算，confidence SHA256=`13a9091e34d96056fcf1cb98bb26b1810e613cc5e357c8c8f5f02cf5bf3dc66f`。多数split在高选择覆盖率阈值下为空，AURC=null；仅CHANRG Test seed0/1得到0.2888476321/0.2932648656，不能声称最佳置信度，空桶不改阈值、不插值。
+- **裁决**：S2全参微调否决为最终独立单模型，保留为S3近参数PairMLP对照；路线一仍需S3三种子、全板、配对bootstrap与greedy/Turner0消融全部关闭后才作最终裁决并进入RIPE。当前未修改PPT。
+- **优化部署**：S2总结后备份旧评测器SHA256=`03a6d0d132f990c33646ccfd15773ab51853ed62446df544d44ed58c264b08cf`；新主评测器与已验证消融器均为SHA256=`f73223c81ee73e7ac0bbdb90e9f991307cdd222c748422e100abda93441bad9f`，后续S3自动使用单次分数前向实现。
+
+
+## §15.485（2026-11-07）S2−S1 配对 bootstrap 与种子异质性
+
+- **协议**：同训练seed、同structRFM-clean序列，S2−S1的micro-F1差值做10,000次逐序列bootstrap；主八split逐seed Holm校正。两次独立运行输出逐字节一致，统计文件 SHA256=`a75c72790581f3fe82b558efe79f2a351bed74d9f0219f2fbc2411785b935177`。相关统计、解码与S3回归8/8通过。
+- **TS0**：三种子Δ=+0.0571089527/+0.0598268293/+0.0245611047，但Holm p=0.1527847215/0.1219878012/1.0，不能称统计稳健提升。
+- **ArchiveII**：三种子Δ=+0.0792397467/+0.0190721964/+0.0634652909；seed0 95%CI=[0.0258404553,0.1340281182]、Holm p=0.0169983002，seed1/2未过0.05。raw clean n=90，但每seed仅33条受官方位置上限支持，结论仅限该支持子集，不能外推为长序列优势。
+- **bpRNA-new**：seed0 Δ=−0.0515591551、95%CI=[−0.0786521448,−0.0242578363]、Holm p=0.0023997600，显著下降；seed1/2未显著。说明全参调整不是跨种子一致增益。
+- **小样本与TestSetB**：TS1/TS2/TS3/hard的n=1–3，仅作描述，不能把形式上的bootstrap/Holm小概率当强证据；TestSetB三种子均未显著。S2仍维持0/8 SOTA和最终模型否决，S3配置不因测试统计改变。
+- **后续**：S3齐套后按同一冻结协议重跑S2−S1/S3−S1/S3−S2全部比较，当前统计不用于选择测试集最优种子或调整模型。
+
+
+## §15.486（2026-11-07）S2 长度桶与长程配对边界
+
+- **Rfam**：≤100/100–200/200–400nt micro-F1均值=0.5728958306/0.6282924783/0.4562785781，200–400nt相对100–200nt明显下降；跨度≥30/≥100nt micro-F1均值=0.4124886834/0.0999433612。每seed另有140条不受支持，不能声称长序列或长程配对优势。
+- **ArchiveII**：200–400nt n=17/seed、micro-F1=0.4872380216；>400nt n=9/seed、micro-F1=0.5151310500，但该桶只含400–514nt，且每seed另有57条>514nt未支持，不能把有限的>400桶解释为全长度无衰减。≥100nt长程micro-F1=0.3168798666。
+- **TS0**：≤100/100–200/200–400nt micro-F1=0.5330756117/0.3793477713/0.4823311636，clean中>400nt为空，≥100nt长程micro-F1=0.2876763464；不能用200–400相对100–200的回升证明整体长度鲁棒。
+- **CHANRG**：Test只含≤200nt，200–400/>400桶为空，不能为长序列主张提供证据。所有空桶保留null，不以0或均值代替。
+- **叙事边界**：structRFM官方位置上限与长程配对弱项必须在论文Limitations中保留；RIPE路线需要独立证明>512工程能力和200–400/>400nt、长程配对效果，当前尚未开始其正式科学实验。
+
+
+## §15.487（2026-11-07）S3 训练续记与 RIPE 独立臂接口
+
+- **S3 seed0**：step8000刷新best validation loss=23.2018600019，bad=0，尚未平台化；此前step6500后曾出现两次未改善，但继续训练获得新低，未提前停止。
+- **S3 seed1**：best step8000 validation loss=22.0595713793，step8500=22.8679872025，bad=1；仍未达到patience=6。seed2尚未启动，三者齐全前不生成S3科学结论。
+- **RIPE接口**：新增encoder-only开关，checkpoint分别记录JEV头 `ripe.mode` 与encoder `ripe.encoder_mode`，旧checkpoint按原字段兼容。默认structRFM位置边界不变，仅显式RIPE encoder允许长序列；R3-head与R3-encoder不再被强制混合。主/消融评测器同步，现有回归7/7通过。
+- **边界**：该接口提交 `927b81733855522cabe67770ac97f27d80136f64` 已推送，但尚未进行RIPE正式三种子训练或A/B/C，不构成效果证据。路线一未裁决前不启动RIPE科学实验。
+
+
+## §15.488（2026-11-07）S3 step9500 轨迹与路线一完整裁决门
+
+- **seed0**：best step8500、validation loss=22.1045517380，step9500=22.8535986939，bad=2；尚未满足早停。
+- **seed1**：best step9000、validation loss=21.6738515200，step9500=21.7901956110，bad=1；尚未满足早停。seed2未启动。
+- **裁决门**：新增 `adjudicate_structrfm_route1_round48.py`，只在三臂主榜/SOTA/confidence、配对bootstrap和六项greedy/Turner0总结全部存在时，核验checkpoint、早停、输入哈希和比较项后生成 `route1_decision.json`。执行两次并逐字节一致，负结果也按合同允许RIPE，未完成前不放行。
+- **选择边界**：VL0参照只取最低best validation loss，不按测试榜选种子；长序列、最佳置信度、独占速度均默认不可主张。合成集成测试与既有统计/解码/S3/RIPE回归11/11通过，提交 `5921b20cae045ab298688f3e1d4c22f57aaca99d` 已推送。
+
+
+## §15.489（2026-11-07）S3 step11500 持续改善
+
+- **seed0**：step10500/11000/11500 validation loss=21.1341829184/21.7180840325/21.0531325398，best step11500，bad=0。
+- **seed1**：step10500/11000/11500 validation loss=20.9570972516/22.0050099293/20.5451347529，best step11500，bad=0。
+- **判定**：step11000的一次未改善没有形成平台，继续训练后两枚种子均创新低；不设置固定步数终点，不提前恢复旧checkpoint。seed2仍未启动，S3全板、配对统计与路线裁决保持等待。
+
+
+## §15.490（2026-11-07）S3 seed0 bad=5 后恢复改善
+
+- **seed0**：step15500曾达到bad=5，但未满足patience=6；继续训练后step16000 validation loss=19.5165950016，刷新best，bad=0。此前best step13000=19.8579217512，不能手动提前终止。
+- **seed1**：step16000 validation loss=19.0811047168，刷新best，bad=0；此前best step14500=19.8316712450。
+- **运行状态**：两枚种子均完成12/12 Transformer blocks训练并继续自然收敛，日志与compute ledger持续更新；无固定步数终点、无CPU静默降级。seed2尚未启动，当前loss仍不是A/B/C或SOTA结论。
+
+
+## §15.491（2026-11-07）新增 RNA 复合物扩充与 LinearDesign 路线合同
+
+- **执行顺序**：用户新增数据扩充和下游设计任务已纳入P4/P5，排在structRFM→RIPE→Pair-JEPA之后，最终独立复算/PPT/论文调整为P6。当前S3及路线一配置不变，不提前混入新数据。
+- **P4复合物**：D0不加新数据，D1以真实RNA复合物链内DSSR配对做纯数据扩充；RNA–蛋白界面接触独立保存，只有D1验收后才可单独评估D2界面辅助任务。不得以界面接触伪造RNA–RNA配对，也不得把D1写成模型理解蛋白界面。主判定为B组改善且A/C不显著退化，三种子A/B/C与complex holdout必需。
+- **去泄露**：RCSB/mmCIF保留entry/chain、实验方法、分辨率、日期、物种、原始哈希；exact+80% identity/query-coverage审计TR1c、VL0、13 split和structRFM预训练语料，按entry+序列簇切分，任何同源簇不得跨训练/验证/holdout。DSSR版本与Raw/canonical-nested/假knot标签分别保存。
+- **LinearDesign**：官方论文 Zhang et al., Nature 621, 396–403 (2023)，DOI=`10.1038/s41586-023-06127-z`。原文采用DFA/lattice representation与lattice parsing，目标 `MFE – λ|p|log(CAI)`，只针对编码区。采用“LinearDesign生成候选+冻结PRISM与独立热力学评价”，不把输出当真实标签蒸馏，不用于一般非编码Rfam RNA，不把结构指标写成湿实验稳定性/表达/免疫效果。
+- **RCSB初步调研**：两个常见属性路径在当前Search API返回search not enabled；全文 `RNA protein complex` 返回76,305个宽泛候选，不能当作复合物数。最终数据门要求条目/实体类型精确过滤与mmCIF核验，未形成数据规模结论。
+- **文档**：新合同 `docs/plans/2026-11-07-rna-complex-lineardesign.md`，三处spec/tasks/checklist增加T-A217/T-A218并同步硬顺序。未启动P4/P5训练，PPT未修改。
+
+
+## §15.492（2026-11-07）S3 seed0 自然早停与 checkpoint 验收
+
+- **seed0收敛**：step20000达到patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复best step17000，best validation loss=18.8644125285。不是固定步数截断。
+- **独立核验**：best checkpoint step=17000、scorer=pairmlp、latent_dim=490，无teacher张量；最终实际可训练参数=85,663,281。checkpoint SHA256=`dc0b9191919e5059ddf9964394f9b13ea09b754614dcf5c281ca039e1544ff07`。
+- **seed1**：step20000 validation loss=19.5192861763，best step19500=18.7388141224，bad=1，继续训练；seed2待其完成后接续。
+- **后续**：S3三种子与A/B/C未齐，不能根据当前较低VL0 loss宣称优于S1/S2或SOTA；全板、confidence、配对统计、greedy/Turner0和route1_decision继续按合同等待。新增P4/P5顺序不变。
+
+
+## §15.493（2026-11-07）S3 seed1 自然早停与 seed2 接续
+
+- **seed1收敛**：step22500达到patience=6，恢复best step19500，best validation loss=18.7388141224；`status=completed`、`converged=True`、`early_stopped=True`、实际可训练参数=85,663,281。checkpoint SHA256=`8155129295fc2f2bd03bda338b7e17c2993c21d6fdc36b106c71162be3733acd`。
+- **独立核验**：best checkpoint step=19500、PairMLP-490、无teacher张量，与seed0的checkpoint SHA256=`dc0b9191919e5059ddf9964394f9b13ea09b754614dcf5c281ca039e1544ff07` 区分，未平均种子或形成集成。
+- **seed2**：已读取42,564条TR1c并保留5.0GB CUDA显存进入初始化；目录出现时run_meta尚未写完，未把目录存在误记为训练已开始。
+- **后续**：S3 seed0/1完成，seed2继续自然收敛；三枚best齐全后自动运行优化后的单次分数前向13 split评测、VL0 confidence、SOTA、配对bootstrap和route1_decision。P4/P5顺序不变，PPT未修改。
+
+
+## §15.494（2026-11-07）RIPE 真实 CUDA 启动门、续训修复与预注册队列
+
+- **训练续训缺陷**：代码审查发现恢复 `resume.pt` 后只恢复了解冻层数，未重新打开此前层的 `requires_grad`。现按保存的层数恢复全部历史顶层，后续新增解冻逻辑不变；以4层模块验证0/3/4层及非法计数，未重写或重启正在运行的S3进程。
+- **精度归因**：RIPE encoder偏置显式转为原attention score dtype，实测score=BF16、autocast softmax=FP32、最终hidden=FP32；避免把新增偏置误变成额外精度对照。QK-norm未改变。
+- **CUDA门**：真实RTX4090上515/1024nt的R3 encoder均前向有限，515nt的60个RIPE参数张量均有有限梯度；JEV head同长度经既有128列分块路径前向有限，515nt全部RIPE参数有梯度。首次1024nt未分块pair representation临时张量申请9GB而OOM，证据保留于 `ripe_cuda_gate.unchunked_pair_repr_oom.log`；只修正预检以复用正式分块路径，未缩短序列或丢弃样本。
+- **独立复核**：`ripe_cuda_gate.json` 与recheck逐字节一致，SHA256=`53c3e69616b8c92242556c84b80581b7ec1e7cab4b03c78d9100dbf3d86eac13`。19项回归通过，续训/配置门另独立复跑4项；SOTA工具泛化实验名后，S2既有比较文件SHA256仍为 `b4e78beb6e3afaaf3d2848776409cef699161d67a58def5850ca7e20b9cadf4c`。
+- **冻结队列**：路线一完整裁决后，以S2/S3各三种子best VL0 loss均值为唯一基座配置选择依据，不读取测试榜选臂。六个head臂log/R1/R2/R3/R5/R6及独立encoder-only R3均三种子并行自然收敛，再做13 split、VL0 confidence、SOTA及greedy/Turner0。head-only不越过512nt，encoder臂要求全部raw序列被支持。容量对照复用另一已完成S2/S3臂；RIPE+ResNet2D整头608,759与PairMLP-490整头608,817仅差58参数。
+- **代码与边界**：提交 `8f8fdc0` 已推送GitHub。现有远端锁定队列只等待route1_decision，不重复启动训练；合成门不是长序列性能结论，尚无RIPE科学结果，PPT未修改。
+
+
+## §15.495（2026-11-07）S3 三种子全部自然收敛
+
+- **seed2收敛**：step22000达到patience=6并自然早停，恢复best step19000，best validation loss=18.8899386721；最终实际可训练参数=85,663,281。checkpoint SHA256=`8da0738356f9fef673152af2790fdb52ef0d8e762ddfc71ad7d98172955a17ee`。
+- **三枚独立核验**：seed0/1/2 best step=17000/19500/19000，loss=18.8644125285/18.7388141224/18.8899386721，checkpoint均PairMLP-490、无teacher张量、无种子平均；SHA256分别为 `dc0b9191…1544ff07`、`81551292…3733acd`、`8da07383…17ee`。三种子best VL0 loss均值=18.8310551077，仅用于后续冻结基座配置选择，不是测试表现。
+- **评测衔接**：原队列已进入13 split×3 seed×3 repeat正式全参评测；VL0 confidence也已启动。seed0 TS0已生成CUDA结果，但单split、单seed不作S3科学结论，须等待全板聚合、SOTA、配对bootstrap、greedy/Turner0和route1_decision。
+
+
+## §15.496（2026-11-07）全参 Pair-JEPA 辅助目标与防坍塌诊断工程验收
+
+- **接口**：全参 `train_plan_a` 新增显式 `lambda_jepa`、EMA/fixed/random target、非空masked-pair采样、原始辅助损失及target/prediction方差、范数、有效秩；默认 `lambda_jepa=0`，PairMLP/ResNet2D默认路径不变。有效秩以中心化latent协方差特征值的熵指数计算，最多等距抽样512个masked latent，避免全矩阵SVD开销。
+- **回归**：28项相关回归通过。测试构造曾误用每行和恒为1的one-hot样本期待满秩4，中心化后真实秩为3；改用以零为均值且四方向独立的正负基向量后通过，未修改算法迎合错误测试。
+- **CUDA工程smoke**：真实structRFM、4条8nt合成序列、两步、全12层解冻；193个encoder张量更新，EMA teacher与student分离。step1辅助损失=0（初始teacher=student），step2原始值=1.2728533505e-16；诊断日志独立于通用25步日志门，避免漏写及四舍五入掩盖正值。`qa.json` 状态 `PASS_PAIRJEPA_FULL_CUDA_ENGINEERING_SMOKE`。
+- **边界**：该run明确 `steps=2`、`stop_reason=step_cap`、`converged=false`、`scientific_conclusion=false`，极小掩码下有效秩约1不构成防坍塌或性能证据。未启动P3正式训练，仍待路线二裁决、三种子自然收敛和完整A/B/C。代码提交 `f10969e056b5429465072eaabf94aa51b7a54085` 已推送GitHub；PPT未修改。
+
+
+## §15.497（2026-11-07）Pair-JEPA fixed/random CUDA 工程对照关闭
+
+- **random-target故障**：首次CUDA运行因 `torch.randperm` 默认CPU而generator为CUDA，按合同停止并保留 `train_random.cuda_generator_failure.log`，没有生成科学结果。现显式在latent同设备采样，新增CUDA回归，修复后两步辅助损失=0.0090133324/0.0065957122，encoder张量正常更新。
+- **fixed-target与真实续训**：前两步辅助损失均为0，原因是零初始化direct logit第一步只更新logit、latent尚未变化；从现有resume续到第三步后为2.2097208330e-07。该续程实际恢复12/12层并继续更新encoder，验证 §15.494 的续训修复，而非重跑一套新实验。
+- **验收**：fixed三步、random两步均明确 `converged=false`、`scientific_conclusion=false`，`qa_fixed.json`/`qa_random.json` 只证明工程路径、非空掩码和有限诊断。极小合成样本的有效秩与损失不能外推防坍塌或基准效果。
+- **回归与提交**：29项相关回归通过；random设备修复提交 `67b9899b2df77921f49863fd6d842287ddbc398f` 已推送GitHub。正式P3仍等待RIPE路线裁决，S3全板继续原队列，PPT未修改。
+
+
+## §15.498（2026-11-07）RIPE 配对统计与路线二独立裁决门
+
+- **配对口径**：七个RIPE臂分别与同训练seed的VL0-selected R0比较13 split；主八split逐seed Holm，Rfam/CHANRG单独保留未校正区间与P值。ArchiveII/Rfam另做200–400/>400nt和跨度≥30/≥100nt子集，n<30只描述。
+- **encoder新增支持**：同名同clean数据且共同支持的序列才进入paired bootstrap；encoder额外支持的序列单列计数，不把R0的不支持当作0分，也不删除右端新增样本来伪造提升。右端丢失R0已支持序列会直接失败。
+- **路线裁决**：七臂主总结/SOTA/confidence/greedy/Turner0、三种子收敛、checkpoint哈希及统计源哈希全部齐套后才放行P3。R0与七臂共同按三种子best VL0 loss均值选择下一基座，测试F1不参与选择；长序列SOTA、最佳置信度和独占速度默认不可主张。
+- **验证与部署**：7项统计/裁决回归通过，包含encoder新增支持和R0优先于测试高分的反例。代码提交 `7df7e6abbf9a84624bc6d26e20ab681d1673b9b1` 已推送GitHub；双重10,000次bootstrap及双重裁决watcher已部署，等待真实七臂结果。S3目前仍在13 split评测，PPT未修改。
+
+
+## §15.499（2026-11-07）S3 单种子独立 QA 与后续官方资产边界
+
+- **S3 seed0/1 QA**：两枚种子的13 split均完成独立checkpoint/clean哈希、raw→supported守恒、三次预测一致、单次score前向及TP/FP/FN→micro/macro复算。QA SHA256分别为 `d113b5b44beffb0ec2afa41e07bb315769d6018ff04a1d9546387ffb6e851c6d`、`fa11607cbe5c560c75ab43b6b89d694798a6d6beb920dc3c673660030b04e3d4`。它们不是三种子全板结论，seed2仍在评测。
+- **VL0阈值**：三枚VL0均196条、CUDA、三次预测一致；confidence阈值reference_seed=1，对应最低best validation loss=18.7388141224，没有测试集拟合。VL0 micro-F1三种子均值=0.7913461135，仅作过程核验，不外推全板或最佳置信度。
+- **DSSR资产门**：集群PATH、`tools/bin`、`/opt`及限定深度资产搜索均未发现DSSR。P4前必须取得固定官方版本、许可与标签一致性证据；不使用经验配对或来路不明替代物，当前未生成复合物标签。
+- **LinearDesign官方资产**：官方仓库确认为 `LinearDesignSoftware/LinearDesign`，commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be`，README引用DOI=`10.1038/s41586-023-06127-z`。源码仅放 `/home/rna_jev/third_party/LinearDesign`，许可允许学术研究但禁止未经书面许可的再分发，因此不提交到本项目GitHub。README声明GCC≥4.8.5/Clang≥11及python2.7，正式P5前仍需编译和官方示例等价验收；未提前运行P5设计实验，PPT未修改。
+
+
+## §15.500（2026-11-07）S3 PairMLP-490 三种子 13 split 完整负结果
+
+- **完整性与复算**：39/39单元格完成，聚合双跑逐字节一致，summary SHA256=`cdae12f3069340936a7dbd9b67ab7c4e1b8d5c4070e1d9676baead7db3c5eabf`。seed2独立QA SHA256=`c618baf6e95414d83dad27fd2d12a1e06bb9368eddb33886d95429f8cff60725`，三枚seed现均通过哈希、样本守恒和指标复算。
+- **主榜**：TS0=0.4750360183±0.0164410583（n=79）、bpRNA-new=0.3904187883±0.0040866013（74）、ArchiveII=0.5362893530±0.0211192255（raw90）、TS1=0.7243737131±0.0252385177（3）、TS2=0.5549707602±0.0558533110（1）、TS3=0.5706093190±0.1209580509（1）、TS-hard=0.3810386473±0.0931557995（2）、TestSetB=0.3124962088±0.0141189524（21）。all-baseline与external-single均**0/8 SOTA**，小split保持描述性。
+- **外部OOD**：Rfam=0.4826468164±0.0056530168，低于BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.4037508683/0.4475214271/0.3662707435/0.2929328290，measured wins=0。SOTA双跑一致，SHA256=`fd3b85f64a1dac18fb7ec7967ba03c8f38042f8f8f79127f4c1853c8203bebf7`。
+- **长序列与长程**：ArchiveII三种子共171条不受支持，Rfam共420条不受支持；Rfam仅≤100/100–200/200–400nt有支持，micro-F1均值=0.5635798138/0.5669664499/0.4129541032，>400桶为空。ArchiveII >400桶仅9条/seed且限于400–514nt，每seed另有57条未支持，不能据此称无长度衰减。Rfam跨度≥30/≥100nt micro-F1=0.3581262402/0.1221373579。
+- **置信度**：13 split×3 seed的AURC全部为null，因VL0冻结阈值下至少一个风险桶为空；不得在测试集改阈值或插值。全板confidence双跑一致，SHA256=`34b280a50c951572112daa4db35c03b78edcb49426ce00a2d01e9d783915debd`，不能称最佳置信度。
+- **配对统计**：S3−S1在TS0 seed1/2和ArchiveII seed1/2经Holm显著为正，但bpRNA-new seed0/2显著为负；S3−S2仅TS0 seed1、ArchiveII seed1显著为正，bpRNA-new seed1/2显著为负。说明近参数PairMLP存在种子与split异质性，不能宣称普遍容量增益。统计双跑SHA256=`a239854a1bbf8bb06fa9d14b1426785916e84120ab8e598d3e4af062eea8e4c3`。
+- **裁决**：S3否决为最终独立单模型，保留为近参数对照。路线一仍需三臂greedy/Turner0全部完成才生成最终route1_decision并启动RIPE；原消融队列已接续，PPT未修改。
+
+
+## §15.501（2026-11-07）路线一解码消融三臂并行调度
+
+- **原因**：主结果齐套后原脚本以单进程依次执行三臂×两种解码，造成GPU等待。改为S1/S2/S3三个独立worker并行，评测器、checkpoint、clean数据、三次repeat、DP/greedy与Turner=0参数均不变。
+- **连续性**：停止的是旧串行bash orchestrator，不是模型评测逻辑；当时正在运行的frozen子任务继续至正常结束。已有输出全部保留，worker逐cell核对checkpoint SHA256、CUDA、repeat、decoder和prior override后跳过，不重算有效结果。
+- **验证**：新脚本 `run_structrfm_decoding_arm_round48.sh` 通过 `bash -n`，提交 `f244387d80b6c549ea64b457b1bbc95354eaf752` 已推送GitHub。三个worker均已进入真实CUDA评测；旧任务的通知属于主动调度替换，不是科学运行失败。路线一裁决仍等待六项总结齐套，RIPE未提前启动。
+
+
+## §15.502（2026-11-07）Pair-JEPA 推理 teacher-forward 硬约束
+
+- **实现**：主全参评测与greedy/Turner0消融在checkpoint加载后将Pair-JEPA teacher forward替换为直接报错，并记录 `pairjepa_teacher_forward_guard`。任何意外teacher调用都会使评测失败，不能只凭代码审查声称无teacher前向。
+- **默认回归**：S3 seed0 VL0在主评测和消融评测中除新增guard字段及wall time外与原结果逐值一致；PairMLP无teacher时guard=false，既有科学结果不变。
+- **真实Pair-JEPA路径**：使用EMA smoke checkpoint在4条8nt合成序列上完成CUDA三次确定性推理，guard=true且未触发teacher报错。该smoke的结构数值不构成科学结果，也不用于PPT。
+- **测试与提交**：相关7项测试通过，提交 `e59bf7056f02e2c1bfd1acb93a5e4a1dd05548f0` 已推送GitHub。正式P3仍需路线二裁决、三种子收敛与A/B/C；路线一消融worker继续运行。
+
+
+## §15.503（2026-11-07）三臂 DP→greedy 完整机制消融
+
+- **S1**：39/39 greedy完成并双跑一致，summary SHA256=`a9cf9c635da7ac15fdc46a19109dd6cf14ff6ee75b297e38a5c1e79e19d7a8fa`。TS0默认DP/greedy=0.4060484541/0.2041445908，Rfam=0.5491246680/0.2440775059；多个split出现大量交叉与共享碱基冲突。
+- **S2**：39/39 greedy完成并双跑一致，summary SHA256=`d0d1b0bb3dc396536affaf088951521e2a80b9d400598b373cc63a5b81fab0e5`。TS0=0.4532140830→0.2212504275，bpRNA-new=0.4380730957→0.1219899697，Rfam=0.5232902658→0.2366868866。
+- **S3**：39/39 greedy完成并双跑一致，summary SHA256=`6c0cdc203c27b3c6577cbe3f5d236a348056c01836c8e4dcf0b7a68521e974ab`。TS0=0.4750360183→0.2073732258，bpRNA-new=0.3904187883→0.1367539341，Rfam=0.4826468164→0.2045584377。
+- **机制边界**：三臂默认DP均在全部13 split明显优于greedy，支持合法DP解码是性能关键组成，不能把结果解释为简单贪心打分。当前仅关闭DP→greedy门，Turner=0及route1_decision未完成，RIPE仍未启动，PPT未修改。
+
+
+## §15.504（2026-11-07）路线一最终裁决与 RIPE 正式启动
+
+- **Turner=0独立复算**：S1 summary SHA256=`58645ef4ddcffbffb79edec7af2bc58add4e8720e90f53fd00868fdbf8bba3c1`；S2=`fc71443428e0bf58ab2bcd1e1deb694b6936742a59a8f6e1cb5b82da6caccc90`；S3=`a0da02db43ee6beb7b0931f20a4ba25ae7747c26376e389811b7606c8da91fbf`。三臂双跑均一致，Turner=0保持DP且交叉/冲突为0。
+- **物理先验机制**：S1 TS0/Rfam=0.4060484541/0.5491246680，Turner=0降至0.2455985528/0.2652132997；S2对应0.4532140830/0.5232902658→0.2397278430/0.2076715300；S3对应0.4750360183/0.4826468164→0.4532272097/0.4331204421。S3降幅较小，但其prior weight三种子=0.3233455122/0.2942570448/0.3030517101，低于S2的0.6843111515/0.8007776737/0.7943384647，不能据此宣称不需要物理先验。
+- **路线一裁决**：六项greedy/Turner0总结、三臂主榜/SOTA/confidence及paired bootstrap齐套，`route1_decision.json` 状态 `PASS_ROUTE1_ADJUDICATION_WITH_NEGATIVE_SOTA`、complete=true、allow_ripe=true，SHA256=`a9cc5c0e66c8d3cfb7ff2d660378d0ce8dcd8db39c9dcc36acaca60a29d798a9`。S1/S2/S3均0/8并否决为最终模型，负结果不掩饰。
+- **RIPE基座与启动**：按三种子best VL0均值选择S3 PairMLP-490（18.8310551077，S2=19.5281032939），不按测试榜选臂。预注册与recheck SHA256=`03e9462be68a0e3d168a89ad123e13d34da3ca7e4ce8e30c637522404ccc7a4a`。log-head seed0/1/2已读取42,564条TR1c并进入真实CUDA，steps=0、patience=6，不设固定终点。
+- **调度异常边界**：首次RIPE调度在预注册双跑阶段退出且未启动训练，未捕获的错误不归因；手动补跑两份配置一致后，以同一锁定脚本重新挂接并保存 `ripe_queue.log`。未重复任何已开始的RIPE训练。路线二全板与机制结论尚未产生，PPT未修改。
+
+
+## §15.505（2026-11-07）P3 队列闭环与 DSSR 官方资产验收
+
+- **P3配置与执行链**：J0由路线二VL0选择，J-mlp/J1/J1-noEMA/J-random保持同骨干及RIPE状态，`lambda_jepa=0.1`预注册，训练两路并发。相同MLP若与J0一致则复用，不重复训练；主评测/消融强制teacher-forward guard。统计与裁决包括有限masked loss、方差、有效秩和全部39个guard结果，低秩如实保留，不设任意合格阈值。相关提交 `5e84b2a`、`6ea6900`、`a50fbe3` 已推送GitHub，正式P3仍等待RIPE裁决。
+- **DSSR官方来源**：从 `https://docs.x3dna-dssr.org/download.php?pkg=linux` 获取官方预许可发布版，完整ZIP通过CRC校验，SHA256=`602b2d0dfda969999204a570e848c3dfb0203c9d3b12436e7d0275a5b4ea78aa`。首次120秒下载不完整且服务器不支持断点续传，重新完整下载后才解压，未使用损坏包或第三方镜像。
+- **版本与许可**：二进制SHA256=`c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a`，`--version`确认 `v1.9.10-2020apr23`，仅用于非商业研究；存于 `/home/rna_jev/third_party/DSSR-v1.9.10`，不推送到项目GitHub。
+- **mmCIF/JSON工程门**：公开1EHZ mmCIF SHA256=`3021dd2b6461f850bb66d6748d3c22a5e1bb6cc891c625c15d793f38215b28ab`，固定命令 `x3dna-dssr -i=1EHZ.cif --json --pair-only -o=1EHZ.dssr.json` 输出34对，含 `A.G1–A.C72`、WC、cWW等字段；JSON SHA256=`0828a38b70938b170745e938c394b5ad2e18b01f5aeeffc2b0c0518ea413eda1`。该结果只证明工具可用，不是复合物扩充科学结果。P4仍待P3裁决、精确RCSB实体清单、去泄露和D0/D1；PPT未修改。
+
+
+## §15.506（2026-11-07）LinearDesign 编译与官方示例等价验收
+
+- **编译**：官方commit=`f0126ca89a8b853088b4bccfd2cc8c378d3678be` 使用g++编译成功，生成二进制SHA256=`f1f22901967cb3e0f569ff2332c326800ac355727ab58e377b14514db4fe9688`，官方 `LinearDesign_linux64.so` SHA256=`5707cd7d7950a711af74350c94956d1b0212eae37cc5bd04872967597cb3d330`。
+- **依赖修复**：首次运行因无 `python2` 失败，直接Python3又因官方gflags的Python2专属语法失败，未修改第三方源码。集群阿里Conda镜像404后，显式使用Anaconda官方channel创建隔离 `/home/rna_jev/envs/lineardesign-py27`，版本Python2.7.18；未改全局channel或项目运行环境。
+- **λ=0官方示例**：MNDTEAI输出序列 `AUGAACGAUACGGAGGCGAUC`、结构 `......(((.((....)))))`、MFE=-1.10、CAI=0.695，与README逐项一致；输出SHA256=`ee16d5dda332676df3cb003509f74b99d51d4450e0981473db9580f54139a71a`。
+- **λ=3官方示例**：testseq两条序列、结构、MFE=-6.00/-13.50和CAI=0.910/0.979均与README一致；输出SHA256=`dd032a0e367c886646b686a1dc48c243dbdd9e4bb009c8221c0b04662520cf51`。`qa.json` 状态 `PASS_LINEARDESIGN_OFFICIAL_EXAMPLES`、scientific_conclusion=false。
+- **边界**：官方示例只证明工具身份与等价性，不证明设计增益、表达、稳定性或免疫原性。正式P5仍等待P4的D0/D1裁决；源码和库不再分发，PPT未修改。
+
+
+## §15.507（2026-11-07）RCSB RNA–蛋白复合物精确 entry 清单
+
+- **查询修正**：schema确认 `rcsb_entry_info.polymer_entity_count_RNA/protein` 存在；手工请求因当前API要求属性查询 `service="text"` 而反复400，最小1EHZ查询验证该合同后返回total_count=1。此前 `service="attribute"` 的错误响应保留，不把400误写成字段不存在。
+- **精确候选**：RNA>0 AND protein>0返回8,157个entry，完整清单去重且total_count与ID数一致，首/末ID可复核。清单SHA256=`9b0d5045d2b5cdabd5cbc769827e6cb037adf9de2dc21773524ef7b761e74f2d`。
+- **边界**：8,157是entry级候选，不是RNA链数、复合物链内配对数或最终训练样本数。P4仍需mmCIF实体/链过滤、实验元数据、DSSR标签、entry+序列簇去泄露及独立holdout，待P3裁决后执行。官方Python客户端安装于隔离环境，仅作API合同参考，不进入项目依赖。PPT未修改。
+
+
+## §15.508（2026-11-07）RIPE log-head step5500 训练节点
+
+- **三枚种子均刷新best VL0**：seed0 step5500=25.6400560916（此前best step4500=26.3062378816）；seed1 step5500=25.3830595520（此前step5000=25.4139357017）；seed2 step5500=24.6396191359（此前best step4500=25.9202607221）。seed0/2在step5000的一次未改善后均恢复下降，bad重置为0。
+- **训练状态**：三枚种子均按预定节奏解冻10/12层，真实CUDA、steps=0、patience=6，无OOM或CPU降级。当前仍是log-head过程损失，不是R1/R2/R3或A/B/C证据，不据此调整后续臂或选择测试集。P3/P4/P5继续按门控等待，PPT未修改。
+
+
+## §15.509（2026-11-07）RIPE log-head 全解冻进展与 seed2 OOM 错峰恢复
+
+- **进展**：step9000时seed0/1 best VL0=22.2219787160/22.3086430235，seed2在step8500 best仍为step7000=23.3092125098、bad=3。三枚种子随后均进入12/12层训练，验证波动不提前终止。
+- **OOM证据**：seed2在step9000验证backward申请928MiB时，与另外两进程峰值重叠，GPU仅剩831.06MiB而OOM；失败日志已单独保存为 `ripe_head_log_s2.oom_step9000.log`。不是CPU静默降级，不把该次运行写成收敛或科学结果。
+- **恢复方案**：seed2的 `resume.pt` 已保存至step9000，seed0/1继续自然训练。恢复队列等待两枚种子结束及原调度退出后，从step9000恢复seed2；利用已修复的历史解冻层恢复逻辑，不重启seed0/1、不删除旧日志、不改batch、LR、数据或patience。后续七臂继续使用同一冻结队列，OOM恢复完成前不进入A/B/C。
+
+
+## §15.510（2026-11-07）RIPE 实际恢复点核验与 RNA 复合物链映射工程门
+
+- **恢复点更正**：恢复时 `resume.pt` 实际为step8500、`n_unfrozen=12`、best step7000=23.3092125098，不是此前预期的step9000；以真实checkpoint为准。日志明确 `resumed from step 8500 (12/12 blocks unfrozen)`，随后训练step8750，VL0 step9000/9500=22.4262935394/22.0649896327，连续刷新best且bad=0。未启动第二份seed2、未重训已收敛seed0/1、未改变batch/LR/数据/patience。
+- **1EHZ链映射**：固定mmCIF/DSSR/parent-map生成链级序列及Raw、canonical-nested、非经典/假结标签。76nt实测序列与mmCIF逐位一致，34/34 DSSR链内配对映射通过；修饰碱基父映射来自gemmi固定表或RCSB化学组分响应哈希，不用字符串猜测。首次22对canonical-nested结果使用有缺陷的交叉判定，已作废；修正后严格规则将含交叉链的canonical-nested置空、Raw 34对完整保留，最终双跑SHA256=`7de6d2de8fc15210e2d8771f6fbac13ec0a5a3655e5da01858a3c671965f1297`。
+- **缺陷关闭**：开发中修正DSSR数字开头修饰残基正则、映射键重复链名及canonical交叉判定，增加负坐标/插入码、共享端点、交叉配对、修饰父映射反例；3项回归通过。这些是工程修正，不改变既有模型、训练或科学结果。
+- **批量准备**：四进程小批量16 entry采集已启动，原子下载mmCIF、DSSR版本与原始JSON、链映射和失败原因均保留；它只是P4数据准备，不是训练启动。去泄露、holdout和D0/D1仍待P3裁决，PPT未修改。
+
+
+## §15.511（2026-11-07）RIPE 恢复后继续改善与复合物采集真实淘汰
+
+- **训练**：seed2 step10500 VL0=21.4040089031，刷新恢复后的best，bad=0；12/12层继续自然训练。该值仍不用于推断A/B/C提升。
+- **16 entry小批量**：14条成功生成labels但accepted_chains=0，主要为短双链、蛋白/DNA混合实体或没有合格链内配对；2条因HSX无明确RNA父碱基而拒绝。未把entry数、DSSR总对数或零链样例算作训练数据。修正蛋白残基误入父映射检查、`auth_seq_num=?`未观测残基处理，3项回归通过；相关提交 `31ca5f3`、`5689ce6` 已推送，未观测修复随全量采集提交。
+- **全量与去泄露准备**：按固定规则四进程采集8157候选，不挑选结果好看的条目。去泄露脚本固定structRFM FASTA SHA256，准备对TR1c/VL0/13 clean split及21M预训练语料做exact+80% identity/query coverage审计，再按entry+序列簇确定训练/holdout；尚未执行或产生非空holdout，P4训练未启动。
+
+
+## §15.512（2026-11-07）复合物真实有效链出现与去泄露工具验收
+
+- **采集中间态**：261个已生成labels的entry中有132条合格链，例如10ZP_B=95nt/38 Raw pairs、1QF6_B=76nt/33 Raw pairs；完整8157条尚未结束，132仅是处理中计数，不是最终样本量。零链与解析失败继续保留，不按通过率外推最终数据规模。
+- **去泄露端到端测试**：构造10条唯一序列，正确删除预训练exact、TR1c exact和80%同源变体共3条，保留7条；MMseqs真实比对和聚类后，train/holdout均非空，entry与序列簇无交集，训练/holdout文件逐字节一致，manifest除输出目录和随机临时目录外完全一致。修复entry与cluster重复计数，改用并查集做联合分组；3项解析回归+1项集成测试通过，提交 `5825337` 已推送GitHub。该测试只是工程验收，不是正式去泄露完成。
+- **RIPE**：seed2 step12000 VL0=21.3019737110，刷新best、bad=0；继续自然训练。仍无RIPE全板、P3、P4科学结论，PPT未修改。
+
+
+## §15.513（2026-11-07）复合物监督与嵌套解码一致性及独立审计
+
+- **标签口径修正**：Raw DSSR配对可能共享碱基、含非经典配对或假结，不能作为现有嵌套结构解码器的可实现监督。D1训练与主complex holdout固定使用canonical-nested；Raw及非嵌套部分保留做分层分析，无canonical-nested的链列入淘汰清单，不进入空标签训练。新链启用现有四损失时缺teacher会fail closed，正式D1前须生成同协议ViennaRNA teacher，不允许均匀标签替代。
+- **分组与审计强化**：MMseqs聚类存在低复杂度序列未返回的风险，改为全对全80% identity/query-coverage搜索并求连通分量，entry关系与序列簇用并查集合并；候选编号在过滤后统一分配。独立审计复核来源SHA256、exact删除、分组、守恒、来源标签与canonical训练标签一致性。
+- **测试**：合成11条唯一序列，3条泄露删除、1条无嵌套监督单列、7条进入train/holdout；双跑输出一致，独立验证通过。4项回归通过，提交 `24213d6` 已推送GitHub。正式全量去泄露尚未完成。
+- **训练**：RIPE seed2 step14500 VL0=20.3426428637，best持续刷新，未达到patience，继续自然训练；不按固定步数终止，也不据此宣称基准改善。
+
+
+## §15.514（2026-11-08）长链 DSSR/mmCIF 映射闭环与最大嵌套子集
+
+- **问题定位**：3J6B的作者编号在部分区域发生偏移，DSSR pair-only输出不能与mmCIF直接混用；固定DSSR v1.9.10没有 `--label-seq-id` 选项，该失败日志已保留。改用完整DSSR `nts` 清单，以链、实测残基顺序和碱基身份桥接mmCIF，不用经验偏移或编号猜测。3J6B完整输出2733个实测核苷酸、1247对配对，最终A链3296nt、1240对链内Raw配对，映射通过。
+- **长链监督**：遇任一交叉即清空的初版规则会丢失长链全部监督，改为确定性动态规划求最大基数、无交叉、无共享端点的canonical-nested子集，平局按字典序，Raw全量保留。3J6B得到768对canonical-nested，1EHZ得到34 Raw/21 canonical-nested；小规模随机集合穷举验证最优配对数，长链另查端点唯一与无交叉。
+- **回归与提交**：作者编号偏移、残基数不符、负坐标、修饰碱基、嵌套/交叉/共享端点、穷举最优性、去泄露集成共6项通过；另修复DSSR `^A` 插入码格式。提交 `3f713b2`、`88531bd` 已推送GitHub。旧pair-only标签在后续缓存更新时不接受，旧DSSR/labels备份保留；完整8157采集与去泄露尚未完成。
+- **RIPE**：seed2 step15000 VL0=20.0274915839，step16500=20.0832780836、bad=3，best仍step15000，未达到patience，继续自然训练；不外推全板提升，PPT未修改。
+
+
+## §15.515（2026-11-08）D0 复用与 D1 teacher/配置冻结工具
+
+- **对照原则**：D0直接复用Pair-JEPA按VL0选出的三种子独立单模型及既有A/B/C结果，不重复训练。D1从同一预训练structRFM初始化、保持D0模型与训练配置，只增加经过去泄露和独立审计的canonical-nested复合物训练链；不是从D0 checkpoint继续微调，也不改变验证集或测试集。
+- **teacher与合并门**：新增链必须用既有ViennaRNA 2.7.2协议生成teacher，合并manifest逐shard记录真实SHA256，TR1c原teacher直接复用；缺失teacher会fail closed。配置工具核验D0三种子收敛、目标/schedule一致、训练序列唯一、canonical配对合法和holdout哈希，合成验收通过，提交 `b963277` 已推送GitHub。
+- **队列**：去泄露独立验证通过后自动8 worker生成新链teacher，待Pair-JEPA正式裁决后冻结D1配置；尚未启动D1训练。4JNX缺nts系旧pair-only缓存，后续按observed_nts_v1重算，不新增猜测规则。
+- **训练**：RIPE seed2 step17000 VL0=20.8093687797，best仍step15000=20.0274915839、bad=4，未达到早停，继续自然训练。
+
+
+## §15.516（2026-11-08）D0/D1 执行链与来源元信息验收
+
+- **执行链**：D1配置门后先以D0三种子对独立complex holdout做CUDA评测，再启动D1三种子自然收敛、13 split、holdout、confidence、SOTA和greedy/Turner0。D0既有A/B/C不重训重测，D1只改变训练数据。新run_meta记录data路径，恢复时强制匹配数据/scorer/目标；语法和续训/配置测试通过后队列处于等待状态，未提前训练。
+- **元信息**：去泄露输出补入实验方法、分辨率、发布日期、来源物种和伴侣实体类型；未知物种明确为空。1EHZ实测元信息、去泄露双跑、独立审计及D1配置测试通过，提交 `67b60f7` 已推送GitHub。
+- **启动故障**：两次D1启动分别在测试文件缺失和PYTHONPATH缺少repo/src时fail closed，均未开始训练；测试文件已注册，正式环境下验收通过后队列正常运行。该过程不是科学结果。
+- **训练**：RIPE seed2 step17500 VL0=19.3288054409，step18500=19.4642804201、bad=2，继续自然训练；尚无RIPE全板结论，PPT未修改。
+
+
+## §15.517（2026-11-08）D0/D1 配对统计与独立裁决闭环
+
+- **统计**：复用既有13 split共同支持序列、每seed配对10,000次bootstrap、主八split Holm；Rfam/CHANRG单独报告，complex holdout同口径比较，200–400/>400nt与跨度≥30/≥100单列，n<30只描述。B组改善、B组显著退化和主榜显著退化分开判断，不以合并均值掩盖弱格。
+- **裁决门**：D1三种子收敛、数据与teacher路径、全部主榜/SOTA/confidence、greedy/Turner0和配对统计齐套后才生成decision；Pair-JEPA评分器逐结果强制teacher-forward guard。D0/D1下一基座只按三种子best VL0均值选择，测试F1不参与选择；长序列SOTA、最佳置信度、独占速度默认不可主张。
+- **测试与队列**：B组正增益、主榜退化、混合B方向和小样本反例均通过，D1配置合成测试通过。提交 `97a9175` 及双跑watcher提交已推送GitHub；独立watcher等待两种解码总结后运行统计和裁决双跑，尚无D1科学结果。
+- **RIPE**：seed2 step19000 VL0=18.9526270525，刷新best、bad=0，继续自然训练；不把该验证损失写成全板提升。
+
+
+## §15.518（2026-11-08）ViennaRNA 真实资产路径与 teacher 启动门修复
+
+- **环境排查**：默认PATH无RNAfold，lucaone无RNA包；历史报错所指 `/root/rna_jepa_data/pylibs` 在当前集群不存在，不能根据旧manifest假定环境完整。实际固定安装位于 `/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/pylibs`，已实测 `ViennaRNA 2.7.2`、25nt partition-function的26×26概率矩阵及有限值，并通过 `ThermodynamicTeacher.tool_version()` 和真实 `predict_probs()` 调用。
+- **队列与文档**：teacher watcher补充真实PYTHONPATH及版本门；旧watcher在未开始计算前主动替换，无标签丢失。同步修正 `src/rnajepa/distill.py` 顶部“teacher未安装”和错误路径提示，行为不变。P5热力学复算可使用同一绑定，但尚未启动正式设计实验。
+- **边界**：启动前的版本/路径失败均未产生teacher或D1科学结果。代码提交 `f44482b` 已推送GitHub，临时部署文件已删除。RIPE seed2 step20000=19.7009390370，best仍step19000=18.9526270525、bad=2，继续自然训练。
+
+
+## §15.519（2026-11-08）ViennaRNA teacher 端到端与共享存储验收
+
+- **真实故障**：首次两条序列teacher smoke的两个worker均成功，但团队盘不支持符号链接，merge失败；未将worker成功误写为完整成功。合并现优先硬链接、跨盘复制，D1原TR1c teacher合并同步修复，shard哈希保持可追溯。
+- **完整验收**：复跑复用已完成worker输出，2条序列、2 shard合并成功；manifest=`thermo:viennarna`、`ViennaRNA 2.7.2`、n=2，实际加载两条矩阵分别为6×6和76×76，全部有限且在[0,1]，sum=5.9160917862e-05/22.3018173527。D1配置回归通过，提交 `612a342` 已推送GitHub。该smoke只证明工具链，不是科学结果。
+- **训练**：RIPE seed2 step20500=19.2728738793，best仍step19000=18.9526270525、bad=3，继续自然训练；尚无RIPE全板、P3、D1结果，PPT未修改。
+
+
+## §15.520（2026-11-08）LinearDesign 独立编码/CAI/MFE 复算工程门
+
+- **实现**：新增候选序列翻译、内部终止检查、密码子表SHA256、CAI几何平均、GC比例与ViennaRNA 2.7.2 fold/MFE独立复算；官方密码子表64项读取，未把LinearDesign输出当真实标签或湿实验结果。
+- **官方例验收**：MNDTEAI候选翻译逐位一致、结构 `......(((.((....)))))` 一致、CAI=0.695一致。独立MFE=-1.40，官方示例=-1.10，存在0.30 kcal/mol差异；当前仅确认数值差异，未证明其来源是版本还是参数，不能篡改为-1.10。后续并列记录生成器和独立复算值。
+- **回归与提交**：官方例及翻译错误/内部终止fail-closed回归通过，提交 `2de6723` 已推送GitHub。该工程门不代表下游设计增益，P5仍等待D0/D1裁决。RIPE seed2 best仍step19000=18.9526270525、bad=3，继续自然训练。
+
+
+## §15.521（2026-11-08）D0/D1 全流程合成裁决验收
+
+- **覆盖**：构造39个主split单元格、D0/D1三种子meta、13 split配对bootstrap、holdout整体与长程子集、SOTA/confidence及greedy/Turner0汇总，完整运行比较与裁决。确认D1较低VL0时选择D1、B组改善与主榜退化分开、holdout整体3项+长程6项共9项、非8/8不写成SOTA。
+- **测试修正**：过程中只修正合成schema的span字段、`PASS_*`状态、D0 holdout目录与测试期望，未放宽真实裁决门。4项集成/规则回归通过，提交 `2bd1f1e` 已推送GitHub。合成数值不构成科学结果。
+- **训练**：RIPE seed2 step21500=20.4586676765，best仍step19000=18.9526270525、bad=5，尚未达到patience=6，继续自然训练；不在bad=5提前终止。
+
+
+## §15.522（2026-11-08）RIPE log-head 三种子自然收敛与 LinearDesign 全例复核
+
+- **log-head seed2收敛**：step22000达到patience=6，`status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`，恢复best step19000，VL0=18.9526270525。best checkpoint SHA256=`1f6adba5fc5d49e31c72e08d65e691fa701a0cf8dd0a0b9ad835001fb98125dc`，checkpoint step=19000、无teacher张量，最终可训练参数85,663,449。
+- **三种子与评测衔接**：seed0/1/2分别step16000/23500/22000自然早停，best step13000/20500/19000，VL0=20.0427111465/18.9850609293/18.9526270525，均值=19.3267997094。三路13 split CUDA正式评测已启动，须等待39单元格、confidence、SOTA、配对统计和解码消融，VL0均值不是全板结论。
+- **LinearDesign全例**：三条官方示例的蛋白序列、翻译、结构和CAI均一致，CAI=0.6946987246/0.9100488572/0.9789878187。末端终止UGA按官方协议计入CAI，内部终止仍拒绝，提交 `4ede28f` 已推送GitHub。独立ViennaRNA MFE=-1.40/-6.70/-14.70，生成器=-1.10/-6.00/-13.50，完整输出SHA256=`d2edab7ec3ff7819e474731cdd08c724f2263143e06b3fa45f5e3e4d296f6a83`。差异来源尚未归因，不宣称一致；仅工程验收，无设计效果结论。
+
+
+## §15.523（2026-11-08）RIPE log-head 正式评测阶段 QA
+
+- **完成度**：当前39个主split单元格中24个已落盘，21个PASS、3个 `PARTIAL_STRUCTRFM_POSITION_LIMIT`；ArchiveII只支持33/90条，严格保留官方512nt边界，不把未支持当0分或删除。
+- **独立QA**：24/24均通过checkpoint与数据SHA256、raw→supported守恒、CUDA、单次score forward、三次解码逐值一致及TP/FP/FN→micro-F1复算。QA状态 `PASS_RIPE_HEAD_LOG_PARTIAL_QA_NOT_SCIENTIFIC_CONCLUSION`，SHA256=`f1c6fe9e29dfe15f7a15864c1581e457c5277451adc82e83fc42ec527477053c`。
+- **边界**：39个单元格未齐，未形成log-head A/B/C、SOTA、长序列或最佳置信度结论；不以部分TS0结果选择后续臂，PPT未修改。
+
+
+## §15.524（2026-11-08）交接同步与 log-head CHANRG 过程检查
+
+- **规范同步**：`spec` 与 `spec_sync` 的spec/tasks均更新路线一裁决、log-head自然收敛、复合物observed-nts长链映射/最大嵌套子集、ViennaRNA teacher与D0/D1队列、LinearDesign独立CAI/MFE边界；旧“待路线一裁决”和“canonical全为空”状态已纠正。
+- **评测进展**：主split已完成33/39，正在计算CHANRG GenC，随后GenF和VL0 confidence；此前27个单元格一度未增长已核实是2727条CHANRG Test正常计算，非异常停滞。未更改split、checkpoint、repeat或CUDA设置。
+- **数据过程**：已有旧缓存中的监督链只作处理中计数，仍存在大量待observed_nts_v1重算标签，不能据此宣称最终样本量或长链覆盖；正式全量去泄露、D0/D1训练未启动。
+
+
+## §15.525（2026-11-08）RIPE log-head 三种子全板负结果与独立复核
+
+- **完整性**：39/39主split单元格与3/3 VL0完成，36个PASS、6个位置边界partial（ArchiveII/Rfam）；独立QA核验全部checkpoint/数据哈希、raw→supported守恒、CUDA、单次score forward、三次解码一致与micro-F1复算。QA SHA256=`fc1da54cd67bbf0424baf735ab5e67acdca97c19f4fcd226905501d65adf0b69`。
+- **主榜**：TS0=0.4860499041±0.0277280449、bpRNA-new=0.3673466336±0.0077151666、ArchiveII=0.5082593617±0.0286838253（raw90）、TS1=0.7163257163、TS2=0.5294117647、TS3=0.6354679803、TS-hard=0.3976292408、TestSetB=0.2728819514。all-baseline与external-single均0/8；小split保持描述性，否决为最终模型。
+- **外部OOD**：Rfam=0.4564284582，低于BPfold=0.7871860033；CHANRG Test/GenA/GenC/GenF=0.3952733419/0.4289726536/0.3550343171/0.2770498599，measured wins=0。GenC略高于quoted OFoldNA-SS，但不等于measured SOTA。
+- **置信度与长度**：全部13 split AURC=null，不能称最佳置信度；ArchiveII三种子171条、Rfam三种子420条不受官方512nt边界支持，长序列SOTA不可主张。
+- **双跑与后续**：summary/SOTA/confidence双跑逐字节一致，SHA256分别 `db846f5f631443561cf80e0b543bd6200414c2ca48c3e01a02e9039b63ca37dc`、`307de90f09ffbb2bf8466826b6ff883167cf3329d4ef1b4964abe143dc0911f1`、`e331aa0aa02c7cceb9fa6ab4926883099aedc6b5af8460e637b91e87c9a57ed6`。greedy/Turner0继续，路线二须等七臂齐套后统一裁决；不以log-head负结果提前关闭其他RIPE臂，PPT未修改。
+
+
+## §15.526（2026-11-08）RIPE log-head DP→greedy 完整机制消融
+
+- **完整性**：39/39 greedy单元格完成，decoder、checkpoint/数据哈希、CUDA、三次解码一致、raw→supported与micro-F1复算全部通过。QA SHA256=`2a3a5ae89949b149ae7847f67243eaee1a4e73ad261df2ad11e0d1803076d648`。
+- **默认DP优于greedy**：TS0=0.4860499041→0.2144085820，bpRNA-new=0.3673466336→0.1370037531，ArchiveII=0.5082593617→0.1606239388，Rfam=0.4564284582→0.2008206964；其余split同样下降。greedy共9,951,416个交叉、474,431个共享碱基冲突，非法解码风险实证保留。
+- **复核与后续**：汇总双跑逐字节一致，summary SHA256=`aaa789b3e3ec35c8b93729a8bc7ad888260d032b8badeca2054cf96f6870b08b`。一次手动复跑缺 `eval` PYTHONPATH失败，正式环境重跑后一致，未影响科学结果。Turner=0已启动，七臂未齐不作路线二裁决。
+
+
+## §15.527（2026-11-08）log-head Turner=0 闭环与 R1 三种子启动
+
+- **完整性与合法性**：39/39 Turner=0单元格完成，全部保持 `nussinov`、`prior_weight_override=0`、交叉/冲突=0，checkpoint/数据哈希、CUDA、三次解码及F1复算通过。QA SHA256=`41a2eb8eb168c8dfe6110e3f04d1e2443e8cc36f385c53ea7aeb4049060c407d`；汇总双跑一致，SHA256=`23161c4e8e64b8dee696df1c36ffe97f19b46090767df7ed638cddd2b207091f`。
+- **物理先验影响**：默认DP→Turner=0，TS0=0.4860499041→0.4609883016、bpRNA-new=0.3673466336→0.3087936649、ArchiveII=0.5082593617→0.4704338573、Rfam=0.4564284582→0.3863534276；多数split下降，TestSetB小幅上升=0.2728819514→0.2756448466，未据此宣称普遍机制或显著性。log-head主榜负结果不变。
+- **阶段状态**：log-head三种子、39主评测、confidence/SOTA、greedy/Turner0均已闭环，否决为最终模型。R1三种子已启动真实CUDA，steps=0、patience=6、12/12层按原计划渐进解冻；目前仅 warmup 训练，未产生A/B/C结论。其余RIPE臂和路线二裁决继续按顺序，PPT未修改。
+
+
+## §15.528（2026-11-08）R1 warmup 首个验证点与采集衔接
+
+- **R1训练**：seed0/1/2 step500 VL0=37.8106309377/37.4640042926/38.0717149324，均为各自当前best、bad=0，0/12层warmup，真实CUDA，未设固定终点。该初期值不能与log-head最佳损失直接比较或写成提升。
+- **复合物采集**：候选处理已超过2400 entry，旧pair-only标签失败仍按预期保留，首轮结束后统一以observed_nts_v1重算；首轮与重算由锁隔离，正式去泄露不会提前读取混合格式。未启动D0/D1训练，PPT未修改。
+
+
+## §15.529（2026-11-08）R1 step1000 验证进展
+
+- **seed0**：step1000 VL0=36.0832013302，较step500=37.8106309377下降，best刷新、bad=0。
+- **seed2**：step1000 VL0=35.2041361669，较step500=38.0717149324下降，best刷新、bad=0。
+- **seed1**：step1000训练已到，但验证输出尚未落盘，不能代填数值；此前step500=37.4640042926。三种子继续0/12 warmup、真实CUDA、steps=0，未发生OOM或CPU静默降级。
+
+
+## §15.530（2026-11-08）R1 step1500 验证与解冻衔接
+
+- **已落盘验证**：seed0 step1500=33.04165786，seed1 step1500=34.4274459507；三者step1000分别为36.0832013302/34.8593761816/35.2041361669，均较step500改善。
+- **运行边界**：seed2 step1500验证尚未写出时保持等待，不代填；三路均真实CUDA，未见OOM或CPU降级。按预注册warmup=1600、随后每800步解冻2层，不根据瞬时loss修改schedule，未设固定终点。
+
+
+## §15.531（2026-11-08）R1 step1500 三种子齐套与 SSH 瞬断复核
+
+- **三种子step1500**：seed0/1/2 VL0=33.0416578638/34.4274459507/32.5494618758，均较各自step1000下降，best刷新、bad=0。warmup按schedule继续，不据早期VL0预测全板。
+- **连接瞬断**：一次SSH控制连接关闭，恢复后原训练进程PID、日志步数和验证轨迹均连续，未重复提交训练、未重启模型、未发生科学结果变化。该工程事件与模型效果无关。
+
+
+## §15.532（2026-11-08）R1 step2000 与首次解冻验收
+
+- **三种子step2000**：seed0/1/2 VL0=31.9659736497/31.4494441461/32.1970228929，均较各自step1500下降，best刷新、bad=0。seed1在step2400按冻结配方解冻2/12层，未见OOM或CPU降级。
+- **连接恢复**：控制socket短时无法建立会话后，使用独立SSH连接读取真实远端状态，训练进程和日志仍连续。未因连接波动重启或重复提交，未把网络问题写成模型失败。
+
+
+## §15.533（2026-11-08）R1 step2500 解冻后验证进展
+
+- **seed0**：step2500 VL0=29.7992357334，较step2000=31.9659736497下降，best刷新、bad=0，当前2/12层解冻。
+- **seed1**：step2500 VL0=30.5098110620，较step2000=31.4494441461下降，best刷新、bad=0，当前2/12层解冻。
+- **seed2**：step2500验证尚未写出，当前已2/12层解冻，继续等待。连接瞬断后原进程与验证轨迹连续，未重复启动训练，未将网络问题误写为模型失败。
+
+
+## §15.534（2026-11-08）R1 step3000 与4/12层解冻
+
+- **三种子**：step2500补齐seed2=29.9328731255；step3000 seed0/1/2=28.7743737102/28.6875016656/29.9179869526，均较各自step2000继续下降，best刷新、bad=0，当前4/12层解冻。
+- **运行状态**：真实CUDA、steps=0、patience=6，未见OOM或CPU降级。seed2该步下降很小但不提前判平台，继续自然训练；早期改善仍不写成A/B/C或SOTA结论。
+
+
+## §15.535（2026-11-08）R1 step3500 持续改善
+
+- **三种子**：step3500 VL0=27.9480535024/27.1405875166/27.6724988708，较各自step3000继续下降，best刷新、bad=0，当前4/12层解冻。
+- **运行状态**：真实CUDA、steps=0、patience=6，未见OOM或CPU降级。一次新SSH会话重置已通过控制通道复核，训练与日志连续，未重复提交。当前仍为训练过程，不宣称A/B/C或SOTA提升。
+
+
+## §15.536（2026-11-08）R1 step4000 与6/12层解冻
+
+- **三种子**：step4000 VL0=26.2455430546/26.3913222887/26.0433850992，均较各自step3500下降，best刷新、bad=0，当前6/12层解冻。
+- **运行状态**：真实CUDA、steps=0、patience=6，未见OOM或CPU降级，未达到早停条件。按原schedule继续，不根据瞬时loss改配置，不将验证改善外推为全板提升。
+
+
+## §15.537（2026-11-08）R1 step4500 种子间波动
+
+- **seed0**：step4500 VL0=25.3349833234，较step4000=26.2455430546下降，best刷新、bad=0。
+- **seed1**：step4500 VL0=26.5039280925，较best step4000=26.3913222887略升，bad=1；单次未改善不构成平台，继续自然训练。
+- **seed2**：step4500验证尚未写出，保持等待，不代填。三种子6/12层解冻、真实CUDA，未改变batch/LR/patience或数据，未发生OOM。
+
+
+## §15.538（2026-11-08）R1 step5000 与8/12层解冻
+
+- **seed0**：step5000 VL0=25.6082861432，best仍step4500=25.3349833234，bad=1；不据此提前终止。
+- **seed1**：step5000 VL0=24.6388931539，较best step4000=26.3913222887明显改善，bad=0。
+- **seed2**：step4500=24.9897342021，step5000验证尚未写出。当前均8/12层解冻、真实CUDA，保持steps=0、patience=6和原数据/学习率，不把单种子波动写成收敛或全板结论。
+
+
+## §15.539（2026-11-08）R1 step5500 验证进展
+
+- **seed1**：step5500 VL0=24.5219177209，较step5000=24.6388931539继续下降，best刷新、bad=0。
+- **seed0/2**：step5000分别25.6082861432/25.9904711482，均bad=1；step5500验证尚未写出，保持等待。当前均8/12层解冻、真实CUDA，未见OOM或CPU降级。连接瞬断后日志与进程连续，未重复启动。
+
+
+## §15.540（2026-11-08）R1 step6000 与10/12层解冻
+
+- **step5500补齐**：seed0/2=24.9507281613/23.7582189613，均恢复改善，bad=0。
+- **step6000进展**：seed0/1=24.4210856760/22.8393541358，继续刷新best、bad=0；seed2验证尚未写出，保持等待。当前均10/12层解冻、真实CUDA，未达到早停，继续自然训练，未将VL0改善外推为全板结论。
+
+
+## §15.541（2026-11-08）R1 step6500 与全层解冻
+
+- **step6000补齐**：seed2=23.3640148981，继续刷新best、bad=0。
+- **step6500进展**：seed1=22.7376460071，较step6000=22.8393541358继续下降，bad=0。seed0/2的验证尚未写出，均已解冻12/12层；三路真实CUDA，未见OOM或CPU降级，继续自然训练，不设固定步数终点。
+
+
+## §15.542（2026-11-08）R1 step7000 的种子间波动
+
+- **step6500齐套**：seed0=23.2641483946，best刷新；seed2=23.3652454273，best仍step6000=23.3640148981、bad=1，差异很小，不判平台。
+- **step7000进展**：seed1=24.3679070709，best仍step6500=22.7376460071、bad=1；seed0/2验证尚未写出。当前均12/12层解冻、真实CUDA，未达到早停条件，继续自然训练，未修改数据、学习率或patience。
+
+
+## §15.543（2026-11-08）R1 step7500 恢复改善
+
+- **seed1**：step7500 VL0=22.2394873243，较best step6500=22.7376460071进一步下降，best刷新、bad=0；此前step7000的一次回升未形成平台。
+- **seed0/2**：step7000分别23.9486817577/22.7596807500，seed0 bad=1、seed2 best刷新。step7500验证尚未写出，保持等待。当前均12/12层解冻、真实CUDA，未见OOM或CPU降级，继续自然训练。
+
+
+## §15.544（2026-11-08）R1 step8000 种子分化
+
+- **seed0**：step7500=23.4762496182、bad=2；step8000=22.6690130474，恢复best、bad=0。
+- **seed1**：step8000=22.0110283952，较best step7500=22.2394873243继续下降，bad=0。
+- **seed2**：step7500=23.1528389863、bad=1；step8000=23.5311599815、bad=2，best仍step7000=22.7596807500。尚未达到patience=6，继续自然训练，不按单个种子提前终止或选择模型。
+
+
+## §15.545（2026-11-08）R1 step8500–9500 验证轨迹
+
+- **step8500**：seed0/1/2 VL0=21.9750424376/22.7584859262/22.8993901529。seed0刷新best；seed1 best仍step8000=22.0110283952、bad=1；seed2 best仍step7000=22.7596807500、bad=3。
+- **step9000及9500**：seed0=21.7476011757、bad=0，随后22.3715168984、bad=1；seed1=21.4414168275、bad=0，随后21.4557625627、bad=1。三种子均未自然早停，继续原schedule，VL0改善不外推为全板SOTA。
+
+
+## §15.546（2026-11-08）复合物完整标签、采集完成门与守恒修复
+
+- **问题与证据**：首轮DSSR输出缺少完整 `nts`，导致observed_nts_v1映射拒绝；原始mmCIF、旧DSSR及首轮日志均保留。完成1EHZ参照复核后停止首轮，最后一次记录为4530/8157，不将该数写成完成量；后续由既有重试队列复用mmCIF重算，不重复下载。
+- **三重验收**：缓存/参数/失败原子性单元测试通过；7PDV成功产生observed_nts_v1标签但0有效链，原因是非纯RNA实体或无链内配对，明确淘汰；1EHZ复算76nt、34 raw、21 canonical-nested，与 `1EHZ.labels.observed.json` 逐项一致。曾误选canonical为空的旧 `labels.final.json` 作参照，断言失败后未绕过，改用正确已验收参照后通过。
+- **去泄露门禁**：单条目测试也会生成 `collection.json`，原watcher只检查文件存在而提前运行并失败，未进入teacher或D1。现要求候选ID集合、结果数、完整标志、标签协议和SHA256全部匹配；同序列重复链初始化bug已修复，补 `duplicate_chain_ids`、标签总数/去重数/重复数守恒与独立复核。局部失败日志和目录已留档，提交 `c837e5d`、`49816bf` 已推送GitHub；10项采集/映射/去泄露回归通过，完整采集门确认拒绝局部collection。当前只处于全量重算阶段，最终链数和长链覆盖尚未知。
+
+
+## §15.547（2026-11-08）R1 seed2第二次OOM与同配置错峰恢复
+
+- **故障**：seed2在step8500后的反向传播发生CUDA OOM，尝试分配928MiB时仅余833.06MiB；seed0/1继续训练，无CPU静默降级。错误日志已另存 `ripe_head_r1_s2.oom_after8500.log`，未将OOM写成收敛。
+- **恢复**：`resume.pt` step=8500，SHA256=`4131e42def34eb11ebae683b8e7d6f891e1f41b14c1a123982625cde66433f18`。保持batch=2、seed、LR、数据、steps=0、patience=6不变，等待seed0/1释放显存后从快照单独续跑；已收敛种子跳过。后续RIPE任一并行训练失败时，仅对未收敛种子串行恢复，不再中断七臂队列。提交 `57040df` 已推送GitHub；恢复任务已排队，尚无R1全板结果。
+
+
+## §15.548（2026-11-08）后续队列续跑保护与真实测试口径
+
+- **R1进展**：step10000 seed0/1 VL0=21.4889431774/21.1305989514，均刷新best、bad=0；seed2尚未恢复，不把并行训练中的等待写成收敛或科学结论。
+- **Pair-JEPA/D1保护**：并行种子失败时只串行恢复未收敛种子，配置不变；D1已有meta若数据、scorer、latent、JEPA目标或RIPE配置不匹配则fail closed，不从不兼容checkpoint恢复。D1消融补checkpoint/CUDA/decoder/repeat缓存校验；主评测补单次score-forward、Pair-JEPA teacher-forward guard及encoder-only全支持检查。
+- **测试实证**：初次unittest仅执行5个D1测试，Pair-JEPA的5个测试文件未部署而报ModuleNotFoundError；补齐原测试文件后，unittest发现的测试有限，进一步使用pytest执行真实函数，最终18 passed。提交 `35fa492` 已推送GitHub；这些是工程回归，不是模型效果或A/B/C科学结果。
+
+
+## §15.549（2026-11-08）复合物异常格式与观测残基桥接闭环
+
+- **真实异常归因**：DSSR无配对时会省略 `pairs`，不得误判为不完整JSON；13FK的DSSR缺首末观测残基，单纯顺序匹配还会遇到末端同碱基歧义；1HNZ的4个配对端点属于同作者链上的HYG非RNA配体，不应使整个RNA链失败；未明N/I/GTP等碱基只淘汰对应链，临时HTTP错误仍须可重试。
+- **映射协议**：优先用DSSR与mmCIF同命名空间的作者链号、作者残基号及插入码桥接，再映射到连续实体序号，绝不把作者编号直接当实体序号。无法直接桥接时，只允许碱基身份一致且顺序唯一的单调子序列；歧义、碱基冲突、倒序仍fail closed。非RNA端点、跨链配对、未明碱基链均保留淘汰记录，无配对entry输出零有效链而非伪造标签。
+- **验收**：13FK、1HNZ、13FU、1DV4真实样例全部完成且无未处理异常；1HNZ保留1条RNA链并明确淘汰4个非RNA端点配对；1EHZ仍为76nt/34 raw/21 canonical-nested。映射、采集、接口故障共12项pytest通过，提交 `1069024`、`9034686` 已推送GitHub。新续采与去泄露按同一锁的正确顺序运行，成功标签复用，旧日志保留；尚未齐套、去泄露或训练D1。
+- **R1过程**：seed0 step10500/11000/11500/12000=20.4985865751/21.7073973089/20.4398776829/20.1919161696，当前best=20.1919161696。seed1 step10500/11000/11500/12000/12500=20.9830192216/21.2546049665/20.2813254365/20.9693367058/20.3328883054，best仍step11500=20.2813254365、bad=2。seed2等待错峰恢复；均无全板结论。
+
+
+## §15.550（2026-11-08）续采窗口与R1最新验证复核
+
+- **续采工程检查**：新日志前32个候选中24个复用有效缓存、8个重算成功，未再出现缺 `pairs`、观测数不一致或非RNA端点导致的同类错误；只说明该窗口的工程修复有效，不作为最终链数或覆盖率结论。正式去泄露仍等待8157候选完整manifest。
+- **R1**：seed0 step12500 VL0=19.6290875126，较step12000=20.1919161696继续改善，best刷新、bad=0；seed1 best仍step11500=20.2813254365、bad=2，seed2尚未恢复。两个spec文件夹的最新实施门禁逐项一致，相关远端代码无未提交改动。
+
+
+## §15.551（2026-11-08）无核苷酸输出与链级淘汰闭环
+
+- **真实样例**：1GSG的DSSR明确返回 `warning=no nucleotides found`，现记录为合法零有效链而非缺失JSON；1KQS的PPU76不在RNA polymer scheme中，明确排除该端点，保留2条可靠RNA链，2nt短链仍按短链淘汰，不误写成映射失败。
+- **链级守恒**：新增 `mapping_failures`、`rejected_nucleotides`，链级映射错误只淘汰受影响链，不再终止整个entry；其他链继续按碱基身份、作者残基桥接及嵌套配对规则处理。14项采集/映射/接口测试通过，1GSG/1KQS真实门禁通过，提交 `4da8d2e` 已推送GitHub。新续采已生效，最近100个候选无未处理错误；未齐套前不作最终数据规模结论。
+- **R1**：seed0 step13000 VL0=19.5805314596，刷新best；seed1 step13000=20.1676698545、刷新best，step13500=20.2743225586、bad=1。seed2仍在等待错峰恢复，三种子均未自然收敛，未启动R1正式全板或Pair-JEPA。
+
+
+## §15.552（2026-11-08）R1 step13500与大结构采集活性核验
+
+- **R1**：seed0 step13500 VL0=19.6292055915，best仍step13000=19.5805314596、bad=1；seed1 step13500=20.2743225586、bad=1。单次未改善不构成平台，继续steps=0、patience=6的自然训练，seed2恢复队列仍在等待。
+- **采集活性**：计数在345时暂停增长，核实四个DSSR子进程正处理1VY4–1VY7且持续消耗CPU，非锁死或静默退出；600秒超时及错误日志仍保留。最近200个已完成候选无未处理错误，不将处理中大结构计为成功或失败。
+
+
+## §15.553（2026-11-08）正式汇总门禁的源码与哈希复核
+
+- **统计源码**：`aggregate_structrfm_frozen_round48.py` 强制13 split×3 seed×3 repeat、CUDA、checkpoint/数据SHA256、raw→supported守恒、TP/FP/FN与macro/INF复算、三次解码一致及置信度有限值；缺单元格或身份不符会直接失败，不会生成科学汇总。RIPE裁决仅按三种子best VL0选下一基座，测试指标不参与选臂。
+- **三端一致性**：本地与远端聚合器、RIPE裁决器、配对bootstrap源码SHA256分别为 `b67b97b5f2232d1e2c9443fbb029c387ea4c00d076ca47a4e990d9b53eb713cd`、`a9d0d4595a1269951892f5262e3b93ccbf71799a8be8ec5012acaba80be64944`、`47d46519e7dc995ae264d52d3745f3faa3829b5c20709a9b6998c9958fd69928`，逐项一致。
+- **当前状态**：大结构批次后继续到363候选；R1 seed1 step14000=20.3666847565，best仍step13000=20.1676698545、bad=2；seed0 best仍19.5805314596，seed2等待恢复。尚无可进入PPT的新全板结果。
+
+
+## §15.554（2026-11-08）R1 step14000与续采稳定性
+
+- **R1**：seed0 step14000 VL0=20.3924209452，best仍step13000=19.5805314596、bad=2；seed1 step14000=20.3666847565，best仍step13000=20.1676698545、bad=2。两者均未达到patience=6，保持原学习率、数据和steps=0继续训练；seed2恢复队列未触发。
+- **续采**：已完成459个候选，最近100个为72个有效缓存复用、28个重算成功，未出现未处理错误。处理中数量不等于去泄露后训练样本量，正式D0/D1仍未启动。
+
+
+## §15.555（2026-11-08）R1 step14500种子分化
+
+- **seed1**：step14500 VL0=19.8523103079，较best step13000=20.1676698545进一步下降，best刷新、bad=0；此前两次未改善不构成平台。
+- **seed0**：step14500 VL0=20.3528746644，best仍step13000=19.5805314596、bad=3，尚未达到patience=6。seed2尚未恢复，保持原配置等待。
+- **复合物**：续采完成463个候选；尚无全量去泄露、D0/D1或R1正式A/B/C结论，PPT不更新。
+
+
+## §15.556（2026-11-08）R1 step15000验证
+
+- **seed0**：step15000 VL0=19.8137218473，best仍step13000=19.5805314596、bad=4；不得提前按bad=4终止。
+- **seed1**：step15000 VL0=20.2588915836，best仍step14500=19.8523103079、bad=1；seed2尚未恢复。两路继续steps=0、patience=6，未启动正式评测。
+- **复合物**：续采完成476个候选，后续去泄露门仍等待完整manifest；不把处理中条目写成最终样本量。
+
+
+## §15.557（2026-11-08）R1 step15500部分落盘与续采推进
+
+- **seed1**：step15500 VL0=19.9384158974，best仍step14500=19.8523103079、bad=2，继续自然训练。
+- **seed0**：训练日志已到step15500，但该次验证尚未写出，保持step15000=19.8137218473、bad=4为最新已知验证，不代填或提前早停。seed2恢复未触发。
+- **复合物**：续采完成680个候选；采集完成度仍不等于去泄露后的有效训练数据量，D0/D1未启动。
+
+
+## §15.558（2026-11-08）R1 seed0达到bad=5但不提前停止
+
+- **seed0**：step15500 VL0=21.3107409156，best仍step13000=19.5805314596、bad=5；按预注册patience=6继续到下一验证点，不人为提前终止。
+- **seed1**：best仍step14500=19.8523103079、bad=2；seed2恢复未触发。
+- **复合物**：续采完成723个候选，最近未处理错误未再出现；正式去泄露仍未开始。
+
+
+## §15.559（2026-11-08）R1 step16000部分验证与第六次判断等待
+
+- **seed1**：step16000 VL0=18.9150352806，较best step14500=19.8523103079明显下降，best刷新、bad=0，继续自然训练。
+- **seed0**：训练已到step16000，但第六次验证尚未写出，run_meta仍为 `running / converged=false`，best仍step13000=19.5805314596、bad=5；不得代填或宣称收敛。seed2恢复未触发。
+- **复合物**：续采完成834个候选，尚无完整manifest或去泄露后样本量；PPT不更新。
+
+
+## §15.560（2026-11-08）R1 seed0第六次验证恢复改善
+
+- **seed0**：step16000 VL0=19.2562138963，较best step13000=19.5805314596进一步下降，best刷新、bad=0，未早停；此前bad=5不能作为人工停止依据。
+- **seed1**：best仍step16000=18.9150352806、bad=0，继续自然训练。两种子run_meta均为 `running / converged=false`，seed2恢复未触发。
+- **复合物**：续采完成837个候选，正式去泄露与D0/D1仍未启动；不以VL0改善推断主榜SOTA。
+
+
+## §15.561（2026-11-08）R1 seed1 step16500验证
+
+- **seed1**：step16500 VL0=19.5690670248，best仍step16000=18.9150352806、bad=1，继续自然训练。
+- **seed0**：best仍step16000=19.2562138963，下一验证尚未写出；seed2恢复未触发。
+- **复合物**：续采完成851个候选，尚无完整manifest或正式去泄露结果；PPT不更新。
+
+
+## §15.562（2026-11-08）R1 step16500三种子状态
+
+- **seed0**：step16500 VL0=20.1642645269，best仍step16000=19.2562138963、bad=1。
+- **seed1**：step16500=19.5690670248，best仍step16000=18.9150352806、bad=1；seed2尚未恢复。继续steps=0、patience=6，无正式全板结论。
+- **复合物**：续采完成900个候选；完整manifest、去泄露、teacher和D0/D1均未齐套。
+
+
+## §15.563（2026-11-08）R1 seed1 step17000改善
+
+- **seed1**：step17000 VL0=18.8116458749，较best step16000=18.9150352806继续下降，best刷新、bad=0；该单种子验证值不用于替代三种子选臂或宣称全板提升。
+- **seed0**：best仍step16000=19.2562138963、bad=1，下一验证尚未写出；seed2恢复未触发。
+- **复合物**：续采完成927个候选，正式去泄露与D0/D1未启动，PPT不更新。
+
+
+## §15.564（2026-11-08）R1 step17000两种子齐套
+
+- **seed0**：step17000 VL0=18.4980949716，较best step16000=19.2562138963明显下降，best刷新、bad=0。
+- **seed1**：step17000=18.8116458749、best刷新、bad=0。两路继续steps=0、patience=6，不能将验证改善外推为8/8或最终模型选择；seed2恢复未触发。
+- **复合物**：续采完成965个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.565（2026-11-08）R1 seed1 step17500波动
+
+- **seed1**：step17500 VL0=18.8248506213，best仍step17000=18.8116458749、bad=1，差异很小，不据此判平台或修改配方。
+- **seed0**：best仍step17000=18.4980949716，下一验证尚未写出；seed2恢复未触发。
+- **复合物**：续采完成1022个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.566（2026-11-08）R1 step17500两种子齐套
+
+- **seed0**：step17500 VL0=19.2668228337，best仍step17000=18.4980949716、bad=1。
+- **seed1**：step17500=18.8248506213，best仍step17000=18.8116458749、bad=1。两路继续steps=0、patience=6，seed2恢复未触发。
+- **复合物**：续采完成1046个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.567（2026-11-08）3J6B长链误删归因、完整聚合物优先与缓存版本
+
+- **问题实证**：新协议最初给3J6B `3296nt/1218 raw/752 canonical`，与已验收 `1240/768` 不符。核查发现DSSR的2713个A链RNA与mmCIF聚合物序列逐位一致，但二者编号存在偏移；部分作者编号匹配后删除其余26个核苷酸属于误删真实RNA，而非正确配体淘汰。
+- **修复**：完整唯一顺序/碱基映射优先；仅在无法映射整个聚合物时，才用可靠作者桥接排除非聚合物端点。缓存除 `observed_nts_v1` 外强制匹配 `observed_alignment=author_bridge_or_full_polymer_alignment_before_nonpolymer_exclusion`，旧映射版本不复用。15项测试通过，3J6B恢复3296/1240/768且无错误排除核苷酸，1KQS的PPU76淘汰不回归。提交 `0fff007` 已推送GitHub，旧版本标签统一重算，旧日志保留。
+- **R1**：seed0 step18000=19.3166893475，best仍step17000=18.4980949716、bad=2；seed1 step18000=19.2343201480、step18500=19.1249928054，best仍step17000=18.8116458749、bad=3。两路未早停，seed2恢复未触发，无全板结论。
+
+
+## §15.568（2026-11-08）新映射版本窗口与R1 step18500
+
+- **映射续采**：完成459个候选，最近100个全部重算成功、无未处理错误；两个spec文件夹的最新规则一致。该窗口只证明工程稳定，不能代替8157候选齐套和正式去泄露。
+- **R1**：seed0 step18500=18.8229395975，best仍step17000=18.4980949716、bad=3；seed1 step18500=19.1249928054，best仍step17000=18.8116458749、bad=3。两路继续steps=0、patience=6，seed2恢复未触发。
+
+
+## §15.569（2026-11-08）R1 seed1 step19000与新映射续采
+
+- **seed1**：step19000 VL0=19.4054020339，best仍step17000=18.8116458749、bad=4，继续自然训练，不提前停止。
+- **seed0**：训练已到step19000，验证尚未写出，best仍step17000=18.4980949716、bad=3；seed2恢复未触发。
+- **复合物**：新映射版本完成1060个候选，完整manifest与正式去泄露仍未齐套。
+
+
+## §15.570（2026-11-08）R1 step19000两种子齐套
+
+- **seed0**：step19000 VL0=19.4067704473，best仍step17000=18.4980949716、bad=4。
+- **seed1**：step19000=19.4054020339，best仍step17000=18.8116458749、bad=4。两路继续steps=0、patience=6，seed2恢复未触发。
+- **复合物**：新映射版本完成1063个候选，正式去泄露与D0/D1未启动，PPT不更新。
+
+
+## §15.571（2026-11-08）R1 seed1 step19500恢复改善
+
+- **seed1**：step19500 VL0=18.7643682781，较best step17000=18.8116458749小幅下降，best刷新、bad=0；此前bad=4不构成停止依据。
+- **seed0**：best仍step17000=18.4980949716、bad=4，下一验证尚未写出；seed2恢复未触发。
+- **复合物**：新映射版本完成1066个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.572（2026-11-08）R1 step19500两种子齐套
+
+- **seed0**：step19500 VL0=18.3567607956，较best step17000=18.4980949716继续下降，best刷新、bad=0。
+- **seed1**：step19500=18.7643682781、best刷新、bad=0。两路继续steps=0、patience=6，不能将验证改善外推为全板SOTA；seed2恢复未触发。
+- **复合物**：新映射版本完成1070个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.573（2026-11-08）R1 seed1 step20000验证
+
+- **seed1**：step20000 VL0=19.4967120174，best仍step19500=18.7643682781、bad=1，继续自然训练。
+- **seed0**：训练已到step20000，验证尚未写出，best仍step19500=18.3567607956、bad=0；seed2恢复未触发。
+- **复合物**：新映射版本完成1075个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.574（2026-11-08）R1 step20000两种子齐套
+
+- **seed0**：step20000 VL0=19.7194169205，best仍step19500=18.3567607956、bad=1。
+- **seed1**：step20000=19.4967120174，best仍step19500=18.7643682781、bad=1。两路继续steps=0、patience=6，seed2恢复未触发。
+- **复合物**：新映射版本完成1079个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.575（2026-11-08）R1 seed1 step20500验证
+
+- **seed1**：step20500 VL0=18.8805314793，best仍step19500=18.7643682781、bad=2，继续自然训练。
+- **seed0**：best仍step19500=18.3567607956、bad=1，下一验证尚未写出；seed2恢复未触发。
+- **复合物**：新映射版本完成1084个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.576（2026-11-08）R1 step20500两种子与大结构活性
+
+- **R1**：seed0 step20500=19.5612648962，best仍step19500=18.3567607956、bad=2；seed1=18.8805314793，best仍step19500=18.7643682781、bad=2。两路继续自然训练，seed2恢复未触发。
+- **采集活性**：新映射版本完成1084个候选后，3JBU、3JBV、3JCD、3JCE四个DSSR子进程仍持续消耗CPU，非死锁；600秒超时和原始日志保留，处理中条目不写成成功或失败。
+
+
+## §15.577（2026-11-08）R1 step21000两种子齐套
+
+- **seed0**：step21000 VL0=19.2798036007，best仍step19500=18.3567607956、bad=3。
+- **seed1**：step21000=20.1429822970，best仍step19500=18.7643682781、bad=3。两路继续steps=0、patience=6，seed2恢复未触发。
+- **复合物**：新映射版本完成1177个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.578（2026-11-08）R1 seed1 step21500与续采推进
+
+- **seed1**：step21500 VL0=19.3381993423，best仍step19500=18.7643682781、bad=4，继续自然训练，不提前停止。
+- **seed0**：训练已到step21500，验证尚未写出，best仍step19500=18.3567607956、bad=3；seed2恢复未触发。
+- **复合物**：新映射版本完成1342个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.579（2026-11-08）R1 step21500两种子齐套
+
+- **seed0**：step21500 VL0=18.5774856934，best仍step19500=18.3567607956、bad=4。
+- **seed1**：step21500=19.3381993423，best仍step19500=18.7643682781、bad=4。两路继续steps=0、patience=6，seed2恢复未触发。
+- **复合物**：新映射版本完成1363个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.580（2026-11-08）R1 seed1达到bad=5但不提前停止
+
+- **seed1**：step22000 VL0=18.7794039568，best仍step19500=18.7643682781、bad=5；按预注册patience=6继续到下一验证点，不人为提前终止。
+- **seed0**：best仍step19500=18.3567607956、bad=4，下一验证尚未写出；seed2恢复未触发。
+- **复合物**：新映射版本完成1373个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.581（2026-11-08）R1 step22000两种子均bad=5
+
+- **seed0**：step22000 VL0=18.7301416063，best仍step19500=18.3567607956、bad=5。
+- **seed1**：step22000=18.7794039568，best仍step19500=18.7643682781、bad=5。两路run_meta均为 `running / converged=false`，继续第六次验证，不提前停止；seed2恢复未触发。
+- **复合物**：新映射版本完成1435个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.582（2026-11-08）R1 seed0/1自然早停与恢复队列预检
+
+- **seed0**：step22500 VL0=19.8093069072、bad=6，自然早停；best step19500=18.3567607956，`status=completed / converged=True / early_stopped=True`，best checkpoint step=19500，SHA256=`7853f0dcce33c5f544b18c294d88927d773e3cad14eb2acf717f32761da54a18`。
+- **seed1**：step22500 VL0=19.6829115756、bad=6，自然早停；best step19500=18.7643682781，状态同上，best checkpoint step=19500，SHA256=`eef3e7e2d048a9b9e54d17df88c5f3d6b97181a9cfe63e4e0ac3bbce263bd833`。
+- **恢复衔接**：旧队列按已知seed2 OOM退出，新恢复队列已执行CUDA门和预注册复核，当前重算既有log-head置信度汇总；seed2训练进程尚未出现，不能将恢复脚本启动写成恢复成功。seed0/1没有重复训练，seed2仍按step8500快照、同配置串行恢复。新映射版本续采完成1501个候选，PPT不更新。
+
+
+## §15.583（2026-11-08）R1 seed2从step8500真实恢复
+
+- **恢复证据**：seed2日志明确 `resumed from step 8500 (12/12 blocks unfrozen)`，已继续执行step8525/8550，真实CUDA训练进程存在，未从头重训seed0/1或seed2。batch=2、seed=2、head/backbone LR、数据、steps=0、patience=6及RIPE R1配置保持不变，12/12层解冻状态正确。
+- **当前边界**：恢复后尚无新验证点，step8500=22.8993901529、bad=3仍为最新已知验证；不得把恢复成功写成收敛或模型效果改善。新映射版本续采完成1514个候选，正式全板和去泄露结论仍未产生。
+
+
+## §15.584（2026-11-08）R1 seed2恢复后step9000验证
+
+- **seed2**：step9000 VL0=21.9664968851，较此前best step7000=22.7596807500下降，best刷新、bad=0；恢复后的训练与验证轨迹连续，未再发生OOM或CPU降级。
+- **边界**：step9000不是自然收敛点，继续steps=0、patience=6；不得用该验证值宣称全板提升。新映射版本续采完成1612个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.585（2026-11-08）R1 seed2恢复后step9500验证
+
+- **seed2**：step9500 VL0=21.6805889654，较step9000=21.9664968851继续下降，best刷新、bad=0；恢复后的训练与验证持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将该验证改善外推为全板SOTA。新映射版本续采完成1627个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.586（2026-11-08）R1 seed2恢复后step10000验证
+
+- **seed2**：step10000 VL0=22.4247882089，best仍step9500=21.6805889654、bad=1，继续自然训练，不提前停止或修改学习率。
+- **边界**：恢复后轨迹正常，但尚不能判断收敛或全板效果。新映射版本续采完成1628个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.587（2026-11-08）R1 seed2恢复后step10500验证
+
+- **seed2**：step10500 VL0=21.1337230282，较best step9500=21.6805889654继续下降，best刷新、bad=0；此前一次回升不构成平台。
+- **边界**：继续原steps=0、patience=6，尚未自然收敛，不将验证改善外推为全板SOTA。新映射版本续采完成1632个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.588（2026-11-08）R1 seed2恢复后step11000验证
+
+- **seed2**：step11000 VL0=20.9467847210，较best step10500=21.1337230282继续下降，best刷新、bad=0；恢复后训练持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。新映射版本续采完成1636个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.589（2026-11-08）R1 seed2恢复后step11500验证
+
+- **seed2**：step11500 VL0=20.9670262483，best仍step11000=20.9467847210、bad=1，差异很小，不据此判平台或修改配方。
+- **边界**：继续原steps=0、patience=6，尚未自然收敛。新映射版本续采完成1638个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.590（2026-11-08）DSSR超时延长重试与R1 seed2 step12000
+
+- **超时证据与处理**：4U3M、4U3N在600秒仍未完成DSSR，原日志保留，不作为永久无标签条目。现仅对该类计算超时允许一次1800秒延长重试，其他映射和筛选规则不变；仍失败才明确记录淘汰。16项测试覆盖600→1800秒调用序列、证据保留和标签输出，提交 `4aed455` 已推送GitHub。新队列复用已验收标签，去泄露按正确锁顺序等待。
+- **R1 seed2**：step12000 VL0=20.6860119261，较best step11000=20.9467847210继续下降，best刷新、bad=0；恢复后训练持续改善，但尚未自然收敛。新版本续采复用到1629个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.591（2026-11-08）R1 seed2恢复后step12500验证
+
+- **seed2**：step12500 VL0=20.3889156190，较best step12000=20.6860119261继续下降，best刷新、bad=0；恢复后验证持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。超时条目仍在正常重试计算中，尚无新的失败证据，正式去泄露与D0/D1未启动。
+
+
+## §15.592（2026-11-08）延长重试实证与R1 seed2 step13000
+
+- **超时重试实证**：4U3M、4U3N均生成 `dssr.timeout600.log`，随后新DSSR进程进入1800秒预算，证明600→1800秒重试机制真实生效；4U3U、4U4N已完成标签。延长中的条目尚不计为成功或失败，正式去泄露保持等待。
+- **R1 seed2**：step13000 VL0=20.2578305539，较best step12500=20.3889156190继续下降，best刷新、bad=0；恢复后验证持续改善，但尚未自然收敛，不将VL0外推为全板SOTA。
+
+
+## §15.593（2026-11-08）R1 seed2恢复后step13500验证
+
+- **seed2**：step13500 VL0=20.0719104397，较best step13000=20.2578305539继续下降，best刷新、bad=0；恢复后训练与验证持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。延长重试条目仍在计算中，正式去泄露与D0/D1未启动。
+
+
+## §15.594（2026-11-08）两个超时条目延长重试成功与R1 step14000
+
+- **重试闭环**：4U3M、4U3N均在延长预算内完成DSSR与observed_nts_v1标签，各保留8条有效链，`error.txt` 已清除，`dssr.timeout600.log` 保留。证明大结构超时不能直接淘汰；未改变映射或筛选规则。正式去泄露仍等待全部候选完成，不将局部成功写成最终样本量。
+- **R1 seed2**：step14000 VL0=20.0791257837，best仍step13500=20.0719104397、bad=1，差异很小，继续自然训练，不判平台或修改配方。
+
+
+## §15.595（2026-11-08）R1 seed2恢复后step14500验证
+
+- **seed2**：step14500 VL0=19.8712991272，较best step13500=20.0719104397继续下降，best刷新、bad=0；恢复后训练持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。4U3M/4U3N延长重试已闭环，其他候选继续采集，正式去泄露与D0/D1未启动。
+
+
+## §15.596（2026-11-08）R1 seed2恢复后step15000验证
+
+- **seed2**：step15000 VL0=19.7861109102，较best step14500=19.8712991272继续下降，best刷新、bad=0；恢复后训练与验证持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。续采完成1645个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.597（2026-11-08）R1 seed2恢复后step15500验证
+
+- **seed2**：step15500 VL0=20.7200271617，best仍step15000=19.7861109102、bad=1，继续自然训练，不提前停止或修改学习率。
+- **边界**：恢复后轨迹正常，但尚不能判断收敛或全板效果。续采完成1645个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.598（2026-11-08）R1 seed2恢复后step16000验证
+
+- **seed2**：step16000 VL0=20.2815990144，best仍step15000=19.7861109102、bad=2，继续自然训练，不提前停止或修改学习率。
+- **边界**：恢复后轨迹正常，但尚未收敛或形成全板结论。续采完成1647个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.599（2026-11-08）R1 seed2恢复后step16500验证
+
+- **seed2**：step16500 VL0=19.2278673132，较best step15000=19.7861109102明显下降，best刷新、bad=0；此前两次未改善不构成平台。
+- **边界**：继续原steps=0、patience=6，尚未自然收敛，不将验证改善外推为全板SOTA。续采完成1647个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.600（2026-11-08）R1 seed2恢复后step17000验证
+
+- **seed2**：step17000 VL0=19.9922371602，best仍step16500=19.2278673132、bad=1，继续自然训练，不提前停止或修改配方。
+- **边界**：恢复后轨迹正常，但尚未收敛或形成全板结论。续采完成1650个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.601（2026-11-08）R1 seed2恢复后step17500验证
+
+- **seed2**：step17500 VL0=19.0999623241，较best step16500=19.2278673132继续下降，best刷新、bad=0；恢复后训练持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。续采完成1650个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.602（2026-11-08）R1 seed2恢复后step18000验证
+
+- **seed2**：step18000 VL0=18.9921501340，较best step17500=19.0999623241继续下降，best刷新、bad=0；恢复后训练与验证持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。续采完成1652个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.603（2026-11-08）R1 seed2恢复后step18500验证
+
+- **seed2**：step18500 VL0=19.2320649468，best仍step18000=18.9921501340、bad=1，继续自然训练，不提前停止或修改配方。
+- **边界**：恢复后轨迹正常，但尚未收敛或形成全板结论。续采完成1660个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.604（2026-11-08）R1 seed2恢复后step19000验证
+
+- **seed2**：step19000 VL0=18.8194048581，较best step18000=18.9921501340继续下降，best刷新、bad=0；恢复后训练与验证持续改善，但尚未自然收敛。
+- **边界**：继续原steps=0、patience=6，不将验证改善外推为全板SOTA。续采完成1680个候选，正式去泄露与D0/D1未启动。
+
+
+## §15.605（2026-11-08）R1 seed2 step20000与LinearDesign冻结评测链验收
+
+- **R1 seed2**：step19500 VL0=21.1024906023，best仍step19000=18.8194048581、bad=1；step20000=19.2223304040、bad=2。run_meta仍为 `running / converged=False / early_stopped=False`，继续原steps=0、patience=6，不提前停止。续采完成1692/8157个候选，尚无完整collection、正式去泄露或D0/D1科学结果。
+- **下游工程闭环**：LinearDesign官方Python2包装器当前不可直接执行，但官方 `bin/LinearDesign_2D` 可在其仓库工作目录运行；直接复现MNDTEAI官方输出，不改写算法或替换模型。新增准备、汇总、单元/集成测试和门禁队列共5文件，D0/D1各自仅按三种子best VL0选择最低损失seed（同分低seed），不看设计候选指标；固定官方三例，GPU评测复用13 split正式raw-sequence评测器，3次解码一致且CUDA/checkpoint/数据哈希硬门，汇总独立运行两次并逐位一致。
+- **失败与修复证据**：首次单元测试的两处预期写错（合法平衡DBN误作非法、配对索引错位）已修正；集成测试实际捕获官方共享库依赖工作目录（exit127）及repeat遍历类型错误，分别通过固定官方仓库cwd和按repeat内候选索引比较修复。最终8项测试通过，脚本bash语法和本地/远端SHA256一致。提交 `b491db8e10cd9166136f8c0d168ece85fdb5b67f` 已推送GitHub。
+- **科学边界**：冻结队列已挂接但尚未运行正式D0/D1候选推理。集成测试中的假checkpoint/F1=1只验工程，不是科学结果。未来只报告与LinearDesign MFE结构的计算一致性；MFE官方报告与ViennaRNA 2.7.2独立复算差异仍未归因，禁止声称真实结构恢复率、表达/稳定性/免疫效果、一般非编码RNA设计或湿实验验证。PPT保持不更新。
+
+
+## §15.606（2026-11-08）复合物元数据与传递同源分组独立复核修复
+
+- **问题实证**：正式全量去泄露前的代码预检发现，`source_metadata` 对 `_entity_poly.type` 读取 `row[0]`，会把聚合物类型截成首字符且未排除当前RNA实体；旧独立复核只比较MMseqs行的直接representative，未计算传递闭包，可能把A–B–C的合法同组误判为跨组，并有随链数平方增长的比较开销。全量正式去泄露尚未启动，无旧正式输出需要重算。
+- **修复**：按 `(entity_id,type)` 读取，排除当前RNA实体及其他RNA聚合物，保留真实蛋白质等伙伴类型；独立复核自行以候选节点和PDB entry节点构建并查集，比较完整分组划分而非复用原分组函数或仅比较直接representative，未知cluster成员、重复候选索引和守恒失败均拒绝。
+- **验证**：新增蛋白质伙伴、传递A–B–C加entry连接、错误分组和未知成员拒绝测试；复合物采集/映射/去泄露/独立复核19项通过，随后对本次相关5项在 `-W error::ResourceWarning` 下再次通过，真实1EHZ mmCIF元数据测试通过，本地/远端SHA256一致。提交 `0a02124b85b80fa9f901623c6c0626cec6516446` 已推送GitHub，等待中的去泄露队列会在完整collection后使用新代码。
+- **当前训练与采集**：R1 seed2 step20500=19.1533835278（bad=3），step21000=19.4674917744（bad=4），best仍step19000=18.8194048581，继续原配方自然训练；续采完成1701/8157，尚无最终样本量、D0/D1提升或下游科学结论。
+
+
+## §15.607（2026-11-08）clean TS0同集合速度协议与R1 seed2 step21500
+
+- **速度口径审计**：旧4090 raw速度板使用原始TS0 1288条（最长499nt），当前去泄露TS0为79条（最长344nt），79条全部为旧集合子集。不同数据规模与长度分布的旧吞吐率不能直接支持当前速度SOTA，必须同集合、同硬件、同协议复测。
+- **新增速度验收链**：D0/D1裁决后，最终run prefix三种子逐一生成完整79条raw clean TS0结果；每条包含tokenization、encoder、一次scorer forward、calibration及Nussinov解码，无embedding缓存，batch=1、每轮第一条warmup不计吞吐、3轮预测一致，RTX4090独占且任一其他compute进程存在则等待。每次逐序列pairs与对应冻结全模型TS0 repeat0完全一致且micro-F1复算误差≤1e-12才接受，禁止静默丢弃长序列。
+- **基线覆盖边界**：同一79条clean TS0上将复测plana、r2d、xens2、rinalmo-ft、mxfold2、RNAformer的B=1 raw三次结果；BPfold等其他基线尚未纳入，因此输出强制 `speed_sota_claim=False`，不可写成完整速度SOTA。3项汇总/拒绝门/预测digest测试通过，bash语法通过，提交 `fe0310bb4fe0171df7bf6ac5f8218239ee90e229` 已推送GitHub，队列等待D0/D1冻结，尚未产生正式速度结果。
+- **R1 seed2**：step21500 VL0=20.0828461854，best仍step19000=18.8194048581、bad=5；按patience=6继续第六次验证，不提前停止。续采完成1705/8157，完整collection和正式去泄露未齐套。
+
+
+## §15.608（2026-11-08）R1三种子自然收敛与外部clean速度基线扩容
+
+- **R1收敛闭环**：seed2在step22000 VL0=19.5796006716、bad=6，按原steps=0/patience=6自然早停；run_meta=`completed / converged=True / early_stopped=True`，best step19000=18.81940485814718，best checkpoint step=19000，SHA256=`0bba031906a4fe16398ea3f1e2bef031ba6c262a4429a0a806209f65293885a5`。seed0/1原已核验step19500及哈希不变，三种子正式13 split评测接续。
+- **当前评测边界**：已落27/39主单元格，VL0尚未生成；ArchiveII三种子均33/90、Rfam均248/388支持，沿用明确512nt部分支持边界，未宣称长序列SOTA或R1路线结论。续采完成1710/8157，完整collection/正式去泄露未齐套。
+- **外部速度协议**：新增共享clean-speed门禁，显式锁定expected SHA256/count、3次完整repeat并拒绝smoke/limit/另一clean audit混用；BPfold/eFold/EternaFold每轮首序列（eFold首批）warmup不计时但保留全量预测。EternaFold仅按官方原生单线程CPU报告，`cross_device_gpu_rankable=False`，不伪装成GPU基线。默认旧协议保持兼容，既有EternaFold的name/id兼容修改原样保留。
+- **环境与验证**：eFold固定既有 `/home/rna_jev/envs/efold_speed/bin/python`（lightning/efold/torch2.5.1+cu121真实导入通过），不向训练环境追加依赖。3项共享门禁测试、三脚本py_compile、CLI导入/help及bash语法均通过；尚未运行正式速度推理。提交 `a024ebd7d14b09917ad36d51d43e1adaab7da16f` 已推送GitHub，独立后续队列等待前六类clean TS0速度结果，不重复执行原队列。
+
+
+## §15.609（2026-11-08）R1主榜39格独立复核与剩余速度基线链
+
+- **R1正式主结果**：39/39主单元格、三种子VL0、置信度和SOTA比较已齐套。主榜any-baseline与external-single均0/8；Rfam=`0.4778399902596972`，对BPfold差−0.3093460131；CHANRG measured wins=0。GenC仅对quoted OFoldNA-SS高0.0165958631，但低于实测RiNALMo-Giga ft，不计measured SOTA。ArchiveII/Rfam保留512nt部分支持，不称长序列SOTA。
+- **独立QA**：逐一复算39格的checkpoint/数据SHA256、raw→supported守恒、三次预测一致及micro-F1；全部与原始JSON和summary cells一致，SOTA所引summary哈希一致。检查脚本两次遍历/字段错误已修正后通过，未修改任何原始结果。置信度阈值仅由最低VL0的seed0冻结；目前没有全模型最佳置信度证据。greedy/Turner=0尚在执行，不能提前关闭R1或选择路线二基座。
+- **剩余速度链**：Kirigami与SPOT-RNA增加同一clean数据门禁、逐轮warmup与完整预测/概率一致性；NucleicBERT新增逐条raw tokenization的B=1独占速度脚本，原阈值、tokenizer和decoder不变。旧NucleicBERT clean为713条，仅44个名称与当前79条重合，不能作参照；已另行生成当前79条三次B=4冻结参照（PASS，`concurrent_timing_eligible_for_speed_claim=False`），后续B=1须逐序列一致且micro-F1一致才接受。
+- **验证与提交**：相关6项单元测试、py_compile、专用环境CLI和bash语法通过；commit `8c1551aefe0b027e6331d30cca35f10b979f26f0` 已推送，门禁补充commit `513034762f5fb4e06cfb7dbb0136fbb094008165` 已推送。Kirigami/SPOT-RNA/NucleicBERT正式速度仍等待前序队列和独占窗口；未产生速度SOTA结论。续采完成1723/8157，PPT不更新。
+
+
+## §15.610（2026-11-08）R1 greedy机制消融闭环与速度汇总全格式测试
+
+- **greedy正式结果**：39/39 greedy单元格齐套，状态 `PASS_STRUCTRFM_FULL_ABC_13_SPLITS_3_SEEDS_3_REPEATS`；逐一核验decoder=greedy、prior override=None、CUDA、三次预测一致、checkpoint/数据哈希、raw→supported守恒及micro-F1，全部通过。TS0=`0.4947685091→0.2064083656`（−0.2883601435），Rfam=`0.4778399903→0.1951939601`（−0.2826460302）。这是约束解码必要性的机制证据，不是模型精度提升。Turner=0尚未齐套，R1不提前关闭。
+- **速度汇总全链测试**：合成四种真实协议格式的79行数据及11个基线结果，验证GPU/CPU分流、完整repeat、数据哈希、双次汇总逐位一致和SOTA方向；构造seed0吞吐100、seed1吞吐50但seed1 VL0最低，主seed必须选1；基线10时主模型胜、基线60时主模型负均正确。4项相关测试通过，commit `9ca3c0de68148313d115d1d83f6fe4390e4af204` 已推送。合成吞吐只验裁决逻辑，不是科学结果。
+- **当前边界**：Turner=0继续正式队列；续采完成1729/8157，完整collection与D1未齐套；正式速度仍等待D0/D1及独占窗口，PPT不更新。
+
+
+## §15.611（2026-11-08）复合物续采真实进度与旧错误文件归因
+
+- **写入协议复核**：采集器对每条 `labels.json` 即时落盘，仅在全部候选结束后原子生成完整 `collection.json`。当前旧manifest仅7PDV一条且无可用链，`observed_alignment=None`，不是续采进度表或正式数据；最终门禁强制8157 ID集合、新版映射、完整标志和哈希，不能混入旧标签。
+- **本轮日志实况**：1737个唯一完成ID中，1638个新版缓存复用、98个重新生成成功、12个合法零标签、1个明确失败；4V4G在600秒后又经1800秒延长仍超时，按预注册保留失败证据并淘汰，不无限重试。目录中的2794个 `error.txt` 含大量未续采旧目录/历史映射错误，不能计为本轮失败。
+- **链级快照**：扫描时1733个新版有效label entry、1981条accepted chain记录、1个旧协议label（即上述7PDV）。这些只是采集中间计数，不是去重、去泄露后的训练样本量，不写成最终数据结论。
+- **R1进度**：Turner=0已达27/39，继续原队列；R1完整机制结论与R2启动仍等待39格齐套。正式速度、PPT和最终论文强主张不更新。
+
+
+## §15.612（2026-11-08）R1主结果本地原始数据保全
+
+- **本地快照**：`交接文档/source_data/round48/ripe_head_r1/` 保存7份主结果/置信度/VL0文件及三种子各2份训练元数据，共13份原始文件；`manifest.json` 记录远端根路径、39格独立QA、主榜0/8、Rfam=0.4778399903、CHANRG measured wins=0和三个best checkpoint SHA256。大权重不复制本地，只保留已核验哈希。
+- **双端核验**：本地13份文件逐一SHA256与远端一致，随后按manifest再次复算全部通过。主结果数字与原始JSON一致，不依赖PPT转录；greedy已完成，Turner=0在快照时仍待齐套，manifest明确标注snapshot范围，防止误当完整R1交付。
+- **当前边界**：Turner=0已到30/39，继续原队列；R2未启动，完整七臂/Pair-JEPA/复合物/正式速度结论均未产生，PPT不更新。
+
+
+## §15.613（2026-11-08）R1完整闭环与R2三种子启动
+
+- **R1机制闭环**：Turner=0 39/39单元格和summary齐套，逐格核验 `decoder=nussinov / prior_weight_override=0.0`、CUDA、三次预测一致、checkpoint/数据哈希、raw→supported守恒、micro-F1与summary哈希，全部通过。TS0=`0.4947685091→0.4521536496`（−0.0426148595），Rfam=`0.4778399903→0.4220129102`（−0.0558270800）；去掉Turner先验进一步下降，但不能把这一机制差异外推为其他RIPE臂方向。主结果+greedy+Turner=0共117格全部复核，R1正式关闭；主榜仍0/8。
+- **本地证据包更新**：两份ablation summary已加入 `交接文档/source_data/round48/ripe_head_r1/ablations/`，本地/远端SHA256一致；manifest更新为15份文件、完整R1范围和117格QA，二次复验全部通过。传输中一次SSH连接关闭仅导致文件未落地，分别补传后核验，不覆盖其他原始文件。
+- **R2真实启动**：三种子run_meta均为running、未收敛，mode=r2、encoder=False、scorer=pairmlp、steps=0、patience=6、resolved_device=cuda:0，日志有真实step1/25和显存峰值；未提前评测、未根据R1测试表现换臂。续采完成1743/8157，完整collection未齐套，PPT不更新。
+
+
+## §15.614（2026-11-08）R2首个VL0验证点
+
+- **step500**：seed0 VL0=38.8063843089、seed1=38.6525247848、seed2=39.1560105864，均为各自当前best、bad=0；训练日志继续推进至step600附近，head warmup阶段0/12层解冻，未发生OOM或CPU静默降级。
+- **边界**：这是首个早期验证点，不用于判断R2收敛、臂间优劣或全板效果；继续steps=0、patience=6和既定解冻计划，不修改配方。复合物续采完成1751/8157，正式去泄露和D1未启动，PPT不更新。
+
+
+## §15.615（2026-11-08）R2 step1000验证改善
+
+- **step1000**：seed0 VL0=37.0250466519、seed1=35.7364960621、seed2=36.1362786771，均较各自step500下降并刷新best、bad=0；训练继续至约step1200，仍0/12层解冻，无OOM或CPU降级。
+- **边界**：早期验证改善只证明训练正常，不能写成R2精度提升或全板SOTA；继续原配方到自然收敛。复合物续采完成1755/8157，正式去泄露未齐套，PPT不更新。
+
+
+## §15.616（2026-11-08）R2 step1500三种子齐套
+
+- **step1500**：seed0 VL0=33.7747518759、seed1=35.2241809561、seed2=33.2531816385，均较各自step1000下降并刷新best、bad=0；随后训练继续，仍处0/12层解冻阶段，无OOM或CPU降级。
+- **调度核验**：训练代码为step>1600后按 `((step-1600)//800)*2` 计算应解冻层数，首次2层解冻应在step2400，不以1600日志误判调度错误。早期VL0不作最终臂选择或SOTA结论。复合物续采完成1765/8157，PPT不更新。
+
+
+## §15.617（2026-11-08）R2 step2000三种子齐套与规范旧状态修正
+
+- **step2000**：seed0 VL0=32.5386688362、seed1=32.1047731356、seed2=32.9109998640，均较各自step1500下降并刷新best、bad=0；继续原配方，等待step2400首次2层解冻，不作测试集或臂间结论。
+- **规范一致性**：两个spec文件夹顶部的T-A212及S3段落仍写“R1在训/机制未完成”，已同步为R1共117格关闭、Rfam=0.4778399903、greedy/Turner0下降和R2训练中；长序列、最佳置信度、速度SOTA和路线二最终裁决仍保持未达成。复合物续采完成1767/8157，PPT不更新。
+
+
+## §15.618（2026-11-08）R2首次解冻与step2500验证
+
+- **解冻实证**：三种子日志均在step2400明确 `unfroze to 2/12 blocks (top-down)`，后续step保持2/12，真实CUDA训练无OOM或CPU降级。
+- **step2500**：seed0 VL0=30.4531554340、seed1=30.9797489198、seed2=30.8584472454，均较各自step2000下降并刷新best、bad=0；训练继续，不作收敛、臂间或全板结论。
+- **边界**：复合物续采完成1776/8157，正式去泄露与D1未齐套，PPT不更新。
+
+
+## §15.619（2026-11-08）R2 step3000与最终置信度验收边界复核
+
+- **step3000**：seed0 VL0=29.1728075083、seed1=29.1961413008、seed2=30.5040748329，均较各自step2500下降并刷新best、bad=0；继续2/12层解冻训练，未收敛，不作全板结论。
+- **置信度复核**：当前structRFM confidence文件只计算Spearman/risk–coverage/AURC及pair-level指标，未包含最终要求的Pearson/Spearman 95%CI与同候选配对/GT下概率基线比较。旧脚本已有2000次、seed=42的bootstrap CI可复用；最终须独立补齐，不能称最佳置信度。
+- **边界**：复合物续采完成1779/8157，正式去泄露未齐套，PPT不更新。
+
+
+## §15.620（2026-11-08）R2第二次解冻与step3500验证
+
+- **解冻实证**：三种子step3200后均为4/12层解冻，训练日志持续更新，未发生OOM或CPU降级。
+- **step3500**：seed0 VL0=28.5556165120、seed1=27.6197081274、seed2=28.0481356798，均较各自step3000下降并刷新best、bad=0；继续原配方到自然收敛，不用于臂间或全板结论。复合物续采完成1783/8157，PPT不更新。
+
+
+## §15.621（2026-11-08）独立置信度统计核心与R2 step4000
+
+- **统计核心**：新增 `confidence_metrics_round49.py`，固定6个coverage阈值、Pearson/Spearman、2000次seed42 bootstrap CI、structure ECE和AURC；常数输入相关为null，未定义重采样剔除且不产生伪有限CI，空风险桶保持null。4项测试在本地和远端均通过，commit `ca175a4fc1b8aed470a7d08d35a03082137b18f8` 已推送。测试发现阈值数量、Pearson预期、NaN字典比较和旧import依赖问题后已逐项修正；不改变模型原始结果。
+- **边界**：这只是最终独立置信度复算的核心，尚未完成同候选配对/GT下概率基线比较或最佳置信度裁决。
+- **R2 step4000**：seed0 VL0=26.6742653338、seed1=26.6357816062、seed2=26.5933106095，均刷新best、bad=0；三种子已实际6/12层解冻，无OOM或CPU降级，继续自然训练。复合物续采完成1789/8157，PPT不更新。
+
+
+## §15.622（2026-11-08）R1独立置信度42范围复算与R2 step5500
+
+- **R1独立置信度**：13 split×3 seed加VL0×3 seed共42范围，双次复算逐位一致，SHA256=`8c745e9120041bb51ddecfd3383d128d6a766e877b530a9cfb0ced63d9045be9`；旧Spearman/risk/AURC逐项一致，新增Pearson/Spearman 95%CI。单结构split保留ECE/risk–coverage且相关为null，空桶不丢弃。索引和NaN序列化断言问题均修复后通过，5项远端测试通过，commit `807a21075935f2f61b346e8455ccf399f744d4be` 已推送。此结果仍不含同候选配对/GT概率基线比较，不称最佳置信度。
+- **本地证据包**：新增 `confidence_independent.json`，manifest共16份文件，全部本地/远端SHA256复核一致。
+- **R2 step5500**：seed0 VL0=25.2346468412、seed1=24.9373786099、seed2=24.2317942716，均刷新best、bad=0；三种子已8/12层解冻，无OOM或CPU降级，继续自然训练。复合物续采完成1797/8157，PPT不更新。
+
+
+## §15.623（2026-11-08）R2 step6000与剩余RIPE置信度队列
+
+- **R2 step6000**：seed0 VL0=24.7012084366、seed1=23.1368154279、seed2=23.7060861223，均较各自step5500下降并刷新best、bad=0；三种子已10/12层解冻，无OOM或CPU降级，继续自然训练，不用于臂间或全板结论。
+- **剩余置信度队列**：log/R2/R3/R5/R6/encoder-R3在各臂confidence_summary完成后自动执行42范围双次复算和逐位比较，R1已验收不重复；commit `1081aa39e04683119f60ce61a0ef6f3aa32f54fb` 已推送。跨概率基线最佳置信度裁决仍未完成。
+- **边界**：复合物续采完成1801/8157，正式去泄露与D1未齐套，PPT不更新。
+
+
+## §15.624（2026-11-08）R2全层解冻与log-head独立置信度
+
+- **R2全层解冻与step6500**：三种子均已12/12层解冻，无OOM或CPU降级。seed0 VL0=23.5128232886、seed1=22.9568633199，均刷新best；seed2=23.7925594914，best仍step6000=23.7060861223、bad=1，继续patience=6，不提前停止或修改配方。
+- **log-head独立置信度**：42范围双次复算逐位一致，SHA256=`5bd57b3e26a0cdbfbc00cde278247254164ae0634d57548318e21f918fb343ee`；VL0 Spearman=0.8868566650/0.8629036064/0.8645291603，新增Pearson/CI，不改变log-head主榜0/8与AURC null的否决结论。
+- **边界**：复合物续采完成1804/8157，正式去泄露未齐套，PPT不更新。
+
+
+## §15.625（2026-11-08）R2 step7000验证分化
+
+- **step7000**：seed0 VL0=24.2514329680，best仍step6500=23.5128232886、bad=1；seed1=23.9285506672，best仍step6500=22.9568633199、bad=1；seed2=23.1026260889，较best step6000=23.7060861223下降并刷新best、bad=0。
+- **边界**：单点回升不判平台，三种子继续steps=0、patience=6、12/12层解冻训练，无OOM或CPU降级；不作臂间或全板结论。复合物续采完成1809/8157，PPT不更新。
+
+
+## §15.626（2026-11-08）R2 step7500验证
+
+- **step7500**：seed0 VL0=23.6613162003，best仍step6500=23.5128232886、bad=2；seed1=22.5274115892，较best step6500=22.9568633199下降并刷新best、bad=0；seed2=23.9854073673，best仍step7000=23.1026260889、bad=1。
+- **边界**：继续steps=0、patience=6和12/12层解冻，不因单点波动停止或修改配方；不作臂间或全板结论。复合物续采完成1812/8157，PPT不更新。
+
+
+## §15.627（2026-11-08）R2 step8000验证
+
+- **step8000**：seed0 VL0=23.0511524121，较best step6500=23.5128232886下降并刷新best、bad=0；seed1=22.1712839048，较best step7500=22.5274115892下降并刷新best、bad=0；seed2=23.8867729644，best仍step7000=23.1026260889、bad=2。
+- **边界**：继续steps=0、patience=6和12/12层解冻，不因单点波动停止或修改配方；不作臂间或全板结论。复合物续采完成1815/8157，PPT不更新。
+
+
+## §15.628（2026-11-08）R2 step8500验证
+
+- **step8500**：seed0 VL0=22.0749381947，较best step8000=23.0511524121下降并刷新best、bad=0；seed1=23.0100634596，best仍step8000=22.1712839048、bad=1；seed2=23.0455794491，较best step7000=23.1026260889下降并刷新best、bad=0。
+- **边界**：继续steps=0、patience=6和12/12层解冻，不因单点波动停止或修改配方；不作臂间或全板结论。复合物续采完成1821/8157，PPT不更新。
+
+
+## §15.629（2026-11-08）R2 step9000两路改善与seed2 OOM快照
+
+- **step9000**：seed0 VL0=21.8985712671、seed1=21.6515410432，均刷新best、bad=0，继续12/12层训练；seed2在step9000验证前反向传播发生CUDA OOM，原始traceback与三进程显存占用已保留，未发生CPU静默降级。
+- **恢复门禁**：seed2最近完整快照为step8000，SHA256=`108dd0c2e27a59532b8331e93a47562bea0608734413ad01230edf04fc6149c1`。自动队列将在seed0/1结束后按原steps=0、batch=2、seed=2、LR、patience=6和RIPE R2配置串行恢复；当前run_meta仍running、best仍step8500=23.0455794491，尚未恢复，不写成恢复成功或自然收敛。复合物续采完成1823/8157，PPT不更新。
+
+
+## §15.630（2026-11-08）R2 step9500两路回升
+
+- **step9500**：seed0 VL0=22.5716760055，best仍step9000=21.8985712671、bad=1；seed1=21.7137060451，best仍step9000=21.6515410432、bad=1。两路继续steps=0、patience=6和12/12层训练，不因单点回升停止或修改配方。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复；不得把等待恢复写成收敛。复合物续采完成1825/8157，PPT不更新。
+
+
+## §15.631（2026-11-08）R2 step10000验证
+
+- **step10000**：seed0 VL0=21.9287742537，best仍step9000=21.8985712671、bad=2；seed1=21.3971463711，较best step9000=21.6515410432下降并刷新best、bad=0。两路继续steps=0、patience=6和12/12层训练，不提前停止或修改配方。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复，不写成恢复成功或收敛。复合物续采完成1831/8157，PPT不更新。
+
+
+## §15.632（2026-11-08）R2 step10500两路改善
+
+- **step10500**：seed0 VL0=20.6636499774、seed1=21.0082129869，均较各自best step10000下降并刷新best、bad=0；继续steps=0、patience=6和12/12层训练，不提前停止或修改配方，不用于全板结论。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复，不写成恢复成功或收敛。复合物续采完成1833/8157，PPT不更新。
+
+
+## §15.633（2026-11-08）R2 step11000两路回升
+
+- **step11000**：seed0 VL0=22.0708630640，best仍step10500=20.6636499774、bad=1；seed1=21.3872403619，best仍step10500=21.0082129869、bad=1。两路继续steps=0、patience=6和12/12层训练，不提前停止或修改配方。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复，不写成恢复成功或收敛。复合物续采完成1837/8157，PPT不更新。
+
+
+## §15.634（2026-11-08）R2 step11500两路改善
+
+- **step11500**：seed0 VL0=20.6117525673、seed1=20.3946843028，均较各自best step11000下降并刷新best、bad=0；继续steps=0、patience=6和12/12层训练，不提前停止或用于全板结论。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复，不写成恢复成功或收敛。复合物续采完成1839/8157，PPT不更新。
+
+
+## §15.636（2026-11-08）R2 step12500验证
+
+- **step12500**：seed0 VL0=19.9043026592，较best step12000=20.3209188543下降并刷新best、bad=0；seed1=20.5206783121，best仍step11500=20.3946843028、bad=2。两路继续steps=0、patience=6和12/12层训练，不提前停止或修改配方。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复，不写成恢复成功或收敛。复合物续采完成1846/8157，PPT不更新。
+
+
+## §15.637（2026-11-08）R2 step13000验证
+
+- **step13000**：seed0 VL0=19.8645168232，较best step12500=19.9043026592下降并刷新best、bad=0；seed1=20.4093897951，best仍step11500=20.3946843028、bad=3。两路继续steps=0、patience=6和12/12层训练，不提前停止或修改配方。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复，不写成恢复成功或收敛。复合物续采完成1867/8157，PPT不更新。
+
+
+## §15.635（2026-11-08）R2 step12000验证
+
+- **step12000**：seed0 VL0=20.3209188543，较best step11500=20.6117525673下降并刷新best、bad=0；seed1=21.0491454641，best仍step11500=20.3946843028、bad=1。两路继续steps=0、patience=6和12/12层训练，不提前停止或修改配方。
+- **seed2状态**：仍保留原OOM现场，best仍step8500=23.0455794491，未开始串行恢复，不写成恢复成功或收敛。复合物续采完成1843/8157，PPT不更新。
+
+
+## §15.638（2026-11-08）R2 step13500验证与恢复边界复核
+
+- **step13500**：seed0 VL0=19.9391506002，best仍step13000=19.8645168232、bad=1；seed1=20.5131861756，best仍step11500=20.3946843028、bad=4。两路run_meta均为running、converged=False、early_stopped=False；继续steps=0、patience=6、12/12层解冻训练，不提前停止或修改配方。
+- **seed2状态**：验证仍止于step8500=23.0455794491，CUDA OOM现场及step8000完整快照保留；run_meta仍running、converged=False，未开始串行恢复。现有队列将串行按原配置恢复，不重复提交，不写成恢复成功或收敛。
+- **边界**：16个现役后台队列已核对；复合物续采1873/8157，尚未完成全量collection、正式去泄露或D1训练。step13500仅为VL0训练过程记录，不作测试榜、臂间选择或全板结论；PPT不更新。
+
+
+## §15.639（2026-11-08）R2 step14000验证及SSH连接边界
+
+- **step14000**：seed0 VL0=20.5378753958，best仍step13000=19.8645168232、bad=2；seed1=20.5563089584，best仍step11500=20.3946843028、bad=5。两路run_meta均running、converged=False、early_stopped=False；seed2验证仍止于step8500，尚未恢复。复合物续采1875/8157。
+- **连接异常**：后续新建SSH会话连续出现 `Session open refused by peer` / `Connection closed by ... port 29744`，控制主进程仍存活，既有训练/等待任务未报告退出。不得据此推断远端训练停止、seed1已收敛或seed2已恢复；保留证据，不重启GPU作业。先核查纯等待任务，再重试只读核验。
+
+
+## §15.640（2026-11-08）R2 step14500与依赖队列单会话整合
+
+- **step14500**：seed0 VL0=20.6970833646，best仍step13000=19.8645168232、bad=3；seed1=20.0737247397，较此前best step11500=20.3946843028下降并刷新best step14500、bad由5重置为0。因此seed1不得按此前bad=5误停，两路均继续steps=0、patience=6和12/12层解冻；seed2仍待原配置串行恢复。
+- **队列修复**：发现正式去泄露脚本第23–24行已含守恒复核，取消其重复等待/同日志写入任务；其余12个依赖等待任务从独立SSH连接迁移至 `tools/run_pending_round49.sh`，沿用原科学脚本、flock与输出目录，正在运行的RIPE训练/评测队列和复合物采集不重启。合并任务 `bash-ggnqutwg` 已返回12个子任务PID 3415074–3415085，未把有意撤下旧等待连接记为科学失败。
+- **验收**：本地新编排脚本及12个被调用脚本均通过 `bash -n`；上传后远端再次全部通过；仅暂存该新文件，commit=`3c5b09b`，已成功推送GitHub。有限退避重试后SSH恢复，不能将连接故障解释为训练中断。
+- **边界**：复合物续采1885/8157，完整采集/去泄露、D1和正式速度仍未齐套；不作测试榜或全板结论，PPT不更新。
+
+
+## §15.641（2026-11-08）R2 step15000与编排/采集存活复核
+
+- **step15000**：seed0 VL0=20.0176529146，best仍step13000=19.8645168232、bad=4；seed1=20.0321617633，较best step14500=20.0737247397下降并刷新best step15000、bad=0。两路run_meta均running且未早停，继续既定训练；seed2验证仍止于step8500、尚未恢复。
+- **编排三向核验**：远端HEAD完整值=`3c5b09bf8532fb47863f8feabcedd3b57eab7a84`，工作区该新脚本无未提交改动；本地与远端SHA256均为 `dbe52017ce159be3a7eaeedcd03acb1d43e87b4cfcfbfbcbd71db4d70d173edf`；12个PID均存活且分别持有原flock，spec与spec_sync已同步到§15.640。
+- **采集存活**：续采计数暂为1885/8157时，采集主进程及4WR6/4WRA/4WRO/4WSD四个DSSR子进程均存在；不据短时计数不增判死或重复启动，继续遵循600秒及一次1800秒延长重试合同。无新增科学结论，PPT不更新。
+
+
+## §15.642（2026-11-08）R2 step15500–16000及恢复验证状态修复
+
+- **step15500**：seed0 VL0=21.6006706185，best仍step13000=19.8645168232、bad=5，尚未达到patience=6，不得提前停；seed1=20.0797945378，best仍step15000=20.0321617633、bad=1。
+- **step16000**：seed0 VL0=19.4214055838，较此前best下降并刷新best step16000、bad=0；seed1=18.9840088528，亦刷新best step16000、bad=0。两路继续steps=0和12/12层解冻；seed2仍待串行恢复，不作臂间或测试榜结论。
+- **发现的恢复问题**：实际 `resume.pt` step=8500、n_unfrozen=12，含优化器/调度器/数据流状态，SHA256=`551f75dc45564a1d6af10ba344507d2b8be3574d424ae5aa1ffd180c73809afe`；因其在step8500验证前保存，内部best仍step7000=23.1026260889、bad=2，而同步validation_log已完成step8500=23.0455794491、bad=0。外部step8000模型快照SHA256=`108dd0c2e27a59532b8331e93a47562bea0608734413ad01230edf04fc6149c1`，不含优化器，不应代替实际resume。
+- **修复**：`restore_validation_state` 仅在最新验证步等于resume步时以日志恢复best/bad；日志早于resume保持原状态，日志超前则fail closed；同时回写run_meta。未改变模型、数据、优化器、LR、batch、steps=0或patience，正在运行的seed0/1不重启。
+- **验收**：本地与远端修改前 `train_plan_a.py` SHA256均为 `314bca68bfdc51c8f5c52a3f4db02fd123feabdc4c8d821194142325118c96f4`；远端pytest真实执行5项全部通过，py_compile通过；真实R2 seed2快照恢复为 `(8500,23.045579449147453,0)`，best.pt内部step=8500且SHA256=`f20cfc1cb5ce189b677402c34bb2c7502a02875bb49017b553722434ba2bb6c3`，原resume哈希未变。仅提交训练文件及测试，commit=`d8337dc` 已推送。
+- **边界**：复合物续采1905/8157，完整采集/去泄露及正式D1未齐套；PPT不更新。
+
+
+## §15.643（2026-11-08）R2 step16500–17000两路继续改善
+
+- **step16500**：seed0 VL0=20.2116167380，best仍step16000=19.4214055838、bad=1；seed1=19.4807817705，best仍step16000=18.9840088528、bad=1。单点回升不满足早停，不改变配方。
+- **step17000**：seed0 VL0=18.7661384619、seed1=18.8580328044，均较各自best下降并刷新best step17000、bad=0。两路run_meta均running、converged=False、early_stopped=False；seed2仍止于step8500，等待串行恢复。
+- **解释边界**：单个/两个种子的VL0改善不得替代三种子best VL0均值选臂，也不得替代A/B/C正式结果或宣称全板提升。复合物续采1939/8157，PPT不更新。
+
+
+## §15.644（2026-11-08）RIPE自然收敛的工具时限保障
+
+- **风险**：原主RIPE后台任务带24小时工具时限，而R2 seed2及后续臂尚未完成；不能把工具超时当作模型收敛或允许其破坏长队列。
+- **处理**：新增无工具时限任务 `bash-4gdwppqm`，只在同一 `/tmp/round48_ripe_queue.lock` 获得锁后执行原 `run_ripe_round48.sh`；若最终encoder-R3 Turner=0汇总已存在则不再运行。正常完成不重复训练，异常超时则从既有checkpoint按修复后的状态对账恢复。
+- **核验**：远端guard PID=3420759、状态S，正在等待原锁；原flock PID=3375841与原bash PID=3375842仍存活，当前仅原队列两个训练子bash在运行，未启动重复GPU任务。SSH间歇断连通过有限重试恢复，不改变科学配置或训练进程。
+
+
+## §15.645（2026-11-08）R2 step17500–18000验证
+
+- **step17500**：seed0 VL0=19.3568337054，seed1=18.9090665372，均未超过各自step17000 best，bad=1。
+- **step18000**：seed0 VL0=19.3694784513，best仍step17000=18.7661384619；seed1=19.3609726671，best仍step17000=18.8580328044；两路均bad=2，run_meta仍running且未早停。
+- **边界**：seed2验证仍止于step8500，等待原配置串行恢复；连续两次未改善不构成收敛，继续steps=0、patience=6及12/12层训练。复合物续采1983/8157，不作正式全板结论，PPT不更新。
+
+
+## §15.646（2026-11-08）R2 step18500验证与进程复核
+
+- **step18500**：seed0 VL0=19.0714259487，best仍step17000=18.7661384619、bad=3；seed1=19.1993066846，best仍step17000=18.8580328044、bad=3。两路run_meta均running、converged=False、early_stopped=False，继续既定训练；seed2尚未恢复。
+- **进程证据**：等待下一验证点时曾出现窗口内未齐套，检查到seed0/1训练日志均推进至step18500、12/12层解冻，两个真实CUDA训练进程存活；不得把验证计算耗时误判为中断，也不得把连续三次未改善写成收敛。
+- **边界**：复合物续采最近复核2045/8157，尚无完整collection、正式去泄露或D1结果；不作A/B/C结论，PPT不更新。
+
+
+## §15.647（2026-11-08）R2 step19000–19500重新改善
+
+- **step19000**：seed0 VL0=19.6340066722，seed1=19.5177603431，均未超过各自step17000 best，bad=4。
+- **step19500**：seed0 VL0=18.5638771168、seed1=18.7091900495，均刷新best step19500、bad由4重置为0；两路run_meta仍running、未早停。此前bad=4不构成收敛，继续steps=0、patience=6和12/12层训练。
+- **checkpoint独立验收**：两份best.pt内部step和validation_loss均与run_meta一致，arm/seed、RIPE R2、steps=0及patience=6断言通过。seed0 SHA256=`d820049b23e0971b201df7993c161f56d68129a6f38281403d0987376a997e43`；seed1 SHA256=`2ac835a0d60c38e4c8059b488533446e8cbfbec0ec63044527e876b97e71d224`。CPU仅用于离线读取元数据与哈希，不替代CUDA训练/评测。
+- **边界**：seed2仍待原配置串行恢复，三种子未齐套，不以两种子VL0均值选臂或声称测试提升。复合物续采2056/8157，PPT不更新。
+
+
+## §15.648（2026-11-08）R2 step20000–21000与复合物8并行迁移
+
+- **step20000**：seed0 VL0=20.0020267304、seed1=19.6242785279，均best仍step19500、bad=1。
+- **step20500**：seed0=19.7268746286、seed1=19.0439296173，均bad=2。
+- **step21000**：seed0=19.3730839543、seed1=20.2458168033，均best仍step19500（18.5638771168/18.7091900495）、bad=3，run_meta仍running且未早停；seed2尚未恢复。继续既定训练，不据连续三次未改善判收敛。
+- **采集迁移**：4并行成为瓶颈，先停止去泄露等待再停止采集；确认无原采集/DSSR进程后，保留2069份当时有效缓存。新任务 `bash-2oln25f7` 以同一采集代码、候选集、DSSR协议及 `--workers 8` 续采，完成后串接原去泄露脚本；无工具时限。
+- **远端生命周期修复**：发现本地TaskStop并未清理部分远端等待进程，旧去泄露进程持锁导致新采集短暂等待，另有多组旧依赖等待flock。按明确PID清理旧副本及其直接等待子进程，保留新12队列PID3415074–3415085、原RIPE训练及guard。lslocks复核旧等待锁已消失，新采集PID3425530实际启动，抽样时6个DSSR计算进程并行；已完成缓存抽样3J6B/5DO4哈希与迁移前一致。
+- **边界**：新队列已处理2076/8157，日志计数为本轮处理进度，不能替代最终唯一序列数与衰减表；完整collection、正式去泄露、D1及科学结论仍未齐套，PPT不更新。
+
+
+## §15.649（2026-11-08）R2 step21500与8并行实证
+
+- **step21500**：seed0 VL0=18.6951480004，best仍step19500=18.5638771168、bad=4；seed1=19.4883957958，best仍step19500=18.7091900495、bad=4。两路run_meta仍running、未早停，继续原配置；seed2仍待恢复。
+- **采集复核**：8并行队列处理至2085/8157时，实测DSSR计算进程数=8，证明并行度迁移已生效；缓存复用与正式标签并行计算均按原协议进行。
+- **监视安排**：已设置一次性验证事件监视，在seed0/1均达到step22500或seed2出现恢复后验证时返回，不启动任何训练或重复评测。无新增科学结论，PPT不更新。
+
+
+## §15.650（2026-11-08）R2 step22000接近既定早停门
+
+- **step22000**：seed0 VL0=18.8299851563，best仍step19500=18.5638771168、bad=5；seed1=18.9112943971，best仍step19500=18.7091900495、bad=5。两路run_meta仍running、converged=False、early_stopped=False，必须继续到下一完整验证点，不能提前按bad=5停止。
+- **边界**：若step22500未改善才达到patience=6；若改善则清零继续。seed2仍待恢复。复合物8并行新队列处理2117/8157，尚无正式去泄露或D1结果，PPT不更新。
+
+
+## §15.651（2026-11-08）R2 seed0/1自然收敛与seed2实际恢复
+
+- **step22500**：seed0 VL0=19.8144504017、seed1=19.6516827965，均未改善、bad=6；两路均输出 `DONE step=22500 early_stopped=True best=19500`。run_meta最终均为status=completed、converged=True、early_stopped=True、stop_reason=early_stopping。
+- **冻结best**：seed0 best step19500=18.563877116762686，SHA256=`d820049b23e0971b201df7993c161f56d68129a6f38281403d0987376a997e43`；seed1 best step19500=18.70919004950943，SHA256=`2ac835a0d60c38e4c8059b488533446e8cbfbec0ec63044527e876b97e71d224`。队列输出的arm/step/loss/hash与此前独立核验一致。
+- **seed2恢复**：串行队列明确输出 `serial resume for incomplete ripe_head_r2 seed 2 with unchanged training configuration`，随后日志输出 `resumed from step 8500 (12/12 blocks unfrozen)` 并实际训练至step8525。run_meta保持best step8500=23.045579449147453，environment为CUDA:0/RTX4090，进程参数仍为steps=0、batch=2、seed=2、原LR和patience=6。`parallel job failed` 是此前OOM触发串行恢复的预期队列信息，不写成最终训练失败。
+- **边界**：R2三种子尚未全部收敛，正式A/B/C评测未启动；不提前计算最终三种子选臂或全板结论。复合物采集最近确认2121/8157，PPT不更新。
+
+
+## §15.652（2026-11-08）R2 seed2恢复后step9000验证通过
+
+- **恢复后首个完整验证**：seed2 step9000 VL0=22.279658143827646，较恢复前best step8500=23.045579449147453下降并刷新best step9000、bad=0；日志明确输出 `validation step=9000 ... best=22.27965814@9000 bad=0`。
+- **训练状态**：run_meta仍running、converged=False、environment=CUDA:0/RTX4090；恢复后从8525持续推进至9000，未再发生OOM或CPU降级。此前best/bad对账修复经真实训练和下一验证点证明有效，不修改科学配置。
+- **边界**：seed0/1已自然收敛，seed2继续steps=0、patience=6；R2正式A/B/C仍未启动。复合物8并行采集最近确认2169/8157，PPT不更新。
+
+
+## §15.653（2026-11-08）R2 seed2 step9500–10000
+
+- **step9500**：seed2 VL0=21.894080043830076，较best step9000=22.279658143827646下降并刷新best step9500、bad=0。
+- **step10000**：VL0=22.086097490756764，best仍step9500、bad=1；日志明确 `validation step=10000 ... best=21.89408004@9500 bad=1`，run_meta仍running、未早停。
+- **边界**：恢复后训练持续在CUDA上推进，未再次发生OOM；一次回升不构成收敛。seed0/1保持已完成，R2正式A/B/C等待seed2自然收敛。复合物8并行采集2211/8157，PPT不更新。
+
+
+## §15.654（2026-11-08）R2 seed2 step10500–11000连续改善
+
+- **step10500**：seed2 VL0=21.120325216928880，较best step9500=21.894080043830076下降并刷新best、bad=0。
+- **step11000**：VL0=21.088733303211345，较best step10500继续下降并刷新best、bad=0；run_meta仍running、未早停，CUDA训练未再OOM。
+- **边界**：改善幅度必须按 `best - 1e-6` 规则判断，step11000改善超过min_delta，不能提前停止。seed0/1保持已完成，R2正式A/B/C等待seed2收敛。复合物8并行采集2241/8157，PPT不更新。
+
+
+## §15.655（2026-11-08）R2 seed2 step11500–12000
+
+- **step11500**：seed2 VL0=21.393591652671084，best仍step11000=21.088733303211345、bad=1。
+- **step12000**：VL0=21.234356538788365，best仍step11000、bad=2；日志与run_meta均确认未早停，继续steps=0、patience=6及12/12层训练。
+- **边界**：连续两次未改善不构成收敛，未再发生OOM。seed0/1保持已完成，R2正式A/B/C尚未启动。复合物8并行采集2296/8157，PPT不更新。
+
+
+## §15.656（2026-11-08）R2 seed2 step12500–13000
+
+- **step12500**：seed2 VL0=20.397670742313267，较best step11000=21.088733303211345下降并刷新best step12500、bad=0。
+- **step13000**：VL0=20.527075852249112，best仍step12500、bad=1；run_meta仍running、未早停，CUDA训练未再OOM。
+- **边界**：一次回升不构成收敛，继续steps=0、patience=6。seed0/1保持已完成，R2正式A/B/C等待seed2自然收敛。复合物8并行采集2353/8157，PPT不更新。
+
+
+## §15.657（2026-11-08）R2 seed2 step13500–14000连续改善
+
+- **step13500**：seed2 VL0=20.382793193384900，较best step12500=20.397670742313267下降并刷新best、bad=0。
+- **step14000**：VL0=20.300950524826920，较best step13500继续下降并刷新best、bad=0；run_meta仍running、未早停，CUDA训练未再OOM。
+- **边界**：改善虽小但超过min_delta，继续steps=0、patience=6，不凭经验提前停止。seed0/1保持已完成，R2正式A/B/C等待seed2收敛。复合物8并行采集2394/8157，PPT不更新。
+
+
+## §15.658（2026-11-08）R2 seed2 step14500–15000连续改善
+
+- **step14500**：seed2 VL0=20.171062499898245，较best step14000=20.300950524826920下降并刷新best、bad=0。
+- **step15000**：VL0=19.833945856477353，较best step14500继续明显下降并刷新best、bad=0；run_meta仍running、未早停，CUDA训练未再OOM。
+- **边界**：seed2恢复后持续改善不构成提前选臂依据，R2需等待其patience=6自然早停，再做三种子VL0均值和正式A/B/C。复合物8并行采集2434/8157，PPT不更新。
+
+
+## §15.659（2026-11-08）R2 seed2 step15500–16000
+
+- **step15500**：seed2 VL0=20.948537789340115，best仍step15000=19.833945856477353、bad=1。
+- **step16000**：VL0=20.522014676165576，best仍step15000、bad=2；run_meta仍running、未早停，继续steps=0、patience=6及12/12层训练。
+- **边界**：连续两次未改善不构成收敛，CUDA训练未再OOM。seed0/1保持已完成，R2正式A/B/C尚未启动。复合物8并行采集2475/8157，PPT不更新。
+
+
+## §15.660（2026-11-08）R2 seed2 step16500–17000
+
+- **step16500**：seed2 VL0=19.471516484909660，较best step15000=19.833945856477353下降并刷新best、bad=0。
+- **step17000**：VL0=20.278362865766200，best仍step16500、bad=1；run_meta仍running、未早停，CUDA训练未再OOM。
+- **边界**：一次回升不构成收敛，继续steps=0、patience=6。seed0/1保持已完成，R2正式A/B/C等待seed2自然收敛。复合物8并行采集2561/8157，PPT不更新。
+
+
+## §15.661（2026-11-08）R2 seed2 step17500–18000
+
+- **step17500**：seed2 VL0=19.243401120427940，较best step16500=19.471516484909660下降并刷新best、bad=0。
+- **step18000**：VL0=19.306907654844018，best仍step17500、bad=1；run_meta仍running、未早停，CUDA训练未再OOM。
+- **边界**：一次回升不构成收敛，继续steps=0、patience=6。seed0/1保持已完成，R2正式A/B/C等待seed2自然收敛。复合物8并行采集最近确认2702/8157，PPT不更新。
+
+
+## §15.662（2026-11-08）R2 seed2 step18500–19000
+
+- **step18500**：seed2 VL0=19.335418105037295，best仍step17500=19.243401120427940、bad=2。
+- **step19000**：VL0=19.044040656826404，较best step17500下降并刷新best step19000、bad=0；run_meta仍running、未早停，CUDA训练未再OOM。
+- **边界**：连续两次未改善后重新改善，继续steps=0、patience=6，不提前判收敛。seed0/1保持已完成，R2正式A/B/C等待seed2自然收敛。复合物8并行采集2822/8157，PPT不更新。
+
+
+## §15.663（2026-11-08）R2 seed2 step19500–20000
+
+- **step19500**：seed2 VL0=21.137196078022953，best仍step19000=19.044040656826404、bad=1。
+- **step20000**：VL0=19.302912353841457，best仍step19000、bad=2；run_meta仍running、未早停，继续steps=0、patience=6及12/12层训练。
+- **边界**：连续两次未改善不构成收敛，CUDA训练未再OOM。seed0/1保持已完成，R2正式A/B/C尚未启动。复合物8并行采集2926/8157，PPT不更新。
+
+
+## §15.664（2026-11-08）R2 seed2 step20500–21000
+
+- **step20500**：seed2 VL0=19.350821146213840，best仍step19000=19.044040656826404、bad=3。
+- **step21000**：VL0=19.743557098280064，best仍step19000、bad=4；run_meta仍running、未早停，继续steps=0、patience=6及12/12层训练。
+- **边界**：连续四次未改善仍未达到patience=6，不能提前停止；CUDA训练未再OOM。seed0/1保持已完成，R2正式A/B/C尚未启动。复合物8并行采集2977/8157，PPT不更新。
+
+
+## §15.665（2026-11-08）R2三种子自然收敛与正式评测启动
+
+- **seed2 step21500–22000**：step21500 VL0=20.302866454914770、bad=5；step22000=20.046796203880316、bad=6，随后 `DONE step=22000 early_stopped=True best=19000`。最终run_meta为completed/converged=True/early_stopping，best step19000=19.044040656826404。
+- **三种子冻结**：seed0 best step19500=18.5638771168，seed1 best step19500=18.7091900495，seed2 best step19000=19.0440406568。seed2 best.pt SHA256=`2cd9463cb3d6de27e2a4f772f322d67ad28a4f5d73c26a20b381815816efe198`，队列输出与独立sha256sum一致。
+- **首批正式TS0**：三种子均已完成79/79 raw、repeats=3、device=cuda、score_forward_count_per_sequence=1，checkpoint哈希分别与冻结best一致；随后三进程继续bprna_new。首批仅是13 split之一，不据单split或micro_f1字段缺失提前解读全板。
+- **边界**：R2训练已闭环，正式13 split×3 seed×3 repeat、VL0、置信度、greedy/Turner=0和独立QA仍待齐套，不提前选臂。复合物8并行采集最近确认3156/8157，PPT不更新。
+
+
+## §15.666（2026-11-08）R2 TS0/Rfam原始结果独立QA
+
+- **原始证据**：已下载三种子TS0与Rfam JSON至 `source_data/round48/ripe_head_r2/`，并写入6文件 `manifest.json`；文件SHA256、raw/n、micro-F1和 `complete=False` 范围均明确，递归下载出现的其他文件不计入本次6文件认证。
+- **TS0独立复算**：seed0/1/2 micro-F1=`0.4879898862 / 0.4832694764 / 0.4924448848`；均79/79、CUDA、3 repeats预测逐对象一致，per-sequence TP/FP/FN独立求和与micro字段一致，checkpoint哈希匹配。
+- **Rfam独立复算与边界**：seed0/1/2 micro-F1=`0.4618121588 / 0.4664835851 / 0.4567090438`；均raw=388、supported=248、140条long unsupported，状态 `PARTIAL_STRUCTRFM_POSITION_LIMIT`。raw=n+unsupported、三次预测一致和micro复算均通过，但**不能宣称完整Rfam或长序列SOTA**。
+- **QA纠错记录**：初次断言误将Rfam要求为PASS及raw=n，检查原始JSON后确认实际协议状态为位置上限部分完成；修正QA以显式记录限制，而不是删除不支持序列或放宽科学主张。
+- **边界**：其余split、汇总、机制消融和最终裁决仍待齐套；不据两个split提前选臂，PPT不更新。
+
+
+## §15.667（2026-11-08）R2主榜负结果与39格+3 VL0独立复核
+
+- **主榜结论**：R2在13 split×3 seed×3 repeat主评测完成。主榜all-baseline wins=0/8、external-single wins=0/8，`main_all_8_sota_any=False`；TS0=0.4879014158、bpRNA-new=0.3560746074、TestSetB=0.3010284596。Rfam=0.4616682625，低于BPfold=0.7871860033；CHANRG measured wins=0，GenC仅quoted口径高于OFoldNA-SS，measured仍低于RiNALMo-Giga ft，不合并口径宣称SOTA。
+- **长序列边界**：ArchiveII三种子合计171条位置上限未预测；Rfam合计420条（每种子140/388）未预测。R2不能作为完整长序列最优模型，主汇总PASS仅表示13 split评测流程完成，不消除PARTIAL限制。
+- **独立QA**：本地完整下载后，39格逐文件核验checkpoint/结果哈希、CUDA、3 repeats逐对象一致、raw=n+unsupported及per-sequence TP/FP/FN→micro-F1；三种子均值与population SD逐split复算一致，另3个VL0同样通过。初次使用sample SD不匹配，核对后确认合同使用population SD，修正复算而非修改结果。
+- **证据与边界**：summary SHA256=`2e6efba064f5b51c5b7b9a9fe6fbc5f8550154a676e605c8f21b3bc4886205a8`，SOTA comparison SHA256=`f850f3a1ff4ff713e725c2ebd22d9676a8cd9d5e12033b056df005b2775c0b91`；manifest已补充39+3 QA。R2主结果为负，不选作当前最优基座；greedy/Turner=0及独立置信度仍按预注册完成，不能提前终止后续RIPE臂。PPT不更新。
+
+
+## §15.668（2026-11-08）R2独立置信度42范围双跑复核
+
+- **双跑与来源**：`confidence_independent.json` 与recheck本地逐字节一致，SHA256=`cbbd576bc6af2310e626a035a77a4c25183f37b962a2ee200647ea4906ff94c9`；42个范围（13 split×3 seed+VL0×3 seed）及44份来源文件哈希全部通过，bootstrap=2000、VL0阈值冻结、n=1相关性的null语义均正确。
+- **VL0结构排序**：Spearman=`0.8817726886 / 0.8631846069 / 0.8614495834`；Pearson=`0.7595381314 / 0.7202907908 / 0.7178805065`；AURC=`0.0488048800 / 0.0591867436 / 0.0553499360`。测试split的AURC null按合同保留。
+- **解释边界**：`best_confidence_claim=False`，仍缺同候选配对/GT下的概率基线ECE/Brier/NLL及结构置信度比较，不能称最佳置信度。manifest已记录42范围和44来源哈希；R2主榜负结论不变，机制消融继续，PPT不更新。
+
+
+## §15.669（2026-11-08）R2 greedy 39格独立复核
+
+- **机制结果**：greedy TS0=0.1946519203、Rfam=0.1790202504，显著低于R2主模型TS0=0.4879014158、Rfam=0.4616682625，支持约束解码必要性而非精度提升。
+- **独立QA**：39格全部核验CUDA、冻结checkpoint哈希、decoder=greedy、prior_weight_override=null、单scorer、三次预测一致、raw/support守恒及micro-F1/population-SD；所有cell结果哈希匹配。初次逐浮点精确相等出现表示误差，改为1e-14绝对容差后全部通过，不改变原始数字。
+- **证据**：summary SHA256=`c22f83848857ebb57fd47f9565964535094e28db808bd42d3fb7ae44af7b352c`，39格与manifest已保存至 `source_data/round48/ripe_head_r2_greedy/`。Turner=0继续执行，R2主榜0/8结论不变，PPT不更新。
+
+
+## §15.670（2026-11-08）R2 117格闭环与R3启动
+
+- **Turner=0**：39格独立QA全部通过，TS0=0.4630869015、Rfam=0.4038360609，均低于主模型0.4879014158/0.4616682625。summary SHA256=`437f7efdf2c12f92ead700a45bc9d5b445323a11d3edc6a1320ce7468ff6e93e`；逐文件CUDA、nussinov+prior=0、冻结checkpoint、三次一致、raw/support及micro/population-SD均通过。
+- **R2关闭**：主39格+greedy39格+Turner0 39格共117格全部复核，另有42范围独立置信度双跑一致。R2主榜两种口径均0/8、Rfam=0.4616682625、CHANRG measured wins=0，且有位置上限不支持；正式否决为当前最优基座，负结果与全部原数据/manifest保留。
+- **R3启动**：三种子训练进程均已实际启动，命令保持steps=0、batch=2、LR、patience=6、RIPE R3不变；当前日志为head warmup、0/12层解冻，尚未到首个VL0验证点。不得把启动当作改善或收敛，R3/R5/R6/encoder-R3继续依序，PPT不更新。
+
+
+## §15.671（2026-11-08）R3 step500–1000 warmup验证
+
+- **step500**：seed0 VL0=38.4708628664、seed1=38.5489996209、seed2=39.0503530715，均为各自首个best、bad=0。
+- **step1000**：seed0=36.7279603457、seed1=35.5718840818、seed2=36.1023953073，均较step500下降并刷新best、bad=0。三种子仍0/12层、head warmup，run_meta均running且未早停。
+- **边界**：warmup下降仅为训练过程，不作臂间选择或全板结论；继续steps=0及既定解冻计划。复合物8并行采集3491/8157，PPT不更新。
+
+
+## §15.672（2026-11-08）R3 step1500 warmup齐套
+
+- **step1500**：seed0 VL0=33.4647232261、seed1=34.7099931815、seed2=33.1894334792，均较各自step1000 best下降并刷新best、bad=0。三种子仍0/12层，run_meta继续running，未提前判收敛。
+- **边界**：step1600后才进入既定逐层解冻阶段；当前改善仅属于head warmup，不作架构结论。复合物8并行采集3523/8157，PPT不更新。
+
+
+## §15.673（2026-11-08）R3 step2000 warmup结束
+
+- **step2000**：seed0 VL0=32.2313660524、seed1=31.9769473292、seed2=32.8608358433，均较step1500下降并刷新best、bad=0。三种子run_meta均running、未早停。
+- **边界**：head warmup已完成，继续既定逐层解冻，不用warmup结果替代全层模型结论。复合物8并行采集3548/8157，PPT不更新。
+
+
+## §15.674（2026-11-08）R3 step2500实际解冻2/12层
+
+- **step2500**：seed0 VL0=30.5189493264、seed1=31.1542638055、seed2=30.8384239198，均较step2000下降并刷新best、bad=0；训练日志均确认unfrozen=2/12，run_meta继续running、未早停。
+- **边界**：首次解冻后改善仅为单验证点，继续每800步解冻2层至12/12，不据此选择架构。复合物8并行采集3570/8157，PPT不更新。
+
+
+## §15.675（2026-11-08）R3 step3000–3500解冻4/12层
+
+- **step3000**：seed0 VL0=29.2426697207、seed1=29.4632689771、seed2=29.7006649127，均刷新best、bad=0。
+- **step3500**：seed0=28.6781684736、seed1=27.7664492980、seed2=28.5689310301，均继续刷新best、bad=0；日志确认已解冻4/12层，run_meta继续running、未早停。
+- **边界**：逐层解冻过程符合合同，不能将阶段改善当作最终模型优势。复合物8并行采集3599/8157，PPT不更新。
+
+
+## §15.676（2026-11-08）R3 step4000–4500解冻6/12层
+
+- **step4000**：seed0 VL0=27.3784189298、seed1=27.0361705841、seed2=26.9864898488，均刷新best、bad=0。
+- **step4500**：seed0=25.9548366902、seed1=26.7499651670、seed2=25.8568716668，均继续刷新best、bad=0；日志确认已解冻6/12层，run_meta继续running、未早停。
+- **边界**：解冻进度过半仍是训练中间态，不作最终架构选择。复合物8并行采集3663/8157，PPT不更新。
+
+
+## §15.677（2026-11-08）R3 step5000–5500解冻8/12层
+
+- **step5000**：seed0 VL0=26.2955164413、seed2=27.3602987590，均未超过各自best、bad=1；seed1=25.2903024813，刷新best、bad=0。
+- **step5500**：seed0=25.0420110849、seed1=24.8334300766、seed2=24.4069971353，三种子均重新刷新best、bad=0；日志确认已解冻8/12层，run_meta继续running、未早停。
+- **边界**：单点回升不提前停止，继续既定解冻和验证。复合物8并行采集3731/8157，PPT不更新。
+
+
+## §15.678（2026-11-08）R3 step6000–6500全层解冻
+
+- **step6000**：seed0 VL0=24.3514013758、seed1=23.2360754039、seed2=23.8115878273，均刷新best、bad=0。
+- **step6500**：seed0=23.5832592259、seed1=23.1429909922，继续刷新best、bad=0；seed2=24.4233297250，best仍step6000、bad=1。三种子均实际解冻12/12层，run_meta继续running、未早停。
+- **边界**：全层解冻后仍需按patience=6自然收敛，seed2单点回升不提前停止。复合物8并行采集3798/8157，PPT不更新。
+
+
+## §15.679（2026-11-08）R3 step7000–7500全层验证分化
+
+- **step7000**：seed0 VL0=24.0575549313、seed1=23.8171010528，均未超过各自best、bad=1；seed2=23.4517244273，刷新best、bad=0。
+- **step7500**：seed0=24.0578587241，best仍step6500=23.5832592259、bad=2；seed1=22.5938112286，刷新best、bad=0；seed2=23.7961438955，best仍step7000、bad=1。三种子继续12/12层和steps=0，未提前停止。
+- **边界**：种子间波动不构成收敛或选臂依据，继续patience=6。复合物8并行采集3871/8157，PPT不更新。
+
+
+## §15.680（2026-11-08）R3 step8000–8500全层验证
+
+- **step8000**：seed0 VL0=23.3696992220、seed1=22.1674072118，均刷新best、bad=0；seed2=23.6021454675，best仍step7000=23.4517244273、bad=2。
+- **step8500**：seed0=22.1082086125、seed2=23.3397341009，均刷新best、bad=0；seed1=23.4430391096，best仍step8000、bad=1。三种子继续12/12层和steps=0，未提前停止。
+- **边界**：seed2早停计数再次清零，继续patience=6，不根据波动选臂。复合物8并行采集3984/8157，PPT不更新。
+
+
+## §15.681（2026-11-08）R3 step9000与seed2 OOM快照
+
+- **step9000**：seed0 VL0=22.1767407012，best仍step8500=22.1082086125、bad=1；seed1=21.7393456436，刷新best、bad=0；两路继续12/12层训练。seed2在step9000验证前发生CUDA OOM，traceback与三进程显存占用保留，未发生CPU静默降级。
+- **恢复门禁**：seed2 run_meta仍running，best step8500=23.33973410085005。resume.pt实际step=8500、n_unfrozen=12，SHA256=`4f3b58c233e3f5a38d4395a5df013033b6a5a1bf4e8c534092cacf592eda0a31`，保存时best仍step7000、bad=2；同step验证日志已记录best step8500、bad=0。`restore_validation_state`实际返回 `(8500,23.33973410085005,0)`，best.pt内部step=8500、SHA256=`8730ae47a2d3760ae1a2e993cbb470876392a580349687bbbf56eab6dff96129`。
+- **边界**：现有串行队列将在seed0/1自然收敛后按原配置恢复，不另起重复任务，不写成恢复成功或收敛。复合物8并行采集4052/8157，PPT不更新。
+
+
+## §15.682（2026-11-08）R3 step9500两路未改善
+
+- **step9500**：seed0 VL0=22.9993334804，best仍step8500=22.1082086125、bad=2；seed1=21.9066413126，best仍step9000=21.7393456436、bad=1。两路run_meta继续running、未早停，保持12/12层和steps=0。
+- **边界**：seed2仍保留step9000验证前CUDA OOM现场，best仍step8500，尚未开始串行恢复；不把等待写成收敛。复合物8并行采集4102/8157，PPT不更新。
+
+
+## §15.683（2026-11-08）R3 step10000–10500两路改善
+
+- **step10000**：seed0 VL0=21.9603588391、seed1=21.2902152025，均刷新best、bad=0。
+- **step10500**：seed0=21.0912306434，继续刷新best、bad=0；seed1=21.4216378837，best仍step10000、bad=1。两路继续12/12层和steps=0，未提前停止。
+- **边界**：seed2仍待串行恢复，best仍step8500，不写成恢复成功。复合物8并行采集4173/8157，PPT不更新。
+
+
+## §15.684（2026-11-08）R3 step11000–11500重新改善
+
+- **step11000**：seed0 VL0=21.7192374547，best仍step10500=21.0912306434、bad=1；seed1=22.2376208738，best仍step10000=21.2902152025、bad=2。
+- **step11500**：seed0=20.6688295288、seed1=20.5675717528，均重新刷新best、bad=0；两路继续12/12层和steps=0，未提前停止。
+- **边界**：两路回升后重新改善，继续patience=6。seed2仍待串行恢复，best仍step8500。复合物8并行采集4249/8157，PPT不更新。
+
+
+## §15.685（2026-11-08）R3 step12000–12500
+
+- **step12000**：seed0 VL0=20.6816305680、seed1=21.4354470071，均未超过各自step11500 best、bad=1。
+- **step12500**：seed0=20.3404306755，刷新best、bad=0；seed1=20.6313609420，best仍step11500=20.5675717528、bad=2。两路继续12/12层和steps=0，未提前停止。
+- **边界**：seed2仍待串行恢复，best仍step8500；不将两路波动写成收敛。复合物8并行采集4343/8157，PPT不更新。
+
+
+## §15.686（2026-11-08）R3 step13000–13500
+
+- **step13000**：seed0 VL0=20.0208120851、seed1=20.5203730867，均刷新best、bad=0。
+- **step13500**：seed0=20.1729697558，best仍step13000、bad=1；seed1=20.4476942885，继续刷新best、bad=0。两路继续12/12层和steps=0，未提前停止。
+- **边界**：seed2仍待串行恢复，best仍step8500；单路单点回升不构成收敛。复合物8并行采集4395/8157，PPT不更新。
+
+
+## §15.687（2026-11-08）R3 step14000–14500
+
+- **step14000**：seed0 VL0=20.6501995503，best仍step13000=20.0208120851、bad=2；seed1=20.6809664911，best仍step13500=20.4476942885、bad=1。
+- **step14500**：seed0=20.4576972745，best仍step13000、bad=3；seed1=20.0748176548，刷新best、bad=0。两路继续12/12层和steps=0，未提前停止。
+- **边界**：seed2仍待串行恢复，best仍step8500；seed0连续三次未改善仍未达到patience=6。复合物8并行采集4475/8157，PPT不更新。
+
+
+## §15.688（2026-11-08）R3 step15000–15500接近早停门
+
+- **step15000**：seed0 VL0=20.1550965731，best仍step13000=20.0208120851、bad=4；seed1=20.3506110092，best仍step14500=20.0748176548、bad=1。
+- **step15500**：seed0=21.1009225691，best仍step13000、bad=5；seed1=20.4941448158，best仍step14500、bad=2。两路run_meta继续running、未早停，必须继续下一完整验证点。
+- **边界**：seed0若step16000未改善才达到patience=6，改善则清零；seed2仍待串行恢复，不提前停止。复合物8并行采集4556/8157，PPT不更新。
+
+
+## §15.689（2026-11-08）R3 step16000重新改善未早停
+
+- **step16000**：seed0 VL0=19.4578944150，较best step13000=20.0208120851下降并刷新best、bad由5重置为0；seed1=19.4480016111，较best step14500=20.0748176548下降并刷新best、bad=0。
+- **边界**：两路run_meta继续running、未早停，seed0不得按此前bad=5误停；继续steps=0、patience=6和12/12层训练。seed2仍待串行恢复，best仍step8500。复合物8并行采集4559/8157，PPT不更新。
+
+
+## §15.690（2026-11-08）R3 step16500–17000
+
+- **step16500**：seed0 VL0=20.2423097221、seed1=20.2241557943，均未超过各自step16000 best、bad=1。
+- **step17000**：seed0=19.0255988933、seed1=19.0540385292，均重新刷新best、bad=0；两路继续12/12层和steps=0，未提前停止。
+- **边界**：两路单点回升后重新改善，继续patience=6。seed2仍待串行恢复，best仍step8500。复合物8并行采集4604/8157，PPT不更新。
+
+
+## §15.691（2026-11-08）R3 step17500–18000
+
+- **step17500**：seed0 VL0=19.4848400436、seed1=19.2605171253，均未超过各自step17000 best、bad=1。
+- **step18000**：seed0=19.6381281040、seed1=19.6390149755，均未超过各自step17000 best、bad=2。两路run_meta继续running、未早停，保持12/12层和steps=0。
+- **边界**：连续两次未改善不构成收敛，seed2仍待串行恢复。复合物8并行采集4690/8157，PPT不更新。
+
+
+## §15.692（2026-11-08）R3 step18500–19000
+
+- **step18500**：seed0 VL0=19.3212095485、seed1=19.2373687585，均未超过各自step17000 best、bad=3。
+- **step19000**：seed0=19.7878317477、seed1=19.4905705282，均未超过各自step17000 best、bad=4。两路run_meta继续running、未早停，保持12/12层和steps=0。
+- **边界**：连续四次未改善仍未达到patience=6，不提前停止；seed2仍待串行恢复。复合物8并行采集4859/8157，PPT不更新。
+
+
+## §15.693（2026-11-08）R3 step19500–20000
+
+- **step19500**：seed0 VL0=18.8011917139、seed1=19.0505400568，均重新刷新best、bad=0。
+- **step20000**：seed0=20.2617707814、seed1=19.7759951315，best均仍step19500、bad=1。两路run_meta继续running、未早停，保持12/12层和steps=0。
+- **边界**：一次回升不构成收敛，seed2仍待串行恢复。复合物8并行采集4971/8157，PPT不更新。
+
+
+## §15.694（2026-11-08）R3 step20500–21000
+
+- **step20500**：seed0 VL0=19.7919865975、seed1=19.3339145447，均未超过各自step19500 best、bad=2。
+- **step21000**：seed0=18.9119103444、seed1=20.5907955922，best分别仍为step19500=18.8011917139和19.0505400568，bad均增至3。validation_log与run_meta交叉核验一致，两路继续steps=0、batch=2、patience=6和12/12层训练，未早停。
+- **边界**：step21000仍未自然收敛；seed2保留step9000验证前OOM现场，best仍step8500=23.3397341009，现有串行队列尚未恢复该种子，不另起副本。复合物8并行采集5053/8157，完整collection、去泄露及正式A/B/C结论未齐套，PPT不更新。
+
+
+## §15.695（2026-11-08）R3 step21500–22000接近早停门
+
+- **step21500**：seed0 VL0=18.9211427347、seed1=19.7890091942，best均仍step19500、bad=4。
+- **step22000**：seed0=18.8851029564、seed1=19.1323756541，均未超过各自best（18.8011917139/19.0505400568），bad=5；两路仍按steps=0、patience=6训练，下一验证点未读取前不得提前停止。
+- **边界**：若step22500未改善则按合同自然早停，若改善则清零继续；seed2仍待串行恢复。复合物8并行采集5092/8157，局部缓存结构审计进行中，不能将未完成审计写成完整标签验收；PPT不更新。
+
+
+## §15.696（2026-11-08）R3 seed0/1自然收敛与seed2原配置恢复
+
+- **step22500**：seed0 VL0=20.2098823248、seed1=19.7381774395，均未超过各自step19500 best，bad=6。两路run_meta均为 `status=completed`、`converged=True`、`early_stopped=True`、`stop_reason=early_stopping`。
+- **最佳权重**：seed0 best step19500 VL0=18.80119171387717，best.pt内部step=19500，SHA256=`a5746e2de27520c3ec71f17987709d35826190031d2237985bb1c716475aa7df`；seed1 best step19500 VL0=19.0505400567537，best.pt内部step=19500，SHA256=`d079d7fe8de12ff5f8431291c539b110630671ef0325c0f294ab8cf1393001ad`。
+- **seed2恢复**：现有串行队列以commit `d8337dca7ce00cbff897f96e2cf3b2809639545c`、原steps=0/batch=2/seed=2/LR/patience=6/RIPE R3配置启动唯一训练进程。日志明确 `resumed from step 8500 (12/12 blocks unfrozen)`，随后已进入step8650，并显示CUDA内存预留与真实GPU进程，未从头重训或CPU降级。
+- **边界**：R3尚未三种子齐套，不得启动路线裁决或写成A/B/C完成。复合物8并行采集5151/8157，局部缓存审计与完整去泄露门仍待完成；PPT不更新。
+
+
+## §15.697（2026-11-08）R3 seed2恢复后step9000与复合物抽样审计
+
+- **seed2 step9000**：VL0=22.32024132583776，较恢复时best step8500=23.33973410085005下降，刷新best step9000、bad=0；随后继续step9025训练，恢复有效但未自然收敛。
+- **局部审计工程记录**：初次全量逐条JSON+sidecar哈希审计超过工具时限，远端遗留PID=3457475经cmdline确认后仅终止该只读进程，未影响采集/训练。改为有界确定性样本和线性配对检查；初用0-based及错误的嵌套判断产生假报警，不据此修改标签。
+- **源码契约复核**：`prepare_rna_complex_round49.py` 以mmCIF `seq_id`生成配对，且强制序列为连续1..N（`left/right=seq_id`、`sequence[a-1]`），故配对为1-based。修正审计器后以正常嵌套、真实交叉、不重叠三个合成例验证通过；67个entry（含3J6B/7ENR/6A5R）、30个非空entry、89条接受链的序列长度/字母表、配对索引/唯一性/嵌套及canonical≤raw均通过，60个DSSR/parent sidecar哈希全部一致。所有样本保持observed_nts_v1及指定映射版本、官方DSSR二进制SHA256。
+- **边界**：这是动态采集过程中的抽样 sanity check，不是完整标签、去泄露或科学效果验收；完整collection后仍执行全量独立守恒复核。复合物8并行采集5169/8157，PPT不更新。
+
+
+## §15.698（2026-11-08）R3 seed2 step9500–10000
+
+- **step9500**：seed2 VL0=22.877569732110107，best仍step9000=22.32024132583776、bad=1。
+- **step10000**：VL0=22.521239291942457，未超过best、bad=2；恢复后的验证日志连续，保持steps=0、batch=2、patience=6和12/12层训练，未早停。
+- **边界**：两次未改善不构成收敛，不提前停止或换臂。复合物8并行采集5241/8157，完整collection和正式科学结果未齐套，PPT不更新。
+
+
+## §15.699（2026-11-08）R3 seed2 step10500–11000连续改善
+
+- **step10500**：seed2 VL0=21.424100945795516，较此前best step9000下降，刷新best、bad由2清零。
+- **step11000**：VL0=21.27368028836654，继续刷新best、bad=0；日志已进入step11025，steps=0/patience=6配置不变，未早停。
+- **边界**：短期bad=2后连续改善，继续自然收敛，不根据单种子VL0选臂或提前进入Pair-JEPA。复合物8并行采集5307/8157，PPT不更新。
+
+
+## §15.700（2026-11-08）R3 seed2 step11500–12000
+
+- **step11500**：seed2 VL0=21.340445691555157，best仍step11000=21.27368028836654、bad=1。
+- **step12000**：VL0=21.133980565024224，重新刷新best、bad=0；保持steps=0/patience=6原配置，继续自然收敛。
+- **边界**：单点回升后再次改善，不能提前停止或据此宣称架构有效。复合物8并行采集5350/8157，完整collection、去泄露、三种子A/B/C和路线裁决未齐套，PPT不更新。
+
+
+## §15.701（2026-11-08）R3 seed2 step12500–13000连续改善
+
+- **step12500**：seed2 VL0=20.86431010279023，刷新best、bad=0。
+- **step13000**：VL0=20.586171089968133，继续刷新best、bad=0；未改变steps=0、batch=2、patience=6或模型配置。
+- **边界**：单种子训练改善不是测试效果或路线选择证据，继续自然收敛。复合物8并行采集5409/8157，完整collection、去泄露和正式A/B/C未齐套，PPT不更新。
+
+
+## §15.702（2026-11-08）R3 seed2 step13500–14000
+
+- **step13500**：seed2 VL0=20.52733217158895，刷新best、bad=0。
+- **step14000**：VL0=20.287331442277765，继续刷新best、bad=0；steps=0、patience=6及12/12层解冻保持不变。
+- **边界**：未满足自然停止条件，不按固定步数截断，不以VL0替代测试效果。复合物8并行采集5466/8157，完整collection和正式结果未齐套，PPT不更新。
+
+
+## §15.703（2026-11-08）R3 seed2 step14500–15000
+
+- **step14500**：seed2 VL0=20.34572480303637，best仍step14000=20.287331442277765、bad=1。
+- **step15000**：VL0=19.988176581226227，重新刷新best、bad=0；继续steps=0、patience=6训练，未早停。
+- **边界**：单点未改善后再次下降，不提前停止，不将恢复后VL0趋势解释为A/B/C效果。复合物8并行采集5569/8157，PPT不更新。
+
+
+## §15.704（2026-11-08）R3 seed2 step15500–16000
+
+- **step15500**：seed2 VL0=20.854596711745636，best仍step15000=19.988176581226227、bad=1。
+- **step16000**：VL0=20.664060957357847，未超过best、bad=2；保持steps=0/patience=6原配置，继续训练。
+- **边界**：两次未改善不触发早停，不人为缩短收敛过程。复合物8并行采集5653/8157，完整collection和正式科学结论未齐套，PPT不更新。
+
+
+## §15.705（2026-11-08）R3 seed2 step16500–17000
+
+- **step16500**：seed2 VL0=19.980870090895934，以超过min_delta的幅度刷新best，bad由2清零。
+- **step17000**：VL0=20.195303309186766，best仍step16500、bad=1；继续原steps=0/patience=6训练。
+- **边界**：改善幅度虽小仍严格按既定计数，不人为修改阈值；无测试集调参或提前选臂。复合物8并行采集5707/8157，PPT不更新。
+
+
+## §15.706（2026-11-08）R3 seed2 step17500–18000
+
+- **step17500**：seed2 VL0=19.241056971589163，较best step16500明显下降，刷新best、bad=0。
+- **step18000**：VL0=19.487506976555707，best仍step17500、bad=1；继续原steps=0/patience=6训练。
+- **边界**：一次回升不构成收敛，继续完整验证；不作测试效果或路线选择结论。复合物8并行采集5746/8157，PPT不更新。
+
+
+## §15.707（2026-11-09）R3 seed2 step18500–19000
+
+- **step18500**：seed2 VL0=19.270453982895457，best仍step17500=19.241056971589163、bad=2。
+- **step19000**：VL0=19.157181957828602，重新刷新best、bad=0；steps=0/patience=6和模型配置不变，继续训练。
+- **边界**：两次未改善后再次改善，不提前停止；VL0不替代A/B/C效果。复合物8并行采集5814/8157，PPT不更新。
+
+
+## §15.708（2026-11-09）R3 seed2 step19500–20000
+
+- **step19500**：seed2 VL0=20.63796655681554，best仍step19000=19.157181957828602、bad=1。
+- **step20000**：VL0=19.649257775145568，未超过best、bad=2；保持steps=0/patience=6，继续完整训练与验证。
+- **边界**：两次未改善未达到早停门，不人为截断或换臂。复合物8并行采集5872/8157，完整collection和正式结果未齐套，PPT不更新。
+
+
+## §15.709（2026-11-09）R3 seed2 step20500–21000
+
+- **step20500**：seed2 VL0=19.080723009981906，较best step19000下降，刷新best、bad由2清零。
+- **step21000**：VL0=20.19345231405039，best仍step20500、bad=1；steps=0/patience=6不变，继续训练。
+- **连接核验**：一次只读SSH连接中断后以有限退避恢复，训练日志继续至step20950且采集进度增加，未重启或复制任何科学任务。
+- **边界**：step20500改善不构成测试效果结论，step21000回升不构成收敛。复合物8并行采集5961/8157，PPT不更新。
+
+
+## §15.710（2026-11-09）R3 seed2 step21500–22000
+
+- **step21500**：seed2 VL0=20.469937777361434，best仍step20500=19.080723009981906、bad=2。
+- **step22000**：VL0=19.8296802222575，未超过best、bad=3；保持steps=0/patience=6训练，未触发早停。
+- **边界**：一次只读SSH中断经有限重试恢复，训练日志和采集进度继续，无科学任务重启。三次未改善仍不提前停止。复合物8并行采集6102/8157，PPT不更新。
+
+
+## §15.711（2026-11-09）R3 seed2 step22500–23000明显改善
+
+- **step22500**：seed2 VL0=19.552095178450852，best仍step20500=19.080723009981906、bad=4。
+- **step23000**：VL0=18.121206235993856，明显低于此前best，刷新best step23000、bad清零；继续steps=0/patience=6训练，未按bad=4误停。
+- **边界**：单种子VL0明显改善仍不是测试SOTA或选臂证据，须等待自然收敛及三种子A/B/C。复合物8并行采集6141/8157，PPT不更新。
+
+
+## §15.712（2026-11-09）R3 seed2 step23500–24000
+
+- **step23500**：seed2 VL0=20.886349260192752，best仍step23000=18.121206235993856、bad=1。
+- **step24000**：VL0=20.254486405422295，未超过best、bad=2；继续原steps=0/patience=6训练，随后已进入step24025。
+- **边界**：后续较差验证点不覆盖best checkpoint，连续两次未改善不提前停止。复合物8并行采集6183/8157，PPT不更新。
+
+
+## §15.713（2026-11-09）R3 seed2 step24500–25000
+
+- **step24500**：seed2 VL0=19.496761546252742，best仍step23000=18.121206235993856、bad=3。
+- **step25000**：VL0=18.83773011402484，未超过best、bad=4；继续原steps=0/patience=6训练，未提前停止。
+- **边界**：四次未改善尚未达到patience=6，下一验证点仍须完整执行；不修改早停规则。复合物8并行采集6213/8157，PPT不更新。
+
+
+## §15.714（2026-11-09）R3三种子自然收敛并启动正式A/B/C
+
+- **step25500–26000**：seed2 step25500 VL0=19.852944200952155，best仍step23000、bad=5；step26000=18.182038203766442，仍未超过best step23000=18.121206235993856，bad=6，日志 `DONE step=26000 early_stopped=True best=23000`。
+- **三种子终态**：seed0 best step19500=18.80119171387717，seed1 best step19500=19.0505400567537，seed2 best step23000=18.121206235993856；run_meta均 `completed/converged=True/early_stopped=True/stop_reason=early_stopping`，best.pt内部step与run_meta一一一致。seed2 best SHA256=`74b5a43bf29487d296538aede02ebac27875b37627f7e5b8754d20cc1e326dae`。三种子best VL0均值=18.657646002208242，仅作训练状态汇总，不据此换臂。
+- **正式评测**：现有队列已并行启动R3 seed0/1/2正式 `eval_structrfm_full_round48.py`，checkpoint路径与各seed best一致、repeats=3；三路均有真实GPU进程，未CPU静默降级。首个split评测正常推进，后续按合同完成13 split×3 seed×3 repeat、VL0/置信度、greedy/Turner=0及独立QA。
+- **边界**：训练收敛不等于效果SOTA，正式主结果尚未齐套，不提前宣称R3胜负或路线裁决。复合物8并行采集6350/8157，PPT不更新。
+
+
+## §15.715（2026-11-09）R3主39格、SOTA与独立置信度复核
+
+- **主结果（三种子micro-F1均值±population SD）**：
+
+| split | F1均值 | population SD | 边界 |
+|---|---:|---:|---|
+| bprna_ts0 | 0.4889201370 | 0.0117025369 | PASS |
+| bprna_new | 0.3741225244 | 0.0058020820 | PASS |
+| archiveii | 0.5475389795 | 0.0173109017 | 每种子57/90条位置上限未预测 |
+| ref_pdb_ts1 | 0.7073167073 | 0.0075397853 | PASS |
+| ref_pdb_ts2 | 0.5294117647 | 0.0415945165 | PASS |
+| ref_pdb_ts3 | 0.6083333333 | 0.0117851130 | PASS |
+| ref_pdb_ts_hard | 0.3859929078 | 0.0104263762 | PASS |
+| testsetb | 0.2969726919 | 0.0206991631 | PASS |
+| rfam_fam | 0.4671097261 | 0.0024331096 | 每种子140/388条位置上限未预测 |
+| chanrg_test | 0.4047179212 | 0.0062606446 | PASS |
+| chanrg_gena | 0.4452748969 | 0.0044618302 | PASS |
+| chanrg_genc | 0.3596806250 | 0.0028282376 | measured否、quoted是，口径分开 |
+| chanrg_genf | 0.3057668878 | 0.0125155626 | PASS |
+
+- **SOTA对照**：all-baseline与external-single主榜均0/8；Rfam BPfold对照=0.7871860033，R3低0.3200762772；CHANRG measured wins=0。不得宣称8/8、Rfam/长序列SOTA或最终最优基座。
+- **主QA与证据**：39格+3 VL0独立复核全部通过，含checkpoint/结果SHA、真实CUDA、raw=n+unsupported、三次预测一致、TP/FP/FN→micro-F1、macro-F1及population SD。48份原始文件本地=远端SHA256字典完全相等，证据位于 `source_data/round48/ripe_head_r3/`。summary SHA256=`8b10404531983b1a67e497176f13fc963d2d0bddff386167c67c53af5fde1833`，SOTA SHA256=`127aec557fd79d0000d7894f508e9d1c48435a433f90e71f99a0ff125461b122`。
+- **置信度**：42范围=39测试split-seed+3 VL0，双跑字节一致，独立Pearson/Spearman、risk/AURC及VL0冻结阈值一致，单例不可计算保持null。VL0 Spearman=`0.8876617666/0.8752656022/0.8854583054`，Pearson=`0.7529173001/0.7551177456/0.7488153294`，AURC=`0.0456884161/0.0534668618/0.0467958248`。independent SHA256=`ba88cf1acd183a4b8d16344ef4dc82640c3fcf9fce3325d1a64837bf2fbdaa44`；缺同候选配对/GT概率基线，`best_confidence_claim=False`。
+- **边界**：R3主结果与置信度闭环，但greedy/Turner=0尚未完成，不能写成117格全闭环或七臂裁决。manifest保留 `complete=false`；PPT不更新。
+
+
+## §15.716（2026-11-09）R3 greedy 39格独立复核完成
+
+- **结果**：greedy TS0三种子F1均值=0.21095921238390458，主模型=0.4889201369933127；greedy Rfam=0.18837597794177277，主模型=0.4671097261000409，两者均明显低于主模型。
+- **独立QA**：39格全部通过，含checkpoint/结果SHA、真实CUDA、`decoder=greedy/prior_weight_override=null`、raw/support守恒、三次确定性预测一致、TP/FP/FN→micro-F1、macro-F1及population SD。40份本地文件与远端SHA256字典一致，证据位于 `source_data/round48/ripe_head_r3_greedy/`；summary SHA256=`019a5bb24ff7ba5075fcd1328f23e24737136f95e1d575cdbbee2ff22c06f419`。
+- **边界**：greedy消融闭环支持约束解码必要性，但ArchiveII/Rfam位置上限仍存在；Turner=0尚未完成，不能写成R3 117格闭环或路线裁决。PPT不更新。
+
+
+## §15.717（2026-11-09）R3 Turner=0及117格全闭环，R5启动
+
+- **Turner=0结果**：TS0三种子F1均值=0.47527309263991574，主模型=0.4889201369933127；Rfam=0.4172702108868626，主模型=0.4671097261000409，均低于主模型。
+- **独立QA**：Turner=0 39格全部通过，含checkpoint/结果SHA、真实CUDA、`decoder=nussinov/prior_weight_override=0.0`、raw/support守恒、三次确定性预测、micro/macro-F1及population SD。40份本地文件与远端SHA256一致，证据位于 `source_data/round48/ripe_head_r3_turner0/`；summary SHA256=`b213156e44d645bab5cf7f64fa551fb639afd6769a9fae93c5def3bbe8652bed`。
+- **R3裁决**：主39+greedy39+Turner0 39共117格及42范围置信度全部复核，主榜两种口径0/8，否决为最终模型；两种机制消融均支持保留约束解码。ArchiveII/Rfam位置上限和缺同候选概率基线的边界不变，不宣称长序列或最佳置信度。七臂齐套后才做统一路线裁决。
+- **后续**：原队列已启动R5三种子，进程参数确认steps=0、batch=2、patience=6、RIPE R5、PairMLP-490；当前处于warmup，日志已进入step250–325，首个验证点尚未产生。复合物8并行采集6738/8157，PPT不更新。
+
+
+## §15.718（2026-11-09）R5 step500首验证
+
+- **step500**：seed0 VL0=39.09074540970465、seed1=38.645486830005616、seed2=39.30276136533647，均为初始best、bad=0；三路继续steps=0/batch=2/patience=6 warmup，未提前解冻或停止。
+- **边界**：首个验证点仅证明训练与CUDA评测链正常，不能作架构效果判断。R3已按117格闭环否决为最终模型，R5/R6/encoder-R3仍依序执行。复合物8并行采集6751/8157，PPT不更新。
+
+
+## §15.719（2026-11-09）R5 step1000–1500 warmup改善
+
+- **step1000**：seed0 VL0=37.46014537952327、seed1=35.79481664508332、seed2=36.28367745349591，均刷新best、bad=0。
+- **step1500**：seed0=33.74560582540234、seed1=35.19692005142346、seed2=33.381103499310065，均继续刷新best、bad=0。三种子仍按既定warmup/解冻计划训练，不以中途VL0作效果结论。
+- **边界**：首1500步下降只说明优化推进，需继续自然收敛和完整A/B/C。复合物8并行采集6845/8157，PPT不更新。
+
+
+## §15.720（2026-11-09）R5 step2000–2500开始解冻
+
+- **step2000**：seed0 VL0=32.60790571712713、seed1=32.14373658725139、seed2=32.83949952562161，均刷新best、bad=0。
+- **step2500**：seed0=30.43922742563932、seed1=31.05480783355039、seed2=30.750900457636785，均继续刷新best、bad=0；日志明确三路已解冻2/12层，既定解冻进度实际生效。
+- **边界**：开始全参训练后仍需完成全部解冻及自然收敛，不能以中途VL0代替A/B/C。复合物8并行采集6938/8157，PPT不更新。
+
+
+## §15.721（2026-11-09）R5 step3000–3500解冻4/12层
+
+- **step3000**：seed0 VL0=29.386745220977026、seed1=29.28922432322856、seed2=30.32164013280922，均刷新best、bad=0。
+- **step3500**：seed0=28.439106549104057、seed1=27.691414687183304、seed2=28.017562786380886，均继续刷新best、bad=0；日志确认三路已解冻4/12层。
+- **边界**：训练和解冻进度正常，但未完成全层解冻与自然收敛，不作架构效果结论。复合物8并行采集7089/8157，PPT不更新。
+
+
+## §15.722（2026-11-09）R5 step4000–4500解冻6/12层
+
+- **step4000**：seed0 VL0=26.516792489914355、seed1=26.592313803420012、seed2=26.431802437775648，均刷新best、bad=0；日志确认解冻6/12层。
+- **step4500**：seed0=25.671427905451903、seed2=25.52029401471987，均刷新best、bad=0；seed1=26.991559039029436，best仍step4000=26.592313803420012、bad=1。三路继续原配置训练，未早停。
+- **边界**：解冻过半仍是中间态，单种子单点回升不构成收敛。复合物8并行采集7218/8157，PPT不更新。
+
+
+## §15.723（2026-11-09）R5 step5000–5500解冻8/12层后改善
+
+- **step5000**：seed0 VL0=25.791532336895276、seed2=26.73478693274897，均未超过各自step4500 best、bad=1；seed1=24.950940788690442，刷新best、bad=0。
+- **step5500**：seed0=25.071945863810186、seed1=24.775383552268217、seed2=24.07518373143539，三种子均重新刷新best、bad=0；日志确认8/12层解冻，随后按队列进入10/12层。
+- **边界**：短期回升后再次改善，继续既定解冻和自然收敛，不提前停止。复合物8并行采集7295/8157，PPT不更新。
+
+
+## §15.724（2026-11-09）R5 step6000–6500全层解冻
+
+- **step6000**：seed0 VL0=24.833728098740764、seed1=22.996993460354336、seed2=23.627691385217712，均刷新best、bad=0；日志确认10/12层解冻。
+- **step6500**：seed0=23.343282363434305，刷新best、bad=0；seed1=23.00001010350664、seed2=23.846314968127658，best均仍step6000、bad=1。三路已实际解冻12/12层，继续steps=0/patience=6。
+- **边界**：全层解冻后仍需自然收敛，seed1/2一次未改善不提前停止。复合物8并行采集7365/8157，PPT不更新。
+
+
+## §15.725（2026-11-09）R5 step7000–7500种子间波动
+
+- **step7000**：seed0 VL0=24.138333874224355，best仍step6500、bad=1；seed1=23.88450512116002，best仍step6000、bad=2；seed2=23.159759598536716，刷新best、bad=0。
+- **step7500**：seed0=23.86923278392539，best仍step6500、bad=2；seed1=22.42439851307395，刷新best、bad清零；seed2=23.814500519112688，best仍step7000、bad=1。三路继续12/12层和steps=0/patience=6。
+- **边界**：种子间波动不构成收敛或选臂依据，继续完整验证。复合物8并行采集7403/8157，PPT不更新。
+
+
+## §15.726（2026-11-09）R5 step8000–8500与主队列时限核验
+
+- **step8000**：seed0 VL0=23.088252650349215、seed1=22.25711701925885，均刷新best、bad=0；seed2=23.359220038589427，best仍step7000=23.159759598536716、bad=2。
+- **step8500**：seed0=22.107194735285354，刷新best、bad=0；seed1=22.98890555693752，best仍step8000、bad=1；seed2=23.412698895822373，best仍step7000、bad=3。三路继续12/12层和steps=0/patience=6。
+- **生命周期**：主RIPE本地工具会话达到24h时限后，远端PID=3375841仍持有 `/tmp/round48_ripe_queue.lock` 写锁且训练继续，guard PID=3420759仅等待同锁，未重复启动队列。
+- **边界**：工具超时不等于科学任务停止，不以本地状态替代远端进程核验。复合物8并行采集7457/8157，PPT不更新。
+
+
+## §15.727（2026-11-09）R5 step9000与seed2 OOM快照
+
+- **step9000**：seed0 VL0=21.874016184161942、seed1=21.635725746697503，均刷新best、bad=0，继续12/12层训练。seed2在step9000验证前发生CUDA OOM，traceback及三进程显存占用保留，未发生CPU静默降级。
+- **恢复门禁**：seed2 run_meta仍running，best step7000=23.159759598536716。resume.pt内部step=8500、12/12层解冻、bad=2，SHA256=`e2ac8ecd9b8768dd09fe02e90e3955a78853cac650eceb437b2d13cd111d273b`；同step验证日志为best step7000、bad=3。`restore_validation_state`实际返回 `(7000,23.159759598536716,3)`，best.pt内部step=7000、SHA256=`73f69e40ffc937c1664b30148c74ea48a465cab92ccba34c4d8305f5c63e8cdf`。
+- **边界**：现有串行队列将在seed0/1自然结束后按原steps=0/batch=2/seed=2/LR/patience=6/RIPE R5配置恢复，不另起重复任务，不写成恢复成功或收敛。复合物8并行采集7496/8157，PPT不更新。
+
+
+## §15.728（2026-11-09）R5 seed0/1 step9500–10000
+
+- **step9500**：seed0 VL0=22.488112003424853、seed1=21.73007057292349，均未超过各自step9000 best、bad=1。
+- **step10000**：seed0=21.578702244602464、seed1=21.29831397707838，均重新刷新best、bad=0；两路继续12/12层和steps=0/patience=6训练，未提前停止。
+- **边界**：seed2仍保留step9000验证前OOM现场，best仍step7000，尚未开始串行恢复；不把等待写成收敛。复合物8并行采集7526/8157，PPT不更新。
+
+
+## §15.729（2026-11-09）R5 seed0/1 step10500–11000
+
+- **step10500**：seed0 VL0=20.778007065118764、seed1=21.10764261984368，均刷新best、bad=0。
+- **step11000**：seed0=21.95236184329182、seed1=21.207040302463138，best均仍step10500、bad=1。两路继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：一次回升不构成收敛；seed2仍待串行恢复，best仍step7000。复合物8并行采集7603/8157，PPT不更新。
+
+
+## §15.730（2026-11-09）R5 seed0/1 step11500–12000
+
+- **step11500**：seed0 VL0=20.78369875557334，best仍step10500=20.778007065118764、bad=2；seed1=20.41406461386294，刷新best、bad=0。
+- **step12000**：seed0=20.51343229373817，重新刷新best、bad清零；seed1=21.33914842211416，best仍step11500、bad=1。两路继续12/12层和steps=0/patience=6训练。
+- **边界**：种子间波动不提前停止；seed2仍待串行恢复，best仍step7000。复合物8并行采集7689/8157，PPT不更新。
+
+
+## §15.731（2026-11-09）R5 seed0/1 step12500–13000
+
+- **step12500**：seed0 VL0=20.013631932139845，刷新best、bad=0；seed1=20.63928876724456，best仍step11500=20.41406461386294、bad=2。
+- **step13000**：seed0=19.86088959623899，继续刷新best、bad=0；seed1=20.463808856421142，best仍step11500、bad=3。两路继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：seed1三次未改善仍未达到早停门，不提前停止；seed2仍待串行恢复。复合物8并行采集7752/8157，PPT不更新。
+
+
+## §15.732（2026-11-09）R5 seed0/1 step13500–14500
+
+- **step13500–14000**：seed0 VL0=19.905900915457142、20.54113193861831，best仍step13000、bad由1增至2；seed1=20.59938504861502、20.782869905829312，best仍step11500、bad由4增至5。
+- **step14500**：seed0=20.60402629404155，best仍step13000、bad=3；seed1=19.994399107496697，在bad=5后明显刷新best、bad清零。两路继续12/12层和steps=0/patience=6，未按前一计数误停。
+- **边界**：连续未改善后仍可能明显下降，必须执行完整验证门；seed2仍待串行恢复。复合物8并行采集7942/8157，PPT不更新。
+
+
+## §15.733（2026-11-09）R5 seed0/1 step15000–16000重新改善
+
+- **step15000–15500**：seed0 VL0=20.01124053415647、21.740282963681892，best仍step13000、bad由4增至5；seed1=20.281038201866075、20.01255084933269，best仍step14500、bad由1增至2。
+- **step16000**：seed0=19.492980036894462、seed1=18.9458713928761，均重新刷新best、bad清零。两路继续12/12层和steps=0/patience=6训练，未按此前bad计数误停。
+- **边界**：两路均需继续自然收敛，seed2仍待串行恢复，best仍step7000。复合物8并行采集8071/8157，PPT不更新。
+
+
+## §15.734（2026-11-09）R5 step16500–17500与复合物完整采集/审计修复
+
+- **step16500**：seed0 VL0=20.53174545910448、seed1=19.57831182150598，best均仍step16000、bad=1。
+- **step17000–17500**：step17000 seed0=18.77156395922317、seed1=18.87161907032183，均刷新best、bad=0；step17500 seed0=19.52133988252965、seed1=18.89930322320608，best均仍step17000、bad=1。两路继续自然收敛，seed2仍待串行恢复。
+- **完整采集**：8157/8157候选结束，collection `complete=True`、结果ID集合8157唯一，SHA256=`fa2746e7a69c8870d63ef17ae9d49b40419f9288d51c74432036a9421bdef1e7`。接受链10673条、非空entry 3771个；14个错误entry均有显式error证据（超时、网络、映射或DSSR失败），不隐藏，不把采集数当训练可用数。
+- **审计修复**：全量去泄露初次在重复序列分支报 `KeyError: duplicate_chain_ids`，根因是首次出现序列未初始化ID列表。最小修复为首条ID `setdefault` 初始化，并新增 `n_duplicate_chains=1` 回归断言；两项审计测试+三项守恒测试重复通过，集成双跑一致。commit `d5de2609d6292524081234e47dae4c5f81f36927` 已推送GitHub。原去泄露流程随后进入全量审计，无重复重启。
+- **边界**：去泄露输出、独立守恒、teacher与D0/D1尚未齐套，不宣称复合物数据有效或B组改善；PPT不更新。
+
+
+## §15.735（2026-11-09）R5 step18000与真实collection门禁通过
+
+- **step18000**：seed0 VL0=19.438884320108084、seed1=19.45231283453257，best均仍step17000（18.77156395922317/18.87161907032183）、bad=2；两路继续12/12层和steps=0/patience=6训练，seed2仍待串行恢复。
+- **collection复核**：修复后实际运行返回 `PASS_COMPLETE_COMPLEX_COLLECTION`，n_entries=8157、n_label_files=8143；与14个显式错误entry守恒。该门禁证明采集及错误记录完整，不等于去泄露、独立守恒或训练效果通过。
+- **边界**：全量去泄露与独立复核仍在运行，尚未生成最终输出；不启动D1，不宣称B组改善。PPT不更新。
+
+
+## §15.736（2026-11-09）R5 step18500–19000
+
+- **step18500**：seed0 VL0=19.146425933639996、seed1=19.008645335491885，best均仍step17000、bad=3。
+- **step19000**：seed0=19.57649230111019、seed1=19.592066271598895，均未超过各自best、bad=4；两路继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：四次未改善尚未达到早停门，不人为截断；seed2仍待串行恢复。完整去泄露和独立守恒未齐套，PPT不更新。
+
+
+## §15.737（2026-11-09）R5 seed1自然收敛、seed0 step19500–21000
+
+- **step19500**：seed0 VL0=18.62270535201131，刷新best、bad=0；seed1=18.90132067445778，best仍step17000、bad=5。
+- **step20000**：seed1=19.67401489994702，bad=6并自然早停，run_meta `completed/converged=True/stop_reason=early_stopping`，best step17000=18.87161907032183，best.pt内部step一致，SHA256=`de4f939b164380de9770c2c1f2cf6b542be39358d3ad97b3bd081dcdebf3a3e8`。seed0=20.05485975078785，best仍step19500、bad=1。
+- **step20500–21000**：seed0 VL0=19.917798270302427、19.404550499434798，best仍step19500、bad由2增至3，继续训练。
+- **边界**：seed1收敛不替代三种子齐套，seed2仍待seed0结束后串行恢复；不得提前启动R5正式评测或路线裁决。PPT不更新。
+
+
+## §15.738（2026-11-09）R5 seed0 step21500–23000
+
+- **step21500**：seed0 VL0=18.61002075317764，以超过min_delta的幅度刷新best、bad清零。
+- **step22000–22500**：VL0=19.0241736468311、19.859093594465513，best仍step21500，bad由1增至2。
+- **step23000**：VL0=19.52910406895049，未超过best、bad=3；继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：连续三次未改善仍未达到早停门，不人为截断；seed2仍待串行恢复，R5正式评测未启动。PPT不更新。
+
+
+## §15.739（2026-11-09）R5 seed0 step23500–26000
+
+- **step23500–24000**：seed0 step23500 VL0=20.154088132485366，best仍step21500、bad=4；step24000=18.582981336508198，刷新best、bad清零。
+- **step24500–25000**：VL0=18.35902588219615、17.95218501105836，连续刷新best、bad=0。
+- **step25500–26000**：VL0=18.782818307499618、18.53794428411375，best仍step25000、bad由1增至2；继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：改善后短期波动不提前停止，不以单种子VL0作架构选择。seed2仍待串行恢复，R5正式评测未启动。PPT不更新。
+
+
+## §15.740（2026-11-09）R5 seed0自然收敛与seed2原配置恢复
+
+- **step26500–27500**：seed0 VL0=19.87156406685391、18.906249486739036、18.16929413869559，best仍step25000，bad由3增至5。
+- **step28000**：seed0 VL0=19.13008199286339，best仍step25000=17.95218501105836、bad=6并自然早停；run_meta `completed/converged=True/stop_reason=early_stopping`，best.pt内部step=25000，SHA256=`6b4244bfd560d1a818ef181775f68e07404d6a37b3bc1cc95d59bf362aaec806`。
+- **seed2恢复**：现有串行队列以原steps=0/batch=2/seed=2/LR/patience=6/RIPE R5配置启动唯一恢复进程，日志明确 `resumed from step 8500 (12/12 blocks unfrozen)`；未从头重训或另起副本。
+- **边界**：seed0/1虽已收敛，R5仍需seed2自然收敛后才能正式A/B/C，不提前启动路线裁决。去泄露输出仍未齐套，PPT不更新。
+
+
+## §15.741（2026-11-09）R5 seed2恢复后step9000–10000
+
+- **step9000**：seed2 VL0=22.295504046719568，较恢复时best step7000=23.159759598536716下降，刷新best、bad=0，断点续训有效。
+- **step9500–10000**：step9500 VL0=21.989636190292256，继续刷新best；step10000=22.623356215748537，best仍step9500、bad=1。保持12/12层和steps=0/patience=6训练，未早停。
+- **边界**：恢复后改善不等于收敛或A/B/C效果，继续完整验证；去泄露与独立守恒仍未齐套，PPT不更新。
+
+
+## §15.742（2026-11-09）R5 seed2 step10500–12000
+
+- **step10500–11000**：seed2 VL0=21.4072709815945、21.288123549707507，连续刷新best、bad=0。
+- **step11500–12000**：VL0=21.315965354866847、21.399801667197337，best仍step11000、bad由1增至2；继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：短期两次未改善不构成收敛，不提前停止；R5正式A/B/C仍待seed2自然收敛，去泄露输出未齐套，PPT不更新。
+
+
+## §15.743（2026-11-09）R5 seed2 step12500–13500
+
+- **step12500**：seed2 VL0=20.479022553496055，明显刷新best、bad清零。
+- **step13000–13500**：VL0=20.52189320433073、20.588826304416674，best仍step12500、bad由1增至2；继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：短期两次未改善不构成收敛，不提前停止；R5正式A/B/C与路线裁决未启动，去泄露输出未齐套，PPT不更新。
+
+
+## §15.744（2026-11-09）R5 seed2 step14000–15500
+
+- **step14000–14500**：seed2 VL0=20.320346785202588、20.18048569247126，连续刷新best、bad=0。
+- **step15000–15500**：step15000 VL0=19.972121148938893，继续刷新best；step15500=20.74555323055303，best仍step15000、bad=1。保持12/12层和steps=0/patience=6训练，未早停。
+- **边界**：连续改善后的单点回升不构成收敛，继续完整验证；R5正式A/B/C与路线裁决未启动，去泄露输出未齐套，PPT不更新。
+
+
+## §15.745（2026-11-09）R5 seed2 step16000–17000
+
+- **step16000**：seed2 VL0=20.437326505228544，best仍step15000、bad=2。
+- **step16500**：VL0=19.466218663414356，重新刷新best、bad清零。
+- **step17000**：VL0=20.597219739565396，best仍step16500、bad=1；继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：种子内波动不提前停止，R5正式A/B/C与路线裁决未启动，去泄露输出未齐套，PPT不更新。
+
+
+## §15.746（2026-11-09）R5 seed2 step17500–18500
+
+- **step17500**：seed2 VL0=19.318915702852383，刷新best、bad=0。
+- **step18000**：VL0=19.169981019701673，继续刷新best、bad=0。
+- **step18500**：VL0=19.276428493411863，best仍step18000、bad=1；随后继续训练，保持12/12层和steps=0/patience=6，未早停。
+- **边界**：连续改善后的单点回升不构成收敛，R5正式A/B/C与路线裁决未启动，去泄露输出未齐套，PPT不更新。
+
+
+## §15.747（2026-11-09）R5 seed2 step19000–20000
+
+- **step19000**：seed2 VL0=18.95903546306678，刷新best、bad=0。
+- **step19500–20000**：VL0=21.020972187222878、19.39221391979962，best仍step19000、bad由1增至2；继续12/12层和steps=0/patience=6训练，未早停。
+- **边界**：短期两次未改善不构成收敛，不提前停止；R5正式A/B/C与路线裁决未启动，去泄露输出未齐套，PPT不更新。
+
+
+## §15.748（2026-11-09）R5三种子自然收敛并启动正式A/B/C
+
+- **step20500–22000**：seed2 VL0=19.05774218707932、19.84868229257638、20.22006398243642、19.972269077878714，best仍step19000，bad由3增至6并自然早停；run_meta `completed/converged=True/stop_reason=early_stopping`，best.pt内部step=19000，SHA256=`232aac37adc0462343eae75baf97dfc524e0a9f5118656634fa2cab33e893657`。
+- **三种子终态**：seed0 best step25000=17.95218501105836、seed1 best step17000=18.87161907032183、seed2 best step19000=18.95903546306678，best VL0均值=18.59427984814899。三路run_meta均completed/converged，best内部step与run_meta一致；该均值不用于提前换臂。
+- **正式评测**：现有队列已启动R5 seed0/1/2正式 `eval_structrfm_full_round48.py`，repeats=3且checkpoint与各seed best一致，三个真实GPU进程正常推进，未CPU静默降级。去泄露已生成protected_references.fasta与candidate_chains.fasta并进入后续计算，完整去泄露输出未齐套。
+- **边界**：训练收敛不等于效果SOTA，须完成13 split×3 seed×3 repeat、置信度、greedy/Turner=0及独立QA后才裁决；PPT不更新。
+
+
+## §15.749（2026-11-09）R5主39格、SOTA与独立置信度复核
+
+- **主结果（三种子micro-F1均值±population SD）**：
+
+| split | F1均值 | population SD | 边界 |
+|---|---:|---:|---|
+| bprna_ts0 | 0.4878941590 | 0.0195413402 | PASS |
+| bprna_new | 0.3811125838 | 0.0153646719 | PASS |
+| archiveii | 0.5356152952 | 0.0092149227 | 每种子57/90条位置上限未预测 |
+| ref_pdb_ts1 | 0.7216848027 | 0.0269844109 | PASS |
+| ref_pdb_ts2 | 0.5588235294 | 0.0415945165 | PASS |
+| ref_pdb_ts3 | 0.6523297491 | 0.0101377316 | PASS |
+| ref_pdb_ts_hard | 0.4198708469 | 0.0111009741 | PASS |
+| testsetb | 0.2808481738 | 0.0086589997 | PASS |
+| rfam_fam | 0.4812456131 | 0.0107297452 | 每种子140/388条位置上限未预测 |
+| chanrg_test | 0.4047306940 | 0.0065978871 | PASS |
+| chanrg_gena | 0.4505774189 | 0.0084057738 | PASS |
+| chanrg_genc | 0.3624493550 | 0.0181713290 | measured否、quoted是，口径分开 |
+| chanrg_genf | 0.2862305130 | 0.0138218871 | PASS |
+
+- **SOTA对照**：all-baseline与external-single主榜均0/8；Rfam BPfold对照=0.7871860033，R5低0.3059403902；CHANRG measured wins=0。不得宣称8/8、Rfam/长序列SOTA或最终最优基座。
+- **主QA与证据**：39格+3 VL0独立复核全部通过，含checkpoint/结果SHA、真实CUDA、raw=n+unsupported、三次预测一致、TP/FP/FN→micro-F1、macro-F1及population SD。48份原始文件本地=远端SHA256字典完全相等，证据位于 `source_data/round48/ripe_head_r5/`。summary SHA256=`c00ab2f50a1c9ca8f8d8aa04774983eadca14231e3c6a49d1578f75a5d569da9`，SOTA SHA256=`1d04c36ed53db716e37862321ac098d0cfcb2a2571663fd6d8f71182ab2ff52b`。
+- **置信度**：42范围=39测试split-seed+3 VL0，双跑字节一致，独立Pearson/Spearman、risk/AURC及VL0冻结阈值一致，单例不可计算保持null。VL0 Spearman=`0.8901136201/0.8664754629/0.8758577944`，Pearson=`0.7647121895/0.6656823421/0.7299793367`，AURC=`0.0452918306/0.0464457261/0.0486647965`。independent SHA256=`2f0775816fa3399a9642c287029391f5c83e830d3c781706038e7eb994f422cc`；缺同候选配对/GT概率基线，`best_confidence_claim=False`。
+- **边界**：R5主结果与置信度闭环，但greedy/Turner=0尚未完成，不能写成117格全闭环或七臂裁决。manifest保留 `complete=false`；PPT不更新。
+
+
+## §15.750（2026-11-09）R5 greedy 39格独立复核完成
+
+- **结果**：greedy TS0三种子F1均值=0.20739203979229615，主模型=0.48789415903301814；greedy Rfam=0.19031505350631636，主模型=0.48124561308633446，两者均明显低于主模型。
+- **独立QA**：39格全部通过，含checkpoint/结果SHA、真实CUDA、`decoder=greedy/prior_weight_override=null`、raw/support守恒、三次确定性预测一致、TP/FP/FN→micro-F1、macro-F1及population SD。40份本地文件与远端SHA256字典一致，证据位于 `source_data/round48/ripe_head_r5_greedy/`；summary SHA256=`24133c4fbd1d1904d7bf9344a8cc75ce0df6d15b582ac383160a5a25e4cd0718`。
+- **边界**：greedy消融闭环支持约束解码必要性，但ArchiveII/Rfam位置上限仍存在；Turner=0尚未完成，不能写成R5 117格闭环或路线裁决。PPT不更新。
+
+
+## §15.751（2026-11-09）R5 Turner=0及117格全闭环，R6启动
+
+- **Turner=0结果**：TS0三种子F1均值=0.4654324181322507，主模型=0.48789415903301814；Rfam=0.42672532097744736，主模型=0.48124561308633446，均低于主模型。
+- **独立QA**：Turner=0 39格全部通过，含checkpoint/结果SHA、真实CUDA、`decoder=nussinov/prior_weight_override=0.0`、raw/support守恒、三次确定性预测、micro/macro-F1及population SD。40份本地文件与远端SHA256一致，证据位于 `source_data/round48/ripe_head_r5_turner0/`；summary SHA256=`aca43f565acc60cd219eed82c1862b9262bb76bed153109de78602ee5867c418`。
+- **R5裁决**：主39+greedy39+Turner0 39共117格及42范围置信度全部复核，主榜两种口径0/8，否决为最终模型；两种机制消融均支持保留约束解码。ArchiveII/Rfam位置上限和缺同候选概率基线的边界不变，不宣称长序列或最佳置信度。七臂齐套后才做统一路线裁决。
+- **后续**：原队列已启动R6三种子，进程参数确认steps=0、batch=2、patience=6、RIPE R6、PairMLP-490；当前处于warmup，日志已进入step275–350，首个验证点尚未产生。完整去泄露输出未齐套，PPT不更新。
+
+
+## §15.752（2026-11-09）R6 step500首验证
+
+- **step500**：seed0 VL0=38.78219541278081、seed1=38.79569900567925、seed2=39.11369596220813，均为初始best、bad=0；三路继续steps=0/batch=2/patience=6 warmup，未提前解冻或停止。
+- **边界**：首个验证点仅证明训练与CUDA评测链正常，不能作架构效果判断。R5已按117格闭环否决为最终模型，R6/encoder-R3依序执行，完整去泄露输出未齐套，PPT不更新。
+
+
+## §15.753（2026-11-09）R6 step1000–1500 warmup改善
+
+- **step1000**：seed0 VL0=36.91354439127476、seed1=35.748566005956974、seed2=36.14887153143152，均刷新best、bad=0。
+- **step1500**：seed0=33.76089474849953、seed1=35.34311158398743、seed2=33.27387385890603，均继续刷新best、bad=0。三种子仍按既定warmup/解冻计划训练，不以中途VL0作效果结论。
+- **边界**：首1500步下降只说明优化推进，需继续自然收敛和完整A/B/C；完整去泄露输出未齐套，PPT不更新。
+
+
+## §15.754（2026-11-09）R6 step2000–2500与首次解冻
+
+- **step2000**：seed0 VL0=32.72560764889121、seed1=32.254761279807624、seed2=32.874253396503555，均刷新best、bad=0。
+- **step2500**：seed0=30.57961372856318、seed1=31.115886695071776、seed2=30.877401552644095，均继续刷新best、bad=0。两次SSH读取一致；随后逐行解析三份validation_log，复核step500–2500连续无重复、best与逐步最小值一致，数值和bad全部一致。训练日志确认随后按原计划进入2/12层解冻，steps=0/batch=2/patience=6未改变。
+- **运行边界**：现役RIPE队列和12路依赖等待队列均未重复启动。复合物去泄露仍有审计进程，当前只确认protected_references.fasta和candidate_chains.fasta，完整去泄露manifest及独立守恒未齐套，不启动D0/D1。
+- **科学边界**：中途VL0改善不等于收敛或测试效果提升，不据此换臂；继续自然收敛，R6/encoder-R3的A/B/C、七臂裁决及Pair-JEPA仍未完成，PPT不更新。
+
+
+## §15.755（2026-11-09）CUDA精确训练内核验收与R6受控切换
+
+- **瓶颈与实现**：旧训练把每个序列的inside–outside分数复制到CPU执行NumPy动态规划，配对掩码为双重Python循环，GPU利用率瞬时值低。新增Triton CUDA float64 inside–outside、设备上配对掩码及CPU预缩放Turner表，保留原CPU参考路径和显式 `RN_CUDA_INSIDE=0` 对照；有效batch=2、学习率、数据顺序、RIPE结构、steps=0和patience=6均未改变。代码commit=`57de63c`，已推送GitHub。
+- **数值验收**：相关测试38 passed，两次复跑测试点一致，仅pytest耗时字段不同。覆盖L=0/1/4/5/8/17/64/129的float32/float64损失与梯度、确定性、非法CPU输入拒绝、CUDA路径禁止 `.cpu/.numpy`、配对掩码和Turner的CPU/GPU逐位一致；对称性和暴力精确递推回归通过。开发中发现的父项边界与lane地址错误均已修复，未接入旧训练进程。
+- **真实序列性能**：训练集真实序列L=128/256/384/500，各10次测量，CPU/CUDA损失及最大梯度误差均为0；首轮中位加速8.6013/22.3987/38.0670/66.6659倍，独立复测8.7474/22.1549/39.5031/73.7960倍。证据位于 `source_data/round49/harness_cuda_benchmark.json`、`harness_cuda_benchmark_recheck.json` 和 `harness_cuda_tests_recheck.json`。这些是训练内核加速，不是最终raw-sequence推理速度SOTA或模型精度改善。
+- **切换门禁**：R6三种子共同step6000快照已核验，VL0=24.712076498642347/23.124766270936757/23.601357252389647，均为best、bad=0，快照10/12层解冻；resume SHA、best/bad、学习率、stream_state哈希全部留档于 `source_data/round49/r6_cuda_transition_candidates.json`。信号循环部分生效后出现ProcessLookupError；实际旧训练及旧队列均已退出，原guard已接管，但未将该异常隐去。三种子新CUDA进程恢复仍在确认中，本节不记为切换完成，PPT不更新。
+
+
+## §15.756（2026-11-09）R6 CUDA三种子恢复完成与GPU实测
+
+- **恢复验收**：三种子日志均明确 `resumed from step 6000 (10/12 blocks unfrozen)`，并实际产生step6025、6050新训练记录；run_meta保留step6000 best及原VL0，compute_kernels=`triton_cuda_float64/torch_device_vectorized/torch_device_gather`，steps=0、batch=2、head/backbone LR=1e-4/1e-5及patience=6不变。证据为 `source_data/round49/r6_cuda_resume_verified.json`，状态 `PASS_CUDA_TRAINING_RESUMED`。
+- **GPU实测**：新路径5次每秒采样显存19686–19690MiB/24564MiB，利用率91%、97%、98%、98%、93%；旧路径此前5次采样为0%、0%、33%、14%、7%。显存占用不是单独优化目标，以真实训练推进与高利用率共同验收，不通过改变有效batch强行占满。
+- **队列幂等修复**：commit `77ff323`已推送。闭环臂仅在三种子converged/early_stopped/completed且主/greedy/Turner0三份13 split、三cell汇总完整时跳过；五个闭环臂判定SKIP_CLOSED，R6/encoder-R3判定MUST_RUN。停止旧重复汇总后R1 summary重新解析完整，未重跑旧评测。现有队列锁保证并行恢复，不重复训练。
+- **边界**：CUDA切换已完成，继续自然收敛；训练内核加速不等于最终推理速度SOTA或精度改善，R6/encoder-R3全板、七臂裁决和后续路线仍未完成，PPT不更新。
+
+
+## §15.757（2026-11-09）重复序列审计修复复核与最新collection门
+
+- **已有修复复核**：当前HEAD的祖先链包含 `d5de260`（Fix duplicate chain audit initialization），`tools/audit_rna_complex_round49.py` 无未提交修改；该提交已包含重复序列 `n_duplicate_chains=1` 回归断言，相关审计测试、守恒测试及真实collection门此前已通过，本次不重复修改或重跑相同测试。
+- **最新门禁**：真实collection门再次输出 `PASS_COMPLETE_COMPLEX_COLLECTION`，n_entries=8157、n_label_files=8150，较此前记录的8143增加7；完整去泄露审计进程仍在运行。标签文件数变化已如实记录，不据此推定新增链均可训练，也不沿用旧的14个错误entry作为当前最终排除数。
+- **边界**：最终接受链、重复序列守恒、exact/80%去泄露与可用训练样本数以完整manifest和独立复核为准；teacher和D0/D1未启动，PPT不更新。
+
+
+## §15.758（2026-11-09）R6 CUDA恢复后step6500–7000
+
+- **step6500**：seed0 VL0=24.015921937021343、seed1=23.051126938984407，均刷新best、bad=0；seed2=24.330990150497595，best仍step6000=23.601357252389647、bad=1。
+- **step7000**：seed0=25.22676443764306、seed1=23.910729066937535，best均step6500、bad=1；seed2=23.221367356211246，刷新best、bad=0。逐行解析三份validation_log，step500–7000共14点连续无重复，run_meta best与逐步最小值一致；三路均12/12层解冻、真实CUDA训练、steps=0/patience=6不变。
+- **边界**：单次未改善不构成收敛，当前run_meta均running/converged=False，继续自然收敛；不以中途VL0换臂或提前启动正式A/B/C。完整去泄露JSON输出尚未形成，PPT不更新。
+
+
+## §15.759（2026-11-09）R6 step7500–8500与去泄露阶段核查
+
+- **step7500**：seed0 VL0=25.231839799345682、bad=2；seed1=22.481818370157676、刷新best、bad=0；seed2=24.81956210634368、bad=1。
+- **step8000**：seed0=26.613813489879185、bad=3；seed1=23.049798813250177、bad=1；seed2=28.38216227325494、bad=2。
+- **step8500**：seed0=178.95742480880216、best仍step6500=24.015921937021343、bad=4；seed1=23.058723080508845、best仍step7500=22.481818370157676、bad=2；seed2=45.335608850411184、best仍step7000=23.221367356211246、bad=3。逐行解析三份日志均为step500–8500共17点连续无重复，best与逐步最小值一致；seed0尖峰未覆盖best，未修改学习率或提前停止。
+- **去泄露进度**：审计进程仍在，protected_references.fasta经两次间隔读取从6441263104增长至完整的6492503116 bytes，candidate_chains.fasta=2133857 bytes；当前尚未形成MMseqs子进程和最终JSON，处于参考exact集合构建阶段。进程RSS约14GB、主机仍有可用内存，近期I/O计数增长，不按卡死处理，不重启或改变阈值。
+- **边界**：继续原配置自然收敛，达到patience才停止；完整去泄露与独立守恒未齐套，不启动teacher/D0/D1，PPT不更新。
+
+
+## §15.760（2026-11-09）R6 seed0/2自然停止、seed1 OOM恢复与MMseqs启动
+
+- **seed0**：step9000 VL0=36252.46144540244、bad=5；step9500=209689.9198922047、bad=6并自然早停。run_meta completed/converged=True、stop_reason=early_stopping、steps_completed=9500；best仍step6500=24.015921937021343，best内部step一致，SHA256=`bff078f0a2d31d45f775e15d88c880b0476262bb60e578f27c0d1b3d5e3efa15`。
+- **seed2**：step9000 VL0=28800.25730973513、bad=4；step9500=197753.31848635、bad=5；step10000=660505.3862918604、bad=6并自然早停。run_meta completed/converged=True、steps_completed=10000；best仍step7000=23.221367356211246，best内部step一致，SHA256=`4a8417d634b8f7e793c81be0dd45074f8f2a85d04e9c9e9bc1e35b41203fd821`。后期损失尖峰如实保留，不将其解释为效果改善。
+- **seed1 OOM与恢复**：日志明确backward尝试分配928MiB时CUDA OOM，run_meta仍running，不当作自然收敛。resume step8500，restore_validation_state复核best step7500=22.481818370157676、bad=2、12/12层解冻；原队列已启动仅seed1的串行恢复进程，科学参数不变，正在读取数据，未重训seed0/2。
+- **复合物**：MMseqs prefilter已实际启动，命令保持identity>=0.8/query-coverage>=0.8、threads=8；完整manifest及独立守恒仍未齐套。
+- **边界**：三种子尚未齐套，不启动或宣称正式A/B/C结论；seed1恢复产生新训练步后再核验，PPT不更新。
+
+
+## §15.761（2026-11-09）R6 seed1 OOM恢复后step9000验收
+
+- **恢复确认**：seed1日志明确 `resumed from step 8500 (12/12 blocks unfrozen)`，恢复后产生step8525–9000真实训练记录和step9000验证，未从头重训，seed0/2保持自然停止状态。
+- **step9000**：VL0=27.38477875900879，best仍step7500=22.481818370157676，bad由恢复时的2增至3。逐行解析step500–9000共18个验证点连续无重复，best与逐步最小值一致；run_meta仍running/converged=False，不提前停止。
+- **边界**：OOM恢复链已验收，但R6三种子尚未齐套，正式13 split评测未启动；继续原配置自然收敛，PPT不更新。
+
+
+## §15.762（2026-11-09）R6三种子齐套与MMseqs内存修复
+
+- **seed1最终训练**：step9500 VL0=27.518972728202648、bad=4；step10000=859.7369216394849、bad=5；step10500=56601.197142253135、bad=6并自然早停。run_meta completed/converged=True、steps_completed=10500，best仍step7500=22.481818370157676；best内部step一致，SHA256=`8bdfe615b796297a6acf32bde3e94441e85c5abd5d4b64ad5285321adb84abd9`。
+- **R6三种子状态**：seed0/1/2 best VL0=24.015921937021343/22.481818370157676/23.221367356211246，均completed/converged；best step=6500/7500/7000，三份SHA256均已核验。原队列已启动正式13 split×3 seed×3 repeat评测，当前只有训练与评测启动事实，尚无全板效果结论。
+- **MMseqs失败证据**：真实日志显示target=21526467条、prefilter预计56G，随后进程Killed并返回CalledProcessError；失败前主机可用内存不足，不能通过降低identity/coverage或删除参考序列解决。
+- **修复与回归**：commit `29a583c`已推送，新增MMseqs `--split-memory-limit 12G`，identity>=0.8/query-coverage>=0.8不变；chain_rows.json缓存记录version/collection SHA/标签数/唯一序列数，重复链守恒与缓存SHA纳入独立验证。按PDB和entity_ids缓存元数据，失败后可复用缓存而不改数据。审计2项含缓存恢复双跑通过，训练准备1项、采集5项通过；独立守恒断言在集成双跑中通过。
+- **当前边界**：原采集等待进程仍在，结束后由既有队列使用新代码，未重复启动审计；真实链缓存和完整去泄露尚未齐套，teacher/D0/D1未启动。R6全板、置信度、greedy/Turner=0及独立QA未完成，PPT不更新。
+
+
+## §15.763（2026-11-09）R6主评测30格结构验收
+
+- **进度**：主13 split×3 seed当前30/39格落盘，CHANRG剩余split继续由原队列执行，尚无summary、VL0、greedy或Turner=0结果。
+- **结构QA**：30格全部通过checkpoint SHA/内部step、真实CUDA、每次序列一次打分、三次确定性预测一致、raw=n+unsupported及TP/FP/FN→micro-F1独立复算。ArchiveII和Rfam各3格共6格明确为 `PARTIAL_STRUCTRFM_POSITION_LIMIT`，其余24格PASS；位置上限不计为完整覆盖。
+- **证据**：`source_data/round49/r6_partial_structural_qa.json`，complete=false，SHA256=`aeb8624e1229d5a2beddda9902be1ecc6fcbc92d814c6bb52d7ae50e2c6a582a`。首轮将ArchiveII/Rfam误设为必须PASS的断言已按真实状态修正，未隐藏部分覆盖。
+- **边界**：这只是已落盘文件的结构验收，不作SOTA或效果结论；39格、3 VL0、置信度及机制消融齐套后继续完整QA，PPT不更新。
+
+
+## §15.764（2026-11-09）R6主39格、SOTA与42范围置信度闭环
+
+- **主结果（三种子micro-F1均值±population SD）**：
+
+| split | F1均值 | population SD | 边界 |
+|---|---:|---:|---|
+| bprna_ts0 | 0.3312682690 | 0.0318816495 | PASS |
+| bprna_new | 0.3133810307 | 0.0295148678 | PASS |
+| archiveii | 0.4023577825 | 0.0244960205 | 每种子57/90条位置上限未预测 |
+| ref_pdb_ts1 | 0.6802569805 | 0.0428073045 | PASS |
+| ref_pdb_ts2 | 0.4158730159 | 0.3032036885 | 单例，种子间差异大 |
+| ref_pdb_ts3 | 0.5777777778 | 0.1257078722 | 单例 |
+| ref_pdb_ts_hard | 0.3727894148 | 0.0837312019 | PASS |
+| testsetb | 0.2102688634 | 0.0313490481 | PASS |
+| rfam_fam | 0.4031537614 | 0.0294361464 | 每种子140/388条位置上限未预测 |
+| chanrg_test | 0.3608479703 | 0.0145495148 | PASS |
+| chanrg_gena | 0.3669606149 | 0.0286878514 | PASS |
+| chanrg_genc | 0.2497476454 | 0.0256939977 | measured否 |
+| chanrg_genf | 0.2492225480 | 0.0170654569 | PASS |
+
+- **SOTA对照**：all-baseline与external-single主榜均0/8；Rfam BPfold=0.7871860033，R6低0.3840322419；CHANRG measured wins=0。R6否决为最终模型，不以best VL0均值23.23970255446342或单split差异替代效果结论。
+- **主QA与证据**：39格+3 VL0全部通过checkpoint/结果SHA、真实CUDA、raw=n+unsupported、三次预测一致、TP/FP/FN→micro-F1、per-sequence macro-F1及population SD。39份原始文件与远端SHA256字典一致，官方summary与独立统计一致。summary SHA256=`5a9c364688af5fadc6bc3b8451e0b9738cc0e59d061b4aa1b54dc2fc73a08c8b`，SOTA SHA256=`941ade8aad6670be52148cc8c9aa26eb7f1606df7635f22832efdbd9f09eca80`，主证据位于 `source_data/round48/ripe_head_r6/`。
+- **置信度**：42范围=39测试split-seed+3 VL0，双跑字节一致，44份来源文件SHA一致。独立从原始structure_conf/f1复算Pearson、Spearman、risk和AURC全部一致，单例与空覆盖保持null。VL0 Spearman=`0.8437536904/0.8525103945/0.8424929971`，Pearson=`0.6794546972/0.7054577238/0.7085344615`，AURC=`0.0425573525/0.0674596561/0.0507432288`。independent SHA256=`4900359c56727e26a9d49c71954a12a6aa915ea1d81489ae93f705ec50a50167`；缺同候选配对/GT概率基线，best_confidence_claim=False。
+- **边界**：主39格、3 VL0及置信度闭环，但greedy/Turner=0尚未完成，manifest保留 `complete=false`，不得写成117格或七臂裁决完成。位置上限、最佳置信度和长序列限制不变，PPT不更新。
+
+
+## §15.765（2026-11-09）R6 greedy 39格独立复核完成
+
+- **结果**：greedy TS0三种子F1均值=0.11802763893094946，主模型=0.3312682690472218；greedy Rfam=0.1253194266957699，主模型=0.4031537614150302，均明显低于主模型，支持保留约束解码。
+- **独立QA**：39格全部通过checkpoint/结果SHA、真实CUDA、`decoder=greedy/prior_weight_override=null`、raw/support守恒、三次预测一致、TP/FP/FN→micro-F1、per-sequence macro-F1及population SD。40份本地文件与远端SHA256字典及官方统计一致，证据位于 `source_data/round48/ripe_head_r6_greedy/`；summary SHA256=`44f63365bde76a26566dd0e3df62778ffc9451cde1eeccc1489e346e8969bde7`。
+- **边界**：greedy消融完成，但Turner=0仍在执行，R6不得写成117格闭环或七臂裁决完成。ArchiveII/Rfam位置上限不变，PPT不更新。
+
+
+## §15.766（2026-11-09）R6 Turner=0及117格全闭环，encoder-R3启动
+
+- **Turner=0结果**：TS0三种子F1均值=0.25226398091894675，主模型=0.3312682690472218；Rfam=0.2345273018103364，主模型=0.4031537614150302，均低于主模型。
+- **独立QA**：Turner=0 39格全部通过checkpoint/结果SHA、真实CUDA、`decoder=nussinov/prior_weight_override=0.0`、raw/support守恒、三次预测一致、micro/macro-F1及population SD。40份本地文件与远端SHA256及官方统计一致，证据位于 `source_data/round48/ripe_head_r6_turner0/`；summary SHA256=`263396c5275a9cd7cebed7cf4b2c6cb6da4251d114337faef06aecab31c70eda`。
+- **R6裁决**：主39+greedy39+Turner0 39共117格及42范围独立置信度全部复核，主榜两种口径0/8，否决为最终模型；两种机制消融均支持约束解码。主manifest已改为complete=true，但ArchiveII/Rfam位置上限、缺同候选概率基线和七臂裁决未完成边界不变。
+- **后续**：encoder-R3三种子已并行启动，参数确认steps=0、batch=2、patience=6、RIPE encoder-only R3、PairMLP-490及真实CUDA；step6000 VL0=50.94354018145201/50.9598186045621/51.183443024232105，best分别6000/4500/5000，继续自然收敛。复合物新审计继续构建链缓存，PPT不更新。
+
+
+## §15.767（2026-11-09）encoder-R3 step6500–7000验证复核
+
+- **seed0**：step6500 VL0=51.32051094890223、bad=1；step7000=51.41357460906156、bad=2，best仍step6000=50.94354018145201。
+- **seed1**：step6500 VL0=50.833611985256056，刷新best、bad=0，当前最新验证为该点。
+- **seed2**：step6500 VL0=51.077011213331986、bad=3；step7000=52.551511201376435、bad=4，best仍step5000=50.95168463366174。
+- **复核与边界**：逐行解析日志，seed0/2 step500–7000共14点、seed1 step500–6500共13点连续无重复，best与逐步最小值一致；三种子run_meta均running/converged=False，继续steps=0/patience=6真实CUDA训练，不根据中途VL0换臂。复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.768（2026-11-09）encoder-R3 step7500–8000与seed2自然停止
+
+- **step7500**：seed0 VL0=51.20023648949919、bad=3；seed1=51.57234416132803、bad=2；seed2=51.45015759242297、bad=5。三种子前15个验证点连续无重复，best与逐步最小值一致，best仍step6000=50.94354018145201、step6500=50.833611985256056、step5000=50.95168463366174。
+- **step8000**：seed0=51.363083983098456、best仍step6000、bad=4；seed2=51.45963215452096、bad=6并自然早停。seed2 run_meta completed/converged=True、stop_reason=early_stopping、steps_completed=8000，best内部step=5000一致，SHA256=`57e66c52a9ab0d010118e55fe8e33ab5f769e96a03e7da96440e0d93414ce3dd`。
+- **边界**：seed1最新仍为step7500、bad=2，seed0/1继续原配置训练，三种子未齐套，不启动统一路线裁决。复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.769（2026-11-09）encoder-R3 seed0 step9000刷新best，seed1 step8500
+
+- **seed0**：step8500 VL0=51.58828551436458、bad=5；step9000=50.88936366896853，重新刷新best、bad=0，未触发早停。前18个验证点连续无重复，best与逐步最小值一致。
+- **seed1**：step8000 VL0=51.55158540745503、bad=3；step8500=51.34374865557072、bad=4，best仍step6500=50.833611985256056，前17个验证点连续无重复。
+- **边界**：seed0 patience重置符合合同，seed0/1均running/converged=False并继续真实CUDA训练；seed2保持step8000自然停止。三种子未齐套，不启动统一路线裁决，复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.770（2026-11-09）encoder-R3 seed0/1 step9000共同改善与step9500
+
+- **step9000**：seed0 VL0=50.88936366896853、seed1=50.80504171559936，均刷新best、bad=0；前18个验证点连续无重复，best与逐步最小值一致。
+- **step9500**：seed0=51.15376023926743、seed1=50.848674303958774，best均保持step9000，bad均增至1。两种子run_meta仍running/converged=False，继续steps=0/patience=6真实CUDA训练。
+- **边界**：seed2保持step8000自然停止，三种子未齐套，不启动统一路线裁决；复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.771（2026-11-09）encoder-R3 step10000验证
+
+- **step10000**：seed0 VL0=51.085812837898565、seed1=51.311597992235534，best均保持step9000=50.88936366896853/50.80504171559936，bad均由1增至2。
+- **复核与边界**：两种子前20个验证点连续无重复，best与逐步最小值一致，run_meta均running/converged=False，继续steps=0/patience=6真实CUDA训练；seed2保持step8000自然停止，三种子未齐套，不启动统一路线裁决。复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.772（2026-11-09）encoder-R3 step10500：seed1刷新best
+
+- **step10500**：seed0 VL0=51.074286941173455、best仍step9000=50.88936366896853、bad=3；seed1=50.77652444944875，刷新best、bad=0。
+- **复核与边界**：两种子前21个验证点连续无重复，best与逐步最小值一致，run_meta均running/converged=False，继续steps=0/patience=6真实CUDA训练；seed2保持step8000自然停止，三种子未齐套，不启动统一路线裁决。复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.773（2026-11-09）encoder-R3 step11000：seed0刷新best
+
+- **step11000**：seed0 VL0=50.64498297339173，刷新best、bad=0；seed1=51.33625997945741，best仍step10500=50.77652444944875、bad=1。
+- **复核与边界**：两种子前22个验证点连续无重复，best与逐步最小值一致，run_meta均running/converged=False，继续steps=0/patience=6真实CUDA训练；seed2保持step8000自然停止，三种子未齐套，不启动统一路线裁决。复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.774（2026-11-09）encoder-R3 step11500验证
+
+- **step11500**：seed0 VL0=50.64756268234375，best仍step11000=50.64498297339173、bad=1；seed1=51.313990191833646，best仍step10500=50.77652444944875、bad=2。
+- **复核与边界**：两种子前23个验证点连续无重复，best与逐步最小值一致，run_meta均running/converged=False，继续steps=0/patience=6真实CUDA训练；seed2保持step8000自然停止，三种子未齐套，不启动统一路线裁决。复合物链缓存仍在构建，PPT不更新。
+
+
+## §15.775（2026-11-09）encoder-R3三种子117格、42范围置信度与独立QA闭环
+
+- **训练收敛**：seed0/1/2均自然early-stopping，best step=12000/10500/5000，best VL0=50.52836075633121/50.77652444944875/50.95168463366174，均值50.75218994648057。best checkpoint SHA256=`126ba8c8…d06f`/`41277fc9…19d1`/`57e66c52…3dd`，权重内部step与原始评测身份已独立复核。
+- **主结果（三种子micro-F1均值±population SD）**：
+
+| split | F1均值 | population SD |
+|---|---:|---:|
+| bprna_ts0 | 0.1620479385 | 0.0080245563 |
+| bprna_new | 0.1543408362 | 0.0058841527 |
+| archiveii | 0.1465152301 | 0.0028948044 |
+| ref_pdb_ts1 | 0.5418622848 | 0.0314987750 |
+| ref_pdb_ts2 | 0.0000000000 | 0.0000000000 |
+| ref_pdb_ts3 | 0.3614718615 | 0.0030610683 |
+| ref_pdb_ts_hard | 0.2645935625 | 0.0065580007 |
+| testsetb | 0.1279935131 | 0.0033161293 |
+| rfam_fam | 0.1631604753 | 0.0056679430 |
+| chanrg_test | 0.1368381155 | 0.0032099453 |
+| chanrg_gena | 0.1875557964 | 0.0035772980 |
+| chanrg_genc | 0.1015858769 | 0.0027834243 |
+| chanrg_genf | 0.1091753974 | 0.0019481431 |
+
+- **独立QA**：主39格、greedy39格、Turner0 39格共117格全部通过checkpoint/结果SHA、真实CUDA、raw=n+unsupported、三次预测一致、TP/FP/FN→micro-F1、macro-F1和population SD复算。encoder-only全部raw序列得到支持，ArchiveII/Rfam无位置截断，但低F1不能由覆盖率或工程完整性解释成效果优势。summary SHA256=`e20efc95…7edc06`，SOTA SHA256=`a669dc5d…db18`，主独立QA=`source_data/round49/encoder_r3_main_39_independent_qa.json`；主、消融manifest=`source_data/round48/ripe_encoder_r3/manifest.json`。
+- **消融与SOTA**：greedy TS0/Rfam=0.0526182386/0.0294584904，Turner0=0.0512543019/0.0319610785，均低于主模型0.1620479385/0.1631604753，支持保留约束解码。主榜all-baseline/external-single均0/8，CHANRG measured wins=0，否决为最终模型。
+- **置信度**：42范围双跑字节一致，44份来源SHA及Pearson/Spearman/risk/AURC独立复算通过。VL0 Spearman=0.2762277667/0.3767461000/0.2875349715，Pearson=0.2431696284/0.3783931225/0.2995696126，AURC=0.5029470923/0.4848898226/0.4986768369。independent SHA256=`92dfac21…c0d43`；缺同候选配对/GT概率基线，best_confidence_claim=False，也不宣称长序列SOTA。PPT不更新。
+
+
+## §15.776（2026-11-09）RIPE七臂配对统计与路线裁决，Pair-JEPA正式放行
+
+- **统计修复**：CHANRG原始结果中的 `per_sequence[*].name` 全为空字符串，旧配对器错误要求名称唯一。修复后以名称+出现序号配对，保留重复名和空名，不去重或删除样本；right-only supported只单列，不把不支持序列按0分插补。缺失occurrence和不同data SHA均拒绝。3项回归通过，commit `a35bf07`已推送GitHub。
+- **双跑验收**：七臂13 split×3 seed paired bootstrap各39格、ArchiveII/Rfam四子集各24行均完成；bootstrap=10000，主八split逐seed Holm，小样本及空真值配对集保留描述性/空状态。原始与recheck逐字节一致，paired SHA256=`33e9220f…b3d`。R1/R2/R3/R5/R6分别有4/3/1/3/3个主八split-seed正差且Holm<0.05，但各臂最终主榜仍0/8，不把局部显著写成SOTA；encoder-R3无显著正格，新增591个split-seed支持实例只单列。
+- **基座裁决**：R0及七臂共八候选只按三种子best VL0均值排序，测试指标不参与。R5以18.5942798481成为P3基座，后续为R1=18.6468446440、R3=18.6576460022、R2=18.7723692744、R0=18.8310551077、log=19.3267997094、R6=23.2397025545、encoder-R3=50.7521899465。正式decision与recheck逐字节一致，SHA256=`ed6e3001…5835`，`complete=True/allow_pair_jepa=True`；八候选无8/8 SOTA，长序列、置信度和速度主张均未达成。
+- **P3启动**：R5 PairMLP-490按预注册直接复用为J-mlp，不重复训练；EMA/noEMA/random均保持R5、λJEPA=0.1、steps=0、patience=6。P3 manifest双跑一致，SHA256=`da8be06b…c1f3`。EMA seed0/1的真实RTX4090 CUDA run_meta已核验，当前running/converged=False；seed2接续，noEMA/random随后执行。推理必须一次scorer前向且teacher-forward拒绝，完整A/B/C、防坍塌和最终速度未闭环，PPT不更新。
+
+
+## §15.777（2026-11-09）Pair-JEPA EMA首六个验证点与真实辅助诊断
+
+- **训练配置复核**：EMA seed0/1均以R5 head-only、Pair-JEPA latent=490、λJEPA=0.1、mask probability=0.15、steps=0、batch=2、patience=6运行，真实设备均为 `cuda:0`（RTX4090），run_meta与P3 manifest绑定，不以合成smoke代替正式训练。
+- **截至step3000**：seed0 VL0从step500=39.12511939646013改善至29.284740970639902，连续六个验证点刷新best、bad=0；seed1从38.63455967435272改善至29.43184265668055，同样连续六个验证点刷新best、bad=0。逐行验证step=500…3000连续无重复，best与逐步最小值一致；两种子均未收敛，继续训练。
+- **辅助诊断**：正式 `jepa_diagnostics.jsonl` 已产生，不是工程smoke。step1的target/prediction完全相同，符合EMA初始化；step3675时seed0 target/prediction variance=1.0595102310/1.0302098989，effective rank=1.2438648939/1.2672722340；seed1 variance=1.3274641037/1.5472086668，effective rank=1.7817009687/1.8108065128。低有效秩是防坍塌警示，不能仅凭非零方差声称未坍塌，也不能在noEMA/random对照和完整训练前判定机制失败。
+- **边界**：当前只确认真实训练推进、VL0改善与辅助指标落盘；不能宣称JEPA优于PairMLP、精度或速度提升。后续仍需三种子自然收敛、全A/B/C、teacher-forward拒绝门、noEMA/random杀手对照和独立QA，PPT不更新。
+
+
+## §15.778（2026-11-09）Pair-JEPA自我target定义缺陷拦截与context_v1正式重启
+
+- **独立审查发现**：§15.777所述旧实现的prediction和EMA target读取同一未掩码z，mask仅选择损失位置，没有“由上下文预测被掩pair latent”。Pair scorer是pair-local MLP，初始化时prediction=target，辅助损失恒为0；真实counterfactual再次确认即使大幅改变masked输入，初始化loss仍为0。该实现只能视为自我target/EMA工程pilot，不能作为合同要求的上下文JEPA。
+- **pilot处置**：停止旧调度器及现役训练，不影响其他等待队列。seed0已在step7000自然早停，best step4000/VL0=27.068207798870112；seed1因定义修复停止，最后验证step7500，best step5000/VL0=25.63695392903655。两份run、日志、best checkpoint和SHA完整移至 `pairjepa_ema_self_target_pilot_s{0,1}`，manifest=`source_data/round49/pairjepa_self_target_pilot.json`，SHA256=`9cca5a56…0f93`。两者均不进入正式A/B/C、SOTA或下一基座裁决，也不把自然收敛的seed0包装为有效JEPA。
+- **修复选择**：未采用“只把masked z置零”的方案，因为pair-local MLP没有跨pair上下文，会进一步诱发常数预测；也未恢复2D ResNet上下文，以免破坏轻量scorer对照。正式context_v1以完整z的teacher为目标，采用3×3排除中心、masked和非法pair的归一化邻域，训练期独立latent predictor从其他未掩码pair预测target；mask对称化。部署scorer结构、参数和前向路径不变，EMA/fixed/random共用定义，λJEPA=0.1、steps=0、patience=6和VL0选择规则不变。
+- **测试与纠错**：新增masked输入反事实、masked位置零梯度、训练predictor不影响部署输出、PairMLP旧状态strict load及全掩码低秩测试。开发中分组卷积通道错误、predictor冗余logit无梯度均被测试拦截并修复；对称重复向量的秩、全掩码pair数和浮点秩的测试构造也按数学事实修正，没有绕过失败。最终14项测试连续三次全部通过，真实CUDA反事实与合成训练均覆盖，日志保存在 `source_data/round49/pairjepa_context_tests_{1,2,3}.log`。
+- **真实CUDA预检**：structRFM+R5两步工程训练完成，step1辅助loss=0.004727690946310759，target/prediction effective rank=62.1521987915/49.2239303589，非零loss不再来自同一输入的恒等映射。严格checkpoint加载、teacher-forward实际拒绝、训练predictor无冗余logit、R5 PairMLP旧权重strict load全部通过。QA=`source_data/round49/pairjepa_context_smoke_qa.json`，SHA256=`28a12a1b…e561`；`converged=False/scientific_result=False`，不作效果结论。
+- **提交与正式恢复**：commit `e69ca25`已推送GitHub。新P3 manifest及recheck逐字节一致，SHA256=`e22e8389…3527`，裁决器强制 `jepa_context=context_v1`，拒绝混入旧pilot。正式EMA seed0/1 run_meta均确认R5、真实RTX4090 CUDA、λJEPA=0.1、steps=0、patience=6及context_v1，当前running/converged=False；seed2、noEMA/random及完整A/B/C、防坍塌、置信度和速度验收待完成。PPT不更新。
+
+
+## §15.779（2026-11-09）context_v1正式EMA首三个验证点
+
+- **seed0**：step500/1000/1500 VL0=39.093733986208726/37.45021312753975/33.6963828005153；**seed1**对应38.65244971357497/35.7963034720593/35.21027219386353。两种子前三点均连续刷新best、bad=0，逐行复核step连续且best等于截至该点的最小值。
+- **辅助诊断快照**：seed0 step2275 target/prediction variance=0.0408794880/0.0231615324，effective rank=2.9172844887/3.5810139179；seed1 step2300对应variance=0.1021143049/0.0701015815，rank=2.8490772247/2.2620205879。初始化非零辅助损失和较高有效秩不保证训练中始终不坍塌，继续保留趋势，不设任意通过阈值。
+- **证据与边界**：快照=`source_data/round49/pairjepa_ema_context_v1_step1500.json`，SHA256=`3c53ce5f…3042`；状态明确为intermediate/not converged/not scientific result。当前只确认context_v1真实CUDA训练推进与VL0改善，不与旧pilot或R5作最终效果比较，不提前宣称防坍塌成功；完整三种子和noEMA/random对照后继续，PPT不更新。
+
+
+## §15.780（2026-11-09）Pair-JEPA独立QA工具验收与训练后段状态
+
+- **独立QA工具**：新增 `tools/qa_pairjepa_round49.py`，直接读取原始JSONL GT与三次预测，按输入顺序保留空名称/重复名称，独立复算每条TP/FP/FN、F1、INF、span≥30/100、长度桶、micro/macro均值和population SD；同时检查真实CUDA、strict encoder身份、一次scorer前向、teacher拒绝、数据/结果/checkpoint SHA、内部best step、raw=n+unsupported、三次预测完全一致及summary/SOTA绑定。主/greedy/Turner0共用同一门，不掩盖ArchiveII/Rfam的PARTIAL位置上限。
+- **测试与提交**：合成fixture覆盖空名称、长序列、长程配对、篡改计数、重复/缺失预测、非法配对及decoder/prior身份；开发中逐行对齐错误被测试拦截并修正。相关17项测试连续三次通过，commit `5b2f410`已推送GitHub。工具已就绪，但正式Pair-JEPA全板尚未产生，不将工具测试写成科学结果。
+- **训练状态**：context_v1 EMA seed0 best step4000/VL0=27.120854084205444，step6500=89.3266585923167、bad=5；seed1 best step5000/VL0=25.629998905035535，step6500=48.723957354840294、bad=3。逐行step和best最小值已核验，两种子仍running/converged=False，继续原配置自然收敛，不因后段损失上升提前改参或停止。seed2、noEMA/random及完整A/B/C仍待执行，PPT不更新。
+
+
+## §15.781（2026-11-09）独立QA接入裁决与EMA seed0自然收敛
+
+- **QA硬门**：`run_pairjepa_decision_round48.sh`现对每个新臂的主/greedy/Turner0分别运行两次独立QA并逐字节比较，缺文件或任何不一致即停止，不进入paired bootstrap。裁决器同时强制三份QA的实验名、39格、complete状态和summary SHA，并纳入最终source hashes。新18项相关测试连续三次通过，shell语法检查通过，commit `ecf5a6a`已推送GitHub。既有R5基座沿用此前独立QA，不用Pair-JEPA专用工具错误重判PairMLP。
+- **seed0自然停止**：step7000 VL0=345.7044387165314、bad=6，按patience=6自然早停；run_meta为completed/converged=True/early_stopped=True/stop_reason=early_stopping。best保持step4000/VL0=27.120854084205444，best checkpoint内部step一致，SHA256=`b4eb5a06…ac20`，context_v1与真实CUDA身份复核通过。
+- **seed1继续**：best仍step5000/VL0=25.629998905035535，step7500=246.82589303488191、bad=5，尚未收敛，继续原配置；seed2要等前两个种子训练阶段结束后接续，不人为提前。三种子未齐套，未启动正式全板效果结论，PPT不更新。
+
+
+## §15.782（2026-11-09）seed2队列路径缺陷定位、修复与真实恢复
+
+- **seed1自然收敛**：step8000 VL0=4803.11320841、bad=6并自然早停，best step5000/VL0=25.629998905035535，steps_completed=8000，best SHA256=`1d312f0f…b598`。seed0/1均completed/converged，未被后续恢复重跑。
+- **异常事实**：首次seed2队列报 `FileNotFoundError: runs/pairjepa_ema_s2/run_meta.json`，seed2目录和日志均不存在，直接重试再次失败，不能归为瞬时故障。异常manifest=`source_data/round49/pairjepa_ema_s2_missing_start.json`，SHA256=`d9e8420e…47ae6`。
+- **执行轨迹根因**：`bash -x`明确显示 `train_seed 2` 实际展开为 `local seed=2 out=...pairjepa_ema_s1`。Bash在同一条local声明中用旧全局seed计算 `${seed}`，seed2错查seed1身份，随后按新seed读取不存在的seed2 run_meta而退出；eval_seed和ablation_seed存在同类隐患。原始轨迹=`source_data/round49/pairjepa_seed2_shell_trace.log`，前两种子没有被覆盖。
+- **修复与回归**：train/eval/ablation三函数改为先单独 `local seed=$1`，再在下一行计算路径。新增mock执行测试实际调用三函数并验证seed2训练目录、命令、主评测和greedy checkpoint全部指向seed2，而非只做静态文本检查。相关19项测试连续三次通过，`bash -n`通过，commit `a14b43a`已推送GitHub。
+- **恢复验收**：新队列仅跳过已闭环seed0/1，seed2已实际创建 `runs/pairjepa_ema_s2/run_meta.json`，arm/seed均正确，context_v1、真实RTX4090 CUDA、steps=0、patience=6，status=running/converged=False。后续全A/B/C与noEMA/random仍按冻结配置执行，PPT不更新。
+
+
+## §15.783（2026-11-09）用户指定旧xens2扩充优先线与固定三种子合同
+
+- **新优先级**：用户要求先用之前xens2在扩充数据上训练并查看Rfam结果，以后每个三种子固定42/2026/3407。旧Pair-JEPA后续调度已暂停，旧seed2最终自然收敛（best step4000/VL0=27.968253429360338），旧0/1/2仅保留历史；恢复P3时EMA/noEMA/random统一使用新三种子，不混配。T-A219成为当前最高优先级，不替代独立单模型终目标。
+- **旧xens2身份**：两个Plan-A全参RiNALMo模型桶内等权，再与frozen RiNALMo+ResNet2D按0.7/0.3融合。本次Plan-A seed42/2026、R2D seed3407；Plan-A保持四目标、batch=4、33层逐步解冻、steps=0/patience=6，R2D保持四目标、batch=4、head-chunk=0，使用安全上限1e6而非提前停止，patience=6。不得把该集成结果写成独立单模型。
+- **当前数据版本**：远端最新独立去泄露为clean=1006、train/holdout=805/201，verification SHA256=`7ee0de7b…a0`，decontamination SHA256=`ada3f47c…a17`，取代旧647/359并分别归档，未混用。旧xens2共同长度上限1024nt，仅150条扩充train可支持，655条超限明确排除；holdout支持101条。总训练集=42564+150=42714，data SHA256=`51030298…be7`。这一子集结论不能外推到长链。
+- **教师与嵌入纠错**：首次教师目录受两个写入者影响，后改用独立目录；又发现并行包装器未把max-length传给worker，默认600导致只有124/150，且合并缺数量门。commit `50c8e58`修复参数传递与teacher sequence conservation，测试三次通过。最终在全新 `teacher_full` 生成150条，未混用旧124条；TR1c旧分片缺文件SHA时现算补齐，不虚构旧字段。teacher_d1=42714，manifest SHA256=`820e494c…ed7`。
+- **嵌入与配置验收**：150条RiNALMo嵌入两shard完成，按长度排序而非原文件顺序，序列集合/长度/张量形状均守恒，不重复计算。补齐train_d1 manifest后R2D dry-run通过：train=42714、VL0=196、真实教师与嵌入、四目标和seed3407正确。recipe SHA256=`92ca0f89…2794`；管线commit `ebc024a`。
+- **启动故障与修复**：Plan-A首次因旧元数据 `report["backbone"]` 缺键停止，改为兼容当前report的weights路径，不改变模型；两高显存任务并发导致R2D OOM，保留日志后改为R2D 3407→Plan-A 42→Plan-A 2026串行，batch与种子不变。24项相关测试三次通过，commit `e6f2237`已推送。串行队列已重启，当前只有R2D进程与历史日志可确认，尚无新收敛或Rfam结果，PPT不更新。
+
+
+## §15.784（2026-11-09）xens2标签索引、24GB适配与激活重算续训验收
+
+- **标签索引纠错**：R2D batch=2首次实际运行至step25后报 `IndexError: index 85 is out of bounds`，确认复合物canonical-nested为1-based，xens2训练要求0-based。原始标签保持不变，仅训练副本逐对减1并验证 `0<=i<j<L`、无共享碱基、无交叉；train/holdout同步生成0-based副本，教师与嵌入只依赖序列无需重算。修正后train_d1 SHA256=`13cfffa9…3177`，3项边界测试三次通过，commit `ea6637f`已推送。
+- **显存实测**：R2D batch=4在step0 OOM，batch=2越过索引修复后到step75仍峰值OOM，batch=1可到step1000并保存best/resume，但step1200再次峰值OOM，不能继续靠降batch或删长链解决。最终硬件适配保留batch=1、seed3407、全部数据及自然收敛门；recipe SHA256=`e7e6eaeb…f2`（batch=1），对应提交 `7b22cec`。
+- **激活重算**：ResNet2D训练前向改为activation checkpoint，validation/eval路径不变；`train_decision`在反向后恢复BatchNorm第一次前向的running mean/var/count，避免重算导致两次统计更新。普通与重算路径的score、输入梯度和单次BN状态逐项完全一致，相关25项测试连续三次通过，commit `39fd124`已推送。Plan-A既有外层重算兼容，Pair-JEPA路径不受影响。
+- **续训验收**：日志明确 `[train] resumed ... at step 1000`，step1000 validation=27.16004803977168、best=27.16004803977168、bad=0，best/resume均存在。随后越过旧step1200 OOM点，当前已到step1450，未再发生OOM，继续到自然收敛。Plan-A 42/2026尚未开始，Rfam未测评，不能提前写提升或最终结论，PPT不更新。
+
+
+## §15.785（2026-11-09）R2D3407自然收敛与Plan-A 42启动
+
+- **R2D收敛**：step7000 VL0=22.048241130251274、bad=3；最终step8500 VL0=21.314006803228764、bad=6，按patience=6自然早停。run_meta为completed/converged=True/early_stopped=True，steps_completed=8500，best step5500/VL0=20.51654328540718。best checkpoint内部step=5500，config seed=3407/batch=1，SHA256=`246713ce…4604`，真实CUDA身份通过。
+- **QA兼容**：R2D完成态run_meta将种子保存在 `config.seed` 而非顶层 `seed`，最终队列和独立QA已兼容两种实际结构，commit `7479f83`已推送。best step不依赖checkpoint中不存在的validation字段，而由完成态run_meta、validation_log和checkpoint内部step三者对账。
+- **Plan-A 42**：已真实启动并到step475，run_meta seed=42/status=running/converged=False、651M RiNALMo、33层、steps=0、batch=4、patience=6，环境为RTX4090 CUDA。当前日志峰值约10GB，未发生新的OOM；Plan-A 2026需等42自然收敛后接续。
+- **证据同步**：当前805/201 train/holdout/verification三份本地文件与远端SHA全部一致，旧647/359已独立归档，不使用传输中的部分文件。Rfam尚未开始，最终数值与是否提升仍未知，PPT不更新。
+
+
+## §15.786（2026-11-09）Plan-A 42首验证点
+
+- **step500**：VL0=30.09667519681643，为首个best、bad=0；validation_log步数连续，run_meta best与逐步最小值一致。best checkpoint SHA256=`19cd6306…3fc1`，run_meta seed=42、真实CUDA、steps=0、batch=4、patience=6不变。
+- **边界**：Plan-A 42仍running/converged=False，Plan-A 2026未启动。首验证点只证明训练与评测链正常，不作架构效果或Rfam提升结论，PPT不更新。
+
+
+## §15.787（2026-11-09）Plan-A长序列显存根因与正确rebatch恢复
+
+- **训练进展**：step1000 VL0=23.44300843，step1500进一步改善至20.94467806939597、bad=0。随后step1550反向发生OOM，best/resume step1500完整，未将中断误记为收敛。
+- **优化与误判排查**：ResNet2D激活重算和pair-type展开重算均保持输出、梯度与BatchNorm单次状态一致，26项相关测试三次通过，commit `2712444`。但batch=4→2→1仍在同一点OOM，不能继续归因于模型本身或盲目减batch。
+- **真正根因**：`compute_ledger`明确显示恢复后step1501起的 `lengths` 仍每组4条。`BatchStream.state`只存epoch和旧queue，resume直接恢复旧B=4分组，使命令行batch-size改变无效；峰值实际来自旧的大batch，而非新B=1。
+- **修复**：新增 `restore_batch_stream`，将尚未处理的序列按原顺序重新分组，保留epoch、seed、step及已处理序列，不重置训练。相同batch时分组完全不变，空queue按新batch进入下一epoch。补充identity、B=1顺序及空queue测试，相关28项测试三次通过，commit `f0ca40b`已推送。
+- **恢复验收**：最新ledger均为单条 `lengths=[L]`，已越过原失败点到step1564，未再发生OOM。step1550日志峰值约3GB。当前recipe为Plan-A batch=1、R2D batch=1，模型结构和数据不变；继续自然收敛，Plan-A 2026和Rfam仍待后续，PPT不更新。
+
+
+## §15.788（2026-11-09）正确rebatch后Plan-A 42进入解冻阶段
+
+- **step2000**：VL0=22.006790746034376，未超过best step1500=20.94467806939597，bad=1；按patience=6继续，未提前停止或改参。
+- **step2400–2500**：按原计划解冻2/33层，step2500真实训练记录完整，日志峰值约5GB，未再出现OOM。run_meta保持seed=42、batch=1、steps=0及正确学习率。
+- **边界**：正确rebatch后的训练和解冻路径已验证，但Plan-A 42尚未收敛，Plan-A 2026和Rfam仍未开始，PPT不更新。
+
+
+## §15.789（2026-11-09）Plan-A 42自然收敛与Plan-A 2026后段改善
+
+- **Plan-A 42**：step3500 VL0=20.226525503748263成为best，最终step6500=67.54642555333588、bad=6并自然早停。run_meta completed/converged=True/early_stopped=True、steps_completed=6500、seed=42、batch=1、真实CUDA；best checkpoint内部step=3500，meta seed=42，SHA256=`c9893c56…d6f2`。
+- **Plan-A 2026**：当前best step5000时VL0=19.84405134882966，step5500=20.214132985741657、bad=1；随后step6000改善至18.330635182157277并刷新best、bad=0，仍running/converged=False，继续原配置自然收敛。
+- **边界**：R2D 3407和Plan-A 42已闭环，最后一个成员未收敛，Rfam尚未产生结果文件，不能提前组合或宣称提升，PPT不更新。
+
+
+## §15.790（2026-11-09）三成员齐套、Rfam repeat0与持久并行守护
+
+- **Plan-A 2026收敛**：best step6000/VL0=18.330635182157277，step9000自然早停，best checkpoint内部step一致，SHA256=`c6a998b7…3c72`。至此R2D3407、Plan-A42、Plan-A2026三成员全部自然收敛，Rfam评测正式启动。
+- **Rfam repeat0（初步）**：n=10790，micro-F1=0.645538279398759，precision=0.6637207166494161，recall=0.6283254843105798，TP/FP/FN=182117/92271/107728，macro-F1=0.6399835804333031。该值低于旧xens2约0.6514，但后两次和独立QA未完成，不作最终结论或PPT更新。
+- **新种子Pair-JEPA**：J-mlp也独立训练42/2026/3407，旧R5仅作架构参照，训练、聚合、置信度、paired bootstrap及QA统一读取新种子；23项相关测试三次通过，commit `5ad3922`已推送。Rfam活跃时只并行一个训练，其余时间最多两个，避免叠加OOM。
+- **持久监督**：新增 `tools/watch_round50.sh`，每分钟检查完成标志与flock，失败按断点恢复，完成不重复；以nohup运行，状态写 `logs/round50/watchdog_status.json`，commit `35152ce`已推送。实测GPU约14.9/24.6GB、利用率91%，不为占满而超订；后续顺序为Rfam→Pair-JEPA全板→复合物D0/D1→LinearDesign→最终速度/置信度/长序列→PPT/归档。
+
+
+## §15.791（2026-11-10）J-mlp 42自然收敛与复合物种子合同同步
+
+- **J-mlp 42**：step8000 VL0=31374.854234167637、bad=5，随后step8500达到bad=6并自然早停。run_meta completed/converged=True、best step5500/VL0=24.79516436509844，best checkpoint内部step一致，SHA256=`240576c9…a98c`，真实CUDA。J-mlp 2026已接续启动，不与旧R5的0/1/2混配。
+- **后续种子合同**：复合物D0只复用新种子训练出的基座，D1训练、主评测、消融、置信度、paired bootstrap及裁决均读取42/2026/3407。23项相关测试三次通过，commit `eec5cb2`已推送。watchdog保持nohup与flock幂等恢复，SSH短时断开不影响远端任务。
+- **当前进度**：Rfam repeat1正在执行，尚未形成三次完整结果与独立QA，不能将repeat0的0.6455382794作为最终结论，PPT不更新。
+
+
+## §15.792（2026-11-10）旧xens2扩充数据Rfam最终负结果与QA纠错
+
+- **最终结果**：三次Rfam输出逐字节一致，n=10790，micro-F1=0.645538279398759，precision=0.6637207166494161，recall=0.6283254843105798，macro-F1=0.639983580433303，TP/FP/FN=182117/92271/107728，population SD=0。相对旧xens2约0.6514下降约0.00586，未带来Rfam提升，也不是BPfold约0.7872的SOTA。
+- **QA问题定位**：首次独立QA得到不同F1，逐条复核确认Rfam GT与预测均为1-based，直接集合计数与原始结果完全一致（TP/FP/FN同上）。真正错误是QA脚本micro-F1漏除precision+recall，另有一处字符串路径未转Path；不是模型结果或数据索引错误。修复后3项测试三次通过，双QA逐字节一致，QA SHA256=`68003ed9…7a29`，commit `a2e1aff`已推送。
+- **科学边界**：本次仅150条满足旧xens2 1024nt共同上限的复合物扩充链加入训练，不能据此否定全部复合物数据或外推长链效果。该模型仍是Plan-A 42/2026+R2D 3407集成，single_model_claim=False，不替代独立单模型目标。
+- **后续**：J-mlp 2026及后续Pair-JEPA由nohup+flock守护继续，复合物D0/D1与LinearDesign按冻结顺序执行。负结果保留，PPT只在最终复核完成后更新。
+
+
+## §15.793（2026-11-10）J-mlp三种子齐套与VL0参考种子修复
+
+- **三种子收敛**：42 steps=8500、best step5500/VL0=24.79516436509844、SHA=`240576c9…a98c`；2026 steps=9500、best step6500/VL0=24.40041182053897、SHA=`0c7c7b5b…e364`；3407 steps=8000、best step5000/VL0=26.938228627576432、SHA=`4aaac1dd…7386`。三者均自然早停且checkpoint内部step一致，不混用旧R5种子。
+- **主结果与故障**：J-mlp主39格已落盘，summary已生成。置信度脚本原先用 `np.argmin` 的数组下标0/1/2直接拼接 `vl0_s{seed}`，导致错误读取不存在的 `vl0_s1.json`；现改为 `args.seeds[argmin]`，真实参考42/2026/3407，双跑逐字节一致，commit `dd9f033`已推送。
+- **后续**：已恢复greedy/Turner=0消融及EMA后续队列，所有完成格按身份跳过，不重算。J-mlp独立QA和全臂裁决未完成，不作SOTA或防坍塌结论，PPT不更新。
+
+
+## §15.794（2026-11-10）用户停止后续实验与证据保全
+
+- **停止指令**：用户明确要求停止后续实验。远端watchdog、训练、评测及等待队列全部停止，本地相关后台任务同步停止，不再自动恢复。停止记录=`source_data/round50/xens2_complex/user_stop_20261110.json`，SHA256=`d04730d3…bd01`。所有checkpoint、日志、预测和原始数据保留。
+- **最终有效结果**：旧xens2扩充Rfam三次原始文件已全部同步到 `source_data/round50/xens2_complex/`，三次逐字节一致，双QA一致，QA SHA256=`68003ed9…7a29`；micro-F1=0.6455382794、macro-F1=0.6399835804，扩充未带来提升。
+- **停止边界**：Pair-JEPA只完成J-mlp三种子和主39格，greedy/Turner0、EMA/noEMA/random及全臂裁决未齐套；复合物D0/D1与LinearDesign正式实验未开展。上述内容不写成科学结论，不宣称8/8 SOTA、速度SOTA、最佳置信度或长序列优势。
+- **当前工作**：仅更新停止状态、汇总交接文档、整理绘图源、建立哈希清单并归档旧文件。原PPT和用户调整不改，废弃文件只移动归档，不删除。
+
+
+## §15.795（2026-11-10）绘图源与根目录归档终审
+
+- **图源清单**：`source_data/SOURCE_MANIFEST.json`覆盖1045个文件、4,011,927,576字节，SHA256=`5aafd5ee…8261`；逐文件大小和SHA独立复算全部通过。`FIGURE_SOURCE_INDEX.md`列明当前结果、旧版本和停止边界。
+- **归档**：33组、1987个文件已移动至 `archive_20261110/`，约750,422,015字节，包含旧根目录文档/脚本、旧图件、缓存和已完成开发目录；没有删除任何原始数据。逐文件索引=`archive_20261110/ARCHIVE_INDEX.json`，SHA256=`f0370852…3034`；组级索引=`ARCHIVE_GROUP_INDEX.json`，SHA256=`e3ab1df0…6b63`。
+- **三轮复核**：①归档文件存在、大小及SHA全部一致；②根目录单文件路径和组级计数已修正，逐文件与组级均为1987；③1045份图源独立复算、Rfam三次一致性及两处spec活跃段一致性全部通过。旧SOURCE_MANIFEST保存在 `archive_20261110/manifest_history/`。
+- **最终交接**：`STOP_AND_ARCHIVE_20261110.md`已写入。根目录仅保留交接文档、论文、ppt、tables和archive_20261110，PPT原稿与用户调整未改。后续实验停止，恢复工作须经用户同意，不得把未齐套结果写成完成。
+
+
+## §15.796（2026-11-10）阶段0 R-replay只读核对与实现预检（工程准备，非科学结果）
+
+- **实时状态**：用户已明确批准按新优化计划恢复阶段0。远端 `/home/rna_jev` HEAD与上游均为 `dd9f033a95e9d0f6b17c4ed889057aec426a27f3`，分支 `round48-single-model-20261106`；无训练、评测或相关等待进程，RTX4090空闲。crontab仍有两条旧RNA/JEV自动恢复项，后续执行前须继续防止旧任务重复启动。未改动旧run、checkpoint、原始JSON或PPT。
+- **R6可恢复身份**：seed0/2的best step=6500/7000，best VL0=24.015921937021343/23.221367356211246；resume step=9500/10000。早停后训练器已将best权重写回resume，seed0/2的encoder/head与各自best逐张量完全一致；optimizer含209个状态，scheduler与stream完整。诊断范围固定为 **best权重+终态optimizer/scheduler/stream**，不是best时刻optimizer的历史重放，禁止混淆。数据SHA256=`5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854`；seed0/2 best SHA256分别为`bff078f0…3efa15`/`4a8417d6…03fd821`。
+- **独立实现**：新增 `tools/replay_r6_objective_optimizer_round51.py` 与测试，不改正式训练路径。直接读取保存队列，seed0选择长度178/341nt批次，seed2选择90/129/253/322nt批次；计划分别计算NLL-sum、NLL-length及辅助项梯度、cosine、m/v、裁剪、update RMS、update/weight和长度斜率，并模拟原LR与backbone=1e-6。禁止optimizer.step，要求权重、scheduler和stream不变。
+- **第一轮实现/合同检查**：初次合成检查发现AdamW未恢复时参数组为张量、恢复后为整数索引的接口缺陷，已修复；随后测试脚本自身的float.sqrt错误也修正。最终远端py_compile通过，5项合成/边界/反事实测试连续三次全部通过。测试覆盖best权重身份拒绝、stream不变、梯度/裁剪、Adam手算与无更新、长度斜率。
+- **第三轮独立复核**：seed0/2 preflight各双跑逐字节一致。seed0原始/recheck SHA256=`cf099aabd9c7f21c4bd5a98a2f0ad298059e6b2400f4c0255186bc1ab82666d1`；seed2=`b2b3e214a1cf0885881a876f0b818625d6983e1f5ba48a743e95f024b8dbd1ff`。远端artifact在`audits/round51/`，本地镜像在`交接文档/source_data/round51/`。
+- **未完成门**：真实CUDA重放、原始artifact逐项检查、独立指标复算和机制裁决尚未执行；因此当前只属工程准备，不作NLL或optimizer机制结论，不启动L-length/O-LR，不提交未验收实现，不进入后续阶段。
+
+
+## §15.797（2026-11-10）R-replay真实CUDA、独立QA与阶段门裁决（诊断完成，非训练效果结论）
+
+- **运行身份**：seed2主诊断与seed0复核均在真实RTX4090/CUDA 12.1执行，best权重+终态optimizer/scheduler/stream，12/12层解冻，batch=2，NLL=sum对照、length重放，AdamW betas=(0.9,0.98)、wd=0；只计算和模拟更新，未调用optimizer.step，权重、scheduler、stream逐值不变。未读取或使用测试集调参。
+- **问题定位与留证**：v1只记录绝对梯度误差，独立QA首先修正total的length关系，随后发现float32逐元素/范数需要分别验收；v2补充小参数相对误差，v3补充全局梯度最大值尺度误差。v3 QA又发现LambdaLR构造把head LR初始化成2e-5、load_state_dict不恢复参数组LR的问题，v4按保存的optimizer参数组显式恢复1e-4/1e-5并新增回归。v1–v3保留但不用于结论；最终6项静态/边界测试连续三次通过。seed2两次SSH建连失败均未进入计算，第三次同配置完成；这些传输事件不归为科学失败。
+- **最终数值验收**：seed0/2各2/4个批次、4/8条序列；NLL-length×L与sum的梯度范数相对差均≤0.005，全局尺度逐元素误差均≤0.01，辅助项全局尺度梯度差均≤0.01。seed0结果SHA256=`c6b0eab98c61427b9e03127a28572476f3cd5dc665af3d1199ff16d5e926699b`、QA=`2a34f18119e05f6a95437d1846c6e47ddf3aae4e29703390afe18dd8ef25da1e`；seed2结果=`38b505d2bd89abbe873d9af9db9ffe218efd874ef1d5f61d13ac7f7ec771104e`、QA=`058afc6e57a3bf18822d4701ebfeb3dd79a5b5819258459414b21f660a94a281`。两项篡改（梯度范数、辅助项尺度误差）均被独立QA拒绝。
+- **关键诊断**：length/sum的shadow update RMS在6个批次中均增大，head/backbone范围分别为8.0182–80.1575/8.0182–80.1575倍，中位均约28.8024倍；因此在恢复的终态优化器状态下，不支持“length自然降低更新幅度”的假设，必须由独立L-length训练裁决。backbone LR=1e-6使对应shadow update RMS变为原来的0.1（数值范围约0.09999999–0.10000000），只证明更新尺度，不证明VL0或F1改善。
+- **冲突与长度边界**：5/6批次至少一种归一化下NLL与辅助项梯度cosine为负，seed2四批中三批、seed0两批均为负；不允许据此混改aux权重。seed2的NLL-sum损失长度斜率=0.5187364389、length=0.0009671870，NLL-sum梯度范数斜率=3.0157800088、length=0.0027694849；seed0仅两个长度点且斜率方向不同，不能外推为普遍长度定律。全解冻重放不能隔离解冻ramp效应，U-ramp不放行。
+- **阶段门**：决策双跑逐字节一致，SHA256=`b776ff27ac16ab91afe1d0faa39c8a785ba2243003accdfbee19de7ab80aeb07`。R-replay三轮检查完成；允许分别启动L-length与O-LR单因子正式实验，禁止L+O交互、U-ramp和容量阶段。当前尚未启动这些训练，所有精度、稳定性、SOTA和速度结论仍未验证，PPT未修改。
+
+
+## §15.798（2026-11-10）L-length/O-LR实现、恢复保护与CUDA工程预检（非科学结果）
+
+- **唯一改动**：`train_plan_a.py`新增`--nll-normalization={sum,length}`，训练与VL0均读取同一配置，run_meta明确记录；O-LR沿用现有`--backbone-lr`。恢复时新增NLL normalization/backbone LR/seed身份拒绝，并按保存的optimizer参数组恢复scheduler对应LR，避免LambdaLR构造覆盖为warmup初值。默认NLL=sum保持既有行为。
+- **合同与静态检查**：新增scheduler LR恢复和resume身份反例，相关29项测试连续三次通过；`bash -n tools/run_loss_optimizer_round51.sh`与py_compile通过，CLI含nll-normalization。初次测试路径及两处测试构造错误已修正，未放宽生产断言。
+- **真实CUDA预检**：两种配置各2步、batch=2、seed42、RTX4090、0/12 warmup，均`stop_reason=step_cap/converged=false`，只作工程证据。L-length step1 NLL=0.8049、total=1.7648、gnorm=3.49，O-LR step1 NLL=88.5346、total=89.4945、gnorm=97.7；三者辅助项逐值相同distill=0.6839、rlcd=-0.4216、cal=0.6976，NLL sum/length四舍五入比=109.9945334824，符合该批长度约110。O-LR backbone LR=1e-6、NLL=sum，L-length backbone LR=1e-5、NLL=length，未混改。QA=`audits/round51/loss_optimizer_smoke_qa.json`。
+- **队列边界**：`tools/run_loss_optimizer_round51.sh`只含L-length与O-LR，seed42/2026/3407，steps=0、500步VL0、patience=6，三任务并行、失败仅按最近resume同配置串行恢复，不自动进入测试评测或后续阶段。正式训练尚未启动，PPT未修改。
+
+
+## §15.799（2026-11-10）L-length/O-LR正式队列启动与首轮VL0身份验收（训练中）
+
+- **正式运行**：实现提交`d17dd1d39e1761b275836c3b2f9888af6e51304e`已push。持久队列PID=3702995，首批L-length 42/2026与O-LR 42三任务真实RTX4090并行，约15.5GiB、利用率96%；剩余L-length 3407与O-LR 2026/3407按队列接续。三者均steps=0、batch=2、500步VL0、patience=6，seed和loss/LR身份与合同一致，无CPU降级或测试集读取。
+- **首个VL0**：L-length 42=-0.33736506058479404，L-length 2026=-0.3090656052765778，O-LR 42=41.117491009075174，均best step500/bad=0。不同NLL归一化的VL0绝对值不能直接作性能比较，单点、单种子不作科学结论。
+- **后段过程快照**：QA完成时L-length 42 best step3000=-0.5006376565074406，L-length 2026 best step2500=-0.48626602186444784，O-LR 42 best step3000=30.847339705376772；训练仍running，未自然收敛，不外推稳定性或精度提升。
+- **artifact问题与修复**：首次QA读到正在重写的checkpoint并出现`PytorchStreamReader failed reading file`，第二次固定2秒检查仍遇到文件变化，第三次读取又发生竞争；训练未报错，原始run保留。随后以源文件元数据前后一致的稳定副本完成QA，确认best内部step/VL0、resume LR、stream、CUDA和训练日志一致。为后续写盘新增`atomic_torch_save`（临时文件+os.replace+失败清理），31项相关测试连续三次通过；正在运行的旧进程不重启、不改变科学配置，后续恢复使用原子写实现。
+- **证据与边界**：`audits/round51/loss_optimizer_first_vl0_qa.json`记录首轮及快照哈希。三种子/两臂尚未齐套，未启动测试评测、交互臂、容量或Pair-JEPA，PPT未修改。
+
+
+## §15.800（2026-11-10）O-LR 42单run自然早停与独立验收（单种子，非全臂结论）
+
+- **收敛与后段**：O-LR 42在step10500达到bad=6并自然早停，`status=completed/converged=True/early_stopped=True/stop_reason=early_stopping`；best step7500、VL0=26.06010442244561，step10500 VL0=75.2729473858714，完整21个验证点保留。最大训练日志绝对loss=26180.2365、最大gnorm=77068.83，说明低backbone LR并未消除所有后段尖峰，不能宣称O-LR已解决稳定性。
+- **独立QA**：`validate_run`核验steps=0、500步验证、patience=6、NLL=sum、backbone LR=1e-6、best/resume权重逐张量一致、resume scheduler LR=[1e-4,1e-6]、全部有限值及数据SHA。best SHA256=`fe5aba82a247668a51bd912cac66598446096ac064a3a2298302bf8747a0635f`，resume=`987f02769c598ac5a39d4c70392316bfbfe6ba769b1c04a763f7ad8f3fcf0adb`，证据=`audits/round51/loss_olr_s42_completed_qa.json`。
+- **边界**：这是O-LR首个完成种子的训练验收，不是三种子结论，也没有测试集精度证据。L-length 42/2026仍训练，第二批与后续评测按门等待，容量阶段未放行，PPT未修改。
+
+
+## §15.801（2026-11-10）L-length/O-LR六种子自然收敛、完整训练QA与评测放行
+
+- **六种子齐套**：L-length 42/2026/3407分别step30500/32500/28000自然早停，best step27500/29500/25000，best VL0=-0.7811064888180498/-0.7856174261502568/-0.7811359934289053，均值=-0.7826199694657373、population SD=0.0021195561740127503。O-LR分别step10500/9500/7500自然早停，best step7500/6500/4500，best VL0=26.06010442244561/25.645122854695654/28.020228774390237，均值=26.575152017177167、population SD=1.0357726748893419。所有run均steps=0、500步VL0、patience=6，best/resume权重一致，无固定步数截断。
+- **稳定性对照**：L-length三种子最大训练绝对loss=1.7648/1.6246/1.7108、最大gnorm=21.88/17.04/21.72，后段最大VL0均为各自首验证点，未出现R6/O-LR式爆炸。O-LR三种子最大训练绝对loss=26180.2365/3654.8934/1633.7124、最大gnorm=77068.83/40176.6/36776.55，末次VL0=75.2729473858714/49.396910658951015/390.17401863901733，明确保留全部尖峰。训练证据支持length在此配方下显著改善优化稳定性，O-LR单独降低backbone LR不能解决失稳；但VL0不同归一化不能直接比较精度，必须等待冻结测试。
+- **三轮检查**：训练QA双跑逐字节一致，SHA256=`277dfb93efef64c3d411f4e8d3fed46fb08d814c0734f4b7292f2a7771c37f7a`，覆盖六run身份、完整曲线、有限值、best内部step/VL0、resume scheduler、数据/教师SHA和CUDA。`loss_optimizer_training_complete.json`与独立QA均已落盘。
+- **同阶段评测放行**：`run_loss_optimizer_evaluation_round51.sh`已在QA通过后启动（PID=3979802），仅L-length/O-LR的13 split×3 seed×3 repeat、greedy/Turner0、confidence、SOTA和双独立QA；测试不参与此前训练、早停或配置选择。容量仅允许离线诊断，不允许C-wide/C-local训练，Pair-JEPA未放行，PPT未修改。
+
+
+## §15.802（2026-11-10）用户缩减测评范围与L/O完整裁决：主benchmark+Rfam
+
+- **用户新协议**：后续只先测主benchmark八任务与Rfam，表现好的模型再跑CHANRG等后续测评。原13 split结果全部保留；不再需要的CHANRG进程已停止并记录`audits/round51/chanrg_stop_scope_change.json`。新独立验收为9 split×3 seed=27格，聚合器、SOTA比较器、QA均参数化同一split列表，默认旧13 split行为不破坏历史结果。
+- **L-length结果**：主benchmark all-baseline/external-single均0/8。TS0=0.5000043683671659（n=79）、bpRNA-new=0.39931044529574694（74）、ArchiveII=0.5242681510048763（90）、TestSetB=0.31589806153504635（21）；Rfam=0.44812320363719244，低于BPfold=0.7871860033232333。主/greedy/Turner0及独立QA均完成。
+- **O-LR结果**：主benchmark两种口径均0/8。TS0=0.24816246345873863、bpRNA-new=0.26717851264576503、ArchiveII=0.3176565438196221、TestSetB=0.17337039516824257；Rfam=0.36039446708005946。O-LR在主benchmark与Rfam均明显弱于L-length，与训练稳定性负证据一致，不启动交互臂。
+- **并行与最终QA**：Turner=0按split并行并补充独立seed worker，27格全部完成；完成标志SHA256=`2953bd1656e626c251bb2e68f22808d8c422d8471649179fc465346536dc8fc3`。O-LR主/greedy/Turner0 QA SHA256分别为`5824a4ec519e55c6529771beb586c860c57e1800ccd7f4a7f843f7af9a242147`、`5865ec7842135d25912a75f9ecb61e065f9260a46ec0f1b6c0032f0d2ed5488a`、`eae7564055d59886d0976cd3e6f61ca4d892a9a3b2d0bc1b71f00a876263b155`。
+- **裁决**：L-length为当前稳定基座，但主benchmark与Rfam未达“表现不错/继续后续测评”的标准，故不继续CHANRG。允许进入离线容量诊断，不允许直接启动C-wide/C-local或Pair-JEPA；最终SOTA、最佳置信度和raw速度仍未验证，PPT未修改。
+
+## §15.803（2026-11-10）容量诊断三轮验收、负向扩参裁决与J-gate放行
+
+- **合同与身份**：唯一诊断为L-length稳定基座的训练/VL0误差及PairMLP容量接口；没有修改部署模型或读取测试集选臂。TR1c SHA256=`5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854`，VL0 SHA256=`1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d`。固定selection seed42从42564条TR1c无重复抽取196条，完整VL0=196；训练/VL0序列不相交，三best训练seed42/2026/3407使用完全相同的子集。
+- **两步工程smoke**：latent490与1024均seed42、batch=2、NLL-length、四目标、真实RTX4090/CUDA，2步step_cap而非收敛。scorer参数分别304547/1182977，整模型参数1217420/3852176；VL0=2.8038569278654246/2.8005251967707525。best/resume权重逐项相同，梯度覆盖无missing/nonfinite，无辅助目标时6个context predictor参数明确排除。两步loss不是容量效果或精度证据。
+- **失败与修复**：旧latent1024的28模型键/20 optimizer槽不兼容现场、混合ledger和validation原件均完整移至`stale_pre_exclusion`，新run从一致初始化启动，没有混用optimizer。原始混合ledger SHA256=`23ff40b96e31d803da324fbac0a81cb3841fa1f149b76e513ce7d6556e372fad`，validation=`bc99161af39fb97f3b6787913c1f494e68a3b317d885595277255c428cfdba0a`。工程QA另纠正checkpoint内部best快照与外部完成态meta的混用、两步无周期train_log、启动器shell优先级、structRFM适配器安装和旧PairMLP无EMA teacher等问题；最终关闭EMA并严格验证missing/unexpected均为空、teacher=None。所有失败日志保留，详见`source_data/round51/capacity_engineering_failures_round51.json`。
+- **冻结CUDA诊断**：三best step=27500/29500/25000，checkpoint SHA256分别`6e0146eb1f86d8c4f24425c59db7993b47b15c03cdf8a55a703908847ac5fdab`、`f6a0632879cf0d41b1863da099b40aa0e8410406909d5761cfb4e9b11a143022`、`e3ab8a9408e886707294846b8a061929fde1675609bc9f203b3a81243ce6b00d`。训练子集NLL=0.2114154677/0.2064146502/0.2248068279，VL0 NLL=0.1486541620/0.1447315615/0.1517624765；三种子平均训练/VL0 NLL=0.2142123153/0.1483827333，distill=0.0396483407/0.0422596050，cal=0.0258398815/0.0155870384，rlcd=-0.9822519842/-0.9888493462，total=-0.7025514467/-0.7826199695。逐序列原始loss、序列SHA、长度和配对数均保留；长桶训练>400仅4条、VL0仅1条，不作长序列结论。
+- **三轮检查**：实现/合同完成参数形状、seed、数据、初始化、无teacher推理和拒绝CPU检查；真实CUDA完成三best及v2/v3两次独立前向；独立QA从原始JSONL重新选择子集，从逐序列loss重算均值和长度桶，并对checkpoint、VL0和SHA逐项对账。v2/v3除允许不同的峰值显存字段外逐字段一致，等价证据SHA256=`bacdbfa52112a2fc6365dd7836411d8973c774a444e5bf4048e3a4a36f220a1c`。初次QA因set键序造成字节差异，排序修复后双跑一致，error QA SHA256=`30ade00581ea3f08d096718aef440338929ab467ec15326de05f3e9fa3c65f9c`，repeat QA=`bec37d9e7b638bb2bd820f3c01710280cae85c61b9c77a824f68339ecc59e7f0`，smoke QA=`aebf0a9df0fd301e9c87fee0e9fa1a00a3421265173b59fe787962bdde29524d`。相关抽样、边界、独立聚合及篡改拒绝测试连续三次通过。
+- **裁决**：三种子均训练NLL高于VL0 NLL，未出现支持简单头部欠拟合的训练/VL0形态；结合既有近参数PairMLP/ResNet对照，不将当前瓶颈归因为参数不足。该诊断不证明理论容量充分。C-wide和C-local均不放行、未启动；decision双跑SHA256=`d0f7a464ee57296319d6b569c36ce558c6513f0a74818b78533c8908a454c943`。下一阶段只允许J-gate的工程与反事实验收，Pair-JEPA训练尚未放行。主8+Rfam未达后续测评标准，CHANRG仍不恢复，最终精度/置信度/raw速度均未验证，PPT未修改。
+
+## §15.804（2026-11-10）RiNALMo全量重跑、结构对比与LinearDesign扩展合同（文档完成，未启动训练）
+
+- **用户最新指令**：后续所有新实验固定RiNALMo骨干，重新执行优化计划；seed=42/2026/3407、steps=0、每500步VL0、patience=6，常规结构评测仅主benchmark八任务+Rfam。structRFM全部checkpoint、run、预测、QA和结论保留为historical_structRFM_diagnostic，不删除、不混入新对照。新run统一`round52_rinalmo_*`，旧RiNALMo结果只作历史参照，不冒充本轮重跑。
+- **核心实验链**：先建立RiNALMo新R0，不能直接读取structRFM R6 optimizer；R0三种子自然收敛后才做best权重+终态optimizer/scheduler/stream的无更新R-replay。之后独立L-length/O-LR、容量诊断、J-gate/J-mlp/J1-block-EMA/fixed/random、D0/D1、motif-input、长序列和冻结验收。旧structRFM容量门的J-gate放行不自动适用于新骨干。
+- **调研借鉴**：已完整阅读指定目录spec/tasks/checklist与17页PPT。采纳tr1c-v2同源/家族审计、视图split继承、负样本假阴性控制、随机/困难负样本对照、距离筛选/加权、同step与同GPU-hour/FLOPs和失败分析，形成CL0–CL5条件矩阵。不照搬第二宿主，不把反向/互补/未验证补偿突变/任意次优结构当正对。主终点为bpRNA-new逐序列macro-F1增量，strict micro/P/R/INF同报，Rfam独立，不合并均值。
+- **LinearDesign扩展**：已完整阅读用户28页论文，PDF SHA256=`2d8e7b5188a46ca6372f52e3abf785ae38f86af3b6394d52f51c91d3c46bfa9c`。新增114条UniProt蛋白的design-dev/test、exact/beam、λ=0与联合优化、max-CAI/野生型/随机同义密码子对照、5′前15nt与<33bp论文约束、UTR–CDS `-d0`交互、全长PRISM结构/风险评价和生成器/推理分段计时。spike/VZV补充序列须从figshare或补充材料恢复核验，不得凭图伪造。生成器MFE与Vienna差异未归因前不称一致；超过支持长度标PARTIAL，禁止截断；无湿实验不写半衰期、表达或免疫效果。
+- **文档同步**：统一合同=`docs/plans/2026-11-10-rinalmo-full-replay-and-downstream-expansion.md`，执行提示词、原LinearDesign合同、两处spec/tasks和停止交接均已加入最新覆盖。调研源SHA：spec=`8a2c36c826f076c2a39122e18a441edbc9a1e8f72a8c081a89e83fc0145a4976`，tasks=`d265c6777f0c88fef9f83cc6a3cbd5fe681f20b9ea3fd81e4a6d37d1ddfb5aae`，checklist=`665852a3dfe854ac212fb30e7687507609e80d3284badbc8ed044238d241f471`，PPT=`1799d2e91837549f4820bb0f6683253a58a0d5e9dc66310dda33ae9a470a293d`。
+- **当前边界**：仅完成论文/调研阅读、旧合同核对和文档更新，未启动R0、J-gate、CL、D0/D1或LD1/LD2，未修改PPT。下一步只读核验RiNALMo权重、R6对应配置、预训练污染证据和训练接口，再做R0三轮工程预检；非计时按实测安全并行提高显存/利用率，正式测速独占，不能为占满而OOM或改变科学配置。
+
+## §15.805（2026-11-10）RiNALMo R0两步CUDA工程预检与三轮QA（非科学结果）
+
+- **资产与配置**：RiNALMo-giga官方权重650878731参数、33层、d_model=1280，`model.safetensors` SHA256=`0b3f73b5c80d267f0b7e92655b28f16088e3d5a595c6dae631b52142aa38bcda`，config SHA256=`04fb8fad8cf6f7a89ca0c6008ecc872a82c9bb27b054a1043b327614fbe06e9d`。严格加载498/504个encoder tensor，仅缺不用的pooler.weight/bias。R0 smoke为PairMLP-490+R6 head、NLL-sum、四目标、head/backbone LR=1e-4/1e-5、batch=2、seed42，未读取任何structRFM checkpoint/optimizer。
+- **实现检查**：`train_plan_a.REPO`从不存在的`/root/rna_jev`改为按`__file__`定位真实仓库，imports明确落在`/home/rna_jev`。仓库身份及既有resume测试连续三次通过；R0 smoke脚本语法、py_compile和完整命令核对通过。首轮两步未触发VL0（validation_every=500），因此无best.pt，完整保留为`round52_rinalmo_r0_smoke_s42_no_validation`；仅工程smoke改为每2步验证并重跑，正式R0仍每500步。
+- **真实CUDA**：第二轮两步完成，首步NLL=88.535、distill=0.684、rlcd=-0.422、cal=0.698、total=89.4945、gnorm=95.64、峰值约5.8GB；best step=2/VL0=70.23955965333478，stop_reason=step_cap、converged=False，不写成收敛或架构效果。best SHA256=`907a059e37cce7cddc8663c610ba25eb9c5b0825c9c7a3fe81f1d8974d4d9cbb`，resume=`ccb5b4d6f992623a77ca3fdf381eb3caf2896e29b9e1ae442e82e9b74e09c0e4`，best/resume权重逐张量相同。
+- **独立QA**：step2 warmup为3/5，scheduler base LR=[1e-4,1e-5]、当前=[6e-5,6e-6]，optimizer参数组一致；train/validation数据SHA分别为`5f024ab2…a854`/`bb15c17a…c778`，教师manifest=`7a91d011…b255`/`87021485…422f`。QA双跑逐字节一致，SHA256=`8061cddebec532bc376fdc36c88bb82b09c0495088e89731f94ebb7fe120e65b`。
+- **模型卡PARTIAL**：初版验证器交换top.indices/top.values且只有11/28 token映射，已修复并保留旧错误输出。官方MLM head缺失仅`lm_head.bias`、unexpected为空；fp32/bf16对比中当前top-5为A/U/G/X/C，模型卡为G/U/X/A/C，真实masked字符A能预测但top-1不一致，标`PARTIAL_TOP1_MISMATCH`，不宣称精确复现模型卡。严格权重SHA、有限输出和R0 checkpoint身份均通过，未隐藏该差异。
+- **预训练/长序列边界**：RiNALMo原文预训练含RNAcentral、nt、Rfam、Ensembl，36M唯一序列经70% identity、0.8 coverage聚成17M簇，Rfam须披露预训练接触风险。原训练/微调1024 token限制及>1022nt随机裁剪不得用于新全长验收；超限标PARTIAL，禁止截断。此内容已补入统一合同。
+- **下一步**：只允许按已验收命令启动R0三种子正式训练，串行以避免650M模型峰值叠加OOM；steps=0、每500步VL0、patience=6。R-replay、L/O、J-gate、CL及后续实验均未放行，PPT未修改。
+
+## §15.806（2026-11-10）R0三种子正式队列启动（训练中）
+
+- **启动身份**：实现与QA提交`6d051026bc25e4d997e02af2a50aa89b2ace1641`及远端分支一致，smoke QA SHA256=`8061cddebec532bc376fdc36c88bb82b09c0495088e89731f94ebb7fe120e65b`通过硬门。远端setsid训练脚本PID=4082710，日志=`logs/round52/rinalmo_r0_s42.log`及`rinalmo_r0_queue.log`，run根目录=`runs/round52_rinalmo_r0_s{42,2026,3407}`。
+- **冻结配置**：RiNALMo-giga+PairMLP490+R6 head，NLL-sum、四目标、batch=2、steps=0、每500步VL0、patience=6、min_delta=1e-6，head/backbone LR=1e-4/1e-5，1600步head warmup后每800步解冻2层，seed=42/2026/3407串行。保存best VL0、resume、stream、optimizer/scheduler和完整后段曲线，失败只按最近有效resume原配置恢复。
+- **当前事实**：已确认数据加载与真实CUDA预留，尚未产生首个500步VL0或自然收敛结果；本地SSH等待已结束但远端独立训练未停止。R-replay、L/O和后续实验未启动，PPT未修改。
+
+## §15.807（2026-11-10）R0前三个VL0与RiNALMo replay工程预检（训练中）
+
+- **过程曲线**：seed42 step500/1000/1500 VL0=32.37983624613044/29.054267892479807/28.433802097627474，均连续刷新best、bad=0。固定checkpoint时best step=1500，训练仍running，未自然收敛，不能用best代替完整后段曲线。
+- **真实artifact QA**：`stable_load`固定best/resume，best step/VL0一致，resume step不早于best、stream完整，scheduler base LR=[1e-4,1e-5]且optimizer组LR一致；训练中的resume不要求等于best。run保持steps=0、batch=2、NLL=sum、PairMLP490+R6、RiNALMo官方权重和真实CUDA。进度QA SHA256=`31b15073bb4a9427c75ed12fab2f14709c53a6996329cea7e7e59984a4f6d6eb`，独立复算确认逐行best及resume关系。
+- **replay实现**：旧诊断脚本新增`--backbone rinalmo`和`--run-id-prefix`，默认structRFM历史行为保留；RiNALMo严格要求官方权重路径，identity不符即拒绝。既有梯度/optimizer回归连续三次通过。固定R0 smoke checkpoint双跑preflight一致，选择4个保存批次，长度86/141/216/391，代码SHA256=`30a4e97aade6686043c2a48479d97f68f5a87ee820c3b3c8cda4f7da45aa44ae`。首次默认R0前缀拒绝smoke是正确身份门，显式smoke前缀后通过。
+- **边界**：当前只完成R0进度验收和replay工程准备，未对R0完成态做真实梯度重放，未启动L/O或测试评测。R-replay必须等三种子完成并固定best权重+终态optimizer/scheduler/stream，不读取活动checkpoint。PPT未修改。
+
+## §15.808（2026-11-10）RiNALMo真实CUDA replay工程验收与R0解冻初期观测
+
+- **replay工程结果**：固定R0 smoke best step2+终态optimizer/scheduler/stream，真实RTX4090重放4批/8条，长度86/141/216/391，n_unfrozen=0，权重、scheduler和stream不变，optimizer.step未调用。最大NLL-length全局尺度梯度误差=0.0028268801979720592，辅助项梯度差=0。独立QA双跑一致，SHA256=`c9a3c674d139c8f0a4608d4b5c152778d94cc7b19b64ce2b58f554c0a8941ac5`，结果SHA256=`430dee6ca2d23155181d0c92bbcd5599c5442b077db0085337e65b5345450a5e`。
+- **失败与修复**：首次0层解冻时autograd收到冻结骨干参数而失败；随后未连接但可训练的type head返回None又触发detach错误。现autograd只对requires_grad参数求导，并将冻结/未连接参数的None对齐回原槽位，不改变optimizer全参数或shadow-Adam索引。新增冻结和未连接反事实，7项测试连续三次通过，两个失败日志均保留。QA也区分smoke warmup head LR=6e-5与shadow backbone基准LR=1e-5，未把终态LR假设强加给smoke。
+- **证据边界**：该结果仅证明RiNALMo replay的梯度、逐项损失、shadow-Adam和状态不变量工程链可用，不是R0科学重放或length/LR效果结论。正式replay仍需R0三种子自然收敛后的固定状态。
+- **R0过程曲线**：seed42 step2000/2500/3000/3500/4000 VL0=27.0499081674/25.2006935872/28.2201775866/24.1349124315/27.6716682268，best step3500=24.1349124315，step4000 bad=1。已解冻6/33层；step3350训练total=723.9225、gnorm=2858.1，尖峰完整保留，不提前改loss/LR或终止。全解冻及自然早停未完成，不启动L/O或测试评测，PPT未修改。
+
+## §15.809（2026-11-10）LinearDesign LD0 MFE参数差异闭环（独立工程诊断）
+
+- **根因**：三条官方示例的生成器MFE=-1.1/-6.0/-13.5，旧ViennaRNA 2.7.2默认dangles=2复算=-1.4/-6.7/-14.7。显式`dangles=0`后分别为-1.1/-6.0/-13.5，与LinearDesign逐项一致，结构逐字符一致。完整终止密码子保留在该工程协议中；删终止子会改变结构与能量，不能用于一致性对照。
+- **三轮检查**：官方二进制三例双跑逐字节一致，诊断SHA256=`a92b4c959e1ba57349ae309aef9e8e5e0937aa4ae9730e221d2af9ec0226b52d`；独立RNAfold CLI在`-d0`下复算三例数值/结构均一致。候选验证器显式设置并记录`dangling_ends=0`，旧测试期望-1.40更正为-1.10并加参数断言。候选3项与综合4项测试连续三次通过。首次二进制相对路径、CLI括号解析和测试环境依赖问题均留证并修正，未通过跳过测试或混装torch环境规避。
+- **边界**：原文使用ViennaRNA 2.4.14，当前Python ViennaRNA 2.7.2与CLI 2.6.4分栏记录；该闭环仅证明三例计算协议一致，不证明所有蛋白MFE或生物稳定性。LD1的114蛋白、LD2冻结PRISM设计评价未启动，无湿实验外推。R0训练继续进行，PPT未修改。
+
+## §15.810（2026-11-10）R0 seed42自然早停与完成态QA（单种子）
+
+- **自然收敛**：seed42 step6500 VL0=744503.73658902，bad=6并自然早停；best step3500/VL0=24.13491243153436，steps_completed=6500，13个验证点完整。终态解冻12/33层，并非全33层，后续replay必须明确实际状态，不能声称完成全解冻归因。
+- **失稳保留**：最大训练绝对loss=1358607.3201，最大gnorm=4102410.5，step6000 VL0=252327.85919811975，step6500进一步上升；不隐藏best之后的爆炸，不以自然早停等同训练稳定。
+- **完成态QA**：best/resume逐张量一致，resume step=6500，scheduler LR=[1e-4,1e-5]，stream完整，steps=0、batch=2、NLL=sum、官方RiNALMo、真实CUDA及数据SHA通过。QA SHA256=`720fad6a6bb6c72e6f3d0d7b90b9da287dd7d0b1109fc97da7edc7c883398d8d`。辅助QA模块的torch导入作用域已修复并重验。
+- **后续**：seed2026已开始数据加载，seed3407未启动；三种子完整QA前不执行正式R-replay。replay QA改为读取各run实际n_unfrozen，不硬编码33层。L/O、测试评测和后续实验未启动，PPT未修改。
+
+## §15.811（2026-11-10）LinearDesign补充资产索引与下载阻塞、R0 seed2026过程点
+
+- **资产索引**：figshare DOI=`10.6084/m9.figshare.22193251`确认5个文件：COVID/VZV FASTA、uniprot_114.zip、raw_data.xlsx和p_value_summary.xlsx，许可CC BY 4.0。整包和单文件下载均返回403，实际下载0个文件，证据=`source_data/round52/lineardesign_asset_access.json`。原始资产未恢复并核验SHA前不得启动LD1，不得用论文图读数或文件名伪造数据。
+- **R0 seed2026**：step500/1000 VL0=33.303607435575735/31.176433418090834，best step1000、bad=0，仍在训练；seed3407未启动。当前不能与seed42拼成三种子结论，也不能启动正式R-replay。PPT未修改。
+
+## §15.812（2026-11-10）RiNALMo R-replay执行链与fail-closed验收（准备阶段）
+
+- **执行链**：`run_rinalmo_replay_round52.sh`先双跑三种子训练QA，再并行seed42主诊断与2026复核，逐run双跑独立QA，最后双跑裁决。各run按实际n_unfrozen验收，不默认全33层。
+- **裁决硬门**：新增`decide_rinalmo_replay_round52.py`，强制RiNALMo身份、42/2026种子、42/2026/3407完整训练QA、best/resume SHA和实际解冻状态一致；只允许独立L-length/O-LR，禁止交互、U-ramp和容量提前放行。length与LR只作shadow诊断，结构效果必须独立训练验证。
+- **反事实**：以smoke replay配合不完整训练QA调用裁决器，明确拒绝且不产生decision文件；脚本语法和py_compile通过。R0 seed2026仍训练，step1500 VL0=29.09801551264604，step2000验证时尚未解冻，seed3407未启动。正式replay、L/O和后续实验未启动，PPT未修改。
+
+## §15.813（2026-11-10）LinearDesign官方补充PDF与部分序列恢复（资产PARTIAL）
+
+- **官方补充**：Nature静态补充PDF 25页，SHA256=`11972295bb6751bd4505d6f59edc1ac054d609b8a4e1d022dd0b506ebe2b04fd29ca3`。figshare整包/单文件403原件保留为`lineardesign_asset_access.initial_403.json`，未重试伪造成功。
+- **可复核序列**：提取COVID A–H共8条CDS（各3819nt）、VZV A–E/Ther/WT共7条CDS（各1869nt）及4条UTR。FASTA SHA256=`412b9288dee41837859a4dc32eceebb9ebf7e6d319a8a60ec085b7b54a86178b`，双跑逐字节一致；独立原文对照要求CDS出现一次，COVID/VZV共享3′UTR出现两次，全部通过。BNT PDF文本3712nt，与3819nt且非三倍数，和wild-type均不纳入已验证序列。
+- **UniProt**：以表头/标题锚点而非分页行号独立解析到114个唯一ID，长度78–3333aa，与原文一致。此前111个是错误切片，未记为资产缺口；ID清单不等于蛋白序列，114条实际蛋白序列仍需从UniProt获取。
+- **边界**：当前为`PARTIAL_SUPPLEMENT_RECOVERED_FIGSHARE_BLOCKED`，原始QA=`source_data/round52/lineardesign_supplement_qa.json`。COVID BNT/wild-type、114条蛋白序列及figshare原包未恢复，全量LD1仍不放行，LD2未启动。R0训练继续，PPT未修改。
+
+## §15.814（2026-11-10）R0三种子完整训练QA与长序列优先级（训练阶段完成）
+
+- **三种子齐套**：seed42 steps=6500/best3500/VL0=24.13491243153436，seed2026 steps=7000/best4000/VL0=21.167809661189136，seed3407 steps=7000/best4000/VL0=22.250467982560117，均steps=0、500步VL0、patience=6自然早停。mean best VL0=22.517730025094536，population SD=1.2259680425368162。三run后段均爆炸，末次VL0=744503.736589/3549645.555944/2227267.145752，不将best曲线截断为“稳定收敛”。
+- **三轮QA**：逐run身份、完整验证曲线、有限值、best step、resume、stream、scheduler、官方RiNALMo和真实CUDA通过；best/resume权重逐张量一致。QA双跑逐字节一致，SHA256=`c4ba8f5e311d0397261d02c2303bf9ae08245dca7dbbebf6928600527eeacd95`。允许固定终态做R-replay，但不放行L/O或测试结论。
+- **长序列优先**：PairMLP latent与type head是主要O(L²)显存点。实现列分块scorer和推理`include_types=False`，不改变部署scorer、Turner、RIPE、校准或DP；R6 bias按第4维列切片，PairRepresentation已对称的z显式标记presymmetrized。初次对称化、bias维度与浮点末位差异均留证，前向最大误差7.152557373046875e-7、梯度误差0，type省略前后score逐位一致，相关测试连续三次通过。
+- **下一步**：用R0 seed42 best做512/1022/1024/1500/1869/3819nt真实CUDA全长探测，OOM即停并留证；该工程结果不替代长程精度。正式R-replay执行链已就绪，长序列探测后启动。PPT未修改。
+
+## §15.815（2026-11-10）RiNALMo全长CUDA工程门通过（非长程精度结论）
+
+- **实现验收**：PairMLP列分块scorer、R6 bias第4维切片及推理`include_types=False`均通过回归；完整矩阵/分块前向最大绝对差7.152557373046875e-7，梯度误差0，省略type head前后最终score逐位一致。首次mask类型错误的日志已保留并修正。该数值差为浮点末位差异，不宣称逐位一致。
+- **全长结果**：512/1022/1024/1500/1869/3819nt均真实RTX4090 CUDA、输入长度完整、输出形状L×L、合法候选score有限，未截断、未过滤、未CPU回退。峰值allocated依次4.71/6.80/6.81/8.76/10.28/18.31GB，3819nt峰值reserved=21.32GB，未OOM。artifact=`source_data/round52/rinalmo_long_sequence_probe.json`，status=PASS_LONG_SEQUENCE_ENGINEERING_PROBE。
+- **边界**：探测使用固定seed42合成序列和R0 seed42 best checkpoint，非生物benchmark，非正式测速。证明当前实现可以全长前向，不证明长程配对准确、校准可靠或DP质量；后续真实结构、span≥30/≥100、预测等价和D1长链训练仍需独立验收。
+- **阶段衔接**：R0三种子训练QA已通过，正式R-replay已启动。长序列工程结果不跳过loss/optimizer阶段门，PPT未修改。
+
+## §15.816（2026-11-10）UniProt 114条蛋白序列完整恢复与版本验收
+
+- **完整资产**：分批UniProt REST获取后，114个ID全部唯一且长度与补充表逐条一致，字符集合法。合并FASTA SHA256=`13cdfb767e96017f4f1fc0a0bc7930cf34a93cdc9e012fa38597bc3f9f1d16d0`，manifest=`source_data/round52/uniprot_114_manifest.json`。初次空响应和整组400保留，改为小批次后完成，未把空文件计为资产。
+- **版本处理**：P01707重定向到P01706，119aa与原文一致，保留accession映射。P01860现版446aa且2023-05-03更新，不能替代论文377aa；通过UniProt历史表取得entryVersion=191/sequenceVersion=2，长度377aa，与论文一致，未混用现版。
+- **边界**：114蛋白LD1所需序列已齐套，可在design-dev/test与配置QA后执行；COVID BNT/wild-type及figshare原包仍缺失，相关对照保持PARTIAL。LD1/LD2尚未启动。正式R-replay正在独立QA，PPT未修改。
+
+## §15.817（2026-11-10）RiNALMo正式R-replay裁决与L/O放行
+
+- **真实replay**：R0三种子训练QA通过后，seed42主诊断和2026复核均以best权重+终态optimizer/scheduler/stream完成，参数、scheduler和stream不变，optimizer.step未调用。终态均n_unfrozen=12/33，不作全33层归因。两路并行首次OOM现场已保留，改串行后完成，单任务峰值约23.7GB；已通过的训练QA未重复计算。
+- **独立QA**：seed42结果SHA=`fc6d106eb8fa0bf2c36ac10242d4c05e50a6b48c3a02f74bf4a80ca88ee5f4c6`，QA=`0eb936e903471e19a2c65e8a968d1ed87e45c4dcd30b93ea143bb6ed3119a3d5`；seed2026结果=`d1b3b72da85e3b3d9dd40dfc30ce99097281845ac057894a92798b1daf171986`，QA=`4a1e725c8713dd724c67bf36140e5773425b00378140570c84d0ef8dc75fd9bf`。逐项loss、梯度、shadow Adam和不变量双跑通过。
+- **关键诊断**：length/sum shadow update RMS在6个批次均增大，head/backbone中位42.6831047/42.6831076倍，范围14.5821–334.9544，不支持“length在终态自然降低更新幅度”的假设，必须独立训练验证。backbone LR=1e-6仅将shadow update缩至0.1，不能证明VL0或F1改善。seed2026两批NLL与辅助项cosine为负，不能混改aux、loss和LR。
+- **阶段门**：decision双跑SHA256=`091802d5545a7129603b75b93750b01e4cac86066b02c7058090206a1d7a6494`，允许L-length和O-LR独立单因子，禁止交互、U-ramp和容量提前放行。正式L/O队列按length42→olr42→length2026→olr2026→length3407→olr3407串行，steps=0、500步VL0、patience=6，其他R0配置不变，不自动进入测试或后续实验，PPT未修改。
+
+## §15.818（2026-11-10）L-length/O-LR正式队列启动（训练中）
+
+- **启动**：实现与replay提交`a1999402fdc57f60a14a01110279e128606b3b28`已push，正式队列PID=4086325，当前首个L-length seed42。使用真实RiNALMo、NLL-length对照；后续O-LR保持NLL-sum且仅backbone LR=1e-6。六种run均独立目录`round52_rinalmo_{length,olr}_s{42,2026,3407}`，不读取structRFM状态。
+- **边界**：steps=0、batch=2、500步VL0、patience=6、best checkpoint和完整后段曲线。串行避免650M模型峰值叠加OOM，失败仅按最近有效resume原配置恢复。尚无首个VL0，不启动测试、容量或后续阶段，PPT未修改。
+
+## §15.819（2026-11-10）L-length首个VL0与分臂完整QA准备（训练中）
+
+- **过程点**：L-length seed42 step500 VL0=-0.47944952549853137，best step500、bad=0；训练已到step1000验证窗口，尚未自然收敛。NLL-length与NLL-sum的VL0绝对值不能直接比较，不作F1或稳定性最终结论。
+- **QA准备**：完整训练QA参数化arm、normalization和backbone LR，L-length要求length/1e-5，O-LR要求sum/1e-6，并分别核验scheduler。三臂自然早停后才进行六run best/resume、完整曲线、SHA和独立复算，容量诊断尚未放行，PPT未修改。
+
+## §15.820（2026-11-10）L-length过程曲线与LinearDesign LD1划分/工程smoke
+
+- **L-length**：seed42 step1000/1500/2000 VL0=-0.5318994743347659/-0.49302383986601606/-0.5263852301512667，best step1000，step1500/2000 bad=1/2，按patience=6继续，未提前停止或改参。O-LR与其他seed未齐，不启动容量或测试结论。
+- **LD1数据与配置**：114条蛋白按(length, ID)排序每五条取一条design-test，冻结design-dev=91、design-test=23，双跑逐字节一致，split=`audits/round52/lineardesign_ld1_design_split.json`。design-test不得调λ、beam、约束或校准。
+- **工程smoke**：仅用design-dev的P15421(78aa)与Q9HA90(598aa)，exact/beam=0/500、λ=0/4并行CPU运行，核验翻译、结构、CAI/GC和`dangling_ends=0`。结果未出，不选择λ/beam，不做正式速度或生物效果结论，PPT未修改。
+
+## §15.821（2026-11-10）LinearDesign exact/beam工程smoke通过、L-length持续改善
+
+- **smoke验收**：P15421在λ=0/4时MFE=-148.7/-124.3，Q9HA90为-1512.3/-1287.9；exact与beam=500在这两个蛋白和λ下输出相同。独立ViennaRNA复算翻译、CAI、MFE和结构均一致，QA SHA256=`76f1ec452e1f59e54a7109db275bca80215cac1ccdc2088393472a6a35a11761`。首次验证蛋白误加终止子失败已保留并修正，未改写生成序列。
+- **边界**：两例相同不能证明beam对所有蛋白无损；并行时间非正式，598aa约6分钟不能外推全部114条或正式速度。未选择λ、beam或最终候选，不启动LD2。L-length best step4000=`-0.7460312473710404`、bad=0，仍未自然收敛，PPT未修改。
+
+## §15.822（2026-11-10）RiNALMo评测器工程smoke与L-length后段改善
+
+- **评测实现**：新增`eval_rinalmo_full_round52.py`，复用既有DP/metrics/calibration，但使用RiNALMo官方加载、PairMLP全长分块与`include_types=False`，不再按位置上限过滤长链；实际CUDA OOM显式记录为PARTIAL。greedy/Turner=0通过同一prior override实现，单checkpoint、无集成。
+- **工程结果**：R0 seed42 best在2条VL0上三次确定性预测完全一致，TP/FP/FN=66/5/3，micro-F1=0.9428571429、macro-F1=0.9443079443，纯PairMLP无teacher。QA SHA256=`1efa76cb48353bd6391c7d1d8c49847c957cdadda02b7bca528260c69e96a836`。该小样本仅验证工程链，不用于选型或精度结论。
+- **训练过程**：L-length step5500 VL0=-0.7813807313011751，best step5500、bad=0，已解冻10/33层，尚未自然早停。O-LR和其他seed未启动，正式主八+Rfam评测未开始，PPT未修改。
+
+## §15.823（2026-11-10）L-length后段改善与RiNALMo预训练污染口径
+
+- **过程**：L-length step7000 VL0=-0.7982564702902243，best step7000、bad=0，已解冻14/33层；step6000曾回升至-0.7747083575并保留。O-LR及其他seed未启动，未自然早停，不作最终稳定性结论。
+- **数据口径**：RiNALMo官方预处理来源为RNAcentral、nt、Rfam、Ensembl，36M唯一序列/17M簇，不能用structRFM_pretrain_clean替代。完整语料审计未完成前，正式主八+Rfam使用原始官方split并标记pretrain_overlap_unresolved，不把原始split包装成clean SOTA；若后续需要clean主张，必须补充RiNALMo专属exact+80%审计。测试集不参与训练、早停或选臂。
+- **状态**：L/O其余run未齐，正式评测未启动；长序列全长前向已通过但长程精度未验收，PPT未修改。
+
+## §15.824（2026-11-10）L-length后段尖峰独立复算（训练中）
+
+- **过程复算**：seed42共15个验证点，best step7000/VL0=-0.7982564702902243，step7500=-0.795118348699924、bad=1。最大训练绝对loss=1.7648、最大gnorm=16.7、已解冻14/33层，未出现R0式百万级loss/梯度爆炸。原始train/validation SHA=`9dcd9f6bb2fc5e59b8d1070e22a21efdb0d80c024aadd79611dc4fbb2f36c5e5`/`455f18cc97cc26500677cdfb3ade02f95a8761e4a00f75fa44622048f6bcfb55`。
+- **边界**：这只是当前单种子过程证据，不证明三种子稳定、F1提升或最终收敛；O-LR和其他seed未启动，继续按patience=6，PPT未修改。
+
+## §15.825（2026-11-10）LinearDesign 114蛋白生成矩阵启动（可断点续跑）
+
+- **任务**：在已验收114条蛋白与91/23 split上执行exact/beam=0/500、λ=0/4，共456个生成单元。小蛋白最多4并发，>700aa串行，避免CPU内存叠加；每个单元独立JSON、翻译/结构/CAI/GC和`dangling_ends=0`验收，可断点续跑。
+- **边界**：design-test不参与λ、beam、约束或校准选择；并发耗时不作正式速度。生成矩阵不代表PRISM选型或生物效果，不启动LD2。L-length已解冻16/33层，继续自然训练，PPT未修改。
+
+## §15.826（2026-11-10）LinearDesign已完成单元独立QA与L-length波动
+
+- **生成QA**：已完成68个生成单元的翻译、CAI、MFE和结构独立复核，全部通过，QA SHA256=`dc718fc1a87f9353513a99ea4827049b83a6bb2773e3214dc4a301bf00b21fb4`。只统计通过单元，不把456格写成完成；design-test未用于调参。
+- **L-length**：step8500 VL0=-0.7892488905659882，best仍step8000=-0.7997258095787299、bad=1，波动保留并继续patience=6，未出现R0式爆炸。O-LR尚未启动，PPT未修改。
+
+## §15.827（2026-11-10）既有RiNALMo TR0-clean审计定位与数据重建
+
+- **纠错**：用户指出RiNALMo clean此前已完成，回查确认`source_data/appendix_leakage/round39_clean_audits/tr0/`保存了exact+80% identity/query-coverage≥0.8的正式审计与删除索引，无需重新运行MMseqs。此前“只能使用原始split”的判断已修正，不重复已验收审计。
+- **重建**：8个JSONL按原顺序/GT/删除索引重建并双跑一致，计数为TS0=1288→1192、bpRNA-new=5388→5388、ArchiveII=2544→1094、TS1=63→61、TS2=39→39、TS3=19→17、TS-hard=28→28、TestSetB=428→116。manifest=`source_data/round52/rinalmo_tr0_clean_manifest.json`及recheck一致，原始数据与审计SHA均通过。
+- **边界**：这些是TR0下游clean，不等于RiNALMo全部预训练语料零重叠；RiNALMo仍包含RNAcentral/nt/Rfam/Ensembl。Rfam继续单列原始官方评测并标pretrain_overlap_risk，不把TR0-clean外推为预训练无污染证明。structRFM专属clean仍不混用。
+- **当前状态**：L-length继续训练，O-LR未启动；主八已有合法TR0-clean数据可用于冻结后评测，Rfam单列风险。PPT未修改。
+
+## §15.828（2026-11-10）L-length seed42完整早停QA与LinearDesign结构差异修正
+
+- **L-length完成**：seed42在step11000满足patience=6自然早停，best step8000、best VL0=`-0.7997258095787299`；step10000/10500/11000 VL0=`-0.7196446409717316`/`8.559809634632757`/`216.2957956593632`，最大训练绝对loss=416.473、最大gnorm=2015.54，后段失稳不得隐藏。终态22/33层解冻，final step11000的total/NLL/distill/RLCD/cal=`30.9878`/`29.8738`/`0.9994`/`-0.8754`/`0.9899`，gnorm=1210.71，peak=10.5GB。配置保持RiNALMo-giga、PairMLP490、R6 head、NLL-length、head/backbone LR=1e-4/1e-5、batch2、steps=0、500步VL0、patience=6、真实CUDA。
+- **三轮证据**：run_meta SHA256=`db8115c04c947b895cd8ffe837f33fec25573afca761499e7ab0b75b0d6acfaf`，best=`16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2`，resume=`ef90e9be558bdd98ada39633e3175735783939dac9248be6ed913a83a8fb3c26`；best/resume权重逐张量一致，scheduler/stream、完整曲线、逐项有限值和CUDA身份通过。单run QA双跑逐字节一致，artifact=`source_data/round52/rinalmo_length_s42_completed_qa.json`，SHA256=`f6191ffad8efedd1b635973b1d873d81b9fcbb3283316f77c4f3e9a0c6b83fa4`。这只是单run验收，`allow_capacity_diagnostic=false`，不比较length与sum的绝对VL0，不宣称F1改善。
+- **O-LR过程**：seed42保持NLL-sum且仅backbone LR=1e-6；已观察step500/1000/1500 VL0=`32.37983631664539`/`29.0542679122042`/`28.433802083028457`，仍在自然训练，其余四个run未齐，不启动容量训练或测试选型。
+- **LD1故障定位**：P78382 λ=4、exact首次因生成DBN与ViennaRNA MFE DBN不同而中断，130格既有成功JSON保留，失败原文存`source_data/round52/lineardesign_ld1_structure_mismatch.json`。独立ViennaRNA 2.7.2、`-d0`复算报告结构能量=`-574.2999877929688`与官方报告`-574.3`一致，但独立MFE=`-574.5`，差异位置812/892，实际次优差距0.20001220703125 kcal/mol，不是同能量并列结构，也不是翻译/CAI错误。
+- **合同纠正与恢复**：不能将“DBN逐字符相同”冒充正确性或最优性门；每格改为分别保存生成结构、独立MFE结构、报告结构的独立能量和次优差距，报告能量差≤0.050000001且翻译/CAI/GC合法，所有结构差和次优差距保留。修正后从断点恢复，不覆盖失败诊断；原后台工具60秒状态超时，远端同一进程持续运行，未重复启动。
+- **固定快照QA**：两次移动窗口QA分别读到148/152格，`cmp`不同是运行中新增单元而非数值不一致，原差异保留。以首份148格清单及逐文件SHA冻结后，独立复算双跑逐字节一致，QA SHA256=`e22703124092c618ea4b63a2093104d48586b5b13ded7342b271270baf291cda`；其中P78382 λ=4的exact/beam500两格均有0.20001220703125差距，报告能量最大绝对差2.4414062522737368e-05，CAI最大显示舍入差0.0004914790232349864。当前仅固定快照验收，456格未完成，P01860 λ=4后续差异尚在持续QA，不能提前写完整统计。
+- **容量准备**：新增RiNALMo专属训练/VL0误差probe，只从训练集固定选196条及VL0，不访问测试；身份、checkpoint、教师、归一化和全长CUDA接口静态检查及子集复现测试通过，尚未在GPU执行，不单独放行C-wide/C-local。PPT未修改。

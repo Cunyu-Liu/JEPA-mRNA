@@ -41,7 +41,7 @@ def main():
                                  input=protein + "\n", text=True, capture_output=True,
                                  check=True, timeout=900, cwd=repository)
         candidate = parse_output(process.stdout)
-        independent = evaluate(candidate["sequence"], protein + "*", table)
+        independent = evaluate(candidate["sequence"], protein, table)
         return {
             "id": name, "protein_length": len(protein), "lambda": weight,
             "beam_size": beam, "sequence": candidate["sequence"],
