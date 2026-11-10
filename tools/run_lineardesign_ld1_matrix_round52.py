@@ -103,7 +103,9 @@ def main():
         "lambda_values": [0, 4], "beam_values": [0, 500],
         "n_structure_mismatch": sum(not cell["structure_matches_independent"] for cell in cells),
         "max_vienna_mfe_suboptimality": max(
-            cell["suboptimality_vs_independent_mfe"] for cell in cells),
+            cell.get("suboptimality_vs_independent_mfe",
+                     structure_energy(cell["sequence"], cell["reported_structure"])
+                     - cell["independent_mfe"]) for cell in cells),
         "fasta_sha256": split["fasta_sha256"], "split_sha256": split["manifest_sha256"],
         "official_binary_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
         "limitations": [
