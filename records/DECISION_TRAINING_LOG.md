@@ -15693,4 +15693,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 ## §15.829（2026-11-10）本阶段提交与LD1旧单元汇总兼容检查
 
-- 上述训练QA、LD1失败诊断、固定快照QA和实现已提交并push到`round48-single-model-20261106`，commit=`ea783a3806aa0dbdddc514ab5d81765283e34b1f`。旧130格缺少新增次优字段，最终manifest若直接索引会在汇总时报错；已改为缺失时用原序列/报告结构和独立MFE重新计算，不重跑生成、不修改原始JSON。当前远端运行进程仍按启动时代码执行，若最终旧逻辑报KeyError，保留错误后用修正脚本从456个缓存单元仅重汇总，不重复计算。
+- 上述训练QA、LD1失败诊断、固定快照QA和实现已提交并push到`round48-single-model-20261106`，commit=`ea783a3806aa0dbdddc514ab5d81765283e34b1f`。旧130格缺少新增次优字段，最终manifest若直接索引会在汇总时报错；已改为缺失时用原序列/报告结构和独立MFE重新计算，不重跑生成、不修改原始JSON。当前远端运行进程仍按启动时代码执行，若最终旧逻辑报KeyError，保留错误后用修正脚本从456个缓存单元仅重汇总，不重复计算。旧单元能量差回退复算通过，修正提交=`977c4872356ca73e10e7e1d31759ea6c2df51030`已push。
+
+## §15.830（2026-11-10）LinearDesign确定性/随机对照生成与独立QA
+
+- **对照集合**：114个蛋白共798条CDS，包含114条确定性max-CAI、342条普通同义均匀随机、342条GC匹配同义随机；seed仅42/2026/3407。max-CAI按人类密码子频率最大值、字典序破并列；普通随机逐位均匀抽取同义密码子；蛋白级derived seed由协议seed/ID/对照类型的SHA256确定。
+- **GC合同**：GC匹配不是事后按阈值筛选，而是逐氨基酸固定max-CAI序列的GC数，以精确整数动态规划计数并反向均匀抽样满足约束的同义组合，因而全CDS GC数也严格一致。所有蛋白翻译、长度、末端终止、字符集、逐条SHA、split与derived seed守恒。6000个固定抽样种子的双精氨酸小型穷举对照覆盖全部4个合法组合，频次误差在预设容差内。
+- **三轮检查**：生成双跑逐字节一致，原始artifact=`runs/lineardesign_ld1_controls/controls.json`，SHA256=`c82e4c718a57c31547ec7bd33eb0973354eeb7639abe4edf37c046e33eae4b9d`；独立QA使用另行枚举的NCBI标准遗传密码，不复用生成器的翻译函数，QA双跑一致，SHA256=`9a1784f127a8b92ca0dca6a1302e53487f359817f6b10b68c1719a7c6c74822a`，artifact=`source_data/round52/lineardesign_ld1_controls_qa.json`。design-dev/test各637/161条，test未调参。
+- **边界**：当前只验收对照序列生成，不已有这些对照的MFE/结构，不证明max-CAI优于随机或任何生物效果；未启动LD2。L/O继续按原配置训练，核心阶段门未改变，PPT未修改。
