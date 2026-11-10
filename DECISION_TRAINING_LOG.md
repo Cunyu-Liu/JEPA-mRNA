@@ -15652,3 +15652,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **评测实现**：新增`eval_rinalmo_full_round52.py`，复用既有DP/metrics/calibration，但使用RiNALMo官方加载、PairMLP全长分块与`include_types=False`，不再按位置上限过滤长链；实际CUDA OOM显式记录为PARTIAL。greedy/Turner=0通过同一prior override实现，单checkpoint、无集成。
 - **工程结果**：R0 seed42 best在2条VL0上三次确定性预测完全一致，TP/FP/FN=66/5/3，micro-F1=0.9428571429、macro-F1=0.9443079443，纯PairMLP无teacher。QA SHA256=`1efa76cb48353bd6391c7d1d8c49847c957cdadda02b7bca528260c69e96a836`。该小样本仅验证工程链，不用于选型或精度结论。
 - **训练过程**：L-length step5500 VL0=-0.7813807313011751，best step5500、bad=0，已解冻10/33层，尚未自然早停。O-LR和其他seed未启动，正式主八+Rfam评测未开始，PPT未修改。
+
+## §15.823（2026-11-10）L-length后段改善与RiNALMo预训练污染口径
+
+- **过程**：L-length step7000 VL0=-0.7982564702902243，best step7000、bad=0，已解冻14/33层；step6000曾回升至-0.7747083575并保留。O-LR及其他seed未启动，未自然早停，不作最终稳定性结论。
+- **数据口径**：RiNALMo官方预处理来源为RNAcentral、nt、Rfam、Ensembl，36M唯一序列/17M簇，不能用structRFM_pretrain_clean替代。完整语料审计未完成前，正式主八+Rfam使用原始官方split并标记pretrain_overlap_unresolved，不把原始split包装成clean SOTA；若后续需要clean主张，必须补充RiNALMo专属exact+80%审计。测试集不参与训练、早停或选臂。
+- **状态**：L/O其余run未齐，正式评测未启动；长序列全长前向已通过但长程精度未验收，PPT未修改。
