@@ -15816,3 +15816,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **三轮证据**：best SHA256=`afedf76ad5cea244212ed5a99b6b9db99e450d18c5797197f686eba69e2b53eb`，resume=`ff9f77fbf09d159acb819acd30ca8c5ae1725c0f831d593bba321f954ac271c8`，run_meta=`a1dda91e0c564f3404dd6cf8cb6ed7c460dc3df466ab4a1644ef399380d28297`。best/resume逐张量一致，scheduler/stream、完整曲线、配置和CUDA身份通过。QA双跑逐字节一致，artifact=`source_data/round52/rinalmo_olr_s2026_completed_qa.json`，SHA256=`0487d05abe704b2ad9286a7626a34d4e00495d45141944d36eaf5605c8c3e024`。QA启动前的SSH失败未执行任何命令，不是run失败。
 - **队列**：L-length seed3407已真实CUDA接续至约step1000，保持NLL-length、steps=0、500步VL0、patience=6。剩余length3407与olr3407未齐，容量门仍未开放。
 - **LD1**：298格首轮QA统计为22格结构不同、最大次优差距0.9000244140625 kcal/mol，第二轮固定SHA复算尚未完成，不作为最终双跑验收。PPT未修改。
+
+## §15.850（2026-11-11）spec/tasks同步与298格第二轮QA落盘
+
+- `spec/tasks.md`与`spec_sync/tasks.md`已同步并推送commit=`b62a48c169b4d1959cd9584523f195c960d117b8`：length42/2026与olr42/2026已完成，length3407在训、olr3407未启；普通/J1一步工程smoke只限工程，容量和正式JEPA未放行；LD1主矩阵SIGKILL恢复与对照评价状态分开记录。
+- 298格第二轮固定清单QA已生成`lineardesign_ld1_snapshot298_qa.json`，首轮22格结构不同、最大次优差距0.9000244140625、最大报告结构能量差4.8828125045474735e-05、最大CAI显示差0.0004971888351339437均保留。第三轮recheck仍在运行，尚未执行最终`cmp`，不提前写成三轮通过。PPT未修改。
