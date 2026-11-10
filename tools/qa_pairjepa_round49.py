@@ -37,8 +37,8 @@ def count_pairs(predicted, truth, minimum_span=0):
 
 def scores(counts, empty_f1):
     tp, fp, fn = counts["tp"], counts["fp"], counts["fn"]
-    precision = tp / (tp + fp) if tp + fp else 0.0
-    recall = tp / (tp + fn) if tp + fn else 0.0
+    precision = tp / (tp + fp) if tp + fp else empty_f1
+    recall = tp / (tp + fn) if tp + fn else empty_f1
     denominator = 2 * tp + fp + fn
     return {"precision": precision, "recall": recall,
             "f1": 2 * tp / denominator if denominator else empty_f1,
