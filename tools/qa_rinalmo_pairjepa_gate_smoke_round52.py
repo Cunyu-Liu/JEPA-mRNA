@@ -48,7 +48,7 @@ def main():
         assert math.isfinite(row[key])
     checkpoint = torch.load(root / "resume.pt", map_location="cpu", weights_only=False)
     assert checkpoint["step"] == 1 and checkpoint["stream_state"]
-    head_state = checkpoint["model"]["head"]
+    head_state = checkpoint["head"]
     changed = [key for key in head_state if key.startswith("pair_jepa.scorer.")
                and not torch.equal(head_state[key], head_state[key.replace("scorer", "teacher", 1)])]
     assert changed, "EMA must differ from the student after the optimizer step"

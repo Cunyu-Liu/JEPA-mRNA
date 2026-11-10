@@ -1,0 +1,30 @@
+{
+  "status": "PASS_RINALMO_PAIRJEPA_ONE_STEP_ENGINEERING_GATE",
+  "scientific_conclusion": false,
+  "allow_pairjepa_training": false,
+  "run_meta_sha256": "2b14586ab44ea24fcd651daf2fed4dc5df0055565fc27f681093baf71664e728",
+  "resume_sha256": "67cdff19bb49f41ffbe64208416988fcc333fb8d885ff4e617cc358adb5ccc6c",
+  "train_log_sha256": "62622346f8af4b8b66fc215543d9cdeb683ba97190c28f184e82115cf8548aeb",
+  "diagnostics_sha256": "bf1b4c39bcdde491aeff1c3610e9fe67ca949b0b02b6a6e2cadced980539e365",
+  "qa_sha256": "100e5aa788caafea9b538a65227c5725505055420e0c3944932efdabb120e9dd",
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "masked_pairs": 580,
+  "direct_nll_gradient": {
+    "cosine": 0.0,
+    "nll_gradient_norm": 47.02518982256596,
+    "jepa_gradient_norm": 0.0208250581086648,
+    "nll_gradient_elements": 796371,
+    "jepa_gradient_elements": 795704,
+    "shared_gradient_elements": 491648
+  },
+  "ema_changed_tensors": 6,
+  "teacher_forward_calls_at_inference": 0,
+  "student_score_calls": 1,
+  "peak_gb": 4.8,
+  "limitations": [
+    "One-step engineering smoke on VL0 assets only; no convergence, model selection, or structure-performance claim.",
+    "This is not the J1 structured-block arm and not a three-seed experiment.",
+    "Full J-gate also requires the frozen capacity decision and independently reviewed training contract."
+  ]
+}
