@@ -16016,3 +16016,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - TS0 seed42 greedy共1192/1192条，micro-F1=0.6206170900、macro-F1=0.6300242460，result SHA256=`a894e56bc2ad2a57b5ccc5d0f6f641bee095439bec86be0ec171cc96f3cf5015`；Turner=0共1192/1192条，micro-F1=0.6428170747、macro-F1=0.6025541472，SHA256=`7a710901c49f5e2281197fdec147687d419d7f48c599e71d87fa4fc37f982369`。均低于默认DP同seed micro-F1=0.6761813111，仅为单seed消融，不外推全部seed。
 - decoder、Turner权重、三次预测、checkpoint/data SHA和逐序列指标均通过。并行快照GPU利用率84%、显存10443MiB，随后补入TS0/bpnew seed3407；补位启动仍有SSH失败，未覆盖已有文件。其余大split与54格双跑QA未齐，PPT未修改。
+
+## §15.883（2026-11-11）bpRNA-new greedy复算与长序列重叠防护
+
+- bpRNA-new greedy seed42共5388/5388条，micro-F1=0.4756964015、macro-F1=0.4798013406，result SHA256=`73a0445156e446785134991f6d14eb6603b277117bd967c8b5218e01c7165961`；seed2026共5388/5388条，micro-F1=0.4546481176、macro-F1=0.4578270443，SHA256=`211e4318d401e55f7357fb24adb193e0c29c2b04f49670a718acb54d5cbf3a29`。均低于对应默认DP micro-F1=0.5356324121/0.5010220155，负结果保留。
+- seed3407 bpnew greedy原始评测已完成，待统一QA。ArchiveII greedy在与其他短序列任务重叠的初始阶段暂停，未生成ArchiveII结果；随后只补TS0/bpnew短序列，避免长序列峰值叠加。Turner=0 bpnew三队列接续，全部短序列结束后再恢复ArchiveII/Rfam和54格QA。PPT未修改。
