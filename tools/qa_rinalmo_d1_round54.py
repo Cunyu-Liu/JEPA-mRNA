@@ -111,7 +111,7 @@ def holdout_qa(seed, arm):
         assert saved["length"] == len(row["seq"])
         predicted = [tuple(pair) for pair in prediction["pred_pairs"]]
         truth = [tuple(pair) for pair in row["pairs"]]
-        assert len(predicted) == len(set(predicted))
+        assert predicted == sorted(set(predicted))
         assert all(0 <= left < right < len(row["seq"]) for left, right in predicted)
         assert all(row["seq"][left] + row["seq"][right] in {"AU", "UA", "GC", "CG", "GU", "UG"}
                    for left, right in predicted)
