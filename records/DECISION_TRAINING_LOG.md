@@ -16068,3 +16068,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 主矩阵在382格后于Q5TZJ5（1347aa）生成时再次收到SIGKILL，原始traceback与日志保留。当前内存充足不能反推当时原因，`dmesg`未提供可用证据，不将原因写成已证实OOM。已按原单进程、λ=0/4、beam=0/500和序列不变从JSON断点恢复，未删除任何格。
 - 验收守候日志出现`line43: syntax error near unexpected token ;;`，文件本地/远端SHA256均为`218c70aec0272753a703b65a41caf973934c7b7018a08ca49f43c9a2b5a26819`，`bash -n`通过。`bash -x`实际执行可到达`flock`并返回`another LD1 matrix acceptance is active`，确认08:03启动的旧验收队列仍持锁等待manifest，未重复启动。错误日志保留，未修改科学配置。
 - 798条对照独立QA仍在运行。J-mlp decoder/置信度/长序列工程与TS0独占测速已完成，D1由其他执行者资产独立保留；PPT未修改。
+
+## §15.892（2026-11-11）Q5TZJ5 exact内存资源停止门
+
+- 第二次恢复时实测`LinearDesign_2D` Q5TZJ5（1347aa）RSS=`55879872 KiB`（约55.9GB），节点63GiB内存且其他任务同时占用，avail约3.0GiB。为避免再次SIGKILL，主动停止runner与该二进制；TERM后进程仍在，随后KILL终止，未影响其他执行者任务。最终可用内存恢复约52GiB，未生成Q5TZJ5新cell。
+- 该实测支持**exact内存资源不足**这一直接停止原因，与第一次SIGKILL的未确认归因区分。382格原始结果完整保留，不把Q5TZJ5或后续困难蛋白删除，不用beam=500替代exact，也不改变λ/beam/序列。相同exact任务不在当前63GiB节点继续盲目重启。
+- 完整LD1需要更高内存环境或用户另行批准的算法/资源方案；在此之前全矩阵和最终LD1验收保持PARTIAL。798条对照QA可继续，J-mlp其他验收不受影响，PPT未修改。
