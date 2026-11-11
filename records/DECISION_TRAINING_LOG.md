@@ -15987,3 +15987,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `eval_rinalmo_full_round52.py`新增显式`--dp-backend python|c`，默认python保持旧行为，C仅用于Nussinov并写入`dp_backend`；非Nussinov请求C会拒绝。调用既有`dp_decode_c.so`单序列接口，其合同为N/dec/kp表及traceback bitwise等价。
 - 真实CUDA完整TS1 seed42评测的61条、三次repeat、per-sequence指标、micro/macro-F1与原Python结果逐项完全一致。C artifact=`source_data/round52/rinalmo_jmlp_length_s42_ref_pdb_ts1.json`，SHA256=`cc18897eca4ac0b286a0b9082d79e3b9806f5bb4166439503e1acfb5f2451aa2`。Python/C墙时=17.5690/18.6329秒，短序列不提速，不写成正式加速结论。
 - 为减少ArchiveII长序列Python DP开销，已停止初始慢任务并用C后端按身份跳过已完成格恢复，未影响21格既有结果。后续runner显式`--dp-backend c`，greedy仍走原实现。ArchiveII快照475/1094，长短序列混合耗时不均，不作整体速度主张；统一27格QA未齐，PPT未修改。
+
+## §15.878（2026-11-11）J-mlp seed42 ArchiveII全长独立验收
+
+- ArchiveII TR0-clean seed42共1094/1094条完整预测，无长序列不支持，三次预测一致。独立复算TP/FP/FN=43338/15260/20814，precision=0.7395815557、recall=0.6755518144、micro-F1=0.7061181263、macro-F1=0.7512359378。result SHA256=`b810c36f1e1bb6bdd1f0742501a3673dc8a9505f19062602e8e1e5e317438e36`，checkpoint SHA256=`16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2`。
+- C DP完整运行墙时194.4778秒，仅作为非正式日志，不能替代独占raw-sequence速度验收。Rfam seed42已独占开始，其他种子和统一27格QA未齐；不作SOTA或最终候选结论，PPT未修改。
