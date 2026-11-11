@@ -253,6 +253,9 @@ def validate_resume_identity(previous_meta, args):
             "jepa_variance_weight": objective.get("jepa_variance_weight", 0.0),
             "jepa_covariance_weight": objective.get("jepa_covariance_weight", 0.0),
             "jepa_std_floor": objective.get("jepa_std_floor", 1.0),
+            "jepa_sigreg_weight": objective.get("jepa_sigreg_weight", 0.0),
+            "jepa_sigreg_projections": objective.get("jepa_sigreg_projections", 32),
+            "jepa_sigreg_samples": objective.get("jepa_sigreg_samples", 512),
         }
         current = {
             "lambda_jepa": args.lambda_jepa, "jepa_target": args.jepa_target,
@@ -260,6 +263,9 @@ def validate_resume_identity(previous_meta, args):
             "jepa_variance_weight": getattr(args, "jepa_variance_weight", 0.0),
             "jepa_covariance_weight": getattr(args, "jepa_covariance_weight", 0.0),
             "jepa_std_floor": getattr(args, "jepa_std_floor", 1.0),
+            "jepa_sigreg_weight": getattr(args, "jepa_sigreg_weight", 0.0),
+            "jepa_sigreg_projections": getattr(args, "jepa_sigreg_projections", 32),
+            "jepa_sigreg_samples": getattr(args, "jepa_sigreg_samples", 512),
         }
         if expected != current:
             raise ValueError(f"resume Pair-JEPA objective mismatch: {expected} vs {current}")
@@ -324,6 +330,9 @@ def main():
     ap.add_argument("--jepa-variance-weight", type=float, default=0.0)
     ap.add_argument("--jepa-covariance-weight", type=float, default=0.0)
     ap.add_argument("--jepa-std-floor", type=float, default=1.0)
+    ap.add_argument("--jepa-sigreg-weight", type=float, default=0.0)
+    ap.add_argument("--jepa-sigreg-projections", type=int, default=32)
+    ap.add_argument("--jepa-sigreg-samples", type=int, default=512)
     ap.add_argument("--jepa-log-every", type=int, default=25)
     ap.add_argument("--jepa-rank-samples", type=int, default=512)
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
@@ -342,7 +351,9 @@ def main():
         raise SystemExit("structured Pair-JEPA context requires --scorer pairjepa")
     if (not 0 < args.jepa_mask_prob <= 1 or args.jepa_rank_samples < 0
             or args.jepa_log_every <= 0 or args.jepa_variance_weight < 0
-            or args.jepa_covariance_weight < 0 or args.jepa_std_floor <= 0):
+            or args.jepa_covariance_weight < 0 or args.jepa_std_floor <= 0
+            or args.jepa_sigreg_weight < 0 or args.jepa_sigreg_projections <= 0
+            or args.jepa_sigreg_samples <= 0):
         raise SystemExit("invalid Pair-JEPA mask, rank sample or logging configuration")
 
     os.makedirs(args.out, exist_ok=True)
@@ -498,6 +509,9 @@ def main():
                       "jepa_variance_weight": args.jepa_variance_weight,
                       "jepa_covariance_weight": args.jepa_covariance_weight,
                       "jepa_std_floor": args.jepa_std_floor,
+                      "jepa_sigreg_weight": args.jepa_sigreg_weight,
+                      "jepa_sigreg_projections": args.jepa_sigreg_projections,
+                      "jepa_sigreg_samples": args.jepa_sigreg_samples,
                       "jepa_context": args.jepa_context if args.scorer == "pairjepa" else None},
         "validation": {"data": args.validation_data, "teacher_dir": args.validation_teacher_dir,
                        "every": args.validation_every, "patience": args.validation_patience,
@@ -720,9 +734,16 @@ def main():
                                         "std_floor": args.jepa_std_floor}
             latent_loss, latent_diagnostics = head.masked_pair_latent_loss(
                 z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0,
-                valid_mask=mask_full, **anti_collapse_kwargs)
+                valid_mask=mask_full,
+                sigreg_weight=args.jepa_sigreg_weight,
+                sigreg_projections=args.jepa_sigreg_projections,
+                sigreg_samples=args.jepa_sigreg_samples, sigreg_seed=args.seed,
+                **anti_collapse_kwargs)
             total = total + args.lambda_jepa * latent_loss
             terms_agg["jepa"] = float(latent_loss.detach())
+            if args.jepa_sigreg_weight:
+                total = total + args.jepa_sigreg_weight * latent_diagnostics["sigreg_loss"]
+                terms_agg["sigreg"] = float(latent_diagnostics["sigreg_loss"].detach())
             if log_latent:
                 jepa_record = {"step": step, "masked_pairs": int(latent_mask.sum()),
                                "context": args.jepa_context, "loss": float(latent_loss.detach()),

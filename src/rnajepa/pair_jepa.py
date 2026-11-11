@@ -98,6 +98,32 @@ def anti_collapse_terms(prediction, mask, std_floor=1.0):
             "sequence_variance": sequence_variance, "sequence_covariance": sequence_covariance}
 
 
+def online_sigreg_loss(latent, valid_mask, projections=32, max_samples=512, seed=42):
+    losses = []
+    for batch_index in range(latent.shape[0]):
+        features = latent[batch_index, valid_mask[batch_index]]
+        if features.shape[0] == 0:
+            raise ValueError("SIGReg requires at least one valid pair per sequence")
+        if features.shape[0] > max_samples:
+            indices = torch.linspace(0, features.shape[0] - 1, max_samples,
+                                     device=features.device).round().long()
+            features = features[indices]
+        generator = torch.Generator(device=features.device).manual_seed(seed + batch_index)
+        directions = torch.randn(features.shape[1], projections, generator=generator,
+                                 device=features.device)
+        directions = directions / directions.norm(dim=0, keepdim=True).clamp_min(1e-12)
+        projected = features @ directions
+        terms = []
+        for frequency in (0.5, 1.0, 2.0):
+            expected = torch.exp(torch.tensor(-0.5 * frequency * frequency,
+                                              dtype=projected.dtype, device=projected.device))
+            cosine = (frequency * projected).cos().mean(dim=0)
+            sine = (frequency * projected).sin().mean(dim=0)
+            terms.append((cosine - expected).square().mean() + sine.square().mean())
+        losses.append(torch.stack(terms).mean())
+    return torch.stack(losses).mean()
+
+
 class PairJEPA(nn.Module):
     def __init__(self, d_z=128, latent_dim=64, use_ema=True, random_target=False, seed=0,
                  use_teacher=True, block_context=False):
@@ -149,8 +175,13 @@ class PairJEPA(nn.Module):
                 flat = target.reshape(-1, shape[-1])
                 permutation = torch.randperm(flat.shape[0], generator=generator, device=flat.device)
                 target = flat[permutation].reshape(shape)
+        online_latent = self.scorer(z) if sigreg_weight else None
         mse = torch.nn.functional.mse_loss(prediction[mask], target[mask])
         loss = mse
+        if sigreg_weight:
+            diagnostics_sigreg = online_sigreg_loss(
+                online_latent, valid_mask if valid_mask is not None else torch.ones_like(mask),
+                projections=sigreg_projections, max_samples=sigreg_samples, seed=sigreg_seed)
         anti_collapse = None
         if variance_weight or covariance_weight:
             anti_collapse = anti_collapse_terms(prediction, mask, std_floor)
@@ -165,6 +196,11 @@ class PairJEPA(nn.Module):
             "prediction_mean_norm": prediction[mask].norm(dim=-1).mean().detach(),
             "contextless_pairs": (context_counts[mask] == 0).sum().detach(),
         }
+        if sigreg_weight:
+            diagnostics["sigreg_loss"] = diagnostics_sigreg.detach()
+            diagnostics["sigreg_weight"] = float(sigreg_weight)
+            diagnostics["sigreg_projections"] = int(sigreg_projections)
+            diagnostics["sigreg_samples"] = int(sigreg_samples)
         if rank_samples:
             diagnostics["target_effective_rank"] = latent_effective_rank(
                 target[mask], max_samples=rank_samples)
