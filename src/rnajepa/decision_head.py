@@ -448,11 +448,15 @@ class FlatDecisionHead(nn.Module):
         return scores
 
     def masked_pair_latent_loss(self, z: torch.Tensor, mask: torch.Tensor, rank_samples: int = 0,
-                                valid_mask: Optional[torch.Tensor] = None):
+                                valid_mask: Optional[torch.Tensor] = None,
+                                variance_weight: float = 0.0, covariance_weight: float = 0.0,
+                                std_floor: float = 1.0):
         if self.pair_jepa is None:
             raise ValueError("Pair-JEPA is not enabled")
-        return self.pair_jepa.masked_latent_loss(z, mask, rank_samples=rank_samples,
-                                                valid_mask=valid_mask)
+        return self.pair_jepa.masked_latent_loss(
+            z, mask, rank_samples=rank_samples, valid_mask=valid_mask,
+            variance_weight=variance_weight, covariance_weight=covariance_weight,
+            std_floor=std_floor)
 
     def pair_scores_and_types(self, h: torch.Tensor, seq_ids: Optional[torch.Tensor] = None,
                               include_types: bool = True):
