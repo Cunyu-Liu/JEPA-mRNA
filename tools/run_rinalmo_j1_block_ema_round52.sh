@@ -9,7 +9,13 @@ export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 exec 9>/tmp/round52_rinalmo_j1_block_ema.lock
 flock -n 9 || { echo "another J1-block-EMA queue is active"; exit 1; }
 until test -f "$ROOT/audits/round52/rinalmo_jmlp_training_qa.json" \
-    && test -f "$ROOT/audits/round52/rinalmo_pairjepa_structure_log_smoke_qa.json"; do
+    && test -f "$ROOT/audits/round52/rinalmo_jmlp_training_qa.recheck.json" \
+    && cmp -s "$ROOT/audits/round52/rinalmo_jmlp_training_qa.json" \
+       "$ROOT/audits/round52/rinalmo_jmlp_training_qa.recheck.json" \
+    && test -f "$ROOT/audits/round52/rinalmo_pairjepa_structure_log_smoke_qa.json" \
+    && test -f "$ROOT/audits/round52/rinalmo_pairjepa_structure_log_smoke_qa.recheck.json" \
+    && cmp -s "$ROOT/audits/round52/rinalmo_pairjepa_structure_log_smoke_qa.json" \
+       "$ROOT/audits/round52/rinalmo_pairjepa_structure_log_smoke_qa.recheck.json"; do
   sleep 300
 done
 base=$("$PY" - "$ROOT/audits/round52/rinalmo_jmlp_training_qa.json" "$ROOT/audits/round52/rinalmo_pairjepa_structure_log_smoke_qa.json" <<'PY'

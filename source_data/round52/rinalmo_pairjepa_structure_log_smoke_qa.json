@@ -1,0 +1,37 @@
+{
+  "status": "PASS_PAIRJEPA_STRUCTURE_LOG_ONE_STEP_CUDA_QA",
+  "scientific_conclusion": false,
+  "allow_pairjepa_training": false,
+  "structure": {
+    "nussinov": {
+      "tp": 0,
+      "fp": 20,
+      "fn": 6,
+      "micro_f1": 0.0,
+      "macro_f1": 0.0
+    },
+    "greedy": {
+      "tp": 0,
+      "fp": 33,
+      "fn": 6,
+      "micro_f1": 0.0,
+      "macro_f1": 0.0
+    },
+    "greedy_turner0": {
+      "tp": 0,
+      "fp": 34,
+      "fn": 6,
+      "micro_f1": 0.0,
+      "macro_f1": 0.0
+    }
+  },
+  "device": "cuda",
+  "run_meta_sha256": "864a327acdb402f2f3f1fd2b0eaedb4c6671dec841862b0539ae9b276ccf8623",
+  "diagnostics_sha256": "a1d47d2eabec14baeceedcfe344356b50ff019231584ea7177e3ba332f87bb8f",
+  "train_log_sha256": "b3b5c3d88562ae0bf627e127d0cfceb5dea9c324b823603d4e80f0db68477d50",
+  "qa_sha256": "b49d7e6d3daf866be4cf6873ea621166158de5ca516aaeff8b841722b053d587",
+  "limitations": [
+    "One-step integration evidence only; training-batch structure metrics are never used for early stopping or arm selection.",
+    "This is not a converged JEPA efficacy, calibration, or structure-performance result."
+  ]
+}
