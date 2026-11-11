@@ -101,7 +101,15 @@ def holdout_qa(seed, arm):
     assert meta["status"] == "completed" and meta["converged"]
     rows = read_jsonl(data)
     full_rows = read_jsonl(SOURCE / "decontamination/complex_holdout.jsonl")
-    assert rows == [row for row in full_rows if len(row["seq"]) <= 1022]
+    expected_rows = []
+    for row in full_rows:
+        if len(row["seq"]) <= 1022:
+            row = dict(row)
+            row["pairs"] = [[left - 1, right - 1] for left, right in row["pairs"]]
+            row["canonical_nested_pairs"] = [[left - 1, right - 1]
+                                             for left, right in row["canonical_nested_pairs"]]
+            expected_rows.append(row)
+    assert rows == expected_rows
     assert len(full_rows) == 202 and len(rows) == 96
     assert result["predictions"][1] == result["predictions"][0]
     assert result["predictions"][2] == result["predictions"][0]
