@@ -15969,3 +15969,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 后续runner按split获取共享/独占锁，TS0/bpRNA-new可共享，ArchiveII/Rfam独占；已有JSON只有checkpoint/data SHA、CUDA、三次repeat及raw/support守恒一致才跳过，身份不一致或残缺文件拒绝覆盖。另两种子bpnew完成后，剩余队列按同一身份检查跳过，不重复计算。
 - seed2026首次bpnew启动为SSH失败，seed3407已运行，seed2026随后按无进程检查补启；无科学运行被重复。实际GPU占用仍需下一快照确认，不预先声称显存占满或速度提升。统一27格QA未齐，PPT未修改。
 - 随后增加独立TS0 seed2026短序列任务，首次SSH启动失败后重试成功。2026-11-11 12:45:05快照确认4个真实`eval_rinalmo_full` CUDA进程，显存15658/24564MiB、GPU利用率81%，无OOM；不追加第五路，不把并发墙时作为正式速度。
+
+## §15.875（2026-11-11）bpRNA-new seed42验收与ArchiveII安全切换
+
+- seed42 bpRNA-new 5388/5388条全部完成，无长序列失败，三次预测一致。独立复算TP/FP/FN=59347/27065/75837，precision=0.6867911864、recall=0.4390090543、micro-F1=0.5356324121、macro-F1=0.5105099498；result SHA256=`599d326d749021d62eab44952e06320fa3afd54db3d6db401444376ae8aa4728`。仅冻结模型单seed描述，不作SOTA结论。
+- seed42完成bpnew后进入ArchiveII初始阶段。为避免旧独占脚本与额外短序列任务在长序列峰值叠加，已停止旧large42及remaining守候，未生成ArchiveII结果或覆盖有效checkpoint。TS0/bpnew短序列任务继续，TS0 seed2026已完成，TS0 seed3407补入空位；ArchiveII/Rfam将在短序列结束后按逐split独占锁恢复。
+- 四路短序列实测峰值快照20772/24564MiB，无OOM；切换后不让ArchiveII与额外短序列共享显存。TS0 2026独立QA因SSH重置尚未执行，统一27格QA未齐。PPT未修改。
