@@ -15931,3 +15931,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **QA失败关闭**：新增连续三条（75步）target/prediction秩<3且跨位置/跨序列余弦均>0.99的持续性坍塌检查，作为证据保留的停止判据，不用于调参；原常量/秩≤1检查保留。合成连续窗口和健康反例连续三轮通过，真实collapse QA双跑逐字节一致，最后诊断step3125。QA SHA256=`65ac3d111747608d4491ee7d39f8d47822060442a6d68f69f05c17e798edaa77`，artifact=`source_data/round52/rinalmo_j1_collapse_qa.json`。
 - **VL0九格**：J-mlp三种子×默认DP/greedy/Turner0全部完成逐序列TP/FP/FN、micro/macro-F1和三次预测一致性复算，QA双跑逐字节一致，SHA256=`03ffa0834708fa9cea21e0a3ddc2bf7cc87cb82037630e14cda145bc598acb80`，artifact=`source_data/round52/rinalmo_jmlp_vl0_structure_qa.json`。默认DP三种子F1=0.8508877029/0.8541735040/0.8605263158，mean=0.8551958409、population SD=0.0040007994；greedy=0.8168808106/0.8198367859/0.8399150743，mean=0.8255442236、SD=0.0102331311；Turner0=0.8458723988/0.8469166762/0.8570454545，mean=0.8499448432、SD=0.0050389576。仅VL0诊断，不是测试集或最终性能结论。
 - **当前边界**：fixed/random、D0/D1及依赖阶段均不放行；LD1原始计算和独立验收队列继续。SSH失败发生在查询/上传阶段，不作为CUDA失败，也不据此重启已完成任务。PPT未修改。
+
+## §15.869（2026-11-11）恢复同步与LD1对照原始齐套
+
+- SSH恢复后，J1 collapse QA、J-mlp VL0九格QA、同初始化测试及§15.868记录已提交并推送GitHub commit=`21f3e49`，分支`round48-single-model-20261106`。提交前本地再次核验两份QA SHA、九格mean/SD与spec镜像一致。
+- LD1 798条对照的ViennaRNA原始评价已全部完成，目录799个JSON由798条cell加1个`manifest.json`组成，expected集合无缺失；此前计数799不是额外科学样本。完整独立复算任务仍在运行，旧`lineardesign_ld1_controls_qa.json`目前仍为生成期QA，不能提前当成798条最终评价QA。
+- 进程核验显示两个同名QA命令是ProcessPool父/子进程，不是重复验收队列；唯一父QA由既有acceptance lock管理，不终止、不重复启动。LD1主矩阵快照354/456，完整矩阵QA继续等待。
+- J1坍塌停止边界不变，fixed/random与D0/D1未启动；LD1独立下游计算可继续，但不使用未冻结模型生成LD2或生物效果结论。PPT未修改。
