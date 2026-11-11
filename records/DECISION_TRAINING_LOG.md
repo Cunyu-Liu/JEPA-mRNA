@@ -16043,3 +16043,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 按用户提高显存占用的要求，以未完成的合法长序列任务填充GPU，不重复seed42。seed2026/3407分别完成512/1022/1024/1500/1869/3819nt全长前向，输入均保留完整长度、合法pair=5432326（3819nt），无OOM、无CPU回退、无截断。
 - 两种子3819nt均为allocated=18306996224 bytes（18.31GB）、reserved=21323841536 bytes（21.32GB）；score SHA256分别为`ddccf57f270b669fd26ddb92035a3013ae82f0280553662e4eda5e9f080a95c5`/`27d959993c7bfbd52ed0e3a111d8219668038756db6fe3dfb51ef45d4a9cf3d7`。单任务非正式墙时=4.4688/4.4624秒，非正式测速。
 - QA双跑逐字节一致，SHA256=`bc8924706b7f5eabd5175a197b815d8f23eb46b28f963e1a053b877c5a4365fc`，artifact=`source_data/round52/rinalmo_long_sequence_remaining_qa.json`。这只证明全长前向与显存可行性，不是长程精度、DP质量或正式速度结论；PPT未修改。
+
+## §15.888（2026-11-11）J-mlp Turner=0主八+Rfam 27格双跑QA
+
+- Turner=0三种子27格全部完成，decoder=`nussinov`、`dp_backend=c`、`prior_weight_override=0`、raw/support、checkpoint/data SHA及三次预测一致性均通过；QA双跑逐字节一致，SHA256=`34186294fe0a07270a3c35679a1d8aaecc041982685f88dc9a7630004d3e727c`，artifact=`source_data/round52/rinalmo_jmlp_turner0_benchmark_qa.json`。所有split三种子均无长序列缺失。
+- mean micro-F1±population SD：TS0=0.6710504429±0.0213083700；bpRNA-new=0.4040784061±0.0300109103；ArchiveII=0.6789031419±0.0066107761；TS1=0.7342639864±0.0187755283；TS2=0.6634019355±0.0087228099；TS3=0.6489890356±0.0387390420；TS-hard=0.6160157780±0.0444472949；TestSetB=0.7234194069±0.0068726622；Rfam=0.5325393558±0.0193916076。九个mean均低于默认DP对应值，且bpRNA-new/Rfam同时低于greedy，保留物理先验的完整负结果证据。
+- 默认DP、greedy、Turner=0共81格已有独立QA；不据此宣称SOTA或最终候选。Rfam保留预训练接触风险，正式raw-sequence速度与LD1仍未齐，PPT未修改。
