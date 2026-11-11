@@ -10,7 +10,7 @@ case "$MODE" in
     exec 9>/tmp/round52_ld1_matrix_acceptance.lock
     flock -n 9 || { echo "another LD1 matrix acceptance is active"; exit 1; }
     until test -f "$ROOT/runs/lineardesign_ld1/manifest.json"; do sleep 300; done
-    "$PY" "$REPO/tools/qa_lineardesign_ld1_round52.py" \
+    "$PY" "$REPO/tools/qa_lineardesign_ld1_parallel_round52.py" \
       --fasta "$ROOT/data/lineardesign_round52/uniprot_114.fasta" \
       --split "$ROOT/audits/round52/lineardesign_ld1_design_split.json" \
       --matrix-dir "$ROOT/runs/lineardesign_ld1" \

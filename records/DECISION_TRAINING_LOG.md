@@ -15938,3 +15938,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - LD1 798条对照的ViennaRNA原始评价已全部完成，目录799个JSON由798条cell加1个`manifest.json`组成，expected集合无缺失；此前计数799不是额外科学样本。完整独立复算任务仍在运行，旧`lineardesign_ld1_controls_qa.json`目前仍为生成期QA，不能提前当成798条最终评价QA。
 - 进程核验显示两个同名QA命令是ProcessPool父/子进程，不是重复验收队列；唯一父QA由既有acceptance lock管理，不终止、不重复启动。LD1主矩阵快照354/456，完整矩阵QA继续等待。
 - J1坍塌停止边界不变，fixed/random与D0/D1未启动；LD1独立下游计算可继续，但不使用未冻结模型生成LD2或生物效果结论。PPT未修改。
+
+## §15.870（2026-11-11）LD1 298格并行独立QA等价验收
+
+- 新增按蛋白调度的独立QA实现：蛋白长度≤700aa时每蛋白最多3个进程，>700aa仍单进程；ViennaRNA `dangles=0`、翻译、CAI/GC、能量、官方stdout、fasta/split身份和逐文件SHA断言均不改变。仅调度优化，不是科学臂或性能结论。
+- 冻结298格首轮与recheck逐字节一致，SHA256=`29ee47b8d9e2829ae3a99eed35d3a2dd56361b59b7132010b95cd8ef923274af`，artifact=`source_data/round52/lineardesign_ld1_snapshot298_parallel_qa.json`。与原串行参考去除`qa_sha256`和新增`execution`元数据后逐字段完全一致：22格结构不同，最大次优差距0.9000244140625 kcal/mol，最大报告结构能量差4.8828125045474735e-05，最大CAI显示差0.0004971888351339437。
+- 完整456格acceptance队列已切换到通过上述三轮检查的并行实现，仍等待原始manifest，未把298格外推为全矩阵。798条对照独立QA继续运行，主矩阵快照356/456。J1依赖阶段仍关闭，PPT未修改。

@@ -1,0 +1,2913 @@
+{
+  "status": "PASS_LD1_COMPLETED_CELL_INDEPENDENT_QA",
+  "complete": false,
+  "n": 298,
+  "n_expected": 456,
+  "n_proteins": 114,
+  "cells": [
+    {
+      "id": "A6NFE2",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ef596b583674fabdcb4ca4fc555f245dc8e6bfbb1df04bd51c2b84cce3e9e962",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NFE2",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "fbf9be28491c410deb21b8264213dcd0c7f18fb5f509ad61f0702ba3fe66e976",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NFE2",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "7de232993f7bfc920095b558aa35b6ce29145237ebbfcaf1f42b54a2a82c6a43",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NFE2",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ba7b55d49cfbca9ea66ca69acaccf38c291d6b1856b28450f341799177647abf",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NH11",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "2a259a78145e4074728fb5522c76b9f8fd0ae7eab145ef7680fb63e5ec083b38",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NH11",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "f9a6a0751a6173ab2e1e9ee2f69806a70f6ab693de4ec1b1a7e68df9d0604222",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NH11",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "c943fc50068c42d6454b9c3fec499fc4ccecada251e7989aecad5facdb9745bd",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NH11",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "dcbbec663e2a024fc5741ca97e71089d666a939a8cdf82e02f62284c2bfa76a3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NKF1",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "6f4eebf5b68264572e1fd40a7c424c5533bc210f35d3b0a737ac3a1d8add404b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NKF1",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "937fdddb84047830868bc30c6894bcb5eb1cc2332447cad724ccfb183f43241c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NKF1",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "1d27543550f7022c1d96cf70179b72acce6bbf911ad4fa3c996b94cabd60a41e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "A6NKF1",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "f6f23ca57ed2766dfc2a61cbfd767272a933039ba62cbcb301b5f46f2e2af689",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O14880",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "69e89d1f6e18b49efbb9702e86f7eabb68a6fa258037bad8418e869db4b428d6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O14880",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "7097eec493cf315ecafd5cb85f0b9c189fec0aea40df9f3552c4e9cff9ff94ce",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O14880",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "3015deb4a9f1f56fbd36ac3f6ad89bdfddad1165c303a11145e2389de24efa89",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O14880",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "98786b6c2932471c8c956baa768503400cd3f6b79f9ad20ea6d13b58d5ab0e51",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O75509",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "5ccd121f298ef93690f1149bb78b03e90b3a879167f3dcdc0b9230f147a6ab7c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O75509",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "389158c3e22fc7b8123543dddfb47fe5b5861b47ec902e6ca37f5868c608e1ff",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O75509",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ac08b18f138eacb40be45dc8bf421c5f85f1f395620f20ffcf2a7047746e485e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O75509",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "968ceeb0185cfc7641ecc0e5294821ec1a5245f322b31499f4e8ef4fce5b6f0a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O95867",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "876bde6e3b69026b381ae52672a7036f4f359c3d4dad80ed41f4b88205ba7046",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O95867",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "7f739f3bda4c6ab6e35643533bddfe5325d7121005ab304aba2dd01be9b1eea3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O95867",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "47e600716496ffa753180b8e7ff0881ad458e8c1f845830a33e175d1e88e4d5c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "O95867",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "22828269be99f44ade297edcd20b2debb8755d8b2d1062c6e995f3ef403fcac7",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P01707",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "f648d0f4e96dda9e51b07e53502443b5b4c158cfb726ae0cb4c93b2443600c62",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P01707",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "cabe58b12617705a3fb3d590ae72369f00d26c751ae20dbeaf61614eb7cef4bc",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P01707",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "113b0a61ad244cab11fc2b4d6c828a776ffcc1d490587b62a472d11b8a3e041b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P01707",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "3a32a5dfea2bb5d2d04327d4c887de9a16c36bff617496a8d92d53f911edf24f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P01860",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "9539be51c634a3889724ba9173867f6ef6668b6885a6e08825a5ff1840a2154a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P01860",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "6692bc201cf79f765852b3783d9f52dbf51d26797fb5ebc0768b105d9c8e43b6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P01860",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "fbbb9419ea002e7c7fdde284ffbcc0ff16862d6e17d1424adff01a552744b95c",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.29998779296875
+    },
+    {
+      "id": "P01860",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "39bad5a565d8dd10f18b34ef7aec172c909302edda93bd17a5d5e65d8f465655",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.29998779296875
+    },
+    {
+      "id": "P05160",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "e8e09c0ce9c26901f2352396fea6aca6f86dd7523f5ad322a2502c4f0b19c7cc",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P05160",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "a8cbf54c499b36f5ec02ba8b43718bafd8a353b5a59b8aacb1cbaf1e0e7d3d1b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P05160",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "dfa203b8f886c88b108410b10d398ce5bbc8ee006a73163c0a968bb4ac686f95",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P05160",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "b5791ac9255487c4a268e4b445b4e99c05c234d9fa1faef6d61600d9a2f3a9e6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P07947",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "38a2aaf4ef380ebf7459da2222e1304806f20e9fde750ffd35197d6cdca8ca1f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P07947",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "992dc20c969fd80677c4b6af7bc561305865c49af6171f88be94ce7e97fdb155",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P07947",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "abdc76501d1437f33b746c81cd0f763f91c4f7dad078a4994614c49a34043129",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P07947",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "1ff47b90d905ffa1b13bc5790bfe63ac000219f661b77be37c3a7a5094fd8b59",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CE72",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "adc59517c70f702716a76b4a58a5102617a22cf30489403df056147d5f6ea41e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CE72",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "dbdae7533395369965d38c4d795040923e6454cbaf238c78664240e0c04a4fdb",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CE72",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "a1bdab11f38407d46ac48dd0d2fff3f460b7b678050a0d2f9447b7678dadc168",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CE72",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "6f771a3761f331233509f340a77a9f09f384912caf8f4a05fa0a7189c5c6f5e6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CL80",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "f9108e3adfccbc001e7bf4180574959e9a9b0a9964d9151a1f32a984340dc53a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CL80",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "439bd90e4a4928153545010e6fc4d2ecee0e0339c0d550dbc7aaad9fd9617f35",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CL80",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "182fe587839b9e91c1061596a5707913a5a35542b77f39818aa62262f113e126",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P0CL80",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "2fdf2d991bf70f06a9403981d17e8840582d9dbafc0323e90a9948d7a719bcc9",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P13501",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "1891b040cb2874ecd1865255843d1e57b8d94ae8f107449ca3595662ce500c20",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P13501",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "d4eba1ddcf2fdb377a3d691071f8b435d47d6c239e5a446f9e41e7825273efcc",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P13501",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "884da4ef68601a9836c8573594ec0c4b3533d924b67181096b451ef83a10a80f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P13501",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "f91f40ce460477d4edc80a92568ea9d43287730c7c1e0178d022afa1f72f6ab2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15086",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "63455bedf26239cfc869d7c85d3ec73ffb524b99ad4d965313d6ba97360d46ba",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15086",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "fa9c1c091d7297918eb515d2fb656d8c9e6e81b872fd52782bfb12aeefd1f45a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15086",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "f1d1559d6982c4587a567d42e6250ff3cfb2ae7cb2284e1b644d1f42e35f8394",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15086",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "f1e90c4ce09e500cfb9c1c872cb6a90c8dc0af81430b63b2c96dce3cb85c181d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15382",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "0aa1044957c918bc53b14ceaa1e17fb8abcc13bd41ea3d4c8bf4ed298192f510",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15382",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "4070a76de1bbea11d48d297cd3a8fafef00f71e8b59c8fdffe8f51cb8fe06e75",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15382",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "9835e3b58599ce7745b16517e7a98777df3427b8b7658c9350d28198a4c74c36",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15382",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "ab8080db27bd124ac12d70b90f4bee8b51a94e88045d9ccdd7d38af9fb0892e3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15421",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "7de5df2456cbfdd9b5f2628ea8561261e40efaa6e8a92678defceac8070b586e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15421",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "0503afde9737baf346a9314b43734a19b144dd765765821b780eb52b346af478",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15421",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "06be4d4d4680ac1370eaa8f238d00f1a9b0ffc997e1458a535751348e857cddb",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P15421",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "167802b533e0dd1fa9bd61fc7771a1fdcaf3bd8ba5dfaf8cb9ffebd95df4fd89",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P26436",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "4742f7768947e9113dc57264fbd208ead46453f721a87c54ca83dfad611df2e2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P26436",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "b11a5a912e0d7c08bf98a1e942c5c65d494b0f5d7c11592a8bc08af08047e097",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P26436",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "32866c2a81c78714c4fde13c5688b500ca77b382c945c948e13948ac3e1dd122",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P26436",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "c8f0281b459ce1e97b8bb7d7aa48fa2077f2cfa6e063115ca2bb87134ca06cc4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P30281",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "6e3fc8c8a8a93c0c09a37b61f24fcff8ea8c7a520c0d9909a8fd00d033867a75",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P30281",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "e44ced7b7ce539f7576be1cc6c2283284af42fe648d73534bacd7fc629c892d4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P30281",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "93108b0c1ac247cedfb5e406a42396baeedef7d11f9daa07cd1bd753b920a976",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P30281",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "6709e3922c10bef3ca57d547c3ee3e205e3496aaa9a1bcc6ac6da3c11110bc93",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31645",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "5bbd32b1ccced607975129e01b1fb4b41595d3f8fb128d64590d71549a7626ab",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31645",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "0f7466e078b85069ab94225af6fc092e31c240079dce010f5d290d6cc0855ace",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31645",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ce2baf96ec422a8a141e6f62d1b800302a577f0a3776ffc03716f9146e0ecc23",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31645",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "b3d5bc0d9bc58edb3c8ac846db7e21ef71f9abdc72be9f344ddbf046019d2950",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31949",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "bbdd483f7eec4c1eacf9bf407fa1cf5dfd24a01ac42c1a74bafd022a0a71753d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31949",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "b95bc5bd59d75c8fed77c3220717d8a60a18eedb280c7ffe2c1d27ece055e468",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31949",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "6867e611342ce174647aa2992fa269733d2560686fd969b680239b8cd4b25b86",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P31949",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "579d8f90ff5cfeda7d31ca2e9f04cf0feeb5959d63d6a202e49e3f03c3cbb0a5",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P40222",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "7031834cf5733b9d7f41514df3b3dd20b9af3a0571bc513c293c7b4300f4c613",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P40222",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "ee8a882027ed4c7e42c5616ce9f2c5d31210190a594e5255b0036389d9046b6d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P40222",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "fa45ed3306dd44cf82a1b280dafafaf88ef94349a53a73327c37c6d65c044667",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P40222",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "26c718dd8703941c7e18dc23a5ee16edeea0f2772ddfda4755be91796fd8dba0",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47211",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "3fd6c6917da89722f8b32a2e2bf489c9a65da11a13a32896ac89be161addff3f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47211",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "43c953f62abb421e1b91e52b010cd16dc8bdeb0c4debdb4192bff83f7c51bb5c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47211",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "46e978c6917b729aa5184bc29bbdef7fca0e2bbee31d5ae85c08bc6fa1441644",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47211",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "9fc1dabd01ec5f3273118259905b24936b7097bb1e0bcd297a519a36dddeb1be",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47974",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "fcb4f674a9750fb83bdc7d53e7fb5d6d9e107fdc42c28345270ad4eb759c0bf2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47974",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "4b077ddf20a1b8400f52e0e9a4fc18a82ddf7048b9eac13cfad0b4e912e391c4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47974",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "306e4096aaf19ff93004c2318cb68ec6406a1a0b25922ebcfdf14ed7268dc9e8",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P47974",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "6449afa6ce6196d70d6653bee0ea74f4927f99157c07bd50423b605e3693fed4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P49755",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "2f6f1236e2ad9f0aa36bc2b0b0d8c553da7ed89b2753723adfabd43a1dfbcd50",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P49755",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ef07bc82b62c2fc425e93fe6fbf4f624b84f45935c94dbd1a5ffc5eed8f5a7a6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P49755",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "583600c6a5a2bc7147abdb827296200f3536c2ca6f76e760b382287048521758",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P49755",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "f6debdfd4533cfb720f6d8eca39320aad919b4cb99367fad3e0c9c28ec75ec0f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P54852",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ea4d18faa729a799eabf7d6633ccc1fefe1171c21fa93827db4946d542962035",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P54852",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "243b1a084c4799ac226033b49754f704d831a4c613175a75dc17599ba133301a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P54852",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "a9465047dc86ebc68463cb73834caba721b0a31acd3ff80a35840d4df9a73af4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P54852",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "a571d3943f724d97dbb8844cdf22a874433655e212e2851157a9b291ec1a0122",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P57076",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "e630c2907b073781879b655141e96f66758fe2ca05646c88797b092920d568a0",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P57076",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "b4ed30db345a4af45cbfcca12ca31a03ba3a766e1f59e21879b1a7de805e38e8",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P57076",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "dd726b2eaa53848a80b93dea56df50d6fc4075768dd660313b1dbf8d406936b1",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P57076",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ea26f4f4fae95b54d1a0be81642516e4df7e324a85f64daa827ecdf2bcd7407a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P78345",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "6c13b832b6eaab9860a272dc2cf97d63c0119fa8c570ca847e616a2af591b21a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P78345",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "42e98b2ce8df6967131415801181f94d573c2cd210bd4510246b9809280677eb",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P78345",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "134ba77a629a3aae68128ec4b054f7a1292324af59d5338b6e71a09cbf40637a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P78345",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "3fe38aa3c13a0505c50b9ae322375c90965549a00ba038171ed9832b795e2a32",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P78382",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "86cc7343cc5d644ad0d59c66d9fc9eefe43f4f56711abd4c0799dc4c3916fb6c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P78382",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "80165262d1b44fb9fff2429e8e8117552e7fd523e04f46d9f9dfdc101af09163",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P78382",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "3538fbe0905225a028f97a83415a9daf6327042e609588a5775e6d7175794630",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.20001220703125
+    },
+    {
+      "id": "P78382",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "aa53eca0d71d6c196c34dd30ea9c136fcb5d7af5f28f6fa87697f1f433e2dc16",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.20001220703125
+    },
+    {
+      "id": "P98173",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "c816be721a2ff4d34d70c8c0c7f67416815c2cc7ba579c11772f044c7a7b82c8",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P98173",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "5d94d06661239d560c336638406d0a4b34832bd70fdb9f9a0c45a9dd7e4fb042",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P98173",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "196c21fc273334fc1865653f8d5a50eb4c97446e647370fefa9530152556e8af",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "P98173",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "b1fb211f66704009efd9ca034b3d791f40626b3fb2a423afeee815ff155f6ab2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q05901",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "27cb0192564842e6c72e940e96daf2e829eedabe520ff805c7c860cf5fc54801",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q05901",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "4e1d08583c3878fd24d33e42571a31181da7c8c49071972926152bce452550f8",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q05901",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "eee9611cd525d6a331c8b90aec518434d8ea4f0f2f69c98faf19936953efca15",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q05901",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "29c88de4587b03fcdb4f8091f53e9fff8c932950f7f7fca78d6c39a6e8a1c317",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q06187",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "b7cc2303fa810e69f32cd6013fab2dadab9df5a31eb3ae562944fbc9bc207e75",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q06187",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "3138793880b060dd0a4a016b54de533ea6c85011165fab922e48e4e4dc986df5",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q06187",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "7dacac4bdef155dbd155add298d0bba23331bfcf4584dc4a971eaf4889ebe654",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q06187",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "165c5fc29ca2f6534b6ce4164ae80d12cb51b52a3fa598ee0e368da30307831e",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13087",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "786e955274ac53007844757d59bcbc2ef30e730c58a4d2e717a247268e612f60",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13087",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ea4a12b454293aa383104aaf70da180d34d88426d7e5028e28b4bca3b1111b49",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13087",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "957967a3454f79c1ffd716d980859ac6443a40059038d8b05a9422ca32a643b7",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13087",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "52b88e8eebab4ff01afccf7e9a28e9250b0bc20ab945fe440fadcc485c5da375",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13155",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "0d35fa8ddc57c39bf51fb6438690b90531d164eabc9545f3a52d1e26cedabaf9",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13155",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "7527e55effe7dc91079de43597edda184dad449b52195731a9694de9854226a5",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13155",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "07a566a0911f4aababb6c38977b42d5687a41caf018ba4c5e2324fa9ed2dd213",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13155",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "5a8d20c23772710c80395e8eb65cf92d220079176857d9258c27a94db12ed491",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q14442",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "fe1db815715f6a03de31e820d3122cc0caac3c411b19b75b0d24475b8f93ba54",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q14442",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "89c8a02f41d0093e54c819825245ff8434948067a2f290eb042a4efc45e5ccd9",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q14442",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "40e0b5e4e12a1bb3d1d9e44c42a0eb08cf698c1c5ef64d346a173efff11e6118",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q14442",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "04c5a9b389ae354e97944fca66a09279063f0046eb748b1fe4e2d9dc9f2769f8",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15465",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "3de50bc1c99ae4ce8c56a39352e6eb465d5ca0484ae5559f6ffb1266497232b8",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15465",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "e8762d354538f76ff63ae644935ec8f779e93f5ec8f5217dd7c6da25397ad4a1",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15465",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "0ed91088196556387e4ca494f033cd4cd58c2119d609bdaeceeb7a94aeaaf69c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15465",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "834802c1039d2b9d5f271ad1fc2fd8569cdc1f2fb969c2f63850ec0eac8491bf",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15669",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "8a4f48ee665d5b1b408d162d6739360ff025f1bdb363ae2c6a9f8c3fbbde8c0d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15669",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "21648d9a5b14a5e7ac3e86d3a9413ad1528cf04ae5c909e786635c4aaa1e991a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15669",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "247b4f574a05149bab98a3bd69e29ff123f931734f715c5feb1dc2e97e2fdd6a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q15669",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "3700d3e215251cd8b547254a2bf5f95ad5d4b994fdf29ef9bed889e21ab0d9b0",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q16690",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "04a1e8fc8754b69fab21fcb96857a49c56c9c35be9196f6662b16d909d4787d1",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q16690",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "eb2d30e341d34b25175ebafe4b0baf7b40e66a1d353de214e53da1fb63f40f60",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q16690",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "046649df8c734d7dfb1b2b055f44a7086c427c7c3084519f60d5a98fdab4bbcf",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q16690",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "f3e068f39d83e463dbc52a554fdce988015ed12990fe489b02783028bfb0fc53",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q3MIR4",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "372e8ef869f31ba5dc530371981f1ca6bc65135a990db2f878742918c30bc8fd",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q3MIR4",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "2330ccd0044994d6f1acf30244080f4f07517ca80030a80c5ea43ee29cdce217",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q3MIR4",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "f0eb8064d7df503f7d8ffaa73b9230c46f880e8f97914e007ca6dc28ad39be55",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q3MIR4",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "f0d136b499dcc66a30bede0a7d952eea0ae10d6bffe3e40c02a9bf8e218f71e9",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q494X3",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "d0de7c3f8dcf5c7d7b92efab6a68eeddc7b8e7c5308a881d8f743bc3d3415d32",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q494X3",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "4b65fba81fb953ef2015009c3b13a9d2020305f885210c343e5a71f22568b8ef",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q494X3",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "788d1073e49c9c1df78a19c55bff9ca7996eb103bd643a8a2c2c979bf5a55641",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q494X3",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "037b431785ccbe55566b72ee285b13d3a4791842fb14612dc0a8d46a73a7a954",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5SWX8",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "cd60df2265b8797dc573f43b20efdfcf4a3aae91f0d57ff72f40eda37999624d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5SWX8",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ee3b5ba2487be521f36ee9436d9ba29d04269460c8e82d3f0813c6f380584d91",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5SWX8",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "bf7383558d6265dce8b5c7f12a2ac518e16860f025a22aab9396eccf1bf8e4b3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5SWX8",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "384efa0a129bc30c279d45387d9e1dbc91b45c509a42da1becadb8ff7f47f925",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T749",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "9555715e3efaeb861d8971f76f463dd1f737e8afe27860d3d978576e7842d035",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T749",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "2c42c0f1dbaeb6ef42da332796de29f0ded5a02cae6590e2b1f81a55098e3286",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T749",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "d7c2e8fb6c93cb06eeb76ce0872a22f38640f5f24ebd6b5e3f0ad4beb9fbe0e7",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T749",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "be30cd67111702d9bf2ea46b0187fb8cf23848d54f5f57ff8e5c83e0047df796",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T7N8",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "0e5fb48b76b79831bf4f02f10132ae22dff3b6681f820b2c23c77e17069eb0ee",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T7N8",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "48a45f1c16a5c40af4ef31da676050dedd49d8a9fb03cd09e5f2210e3758dc16",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T7N8",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "6718c3af97a4be2603c333433b067bdbb984ec1844579631dcb652c47120d1e2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5T7N8",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "24f1868baa523629fdb0eda6237abb202e3baa913d9bb854cc0dd2fe7844ac09",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5VV16",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "8c0f4686fefcd19399fedaea74f0897f813c74b7c03f08a15e318db496dcfac1",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5VV16",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "d2b3d619c8677f13368037883af783f6b60396d8599b5143944b9f5d12a16d79",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5VV16",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "438ad002b83c6e5bbaea4ad8236bb4ed97d6704b85c8fb493fe8441030c58e4b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5VV16",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "acb60444fcc78fcefeccae11491af7bb29f68043dbeff69eaff0c79713640c75",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6B0B8",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "3229c8a60648ce2a4d4ac35b9f042417eed0ff1ffbc5d10e72e34507cea3bbbc",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6B0B8",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "02b53b6c500551fcf680d6e5a4484a37fcf321028edbff44668c057046b9cb27",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6B0B8",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "3c867fe3b57647a87018b840fb5cd16681f0634a666e683b91c48c655ae8e432",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6B0B8",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "86a660006a29c2fc65f45a714b111bf976292a512547993f7f7db16807ba0303",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6NT16",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "082448831de214b93b83ae2b9568a619e85765728bbc438b77a78038f28b4353",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6NT16",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "3144e4b40ef6b920dee7e6a82b3716453cdfe9e42c92a100287c7791b68b5580",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6NT16",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "87bb812ed4e3a805e57bd9ecc04016dae85b30fa3e2d2de3b4960a47f1d0ceec",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6NT16",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "1fd2ddaede9475a3019ff6f35ceb589e1e128deee60c13ea5ba7bfcd0cbd3618",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PF06",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "c84cade09e91584c3b6d3f80e3c383702b0843fb2d9212614cff784bdf46290e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PF06",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "b4c426c1325f6640996131e760e854597c9a0c1f6335198ebade95d58b8ae232",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PF06",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ae4244f2a2b315f223beb5d53475fe2463027f078af5ff76d9c4943a2c666c2a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PF06",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "486d6ab42cbf5d1333edc222dd0f89c435da5774529dcc8b0556f7d351caf8cf",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PI48",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "d176b091e71da2f2f193134a82311b61f2abf933a959d833e3688069a296d00a",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PI48",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "71b41da4d921ca97d99d6da530054ff36b4cbf94ce5701cd9e3b967ec91cdfca",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PI48",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "0c3c3f77c5f305a39f60373fdb340816dc56adc10cdac5ee6483ee1dd823c96b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PI48",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ea25684277c31f5490b1fd404bf0329aa715b55bae711e49f17393a281d78216",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7RTU1",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "89c77d8ffa14e2dad61e9564ac608c9bd903d8c0750bbbe2fbacb594f72dfb6e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7RTU1",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "be6edfbbb4bc838250575557c66ff46f7d1088b7fc48a50b9fd8bdd406cabfbc",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7RTU1",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "af6493130d2c8a5dba2554f7eb4ab52e3f6f60c74e499375f485b7d5b482845a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7RTU1",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "8d44855ebc984e5011b1360aa817d36af07a264fa1affd0d4d3dc3c777821dc0",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7Z340",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ce8e3f69f20fa84c7357dddb47d7ca06bf47d0231954fc581fa6d2aabdc9e609",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7Z340",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "addb431bb86c37c02bf61d14c19ddd55034b14b3c4fe2ffa8bdd207b121fc6d5",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7Z340",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "c595c083b4a4f57c20753fc411045302418b5bc5831dcc937f2db155e5de1815",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q7Z340",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "6cf40895d1fa1c8253877abee5e9f61a472462d48cf701749f8e22dfc4b427b4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q86TJ5",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "b473b1c67156d0da92c86969916c7c7cd9cf1961684416e85398d7daff01ac1d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q86TJ5",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "9680ad6e6061ec7aa0580dde442757f7092cc9d1796d8c14773a14421e80d2b0",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q86TJ5",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "b23412794445d1236fd53b1fe71ec8efbfd506bb4c984c87ce663b86ecd0c145",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q86TJ5",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "5bbe3309b2a1c8b68720d37b09e3b704fec86f4faaa68c68e7affc8d0a14b8ab",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8IW19",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "3598938f68493e2669c36c6de19b41018ea46c379e629c1070721879ace64c0c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8IW19",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "c6b2e906395c69ff2833a61d51d80c6242b96480f6d87a960112023be363cbc7",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8IW19",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "cf3706f7830e4cf0f15be53bc4ce61c0e9cf8fda1f45cee0ac53ef145b9ff102",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8IW19",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "ac30fe240c600de60aaf446549edde5445be28bf1a01762f8fa95413ac1804c9",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N1G4",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "126b528b2d80cfcacbbb67c6364f02b17d48b602b687419cc6db609a393c609c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N1G4",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "85ca53347f196e44754ab4ace927f0393aa03f15bf32200e11513cdc50f46c8d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N1G4",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "a7b27717a0b7c42ddad9bcaa951e6a815104c39c81bf71f7a96e997b2a06b8ca",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N1G4",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "4ba6ee52b004326bdaff320e4c2eac4d35ee0c911e3cc9701f4cddedfdbc77d3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N6Q8",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "354c94ec44386d3e1a37254080fda9a16fd4870b992f1a84df7c16a0c3e4c921",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N6Q8",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "1922a5047a6f5ea4da624029481ea30185d532b8e72c04071fbc258cf732ff06",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N6Q8",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "ea593983e3166264b2319c481b2bccf2186a2a651f1bda49256f42501355a052",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.9000244140625
+    },
+    {
+      "id": "Q8N6Q8",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "9736628b391f2a71ef37f921ca17b2af63647d75295cab50871dd04abc0b74a1",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.9000244140625
+    },
+    {
+      "id": "Q8NC38",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "05e1f5be52b0bdcd5f4a15b4918b11755ed45cf84fdfcfd7c21d3fd0865129ed",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NC38",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "4b35436758a8eaef04400941398330bc0f3f1f301b6673105699dc5e6deb2f6f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NC38",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "171897a0ae1a92f00b09ed612439c42dc35a1b7c291edaa66a165e52803e464e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NC38",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "5782ae771f0a81876d492155157ca18d25c946a5061fe07d7100f4a882a3eeee",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NGJ5",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "cb86a61c1a03c867d7d3ebb94b4d34ddd90a3ed322e3c0082160dc43ef7f5cb3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NGJ5",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "cf45c1924f51faed2b634794ef5ca33d8e905b04f6f6ee66f4d736dd358928ea",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NGJ5",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "36b3634c2a153cc690145addabcd6302511ff0f65cda0614308c021c0b5af2e5",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NGJ5",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "fc8a229cae3c72ab41e5efb7592cf9697bde0e6c1c446d835eff5d5e3429ee75",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NH43",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "5029d960a63b78f82dd593397f6b89db74078fa2d913788a297bafc37503e842",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NH43",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ad272ade075aadc619d88eb550a576e976fcb0ded226392678be324db5ebf007",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NH43",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "1b214e78c231e11fa7c0a69c63695158e83ea12b196fec6eeaa1453823a21276",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8NH43",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "31ad4cade55a572abe7d7ee903a7b48e7e80495df058ac927f9fd194820a372e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TAA9",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "02443dd79c0a895a9e5859ec5bc31968bf0739e4ab676e33be6a73d116f8c30e",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TAA9",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "c3a22b66b7b1a589e09bc6062e8c68f521b42ce92ff488db8298f0c50aeeca6d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TAA9",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "0e607fccb6678c3271fa7662625a1ccc67d9cef3512d76f485018edcc7865767",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TAA9",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "d72d1147442157a22815961a9f7e0d018db763e84ffaecc0fa3126695826c3a2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TDG2",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "1adaa75220be31a022b215d7b96eb3fe3aa1e02a8725a347b959bdf24f68ebe4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TDG2",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ee81ce77728d53900c9661677758f3cfe2872dc8c6a98862a13c2a4ac3004929",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TDG2",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "5e55482f6d67fe903054177617b5aed2bb52761179f4bd657cdbd8b7a3e5776a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8TDG2",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "cc7642ce01b1e6d0c0a968e39e29ba6b1e1371145bbb7e1c7e7faf7c09c49161",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q92542",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "6746de271129717b5def24caffdb177005a26beb2a4ad195b4e77127106f2182",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q92542",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "521b14ccc1f606871efeab7af518887e915762d92e79b38c63cab369a0bc8743",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q92734",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "0e342366c663d9b2d4a45ffc4a161743dfda55415e772d2bfe709eb3de2a4fd8",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q92734",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "78e2aadf4efa71458fed7278cdead62566882f52d3f52948f5e99ee48ea235af",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q92734",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "1280997a1ec820dad09f67cebc7a7cc083c116691b172d0eb0f3e3eba041a3a3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q92734",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "b19c0f3200d5c7afb334e50a71f04f48def96127a31c80e8caf0f522c1657650",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q96DV4",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ad7478db8571951e158aefe7da315dae09007ced61f58e61b3a3692271e5d77a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q96DV4",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "1417821c1d17909f61d9b0f89d0b5dfe2a855e177e3c5ccf87bc07d384c8a7f4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q96DV4",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "9086cb51bd7726cbeda38bf14218efb2a0b254cb0271a2dca1e49854daa02e81",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q96DV4",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "146b205b383a8966378a1d6752d9fd4b9d9aa398347f30ab1d4318d140f0d649",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q99525",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "217f7b4b65448fa3086ed3285ba7798995c0e0259bca8297636ffe9d088eccfa",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q99525",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "78ec5d2d86ed552ea37f1744c968dcc675cd0b053f722dfcc1ae692760543697",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q99525",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "31c0f03717d7b57a113e4d88bcf7ab2428b3b8e699e48737bb1f8164b2dfd24b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q99525",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "77e40cfac4ba73f0017c256325c9b4a36fe4df760f439ab5caf530f3e4d06594",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY11",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "eed5d190800dedcef67578779ad8964f1e97c21731d1b001cdcac8376b23705f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY11",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "86685521bbb218156e49804c91f8f7b5c438d52d0e2b39e44a10c6b0f65c80e7",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY11",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "a5d7ef5774fcea08e6aca026ae5d879843230dcd058cdb8ac464fa5f11e8841f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY11",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "9e9273c928cd8d552b12bdda3a7c304ef58b42e83850214c92da2dd866556b9d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY21",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "571000ffb1a8f46600fdfb9898e34a7dc56d63556212f7b30934511e833ab32f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY21",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "4b646219c0f0ca454c3b202363e5dbddf7f011f71e9b28b464270a2e681d2388",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY21",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "8cd54df713c490cc64c0492e0b3180c0236825891f5c77dd5ccc2a1266d7271b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BY21",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "4d9276452595fbf0c61f6e24b54d1d20fe59cd127820b8723e51f9d33d58c7e1",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BYB4",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "366b60fc05ebc5fa243d5f33b57b3c09750676c9dc3eaed1dfb6b4057913129f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BYB4",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "c6a0978f2234a83f828b907ebf010e9ffbaa5b06175df0e81be2913f51c18005",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BYB4",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "3138ed23367e68d9ed466471f83e110d333efa0ce80148918414e66178c18820",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9BYB4",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "85bd92f58fc28246719ad32c1ec79b73c14137a1bc2208c84bed66249e7e6cf6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9GZQ8",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "4f1d13508dc2c65ebaec75203da4d47f9f1e7186392f4db3a3340cdaf15cca83",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9GZQ8",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "1a7e95284e93c5c39ee26f1ca16a24d8e843bf51c06f1eddc36ce93ed2277e19",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9GZQ8",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "19995bcab2b107035bbc3b1c4fb743adf88c223ff745d43b15606bb804ee52f2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9GZQ8",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "c3cfd8a774e496eadadb1149a6e297b45641398193e1439bd2a20ca6cf98c56f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9H461",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "d3562b242021ed9331fb11cf8b003b4ea8900cc68f9713fa989ae54f67c16629",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9H461",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "85deaa53645e474ccc835c8db702edb4616a1178cff118683a1be7d0789b5d83",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9H461",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "5c478bc9506d1e2fd0a21fc982830aef50ecbb548b99f1575875102849b9ebc1",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9H461",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "e1ed439dfc618615481a32e17345788777456bc817005b21e293f035b645eb25",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "962cfdca8e72004cb0ed4681b8f1f66caeb447539ae33abf916f29b83169531b",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "f2d4b62b5a511018232352ab1c91579c9ad8a5e250486fc262eb66afed980453",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "89292d5dab34555ca0755bdebe04acfdd69ff6953e1e4320579ec428017bcb3d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HA90",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "016490c4aff55458549f1d26b29d5782f16276201a83b6d61f80095b264d4f6f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HAE3",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "573ae12061a4cbcdc91700520debfb5d66cdc7f42f9436b3147717ec89fd6845",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HAE3",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "2c43b02bf9853d9960494c8ed94ee8fd0fd009d1da363d1e66f6762fc45c0ac2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HAE3",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "16222b037bf5347757928309ea294201dff8e669d26fa6fc22f23cf9473e41a2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HAE3",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "3de9d58cda0eea2cab78887b47758d14b32716f99c5fc60a4b0541628960ef31",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HC38",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "832353a0a389867b923a625ae84c9ccf161291a40d318241af26ffdc458b47cc",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HC38",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "e43295be9b351cac47c8eadf304a2f74928bec2e2a303d14d944c263847264b4",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HC38",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "ff87d4c61f21803fbf6067e963db01cc24014a46dbfcd16151508b571ea67c89",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9HC38",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "931022d767b702a1f10b0a53c258df53fa21d006142b2b7da08bc5b652cefee6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NV29",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "2f315edeb7ce18ced098a02f75b000da98a2c5c8c71df632afce5ccc23c10d09",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NV29",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "90ac06b77f3ecf2dfc1583f80a70a871d52750e28fd16ef4d5998b9143f467f1",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NV29",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "5a7d88eadd4777298bb9bd1b7b4f504a84e10ae44ddfc691fb4561f0af6fcdea",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NV29",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "60637870ed006ddc6f8bd4fbe944957b1e4bdc1420ebc3d5f03ad94e3c02cfd6",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NWZ3",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "57c74aee6c809baafffaa4d8a01358a1243edffc88cf86d07f4d600004e90b50",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NWZ3",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "59d28f95ec2344d24b6927cb2839d23249b382fef32685fded48d3fdfdbe4a59",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NWZ3",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "432148b006d4f9f927aa0c425866e608ec39becff389f751f36104ae5a7499fc",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9NWZ3",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "1de96b6f52c8ca1f89c9b8a1de4fd807b2a664f6ee74abbd79740e8c8240c18a",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UBM8",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "6148f2eec5bc486b0d8b054cd8545770279ed1f0ebf8dcc094529324f36c9832",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UBM8",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "0c97fe313ea183ac708720618aa36bc57e62f4a83a4e91ea984465d88e227a87",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UBM8",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "044c0ae387a94a77750d656d57784fb23b09ba15c61b88fb312dc4f43908ca4c",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UBM8",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "a9f84374ba7b2184af1bd563bca7ac4c7cbb3bf6608cef7833e88596f304734f",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UNN5",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "445ac4cc5af542131fca729a0b514fdc0176c2438661ddfd5a174e7fd49930db",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UNN5",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "226830c688fd85c8564c2d560b5e338ef7a27d385c4ea2c308203471984e03e3",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UNN5",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "c43bb4d41229cb3a8c7f70d5ad69273d71415141e570020a9dbd765a71b564cd",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9UNN5",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "bc417e928a752b320d7a828c89beb7ebc313d57b9b3b3d3dec87826dc2f1add2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9Y512",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "e4eefd6f3ec22a6beca09ce383343b392399fb4ea2fa926214366e43bf514bdd",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9Y512",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "08c79c7979684ee4224dbba43edf1d059d3e6629eaf28966fc3a938acc579157",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9Y512",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "b5f51a35612e856a1075ef280143f139048d47b975f80cf29418d8d208b155a2",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9Y512",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ec2a9ec8452e15b0127fab3171013d93456aaa5aea4aeb1ff4a630d540e3956d",
+      "structure_matches_independent": true,
+      "suboptimality_vs_independent_mfe": 0.0
+    }
+  ],
+  "n_structure_mismatch": 22,
+  "structure_mismatches": [
+    {
+      "id": "P01860",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "fbbb9419ea002e7c7fdde284ffbcc0ff16862d6e17d1424adff01a552744b95c",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.29998779296875
+    },
+    {
+      "id": "P01860",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "39bad5a565d8dd10f18b34ef7aec172c909302edda93bd17a5d5e65d8f465655",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.29998779296875
+    },
+    {
+      "id": "P78382",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "3538fbe0905225a028f97a83415a9daf6327042e609588a5775e6d7175794630",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.20001220703125
+    },
+    {
+      "id": "P78382",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "aa53eca0d71d6c196c34dd30ea9c136fcb5d7af5f28f6fa87697f1f433e2dc16",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.20001220703125
+    },
+    {
+      "id": "Q06187",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "7dacac4bdef155dbd155add298d0bba23331bfcf4584dc4a971eaf4889ebe654",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q06187",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "165c5fc29ca2f6534b6ce4164ae80d12cb51b52a3fa598ee0e368da30307831e",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13087",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "786e955274ac53007844757d59bcbc2ef30e730c58a4d2e717a247268e612f60",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q13087",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "ea4a12b454293aa383104aaf70da180d34d88426d7e5028e28b4bca3b1111b49",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5VV16",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "8c0f4686fefcd19399fedaea74f0897f813c74b7c03f08a15e318db496dcfac1",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q5VV16",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "d2b3d619c8677f13368037883af783f6b60396d8599b5143944b9f5d12a16d79",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6NT16",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "87bb812ed4e3a805e57bd9ecc04016dae85b30fa3e2d2de3b4960a47f1d0ceec",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6NT16",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "1fd2ddaede9475a3019ff6f35ceb589e1e128deee60c13ea5ba7bfcd0cbd3618",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PI48",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "d176b091e71da2f2f193134a82311b61f2abf933a959d833e3688069a296d00a",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q6PI48",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "71b41da4d921ca97d99d6da530054ff36b4cbf94ce5701cd9e3b967ec91cdfca",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q86TJ5",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "b23412794445d1236fd53b1fe71ec8efbfd506bb4c984c87ce663b86ecd0c145",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q86TJ5",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "5bbe3309b2a1c8b68720d37b09e3b704fec86f4faaa68c68e7affc8d0a14b8ab",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q8N6Q8",
+      "lambda": 4,
+      "beam": 0,
+      "split": "design-test",
+      "sha256": "ea593983e3166264b2319c481b2bccf2186a2a651f1bda49256f42501355a052",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.9000244140625
+    },
+    {
+      "id": "Q8N6Q8",
+      "lambda": 4,
+      "beam": 500,
+      "split": "design-test",
+      "sha256": "9736628b391f2a71ef37f921ca17b2af63647d75295cab50871dd04abc0b74a1",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.9000244140625
+    },
+    {
+      "id": "Q92542",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "6746de271129717b5def24caffdb177005a26beb2a4ad195b4e77127106f2182",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q92542",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "521b14ccc1f606871efeab7af518887e915762d92e79b38c63cab369a0bc8743",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9H461",
+      "lambda": 0,
+      "beam": 0,
+      "split": "design-dev",
+      "sha256": "d3562b242021ed9331fb11cf8b003b4ea8900cc68f9713fa989ae54f67c16629",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    },
+    {
+      "id": "Q9H461",
+      "lambda": 0,
+      "beam": 500,
+      "split": "design-dev",
+      "sha256": "85deaa53645e474ccc835c8db702edb4616a1178cff118683a1be7d0789b5d83",
+      "structure_matches_independent": false,
+      "suboptimality_vs_independent_mfe": 0.0
+    }
+  ],
+  "max_abs_reported_structure_energy_difference": 4.8828125045474735e-05,
+  "max_vienna_mfe_suboptimality": 0.9000244140625,
+  "max_abs_reported_independent_cai_difference": 0.0004971888351339437,
+  "fasta_sha256": "13cdfb767e96017f4f1fc0a0bc7930cf34a93cdc9e012fa38597bc3f9f1d16d0",
+  "split_sha256": "102b2d138f334c97589c1c9ad456fe8b13fb1bdccbdbc222bad30bfe0a51966d",
+  "split_file_sha256": "dec3a1464549fdb4e9607529799e4dd23d1b9f406eab0e2a4f4255ed097f422c",
+  "codon_table_sha256": "e6c4a49036fe21f3266e7e53130011bd7725c62ebeabbe442f7f8f1cdf5890c4",
+  "cells_manifest_sha256": "47980db9f734f34fa98897a2bbe03dea0c040a6638cc1cceeb621c087cc8fe79",
+  "qa_sha256": "f0ac214e8807dd3d5c5ee36c8655237fa97ae02cb57792bbfda5fe9724a14e0b",
+  "scientific_conclusion": false,
+  "execution": {
+    "processes_per_protein": "3 if protein length <=700 aa else 1",
+    "scientific_configuration_changed": false
+  },
+  "limitations": [
+    "Only existing passing cells are checked; this artifact does not assert matrix completion.",
+    "Independent ViennaRNA uses dangling_ends=0; CDS translation and terminal stop are preserved.",
+    "Different dot-bracket structures are retained with independently scored energy; this is not an exact-optimality assertion.",
+    "design-test was not used to select lambda, beam, constraints, or calibration.",
+    "Generator agreement is not experimental structural or biological validation."
+  ]
+}
