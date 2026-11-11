@@ -9,7 +9,7 @@
 > | T-A225 | 结构感知对比CL0–CL5 | tr1c-v2/同源家族审计、视图split继承、负池、CL1/2/3/4、条件CL5、三种子与同算力对照 | 仅计划；Pair-JEPA裁决和数据门后执行，不照搬第二宿主或未验证增强 |
 > | T-A226 | D0/D1、motif与长序列 | RiNALMo同初始化纯数据扩充、去泄露/标签守恒；motif/shuffle/Turner0；全长与span验收 | 未启动；常规评测仅主八+Rfam，不删除长链 |
 > | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | 798条max-CAI/同义/GC匹配对照已生成并独立QA，798条ViennaRNA原始评价已齐套，完整独立复算进行中；主矩阵SIGKILL后单进程恢复，快照354/456，298格三轮QA逐字节一致（22格结构不同、最大次优0.900024kcal/mol），全矩阵未齐。design-test不调参，COVID BNT/wild-type仍PARTIAL，LD2未启动；298格并行QA双跑与原串行逐字段一致，SHA256=29ee47b8…74af，全矩阵验收采用该已验证调度实现但仍未齐套 |
-> | T-A228 | 最终主八+Rfam、置信度、raw速度与交付 | 单骨干/头/checkpoint、3seed×3repeat、独立QA、独占raw三轮、负结果/PARTIAL完整、PPT逐页复核 | 未达成；所有前轮阶段门通过前不启动 |
+> | T-A228 | 最终主八+Rfam、置信度、raw速度与交付 | 单骨干/头/checkpoint、3seed×3repeat、独立QA、独占raw三轮、负结果/PARTIAL完整、PPT逐页复核 | 未达成；J-mlp三种子主八TR0-clean+Rfam共27格按小split共享/大split独占锁评测中，非正式测速且测试集不选臂；最终候选、置信度与独占速度仍未启动 |
 > | T-A229 | RiNALMo长序列工程门 | 分块等价、无type推理、真实CUDA全长与峰值，禁止截断/CPU回退 | 已通过：512–3819nt完整前向，3819nt allocated=18.31GB/reserved=21.32GB，未OOM；仅工程可运行，长程精度/DP和D1长链训练未验收 |
 >
 > 统一合同：`docs/plans/2026-11-10-rinalmo-full-replay-and-downstream-expansion.md`。非计时任务按实测安全并行提高显存与利用率，禁止为占满而OOM或改科学配置；正式测速独占。

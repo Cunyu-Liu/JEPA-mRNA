@@ -15944,3 +15944,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增按蛋白调度的独立QA实现：蛋白长度≤700aa时每蛋白最多3个进程，>700aa仍单进程；ViennaRNA `dangles=0`、翻译、CAI/GC、能量、官方stdout、fasta/split身份和逐文件SHA断言均不改变。仅调度优化，不是科学臂或性能结论。
 - 冻结298格首轮与recheck逐字节一致，SHA256=`29ee47b8d9e2829ae3a99eed35d3a2dd56361b59b7132010b95cd8ef923274af`，artifact=`source_data/round52/lineardesign_ld1_snapshot298_parallel_qa.json`。与原串行参考去除`qa_sha256`和新增`execution`元数据后逐字段完全一致：22格结构不同，最大次优差距0.9000244140625 kcal/mol，最大报告结构能量差4.8828125045474735e-05，最大CAI显示差0.0004971888351339437。
 - 完整456格acceptance队列已切换到通过上述三轮检查的并行实现，仍等待原始manifest，未把298格外推为全矩阵。798条对照独立QA继续运行，主矩阵快照356/456。J1依赖阶段仍关闭，PPT未修改。
+
+## §15.871（2026-11-11）J-mlp主八+Rfam并行评测与安全GPU调度（进行中）
+
+- 用户再次要求提高GPU占用。当前可合法执行的独立任务是已完成训练的J-mlp三种子主八TR0-clean+Rfam原始官方集，不启动J1/fixed/random或D0/D1。每格使用单checkpoint、原始序列一次score forward、确定性解码三次，非正式测速；测试集不调参、早停、校准或选臂。
+- 调度分为五个小split（TS1/TS2/TS3/TS-hard/TestSetB）三种子共享锁并行，以及TS0/bpRNA-new/ArchiveII/Rfam单任务独占锁，避免3819nt级别全长前向与多任务叠加OOM。Rfam=`/root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl`，n=10790，SHA256=`569b3fe999e1a4fc494cfd48d78c7c30bb0ead93c7f9969b7e85708bf033b067`，保留预训练接触风险；clean八split严格使用既有manifest及SHA。
+- seed42/2026小split已启动。seed3407多次在SSH建连阶段失败，未产生错误评测；释放尚未执行的seed2026/3407大split守候连接后补启，未损失已有计算。大split当前仅保留seed42队列，其他种子后续按独占锁补回。27格独立QA等待齐套，逐序列复算TP/FP/FN、micro/macro-F1、三次预测一致性，长序列失败保持PARTIAL。
+- 不为了占满显存而改科学batch、截断长序列、运行无资格负载或超订OOM；实际占用以CUDA进程和nvidia-smi后续证据为准。LD1原任务继续，PPT未修改。
