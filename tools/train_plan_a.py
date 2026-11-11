@@ -71,7 +71,40 @@ from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
 from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
 from rnajepa.structured_mask import structured_pair_mask  # noqa: E402
 from rinalmo_preflight import VOCAB, load_encoder  # noqa: E402
+from structrfm_decode_round48 import decode_scores  # noqa: E402
 from torch.utils.checkpoint import checkpoint as _grad_ckpt  # noqa: E402
+
+
+def training_batch_structure_metrics(matrix, no_prior_matrix, lengths, sequences, ground_truth):
+    results = {name: {"tp": 0, "fp": 0, "fn": 0, "f1": []}
+               for name in ("nussinov", "greedy", "greedy_turner0")}
+    for index, length in enumerate(lengths):
+        sequence = sequences[index]
+        expected = {tuple(pair) for pair in ground_truth[index]}
+        mask = valid_pair_mask(sequence)
+        score_sets = {
+            "nussinov": (matrix[index, :length, :length], "nussinov"),
+            "greedy": (matrix[index, :length, :length], "greedy"),
+            "greedy_turner0": (no_prior_matrix[index, :length, :length], "greedy"),
+        }
+        for name, (scores, decoder) in score_sets.items():
+            values = scores.detach().float().cpu().numpy()
+            pairs, _, _ = decode_scores(values, mask, decoder)
+            predicted = {tuple(pair) for pair in pairs}
+            tp = len(predicted & expected)
+            fp = len(predicted - expected)
+            fn = len(expected - predicted)
+            f1 = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0
+            results[name]["tp"] += tp
+            results[name]["fp"] += fp
+            results[name]["fn"] += fn
+            results[name]["f1"].append(f1)
+    for name, values in results.items():
+        tp, fp, fn = values["tp"], values["fp"], values["fn"]
+        values["micro_f1"] = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0
+        values["macro_f1"] = float(np.mean(values.pop("f1")))
+    return results
+
 
 NEG_BIG = -1.0e4
 ENCODER_SPECIAL_TOKENS = True
@@ -679,6 +712,12 @@ def main():
                     jepa_record["off_anti_diagonal_masked_pairs"] = int((latent_mask & ~anti).sum())
                 jepa_record["direct_nll_gradient"] = loss_gradient_cosine(
                     direct_nll, latent_loss, trainable())
+                with torch.no_grad():
+                    no_prior_matrix = head.calibration(s_raw, lengths_t)
+                    no_prior_matrix = torch.where(
+                        mask_full, no_prior_matrix, torch.full_like(no_prior_matrix, float("-inf")))
+                    jepa_record["training_batch_structure"] = training_batch_structure_metrics(
+                        matrix, no_prior_matrix, lengths, seqs, gts)
 
         opt.zero_grad(set_to_none=True)
         total.backward()

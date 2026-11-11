@@ -5,7 +5,7 @@
 > | ID | 任务 | 完成判据 | 当前状态 |
 > |---|---|---|---|
 > | T-A223 | RiNALMo资产、历史隔离与R0/R-replay | RiNALMo权重/预训练风险、R6对应配置、独立run命名空间核验；R0三种子自然收敛后做同状态无更新重放与独立QA | 已完成：R0三种子齐套、正式replay及独立QA通过；length/sum update RMS中位42.68倍，LR=1e-6仅缩放0.1；decision=091802d5…6494，允许独立L/O，禁止交互/U-ramp |
-> | T-A224 | RiNALMo核心优化、容量与Pair-JEPA | L/O独立单因子→容量证据门→J-gate/J-mlp/J1-block-EMA/fixed/random；42/2026/3407、steps=0、500步VL0、patience=6 | 六个L/O run均自然早停，完整训练QA双跑一致SHA256=81f0bf71…e7；容量误差与表征probe已按门启动，尚无扩参/基座裁决。普通与J1 structured-block一步CUDA工程smoke均通过，teacher=0/student=1，`allow_pairjepa_training=false`。TR0-clean八split已重建，Rfam单列预训练风险 |
+> | T-A224 | RiNALMo核心优化、容量与Pair-JEPA | L/O独立单因子→容量证据门→J-gate/J-mlp/J1-block-EMA/fixed/random；42/2026/3407、steps=0、500步VL0、patience=6 | 六个L/O run均自然早停，完整训练QA双跑一致SHA256=81f0bf71…e7；六组容量误差与表征probe及独立QA已齐套，清单SHA256=79f3181c…0c1，六组均不支持欠拟合扩参，独立CUDA复现与正式基座裁决仍待完成。J-mlp仅复用合法L/O结果，不重复训练；普通与J1 structured-block一步CUDA工程smoke均通过，teacher=0/student=1，正式J1待每25步结构日志集成smoke及J-mlp复用QA，`allow_pairjepa_training=false`。TR0-clean八split已重建，Rfam单列预训练风险 |
 > | T-A225 | 结构感知对比CL0–CL5 | tr1c-v2/同源家族审计、视图split继承、负池、CL1/2/3/4、条件CL5、三种子与同算力对照 | 仅计划；Pair-JEPA裁决和数据门后执行，不照搬第二宿主或未验证增强 |
 > | T-A226 | D0/D1、motif与长序列 | RiNALMo同初始化纯数据扩充、去泄露/标签守恒；motif/shuffle/Turner0；全长与span验收 | 未启动；常规评测仅主八+Rfam，不删除长链 |
 > | T-A227 | LinearDesign LD0–LD2 | MFE参数差异归因；114蛋白design-dev/test、exact/beam、λ与合法对照；冻结PRISM全长结构/置信度、UTR–CDS与独立复算 | 798条max-CAI/同义/GC匹配对照已生成并独立QA，ViennaRNA评价进行中；主矩阵SIGKILL后单进程断点恢复至303/456，298格三轮QA逐字节一致（22格结构不同、最大次优0.900024kcal/mol），全矩阵未齐。design-test不调参，COVID BNT/wild-type仍PARTIAL，LD2未启动 |

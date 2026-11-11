@@ -1,0 +1,37 @@
+{
+  "status": "PASS_RINALMO_CAPACITY_ERROR_INDEPENDENT_QA",
+  "scientific_conclusion": false,
+  "allow_capacity_expansion": false,
+  "arm": "round52_rinalmo_olr_s3407",
+  "training_seed": 3407,
+  "best_step": 4000,
+  "selection_seed": 42,
+  "train_mean_losses": {
+    "total": 40.211363375405384,
+    "nll": 40.020441986681334,
+    "distill": 0.4330617171260345,
+    "rlcd": -0.67018472083993,
+    "cal": 0.4280443924379474
+  },
+  "validation_mean_losses": {
+    "total": 23.820185378417428,
+    "nll": 23.9493282603084,
+    "distill": 0.33769590652497744,
+    "rlcd": -0.7728033436044854,
+    "cal": 0.3059645551885408
+  },
+  "total_train_minus_validation": 16.391177996987956,
+  "checkpoint_sha256": "251420694b2a08fc35614c39127389bc4b583e5aab584ca1bd5da6457d2e8a4f",
+  "run_meta_sha256": "73cdef41d44fdb9383a60f182e1a67357c961771db9fff5805fe8db8eb7b12b4",
+  "probe_code_sha256": "9716dfb2628773cb4b331e17c728a211c2140f740ff742392605875c8ab64f1b",
+  "input_sha256": "3f652b4f053b5f2c2e917c56b442eacd0399ebb62c322392fef695a0354c624f",
+  "train_data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+  "validation_data_sha256": "bb15c17a5875613407dcd140044de9a266b5d3ab62e2b5440a36697097dcc778",
+  "teacher_manifest_sha256": "7a91d011b84bd0fb3e5e0d71b0c4a451f18d85a90a66562cde8782a832a2b255",
+  "validation_teacher_manifest_sha256": "8702148528f32195753a0b8196f32db203e5430aa92f9365c65fbc54c818422f",
+  "limitations": [
+    "Independent arithmetic, identity, and hash QA of a frozen-checkpoint diagnostic; no test-set access.",
+    "This QA alone cannot authorize C-wide or C-local; stability, representation probes, and all L/O arms are required.",
+    "Train/VL0 objective errors are not structure F1 or proof of sufficient capacity."
+  ]
+}

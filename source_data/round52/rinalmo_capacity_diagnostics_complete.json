@@ -1,0 +1,24 @@
+{
+  "status": "PASS_ALL_L_O_ERROR_AND_REPRESENTATION_PROBES",
+  "scientific_conclusion": false,
+  "allow_capacity_expansion": false,
+  "allow_j_gate": false,
+  "qa_sha256": {
+    "error_length_s42": "71e0637c50538101fece9d36b14b750295500dffd9cbd9299b79353914457a6f",
+    "representation_length_s42": "64224bf1ddf48e993c081c578221da09bb9111e2bb735196c6ab38b8b311f94e",
+    "error_length_s2026": "bfd8cd75a0cf3b9fecf1b367ff136fda6b367d5929d3d04972074e000e127d0f",
+    "representation_length_s2026": "9448233795f19701ee4049f8f6da7f5ad211de106f82621635c7492bbe8d3bc8",
+    "error_length_s3407": "087c93c5f27a5fec714b28649f7c9e8de48017b50420e84aea24fe1f468ed556",
+    "representation_length_s3407": "f8e183e77ad17d08440dcf9f42b0a01eeb22e8f54959e2dff3e58904a4bfadb5",
+    "error_olr_s42": "b8c92dfae8dea1472ef7453d5e00edf75411c89ad735911c2bf718524fab447b",
+    "representation_olr_s42": "6e24e5e979aaa1f9eabb16d4b5bd108ffeb699688741994aa0dde11519fefe11",
+    "error_olr_s2026": "491a4def45e69d7a87a4abec9bb01c3738911841969c8ff00e849402425906e0",
+    "representation_olr_s2026": "bcbe95399fde8539d260b4431d4626ed842af699e3935de785c66148892e7252",
+    "error_olr_s3407": "10413b72ba19d742b205b75b370f8a0566eaae5167754d0f4ebc31dad415f1cf",
+    "representation_olr_s3407": "9025a133d7725891167f7f9d53e5956092bbf7f092eeb418d27b0fe92fea69c8"
+  },
+  "limitations": [
+    "All six runs and both diagnostic families are complete; capacity decision and independent replication remain required.",
+    "No test set was accessed and no C-wide or C-local run is licensed yet."
+  ]
+}

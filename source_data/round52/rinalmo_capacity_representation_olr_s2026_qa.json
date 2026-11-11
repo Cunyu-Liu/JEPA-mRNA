@@ -1,0 +1,31 @@
+{
+  "status": "PASS_FROZEN_REPRESENTATION_INDEPENDENT_QA",
+  "scientific_conclusion": false,
+  "allow_capacity_expansion": false,
+  "arm": "round52_rinalmo_olr_s2026",
+  "training_seed": 2026,
+  "best_step": 5000,
+  "train": {
+    "weighted_nll": 0.7106996581942041,
+    "brier": 0.13786539209592424,
+    "n_pairs": 50108,
+    "n_positive": 5115,
+    "n_negative": 44993
+  },
+  "validation": {
+    "weighted_nll": 0.859986575467561,
+    "brier": 0.12262413093120882,
+    "n_pairs": 50176,
+    "n_positive": 4618,
+    "n_negative": 45558
+  },
+  "checkpoint_sha256": "afedf76ad5cea244212ed5a99b6b9db99e450d18c5797197f686eba69e2b53eb",
+  "run_meta_sha256": "a1dda91e0c564f3404dd6cf8cb6ed7c460dc3df466ab4a1644ef399380d28297",
+  "probe_code_sha256": "70a80314e92d6468403e2c2638151c6c1033490e1ebaa6f3c86d5c48891e79aa",
+  "input_sha256": "8e1cbdf529deaf989b435cd751b7f2f9218f7cdc38cbba092e872edc78d3c85a",
+  "qa_sha256": "3441ccd1942bc04d4a4b32555fedb7cc3cf0e085e0fdcfeb6a2f26c13634e4c5",
+  "limitations": [
+    "Independent arithmetic and identity QA of frozen-representation logits, not structure-performance evidence.",
+    "This QA does not authorize capacity expansion or replace training stability and error probes."
+  ]
+}
