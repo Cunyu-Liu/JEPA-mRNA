@@ -324,7 +324,7 @@ def main():
     ap.add_argument("--scorer", choices=["resnet2d", "pairmlp", "pairjepa"], default="resnet2d")
     ap.add_argument("--pair-latent-dim", type=int, default=64)
     ap.add_argument("--lambda-jepa", type=float, default=0.0)
-    ap.add_argument("--jepa-target", choices=["ema", "fixed", "random"], default="ema")
+    ap.add_argument("--jepa-target", choices=["ema", "fixed", "random", "online"], default="ema")
     ap.add_argument("--jepa-context", choices=["context_v1", "structured_block"], default="context_v1")
     ap.add_argument("--jepa-mask-prob", type=float, default=0.15)
     ap.add_argument("--jepa-variance-weight", type=float, default=0.0)
@@ -425,6 +425,7 @@ def main():
                             pair_latent_dim=args.pair_latent_dim,
                             jepa_use_ema=args.scorer == "pairjepa" and args.jepa_target == "ema",
                             jepa_random_target=args.scorer == "pairjepa" and args.jepa_target == "random",
+                            jepa_online_target=args.scorer == "pairjepa" and args.jepa_target == "online",
                             jepa_block_context=(args.scorer == "pairjepa"
                                                 and args.jepa_context == "structured_block"),
                             ripe_mode=None if args.ripe_encoder_only else args.ripe_mode or None)

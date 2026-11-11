@@ -142,13 +142,14 @@ def online_sigreg_loss(latent, valid_mask, projections=32, max_samples=512, seed
 
 class PairJEPA(nn.Module):
     def __init__(self, d_z=128, latent_dim=64, use_ema=True, random_target=False, seed=0,
-                 use_teacher=True, block_context=False):
+                 use_teacher=True, block_context=False, online_target=False):
         super().__init__()
         if use_ema and not use_teacher:
             raise ValueError("EMA requires a target encoder")
         self.scorer = SymmetricPairMLP(d_z, latent_dim)
         self.use_ema = use_ema
         self.random_target = random_target
+        self.online_target = online_target
         self.seed = seed
         self.teacher = copy.deepcopy(self.scorer) if use_teacher else None
         self.context_predictor = LatentPairMLP(d_z, latent_dim) if use_teacher else None
@@ -193,7 +194,7 @@ class PairJEPA(nn.Module):
             context = self.context_mixer(context)
         prediction = self.context_predictor(context)
         with torch.no_grad():
-            target = self.teacher(z)
+            target = self.scorer(z) if self.online_target else self.teacher(z)
             if self.random_target:
                 generator = torch.Generator(device=z.device).manual_seed(self.seed)
                 shape = target.shape

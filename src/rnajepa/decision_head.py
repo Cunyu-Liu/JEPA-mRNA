@@ -334,6 +334,7 @@ class FlatDecisionHead(nn.Module):
         resnet_kernel_size: int = 3,
         ripe_mode: Optional[str] = None,
         jepa_use_ema: bool = True,
+        jepa_online_target: bool = False,
         jepa_random_target: bool = False,
         pair_latent_dim: int = 64,
         jepa_block_context: bool = False,
@@ -365,6 +366,7 @@ class FlatDecisionHead(nn.Module):
                                       use_ema=jepa_use_ema,
                                       random_target=jepa_random_target,
                                       use_teacher=scorer != "pairmlp" or jepa_use_ema,
+                                      online_target=jepa_online_target,
                                       block_context=jepa_block_context)
             self.resnet2d = None
             self.turner = None
