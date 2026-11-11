@@ -15975,3 +15975,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - seed42 bpRNA-new 5388/5388条全部完成，无长序列失败，三次预测一致。独立复算TP/FP/FN=59347/27065/75837，precision=0.6867911864、recall=0.4390090543、micro-F1=0.5356324121、macro-F1=0.5105099498；result SHA256=`599d326d749021d62eab44952e06320fa3afd54db3d6db401444376ae8aa4728`。仅冻结模型单seed描述，不作SOTA结论。
 - seed42完成bpnew后进入ArchiveII初始阶段。为避免旧独占脚本与额外短序列任务在长序列峰值叠加，已停止旧large42及remaining守候，未生成ArchiveII结果或覆盖有效checkpoint。TS0/bpnew短序列任务继续，TS0 seed2026已完成，TS0 seed3407补入空位；ArchiveII/Rfam将在短序列结束后按逐split独占锁恢复。
 - 四路短序列实测峰值快照20772/24564MiB，无OOM；切换后不让ArchiveII与额外短序列共享显存。TS0 2026独立QA因SSH重置尚未执行，统一27格QA未齐。PPT未修改。
+
+## §15.876（2026-11-11）21格短序列全部独立验收与长序列恢复
+
+- TS0 seed2026=1192/1192，micro-F1=0.7072663226、macro-F1=0.6903239433，result SHA256=`59114bb85e2676d82263c87303b5b93785dd8c1b02a23d98d72326af79de3872`。bpRNA-new seed2026=5388/5388，micro-F1=0.5010220155、macro-F1=0.4794210054，SHA256=`4f9830507b17a8310e4bc57942753631b9c823c647061f79a1f681cc3001a754`；seed3407=5388/5388，micro-F1=0.5396799727、macro-F1=0.5125225677，SHA256=`7a85902d7f77e482cd202530f648d11357d9a06012b584281e6851130fb05685`。TS0 seed3407=1192/1192，micro-F1=0.7141610651、macro-F1=0.6976525608，SHA256=`9767640b69d685babb915044897fb95316bf16dbb75f174c8e367df7b05d2841`。
+- 三次预测、raw/support、checkpoint/data SHA及逐项指标均通过；15小split+TS0三格+bpnew三格共21/21短序列格已齐。剩余仅ArchiveII与Rfam各三格，统一27格QA待其完成。
+- 短序列结束后已按逐split锁恢复seed42长序列队列，TS0/bpnew身份检查跳过。remaining队列两次SSH启动失败，未执行重复计算；将在seed42长序列完成后接续，不为恢复管理队列中断有效GPU任务。PPT未修改。
