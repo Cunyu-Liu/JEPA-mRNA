@@ -1,0 +1,38 @@
+{
+  "status": "PASS_RINALMO_CAPACITY_INDEPENDENT_CUDA_REPLICATION",
+  "scientific_conclusion": false,
+  "equivalent": true,
+  "arms": [
+    "length_s42",
+    "olr_s42"
+  ],
+  "results": {
+    "length_s42": {
+      "error_max_abs_loss_difference": 0.0,
+      "representation_max_abs_logit_difference": 0.0,
+      "error_sha256": "ac745b0913e14b279c21c587463135b34ad2e238d8b3334cd0179250a47ab203",
+      "error_repeat_sha256": "ac745b0913e14b279c21c587463135b34ad2e238d8b3334cd0179250a47ab203",
+      "representation_sha256": "91e143e22ae9fd647f5a5cc5ad0d85b0d58edc2d3c82264b1832d8ae081b8f83",
+      "representation_repeat_sha256": "91e143e22ae9fd647f5a5cc5ad0d85b0d58edc2d3c82264b1832d8ae081b8f83"
+    },
+    "olr_s42": {
+      "error_max_abs_loss_difference": 0.0,
+      "representation_max_abs_logit_difference": 0.0,
+      "error_sha256": "17ac21070dd0d52e410ac9a65a340e10f6c68d16288849d0dc430d512d166a0e",
+      "error_repeat_sha256": "17ac21070dd0d52e410ac9a65a340e10f6c68d16288849d0dc430d512d166a0e",
+      "representation_sha256": "889dee3eacaccd54bb8c14a82bb9e8ebbc661acf03b188af608d0bc5dbe83ee9",
+      "representation_repeat_sha256": "889dee3eacaccd54bb8c14a82bb9e8ebbc661acf03b188af608d0bc5dbe83ee9"
+    }
+  },
+  "tolerances": {
+    "error_max_abs_loss_difference": 1e-08,
+    "representation_max_abs_logit_difference": 1e-05,
+    "linear_weight_and_bias_sha256": "exact"
+  },
+  "code_sha256": "85289a02d6d64be0b6fa470e82cf1c623e29a501037d2ef6627615a66d317278",
+  "limitations": [
+    "Replication covers both arms at seed42 for error and representation probes; all six first-pass probes remain required.",
+    "Exact checkpoint/data/protocol/linear-weight identity is required; tolerances cover only numeric GPU replication.",
+    "No capacity expansion, structure-performance, or test-set claim is licensed by replication alone."
+  ]
+}

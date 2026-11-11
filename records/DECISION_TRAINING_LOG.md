@@ -15901,3 +15901,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **J-mlp不重复训练**：合同复核确认执行提示词要求复用本轮合法L/O结果。此前准备的重复J-mlp守候队列在任何训练开始前已取消，远端孤儿sleep和锁已清理，未创建J-mlp run/checkpoint。修正QA仅引用`round52_rinalmo_{length|olr}_s{42,2026,3407}`原权重、曲线与run身份，length/sum及teacher注入失败测试连续三轮通过；正式复用QA仍等待容量裁决。
 - **J1训练前补门**：预检发现每25步缺少结构指标，已在仅`lambda_jepa`诊断分支补默认DP/greedy/Turner=0训练批次F1，不改前向、损失、优化器、batch或VL0协议。CUDA精确计数、无梯度/RNG/模型改动连续三轮通过；target/context与明显常量坍塌失败注入三轮通过。集成smoke和正式J1仍分别在容量裁决与J-mlp复用QA后守候，尚未启动正式J1训练，fixed/random未启动。
 - **LD1并行边界**：主矩阵与对照仍生成中；完整456格与798条独立ViennaRNA验收队列已就位，只在原始文件齐套后运行。此前298格结果不外推全矩阵。PPT未修改。
+
+## §15.865（2026-11-11）容量诊断三轮验收、关闭扩参与L-length基座裁决
+
+- **独立复现**：length_s42与olr_s42的误差、冻结表征均在真实CUDA独立重跑。两臂`error_max_abs_loss_difference=0.0`、`representation_max_abs_logit_difference=0.0`，原/复现JSON逐文件SHA完全一致，线性权重/偏差、pair/label、checkpoint/data/protocol身份全部一致。复现及QA双跑`cmp`通过，SHA256=`f7f08f4fae37320862ee196df8ec2eff488749a56d148a5d4881639379414fc8`，artifact=`source_data/round52/rinalmo_capacity_replication.json`。
+- **容量结论**：两臂全部种子的目标误差满足欠拟合方向，但六组冻结表征均不满足欠拟合方向，故预注册的联合证据门不成立，`capacity_insufficiency_supported=false`、`allow_c_wide=false`、`allow_c_local=false`。只关闭本轮扩参分支，不反推容量已足够或结构性能到顶。
+- **基座裁决**：仅使用完整VL0曲线，length/olr的median `log1p((max_vl0-best_vl0)/abs(best_vl0))`分别为10.077911399292372/10.218281215105222，best VL0 population SD分别为0.007747091215165112/0.8084860914182952；预注册规则选择`next_base=length`。length最大VL0=216.2957956593632/29579.95086827981/19492.070820770292，olr最大VL0=832854.171146579/389604.41719429765/652661.9335887963，后段尖峰保留，不能称为后段稳定或直接比较length/sum绝对VL0。
+- **阶段门**：容量decision双跑逐字节一致，SHA256=`28c55107ccbc644391ef76c506658d003081695eb50a85051610fa74dd3ca42b`，artifact=`source_data/round52/rinalmo_capacity_decision.json`。`allow_j_gate=true`，复用L-length三种子的J-mlp身份QA与每25步结构日志集成smoke继续验收，正式J1须两者通过后才启动；fixed/random、D0/D1未启动，无测试集选型或最终科学结论。
+- **提交**：阶段准备、首轮QA与台账已推送GitHub commit=`7e7e9c4`，分支`round48-single-model-20261106`；容量最终裁决另行提交。LD1完整矩阵/对照仍计算中，PPT未修改。
