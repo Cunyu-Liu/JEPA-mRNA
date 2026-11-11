@@ -16026,3 +16026,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - Turner=0 bpRNA-new seed42共5388/5388条，micro-F1=0.4086573189、macro-F1=0.3672236158，result SHA256=`6dc831c135080d6062bbc143b21ea16f11beddc59442963769743dcb53548793`；seed2026共5388/5388条，micro-F1=0.3652477774、macro-F1=0.3308039567，SHA256=`5a10820ae2bc46424cef7775d003f0beec8efc7d746fd359a0d3f9de48af7bf6`。均显著低于默认DP=0.5356324121/0.5010220155及greedy=0.4756964015/0.4546481176，支持保留Turner与约束解码，但仅限这两个seed的描述。
 - 三次预测、C backend、prior_weight_override=0、checkpoint/data SHA与逐项指标均通过。seed3407 Turner=0仍在运行，ArchiveII/Rfam继续等待短序列结束，不作全种子或最终机制结论，PPT未修改。
+
+## §15.885（2026-11-11）ArchiveII greedy独立复算
+
+- ArchiveII greedy seed42共1094/1094条完整覆盖，无长序列失败，三次预测一致。独立复算TP/FP/FN=43799/28310/20353，precision=0.6073999085、recall=0.6827378726、micro-F1=0.6428691996、macro-F1=0.7243279170，result SHA256=`33b3bd721b3eae1c08b70c8c7320c0d677b0eda14f66baae2b6a763bc34ae0a3`。低于默认DP同seed micro-F1=0.7061181263，支持约束DP而非greedy的单seed证据。
+- Rfam seed42 greedy已独占开始，其他种子和54格统一QA未齐；不作最终SOTA或机制结论，PPT未修改。
