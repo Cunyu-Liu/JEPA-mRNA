@@ -1,0 +1,191 @@
+{
+  "status": "PASS_RINALMO_REMAINING_LONG_SEQUENCE_ENGINEERING_QA",
+  "scientific_conclusion": false,
+  "results": {
+    "2026": {
+      "probe_sha256": "b19734fa93671a63683d647cb61cc4691810bb16f08d1d2cb4ed2e14c60bf32e",
+      "checkpoint_sha256": "abeb3e37ff9bea995461584820f54c16700eff147518fbd25e65390412cbc210",
+      "rows": [
+        {
+          "length": 512,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            512,
+            512
+          ],
+          "valid_pairs": 95518,
+          "score_sha256": "82c83be0d8402d5892dfb33d9b7127844c9b18c7a07affa856571164698c0433",
+          "peak_allocated_bytes": 4711768064,
+          "peak_reserved_bytes": 5077204992,
+          "wall_seconds_nonformal": 0.841362714767456
+        },
+        {
+          "length": 1022,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1022,
+            1022
+          ],
+          "valid_pairs": 394406,
+          "score_sha256": "f5227197c4fb2141a69b055df2dd6afe46f84be003ff9200913d2b19375d7360",
+          "peak_allocated_bytes": 6801003008,
+          "peak_reserved_bytes": 7495221248,
+          "wall_seconds_nonformal": 0.2909681797027588
+        },
+        {
+          "length": 1024,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1024,
+            1024
+          ],
+          "valid_pairs": 396480,
+          "score_sha256": "758330f5fbaef3721372c6dfd7674f98d0deeffa360e3e20436e226cedc52c28",
+          "peak_allocated_bytes": 6809718784,
+          "peak_reserved_bytes": 7495221248,
+          "wall_seconds_nonformal": 0.29763102531433105
+        },
+        {
+          "length": 1500,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1500,
+            1500
+          ],
+          "valid_pairs": 849264,
+          "score_sha256": "603729c89195bd33557de15e7c42cf2e12bf0c712372b713249e7c6adaa97dd7",
+          "peak_allocated_bytes": 8761956864,
+          "peak_reserved_bytes": 9772728320,
+          "wall_seconds_nonformal": 0.5738682746887207
+        },
+        {
+          "length": 1869,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1869,
+            1869
+          ],
+          "valid_pairs": 1311856,
+          "score_sha256": "3411a5ffe43f776eec602cb63222cf375ff4a02dfdfc7f0bf7f9775f4f10272c",
+          "peak_allocated_bytes": 10277331968,
+          "peak_reserved_bytes": 11567890432,
+          "wall_seconds_nonformal": 0.86788010597229
+        },
+        {
+          "length": 3819,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            3819,
+            3819
+          ],
+          "valid_pairs": 5432326,
+          "score_sha256": "ddccf57f270b669fd26ddb92035a3013ae82f0280553662e4eda5e9f080a95c5",
+          "peak_allocated_bytes": 18306996224,
+          "peak_reserved_bytes": 21323841536,
+          "wall_seconds_nonformal": 4.46882700920105
+        }
+      ]
+    },
+    "3407": {
+      "probe_sha256": "a20b992f75feddfc1d673c9986e6f93d6eaa243d606979415cc42322b8068aec",
+      "checkpoint_sha256": "1dd2364bb0dcaa2ded9e57658bba06dcc8dd885190373eb4c2a3fcd8ba572b27",
+      "rows": [
+        {
+          "length": 512,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            512,
+            512
+          ],
+          "valid_pairs": 95518,
+          "score_sha256": "ef0c88dd45bc3c243f420785705d1df82eb59420ef65a10fd62d7277af890a0c",
+          "peak_allocated_bytes": 4711768064,
+          "peak_reserved_bytes": 5077204992,
+          "wall_seconds_nonformal": 1.0379741191864014
+        },
+        {
+          "length": 1022,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1022,
+            1022
+          ],
+          "valid_pairs": 394406,
+          "score_sha256": "bd66c107cd0f058e192daa961d7c93cd032c7681914ea8ae1c8d6e4d35dd51b4",
+          "peak_allocated_bytes": 6801003008,
+          "peak_reserved_bytes": 7495221248,
+          "wall_seconds_nonformal": 0.29469823837280273
+        },
+        {
+          "length": 1024,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1024,
+            1024
+          ],
+          "valid_pairs": 396480,
+          "score_sha256": "49370adbb3a2668a7915d27c4996eee4215d9ace077f8f96136e5f802cc6f4e4",
+          "peak_allocated_bytes": 6809718784,
+          "peak_reserved_bytes": 7495221248,
+          "wall_seconds_nonformal": 0.32392382621765137
+        },
+        {
+          "length": 1500,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1500,
+            1500
+          ],
+          "valid_pairs": 849264,
+          "score_sha256": "d761aa3067f51db9c647e624fcad842740db9060468db4fdc3471f5b30f00fd1",
+          "peak_allocated_bytes": 8761956864,
+          "peak_reserved_bytes": 9772728320,
+          "wall_seconds_nonformal": 0.5601711273193359
+        },
+        {
+          "length": 1869,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            1869,
+            1869
+          ],
+          "valid_pairs": 1311856,
+          "score_sha256": "35d71dcbb70460ba96c9c12b1323690c18a9b67bfc778a311d3bb489d6f77a07",
+          "peak_allocated_bytes": 10277331968,
+          "peak_reserved_bytes": 11567890432,
+          "wall_seconds_nonformal": 0.869807243347168
+        },
+        {
+          "length": 3819,
+          "status": "PASS_FULL_LENGTH_CUDA",
+          "input_length_preserved": true,
+          "output_shape": [
+            3819,
+            3819
+          ],
+          "valid_pairs": 5432326,
+          "score_sha256": "27d959993c7bfbd52ed0e3a111d8219668038756db6fe3dfb51ef45d4a9cf3d7",
+          "peak_allocated_bytes": 18306996224,
+          "peak_reserved_bytes": 21323841536,
+          "wall_seconds_nonformal": 4.462387561798096
+        }
+      ]
+    }
+  },
+  "qa_sha256": "a98e3e4d3111dd687d10d0bddcf867f065d6445d02780dc3e1d9ce9e99edf323",
+  "limitations": [
+    "Full-length forward and memory only; not long-range accuracy, DP quality or formal speed evidence.",
+    "seed42 was accepted previously and was not repeated."
+  ]
+}
