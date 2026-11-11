@@ -16011,3 +16011,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 为利用GPU空余，新增已冻结J-mlp三种子greedy与Turner=0主八TR0-clean+Rfam对照，不启动J1依赖阶段。runner第三参数隔离为`jmlp_greedy`/`jmlp_turner0`，默认`jmlp_benchmark`不变；greedy使用原Python解码，Turner=0使用等价C Nussinov及`prior_weight_override=0`。
 - 当前四路短序列任务并行：greedy seed2026小split、Turner=0 seed42/3407小split及TS0 seed42；已有greedy14格、Turner=0六格原始JSON，TS0 greedy seed42已完成。四路模型加载/解码阶段显存动态变化，未发生OOM，不把并发墙时作为正式速度。
 - 独立QA按mode核对decoder、Turner权重、C backend、checkpoint/data SHA、raw/support和三次预测，逐序列复算指标。后续大split继续独占；remaining守候曾SSH失败，不重复正在运行的格，全部54格齐套后双跑QA。PPT未修改。
+
+## §15.882（2026-11-11）TS0 greedy/Turner=0独立复算与并行占用
+
+- TS0 seed42 greedy共1192/1192条，micro-F1=0.6206170900、macro-F1=0.6300242460，result SHA256=`a894e56bc2ad2a57b5ccc5d0f6f641bee095439bec86be0ec171cc96f3cf5015`；Turner=0共1192/1192条，micro-F1=0.6428170747、macro-F1=0.6025541472，SHA256=`7a710901c49f5e2281197fdec147687d419d7f48c599e71d87fa4fc37f982369`。均低于默认DP同seed micro-F1=0.6761813111，仅为单seed消融，不外推全部seed。
+- decoder、Turner权重、三次预测、checkpoint/data SHA和逐序列指标均通过。并行快照GPU利用率84%、显存10443MiB，随后补入TS0/bpnew seed3407；补位启动仍有SSH失败，未覆盖已有文件。其余大split与54格双跑QA未齐，PPT未修改。
