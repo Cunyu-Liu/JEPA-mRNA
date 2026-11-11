@@ -15,7 +15,7 @@ def latent_effective_rank(features, max_samples=512):
         indices = torch.linspace(0, features.shape[0] - 1, max_samples,
                                  device=features.device).round().long()
         features = features[indices]
-    centered = features.float() - features.float().mean(dim=0, keepdim=True)
+    centered = features.double() - features.double().mean(dim=0, keepdim=True)
     covariance = centered.T @ centered / features.shape[0]
     eigenvalues = torch.linalg.eigvalsh(covariance).clamp_min(0)
     total = eigenvalues.sum()
