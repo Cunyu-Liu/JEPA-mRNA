@@ -15916,3 +15916,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **每25步结构日志**：新增一步集成smoke在真实CUDA完成，run_meta/diagnostics/train_log SHA分别为`864a327acdb402f2f3f1fd2b0eaedb4c6671dec841862b0539ae9b276ccf8623`/`a1d47d2eabec14baeceedcfe344356b50ff019231584ea7177e3ba332f87bb8f`/`b3b5c3d88562ae0bf627e127d0cfceb5dea9c324b823603d4e80f0db68477d50`。QA双跑一致，SHA256=`ae5c6de6e2fd50f332e52d746425da5d794e59ddf3f0162fc93ea6ab89e4ff65`；默认DP/greedy/Turner0的TP/FP/FN分别为0/20/6、0/33/6、0/34/6，F1均0，仅是单步训练批次诊断，不是性能结论。原train_plan_a、PairJEPA、resume、mask/mixer及RiNALMo身份回归连续三轮通过。
 - **失败留证**：初版J1守候只等J-mlp第一份QA，导致recheck/`cmp`未完成即启动并实际跑至step25。发现后立即停止；无best/resume，原始run与日志完整改名隔离为`invalid_round52_rinalmo_j1_block_ema_length_s42_pre_recheck_20261111`及对应invalid日志，不从该run恢复、不混入科学结果。唤醒等待中的J-mlp任务也曾以143退出，随后以同一QA脚本直接完成双跑，未重训。
 - **修复与重启**：J1现在同时要求J-mlp及结构smoke的qa+recheck逐字节`cmp`；fixed/random通用队列同样要求前置臂qa+recheck后才启动。缺失recheck/删除cmp失败注入连续三轮拒绝。全部条件满足后，正式J1-block-EMA length seed42重新从官方初始化启动，seed2026/3407按同一队列顺序执行；fixed/random尚未启动。PPT未修改。
+
+## §15.867（2026-11-11）J1 seed42中段诊断与VL0 QA公式失败注入（进行中）
+
+- 正式J1 length seed42在step500/1000的VL0=`-0.48614198462959657`/`-0.5334808935435876`，均当时best、bad=0；同seed J-mlp对应为`-0.47944952549853137`/`-0.5318994743347659`。仅为同一归一化的早期对照，单run未收敛，不作JEPA效果结论。
+- step1/1200的target有效秩=27.1412181854/2.3546478748，prediction=12.5833759308/3.1084895134；截至step1200最低target/prediction秩=1.5329052210/1.2500236034。target/prediction总方差=0.0087774973/0.0055958675（step1）与0.7601364255/0.6960060000（step1200）。不把秩下降隐藏，也不以非零方差或秩>1宣称无坍塌；尚未触发预注册常量/秩≤1硬停止，继续保留完整曲线。
+- VL0结构QA准备时，单元测试先以精确等值、再以1e-15容差拒绝错误结果；打印实际值确认新helper漏除`precision+recall`，将TP/FP/FN=2/1/1的F1错算为0.8888888889而非2/3。修正为调和平均后三轮通过，正式逐序列复算容差仍1e-12，未放宽。该失败发生在任何VL0评测启动前，无错误科学结果落盘。
+- J1与J-mlp VL0九格评测按单额外任务安全并行，实测显存约17.4GB、GPU利用率68%，未OOM。评测只用VL0，每序列一次score forward、确定性解码三次，独立QA要求逐序列TP/FP/FN和三次预测一致；九格尚未齐套。LD1与最终测试集评测仍按原边界，PPT未修改。
