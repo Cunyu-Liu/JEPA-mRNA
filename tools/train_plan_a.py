@@ -48,6 +48,7 @@ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True is set by the launcher.
 """
 
 import argparse
+import hashlib
 import itertools
 import json
 import os
@@ -778,6 +779,8 @@ def main():
         sched.step()
         with open(os.path.join(args.out, "compute_ledger.jsonl"), "a") as fh:
             fh.write(json.dumps({"step": step, "lengths": lengths,
+                                 "sequence_sha256": [hashlib.sha256(seq.encode()).hexdigest()
+                                                     for seq in seqs],
                                  "unfrozen": n_unfrozen,
                                  "trainable_params": sum(p.numel() for p in trainable())}) + "\n")
 
