@@ -15992,3 +15992,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - ArchiveII TR0-clean seed42共1094/1094条完整预测，无长序列不支持，三次预测一致。独立复算TP/FP/FN=43338/15260/20814，precision=0.7395815557、recall=0.6755518144、micro-F1=0.7061181263、macro-F1=0.7512359378。result SHA256=`b810c36f1e1bb6bdd1f0742501a3673dc8a9505f19062602e8e1e5e317438e36`，checkpoint SHA256=`16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2`。
 - C DP完整运行墙时194.4778秒，仅作为非正式日志，不能替代独占raw-sequence速度验收。Rfam seed42已独占开始，其他种子和统一27格QA未齐；不作SOTA或最终候选结论，PPT未修改。
+
+## §15.879（2026-11-11）J-mlp主八+Rfam 27格双跑QA完成
+
+- **完整验收**：三种子×主八TR0-clean+Rfam共27格均完成真实CUDA单checkpoint推理、每序列一次score forward、三次确定性解码。逐序列TP/FP/FN、micro/macro-F1、raw/support、checkpoint/data SHA与三次预测一致性全部通过；QA双跑逐字节一致，SHA256=`2601701cc3c1a7f17844ce8ba8e6ce32acdc30a298ca1bb965fd3605650c05c6`，artifact=`source_data/round52/rinalmo_jmlp_benchmark_qa.json`。所有split三种子均无长序列不支持。
+- **mean micro-F1 ± population SD**：TS0=0.6992028996±0.0165202809；bpRNA-new=0.5254448001±0.0173483907；ArchiveII=0.7115342707±0.0040158369；TS1=0.7828656826±0.0129605155；TS2=0.7599538493±0.0054957797；TS3=0.7452348484±0.0311697311；TS-hard=0.7026636414±0.0359646342；TestSetB=0.7460101185±0.0051495610；Rfam=0.6234693704±0.0126828138。
+- **边界**：Rfam为原始官方集并保留RiNALMo预训练接触风险，不能写成clean OOD。C DP后端与Python完整TS1逐对一致后才使用；所有并发/长序列墙时均非正式速度。以上是冻结J-mlp描述结果，不用于测试集选臂、校准或宣称SOTA/最终候选；J1依赖阶段仍关闭，LD1与最终置信度/独占速度未齐，PPT未修改。
