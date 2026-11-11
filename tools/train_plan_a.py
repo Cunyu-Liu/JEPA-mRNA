@@ -250,10 +250,16 @@ def validate_resume_identity(previous_meta, args):
             "jepa_target": objective.get("jepa_target", "ema"),
             "jepa_context": objective.get("jepa_context", "context_v1"),
             "jepa_mask_prob": objective.get("jepa_mask_prob", 0.15),
+            "jepa_variance_weight": objective.get("jepa_variance_weight", 0.0),
+            "jepa_covariance_weight": objective.get("jepa_covariance_weight", 0.0),
+            "jepa_std_floor": objective.get("jepa_std_floor", 1.0),
         }
         current = {
             "lambda_jepa": args.lambda_jepa, "jepa_target": args.jepa_target,
             "jepa_context": args.jepa_context, "jepa_mask_prob": args.jepa_mask_prob,
+            "jepa_variance_weight": getattr(args, "jepa_variance_weight", 0.0),
+            "jepa_covariance_weight": getattr(args, "jepa_covariance_weight", 0.0),
+            "jepa_std_floor": getattr(args, "jepa_std_floor", 1.0),
         }
         if expected != current:
             raise ValueError(f"resume Pair-JEPA objective mismatch: {expected} vs {current}")
@@ -315,6 +321,9 @@ def main():
     ap.add_argument("--jepa-target", choices=["ema", "fixed", "random"], default="ema")
     ap.add_argument("--jepa-context", choices=["context_v1", "structured_block"], default="context_v1")
     ap.add_argument("--jepa-mask-prob", type=float, default=0.15)
+    ap.add_argument("--jepa-variance-weight", type=float, default=0.0)
+    ap.add_argument("--jepa-covariance-weight", type=float, default=0.0)
+    ap.add_argument("--jepa-std-floor", type=float, default=1.0)
     ap.add_argument("--jepa-log-every", type=int, default=25)
     ap.add_argument("--jepa-rank-samples", type=int, default=512)
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
@@ -332,7 +341,8 @@ def main():
     if args.scorer != "pairjepa" and args.jepa_context != "context_v1":
         raise SystemExit("structured Pair-JEPA context requires --scorer pairjepa")
     if (not 0 < args.jepa_mask_prob <= 1 or args.jepa_rank_samples < 0
-            or args.jepa_log_every <= 0):
+            or args.jepa_log_every <= 0 or args.jepa_variance_weight < 0
+            or args.jepa_covariance_weight < 0 or args.jepa_std_floor <= 0):
         raise SystemExit("invalid Pair-JEPA mask, rank sample or logging configuration")
 
     os.makedirs(args.out, exist_ok=True)
@@ -485,6 +495,9 @@ def main():
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
                       "jepa_rank_samples": args.jepa_rank_samples,
+                      "jepa_variance_weight": args.jepa_variance_weight,
+                      "jepa_covariance_weight": args.jepa_covariance_weight,
+                      "jepa_std_floor": args.jepa_std_floor,
                       "jepa_context": args.jepa_context if args.scorer == "pairjepa" else None},
         "validation": {"data": args.validation_data, "teacher_dir": args.validation_teacher_dir,
                        "every": args.validation_every, "patience": args.validation_patience,
@@ -700,9 +713,14 @@ def main():
                 latent_mask = structured_pair_mask(mask_full, args.jepa_mask_prob, args.seed + step)
             else:
                 latent_mask = masked_pair_target(mask_full, args.jepa_mask_prob, args.seed + step)
+            anti_collapse_kwargs = {}
+            if args.jepa_variance_weight or args.jepa_covariance_weight:
+                anti_collapse_kwargs = {"variance_weight": args.jepa_variance_weight,
+                                        "covariance_weight": args.jepa_covariance_weight,
+                                        "std_floor": args.jepa_std_floor}
             latent_loss, latent_diagnostics = head.masked_pair_latent_loss(
                 z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0,
-                valid_mask=mask_full)
+                valid_mask=mask_full, **anti_collapse_kwargs)
             total = total + args.lambda_jepa * latent_loss
             terms_agg["jepa"] = float(latent_loss.detach())
             if log_latent:
