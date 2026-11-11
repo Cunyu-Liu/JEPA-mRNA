@@ -16021,3 +16021,8 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - bpRNA-new greedy seed42共5388/5388条，micro-F1=0.4756964015、macro-F1=0.4798013406，result SHA256=`73a0445156e446785134991f6d14eb6603b277117bd967c8b5218e01c7165961`；seed2026共5388/5388条，micro-F1=0.4546481176、macro-F1=0.4578270443，SHA256=`211e4318d401e55f7357fb24adb193e0c29c2b04f49670a718acb54d5cbf3a29`。均低于对应默认DP micro-F1=0.5356324121/0.5010220155，负结果保留。
 - seed3407 bpnew greedy原始评测已完成，待统一QA。ArchiveII greedy在与其他短序列任务重叠的初始阶段暂停，未生成ArchiveII结果；随后只补TS0/bpnew短序列，避免长序列峰值叠加。Turner=0 bpnew三队列接续，全部短序列结束后再恢复ArchiveII/Rfam和54格QA。PPT未修改。
+
+## §15.884（2026-11-11）bpRNA-new Turner=0负结果
+
+- Turner=0 bpRNA-new seed42共5388/5388条，micro-F1=0.4086573189、macro-F1=0.3672236158，result SHA256=`6dc831c135080d6062bbc143b21ea16f11beddc59442963769743dcb53548793`；seed2026共5388/5388条，micro-F1=0.3652477774、macro-F1=0.3308039567，SHA256=`5a10820ae2bc46424cef7775d003f0beec8efc7d746fd359a0d3f9de48af7bf6`。均显著低于默认DP=0.5356324121/0.5010220155及greedy=0.4756964015/0.4546481176，支持保留Turner与约束解码，但仅限这两个seed的描述。
+- 三次预测、C backend、prior_weight_override=0、checkpoint/data SHA与逐项指标均通过。seed3407 Turner=0仍在运行，ArchiveII/Rfam继续等待短序列结束，不作全种子或最终机制结论，PPT未修改。
