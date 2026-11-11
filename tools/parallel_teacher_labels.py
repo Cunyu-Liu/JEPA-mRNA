@@ -44,12 +44,14 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import shutil
 import subprocess
 import sys
 import time
+from pathlib import Path
 from typing import Dict, List, Optional, Sequence
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -148,7 +150,9 @@ def merge_parts(out_dir: str, part_names: Sequence[str], *, worker_meta: Dict) -
         "version_lock": version_lock,
         "shard_size": worker_meta.get("shard_size"),
         "n_sequences": sum(int(s["n"]) for s in merged_shards),
-        "meta": dict(worker_meta, merged_from=list(part_names)),
+        "meta": dict(worker_meta, merged_from=list(part_names),
+                     corpus_sha256=hashlib.sha256(
+                         Path(worker_meta["corpus"]).read_bytes()).hexdigest()),
         "shards": merged_shards,
     }
     # A merged manifest with no version lock would be accepted by
