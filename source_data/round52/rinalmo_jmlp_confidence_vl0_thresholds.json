@@ -1,0 +1,23 @@
+{
+  "status": "PASS_JMLP_VL0_FROZEN_CONFIDENCE_THRESHOLDS",
+  "reference_seed": 3407,
+  "reference_best_vl0": -0.8186780576591024,
+  "coverage": [
+    1.0,
+    0.95,
+    0.9,
+    0.75,
+    0.5,
+    0.25
+  ],
+  "thresholds": [
+    0.0,
+    0.6804731502604457,
+    0.7574690065177362,
+    0.8596712394226953,
+    0.9485499987204042,
+    0.9793573739913428
+  ],
+  "reference_result_sha256": "82809cd068764e62cef7f14f3ba587301d9d9ae473062b61da65660f7646d01d",
+  "protocol": "minimum best VL0 seed; thresholds use only its 196 VL0 structures; no test fitting"
+}

@@ -15998,3 +15998,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **完整验收**：三种子×主八TR0-clean+Rfam共27格均完成真实CUDA单checkpoint推理、每序列一次score forward、三次确定性解码。逐序列TP/FP/FN、micro/macro-F1、raw/support、checkpoint/data SHA与三次预测一致性全部通过；QA双跑逐字节一致，SHA256=`2601701cc3c1a7f17844ce8ba8e6ce32acdc30a298ca1bb965fd3605650c05c6`，artifact=`source_data/round52/rinalmo_jmlp_benchmark_qa.json`。所有split三种子均无长序列不支持。
 - **mean micro-F1 ± population SD**：TS0=0.6992028996±0.0165202809；bpRNA-new=0.5254448001±0.0173483907；ArchiveII=0.7115342707±0.0040158369；TS1=0.7828656826±0.0129605155；TS2=0.7599538493±0.0054957797；TS3=0.7452348484±0.0311697311；TS-hard=0.7026636414±0.0359646342；TestSetB=0.7460101185±0.0051495610；Rfam=0.6234693704±0.0126828138。
 - **边界**：Rfam为原始官方集并保留RiNALMo预训练接触风险，不能写成clean OOD。C DP后端与Python完整TS1逐对一致后才使用；所有并发/长序列墙时均非正式速度。以上是冻结J-mlp描述结果，不用于测试集选臂、校准或宣称SOTA/最终候选；J1依赖阶段仍关闭，LD1与最终置信度/独占速度未齐，PPT未修改。
+
+## §15.880（2026-11-11）J-mlp VL0冻结阈值置信度验收与空桶负结果
+
+- **协议**：以best VL0最低的seed3407（VL0=`-0.8186780576591024`）196条结构置信度分位数冻结阈值，coverage=1/0.95/0.9/0.75/0.5/0.25，阈值=0/0.6804731503/0.7574690065/0.8596712394/0.9485499987/0.9793573740。主八+Rfam不拟合阈值；每格Pearson/Spearman及2000次bootstrap、ECE、risk–coverage与AURC均复算。
+- **验收**：初次严格JSON写出因空桶NaN失败，未生成科学结果；将空桶保留为null且不定义相应AURC后，失败注入三轮通过，双跑`cmp`一致。QA SHA256=`1c9a6e05f9ed9e6585521ac3f28c3f180adb5f8bc665e0a0f521f5cffc8e00a5`，artifact=`source_data/round52/rinalmo_jmlp_confidence_qa.json`与`rinalmo_jmlp_confidence_vl0_thresholds.json`。
+- **主要读数**：VL0 Spearman=0.8517976303/0.8000633618/0.8532783143，AURC=0.0401847845/0.0327795550/0.0360600344；Rfam Spearman=0.7340726614/0.7188694008/0.7001876898，AURC=0.1437505873/0.1505073659/0.1507087062。TS0 AURC=0.1036731885/0.0842085065/0.0787504822。
+- **负结果**：27格中9格存在空覆盖桶且AURC不定义；TS3 seed3407 Spearman=0.1887254902、95%CI[-0.3627663170,0.7104042184]，不作稳定相关性主张。部分低覆盖风险反而上升，不能声称最佳或普遍可靠的置信度。`best_confidence_claim=false`，缺少同候选概率基线比较；structure_conf不是结构正确的校准概率。独占raw速度未验收，PPT未修改。
