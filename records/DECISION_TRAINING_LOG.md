@@ -15951,3 +15951,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 调度分为五个小split（TS1/TS2/TS3/TS-hard/TestSetB）三种子共享锁并行，以及TS0/bpRNA-new/ArchiveII/Rfam单任务独占锁，避免3819nt级别全长前向与多任务叠加OOM。Rfam=`/root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl`，n=10790，SHA256=`569b3fe999e1a4fc494cfd48d78c7c30bb0ead93c7f9969b7e85708bf033b067`，保留预训练接触风险；clean八split严格使用既有manifest及SHA。
 - seed42/2026小split已启动。seed3407多次在SSH建连阶段失败，未产生错误评测；释放尚未执行的seed2026/3407大split守候连接后补启，未损失已有计算。大split当前仅保留seed42队列，其他种子后续按独占锁补回。27格独立QA等待齐套，逐序列复算TP/FP/FN、micro/macro-F1、三次预测一致性，长序列失败保持PARTIAL。
 - 不为了占满显存而改科学batch、截断长序列、运行无资格负载或超订OOM；实际占用以CUDA进程和nvidia-smi后续证据为准。LD1原任务继续，PPT未修改。
+
+## §15.872（2026-11-11）J-mlp十五格小split完成与大split接续
+
+- 三种子×TS1/TS2/TS3/TS-hard/TestSetB共15格已全部完成，单checkpoint、三次预测均落盘。seed42/2026十格已独立复算TP/FP/FN和F1通过：seed42依次=0.7657387580/0.7524401065/0.7043478261/0.6658711217/0.7427933792，seed2026=0.7857754927/0.7654320988/0.7514124294/0.6906474820/0.7532767926；seed3407五格待统一QA，不提前写成27格结论。
+- 后续单连接队列首次因SSH上传失败导致远端脚本不存在（exit127），未执行任何新评测；上传核验后已恢复。seed42大split已独占进入TS0，seed2026/3407和27格QA将在同一队列顺序执行。小型三任务并行和大型独占均保持科学配置不变。
+- 执行代码、调度合同与QA已推送commit=`642ad4d`；remaining顺序脚本在本阶段补充提交。测试集指标只作冻结模型描述，不用于选臂或宣称SOTA。PPT未修改。
