@@ -16088,3 +16088,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - all：普通同义−max-CAI MFE/nt mean=0.1310839167、SD=0.0276318127，114/114均更高；GC匹配−max-CAI mean=`-0.0169435635`、SD=0.0209864694，91/114更低、23/114更高。design-dev对应mean=0.1315555163/`-0.0162925894`，design-test=0.1292180225/`-0.0195191567`。仅计算描述，不声称生物稳定性、表达或免疫原性效果。
 - shell acceptance在完整QA后报语法错误，改用独立Python直接核验生成acceptance，不重跑ViennaRNA。Python初版错误链式断言`n_recomputed==n_proteins==114`已定位为实现错误并拆成798/114两条件，最终双跑`cmp`一致，acceptance SHA256=`3098bb6d4bfca7544df22f5c496795090156a06e2ce8f1cef55be3482e7d4769`。
 - Q5TZJ5 exact资源停止门不变，主矩阵仍382/456且PARTIAL；其他执行者D1嵌入/长链诊断记录原样保留，PPT未修改。
+
+## §15.895（2026-11-11）Q5TZJ5 beam=500同样触及内存停止门
+
+- 为完成非exact部分，新增`--beam-only`模式，只生成缺失beam=500格并写独立`beam_only_manifest.json`，不替代exact、不触发全矩阵PASS。Q5TZJ5 beam初期RSS约8.9GB，但后续阶段同样升至`55879740 KiB`（约55.9GB），avail约1.1GiB，已停止任务。SSH一度中断，随后确认进程退出、可用内存恢复约54GiB，未生成Q5TZJ5新cell。
+- 因此不能把beam=500作为该长蛋白在当前63GiB节点上的可行替代路径，更不能删除困难蛋白或把382格写成完整矩阵。exact与beam均保持PARTIAL，Q5TZJ5需更高内存环境。runner保留beam-only实现供合格环境使用，但当前不再启动该任务。
+- 798条对照QA、J-mlp精度/decoder/置信度/长序列工程和TS0独占测速不受影响；PPT未修改。

@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--split", required=True)
     parser.add_argument("--out-dir", required=True)
     parser.add_argument("--max-workers", type=int, default=1)
+    parser.add_argument("--beam-only", action="store_true")
     args = parser.parse_args()
     assert args.max_workers >= 1
     repository = Path(args.lineardesign).resolve()
@@ -44,7 +45,7 @@ def main():
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     jobs = [(name, weight, beam) for name in sorted(sequences, key=lambda x: (len(sequences[x]), x))
-            for weight in (0, 4) for beam in (0, 500)]
+            for weight in (0, 4) for beam in ((500,) if args.beam_only else (0, 500))]
 
     def run(job):
         name, weight, beam = job
@@ -99,10 +100,10 @@ def main():
              for name, weight, beam in jobs]
     assert len(cells) == len(jobs)
     manifest = {
-        "status": "PASS_LD1_114_PROTEIN_GENERATION_MATRIX",
-        "scientific_conclusion": False,
+        "status": "PARTIAL_LD1_BEAM_ONLY_GENERATION" if args.beam_only else "PASS_LD1_114_PROTEIN_GENERATION_MATRIX",
+        "scientific_conclusion": False, "complete_full_matrix": not args.beam_only,
         "n_cells": len(cells), "n_proteins": len(sequences),
-        "lambda_values": [0, 4], "beam_values": [0, 500],
+        "lambda_values": [0, 4], "beam_values": [500] if args.beam_only else [0, 500],
         "n_structure_mismatch": sum(not cell["structure_matches_independent"] for cell in cells),
         "max_vienna_mfe_suboptimality": max(
             cell.get("suboptimality_vs_independent_mfe",
@@ -115,9 +116,11 @@ def main():
             "Concurrent wall times are not exclusive benchmark results.",
             "A different ViennaRNA MFE structure is retained, not mislabeled as an exact match or failed translation.",
             "design-test has not been used to tune lambda, beam, constraints, or calibration.",
+            "Beam-only generation is partial and never substitutes for the memory-blocked exact cells." if args.beam_only else "Full exact and beam matrix generation is complete.",
         ],
     }
-    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    manifest_path = out_dir / ("beam_only_manifest.json" if args.beam_only else "manifest.json")
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     print(json.dumps(manifest, indent=2), flush=True)
 
 
