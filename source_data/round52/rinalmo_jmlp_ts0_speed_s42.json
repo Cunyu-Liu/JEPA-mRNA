@@ -1,0 +1,111 @@
+{
+  "status": "PASS_JMLP_EXCLUSIVE_RAW_SEQUENCE_SPEED",
+  "scientific_conclusion": false,
+  "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/runs/round52_rinalmo_length_s42/best.pt",
+  "checkpoint_sha256": "16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2",
+  "data": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rinalmo_tr0_clean_round52/bprna_ts0.jsonl",
+  "data_sha256": "d2477d5296a6ebf34a90df4e040d17b42525d296fe3521633af52f6712e96174",
+  "encoder_load": {
+    "weights": "/root/rna_jepa_data/weights/rinalmo-giga",
+    "n_tensors_in_checkpoint": 504,
+    "n_encoder_tensors_loaded": 498,
+    "loaded_fraction_of_encoder": 0.996,
+    "expected_absent": {
+      "pooler.dense.weight": "pooler output is unused: we take per-residue states",
+      "pooler.dense.bias": "pooler output is unused: we take per-residue states"
+    },
+    "d_model": 1280,
+    "n_layers": 33,
+    "n_params": 650878731,
+    "license_note": "multimolecule/rinalmo-giga is AGPL-3.0"
+  },
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "decoder": "nussinov",
+  "dp_backend": "c",
+  "repeats": 3,
+  "warmup_sequences": 32,
+  "n": 1192,
+  "exclusive_gpu": true,
+  "protocol": "single checkpoint, raw sequence B=1, full forward and required C DP once; three full repeats; predictions and F1 exactly match accepted benchmark",
+  "runs": [
+    {
+      "repeat": 0,
+      "wall_seconds": 133.30419419705868,
+      "sequences_per_second": 8.941954206166313,
+      "micro": {
+        "f1": 0.6761813110636286,
+        "precision": 0.7207984142991272,
+        "recall": 0.6367657901204227,
+        "tp": 20728,
+        "fp": 8029,
+        "fn": 11824
+      },
+      "predictions_sha256": "dfc6d1e506736bbe5e862d2ab5c6af48a5096db1ef1021224c56c49b38f14ed4",
+      "peak_allocated_bytes": 4660091392,
+      "peak_reserved_bytes": 12660506624
+    },
+    {
+      "repeat": 1,
+      "wall_seconds": 134.28005676716566,
+      "sequences_per_second": 8.87696973547504,
+      "micro": {
+        "f1": 0.6761813110636286,
+        "precision": 0.7207984142991272,
+        "recall": 0.6367657901204227,
+        "tp": 20728,
+        "fp": 8029,
+        "fn": 11824
+      },
+      "predictions_sha256": "dfc6d1e506736bbe5e862d2ab5c6af48a5096db1ef1021224c56c49b38f14ed4",
+      "peak_allocated_bytes": 4660091392,
+      "peak_reserved_bytes": 12660506624
+    },
+    {
+      "repeat": 2,
+      "wall_seconds": 133.08208888024092,
+      "sequences_per_second": 8.95687774387632,
+      "micro": {
+        "f1": 0.6761813110636286,
+        "precision": 0.7207984142991272,
+        "recall": 0.6367657901204227,
+        "tp": 20728,
+        "fp": 8029,
+        "fn": 11824
+      },
+      "predictions_sha256": "dfc6d1e506736bbe5e862d2ab5c6af48a5096db1ef1021224c56c49b38f14ed4",
+      "peak_allocated_bytes": 4660091392,
+      "peak_reserved_bytes": 12660506624
+    }
+  ],
+  "summary": {
+    "rates": [
+      8.941954206166313,
+      8.87696973547504,
+      8.95687774387632
+    ],
+    "median_sequences_per_second": 8.941954206166313,
+    "mean_sequences_per_second": 8.925267228505891,
+    "population_sd_sequences_per_second": 0.034690669919968505,
+    "wall_seconds": [
+      133.30419419705868,
+      134.28005676716566,
+      133.08208888024092
+    ],
+    "predictions_sha256": "dfc6d1e506736bbe5e862d2ab5c6af48a5096db1ef1021224c56c49b38f14ed4",
+    "micro": {
+      "f1": 0.6761813110636286,
+      "precision": 0.7207984142991272,
+      "recall": 0.6367657901204227,
+      "tp": 20728,
+      "fp": 8029,
+      "fn": 11824
+    }
+  },
+  "code_sha256": "9b70340f377f2ec9f6ed8ff07ea70b891b512523fed3b5c51a43838fed7780aa",
+  "recovery": "Finalized from three completed repeat logs after fixing expected pred_pairs schema; no inference rerun",
+  "limitations": [
+    "Speed is a J-mlp control measurement, not a SOTA claim without same-hardware baselines.",
+    "No ensemble, cached embeddings, test-time augmentation or concurrent GPU tenants is used."
+  ]
+}

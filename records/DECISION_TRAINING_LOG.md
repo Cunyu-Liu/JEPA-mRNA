@@ -16056,3 +16056,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第一批已生成TR1c 42564+804=43368条D1训练集及202条holdout，未按长度或效果删除任何链。train最长7224nt、>1024=649、>3819=45；holdout最长19000nt、>1024=106、>3819=10。D1 SHA256=`5f67f467b90454b4f9f4db5c18ebc113c9e313c7be99e63c82424581ed8d84fc`，manifest=`source_data/round53/rinalmo_full_d1_manifest.json`。holdout未用于训练、早停、校准或选臂。
 - 旧Plan-A checkpoint在最长7224 nt真实CUDA测试中额外申请13.23GiB失败，artifact=`evals/round52/xens2_complex_longest7224_smoke.json`，证明不能只删除长度过滤来复用旧集成。当前教师仅189条、嵌入150条，后续按当前804条版本补齐，不混用旧分片。
 - 实施计划=`docs/plans/2026-11-11-rinalmo-full-d1-data-pipeline.md`，采用教师/嵌入身份门→PairMLP+R6显式分块和内存审计→正式D1三种子。7224 nt训练CRF与19000 nt holdout尚未验收，不提前保证完整长程支持。未启动新训练，PPT未修改。
+
+## §15.890（2026-11-11）J-mlp TS0独占raw-sequence三轮测速
+
+- 单checkpoint、单骨干、单PairMLP+R6头，TS0 TR0-clean 1192条，B=1原始序列完整前向+C DP一次， warmup=32，三次全量重复且GPU独占。三次wall=133.304194/134.280057/133.082089秒，rate=8.9419542062/8.8769697355/8.9568777439 seq/s；median=8.9419542062、mean=8.9252672285、population SD=0.0346906699 seq/s。allocated=4660091392 bytes、reserved=12660506624 bytes。
+- 首轮进程以exit120退出且日志为空，原因未确认，未形成accepted结果。加入逐轮日志后三轮预测与F1均和已验收TS0一致，随后仅因摘要schema断言失败：直接将含`pred_pairs`的预测字典传入比对而非先取列表。修正后从三轮日志完成验收，不重跑推理。最终预测SHA256=`dfc6d1e506736bbe5e862d2ab5c6af48a5096db1ef1021224c56c49b38f14ed4`，micro-F1=0.6761813111，双跑`cmp`一致，artifact=`source_data/round52/rinalmo_jmlp_ts0_speed_s42.json`。
+- 该数值仅为J-mlp控制测量，无同硬件全基线时不宣称速度SOTA；不用于测试集选臂。其他执行者新增的D1数据管线记录原样保留，不混入本J-mlp对照。PPT未修改。
