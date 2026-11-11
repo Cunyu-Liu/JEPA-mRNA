@@ -1,0 +1,235 @@
+{
+  "d_model": 1280,
+  "dtype": "float16",
+  "encoder": {
+    "d_model": 1280,
+    "expected_absent": {
+      "pooler.dense.bias": "pooler output is unused: we take per-residue states",
+      "pooler.dense.weight": "pooler output is unused: we take per-residue states"
+    },
+    "license_note": "multimolecule/rinalmo-giga is AGPL-3.0",
+    "loaded_fraction_of_encoder": 0.996,
+    "n_encoder_tensors_loaded": 498,
+    "n_layers": 33,
+    "n_params": 650878731,
+    "n_tensors_in_checkpoint": 504,
+    "weights": "/root/rna_jepa_data/weights/rinalmo-giga"
+  },
+  "entries": [
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard0of26.npz",
+      "sequences_sha256": "8de2e9153a4ca77d03a34b497db5b120ff4f15e2711d802f03c8f85dd6f1c509",
+      "sha256": "653b5721b2f0539482d808fe83298558e8b4f2dafc9517c1caf27208f77547ef",
+      "split": "complex_train",
+      "start": 0
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard1of26.npz",
+      "sequences_sha256": "db3a3ec933877d6513f8f2314359c0a02f483347553a951599e95aa899d473b3",
+      "sha256": "27d8c7fc9bbc8ad5841ddc064afb099869556afb7aca21ff5e0be5bc45a67048",
+      "split": "complex_train",
+      "start": 32
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard2of26.npz",
+      "sequences_sha256": "76d894307299d1e491082529ab215494335656ae60411a6c09023c7955782702",
+      "sha256": "22529b7dc7859e2767e61529f30e1bb0992e4f1521ce141179340ac65216e069",
+      "split": "complex_train",
+      "start": 64
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard3of26.npz",
+      "sequences_sha256": "302f316a8452a5f44f74501a5a117f22d3748dabf19274caab7a864bb4125076",
+      "sha256": "a80bd87fff6fb30d49bb29efe7a54ac26b7edae4072d838122aa0c6b2eaa0e73",
+      "split": "complex_train",
+      "start": 96
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard4of26.npz",
+      "sequences_sha256": "d779ebc4d7107e1a3b274ecbfa4b6615d4bc2d2e4f36033a0d9d8f084a3d33c8",
+      "sha256": "c84264654817a1f2b584e645a879d2946f9e0bd42fd1ed0e0d4be1900b803b8b",
+      "split": "complex_train",
+      "start": 128
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard5of26.npz",
+      "sequences_sha256": "17ab71dd9e6cbf06427e75ea570775c9a1b7eebcc7c2122f61df9fe303d39c98",
+      "sha256": "01424ac6d4c3a66bbb89456fb2b034e463f6f84eb400798fe4fa95d4a5030638",
+      "split": "complex_train",
+      "start": 160
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard6of26.npz",
+      "sequences_sha256": "e7c68e0ae3a30fa83bf2658f7c1ac535b8f1c27703a3fc4e4aa9b0148716edd3",
+      "sha256": "b60141031be027d48fa6df12b3b40c96ffd577e7c1dcc41a91b9c49115181767",
+      "split": "complex_train",
+      "start": 192
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard7of26.npz",
+      "sequences_sha256": "2a8abad6d71daae8a9a8068728abb0d6b798636a0d5072ba772b0333f1dbf391",
+      "sha256": "75c29c10b758a00196a9e5aa761ed7cb3a2f3197386d841563dcf5ad4201a1c4",
+      "split": "complex_train",
+      "start": 224
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard8of26.npz",
+      "sequences_sha256": "b0803576e33b6941f0d19c32e397a32d3284fe1bb7df3bd951bcb2b96bd68b30",
+      "sha256": "1d1240af8f443cdf59dc06fc4fa8a5ad0b9604c5e0b8a2ec3e9b46b06b32d534",
+      "split": "complex_train",
+      "start": 256
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard9of26.npz",
+      "sequences_sha256": "a8a746ec13b9d179d07180e10706f6cae5e0baec037102047a88c30894f30617",
+      "sha256": "fad666eeea82493361ac29c6d082b48824e7211b68c830ccfa8e39e579fb57f9",
+      "split": "complex_train",
+      "start": 288
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard10of26.npz",
+      "sequences_sha256": "004848d94a78ce7c3a198c14eeb849d5865feacd803038e5c48711c87086209e",
+      "sha256": "011aab72136ff9a2856def85eefd5975b0da781c91cfdd5c754b18aaa7264dc7",
+      "split": "complex_train",
+      "start": 320
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard11of26.npz",
+      "sequences_sha256": "a7dc3b4d9669925f505400b0b3d3f643950148911528525161fe46a15980f77a",
+      "sha256": "57a08ef505e3bde50b0eb9f6f5c5a0534bb0a8c0e9515f174f908076889c5b62",
+      "split": "complex_train",
+      "start": 352
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard12of26.npz",
+      "sequences_sha256": "7f247bd8e0260320e874e414839ff3d0c3258913e3655f01fbab8a6b67986ace",
+      "sha256": "9b0c2900d145b8bd60e3127aca5880e71916882ad80c0e123a518f76717570a5",
+      "split": "complex_train",
+      "start": 384
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard13of26.npz",
+      "sequences_sha256": "070232132977b12f5f3dcc2fd83fe3bc5c91cef2472598f00f8f0fa0640cea42",
+      "sha256": "bb6e93d37e442fe340acc9f67c90b7230a3922c682f711e9865c255711b784bb",
+      "split": "complex_train",
+      "start": 416
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard14of26.npz",
+      "sequences_sha256": "83702e7aa0a2fa604b6142ab078219b3a2f82c2c892e61016618d094bb9aae28",
+      "sha256": "4581b600537b449944a32ef6ee22da8d67566008da35e974d37f219888e4dcd0",
+      "split": "complex_train",
+      "start": 448
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard15of26.npz",
+      "sequences_sha256": "1edafcda9ea06dce7ad8928c781853c4539d06c2222732a8f07936bd7c89ee7a",
+      "sha256": "d8e4dccc1d2dfa770d5cee5794b91f619438e13cd530f12b1327a6ff228212aa",
+      "split": "complex_train",
+      "start": 480
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard16of26.npz",
+      "sequences_sha256": "27c4c70abea7166675a312328d390dc7838d169d0e48c1aed980eca9b83a77fd",
+      "sha256": "b75ee594c542770896255f943d1a21f61cabfd66c2bc4732d47376777ccd05ec",
+      "split": "complex_train",
+      "start": 512
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard17of26.npz",
+      "sequences_sha256": "eba1ec4c65821c94dd7ce9f1fd6009e7a57f44978cdb76f548150e7055ae215e",
+      "sha256": "1435c5d33f2d467924a293979a331c6bfed0fd3f38717e14e7c3bea429a96012",
+      "split": "complex_train",
+      "start": 544
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard18of26.npz",
+      "sequences_sha256": "7d5b22db29f6f84c50e1c5a365b3cd0d5db8015d2c40544575866e163782282c",
+      "sha256": "57dfa92293e8e53ab26a4a5c1cfde8b7d220413d1b96bb0d56cd73a32507a997",
+      "split": "complex_train",
+      "start": 576
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard19of26.npz",
+      "sequences_sha256": "e0a7f2a47619165ac1ba31ba9cfd2838bb670e50c3d2dabfe2e55f27cda18fad",
+      "sha256": "680b8115e66438eb489fa42e79c1a76a36dbd7bd4017a0e8cf68e4407fad14dd",
+      "split": "complex_train",
+      "start": 608
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard20of26.npz",
+      "sequences_sha256": "4167c06604116bb27fa54b084ff5071b463ae0383700186842d6873d088bacd5",
+      "sha256": "143c3308cd01115b308c7c97745c9fc58073193e01ca6cef26058902e639680e",
+      "split": "complex_train",
+      "start": 640
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard21of26.npz",
+      "sequences_sha256": "cc2c51dc005b5075c05910461c171155471ded1662c2e6278f7384eb9cd0065f",
+      "sha256": "37faca6b24dbf42dd6043478f3b35d2d80aa34106420b3937cfe3f7d79bb261c",
+      "split": "complex_train",
+      "start": 672
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard22of26.npz",
+      "sequences_sha256": "65f8556f01df7db1539d199f0a9ea4d26369cb36c92d02c8418df0dc7c6ca473",
+      "sha256": "4b0210eb40dd5e09d7fd447c0703ee4459fa36b0ea1b4609530d86d554230f9d",
+      "split": "complex_train",
+      "start": 704
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard23of26.npz",
+      "sequences_sha256": "64c80fa43d1fa12cc47a5a0af1c7842c841e25bea1fb25843bdc476c8f5a0890",
+      "sha256": "fc8a9249a426a145d27fcce156b0c0243cf27441a5714e545a21fd56070264b7",
+      "split": "complex_train",
+      "start": 736
+    },
+    {
+      "n": 32,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard24of26.npz",
+      "sequences_sha256": "a947ab4c74c09cec385732e13324e0f20d310a18c8533a1b86952af4d223df3c",
+      "sha256": "4de6182c5d89a7ba68bcb6997f67c8f187d6e3ff05bf3fa83e3bf43d9504c8ae",
+      "split": "complex_train",
+      "start": 768
+    },
+    {
+      "n": 4,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/embeddings/complex_train.shard25of26.npz",
+      "sequences_sha256": "1d4af2b37d4436531ab1bcd202a6dc478c6f47d0d60562298f25e30fe2b55e60",
+      "sha256": "d9da1fcc5afad893a4ab3b38988fe6dc89b9ce10b2cf2aa2a1ff282c860fe032",
+      "split": "complex_train",
+      "start": 800
+    }
+  ],
+  "length_exclusion": "none",
+  "n_sequences": 804,
+  "peak_cuda_bytes": 14712371712,
+  "resolved_device": "cuda",
+  "source": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/complex_train.jsonl",
+  "source_sha256": "0e3ab2d90fca2284c287e222dca1555eed071822455a3a878d4a0b9d0f5cabeb",
+  "status": "PASS_RINALMO_FULL_D1_EMBEDDINGS"
+}

@@ -16074,3 +16074,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 第二次恢复时实测`LinearDesign_2D` Q5TZJ5（1347aa）RSS=`55879872 KiB`（约55.9GB），节点63GiB内存且其他任务同时占用，avail约3.0GiB。为避免再次SIGKILL，主动停止runner与该二进制；TERM后进程仍在，随后KILL终止，未影响其他执行者任务。最终可用内存恢复约52GiB，未生成Q5TZJ5新cell。
 - 该实测支持**exact内存资源不足**这一直接停止原因，与第一次SIGKILL的未确认归因区分。382格原始结果完整保留，不把Q5TZJ5或后续困难蛋白删除，不用beam=500替代exact，也不改变λ/beam/序列。相同exact任务不在当前63GiB节点继续盲目重启。
 - 完整LD1需要更高内存环境或用户另行批准的算法/资源方案；在此之前全矩阵和最终LD1验收保持PARTIAL。798条对照QA可继续，J-mlp其他验收不受影响，PPT未修改。
+
+## §15.893（2026-11-11）全量D1嵌入与7224 nt训练显存诊断
+
+- **嵌入完成**：804条RiNALMo全残基float16表征共26 shard，逐shard序列、长度、shape、有限值和SHA全部一致，未按长度过滤。真实CUDA峰值14712371712 bytes（14.71GB），manifest=`source_data/round53/rinalmo_full_d1_embeddings_manifest.json`。
+- **教师恢复**：首次4 worker均因解释器缺少ViennaRNA路径失败，未生成标签；已补固定`pylibs`并验证`RNA.__version__=2.7.2`后按原804条恢复，仍待全量教师守恒门，不能用189条旧教师代替。
+- **长链前向/梯度**：PairMLP列打分与整图前向/反向在三个seed下逐元素完全一致。`zchunk=64`时113个latent chunk为scorer反向保留，理论占用约26.7GB；真实7224 nt全33层四目标训练在反向重算`PairRepresentation.cross`时OOM，额外申请226MiB失败。artifact=`audits/round53/rinalmo_full_d1_longest7224/qa.json`，不是CRF或数据标签错误。
+- 改用仅长序列`zchunk=8`（latent约3.3GB）重试，科学配置/序列/标签不变；结果未出，正式D1训练仍未放行。PPT未修改。

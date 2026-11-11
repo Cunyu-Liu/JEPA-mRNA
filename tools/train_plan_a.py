@@ -649,8 +649,14 @@ def main():
         for j0 in range(0, max_len, zc):
             chunks.append(_grad_ckpt(_z_chunk, h, h[:, j0:j0 + zc],
                                      use_reentrant=False))
-        z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
-        s_raw = _grad_ckpt(head.score_pair_matrix, z, head_ids, use_reentrant=False)
+        if args.scorer == "pairmlp":
+            score_chunks = [
+                _grad_ckpt(head.score_pair_matrix, z, head_ids, True,
+                           use_reentrant=False) for z in chunks]
+            s_raw = score_chunks[0] if len(score_chunks) == 1 else torch.cat(score_chunks, dim=2)
+        else:
+            z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
+            s_raw = _grad_ckpt(head.score_pair_matrix, z, head_ids, use_reentrant=False)
         bn_after_fwd = _snap()  # stats after exactly one update
         s = s_raw
         if head.use_turner_prior:
