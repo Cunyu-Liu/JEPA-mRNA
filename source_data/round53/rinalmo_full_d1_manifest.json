@@ -1,0 +1,33 @@
+{
+  "historical_isolation": "legacy 805/201 and xens2 150-chain assets are historical only; not mixed with this D1",
+  "holdout": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/complex_holdout_0based.jsonl",
+  "holdout_max_length": 19000,
+  "holdout_over_1024": 106,
+  "holdout_over_3819": 10,
+  "holdout_sha256": "a7cce12f5c5bdd7d0c4dcf6897113f5753b8a6dc54c40588657166f2fecd2950",
+  "length_exclusion": "none; every chain in the independently audited 804/202 version is retained",
+  "limitations": [
+    "Complete sequence inclusion is not evidence of training benefit or full-length CRF support.",
+    "The 202 holdout sequences are not used for training, early stopping, calibration or model selection."
+  ],
+  "n_complex_holdout": 202,
+  "n_complex_train": 804,
+  "n_total_train": 43368,
+  "n_tr1c": 42564,
+  "pair_index_conversion": "canonical_nested source 1-based converted to 0-based; source preserved",
+  "scientific_conclusion": false,
+  "source_hashes": {
+    "complex_holdout": "04cde607188f4f1ca9fae4fbc8a8a88d4f2ca117bba5936ca5c3bba1a36bc22a",
+    "complex_train": "0e3ab2d90fca2284c287e222dca1555eed071822455a3a878d4a0b9d0f5cabeb",
+    "decontamination": "05e5b6b32301f243e299740e0339cc508e7a4291a6e8b1877bafc66918dea27e",
+    "verification": "2f86dc353ae8d383747d46fdbfa663f7b5bc9e2ba1f357e10e1826455a986283"
+  },
+  "status": "PASS_RINALMO_FULL_D1_DATA",
+  "tr1c": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+  "tr1c_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+  "train_d1": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/train_d1.jsonl",
+  "train_d1_sha256": "5f67f467b90454b4f9f4db5c18ebc113c9e313c7be99e63c82424581ed8d84fc",
+  "train_max_length": 7224,
+  "train_over_1024": 649,
+  "train_over_3819": 45
+}

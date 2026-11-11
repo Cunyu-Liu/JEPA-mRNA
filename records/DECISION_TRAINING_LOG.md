@@ -16049,3 +16049,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - Turner=0三种子27格全部完成，decoder=`nussinov`、`dp_backend=c`、`prior_weight_override=0`、raw/support、checkpoint/data SHA及三次预测一致性均通过；QA双跑逐字节一致，SHA256=`34186294fe0a07270a3c35679a1d8aaecc041982685f88dc9a7630004d3e727c`，artifact=`source_data/round52/rinalmo_jmlp_turner0_benchmark_qa.json`。所有split三种子均无长序列缺失。
 - mean micro-F1±population SD：TS0=0.6710504429±0.0213083700；bpRNA-new=0.4040784061±0.0300109103；ArchiveII=0.6789031419±0.0066107761；TS1=0.7342639864±0.0187755283；TS2=0.6634019355±0.0087228099；TS3=0.6489890356±0.0387390420；TS-hard=0.6160157780±0.0444472949；TestSetB=0.7234194069±0.0068726622；Rfam=0.5325393558±0.0193916076。九个mean均低于默认DP对应值，且bpRNA-new/Rfam同时低于greedy，保留物理先验的完整负结果证据。
 - 默认DP、greedy、Turner=0共81格已有独立QA；不据此宣称SOTA或最终候选。Rfam保留预训练接触风险，正式raw-sequence速度与LD1仍未齐，PPT未修改。
+
+## §15.889（2026-11-11）全量D1数据版本与旧xens2长链OOM边界
+
+- 用户选择以当前RiNALMo单模型实现完整D1，不以旧xens2集成充数。当前唯一有效去泄露版本为train=804、holdout=202，source SHA分别`0e3ab2d90fca2284c287e222dca1555eed071822455a3a878d4a0b9d0f5cabeb`/`04cde607188f4f1ca9fae4fbc8a8a88d4f2ca117bba5936ca5c3bba1a36bc22a`，与旧805/201分开。独立核验verification、decontamination、序列唯一性、canonical-nested端点、无共享端点和无交叉全部通过。
+- 第一批已生成TR1c 42564+804=43368条D1训练集及202条holdout，未按长度或效果删除任何链。train最长7224nt、>1024=649、>3819=45；holdout最长19000nt、>1024=106、>3819=10。D1 SHA256=`5f67f467b90454b4f9f4db5c18ebc113c9e313c7be99e63c82424581ed8d84fc`，manifest=`source_data/round53/rinalmo_full_d1_manifest.json`。holdout未用于训练、早停、校准或选臂。
+- 旧Plan-A checkpoint在最长7224 nt真实CUDA测试中额外申请13.23GiB失败，artifact=`evals/round52/xens2_complex_longest7224_smoke.json`，证明不能只删除长度过滤来复用旧集成。当前教师仅189条、嵌入150条，后续按当前804条版本补齐，不混用旧分片。
+- 实施计划=`docs/plans/2026-11-11-rinalmo-full-d1-data-pipeline.md`，采用教师/嵌入身份门→PairMLP+R6显式分块和内存审计→正式D1三种子。7224 nt训练CRF与19000 nt holdout尚未验收，不提前保证完整长程支持。未启动新训练，PPT未修改。
