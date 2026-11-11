@@ -5,6 +5,7 @@ import statistics
 from pathlib import Path
 
 from qa_loss_optimizer_training_round51 import read_jsonl, sha256_file, stable_load
+from qa_rinalmo_j1_collapse_round52 import sustained_collapse
 
 
 ARM_CONFIG = {
@@ -65,6 +66,7 @@ def validate_run(root, seed, base, arm, data_sha256):
     diagnostics = read_jsonl(root / "jepa_diagnostics.jsonl")
     expected_steps = sorted({1, *range(25, meta["steps_completed"] + 1, 25)})
     assert [row["step"] for row in diagnostics] == expected_steps
+    assert not sustained_collapse(diagnostics), "sustained low-rank/high-correlation latent collapse"
     for row in diagnostics:
         assert row["context"] == context and row["masked_pairs"] > 0
         assert row["masked_pairs"] == row["anti_diagonal_masked_pairs"] + row["off_anti_diagonal_masked_pairs"]

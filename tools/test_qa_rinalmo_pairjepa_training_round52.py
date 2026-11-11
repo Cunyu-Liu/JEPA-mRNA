@@ -1,3 +1,4 @@
+from qa_rinalmo_j1_collapse_round52 import sustained_collapse
 from qa_rinalmo_pairjepa_training_round52 import ARM_CONFIG, obvious_collapse
 
 
@@ -22,4 +23,11 @@ changed["target_channel_variance"] = [0.0] * 466 + [0.1] * 24
 assert obvious_collapse(changed)
 changed["target_channel_variance"] = [0.0] * 465 + [0.1] * 25
 assert not obvious_collapse(changed)
-print("PASS target/context identities and obvious-collapse failure injection; no no-collapse claim")
+collapsed = {prefix + "_effective_rank": 2.0 for prefix in ("target", "prediction")}
+collapsed.update({prefix + "_" + scope + "_cosine": 0.999
+                  for prefix in ("target", "prediction") for scope in ("cross_position", "cross_sequence")})
+assert not sustained_collapse([collapsed, collapsed])
+assert sustained_collapse([collapsed, collapsed, collapsed])
+healthy = dict(collapsed, target_effective_rank=4.0)
+assert not sustained_collapse([collapsed, healthy, collapsed, collapsed])
+print("PASS target/context, constant and sustained high-correlation collapse failure injection")

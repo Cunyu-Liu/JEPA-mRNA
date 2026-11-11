@@ -1,0 +1,195 @@
+{
+  "status": "PASS_JMLP_VL0_STRUCTURE_INDEPENDENT_QA",
+  "scientific_conclusion": false,
+  "results": {
+    "42.nussinov": {
+      "file": "rinalmo_jmlp_length_s42_vl0_nussinov.json",
+      "mode": "nussinov",
+      "micro": {
+        "f1": 0.8508877028646117,
+        "precision": 0.8560157790927022,
+        "recall": 0.8458207016024253,
+        "tp": 3906,
+        "fp": 657,
+        "fn": 712
+      },
+      "macro_f1": 0.826952038077974,
+      "checkpoint_sha256": "16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2",
+      "result_sha256": "e6a65691ce38ec4908e91c201a8dbc041614008b2e0925c8414a40b7872957be",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "42.greedy": {
+      "file": "rinalmo_jmlp_length_s42_vl0_greedy.json",
+      "mode": "greedy",
+      "micro": {
+        "f1": 0.816880810613183,
+        "precision": 0.7891019172552977,
+        "recall": 0.8466868774361195,
+        "tp": 3910,
+        "fp": 1045,
+        "fn": 708
+      },
+      "macro_f1": 0.8156253579107754,
+      "checkpoint_sha256": "16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2",
+      "result_sha256": "f157709d87320e88727faec54f3a050cb50ec181c10d27b5d342fe02adecbfd6",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "42.turner0": {
+      "file": "rinalmo_jmlp_length_s42_vl0_turner0.json",
+      "mode": "turner0",
+      "micro": {
+        "f1": 0.845872398810885,
+        "precision": 0.8960755813953488,
+        "recall": 0.8009961022087484,
+        "tp": 3699,
+        "fp": 429,
+        "fn": 919
+      },
+      "macro_f1": 0.8126348515495947,
+      "checkpoint_sha256": "16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2",
+      "result_sha256": "2ffa3290a1534c1173e9edf049c786f75b32ab0595c746ce6605a23b8cf655aa",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "2026.nussinov": {
+      "file": "rinalmo_jmlp_length_s2026_vl0_nussinov.json",
+      "mode": "nussinov",
+      "micro": {
+        "f1": 0.8541735039929985,
+        "precision": 0.863143931019235,
+        "recall": 0.8453876136855781,
+        "tp": 3904,
+        "fp": 619,
+        "fn": 714
+      },
+      "macro_f1": 0.8365977100001001,
+      "checkpoint_sha256": "abeb3e37ff9bea995461584820f54c16700eff147518fbd25e65390412cbc210",
+      "result_sha256": "c29c18d7511124e7920d775c738f06f13445dc6b0bcf1302a9d6db7b93f3be38",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "2026.greedy": {
+      "file": "rinalmo_jmlp_length_s2026_vl0_greedy.json",
+      "mode": "greedy",
+      "micro": {
+        "f1": 0.8198367859384807,
+        "precision": 0.7931174089068825,
+        "recall": 0.848419229103508,
+        "tp": 3918,
+        "fp": 1022,
+        "fn": 700
+      },
+      "macro_f1": 0.8272224168607938,
+      "checkpoint_sha256": "abeb3e37ff9bea995461584820f54c16700eff147518fbd25e65390412cbc210",
+      "result_sha256": "3f08d279b4d1c7ee6db9aa83c63768299ae25a70296991fcac4c70581d6f27e0",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "2026.turner0": {
+      "file": "rinalmo_jmlp_length_s2026_vl0_turner0.json",
+      "mode": "turner0",
+      "micro": {
+        "f1": 0.8469166761655077,
+        "precision": 0.8941034897713598,
+        "recall": 0.8044608055435253,
+        "tp": 3715,
+        "fp": 440,
+        "fn": 903
+      },
+      "macro_f1": 0.812716396945237,
+      "checkpoint_sha256": "abeb3e37ff9bea995461584820f54c16700eff147518fbd25e65390412cbc210",
+      "result_sha256": "3f1aa958fe1ce9ecf3fd9100afb33df4e3d22d99a531ef740df935ac3a9cd38b",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "3407.nussinov": {
+      "file": "rinalmo_jmlp_length_s3407_vl0_nussinov.json",
+      "mode": "nussinov",
+      "micro": {
+        "f1": 0.8605263157894736,
+        "precision": 0.8716126166148378,
+        "recall": 0.8497184928540493,
+        "tp": 3924,
+        "fp": 578,
+        "fn": 694
+      },
+      "macro_f1": 0.8308824942682506,
+      "checkpoint_sha256": "1dd2364bb0dcaa2ded9e57658bba06dcc8dd885190373eb4c2a3fcd8ba572b27",
+      "result_sha256": "82809cd068764e62cef7f14f3ba587301d9d9ae473062b61da65660f7646d01d",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "3407.greedy": {
+      "file": "rinalmo_jmlp_length_s3407_vl0_greedy.json",
+      "mode": "greedy",
+      "micro": {
+        "f1": 0.8399150743099788,
+        "precision": 0.823823406913786,
+        "recall": 0.8566478995236033,
+        "tp": 3956,
+        "fp": 846,
+        "fn": 662
+      },
+      "macro_f1": 0.8245785845518016,
+      "checkpoint_sha256": "1dd2364bb0dcaa2ded9e57658bba06dcc8dd885190373eb4c2a3fcd8ba572b27",
+      "result_sha256": "88e2ead3916270d4622276e35629e4f2032c6466607409b26d414e031ca910fa",
+      "n": 196,
+      "repeat_predictions_equal": true
+    },
+    "3407.turner0": {
+      "file": "rinalmo_jmlp_length_s3407_vl0_turner0.json",
+      "mode": "turner0",
+      "micro": {
+        "f1": 0.8570454545454546,
+        "precision": 0.9017216642754663,
+        "recall": 0.8165872672152447,
+        "tp": 3771,
+        "fp": 411,
+        "fn": 847
+      },
+      "macro_f1": 0.824426651143078,
+      "checkpoint_sha256": "1dd2364bb0dcaa2ded9e57658bba06dcc8dd885190373eb4c2a3fcd8ba572b27",
+      "result_sha256": "2b3abbb68fbe73f890898c61dc43911262802c693c45948c9d4a0461275e3d18",
+      "n": 196,
+      "repeat_predictions_equal": true
+    }
+  },
+  "aggregates": {
+    "nussinov": {
+      "seed_micro_f1": [
+        0.8508877028646117,
+        0.8541735039929985,
+        0.8605263157894736
+      ],
+      "mean_micro_f1": 0.8551958408823612,
+      "population_sd_micro_f1": 0.004000799446389237
+    },
+    "greedy": {
+      "seed_micro_f1": [
+        0.816880810613183,
+        0.8198367859384807,
+        0.8399150743099788
+      ],
+      "mean_micro_f1": 0.8255442236205475,
+      "population_sd_micro_f1": 0.010233131149502852
+    },
+    "turner0": {
+      "seed_micro_f1": [
+        0.845872398810885,
+        0.8469166761655077,
+        0.8570454545454546
+      ],
+      "mean_micro_f1": 0.8499448431739491,
+      "population_sd_micro_f1": 0.005038957576404657
+    }
+  },
+  "control_sha256": "776d735de88a78988c611a63b27bbac20730d03e4f55b0e6fc7ec488c5eb1820",
+  "qa_sha256": "cd428366fe13c63bd93d3a4cea6d9b7853a5fc73482c8258588eb27d0bdf223e",
+  "limitations": [
+    "VL0-only structural diagnostics; no test set was accessed or used for tuning, calibration or selection.",
+    "Concurrent wall times are not formal speed results; calibration/confidence fields are not independently accepted here.",
+    "These are not final benchmark or Rfam results and do not establish JEPA efficacy."
+  ]
+}
