@@ -2,7 +2,7 @@
 set -euo pipefail
 GROUP=${1:?large or small}
 SEED=${2:?42, 2026 or 3407}
-if [[ "$GROUP" != large && "$GROUP" != small && "$GROUP" != bpnew ]]; then echo "invalid group" >&2; exit 2; fi
+if [[ "$GROUP" != large && "$GROUP" != small && "$GROUP" != bpnew && "$GROUP" != ts0 ]]; then echo "invalid group" >&2; exit 2; fi
 if [[ "$SEED" != 42 && "$SEED" != 2026 && "$SEED" != 3407 ]]; then echo "invalid seed" >&2; exit 2; fi
 ROOT=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024
 REPO=/home/rna_jev
@@ -15,6 +15,8 @@ if [[ "$GROUP" == large ]]; then
   splits=(bprna_ts0 bprna_new archiveii_embok_clean rfam_fam)
 elif [[ "$GROUP" == bpnew ]]; then
   splits=(bprna_new)
+elif [[ "$GROUP" == ts0 ]]; then
+  splits=(bprna_ts0)
 else
   flock -s 9
   splits=(ref_pdb_ts1 ref_pdb_ts2 ref_pdb_ts3 ref_pdb_ts_hard testsetb)

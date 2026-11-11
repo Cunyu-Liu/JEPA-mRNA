@@ -15968,3 +15968,4 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - seed42 bpRNA-new运行中实测单任务显存约5.2GB，原大split全程独占导致GPU余量过大。为响应用户并行要求，新增独立bpnew调度：seed2026/3407只执行同一bpRNA-new，和seed42共享短序列计算，不改checkpoint、数据、decoder或重复协议。ArchiveII/Rfam仍必须独占，不用短序列峰值外推长序列安全。
 - 后续runner按split获取共享/独占锁，TS0/bpRNA-new可共享，ArchiveII/Rfam独占；已有JSON只有checkpoint/data SHA、CUDA、三次repeat及raw/support守恒一致才跳过，身份不一致或残缺文件拒绝覆盖。另两种子bpnew完成后，剩余队列按同一身份检查跳过，不重复计算。
 - seed2026首次bpnew启动为SSH失败，seed3407已运行，seed2026随后按无进程检查补启；无科学运行被重复。实际GPU占用仍需下一快照确认，不预先声称显存占满或速度提升。统一27格QA未齐，PPT未修改。
+- 随后增加独立TS0 seed2026短序列任务，首次SSH启动失败后重试成功。2026-11-11 12:45:05快照确认4个真实`eval_rinalmo_full` CUDA进程，显存15658/24564MiB、GPU利用率81%，无OOM；不追加第五路，不把并发墙时作为正式速度。
