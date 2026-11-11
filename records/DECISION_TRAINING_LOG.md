@@ -15962,3 +15962,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - seed42 TS0 TR0-clean共1192条全部完成，无长序列跳过，三次预测一致。独立复算TP/FP/FN=20728/8029/11824，precision=0.7207984143、recall=0.6367657901、micro-F1=0.6761813111、macro-F1=0.6544196816。result SHA256=`4584d6e47c78ee94324d731593603c295a5b514b367e60f201b49b64b68c4051`，checkpoint SHA256=`16172268071c53908278159e6117f3f1db4b2c45b8d3bd38342856ac44e045c2`。
 - 该结果仅是冻结J-mlp单seed单split描述，不用于选臂、校准或SOTA主张。bpRNA-new继续独占评测，其他种子和统一27格QA未齐。PPT未修改。
+
+## §15.874（2026-11-11）bpRNA-new三种子并行与逐split锁优化
+
+- seed42 bpRNA-new运行中实测单任务显存约5.2GB，原大split全程独占导致GPU余量过大。为响应用户并行要求，新增独立bpnew调度：seed2026/3407只执行同一bpRNA-new，和seed42共享短序列计算，不改checkpoint、数据、decoder或重复协议。ArchiveII/Rfam仍必须独占，不用短序列峰值外推长序列安全。
+- 后续runner按split获取共享/独占锁，TS0/bpRNA-new可共享，ArchiveII/Rfam独占；已有JSON只有checkpoint/data SHA、CUDA、三次repeat及raw/support守恒一致才跳过，身份不一致或残缺文件拒绝覆盖。另两种子bpnew完成后，剩余队列按同一身份检查跳过，不重复计算。
+- seed2026首次bpnew启动为SSH失败，seed3407已运行，seed2026随后按无进程检查补启；无科学运行被重复。实际GPU占用仍需下一快照确认，不预先声称显存占满或速度提升。统一27格QA未齐，PPT未修改。
