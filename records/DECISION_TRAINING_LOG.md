@@ -16031,3 +16031,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - ArchiveII greedy seed42共1094/1094条完整覆盖，无长序列失败，三次预测一致。独立复算TP/FP/FN=43799/28310/20353，precision=0.6073999085、recall=0.6827378726、micro-F1=0.6428691996、macro-F1=0.7243279170，result SHA256=`33b3bd721b3eae1c08b70c8c7320c0d677b0eda14f66baae2b6a763bc34ae0a3`。低于默认DP同seed micro-F1=0.7061181263，支持约束DP而非greedy的单seed证据。
 - Rfam seed42 greedy已独占开始，其他种子和54格统一QA未齐；不作最终SOTA或机制结论，PPT未修改。
+
+## §15.886（2026-11-11）J-mlp greedy主八+Rfam 27格双跑QA
+
+- greedy三种子27格全部完成并通过逐序列TP/FP/FN、micro/macro-F1、raw/support、decoder、checkpoint/data SHA及三次预测一致性检查，双跑`cmp`一致。所有split三种子均无长序列缺失。QA SHA256=`d61cc12b167d85f4f208cc4cef65a3c2b45b26c47d655ad1d2cd09b759a20420`，artifact=`source_data/round52/rinalmo_jmlp_greedy_benchmark_qa.json`。
+- mean micro-F1±population SD：TS0=0.6456457466±0.0185642734；bpRNA-new=0.4714124316±0.0123173808；ArchiveII=0.6548303487±0.0130606045；TS1=0.7498595709±0.0156049378；TS2=0.7274084067±0.0133013172；TS3=0.7087066706±0.0363195756；TS-hard=0.6564064064±0.0279365840；TestSetB=0.7128017543±0.0085274185；Rfam=0.5632293560±0.0080505984。九个mean均低于默认DP对应值，支持约束DP的完整对照证据，不作SOTA主张。
+- Turner=0独立QA正在运行，Rfam保留预训练接触风险；全部54格尚未完成，PPT未修改。
