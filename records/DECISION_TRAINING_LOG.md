@@ -15981,3 +15981,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - TS0 seed2026=1192/1192，micro-F1=0.7072663226、macro-F1=0.6903239433，result SHA256=`59114bb85e2676d82263c87303b5b93785dd8c1b02a23d98d72326af79de3872`。bpRNA-new seed2026=5388/5388，micro-F1=0.5010220155、macro-F1=0.4794210054，SHA256=`4f9830507b17a8310e4bc57942753631b9c823c647061f79a1f681cc3001a754`；seed3407=5388/5388，micro-F1=0.5396799727、macro-F1=0.5125225677，SHA256=`7a85902d7f77e482cd202530f648d11357d9a06012b584281e6851130fb05685`。TS0 seed3407=1192/1192，micro-F1=0.7141610651、macro-F1=0.6976525608，SHA256=`9767640b69d685babb915044897fb95316bf16dbb75f174c8e367df7b05d2841`。
 - 三次预测、raw/support、checkpoint/data SHA及逐项指标均通过；15小split+TS0三格+bpnew三格共21/21短序列格已齐。剩余仅ArchiveII与Rfam各三格，统一27格QA待其完成。
 - 短序列结束后已按逐split锁恢复seed42长序列队列，TS0/bpnew身份检查跳过。remaining队列两次SSH启动失败，未执行重复计算；将在seed42长序列完成后接续，不为恢复管理队列中断有效GPU任务。PPT未修改。
+
+## §15.877（2026-11-11）C DP完整模型等价门与长序列后端切换
+
+- `eval_rinalmo_full_round52.py`新增显式`--dp-backend python|c`，默认python保持旧行为，C仅用于Nussinov并写入`dp_backend`；非Nussinov请求C会拒绝。调用既有`dp_decode_c.so`单序列接口，其合同为N/dec/kp表及traceback bitwise等价。
+- 真实CUDA完整TS1 seed42评测的61条、三次repeat、per-sequence指标、micro/macro-F1与原Python结果逐项完全一致。C artifact=`source_data/round52/rinalmo_jmlp_length_s42_ref_pdb_ts1.json`，SHA256=`cc18897eca4ac0b286a0b9082d79e3b9806f5bb4166439503e1acfb5f2451aa2`。Python/C墙时=17.5690/18.6329秒，短序列不提速，不写成正式加速结论。
+- 为减少ArchiveII长序列Python DP开销，已停止初始慢任务并用C后端按身份跳过已完成格恢复，未影响21格既有结果。后续runner显式`--dp-backend c`，greedy仍走原实现。ArchiveII快照475/1094，长短序列混合耗时不均，不作整体速度主张；统一27格QA未齐，PPT未修改。

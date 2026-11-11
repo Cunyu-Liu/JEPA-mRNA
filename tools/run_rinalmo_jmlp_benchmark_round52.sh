@@ -55,6 +55,6 @@ PY
   fi
   "$PY" "$REPO/tools/eval_rinalmo_full_round52.py" \
     --checkpoint "$checkpoint" --pretrained /root/rna_jepa_data/weights/rinalmo-giga \
-    --data "$data" --out "$out" --repeats 3 --decoder nussinov \
+    --data "$data" --out "$out" --repeats 3 --decoder nussinov --dp-backend c \
     > "$ROOT/logs/round52/rinalmo_jmlp_length_s${SEED}_${split}.log" 2>&1
 done

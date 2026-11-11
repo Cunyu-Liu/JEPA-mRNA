@@ -17,6 +17,7 @@ import xens2_eval
 from structrfm_metrics_round48 import (PairCalibrationAccumulator, inf_value,
                                        span_metrics, structure_confidence)
 from structrfm_decode_round48 import decode_scores
+from dp_decode_c_wrapper import nussinov_map_single
 
 
 def main():
@@ -27,8 +28,11 @@ def main():
     parser.add_argument("--out", required=True)
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--decoder", choices=["nussinov", "greedy"], default="nussinov")
+    parser.add_argument("--dp-backend", choices=["python", "c"], default="python")
     parser.add_argument("--prior-weight-override", type=float, default=None)
     args = parser.parse_args()
+    if args.decoder != "nussinov" and args.dp_backend != "python":
+        raise ValueError("C DP backend only applies to nussinov decoding")
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA required for RiNALMo full-model evaluation")
     encoder, load_report = load_encoder(device="cpu", dtype=torch.float32)
@@ -75,7 +79,10 @@ def main():
         scores_np = scores.cpu().numpy()
         scores_np = np.where(mask, scores_np, -np.inf)
         for repeat in range(args.repeats):
-            pairs, crossings, conflicts = decode_scores(scores_np, mask, args.decoder)
+            if args.dp_backend == "c":
+                pairs, crossings, conflicts = nussinov_map_single(scores_np, mask), 0, 0
+            else:
+                pairs, crossings, conflicts = decode_scores(scores_np, mask, args.decoder)
             repeat_pairs.append(pairs)
             predictions[repeat].append({"name": row.get("name", ""),
                                         "pred_pairs": [list(pair) for pair in pairs]})
@@ -111,7 +118,7 @@ def main():
         "device": "cuda", "gpu_name": torch.cuda.get_device_name(0),
         "raw_n": len(rows), "n": len(per_sequence),
         "n_long_unsupported": len(long_unsupported), "long_unsupported": long_unsupported,
-        "decoder": args.decoder,
+        "decoder": args.decoder, "dp_backend": args.dp_backend,
         "prior_weight_override": args.prior_weight_override,
         "prior_weight_trained": float(head.prior_weight.detach().cpu()) if head.use_turner_prior else None,
         "crossing_pairs": crossing_pairs, "conflict_pairs": conflict_pairs,
