@@ -1,0 +1,92 @@
+{
+  "status": "PASS_LD1_CONTROLS_THREE_CHECK_ACCEPTANCE",
+  "scientific_conclusion": false,
+  "artifacts": {
+    "lineardesign_ld1_controls_qa.json": "1f4f7085b3b8d7e8b49f4cfb515bcb20f68a74c3ce1df8cbf837684e0f6a7853"
+  },
+  "paired_comparisons": {
+    "all": {
+      "synonymous_uniform_minus_max_cai": {
+        "n": 114,
+        "mean": 0.1310839167051179,
+        "population_sd": 0.027631812671346304,
+        "median": 0.130163465116778,
+        "min": 0.05653236491630659,
+        "max": 0.21279114864854787,
+        "n_negative": 0,
+        "n_zero": 0,
+        "n_positive": 114,
+        "interpretation": "Positive values mean higher (less favorable) ViennaRNA MFE per nt than max-CAI."
+      },
+      "gc_matched_uniform_minus_max_cai": {
+        "n": 114,
+        "mean": -0.01694356349463265,
+        "population_sd": 0.020986469407286903,
+        "median": -0.018037763559009212,
+        "min": -0.07496946751707495,
+        "max": 0.030594305782663145,
+        "n_negative": 91,
+        "n_zero": 0,
+        "n_positive": 23,
+        "interpretation": "Positive values mean higher (less favorable) ViennaRNA MFE per nt than max-CAI."
+      }
+    },
+    "design-dev": {
+      "synonymous_uniform_minus_max_cai": {
+        "n": 91,
+        "mean": 0.13155551633048182,
+        "population_sd": 0.029208638347380873,
+        "median": 0.13018805088141028,
+        "min": 0.05653236491630659,
+        "max": 0.21279114864854787,
+        "n_negative": 0,
+        "n_zero": 0,
+        "n_positive": 91,
+        "interpretation": "Positive values mean higher (less favorable) ViennaRNA MFE per nt than max-CAI."
+      },
+      "gc_matched_uniform_minus_max_cai": {
+        "n": 91,
+        "mean": -0.01629258938877265,
+        "population_sd": 0.02214815473472306,
+        "median": -0.017305067095251203,
+        "min": -0.07496946751707495,
+        "max": 0.030594305782663145,
+        "n_negative": 71,
+        "n_zero": 0,
+        "n_positive": 20,
+        "interpretation": "Positive values mean higher (less favorable) ViennaRNA MFE per nt than max-CAI."
+      }
+    },
+    "design-test": {
+      "synonymous_uniform_minus_max_cai": {
+        "n": 23,
+        "mean": 0.12921802253519984,
+        "population_sd": 0.020113241213549012,
+        "median": 0.13013887935214574,
+        "min": 0.09283212879595068,
+        "max": 0.17307692851096476,
+        "n_negative": 0,
+        "n_zero": 0,
+        "n_positive": 23,
+        "interpretation": "Positive values mean higher (less favorable) ViennaRNA MFE per nt than max-CAI."
+      },
+      "gc_matched_uniform_minus_max_cai": {
+        "n": 23,
+        "mean": -0.019519156696078743,
+        "population_sd": 0.015292638083959226,
+        "median": -0.019497393282661812,
+        "min": -0.05204177378249647,
+        "max": 0.013817670338513832,
+        "n_negative": 20,
+        "n_zero": 0,
+        "n_positive": 3,
+        "interpretation": "Positive values mean higher (less favorable) ViennaRNA MFE per nt than max-CAI."
+      }
+    }
+  },
+  "limitations": [
+    "Full computational QA is complete; wild-type assets and LD2 frozen-model evaluation remain separate.",
+    "No biological efficacy or PRISM benefit is claimed.",
+    "Shell acceptance finalization failed; this independent Python finalizer did not rerun ViennaRNA."
+  ]
+}

@@ -16081,3 +16081,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **教师恢复**：首次4 worker均因解释器缺少ViennaRNA路径失败，未生成标签；已补固定`pylibs`并验证`RNA.__version__=2.7.2`后按原804条恢复，仍待全量教师守恒门，不能用189条旧教师代替。
 - **长链前向/梯度**：PairMLP列打分与整图前向/反向在三个seed下逐元素完全一致。`zchunk=64`时113个latent chunk为scorer反向保留，理论占用约26.7GB；真实7224 nt全33层四目标训练在反向重算`PairRepresentation.cross`时OOM，额外申请226MiB失败。artifact=`audits/round53/rinalmo_full_d1_longest7224/qa.json`，不是CRF或数据标签错误。
 - 改用仅长序列`zchunk=8`（latent约3.3GB）重试，科学配置/序列/标签不变；结果未出，正式D1训练仍未放行。PPT未修改。
+
+## §15.894（2026-11-11）LD1 798条对照独立ViennaRNA验收
+
+- 798条max-CAI/普通同义/GC严格匹配对照全部完成独立翻译、GC、CAI与ViennaRNA `dangles=0`复算，114蛋白均齐，QA SHA256=`1f4f7085b3b8d7e8b49f4cfb515bcb20f68a74c3ce1df8cbf837684e0f6a7853`，artifact=`source_data/round52/lineardesign_ld1_controls_qa.json`。种子先在蛋白内平均，蛋白为独立单位；design-test未用于选参。
+- all：普通同义−max-CAI MFE/nt mean=0.1310839167、SD=0.0276318127，114/114均更高；GC匹配−max-CAI mean=`-0.0169435635`、SD=0.0209864694，91/114更低、23/114更高。design-dev对应mean=0.1315555163/`-0.0162925894`，design-test=0.1292180225/`-0.0195191567`。仅计算描述，不声称生物稳定性、表达或免疫原性效果。
+- shell acceptance在完整QA后报语法错误，改用独立Python直接核验生成acceptance，不重跑ViennaRNA。Python初版错误链式断言`n_recomputed==n_proteins==114`已定位为实现错误并拆成798/114两条件，最终双跑`cmp`一致，acceptance SHA256=`3098bb6d4bfca7544df22f5c496795090156a06e2ce8f1cef55be3482e7d4769`。
+- Q5TZJ5 exact资源停止门不变，主矩阵仍382/456且PARTIAL；其他执行者D1嵌入/长链诊断记录原样保留，PPT未修改。
