@@ -16062,3 +16062,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 单checkpoint、单骨干、单PairMLP+R6头，TS0 TR0-clean 1192条，B=1原始序列完整前向+C DP一次， warmup=32，三次全量重复且GPU独占。三次wall=133.304194/134.280057/133.082089秒，rate=8.9419542062/8.8769697355/8.9568777439 seq/s；median=8.9419542062、mean=8.9252672285、population SD=0.0346906699 seq/s。allocated=4660091392 bytes、reserved=12660506624 bytes。
 - 首轮进程以exit120退出且日志为空，原因未确认，未形成accepted结果。加入逐轮日志后三轮预测与F1均和已验收TS0一致，随后仅因摘要schema断言失败：直接将含`pred_pairs`的预测字典传入比对而非先取列表。修正后从三轮日志完成验收，不重跑推理。最终预测SHA256=`dfc6d1e506736bbe5e862d2ab5c6af48a5096db1ef1021224c56c49b38f14ed4`，micro-F1=0.6761813111，双跑`cmp`一致，artifact=`source_data/round52/rinalmo_jmlp_ts0_speed_s42.json`。
 - 该数值仅为J-mlp控制测量，无同硬件全基线时不宣称速度SOTA；不用于测试集选臂。其他执行者新增的D1数据管线记录原样保留，不混入本J-mlp对照。PPT未修改。
+
+## §15.891（2026-11-11）LD1第二次SIGKILL与验收锁真实状态
+
+- 主矩阵在382格后于Q5TZJ5（1347aa）生成时再次收到SIGKILL，原始traceback与日志保留。当前内存充足不能反推当时原因，`dmesg`未提供可用证据，不将原因写成已证实OOM。已按原单进程、λ=0/4、beam=0/500和序列不变从JSON断点恢复，未删除任何格。
+- 验收守候日志出现`line43: syntax error near unexpected token ;;`，文件本地/远端SHA256均为`218c70aec0272753a703b65a41caf973934c7b7018a08ca49f43c9a2b5a26819`，`bash -n`通过。`bash -x`实际执行可到达`flock`并返回`another LD1 matrix acceptance is active`，确认08:03启动的旧验收队列仍持锁等待manifest，未重复启动。错误日志保留，未修改科学配置。
+- 798条对照独立QA仍在运行。J-mlp decoder/置信度/长序列工程与TS0独占测速已完成，D1由其他执行者资产独立保留；PPT未修改。
