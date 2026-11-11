@@ -2,8 +2,16 @@
 set -euo pipefail
 GROUP=${1:?large or small}
 SEED=${2:?42, 2026 or 3407}
+MODE=${3:-nussinov}
 if [[ "$GROUP" != large && "$GROUP" != small && "$GROUP" != bpnew && "$GROUP" != ts0 ]]; then echo "invalid group" >&2; exit 2; fi
 if [[ "$SEED" != 42 && "$SEED" != 2026 && "$SEED" != 3407 ]]; then echo "invalid seed" >&2; exit 2; fi
+if [[ "$MODE" != nussinov && "$MODE" != greedy && "$MODE" != turner0 ]]; then echo "invalid mode" >&2; exit 2; fi
+decoder=$MODE
+backend=c
+prior_args=()
+eval_dir=jmlp_benchmark
+if [[ "$MODE" == greedy ]]; then backend=python; eval_dir=jmlp_greedy; fi
+if [[ "$MODE" == turner0 ]]; then decoder=nussinov; eval_dir=jmlp_turner0; prior_args=(--prior-weight-override 0); fi
 ROOT=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024
 REPO=/home/rna_jev
 PY=/root/miniconda3/envs/lucaone/bin/python
@@ -25,7 +33,7 @@ checkpoint="$ROOT/runs/round52_rinalmo_length_s${SEED}/best.pt"
 for split in "${splits[@]}"; do
   if [[ "$split" == rfam_fam ]]; then data=/root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl;
   else data="$ROOT/data/rinalmo_tr0_clean_round52/${split}.jsonl"; fi
-  out="$ROOT/evals/round52/jmlp_benchmark/rinalmo_jmlp_length_s${SEED}_${split}.json"
+  out="$ROOT/evals/round52/${eval_dir}/rinalmo_jmlp_length_s${SEED}_${split}.json"
   mkdir -p "$(dirname "$out")"
   if [[ -e "$out" ]] && "$PY" - "$out" "$checkpoint" "$data" <<'PY'
 import hashlib
@@ -55,6 +63,6 @@ PY
   fi
   "$PY" "$REPO/tools/eval_rinalmo_full_round52.py" \
     --checkpoint "$checkpoint" --pretrained /root/rna_jepa_data/weights/rinalmo-giga \
-    --data "$data" --out "$out" --repeats 3 --decoder nussinov --dp-backend c \
-    > "$ROOT/logs/round52/rinalmo_jmlp_length_s${SEED}_${split}.log" 2>&1
+    --data "$data" --out "$out" --repeats 3 --decoder "$decoder" --dp-backend "$backend" "${prior_args[@]}" \
+    > "$ROOT/logs/round52/rinalmo_jmlp_length_s${SEED}_${split}_${MODE}.log" 2>&1
 done

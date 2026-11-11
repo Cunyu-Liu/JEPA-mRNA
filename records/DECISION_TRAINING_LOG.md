@@ -16005,3 +16005,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - **验收**：初次严格JSON写出因空桶NaN失败，未生成科学结果；将空桶保留为null且不定义相应AURC后，失败注入三轮通过，双跑`cmp`一致。QA SHA256=`1c9a6e05f9ed9e6585521ac3f28c3f180adb5f8bc665e0a0f521f5cffc8e00a5`，artifact=`source_data/round52/rinalmo_jmlp_confidence_qa.json`与`rinalmo_jmlp_confidence_vl0_thresholds.json`。
 - **主要读数**：VL0 Spearman=0.8517976303/0.8000633618/0.8532783143，AURC=0.0401847845/0.0327795550/0.0360600344；Rfam Spearman=0.7340726614/0.7188694008/0.7001876898，AURC=0.1437505873/0.1505073659/0.1507087062。TS0 AURC=0.1036731885/0.0842085065/0.0787504822。
 - **负结果**：27格中9格存在空覆盖桶且AURC不定义；TS3 seed3407 Spearman=0.1887254902、95%CI[-0.3627663170,0.7104042184]，不作稳定相关性主张。部分低覆盖风险反而上升，不能声称最佳或普遍可靠的置信度。`best_confidence_claim=false`，缺少同候选概率基线比较；structure_conf不是结构正确的校准概率。独占raw速度未验收，PPT未修改。
+
+## §15.881（2026-11-11）J-mlp greedy/Turner=0并行对照（进行中）
+
+- 为利用GPU空余，新增已冻结J-mlp三种子greedy与Turner=0主八TR0-clean+Rfam对照，不启动J1依赖阶段。runner第三参数隔离为`jmlp_greedy`/`jmlp_turner0`，默认`jmlp_benchmark`不变；greedy使用原Python解码，Turner=0使用等价C Nussinov及`prior_weight_override=0`。
+- 当前四路短序列任务并行：greedy seed2026小split、Turner=0 seed42/3407小split及TS0 seed42；已有greedy14格、Turner=0六格原始JSON，TS0 greedy seed42已完成。四路模型加载/解码阶段显存动态变化，未发生OOM，不把并发墙时作为正式速度。
+- 独立QA按mode核对decoder、Turner权重、C backend、checkpoint/data SHA、raw/support和三次预测，逐序列复算指标。后续大split继续独占；remaining守候曾SSH失败，不重复正在运行的格，全部54格齐套后双跑QA。PPT未修改。

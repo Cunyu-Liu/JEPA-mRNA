@@ -18,10 +18,17 @@ def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def validate_result(path, checkpoint, data, split, seed):
+def validate_result(path, checkpoint, data, split, seed, mode="nussinov"):
     path, checkpoint, data = Path(path), Path(checkpoint), Path(data)
     result = json.loads(path.read_text())
-    assert result["device"] == "cuda" and result["decoder"] == "nussinov"
+    assert mode in ("nussinov", "greedy", "turner0")
+    assert result["device"] == "cuda"
+    assert result["decoder"] == ("nussinov" if mode == "turner0" else mode)
+    assert result["prior_weight_override"] == (0.0 if mode == "turner0" else None)
+    if mode == "greedy":
+        assert result.get("dp_backend", "python") == "python"
+    if mode == "turner0":
+        assert result.get("dp_backend") == "c"
     assert result["repeats"] == 3 and result["score_forward_count_per_sequence"] == 1
     assert result["checkpoint_sha256"] == sha256_file(checkpoint)
     assert result["data_sha256"] == sha256_file(data)
@@ -65,7 +72,7 @@ def validate_result(path, checkpoint, data, split, seed):
     macro = math.fsum(per_sequence_f1) / len(per_sequence_f1) if per_sequence_f1 else 0.0
     if per_sequence_f1:
         assert math.isclose(macro, result["macro_f1"], rel_tol=0, abs_tol=1e-12)
-    return {"file": path.name, "split": split, "seed": seed, "complete": complete,
+    return {"file": path.name, "split": split, "seed": seed, "mode": mode, "complete": complete,
             "raw_n": len(records), "n": result["n"], "n_long_unsupported": result["n_long_unsupported"],
             "long_unsupported": result["long_unsupported"], "micro": micro, "macro_f1": macro,
             "checkpoint_sha256": result["checkpoint_sha256"], "result_sha256": sha256_file(path),
