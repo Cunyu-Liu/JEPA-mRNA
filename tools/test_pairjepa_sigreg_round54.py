@@ -15,7 +15,7 @@ def check(device):
         latent, valid, projections=16, max_samples=128, seed=42).item()
 
     model = PairJEPA(d_z=8, latent_dim=8, use_ema=True, block_context=True, seed=42).to(device)
-    z = torch.randn(1, 4, 4, 8, device=device)
+    z = torch.randn(1, 4, 4, 8, device=device, requires_grad=True)
     mask = torch.zeros(1, 4, 4, dtype=torch.bool, device=device)
     mask[0, 0, 0] = mask[0, 1, 1] = True
     valid_pairs = torch.ones_like(mask)

@@ -2,6 +2,7 @@ import copy
 
 import torch
 from torch import nn
+from torch.utils.checkpoint import checkpoint
 
 from .context_mixer import LocalContextMixer
 from .pair_diagnostics import masked_latent_correlations
@@ -98,6 +99,21 @@ def anti_collapse_terms(prediction, mask, std_floor=1.0):
             "sequence_variance": sequence_variance, "sequence_covariance": sequence_covariance}
 
 
+def masked_axial_context(z, mask, valid_mask=None):
+    if z.ndim != 4 or mask.shape != z.shape[:-1] or mask.dtype != torch.bool:
+        raise ValueError("mask must be a bool [batch, length, length] tensor")
+    if valid_mask is None:
+        valid_mask = torch.ones_like(mask)
+    known = valid_mask & ~mask
+    known_values = z * known.unsqueeze(-1)
+    row_count = known.sum(dim=2).clamp_min(1)
+    column_count = known.sum(dim=1).clamp_min(1)
+    row = (known_values.sum(dim=2) / row_count.unsqueeze(-1)).unsqueeze(2)
+    column = (known_values.sum(dim=1) / column_count.unsqueeze(-1)).unsqueeze(1)
+    context = 0.5 * (row + column)
+    return 0.5 * (context + context.transpose(1, 2))
+
+
 def online_sigreg_loss(latent, valid_mask, projections=32, max_samples=512, seed=42):
     losses = []
     for batch_index in range(latent.shape[0]):
@@ -155,7 +171,9 @@ class PairJEPA(nn.Module):
             target.copy_(source)
 
     def masked_latent_loss(self, z, mask, rank_samples=0, valid_mask=None,
-                         variance_weight=0.0, covariance_weight=0.0, std_floor=1.0):
+                         variance_weight=0.0, covariance_weight=0.0, std_floor=1.0,
+                         context_mode="local", sigreg_weight=0.0,
+                         sigreg_projections=32, sigreg_samples=512, sigreg_seed=42):
         if self.teacher is None:
             raise ValueError("latent target requested without a target encoder")
         if mask.dtype != torch.bool:
@@ -163,7 +181,14 @@ class PairJEPA(nn.Module):
         mask = mask | mask.transpose(1, 2)
         if not mask.any():
             raise ValueError("empty masked-pair target")
-        context, context_counts = masked_neighbor_context(z, mask, valid_mask)
+        if context_mode == "axial":
+            context = masked_axial_context(z, mask, valid_mask)
+            known = (valid_mask if valid_mask is not None else torch.ones_like(mask)) & ~mask
+            context_counts = known.sum(dim=2).unsqueeze(2) + known.sum(dim=1).unsqueeze(1)
+        elif context_mode == "local":
+            context, context_counts = masked_neighbor_context(z, mask, valid_mask)
+        else:
+            raise ValueError(f"unknown JEPA context mode: {context_mode}")
         if self.context_mixer is not None:
             context = self.context_mixer(context)
         prediction = self.context_predictor(context)
@@ -175,7 +200,8 @@ class PairJEPA(nn.Module):
                 flat = target.reshape(-1, shape[-1])
                 permutation = torch.randperm(flat.shape[0], generator=generator, device=flat.device)
                 target = flat[permutation].reshape(shape)
-        online_latent = self.scorer(z) if sigreg_weight else None
+        online_latent = (checkpoint(lambda value: self.scorer(value), z, use_reentrant=False)
+                         if sigreg_weight and z.requires_grad else self.scorer(z) if sigreg_weight else None)
         mse = torch.nn.functional.mse_loss(prediction[mask], target[mask])
         loss = mse
         if sigreg_weight:
@@ -197,7 +223,7 @@ class PairJEPA(nn.Module):
             "contextless_pairs": (context_counts[mask] == 0).sum().detach(),
         }
         if sigreg_weight:
-            diagnostics["sigreg_loss"] = diagnostics_sigreg.detach()
+            diagnostics["sigreg_loss"] = diagnostics_sigreg
             diagnostics["sigreg_weight"] = float(sigreg_weight)
             diagnostics["sigreg_projections"] = int(sigreg_projections)
             diagnostics["sigreg_samples"] = int(sigreg_samples)
