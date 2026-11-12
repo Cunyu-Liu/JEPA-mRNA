@@ -16221,3 +16221,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - online两步CUDA/VL0与双跑QA通过，投影梯度=0.15906404612526098，best/resume逐张量一致，best SHA=`1bda8485828c458ec662d47b3fe7b1b0d06596882c699a82e0ee620e8ff539c6`，best VL0=68.00963923090973@2。
 - shuffled两步CUDA/VL0与双跑QA通过，投影梯度=0.020293878251751482，best/resume逐张量一致，best SHA=`60d97a9f72db3651ee8872fc4e58b3d5ff1d71383bbceb56648e2d5ab9cafc7e`，best VL0=68.00981988212523@2。两步仅为工程证据，不作收益结论。
 - 原主队列PID=628207、单监控PID=617956。一次诊断命令曾误起第二主进程，已仅停止后启动进程及其子进程，保留原队列，无重复训练。现已按原协议启动E2b seed42正式训练，随后串行其余种子和shuffled，按B0与shuffled门裁决。
+
+
+## §15.924（2026-11-13）E2b seed42自然早停与双跑验收
+
+- `round54_e2b_s42`在step9000达到patience=6并自然早停，best VL0=19.728811457864218@6000，step9000 VL0=4345.986218898844，最大梯度范数68765.13。完整后段退化与尖峰保留，不用中途best掩盖。
+- 单seed双跑QA逐字节一致，QA SHA=`55921c8ba0d2aef362c5b12f03e1b183a3ee32393e4ddc8eb750c774d2611a61`。best SHA=`a642990ff39d6a2ff2475416eaad961304930265f04185a6bbbf39d06d75f8bc`，resume SHA=`a31a671d6ed46be3eeca33890f094087c1c787a588254e4b3e70db20559d484f`。
+- seed2026已由原队列启动，当前进入step300。最终E2b贡献仍需三种子、shuffled和B0比较，不作提前有效或无效结论。
