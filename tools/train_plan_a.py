@@ -416,6 +416,10 @@ def main():
         raise SystemExit("--ripe-encoder-only requires --ripe-encoder and --ripe-mode")
     if args.serial_encoder and args.scorer != "pairmlp":
         raise SystemExit("--serial-encoder is licensed only for the batch-independent PairMLP path")
+    if bool(args.cl3_negative_map) != bool(args.cl2_infonce_weight):
+        raise SystemExit("CL3 negative map requires the CL2 objective")
+    if args.cl4_negative_weights and not args.cl3_negative_map:
+        raise SystemExit("CL4 weights require the CL3 negative map")
     if args.cl2_infonce_weight < 0 or args.cl2_temperature <= 0 or args.cl2_max_negatives <= 0:
         raise SystemExit("invalid CL2 weight, temperature or negative limit")
     if args.cl2_infonce_weight and (not args.cl1_token_mask or args.lambda_jepa or args.scorer != "resnet2d"):
@@ -564,6 +568,35 @@ def main():
                          for row in (json.loads(line) for line in open(args.cl0_clusters)) if row["split"] == "train"}
         cl2 = ResidueInfoNCE(temperature=args.cl2_temperature,
                              max_negatives=args.cl2_max_negatives).to(device)
+    negative_map = json.loads(Path(args.cl3_negative_map).read_text()) if args.cl3_negative_map else None
+    negative_weights = json.loads(Path(args.cl4_negative_weights).read_text()) if args.cl4_negative_weights else None
+    if negative_map is not None:
+        required = {sequence for values in negative_map.values() for sequence in values}
+        bank_hashes = sorted(required)
+        sequence_by_hash = {hashlib.sha256(seq.encode()).hexdigest(): seq for seq, _ in records}
+        assert all(sequence in sequence_by_hash for sequence in bank_hashes)
+        bank_z = []
+        with torch.no_grad():
+            for start in range(0, len(bank_hashes), 4):
+                batch = [sequence_by_hash[sequence] for sequence in bank_hashes[start:start + 4]]
+                max_len = max(map(len, batch))
+                lengths = torch.tensor([len(seq) for seq in batch], device=device)
+                ids = torch.zeros(len(batch), max_len + 2, dtype=torch.long, device=device)
+                attn = torch.zeros_like(ids)
+                for bi, seq in enumerate(batch):
+                    tokens = [VOCAB["<cls>"]] + [VOCAB.get(c, VOCAB["<unk>"]) for c in seq] + [VOCAB["<eos>"]]
+                    ids[bi, :len(tokens)] = torch.tensor(tokens, device=device)
+                    attn[bi, :len(tokens)] = 1
+                with torch.autocast("cuda", dtype=torch.bfloat16):
+                    out = encoder(input_ids=ids, attention_mask=attn)
+                hidden = out.last_hidden_state if hasattr(out, "last_hidden_state") else out[0]
+                hidden = hidden[:, 1:max_len + 1, :].float().to(torch.float16).to(torch.float32)
+                for bi, length in enumerate(lengths.tolist()):
+                    if length < max_len:
+                        hidden[bi, length:, :] = 0.0
+                bank_z.append(cl2.project(hidden, lengths).detach())
+        cl2.set_bank(torch.cat(bank_z), bank_hashes)
+        print(f"[plan-a] structure negative bank: {len(bank_hashes)} sequences", flush=True)
     head_params = list(head.parameters()) + ([] if cl2 is None else list(cl2.parameters()))
     enc_params = list(encoder.parameters())
     n_head = sum(p.numel() for p in head_params)
@@ -609,6 +642,9 @@ def main():
                       "cl2_temperature": args.cl2_temperature,
                       "cl2_max_negatives": args.cl2_max_negatives,
                       "cl0_clusters": args.cl0_clusters if args.cl2_infonce_weight else None,
+                      "cl3_negative_map": args.cl3_negative_map or None,
+                      "cl4_negative_weights": args.cl4_negative_weights or None,
+                      "cl3_negative_bank_size": len(bank_hashes) if negative_map is not None else 0,
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
                       "jepa_rank_samples": args.jepa_rank_samples,
@@ -802,11 +838,14 @@ def main():
             sequence_hashes = [hashlib.sha256(seq.encode()).hexdigest() for seq in seqs]
             cl2_loss, cl2_diagnostics = cl2(
                 direct_views[0][10], direct_views[1][10], lengths_t, sequence_hashes,
-                legal_by_hash, log_details=(step % 25 == 0 or step == 1))
+                legal_by_hash, log_details=(step % 25 == 0 or step == 1),
+                negative_map=negative_map, negative_weights=negative_weights)
             total = total + args.cl2_infonce_weight * cl2_loss
             terms_agg["infonce"] = float(cl2_loss.detach())
             if step % 25 == 0 or step == 1:
-                cl2_record = {"step": step, "loss": float(cl2_loss.detach()), **cl2_diagnostics}
+                cl2_record = {"step": step, "loss": float(cl2_loss.detach()),
+                              "negative_mode": "cl4_weighted" if negative_weights else ("cl3_structure_hard" if negative_map else "random"),
+                              **cl2_diagnostics}
 
         jepa_record = None
         if args.lambda_jepa:
