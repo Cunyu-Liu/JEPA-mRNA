@@ -12,9 +12,9 @@ mean_vl0(){ $PY -c "import json; print(json.load(open('$1'))['mean_best_vl0'])";
 run_arm(){ local arm=$1 seed=$2
   local run=$ROOT/runs/round54_${arm}_s${seed}
   local qa=$ROOT/audits/round54/${arm}_s${seed}_training_qa
-  if [[ ! -f "$run/run_meta.json" ]]; then
-    log "START $arm seed=$seed"
-    bash "tools/run_rinalmo_${arm}_round54.sh" "$seed" > "$ROOT/logs/round54/${arm}_s${seed}.log" 2>&1
+  if [[ ! -f "$run/run_meta.json" ]] || ! $PY -c 'import json,sys; assert json.load(open(sys.argv[1])).get("converged", False)' "$run/run_meta.json"; then
+    log "START_OR_RESUME $arm seed=$seed"
+    bash "tools/run_rinalmo_${arm}_round54.sh" "$seed" >> "$ROOT/logs/round54/${arm}_s${seed}.log" 2>&1
   fi
   if ! cmp -s "$qa.json" "$qa.recheck.json"; then
     for suffix in json recheck.json; do

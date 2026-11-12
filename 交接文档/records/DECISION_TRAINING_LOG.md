@@ -16228,3 +16228,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - `round54_e2b_s42`在step9000达到patience=6并自然早停，best VL0=19.728811457864218@6000，step9000 VL0=4345.986218898844，最大梯度范数68765.13。完整后段退化与尖峰保留，不用中途best掩盖。
 - 单seed双跑QA逐字节一致，QA SHA=`55921c8ba0d2aef362c5b12f03e1b183a3ee32393e4ddc8eb750c774d2611a61`。best SHA=`a642990ff39d6a2ff2475416eaad961304930265f04185a6bbbf39d06d75f8bc`，resume SHA=`a31a671d6ed46be3eeca33890f094087c1c787a588254e4b3e70db20559d484f`。
 - seed2026已由原队列启动，当前进入step300。最终E2b贡献仍需三种子、shuffled和B0比较，不作提前有效或无效结论。
+
+
+## §15.925（2026-11-13）E2b seed2026 step4000中断与原地恢复
+
+- 主队列PID=628207及seed2026训练进程在step4000后消失，未留下自然早停或Python异常；中断根因未确认，不把SSH故障当作训练失败原因。原日志已复制为`e2b_s2026.interrupted_step4000.log`，原始训练记录保留。
+- 中断时best VL0=22.359044330264734@3500，run_meta明确`converged=false`、`early_stopped=false`。step4000 resume SHA=`b287bee7a7c995358e9e25d3b1d188737a90bf7fce5fbff2e88d2acb4f63a1b0`。
+- 原队列只检查run_meta是否存在，会跳过这种未完成run。已改为检查`converged`，训练日志改为追加；科学臂、初始化、seed、优化器和解冻协议不变。
+- 新主队列PID=647060，训练器从step4000恢复optimizer、scheduler、batch stream和验证状态，日志确认6/33层解冻。单监控PID=617956保持运行，未重新训练已完成seed42。
