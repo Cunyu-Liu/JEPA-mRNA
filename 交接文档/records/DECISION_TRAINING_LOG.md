@@ -16214,3 +16214,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - TR1c partition-function缓存完成：42564条、347580844个合法pair。归一化SHA=`7ad7a41b5e2c9e7a212a102d6448cc130bcc8d8b951c745eb97cee35e6f465c8`，train cache manifest SHA=`f9bb3563a879f5ae1dc24d99677b8e1bd70195c8f8496f0f9e5c2875d764a727`。196条VL0同协议缓存完成，归一化仅TR1c，不读GT、不调测试集。
 - online首次smoke因共享`MotifInput`把E2b八维输入错建为六维投影而在首次前向失败，未执行训练步。修复为按归一化向量长度构建投影，保留原始错误日志。重试首个真实CUDA步四目标齐全、非零梯度，峰值3.0GB；完整两步VL0和双跑QA仍在进行，未提前启动三种子。
+
+
+## §15.923（2026-11-13）E2b双模式工程门通过
+
+- online两步CUDA/VL0与双跑QA通过，投影梯度=0.15906404612526098，best/resume逐张量一致，best SHA=`1bda8485828c458ec662d47b3fe7b1b0d06596882c699a82e0ee620e8ff539c6`，best VL0=68.00963923090973@2。
+- shuffled两步CUDA/VL0与双跑QA通过，投影梯度=0.020293878251751482，best/resume逐张量一致，best SHA=`60d97a9f72db3651ee8872fc4e58b3d5ff1d71383bbceb56648e2d5ab9cafc7e`，best VL0=68.00981988212523@2。两步仅为工程证据，不作收益结论。
+- 原主队列PID=628207、单监控PID=617956。一次诊断命令曾误起第二主进程，已仅停止后启动进程及其子进程，保留原队列，无重复训练。现已按原协议启动E2b seed42正式训练，随后串行其余种子和shuffled，按B0与shuffled门裁决。
