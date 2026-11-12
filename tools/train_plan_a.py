@@ -160,8 +160,69 @@ def load_records(path):
     return records
 
 
-def load_teacher_map(directory):
-    """seq -> (L, L) float64 soft labels, the TeacherLabelStore.from_dir protocol."""
+class LazyTeacherMap:
+    def __init__(self, directory, shard_cache_size=1):
+        import hashlib
+        from collections import OrderedDict
+
+        if shard_cache_size <= 0:
+            raise ValueError("teacher shard cache size must be positive")
+        self.directory = str(directory)
+        self.shard_cache_size = shard_cache_size
+        self.cache = OrderedDict()
+        self.index = {}
+        self._sha256 = hashlib.sha256
+        with open(os.path.join(directory, "manifest.json"), encoding="utf-8") as fh:
+            self.manifest = json.load(fh)
+        self.shards = [os.path.join(directory, str(shard["file"]))
+                       for shard in self.manifest.get("shards", [])]
+        self.shard_hashes = [str(shard["sha256"]) for shard in self.manifest.get("shards", [])]
+        for shard_index, path in enumerate(self.shards):
+            with np.load(path, allow_pickle=True) as shard:
+                sequences = shard["sequences"]
+            for sequence_index, sequence in enumerate(sequences):
+                sequence = str(sequence)
+                if sequence in self.index:
+                    raise ValueError(f"duplicate teacher sequence: {sequence}")
+                self.index[sequence] = (shard_index, sequence_index)
+        if len(self.index) != int(self.manifest["n_sequences"]):
+            raise ValueError("teacher manifest sequence count mismatch")
+
+    def __len__(self):
+        return len(self.index)
+
+    def __iter__(self):
+        return iter(self.index)
+
+    def __contains__(self, sequence):
+        return sequence in self.index
+
+    def __getitem__(self, sequence):
+        shard_index, sequence_index = self.index[sequence]
+        if shard_index not in self.cache:
+            path = self.shards[shard_index]
+            digest = self._sha256()
+            with open(path, "rb") as handle:
+                for block in iter(lambda: handle.read(1 << 20), b""):
+                    digest.update(block)
+            if digest.hexdigest() != self.shard_hashes[shard_index]:
+                raise ValueError(f"teacher shard SHA256 mismatch: {path}")
+            self.cache[shard_index] = load_teacher_shard(path)
+            if len(self.cache) > self.shard_cache_size:
+                self.cache.popitem(last=False)
+        self.cache.move_to_end(shard_index)
+        sequences, probabilities = self.cache[shard_index]
+        if str(sequences[sequence_index]) != sequence:
+            raise ValueError("teacher sequence index mismatch")
+        probability = np.asarray(probabilities[sequence_index], dtype=np.float64)
+        if probability.shape != (len(sequence), len(sequence)):
+            raise ValueError("teacher probability shape mismatch")
+        return probability
+
+
+def load_teacher_map(directory, lazy=False, shard_cache_size=1):
+    if lazy:
+        return LazyTeacherMap(directory, shard_cache_size)
     with open(os.path.join(directory, "manifest.json"), encoding="utf-8") as fh:
         manifest = json.load(fh)
     mapping = {}
@@ -292,6 +353,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl")
     ap.add_argument("--teacher-dir", default=TEACHER_DIR)
+    ap.add_argument("--aux-teacher-dir", default="")
+    ap.add_argument("--lazy-teacher", action="store_true")
+    ap.add_argument("--teacher-shard-cache-size", type=int, default=1)
+    ap.add_argument("--serial-encoder", action="store_true")
     ap.add_argument("--out", required=True)
     ap.add_argument("--steps", type=int, default=20000)
     ap.add_argument("--validation-data", default="")
@@ -393,9 +458,17 @@ def main():
     print(f"[plan-a] {len(records)} sequences from {args.data}", flush=True)
     weights = ObjectiveWeights(lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
                                lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal)
-    teacher_map = load_teacher_map(args.teacher_dir) if args.teacher_dir else {}
-    print(f"[plan-a] teacher: {len(teacher_map)} soft labels from {args.teacher_dir}",
-          flush=True)
+    teacher_map = load_teacher_map(args.teacher_dir, args.lazy_teacher,
+                                   args.teacher_shard_cache_size) if args.teacher_dir else {}
+    if args.aux_teacher_dir:
+        from collections import ChainMap
+        auxiliary_teacher = load_teacher_map(args.aux_teacher_dir, args.lazy_teacher,
+                                             args.teacher_shard_cache_size)
+        if set(auxiliary_teacher) & set(teacher_map):
+            raise ValueError("primary and auxiliary teacher sequence sets overlap")
+        teacher_map = ChainMap(auxiliary_teacher, teacher_map)
+    print(f"[plan-a] teacher: {len(teacher_map)} soft labels from {args.teacher_dir}; "
+          f"auxiliary={args.aux_teacher_dir or 'none'}; lazy={args.lazy_teacher}", flush=True)
     missing = [s for s, _ in records if s not in teacher_map]
     if weights.lambda_distill and missing:
         raise SystemExit(f"FATAL: {len(missing)} sequences have no teacher label "
@@ -550,7 +623,8 @@ def main():
                      "warmup_head_steps": args.warmup_head_steps,
                      "unfreeze_every": args.unfreeze_every,
                      "unfreeze_per_step": args.unfreeze_per_step,
-                     "n_blocks": n_blocks},
+                     "n_blocks": n_blocks, "zchunk": args.zchunk,
+                     "serial_encoder": args.serial_encoder},
         "seed": args.seed, "backbone_report": report,
     }
     meta["status"] = "running"
@@ -714,7 +788,7 @@ def main():
                                         "std_floor": args.jepa_std_floor}
             latent_loss, latent_diagnostics = head.masked_pair_latent_loss(
                 z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0,
-                valid_mask=mask_full,
+                valid_mask=mask_full, context_mode=("axial" if args.jepa_context == "structured_axial" else "local"),
                 sigreg_weight=args.jepa_sigreg_weight,
                 sigreg_projections=args.jepa_sigreg_projections,
                 sigreg_samples=args.jepa_sigreg_samples, sigreg_seed=args.seed,
