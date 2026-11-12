@@ -978,7 +978,7 @@ def main():
                 "encoder": encoder.state_dict(), "optimizer": opt.state_dict(),
                 "scheduler": sched.state_dict(), "n_unfrozen": n_unfrozen,
                 "best_step": best_step, "best_validation_loss": best_validation_loss,
-                "bad_evaluations": bad_evaluations, "stream_state": stream.state}, resume_path)
+                "bad_evaluations": bad_evaluations, "stream_state": stream.state, "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
     meta["final_trainable_params"] = sum(p.numel() for p in trainable())
     meta["trainable_parameter_scope"] = (
         f"{n_unfrozen}/{n_blocks} transformer blocks plus head; "

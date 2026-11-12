@@ -40,9 +40,7 @@ def training(seed):
     state = stable_load(run / "resume.pt")
     best = stable_load(run / "best.pt")
     assert best["cl2"]["model"]
-    if seed == 42:
-        assert "cl2" not in state
-    else:
+    if "cl2" in state:
         assert state["cl2"]["queue_z"] is not None
     assert not any("projection" in key for key in best["model"]["head"])
     report.update({"status": "PASS_CL2_SINGLE_SEED_TRAINING_QA", "logged_steps": len(logs),
