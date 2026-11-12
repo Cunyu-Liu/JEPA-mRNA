@@ -355,6 +355,7 @@ class FlatDecisionHead(nn.Module):
         #: ``tools/patch_head_checkpointing.py`` for the measurement.
         self.grad_checkpoint = bool(grad_checkpoint)
         self.pair_repr = PairRepresentation(d_model, d_z)
+        self.motif_input = None
         if ripe_mode:
             from rnajepa.ripe import RipeConfig, RipePositionalBias
             self.ripe = RipePositionalBias(RipeConfig(mode=ripe_mode))
@@ -420,7 +421,22 @@ class FlatDecisionHead(nn.Module):
     ) -> DecisionScores:
         B, L, _ = h.shape
         mask = pair_mask_from_ids(seq_ids, self.min_loop).to(h.device)
-        s, types = self.pair_scores_and_types(h, seq_ids, include_types=include_types)
+        motif_features = None
+        if self.motif_input is not None:
+            if hasattr(self.motif_input, "thermo_cache_dir"):
+                from rnajepa.thermodynamics import thermodynamic_batch
+                motif_features = thermodynamic_batch(
+                    self.motif_input.sequences, self.motif_input.thermo_cache_dir,
+                    shuffled=self.motif_input.shuffle).to(h.device)
+            else:
+                from rnajepa.motif import candidate_motif_features_torch
+                motif_features = candidate_motif_features_torch(
+                    seq_ids, self.motif_input.motif_parameters, self.motif_input.sequences)
+                if self.motif_input.shuffle:
+                    from rnajepa.motif import shuffle_positions
+                    motif_features = shuffle_positions(motif_features, self.motif_input.sequences)
+        s, types = self.pair_scores_and_types(h, seq_ids, include_types=include_types,
+                                             motif_features=motif_features)
         if self.use_turner_prior:
             prior_weight = (self.prior_weight if prior_weight_override is None else
                             torch.as_tensor(prior_weight_override, device=h.device))
@@ -432,7 +448,12 @@ class FlatDecisionHead(nn.Module):
         return DecisionScores(scores=s, pair_types=types, mask=mask)
 
     def score_pair_matrix(self, z: torch.Tensor, seq_ids: Optional[torch.Tensor] = None,
-                          presymmetrized: bool = False, column_start: Optional[int] = None):
+                          presymmetrized: bool = False, column_start: Optional[int] = None,
+                          motif_features: Optional[torch.Tensor] = None):
+        if motif_features is not None:
+            if self.motif_input is None:
+                raise ValueError("motif features require a motif input module")
+            z = z + self.motif_input(motif_features)
         if self.pair_jepa is not None:
             scores = self.pair_jepa(z, presymmetrized=presymmetrized)
         else:
@@ -443,16 +464,15 @@ class FlatDecisionHead(nn.Module):
         if self.ripe is not None:
             if seq_ids is None:
                 raise ValueError("seq_ids are required when RIPE is enabled")
-            bias = self.ripe(seq_ids)
-            if column_start is not None:
-                bias = bias[:, :, :, column_start:column_start + scores.shape[2]]
+            bias = self.ripe(seq_ids, column_start=column_start,
+                             column_end=None if column_start is None else column_start + scores.shape[2])
             scores = scores + bias.mean(dim=1)
         return scores
 
     def masked_pair_latent_loss(self, z: torch.Tensor, mask: torch.Tensor, rank_samples: int = 0,
                                 valid_mask: Optional[torch.Tensor] = None,
                                 variance_weight: float = 0.0, covariance_weight: float = 0.0,
-                                std_floor: float = 1.0,
+                                std_floor: float = 1.0, context_mode: str = "local",
                                 sigreg_weight: float = 0.0, sigreg_projections: int = 32,
                                 sigreg_samples: int = 512, sigreg_seed: int = 42):
         if self.pair_jepa is None:
@@ -460,12 +480,13 @@ class FlatDecisionHead(nn.Module):
         return self.pair_jepa.masked_latent_loss(
             z, mask, rank_samples=rank_samples, valid_mask=valid_mask,
             variance_weight=variance_weight, covariance_weight=covariance_weight,
-            std_floor=std_floor,
+            std_floor=std_floor, context_mode=context_mode,
             sigreg_weight=sigreg_weight, sigreg_projections=sigreg_projections,
             sigreg_samples=sigreg_samples, sigreg_seed=sigreg_seed)
 
     def pair_scores_and_types(self, h: torch.Tensor, seq_ids: Optional[torch.Tensor] = None,
-                              include_types: bool = True):
+                              include_types: bool = True,
+                              motif_features: Optional[torch.Tensor] = None):
         """``(scores, pair_types)`` for every ``(i, j)``, chunked along ``j``.
         With ``scorer == 'resnet2d'`` the whole-matrix 2D path replaces the
         chunked per-pair MLP path (BatchNorm over the full matrix is what makes
@@ -474,17 +495,15 @@ class FlatDecisionHead(nn.Module):
         if self.resnet2d is not None or self.pair_jepa is not None:
             zchunk = 128 if L > 128 else L
             if self.pair_jepa is not None:
-                score_chunks = []
-                for j0 in range(0, L, zchunk):
-                    z = self.pair_repr.cross(h, h[:, j0:j0 + zchunk])
-                    score_chunks.append(self.score_pair_matrix(
-                        z, seq_ids, presymmetrized=True, column_start=j0))
+                score_chunks = [self.score_pair_matrix(
+                    self.pair_repr.cross(h, h[:, j0:j0 + zchunk]), seq_ids,
+                    presymmetrized=True, column_start=j0) for j0 in range(0, L, zchunk)]
                 s = score_chunks[0] if len(score_chunks) == 1 else torch.cat(score_chunks, dim=2)
             else:
                 chunks = [self.pair_repr.cross(h, h[:, j0:j0 + zchunk])
                           for j0 in range(0, L, zchunk)]
                 z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
-                s = self.score_pair_matrix(z, seq_ids)
+                s = self.score_pair_matrix(z, seq_ids, motif_features=motif_features)
             if not include_types:
                 return s, None
             if self.training and self.grad_checkpoint and torch.is_grad_enabled() and L > 128:

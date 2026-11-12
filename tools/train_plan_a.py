@@ -357,6 +357,10 @@ def main():
     ap.add_argument("--lazy-teacher", action="store_true")
     ap.add_argument("--teacher-shard-cache-size", type=int, default=1)
     ap.add_argument("--serial-encoder", action="store_true")
+    ap.add_argument("--motif", choices=["", "motif", "shuffled"], default="")
+    ap.add_argument("--motif-asset-dir", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/e2a_motif_round54")
+    ap.add_argument("--thermo", choices=["", "online", "shuffled"], default="")
+    ap.add_argument("--thermo-cache-dir", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/e2b_thermo_round54/cache")
     ap.add_argument("--out", required=True)
     ap.add_argument("--steps", type=int, default=20000)
     ap.add_argument("--validation-data", default="")
@@ -394,6 +398,8 @@ def main():
     ap.add_argument("--cl2-infonce-weight", type=float, default=0.0)
     ap.add_argument("--cl2-temperature", type=float, default=0.1)
     ap.add_argument("--cl2-max-negatives", type=int, default=32)
+    ap.add_argument("--cl3-negative-map", default="")
+    ap.add_argument("--cl4-negative-weights", default="")
     ap.add_argument("--cl0-clusters", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/cl0_structure_contrast_round54/clusters.jsonl")
     ap.add_argument("--jepa-target", choices=["ema", "fixed", "random", "online"], default="ema")
     ap.add_argument("--jepa-context", choices=["context_v1", "structured_block", "structured_axial"], default="context_v1")
@@ -412,6 +418,14 @@ def main():
                          "data-loading phase; freed into the allocator pool "
                          "once the model is on device (shared-cluster race fix)")
     args = ap.parse_args()
+    if args.motif and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
+                       or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
+                       or args.cl2_infonce_weight):
+        raise SystemExit("E2a motif is an independent B0 input arm")
+    if args.thermo and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
+                        or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
+                        or args.cl2_infonce_weight or args.motif):
+        raise SystemExit("E2b thermodynamics is an independent B0 input arm")
     if args.ripe_encoder_only and not (args.ripe_encoder and args.ripe_mode):
         raise SystemExit("--ripe-encoder-only requires --ripe-encoder and --ripe-mode")
     if args.serial_encoder and args.scorer != "pairmlp":
@@ -522,6 +536,17 @@ def main():
                             jepa_block_context=(args.scorer == "pairjepa"
                                                 and args.jepa_context == "structured_block"),
                             ripe_mode=None if args.ripe_encoder_only else args.ripe_mode or None)
+    if args.motif:
+        from rnajepa.motif import MotifInput, load_parameters
+        normalization = json.loads((Path(args.motif_asset_dir) / "normalization.json").read_text())
+        head.motif_input = MotifInput(normalization["mean"], normalization["std"])
+        head.motif_input.motif_parameters = load_parameters(Path(args.motif_asset_dir) / "parameters.npz")
+        head.motif_input.sequences = []
+        head.motif_input.shuffle = args.motif == "shuffled"
+    if args.thermo:
+        from rnajepa.thermodynamics import attach_thermodynamic_input
+        normalization = json.loads((Path(args.thermo_cache_dir).parent / "normalization.json").read_text())
+        attach_thermodynamic_input(head, normalization, args.thermo_cache_dir, args.thermo == "shuffled")
     encoder = encoder.to(device)
     head = head.to(device)
     if args.init_checkpoint:
@@ -625,12 +650,21 @@ def main():
                  "encoder_mode": args.ripe_mode if args.ripe_encoder else None},
         "backbone": report.get("backbone", report.get("weights")),
         "scorer": args.scorer,
+        "thermodynamics": (None if not args.thermo else {
+                  "mode": args.thermo, "cache_dir": args.thermo_cache_dir,
+                  "features": 8, "projection": "8_to_128_zero_initialized",
+                  "position_shuffle_seed": 20261113 if args.thermo == "shuffled" else None}),
+        "motif": (None if not args.motif else {
+                  "mode": args.motif, "asset_dir": args.motif_asset_dir,
+                  "features": 6, "projection": "6_to_128_zero_initialized",
+                  "position_shuffle_seed": 20261113 if args.motif == "shuffled" else None}),
         "pair_latent_dim": args.pair_latent_dim,
         "head": f"FlatDecisionHead scorer={args.scorer} d_z=128 "
                 f"pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
         "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
                       "teacher": args.teacher_dir,
+                      "aux_teacher": args.aux_teacher_dir,
                       "teacher_storage": {"lazy": args.lazy_teacher,
                                           "shard_cache_size": args.teacher_shard_cache_size},
                       "distill_kind": "kl", "rlcd_reward": "brier", "beta": 1.0,
@@ -757,6 +791,19 @@ def main():
             labels_all.append(pair_indicator(len(s), gts[bi]))
 
         head_ids = head_ids.to(device)
+        motif_features = None
+        if args.thermo:
+            from rnajepa.thermodynamics import thermodynamic_batch
+            head.motif_input.sequences = seqs
+            motif_features = thermodynamic_batch(
+                seqs, args.thermo_cache_dir, shuffled=args.thermo == "shuffled").to(device)
+        elif head.motif_input is not None:
+            from rnajepa.motif import candidate_motif_features_torch, shuffle_positions
+            head.motif_input.sequences = seqs
+            motif_features = candidate_motif_features_torch(
+                head_ids, head.motif_input.motif_parameters, seqs)
+            if args.motif == "shuffled":
+                motif_features = shuffle_positions(motif_features, seqs)
         def forward_direct(view_ids, view_attn):
             enc_ids = view_ids.to(device)
             attn = view_attn.to(device)
@@ -781,7 +828,8 @@ def main():
             chunks = [_grad_ckpt(_z_chunk, h, h[:, j0:j0 + zc], use_reentrant=False)
                       for j0 in range(0, max_len, zc)]
             z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
-            s_raw = _grad_ckpt(head.score_pair_matrix, z, head_ids, use_reentrant=False)
+            s_raw = _grad_ckpt(head.score_pair_matrix, z, head_ids, False, None,
+                               motif_features, use_reentrant=False)
             s = s_raw
             if head.use_turner_prior:
                 s = s + head.prior_weight.to(s.dtype) * turner_phys_scores(head_ids).to(device)
@@ -809,7 +857,7 @@ def main():
                 for k, v in terms_b.items():
                     terms_agg[k] = terms_agg.get(k, 0.0) + float(v.detach())
             return (total / B, direct_nll / B, {k: v / B for k, v in terms_agg.items()},
-                    matrix, z, mask_full, s_raw, lengths_t, bns, bn_after_fwd)
+                    matrix, z, mask_full, s_raw, lengths_t, bns, bn_after_fwd, h)
 
         n_views = 2 if args.cl1_token_mask else 1
         masked_counts = []
@@ -899,6 +947,8 @@ def main():
                     bn.running_mean.copy_(rm)
                     bn.running_var.copy_(rv)
                     bn.num_batches_tracked.copy_(nbt)
+        motif_projection_grad = (None if head.motif_input is None else
+                                 float(head.motif_input.projection.weight.grad.detach().square().sum()) ** 0.5)
         cl2_projection_grad = (None if cl2 is None else sum(float(p.grad.detach().square().sum()) for p in cl2.parameters() if p.grad is not None) ** 0.5)
         gnorm = float(torch.nn.utils.clip_grad_norm_(
             trainable(), args.grad_clip))
@@ -917,6 +967,7 @@ def main():
             rec = {"step": step, "loss": round(float(total), 4),
                    "cl1_views": n_views, "cl1_masked_tokens": masked_counts,
                    "cl2_projection_grad": cl2_projection_grad,
+                   "motif_projection_grad": motif_projection_grad,
                    "terms": {k: round(v, 4) for k, v in terms_agg.items()},
                    "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
                    "lr_head": sched.get_last_lr()[0],
