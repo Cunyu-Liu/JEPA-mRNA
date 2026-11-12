@@ -391,8 +391,12 @@ def main():
     ap.add_argument("--pair-latent-dim", type=int, default=64)
     ap.add_argument("--lambda-jepa", type=float, default=0.0)
     ap.add_argument("--cl1-token-mask", type=float, default=0.0)
+    ap.add_argument("--cl2-infonce-weight", type=float, default=0.0)
+    ap.add_argument("--cl2-temperature", type=float, default=0.1)
+    ap.add_argument("--cl2-max-negatives", type=int, default=32)
+    ap.add_argument("--cl0-clusters", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/cl0_structure_contrast_round54/clusters.jsonl")
     ap.add_argument("--jepa-target", choices=["ema", "fixed", "random", "online"], default="ema")
-    ap.add_argument("--jepa-context", choices=["context_v1", "structured_block"], default="context_v1")
+    ap.add_argument("--jepa-context", choices=["context_v1", "structured_block", "structured_axial"], default="context_v1")
     ap.add_argument("--jepa-mask-prob", type=float, default=0.15)
     ap.add_argument("--jepa-variance-weight", type=float, default=0.0)
     ap.add_argument("--jepa-covariance-weight", type=float, default=0.0)
@@ -410,6 +414,12 @@ def main():
     args = ap.parse_args()
     if args.ripe_encoder_only and not (args.ripe_encoder and args.ripe_mode):
         raise SystemExit("--ripe-encoder-only requires --ripe-encoder and --ripe-mode")
+    if args.serial_encoder and args.scorer != "pairmlp":
+        raise SystemExit("--serial-encoder is licensed only for the batch-independent PairMLP path")
+    if args.cl2_infonce_weight < 0 or args.cl2_temperature <= 0 or args.cl2_max_negatives <= 0:
+        raise SystemExit("invalid CL2 weight, temperature or negative limit")
+    if args.cl2_infonce_weight and (not args.cl1_token_mask or args.lambda_jepa or args.scorer != "resnet2d"):
+        raise SystemExit("CL2 requires CL1 token-mask views, ResNet2D and no JEPA")
     if not 0.0 <= args.cl1_token_mask < 1.0:
         raise SystemExit("--cl1-token-mask must be in [0, 1)")
     if args.cl1_token_mask and (args.scorer != "resnet2d" or args.serial_encoder or args.lambda_jepa):
@@ -546,7 +556,15 @@ def main():
     n_blocks = len(blocks)
     print(f"[plan-a] {n_blocks} transformer blocks found", flush=True)
 
-    head_params = list(head.parameters())
+    legal_by_hash = {}
+    cl2 = None
+    if args.cl2_infonce_weight:
+        from rnajepa.contrast import ResidueInfoNCE
+        legal_by_hash = {row["sequence_sha256"]: row["legal_negative"]
+                         for row in (json.loads(line) for line in open(args.cl0_clusters)) if row["split"] == "train"}
+        cl2 = ResidueInfoNCE(temperature=args.cl2_temperature,
+                             max_negatives=args.cl2_max_negatives).to(device)
+    head_params = list(head.parameters()) + ([] if cl2 is None else list(cl2.parameters()))
     enc_params = list(encoder.parameters())
     n_head = sum(p.numel() for p in head_params)
     print(f"[plan-a] head params: {n_head/1e6:.2f}M", flush=True)
@@ -587,6 +605,10 @@ def main():
                       "lambda_jepa": args.lambda_jepa,
                       "cl1_token_mask": args.cl1_token_mask,
                       "cl1_views": 2 if args.cl1_token_mask else 1,
+                      "cl2_infonce_weight": args.cl2_infonce_weight,
+                      "cl2_temperature": args.cl2_temperature,
+                      "cl2_max_negatives": args.cl2_max_negatives,
+                      "cl0_clusters": args.cl0_clusters if args.cl2_infonce_weight else None,
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
                       "jepa_rank_samples": args.jepa_rank_samples,
@@ -642,6 +664,8 @@ def main():
         n_unfrozen = int(state["n_unfrozen"])
         restore_unfrozen_blocks(blocks, n_unfrozen)
         start_step = int(state["step"])
+        if cl2 is not None:
+            cl2.restore_state(state["cl2"])
         restore_batch_stream(stream, state["stream_state"], args.batch_size)
         best_step, best_validation_loss, bad_evaluations = restore_validation_state(
             state, os.path.join(args.out, "validation_log.jsonl"))
@@ -773,6 +797,16 @@ def main():
         terms_agg = {key: sum(view[2][key] for view in direct_views) / n_views
                      for key in direct_views[0][2]}
         matrix, z, mask_full, s_raw, lengths_t, bns = direct_views[0][3:9]
+        cl2_record = None
+        if cl2 is not None:
+            sequence_hashes = [hashlib.sha256(seq.encode()).hexdigest() for seq in seqs]
+            cl2_loss, cl2_diagnostics = cl2(
+                direct_views[0][10], direct_views[1][10], lengths_t, sequence_hashes,
+                legal_by_hash, log_details=(step % 25 == 0 or step == 1))
+            total = total + args.cl2_infonce_weight * cl2_loss
+            terms_agg["infonce"] = float(cl2_loss.detach())
+            if step % 25 == 0 or step == 1:
+                cl2_record = {"step": step, "loss": float(cl2_loss.detach()), **cl2_diagnostics}
 
         jepa_record = None
         if args.lambda_jepa:
@@ -819,13 +853,14 @@ def main():
                         matrix, no_prior_matrix, lengths, seqs, gts)
 
         opt.zero_grad(set_to_none=True)
+        total.backward()
         for view in direct_views:
-            (view[0] / n_views).backward()
             with torch.no_grad():
                 for bn, (rm, rv, nbt) in zip(bns, view[9]):
                     bn.running_mean.copy_(rm)
                     bn.running_var.copy_(rv)
                     bn.num_batches_tracked.copy_(nbt)
+        cl2_projection_grad = (None if cl2 is None else sum(float(p.grad.detach().square().sum()) for p in cl2.parameters() if p.grad is not None) ** 0.5)
         gnorm = float(torch.nn.utils.clip_grad_norm_(
             trainable(), args.grad_clip))
         opt.step()
@@ -842,6 +877,7 @@ def main():
         if step % 25 == 0 or step == 1 or jepa_record is not None:
             rec = {"step": step, "loss": round(float(total), 4),
                    "cl1_views": n_views, "cl1_masked_tokens": masked_counts,
+                   "cl2_projection_grad": cl2_projection_grad,
                    "terms": {k: round(v, 4) for k, v in terms_agg.items()},
                    "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
                    "lr_head": sched.get_last_lr()[0],
@@ -850,6 +886,9 @@ def main():
                    "sec": round(time.time() - t0, 1)}
             with open(log_path, "a") as fh:
                 fh.write(json.dumps(rec) + "\n")
+            if cl2_record is not None:
+                with open(os.path.join(args.out, "cl2_diagnostics.jsonl"), "a") as fh:
+                    fh.write(json.dumps(cl2_record) + "\n")
             if jepa_record is not None:
                 with open(os.path.join(args.out, "jepa_diagnostics.jsonl"), "a") as fh:
                     fh.write(json.dumps(jepa_record) + "\n")
@@ -868,7 +907,8 @@ def main():
                         "best_step": best_step,
                         "best_validation_loss": best_validation_loss,
                         "bad_evaluations": bad_evaluations,
-                        "stream_state": stream.state}, resume_path)
+                        "stream_state": stream.state,
+                        "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
         if step % args.snapshot_every == 0 or step == args.steps:
             atomic_torch_save({"step": step,
                         "model": {"encoder": encoder.state_dict(),
@@ -909,7 +949,8 @@ def main():
                             "model": {"encoder": encoder.state_dict(),
                                       "head": head.state_dict()},
                             "validation_loss": validation_loss,
-                            "objective": meta["objective"], "meta": meta},
+                            "objective": meta["objective"], "meta": meta,
+                            "cl2": None if cl2 is None else cl2.export_state()},
                            os.path.join(args.out, "best.pt"))
             else:
                 bad_evaluations += 1
