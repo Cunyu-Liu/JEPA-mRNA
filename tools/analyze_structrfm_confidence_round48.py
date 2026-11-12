@@ -47,6 +47,7 @@ def main():
     parser.add_argument("--experiment", default="")
     parser.add_argument("--run-prefix", default="")
     parser.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
+    parser.add_argument("--splits", nargs="+")
     args = parser.parse_args()
     experiment = args.experiment or ("structrfm_full" if args.full_model else "structrfm_frozen")
     run_prefix = args.run_prefix or ("structrfm_jev_s" if args.full_model else "structrfm_frozen_jev_s")
@@ -68,7 +69,7 @@ def main():
         assert result["repeats"] == 3
         summary["vl0"][f"s{seed}"] = evaluate(result["per_sequence"], thresholds)
     if not args.vl0_only:
-        for split in SPLITS:
+        for split in (args.splits or SPLITS):
             cells = {}
             for seed in args.seeds:
                 result = json.loads((output / f"s{seed}/{split}.json").read_text())

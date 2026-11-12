@@ -43,14 +43,14 @@ def main():
               "test_set_used": False, "checkpoint_training": False,
               "physics_dp_binary_sha256": sha256_file(ROOT / "bin/physics_dp.so"),
               "physics_dp_source_sha256": sha256_file(Path("/home/rna_jev/tools/physics_dp.cpp"))}
-    decision = {"status": "E2C_VL0_DECISION", "mean_delta_micro_f1": mean_delta,
-                "retain_physics_dp": mean_delta > 0, "test_set_used": False,
-                "summary_sha256": sha256_file(ROOT / "audits/round54/e2c_summary.json")}
-    (ROOT / "audits/round54/e2c_vl0_decision.json").write_text(json.dumps(decision, indent=2) + "\n")
     path = Path(args.output)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
     temporary.replace(path)
+    decision = {"status": "E2C_VL0_DECISION", "mean_delta_micro_f1": mean_delta,
+                "retain_physics_dp": mean_delta > 0, "test_set_used": False,
+                "summary_sha256": sha256_file(ROOT / "audits/round54/e2c_summary.json")}
+    (ROOT / "audits/round54/e2c_vl0_decision.json").write_text(json.dumps(decision, indent=2) + "\n")
     print(json.dumps({"status": report["status"], "delta_micro_f1": delta,
                       "mean_delta_micro_f1": mean_delta, "retain": mean_delta > 0}, indent=2))
 

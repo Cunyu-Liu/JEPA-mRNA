@@ -16201,3 +16201,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - CL2三种子均自然早停：seed42/2026/3407 best VL0=15.344178829328012/15.845622469889989/15.345268739439065，mean=15.511690012885689、population SD=0.23612632403963926，高于CL1 mean=15.332559672357188。关闭CL3/CL4/CL5，不将InfoNCE低秩或额外算力解释为结构收益。seed3407最终resume projection/queue完整；seed42/2026保留`PARTIAL_MISSING_FINAL_PROJECTION`，best projection完整，部署不加载projection。
 - E2a motif候选能量参数门未通过。固定ViennaRNA 2.7.2和Turner2004参数，SHA=`9521527a251d5e68e6149595f8aa72aa72c63e00dc5af41d7164e6ecaa664777`，补充special参数SHA=`56c1720590795cd5ac94bf7596f786550e51f42d40685fb7a94bce1c67511d11`。原始失败保留在`logs/round54/e2a_prepare.log`，SHA=`975cfc4ea58862c362b552423cd01be2dbd1f242db88a22856f93337973a5f90`。没有启动motif/shuffled训练；失败QA=`cbf8d5fe565ac689976ab77d5d7d2cfe9d8a0a4f098736ca1beb754adb471af7`。这是工程失败，不宣称局部motif科学无效。
 - 按预注册条件转入独立E2b：八维BPP/未配对/位置熵特征，TR1c-only归一化，保留shuffled和Vienna-only+DP。E2c只使用同一冻结B0 checkpoint，从原分数扣除Turner后注入显式loop DP。短序列参考、traceback和强制配对通过后才运行196条VL0；测试集不参与选择。当前E2b缓存与E2c评估在飞，不作提前效果结论，不启动LinearDesign、raw-sequence测速或PPT修改。
+
+
+## §15.921（2026-11-13）E2c物理DP三种子VL0否决
+
+- 同一冻结B0 checkpoint、196条VL0、三seed，输入为原校准分数扣除原Turner后的神经残差，显式hairpin/stack/bulge/interior/bifurcation状态，无假结、无共享端点。修复C++非 owning参数生命周期后，三seed完整真实CUDA评估完成。
+- 参考DP逐结构/能量一致和强制配对通过。micro-F1差值physics−original：seed42=−0.11384062670782014、seed2026=−0.0969203918656758、seed3407=−0.1873663628558737，mean=−0.13270912714312322。双跑独立复算一致，summary SHA=`c4579b908229477fa013c1d7ca1c6167fe7830ead5e16759ab463d19fcd350e4`。不保留物理DP，不进入组合或最终候选；保留原始VL0、负结果、早期段错误和修复证据。
+- E2b按独立B0单变量继续，Vienna-only+DP和shuffled为必要对照。最终只冻结具有独立VL0证据的模块，不默认组合。

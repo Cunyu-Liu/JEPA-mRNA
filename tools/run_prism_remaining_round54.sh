@@ -21,7 +21,7 @@ run_arm(){ local arm=$1 seed=$2
       case "$arm" in
         cl2|cl3|cl4) $PY tools/qa_rinalmo_cl2_training_round54.py --arm "$arm" --seed "$seed" --output "$qa.$suffix" ;;
         e2a_motif|e2a_shuffled) $PY tools/qa_rinalmo_e2a_round54.py --arm "$arm" --seed "$seed" --output "$qa.$suffix" ;;
-        e2b) $PY tools/qa_rinalmo_e2b_round54.py --seed "$seed" --output "$qa.$suffix" ;;
+        e2b|e2b_shuffled) $PY tools/qa_rinalmo_e2b_round54.py --arm "$arm" --seed "$seed" --output "$qa.$suffix" ;;
         e2c) $PY tools/qa_rinalmo_e2c_round54.py --seed "$seed" --output "$qa.$suffix" ;;
         *) log "UNKNOWN_ARM $arm"; return 1 ;;
       esac
@@ -35,7 +35,7 @@ run_summary(){ local arm=$1
       case "$arm" in
         cl2|cl3|cl4) $PY tools/qa_rinalmo_cl2_training_round54.py --arm "$arm" --summary --output "$ROOT/audits/round54/${arm}_training_summary.$suffix" ;;
         e2a_motif|e2a_shuffled) $PY tools/qa_rinalmo_e2a_round54.py --arm "$arm" --summary --output "$ROOT/audits/round54/${arm}_training_summary.$suffix" ;;
-        e2b) $PY tools/qa_rinalmo_e2b_round54.py --summary --output "$ROOT/audits/round54/${arm}_training_summary.$suffix" ;;
+        e2b|e2b_shuffled) $PY tools/qa_rinalmo_e2b_round54.py --arm "$arm" --summary --output "$ROOT/audits/round54/${arm}_training_summary.$suffix" ;;
         e2c) $PY tools/qa_rinalmo_e2c_round54.py --summary --output "$ROOT/audits/round54/${arm}_training_summary.$suffix" ;;
         *) log "UNKNOWN_ARM $arm"; return 1 ;;
       esac
@@ -78,19 +78,63 @@ else
     fi
   fi
 fi
-log "START independent E2a motif arm"
-require_tools tools/run_rinalmo_e2a_motif_round54.sh tools/qa_rinalmo_e2a_round54.py
-run_seeds e2a_motif
-require_tools tools/run_rinalmo_e2a_shuffled_round54.sh
-run_seeds e2a_shuffled
+if [[ -f "$ROOT/audits/round54/e2a_parameter_failure.json" ]]; then
+  decision '{"stage":"E2a","decision":"STOP_PARAMETER_GATE_NO_TRAINING"}'
+  log "SKIP E2a: parameter gate failed; no motif or shuffled training"
+else
+  log "START independent E2a motif arm"
+  require_tools tools/run_rinalmo_e2a_motif_round54.sh tools/qa_rinalmo_e2a_round54.py
+  run_seeds e2a_motif
+  require_tools tools/run_rinalmo_e2a_shuffled_round54.sh
+  run_seeds e2a_shuffled
+  motif_mean=$(mean_vl0 "$ROOT/audits/round54/e2a_motif_training_summary.json")
+  shuffled_mean=$(mean_vl0 "$ROOT/audits/round54/e2a_shuffled_training_summary.json")
+  if ! $PY -c "assert $motif_mean < $shuffled_mean"; then
+    decision '{"stage":"E2a","decision":"STOP_MOTIF_NOT_BETTER_THAN_SHUFFLED"}'
+  fi
+fi
 log "START conditional E2b statistical thermodynamics"
-require_tools tools/run_rinalmo_e2b_round54.sh tools/qa_rinalmo_e2b_round54.py
+wait_pid 623701
+require_tools tools/run_rinalmo_e2b_round54.sh tools/run_rinalmo_e2b_shuffled_round54.sh tools/qa_rinalmo_e2b_round54.py
+if [[ ! -f "$ROOT/data/e2b_thermo_round54/train_qa.json" ]]; then
+  log "PREPARE E2b TR1c partition cache"
+  $PY tools/prepare_rinalmo_e2b_round54.py >> "$ROOT/logs/round54/e2b_prepare.log" 2>&1
+fi
+if [[ ! -f "$ROOT/data/e2b_thermo_round54/validation_cache_manifest.json" ]]; then
+  $PY tools/prepare_rinalmo_e2b_vl0_round54.py > "$ROOT/logs/round54/e2b_vl0_prepare.log" 2>&1
+fi
+for mode in online shuffled; do
+  if ! cmp -s "$ROOT/audits/round54/e2b_${mode}_smoke_qa.json" "$ROOT/audits/round54/e2b_${mode}_smoke_qa.recheck.json"; then
+    log "E2b $mode smoke"
+    bash tools/run_rinalmo_e2b_smoke_round54.sh "$mode" > "$ROOT/logs/round54/e2b_${mode}_smoke.log" 2>&1
+    for suffix in json recheck.json; do
+      $PY tools/qa_rinalmo_e2b_round54.py --smoke "$mode" --output "$ROOT/audits/round54/e2b_${mode}_smoke_qa.$suffix"
+    done
+    cmp "$ROOT/audits/round54/e2b_${mode}_smoke_qa.json" "$ROOT/audits/round54/e2b_${mode}_smoke_qa.recheck.json"
+  fi
+done
 run_seeds e2b
+require_tools tools/run_rinalmo_e2b_shuffled_round54.sh
+run_seeds e2b_shuffled
+e2b_mean=$(mean_vl0 "$ROOT/audits/round54/e2b_training_summary.json")
+shuffled_mean=$(mean_vl0 "$ROOT/audits/round54/e2b_shuffled_training_summary.json")
+if ! $PY -c "assert $e2b_mean < $shuffled_mean and $e2b_mean < $(mean_vl0 "$ROOT/audits/round54/b0_training_qa.json")"; then
+  decision '{"stage":"E2b","decision":"STOP_NOT_BETTER_THAN_SHUFFLED_OR_B0"}'
+fi
 log "START independent E2c enhanced DP"
 require_tools tools/run_rinalmo_e2c_round54.sh tools/qa_rinalmo_e2c_round54.py
-run_seeds e2c
+if [[ ! -f "$ROOT/audits/round54/e2c_vl0_decision.json" ]]; then
+  bash tools/run_rinalmo_e2c_round54.sh > "$ROOT/logs/round54/e2c.log" 2>&1
+fi
+for suffix in json recheck.json; do
+  $PY tools/qa_rinalmo_e2c_round54.py --summary --output "$ROOT/audits/round54/e2c_summary.$suffix"
+done
+cmp "$ROOT/audits/round54/e2c_summary.json" "$ROOT/audits/round54/e2c_summary.recheck.json"
 log "START frozen main-eight and Rfam acceptance"
 require_tools tools/run_prism_frozen_benchmark_round54.sh tools/qa_prism_frozen_benchmark_round54.py
 bash tools/run_prism_frozen_benchmark_round54.sh >> "$ROOT/logs/round54/frozen_benchmark.log" 2>&1
-$PY tools/qa_prism_frozen_benchmark_round54.py --root "$ROOT" --output "$ROOT/audits/round54/frozen_benchmark_qa.json"
+for suffix in json recheck.json; do
+  $PY tools/qa_prism_frozen_benchmark_round54.py --root "$ROOT" --output "$ROOT/audits/round54/frozen_benchmark_qa.$suffix"
+done
+cmp "$ROOT/audits/round54/frozen_benchmark_qa.json" "$ROOT/audits/round54/frozen_benchmark_qa.recheck.json"
 log "ALL_REGISTERED_STAGES_COMPLETE"
