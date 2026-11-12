@@ -36,7 +36,8 @@ def validate(root, arm, seed, split, ablation):
     rows = [json.loads(line) for line in data.read_text().splitlines() if line.strip()]
     assert result["raw_n"] == len(rows)
     assert result["n"] + result["n_long_unsupported"] == len(rows)
-    assert result["n_long_unsupported"] == 0 and result["status"] == "PASS"
+    assert result["status"] == "PASS" or result["status"].startswith("PARTIAL_")
+    complete = result["n_long_unsupported"] == 0 and result["status"] == "PASS"
     tp = fp = fn = 0
     for index, (source, row) in enumerate(zip(rows, result["per_sequence"])):
         sequence = source["seq"].upper().replace("T", "U")
@@ -59,7 +60,7 @@ def validate(root, arm, seed, split, ablation):
     macro = statistics.mean(row["f1"] for row in result["per_sequence"])
     assert math.isclose(macro, result["macro_f1"], abs_tol=1e-12)
     return {"micro_f1": micro_f1, "macro_f1": macro, "tp": tp, "fp": fp, "fn": fn,
-            "sha256": sha256(path), "n": result["n"], "complete": True}
+            "sha256": sha256(path), "n": result["n"], "complete": complete}
 
 
 def holm(values):
@@ -123,7 +124,8 @@ def main():
             baseline = {row["name"]: row for row in baseline}
             candidate = {row["name"]: row for row in candidate}
             paired[arm][split] = bootstrap(baseline, candidate, 42)
-    report = {"status": "PASS_PRISM_FROZEN_BENCHMARK_QA", "arms": arms,
+    report = {"status": "PASS_PRISM_FROZEN_BENCHMARK_QA" if all(row["complete"] for row in results.values()) else "PARTIAL_PRISM_FROZEN_BENCHMARK_QA",
+              "complete": all(row["complete"] for row in results.values()), "arms": arms,
               "n_cells": len(results), "results": results, "paired_bootstrap": paired,
               "holm_main_eight": {arm: holm({split: value["p_two_sided"] for split, value in cells.items() if split != "rfam_fam"})
                                   for arm, cells in paired.items()},
