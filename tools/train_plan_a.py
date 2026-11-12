@@ -325,8 +325,9 @@ def main():
     ap.add_argument("--scorer", choices=["resnet2d", "pairmlp", "pairjepa"], default="resnet2d")
     ap.add_argument("--pair-latent-dim", type=int, default=64)
     ap.add_argument("--lambda-jepa", type=float, default=0.0)
+    ap.add_argument("--cl1-token-mask", type=float, default=0.0)
     ap.add_argument("--jepa-target", choices=["ema", "fixed", "random", "online"], default="ema")
-    ap.add_argument("--jepa-context", choices=["context_v1", "structured_block"], default="context_v1")
+    ap.add_argument("--jepa-context", choices=["context_v1", "structured_block", "structured_axial"], default="context_v1")
     ap.add_argument("--jepa-mask-prob", type=float, default=0.15)
     ap.add_argument("--jepa-variance-weight", type=float, default=0.0)
     ap.add_argument("--jepa-covariance-weight", type=float, default=0.0)
@@ -344,6 +345,12 @@ def main():
     args = ap.parse_args()
     if args.ripe_encoder_only and not (args.ripe_encoder and args.ripe_mode):
         raise SystemExit("--ripe-encoder-only requires --ripe-encoder and --ripe-mode")
+    if args.serial_encoder and args.scorer != "pairmlp":
+        raise SystemExit("--serial-encoder is licensed only for the batch-independent PairMLP path")
+    if not 0.0 <= args.cl1_token_mask < 1.0:
+        raise SystemExit("--cl1-token-mask must be in [0, 1)")
+    if args.cl1_token_mask and (args.scorer != "resnet2d" or args.serial_encoder or args.lambda_jepa):
+        raise SystemExit("CL1 requires ResNet2D, non-serial encoder and no JEPA")
     if args.lambda_jepa < 0 or (args.lambda_jepa and args.scorer != "pairjepa"):
         raise SystemExit("--lambda-jepa is nonnegative and requires --scorer pairjepa")
     if args.scorer == "pairjepa" and args.lambda_jepa <= 0:
@@ -502,9 +509,14 @@ def main():
         "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
                       "teacher": args.teacher_dir,
+                      "aux_teacher": args.aux_teacher_dir,
+                      "teacher_storage": {"lazy": args.lazy_teacher,
+                                          "shard_cache_size": args.teacher_shard_cache_size},
                       "distill_kind": "kl", "rlcd_reward": "brier", "beta": 1.0,
                       "n_bins": 10, "tau": 0.1, "nll_normalization": args.nll_normalization,
                       "lambda_jepa": args.lambda_jepa,
+                      "cl1_token_mask": args.cl1_token_mask,
+                      "cl1_views": 2 if args.cl1_token_mask else 1,
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
                       "jepa_rank_samples": args.jepa_rank_samples,
@@ -597,130 +609,99 @@ def main():
         B = len(seqs)
 
         frame_extra = 2 if ENCODER_SPECIAL_TOKENS else 0
-        enc_ids = torch.zeros(B, max_len + frame_extra, dtype=torch.long)
-        attn = torch.zeros(B, max_len + frame_extra, dtype=torch.long)
+        enc_ids = None if args.serial_encoder else torch.zeros(B, max_len + frame_extra, dtype=torch.long)
+        attn = None if args.serial_encoder else torch.zeros(B, max_len + frame_extra, dtype=torch.long)
         head_ids = torch.zeros(B, max_len, dtype=torch.long)
         masks, labels_all = [], []
         for bi, s in enumerate(seqs):
             token_ids = [VOCAB.get(c, VOCAB["<unk>"]) for c in s]
             ids = ([VOCAB["<cls>"]] + token_ids + [VOCAB["<eos>"]]
                    if ENCODER_SPECIAL_TOKENS else token_ids)
-            enc_ids[bi, :len(ids)] = torch.tensor(ids, dtype=torch.long)
-            attn[bi, :len(ids)] = 1
+            if not args.serial_encoder:
+                enc_ids[bi, :len(ids)] = torch.tensor(ids, dtype=torch.long)
+                attn[bi, :len(ids)] = 1
             head_ids[bi, :len(s)] = torch.tensor(
                 [BASE_TO_INDEX.get(c, UNK_INDEX) for c in s], dtype=torch.long)
             masks.append(valid_pair_mask(s))
             labels_all.append(pair_indicator(len(s), gts[bi]))
 
-        enc_ids = enc_ids.to(device)
-        attn = attn.to(device)
         head_ids = head_ids.to(device)
-
-        with torch.autocast("cuda", dtype=torch.bfloat16):
-            out = encoder(input_ids=enc_ids, attention_mask=attn)
+        def forward_direct(view_ids, view_attn):
+            enc_ids = view_ids.to(device)
+            attn = view_attn.to(device)
+            with torch.autocast("cuda", dtype=torch.bfloat16):
+                out = encoder(input_ids=enc_ids, attention_mask=attn)
             h = out.last_hidden_state if hasattr(out, "last_hidden_state") else out[0]
-        h = (h[:, 1:max_len + 1, :] if ENCODER_SPECIAL_TOKENS
-             else h[:, :max_len, :]).float()
-        # quantise to the control arm's cached-feature precision (extraction wrote
-        # float16; the control's head consumed fp32-cast fp16 values). Doing the
-        # same here keeps the frozen-phase forward numerically aligned with the
-        # control arm's inputs, and bounds activation memory a little too.
-        h = h.to(torch.float16).to(torch.float32)
-        # zero the pad region exactly as the control arm's _stack_embeddings does:
-        # the resnet2d BatchNorm statistics span the full (B, C, L, L) tensor, so a
-        # pad region holding live encoder states would shift them.
-        for bi, L in enumerate(lengths):
-            if L < max_len:
-                h[bi, L:, :] = 0.0
-        lengths_t = torch.tensor(lengths, device=device)
+            h = (h[:, 1:max_len + 1, :] if ENCODER_SPECIAL_TOKENS
+                 else h[:, :max_len, :]).float()
+            h = h.to(torch.float16).to(torch.float32)
+            for bi, L in enumerate(lengths):
+                if L < max_len:
+                    h[bi, L:, :] = 0.0
+            lengths_t = torch.tensor(lengths, device=device)
+            bns = [m for m in head.resnet2d.modules() if isinstance(m, torch.nn.BatchNorm2d)]
+            bn_after_fwd = [(bn.running_mean.clone(), bn.running_var.clone(),
+                             bn.num_batches_tracked.clone()) for bn in bns]
 
-        # ---- memory-engineered head forward (numerically exact) ----------------
-        # The control arm's head path needs ~35GB dynamic at B=4, L=500 (the z
-        # construction retains a (B, L, L, 3840) tensor = 15.7GB, the type head
-        # another ~10GB). This run must fit a 3g.20gb MIG slice, so:
-        # (a) z is built column-chunked with each chunk checkpointed:
-        #     PairRepresentation.cross is Linear + elementwise ops only, so
-        #     torch.utils.checkpoint recomputes it exactly; torch.cat of the
-        #     recomputed chunks is bit-identical to the whole-matrix result.
-        # (b) the type head is skipped: its output never enters the loss, it
-        #     receives no gradient, AdamW updates nothing (grad=None ->
-        #     skipped), and it has no BatchNorm running stats. The control arm
-        #     therefore trained it into its exact init state, which the
-        #     evaluation of this arm can reproduce by re-initialising it.
-        # (c) the resnet2d scorer is checkpointed too, with a BatchNorm-snapshot
-        #     restore: recompute re-runs every BN forward, which would update
-        #     the running stats twice per step and silently diverge from the
-        #     control arm. The fix: after backward, restore the stats captured
-        #     right after the *first* forward (exactly one update, as the control
-        #     arm applied). The gamma/beta gradients are unaffected -- they come
-        #     from the batch-statistics normalisation, which is identical in
-        #     both passes.
-        bns = ([] if head.resnet2d is None else
-               [m for m in head.resnet2d.modules()
-                if isinstance(m, torch.nn.BatchNorm2d)])
+            def _z_chunk(hi, hj):
+                return head.pair_repr.cross(hi, hj)
 
-        def _snap():
-            return [(bn.running_mean.clone(), bn.running_var.clone(),
-                     bn.num_batches_tracked.clone()) for bn in bns]
-
-        def _restore(snap):
-            with torch.no_grad():
-                for bn, (rm, rv, nbt) in zip(bns, snap):
-                    bn.running_mean.copy_(rm)
-                    bn.running_var.copy_(rv)
-                    bn.num_batches_tracked.copy_(nbt)
-
-        def _z_chunk(hi, hj):
-            return head.pair_repr.cross(hi, hj)
-
-        chunks = []
-        zc = args.zchunk if args.zchunk > 0 else max_len
-        for j0 in range(0, max_len, zc):
-            chunks.append(_grad_ckpt(_z_chunk, h, h[:, j0:j0 + zc],
-                                     use_reentrant=False))
-        if args.scorer == "pairmlp":
-            score_chunks = [
-                _grad_ckpt(head.score_pair_matrix, z, head_ids, True,
-                           use_reentrant=False) for z in chunks]
-            s_raw = score_chunks[0] if len(score_chunks) == 1 else torch.cat(score_chunks, dim=2)
-        else:
+            zc = args.zchunk if args.zchunk > 0 else max_len
+            chunks = [_grad_ckpt(_z_chunk, h, h[:, j0:j0 + zc], use_reentrant=False)
+                      for j0 in range(0, max_len, zc)]
             z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
             s_raw = _grad_ckpt(head.score_pair_matrix, z, head_ids, use_reentrant=False)
-        bn_after_fwd = _snap()  # stats after exactly one update
-        s = s_raw
-        if head.use_turner_prior:
-            s = s + head.prior_weight.to(s.dtype) * turner_phys_scores(
-                head_ids).to(device)
-        s = head.calibration(s, lengths_t)
-        mask_full = pair_mask_from_ids(head_ids, head.min_loop).to(device)
-        s = torch.where(mask_full, s, torch.full_like(s, float("-inf")))
-        matrix = s
+            s = s_raw
+            if head.use_turner_prior:
+                s = s + head.prior_weight.to(s.dtype) * turner_phys_scores(head_ids).to(device)
+            s = head.calibration(s, lengths_t)
+            mask_full = pair_mask_from_ids(head_ids, head.min_loop).to(device)
+            matrix = torch.where(mask_full, s, torch.full_like(s, float("-inf")))
+            total = None
+            direct_nll = None
+            terms_agg = {}
+            for b in range(B):
+                L = lengths[b]
+                s_b = matrix[b, :L, :L]
+                s_b = torch.where(torch.isfinite(s_b), s_b, torch.full_like(s_b, NEG_BIG))
+                mask_b = torch.as_tensor(masks[b], device=s_b.device)
+                loss_b, terms_b = combined_loss(
+                    s_b, mask_b, gts[b], weights,
+                    teacher_probs=optional_teacher(teacher_map, seqs[b], s_b.device),
+                    student_probs=torch.sigmoid(s_b),
+                    labels=torch.as_tensor(labels_all[b], dtype=torch.float64, device=s_b.device),
+                    distill_kind="kl", reward="brier", beta=1.0,
+                    n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
+                    return_terms=True)
+                total = loss_b if total is None else total + loss_b
+                direct_nll = terms_b["nll"] if direct_nll is None else direct_nll + terms_b["nll"]
+                for k, v in terms_b.items():
+                    terms_agg[k] = terms_agg.get(k, 0.0) + float(v.detach())
+            return (total / B, direct_nll / B, {k: v / B for k, v in terms_agg.items()},
+                    matrix, z, mask_full, s_raw, lengths_t, bns, bn_after_fwd)
 
-        total = None
-        direct_nll = None
-        terms_agg = {}
-        for b in range(B):
-            L = lengths[b]
-            s = matrix[b, :L, :L]
-            s = torch.where(torch.isfinite(s), s, torch.full_like(s, NEG_BIG))
-            mask_b = torch.as_tensor(masks[b], device=s.device)
-            loss_b, terms_b = combined_loss(
-                s, mask_b, gts[b], weights,
-                teacher_probs=optional_teacher(teacher_map, seqs[b], s.device),
-                student_probs=torch.sigmoid(s),
-                labels=torch.as_tensor(labels_all[b], dtype=torch.float64,
-                                       device=s.device),
-                distill_kind="kl", reward="brier", beta=1.0,
-                n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
-                return_terms=True)
-            total = loss_b if total is None else total + loss_b
-            direct_nll = terms_b["nll"] if direct_nll is None else direct_nll + terms_b["nll"]
-            for k, v in terms_b.items():
-                terms_agg[k] = terms_agg.get(k, 0.0) + float(v.detach())
-        total = total / B
-        direct_nll = direct_nll / B
-        for k in terms_agg:
-            terms_agg[k] /= B
+        n_views = 2 if args.cl1_token_mask else 1
+        masked_counts = []
+        direct_views = []
+        for view in range(n_views):
+            view_ids = enc_ids
+            if args.cl1_token_mask:
+                generator = torch.Generator().manual_seed(args.seed + 2 * step + view)
+                view_ids = enc_ids.clone()
+                residue = attn.bool().clone()
+                if ENCODER_SPECIAL_TOKENS:
+                    residue[:, 0] = False
+                    for bi, L in enumerate(lengths):
+                        residue[bi, L + 1] = False
+                token_mask = (torch.rand(view_ids.shape, generator=generator) < args.cl1_token_mask) & residue
+                masked_counts.append(int(token_mask.sum()))
+                view_ids[token_mask] = VOCAB["<mask>"]
+            direct_views.append(forward_direct(view_ids, attn))
+        total = sum(view[0] for view in direct_views) / n_views
+        direct_nll = sum(view[1] for view in direct_views) / n_views
+        terms_agg = {key: sum(view[2][key] for view in direct_views) / n_views
+                     for key in direct_views[0][2]}
+        matrix, z, mask_full, s_raw, lengths_t, bns = direct_views[0][3:9]
 
         jepa_record = None
         if args.lambda_jepa:
@@ -767,10 +748,13 @@ def main():
                         matrix, no_prior_matrix, lengths, seqs, gts)
 
         opt.zero_grad(set_to_none=True)
-        total.backward()
-        # restore the one-update BN statistics (see (c) above): the backward's
-        # recompute pass re-ran the BN forwards and applied a second update.
-        _restore(bn_after_fwd)
+        for view in direct_views:
+            (view[0] / n_views).backward()
+            with torch.no_grad():
+                for bn, (rm, rv, nbt) in zip(bns, view[9]):
+                    bn.running_mean.copy_(rm)
+                    bn.running_var.copy_(rv)
+                    bn.num_batches_tracked.copy_(nbt)
         gnorm = float(torch.nn.utils.clip_grad_norm_(
             trainable(), args.grad_clip))
         opt.step()
@@ -786,6 +770,7 @@ def main():
 
         if step % 25 == 0 or step == 1 or jepa_record is not None:
             rec = {"step": step, "loss": round(float(total), 4),
+                   "cl1_views": n_views, "cl1_masked_tokens": masked_counts,
                    "terms": {k: round(v, 4) for k, v in terms_agg.items()},
                    "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
                    "lr_head": sched.get_last_lr()[0],
