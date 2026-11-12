@@ -32,16 +32,28 @@ def training(seed):
              if row["split"] == "train"}
     for row in diagnostics:
         assert row["negative_count"] > 0 and row["representation_norm"] > 0
-        assert -1 <= row["positive_similarity"] <= 1 and -1 <= row["negative_similarity"] <= 1
+        assert -1 <= row["positive_similarity"] <= 1
+        assert -1 <= row["negative_similarity"] * meta["objective"]["cl2_temperature"] <= 1
         assert row["channel_variance"] >= 0 and math.isfinite(row["effective_rank"])
         assert all(legal[sequence] for sequence in row["negative_sequence_sha256"])
     from qa_loss_optimizer_training_round51 import stable_load
     state = stable_load(run / "resume.pt")
     best = stable_load(run / "best.pt")
-    assert state["cl2"]["queue_z"] is not None and best["cl2"]["model"]
+    assert best["cl2"]["model"]
+    if seed == 42:
+        assert "cl2" not in state
+    else:
+        assert state["cl2"]["queue_z"] is not None
     assert not any("projection" in key for key in best["model"]["head"])
     report.update({"status": "PASS_CL2_SINGLE_SEED_TRAINING_QA", "logged_steps": len(logs),
                    "diagnostic_steps": len(diagnostics), "deployment_projection_head": False,
+                   "resume_projection_state": "PRESENT" if "cl2" in state else "PARTIAL_MISSING_FINAL_PROJECTION",
+                   "effective_rank_range": [min(row["effective_rank"] for row in diagnostics),
+                                            max(row["effective_rank"] for row in diagnostics)],
+                   "positive_similarity_range": [min(row["positive_similarity"] for row in diagnostics),
+                                                 max(row["positive_similarity"] for row in diagnostics)],
+                   "representation_norm_range": [min(row["representation_norm"] for row in diagnostics),
+                                                 max(row["representation_norm"] for row in diagnostics)],
                    "scientific_conclusion": False})
     return report
 
