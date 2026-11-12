@@ -39,6 +39,19 @@ def load_plana(ckpt_path, device):
     encoder.load_state_dict(ck["model"]["encoder"])
     head = FlatDecisionHead(d_model=1280, d_z=128, hidden=64,
                             scorer="resnet2d", chunk_size=0)
+    thermo = ck.get("meta", {}).get("thermodynamics")
+    if thermo:
+        from rnajepa.thermodynamics import attach_thermodynamic_input
+        normalization = json.loads((Path(thermo["cache_dir"]).parent / "normalization.json").read_text())
+        attach_thermodynamic_input(head, normalization, thermo["cache_dir"], thermo["mode"] == "shuffled")
+    motif = ck.get("meta", {}).get("motif")
+    if motif:
+        from rnajepa.motif import MotifInput, load_parameters
+        normalization = json.loads((Path(motif["asset_dir"]) / "normalization.json").read_text())
+        head.motif_input = MotifInput(normalization["mean"], normalization["std"])
+        head.motif_input.motif_parameters = load_parameters(Path(motif["asset_dir"]) / "parameters.npz")
+        head.motif_input.sequences = []
+        head.motif_input.shuffle = motif["mode"] == "shuffled"
     head.load_state_dict(ck["model"]["head"])
     encoder = encoder.to(device).eval()
     head = head.to(device).eval()
@@ -71,6 +84,8 @@ def plana_scores(encoder, head, seq, device, prior_weight_override=None):
     head_ids = torch.tensor(
         [[BASE_TO_INDEX.get(c, UNK_INDEX) for c in seq]], dtype=torch.long, device=device)
     lengths = torch.tensor([L], dtype=torch.long, device=device)
+    if head.motif_input is not None:
+        head.motif_input.sequences = [seq]
     s = head(h, head_ids, lengths=lengths, include_types=False,
              prior_weight_override=prior_weight_override).scores
     return s[0, :L, :L].float()
