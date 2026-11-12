@@ -75,9 +75,13 @@ class ResidueInfoNCE(nn.Module):
             singular = torch.linalg.svdvals(torch.cat([raw1, raw2], dim=0))
             diagnostics["effective_rank"] = float((singular.square() / singular.square().sum()).sum().reciprocal())
             diagnostics["negative_sequence_sha256"] = names1 + names2
-        self.queue_z = torch.cat([z1, z2], dim=0).detach()
-        self.queue_hashes = list(sequence_hashes) * 2
-        self.queue_legal = legal * 2
+        current_z = torch.cat([z1, z2], dim=0).detach()
+        if self.queue_z is None:
+            self.queue_z = current_z
+        else:
+            self.queue_z = torch.cat([self.queue_z, current_z], dim=0)[-self.queue_size:]
+        self.queue_hashes = (self.queue_hashes + list(sequence_hashes) * 2)[-self.queue_size:]
+        self.queue_legal = (self.queue_legal + legal * 2)[-self.queue_size:]
         return (loss1 + loss2) / 2, diagnostics
 
     def export_state(self):
