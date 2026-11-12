@@ -9,10 +9,12 @@ for seed in 42 2026 3407; do
   if [[ ! -f "$ROOT/runs/round54_cl1_s${seed}/run_meta.json" ]]; then
     bash tools/run_rinalmo_cl1_round54.sh "$seed" > "$ROOT/logs/round54/cl1_s${seed}.log" 2>&1
   fi
-  for suffix in json recheck.json; do
-    $PY tools/qa_rinalmo_cl1_training_round54.py --seed "$seed" --output "$ROOT/audits/round54/cl1_s${seed}_training_qa.$suffix"
-  done
-  cmp "$ROOT/audits/round54/cl1_s${seed}_training_qa.json" "$ROOT/audits/round54/cl1_s${seed}_training_qa.recheck.json"
+  if ! cmp -s "$ROOT/audits/round54/cl1_s${seed}_training_qa.json" "$ROOT/audits/round54/cl1_s${seed}_training_qa.recheck.json"; then
+    for suffix in json recheck.json; do
+      $PY tools/qa_rinalmo_cl1_training_round54.py --seed "$seed" --output "$ROOT/audits/round54/cl1_s${seed}_training_qa.$suffix"
+    done
+    cmp "$ROOT/audits/round54/cl1_s${seed}_training_qa.json" "$ROOT/audits/round54/cl1_s${seed}_training_qa.recheck.json"
+  fi
 done
 for suffix in json recheck.json; do
   $PY tools/qa_rinalmo_cl1_training_round54.py --summary --output "$ROOT/audits/round54/cl1_training_summary.$suffix"
