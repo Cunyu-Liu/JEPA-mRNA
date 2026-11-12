@@ -16208,3 +16208,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 同一冻结B0 checkpoint、196条VL0、三seed，输入为原校准分数扣除原Turner后的神经残差，显式hairpin/stack/bulge/interior/bifurcation状态，无假结、无共享端点。修复C++非 owning参数生命周期后，三seed完整真实CUDA评估完成。
 - 参考DP逐结构/能量一致和强制配对通过。micro-F1差值physics−original：seed42=−0.11384062670782014、seed2026=−0.0969203918656758、seed3407=−0.1873663628558737，mean=−0.13270912714312322。双跑独立复算一致，summary SHA=`c4579b908229477fa013c1d7ca1c6167fe7830ead5e16759ab463d19fcd350e4`。不保留物理DP，不进入组合或最终候选；保留原始VL0、负结果、早期段错误和修复证据。
 - E2b按独立B0单变量继续，Vienna-only+DP和shuffled为必要对照。最终只冻结具有独立VL0证据的模块，不默认组合。
+
+
+## §15.922（2026-11-13）E2b热力学数据门与工程门
+
+- TR1c partition-function缓存完成：42564条、347580844个合法pair。归一化SHA=`7ad7a41b5e2c9e7a212a102d6448cc130bcc8d8b951c745eb97cee35e6f465c8`，train cache manifest SHA=`f9bb3563a879f5ae1dc24d99677b8e1bd70195c8f8496f0f9e5c2875d764a727`。196条VL0同协议缓存完成，归一化仅TR1c，不读GT、不调测试集。
+- online首次smoke因共享`MotifInput`把E2b八维输入错建为六维投影而在首次前向失败，未执行训练步。修复为按归一化向量长度构建投影，保留原始错误日志。重试首个真实CUDA步四目标齐全、非零梯度，峰值3.0GB；完整两步VL0和双跑QA仍在进行，未提前启动三种子。

@@ -174,7 +174,7 @@ class MotifInput(nn.Module):
         super().__init__()
         self.register_buffer("mean", torch.as_tensor(mean, dtype=torch.float32))
         self.register_buffer("std", torch.as_tensor(std, dtype=torch.float32))
-        self.projection = nn.Linear(len(FEATURE_NAMES), d_z)
+        self.projection = nn.Linear(len(mean), d_z)
         nn.init.zeros_(self.projection.weight)
         nn.init.zeros_(self.projection.bias)
 
