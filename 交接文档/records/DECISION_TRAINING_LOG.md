@@ -16244,3 +16244,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - seed42已完成；seed2026仅保留best VL0=22.359044330264734@3500的部分轨迹；seed3407和全部shuffled未启动，不计算三种子均值、不进入组合或冻结评测。
 - 停止记录`e2b_interrupted.json` SHA=`a16c6436a3498394675fc32cdfcb499c4d4dd8f9d3b664345c150e85e3e6c23e`，step4000 resume SHA=`b287bee7a7c995358e9e25d3b1d188737a90bf7fce5fbff2e88d2acb4f63a1b0`。原始中断日志和最终追加日志均保留，test set未使用。
 - 主队列PID=647521已越过E2b与已完成E2c，启动B0/CL1主八+Rfam冻结验收；单监控PID=617956。
+
+
+## §15.927（2026-11-13）冻结评测calibration修复与官方路径复核
+
+- 首版冻结脚本在raw scorer后先做无Turner calibration，再加Turner并做第二次calibration，与官方`xens2_eval.plana_scores`不一致。该批结果无效并移至`audits/round54/invalid_double_calibration`，不进入汇总。
+- 已改为直接调用`head(...)`完成单次Turner+calibration+mask。修正后B0 seed42 TS0 micro-F1=0.5306537776647163、macro-F1=0.5421595328835257，79/79条完整，无交叉或冲突配对。
+- 独立用`xens2_eval.plana_scores`和canonical-nested DP重算79条，所有预测配对逐项一致。路径QA SHA=`8dce9aea215ed5cba9a06126e0730bea49352ee7c06ff81e28c4ea03c6f74691`。run_meta内0.6629是静态旧对照字段，不是round54 seed42的等价参考，不用它调参或选臂。
+- 同时修正聚合和VL0置信度分析的run前缀为`round54_<arm>_s<seed>`。已从合法checkpoint恢复串行冻结队列，主队列PID=647817，不重跑已移出的无效结果。

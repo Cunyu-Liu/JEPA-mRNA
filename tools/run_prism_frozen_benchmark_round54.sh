@@ -51,12 +51,12 @@ for arm in "${ARMS[@]}"; do
   for suffix in "" _greedy _turner0; do
     experiment=prism_${arm}${suffix}
     $PY tools/aggregate_structrfm_frozen_round48.py --root "$ROOT" --full-model \
-      --experiment "$experiment" --run-prefix "prism_${arm}_s" --seeds "${SEEDS[@]}" \
+      --experiment "$experiment" --run-prefix "round54_${arm}_s" --seeds "${SEEDS[@]}" \
       --splits "${SPLITS[@]}" --out "$ROOT/eval_decision/${experiment}/summary.json" \
       > "$ROOT/logs/round54/${experiment}_aggregate.log" 2>&1
   done
   $PY tools/analyze_structrfm_confidence_round48.py --root "$ROOT" --full-model \
-    --experiment "prism_${arm}" --run-prefix "prism_${arm}_s" --seeds "${SEEDS[@]}" --splits "${SPLITS[@]}" \
+    --experiment "prism_${arm}" --run-prefix "round54_${arm}_s" --seeds "${SEEDS[@]}" --splits "${SPLITS[@]}" \
     > "$ROOT/logs/round54/prism_${arm}_confidence.log" 2>&1
   $PY tools/compare_structrfm_sota_round48.py --root "$ROOT" --experiment "prism_${arm}" \
     --baseline "$ROOT/source_data/round48/round39_own_clean_leaderboard.json" \

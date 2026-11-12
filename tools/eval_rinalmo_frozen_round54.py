@@ -63,24 +63,18 @@ def main():
         head_ids = torch.tensor([[BASE_TO_INDEX.get(char, UNK_INDEX) for char in sequence]],
                                 device="cuda")
         with torch.no_grad():
-            raw = head.pair_scores_and_types(hidden, head_ids, include_types=False)[0][0]
             lengths = torch.tensor([len(sequence)], device="cuda")
-            no_prior = head.calibration(raw.unsqueeze(0), lengths)[0]
-            scores = no_prior.clone()
-            if head.use_turner_prior:
-                prior = turner_phys_scores(head_ids)[0].to(scores.device)
-                prior_weight = (head.prior_weight if args.prior_weight_override is None else
-                                torch.as_tensor(args.prior_weight_override, device=scores.device))
-                scores = scores + prior_weight.to(scores.dtype) * prior
-            scores = head.calibration(scores.unsqueeze(0), lengths)[0]
-            valid = pair_mask_from_ids(head_ids, head.min_loop).cuda()[0]
-            scores = torch.where(valid, scores, torch.full_like(scores, float("-inf")))
+            scores = head(hidden, head_ids, lengths=lengths, include_types=False,
+                          prior_weight_override=args.prior_weight_override).scores[0]
+            raw_np = None
+            if args.decoder == "physics":
+                raw = head.pair_scores_and_types(hidden, head_ids, include_types=False)[0][0]
+                raw_np = raw.cpu().numpy()
         scores_np = scores.cpu().numpy()
-        no_prior_np = no_prior.cpu().numpy()
         for repeat in range(args.repeats):
             if args.decoder == "physics":
                 import physics_dp
-                _, _, table = physics_dp.decode(sequence, np.where(mask, no_prior_np - (scores_np - no_prior_np), -1e4).astype(np.float32))
+                _, _, table = physics_dp.decode(sequence, np.where(mask, raw_np, -1e4).astype(np.float32))
                 pairs = [(i - 1, j - 1) for i, j in enumerate(table) if j > i]
                 crossings, conflicts = 0, 0
             else:
