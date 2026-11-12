@@ -17,6 +17,8 @@ class ResidueInfoNCE(nn.Module):
         self.queue_z = None
         self.queue_hashes = []
         self.queue_legal = []
+        self.bank_z = None
+        self.bank_hashes = []
 
     def pooled(self, hidden, lengths):
         mask = torch.arange(hidden.shape[1], device=hidden.device)[None, :] < lengths[:, None]
@@ -25,7 +27,11 @@ class ResidueInfoNCE(nn.Module):
     def project(self, hidden, lengths):
         return self.projection(self.pooled(hidden, lengths))
 
-    def candidates(self, z, hashes, legal):
+    def candidates(self, z, hashes, legal, negative_map=None):
+        if negative_map is not None:
+            if self.bank_z is None:
+                raise ValueError("structure-negative bank is not initialized")
+            return self.bank_z, self.bank_hashes
         tensors, names = [], []
         if self.queue_z is not None:
             for index, (name, allowed) in enumerate(zip(self.queue_hashes, self.queue_legal)):
@@ -38,11 +44,15 @@ class ResidueInfoNCE(nn.Module):
                 names.append(name)
         return (torch.stack(tensors) if tensors else None), names
 
-    def direction(self, anchors, positives, anchor_hashes, positive_hashes, legal):
-        candidates, names = self.candidates(positives, positive_hashes, legal)
+    def direction(self, anchors, positives, anchor_hashes, positive_hashes, legal,
+                  negative_map=None, negative_weights=None):
+        candidates, names = self.candidates(positives, positive_hashes, legal, negative_map)
         losses, negative_scores, used_names = [], [], []
         for index, (anchor, positive, sequence) in enumerate(zip(anchors, positives, anchor_hashes)):
             keep = [j for j, name in enumerate(names) if name != sequence]
+            if negative_map is not None:
+                allowed = set(negative_map.get(sequence, ()))
+                keep = [j for j in keep if names[j] in allowed]
             if candidates is None or not keep:
                 raise ValueError("InfoNCE requires at least one legal negative")
             selected = keep[:self.max_negatives]
@@ -50,19 +60,28 @@ class ResidueInfoNCE(nn.Module):
             negative = F.normalize(negatives, dim=-1)
             pos = torch.dot(anchors[index], F.normalize(positive, dim=0)) / self.temperature
             neg = negative @ F.normalize(anchor, dim=0) / self.temperature
+            if negative_weights is not None:
+                weights = torch.tensor([negative_weights.get(sequence, {}).get(names[j], 1.0)
+                                        for j in selected], device=neg.device, dtype=neg.dtype)
+                neg = neg + torch.log(weights)
             losses.append(-pos + torch.logsumexp(torch.cat([pos[None], neg]), dim=0))
             negative_scores.append(neg.detach().mean())
             used_names.extend(names[j] for j in selected)
         return (torch.stack(losses).mean(), torch.stack(negative_scores).mean(), used_names)
 
-    def forward(self, h1, h2, lengths, sequence_hashes, legal_by_hash, log_details=False):
+    def forward(self, h1, h2, lengths, sequence_hashes, legal_by_hash, log_details=False,
+                negative_map=None, negative_weights=None):
         raw1, raw2 = self.project(h1, lengths), self.project(h2, lengths)
         if self.queue_z is not None:
             self.queue_z = self.queue_z.to(raw1.device)
+        if self.bank_z is not None:
+            self.bank_z = self.bank_z.to(raw1.device)
         z1, z2 = F.normalize(raw1, dim=-1), F.normalize(raw2, dim=-1)
         legal = [bool(legal_by_hash.get(sequence, False)) for sequence in sequence_hashes]
-        loss1, neg1, names1 = self.direction(z1, z2, sequence_hashes, sequence_hashes, legal)
-        loss2, neg2, names2 = self.direction(z2, z1, sequence_hashes, sequence_hashes, legal)
+        loss1, neg1, names1 = self.direction(z1, z2, sequence_hashes, sequence_hashes, legal,
+                                             negative_map, negative_weights)
+        loss2, neg2, names2 = self.direction(z2, z1, sequence_hashes, sequence_hashes, legal,
+                                             negative_map, negative_weights)
         positive = (z1 * z2).sum(dim=-1).mean().detach()
         diagnostics = {
             "positive_similarity": float(positive),
@@ -84,12 +103,19 @@ class ResidueInfoNCE(nn.Module):
         self.queue_legal = (self.queue_legal + legal * 2)[-self.queue_size:]
         return (loss1 + loss2) / 2, diagnostics
 
+    def set_bank(self, z, hashes):
+        self.bank_z = z.detach()
+        self.bank_hashes = list(hashes)
+
     def export_state(self):
         return {"model": self.state_dict(), "queue_z": self.queue_z,
-                "queue_hashes": self.queue_hashes, "queue_legal": self.queue_legal}
+                "queue_hashes": self.queue_hashes, "queue_legal": self.queue_legal,
+                "bank_z": self.bank_z, "bank_hashes": self.bank_hashes}
 
     def restore_state(self, state):
         self.load_state_dict(state["model"])
         self.queue_z = state["queue_z"]
         self.queue_hashes = state["queue_hashes"]
         self.queue_legal = state["queue_legal"]
+        self.bank_z = state["bank_z"]
+        self.bank_hashes = state["bank_hashes"]

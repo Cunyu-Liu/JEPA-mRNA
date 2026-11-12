@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT=/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024
+OUT=$ROOT/runs/round54_cl3_smoke_s42
+mkdir -p "$OUT" "$ROOT/weights/round54/cl3_smoke_s42" "$ROOT/logs/round54"
+export PYTHONPATH=/home/rna_jev/src:/home/rna_jev
+exec /root/miniconda3/envs/lucaone/bin/python /home/rna_jev/tools/train_plan_a.py \
+  --data /root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl \
+  --teacher-dir /root/rna_jepa_data/ss_data/teacher/bprna_tr1c \
+  --out "$OUT" --steps 2 \
+  --validation-data /root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl \
+  --validation-teacher-dir "$ROOT/data/teacher_vl0" \
+  --validation-every 2 --validation-patience 6 --validation-min-delta 1e-6 \
+  --batch-size 4 --seed 42 --warmup-head-steps 1600 \
+  --unfreeze-every 800 --unfreeze-per-step 2 \
+  --head-lr 1e-4 --backbone-lr 1e-5 --nll-normalization sum \
+  --scorer resnet2d --pair-latent-dim 64 --cl1-token-mask 0.15 \
+  --cl2-infonce-weight 0.1 --cl2-temperature 0.1 --cl2-max-negatives 32 \
+  --cl3-negative-map "$ROOT/data/cl0_structure_contrast_round54/cl3_negative_map.json" \
+  --save-every 2 --snapshot-every 2000 --snapshot-dir "$ROOT/weights/round54/cl3_smoke_s42" \
+  --gpu-reserve-gb 0
