@@ -113,13 +113,18 @@ for mode in online shuffled; do
     cmp "$ROOT/audits/round54/e2b_${mode}_smoke_qa.json" "$ROOT/audits/round54/e2b_${mode}_smoke_qa.recheck.json"
   fi
 done
-run_seeds e2b
-require_tools tools/run_rinalmo_e2b_shuffled_round54.sh
-run_seeds e2b_shuffled
-e2b_mean=$(mean_vl0 "$ROOT/audits/round54/e2b_training_summary.json")
-shuffled_mean=$(mean_vl0 "$ROOT/audits/round54/e2b_shuffled_training_summary.json")
-if ! $PY -c "assert $e2b_mean < $shuffled_mean and $e2b_mean < $(mean_vl0 "$ROOT/audits/round54/b0_training_qa.json")"; then
-  decision '{"stage":"E2b","decision":"STOP_NOT_BETTER_THAN_SHUFFLED_OR_B0"}'
+if [[ -f "$ROOT/audits/round54/e2b_interrupted.json" ]]; then
+  decision '{"stage":"E2b","decision":"STOP_PARTIAL_REPEATED_UNEXPLAINED_TERMINATION"}'
+  log "SKIP E2b seed3407 and shuffled: seed2026 repeatedly terminated; retain PARTIAL evidence"
+else
+  run_seeds e2b
+  require_tools tools/run_rinalmo_e2b_shuffled_round54.sh
+  run_seeds e2b_shuffled
+  e2b_mean=$(mean_vl0 "$ROOT/audits/round54/e2b_training_summary.json")
+  shuffled_mean=$(mean_vl0 "$ROOT/audits/round54/e2b_shuffled_training_summary.json")
+  if ! $PY -c "assert $e2b_mean < $shuffled_mean and $e2b_mean < $(mean_vl0 "$ROOT/audits/round54/b0_training_qa.json")"; then
+    decision '{"stage":"E2b","decision":"STOP_NOT_BETTER_THAN_SHUFFLED_OR_B0"}'
+  fi
 fi
 log "START independent E2c enhanced DP"
 require_tools tools/run_rinalmo_e2c_round54.sh tools/qa_rinalmo_e2c_round54.py

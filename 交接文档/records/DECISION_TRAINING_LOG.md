@@ -16236,3 +16236,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 中断时best VL0=22.359044330264734@3500，run_meta明确`converged=false`、`early_stopped=false`。step4000 resume SHA=`b287bee7a7c995358e9e25d3b1d188737a90bf7fce5fbff2e88d2acb4f63a1b0`。
 - 原队列只检查run_meta是否存在，会跳过这种未完成run。已改为检查`converged`，训练日志改为追加；科学臂、初始化、seed、优化器和解冻协议不变。
 - 新主队列PID=647060，训练器从step4000恢复optimizer、scheduler、batch stream和验证状态，日志确认6/33层解冻。单监控PID=617956保持运行，未重新训练已完成seed42。
+
+
+## §15.926（2026-11-13）E2b重复中断停止与冻结范围
+
+- seed2026第一次从step4000恢复后在step4500验证附近再次无traceback终止；改用独立session脱离SSH后仍在同一位置终止。容器内无可用内核OOM记录，根因未确认。按“一次修复仍失败即停止”不再恢复，保留PARTIAL，不把它判作统计热力学科学无效。
+- seed42已完成；seed2026仅保留best VL0=22.359044330264734@3500的部分轨迹；seed3407和全部shuffled未启动，不计算三种子均值、不进入组合或冻结评测。
+- 停止记录`e2b_interrupted.json` SHA=`a16c6436a3498394675fc32cdfcb499c4d4dd8f9d3b664345c150e85e3e6c23e`，step4000 resume SHA=`b287bee7a7c995358e9e25d3b1d188737a90bf7fce5fbff2e88d2acb4f63a1b0`。原始中断日志和最终追加日志均保留，test set未使用。
+- 主队列PID=647521已越过E2b与已完成E2c，启动B0/CL1主八+Rfam冻结验收；单监控PID=617956。
