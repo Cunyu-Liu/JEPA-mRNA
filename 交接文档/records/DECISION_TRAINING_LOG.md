@@ -16294,3 +16294,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - canonical三种子micro-F1均值：TS0=0.547633195、bpRNA-new=0.392921464、ArchiveII=0.502389421、PDB-TS1=0.905742893、PDB-TS2=0.767857143、PDB-TS3=0.574548908、PDB-hard=0.660760428、TestSetB=0.385853523、Rfam=0.412937464。
 - greedy和Turner=0整体弱于canonical，完整负结果保留，不用于替代主结果。VL0参考seed=42（best VL0=15.054794576062195），置信度阈值只由该seed的VL0确定，未拟合测试集。
 - CL1 seed42真实CUDA冻结评测已启动，主队列PID=657272、单监控PID=657273。
+
+
+## §15.934（2026-11-13）CL1 seed42二十七格QA与空间维护
+
+- CL1 seed42的canonical、greedy、Turner=0共27/27格从原始预测复算通过，所有数据集完整，配对合法，指标与checkpoint/data SHA一致。QA SHA=`501c4a335277381282a0229bce972e1562f621457317c83b2121c569b02a5961`。
+- 为避免共享盘再次写满，B0 seed2026历史快照已移动而非删除至`/root/rna_jev_artifact_overflow/b0_s2026`，清单SHA=`d6335b4b523ab721f07b46f34e0ee8709b228109fe6742e0174040d16f3bdd54`；当前best.pt和原始预测不变，可用空间约16GB。
+- CL1其余两种子、聚合、Vienna-only及最终统计复核仍在执行，不作提前完成声明。
