@@ -3,6 +3,7 @@ import hashlib
 import json
 import math
 import statistics
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,7 @@ from rnajepa.harness import valid_pair_mask
 SPLITS = ("bprna_ts0", "bprna_new", "archiveii", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb", "rfam_fam")
 
 
+@lru_cache(maxsize=None)
 def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -42,14 +44,15 @@ def validate(root, arm, seed, split, ablation):
     for index, (source, row) in enumerate(zip(rows, result["per_sequence"])):
         sequence = source["seq"].upper().replace("T", "U")
         expected = [tuple(pair) for pair in source["pairs"]]
+        mask = valid_pair_mask(sequence)
         assert row["name"] == source.get("name", "") and row["length"] == len(sequence)
         repeats = []
         for prediction in result["predictions"]:
             pairs = [tuple(pair) for pair in prediction[index]["pred_pairs"]]
             repeats.append(pairs)
-            assert all(mask[i, j] for i, j in pairs for mask in [valid_pair_mask(sequence)])
+            assert all(mask[i, j] for i, j in pairs)
         assert repeats[0] == repeats[1] == repeats[2]
-        metrics = PairLevelMetrics.from_pairs(repeats[0], expected, L=len(sequence), mask=valid_pair_mask(sequence))
+        metrics = PairLevelMetrics.from_pairs(repeats[0], expected, L=len(sequence), mask=mask)
         assert (row["tp"], row["fp"], row["fn"]) == (metrics.tp, metrics.fp, metrics.fn)
         assert math.isclose(row["f1"], metrics.f1, abs_tol=1e-12)
         tp += metrics.tp

@@ -16252,3 +16252,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 已改为直接调用`head(...)`完成单次Turner+calibration+mask。修正后B0 seed42 TS0 micro-F1=0.5306537776647163、macro-F1=0.5421595328835257，79/79条完整，无交叉或冲突配对。
 - 独立用`xens2_eval.plana_scores`和canonical-nested DP重算79条，所有预测配对逐项一致。路径QA SHA=`8dce9aea215ed5cba9a06126e0730bea49352ee7c06ff81e28c4ea03c6f74691`。run_meta内0.6629是静态旧对照字段，不是round54 seed42的等价参考，不用它调参或选臂。
 - 同时修正聚合和VL0置信度分析的run前缀为`round54_<arm>_s<seed>`。已从合法checkpoint恢复串行冻结队列，主队列PID=647817，不重跑已移出的无效结果。
+
+
+## §15.928（2026-11-13）B0 seed42 canonical九格QA
+
+- 从原始预测重新计算B0 seed42的canonical主八+Rfam，9/9格完整，三次确定性解码、配对合法性、TP/FP/FN、micro/macro F1、checkpoint和数据SHA均通过。QA SHA=`e653301a4059c7ee5282fa48b6253953950c5c1434b387c10ba626dfe24098e3`。
+- 为最终双跑QA加入按路径缓存的SHA计算，并将合法pair mask提升为每序列计算一次，避免重复读取大型checkpoint和重复构造mask；不改变任何指标、阈值或裁决。
+- 其余seed、消融、CL1、Vienna-only和最终统计复核仍由队列执行，seed42单臂QA不是全阶段完成。
