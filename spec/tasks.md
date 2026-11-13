@@ -1,3 +1,5 @@
+> **暂停状态（2026-11-13）**：用户已要求暂停所有正在进行的实验。CL2–CL5队列及训练子进程已停止，不自动恢复。CL3 seed42/2026已完成，seed3407保留step2500 PARTIAL；CL4/CL5未启动。所有checkpoint、日志、负结果和待补计划保留，后续须用户明确恢复。
+>
 > **最新补充（2026-11-13：待补实验与Pair-JEPA复盘）**
 >
 > D1、E2a、E2b及Pair-JEPA/SIGReg未完成证据已登记在`docs/plans/2026-11-13-prism-incomplete-experiments-and-pairjepa-review.md`。CL2–CL5不再与CL1比较，全部独立对照B0；CL2补冻结评测，CL3/4/5从同一B0初始化分别试跑。Pair-JEPA优先验证frozen-target对shuffled-target的结构语义，再评估no-EMA+SIGReg，最后评估长程context；不以随机多样表征冒充有效JEPA。
