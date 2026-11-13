@@ -16259,3 +16259,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 从原始预测重新计算B0 seed42的canonical主八+Rfam，9/9格完整，三次确定性解码、配对合法性、TP/FP/FN、micro/macro F1、checkpoint和数据SHA均通过。QA SHA=`e653301a4059c7ee5282fa48b6253953950c5c1434b387c10ba626dfe24098e3`。
 - 为最终双跑QA加入按路径缓存的SHA计算，并将合法pair mask提升为每序列计算一次，避免重复读取大型checkpoint和重复构造mask；不改变任何指标、阈值或裁决。
 - 其余seed、消融、CL1、Vienna-only和最终统计复核仍由队列执行，seed42单臂QA不是全阶段完成。
+
+
+## §15.929（2026-11-13）B0 seed42消融十八格QA
+
+- greedy与Turner=0共18/18格从原始预测复算通过，三次解码一致、配对合法、指标和checkpoint/data SHA均一致。QA SHA=`0b993ea655daadb3f59c65cbfabe70ee1ad5177c68e20052c828a6106f243464`。
+- 首次消融QA发现校验器将`_greedy`误写为`greedy`比较，属于QA前缀判断错误，不是模型结果错误；修正后同一原始JSON全部通过，未重新推理。
+- 加上§15.928，B0 seed42的27个正式测试格已全部独立复算通过；其余seed与CL1继续运行。

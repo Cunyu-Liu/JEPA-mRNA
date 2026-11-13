@@ -20,7 +20,7 @@ def sha256(path):
 
 
 def validate(root, arm, seed, split, ablation):
-    mode = "nussinov" if ablation != "greedy" else "greedy"
+    mode = "nussinov" if ablation != "_greedy" else "greedy"
     experiment = f"prism_{arm}{ablation}"
     path = root / f"eval_decision/{experiment}/s{seed}/{split}.json"
     result = json.loads(path.read_text())
