@@ -16266,3 +16266,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - greedy与Turner=0共18/18格从原始预测复算通过，三次解码一致、配对合法、指标和checkpoint/data SHA均一致。QA SHA=`0b993ea655daadb3f59c65cbfabe70ee1ad5177c68e20052c828a6106f243464`。
 - 首次消融QA发现校验器将`_greedy`误写为`greedy`比较，属于QA前缀判断错误，不是模型结果错误；修正后同一原始JSON全部通过，未重新推理。
 - 加上§15.928，B0 seed42的27个正式测试格已全部独立复算通过；其余seed与CL1继续运行。
+
+
+## §15.930（2026-11-13）B0 seed2026冻结二十七格QA
+
+- B0 seed2026的canonical、greedy、Turner=0主八+Rfam共27/27格从原始预测复算通过，所有数据集完整，三次确定性解码、配对合法性、指标及checkpoint/data SHA均一致。QA SHA=`839a99e85ef0defbf6fa15587eda6af17e904a153f4d814f042cbac384c8c8a4`。
+- VL0输入已完成，但阈值选择与置信度统计在三种子聚合后统一复核；不以测试集调参或选臂。B0 seed3407正在运行，CL1尚未开始。
