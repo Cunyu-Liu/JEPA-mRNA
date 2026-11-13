@@ -16323,3 +16323,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - 新增`docs/plans/2026-11-13-prism-incomplete-experiments-and-pairjepa-review.md`，逐项登记D1、CL2–CL5、E2a、E2b、Pair-JEPA/SIGReg及fixed/random/J3的已有证据、缺口和补跑条件。工程失败、训练未完成、未测评与科学负结果不再混写。
 - 用户新指令：D1、E2a、E2b后续补齐；CL2–CL5各自直接与统一B0比较，不再以CL1为晋级门槛。CL2补主八+Rfam；CL3/4/5均从B0独立初始化，先seed42工程门再三种子，不因CL2结果跳过。
 - Pair-JEPA作为核心创新优先复盘：恒定解是MSE优化捷径，EMA stop-gradient不保证target语义，SIGReg各向同性不等于结构正确。推荐先做frozen-target对shuffled-target语义门，再视证据评估no-EMA+SIGReg，最后才做长程context；fixed/random不可省略，不把随机多样的表征当成有效创新。
+
+
+## §15.938（2026-11-13）CL2–CL5独立B0对照与CL5实现门
+
+- 新队列`run_prism_cl2_cl5_b0_round55.sh`：CL2已有三种子直接与B0比较；CL3/CL4从B0独立训练；CL5必须在CL4释放GPU后通过两步smoke QA，才允许正式三种子。CL3 seed42已启动并进入正式训练。
+- CL5按预注册设计仅增加CL4双视图在合法pair位置的64维输出余弦一致性项，权重0.1，其他负样本、直接目标、优化器、解冻和部署不变。新增实现计划`docs/plans/2026-11-13-cl5-output-consistency-implementation.md`。
+- 相同输入、独立输入、空mask、梯度和真实CUDA三项测试通过。相同输入的浮点误差和近零梯度使用1e-6测试容差，生产逻辑未改。
+- 一次误在CL3占约20.9GB时启动CL5 smoke发生CUDA OOM，原始日志保留。此后smoke硬放在CL4完成后串行执行，不并行抢救，不改科学配置；尚无CL5正式结果。

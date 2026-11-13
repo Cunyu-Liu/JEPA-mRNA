@@ -400,6 +400,7 @@ def main():
     ap.add_argument("--cl2-max-negatives", type=int, default=32)
     ap.add_argument("--cl3-negative-map", default="")
     ap.add_argument("--cl4-negative-weights", default="")
+    ap.add_argument("--cl5-output-weight", type=float, default=0.0)
     ap.add_argument("--cl0-clusters", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/cl0_structure_contrast_round54/clusters.jsonl")
     ap.add_argument("--jepa-target", choices=["ema", "fixed", "random", "online"], default="ema")
     ap.add_argument("--jepa-context", choices=["context_v1", "structured_block", "structured_axial"], default="context_v1")
@@ -434,6 +435,8 @@ def main():
         raise SystemExit("CL3 negative map requires the CL2 objective")
     if args.cl4_negative_weights and not args.cl3_negative_map:
         raise SystemExit("CL4 weights require the CL3 negative map")
+    if args.cl5_output_weight < 0 or (args.cl5_output_weight and not args.cl4_negative_weights):
+        raise SystemExit("CL5 output consistency requires the complete CL4 objective")
     if args.cl2_infonce_weight < 0 or args.cl2_temperature <= 0 or args.cl2_max_negatives <= 0:
         raise SystemExit("invalid CL2 weight, temperature or negative limit")
     if args.cl2_infonce_weight and (not args.cl1_token_mask or args.lambda_jepa or args.scorer != "resnet2d"):
@@ -678,6 +681,7 @@ def main():
                       "cl0_clusters": args.cl0_clusters if args.cl2_infonce_weight else None,
                       "cl3_negative_map": args.cl3_negative_map or None,
                       "cl4_negative_weights": args.cl4_negative_weights or None,
+                      "cl5_output_weight": args.cl5_output_weight,
                       "cl3_negative_bank_size": len(bank_hashes) if negative_map is not None else 0,
                       "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
                       "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
@@ -895,6 +899,14 @@ def main():
                               "negative_mode": "cl4_weighted" if negative_weights else ("cl3_structure_hard" if negative_map else "random"),
                               **cl2_diagnostics}
 
+        cl5_record = None
+        if args.cl5_output_weight:
+            from rnajepa.contrast import output_consistency
+            output_loss, cl5_record = output_consistency(
+                direct_views[0][3], direct_views[1][3], mask_full)
+            total = total + args.cl5_output_weight * output_loss
+            terms_agg["output_consistency"] = float(output_loss.detach())
+
         jepa_record = None
         if args.lambda_jepa:
             log_latent = step % args.jepa_log_every == 0 or step == 1
@@ -968,6 +980,7 @@ def main():
                    "cl1_views": n_views, "cl1_masked_tokens": masked_counts,
                    "cl2_projection_grad": cl2_projection_grad,
                    "motif_projection_grad": motif_projection_grad,
+                   "cl5_output": cl5_record,
                    "terms": {k: round(v, 4) for k, v in terms_agg.items()},
                    "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
                    "lr_head": sched.get_last_lr()[0],

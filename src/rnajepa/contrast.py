@@ -119,3 +119,20 @@ class ResidueInfoNCE(nn.Module):
         self.queue_legal = state["queue_legal"]
         self.bank_z = state["bank_z"]
         self.bank_hashes = state["bank_hashes"]
+
+
+def output_consistency(z1, z2, valid_mask):
+    if z1.shape != z2.shape or z1.shape[:-1] != valid_mask.shape:
+        raise ValueError("output views and legal mask have incompatible shapes")
+    if valid_mask.dtype != torch.bool or not valid_mask.any():
+        raise ValueError("at least one legal pair is required")
+    left, right = z1[valid_mask], z2[valid_mask]
+    similarity = F.cosine_similarity(left, right, dim=-1)
+    loss = 1.0 - similarity.mean()
+    diagnostics = {
+        "output_similarity": float(similarity.detach().mean()),
+        "output_norm": float(torch.cat([left, right]).norm(dim=-1).mean().detach()),
+        "output_channel_variance": float(torch.cat([left, right]).var(dim=0, unbiased=False).mean().detach()),
+        "output_pairs": int(valid_mask.sum()),
+    }
+    return loss, diagnostics
