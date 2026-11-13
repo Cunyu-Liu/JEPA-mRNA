@@ -16286,3 +16286,11 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - canonical聚合在所有计算完成后写summary时报`OSError: [Errno 122] Disk quota exceeded`；共享盘fx为4.9T、可用0。此前无退出日志的队列/监控消失与满盘时间一致，现以实际磁盘错误为准，不归因为模型或CUDA失败。
 - 未删除任何实验artifact。B0 seed42四个历史快照各2.5GB已移至`/root/rna_jev_artifact_overflow/b0_s42`，当前best.pt不受影响。fx不支持symlink，故以`weights/round54/b0_s42.moved.json`记录原路径、新位置、大小和SHA，清单SHA=`96b3defea482853a2601a7c47a4fd5706c5fa5e20760c91d4e958790739de3f8`；释放约13GB。
 - 聚合器已加入同进程checkpoint SHA缓存，减少恢复时重复读取。单队列PID=657272、单监控PID=657273恢复，B0预测继续复用，不重跑推理。
+
+
+## §15.933（2026-11-13）B0冻结聚合与CL1启动
+
+- B0 canonical、greedy、Turner=0三种模式均完成三种子九数据集汇总，状态`PASS_STRUCTRFM_FULL_ABC_9_SPLITS_3_SEEDS_3_REPEATS`，81格原始预测未重跑。
+- canonical三种子micro-F1均值：TS0=0.547633195、bpRNA-new=0.392921464、ArchiveII=0.502389421、PDB-TS1=0.905742893、PDB-TS2=0.767857143、PDB-TS3=0.574548908、PDB-hard=0.660760428、TestSetB=0.385853523、Rfam=0.412937464。
+- greedy和Turner=0整体弱于canonical，完整负结果保留，不用于替代主结果。VL0参考seed=42（best VL0=15.054794576062195），置信度阈值只由该seed的VL0确定，未拟合测试集。
+- CL1 seed42真实CUDA冻结评测已启动，主队列PID=657272、单监控PID=657273。
