@@ -16279,3 +16279,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - B0 seed3407的27/27格从原始预测复算通过，QA SHA=`fca8da575342f4ab3e0e4c7b913a45c45d6f0ded815470a6cc3c5644c69d292b`；结合前两seed，B0三种子共81个正式测试格全部独立QA通过。
 - 首次聚合因旧结果缺少`encoder_load.strict_identity`停止，并非推理失败。`load_plana`实际使用严格state_dict加载；已备份84份原始JSON（81格+3份VL0），只补充严格加载元数据，预测和指标不变。backfill QA SHA=`8a54df0fc94a634db537598151cd34100ebf760732ac2dde3197616c1c619b40`。后续新结果直接写入该元数据。
 - 队列按checkpoint SHA复用全部B0结果，仅重做聚合、置信度和后续CL1，不重跑B0推理。
+
+
+## §15.932（2026-11-13）共享盘满导致的中断与artifact迁移
+
+- canonical聚合在所有计算完成后写summary时报`OSError: [Errno 122] Disk quota exceeded`；共享盘fx为4.9T、可用0。此前无退出日志的队列/监控消失与满盘时间一致，现以实际磁盘错误为准，不归因为模型或CUDA失败。
+- 未删除任何实验artifact。B0 seed42四个历史快照各2.5GB已移至`/root/rna_jev_artifact_overflow/b0_s42`，当前best.pt不受影响。fx不支持symlink，故以`weights/round54/b0_s42.moved.json`记录原路径、新位置、大小和SHA，清单SHA=`96b3defea482853a2601a7c47a4fd5706c5fa5e20760c91d4e958790739de3f8`；释放约13GB。
+- 聚合器已加入同进程checkpoint SHA缓存，减少恢复时重复读取。单队列PID=657272、单监控PID=657273恢复，B0预测继续复用，不重跑推理。

@@ -1,11 +1,13 @@
 import argparse
 import hashlib
 import json
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 
 
+@lru_cache(maxsize=None)
 def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
