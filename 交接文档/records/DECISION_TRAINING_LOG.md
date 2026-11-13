@@ -16301,3 +16301,9 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - CL1 seed42的canonical、greedy、Turner=0共27/27格从原始预测复算通过，所有数据集完整，配对合法，指标与checkpoint/data SHA一致。QA SHA=`501c4a335277381282a0229bce972e1562f621457317c83b2121c569b02a5961`。
 - 为避免共享盘再次写满，B0 seed2026历史快照已移动而非删除至`/root/rna_jev_artifact_overflow/b0_s2026`，清单SHA=`d6335b4b523ab721f07b46f34e0ee8709b228109fe6742e0174040d16f3bdd54`；当前best.pt和原始预测不变，可用空间约16GB。
 - CL1其余两种子、聚合、Vienna-only及最终统计复核仍在执行，不作提前完成声明。
+
+
+## §15.935（2026-11-13）CL1 seed2026二十七格QA
+
+- CL1 seed2026的canonical、greedy、Turner=0共27/27格从原始预测复算通过，所有数据集完整，三次确定性解码、配对合法性、指标及checkpoint/data SHA一致。QA SHA=`1184911134df127fd3abd0d56f773779d7b7e55b6fb1307fcf1544c53edfb0ed`。
+- CL1 seed3407继续由单队列执行；聚合、置信度、Vienna-only和最终双跑QA尚待完成。
