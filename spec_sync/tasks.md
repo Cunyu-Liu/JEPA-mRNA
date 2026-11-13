@@ -1,3 +1,7 @@
+> **最新补充（2026-11-13：待补实验与Pair-JEPA复盘）**
+>
+> D1、E2a、E2b及Pair-JEPA/SIGReg未完成证据已登记在`docs/plans/2026-11-13-prism-incomplete-experiments-and-pairjepa-review.md`。CL2–CL5不再与CL1比较，全部独立对照B0；CL2补冻结评测，CL3/4/5从同一B0初始化分别试跑。Pair-JEPA优先验证frozen-target对shuffled-target的结构语义，再评估no-EMA+SIGReg，最后评估长程context；不以随机多样表征冒充有效JEPA。
+>
 > **最终执行覆盖（2026-11-13：统一B0科学臂与冻结验收）**
 >
 > B0三种子、D0、D1、Pair-JEPA/SIGReg、CL0/CL1/CL2、E2a/E2b/E2c均已按阶段门裁决，不重跑已关闭实验。E2b保留PARTIAL并排除；E2c不保留。B0/CL1冻结主八+Rfam共162格及Vienna-only 9格已完成，最终QA与独立实现复核均双跑一致。CL1主八Holm校正p值全部1.0；B0仅PDB-TS1一个基线胜出格，Rfam均未胜出，不宣称SOTA。LinearDesign/raw-sequence测速保持暂停，PPT未修改。独立复核SHA256=`7ce91a055d71982d9ab96732a7e82c0db5774919a62df2c76e3d9ee0ed08c18f`。

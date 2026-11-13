@@ -16316,3 +16316,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 - CL1−B0 canonical micro-F1均值差：TS0=-0.006906、bpRNA-new=+0.007965、ArchiveII=+0.003976、PDB-TS1=-0.026201、PDB-TS2=-0.251190、PDB-TS3=-0.099715、PDB-hard=-0.152298、TestSetB=+0.033179、Rfam=+0.028837。主八Holm校正p值全部1.0，不支持稳定提升。
 - B0在PDB-TS1有1个主基线胜出格，CL1为0；Rfam均未胜出，不宣称SOTA。Vienna-only在PDB-TS2高于B0/CL1，保留物理基线优势，不外推为其他数据集结论。
 - E2b因重复外部终止保留PARTIAL且未进入冻结集合；E2c物理DP为VL0负结果；Pair-JEPA、D1、CL3–CL5、E2a均维持既有关闭状态，未默认组合。LinearDesign/raw-sequence测速未启动，PPT未修改。
+
+
+## §15.937（2026-11-13）未完成实验交接与Pair-JEPA核心复盘
+
+- 新增`docs/plans/2026-11-13-prism-incomplete-experiments-and-pairjepa-review.md`，逐项登记D1、CL2–CL5、E2a、E2b、Pair-JEPA/SIGReg及fixed/random/J3的已有证据、缺口和补跑条件。工程失败、训练未完成、未测评与科学负结果不再混写。
+- 用户新指令：D1、E2a、E2b后续补齐；CL2–CL5各自直接与统一B0比较，不再以CL1为晋级门槛。CL2补主八+Rfam；CL3/4/5均从B0独立初始化，先seed42工程门再三种子，不因CL2结果跳过。
+- Pair-JEPA作为核心创新优先复盘：恒定解是MSE优化捷径，EMA stop-gradient不保证target语义，SIGReg各向同性不等于结构正确。推荐先做frozen-target对shuffled-target语义门，再视证据评估no-EMA+SIGReg，最后才做长程context；fixed/random不可省略，不把随机多样的表征当成有效创新。
