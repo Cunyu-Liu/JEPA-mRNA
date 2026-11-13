@@ -1,3 +1,9 @@
+> **最终执行覆盖（2026-11-13：统一B0科学臂与冻结验收）**
+>
+> B0三种子、D0、D1、Pair-JEPA/SIGReg、CL0/CL1/CL2、E2a/E2b/E2c均已按阶段门裁决，不重跑已关闭实验。E2b保留PARTIAL并排除；E2c不保留。B0/CL1冻结主八+Rfam共162格及Vienna-only 9格已完成，最终QA与独立实现复核均双跑一致。CL1主八Holm校正p值全部1.0；B0仅PDB-TS1一个基线胜出格，Rfam均未胜出，不宣称SOTA。LinearDesign/raw-sequence测速保持暂停，PPT未修改。独立复核SHA256=`7ce91a055d71982d9ab96732a7e82c0db5774919a62df2c76e3d9ee0ed08c18f`。
+>
+> 统一B0=单RiNALMo-giga+单ResNet2D+Turner+calibration+canonical-nested DP+原四目标/优化器/解冻+单checkpoint，无集成；测试集未用于调参、早停、校准或选臂。
+>
 # Tasks — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
 > **最新执行覆盖（2026-11-11：RiNALMo全量重跑与下游扩展）**

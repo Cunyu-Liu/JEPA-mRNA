@@ -16307,3 +16307,12 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - CL1 seed2026的canonical、greedy、Turner=0共27/27格从原始预测复算通过，所有数据集完整，三次确定性解码、配对合法性、指标及checkpoint/data SHA一致。QA SHA=`1184911134df127fd3abd0d56f773779d7b7e55b6fb1307fcf1544c53edfb0ed`。
 - CL1 seed3407继续由单队列执行；聚合、置信度、Vienna-only和最终双跑QA尚待完成。
+
+
+## §15.936（2026-11-13）PRISM统一B0阶段最终冻结验收
+
+- 主队列退出码0，`ALL_REGISTERED_STAGES_COMPLETE`。B0与CL1两种模式×三种子×三模式×九数据集共162格完整，Vienna-only 9格齐全；最终QA双跑逐字节一致，SHA=`1e9e4b4f41901084ba0c66329b6e81a459e5fb6c3bc8551796d3a6fad765664a`。
+- 独立实现从原始预测复算两次并逐字节一致，模型162格+Vienna 9格的micro/macro F1、数据/checkpoint SHA、三次确定性预测、合法pair、canonical零交叉/零冲突、greedy冲突计数均通过。独立复核SHA=`7ce91a055d71982d9ab96732a7e82c0db5774919a62df2c76e3d9ee0ed08c18f`。首次独立检查误把保留冲突的greedy按canonical处理，已区分两种协议后复算，未重跑实验。
+- CL1−B0 canonical micro-F1均值差：TS0=-0.006906、bpRNA-new=+0.007965、ArchiveII=+0.003976、PDB-TS1=-0.026201、PDB-TS2=-0.251190、PDB-TS3=-0.099715、PDB-hard=-0.152298、TestSetB=+0.033179、Rfam=+0.028837。主八Holm校正p值全部1.0，不支持稳定提升。
+- B0在PDB-TS1有1个主基线胜出格，CL1为0；Rfam均未胜出，不宣称SOTA。Vienna-only在PDB-TS2高于B0/CL1，保留物理基线优势，不外推为其他数据集结论。
+- E2b因重复外部终止保留PARTIAL且未进入冻结集合；E2c物理DP为VL0负结果；Pair-JEPA、D1、CL3–CL5、E2a均维持既有关闭状态，未默认组合。LinearDesign/raw-sequence测速未启动，PPT未修改。
