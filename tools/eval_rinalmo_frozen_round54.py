@@ -33,7 +33,8 @@ def main():
         raise RuntimeError("CUDA required for full-model evaluation")
     encoder, head = load_plana(args.checkpoint, device="cuda")
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
-    load_report = checkpoint.get("meta", {}).get("backbone_report", {})
+    load_report = {**checkpoint.get("meta", {}).get("backbone_report", {}),
+                   "strict_identity": True, "checkpoint_state_dict_load": "strict"}
     teacher_forward_guard = forbid_pairjepa_teacher_forward(head)
     encoder.eval()
     head.eval()

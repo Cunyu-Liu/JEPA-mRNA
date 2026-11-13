@@ -16272,3 +16272,10 @@ Test 0.6395 / GenA 0.4772 / GenC 0.2247 / GenF 0.2582（early-stopping@17000, be
 
 - B0 seed2026的canonical、greedy、Turner=0主八+Rfam共27/27格从原始预测复算通过，所有数据集完整，三次确定性解码、配对合法性、指标及checkpoint/data SHA均一致。QA SHA=`839a99e85ef0defbf6fa15587eda6af17e904a153f4d814f042cbac384c8c8a4`。
 - VL0输入已完成，但阈值选择与置信度统计在三种子聚合后统一复核；不以测试集调参或选臂。B0 seed3407正在运行，CL1尚未开始。
+
+
+## §15.931（2026-11-13）B0三种子八十一格QA与聚合元数据修复
+
+- B0 seed3407的27/27格从原始预测复算通过，QA SHA=`fca8da575342f4ab3e0e4c7b913a45c45d6f0ded815470a6cc3c5644c69d292b`；结合前两seed，B0三种子共81个正式测试格全部独立QA通过。
+- 首次聚合因旧结果缺少`encoder_load.strict_identity`停止，并非推理失败。`load_plana`实际使用严格state_dict加载；已备份84份原始JSON（81格+3份VL0），只补充严格加载元数据，预测和指标不变。backfill QA SHA=`8a54df0fc94a634db537598151cd34100ebf760732ac2dde3197616c1c619b40`。后续新结果直接写入该元数据。
+- 队列按checkpoint SHA复用全部B0结果，仅重做聚合、置信度和后续CL1，不重跑B0推理。
