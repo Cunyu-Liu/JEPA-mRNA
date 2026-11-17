@@ -8,11 +8,14 @@ import time
 REPO = Path("/home/rna_jev_xens2_dualview_round56")
 ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/interface")
 PYTHON = "/root/miniconda3/envs/lucaone_cu128/bin/python"
-MODES = ("rinalmo", "h0", "h2", "handcrafted", "random", "length", "gc")
+MODES = ("rinalmo", "h0", "handcrafted", "random", "length", "gc")
 
 
 def main():
     os.environ.update(OMP_NUM_THREADS="2", MKL_NUM_THREADS="2", PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True")
+    identity = json.loads((ROOT / "h2_encoder_identity.json").read_text())
+    assert identity["status"] == "ALIASED_H0_SHARED_FROZEN_ENCODER_NOT_INDEPENDENT_JEPA_TRANSFER"
+    assert identity["encoder_exact_equal"] and identity["remaining_duplicate_h2_runs_stopped"]
     while True:
         paths = [ROOT / "features" / f"{mode}_{split}_part0.json"
                  for mode in ("rinalmo", "h0", "h2") for split in ("train", "holdout")]

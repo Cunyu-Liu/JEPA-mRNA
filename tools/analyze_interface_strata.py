@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/interface")
-MODES = ("rinalmo", "h0", "h2", "handcrafted", "random", "length", "gc")
+MODES = ("rinalmo", "h0", "handcrafted", "random", "length", "gc")
 
 
 def f1(tp, fp, fn):
@@ -33,7 +33,7 @@ def bucket(length):
 def main():
     summary_path = ROOT / "converged_baseline_summary.json"
     summary = json.loads(summary_path.read_text())
-    assert summary["status"] == "PASS_SEQUENCE_ONLY_INTERFACE_PROBES_WITH_STRUCTURE_BLOCKED"
+    assert summary["status"] == "PASS_SEQUENCE_ONLY_INTERFACE_PROBES_WITH_H2_ALIAS_AND_STRUCTURE_BLOCKED"
     labels = {r["name"]: r for r in map(json.loads, (ROOT / "holdout_contacts.jsonl").open())}
     output = {"status": "PASS_DESCRIPTIVE_INTERFACE_STRATA", "scientific_scope": "frozen holdout strata only; not model selection; structure-aware arms remain blocked",
               "source_summary_sha256": hashlib.sha256(summary_path.read_bytes()).hexdigest(), "modes": {}}
