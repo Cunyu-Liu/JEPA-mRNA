@@ -1,4 +1,5 @@
 import json
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 from pathlib import Path
@@ -35,7 +36,36 @@ def fetch(url):
         return [], str(error)
 
 
+def retry_errors():
+    path = ROOT / "ensembl_sources.json"
+    output = json.loads(path.read_text())
+    resolved = []
+    for source in output["sources"].values():
+        remaining = []
+        for item in source["errors"]:
+            hrefs, error = fetch(item["url"])
+            if error:
+                remaining.append({**item, "error": error})
+                continue
+            base = item["url"]
+            source["files"].extend(base + href for href in hrefs if href.endswith(".ncrna.fa.gz"))
+            resolved.append(item)
+        source["errors"] = remaining
+        source["files"] = sorted(set(source["files"]))
+        source["n_files"] = len(source["files"])
+    output["resolved_timeouts"] = resolved
+    if not any(source["errors"] for source in output["sources"].values()):
+        output["status"] = "PASS_ENSEMBL_EXACT_NCRNA_SOURCE_LIST_WITH_DOWNLOAD_PENDING"
+    path.with_name("ensembl_sources_with_two_timeouts.json").write_text(json.dumps(output, indent=2) + "\n")
+    path.write_text(json.dumps(output, indent=2) + "\n")
+    print(json.dumps({"status": output["status"], "resolved": resolved,
+                      "counts": {name: source["n_files"] for name, source in output["sources"].items()}}, indent=2))
+
+
 def main():
+    if "--retry-errors" in sys.argv:
+        retry_errors()
+        return
     jobs = [("ensembl_109", "https://ftp.ensembl.org/pub/release-109/fasta/", 2),
             ("ensembl_bacteria_56", "https://ftp.ensemblgenomes.ebi.ac.uk/pub/bacteria/release-56/fasta/", 3)]
     output = {"status": "PASS_ENSEMBL_EXACT_NCRNA_SOURCE_LIST_WITH_DOWNLOAD_PENDING",
@@ -56,6 +86,7 @@ def main():
                     if href.endswith("/") and not href.startswith(("?", "/", "http", "..")):
                         directories.append(base + href)
             previous = directories
+        directories = [directory + "ncrna/" for directory in directories]
         with ThreadPoolExecutor(max_workers=8) as executor:
             results = list(executor.map(fetch, directories))
         files = []
