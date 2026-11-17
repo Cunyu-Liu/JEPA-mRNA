@@ -453,7 +453,8 @@ class FlatDecisionHead(nn.Module):
         if motif_features is not None:
             if self.motif_input is None:
                 raise ValueError("motif features require a motif input module")
-            z = z + self.motif_input(motif_features)
+            if not getattr(self.motif_input, "direct_score", False):
+                z = z + self.motif_input(motif_features)
         if self.pair_jepa is not None:
             scores = self.pair_jepa(z, presymmetrized=presymmetrized)
         else:
@@ -467,6 +468,8 @@ class FlatDecisionHead(nn.Module):
             bias = self.ripe(seq_ids, column_start=column_start,
                              column_end=None if column_start is None else column_start + scores.shape[2])
             scores = scores + bias.mean(dim=1)
+        if motif_features is not None and getattr(self.motif_input, "direct_score", False):
+            scores = scores + self.motif_input(motif_features)
         return scores
 
     def masked_pair_latent_loss(self, z: torch.Tensor, mask: torch.Tensor, rank_samples: int = 0,

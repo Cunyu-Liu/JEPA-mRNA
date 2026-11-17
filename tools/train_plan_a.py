@@ -374,6 +374,8 @@ def main():
     ap.add_argument("--serial-encoder", action="store_true")
     ap.add_argument("--motif", choices=["", "motif", "shuffled"], default="")
     ap.add_argument("--motif-asset-dir", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/e2a_motif_round54")
+    ap.add_argument("--bpfold-motif", choices=["", "inner_outer", "shuffled", "energy_only", "turner0"], default="")
+    ap.add_argument("--bpfold-energy-table", default="/home/rna_jev/third_party/BPfold/src/BPfold/paras/key.energy")
     ap.add_argument("--thermo", choices=["", "online", "shuffled"], default="")
     ap.add_argument("--thermo-cache-dir", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/e2b_thermo_round54/cache")
     ap.add_argument("--out", required=True)
@@ -448,10 +450,12 @@ def main():
                          "data-loading phase; freed into the allocator pool "
                          "once the model is on device (shared-cluster race fix)")
     args = ap.parse_args()
+    if args.bpfold_motif and (args.motif or args.thermo):
+        raise SystemExit("BPfold motif is independent of Turner motif/thermodynamic input arms")
     if args.dual_view_arm != "H0":
         if (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
                 or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
-                or args.cl2_infonce_weight or args.motif or args.thermo):
+                or args.cl2_infonce_weight or args.motif or args.thermo or args.bpfold_motif):
             raise SystemExit("dual-view H1-H6 is isolated from stopped Pair-JEPA/RIPE and independent input arms")
         if (args.dual_view_dim <= 0 or args.dual_view_queries <= 0
                 or args.dual_view_heads <= 0 or args.dual_view_dim % args.dual_view_heads
@@ -587,6 +591,12 @@ def main():
         head.motif_input.motif_parameters = load_parameters(Path(args.motif_asset_dir) / "parameters.npz")
         head.motif_input.sequences = []
         head.motif_input.shuffle = args.motif == "shuffled"
+    if args.bpfold_motif:
+        from rnajepa.bpfold_motif import BPfoldMotifInput
+        head.motif_input = BPfoldMotifInput(
+            args.bpfold_energy_table, direct_score=args.bpfold_motif == "energy_only")
+        head.motif_input.sequences = []
+        head.motif_input.shuffle = args.bpfold_motif == "shuffled"
     if args.thermo:
         from rnajepa.thermodynamics import attach_thermodynamic_input
         normalization = json.loads((Path(args.thermo_cache_dir).parent / "normalization.json").read_text())
@@ -719,6 +729,11 @@ def main():
                   "mode": args.motif, "asset_dir": args.motif_asset_dir,
                   "features": 6, "projection": "6_to_128_zero_initialized",
                   "position_shuffle_seed": 20261113 if args.motif == "shuffled" else None}),
+        "bpfold_motif": (None if not args.bpfold_motif else {
+                  "mode": args.bpfold_motif, "energy_table": args.bpfold_energy_table,
+                  "identity": "BPfold/BRIQ normalized inner/outer motif energy",
+                  "turner_zero": args.bpfold_motif == "turner0",
+                  "projection": "2_to_128_pair_input" if args.bpfold_motif != "energy_only" else "2_to_1_direct_score"}),
         "pair_latent_dim": args.pair_latent_dim,
         "dual_view": {
             "arm": args.dual_view_arm,
@@ -895,12 +910,15 @@ def main():
             motif_features = thermodynamic_batch(
                 seqs, args.thermo_cache_dir, shuffled=args.thermo == "shuffled").to(device)
         elif head.motif_input is not None:
-            from rnajepa.motif import candidate_motif_features_torch, shuffle_positions
             head.motif_input.sequences = seqs
-            motif_features = candidate_motif_features_torch(
-                head_ids, head.motif_input.motif_parameters, seqs)
-            if args.motif == "shuffled":
-                motif_features = shuffle_positions(motif_features, seqs)
+            if args.bpfold_motif:
+                motif_features = head.motif_input.features().to(device)
+            else:
+                from rnajepa.motif import candidate_motif_features_torch, shuffle_positions
+                motif_features = candidate_motif_features_torch(
+                    head_ids, head.motif_input.motif_parameters, seqs)
+                if args.motif == "shuffled":
+                    motif_features = shuffle_positions(motif_features, seqs)
         def forward_direct(view_ids, view_attn):
             enc_ids = view_ids.to(device)
             attn = view_attn.to(device)
@@ -929,7 +947,8 @@ def main():
                                motif_features, use_reentrant=False)
             s = s_raw
             if head.use_turner_prior:
-                s = s + head.prior_weight.to(s.dtype) * turner_phys_scores(head_ids).to(device)
+                prior_factor = 0.0 if args.bpfold_motif == "turner0" else head.prior_weight.to(s.dtype)
+                s = s + prior_factor * turner_phys_scores(head_ids).to(device)
             s = head.calibration(s, lengths_t)
             mask_full = pair_mask_from_ids(head_ids, head.min_loop).to(device)
             matrix = torch.where(mask_full, s, torch.full_like(s, float("-inf")))
