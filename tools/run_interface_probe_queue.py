@@ -40,6 +40,8 @@ def main():
     running = []
     failed = []
     while jobs or running:
+        if failed:
+            raise RuntimeError(f"interface probe failures preserved: {failed}")
         while jobs and len(running) < 2 and not failed:
             mode, seed = jobs.pop(0)
             directory = ROOT / "converged_baselines" / f"{mode}_seed{seed}"
