@@ -48,7 +48,9 @@ def load_split(split, mode):
             embedding = torch.tensor([[value]], dtype=torch.float32).expand(len(record["residues"]), 1)
             structure = torch.empty(len(embedding), 0)
         else:
-            source = "rinalmo" if mode in ("rinalmo", "random") else "h0_structure" if mode.startswith("h0") else "h2_structure"
+            source = ("rinalmo" if mode in ("rinalmo", "random") else
+                      "h0" if mode == "h0" else "h2" if mode == "h2" else
+                      "h0_structure" if mode == "h0_structure" else "h2_structure")
             path = ROOT / "features" / source / split / f"{record['name']}.npz"
             with np.load(path, allow_pickle=False) as saved:
                 assert str(saved["sequence"]) == record["sequence"]

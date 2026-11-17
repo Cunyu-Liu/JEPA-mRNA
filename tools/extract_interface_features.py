@@ -49,7 +49,7 @@ def structure_statistics(scores, sequence):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["rinalmo", "h0_structure", "h2_structure"], required=True)
+    parser.add_argument("--mode", choices=["rinalmo", "h0", "h2", "h0_structure", "h2_structure"], required=True)
     parser.add_argument("--split", choices=["train", "holdout"], required=True)
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--shard-count", type=int, default=1)
@@ -68,6 +68,13 @@ def main():
         encoder, report = load_encoder(device="cuda", dtype=torch.float32)
         head = None
         checkpoint_sha = sha256(Path(report["weights"]) / "model.safetensors")
+    elif args.mode in ("h0", "h2"):
+        state = torch.load(checkpoint, map_location="cpu", weights_only=False, mmap=True)
+        encoder, report = load_encoder(device="cuda", dtype=torch.float32)
+        encoder.load_state_dict(state["model"]["encoder"], strict=True)
+        encoder.eval()
+        head = None
+        checkpoint_sha = sha256(checkpoint)
     else:
         encoder, head = load_plana(str(checkpoint), "cuda")
         checkpoint_sha = sha256(checkpoint)

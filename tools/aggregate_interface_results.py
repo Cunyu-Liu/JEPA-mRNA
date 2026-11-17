@@ -21,10 +21,18 @@ def main():
     assert qa["status"] == "PASS_INDEPENDENT_INTERFACE_LABEL_QA"
     assert not qa["train_holdout_group_overlap"] and not qa["train_holdout_pdb_overlap"]
     labels = {r["name"]: r for r in map(json.loads, (ROOT / "holdout_contacts.jsonl").open())}
-    summary = {"status": "PASS_CONVERGED_INTERFACE_PROBE_EVALUATION",
-               "scientific_scope": "frozen representation probes with verified contacts; not a secondary-structure accuracy rescue; RiNALMo pretraining exposure unknown",
-               "label_qa_sha256": sha256(ROOT / "label_qa_summary.json"), "modes": {}}
+    gate = json.loads((ROOT / "structure_feature_gate.json").read_text())
+    assert gate["status"] == "BLOCKED_STRUCTURE_FEATURE_FULL_LENGTH_CUDA_OOM"
+    assert not gate["structure_arms_started"]
+    summary = {"status": "PASS_SEQUENCE_ONLY_INTERFACE_PROBES_WITH_STRUCTURE_BLOCKED",
+               "scientific_scope": "sequence-only frozen representation probes with verified contacts; structure-aware arms remain engineering-blocked; not complete F2 or a secondary-structure accuracy rescue; RiNALMo pretraining exposure unknown",
+               "label_qa_sha256": sha256(ROOT / "label_qa_summary.json"),
+               "structure_feature_gate_sha256": sha256(ROOT / "structure_feature_gate.json"), "modes": {}}
     for mode in MODES:
+        if mode.endswith("_structure"):
+            summary["modes"][mode] = {"status": gate["status"], "evidence_sha256": gate["log_sha256"],
+                                      "not_a_model_efficacy_result": True}
+            continue
         rows = []
         for seed in (42, 2026, 3407):
             directory = ROOT / "converged_baselines" / f"{mode}_seed{seed}"
@@ -98,8 +106,6 @@ def main():
     summary["descriptive_effects"] = {
         "h2_minus_h0_auprc": summary["modes"]["h2"]["micro_auprc_mean"] - summary["modes"]["h0"]["micro_auprc_mean"],
         "h2_minus_h0_macro_f1_binary": summary["modes"]["h2"]["macro_f1_binary_mean"] - summary["modes"]["h0"]["macro_f1_binary_mean"],
-        "h0_structure_minus_h0_auprc": summary["modes"]["h0_structure"]["micro_auprc_mean"] - summary["modes"]["h0"]["micro_auprc_mean"],
-        "h2_structure_minus_h2_auprc": summary["modes"]["h2_structure"]["micro_auprc_mean"] - summary["modes"]["h2"]["micro_auprc_mean"],
     }
     output = ROOT / "converged_baseline_summary.json"
     output.write_text(json.dumps(summary, indent=2) + "\n")

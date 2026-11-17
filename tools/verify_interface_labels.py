@@ -22,6 +22,18 @@ def rows(block, category, names):
             for row in block.find(category, names)]
 
 
+def parent_base(monomer, parents):
+    if monomer in {"A", "C", "G", "U"}:
+        return monomer
+    info = gemmi.find_tabulated_residue(monomer)
+    letter = info.one_letter_code.upper() if info else ""
+    if letter not in {"A", "C", "G", "U"}:
+        letter = parents.get(monomer, {}).get("parent", "")
+    if letter not in {"A", "C", "G", "U"}:
+        raise ValueError(f"unsupported modified RNA residue: {monomer}")
+    return letter
+
+
 def main():
     source = {}
     output = {}
@@ -39,6 +51,11 @@ def main():
         for pdb, records in sorted(by_pdb.items()):
             path = DATA / f"entries/{pdb}/{pdb}.cif"
             block = gemmi.cif.read(str(path)).sole_block()
+            parent_document = json.loads(path.with_name("parents.json").read_text())
+            assert parent_document["cif_sha256"] == digest(path)
+            parents = parent_document["parents"]
+            label_path = path.with_name("labels.json")
+            label_document = json.loads(label_path.read_text())
             polymers = {r["entity_id"]: r["type"] for r in rows(block, "_entity_poly.", ["entity_id", "type"])}
             peptide_chains = {r["asym_id"] for r in rows(block, "_pdbx_poly_seq_scheme.", ["asym_id", "entity_id"])
                               if polymers.get(r["entity_id"]) in ("polypeptide(L)", "polypeptide(D)")}
@@ -66,8 +83,12 @@ def main():
                 assert record["label_asym_id"] in original["source"]["asym_ids"]
                 assert not record["rna_rna_pairs_used_as_contacts"]
                 assert digest(path) == record["cif_sha256"]
+                assert digest(label_path) == original["source"]["source_json_sha256"]
+                source_chain = next(chain for chain in label_document["chains"] if chain["id"] == original["source"]["id"])
+                assert source_chain["sequence"] == original["source"]["sequence"] == original["seq"]
+                assert all(1 <= left < right <= len(original["seq"]) for left, right in original["pairs"])
                 scheme = sorted(schemes[record["label_asym_id"]], key=lambda row: int(row["seq_id"]))
-                assert "".join(row["mon_id"] for row in scheme) == original["seq"]
+                assert "".join(parent_base(row["mon_id"], parents) for row in scheme) == original["seq"]
                 observed = defaultdict(list)
                 for atom, xyz in rna[record["label_asym_id"]]:
                     observed[int(atom["label_seq_id"]) - 1].append((atom, xyz))
@@ -76,8 +97,9 @@ def main():
                     index = saved["residue_index"]
                     assert 0 <= index < len(original["seq"])
                     atoms = observed[index]
-                    assert all(atom["label_comp_id"] == original["seq"][index] for atom, _ in atoms)
-                    assert saved["residue_name"] == original["seq"][index]
+                    assert all(atom["label_comp_id"] == scheme[index]["mon_id"] for atom, _ in atoms)
+                    assert saved["residue_name"] == scheme[index]["mon_id"]
+                    assert saved["canonical_base"] == original["seq"][index]
                     distances, indices = tree.query(np.stack([xyz for _, xyz in atoms]))
                     distances = np.asarray(distances).reshape(-1)
                     indices = np.asarray(indices).reshape(-1)

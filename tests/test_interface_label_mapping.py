@@ -56,6 +56,21 @@ class InterfaceLabelMappingTest(unittest.TestCase):
             extract_record(record, self.blocks["30GA_1"], "fixture")
 
 
+class ModifiedParentMappingTest(unittest.TestCase):
+    def test_modified_residue_uses_exact_parent_and_one_based_label_seq(self):
+        lines = (ROOT / "decontamination/complex_train.jsonl").read_text().splitlines()
+        record = next(json.loads(line) for line in lines if json.loads(line)["name"] == "11EL_A")
+        parents = json.loads((ROOT / "entries/11EL/parents.json").read_text())
+        block = gemmi.cif.read(str(ROOT / "entries/11EL/11EL.cif")).sole_block()
+        result = extract_record(record, block, parents["cif_sha256"], parents["parents"])
+        self.assertEqual(len(result["sequence"]), 1543)
+        modified = next(row for row in result["residues"] if row["residue_name"] == "PSU")
+        self.assertEqual(modified["residue_index"], 515)
+        self.assertEqual(modified["canonical_base"], "U")
+        self.assertEqual(result["sequence"][515], "U")
+        self.assertTrue(all(1 <= left < right <= len(record["seq"]) for left, right in record["pairs"]))
+
+
 class IndependentCifReadTest(unittest.TestCase):
     def test_quoted_polypeptide_type_is_normalized(self):
         from verify_interface_labels import rows

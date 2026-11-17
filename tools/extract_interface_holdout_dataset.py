@@ -22,6 +22,25 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def load_parents(cif_path, cif_sha256):
+    document = json.loads(cif_path.with_name("parents.json").read_text())
+    if document["cif_sha256"] != cif_sha256:
+        raise ValueError("PARENT_MAP_CIF_HASH_MISMATCH")
+    return document["parents"]
+
+
+def canonical_base(monomer, parents):
+    if monomer in {"A", "C", "G", "U"}:
+        return monomer
+    info = gemmi.find_tabulated_residue(monomer)
+    letter = info.one_letter_code.upper() if info else ""
+    if letter not in {"A", "C", "G", "U"}:
+        letter = parents.get(monomer, {}).get("parent", "")
+    if letter not in {"A", "C", "G", "U"}:
+        raise ValueError(f"UNSUPPORTED_MODIFIED_RNA_RESIDUE_{monomer}")
+    return letter
+
+
 def scheme_rows(block, asym_id):
     table = block.find("_pdbx_poly_seq_scheme.", ["asym_id", "entity_id", "seq_id", "mon_id", "pdb_strand_id"])
     rows = [{"asym_id": row.str(0), "entity_id": row.str(1), "seq_id": int(row.str(2)),
@@ -48,7 +67,8 @@ def experimental_metadata(block):
             "resolution_angstrom": None if resolution in (None, "?", ".") else float(resolution)}
 
 
-def extract_record(record, block, cif_sha256):
+def extract_record(record, block, cif_sha256, parents=None):
+    parents = parents or {}
     asym_ids = record["source"]["asym_ids"]
     if len(asym_ids) != 1:
         raise ValueError("MULTIPLE_RNA_ASYM_IDS_NOT_SUPPORTED")
@@ -57,7 +77,7 @@ def extract_record(record, block, cif_sha256):
     entities = {row.str(0): str(row.str(1)) for row in block.find("_entity_poly.", ["entity_id", "type"])}
     if entities.get(scheme[0]["entity_id"]) != "polyribonucleotide":
         raise ValueError("SOURCE_IS_NOT_POLYRIBONUCLEOTIDE")
-    sequence = "".join(row["mon_id"] for row in scheme)
+    sequence = "".join(canonical_base(row["mon_id"], parents) for row in scheme)
     if sequence != record["seq"]:
         raise ValueError("REFERENCE_SEQUENCE_MISMATCH")
     protein_asyms = {}
@@ -100,6 +120,7 @@ def extract_record(record, block, cif_sha256):
         partner_atom, _ = protein_atoms[int(np.asarray(indices).reshape(-1)[nearest_index])]
         rows.append({
             "residue_index": label_seq - 1, "residue_name": monomer,
+            "canonical_base": canonical_base(monomer, parents),
             "auth_chain": atoms[0][0]["auth_asym_id"], "auth_seq_id": atoms[0][0]["auth_seq_id"],
             "nearest_angstrom": distance, "interface": bool(distance < THRESHOLD),
             "nearest_partner_label_asym_id": partner_atom["label_asym_id"],
@@ -111,7 +132,8 @@ def extract_record(record, block, cif_sha256):
         "name": record["name"], "pdb": record["name"].split("_")[0], "group": record["group"],
         "sequence": sequence, "label_asym_id": asym_id, "chain": asym_id,
         "auth_chains": sorted({row["pdb_strand_id"] for row in scheme}),
-        "contact_definition": "observed RNA polymer residue to peptide polymer heavy atom <5A",
+        "reference_policy": "exact full-polymer label_seq alignment with hash-verified modified-parent normalization",
+        "contact_definition": "deposited model 1 observed RNA polymer residue to peptide polymer heavy atom <5A",
         "negative_definition": "observed residue in same RNA polymer with distance >=5A; unobserved residues excluded",
         "rna_rna_pairs_used_as_contacts": False, "cif_sha256": cif_sha256,
         **experimental_metadata(block), "residues": rows,
@@ -173,10 +195,16 @@ def main():
         for pdb in pdbs:
             path = ROOT / f"entries/{pdb}/{pdb}.cif"
             digest = sha256(path)
+            parents = load_parents(path, digest)
             block = gemmi.cif.read(str(path)).sole_block()
+            label_path = path.with_name("labels.json")
+            label_document = json.loads(label_path.read_text())
             for record in by_pdb[pdb]:
                 try:
-                    output = extract_record(record, block, digest)
+                    assert sha256(label_path) == record["source"]["source_json_sha256"]
+                    chain = next(chain for chain in label_document["chains"] if chain["id"] == record["source"]["id"])
+                    assert chain["sequence"] == record["seq"] == record["source"]["sequence"]
+                    output = extract_record(record, block, digest, parents)
                     handle.write(json.dumps(output) + "\n")
                     entries[record["name"]] = {
                         "pdb": pdb, "cif_sha256": digest, "n_reference_residues": len(record["seq"]),
