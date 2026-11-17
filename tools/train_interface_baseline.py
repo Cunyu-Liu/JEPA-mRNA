@@ -77,13 +77,27 @@ class Probe(nn.Module):
         return self.net(self.norm(x.cuda())).squeeze(-1)
 
 
+def residue_batches(records, use_structure, max_rows=65536):
+    xs, ys, count = [], [], 0
+    for example in records:
+        x = torch.cat([example["x"], example["structure"]], dim=1) if use_structure else example["x"]
+        if xs and count + len(example["y"]) > max_rows:
+            yield torch.cat(xs), torch.cat(ys)
+            xs, ys, count = [], [], 0
+        xs.append(x)
+        ys.append(example["y"])
+        count += len(example["y"])
+    if xs:
+        yield torch.cat(xs), torch.cat(ys)
+
+
 def loss(records, model, use_structure):
     total = 0.0
     count = 0
-    for example in records:
-        logits = model(example, use_structure)
-        total = total + F.binary_cross_entropy_with_logits(logits, example["y"].cuda(), reduction="sum")
-        count += len(logits)
+    for x, y in residue_batches(records, use_structure):
+        logits = model({"x": x, "structure": torch.empty(len(x), 0)}, False)
+        total = total + F.binary_cross_entropy_with_logits(logits, y.cuda(), reduction="sum")
+        count += len(y)
     return total / count
 
 
@@ -247,6 +261,7 @@ def main():
         "validation_metrics_at_threshold": selected,
         "inference_structure_labels_used": False,
         "structure_features": "frozen model predictions" if use_structure else None,
+        "residue_batch_size": 65536, "objective": "micro-residue BCE with equivalent packed batches",
         "pretraining_exposure": "UNKNOWN; PDB/group isolation does not prove RiNALMo pretraining decontamination",
         "gpu": torch.cuda.get_device_name(0), "peak_cuda_memory_bytes": torch.cuda.max_memory_allocated(),
         "torch": torch.__version__, "label_qa_sha256": sha256(ROOT / "label_qa_summary.json"),
