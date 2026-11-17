@@ -22,7 +22,7 @@ def read_query_index(path):
 
 
 def summarize_matches(lines, query_rows):
-    hits = {}
+    best = {}
     n_alignments = 0
     for line_number, line in enumerate(lines, 1):
         fields = line.rstrip("\n").split("\t")
@@ -39,10 +39,11 @@ def summarize_matches(lines, query_rows):
                   "query_length": qlen, "target_length": tlen, "query_start": int(fields[6]),
                   "query_end": int(fields[7]), "target_start": int(fields[8]), "target_end": int(fields[9]),
                   "evalue": evalue, "bits": bits}
-        hits.setdefault(query, []).append(record)
+        previous = best.get(query)
+        if previous is None or (-pident, -alnlen, -bits, target) < (
+                -previous["pident_percent"], -previous["alignment_length"], -previous["bits"], previous["target"]):
+            best[query] = record
         n_alignments += 1
-    best = {query: sorted(rows, key=lambda row: (-row["pident_percent"], -row["alignment_length"], -row["bits"], row["target"]))[0]
-            for query, rows in hits.items()}
     return best, n_alignments
 
 

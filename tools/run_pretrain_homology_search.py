@@ -14,6 +14,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", required=True, choices=["rnacentral_22_active", "rfam_14_9", "ensembl_109_and_bacteria_56"])
     parser.add_argument("--threads", type=int, default=16)
+    parser.add_argument("--split-memory-limit", default="50G")
     args = parser.parse_args()
     if not MMSEQS.is_file():
         raise RuntimeError("pinned MMseqs2 environment is not installed")
@@ -45,11 +46,12 @@ def main():
     destination = OUTPUT / args.source
     destination.mkdir(parents=True, exist_ok=False)
     result = destination / "matches.tsv"
-    temporary = Path("/home/rna_pretrain_homology_tmp") / args.source
+    temporary = Path("/home/rna_pretrain_homology_tmp") / f"{args.source}_{args.split_memory_limit}"
     temporary.parent.mkdir(parents=True, exist_ok=True)
     command = [str(MMSEQS), "easy-search", str(OUTPUT / "queries.fasta"), str(target), str(result), str(temporary),
                "--search-type", "3", "--min-seq-id", "0.8", "-c", "0.8", "--cov-mode", "0",
-               "--max-seqs", "300", "--threads", str(args.threads), "--format-output",
+               "--max-seqs", "300", "--split-memory-limit", args.split_memory_limit,
+               "--threads", str(args.threads), "--format-output",
                "query,target,pident,alnlen,qlen,tlen,qstart,qend,tstart,tend,evalue,bits"]
     invocation = {"source": args.source, "command": command, "query_manifest": str(query_manifest_path),
                   "query_manifest_sha256": sha256(query_manifest_path), "target_manifest": str(target_manifest_path),
