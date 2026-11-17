@@ -14,8 +14,12 @@ def f1(tp, fp, fn):
 
 def metrics(probabilities, labels, threshold):
     order = np.argsort(-probabilities, kind="stable")
-    positives = labels[order]
-    auprc = float(np.sum(np.cumsum(positives) / np.arange(1, len(positives) + 1) * positives) / max(1, positives.sum()))
+    distinct = np.where(np.diff(probabilities[order]))[0]
+    indices = np.r_[distinct, len(labels) - 1]
+    true_positives = np.cumsum(labels[order])[indices]
+    precision = true_positives / (indices + 1)
+    previous = np.r_[0, true_positives[:-1]]
+    auprc = float(np.sum((true_positives - previous) * precision / max(1, labels.sum())))
     prediction = probabilities >= threshold
     tp = int(np.sum(prediction & (labels == 1)))
     fp = int(np.sum(prediction & (labels == 0)))

@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit")
 ART = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56")
 SS = Path("/root/rna_jepa_data/ss_data/jsonl")
-NCRNA = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rinalmo/ncrna_clean_v2")
+NCRNA = ART / "manifests/v2/data_audit/ncrna_clean_v2"
 
 
 def sha256(path):
@@ -20,7 +20,7 @@ def normalize(sequence):
 
 def jsonl_queries(path):
     rows = [json.loads(line) for line in path.open() if line.strip()]
-    return [(row.get("name", f"row_{i}"), normalize(row["seq"])) for i, row in enumerate(rows)]
+    return [(row.get("name", f"row_{i}"), normalize(row.get("seq", row.get("sequence")))) for i, row in enumerate(rows)]
 
 
 def csv_queries(path):
@@ -59,6 +59,10 @@ def main():
     manifest = json.loads((ROOT / "source_manifest.json").read_text())
     if manifest["status"] != "PASS_INITIAL_PUBLIC_ASSETS_WITH_NT_AND_ENSEMBL_PENDING":
         raise RuntimeError("public source assets are incomplete")
+    clean_manifest = json.loads((ART / "manifests/v2/data_audit/ncrna_clean_v2_manifest.json").read_text())
+    for filename in ("train.csv", "val.csv", "test.csv"):
+        if sha256(NCRNA / filename) != clean_manifest["splits"][filename]["sha256"]:
+            raise AssertionError(f"ncRNA clean identity mismatch: {filename}")
     queries = query_sets()
     unique_queries = {name: {sequence for _, sequence in rows} for name, rows in queries.items()}
     output = {"status": "PASS_EXACT_OVERLAP_WITH_NT_ENSEMBL_PENDING",

@@ -32,6 +32,11 @@ class InterfaceMetricTest(unittest.TestCase):
         self.assertEqual(result["micro_auprc"], 1.0)
         self.assertEqual(result["macro_auprc_positive_chains"], 1.0)
 
+    def test_constant_scores_have_prevalence_auprc(self):
+        result = metrics([{"probability": np.array([0.5, 0.5, 0.5, 0.5]),
+                           "label": np.array([1.0, 0.0, 1.0, 0.0])}], 0.5)
+        self.assertAlmostEqual(result["micro_auprc"], 0.5)
+
     def test_structure_features_finite_for_empty_and_single_residue(self):
         for sequence in ("A", "AA", "AUGCUAUGCA"):
             scores = torch.arange(len(sequence) ** 2, dtype=torch.float32).reshape(len(sequence), len(sequence))

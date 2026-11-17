@@ -123,13 +123,20 @@ def f1(tp, fp, fn):
     return 2 * tp / max(1, 2 * tp + fp + fn)
 
 
+def average_precision(probabilities, labels):
+    order = np.argsort(-probabilities, kind="stable")
+    distinct = np.where(np.diff(probabilities[order]))[0]
+    indices = np.r_[distinct, len(labels) - 1]
+    true_positives = np.cumsum(labels[order])[indices]
+    precision = true_positives / (indices + 1)
+    previous = np.r_[0, true_positives[:-1]]
+    return float(np.sum((true_positives - previous) * precision / max(1, labels.sum())))
+
+
 def metrics(predictions, threshold):
     all_probabilities = np.concatenate([row["probability"] for row in predictions])
     all_labels = np.concatenate([row["label"] for row in predictions])
-    order = np.argsort(-all_probabilities, kind="stable")
-    positives = all_labels[order]
-    precision = np.cumsum(positives) / np.arange(1, len(positives) + 1)
-    micro_auprc = float(np.sum(precision * positives) / max(1, positives.sum()))
+    micro_auprc = average_precision(all_probabilities, all_labels)
     tp, fp, fn, tn = binary_counts(all_labels, all_probabilities >= threshold)
     positive_f1 = f1(tp, fp, fn)
     negative_f1 = f1(tn, fn, fp)
@@ -143,9 +150,7 @@ def metrics(predictions, threshold):
         chain_f1.append(pf1)
         chain_macro.append((pf1 + nf1) / 2)
         if row["label"].sum() > 0:
-            order = np.argsort(-row["probability"], kind="stable")
-            positive = row["label"][order]
-            chain_auprc.append(float(np.sum(np.cumsum(positive) / np.arange(1, len(positive) + 1) * positive) / positive.sum()))
+            chain_auprc.append(average_precision(row["probability"], row["label"]))
     return {"micro_auprc": micro_auprc, "micro_f1": positive_f1,
             "macro_f1_binary": (positive_f1 + negative_f1) / 2,
             "macro_f1_per_chain": float(np.mean(chain_f1)),

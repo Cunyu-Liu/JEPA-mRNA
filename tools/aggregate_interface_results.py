@@ -88,8 +88,12 @@ def main():
                 positive_f1 = f1(tp, fp, fn)
                 negative_f1 = f1(tn, fn, fp)
                 order = np.argsort(-probabilities, kind="stable")
-                positives = expected_labels[order]
-                auprc = float(np.sum(np.cumsum(positives) / np.arange(1, len(positives) + 1) * positives) / positives.sum())
+                distinct = np.where(np.diff(probabilities[order]))[0]
+                indices = np.r_[distinct, len(expected_labels) - 1]
+                true_positives = np.cumsum(expected_labels[order])[indices]
+                precision = true_positives / (indices + 1)
+                previous = np.r_[0, true_positives[:-1]]
+                auprc = float(np.sum((true_positives - previous) * precision / expected_labels.sum()))
                 assert abs(auprc - result["micro_auprc"]) < 1e-12
                 assert abs(positive_f1 - result["micro_f1"]) < 1e-12
                 assert abs((positive_f1 + negative_f1) / 2 - result["macro_f1_binary"]) < 1e-12
