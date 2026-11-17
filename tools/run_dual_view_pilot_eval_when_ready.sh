@@ -15,7 +15,7 @@ while true; do
         echo "$ARM exited without run_meta.json; no automatic retry" >&2
         exit 1
       fi
-    elif [ "$(python3 -c "import json; print(json.load(open('$ROOT/$ARM/run_meta.json'))['status'])")" != completed ]; then
+    elif [ "$("$PY" -c "import json; print(json.load(open('$ROOT/$ARM/run_meta.json'))['status'])")" != completed ]; then
       COMPLETE=0
       PID=$(awk -v arm="$ARM" '$1==arm {print $2}' "$ROOT/launch_pids.txt")
       if ! kill -0 "$PID" 2>/dev/null; then
