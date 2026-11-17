@@ -228,9 +228,13 @@ def main():
     model.load_state_dict(checkpoint["model"], strict=True)
     model.eval()
     validation_predictions = raw_predictions(validation, model, use_structure)
-    candidates = [metrics(validation_predictions, threshold) for threshold in np.linspace(0.01, 0.99, 99)]
-    selected = max(candidates, key=lambda row: row["macro_f1_binary"])
-    threshold = selected["threshold"]
+    validation_probabilities = np.concatenate([row["probability"] for row in validation_predictions])
+    validation_labels = np.concatenate([row["label"] for row in validation_predictions])
+    def validation_macro(threshold):
+        tp, fp, fn, tn = binary_counts(validation_labels, validation_probabilities >= threshold)
+        return (f1(tp, fp, fn) + f1(tn, fn, fp)) / 2
+    threshold = float(max(np.linspace(0.01, 0.99, 99), key=validation_macro))
+    selected = metrics(validation_predictions, threshold)
     holdout_predictions = raw_predictions(holdout, model, use_structure)
     result = metrics(holdout_predictions, threshold)
     result.update({"status": "PASS_CONVERGED_INTERFACE_PROBE", "mode": args.mode, "seed": args.seed,

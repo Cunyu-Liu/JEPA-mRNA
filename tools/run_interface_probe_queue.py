@@ -18,6 +18,12 @@ def main():
                  for mode in ("rinalmo", "h0", "h2") for split in ("train", "holdout")]
         if all(path.exists() for path in paths):
             break
+        for path in paths:
+            if path.exists():
+                continue
+            log = ROOT / f"features_{path.name.removesuffix('_part0.json')}.log"
+            if log.exists() and "Traceback (most recent call last)" in log.read_text():
+                raise RuntimeError(f"feature extraction failed; preserved log: {log}")
         time.sleep(30)
     qa = json.loads((ROOT / "label_qa_summary.json").read_text())
     assert qa["status"] == "PASS_INDEPENDENT_INTERFACE_LABEL_QA"
