@@ -6,7 +6,7 @@ PY=/root/miniconda3/envs/lucaone_cu128/bin/python
 cd "$REPO"
 run_pair() {
   for ARM in "$@"; do
-    bash tools/run_v2_bpfold_pilot.sh "$ARM" > "$ART/artifacts/v2/bpfold_v3_${ARM}.stdout.log" 2>&1 &
+    bash tools/run_v2_bpfold_pilot.sh "$ARM" > "$ART/artifacts/v2/bpfold_v4_${ARM}.stdout.log" 2>&1 &
   done
   wait
 }

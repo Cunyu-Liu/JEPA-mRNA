@@ -614,6 +614,7 @@ def main():
             allowed_missing = {f"motif_input.{key}" for key in head.motif_input.state_dict()}
             if missing != allowed_missing:
                 raise ValueError(f"unexpected head initialization keys after BPfold attachment: {sorted(missing ^ allowed_missing)}")
+            initial_head.update(head.motif_input.state_dict())
         head.load_state_dict(initial_head, strict=True)
         print(f"[plan-a] model-only init from {args.init_checkpoint}; optimizer starts at step 0", flush=True)
     dual_view = None
