@@ -45,7 +45,8 @@ def main():
     destination = OUTPUT / args.source
     destination.mkdir(parents=True, exist_ok=False)
     result = destination / "matches.tsv"
-    temporary = destination / "tmp"
+    temporary = Path("/home/rna_pretrain_homology_tmp") / args.source
+    temporary.parent.mkdir(parents=True, exist_ok=True)
     command = [str(MMSEQS), "easy-search", str(OUTPUT / "queries.fasta"), str(target), str(result), str(temporary),
                "--search-type", "3", "--min-seq-id", "0.8", "-c", "0.8", "--cov-mode", "0",
                "--max-seqs", "300", "--threads", str(args.threads), "--format-output",
