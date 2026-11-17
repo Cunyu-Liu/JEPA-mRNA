@@ -1,3 +1,4 @@
+import argparse
 import hashlib
 import json
 from collections import defaultdict
@@ -22,13 +23,16 @@ def heavy_atoms(chain):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--split", choices=["holdout", "train"], required=True)
+    args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
-    records = [json.loads(line) for line in (ROOT / "decontamination/complex_holdout.jsonl").open() if line.strip()]
+    records = [json.loads(line) for line in (ROOT / f"decontamination/complex_{args.split}.jsonl").open() if line.strip()]
     by_pdb = defaultdict(list)
     for record in records:
         by_pdb[record["name"].split("_")[0]].append(record)
-    destination = OUT / "holdout_contacts.jsonl"
-    manifest = {"status": "PASS_INTERFACE_HOLDOUT_LABELS", "threshold_angstrom": THRESHOLD,
+    destination = OUT / f"{args.split}_contacts.jsonl"
+    manifest = {"status": f"PASS_INTERFACE_{args.split.upper()}_LABELS", "threshold_angstrom": THRESHOLD,
                 "scientific_scope": "labels only; no interface model result", "entries": {}}
     with destination.open("w") as handle:
         for pdb, pdb_records in sorted(by_pdb.items()):
@@ -78,7 +82,7 @@ def main():
         for value in manifest["entries"].values())
     manifest["output"] = str(destination)
     manifest["output_sha256"] = hashlib.sha256(destination.read_bytes()).hexdigest()
-    (OUT / "holdout_contacts_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (OUT / f"{args.split}_contacts_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     print(json.dumps({key: manifest[key] for key in (
         "status", "n_records", "n_unique_pdbs", "n_with_interface_and_negative", "output_sha256")}, indent=2))
 
