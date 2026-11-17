@@ -5,6 +5,7 @@ import pytest
 import torch
 
 from rnajepa.bpfold_motif import BPfoldEnergyTable, BPfoldMotifInput, motif_keys
+from rnajepa.decision_head import FlatDecisionHead
 
 TABLE = Path("/home/rna_jev/third_party/BPfold/src/BPfold/paras/key.energy")
 
@@ -44,3 +45,18 @@ def test_invalid_sequences_fail_explicitly():
             pass
         else:
             raise AssertionError("invalid sequence did not fail")
+
+
+@pytest.mark.parametrize("direct", [False, True])
+def test_bpfold_paths_reach_the_original_resnet_head(direct):
+    head = FlatDecisionHead(d_model=8, d_z=8, hidden=4, scorer="resnet2d", chunk_size=0)
+    head.motif_input = BPfoldMotifInput(TABLE, d_z=8, direct_score=direct)
+    head.motif_input.sequences = ["GCGCU"]
+    features = head.motif_input.features()
+    z = torch.randn(1, 5, 5, 8, requires_grad=True)
+    scores = head.score_pair_matrix(z, motif_features=features)
+    assert scores.shape == (1, 5, 5)
+    assert torch.isfinite(scores).all()
+    scores.sum().backward()
+    parameter = head.motif_input.direct_projection if direct else head.motif_input.projection
+    assert parameter.weight.grad is not None and parameter.weight.grad.abs().sum() > 0
