@@ -71,6 +71,9 @@ from rnajepa.harness import valid_pair_mask  # noqa: E402
 from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
 from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
 from rnajepa.structured_mask import structured_pair_mask  # noqa: E402
+from rnajepa.dual_view import (  # noqa: E402
+    DualViewJEPA, build_structure_example, make_view_masks,
+    effective_rank, linear_cka, mean_off_diagonal_cosine)
 from rinalmo_preflight import VOCAB, load_encoder  # noqa: E402
 from structrfm_decode_round48 import decode_scores  # noqa: E402
 from torch.utils.checkpoint import checkpoint as _grad_ckpt  # noqa: E402
@@ -305,6 +308,18 @@ def validate_resume_identity(previous_meta, args):
         raise ValueError("resume scorer mismatch")
     if previous_meta.get("pair_latent_dim") != args.pair_latent_dim:
         raise ValueError("resume pair latent dimension mismatch")
+    previous_dual = previous_meta.get("dual_view", {})
+    expected_dual = (previous_dual.get("arm", "H0"), previous_dual.get("dimension", 0),
+                     previous_dual.get("queries", 0), previous_dual.get("weight", 0.0),
+                     previous_dual.get("sigreg_weight", 0.0))
+    dual_arm = getattr(args, "dual_view_arm", "H0")
+    current_dual = (dual_arm,
+                    getattr(args, "dual_view_dim", 0) if dual_arm != "H0" else 0,
+                    getattr(args, "dual_view_queries", 0) if dual_arm != "H0" else 0,
+                    getattr(args, "dual_view_weight", 0.0) if dual_arm != "H0" else 0.0,
+                    getattr(args, "dual_view_sigreg_weight", 0.0) if dual_arm not in ("H0", "H1") else 0.0)
+    if expected_dual != current_dual:
+        raise ValueError(f"resume dual-view identity mismatch: {expected_dual} vs {current_dual}")
     if args.scorer == "pairjepa":
         objective = previous_meta.get("objective", {})
         expected = {
@@ -413,12 +428,36 @@ def main():
     ap.add_argument("--jepa-sigreg-samples", type=int, default=512)
     ap.add_argument("--jepa-log-every", type=int, default=25)
     ap.add_argument("--jepa-rank-samples", type=int, default=512)
+    ap.add_argument("--dual-view-arm", choices=["H0", "H1", "H2", "H3", "H4", "H5", "H6"], default="H0",
+                    help="training-only dual-view arm; deployment checkpoints remain encoder/head only")
+    ap.add_argument("--dual-view-dim", type=int, default=256)
+    ap.add_argument("--dual-view-queries", type=int, default=8)
+    ap.add_argument("--dual-view-heads", type=int, default=8)
+    ap.add_argument("--dual-view-weight", type=float, default=1.0)
+    ap.add_argument("--dual-view-sigreg-weight", type=float, default=0.7)
+    ap.add_argument("--dual-view-sigreg-slices", type=int, default=1024)
+    ap.add_argument("--dual-view-structure-slots", type=int, default=512)
+    ap.add_argument("--dual-view-helix-mask", type=float, default=0.3)
+    ap.add_argument("--dual-view-sequence-mask", type=float, default=0.3)
+    ap.add_argument("--dual-view-log-every", type=int, default=25)
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
                     help="hold this much GPU memory from process start so "
                          "co-tenants cannot claim the card during the CPU-bound "
                          "data-loading phase; freed into the allocator pool "
                          "once the model is on device (shared-cluster race fix)")
     args = ap.parse_args()
+    if args.dual_view_arm != "H0":
+        if (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
+                or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
+                or args.cl2_infonce_weight or args.motif or args.thermo):
+            raise SystemExit("dual-view H1-H6 is isolated from stopped Pair-JEPA/RIPE and independent input arms")
+        if (args.dual_view_dim <= 0 or args.dual_view_queries <= 0
+                or args.dual_view_heads <= 0 or args.dual_view_dim % args.dual_view_heads
+                or args.dual_view_weight <= 0 or args.dual_view_sigreg_weight < 0
+                or args.dual_view_sigreg_slices <= 0 or args.dual_view_structure_slots <= 0
+                or args.dual_view_log_every <= 0 or not 0 < args.dual_view_helix_mask <= 1
+                or not 0 < args.dual_view_sequence_mask <= 1):
+            raise SystemExit("invalid dual-view architecture, objective or mask configuration")
     if args.motif and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
                        or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
                        or args.cl2_infonce_weight):
@@ -557,6 +596,18 @@ def main():
         encoder.load_state_dict(initial["model"]["encoder"], strict=True)
         head.load_state_dict(initial["model"]["head"], strict=True)
         print(f"[plan-a] model-only init from {args.init_checkpoint}; optimizer starts at step 0", flush=True)
+    dual_view = None
+    if args.dual_view_arm != "H0":
+        dual_view = DualViewJEPA(
+            input_dimension=int(report["d_model"]), dimension=args.dual_view_dim,
+            queries=args.dual_view_queries, heads=args.dual_view_heads,
+            structure_control="mlp" if args.dual_view_arm == "H5" else "transformer",
+            mean_structure=args.dual_view_arm == "H6",
+            frozen_structure=args.dual_view_arm == "H4",
+            sigreg_slices=args.dual_view_sigreg_slices,
+            structure_slots=args.dual_view_structure_slots).to(device)
+        print(f"[plan-a] dual-view {args.dual_view_arm}: training-only auxiliary module; "
+              "structure labels are forbidden at validation/deployment", flush=True)
     if _reserve is not None:
         _rgb = _reserve.numel() * 4 / (1 << 30)
         _reserve = None  # freed into the caching allocator pool, not to the OS
@@ -628,7 +679,11 @@ def main():
     head_params = list(head.parameters()) + ([] if cl2 is None else list(cl2.parameters()))
     enc_params = list(encoder.parameters())
     n_head = sum(p.numel() for p in head_params)
-    print(f"[plan-a] head params: {n_head/1e6:.2f}M", flush=True)
+    dual_view_params = [] if dual_view is None else list(dual_view.parameters())
+    n_dual_view = sum(p.numel() for p in dual_view_params)
+    head_params = head_params + dual_view_params
+    print(f"[plan-a] head params: {n_head/1e6:.2f}M; "
+          f"training-only dual-view params: {n_dual_view/1e6:.2f}M", flush=True)
 
     opt = torch.optim.AdamW([
         {"params": head_params, "lr": args.head_lr},
@@ -640,6 +695,7 @@ def main():
     stream = BatchStream(records, args.batch_size, args.seed)
     n_unfrozen = 0
     start_step = 0
+    resume_saved_at_step = -1
     meta_path = os.path.join(args.out, "run_meta.json")
     previous_meta = json.load(open(meta_path)) if os.path.isfile(meta_path) else {}
 
@@ -662,6 +718,31 @@ def main():
                   "features": 6, "projection": "6_to_128_zero_initialized",
                   "position_shuffle_seed": 20261113 if args.motif == "shuffled" else None}),
         "pair_latent_dim": args.pair_latent_dim,
+        "dual_view": {
+            "arm": args.dual_view_arm,
+            "host_assumption": ("Plan-A new training lineage from verified RiNALMo-giga; "
+                                "explicit correctable assumption, not user confirmation"),
+            "dimension": args.dual_view_dim if dual_view is not None else 0,
+            "queries": args.dual_view_queries if dual_view is not None else 0,
+            "heads": args.dual_view_heads if dual_view is not None else 0,
+            "weight": args.dual_view_weight if dual_view is not None else 0.0,
+            "sigreg_weight": (args.dual_view_sigreg_weight
+                              if args.dual_view_arm not in ("H0", "H1") else 0.0),
+            "sigreg_slices": args.dual_view_sigreg_slices,
+            "structure_slots": args.dual_view_structure_slots if dual_view is not None else 0,
+            "structure_target_identity": "generic learned output slots aligned to canonical-nested helix/stacking token order; no residue-span input",
+            "helix_mask": args.dual_view_helix_mask,
+            "sequence_mask": args.dual_view_sequence_mask,
+            "structure_shuffle": args.dual_view_arm == "H3",
+            "structure_encoder": ("frozen_random" if args.dual_view_arm == "H4" else
+                                  "parameter_matched_mlp" if args.dual_view_arm == "H5" else
+                                  "transformer" if dual_view is not None else None),
+            "structure_aggregation": ("global_mean" if args.dual_view_arm == "H6" else
+                                      "fixed_learned_queries" if dual_view is not None else None),
+            "structure_scope": "sequence + canonical non-crossing nested pairs; not 3D or complex environment",
+            "training_auxiliary_params": n_dual_view,
+            "deployment": "sequence-only original encoder/head checkpoint; no dual_view state",
+        },
         "head": f"FlatDecisionHead scorer={args.scorer} d_z=128 "
                 f"pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
         "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
@@ -740,6 +821,8 @@ def main():
         start_step = int(state["step"])
         if cl2 is not None:
             cl2.restore_state(state["cl2"])
+        if dual_view is not None:
+            dual_view.restore_training_state(state)
         restore_batch_stream(stream, state["stream_state"], args.batch_size)
         best_step, best_validation_loss, bad_evaluations = restore_validation_state(
             state, os.path.join(args.out, "validation_log.jsonl"))
@@ -899,6 +982,81 @@ def main():
                               "negative_mode": "cl4_weighted" if negative_weights else ("cl3_structure_hard" if negative_map else "random"),
                               **cl2_diagnostics}
 
+        dual_record = None
+        if dual_view is not None:
+            dual_examples = [build_structure_example(seq, gt) for seq, gt in zip(seqs, gts)]
+            if args.dual_view_arm == "H3":
+                if B < 2:
+                    raise ValueError("H3 structure shuffle requires a batch of at least two sequences")
+                dual_examples = dual_examples[1:] + dual_examples[:1]
+            dual_masks = make_view_masks(
+                dual_examples, max_len, seed=args.seed * 1000003 + step,
+                helix_fraction=args.dual_view_helix_mask,
+                sequence_fraction=args.dual_view_sequence_mask,
+                sequence_lengths=lengths)
+            dual_sigreg_weight = (0.0 if args.dual_view_arm == "H1"
+                                  else args.dual_view_sigreg_weight)
+            dual_output = dual_view(direct_views[0][10], lengths, dual_examples, dual_masks,
+                                    sigreg_weight=dual_sigreg_weight)
+            host_objective = total
+            total = total + args.dual_view_weight * dual_output.loss
+            terms_agg["dual_view"] = float(dual_output.loss.detach())
+            terms_agg["dual_mse_sequence"] = float(dual_output.mse_sequence.detach())
+            terms_agg["dual_mse_structure"] = float(dual_output.mse_structure.detach())
+            terms_agg["dual_sigreg"] = float(dual_output.sigreg.detach())
+            if step % args.dual_view_log_every == 0 or step == 1:
+                dual_record = {"step": step, "arm": args.dual_view_arm,
+                               **dual_output.diagnostics()}
+                for key, value in list(dual_record.items()):
+                    if isinstance(value, torch.Tensor):
+                        dual_record[key] = float(value)
+                sequence_valid = (torch.arange(max_len, device=device)[None, :]
+                                  < torch.tensor(lengths, device=device)[:, None])
+                # Slot-based structure targets use the padded token-valid mask,
+                # never the residue-length mask.  The loss itself is restricted
+                # separately to masked & valid structure tokens in dual_view.py.
+                structure_valid = dual_output.masks.token_valid
+                sequence_flat = dual_output.sequence_target[sequence_valid]
+                structure_flat = dual_output.structure_target[structure_valid]
+                if sequence_flat.shape[0] > 512:
+                    sequence_flat = sequence_flat[::(sequence_flat.shape[0] + 511) // 512]
+                if structure_flat.shape[0] > 512:
+                    structure_flat = structure_flat[::(structure_flat.shape[0] + 511) // 512]
+                structure_position_values = dual_output.structure_target[0][
+                    dual_output.masks.token_valid[0]][:64]
+                dual_record.update({
+                    "sequence_variance": float(sequence_flat.var(dim=0, unbiased=False).mean()),
+                    "structure_variance": (float(structure_flat.var(dim=0, unbiased=False).mean())
+                                           if structure_flat.shape[0] else 0.0),
+                    "sequence_effective_rank": effective_rank(sequence_flat),
+                    "structure_effective_rank": effective_rank(structure_flat),
+                    "cross_position_cosine": mean_off_diagonal_cosine(
+                        dual_output.sequence_target[0, :lengths[0]][:64]),
+                    "structure_cross_position_cosine": mean_off_diagonal_cosine(
+                        structure_position_values),
+                    "cross_sequence_cosine": mean_off_diagonal_cosine(dual_output.sequence_global),
+                    "structure_cross_sequence_cosine": mean_off_diagonal_cosine(
+                        dual_output.structure_global),
+                    "sequence_structure_cka": linear_cka(
+                        dual_output.sequence_global, dual_output.structure_global),
+                    "structure_loss_tokens": int((dual_output.masks.structure_token_mask
+                                                  & dual_output.masks.token_valid).sum()),
+                })
+                shared = [parameter for parameter in enc_params if parameter.requires_grad][-4:]
+                if shared:
+                    dual_record["direct_nll_gradient"] = loss_gradient_cosine(
+                        host_objective, dual_output.loss, shared)
+                    dual_record["gradient_scope"] = "last_four_unfrozen_encoder_tensors"
+                else:
+                    dual_record["direct_nll_gradient"] = None
+                    dual_record["gradient_scope"] = "encoder_frozen_warmup"
+                with torch.no_grad():
+                    no_prior_matrix = head.calibration(s_raw, lengths_t)
+                    no_prior_matrix = torch.where(
+                        mask_full, no_prior_matrix, torch.full_like(no_prior_matrix, float("-inf")))
+                    dual_record["training_batch_structure"] = training_batch_structure_metrics(
+                        matrix, no_prior_matrix, lengths, seqs, gts)
+
         cl5_record = None
         if args.cl5_output_weight:
             from rnajepa.contrast import output_consistency
@@ -975,12 +1133,13 @@ def main():
                                  "unfrozen": n_unfrozen,
                                  "trainable_params": sum(p.numel() for p in trainable())}) + "\n")
 
-        if step % 25 == 0 or step == 1 or jepa_record is not None:
+        if step % 25 == 0 or step == 1 or jepa_record is not None or dual_record is not None:
             rec = {"step": step, "loss": round(float(total), 4),
                    "cl1_views": n_views, "cl1_masked_tokens": masked_counts,
                    "cl2_projection_grad": cl2_projection_grad,
                    "motif_projection_grad": motif_projection_grad,
                    "cl5_output": cl5_record,
+                   "dual_view": dual_record,
                    "terms": {k: round(v, 4) for k, v in terms_agg.items()},
                    "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
                    "lr_head": sched.get_last_lr()[0],
@@ -995,6 +1154,9 @@ def main():
             if jepa_record is not None:
                 with open(os.path.join(args.out, "jepa_diagnostics.jsonl"), "a") as fh:
                     fh.write(json.dumps(jepa_record) + "\n")
+            if dual_record is not None:
+                with open(os.path.join(args.out, "dual_view_diagnostics.jsonl"), "a") as fh:
+                    fh.write(json.dumps(dual_record) + "\n")
             print(f"[plan-a] step {step}/{args.steps} loss={float(total):.4f} "
                   f"terms={ {k: round(v, 3) for k, v in terms_agg.items()} } "
                   f"unfrozen={n_unfrozen}/{n_blocks} gnorm={rec['gnorm']} "
@@ -1011,7 +1173,10 @@ def main():
                         "best_validation_loss": best_validation_loss,
                         "bad_evaluations": bad_evaluations,
                         "stream_state": stream.state,
-                        "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
+                        "cl2": None if cl2 is None else cl2.export_state(),
+                        "dual_view": None if dual_view is None else dual_view.state_dict(),
+                        "dual_view_sigreg_step": None if dual_view is None else int(dual_view.sigreg.global_step)}, resume_path)
+            resume_saved_at_step = step
         if step % args.snapshot_every == 0 or step == args.steps:
             atomic_torch_save({"step": step,
                         "model": {"encoder": encoder.state_dict(),
@@ -1077,14 +1242,19 @@ def main():
         best = torch.load(os.path.join(args.out, "best.pt"), map_location="cpu", weights_only=False)
         encoder.load_state_dict(best["model"]["encoder"], strict=True)
         head.load_state_dict(best["model"]["head"], strict=True)
-    atomic_torch_save({"step": step, "head": head.state_dict(),
-                "encoder": encoder.state_dict(), "optimizer": opt.state_dict(),
-                "scheduler": sched.state_dict(), "n_unfrozen": n_unfrozen,
-                "best_step": best_step, "best_validation_loss": best_validation_loss,
-                "bad_evaluations": bad_evaluations, "stream_state": stream.state, "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
+    if early_stopped or resume_saved_at_step != step:
+        atomic_torch_save({"step": step, "head": head.state_dict(),
+                    "encoder": encoder.state_dict(), "optimizer": opt.state_dict(),
+                    "scheduler": sched.state_dict(), "n_unfrozen": n_unfrozen,
+                    "best_step": best_step, "best_validation_loss": best_validation_loss,
+                    "bad_evaluations": bad_evaluations, "stream_state": stream.state,
+                    "cl2": None if cl2 is None else cl2.export_state(),
+                    "dual_view": None if dual_view is None else dual_view.state_dict(),
+                    "dual_view_sigreg_step": None if dual_view is None else int(dual_view.sigreg.global_step)}, resume_path)
     meta["final_trainable_params"] = sum(p.numel() for p in trainable())
     meta["trainable_parameter_scope"] = (
-        f"{n_unfrozen}/{n_blocks} transformer blocks plus head; "
+        f"{n_unfrozen}/{n_blocks} transformer blocks plus original head; "
+        "training-only dual-view auxiliary parameters included when enabled; "
         "embeddings and pooler remain frozen")
     meta["status"] = "completed"
     meta["steps_completed"] = int(step)
