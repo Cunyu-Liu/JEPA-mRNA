@@ -5,7 +5,7 @@ ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round5
 p0 = json.loads((ROOT / "artifacts/p2/pilot_v1/H0/model_dev_eval.json").read_text())
 results = {"P0_no_motif": p0["pair_level"]["macro"]["f1"]}
 for arm in ("inner_outer", "shuffled", "turner0", "energy_only"):
-    result = json.loads((ROOT / f"artifacts/v2/bpfold_v2/{arm}/model_dev_eval.json").read_text())
+    result = json.loads((ROOT / f"artifacts/v2/bpfold_v3/{arm}/model_dev_eval.json").read_text())
     assert result["data_role"] == "model-dev"
     assert not result["structure_labels_used_for_inference"]
     results[arm] = result["pair_level"]["macro"]["f1"]

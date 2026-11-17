@@ -4,7 +4,7 @@ ARM="${1:?usage: run_v2_bpfold_pilot.sh inner_outer|shuffled|turner0|energy_only
 case "$ARM" in inner_outer|shuffled|turner0|energy_only) ;; *) echo "invalid BPfold arm" >&2; exit 2;; esac
 REPO=/home/rna_jev_xens2_dualview_round56
 ART=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56
-OUT="$ART/artifacts/v2/bpfold_v2/$ARM"
+OUT="$ART/artifacts/v2/bpfold_v3/$ARM"
 PY=/root/miniconda3/envs/lucaone_cu128/bin/python
 INIT=/teams/HoulabData_1788502323/liucunyu/rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s0_step20000.pt
 if [ -e "$OUT" ]; then

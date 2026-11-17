@@ -611,7 +611,7 @@ def main():
             initial_head = {key: value for key, value in initial_head.items()
                             if not key.startswith("motif_input.")}
             missing = set(head.state_dict()) - set(initial_head)
-            allowed_missing = set(head.motif_input.state_dict())
+            allowed_missing = {f"motif_input.{key}" for key in head.motif_input.state_dict()}
             if missing != allowed_missing:
                 raise ValueError(f"unexpected head initialization keys after BPfold attachment: {sorted(missing ^ allowed_missing)}")
         head.load_state_dict(initial_head, strict=True)
