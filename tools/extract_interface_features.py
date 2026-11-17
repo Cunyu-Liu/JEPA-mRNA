@@ -14,6 +14,7 @@ sys.path.insert(0, str(REPO / "tools"))
 from rinalmo_preflight import VOCAB, load_encoder
 from rnajepa.encoder import BASE_TO_INDEX, UNK_INDEX
 from rnajepa.harness import valid_pair_mask
+from rnajepa.rinalmo_attention import enable_query_chunked_attention
 from xens2_eval import load_plana
 
 ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/interface")
@@ -78,6 +79,10 @@ def main():
     else:
         encoder, head = load_plana(str(checkpoint), "cuda")
         checkpoint_sha = sha256(checkpoint)
+    validation = json.loads((ROOT / "attention_chunk_validation.json").read_text())
+    if validation["status"] != "PASS_RINALMO_QUERY_CHUNK_ENGINEERING":
+        raise RuntimeError("query-chunk attention has not passed CUDA validation")
+    enable_query_chunked_attention(encoder, 512)
     if encoder.training or (head is not None and head.training):
         raise AssertionError("feature encoder must be frozen and in eval mode")
     for parameter in encoder.parameters():
@@ -98,6 +103,8 @@ def main():
             if path.exists():
                 with np.load(path, allow_pickle=False) as saved:
                     valid = (str(saved["sequence"]) == record["sequence"] and str(saved["mode"]) == args.mode
+                             and str(saved["attention_kernel"]) == "query_chunk_512_full_sequence"
+                             and str(saved["attention_validation_sha256"]) == sha256(ROOT / "attention_chunk_validation.json")
                              and str(saved["label_qa_sha256"]) == sha256(qa)
                              and saved["embedding"].shape == (expected_fields[0], 1280)
                              and saved["structure_features"].shape == (expected_fields[0], expected_fields[2])
@@ -131,6 +138,8 @@ def main():
             with temporary.open("wb") as handle:
                 np.savez_compressed(handle, embedding=embedding, structure_features=statistics,
                     residue_indices=indices.numpy(), sequence=record["sequence"], mode=args.mode,
+                    attention_kernel="query_chunk_512_full_sequence",
+                    attention_validation_sha256=sha256(ROOT / "attention_chunk_validation.json"),
                     label_qa_sha256=sha256(qa), checkpoint_sha256=checkpoint_sha)
             os.replace(temporary, path)
             processed += 1
@@ -139,6 +148,8 @@ def main():
     result = {"status": "PASS_FROZEN_INTERFACE_FEATURES", "mode": args.mode, "split": args.split,
               "shard_index": args.shard_index, "shard_count": args.shard_count,
               "n_new": processed, "n_total": len(records), "checkpoint_sha256": checkpoint_sha,
+              "attention_kernel": "query_chunk_512_full_sequence",
+              "attention_validation_sha256": sha256(ROOT / "attention_chunk_validation.json"),
               "labels_sha256": source_sha, "label_qa_sha256": sha256(qa),
               "inference_structure_labels_used": False,
               "structure_feature_source": "frozen model pair scores; no canonical/contact labels" if head is not None else None,
