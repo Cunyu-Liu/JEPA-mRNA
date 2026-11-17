@@ -428,13 +428,15 @@ class FlatDecisionHead(nn.Module):
                 motif_features = thermodynamic_batch(
                     self.motif_input.sequences, self.motif_input.thermo_cache_dir,
                     shuffled=self.motif_input.shuffle).to(h.device)
-            else:
+            elif hasattr(self.motif_input, "motif_parameters"):
                 from rnajepa.motif import candidate_motif_features_torch
                 motif_features = candidate_motif_features_torch(
                     seq_ids, self.motif_input.motif_parameters, self.motif_input.sequences)
                 if self.motif_input.shuffle:
                     from rnajepa.motif import shuffle_positions
                     motif_features = shuffle_positions(motif_features, self.motif_input.sequences)
+            else:
+                motif_features = self.motif_input.features().to(h.device)
         s, types = self.pair_scores_and_types(h, seq_ids, include_types=include_types,
                                              motif_features=motif_features)
         if self.use_turner_prior:

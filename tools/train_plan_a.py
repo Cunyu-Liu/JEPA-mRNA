@@ -1188,7 +1188,9 @@ def main():
                     bn.running_var.copy_(rv)
                     bn.num_batches_tracked.copy_(nbt)
         motif_projection_grad = (None if head.motif_input is None else
-                                 float(head.motif_input.projection.weight.grad.detach().square().sum()) ** 0.5)
+                                 sum(float(parameter.grad.detach().square().sum())
+                                     for parameter in head.motif_input.parameters()
+                                     if parameter.grad is not None) ** 0.5)
         cl2_projection_grad = (None if cl2 is None else sum(float(p.grad.detach().square().sum()) for p in cl2.parameters() if p.grad is not None) ** 0.5)
         gnorm = float(torch.nn.utils.clip_grad_norm_(
             trainable(), args.grad_clip))

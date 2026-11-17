@@ -6,6 +6,7 @@ import torch
 
 from rnajepa.bpfold_motif import BPfoldEnergyTable, BPfoldMotifInput, motif_keys
 from rnajepa.decision_head import FlatDecisionHead
+from rnajepa.encoder import BASE_TO_INDEX
 
 TABLE = Path("/home/rna_jev/third_party/BPfold/src/BPfold/paras/key.energy")
 
@@ -60,3 +61,11 @@ def test_bpfold_paths_reach_the_original_resnet_head(direct):
     scores.sum().backward()
     parameter = head.motif_input.direct_projection if direct else head.motif_input.projection
     assert parameter.weight.grad is not None and parameter.weight.grad.abs().sum() > 0
+    head.eval()
+    with torch.no_grad():
+        ids = torch.tensor([[BASE_TO_INDEX[c] for c in "GCGCU"]])
+        full = head(torch.randn(1, 5, 8), ids, lengths=torch.tensor([5]),
+                    include_types=False).scores
+    assert full.shape == (1, 5, 5)
+    assert torch.isfinite(full[0, 0, 4]) and torch.isfinite(full[0, 4, 0])
+    assert torch.isneginf(full[0, 0, 0])
