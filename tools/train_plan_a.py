@@ -606,7 +606,15 @@ def main():
     if args.init_checkpoint:
         initial = torch.load(args.init_checkpoint, map_location="cpu", weights_only=False)
         encoder.load_state_dict(initial["model"]["encoder"], strict=True)
-        head.load_state_dict(initial["model"]["head"], strict=True)
+        initial_head = initial["model"]["head"]
+        if args.bpfold_motif:
+            initial_head = {key: value for key, value in initial_head.items()
+                            if not key.startswith("motif_input.")}
+            missing = set(head.state_dict()) - set(initial_head)
+            allowed_missing = set(head.motif_input.state_dict())
+            if missing != allowed_missing:
+                raise ValueError(f"unexpected head initialization keys after BPfold attachment: {sorted(missing ^ allowed_missing)}")
+        head.load_state_dict(initial_head, strict=True)
         print(f"[plan-a] model-only init from {args.init_checkpoint}; optimizer starts at step 0", flush=True)
     dual_view = None
     if args.dual_view_arm != "H0":
