@@ -48,7 +48,7 @@ def features(record, include_structure=True):
     gc = (sequence.count("G") + sequence.count("C")) / length
     rows = []
     labels = []
-    pair_target = torch.zeros(length)
+    pair_target = torch.zeros(len(record["residues"]))
     if include_structure:
         for i, j in record.get("canonical_nested_pairs", []):
             if 0 <= i < length and 0 <= j < length:
@@ -165,7 +165,7 @@ def main():
             if args.mode in ("length", "gc"):
                 value = float(np.log(len(record["sequence"]))) if args.mode == "length" else (
                     (record["sequence"].count("G") + record["sequence"].count("C")) / len(record["sequence"]))
-                loss = F.binary_cross_entropy_with_logits(model(torch.tensor([value], device="cuda")), y.mean().cuda())
+                loss = F.binary_cross_entropy_with_logits(model(torch.tensor([value], device="cuda")).reshape(1), y.mean().cuda().reshape(1))
             else:
                 output = model(x.cuda())
                 loss = F.binary_cross_entropy_with_logits(output["logit"].squeeze(-1), y.cuda())
@@ -184,7 +184,7 @@ def main():
                     if args.mode in ("length", "gc"):
                         value = float(np.log(len(record["sequence"]))) if args.mode == "length" else (
                             (record["sequence"].count("G") + record["sequence"].count("C")) / len(record["sequence"]))
-                        loss = F.binary_cross_entropy_with_logits(model(torch.tensor([value], device="cuda")), y.mean().cuda())
+                        loss = F.binary_cross_entropy_with_logits(model(torch.tensor([value], device="cuda")).reshape(1), y.mean().cuda().reshape(1))
                     else:
                         output = model(x.cuda())
                         loss = F.binary_cross_entropy_with_logits(output["logit"].squeeze(-1), y.cuda())
