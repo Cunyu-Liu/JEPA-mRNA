@@ -7,7 +7,7 @@ ART=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56
 OUT="$ART/artifacts/v2/bpfold_v6/$ARM"
 PY=/root/miniconda3/envs/lucaone_cu128/bin/python
 INIT=/teams/HoulabData_1788502323/liucunyu/rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s0_step20000.pt
-if [ -e "$OUT" ]; then
+if [ -e "$OUT" ] && [ "${ALLOW_RESUME:-0}" != 1 ]; then
   echo "refusing to overwrite $OUT" >&2
   exit 3
 fi
