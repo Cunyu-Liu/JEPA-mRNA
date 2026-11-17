@@ -1,27 +1,110 @@
+import hashlib
 import json
 from pathlib import Path
 
 import numpy as np
 
 ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/interface")
-summary = {"status": "PASS_INTERFACE_BASELINE_EVALUATION", "scientific_scope": "lightweight interface baseline; not dual-view JEPA or full RNA structure prediction", "modes": {}}
-for mode in ("sequence_only", "structure_aware", "length", "gc", "random"):
-    rows = []
-    for seed in (42, 2026, 3407):
-        result = json.loads((ROOT / f"{mode}_seed{seed}/result.json").read_text())
-        assert result["train_holdout_group_overlap"] == 0
-        assert result["train_holdout_pdb_overlap"] == 0
-        assert not result["holdout_structure_labels_used_for_inference"]
-        rows.append(result)
-    auprc = [row["auprc"] for row in rows]
-    macro = [row["macro_f1"] for row in rows]
-    summary["modes"][mode] = {
-        "auprc_mean": float(np.mean(auprc)), "auprc_sd": float(np.std(auprc)),
-        "macro_f1_mean": float(np.mean(macro)), "macro_f1_sd": float(np.std(macro)),
-        "seeds": [{"seed": row["seed"], "auprc": row["auprc"], "macro_f1": row["macro_f1"],
-                   "best_step": row["best_step"], "converged": row["converged"],
-                   "checkpoint_sha256": row["checkpoint_sha256"]} for row in rows],
+MODES = ("rinalmo", "h0", "h2", "h0_structure", "h2_structure", "handcrafted", "random", "length", "gc")
+
+
+def sha256(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def f1(tp, fp, fn):
+    return 2 * tp / max(1, 2 * tp + fp + fn)
+
+
+def main():
+    qa = json.loads((ROOT / "label_qa_summary.json").read_text())
+    assert qa["status"] == "PASS_INDEPENDENT_INTERFACE_LABEL_QA"
+    assert not qa["train_holdout_group_overlap"] and not qa["train_holdout_pdb_overlap"]
+    labels = {r["name"]: r for r in map(json.loads, (ROOT / "holdout_contacts.jsonl").open())}
+    summary = {"status": "PASS_CONVERGED_INTERFACE_PROBE_EVALUATION",
+               "scientific_scope": "frozen representation probes with verified contacts; not a secondary-structure accuracy rescue; RiNALMo pretraining exposure unknown",
+               "label_qa_sha256": sha256(ROOT / "label_qa_summary.json"), "modes": {}}
+    for mode in MODES:
+        rows = []
+        for seed in (42, 2026, 3407):
+            directory = ROOT / "converged_baselines" / f"{mode}_seed{seed}"
+            result = json.loads((directory / "result.json").read_text())
+            assert result["mode"] == mode and result["seed"] == seed
+            assert result["converged"] and result["stop_reason"] == "internal_validation_plateau_30_epochs"
+            assert result["label_qa_sha256"] == sha256(ROOT / "label_qa_summary.json")
+            assert not result["inference_structure_labels_used"]
+            assert result["checkpoint_sha256"] == sha256(directory / "best.pt")
+            with np.load(directory / "holdout_predictions.npz", allow_pickle=False) as saved:
+                names = saved["names"].tolist()
+                assert len(names) == len(labels) and set(names) == set(labels)
+                lengths = saved["lengths"]
+                assert lengths.sum() == len(saved["labels"]) == len(saved["probabilities"])
+                offset = 0
+                probabilities = []
+                expected_labels = []
+                per_chain_f1 = []
+                per_chain_macro = []
+                for name, length in zip(names, lengths):
+                    length = int(length)
+                    p = saved["probabilities"][offset:offset + length]
+                    y = saved["labels"][offset:offset + length]
+                    truth = np.asarray([r["interface"] for r in labels[name]["residues"]], dtype=np.float64)
+                    assert np.array_equal(y, truth)
+                    assert len(p) == len(y) and np.isfinite(p).all()
+                    probabilities.extend(p)
+                    expected_labels.extend(y)
+                    prediction = p >= result["threshold"]
+                    tp = int(np.sum(prediction & (y == 1)))
+                    fp = int(np.sum(prediction & (y == 0)))
+                    fn = int(np.sum(~prediction & (y == 1)))
+                    tn = int(np.sum(~prediction & (y == 0)))
+                    pf1 = f1(tp, fp, fn)
+                    nf1 = f1(tn, fn, fp)
+                    per_chain_f1.append(pf1)
+                    per_chain_macro.append((pf1 + nf1) / 2)
+                    offset += length
+                probabilities = np.asarray(probabilities)
+                expected_labels = np.asarray(expected_labels)
+                prediction = probabilities >= result["threshold"]
+                tp = int(np.sum(prediction & (expected_labels == 1)))
+                fp = int(np.sum(prediction & (expected_labels == 0)))
+                fn = int(np.sum(~prediction & (expected_labels == 1)))
+                tn = int(np.sum(~prediction & (expected_labels == 0)))
+                positive_f1 = f1(tp, fp, fn)
+                negative_f1 = f1(tn, fn, fp)
+                order = np.argsort(-probabilities, kind="stable")
+                positives = expected_labels[order]
+                auprc = float(np.sum(np.cumsum(positives) / np.arange(1, len(positives) + 1) * positives) / positives.sum())
+                assert abs(auprc - result["micro_auprc"]) < 1e-12
+                assert abs(positive_f1 - result["micro_f1"]) < 1e-12
+                assert abs((positive_f1 + negative_f1) / 2 - result["macro_f1_binary"]) < 1e-12
+                assert abs(np.mean(per_chain_f1) - result["macro_f1_per_chain"]) < 1e-12
+                assert abs(np.mean(per_chain_macro) - result["macro_f1_binary_per_chain"]) < 1e-12
+                assert (tp, fp, fn, tn) == tuple(result[key] for key in ("tp", "fp", "fn", "tn"))
+            rows.append({"seed": seed, "micro_auprc": result["micro_auprc"],
+                         "macro_f1_binary": result["macro_f1_binary"],
+                         "macro_f1_per_chain": result["macro_f1_per_chain"],
+                         "micro_f1": result["micro_f1"], "threshold": result["threshold"],
+                         "best_epoch": result["best_epoch"], "epochs": result["epochs"],
+                         "checkpoint_sha256": result["checkpoint_sha256"],
+                         "predictions_sha256": sha256(directory / "holdout_predictions.npz"),
+                         "peak_cuda_memory_bytes": result["peak_cuda_memory_bytes"]})
+        entry = {"seeds": rows}
+        for metric in ("micro_auprc", "macro_f1_binary", "macro_f1_per_chain", "micro_f1"):
+            values = [row[metric] for row in rows]
+            entry[f"{metric}_mean"] = float(np.mean(values))
+            entry[f"{metric}_sd"] = float(np.std(values))
+        summary["modes"][mode] = entry
+    summary["descriptive_effects"] = {
+        "h2_minus_h0_auprc": summary["modes"]["h2"]["micro_auprc_mean"] - summary["modes"]["h0"]["micro_auprc_mean"],
+        "h2_minus_h0_macro_f1_binary": summary["modes"]["h2"]["macro_f1_binary_mean"] - summary["modes"]["h0"]["macro_f1_binary_mean"],
+        "h0_structure_minus_h0_auprc": summary["modes"]["h0_structure"]["micro_auprc_mean"] - summary["modes"]["h0"]["micro_auprc_mean"],
+        "h2_structure_minus_h2_auprc": summary["modes"]["h2_structure"]["micro_auprc_mean"] - summary["modes"]["h2"]["micro_auprc_mean"],
     }
-out = ROOT / "baseline_summary.json"
-out.write_text(json.dumps(summary, indent=2) + "\n")
-print(json.dumps(summary, indent=2))
+    output = ROOT / "converged_baseline_summary.json"
+    output.write_text(json.dumps(summary, indent=2) + "\n")
+    print(json.dumps({"status": summary["status"], "sha256": sha256(output), "effects": summary["descriptive_effects"]}, indent=2))
+
+
+if __name__ == "__main__":
+    main()

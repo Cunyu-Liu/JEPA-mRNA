@@ -1,7 +1,8 @@
 import argparse
 import hashlib
 import json
-from collections import defaultdict
+import math
+import os
 from pathlib import Path
 import sys
 
@@ -10,221 +11,255 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from rnajepa.dual_view import build_structure_example
-
 ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/interface")
-OUT = ROOT
-BASES = "ACGU"
-EXPECTED = {"holdout": (83, 79, 119), "train": (376, 346, 428)}
-VALID = {"holdout": 65, "train": 300}
+MODES = ("rinalmo", "h0", "h2", "h0_structure", "h2_structure", "handcrafted", "random", "length", "gc")
 
 
 def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def load(split):
-    records = [json.loads(line) for line in (ROOT / f"{split}_contacts.jsonl").open()]
-    assert len(records) == EXPECTED[split][0]
-    valid = []
-    excluded = []
-    for record in records:
-        invalid = [row["residue_index"] for row in record["residues"]
-                   if row["residue_index"] < 0 or row["residue_index"] >= len(record["sequence"])]
-        if invalid:
-            excluded.append({"name": record["name"], "reason": "RESIDUE_INDEX_OUT_OF_RANGE",
-                             "examples": invalid[:3]})
-        else:
-            valid.append(record)
-    assert len(valid) == VALID[split]
-    (OUT / f"{split}_baseline_excluded.json").write_text(json.dumps(excluded, indent=2) + "\n")
-    return valid
-
-
-def features(record, include_structure=True):
+def handcrafted(record):
     sequence = record["sequence"]
-    length = len(sequence)
-    gc = (sequence.count("G") + sequence.count("C")) / length
-    rows = []
-    labels = []
-    pair_target = torch.zeros(len(record["residues"]))
-    if include_structure:
-        for i, j in record.get("canonical_nested_pairs", []):
-            if 0 <= i < length and 0 <= j < length:
-                pair_target[i] = pair_target[j] = 1.0
-    for index, residue in enumerate(record["residues"]):
-        i = residue["residue_index"]
-        vector = [float(sequence[i] == base) for base in BASES]
-        vector += [float(i > 0 and sequence[i - 1] == base) for base in BASES]
-        vector += [float(i + 1 < length and sequence[i + 1] == base) for base in BASES]
-        local = sequence[max(0, i - 2):i + 3]
-        vector += [i / max(1, length - 1), float(np.log(length) / 7), gc,
+    gc = (sequence.count("G") + sequence.count("C")) / len(sequence)
+    indices = [row["residue_index"] for row in record["residues"]]
+    features = []
+    for index in indices:
+        vector = [float(sequence[index] == base) for base in "ACGU"]
+        vector += [float(index > 0 and sequence[index - 1] == base) for base in "ACGU"]
+        vector += [float(index + 1 < len(sequence) and sequence[index + 1] == base) for base in "ACGU"]
+        local = sequence[max(0, index - 2):index + 3]
+        vector += [index / max(1, len(sequence) - 1), math.log(len(sequence)) / 7, gc,
                    (local.count("G") + local.count("C")) / len(local)]
-        rows.append(vector)
-        labels.append(float(residue["interface"]))
-    if include_structure:
-        structure = build_structure_example(sequence, record.get("canonical_nested_pairs", []))
-        structure_target = (structure.features.mean(dim=0) if structure.features.shape[0]
-                            else torch.zeros(16))
-    else:
-        structure_target = torch.zeros(16)
-    return (torch.tensor(rows, dtype=torch.float32), torch.tensor(labels),
-            pair_target, structure_target)
+        features.append(vector)
+    return torch.tensor(features, dtype=torch.float32)
 
 
-class InterfaceMLP(nn.Module):
-    def __init__(self, structure_aware):
-        super().__init__()
-        self.structure_aware = structure_aware
-        self.core = nn.Sequential(nn.Linear(16, 32), nn.GELU(), nn.Linear(32, 16), nn.GELU(), nn.Linear(16, 1))
-        if structure_aware:
-            self.pair_head = nn.Linear(32, 1)
-            self.structure_head = nn.Linear(32, 16)
-
-    def forward(self, x):
-        hidden = F.gelu(self.core[1](self.core[0](x)))
-        output = self.core[2:](hidden)
-        result = {"logit": output}
-        if self.structure_aware:
-            result["pair"] = self.pair_head(hidden).squeeze(-1)
-            result["structure"] = self.structure_head(hidden.mean(dim=0, keepdim=True)).squeeze(0)
-        return result
-
-
-def metrics(records, model, structure_aware, threshold):
-    probabilities = []
-    labels = []
-    per_sequence = []
+def load_split(split, mode):
+    records = [json.loads(line) for line in (ROOT / f"{split}_contacts.jsonl").open()]
+    examples = []
     for record in records:
-        x, y, _, _ = features(record, include_structure=False)
-        with torch.no_grad():
-            output = model(x.cuda())
-        probabilities.extend(torch.sigmoid(output["logit"]).cpu().numpy())
-        labels.extend(y.numpy())
-        per_sequence.append({"name": record["name"], "group": record["group"],
-                             "n": len(y), "positive": int(y.sum())})
-    probabilities = np.asarray(probabilities).reshape(-1)
-    labels = np.asarray(labels).reshape(-1)
-    order = np.argsort(-probabilities)
-    positives = labels[order]
+        if mode == "handcrafted":
+            embedding = handcrafted(record)
+            structure = torch.empty(len(embedding), 0)
+        elif mode in ("length", "gc"):
+            value = math.log(len(record["sequence"])) / 7 if mode == "length" else (
+                (record["sequence"].count("G") + record["sequence"].count("C")) / len(record["sequence"]))
+            embedding = torch.tensor([[value]], dtype=torch.float32).expand(len(record["residues"]), 1)
+            structure = torch.empty(len(embedding), 0)
+        else:
+            source = "rinalmo" if mode in ("rinalmo", "random") else "h0_structure" if mode.startswith("h0") else "h2_structure"
+            path = ROOT / "features" / source / split / f"{record['name']}.npz"
+            with np.load(path, allow_pickle=False) as saved:
+                assert str(saved["sequence"]) == record["sequence"]
+                embedding = torch.from_numpy(saved["embedding"].astype(np.float32))
+                structure = torch.from_numpy(saved["structure_features"])
+                assert np.array_equal(saved["residue_indices"], [row["residue_index"] for row in record["residues"]])
+        labels = torch.tensor([row["interface"] for row in record["residues"]], dtype=torch.float32)
+        assert embedding.shape[0] == len(labels) and structure.shape[0] == len(labels)
+        assert torch.isfinite(embedding).all() and torch.isfinite(structure).all()
+        examples.append({"name": record["name"], "pdb": record["pdb"], "group": record["group"],
+                         "x": embedding, "structure": structure, "y": labels})
+    return examples
+
+
+class Probe(nn.Module):
+    def __init__(self, dimension):
+        super().__init__()
+        self.norm = nn.LayerNorm(dimension) if dimension > 1 else nn.Identity()
+        self.net = nn.Sequential(nn.Linear(dimension, 64), nn.GELU(), nn.Linear(64, 32),
+                                 nn.GELU(), nn.Linear(32, 1)) if dimension > 1 else nn.Linear(1, 1)
+
+    def forward(self, example, use_structure):
+        x = torch.cat([example["x"], example["structure"]], dim=1) if use_structure else example["x"]
+        return self.net(self.norm(x.cuda())).squeeze(-1)
+
+
+def loss(records, model, use_structure):
+    total = 0.0
+    count = 0
+    for example in records:
+        logits = model(example, use_structure)
+        total = total + F.binary_cross_entropy_with_logits(logits, example["y"].cuda(), reduction="sum")
+        count += len(logits)
+    return total / count
+
+
+@torch.no_grad()
+def raw_predictions(records, model, use_structure):
+    output = []
+    for example in records:
+        probabilities = torch.sigmoid(model(example, use_structure)).cpu().numpy()
+        output.append({"name": example["name"], "pdb": example["pdb"], "group": example["group"],
+                       "probability": probabilities, "label": example["y"].numpy()})
+    return output
+
+
+def binary_counts(labels, predictions):
+    tp = int(np.sum(predictions & (labels == 1)))
+    fp = int(np.sum(predictions & (labels == 0)))
+    fn = int(np.sum(~predictions & (labels == 1)))
+    tn = int(np.sum(~predictions & (labels == 0)))
+    return tp, fp, fn, tn
+
+
+def f1(tp, fp, fn):
+    return 2 * tp / max(1, 2 * tp + fp + fn)
+
+
+def metrics(predictions, threshold):
+    all_probabilities = np.concatenate([row["probability"] for row in predictions])
+    all_labels = np.concatenate([row["label"] for row in predictions])
+    order = np.argsort(-all_probabilities, kind="stable")
+    positives = all_labels[order]
     precision = np.cumsum(positives) / np.arange(1, len(positives) + 1)
-    auprc = float((precision * positives).sum() / max(1, positives.sum()))
-    prediction = probabilities >= threshold
-    tp = int((prediction & (labels == 1)).sum())
-    fp = int((prediction & (labels == 0)).sum())
-    fn = int((~prediction & (labels == 1)).sum())
-    f1 = 2 * tp / max(1, 2 * tp + fp + fn)
-    return {"auprc": auprc, "macro_f1": f1, "tp": tp, "fp": fp, "fn": fn,
-            "threshold": threshold, "per_sequence": per_sequence}
+    micro_auprc = float(np.sum(precision * positives) / max(1, positives.sum()))
+    tp, fp, fn, tn = binary_counts(all_labels, all_probabilities >= threshold)
+    positive_f1 = f1(tp, fp, fn)
+    negative_f1 = f1(tn, fn, fp)
+    chain_f1 = []
+    chain_macro = []
+    chain_auprc = []
+    for row in predictions:
+        ctp, cfp, cfn, ctn = binary_counts(row["label"], row["probability"] >= threshold)
+        pf1 = f1(ctp, cfp, cfn)
+        nf1 = f1(ctn, cfn, cfp)
+        chain_f1.append(pf1)
+        chain_macro.append((pf1 + nf1) / 2)
+        if row["label"].sum() > 0:
+            order = np.argsort(-row["probability"], kind="stable")
+            positive = row["label"][order]
+            chain_auprc.append(float(np.sum(np.cumsum(positive) / np.arange(1, len(positive) + 1) * positive) / positive.sum()))
+    return {"micro_auprc": micro_auprc, "micro_f1": positive_f1,
+            "macro_f1_binary": (positive_f1 + negative_f1) / 2,
+            "macro_f1_per_chain": float(np.mean(chain_f1)),
+            "macro_f1_binary_per_chain": float(np.mean(chain_macro)),
+            "macro_auprc_positive_chains": float(np.mean(chain_auprc)) if chain_auprc else None,
+            "n_auprc_chains": len(chain_auprc), "precision": tp / max(1, tp + fp),
+            "interface_residue_recall": tp / max(1, tp + fn),
+            "tp": tp, "fp": fp, "fn": fn, "tn": tn, "threshold": float(threshold),
+            "n_residues": len(all_labels), "n_chains": len(predictions)}
+
+
+def save_checkpoint(path, model, optimizer, epoch, best, patience, history, args):
+    temporary = path.with_suffix(f".tmp.{os.getpid()}")
+    torch.save({"model": model.state_dict(), "optimizer": optimizer.state_dict(), "epoch": epoch,
+                "best": best, "patience": patience, "history": history,
+                "mode": args.mode, "seed": args.seed}, temporary)
+    os.replace(temporary, path)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["sequence_only", "structure_aware", "length", "gc", "random"], required=True)
+    parser.add_argument("--mode", choices=MODES, required=True)
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--max-steps", type=int, default=500)
+    parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA required; refusing silent CPU fallback")
+    qa = json.loads((ROOT / "label_qa_summary.json").read_text())
+    assert qa["status"] == "PASS_INDEPENDENT_INTERFACE_LABEL_QA"
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-    train = load("train")
-    holdout = load("holdout")
-    train_groups = {record["group"] for record in train}
-    holdout_groups = {record["group"] for record in holdout}
-    train_pdbs = {record["pdb"] for record in train}
-    holdout_pdbs = {record["pdb"] for record in holdout}
-    if train_groups & holdout_groups or train_pdbs & holdout_pdbs:
-        raise AssertionError("train/holdout group or PDB leakage")
-    groups = sorted({record["pdb"] for record in train})
-    validation_pdbs = set(groups[::5])
-    training = [record for record in train if record["pdb"] not in validation_pdbs]
-    validation = [record for record in train if record["pdb"] in validation_pdbs]
-    if not training or not validation:
-        raise AssertionError("empty train/validation split")
-    structure_aware = args.mode == "structure_aware"
-    model = InterfaceMLP(structure_aware).cuda()
-    if args.mode in ("length", "gc"):
-        model = nn.Linear(1, 1).cuda()
+    train = load_split("train", args.mode)
+    holdout = load_split("holdout", args.mode)
+    if {row["pdb"] for row in train} & {row["pdb"] for row in holdout}:
+        raise AssertionError("PDB leakage")
+    if {row["group"] for row in train} & {row["group"] for row in holdout}:
+        raise AssertionError("sequence-cluster leakage")
+    validation_groups = {group for i, group in enumerate(sorted({row["group"] for row in train})) if i % 5 == 0}
+    validation = [row for row in train if row["group"] in validation_groups]
+    training = [row for row in train if row["group"] not in validation_groups]
+    if not training or not validation or {row["pdb"] for row in training} & {row["pdb"] for row in validation}:
+        raise AssertionError("invalid internal PDB/group validation split")
     if args.mode == "random":
-        model = InterfaceMLP(False).cuda()
+        rng = np.random.default_rng(args.seed)
+        for example in training:
+            example["y"] = torch.from_numpy(rng.permutation(example["y"].numpy()).astype(np.float32))
+    use_structure = args.mode.endswith("_structure")
+    dimension = training[0]["x"].shape[1] + (training[0]["structure"].shape[1] if use_structure else 0)
+    model = Probe(dimension).cuda()
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3)
-    destination = OUT / f"{args.mode}_seed{args.seed}"
+    destination = ROOT / "converged_baselines" / f"{args.mode}_seed{args.seed}"
     destination.mkdir(parents=True, exist_ok=True)
+    epoch = 0
     best = float("inf")
-    best_step = 0
     patience = 0
     history = []
-    for step in range(1, args.max_steps + 1):
+    if args.resume:
+        state = torch.load(destination / "resume.pt", map_location="cpu", weights_only=False)
+        assert state["mode"] == args.mode and state["seed"] == args.seed
+        model.load_state_dict(state["model"], strict=True)
+        optimizer.load_state_dict(state["optimizer"])
+        epoch, best, patience, history = state["epoch"], state["best"], state["patience"], state["history"]
+    torch.cuda.reset_peak_memory_stats()
+    while patience < 30:
+        epoch += 1
         model.train()
         optimizer.zero_grad(set_to_none=True)
-        total = 0.0
-        for record in training:
-            x, y, pair_target, structure_target = features(record)
-            if args.mode == "random":
-                y = y[torch.randperm(len(y))]
-            if args.mode in ("length", "gc"):
-                value = float(np.log(len(record["sequence"]))) if args.mode == "length" else (
-                    (record["sequence"].count("G") + record["sequence"].count("C")) / len(record["sequence"]))
-                loss = F.binary_cross_entropy_with_logits(model(torch.tensor([value], device="cuda")).reshape(1), y.mean().cuda().reshape(1))
-            else:
-                output = model(x.cuda())
-                loss = F.binary_cross_entropy_with_logits(output["logit"].squeeze(-1), y.cuda())
-                if structure_aware:
-                    loss = loss + 0.1 * F.mse_loss(output["pair"], pair_target.cuda())
-                    loss = loss + 0.1 * F.mse_loss(output["structure"], structure_target.cuda())
-            total = total + loss
-        (total / len(training)).backward()
+        objective = loss(training, model, use_structure)
+        if not torch.isfinite(objective):
+            raise FloatingPointError("non-finite training loss")
+        objective.backward()
+        for parameter in model.parameters():
+            if parameter.grad is None or not torch.isfinite(parameter.grad).all():
+                raise FloatingPointError("missing or non-finite parameter gradient")
         optimizer.step()
-        if step % 10 == 0:
-            model.eval()
-            validation_loss = 0.0
-            with torch.no_grad():
-                for record in validation:
-                    x, y, pair_target, structure_target = features(record)
-                    if args.mode in ("length", "gc"):
-                        value = float(np.log(len(record["sequence"]))) if args.mode == "length" else (
-                            (record["sequence"].count("G") + record["sequence"].count("C")) / len(record["sequence"]))
-                        loss = F.binary_cross_entropy_with_logits(model(torch.tensor([value], device="cuda")).reshape(1), y.mean().cuda().reshape(1))
-                    else:
-                        output = model(x.cuda())
-                        loss = F.binary_cross_entropy_with_logits(output["logit"].squeeze(-1), y.cuda())
-                        if structure_aware:
-                            loss = loss + 0.1 * F.mse_loss(output["pair"], pair_target.cuda())
-                            loss = loss + 0.1 * F.mse_loss(output["structure"], structure_target.cuda())
-                    validation_loss += float(loss)
-            validation_loss /= len(validation)
-            history.append({"step": step, "validation_loss": validation_loss})
-            if validation_loss < best - 1e-4:
-                best = validation_loss
-                best_step = step
-                patience = 0
-                torch.save({"step": step, "model": model.state_dict()}, destination / "best.pt")
-            else:
-                patience += 1
-            if patience >= 30:
-                break
-    if best_step == 0:
-        raise RuntimeError("no improving validation checkpoint")
+        model.eval()
+        with torch.no_grad():
+            validation_loss = float(loss(validation, model, use_structure))
+        if not np.isfinite(validation_loss):
+            raise FloatingPointError("non-finite validation loss")
+        history.append({"epoch": epoch, "train_loss": float(objective), "validation_loss": validation_loss})
+        if validation_loss < best - 1e-5:
+            best = validation_loss
+            patience = 0
+            torch.save({"model": model.state_dict(), "epoch": epoch}, destination / "best.tmp.pt")
+            os.replace(destination / "best.tmp.pt", destination / "best.pt")
+        else:
+            patience += 1
+        save_checkpoint(destination / "resume.pt", model, optimizer, epoch, best, patience, history, args)
+        print(json.dumps({"mode": args.mode, "seed": args.seed, "epoch": epoch,
+                          "train_loss": float(objective), "validation_loss": validation_loss,
+                          "patience": patience}), flush=True)
     checkpoint = torch.load(destination / "best.pt", map_location="cpu", weights_only=False)
-    model.load_state_dict(checkpoint["model"])
+    model.load_state_dict(checkpoint["model"], strict=True)
     model.eval()
-    thresholds = np.linspace(0.01, 0.99, 99)
-    candidates = [metrics(validation, model, structure_aware, threshold) for threshold in thresholds]
-    chosen = max(candidates, key=lambda result: result["macro_f1"])
-    result = metrics(holdout, model, structure_aware, chosen["threshold"])
-    result.update({
-        "status": "PASS_INTERFACE_BASELINE", "mode": args.mode, "seed": args.seed,
-        "best_step": best_step, "early_stopped": patience >= 30,
-        "converged": patience >= 30, "max_steps": args.max_steps,
-        "train_n": len(training), "validation_n": len(validation),
-        "holdout_n": len(holdout), "train_holdout_group_overlap": 0,
-        "train_holdout_pdb_overlap": 0, "history": history,
-        "checkpoint_sha256": sha256(destination / "best.pt"),
-        "holdout_structure_labels_used_for_inference": False,
-    })
+    validation_predictions = raw_predictions(validation, model, use_structure)
+    candidates = [metrics(validation_predictions, threshold) for threshold in np.linspace(0.01, 0.99, 99)]
+    selected = max(candidates, key=lambda row: row["macro_f1_binary"])
+    threshold = selected["threshold"]
+    holdout_predictions = raw_predictions(holdout, model, use_structure)
+    result = metrics(holdout_predictions, threshold)
+    result.update({"status": "PASS_CONVERGED_INTERFACE_PROBE", "mode": args.mode, "seed": args.seed,
+        "scientific_scope": "frozen representation interface probe; not dual-view secondary-structure accuracy rescue",
+        "converged": True, "stop_reason": "internal_validation_plateau_30_epochs",
+        "epochs": epoch, "best_epoch": checkpoint["epoch"], "best_validation_loss": best,
+        "n_training_chains": len(training), "n_validation_chains": len(validation), "n_holdout_chains": len(holdout),
+        "validation_group_overlap": 0, "holdout_group_overlap": 0, "holdout_pdb_overlap": 0,
+        "threshold_selection": "internal train group validation; binary-class macro-F1; no holdout labels",
+        "validation_metrics_at_threshold": selected,
+        "inference_structure_labels_used": False,
+        "structure_features": "frozen model predictions" if use_structure else None,
+        "pretraining_exposure": "UNKNOWN; PDB/group isolation does not prove RiNALMo pretraining decontamination",
+        "gpu": torch.cuda.get_device_name(0), "peak_cuda_memory_bytes": torch.cuda.max_memory_allocated(),
+        "torch": torch.__version__, "label_qa_sha256": sha256(ROOT / "label_qa_summary.json"),
+        "labels_sha256": {split: sha256(ROOT / f"{split}_contacts.jsonl") for split in ("train", "holdout")},
+        "checkpoint_sha256": sha256(destination / "best.pt"), "source_sha256": sha256(__file__), "history": history})
     (destination / "result.json").write_text(json.dumps(result, indent=2) + "\n")
-    print(json.dumps({key: result[key] for key in (
-        "status", "mode", "seed", "best_step", "auprc", "macro_f1", "tp", "fp", "fn")}, indent=2))
+    with (destination / "holdout_predictions.npz").open("wb") as handle:
+        np.savez_compressed(handle,
+            probabilities=np.concatenate([row["probability"] for row in holdout_predictions]),
+            labels=np.concatenate([row["label"] for row in holdout_predictions]),
+            lengths=np.asarray([len(row["probability"]) for row in holdout_predictions]),
+            names=np.asarray([row["name"] for row in holdout_predictions]),
+            pdbs=np.asarray([row["pdb"] for row in holdout_predictions]),
+            groups=np.asarray([row["group"] for row in holdout_predictions]))
+    export = [{**row, "probability": row["probability"].tolist(), "label": row["label"].tolist()}
+              for row in holdout_predictions]
+    (destination / "holdout_predictions.json").write_text(json.dumps(export) + "\n")
+    print(json.dumps({key: result[key] for key in ("status", "mode", "seed", "best_epoch", "epochs",
+        "micro_auprc", "macro_f1_binary", "macro_f1_per_chain", "interface_residue_recall")}, indent=2))
 
 
 if __name__ == "__main__":
