@@ -52,6 +52,13 @@ def load_plana(ckpt_path, device):
         head.motif_input.motif_parameters = load_parameters(Path(motif["asset_dir"]) / "parameters.npz")
         head.motif_input.sequences = []
         head.motif_input.shuffle = motif["mode"] == "shuffled"
+    bpfold = ck.get("meta", {}).get("bpfold_motif")
+    if bpfold:
+        from rnajepa.bpfold_motif import BPfoldMotifInput
+        head.motif_input = BPfoldMotifInput(
+            bpfold["energy_table"], direct_score=bpfold["mode"] == "energy_only")
+        head.motif_input.sequences = []
+        head.motif_input.shuffle = bpfold["mode"] == "shuffled"
     head.load_state_dict(ck["model"]["head"])
     encoder = encoder.to(device).eval()
     head = head.to(device).eval()
