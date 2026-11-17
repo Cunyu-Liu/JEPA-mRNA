@@ -74,6 +74,7 @@ def main():
     if failed:
         raise RuntimeError(f"interface probe failures preserved: {failed}")
     subprocess.run([PYTHON, "tools/aggregate_interface_results.py"], cwd=REPO, check=True)
+    subprocess.run([PYTHON, "tools/analyze_interface_strata.py"], cwd=REPO, check=True)
 
 
 if __name__ == "__main__":
