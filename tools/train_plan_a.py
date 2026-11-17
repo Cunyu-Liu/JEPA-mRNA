@@ -440,6 +440,8 @@ def main():
     ap.add_argument("--dual-view-helix-mask", type=float, default=0.3)
     ap.add_argument("--dual-view-sequence-mask", type=float, default=0.3)
     ap.add_argument("--dual-view-log-every", type=int, default=25)
+    ap.add_argument("--profile-out", default="",
+                    help="optional full-host train forward/backward profiler report on step 1")
     ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
                     help="hold this much GPU memory from process start so "
                          "co-tenants cannot claim the card during the CPU-bound "
@@ -853,6 +855,14 @@ def main():
                 print(f"[plan-a] step {step}: unfroze to {n_unfrozen}/{n_blocks} "
                       "blocks (top-down)", flush=True)
 
+        profiler = None
+        if args.profile_out and step == 1:
+            from torch.profiler import ProfilerActivity, profile
+            torch.cuda.reset_peak_memory_stats()
+            profiler = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
+                               with_flops=True, record_shapes=True)
+            profiler.__enter__()
+
         bucket = stream.next()
         seqs = [records[i][0] for i in bucket]
         gts = [records[i][1] for i in bucket]
@@ -1111,6 +1121,37 @@ def main():
 
         opt.zero_grad(set_to_none=True)
         total.backward()
+        if profiler is not None:
+            profiler.__exit__(None, None, None)
+            gradient_cosine = None if dual_record is None else dual_record["direct_nll_gradient"]
+            if dual_view is not None and gradient_cosine is None:
+                raise AssertionError("full-host profile lacks shared-encoder gradient cosine")
+            report = {
+                "status": "PASS_FULL_HOST_TRAIN_PROFILE",
+                "scientific_scope": "one engineering batch; not a scientific accuracy result",
+                "arm": args.dual_view_arm,
+                "gpu": torch.cuda.get_device_name(0),
+                "torch": torch.__version__,
+                "step": step,
+                "batch_size": B,
+                "lengths": lengths,
+                "forward_backward_profiler_flops": sum(
+                    int(getattr(event, "flops", 0) or 0) for event in profiler.key_averages()),
+                "scope": ("full RiNALMo + original ResNet2D/Turner + dual-view train forward/backward "
+                          "for profiler-supported aten/CUDA operations; exact inference DP and Python/C "
+                          "decoder are excluded and reported separately, not estimated"),
+                "peak_cuda_memory_bytes": int(torch.cuda.max_memory_allocated()),
+                "direct_nll_gradient_cosine": gradient_cosine,
+                "gradient_scope": None if dual_record is None else dual_record["gradient_scope"],
+                "train_log": log_path,
+                "source_sha256": {
+                    "tools/train_plan_a.py": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                    "src/rnajepa/dual_view.py": hashlib.sha256((Path(__file__).parents[1] / "src/rnajepa/dual_view.py").read_bytes()).hexdigest(),
+                },
+            }
+            if report["forward_backward_profiler_flops"] <= 0:
+                raise AssertionError("full-host profiler returned zero FLOPs")
+            Path(args.profile_out).write_text(json.dumps(report, indent=2) + "\n")
         for view in direct_views:
             with torch.no_grad():
                 for bn, (rm, rv, nbt) in zip(bns, view[9]):
