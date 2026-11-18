@@ -99,7 +99,7 @@ def main():
     assert "--max-seqs 300` is not a final output cap" in text
     for number in range(1, 13):
         assert f"**Q{number}**" in text
-    assert hashlib.sha256(Path(args.deck).read_bytes()).hexdigest() == "bc64bc3a8864aa90d638fd5ef4bfec23d377d227b798bebfa548cd7dc1c83d23"
+    assert hashlib.sha256(Path(args.deck).read_bytes()).hexdigest() == "1b4b5432758290c93d4d95063b257f751ed5d84694bd4f6c79c6a004be832bbd"
     print(json.dumps({"status": "PASS_EVIDENCE_MANUSCRIPT_NUMBERS_AND_LIMITS",
                       "manuscript": args.manuscript, "words": len(text.split()),
                       "checked_arms": len(pilot["results"]), "checked_interface_modes": len(labels),
