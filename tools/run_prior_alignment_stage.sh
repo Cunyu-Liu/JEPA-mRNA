@@ -18,6 +18,7 @@ STAGE="$ART/${MODE}_seed${SEED}"
 INIT="$ART/init/shared_init_seed${SEED}.pt"
 mkdir -p "$STAGE" "$ART/init" "$STAGE/snapshots"
 cd "$REPO"
+RUN_GIT_HEAD="$(git rev-parse HEAD)"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader
 
@@ -60,11 +61,14 @@ done
   --out "$STAGE/stage_verification.json" \
   > "$STAGE/stage_verification.stdout.log" 2>&1
 
-STAGE="$STAGE" MODE="$MODE" SEED="$SEED" REPO="$REPO" "$PY" - <<'PY'
+"$PY" tools/verify_prior_alignment_science.py \
+  --stage "$STAGE" --out "$STAGE/scientific_verification.json" \
+  > "$STAGE/scientific_verification.stdout.log" 2>&1
+
+STAGE="$STAGE" MODE="$MODE" SEED="$SEED" REPO="$REPO" RUN_GIT_HEAD="$RUN_GIT_HEAD" "$PY" - <<'PY'
 import hashlib
 import json
 import os
-import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -77,7 +81,7 @@ manifest = {
     "mode": os.environ["MODE"],
     "seed": int(os.environ["SEED"]),
     "status": "COMPLETED",
-    "git_head": subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip(),
+    "git_head": os.environ["RUN_GIT_HEAD"],
     "contract_sha256": hashlib.sha256(contract.read_bytes()).hexdigest(),
     "old_external_panels_used": False,
     "artifacts": {
@@ -85,6 +89,7 @@ manifest = {
         "train_off": str(stage / "train_off"),
         "decode_vl0": str(stage / "decode_vl0"),
         "verification": str(stage / "stage_verification.json"),
+        "scientific_verification": str(stage / "scientific_verification.json"),
         "decode_verification": str(stage / "decode_vl0/decode_verification.json"),
     },
 }
