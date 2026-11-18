@@ -214,32 +214,71 @@ def build_data_registry(cache_path: Path | None = None) -> list[dict]:
     return rows
 
 
-def prediction_row(model: str, split: str, path: Path, repeat: int | None = None) -> dict:
+def prediction_row(model: str, split: str, path: Path, repeat: int | None = None,
+                   variant: str | None = None) -> dict:
     identity = f"{model}/{split}" + (f"/repeat{repeat}" if repeat is not None else "")
-    rec = {"prediction_id": identity, "model": model, "split": split, "repeat": repeat, **file_info(path)}
+    rec = {"prediction_id": identity, "model": model, "split": split, "repeat": repeat,
+           "variant": variant, **file_info(path)}
     if not path.is_file():
         rec.update({"status": "BLOCKED", "block_reason": "registered prediction file missing"})
         return rec
     try:
         obj = json.loads(path.read_text())
+        top = obj
+        if variant is not None:
+            group = obj.get("results") or obj.get("baselines")
+            if not isinstance(group, dict) or variant not in group:
+                raise ValueError(f"variant {variant} absent")
+            obj = group[variant]
         per = obj.get("per_sequence")
         if per is None and isinstance(obj.get("predictions"), list):
             per = obj["predictions"]
         if not isinstance(per, list):
             raise ValueError("no per_sequence/predictions list")
         rec["n_sequences"] = len(per)
-        rec["n_sequences_field"] = obj.get("n_sequences", obj.get("n"))
+        rec["n_sequences_field"] = obj.get("n_sequences", obj.get("n", top.get("n_sequences")))
         rec["n_skipped"] = obj.get("n_skipped")
-        rec["data_path"] = obj.get("data") or str(JSONL / f"{split}.jsonl")
+        rec["data_path"] = obj.get("data") or top.get("data") or str(JSONL / f"{split}.jsonl")
         rec["prediction_schema"] = "per_sequence" if "per_sequence" in obj else "predictions"
-        rec["model_metadata"] = {k: obj.get(k) for k in (
+        metadata_keys = (
             "tag", "checkpoint", "plana_ckpt", "plana_ckpt2", "r2d_ckpt", "w_plana",
-            "plana_s1_weight", "system", "distribution", "weights_sha256", "threshold",
-        ) if k in obj}
+            "plana_s1_weight", "system", "distribution", "weights", "weights_sha256", "threshold",
+            "parameters", "parameters_sha256", "binary", "binary_sha256", "repository", "commit",
+            "repository_commit", "decoder", "efold_version", "training_corpus", "evaluation_scope",
+            "pretrained_backbone", "pretrained_backbone_sha256", "vienna_version",
+        )
+        rec["model_metadata"] = {k: obj.get(k) for k in metadata_keys if k in obj}
+        for key in metadata_keys:
+            if key not in rec["model_metadata"] and key in top:
+                rec["model_metadata"][key] = top[key]
+        protocol = top.get("protocol")
+        if isinstance(protocol, dict):
+            model_report = protocol.get("model_report")
+            if isinstance(model_report, dict):
+                for key in ("weights", "weights_sha256", "config", "config_sha256"):
+                    if key in model_report:
+                        rec["model_metadata"][key] = model_report[key]
         rec["count_consistent"] = rec["n_sequences_field"] is None or rec["n_sequences_field"] == len(per)
         rec["status"] = "FROZEN" if rec["count_consistent"] else "QA_MISMATCH"
     except Exception as exc:
         rec.update({"status": "BLOCKED", "block_reason": f"schema/read error: {exc}"})
+    return rec
+
+
+def summary_prediction_row(model: str, split: str, path: Path, repeat: int, variant: str) -> dict:
+    """Register aggregate-only files without pretending they contain sequences."""
+    identity = f"{model}/{split}/repeat{repeat}"
+    rec = {"prediction_id": identity, "model": model, "split": split, "repeat": repeat,
+           "variant": variant, "status": "SUMMARY_ONLY", **file_info(path)}
+    try:
+        obj = json.loads(path.read_text())
+        variant_obj = obj["baselines"][variant]
+        rec["n_sequences"] = variant_obj.get("n_sequences", obj.get("n_sequences"))
+        rec["metrics"] = {k: variant_obj.get(k) for k in ("micro_precision", "micro_recall", "micro_f1", "macro_f1", "inf")}
+        rec["model_metadata"] = {"vienna_version": obj.get("vienna_version"), "protocol": obj.get("protocol")}
+        rec["block_reason"] = "aggregate metrics only; no per-sequence prediction list"
+    except Exception as exc:
+        rec.update({"status": "BLOCKED", "block_reason": f"summary schema/read error: {exc}"})
     return rec
 
 
@@ -277,55 +316,55 @@ def build_prediction_registry() -> list[dict]:
                 rec["limited_clean_subset_evidence"] = file_info(limited)
                 rec["selection_evidence"] = str(EXT.parent / "round39_xens2" / "qa" / "xens2_plana_distill_s0_vl0" / "qa_summary.json")
             rows.append(rec)
+
+    # The 89 rows above are the already-audited expanded-E0 inventory. The assets
+    # below complete Phase-0 provenance but are not silently added to that E0 run.
+    for row in rows:
+        row["e0_scope"] = "E0_EXPANDED_71" if row["status"] == "FROZEN" else "E0_EXPANDED_BLOCKED_18"
+
+    # ViennaRNA/Nussinov files contain aggregate metrics for three repeats, not
+    # per-sequence predictions. Register all 96 summaries as SUMMARY_ONLY.
+    for split in MAIN_SPLITS:
+        for repeat in range(3):
+            path = EXT / "vienna" / "raw" / f"{split}.repeat{repeat}.json"
+            for variant in ("vienna_mfe", "vienna_centroid", "vienna_mea", "nussinov_turner"):
+                rows.append(summary_prediction_row(variant, split, path, repeat, variant))
+
+    for model, directory in (
+        ("efold_0_1_3", "efold"), ("contrafold", "contrafold"),
+        ("nucleicbert_frozen_official", "nucleicbert_frozen"),
+        ("nucleicbert_ft", "nucleicbert_ft"),
+    ):
+        for split in MAIN_SPLITS:
+            rows.append(prediction_row(model, split, EXT / directory / "raw" / f"{split}.json"))
+
+    for model, variant in (("rnastructure_fold", "fold"), ("rnastructure_maxexpect", "maxexpect")):
+        for split in MAIN_SPLITS:
+            rows.append(prediction_row(model, split, EXT / "rnastructure" / "raw" / f"{split}.json", variant=variant))
+
+    for model, directory in (
+        ("rnaformer_bprna", "raw"), ("rnaformer_interfamily", "interfam/raw"),
+        ("rnaformer_intrafamily", "intrafam/raw"), ("rnaformer_biophysical", "biophysical/raw"),
+    ):
+        for split in MAIN_SPLITS:
+            rows.append(prediction_row(model, split, EXT / "rnaformer" / directory / f"{split}.json"))
+
+    for split in ("bprna_ts0", "bprna_new"):
+        rows.append(prediction_row("kirigami", split, EXT / "kirigami" / "raw" / f"{split}.json"))
+    for split in MAIN_SPLITS:
+        rows.append(prediction_row("kirigami_fast", split, EXT / "kirigami_fast" / "raw" / f"{split}.json"))
+    rows.append(prediction_row("spot_rna", "bprna_new", EXT / "spotrna" / "raw" / "bprna_new.json"))
+
+    for row in rows[89:]:
+        row["e0_scope"] = "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION"
     return rows
 
 
-def build_baseline_registry() -> list[dict]:
-    source = REPO / "source_data"
-    entries = [
-        ("xens2", "frozen_ensemble", "VL0-selected Plan-A s0/s1 x RiNALMo-2D s0",
-         ART / "artifacts/p0/xens2_bprna_new_replay/run_manifest.json", "COMPLETE_RAW"),
-        ("rinalmo_2d_s0", "own_best_single", "RiNALMo-2D frozen embedding downstream model",
-         ART / "manifests/p0/xens2_r2d_identity.json", "ARCHIVEII_FULL_BLOCKED"),
-        ("best_plan_a", "own_required_single", "VL0-selected Plan-A seed 0; clean-subset predictions are not raw-complete",
-         EXT.parent / "round39_xens2" / "qa" / "xens2_plana_distill_s0_vl0" / "qa_summary.json", "LIMITED_CLEAN_SUBSET_RAW_E0_BLOCKED"),
-        ("h0", "own_required_ablation", "H0 scientific ablation; requires the same data and decoding protocol",
-         REPO / "records/BASELINE_RESULTS.md", "BLOCKED_NO_FROZEN_E0_PREDICTIONS"),
-        ("bpfold", "external_required", "BPfold raw main-split and Rfam-family per-sequence predictions",
-         EXT / "bpfold" / "raw_summary.json", "RAW_COMPLETE_MAIN_AND_RFAM"),
-        ("ufold", "external_replay", "MultiMolecule conversion; official-weight provenance limitation retained",
-         source / "appendix_leakage/round39_ufold_raw_summary.json", "RAW_COMPLETE_CLEAN_BLOCKED"),
-        ("mxfold2", "external_replay", "Official MXfold2 raw full-length replay",
-         source / "appendix_leakage/round39_mxfold2_raw_summary.json", "RAW_COMPLETE_CLEAN_PENDING"),
-        ("rinalmo_ft", "external_replay", "Full fine-tuned RiNALMo downstream baseline",
-         source / "appendix_leakage/round39_rinalmo_ft_raw_summary.json", "RAW_COMPLETE_CLEAN_PENDING"),
-        ("eternafold", "external_replay", "Official EternaFold serial CPU parameters",
-         source / "appendix_leakage/round39_eternafold_raw_summary.json", "RAW_COMPLETE"),
-        ("efold", "external_replay", "eFold 0.1.3; 0.1.2 records are not interchangeable",
-         source / "fig05_speed/round38_baseline_assets.json", "TS0_ONLY"),
-        ("spot_rna", "external_replay", "Converted weights; not original-author distribution",
-         source / "appendix_leakage/round39_spotrna_raw_summary.json", "SUMMARY_ONLY_IN_E0"),
-        ("vienna", "external_reference", "ViennaRNA reference",
-         REPO / "records/BASELINE_RESULTS.md", "NOT_REGISTERED_FOR_E0"),
-        ("rnastructure", "external_reference", "RNAstructure reference",
-         REPO / "records/BASELINE_RESULTS.md", "NOT_REGISTERED_FOR_E0"),
-        ("contrafold", "external_reference", "CONTRAfold reference",
-         REPO / "records/BASELINE_RESULTS.md", "NOT_REGISTERED_FOR_E0"),
-        ("kirigami", "external_reference", "Kirigami reference",
-         REPO / "records/BASELINE_RESULTS.md", "NOT_REGISTERED_FOR_E0"),
-        ("linearfold", "external_reference", "LinearFold reference",
-         REPO / "records/BASELINE_RESULTS.md", "NOT_REGISTERED_FOR_E0"),
-        ("nucleicbert_frozen", "external_reference", "NucleicBERT frozen baseline",
-         REPO / "records/BASELINE_RESULTS.md", "NOT_REGISTERED_FOR_E0"),
-        ("nucleicbert_ft", "external_reference", "NucleicBERT fine-tuned baseline",
-         REPO / "records/BASELINE_RESULTS.md", "NOT_REGISTERED_FOR_E0"),
-    ]
-    rows = []
-    for model, role, version, evidence, status in entries:
-        rows.append({"model": model, "role": role, "version_protocol": version,
-                     "evidence": file_info(evidence), "status": status,
-                     "prediction_registry_scope": "E0 raw" if status.startswith(("COMPLETE", "RAW")) else "limited/blocked"})
-    return rows
+from foldnar_baseline_contract import baseline_metadata, build_baseline_rows, link_registries
+
+
+def build_baseline_registry(predictions: list[dict] | None = None) -> list[dict]:
+    return build_baseline_rows(predictions or [], file_info)
 
 
 def run(command: list[str]) -> str:
@@ -360,13 +399,25 @@ def main() -> int:
 
     data = build_data_registry()
     predictions = build_prediction_registry()
-    baselines = build_baseline_registry()
+    baselines = build_baseline_registry(predictions)
+    trace_errors = link_registries(data, predictions, baselines)
+    baseline_meta = baseline_metadata(baselines)
     for path, rows in zip(targets, (data, predictions, baselines)):
-        payload = {"schema_version": 1, "created_utc": datetime.now(timezone.utc).isoformat(),
+        payload = {"schema_version": 2 if path.name == "baseline_registry.json" else 1,
+                   "created_utc": datetime.now(timezone.utc).isoformat(),
                    "n_rows": len(rows), "rows": rows}
+        if path.name == "baseline_registry.json":
+            payload.update(baseline_meta)
         path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
 
-    # Three independent registry checks: declared rows, successful file/JSON counts, and reloaded rows.
+    # Three independent core-union counts: source roster union, row membership,
+    # and a full JSON reload. Supplemental rows are counted separately.
+    reloaded_baselines = json.loads(targets[2].read_text())
+    core_from_rosters = set(baseline_meta["core_union_ids"])
+    core_from_rows = {r["baseline_id"] for r in baselines if r["source_cohorts"]}
+    core_from_reload = {r["baseline_id"] for r in reloaded_baselines["rows"] if r["source_cohorts"]}
+    required_baseline_fields = {"baseline_id", "category", "official_weights", "training_data",
+                                "license", "inference", "comparability", "prediction_ids"}
     verification = {
         "data": {
             "declared_rows": len(data),
@@ -378,24 +429,52 @@ def main() -> int:
         "predictions": {
             "declared_rows": len(predictions),
             "frozen_rows": sum(r["status"] == "FROZEN" for r in predictions),
+            "summary_only_rows": sum(r["status"] == "SUMMARY_ONLY" for r in predictions),
             "blocked_rows": sum(r["status"] == "BLOCKED" for r in predictions),
-            "per_sequence_total": sum((r.get("n_sequences") or 0) for r in predictions),
+            "e0_expanded_frozen_rows": sum(r.get("e0_scope") == "E0_EXPANDED_71" and r["status"] == "FROZEN" for r in predictions),
+            "phase0_completion_new_frozen_rows": sum(r.get("e0_scope") == "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION" and r["status"] == "FROZEN" for r in predictions),
+            "per_sequence_total_frozen_only": sum((r.get("n_sequences") or 0) for r in predictions if r["status"] == "FROZEN"),
             "reloaded_rows": len(json.loads(targets[1].read_text())["rows"]),
             "mismatches": [r["prediction_id"] for r in predictions if r.get("status") == "QA_MISMATCH"],
         },
         "baselines": {
             "declared_rows": len(baselines),
-            "existing_evidence": sum(r["evidence"]["exists"] for r in baselines),
-            "reloaded_rows": len(json.loads(targets[2].read_text())["rows"]),
+            "existing_evidence": sum(bool(r["evidence"].get("exists")) for r in baselines),
+            "reloaded_rows": len(reloaded_baselines["rows"]),
+            "unique_baseline_ids": len({r["baseline_id"] for r in baselines}),
+            "source_counts": baseline_meta["cohort_sizes"],
+            "source_membership_total": baseline_meta["source_membership_total"],
+            "core_union_count_1_source_rosters": len(core_from_rosters),
+            "core_union_count_2_row_membership": len(core_from_rows),
+            "core_union_count_3_json_reload": len(core_from_reload),
+            "supplemental_rows": baseline_meta["supplemental_row_count"],
+            "four_category_counts": baseline_meta["four_category_counts"],
+            "missing_required_fields": [r["baseline_id"] for r in baselines if not required_baseline_fields <= set(r)],
+            "duplicate_baseline_ids": len(baselines) - len({r["baseline_id"] for r in baselines}),
         },
+        "trace_errors": trace_errors,
     }
     verification["pass"] = (
         verification["data"]["declared_rows"] == verification["data"]["reloaded_rows"]
         and verification["predictions"]["declared_rows"] == verification["predictions"]["reloaded_rows"]
         and verification["baselines"]["declared_rows"] == verification["baselines"]["reloaded_rows"]
         and verification["baselines"]["declared_rows"] == verification["baselines"]["existing_evidence"]
+        and verification["baselines"]["declared_rows"] == verification["baselines"]["unique_baseline_ids"]
+        and verification["baselines"]["source_counts"] == {"HISTORICAL_25": 25, "MAIN_BOARD_13": 13, "CHANRG_29": 29}
+        and verification["baselines"]["source_membership_total"] == 67
+        and len({verification["baselines"]["core_union_count_1_source_rosters"],
+                 verification["baselines"]["core_union_count_2_row_membership"],
+                 verification["baselines"]["core_union_count_3_json_reload"]}) == 1
+        and verification["predictions"]["frozen_rows"] == 162
+        and verification["predictions"]["summary_only_rows"] == 96
+        and verification["predictions"]["blocked_rows"] == 18
+        and verification["predictions"]["e0_expanded_frozen_rows"] == 71
+        and verification["predictions"]["phase0_completion_new_frozen_rows"] == 91
+        and not verification["baselines"]["missing_required_fields"]
+        and verification["baselines"]["duplicate_baseline_ids"] == 0
         and verification["data"]["jsonl_parse_total"] == verification["data"]["binary_newline_total"]
         and not verification["data"]["mismatches"] and not verification["predictions"]["mismatches"]
+        and not trace_errors
     )
     (out / "registry_verification.json").write_text(json.dumps(verification, indent=2) + "\n")
 
@@ -408,7 +487,8 @@ def main() -> int:
         Path("/root/rna_jepa_data/backbone/rinalmo-giga/model.safetensors"),
     ]
     code_paths = [args.repo / p for p in (
-        "src/rnajepa/fold_structure.py", "tools/foldnar_phase0.py", "tools/xens2_eval.py", "eval/ss/evaluate_decision.py",
+        "src/rnajepa/fold_structure.py", "tools/foldnar_phase0.py", "tools/foldnar_baseline_contract.py",
+        "tools/foldnar_verify_phase0.py", "tools/xens2_eval.py", "eval/ss/evaluate_decision.py",
         "eval/ss/metrics.py", "configs/ss/decision_r2d.yaml",
         "paper/2026-11-18-rna-jev-strict-scientific-engineering-audit.md",
     )]
