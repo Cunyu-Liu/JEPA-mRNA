@@ -16405,3 +16405,12 @@ cd /home/rna_jev_xens2_dualview_round56
 - 同源参数转发首轮失败未产生结果，修复后3项参数/聚合回归通过，commit=`cf831bf`。真实MMseqs2保留`|`注释ID，已修正解析并加真实120nt烟测，commit=`4f3f9f9`。短/低复杂度无命中及内联脚本错误均保留。
 - 聚合新增`BLOCKED_EXACT_NOT_HOMOLOGY_DETECTED`，精确有而同源无不得静默归入未知；4项回归通过，commit=`d466688`。三源80%同源搜索与完整1805入口DSSR标签仍在运行，未启动模型推理。
 
+## §15.959（2026-11-18）双向覆盖、短序列漏检与时间外联合裁决
+
+- 时间外canonical polymer三源搜索完成。独立后过滤要求`alnlen>=0.8*qlen`且`alnlen>=0.8*tlen`；RNAcentral有3行target覆盖不足，Rfam/Ensembl为0。严格同源命中665，源内分别为656/542/461；原始block artifact SHA256=`01ae90d9…810b`。
+- 15条精确阳性未被MMseqs检出，均为16–49nt，含低复杂度poly-U和X序列。直接回查源FASTA证实精确暴露，短序列/低复杂度解释仅与现象一致，不冒充漏检机制证明。最终精确/同源任一证据680，未知451；resolved SHA256=`5b248cf1a7031db4f57b82976b877c003dcf64c961437832fa254b5d73523e6b`。
+- 实测`--max-seqs 300`不是最终行数上限：时间外RNAcentral/Ensembl单查询最高924/427行；历史最高935/600/591行。全部原始行保留，不能截断制造上限。真实ID保留`|`注释，参数转发和Ensembl target链接已修复，相关回归7项通过，commit=`8e00db0`。
+- 历史三源复核只排除RNAcentral的9行target覆盖不足，原始/严格联合均162489，未丢失联合查询。证据SHA256=`8688a3fa4b6bdaaf4634d3a757173674bd2670afa144764feec3d0d3ff2362e5`；旧联合结果不改写，旧“300为最终上限”表述纠正。
+- PPT第28页备注更正后deck SHA256=`bc64bc3a8864aa90d638fd5ef4bfec23d377d227b798bebfa548cd7dc1c83d23`，原生页面/备注通过。证据稿3424词，SHA256=`1b923c7aa902be7a8e2f6acc94639690fa8eb3205f75748b3186bcdc1c6c47ae`；PDF6页，SHA256=`e1b066539eeb9a7fcf8912002ebede35f0c829df7a84b3ffe8131870bd19f0dd`，首/中/末页视觉及独立重建文本/表格/页数通过，commit=`f2b432f`。
+- 最终DSSR标签亲本恢复序列不能盲目复用canonical polymer同源结果，已新增独立查询构建器与5项相关测试，commit=`2875555`。完整1805入口标签提取仍在运行，未启动模型推理或新训练。
+
