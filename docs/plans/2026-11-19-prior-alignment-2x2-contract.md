@@ -45,3 +45,17 @@
 - C0 最佳：不支持替换受控 on/on MAP 路线，需复核初始化与分布条件。
 - 任何结论都要求三种子一致方向、precision 不崩溃且 stem-F1 同步；VL0 单独不能支持生产修复或 SOTA。
 - 既有八组外部面板即使将来冻结应用一次，也只是非独立敏感性证据；严格 OOD 需另用官方或时间外划分。
+
+## 执行、验收与存储
+
+- 代码和 Git 提交留在 `/home/rna_jev_xens2_dualview_round56`；共享初始化、checkpoint、raw scores 和报告全部写入 `/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/`。
+- 端到端入口：`bash tools/run_prior_alignment_stage.sh smoke 0`、`bash tools/run_prior_alignment_stage.sh pilot 0`；pilot 全部验收通过后才可执行 `bash tools/run_prior_alignment_stage.sh full SEED`，其中 SEED 为 0/1/2。
+- 每个阶段顺序执行：共享初始化核验 → train-on/train-off 两次训练 → 同一 checkpoint 的 on/off raw 导出 → VL0 四身份解码 → 独立工程与身份验收。脚本不读取旧外部面板。
+- 训练逐步写入 `batch_order.jsonl`；验收器逐 step 比较两臂序列哈希，检查共享初始化、终端 checkpoint、有限 loss/gradient、解冻计划、纯 length-NLL、四身份来源和 `/teams` 存储边界。
+- `stage_verification.json` 只证明工程与身份有效，不自动选择科学路线，不构成生产修复或 SOTA 结论。
+
+## 两项定向数据检查
+
+- `tools/analyze_chanrg_task_truncation.py` 分开报告任务原生冻结 GT 与统一 canonical-nested 两种分母，并保存逐序列、逐 family 的删除原因和理论 recall 上限。
+- `tools/analyze_high_frequency_fn.py` 仅应用已冻结的 `xens2-TurnerOff-MEA(T=2,gamma=4)`，对高频已见环境 FN 分析 posterior、Turner-on MAP 四状态、长度/loop/helix/register/source 分桶和保守的 exact-sequence 标签冲突；旧外部结果只作非独立诊断。
+- `tools/verify_targeted_diagnostics.py` 独立重算 CHANRG 聚合、512 条外部 raw 的 candidate/baseline 解码、逐 pair 状态与 posterior，并核对冻结 route summary。复核通过前不得写入 PPT。
