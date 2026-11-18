@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-18T10:35:38.670451+00:00",
+  "n_rows": 15,
+  "rows": [
+    {
+      "model": "xens2",
+      "role": "frozen_ensemble",
+      "version_protocol": "VL0-selected Plan-A s0/s1 x RiNALMo-2D s0",
+      "evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/p0/xens2_bprna_new_replay/run_manifest.json",
+        "exists": true,
+        "bytes": 2025,
+        "sha256": "5c71e2f08ebeb5164a5d24b6361503bde91789a2f662012e6ad5c57c703cf1b6",
+        "hash_scope": "full_content"
+      },
+      "status": "COMPLETE_RAW",
+      "prediction_registry_scope": "E0 raw"
+    },
+    {
+      "model": "rinalmo_2d_s0",
+      "role": "own_best_single",
+      "version_protocol": "RiNALMo-2D frozen embedding downstream model",
+      "evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/p0/xens2_r2d_identity.json",
+        "exists": true,
+        "bytes": 15580,
+        "sha256": "a93a6f16113b58b4a302654f8740cb1aac7604af83d2e875b3e40b8deb033a64",
+        "hash_scope": "full_content"
+      },
+      "status": "ARCHIVEII_FULL_BLOCKED",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "ufold",
+      "role": "external_replay",
+      "version_protocol": "MultiMolecule conversion; official-weight provenance limitation retained",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/appendix_leakage/round39_ufold_raw_summary.json",
+        "exists": true,
+        "bytes": 4722,
+        "sha256": "e22f77455ae5e3bf338f5d218899270ad58a171e97943b44151ed2eda970f4be",
+        "hash_scope": "full_content"
+      },
+      "status": "RAW_COMPLETE_CLEAN_BLOCKED",
+      "prediction_registry_scope": "E0 raw"
+    },
+    {
+      "model": "mxfold2",
+      "role": "external_replay",
+      "version_protocol": "Official MXfold2 raw full-length replay",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/appendix_leakage/round39_mxfold2_raw_summary.json",
+        "exists": true,
+        "bytes": 4186,
+        "sha256": "9d690e989f180fa65491ac100af8866b749aba4af498ecb0c9cfdc9a4c617bc5",
+        "hash_scope": "full_content"
+      },
+      "status": "RAW_COMPLETE_CLEAN_PENDING",
+      "prediction_registry_scope": "E0 raw"
+    },
+    {
+      "model": "rinalmo_ft",
+      "role": "external_replay",
+      "version_protocol": "Full fine-tuned RiNALMo downstream baseline",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/appendix_leakage/round39_rinalmo_ft_raw_summary.json",
+        "exists": true,
+        "bytes": 4178,
+        "sha256": "04ac23a5369ea5e4139de7feb3303795ea368d578b0804466927327ac3eded07",
+        "hash_scope": "full_content"
+      },
+      "status": "RAW_COMPLETE_CLEAN_PENDING",
+      "prediction_registry_scope": "E0 raw"
+    },
+    {
+      "model": "eternafold",
+      "role": "external_replay",
+      "version_protocol": "Official EternaFold serial CPU parameters",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/appendix_leakage/round39_eternafold_raw_summary.json",
+        "exists": true,
+        "bytes": 2810,
+        "sha256": "d1310c1386b82c1cbf364329a585a91960374e69d24b1d6f79f8cb3858aeff21",
+        "hash_scope": "full_content"
+      },
+      "status": "RAW_COMPLETE",
+      "prediction_registry_scope": "E0 raw"
+    },
+    {
+      "model": "efold",
+      "role": "external_replay",
+      "version_protocol": "eFold 0.1.3; 0.1.2 records are not interchangeable",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/fig05_speed/round38_baseline_assets.json",
+        "exists": true,
+        "bytes": 2890,
+        "sha256": "20bab1641c3e1ab6b080a27df98ef6d14ca5c3fd4371397ea573e500656c7a9e",
+        "hash_scope": "full_content"
+      },
+      "status": "TS0_ONLY",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "spot_rna",
+      "role": "external_replay",
+      "version_protocol": "Converted weights; not original-author distribution",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/appendix_leakage/round39_spotrna_raw_summary.json",
+        "exists": true,
+        "bytes": 4261,
+        "sha256": "dd752681b49ba620a6e76701da3f5f3b695316b7d43927822b6eab87876078e9",
+        "hash_scope": "full_content"
+      },
+      "status": "SUMMARY_ONLY_IN_E0",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "vienna",
+      "role": "external_reference",
+      "version_protocol": "ViennaRNA reference",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "NOT_REGISTERED_FOR_E0",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "rnastructure",
+      "role": "external_reference",
+      "version_protocol": "RNAstructure reference",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "NOT_REGISTERED_FOR_E0",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "contrafold",
+      "role": "external_reference",
+      "version_protocol": "CONTRAfold reference",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "NOT_REGISTERED_FOR_E0",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "kirigami",
+      "role": "external_reference",
+      "version_protocol": "Kirigami reference",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "NOT_REGISTERED_FOR_E0",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "linearfold",
+      "role": "external_reference",
+      "version_protocol": "LinearFold reference",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "NOT_REGISTERED_FOR_E0",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "nucleicbert_frozen",
+      "role": "external_reference",
+      "version_protocol": "NucleicBERT frozen baseline",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "NOT_REGISTERED_FOR_E0",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "nucleicbert_ft",
+      "role": "external_reference",
+      "version_protocol": "NucleicBERT fine-tuned baseline",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "NOT_REGISTERED_FOR_E0",
+      "prediction_registry_scope": "limited/blocked"
+    }
+  ]
+}
