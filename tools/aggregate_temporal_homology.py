@@ -48,6 +48,9 @@ def aggregate(fasta, root):
         assert sha256(matches) == manifest["result_sha256"]
         hits = set()
         counts = {name: 0 for name in queries}
+        reported = 0
+        excluded_count = 0
+        excluded = []
         with matches.open() as handle:
             for line_number, line in enumerate(handle, 1):
                 fields = line.rstrip("\n").split("\t")
@@ -57,11 +60,20 @@ def aggregate(fasta, root):
                 assert len(queries[query]) == int(query_length)
                 assert float(identity) >= 80.0 and int(target_length) > 0
                 assert int(alignment_length) >= 0.8 * int(query_length)
-                assert int(alignment_length) >= 0.8 * int(target_length)
-                hits.add(query)
+                reported += 1
                 counts[query] += 1
-        assert all(count <= 300 for count in counts.values())
+                if int(alignment_length) < 0.8 * int(target_length):
+                    excluded_count += 1
+                    if len(excluded) < 100:
+                        excluded.append({"query": query, "target": target, "alnlen": alignment_length,
+                                         "qlen": query_length, "tlen": target_length})
+                    continue
+                hits.add(query)
         source_reports[source] = {"detected": len(hits), "not_detected": len(queries) - len(hits),
+                                  "reported_matches": reported, "excluded_target_coverage": excluded_count,
+                                  "max_reported_targets_per_query": max(counts.values(), default=0),
+                                  "queries_with_over_300_reported_targets": sum(count > 300 for count in counts.values()),
+                                  "excluded_examples": excluded,
                                   "matches_sha256": sha256(matches), "search_manifest_sha256": sha256(manifest_path),
                                   "target_sha256": manifest["target_sha256"]}
         for name in hits:
@@ -76,8 +88,11 @@ def aggregate(fasta, root):
             "n_exact_detected": sum(row["exact_detected"] for row in records.values()),
             "exact_detected_not_homology_detected": exact_missed,
             "query_records": [records[name] for name in sorted(records)],
-            "protocol": "MMseqs2 17.b804f; >=80% identity and >=80% bidirectional coverage; up to300 targets/query",
+            "protocol": "MMseqs2 17.b804f; >=80% identity and >=80% bidirectional coverage; --max-seqs 300 with all reported hits retained",
+            "independent_postfilter": "Require alnlen >= 0.8*qlen and alnlen >= 0.8*tlen for every accepted hit; raw TSV preserved",
             "limitations": ["Not detected is unknown, not clean or independent", "Historical nt snapshot remains unpinned",
+                            "cov-mode=0 documentation alone is not accepted as proof of bidirectional coverage",
+                            "--max-seqs 300 is not treated as a cap on final reported target rows",
                             "Canonical polymer and structure-label gates are separate", "No model inference or training has occurred"]}
 
 
