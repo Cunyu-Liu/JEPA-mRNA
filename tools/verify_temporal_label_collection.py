@@ -31,6 +31,14 @@ def validate_mapping_failures(label):
     assert not set(failures) & {chain["auth_chain"] for chain in label["chains"]}
 
 
+def resolve_error_result(result, directory):
+    if (directory / "error.txt").is_file():
+        return "error", result["error"]
+    backups = sorted(path.name for path in directory.glob("error.*.txt"))
+    assert backups and (directory / "labels.json").is_file()
+    return "recovered", {"original_error": result["error"], "recovery_logs": backups}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True)
@@ -47,7 +55,7 @@ def main():
     assert collection["complete"] is True and collection["dssr_seq_id_mode"] == "observed_nts_v1"
     assert collection["n_entries"] == len(expected) == args.expected_count
     assert set(collection["results"]) == expected
-    accepted, duplicate_chain_ids, errors = [], set(), {}
+    accepted, duplicate_chain_ids, errors, recovered = [], set(), {}, {}
     metadata_records = {(row["entry_id"], row["entity_id"]): row for row in metadata["records"]}
     metadata_sequence_differences = []
     rejection_reasons = collections.Counter()
@@ -56,9 +64,12 @@ def main():
         directory = root / pdb_id
         result = collection["results"][pdb_id]
         if isinstance(result, dict) and "error" in result:
-            assert result["error"] and (directory / "error.txt").is_file()
-            errors[pdb_id] = result["error"]
-            continue
+            state, detail = resolve_error_result(result, directory)
+            if state == "error":
+                errors[pdb_id] = detail
+                continue
+            recovered[pdb_id] = detail
+            result = "cached"
         path = directory / "labels.json"
         label = json.loads(path.read_text())
         assert label["pdb_id"] == pdb_id
@@ -113,6 +124,7 @@ def main():
         "status": "PASS_TEMPORAL_LABEL_COLLECTION_QA_HOMOLOGY_PENDING" if not errors else "BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS",
         "collection_sha256": sha256(root / "collection.json"), "metadata_sha256": sha256(Path(args.metadata)),
         "n_entries": len(expected), "n_entry_errors": len(errors), "errors": errors,
+        "recovered_errors": recovered,
         "n_mapping_failure_chains": sum(len(entry["mapping_failures"]) for entry in per_entry),
         "n_accepted_chains": len(accepted), "n_unique_accepted_sequences": len(unique),
         "n_duplicate_accepted_chains": len(accepted) - len(unique),
