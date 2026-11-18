@@ -16,6 +16,8 @@
 >
 > **时间外候选数据门（2026-11-18）**：固定initial_release_date≥2025-07-01，不按模型结果选样本。官方Search＋GraphQL冻结1805入口、4087 RNA实体，独立QA确认1391唯一序列；16–8192nt为3584实体/1131唯一序列，≤1022nt为2588实体/841唯一序列，2条实验方法未知保留。日期过滤不是历史预训练截止证明，唯一序列不是独立家族。三源精确命中296/1131，835未检出仍为未知；exact SHA256=`8ceeb3fb9147b4c968182a0a0a1d9816e0e230f76cd6635a0725b0df66ac2ce5`。canonical polymer严格同源665，另15条精确阳性漏检，任一证据680、未知451（resolved SHA256=`5b248cf1…23e6b`）；最终标签序列需独立复核。完整mmCIF/DSSR标签、缺失坐标、配对守恒未完成前禁止模型推理。metadata SHA256=`b79ecc8f3501966417738d85f94559da917ca20a26bd3a16e9f07b130c1d289c`，QA SHA256=`54f014707e285a2ed5f1e56e52780b23c5c389f7a23df72b599e91ebae5f8fea`。
 >
+> **全量标签QA（2026-11-18）**：1805入口已齐套，2930接受链/731唯一序列，raw pairs=847391，canonical-nested=485745，删除非canonical/crossing=361646；20条映射失败链均明确拒绝，2930条接受链与metadata序列一致。9KFX scheme19行vs polymer18、seq16 C/U歧义，9P4K DSSR内部断言，均保留错误；显式排除审查通过，未替换标签。QA SHA256=`5b57831a…c1c6`，排除审查=`e60c0aaa…9874`，最终序列=`f03efde1…d333`；精确/同源复核进行中，未启动模型推理。
+>
 > **历史执行覆盖（2026-11-16：双视图 RNA-JEPA 精度主线；活跃清单 `dual-view-jepa-accuracy-v1`）**
 >
 > 唯一新实验合同：`docs/plans/2026-11-16-dual-view-jepa-accuracy-contract.md`，执行提示词：`docs/plans/2026-11-16-dual-view-jepa-execution-prompt.md`。中心问题是训练期结构模态能否通过双向潜在预测改善单 checkpoint 的未见家族精度，推理只使用序列。原 xens2 是精度基线，投票不再是新架构卖点；D1 通用扩增、RIPE 和旧局部 Pair-JEPA 停止。必须先通过文献/资产/数据/掩码/泄漏工程门与 H0–H6 pilot，再进入三种子正式训练；BPfold motif、ncRNA 功能分类和 RNA–蛋白界面均有独立资产或标签门。未通过不得宣称新架构精度突破。

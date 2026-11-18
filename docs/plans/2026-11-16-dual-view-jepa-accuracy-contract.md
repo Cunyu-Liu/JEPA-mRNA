@@ -21,6 +21,8 @@
 >
 > **冻结预测暴露分层裁决（2026-11-18）**：原 xens2 三个 checkpoint 的实际 SHA256 与 P0 一致，历史和重放的 bpRNA-new 预测逐序列一致。全量5388条无跳过，macro-F1=0.5422090871138705；精确暴露n=5381、macro-F1=0.5424236738973192，精确未检出n=7、macro-F1=0.3772531611514662。精确未检出仍未知，不能作clean或显著性/因果结论。全部5388条至少在一个已知来源检出80%同源，同源未检出n=0，故现有bpRNA-new不能形成同源未检出精度对照；不得把空组的0指标解释为性能。只读分析不选模型、不改阈值、不启动新训练，证据`xens2_bprna_new.json` SHA256=`c1c39477b84c3a139a52a091f1011548b1841c50bf6f5e572dc56b75318007ec`。旧替代预测的385条完整记录差异保留，不与P0身份混用。
 >
+> **全量标签排除审查（2026-11-18）**：1805入口完整QA得到2930接受链/731唯一序列，canonical-nested=485745；9KFX scheme19行与polymer18不一致、9P4K DSSR内部断言保留为不可用入口，不以猜测修复。`label_collection_qa.json`保持`BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS`，另由`label_exclusion_review.json`通过`PASS_EXPLICIT_ENTRY_EXCLUSIONS_LABELS_REVIEWED`后才允许使用其余1803入口，所有候选仍保留在审计分母。QA SHA256=`5b57831a…c1c6`，排除审查=`e60c0aaa…9874`，最终序列=`f03efde1…d333`。最终731条标签序列的精确/80%同源复核完成前不得启动模型推理。
+>
 > **H2 编码器身份限制（2026-11-18）**：H0/H2 best step100 的编码器逐张量完全相同，warmup_head_steps=1600，两个 split 的缓存也一致。故 H2 当前只是 H0 的共享冻结编码器别名，不能用于独立 JEPA 迁移或功能增益结论。保留 seed42 及身份文件 `h2_encoder_identity.json`，停止其余重复 H2 run，汇总不计算独立 H2−H0 效果；不把这一发现改写成新的正/负精度结论，也不通过调参恢复主线。
 >
 > **界面 QA 更正（2026-11-17）**：此前仅验证距离阈值与计数的 QA 不充分，旧实现未证明 mmCIF 坐标与 RNA 序列逐残基对应，并混入同名蛋白链。旧标签、500 步未收敛探索基线及误标 macro-F1 的数值全部撤销为失败证据，不进入论文/PPT。新标签必须直接由原始 mmCIF 的 entity、poly-seq-scheme、atom_site 建立，逐条核对 polymer、label_seq、完整参考序列、肽链伙伴和未观测残基；缺失坐标不得当负样本。由不共用提取代码的验证器重算全部距离、标签及 PDB＋序列簇隔离后，才可运行冻结表征界面 probe。下游 probe 无固定步数上限，使用训练集内部 PDB＋簇隔离验证自然早停，阈值不得接触 holdout；下游 split 隔离不替代预训练审计，RiNALMo 预训练精确接触已证实，禁止 clean-OOD 叙事。
@@ -399,11 +401,12 @@ done
 $PY tools/aggregate_temporal_homology.py --fasta "$T/homology/queries.fasta" --root "$T/homology" --metadata "$T/metadata_frozen.json" --output "$T/homology_union.json"
 
 # 完整 mmCIF/DSSR 标签与独立 QA；不得用四条 smoke 代替全量
-/root/miniconda3/envs/lucaone_cu128/bin/python /home/rna_jev/tools/collect_rna_complex_round49.py --ids-json "$T/candidate_entry_ids.json" --root "$T/full_labels_v1" --workers 4
+$PY tools/collect_rna_complex_temporal.py --ids-json "$T/candidate_entry_ids.json" --root "$T/full_labels_v1" --workers 12
 $PY tools/verify_temporal_label_collection.py --root "$T/full_labels_v1" --ids "$T/candidate_entry_ids.json" --metadata "$T/metadata_frozen.json" --output "$T/label_collection_qa.json"
+$PY tools/review_temporal_entry_exclusions.py --root "$T/full_labels_v1" --label-qa "$T/label_collection_qa.json" --metadata "$T/metadata_frozen.json" --output "$T/label_exclusion_review.json"
 
-# 仅在上述标签QA通过后：以最终亲本恢复序列重新做暴露审计
-$PY tools/prepare_temporal_evaluation_sequences.py --root "$T/full_labels_v1" --metadata "$T/metadata_frozen.json" --label-qa "$T/label_collection_qa.json" --output "$T/evaluation_sequences.json" --fasta "$T/evaluation_unknown.fasta"
+# 仅在上述标签QA或显式排除审查通过后：以最终亲本恢复序列重新做暴露审计
+$PY tools/prepare_temporal_evaluation_sequences.py --root "$T/full_labels_v1" --metadata "$T/metadata_frozen.json" --label-qa "$T/label_exclusion_review.json" --output "$T/evaluation_sequences.json" --fasta "$T/evaluation_unknown.fasta"
 $PY tools/audit_evaluation_exact_exposure.py --evaluation "$T/evaluation_sequences.json" --output "$T/evaluation_exact_exposure.json" --fasta "$T/evaluation_input.fasta"
 N=$($PY -c "import json; print(len(json.load(open('$T/evaluation_sequences.json'))['records']))")
 $PY tools/run_temporal_homology_search.py --metadata "$T/metadata_frozen.json" --eligible-fasta "$T/evaluation_input.fasta" --output-root "$T/evaluation_homology" --prepare-only --expected-count "$N"

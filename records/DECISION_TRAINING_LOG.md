@@ -16420,3 +16420,10 @@ cd /home/rna_jev_xens2_dualview_round56
 - 同源wrapper与聚合器支持`--expected-count`，不再把1131条canonical polymer查询硬编码到最终标签评测。独立后过滤、原始行保留、target覆盖、max-seqs非最终上限和精确阳性短序列回查规则全部沿用。
 - 相关参数、分组、动态查询和精确匹配测试8/8通过，commit=`6854f11`。合同第14节补齐标签通过后的完整命令；只有label_collection_qa通过才能执行，当前完整DSSR标签任务尚未完成，未启动模型推理。
 
+## §15.961（2026-11-18）完整时间外标签 QA 与显式排除审查
+
+- 独立目录版采集器`a49c945`完成1805入口、1803标签文件；旧628缓存SHA全部不变。缓存字符串、显式映射拒绝和恢复错误兼容分别由`44c99ed`、`a29b75d`、`8def03f`修复，3项QA回归通过。
+- 全量QA：2930接受链/731唯一序列，重复链2199；raw pairs=847391，canonical-nested=485745，删除非canonical/crossing=361646。20条映射失败链均明确拒绝，接受链与metadata序列完全一致。QA SHA256=`5b57831a973aee12fa6411711f621c1517c2c0bb0b3f4b98e9a70e154d6ab1c6`，状态保留`BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS`。
+- 9KFX scheme19行、polymer18、seq16 C/U歧义，未猜测删碱基或重编号；9P4K为DSSR内部断言失败。二者保留原始错误和证据，显式排除审查通过，所有1805候选仍在审计分母。9M7U并发辅助文件竞争、9O2Y/9QF5/9SPI网络失败已恢复，旧日志保留。排除审查SHA256=`e60c0aaa…9874`。
+- 最终731条唯一标签序列与2930来源链已冻结，ID按序列SHA256排序，不按模型表现或结构质量。序列artifact SHA256=`f03efde106a6b0f8f5577187da7a39706e2a423221eed6103f65753b8d01d333`。最终标签精确暴露正在独立运行，之后按双向80%覆盖执行同源复核；未启动模型推理。
+
