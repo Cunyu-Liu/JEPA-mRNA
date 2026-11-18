@@ -1,0 +1,1162 @@
+"""Plan-A: gradual unfreezing of the RiNALMo-giga backbone under the CRF objective.
+
+Control arm: rinalmo_r2d_b4_s0 (frozen giga embeddings + resnet2d head,
+TS0 micro F1 0.6629 / bpRNA-new 0.5010). The single variable under study is
+backbone adaptation; everything else must match the control arm's protocol.
+
+v2 discipline audit (2026-09-27). The v1 draft deviated from the control in five
+ways that would have confounded the backbone-adaptation axis; v2 corrects all:
+
+1. four-term objective: lambda_nll = lambda_distill = lambda_rlcd = lambda_cal
+   = 1.0 with the thermodynamic teacher (thermo:viennarna, 42 shards, strict
+   sequence keying). v1 ran nll only: ObjectiveWeights() defaults
+   lambda_distill = 0, and the smoke test "passing" with teacher_probs=None was
+   exactly the evidence of that gap. A separately declared pure-NLL run may use
+   lambda_distill=0 with empty teacher directories; optional_teacher then returns
+   None and combined_loss never reads it. This does not change the default parity.
+2. batching: length-bucketed batch_size 4 with the exact iter_batches RNG
+   (np.random.default_rng((seed, epoch)) permuting bucket order), so both arms
+   see the same batch sequence. v1 used random pairing at batch 2: that changes
+   the BatchNorm statistics the resnet2d scorer sees and the loss averaging.
+3. encoder frame: <cls> + seq + <eos>, attention_mask, hidden[:, 1:L+1] --
+   identical to the frozen-embedding extraction protocol
+   (tools/extract_rinalmo_embeddings.py), so the in-loop forward reproduces the
+   features the control arm consumed. v1 used a bare frame with no cls/eos and
+   no attention_mask.
+4. optimizer: AdamW betas=(0.9, 0.98) with the 5-step warmup LambdaLR of
+   run_training, applied per layer-wise group.
+5. NEG_BIG = -1e4 (the frozen sentinel), labels = the symmetric
+   pair_indicator matrix, gt_pairs sorted, mask from harness.valid_pair_mask.
+
+Plan-A's own variables (the thing under study):
+- the 650M backbone is in the training loop with top-down gradual unfreezing
+  (2 blocks / 800 steps after a 1600-step head warmup), layer-wise LR
+  (backbone 1e-5, head 1e-4);
+- the backbone stays dropout-free throughout (all nn.Dropout p set to 0 while
+  the module tree is in train() mode): the frozen control's features are
+  deterministic, so dropout here would be a regulariser the control never saw.
+  train() mode is required for HF gradient checkpointing to engage (the gate
+  is `self.training`), which is what fits the run on a 3g.20gb MIG slice.
+
+Parity check: until the first unfreeze (step 1600) this arm should track the
+control arm's loss trajectory (same data, same batch order, same head family);
+that is the built-in health signal for the whole protocol alignment.
+
+Memory: gradient checkpointing over the 33 encoder blocks (use_reentrant=False)
++ bf16 autocast on the encoder only (the head stays fp32 like the control);
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True is set by the launcher.
+"""
+
+import argparse
+import hashlib
+import itertools
+import json
+import os
+import sys
+import time
+from pathlib import Path
+
+import numpy as np
+import torch
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "tools"))
+
+from rnajepa.encoder import BASE_TO_INDEX, UNK_INDEX  # noqa: E402
+from rnajepa.decision_head import (  # noqa: E402
+    FlatDecisionHead, pair_mask_from_ids, turner_phys_scores)
+from rnajepa.rlcd import ObjectiveWeights, combined_loss  # noqa: E402
+from rnajepa.harness import valid_pair_mask  # noqa: E402
+from rnajepa.prior_alignment import (checkpoint_due, evaluation_rows, load_contract,
+                                     scheduled_unfreeze_blocks, sha256_file,
+                                     validate_training_args)  # noqa: E402
+from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
+from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
+from rnajepa.structured_mask import structured_pair_mask  # noqa: E402
+from rinalmo_preflight import VOCAB, load_encoder  # noqa: E402
+from structrfm_decode_round48 import decode_scores  # noqa: E402
+from torch.utils.checkpoint import checkpoint as _grad_ckpt  # noqa: E402
+
+
+def training_batch_structure_metrics(matrix, no_prior_matrix, lengths, sequences, ground_truth):
+    results = {name: {"tp": 0, "fp": 0, "fn": 0, "f1": []}
+               for name in ("nussinov", "greedy", "greedy_turner0")}
+    for index, length in enumerate(lengths):
+        sequence = sequences[index]
+        expected = {tuple(pair) for pair in ground_truth[index]}
+        mask = valid_pair_mask(sequence)
+        score_sets = {
+            "nussinov": (matrix[index, :length, :length], "nussinov"),
+            "greedy": (matrix[index, :length, :length], "greedy"),
+            "greedy_turner0": (no_prior_matrix[index, :length, :length], "greedy"),
+        }
+        for name, (scores, decoder) in score_sets.items():
+            values = scores.detach().float().cpu().numpy()
+            pairs, _, _ = decode_scores(values, mask, decoder)
+            predicted = {tuple(pair) for pair in pairs}
+            tp = len(predicted & expected)
+            fp = len(predicted - expected)
+            fn = len(expected - predicted)
+            f1 = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0
+            results[name]["tp"] += tp
+            results[name]["fp"] += fp
+            results[name]["fn"] += fn
+            results[name]["f1"].append(f1)
+    for name, values in results.items():
+        tp, fp, fn = values["tp"], values["fp"], values["fn"]
+        values["micro_f1"] = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0
+        values["macro_f1"] = float(np.mean(values.pop("f1")))
+    return results
+
+
+NEG_BIG = -1.0e4
+ENCODER_SPECIAL_TOKENS = True
+
+TEACHER_DIR = "/root/rna_jepa_data/ss_data/teacher/bprna_tr0"
+CKPT_DIR = "/root/rna_jepa_data/ckpts"
+
+
+def atomic_torch_save(value, path):
+    temporary = f"{path}.tmp.{os.getpid()}"
+    try:
+        torch.save(value, temporary)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def restore_validation_state(state, validation_log_path):
+    restored = (int(state.get("best_step", 0)),
+                float(state.get("best_validation_loss", float("inf"))),
+                int(state.get("bad_evaluations", 0)))
+    if not os.path.isfile(validation_log_path):
+        return restored
+    with open(validation_log_path, encoding="utf-8") as fh:
+        records = [json.loads(line) for line in fh if line.strip()]
+    if not records:
+        return restored
+    latest = records[-1]
+    validation_step = int(latest["step"])
+    if validation_step > int(state["step"]):
+        raise ValueError("validation log is ahead of the resume checkpoint")
+    if validation_step == int(state["step"]):
+        restored = (int(latest["best_step"]),
+                    float(latest["best_validation_loss"]),
+                    int(latest["bad_evaluations"]))
+    return restored
+
+
+def load_records(path):
+    """(seq, sorted pairs) per line -- the control arm's load_dataset_from_jsonl."""
+    records = []
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            r = json.loads(line)
+            seq = str(r["seq"]).upper().replace("T", "U")
+            pairs = [tuple(p) for p in r["pairs"]] if "pairs" in r else []
+            records.append((seq, sorted(pairs)))
+    return records
+
+
+class LazyTeacherMap:
+    def __init__(self, directory, shard_cache_size=1):
+        import hashlib
+        from collections import OrderedDict
+
+        if shard_cache_size <= 0:
+            raise ValueError("teacher shard cache size must be positive")
+        self.directory = str(directory)
+        self.shard_cache_size = shard_cache_size
+        self.cache = OrderedDict()
+        self.index = {}
+        self._sha256 = hashlib.sha256
+        with open(os.path.join(directory, "manifest.json"), encoding="utf-8") as fh:
+            self.manifest = json.load(fh)
+        self.shards = [os.path.join(directory, str(shard["file"]))
+                       for shard in self.manifest.get("shards", [])]
+        self.shard_hashes = [str(shard["sha256"]) for shard in self.manifest.get("shards", [])]
+        for shard_index, path in enumerate(self.shards):
+            with np.load(path, allow_pickle=True) as shard:
+                sequences = shard["sequences"]
+            for sequence_index, sequence in enumerate(sequences):
+                sequence = str(sequence)
+                if sequence in self.index:
+                    raise ValueError(f"duplicate teacher sequence: {sequence}")
+                self.index[sequence] = (shard_index, sequence_index)
+        if len(self.index) != int(self.manifest["n_sequences"]):
+            raise ValueError("teacher manifest sequence count mismatch")
+
+    def __len__(self):
+        return len(self.index)
+
+    def __iter__(self):
+        return iter(self.index)
+
+    def __contains__(self, sequence):
+        return sequence in self.index
+
+    def __getitem__(self, sequence):
+        shard_index, sequence_index = self.index[sequence]
+        if shard_index not in self.cache:
+            path = self.shards[shard_index]
+            digest = self._sha256()
+            with open(path, "rb") as handle:
+                for block in iter(lambda: handle.read(1 << 20), b""):
+                    digest.update(block)
+            if digest.hexdigest() != self.shard_hashes[shard_index]:
+                raise ValueError(f"teacher shard SHA256 mismatch: {path}")
+            self.cache[shard_index] = load_teacher_shard(path)
+            if len(self.cache) > self.shard_cache_size:
+                self.cache.popitem(last=False)
+        self.cache.move_to_end(shard_index)
+        sequences, probabilities = self.cache[shard_index]
+        if str(sequences[sequence_index]) != sequence:
+            raise ValueError("teacher sequence index mismatch")
+        probability = np.asarray(probabilities[sequence_index], dtype=np.float64)
+        if probability.shape != (len(sequence), len(sequence)):
+            raise ValueError("teacher probability shape mismatch")
+        return probability
+
+
+def load_teacher_map(directory, lazy=False, shard_cache_size=1):
+    if lazy:
+        return LazyTeacherMap(directory, shard_cache_size)
+    with open(os.path.join(directory, "manifest.json"), encoding="utf-8") as fh:
+        manifest = json.load(fh)
+    mapping = {}
+    for shard in manifest.get("shards", []):
+        seqs, probs = load_teacher_shard(os.path.join(directory, str(shard["file"])))
+        for s, p in zip(seqs, probs):
+            mapping[str(s)] = np.asarray(p, dtype=np.float64)
+    return mapping
+
+
+class BatchStream:
+    """Length-bucketed endless batch stream, the iter_batches RNG exactly.
+
+    ``sorted by length -> contiguous buckets of batch_size -> bucket order
+    permuted per epoch by np.random.default_rng((seed, epoch))``.  Reproduced
+    one-for-one so the control arm and this arm see the same batches in the
+    same order.
+    """
+
+    def __init__(self, records, batch_size, seed):
+        lengths = [len(s) for s, _ in records]
+        order = sorted(range(len(records)), key=lambda i: lengths[i])
+        self.buckets = [order[i:i + batch_size]
+                        for i in range(0, len(order), batch_size)]
+        self.seed = seed
+        self.state = {"epoch": 0, "queue": [], "batch_size": batch_size}
+
+    def _permute(self):
+        rng = np.random.default_rng((self.seed, self.state["epoch"]))
+        return [self.buckets[int(b)] for b in rng.permutation(len(self.buckets))]
+
+    def next(self):
+        if not self.state["queue"]:
+            # first permutation uses epoch 0, exactly as _batch_stream's first
+            # iter_batches(dataset, ..., epoch=0) call does
+            self.state["queue"] = self._permute()
+            self.state["epoch"] += 1
+        return self.state["queue"].pop(0)
+
+
+def restore_batch_stream(stream, saved_state, batch_size):
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive")
+    remaining = [index for bucket in saved_state["queue"] for index in bucket]
+    stream.state = {"epoch": saved_state["epoch"],
+                    "queue": [remaining[index:index + batch_size]
+                              for index in range(0, len(remaining), batch_size)],
+                    "batch_size": batch_size}
+
+
+def restore_unfrozen_blocks(blocks, n_unfrozen):
+    if not 0 <= n_unfrozen <= len(blocks):
+        raise ValueError(f"invalid unfrozen block count: {n_unfrozen}/{len(blocks)}")
+    first = len(blocks) - n_unfrozen
+    for index, block in enumerate(blocks):
+        block.requires_grad_(index >= first)
+
+
+def restore_scheduler_state(scheduler, scheduler_state, optimizer_state):
+    scheduler.load_state_dict(scheduler_state)
+    for group, saved in zip(scheduler.optimizer.param_groups, optimizer_state["param_groups"]):
+        group["lr"] = saved["lr"]
+    restored = [group["lr"] for group in scheduler.optimizer.param_groups]
+    if list(scheduler._last_lr) != restored:
+        raise ValueError(f"scheduler LR mismatch: {scheduler._last_lr} vs {restored}")
+
+
+def validate_resume_identity(previous_meta, args):
+    if not previous_meta:
+        return
+    expected = previous_meta.get("objective", {}).get("nll_normalization", "sum")
+    if expected != args.nll_normalization:
+        raise ValueError(f"resume NLL normalization mismatch: {expected} vs {args.nll_normalization}")
+    expected_lr = previous_meta.get("schedule", {}).get("backbone_lr", args.backbone_lr)
+    if float(expected_lr) != float(args.backbone_lr):
+        raise ValueError(f"resume backbone LR mismatch: {expected_lr} vs {args.backbone_lr}")
+    if int(previous_meta.get("seed", args.seed)) != int(args.seed):
+        raise ValueError("resume seed mismatch")
+    if getattr(args, "contract_mode", None):
+        previous = previous_meta.get("prior_alignment") or {}
+        expected_identity = {
+            "mode": args.contract_mode, "train_turner": args.train_turner,
+            "shared_init": args.shared_init,
+        }
+        for key, value in expected_identity.items():
+            if previous.get(key) != value:
+                raise ValueError(f"resume prior-alignment identity mismatch for {key}")
+    if previous_meta.get("scorer") != args.scorer:
+        raise ValueError("resume scorer mismatch")
+    if previous_meta.get("pair_latent_dim") != args.pair_latent_dim:
+        raise ValueError("resume pair latent dimension mismatch")
+    if args.scorer == "pairjepa":
+        objective = previous_meta.get("objective", {})
+        expected = {
+            "lambda_jepa": objective.get("lambda_jepa", 0.1),
+            "jepa_target": objective.get("jepa_target", "ema"),
+            "jepa_context": objective.get("jepa_context", "context_v1"),
+            "jepa_mask_prob": objective.get("jepa_mask_prob", 0.15),
+            "jepa_variance_weight": objective.get("jepa_variance_weight", 0.0),
+            "jepa_covariance_weight": objective.get("jepa_covariance_weight", 0.0),
+            "jepa_std_floor": objective.get("jepa_std_floor", 1.0),
+            "jepa_sigreg_weight": objective.get("jepa_sigreg_weight", 0.0),
+            "jepa_sigreg_projections": objective.get("jepa_sigreg_projections", 32),
+            "jepa_sigreg_samples": objective.get("jepa_sigreg_samples", 512),
+        }
+        current = {
+            "lambda_jepa": args.lambda_jepa, "jepa_target": args.jepa_target,
+            "jepa_context": args.jepa_context, "jepa_mask_prob": args.jepa_mask_prob,
+            "jepa_variance_weight": getattr(args, "jepa_variance_weight", 0.0),
+            "jepa_covariance_weight": getattr(args, "jepa_covariance_weight", 0.0),
+            "jepa_std_floor": getattr(args, "jepa_std_floor", 1.0),
+            "jepa_sigreg_weight": getattr(args, "jepa_sigreg_weight", 0.0),
+            "jepa_sigreg_projections": getattr(args, "jepa_sigreg_projections", 32),
+            "jepa_sigreg_samples": getattr(args, "jepa_sigreg_samples", 512),
+        }
+        if expected != current:
+            raise ValueError(f"resume Pair-JEPA objective mismatch: {expected} vs {current}")
+
+
+def masked_pair_target(valid, probability, seed):
+    if valid.dtype != torch.bool:
+        raise TypeError("valid pair mask must be bool")
+    generator = torch.Generator(device=valid.device).manual_seed(seed)
+    mask = (torch.rand(valid.shape, device=valid.device, generator=generator)
+            < probability) & valid
+    if not mask.any():
+        indices = valid.reshape(-1).nonzero(as_tuple=False).squeeze(1)
+        if indices.numel() == 0:
+            raise ValueError("no legal pairs available for Pair-JEPA target")
+        selected = indices[torch.randint(indices.numel(), (1,), device=valid.device,
+                                        generator=generator)]
+        mask.reshape(-1)[selected] = True
+    return mask | mask.transpose(1, 2)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl")
+    ap.add_argument("--teacher-dir", default=TEACHER_DIR)
+    ap.add_argument("--aux-teacher-dir", default="")
+    ap.add_argument("--lazy-teacher", action="store_true")
+    ap.add_argument("--teacher-shard-cache-size", type=int, default=1)
+    ap.add_argument("--serial-encoder", action="store_true")
+    ap.add_argument("--motif", choices=["", "motif", "shuffled"], default="")
+    ap.add_argument("--motif-asset-dir", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/e2a_motif_round54")
+    ap.add_argument("--thermo", choices=["", "online", "shuffled"], default="")
+    ap.add_argument("--thermo-cache-dir", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/e2b_thermo_round54/cache")
+    ap.add_argument("--out", required=True)
+    ap.add_argument("--steps", type=int, default=20000)
+    ap.add_argument("--validation-data", default="")
+    ap.add_argument("--validation-teacher-dir", default="")
+    ap.add_argument("--validation-every", type=int, default=500)
+    ap.add_argument("--validation-patience", type=int, default=5)
+    ap.add_argument("--validation-min-delta", type=float, default=1e-6)
+    ap.add_argument("--init-checkpoint", default="")
+    ap.add_argument("--contract", default=str(REPO / "configs/prior_alignment_2x2_v1.json"))
+    ap.add_argument("--contract-mode", choices=["smoke", "pilot", "full"], default=None)
+    ap.add_argument("--train-turner", choices=["on", "off"], default=None)
+    ap.add_argument("--shared-init", default="")
+    ap.add_argument("--no-early-stop", action="store_true")
+    ap.add_argument("--lambda-nll", type=float, default=1.0)
+    ap.add_argument("--lambda-distill", type=float, default=1.0)
+    ap.add_argument("--lambda-rlcd", type=float, default=1.0)
+    ap.add_argument("--lambda-cal", type=float, default=1.0)
+    ap.add_argument("--nll-normalization", choices=["sum", "length"], default="sum")
+    ap.add_argument("--batch-size", type=int, default=4)
+    ap.add_argument("--head-lr", type=float, default=1e-4)
+    ap.add_argument("--backbone-lr", type=float, default=1e-5)
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--warmup-head-steps", type=int, default=1600)
+    ap.add_argument("--unfreeze-every", type=int, default=800)
+    ap.add_argument("--unfreeze-per-step", type=int, default=2)
+    ap.add_argument("--warmup-steps", type=int, default=5)
+    ap.add_argument("--save-every", type=int, default=500)
+    ap.add_argument("--snapshot-every", type=int, default=2000)
+    ap.add_argument("--snapshot-dir", default=CKPT_DIR)
+    ap.add_argument("--grad-clip", type=float, default=1.0)
+    ap.add_argument("--zchunk", type=int, default=64, help="column width of the "
+                    "checkpointed z construction (numerically exact; see docstring)")
+    ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
+    ap.add_argument("--ripe-encoder", action="store_true")
+    ap.add_argument("--ripe-encoder-only", action="store_true")
+    ap.add_argument("--scorer", choices=["resnet2d", "pairmlp", "pairjepa"], default="resnet2d")
+    ap.add_argument("--pair-latent-dim", type=int, default=64)
+    ap.add_argument("--lambda-jepa", type=float, default=0.0)
+    ap.add_argument("--cl1-token-mask", type=float, default=0.0)
+    ap.add_argument("--cl2-infonce-weight", type=float, default=0.0)
+    ap.add_argument("--cl2-temperature", type=float, default=0.1)
+    ap.add_argument("--cl2-max-negatives", type=int, default=32)
+    ap.add_argument("--cl3-negative-map", default="")
+    ap.add_argument("--cl4-negative-weights", default="")
+    ap.add_argument("--cl5-output-weight", type=float, default=0.0)
+    ap.add_argument("--cl0-clusters", default="/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/cl0_structure_contrast_round54/clusters.jsonl")
+    ap.add_argument("--jepa-target", choices=["ema", "fixed", "random", "online"], default="ema")
+    ap.add_argument("--jepa-context", choices=["context_v1", "structured_block", "structured_axial"], default="context_v1")
+    ap.add_argument("--jepa-mask-prob", type=float, default=0.15)
+    ap.add_argument("--jepa-variance-weight", type=float, default=0.0)
+    ap.add_argument("--jepa-covariance-weight", type=float, default=0.0)
+    ap.add_argument("--jepa-std-floor", type=float, default=1.0)
+    ap.add_argument("--jepa-sigreg-weight", type=float, default=0.0)
+    ap.add_argument("--jepa-sigreg-projections", type=int, default=32)
+    ap.add_argument("--jepa-sigreg-samples", type=int, default=512)
+    ap.add_argument("--jepa-log-every", type=int, default=25)
+    ap.add_argument("--jepa-rank-samples", type=int, default=512)
+    ap.add_argument("--gpu-reserve-gb", type=float, default=0.0,
+                    help="hold this much GPU memory from process start so "
+                         "co-tenants cannot claim the card during the CPU-bound "
+                         "data-loading phase; freed into the allocator pool "
+                         "once the model is on device (shared-cluster race fix)")
+    args = ap.parse_args()
+    contract = None
+    training_trajectory = None
+    if args.contract_mode:
+        contract = load_contract(args.contract)
+        training_trajectory = validate_training_args(contract, args)
+    elif args.train_turner or args.shared_init or args.no_early_stop:
+        raise SystemExit("--train-turner/--shared-init/--no-early-stop require --contract-mode")
+    if args.motif and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
+                       or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
+                       or args.cl2_infonce_weight):
+        raise SystemExit("E2a motif is an independent B0 input arm")
+    if args.thermo and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
+                        or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
+                        or args.cl2_infonce_weight or args.motif):
+        raise SystemExit("E2b thermodynamics is an independent B0 input arm")
+    if args.ripe_encoder_only and not (args.ripe_encoder and args.ripe_mode):
+        raise SystemExit("--ripe-encoder-only requires --ripe-encoder and --ripe-mode")
+    if args.serial_encoder and args.scorer != "pairmlp":
+        raise SystemExit("--serial-encoder is licensed only for the batch-independent PairMLP path")
+    if bool(args.cl3_negative_map) != bool(args.cl2_infonce_weight):
+        raise SystemExit("CL3 negative map requires the CL2 objective")
+    if args.cl4_negative_weights and not args.cl3_negative_map:
+        raise SystemExit("CL4 weights require the CL3 negative map")
+    if args.cl5_output_weight < 0 or (args.cl5_output_weight and not args.cl4_negative_weights):
+        raise SystemExit("CL5 output consistency requires the complete CL4 objective")
+    if args.cl2_infonce_weight < 0 or args.cl2_temperature <= 0 or args.cl2_max_negatives <= 0:
+        raise SystemExit("invalid CL2 weight, temperature or negative limit")
+    if args.cl2_infonce_weight and (not args.cl1_token_mask or args.lambda_jepa or args.scorer != "resnet2d"):
+        raise SystemExit("CL2 requires CL1 token-mask views, ResNet2D and no JEPA")
+    if not 0.0 <= args.cl1_token_mask < 1.0:
+        raise SystemExit("--cl1-token-mask must be in [0, 1)")
+    if args.cl1_token_mask and (args.scorer != "resnet2d" or args.serial_encoder or args.lambda_jepa):
+        raise SystemExit("CL1 requires ResNet2D, non-serial encoder and no JEPA")
+    if args.lambda_jepa < 0 or (args.lambda_jepa and args.scorer != "pairjepa"):
+        raise SystemExit("--lambda-jepa is nonnegative and requires --scorer pairjepa")
+    if args.scorer == "pairjepa" and args.lambda_jepa <= 0:
+        raise SystemExit("Pair-JEPA training requires a positive --lambda-jepa")
+    if args.scorer != "pairjepa" and args.jepa_context != "context_v1":
+        raise SystemExit("structured Pair-JEPA context requires --scorer pairjepa")
+    if (not 0 < args.jepa_mask_prob <= 1 or args.jepa_rank_samples < 0
+            or args.jepa_log_every <= 0 or args.jepa_variance_weight < 0
+            or args.jepa_covariance_weight < 0 or args.jepa_std_floor <= 0
+            or args.jepa_sigreg_weight < 0 or args.jepa_sigreg_projections <= 0
+            or args.jepa_sigreg_samples <= 0):
+        raise SystemExit("invalid Pair-JEPA mask, rank sample or logging configuration")
+
+    if training_trajectory and args.snapshot_dir == CKPT_DIR:
+        args.snapshot_dir = os.path.join(args.out, "snapshots")
+
+    os.makedirs(args.out, exist_ok=True)
+    os.makedirs(args.snapshot_dir, exist_ok=True)
+    torch.manual_seed(args.seed)
+    np.random.seed(args.seed)
+    device = "cuda"
+
+    _reserve = None
+    if args.gpu_reserve_gb > 0:
+        try:
+            free, _total = torch.cuda.mem_get_info()
+            cap = (free - (1 << 29)) / (1 << 30)  # free minus 0.5GB
+            take = min(args.gpu_reserve_gb, cap)
+            if take <= 0:
+                raise RuntimeError("no free cuda memory to reserve "
+                                   f"(free={free/(1<<30):.1f}GB)")
+            n = int(take * (1 << 30)) // 4
+            _reserve = torch.empty(n, dtype=torch.float32, device=device)
+            print(f"[plan-a] reserved {take:.1f}GB on {device} for the "
+                  f"data-loading window", flush=True)
+        except RuntimeError as exc:
+            if "out of memory" not in str(exc).lower() and "no free cuda" not in str(exc):
+                raise
+            print(f"[plan-a] FATAL: gpu reservation of {args.gpu_reserve_gb:g}GB "
+                  f"failed (card fuller than at launch); backing off",
+                  file=sys.stderr)
+            raise SystemExit(1)
+
+    records = load_records(args.data)
+    print(f"[plan-a] {len(records)} sequences from {args.data}", flush=True)
+    weights = ObjectiveWeights(lambda_nll=args.lambda_nll, lambda_distill=args.lambda_distill,
+                               lambda_rlcd=args.lambda_rlcd, lambda_cal=args.lambda_cal)
+    teacher_map = load_teacher_map(args.teacher_dir, args.lazy_teacher,
+                                   args.teacher_shard_cache_size) if args.teacher_dir else {}
+    if args.aux_teacher_dir:
+        from collections import ChainMap
+        auxiliary_teacher = load_teacher_map(args.aux_teacher_dir, args.lazy_teacher,
+                                             args.teacher_shard_cache_size)
+        if set(auxiliary_teacher) & set(teacher_map):
+            raise ValueError("primary and auxiliary teacher sequence sets overlap")
+        teacher_map = ChainMap(auxiliary_teacher, teacher_map)
+    print(f"[plan-a] teacher: {len(teacher_map)} soft labels from {args.teacher_dir}; "
+          f"auxiliary={args.aux_teacher_dir or 'none'}; lazy={args.lazy_teacher}", flush=True)
+    missing = [s for s, _ in records if s not in teacher_map]
+    if weights.lambda_distill and missing:
+        raise SystemExit(f"FATAL: {len(missing)} sequences have no teacher label "
+                         f"(first: len {len(missing[0])}); refusing to run a "
+                         "distillation term over a partial teacher.")
+    if weights.lambda_distill and bool(args.validation_data) != bool(args.validation_teacher_dir):
+        raise SystemExit("FATAL: validation data and teacher directory must be supplied together")
+    validation_records = load_records(args.validation_data) if args.validation_data else []
+    validation_teacher = load_teacher_map(args.validation_teacher_dir) if args.validation_teacher_dir else {}
+    missing_validation = [seq for seq, _ in validation_records if seq not in validation_teacher]
+    if weights.lambda_distill and missing_validation:
+        raise SystemExit(f"FATAL: {len(missing_validation)} validation sequences lack teacher labels")
+
+    def optional_teacher(mapping, seq, target_device):
+        if not weights.lambda_distill:
+            return None
+        return torch.as_tensor(mapping[seq], dtype=torch.float64, device=target_device)
+    best_step = 0
+    best_validation_loss = float("inf")
+    bad_evaluations = 0
+    early_stopped = False
+
+    encoder, report = load_encoder(device="cpu", dtype=torch.float32)
+    if args.ripe_encoder:
+        from ripe_structrfm import enable_ripe_structrfm
+        if not args.ripe_mode:
+            raise SystemExit("--ripe-encoder requires --ripe-mode")
+        encoder = enable_ripe_structrfm(encoder, args.ripe_mode, vocab=VOCAB)
+    print(f"[plan-a] backbone: {report['n_params']/1e6:.0f}M params, "
+          f"d={report['d_model']}, layers={report['n_layers']}", flush=True)
+    head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=128, hidden=64,
+                            scorer=args.scorer, chunk_size=0,
+                            pair_latent_dim=args.pair_latent_dim,
+                            jepa_use_ema=args.scorer == "pairjepa" and args.jepa_target == "ema",
+                            jepa_random_target=args.scorer == "pairjepa" and args.jepa_target == "random",
+                            jepa_online_target=args.scorer == "pairjepa" and args.jepa_target == "online",
+                            jepa_block_context=(args.scorer == "pairjepa"
+                                                and args.jepa_context == "structured_block"),
+                            ripe_mode=None if args.ripe_encoder_only else args.ripe_mode or None)
+    if args.motif:
+        from rnajepa.motif import MotifInput, load_parameters
+        normalization = json.loads((Path(args.motif_asset_dir) / "normalization.json").read_text())
+        head.motif_input = MotifInput(normalization["mean"], normalization["std"])
+        head.motif_input.motif_parameters = load_parameters(Path(args.motif_asset_dir) / "parameters.npz")
+        head.motif_input.sequences = []
+        head.motif_input.shuffle = args.motif == "shuffled"
+    if args.thermo:
+        from rnajepa.thermodynamics import attach_thermodynamic_input
+        normalization = json.loads((Path(args.thermo_cache_dir).parent / "normalization.json").read_text())
+        attach_thermodynamic_input(head, normalization, args.thermo_cache_dir, args.thermo == "shuffled")
+    encoder = encoder.to(device)
+    head = head.to(device)
+    shared_init_sha256 = None
+    if args.shared_init:
+        initial = torch.load(args.shared_init, map_location="cpu", weights_only=False)
+        shared_init_sha256 = sha256_file(args.shared_init)
+        if initial.get("format") != "prior_alignment_shared_init_v1" or int(initial.get("seed", -1)) != args.seed:
+            raise ValueError("shared-init format or seed identity mismatch")
+        encoder.load_state_dict(initial["model"]["encoder"], strict=True)
+        head.load_state_dict(initial["model"]["head"], strict=True)
+        print(f"[plan-a] shared init {args.shared_init} sha256={shared_init_sha256}; "
+              "optimizer starts at step 0", flush=True)
+    elif args.init_checkpoint:
+        initial = torch.load(args.init_checkpoint, map_location="cpu", weights_only=False)
+        encoder.load_state_dict(initial["model"]["encoder"], strict=True)
+        head.load_state_dict(initial["model"]["head"], strict=True)
+        print(f"[plan-a] model-only init from {args.init_checkpoint}; optimizer starts at step 0", flush=True)
+    if training_trajectory:
+        head.use_turner_prior = args.train_turner == "on"
+    if _reserve is not None:
+        _rgb = _reserve.numel() * 4 / (1 << 30)
+        _reserve = None  # freed into the caching allocator pool, not to the OS
+        print(f"[plan-a] released {_rgb:.1f}GB reservation into the allocator "
+              f"pool", flush=True)
+
+    # dropout-free train() mode: matches the control's deterministic (cached)
+    # features while keeping HF gradient checkpointing engaged.
+    encoder.train()
+    n_dropout = 0
+    for m in encoder.modules():
+        if isinstance(m, torch.nn.Dropout):
+            m.p = 0.0
+            n_dropout += 1
+    encoder.gradient_checkpointing_enable(
+        gradient_checkpointing_kwargs={"use_reentrant": False})
+    print(f"[plan-a] encoder in train() mode with {n_dropout} dropout modules "
+          "set to p=0 (deterministic forward, checkpointing active)", flush=True)
+
+    for p in encoder.parameters():
+        p.requires_grad_(False)
+    blocks = getattr(encoder, "encoder", None)
+    if blocks is None:
+        blocks = getattr(encoder, "transformer", None)
+    if blocks is not None and hasattr(blocks, "layer"):
+        blocks = blocks.layer
+    if blocks is None or not hasattr(blocks, "__getitem__"):
+        raise RuntimeError(f"cannot locate transformer blocks on {type(encoder)}")
+    n_blocks = len(blocks)
+    print(f"[plan-a] {n_blocks} transformer blocks found", flush=True)
+
+    legal_by_hash = {}
+    cl2 = None
+    if args.cl2_infonce_weight:
+        from rnajepa.contrast import ResidueInfoNCE
+        legal_by_hash = {row["sequence_sha256"]: row["legal_negative"]
+                         for row in (json.loads(line) for line in open(args.cl0_clusters)) if row["split"] == "train"}
+        cl2 = ResidueInfoNCE(temperature=args.cl2_temperature,
+                             max_negatives=args.cl2_max_negatives).to(device)
+    negative_map = json.loads(Path(args.cl3_negative_map).read_text()) if args.cl3_negative_map else None
+    negative_weights = json.loads(Path(args.cl4_negative_weights).read_text()) if args.cl4_negative_weights else None
+    if negative_map is not None:
+        required = {sequence for values in negative_map.values() for sequence in values}
+        bank_hashes = sorted(required)
+        sequence_by_hash = {hashlib.sha256(seq.encode()).hexdigest(): seq for seq, _ in records}
+        assert all(sequence in sequence_by_hash for sequence in bank_hashes)
+        bank_z = []
+        with torch.no_grad():
+            for start in range(0, len(bank_hashes), 4):
+                batch = [sequence_by_hash[sequence] for sequence in bank_hashes[start:start + 4]]
+                max_len = max(map(len, batch))
+                lengths = torch.tensor([len(seq) for seq in batch], device=device)
+                ids = torch.zeros(len(batch), max_len + 2, dtype=torch.long, device=device)
+                attn = torch.zeros_like(ids)
+                for bi, seq in enumerate(batch):
+                    tokens = [VOCAB["<cls>"]] + [VOCAB.get(c, VOCAB["<unk>"]) for c in seq] + [VOCAB["<eos>"]]
+                    ids[bi, :len(tokens)] = torch.tensor(tokens, device=device)
+                    attn[bi, :len(tokens)] = 1
+                with torch.autocast("cuda", dtype=torch.bfloat16):
+                    out = encoder(input_ids=ids, attention_mask=attn)
+                hidden = out.last_hidden_state if hasattr(out, "last_hidden_state") else out[0]
+                hidden = hidden[:, 1:max_len + 1, :].float().to(torch.float16).to(torch.float32)
+                for bi, length in enumerate(lengths.tolist()):
+                    if length < max_len:
+                        hidden[bi, length:, :] = 0.0
+                bank_z.append(cl2.project(hidden, lengths).detach())
+        cl2.set_bank(torch.cat(bank_z), bank_hashes)
+        print(f"[plan-a] structure negative bank: {len(bank_hashes)} sequences", flush=True)
+    head_params = list(head.parameters()) + ([] if cl2 is None else list(cl2.parameters()))
+    enc_params = list(encoder.parameters())
+    n_head = sum(p.numel() for p in head_params)
+    print(f"[plan-a] head params: {n_head/1e6:.2f}M", flush=True)
+
+    opt = torch.optim.AdamW([
+        {"params": head_params, "lr": args.head_lr},
+        {"params": enc_params, "lr": args.backbone_lr},
+    ], weight_decay=0.0, betas=(0.9, 0.98))
+    sched = torch.optim.lr_scheduler.LambdaLR(
+        opt, lambda st: min(1.0, (st + 1) / max(1, args.warmup_steps)))
+
+    stream = BatchStream(records, args.batch_size, args.seed)
+    n_unfrozen = 0
+    start_step = 0
+    meta_path = os.path.join(args.out, "run_meta.json")
+    previous_meta = json.load(open(meta_path)) if os.path.isfile(meta_path) else {}
+
+    meta = {
+        "arm": os.path.basename(args.out.rstrip("/")),
+        "data": args.data,
+        "control_arm": "rinalmo_r2d_b4_s0",
+        "control_results": {"ts0_micro_f1": 0.6629, "bprna_new_micro_f1": 0.5010},
+        "prior_alignment": (None if contract is None else {
+            "contract_id": contract["contract_id"], "contract_sha256": sha256_file(args.contract),
+            "mode": args.contract_mode, "training_trajectory": training_trajectory,
+            "train_turner": args.train_turner, "shared_init": args.shared_init,
+            "shared_init_sha256": shared_init_sha256,
+            "derived_evaluation_identities": evaluation_rows(contract, training_trajectory),
+            "old_external_panels_used": False,
+        }),
+        "ripe": {"mode": None if args.ripe_encoder_only else args.ripe_mode or None,
+                 "encoder": args.ripe_encoder,
+                 "encoder_mode": args.ripe_mode if args.ripe_encoder else None},
+        "backbone": report.get("backbone", report.get("weights")),
+        "scorer": args.scorer,
+        "thermodynamics": (None if not args.thermo else {
+                  "mode": args.thermo, "cache_dir": args.thermo_cache_dir,
+                  "features": 8, "projection": "8_to_128_zero_initialized",
+                  "position_shuffle_seed": 20261113 if args.thermo == "shuffled" else None}),
+        "motif": (None if not args.motif else {
+                  "mode": args.motif, "asset_dir": args.motif_asset_dir,
+                  "features": 6, "projection": "6_to_128_zero_initialized",
+                  "position_shuffle_seed": 20261113 if args.motif == "shuffled" else None}),
+        "pair_latent_dim": args.pair_latent_dim,
+        "head": f"FlatDecisionHead scorer={args.scorer} d_z=128 "
+                f"pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
+        "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
+                      "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
+                      "teacher": args.teacher_dir,
+                      "aux_teacher": args.aux_teacher_dir,
+                      "teacher_storage": {"lazy": args.lazy_teacher,
+                                          "shard_cache_size": args.teacher_shard_cache_size},
+                      "distill_kind": "kl", "rlcd_reward": "brier", "beta": 1.0,
+                      "n_bins": 10, "tau": 0.1, "nll_normalization": args.nll_normalization,
+                      "lambda_jepa": args.lambda_jepa,
+                      "cl1_token_mask": args.cl1_token_mask,
+                      "cl1_views": 2 if args.cl1_token_mask else 1,
+                      "cl2_infonce_weight": args.cl2_infonce_weight,
+                      "cl2_temperature": args.cl2_temperature,
+                      "cl2_max_negatives": args.cl2_max_negatives,
+                      "cl0_clusters": args.cl0_clusters if args.cl2_infonce_weight else None,
+                      "cl3_negative_map": args.cl3_negative_map or None,
+                      "cl4_negative_weights": args.cl4_negative_weights or None,
+                      "cl5_output_weight": args.cl5_output_weight,
+                      "cl3_negative_bank_size": len(bank_hashes) if negative_map is not None else 0,
+                      "jepa_target": args.jepa_target if args.scorer == "pairjepa" else None,
+                      "jepa_mask_prob": args.jepa_mask_prob if args.lambda_jepa else 0.0,
+                      "jepa_rank_samples": args.jepa_rank_samples,
+                      "jepa_variance_weight": args.jepa_variance_weight,
+                      "jepa_covariance_weight": args.jepa_covariance_weight,
+                      "jepa_std_floor": args.jepa_std_floor,
+                      "jepa_sigreg_weight": args.jepa_sigreg_weight,
+                      "jepa_sigreg_projections": args.jepa_sigreg_projections,
+                      "jepa_sigreg_samples": args.jepa_sigreg_samples,
+                      "jepa_context": args.jepa_context if args.scorer == "pairjepa" else None},
+        "validation": {"data": args.validation_data, "teacher_dir": args.validation_teacher_dir,
+                       "every": args.validation_every, "patience": args.validation_patience,
+                       "min_delta": args.validation_min_delta},
+        "environment": {"resolved_device": "cuda:0", "gpu_name": torch.cuda.get_device_name(0)},
+        "compute_kernels": {
+            "inside_outside": ("triton_cuda_float64" if os.environ.get("RN_CUDA_INSIDE", "1") == "1"
+                               else "numpy_cpu_float64"),
+            "pair_mask": "torch_device_vectorized",
+            "turner_prior": "torch_device_gather",
+        },
+        "best_step": None, "best_validation_loss": None,
+        "early_stopped": False, "converged": False,
+        "protocol_parity": [
+            f"length-bucketed batch={args.batch_size}, iter_batches RNG (seed,epoch)",
+            ("encoder frame <cls>+seq+<eos> + attention_mask, hidden[1:L+1]"
+             if ENCODER_SPECIAL_TOKENS else
+             "official encoder tokenization without added special tokens, full sequence hidden"),
+            "encoder dropout p=0 (deterministic, matches cached features)",
+            "AdamW betas=(0.9,0.98) wd=0, 5-step warmup LambdaLR",
+            "NEG_BIG=-1e4, symmetric labels, sorted gt_pairs, valid_pair_mask",
+        ],
+        "schedule": {"steps": args.steps, "batch_size": args.batch_size,
+                     "head_lr": args.head_lr, "backbone_lr": args.backbone_lr,
+                     "warmup_head_steps": args.warmup_head_steps,
+                     "unfreeze_every": args.unfreeze_every,
+                     "unfreeze_per_step": args.unfreeze_per_step,
+                     "n_blocks": n_blocks, "zchunk": args.zchunk,
+                     "serial_encoder": args.serial_encoder},
+        "seed": args.seed, "backbone_report": report,
+    }
+    meta["storage"] = {"run_directory": args.out, "snapshot_directory": args.snapshot_dir,
+                       "large_artifacts_root": "/teams/HoulabData_1788502323/liucunyu"}
+    meta["status"] = "running"
+    with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
+        json.dump(meta, fh, indent=1)
+
+    resume_path = os.path.join(args.out, "resume.pt")
+    if os.path.isfile(resume_path):
+        validate_resume_identity(previous_meta, args)
+        state = torch.load(resume_path, map_location="cpu")
+        head.load_state_dict(state["head"])
+        encoder.load_state_dict(state["encoder"])
+        opt.load_state_dict(state["optimizer"])
+        restore_scheduler_state(sched, state["scheduler"], state["optimizer"])
+        n_unfrozen = int(state["n_unfrozen"])
+        restore_unfrozen_blocks(blocks, n_unfrozen)
+        start_step = int(state["step"])
+        if cl2 is not None:
+            cl2.restore_state(state["cl2"])
+        restore_batch_stream(stream, state["stream_state"], args.batch_size)
+        best_step, best_validation_loss, bad_evaluations = restore_validation_state(
+            state, os.path.join(args.out, "validation_log.jsonl"))
+        meta["best_step"] = best_step
+        meta["best_validation_loss"] = best_validation_loss
+        with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
+            json.dump(meta, fh, indent=1)
+        print(f"[plan-a] resumed from step {start_step} "
+              f"({n_unfrozen}/{n_blocks} blocks unfrozen)", flush=True)
+
+    log_path = os.path.join(args.out, "train_log.jsonl")
+    t0 = time.time()
+    trainable = lambda: [p for p in head_params + enc_params if p.requires_grad]
+
+    step = start_step
+    step_iterator = (range(start_step + 1, args.steps + 1) if args.steps > 0
+                     else itertools.count(start_step + 1))
+    for step in step_iterator:
+        if step > args.warmup_head_steps and n_unfrozen < n_blocks:
+            due = scheduled_unfreeze_blocks(step, args.warmup_head_steps, args.unfreeze_every,
+                                            args.unfreeze_per_step, n_blocks)
+            while n_unfrozen < due:
+                blk = blocks[n_blocks - 1 - n_unfrozen]
+                for p in blk.parameters():
+                    p.requires_grad_(True)
+                n_unfrozen += 1
+            if step % args.unfreeze_every == 0 or n_unfrozen == n_blocks:
+                print(f"[plan-a] step {step}: unfroze to {n_unfrozen}/{n_blocks} "
+                      "blocks (top-down)", flush=True)
+
+        bucket = stream.next()
+        seqs = [records[i][0] for i in bucket]
+        gts = [records[i][1] for i in bucket]
+        if training_trajectory:
+            with open(os.path.join(args.out, "batch_order.jsonl"), "a") as fh:
+                fh.write(json.dumps({"step": step, "sequences": [
+                    hashlib.sha256(seq.encode()).hexdigest() for seq in seqs]}) + "\n")
+        lengths = [len(s) for s in seqs]
+        max_len = max(lengths)
+        B = len(seqs)
+
+        frame_extra = 2 if ENCODER_SPECIAL_TOKENS else 0
+        enc_ids = None if args.serial_encoder else torch.zeros(B, max_len + frame_extra, dtype=torch.long)
+        attn = None if args.serial_encoder else torch.zeros(B, max_len + frame_extra, dtype=torch.long)
+        head_ids = torch.zeros(B, max_len, dtype=torch.long)
+        masks, labels_all = [], []
+        for bi, s in enumerate(seqs):
+            token_ids = [VOCAB.get(c, VOCAB["<unk>"]) for c in s]
+            ids = ([VOCAB["<cls>"]] + token_ids + [VOCAB["<eos>"]]
+                   if ENCODER_SPECIAL_TOKENS else token_ids)
+            if not args.serial_encoder:
+                enc_ids[bi, :len(ids)] = torch.tensor(ids, dtype=torch.long)
+                attn[bi, :len(ids)] = 1
+            head_ids[bi, :len(s)] = torch.tensor(
+                [BASE_TO_INDEX.get(c, UNK_INDEX) for c in s], dtype=torch.long)
+            masks.append(valid_pair_mask(s))
+            labels_all.append(pair_indicator(len(s), gts[bi]))
+
+        head_ids = head_ids.to(device)
+        motif_features = None
+        if args.thermo:
+            from rnajepa.thermodynamics import thermodynamic_batch
+            head.motif_input.sequences = seqs
+            motif_features = thermodynamic_batch(
+                seqs, args.thermo_cache_dir, shuffled=args.thermo == "shuffled").to(device)
+        elif head.motif_input is not None:
+            from rnajepa.motif import candidate_motif_features_torch, shuffle_positions
+            head.motif_input.sequences = seqs
+            motif_features = candidate_motif_features_torch(
+                head_ids, head.motif_input.motif_parameters, seqs)
+            if args.motif == "shuffled":
+                motif_features = shuffle_positions(motif_features, seqs)
+        def forward_direct(view_ids, view_attn):
+            enc_ids = view_ids.to(device)
+            attn = view_attn.to(device)
+            with torch.autocast("cuda", dtype=torch.bfloat16):
+                out = encoder(input_ids=enc_ids, attention_mask=attn)
+            h = out.last_hidden_state if hasattr(out, "last_hidden_state") else out[0]
+            h = (h[:, 1:max_len + 1, :] if ENCODER_SPECIAL_TOKENS
+                 else h[:, :max_len, :]).float()
+            h = h.to(torch.float16).to(torch.float32)
+            for bi, L in enumerate(lengths):
+                if L < max_len:
+                    h[bi, L:, :] = 0.0
+            lengths_t = torch.tensor(lengths, device=device)
+            bns = [m for m in head.resnet2d.modules() if isinstance(m, torch.nn.BatchNorm2d)]
+            bn_after_fwd = [(bn.running_mean.clone(), bn.running_var.clone(),
+                             bn.num_batches_tracked.clone()) for bn in bns]
+
+            def _z_chunk(hi, hj):
+                return head.pair_repr.cross(hi, hj)
+
+            zc = args.zchunk if args.zchunk > 0 else max_len
+            chunks = [_grad_ckpt(_z_chunk, h, h[:, j0:j0 + zc], use_reentrant=False)
+                      for j0 in range(0, max_len, zc)]
+            z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
+            s_raw = _grad_ckpt(head.score_pair_matrix, z, head_ids, False, None,
+                               motif_features, use_reentrant=False)
+            s = s_raw
+            if head.use_turner_prior:
+                s = s + head.prior_weight.to(s.dtype) * turner_phys_scores(head_ids).to(device)
+            s = head.calibration(s, lengths_t)
+            mask_full = pair_mask_from_ids(head_ids, head.min_loop).to(device)
+            matrix = torch.where(mask_full, s, torch.full_like(s, float("-inf")))
+            total = None
+            direct_nll = None
+            terms_agg = {}
+            for b in range(B):
+                L = lengths[b]
+                s_b = matrix[b, :L, :L]
+                s_b = torch.where(torch.isfinite(s_b), s_b, torch.full_like(s_b, NEG_BIG))
+                mask_b = torch.as_tensor(masks[b], device=s_b.device)
+                loss_b, terms_b = combined_loss(
+                    s_b, mask_b, gts[b], weights,
+                    teacher_probs=optional_teacher(teacher_map, seqs[b], s_b.device),
+                    student_probs=torch.sigmoid(s_b),
+                    labels=torch.as_tensor(labels_all[b], dtype=torch.float64, device=s_b.device),
+                    distill_kind="kl", reward="brier", beta=1.0,
+                    n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
+                    return_terms=True)
+                total = loss_b if total is None else total + loss_b
+                direct_nll = terms_b["nll"] if direct_nll is None else direct_nll + terms_b["nll"]
+                for k, v in terms_b.items():
+                    terms_agg[k] = terms_agg.get(k, 0.0) + float(v.detach())
+            return (total / B, direct_nll / B, {k: v / B for k, v in terms_agg.items()},
+                    matrix, z, mask_full, s_raw, lengths_t, bns, bn_after_fwd, h)
+
+        n_views = 2 if args.cl1_token_mask else 1
+        masked_counts = []
+        direct_views = []
+        for view in range(n_views):
+            view_ids = enc_ids
+            if args.cl1_token_mask:
+                generator = torch.Generator().manual_seed(args.seed + 2 * step + view)
+                view_ids = enc_ids.clone()
+                residue = attn.bool().clone()
+                if ENCODER_SPECIAL_TOKENS:
+                    residue[:, 0] = False
+                    for bi, L in enumerate(lengths):
+                        residue[bi, L + 1] = False
+                token_mask = (torch.rand(view_ids.shape, generator=generator) < args.cl1_token_mask) & residue
+                masked_counts.append(int(token_mask.sum()))
+                view_ids[token_mask] = VOCAB["<mask>"]
+            direct_views.append(forward_direct(view_ids, attn))
+        total = sum(view[0] for view in direct_views) / n_views
+        direct_nll = sum(view[1] for view in direct_views) / n_views
+        terms_agg = {key: sum(view[2][key] for view in direct_views) / n_views
+                     for key in direct_views[0][2]}
+        matrix, z, mask_full, s_raw, lengths_t, bns = direct_views[0][3:9]
+        cl2_record = None
+        if cl2 is not None:
+            sequence_hashes = [hashlib.sha256(seq.encode()).hexdigest() for seq in seqs]
+            cl2_loss, cl2_diagnostics = cl2(
+                direct_views[0][10], direct_views[1][10], lengths_t, sequence_hashes,
+                legal_by_hash, log_details=(step % 25 == 0 or step == 1),
+                negative_map=negative_map, negative_weights=negative_weights)
+            total = total + args.cl2_infonce_weight * cl2_loss
+            terms_agg["infonce"] = float(cl2_loss.detach())
+            if step % 25 == 0 or step == 1:
+                cl2_record = {"step": step, "loss": float(cl2_loss.detach()),
+                              "negative_mode": "cl4_weighted" if negative_weights else ("cl3_structure_hard" if negative_map else "random"),
+                              **cl2_diagnostics}
+
+        cl5_record = None
+        if args.cl5_output_weight:
+            from rnajepa.contrast import output_consistency
+            output_loss, cl5_record = output_consistency(
+                direct_views[0][3], direct_views[1][3], mask_full)
+            total = total + args.cl5_output_weight * output_loss
+            terms_agg["output_consistency"] = float(output_loss.detach())
+
+        jepa_record = None
+        if args.lambda_jepa:
+            log_latent = step % args.jepa_log_every == 0 or step == 1
+            if args.jepa_context == "structured_block":
+                latent_mask = structured_pair_mask(mask_full, args.jepa_mask_prob, args.seed + step)
+            else:
+                latent_mask = masked_pair_target(mask_full, args.jepa_mask_prob, args.seed + step)
+            anti_collapse_kwargs = {}
+            if args.jepa_variance_weight or args.jepa_covariance_weight:
+                anti_collapse_kwargs = {"variance_weight": args.jepa_variance_weight,
+                                        "covariance_weight": args.jepa_covariance_weight,
+                                        "std_floor": args.jepa_std_floor}
+            latent_loss, latent_diagnostics = head.masked_pair_latent_loss(
+                z, latent_mask, rank_samples=args.jepa_rank_samples if log_latent else 0,
+                valid_mask=mask_full, context_mode=("axial" if args.jepa_context == "structured_axial" else "local"),
+                sigreg_weight=args.jepa_sigreg_weight,
+                sigreg_projections=args.jepa_sigreg_projections,
+                sigreg_samples=args.jepa_sigreg_samples, sigreg_seed=args.seed,
+                **anti_collapse_kwargs)
+            total = total + args.lambda_jepa * latent_loss
+            terms_agg["jepa"] = float(latent_loss.detach())
+            if args.jepa_sigreg_weight:
+                total = total + args.jepa_sigreg_weight * latent_diagnostics["sigreg_loss"]
+                terms_agg["sigreg"] = float(latent_diagnostics["sigreg_loss"].detach())
+            if log_latent:
+                jepa_record = {"step": step, "masked_pairs": int(latent_mask.sum()),
+                               "context": args.jepa_context, "loss": float(latent_loss.detach()),
+                               **{name: float(value) if isinstance(value, torch.Tensor) else value
+                                  for name, value in latent_diagnostics.items()}}
+                if args.jepa_context == "structured_block":
+                    coordinates = torch.arange(mask_full.shape[-1], device=mask_full.device) // 8
+                    n_blocks = (mask_full.shape[-1] + 7) // 8
+                    anti = (coordinates[:, None] + coordinates[None, :]) == n_blocks - 1
+                    jepa_record["anti_diagonal_masked_pairs"] = int((latent_mask & anti).sum())
+                    jepa_record["off_anti_diagonal_masked_pairs"] = int((latent_mask & ~anti).sum())
+                jepa_record["direct_nll_gradient"] = loss_gradient_cosine(
+                    direct_nll, latent_loss, trainable())
+                with torch.no_grad():
+                    no_prior_matrix = head.calibration(s_raw, lengths_t)
+                    no_prior_matrix = torch.where(
+                        mask_full, no_prior_matrix, torch.full_like(no_prior_matrix, float("-inf")))
+                    jepa_record["training_batch_structure"] = training_batch_structure_metrics(
+                        matrix, no_prior_matrix, lengths, seqs, gts)
+
+        opt.zero_grad(set_to_none=True)
+        total.backward()
+        for view in direct_views:
+            with torch.no_grad():
+                for bn, (rm, rv, nbt) in zip(bns, view[9]):
+                    bn.running_mean.copy_(rm)
+                    bn.running_var.copy_(rv)
+                    bn.num_batches_tracked.copy_(nbt)
+        motif_projection_grad = (None if head.motif_input is None else
+                                 float(head.motif_input.projection.weight.grad.detach().square().sum()) ** 0.5)
+        cl2_projection_grad = (None if cl2 is None else sum(float(p.grad.detach().square().sum()) for p in cl2.parameters() if p.grad is not None) ** 0.5)
+        gnorm = float(torch.nn.utils.clip_grad_norm_(
+            trainable(), args.grad_clip))
+        opt.step()
+        if args.lambda_jepa:
+            head.pair_jepa.ema_update()
+        sched.step()
+        with open(os.path.join(args.out, "compute_ledger.jsonl"), "a") as fh:
+            fh.write(json.dumps({"step": step, "lengths": lengths,
+                                 "sequence_sha256": [hashlib.sha256(seq.encode()).hexdigest()
+                                                     for seq in seqs],
+                                 "unfrozen": n_unfrozen,
+                                 "trainable_params": sum(p.numel() for p in trainable())}) + "\n")
+
+        if step % 25 == 0 or step == 1 or jepa_record is not None:
+            rec = {"step": step, "loss": round(float(total), 4),
+                   "cl1_views": n_views, "cl1_masked_tokens": masked_counts,
+                   "cl2_projection_grad": cl2_projection_grad,
+                   "motif_projection_grad": motif_projection_grad,
+                   "cl5_output": cl5_record,
+                   "terms": {k: round(v, 4) for k, v in terms_agg.items()},
+                   "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
+                   "lr_head": sched.get_last_lr()[0],
+                   "lr_backbone": sched.get_last_lr()[-1],
+                   "peak_gb": round(torch.cuda.max_memory_allocated() / 1e9, 1),
+                   "sec": round(time.time() - t0, 1)}
+            with open(log_path, "a") as fh:
+                fh.write(json.dumps(rec) + "\n")
+            if cl2_record is not None:
+                with open(os.path.join(args.out, "cl2_diagnostics.jsonl"), "a") as fh:
+                    fh.write(json.dumps(cl2_record) + "\n")
+            if jepa_record is not None:
+                with open(os.path.join(args.out, "jepa_diagnostics.jsonl"), "a") as fh:
+                    fh.write(json.dumps(jepa_record) + "\n")
+            print(f"[plan-a] step {step}/{args.steps} loss={float(total):.4f} "
+                  f"terms={ {k: round(v, 3) for k, v in terms_agg.items()} } "
+                  f"unfrozen={n_unfrozen}/{n_blocks} gnorm={rec['gnorm']} "
+                  f"peak={rec['peak_gb']}GB", flush=True)
+            torch.cuda.reset_peak_memory_stats()
+
+        if checkpoint_due(step, args.save_every, args.steps):
+            atomic_torch_save({"step": step, "head": head.state_dict(),
+                        "encoder": encoder.state_dict(),
+                        "optimizer": opt.state_dict(),
+                        "scheduler": sched.state_dict(),
+                        "n_unfrozen": n_unfrozen,
+                        "best_step": best_step,
+                        "best_validation_loss": best_validation_loss,
+                        "bad_evaluations": bad_evaluations,
+                        "stream_state": stream.state,
+                        "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
+        if (args.snapshot_every > 0 and step % args.snapshot_every == 0) or step == args.steps:
+            atomic_torch_save({"step": step,
+                        "model": {"encoder": encoder.state_dict(),
+                                  "head": head.state_dict()},
+                        "meta": meta},
+                       os.path.join(args.snapshot_dir,
+                                    f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt"))
+        if validation_records and step % args.validation_every == 0:
+            import xens2_eval
+            encoder.eval()
+            head.eval()
+            validation_total = 0.0
+            with torch.no_grad():
+                for seq, gt_pairs in validation_records:
+                    scores = xens2_eval.plana_scores(encoder, head, seq, device)
+                    scores = torch.where(torch.isfinite(scores), scores,
+                                         torch.full_like(scores, NEG_BIG))
+                    mask = valid_pair_mask(seq)
+                    loss, _ = combined_loss(
+                        scores, mask, gt_pairs, weights,
+                        teacher_probs=optional_teacher(validation_teacher, seq, device),
+                        student_probs=torch.sigmoid(scores),
+                        labels=torch.as_tensor(pair_indicator(len(seq), gt_pairs),
+                                               dtype=torch.float64, device=device),
+                        distill_kind="kl", reward="brier", beta=1.0,
+                        n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
+                        return_terms=True)
+                    validation_total += float(loss)
+            validation_loss = validation_total / len(validation_records)
+            encoder.train()
+            head.train()
+            improved = validation_loss < best_validation_loss - args.validation_min_delta
+            if improved:
+                best_step = step
+                best_validation_loss = validation_loss
+                bad_evaluations = 0
+                atomic_torch_save({"step": step,
+                            "model": {"encoder": encoder.state_dict(),
+                                      "head": head.state_dict()},
+                            "validation_loss": validation_loss,
+                            "objective": meta["objective"], "meta": meta,
+                            "cl2": None if cl2 is None else cl2.export_state()},
+                           os.path.join(args.out, "best.pt"))
+            else:
+                bad_evaluations += 1
+            with open(os.path.join(args.out, "validation_log.jsonl"), "a") as fh:
+                fh.write(json.dumps({"step": step, "validation_loss": validation_loss,
+                                     "best_step": best_step,
+                                     "best_validation_loss": best_validation_loss,
+                                     "improved": improved,
+                                     "bad_evaluations": bad_evaluations}) + "\n")
+            meta["best_step"] = best_step
+            meta["best_validation_loss"] = best_validation_loss
+            with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
+                json.dump(meta, fh, indent=1)
+            print(f"[plan-a] validation step={step} loss={validation_loss:.8f} "
+                  f"best={best_validation_loss:.8f}@{best_step} bad={bad_evaluations}", flush=True)
+            if not args.no_early_stop and bad_evaluations >= args.validation_patience:
+                early_stopped = True
+                break
+
+    if early_stopped:
+        best = torch.load(os.path.join(args.out, "best.pt"), map_location="cpu", weights_only=False)
+        encoder.load_state_dict(best["model"]["encoder"], strict=True)
+        head.load_state_dict(best["model"]["head"], strict=True)
+    if early_stopped or not checkpoint_due(step, args.save_every, args.steps):
+        atomic_torch_save({"step": step, "head": head.state_dict(),
+                    "encoder": encoder.state_dict(), "optimizer": opt.state_dict(),
+                    "scheduler": sched.state_dict(), "n_unfrozen": n_unfrozen,
+                    "best_step": best_step, "best_validation_loss": best_validation_loss,
+                    "bad_evaluations": bad_evaluations,
+                    "stream_state": stream.state, "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
+    terminal_snapshot = os.path.join(args.snapshot_dir,
+                                     f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt")
+    if args.steps > 0 and step == args.steps and not os.path.isfile(terminal_snapshot):
+        atomic_torch_save({"step": step,
+                    "model": {"encoder": encoder.state_dict(),
+                              "head": head.state_dict()},
+                    "meta": meta}, terminal_snapshot)
+    meta["final_trainable_params"] = sum(p.numel() for p in trainable())
+    meta["trainable_parameter_scope"] = (
+        f"{n_unfrozen}/{n_blocks} transformer blocks plus head; "
+        "embeddings and pooler remain frozen")
+    meta["status"] = "completed"
+    meta["steps_completed"] = int(step)
+    meta["stop_reason"] = "early_stopping" if early_stopped else "step_cap"
+    meta["early_stopped"] = early_stopped
+    meta["converged"] = early_stopped
+    with open(os.path.join(args.out, "run_meta.json"), "w") as fh:
+        json.dump(meta, fh, indent=1)
+    print(f"[plan-a] DONE step={step} early_stopped={early_stopped} best={best_step}", flush=True)
+
+
+if __name__ == "__main__":
+    main()
