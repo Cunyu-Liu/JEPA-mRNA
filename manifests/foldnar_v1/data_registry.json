@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "created_utc": "2026-11-18T11:29:09.586106+00:00",
+  "created_utc": "2026-11-18T12:57:34.793656+00:00",
   "n_rows": 31,
   "rows": [
     {
@@ -38,7 +38,16 @@
       "contract_coverage_fraction": 1.0,
       "contract_coverage_status": "MATCH",
       "availability": "FROZEN",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [],
+      "training_baseline_ids": [
+        "xens2",
+        "best_plan_a",
+        "r2d",
+        "h0",
+        "nucleicbert_frozen_project_head",
+        "nucleicbert_ft"
+      ]
     },
     {
       "dataset_id": "bprna_vl0",
@@ -75,7 +84,8 @@
       "contract_coverage_fraction": 1.0,
       "contract_coverage_status": "MATCH",
       "availability": "FROZEN",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "ref_tr_bprna",
@@ -108,7 +118,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "ref_tr_inter",
@@ -141,7 +152,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "ref_tr_intra",
@@ -174,7 +186,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "ref_tr_experimental",
@@ -207,7 +220,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "ref_syn_train",
@@ -240,7 +254,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "chanrg_train_train",
@@ -277,7 +292,28 @@
       "contract_coverage_fraction": 0.7724288485104241,
       "contract_coverage_status": "FROZEN_SUBSET_OR_VERSION_MISMATCH",
       "availability": "FROZEN_CURRENT_FILES_ONLY",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [],
+      "training_baseline_ids": [
+        "rinalmo_giga_linear",
+        "rinalmo_giga_resnet",
+        "rinalmo_giga_unet",
+        "aido_rna_linear",
+        "aido_rna_resnet",
+        "aido_rna_unet",
+        "rinalmo_mega_linear",
+        "rinalmo_mega_resnet",
+        "rinalmo_mega_unet",
+        "ernie_rna_linear",
+        "ernie_rna_resnet",
+        "ernie_rna_unet",
+        "rinalmo_micro_linear",
+        "rinalmo_micro_resnet",
+        "rinalmo_micro_unet",
+        "rna_fm_linear",
+        "rna_fm_resnet",
+        "rna_fm_unet"
+      ]
     },
     {
       "dataset_id": "chanrg_train_validation",
@@ -314,7 +350,8 @@
       "contract_coverage_fraction": 0.7491115849324804,
       "contract_coverage_status": "FROZEN_SUBSET_OR_VERSION_MISMATCH",
       "availability": "FROZEN_CURRENT_FILES_ONLY",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "ncrna_rfamnovel_train",
@@ -347,7 +384,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "ncrna_rfamnovel_val",
@@ -380,7 +418,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "archiveii_embok_clean",
@@ -413,7 +452,41 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/archiveii_embok_clean",
+        "rinalmo_2d_s0/archiveii_embok_clean",
+        "ufold/archiveii_embok_clean",
+        "mxfold2/archiveii_embok_clean",
+        "rinalmo_ft/archiveii_embok_clean",
+        "eternafold/archiveii_embok_clean",
+        "bpfold/archiveii_embok_clean",
+        "best_plan_a/archiveii_embok_clean",
+        "h0/archiveii_embok_clean",
+        "vienna_mfe/archiveii_embok_clean/repeat0",
+        "vienna_centroid/archiveii_embok_clean/repeat0",
+        "vienna_mea/archiveii_embok_clean/repeat0",
+        "nussinov_turner/archiveii_embok_clean/repeat0",
+        "vienna_mfe/archiveii_embok_clean/repeat1",
+        "vienna_centroid/archiveii_embok_clean/repeat1",
+        "vienna_mea/archiveii_embok_clean/repeat1",
+        "nussinov_turner/archiveii_embok_clean/repeat1",
+        "vienna_mfe/archiveii_embok_clean/repeat2",
+        "vienna_centroid/archiveii_embok_clean/repeat2",
+        "vienna_mea/archiveii_embok_clean/repeat2",
+        "nussinov_turner/archiveii_embok_clean/repeat2",
+        "efold_0_1_3/archiveii_embok_clean",
+        "contrafold/archiveii_embok_clean",
+        "nucleicbert_frozen_official/archiveii_embok_clean",
+        "nucleicbert_ft/archiveii_embok_clean",
+        "rnastructure_fold/archiveii_embok_clean",
+        "rnastructure_maxexpect/archiveii_embok_clean",
+        "rnaformer_bprna/archiveii_embok_clean",
+        "rnaformer_interfamily/archiveii_embok_clean",
+        "rnaformer_intrafamily/archiveii_embok_clean",
+        "rnaformer_biophysical/archiveii_embok_clean",
+        "kirigami_fast/archiveii_embok_clean"
+      ]
     },
     {
       "dataset_id": "bprna_new",
@@ -446,7 +519,43 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/bprna_new",
+        "rinalmo_2d_s0/bprna_new",
+        "ufold/bprna_new",
+        "mxfold2/bprna_new",
+        "rinalmo_ft/bprna_new",
+        "eternafold/bprna_new",
+        "bpfold/bprna_new",
+        "best_plan_a/bprna_new",
+        "h0/bprna_new",
+        "vienna_mfe/bprna_new/repeat0",
+        "vienna_centroid/bprna_new/repeat0",
+        "vienna_mea/bprna_new/repeat0",
+        "nussinov_turner/bprna_new/repeat0",
+        "vienna_mfe/bprna_new/repeat1",
+        "vienna_centroid/bprna_new/repeat1",
+        "vienna_mea/bprna_new/repeat1",
+        "nussinov_turner/bprna_new/repeat1",
+        "vienna_mfe/bprna_new/repeat2",
+        "vienna_centroid/bprna_new/repeat2",
+        "vienna_mea/bprna_new/repeat2",
+        "nussinov_turner/bprna_new/repeat2",
+        "efold_0_1_3/bprna_new",
+        "contrafold/bprna_new",
+        "nucleicbert_frozen_official/bprna_new",
+        "nucleicbert_ft/bprna_new",
+        "rnastructure_fold/bprna_new",
+        "rnastructure_maxexpect/bprna_new",
+        "rnaformer_bprna/bprna_new",
+        "rnaformer_interfamily/bprna_new",
+        "rnaformer_intrafamily/bprna_new",
+        "rnaformer_biophysical/bprna_new",
+        "kirigami/bprna_new",
+        "kirigami_fast/bprna_new",
+        "spot_rna/bprna_new"
+      ]
     },
     {
       "dataset_id": "bprna_ts0",
@@ -479,7 +588,42 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/bprna_ts0",
+        "rinalmo_2d_s0/bprna_ts0",
+        "ufold/bprna_ts0",
+        "mxfold2/bprna_ts0",
+        "rinalmo_ft/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "bpfold/bprna_ts0",
+        "best_plan_a/bprna_ts0",
+        "h0/bprna_ts0",
+        "vienna_mfe/bprna_ts0/repeat0",
+        "vienna_centroid/bprna_ts0/repeat0",
+        "vienna_mea/bprna_ts0/repeat0",
+        "nussinov_turner/bprna_ts0/repeat0",
+        "vienna_mfe/bprna_ts0/repeat1",
+        "vienna_centroid/bprna_ts0/repeat1",
+        "vienna_mea/bprna_ts0/repeat1",
+        "nussinov_turner/bprna_ts0/repeat1",
+        "vienna_mfe/bprna_ts0/repeat2",
+        "vienna_centroid/bprna_ts0/repeat2",
+        "vienna_mea/bprna_ts0/repeat2",
+        "nussinov_turner/bprna_ts0/repeat2",
+        "efold_0_1_3/bprna_ts0",
+        "contrafold/bprna_ts0",
+        "nucleicbert_frozen_official/bprna_ts0",
+        "nucleicbert_ft/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0",
+        "rnaformer_bprna/bprna_ts0",
+        "rnaformer_interfamily/bprna_ts0",
+        "rnaformer_intrafamily/bprna_ts0",
+        "rnaformer_biophysical/bprna_ts0",
+        "kirigami/bprna_ts0",
+        "kirigami_fast/bprna_ts0"
+      ]
     },
     {
       "dataset_id": "ref_pdb_ts1",
@@ -512,7 +656,41 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/ref_pdb_ts1",
+        "rinalmo_2d_s0/ref_pdb_ts1",
+        "ufold/ref_pdb_ts1",
+        "mxfold2/ref_pdb_ts1",
+        "rinalmo_ft/ref_pdb_ts1",
+        "eternafold/ref_pdb_ts1",
+        "bpfold/ref_pdb_ts1",
+        "best_plan_a/ref_pdb_ts1",
+        "h0/ref_pdb_ts1",
+        "vienna_mfe/ref_pdb_ts1/repeat0",
+        "vienna_centroid/ref_pdb_ts1/repeat0",
+        "vienna_mea/ref_pdb_ts1/repeat0",
+        "nussinov_turner/ref_pdb_ts1/repeat0",
+        "vienna_mfe/ref_pdb_ts1/repeat1",
+        "vienna_centroid/ref_pdb_ts1/repeat1",
+        "vienna_mea/ref_pdb_ts1/repeat1",
+        "nussinov_turner/ref_pdb_ts1/repeat1",
+        "vienna_mfe/ref_pdb_ts1/repeat2",
+        "vienna_centroid/ref_pdb_ts1/repeat2",
+        "vienna_mea/ref_pdb_ts1/repeat2",
+        "nussinov_turner/ref_pdb_ts1/repeat2",
+        "efold_0_1_3/ref_pdb_ts1",
+        "contrafold/ref_pdb_ts1",
+        "nucleicbert_frozen_official/ref_pdb_ts1",
+        "nucleicbert_ft/ref_pdb_ts1",
+        "rnastructure_fold/ref_pdb_ts1",
+        "rnastructure_maxexpect/ref_pdb_ts1",
+        "rnaformer_bprna/ref_pdb_ts1",
+        "rnaformer_interfamily/ref_pdb_ts1",
+        "rnaformer_intrafamily/ref_pdb_ts1",
+        "rnaformer_biophysical/ref_pdb_ts1",
+        "kirigami_fast/ref_pdb_ts1"
+      ]
     },
     {
       "dataset_id": "ref_pdb_ts2",
@@ -545,7 +723,41 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/ref_pdb_ts2",
+        "rinalmo_2d_s0/ref_pdb_ts2",
+        "ufold/ref_pdb_ts2",
+        "mxfold2/ref_pdb_ts2",
+        "rinalmo_ft/ref_pdb_ts2",
+        "eternafold/ref_pdb_ts2",
+        "bpfold/ref_pdb_ts2",
+        "best_plan_a/ref_pdb_ts2",
+        "h0/ref_pdb_ts2",
+        "vienna_mfe/ref_pdb_ts2/repeat0",
+        "vienna_centroid/ref_pdb_ts2/repeat0",
+        "vienna_mea/ref_pdb_ts2/repeat0",
+        "nussinov_turner/ref_pdb_ts2/repeat0",
+        "vienna_mfe/ref_pdb_ts2/repeat1",
+        "vienna_centroid/ref_pdb_ts2/repeat1",
+        "vienna_mea/ref_pdb_ts2/repeat1",
+        "nussinov_turner/ref_pdb_ts2/repeat1",
+        "vienna_mfe/ref_pdb_ts2/repeat2",
+        "vienna_centroid/ref_pdb_ts2/repeat2",
+        "vienna_mea/ref_pdb_ts2/repeat2",
+        "nussinov_turner/ref_pdb_ts2/repeat2",
+        "efold_0_1_3/ref_pdb_ts2",
+        "contrafold/ref_pdb_ts2",
+        "nucleicbert_frozen_official/ref_pdb_ts2",
+        "nucleicbert_ft/ref_pdb_ts2",
+        "rnastructure_fold/ref_pdb_ts2",
+        "rnastructure_maxexpect/ref_pdb_ts2",
+        "rnaformer_bprna/ref_pdb_ts2",
+        "rnaformer_interfamily/ref_pdb_ts2",
+        "rnaformer_intrafamily/ref_pdb_ts2",
+        "rnaformer_biophysical/ref_pdb_ts2",
+        "kirigami_fast/ref_pdb_ts2"
+      ]
     },
     {
       "dataset_id": "ref_pdb_ts3",
@@ -578,7 +790,41 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/ref_pdb_ts3",
+        "rinalmo_2d_s0/ref_pdb_ts3",
+        "ufold/ref_pdb_ts3",
+        "mxfold2/ref_pdb_ts3",
+        "rinalmo_ft/ref_pdb_ts3",
+        "eternafold/ref_pdb_ts3",
+        "bpfold/ref_pdb_ts3",
+        "best_plan_a/ref_pdb_ts3",
+        "h0/ref_pdb_ts3",
+        "vienna_mfe/ref_pdb_ts3/repeat0",
+        "vienna_centroid/ref_pdb_ts3/repeat0",
+        "vienna_mea/ref_pdb_ts3/repeat0",
+        "nussinov_turner/ref_pdb_ts3/repeat0",
+        "vienna_mfe/ref_pdb_ts3/repeat1",
+        "vienna_centroid/ref_pdb_ts3/repeat1",
+        "vienna_mea/ref_pdb_ts3/repeat1",
+        "nussinov_turner/ref_pdb_ts3/repeat1",
+        "vienna_mfe/ref_pdb_ts3/repeat2",
+        "vienna_centroid/ref_pdb_ts3/repeat2",
+        "vienna_mea/ref_pdb_ts3/repeat2",
+        "nussinov_turner/ref_pdb_ts3/repeat2",
+        "efold_0_1_3/ref_pdb_ts3",
+        "contrafold/ref_pdb_ts3",
+        "nucleicbert_frozen_official/ref_pdb_ts3",
+        "nucleicbert_ft/ref_pdb_ts3",
+        "rnastructure_fold/ref_pdb_ts3",
+        "rnastructure_maxexpect/ref_pdb_ts3",
+        "rnaformer_bprna/ref_pdb_ts3",
+        "rnaformer_interfamily/ref_pdb_ts3",
+        "rnaformer_intrafamily/ref_pdb_ts3",
+        "rnaformer_biophysical/ref_pdb_ts3",
+        "kirigami_fast/ref_pdb_ts3"
+      ]
     },
     {
       "dataset_id": "ref_pdb_ts_hard",
@@ -611,7 +857,41 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/ref_pdb_ts_hard",
+        "rinalmo_2d_s0/ref_pdb_ts_hard",
+        "ufold/ref_pdb_ts_hard",
+        "mxfold2/ref_pdb_ts_hard",
+        "rinalmo_ft/ref_pdb_ts_hard",
+        "eternafold/ref_pdb_ts_hard",
+        "bpfold/ref_pdb_ts_hard",
+        "best_plan_a/ref_pdb_ts_hard",
+        "h0/ref_pdb_ts_hard",
+        "vienna_mfe/ref_pdb_ts_hard/repeat0",
+        "vienna_centroid/ref_pdb_ts_hard/repeat0",
+        "vienna_mea/ref_pdb_ts_hard/repeat0",
+        "nussinov_turner/ref_pdb_ts_hard/repeat0",
+        "vienna_mfe/ref_pdb_ts_hard/repeat1",
+        "vienna_centroid/ref_pdb_ts_hard/repeat1",
+        "vienna_mea/ref_pdb_ts_hard/repeat1",
+        "nussinov_turner/ref_pdb_ts_hard/repeat1",
+        "vienna_mfe/ref_pdb_ts_hard/repeat2",
+        "vienna_centroid/ref_pdb_ts_hard/repeat2",
+        "vienna_mea/ref_pdb_ts_hard/repeat2",
+        "nussinov_turner/ref_pdb_ts_hard/repeat2",
+        "efold_0_1_3/ref_pdb_ts_hard",
+        "contrafold/ref_pdb_ts_hard",
+        "nucleicbert_frozen_official/ref_pdb_ts_hard",
+        "nucleicbert_ft/ref_pdb_ts_hard",
+        "rnastructure_fold/ref_pdb_ts_hard",
+        "rnastructure_maxexpect/ref_pdb_ts_hard",
+        "rnaformer_bprna/ref_pdb_ts_hard",
+        "rnaformer_interfamily/ref_pdb_ts_hard",
+        "rnaformer_intrafamily/ref_pdb_ts_hard",
+        "rnaformer_biophysical/ref_pdb_ts_hard",
+        "kirigami_fast/ref_pdb_ts_hard"
+      ]
     },
     {
       "dataset_id": "testsetb",
@@ -644,7 +924,41 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/testsetb",
+        "rinalmo_2d_s0/testsetb",
+        "ufold/testsetb",
+        "mxfold2/testsetb",
+        "rinalmo_ft/testsetb",
+        "eternafold/testsetb",
+        "bpfold/testsetb",
+        "best_plan_a/testsetb",
+        "h0/testsetb",
+        "vienna_mfe/testsetb/repeat0",
+        "vienna_centroid/testsetb/repeat0",
+        "vienna_mea/testsetb/repeat0",
+        "nussinov_turner/testsetb/repeat0",
+        "vienna_mfe/testsetb/repeat1",
+        "vienna_centroid/testsetb/repeat1",
+        "vienna_mea/testsetb/repeat1",
+        "nussinov_turner/testsetb/repeat1",
+        "vienna_mfe/testsetb/repeat2",
+        "vienna_centroid/testsetb/repeat2",
+        "vienna_mea/testsetb/repeat2",
+        "nussinov_turner/testsetb/repeat2",
+        "efold_0_1_3/testsetb",
+        "contrafold/testsetb",
+        "nucleicbert_frozen_official/testsetb",
+        "nucleicbert_ft/testsetb",
+        "rnastructure_fold/testsetb",
+        "rnastructure_maxexpect/testsetb",
+        "rnaformer_bprna/testsetb",
+        "rnaformer_interfamily/testsetb",
+        "rnaformer_intrafamily/testsetb",
+        "rnaformer_biophysical/testsetb",
+        "kirigami_fast/testsetb"
+      ]
     },
     {
       "dataset_id": "chanrg_test",
@@ -681,7 +995,12 @@
       "contract_coverage_fraction": 0.7531627576403696,
       "contract_coverage_status": "FROZEN_SUBSET_OR_VERSION_MISMATCH",
       "availability": "FROZEN_CURRENT_FILES_ONLY",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/chanrg_test",
+        "rinalmo_2d_s0/chanrg_test",
+        "chanrg_ens3/chanrg_test"
+      ]
     },
     {
       "dataset_id": "chanrg_gena",
@@ -718,7 +1037,12 @@
       "contract_coverage_fraction": 0.4269941595327626,
       "contract_coverage_status": "FROZEN_SUBSET_OR_VERSION_MISMATCH",
       "availability": "FROZEN_CURRENT_FILES_ONLY",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/chanrg_gena",
+        "rinalmo_2d_s0/chanrg_gena",
+        "chanrg_ens3/chanrg_gena"
+      ]
     },
     {
       "dataset_id": "chanrg_genc",
@@ -755,7 +1079,12 @@
       "contract_coverage_fraction": 0.8896925858951176,
       "contract_coverage_status": "FROZEN_SUBSET_OR_VERSION_MISMATCH",
       "availability": "FROZEN_CURRENT_FILES_ONLY",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/chanrg_genc",
+        "rinalmo_2d_s0/chanrg_genc",
+        "chanrg_ens3/chanrg_genc"
+      ]
     },
     {
       "dataset_id": "chanrg_genf",
@@ -792,7 +1121,12 @@
       "contract_coverage_fraction": 0.9649415692821369,
       "contract_coverage_status": "FROZEN_SUBSET_OR_VERSION_MISMATCH",
       "availability": "FROZEN_CURRENT_FILES_ONLY",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/chanrg_genf",
+        "rinalmo_2d_s0/chanrg_genf",
+        "chanrg_ens3/chanrg_genf"
+      ]
     },
     {
       "dataset_id": "rfam_temporal",
@@ -825,7 +1159,10 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/rfam_temporal"
+      ]
     },
     {
       "dataset_id": "rfam_fam",
@@ -858,7 +1195,13 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": [
+        "xens2/rfam_fam/repeat0",
+        "xens2/rfam_fam/repeat1",
+        "xens2/rfam_fam/repeat2",
+        "bpfold/rfam_fam"
+      ]
     },
     {
       "dataset_id": "ncrna_rfamnovel_test",
@@ -891,7 +1234,8 @@
         "adjacent_manifest": null
       },
       "count_consistent": true,
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     },
     {
       "dataset_id": "pdb_d1_dssr",
@@ -943,7 +1287,8 @@
           "sha256": "f03efde106a6b0f8f5577187da7a39706e2a423221eed6103f65753b8d01d333",
           "hash_scope": "full_content"
         }
-      ]
+      ],
+      "prediction_ids": []
     },
     {
       "dataset_id": "temporal_pdb_candidates_1805",
@@ -995,7 +1340,8 @@
           "sha256": "f03efde106a6b0f8f5577187da7a39706e2a423221eed6103f65753b8d01d333",
           "hash_scope": "full_content"
         }
-      ]
+      ],
+      "prediction_ids": []
     },
     {
       "dataset_id": "longchain_7224",
@@ -1019,7 +1365,8 @@
       "n_sequences": null,
       "status": "BLOCKED",
       "block_reason": "required frozen asset not located in the current filesystem inventory",
-      "contract_expected_length": 7224
+      "contract_expected_length": 7224,
+      "prediction_ids": []
     },
     {
       "dataset_id": "longchain_19000",
@@ -1043,7 +1390,8 @@
       "n_sequences": null,
       "status": "BLOCKED",
       "block_reason": "required frozen asset not located in the current filesystem inventory",
-      "contract_expected_length": 19000
+      "contract_expected_length": 19000,
+      "prediction_ids": []
     },
     {
       "dataset_id": "rinalmo_giga_embedding_cache",
@@ -1054,7 +1402,8 @@
       "n_files": 33,
       "index_sha256": "91fffd8395c853491e6c02be0fd72c4ed98fb2c50057095b67cfadf5fe41fcd0",
       "hash_scope": "path_size_mtime_index",
-      "status": "FROZEN"
+      "status": "FROZEN",
+      "prediction_ids": []
     }
   ]
 }
