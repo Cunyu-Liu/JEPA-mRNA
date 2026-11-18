@@ -50,9 +50,11 @@
 
 - 代码和 Git 提交留在 `/home/rna_jev_xens2_dualview_round56`；共享初始化、checkpoint、raw scores 和报告全部写入 `/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/`。
 - 端到端入口：`bash tools/run_prior_alignment_stage.sh smoke 0`、`bash tools/run_prior_alignment_stage.sh pilot 0`；pilot 全部验收通过后才可执行 `bash tools/run_prior_alignment_stage.sh full SEED`，其中 SEED 为 0/1/2。
-- 每个阶段顺序执行：共享初始化核验 → train-on/train-off 两次训练 → 同一 checkpoint 的 on/off raw 导出 → VL0 四身份解码 → 独立工程与身份验收。脚本不读取旧外部面板。
+- 每个阶段顺序执行：共享初始化核验 → train-on/train-off 两次训练 → 同一 checkpoint 的 on/off raw 导出 → VL0 四身份解码 → 独立工程与身份验收 → 独立科学复核。脚本不读取旧外部面板。
 - 训练逐步写入 `batch_order.jsonl`；验收器逐 step 比较两臂序列哈希，检查共享初始化、终端 checkpoint、有限 loss/gradient、解冻计划、纯 length-NLL、四身份来源和 `/teams` 存储边界。
 - `stage_verification.json` 只证明工程与身份有效，不自动选择科学路线，不构成生产修复或 SOTA 结论。
+- `tools/verify_prior_alignment_science.py` 从逐序列网格明细独立重算 micro/macro 指标与冻结选择规则，再从原始 scores 独立重跑四个身份的终端解码、pair/exact-stem 计数和汇总；结果写入 `scientific_verification.json`。该文件仍只限 VL0 开发集，不选择生产路线。
+- 当前 pilot 启动于科学复核器加入之前，因此完成后必须补跑该复核器并生成 `scientific_verification.json`，不能只凭旧启动脚本的退出状态宣告验收完成。
 
 ## 两项定向数据检查
 
