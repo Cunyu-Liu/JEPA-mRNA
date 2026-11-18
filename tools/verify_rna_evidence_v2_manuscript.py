@@ -88,13 +88,18 @@ def main():
               "rfam14_9_exact_sequence_family_mapping_summary.json": "bdef1812946c4c00c36801b1cbddfb4433a3d3c433b8ecf71a8a6256f79c8a99",
               "converged_baseline_summary.json": "2b465cd3816407cb92c886d2b9fe9e3f00d48d81834f34113fab9ccda7f24870",
               "nt_snapshot_assessment.json": "5f4282bdcda743cc14de112a4b6e6c8d5436b9404dff3180553f27a04c336232",
-              "xens2_exposure_stratified.json": "c1c39477b84c3a139a52a091f1011548b1841c50bf6f5e572dc56b75318007ec"}
+              "xens2_exposure_stratified.json": "c1c39477b84c3a139a52a091f1011548b1841c50bf6f5e572dc56b75318007ec",
+              "historical_bidirectional_coverage.json": "8688a3fa4b6bdaaf4634d3a757173674bd2670afa144764feec3d0d3ff2362e5"}
     for filename, expected in hashes.items():
         assert sha(filename) == expected
     assert "Calibration and pair dependence" in text and "no structure-level posterior calibration" in text
+    coverage = read("historical_bidirectional_coverage.json")
+    assert coverage["raw_detected_by_any_source"] == coverage["strict_detected_by_any_source"] == 162489
+    assert sum(item["excluded_target_coverage"] for item in coverage["sources"].values()) == 9
+    assert "--max-seqs 300` is not a final output cap" in text
     for number in range(1, 13):
         assert f"**Q{number}**" in text
-    assert hashlib.sha256(Path(args.deck).read_bytes()).hexdigest() == "5a6e87ab7594a25c535589a8111a9873b92238ec901f0ab001a344ca2c8ed19a"
+    assert hashlib.sha256(Path(args.deck).read_bytes()).hexdigest() == "bc64bc3a8864aa90d638fd5ef4bfec23d377d227b798bebfa548cd7dc1c83d23"
     print(json.dumps({"status": "PASS_EVIDENCE_MANUSCRIPT_NUMBERS_AND_LIMITS",
                       "manuscript": args.manuscript, "words": len(text.split()),
                       "checked_arms": len(pilot["results"]), "checked_interface_modes": len(labels),
