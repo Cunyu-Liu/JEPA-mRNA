@@ -16450,3 +16450,11 @@ cd /home/rna_jev_xens2_dualview_round56
 - 证据稿3521词、6页，远端9份哈希与7臂/6界面对照/7查询集合检查通过。稿件SHA256=`1e978ac8a359ec905ea36589298bf48a7b117e9c0b34adf45c0006d56aef47f1`，commit=`e39b43b`；PDF SHA256=`473eaa07d6666e683c1b4954af8f8d67303f93d11ea3481d8d5c8744e4852d0b`，首/中/末页视觉与独立重建文本/表格/页数一致，非bitwise一致。
 - 原始负结果、历史模型身份、数据审计限制及`STOP_NO_JUSTIFIED_NEW_MECHANISM`均保留。未启动新训练或继续审计扩张。
 
+## §15.965（2026-11-18）可编辑 arXiv 源文件与未编译边界
+
+- 新增`paper/rna_evidence_v2_arxiv_source.tex`，由同一3521词Markdown经Pandoc生成，5个longtable、8条参考、关键数值与deck SHA均一致。源文件SHA256=`16869b8a358fe3b60de9b585afd6a091cd1d6a192423c6c9ef0ce143437f0ef6`，与临时构建逐字节相同。
+- 新增可复现构建器`tools/build_arxiv_source.py`，支持输入稿SHA断言、拒绝覆盖和QA输出。复现命令：`python3 tools/build_arxiv_source.py --manuscript paper/rna_evidence_v2_manuscript_draft.md --output paper/rna_evidence_v2_arxiv_source.tex --qa paper/rna_evidence_v2_arxiv_source_qa.json --expected-sha256 1e978ac8a359ec905ea36589298bf48a7b117e9c0b34adf45c0006d56aef47f1`。
+- 本机未安装XeLaTeX/PDFLaTeX，未进行LaTeX编译验收，不称arXiv-ready。Q4含中文“堆叠能”，源代码显式使用xeCJK；后续需在具备XeLaTeX与合适中文字体的环境编译并做视觉复核。当前已验收阅读PDF仍是`473eaa07…52d0b`，不是由LaTeX源编译得到。
+- 机制裁决不变：没有合格新结构学习机制，不启动pilot；源文件交付是编辑与复现补充，不是科学门通过。
+- 交接首次同步因claim matrix锚点措辞不匹配而中断，未影响源文件、构建器或其他镜像；已按实际文本补齐，不将中断写成完整通过。
+
