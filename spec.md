@@ -1,6 +1,26 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
-> **当前执行覆盖（2026-11-06，第 48 轮：独立单模型 structRFM→RIPE→Pair-JEPA；活跃清单 `round48-single-model-architecture-v1`）**
+> **当前执行覆盖（2026-11-18：污染感知的数据与机制证据；活跃清单 `rna-evidence-v2`）**
+>
+> v2 合同同上。先完成数据来源、独立家族、标签质量和预训练暴露审计，再补梯度 cosine 与完整宿主 FLOPs，随后区分 RiNALMo 原生初始化与 Plan-A warm-start。BPfold motif 和真实 RNA–蛋白界面均有独立资产门，不是 v1 的抢救路线。`ENGINEERING_PASS`、model-dev 正负结果与冻结外部结论分开；v1 `STOP_PILOT_NEGATIVE_DEV_ONLY` 保留，三种子与旧主线不恢复。
+>
+> **D0 状态**：三遍＋独立复核通过，audit SHA256=`ee1b7df5…c7e82`。TR1c=42564/15521簇；Rfam 与 TR1c 有284条精确重叠、1038簇重叠，TS0有418簇重叠，不能宣称无同源污染。ncRNA test 已去304条至25038，train/val/test 分别删除3804/270/304行。RNAcentral22.0/Rfam14.9/Ensembl109/56已冻结并核验；RNAcentral与VL0/bpRNA-new/Rfam/ncRNA test分别重叠184/196、5303/5388、9989/10790、21452/25038。三源精确去重后为193/196、5381/5388、10327/10790、24912/25038，SHA256=`d4412393…baa4`，不得称clean-OOD；Rfam精确序列可映射家族与TR1c共享120，bpRNA-new交集0仅支持下游标签划分，不抵消预训练暴露；三源同源联合162489/165854（SHA256=`69a0b13b…7131`），未检出不等于无同源；nt历史快照未固定，完整预训练暴露仍blocked。
+>
+> **D1 状态**：完整宿主 forward/backward=199,494,385,321 FLOPs，峰值2.907GB，梯度 cosine=-0.052939（仅一个工程 batch，不是机制结论）。精确 DP/Python/C 解码不估计。
+>
+> **D2 状态**：native H0/H2=0.653980/0.658859，H2−H0=+0.004879，step500 均 step_cap 未收敛；warm 分别为0.851460/0.844264。初始化混杂明确，小正值不作机制证据；优化器延续 blocked。report SHA256=`325f79f1…bf29`。
+>
+> **独立任务状态**：BPfold motif 已判负，P1−P0=0、P1−shuffle=-0.000049，Turner=0=0.847600，energy-only=P0，不启动外部评测。旧界面 QA 漏验坐标—序列映射并混入蛋白链，旧标签和探索基线已撤销隔离；全量界面标签 QA 已通过：train=804/804、holdout=202/202，观测残基1,453,871/231,155，PDB/簇/精确序列重叠均为0；modified-parent 与原始 labels.json 哈希复核完成。512查询块已通过数值与完整VL0 pair等价门，长链前向仅工程通过；H2为H0共享冻结编码器别名，重复run停止；六类独立对照18 run均自然收敛并经sklearn复核；H0 micro-AUPRC=0.771506±0.005265、二分类macro-F1=0.685372±0.004139，shuffle=0.629166且100–499 nt弱桶AUPRC=0.623279，不能解释成复合物理解或JEPA收益；界面holdout与RNAcentral精确重叠86/202，只作污染感知probe。结构辅助臂OOM blocked，完整F2未通过。Ensembl109/56共31046个ncRNA文件、701138004字节及FASTA已独立验收；已知三源精确/80%同源与Rfam精确序列家族映射已完成，未检出不等于无暴露，nt历史快照仍不可追溯。
+>
+> **冻结预测分层（2026-11-18）**：原xens2的P0身份与bpRNA-new 5388/5388覆盖通过；全量macro-F1=0.542209。精确暴露n=5381、macro=0.542424；精确未检出n=7、macro=0.377253，仍是未知而非clean。全部序列至少一个已知来源检出80%同源，同源未检出n=0，无法形成同源精度对照，不做显著性或因果结论。证据SHA256=`c1c39477…07ec`；第29页原生视觉通过，deck SHA256=`5a6e87ab…19a`。
+>
+> **历史执行覆盖（2026-11-16：双视图 RNA-JEPA 精度主线；活跃清单 `dual-view-jepa-accuracy-v1`）**
+>
+> 唯一新实验合同：`docs/plans/2026-11-16-dual-view-jepa-accuracy-contract.md`，执行提示词：`docs/plans/2026-11-16-dual-view-jepa-execution-prompt.md`。中心问题是训练期结构模态能否通过双向潜在预测改善单 checkpoint 的未见家族精度，推理只使用序列。原 xens2 是精度基线，投票不再是新架构卖点；D1 通用扩增、RIPE 和旧局部 Pair-JEPA 停止。必须先通过文献/资产/数据/掩码/泄漏工程门与 H0–H6 pilot，再进入三种子正式训练；BPfold motif、ncRNA 功能分类和 RNA–蛋白界面均有独立资产或标签门。未通过不得宣称新架构精度突破。
+>
+> **本轮执行状态**：P0 已通过，远程 gate 为 `manifests/p0/gate_decision.json`（SHA256=`6998854c…49c1eb301b`）。P1 旧源码身份曾取得 19 项 CPU、H1–H6 合成 CUDA、H0/H2 真实宿主一步接线和部署零调用证据，但并发修改后不得沿用，原阻断 gate SHA256=`e1ff6c07…2a2cb6`。新集群 `px1-jcy.matpool.com:27693` 上，合并候选的 28 项双视图＋resume 测试已 PASS；候选哈希见 `.round56_work/p1_resume_candidate_manifest.json`。真实 CUDA 首轮因 RTX 5090 sm_120 与旧 torch cu121 不兼容而停止，失败保留；新建 `lucaone_cu128` 后，H1–H6 真实 forward/backward、H0/H2 宿主、旧 resume 与序列-only 部署全部通过，P1 gate=`manifests/p1/candidate_cu128_v1/gate_decision.json`，代码 commit=`0a44150` 已推送。H0–H6 已在 step400 自然早停（best@100），VL0 独立评测裁决为 `STOP_PILOT_NEGATIVE_DEV_ONLY`：H2 macro-F1=0.8442637614，低于 H0=0.8514596293（Δ=-0.0071958679），且未超过 H3/H4/H5/H6；H2 micro-F1=0.8658792361 不得用于掩盖 macro 失败。decision SHA256=`b6b47fb4…211c41`。按合同停止三种子、正式训练与冻结评测，未启动 motif 或功能下游；该单 seed model-dev 负结果不是外部未见家族精度结论。
+>
+> **历史执行覆盖（2026-11-06，第 48 轮：独立单模型 structRFM→RIPE→Pair-JEPA；活跃清单 `round48-single-model-architecture-v1`）**
 >
 > 唯一执行合同：`docs/plans/2026-11-06-round48-single-model-architecture.md`。按用户指定顺序依次完成 structRFM+JEV、RIPE 思想迁移、JEPA 式 scorer，每个冻结候选均做 A/B/C 消融。主模型必须单骨干、单任务头、单 checkpoint；xens2 仅作历史集成对照。主去泄露八 split 目标 8/8 SOTA，Rfam/CHANRG 尽可能多领先，并同时验收 raw-sequence 速度、结构置信度和 200–400/>400 nt 长序列。
 >
