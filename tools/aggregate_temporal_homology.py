@@ -10,7 +10,7 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def read_queries(path):
+def read_queries(path, expected_count=1131):
     queries = {}
     name = None
     for line in Path(path).read_text().splitlines():
@@ -22,13 +22,13 @@ def read_queries(path):
         elif line.strip():
             assert name is not None
             queries[name] += line.strip().upper().replace("T", "U")
-    assert len(queries) == 1131
+    assert len(queries) == expected_count
     assert all(16 <= len(sequence) <= 8192 for sequence in queries.values())
     return queries
 
 
-def aggregate(fasta, root):
-    queries = read_queries(fasta)
+def aggregate(fasta, root, expected_count=1131):
+    queries = read_queries(fasta, expected_count)
     records = {name: {"query": name, "sequence_sha256": hashlib.sha256(sequence.encode()).hexdigest(),
                       "exact_detected": name.rsplit("exact_detected=", 1)[-1] == "1",
                       "detected_by_source": []} for name, sequence in queries.items()}
@@ -102,9 +102,10 @@ def main():
     parser.add_argument("--root", required=True)
     parser.add_argument("--metadata", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--expected-count", type=int, default=1131)
     args = parser.parse_args()
     assert sha256(args.metadata) == "b79ecc8f3501966417738d85f94559da917ca20a26bd3a16e9f07b130c1d289c"
-    report = aggregate(args.fasta, args.root)
+    report = aggregate(args.fasta, args.root, args.expected_count)
     report["metadata_sha256"] = sha256(args.metadata)
     output = Path(args.output)
     if output.exists():

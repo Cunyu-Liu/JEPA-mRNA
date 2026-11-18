@@ -17,6 +17,7 @@ def main():
     parser.add_argument("--prepare-only", action="store_true")
     parser.add_argument("--threads", type=int, default=16)
     parser.add_argument("--split-memory-limit", default="50G")
+    parser.add_argument("--expected-count", type=int, default=1131)
     args = parser.parse_args()
     metadata_hash = hashlib.sha256(Path(args.metadata).read_bytes()).hexdigest()
     assert metadata_hash == "b79ecc8f3501966417738d85f94559da917ca20a26bd3a16e9f07b130c1d289c"
@@ -25,8 +26,8 @@ def main():
     rows = [line.strip() for line in fasta.open() if line.strip()]
     identifiers = [line[1:] for line in rows if line.startswith(">")]
     sequences = [line for line in rows if not line.startswith(">")]
-    assert len(identifiers) == len(sequences) == 1131
-    assert len(set(identifiers)) == len(set(sequences)) == 1131
+    assert len(identifiers) == len(sequences) == args.expected_count
+    assert len(set(identifiers)) == len(set(sequences)) == args.expected_count
     assert all(16 <= len(sequence) <= 8192 for sequence in sequences)
     manifest_path = output / "query_manifest.json"
     if args.prepare_only:
@@ -42,7 +43,7 @@ def main():
         print(json.dumps(manifest, indent=2))
         return
     manifest = json.loads(manifest_path.read_text())
-    assert manifest["n_queries"] == 1131
+    assert manifest["n_queries"] == args.expected_count
     assert manifest["metadata_sha256"] == metadata_hash
     assert manifest["query_fasta_sha256"] == hashlib.sha256(fasta.read_bytes()).hexdigest()
     if not args.source:
