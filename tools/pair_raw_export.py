@@ -55,6 +55,18 @@ def resilient_r2d_scores(model, seq, emb, requested_device, prior_weight_overrid
 def resilient_plana_scores(encoder, head, seq, requested_device, prior_weight_override=None):
     current_device = str(next(encoder.parameters()).device)
     device = "cpu" if current_device == "cpu" else requested_device
+    # A long sequence may force a one-off CPU fallback. Retry the requested GPU
+    # on the next sequence; a repeated OOM still takes the safe CPU path.
+    if current_device == "cpu" and requested_device != "cpu":
+        try:
+            encoder.to(requested_device)
+            head.to(requested_device)
+            device = requested_device
+        except torch.OutOfMemoryError:
+            encoder.to("cpu")
+            head.to("cpu")
+            torch.cuda.empty_cache()
+            device = "cpu"
     try:
         scores = plana_scores(encoder, head, seq, device, prior_weight_override=prior_weight_override)
         used = "cpu_persistent" if device == "cpu" else str(device)
