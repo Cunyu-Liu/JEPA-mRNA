@@ -67,8 +67,9 @@ def main():
                 arrays.update({k: p1[k].astype(np.float32) for k in ("plana1_on", "plana1_off")})
                 arrays.update({k: r2d[k].astype(np.float32) for k in ("r2d_on", "r2d_off")})
                 for suffix in ("on", "off"):
-                    arrays[f"xens2_{suffix}"] = (.35 * arrays[f"plana0_{suffix}"] +
-                                                    .35 * arrays[f"plana1_{suffix}"] +
+                    arrays[f"plana_mean_{suffix}"] = (.5 * arrays[f"plana0_{suffix}"] +
+                                                       .5 * arrays[f"plana1_{suffix}"]).astype(np.float32)
+                    arrays[f"xens2_{suffix}"] = (.70 * arrays[f"plana_mean_{suffix}"] +
                                                     .30 * arrays[f"r2d_{suffix}"]).astype(np.float32)
                 payload = dict(arrays)
                 payload.update({"name": np.array(name), "seq": np.array(seq),

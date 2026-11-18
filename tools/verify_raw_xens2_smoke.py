@@ -34,13 +34,16 @@ def main():
             name, seq = str(z["name"]), str(z["seq"])
             mask = valid_pair_mask(seq)
             arrays = {k: np.asarray(z[k]) for k in z.files if k.endswith("_on") or k.endswith("_off")}
-            required = {"plana0_on", "plana0_off", "plana1_on", "plana1_off", "r2d_on", "r2d_off", "xens2_on", "xens2_off"}
+            required = {"plana0_on", "plana0_off", "plana1_on", "plana1_off", "plana_mean_on", "plana_mean_off",
+                        "r2d_on", "r2d_off", "xens2_on", "xens2_off"}
             if set(arrays) != required:
                 failures.append({"name": name, "check": "score_keys", "actual": sorted(arrays)})
                 continue
             formula_ok = {}
             for suffix in ("on", "off"):
-                expected = 0.7 * (0.5 * arrays[f"plana0_{suffix}"] + 0.5 * arrays[f"plana1_{suffix}"]) + 0.3 * arrays[f"r2d_{suffix}"]
+                expected_mean = 0.5 * arrays[f"plana0_{suffix}"] + 0.5 * arrays[f"plana1_{suffix}"]
+                expected = 0.7 * expected_mean + 0.3 * arrays[f"r2d_{suffix}"]
+                formula_ok[f"plana_mean_{suffix}"] = bool(np.allclose(expected_mean, arrays[f"plana_mean_{suffix}"], atol=1e-6, rtol=1e-6))
                 formula_ok[suffix] = bool(np.allclose(expected, arrays[f"xens2_{suffix}"], atol=1e-6, rtol=1e-6))
             predicted = set(nussinov_map(arrays["xens2_on"], mask))
             expected_pairs = set(frozen[name][0]["pairs"])
