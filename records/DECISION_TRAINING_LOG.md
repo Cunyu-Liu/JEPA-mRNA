@@ -16397,3 +16397,11 @@ cd /home/rna_jev_xens2_dualview_round56
 - 时间外候选固定initial_release_date≥2025-07-01，不使用模型表现。官方Search字段错误、GraphQL字段错误及方法缺失断言均保留并纠正；2条实验方法未知显式保留。最终1805入口、4087 RNA实体、1391唯一序列；16–8192nt为3584实体/1131唯一序列，≤1022nt为2588实体/841唯一序列。元数据SHA256=`b79ecc8f…289c`，独立QA SHA256=`54f01470…8fea`，代码commit=`a1c9a41`。
 - DSSR v1.9.10二进制SHA256=`c7261c0a…c39a`，非商业使用；既有工具16项回归通过。4条固定工程样本均完成：前三条无可接受链内配对，10FZ_A保留1542nt、430个canonical-nested配对；未知HSX不强行映射。完整1805入口标签提取在独立目录运行，尚未通过完整标签/同源门，未启动模型推理或训练。
 
+## §15.958（2026-11-18）时间外精确暴露、同源工程与字符集边界
+
+- 时间外1131条唯一序列的三源精确联合命中296，未检出835仍是未知而非clean。RNAcentral=296、Rfam=53、Ensembl=92，联合值按完整序列去重，不相加。exact SHA256=`8ceeb3fb9147b4c968182a0a0a1d9816e0e230f76cd6635a0725b0df66ac2ce5`，FASTA SHA256=`ef330fcf82ee0fa3e0aae9955294f490e7d2fc689b1e39670aa75a1fb17bcdc7`；查询身份、计数和哈希独立一致。
+- TR1c精确重叠46、VL0=0，artifact SHA256=`113eb5b6765bbfa4178d4801759f159408df801b37fa901f638b8b9b8958bb44`。这不替代80%同源或预训练审计，时间外也不等于未见。
+- 437个实体含非A/C/G/U字符，包括X、N、I、M；保留原始canonical polymer符号，不静默视为观测碱基或亲本。标签entity与metadata亲本差异另由`verify_temporal_label_collection.py`逐链记录。
+- 同源参数转发首轮失败未产生结果，修复后3项参数/聚合回归通过，commit=`cf831bf`。真实MMseqs2保留`|`注释ID，已修正解析并加真实120nt烟测，commit=`4f3f9f9`。短/低复杂度无命中及内联脚本错误均保留。
+- 聚合新增`BLOCKED_EXACT_NOT_HOMOLOGY_DETECTED`，精确有而同源无不得静默归入未知；4项回归通过，commit=`d466688`。三源80%同源搜索与完整1805入口DSSR标签仍在运行，未启动模型推理。
+
