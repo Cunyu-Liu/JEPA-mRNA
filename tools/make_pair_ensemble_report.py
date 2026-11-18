@@ -6,8 +6,8 @@ from pathlib import Path
 import pandas as pd
 
 ATOMIC = ("plana0", "plana1", "r2d")
-METRICS = ("map_micro_recall", "map_macro_recall", "map_micro_f1", "map_macro_f1",
-           "map_micro_precision", "raw_micro_AUPRC", "raw_macro_AUPRC")
+METRICS = ("map_micro_recall", "map_micro_f1", "map_macro_f1",
+           "map_micro_precision", "raw_micro_average_precision", "raw_macro_average_precision")
 
 
 def load(path):
@@ -43,12 +43,25 @@ def analyze(vl0, external):
             if "plana_mean" in by_model:
                 row[f"xens2_delta_{metric}_vs_plana_mean"] = float(ensemble[metric]) - row[f"plana_mean_{metric}"]
         row["micro_recall_below_all_atomic"] = row["xens2_map_micro_recall"] < min(row[f"{m}_map_micro_recall"] for m in ATOMIC)
-        row["macro_recall_below_all_atomic"] = row["xens2_map_macro_recall"] < min(row[f"{m}_map_macro_recall"] for m in ATOMIC)
         rows.append(row)
     details = pd.DataFrame(rows)
+    external = details.query("dataset_role == 'external64'") if len(details) else details
+    by_prior = {}
+    for prior, group in external.groupby("prior"):
+        by_prior[prior] = {
+            "n_external": int(len(group)),
+            "n_micro_recall_below_best_atomic": int((group.xens2_delta_map_micro_recall_vs_best_atomic < 0).sum()),
+            "n_micro_recall_below_all_atomic": int(group.micro_recall_below_all_atomic.sum()),
+            "median_delta_micro_recall_vs_best_atomic": float(group.xens2_delta_map_micro_recall_vs_best_atomic.median()),
+            "median_delta_micro_recall_vs_r2d": float(group.xens2_delta_map_micro_recall_vs_r2d.median()),
+            "median_delta_micro_recall_vs_plana_mean": float(group.xens2_delta_map_micro_recall_vs_plana_mean.median()),
+            "n_micro_f1_below_best_atomic": int((group.xens2_delta_map_micro_f1_vs_best_atomic < 0).sum()),
+            "median_delta_micro_f1_vs_best_atomic": float(group.xens2_delta_map_micro_f1_vs_best_atomic.median()),
+        }
     summary = {"schema_version": 1, "n_rows": len(details),
-               "n_external_micro_recall_below_all_atomic": int(details.query("dataset_role == 'external64'").micro_recall_below_all_atomic.sum()) if len(details) else 0,
-               "n_external_macro_recall_below_all_atomic": int(details.query("dataset_role == 'external64'").macro_recall_below_all_atomic.sum()) if len(details) else 0,
+               "n_external_micro_recall_below_all_atomic": int(external.micro_recall_below_all_atomic.sum()) if len(external) else 0,
+               "by_prior": by_prior,
+               "macro_recall_analysis": "NOT_AVAILABLE_IN_FROZEN_ROUTE_SUMMARY",
                "interpretation": "Descriptive member-complement diagnostic only; no threshold or route decision is tuned on external panels."}
     return details, summary
 
