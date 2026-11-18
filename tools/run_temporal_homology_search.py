@@ -2,6 +2,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 import run_pretrain_homology_search
 
@@ -13,6 +14,8 @@ def main():
     parser.add_argument("--output-root", required=True)
     parser.add_argument("--source", choices=["rnacentral_22_active", "rfam_14_9", "ensembl_109_and_bacteria_56"])
     parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--threads", type=int, default=16)
+    parser.add_argument("--split-memory-limit", default="50G")
     args = parser.parse_args()
     metadata_hash = hashlib.sha256(Path(args.metadata).read_bytes()).hexdigest()
     assert metadata_hash == "b79ecc8f3501966417738d85f94559da917ca20a26bd3a16e9f07b130c1d289c"
@@ -41,7 +44,11 @@ def main():
     assert manifest["n_queries"] == 1131
     assert manifest["metadata_sha256"] == metadata_hash
     assert manifest["query_fasta_sha256"] == hashlib.sha256(fasta.read_bytes()).hexdigest()
+    if not args.source:
+        parser.error("--source is required unless --prepare-only is used")
     run_pretrain_homology_search.OUTPUT = output
+    sys.argv = [sys.argv[0], "--source", args.source, "--threads", str(args.threads),
+                "--split-memory-limit", args.split_memory_limit]
     run_pretrain_homology_search.main()
 
 
