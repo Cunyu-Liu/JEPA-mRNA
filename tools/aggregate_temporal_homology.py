@@ -15,9 +15,8 @@ def read_queries(path):
     name = None
     for line in Path(path).read_text().splitlines():
         if line.startswith(">"):
-            header = line[1:].split()[0]
-            name = header.split("|", 1)[0]
-            assert header.rsplit("exact_detected=", 1)[-1] in {"0", "1"}
+            name = line[1:].split()[0]
+            assert name.rsplit("exact_detected=", 1)[-1] in {"0", "1"}
             assert name not in queries
             queries[name] = ""
         elif line.strip():

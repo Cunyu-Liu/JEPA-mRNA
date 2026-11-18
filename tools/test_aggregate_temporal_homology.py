@@ -17,7 +17,7 @@ def fixture(tmp_path, coverage=16):
         directory = tmp_path / source
         directory.mkdir()
         result = directory / "matches.tsv"
-        result.write_text(f"q0\ttarget\t80\t{coverage}\t16\t16\t1\t16\t1\t{coverage}\t0\t30\n" if source == SOURCES[0] else "")
+        result.write_text(f"q0|exact_detected=0\ttarget\t80\t{coverage}\t16\t16\t1\t16\t1\t{coverage}\t0\t30\n" if source == SOURCES[0] else "")
         manifest = {"status": "PASS_SEARCH_COMPLETED_AGGREGATION_PENDING", "source": source,
                     "mmseqs_version": "17.b804f", "target_sha256": "target",
                     "command": ["mmseqs", "easy-search", "--min-seq-id", "0.8", "--cov-mode", "0",
