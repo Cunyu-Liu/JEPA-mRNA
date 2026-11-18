@@ -75,6 +75,8 @@ Six frozen-representation or composition controls were run with seeds 42, 2026, 
 
 Across all queries, 162,489/165,854 had a qualifying match in at least one known source; 3,365 did not. The 198 interface queries are the length-filtered subset of 202 chains. The exact and homology columns answer different questions and are not expected to be identical. No-hit records cannot be treated as clean because of search heuristics, the target cap, and the unresolved nt snapshot.
 
+A read-only reanalysis of the verified original xens2 replay on bpRNA-new gave macro-F1 0.542209. The exact-match-detected subset had macro-F1 0.542424 (n=5,381), compared with 0.377253 for seven sequences without an exact match. All 5,388 sequences had at least one qualifying homology match, leaving no homology-not-detected comparison arm. The seven-sequence subset is not a clean control and is insufficient for significance testing or a causal exposure-effect claim. An older alternative result with 385 different full records was not mixed with the P0-verified historical/replay identity.
+
 ### 4.2 Family mapping is not equivalent to pretraining independence
 
 The independent mapping check covered 58,742 rows. Rfam evaluation contained 8,002 uniquely mapped rows, 110 ambiguous rows, 2,111 rows with FASTA matches but no family metadata, and 567 without an exact Rfam 14.9 match. Corresponding counts for bpRNA-new were 4,938, 0, 442, and 8, and for TR1c were 24,392, 35, 4,487, and 13,650. The uniquely mapped family sets contained 1,597, 477, and 1,732 families, respectively.

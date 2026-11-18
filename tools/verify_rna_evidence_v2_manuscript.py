@@ -53,6 +53,12 @@ def main():
         assert f"{homology_row['detected_by_any_source']:,} / {homology_row['n_queries']:,}" in text
     assert homology["detected_by_any_source"] == 162489 and homology["not_detected_by_any_source"] == 3365
     assert "162,489/165,854" in text and "3,365" in text
+    strata = read("xens2_exposure_stratified.json")
+    assert strata["status"] == "PASS_FROZEN_EXPOSURE_STRATIFIED_WITH_NO_HOMOLOGY_UNKNOWN_COMPARISON"
+    assert not strata["primary_comparison"]["available"] and strata["statistical_test"] is None
+    assert strata["exact_overlap_strata"]["detected"]["n"] == 5381
+    assert strata["exact_overlap_strata"]["not_detected"]["n"] == 7
+    assert "0.542424" in text and "0.377253" in text and "385 different full records" in text
     families = read("rfam14_9_exact_sequence_family_mapping_summary.json")
     for dataset in ("rfam_fam", "bprna_new", "bprna_tr1c"):
         report = families["datasets"][dataset]
@@ -81,7 +87,8 @@ def main():
               "homology_union_summary.json": "69a0b13b2ef0cb061807e10f50efca3a6da7889ee006cd032e2e72bca2197131",
               "rfam14_9_exact_sequence_family_mapping_summary.json": "bdef1812946c4c00c36801b1cbddfb4433a3d3c433b8ecf71a8a6256f79c8a99",
               "converged_baseline_summary.json": "2b465cd3816407cb92c886d2b9fe9e3f00d48d81834f34113fab9ccda7f24870",
-              "nt_snapshot_assessment.json": "5f4282bdcda743cc14de112a4b6e6c8d5436b9404dff3180553f27a04c336232"}
+              "nt_snapshot_assessment.json": "5f4282bdcda743cc14de112a4b6e6c8d5436b9404dff3180553f27a04c336232",
+              "xens2_exposure_stratified.json": "c1c39477b84c3a139a52a091f1011548b1841c50bf6f5e572dc56b75318007ec"}
     for filename, expected in hashes.items():
         assert sha(filename) == expected
     assert "Calibration and pair dependence" in text and "no structure-level posterior calibration" in text
