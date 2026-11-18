@@ -13,7 +13,7 @@ def sha256(path):
 def prepare(root, metadata_path, qa_path):
     root = Path(root)
     qa = json.loads(Path(qa_path).read_text())
-    assert qa["status"] == "PASS_TEMPORAL_LABEL_COLLECTION_QA_HOMOLOGY_PENDING"
+    assert qa["status"] in {"PASS_TEMPORAL_LABEL_COLLECTION_QA_HOMOLOGY_PENDING", "PASS_EXPLICIT_ENTRY_EXCLUSIONS_LABELS_REVIEWED"}
     assert qa["metadata_sha256"] == EXPECTED_METADATA
     assert qa["collection_sha256"] == sha256(root / "collection.json")
     metadata = json.loads(Path(metadata_path).read_text())

@@ -1,9 +1,11 @@
 import json
+import pytest
 
 import prepare_temporal_evaluation_sequences as preparation
 
 
-def test_sequence_identity_and_metadata_mismatch(tmp_path):
+@pytest.mark.parametrize("status", ["PASS_TEMPORAL_LABEL_COLLECTION_QA_HOMOLOGY_PENDING", "PASS_EXPLICIT_ENTRY_EXCLUSIONS_LABELS_REVIEWED"])
+def test_sequence_identity_and_metadata_mismatch(tmp_path, status):
     root = tmp_path / "labels"
     root.mkdir()
     (root / "collection.json").write_text("{}")
@@ -21,7 +23,7 @@ def test_sequence_identity_and_metadata_mismatch(tmp_path):
         (directory / "labels.json").write_text(json.dumps({"chains": chains}))
     preparation.EXPECTED_METADATA = preparation.sha256(metadata_path)
     qa = tmp_path / "qa.json"
-    qa.write_text(json.dumps({"status": "PASS_TEMPORAL_LABEL_COLLECTION_QA_HOMOLOGY_PENDING",
+    qa.write_text(json.dumps({"status": status,
                               "metadata_sha256": preparation.EXPECTED_METADATA,
                               "collection_sha256": preparation.sha256(root / "collection.json"),
                               "n_accepted_chains": 3, "n_unique_accepted_sequences": 2,
