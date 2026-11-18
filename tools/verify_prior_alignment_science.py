@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import math
 import sys
@@ -11,12 +12,15 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+import torch
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
 from pair_decode_common import decode_mea  # noqa: E402
+from rnajepa.decision_head import FlatDecisionHead  # noqa: E402
 from rnajepa.harness import inside_outside, nussinov_map, valid_pair_mask  # noqa: E402
+from rnajepa.prior_alignment import sha256_file  # noqa: E402
 
 
 def prf(tp, fp, fn):
@@ -71,6 +75,17 @@ def close(a, b, tolerance=1e-10):
     return math.isfinite(float(a)) and math.isfinite(float(b)) and abs(float(a) - float(b)) <= tolerance
 
 
+def state_sha256(state):
+    digest = hashlib.sha256()
+    for key in sorted(state):
+        tensor = state[key].detach().cpu().contiguous()
+        digest.update(key.encode())
+        digest.update(str(tensor.dtype).encode())
+        digest.update(str(tuple(tensor.shape)).encode())
+        digest.update(tensor.numpy().tobytes())
+    return digest.hexdigest()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", type=Path, required=True)
@@ -99,6 +114,30 @@ def main():
     check("no_external_selection", not summary["old_external_panels_used"] and
           not frozen["old_external_panels_may_select_parameters"])
     check("development_dataset", summary["development_dataset"] == "bprna_vl0")
+
+    init_path = args.stage.parent / "init" / f"shared_init_seed{summary['seed']}.pt"
+    check("shared_init_exists", init_path.is_file(), init_path)
+    check("shared_init_file_identity", sha256_file(init_path) == summary["shared_init_sha256"])
+    initial = torch.load(init_path, map_location="cpu", weights_only=False)
+    head = FlatDecisionHead(d_model=initial["backbone_report"]["d_model"], **initial["head_config"])
+    head.load_state_dict(initial["model"]["head"], strict=True)
+    initial_head_sha = state_sha256(head.state_dict())
+    for flag in (True, False):
+        head.use_turner_prior = flag
+        check(f"prior_switch_preserves_head_tensors_{flag}", state_sha256(head.state_dict()) == initial_head_sha)
+    training_source = (REPO / "tools/train_plan_a_clean_head_p1.py").read_text()
+    encoder_load = 'encoder.load_state_dict(initial["model"]["encoder"], strict=True)'
+    head_load = 'head.load_state_dict(initial["model"]["head"], strict=True)'
+    encoder_pos = training_source.find(encoder_load)
+    head_pos = training_source.find(head_load)
+    switch_pos = training_source.find("head.use_turner_prior = args.train_turner ==")
+    check("strict_shared_load_precedes_flag_switch", encoder_pos >= 0 and head_pos >= 0 and
+          switch_pos > max(encoder_pos, head_pos))
+    for arm in ("on", "off"):
+        meta = json.loads((args.stage / f"train_{arm}/run_meta.json").read_text())
+        check(f"initial_file_reference_{arm}",
+              meta["prior_alignment"]["shared_init_sha256"] == summary["shared_init_sha256"])
+    del initial, head
 
     with (decode_dir / "vl0_grid_per_sequence.csv").open() as handle:
         grid_rows = list(csv.DictReader(handle))
@@ -194,6 +233,11 @@ def main():
         "mode": summary["mode"], "seed": summary["seed"], "n_sequences": len(on_files),
         "n_checks": len(checks), "checks": checks,
         "shared_init_sha256": summary["shared_init_sha256"],
+        "initial_tensor_identity": {
+            "strict_shared_load_precedes_flag_switch": True,
+            "prior_switch_preserves_head_tensors": True,
+            "head_state_sha256": initial_head_sha,
+        },
         "train_on_checkpoint_sha256": summary["train_on_checkpoint_sha256"],
         "train_off_checkpoint_sha256": summary["train_off_checkpoint_sha256"],
         "decode_config": config, "arms": summary["arms"],
