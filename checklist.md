@@ -1,41 +1,14 @@
 # Checklist — RNA 二级结构决策模型（纯血 Jev 架构迁移）
 
-> **当前执行覆盖（2026-11-18：rna-evidence-v2）**
->
-> - [x] T-A225–T-A227 数据/暴露审计、完整宿主机制测量和初始化区分完成；优化器延续限制保留。
-> - [x] T-A225a 精确预训练暴露已证实：VL0=184/196、bpRNA-new=5303/5388、Rfam=9989/10790、ncRNA test=21452/25038，禁止clean-OOD叙事；nt历史快照仍不可追溯，已知三源同源审计已完成。
-> - [x] T-A228 官方 BPfold motif 单变量 dev 实验完成并判负，不启动外部评测。
-> - [x] T-A229a 全量界面标签与独立 QA 通过：804/202，modified-parent、真实伙伴、距离、PDB＋簇隔离齐全；QA SHA256=`1c996c9c…4b32bb`。
-> - [x] T-A229b 六类独立对照收敛、逐残基复核、sklearn第三方指标和分层分析完成；H2为H0别名，结构辅助臂OOM blocked，完整F2未通过；RNAcentral与界面holdout精确重叠86/202，结果只作污染感知probe。
-> - [ ] T-A230 预印本证据链、完整台账与复现命令持续更新；文档完成不等于实验完成。第24–29页PPT原生视觉通过，第29页deck SHA256=`5a6e87ab…19a`。
-> - [x] T-A230a 第24页污染感知界面probe与第25页精确暴露证据已完成PowerPoint原生逐页复核，中文正常、表格与底部说明不重叠。
-> - [x] T-A230b 证据草稿3346词通过原项目Q1–Q12、禁止性表述和逐数/哈希双检查；SHA256=`5ec63380…6a1`，commit=`8ccca43`；仍非投稿就绪。
-> - [x] T-A230c 6页A4 PDF的表格网格、文本与首/中/末页视觉复核通过；SHA256=`09ba5a7a…3bab`。
-> - [x] T-A230d 新版独立重建文本、表格与页数一致，非bitwise一致；参考PDF=`09ba5a7a…3bab`，重建PDF=`d4d1b778…06f8`。
-> - [x] T-A231a Ensembl 109/56共31046个文件、701138004字节、gzip/FASTA和独立SHA256全部通过；4040439条原始、4032030条过滤后，精确重叠已复核。
-> - [x] T-A231b Ensembl同源与独立QA完成：61092/165854；Rfam精确序列家族映射58742行复核通过，Rfam与TR1c共享120个可映射家族，bpRNA-new交集0仅下游标签。
-> - [x] T-A231c RNAcentral及三源同源联合、独立计数已完成：联合检出162489/165854，SHA256=`69a0b13b…7131`；未检出不等于无同源。
-> - [ ] T-A231d nt历史快照为`BLOCKED_HISTORICAL_NT_SNAPSHOT_UNPINNED`，只提供实时URL且无日期/哈希，当前nt不得冒充历史训练集；完整历史污染分母未闭环。
-> - [x] T-A232 原xens2的P0身份与5388条覆盖通过；精确暴露n=5381、macro=0.542424，精确未检出n=7、macro=0.377253；同源未检出n=0，不能做同源对照或显著性/因果结论；证据SHA256=`c1c39477…07ec`。
-
-> **当前执行覆盖（2026-11-16：双视图 RNA-JEPA 精度主线；合同 `docs/plans/2026-11-16-dual-view-jepa-accuracy-contract.md`）**
->
-> - [x] T-A217 完成 Mol-JEPA/原 xens2/E2A/E2B/motif 表/下游标签/工作区身份复核，未把文档完成误记为实验完成；P0 gate SHA256=`6998854c…49c1eb301b`。
-> - [x] T-A218 双视图 helix、mask、SIGReg、masked loss 索引、位置不泄漏、推理无结构输入和真实 CUDA 工程门全过。28 项测试、H1–H6 CUDA、H0/H2 宿主、旧 resume 和部署全过；gate=`manifests/p1/candidate_cu128_v1/gate_decision.json`；commit=`0a44150`。旧 cu121 失败保留。
-> - [ ] T-A219 H0–H6 pilot 已完成并判负：H2 macro=0.8442637614，低于 H0=0.8514596293，且未超过其他对照；`STOP_PILOT_NEGATIVE_DEV_ONLY`，不得进入三种子。
-> - [ ] T-A220 三种子正式训练与主八＋Rfam 冻结评测完成，bpRNA-new 的配对效应和统计门明确。pilot 判负，未启动，未把目标写成结果。
-> - [ ] T-A221 BPfold motif 能量身份、inner/outer、shuffled、Turner=0 和独立贡献验收完成；无 BRIQ 资产不得冒充复现。
-> - [ ] T-A222 ncRNA 功能分类与 RNA–蛋白界面标签、负样本和隔离门通过；未通过项标 blocked，不虚构标签。
-> - [ ] T-A223 可选分歧校准与 Vienna/BPfold 回退只使用独立 calibration-dev，单一路径/随机/长度路由和成本对照齐全。
-> - [ ] T-A224 全部主张完成独立复核与 claim–evidence–limitation；D1、RIPE、旧 Pair-JEPA 和投票退出新冠军主线。
->
-> **历史执行覆盖（2026-11-06，第 48 轮：独立单模型架构攻关；合同 `docs/plans/2026-11-06-round48-single-model-architecture.md`）**
+> **当前执行覆盖（2026-11-06，第 48 轮：独立单模型架构攻关；合同 `docs/plans/2026-11-06-round48-single-model-architecture.md`）**
 >
 > - [ ] T-A209 structRFM 官方 commit/权重严格加载与 Nature 版预训练精确+80% identity 污染审计完成；专属 clean 和 512 nt 边界可复现。
 > - [ ] T-A210 structRFM 冻结/全参与 RiNALMo 对照均三种子收敛并完成 A/B/C、长度、速度和置信度验收。
 > - [ ] T-A211 RIPE log/R1/R2/R3/R5/R6、等参数和 QK-norm 对照完成；合成边界、梯度、随机杀手与长序列门全过。
 > - [ ] T-A212 RIPE 三种子 A/B/C 完成，长程及 200–400/>400 nt 结论不依赖短序列平均提升。
 > - [ ] T-A213 Pair-JEPA 与 J-mlp/noEMA/random-target 完成；无区域均值饱和或常数坍塌，推理无 teacher 前向。
+> - [ ] T-A217 RCSB/mmCIF/DSSR 标签与去泄露全过；D0/D1 三种子 A/B/C 和 complex holdout 独立复算完成，界面标签不与链内配对混用。
+> - [ ] T-A218 LinearDesign 编码区约束、λ 消融和 PRISM+独立热力学复算完成；未将结构指标写成湿实验稳定性或表达效果。
 > - [ ] T-A214 独立单模型主 clean 8/8、Rfam/CHANRG、独占 raw-sequence 速度、最佳结构置信度均经独立复算；未达标项不得勾选。
 > - [ ] T-A215 每 run 台账完整；PPT 副本仅含验收结果，微软雅黑、1.5 行距、无重叠、图文同源、逐页渲染通过，其他页面不改。
 > - [ ] T-A216 确认代码已 push；活跃图源保留、旧件归档有索引；论文每主张均有实验现象和限制支撑。
