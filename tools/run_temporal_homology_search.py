@@ -37,7 +37,7 @@ def main():
         (output / "queries.fasta").write_bytes(fasta.read_bytes())
         manifest = {"status": "PASS_HOMOLOGY_QUERY_PREPARED_EXECUTION_PENDING",
                     "metadata_sha256": metadata_hash, "query_fasta_sha256": hashlib.sha256(fasta.read_bytes()).hexdigest(),
-                    "n_queries": 1131, "source_fasta": str(fasta),
+                    "n_queries": args.expected_count, "source_fasta": str(fasta),
                     "scope": "unique full polymer sequences; no label or homology quality claim"}
         manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
         print(json.dumps(manifest, indent=2))

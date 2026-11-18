@@ -50,3 +50,18 @@ def test_ensembl_target_manifest_is_linked(tmp_path, monkeypatch):
     wrapper.main()
     assert (output / "ensembl_target_manifest.json").read_bytes() == source_manifest.read_bytes()
     assert wrapper.run_pretrain_homology_search.OUTPUT == output
+
+
+def test_prepare_uses_expected_query_count(tmp_path, monkeypatch):
+    fasta = tmp_path / "eligible.fasta"
+    fasta.write_text(">q0|exact_detected=0\n" + "A" * 16 + "\n>q1|exact_detected=1\n" + "C" * 16 + "\n")
+    metadata = tmp_path / "metadata.json"
+    metadata.write_text("{}")
+    monkeypatch.setattr(wrapper.hashlib, "sha256", lambda value: type("Digest", (), {"hexdigest": lambda self: EXPECTED})())
+    output = tmp_path / "evaluation_homology"
+    monkeypatch.setattr(sys, "argv", ["wrapper", "--metadata", str(metadata), "--eligible-fasta", str(fasta),
+                                      "--output-root", str(output), "--prepare-only", "--expected-count", "2"])
+    wrapper.main()
+    manifest = json.loads((output / "query_manifest.json").read_text())
+    assert manifest["n_queries"] == 2
+    assert (output / "queries.fasta").read_bytes() == fasta.read_bytes()
