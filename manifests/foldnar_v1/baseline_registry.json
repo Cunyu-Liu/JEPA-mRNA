@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "created_utc": "2026-11-18T10:35:38.670451+00:00",
-  "n_rows": 15,
+  "created_utc": "2026-11-18T11:16:21.343598+00:00",
+  "n_rows": 18,
   "rows": [
     {
       "model": "xens2",
@@ -30,6 +30,48 @@
       },
       "status": "ARCHIVEII_FULL_BLOCKED",
       "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "best_plan_a",
+      "role": "own_required_single",
+      "version_protocol": "VL0-selected Plan-A seed 0; clean-subset predictions are not raw-complete",
+      "evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json",
+        "exists": true,
+        "bytes": 2115,
+        "sha256": "0640da58811da563d1561c32c8252a2cb21b63ce60e6d9be537363a46553107f",
+        "hash_scope": "full_content"
+      },
+      "status": "LIMITED_CLEAN_SUBSET_RAW_E0_BLOCKED",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "h0",
+      "role": "own_required_ablation",
+      "version_protocol": "H0 scientific ablation; requires the same data and decoding protocol",
+      "evidence": {
+        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "exists": true,
+        "bytes": 9349,
+        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "hash_scope": "full_content"
+      },
+      "status": "BLOCKED_NO_FROZEN_E0_PREDICTIONS",
+      "prediction_registry_scope": "limited/blocked"
+    },
+    {
+      "model": "bpfold",
+      "role": "external_required",
+      "version_protocol": "BPfold raw main-split and Rfam-family per-sequence predictions",
+      "evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw_summary.json",
+        "exists": true,
+        "bytes": 2806,
+        "sha256": "709b565e395b908a944dd0f0eaf479eeafaade49b5b04b872ccbb92ca262c6bb",
+        "hash_scope": "full_content"
+      },
+      "status": "RAW_COMPLETE_MAIN_AND_RFAM",
+      "prediction_registry_scope": "E0 raw"
     },
     {
       "model": "ufold",

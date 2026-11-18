@@ -120,17 +120,25 @@ def dataset_contract_metadata(name: str, role: str) -> dict:
         "label_source": label,
         "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
         "split_provenance": f"frozen JSONL split identity: {name}",
-        "cluster_80_status": "BLOCKED_NOT_COMPUTED",
+        "cluster_80_status": "AVAILABLE_IN_V2_AUDIT; integrate by dataset identity" if name in {
+            "bprna_tr1c", "bprna_vl0", "bprna_new", "bprna_ts0", "archiveii_embok_clean",
+            "testsetb", "rfam_fam", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard",
+        } else "BLOCKED_NOT_COMPUTED_IN_CURRENT_PIPELINE",
+        "cluster_80_evidence_path": str(ART / "manifests/v2/data_audit/data_exposure_audit.json"),
         "modified_parent_mapping": "NOT_AVAILABLE_IN_JSONL",
-        "cleaning_rules": "raw JSONL unchanged; analysis normalizes uppercase and T->U; no pair deletion",
-        "pair_convention": "zero-based inclusive; QA records invalid and crossing pairs without silent repair",
+        "experimental_metadata_policy": "dataset-level label source only; PDB method/resolution/modified bases/ligands require separate per-record audit",
+        "cleaning_rules": "raw JSONL unchanged; analysis normalizes uppercase and T->U; only exact duplicate canonical pairs collapse; no other pair deletion",
+        "pair_convention": "zero-based inclusive; QA records invalid, crossing, partner conflicts and span<4 without silent repair",
+        "min_loop_policy": "span<4 pairs counted and retained; no unannounced minimum-loop deletion",
+        "chanrg_provenance": "hf:multimolecule/chanrg@469835a2c1440bcd11dd40b7325090abe9fc22ad" if name.startswith("chanrg") else None,
+        "chanrg_dedup_status": "PROVENANCE_ONLY; official sequence/structure dedup not independently recomputed" if name.startswith("chanrg") else None,
     }
     if name in CONTRACT_COUNTS:
         metadata["contract_expected_n"] = CONTRACT_COUNTS[name]
     return metadata
 
 
-def build_data_registry() -> list[dict]:
+def build_data_registry(cache_path: Path | None = None) -> list[dict]:
     rows = []
     for name, role, description in data_specs():
         path = JSONL / f"{name}.jsonl"
@@ -154,8 +162,24 @@ def build_data_registry() -> list[dict]:
             rec["status"] = "BLOCKED"
             rec["block_reason"] = "JSONL not found"
         rows.append(rec)
+    # Required contract assets that are not present in the current filesystem inventory
+    # remain explicit BLOCKED rows; nearby Rfam/PDB subsets are not silently substituted.
+    for name, role, description, expected_key, expected_value in (
+        ("pdb_d1_dssr", "auxiliary", "Experimental D1/PDB chains with DSSR and per-record experimental metadata", "contract_expected_n", None),
+        ("temporal_pdb_candidates_1805", "temporal", "Strict post-cutoff PDB candidate set; distinct from the 436-row Rfam temporal file", "contract_expected_n", 1805),
+        ("longchain_7224", "long_chain", "Frozen 7,224-nt long-chain structure and prediction pair", "contract_expected_length", 7224),
+        ("longchain_19000", "long_chain", "Frozen 19,000-nt long-chain structure and prediction pair", "contract_expected_length", 19000),
+    ):
+        if any(row["dataset_id"] == name for row in rows):
+            continue
+        rec = {"dataset_id": name, "role": role, "description": description,
+               **dataset_contract_metadata(name, role), "path": None, "exists": False,
+               "n_sequences": None, "status": "BLOCKED",
+               "block_reason": "required frozen asset not located in the current filesystem inventory",
+               expected_key: expected_value}
+        rows.append(rec)
     # The frozen cache is registered by an index hash, not a misleading partial content hash.
-    cache = Path("/root/rna_jepa_data/embeddings/rinalmo-giga")
+    cache = cache_path if cache_path is not None else Path("/root/rna_jepa_data/embeddings/rinalmo-giga")
     index_rows = []
     if cache.is_dir():
         for p in sorted(cache.rglob("*.npz")):
@@ -207,19 +231,34 @@ def build_prediction_registry() -> list[dict]:
         rows.append(prediction_row("xens2", split, EVAL / "xens2_board_4090" / f"{split}.json"))
         rows.append(prediction_row("rinalmo_2d_s0", split, EVAL / "nb_jev_r2dtr1c_s0_step20000" / split / "result.json"))
         for model, directory in (("ufold", "ufold_mm_corrected"), ("mxfold2", "mxfold2"),
-                                 ("rinalmo_ft", "rinalmo_ft"), ("eternafold", "eternafold")):
+                                 ("rinalmo_ft", "rinalmo_ft"), ("eternafold", "eternafold"), ("bpfold", "bpfold")):
             rows.append(prediction_row(model, split, EXT / directory / "raw" / f"{split}.json"))
-        # The verified full ArchiveII MXfold2 result lives in raw_full.
+        # The verified full ArchiveII MXfold2 result lives in raw_full; BPfold remains raw.
         if split == "archiveii_embok_clean":
-            rows[-3] = prediction_row("mxfold2", split, EXT / "mxfold2" / "raw_full" / f"{split}.json")
+            rows[-4] = prediction_row("mxfold2", split, EXT / "mxfold2" / "raw_full" / f"{split}.json")
     for split in CHANRG_SPLITS:
         rows.append(prediction_row("xens2", split, EVAL / split / "xens2" / "result.json"))
         rows.append(prediction_row("rinalmo_2d_s0", split, EVAL / split / "r2d" / "result.json"))
         rows.append(prediction_row("chanrg_ens3", split, EVAL / "chanrg_ens3_gt" / split / "result.json"))
     for repeat in range(3):
         rows.append(prediction_row("xens2", "rfam_fam", EVAL / "round42_rfam" / "xens2" / f"repeat{repeat}.json", repeat))
+    rows.append(prediction_row("bpfold", "rfam_fam", EXT.parent / "round43_bpfold_rfam" / "rfam_fam.json"))
     rows.append({"prediction_id": "xens2/rfam_temporal", "model": "xens2", "split": "rfam_temporal",
                  "repeat": None, "status": "BLOCKED", "block_reason": "no frozen per-sequence prediction found"})
+    # Raw-complete Plan-A predictions are not registered by the available clean-subset
+    # files. VL0 selects seed 0 (student_gt_f1_mean 0.6975006228); retain that evidence
+    # without treating the 5,386/5,388 bpRNA-new subset as raw-complete coverage.
+    for model in ("best_plan_a", "h0"):
+        for split in MAIN_SPLITS:
+            rec = {"prediction_id": f"{model}/{split}", "model": model, "split": split,
+                   "repeat": None, "path": None, "exists": False, "n_sequences": None,
+                   "status": "BLOCKED",
+                   "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"}
+            if model == "best_plan_a":
+                limited = EXT.parent / "round39_xens2" / "plana_s0" / "clean" / f"{split}.json"
+                rec["limited_clean_subset_evidence"] = file_info(limited)
+                rec["selection_evidence"] = str(EXT.parent / "round39_xens2" / "qa" / "xens2_plana_distill_s0_vl0" / "qa_summary.json")
+            rows.append(rec)
     return rows
 
 
@@ -230,6 +269,12 @@ def build_baseline_registry() -> list[dict]:
          ART / "artifacts/p0/xens2_bprna_new_replay/run_manifest.json", "COMPLETE_RAW"),
         ("rinalmo_2d_s0", "own_best_single", "RiNALMo-2D frozen embedding downstream model",
          ART / "manifests/p0/xens2_r2d_identity.json", "ARCHIVEII_FULL_BLOCKED"),
+        ("best_plan_a", "own_required_single", "VL0-selected Plan-A seed 0; clean-subset predictions are not raw-complete",
+         EXT.parent / "round39_xens2" / "qa" / "xens2_plana_distill_s0_vl0" / "qa_summary.json", "LIMITED_CLEAN_SUBSET_RAW_E0_BLOCKED"),
+        ("h0", "own_required_ablation", "H0 scientific ablation; requires the same data and decoding protocol",
+         REPO / "records/BASELINE_RESULTS.md", "BLOCKED_NO_FROZEN_E0_PREDICTIONS"),
+        ("bpfold", "external_required", "BPfold raw main-split and Rfam-family per-sequence predictions",
+         EXT / "bpfold" / "raw_summary.json", "RAW_COMPLETE_MAIN_AND_RFAM"),
         ("ufold", "external_replay", "MultiMolecule conversion; official-weight provenance limitation retained",
          source / "appendix_leakage/round39_ufold_raw_summary.json", "RAW_COMPLETE_CLEAN_BLOCKED"),
         ("mxfold2", "external_replay", "Official MXfold2 raw full-length replay",
@@ -274,14 +319,25 @@ def main() -> int:
     parser.add_argument("--repo", type=Path, default=REPO)
     parser.add_argument("--artifact-root", type=Path, default=ART)
     parser.add_argument("--out-phase", default="phase0")
+    parser.add_argument("--refresh-registries", action="store_true",
+                        help="Write corrected registries with a backup; the output phase itself remains write-once.")
     args = parser.parse_args()
     out = args.artifact_root / "artifacts/foldnar_v1" / args.out_phase
     manifests = args.repo / "manifests/foldnar_v1"
     targets = [manifests / name for name in ("data_registry.json", "prediction_registry.json", "baseline_registry.json")]
-    targets.append(out / "environment.json")
-    if any(p.exists() for p in targets):
-        raise FileExistsError("refusing to overwrite a frozen Phase-0 registry")
+    environment_path = out / "environment.json"
+    targets.append(environment_path)
+    if environment_path.exists():
+        raise FileExistsError("refusing to overwrite a frozen Phase-0 environment/output phase")
+    if any(p.exists() for p in targets[:3]) and not args.refresh_registries:
+        raise FileExistsError("refusing to overwrite frozen Phase-0 registries without --refresh-registries")
     out.mkdir(parents=True, exist_ok=True)
+    if args.refresh_registries:
+        backup = out / "registry_backup"
+        backup.mkdir(parents=True, exist_ok=False)
+        for path in targets[:3]:
+            if path.exists():
+                shutil.copy2(path, backup / path.name)
     manifests.mkdir(parents=True, exist_ok=True)
 
     data = build_data_registry()
@@ -296,7 +352,7 @@ def main() -> int:
     verification = {
         "data": {
             "declared_rows": len(data),
-            "jsonl_parse_total": sum(r.get("n_sequences", 0) for r in data),
+            "jsonl_parse_total": sum((r.get("n_sequences") or 0) for r in data),
             "binary_newline_total": sum(r.get("count_verification", {}).get("binary_newlines", 0) for r in data),
             "reloaded_rows": len(json.loads(targets[0].read_text())["rows"]),
             "mismatches": [r["dataset_id"] for r in data if r.get("status") == "QA_MISMATCH"],
@@ -305,7 +361,7 @@ def main() -> int:
             "declared_rows": len(predictions),
             "frozen_rows": sum(r["status"] == "FROZEN" for r in predictions),
             "blocked_rows": sum(r["status"] == "BLOCKED" for r in predictions),
-            "per_sequence_total": sum(r.get("n_sequences", 0) for r in predictions),
+            "per_sequence_total": sum((r.get("n_sequences") or 0) for r in predictions),
             "reloaded_rows": len(json.loads(targets[1].read_text())["rows"]),
             "mismatches": [r["prediction_id"] for r in predictions if r.get("status") == "QA_MISMATCH"],
         },

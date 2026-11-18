@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "created_utc": "2026-11-18T10:35:38.668540+00:00",
-  "n_rows": 64,
+  "created_utc": "2026-11-18T11:16:21.342122+00:00",
+  "n_rows": 89,
   "rows": [
     {
       "prediction_id": "xens2/archiveii_embok_clean",
@@ -118,6 +118,27 @@
       "prediction_schema": "per_sequence",
       "model_metadata": {
         "system": "EternaFold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
+      "prediction_id": "bpfold/archiveii_embok_clean",
+      "model": "bpfold",
+      "split": "archiveii_embok_clean",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/archiveii_embok_clean.json",
+      "exists": true,
+      "bytes": 7361095,
+      "sha256": "e47f901ddafd60722787b4ed39d450d8e03ef721fc46afd04faf9fcd40ac2ab2",
+      "hash_scope": "full_content",
+      "n_sequences": 2544,
+      "n_sequences_field": 2544,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
       },
       "count_consistent": true,
       "status": "FROZEN"
@@ -254,6 +275,27 @@
       "status": "FROZEN"
     },
     {
+      "prediction_id": "bpfold/bprna_new",
+      "model": "bpfold",
+      "split": "bprna_new",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/bprna_new.json",
+      "exists": true,
+      "bytes": 8386850,
+      "sha256": "9832e97bcb5e6879e57a317ef560dd1ca364b11a48575b3f89cd9c94c773255a",
+      "hash_scope": "full_content",
+      "n_sequences": 5388,
+      "n_sequences_field": 5388,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
       "prediction_id": "xens2/bprna_ts0",
       "model": "xens2",
       "split": "bprna_ts0",
@@ -380,6 +422,27 @@
       "prediction_schema": "per_sequence",
       "model_metadata": {
         "system": "EternaFold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
+      "prediction_id": "bpfold/bprna_ts0",
+      "model": "bpfold",
+      "split": "bprna_ts0",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/bprna_ts0.json",
+      "exists": true,
+      "bytes": 2347705,
+      "sha256": "89f6ecdb87141dbd11fc8e8c390e7649fc2edffee3497c5351a01eabca2db50c",
+      "hash_scope": "full_content",
+      "n_sequences": 1288,
+      "n_sequences_field": 1288,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
       },
       "count_consistent": true,
       "status": "FROZEN"
@@ -516,6 +579,27 @@
       "status": "FROZEN"
     },
     {
+      "prediction_id": "bpfold/ref_pdb_ts1",
+      "model": "bpfold",
+      "split": "ref_pdb_ts1",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/ref_pdb_ts1.json",
+      "exists": true,
+      "bytes": 81303,
+      "sha256": "332ff7937115abf13b1d26df020974645daea85a587ace4baa3d0384b07a266a",
+      "hash_scope": "full_content",
+      "n_sequences": 63,
+      "n_sequences_field": 63,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
       "prediction_id": "xens2/ref_pdb_ts2",
       "model": "xens2",
       "split": "ref_pdb_ts2",
@@ -642,6 +726,27 @@
       "prediction_schema": "per_sequence",
       "model_metadata": {
         "system": "EternaFold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
+      "prediction_id": "bpfold/ref_pdb_ts2",
+      "model": "bpfold",
+      "split": "ref_pdb_ts2",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/ref_pdb_ts2.json",
+      "exists": true,
+      "bytes": 41452,
+      "sha256": "080119591c2c27f33b6ee8443d3d7a431a4f0ff0f10a9b722fc7fb1a7be828c2",
+      "hash_scope": "full_content",
+      "n_sequences": 39,
+      "n_sequences_field": 39,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
       },
       "count_consistent": true,
       "status": "FROZEN"
@@ -778,6 +883,27 @@
       "status": "FROZEN"
     },
     {
+      "prediction_id": "bpfold/ref_pdb_ts3",
+      "model": "bpfold",
+      "split": "ref_pdb_ts3",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/ref_pdb_ts3.json",
+      "exists": true,
+      "bytes": 27053,
+      "sha256": "9de5934ab49a4a00f2a68c3b08edb7e8d69771b9fa49e6322768ce0a551e09c8",
+      "hash_scope": "full_content",
+      "n_sequences": 19,
+      "n_sequences_field": 19,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
       "prediction_id": "xens2/ref_pdb_ts_hard",
       "model": "xens2",
       "split": "ref_pdb_ts_hard",
@@ -909,6 +1035,27 @@
       "status": "FROZEN"
     },
     {
+      "prediction_id": "bpfold/ref_pdb_ts_hard",
+      "model": "bpfold",
+      "split": "ref_pdb_ts_hard",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/ref_pdb_ts_hard.json",
+      "exists": true,
+      "bytes": 32401,
+      "sha256": "dc5ee89d6c5c5bfbf6b813f19930213c55aa3a07314c838b3426536f1879ae57",
+      "hash_scope": "full_content",
+      "n_sequences": 28,
+      "n_sequences_field": 28,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
       "prediction_id": "xens2/testsetb",
       "model": "xens2",
       "split": "testsetb",
@@ -1035,6 +1182,27 @@
       "prediction_schema": "per_sequence",
       "model_metadata": {
         "system": "EternaFold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
+      "prediction_id": "bpfold/testsetb",
+      "model": "bpfold",
+      "split": "testsetb",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/testsetb.json",
+      "exists": true,
+      "bytes": 679673,
+      "sha256": "b1024d3af6f90d316a495e76a0338691539f791b0d1ee4d305207ff1bf1c36c2",
+      "hash_scope": "full_content",
+      "n_sequences": 428,
+      "n_sequences_field": 428,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
       },
       "count_consistent": true,
       "status": "FROZEN"
@@ -1398,12 +1566,273 @@
       "status": "FROZEN"
     },
     {
+      "prediction_id": "bpfold/rfam_fam",
+      "model": "bpfold",
+      "split": "rfam_fam",
+      "repeat": null,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round43_bpfold_rfam/rfam_fam.json",
+      "exists": true,
+      "bytes": 17417789,
+      "sha256": "7e2f6a2f900c2c241d212493bee647e74e28d8484f20837ead7142223a0a67e9",
+      "hash_scope": "full_content",
+      "n_sequences": 10790,
+      "n_sequences_field": 10790,
+      "n_skipped": null,
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl",
+      "prediction_schema": "per_sequence",
+      "model_metadata": {
+        "system": "BPfold"
+      },
+      "count_consistent": true,
+      "status": "FROZEN"
+    },
+    {
       "prediction_id": "xens2/rfam_temporal",
       "model": "xens2",
       "split": "rfam_temporal",
       "repeat": null,
       "status": "BLOCKED",
       "block_reason": "no frozen per-sequence prediction found"
+    },
+    {
+      "prediction_id": "best_plan_a/archiveii_embok_clean",
+      "model": "best_plan_a",
+      "split": "archiveii_embok_clean",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/archiveii_embok_clean.json",
+        "exists": true,
+        "bytes": 1973314,
+        "sha256": "bd75c6650ba79e72485ef83bce19b1aaff51b8c633b78e14371af53203615cb9",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "best_plan_a/bprna_new",
+      "model": "best_plan_a",
+      "split": "bprna_new",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/bprna_new.json",
+        "exists": true,
+        "bytes": 3183735,
+        "sha256": "7527d9ea9e4377cb396cc5dda399b29ff061db39a638ddeb9ba1efec6055949f",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "best_plan_a/bprna_ts0",
+      "model": "best_plan_a",
+      "split": "bprna_ts0",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/bprna_ts0.json",
+        "exists": true,
+        "bytes": 609531,
+        "sha256": "1565f0ad8e9e29bf651425e82a52433269ae3f19d50574907169612b67a9c559",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "best_plan_a/ref_pdb_ts1",
+      "model": "best_plan_a",
+      "split": "ref_pdb_ts1",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/ref_pdb_ts1.json",
+        "exists": true,
+        "bytes": 12333,
+        "sha256": "e4f7f8894d894c7d319a753ad17d08be56abf90c1ef32696241871d8eca0ec87",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "best_plan_a/ref_pdb_ts2",
+      "model": "best_plan_a",
+      "split": "ref_pdb_ts2",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/ref_pdb_ts2.json",
+        "exists": true,
+        "bytes": 14763,
+        "sha256": "f9f58e6b9fe4d14a17e8b9e89948e687911e5b5a84c3c7895b6a199a0595e186",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "best_plan_a/ref_pdb_ts3",
+      "model": "best_plan_a",
+      "split": "ref_pdb_ts3",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/ref_pdb_ts3.json",
+        "exists": true,
+        "bytes": 4970,
+        "sha256": "967707f4b11be4330ff21d6b264538282966c40756a0bd3717bbcaff78e16d2d",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "best_plan_a/ref_pdb_ts_hard",
+      "model": "best_plan_a",
+      "split": "ref_pdb_ts_hard",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/ref_pdb_ts_hard.json",
+        "exists": true,
+        "bytes": 5522,
+        "sha256": "6efef449307f4e1e1fe5d009006da6fdd4165b2df88f2766dd7b5b7808b3f107",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "best_plan_a/testsetb",
+      "model": "best_plan_a",
+      "split": "testsetb",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
+      "limited_clean_subset_evidence": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/plana_s0/clean/testsetb.json",
+        "exists": true,
+        "bytes": 206649,
+        "sha256": "32aeaaf1a423e3302a9fb6d948fc95f7f8c23b035a26793e2de1266825566fdc",
+        "hash_scope": "full_content"
+      },
+      "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json"
+    },
+    {
+      "prediction_id": "h0/archiveii_embok_clean",
+      "model": "h0",
+      "split": "archiveii_embok_clean",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
+    },
+    {
+      "prediction_id": "h0/bprna_new",
+      "model": "h0",
+      "split": "bprna_new",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
+    },
+    {
+      "prediction_id": "h0/bprna_ts0",
+      "model": "h0",
+      "split": "bprna_ts0",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
+    },
+    {
+      "prediction_id": "h0/ref_pdb_ts1",
+      "model": "h0",
+      "split": "ref_pdb_ts1",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
+    },
+    {
+      "prediction_id": "h0/ref_pdb_ts2",
+      "model": "h0",
+      "split": "ref_pdb_ts2",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
+    },
+    {
+      "prediction_id": "h0/ref_pdb_ts3",
+      "model": "h0",
+      "split": "ref_pdb_ts3",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
+    },
+    {
+      "prediction_id": "h0/ref_pdb_ts_hard",
+      "model": "h0",
+      "split": "ref_pdb_ts_hard",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
+    },
+    {
+      "prediction_id": "h0/testsetb",
+      "model": "h0",
+      "split": "testsetb",
+      "repeat": null,
+      "path": null,
+      "exists": false,
+      "n_sequences": null,
+      "status": "BLOCKED",
+      "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories"
     }
   ]
 }
