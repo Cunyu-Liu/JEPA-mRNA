@@ -7,7 +7,8 @@ class PriorAlignmentScienceTests(unittest.TestCase):
     def test_prf_zero_denominator_semantics(self):
         self.assertEqual(prf(0, 0, 0), {"tp": 0, "fp": 0, "fn": 0,
                                         "precision": 1.0, "recall": 1.0, "f1": 1.0})
-        self.assertEqual(prf(0, 2, 0)["recall"], 1.0)
+        # Match the frozen pair_decode_audit/prior_structure_metrics convention.
+        self.assertEqual(prf(0, 2, 0)["recall"], 0.0)
         self.assertEqual(prf(0, 0, 2)["precision"], 0.0)
 
     def test_pair_cleaning_rejects_crossing_and_conflict(self):
