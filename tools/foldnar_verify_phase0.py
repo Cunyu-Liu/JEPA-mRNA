@@ -44,6 +44,11 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+def final_e1_allowed(final: dict):
+    """Read both the current nested schema and the early flat schema."""
+    return final.get("final_decision", final).get("e1_allowed")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=Path("/home/rna_jev_xens2_dualview_round56"))
@@ -152,13 +157,18 @@ def main() -> int:
     final_path = args.artifact_root / "artifacts/foldnar_v1/e0_expanded/final_scientific_decision.json"
     if final_path.is_file():
         final = json.loads(final_path.read_text())
-        check("e1_remains_false", final.get("e1_allowed") is False, final.get("reason_code"))
+        check("e1_remains_false", final_e1_allowed(final) is False,
+              final.get("final_decision", final).get("reason_code"))
 
     failed = [c for c in checks if not c["pass"]]
     out = args.out or args.artifact_root / "artifacts/foldnar_v1" / args.phase / "independent_registry_verification.json"
+    if out.exists():
+        raise FileExistsError(f"refusing to overwrite verification report: {out}")
     report = {
         "schema_version": 1, "created_utc": datetime.now(timezone.utc).isoformat(),
         "status": "PASS" if not failed else "FAIL", "generator_imported": False,
+        "verifier_code": {"path": str(Path(__file__).resolve()), "sha256": sha256(Path(__file__).resolve())},
+        "generator_environment": {"path": str(environment_path), "sha256": sha256(environment_path) if environment_path.is_file() else None},
         "n_checks": len(checks), "n_failed": len(failed), "failed_checks": failed,
         "counts": {"data": len(data), "predictions": len(predictions), "baselines": len(baselines),
                    "historical": len(HISTORICAL), "main_board": len(MAIN), "chanrg": len(CHANRG),

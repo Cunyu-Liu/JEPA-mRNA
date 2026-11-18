@@ -111,6 +111,12 @@ def test_bidirectional_registry_links() -> None:
     assert "rinalmo_giga_unet" in next(row for row in data if row["dataset_id"] == "chanrg_train_train")["training_baseline_ids"]
 
 
+def test_final_decision_schema_compatibility() -> None:
+    from foldnar_verify_phase0 import final_e1_allowed
+    assert final_e1_allowed({"final_decision": {"e1_allowed": False}}) is False
+    assert final_e1_allowed({"e1_allowed": True}) is True
+
+
 def test_existing_cluster_audit_is_registered_not_relabelled_clean() -> None:
     row = dataset_contract_metadata("bprna_vl0", "val")
     assert row["cluster_80_status"].startswith("AVAILABLE_IN_V2_AUDIT")
