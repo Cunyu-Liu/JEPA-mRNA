@@ -177,6 +177,24 @@ def build_data_registry(cache_path: Path | None = None) -> list[dict]:
                "n_sequences": None, "status": "BLOCKED",
                "block_reason": "required frozen asset not located in the current filesystem inventory",
                expected_key: expected_value}
+        if name in {"pdb_d1_dssr", "temporal_pdb_candidates_1805"}:
+            temporal = ART / "artifacts/v2/temporal_structure"
+            evidence_names = ("label_collection_qa.json", "metadata_independent_qa.json", "evaluation_sequences.json")
+            evidence_paths = [temporal / item for item in evidence_names]
+            if all(path.is_file() for path in evidence_paths):
+                label_qa = json.loads(evidence_paths[0].read_text())
+                evaluation = json.loads(evidence_paths[2].read_text())
+                dssr_root = temporal / "full_labels_v1"
+                rec.update({
+                    "path": str(evidence_paths[0]), "exists": True,
+                    "raw_asset_status": "LOCATED_QA_BLOCKED",
+                    "raw_dssr_root": str(dssr_root),
+                    "n_dssr_entries": sum(path.is_dir() for path in dssr_root.iterdir()) if dssr_root.is_dir() else 0,
+                    "n_unique_evaluation_sequences": evaluation.get("n_unique_evaluation_sequences"),
+                    "n_evaluation_chains": evaluation.get("n_chains"),
+                    "raw_asset_evidence": [file_info(path) for path in evidence_paths],
+                    "block_reason": f"Raw mmCIF/DSSR and metadata are located, but {label_qa.get('status')} and no contract-frozen JSONL/prediction pair or complete PDB-evaluation mapping is authorized.",
+                })
         rows.append(rec)
     # The frozen cache is registered by an index hash, not a misleading partial content hash.
     cache = cache_path if cache_path is not None else Path("/root/rna_jepa_data/embeddings/rinalmo-giga")

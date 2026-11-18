@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "created_utc": "2026-11-18T11:16:21.341102+00:00",
+  "created_utc": "2026-11-18T11:29:09.586106+00:00",
   "n_rows": 31,
   "rows": [
     {
@@ -910,12 +910,40 @@
       "min_loop_policy": "span<4 pairs counted and retained; no unannounced minimum-loop deletion",
       "chanrg_provenance": null,
       "chanrg_dedup_status": null,
-      "path": null,
-      "exists": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/label_collection_qa.json",
+      "exists": true,
       "n_sequences": null,
       "status": "BLOCKED",
-      "block_reason": "required frozen asset not located in the current filesystem inventory",
-      "contract_expected_n": null
+      "block_reason": "Raw mmCIF/DSSR and metadata are located, but BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS and no contract-frozen JSONL/prediction pair or complete PDB-evaluation mapping is authorized.",
+      "contract_expected_n": null,
+      "raw_asset_status": "LOCATED_QA_BLOCKED",
+      "raw_dssr_root": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/full_labels_v1",
+      "n_dssr_entries": 1805,
+      "n_unique_evaluation_sequences": 731,
+      "n_evaluation_chains": 2930,
+      "raw_asset_evidence": [
+        {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/label_collection_qa.json",
+          "exists": true,
+          "bytes": 353852,
+          "sha256": "5b57831a973aee12fa6411711f621c1517c2c0bb0b3f4b98e9a70e154d6ab1c6",
+          "hash_scope": "full_content"
+        },
+        {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/metadata_independent_qa.json",
+          "exists": true,
+          "bytes": 1488,
+          "sha256": "54f014707e285a2ed5f1e56e52780b23c5c389f7a23df72b599e91ebae5f8fea",
+          "hash_scope": "full_content"
+        },
+        {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/evaluation_sequences.json",
+          "exists": true,
+          "bytes": 1423668,
+          "sha256": "f03efde106a6b0f8f5577187da7a39706e2a423221eed6103f65753b8d01d333",
+          "hash_scope": "full_content"
+        }
+      ]
     },
     {
       "dataset_id": "temporal_pdb_candidates_1805",
@@ -934,12 +962,40 @@
       "min_loop_policy": "span<4 pairs counted and retained; no unannounced minimum-loop deletion",
       "chanrg_provenance": null,
       "chanrg_dedup_status": null,
-      "path": null,
-      "exists": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/label_collection_qa.json",
+      "exists": true,
       "n_sequences": null,
       "status": "BLOCKED",
-      "block_reason": "required frozen asset not located in the current filesystem inventory",
-      "contract_expected_n": 1805
+      "block_reason": "Raw mmCIF/DSSR and metadata are located, but BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS and no contract-frozen JSONL/prediction pair or complete PDB-evaluation mapping is authorized.",
+      "contract_expected_n": 1805,
+      "raw_asset_status": "LOCATED_QA_BLOCKED",
+      "raw_dssr_root": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/full_labels_v1",
+      "n_dssr_entries": 1805,
+      "n_unique_evaluation_sequences": 731,
+      "n_evaluation_chains": 2930,
+      "raw_asset_evidence": [
+        {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/label_collection_qa.json",
+          "exists": true,
+          "bytes": 353852,
+          "sha256": "5b57831a973aee12fa6411711f621c1517c2c0bb0b3f4b98e9a70e154d6ab1c6",
+          "hash_scope": "full_content"
+        },
+        {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/metadata_independent_qa.json",
+          "exists": true,
+          "bytes": 1488,
+          "sha256": "54f014707e285a2ed5f1e56e52780b23c5c389f7a23df72b599e91ebae5f8fea",
+          "hash_scope": "full_content"
+        },
+        {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure/evaluation_sequences.json",
+          "exists": true,
+          "bytes": 1423668,
+          "sha256": "f03efde106a6b0f8f5577187da7a39706e2a423221eed6103f65753b8d01d333",
+          "hash_scope": "full_content"
+        }
+      ]
     },
     {
       "dataset_id": "longchain_7224",
