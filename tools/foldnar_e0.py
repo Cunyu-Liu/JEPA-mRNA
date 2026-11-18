@@ -20,6 +20,22 @@ from rnajepa.fold_structure import StructureError, loop_diagram, pair_prf, struc
 REPO = Path("/home/rna_jev_xens2_dualview_round56")
 ART = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56")
 MAIN_SPLITS = {"archiveii_embok_clean", "bprna_new", "bprna_ts0", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb"}
+PAIR_SPAN_BINS = (("0_3", 0, 4), ("4_9", 4, 10), ("10_24", 10, 25), ("25_49", 25, 50),
+                  ("50_99", 50, 100), ("100_199", 100, 200), ("200_plus", 200, None))
+
+
+def pair_span_confusion(raw_pred, raw_truth):
+    pred = {tuple(sorted(map(int, pair))) for pair in raw_pred}
+    truth = {tuple(sorted(map(int, pair))) for pair in raw_truth}
+    output = {}
+    for label, lower, upper in PAIR_SPAN_BINS:
+        inside = lambda pair: (pair[1] - pair[0]) >= lower and (upper is None or (pair[1] - pair[0]) < upper)
+        output[label] = {
+            "tp": sum(1 for pair in pred & truth if inside(pair)),
+            "fp": sum(1 for pair in pred - truth if inside(pair)),
+            "fn": sum(1 for pair in truth - pred if inside(pair)),
+        }
+    return output
 
 
 def sha256(path: Path) -> str:
@@ -110,6 +126,7 @@ def evaluate_join(pred_spec: dict, data_path: str) -> dict:
         base = {
             "prediction_id": pred_spec["prediction_id"], "model": pred_spec["model"], "split": pred_spec["split"],
             "repeat": pred_spec.get("repeat"), "name": name, "length": len(t["seq"]), "family": t["family"],
+            "sequence_sha256": hashlib.sha256(t["seq"].encode()).hexdigest(),
             "clan": t["clan"], "architecture": t["architecture"], "status": "OK", "error": None,
             "join_method": join_metadata["method"],
         }
@@ -121,17 +138,21 @@ def evaluate_join(pred_spec: dict, data_path: str) -> dict:
             base["loop_types"] = metrics["loop_types"]
             base["multiloop"] = metrics["multiloop"]
             base["junction"] = metrics["junction"]
+            base["wiring"] = metrics["wiring"]
             base["topology"] = metrics["topology"]
+            base["pair_span_confusion"] = pair_span_confusion(p["pairs"], t["pairs"])
             base["n_pred_pairs"] = metrics["n_pred_pairs"]
             base["n_truth_pairs"] = metrics["n_truth_pairs"]
             base["n_pred_stems"] = metrics["n_pred_stems"]
             base["n_truth_stems"] = metrics["n_truth_stems"]
             base["pair_f1_minus_topology_f1"] = metrics["pair"]["f1"] - metrics["topology"]["f1"]
+            base["pair_f1_minus_wiring_f1"] = metrics["pair"]["f1"] - metrics["wiring"]["f1"]
             base["dominant_pair_error"] = "FN" if metrics["pair"]["fn"] > metrics["pair"]["fp"] else "FP" if metrics["pair"]["fp"] > metrics["pair"]["fn"] else "BALANCED"
             base["dominant_stem_error"] = "FN" if metrics["stem"]["fn"] > metrics["stem"]["fp"] else "FP" if metrics["stem"]["fp"] > metrics["stem"]["fn"] else "BALANCED"
             severity = max(base["pair_f1_minus_topology_f1"], 1 - metrics["topology"]["f1"], 1 - metrics["stem"]["f1"])
             candidates.append({"severity": severity, "split": pred_spec["split"], "model": pred_spec["model"],
-                               "prediction_id": pred_spec["prediction_id"], "name": name, "metrics": metrics,
+                               "prediction_id": pred_spec["prediction_id"], "repeat": pred_spec.get("repeat"), "name": name,
+                               "metrics": metrics, "pair_span_confusion": base["pair_span_confusion"],
                                "sequence": t["seq"], "truth_pairs": t["pairs"], "pred_pairs": p["pairs"],
                                "truth_diagram": loop_diagram(t["pairs"], len(t["seq"])),
                                "pred_diagram": loop_diagram(p["pairs"], len(t["seq"]))})
@@ -141,6 +162,7 @@ def evaluate_join(pred_spec: dict, data_path: str) -> dict:
             base["error"] = str(exc)
             try:
                 base["pair"] = pair_prf(p["pairs"], t["pairs"])
+                base["pair_span_confusion"] = pair_span_confusion(p["pairs"], t["pairs"])
                 base["pair_f1_minus_topology_f1"] = None
                 counts["pair_only"] += 1
             except Exception as pair_exc:
@@ -192,30 +214,37 @@ def summarize_rows(rows: list[dict], pred_spec: dict) -> dict:
         "loop_f1": _mean(valid, "loop", "f1"),
         "multiloop_f1": _mean(valid, "multiloop", "f1"),
         "junction_f1": _mean(valid, "junction", "f1"),
+        "wiring_f1": _mean(valid, "wiring", "f1"),
         "topology_f1": _mean(valid, "topology", "f1"),
         "topology_exact": _mean(valid, "topology", "exact"),
         "topology_ged": _mean(valid, "topology", "ged"),
         "topology_normalized_ged": _mean(valid, "topology", "normalized_ged"),
         "pair_f1_minus_topology_f1": _mean(valid, "pair", "f1") - _mean(valid, "topology", "f1") if valid else None,
+        "pair_f1_minus_wiring_f1": _mean(valid, "pair", "f1") - _mean(valid, "wiring", "f1") if valid else None,
     }
     for kind in ("external", "hairpin", "internal", "bulge", "multiloop"):
         values = [r["loop_types"][kind.upper()]["f1"] for r in valid]
         macro[f"{kind}_loop_f1"] = float(np.mean(values)) if values else None
+    pair_span_micro = {}
+    for label, _, _ in PAIR_SPAN_BINS:
+        selected = [{"counts": r["pair_span_confusion"][label]} for r in pair_rows]
+        pair_span_micro[label] = _micro(selected, "counts")
     return {
         "prediction_id": pred_spec["prediction_id"], "model": pred_spec["model"], "split": pred_spec["split"],
         "repeat": pred_spec.get("repeat"), "n_rows": len(rows), "n_structure_valid": len(valid),
         "structure_valid_fraction": len(valid) / len(rows) if rows else 0,
         "macro": macro,
         "micro": {section: _micro(valid if section != "pair" else pair_rows, section)
-                  for section in ("pair", "stem", "loop", "multiloop", "junction")},
+                  for section in ("pair", "stem", "loop", "multiloop", "junction", "wiring")},
+        "pair_span_micro": pair_span_micro,
         "dominant_pair_errors": dict(Counter(r.get("dominant_pair_error") for r in valid)),
         "dominant_stem_errors": dict(Counter(r.get("dominant_stem_error") for r in valid)),
     }
 
 
 def flatten_row(row: dict) -> dict:
-    flat = {k: v for k, v in row.items() if k not in {"pair", "stem", "loop", "loop_types", "multiloop", "junction", "topology"}}
-    for section in ("pair", "stem", "loop", "multiloop", "junction"):
+    flat = {k: v for k, v in row.items() if k not in {"pair", "stem", "loop", "loop_types", "multiloop", "junction", "wiring", "topology", "pair_span_confusion"}}
+    for section in ("pair", "stem", "loop", "multiloop", "junction", "wiring"):
         for field in ("tp", "fp", "fn", "precision", "recall", "f1"):
             flat[f"{section}_{field}"] = row.get(section, {}).get(field)
     for kind in ("EXTERNAL", "HAIRPIN", "INTERNAL", "BULGE", "MULTILOOP"):
@@ -223,7 +252,40 @@ def flatten_row(row: dict) -> dict:
             flat[f"loop_{kind.lower()}_{field}"] = row.get("loop_types", {}).get(kind, {}).get(field)
     for field in ("ged", "normalized_ged", "f1", "exact", "n_pred_nodes", "n_truth_nodes"):
         flat[f"topology_{field}"] = row.get("topology", {}).get(field)
+    for label, _, _ in PAIR_SPAN_BINS:
+        for field in ("tp", "fp", "fn"):
+            flat[f"pair_span_{label}_{field}"] = row.get("pair_span_confusion", {}).get(label, {}).get(field)
     return flat
+
+
+def select_preregistered_helix_junction_cases(candidates):
+    rule = {
+        "name": "high_helix_f1_with_junction_error",
+        "eligibility": "status=OK; repeat is null or 0; stem_f1>=0.80; junction_f1<0.80",
+        "ranking_within_split": ["junction_f1 ascending", "stem_f1 descending", "topology_ged descending", "model ascending", "name ascending"],
+        "allocation": "round-robin by sorted split; at most 3 per split; at most 30 total",
+        "interpretation_limit": "High stem-F1 is not exact helix identity; cases are diagnostic examples, not proof that wiring dominates.",
+    }
+    groups = {}
+    for case in candidates:
+        if case.get("repeat") not in (None, 0):
+            continue
+        metrics = case["metrics"]
+        if metrics["stem"]["f1"] >= 0.80 and metrics["junction"]["f1"] < 0.80:
+            groups.setdefault(case["split"], []).append(case)
+    for values in groups.values():
+        values.sort(key=lambda c: (c["metrics"]["junction"]["f1"], -c["metrics"]["stem"]["f1"],
+                                   -c["metrics"]["topology"]["ged"], c["model"], c["name"]))
+    selected = []
+    depth = 0
+    while len(selected) < 30 and depth < 3:
+        for split in sorted(groups):
+            if depth < len(groups[split]) and len(selected) < 30:
+                selected.append(groups[split][depth])
+        depth += 1
+    for rank, case in enumerate(selected, 1):
+        case["preregistered_case_rank"] = rank
+    return selected, rule
 
 
 def decide_gate(runs: list[dict], leakage_path: Path) -> dict:
@@ -335,17 +397,23 @@ def main() -> int:
     difficult = sorted(best_by_sequence.values(), key=lambda x: (-x["severity"], x["split"], x["name"]))[:30]
     for rank, case in enumerate(difficult, 1):
         case["case_rank"] = rank
+    preregistered_cases, preregistered_rule = select_preregistered_helix_junction_cases(candidates)
     payload = {"schema_version": 1, "created_utc": datetime.now(timezone.utc).isoformat(),
                "code_sha256": sha256(Path(__file__)), "structure_code_sha256": sha256(args.repo / "src/rnajepa/fold_structure.py"),
                "prediction_registry_sha256": sha256(args.repo / "manifests/foldnar_v1/prediction_registry.json"),
+               "pair_span_bins": [{"label": label, "lower_inclusive": lower, "upper_exclusive": upper} for label, lower, upper in PAIR_SPAN_BINS],
                "n_prediction_runs": len(runs), "n_per_sequence_rows": len(rows), "runs": runs,
-               "difficult_cases": difficult, "n_difficult_cases": len(difficult)}
+               "difficult_cases": difficult, "n_difficult_cases": len(difficult),
+               "preregistered_case_rule": preregistered_rule,
+               "preregistered_helix_junction_cases": preregistered_cases,
+               "n_preregistered_helix_junction_cases": len(preregistered_cases)}
     (out / "e0_error_decomposition.json").write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
     gate = decide_gate(runs, args.artifact_root / "artifacts/foldnar_v1/phase1/leakage_matrix.json")
     gate["code_sha256"] = payload["code_sha256"]
     gate["e0_summary_sha256"] = sha256(out / "e0_error_decomposition.json")
     (out / "e0_gate_decision.json").write_text(json.dumps(gate, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({"status": "COMPLETE", "runs": len(runs), "rows": len(rows), "difficult_cases": len(difficult),
+                      "preregistered_helix_junction_cases": len(preregistered_cases),
                       "e0_decision": gate["e0_decision"], "execution_decision": gate["execution_decision"],
                       "out": str(out)}, indent=2), flush=True)
     return 0

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -17,6 +18,16 @@ from foldnar_e0 import load_predictions, load_truth, summarize_rows, verified_po
 
 REPO = Path("/home/rna_jev_xens2_dualview_round56")
 ART = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56")
+INDEPENDENT_PAIR_SPAN_BINS = (("0_3", 0, 4), ("4_9", 4, 10), ("10_24", 10, 25), ("25_49", 25, 50),
+                              ("50_99", 50, 100), ("100_199", 100, 200), ("200_plus", 200, None))
+
+
+def independent_pair_span_confusion(pred, truth):
+    output = {}
+    for label, lower, upper in INDEPENDENT_PAIR_SPAN_BINS:
+        selected = lambda pairs: sum(1 for i, j in pairs if j - i >= lower and (upper is None or j - i < upper))
+        output[label] = {"tp": selected(pred & truth), "fp": selected(pred - truth), "fn": selected(truth - pred)}
+    return output
 
 
 def _valid_pairs(raw_pairs, length=None):
@@ -147,6 +158,10 @@ def independent_metrics(raw_pred, raw_truth, length=None):
                             for child in children for _ in range(count))
     truth_junction = Counter((closing, child) for (closing, children), count in truth_multi.items()
                              for child in children for _ in range(count))
+    pred_wiring = Counter((closing, child) for (closing, children), count in pred_loop_counter.items()
+                          for child in children for _ in range(count))
+    truth_wiring = Counter((closing, child) for (closing, children), count in truth_loop_counter.items()
+                           for child in children for _ in range(count))
     ged = int(simple_distance(pred_root, truth_root))
     n_nodes = max(1 + len(pred_stems), 1 + len(truth_stems))
     return {
@@ -156,6 +171,8 @@ def independent_metrics(raw_pred, raw_truth, length=None):
         "loop_types": {kind: _prf_counters(pred_kind[kind], truth_kind[kind]) for kind in pred_kind},
         "multiloop": _prf_counters(pred_multi, truth_multi),
         "junction": _prf_counters(pred_junction, truth_junction),
+        "wiring": _prf_counters(pred_wiring, truth_wiring),
+        "pair_span_confusion": independent_pair_span_confusion(pred, truth),
         "topology": {"ged": ged, "normalized_ged": ged / n_nodes, "f1": 1 - ged / n_nodes,
                      "exact": pred_signature == truth_signature, "n_pred_nodes": 1 + len(pred_stems),
                      "n_truth_nodes": 1 + len(truth_stems)},
@@ -188,7 +205,7 @@ def verify_task(spec, data_path, original_rows):
     aligned = positional[0] if positional else None
     mismatches, max_delta = [], [0.0]
     counts = Counter()
-    metric_keys = ("pair", "stem", "loop", "loop_types", "multiloop", "junction", "topology",
+    metric_keys = ("pair", "stem", "loop", "loop_types", "multiloop", "junction", "wiring", "pair_span_confusion", "topology",
                    "n_pred_pairs", "n_truth_pairs", "n_pred_stems", "n_truth_stems")
     for row in original_rows:
         name = row["name"]
@@ -199,15 +216,22 @@ def verify_task(spec, data_path, original_rows):
             continue
         t = truth[name][0]
         p = aligned[name] if positional else pred[name][0]
+        expected_sha = hashlib.sha256(t["seq"].encode()).hexdigest()
+        if row.get("sequence_sha256") != expected_sha:
+            mismatches.append({"path": f"{spec['prediction_id']}:{name}.sequence_sha256",
+                               "original": row.get("sequence_sha256"), "recomputed": expected_sha})
         try:
             recomputed = independent_metrics(p["pairs"], t["pairs"], len(t["seq"]))
         except Exception as exc:
             if row["status"] == "OK":
                 mismatches.append({"path": f"{spec['prediction_id']}:{name}.status", "original": "OK", "recomputed": str(exc)})
             elif row.get("pair"):
-                pair = _prf_sets({tuple(sorted(map(int, x))) for x in p["pairs"]},
-                                 {tuple(sorted(map(int, x))) for x in t["pairs"]})
+                pred_set = {tuple(sorted(map(int, x))) for x in p["pairs"]}
+                truth_set = {tuple(sorted(map(int, x))) for x in t["pairs"]}
+                pair = _prf_sets(pred_set, truth_set)
                 _compare_values(row["pair"], pair, f"{spec['prediction_id']}:{name}.pair_only", mismatches, max_delta)
+                span = independent_pair_span_confusion(pred_set, truth_set)
+                _compare_values(row.get("pair_span_confusion"), span, f"{spec['prediction_id']}:{name}.pair_span_only", mismatches, max_delta)
                 counts["pair_only"] += 1
             else:
                 counts["invalid"] += 1
@@ -256,8 +280,9 @@ def main():
     parser.add_argument("--artifact-root", type=Path, default=ART)
     parser.add_argument("--workers", type=int, default=min(8, os.cpu_count() or 1))
     parser.add_argument("--limit-predictions", type=int, default=0)
+    parser.add_argument("--out-phase", default="e0")
     args = parser.parse_args()
-    out = args.artifact_root / "artifacts/foldnar_v1/e0"
+    out = args.artifact_root / "artifacts/foldnar_v1" / args.out_phase
     target = out / "independent_verification.json"
     if target.exists():
         raise FileExistsError("refusing to overwrite independent verification")
