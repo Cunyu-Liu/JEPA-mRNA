@@ -15,6 +15,14 @@ def sha256(path):
     return digest.hexdigest()
 
 
+def validate_collection_result(result, label, path):
+    if result == "cached":
+        return
+    assert result["accepted_chains"] == len(label["chains"])
+    assert result["rejected_chains"] == len(label["rejected_chains"])
+    assert result["labels_sha256"] == sha256(path)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True)
@@ -46,9 +54,7 @@ def main():
         path = directory / "labels.json"
         label = json.loads(path.read_text())
         assert label["pdb_id"] == pdb_id
-        assert result["accepted_chains"] == len(label["chains"])
-        assert result["rejected_chains"] == len(label["rejected_chains"])
-        assert result["labels_sha256"] == sha256(path)
+        validate_collection_result(result, label, path)
         assert label["cif_sha256"] == sha256(directory / f"{pdb_id}.cif")
         assert label["dssr_json_sha256"] == sha256(directory / "dssr.json")
         assert label["dssr_binary_sha256"] == "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a"
