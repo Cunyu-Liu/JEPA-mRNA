@@ -1,0 +1,15 @@
+{
+  "status": "PASS_ARXIV_SOURCE_CONTENT_QA_COMPILE_NOT_AVAILABLE",
+  "source": "交接文档/paper/rna_evidence_v2_arxiv_source.tex",
+  "source_sha256": "16869b8a358fe3b60de9b585afd6a091cd1d6a192423c6c9ef0ce143437f0ef6",
+  "manuscript_sha256": "1e978ac8a359ec905ea36589298bf48a7b117e9c0b34adf45c0006d56aef47f1",
+  "tables": 5,
+  "references": 8,
+  "compiler": "unavailable: xelatex and pdflatex were not found",
+  "reading_pdf_sha256": "473eaa07d6666e683c1b4954af8f8d67303f93d11ea3481d8d5c8744e4852d0b",
+  "limitations": [
+    "LaTeX source is generated for editing; no compiled PDF from this source has been validated",
+    "XeLaTeX and xeCJK are required for the Chinese stacking-energy phrase in Q4",
+    "Evidence draft remains not submission-ready"
+  ]
+}
