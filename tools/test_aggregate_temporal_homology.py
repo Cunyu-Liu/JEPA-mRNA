@@ -40,3 +40,12 @@ def test_union_conserves_unknown_queries(tmp_path):
 def test_bidirectional_coverage_is_enforced(tmp_path):
     with pytest.raises(AssertionError):
         aggregate(fixture(tmp_path, coverage=12), tmp_path)
+
+
+def test_exact_match_missing_from_homology_is_blocked(tmp_path):
+    fasta = fixture(tmp_path)
+    text = fasta.read_text().replace(">q1|exact_detected=0", ">q1|exact_detected=1")
+    fasta.write_text(text)
+    result = aggregate(fasta, tmp_path)
+    assert result["status"] == "BLOCKED_EXACT_NOT_HOMOLOGY_DETECTED"
+    assert result["exact_detected_not_homology_detected"] == ["q1|exact_detected=1"]

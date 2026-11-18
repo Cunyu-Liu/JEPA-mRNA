@@ -69,9 +69,12 @@ def aggregate(fasta, root):
     union = {name for name, row in records.items() if row["detected_by_source"]}
     for row in records.values():
         row["interpretation"] = "DETECTED_KNOWN_SOURCE" if row["detected_by_source"] else "UNKNOWN_NOT_CLEAN"
-    return {"status": "PASS_TEMPORAL_HOMOLOGY_UNION_LABEL_GATE_PENDING",
+    exact_missed = sorted(name for name, row in records.items() if row["exact_detected"] and not row["detected_by_source"])
+    return {"status": "BLOCKED_EXACT_NOT_HOMOLOGY_DETECTED" if exact_missed else "PASS_TEMPORAL_HOMOLOGY_UNION_LABEL_GATE_PENDING",
             "n_queries": len(queries), "query_fasta_sha256": sha256(fasta), "sources": source_reports,
             "detected_by_any_source": len(union), "not_detected_by_any_source": len(queries) - len(union),
+            "n_exact_detected": sum(row["exact_detected"] for row in records.values()),
+            "exact_detected_not_homology_detected": exact_missed,
             "query_records": [records[name] for name in sorted(records)],
             "protocol": "MMseqs2 17.b804f; >=80% identity and >=80% bidirectional coverage; up to300 targets/query",
             "limitations": ["Not detected is unknown, not clean or independent", "Historical nt snapshot remains unpinned",
