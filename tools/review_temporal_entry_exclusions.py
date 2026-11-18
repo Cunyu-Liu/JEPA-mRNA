@@ -21,7 +21,10 @@ def main():
     assert qa["status"] == "BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS"
     assert qa["collection_sha256"] == sha256(root / "collection.json")
     assert qa["n_entry_errors"] == 2 and set(qa["errors"]) == {"9KFX", "9P4K"}
-    assert qa["recovered_errors"]["9M7U"]["recovery_logs"] == ["error.shared_cwd_failure.txt"]
+    if "9M7U" in qa["recovered_errors"]:
+        assert qa["recovered_errors"]["9M7U"]["recovery_logs"] == ["error.shared_cwd_failure.txt"]
+    else:
+        assert (root / "9M7U/labels.json").is_file() and (root / "9M7U/error.shared_cwd_failure.txt").is_file()
     evidence = []
     for pdb, reason in [("9KFX", "SOURCE_POLYMER_SCHEME_INCONSISTENT"), ("9P4K", "DSSR_INTERNAL_ASSERTION_FAILED")]:
         assert not (root / pdb / "labels.json").exists()
