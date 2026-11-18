@@ -50,6 +50,14 @@ def test_loop_types_and_topology_not_coordinates():
     assert structure_metrics(hairpin, shifted)["stem"]["f1"] == 0.0
 
 
+def test_wiring_counts_all_helix_parent_child_edges():
+    truth = [(0, 13), (2, 5), (7, 10)]
+    pred = [(0, 13), (2, 5)]
+    metrics = structure_metrics(pred, truth)
+    assert (metrics["wiring"]["tp"], metrics["wiring"]["fp"], metrics["wiring"]["fn"]) == (2, 0, 1)
+    assert metrics["junction"]["fn"] == 2
+
+
 def test_known_tree_edit_distances():
     empty = build_helix_tree([])
     hairpin = build_helix_tree([(0, 9), (1, 8)])
@@ -105,6 +113,7 @@ def test_small_exhaustive_pair_and_structure_invariants():
         assert identity["pair"]["f1"] == 1.0
         assert identity["stem"]["f1"] == 1.0
         assert identity["loop"]["f1"] == 1.0
+        assert identity["wiring"]["f1"] == 1.0
         assert identity["topology"]["ged"] == 0
         assert identity["topology"]["exact"] is True
         assert sum(identity["truth_loop_counts"].values()) == identity["n_truth_stems"] + 1

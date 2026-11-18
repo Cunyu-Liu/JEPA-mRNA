@@ -266,6 +266,11 @@ def structure_metrics(pred_pairs: Iterable[Sequence[int]], truth_pairs: Iterable
         (loop.closing, child)
         for loop in truth_loops if loop.kind == "MULTILOOP" for child in loop.children
     )
+    # Wiring is the complete set of helix parent->child relations, including the
+    # external root. Unlike junction-F1 it includes hairpin/internal/bulge parents;
+    # unlike stem-F1 it uses outer-pair identities rather than the full register.
+    pred_wiring = Counter((loop.closing, child) for loop in pred_loops for child in loop.children)
+    truth_wiring = Counter((loop.closing, child) for loop in truth_loops for child in loop.children)
     ged = topology_ged(pred_tree, truth_tree)
     n_nodes = max(_tree_size(pred_tree), _tree_size(truth_tree))
     pair = pair_prf(pred, truth)
@@ -284,6 +289,7 @@ def structure_metrics(pred_pairs: Iterable[Sequence[int]], truth_pairs: Iterable
             Counter(x.identity for x in truth_loops if x.kind == "MULTILOOP"),
         ),
         "junction": _counter_prf(pred_junctions, truth_junctions),
+        "wiring": _counter_prf(pred_wiring, truth_wiring),
         "topology": {
             "ged": ged,
             "normalized_ged": ged / n_nodes if n_nodes else 0.0,
