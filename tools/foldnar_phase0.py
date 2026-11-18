@@ -85,24 +85,57 @@ def data_specs() -> list[tuple[str, str, str]]:
         ("ref_tr_inter", "train", "inter-molecular experimental"),
         ("ref_tr_intra", "train", "intra-molecular experimental"),
         ("ref_tr_experimental", "train", "experimental reference union"),
-        ("ref_syn_train", "train", "synthetic reference"),
+        ("ref_syn_train", "synthetic_algorithm", "synthetic reference; SYNTHETIC_ALGORITHM only"),
         ("chanrg_train_train", "train", "CHANRG train"),
         ("chanrg_train_validation", "val", "CHANRG validation"),
-        ("ncrna_rfamnovel_train", "train", "ncRNA/RfamNovel train"),
-        ("ncrna_rfamnovel_val", "val", "ncRNA/RfamNovel validation"),
+        ("ncrna_rfamnovel_train", "out_of_scope_ncrna", "ncRNA/RfamNovel train; excluded by contract"),
+        ("ncrna_rfamnovel_val", "out_of_scope_ncrna", "ncRNA/RfamNovel validation; excluded by contract"),
     ]
     specs += [(name, "test", name) for name in MAIN_SPLITS]
     specs += [(name, "test", name) for name in CHANRG_SPLITS]
     specs += [("rfam_temporal", "test", "Rfam temporal"), ("rfam_fam", "test", "Rfam family"),
-              ("ncrna_rfamnovel_test", "test", "ncRNA/RfamNovel test")]
+              ("ncrna_rfamnovel_test", "out_of_scope_ncrna", "ncRNA/RfamNovel test; excluded by contract")]
     return [(name, role, desc) for name, role, desc in specs]
+
+
+CONTRACT_COUNTS = {
+    "bprna_tr1c": 42564, "bprna_vl0": 196,
+    "chanrg_train_train": 123223, "chanrg_train_validation": 14070,
+    "chanrg_test": 14070, "chanrg_gena": 12499, "chanrg_genc": 4424, "chanrg_genf": 1797,
+}
+
+
+def dataset_contract_metadata(name: str, role: str) -> dict:
+    if role == "synthetic_algorithm":
+        label = "SIMULATED"
+    elif name.startswith("ref_pdb") or name in {"ref_tr_inter", "ref_tr_intra", "ref_tr_experimental"}:
+        label = "EXPERIMENTAL"
+    elif name.startswith("chanrg") or name.startswith("rfam"):
+        label = "COMPARATIVE_INFERRED"
+    else:
+        label = "DATABASE"
+    metadata = {
+        "scope": "OUT_OF_SCOPE_NCRNA_CLASSIFICATION" if role == "out_of_scope_ncrna" else
+                 "SYNTHETIC_ALGORITHM" if role == "synthetic_algorithm" else "IN_SCOPE",
+        "label_source": label,
+        "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
+        "split_provenance": f"frozen JSONL split identity: {name}",
+        "cluster_80_status": "BLOCKED_NOT_COMPUTED",
+        "modified_parent_mapping": "NOT_AVAILABLE_IN_JSONL",
+        "cleaning_rules": "raw JSONL unchanged; analysis normalizes uppercase and T->U; no pair deletion",
+        "pair_convention": "zero-based inclusive; QA records invalid and crossing pairs without silent repair",
+    }
+    if name in CONTRACT_COUNTS:
+        metadata["contract_expected_n"] = CONTRACT_COUNTS[name]
+    return metadata
 
 
 def build_data_registry() -> list[dict]:
     rows = []
     for name, role, description in data_specs():
         path = JSONL / f"{name}.jsonl"
-        rec = {"dataset_id": name, "role": role, "description": description, **file_info(path)}
+        rec = {"dataset_id": name, "role": role, "description": description,
+               **dataset_contract_metadata(name, role), **file_info(path)}
         if path.is_file():
             counts = jsonl_counts(path)
             rec["n_sequences"] = counts["json_parse"]
@@ -111,6 +144,11 @@ def build_data_registry() -> list[dict]:
                 rec["count_verification"]["adjacent_manifest"] is None
                 or rec["count_verification"]["adjacent_manifest"] == counts["json_parse"]
             )
+            if "contract_expected_n" in rec:
+                expected = rec["contract_expected_n"]
+                rec["contract_coverage_fraction"] = counts["json_parse"] / expected
+                rec["contract_coverage_status"] = "MATCH" if counts["json_parse"] == expected else "FROZEN_SUBSET_OR_VERSION_MISMATCH"
+                rec["availability"] = "FROZEN" if counts["json_parse"] == expected else "FROZEN_CURRENT_FILES_ONLY"
             rec["status"] = "FROZEN" if rec["count_consistent"] else "QA_MISMATCH"
         else:
             rec["status"] = "BLOCKED"

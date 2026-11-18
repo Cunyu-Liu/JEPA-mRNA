@@ -1,0 +1,46 @@
+{
+  "reason": "scientific scope and contract coverage corrected before final Phase 1",
+  "role_changes": {
+    "ref_syn_train": "synthetic_algorithm",
+    "ncrna_rfamnovel_*": "out_of_scope_ncrna"
+  },
+  "contract_mismatches": [
+    {
+      "dataset_id": "chanrg_train_train",
+      "registered_n": 95181,
+      "expected_n": 123223,
+      "coverage": 0.7724288485104241
+    },
+    {
+      "dataset_id": "chanrg_train_validation",
+      "registered_n": 10540,
+      "expected_n": 14070,
+      "coverage": 0.7491115849324804
+    },
+    {
+      "dataset_id": "chanrg_test",
+      "registered_n": 10597,
+      "expected_n": 14070,
+      "coverage": 0.7531627576403696
+    },
+    {
+      "dataset_id": "chanrg_gena",
+      "registered_n": 5337,
+      "expected_n": 12499,
+      "coverage": 0.4269941595327626
+    },
+    {
+      "dataset_id": "chanrg_genc",
+      "registered_n": 3936,
+      "expected_n": 4424,
+      "coverage": 0.8896925858951176
+    },
+    {
+      "dataset_id": "chanrg_genf",
+      "registered_n": 1734,
+      "expected_n": 1797,
+      "coverage": 0.9649415692821369
+    }
+  ],
+  "verification_pass": true
+}

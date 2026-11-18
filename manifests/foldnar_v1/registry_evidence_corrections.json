@@ -1,0 +1,12 @@
+{
+  "reason": "xens2 evidence path corrected after independent registry review",
+  "old_path": "/home/rna_jev_xens2_dualview_round56/paper/2026-11-16-rna-jev-mechanism-results.json",
+  "new_evidence": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/p0/xens2_bprna_new_replay/run_manifest.json",
+    "exists": true,
+    "bytes": 2025,
+    "sha256": "5c71e2f08ebeb5164a5d24b6361503bde91789a2f662012e6ad5c57c703cf1b6",
+    "hash_scope": "full_content"
+  },
+  "verification_pass": true
+}
