@@ -16414,3 +16414,9 @@ cd /home/rna_jev_xens2_dualview_round56
 - PPT第28页备注更正后deck SHA256=`bc64bc3a8864aa90d638fd5ef4bfec23d377d227b798bebfa548cd7dc1c83d23`，原生页面/备注通过。证据稿3424词，SHA256=`1b923c7aa902be7a8e2f6acc94639690fa8eb3205f75748b3186bcdc1c6c47ae`；PDF6页，SHA256=`e1b066539eeb9a7fcf8912002ebede35f0c829df7a84b3ffe8131870bd19f0dd`，首/中/末页视觉及独立重建文本/表格/页数通过，commit=`f2b432f`。
 - 最终DSSR标签亲本恢复序列不能盲目复用canonical polymer同源结果，已新增独立查询构建器与5项相关测试，commit=`2875555`。完整1805入口标签提取仍在运行，未启动模型推理或新训练。
 
+## §15.960（2026-11-18）最终标签序列暴露流程泛化
+
+- 新增`prepare_temporal_evaluation_sequences.py`：按序列SHA256分配稳定ID，重复链保留所有来源但只计一个评测序列；canonical polymer与DSSR亲本恢复不一致的序列必须重新审计。`audit_evaluation_exact_exposure.py`直接生成真实`exact_detected=0/1`的FASTA，未知不写成0。
+- 同源wrapper与聚合器支持`--expected-count`，不再把1131条canonical polymer查询硬编码到最终标签评测。独立后过滤、原始行保留、target覆盖、max-seqs非最终上限和精确阳性短序列回查规则全部沿用。
+- 相关参数、分组、动态查询和精确匹配测试8/8通过，commit=`6854f11`。合同第14节补齐标签通过后的完整命令；只有label_collection_qa通过才能执行，当前完整DSSR标签任务尚未完成，未启动模型推理。
+
