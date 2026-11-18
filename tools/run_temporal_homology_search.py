@@ -2,6 +2,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import sys
 
 import run_pretrain_homology_search
@@ -46,6 +47,12 @@ def main():
     assert manifest["query_fasta_sha256"] == hashlib.sha256(fasta.read_bytes()).hexdigest()
     if not args.source:
         parser.error("--source is required unless --prepare-only is used")
+    if args.source == "ensembl_109_and_bacteria_56":
+        source_manifest = run_pretrain_homology_search.OUTPUT / "ensembl_target_manifest.json"
+        target_manifest = output / "ensembl_target_manifest.json"
+        if not target_manifest.exists():
+            shutil.copyfile(source_manifest, target_manifest)
+        assert hashlib.sha256(source_manifest.read_bytes()).hexdigest() == hashlib.sha256(target_manifest.read_bytes()).hexdigest()
     run_pretrain_homology_search.OUTPUT = output
     sys.argv = [sys.argv[0], "--source", args.source, "--threads", str(args.threads),
                 "--split-memory-limit", args.split_memory_limit]
