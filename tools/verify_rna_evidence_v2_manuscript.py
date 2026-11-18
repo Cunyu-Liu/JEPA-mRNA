@@ -94,7 +94,7 @@ def main():
     assert "Calibration and pair dependence" in text and "no structure-level posterior calibration" in text
     for number in range(1, 13):
         assert f"**Q{number}**" in text
-    assert hashlib.sha256(Path(args.deck).read_bytes()).hexdigest() == "abc4f31ecd043ec407bf8ad6e748eb93362e7f96371e63214717dbf35afd472e"
+    assert hashlib.sha256(Path(args.deck).read_bytes()).hexdigest() == "5a6e87ab7594a25c535589a8111a9873b92238ec901f0ab001a344ca2c8ed19a"
     print(json.dumps({"status": "PASS_EVIDENCE_MANUSCRIPT_NUMBERS_AND_LIMITS",
                       "manuscript": args.manuscript, "words": len(text.split()),
                       "checked_arms": len(pilot["results"]), "checked_interface_modes": len(labels),

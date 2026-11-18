@@ -143,9 +143,9 @@ The model results also separate engineering success from scientific support. The
 
 The main code workspace is `/home/rna_jev_xens2_dualview_round56`. Large evidence files are under `/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit` and `/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2`. The contract's Section 13 contains full commands and the rule that previous result directories must be archived rather than overwritten.
 
-Key artifacts include `exact_overlap.json` (SHA256 `6cd88fc5…5877`), `exact_union_summary.json` (`d4412393…baa4`), `homology_union_summary.json` (`69a0b13b…7131`), `rfam14_9_exact_sequence_family_mapping_summary.json` (`bdef1812…8a99`), `converged_baseline_summary.json` (`2b465cd3…4870`), and `nt_snapshot_assessment.json` (`5f4282bd…6232`). The final evidence presentation contains 28 slides and has SHA256 `abc4f31ecd043ec407bf8ad6e748eb93362e7f96371e63214717dbf35afd472e`.
+Key artifacts include `exact_overlap.json` (SHA256 `6cd88fc5…5877`), `exact_union_summary.json` (`d4412393…baa4`), `homology_union_summary.json` (`69a0b13b…7131`), `rfam14_9_exact_sequence_family_mapping_summary.json` (`bdef1812…8a99`), `converged_baseline_summary.json` (`2b465cd3…4870`), `nt_snapshot_assessment.json` (`5f4282bd…6232`), and `xens2_exposure_stratified.json` (`c1c39477…07ec`). The final evidence presentation contains 29 slides and has SHA256 `5a6e87ab7594a25c535589a8111a9873b92238ec901f0ab001a344ca2c8ed19a`.
 
-Relevant source revisions include `181b4d0` (tied-score AUPRC correction), `77018f6` (H0/H2 encoder identity), `33805b9` (bounded-memory homology processing), `610ee8e` (family mapping), `9f586b6` (homology-union evidence page), and `96aa207` (nt provenance limitation). Earlier revisions are retained for model and engineering provenance. No credentials or `.env` files are part of the artifacts.
+Relevant source revisions include `181b4d0` (tied-score AUPRC correction), `77018f6` (H0/H2 encoder identity), `33805b9` (bounded-memory homology processing), `610ee8e` (family mapping), `9f586b6` (homology-union evidence page), `96aa207` (nt provenance limitation), and `e6dbffd` (frozen-prediction exposure stratification). Earlier revisions are retained for model and engineering provenance. No credentials or `.env` files are part of the artifacts.
 
 ## 8. Conclusion
 
