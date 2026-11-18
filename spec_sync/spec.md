@@ -1,15 +1,25 @@
 # RNA 二级结构决策模型（纯血 Jev 架构迁移）Spec
 
-> **最新执行覆盖（2026-11-10：RiNALMo全量重跑与下游扩展）**：用户固定后续骨干为RiNALMo，structRFM全部结果仅作historical_structRFM_diagnostic，不删除、不混入新对照。全部科学实验以`round52_rinalmo_*`重跑，seed=42/2026/3407、steps=0、500步VL0、patience=6，常规评测仅主benchmark八任务+Rfam。顺序为R0/R-replay→L-length/O-LR→容量→J-gate/J-mlp/J1-block-EMA/fixed/random→结构对比CL0–CL5→D0/D1→motif/长序列→冻结精度/置信度/raw速度→LinearDesign。调研借鉴限同序列视图、随机/困难负样本、距离控制、预算对齐与失败分析；不照搬第二宿主或未验证正对。LinearDesign扩展114蛋白计算基准、λ/exact/beam、密码子约束、UTR–CDS、全长结构与风险评价，禁止湿实验外推。统一合同=`docs/plans/2026-11-10-rinalmo-full-replay-and-downstream-expansion.md`。当前只完成文档，未启动新训练；旧structRFM容量门不放行新J-gate。
-
-> **当前优化执行覆盖（2026-11-10：loss/optimizer 解耦；合同 `docs/plans/2026-11-10-prism-optimization-execution-prompt.md`）**
+> **当前执行覆盖（2026-11-18：污染感知的数据与机制证据；活跃清单 `rna-evidence-v2`）**
 >
-> 用户明确批准恢复阶段0。R-replay已以seed2主诊断、seed0复核、真实CUDA无更新、独立QA及双跑完成。合法身份为R6 best权重+终态optimizer/scheduler/stream，不是best时刻optimizer历史重放。length/sum shadow update RMS在6批次均增大，中位28.8024倍、范围8.0182–80.1575，不支持终态自然稳定假设；backbone LR=1e-6仅将对应更新缩至0.1。5/6批次NLL与辅助项梯度存在负cosine，不能混改aux权重；全解冻诊断不能隔离U-ramp。
+> v2 合同同上。先完成数据来源、独立家族、标签质量和预训练暴露审计，再补梯度 cosine 与完整宿主 FLOPs，随后区分 RiNALMo 原生初始化与 Plan-A warm-start。BPfold motif 和真实 RNA–蛋白界面均有独立资产门，不是 v1 的抢救路线。`ENGINEERING_PASS`、model-dev 正负结果与冻结外部结论分开；v1 `STOP_PILOT_NEGATIVE_DEV_ONLY` 保留，三种子与旧主线不恢复。
 >
-> 阶段门：L-length/O-LR六种子均自然早停。按用户最新协议只先测主benchmark八任务和Rfam，表现好的模型再跑CHANRG；原13 split结果保留。两臂主榜均0/8，length Rfam=0.4481232036、O-LR=0.3603944671，length为稳定基座但未达后续测评标准，禁止交互和U-ramp。完成标志SHA256=`2953bd1656e626c251bb2e68f22808d8c422d8471649179fc465346536dc8fc3`，允许离线容量诊断，不允许直接启动C-wide/C-local或Pair-JEPA，PPT不改。
+> **D0 状态**：三遍＋独立复核通过，audit SHA256=`ee1b7df5…c7e82`。TR1c=42564/15521簇；Rfam 与 TR1c 有284条精确重叠、1038簇重叠，TS0有418簇重叠，不能宣称无同源污染。ncRNA test 已去304条至25038，train/val/test 分别删除3804/270/304行。RNAcentral22.0/Rfam14.9/Ensembl109/56已冻结并核验；RNAcentral与VL0/bpRNA-new/Rfam/ncRNA test分别重叠184/196、5303/5388、9989/10790、21452/25038。三源精确去重后为193/196、5381/5388、10327/10790、24912/25038，SHA256=`d4412393…baa4`，不得称clean-OOD；Rfam精确序列可映射家族与TR1c共享120，bpRNA-new交集0仅支持下游标签划分，不抵消预训练暴露；三源同源联合162489/165854（SHA256=`69a0b13b…7131`），未检出不等于无同源；nt历史快照未固定，完整预训练暴露仍blocked。
 >
-> 容量诊断：PairMLP latent490/1024两步CUDA工程预检通过，scorer参数304547/1182977，不作科学效果证据。L-length三best在同一固定TR1c子集196条与完整VL0=196上逐项复核，平均NLL=0.2142123153/0.1483827333，total=-0.7025514467/-0.7826199695；v2/v3独立CUDA逐字段一致，QA双跑一致。未获训练欠拟合证据，不证明理论容量足够；C-wide/C-local关闭，只放行J-gate，Pair-JEPA训练未放行。decision SHA256=`d0f7a464ee57296319d6b569c36ce558c6513f0a74818b78533c8908a454c943`。
-
+> **D1 状态**：完整宿主 forward/backward=199,494,385,321 FLOPs，峰值2.907GB，梯度 cosine=-0.052939（仅一个工程 batch，不是机制结论）。精确 DP/Python/C 解码不估计。
+>
+> **D2 状态**：native H0/H2=0.653980/0.658859，H2−H0=+0.004879，step500 均 step_cap 未收敛；warm 分别为0.851460/0.844264。初始化混杂明确，小正值不作机制证据；优化器延续 blocked。report SHA256=`325f79f1…bf29`。
+>
+> **独立任务状态**：BPfold motif 已判负，P1−P0=0、P1−shuffle=-0.000049，Turner=0=0.847600，energy-only=P0，不启动外部评测。旧界面 QA 漏验坐标—序列映射并混入蛋白链，旧标签和探索基线已撤销隔离；全量界面标签 QA 已通过：train=804/804、holdout=202/202，观测残基1,453,871/231,155，PDB/簇/精确序列重叠均为0；modified-parent 与原始 labels.json 哈希复核完成。512查询块已通过数值与完整VL0 pair等价门，长链前向仅工程通过；H2为H0共享冻结编码器别名，重复run停止；六类独立对照18 run均自然收敛并经sklearn复核；H0 micro-AUPRC=0.771506±0.005265、二分类macro-F1=0.685372±0.004139，shuffle=0.629166且100–499 nt弱桶AUPRC=0.623279，不能解释成复合物理解或JEPA收益；界面holdout与RNAcentral精确重叠86/202，只作污染感知probe。结构辅助臂OOM blocked，完整F2未通过。Ensembl109/56共31046个ncRNA文件、701138004字节及FASTA已独立验收；已知三源精确/80%同源与Rfam精确序列家族映射已完成，未检出不等于无暴露，nt历史快照仍不可追溯。
+>
+> **冻结预测分层（2026-11-18）**：原xens2的P0身份与bpRNA-new 5388/5388覆盖通过；全量macro-F1=0.542209。精确暴露n=5381、macro=0.542424；精确未检出n=7、macro=0.377253，仍是未知而非clean。全部序列至少一个已知来源检出80%同源，同源未检出n=0，无法形成同源精度对照，不做显著性或因果结论。证据SHA256=`c1c39477…07ec`；第29页原生视觉通过，deck SHA256=`5a6e87ab…19a`。
+>
+> **历史执行覆盖（2026-11-16：双视图 RNA-JEPA 精度主线；活跃清单 `dual-view-jepa-accuracy-v1`）**
+>
+> 唯一新实验合同：`docs/plans/2026-11-16-dual-view-jepa-accuracy-contract.md`，执行提示词：`docs/plans/2026-11-16-dual-view-jepa-execution-prompt.md`。中心问题是训练期结构模态能否通过双向潜在预测改善单 checkpoint 的未见家族精度，推理只使用序列。原 xens2 是精度基线，投票不再是新架构卖点；D1 通用扩增、RIPE 和旧局部 Pair-JEPA 停止。必须先通过文献/资产/数据/掩码/泄漏工程门与 H0–H6 pilot，再进入三种子正式训练；BPfold motif、ncRNA 功能分类和 RNA–蛋白界面均有独立资产或标签门。未通过不得宣称新架构精度突破。
+>
+> **本轮执行状态**：P0 已通过，远程 gate 为 `manifests/p0/gate_decision.json`（SHA256=`6998854c…49c1eb301b`）。P1 旧源码身份曾取得 19 项 CPU、H1–H6 合成 CUDA、H0/H2 真实宿主一步接线和部署零调用证据，但并发修改后不得沿用，原阻断 gate SHA256=`e1ff6c07…2a2cb6`。新集群 `px1-jcy.matpool.com:27693` 上，合并候选的 28 项双视图＋resume 测试已 PASS；候选哈希见 `.round56_work/p1_resume_candidate_manifest.json`。真实 CUDA 首轮因 RTX 5090 sm_120 与旧 torch cu121 不兼容而停止，失败保留；新建 `lucaone_cu128` 后，H1–H6 真实 forward/backward、H0/H2 宿主、旧 resume 与序列-only 部署全部通过，P1 gate=`manifests/p1/candidate_cu128_v1/gate_decision.json`，代码 commit=`0a44150` 已推送。H0–H6 已在 step400 自然早停（best@100），VL0 独立评测裁决为 `STOP_PILOT_NEGATIVE_DEV_ONLY`：H2 macro-F1=0.8442637614，低于 H0=0.8514596293（Δ=-0.0071958679），且未超过 H3/H4/H5/H6；H2 micro-F1=0.8658792361 不得用于掩盖 macro 失败。decision SHA256=`b6b47fb4…211c41`。按合同停止三种子、正式训练与冻结评测，未启动 motif 或功能下游；该单 seed model-dev 负结果不是外部未见家族精度结论。
+>
 > **历史执行覆盖（2026-11-06，第 48 轮：独立单模型 structRFM→RIPE→Pair-JEPA；活跃清单 `round48-single-model-architecture-v1`）**
 >
 > 唯一执行合同：`docs/plans/2026-11-06-round48-single-model-architecture.md`。按用户指定顺序依次完成 structRFM+JEV、RIPE 思想迁移、JEPA 式 scorer，每个冻结候选均做 A/B/C 消融。主模型必须单骨干、单任务头、单 checkpoint；xens2 仅作历史集成对照。主去泄露八 split 目标 8/8 SOTA，Rfam/CHANRG 尽可能多领先，并同时验收 raw-sequence 速度、结构置信度和 200–400/>400 nt 长序列。
@@ -18,19 +28,7 @@
 >
 > **新污染门**：structRFM 使用 Nature 版 Zenodo 18272040 的 21M MUSES 语料重新计算精确与 80% identity 重叠，形成 structRFM 专属 clean；TR1c downstream clean 不能替代预训练 clean。官方 SSP 微调权重不得作为干净主模型初始化。原文 512 nt 限制与 23S 退化必须保留，不得随机扩展绝对位置 embedding 后冒充官方模型。
 >
-> **阶段顺序**：P0 资产/合同 → P1 structRFM 冻结与全参两臂 → P2 RIPE 的 log/R1/R2/R3/随机周期/随机互补分解 → P3 Pair-JEPA 与近参数 MLP/noEMA/random-target 对照 → P4 RNA 复合物数据扩充与 B 组消融 → P5 LinearDesign 编码区设计验证 → P6 独立复算、PPT 副本、归档与论文。新增合同 `docs/plans/2026-11-07-rna-complex-lineardesign.md`。每路线三种子收敛并完成 A/B/C 后无论正负均作裁决再进入下一路线，不反复测试集调参。
->
-> **停止与归档覆盖（2026-11-10）**：用户明确要求停止后续实验。远端守护、训练、评测与等待队列全部停止，不再恢复。旧xens2扩充Rfam验证已完成且为负结果；Pair-JEPA仅有J-mlp三种子与主39格，其他臂未齐套；复合物D0/D1与LinearDesign正式实验未开展。所有未完成事项按停止状态交接，不写成科学结论。当前只进行证据同步、交接总结、图源哈希清单和废弃文件归档，原PPT不改。
->
-> **用户最新优先与种子合同（2026-11-09）**：先执行旧xens2+扩充数据的Rfam验证，再恢复Pair-JEPA。新启动的三种子实验固定42/2026/3407；本xens2由Plan-A seed42、Plan-A seed2026桶内平均与R2D seed3407按0.7/0.3组成，保持集成身份，不替代独立单模型目标。Pair-JEPA旧0/1/2只留历史，后续EMA/noEMA/random统一重排新三种子，禁止新旧种子混配。
->
-> **xens2扩充数据边界**：当前远端去泄露验收为train/holdout=805/201，取代旧647/359并按SHA区分。旧xens2共同长度上限1024nt，本次仅使用150条可支持train（655条超限明确排除），holdout支持101条；训练总集=42564+150=42714。排除仅由架构支持决定，不按效果挑选，不把该子集结论外推到长链。三成员必须自然收敛，固定权重Rfam三次确定性与独立复算完成后才报告结果。
->
-> **路线一与路线二裁决**：structRFM S1/S2/S3均完成三种子13 split及机制消融，主榜两种口径均0/8，已关闭；S3 PairMLP-490仅替换scorer，不冒充全骨干等参数。RIPE的R0、log/R1/R2/R3/R5/R6及encoder-R3均完成三种子自然收敛、主/greedy/Turner0共117格、42范围置信度和独立QA；七臂主榜均0/8，均否决为最终模型。同种子共同支持序列paired bootstrap双跑一致，主八split Holm与ArchiveII/Rfam长度、长程子集已落盘；encoder新增支持单列，未把R0不支持记0分。八候选仅按三种子best VL0均值选择R5=18.5942798481为P3基座，测试指标不参与选臂；decision SHA256=`ed6e3001…5835`。head臂位置上限、长序列及最佳置信度未达成边界不变。
->
-> **RIPE统计与覆盖边界**：七臂paired bootstrap=10000，主八split逐seed Holm，原始与recheck逐字节一致，SHA256=`33e9220f…b3d`。CHANRG空名称以名称+出现序号保留全部样本，缺失occurrence和不同数据SHA拒绝；encoder新增支持只单列。R5的选择只由VL0决定，不等于主榜提升或最终模型放行。
->
-> **P3 定义修复与正式启动**：旧自我target pilot的prediction/target同读未掩码z，mask仅选择损失位置，不属于合同中的上下文JEPA；原始运行完整保留且不作为科学结果。context_v1使用训练期3×3排除中心及masked位置的归一化邻域，独立latent predictor根据未掩码上下文预测完整输入的EMA/fixed/random target；部署仍只有原轻量scorer，PairMLP旧checkpoint结构不变。CPU/CUDA反事实泄露与零梯度、真实structRFM、teacher拒绝及R5 strict load通过，14项测试三次全过，commit=`e69ca25`。R5 PairMLP复用为J-mlp，新manifest双跑SHA256=`e22e8389…3527`，EMA seed0/1正式CUDA训练中；三种子A/B/C、防坍塌、置信度与速度仍未验收。
+> **阶段顺序**：P0 资产/合同 → P1 structRFM 冻结与全参两臂 → P2 RIPE 的 log/R1/R2/R3/随机周期/随机互补分解 → P3 Pair-JEPA 与近参数 MLP/noEMA/random-target 对照 → P4 独立复算、PPT 副本、归档与论文。每路线三种子收敛并完成 A/B/C 后无论正负均作裁决再进入下一路线，不反复测试集调参。
 
 > **历史执行覆盖（2026-11-06，第 47 轮：PRISM 分组证据、否决证据与最终讲稿；活跃清单 `round47-current-status-v1`）**
 >
@@ -2179,7 +2177,7 @@ L = L_NLL  +  λ_distill · L_distill  +  λ_RLCD · L_RLCD  +  λ_1 · L_cal
 **Out-of-scope（明确不做）**
 - 旧区域均值 JEPA / 隐空间预测性预训练、视频 V-JEPA 及推理期 EMA 双前向
 - RNA 三级结构从头预测（仅作补充对比引用）
-- 超出合同指定LinearDesign官方三例计算验证的通用RNA序列设计 / 生成式设计
+- RNA 序列设计 / 生成式设计
 - 湿实验验证
 - 蛋白质结构预测
 - 通用 LLM 训练
@@ -2194,86 +2192,3 @@ L = L_NLL  +  λ_distill · L_distill  +  λ_RLCD · L_RLCD  +  λ_1 · L_cal
 6. 不编造任何引用、数字或结论
 7. 负结果如实报告，不选择性汇报
 8. 不把"计划中的数据"当作"已有数据"
-
----
-
-# 第四十八轮续接的实施门禁（2026-11-08）
-
-### Requirement: RIPE恢复不改变科学配置
-系统 SHALL 在并行CUDA OOM后保留错误日志及最近快照，只恢复未自然收敛的种子；恢复SHALL保持原seed、batch size、数据、学习率、steps=0和patience=6，不得把OOM当作收敛或从头重训已完成种子。
-
-#### Scenario: R1 seed2第二次OOM
-- **GIVEN** step8500快照与CUDA OOM证据均已保存
-- **WHEN** seed0/1结束并释放显存
-- **THEN** seed2从step8500按原配置串行恢复，七臂齐套后才允许路线二裁决
-
-### Requirement: 复合物全量采集完成门
-系统 SHALL 使用完整DSSR `nts` 进行observed_nts_v1映射，保留旧缓存；去泄露SHALL校验候选ID集合、结果数、完整标志、标签协议与哈希，不得仅凭 `collection.json` 存在启动。重复序列SHALL记录全部链ID并保持标签数=唯一序列数+重复数。
-
-#### Scenario: 局部collection或缺少nts
-- **WHEN** collection仅包含验收子集，或DSSR缺少完整实测核苷酸表
-- **THEN** fail closed，保留证据并重算，不进入teacher、D1或科学结论
-
-#### Scenario: 无配对、缺失观测残基或非RNA端点
-- **WHEN** DSSR省略空 `pairs`、观测残基不完全一致，或配对端点属于配体/非RNA
-- **THEN** 空配对按零有效链处理；作者链号、作者残基号和插入码桥接或完整唯一顺序/碱基映射优先，只有无法映射整个聚合物时才排除非聚合物端点；歧义或碱基冲突继续拒绝，缓存必须匹配映射算法版本
-- **AND** 未明碱基和链级映射失败只淘汰对应链，DSSR `no nucleotides found` 记录为合法零标签；化学组分接口临时HTTP错误不得缓存为永久淘汰，同链非聚合物端点须单独记录
-
-#### Scenario: DSSR大结构计算超时
-- **WHEN** 完整DSSR计算在600秒超时
-- **THEN** 保留超时证据并只允许一次1800秒延长重试，不将其直接写成永久无标签；仍失败才明确淘汰，不改变映射或筛选规则
-
-#### Scenario: 伙伴元数据与传递同源分组
-- **WHEN** 提取RNA复合物伙伴类型或独立复核去泄露分组
-- **THEN** 按mmCIF实体ID排除当前及其他RNA聚合物并保留完整蛋白质等伙伴类型；对序列cluster与PDB entry连接计算传递闭包并比较完整分组划分，未知成员、重复候选索引或守恒不一致均fail closed
-
-#### Scenario: MMseqs预过滤内存不足
-- **WHEN** prefilter预计内存超过当前可用内存并被系统终止
-- **THEN** 保留失败证据，使用显式 `--split-memory-limit 12G` 分块，保持identity/coverage阈值、参考集合和标签不变；链级缓存SHALL绑定collection哈希并满足标签数=唯一序列数+重复数，独立复核缓存SHA后才允许续算
-
-### Requirement: LinearDesign冻结模型下游验证
-系统 SHALL 在D0/D1裁决后，分别只按三种子best VL0选择checkpoint，对LinearDesign官方三个编码序列示例执行一次raw-sequence CUDA打分与三次确定性解码；官方二进制、密码子表、checkpoint、输入和代码哈希SHALL留档，汇总SHALL独立复跑一致。集成测试和模拟结果不得写成模型效果。
-
-#### Scenario: 下游结果的解释边界
-- **WHEN** 汇总LinearDesign候选的结构预测
-- **THEN** 仅报告与LinearDesign MFE结构的计算一致性，分别保留官方MFE与ViennaRNA 2.7.2独立复算，禁止声称真实结构恢复、一般非编码RNA设计、表达/稳定性/免疫效果或湿实验验证
-
-### Requirement: clean TS0同集合速度验收
-系统 SHALL 在精度冻结后，以完整去泄露TS0的全部79条raw序列在独占RTX4090上进行batch=1三次评测，包含tokenization、encoder、单次scorer、calibration及解码，不得缓存embedding或过滤长序列；新模型逐序列预测须与冻结全模型评测一致。速度SOTA SHALL要求所有比较模型在相同79条序列上复测，不得直接比较原始TS0 1288条的旧吞吐率。
-
-#### Scenario: 基线尚未覆盖完整
-- **WHEN** BPfold或其他相关基线尚未完成同集合复测
-- **THEN** 输出描述性速度结果且 `speed_sota_claim=False`，不得用不同集合的旧数字补足排名
-
-### Requirement: 最终置信度独立复核
-最终模型与可输出概率的基线 SHALL 在相同候选配对、GT和分箱下比较pair ECE/Brier/NLL；结构质量排序SHALL独立复算Pearson、Spearman及2000次bootstrap 95%CI、VL0冻结阈值下的risk–coverage/AURC和跨split稳定性，不得以平均置信度代替。
-
-#### Scenario: 现有文件只有Spearman
-- **WHEN** confidence文件未含Pearson/CI或缺少同配对概率基线
-- **THEN** 不得写成完整置信度验收或最佳置信度，继续补齐独立比较
-
-### Requirement: 中断恢复保留已完成验证状态
-系统 SHALL 区分仅含模型的周期快照与含优化器、调度器和数据流的 `resume.pt`。当checkpoint在同步验证前保存时，恢复SHALL从相同step的validation_log恢复best_step、best_validation_loss和bad_evaluations；日志较早时保持checkpoint状态，日志超前或损坏时fail closed。不得因恢复丢失已改善的best checkpoint或错误累计早停次数。
-
-#### Scenario: step N保存后验证完成但进程中断
-- **GIVEN** resume.pt的step=N且验证状态仍是N−500，validation_log已完成step=N
-- **WHEN** 按原科学配置恢复
-- **THEN** 优化器/调度器/数据流从N恢复，验证状态与step=N日志一致，best.pt步数与恢复后的best_step一致
-
-### Requirement: 远端等待进程生命周期核验
-本地后台任务停止SHALL不得被直接解释为远端进程退出。迁移或重启队列前，系统SHALL核验远端进程及flock实际持锁者，按明确PID清理已撤下副本，保留现役科学任务；重启后SHALL再次核验实际命令、并行度、缓存哈希和新增进度，防止旧等待进程在门禁满足后重复执行。
-
-#### Scenario: 采集并行度迁移
-- **GIVEN** 已完成entry均已按当前映射协议落盘，旧采集和去泄露等待任务需要迁移
-- **WHEN** 从4并行迁移至8并行
-- **THEN** 先清理旧去泄露等待与旧采集/DSSR进程，再以相同候选、映射和标签规则续采，完成缓存哈希不变，后续去泄露只在完整collection门禁通过后启动
-
-### Requirement: 训练数值内核切换
-系统 SHALL 在训练计算内核切换前完成CPU参考路径对照、CUDA真实性、双向梯度、确定性和真实训练序列测速；切换SHALL保持有效batch、学习率、数据顺序、模型结构和自然收敛判据不变，并核验resume与validation_log的best/bad、stream_state及哈希。禁止以显存占用率代替有效吞吐，禁止CPU静默回退，禁止把内核微基准写成最终推理速度或精度结论。
-
-#### Scenario: GPU利用率低但精确动态规划在CPU执行
-- **WHEN** GPU训练每一步等待CPU inside–outside或配对掩码
-- **THEN** 可使用验收后的Triton CUDA精确递推和设备原语，从共同验证快照由原队列并行恢复；若数值、恢复或真实CUDA验收失败，不得切换
-
-### Requirement: 当前交付边界
-R1/R2/R3/R5已闭环但其余RIPE臂、复合物和Pair-JEPA正式科学结果尚未齐套。最终PPT、归档、独占速度及论文强主张SHALL等待冻结模型的独立复核，VL0、smoke、局部标签和训练日志不得替代正式A/B/C结论。详见 `records/DECISION_TRAINING_LOG.md` §15.545–15.774。
