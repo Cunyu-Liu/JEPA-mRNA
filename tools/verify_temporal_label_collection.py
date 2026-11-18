@@ -23,6 +23,14 @@ def validate_collection_result(result, label, path):
     assert result["labels_sha256"] == sha256(path)
 
 
+def validate_mapping_failures(label):
+    failures = label["mapping_failures"]
+    rejected = {row["auth_chain"]: row["reason"] for row in label["rejected_chains"]}
+    for chain, reason in failures.items():
+        assert rejected.get(chain) == reason
+    assert not set(failures) & {chain["auth_chain"] for chain in label["chains"]}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True)
@@ -62,7 +70,7 @@ def main():
         parents = json.loads((directory / "parents.json").read_text())
         assert parents["cif_sha256"] == label["cif_sha256"]
         assert label["parent_map_sha256"] == sha256(directory / "parents.json")
-        assert label["mapping_failures"] == {}
+        validate_mapping_failures(label)
         dssr = json.loads((directory / "dssr.json").read_text())
         source_pairs = {(pair["nt1"], pair["nt2"]) for pair in dssr.get("pairs", [])}
         assert len(source_pairs) == len(dssr.get("pairs", []))
@@ -98,12 +106,14 @@ def main():
             accepted.append(chain)
         rejection_reasons.update(row["reason"] for row in label["rejected_chains"])
         per_entry.append({"pdb_id": pdb_id, "accepted_chains": len(label["chains"]), "rejected_chains": len(label["rejected_chains"]),
-                          "parent_map_failures": len(label["parent_map_failures"]), "rejected_pairs": len(label["rejected_pairs"])})
+                          "parent_map_failures": len(label["parent_map_failures"]), "rejected_pairs": len(label["rejected_pairs"]),
+                          "mapping_failures": label["mapping_failures"]})
     unique = {chain["sequence"].upper().replace("T", "U") for chain in accepted}
     summary = {
         "status": "PASS_TEMPORAL_LABEL_COLLECTION_QA_HOMOLOGY_PENDING" if not errors else "BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS",
         "collection_sha256": sha256(root / "collection.json"), "metadata_sha256": sha256(Path(args.metadata)),
         "n_entries": len(expected), "n_entry_errors": len(errors), "errors": errors,
+        "n_mapping_failure_chains": sum(len(entry["mapping_failures"]) for entry in per_entry),
         "n_accepted_chains": len(accepted), "n_unique_accepted_sequences": len(unique),
         "n_duplicate_accepted_chains": len(accepted) - len(unique),
         "n_metadata_exact_sequence_chains": len(accepted) - len(metadata_sequence_differences),
