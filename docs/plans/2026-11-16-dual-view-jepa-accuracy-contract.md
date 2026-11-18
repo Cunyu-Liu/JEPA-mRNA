@@ -21,8 +21,6 @@
 >
 > **冻结预测暴露分层裁决（2026-11-18）**：原 xens2 三个 checkpoint 的实际 SHA256 与 P0 一致，历史和重放的 bpRNA-new 预测逐序列一致。全量5388条无跳过，macro-F1=0.5422090871138705；精确暴露n=5381、macro-F1=0.5424236738973192，精确未检出n=7、macro-F1=0.3772531611514662。精确未检出仍未知，不能作clean或显著性/因果结论。全部5388条至少在一个已知来源检出80%同源，同源未检出n=0，故现有bpRNA-new不能形成同源未检出精度对照；不得把空组的0指标解释为性能。只读分析不选模型、不改阈值、不启动新训练，证据`xens2_bprna_new.json` SHA256=`c1c39477b84c3a139a52a091f1011548b1841c50bf6f5e572dc56b75318007ec`。旧替代预测的385条完整记录差异保留，不与P0身份混用。
 >
-> **时间外结构候选补充门（2026-11-18）**：为检验现有bpRNA-new同源未检出n=0造成的评估缺口，固定RCSB initial_release_date≥2025-07-01，不以任何模型表现调整日期或筛选候选。元数据独立QA通过1805入口、4087 RNA实体、1391唯一序列；16–8192nt为3584实体/1131唯一序列，≤1022nt为2588实体/841唯一序列。日期只是保守过滤，不证明历史预训练未接触；canonical polymer字符串不是坐标观测序列或配对标签。必须完成mmCIF哈希、polymer/label_seq映射、DSSR配对与nested删除守恒、缺失残基和精确/80%同源审计后才能冻结评测集，未通过不得启动模型推理或新训练。DSSR v1.9.10非商业使用，二进制SHA256=`c7261c0a…c39a`；完整标签任务在独立`/teams`目录运行。
->
 > **H2 编码器身份限制（2026-11-18）**：H0/H2 best step100 的编码器逐张量完全相同，warmup_head_steps=1600，两个 split 的缓存也一致。故 H2 当前只是 H0 的共享冻结编码器别名，不能用于独立 JEPA 迁移或功能增益结论。保留 seed42 及身份文件 `h2_encoder_identity.json`，停止其余重复 H2 run，汇总不计算独立 H2−H0 效果；不把这一发现改写成新的正/负精度结论，也不通过调参恢复主线。
 >
 > **界面 QA 更正（2026-11-17）**：此前仅验证距离阈值与计数的 QA 不充分，旧实现未证明 mmCIF 坐标与 RNA 序列逐残基对应，并混入同名蛋白链。旧标签、500 步未收敛探索基线及误标 macro-F1 的数值全部撤销为失败证据，不进入论文/PPT。新标签必须直接由原始 mmCIF 的 entity、poly-seq-scheme、atom_site 建立，逐条核对 polymer、label_seq、完整参考序列、肽链伙伴和未观测残基；缺失坐标不得当负样本。由不共用提取代码的验证器重算全部距离、标签及 PDB＋序列簇隔离后，才可运行冻结表征界面 probe。下游 probe 无固定步数上限，使用训练集内部 PDB＋簇隔离验证自然早停，阈值不得接触 holdout；下游 split 隔离不替代预训练审计，RiNALMo 预训练精确接触已证实，禁止 clean-OOD 叙事。
@@ -375,3 +373,34 @@ $PY tools/audit_nt_snapshot_provenance.py
 ```
 
 已有 `homology_round56/<source>` 目录时 runner 会拒绝覆盖，这是历史保护而不是失败。全量重搜前必须先按哈希归档同名目录，禁止删除旧结果或把旧失败目录改成成功。上述命令只复核数据、标签、暴露和工程证据，不能推出新模型精度、完整历史去污染或独立泛化。
+
+
+## 14. 时间外 RNA 候选审计的复现命令（仍非精度实验）
+
+```bash
+cd /home/rna_jev_xens2_dualview_round56
+PY=/root/miniconda3/envs/lucaone_cu128/bin/python
+T=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/v2/temporal_structure
+
+# 固定日期与完整候选元数据；不得用模型结果修改 cutoff
+$PY tools/audit_temporal_pdb_availability.py --cutoff 2025-07-01 --output "$T/availability.json"
+$PY tools/freeze_temporal_pdb_metadata.py --cutoff 2025-07-01 --availability "$T/availability.json" --output "$T/metadata_frozen.json"
+$PY tools/verify_temporal_pdb_metadata.py --availability "$T/availability.json" --metadata "$T/metadata_frozen.json" --output "$T/metadata_independent_qa.json"
+
+# 精确暴露：三源预训练来源与 TR1c/VL0 分开报告
+$PY tools/audit_temporal_exact_exposure.py --metadata "$T/metadata_frozen.json" --output "$T/exact_exposure.json" --fasta "$T/eligible_unique.fasta"
+$PY tools/audit_temporal_downstream_overlap.py --metadata "$T/metadata_frozen.json" --train /root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl --dev /root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl --output "$T/downstream_exact_overlap.json"
+
+# 同源：同一 MMseqs2 17.b804f、identity 与双向覆盖口径
+$PY tools/run_temporal_homology_search.py --metadata "$T/metadata_frozen.json" --eligible-fasta "$T/eligible_unique.fasta" --output-root "$T/homology" --prepare-only
+for source in rnacentral_22_active rfam_14_9 ensembl_109_and_bacteria_56; do
+  $PY tools/run_temporal_homology_search.py --metadata "$T/metadata_frozen.json" --eligible-fasta "$T/eligible_unique.fasta" --output-root "$T/homology" --source "$source" --threads 16 --split-memory-limit 50G
+done
+$PY tools/aggregate_temporal_homology.py --fasta "$T/homology/queries.fasta" --root "$T/homology" --metadata "$T/metadata_frozen.json" --output "$T/homology_union.json"
+
+# 完整 mmCIF/DSSR 标签与独立 QA；不得用四条 smoke 代替全量
+/root/miniconda3/envs/lucaone_cu128/bin/python /home/rna_jev/tools/collect_rna_complex_round49.py --ids-json "$T/candidate_entry_ids.json" --root "$T/full_labels_v1" --workers 4
+$PY tools/verify_temporal_label_collection.py --root "$T/full_labels_v1" --ids "$T/candidate_entry_ids.json" --metadata "$T/metadata_frozen.json" --output "$T/label_collection_qa.json"
+```
+
+所有新输出目录均拒绝覆盖。必须保存 `availability.json`、`metadata_frozen.json`、`metadata_independent_qa.json`、`exact_exposure.json`、`downstream_exact_overlap.json`、`homology_union.json`、`label_collection_qa.json` 以及原始 mmCIF/DSSR/parent-map 和逐来源 `search_manifest.json`。标签和同源门均通过前，不启动冻结模型推理；时间外、精确未检出或同源未检出均不能单独证明完整未见或独立家族。
