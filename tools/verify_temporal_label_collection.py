@@ -32,6 +32,8 @@ def main():
     assert collection["n_entries"] == len(expected) == args.expected_count
     assert set(collection["results"]) == expected
     accepted, duplicate_chain_ids, errors = [], set(), {}
+    metadata_records = {(row["entry_id"], row["entity_id"]): row for row in metadata["records"]}
+    metadata_sequence_differences = []
     rejection_reasons = collections.Counter()
     per_entry = []
     for pdb_id in sorted(expected):
@@ -79,6 +81,14 @@ def main():
                 for other_left, other_right in nested[i + 1:]:
                     assert other_left not in {left, right} and other_right not in {left, right}
                     assert not (left < other_left < right < other_right or other_left < left < other_right < right)
+            assert len(chain["entity_ids"]) == 1
+            meta = metadata_records[(pdb_id, chain["entity_ids"][0])]
+            assert meta["length"] == chain["length"]
+            if meta["sequence"] != chain["sequence"]:
+                differences = [index + 1 for index, (left, right) in enumerate(zip(meta["sequence"], chain["sequence"])) if left != right]
+                assert differences
+                metadata_sequence_differences.append({"id": chain["id"], "positions": differences,
+                                                      "scope": "canonical polymer versus verified modified-parent restoration"})
             accepted.append(chain)
         rejection_reasons.update(row["reason"] for row in label["rejected_chains"])
         per_entry.append({"pdb_id": pdb_id, "accepted_chains": len(label["chains"]), "rejected_chains": len(label["rejected_chains"]),
@@ -90,6 +100,8 @@ def main():
         "n_entries": len(expected), "n_entry_errors": len(errors), "errors": errors,
         "n_accepted_chains": len(accepted), "n_unique_accepted_sequences": len(unique),
         "n_duplicate_accepted_chains": len(accepted) - len(unique),
+        "n_metadata_exact_sequence_chains": len(accepted) - len(metadata_sequence_differences),
+        "metadata_sequence_differences": metadata_sequence_differences,
         "n_raw_pairs": sum(len(chain["raw_pairs"]) for chain in accepted),
         "n_canonical_nested_pairs": sum(len(chain["canonical_nested_pairs"]) for chain in accepted),
         "n_removed_noncanonical_or_crossing_pairs": sum(chain["n_pseudoknot_or_noncanonical"] for chain in accepted),
