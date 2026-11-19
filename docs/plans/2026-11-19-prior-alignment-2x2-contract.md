@@ -29,7 +29,19 @@
 
 - 单 seed=0 pilot 固定 3,200 steps，使用终端 checkpoint；在 step 2,400/3,200 应分别解冻 2/4 个 block。
 - pilot 只用于工程有效性与 VL0 开发集可行性，不运行旧外部面板，也不作生产或 SOTA 决策。
-- pilot 全部验收通过后，完整矩阵才能运行 seeds=0/1/2；每 seed 两条 20,000-step 轨迹，共 6 次训练、每 seed 四个评估身份。
+- pilot 全部验收通过后，完整矩阵才能运行 seeds=0/1/2；每 seed 两条 20,000-step 轨迹，共 6 次训练、每 seed 四个评估身份。当前不再追加 pilot。
+- 主终点只比较固定终端 checkpoint 的 C2−C1：三种子 macro pair-F1 平均提升至少 `+0.01`，micro pair-F1 平均不得下降，micro/macro pair precision 平均降幅均不得超过 `0.005`。本次采用三种子 macro pair-F1 方向全部为正的一致性判据，不在运行后改选配对区间替代，也不挑选冠军 seed。
+- 次要终点：C2−C1 的 micro/macro exact-stem F1 平均非劣界限均为 `−0.005`；micro/macro recall 必须同步报告，方向不一致时写“混合证据”。
+- 保留 C2 vs C1、C2 vs C0、C2 vs C3 三组比较；所有臂共享初始化、数据顺序、训练预算、MEA 网格与 VL0 选择规则。
+
+### 解冻轨迹与最终裁决
+
+- 固定 step 20,000 是唯一主裁决 checkpoint；保留 step 3,200（4/33 blocks）、9,600（20/33）、16,800（33/33）和 20,000（33/33）的模型快照。
+- 每个快照 sidecar 记录实际解冻数、backbone 权重哈希和 checkpoint 文件 SHA256。轨迹 best 只能用于收敛分析，不能替代三种子终端主终点。
+- 轨迹分析回答：C2 优势随解冻扩大/稳定/消失，stem 分歧是否集中于少数序列或长度桶，C2 是否仅较早达到好 checkpoint，以及 C0 充分训练后是否反超。
+- C2 达主终点且 stem 非劣：选定无 Turner 对齐候选，之后只允许一次冻结外部评测；pair 提升但 stem 越界：不选生产路线，转向 pair→stem 目标不一致诊断。
+- C0 终端更强：停止无 Turner 主线；种子方向不一致：不选路线、先查训练稳定性；C3 再次显著较弱：只允许形成“本设置下 Turner 不宜仅作推理补救”的有限结论。
+- 既有八组外部面板只有在前述候选成立时才可冻结应用一次，且仍为非独立敏感性证据；严格 OOD 需另用官方或时间外划分。
 
 ## 解码和指标
 
@@ -40,18 +52,16 @@
 
 ## 解释边界
 
-- C2>C1：支持训练—推理一致的无先验候选方向。
-- C3 最佳：支持 Turner 作为 off-trained 表示的推理正则项。
-- C0 最佳：不支持替换受控 on/on MAP 路线，需复核初始化与分布条件。
-- 任何结论都要求三种子一致方向、precision 不崩溃且 stem-F1 同步；VL0 单独不能支持生产修复或 SOTA。
-- 既有八组外部面板即使将来冻结应用一次，也只是非独立敏感性证据；严格 OOD 需另用官方或时间外划分。
+- 所有路线判断均以上述冻结的主要终点、次要终点和最终裁决规则为准；VL0 单独不能支持生产修复或 SOTA。
+- 运行后不得放宽阈值、改用有利指标、用轨迹 best 替代终端结果，或从三个 seed 中挑冠军。
 
 ## 执行、验收与存储
 
 - 代码和 Git 提交留在 `/home/rna_jev_xens2_dualview_round56`；共享初始化、checkpoint、raw scores 和报告全部写入 `/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/`。
-- 端到端入口：`bash tools/run_prior_alignment_stage.sh smoke 0`、`bash tools/run_prior_alignment_stage.sh pilot 0`；pilot 全部验收通过后才可执行 `bash tools/run_prior_alignment_stage.sh full SEED`，其中 SEED 为 0/1/2。
+- 端到端入口：`bash tools/run_prior_alignment_stage.sh smoke 0`、`bash tools/run_prior_alignment_stage.sh pilot 0`；pilot 全部验收通过后才可执行 `bash tools/run_prior_alignment_stage.sh full SEED`，其中 SEED 为 0/1/2。冻结的完整矩阵由 `bash tools/run_prior_alignment_full_matrix.sh` 顺序执行 seeds=0/1/2，并在全部阶段验收后生成 `full_matrix_verdict.json`。
 - 每个阶段顺序执行：共享初始化核验 → train-on/train-off 两次训练 → 同一 checkpoint 的 on/off raw 导出 → VL0 四身份解码 → 独立工程与身份验收 → 独立科学复核。脚本不读取旧外部面板。
 - 训练逐步写入 `batch_order.jsonl`；验收器逐 step 比较两臂序列哈希，检查共享初始化、终端 checkpoint、有限 loss/gradient、解冻计划、纯 length-NLL、四身份来源和 `/teams` 存储边界。
+- full 模式关闭周期性模型快照，只保存四个合同里程碑；resume 仍每 500 steps 覆盖保存，用于容错，不作为科学 checkpoint。每个里程碑 `.pt.json` sidecar 的文件 SHA 由阶段验收器复核。
 - `stage_verification.json` 只证明工程与身份有效，不自动选择科学路线，不构成生产修复或 SOTA 结论。
 - `tools/verify_prior_alignment_science.py` 从逐序列网格明细独立重算 micro/macro 指标与冻结选择规则，再从原始 scores 独立重跑四个身份的终端解码、pair/exact-stem 计数和汇总；结果写入 `scientific_verification.json`。该文件仍只限 VL0 开发集，不选择生产路线。
 - 当前 pilot 启动于科学复核器加入之前，因此完成后必须补跑该复核器并生成 `scientific_verification.json`，不能只凭旧启动脚本的退出状态宣告验收完成。

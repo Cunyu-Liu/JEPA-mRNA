@@ -4,7 +4,9 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
+
+import torch
 
 
 def sha256_file(path: str | Path) -> str:
@@ -19,8 +21,8 @@ def load_contract(path: str | Path) -> dict[str, Any]:
     contract = json.loads(Path(path).read_text())
     if contract.get("contract_id") != "prior_alignment_2x2_v1":
         raise ValueError("unexpected prior-alignment contract")
-    if contract.get("status") != "FROZEN_BEFORE_TRAINING":
-        raise ValueError("training requires the frozen pre-training contract")
+    if contract.get("status") not in {"FROZEN_BEFORE_TRAINING", "FROZEN_BEFORE_FULL_MATRIX"}:
+        raise ValueError("training requires a frozen pre-training contract")
     return contract
 
 
@@ -80,6 +82,8 @@ def validate_training_args(contract: dict[str, Any], args: Any) -> str:
             raise ValueError("pilot must use seed=0 and steps=3200")
     elif mode == "full":
         gate = contract["full_matrix_gate"]
+        if contract.get("status") != "FROZEN_BEFORE_FULL_MATRIX" or not gate.get("scientific_criteria_frozen_before_launch"):
+            raise ValueError("full matrix requires scientific criteria frozen before launch")
         if values.get("seed") not in gate["seeds"] or values.get("steps") != gate["steps_per_training_trajectory"]:
             raise ValueError("full matrix must use seeds=0/1/2 and steps=20000")
     elif not 1 <= int(values.get("steps", 0)) <= 16:
@@ -90,6 +94,33 @@ def validate_training_args(contract: dict[str, Any], args: Any) -> str:
 def checkpoint_due(step: int, save_every: int, total_steps: int) -> bool:
     """Zero disables intermediate saves but never suppresses the terminal checkpoint."""
     return step == total_steps or (save_every > 0 and step % save_every == 0)
+
+
+def parse_snapshot_steps(value: str | Iterable[int] | None) -> set[int]:
+    """Parse explicit model-only milestones independently of resume-save cadence."""
+    if value is None:
+        return set()
+    items = value.split(",") if isinstance(value, str) else value
+    steps = {int(item) for item in items if str(item).strip()}
+    if any(step < 1 for step in steps):
+        raise ValueError("snapshot steps must be positive")
+    return steps
+
+
+def snapshot_due(step: int, snapshot_every: int, explicit_steps: set[int], total_steps: int) -> bool:
+    return step == total_steps or step in explicit_steps or (snapshot_every > 0 and step % snapshot_every == 0)
+
+
+def tensor_state_sha256(state: dict[str, torch.Tensor]) -> str:
+    """Hash tensor identity, shape and bytes without depending on pickle serialization."""
+    digest = hashlib.sha256()
+    for name in sorted(state):
+        tensor = state[name].detach().cpu().contiguous()
+        digest.update(name.encode("utf-8"))
+        digest.update(str(tensor.dtype).encode("ascii"))
+        digest.update(str(tuple(tensor.shape)).encode("ascii"))
+        digest.update(tensor.reshape(-1).view(torch.uint8).numpy().tobytes())
+    return digest.hexdigest()
 
 
 def evaluation_rows(contract: dict[str, Any], training_trajectory: str) -> list[dict[str, Any]]:

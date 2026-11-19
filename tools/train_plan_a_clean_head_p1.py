@@ -69,8 +69,8 @@ from rnajepa.decision_head import (  # noqa: E402
 from rnajepa.rlcd import ObjectiveWeights, combined_loss  # noqa: E402
 from rnajepa.harness import valid_pair_mask  # noqa: E402
 from rnajepa.prior_alignment import (checkpoint_due, evaluation_rows, load_contract,
-                                     scheduled_unfreeze_blocks, sha256_file,
-                                     validate_training_args)  # noqa: E402
+                                     parse_snapshot_steps, scheduled_unfreeze_blocks, sha256_file,
+                                     snapshot_due, tensor_state_sha256, validate_training_args)  # noqa: E402
 from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
 from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
 from rnajepa.structured_mask import structured_pair_mask  # noqa: E402
@@ -401,6 +401,7 @@ def main():
     ap.add_argument("--warmup-steps", type=int, default=5)
     ap.add_argument("--save-every", type=int, default=500)
     ap.add_argument("--snapshot-every", type=int, default=2000)
+    ap.add_argument("--snapshot-steps", default="", help="comma-separated model-only milestones; terminal is always saved")
     ap.add_argument("--snapshot-dir", default=CKPT_DIR)
     ap.add_argument("--grad-clip", type=float, default=1.0)
     ap.add_argument("--zchunk", type=int, default=64, help="column width of the "
@@ -487,6 +488,9 @@ def main():
 
     os.makedirs(args.out, exist_ok=True)
     os.makedirs(args.snapshot_dir, exist_ok=True)
+    explicit_snapshot_steps = parse_snapshot_steps(args.snapshot_steps)
+    if args.steps > 0 and any(step > args.steps for step in explicit_snapshot_steps):
+        raise ValueError("an explicit snapshot step exceeds the training budget")
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     device = "cuda"
@@ -787,6 +791,13 @@ def main():
         n_unfrozen = int(state["n_unfrozen"])
         restore_unfrozen_blocks(blocks, n_unfrozen)
         start_step = int(state["step"])
+        for ledger_name in ("batch_order.jsonl", "compute_ledger.jsonl", "train_log.jsonl"):
+            ledger_path = os.path.join(args.out, ledger_name)
+            if os.path.isfile(ledger_path):
+                with open(ledger_path) as fh:
+                    retained = [line for line in fh if line.strip() and json.loads(line)["step"] <= start_step]
+                with open(ledger_path, "w") as fh:
+                    fh.writelines(retained)
         if cl2 is not None:
             cl2.restore_state(state["cl2"])
         restore_batch_stream(stream, state["stream_state"], args.batch_size)
@@ -798,6 +809,33 @@ def main():
             json.dump(meta, fh, indent=1)
         print(f"[plan-a] resumed from step {start_step} "
               f"({n_unfrozen}/{n_blocks} blocks unfrozen)", flush=True)
+
+    def write_model_snapshot(step):
+        path = os.path.join(args.snapshot_dir,
+                            f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt")
+        checkpoint_meta = None
+        if training_trajectory:
+            backbone_hash = tensor_state_sha256(encoder.state_dict())
+            checkpoint_meta = {
+                "step": int(step),
+                "actual_unfrozen_blocks": int(n_unfrozen),
+                "backbone_update_sha256": backbone_hash,
+                "backbone_hash_semantics": "sorted encoder tensor names, dtypes, shapes and contiguous uint8 bytes",
+            }
+        payload = {"step": step,
+                   "model": {"encoder": encoder.state_dict(), "head": head.state_dict()},
+                   "meta": meta}
+        if checkpoint_meta is not None:
+            payload["prior_alignment_checkpoint"] = checkpoint_meta
+        atomic_torch_save(payload, path)
+        if checkpoint_meta is not None:
+            receipt = dict(checkpoint_meta)
+            receipt.update({"checkpoint_path": path, "checkpoint_sha256": sha256_file(path)})
+            receipt_path = path + ".json"
+            temporary = receipt_path + ".tmp"
+            with open(temporary, "w") as fh:
+                json.dump(receipt, fh, indent=2)
+            os.replace(temporary, receipt_path)
 
     log_path = os.path.join(args.out, "train_log.jsonl")
     t0 = time.time()
@@ -1065,13 +1103,8 @@ def main():
                         "bad_evaluations": bad_evaluations,
                         "stream_state": stream.state,
                         "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
-        if (args.snapshot_every > 0 and step % args.snapshot_every == 0) or step == args.steps:
-            atomic_torch_save({"step": step,
-                        "model": {"encoder": encoder.state_dict(),
-                                  "head": head.state_dict()},
-                        "meta": meta},
-                       os.path.join(args.snapshot_dir,
-                                    f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt"))
+        if snapshot_due(step, args.snapshot_every, explicit_snapshot_steps, args.steps):
+            write_model_snapshot(step)
         if validation_records and step % args.validation_every == 0:
             import xens2_eval
             encoder.eval()
@@ -1140,10 +1173,7 @@ def main():
     terminal_snapshot = os.path.join(args.snapshot_dir,
                                      f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt")
     if args.steps > 0 and step == args.steps and not os.path.isfile(terminal_snapshot):
-        atomic_torch_save({"step": step,
-                    "model": {"encoder": encoder.state_dict(),
-                              "head": head.state_dict()},
-                    "meta": meta}, terminal_snapshot)
+        write_model_snapshot(step)
     meta["final_trainable_params"] = sum(p.numel() for p in trainable())
     meta["trainable_parameter_scope"] = (
         f"{n_unfrozen}/{n_blocks} transformer blocks plus head; "

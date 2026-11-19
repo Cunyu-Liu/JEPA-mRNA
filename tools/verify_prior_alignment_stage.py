@@ -33,6 +33,7 @@ def main() -> None:
             raise ValueError(f"{name}: {detail}")
 
     metas, orders, logs, checkpoint_hashes = {}, {}, {}, {}
+    trajectory_receipts = {}
     for arm in ("on", "off"):
         trajectory = f"train_{arm}"
         root = args.stage / trajectory
@@ -65,6 +66,21 @@ def main() -> None:
         snapshot = args.stage / "snapshots" / f"{trajectory}_step{expected_steps}.pt"
         check(f"{arm}_snapshot_exists", snapshot.is_file(), snapshot)
         checkpoint_hashes[arm] = sha256_file(snapshot)
+        if args.mode == "full":
+            for milestone, expected_unfrozen in ((3200, 4), (9600, 20), (16800, 33), (20000, 33)):
+                milestone_path = args.stage / "snapshots" / f"{trajectory}_step{milestone}.pt"
+                receipt_path = Path(str(milestone_path) + ".json")
+                check(f"{arm}_milestone_{milestone}_exists", milestone_path.is_file())
+                check(f"{arm}_milestone_{milestone}_receipt", receipt_path.is_file())
+                receipt = json.loads(receipt_path.read_text())
+                check(f"{arm}_milestone_{milestone}_step", receipt["step"] == milestone)
+                check(f"{arm}_milestone_{milestone}_unfrozen",
+                      receipt["actual_unfrozen_blocks"] == expected_unfrozen)
+                check(f"{arm}_milestone_{milestone}_backbone_hash",
+                      len(receipt["backbone_update_sha256"]) == 64)
+                check(f"{arm}_milestone_{milestone}_file_hash",
+                      receipt["checkpoint_sha256"] == sha256_file(milestone_path))
+                trajectory_receipts[f"{arm}_{milestone}"] = receipt
     check("same_shared_init", metas["on"]["prior_alignment"]["shared_init_sha256"] ==
           metas["off"]["prior_alignment"]["shared_init_sha256"])
     check("different_terminal_checkpoints", checkpoint_hashes["on"] != checkpoint_hashes["off"])
@@ -95,6 +111,7 @@ def main() -> None:
         "n_checks": len(checks), "checks": checks,
         "shared_init_sha256": metas["on"]["prior_alignment"]["shared_init_sha256"],
         "checkpoint_sha256": checkpoint_hashes,
+        "checkpoint_trajectory": trajectory_receipts,
         "batch_order_identical": True, "old_external_panels_used": False,
         "scientific_route_selected": False,
         "next_gate": "pilot acceptance permits frozen full seeds 0/1/2; it does not permit production or SOTA claims",

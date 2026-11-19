@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "contract_id": "prior_alignment_2x2_v1",
-  "status": "FROZEN_BEFORE_TRAINING",
+  "status": "FROZEN_BEFORE_FULL_MATRIX",
   "research_question": "When does the Turner thermodynamic prior help or suppress learned RNA pair scores, and is its effect specific to training, inference, or structured decoding?",
   "scope": {
     "model_family": "single Plan-A member per seed; no R2D or xens2 ensemble inside this 2x2 comparison",
@@ -113,17 +113,61 @@
     "steps_per_training_trajectory": 20000,
     "n_training_runs": 6,
     "n_evaluation_identities_per_seed": 4,
+    "additional_pilot_required": false,
     "prerequisite": "pilot required_checks all PASS and implementation tests committed",
+    "scientific_criteria_frozen_before_launch": true,
+    "primary_endpoint": {
+      "comparison": "C2_minus_C1",
+      "aggregation": "mean over seeds 0/1/2 at the fixed terminal checkpoint",
+      "macro_pair_f1_mean_delta_min": 0.01,
+      "micro_pair_f1_mean_delta_min": 0.0,
+      "micro_pair_precision_mean_delta_min": -0.005,
+      "macro_pair_precision_mean_delta_min": -0.005,
+      "seed_direction_rule": "all three per-seed macro pair-F1 deltas must be positive; the paired-interval alternative is not invoked for this run",
+      "forbidden": "selecting the best seed, comparing only seed0, or replacing the terminal comparison with a best checkpoint"
+    },
+    "secondary_endpoint": {
+      "comparison": "C2_minus_C1",
+      "micro_stem_f1_mean_delta_min": -0.005,
+      "macro_stem_f1_mean_delta_min": -0.005,
+      "recall_reporting": "micro and macro pair-recall are mandatory for every arm",
+      "mixed_evidence_rule": "if micro and macro directions disagree, report mixed evidence and never select only the favorable metric"
+    },
+    "required_comparisons": {
+      "C2_vs_C1": "test whether aligned train-off/inference-off exceeds inference-only Turner removal",
+      "C2_vs_C0": "required before any production-candidate discussion; beating only an ablation arm is insufficient",
+      "C2_vs_C3": "test whether Turner is suitable as an inference-only remedy",
+      "production_candidate_baseline_rule": "C2 mean micro pair-F1 must be no lower than C0 and C2 mean macro pair-F1 must exceed C0",
+      "C0_final_stronger_definition": "C0 exceeds C2 on both mean micro and mean macro pair-F1",
+      "shared_conditions": "same initialization, data order, training budget, MEA temperature/gamma grids and VL0 selection policy"
+    },
+    "checkpoint_trajectory": {
+      "primary_checkpoint": "fixed step 20000; no best-checkpoint substitution",
+      "required_retained_steps": [3200, 9600, 16800, 20000],
+      "expected_unfrozen_blocks": {"3200": 4, "9600": 20, "16800": 33, "20000": 33},
+      "required_metadata": ["actual_unfrozen_blocks", "backbone_update_sha256", "checkpoint_sha256"],
+      "best_checkpoint_rule": "a VL0 trajectory-best checkpoint may be reported only for convergence analysis; record its actual unfreeze count and hashes, and never substitute it for the terminal endpoint",
+      "required_analyses": [
+        "whether the C2 advantage expands, remains stable, or disappears with backbone unfreezing",
+        "whether stem micro/macro disagreement is concentrated in a few sequences or length buckets",
+        "whether C2 only reaches a good checkpoint earlier rather than converging better",
+        "whether C0 surpasses C2 after sufficient training"
+      ]
+    },
+    "decision_rules": {
+      "select_aligned_off_candidate": "C2 meets the primary endpoint and both stem noninferiority margins; then exactly one frozen external evaluation is allowed",
+      "pair_gain_stem_failure": "do not select a production route; diagnose pair-to-stem objective mismatch",
+      "C0_final_stronger": "stop the train-off mainline and attribute the pilot signal to seed or undertraining",
+      "seed_direction_inconsistent": "do not select a route; inspect training stability and never choose a champion seed",
+      "C3_repeatedly_weaker": "allow only the limited conclusion that Turner is not suitable as an inference-only remedy in this setting; do not claim universal Turner ineffectiveness"
+    },
     "route_interpretation": {
-      "C2_above_C1": "supports aligned train-off/inference-off as a candidate direction",
-      "C3_best": "supports Turner as an inference-time regularizer for the off-trained representation",
-      "C0_best": "does not support replacing the controlled on/on MAP route; recheck initialization and distribution conditions",
       "any_result": "requires precision, recall, pair-F1 and stem-F1 jointly; no SOTA or production claim from VL0 alone"
     }
   },
   "external_policy": {
     "previous_eight_panels": "not used in pilot or route/parameter selection",
-    "future_use": "at most one frozen sensitivity application after the full matrix is locked; label non-independent because they were used in earlier analyses",
+    "future_use": "only if C2 meets the frozen primary endpoint and both stem noninferiority margins, permit exactly one frozen sensitivity application; otherwise none; label any such application non-independent because the panels were used in earlier analyses",
     "strict_ood": "requires a separate preregistered official/time-out split"
   },
   "artifact_root": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1",

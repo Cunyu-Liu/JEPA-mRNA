@@ -2,9 +2,11 @@ import json
 from pathlib import Path
 
 import pytest
+import torch
 
 from rnajepa.prior_alignment import (checkpoint_due, evaluation_rows, load_contract,
-                                     scheduled_unfreeze_blocks, validate_training_args)
+                                     parse_snapshot_steps, scheduled_unfreeze_blocks,
+                                     snapshot_due, tensor_state_sha256, validate_training_args)
 from rnajepa.prior_structure_metrics import pair_and_stem_counts, prf
 
 
@@ -36,6 +38,22 @@ def test_unfreeze_schedule_crosses_two_events_in_pilot():
     assert scheduled_unfreeze_blocks(1600, 1600, 800, 2, 33) == 0
     assert scheduled_unfreeze_blocks(2400, 1600, 800, 2, 33) == 2
     assert scheduled_unfreeze_blocks(3200, 1600, 800, 2, 33) == 4
+    assert scheduled_unfreeze_blocks(9600, 1600, 800, 2, 33) == 20
+    assert scheduled_unfreeze_blocks(16800, 1600, 800, 2, 33) == 33
+    assert scheduled_unfreeze_blocks(20000, 1600, 800, 2, 33) == 33
+
+
+def test_explicit_snapshot_milestones_and_tensor_hash():
+    milestones = parse_snapshot_steps("3200,9600,16800")
+    assert snapshot_due(3200, 0, milestones, 20000)
+    assert not snapshot_due(4000, 0, milestones, 20000)
+    assert snapshot_due(20000, 0, milestones, 20000)
+    state = {"scalar": torch.tensor(1.0), "matrix": torch.arange(4, dtype=torch.float32).reshape(2, 2)}
+    assert tensor_state_sha256(state) == tensor_state_sha256(dict(reversed(list(state.items()))))
+    changed = dict(state)
+    changed["matrix"] = state["matrix"].clone()
+    changed["matrix"][0, 0] = 99
+    assert tensor_state_sha256(state) != tensor_state_sha256(changed)
 
 
 def test_zero_save_interval_still_writes_terminal_checkpoint():

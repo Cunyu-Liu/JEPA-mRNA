@@ -8,9 +8,9 @@ PY="${PY:-/root/miniconda3/envs/lucaone_cu128/bin/python}"
 ART="${ART:-/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1}"
 
 case "$MODE" in
-  smoke) STEPS=2; LIMIT=2; SAVE_EVERY=0 ;;
-  pilot) STEPS=3200; LIMIT=0; SAVE_EVERY=500; [[ "$SEED" == "0" ]] || { echo "pilot is frozen to seed0"; exit 2; } ;;
-  full) STEPS=20000; LIMIT=0; SAVE_EVERY=500; [[ "$SEED" =~ ^[012]$ ]] || { echo "full seeds are 0/1/2"; exit 2; } ;;
+  smoke) STEPS=2; LIMIT=2; SAVE_EVERY=0; SNAPSHOT_ARGS=(--snapshot-every 2000) ;;
+  pilot) STEPS=3200; LIMIT=0; SAVE_EVERY=500; SNAPSHOT_ARGS=(--snapshot-every 2000); [[ "$SEED" == "0" ]] || { echo "pilot is frozen to seed0"; exit 2; } ;;
+  full) STEPS=20000; LIMIT=0; SAVE_EVERY=500; SNAPSHOT_ARGS=(--snapshot-every 0 --snapshot-steps 3200,9600,16800); [[ "$SEED" =~ ^[012]$ ]] || { echo "full seeds are 0/1/2"; exit 2; } ;;
   *) echo "unknown mode: $MODE"; exit 2 ;;
 esac
 
@@ -18,7 +18,7 @@ STAGE="$ART/${MODE}_seed${SEED}"
 INIT="$ART/init/shared_init_seed${SEED}.pt"
 mkdir -p "$STAGE" "$ART/init" "$STAGE/snapshots"
 cd "$REPO"
-RUN_GIT_HEAD="$(git rev-parse HEAD)"
+RUN_GIT_HEAD="${PRIOR_ALIGNMENT_RUN_GIT_HEAD:-$(git rev-parse HEAD)}"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader
 
@@ -38,7 +38,7 @@ for ARM in on off; do
     --warmup-head-steps 1600 --unfreeze-every 800 --unfreeze-per-step 2 \
     --warmup-steps 5 --grad-clip 1 --nll-normalization length \
     --lambda-nll 1 --lambda-distill 0 --lambda-rlcd 0 --lambda-cal 0 --lambda-jepa 0 \
-    --scorer resnet2d --no-early-stop --save-every "$SAVE_EVERY" \
+    --scorer resnet2d --no-early-stop --save-every "$SAVE_EVERY" "${SNAPSHOT_ARGS[@]}" \
     > "$STAGE/train_${ARM}.stdout.log" 2>&1
 done
 
