@@ -95,6 +95,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifact-root", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--checkpoint-verification", type=Path,
+                        help="independent 24-checkpoint tensor verification; required for final audited verdict")
     args = parser.parse_args()
     contract_path = REPO / "configs/prior_alignment_2x2_v1.json"
     contract = json.loads(contract_path.read_text())
@@ -112,18 +114,58 @@ def main():
         assert not science["route_winner_selected"] and science["mode"] == "full" and science["seed"] == seed
         assert summary["terminal_step"] == 20000 and summary["n_sequences"] == 196
         assert not summary["old_external_panels_used"] and set(summary["arms"]) == set(ARMS)
+        training_completion = []
+        for arm in ("on", "off"):
+            run_meta = json.loads((stage / f"train_{arm}/run_meta.json").read_text())
+            log_lines = (stage / f"train_{arm}/train_log.jsonl").read_text().splitlines()
+            last_log = json.loads(log_lines[-1])
+            assert run_meta["status"] == "completed" and run_meta["early_stopped"] is False
+            assert run_meta["schedule"]["steps"] == 20000 and last_log["step"] == 20000
+            receipt = engineering["checkpoint_trajectory"][f"{arm}_20000"]
+            assert receipt["actual_unfrozen_blocks"] == last_log["unfrozen"] == 33
+            training_completion.append({
+                "trajectory": f"train_{arm}", "status": "completed",
+                "stopping_reason": "FIXED_20000_STEP_BUDGET_REACHED_NO_EARLY_STOP",
+                "terminal_step": last_log["step"], "actual_unfrozen_blocks": 33,
+                "checkpoint_sha256": engineering["checkpoint_sha256"][arm],
+                "backbone_update_sha256": receipt["backbone_update_sha256"],
+            })
         seed_rows.append(summary["arms"])
         provenance.append({
             "seed": seed, "stage": str(stage),
             "engineering_checks": engineering["n_checks"], "science_checks": science["n_checks"],
             "git_head": manifest["git_head"], "contract_sha256": contract_sha256,
+            "training_completion": training_completion,
         })
+    checkpoint_evidence = None
+    if args.checkpoint_verification:
+        verified = json.loads(args.checkpoint_verification.read_text())
+        assert verified["status"] == "PASS" and verified["n_checkpoints"] == 24
+        assert verified["contract_sha256"] == contract_sha256 and not verified["scientific_route_selected"]
+        by_identity = {(record["seed"], record["trajectory"], record["step"]): record
+                       for record in verified["records"]}
+        for provenance_row in provenance:
+            seed = provenance_row["seed"]
+            engineering = json.loads((Path(provenance_row["stage"]) / "stage_verification.json").read_text())
+            for trajectory in ("train_on", "train_off"):
+                short_arm = trajectory.removeprefix("train_")
+                for step in (3200, 9600, 16800, 20000):
+                    record = by_identity[(seed, trajectory, step)]
+                    receipt = engineering["checkpoint_trajectory"][f"{short_arm}_{step}"]
+                    assert record["status"] == "PASS"
+                    assert record["checkpoint_sha256"] == receipt["checkpoint_sha256"]
+                    assert record["backbone_update_sha256"] == receipt["backbone_update_sha256"]
+        checkpoint_evidence = {
+            "path": str(args.checkpoint_verification),
+            "sha256": sha256_file(args.checkpoint_verification),
+            "n_checkpoints": verified["n_checkpoints"], "n_checks": verified["n_checks"],
+        }
     result = evaluate_seed_metrics(seed_rows, contract)
     result.update({
         "status": "PASS", "scope": "FROZEN_THREE_SEED_TERMINAL_VL0_MATRIX",
         "contract_sha256": contract_sha256, "seeds": [0, 1, 2],
         "terminal_step": 20000, "old_external_panels_used": False,
-        "provenance": provenance,
+        "provenance": provenance, "checkpoint_tensor_verification": checkpoint_evidence,
     })
     args.out.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({key: result[key] for key in (
