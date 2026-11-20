@@ -241,7 +241,7 @@ def collect_records(artifact_root):
     for seed in (0, 1, 2):
         stage = artifact_root / f"full_seed{seed}"
         lengths = {}
-        for path in (stage / "raw_train_on/bprna_vl0").glob("*.npz"):
+        for path in (stage / "export_train_on/bprna_vl0").glob("*.npz"):
             with np.load(path, allow_pickle=False) as raw:
                 lengths[path.stem] = len(str(raw["seq"]))
         for step in STEPS:

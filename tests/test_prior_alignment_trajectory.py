@@ -1,10 +1,12 @@
+import json
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "tools"))
-from analyze_prior_alignment_unfreeze_trajectory import (ARMS, STEPS, aggregate_trajectory,
+from analyze_prior_alignment_unfreeze_trajectory import (ARMS, STEPS, aggregate_trajectory, collect_records,
                                                           length_bucket, summarize_rows)
 
 
@@ -66,3 +68,26 @@ def test_terminal_reversal_is_not_hidden_by_intermediate_advantage():
     result = aggregate_trajectory(records)
     assert result["C2_macro_pair_f1_advantage_trend"] == "DISAPPEARED_OR_REVERSED"
     assert result["C2_advantage_persists_through_full_unfreeze"] is False
+
+
+def test_collect_records_uses_terminal_export_for_sequence_lengths(tmp_path):
+    for seed in (0, 1, 2):
+        stage = tmp_path / f"full_seed{seed}"
+        raw_dir = stage / "export_train_on/bprna_vl0"
+        raw_dir.mkdir(parents=True)
+        for sequence, length in (("a", 100), ("b", 300)):
+            np.savez(raw_dir / f"{sequence}.npz", seq=np.array("A" * length))
+        for step in STEPS:
+            root = stage / "decode_vl0" if step == 20000 else stage / "trajectory" / f"step{step}"
+            root.mkdir(parents=True)
+            (root / "vl0_selected_summary.json").write_text(json.dumps({
+                "seed": seed, "old_external_panels_used": False,
+            }))
+            rows = [_row(arm, sequence, 1, 1, 1, 1, length)
+                    for sequence, length in (("a", 100), ("b", 300)) for arm in ARMS]
+            (root / "vl0_selected_per_sequence.jsonl").write_text(
+                "".join(json.dumps(row) + "\n" for row in rows))
+    records = collect_records(tmp_path)
+    assert len(records) == 12
+    assert {row["length"] for record in records for row in record["rows"]} == {100, 300}
+    assert {row["length_bucket"] for record in records for row in record["rows"]} == {"065-128", "257-512"}
