@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import statistics
 import sys
 from pathlib import Path
@@ -23,6 +24,36 @@ METRICS = (
 
 def _mean(values):
     return statistics.fmean(values)
+
+
+def _prf(tp, fp, fn):
+    return {
+        "precision": tp / (tp + fp) if tp + fp else (1.0 if fn == 0 else 0.0),
+        "recall": tp / (tp + fn) if tp + fn else (1.0 if fp == 0 else 0.0),
+        "f1": 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 1.0,
+    }
+
+
+def recompute_selected_arms(rows):
+    """Recompute all terminal metrics from selected per-sequence TP/FP/FN counts."""
+    identities = {(row["arm"], row["sequence_sha256"]) for row in rows}
+    assert len(rows) == len(identities) == 4 * 196
+    recomputed = {}
+    for arm in ARMS:
+        arm_rows = [row for row in rows if row["arm"] == arm]
+        assert len({row["sequence_sha256"] for row in arm_rows}) == len(arm_rows) == 196
+        metrics = {"arm": arm, "n_sequences": 196}
+        for level in ("pair", "stem"):
+            totals = {key: sum(int(row[level][key]) for row in arm_rows) for key in ("tp", "fp", "fn")}
+            micro = _prf(**totals)
+            per_sequence = [_prf(**{key: int(row[level][key]) for key in ("tp", "fp", "fn")})
+                            for row in arm_rows]
+            for metric in ("precision", "recall", "f1"):
+                metrics[f"micro_{level}_{metric}"] = micro[metric]
+                metrics[f"macro_{level}_{metric}"] = _mean(row[metric] for row in per_sequence)
+        assert set(metrics) == {"arm", "n_sequences", *METRICS}
+        recomputed[arm] = metrics
+    return recomputed
 
 
 def evaluate_seed_metrics(seed_rows, contract):
@@ -130,12 +161,24 @@ def main():
                 "checkpoint_sha256": engineering["checkpoint_sha256"][arm],
                 "backbone_update_sha256": receipt["backbone_update_sha256"],
             })
-        seed_rows.append(summary["arms"])
+        selected_path = stage / "decode_vl0/vl0_selected_per_sequence.jsonl"
+        selected_rows = [json.loads(line) for line in selected_path.read_text().splitlines() if line.strip()]
+        recomputed_arms = recompute_selected_arms(selected_rows)
+        for arm in ARMS:
+            for metric in METRICS:
+                assert math.isclose(recomputed_arms[arm][metric], summary["arms"][arm][metric],
+                                    rel_tol=1e-12, abs_tol=1e-12), (seed, arm, metric)
+        seed_rows.append(recomputed_arms)
         provenance.append({
             "seed": seed, "stage": str(stage),
             "engineering_checks": engineering["n_checks"], "science_checks": science["n_checks"],
             "git_head": manifest["git_head"], "contract_sha256": contract_sha256,
             "training_completion": training_completion,
+            "independent_metric_recomputation": {
+                "source": str(selected_path), "n_rows": len(selected_rows),
+                "n_sequences_per_arm": 196, "n_metric_comparisons": len(ARMS) * len(METRICS),
+                "summary_match": True,
+            },
         })
     checkpoint_evidence = None
     if args.checkpoint_verification:

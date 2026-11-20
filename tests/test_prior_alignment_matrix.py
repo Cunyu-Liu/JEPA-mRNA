@@ -2,7 +2,7 @@ import copy
 import json
 from pathlib import Path
 
-from tools.verify_prior_alignment_matrix import evaluate_seed_metrics
+from tools.verify_prior_alignment_matrix import evaluate_seed_metrics, recompute_selected_arms
 
 
 CONTRACT = json.loads((Path(__file__).parents[1] / "configs/prior_alignment_2x2_v1.json").read_text())
@@ -67,3 +67,18 @@ def test_mixed_micro_macro_evidence_is_explicit():
         row["C2"]["micro_stem_f1"] = 0.51
     result = evaluate_seed_metrics(rows, CONTRACT)
     assert result["mixed_evidence"] is True
+
+
+def test_terminal_metrics_are_recomputed_from_per_sequence_counts():
+    selected = []
+    for arm in ("C0", "C1", "C2", "C3"):
+        tp = 9 if arm == "C2" else 8
+        for index in range(196):
+            selected.append({"arm": arm, "sequence_sha256": f"sequence-{index}",
+                             "pair": {"tp": tp, "fp": 0, "fn": 10 - tp},
+                             "stem": {"tp": tp, "fp": 0, "fn": 10 - tp}})
+    result = recompute_selected_arms(selected)
+    assert result["C2"]["micro_pair_f1"] == 18 / 19
+    assert result["C2"]["macro_pair_f1"] == 18 / 19
+    assert result["C1"]["micro_stem_f1"] == 16 / 18
+    assert result["C2"]["n_sequences"] == 196
