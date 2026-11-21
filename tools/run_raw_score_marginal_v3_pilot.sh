@@ -149,7 +149,7 @@ provenance = json.loads(provenance_path.read_text())
 provenance["elapsed_seconds_marginal_train_export_evaluate_verify"] = int(sys.argv[2])
 provenance["evaluation_sha256"] = {
     name: hashlib.sha256((stage / "evaluation_v3" / name).read_bytes()).hexdigest()
-    for name in ["arm_metrics.json", "pairwise_comparisons.json", "pilot_verdict.json"]
+    for name in ["per_sequence.jsonl", "pilot_verdict.json"]
 }
 provenance["verification_sha256"] = hashlib.sha256((stage / "verification_v3.json").read_bytes()).hexdigest()
 provenance_path.write_text(json.dumps(provenance, indent=2) + "\n")
