@@ -33,7 +33,7 @@ def _summarize_decoded(rows):
         counts = {key: int(sum(row[level][key] for row in rows)) for key in ("tp", "fp", "fn")}
         for key, value in prf(**counts).items():
             output[f"micro_{level}_{key}"] = value
-        for key in ("p", "r", "f1"):
+        for key in ("precision", "recall", "f1"):
             output[f"macro_{level}_{key}"] = _macro(rows, level, key)
     return output
 
@@ -99,13 +99,18 @@ def _verify_completion(stage, arm):
 
 def _direction_gate(arm_metrics, control, rules):
     deltas = {key: arm_metrics[key] - control[key] for key in (
-        "micro_auprc", "micro_recall_at_precision_0.8",
-        "micro_pair_f1", "macro_pair_f1", "micro_pair_precision",
+        "micro_auprc", "micro_pair_f1", "macro_pair_f1", "micro_pair_precision",
         "macro_pair_precision", "micro_stem_f1", "macro_stem_f1")}
+    if arm_metrics["micro_recall_at_precision_0.8"] is None or control["micro_recall_at_precision_0.8"] is None:
+        deltas["micro_recall_at_precision_0.8"] = None
+    else:
+        deltas["micro_recall_at_precision_0.8"] = (
+            arm_metrics["micro_recall_at_precision_0.8"] - control["micro_recall_at_precision_0.8"])
     checks = {
         "micro_auprc_strictly_positive": deltas["micro_auprc"] > rules["micro_auprc_delta_min_exclusive"],
         "micro_recall_at_precision_0.8_strictly_positive": (
-            deltas["micro_recall_at_precision_0.8"] > rules["micro_recall_at_precision_0.8_delta_min_exclusive"]),
+            deltas["micro_recall_at_precision_0.8"] is not None
+            and deltas["micro_recall_at_precision_0.8"] > rules["micro_recall_at_precision_0.8_delta_min_exclusive"]),
         "micro_pair_f1_noninferior": deltas["micro_pair_f1"] >= rules["micro_pair_f1_delta_min_inclusive"],
         "macro_pair_f1_noninferior": deltas["macro_pair_f1"] >= rules["macro_pair_f1_delta_min_inclusive"],
         "micro_pair_precision_preserved": deltas["micro_pair_precision"] >= rules["micro_pair_precision_delta_min_inclusive"],
@@ -137,9 +142,10 @@ def main():
         if not args.limit and arm in NEW_TRAINING_ARMS:
             _verify_completion(args.stage, arm)
         export_dir = _export_dir(contract, arm, args.seed, args.stage)
-        metadata = _verify_export_metadata(export_dir, args.seed,
-                                           arm in NEW_TRAINING_ARMS and not args.limit,
-                                           args.steps, len(records))
+        metadata = _verify_export_metadata(
+            export_dir, args.seed, arm in NEW_TRAINING_ARMS and not args.limit,
+            9600 if arm == "full_control" else args.steps,
+            196 if arm == "full_control" else len(records))
         export_metadata[arm] = metadata
         arm_rows, score_parts, label_parts = [], [], []
         for index, (sequence_hash, seq, truth) in enumerate(records):
@@ -149,9 +155,11 @@ def main():
                     raise ValueError(f"score/record mismatch: {arm} {sequence_hash}")
                 scores = np.asarray(data["plana_off"], dtype=np.float64)
                 np_truth = {tuple(sorted(map(int, pair))) for pair in data["gt_pairs"].tolist()}
-            if np_truth != truth or scores.shape != (len(seq), len(seq)) or not np.isfinite(scores).all():
+            if np_truth != truth or scores.shape != (len(seq), len(seq)):
                 raise ValueError(f"invalid raw score matrix: {arm} {sequence_hash}")
             mask = valid_pair_mask(seq)
+            if not np.isfinite(scores[mask]).all():
+                raise ValueError(f"non-finite legal raw score: {arm} {sequence_hash}")
             log_z, posterior = inside_outside(scores, mask)
             if not np.isfinite(log_z) or not np.isfinite(posterior).all():
                 raise ValueError(f"non-finite inside-outside: {arm} {sequence_hash}")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import itertools
 import json
 import sys
@@ -125,3 +126,35 @@ def test_contract_rejects_control_retraining_and_cap_drift():
         validate_raw_score_training_args(contract, args)
     identity = json.loads(path.read_text())
     assert len(identity["arms"]["full_control"]["run_meta_sha256"]) == 64
+
+
+def test_direction_gate_fails_closed_when_fixed_precision_is_infeasible():
+    spec = importlib.util.spec_from_file_location(
+        "raw_score_evaluator", Path(__file__).resolve().parents[1] / "tools/evaluate_raw_score_matrix.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    control = {key: 0.5 for key in (
+        "micro_auprc", "micro_recall_at_precision_0.8", "micro_pair_f1", "macro_pair_f1",
+        "micro_pair_precision", "macro_pair_precision", "micro_stem_f1", "macro_stem_f1")}
+    candidate = dict(control)
+    candidate["micro_auprc"] = 0.6
+    candidate["micro_recall_at_precision_0.8"] = None
+    rules = load_raw_score_contract(
+        Path(__file__).resolve().parents[1] / "configs/raw_score_mechanism_4arm_v1.json"
+    )["pilot"]["per_arm_direction_gate"]
+    deltas, checks, passed = module._direction_gate(candidate, control, rules)
+    assert deltas["micro_recall_at_precision_0.8"] is None
+    assert checks["micro_recall_at_precision_0.8_strictly_positive"] is False
+    assert passed is False
+
+
+def test_evaluator_macro_uses_existing_prf_key_names():
+    spec = importlib.util.spec_from_file_location(
+        "raw_score_evaluator", Path(__file__).resolve().parents[1] / "tools/evaluate_raw_score_matrix.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    rows = [{"pair": {"tp": 1, "fp": 1, "fn": 0}, "stem": {"tp": 1, "fp": 0, "fn": 1}}]
+    summary = module._summarize_decoded(rows)
+    assert summary["macro_pair_precision"] == 0.5
+    assert summary["micro_pair_recall"] == 1.0
+    assert summary["macro_stem_f1"] == 2 / 3
