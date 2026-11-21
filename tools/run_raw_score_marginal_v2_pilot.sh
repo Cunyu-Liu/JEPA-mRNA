@@ -23,6 +23,7 @@ assert meta["status"] == "completed", sys.argv[2]
 assert meta["steps_completed"] == 9600 and meta["stop_reason"] == "step_cap", sys.argv[2]
 PY2
 done
+if [[ "${SKIP_V1_ARCHIVE:-0}" != "1" ]]; then
 [[ -d "$STAGE/marginal" ]] || { echo "missing failed v1 marginal directory"; exit 2; }
 [[ ! -e "$FAILED_ARCHIVE" ]] || { echo "central-difference archive already exists"; exit 2; }
 [[ ! -e "$EVALUATION" && ! -e "$VERIFICATION" && ! -e "$STAGE/provenance_v2.json" ]] || {
@@ -61,6 +62,11 @@ record = {
 PY2
 mv "$STAGE/marginal" "$FAILED_ARCHIVE"
 mv "$STAGE/marginal.train.stdout.log" "$STAGE/marginal_failed_central_difference_v1.train.stdout.log"
+else
+[[ ! -e "$STAGE/marginal" ]] || { echo "engineering failure must be archived before restart"; exit 2; }
+[[ -s "$FAILED_ARCHIVE/run_meta.json" && -s "$STAGE/marginal_failed_central_difference_v1.json" ]] || {
+  echo "missing immutable v1 archive"; exit 2; }
+fi
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export RN_CUDA_INSIDE=1
 RUN_GIT_HEAD="$(git rev-parse HEAD)"
@@ -113,7 +119,7 @@ provenance.update({
     "V1_TO_V2_SCOPE": "marginal VJP only; frozen/limited4 inherited; full control reused",
     "MARGINAL_RESTART_FROM_SHARED_INIT": True,
     "MARGINAL_OPTIMIZER_RESUME_USED": False,
-    "FAILED_PARTIAL_ARCHIVES": ["marginal_failed_empty_set_v1", "marginal_failed_central_difference_v1"],
+    "FAILED_PARTIAL_ARCHIVES": ["marginal_failed_empty_set_v1", "marginal_failed_central_difference_v1", "marginal_failed_oom_v2_step33"],
     "verification": "independent verdict is stored separately in verification_v2.json",
     "decision": verdict["decision"], "promoted_arms": verdict["promoted_arms"],
     "external_evaluation_allowed": False, "full_control_reused_not_retrained": True,
