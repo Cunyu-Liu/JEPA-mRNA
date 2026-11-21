@@ -18,8 +18,15 @@ git diff --quiet
 git diff --cached --quiet
 [[ -d "$STAGE/frozen" && -d "$STAGE/limited4" ]] || { echo "missing inherited arms"; exit 2; }
 [[ ! -e "$STAGE/evaluation_v3" && ! -e "$STAGE/verification_v3.json" ]] || { echo "v3 evaluation already exists"; exit 2; }
-[[ -f "$SMOKE" && -f "$STRESS" && -f "$FAILED_RECORD" && -d "$STAGE/marginal" ]] || { echo "missing smoke, stress, failure record, or failed v2 run"; exit 2; }
-"$PY" - "$STAGE" "$CONTRACT" "$SMOKE" "$STRESS" "$FAILED_RECORD" <<'PY'
+if [[ -d "$STAGE/marginal" && ! -e "$FAILED_ARCHIVE" ]]; then
+  V2_STATE=ARCHIVE_REQUIRED
+elif [[ -d "$FAILED_ARCHIVE" && ! -e "$STAGE/marginal" ]]; then
+  V2_STATE=ARCHIVE_COMPLETE_WAIT_ONLY
+else
+  echo "ambiguous marginal/v2 archive state"; exit 2
+fi
+[[ -f "$SMOKE" && -f "$STRESS" && -f "$FAILED_RECORD" ]] || { echo "missing smoke, stress, or failure record"; exit 2; }
+"$PY" - "$STAGE" "$CONTRACT" "$SMOKE" "$STRESS" "$FAILED_RECORD" "$V2_STATE" <<'PY'
 import json, sys
 from pathlib import Path
 stage = Path(sys.argv[1])
@@ -27,6 +34,7 @@ contract = json.loads(Path(sys.argv[2]).read_text())
 smoke = json.loads(Path(sys.argv[3]).read_text())
 stress = json.loads(Path(sys.argv[4]).read_text())
 failure = json.loads(Path(sys.argv[5]).read_text())
+v2_state = sys.argv[6]
 assert contract["contract_id"] == "raw_score_mechanism_4arm_v3"
 assert smoke["status"] == "PASS" and smoke["scientifically_promoted_arms"] == []
 assert stress["status"] == "PASS" and "NO_SCIENTIFIC_RESULT" in stress["scope"]
@@ -39,30 +47,44 @@ for arm, blocks in (("frozen", 0), ("limited4", 4)):
     assert meta["steps_completed"] == 9600
     assert meta["trainable_parameter_scope"].startswith(f"{blocks}/33 ")
     assert (stage / arm / "export_train_off" / "export_metadata.json").exists()
-failed_meta = json.loads((stage / "marginal/run_meta.json").read_text())
+failed_dir = stage / ("marginal" if v2_state == "ARCHIVE_REQUIRED" else "marginal_failed_nonfinite_tangent_v2")
+failed_stdout = stage / ("marginal.train.stdout.log" if v2_state == "ARCHIVE_REQUIRED" else "marginal_failed_nonfinite_tangent_v2.train.stdout.log")
+failed_meta = json.loads((failed_dir / "run_meta.json").read_text())
 assert failed_meta["status"] == "running"  # abnormal-exit residue, not a healthy process
-failed_batches = [json.loads(line) for line in (stage / "marginal/batch_order.jsonl").read_text().splitlines() if line]
+failed_batches = [json.loads(line) for line in (failed_dir / "batch_order.jsonl").read_text().splitlines() if line]
 assert len(failed_batches) == 9198 and failed_batches[-1]["step"] == 9198
-assert not (stage / "marginal/snapshots/marginal_step9600.pt").exists()
-assert not (stage / "marginal/export_train_off").exists()
-assert "non-finite exact structured-marginal VJP" in (stage / "marginal.train.stdout.log").read_text()
-assert (stage / "marginal/resume.pt").exists()
+assert not (failed_dir / "snapshots/marginal_step9600.pt").exists()
+assert not (failed_dir / "export_train_off").exists()
+assert "non-finite exact structured-marginal VJP" in failed_stdout.read_text()
+assert (failed_dir / "resume.pt").exists()
 PY
-[[ ! -e "$FAILED_ARCHIVE" && ! -e "$FAILED_STDOUT" ]] || { echo "v2 failure archive already exists"; exit 2; }
-mv "$STAGE/marginal" "$FAILED_ARCHIVE"
-mv "$STAGE/marginal.train.stdout.log" "$FAILED_STDOUT"
-cp "$CONTRACT" "$STAGE/contract.v3.executed.json"
+if [[ "$V2_STATE" == ARCHIVE_REQUIRED ]]; then
+  [[ ! -e "$FAILED_STDOUT" ]] || { echo "v2 failure stdout archive already exists"; exit 2; }
+  mv "$STAGE/marginal" "$FAILED_ARCHIVE"
+  mv "$STAGE/marginal.train.stdout.log" "$FAILED_STDOUT"
+else
+  echo "using existing v2 failure archive; no training process is resumed"
+fi
+if [[ -e "$STAGE/contract.v3.executed.json" ]]; then
+  cmp "$CONTRACT" "$STAGE/contract.v3.executed.json"
+else
+  cp "$CONTRACT" "$STAGE/contract.v3.executed.json"
+fi
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export RN_CUDA_INSIDE=1
 export CUDA_VISIBLE_DEVICES=0
+WAIT_POLLS=0
 while true; do
   FREE_MB="$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits -i 0 | tr -d ' ')"
-  NOW="$(date -Is)"
-  echo "$NOW free_mb=$FREE_MB required_mb=$MIN_FREE_MB" | tee -a "$WAIT_LOG"
   if [[ "$FREE_MB" =~ ^[0-9]+$ ]] && (( FREE_MB >= MIN_FREE_MB )); then
+    echo "$(date -Is) free_mb=$FREE_MB required_mb=$MIN_FREE_MB resource_gate_open" | tee -a "$WAIT_LOG"
     break
   fi
-  sleep 300
+  if (( WAIT_POLLS % 60 == 0 )); then
+    echo "$(date -Is) free_mb=$FREE_MB required_mb=$MIN_FREE_MB" | tee -a "$WAIT_LOG"
+  fi
+  WAIT_POLLS=$((WAIT_POLLS+1))
+  sleep 5
 done
 nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader > "$STAGE/marginal_v3_gpu_before.txt"
 START="$(date +%s)"
