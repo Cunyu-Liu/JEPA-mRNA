@@ -87,33 +87,46 @@ test -s "$STAGE/marginal/snapshots/marginal_step9600.pt"
 "$PY" tools/evaluate_raw_score_matrix.py \
   --contract "$CONTRACT" --seed 0 --steps 9600 --stage "$STAGE" --out "$STAGE/evaluation_v3" \
   > "$STAGE/evaluation_v3.stdout.log" 2>&1
-"$PY" tools/verify_raw_score_matrix.py \
-  --contract "$CONTRACT" --seed 0 --steps 9600 --stage "$STAGE" \
-  --evaluation "$STAGE/evaluation_v3" --out "$STAGE/verification_v3.json" \
-  > "$STAGE/verification_v3.stdout.log" 2>&1
-END="$(date +%s)"
-nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader > "$STAGE/marginal_v3_gpu_after.txt"
-"$PY" - "$STAGE" "$CONTRACT" "$((END-START))" "$STRESS" <<'PY'
+"$PY" - "$STAGE" "$CONTRACT" "$STRESS" <<'PY'
 import hashlib, json, subprocess, sys
 from pathlib import Path
 stage = Path(sys.argv[1])
 contract = Path(sys.argv[2])
 verdict = json.loads((stage / "evaluation_v3/pilot_verdict.json").read_text())
-verification = json.loads((stage / "verification_v3.json").read_text())
-assert verification["status"] == "PASS"
 provenance = {
+    "CONTRACT_SHA256": hashlib.sha256(contract.read_bytes()).hexdigest(),
+    "decision": verdict["decision"],
+    "promoted_arms": verdict["promoted_arms"],
+    "external_evaluation_allowed": False,
     "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
-    "contract_sha256": hashlib.sha256(contract.read_bytes()).hexdigest(),
-    "numerical_stress_sha256": hashlib.sha256(Path(sys.argv[4]).read_bytes()).hexdigest(),
+    "numerical_stress_sha256": hashlib.sha256(Path(sys.argv[3]).read_bytes()).hexdigest(),
     "marginal_restarted_from_shared_init_not_v2_resume": True,
     "failed_v2_archive": "marginal_failed_nonfinite_tangent_v2",
-    "elapsed_seconds_marginal_train_export_evaluate_verify": int(sys.argv[3]),
-    "evaluation_sha256": {
-        name: hashlib.sha256((stage / "evaluation_v3" / name).read_bytes()).hexdigest()
-        for name in ["arm_metrics.json", "pairwise_comparisons.json", "pilot_verdict.json"]
-    },
-    "verification_sha256": hashlib.sha256((stage / "verification_v3.json").read_bytes()).hexdigest(),
 }
 (stage / "provenance_v3.json").write_text(json.dumps(provenance, indent=2) + "\n")
+PY
+"$PY" tools/verify_raw_score_matrix.py \
+  --contract "$CONTRACT" --seed 0 --steps 9600 --stage "$STAGE" \
+  --evaluation "$STAGE/evaluation_v3" --provenance "$STAGE/provenance_v3.json" \
+  --out "$STAGE/verification_v3.json" \
+  > "$STAGE/verification_v3.stdout.log" 2>&1
+END="$(date +%s)"
+nvidia-smi --query-gpu=name,memory.used,memory.free,utilization.gpu --format=csv,noheader > "$STAGE/marginal_v3_gpu_after.txt"
+"$PY" - "$STAGE" "$((END-START))" <<'PY'
+import hashlib, json, sys
+from pathlib import Path
+stage = Path(sys.argv[1])
+verdict = json.loads((stage / "evaluation_v3/pilot_verdict.json").read_text())
+verification = json.loads((stage / "verification_v3.json").read_text())
+assert verification["status"] == "PASS"
+provenance_path = stage / "provenance_v3.json"
+provenance = json.loads(provenance_path.read_text())
+provenance["elapsed_seconds_marginal_train_export_evaluate_verify"] = int(sys.argv[2])
+provenance["evaluation_sha256"] = {
+    name: hashlib.sha256((stage / "evaluation_v3" / name).read_bytes()).hexdigest()
+    for name in ["arm_metrics.json", "pairwise_comparisons.json", "pilot_verdict.json"]
+}
+provenance["verification_sha256"] = hashlib.sha256((stage / "verification_v3.json").read_bytes()).hexdigest()
+provenance_path.write_text(json.dumps(provenance, indent=2) + "\n")
 print(json.dumps({"verification": verification["status"], "verdict": verdict, "provenance": provenance}, indent=2))
 PY
