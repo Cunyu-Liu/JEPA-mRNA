@@ -13,8 +13,8 @@ git diff --quiet
 git diff --cached --quiet
 [[ ! -e "$STAGE" ]] || { echo "refusing to overwrite v2 smoke: $STAGE"; exit 2; }
 mkdir -p "$STAGE"
-ln -s "$V1_SMOKE/frozen" "$STAGE/frozen"
-ln -s "$V1_SMOKE/limited4" "$STAGE/limited4"
+cp -a "$V1_SMOKE/frozen" "$STAGE/frozen"
+cp -a "$V1_SMOKE/limited4" "$STAGE/limited4"
 cp "$CONTRACT" "$STAGE/contract.executed.json"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export RN_CUDA_INSIDE=1
