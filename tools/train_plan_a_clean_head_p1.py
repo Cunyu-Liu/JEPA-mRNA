@@ -72,6 +72,10 @@ from rnajepa.harness import valid_pair_mask  # noqa: E402
 from rnajepa.prior_alignment import (checkpoint_due, evaluation_rows, load_contract,
                                      parse_snapshot_steps, scheduled_unfreeze_blocks, sha256_file,
                                      snapshot_due, tensor_state_sha256, validate_training_args)  # noqa: E402
+from rnajepa.raw_score_matrix import (capped_unfreeze_blocks, load_raw_score_contract,
+                                      raw_score_evaluation_identity,
+                                      validate_raw_score_training_args)  # noqa: E402
+from rnajepa.structured_marginal import structured_marginal_bce  # noqa: E402
 from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
 from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
 from rnajepa.structured_mask import structured_pair_mask  # noqa: E402
@@ -300,6 +304,14 @@ def validate_resume_identity(previous_meta, args):
     expected = previous_meta.get("objective", {}).get("nll_normalization", "sum")
     if expected != args.nll_normalization:
         raise ValueError(f"resume NLL normalization mismatch: {expected} vs {args.nll_normalization}")
+    previous_objective = previous_meta.get("objective", {})
+    for key in ("lambda_marginal_bce", "marginal_vjp_epsilon"):
+        expected_value = float(previous_objective.get(key, 0.0 if key == "lambda_marginal_bce" else 1e-3))
+        if expected_value != float(getattr(args, key)):
+            raise ValueError(f"resume objective mismatch for {key}")
+    previous_cap = int(previous_meta.get("schedule", {}).get("max_unfrozen_blocks", 33))
+    if previous_cap != int(args.max_unfrozen_blocks):
+        raise ValueError("resume unfreeze-cap mismatch")
     expected_lr = previous_meta.get("schedule", {}).get("backbone_lr", args.backbone_lr)
     if float(expected_lr) != float(args.backbone_lr):
         raise ValueError(f"resume backbone LR mismatch: {expected_lr} vs {args.backbone_lr}")
@@ -398,6 +410,8 @@ def main():
     ap.add_argument("--shared-init", default="")
     ap.add_argument("--no-early-stop", action="store_true")
     ap.add_argument("--lambda-nll", type=float, default=1.0)
+    ap.add_argument("--lambda-marginal-bce", type=float, default=0.0)
+    ap.add_argument("--marginal-vjp-epsilon", type=float, default=1e-3)
     ap.add_argument("--lambda-distill", type=float, default=1.0)
     ap.add_argument("--lambda-rlcd", type=float, default=1.0)
     ap.add_argument("--lambda-cal", type=float, default=1.0)
@@ -409,6 +423,8 @@ def main():
     ap.add_argument("--warmup-head-steps", type=int, default=1600)
     ap.add_argument("--unfreeze-every", type=int, default=800)
     ap.add_argument("--unfreeze-per-step", type=int, default=2)
+    ap.add_argument("--max-unfrozen-blocks", type=int, default=33)
+    ap.add_argument("--raw-score-arm", choices=["frozen", "limited4", "marginal"], default=None)
     ap.add_argument("--warmup-steps", type=int, default=5)
     ap.add_argument("--save-every", type=int, default=500)
     ap.add_argument("--snapshot-every", type=int, default=2000)
@@ -452,11 +468,24 @@ def main():
     args = ap.parse_args()
     contract = None
     training_trajectory = None
+    raw_score_contract = False
     if args.contract_mode:
-        contract = load_contract(args.contract)
-        training_trajectory = validate_training_args(contract, args)
+        contract_id = json.loads(Path(args.contract).read_text()).get("contract_id")
+        raw_score_contract = contract_id == "raw_score_mechanism_4arm_v1"
+        if raw_score_contract:
+            contract = load_raw_score_contract(args.contract)
+            training_trajectory = validate_raw_score_training_args(contract, args)
+        else:
+            if (args.raw_score_arm or args.lambda_marginal_bce
+                    or args.max_unfrozen_blocks != 33):
+                raise SystemExit("RAW_SCORE-only arguments require the RAW_SCORE contract")
+            contract = load_contract(args.contract)
+            training_trajectory = validate_training_args(contract, args)
     elif args.train_turner or args.shared_init or args.no_early_stop:
         raise SystemExit("--train-turner/--shared-init/--no-early-stop require --contract-mode")
+    if not raw_score_contract and (args.raw_score_arm or args.lambda_marginal_bce
+                                   or args.max_unfrozen_blocks != 33):
+        raise SystemExit("uncontrolled RAW_SCORE arguments are forbidden")
     if args.motif and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
                        or args.serial_encoder or args.lambda_jepa or args.cl1_token_mask
                        or args.cl2_infonce_weight):
@@ -709,7 +738,11 @@ def main():
             "mode": args.contract_mode, "training_trajectory": training_trajectory,
             "train_turner": args.train_turner, "shared_init": args.shared_init,
             "shared_init_sha256": shared_init_sha256,
-            "derived_evaluation_identities": evaluation_rows(contract, training_trajectory),
+            "derived_evaluation_identities": (raw_score_evaluation_identity(contract, args.raw_score_arm)
+                                               if raw_score_contract else
+                                               evaluation_rows(contract, training_trajectory)),
+            "raw_score_arm": args.raw_score_arm if raw_score_contract else None,
+            "full_control_reused_not_retrained": False,
             "old_external_panels_used": False,
         }),
         "ripe": {"mode": None if args.ripe_encoder_only else args.ripe_mode or None,
@@ -730,6 +763,10 @@ def main():
                 f"pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
         "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
+                      "lambda_marginal_bce": args.lambda_marginal_bce,
+                      "marginal_vjp_epsilon": args.marginal_vjp_epsilon,
+                      "marginal_forward": "exact_inside_outside_float64",
+                      "marginal_backward": "central_difference_hessian_vector_float64",
                       "teacher": args.teacher_dir,
                       "aux_teacher": args.aux_teacher_dir,
                       "teacher_storage": {"lazy": args.lazy_teacher,
@@ -783,6 +820,7 @@ def main():
                      "warmup_head_steps": args.warmup_head_steps,
                      "unfreeze_every": args.unfreeze_every,
                      "unfreeze_per_step": args.unfreeze_per_step,
+                     "max_unfrozen_blocks": args.max_unfrozen_blocks,
                      "n_blocks": n_blocks, "zchunk": args.zchunk,
                      "abort_loss_threshold": args.abort_loss_threshold,
                      "abort_gnorm_threshold": args.abort_gnorm_threshold,
@@ -860,15 +898,16 @@ def main():
     step_iterator = (range(start_step + 1, args.steps + 1) if args.steps > 0
                      else itertools.count(start_step + 1))
     for step in step_iterator:
-        if step > args.warmup_head_steps and n_unfrozen < n_blocks:
-            due = scheduled_unfreeze_blocks(step, args.warmup_head_steps, args.unfreeze_every,
-                                            args.unfreeze_per_step, n_blocks)
+        unfreeze_cap = min(n_blocks, args.max_unfrozen_blocks)
+        if step > args.warmup_head_steps and n_unfrozen < unfreeze_cap:
+            due = capped_unfreeze_blocks(step, args.warmup_head_steps, args.unfreeze_every,
+                                         args.unfreeze_per_step, n_blocks, unfreeze_cap)
             while n_unfrozen < due:
                 blk = blocks[n_blocks - 1 - n_unfrozen]
                 for p in blk.parameters():
                     p.requires_grad_(True)
                 n_unfrozen += 1
-            if step % args.unfreeze_every == 0 or n_unfrozen == n_blocks:
+            if step % args.unfreeze_every == 0 or n_unfrozen == unfreeze_cap:
                 print(f"[plan-a] step {step}: unfroze to {n_unfrozen}/{n_blocks} "
                       "blocks (top-down)", flush=True)
 
@@ -962,6 +1001,13 @@ def main():
                     distill_kind="kl", reward="brier", beta=1.0,
                     n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
                     return_terms=True)
+                if args.lambda_marginal_bce:
+                    marginal_bce = structured_marginal_bce(
+                        s_b, mask_b, torch.as_tensor(
+                            labels_all[b], dtype=torch.float64, device=s_b.device),
+                        vjp_epsilon=args.marginal_vjp_epsilon)
+                    loss_b = loss_b + args.lambda_marginal_bce * marginal_bce
+                    terms_b["marginal_bce"] = marginal_bce
                 total = loss_b if total is None else total + loss_b
                 direct_nll = terms_b["nll"] if direct_nll is None else direct_nll + terms_b["nll"]
                 for k, v in terms_b.items():
@@ -1149,6 +1195,11 @@ def main():
                         distill_kind="kl", reward="brier", beta=1.0,
                         n_bins=10, tau=0.1, nll_normalization=args.nll_normalization,
                         return_terms=True)
+                    if args.lambda_marginal_bce:
+                        loss = loss + args.lambda_marginal_bce * structured_marginal_bce(
+                            scores, mask, torch.as_tensor(
+                                pair_indicator(len(seq), gt_pairs), dtype=torch.float64,
+                                device=scores.device), vjp_epsilon=args.marginal_vjp_epsilon)
                     validation_total += float(loss)
             validation_loss = validation_total / len(validation_records)
             encoder.train()
