@@ -329,6 +329,51 @@ FoldNAR 不是只模仿旧 DP。若只复制 Turner，精度上限仍是旧模�
 
 ---
 
+## 2026-11-22 第六修订：RAW_SCORE 的表征—优化归因与 v3 四臂门
+
+### 1. 最终矩阵后的正确结论
+
+三种子低 LR 的 6/6 run 均完成 9,600-step，冻结门通过 8/9。C2−C1 的 micro pair precision 均值差为 −0.0253695431，低于 −0.005 下限，因此 C2 停止，外部评测未开放。相对 C1，C2 micro/macro pair-F1 分别提高 0.017345/0.032405，说明存在真实性能信号，但不能用其他 8 个通过项掩盖 precision 失败。
+
+当前统一主 benchmark 可声明完整 SOTA 的格子为 0/8。39 项最终回归通过和 PPT/报告交付只证明证据链可复核，不证明模型成功。
+
+### 2. 主要矛盾已从解码转为 RAW_SCORE
+
+三种子 C2 共 2,650 个 FN：RAW_SCORE=2,416（91.17%），直接 DECODER=234（8.83%），LABEL/MASK/DATA_SHIFT=0。后验重放 588 条、604 项检查通过，但校准方向跨 seed 不一致，未授权 B2，未搜索温度、gamma 或阈值。
+
+因此下一步不是继续调解码或盲目扩数据，而是回答：**RAW_SCORE 漏召回主要来自全参遗忘、有限适配不足，还是训练内结构边际目标？**RAW_SCORE 只是误差定位，不自动证明表示或优化因果。
+
+### 3. 当前唯一允许先完成的机制实验
+
+最新合同为 `configs/raw_score_mechanism_4arm_v3.json`，四臂为：
+
+- `full_control`：复用稳定全参对照，不重训；
+- `frozen`：共享预训练表示＋同初始化头，检验不适配能否判别 pair；
+- `limited4`：只解冻顶部 4 层，检验有限适配能否减少遗忘；
+- `marginal`：相同全参计划下加入精确 inside–outside marginal BCE，检验训练内结构边际目标。
+
+v1 central difference 在 BCE clamp kink 附近产生伪大梯度；v2 高 log-partition 下 parent accumulation 溢出；v3 改为 exact forward-mode tangent 和 shifted log-sum-exp。v1/v2 partial optimization 都不是科学结果，marginal 必须从同一 seed0 shared-init 重训，不能把数值实现差异写成科学收益。
+
+当前 `verification_v3.json` 尚未生成，资源门要求 20,000 MiB，仍在等待，不得重复启动或降低资源门。
+
+### 4. 每臂必须通过的全部门与分流
+
+- micro AUPRC 和 recall@precision=0.8 严格提高；
+- micro/macro pair-F1 非负，至少一项严格为正；
+- micro/macro precision 降幅不超过 0.005；
+- micro/macro stem-F1 降幅不超过 0.005；
+- 9,600-step、预期解冻数、有限 loss、独立指标与 provenance 全部通过。
+
+只有达到全部门的臂才能增加 seed1/2。frozen/limited4 更好只支持全计划遗忘是贡献因素；marginal 更好只支持训练内结构边际路线；全部失败则停止同路线，禁止阈值、解码或普通模块救援。
+
+### 5. 新科学故事
+
+**序列知识为何没有转化为配对判别能力？**先由 RAW_SCORE 证明主要矛盾在打分，再由 frozen/limited4/marginal 区分适配与训练目标，随后只让获胜机制做三种子，最后统一评估强 baseline、CHANRG、时间外和长序列。任何一步失败都不得跳级写 SOTA 或生产修复。
+
+完整提示词已更新为 `交接文档/docs/plans/2026-11-18-foldnar-scientific-story-execution-prompt.md`，标题为“RNA-JEV 性能主线完整执行提示词：RAW_SCORE 的表征—优化归因”。提示词要求先完成 v3，不另起重复实验，并保留数据质量、四层泄漏、长序列和统一 baseline 的验收边界。
+
+---
+
 ## 原审计（事实与历史执行方案保留）
 
 - 日期：2026-11-18
