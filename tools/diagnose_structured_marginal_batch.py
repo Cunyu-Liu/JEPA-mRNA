@@ -94,6 +94,8 @@ def main():
     ap.add_argument("--exact", action="store_true")
     ap.add_argument("--vjp-method", choices=("central_difference", "exact_tangent"),
                     default="central_difference")
+    ap.add_argument("--diagnose-nonfinite", action="store_true",
+                    help="call the CUDA tangent directly and skip the total backward")
     args = ap.parse_args()
     if args.out.exists():
         raise ValueError("refusing to overwrite diagnostic")
@@ -127,21 +129,27 @@ def main():
             module.p = 0.0
     head.train()
     lengths = list(map(len, seqs))
-    assert len(set(lengths)) == 1, "diagnostic currently expects the recorded equal-length batch"
-    max_len = lengths[0]
-    ids, attn, head_ids = [], [], []
-    for seq in seqs:
+    max_len = max(lengths)
+    ids = torch.zeros((len(seqs), max_len + 2), dtype=torch.long)
+    attn = torch.zeros_like(ids)
+    head_ids = torch.zeros((len(seqs), max_len), dtype=torch.long)
+    for bi, seq in enumerate(seqs):
         tokens = [VOCAB.get(c, VOCAB["<unk>"]) for c in seq]
-        ids.append([VOCAB["<cls>"]] + tokens + [VOCAB["<eos>"]])
-        attn.append([1] * (max_len + 2))
-        head_ids.append([BASE_TO_INDEX.get(c, UNK_INDEX) for c in seq])
-    enc_ids = torch.tensor(ids, device=device)
-    attn = torch.tensor(attn, device=device)
-    head_ids = torch.tensor(head_ids, device=device)
+        row_ids = [VOCAB["<cls>"]] + tokens + [VOCAB["<eos>"]]
+        ids[bi, :len(row_ids)] = torch.tensor(row_ids)
+        attn[bi, :len(row_ids)] = 1
+        head_ids[bi, :len(seq)] = torch.tensor([BASE_TO_INDEX.get(c, UNK_INDEX) for c in seq])
+    enc_ids = ids.to(device)
+    attn = attn.to(device)
+    head_ids = head_ids.to(device)
     with torch.no_grad(), torch.autocast("cuda", dtype=torch.bfloat16):
         out = encoder(input_ids=enc_ids, attention_mask=attn)
     h = out.last_hidden_state[:, 1:max_len + 1, :].float().to(torch.float16).to(torch.float32)
-    z = head.pair_repr.cross(h, h)
+    for bi, length in enumerate(lengths):
+        if length < max_len:
+            h[bi, length:, :] = 0.0
+    chunks = [head.pair_repr.cross(h, h[:, j0:j0 + 64]) for j0 in range(0, max_len, 64)]
+    z = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
     s = head.score_pair_matrix(z, head_ids, False, None, None)
     lengths_t = torch.tensor(lengths, device=device)
     s = head.calibration(s, lengths_t)
@@ -160,10 +168,35 @@ def main():
                                    nll_normalization="length", return_terms=True)
         marginal = structured_marginal_bce(s_b, mask, labels, vjp_epsilon=1e-3,
                                            vjp_method=args.vjp_method)
-        marginal_gradient = torch.autograd.grad(marginal, s_b, retain_graph=True)[0]
-        nll_gradient = torch.autograd.grad(terms["nll"], s_b, retain_graph=True)[0]
         legal = torch.triu(mask, diagonal=1)
         p = _exact_marginals(s_b.detach().to(torch.float64), mask)[legal]
+        scaling_checks = {}
+        if args.diagnose_nonfinite:
+            if args.vjp_method != "exact_tangent":
+                raise ValueError("nonfinite tangent diagnosis requires exact_tangent")
+            probe = p.detach().requires_grad_(True)
+            probe_loss = F.binary_cross_entropy(probe.clamp(1e-7, 1.0 - 1e-7),
+                                                labels[legal], reduction="mean")
+            legal_direction = torch.autograd.grad(probe_loss, probe)[0]
+            direction = torch.zeros_like(s_b, dtype=torch.float64)
+            direction[legal] = legal_direction
+            from rnajepa.harness_cuda import cuda_marginal_tangent
+            for scale in (1.0, 1e-6):
+                candidate = cuda_marginal_tangent(
+                    s_b.detach().to(torch.float64), mask, direction * scale)
+                finite_values = candidate[legal][torch.isfinite(candidate[legal])]
+                scaling_checks[str(scale)] = {
+                    "finite": bool(torch.isfinite(candidate[legal]).all()),
+                    "nonfinite_count": int((~torch.isfinite(candidate[legal])).sum()),
+                    "max_abs_finite": float(finite_values.abs().max()) if finite_values.numel() else None,
+                }
+                if scale == 1.0:
+                    marginal_gradient = candidate
+                if scaling_checks["1.0"]["finite"]:
+                    break
+        else:
+            marginal_gradient = torch.autograd.grad(marginal, s_b, retain_graph=True)[0]
+        nll_gradient = torch.autograd.grad(terms["nll"], s_b, retain_graph=True)[0]
         row = {
             "sequence_sha256": batch["sequences"][b], "length": length,
             "n_legal": int(legal.sum()), "n_truth": len(gts[b]),
@@ -175,6 +208,8 @@ def main():
             "posterior_min": float(p.min()), "posterior_max": float(p.max()),
             "posterior_below_clamp_fraction": float((p < 1e-7).float().mean()),
             "posterior_above_clamp_fraction": float((p > 1.0 - 1e-7).float().mean()),
+            "nonfinite_gradient_count": int((~torch.isfinite(marginal_gradient[legal])).sum()),
+            "tangent_scaling_checks": scaling_checks,
         }
         if args.exact:
             reference = exact_reference(s_b, mask, labels)
@@ -192,9 +227,12 @@ def main():
         losses.append(terms["nll"] + marginal)
         print(json.dumps(row), flush=True)
     total = torch.stack(losses).mean()
-    total.backward()
-    parameters = [p for p in head.parameters() if p.requires_grad]
-    gnorm = float(torch.nn.utils.clip_grad_norm_(parameters, 1.0))
+    if args.diagnose_nonfinite:
+        gnorm = None
+    else:
+        total.backward()
+        parameters = [p for p in head.parameters() if p.requires_grad]
+        gnorm = float(torch.nn.utils.clip_grad_norm_(parameters, 1.0))
     output = {"resume_step": state["step"], "batch": batch, "vjp_method": args.vjp_method,
               "rows": rows_out,
               "batch_total_loss": float(total.detach()), "batch_head_gnorm_before_clip": gnorm,

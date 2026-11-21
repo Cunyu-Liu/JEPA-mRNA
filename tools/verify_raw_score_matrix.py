@@ -210,6 +210,9 @@ def verify_run_and_checkpoint(contract: dict, contract_sha256: str, arm: str, se
     objective_ok = (
         objective["lambda_marginal_bce"] == arm_contract["lambda_marginal_bce"]
         and objective.get("marginal_vjp_method", "central_difference") == method)
+    if arm_contract.get("numerical_recurrence"):
+        objective_ok = (objective_ok and objective.get("numerical_recurrence")
+                        == arm_contract["numerical_recurrence"])
     if method == "central_difference":
         objective_ok = objective_ok and objective["marginal_vjp_epsilon"] == arm_contract["marginal_vjp_epsilon"]
     elif method == "exact_tangent":

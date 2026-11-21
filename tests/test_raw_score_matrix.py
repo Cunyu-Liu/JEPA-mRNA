@@ -13,7 +13,7 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from rnajepa.harness import valid_pair_mask
+from rnajepa.harness import inside_outside, valid_pair_mask
 from rnajepa.raw_score_matrix import (capped_unfreeze_blocks, load_raw_score_contract,
                                       validate_raw_score_training_args)
 from rnajepa.raw_score_metrics import raw_ranking_metrics, sequence_raw_metrics
@@ -239,3 +239,64 @@ def test_cuda_exact_tangent_matches_cpu_enumeration(sequence):
     gpu_gradient, = torch.autograd.grad(gpu_loss, gpu_scores)
     assert torch.allclose(gpu_loss.cpu(), cpu_loss, atol=1e-10, rtol=1e-10)
     assert torch.allclose(gpu_gradient.cpu(), cpu_gradient, atol=2e-9, rtol=2e-9)
+
+
+def _high_score_case(length, scale):
+    sequence = "G" * (length // 2) + "C" * (length - length // 2)
+    mask = torch.as_tensor(valid_pair_mask(sequence), dtype=torch.bool)
+    base = torch.randn(length, length, generator=torch.Generator().manual_seed(11),
+                       dtype=torch.float64)
+    scores = torch.triu(base, diagonal=1) * scale
+    labels = torch.zeros(length, length, dtype=torch.float64)
+    legal = np.argwhere(np.triu(valid_pair_mask(sequence), k=1))
+    for index, (i, j) in enumerate(legal):
+        labels[i, j] = float(index % 3 == 0)
+    return scores, mask, labels
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA stress validation requires a GPU")
+@pytest.mark.parametrize(("length", "scale"), [(32, 60.0), (64, 30.0), (64, 100.0)])
+def test_cuda_exact_tangent_high_partition_remains_finite(length, scale):
+    scores, mask, labels = _high_score_case(length, scale)
+    gpu_scores = scores.cuda().requires_grad_()
+    gpu_loss = structured_marginal_bce(gpu_scores, mask.cuda(), labels.cuda(),
+                                       vjp_method="exact_tangent")
+    gpu_gradient, = torch.autograd.grad(gpu_loss, gpu_scores)
+    _log_z, cpu_probability = inside_outside(scores.numpy(), mask.numpy())
+    assert np.isfinite(cpu_probability).all()
+    assert torch.isfinite(gpu_loss)
+    assert torch.isfinite(gpu_gradient).all()
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA stress validation requires a GPU")
+@pytest.mark.parametrize("scale", [60.0, 100.0])
+def test_cuda_exact_tangent_high_score_matches_independent_cpu_dp(scale):
+    scores, mask, labels = _high_score_case(12, scale)
+    cpu_scores = scores.clone().requires_grad_()
+    cpu_loss = structured_marginal_bce(cpu_scores, mask, labels, vjp_method="exact_tangent")
+    cpu_gradient, = torch.autograd.grad(cpu_loss, cpu_scores)
+    gpu_scores = scores.cuda().requires_grad_()
+    gpu_loss = structured_marginal_bce(gpu_scores, mask.cuda(), labels.cuda(),
+                                       vjp_method="exact_tangent")
+    gpu_gradient, = torch.autograd.grad(gpu_loss, gpu_scores)
+    assert torch.allclose(gpu_loss.cpu(), cpu_loss, atol=1e-10, rtol=1e-10)
+    assert torch.allclose(gpu_gradient.cpu(), cpu_gradient, atol=2e-9, rtol=2e-9)
+
+
+def test_v3_contract_changes_only_numerical_recurrence():
+    root = Path(__file__).resolve().parents[1] / "configs"
+    v2 = load_raw_score_contract(root / "raw_score_mechanism_4arm_v2.json")
+    v3 = load_raw_score_contract(root / "raw_score_mechanism_4arm_v3.json")
+    for key in ("training", "evaluation", "three_seed_gate", "scientific_boundary"):
+        assert v3[key] == v2[key]
+    assert v3["pilot"]["per_arm_direction_gate"] == v2["pilot"]["per_arm_direction_gate"]
+    for key in ("seed", "steps", "promotion_rule", "no_direction_rule", "control_comparison"):
+        assert v3["pilot"][key] == v2["pilot"][key]
+    for arm in ("full_control", "frozen", "limited4"):
+        assert v3["arms"][arm] == v2["arms"][arm]
+    for arm in ("frozen", "limited4"):
+        assert validate_raw_score_training_args(v3, _valid_args(v3, arm)) == "train_off"
+    marginal = dict(v3["arms"]["marginal"])
+    assert marginal.pop("numerical_recurrence") == "stable_logsumexp_float64"
+    assert marginal == v2["arms"]["marginal"]
+    assert validate_raw_score_training_args(v3, _valid_args(v3, "marginal")) == "train_off"

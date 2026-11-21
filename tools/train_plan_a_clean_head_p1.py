@@ -480,7 +480,8 @@ def main():
     raw_score_contract = False
     if args.contract_mode:
         contract_id = json.loads(Path(args.contract).read_text()).get("contract_id")
-        raw_score_contract = contract_id in {"raw_score_mechanism_4arm_v1", "raw_score_mechanism_4arm_v2"}
+        raw_score_contract = contract_id in {"raw_score_mechanism_4arm_v1", "raw_score_mechanism_4arm_v2",
+                                             "raw_score_mechanism_4arm_v3"}
         if raw_score_contract:
             contract = load_raw_score_contract(args.contract)
             training_trajectory = validate_raw_score_training_args(contract, args)
@@ -780,6 +781,8 @@ def main():
                       "marginal_backward": ("central_difference_hessian_vector_float64"
                                              if args.marginal_vjp_method == "central_difference"
                                              else "exact_forward_mode_tangent_float64"),
+                      "numerical_recurrence": (contract["arms"][args.raw_score_arm].get("numerical_recurrence")
+                                                if raw_score_contract else None),
                       "teacher": args.teacher_dir,
                       "aux_teacher": args.aux_teacher_dir,
                       "teacher_storage": {"lazy": args.lazy_teacher,

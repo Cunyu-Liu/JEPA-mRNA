@@ -19,7 +19,8 @@ def _inside_span(scores, mask, z, length, span, block: tl.constexpr, min_loop: t
     terms = tl.where(legal & (m < span - min_loop), left + middle + score, -float("inf"))
     unpaired = tl.load(z + i * length + j - 1)
     maximum = tl.maximum(unpaired, tl.max(terms, axis=0))
-    value = maximum + tl.log(tl.sum(tl.exp(terms - maximum), axis=0) + tl.exp(unpaired - maximum))
+    shift = tl.maximum(maximum, -1.0e30)
+    value = shift + tl.log(tl.sum(tl.exp(terms - shift), axis=0) + tl.exp(unpaired - shift))
     tl.store(z + i * length + j, value)
 
 
@@ -41,7 +42,8 @@ def _outside_span(scores, mask, z, outside, parents, length, span,
     parent_terms = tl.where(valid_t, parent + middle, -float("inf"))
     terms = tl.where(t == 0, first, parent_terms)
     maximum = tl.max(terms, axis=0)
-    value = maximum + tl.log(tl.sum(tl.exp(terms - maximum), axis=0))
+    shift = tl.maximum(maximum, -1.0e30)
+    value = shift + tl.log(tl.sum(tl.exp(terms - shift), axis=0))
     pair_index = i * length + j
     score = tl.load(scores + pair_index)
     legal = tl.load(mask + pair_index).to(tl.int1)
@@ -53,7 +55,8 @@ def _outside_span(scores, mask, z, outside, parents, length, span,
     zg = tl.load(z + zg_index, mask=(m >= 1) & (child < j), other=0.0)
     update = value + score + zg
     old = tl.load(parents + safe_child * length + j, mask=(m >= 1) & (child < j), other=-float("inf"))
-    update = tl.log(tl.exp(old) + tl.exp(update))
+    shift = tl.maximum(tl.maximum(old, update), -1.0e30)
+    update = shift + tl.log(tl.exp(old - shift) + tl.exp(update - shift))
     tl.store(parents + safe_child * length + j, update,
              mask=legal & (m >= 1) & (child < j))
 
@@ -102,9 +105,10 @@ def _inside_tangent_span(scores, direction, mask, z, dz, length, span,
     unpaired = tl.load(z + i * length + j - 1)
     dunpaired = tl.load(dz + i * length + j - 1)
     value = tl.load(z + i * length + j)
-    weighted = tl.where(active, tl.exp(terms - value) * dterms, 0.0)
+    finite_value = value != -float("inf")
+    weighted = tl.where(active & finite_value, tl.exp(terms - value) * dterms, 0.0)
     dvalue = (tl.sum(weighted, axis=0)
-              + tl.exp(unpaired - value) * dunpaired)
+              + tl.where(finite_value, tl.exp(unpaired - value) * dunpaired, 0.0))
     tl.store(dz + i * length + j, dvalue)
 
 
@@ -139,8 +143,10 @@ def _outside_forward_tangent_span(scores, direction, mask, z, dz, outside, paren
     terms = tl.where(t == 0, first, parent_terms)
     dterms = tl.where(t == 0, dfirst, dparent_terms)
     maximum = tl.max(terms, axis=0)
-    value = maximum + tl.log(tl.sum(tl.exp(terms - maximum), axis=0))
-    dvalue = tl.sum(tl.exp(terms - value) * dterms, axis=0)
+    shift = tl.maximum(maximum, -1.0e30)
+    value = shift + tl.log(tl.sum(tl.exp(terms - shift), axis=0))
+    finite_value = value != -float("inf")
+    dvalue = tl.sum(tl.where(finite_value, tl.exp(terms - value) * dterms, 0.0), axis=0)
     pair_index = i * length + j
     score = tl.load(scores + pair_index)
     dscore = tl.load(direction + pair_index)
@@ -159,7 +165,8 @@ def _outside_forward_tangent_span(scores, direction, mask, z, dz, outside, paren
                   mask=(m >= 1) & (child < j), other=-float("inf"))
     dold = tl.load(dparents + safe_child * length + j,
                    mask=(m >= 1) & (child < j), other=0.0)
-    new = tl.log(tl.exp(old) + tl.exp(update))
+    parent_shift = tl.maximum(tl.maximum(old, update), -1.0e30)
+    new = parent_shift + tl.log(tl.exp(old - parent_shift) + tl.exp(update - parent_shift))
     finite_new = new != -float("inf")
     old_weight = tl.where(finite_new, tl.exp(old - new), 0.0)
     update_weight = tl.where(finite_new, tl.exp(update - new), 0.0)

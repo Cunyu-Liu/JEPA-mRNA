@@ -8,7 +8,7 @@ from typing import Any
 from rnajepa.prior_alignment import scheduled_unfreeze_blocks
 
 CONTRACT_ID = "raw_score_mechanism_4arm_v1"
-CONTRACT_IDS = {CONTRACT_ID, "raw_score_mechanism_4arm_v2"}
+CONTRACT_IDS = {CONTRACT_ID, "raw_score_mechanism_4arm_v2", "raw_score_mechanism_4arm_v3"}
 NEW_TRAINING_ARMS = ("frozen", "limited4", "marginal")
 ALL_ARMS = ("full_control",) + NEW_TRAINING_ARMS
 
@@ -21,6 +21,10 @@ def load_raw_score_contract(path: str | Path) -> dict[str, Any]:
         raise ValueError("RAW_SCORE training requires a frozen contract")
     if tuple(contract.get("arms", {})) != ALL_ARMS:
         raise ValueError("the four-arm identities are incomplete or reordered")
+    if (contract["contract_id"] == "raw_score_mechanism_4arm_v3"
+            and contract["arms"]["marginal"].get("numerical_recurrence")
+            != "stable_logsumexp_float64"):
+        raise ValueError("v3 marginal requires the validated stable float64 recurrence")
     return contract
 
 
