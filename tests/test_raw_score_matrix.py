@@ -158,3 +158,13 @@ def test_evaluator_macro_uses_existing_prf_key_names():
     assert summary["macro_pair_precision"] == 0.5
     assert summary["micro_pair_recall"] == 1.0
     assert summary["macro_stem_f1"] == 2 / 3
+
+
+def test_marginal_empty_legal_set_is_differentiable_zero():
+    scores = torch.randn(4, 4, dtype=torch.float64, requires_grad=True)
+    mask = torch.zeros(4, 4, dtype=torch.bool)
+    labels = torch.zeros(4, 4, dtype=torch.float64)
+    loss = structured_marginal_bce(scores, mask, labels)
+    assert loss.item() == 0.0
+    loss.backward()
+    assert torch.equal(scores.grad, torch.zeros_like(scores))

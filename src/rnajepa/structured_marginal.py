@@ -92,7 +92,9 @@ def structured_marginal_bce(
         raise ValueError("probability epsilon must be in (0, 0.5)")
     legal = torch.triu(mask, diagonal=1)
     if not torch.any(legal):
-        raise ValueError("structured marginal BCE requires at least one legal pair")
+        # No legal pair means no marginal supervision. Keep a differentiable
+        # zero so the NLL objective and the normal backward path are unchanged.
+        return scores.to(dtype=torch.float64).sum() * 0.0
     scores64 = scores.to(dtype=torch.float64)
     marginals = _PairMarginals.apply(scores64, mask, float(vjp_epsilon))
     probabilities = marginals.clamp(probability_epsilon, 1.0 - probability_epsilon)
