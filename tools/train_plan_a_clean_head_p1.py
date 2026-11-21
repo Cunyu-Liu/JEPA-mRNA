@@ -51,6 +51,7 @@ import argparse
 import hashlib
 import itertools
 import json
+import math
 import os
 import sys
 import time
@@ -361,6 +362,16 @@ def masked_pair_target(valid, probability, seed):
     return mask | mask.transpose(1, 2)
 
 
+def divergence_reason(loss, gnorm, loss_threshold=0.0, gnorm_threshold=0.0):
+    if not math.isfinite(loss) or not math.isfinite(gnorm):
+        return "NON_FINITE_LOSS_OR_GRADIENT_NORM"
+    if loss_threshold > 0 and loss > loss_threshold:
+        return f"LOSS_THRESHOLD_EXCEEDED:{loss:.6g}>{loss_threshold:.6g}"
+    if gnorm_threshold > 0 and gnorm > gnorm_threshold:
+        return f"GRADIENT_NORM_THRESHOLD_EXCEEDED:{gnorm:.6g}>{gnorm_threshold:.6g}"
+    return ""
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl")
@@ -404,6 +415,8 @@ def main():
     ap.add_argument("--snapshot-steps", default="", help="comma-separated model-only milestones; terminal is always saved")
     ap.add_argument("--snapshot-dir", default=CKPT_DIR)
     ap.add_argument("--grad-clip", type=float, default=1.0)
+    ap.add_argument("--abort-loss-threshold", type=float, default=0.0)
+    ap.add_argument("--abort-gnorm-threshold", type=float, default=0.0)
     ap.add_argument("--zchunk", type=int, default=64, help="column width of the "
                     "checkpointed z construction (numerically exact; see docstring)")
     ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
@@ -771,6 +784,8 @@ def main():
                      "unfreeze_every": args.unfreeze_every,
                      "unfreeze_per_step": args.unfreeze_per_step,
                      "n_blocks": n_blocks, "zchunk": args.zchunk,
+                     "abort_loss_threshold": args.abort_loss_threshold,
+                     "abort_gnorm_threshold": args.abort_gnorm_threshold,
                      "serial_encoder": args.serial_encoder},
         "seed": args.seed, "backbone_report": report,
     }
@@ -1055,15 +1070,20 @@ def main():
         cl2_projection_grad = (None if cl2 is None else sum(float(p.grad.detach().square().sum()) for p in cl2.parameters() if p.grad is not None) ** 0.5)
         gnorm = float(torch.nn.utils.clip_grad_norm_(
             trainable(), args.grad_clip))
-        opt.step()
-        if args.lambda_jepa:
-            head.pair_jepa.ema_update()
-        sched.step()
+        divergence = divergence_reason(float(total.detach()), gnorm,
+                                       args.abort_loss_threshold, args.abort_gnorm_threshold)
+        if not divergence:
+            opt.step()
+            if args.lambda_jepa:
+                head.pair_jepa.ema_update()
+            sched.step()
         with open(os.path.join(args.out, "compute_ledger.jsonl"), "a") as fh:
             fh.write(json.dumps({"step": step, "lengths": lengths,
                                  "sequence_sha256": [hashlib.sha256(seq.encode()).hexdigest()
                                                      for seq in seqs],
                                  "unfrozen": n_unfrozen,
+                                 "optimizer_step": not divergence,
+                                 "divergence_reason": divergence,
                                  "trainable_params": sum(p.numel() for p in trainable())}) + "\n")
 
         if step % 25 == 0 or step == 1 or jepa_record is not None:
@@ -1076,6 +1096,7 @@ def main():
                    "unfrozen": n_unfrozen, "gnorm": round(gnorm, 2),
                    "lr_head": sched.get_last_lr()[0],
                    "lr_backbone": sched.get_last_lr()[-1],
+                   "divergence_reason": divergence,
                    "peak_gb": round(torch.cuda.max_memory_allocated() / 1e9, 1),
                    "sec": round(time.time() - t0, 1)}
             with open(log_path, "a") as fh:
@@ -1091,6 +1112,9 @@ def main():
                   f"unfrozen={n_unfrozen}/{n_blocks} gnorm={rec['gnorm']} "
                   f"peak={rec['peak_gb']}GB", flush=True)
             torch.cuda.reset_peak_memory_stats()
+
+        if divergence:
+            break
 
         if checkpoint_due(step, args.save_every, args.steps):
             atomic_torch_save({"step": step, "head": head.state_dict(),
@@ -1172,15 +1196,16 @@ def main():
                     "stream_state": stream.state, "cl2": None if cl2 is None else cl2.export_state()}, resume_path)
     terminal_snapshot = os.path.join(args.snapshot_dir,
                                      f"{os.path.basename(args.out.rstrip('/'))}_step{step}.pt")
-    if args.steps > 0 and step == args.steps and not os.path.isfile(terminal_snapshot):
+    if args.steps > 0 and step == args.steps and not divergence and not os.path.isfile(terminal_snapshot):
         write_model_snapshot(step)
     meta["final_trainable_params"] = sum(p.numel() for p in trainable())
     meta["trainable_parameter_scope"] = (
         f"{n_unfrozen}/{n_blocks} transformer blocks plus head; "
         "embeddings and pooler remain frozen")
-    meta["status"] = "completed"
+    meta["status"] = "diverged" if divergence else "completed"
     meta["steps_completed"] = int(step)
-    meta["stop_reason"] = "early_stopping" if early_stopped else "step_cap"
+    meta["stop_reason"] = divergence or ("early_stopping" if early_stopped else "step_cap")
+    meta["divergence_reason"] = divergence
     meta["early_stopped"] = early_stopped
     meta["converged"] = early_stopped
     with open(os.path.join(args.out, "run_meta.json"), "w") as fh:

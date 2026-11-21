@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "contract_id": "prior_alignment_2x2_v1",
+  "status": "FROZEN_BEFORE_FULL_MATRIX",
+  "research_question": "When does the Turner thermodynamic prior help or suppress learned RNA pair scores, and is its effect specific to training, inference, or structured decoding?",
+  "scope": {
+    "model_family": "single Plan-A member per seed; no R2D or xens2 ensemble inside this 2x2 comparison",
+    "structure_class": "canonical nested pairs",
+    "legal_pairs": "AU/UA, GC/CG, GU/UG; j-i>3",
+    "separate_frozen_candidate": "xens2_turneroff_mea_v1",
+    "not_foldnar": true,
+    "not_production_repair": true,
+    "not_sota_claim": true
+  },
+  "shared_initialization": {
+    "backbone": "/root/rna_jepa_data/weights/rinalmo-giga",
+    "head": "FlatDecisionHead(d_z=128, hidden=64, scorer=resnet2d, chunk_size=0)",
+    "source": "new head initialized under the arm seed; no historical Plan-A-trained checkpoint",
+    "reason": "A Turner-on-trained Plan-A checkpoint would contaminate the train-off trajectory.",
+    "artifact_template": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/init/shared_init_seed{seed}.pt",
+    "same_file_for_train_on_and_train_off_within_seed": true,
+    "verify_sha256_before_training": true
+  },
+  "training": {
+    "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+    "n_records": 42564,
+    "validation_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+    "n_validation_records": 196,
+    "batch_size": 4,
+    "batch_order": "length-bucketed; numpy default_rng((seed, epoch)); identical sequence order required between training arms",
+    "objective": {
+      "lambda_nll": 1.0,
+      "nll_normalization": "length",
+      "lambda_distill": 0.0,
+      "lambda_rlcd": 0.0,
+      "lambda_cal": 0.0,
+      "lambda_pair_recall": 0.0,
+      "pair_recall_note": "Omitted in this 2x2 to isolate the prior. Any later recall term must use inside-outside marginals, never independent sigmoid probabilities.",
+      "lambda_jepa": 0.0,
+      "teacher": null,
+      "motif": null,
+      "thermodynamic_input": null
+    },
+    "optimizer": "AdamW(betas=(0.9,0.98), weight_decay=0)",
+    "head_lr": 0.0001,
+    "backbone_lr": 0.000001,
+    "wrong_backbone_lr_guard": 0.00005,
+    "optimizer_warmup_steps": 5,
+    "grad_clip": 1.0,
+    "head_warmup_steps": 1600,
+    "unfreeze_every": 800,
+    "unfreeze_per_step": 2,
+    "n_backbone_blocks": 33,
+    "dropout": 0.0,
+    "early_stopping": false,
+    "primary_checkpoint": "fixed terminal step; no external checkpoint selection",
+    "seed_schedule": [0, 1, 2]
+  },
+  "training_trajectories": {
+    "train_on": {
+      "head_use_turner_prior_during_training": true,
+      "derived_evaluation_identities": ["C0", "C1"]
+    },
+    "train_off": {
+      "head_use_turner_prior_during_training": false,
+      "derived_evaluation_identities": ["C2", "C3"],
+      "expected_prior_weight": "remains at its shared initialized value because it receives no gradient"
+    }
+  },
+  "evaluation_identities": [
+    {"arm": "C0", "training_trajectory": "train_on", "inference_turner": "on", "prior_weight_override": null, "decoder": "MAP"},
+    {"arm": "C1", "training_trajectory": "train_on", "inference_turner": "off", "prior_weight_override": 0.0, "decoder": "MEA"},
+    {"arm": "C2", "training_trajectory": "train_off", "inference_turner": "off", "prior_weight_override": 0.0, "decoder": "MEA"},
+    {"arm": "C3", "training_trajectory": "train_off", "inference_turner": "on", "prior_weight_override": null, "decoder": "MEA"}
+  ],
+  "decode_selection": {
+    "development_dataset": "bprna_vl0",
+    "temperature_grid": [0.5, 1.0, 2.0, 4.0],
+    "mea_gamma_grid": [0.5, 1.0, 2.0, 4.0, 8.0],
+    "map_temperature": 1.0,
+    "selection_policy": "micro pair-F1, then macro pair-F1, then micro pair-precision; ties broken by lower temperature then lower gamma",
+    "selected_separately_for": ["C1", "C2", "C3"],
+    "external_panels_may_select_parameters": false,
+    "old_external_panels_may_select_routes": false
+  },
+  "metrics": {
+    "primary": ["micro pair-F1", "macro pair-F1"],
+    "required_companions": ["micro/macro pair-precision", "micro/macro pair-recall", "micro/macro exact-stem F1"],
+    "stem_definition": "maximal consecutive nested stem, outer pair first, no bulges; exact stem identity",
+    "statistical_comparison": "paired per-sequence and per-seed effects with seed-level dispersion; no cross-level F1 ranking"
+  },
+  "pilot": {
+    "purpose": "single-factor backbone-LR stability diagnosis only; not a production or SOTA decision",
+    "seed": 0,
+    "seeds": [0, 1, 2],
+    "steps": 9600,
+    "terminal_checkpoints": ["train_on_step9600.pt", "train_off_step9600.pt"],
+    "retained_checkpoints": [3200, 6400, 9600],
+    "old_external_panels": false,
+    "expected_unfreeze_schedule": {"1": 0, "1600": 0, "2400": 2, "3200": 4, "6400": 12, "9600": 20},
+    "required_checks": [
+      "both arms load the same shared-init SHA256",
+      "initial model tensors are identical before applying the training-prior switch",
+      "compute ledgers have identical sequence hashes and batch order",
+      "both arms complete exactly 9600 steps without validation early stopping or diverge explicitly",
+      "only length-normalized NLL is optimized",
+      "train-on and train-off checkpoints differ after optimization",
+      "C0/C1 share one checkpoint and C2/C3 share one checkpoint",
+      "no NaN, OOM, mask violation, or non-finite inside-outside posterior",
+      "decoder parameters are selected on VL0 only"
+    ]
+  },
+  "full_matrix_gate": {
+    "seeds": [0, 1, 2],
+    "steps_per_training_trajectory": 20000,
+    "n_training_runs": 6,
+    "n_evaluation_identities_per_seed": 4,
+    "additional_pilot_required": false,
+    "prerequisite": "pilot required_checks all PASS and implementation tests committed",
+    "scientific_criteria_frozen_before_launch": true,
+    "primary_endpoint": {
+      "comparison": "C2_minus_C1",
+      "aggregation": "mean over seeds 0/1/2 at the fixed terminal checkpoint",
+      "macro_pair_f1_mean_delta_min": 0.01,
+      "micro_pair_f1_mean_delta_min": 0.0,
+      "micro_pair_precision_mean_delta_min": -0.005,
+      "macro_pair_precision_mean_delta_min": -0.005,
+      "seed_direction_rule": "all three per-seed macro pair-F1 deltas must be positive; the paired-interval alternative is not invoked for this run",
+      "forbidden": "selecting the best seed, comparing only seed0, or replacing the terminal comparison with a best checkpoint"
+    },
+    "secondary_endpoint": {
+      "comparison": "C2_minus_C1",
+      "micro_stem_f1_mean_delta_min": -0.005,
+      "macro_stem_f1_mean_delta_min": -0.005,
+      "recall_reporting": "micro and macro pair-recall are mandatory for every arm",
+      "mixed_evidence_rule": "if micro and macro directions disagree, report mixed evidence and never select only the favorable metric"
+    },
+    "required_comparisons": {
+      "C2_vs_C1": "test whether aligned train-off/inference-off exceeds inference-only Turner removal",
+      "C2_vs_C0": "required before any production-candidate discussion; beating only an ablation arm is insufficient",
+      "C2_vs_C3": "test whether Turner is suitable as an inference-only remedy",
+      "production_candidate_baseline_rule": "C2 mean micro pair-F1 must be no lower than C0 and C2 mean macro pair-F1 must exceed C0",
+      "C0_final_stronger_definition": "C0 exceeds C2 on both mean micro and mean macro pair-F1",
+      "shared_conditions": "same initialization, data order, training budget, MEA temperature/gamma grids and VL0 selection policy"
+    },
+    "checkpoint_trajectory": {
+      "primary_checkpoint": "fixed step 20000; no best-checkpoint substitution",
+      "required_retained_steps": [3200, 9600, 16800, 20000],
+      "expected_unfrozen_blocks": {"3200": 4, "9600": 20, "16800": 33, "20000": 33},
+      "required_metadata": ["actual_unfrozen_blocks", "backbone_update_sha256", "checkpoint_sha256"],
+      "best_checkpoint_rule": "a VL0 trajectory-best checkpoint may be reported only for convergence analysis; record its actual unfreeze count and hashes, and never substitute it for the terminal endpoint",
+      "required_analyses": [
+        "whether the C2 advantage expands, remains stable, or disappears with backbone unfreezing",
+        "whether stem micro/macro disagreement is concentrated in a few sequences or length buckets",
+        "whether C2 only reaches a good checkpoint earlier rather than converging better",
+        "whether C0 surpasses C2 after sufficient training"
+      ]
+    },
+    "decision_rules": {
+      "select_aligned_off_candidate": "C2 meets the primary endpoint and both stem noninferiority margins; then exactly one frozen external evaluation is allowed",
+      "pair_gain_stem_failure": "do not select a production route; diagnose pair-to-stem objective mismatch",
+      "C0_final_stronger": "stop the train-off mainline and attribute the pilot signal to seed or undertraining",
+      "seed_direction_inconsistent": "do not select a route; inspect training stability and never choose a champion seed",
+      "C3_repeatedly_weaker": "allow only the limited conclusion that Turner is not suitable as an inference-only remedy in this setting; do not claim universal Turner ineffectiveness"
+    },
+    "route_interpretation": {
+      "any_result": "requires precision, recall, pair-F1 and stem-F1 jointly; no SOTA or production claim from VL0 alone"
+    }
+  },
+  "external_policy": {
+    "previous_eight_panels": "not used in pilot or route/parameter selection",
+    "future_use": "only if C2 meets the frozen primary endpoint and both stem noninferiority margins, permit exactly one frozen sensitivity application; otherwise none; label any such application non-independent because the panels were used in earlier analyses",
+    "strict_ood": "requires a separate preregistered official/time-out split"
+  },
+  "artifact_root": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1",
+  "code_root": "/home/rna_jev_xens2_dualview_round56"
+}

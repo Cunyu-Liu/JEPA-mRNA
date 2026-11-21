@@ -78,8 +78,9 @@ def validate_training_args(contract: dict[str, Any], args: Any) -> str:
     if values.get("lambda_nll") != objective["lambda_nll"]:
         raise ValueError("lambda_nll must be one")
     if mode == "pilot":
-        if values.get("seed") != contract["pilot"]["seed"] or values.get("steps") != contract["pilot"]["steps"]:
-            raise ValueError("pilot must use seed=0 and steps=3200")
+        allowed_seeds = contract["pilot"].get("seeds", [contract["pilot"]["seed"]])
+        if values.get("seed") not in allowed_seeds or values.get("steps") != contract["pilot"]["steps"]:
+            raise ValueError(f"pilot must use seeds={allowed_seeds} and steps={contract['pilot']['steps']}")
     elif mode == "full":
         gate = contract["full_matrix_gate"]
         if contract.get("status") != "FROZEN_BEFORE_FULL_MATRIX" or not gate.get("scientific_criteria_frozen_before_launch"):

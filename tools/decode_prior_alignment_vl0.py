@@ -69,7 +69,9 @@ def main() -> None:
         "contract_temperature_grid": list(TEMPERATURES) == contract["decode_selection"]["temperature_grid"],
         "contract_gamma_grid": list(GAMMAS) == contract["decode_selection"]["mea_gamma_grid"],
     }
-    expected_step = 3200 if args.contract_mode == "pilot" else 20000 if args.contract_mode == "full" else None
+    expected_step = (contract["pilot"]["steps"] if args.contract_mode == "pilot"
+                     else contract["full_matrix_gate"]["steps_per_training_trajectory"]
+                     if args.contract_mode == "full" else None)
     if expected_step is not None:
         checks["expected_terminal_step"] = on_meta["checkpoint_step"] == expected_step
     if args.contract_mode != "smoke":
