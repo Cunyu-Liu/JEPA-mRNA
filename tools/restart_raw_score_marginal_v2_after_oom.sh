@@ -6,14 +6,20 @@ ART=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifac
 PY=/root/miniconda3/envs/lucaone_cu128/bin/python
 STAGE="$ART/raw_score_mechanism_4arm_v1/seed0"
 FAILED_ARCHIVE="$STAGE/marginal_failed_oom_v2_step33"
-MIN_FREE_MB=16000
+MIN_FREE_MB=20000
 cd "$REPO"
 git diff --quiet
 git diff --cached --quiet
-[[ -d "$STAGE/marginal" && ! -e "$FAILED_ARCHIVE" ]] || {
-  echo "missing unarchived OOM run or archive already exists"; exit 2; }
+if [[ -d "$STAGE/marginal" && ! -e "$FAILED_ARCHIVE" ]]; then
+  ARCHIVE_NEEDED=1
+elif [[ ! -e "$STAGE/marginal" && -d "$FAILED_ARCHIVE" && -s "$STAGE/marginal_failed_oom_v2_step33.json" ]]; then
+  ARCHIVE_NEEDED=0
+else
+  echo "expected either an unarchived OOM run or its complete immutable archive"; exit 2
+fi
 [[ ! -e "$STAGE/evaluation_v2" && ! -e "$STAGE/verification_v2.json" ]] || {
   echo "formal evaluation already exists"; exit 2; }
+if [[ "$ARCHIVE_NEEDED" == "1" ]]; then
 "$PY" - "$STAGE" <<'PY2'
 import hashlib, json, sys
 from pathlib import Path
@@ -42,12 +48,13 @@ record = {
     "run_meta_sha256": sha(run / "run_meta.json"),
     "stdout_sha256": sha(log),
     "cause_scope": "GPU shared with other active RNA fine-tuning jobs; no process was terminated and no scientific/stopping parameter was changed",
-    "restart": "same shared init after at least 16000 MiB GPU memory is free",
+    "restart": "same shared init after at least 20000 MiB GPU memory is free",
 }
 (stage / "marginal_failed_oom_v2_step33.json").write_text(json.dumps(record, indent=2) + "\n")
 PY2
 mv "$STAGE/marginal" "$FAILED_ARCHIVE"
 mv "$STAGE/marginal.train.stdout.log" "$STAGE/marginal_failed_oom_v2_step33.train.stdout.log"
+fi
 WAIT_LOG="$STAGE/marginal_v2_resource_wait.log"
 while true; do
   FREE_MB="$(nvidia-smi -i 0 --query-gpu=memory.free --format=csv,noheader,nounits | tr -d ' ')"
