@@ -305,7 +305,14 @@ def validate_resume_identity(previous_meta, args):
     if expected != args.nll_normalization:
         raise ValueError(f"resume NLL normalization mismatch: {expected} vs {args.nll_normalization}")
     previous_objective = previous_meta.get("objective", {})
+    previous_method = previous_objective.get("marginal_vjp_method", "central_difference")
+    if previous_method != args.marginal_vjp_method:
+        raise ValueError("resume marginal VJP method mismatch")
     for key in ("lambda_marginal_bce", "marginal_vjp_epsilon"):
+        if key == "marginal_vjp_epsilon" and previous_method == "exact_tangent":
+            if previous_objective.get(key) is not None:
+                raise ValueError("exact-tangent resume epsilon must be null")
+            continue
         expected_value = float(previous_objective.get(key, 0.0 if key == "lambda_marginal_bce" else 1e-3))
         if expected_value != float(getattr(args, key)):
             raise ValueError(f"resume objective mismatch for {key}")
@@ -412,6 +419,8 @@ def main():
     ap.add_argument("--lambda-nll", type=float, default=1.0)
     ap.add_argument("--lambda-marginal-bce", type=float, default=0.0)
     ap.add_argument("--marginal-vjp-epsilon", type=float, default=1e-3)
+    ap.add_argument("--marginal-vjp-method", choices=("central_difference", "exact_tangent"),
+                    default="central_difference")
     ap.add_argument("--lambda-distill", type=float, default=1.0)
     ap.add_argument("--lambda-rlcd", type=float, default=1.0)
     ap.add_argument("--lambda-cal", type=float, default=1.0)
@@ -471,7 +480,7 @@ def main():
     raw_score_contract = False
     if args.contract_mode:
         contract_id = json.loads(Path(args.contract).read_text()).get("contract_id")
-        raw_score_contract = contract_id == "raw_score_mechanism_4arm_v1"
+        raw_score_contract = contract_id in {"raw_score_mechanism_4arm_v1", "raw_score_mechanism_4arm_v2"}
         if raw_score_contract:
             contract = load_raw_score_contract(args.contract)
             training_trajectory = validate_raw_score_training_args(contract, args)
@@ -764,9 +773,13 @@ def main():
         "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
                       "lambda_marginal_bce": args.lambda_marginal_bce,
-                      "marginal_vjp_epsilon": args.marginal_vjp_epsilon,
+                      "marginal_vjp_epsilon": (args.marginal_vjp_epsilon
+                                                if args.marginal_vjp_method == "central_difference" else None),
+                      "marginal_vjp_method": args.marginal_vjp_method,
                       "marginal_forward": "exact_inside_outside_float64",
-                      "marginal_backward": "central_difference_hessian_vector_float64",
+                      "marginal_backward": ("central_difference_hessian_vector_float64"
+                                             if args.marginal_vjp_method == "central_difference"
+                                             else "exact_forward_mode_tangent_float64"),
                       "teacher": args.teacher_dir,
                       "aux_teacher": args.aux_teacher_dir,
                       "teacher_storage": {"lazy": args.lazy_teacher,
@@ -1005,7 +1018,8 @@ def main():
                     marginal_bce = structured_marginal_bce(
                         s_b, mask_b, torch.as_tensor(
                             labels_all[b], dtype=torch.float64, device=s_b.device),
-                        vjp_epsilon=args.marginal_vjp_epsilon)
+                        vjp_epsilon=args.marginal_vjp_epsilon,
+                        vjp_method=args.marginal_vjp_method)
                     loss_b = loss_b + args.lambda_marginal_bce * marginal_bce
                     terms_b["marginal_bce"] = marginal_bce
                 total = loss_b if total is None else total + loss_b
@@ -1199,7 +1213,8 @@ def main():
                         loss = loss + args.lambda_marginal_bce * structured_marginal_bce(
                             scores, mask, torch.as_tensor(
                                 pair_indicator(len(seq), gt_pairs), dtype=torch.float64,
-                                device=scores.device), vjp_epsilon=args.marginal_vjp_epsilon)
+                                device=scores.device), vjp_epsilon=args.marginal_vjp_epsilon,
+                            vjp_method=args.marginal_vjp_method)
                     validation_total += float(loss)
             validation_loss = validation_total / len(validation_records)
             encoder.train()

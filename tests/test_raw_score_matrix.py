@@ -99,7 +99,9 @@ def _valid_args(contract, arm="limited4"):
         warmup_steps=5, grad_clip=1.0, nll_normalization="length", lambda_nll=1.0,
         max_unfrozen_blocks=contract["arms"][arm]["max_unfrozen_blocks"],
         lambda_marginal_bce=contract["arms"][arm]["lambda_marginal_bce"],
-        marginal_vjp_epsilon=0.001, seed=0, steps=9600,
+        marginal_vjp_epsilon=0.001,
+        marginal_vjp_method=contract["arms"][arm].get("marginal_vjp_method", "central_difference"),
+        seed=0, steps=9600,
         scorer="resnet2d", serial_encoder=False,
     )
 
@@ -168,3 +170,72 @@ def test_marginal_empty_legal_set_is_differentiable_zero():
     assert loss.item() == 0.0
     loss.backward()
     assert torch.equal(scores.grad, torch.zeros_like(scores))
+
+
+@pytest.mark.parametrize("sequence", ["AUAUAU", "AUAUAUU"])
+def test_exact_tangent_value_and_vjp_match_enumeration(sequence):
+    generator = torch.Generator().manual_seed(29)
+    n = len(sequence)
+    scores = (0.2 * torch.randn(n, n, generator=generator, dtype=torch.float64)).requires_grad_()
+    mask = torch.as_tensor(valid_pair_mask(sequence), dtype=torch.bool)
+    labels = torch.zeros(n, n, dtype=torch.float64)
+    for i, j in np.argwhere(np.triu(valid_pair_mask(sequence), k=1)):
+        labels[i, j] = float((i + j) % 2)
+    actual = structured_marginal_bce(scores, mask, labels, vjp_method="exact_tangent")
+    actual_gradient, = torch.autograd.grad(actual, scores)
+    reference, _pairs = _enumerated_marginal_bce(scores, mask.numpy(), labels)
+    expected_gradient, = torch.autograd.grad(reference, scores)
+    assert torch.allclose(actual, reference, atol=1e-11, rtol=1e-11)
+    assert torch.allclose(actual_gradient, expected_gradient, atol=2e-10, rtol=2e-10)
+
+
+def test_exact_tangent_does_not_cross_probability_clamp_kink():
+    sequence = "AUAUAU"
+    n = len(sequence)
+    legal = np.triu(valid_pair_mask(sequence), k=1)
+    base = torch.zeros(n, n, dtype=torch.float64)
+    base[torch.as_tensor(legal)] = -30.0
+    mask = torch.as_tensor(valid_pair_mask(sequence), dtype=torch.bool)
+    labels = torch.zeros(n, n, dtype=torch.float64)
+    labels[0, 5] = 1.0
+    exact_scores = base.clone().requires_grad_()
+    exact = structured_marginal_bce(exact_scores, mask, labels, vjp_method="exact_tangent")
+    exact_gradient, = torch.autograd.grad(exact, exact_scores)
+    reference, _pairs = _enumerated_marginal_bce(exact_scores, legal, labels)
+    expected_gradient, = torch.autograd.grad(reference, exact_scores)
+    assert torch.allclose(exact_gradient, expected_gradient, atol=1e-12, rtol=1e-12)
+    assert float(exact_gradient.abs().max()) < 1e-12
+
+
+def test_v2_contract_changes_only_marginal_vjp_method():
+    path = Path(__file__).resolve().parents[1] / "configs/raw_score_mechanism_4arm_v2.json"
+    contract = load_raw_score_contract(path)
+    for arm in ("frozen", "limited4", "marginal"):
+        assert validate_raw_score_training_args(contract, _valid_args(contract, arm)) == "train_off"
+    args = _valid_args(contract, "limited4")
+    args.marginal_vjp_method = "exact_tangent"
+    with pytest.raises(ValueError, match="marginal_vjp_method"):
+        validate_raw_score_training_args(contract, args)
+    args = _valid_args(contract, "marginal")
+    args.marginal_vjp_method = "central_difference"
+    with pytest.raises(ValueError, match="marginal_vjp_method"):
+        validate_raw_score_training_args(contract, args)
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA tangent validation requires a GPU")
+@pytest.mark.parametrize("sequence", ["AUAUAU", "AUAUAUU"])
+def test_cuda_exact_tangent_matches_cpu_enumeration(sequence):
+    generator = torch.Generator().manual_seed(41)
+    n = len(sequence)
+    cpu_scores = (0.3 * torch.randn(n, n, generator=generator, dtype=torch.float64)).requires_grad_()
+    mask = torch.as_tensor(valid_pair_mask(sequence), dtype=torch.bool)
+    labels = torch.zeros(n, n, dtype=torch.float64)
+    for i, j in np.argwhere(np.triu(valid_pair_mask(sequence), k=1)):
+        labels[i, j] = float((i + 2 * j) % 2)
+    cpu_loss = structured_marginal_bce(cpu_scores, mask, labels, vjp_method="exact_tangent")
+    cpu_gradient, = torch.autograd.grad(cpu_loss, cpu_scores)
+    gpu_scores = cpu_scores.detach().cuda().requires_grad_()
+    gpu_loss = structured_marginal_bce(gpu_scores, mask.cuda(), labels.cuda(), vjp_method="exact_tangent")
+    gpu_gradient, = torch.autograd.grad(gpu_loss, gpu_scores)
+    assert torch.allclose(gpu_loss.cpu(), cpu_loss, atol=1e-10, rtol=1e-10)
+    assert torch.allclose(gpu_gradient.cpu(), cpu_gradient, atol=2e-9, rtol=2e-9)

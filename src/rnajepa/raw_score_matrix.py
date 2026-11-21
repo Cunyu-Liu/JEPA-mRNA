@@ -8,13 +8,14 @@ from typing import Any
 from rnajepa.prior_alignment import scheduled_unfreeze_blocks
 
 CONTRACT_ID = "raw_score_mechanism_4arm_v1"
+CONTRACT_IDS = {CONTRACT_ID, "raw_score_mechanism_4arm_v2"}
 NEW_TRAINING_ARMS = ("frozen", "limited4", "marginal")
 ALL_ARMS = ("full_control",) + NEW_TRAINING_ARMS
 
 
 def load_raw_score_contract(path: str | Path) -> dict[str, Any]:
     contract = json.loads(Path(path).read_text())
-    if contract.get("contract_id") != CONTRACT_ID:
+    if contract.get("contract_id") not in CONTRACT_IDS:
         raise ValueError("unexpected RAW_SCORE mechanism contract")
     if contract.get("status") not in {"FROZEN_BEFORE_PILOT", "FROZEN_BEFORE_THREE_SEED"}:
         raise ValueError("RAW_SCORE training requires a frozen contract")
@@ -70,8 +71,12 @@ def validate_raw_score_training_args(contract: dict[str, Any], args: Any) -> str
         "lambda_nll": train["objective"]["lambda_nll"],
         "max_unfrozen_blocks": arm_contract["max_unfrozen_blocks"],
         "lambda_marginal_bce": arm_contract["lambda_marginal_bce"],
-        "marginal_vjp_epsilon": arm_contract["marginal_vjp_epsilon"],
+        "marginal_vjp_method": arm_contract.get("marginal_vjp_method", "central_difference"),
     }
+    if expected["marginal_vjp_method"] == "central_difference":
+        expected["marginal_vjp_epsilon"] = arm_contract["marginal_vjp_epsilon"]
+    elif expected["marginal_vjp_method"] != "exact_tangent":
+        raise ValueError("unknown marginal VJP method in contract")
     for key, target in expected.items():
         if values.get(key) != target:
             raise ValueError(f"RAW_SCORE contract mismatch for {key}: {values.get(key)!r} != {target!r}")

@@ -179,26 +179,54 @@ def aggregate(rows: list[dict], score_parts: list[np.ndarray], label_parts: list
     return output
 
 
+def expected_arm_contract_identity(contract, contract_sha256, arm):
+    """Allow only the explicitly declared v1->v2 unchanged-arm inheritance."""
+    migration = contract.get("contract_migration", {})
+    inherited = migration.get("inherited_run_contract_sha256", {})
+    if arm in inherited:
+        if (migration.get("previous_contract_id") != "raw_score_mechanism_4arm_v1"
+                or not migration.get("previous_contract_sha256")
+                or arm not in migration.get("unchanged_arms", [])
+                or migration.get("formal_pilot_vl0_evaluation_before_migration") is not False):
+            raise ValueError(f"invalid contract migration identity for {arm}")
+        return migration["previous_contract_id"], inherited[arm]
+    return contract["contract_id"], contract_sha256
+
+
 def verify_run_and_checkpoint(contract: dict, contract_sha256: str, arm: str, seed: int,
                               stage: Path, steps: int, mode: str, initial_encoder=None) -> dict:
     run_dir = stage / arm
     meta = read_json(run_dir / "run_meta.json")
     prior = meta["prior_alignment"]
     arm_contract = contract["arms"][arm]
+    expected_contract_id, expected_contract_sha256 = expected_arm_contract_identity(
+        contract, contract_sha256, arm)
     schedule = meta["schedule"]
     terminal_unfrozen = capped_unfreeze_blocks(
         steps, schedule["warmup_head_steps"], schedule["unfreeze_every"],
         schedule["unfreeze_per_step"], schedule["n_blocks"], schedule["max_unfrozen_blocks"])
+    objective = meta["objective"]
+    method = arm_contract.get("marginal_vjp_method", "central_difference")
+    objective_ok = (
+        objective["lambda_marginal_bce"] == arm_contract["lambda_marginal_bce"]
+        and objective.get("marginal_vjp_method", "central_difference") == method)
+    if method == "central_difference":
+        objective_ok = objective_ok and objective["marginal_vjp_epsilon"] == arm_contract["marginal_vjp_epsilon"]
+    elif method == "exact_tangent":
+        objective_ok = (objective_ok and objective["marginal_vjp_epsilon"] is None
+                        and objective.get("marginal_backward") == "exact_forward_mode_tangent_float64")
+    else:
+        raise ValueError(f"unknown contract VJP method for {arm}")
     checks = {
         "completed": meta["status"] == "completed" and meta["stop_reason"] == "step_cap",
         "steps": meta["steps_completed"] == steps and not meta["early_stopped"] and not meta["converged"],
         "no_divergence": not meta["divergence_reason"],
         "arm": prior["raw_score_arm"] == arm and prior["mode"] == mode,
-        "contract": prior["contract_id"] == contract["contract_id"] and prior["contract_sha256"] == contract_sha256,
+        "contract": (prior["contract_id"] == expected_contract_id
+                     and prior["contract_sha256"] == expected_contract_sha256),
         "trajectory": prior["training_trajectory"] == "train_off" and prior["train_turner"] == "off",
         "schedule": schedule["steps"] == steps and schedule["max_unfrozen_blocks"] == arm_contract["max_unfrozen_blocks"],
-        "objective": (meta["objective"]["lambda_marginal_bce"] == arm_contract["lambda_marginal_bce"]
-                      and meta["objective"]["marginal_vjp_epsilon"] == arm_contract["marginal_vjp_epsilon"]),
+        "objective": objective_ok,
         "terminal_unfrozen": str(meta["trainable_parameter_scope"]).startswith(f"{terminal_unfrozen}/33 "),
         "external_closed": not prior["old_external_panels_used"],
     }
@@ -239,7 +267,7 @@ def verify_run_and_checkpoint(contract: dict, contract_sha256: str, arm: str, se
     if (state["step"] != steps or checkpoint_identity["step"] != steps
             or checkpoint_identity["actual_unfrozen_blocks"] != terminal_unfrozen
             or state["meta"]["prior_alignment"]["raw_score_arm"] != arm
-            or state["meta"]["prior_alignment"]["contract_sha256"] != contract_sha256):
+            or state["meta"]["prior_alignment"]["contract_sha256"] != expected_contract_sha256):
         raise ValueError(f"checkpoint identity failed for {arm}")
     encoder = state["model"]["encoder"]
     if tensor_state_sha256(encoder) != checkpoint_identity["backbone_update_sha256"]:
@@ -286,6 +314,7 @@ def main():
     parser.add_argument("--steps", type=int, default=9600)
     parser.add_argument("--stage", type=Path, required=True)
     parser.add_argument("--evaluation", type=Path, required=True)
+    parser.add_argument("--provenance", type=Path, default=None)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--control-only", action="store_true")
@@ -339,8 +368,11 @@ def main():
                 or metadata["checkpoint_step"] != (9600 if arm == "full_control" else args.steps)
                 or metadata["train_trajectory"] != "train_off" or metadata["old_external_panels_used"]):
             raise ValueError(f"export/checkpoint identity mismatch for {arm}")
-        if arm != "full_control" and metadata["contract_sha256"] != contract_sha256:
-            raise ValueError(f"new-arm export contract mismatch for {arm}")
+        if arm != "full_control":
+            _expected_id, expected_export_contract_sha256 = expected_arm_contract_identity(
+                contract, contract_sha256, arm)
+            if metadata["contract_sha256"] != expected_export_contract_sha256:
+                raise ValueError(f"new-arm export contract mismatch for {arm}")
         arm_rows, score_parts, label_parts = [], [], []
         for sequence_hash, seq, truth in records:
             path = export / "bprna_vl0" / f"{sequence_hash}.npz"
@@ -398,7 +430,7 @@ def main():
             decision = "PILOT_DIRECTION_CONFIRMED" if promoted else "STOP_RAW_SCORE_MATRIX_NO_DIRECTION"
             if verdict["promoted_arms"] != promoted or verdict["decision"] != decision:
                 raise ValueError("independently recomputed pilot decision differs")
-        provenance_path = args.stage / "provenance.json"
+        provenance_path = args.provenance or (args.stage / "provenance.json")
         if not args.limit:
             provenance = read_json(provenance_path)
             if (provenance["CONTRACT_SHA256"] != contract_sha256

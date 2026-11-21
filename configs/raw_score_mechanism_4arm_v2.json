@@ -1,0 +1,159 @@
+{
+  "contract_id": "raw_score_mechanism_4arm_v2",
+  "status": "FROZEN_BEFORE_PILOT",
+  "contract_migration": {
+    "previous_contract_id": "raw_score_mechanism_4arm_v1",
+    "previous_contract_sha256": "3e9ddbb29d2d3535d2101fc687c301ea0dc4952f96fa182ce3274ce2b8f46d01",
+    "reason": "The v1 central-difference marginal VJP crossed the BCE probability-clamp kink and produced a spurious gradient norm 8848 at step 537; CUDA, CPU, and independent DP forward values agreed, while exact DP derivatives remained finite.",
+    "unchanged_arms": ["frozen", "limited4"],
+    "inherited_run_contract_sha256": {
+      "frozen": "3e9ddbb29d2d3535d2101fc687c301ea0dc4952f96fa182ce3274ce2b8f46d01",
+      "limited4": "3e9ddbb29d2d3535d2101fc687c301ea0dc4952f96fa182ce3274ce2b8f46d01"
+    },
+    "retrain_arms": ["marginal"],
+    "full_control_reused_not_retrained": true,
+    "formal_pilot_vl0_evaluation_before_migration": false,
+    "engineering_smoke_vl0_evaluation_before_migration": true,
+    "scientific_change_scope": "Only the marginal arm second-order VJP changes from central finite difference to exact forward-mode tangent; forward marginals, BCE, clamp, data, initialization, schedule, stopping gates, decoder, metrics, and promotion gates are unchanged.",
+    "v1_failed_runs_retained": true,
+    "v1_scientific_result_available": false
+  },
+  "research_question": "Do exact raw-score ranking and decoded pair/stem metrics support a representation/limited-adaptation explanation or an in-training marginal-objective explanation for the dominant RAW_SCORE FN residue?",
+  "scientific_boundary": {
+    "model_dev_only": true,
+    "datasets": ["bprna_vl0"],
+    "external_evaluation_allowed": false,
+    "strict_ood_allowed": false,
+    "sota_claim_allowed": false,
+    "threshold_search_allowed": false,
+    "temperature_or_gamma_search_allowed": false,
+    "new_general_modules_allowed": false,
+    "old_external_panels_used": false,
+    "raw_score_is_residual_localization_not_causal_proof": true
+  },
+  "training": {
+    "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+    "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+    "evaluation_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+    "shared_init_template": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/init/shared_init_seed{seed}.pt",
+    "shared_init_sha256_seed0": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e",
+    "seed0": 0,
+    "steps": 9600,
+    "batch_size": 4,
+    "optimizer": "AdamW",
+    "optimizer_betas": [0.9, 0.98],
+    "weight_decay": 0.0,
+    "head_lr": 0.0001,
+    "backbone_lr": 0.000001,
+    "optimizer_warmup_steps": 5,
+    "head_warmup_steps": 1600,
+    "unfreeze_every": 800,
+    "unfreeze_per_step": 2,
+    "grad_clip": 1.0,
+    "dropout": 0.0,
+    "early_stopping": false,
+    "objective": {
+      "nll_normalization": "length",
+      "lambda_nll": 1.0,
+      "auxiliary_weights": "all_zero",
+      "marginal_forward": "exact_inside_outside_float64",
+      "marginal_backward": "arm_specific_marginal_vjp_method",
+      "marginal_vjp_methods": {
+        "central_difference": "central_difference_hessian_vector_float64",
+        "exact_tangent": "exact_forward_mode_tangent_float64"
+      },
+      "marginal_probability_epsilon": 1e-7
+    }
+  },
+  "arms": {
+    "full_control": {
+      "purpose": "Direct stable progressive-full-parameter control",
+      "execution": "REUSE_EXISTING_RUN_NOT_RETRAINED",
+      "max_unfrozen_blocks": 33,
+      "lambda_marginal_bce": 0.0,
+      "marginal_vjp_epsilon": 0.001,
+      "run_meta": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_optimizer_v1/seed0_backbone_lr_1e-6/train_off/run_meta.json",
+      "run_meta_sha256": "2b1bf13340c8c2cb4c182a2b4a0cecb44883fb0f4809ff889f140985e8254031",
+      "checkpoint": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_optimizer_v1/seed0_backbone_lr_1e-6/snapshots/train_off_step9600.pt",
+      "export": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_optimizer_v1/seed0_backbone_lr_1e-6/export_train_off"
+    },
+    "frozen": {
+      "purpose": "Can the shared pretrained representation plus the identically initialized head support pair discrimination without backbone adaptation?",
+      "execution": "INHERIT_COMPLETED_V1_RUN_NOT_RETRAINED",
+      "max_unfrozen_blocks": 0,
+      "lambda_marginal_bce": 0.0,
+      "marginal_vjp_method": "central_difference",
+      "marginal_vjp_epsilon": 0.001
+    },
+    "limited4": {
+      "purpose": "Does the same top-down schedule capped at four top blocks reduce forgetting and improve the pair decision boundary without LoRA or new parameters?",
+      "execution": "INHERIT_COMPLETED_V1_RUN_NOT_RETRAINED",
+      "max_unfrozen_blocks": 4,
+      "lambda_marginal_bce": 0.0,
+      "marginal_vjp_method": "central_difference",
+      "marginal_vjp_epsilon": 0.001
+    },
+    "marginal": {
+      "purpose": "Does an additional supervised exact-marginal BCE objective improve raw ranking and decoded precision-recall under the stable full schedule when its VJP is exact?",
+      "execution": "RETRAIN_FROM_SHARED_INIT",
+      "max_unfrozen_blocks": 33,
+      "lambda_marginal_bce": 1.0,
+      "marginal_vjp_method": "exact_tangent",
+      "marginal_vjp_epsilon": null
+    }
+  },
+  "evaluation": {
+    "decoder": {
+      "decoder": "MEA",
+      "temperature": 1.0,
+      "gamma": 1.0
+    },
+    "decoder_provenance": "old_C2_turner_training_off_with_shared_initialization",
+    "decoder_source": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_optimizer_v1/seed0_backbone_lr_1e-6/decode_vl0/frozen_decode_config.json",
+    "decoder_source_sha256": "dccb8f73c6b965134981b71d4243dcf6b4798e2ae30537904016d04a9699ff51",
+    "primary_metrics": ["micro_pair_f1", "micro_pair_precision", "micro_pair_recall", "macro_pair_f1", "macro_pair_precision", "macro_pair_recall", "micro_stem_f1", "micro_stem_precision", "micro_stem_recall", "macro_stem_f1", "macro_stem_precision", "macro_stem_recall"],
+    "raw_metrics": ["micro_auprc", "macro_auprc", "micro_recall_at_precision_0.8", "micro_recall_at_precision_0.9"],
+    "raw_role": "auxiliary_mechanism_diagnostic_not_replacement_primary_endpoint",
+    "raw_candidate_set": "strict_upper_triangle_of_valid_pair_mask_no_canonical_only_filter",
+    "raw_score_source": "train_off/plana_off_float64",
+    "raw_tie_policy": "all_equal_scores_enter_one_threshold_point; underlying deterministic order is descending_score_then_i_then_j",
+    "auprc": "right_continuous_step_area_over_distinct_score_thresholds_with_initial_recall_zero",
+    "recall_at_fixed_precision": "maximum_recall_among_distinct_threshold_points_with_precision_at_least_fixed_target",
+    "fixed_precision_targets": [0.8, 0.9],
+    "infeasible_precision_rule": "null_with_feasible_false; macro_recall_sets_infeasible_sequences_to_zero_and_reports_feasible_fraction",
+    "no_threshold_selected_for_prediction": true
+  },
+  "pilot": {
+    "seed": 0,
+    "steps": 9600,
+    "completion_gate": "the v2 marginal run and inherited frozen/limited4 runs completed at step_cap=9600 with expected terminal unfreeze counts 0/4/20 and finite losses",
+    "per_arm_direction_gate": {
+      "micro_auprc_delta_min_exclusive": 0.0,
+      "micro_recall_at_precision_0.8_delta_min_exclusive": 0.0,
+      "micro_pair_f1_delta_min_inclusive": 0.0,
+      "macro_pair_f1_delta_min_inclusive": 0.0,
+      "micro_pair_precision_delta_min_inclusive": -0.005,
+      "macro_pair_precision_delta_min_inclusive": -0.005,
+      "micro_stem_f1_delta_min_inclusive": -0.005,
+      "macro_stem_f1_delta_min_inclusive": -0.005,
+      "require_at_least_one_pair_f1_strictly_positive": true
+    },
+    "promotion_rule": "independently verified arms passing every per-arm direction gate may add seeds 1 and 2; failing arms stop",
+    "no_direction_rule": "STOP_RAW_SCORE_MATRIX_NO_DIRECTION",
+    "control_comparison": "same_seed_only_for_pilot"
+  },
+  "three_seed_gate": {
+    "pilot_direction_confirmed": false,
+    "pilot_verdict_sha256": null,
+    "promoted_arms": [],
+    "mean_delta_rules_same_as_pilot": true,
+    "macro_pair_f1_delta_must_be_positive_for_each_seed": true,
+    "external_evaluation_remains_closed": true
+  },
+  "interpretation": {
+    "frozen_or_limited4_better": "supports full-schedule forgetting/optimization as a contributor; does not prove exclusive causality",
+    "frozen_and_limited4_not_better": "does not support the adaptation explanation; representation/head modification becomes the next hypothesis rather than a proven cause",
+    "marginal_better": "supports the in-training structured-marginal decision-boundary route with the exact tangent VJP as part of the intervention; it is not a v1-versus-v2 scientific comparison",
+    "all_fail": "no mechanism arm is promoted and no threshold/decoder/module rescue is attempted"
+  }
+}
