@@ -32,14 +32,17 @@ assert smoke["status"] == "PASS" and smoke["scientifically_promoted_arms"] == []
 assert stress["status"] == "PASS" and "NO_SCIENTIFIC_RESULT" in stress["scope"]
 assert failure["last_batch_step"] == 9198
 assert failure["status"] == "NUMERICAL_NONFINITE_TANGENT_NO_SCIENTIFIC_RESULT"
-assert failure["resume_checkpoint_is_not_terminal"] is True
+assert failure["resume_is_terminal"] is False and failure["resume_step"] == 9000
 for arm, blocks in (("frozen", 0), ("limited4", 4)):
     meta = json.loads((stage / arm / "run_meta.json").read_text())
-    assert meta["status"] == "completed" and meta["stop_reason"] == "step_cap" and meta["batch_step"] == 9600
-    assert meta["unfrozen_blocks"] == blocks
-    assert (stage / arm / "export_train_off" / "scores_manifest.json").exists()
+    assert meta["status"] == "completed" and meta["stop_reason"] == "step_cap"
+    assert meta["steps_completed"] == 9600
+    assert meta["trainable_parameter_scope"].startswith(f"{blocks}/33 ")
+    assert (stage / arm / "export_train_off" / "export_metadata.json").exists()
 failed_meta = json.loads((stage / "marginal/run_meta.json").read_text())
-assert failed_meta["batch_step"] == 9198
+assert failed_meta["status"] == "running"  # abnormal-exit residue, not a healthy process
+failed_batches = [json.loads(line) for line in (stage / "marginal/batch_order.jsonl").read_text().splitlines() if line]
+assert len(failed_batches) == 9198 and failed_batches[-1]["step"] == 9198
 assert not (stage / "marginal/snapshots/marginal_step9600.pt").exists()
 assert not (stage / "marginal/export_train_off").exists()
 assert "non-finite exact structured-marginal VJP" in (stage / "marginal.train.stdout.log").read_text()
