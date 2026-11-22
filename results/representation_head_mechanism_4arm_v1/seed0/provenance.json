@@ -1,0 +1,18 @@
+{
+  "RUN_GIT_HEAD": "4f350532dfbff15f8a4879ea33ad1a697451c134",
+  "TRAIN_SHA256": "d5e0a63e736f0d96a62351e6779a5c7cacb91ebe8cd2689e88ccc789f3312c75",
+  "INIT_SHA256": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e",
+  "CONTRACT_SHA256": "20f6595e38c981388595b71c4df344425f611638a9bf72c71a71798a10ee84b0",
+  "MODE": "pilot",
+  "STEPS": "9600",
+  "SEED": "0",
+  "decision": "PILOT_DIRECTION_CONFIRMED",
+  "promoted_arms": [
+    "head_deep",
+    "repr_head"
+  ],
+  "external_evaluation_allowed": false,
+  "control_arm": "control_matched",
+  "full_control_reused_not_retrained": false,
+  "artifact_staging": "/home (teams quota EDQUOT); migratable to /teams"
+}

@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "data_sha256": true,
+    "shared_init_sha256": true,
+    "decoder_source_sha256": true,
+    "evaluation_data_exists": true,
+    "contract_frozen": true
+  },
+  "all_pass": true,
+  "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+  "shared_init_sha256": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e",
+  "decoder_source_sha256": "dccb8f73c6b965134981b71d4243dcf6b4798e2ae30537904016d04a9699ff51"
+}

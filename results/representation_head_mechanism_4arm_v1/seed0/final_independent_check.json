@@ -1,0 +1,276 @@
+{
+  "contract_sha256": "20f6595e38c981388595b71c4df344425f611638a9bf72c71a71798a10ee84b0",
+  "control_arm": "control_matched",
+  "decision_match": true,
+  "direction_gate_agreement": {
+    "head_deep": true,
+    "repr_head": true,
+    "repr_wide": true
+  },
+  "gates_match": true,
+  "max_abs_diff_vs_official": {
+    "control_matched": {
+      "macro_pair_f1": 0.0,
+      "macro_pair_precision": 0.0,
+      "macro_stem_f1": 0.0,
+      "micro_auprc": 0.0,
+      "micro_pair_f1": 0.0,
+      "micro_pair_precision": 0.0,
+      "micro_recall_at_precision_0.8": 0.0,
+      "micro_stem_f1": 0.0
+    },
+    "head_deep": {
+      "macro_pair_f1": 0.0,
+      "macro_pair_precision": 0.0,
+      "macro_stem_f1": 0.0,
+      "micro_auprc": 0.0,
+      "micro_pair_f1": 0.0,
+      "micro_pair_precision": 0.0,
+      "micro_recall_at_precision_0.8": 0.0,
+      "micro_stem_f1": 0.0
+    },
+    "repr_head": {
+      "macro_pair_f1": 0.0,
+      "macro_pair_precision": 0.0,
+      "macro_stem_f1": 0.0,
+      "micro_auprc": 0.0,
+      "micro_pair_f1": 0.0,
+      "micro_pair_precision": 0.0,
+      "micro_recall_at_precision_0.8": 0.0,
+      "micro_stem_f1": 0.0
+    },
+    "repr_wide": {
+      "macro_pair_f1": 0.0,
+      "macro_pair_precision": 0.0,
+      "macro_stem_f1": 0.0,
+      "micro_auprc": 0.0,
+      "micro_pair_f1": 0.0,
+      "micro_pair_precision": 0.0,
+      "micro_recall_at_precision_0.8": 0.0,
+      "micro_stem_f1": 0.0
+    }
+  },
+  "metrics_match_1e-6": true,
+  "n_sequences": 196,
+  "official_decision": "PILOT_DIRECTION_CONFIRMED",
+  "official_promoted_arms": [
+    "head_deep",
+    "repr_head"
+  ],
+  "overall": "PASS",
+  "recomputed_arms": {
+    "control_matched": {
+      "export_checkpoint_sha256": "a9414ebd1b7225f46f58f7e0ae2de5f28b6bbfe97f6688b6364440824f36adf2",
+      "macro_auprc": 0.47091529226965945,
+      "macro_feasible_fraction_precision_0.8": 0.8418367346938775,
+      "macro_feasible_fraction_precision_0.9": 0.8316326530612245,
+      "macro_pair_f1": 0.8057720535564922,
+      "macro_pair_precision": 0.8276097112042003,
+      "macro_pair_recall": 0.8007030944391966,
+      "macro_recall_at_precision_0.8": 0.2792731570280607,
+      "macro_recall_at_precision_0.9": 0.23091648779489224,
+      "macro_stem_f1": 0.6341907402071509,
+      "macro_stem_precision": 0.6464883214116166,
+      "macro_stem_recall": 0.6303174276791356,
+      "micro_auprc": 0.2881783999848029,
+      "micro_fixed_precision_feasible": {
+        "0.8": true,
+        "0.9": true
+      },
+      "micro_pair_f1": 0.8257126886528787,
+      "micro_pair_fn": 925,
+      "micro_pair_fp": 634,
+      "micro_pair_precision": 0.8534781603882597,
+      "micro_pair_recall": 0.799696838458207,
+      "micro_pair_tp": 3693,
+      "micro_recall_at_precision_0.8": 0.035513209181463834,
+      "micro_recall_at_precision_0.9": 0.009527934170636639,
+      "micro_stem_f1": 0.5684995340167754,
+      "micro_stem_fn": 527,
+      "micro_stem_fp": 399,
+      "micro_stem_precision": 0.6045589692765114,
+      "micro_stem_recall": 0.5364995602462621,
+      "micro_stem_tp": 610,
+      "n_sequences": 196
+    },
+    "head_deep": {
+      "export_checkpoint_sha256": "efc244524588b69f0c6e36017653cf3f1318b411e149ce05b2d862848c41b881",
+      "macro_auprc": 0.5626123170092061,
+      "macro_feasible_fraction_precision_0.8": 0.8316326530612245,
+      "macro_feasible_fraction_precision_0.9": 0.826530612244898,
+      "macro_pair_f1": 0.8198590697000052,
+      "macro_pair_precision": 0.8349550628417186,
+      "macro_pair_recall": 0.8170133092606753,
+      "macro_recall_at_precision_0.8": 0.365826554801711,
+      "macro_recall_at_precision_0.9": 0.2969729925423174,
+      "macro_stem_f1": 0.6391145484401796,
+      "macro_stem_precision": 0.6546890009019597,
+      "macro_stem_recall": 0.633141800018814,
+      "micro_auprc": 0.3656684995086128,
+      "micro_fixed_precision_feasible": {
+        "0.8": true,
+        "0.9": true
+      },
+      "micro_pair_f1": 0.8422456920511395,
+      "micro_pair_fn": 830,
+      "micro_pair_fp": 589,
+      "micro_pair_precision": 0.8654329449394562,
+      "micro_pair_recall": 0.8202685145084452,
+      "micro_pair_tp": 3788,
+      "micro_recall_at_precision_0.8": 0.07925508878302295,
+      "micro_recall_at_precision_0.9": 0.0086617583369424,
+      "micro_stem_f1": 0.5961628451099672,
+      "micro_stem_fn": 500,
+      "micro_stem_fp": 363,
+      "micro_stem_precision": 0.637,
+      "micro_stem_recall": 0.5602462620932278,
+      "micro_stem_tp": 637,
+      "n_sequences": 196
+    },
+    "repr_head": {
+      "export_checkpoint_sha256": "140b2d17267500d47705644593dd9a112d61b23c5d4ccce9cecfa699c3886ccb",
+      "macro_auprc": 0.5939942455158796,
+      "macro_feasible_fraction_precision_0.8": 0.8520408163265306,
+      "macro_feasible_fraction_precision_0.9": 0.8520408163265306,
+      "macro_pair_f1": 0.8134968019061627,
+      "macro_pair_precision": 0.84443552181369,
+      "macro_pair_recall": 0.8015571077250125,
+      "macro_recall_at_precision_0.8": 0.41963943023908645,
+      "macro_recall_at_precision_0.9": 0.34987849655270054,
+      "macro_stem_f1": 0.6427993226034754,
+      "macro_stem_precision": 0.6626666292557649,
+      "macro_stem_recall": 0.635286598471346,
+      "micro_auprc": 0.39751333992161864,
+      "micro_fixed_precision_feasible": {
+        "0.8": true,
+        "0.9": true
+      },
+      "micro_pair_f1": 0.8459702171194725,
+      "micro_pair_fn": 897,
+      "micro_pair_fp": 458,
+      "micro_pair_precision": 0.890404402967217,
+      "micro_pair_recall": 0.8057600692940667,
+      "micro_pair_tp": 3721,
+      "micro_recall_at_precision_0.8": 0.14811606756171503,
+      "micro_recall_at_precision_0.9": 0.06431355565179732,
+      "micro_stem_f1": 0.5995203836930456,
+      "micro_stem_fn": 512,
+      "micro_stem_fp": 323,
+      "micro_stem_precision": 0.6592827004219409,
+      "micro_stem_recall": 0.5496921723834652,
+      "micro_stem_tp": 625,
+      "n_sequences": 196
+    },
+    "repr_wide": {
+      "export_checkpoint_sha256": "52bb3dd542c302e73e46890fd3e35de6d5181f863987aee161cba92fcdc5209d",
+      "macro_auprc": 0.5287562583046007,
+      "macro_feasible_fraction_precision_0.8": 0.8367346938775511,
+      "macro_feasible_fraction_precision_0.9": 0.8367346938775511,
+      "macro_pair_f1": 0.7707023998898982,
+      "macro_pair_precision": 0.845180246180063,
+      "macro_pair_recall": 0.7379238937521707,
+      "macro_recall_at_precision_0.8": 0.3560042504931608,
+      "macro_recall_at_precision_0.9": 0.27825574250381474,
+      "macro_stem_f1": 0.5688521973014248,
+      "macro_stem_precision": 0.5849044379656624,
+      "macro_stem_recall": 0.5607505112741418,
+      "micro_auprc": 0.36325985995043975,
+      "micro_fixed_precision_feasible": {
+        "0.8": true,
+        "0.9": true
+      },
+      "micro_pair_f1": 0.8174726989079563,
+      "micro_pair_fn": 1212,
+      "micro_pair_fp": 309,
+      "micro_pair_precision": 0.9168236877523553,
+      "micro_pair_recall": 0.7375487223906453,
+      "micro_pair_tp": 3406,
+      "micro_recall_at_precision_0.8": 0.12862711130359464,
+      "micro_recall_at_precision_0.9": 0.055002165439584236,
+      "micro_stem_f1": 0.527209186220669,
+      "micro_stem_fn": 609,
+      "micro_stem_fp": 338,
+      "micro_stem_precision": 0.6096997690531177,
+      "micro_stem_recall": 0.46437994722955145,
+      "micro_stem_tp": 528,
+      "n_sequences": 196
+    }
+  },
+  "recomputed_comparisons": {
+    "head_deep": {
+      "checks": {
+        "at_least_one_pair_f1_strictly_positive": true,
+        "macro_pair_f1_noninferior": true,
+        "macro_pair_precision_preserved": true,
+        "macro_stem_f1_preserved": true,
+        "micro_auprc_strictly_positive": true,
+        "micro_pair_f1_noninferior": true,
+        "micro_pair_precision_preserved": true,
+        "micro_recall_at_precision_0.8_strictly_positive": true,
+        "micro_stem_f1_preserved": true
+      },
+      "delta_vs_control_matched": {
+        "macro_pair_f1": 0.014087016143513043,
+        "macro_pair_precision": 0.00734535163751826,
+        "macro_stem_f1": 0.004923808233028626,
+        "micro_auprc": 0.07749009952380992,
+        "micro_pair_f1": 0.016533003398260804,
+        "micro_pair_precision": 0.011954784551196473,
+        "micro_recall_at_precision_0.8": 0.04374187960155912,
+        "micro_stem_f1": 0.027663311093191756
+      },
+      "direction_passed": true
+    },
+    "repr_head": {
+      "checks": {
+        "at_least_one_pair_f1_strictly_positive": true,
+        "macro_pair_f1_noninferior": true,
+        "macro_pair_precision_preserved": true,
+        "macro_stem_f1_preserved": true,
+        "micro_auprc_strictly_positive": true,
+        "micro_pair_f1_noninferior": true,
+        "micro_pair_precision_preserved": true,
+        "micro_recall_at_precision_0.8_strictly_positive": true,
+        "micro_stem_f1_preserved": true
+      },
+      "delta_vs_control_matched": {
+        "macro_pair_f1": 0.007724748349670518,
+        "macro_pair_precision": 0.016825810609489622,
+        "macro_stem_f1": 0.008608582396324449,
+        "micro_auprc": 0.10933493993681576,
+        "micro_pair_f1": 0.020257528466593788,
+        "micro_pair_precision": 0.03692624257895727,
+        "micro_recall_at_precision_0.8": 0.11260285838025119,
+        "micro_stem_f1": 0.031020849676270168
+      },
+      "direction_passed": true
+    },
+    "repr_wide": {
+      "checks": {
+        "at_least_one_pair_f1_strictly_positive": false,
+        "macro_pair_f1_noninferior": false,
+        "macro_pair_precision_preserved": true,
+        "macro_stem_f1_preserved": false,
+        "micro_auprc_strictly_positive": true,
+        "micro_pair_f1_noninferior": false,
+        "micro_pair_precision_preserved": true,
+        "micro_recall_at_precision_0.8_strictly_positive": true,
+        "micro_stem_f1_preserved": false
+      },
+      "delta_vs_control_matched": {
+        "macro_pair_f1": -0.03506965366659398,
+        "macro_pair_precision": 0.017570534975862695,
+        "macro_stem_f1": -0.06533854290572616,
+        "micro_auprc": 0.07508145996563687,
+        "micro_pair_f1": -0.00823998974492246,
+        "micro_pair_precision": 0.0633455273640956,
+        "micro_recall_at_precision_0.8": 0.0931139021221308,
+        "micro_stem_f1": -0.04129034779610641
+      },
+      "direction_passed": false
+    }
+  },
+  "recomputed_decision": "PILOT_DIRECTION_CONFIRMED",
+  "scope": "INDEPENDENT_REPRESENTATION_HEAD_RECHECK_FROM_RAW_SCORES",
+  "seed": 0
+}
