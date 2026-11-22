@@ -337,6 +337,10 @@ def validate_resume_identity(previous_meta, args):
         raise ValueError("resume scorer mismatch")
     if previous_meta.get("pair_latent_dim") != args.pair_latent_dim:
         raise ValueError("resume pair latent dimension mismatch")
+    for _arch_key, _arch_val in (("d_z", args.d_z), ("resnet_blocks", args.resnet_blocks),
+                                 ("resnet_hidden", args.resnet_hidden), ("head_init", args.head_init)):
+        if _arch_key in previous_meta and previous_meta.get(_arch_key) != _arch_val:
+            raise ValueError(f"resume architecture mismatch for {_arch_key}")
     if args.scorer == "pairjepa":
         objective = previous_meta.get("objective", {})
         expected = {
@@ -449,6 +453,10 @@ def main():
     ap.add_argument("--ripe-encoder-only", action="store_true")
     ap.add_argument("--scorer", choices=["resnet2d", "pairmlp", "pairjepa"], default="resnet2d")
     ap.add_argument("--pair-latent-dim", type=int, default=64)
+    ap.add_argument("--d-z", type=int, default=128)
+    ap.add_argument("--resnet-blocks", type=int, default=4)
+    ap.add_argument("--resnet-hidden", type=int, default=64)
+    ap.add_argument("--head-init", choices=["shared", "fresh"], default="shared")
     ap.add_argument("--lambda-jepa", type=float, default=0.0)
     ap.add_argument("--cl1-token-mask", type=float, default=0.0)
     ap.add_argument("--cl2-infonce-weight", type=float, default=0.0)
@@ -613,8 +621,9 @@ def main():
         encoder = enable_ripe_structrfm(encoder, args.ripe_mode, vocab=VOCAB)
     print(f"[plan-a] backbone: {report['n_params']/1e6:.0f}M params, "
           f"d={report['d_model']}, layers={report['n_layers']}", flush=True)
-    head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=128, hidden=64,
+    head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=args.d_z, hidden=64,
                             scorer=args.scorer, chunk_size=0,
+                            resnet_blocks=args.resnet_blocks, resnet_hidden=args.resnet_hidden,
                             pair_latent_dim=args.pair_latent_dim,
                             jepa_use_ema=args.scorer == "pairjepa" and args.jepa_target == "ema",
                             jepa_random_target=args.scorer == "pairjepa" and args.jepa_target == "random",
@@ -642,9 +651,14 @@ def main():
         if initial.get("format") != "prior_alignment_shared_init_v1" or int(initial.get("seed", -1)) != args.seed:
             raise ValueError("shared-init format or seed identity mismatch")
         encoder.load_state_dict(initial["model"]["encoder"], strict=True)
-        head.load_state_dict(initial["model"]["head"], strict=True)
-        print(f"[plan-a] shared init {args.shared_init} sha256={shared_init_sha256}; "
-              "optimizer starts at step 0", flush=True)
+        if args.head_init == "fresh":
+            print(f"[plan-a] shared init {args.shared_init} sha256={shared_init_sha256}; "
+                  f"encoder loaded strict; head FRESH seed={args.seed} (head-init=fresh); "
+                  "optimizer starts at step 0", flush=True)
+        else:
+            head.load_state_dict(initial["model"]["head"], strict=True)
+            print(f"[plan-a] shared init {args.shared_init} sha256={shared_init_sha256}; "
+                  "optimizer starts at step 0", flush=True)
     elif args.init_checkpoint:
         initial = torch.load(args.init_checkpoint, map_location="cpu", weights_only=False)
         encoder.load_state_dict(initial["model"]["encoder"], strict=True)
@@ -769,8 +783,13 @@ def main():
                   "features": 6, "projection": "6_to_128_zero_initialized",
                   "position_shuffle_seed": 20261113 if args.motif == "shuffled" else None}),
         "pair_latent_dim": args.pair_latent_dim,
-        "head": f"FlatDecisionHead scorer={args.scorer} d_z=128 "
-                f"pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
+        "d_z": args.d_z,
+        "resnet_blocks": args.resnet_blocks,
+        "resnet_hidden": args.resnet_hidden,
+        "head_init": args.head_init,
+        "head": f"FlatDecisionHead scorer={args.scorer} d_z={args.d_z} "
+                f"resnet_blocks={args.resnet_blocks} resnet_hidden={args.resnet_hidden} "
+                f"head_init={args.head_init} pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
         "objective": {"lambda_nll": args.lambda_nll, "lambda_distill": args.lambda_distill,
                       "lambda_rlcd": args.lambda_rlcd, "lambda_cal": args.lambda_cal,
                       "lambda_marginal_bce": args.lambda_marginal_bce,

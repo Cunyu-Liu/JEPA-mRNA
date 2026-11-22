@@ -332,6 +332,7 @@ class FlatDecisionHead(nn.Module):
         scorer: str = "mlp",
         resnet_blocks: int = 4,
         resnet_kernel_size: int = 3,
+        resnet_hidden: int = 64,
         ripe_mode: Optional[str] = None,
         jepa_use_ema: bool = True,
         jepa_online_target: bool = False,
@@ -380,7 +381,8 @@ class FlatDecisionHead(nn.Module):
             #: ResNet preserves the flat arm's init-time equivalence (scores ==
             #: Turner prior exactly).
             self.resnet2d = ResNet2DScorer(d_z, n_blocks=resnet_blocks,
-                                           kernel_size=resnet_kernel_size)
+                                           kernel_size=resnet_kernel_size,
+                                           hidden=resnet_hidden)
             self.turner = None
         elif scorer not in {"pairjepa", "pairmlp"}:
             self.resnet2d = None

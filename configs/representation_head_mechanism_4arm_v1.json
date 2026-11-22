@@ -1,0 +1,160 @@
+{
+  "contract_id": "representation_head_mechanism_4arm_v1",
+  "status": "FROZEN_BEFORE_PILOT",
+  "predecessor": {
+    "contract_id": "raw_score_mechanism_4arm_v3",
+    "verdict": "STOP_RAW_SCORE_MATRIX_NO_DIRECTION",
+    "promoted_arms": [],
+    "key_findings": "frozen/limited4 worse than full_control (does not support full-schedule forgetting as dominant); marginal improved raw micro AUPRC (+0.004383) and recall@P0.8 (+0.013426) but micro/macro pair-F1 fell (-0.001387/-0.003763) and macro stem-F1 fell (-0.008257), failing the pair-F1 non-inferiority gate (5/9).",
+    "next_hypothesis": "representation or structure-head modification, not optimization schedule; this contract probes whether the limitation is pair-representation WIDTH or structure-head CAPACITY before any change of architectural FORM."
+  },
+  "research_question": "Holding backbone adaptation, objective, schedule, data, initialization seed, decoder and metrics fixed, is the dominant RAW_SCORE false-negative residue limited by the pair-representation width (d_z) or by the structure-head 2D-scorer capacity (depth/width), and does joint capacity scaling lift decoded pair-F1 above the matched control?",
+  "scientific_boundary": {
+    "model_dev_only": true,
+    "datasets": ["bprna_vl0"],
+    "external_evaluation_allowed": false,
+    "strict_ood_allowed": false,
+    "sota_claim_allowed": false,
+    "threshold_search_allowed": false,
+    "temperature_or_gamma_search_allowed": false,
+    "new_general_modules_allowed": false,
+    "capacity_probe_only": "Scaling the width of the existing PairRepresentation (d_z) and the depth/width of the existing ResNet2DScorer (n_blocks, hidden). No new module type, no decoder change, no objective change. This respects new_general_modules_allowed=false because no new general module is introduced.",
+    "old_external_panels_used": false,
+    "raw_score_is_residual_localization_not_causal_proof": true
+  },
+  "training": {
+    "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+    "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+    "evaluation_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+    "shared_init_template": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/init/shared_init_seed{seed}.pt",
+    "shared_init_sha256_seed0": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e",
+    "seed0": 0,
+    "steps": 9600,
+    "batch_size": 4,
+    "optimizer": "AdamW",
+    "optimizer_betas": [0.9, 0.98],
+    "weight_decay": 0.0,
+    "head_lr": 0.0001,
+    "backbone_lr": 0.000001,
+    "optimizer_warmup_steps": 5,
+    "head_warmup_steps": 1600,
+    "unfreeze_every": 800,
+    "unfreeze_per_step": 2,
+    "grad_clip": 1.0,
+    "dropout": 0.0,
+    "early_stopping": false,
+    "scorer": "resnet2d",
+    "chunk_size": 0,
+    "grad_checkpoint": true,
+    "objective": {
+      "nll_normalization": "length",
+      "lambda_nll": 1.0,
+      "auxiliary_weights": "all_zero",
+      "lambda_marginal_bce": 0.0,
+      "note": "Objective identical to full_control (NLL only). The structured marginal objective is deliberately OFF so that any cross-arm difference is attributable to architecture, not to the objective."
+    }
+  },
+  "initialization_policy": {
+    "encoder": "load_state_dict(shared_init[model][encoder], strict=True) for every arm; the pretrained backbone initialization is identical across arms.",
+    "head": "Freshly constructed under torch.manual_seed(seed) for every arm; shared_init[model][head] is NOT loaded (head-init=fresh). The head architecture is the manipulated variable, so its tensors are arm-specific and seeded identically.",
+    "rationale": "Loading the shared head with strict=True is impossible for arms whose d_z/blocks/hidden differ. A uniform fresh-head-init policy across all arms (including the matched control) removes any initialization confound: arms differ only in head/representation architecture.",
+    "control_sanity": "control_matched uses the default architecture (d_z=128, blocks=4, hidden=64). Its decoded metrics are compared against the reused full_control reference (micro_pair_f1=0.827895) as an integrity sanity check, NOT as a promotion gate; a large divergence flags initialization sensitivity and is reported."
+  },
+  "arms": {
+    "control_matched": {
+      "purpose": "Matched progressive-full-parameter control under the identical fresh-head-init policy; the gate baseline.",
+      "execution": "RETRAIN_FROM_SHARED_INIT",
+      "d_z": 128,
+      "resnet_blocks": 4,
+      "resnet_hidden": 64,
+      "max_unfrozen_blocks": 33,
+      "terminal_unfrozen_expected": 20,
+      "lambda_marginal_bce": 0.0,
+      "head_init": "fresh"
+    },
+    "repr_wide": {
+      "purpose": "Pair-representation WIDTH probe: widen z_ij from 128 to 256 channels with the head unchanged; tests whether the pair feature bottleneck limits raw-score quality.",
+      "execution": "RETRAIN_FROM_SHARED_INIT",
+      "d_z": 256,
+      "resnet_blocks": 4,
+      "resnet_hidden": 64,
+      "max_unfrozen_blocks": 33,
+      "terminal_unfrozen_expected": 20,
+      "lambda_marginal_bce": 0.0,
+      "head_init": "fresh"
+    },
+    "head_deep": {
+      "purpose": "Structure-head CAPACITY probe: deepen/widen the ResNet2D scorer (4->8 blocks, 64->128 hidden) with the representation unchanged; tests whether the 2D decision-boundary capacity limits raw-score quality.",
+      "execution": "RETRAIN_FROM_SHARED_INIT",
+      "d_z": 128,
+      "resnet_blocks": 8,
+      "resnet_hidden": 128,
+      "max_unfrozen_blocks": 33,
+      "terminal_unfrozen_expected": 20,
+      "lambda_marginal_bce": 0.0,
+      "head_init": "fresh"
+    },
+    "repr_head": {
+      "purpose": "Joint capacity / ceiling probe: widen representation AND deepen/widen head together; tests interaction and whether joint capacity lifts decoded pair-F1.",
+      "execution": "RETRAIN_FROM_SHARED_INIT",
+      "d_z": 256,
+      "resnet_blocks": 8,
+      "resnet_hidden": 128,
+      "max_unfrozen_blocks": 33,
+      "terminal_unfrozen_expected": 20,
+      "lambda_marginal_bce": 0.0,
+      "head_init": "fresh"
+    }
+  },
+  "evaluation": {
+    "decoder": {"decoder": "MEA", "temperature": 1.0, "gamma": 1.0},
+    "decoder_provenance": "old_C2_turner_training_off_with_shared_initialization",
+    "decoder_source": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_optimizer_v1/seed0_backbone_lr_1e-6/decode_vl0/frozen_decode_config.json",
+    "decoder_source_sha256": "dccb8f73c6b965134981b71d4243dcf6b4798e2ae30537904016d04a9699ff51",
+    "primary_metrics": ["micro_pair_f1", "micro_pair_precision", "micro_pair_recall", "macro_pair_f1", "macro_pair_precision", "macro_pair_recall", "micro_stem_f1", "micro_stem_precision", "micro_stem_recall", "macro_stem_f1", "macro_stem_precision", "macro_stem_recall"],
+    "raw_metrics": ["micro_auprc", "macro_auprc", "micro_recall_at_precision_0.8", "micro_recall_at_precision_0.9"],
+    "raw_role": "auxiliary_mechanism_diagnostic_not_replacement_primary_endpoint",
+    "raw_candidate_set": "strict_upper_triangle_of_valid_pair_mask_no_canonical_only_filter",
+    "raw_score_source": "train_off/plana_off_float64",
+    "raw_tie_policy": "all_equal_scores_enter_one_threshold_point; underlying deterministic order is descending_score_then_i_then_j",
+    "auprc": "right_continuous_step_area_over_distinct_score_thresholds_with_initial_recall_zero",
+    "recall_at_fixed_precision": "maximum_recall_among_distinct_threshold_points_with_precision_at_least_fixed_target",
+    "fixed_precision_targets": [0.8, 0.9],
+    "infeasible_precision_rule": "null_with_feasible_false; macro_recall_sets_infeasible_sequences_to_zero_and_reports_feasible_fraction",
+    "no_threshold_selected_for_prediction": true
+  },
+  "pilot": {
+    "seed": 0,
+    "steps": 9600,
+    "completion_gate": "all four arms completed at step_cap=9600 with terminal unfreeze 20/33 and finite losses/gradient norms; control_matched is the gate baseline.",
+    "per_arm_direction_gate": {
+      "micro_auprc_delta_min_exclusive": 0.0,
+      "micro_recall_at_precision_0.8_delta_min_exclusive": 0.0,
+      "micro_pair_f1_delta_min_inclusive": 0.0,
+      "macro_pair_f1_delta_min_inclusive": 0.0,
+      "micro_pair_precision_delta_min_inclusive": -0.005,
+      "macro_pair_precision_delta_min_inclusive": -0.005,
+      "micro_stem_f1_delta_min_inclusive": -0.005,
+      "macro_stem_f1_delta_min_inclusive": -0.005,
+      "require_at_least_one_pair_f1_strictly_positive": true
+    },
+    "promotion_rule": "independently verified arms passing every per-arm direction gate vs control_matched may add seeds 1 and 2; failing arms stop",
+    "no_direction_rule": "STOP_REPRESENTATION_HEAD_MATRIX_NO_DIRECTION",
+    "control_comparison": "same_seed_only_for_pilot"
+  },
+  "three_seed_gate": {
+    "pilot_direction_confirmed": false,
+    "pilot_verdict_sha256": null,
+    "promoted_arms": [],
+    "mean_delta_rules_same_as_pilot": true,
+    "macro_pair_f1_delta_must_be_positive_for_each_seed": true,
+    "external_evaluation_remains_closed": true
+  },
+  "interpretation": {
+    "repr_wide_better": "supports pair-representation width as a contributor to the raw-score limitation; does not prove exclusive causality",
+    "head_deep_better": "supports structure-head 2D-scorer capacity as a contributor; does not prove exclusive causality",
+    "repr_head_better_than_either_single": "supports a joint capacity bottleneck / positive interaction between representation width and head capacity",
+    "all_fail": "capacity scaling of the existing components is insufficient; the FORM of the pair representation or structure head (not its width/depth) becomes the next hypothesis rather than a proven cause; no threshold/decoder/module rescue is attempted",
+    "control_matched_diverges_from_full_control": "flags initialization sensitivity of the fresh-head-init policy; reported as an integrity finding, not a promotion gate"
+  }
+}
