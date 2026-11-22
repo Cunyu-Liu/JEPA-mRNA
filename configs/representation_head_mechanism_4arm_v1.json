@@ -46,6 +46,8 @@
     "scorer": "resnet2d",
     "chunk_size": 0,
     "grad_checkpoint": true,
+    "resnet_per_block_checkpoint": true,
+    "compute_policy_note": "Uniform exact per-block gradient checkpointing of the ResNet2D scorer across all four arms (memory optimization only). Mathematically equivalent: outputs/gradients unchanged and the trainer restores BatchNorm running stats to the post-forward snapshot after backward, so BN updates once per step. Worst-case L=500/B=4/terminal-20 reserved memory measured at 15072 MiB (repr_head), fitting the 32GB RTX 5090 with AdamW states. Does not alter any scientific variable.",
     "objective": {
       "nll_normalization": "length",
       "lambda_nll": 1.0,

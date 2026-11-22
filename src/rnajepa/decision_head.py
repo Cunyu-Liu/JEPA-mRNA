@@ -333,6 +333,7 @@ class FlatDecisionHead(nn.Module):
         resnet_blocks: int = 4,
         resnet_kernel_size: int = 3,
         resnet_hidden: int = 64,
+        resnet_per_block_checkpoint: bool = False,
         ripe_mode: Optional[str] = None,
         jepa_use_ema: bool = True,
         jepa_online_target: bool = False,
@@ -382,7 +383,8 @@ class FlatDecisionHead(nn.Module):
             #: Turner prior exactly).
             self.resnet2d = ResNet2DScorer(d_z, n_blocks=resnet_blocks,
                                            kernel_size=resnet_kernel_size,
-                                           hidden=resnet_hidden)
+                                           hidden=resnet_hidden,
+                                           per_block_checkpoint=resnet_per_block_checkpoint)
             self.turner = None
         elif scorer not in {"pairjepa", "pairmlp"}:
             self.resnet2d = None
@@ -463,7 +465,10 @@ class FlatDecisionHead(nn.Module):
             scores = self.pair_jepa(z, presymmetrized=presymmetrized)
         else:
             if self.training and self.grad_checkpoint and torch.is_grad_enabled():
-                scores = checkpoint(self.resnet2d, z, use_reentrant=False)
+                if getattr(self.resnet2d, "per_block_checkpoint", False):
+                    scores = self.resnet2d(z)
+                else:
+                    scores = checkpoint(self.resnet2d, z, use_reentrant=False)
             else:
                 scores = self.resnet2d(z)
         if self.ripe is not None:
@@ -594,8 +599,9 @@ class ResNet2DScorer(nn.Module):
     """
 
     def __init__(self, d_z: int, n_blocks: int = 4, kernel_size: int = 3,
-                 hidden: int = 64) -> None:
+                 hidden: int = 64, per_block_checkpoint: bool = False) -> None:
         super().__init__()
+        self.per_block_checkpoint = bool(per_block_checkpoint)
         self.stem = nn.Sequential(
             nn.Conv2d(d_z + 1, hidden, kernel_size=1),
             nn.GELU(),
@@ -622,8 +628,12 @@ class ResNet2DScorer(nn.Module):
         rel = rel.expand(B, 1, L, L)
         x = torch.cat([z.permute(0, 3, 1, 2), rel], dim=1)
         x = self.stem(x)
-        for blk in self.blocks:
-            x = blk(x)
+        if self.per_block_checkpoint and self.training and torch.is_grad_enabled():
+            for blk in self.blocks:
+                x = checkpoint(blk, x, use_reentrant=False)
+        else:
+            for blk in self.blocks:
+                x = blk(x)
         return self.head(x).squeeze(1)
 
 

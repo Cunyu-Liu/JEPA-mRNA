@@ -69,6 +69,8 @@ from rnajepa.decision_head import (  # noqa: E402
     FlatDecisionHead, pair_mask_from_ids, turner_phys_scores)
 from rnajepa.rlcd import ObjectiveWeights, combined_loss  # noqa: E402
 from rnajepa.harness import valid_pair_mask  # noqa: E402
+from rnajepa.repr_head_matrix import (load_repr_head_contract, repr_head_evaluation_identity,
+                                      validate_repr_head_training_args)  # noqa: E402
 from rnajepa.prior_alignment import (checkpoint_due, evaluation_rows, load_contract,
                                      parse_snapshot_steps, scheduled_unfreeze_blocks, sha256_file,
                                      snapshot_due, tensor_state_sha256, validate_training_args)  # noqa: E402
@@ -338,7 +340,8 @@ def validate_resume_identity(previous_meta, args):
     if previous_meta.get("pair_latent_dim") != args.pair_latent_dim:
         raise ValueError("resume pair latent dimension mismatch")
     for _arch_key, _arch_val in (("d_z", args.d_z), ("resnet_blocks", args.resnet_blocks),
-                                 ("resnet_hidden", args.resnet_hidden), ("head_init", args.head_init)):
+                                 ("resnet_hidden", args.resnet_hidden), ("head_init", args.head_init),
+                                 ("resnet_per_block_checkpoint", args.resnet_per_block_checkpoint)):
         if _arch_key in previous_meta and previous_meta.get(_arch_key) != _arch_val:
             raise ValueError(f"resume architecture mismatch for {_arch_key}")
     if args.scorer == "pairjepa":
@@ -437,7 +440,8 @@ def main():
     ap.add_argument("--unfreeze-every", type=int, default=800)
     ap.add_argument("--unfreeze-per-step", type=int, default=2)
     ap.add_argument("--max-unfrozen-blocks", type=int, default=33)
-    ap.add_argument("--raw-score-arm", choices=["frozen", "limited4", "marginal"], default=None)
+    ap.add_argument("--raw-score-arm", choices=["frozen", "limited4", "marginal",
+                                                 "control_matched", "repr_wide", "head_deep", "repr_head"], default=None)
     ap.add_argument("--warmup-steps", type=int, default=5)
     ap.add_argument("--save-every", type=int, default=500)
     ap.add_argument("--snapshot-every", type=int, default=2000)
@@ -457,6 +461,8 @@ def main():
     ap.add_argument("--resnet-blocks", type=int, default=4)
     ap.add_argument("--resnet-hidden", type=int, default=64)
     ap.add_argument("--head-init", choices=["shared", "fresh"], default="shared")
+    ap.add_argument("--resnet-per-block-checkpoint", action="store_true",
+                    help="exact per-block gradient checkpointing of the ResNet2D scorer (memory)")
     ap.add_argument("--lambda-jepa", type=float, default=0.0)
     ap.add_argument("--cl1-token-mask", type=float, default=0.0)
     ap.add_argument("--cl2-infonce-weight", type=float, default=0.0)
@@ -486,13 +492,18 @@ def main():
     contract = None
     training_trajectory = None
     raw_score_contract = False
+    repr_head_contract = False
     if args.contract_mode:
         contract_id = json.loads(Path(args.contract).read_text()).get("contract_id")
         raw_score_contract = contract_id in {"raw_score_mechanism_4arm_v1", "raw_score_mechanism_4arm_v2",
                                              "raw_score_mechanism_4arm_v3"}
+        repr_head_contract = contract_id == "representation_head_mechanism_4arm_v1"
         if raw_score_contract:
             contract = load_raw_score_contract(args.contract)
             training_trajectory = validate_raw_score_training_args(contract, args)
+        elif repr_head_contract:
+            contract = load_repr_head_contract(args.contract)
+            training_trajectory = validate_repr_head_training_args(contract, args)
         else:
             if (args.raw_score_arm or args.lambda_marginal_bce
                     or args.max_unfrozen_blocks != 33):
@@ -501,7 +512,7 @@ def main():
             training_trajectory = validate_training_args(contract, args)
     elif args.train_turner or args.shared_init or args.no_early_stop:
         raise SystemExit("--train-turner/--shared-init/--no-early-stop require --contract-mode")
-    if not raw_score_contract and (args.raw_score_arm or args.lambda_marginal_bce
+    if not (raw_score_contract or repr_head_contract) and (args.raw_score_arm or args.lambda_marginal_bce
                                    or args.max_unfrozen_blocks != 33):
         raise SystemExit("uncontrolled RAW_SCORE arguments are forbidden")
     if args.motif and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
@@ -624,6 +635,7 @@ def main():
     head = FlatDecisionHead(d_model=int(report["d_model"]), d_z=args.d_z, hidden=64,
                             scorer=args.scorer, chunk_size=0,
                             resnet_blocks=args.resnet_blocks, resnet_hidden=args.resnet_hidden,
+                            resnet_per_block_checkpoint=args.resnet_per_block_checkpoint,
                             pair_latent_dim=args.pair_latent_dim,
                             jepa_use_ema=args.scorer == "pairjepa" and args.jepa_target == "ema",
                             jepa_random_target=args.scorer == "pairjepa" and args.jepa_target == "random",
@@ -764,8 +776,10 @@ def main():
             "shared_init_sha256": shared_init_sha256,
             "derived_evaluation_identities": (raw_score_evaluation_identity(contract, args.raw_score_arm)
                                                if raw_score_contract else
-                                               evaluation_rows(contract, training_trajectory)),
-            "raw_score_arm": args.raw_score_arm if raw_score_contract else None,
+                                               (repr_head_evaluation_identity(contract, args.raw_score_arm)
+                                                if repr_head_contract else
+                                                evaluation_rows(contract, training_trajectory))),
+            "raw_score_arm": args.raw_score_arm if (raw_score_contract or repr_head_contract) else None,
             "full_control_reused_not_retrained": False,
             "old_external_panels_used": False,
         }),
@@ -787,6 +801,7 @@ def main():
         "resnet_blocks": args.resnet_blocks,
         "resnet_hidden": args.resnet_hidden,
         "head_init": args.head_init,
+        "resnet_per_block_checkpoint": args.resnet_per_block_checkpoint,
         "head": f"FlatDecisionHead scorer={args.scorer} d_z={args.d_z} "
                 f"resnet_blocks={args.resnet_blocks} resnet_hidden={args.resnet_hidden} "
                 f"head_init={args.head_init} pair_latent_dim={args.pair_latent_dim} (head params {n_head})",
@@ -801,7 +816,7 @@ def main():
                                              if args.marginal_vjp_method == "central_difference"
                                              else "exact_forward_mode_tangent_float64"),
                       "numerical_recurrence": (contract["arms"][args.raw_score_arm].get("numerical_recurrence")
-                                                if raw_score_contract else None),
+                                                if (raw_score_contract or repr_head_contract) else None),
                       "teacher": args.teacher_dir,
                       "aux_teacher": args.aux_teacher_dir,
                       "teacher_storage": {"lazy": args.lazy_teacher,
