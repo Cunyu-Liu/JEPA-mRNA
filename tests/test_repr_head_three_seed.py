@@ -136,3 +136,23 @@ def test_three_seed_aggregate_requires_all_seed_gates(tmp_path, failing_seed,
     assert result["external_evaluation_allowed"] is external_allowed
     assert result["candidate_selected"] is False
     assert result["sota_claim"] is False
+
+
+def test_leave_one_sequence_out_detects_single_sequence_driven_gain():
+    spec = importlib.util.spec_from_file_location(
+        "three_seed_analysis", ROOT / "tools/analyze_repr_head_three_seed.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    def row(tp, fp, fn):
+        return {"pair": {"tp": tp, "fp": fp, "fn": fn},
+                "stem": {"tp": tp, "fp": fp, "fn": fn},
+                "raw": {"auprc": tp / max(tp + fp + fn, 1)}}
+
+    control = {"a": row(10, 10, 10), "b": row(10, 10, 10)}
+    candidate = {"a": row(100, 0, 0), "b": row(10, 10, 10)}
+    result = module.summarize(None, control, candidate)
+    check = result["micro_pair_f1_delta_leave_one_sequence_out"]
+    assert check["full"] > 0
+    assert check["positive_after_every_single_sequence_removal"] is False
+    assert module.summarize(None, {}, {})["n_sequences"] == 0
