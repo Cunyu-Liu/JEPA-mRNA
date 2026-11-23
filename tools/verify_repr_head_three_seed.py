@@ -103,8 +103,8 @@ def main():
         "decoder_temperature_or_gamma_searched": False,
         "threshold_searched": False,
         "interpretation_boundary": (
-            "Structure-head capacity is a robust contributing factor, not an exclusive root cause. "
-            "A positive repr_head-minus-head_deep increment is reported separately and is not a promotion gate."
+            "Simple capacity expansion is not a robust production route. Raw ranking gains did not transfer reliably to decoded pair/stem endpoints; "
+            "representation, objective and optimization causes remain unseparated."
         ),
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
