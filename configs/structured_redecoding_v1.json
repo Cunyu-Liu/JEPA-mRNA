@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "contract_id": "structured_redecoding_v1",
+  "status": "FROZEN_BEFORE_VL0_MODEL_DEV",
+  "scope": "FROZEN_CHECKPOINT_BPRNA_VL0_MODEL_DEV_ONLY",
+  "external_evaluation_allowed": false,
+  "strict_ood_allowed": false,
+  "sota_claim": false,
+  "training_allowed": false,
+  "checkpoint_selection_allowed": false,
+  "threshold_temperature_gamma_search_allowed": false,
+  "primary_model": {
+    "model_id": "control_matched_seed0_step9600",
+    "export_dir": "/home/rna_jev_artifacts/representation_head_mechanism_4arm_v1/seed0/control_matched/export_train_off",
+    "export_metadata_sha256": "6b4f58618965077e54a3ae9d5a2358e41f15e700a673db998e4d014a43ce61d8",
+    "checkpoint_sha256": "a9414ebd1b7225f46f58f7e0ae2de5f28b6bbfe97f6688b6364440824f36adf2",
+    "score_key": "plana_off",
+    "temperature": 1.0,
+    "mea_gamma": 1.0
+  },
+  "decoders": {
+    "map": "current Nussinov MAP on plana_off",
+    "mea": "current MEA on inside-outside marginals, temperature=1, gamma=1",
+    "nested_matching": "current exact Nussinov DP on plana_off with canonical nested mask",
+    "nested_srd_stacking": "exact helix-prefix DP over MAP+MEA candidate structures",
+    "best_of_n": "maximum SRD objective among MAP+MEA structures without recombination"
+  },
+  "srd_objective": {
+    "pair_weight": "plana_off; uncalibrated structural weight, not probability",
+    "stacking_bonus_per_adjacent_pair": 1.0,
+    "candidate_sources": ["map", "mea"],
+    "solver": "EXACT_HELIX_PREFIX_DP",
+    "equivalence_reference": "EXHAUSTIVE_NESTED_SUPPORT_REFERENCE length<=12"
+  },
+  "constraints": {
+    "canonical_pairs_only": true,
+    "min_loop": 3,
+    "noncrossing_required": true,
+    "partner_conflicts_allowed": false,
+    "fallback": "current_mea_on_any_solver_failure"
+  },
+  "promotion_gate": {
+    "micro_pair_f1_strictly_positive_vs_mea": true,
+    "macro_pair_f1_strictly_positive_vs_mea": true,
+    "micro_pair_precision_drop_max": 0.005,
+    "micro_stem_f1_drop_max": 0.005,
+    "nested_canonical_satisfaction_required": 1.0,
+    "failed_sequences_max": 0,
+    "multimodel_recombination_must_beat_single_source_srd": true,
+    "pass_only_allows_separate_frozen_external_sensitivity_application": true
+  },
+  "multimodel": {
+    "status": "PENDING_SEPARATE_MEMBER_IDENTITY_VERIFICATION",
+    "fixed_weight_xens2": [0.7, 0.3],
+    "external_scores_allowed": false
+  },
+  "provenance": {
+    "capacity_contract_sha256": "ce2372f2836b59cd44dc8b029428eafdd72a84ea7aa36acb4b08c59e13f14bf6",
+    "code_head_before_srd": "98a4487e2aed580775df0898173c81ebf685e885"
+  }
+}
