@@ -2,10 +2,15 @@
 """Paired per-sequence mechanism checks for the verified three-seed capacity matrix."""
 import argparse
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "tools"))
 
 from rnajepa.prior_alignment import sha256_file
 from verify_raw_score_matrix import load_records, read_jsonl

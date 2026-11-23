@@ -129,7 +129,7 @@ def test_three_seed_aggregate_requires_all_seed_gates(tmp_path, failing_seed,
         sys.executable, str(ROOT / "tools/verify_repr_head_three_seed.py"),
         "--contract", str(ROOT / "configs/representation_head_mechanism_4arm_v1.json"),
         "--artifact-root", str(tmp_path), "--out", str(out),
-    ], check=True, cwd=ROOT, env={"PYTHONPATH": str(ROOT / "src")})
+    ], check=True, cwd=ROOT)
     result = json.loads(out.read_text())
     assert result["status"] == "PASS"
     assert result["decision"] == expected_decision

@@ -2,7 +2,11 @@
 """Aggregate independently verified per-seed gates without selecting a champion seed."""
 import argparse
 import json
+import sys
 from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
 
 from rnajepa.prior_alignment import sha256_file
 from rnajepa.repr_head_matrix import CONTROL_ARM, active_repr_head_arms, load_repr_head_contract
