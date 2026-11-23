@@ -74,7 +74,10 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--zchunk", type=int, default=64)
     args = parser.parse_args()
+    global ZC
+    ZC = args.zchunk
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA required for memory preflight")
     if args.out.exists():

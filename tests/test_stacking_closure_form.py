@@ -68,7 +68,7 @@ def _args(mode="pilot", arm="stacking_closure", seed=0, steps=9600):
         contract_mode=mode, raw_score_arm=arm, train_turner="off",
         shared_init=f"/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/init/shared_init_seed{seed}.pt",
         init_checkpoint=None, no_early_stop=True, head_init="fresh", data=train["data"], batch_size=4,
-        head_lr=1e-4, backbone_lr=1e-6, warmup_head_steps=1600, unfreeze_every=800,
+        zchunk=16, head_lr=1e-4, backbone_lr=1e-6, warmup_head_steps=1600, unfreeze_every=800,
         unfreeze_per_step=2, warmup_steps=5, grad_clip=1.0, nll_normalization="length",
         lambda_nll=1.0, max_unfrozen_blocks=33, lambda_marginal_bce=0.0, d_z=128,
         scorer=arm, seed=seed, steps=steps, serial_encoder=False, lambda_distill=0.0,

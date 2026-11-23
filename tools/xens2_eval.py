@@ -39,7 +39,7 @@ def load_plana(ckpt_path, device):
     encoder.load_state_dict(ck["model"]["encoder"])
     _meta = ck.get("meta", {})
     head = FlatDecisionHead(d_model=1280, d_z=int(_meta.get("d_z", 128)), hidden=64,
-                            scorer="resnet2d", chunk_size=0,
+                            scorer=_meta.get("scorer", "resnet2d"), chunk_size=0,
                             resnet_blocks=int(_meta.get("resnet_blocks", 4)),
                             resnet_hidden=int(_meta.get("resnet_hidden", 64)))
     thermo = ck.get("meta", {}).get("thermodynamics")

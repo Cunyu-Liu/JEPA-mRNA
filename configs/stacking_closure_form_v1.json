@@ -20,6 +20,7 @@
     "shared_init_sha256_seed0": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e",
     "steps": 9600,
     "batch_size": 4,
+    "zchunk": 16,
     "head_lr": 0.0001,
     "backbone_lr": 1e-06,
     "head_warmup_steps": 1600,

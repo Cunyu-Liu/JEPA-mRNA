@@ -45,7 +45,7 @@ def validate_stacking_form_training_args(contract, args):
         raise ValueError("unknown stacking-form arm")
     train = contract["training"]
     expected = {
-        "data": train["data"], "batch_size": train["batch_size"],
+        "data": train["data"], "batch_size": train["batch_size"], "zchunk": train["zchunk"],
         "head_lr": train["head_lr"], "backbone_lr": train["backbone_lr"],
         "warmup_head_steps": train["head_warmup_steps"], "unfreeze_every": train["unfreeze_every"],
         "unfreeze_per_step": train["unfreeze_per_step"], "warmup_steps": train["optimizer_warmup_steps"],
