@@ -24,8 +24,8 @@ from rnajepa.prior_alignment import sha256_file  # noqa: E402
 from rnajepa.prior_structure_metrics import pair_and_stem_counts  # noqa: E402
 from rnajepa.raw_score_metrics import (PRECISION_TARGETS, legal_pair_coordinates,  # noqa: E402
                                        raw_ranking_metrics, sequence_raw_metrics)
-from rnajepa.repr_head_matrix import (ALL_ARMS, CONTROL_ARM, VARIANT_ARMS,  # noqa: E402
-                                      STOP_DECISION, CONFIRM_DECISION, load_repr_head_contract)
+from rnajepa.repr_head_matrix import (CONTROL_ARM, STOP_DECISION, CONFIRM_DECISION,  # noqa: E402
+                                      active_repr_head_arms, load_repr_head_contract)
 from evaluate_raw_score_matrix import (_summarize_decoded, _macro_raw, _load_records,  # noqa: E402
                                        _verify_export_metadata, _direction_gate)
 
@@ -62,7 +62,9 @@ def main():
         raise ValueError("empty evaluation set")
     args.out.mkdir(parents=True, exist_ok=False)
     all_rows, per_arm, export_metadata = [], {}, {}
-    for arm in ALL_ARMS:
+    arms = active_repr_head_arms(contract, args.seed)
+    variant_arms = arms[1:]
+    for arm in arms:
         if not args.limit:
             _verify_completion(args.stage, arm)
         export_dir = args.stage / arm / "export_train_off"
@@ -118,12 +120,12 @@ def main():
     control = per_arm[CONTROL_ARM]
     comparisons = {}
     if not args.limit:
-        for arm in VARIANT_ARMS:
+        for arm in variant_arms:
             deltas, checks, passed = _direction_gate(
                 per_arm[arm], control, contract["pilot"]["per_arm_direction_gate"])
             comparisons[arm] = {"delta_vs_control_matched": deltas, "checks": checks,
                                 "direction_passed": passed}
-    promoted = [arm for arm in VARIANT_ARMS if comparisons.get(arm, {}).get("direction_passed")]
+    promoted = [arm for arm in variant_arms if comparisons.get(arm, {}).get("direction_passed")]
     decision = CONFIRM_DECISION if promoted else STOP_DECISION
     if args.limit:
         decision = "SMOKE_ONLY_NO_SCIENTIFIC_VERDICT"

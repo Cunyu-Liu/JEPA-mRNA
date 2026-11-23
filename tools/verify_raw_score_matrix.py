@@ -301,6 +301,8 @@ def direction_gate(candidate: dict, control: dict, rules: dict):
             deltas[key] is not None and deltas[key] > rules["micro_recall_at_precision_0.8_delta_min_exclusive"]),
         "micro_pair_f1_noninferior": deltas["micro_pair_f1"] >= rules["micro_pair_f1_delta_min_inclusive"],
         "macro_pair_f1_noninferior": deltas["macro_pair_f1"] >= rules["macro_pair_f1_delta_min_inclusive"],
+        "macro_pair_f1_strictly_positive": (
+            deltas["macro_pair_f1"] > rules.get("macro_pair_f1_delta_min_exclusive", float("-inf"))),
         "micro_pair_precision_preserved": deltas["micro_pair_precision"] >= rules["micro_pair_precision_delta_min_inclusive"],
         "macro_pair_precision_preserved": deltas["macro_pair_precision"] >= rules["macro_pair_precision_delta_min_inclusive"],
         "micro_stem_f1_preserved": deltas["micro_stem_f1"] >= rules["micro_stem_f1_delta_min_inclusive"],

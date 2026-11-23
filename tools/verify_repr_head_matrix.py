@@ -27,8 +27,8 @@ from rnajepa.harness import inside_outside, valid_pair_mask  # noqa: E402
 from rnajepa.prior_alignment import tensor_state_sha256  # noqa: E402
 from rnajepa.prior_structure_metrics import pair_and_stem_counts  # noqa: E402
 from rnajepa.raw_score_matrix import capped_unfreeze_blocks  # noqa: E402
-from rnajepa.repr_head_matrix import (ALL_ARMS, CONTROL_ARM, VARIANT_ARMS,  # noqa: E402
-                                      STOP_DECISION, CONFIRM_DECISION, load_repr_head_contract)
+from rnajepa.repr_head_matrix import (CONTROL_ARM, STOP_DECISION, CONFIRM_DECISION,  # noqa: E402
+                                      active_repr_head_arms, load_repr_head_contract)
 from verify_raw_score_matrix import (sha256_file, read_json, read_jsonl,  # noqa: E402
                                      assert_nested_close, load_records,
                                      independent_raw_metrics, aggregate, direction_gate)
@@ -148,19 +148,21 @@ def main():
     if not args.skip_training_replay:
         initial = torch.load(shared_init, map_location="cpu", weights_only=False)
         initial_encoder = initial["model"]["encoder"]
+    arms = active_repr_head_arms(contract, args.seed)
+    variant_arms = arms[1:]
     run_identities = {}
     if not args.skip_training_replay:
-        for arm in ALL_ARMS:
+        for arm in arms:
             run_identities[arm] = verify_run_and_checkpoint_rh(
                 contract, contract_sha256, arm, args.seed, args.stage, args.steps, mode, initial_encoder)
         reference_batches = run_identities[CONTROL_ARM]["batches"]
-        for arm in VARIANT_ARMS:
+        for arm in variant_arms:
             if run_identities[arm]["batches"] != reference_batches:
                 raise ValueError(f"batch order differs between {CONTROL_ARM} and {arm}")
     del initial_encoder
 
     recomputed = {}
-    for arm in ALL_ARMS:
+    for arm in arms:
         export = args.stage / arm / "export_train_off"
         metadata = read_json(export / "export_metadata.json")
         checkpoint = args.stage / arm / "snapshots" / f"{arm}_step{args.steps}.pt"
@@ -217,14 +219,14 @@ def main():
         comparisons = {}
     else:
         comparisons = {}
-        for arm in VARIANT_ARMS:
+        for arm in variant_arms:
             deltas, checks, passed = direction_gate(
                 recomputed[arm], recomputed[CONTROL_ARM],
                 contract["pilot"]["per_arm_direction_gate"])
             comparisons[arm] = {"delta_vs_control_matched": deltas, "checks": checks,
                                 "direction_passed": passed}
         assert_nested_close(verdict["comparisons"], comparisons, "comparisons")
-        promoted = [arm for arm in VARIANT_ARMS if comparisons[arm]["direction_passed"]]
+        promoted = [arm for arm in variant_arms if comparisons[arm]["direction_passed"]]
         decision = CONFIRM_DECISION if promoted else STOP_DECISION
         if verdict["promoted_arms"] != promoted or verdict["decision"] != decision:
             raise ValueError("independently recomputed pilot decision differs")
@@ -241,7 +243,7 @@ def main():
         "verification": "independent_full_metric_and_identity_replay",
         "contract_id": contract["contract_id"], "contract_sha256": contract_sha256,
         "seed": args.seed, "steps": args.steps, "n_sequences": len(records),
-        "arms": list(ALL_ARMS), "training_replay_performed": not args.skip_training_replay,
+        "arms": list(arms), "training_replay_performed": not args.skip_training_replay,
         "metrics": recomputed, "comparisons": comparisons,
         "decision": verdict["decision"], "promoted_arms": verdict["promoted_arms"],
         "external_evaluation_allowed": False, "sota_claim": False,

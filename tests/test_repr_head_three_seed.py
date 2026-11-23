@@ -1,0 +1,72 @@
+from __future__ import annotations
+
+import importlib.util
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from rnajepa.repr_head_matrix import (active_repr_head_arms, load_repr_head_contract,
+                                      validate_repr_head_training_args)
+
+
+def _contract():
+    return load_repr_head_contract(ROOT / "configs/representation_head_mechanism_4arm_v1.json")
+
+
+def _valid_args(contract, arm="control_matched"):
+    train = contract["training"]
+    return SimpleNamespace(
+        contract_mode="full", raw_score_arm=arm, train_turner="off",
+        shared_init=train["shared_init_template"].format(seed=1), init_checkpoint=None,
+        no_early_stop=True, head_init="fresh", data=train["data"], batch_size=4,
+        head_lr=train["head_lr"], backbone_lr=train["backbone_lr"],
+        warmup_head_steps=1600, unfreeze_every=800, unfreeze_per_step=2,
+        warmup_steps=5, grad_clip=1.0, nll_normalization="length", lambda_nll=1.0,
+        max_unfrozen_blocks=33, lambda_marginal_bce=0.0,
+        d_z=contract["arms"][arm]["d_z"],
+        resnet_blocks=contract["arms"][arm]["resnet_blocks"],
+        resnet_hidden=contract["arms"][arm]["resnet_hidden"],
+        seed=1, steps=9600, scorer="resnet2d", serial_encoder=False,
+    )
+
+
+def test_three_seed_active_arms_exclude_failed_repr_wide():
+    contract = _contract()
+    assert active_repr_head_arms(contract, 0) == (
+        "control_matched", "repr_wide", "head_deep", "repr_head")
+    for seed in (1, 2):
+        assert active_repr_head_arms(contract, seed) == (
+            "control_matched", "head_deep", "repr_head")
+
+
+def test_full_mode_retrains_control_and_only_promoted_variants():
+    contract = _contract()
+    for arm in ("control_matched", "head_deep", "repr_head"):
+        assert validate_repr_head_training_args(contract, _valid_args(contract, arm)) == "train_off"
+    with pytest.raises(ValueError, match="did not pass"):
+        validate_repr_head_training_args(contract, _valid_args(contract, "repr_wide"))
+
+
+def test_three_seed_macro_pair_f1_must_be_strictly_positive():
+    spec = importlib.util.spec_from_file_location(
+        "raw_score_evaluator", ROOT / "tools/evaluate_raw_score_matrix.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    keys = ("micro_auprc", "micro_recall_at_precision_0.8", "micro_pair_f1", "macro_pair_f1",
+            "micro_pair_precision", "macro_pair_precision", "micro_stem_f1", "macro_stem_f1")
+    control = {key: 0.5 for key in keys}
+    candidate = dict(control, micro_auprc=0.6, micro_pair_f1=0.6)
+    candidate["micro_recall_at_precision_0.8"] = 0.6
+    rules = _contract()["pilot"]["per_arm_direction_gate"]
+    _, checks, passed = module._direction_gate(candidate, control, rules)
+    assert checks["macro_pair_f1_strictly_positive"] is False
+    assert passed is False
+    candidate["macro_pair_f1"] = 0.500001
+    _, checks, passed = module._direction_gate(candidate, control, rules)
+    assert checks["macro_pair_f1_strictly_positive"] is True
+    assert passed is True

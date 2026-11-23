@@ -24,6 +24,15 @@ STOP_DECISION = "STOP_REPRESENTATION_HEAD_MATRIX_NO_DIRECTION"
 CONFIRM_DECISION = "PILOT_DIRECTION_CONFIRMED"
 
 
+def active_repr_head_arms(contract: dict[str, Any], seed: int) -> tuple[str, ...]:
+    if seed in (1, 2) and contract.get("status") == "FROZEN_BEFORE_THREE_SEED":
+        promoted = tuple(contract["three_seed_gate"]["promoted_arms"])
+        if not promoted or CONTROL_ARM in promoted or any(arm not in VARIANT_ARMS for arm in promoted):
+            raise ValueError("invalid promoted arms in three-seed contract")
+        return (CONTROL_ARM,) + promoted
+    return ALL_ARMS
+
+
 def load_repr_head_contract(path: str | Path) -> dict[str, Any]:
     contract = json.loads(Path(path).read_text())
     if contract.get("contract_id") != CONTRACT_ID:
@@ -130,7 +139,7 @@ def validate_repr_head_training_args(contract: dict[str, Any], args: Any) -> str
                 or not gate.get("pilot_direction_confirmed")
                 or not gate.get("pilot_verdict_sha256")):
             raise ValueError("three-seed expansion requires a verified pilot-direction verdict")
-        if arm not in gate.get("promoted_arms", []):
+        if arm != CONTROL_ARM and arm not in gate.get("promoted_arms", []):
             raise ValueError(f"arm {arm} did not pass the pilot-direction gate")
         if values.get("seed") not in (1, 2) or values.get("steps") != train["steps"]:
             raise ValueError("three-seed expansion adds only seeds 1 and 2 at 9600 steps")
