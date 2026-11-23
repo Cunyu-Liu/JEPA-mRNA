@@ -43,7 +43,8 @@ def main():
     contract = load_stacking_form_contract(args.contract)
     records = _load_records(contract["training"]["evaluation_data"], args.limit)
     args.out.mkdir(parents=True, exist_ok=False)
-    per_arm, all_rows, targets = {}, {}, {}
+    per_arm, targets = {}, {}
+    all_rows = []
     for arm in ARMS:
         export_dir = args.stage / arm / "export_train_off"
         metadata = _verify_export_metadata(export_dir, 0, not args.limit, args.steps, len(records))
@@ -99,8 +100,9 @@ def main():
     control = per_arm[CONTROL_ARM]
     deltas, checks, direction_passed = _direction_gate(
         per_arm["stacking_closure"], control, contract["pilot"]["per_arm_direction_gate"])
-    target_ok = (per_arm["stacking_closure"]["target_supported_boundary_recall"]
-                 > control["target_supported_boundary_recall"])
+    candidate_target = per_arm["stacking_closure"]["target_supported_boundary_recall"]
+    control_target = control["target_supported_boundary_recall"]
+    target_ok = candidate_target is not None and control_target is not None and candidate_target > control_target
     destroy_checks = {metric: all(per_arm["stacking_closure"][metric] > per_arm[arm][metric]
                                   for arm in ("destroy_offset", "destroy_channel_shuffle"))
                       for metric in contract["pilot"]["must_beat_both_destroy_controls_on"]}

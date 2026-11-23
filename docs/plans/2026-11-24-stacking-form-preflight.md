@@ -23,3 +23,9 @@
 评估使用由 `local_control` 预测固定的 helix-boundary truth pairs：每个目标 pair 至少一个真实 stacking 邻居被 control 正确预测。所有臂共享同一目标集合和分母，避免通过改变邻居预测来缩小评估集合。
 
 只有 `stacking_closure` 同时通过全部 pair/stem 方向门、目标边界 recall 严格提高，并在 micro/macro pair-F1 和 micro/macro stem-F1 上严格优于两个 destroy 对照，才允许预注册三种子确认。任何失败均停止；smoke 不产生科学裁决，外部评估始终关闭。
+
+## 四臂 smoke 完成状态
+
+`smoke_v2` 四臂均完成 2-step 训练与 2 条 VL0 导出，run meta 为 `completed/step_cap`，fresh head、有限 loss/gnorm、checkpoint step=2，导出 checkpoint/合同身份一致。评估 artifact 为 `smoke_v2/evaluation_v3/pilot_verdict.json`，裁决固定为 `SMOKE_ONLY_NO_SCIENTIFIC_VERDICT`。两条 smoke 没有目标边界集合，不作为性能证据；早期空目录 `evaluation/` 和因空目标集合中止的 `evaluation_v2/` 均保留。
+
+评估器初始化及空目标处理的两处工程错误已修复，未重跑训练。相关代码提交：`c4221e5`（形式矩阵）、`7f43cb0`（预检/导出/评估）、`1ba5940`（部分恢复与独立 raw recheck）。
