@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -70,3 +72,67 @@ def test_three_seed_macro_pair_f1_must_be_strictly_positive():
     _, checks, passed = module._direction_gate(candidate, control, rules)
     assert checks["macro_pair_f1_strictly_positive"] is True
     assert passed is True
+
+
+def _write_three_seed_fixture(root, contract, failing_seed=None):
+    metric_keys = ("micro_auprc", "micro_recall_at_precision_0.8", "micro_pair_f1", "macro_pair_f1",
+                   "micro_pair_precision", "macro_pair_precision", "micro_pair_recall",
+                   "macro_pair_recall", "micro_stem_f1", "macro_stem_f1")
+    contract_sha256 = __import__("hashlib").sha256(
+        (ROOT / "configs/representation_head_mechanism_4arm_v1.json").read_bytes()).hexdigest()
+    for seed in (0, 1, 2):
+        stage = root / f"seed{seed}"
+        (stage / "evaluation").mkdir(parents=True)
+        arms = active_repr_head_arms(contract, seed)
+        control = {key: 0.5 for key in metric_keys}
+        verdict_arms = {"control_matched": control}
+        comparisons = {}
+        for arm in arms[1:]:
+            candidate = dict(control, micro_auprc=0.6, micro_pair_f1=0.6,
+                             macro_pair_f1=0.6, micro_pair_recall=0.6,
+                             macro_pair_recall=0.6, micro_stem_f1=0.6, macro_stem_f1=0.6)
+            candidate["micro_recall_at_precision_0.8"] = 0.6
+            if seed == failing_seed and arm == "head_deep":
+                candidate["macro_pair_f1"] = 0.5
+            verdict_arms[arm] = candidate
+            delta = {key: candidate[key] - control[key] for key in metric_keys[:4]}
+            checks = {"micro_auprc_strictly_positive": True,
+                      "micro_recall_at_precision_0.8_strictly_positive": True,
+                      "micro_pair_f1_noninferior": True,
+                      "macro_pair_f1_noninferior": True,
+                      "macro_pair_f1_strictly_positive": delta["macro_pair_f1"] > 0,
+                      "micro_pair_precision_preserved": True,
+                      "macro_pair_precision_preserved": True,
+                      "micro_stem_f1_preserved": True, "macro_stem_f1_preserved": True,
+                      "at_least_one_pair_f1_strictly_positive": True}
+            comparisons[arm] = {"delta_vs_control_matched": delta, "checks": checks,
+                                "direction_passed": all(checks.values())}
+        identity_sha = "seed0-frozen-contract" if seed == 0 else contract_sha256
+        (stage / "evaluation/pilot_verdict.json").write_text(json.dumps({
+            "contract_sha256": identity_sha, "arms": verdict_arms, "comparisons": comparisons}))
+        (stage / "verification.json").write_text(json.dumps({
+            "status": "PASS", "contract_sha256": identity_sha, "arms": list(arms)}))
+        (stage / "final_independent_check.json").write_text(json.dumps({
+            "overall": "PASS", "contract_sha256": identity_sha}))
+
+
+@pytest.mark.parametrize("failing_seed,expected_decision,external_allowed", [
+    (None, "THREE_SEED_CAPACITY_DIRECTION_CONFIRMED", True),
+    (1, "STOP_REPRESENTATION_HEAD_CAPACITY_THREE_SEED", False),
+])
+def test_three_seed_aggregate_requires_all_seed_gates(tmp_path, failing_seed,
+                                                       expected_decision, external_allowed):
+    contract = _contract()
+    _write_three_seed_fixture(tmp_path, contract, failing_seed)
+    out = tmp_path / "three_seed_verdict.json"
+    subprocess.run([
+        sys.executable, str(ROOT / "tools/verify_repr_head_three_seed.py"),
+        "--contract", str(ROOT / "configs/representation_head_mechanism_4arm_v1.json"),
+        "--artifact-root", str(tmp_path), "--out", str(out),
+    ], check=True, cwd=ROOT, env={"PYTHONPATH": str(ROOT / "src")})
+    result = json.loads(out.read_text())
+    assert result["status"] == "PASS"
+    assert result["decision"] == expected_decision
+    assert result["external_evaluation_allowed"] is external_allowed
+    assert result["candidate_selected"] is False
+    assert result["sota_claim"] is False
