@@ -375,7 +375,11 @@ class FlatDecisionHead(nn.Module):
             self.turner = None
         else:
             self.pair_jepa = None
-        if scorer == "resnet2d":
+        if scorer in {"local_control", "stacking_closure", "destroy_offset", "destroy_channel_shuffle"}:
+            from rnajepa.stacking_closure import Closure2DScorer
+            self.resnet2d = Closure2DScorer(d_z, scorer)
+            self.turner = None
+        elif scorer == "resnet2d":
             #: In the 2D path the ResNet *is* the pair scorer; the per-pair MLP_T
             #: is replaced (not added to), so it is not constructed at all and the
             #: gradient-coverage audit stays green. The zero-init head of the

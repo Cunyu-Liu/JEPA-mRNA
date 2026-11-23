@@ -77,6 +77,8 @@ from rnajepa.prior_alignment import (checkpoint_due, evaluation_rows, load_contr
 from rnajepa.raw_score_matrix import (capped_unfreeze_blocks, load_raw_score_contract,
                                       raw_score_evaluation_identity,
                                       validate_raw_score_training_args)  # noqa: E402
+from rnajepa.stacking_form_matrix import (load_stacking_form_contract, stacking_form_evaluation_identity,
+                                           validate_stacking_form_training_args)  # noqa: E402
 from rnajepa.structured_marginal import structured_marginal_bce  # noqa: E402
 from rnajepa.distill import load_teacher_shard, pair_indicator  # noqa: E402
 from rnajepa.gradient_diagnostics import loss_gradient_cosine  # noqa: E402
@@ -441,7 +443,9 @@ def main():
     ap.add_argument("--unfreeze-per-step", type=int, default=2)
     ap.add_argument("--max-unfrozen-blocks", type=int, default=33)
     ap.add_argument("--raw-score-arm", choices=["frozen", "limited4", "marginal",
-                                                 "control_matched", "repr_wide", "head_deep", "repr_head"], default=None)
+                                                 "control_matched", "repr_wide", "head_deep", "repr_head",
+                                                 "local_control", "stacking_closure", "destroy_offset",
+                                                 "destroy_channel_shuffle"], default=None)
     ap.add_argument("--warmup-steps", type=int, default=5)
     ap.add_argument("--save-every", type=int, default=500)
     ap.add_argument("--snapshot-every", type=int, default=2000)
@@ -455,7 +459,9 @@ def main():
     ap.add_argument("--ripe-mode", default="", choices=["", "log", "r1", "r2", "r3", "r5", "r6"])
     ap.add_argument("--ripe-encoder", action="store_true")
     ap.add_argument("--ripe-encoder-only", action="store_true")
-    ap.add_argument("--scorer", choices=["resnet2d", "pairmlp", "pairjepa"], default="resnet2d")
+    ap.add_argument("--scorer", choices=["resnet2d", "pairmlp", "pairjepa", "local_control",
+                                         "stacking_closure", "destroy_offset", "destroy_channel_shuffle"],
+                    default="resnet2d")
     ap.add_argument("--pair-latent-dim", type=int, default=64)
     ap.add_argument("--d-z", type=int, default=128)
     ap.add_argument("--resnet-blocks", type=int, default=4)
@@ -493,17 +499,22 @@ def main():
     training_trajectory = None
     raw_score_contract = False
     repr_head_contract = False
+    stacking_form_contract = False
     if args.contract_mode:
         contract_id = json.loads(Path(args.contract).read_text()).get("contract_id")
         raw_score_contract = contract_id in {"raw_score_mechanism_4arm_v1", "raw_score_mechanism_4arm_v2",
                                              "raw_score_mechanism_4arm_v3"}
         repr_head_contract = contract_id == "representation_head_mechanism_4arm_v1"
+        stacking_form_contract = contract_id == "stacking_closure_form_v1"
         if raw_score_contract:
             contract = load_raw_score_contract(args.contract)
             training_trajectory = validate_raw_score_training_args(contract, args)
         elif repr_head_contract:
             contract = load_repr_head_contract(args.contract)
             training_trajectory = validate_repr_head_training_args(contract, args)
+        elif stacking_form_contract:
+            contract = load_stacking_form_contract(args.contract)
+            training_trajectory = validate_stacking_form_training_args(contract, args)
         else:
             if (args.raw_score_arm or args.lambda_marginal_bce
                     or args.max_unfrozen_blocks != 33):
@@ -512,7 +523,7 @@ def main():
             training_trajectory = validate_training_args(contract, args)
     elif args.train_turner or args.shared_init or args.no_early_stop:
         raise SystemExit("--train-turner/--shared-init/--no-early-stop require --contract-mode")
-    if not (raw_score_contract or repr_head_contract) and (args.raw_score_arm or args.lambda_marginal_bce
+    if not (raw_score_contract or repr_head_contract or stacking_form_contract) and (args.raw_score_arm or args.lambda_marginal_bce
                                    or args.max_unfrozen_blocks != 33):
         raise SystemExit("uncontrolled RAW_SCORE arguments are forbidden")
     if args.motif and (args.scorer != "resnet2d" or args.ripe_mode or args.ripe_encoder
@@ -778,8 +789,10 @@ def main():
                                                if raw_score_contract else
                                                (repr_head_evaluation_identity(contract, args.raw_score_arm)
                                                 if repr_head_contract else
-                                                evaluation_rows(contract, training_trajectory))),
-            "raw_score_arm": args.raw_score_arm if (raw_score_contract or repr_head_contract) else None,
+                                                (stacking_form_evaluation_identity(contract, args.raw_score_arm)
+                                                 if stacking_form_contract else
+                                                 evaluation_rows(contract, training_trajectory)))),
+            "raw_score_arm": args.raw_score_arm if (raw_score_contract or repr_head_contract or stacking_form_contract) else None,
             "full_control_reused_not_retrained": False,
             "old_external_panels_used": False,
         }),
@@ -816,7 +829,7 @@ def main():
                                              if args.marginal_vjp_method == "central_difference"
                                              else "exact_forward_mode_tangent_float64"),
                       "numerical_recurrence": (contract["arms"][args.raw_score_arm].get("numerical_recurrence")
-                                                if (raw_score_contract or repr_head_contract) else None),
+                                                if (raw_score_contract or repr_head_contract or stacking_form_contract) else None),
                       "teacher": args.teacher_dir,
                       "aux_teacher": args.aux_teacher_dir,
                       "teacher_storage": {"lazy": args.lazy_teacher,

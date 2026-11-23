@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "contract_id": "stacking_closure_form_v1",
+  "status": "FROZEN_BEFORE_PILOT",
+  "scope": "SEED0_BPRNA_VL0_MODEL_DEV_FORM_FALSIFICATION",
+  "external_evaluation_allowed": false,
+  "strict_ood_allowed": false,
+  "sota_claim": false,
+  "arms": {
+    "local_control": {"scorer": "local_control", "d_z": 128, "head_init": "fresh", "lambda_marginal_bce": 0.0, "max_unfrozen_blocks": 33},
+    "stacking_closure": {"scorer": "stacking_closure", "d_z": 128, "head_init": "fresh", "lambda_marginal_bce": 0.0, "max_unfrozen_blocks": 33},
+    "destroy_offset": {"scorer": "destroy_offset", "d_z": 128, "head_init": "fresh", "lambda_marginal_bce": 0.0, "max_unfrozen_blocks": 33},
+    "destroy_channel_shuffle": {"scorer": "destroy_channel_shuffle", "d_z": 128, "head_init": "fresh", "lambda_marginal_bce": 0.0, "max_unfrozen_blocks": 33}
+  },
+  "training": {
+    "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+    "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+    "evaluation_data": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl",
+    "shared_init_template": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/init/shared_init_seed{seed}.pt",
+    "shared_init_sha256_seed0": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e",
+    "steps": 9600,
+    "batch_size": 4,
+    "head_lr": 0.0001,
+    "backbone_lr": 1e-06,
+    "head_warmup_steps": 1600,
+    "unfreeze_every": 800,
+    "unfreeze_per_step": 2,
+    "optimizer_warmup_steps": 5,
+    "grad_clip": 1.0,
+    "objective": {"lambda_nll": 1.0, "lambda_marginal_bce": 0.0, "nll_normalization": "length"}
+  },
+  "evaluation": {
+    "decoder": {"decoder": "MEA", "temperature": 1.0, "gamma": 1.0},
+    "decoder_source": "/home/rna_jev_xens2_dualview_round56/tools/pair_decode_common.py",
+    "decoder_source_sha256": "87f0068b3509d96772e5ad27f5a623ca71caee7d500ad02697f1edc4e2ecd2c1",
+    "raw_metrics_auxiliary_only": true
+  },
+  "pilot": {
+    "seed": 0,
+    "steps": 9600,
+    "control_arm": "local_control",
+    "per_arm_direction_gate": {
+      "micro_auprc_delta_min_exclusive": 0.0,
+      "micro_recall_at_precision_0.8_delta_min_exclusive": 0.0,
+      "micro_pair_f1_delta_min_inclusive": 0.0,
+      "macro_pair_f1_delta_min_inclusive": 0.0,
+      "macro_pair_f1_delta_min_exclusive": 0.0,
+      "micro_pair_precision_delta_min_inclusive": -0.005,
+      "macro_pair_precision_delta_min_inclusive": -0.005,
+      "micro_stem_f1_delta_min_inclusive": -0.005,
+      "macro_stem_f1_delta_min_inclusive": -0.005,
+      "require_at_least_one_pair_f1_strictly_positive": true
+    },
+    "target_supported_boundary_recall_strictly_positive": true,
+    "must_beat_both_destroy_controls_on": ["micro_pair_f1", "macro_pair_f1", "micro_stem_f1", "macro_stem_f1"],
+    "seed1_seed2_authorized": false,
+    "decoder_search_allowed": false,
+    "stacking_capacity_increase_allowed": false
+  },
+  "fair_compute": {
+    "same_parameter_names_shapes_and_count_required": true,
+    "same_training_steps_batch_init_and_decoder_required": true,
+    "flops_and_memory_preflight_required": true,
+    "gradient_checkpointing_is_memory_only": true
+  },
+  "evidence": {
+    "hypothesis_design_sha256": "6889cf629d41fe83cff67936360599aa6645e63d0119306a21d0a5f89310c5c0",
+    "fn_audit_sha256": "72cc68cb6e53b3c91db07dfa84fcc0a6e9dfc6d7b1c5a1008346cb3eff74642d",
+    "fn_independent_verification_sha256": "5d34f46b61972be29c1e75355c88be9e86f6406e3db098565bd17758e4477527"
+  }
+}
