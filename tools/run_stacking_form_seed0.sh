@@ -7,17 +7,20 @@ CONTRACT="$REPO/configs/stacking_closure_form_v1.json"
 MODE="${MODE:-smoke}"
 if [[ "$MODE" == smoke ]]; then STEPS=2; LIMIT=2; elif [[ "$MODE" == pilot ]]; then STEPS=9600; LIMIT=0; else echo "only smoke/pilot" >&2; exit 2; fi
 STAGE="${STAGE:-$ART/$MODE}"
-[[ ! -e "$STAGE" ]] || { echo "refusing to overwrite stage: $STAGE" >&2; exit 2; }
+ALLOW_EXISTING_STAGE="${ALLOW_EXISTING_STAGE:-0}"
+if [[ -e "$STAGE" && "$ALLOW_EXISTING_STAGE" != 1 ]]; then echo "refusing to overwrite stage: $STAGE" >&2; exit 2; fi
 mkdir -p "$STAGE"
 cd "$REPO"
-git rev-parse HEAD > "$STAGE/git_head_before.txt"
-git status --short --branch > "$STAGE/git_status_before.txt"
-cp "$CONTRACT" "$STAGE/contract.executed.json"
-cp "$0" "$STAGE/command.executed.sh"
-sha256sum src/rnajepa/stacking_closure.py src/rnajepa/stacking_form_matrix.py src/rnajepa/decision_head.py tools/train_plan_a_clean_head_p1.py "$CONTRACT" > "$STAGE/code_and_contract_sha256.txt"
+if [[ "$ALLOW_EXISTING_STAGE" != 1 ]]; then
+  git rev-parse HEAD > "$STAGE/git_head_before.txt"
+  git status --short --branch > "$STAGE/git_status_before.txt"
+  cp "$CONTRACT" "$STAGE/contract.executed.json"
+  cp "$0" "$STAGE/command.executed.sh"
+  sha256sum src/rnajepa/stacking_closure.py src/rnajepa/stacking_form_matrix.py src/rnajepa/decision_head.py tools/train_plan_a_clean_head_p1.py "$CONTRACT" > "$STAGE/code_and_contract_sha256.txt"
+fi
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export RN_CUDA_INSIDE=1
-for ARM in local_control stacking_closure destroy_offset destroy_channel_shuffle; do
+for ARM in ${ARMS:-local_control stacking_closure destroy_offset destroy_channel_shuffle}; do
   FREE=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | head -1)
   [[ "$FREE" -ge 20000 ]] || { echo "GPU free $FREE MiB < 20000" >&2; exit 2; }
   OUT="$STAGE/$ARM"
