@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "scope": "Phase 0C; bpRNA-new raw frozen predictions only; no model development",
+  "target_registries": [
+    "manifests/foldnar_v1/baseline_registry.json",
+    "manifests/foldnar_v1/prediction_registry.json"
+  ],
+  "integration_mode": "FIELD_LEVEL_CORRECTION; shared registries intentionally not modified",
+  "corrections": {
+    "mxfold2": {
+      "official_weights": {
+        "status": "OFFICIAL_RELEASE_VERIFIED",
+        "version": "0.1.2",
+        "commit": "51b213676708bebd664f0c40873a46e09353e1ee",
+        "distribution_url": "https://github.com/mxfold/mxfold2/releases/download/v0.1.2/mxfold2-0.1.2-cp310-cp310-manylinux_2_17_x86_64.whl",
+        "distribution_sha256": "a9ea044a6555903e019fc016d8409ba0907bfb143bbf2eda51b1d27aae763c72",
+        "member": "mxfold2/models/TrainSetAB.pth",
+        "sha256": "8ba1283e70c1c073033161adc120f67cdc467176476358d26a12cadaf63262ec"
+      },
+      "license": {
+        "status": "VERIFIED_OFFICIAL_DISTRIBUTION",
+        "spdx": "MIT"
+      },
+      "provenance_status": "RECOVERED_WEIGHTS_LICENSE_PROTOCOL; TRAINING_OVERLAP_STILL_UNRESOLVED",
+      "verified_metrics": {
+        "n_sequences": 5388,
+        "n_with_prediction": 5388,
+        "coverage": 1.0,
+        "tp": 100227,
+        "fp": 64290,
+        "fn": 34957,
+        "micro_precision": 0.6092197158956217,
+        "micro_recall": 0.7414117055272813,
+        "micro_f1": 0.6688466171284047,
+        "macro_f1": 0.68194864244077
+      }
+    },
+    "eternafold": {
+      "official_weights": {
+        "status": "OFFICIAL_PARAMETER_FILE_VERIFIED",
+        "version": "EternaFoldParams.v1",
+        "commit": "87b9aac55cee14fd562049d08f7b92d3131f10ce",
+        "distribution_url": "https://raw.githubusercontent.com/WaymentSteeleLab/EternaFold/87b9aac55cee14fd562049d08f7b92d3131f10ce/parameters/EternaFoldParams.v1",
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v1/eternafold/EternaFoldParams.v1",
+        "sha256": "1421e89cc8df24b53a320eff6c72b8acfdb2771faba29ab9c798f7bdfc853a8a"
+      },
+      "license": {
+        "status": "VERIFIED_OFFICIAL_SOURCE_AND_PARAMETERS",
+        "spdx": "BSD-3-Clause"
+      },
+      "provenance_status": "RECOVERED_PARAMETERS_LICENSE_PROTOCOL; EXACT_TRAINING_UNION_STILL_UNRESOLVED",
+      "verified_metrics": {
+        "n_sequences": 5388,
+        "n_with_prediction": 5388,
+        "coverage": 1.0,
+        "tp": 104470,
+        "fp": 65197,
+        "fn": 30714,
+        "micro_precision": 0.6157355290068193,
+        "micro_recall": 0.7727985560421352,
+        "micro_f1": 0.685384007269125,
+        "macro_f1": 0.6996978275536603
+      }
+    }
+  },
+  "remaining_blocked_provenance": [
+    {
+      "baseline_id": "mxfold2",
+      "field": "training_data.homology_overlap",
+      "status": "BLOCKED_PROVENANCE",
+      "reason": "Official TrainSetA/B identity is known, but this slice did not reconstruct and compare the complete training union against bpRNA-new; raw results remain non-decontaminated."
+    },
+    {
+      "baseline_id": "eternafold",
+      "field": "training_data.exact_union",
+      "status": "BLOCKED_PROVENANCE",
+      "reason": "Official repository describes multitask Eterna data and ships data lists, but the exact effective training union and bpRNA-new homology overlap were not reconstructed in this slice."
+    }
+  ],
+  "official_source_attempts": [
+    {
+      "source": "MXfold2 v0.1.2 bpRNAnew.tar.gz",
+      "url": "https://github.com/mxfold/mxfold2/releases/download/v0.1.2/bpRNAnew.tar.gz",
+      "outcome": "HTTP_404; asset is attached to v0.1.1 instead"
+    },
+    {
+      "source": "MXfold2 v0.1.1 bpRNAnew.tar.gz",
+      "outcome": "RECOVERED; 5401 reference BPSEQ files and no prediction structures",
+      "audit": {
+        "status": "REFERENCE_BPSEQ_ONLY_NOT_PREDICTIONS",
+        "archive": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v1/mxfold2/bpRNAnew-v0.1.1.tar.gz",
+        "archive_sha256": "0d1959ac93e2b15ac47b56c7dd8155d9a0fcd3a692f75f2d0ede9221bf9d9dfb",
+        "release_url": "https://github.com/mxfold/mxfold2/releases/download/v0.1.1/bpRNAnew.tar.gz",
+        "n_official_bpseq": 5401,
+        "n_project": 5388,
+        "n_common_names": 5388,
+        "n_common_sequence_exact_after_T_to_U": 5388,
+        "n_common_pair_sets_exact": 106,
+        "official_only_names": [
+          "CP007500.1_8618-8854.bpseq",
+          "NC_039208.1_1-280.bpseq",
+          "URS0000D661BB_12908_1-77.bpseq",
+          "URS0000D67255_12908_1-80.bpseq",
+          "URS0000D68725_12908_1-53.bpseq",
+          "URS0000D69110_12908_1-61.bpseq",
+          "URS0000D6933B_12908_1-264.bpseq",
+          "URS0000D6A4D9_12908_1-66.bpseq",
+          "URS0000D6A629_12908_1-109.bpseq",
+          "URS0000D6B31B_12908_1-130.bpseq",
+          "URS0000D6B7EF_12908_1-107.bpseq",
+          "URS0000D6BAD3_12908_1-211.bpseq",
+          "URS0000D6BD84_12908_1-182.bpseq"
+        ],
+        "project_only_names": [],
+        "note": "The 13 official-only BPSEQ records are outside the frozen project split; no coverage or score is imputed for them."
+      }
+    },
+    {
+      "source": "WaymentSteeleLab/EternaFold pinned source tree",
+      "commit": "87b9aac55cee14fd562049d08f7b92d3131f10ce",
+      "outcome": "Parameters and licenses recovered; repository tree has no bpRNA-new per-sequence prediction asset"
+    },
+    {
+      "source": "eternagame/EternaBench",
+      "outcome": "Inspected scoring_data and repository tree; benchmark score tables are not per-sequence frozen structures and were not substituted"
+    }
+  ],
+  "scientific_use": "Same 5388 raw sequences, strict zero-based pair scoring; not clean/homology-controlled and not a claim about the 13 release-only records."
+}

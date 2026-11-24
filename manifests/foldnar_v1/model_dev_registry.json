@@ -1,0 +1,287 @@
+{
+  "artifacts": {
+    "cluster_dev_ids": {
+      "bytes": 306963,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_dev_ids.txt",
+      "sha256": "2560ecadf85b2557de048f53c4c0dddbb7841b840feae1e90deed7aceb1f1ae6"
+    },
+    "cluster_train_ids": {
+      "bytes": 1130259,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_train_ids.txt",
+      "sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+    },
+    "environment_summary": {
+      "bytes": 5302884,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/environment_summary.json",
+      "sha256": "857b96c33209d7a9ace76cf669aea8297976474613cd216f7a3952a677aab7d5"
+    },
+    "family_dev_ids": {
+      "bytes": 167598,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_dev_ids.txt",
+      "sha256": "89ba58047e0e583b735ad1668ca32089873d35505d4ec0fba743c6e150c61a34"
+    },
+    "family_excluded_ids": {
+      "bytes": 593078,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_excluded_ids.txt",
+      "sha256": "0cd884b689204933d7630d7b566f87f39251c0e7dad83ec526cada9bd02853fd"
+    },
+    "family_train_ids": {
+      "bytes": 676546,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_train_ids.txt",
+      "sha256": "a00e78bc04e46b99fb7a8559c64825c33c95929e78875f8b5e10b3b4f46652ad"
+    },
+    "input_provenance": {
+      "bytes": 1982,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/input_provenance.json",
+      "sha256": "0d807b0a3a892a1575d7ad98297cdfd5b8be8ede5b974c75b4cd3b27d086b392"
+    },
+    "legacy_vl0_records": {
+      "bytes": 17194,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/legacy_vl0_panel_records.jsonl.gz",
+      "sha256": "ad01f87fd08bd206c9d41739b2d9214b897beb67ce2ef0baab0112857d9b0470"
+    },
+    "panel_records": {
+      "bytes": 3851786,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_panel_records.jsonl.gz",
+      "sha256": "3ed9621dde2662b94f6ff49767e41bd6b790d8f677b9ba033ee5c501ebe4c1fe"
+    }
+  },
+  "assets": [
+    {
+      "dataset_id": "bprna_tr1c",
+      "label_quality": "mixed sources; per-record experimental lineage unresolved",
+      "label_source": "DATABASE",
+      "n_sequences": 42564,
+      "role": "legal_train_dev_source",
+      "sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl"
+    },
+    {
+      "dataset_id": "bprna_vl0",
+      "historical_cluster_overlap_with_tr1c": 23,
+      "label_source": "DATABASE",
+      "n_sequences": 196,
+      "role": "LEGACY_CONTROL_ONLY",
+      "route_selection_allowed": false,
+      "sha256": "1920d906de5ea84403aa83a97bfab5538a780bd0457d211d6de44b36b60a7f4d",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/bprna_vl0.jsonl"
+    },
+    {
+      "availability": "FROZEN_CURRENT_FILES_ONLY",
+      "contract_coverage_status": "FROZEN_SUBSET_OR_VERSION_MISMATCH",
+      "dataset_id": "chanrg_train_validation",
+      "label_source": "COMPARATIVE_INFERRED",
+      "n_sequences": 10540,
+      "reason": "80% clusters and train-validation near-neighbor status are UNCHECKED; do not call clean or use for route selection",
+      "role": "OFFICIAL_VALIDATION_REGISTERED_NOT_PANELLED",
+      "route_selection_allowed": false,
+      "sha256": "0b6f7643a900a99982b73a4a294a20b177968fc1c849e37d47f44d89b3d114e3",
+      "source": "/root/rna_jepa_data/ss_data/jsonl/chanrg_train_validation.jsonl"
+    }
+  ],
+  "environment_contracts": {
+    "family_concentration": "report sequence and pair counts, top mapped-family fraction of all weight, known-family HHI, unmapped fraction; small or concentrated strata are diagnostic only",
+    "family_macro_component_minimum": {
+      "min_pairs": 500,
+      "min_sequences": 30
+    },
+    "pair_level": {
+      "isolated_pair": "neither inward (i+1,j-1) nor outward (i-1,j+1) stacked partner exists",
+      "junction_pair": "closing pairs and member stem-closing pairs of multiloops; order 2, 3, >=4; overlapping definitions are separate environments",
+      "loop_closure": "immediate child-stem count inside a closing pair: 0 hairpin, 1 internal/bulge, >=2 multiloop",
+      "minimum_route_sample": {
+        "max_family_hhi": 0.25,
+        "max_top_family_fraction": 0.5,
+        "max_unmapped_family_fraction": 0.5,
+        "min_known_families": 10,
+        "min_pairs": 1000,
+        "min_sequences": 100
+      },
+      "pair_span": {
+        "bins": [
+          "le3",
+          "4_7",
+          "8_15",
+          "16_31",
+          "32_63",
+          "64_127",
+          "ge128"
+        ],
+        "definition": "zero-based inclusive j-i; original pairs retained"
+      }
+    },
+    "paired_ci": {
+      "confidence": 0.95,
+      "required": true,
+      "resamples": 2000,
+      "seed": 20261118,
+      "sensitivity": "family-cluster bootstrap; never treat pairs as independent Bernoulli trials",
+      "unit": "paired sequence bootstrap on identical IDs and coverage"
+    },
+    "panel_records": {
+      "bytes": 3851786,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_panel_records.jsonl.gz",
+      "sha256": "3ed9621dde2662b94f6ff49767e41bd6b790d8f677b9ba033ee5c501ebe4c1fe"
+    },
+    "sequence_level": {
+      "cluster80": "existing cluster_id; singleton/small clusters are diagnostic only",
+      "family": "unique Rfam14.9 exact full-sequence mapping; unmatched and ambiguous remain separate diagnostic states",
+      "length": [
+        "le63",
+        "64_127",
+        "128_255",
+        "256_511",
+        "ge512"
+      ],
+      "minimum_route_sample": {
+        "max_family_hhi": 0.25,
+        "max_top_family_fraction": 0.5,
+        "max_unmapped_family_fraction": 0.5,
+        "min_known_families": 10,
+        "min_pairs": 1000,
+        "min_sequences": 100
+      },
+      "source": "prefix before first colon in source",
+      "topology": [
+        "unpaired",
+        "single_root_no_multiloop",
+        "multi_root_no_multiloop",
+        "contains_multiloop",
+        "crossing"
+      ]
+    },
+    "summary": {
+      "bytes": 5302884,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/environment_summary.json",
+      "sha256": "857b96c33209d7a9ace76cf669aea8297976474613cd216f7a3952a677aab7d5"
+    }
+  },
+  "frozen_utc": "2026-11-24T04:12:24Z",
+  "git_head": "ab9bb10d58380d86b6eb5c1051b7209a08d4e3fa",
+  "implementation": {
+    "builder": {
+      "bytes": 32217,
+      "path": "/home/rna_jev_xens2_dualview_round56/tools/build_foldnar_model_dev_registry_phase0a.py",
+      "sha256": "24d0127899f7d6b055bdf22f5c48cc1d948e8039e042a6d780d11f2fd1a9c4fb"
+    },
+    "verifier": {
+      "bytes": 17536,
+      "path": "/home/rna_jev_xens2_dualview_round56/tools/verify_foldnar_model_dev_registry_phase0a.py",
+      "sha256": "db821ce9bf16aa27937203a66918b3f7920390318ea351b7d096e6eb0837e438"
+    }
+  },
+  "limitations": [
+    "80% cluster separation is not proof of absence of all homology, structural similarity, or pretraining exposure",
+    "Rfam exact mapping is incomplete; unmapped rows are not independent-family evidence",
+    "family-panel selected-dev rows with train-cluster overlap are excluded rather than silently retained as development evidence",
+    "per-record experimental label lineage, modified bases and PDB quality are unresolved for mixed bpRNA sources",
+    "registry freezes IDs and metric contracts; model-specific eligibility still requires exact training-set identity verification"
+  ],
+  "panels": [
+    {
+      "dev_ids": {
+        "bytes": 306963,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_dev_ids.txt",
+        "sha256": "2560ecadf85b2557de048f53c4c0dddbb7841b840feae1e90deed7aceb1f1ae6"
+      },
+      "eligible_only_for": "models whose complete gradient-update set is exactly the registered train IDs; any added training data requires a new leakage audit",
+      "leakage_state": {
+        "broader_sequence_homology": "UNCHECKED",
+        "downstream_80pct_cluster": "NOT_DETECTED_UNKNOWN",
+        "downstream_exact": "NOT_DETECTED_UNKNOWN",
+        "downstream_family": "UNCHECKED",
+        "interpretation": "NOT_DETECTED_UNKNOWN is limited to the named check and is not a clean claim",
+        "pretraining_exposure": "UNCHECKED",
+        "structure_similarity": "UNCHECKED",
+        "temporal_and_label_source": "UNCHECKED"
+      },
+      "n_dev_clusters": 3104,
+      "n_dev_sequences": 9143,
+      "n_train_clusters": 12417,
+      "n_train_sequences": 33421,
+      "panel_id": "tr1c_cluster80_dev_v1",
+      "split_rule": "SHA-256 rank with salt foldnar-phase0a-model-dev-v1-20261118; exactly 20% of 15521 clusters held out before training",
+      "split_unit": "existing 80% cluster",
+      "train_ids": {
+        "bytes": 1130259,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_train_ids.txt",
+        "sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+      }
+    },
+    {
+      "dev_ids": {
+        "bytes": 167598,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_dev_ids.txt",
+        "sha256": "89ba58047e0e583b735ad1668ca32089873d35505d4ec0fba743c6e150c61a34"
+      },
+      "eligible_only_for": "models whose complete gradient-update set is exactly the registered family-panel train IDs; excluded IDs must never enter gradient updates for this track",
+      "excluded_ids": {
+        "bytes": 593078,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_excluded_ids.txt",
+        "sha256": "0cd884b689204933d7630d7b566f87f39251c0e7dad83ec526cada9bd02853fd"
+      },
+      "leakage_state": {
+        "broader_sequence_homology": "UNCHECKED",
+        "downstream_80pct_cluster": "NOT_DETECTED_UNKNOWN",
+        "downstream_exact": "NOT_DETECTED_UNKNOWN",
+        "downstream_family": "NOT_DETECTED_UNKNOWN",
+        "interpretation": "NOT_DETECTED_UNKNOWN is limited to the named check and is not a clean claim",
+        "pretraining_exposure": "UNCHECKED",
+        "structure_similarity": "UNCHECKED",
+        "temporal_and_label_source": "UNCHECKED"
+      },
+      "n_dev_families": 346,
+      "n_dev_sequences": 4846,
+      "n_excluded_cluster_overlap_with_family_train": 27,
+      "n_excluded_unmapped_or_ambiguous": 18172,
+      "n_selected_dev_families": 346,
+      "n_train_families": 1386,
+      "n_train_sequences": 19519,
+      "panel_id": "tr1c_rfam_family_dev_v1",
+      "split_rule": "SHA-256 rank with salt foldnar-phase0a-model-dev-v1-20261118; exactly 20% of 1732 mapped families selected before training; selected-dev rows sharing an 80% cluster with train are excluded, and unmapped/ambiguous rows are excluded",
+      "split_unit": "Rfam14.9 exact full-sequence family",
+      "train_ids": {
+        "bytes": 676546,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_train_ids.txt",
+        "sha256": "a00e78bc04e46b99fb7a8559c64825c33c95929e78875f8b5e10b3b4f46652ad"
+      }
+    },
+    {
+      "dev_records": {
+        "bytes": 17194,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/legacy_vl0_panel_records.jsonl.gz",
+        "sha256": "ad01f87fd08bd206c9d41739b2d9214b897beb67ce2ef0baab0112857d9b0470"
+      },
+      "leakage_state": {
+        "downstream_80pct_cluster": "HOMOLOGY",
+        "downstream_exact": "NOT_DETECTED_UNKNOWN",
+        "historical_cluster_overlap_clusters": 23,
+        "historical_cluster_overlap_sequences": 26,
+        "pretraining_exposure": "UNCHECKED"
+      },
+      "n_dev_sequences": 196,
+      "panel_id": "legacy_vl0_control",
+      "role": "LEGACY_CONTROL_ONLY_NOT_UNIQUE_SELECTION_SET",
+      "split_unit": "existing VL0"
+    }
+  ],
+  "schema_version": "foldnar.model_dev_registry.v1",
+  "scientific_scope": "model development only; no external test set participates in architecture, sampling, hyperparameter, decoder, or checkpoint selection",
+  "selection_policy": {
+    "comparison": "same sequences, pairs, coverage, decoding protocol and training budget; paired 95% CI required",
+    "forbidden": [
+      "external-test model development",
+      "training-row prediction as generalization",
+      "decoder temperature/gamma/threshold rescue search"
+    ],
+    "primary_metric": "macro pair-F1 over macro-component-eligible mapped families",
+    "required_secondary_metrics": [
+      "micro pair-F1",
+      "macro stem-F1",
+      "per-stratum pair precision/recall/F1",
+      "coverage"
+    ],
+    "route_rule": "no route decision from VL0 alone or from any diagnostic-only stratum; preserve micro performance and report target-environment retention"
+  },
+  "status": "FROZEN_BEFORE_ANY_MODEL_TRAINING_ON_THESE_SPLIT_IDS"
+}
