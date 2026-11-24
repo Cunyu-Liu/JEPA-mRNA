@@ -105,3 +105,36 @@ def test_dry_run_does_not_create_artifact_root_or_spawn_training():
         assert production.main(["--dry-run"]) == 0
     popen.assert_not_called()
     prepare.assert_not_called()
+
+
+def test_new_git_head_is_frozen_without_hardcoded_commit(tmp_path):
+    plan = {"parallelism": 4}
+    with patch.object(production, "require_clean_scientific_files"), \
+         patch.object(production, "current_git_head", return_value="4a66d6e-new-reviewed-head"), \
+         patch.object(production, "code_manifest", return_value={}), \
+         patch.object(production, "sha256", return_value="frozen-hash"):
+        identity = production.build_identity(tmp_path, plan)
+        assert identity["git_commit"] == "4a66d6e-new-reviewed-head"
+        production.validate_identity(identity, tmp_path)
+    with patch.object(production, "require_clean_scientific_files"), \
+         patch.object(production, "current_git_head", return_value="different-head"), \
+         patch.object(production, "code_manifest", return_value={}), \
+         patch.object(production, "sha256", return_value="frozen-hash"):
+        with pytest.raises(ValueError, match="frozen production identity mismatch.*git_commit"):
+            production.validate_identity(identity, tmp_path)
+
+
+def test_dirty_scientific_or_launcher_files_are_rejected():
+    with patch.object(production.subprocess, "check_output", return_value=" M tools/gec_seed0_scientific_evaluator.py\n"):
+        with pytest.raises(ValueError, match="must be clean"):
+            production.require_clean_scientific_files()
+    with patch.object(production.subprocess, "check_output", return_value=""):
+        production.require_clean_scientific_files()
+
+
+def test_dirty_files_fail_before_artifact_root_creation():
+    with patch.object(production, "require_clean_scientific_files", side_effect=ValueError("dirty")), \
+         patch.object(production.Path, "mkdir") as mkdir:
+        with pytest.raises(ValueError, match="dirty"):
+            production.prepare_artifact_root()
+    mkdir.assert_not_called()

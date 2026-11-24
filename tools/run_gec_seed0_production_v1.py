@@ -23,7 +23,6 @@ SMOKE_VERIFICATION = Path(
     "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_smoke_v2/generation_02/"
     "smoke_verification_v2.json"
 )
-EXPECTED_COMMIT = "c8031d39983dfed261437f269e0d7d637d232a5d"
 ARMS = ("matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context")
 IDENTITY_SCHEMA = "foldnar.gec_seed0_production_identity.v1"
 STATUS_SCHEMA = "foldnar.gec_seed0_production_arm_status.v1"
@@ -185,12 +184,24 @@ def code_manifest() -> dict:
     }
 
 
+
+def current_git_head() -> str:
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()
+
+
+def require_clean_scientific_files() -> None:
+    status = subprocess.check_output(
+        ["git", "status", "--porcelain", "--", *CODE_FILES], cwd=REPO, text=True,
+    )
+    if status.strip():
+        raise ValueError(f"scientific source/config/launcher files must be clean: {status.strip()}")
+
+
 def build_identity(root: Path, plan: dict) -> dict:
     config = load_config()
     assets = config["assets"]
-    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()
-    if head != EXPECTED_COMMIT:
-        raise ValueError(f"repository commit must be {EXPECTED_COMMIT}")
+    require_clean_scientific_files()
+    head = current_git_head()
     manifest = code_manifest()
     arm_commands = {arm: build_arm_command(arm, root) for arm in ARMS}
     evaluator_command = build_evaluator_command(root)
@@ -556,7 +567,7 @@ def dry_run() -> dict:
     plan = plan_parallelism()
     return {
         "status": "DRY_RUN_NO_TRAINING", "artifact_root": str(ARTIFACT_ROOT),
-        "artifact_root_created": False, "git_commit": EXPECTED_COMMIT,
+        "artifact_root_created": False, "git_commit": current_git_head(),
         "parallelism_plan": plan, "arm_commands": {arm: build_arm_command(arm) for arm in ARMS},
         "evaluator_command": build_evaluator_command(),
         "production_launch_command": (
@@ -570,12 +581,14 @@ def dry_run() -> dict:
 
 def prepare_artifact_root() -> tuple[dict, object]:
     root = ARTIFACT_ROOT
+    require_clean_scientific_files()
+    head = current_git_head()
     fresh = not root.exists()
     if fresh:
         root.mkdir(parents=True, exist_ok=False)
         atomic_json({
             "schema_version": "foldnar.gec_seed0_production_initialization.v1",
-            "artifact_root": str(root), "repository": str(REPO), "git_commit": EXPECTED_COMMIT,
+            "artifact_root": str(root), "repository": str(REPO), "git_commit": head,
         }, root / "production_initialization.json")
     lock = acquire_lock(root / ".production_supervisor.lock")
     identity_path = root / "production_identity.json"
@@ -584,8 +597,9 @@ def prepare_artifact_root() -> tuple[dict, object]:
         validate_identity(identity, root)
         return identity, lock
     marker = read_json(root / "production_initialization.json")
-    if (marker.get("artifact_root") != str(root) or marker.get("repository") != str(REPO)
-            or marker.get("git_commit") != EXPECTED_COMMIT):
+    if (marker.get("schema_version") != "foldnar.gec_seed0_production_initialization.v1"
+            or marker.get("artifact_root") != str(root) or marker.get("repository") != str(REPO)
+            ):
         release_lock(lock)
         raise ValueError("refusing non-fresh or foreign artifact root")
     init = root / "gec_shared_residual_init_seed0.pt"
