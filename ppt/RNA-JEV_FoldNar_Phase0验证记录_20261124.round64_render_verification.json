@@ -1,0 +1,76 @@
+{
+  "status": "PASS",
+  "renderer": "LibreOffice 26.8.1.1 headless PDF export; pdftoppm 120 dpi",
+  "slides_rendered": 6,
+  "raster_sizes": [
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ]
+  ],
+  "ppt_to_pdf_complete_text_checks": 244,
+  "missing_or_clipped_text": [],
+  "pdf_words_checked": 982,
+  "pdf_page_bounds": [
+    {
+      "slide": 20,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 163
+    },
+    {
+      "slide": 21,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 129
+    },
+    {
+      "slide": 22,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 131
+    },
+    {
+      "slide": 23,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 188
+    },
+    {
+      "slide": 24,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 183
+    },
+    {
+      "slide": 25,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 188
+    }
+  ],
+  "pdf_out_of_page_words": [],
+  "raster_edge_clipping_findings": [],
+  "ppt_sha256": "8added53fb33dad46ae43da218110e59f79d03eb84a63db77e84f2f2f06464f2",
+  "pdf_sha256": "97f20a029982fa226dc6b5bca9b0fd4e6f0630549114dfa9f523b19189abf381"
+}

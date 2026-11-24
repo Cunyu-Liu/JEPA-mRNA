@@ -1,0 +1,47 @@
+{
+  "status": "PASS_BUILD_REOPEN_PRIOR_SLIDES_SOURCE_TEXT_AND_SHAPE_BOUNDS",
+  "deck": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "b099b656c0107363397918d037b74a276a891cfa602d188838c33f3ed59d2c6b",
+  "backup": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round66.pptx",
+  "backup_sha256": "d1f4c88bd64b8c03653a0325d148064980959af33e68a6033f94007a0d42e0cc",
+  "builder": "/home/rna_jev_xens2_dualview_round56/ppt/add_phase0_unified_baseline_v3_round66.py",
+  "builder_sha256": "1687eea5168593a6e0792ef2d0adc3c0d19f2d9c0ababe4e14d7a204a6b02035",
+  "project_commit": "c3cfc7f8e30adad029abe9d3f2e9c8b5dce9d297",
+  "sources": {
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v3_spot_rnaformer/reports/bprna_new_metrics_v3.json": "c61715ca22f04fccbb3a3be18eed718d975e4333f5bfc05d8a892cefa56980b8",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v3_spot_rnaformer/reports/delivery_verification_v3.json": "f7207a1d01e06f0cdfb22fc850a3ee6d424d4820c9863ab998282c1d3420f05f",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v3_efold_family/reports/bprna_new_efold_family_metrics_v3.json": "a402e87c6bcbd9683b0c989f9cd530449628353ed86f069cb31bc8b13c0eee42",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v3_efold_family/reports/delivery_verification_v3.json": "fc6bdb29cd97b73df3ebb7502434cb9edadff60afed9da8e4e1b81d783d750a5",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v3_foundation/reports/foundation_bprna_new_metrics_verification_v3.json": "4053bea4072f002e152b0d6dff3bd36130e08be7f83df54d06ccf8a84b063d65",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v3_foundation/reports/delivery_verification_v3.json": "5ac4b9732b9b275e18e15011ad93ec0375b80499aa19a48a83476d480a2e3fd0"
+  },
+  "slide_count": 9,
+  "added_slide_numbers": [
+    28
+  ],
+  "prior_slide_xml_preserved": 8,
+  "verified_micro_f1": {
+    "eFold 0.1.3": "0.6495050",
+    "SPOT-RNA": "0.5836013",
+    "structRFM": "0.5437894",
+    "RNAformer 32M": "0.4935795",
+    "RiNALMo": "0.4489962",
+    "NucleicBERT": "0.1908860"
+  },
+  "unavailable_metrics": {
+    "ERNIE-RNA": null,
+    "E2Efold": null,
+    "DEBFold": null
+  },
+  "spot_registry_raw": {
+    "empty_predictions": 5388,
+    "micro_f1": 0.0,
+    "micro_precision": null
+  },
+  "shape_bounds_checks": 173,
+  "render_visual_check": "PASS_ALL_9_RENDERED; automated text completeness, PDF bounds and raster-edge clipping audit",
+  "render_verification": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round66_render_verification.json",
+  "render_pdf_sha256": "f45b5a7053541f0fa24631d8bd4212b316f107cac6991ff8d1e4f7df0f805675",
+  "final_remote_reopen": "PASS_9_SLIDES",
+  "final_source_hash_replay": "PASS_6_V3_SOURCES"
+}

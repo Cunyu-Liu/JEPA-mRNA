@@ -1,0 +1,43 @@
+{
+  "status": "PASS_BUILD_REOPEN_PRIOR_SLIDES_SOURCE_TEXT_AND_SHAPE_BOUNDS",
+  "deck": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "d1f4c88bd64b8c03653a0325d148064980959af33e68a6033f94007a0d42e0cc",
+  "backup": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round65.pptx",
+  "backup_sha256": "8added53fb33dad46ae43da218110e59f79d03eb84a63db77e84f2f2f06464f2",
+  "builder": "/home/rna_jev_xens2_dualview_round56/ppt/add_phase0_exposure_long_sequence_round65.py",
+  "builder_sha256": "ed17cce0d7d16f398bea1d4bcd905c90d47887c959263bcf1d960bd715885388",
+  "project_commit": "1bb28399eedb8c528b8abb96aabaaf3b15407df3",
+  "sources": {
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/exposure_temporal_audit_v1/audit_summary.json": "d5886e469cd7e00581e7671e2e50422333eabdb08be9848d3312ba8c283c2270",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/exposure_temporal_audit_v1/temporal_label_lineage.json": "67eee8d4936c9caf33b099727af22a207aa928d1bb95c5b99c4f5de2551c9972",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/exposure_temporal_audit_v1/independent_verification.json": "d20bf7c2bb2fff21ccb5fa6e839e3911c4fea27ca401e44d8fb449010ddf1384",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/audit_report.json": "e63f6e55ae5d580f334bd747ded805b7d833ecf344747af0b8c86a06cd2c2e0f",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/delivery_verification_v1.json": "a412048ff30f47dab78047f64510b6a3104723a3391432c4a69fe8c62de622e9",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/cpu_smoke_v2/summary.json": "426ea34fc583f58a4523f0b2d10e761325d8a4289dd96d6f09689930fdbcdb87",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/long_chain_records_complete.jsonl": "7c98c843c5edd754e65c1f0e5c12b3d25d633fce80b025a81b5cfec6bae5f4f6",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/registry_reconciliation_v1/reconciliation_report.json": "52e78a05b45c6fe41f5ee8f9803bb685843fd4572d70fa124463a07f8b167cd4",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/registry_reconciliation_v1/delivery_verification.json": "194b58c5d28bc5528af00ea56c51c80165cde3844b9125b47533b793ae4edc1a",
+    "/home/rna_jev_xens2_dualview_round56/manifests/foldnar_v1/data_registry.json": "1cbb76f5248bac7850168ecb6975b4f668517428e34bffa0dd23be9cd8129f2e",
+    "/home/rna_jev_xens2_dualview_round56/manifests/foldnar_v1/baseline_registry.json": "33c91e028765c6ab6b4a0b91f8d54aa63a030c5077571a02dfa8a8eea427e930"
+  },
+  "slide_count": 8,
+  "added_slide_numbers": [
+    26,
+    27
+  ],
+  "prior_slide_xml_preserved": 6,
+  "source_derived_text_checks": {
+    "26": 9,
+    "27": 11
+  },
+  "shape_bounds_checks": 160,
+  "exposure_independent_checks": 17,
+  "full_historical_pretraining_state": "UNCHECKED",
+  "long_chain_predictions": 0,
+  "gec_exact_cubic_long_chain_support": "NOT_ESTABLISHED",
+  "render_visual_check": "PASS_ALL_8_RENDERED; automated text completeness, PDF bounds and raster-edge clipping audit",
+  "render_verification": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round65_render_verification.json",
+  "render_pdf_sha256": "f43113c69d3aaa2a6630996f91dc5211ec7d11f54bb6c9dfe1e53e3f4f38af03",
+  "final_remote_reopen": "PASS_8_SLIDES",
+  "final_source_hash_replay": "PASS_11_SOURCES"
+}

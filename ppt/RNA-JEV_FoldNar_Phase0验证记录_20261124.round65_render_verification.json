@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "renderer": "LibreOffice 26.8.1.1 headless PDF export; pdftoppm 120 dpi",
+  "slides_rendered": 8,
+  "raster_sizes": [
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ]
+  ],
+  "ppt_to_pdf_complete_text_checks": 294,
+  "missing_or_clipped_text": [],
+  "pdf_words_checked": 1281,
+  "pdf_page_bounds": [
+    {
+      "slide": 20,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 163
+    },
+    {
+      "slide": 21,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 129
+    },
+    {
+      "slide": 22,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 131
+    },
+    {
+      "slide": 23,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 188
+    },
+    {
+      "slide": 24,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 183
+    },
+    {
+      "slide": 25,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 188
+    },
+    {
+      "slide": 26,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 134
+    },
+    {
+      "slide": 27,
+      "width_pt": 960.009449,
+      "height_pt": 540.0,
+      "words": 165
+    }
+  ],
+  "pdf_out_of_page_words": [],
+  "raster_edge_clipping_findings": [],
+  "ppt_sha256": "d1f4c88bd64b8c03653a0325d148064980959af33e68a6033f94007a0d42e0cc",
+  "pdf_sha256": "f43113c69d3aaa2a6630996f91dc5211ec7d11f54bb6c9dfe1e53e3f4f38af03"
+}

@@ -374,6 +374,41 @@ v1 central difference 在 BCE clamp kink 附近产生伪大梯度；v2 高 log-p
 
 ---
 
+## 2026-11-23 第七修订：结构头容量的跨 seed 确认门
+
+### 1. 前序归因已经收敛到结构头，但尚未跨 seed
+
+RAW_SCORE 三种子共 2,650 FN，其中 RAW_SCORE=2,416（91.17%），直接 DECODER=234（8.83%）。前序 v3 无晋升：frozen/limited4 不支持全计划遗忘主导，marginal 改善部分 raw 指标但 pair-F1/stem 未过门。因此下一步不是继续调解码或扩数据，而是检验 pair representation 宽度与结构头容量。
+
+### 2. seed0 容量探针的直接证据
+
+`configs/representation_head_mechanism_4arm_v1.json` 统一 fresh-head-init、NLL-only、数据、schedule、decoder 和指标：
+
+- `control_matched(128/4/64)` micro pair-F1=0.825713；
+- `repr_wide(256/4/64)` micro pair-F1=0.817473，仅过 4/9，AUPRC 提高但 pair/stem 下降；
+- `head_deep(128/8/128)` micro pair-F1=0.842246，Δ=+0.016533，9/9；
+- `repr_head(256/8/128)` micro pair-F1=0.845970，Δ=+0.020258，9/9。
+
+独立 raw 重算 max_abs_diff=0.0，verification PASS，训练 replay 与 run_meta 身份一致。`control_matched` 与上轮 full_control 仅差 −0.002182，说明对照衔接合理。
+
+这支持“结构头容量是重要贡献因素”的候选机制，但不能写成排他性根因。`repr_wide` 是重要反例：raw 排序改善不等于最终 pair/stem 改善，AUPRC 不能替代结构终点。
+
+### 3. 当前唯一放行的工作
+
+仅允许 `control_matched/head_deep/repr_head` 增加 seeds 1/2，`repr_wide` 不进入。fresh-head-init、NLL-only、数据、schedule、20/33 终态、decoder 和指标全部冻结。逐块 ResNet 梯度检查点只用于显存，BN running stats 每步仅更新一次，不改变科学变量。
+
+每个 seed 必须同时满足：micro AUPRC 和 recall@precision=0.8 严格提高、micro/macro pair-F1 非负且 macro_pair_f1_delta>0、precision/stem 降幅≤0.005，以及完整训练与独立重算。种子方向不一致时不选冠军、不降低门限。当前没有三种子 verdict，candidate_selected=false，外部关闭，统一完整 SOTA=0/8。
+
+### 4. 跨 seed 后的科学故事
+
+**序列知识为何没有充分转化为配对决策？**先由 RAW_SCORE 定位打分问题，再由匹配容量四臂证明结构头容量在 seed0 有效且仅拓宽表示存在反例，随后用三种子检验稳健性。只有全部门通过才讨论一次非独立外部敏感性；严格 OOD 仍须官方/时间外 split。
+
+若 head_deep 与 repr_head 都通过，再判断联合容量相对 head_deep 的增量是否稳定；只有 repr_head 通过才讨论联合作用；只有 head_deep 通过则优先较小模型；全部失败则停止扩容，不得继续增加 blocks、hidden 或 d_z，也不得恢复普通模块救援。
+
+完整提示词已更新为 `交接文档/docs/plans/2026-11-18-foldnar-scientific-story-execution-prompt.md`，标题为“RNA-JEV 性能主线完整执行提示词：结构头容量的跨 seed 确认”。提示词同时保留数据质量、四层泄漏、长序列、baseline 注册和 claim–evidence–limitation 要求。
+
+---
+
 ## 原审计（事实与历史执行方案保留）
 
 - 日期：2026-11-18
@@ -924,3 +959,87 @@ Rfam 上历史 BPfold=0.7872 与旧 xens2≈0.6514 相差约 0.1358；同样只�
 ## 最终直接回答
 
 **当前最应该先完成“时间外全量 QA + 统一 pair/stem/topology 指标 + H0/H2/强基线的冻结评测”，因为它直接决定项目是否还有真实 OOD 科学问题、当前差距在哪里以及结构辅助是否值得继续；在这一答案出来前增加模型模块，只会把预训练暴露、训练目标、先验/DP 和模型身份进一步混杂，既无法证明 SOTA，也更难形成可信预印本。**
+
+## 2026-11-24 第八修订：三种子否定稳健容量路线后的机制分流
+
+### 1. 最终裁决取代 seed0 正向解释
+
+三种子容量确认已经完成，权威裁决为 `STOP_REPRESENTATION_HEAD_CAPACITY_THREE_SEED`，`candidate_selected=false`、`external_evaluation_allowed=false`、`strict_ood_allowed=false`。artifact 为 `representation_head_mechanism_4arm_v1/three_seed_verdict.json`，复核时记录代码 HEAD 与原始 run 身份；本次记录所依据的最新 HEAD 为 `558366d`。
+
+seed0 的 head_deep/repr_head 正向门只能作为候选机制信号，不能继续写成“结构头容量是重要贡献因素”。三种子 `head_deep−control_matched` 均值为：micro/macro pair-F1=−0.0039389391/−0.0099052807，micro AUPRC=+0.0630519273，r@P0.8=+0.0104662913，micro/macro stem-F1=+0.0014277310/−0.0149689482。`repr_head−control_matched` 均值为：micro/macro pair-F1=−0.0345147191/−0.0519265689，micro AUPRC=+0.1219403702，r@P0.8=+0.1300707377，micro/macro stem-F1=−0.0333460085/−0.0564139810。
+
+`repr_head−head_deep` 只有 AUPRC、r@P0.8 和 precision 为正，pair-F1、recall 与 stem 未跨 seed 保持。raw 排序改善再次不等于最终结构改善，不能用 raw 正增益抵消结构终点失败。
+
+### 2. 强制停止与新路线准入
+
+立即停止容量扩张，不再增加 `blocks/hidden/d_z`，不启动 seeds 1/2，不重复 pilot，不挑选冠军 seed/checkpoint，不放宽门限，也不开放外部或严格 OOD 评测。RAW_SCORE=91.17% 仍只定位主要可观测错误，不表示容量、表示、目标或优化因果已经分离。
+
+下一假设若转向 pair representation/结构头形式，必须先给出独立数学命题、物理对应、目标 FN 子群、同预算同初始化对照、破坏结构关系的负对照和停止条件。普通 attention、状态空间、扩散、GNN 或更多 ResNet block 不得仅因“前沿”而堆入；只有能预测并解释具体结构错误的算子才可进入最小探针。
+
+SRD 保持为冻结 checkpoint 上的独立有限消融，不是容量失败的救援路线。必须处理 nested/non-crossing 约束，不得把未校准 logits 当概率，不伪造 probing，不做全长全域 MILP，也不在支持集分布未定义时使用 KL/proxy-regret。它必须超过当前 MEA，且候选重组须相对单来源 SRD 有独立增益；与 DP 等价或只提高 raw 指标时停止。
+
+### 3. 更新后的证据链与执行文档
+
+论文链条改为：RAW_SCORE 定位主要可观测错误 → seed0 出现容量候选信号 → 三种子否定稳健容量收益 → 停止扩容 → 仅允许具有独立命题和负对照的新形式假设，或满足独立停止门的受控 SRD。负结果必须进入 claim–evidence–counterexample/limitation 矩阵，不得隐藏。
+
+完整执行提示词已更新为 `交接文档/docs/plans/2026-11-18-foldnar-scientific-story-execution-prompt.md`，标题为“RNA-JEV 性能主线完整执行提示词：容量路线停止后的机制分流与受控结构化重解码”。数据质量、四层泄漏、长序列、baseline 注册与外部关闭边界继续有效。
+
+---
+
+## 2026-11-24 第九修订：从局部机制证伪转向全局结构系综的正向 SOTA 主线
+
+### 1. 最新实现事实与路线边界
+
+本次核对到 GitHub/px2 HEAD=`ab9bb10d58380d86b6eb5c1051b7209a08d4e3fa`。SRD 与局部 stacking closure 已有正式停止裁决，不能继续沿用上一版“新形式或 SRD 待检验”的状态。
+
+- SRD：`STOP_SRD_NOT_BETTER_THAN_CURRENT_MEA_OR_CONSTRAINT_FAILURE`。nested SRD micro pair-F1=0.800210，当前 MEA=0.825713；多模型重组未获授权。
+- stacking closure：`STOP_STACKING_CLOSURE_FORM_SEED0`。候选 micro pair-F1 相对 local_control +0.0039898，但 macro pair-F1 −0.0056406、macro stem-F1 −0.0194306，且未优于 destroy 对照；不得启动 seeds 1/2。
+- 当前 `candidate_selected=false`，统一完整 SOTA=0/8；63 个注册 baseline 中 62 个仍有 provenance 阻塞。
+
+关键实现核查：`src/rnajepa/rlcd.py::combined_loss` 的 NLL 已经调用精确结构化 `negative_log_likelihood`，当前 pilot 使用 `lambda_nll=1`、`lambda_marginal_bce=0`。因此不能把“引入 CRF、inside–outside 或结构化 NLL”当作下一轮创新。
+
+### 2. 对核心性能停滞的纠正
+
+后续不再以局部模块数量或阶段验收数量衡量进展。所有工作归入三条互相支撑的主线：全局结构系综模型、宏泛化数据治理、统一 SOTA 证据链。model-dev 从单一 VL0 扩展为合法训练/验证数据上的 family、80% 簇、长度、span、孤立 pair、junction/topology 多环境面板；外部测试仍不得参与路线选择。baseline 资产恢复与模型研究并行，避免候选完成后仍无法做同协议比较。
+
+“不要提交负结果”解释为不得以负结果汇总作为最终交付或论文主线；内部失败门、必要消融和适用范围仍必须如实保留，禁止删指标、选种子或放宽成功定义。
+
+### 3. 新科学问题与 Global Ensemble Context 假设
+
+核心问题改为：孤立或长程 pair 依赖竞争配对、嵌套区间和整个折叠系综，显式利用全局结构系综上下文能否改善非局部配对及跨 family/topology/长度泛化？
+
+当前结构化 NLL 已提供全局监督，但输入 pair score 的表示仍缺少全局系综上下文。候选 GEC 采用两遍能量：第一遍由当前 head 产生 \(S^{(0)}\)，inside–outside 计算非交叉配对边际和区间/竞争上下文；第二遍以这些上下文形成残差 \(S^{(1)}=S^{(0)}+\Delta_\theta\)，终点仍为结构化 NLL。科学增量是“全局系综信息反哺 pair 表示”，不是 DP 本身。
+
+最小实验必须包含 matched control、真实 ensemble context、destroy interval shuffle 和 independent sigmoid context，同初始化、参数/近似 FLOPs、步数和 MEA。主要观察孤立/长程 pair、竞争环境与 macro pair/stem；raw 指标只作辅助。seed0 通过全部结构门、目标子群门和负对照门后才允许三种子与多环境确认。
+
+数据侧仅在开发面板证实覆盖或质量疑问后开放单变量采样/清洗臂，分别检验 source/family balance、topology/long-span balance 和 quality filtering，避免把架构与数据改变混在一起。长序列须另证块稀疏近似的候选覆盖和精度，不能用 VL0 结果宣称支持 19,000 nt。
+
+### 4. 正向论文链与执行文档
+
+论文链条更新为：非局部配对现象 → 局部 pair 表示缺口 → 全局系综上下文干预 → 真实上下文相对 destroy/independent 的机制证据 → 数据宏泛化 → 严格 OOD → 同协议强 baseline SOTA。每段必须由下一实验承接，没有正向证据的段落不得进入主结论。
+
+完整提示词已更新为 `交接文档/docs/plans/2026-11-18-foldnar-scientific-story-execution-prompt.md`，标题为“RNA-JEV 性能主线完整执行提示词：全局结构系综学习与统一 SOTA 证据链”。若候选未超过 baseline，不得把任务写成核心目标完成；必须报告真实数值差距、当前最强候选和下一项独立科学干预。
+
+---
+
+## 2026-11-24 第十修订：Global Ensemble Context 合同的量化与防混淆补强
+
+### 1. 从“优于 control”转为回答强基线差距
+
+bpRNA-new 上统一 xens2 micro-F1=0.5531420736，MXfold2=0.6688、EternaFold=0.6854，绝对差距为 0.1156579264/0.1322579264。局部 control 上 0.004 量级且 macro 不保持的变化不能回答核心性能缺口。后续候选在开发启动时必须登记目标 benchmark、最强可比系统、绝对差距与预期机制，最终交付优先报告相对强 baseline 的逐任务结果。
+
+### 2. GEC 目标环境的直接描述依据
+
+`pair_form_hypothesis_v1/stacking_fn_audit.json` 的三种子 VL0 审计显示：孤立 pair 有 372 个真值、319 个 FN，recall=0.1424731183，占全部 FN 的 10.70%；helix boundary/interior recall=0.7057/0.8821。该结果支持把孤立 pair 作为高错误目标环境，但不证明 GEC 必然有效，也不允许把有限 VL0 样本外推为普遍规律。多环境面板必须报告序列数、pair 数、paired CI 与 family 集中度。
+
+### 3. 新增防泄漏与因果隔离要求
+
+进入梯度更新的序列及其近邻不得作为该模型的开发评价样本。优先使用既有未训练 validation；新增开发划分必须在训练前按 family/80% 簇 group-held-out 冻结，保存 train/dev ID 与同源性检查，禁止用训练内预测冒充泛化。
+
+GEC 第一轮固定 `stopgrad(P^(0),M^(0))`，所有对照一致，以分离“全局上下文作为输入”与“通过第一遍 DP 反传”两种机制。数值验收须检查边际对称、有界、单核苷酸配对质量、canonical/min-loop、有限 logZ、非法位置为零和短序列穷举一致性，并在合同中冻结容差。只有第一轮成立，才可把可微反馈作为独立后续假设。
+
+### 4. 执行状态
+
+指定服务器统一为 px2；认证信息不得进入文件或日志。执行提示词 `交接文档/docs/plans/2026-11-18-foldnar-scientific-story-execution-prompt.md` 已据此补强，路线仍为 Global Ensemble Context、宏泛化数据治理与统一 SOTA 证据链。本次只更新研究合同，不表示 GEC 已实现、已训练或已取得性能提升；外部与 SOTA 状态不变。
+
+---

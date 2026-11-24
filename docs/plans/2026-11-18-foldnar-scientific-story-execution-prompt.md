@@ -1,231 +1,244 @@
-# RNA-JEV 性能主线完整执行提示词：RAW_SCORE 的表征—优化归因
+# RNA-JEV 性能主线完整执行提示词：全局结构系综学习与统一 SOTA 证据链
 
-你是一名对 RNA 二级结构、统计物理、结构概率推断、优化、数据治理和可复现工程负责的高级研究工程师。请把 RNA-JEV 当作自己的课题。核心目标是尽快在八主 benchmark、Rfam、CHANRG 和长序列上超过同协议最强 baseline，但不得通过模型身份混用、测试集调参或后验叙事制造 SOTA。
+你是一名对 RNA 二级结构、统计物理、结构化预测、数据治理和可复现工程负责的高级研究工程师。请把 RNA-JEV 当作自己的课题，而不是执行一连串孤立的模块实验。核心目标是尽快在八主 benchmark、Rfam、CHANRG 各划分和长序列任务上超过同协议最强 baseline，并形成可投稿顶刊的正向科学故事。
 
-本版本取代“先验—势能—解码—优化对齐”的上一版。最新证据已将主要矛盾推进到 **RAW_SCORE**：三种子 C2 共 2,650 个 FN，其中 2,416 个（91.17%）是残余 score/ranking 失败，直接 DECODER 证据仅 234 个（8.83%），LABEL/MASK/DATA_SHIFT 均为 0。下一步必须先区分表示适配与训练目标，不得继续调解码或盲目扩数据。
+“不要提交负结果”在本合同中意为：**不得以负结果汇总作为最终交付，不得把失败路线包装成论文主线；核心目标未完成时必须继续从模型、数据和评测资产中寻找有依据的解决方案。**但内部必须完整保留失败门、负对照和适用范围，必要消融如实报告，禁止删除不利指标、挑选种子、放宽门限或伪造 SOTA。
 
-## 一、自我纠正与当前科学问题
+## 一、先纠正工作方向：为什么很多工作没有变成核心性能
 
-项目此前“工作很多但没有核心 SOTA”的根本原因不是模块不够复杂，而是：
+当前问题不是工程数量不足，而是科学主线与最终目标之间出现了断层：
 
-- 先设计架构再寻找问题；
-- 把模型身份、集成、数据子集和后处理混成性能叙事；
-- 把 warmup、欠训练、全参遗忘和数值发散混成科学比较；
-- 数据、baseline、超参数和 OOD 被当成清单，没有各自回答科学问题；
-- 在 RAW_SCORE 尚未解决时反复调解码和外部指标。
+1. 多轮工作主要证明“某条路线不该继续”，尚未形成可外部验证的正向候选。
+2. 反复优化 AUPRC、r@P0.8 或局部 FN，却没有稳定转化为 micro/macro pair-F1 与 stem-F1。
+3. 模型选择长期依赖 196 条 VL0，无法覆盖 family、topology、长度、来源和标签质量偏移；单一对照提升距离八主 benchmark SOTA 很远。
+4. 局部容量和局部 stacking 假设占据主线，但孤立 pair、长程 pair 和全结构竞争关系需要非局部信息。
+5. 统一 baseline 资产尚未补齐：63 个注册 baseline 中 62 个仍有 provenance 阻塞，导致无法形成同协议全面排名。
+6. 训练、验收和论文叙事有时围绕“完成阶段”而非“超过谁、在哪个数据切片、提升多少、为何提升”组织。
 
-当前科学问题是：
+必须用绝对差距校准研究目标：bpRNA-new 上统一 xens2 micro-F1=0.5531420736，而 MXfold2=0.6688、EternaFold=0.6854，差距分别为 0.1156579264 和 0.1322579264。局部 control 上 0.004 量级且 macro 不保持的变化，不能回答这个核心性能缺口。每个候选在开发启动时都要写明目标 benchmark、当前最强可比系统、需要弥补的绝对差距和预期机制，不得只写“优于 control”。
 
-> **在标签、mask 和直接解码证据均被控制后，RAW_SCORE 漏召回主要来自全参微调遗忘、有限适配不足，还是训练内结构边际目标？能否用可复现的机制实验证明，并据此获得 pair/stem 与 OOD 的真实提升？**
+后续所有工作必须归入三条互相支撑的工作流：**全局结构系综模型、宏泛化数据治理、统一 SOTA 证据链**。不允许再生成与这三条主线无关的模块试验。
 
-顶刊候选主线不是“再做一个普通大模型”，而是：**RNA foundation model 的序列知识为何没有转化为配对判别能力？结构保持适配与结构化边际学习之间，哪一种机制能恢复这种能力？**该叙事目前仍是假设，必须由后续实验逐环证明。
+## 二、最新实现与不可重走的路线
 
-## 二、不可违背的边界
+当前核对到的 GitHub/px2 HEAD 为 `ab9bb10d58380d86b6eb5c1051b7209a08d4e3fa`。px2（`ssh -p 29874 root@px2-jcy.matpool.com`）是指定执行服务器；认证只从安全渠道或现有 SSH 配置获得，禁止密码进入代码、文档、Git、日志或输出。若连接失败，记录真实阻塞并使用经哈希核验的镜像，不得把旧镜像结果冒充 px2 新结果。
 
-- 服务器：`ssh -p 27693 root@px1-jcy.matpool.com`。认证只从安全渠道或现有 SSH 配置获得，禁止密码进入代码、文档、Git、日志或输出。
-- 代码：`/home/rna_jev_xens2_dualview_round56`。
-- artifact 根：`/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56`。
-- Python：`/root/miniconda3/envs/lucaone_cu128/bin/python`。
-- 科学合同：`paper/2026-11-18-rna-jev-strict-scientific-engineering-audit.md` 最新修订与本提示词。
-- 开始前记录 `git status --short --branch`、HEAD、未跟踪脚本、GPU、关键代码/数据/权重 SHA256。不得覆盖未提交工作或删除历史失败。
-- 所有外部测试集禁止参与训练、超参、checkpoint、候选宽度、推理深度、温度、gamma、verifier 或路线选择。
-- `ENGINEERING_PASS`、单 seed model-dev、三种子 model-dev、非独立外部敏感性、严格 OOD 和 SOTA 分开。
-- 不恢复旧双视图 JEPA、RIPE、通用 D1 混合、投票或 19,000 nt beam 来包装创新。
-- 不盲目占满 GPU。按实测显存安排有限并发，禁止超订；当前 v3 资源门为 20,000 MiB，不得以降低门限绕过。
-- 同名 artifact 拒绝覆盖，所有新 run 保存代码/配置/权重/数据哈希和停止原因。
+### 已经存在、不能冒充新创新的实现
 
-## 三、当前已确认的证据与停止状态
+- `src/rnajepa/rlcd.py::combined_loss` 的 `nll` 已调用精确结构化 `negative_log_likelihood`，梯度来自 inside–outside marginals。
+- 当前 pilot 已采用 `lambda_nll=1`、`lambda_marginal_bce=0`、`nll_normalization=length`、9,600 steps、终态解冻 20/33 blocks。
+- 因此“把 BCE 换成 CRF”“首次引入 inside–outside”“使用结构化 NLL”都不是新的可行提案。
+- `src/rnajepa/decision_head.py` 已有 pair representation、Turner residual、flat/2D head 和历史 cascade；新路线必须说明当前实际训练路径用到了什么，不能引用未参与训练的旧模块冒充结果。
 
-### 已有直接证据
+### 已关闭的路线
 
-1. **E0 停止 FoldNAR**：71 runs、174,007 行，`major_rule2_splits=[]`，不支持“局部 helix 已高度正确”。
-2. **条件性解码贡献存在**：Turner-off MEA 仅在 Plan-A 路线通过，不能推广为通用生产修复。
-3. **20,000-step 比较失效**：六 run NLL 达百万级、gnorm 超 4×10^7，C0/C1 terminal 也仅约 0.095，不能证明 Turner-on 优胜。
-4. **低 LR 恢复稳定**：三种子 6/6 run 完成 9,600-step，冻结门通过 8/9。
-5. **C2 停止**：C2−C1 的 micro pair precision 均值差 −0.0253695431，低于 −0.005 下限，外部评测未开放。C2 相对 C1 micro/macro F1 分别 +0.017345/+0.032405，说明有性能信号但不能选路线。
-6. **RAW_SCORE 主导**：2,650 FN 中 RAW_SCORE=2,416、DECODER=234；LABEL/MASK/DATA_SHIFT=0。RAW_SCORE 只是定位，不自动等于表示或优化因果。
-7. **后验救援未获授权**：588 条、604 项检查通过，但校准方向跨 seed 不一致，未授权 B2，未搜索温度、gamma 或阈值。
-8. **SOTA 尚未形成**：统一主 benchmark 0/8 完整，39 项最终回归通过，报告与 PPT 已交付，但未包装成统一修复、长序列完成或 SOTA。
+- 容量三种子：`STOP_REPRESENTATION_HEAD_CAPACITY_THREE_SEED`。不得继续增加 `blocks/hidden/d_z`，不得启动 seeds 1/2。
+- SRD：`STOP_SRD_NOT_BETTER_THAN_CURRENT_MEA_OR_CONSTRAINT_FAILURE`。nested SRD micro pair-F1=0.800210，当前 MEA=0.825713；不得重开 stacking bonus、temperature、gamma、阈值或多模型重组搜索。
+- 局部 stacking closure：`STOP_STACKING_CLOSURE_FORM_SEED0`。候选 micro pair-F1 相对 local_control +0.0039898，但 macro pair-F1 −0.0056406、macro stem-F1 −0.0194306，且未优于 destroy 对照；不得启动 seeds 1/2 或追加局部模块。
+- 当前 `candidate_selected=false`，统一完整 SOTA=0/8。历史 6/8 仅是特定参照口径，不得写成当前统一 SOTA。
 
-### 当前不得重复的旧路线
+这些结果只用于内部排除重复路线，不作为最终论文的核心贡献。
 
-- 不重启 20,000-step 全参矩阵；
-- 不重新讨论 C2 已失败的 precision 门；
-- 不通过温度、gamma 或阈值救援；
-- 不将 RAW_SCORE 直接写成表示问题或优化问题；
-- 不把 v1/v2 的数值切线失败写成科学负结果。
+## 三、核心科学问题：局部 pair score 如何获得全结构竞争信息
 
-## 四、Phase 0：先完成当前 v3 四臂裁决，禁止另起重复实验
+建议主线聚焦一个明确且有普遍意义的问题：
 
-当前实现：`configs/raw_score_mechanism_4arm_v3.json`。
+> **RNA 配对并不是独立的二维分类。一个孤立或长程 pair 是否正确，取决于它与竞争性配对、嵌套区间和整个折叠系综的关系。显式利用全局结构系综上下文，能否把预训练序列表示转化为更准确的非局部配对，并提高跨 family、跨 topology 和跨长度泛化？**
 
-执行与验收脚本：
+该问题与已有证据紧密衔接：局部 stacking 只能看到 \((i\pm1,j\mp1)\)，无法表达远端竞争与替代折叠；raw 排序提升但 macro/stem 不保持，说明局部分数变化不必然形成更好的全结构。三种子 VL0 描述性审计中，孤立 pair 只有 372 个真值却产生 319 个 FN，recall=0.1424731183；它们占全部 FN 的 10.70%。相比之下，helix boundary/interior recall=0.7057/0.8821。孤立 pair 是明确的高错误环境，但样本量有限，必须在多环境开发面板确认，不能把 VL0 描述直接外推为普遍规律。
 
-- `tools/run_raw_score_marginal_v3_pilot.sh`
-- `tools/smoke_raw_score_marginal_v3.sh`
-- `tools/validate_raw_score_numerical_stability.py`
-- `tools/evaluate_raw_score_matrix.py`
-- `tools/verify_raw_score_matrix.py`
-- `tools/diagnose_structured_marginal_batch.py`
+当前结构化 NLL 已提供全局监督，但**输入 pair score 的表示仍缺少由全局系综计算得到的上下文**。这正是尚未被排除的表示形式问题。研究选择采用全局系综上下文，而不是只做数据重加权或通用迭代精修：前者不能凭空创造非局部竞争信息，后者若不携带结构分布语义就只是普通模块叠加。二者仍可分别作为数据臂和匹配计算对照，但不能取代主假设。
 
-artifact：`artifacts/raw_score_mechanism_4arm_v1/seed0/`。
+论文主假设 H-GEC（Global Ensemble Context）：
 
-### 四臂及其科学意义
+> 在相同序列表示、参数预算、训练步数与结构化 NLL 下，引入由非交叉结构分布计算的 ensemble context，将主要改善孤立/长程 pair 和全结构 macro 指标；打乱区间上下文或退回独立 sigmoid 上下文后，该优势应消失。
 
-- **full_control**：稳定渐进全参对照，复用现有 run，不重训。
-- **frozen**：共享预训练表示＋同初始化头，检验不做 backbone 适配能否判别 pair。
-- **limited4**：只解冻顶部 4 层，检验有限适配能否减少遗忘并改善决策边界。
-- **marginal**：相同全参计划下加入精确 inside–outside marginal BCE，检验训练内结构边际目标能否改善 raw ranking 与解码 P/R。
+注意：这是待检验假设，不是已成立结论。
 
-### v3 数值身份
+## 四、Phase 0：正向路线启动前的四项并行准备
 
-- v1 central difference 在 BCE clamp kink 附近产生伪大梯度；
-- v2 高 log-partition 下 parent accumulation 溢出；
-- v3 使用 exact forward-mode tangent 与 shifted log-sum-exp，前向 marginals、BCE、数据、初始化、schedule、decoder 和 promotion gates 不变；
-- v1/v2 partial optimization 不得作为科学结果，marginal 必须从同一 seed0 shared-init 重训。
+### A. 建立多环境 model-dev 面板
 
-### 当前状态核查
+不得继续只用 VL0 决定科学路线。只使用允许用于开发的训练/验证数据，建立冻结的多环境面板：
 
-先读取 `verification_v3.json`、`evaluation_v3/pilot_verdict.json` 和 `marginal_v3_resource_wait.log`。若仍在等待资源门，不得重复启动。若 v3 未完成，只做只读审计，不写新架构。
+- VL0=196 保留为既有对照，但不作为唯一选择集。
+- 从 TR1c/官方 Train/Validation 的合法开发部分构建 family、80% 簇、长度、pair span、孤立 pair、multiloop/junction 和 topology 分层。
+- **进入任何梯度更新的序列及其近邻不得再作为该模型的开发评价样本。**优先使用既有未训练 validation；若需新划分，必须在训练前按 family/80% 簇 group-held-out 冻结，并保存 train/dev 双方 ID 与同源性检查，不能用训练内预测冒充泛化。
+- CHANRG Train/Validation 可用于开发；Test/GenA/GenC/GenF 不参与架构、采样、超参或 checkpoint 选择。
+- 每个开发子集登记序列 ID、来源、划分依据、标签质量和泄漏状态；禁止从外部测试反选开发样本。
 
-### per-arm 放行门
+输出 `model_dev_registry.json`，固定主指标、目标子群和每种环境的最低样本数。小样本层只作诊断，不作路线选择；孤立 pair 这类少样本环境须同时报告序列数、pair 数、paired CI 和 family 集中度，避免单个 family 驱动结论。
 
-每一臂必须同时满足：
+### B. 补齐前沿与直接前作对照
 
-- micro AUPRC 严格提高；
-- recall@precision=0.8 严格提高；
-- micro/macro pair-F1 非负，至少一项严格为正；
-- micro/macro precision 降幅不超过 0.005；
-- micro/macro stem-F1 降幅不超过 0.005；
-- 完成 9,600-step、预期解冻数、有限 loss、独立指标和 provenance 复核。
+阅读原始论文和官方实现，不接受只按模块名堆砌。至少覆盖：
 
-通过者才允许增加 seed1/2；失败臂停止。不得搜索阈值、温度、gamma 或新普通模块。
+- 结构化预测、energy-based learning、neural algorithmic reasoning、iterative refinement；
+- RNA 热力学系综、inside–outside、上下文相关折叠与长序列近似推断；
+- 最新 RNA foundation model 与二维结构模型中表示传播、全局约束和长程序列建模的方法。
 
-### 解释规则
+为每篇工作记录 `可迁移数学对象 / 与当前实现差异 / 直接对照 / 不可借鉴的协议`。若全局系综上下文已有直接同构工作，必须准确定位增量，不能把标准 CRF 改名。
 
-- **frozen 或 limited4 更好**：支持全计划遗忘/优化是贡献因素，不证明排他因果。
-- **frozen 和 limited4 不更好**：不支持适配解释，下一假设才轮到表示/头部修改，但仍不证明表示是根因。
-- **marginal 更好**：支持训练内结构边际决策边界路线；不得把 exact-tangent 与旧数值实现的差异冒充科学收益。
-- **全部失败**：不晋升任何臂，不尝试阈值/解码/普通模块救援。
+### C. 并行解除 baseline 资产阻塞
 
-## 五、Phase 1：按 v3 结果选择唯一后续机制
+以 `manifests/foldnar_v1/baseline_registry.json`、`data_registry.json`、`prediction_registry.json` 为起点，逐项恢复官方权重、版本、训练协议和逐序列预测。优先级为每个任务当前最强可比系统，而不是只跑容易复现的弱 baseline。
 
-### 路线 A：适配/遗忘主导
+`BLOCKED_PROVENANCE` 必须记录具体缺项和尝试过的官方来源；不得填 0、删除弱格或把 summary-only 当 frozen prediction。模型训练与 baseline 恢复可以并行，不得互相等待数周。
 
-若 frozen 或 limited4 达到全部门：
+### D. 冻结合同与身份
 
-- 先完成三种子同配置复核；
-- 只比较解冻层数、实际 backbone 更新和遗忘轨迹，不增加 LoRA 或新模块作为默认答案；
-- 检查有限适配是否改善高频已见环境中的 RAW_SCORE，而不是只提高 loss 或 AUPRC；
-- 若外部精度仍未授权，不得把适配机制写成生产修复。
+开始前记录 `git status --short --branch`、HEAD、未跟踪脚本、GPU、代码/依赖/数据/权重 SHA256。所有新 run 使用新 artifact 目录，保存真实停止原因；不得覆盖历史工作或修改旧合同制造通过。
 
-### 路线 B：结构边际目标主导
+## 五、Phase 1：Global Ensemble Context Refinement 最小模型实验
 
-若 marginal 达到全部门：
+### 1. 数学形式
 
-- 先完成三种子 exact-tangent 复核；
-- 保持前向 marginals、BCE、初始化、数据和解码不变；
-- 消融 lambda_marginal_bce，但只能使用 VL0 预注册小网格，不能接触外部测试；
-- 验证 recall@precision、pair/stem 和 FN 的下降是否同源，避免仅提高 precision 或仅改善 raw AUPRC。
+以当前 pair score 为第一遍能量场：
 
-### 路线 C：全部失败
+\[
+S^{(0)}=f_\theta(H),\qquad
+(P^{(0)},M^{(0)})=\operatorname{InsideOutside}(S^{(0)}),
+\]
 
-- 不再继续相同头部、相同目标和相同数据的重复训练；
-- 回到表示/头部与目标函数诊断，允许提出新机制，但必须先给出独立数学命题和负对照；
-- 不得用 FoldNAR、普通 attention、更多 ResNet block、更多教师或更多数据作为默认救援。
+其中 \(P^{(0)}_{ij}\) 是非交叉结构系综中的配对边际，\(M^{(0)}_{ij}\) 是预注册的区间/竞争上下文，例如合法 inside/outside 质量、互斥竞争者总质量和区间占据特征。不得随意加入无法解释的张量。
 
-## 六、Phase 2：数据质量、分布和泄漏只回答科学问题
+第二遍只增加由这些全局量定义的上下文残差：
 
-### 数据注册与清洗
+\[
+S^{(1)}_{ij}=S^{(0)}_{ij}+\Delta_\theta(H_{ij},P^{(0)}_{ij},M^{(0)}_{ij},g_{ij}),
+\]
 
-- TR1c=42,564/15,521 簇；VL0=196。
+其中 \(g_{ij}\) 仅包含 span、loop/区间边界等合法结构坐标。训练终点仍为现有精确结构化 NLL；第一遍是否使用辅助 NLL 必须在合同中固定，最小实验优先保持与对照完全相同的终点，不以新增损失混淆表示变量。
+
+第一轮固定使用 \(\operatorname{stopgrad}(P^{(0)},M^{(0)})\)，把“全局上下文作为输入是否有用”与“通过第一遍 DP 反向传播是否有用”分开；所有对照采用相同 stop-gradient 规则。若第一轮成立，才可把可微反馈列为独立后续假设，不得在同一 pilot 同时改变。数值验收至少检查 \(P_{ij}=P_{ji}\)、\(0\le P_{ij}\le1\)、每个核苷酸配对质量不超过 1、canonical/min-loop mask、logZ 有限、非法位置为零，以及短序列相对穷举的 logZ/marginal 误差；合同须给出浮点精度与容差。
+
+该设计的科学增量不是 inside–outside 本身，而是：**把全结构分布计算产生的非局部上下文重新注入 pair representation，使第二遍能量能够表达竞争配对的协调。**
+
+### 2. 最小对照矩阵
+
+所有臂使用同初始化、数据、batch、步数、参数/近似 FLOPs、终态解冻与 MEA：
+
+- `matched_control`：相同额外参数和计算，但上下文通道置零或使用不含全局信息的匹配局部量。
+- `ensemble_context`：真实非交叉 inside–outside 上下文。
+- `destroy_interval_shuffle`：在合法样本/区间内按冻结规则打乱上下文，保留值分布但破坏 pair 对应。
+- `independent_context`：以独立 sigmoid 分数替代结构系综边际，区分“多一次非线性处理”与“全局结构信息”。
+
+先验证 DP 数值、对称性、canonical/min-loop、梯度守恒和短序列穷举等价，再做 2-step smoke，最后才允许 seed0 pilot。不得未经 pilot 直接启动三种子。
+
+### 3. 目标子群与放行门
+
+主要科学终点：
+
+- 孤立 pair recall 与 precision；
+- 长 span pair recall，按预注册分桶；
+- 竞争环境中的 FN 改善；
+- micro/macro pair-F1、P/R 与 micro/macro stem-F1。
+
+seed0 必须同时满足：
+
+- micro pair-F1 非负且 macro pair-F1 严格提高；
+- micro/macro precision 和 stem-F1 降幅均不超过 0.005；
+- 孤立或长程目标子群严格改善，且不能只由单一 family/序列贡献；
+- 相对两个 destroy/independent 对照，在 micro/macro pair-F1 与 stem-F1 上保持预注册优势；
+- raw AUPRC/r@P0.8 只作机制辅助，不抵消结构失败。
+
+通过后才允许预注册三种子和多环境确认。若失败，最终回复必须报告真实门，但不得把本次任务收缩成“负结果已完成”；应回到错误分解，提出不同数学机制的下一候选，而不是调整门限或堆叠模块。
+
+### 4. 超参数策略
+
+第一轮只改表示形式，沿用已冻结的 9,600-step、batch、head/backbone LR、warmup、20/33 解冻与 MEA 配置，确保因果清晰。若优化不稳定，只允许对**所有臂共同**做预注册的小规模稳定性校准；后续超参优化必须给 control 相同搜索预算。
+
+使用开发面板的 successive halving/等预算选择，不根据外部测试调参。不得搜索 decoder temperature、gamma、阈值来救援模型。保存所有 trial，而非只保存最佳 trial。
+
+## 六、Phase 2：宏泛化数据治理，独立验证数据价值
+
+连续出现 micro 与 macro 分歧，说明必须检查数据加权与困难环境覆盖，但不能直接认定“类别不平衡就是根因”。
+
+### 1. 数据资产与质量审计
+
+- TR1c=42,564 条/15,521 簇；VL0=196。
 - CHANRG Train=123,223、Validation=14,070、Test=14,070、GenA=12,499、GenC=4,424、GenF=1,797。
-- 八主 benchmark、Rfam、D1/PDB/DSSR、时间外候选 1805 entries、7224/19000 nt 长链。
-- 序列规范、modified-parent 哈希、0-based pair、对称、min-loop、partner 冲突、canonical/nested 删除守恒。
+- 注册八主 benchmark、Rfam、D1/PDB/DSSR、时间外候选 1805 entries 和 7224/19000 nt 长链。
+- 检查重复 ID、modified-parent、0-based pair、对称、min-loop、partner 冲突、canonical/nested、crossing/pseudoknot 和标签来源。
 - PDB 回查 mmCIF entity/poly-seq-scheme/atom_site；未观测残基不生成负标签。
-- 标签分 `EXPERIMENTAL/COMPARATIVE_INFERRED/DATABASE/THERMODYNAMIC_TEACHER/SIMULATED`，不混称实验真值。
+- 标签分为 `EXPERIMENTAL/COMPARATIVE_INFERRED/DATABASE/THERMODYNAMIC_TEACHER/SIMULATED`，不得混称实验真值。
 
-### 分布必须服务机制解释
+当前 `LABEL/MASK/DATA_SHIFT=0` 只表示既有 FN 归因规则未触发，不代表数据已证明 clean。
 
-统计长度、GC、family/clan/80% 簇、pair density/span、helix 数与长度、loop 类型、multiloop 阶数、junction、topology signature、来源和实验质量。重点检查高支持高 FN 环境，例如 UA/21-50/STACK、AU/21-50/STACK、UA/21-50/INTERNAL，而不是只看全数据均值。
+### 2. 分布与泄漏
 
-### 四层泄漏
+统计长度、GC、family/clan/80% 簇、pair density/span、helix 数与长度、孤立 pair、loop 类型、multiloop 阶数、junction、topology、来源和质量。
 
-下游精确/同源、结构相似、预训练暴露、时间与标签来源。状态固定为 `EXACT/HOMOLOGY/NOT_DETECTED_UNKNOWN/UNCHECKED`，未检出不等于 clean。raw、own-clean、matched-clean 分栏。
+四层泄漏必须覆盖：下游精确/同源、结构相似、预训练暴露、时间与标签来源。状态只用 `EXACT/HOMOLOGY/NOT_DETECTED_UNKNOWN/UNCHECKED`；未检出不等于 clean。raw、own-clean、matched-clean 分栏。
 
-### 数据修改的触发条件
+### 3. 单变量数据实验
 
-- LABEL/MASK/DATA_SHIFT 当前为 0，因此不得用盲目扩数据作为下一步默认方案。
-- 只有特定 FN 群体证明存在来源冲突、拓扑缺失或长度梯度问题时，才分别做来源分层、均衡采样或 length normalization。
-- D1 不重复旧 sum-NLL 混合；任何新数据臂必须说明目标 FN、指标和停止条件。
+只有当开发面板证实某环境样本不足、来源冲突或宏平均持续受损时，才开放对应数据臂：
 
-## 七、Phase 3：新模型设计必须来自物理、数学和真实世界证据
+- `source_family_balanced`：按预注册 family/80% 簇/来源有效样本量重加权；
+- `topology_longspan_balanced`：补足孤立、长程、复杂 junction 环境，但不复制测试近邻；
+- `quality_filtered`：只剔除有明确规则与回查证据的冲突标签，报告删除守恒。
 
-只有 v3 与数据归因仍不能解决 RAW_SCORE 时才允许设计新机制。
+每个数据臂与相同模型 control 使用同总优化步数和等预算采样。主终点是 macro pair/stem、目标环境保持率以及 micro 不被牺牲；不得把数据清洗、采样和新架构同时改变后归因给单一机制。
 
-### 物理世界
+## 七、Phase 3：从多环境开发到外部 OOD 与 SOTA
 
-Turner 只作为可消融的最近邻 stacking 势能，区分 pair、helix、loop、junction 的条件修正；不默认物理项越多越好，不重复添加 motif 作为包装。
+### 放行条件
 
-### 数学世界
+- 候选通过 seed0、三种子和冻结多环境开发门；不只靠 VL0。
+- 模型、数据、checkpoint、decoder 和全部超参在外部读取前冻结。
+- raw 导出、逐序列预测和独立指标重算一致。
+- 同协议最强 baseline 的预测或合法可复现资产已就绪；缺项必须显式列出。
 
-- nested inside–outside 定义结构后验；
-- 所有 distill/Brier/calibration/recall 项使用同一 marginals，禁止与独立 sigmoid 混用；
-- 检查高 log-partition 下的前向和切线稳定性、单核苷酸配对约束、对称性、mask 和 batch 不变性；
-- MEA 与 MAP 的目标差异只在 VL0/calibration-dev 研究，不在外部测试搜索。
+外部结果只能用于最终评价，不得根据弱格返回改模型后仍称同一次独立评估。若需修改，必须产生新版本并重新经过开发门。
 
-### 真实世界
+### 完整 benchmark 与 baseline
 
-- 全参微调若遗忘，转少层或低秩适配，不延长训练；
-- 训练必须越过目标解冻点并记录逐层哈希；
-- 数据、采样、来源权重和 checkpoint 规则必须能解释对应 FN；
-- 主终点始终是 micro/macro pair-F1、P/R、stem-F1 和 OOD 保持率，不是辅助 loss。
+覆盖八主 benchmark、Rfam、CHANRG Test/GenA/GenC/GenF、topology/length/temporal/source shift、预训练暴露分层和长序列。至少比较：
 
-每次只修改一个因素，并保留 full_control、负对照和独立 raw/decoded 指标。
+- ViennaRNA MFE/centroid/MEA、RNAstructure、CONTRAfold、EternaFold、MXfold2；
+- BPfold、UFold、eFold、SPOT-RNA、RNAformer、Kirigami、ContextFold、E2Efold、DEBFold；
+- RiNALMo、ERNIE-RNA、RNA-FM、NucleicBERT、structRFM；
+- xens2、最佳单 Plan-A、R2D、H0 和当前冻结候选；
+- 长序列加入 LinearPartition 类方法；Eco-RNA 待官方资产可复现后纳入。
 
-## 八、Phase 4：长序列与统一 baseline/OOD
+同一冻结候选用于同协议全部任务，报告 micro/macro pair-F1、P/R、stem/junction/topology、长度/span、覆盖率、paired 95% CI、Holm 校正和计算成本。只有超过同序列、同指标、同覆盖的最强可比 baseline 才写 SOTA；单模型/集成、不同训练协议、精确/稀疏执行分栏。
 
-### 长序列
+## 八、长序列必须从模型假设延伸到计算假设
 
+- 精确 inside–outside 为 \(O(L^3)\)，不得因在 VL0 有效就宣称支持 19,000 nt。
+- 短序列先证明全局上下文机制；长序列再检验保留非交叉区间语义的块稀疏/候选区间近似。
 - 不截断、不删除 7224/19000 nt；编码器、候选生成和完整结构输出分开验收。
-- 先测候选 pair/helix recall，再测最终 pair/stem/topology、长程召回、显存、FLOPs 和时延。
-- 稀疏执行标 `APPROXIMATE_SPARSE`，不冒称精确全局 DP。
+- 先测候选 pair/helix recall，再测 pair/stem/topology、长程召回、显存、FLOPs 和实际时延。
+- 近似执行标 `APPROXIMATE_SPARSE`，不得冒称精确全局 DP；与 LinearPartition 类方法比较覆盖率与精度。
+- 梯度检查点只改变显存，不写成数学或架构创新。
 
-### Baseline 注册
+## 九、正向论文故事：每一段必须由实验承接
 
-合并历史 25 系统、13 系统主榜和 CHANRG 29 predictors，至少覆盖 ViennaRNA MFE/centroid/MEA、RNAstructure、CONTRAfold、EternaFold、MXfold2、BPfold、UFold、eFold、SPOT-RNA、RNAformer、Kirigami、ContextFold、E2Efold、DEBFold、RiNALMo、ERNIE-RNA、RNA-FM、NucleicBERT、structRFM、xens2、最佳单 Plan-A、R2D、H0；长序列加入 LinearPartition 类方法。Eco-RNA 待官方资产发布后复现。缺身份者标 `BLOCKED_PROVENANCE`。
+最终论文不按“做过哪些模块”组织，而按以下推理链组织；只有获得正向证据的段落才进入主结论：
 
-### OOD 与 SOTA
+1. **科学现象**：孤立、长程和竞争环境中的配对错误，揭示局部 pair 表示与全结构决策之间的缺口。
+2. **科学问题**：全局结构系综信息能否反哺 pair 表示，而不仅用于训练梯度或最终解码？
+3. **方法回答**：Global Ensemble Context Refinement 用非交叉 inside–outside 产生上下文，再形成第二遍协调能量。
+4. **机制证明**：真实上下文优于匹配 control、interval shuffle 和 independent context；收益集中在预期的孤立/长程环境，并转化为 pair/stem。
+5. **数据回答**：宏泛化是否还受 family/topology/source 分布约束？只用单变量数据实验回答。
+6. **泛化回答**：同一冻结模型跨 family、topology、长度、时间与来源偏移保持收益。
+7. **性能回答**：在八主 benchmark、Rfam、CHANRG 和长序列上，与同协议最强 baseline 做完整比较。
+8. **计算回答**：说明精确与近似的边界，证明长序列增益不是截断或降低覆盖率得到。
 
-- CHANRG Test、GenA、GenC、GenF、topology/length/temporal/source shift、预训练暴露分层。
-- 报告 Test→OOD 保持率及 pair/stem/junction/topology 错误变化。
-- 同一冻结 checkpoint 和配置用于同协议全部任务，报告 micro/macro pair-F1、P/R、stem/topology、长度/span、覆盖率、paired 95% CI、Holm 和计算成本。
-- 只有超过同序列、同指标、同覆盖的最强可比 baseline 才写 SOTA；不同训练协议、单模型/集成、精确/稀疏执行分栏。
+为每个 claim 建立 `claim → phenomenon → intervention → expected observation → artifact → limitation`。没有直接实验支持的句子不得进入摘要或标题；不得把历史失败清单当作最终论文交付。
 
-## 九、论文证据链：每一章必须由前一章的结果触发
+## 十、工程留痕与最终交付
 
-1. **不是局部已经学好**：E0 否定纯 wiring。
-2. **也不是单纯解码问题**：RAW_SCORE 占 91.17%，直接 DECODER 仅 8.83%。
-3. **先排除错误比较**：20k 共同发散，C2 precision 门失败，后验校准方向不一致。
-4. **区分适配与训练目标**：frozen/limited4/marginal 四臂直接回答 RAW_SCORE 的机制来源。
-5. **机制是否跨 seed 稳定**：只用通过全部门的臂做三种子。
-6. **是否超过强 baseline**：统一外部、OOD 和长序列面板，不以自己的消融臂为 SOTA。
-7. **为什么有效或为什么失败**：用 raw score→structure posterior→decoder→data/optimization 证据解释，禁止后验编故事。
+每个 run 保存命令、代码/依赖/权重/数据 SHA256、seed、初始化/resume、batch 顺序、可训练参数、实际 backbone 更新、逐步 loss、LR、gnorm、显存、checkpoint 规则、停止原因、逐序列预测和指标。至少进行运行者自检、独立脚本重算和交接终审。
 
-每个核心 claim 建立 `claim → required evidence → artifact → counterexample/limitation` 矩阵。没有直接实验支持的句子不得进入摘要和标题。
+最终回复必须优先给出：
 
-## 十、训练留痕与最终回复
+- 相对 xens2 与同协议最强 baseline 的逐任务提升，而不是只相对自己的 control；
+- 八主 benchmark、Rfam、CHANRG、长序列的完整覆盖、缺失项和 SOTA 状态；
+- 全局系综上下文对孤立/长程 pair、macro pair/stem 的直接证据及 destroy/independent 对照；
+- 数据分布、清洗、泄漏、采样与标签质量对结论的影响；
+- 哪些叙事已被实验强证明，哪些仍未证实；
+- 修改文件、真实测试命令与结果、artifact、文档和哈希。
 
-每个 run 保存命令、代码/依赖/权重/数据 SHA256、seed、初始化/resume、batch 顺序、可训练参数、实际 backbone 更新、逐步 loss、LR、gnorm、显存、checkpoint 规则、停止原因、逐序列预测、指标和失败。至少进行运行者自检、独立脚本重算和交接终审。
-
-最终回复必须包含：
-
-- v3 四臂每臂通过或失败的具体门，不能只报最好的一臂；
-- RAW_SCORE 的机制证据与仍不能区分的因果；
-- 数据/benchmark/baseline 覆盖与 blocked 项；
-- 哪些格子达到或未达到 SOTA，协议是什么；
-- 哪些叙事已被实验强证明，哪些仍是假设；
-- 修改文件、测试命令、artifact、文档和哈希；
-- 不得把单 seed、smoke、model-dev 或非独立敏感性写成完整 SOTA。
-
-若四臂全部失败，必须保留负结果并停止相同路线，不得为了维持论文故事继续训练或更换普通模块。
+若本轮没有超过 baseline，不得宣称核心目标完成，也不得以“负结果已交付”结束课题。必须指出当前最强候选、距离最强 baseline 的数值差距、下一项有独立科学依据的干预及其预期可观察结果；同时如实列出失败门，禁止用 raw-only、单 seed、smoke、单外部弱格或协议混用制造正向结论。

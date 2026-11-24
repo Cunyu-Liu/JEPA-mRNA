@@ -1,0 +1,37 @@
+{
+  "status": "PASS_BUILD_REOPEN_SOURCE_TEXT_AND_SHAPE_BOUNDS",
+  "deck": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "8added53fb33dad46ae43da218110e59f79d03eb84a63db77e84f2f2f06464f2",
+  "backup": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round64.pptx",
+  "backup_sha256": "843beea82506d24ba1e54125966b947ab9e9ed6a57df8c5ab5b26cfe54f5bc59",
+  "builder": "/home/rna_jev_xens2_dualview_round56/ppt/add_phase0_governance_baseline_v2_round64.py",
+  "builder_sha256": "abe819ad34a4c42b34a82ddd3db82c87760aa404332ba9492adbec95d7d224e3",
+  "sources": {
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/distribution_and_quality.json": "ccdec2b4ecc1042066fe78e722ef7b0fae8b6016e385fdc7b4bdbcabcacc35b2",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/audit_summary.json": "a8af93d974c6c80797fb04ba8535df9250233f402ab429d3f239d62a6e75526c",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/independent_verification.json": "0e4cff332ffdd6061a2ab5f79c3bdad01a38a3f96d19bfec52b111c8b3917161",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/mmseqs_evidence.json": "bc4c0b95f79edcf49ed996d195df629b048edf55ac524ec3794954af40e57c72",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/leakage_matrix.json": "402c75f9bb81647c31fee6839d5c404a8662c87743caa79df82380cdbd456d27",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/reports/bprna_new_raw_metrics_verification_v2.json": "6bb55b84a655d677b6c17c04adf8406b464df6ef25d060190b7840c59e92c8ca"
+  },
+  "slide_count": 6,
+  "added_slide_numbers": [
+    23,
+    24,
+    25
+  ],
+  "source_derived_text_checks": {
+    "23": 22,
+    "24": 31,
+    "25": 28
+  },
+  "shape_bounds_checks": 114,
+  "governance_independent_checks": 154,
+  "baseline_status": "PASS",
+  "contextfold_status": "BLOCKED_NO_VERIFIED_PREDICTIONS",
+  "sota_exclusion": "0.96167 label-sensitive project-label result excluded from SOTA claims",
+  "render_visual_check": "PASS_ALL_6_RENDERED; automated text completeness, PDF bounds and raster-edge clipping audit",
+  "render_verification": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round64_render_verification.json",
+  "render_pdf_sha256": "97f20a029982fa226dc6b5bca9b0fd4e6f0630549114dfa9f523b19189abf381",
+  "final_remote_reopen": "PASS_6_SLIDES"
+}
