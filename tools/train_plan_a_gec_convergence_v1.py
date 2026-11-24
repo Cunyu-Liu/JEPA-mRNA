@@ -116,6 +116,41 @@ def _finite_float_or_none(value) -> float | None:
     return value if math.isfinite(value) else None
 
 
+def require_finite_validation_nll(value, step: int, record: dict | None = None) -> float:
+    value = float(value)
+    if math.isfinite(value):
+        return value
+    if record is None:
+        raise FloatingPointError(f"NON_FINITE_AGGREGATE_VALIDATION_NLL step={step} loss={value}")
+    raise FloatingPointError(
+        f"NON_FINITE_VALIDATION_NLL step={step} record_id={record['id']} "
+        f"length={len(record['sequence'])} loss={value}"
+    )
+
+
+def validation_error_record(step: int, error: Exception, record: dict | None = None,
+                            losses: list[float] | None = None) -> dict:
+    return {
+        "step": step, "error": str(error),
+        "record_id": None if record is None else record["id"],
+        "sequence_length": None if record is None else len(record["sequence"]),
+        "sequence_sha256": None if record is None else record["sequence_sha256"],
+        "validation_losses": losses,
+    }
+
+
+def build_validation_log_record(step: int, validation_loss: float, decision: dict,
+                                convergence: GECConvergenceStateV1, n_unfrozen: int) -> dict:
+    return {
+        "step": step, "validation_loss": validation_loss,
+        "n_unfrozen": n_unfrozen,
+        **decision,
+        "best_step": convergence.best_step,
+        "best_validation_loss": _finite_float_or_none(convergence.best_validation_loss),
+        "bad_evaluations": convergence.bad_evaluations,
+    }
+
+
 def _read_previous_run_meta(path: Path) -> dict | None:
     if not path.exists():
         return None
@@ -792,14 +827,27 @@ def main() -> None:
         head.eval()
         residual.eval()
         losses = []
-        with torch.no_grad():
-            for row in validation_records:
-                loss, _, _, _ = score_batch([row], VALIDATION_DESTROY_STEP_V2, 0)
-                losses.append(float(loss.detach()))
-        encoder.train()
-        head.train()
-        residual.train()
-        return float(np.mean(losses))
+        try:
+            with torch.no_grad():
+                for row in validation_records:
+                    loss, _, _, _ = score_batch([row], VALIDATION_DESTROY_STEP_V2, 0)
+                    try:
+                        losses.append(require_finite_validation_nll(loss.detach(), step, row))
+                    except FloatingPointError as error:
+                        _append_jsonl(validation_error_record(step, error, row),
+                                      output / "validation_error.jsonl")
+                        raise
+            aggregate = float(np.mean(losses))
+            try:
+                return require_finite_validation_nll(aggregate, step)
+            except FloatingPointError as error:
+                _append_jsonl(validation_error_record(step, error, losses=losses),
+                              output / "validation_error.jsonl")
+                raise
+        finally:
+            encoder.train()
+            head.train()
+            residual.train()
 
     def training_checkpoint(step: int, phase: str, terminal_status: str = "running"):
         return {
@@ -891,16 +939,12 @@ def main() -> None:
               f"unfrozen={n_unfrozen}/33", flush=True)
         if divergence:
             break
+        if args.save_every > 0 and step % args.save_every == 0:
+            save_resume(step)
         if validation_records and args.validation_every > 0 and step % args.validation_every == 0:
             validation_loss = evaluate(step)
             decision = convergence.observe(step, validation_loss, n_unfrozen)
-            record = {
-                "step": step, "validation_loss": validation_loss,
-                "n_unfrozen": n_unfrozen, **decision,
-                "best_step": convergence.best_step,
-                "best_validation_loss": convergence.best_validation_loss,
-                "bad_evaluations": convergence.bad_evaluations,
-            }
+            record = build_validation_log_record(step, validation_loss, decision, convergence, n_unfrozen)
             _append_jsonl(record, output / "validation_log.jsonl")
             if decision["save_best"]:
                 best_payload = training_checkpoint(step, "best_eligible")
@@ -912,8 +956,6 @@ def main() -> None:
                 atomic_torch_save(best_payload, output / "best.pt")
             if decision["stop"]:
                 early_stopped = True
-        if args.save_every > 0 and step % args.save_every == 0:
-            save_resume(step)
         if args.smoke_interrupt_after_step == step:
             meta.update({
                 "status": "interrupted", "steps_completed": int(step),

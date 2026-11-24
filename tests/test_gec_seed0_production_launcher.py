@@ -168,14 +168,14 @@ def test_peer_failure_stops_wave_and_never_launches_remaining_arms(tmp_path):
     assert not (tmp_path / production.ARMS[3] / "production.pid").exists()
 
 
-def test_v2_root_is_fresh_and_never_reads_failed_run_artifacts(tmp_path):
-    assert str(production.ARTIFACT_ROOT).endswith("/gec_seed0_v2")
+def test_v3_root_is_fresh_and_never_reads_failed_run_artifacts(tmp_path):
+    assert str(production.ARTIFACT_ROOT).endswith("/gec_seed0_v3")
     assert production.ARTIFACT_ROOT != production.LONG_RUN_AUDIT.parent
     for arm in production.ARMS:
         command = production.build_arm_command(arm)
         assert str(production.ARTIFACT_ROOT / arm) in command
         assert str(production.ARTIFACT_ROOT / "gec_shared_residual_init_seed0.pt") in command
-        assert not any("/gec_seed0_v1/" in item for item in command)
+        assert not any("/gec_seed0_v1/" in item or "/gec_seed0_v2/" in item for item in command)
 
 
 def test_evaluator_uses_real_v2_run_metadata_without_adapter(tmp_path):

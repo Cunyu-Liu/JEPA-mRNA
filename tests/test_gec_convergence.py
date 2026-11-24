@@ -38,6 +38,9 @@ from tools.train_plan_a_gec_convergence_v1 import (
     _atomic_json,
     _batch_norm_running_state,
     _finite_float_or_none,
+    build_validation_log_record,
+    require_finite_validation_nll,
+    validation_error_record,
     _read_previous_run_meta,
     _restore_batch_norm_running_state,
     load_gec_config,
@@ -362,3 +365,34 @@ def test_active_trainer_interrupted_resume_matches_uninterrupted_step_two():
         "completed_reentry_noop": True,
     }
     (root / "active_resume_determinism_v2.json").write_text(json.dumps(evidence, indent=2) + "\n")
+
+
+def test_preterminal_validation_log_uses_json_null_for_no_eligible_best():
+    convergence = GECConvergenceStateV1()
+    decision = convergence.observe(500, 1.25, 0)
+    row = build_validation_log_record(500, 1.25, decision, convergence, 0)
+    assert row["eligible"] is False and row["best_step"] is None
+    assert row["best_validation_loss"] is None
+    encoded = json.dumps(row, allow_nan=False)
+    assert json.loads(encoded)["best_validation_loss"] is None
+
+
+@pytest.mark.parametrize("value", [float("inf"), float("-inf"), float("nan")])
+def test_nonfinite_validation_nll_identifies_step_record_and_preserves_diagnostic(tmp_path, value):
+    record = {"id": "bprna_tr1c:row000001:bad", "sequence": "A" * 68,
+              "sequence_sha256": "sequence-hash"}
+    with pytest.raises(FloatingPointError) as caught:
+        require_finite_validation_nll(value, 500, record)
+    message = str(caught.value)
+    assert "step=500" in message and "record_id=bprna_tr1c:row000001:bad" in message
+    assert "length=68" in message
+    diagnostic = validation_error_record(500, caught.value, record)
+    _append_jsonl(diagnostic, tmp_path / "validation_error.jsonl")
+    saved = json.loads((tmp_path / "validation_error.jsonl").read_text())
+    assert saved["record_id"] == record["id"] and saved["sequence_length"] == 68
+    assert saved["step"] == 500 and "NON_FINITE_VALIDATION_NLL" in saved["error"]
+
+
+def test_nonfinite_aggregate_validation_nll_is_not_hidden():
+    with pytest.raises(FloatingPointError, match="NON_FINITE_AGGREGATE_VALIDATION_NLL step=500"):
+        require_finite_validation_nll(float("nan"), 500)

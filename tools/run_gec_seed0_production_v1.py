@@ -17,7 +17,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 PYTHON = Path("/root/miniconda3/envs/lucaone_cu128/bin/python")
-ARTIFACT_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v2")
+ARTIFACT_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v3")
 CONFIG = REPO / "configs/gec_four_arm_convergence_v1.json"
 LONG_RUN_AUDIT = Path(
     "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v1/"

@@ -1,0 +1,224 @@
+{
+  "schema_version": "foldnar.preprint_claim_evidence_registry.v1",
+  "snapshot_utc": "2026-11-24T08:45:03Z",
+  "repository_root": "/home/rna_jev_xens2_dualview_round56",
+  "purpose": "Living internal claim-evidence registry; not an abstract, title, manuscript conclusion, or final delivery of failed routes.",
+  "source_execution_prompt": {
+    "artifact_id": "A00",
+    "story_section_mapping": {
+      "1_scientific_phenomenon": ["C01"],
+      "2_scientific_question": ["C02"],
+      "3_method_answer": ["C02", "C07"],
+      "4_mechanism_proof": ["C02"],
+      "5_data_answer": ["C03"],
+      "6_generalization_answer": ["C04"],
+      "7_performance_answer": ["C05", "C08"],
+      "8_computation_answer": ["C06"]
+    }
+  },
+  "publication_gate": {
+    "abstract_or_title_performance_claim_authorized": false,
+    "candidate_selected": false,
+    "external_evaluation_authorized": false,
+    "rule": "Only direct evidence for the exact claim can change current_status to SUPPORTED; numerical correctness, smoke completion, raw ranking, one seed, or a failed route cannot support a performance, mechanism, OOD, long-sequence, or SOTA claim."
+  },
+  "claims": [
+    {
+      "claim_id": "C01",
+      "claim": "Isolated, long-span, and competitive environments are reproducible error modes that local pair scoring fails to resolve.",
+      "phenomenon": "Frozen three-seed VL0 controls have 372 isolated true pairs, 319 isolated FN, recall 0.1424731182795699, and isolated FN comprise 0.1070110701107011 of all FN; long-span and competitive strata still require multi-environment confirmation.",
+      "intervention": "Run frozen family/cluster/length/span/topology error decomposition, then test non-local context rather than another local capacity or stacking module.",
+      "expected_observation": "Target-environment recall and precision improve with paired sequence/family-cluster 95% CIs, adequate sequence and pair counts, no single-family driver, and preservation of micro/macro pair-F1 and stem-F1.",
+      "artifact_ids": ["A01", "A02", "A03"],
+      "limitation": "VL0 has only 196 sequences and the isolated stratum is small and descriptive; it cannot establish universality, causality, or an intervention effect.",
+      "current_status": "IN_PROGRESS",
+      "supported": false,
+      "abstract_title_eligible": false
+    },
+    {
+      "claim_id": "C02",
+      "claim": "Global Ensemble Context improves isolated/long-span pairing and whole-structure metrics through non-local ensemble feedback.",
+      "phenomenon": "Local scores can change without preserving macro pair/stem structure; the preregistered H-GEC causal hypothesis remains untested scientifically.",
+      "intervention": "Matched-control four-arm seed0 pilot: exact stopped non-crossing posterior/interval context versus matched control, interval shuffle, and independent sigmoid context, with identical initialization, data order, budget, structured NLL, unfreezing, and MEA.",
+      "expected_observation": "Ensemble context passes every seed0 gate: nonnegative micro pair-F1 delta, strictly positive macro pair-F1 delta, precision and micro/macro stem-F1 losses no greater than 0.005, strict non-single-family isolated or long-span gain, and preregistered advantages over both destroy controls; only then three seeds and multi-environment confirmation are allowed.",
+      "artifact_ids": ["A04", "A05", "A06", "A14", "A15"],
+      "limitation": "Numerical and two-step smoke evidence is engineering-only. Seed0 v2 failed at the first validation serialization with a non-finite float before scientific evaluation; its peer arm was terminated and the remaining arms were not launched. V1 also stopped on an arm failure without evaluation. These engineering failures do not falsify H-GEC and raw AUPRC or training loss cannot rescue failed structural gates.",
+      "current_status": "IN_PROGRESS",
+      "supported": false,
+      "abstract_title_eligible": false
+    },
+    {
+      "claim_id": "C03",
+      "claim": "Single-variable source/family, topology/long-span, or quality interventions improve macro generalization without sacrificing micro performance.",
+      "phenomenon": "Development audits show heterogeneous sources, TR1c duplicate IDs, CHANRG train/validation 80% homology, cross-source exact sequence overlap, and unresolved label/exposure layers; these are risks, not proof that reweighting will help.",
+      "intervention": "Open only a diagnostics-motivated, preregistered source_family_balanced, topology_longspan_balanced, or quality_filtered arm against the identical model and optimization budget.",
+      "expected_observation": "Macro pair/stem and target-environment retention improve while micro is preserved, deletion/sampling conservation is reported, and the effect survives paired uncertainty and family concentration checks.",
+      "artifact_ids": ["A02", "A07"],
+      "limitation": "The completed audit is descriptive only; no sampling, cleaning, or training arm has run. Matched-clean accounting authorizes no route decision and no causal attribution.",
+      "current_status": "UNSUPPORTED",
+      "supported": false,
+      "abstract_title_eligible": false
+    },
+    {
+      "claim_id": "C04",
+      "claim": "One frozen FoldNar candidate preserves gains across family, topology, length, temporal, source, and pretraining-exposure shifts.",
+      "phenomenon": "Current development panels freeze only specific TR1c family/cluster separations; broader homology, structure similarity, pretraining exposure, and temporal/label lineage remain unchecked.",
+      "intervention": "After seed0, three-seed, and multi-environment gates, freeze model, data, checkpoint, decoder, and hyperparameters before any external read; evaluate the same candidate on all preregistered OOD slices.",
+      "expected_observation": "Pair/stem/junction/topology and span/length gains persist with full coverage, per-sequence predictions, paired 95% CIs, Holm correction, explicit exposure strata, and no test-driven revision within the same evaluation version.",
+      "artifact_ids": ["A02", "A08"],
+      "limitation": "No candidate is selected and external evaluation is closed. NOT_DETECTED_UNKNOWN is not clean; temporal candidates and auxiliary PDB/DSSR assets remain blocked.",
+      "current_status": "UNSUPPORTED",
+      "supported": false,
+      "abstract_title_eligible": false
+    },
+    {
+      "claim_id": "C05",
+      "claim": "FoldNar exceeds the strongest same-protocol baselines across the eight main benchmarks, Rfam, CHANRG splits, and long sequences.",
+      "phenomenon": "Raw bpRNA-new measurements show a large xens2 gap, while unified baseline provenance and full prediction coverage are incomplete.",
+      "intervention": "Recover official assets and frozen per-sequence predictions, then evaluate one frozen candidate with matched labels, sequences, coverage, metrics, training protocol, model/ensemble class, and exact/approximate execution columns.",
+      "expected_observation": "The candidate beats the strongest comparable system on the same sequences, labels, coverage, and metrics across every required task, with micro/macro pair-F1, P/R, stem/junction/topology, length/span, coverage, paired 95% CIs, Holm correction, and compute cost.",
+      "artifact_ids": ["A08", "A09", "A10", "A11", "A12"],
+      "limitation": "Current unified complete SOTA is 0/8. Sixty-two of 63 baselines remain BLOCKED_PROVENANCE; raw, own-clean, matched-clean, CHANRG, summary-only, and different-label results cannot be mixed. Historical 6/8 is not the current candidate's unified SOTA.",
+      "current_status": "UNSUPPORTED",
+      "supported": false,
+      "abstract_title_eligible": false
+    },
+    {
+      "claim_id": "C06",
+      "claim": "Sparse approximate GEC retains non-crossing interval semantics and accurate full-length predictions on 7,224- and 19,000-nt RNAs with tractable compute.",
+      "phenomenon": "Exact inside/outside is O(L^3) time with O(L^2) states; short-sequence numerical correctness does not imply long-sequence feasibility.",
+      "intervention": "Only after exact short-sequence GEC passes, preregister block-sparse/candidate-interval inference and compare against exact execution and LinearPartition-class methods without truncating or deleting targets.",
+      "expected_observation": "Full-length output success and candidate pair/helix recall precede pair/stem/topology and long-span accuracy; report omitted-pair recall, probability-mass error, coverage, memory, FLOPs, wall time, and accuracy-compute tradeoffs under APPROXIMATE_SPARSE.",
+      "artifact_ids": ["A08", "A13"],
+      "limitation": "Both long-chain assets are BLOCKED in the data registry. No sparse GEC result exists; checkpointing changes memory only, and approximate inference must never be called exact global DP.",
+      "current_status": "UNSUPPORTED",
+      "supported": false,
+      "abstract_title_eligible": false
+    },
+    {
+      "claim_id": "C07",
+      "claim": "The implemented GEC numerical context and four-arm training path pass their preregistered engineering checks.",
+      "phenomenon": "Scientific interpretation first requires valid canonical masks, finite logZ, symmetric bounded pair marginals, per-nucleotide mass conservation, short-sequence exhaustive equivalence, deterministic destroy behavior, and resumable matched training.",
+      "intervention": "Run float64 exact non-crossing CPU/CUDA numerical tests, independent exhaustive checks, and a real two-step four-arm smoke with interruption/resume.",
+      "expected_observation": "All focused checks pass within float64 atol/rtol 2e-10 and mass atol 2e-09; all arms complete two optimizer steps with common initialization/batch order and no CPU fallback.",
+      "artifact_ids": ["A04", "A05"],
+      "limitation": "SUPPORTED is restricted to numerical/engineering readiness: 12 CPU passes with 6 CUDA-hidden skips, 6 CUDA passes with 12 deselections, 5 independent passes, 1,280 exhaustive cases, and two-step smoke. It is not accuracy, calibration, novelty, convergence, or long-sequence evidence.",
+      "current_status": "SUPPORTED",
+      "supported": true,
+      "abstract_title_eligible": false
+    },
+    {
+      "claim_id": "C08",
+      "claim": "On frozen raw project bpRNA-new labels, xens2 has a substantial exact strict micro-F1 gap to MXfold2, EternaFold, and the frozen BPfold replay.",
+      "phenomenon": "xens2 strict micro-F1 is 0.5531420736; all three comparator predictions cover 5,388/5,388 sequences under exact zero-based inclusive pair matching.",
+      "intervention": "Independently recompute pooled TP/FP/FN and strict micro-F1 from frozen predictions without crossing-pair or short-span filtering, preserving official-versus-project label identities.",
+      "expected_observation": "Absolute comparator-minus-xens2 gaps are 0.1157045435284047 for MXfold2, 0.132241933669125 for EternaFold, and 0.1838653448282851 for the frozen project BPfold replay.",
+      "artifact_ids": ["A08", "A11", "A12"],
+      "limitation": "SUPPORTED is restricted to PROJECT_RAW_GT_ONLY arithmetic and coverage. Training-union/homology overlap remains unresolved, so these are not clean, decontaminated, external-OOD, or unified SOTA conclusions. Official BPfold predictions score 0.9616708875167174 on project labels but 0.633624758107719 on all 5,401 official-label records; the former is a label-sensitive audit, not an official-result or comparator gap.",
+      "current_status": "SUPPORTED",
+      "supported": true,
+      "abstract_title_eligible": false
+    }
+  ],
+  "baseline_gaps": {
+    "scope": "PROJECT_RAW_GT_ONLY; frozen project bprna_new.jsonl; zero-based inclusive exact pairs; no added crossing or short-span filter; pooled strict micro-F1; raw non-decontaminated comparison",
+    "reference_label_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "xens2_micro_f1": 0.5531420736,
+    "coverage_sequences": 5388,
+    "rows": [
+      {"system": "MXfold2 v0.1.2 TrainSetAB MixC", "micro_f1": 0.6688466171284047, "absolute_gap": 0.1157045435284047, "coverage": "5388/5388", "protocol": "official CPU @TrainSetAB.conf; frozen per-sequence predictions", "training_overlap": "UNRESOLVED"},
+      {"system": "EternaFold Params.v1", "micro_f1": 0.685384007269125, "absolute_gap": 0.132241933669125, "coverage": "5388/5388", "protocol": "official serial CONTRAfold-derived predict default MEA; frozen per-sequence predictions", "training_overlap": "UNRESOLVED"},
+      {"system": "BPfold frozen project replay", "micro_f1": 0.7370074184282851, "absolute_gap": 0.1838653448282851, "coverage": "5388/5388", "protocol": "six-model BPfold_predict; project labels; raw non-decontaminated", "training_overlap": "UNRESOLVED"}
+    ],
+    "bpfold_label_identity_warning": {
+      "official_release_project_labels_5388_micro_f1": 0.9616708875167174,
+      "official_release_official_labels_5401_micro_f1": 0.633624758107719,
+      "official_release_official_labels_5401_macro_f1": 0.6470223791166072,
+      "rule": "Do not mix prediction identities or labels; the project-label official-release score is label-sensitive audit evidence only."
+    },
+    "artifact_ids": ["A11", "A12"]
+  },
+  "gec_seed0": {
+    "current_status": "IN_PROGRESS",
+    "supported": false,
+    "performance_claim": null,
+    "abstract_title_eligible": false,
+    "production_generation": "gec_seed0_v2",
+    "started_utc": "2026-11-24T08:26:53.172748+00:00",
+    "snapshot_state": "At 08:45:03Z, ensemble_context had failed at step-500 validation serialization because a non-finite float was rejected by allow_nan=False; matched_control was terminated as its peer, and destroy_interval_shuffle/independent_context were not launched.",
+    "scientific_evaluation": "NO_VERDICT",
+    "engineering_interpretation": "The production failure is preserved for debugging and is neither a scientific gate result nor evidence for or against H-GEC; the overall claim remains IN_PROGRESS.",
+    "failed_prior_generation": "gec_seed0_v1 stopped when destroy_interval_shuffle exited nonzero; no evaluation was invoked.",
+    "artifact_ids": ["A06", "A14", "A15"]
+  },
+  "data_governance": {
+    "scope": "CPU-only TR1c and CHANRG Train/Validation; no Test/GenA/GenC/GenF access; no sampling intervention",
+    "raw_populations": {
+      "tr1c": {"rows": 42564, "duplicate_id_rows_beyond_first": 3496, "pairs": 1157273},
+      "chanrg_train": {"rows": 95181, "contract_rows": 123223, "duplicate_id_rows_beyond_first": 0, "pairs": 2891878},
+      "chanrg_validation": {"rows": 10540, "contract_rows": 14070, "duplicate_id_rows_beyond_first": 0, "pairs": 326559}
+    },
+    "frozen_model_dev": {
+      "tr1c_cluster80": {"train_sequences": 33421, "dev_sequences": 9143, "train_clusters": 12417, "dev_clusters": 3104},
+      "tr1c_rfam_family": {"train_sequences": 19519, "dev_sequences": 4846, "train_families": 1386, "selected_dev_families": 346},
+      "legacy_vl0": {"sequences": 196, "role": "LEGACY_CONTROL_ONLY_NOT_UNIQUE_SELECTION_SET"}
+    },
+    "findings": [
+      "CHANRG raw Train/Validation has HOMOLOGY at the registered 80% check; 3,250 shared clusters motivate conservative accounting exclusions of 16,322 Train and 4,668 Validation rows.",
+      "TR1c versus CHANRG Train and Validation each has EXACT sequence overlap; cross-source broader homology is UNCHECKED.",
+      "Exact topology-signature overlap is not a structural-similarity search.",
+      "Chemical modified-parent mapping and per-record experimental lineage are unavailable in aggregated JSONL; dataset-level labels must not be called uniformly experimental truth.",
+      "Pretraining exposure and temporal/label provenance remain UNCHECKED; NOT_DETECTED_UNKNOWN never means clean.",
+      "Frozen CHANRG Train/Validation and external CHANRG splits are subset/version mismatches against contract counts and must remain explicitly scoped."
+    ],
+    "artifact_ids": ["A02", "A07", "A08"]
+  },
+  "ood_and_sota_coverage": {
+    "current_status": "UNSUPPORTED",
+    "supported": false,
+    "abstract_title_eligible": false,
+    "unified_main_sota_passed": 0,
+    "unified_main_sota_total": 8,
+    "baseline_rows": 63,
+    "baseline_blocked_provenance": 62,
+    "eight_main_benchmarks": ["archiveii_embok_clean", "bprna_new", "bprna_ts0", "ref_pdb_ts1", "ref_pdb_ts2", "ref_pdb_ts3", "ref_pdb_ts_hard", "testsetb"],
+    "rfam": ["rfam_temporal", "rfam_fam"],
+    "chanrg_final_only": ["chanrg_test", "chanrg_gena", "chanrg_genc", "chanrg_genf"],
+    "additional_shifts": ["topology", "length", "pair_span", "temporal", "source", "pretraining_exposure"],
+    "required_comparator_families": ["ViennaRNA MFE/centroid/MEA, RNAstructure, CONTRAfold, EternaFold, MXfold2", "BPfold, UFold, eFold, SPOT-RNA, RNAformer, Kirigami, ContextFold, E2Efold, DEBFold", "RiNALMo, ERNIE-RNA, RNA-FM, NucleicBERT, structRFM", "xens2, best single Plan-A, R2D, H0, frozen candidate", "LinearPartition-class for long sequences; Eco-RNA only after official assets are reproducible"],
+    "release_requirements": ["seed0 plus three-seed and frozen multi-environment development gates", "single frozen model/data/checkpoint/decoder/hyperparameters before external reads", "raw export, per-sequence predictions, and independent metric recomputation", "same-sequence/label/metric/coverage strongest baselines with missing cells explicit", "micro/macro pair-F1, P/R, stem/junction/topology, length/span, coverage, paired 95% CI, Holm correction, and compute cost"],
+    "artifact_ids": ["A08", "A09", "A10"]
+  },
+  "long_sequence_requirements": {
+    "current_status": "UNSUPPORTED",
+    "supported": false,
+    "abstract_title_eligible": false,
+    "datasets": {"longchain_7224": "BLOCKED", "longchain_19000": "BLOCKED", "temporal_pdb_candidates_1805": "BLOCKED_TEMPORAL_LABEL_COLLECTION_ERRORS"},
+    "rules": ["Do not truncate or delete 7,224/19,000-nt targets.", "Separate encoder, candidate generation, and complete-structure output acceptance.", "Measure candidate pair/helix recall before pair/stem/topology accuracy and compute.", "Label sparse execution APPROXIMATE_SPARSE and compare coverage/accuracy with LinearPartition-class methods.", "Do not present gradient checkpointing as a mathematical or architecture contribution."],
+    "artifact_ids": ["A08", "A13"]
+  },
+  "next_evidence_actions": [
+    "Diagnose the non-finite step-500 validation value from preserved seed0 v2 artifacts, add a finite-value engineering gate before any new attempt, and never convert the serialization failure into a scientific verdict or final delivery.",
+    "If seed0 passes, run preregistered three-seed and multi-environment confirmation with the additional close-prior controls before any external evaluation.",
+    "Recover missing baseline provenance/predictions and blocked temporal/long-chain assets in parallel without external-test model development.",
+    "Open a data intervention only when development diagnostics justify one single-variable arm with equal budget."
+  ],
+  "artifacts": {
+    "A00": {"path": "/home/rna_jev_xens2_dualview_round56/docs/plans/2026-11-18-foldnar-scientific-story-execution-prompt.md", "sha256": "2bb52d87c9c58d376881ad9324e0798d82c7d24e141143ec9e158c30fd41e852", "availability": "EXISTING"},
+    "A01": {"path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/pair_form_hypothesis_v1/stacking_fn_audit.json", "sha256": "72cc68cb6e53b3c91db07dfa84fcc0a6e9dfc6d7b1c5a1008346cb3eff74642d", "availability": "EXISTING"},
+    "A02": {"path": "/home/rna_jev_xens2_dualview_round56/manifests/foldnar_v1/model_dev_registry.json", "sha256": "62ae08e06f1b3a291c2de2a9cf52d2e57ec55570396fc810cd3638612c774902", "availability": "EXISTING"},
+    "A03": {"path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/environment_summary.json", "sha256": "857b96c33209d7a9ace76cf669aea8297976474613cd216f7a3952a677aab7d5", "availability": "EXISTING"},
+    "A04": {"path": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_numeric_v1/manifest_v1.json", "sha256": "c98ede00d047b5d8db541fc2b18427ae7e4ee63d5e1ffbfdd472ca24bb59d649", "availability": "EXISTING"},
+    "A05": {"path": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_smoke_v2/generation_02/smoke_verification_v2.json", "sha256": "59e95d5d7dc77f9be4eac1cf513dceda3e353fd2da0821a5ab02f68031ea50fe", "availability": "EXISTING"},
+    "A06": {"path": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v2/production_launch.json", "sha256": "0f89518dc5e34648de001c49ffcb58fd302d8be680c0ab7bbdcbaf11f729bb9a", "availability": "EXISTING"},
+    "A07": {"path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/audit_summary.json", "sha256": "a8af93d974c6c80797fb04ba8535df9250233f402ab429d3f239d62a6e75526c", "availability": "EXISTING"},
+    "A08": {"path": "/home/rna_jev_xens2_dualview_round56/manifests/foldnar_v1/data_registry.json", "sha256": "4fe3f5376498b64ffcce758300067f3bcf1489868dbe3156d84b886f0c16fd69", "availability": "EXISTING"},
+    "A09": {"path": "/home/rna_jev_xens2_dualview_round56/manifests/foldnar_v1/baseline_registry.json", "sha256": "51878f149f7521ab714b8ed7e1db9cee8dab11f32639aa38a0f6a0fb65711c8a", "availability": "EXISTING"},
+    "A10": {"path": "/home/rna_jev_xens2_dualview_round56/manifests/foldnar_v1/prediction_registry.json", "sha256": "da2b6fadaf994496dc004375be96cda9fdaa024dba4ce0e465738f048010d1c9", "availability": "EXISTING"},
+    "A11": {"path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v1/phase0c_verification.json", "sha256": "3e29b2e2461fdeb14a1a7cfc041e749692ebf95e297e8fb0118bd216fbc28ef2", "availability": "EXISTING"},
+    "A12": {"path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/reports/bprna_new_raw_metrics_verification_v2.json", "sha256": "6bb55b84a655d677b6c17c04adf8406b464df6ef25d060190b7840c59e92c8ca", "availability": "EXISTING"},
+    "A13": {"path": "/home/rna_jev_xens2_dualview_round56/docs/plans/2026-11-24-phase0b-global-ensemble-context-direct-prior-audit-v1.md", "sha256": "97649b4f596075aa659c45c29143fc6889ac39c9d9ce4974e57f18e0f1ebc0a9", "availability": "EXISTING"},
+    "A14": {"path": "/home/rna_jev_xens2_dualview_round56/logs/gec_seed0_production_v1.supervisor.log", "sha256": "45bac1f9e40abad433a81db6e1cd956e2e76bccf573d39ecdd1d1d6c840ab40c", "availability": "EXISTING"},
+    "A15": {"path": "/home/rna_jev_xens2_dualview_round56/logs/gec_seed0_production_v2.supervisor.log", "sha256": "4308b0e5fce46b38fa07b1ee31350278cd82e785311f045e309b809c0adc038d", "availability": "EXISTING"}
+  }
+}
