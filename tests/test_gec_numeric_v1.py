@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import itertools
 import sys
 from pathlib import Path
@@ -16,6 +17,7 @@ from rnajepa.gec_numeric_v1 import (
     GEC_MASS_ATOL_V1,
     canonical_pair_mask_v1,
     compute_gec_context_v1,
+    gec_span_bucket_v1,
 )
 
 
@@ -141,7 +143,7 @@ def test_interval_feature_values_and_partition_match_independent_loops():
 
 @pytest.mark.parametrize(
     "mode",
-    ["ensemble_context", "matched_local", "zero", "destroy_interval_shuffle", "independent_context"],
+    ["matched_control", "ensemble_context", "matched_local", "zero", "destroy_interval_shuffle", "independent_context"],
 )
 def test_all_context_modes_stop_first_pass_gradient(mode):
     scores, mask = _case()
@@ -180,21 +182,23 @@ def test_matched_zero_and_independent_destruction_semantics():
     ensemble = compute_gec_context_v1(scores, mask)
     local = compute_gec_context_v1(scores, mask, mode="matched_local")
     zero = compute_gec_context_v1(scores, mask, mode="zero")
+    control = compute_gec_context_v1(scores, mask, mode="matched_control")
     independent = compute_gec_context_v1(scores, mask, mode="independent_context")
     legal = mask
     expected_local = torch.where(mask, torch.sigmoid(scores), torch.zeros_like(scores))
     assert torch.equal(local.context[..., 0], expected_local)
     assert torch.count_nonzero(local.context[..., 1:]) == 0
     assert torch.count_nonzero(zero.context) == 0
+    assert torch.equal(control.context, zero.context)
     assert torch.equal(independent.context[..., 0], expected_local)
     assert not torch.allclose(independent.context, ensemble.context)
-    for result in (local, zero, independent):
+    for result in (local, zero, control, independent):
         assert torch.count_nonzero(result.context[~legal]) == 0
         assert torch.equal(result.marginals, ensemble.marginals)
         assert torch.equal(result.log_z, ensemble.log_z)
 
 
-def test_interval_shuffle_preserves_same_span_distribution_but_not_pair_alignment():
+def test_interval_shuffle_matches_independent_frozen_bucket_permutation():
     scores, mask = _case("AUAUAUAUAUAU", seed=23)
     ensemble = compute_gec_context_v1(scores, mask)
     shuffled = compute_gec_context_v1(
@@ -209,17 +213,35 @@ def test_interval_shuffle_preserves_same_span_distribution_but_not_pair_alignmen
     legal = torch.triu(mask, diagonal=1)
     positions = torch.arange(len(mask))
     spans = positions[None, :] - positions[:, None]
-    for span in range(1, len(mask)):
-        rows, cols = torch.where(legal & (spans == span))
-        if not rows.numel():
+    expected = ensemble.context.clone()
+    moved_across_spans = False
+    for bucket in ("short", "medium", "long", "very_long"):
+        selected = [(i, j) for i, j in zip(*torch.where(legal))
+                    if gec_span_bucket_v1(int(j - i)) == bucket]
+        if not selected:
             continue
+        rows = torch.tensor([pair[0] for pair in selected])
+        cols = torch.tensor([pair[1] for pair in selected])
         before = ensemble.context[rows, cols]
         after = shuffled.context[rows, cols]
         for channel in range(before.shape[-1]):
-            assert torch.equal(
-                torch.sort(before[:, channel]).values,
-                torch.sort(after[:, channel]).values,
+            assert torch.equal(torch.sort(before[:, channel]).values,
+                               torch.sort(after[:, channel]).values)
+        if len(selected) > 1:
+            key = f"gec_destroy_v1|seed=91|{bucket}".encode()
+            seed = int.from_bytes(hashlib.sha256(key).digest()[:8], "big")
+            permutation = np.random.default_rng(seed).permutation(len(selected))
+            expected_values = before[torch.tensor(permutation)]
+            assert torch.equal(after, expected_values)
+            expected[rows, cols] = expected_values
+            expected[cols, rows] = expected_values
+            moved_across_spans |= any(
+                int(selected[index][1] - selected[index][0])
+                != int(selected[source][1] - selected[source][0])
+                for index, source in enumerate(permutation)
             )
+    assert torch.equal(shuffled.context, expected)
+    assert moved_across_spans
     assert torch.count_nonzero(shuffled.context[~mask]) == 0
 
 
@@ -240,7 +262,7 @@ def test_cuda_numerics_match_cpu(length):
     cpu_scores, cpu_mask = _case(sequence, seed=100 + length)
     gpu_scores = cpu_scores.cuda().requires_grad_(True)
     gpu_mask = cpu_mask.cuda()
-    for mode in ("ensemble_context", "matched_local", "zero", "destroy_interval_shuffle", "independent_context"):
+    for mode in ("matched_control", "ensemble_context", "matched_local", "zero", "destroy_interval_shuffle", "independent_context"):
         cpu = compute_gec_context_v1(cpu_scores, cpu_mask, mode=mode, shuffle_seed=5)
         gpu = compute_gec_context_v1(gpu_scores, gpu_mask, mode=mode, shuffle_seed=5)
         assert gpu.context.is_cuda and gpu.marginals.is_cuda and gpu.log_z.is_cuda

@@ -1,0 +1,93 @@
+{
+  "config_id": "gec_four_arm_implementation_v1",
+  "status": "FROZEN_FOR_ENGINEERING_SMOKE_ONLY",
+  "scientific_training_authorized": false,
+  "source_contract": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_run_identity_v1/phase0d_identity_convergence_20261124T034824Z/phase0d_gec_four_arm_convergence_contract_v1.json",
+  "arms": [
+    "matched_control",
+    "ensemble_context",
+    "destroy_interval_shuffle",
+    "independent_context"
+  ],
+  "assets": {
+    "data": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+    "data_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+    "registry": "manifests/foldnar_v1/model_dev_registry.json",
+    "train_ids": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_train_ids.txt",
+    "validation_ids": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_dev_ids.txt",
+    "shared_init": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/init/shared_init_seed0.pt",
+    "shared_init_sha256": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e"
+  },
+  "model": {
+    "d_z": 128,
+    "residual_hidden": 64,
+    "context_channels": 6,
+    "geometry_channels": 8,
+    "output_layer_initialization": "exact_zero",
+    "score_update": "S1=S0+Delta",
+    "first_pass": "exact_noncrossing_inside_outside_float64_stop_gradient",
+    "turner": "off",
+    "span_buckets": {
+      "short": [4, 10],
+      "medium": [11, 30],
+      "long": [31, 100],
+      "very_long": [101, null]
+    },
+    "geometry_channels_in_order": [
+      "log_span",
+      "reciprocal_span",
+      "short_bucket",
+      "medium_bucket",
+      "long_bucket",
+      "very_long_bucket",
+      "hairpin_boundary_distance",
+      "nearest_interval_bucket_boundary_distance"
+    ],
+    "destroy_hash": "first_uint64_big_endian(SHA256(gec_destroy_v1|seed|epoch|step|sequence_sha256|bucket_name))",
+    "decoder": {
+      "name": "MEA",
+      "temperature": 1.0,
+      "gamma": 1.0,
+      "score_variant": "train_off/plana_off",
+      "search_allowed": false
+    }
+  },
+  "training": {
+    "seed": 0,
+    "batch_size": 4,
+    "head_lr": 0.0001,
+    "backbone_lr": 0.000001,
+    "optimizer": "AdamW",
+    "betas": [0.9, 0.98],
+    "weight_decay": 0.0,
+    "optimizer_warmup_steps": 5,
+    "dropout": 0.0,
+    "grad_clip": 1.0,
+    "lambda_nll": 1.0,
+    "all_auxiliary_weights": 0.0,
+    "nll_normalization": "length",
+    "warmup_head_steps": 1600,
+    "unfreeze_every": 800,
+    "unfreeze_per_step": 2,
+    "n_blocks": 33,
+    "max_unfrozen_blocks": 20,
+    "terminal_step": 9600,
+    "fixed_step_cap": null
+  },
+  "convergence": {
+    "validation_every": 500,
+    "patience": 5,
+    "min_delta": 0.000001,
+    "eligible_only_at_terminal_unfreeze": true,
+    "restore_best_eligible": true,
+    "stop_reason": "CONVERGED_VALIDATION_NLL_AFTER_TERMINAL_UNFREEZE"
+  },
+  "smoke": {
+    "steps_per_arm": 2,
+    "train_record_limit": 8,
+    "validation_record_limit": 2,
+    "validation_every": 0,
+    "explicit_device": "cuda:0",
+    "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_smoke_v1"
+  }
+}

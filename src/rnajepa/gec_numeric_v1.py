@@ -8,9 +8,11 @@ scores, supplied marginals, or the partition function.
 """
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
+import numpy as np
 import torch
 
 from rnajepa import harness
@@ -24,11 +26,24 @@ GEC_FEATURE_NAMES_V1: Tuple[str, ...] = (
     "disjoint_outside_pair_mass",
 )
 GEC_CONTEXT_MODES_V1: Tuple[str, ...] = (
+    "matched_control",
     "ensemble_context",
     "matched_local",
     "zero",
     "destroy_interval_shuffle",
     "independent_context",
+)
+GEC_ARMS_V1: Tuple[str, ...] = (
+    "matched_control",
+    "ensemble_context",
+    "destroy_interval_shuffle",
+    "independent_context",
+)
+GEC_SPAN_BUCKETS_V1: Tuple[Tuple[str, int, Optional[int]], ...] = (
+    ("short", 4, 10),
+    ("medium", 11, 30),
+    ("long", 31, 100),
+    ("very_long", 101, None),
 )
 GEC_FLOAT64_ATOL_V1 = 2.0e-10
 GEC_FLOAT64_RTOL_V1 = 2.0e-10
@@ -53,9 +68,17 @@ def canonical_pair_mask_v1(
     return torch.as_tensor(mask, dtype=torch.bool, device=device)
 
 
+def gec_span_bucket_v1(span: int) -> str:
+    for name, lower, upper in GEC_SPAN_BUCKETS_V1:
+        if span >= lower and (upper is None or span <= upper):
+            return name
+    raise ValueError(f"illegal GEC pair span: {span}")
+
+
 def _normalize_mode(mode: str) -> str:
     aliases = {
         "ensemble": "ensemble_context",
+        "matched-control": "matched_control",
         "matched-local": "matched_local",
         "interval_shuffle": "destroy_interval_shuffle",
         "interval-shuffle": "destroy_interval_shuffle",
@@ -179,14 +202,17 @@ def compute_gec_context_v1(
     marginals: Optional[torch.Tensor] = None,
     log_z: Optional[torch.Tensor] = None,
     shuffle_seed: int = 0,
+    shuffle_key: Optional[str] = None,
 ) -> GECNumericsV1:
     """Compute an ``L x L x 6`` stop-gradient context for one sequence.
 
-    ``scores`` and ``mask`` are square matrices on one device.  Only the strict
-    upper triangle is consulted.  Supplied ``marginals`` may be strict-upper or
-    symmetric and must be on the same device.  Interval shuffle permutes complete
-    feature vectors only among legal pairs with the same span, using a frozen
-    CPU generator so CPU and CUDA runs are reproducible.
+    ``scores`` and ``mask`` are square matrices on one device. Only the strict
+    upper triangle is consulted. Supplied ``marginals`` may be strict-upper or
+    symmetric and must be on the same device. Interval shuffle jointly permutes
+    complete feature vectors among legal pairs in each frozen span bucket.
+    ``shuffle_key`` is the resume-safe sample identity; ``shuffle_seed`` is a
+    convenience identity for focused tests. Permutations use NumPy's frozen
+    SHA256-seeded generator independently of tensor device.
     """
     mode = _normalize_mode(mode)
     if scores.ndim != 2 or scores.shape[0] != scores.shape[1]:
@@ -237,7 +263,7 @@ def compute_gec_context_v1(
     )
     if mode == "ensemble_context":
         context = ensemble_features
-    elif mode == "zero":
+    elif mode in {"matched_control", "zero"}:
         context = torch.zeros_like(ensemble_features)
     elif mode == "matched_local":
         independent = torch.sigmoid(scores64)
@@ -252,15 +278,24 @@ def compute_gec_context_v1(
         context = _interval_features(independent)
     else:
         context = ensemble_features.clone()
-        generator = torch.Generator(device="cpu")
-        generator.manual_seed(int(shuffle_seed))
+        identity = (f"gec_destroy_v1|seed={int(shuffle_seed)}" if shuffle_key is None
+                    else str(shuffle_key))
         positions = torch.arange(scores.shape[0], device=scores.device)
         spans = positions[None, :] - positions[:, None]
-        for span in range(1, scores.shape[0]):
-            rows, cols = torch.where(legal & (spans == span))
+        for bucket_name, lower, upper in GEC_SPAN_BUCKETS_V1:
+            in_bucket = spans >= lower
+            if upper is not None:
+                in_bucket = in_bucket & (spans <= upper)
+            rows, cols = torch.where(legal & in_bucket)
             if rows.numel() < 2:
                 continue
-            permutation = torch.randperm(rows.numel(), generator=generator).to(scores.device)
+            key = f"{identity}|{bucket_name}".encode("utf-8")
+            seed = int.from_bytes(hashlib.sha256(key).digest()[:8], "big")
+            permutation = torch.as_tensor(
+                np.random.default_rng(seed).permutation(rows.numel()),
+                dtype=torch.long,
+                device=scores.device,
+            )
             shuffled = context[rows, cols][permutation]
             context[rows, cols] = shuffled
             context[cols, rows] = shuffled
