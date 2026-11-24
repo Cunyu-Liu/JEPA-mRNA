@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Read-only four-arm GEC seed0 evaluation against the frozen model-dev contract.
 
-Each ARM.jsonl row must contain sequence_id, true_pairs and predicted_pairs.
-Pairs are zero-based [i, j], i < j. Optional raw_scores are [i, j, score]
-triples on a candidate set shared by all arms. Inputs are never modified.
+Each ARM.jsonl row must contain sequence_id, true_pairs, predicted_pairs,
+sequence_length, sequence_sha256 and checkpoint_sha256. Truth is accepted only
+when it exactly matches the frozen raw TR1c source. Pairs are zero-based [i, j],
+i < j. Optional raw_scores are [i, j, score] triples on a candidate set shared
+by all arms. Inputs are never modified.
 """
 from __future__ import annotations
 
@@ -140,9 +142,9 @@ def confusion(
     truth_set = truth_all & selected_truth
     predicted_set = predicted_all & selected_predicted
     return (
-        len(truth_set & predicted_all),
-        len(predicted_set - truth_all),
-        len(truth_set - predicted_all),
+        len(truth_set & predicted_set),
+        len(predicted_set - truth_set),
+        len(truth_set - predicted_set),
     )
 
 
@@ -165,6 +167,9 @@ class Record:
     true_pairs: tuple[tuple[int, int], ...]
     predicted_pairs: tuple[tuple[int, int], ...] = ()
     raw_scores: list[tuple[int, int, float]] | None = None
+    sequence_length: int = 0
+    sequence_sha256: str = ""
+    cluster_id: int | None = None
 
 
 @dataclass
@@ -218,66 +223,334 @@ class BootstrapSpace:
         return float(np.mean(observed_by_family)), np.mean(sampled_by_family, axis=0)
 
 
+class FamilyClusterBootstrapSpace:
+    def __init__(self, records: list[Record], resamples: int, seed: int):
+        grouped: dict[str, list[int]] = {}
+        self.mapped_family_by_group: dict[str, str | None] = {}
+        for index, record in enumerate(records):
+            key = (f"family:{record.family_id}" if record.family_id is not None
+                   else f"unmapped_singleton:{record.sequence_id}")
+            grouped.setdefault(key, []).append(index)
+            self.mapped_family_by_group[key] = record.family_id
+        self.group_ids = sorted(grouped)
+        self.rows = [np.asarray(grouped[name], dtype=np.int32) for name in self.group_ids]
+        rng = np.random.default_rng(seed)
+        self.indices = rng.integers(
+            0, len(self.rows), size=(resamples, len(self.rows)), dtype=np.int32,
+        )
+        self.multiplicity = np.zeros((resamples, len(records)), dtype=np.int32)
+        for group_index, rows in enumerate(self.rows):
+            for record_index in rows:
+                self.multiplicity[:, record_index] = (self.indices == group_index).sum(axis=1)
+        self.n_mapped_families = sum(
+            self.mapped_family_by_group[name] is not None for name in self.group_ids
+        )
+        self.n_unmapped_singletons = len(self.rows) - self.n_mapped_families
+
+    def sample_counts(self, counts: np.ndarray) -> np.ndarray:
+        return np.einsum("bi,ij->bj", self.multiplicity, counts, optimize=True)
+
+    def macro(self, values: np.ndarray, eligible_families: set[str]) -> tuple[float, np.ndarray]:
+        eligible = [
+            index for index, name in enumerate(self.group_ids)
+            if self.mapped_family_by_group[name] in eligible_families
+        ]
+        if not eligible:
+            raise ValueError("no macro-component-eligible mapped family")
+        family_means = np.asarray([
+            float(values[rows].mean()) if rows.size else np.nan for rows in self.rows
+        ])
+        observed = float(np.mean(family_means[eligible]))
+        sampled = family_means[self.indices[:, eligible]].mean(axis=1)
+        return observed, sampled
+
+
+def _validate_bounds(
+    values: Iterable[tuple[int, int]], length: int, label: str,
+) -> None:
+    if any(j >= length for _, j in values):
+        raise ValueError(f"{label}: pair coordinate outside frozen sequence length")
+
+
+def _frozen_identity(name: str, artifact: dict) -> dict:
+    path = Path(artifact["path"])
+    if path.stat().st_size != artifact["bytes"] or sha256(path) != artifact["sha256"]:
+        raise ValueError(f"frozen artifact identity mismatch: {name}")
+    return {"path": str(path), "sha256": artifact["sha256"], "bytes": artifact["bytes"]}
+
+
+def _read_frozen_ids(name: str, artifact: dict) -> set[str]:
+    values = Path(artifact["path"]).read_text().splitlines()
+    if not values or any(not value or value.strip() != value for value in values):
+        raise ValueError(f"{name}: empty or malformed ID file")
+    if len(set(values)) != len(values):
+        raise ValueError(f"{name}: duplicate IDs")
+    return set(values)
+
+
 def load_panel(registry_path: Path, panel_id: str) -> tuple[dict, list[Record], dict]:
     registry = json.loads(registry_path.read_text())
     if registry.get("schema_version") != "foldnar.model_dev_registry.v1":
         raise ValueError("unexpected registry schema")
+    if panel_id != "tr1c_cluster80_dev_v1":
+        raise ValueError("scientific evaluation requires the registered cluster-dev panel")
     panel = next((p for p in registry["panels"] if p["panel_id"] == panel_id), None)
-    if panel is None or panel_id == "legacy_vl0_control" or "dev_ids" not in panel:
-        raise ValueError("route evaluation requires a registered non-legacy dev panel")
+    if panel is None or panel.get("split_unit") != "existing 80% cluster":
+        raise ValueError("missing registered cluster-dev panel")
+    if "train_ids" not in panel or "dev_ids" not in panel:
+        raise ValueError("cluster-dev panel lacks train/dev ID artifacts")
     used = {
         "panel_records": registry["environment_contracts"]["panel_records"],
         "environment_summary": registry["artifacts"]["environment_summary"],
         "dev_ids": panel["dev_ids"],
+        "train_ids": panel["train_ids"],
     }
-    identities = {}
-    for name, artifact in used.items():
-        path = Path(artifact["path"])
-        if path.stat().st_size != artifact["bytes"] or sha256(path) != artifact["sha256"]:
-            raise ValueError(f"frozen artifact identity mismatch: {name}")
-        identities[name] = {"path": str(path), "sha256": artifact["sha256"]}
-    allowed = set(Path(panel["dev_ids"]["path"]).read_text().splitlines())
+    identities = {name: _frozen_identity(name, artifact) for name, artifact in used.items()}
+    raw_asset = next((
+        asset for asset in registry["assets"]
+        if asset.get("dataset_id") == "bprna_tr1c"
+        and asset.get("role") == "legal_train_dev_source"
+    ), None)
+    if raw_asset is None:
+        raise ValueError("registry lacks the frozen raw TR1c source")
+    raw_path = Path(raw_asset["source"])
+    if sha256(raw_path) != raw_asset["sha256"]:
+        raise ValueError("frozen artifact identity mismatch: raw_tr1c")
+    identities["raw_tr1c"] = {
+        "path": str(raw_path), "sha256": raw_asset["sha256"], "bytes": raw_path.stat().st_size,
+    }
+    allowed = _read_frozen_ids("dev_ids", used["dev_ids"])
+    planned_train_ids = _read_frozen_ids("train_ids", used["train_ids"])
     rows = read_jsonl(used["panel_records"]["path"])
-    records = [
-        Record(row["sequence_id"], row.get("family_id"), pairs(row.get("true_pairs", ())))
-        for row in rows if row["sequence_id"] in allowed
-    ]
-    if len(records) != len(allowed) or {r.sequence_id for r in records} != allowed:
+    panel_rows = {row["sequence_id"]: row for row in rows}
+    if len(panel_rows) != len(rows):
+        raise ValueError("duplicate panel sequence_id")
+    raw_records = {}
+    for row_index, raw in enumerate(read_jsonl(raw_path)):
+        sequence_id = f"bprna_tr1c:row{row_index:06d}:" + raw["name"]
+        sequence = str(raw["seq"]).upper().replace("T", "U")
+        truth = pairs(raw["pairs"])
+        _validate_bounds(truth, len(sequence), f"raw TR1c {sequence_id}")
+        raw_records[sequence_id] = {
+            "sequence_id": sequence_id, "source_row_index": row_index, "name": raw["name"],
+            "sequence_sha256": hashlib.sha256(sequence.encode()).hexdigest(),
+            "length": len(sequence), "true_pairs": truth,
+        }
+    if set(panel_rows) != set(raw_records):
+        raise ValueError("panel rows do not exactly cover frozen raw TR1c rows")
+    for sequence_id, raw in raw_records.items():
+        metadata = panel_rows[sequence_id]
+        if metadata["source_row_index"] != raw["source_row_index"] or metadata["name"] != raw["name"]:
+            raise ValueError(f"raw TR1c row identity mismatch for {sequence_id}")
+        if metadata["sequence_sha256"] != raw["sequence_sha256"] or metadata["length"] != raw["length"]:
+            raise ValueError(f"raw TR1c sequence identity mismatch for {sequence_id}")
+        truth = raw["true_pairs"]
+        span_counts = Counter(span_bin(pair) for pair in truth)
+        if (metadata["n_pairs"] != len(truth)
+                or any(span_counts.get(name, 0) != metadata["pair_span_counts"].get(name, 0)
+                       for name in SPANS)
+                or len(isolated_pairs(truth)) != metadata["isolated_pair_counts"].get("isolated", 0)):
+            raise ValueError(f"panel truth metadata mismatch for {sequence_id}")
+    exact_overlap = allowed & planned_train_ids
+    if exact_overlap:
+        raise ValueError(f"panel rows occur in planned train IDs: {sorted(exact_overlap)[:3]}")
+    train_clusters = {
+        int(panel_rows[sequence_id]["cluster_id"]) for sequence_id in planned_train_ids
+    }
+    cluster_overlap = {
+        sequence_id for sequence_id in allowed
+        if int(panel_rows[sequence_id]["cluster_id"]) in train_clusters
+    }
+    if cluster_overlap:
+        raise ValueError(f"panel rows share a registered train cluster: {sorted(cluster_overlap)[:3]}")
+    records = []
+    for sequence_id in sorted(allowed):
+        metadata = panel_rows[sequence_id]
+        if metadata.get("cluster_assignment") != "dev":
+            raise ValueError(f"panel row is not registered cluster-dev: {sequence_id}")
+        raw = raw_records[sequence_id]
+        records.append(Record(
+            sequence_id, metadata.get("family_id"), raw["true_pairs"],
+            sequence_length=raw["length"], sequence_sha256=raw["sequence_sha256"],
+            cluster_id=int(metadata["cluster_id"]),
+        ))
+    if len(records) != len(allowed):
         raise ValueError("panel records do not exactly cover frozen dev IDs")
-    by_id = {row["sequence_id"]: row for row in rows}
-    return registry, records, {"identities": identities, "panel_rows": by_id, "panel": panel}
+    return registry, records, {
+        "identities": identities, "panel_rows": panel_rows, "panel": panel,
+        "allowed_ids": allowed, "planned_train_ids": planned_train_ids,
+        "train_clusters": train_clusters,
+    }
+
+
+def validate_run_metadata(
+    registry_path: Path, gec_config_path: Path, metadata_paths: dict[str, Path], panel_info: dict,
+) -> dict:
+    if set(metadata_paths) != set(ARMS):
+        raise ValueError(f"exactly four run metadata files required: {ARMS}")
+    config_path = gec_config_path.resolve()
+    config = json.loads(config_path.read_text())
+    config_sha256 = sha256(config_path)
+    if config.get("config_id") != "gec_four_arm_implementation_v1" or tuple(config["arms"]) != ARMS:
+        raise ValueError("unexpected GEC implementation config")
+    training = config["training"]
+    if (training["seed"] != 0 or training["n_blocks"] != 33
+            or training["max_unfrozen_blocks"] != 20 or training["terminal_step"] != 9600
+            or training["fixed_step_cap"] is not None):
+        raise ValueError("GEC config is not the planned converged seed0 20/33 run")
+    raw_identity = panel_info["identities"]["raw_tr1c"]
+    if (Path(config["assets"]["data"]).resolve() != Path(raw_identity["path"]).resolve()
+            or config["assets"]["data_sha256"] != raw_identity["sha256"]):
+        raise ValueError("GEC config raw TR1c identity mismatch")
+    configured_registry = Path(config["assets"]["registry"])
+    if not configured_registry.is_absolute():
+        configured_registry = Path(__file__).resolve().parents[1] / configured_registry
+    if configured_registry.resolve() != registry_path.resolve():
+        raise ValueError("GEC config registry identity mismatch")
+    for key, name in (("train_ids", "train_ids"), ("validation_ids", "dev_ids")):
+        artifact = panel_info["identities"][name]
+        if Path(config["assets"][key]).resolve() != Path(artifact["path"]).resolve():
+            raise ValueError(f"GEC config {key} differs from the frozen cluster panel")
+    source_contract = Path(config["source_contract"])
+    source_contract_sha256 = sha256(source_contract)
+    convergence_contract = config["convergence"]
+    if convergence_contract["stop_reason"] != "CONVERGED_VALIDATION_NLL_AFTER_TERMINAL_UNFREEZE":
+        raise ValueError("unexpected GEC convergence stop reason")
+    expected_schedule = {
+        "seed": training["seed"], "batch_size": training["batch_size"],
+        "head_lr": training["head_lr"], "backbone_lr": training["backbone_lr"],
+        "warmup_head_steps": training["warmup_head_steps"],
+        "unfreeze_every": training["unfreeze_every"],
+        "unfreeze_per_step": training["unfreeze_per_step"],
+        "max_unfrozen_blocks": 20, "warmup_steps": training["optimizer_warmup_steps"],
+        "grad_clip": training["grad_clip"],
+        "validation_every": convergence_contract["validation_every"],
+        "validation_patience": convergence_contract["patience"],
+        "validation_min_delta": convergence_contract["min_delta"],
+    }
+    common_fields = (
+        "gec_config_sha256", "source_contract_sha256", "shared_init_sha256", "gec_init_sha256",
+        "initial_residual_tensor_sha256", "residual_parameter_count",
+        "trainable_head_and_residual_parameter_count", "train_record_ids", "validation_record_ids",
+        "objective", "decoder",
+    )
+    reference = None
+    summaries = {}
+    for arm in ARMS:
+        metadata_path = metadata_paths[arm].resolve()
+        metadata = json.loads(metadata_path.read_text())
+        if metadata.get("schema_version") != "foldnar.gec_training_run.v1" or metadata.get("arm") != arm:
+            raise ValueError(f"{arm}: unexpected run metadata identity")
+        if Path(metadata["gec_config"]).resolve() != config_path or metadata["gec_config_sha256"] != config_sha256:
+            raise ValueError(f"{arm}: run does not use the exact common GEC config")
+        if (Path(metadata["source_contract"]).resolve() != source_contract.resolve()
+                or metadata["source_contract_sha256"] != source_contract_sha256):
+            raise ValueError(f"{arm}: source contract identity mismatch")
+        if (Path(metadata["shared_init"]).resolve() != Path(config["assets"]["shared_init"]).resolve()
+                or metadata["shared_init_sha256"] != config["assets"]["shared_init_sha256"]):
+            raise ValueError(f"{arm}: shared initialization identity mismatch")
+        train_ids = metadata["train_record_ids"]
+        validation_ids = metadata["validation_record_ids"]
+        if not isinstance(train_ids, list) or len(set(train_ids)) != len(train_ids):
+            raise ValueError(f"{arm}: duplicate or malformed train IDs")
+        if set(train_ids) != panel_info["planned_train_ids"]:
+            raise ValueError(f"{arm}: training IDs differ from planned cluster train IDs")
+        if (not isinstance(validation_ids, list) or len(set(validation_ids)) != len(validation_ids)
+                or set(validation_ids) != panel_info["allowed_ids"]):
+            raise ValueError(f"{arm}: validation IDs differ from full frozen cluster-dev panel")
+        panel_train_overlap = panel_info["allowed_ids"] & set(train_ids)
+        if panel_train_overlap:
+            raise ValueError(f"{arm}: panel rows occur in run train IDs")
+        run_train_clusters = {
+            int(panel_info["panel_rows"][sequence_id]["cluster_id"]) for sequence_id in train_ids
+        }
+        if any(record_cluster in run_train_clusters for record_cluster in (
+            int(panel_info["panel_rows"][sequence_id]["cluster_id"])
+            for sequence_id in panel_info["allowed_ids"]
+        )):
+            raise ValueError(f"{arm}: panel rows share a run train cluster")
+        schedule = metadata["schedule"]
+        if (metadata["engineering_smoke"] is not False or schedule["engineering_smoke"] is not False
+                or schedule["steps"] != 0 or schedule["train_record_limit"] != 0
+                or schedule["validation_record_limit"] != 0):
+            raise ValueError(f"{arm}: smoke or subsampled run is scientifically ineligible")
+        for name, expected in expected_schedule.items():
+            if schedule[name] != expected:
+                raise ValueError(f"{arm}: common training config mismatch for {name}")
+        if metadata["decoder"] != config["model"]["decoder"]:
+            raise ValueError(f"{arm}: decoder differs from common config")
+        if (metadata["status"] != "converged" or metadata["converged"] is not True
+                or metadata["stop_reason"] != "CONVERGED_VALIDATION_NLL_AFTER_TERMINAL_UNFREEZE"
+                or metadata["divergence_reason"]):
+            raise ValueError(f"{arm}: run is not converged after terminal unfreeze")
+        if (metadata["final_unfrozen_blocks"] != 20
+                or metadata["backbone_report"]["n_layers"] != 33):
+            raise ValueError(f"{arm}: final checkpoint is not 20/33 unfrozen blocks")
+        convergence = metadata["convergence"]
+        best_step = convergence["best_step"]
+        if (convergence["terminal_step"] != 9600 or convergence["terminal_unfrozen_blocks"] != 20
+                or convergence["eligible"] is not True or isinstance(best_step, bool)
+                or not isinstance(best_step, int) or best_step < 9600
+                or metadata["steps_completed"] < best_step
+                or convergence["bad_evaluations"] < convergence_contract["patience"]
+                or not math.isfinite(float(convergence["best_validation_loss"]))):
+            raise ValueError(f"{arm}: best checkpoint is not eligible post-terminal convergence")
+        environment = metadata["environment"]
+        if (not str(environment["requested_device"]).startswith("cuda:")
+                or environment["resolved_device"] != environment["requested_device"]
+                or schedule["device"] != environment["requested_device"]):
+            raise ValueError(f"{arm}: scientific run lacks explicit CUDA execution")
+        best_path = metadata_path.parent / "best.pt"
+        best_sha256 = metadata["best_checkpoint_sha256"]
+        if not best_path.is_file() or sha256(best_path) != best_sha256:
+            raise ValueError(f"{arm}: eligible best-checkpoint identity mismatch")
+        current = {name: metadata[name] for name in common_fields}
+        if reference is None:
+            reference = current
+        elif current != reference:
+            raise ValueError(f"{arm}: common four-arm run metadata mismatch")
+        summaries[arm] = {
+            "path": str(metadata_path), "run_meta_sha256": sha256(metadata_path),
+            "best_checkpoint_path": str(best_path), "best_checkpoint_sha256": best_sha256,
+            "best_step": best_step, "resolved_device": environment["resolved_device"],
+        }
+    return {
+        "config_path": str(config_path), "config_sha256": config_sha256,
+        "source_contract_path": str(source_contract),
+        "source_contract_sha256": source_contract_sha256,
+        "planned_train_ids_sha256": panel_info["identities"]["train_ids"]["sha256"],
+        "arms": summaries,
+    }
 
 
 def bind_predictions(
-    panel_records: list[Record], arm_rows: dict[str, list[dict]], panel_rows: dict[str, dict],
+    panel_records: list[Record], arm_rows: dict[str, list[dict]], run_validation: dict,
 ) -> dict[str, list[Record]]:
     expected_ids = {record.sequence_id for record in panel_records}
-    reference_truth: dict[str, tuple[tuple[int, int], ...]] = {}
-    bound: dict[str, dict[str, Record]] = {}
+    metadata_by_id = {record.sequence_id: record for record in panel_records}
+    bound = {}
     for arm, rows in arm_rows.items():
         if len(rows) != len(expected_ids):
             raise ValueError(f"{arm}: prediction count does not match panel")
+        checkpoint_sha256 = run_validation["arms"][arm]["best_checkpoint_sha256"]
         by_id = {}
         for row in rows:
             sequence_id = row["sequence_id"]
             if sequence_id in by_id or sequence_id not in expected_ids:
                 raise ValueError(f"{arm}: duplicate or out-of-panel sequence_id")
-            truth = pairs(row["true_pairs"])
-            pred = pairs(row["predicted_pairs"])
-            metadata = panel_rows[sequence_id]
-            if len(truth) != metadata["n_pairs"]:
-                raise ValueError(f"{arm}: true pair count mismatch for {sequence_id}")
-            span_counts = Counter(span_bin(pair) for pair in truth)
-            if any(span_counts.get(name, 0) != metadata["pair_span_counts"].get(name, 0) for name in SPANS):
-                raise ValueError(f"{arm}: pair-span identity mismatch for {sequence_id}")
-            isolated = len(isolated_pairs(truth))
-            if isolated != metadata["isolated_pair_counts"].get("isolated", 0):
-                raise ValueError(f"{arm}: isolated-pair identity mismatch for {sequence_id}")
-            if sequence_id in reference_truth and reference_truth[sequence_id] != truth:
-                raise ValueError("true pairs differ across arms")
-            reference_truth[sequence_id] = truth
-            if "sequence_sha256" in row and row["sequence_sha256"] != metadata["sequence_sha256"]:
+            authoritative = metadata_by_id[sequence_id]
+            if row.get("checkpoint_sha256") != checkpoint_sha256:
+                raise ValueError(f"{arm}: prediction checkpoint mismatch for {sequence_id}")
+            if row.get("sequence_sha256") != authoritative.sequence_sha256:
                 raise ValueError(f"{arm}: sequence identity mismatch for {sequence_id}")
+            length = row.get("sequence_length")
+            if isinstance(length, bool) or not isinstance(length, int) or length != authoritative.sequence_length:
+                raise ValueError(f"{arm}: sequence length mismatch for {sequence_id}")
+            truth = pairs(row["true_pairs"])
+            if truth != authoritative.true_pairs:
+                raise ValueError(f"{arm}: authoritative true-pair mismatch for {sequence_id}")
+            pred = pairs(row["predicted_pairs"])
+            _validate_bounds(pred, authoritative.sequence_length, f"{arm} {sequence_id}")
             raw = None
             if "raw_scores" in row:
                 raw = [(int(i), int(j), float(score)) for i, j, score in row["raw_scores"]]
@@ -285,17 +558,16 @@ def bind_predictions(
                     raise ValueError(f"{arm}: invalid raw score")
                 if len({(i, j) for i, j, _ in raw}) != len(raw):
                     raise ValueError(f"{arm}: duplicate raw-score candidate")
-            by_id[sequence_id] = Record(sequence_id, "", truth, pred, raw)
-        bound[arm] = by_id
-    ordered = {}
-    metadata_by_id = {record.sequence_id: record for record in panel_records}
-    for arm, by_id in bound.items():
-        ordered[arm] = [
-            Record(sid, metadata_by_id[sid].family_id, reference_truth[sid],
-                   by_id[sid].predicted_pairs, by_id[sid].raw_scores)
-            for sid in sorted(expected_ids)
-        ]
-    return ordered
+                _validate_bounds(((i, j) for i, j, _ in raw), authoritative.sequence_length,
+                                 f"{arm} raw scores {sequence_id}")
+            by_id[sequence_id] = Record(
+                sequence_id, authoritative.family_id, authoritative.true_pairs, pred, raw,
+                authoritative.sequence_length, authoritative.sequence_sha256, authoritative.cluster_id,
+            )
+        if set(by_id) != expected_ids:
+            raise ValueError(f"{arm}: predictions do not exactly cover frozen dev IDs")
+        bound[arm] = [by_id[sequence_id] for sequence_id in sorted(expected_ids)]
+    return bound
 
 
 def make_arrays(records: list[Record], reference: list[Record]) -> ArmArrays:
@@ -410,6 +682,8 @@ def evaluate_arrays(
 ) -> dict:
     ci_contract_pass = resamples == 2000 and seed == 20261118
     boot = BootstrapSpace(records, resamples, seed)
+    family_boot = FamilyClusterBootstrapSpace(records, resamples, seed)
+    eligible_families = {boot.family_ids[index] for index in boot.eligible}
 
     def series(arm: str, metric: str, subgroup: str | None = None):
         data = arrays[arm]
@@ -417,48 +691,82 @@ def evaluate_arrays(
             data.stem_counts if metric.startswith("micro_stem") else data.pair_counts
         )
         sampled = counts[boot.indices].sum(axis=1)
+        family_sampled = family_boot.sample_counts(counts)
         observed_counts = counts.sum(axis=0)
         if metric.startswith("micro_"):
             index = {"precision": 0, "recall": 1, "f1": 2}[metric.rsplit("_", 1)[1]]
-            return prf(observed_counts)[index], np.asarray([prf(row)[index] for row in sampled])
+            return (
+                prf(observed_counts)[index],
+                np.asarray([prf(row)[index] for row in sampled]),
+                np.asarray([prf(row)[index] for row in family_sampled]),
+            )
         if subgroup:
             raise ValueError("subgroup bootstrap is micro-only")
         if metric == "macro_stem_f1":
-            return boot.macro(data.stem_sequence_f1)
-        index = {"precision": 0, "recall": 1, "f1": 2}[metric.rsplit("_", 1)[1]]
-        return boot.macro(data.pair_sequence_prf[:, index])
+            observed, paired_sample = boot.macro(data.stem_sequence_f1)
+            family_observed, family_sample = family_boot.macro(
+                data.stem_sequence_f1, eligible_families,
+            )
+        else:
+            index = {"precision": 0, "recall": 1, "f1": 2}[metric.rsplit("_", 1)[1]]
+            observed, paired_sample = boot.macro(data.pair_sequence_prf[:, index])
+            family_observed, family_sample = family_boot.macro(
+                data.pair_sequence_prf[:, index], eligible_families,
+            )
+        if observed != family_observed:
+            raise AssertionError("paired and family-cluster macro observations differ")
+        return observed, paired_sample, family_sample
 
     comparisons = {}
     for control in ("matched_control", "destroy_interval_shuffle", "independent_context"):
         metrics = {}
         for metric in GLOBAL_METRICS:
-            e_observed, e_sample = series("ensemble_context", metric)
-            c_observed, c_sample = series(control, metric)
+            e_observed, e_sample, e_family_sample = series("ensemble_context", metric)
+            c_observed, c_sample, c_family_sample = series(control, metric)
             delta = e_sample - c_sample
+            family_delta = e_family_sample - c_family_sample
             metrics[metric] = {
                 "ensemble_context": e_observed, control: c_observed,
                 "delta": e_observed - c_observed,
                 "ci95": [float(x) for x in np.quantile(delta, (0.025, 0.975))],
+                "family_cluster_sensitivity_ci95": [
+                    float(x) for x in np.quantile(family_delta, (0.025, 0.975))
+                ],
             }
         subgroups = {}
         for subgroup in list(TARGETS) + ["competition:reference_conflicts"]:
             subgroup_metrics = {}
             for metric in ("precision", "recall", "f1"):
-                e_observed, e_sample = series("ensemble_context", "micro_pair_" + metric, subgroup)
-                c_observed, c_sample = series(control, "micro_pair_" + metric, subgroup)
+                e_observed, e_sample, e_family_sample = series(
+                    "ensemble_context", "micro_pair_" + metric, subgroup,
+                )
+                c_observed, c_sample, c_family_sample = series(
+                    control, "micro_pair_" + metric, subgroup,
+                )
                 delta = e_sample - c_sample
+                family_delta = e_family_sample - c_family_sample
                 subgroup_metrics[metric] = {
                     "ensemble_context": e_observed, control: c_observed,
                     "delta": e_observed - c_observed,
                     "ci95": [float(x) for x in np.quantile(delta, (0.025, 0.975))],
+                    "family_cluster_sensitivity_ci95": [
+                        float(x) for x in np.quantile(family_delta, (0.025, 0.975))
+                    ],
                 }
             e_fn = arrays["ensemble_context"].subgroup_counts[subgroup][:, 2]
             c_fn = arrays[control].subgroup_counts[subgroup][:, 2]
             fn_delta = e_fn[boot.indices].sum(axis=1) - c_fn[boot.indices].sum(axis=1)
+            family_fn_delta = (
+                family_boot.sample_counts(e_fn[:, None])[:, 0]
+                - family_boot.sample_counts(c_fn[:, None])[:, 0]
+            )
             subgroup_metrics["fn_count"] = {
                 "ensemble_context": float(e_fn.sum()), control: float(c_fn.sum()),
                 "delta": float(e_fn.sum() - c_fn.sum()),
                 "ci95": [float(x) for x in np.quantile(fn_delta, (0.025, 0.975))],
+                "family_cluster_sensitivity_ci95": [
+                    float(x) for x in np.quantile(family_fn_delta, (0.025, 0.975))
+                ],
             }
             subgroups[subgroup] = subgroup_metrics
         comparisons[control] = {"metrics": metrics, "subgroups": subgroups}
@@ -491,7 +799,15 @@ def evaluate_arrays(
             "bootstrap": {"unit": "paired_sequence", "resamples": resamples,
                           "seed": seed, "confidence": 0.95,
                           "n_sequences": len(records),
-                          "n_macro_eligible_families": len(boot.eligible)}}
+                          "n_macro_eligible_families": len(boot.eligible),
+                          "family_cluster_sensitivity": {
+                              "unit": "registered_family_cluster; unmapped rows retained as labeled singletons",
+                              "role": "SENSITIVITY_ONLY_NEVER_REPLACES_PAIRED_SEQUENCE_CI_OR_GATES",
+                              "resamples": resamples, "seed": seed, "confidence": 0.95,
+                              "n_clusters": len(family_boot.rows),
+                              "n_mapped_families": family_boot.n_mapped_families,
+                              "n_unmapped_singleton_clusters": family_boot.n_unmapped_singletons,
+                          }}}
 
 
 def verify_gates(evaluation: dict) -> dict:
@@ -561,13 +877,19 @@ def raw_auxiliary(arms: dict[str, list[Record]]) -> dict:
 
 def evaluate(
     registry_path: Path, panel_id: str, prediction_paths: dict[str, Path],
+    run_metadata_paths: dict[str, Path], gec_config_path: Path | None = None,
     resamples: int = 2000, seed: int = 20261118,
 ) -> dict:
     if set(prediction_paths) != set(ARMS):
         raise ValueError(f"exactly four arms required: {ARMS}")
+    if gec_config_path is None:
+        gec_config_path = Path(__file__).resolve().parents[1] / "configs/gec_four_arm_convergence_v1.json"
     registry, panel_records, panel_info = load_panel(registry_path, panel_id)
+    run_validation = validate_run_metadata(
+        registry_path, gec_config_path, run_metadata_paths, panel_info,
+    )
     arm_rows = {arm: read_jsonl(path) for arm, path in prediction_paths.items()}
-    arms = bind_predictions(panel_records, arm_rows, panel_info["panel_rows"])
+    arms = bind_predictions(panel_records, arm_rows, run_validation)
     reference = arms["matched_control"]
     arrays = {arm: make_arrays(records, reference) for arm, records in arms.items()}
     result = evaluate_arrays(reference, arrays, resamples=resamples, seed=seed)
@@ -581,7 +903,12 @@ def evaluate(
         "frozen_utc": registry["frozen_utc"], "artifacts": panel_info["identities"],
         "prediction_sha256": {arm: sha256(path) for arm, path in prediction_paths.items()},
         "route_scope": "model development only; no external test data",
+        "leakage_eligibility": {
+            "exact_train_id_overlap": False, "train_cluster_overlap": False,
+            "planned_train_ids_sha256": run_validation["planned_train_ids_sha256"],
+        },
     }
+    result["run_validation"] = run_validation
     result["metric_definitions"] = {
         "macro": "equal-weight mapped families with >=30 sequences and >=500 true pairs; within-family mean of per-sequence metrics",
         "stem": "maximal inward/outward stacking connected components; exact whole-stem matches",
@@ -590,6 +917,8 @@ def evaluate(
         "target": "long-span recall >0; isolated recall and precision >0; route eligible and positive after removing any one family or sequence",
         "control_advantage": "strictly positive micro/macro pair-F1 and micro/macro stem-F1 delta",
         "raw_ranking": "auxiliary only; never included in gates",
+        "subgroup_confusion": "TP/FP/FN require truth and prediction to occupy the same selected environment",
+        "family_cluster_sensitivity": "additional sensitivity interval only; paired-sequence ci95 and gates are unchanged",
     }
     return result
 
@@ -597,9 +926,13 @@ def evaluate(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--registry", type=Path, required=True)
-    parser.add_argument("--panel-id", default="tr1c_rfam_family_dev_v1")
+    parser.add_argument("--panel-id", default="tr1c_cluster80_dev_v1")
+    parser.add_argument("--gec-config", type=Path,
+                        default=Path(__file__).resolve().parents[1] / "configs/gec_four_arm_convergence_v1.json")
     parser.add_argument("--prediction", action="append", required=True,
                         help="ARM=/path/to/arm.jsonl; repeat for all four arms")
+    parser.add_argument("--run-metadata", action="append", required=True,
+                        help="ARM=/path/to/run_meta.json; repeat for all four arms")
     parser.add_argument("--output", type=Path, help="new report path; inputs are read-only")
     args = parser.parse_args(argv)
     paths = {}
@@ -608,8 +941,16 @@ def main(argv: list[str] | None = None) -> int:
         if not separator or arm in paths:
             parser.error("each --prediction must be a unique ARM=PATH")
         paths[arm] = Path(path)
+    metadata_paths = {}
+    for item in args.run_metadata:
+        arm, separator, path = item.partition("=")
+        if not separator or arm in metadata_paths:
+            parser.error("each --run-metadata must be a unique ARM=PATH")
+        metadata_paths[arm] = Path(path)
     try:
-        result = evaluate(args.registry, args.panel_id, paths)
+        result = evaluate(
+            args.registry, args.panel_id, paths, metadata_paths, args.gec_config,
+        )
         encoded = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
         if args.output:
             if args.output.exists():

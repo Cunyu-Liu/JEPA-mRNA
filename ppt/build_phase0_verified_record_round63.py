@@ -102,7 +102,7 @@ slide = new_slide(
     20,
     "20 · FOLDNAR PHASE 0A / FROZEN MODEL-DEVELOPMENT PANELS",
     "冻结开发面板：多环境计数与泄漏边界",
-    "42,564 条 TR1c 原始记录 · split 在任何这些 ID 的训练前冻结 · 外部测试集不参与开发",
+    "42,564 条 TR1c 原始记录 · 先于 GEC split-specific 训练冻结 · legacy TR1c-trained 模型不可用 · 外部测试集不参与开发",
 )
 table(
     slide, 0.78, 1.82, (2.52, 1.48, 1.25, 1.84, 1.39, 1.30), 0.36,

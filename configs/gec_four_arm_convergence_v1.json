@@ -16,7 +16,8 @@
     "train_ids": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_train_ids.txt",
     "validation_ids": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_dev_ids.txt",
     "shared_init": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts/prior_alignment_v1/init/shared_init_seed0.pt",
-    "shared_init_sha256": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e"
+    "shared_init_sha256": "cb861921d35f1f014f7f7ad21bbcb579cfaa2503e01d1a7a3eb3b02f2fa7e12e",
+    "model_dev_registry_sha256": "62ae08e06f1b3a291c2de2a9cf52d2e57ec55570396fc810cd3638612c774902"
   },
   "model": {
     "d_z": 128,
@@ -28,10 +29,22 @@
     "first_pass": "exact_noncrossing_inside_outside_float64_stop_gradient",
     "turner": "off",
     "span_buckets": {
-      "short": [4, 10],
-      "medium": [11, 30],
-      "long": [31, 100],
-      "very_long": [101, null]
+      "short": [
+        4,
+        10
+      ],
+      "medium": [
+        11,
+        30
+      ],
+      "long": [
+        31,
+        100
+      ],
+      "very_long": [
+        101,
+        null
+      ]
     },
     "geometry_channels_in_order": [
       "log_span",
@@ -56,9 +69,12 @@
     "seed": 0,
     "batch_size": 4,
     "head_lr": 0.0001,
-    "backbone_lr": 0.000001,
+    "backbone_lr": 1e-06,
     "optimizer": "AdamW",
-    "betas": [0.9, 0.98],
+    "betas": [
+      0.9,
+      0.98
+    ],
     "weight_decay": 0.0,
     "optimizer_warmup_steps": 5,
     "dropout": 0.0,
@@ -77,7 +93,7 @@
   "convergence": {
     "validation_every": 500,
     "patience": 5,
-    "min_delta": 0.000001,
+    "min_delta": 1e-06,
     "eligible_only_at_terminal_unfreeze": true,
     "restore_best_eligible": true,
     "stop_reason": "CONVERGED_VALIDATION_NLL_AFTER_TERMINAL_UNFREEZE"
@@ -88,6 +104,10 @@
     "validation_record_limit": 2,
     "validation_every": 0,
     "explicit_device": "cuda:0",
-    "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_smoke_v1"
+    "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_smoke_v2/generation_02",
+    "artifact_generation": "gec_smoke_v2",
+    "controlled_interrupt_after_step": 1,
+    "validation_destroy_step": 0,
+    "batch_norm_policy": "inherited_padded_batch_train_once_plus_frozen_singleton_eval"
   }
 }

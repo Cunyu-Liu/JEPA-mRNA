@@ -107,25 +107,43 @@ def test_exhaustive_short_sequence_logz_and_marginals_match_enumeration():
 
 
 def test_symmetry_legality_mass_and_canonical_min_loop():
-    for min_loop in (1, 2, 3, 4, 5):
-        sequence = "AUAUAUAUAUAU"
-        scores, _ = _case(sequence)
-        mask = canonical_pair_mask_v1(sequence, min_loop=min_loop)
-        result = compute_gec_context_v1(scores, mask)
-        expected = torch.as_tensor(harness.valid_pair_mask(sequence, min_loop=min_loop))
-        assert torch.equal(result.legal_mask, expected)
-        assert torch.equal(result.marginals, result.marginals.transpose(0, 1))
-        assert torch.equal(result.context, result.context.transpose(0, 1))
-        assert torch.all((result.marginals >= 0.0) & (result.marginals <= 1.0))
-        assert torch.all(result.marginals.sum(0) <= 1.0 + GEC_MASS_ATOL_V1)
-        assert torch.isfinite(result.log_z)
-        assert torch.count_nonzero(result.marginals[~expected]) == 0
-        assert torch.count_nonzero(result.context[~expected]) == 0
-        assert torch.count_nonzero(result.context.diagonal()) == 0
-        for i in range(len(sequence)):
-            for j in range(len(sequence)):
-                if abs(j - i) <= min_loop or (sequence[i], sequence[j]) not in harness.PAIRS:
-                    assert not result.legal_mask[i, j]
+    sequence = "AUAUAUAUAUAU"
+    scores, mask = _case(sequence)
+    result = compute_gec_context_v1(scores, mask)
+    expected = torch.as_tensor(harness.valid_pair_mask(sequence, min_loop=3))
+    assert torch.equal(result.legal_mask, expected)
+    assert torch.equal(result.marginals, result.marginals.transpose(0, 1))
+    assert torch.equal(result.context, result.context.transpose(0, 1))
+    assert torch.all((result.marginals >= 0.0) & (result.marginals <= 1.0))
+    assert torch.all(result.marginals.sum(0) <= 1.0 + GEC_MASS_ATOL_V1)
+    assert torch.isfinite(result.log_z)
+    assert torch.count_nonzero(result.marginals[~expected]) == 0
+    assert torch.count_nonzero(result.context[~expected]) == 0
+    assert torch.count_nonzero(result.context.diagonal()) == 0
+    for i in range(len(sequence)):
+        for j in range(len(sequence)):
+            if abs(j - i) <= 3 or (sequence[i], sequence[j]) not in harness.PAIRS:
+                assert not result.legal_mask[i, j]
+
+
+@pytest.mark.parametrize("min_loop", [0, 1, 2, 4, 5])
+def test_noncanonical_min_loop_mask_construction_is_rejected(min_loop):
+    with pytest.raises(ValueError, match="frozen canonical min_loop=3"):
+        canonical_pair_mask_v1("AUAUAUAUAUAU", min_loop=min_loop)
+
+
+@pytest.mark.parametrize("min_loop", [0, 1, 2])
+def test_noncanonical_min_loop_masks_are_rejected_before_dp(min_loop, monkeypatch):
+    sequence = "AUAUAUAUAUAU"
+    scores = torch.zeros(len(sequence), len(sequence), dtype=torch.float64)
+    mask = torch.as_tensor(harness.valid_pair_mask(sequence, min_loop=min_loop))
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("DP ran before rejecting a non-canonical min-loop mask")
+
+    monkeypatch.setattr(harness, "inside_outside", forbidden)
+    with pytest.raises(ValueError, match="min_loop=3.*j-i <= 3"):
+        compute_gec_context_v1(scores, mask)
 
 
 def test_interval_feature_values_and_partition_match_independent_loops():
@@ -139,6 +157,31 @@ def test_interval_feature_values_and_partition_match_independent_loops():
         parts = result.context[i, j].numpy()
         reconstructed = parts.sum() - parts[0] + result.marginals[i, j].item()
         assert reconstructed == pytest.approx(total, abs=2e-10)
+
+
+def test_independent_interval_features_match_independent_loops_for_every_channel():
+    scores, mask = _case("AUAUAUAUAUAU", seed=29)
+    result = compute_gec_context_v1(scores, mask, mode="independent_context")
+    probabilities = torch.where(
+        mask, torch.sigmoid(scores), torch.zeros_like(scores)
+    )
+    expected = _reference_features(probabilities.numpy(), mask.numpy())
+    for channel in range(len(GEC_FEATURE_NAMES_V1)):
+        assert np.any(expected[..., channel] != 0.0)
+    np.testing.assert_allclose(result.context.numpy(), expected, atol=2e-12, rtol=2e-12)
+
+
+def test_independent_strict_inside_excludes_illegal_sigmoid_probabilities():
+    sequence = "ACCCCU"
+    scores = torch.zeros(len(sequence), len(sequence), dtype=torch.float64)
+    mask = canonical_pair_mask_v1(sequence)
+    result = compute_gec_context_v1(scores, mask, mode="independent_context")
+    assert result.context[0, 5, 3].item() == 0.0
+    probabilities = torch.where(
+        mask, torch.sigmoid(scores), torch.zeros_like(scores)
+    )
+    expected = _reference_features(probabilities.numpy(), mask.numpy())
+    np.testing.assert_allclose(result.context.numpy(), expected, atol=2e-12, rtol=2e-12)
 
 
 @pytest.mark.parametrize(

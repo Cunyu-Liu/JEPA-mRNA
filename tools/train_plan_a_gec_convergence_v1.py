@@ -12,6 +12,8 @@ import sys
 import time
 from pathlib import Path
 
+os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+
 import numpy as np
 import torch
 
@@ -49,6 +51,54 @@ from tools.train_plan_a_clean_head_p1 import (
 from torch.utils.checkpoint import checkpoint as gradient_checkpoint
 
 
+MODEL_DEV_REGISTRY_SHA256 = "62ae08e06f1b3a291c2de2a9cf52d2e57ec55570396fc810cd3638612c774902"
+RUN_META_SCHEMA_V2 = "foldnar.gec_training_run.v2"
+RUN_IDENTITY_SCHEMA_V2 = "foldnar.gec_run_identity.v2"
+SMOKE_IDENTITY_SCHEMA_V2 = "foldnar.gec_smoke_artifact_identity.v2"
+SMOKE_ARTIFACT_GENERATION_V2 = "gec_smoke_v2"
+VALIDATION_DESTROY_STEP_V2 = 0
+BATCH_NORM_POLICY_V2 = "inherited_padded_batch_train_once_plus_frozen_singleton_eval"
+CODE_FILES = (
+    "src/rnajepa/gec_numeric_v1.py",
+    "src/rnajepa/gec_context.py",
+    "tools/train_plan_a_gec_convergence_v1.py",
+    "tools/init_gec_residual_v1.py",
+    "tools/run_gec_four_arm_smoke_v1.sh",
+    "tools/verify_gec_smoke_v1.py",
+    "configs/gec_four_arm_convergence_v1.json",
+    "tests/test_gec_numeric_v1.py",
+    "tests/test_gec_context.py",
+    "tests/test_gec_convergence.py",
+)
+
+
+def build_code_manifest(repo: str | Path = REPO) -> dict:
+    repo = Path(repo)
+    return {
+        name: {"sha256": sha256_file(repo / name), "bytes": (repo / name).stat().st_size}
+        for name in CODE_FILES
+    }
+
+
+def code_manifest_sha256(manifest: dict) -> str:
+    return hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
+
+
+def _registry_path(config: dict) -> Path:
+    path = Path(config["assets"]["registry"])
+    return path if path.is_absolute() else REPO / path
+
+
+def require_model_dev_registry(config: dict) -> tuple[Path, dict]:
+    path = _registry_path(config)
+    actual = sha256_file(path)
+    if actual != MODEL_DEV_REGISTRY_SHA256:
+        raise ValueError(f"model-development registry SHA256 mismatch: {actual}")
+    if config["assets"].get("model_dev_registry_sha256") != MODEL_DEV_REGISTRY_SHA256:
+        raise ValueError("frozen config does not pin the required model-development registry")
+    return path, json.loads(path.read_text())
+
+
 def _atomic_json(value, path: str | Path) -> None:
     path = Path(path)
     temporary = path.with_name(path.name + f".tmp.{os.getpid()}")
@@ -66,8 +116,172 @@ def _finite_float_or_none(value) -> float | None:
     return value if math.isfinite(value) else None
 
 
+def _read_previous_run_meta(path: Path) -> dict | None:
+    if not path.exists():
+        return None
+    previous = json.loads(path.read_text())
+    if not isinstance(previous, dict) or previous.get("schema_version") != RUN_META_SCHEMA_V2:
+        raise ValueError("previous run_meta is missing or has an unsupported schema")
+    if not isinstance(previous.get("run_identity"), dict):
+        raise ValueError("previous run_meta has no complete run identity")
+    if previous.get("status") not in {
+        "running", "interrupted", "diverged", "engineering_smoke_completed", "converged",
+    }:
+        raise ValueError(f"invalid previous run status: {previous.get('status')}")
+    return previous
+
+
+def build_smoke_artifact_identity(
+    config_path: str | Path,
+    shared_init: str | Path,
+    gec_init: str | Path,
+    repo: str | Path = REPO,
+) -> dict:
+    config = load_gec_config(config_path)
+    residual_initial = torch.load(gec_init, map_location="cpu", weights_only=False)
+    registry_path, _ = require_model_dev_registry(config)
+    assets = config["assets"]
+    manifest = build_code_manifest(repo)
+    return {
+        "schema_version": SMOKE_IDENTITY_SCHEMA_V2,
+        "artifact_generation": SMOKE_ARTIFACT_GENERATION_V2,
+        "code_manifest": manifest,
+        "code_manifest_sha256": code_manifest_sha256(manifest),
+        "gec_config": str(Path(config_path).resolve()),
+        "gec_config_sha256": sha256_file(config_path),
+        "source_contract": str(Path(config["source_contract"]).resolve()),
+        "source_contract_sha256": sha256_file(config["source_contract"]),
+        "data": str(Path(assets["data"]).resolve()),
+        "data_sha256": sha256_file(assets["data"]),
+        "model_dev_registry": str(registry_path.resolve()),
+        "model_dev_registry_sha256": MODEL_DEV_REGISTRY_SHA256,
+        "train_ids": str(Path(assets["train_ids"]).resolve()),
+        "train_ids_sha256": sha256_file(assets["train_ids"]),
+        "validation_ids": str(Path(assets["validation_ids"]).resolve()),
+        "validation_ids_sha256": sha256_file(assets["validation_ids"]),
+        "shared_init": str(Path(shared_init).resolve()),
+        "shared_init_sha256": sha256_file(shared_init),
+        "gec_init": str(Path(gec_init).resolve()),
+        "gec_init_sha256": sha256_file(gec_init),
+        "initial_residual_tensor_sha256": residual_initial["residual_tensor_sha256"],
+        "smoke": config["smoke"],
+    }
+
+
+def validate_smoke_artifact_identity(document: dict, expected: dict) -> None:
+    if document != expected:
+        differing = sorted(key for key in set(document) | set(expected)
+                           if document.get(key) != expected.get(key))
+        raise ValueError(f"stale or invalid smoke artifact identity: {differing}")
+
+
+def build_run_identity(
+    args: argparse.Namespace,
+    config: dict,
+    train_records: list[dict],
+    validation_records: list[dict],
+    residual_initial: dict,
+) -> dict:
+    registry_path, _ = require_model_dev_registry(config)
+    assets = config["assets"]
+    manifest = build_code_manifest()
+    identity = {
+        "schema_version": RUN_IDENTITY_SCHEMA_V2,
+        "arm": args.arm,
+        "engineering_smoke": bool(args.engineering_smoke),
+        "code_manifest": manifest,
+        "code_manifest_sha256": code_manifest_sha256(manifest),
+        "gec_config_sha256": sha256_file(args.gec_config),
+        "source_contract_sha256": sha256_file(config["source_contract"]),
+        "shared_init_sha256": sha256_file(args.shared_init),
+        "gec_init_sha256": sha256_file(args.gec_init),
+        "initial_residual_tensor_sha256": residual_initial["residual_tensor_sha256"],
+        "model_dev_registry": str(registry_path.resolve()),
+        "model_dev_registry_sha256": MODEL_DEV_REGISTRY_SHA256,
+        "train_data_sha256": assets["data_sha256"],
+        "train_ids_sha256": sha256_file(assets["train_ids"]),
+        "validation_ids_sha256": sha256_file(assets["validation_ids"]),
+        "train_record_ids": [row["id"] for row in train_records],
+        "validation_record_ids": [row["id"] for row in validation_records],
+        "validation_destroy_step": VALIDATION_DESTROY_STEP_V2,
+        "batch_norm_policy": BATCH_NORM_POLICY_V2,
+        "determinism": "torch_and_cudnn_deterministic_tf32_off",
+        "terminal_unfrozen_blocks": config["training"]["max_unfrozen_blocks"],
+    }
+    if args.engineering_smoke:
+        identity["smoke_artifact_identity_sha256"] = sha256_file(
+            Path(config["smoke"]["artifact_root"]) / "smoke_artifact_identity.json"
+        )
+    return identity
+
+
+def validate_run_identity(previous: dict, current_identity: dict) -> None:
+    previous_identity = previous.get("run_identity")
+    if previous_identity != current_identity:
+        differing = sorted(
+            key for key in set(previous_identity or {}) | set(current_identity)
+            if (previous_identity or {}).get(key) != current_identity.get(key)
+        )
+        raise ValueError(f"resume identity mismatch: {differing}")
+    for key in ("arm", "gec_config_sha256", "shared_init_sha256", "gec_init_sha256",
+                "initial_residual_tensor_sha256", "train_record_ids", "validation_record_ids"):
+        if previous.get(key) != current_identity.get(key):
+            raise ValueError(f"resume metadata identity mismatch: {key}")
+
+
+def validate_checkpoint_identity(state: dict, current_identity: dict) -> None:
+    if state.get("format") != "foldnar.gec_checkpoint.v2":
+        raise ValueError("unsupported GEC checkpoint format")
+    if state.get("run_identity") != current_identity:
+        raise ValueError("checkpoint run identity mismatch")
+
+
+def model_tensor_hashes(encoder, head, residual) -> dict[str, str]:
+    return {
+        "encoder": tensor_state_sha256(encoder.state_dict()),
+        "head": tensor_state_sha256(head.state_dict()),
+        "residual": tensor_state_sha256(residual.state_dict()),
+    }
+
+
+def validate_converged_reentry(previous: dict, state: dict, best: dict, current_identity: dict) -> None:
+    validate_checkpoint_identity(state, current_identity)
+    validate_checkpoint_identity(best, current_identity)
+    best_step = previous.get("restored_best_step")
+    if (not previous.get("converged") or best_step is None
+            or best_step != previous.get("convergence", {}).get("best_step")):
+        raise ValueError("converged run metadata has no restored best eligible state")
+    if (state.get("checkpoint_phase") != "restored_best_eligible"
+            or state.get("terminal_status") != "converged"
+            or int(state.get("step", -1)) != best_step
+            or best.get("checkpoint_phase") != "best_eligible"
+            or int(best.get("step", -1)) != best_step):
+        raise ValueError("resume.pt does not represent the restored best eligible state")
+    if state.get("model_tensor_sha256") != best.get("model_tensor_sha256"):
+        raise ValueError("restored resume and best model tensor identities differ")
+    if int(state.get("n_unfrozen", -1)) != current_identity.get("terminal_unfrozen_blocks", 20):
+        raise ValueError("restored best checkpoint is not at terminal unfreeze")
+
+
+def _batch_norm_running_state(head) -> list[tuple[torch.nn.BatchNorm2d, torch.Tensor, torch.Tensor, torch.Tensor]]:
+    modules = [] if head.resnet2d is None else [
+        module for module in head.resnet2d.modules() if isinstance(module, torch.nn.BatchNorm2d)
+    ]
+    return [(module, module.running_mean.clone(), module.running_var.clone(),
+             module.num_batches_tracked.clone()) for module in modules]
+
+
+def _restore_batch_norm_running_state(saved) -> None:
+    with torch.no_grad():
+        for module, running_mean, running_var, num_batches_tracked in saved:
+            module.running_mean.copy_(running_mean)
+            module.running_var.copy_(running_var)
+            module.num_batches_tracked.copy_(num_batches_tracked)
+
+
 def load_gec_config(path: str | Path) -> dict:
     config = json.loads(Path(path).read_text())
+    require_model_dev_registry(config)
     if config.get("config_id") != "gec_four_arm_implementation_v1":
         raise ValueError("unexpected GEC implementation config")
     if tuple(config.get("arms", ())) != (
@@ -115,10 +329,7 @@ def load_registered_records(
     data_path = Path(assets["data"])
     if verify_data_hash and sha256_file(data_path) != assets["data_sha256"]:
         raise ValueError("TR1c source data SHA256 mismatch")
-    registry_path = Path(assets["registry"])
-    if not registry_path.is_absolute():
-        registry_path = REPO / registry_path
-    registry = json.loads(registry_path.read_text())
+    registry_path, registry = require_model_dev_registry(config)
     panel_id = "tr1c_cluster80_dev_v1"
     asset = _panel_asset(registry, panel_id, "train_ids" if split == "train" else "dev_ids")
     ids_path = assets["train_ids" if split == "train" else "validation_ids"]
@@ -178,6 +389,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--train-record-limit", type=int, default=0)
     parser.add_argument("--validation-record-limit", type=int, default=0)
     parser.add_argument("--engineering-smoke", action="store_true")
+    parser.add_argument("--smoke-interrupt-after-step", type=int, default=0)
     parser.add_argument("--zchunk", type=int, default=64)
     parser.add_argument("--abort-loss-threshold", type=float, default=0.0)
     parser.add_argument("--abort-gnorm-threshold", type=float, default=0.0)
@@ -186,6 +398,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 def validate_training_args(args: argparse.Namespace, config: dict) -> None:
     validate_gec_arm_v1(args.arm)
+    if os.environ.get("RN_CUDA_INSIDE") != "1":
+        raise ValueError("GEC requires RN_CUDA_INSIDE=1; CPU fallback is forbidden")
     training = config["training"]
     exact = {
         "seed": training["seed"], "batch_size": training["batch_size"],
@@ -224,6 +438,16 @@ def validate_training_args(args: argparse.Namespace, config: dict) -> None:
             raise ValueError("smoke output must be under the registered GEC smoke root")
         if args.save_every != 1:
             raise ValueError("smoke requires a resume checkpoint after every step")
+        if args.smoke_interrupt_after_step not in (0, smoke["controlled_interrupt_after_step"]):
+            raise ValueError("invalid controlled smoke interruption step")
+        if smoke["artifact_generation"] != SMOKE_ARTIFACT_GENERATION_V2:
+            raise ValueError("smoke artifact generation is not gec_smoke_v2")
+        if smoke["validation_destroy_step"] != VALIDATION_DESTROY_STEP_V2:
+            raise ValueError("validation destroy identity must be frozen at step zero")
+        if smoke["batch_norm_policy"] != BATCH_NORM_POLICY_V2:
+            raise ValueError("unexpected BatchNorm train/eval policy")
+    elif args.smoke_interrupt_after_step:
+        raise ValueError("controlled interruption is restricted to engineering smoke")
     else:
         if args.steps != 0:
             raise ValueError("non-smoke GEC training has no fixed step cap; use --steps 0")
@@ -285,11 +509,21 @@ def main() -> None:
     args = build_parser().parse_args()
     config = load_gec_config(args.gec_config)
     validate_training_args(args, config)
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.allow_tf32 = False
+    torch.backends.cuda.matmul.allow_tf32 = False
     device = require_explicit_cuda(args.device)
     output = Path(args.out)
     output.mkdir(parents=True, exist_ok=True)
     resume_path = output / "resume.pt"
     meta_path = output / "run_meta.json"
+    previous = _read_previous_run_meta(meta_path)
+    if resume_path.exists() and previous is None:
+        raise ValueError("refusing to resume without a valid previous run_meta.json")
+    if previous is not None and not resume_path.exists():
+        raise ValueError("refusing to overwrite previous run_meta without resume.pt")
     if not resume_path.exists():
         existing = [name for name in ("train_log.jsonl", "batch_order.jsonl", "validation_log.jsonl")
                     if (output / name).exists() and (output / name).stat().st_size > 0]
@@ -357,12 +591,25 @@ def main() -> None:
         min_delta=args.validation_min_delta,
     )
     initial_residual_hash = tensor_state_sha256(residual.state_dict())
+    if args.engineering_smoke:
+        artifact_path = Path(config["smoke"]["artifact_root"]) / "smoke_artifact_identity.json"
+        if not artifact_path.is_file():
+            raise ValueError("missing current gec_smoke_v2 artifact identity document")
+        artifact = json.loads(artifact_path.read_text())
+        expected_artifact = build_smoke_artifact_identity(
+            args.gec_config, args.shared_init, args.gec_init,
+        )
+        validate_smoke_artifact_identity(artifact, expected_artifact)
+    run_identity = build_run_identity(
+        args, config, train_records, validation_records, residual_initial,
+    )
     n_unfrozen = 0
     start_step = 0
     optimizer_steps = 0
     meta = {
-        "schema_version": "foldnar.gec_training_run.v1",
+        "schema_version": RUN_META_SCHEMA_V2,
         "status": "running",
+        "run_identity": run_identity,
         "arm": args.arm,
         "engineering_smoke": args.engineering_smoke,
         "scientific_training_authorized": False,
@@ -370,6 +617,11 @@ def main() -> None:
         "gec_config_sha256": sha256_file(args.gec_config),
         "source_contract": config["source_contract"],
         "source_contract_sha256": sha256_file(config["source_contract"]),
+        "model_dev_registry": run_identity["model_dev_registry"],
+        "model_dev_registry_sha256": MODEL_DEV_REGISTRY_SHA256,
+        "train_data_sha256": run_identity["train_data_sha256"],
+        "train_ids_sha256": run_identity["train_ids_sha256"],
+        "validation_ids_sha256": run_identity["validation_ids_sha256"],
         "shared_init": args.shared_init,
         "shared_init_sha256": sha256_file(args.shared_init),
         "gec_init": args.gec_init,
@@ -392,23 +644,56 @@ def main() -> None:
             "cuda": torch.version.cuda,
         },
         "decoder": config["model"]["decoder"],
+        "validation_destroy_step": VALIDATION_DESTROY_STEP_V2,
+        "batch_norm_policy": BATCH_NORM_POLICY_V2,
+        "determinism": {
+            "torch_deterministic_algorithms": True,
+            "cudnn_deterministic": True,
+            "cudnn_benchmark": False,
+            "tf32": False,
+            "CUBLAS_WORKSPACE_CONFIG": os.environ["CUBLAS_WORKSPACE_CONFIG"],
+        },
+        "compute_kernels": {
+            "inside_outside": "triton_cuda_float64",
+            "cpu_fallback": False,
+            "RN_CUDA_INSIDE": os.environ["RN_CUDA_INSIDE"],
+        },
+        "resume_history": [],
+        "controlled_interruption_steps": [],
         "backbone_report": report,
         "steps_completed": 0,
         "optimizer_steps": 0,
         "converged": False,
     }
-    _atomic_json(meta, meta_path)
-
-    if resume_path.exists():
-        previous = json.loads(meta_path.read_text()) if meta_path.exists() else {}
-        identity_keys = (
-            "arm", "gec_config_sha256", "shared_init_sha256", "gec_init_sha256",
-            "initial_residual_tensor_sha256", "train_record_ids", "validation_record_ids",
-        )
-        for key in identity_keys:
-            if previous.get(key) != meta[key]:
-                raise ValueError(f"resume identity mismatch: {key}")
+    if previous is not None:
+        validate_run_identity(previous, run_identity)
         state = torch.load(resume_path, map_location="cpu", weights_only=False)
+        validate_checkpoint_identity(state, run_identity)
+        if previous.get("resume_checkpoint_sha256") is not None:
+            if sha256_file(resume_path) != previous["resume_checkpoint_sha256"]:
+                raise ValueError("resume checkpoint SHA256 differs from previous run_meta")
+        if previous["status"] == "converged":
+            best = torch.load(output / "best.pt", map_location="cpu", weights_only=False)
+            validate_converged_reentry(previous, state, best, run_identity)
+            print(f"[gec] already converged arm={args.arm}; restored_best_step={state['step']}; no further training", flush=True)
+            return
+        if previous["status"] == "engineering_smoke_completed":
+            if int(state["step"]) != args.steps or int(state["optimizer_steps"]) != args.steps:
+                raise ValueError("completed smoke checkpoint step mismatch")
+            print(f"[gec] engineering smoke already complete arm={args.arm}; no further training", flush=True)
+            return
+        if state.get("checkpoint_phase") != "latest":
+            raise ValueError("non-terminal resume must use a latest-state checkpoint")
+        meta["resume_history"] = list(previous.get("resume_history", [])) + [{
+            "from_step": int(state["step"]),
+            "previous_status": previous["status"],
+            "resume_sha256": sha256_file(resume_path),
+        }]
+        meta["controlled_interruption_steps"] = list(previous.get("controlled_interruption_steps", []))
+    else:
+        _atomic_json(meta, meta_path)
+
+    if previous is not None:
         encoder.load_state_dict(state["encoder"], strict=True)
         head.load_state_dict(state["head"], strict=True)
         residual.load_state_dict(state["residual"], strict=True)
@@ -462,6 +747,7 @@ def main() -> None:
             for start in range(0, max_length, zchunk)
         ]
         pair_representation = chunks[0] if len(chunks) == 1 else torch.cat(chunks, dim=2)
+        batch_norm_state = _batch_norm_running_state(head)
         raw_scores = gradient_checkpoint(
             head.score_pair_matrix, pair_representation, head_ids, False, None, None,
             use_reentrant=False,
@@ -499,7 +785,7 @@ def main() -> None:
             losses.append(loss)
             final_scores.append(scores)
             context_log_z.append(float(numerics.log_z.detach()))
-        return torch.stack(losses).mean(), final_scores, context_log_z
+        return torch.stack(losses).mean(), final_scores, context_log_z, batch_norm_state
 
     def evaluate(step: int):
         encoder.eval()
@@ -508,21 +794,31 @@ def main() -> None:
         losses = []
         with torch.no_grad():
             for row in validation_records:
-                loss, _, _ = score_batch([row], step, 0)
+                loss, _, _, _ = score_batch([row], VALIDATION_DESTROY_STEP_V2, 0)
                 losses.append(float(loss.detach()))
         encoder.train()
         head.train()
         residual.train()
         return float(np.mean(losses))
 
-    def save_resume(step: int):
-        atomic_torch_save({
-            "step": step, "encoder": encoder.state_dict(), "head": head.state_dict(),
+    def training_checkpoint(step: int, phase: str, terminal_status: str = "running"):
+        return {
+            "format": "foldnar.gec_checkpoint.v2",
+            "checkpoint_phase": phase,
+            "terminal_status": terminal_status,
+            "run_identity": run_identity,
+            "step": int(step), "encoder": encoder.state_dict(), "head": head.state_dict(),
             "residual": residual.state_dict(), "optimizer": optimizer.state_dict(),
             "scheduler": scheduler.state_dict(), "n_unfrozen": n_unfrozen,
             "optimizer_steps": optimizer_steps, "stream_state": stream.state,
             "convergence": convergence.state_dict(), "random_state": _random_state(),
-        }, resume_path)
+            "model_tensor_sha256": model_tensor_hashes(encoder, head, residual),
+            "validation_destroy_step": VALIDATION_DESTROY_STEP_V2,
+            "batch_norm_policy": BATCH_NORM_POLICY_V2,
+        }
+
+    def save_resume(step: int, phase: str = "latest", terminal_status: str = "running"):
+        atomic_torch_save(training_checkpoint(step, phase, terminal_status), resume_path)
 
     step = start_step
     divergence = ""
@@ -544,9 +840,12 @@ def main() -> None:
             "step": step, "epoch": epoch, "record_ids": [row["id"] for row in batch_records],
             "sequence_sha256": [row["sequence_sha256"] for row in batch_records],
         }, output / "batch_order.jsonl")
-        loss, _, log_z = score_batch(batch_records, step, epoch)
+        loss, _, log_z, batch_norm_state = score_batch(batch_records, step, epoch)
         optimizer.zero_grad(set_to_none=True)
-        loss.backward()
+        try:
+            loss.backward()
+        finally:
+            _restore_batch_norm_running_state(batch_norm_state)
         trainable = [parameter for parameter in head_parameters + encoder_parameters
                      if parameter.requires_grad]
         if any(parameter.grad is not None and not torch.isfinite(parameter.grad).all()
@@ -604,39 +903,69 @@ def main() -> None:
             }
             _append_jsonl(record, output / "validation_log.jsonl")
             if decision["save_best"]:
-                atomic_torch_save({
-                    "step": step, "model": {
-                        "encoder": encoder.state_dict(), "head": head.state_dict(),
-                        "residual": residual.state_dict(),
-                    },
-                    "validation_loss": validation_loss, "n_unfrozen": n_unfrozen,
-                    "gec_config_sha256": meta["gec_config_sha256"],
-                    "arm": args.arm, "convergence": convergence.state_dict(),
-                }, output / "best.pt")
+                best_payload = training_checkpoint(step, "best_eligible")
+                best_payload["model"] = {
+                    "encoder": encoder.state_dict(), "head": head.state_dict(),
+                    "residual": residual.state_dict(),
+                }
+                best_payload["validation_loss"] = validation_loss
+                atomic_torch_save(best_payload, output / "best.pt")
             if decision["stop"]:
                 early_stopped = True
         if args.save_every > 0 and step % args.save_every == 0:
             save_resume(step)
+        if args.smoke_interrupt_after_step == step:
+            meta.update({
+                "status": "interrupted", "steps_completed": int(step),
+                "optimizer_steps": optimizer_steps, "stop_reason": "ENGINEERING_SMOKE_CONTROLLED_INTERRUPT",
+                "convergence": convergence.state_dict(),
+                "final_residual_tensor_sha256": tensor_state_sha256(residual.state_dict()),
+                "residual_changed_from_initial": tensor_state_sha256(residual.state_dict()) != initial_residual_hash,
+                "final_unfrozen_blocks": n_unfrozen,
+                "controlled_interruption_steps": meta["controlled_interruption_steps"] + [int(step)],
+                "resume_checkpoint_sha256": sha256_file(resume_path),
+                "elapsed_seconds": time.time() - started,
+                "peak_cuda_bytes": torch.cuda.max_memory_allocated(device),
+            })
+            _atomic_json(meta, meta_path)
+            print(f"[gec] CONTROLLED_INTERRUPT arm={args.arm} step={step}", flush=True)
+            return
         if early_stopped:
             break
 
+    training_stopped_step = int(step)
+    training_stopped_optimizer_steps = optimizer_steps
     if early_stopped:
         best_path = output / "best.pt"
         best = torch.load(best_path, map_location="cpu", weights_only=False)
-        if int(best["n_unfrozen"]) != args.max_unfrozen_blocks:
-            raise ValueError("refusing to restore a pre-terminal checkpoint")
+        validate_checkpoint_identity(best, run_identity)
+        if best.get("checkpoint_phase") != "best_eligible" or int(best["n_unfrozen"]) != args.max_unfrozen_blocks:
+            raise ValueError("refusing to restore a non-best or pre-terminal checkpoint")
         encoder.load_state_dict(best["model"]["encoder"], strict=True)
         head.load_state_dict(best["model"]["head"], strict=True)
         residual.load_state_dict(best["model"]["residual"], strict=True)
+        optimizer.load_state_dict(best["optimizer"])
+        restore_scheduler_state(scheduler, best["scheduler"], best["optimizer"])
+        n_unfrozen = int(best["n_unfrozen"])
+        restore_unfrozen_blocks(blocks, n_unfrozen)
+        optimizer_steps = int(best["optimizer_steps"])
+        restore_batch_stream(stream, best["stream_state"], args.batch_size)
+        convergence.load_state_dict(best["convergence"])
+        _restore_random_state(best["random_state"])
+        step = int(best["step"])
+        save_resume(step, "restored_best_eligible", "converged")
         meta["best_checkpoint_sha256"] = sha256_file(best_path)
-    if not resume_path.exists() or (early_stopped and args.save_every <= 0):
+        meta["restored_best_step"] = step
+        meta["training_stopped_step"] = training_stopped_step
+        meta["training_stopped_optimizer_steps"] = training_stopped_optimizer_steps
+    elif not resume_path.exists() or training_stopped_step % max(1, args.save_every) != 0:
         save_resume(step)
     final_hash = tensor_state_sha256(residual.state_dict())
     meta.update({
         "status": "diverged" if divergence else (
             "converged" if early_stopped else "engineering_smoke_completed"
         ),
-        "steps_completed": int(step), "optimizer_steps": optimizer_steps,
+        "steps_completed": training_stopped_step, "optimizer_steps": optimizer_steps,
         "stop_reason": divergence or (
             config["convergence"]["stop_reason"] if early_stopped else "ENGINEERING_SMOKE_TWO_STEP_CAP"
         ),
@@ -648,6 +977,8 @@ def main() -> None:
         "elapsed_seconds": time.time() - started,
         "peak_cuda_bytes": torch.cuda.max_memory_allocated(device),
     })
+    if resume_path.exists():
+        meta["resume_checkpoint_sha256"] = sha256_file(resume_path)
     _atomic_json(meta, meta_path)
     print(f"[gec] DONE arm={args.arm} status={meta['status']} step={step} "
           f"optimizer_steps={optimizer_steps} residual_changed={final_hash != initial_residual_hash}", flush=True)

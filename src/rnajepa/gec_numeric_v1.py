@@ -63,7 +63,9 @@ class GECNumericsV1:
 def canonical_pair_mask_v1(
     sequence: str, *, min_loop: int = harness.MIN_LOOP, device=None
 ) -> torch.Tensor:
-    """Return the existing canonical Watson-Crick/wobble and min-loop mask."""
+    """Return the frozen canonical Watson-Crick/wobble, min_loop=3 mask."""
+    if min_loop != harness.MIN_LOOP:
+        raise ValueError("GEC v1 requires the frozen canonical min_loop=3 mask")
     mask = harness.valid_pair_mask(sequence, min_loop=min_loop)
     return torch.as_tensor(mask, dtype=torch.bool, device=device)
 
@@ -206,8 +208,10 @@ def compute_gec_context_v1(
 ) -> GECNumericsV1:
     """Compute an ``L x L x 6`` stop-gradient context for one sequence.
 
-    ``scores`` and ``mask`` are square matrices on one device. Only the strict
-    upper triangle is consulted. Supplied ``marginals`` may be strict-upper or
+    ``scores`` and ``mask`` are square matrices on one device. The mask must use
+    the frozen canonical min_loop=3 legality; incompatible masks are rejected
+    before exact DP. Only the strict upper triangle is consulted. Supplied
+    ``marginals`` may be strict-upper or
     symmetric and must be on the same device. Interval shuffle jointly permutes
     complete feature vectors among legal pairs in each frozen span bucket.
     ``shuffle_key`` is the resume-safe sample identity; ``shuffle_seed`` is a
@@ -225,6 +229,13 @@ def compute_gec_context_v1(
         raise ValueError("mask must be symmetric")
     if torch.diagonal(mask).any():
         raise ValueError("mask diagonal must be false")
+    positions = torch.arange(scores.shape[0], device=scores.device)
+    spans = positions[None, :] - positions[:, None]
+    if (torch.triu(mask, diagonal=1) & (spans <= harness.MIN_LOOP)).any():
+        raise ValueError(
+            "mask must use the frozen canonical min_loop=3 legality; "
+            "found a pair with j-i <= 3"
+        )
     legal = torch.triu(mask, diagonal=1)
     legal_full = legal | legal.transpose(0, 1)
     scores64 = scores.detach().to(dtype=torch.float64)
@@ -268,12 +279,14 @@ def compute_gec_context_v1(
     elif mode == "matched_local":
         independent = torch.sigmoid(scores64)
         independent = torch.triu(independent, diagonal=1)
+        independent = torch.where(legal, independent, torch.zeros_like(independent))
         independent = independent + independent.transpose(0, 1)
         context = torch.zeros_like(ensemble_features)
         context[..., 0] = independent
     elif mode == "independent_context":
         independent = torch.sigmoid(scores64)
         independent = torch.triu(independent, diagonal=1)
+        independent = torch.where(legal, independent, torch.zeros_like(independent))
         independent = independent + independent.transpose(0, 1)
         context = _interval_features(independent)
     else:
