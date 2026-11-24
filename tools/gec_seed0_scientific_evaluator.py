@@ -21,6 +21,12 @@ from pathlib import Path
 from typing import Iterable
 
 import numpy as np
+import torch
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
+
+from rnajepa.prior_alignment import tensor_state_sha256
 
 ARMS = (
     "matched_control",
@@ -383,6 +389,100 @@ def load_panel(registry_path: Path, panel_id: str) -> tuple[dict, list[Record], 
     }
 
 
+
+def load_structured_checkpoint(path: Path, label: str) -> dict:
+    try:
+        checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+    except Exception as error:
+        raise ValueError(f"{label}: invalid checkpoint bytes: {type(error).__name__}") from error
+    if not isinstance(checkpoint, dict):
+        raise ValueError(f"{label}: checkpoint is not a structured dictionary")
+    return checkpoint
+
+
+def validate_run_identity(metadata: dict, arm: str, config_sha256: str,
+                          source_contract_sha256: str) -> dict:
+    identity = metadata.get("run_identity")
+    if not isinstance(identity, dict) or identity.get("schema_version") != "foldnar.gec_run_identity.v2":
+        raise ValueError(f"{arm}: missing or unsupported v2 run identity")
+    expected = {
+        "arm": arm,
+        "engineering_smoke": False,
+        "gec_config_sha256": config_sha256,
+        "source_contract_sha256": source_contract_sha256,
+        "shared_init_sha256": metadata["shared_init_sha256"],
+        "gec_init_sha256": metadata["gec_init_sha256"],
+        "initial_residual_tensor_sha256": metadata["initial_residual_tensor_sha256"],
+        "train_record_ids": metadata["train_record_ids"],
+        "validation_record_ids": metadata["validation_record_ids"],
+        "terminal_unfrozen_blocks": 20,
+    }
+    for key, value in expected.items():
+        if identity.get(key) != value:
+            raise ValueError(f"{arm}: run identity mismatch for {key}")
+    return identity
+
+
+def checkpoint_tensor_identity(checkpoint: dict, label: str) -> dict:
+    hashes = checkpoint.get("model_tensor_sha256")
+    if not isinstance(hashes, dict) or set(hashes) != {"encoder", "head", "residual"}:
+        raise ValueError(f"{label}: missing selected model tensor identity")
+    actual = {}
+    for component in ("encoder", "head", "residual"):
+        state = checkpoint.get(component)
+        if not isinstance(state, dict) or not state:
+            raise ValueError(f"{label}: missing {component} state")
+        try:
+            actual[component] = tensor_state_sha256(state)
+        except Exception as error:
+            raise ValueError(f"{label}: invalid {component} tensor state") from error
+        if hashes[component] != actual[component]:
+            raise ValueError(f"{label}: serialized {component} tensor identity mismatch")
+    return actual
+
+
+def validate_checkpoint_pair(metadata: dict, arm: str, best_path: Path,
+                             resume_path: Path, identity: dict, best_step: int) -> dict:
+    best = load_structured_checkpoint(best_path, f"{arm} best.pt")
+    resume = load_structured_checkpoint(resume_path, f"{arm} resume.pt")
+    for label, checkpoint in (("best.pt", best), ("resume.pt", resume)):
+        if checkpoint.get("format") != "foldnar.gec_checkpoint.v2":
+            raise ValueError(f"{arm} {label}: unsupported checkpoint format")
+        if checkpoint.get("run_identity") != identity:
+            raise ValueError(f"{arm} {label}: checkpoint run identity mismatch")
+        if checkpoint.get("step") != best_step:
+            raise ValueError(f"{arm} {label}: selected best-step mismatch")
+        if checkpoint.get("n_unfrozen") != 20:
+            raise ValueError(f"{arm} {label}: terminal 20/33 unfreezing mismatch")
+        if checkpoint.get("convergence") != metadata["convergence"]:
+            raise ValueError(f"{arm} {label}: convergence state mismatch")
+    if best.get("checkpoint_phase") != "best_eligible":
+        raise ValueError(f"{arm} best.pt: checkpoint phase is not best_eligible")
+    if (resume.get("checkpoint_phase") != "restored_best_eligible"
+            or resume.get("terminal_status") != "converged"):
+        raise ValueError(f"{arm} resume.pt: checkpoint is not restored best eligible and converged")
+    if metadata.get("restored_best_step") != best_step:
+        raise ValueError(f"{arm}: restored_best_step does not match selected best checkpoint")
+    best_hashes = checkpoint_tensor_identity(best, f"{arm} best.pt")
+    resume_hashes = checkpoint_tensor_identity(resume, f"{arm} resume.pt")
+    selected_model = best.get("model")
+    if not isinstance(selected_model, dict) or set(selected_model) != {"encoder", "head", "residual"}:
+        raise ValueError(f"{arm} best.pt: missing selected model state")
+    selected_hashes = {}
+    for component in ("encoder", "head", "residual"):
+        selected_hashes[component] = tensor_state_sha256(selected_model[component])
+    if selected_hashes != best_hashes:
+        raise ValueError(f"{arm} best.pt: selected model differs from best checkpoint tensors")
+    if resume_hashes != best_hashes:
+        raise ValueError(f"{arm}: best-vs-resume selected model tensor identity mismatch")
+    return {
+        "resume_checkpoint_path": str(resume_path),
+        "resume_checkpoint_sha256": sha256(resume_path),
+        "selected_model_tensor_sha256": best_hashes,
+        "checkpoint_validation": "PASS_BEST_AND_RESUME",
+    }
+
+
 def validate_run_metadata(
     registry_path: Path, gec_config_path: Path, metadata_paths: dict[str, Path], panel_info: dict,
 ) -> dict:
@@ -439,7 +539,7 @@ def validate_run_metadata(
     for arm in ARMS:
         metadata_path = metadata_paths[arm].resolve()
         metadata = json.loads(metadata_path.read_text())
-        if metadata.get("schema_version") != "foldnar.gec_training_run.v1" or metadata.get("arm") != arm:
+        if metadata.get("schema_version") != "foldnar.gec_training_run.v2" or metadata.get("arm") != arm:
             raise ValueError(f"{arm}: unexpected run metadata identity")
         if Path(metadata["gec_config"]).resolve() != config_path or metadata["gec_config_sha256"] != config_sha256:
             raise ValueError(f"{arm}: run does not use the exact common GEC config")
@@ -458,6 +558,7 @@ def validate_run_metadata(
         if (not isinstance(validation_ids, list) or len(set(validation_ids)) != len(validation_ids)
                 or set(validation_ids) != panel_info["allowed_ids"]):
             raise ValueError(f"{arm}: validation IDs differ from full frozen cluster-dev panel")
+        identity = validate_run_identity(metadata, arm, config_sha256, source_contract_sha256)
         panel_train_overlap = panel_info["allowed_ids"] & set(train_ids)
         if panel_train_overlap:
             raise ValueError(f"{arm}: panel rows occur in run train IDs")
@@ -501,17 +602,27 @@ def validate_run_metadata(
                 or schedule["device"] != environment["requested_device"]):
             raise ValueError(f"{arm}: scientific run lacks explicit CUDA execution")
         best_path = metadata_path.parent / "best.pt"
+        resume_path = metadata_path.parent / "resume.pt"
         best_sha256 = metadata["best_checkpoint_sha256"]
         if not best_path.is_file() or sha256(best_path) != best_sha256:
             raise ValueError(f"{arm}: eligible best-checkpoint identity mismatch")
+        if not resume_path.is_file() or sha256(resume_path) != metadata["resume_checkpoint_sha256"]:
+            raise ValueError(f"{arm}: restored resume-checkpoint identity mismatch")
         current = {name: metadata[name] for name in common_fields}
+        current["common_run_identity"] = {
+            key: value for key, value in identity.items() if key != "arm"
+        }
         if reference is None:
             reference = current
         elif current != reference:
             raise ValueError(f"{arm}: common four-arm run metadata mismatch")
+        checkpoint_validation = validate_checkpoint_pair(
+            metadata, arm, best_path, resume_path, identity, best_step,
+        )
         summaries[arm] = {
             "path": str(metadata_path), "run_meta_sha256": sha256(metadata_path),
             "best_checkpoint_path": str(best_path), "best_checkpoint_sha256": best_sha256,
+            **checkpoint_validation,
             "best_step": best_step, "resolved_device": environment["resolved_device"],
         }
     return {
@@ -532,7 +643,10 @@ def bind_predictions(
     for arm, rows in arm_rows.items():
         if len(rows) != len(expected_ids):
             raise ValueError(f"{arm}: prediction count does not match panel")
-        checkpoint_sha256 = run_validation["arms"][arm]["best_checkpoint_sha256"]
+        arm_validation = run_validation["arms"][arm]
+        if arm_validation.get("checkpoint_validation") != "PASS_BEST_AND_RESUME":
+            raise ValueError(f"{arm}: predictions are not bound to verified checkpoints")
+        checkpoint_sha256 = arm_validation["best_checkpoint_sha256"]
         by_id = {}
         for row in rows:
             sequence_id = row["sequence_id"]

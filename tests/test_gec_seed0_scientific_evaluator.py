@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+import torch
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools/gec_seed0_scientific_evaluator.py"
 SPEC = importlib.util.spec_from_file_location("gec_seed0_scientific_evaluator", MODULE_PATH)
@@ -282,11 +283,49 @@ def _scientific_fixture(tmp_path):
         arm_dir = tmp_path / arm
         arm_dir.mkdir()
         best = arm_dir / "best.pt"
-        best.write_bytes(f"best-{arm}".encode())
+        resume = arm_dir / "resume.pt"
+        convergence = {
+            "terminal_step": 9600, "terminal_unfrozen_blocks": 20, "best_step": 9600,
+            "best_validation_loss": 1.0, "bad_evaluations": 5, "eligible": True,
+        }
+        run_identity = {
+            "schema_version": "foldnar.gec_run_identity.v2", "arm": arm,
+            "engineering_smoke": False, "gec_config_sha256": config_sha256,
+            "source_contract_sha256": contract_sha256,
+            "shared_init_sha256": hashlib.sha256(shared_init.read_bytes()).hexdigest(),
+            "gec_init_sha256": "common-gec-init",
+            "initial_residual_tensor_sha256": "common-residual",
+            "train_record_ids": [ids[30]], "validation_record_ids": ids[:30],
+            "terminal_unfrozen_blocks": 20,
+        }
+        encoder = {"weight": torch.tensor([1.0, 2.0], dtype=torch.float32)}
+        head = {"weight": torch.tensor([3.0], dtype=torch.float64)}
+        residual = {"weight": torch.tensor([4.0], dtype=torch.float32)}
+        model_hashes = {
+            "encoder": G.tensor_state_sha256(encoder),
+            "head": G.tensor_state_sha256(head),
+            "residual": G.tensor_state_sha256(residual),
+        }
+        common_checkpoint = {
+            "format": "foldnar.gec_checkpoint.v2", "run_identity": run_identity,
+            "step": 9600, "encoder": encoder, "head": head, "residual": residual,
+            "n_unfrozen": 20, "optimizer_steps": 9600, "convergence": convergence,
+            "model_tensor_sha256": model_hashes,
+        }
+        torch.save({
+            **common_checkpoint, "checkpoint_phase": "best_eligible",
+            "terminal_status": "running",
+            "model": {"encoder": encoder, "head": head, "residual": residual},
+        }, best)
+        torch.save({
+            **common_checkpoint, "checkpoint_phase": "restored_best_eligible",
+            "terminal_status": "converged",
+        }, resume)
         best_sha256 = hashlib.sha256(best.read_bytes()).hexdigest()
+        resume_sha256 = hashlib.sha256(resume.read_bytes()).hexdigest()
         metadata = {
-            "schema_version": "foldnar.gec_training_run.v1", "arm": arm,
-            "status": "converged", "converged": True, "engineering_smoke": False,
+            "schema_version": "foldnar.gec_training_run.v2", "run_identity": run_identity,
+            "arm": arm, "status": "converged", "converged": True, "engineering_smoke": False,
             "gec_config": str(config), "gec_config_sha256": config_sha256,
             "source_contract": str(contract), "source_contract_sha256": contract_sha256,
             "shared_init": str(shared_init),
@@ -303,16 +342,14 @@ def _scientific_fixture(tmp_path):
                 "engineering_smoke": False, "steps": 0, "train_record_limit": 0,
                 "validation_record_limit": 0, "device": "cuda:0",
             },
-            "convergence": {
-                "terminal_step": 9600, "terminal_unfrozen_blocks": 20, "best_step": 9600,
-                "best_validation_loss": 1.0, "bad_evaluations": 5, "eligible": True,
-            },
+            "convergence": convergence,
             "environment": {"requested_device": "cuda:0", "resolved_device": "cuda:0"},
-            "decoder": config and json.loads(config.read_text())["model"]["decoder"],
+            "decoder": json.loads(config.read_text())["model"]["decoder"],
             "backbone_report": {"n_layers": 33}, "steps_completed": 15000,
             "stop_reason": "CONVERGED_VALIDATION_NLL_AFTER_TERMINAL_UNFREEZE",
             "divergence_reason": "", "final_unfrozen_blocks": 20,
-            "best_checkpoint_sha256": best_sha256,
+            "restored_best_step": 9600, "best_checkpoint_sha256": best_sha256,
+            "resume_checkpoint_sha256": resume_sha256,
         }
         metadata_path = arm_dir / "run_meta.json"
         _write_json(metadata_path, metadata)
@@ -362,7 +399,7 @@ def test_end_to_end_failed_gate_is_reported_without_modifying_inputs(tmp_path):
         ("registry", "panel_records", "raw", "dev_ids", "train_ids", "environment",
          "contract", "shared_init", "config")
     ] + list(paths.values()) + list(fixture["metadata_paths"].values())
-    tracked += [path.parent / "best.pt" for path in fixture["metadata_paths"].values()]
+    tracked += [path.parent / name for path in fixture["metadata_paths"].values() for name in ("best.pt", "resume.pt")]
     before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in tracked}
     output = tmp_path / "report.json"
     rc = G.main(_main_args(fixture, output, include_panel=False))
@@ -486,6 +523,7 @@ def test_cross_arm_common_identity_and_best_checkpoint_hash_are_enforced(tmp_pat
     path = fixture["metadata_paths"]["destroy_interval_shuffle"]
     metadata = json.loads(path.read_text())
     metadata["gec_init_sha256"] = "arm-specific-init"
+    metadata["run_identity"]["gec_init_sha256"] = "arm-specific-init"
     _write_json(path, metadata)
     _, _, panel, _ = _validated_fixture_without_runs(fixture)
     with pytest.raises(ValueError, match="common four-arm run metadata mismatch"):
@@ -496,6 +534,128 @@ def test_cross_arm_common_identity_and_best_checkpoint_hash_are_enforced(tmp_pat
         G.validate_run_metadata(fixture["registry"], fixture["config"], fixture["metadata_paths"], panel)
 
 
+
+def test_valid_structured_v2_checkpoints_are_accepted(tmp_path):
+    fixture = _scientific_fixture(tmp_path)
+    _, _, _, validation = _validated_fixture(fixture)
+    for arm in G.ARMS:
+        metadata = json.loads(fixture["metadata_paths"][arm].read_text())
+        assert metadata["schema_version"] == "foldnar.gec_training_run.v2"
+        result = validation["arms"][arm]
+        assert result["checkpoint_validation"] == "PASS_BEST_AND_RESUME"
+        assert result["resume_checkpoint_sha256"] == metadata["resume_checkpoint_sha256"]
+        assert set(result["selected_model_tensor_sha256"]) == {"encoder", "head", "residual"}
+
+
+def test_v1_run_metadata_schema_is_rejected(tmp_path):
+    fixture = _scientific_fixture(tmp_path)
+    path = fixture["metadata_paths"]["matched_control"]
+    metadata = json.loads(path.read_text())
+    metadata["schema_version"] = "foldnar.gec_training_run.v1"
+    _write_json(path, metadata)
+    _, _, panel, _ = _validated_fixture_without_runs(fixture)
+    with pytest.raises(ValueError, match="unexpected run metadata identity"):
+        G.validate_run_metadata(fixture["registry"], fixture["config"], fixture["metadata_paths"], panel)
+
+
+def _refresh_checkpoint_hash(fixture, arm, name):
+    path = fixture["metadata_paths"][arm]
+    metadata = json.loads(path.read_text())
+    key = "best_checkpoint_sha256" if name == "best.pt" else "resume_checkpoint_sha256"
+    metadata[key] = hashlib.sha256((path.parent / name).read_bytes()).hexdigest()
+    _write_json(path, metadata)
+
+
+@pytest.mark.parametrize("name", ["best.pt", "resume.pt"])
+def test_arbitrary_checkpoint_bytes_are_rejected_after_file_hash_validation(tmp_path, name):
+    fixture = _scientific_fixture(tmp_path)
+    arm = "ensemble_context"
+    (fixture["metadata_paths"][arm].parent / name).write_bytes(b"not-a-torch-checkpoint")
+    _refresh_checkpoint_hash(fixture, arm, name)
+    _, _, panel, _ = _validated_fixture_without_runs(fixture)
+    with pytest.raises(ValueError, match="invalid checkpoint bytes"):
+        G.validate_run_metadata(fixture["registry"], fixture["config"], fixture["metadata_paths"], panel)
+
+
+def _mutate_checkpoint(fixture, arm, name, mutate):
+    path = fixture["metadata_paths"][arm].parent / name
+    checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+    mutate(checkpoint)
+    torch.save(checkpoint, path)
+    _refresh_checkpoint_hash(fixture, arm, name)
+
+
+def _assert_checkpoint_mutation_rejected(fixture, arm, match):
+    _, _, panel, _ = _validated_fixture_without_runs(fixture)
+    with pytest.raises(ValueError, match=match):
+        G.validate_run_metadata(fixture["registry"], fixture["config"], fixture["metadata_paths"], panel)
+
+
+@pytest.mark.parametrize("name,mutation,match", [
+    ("best.pt", ("format", "forged"), "unsupported checkpoint format"),
+    ("best.pt", ("checkpoint_phase", "latest"), "checkpoint phase is not best_eligible"),
+    ("resume.pt", ("checkpoint_phase", "latest"), "restored best eligible"),
+    ("resume.pt", ("terminal_status", "running"), "restored best eligible"),
+    ("best.pt", ("step", 10600), "selected best-step mismatch"),
+    ("resume.pt", ("step", 10600), "selected best-step mismatch"),
+    ("best.pt", ("n_unfrozen", 19), "terminal 20/33 unfreezing mismatch"),
+    ("resume.pt", ("n_unfrozen", 19), "terminal 20/33 unfreezing mismatch"),
+])
+def test_checkpoint_phase_step_and_unfreeze_mismatches_are_rejected(tmp_path, name, mutation, match):
+    fixture = _scientific_fixture(tmp_path)
+    arm = "destroy_interval_shuffle"
+    _mutate_checkpoint(fixture, arm, name, lambda cp: cp.__setitem__(*mutation))
+    _assert_checkpoint_mutation_rejected(fixture, arm, match)
+
+
+@pytest.mark.parametrize("key,value", [
+    ("arm", "matched_control"),
+    ("gec_config_sha256", "forged-config"),
+    ("train_record_ids", []),
+])
+def test_checkpoint_arm_config_and_train_identity_mismatches_are_rejected(tmp_path, key, value):
+    fixture = _scientific_fixture(tmp_path)
+    arm = "independent_context"
+    _mutate_checkpoint(
+        fixture, arm, "best.pt", lambda cp: cp["run_identity"].__setitem__(key, value),
+    )
+    _assert_checkpoint_mutation_rejected(fixture, arm, "checkpoint run identity mismatch")
+
+
+def test_best_tensor_content_cannot_be_changed_without_updating_hash(tmp_path):
+    fixture = _scientific_fixture(tmp_path)
+    arm = "matched_control"
+    _mutate_checkpoint(
+        fixture, arm, "best.pt", lambda cp: cp["encoder"]["weight"].add_(1.0),
+    )
+    _assert_checkpoint_mutation_rejected(fixture, arm, "serialized encoder tensor identity mismatch")
+
+
+def test_best_and_resume_selected_model_tensors_must_match_exactly(tmp_path):
+    fixture = _scientific_fixture(tmp_path)
+    arm = "matched_control"
+    def mutate(cp):
+        cp["residual"]["weight"].add_(1.0)
+        cp["model_tensor_sha256"]["residual"] = G.tensor_state_sha256(cp["residual"])
+    _mutate_checkpoint(fixture, arm, "resume.pt", mutate)
+    _assert_checkpoint_mutation_rejected(fixture, arm, "best-vs-resume selected model tensor identity mismatch")
+
+
+def test_restored_best_step_and_checkpoint_convergence_must_match(tmp_path):
+    fixture = _scientific_fixture(tmp_path)
+    path = fixture["metadata_paths"]["matched_control"]
+    metadata = json.loads(path.read_text())
+    metadata["restored_best_step"] = 10600
+    _write_json(path, metadata)
+    _, _, panel, _ = _validated_fixture_without_runs(fixture)
+    with pytest.raises(ValueError, match="restored_best_step"):
+        G.validate_run_metadata(fixture["registry"], fixture["config"], fixture["metadata_paths"], panel)
+    _mutate_checkpoint(
+        fixture, "matched_control", "resume.pt",
+        lambda cp: cp["convergence"].__setitem__("best_step", 10600),
+    )
+    _assert_checkpoint_mutation_rejected(fixture, "matched_control", "convergence state mismatch")
+
 def _binding_case():
     sequence = "AAAAAAAAAAA"
     record = G.Record(
@@ -503,7 +663,7 @@ def _binding_case():
         sequence_sha256=hashlib.sha256(sequence.encode()).hexdigest(), cluster_id=1,
     )
     run_validation = {"arms": {
-        arm: {"best_checkpoint_sha256": f"checkpoint-{arm}"} for arm in G.ARMS
+        arm: {"best_checkpoint_sha256": f"checkpoint-{arm}", "checkpoint_validation": "PASS_BEST_AND_RESUME"} for arm in G.ARMS
     }}
     rows = {arm: [{
         "sequence_id": "s", "true_pairs": [[0, 10]], "predicted_pairs": [[0, 10]],
