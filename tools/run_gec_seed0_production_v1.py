@@ -17,11 +17,11 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 PYTHON = Path("/root/miniconda3/envs/lucaone_cu128/bin/python")
-ARTIFACT_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v1")
+ARTIFACT_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v2")
 CONFIG = REPO / "configs/gec_four_arm_convergence_v1.json"
-SMOKE_VERIFICATION = Path(
-    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_smoke_v2/generation_02/"
-    "smoke_verification_v2.json"
+LONG_RUN_AUDIT = Path(
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v1/"
+    "independent_live_integrity_audit_20261124T074426Z.json"
 )
 ARMS = ("matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context")
 IDENTITY_SCHEMA = "foldnar.gec_seed0_production_identity.v1"
@@ -147,33 +147,40 @@ def query_gpu0() -> dict:
     return {"index": 0, "name": name, "total_mib": int(total), "used_mib": int(used)}
 
 
-def plan_parallelism(smoke_path: Path = SMOKE_VERIFICATION, gpu: dict | None = None) -> dict:
-    smoke = read_json(smoke_path)
-    if smoke.get("status") != "PASS_ENGINEERING_SMOKE_ONLY" or smoke.get("cpu_fallback") is not False:
-        raise ValueError("a passing CUDA-only engineering smoke is required")
-    peaks = []
+def plan_parallelism(audit_path: Path = LONG_RUN_AUDIT, gpu: dict | None = None) -> dict:
+    audit = read_json(audit_path)
+    if (audit.get("schema_version") != "foldnar.independent_gec_seed0_live_integrity_audit_20261124.v1"
+            or audit.get("artifact_root") != str(LONG_RUN_AUDIT.parent)
+            or audit.get("scientific_result") is not False):
+        raise ValueError("unexpected long-run memory audit")
+    peaks = {}
     for arm in ARMS:
-        result = smoke["arms"][arm]
-        if result["status"] != "engineering_smoke_completed":
-            raise ValueError(f"missing completed smoke measurement for {arm}")
-        peaks.append(int(result["peak_cuda_bytes"]))
-    for name, frozen in smoke["code_manifest"].items():
-        if sha256(REPO / name) != frozen["sha256"]:
-            raise ValueError(f"smoke measurement does not match current code: {name}")
+        result = audit["arms"][arm]
+        peak = int(result["training"]["cuda_peak_bytes"]["max"])
+        if peak <= 0 or result["completed_steps"] < 45:
+            raise ValueError(f"insufficient long-run memory evidence for {arm}")
+        peaks[arm] = peak
+    if not any(audit["arms"][arm].get("cuda_oom_observed") for arm in ARMS):
+        raise ValueError("long-run audit does not contain the required OOM evidence")
     gpu = query_gpu0() if gpu is None else gpu
     total_bytes = int(gpu["total_mib"]) * 1024 ** 2
     used_bytes = int(gpu["used_mib"]) * 1024 ** 2
     reserve_bytes = max(4 * 1024 ** 3, int(total_bytes * 0.20))
-    per_arm_budget = int(max(peaks) * MEMORY_SAFETY_FACTOR)
-    safe = min(ARMS.__len__(), max(0, (total_bytes - used_bytes - reserve_bytes) // per_arm_budget))
+    max_peak = max(peaks.values())
+    per_arm_budget = int(max_peak * MEMORY_SAFETY_FACTOR)
+    safe = min(len(ARMS), max(0, (total_bytes - used_bytes - reserve_bytes) // per_arm_budget))
     if safe < 1:
-        raise RuntimeError("measured smoke memory does not support even one safe CUDA arm")
+        raise RuntimeError("measured long-run memory does not support even one safe CUDA arm")
+    waves = [list(ARMS[index:index + safe]) for index in range(0, len(ARMS), safe)]
     return {
-        "parallelism": int(safe), "device": "cuda:0", "cpu_fallback": False,
-        "gpu": gpu, "smoke_verification": str(smoke_path),
-        "smoke_verification_sha256": sha256(smoke_path),
-        "max_smoke_peak_cuda_bytes": max(peaks), "memory_safety_factor": MEMORY_SAFETY_FACTOR,
+        "parallelism": int(safe), "waves": waves, "device": "cuda:0", "cpu_fallback": False,
+        "gpu": gpu, "long_run_audit": str(audit_path),
+        "long_run_audit_sha256": sha256(audit_path),
+        "long_run_allocated_peak_bytes": peaks,
+        "max_long_run_allocated_bytes": max_peak,
+        "memory_safety_factor": MEMORY_SAFETY_FACTOR,
         "per_arm_budget_bytes": per_arm_budget, "reserved_bytes": reserve_bytes,
+        "evidence_scope": "failed seed0_v1 long-run memory only; no statuses or checkpoints inherited",
     }
 
 
@@ -348,7 +355,9 @@ def run_training(root: Path, parallelism: int) -> None:
                 active[arm] = {"process": process, "log": log, "lock": lock}
                 write_arm_status(root, arm, "running", pid=process.pid, returncode=None,
                                  command=command, command_sha256=command_sha256(command),
-                                 log=str(directory / "production.log"), failure_reason=None)
+                                 log=str(directory / "production.log"), failure_reason=None,
+                                 selected_parallelism=parallelism,
+                                 wave=ARMS.index(arm) // parallelism + 1)
             time.sleep(1)
             for arm, item in list(active.items()):
                 returncode = item["process"].poll()

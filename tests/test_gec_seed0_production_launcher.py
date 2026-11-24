@@ -23,47 +23,159 @@ def test_production_commands_are_full_seed0_cuda_without_step_cap(tmp_path):
     assert sum(item == "--run-metadata" for item in evaluator) == 4
 
 
-def _smoke_document(tmp_path):
-    manifest = {
-        name: {"sha256": production.sha256(production.REPO / name)}
-        for name in (
-            "tools/train_plan_a_gec_convergence_v1.py",
-            "src/rnajepa/gec_context.py",
-        )
-    }
+def _long_run_audit(tmp_path):
     document = {
-        "status": "PASS_ENGINEERING_SMOKE_ONLY", "cpu_fallback": False,
-        "code_manifest": manifest,
+        "schema_version": "foldnar.independent_gec_seed0_live_integrity_audit_20261124.v1",
+        "artifact_root": str(production.LONG_RUN_AUDIT.parent), "scientific_result": False,
         "arms": {
-            arm: {"status": "engineering_smoke_completed", "peak_cuda_bytes": 2748794880}
-            for arm in production.ARMS
+            arm: {
+                "completed_steps": 57,
+                "cuda_oom_observed": arm in ("destroy_interval_shuffle", "independent_context"),
+                "training": {"cuda_peak_bytes": {"max": (
+                    7723756544 if arm in ("matched_control", "ensemble_context") else 6659579392
+                )}},
+            } for arm in production.ARMS
         },
     }
-    path = tmp_path / "smoke.json"
+    path = tmp_path / "long_run_audit.json"
     path.write_text(json.dumps(document))
     return path
 
 
-def test_measured_smoke_supports_four_and_reduces_parallelism_without_cpu(tmp_path):
-    smoke = _smoke_document(tmp_path)
+def test_oom_long_run_peaks_yield_two_slots_and_two_explicit_waves(tmp_path):
+    audit = _long_run_audit(tmp_path)
     gpu = {"index": 0, "name": "synthetic", "total_mib": 32607, "used_mib": 2}
-    assert production.plan_parallelism(smoke, gpu)["parallelism"] == 4
-    constrained = dict(gpu, total_mib=13000, used_mib=2)
-    plan = production.plan_parallelism(smoke, constrained)
-    assert 1 <= plan["parallelism"] < 4
+    plan = production.plan_parallelism(audit, gpu)
+    assert plan["parallelism"] == 2
+    assert plan["waves"] == [list(production.ARMS[:2]), list(production.ARMS[2:])]
+    assert plan["memory_safety_factor"] == 1.5
+    assert plan["max_long_run_allocated_bytes"] == 7723756544
     assert plan["device"] == "cuda:0" and plan["cpu_fallback"] is False
+    constrained = dict(gpu, total_mib=24000, used_mib=2)
+    assert production.plan_parallelism(audit, constrained)["parallelism"] == 1
     with pytest.raises(RuntimeError, match="does not support even one"):
-        production.plan_parallelism(smoke, dict(gpu, total_mib=5000))
+        production.plan_parallelism(audit, dict(gpu, total_mib=12000))
 
 
-def test_stale_smoke_code_cannot_determine_parallelism(tmp_path):
-    smoke = _smoke_document(tmp_path)
-    document = json.loads(smoke.read_text())
-    name = next(iter(document["code_manifest"]))
-    document["code_manifest"][name]["sha256"] = "0" * 64
-    smoke.write_text(json.dumps(document))
-    with pytest.raises(ValueError, match="does not match current code"):
-        production.plan_parallelism(smoke, {"total_mib": 32607, "used_mib": 2})
+def test_invalid_long_run_audit_cannot_set_parallelism(tmp_path):
+    audit = _long_run_audit(tmp_path)
+    document = json.loads(audit.read_text())
+    document["arms"]["matched_control"]["training"]["cuda_peak_bytes"]["max"] = 0
+    audit.write_text(json.dumps(document))
+    with pytest.raises(ValueError, match="insufficient long-run memory evidence"):
+        production.plan_parallelism(audit, {"total_mib": 32607, "used_mib": 2})
+
+
+class _FakeProcess:
+    def __init__(self, arm, completed, returncode=0):
+        self.arm = arm
+        self.completed = completed
+        self.returncode = returncode
+        self.pid = 10000 + production.ARMS.index(arm)
+        self.poll_count = 0
+        self.terminated = False
+
+    def poll(self):
+        self.poll_count += 1
+        if self.poll_count == 1:
+            return None
+        if self.returncode == 0:
+            self.completed.add(self.arm)
+        return self.returncode
+
+    def send_signal(self, signal):
+        self.terminated = True
+        self.returncode = -15
+
+    def wait(self, timeout=None):
+        return self.returncode
+
+    def kill(self):
+        self.returncode = -9
+
+
+def _patch_converged(completed):
+    def check(root, arm):
+        if arm not in completed:
+            raise ValueError("not converged")
+        return {"arm": arm}
+    return patch.object(production, "converged_metadata", side_effect=check)
+
+
+def test_wave_scheduling_is_two_then_two_without_duplicate_steps(tmp_path):
+    completed = set()
+    processes = []
+    active = set()
+    maximum_active = 0
+
+    def popen(command, **kwargs):
+        arm = command[command.index("--arm") + 1]
+        process = _FakeProcess(arm, completed)
+        processes.append(process)
+        active.add(arm)
+        nonlocal maximum_active
+        maximum_active = max(maximum_active, len(active))
+        original_poll = process.poll
+        def poll():
+            result = original_poll()
+            if result is not None:
+                active.discard(arm)
+            return result
+        process.poll = poll
+        return process
+
+    with _patch_converged(completed), \
+         patch.object(production.subprocess, "Popen", side_effect=popen), \
+         patch.object(production.time, "sleep", return_value=None):
+        production.run_training(tmp_path, 2)
+    assert [process.arm for process in processes] == list(production.ARMS)
+    assert maximum_active == 2
+    assert all(not process.terminated for process in processes)
+    for arm in production.ARMS:
+        status = json.loads((tmp_path / arm / "launcher_status.json").read_text())
+        assert status["selected_parallelism"] == 2
+        assert status["wave"] == (1 if arm in production.ARMS[:2] else 2)
+    with _patch_converged(completed), patch.object(production.subprocess, "Popen") as no_restart:
+        production.run_training(tmp_path, 2)
+    no_restart.assert_not_called()
+
+
+def test_peer_failure_stops_wave_and_never_launches_remaining_arms(tmp_path):
+    processes = []
+    def popen(command, **kwargs):
+        arm = command[command.index("--arm") + 1]
+        process = _FakeProcess(arm, set(), 1 if arm == "ensemble_context" else 0)
+        if arm == "matched_control":
+            process.returncode = None
+        processes.append(process)
+        return process
+
+    def fake_terminate(active, root, reason):
+        for arm, item in active.items():
+            item["process"].send_signal(15)
+            item["log"].close()
+            production.release_lock(item["lock"])
+            production.write_arm_status(root, arm, "failed", returncode=-15, failure_reason=reason)
+
+    with _patch_converged(set()), \
+         patch.object(production.subprocess, "Popen", side_effect=popen), \
+         patch.object(production, "terminate_processes", side_effect=fake_terminate), \
+         patch.object(production.time, "sleep", return_value=None):
+        with pytest.raises(RuntimeError, match="failed.*no evaluation invoked"):
+            production.run_training(tmp_path, 2)
+    assert len(processes) == 2
+    assert not (tmp_path / production.ARMS[2] / "production.pid").exists()
+    assert not (tmp_path / production.ARMS[3] / "production.pid").exists()
+
+
+def test_v2_root_is_fresh_and_never_reads_failed_run_artifacts(tmp_path):
+    assert str(production.ARTIFACT_ROOT).endswith("/gec_seed0_v2")
+    assert production.ARTIFACT_ROOT != production.LONG_RUN_AUDIT.parent
+    for arm in production.ARMS:
+        command = production.build_arm_command(arm)
+        assert str(production.ARTIFACT_ROOT / arm) in command
+        assert str(production.ARTIFACT_ROOT / "gec_shared_residual_init_seed0.pt") in command
+        assert not any("/gec_seed0_v1/" in item for item in command)
 
 
 def test_evaluator_uses_real_v2_run_metadata_without_adapter(tmp_path):
