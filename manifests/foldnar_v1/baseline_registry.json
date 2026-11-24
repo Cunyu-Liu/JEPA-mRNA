@@ -4393,54 +4393,118 @@
     },
     {
       "baseline_id": "linearpartition",
-      "model": "LinearPartition-class method",
+      "model": "Official LinearPartition-C and LinearPartition-V",
       "category": "STRUCTURED_DECODER",
       "row_type": "PREDICTOR",
       "role": "baseline",
       "source_cohorts": [],
       "cohort_memberships": [],
-      "version_protocol": "long-sequence contract candidate; exact variant/version BLOCKED_PROVENANCE",
+      "version_protocol": "official LinearPartition commit b450fb3e63189073b68d385589035f992080aa3a; C/V distinguished; beam100 cutoff0.0 dangles2 no-sharpturn; optional MEA gamma3; APPROXIMATE_SPARSE",
       "official_weights": {
-        "status": "NOT_APPLICABLE_NO_LEARNED_WEIGHTS",
-        "path": null,
-        "parameters_or_binary": null,
-        "sha256": null
+        "status": "VERIFIED_EMBEDDED_VARIANT_PARAMETERS_NO_EXTERNAL_CHECKPOINT",
+        "external_checkpoint_path": null,
+        "external_checkpoint_sha256": null,
+        "LinearPartition-C": {
+          "kind": "EMBEDDED_C_FEATURE_WEIGHTS",
+          "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/upstream_linearpartition/src/Utils/feature_weight.h",
+          "sha256": "d1e89e10b4a62be5c41e5b67c84af1d30bd539a9fc97abb2513c58d36c818b32"
+        },
+        "LinearPartition-V": {
+          "kind": "EMBEDDED_VIENNARNA_PARAMETERS",
+          "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/upstream_linearpartition/src/Utils/energy_parameter.h",
+          "sha256": "e3fb9fcf3fc577560261408f2e879a36fa88a44f7d9f11dc25a33830d1fba8ff"
+        }
       },
       "training_data": {
-        "status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "status": "NO_PROJECT_TRAINING; upstream embedded parameter provenance is variant-dependent",
         "project_training_dataset_ids": [],
         "external_training_corpora": [],
-        "reason": "thermodynamic/prior parameter inference; no learned sequence-fit training set"
+        "external_training_corpora_status": "NOT_REDERIVED_IN_THIS_AUDIT",
+        "reason": "C embedded weights and V Vienna parameters are hashed source assets; no project sequence fitting was performed"
       },
       "license": {
-        "status": "BLOCKED_PROVENANCE",
+        "status": "VERIFIED_CUSTOM_LICENSE_NOT_SPDX_ASSIGNED",
         "spdx": null,
-        "reason": "model/weight license not verified; dataset or framework license is not a substitute"
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/upstream_linearpartition/LICENSE",
+        "sha256": "cad1fa04798b34a554fba764fe35fd1f300ddb5c57b636f932a4e3fdd07fba79",
+        "reason": "official custom license verified; no SPDX identifier assigned"
       },
       "inference": {
-        "status": "BLOCKED_PROVENANCE",
-        "version_protocol": "long-sequence contract candidate; exact variant/version BLOCKED_PROVENANCE",
-        "decoder": null,
-        "threshold": null,
-        "evaluation_scope": null,
+        "status": "OFFICIAL_SOURCE_PROTOCOL_VERIFIED__NO_LONG_CHAIN_PREDICTIONS",
+        "version_protocol": "official commit b450fb3e63189073b68d385589035f992080aa3a; variant-specific protocols below",
+        "variants": {
+          "LinearPartition-C": {
+            "beam_size": 100,
+            "bpp_cutoff": 0.0,
+            "command_template": "./linearpartition --fasta -b 100 -c 0.0 --rewrite FULL_PATH.bpp < FULL_PATH.fasta",
+            "dangles": 2,
+            "execution_label": "APPROXIMATE_SPARSE",
+            "execution_label_reason": "finite beam pruning and sparse emitted BPP support are not exact global cubic DP",
+            "input": "full-length FASTA with --fasta; no truncation",
+            "mea_gamma_if_structure_requested": 3.0,
+            "sharpturn": false,
+            "variant_flag": null
+          },
+          "LinearPartition-V": {
+            "beam_size": 100,
+            "bpp_cutoff": 0.0,
+            "command_template": "./linearpartition -V --fasta -b 100 -c 0.0 --rewrite FULL_PATH.bpp < FULL_PATH.fasta",
+            "dangles": 2,
+            "execution_label": "APPROXIMATE_SPARSE",
+            "execution_label_reason": "finite beam pruning and sparse emitted BPP support are not exact global cubic DP",
+            "input": "full-length FASTA with --fasta; no truncation",
+            "mea_gamma_if_structure_requested": 3.0,
+            "sharpturn": false,
+            "variant_flag": "-V"
+          }
+        },
+        "decoder": "base-pairing probabilities; optional MEA structure",
+        "beam_size": 100,
+        "threshold": 0.0,
+        "dangles": 2,
+        "sharpturn": false,
+        "mea": {
+          "enabled_when_requested": true,
+          "gamma": 3.0,
+          "full_length_output_required": true
+        },
+        "execution_label": "APPROXIMATE_SPARSE",
+        "execution_label_reason": "finite beam pruning and sparse BPP output are not exact global cubic DP",
+        "evaluation_scope": [
+          "longchain_7224",
+          "longchain_19000"
+        ],
+        "evaluation_status": "PLANNED_ONLY_NO_PREDICTIONS",
         "efold_version": null
       },
       "comparability": {
-        "status": "NOT_COMPARABLE_UNTIL_IDENTITY_WEIGHTS_AND_PREDICTIONS_ARE_RESOLVED",
+        "status": "NOT_COMPARABLE_NO_LONG_CHAIN_PREDICTIONS",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
-      "provenance_status": "BLOCKED_PROVENANCE",
+      "provenance_status": "OFFICIAL_SOURCE_AND_PROTOCOL_VERIFIED",
       "evidence": {
         "source_type": "local_file",
-        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/audit_report.json",
         "exists": true,
-        "bytes": 9349,
-        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "bytes": 43413,
+        "sha256": "e63f6e55ae5d580f334bd747ded805b7d833ecf344747af0b8c86a06cd2c2e0f",
         "hash_scope": "full_content"
       },
-      "evidence_additional": [],
-      "status": "BLOCKED_PROVENANCE",
+      "evidence_additional": [
+        {
+          "source_type": "public_url",
+          "url": "https://github.com/LinearFold/LinearPartition.git",
+          "commit": "b450fb3e63189073b68d385589035f992080aa3a",
+          "retrieval_status": "RETRIEVED_AND_PINNED_IN_LONG_SEQUENCE_AUDIT_V1"
+        },
+        {
+          "source_type": "local_file",
+          "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/cpu_smoke_v2/summary.json",
+          "scope": "SHORT_72NT_CPU_SMOKE_ONLY_NOT_LONG_CHAIN_PREDICTION"
+        }
+      ],
+      "status": "BLOCKED_PREDICTIONS_UNAVAILABLE",
       "inclusion_reason": "required long-sequence method class; not silently merged with LinearFold",
       "exclusion_reason": null,
       "prediction_registry_scope": "NO_CURRENT_PREDICTION",
@@ -4448,7 +4512,69 @@
       "n_frozen_prediction_rows": 0,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "official_source": {
+        "repository": "https://github.com/LinearFold/LinearPartition.git",
+        "commit": "b450fb3e63189073b68d385589035f992080aa3a",
+        "tree": "92ef4194349e06eb8a4492060e3aaf4d7d91c043",
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/upstream_linearpartition",
+        "tracked_source_clean": true,
+        "tag_v1_0_commit": "ae6507f3053573decd2e4bdae60d5a96eac87783",
+        "version_selection": "official master pinned by full commit; v1.0 differs and must not be substituted silently"
+      },
+      "resource_measurements": {
+        "GEC": {
+          "flops": {
+            "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+            "required_method": "profile the exact full-length execution; do not infer from short chains",
+            "status": "NOT_MEASURED",
+            "unit": "FLOPs",
+            "value": null
+          },
+          "latency": {
+            "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+            "required_method": "timed full-length execution after protocol freeze",
+            "status": "NOT_MEASURED",
+            "wall_seconds": null
+          },
+          "memory": {
+            "peak_cpu_rss_bytes": null,
+            "peak_gpu_allocated_bytes": null,
+            "peak_gpu_reserved_bytes": null,
+            "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+            "status": "NOT_MEASURED"
+          }
+        },
+        "LinearPartition-class": {
+          "flops": {
+            "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+            "required_method": "profile the exact full-length execution; do not infer from short chains",
+            "status": "NOT_MEASURED",
+            "unit": "FLOPs",
+            "value": null
+          },
+          "latency": {
+            "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+            "required_method": "timed full-length execution after protocol freeze",
+            "status": "NOT_MEASURED",
+            "wall_seconds": null
+          },
+          "memory": {
+            "peak_cpu_rss_bytes": null,
+            "peak_gpu_allocated_bytes": null,
+            "peak_gpu_reserved_bytes": null,
+            "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+            "status": "NOT_MEASURED"
+          }
+        }
+      },
+      "scientific_blockers": [
+        "NO_VERIFIED_LONG_CHAIN_PREDICTIONS",
+        "PREDICTION_COVERAGE_AND_METRICS_NOT_COMPUTABLE",
+        "FULL_COVERAGE_OUTPUT_NOT_AVAILABLE",
+        "MEMORY_FLOPS_LATENCY_NOT_MEASURED",
+        "EXACT_CUBIC_GEC_LONG_CHAIN_SUPPORT_NOT_ESTABLISHED"
+      ]
     },
     {
       "baseline_id": "eco_rna",

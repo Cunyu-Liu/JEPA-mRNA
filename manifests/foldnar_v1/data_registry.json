@@ -1346,52 +1346,580 @@
     {
       "dataset_id": "longchain_7224",
       "role": "long_chain",
-      "description": "Frozen 7,224-nt long-chain structure and prediction pair",
+      "description": "Verified frozen full-length 7,224-nt chain assets; predictions unavailable",
       "scope": "IN_SCOPE",
       "label_source": "DATABASE",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
-      "split_provenance": "frozen JSONL split identity: longchain_7224",
+      "label_provenance_status": "PER_RECORD_VERIFIED_PDB_MMCIF_DSSR_PARENT_MAP_AND_LABEL_HASHES",
+      "split_provenance": "rinalmo_full_d1 train; exact zero-based row indices recorded per chain",
       "cluster_80_status": "BLOCKED_NOT_COMPUTED_IN_CURRENT_PIPELINE",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
       "modified_parent_mapping": "NOT_AVAILABLE_IN_JSONL",
-      "experimental_metadata_policy": "dataset-level label source only; PDB method/resolution/modified bases/ligands require separate per-record audit",
+      "experimental_metadata_policy": "per-chain PDB method, resolution, deposition, DSSR, mmCIF and parent-map provenance verified in the linked audit",
       "cleaning_rules": "raw JSONL unchanged; analysis normalizes uppercase and T->U; only exact duplicate canonical pairs collapse; no other pair deletion",
       "pair_convention": "zero-based inclusive; QA records invalid, crossing, partner conflicts and span<4 without silent repair",
       "min_loop_policy": "span<4 pairs counted and retained; no unannounced minimum-loop deletion",
       "chanrg_provenance": null,
       "chanrg_dedup_status": null,
-      "path": null,
-      "exists": false,
-      "n_sequences": null,
-      "status": "BLOCKED",
-      "block_reason": "required frozen asset not located in the current filesystem inventory",
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/train_d1.jsonl",
+      "exists": true,
+      "n_sequences": 43368,
+      "status": "FROZEN",
       "contract_expected_length": 7224,
-      "prediction_ids": []
+      "prediction_ids": [],
+      "bytes": 663883132,
+      "sha256": "5f67f467b90454b4f9f4db5c18ebc113c9e313c7be99e63c82424581ed8d84fc",
+      "hash_scope": "full_content",
+      "count_verification": {
+        "json_parse": 43368,
+        "max_length": 7224,
+        "n_over_1024": 649,
+        "n_over_3819": 45,
+        "count_source": "full-file streaming verification in long_sequence_audit_v1"
+      },
+      "count_consistent": true,
+      "availability": "FROZEN_FULL_LENGTH_ASSETS",
+      "n_chains_at_contract_length": 2,
+      "long_chains": [
+        {
+          "name": "9MR4_5",
+          "row_index_zero_based": 42894,
+          "length": 7224,
+          "sequence_sha256": "b549ef087290a901736193d7c0890b915620a194008b6cffd8111c4bdb4d6403",
+          "pair_counts": {
+            "canonical_nested_frozen_0based": 964,
+            "raw_dssr_1based": 1583
+          },
+          "pairs_sha256": "345287d650d14287f7443b4682842a942036bb52bd9ef7e564b3a0af57d06c32",
+          "raw_pairs_sha256": "067053a75d73b144f16989638b9ee7293c852505c9d0440f8b823f4b8b840690",
+          "reference_helix_count": 208,
+          "source_conversion": {
+            "label_scope": "evaluation uses frozen canonical nested pairs, not all raw DSSR pairs",
+            "pairs": "source 1-based inclusive -> frozen 0-based inclusive by subtracting one from both endpoints",
+            "raw_pairs": "unchanged 1-based inclusive DSSR-derived pairs",
+            "sequence": "uppercase and T->U only; length and nucleotide order preserved",
+            "source_embedded_canonical_pairs": "unchanged 1-based inclusive provenance copy",
+            "status": "PASS_EXACT_ROW_IDENTITY"
+          },
+          "provenance": {
+            "pdb_id": "9MR4",
+            "auth_chain": "5",
+            "asym_ids": [
+              "BB"
+            ],
+            "entity_ids": [
+              "54"
+            ],
+            "experimental_method": "'ELECTRON MICROSCOPY'",
+            "resolution_angstrom": null,
+            "deposition_date": "2025-01-06",
+            "source_json": {
+              "bytes": 5541154,
+              "expected_sha256": "68622cf486e59cc2bd8b2f43c83563291c11bda98fa146af225e8988ef257daf",
+              "hash_match": true,
+              "hash_scope": "full_content",
+              "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9MR4/labels.json",
+              "sha256": "68622cf486e59cc2bd8b2f43c83563291c11bda98fa146af225e8988ef257daf"
+            },
+            "related_source_files": {
+              "cif_sha256": {
+                "bytes": 24821137,
+                "expected_sha256": "ee8f4fb92296768f4df18e13a934e85c6502378c8391773037650fa812f1d2bf",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9MR4/9MR4.cif",
+                "sha256": "ee8f4fb92296768f4df18e13a934e85c6502378c8391773037650fa812f1d2bf"
+              },
+              "dssr_json_sha256": {
+                "bytes": 14529572,
+                "expected_sha256": "e0cdc91c4ea718ca66ef867f8a6b13c4aafb2befbe8d64db55c9fc3ea4a40e92",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9MR4/dssr.json",
+                "sha256": "e0cdc91c4ea718ca66ef867f8a6b13c4aafb2befbe8d64db55c9fc3ea4a40e92"
+              },
+              "parent_map_sha256": {
+                "bytes": 122,
+                "expected_sha256": "dbc83685b12632af50edc24ddf2bfbafef296c5fd85d228c33a79e3e2505f021",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9MR4/parents.json",
+                "sha256": "dbc83685b12632af50edc24ddf2bfbafef296c5fd85d228c33a79e3e2505f021"
+              }
+            },
+            "dssr_seq_id_mode": "observed_nts_v1",
+            "observed_alignment": "author_bridge_or_full_polymer_alignment_before_nonpolymer_exclusion",
+            "modified_parent_map_verified_through_parent_map_hash": true
+          },
+          "resource_measurements": {
+            "GEC": {
+              "flops": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "required_method": "profile the exact full-length execution; do not infer from short chains",
+                "status": "NOT_MEASURED",
+                "unit": "FLOPs",
+                "value": null
+              },
+              "latency": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "required_method": "timed full-length execution after protocol freeze",
+                "status": "NOT_MEASURED",
+                "wall_seconds": null
+              },
+              "memory": {
+                "peak_cpu_rss_bytes": null,
+                "peak_gpu_allocated_bytes": null,
+                "peak_gpu_reserved_bytes": null,
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "status": "NOT_MEASURED"
+              }
+            },
+            "LinearPartition-class": {
+              "flops": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "required_method": "profile the exact full-length execution; do not infer from short chains",
+                "status": "NOT_MEASURED",
+                "unit": "FLOPs",
+                "value": null
+              },
+              "latency": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "required_method": "timed full-length execution after protocol freeze",
+                "status": "NOT_MEASURED",
+                "wall_seconds": null
+              },
+              "memory": {
+                "peak_cpu_rss_bytes": null,
+                "peak_gpu_allocated_bytes": null,
+                "peak_gpu_reserved_bytes": null,
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "status": "NOT_MEASURED"
+              }
+            }
+          }
+        },
+        {
+          "name": "9Q7Q_5",
+          "row_index_zero_based": 42911,
+          "length": 7224,
+          "sequence_sha256": "0eaa85f0f67b900a85b21850f31e672f9fd9d2ba21931cc6640ec3165e272c2d",
+          "pair_counts": {
+            "canonical_nested_frozen_0based": 934,
+            "raw_dssr_1based": 1558
+          },
+          "pairs_sha256": "143a361bc17e5f976f9c226fd29294e170cd85e19c86f19549bbd6a273fd518c",
+          "raw_pairs_sha256": "2b788830cc23d4b111a4957d29f8ff9b153d782ad72b6d378ae64fc237bf1416",
+          "reference_helix_count": 206,
+          "source_conversion": {
+            "label_scope": "evaluation uses frozen canonical nested pairs, not all raw DSSR pairs",
+            "pairs": "source 1-based inclusive -> frozen 0-based inclusive by subtracting one from both endpoints",
+            "raw_pairs": "unchanged 1-based inclusive DSSR-derived pairs",
+            "sequence": "uppercase and T->U only; length and nucleotide order preserved",
+            "source_embedded_canonical_pairs": "unchanged 1-based inclusive provenance copy",
+            "status": "PASS_EXACT_ROW_IDENTITY"
+          },
+          "provenance": {
+            "pdb_id": "9Q7Q",
+            "auth_chain": "5",
+            "asym_ids": [
+              "E"
+            ],
+            "entity_ids": [
+              "5"
+            ],
+            "experimental_method": "'ELECTRON MICROSCOPY'",
+            "resolution_angstrom": "2.86",
+            "deposition_date": "2025-08-25",
+            "source_json": {
+              "bytes": 5559453,
+              "expected_sha256": "78fa39fbc219ed58a41086de9eb86d851e364544c6aa98e823aaf60d5ac767d3",
+              "hash_match": true,
+              "hash_scope": "full_content",
+              "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9Q7Q/labels.json",
+              "sha256": "78fa39fbc219ed58a41086de9eb86d851e364544c6aa98e823aaf60d5ac767d3"
+            },
+            "related_source_files": {
+              "cif_sha256": {
+                "bytes": 25871540,
+                "expected_sha256": "f2ea253dee6f8142b4cfb68ce8134eba338ac38d662eef9c64ce0b81c69220de",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9Q7Q/9Q7Q.cif",
+                "sha256": "f2ea253dee6f8142b4cfb68ce8134eba338ac38d662eef9c64ce0b81c69220de"
+              },
+              "dssr_json_sha256": {
+                "bytes": 14512083,
+                "expected_sha256": "1f06ff3e55adbb66c878a0a1e20dccd388a643f9015926f1abaff3fcb98cca7c",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9Q7Q/dssr.json",
+                "sha256": "1f06ff3e55adbb66c878a0a1e20dccd388a643f9015926f1abaff3fcb98cca7c"
+              },
+              "parent_map_sha256": {
+                "bytes": 122,
+                "expected_sha256": "0245d818337546888486ebcd22f7abad07ce669187e9f861034981d49cce24a0",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/9Q7Q/parents.json",
+                "sha256": "0245d818337546888486ebcd22f7abad07ce669187e9f861034981d49cce24a0"
+              }
+            },
+            "dssr_seq_id_mode": "observed_nts_v1",
+            "observed_alignment": "author_bridge_or_full_polymer_alignment_before_nonpolymer_exclusion",
+            "modified_parent_map_verified_through_parent_map_hash": true
+          },
+          "resource_measurements": {
+            "GEC": {
+              "flops": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "required_method": "profile the exact full-length execution; do not infer from short chains",
+                "status": "NOT_MEASURED",
+                "unit": "FLOPs",
+                "value": null
+              },
+              "latency": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "required_method": "timed full-length execution after protocol freeze",
+                "status": "NOT_MEASURED",
+                "wall_seconds": null
+              },
+              "memory": {
+                "peak_cpu_rss_bytes": null,
+                "peak_gpu_allocated_bytes": null,
+                "peak_gpu_reserved_bytes": null,
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "status": "NOT_MEASURED"
+              }
+            },
+            "LinearPartition-class": {
+              "flops": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "required_method": "profile the exact full-length execution; do not infer from short chains",
+                "status": "NOT_MEASURED",
+                "unit": "FLOPs",
+                "value": null
+              },
+              "latency": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "required_method": "timed full-length execution after protocol freeze",
+                "status": "NOT_MEASURED",
+                "wall_seconds": null
+              },
+              "memory": {
+                "peak_cpu_rss_bytes": null,
+                "peak_gpu_allocated_bytes": null,
+                "peak_gpu_reserved_bytes": null,
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "status": "NOT_MEASURED"
+              }
+            }
+          }
+        }
+      ],
+      "full_length_coverage": {
+        "status": "VERIFIED_ASSETS_ONLY_NO_TRUNCATION_OR_NUCLEOTIDE_DELETION",
+        "chain_lengths": [
+          7224,
+          7224
+        ],
+        "all_contract_length_chains_verified": true,
+        "prediction_coverage": null,
+        "prediction_coverage_status": "NOT_AVAILABLE_NO_LONG_CHAIN_PREDICTIONS"
+      },
+      "source_manifest": {
+        "bytes": 1867,
+        "expected_sha256": null,
+        "hash_match": null,
+        "hash_scope": "full_content",
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/round53/rinalmo_full_d1_manifest.json",
+        "sha256": "e89fa3aec3dc2e2f9243218d90af73af17e5ee80ec535227619da4a38c43a650"
+      },
+      "source_files": {
+        "complex_holdout_1based": {
+          "bytes": 97604406,
+          "expected_sha256": "04cde607188f4f1ca9fae4fbc8a8a88d4f2ca117bba5936ca5c3bba1a36bc22a",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/complex_holdout.jsonl",
+          "sha256": "04cde607188f4f1ca9fae4fbc8a8a88d4f2ca117bba5936ca5c3bba1a36bc22a"
+        },
+        "complex_train_1based": {
+          "bytes": 632621777,
+          "expected_sha256": "0e3ab2d90fca2284c287e222dca1555eed071822455a3a878d4a0b9d0f5cabeb",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/complex_train.jsonl",
+          "sha256": "0e3ab2d90fca2284c287e222dca1555eed071822455a3a878d4a0b9d0f5cabeb"
+        },
+        "decontamination_manifest": {
+          "bytes": 415904265,
+          "expected_sha256": "05e5b6b32301f243e299740e0339cc508e7a4291a6e8b1877bafc66918dea27e",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/decontamination.json",
+          "sha256": "05e5b6b32301f243e299740e0339cc508e7a4291a6e8b1877bafc66918dea27e"
+        },
+        "decontamination_verification": {
+          "bytes": 394,
+          "expected_sha256": "2f86dc353ae8d383747d46fdbfa663f7b5bc9e2ba1f357e10e1826455a986283",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/verification.json",
+          "sha256": "2f86dc353ae8d383747d46fdbfa663f7b5bc9e2ba1f357e10e1826455a986283"
+        },
+        "tr1c": {
+          "bytes": 31262653,
+          "expected_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+          "sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854"
+        }
+      },
+      "verification_evidence": {
+        "source_type": "local_file",
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/audit_report.json",
+        "exists": true,
+        "bytes": 43413,
+        "sha256": "e63f6e55ae5d580f334bd747ded805b7d833ecf344747af0b8c86a06cd2c2e0f",
+        "hash_scope": "full_content"
+      },
+      "prediction_registry_scope": "NO_CURRENT_PREDICTION",
+      "scientific_blockers": [
+        "NO_VERIFIED_LONG_CHAIN_PREDICTIONS",
+        "PREDICTION_COVERAGE_AND_METRICS_NOT_COMPUTABLE",
+        "MEMORY_FLOPS_LATENCY_NOT_MEASURED",
+        "EXACT_CUBIC_GEC_LONG_CHAIN_SUPPORT_NOT_ESTABLISHED"
+      ]
     },
     {
       "dataset_id": "longchain_19000",
       "role": "long_chain",
-      "description": "Frozen 19,000-nt long-chain structure and prediction pair",
+      "description": "Verified frozen full-length 19,000-nt chain assets; predictions unavailable",
       "scope": "IN_SCOPE",
       "label_source": "DATABASE",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
-      "split_provenance": "frozen JSONL split identity: longchain_19000",
+      "label_provenance_status": "PER_RECORD_VERIFIED_PDB_MMCIF_DSSR_PARENT_MAP_AND_LABEL_HASHES",
+      "split_provenance": "rinalmo_full_d1 holdout; exact zero-based row indices recorded per chain",
       "cluster_80_status": "BLOCKED_NOT_COMPUTED_IN_CURRENT_PIPELINE",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
       "modified_parent_mapping": "NOT_AVAILABLE_IN_JSONL",
-      "experimental_metadata_policy": "dataset-level label source only; PDB method/resolution/modified bases/ligands require separate per-record audit",
+      "experimental_metadata_policy": "per-chain PDB method, resolution, deposition, DSSR, mmCIF and parent-map provenance verified in the linked audit",
       "cleaning_rules": "raw JSONL unchanged; analysis normalizes uppercase and T->U; only exact duplicate canonical pairs collapse; no other pair deletion",
       "pair_convention": "zero-based inclusive; QA records invalid, crossing, partner conflicts and span<4 without silent repair",
       "min_loop_policy": "span<4 pairs counted and retained; no unannounced minimum-loop deletion",
       "chanrg_provenance": null,
       "chanrg_dedup_status": null,
-      "path": null,
-      "exists": false,
-      "n_sequences": null,
-      "status": "BLOCKED",
-      "block_reason": "required frozen asset not located in the current filesystem inventory",
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/rinalmo_full_d1/complex_holdout_0based.jsonl",
+      "exists": true,
+      "n_sequences": 202,
+      "status": "FROZEN",
       "contract_expected_length": 19000,
-      "prediction_ids": []
+      "prediction_ids": [],
+      "bytes": 97604044,
+      "sha256": "a7cce12f5c5bdd7d0c4dcf6897113f5753b8a6dc54c40588657166f2fecd2950",
+      "hash_scope": "full_content",
+      "count_verification": {
+        "json_parse": 202,
+        "max_length": 19000,
+        "n_over_1024": 106,
+        "n_over_3819": 10,
+        "count_source": "full-file streaming verification in long_sequence_audit_v1"
+      },
+      "count_consistent": true,
+      "availability": "FROZEN_FULL_LENGTH_ASSETS",
+      "n_chains_at_contract_length": 1,
+      "long_chains": [
+        {
+          "name": "7AM2_1",
+          "row_index_zero_based": 57,
+          "length": 19000,
+          "sequence_sha256": "6d21b52178a592b01c000d0e800d486cb540f7e3d869a0313326e244faa95a23",
+          "pair_counts": {
+            "canonical_nested_frozen_0based": 73,
+            "raw_dssr_1based": 166
+          },
+          "pairs_sha256": "2bcf727cd947869fc3414fc9f6e111b611bbdac240e1f5f098a4d358a59ceee8",
+          "raw_pairs_sha256": "5fa561b802392f4f913ce4741de82a5c42e84f1897c81a470f6e2c1b1bbb9043",
+          "reference_helix_count": 16,
+          "source_conversion": {
+            "label_scope": "evaluation uses frozen canonical nested pairs, not all raw DSSR pairs",
+            "pairs": "source 1-based inclusive -> frozen 0-based inclusive by subtracting one from both endpoints",
+            "raw_pairs": "unchanged 1-based inclusive DSSR-derived pairs",
+            "sequence": "uppercase and T->U only; length and nucleotide order preserved",
+            "source_embedded_canonical_pairs": "unchanged 1-based inclusive provenance copy",
+            "status": "PASS_EXACT_ROW_IDENTITY"
+          },
+          "provenance": {
+            "pdb_id": "7AM2",
+            "auth_chain": "1",
+            "asym_ids": [
+              "VB"
+            ],
+            "entity_ids": [
+              "73"
+            ],
+            "experimental_method": "'ELECTRON MICROSCOPY'",
+            "resolution_angstrom": null,
+            "deposition_date": "2020-10-07",
+            "source_json": {
+              "bytes": 2262508,
+              "expected_sha256": "508127037ce55db72796e96c225db0bd8e413c648d7b20bd91a64bad8627d086",
+              "hash_match": true,
+              "hash_scope": "full_content",
+              "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/7AM2/labels.json",
+              "sha256": "508127037ce55db72796e96c225db0bd8e413c648d7b20bd91a64bad8627d086"
+            },
+            "related_source_files": {
+              "cif_sha256": {
+                "bytes": 18384743,
+                "expected_sha256": "19e32d61fcb2e4a0d4b97127a223515fdd1eebca944d62d4c87e8df037280d30",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/7AM2/7AM2.cif",
+                "sha256": "19e32d61fcb2e4a0d4b97127a223515fdd1eebca944d62d4c87e8df037280d30"
+              },
+              "dssr_json_sha256": {
+                "bytes": 3897222,
+                "expected_sha256": "8e7920ebc66276a9e8ea7bb58eca8d2e47c4a010d6671355b8bd1d6bf389652d",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/7AM2/dssr.json",
+                "sha256": "8e7920ebc66276a9e8ea7bb58eca8d2e47c4a010d6671355b8bd1d6bf389652d"
+              },
+              "parent_map_sha256": {
+                "bytes": 122,
+                "expected_sha256": "8cc8386d761b7e87135c42f43027329e0b057b707154bf591c2cb8418ba3d14f",
+                "hash_match": true,
+                "hash_scope": "full_content",
+                "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/entries/7AM2/parents.json",
+                "sha256": "8cc8386d761b7e87135c42f43027329e0b057b707154bf591c2cb8418ba3d14f"
+              }
+            },
+            "dssr_seq_id_mode": "observed_nts_v1",
+            "observed_alignment": "author_bridge_or_full_polymer_alignment_before_nonpolymer_exclusion",
+            "modified_parent_map_verified_through_parent_map_hash": true
+          },
+          "resource_measurements": {
+            "GEC": {
+              "flops": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "required_method": "profile the exact full-length execution; do not infer from short chains",
+                "status": "NOT_MEASURED",
+                "unit": "FLOPs",
+                "value": null
+              },
+              "latency": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "required_method": "timed full-length execution after protocol freeze",
+                "status": "NOT_MEASURED",
+                "wall_seconds": null
+              },
+              "memory": {
+                "peak_cpu_rss_bytes": null,
+                "peak_gpu_allocated_bytes": null,
+                "peak_gpu_reserved_bytes": null,
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted; exact O(L^3) support is not established",
+                "status": "NOT_MEASURED"
+              }
+            },
+            "LinearPartition-class": {
+              "flops": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "required_method": "profile the exact full-length execution; do not infer from short chains",
+                "status": "NOT_MEASURED",
+                "unit": "FLOPs",
+                "value": null
+              },
+              "latency": {
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "required_method": "timed full-length execution after protocol freeze",
+                "status": "NOT_MEASURED",
+                "wall_seconds": null
+              },
+              "memory": {
+                "peak_cpu_rss_bytes": null,
+                "peak_gpu_allocated_bytes": null,
+                "peak_gpu_reserved_bytes": null,
+                "reason": "CPU-only provenance audit; no long-chain inference; seed0 CUDA training was not interrupted",
+                "status": "NOT_MEASURED"
+              }
+            }
+          }
+        }
+      ],
+      "full_length_coverage": {
+        "status": "VERIFIED_ASSETS_ONLY_NO_TRUNCATION_OR_NUCLEOTIDE_DELETION",
+        "chain_lengths": [
+          19000
+        ],
+        "all_contract_length_chains_verified": true,
+        "prediction_coverage": null,
+        "prediction_coverage_status": "NOT_AVAILABLE_NO_LONG_CHAIN_PREDICTIONS"
+      },
+      "source_manifest": {
+        "bytes": 1867,
+        "expected_sha256": null,
+        "hash_match": null,
+        "hash_scope": "full_content",
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/round53/rinalmo_full_d1_manifest.json",
+        "sha256": "e89fa3aec3dc2e2f9243218d90af73af17e5ee80ec535227619da4a38c43a650"
+      },
+      "source_files": {
+        "complex_holdout_1based": {
+          "bytes": 97604406,
+          "expected_sha256": "04cde607188f4f1ca9fae4fbc8a8a88d4f2ca117bba5936ca5c3bba1a36bc22a",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/complex_holdout.jsonl",
+          "sha256": "04cde607188f4f1ca9fae4fbc8a8a88d4f2ca117bba5936ca5c3bba1a36bc22a"
+        },
+        "complex_train_1based": {
+          "bytes": 632621777,
+          "expected_sha256": "0e3ab2d90fca2284c287e222dca1555eed071822455a3a878d4a0b9d0f5cabeb",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/complex_train.jsonl",
+          "sha256": "0e3ab2d90fca2284c287e222dca1555eed071822455a3a878d4a0b9d0f5cabeb"
+        },
+        "decontamination_manifest": {
+          "bytes": 415904265,
+          "expected_sha256": "05e5b6b32301f243e299740e0339cc508e7a4291a6e8b1877bafc66918dea27e",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/decontamination.json",
+          "sha256": "05e5b6b32301f243e299740e0339cc508e7a4291a6e8b1877bafc66918dea27e"
+        },
+        "decontamination_verification": {
+          "bytes": 394,
+          "expected_sha256": "2f86dc353ae8d383747d46fdbfa663f7b5bc9e2ba1f357e10e1826455a986283",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/data/rna_complex_round49/decontamination/verification.json",
+          "sha256": "2f86dc353ae8d383747d46fdbfa663f7b5bc9e2ba1f357e10e1826455a986283"
+        },
+        "tr1c": {
+          "bytes": 31262653,
+          "expected_sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854",
+          "hash_match": true,
+          "hash_scope": "full_content",
+          "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+          "sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854"
+        }
+      },
+      "verification_evidence": {
+        "source_type": "local_file",
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/long_sequence_audit_v1/audit_report.json",
+        "exists": true,
+        "bytes": 43413,
+        "sha256": "e63f6e55ae5d580f334bd747ded805b7d833ecf344747af0b8c86a06cd2c2e0f",
+        "hash_scope": "full_content"
+      },
+      "prediction_registry_scope": "NO_CURRENT_PREDICTION",
+      "scientific_blockers": [
+        "NO_VERIFIED_LONG_CHAIN_PREDICTIONS",
+        "PREDICTION_COVERAGE_AND_METRICS_NOT_COMPUTABLE",
+        "MEMORY_FLOPS_LATENCY_NOT_MEASURED",
+        "EXACT_CUBIC_GEC_LONG_CHAIN_SUPPORT_NOT_ESTABLISHED"
+      ]
     },
     {
       "dataset_id": "rinalmo_giga_embedding_cache",
