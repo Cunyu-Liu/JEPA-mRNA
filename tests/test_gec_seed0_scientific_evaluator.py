@@ -288,6 +288,7 @@ def _scientific_fixture(tmp_path):
             "terminal_step": 9600, "terminal_unfrozen_blocks": 20, "best_step": 9600,
             "best_validation_loss": 1.0, "bad_evaluations": 5, "eligible": True,
         }
+        best_convergence = {**convergence, "bad_evaluations": 0}
         run_identity = {
             "schema_version": "foldnar.gec_run_identity.v2", "arm": arm,
             "engineering_smoke": False, "gec_config_sha256": config_sha256,
@@ -309,7 +310,7 @@ def _scientific_fixture(tmp_path):
         common_checkpoint = {
             "format": "foldnar.gec_checkpoint.v2", "run_identity": run_identity,
             "step": 9600, "encoder": encoder, "head": head, "residual": residual,
-            "n_unfrozen": 20, "optimizer_steps": 9600, "convergence": convergence,
+            "n_unfrozen": 20, "optimizer_steps": 9600, "convergence": best_convergence,
             "model_tensor_sha256": model_hashes,
         }
         torch.save({
@@ -343,6 +344,7 @@ def _scientific_fixture(tmp_path):
                 "validation_record_limit": 0, "device": "cuda:0",
             },
             "convergence": convergence,
+            "best_convergence": best_convergence,
             "environment": {"requested_device": "cuda:0", "resolved_device": "cuda:0"},
             "decoder": json.loads(config.read_text())["model"]["decoder"],
             "backbone_report": {"n_layers": 33}, "steps_completed": 15000,
@@ -501,6 +503,7 @@ def _validated_fixture_without_runs(fixture):
     ("convergence", "eligible", False, "best checkpoint is not eligible"),
     ("convergence", "best_step", 8000, "best checkpoint is not eligible"),
     ("convergence", "bad_evaluations", 4, "best checkpoint is not eligible"),
+    ("best_convergence", "bad_evaluations", 1, "restored best convergence state mismatch"),
     ("backbone_report", "n_layers", 32, "not 20/33"),
     ("environment", "resolved_device", "cpu", "explicit CUDA"),
     ("schedule", "device", "cpu", "explicit CUDA"),
