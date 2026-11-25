@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "created_utc": "2026-11-18T12:57:34.801333+00:00",
-  "n_rows": 63,
+  "n_rows": 64,
   "rows": [
     {
       "baseline_id": "vienna_mfe",
@@ -47,7 +47,7 @@
         "reason": "model/weight license not verified; dataset or framework license is not a substitute"
       },
       "inference": {
-        "status": "SUMMARY_ONLY_NO_PER_SEQUENCE_PREDICTION",
+        "status": "FROZEN_RAW_PROTOCOL",
         "version_protocol": "ViennaRNA 2.7.2; MFE",
         "decoder": null,
         "threshold": null,
@@ -55,7 +55,7 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "LEGACY_TABLE_ONLY; no frozen per-sequence join; external protocol numbers must not be ranked as project raw predictions",
+        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
@@ -77,10 +77,10 @@
           "retrieval_status": "RETRIEVED_DURING_PHASE0_REMEDIATION"
         }
       ],
-      "status": "LEGACY_TABLE_ONLY",
+      "status": "RAW_BPRNA_NEW_RECOVERED",
       "inclusion_reason": "historical 25 and 13-system board; raw summary has metrics but no per-sequence list",
       "exclusion_reason": null,
-      "prediction_registry_scope": "SUMMARY_ONLY",
+      "prediction_registry_scope": "FROZEN_RAW",
       "prediction_ids": [
         "vienna_mfe/archiveii_embok_clean/repeat0",
         "vienna_mfe/archiveii_embok_clean/repeat1",
@@ -105,9 +105,10 @@
         "vienna_mfe/ref_pdb_ts_hard/repeat2",
         "vienna_mfe/testsetb/repeat0",
         "vienna_mfe/testsetb/repeat1",
-        "vienna_mfe/testsetb/repeat2"
+        "vienna_mfe/testsetb/repeat2",
+        "vienna_mfe/bprna_new/recovered_v4"
       ],
-      "n_frozen_prediction_rows": 0,
+      "n_frozen_prediction_rows": 1,
       "n_summary_only_rows": 24,
       "n_blocked_prediction_rows": 0,
       "unknown_fields_are_not_zero": true,
@@ -116,6 +117,14 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "vienna_mfe_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
       }
     },
     {
@@ -157,7 +166,7 @@
         "reason": "model/weight license not verified; dataset or framework license is not a substitute"
       },
       "inference": {
-        "status": "SUMMARY_ONLY_NO_PER_SEQUENCE_PREDICTION",
+        "status": "FROZEN_RAW_PROTOCOL",
         "version_protocol": "ViennaRNA 2.7.2; centroid/BPP",
         "decoder": null,
         "threshold": null,
@@ -165,7 +174,7 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "LEGACY_TABLE_ONLY; no frozen per-sequence join; external protocol numbers must not be ranked as project raw predictions",
+        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
@@ -179,10 +188,10 @@
         "hash_scope": "full_content"
       },
       "evidence_additional": [],
-      "status": "LEGACY_TABLE_ONLY",
+      "status": "RAW_BPRNA_NEW_RECOVERED",
       "inclusion_reason": "historical 25 and 13-system board; summary only",
       "exclusion_reason": null,
-      "prediction_registry_scope": "SUMMARY_ONLY",
+      "prediction_registry_scope": "FROZEN_RAW",
       "prediction_ids": [
         "vienna_centroid/archiveii_embok_clean/repeat0",
         "vienna_centroid/archiveii_embok_clean/repeat1",
@@ -207,12 +216,21 @@
         "vienna_centroid/ref_pdb_ts_hard/repeat2",
         "vienna_centroid/testsetb/repeat0",
         "vienna_centroid/testsetb/repeat1",
-        "vienna_centroid/testsetb/repeat2"
+        "vienna_centroid/testsetb/repeat2",
+        "vienna_centroid/bprna_new/recovered_v4"
       ],
-      "n_frozen_prediction_rows": 0,
+      "n_frozen_prediction_rows": 1,
       "n_summary_only_rows": 24,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "vienna_centroid_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "vienna_mea",
@@ -253,7 +271,7 @@
         "reason": "model/weight license not verified; dataset or framework license is not a substitute"
       },
       "inference": {
-        "status": "SUMMARY_ONLY_NO_PER_SEQUENCE_PREDICTION",
+        "status": "FROZEN_RAW_PROTOCOL",
         "version_protocol": "ViennaRNA 2.7.2; MEA/BPP",
         "decoder": null,
         "threshold": null,
@@ -261,7 +279,7 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "LEGACY_TABLE_ONLY; no frozen per-sequence join; external protocol numbers must not be ranked as project raw predictions",
+        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
@@ -275,10 +293,10 @@
         "hash_scope": "full_content"
       },
       "evidence_additional": [],
-      "status": "LEGACY_TABLE_ONLY",
+      "status": "RAW_BPRNA_NEW_RECOVERED",
       "inclusion_reason": "historical 25 and 13-system board; summary only",
       "exclusion_reason": null,
-      "prediction_registry_scope": "SUMMARY_ONLY",
+      "prediction_registry_scope": "FROZEN_RAW",
       "prediction_ids": [
         "vienna_mea/archiveii_embok_clean/repeat0",
         "vienna_mea/archiveii_embok_clean/repeat1",
@@ -303,12 +321,21 @@
         "vienna_mea/ref_pdb_ts_hard/repeat2",
         "vienna_mea/testsetb/repeat0",
         "vienna_mea/testsetb/repeat1",
-        "vienna_mea/testsetb/repeat2"
+        "vienna_mea/testsetb/repeat2",
+        "vienna_mea/bprna_new/recovered_v4"
       ],
-      "n_frozen_prediction_rows": 0,
+      "n_frozen_prediction_rows": 1,
       "n_summary_only_rows": 24,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "vienna_mea_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "rnastructure",
@@ -456,9 +483,10 @@
         "contrafold/ref_pdb_ts2",
         "contrafold/ref_pdb_ts3",
         "contrafold/ref_pdb_ts_hard",
-        "contrafold/testsetb"
+        "contrafold/testsetb",
+        "contrafold/bprna_new/clean_tr1c"
       ],
-      "n_frozen_prediction_rows": 8,
+      "n_frozen_prediction_rows": 9,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
       "unknown_fields_are_not_zero": true,
@@ -467,6 +495,15 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "contrafold_mea_single_raw",
+          "contrafold_mea_single_clean_tr1c"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
       }
     },
     {
@@ -749,9 +786,10 @@
         "bpfold/ref_pdb_ts3",
         "bpfold/ref_pdb_ts_hard",
         "bpfold/testsetb",
-        "bpfold/rfam_fam"
+        "bpfold/rfam_fam",
+        "bpfold_official_release/bprna_new_official_reference"
       ],
-      "n_frozen_prediction_rows": 9,
+      "n_frozen_prediction_rows": 10,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
       "unknown_fields_are_not_zero": true,
@@ -760,6 +798,15 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "bpfold_project_six_checkpoint_raw",
+          "bpfold_author_release_official_reference"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
       }
     },
     {
@@ -859,6 +906,14 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "ufold_converted_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
       }
     },
     {
@@ -1000,9 +1055,10 @@
       "exclusion_reason": null,
       "prediction_registry_scope": "FROZEN_RAW",
       "prediction_ids": [
-        "spot_rna/bprna_new"
+        "spot_rna/bprna_new",
+        "spot_rna_postprocessed/bprna_new"
       ],
-      "n_frozen_prediction_rows": 1,
+      "n_frozen_prediction_rows": 2,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
       "unknown_fields_are_not_zero": true,
@@ -1011,6 +1067,15 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "spot_rna_registry_raw_single",
+          "spot_rna_postprocessed_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
       }
     },
     {
@@ -1145,7 +1210,15 @@
       "n_frozen_prediction_rows": 2,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "kirigami_standard_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "contextfold",
@@ -1633,7 +1706,7 @@
         "reason": "model/weight license not verified; dataset or framework license is not a substitute"
       },
       "inference": {
-        "status": "BLOCKED_PROVENANCE",
+        "status": "FROZEN_RAW_PROTOCOL",
         "version_protocol": "BLOCKED_PROVENANCE",
         "decoder": null,
         "threshold": null,
@@ -1641,7 +1714,7 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "NOT_COMPARABLE_UNTIL_IDENTITY_WEIGHTS_AND_PREDICTIONS_ARE_RESOLVED",
+        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
@@ -1655,15 +1728,25 @@
         "hash_scope": "full_content"
       },
       "evidence_additional": [],
-      "status": "BLOCKED_PROVENANCE",
+      "status": "RAW_BPRNA_NEW_RECOVERED",
       "inclusion_reason": "required historical 25 coverage; no verified current checkpoint/prediction",
       "exclusion_reason": null,
-      "prediction_registry_scope": "NO_CURRENT_PREDICTION",
-      "prediction_ids": [],
-      "n_frozen_prediction_rows": 0,
+      "prediction_registry_scope": "FROZEN_RAW",
+      "prediction_ids": [
+        "structrfm/bprna_new"
+      ],
+      "n_frozen_prediction_rows": 1,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "structrfm_author_bprna1m_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "xens2",
@@ -2164,7 +2247,15 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "rnaformer_bprna_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "rnaformer_interfamily",
@@ -2395,7 +2486,15 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "rinalmo_author_bprna_ft_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "nucleicbert_frozen_project_head",
@@ -2466,7 +2565,8 @@
       "n_frozen_prediction_rows": 0,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "identity_disposition": "Legacy cohort alias of nucleicbert_ft; no additional prediction asset"
     },
     {
       "baseline_id": "efold_0_1_2",
@@ -2859,6 +2959,14 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "rnastructure_fold_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
       }
     },
     {
@@ -4703,17 +4811,25 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "efold_0_1_3_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "nucleicbert_frozen_official",
-      "model": "NucleicBERT official SSP",
+      "model": "NucleicBERT author secstr full fine-tune",
       "category": "FOUNDATION_MODEL",
       "row_type": "PREDICTOR",
       "role": "baseline",
       "source_cohorts": [],
       "cohort_memberships": [],
-      "version_protocol": "official secstr.ckpt epoch99/global-step258000; B=2 first-598-nt protocol",
+      "version_protocol": "official secstr.ckpt epoch99/global-step258000; official frozen=False; full fine-tune",
       "official_weights": {
         "status": "LOCAL_FROZEN_ASSET",
         "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/weights/round39/NucleicBERT/secstr.ckpt",
@@ -4722,11 +4838,11 @@
         "official_distribution_verified": true
       },
       "training_data": {
-        "status": "RAW_ARTIFACT_RECORD; full pretraining union not inferred",
-        "project_training_dataset_ids": [],
+        "status": "AUTHOR_FULL_FINE_TUNE",
         "external_training_corpora": [
-          "RNAstralign TR0 (from raw artifact training_corpus)"
-        ]
+          "RNAStrAlign/TR0-style secondary-structure data"
+        ],
+        "project_training_dataset_ids": []
       },
       "license": {
         "status": "BLOCKED_PROVENANCE",
@@ -4773,17 +4889,26 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "nucleicbert_author_secstr_full_ft_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      },
+      "identity_correction": "Historical frozen_official filename does not mean frozen-encoder training."
     },
     {
       "baseline_id": "nucleicbert_ft",
-      "model": "NucleicBERT fine-tuned",
+      "model": "NucleicBERT frozen encoder + project TR1c head",
       "category": "FOUNDATION_MODEL",
       "row_type": "PREDICTOR",
       "role": "baseline",
       "source_cohorts": [],
       "cohort_memberships": [],
-      "version_protocol": "project nb_finetuned.pt; full fine-tuning protocol",
+      "version_protocol": "official pretrained encoder frozen; project SecStruct2DPredictionHead on TR1c; threshold=0.55",
       "official_weights": {
         "status": "LOCAL_FROZEN_ASSET",
         "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_data/nb_ft/nb_finetuned.pt",
@@ -4792,15 +4917,13 @@
         "official_distribution_verified": true
       },
       "training_data": {
-        "status": "PROJECT_TR1c_PROTOCOL",
+        "status": "PROJECT_FROZEN_ENCODER_DOWNSTREAM_HEAD",
         "project_training_dataset_ids": [
           "bprna_tr1c"
         ],
         "development_dataset_ids": [
           "bprna_vl0"
-        ],
-        "external_training_corpora": [],
-        "clean_scope": "project-specific; never applied to external baselines"
+        ]
       },
       "license": {
         "status": "BLOCKED_PROVENANCE",
@@ -4847,7 +4970,16 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "nucleicbert_project_frozen_encoder_tr1c_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      },
+      "identity_correction": "Historical nucleicbert_ft is a project frozen-encoder head, not the author full-fine-tuned checkpoint."
     },
     {
       "baseline_id": "rnaformer_intrafamily",
@@ -5053,7 +5185,15 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "rnastructure_maxexpect_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     },
     {
       "baseline_id": "chanrg_ens3",
@@ -5118,6 +5258,67 @@
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
       "unknown_fields_are_not_zero": true
+    },
+    {
+      "baseline_id": "rnafm_project_frozen_encoder_crf",
+      "model": "RNA-FM frozen encoder + project CRF head",
+      "category": "FOUNDATION_MODEL",
+      "row_type": "PREDICTOR",
+      "role": "baseline",
+      "source_cohorts": [],
+      "cohort_memberships": [],
+      "version_protocol": "project frozen RNA-FM encoder + TR0 CRF/decision head; not official RNA-FM bpRNA ResNet checkpoint",
+      "official_weights": {
+        "status": "PROJECT_DOWNSTREAM_ASSET; official pretrained identity retained in recovery provenance"
+      },
+      "training_data": {
+        "status": "PROJECT_TR0_FROZEN_ENCODER_CRF",
+        "project_training_dataset_ids": [
+          "ref_tr_bprna"
+        ],
+        "development_dataset_ids": [
+          "bprna_vl0"
+        ]
+      },
+      "license": {
+        "status": "BLOCKED_PROVENANCE",
+        "spdx": null
+      },
+      "inference": {
+        "status": "FROZEN_RAW_PROTOCOL"
+      },
+      "comparability": {
+        "status": "PROJECT_RAW_GT_ONLY; not official RNA-FM ResNet",
+        "clean_subset_policy": "not applied"
+      },
+      "provenance_status": "BLOCKED_PROVENANCE",
+      "evidence": {
+        "source_type": "local_file",
+        "path": "/root/rna_jepa_data/eval_decision_ref/ow_rnafm_ff_b4_s0_step20000_bprna_new/result.json",
+        "exists": true,
+        "sha256": "758b0087ac4337420fbc6120913476fda98db9c63cf204ab69d6cb6720d60a8f",
+        "hash_scope": "full_content"
+      },
+      "evidence_additional": [],
+      "status": "RAW_BPRNA_NEW_ONLY",
+      "inclusion_reason": "recovered project backbone-swap predictor; not the official downstream model",
+      "exclusion_reason": null,
+      "prediction_registry_scope": "FROZEN_RAW",
+      "prediction_ids": [
+        "rnafm_project_frozen_encoder_crf/bprna_new"
+      ],
+      "n_frozen_prediction_rows": 1,
+      "n_summary_only_rows": 0,
+      "n_blocked_prediction_rows": 0,
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_recovery": {
+        "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+        "asset_ids": [
+          "rnafm_project_frozen_encoder_crf_single_raw"
+        ],
+        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "raw_clean_sota_claim": false
+      }
     }
   ],
   "identity_granularity": "model family + checkpoint + decoding/head variant; method-level CHANRG aliases never imply version equality",
@@ -5184,11 +5385,11 @@
     "xens2"
   ],
   "core_union_count": 54,
-  "supplemental_row_count": 9,
+  "supplemental_row_count": 10,
   "four_category_counts": {
     "STRUCTURED_DECODER": 14,
     "DIRECT_NEURAL": 16,
-    "FOUNDATION_MODEL": 28,
+    "FOUNDATION_MODEL": 29,
     "PROJECT": 5
   },
   "chanrg_composition": {
@@ -5344,5 +5545,6 @@
     }
   ],
   "sota_protocol": "one frozen model/config per protocol; raw/clean and project/CHANRG panels separate; LEGACY_TABLE_ONLY is never a frozen prediction or SOTA claim",
-  "scientific_decision_effect": "REGISTRY_COMPLETION_ONLY; E0/E1 decision unchanged"
+  "scientific_decision_effect": "REGISTRY_COMPLETION_ONLY; E0/E1 decision unchanged",
+  "recovery_overlay": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json"
 }

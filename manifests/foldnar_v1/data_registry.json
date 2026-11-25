@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_utc": "2026-11-18T12:57:34.793656+00:00",
-  "n_rows": 31,
+  "n_rows": 32,
   "rows": [
     {
       "dataset_id": "bprna_tr1c",
@@ -554,7 +554,14 @@
         "rnaformer_biophysical/bprna_new",
         "kirigami/bprna_new",
         "kirigami_fast/bprna_new",
-        "spot_rna/bprna_new"
+        "spot_rna/bprna_new",
+        "structrfm/bprna_new",
+        "rnafm_project_frozen_encoder_crf/bprna_new",
+        "spot_rna_postprocessed/bprna_new",
+        "vienna_mfe/bprna_new/recovered_v4",
+        "vienna_centroid/bprna_new/recovered_v4",
+        "vienna_mea/bprna_new/recovered_v4",
+        "contrafold/bprna_new/clean_tr1c"
       ]
     },
     {
@@ -1932,6 +1939,23 @@
       "hash_scope": "path_size_mtime_index",
       "status": "FROZEN",
       "prediction_ids": []
+    },
+    {
+      "dataset_id": "bpfold_official_bprna_new_reference",
+      "role": "external_protocol_reference",
+      "description": "BPfold v0.2 official bpRNAnew reference labels; not project DATABASE labels",
+      "scope": "EXTERNAL_PROTOCOL_ONLY",
+      "label_source": "BPFOLD_OFFICIAL_REFERENCE",
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz",
+      "exists": true,
+      "sha256": "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403",
+      "hash_scope": "full_content",
+      "n_sequences": 5401,
+      "status": "FROZEN",
+      "prediction_ids": [
+        "bpfold_official_release/bprna_new_official_reference"
+      ],
+      "comparability": "Do not mix with project raw 5388 labels; 13 official-only records retained"
     }
   ]
 }
