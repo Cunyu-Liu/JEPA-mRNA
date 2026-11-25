@@ -1,0 +1,1129 @@
+{
+  "artifacts": {
+    "chanrg_train_matched_clean": {
+      "bytes": 4086578,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_train_matched_clean_ids.txt",
+      "sha256": "3b6b4dadddb7bcd70b4cc83c085acfae52561e9bf2fcdb38987fc7a2b3575eea"
+    },
+    "chanrg_train_own_clean_unchecked_source": {
+      "bytes": 4926450,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_train_own_clean_unchecked_source_ids.txt",
+      "sha256": "be1484b942869b33c741524665f1bd34387e83d783f1afa84e38b08182dee33f"
+    },
+    "chanrg_train_raw": {
+      "bytes": 4926450,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_train_raw_ids.txt",
+      "sha256": "be1484b942869b33c741524665f1bd34387e83d783f1afa84e38b08182dee33f"
+    },
+    "chanrg_validation_matched_clean": {
+      "bytes": 327621,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_matched_clean_ids.txt",
+      "sha256": "a96b820edd7dbd4868d757269357d8fc8cce89d05ce7dc77e2975aa790206fd2"
+    },
+    "chanrg_validation_own_clean_unchecked_source": {
+      "bytes": 588228,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_own_clean_unchecked_source_ids.txt",
+      "sha256": "493ba48590df3c82aaaa787be180088e6aff016002eb3bf91b83b259641e50b2"
+    },
+    "chanrg_validation_raw": {
+      "bytes": 588228,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_raw_ids.txt",
+      "sha256": "493ba48590df3c82aaaa787be180088e6aff016002eb3bf91b83b259641e50b2"
+    },
+    "id_manifest": {
+      "bytes": 6379,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/id_manifest.json",
+      "sha256": "1cf7ef3f90b5ba45f05e2849487ab9bb7c945cfee5b7be2967b0bb09a54d1a70"
+    },
+    "tr1c_matched_clean_dev": {
+      "bytes": 306963,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_matched_clean_dev_ids.txt",
+      "sha256": "2560ecadf85b2557de048f53c4c0dddbb7841b840feae1e90deed7aceb1f1ae6"
+    },
+    "tr1c_matched_clean_train": {
+      "bytes": 1130259,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_matched_clean_train_ids.txt",
+      "sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+    },
+    "tr1c_own_clean_declared": {
+      "bytes": 1437222,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_own_clean_declared_ids.txt",
+      "sha256": "87c60ad3b472804bdecc3037aab2a3333befad087063827050d1a464a9a5a3d4"
+    },
+    "tr1c_raw": {
+      "bytes": 1437222,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_raw_ids.txt",
+      "sha256": "87c60ad3b472804bdecc3037aab2a3333befad087063827050d1a464a9a5a3d4"
+    }
+  },
+  "assets": {
+    "chanrg_train": {
+      "bytes": 78181512,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_train_train.jsonl",
+      "sha256": "0772b282cc2f9f9d3805c65ee3a780797c20bc2a9c550d4f2843268c3c54a486"
+    },
+    "chanrg_validation": {
+      "bytes": 8777885,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_train_validation.jsonl",
+      "sha256": "0b6f7643a900a99982b73a4a294a20b177968fc1c849e37d47f44d89b3d114e3"
+    },
+    "tr1c": {
+      "bytes": 31262653,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+      "sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854"
+    }
+  },
+  "frozen_utc": "2026-11-26T05:00:00Z",
+  "governance_evidence": {
+    "AUDIT_REPORT.md": {
+      "bytes": 2109,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/AUDIT_REPORT.md",
+      "sha256": "f7f7def594c3ef468ed34279d5fe93f33ba725ba4454941c2460f4d824e8aa69"
+    },
+    "audit_summary.json": {
+      "bytes": 4027,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/audit_summary.json",
+      "sha256": "a8af93d974c6c80797fb04ba8535df9250233f402ab429d3f239d62a6e75526c"
+    },
+    "distribution_and_quality.json": {
+      "bytes": 400014,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/distribution_and_quality.json",
+      "sha256": "ccdec2b4ecc1042066fe78e722ef7b0fae8b6016e385fdc7b4bdbcabcacc35b2"
+    },
+    "independent_verification.json": {
+      "bytes": 21609,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/independent_verification.json",
+      "sha256": "0e4cff332ffdd6061a2ab5f79c3bdad01a38a3f96d19bfec52b111c8b3917161"
+    },
+    "leakage_matrix.json": {
+      "bytes": 30546,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/leakage_matrix.json",
+      "sha256": "402c75f9bb81647c31fee6839d5c404a8662c87743caa79df82380cdbd456d27"
+    },
+    "mmseqs_evidence.json": {
+      "bytes": 2137,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/mmseqs_evidence.json",
+      "sha256": "bc4c0b95f79edcf49ed996d195df629b048edf55ac524ec3794954af40e57c72"
+    },
+    "record_metrics.jsonl.gz": {
+      "bytes": 26300670,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/data_governance_v1/record_metrics.jsonl.gz",
+      "sha256": "892764a5ddceb96eca6049e60f01d631882ec6876c18da4b0f5d1ca79d973b81"
+    }
+  },
+  "implementation": {
+    "builder": {
+      "bytes": 18794,
+      "path": "/home/rna_jev_model_dev_v2/tools/build_foldnar_model_dev_registry_v2.py",
+      "sha256": "f7892eaeddde87b8b6bb610ec35b3c8574369a9478983c6a39d6888c700e92f3"
+    },
+    "verifier": {
+      "bytes": 13177,
+      "path": "/home/rna_jev_model_dev_v2/tools/verify_foldnar_model_dev_registry_v2.py",
+      "sha256": "7b87e93a91182fc5f9907f191452017dc770de4fc8e9925d26abeb437c01060e"
+    }
+  },
+  "leakage_evidence": {
+    "comparisons": {
+      "chanrg_matched_clean_accounting": {
+        "evidence": {
+          "clan": {
+            "n_left_records_with_shared": 50098,
+            "n_left_unique": 130,
+            "n_right_records_with_shared": 4221,
+            "n_right_unique": 83,
+            "n_shared": 83,
+            "state": "EXACT"
+          },
+          "exact_sequence": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 78859,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 5872,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          },
+          "exact_structure_signature": {
+            "n_left_records_with_shared": 98,
+            "n_left_unique": 77864,
+            "n_right_records_with_shared": 19,
+            "n_right_unique": 5872,
+            "n_shared": 19,
+            "state": "EXACT"
+          },
+          "family": {
+            "n_left_records_with_shared": 70308,
+            "n_left_unique": 3475,
+            "n_right_records_with_shared": 5871,
+            "n_right_unique": 594,
+            "n_shared": 593,
+            "state": "EXACT"
+          },
+          "homology_80pct": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 57753,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 5689,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          }
+        },
+        "matched_clean": {
+          "exact_sequence": "NOT_DETECTED_UNKNOWN",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "NOT_DETECTED_UNKNOWN",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "own_clean": {
+          "exact_sequence": "UNCHECKED",
+          "exact_structure_signature": "UNCHECKED",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "raw": {
+          "exact_sequence": "NOT_DETECTED_UNKNOWN",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "NOT_DETECTED_UNKNOWN",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        }
+      },
+      "chanrg_raw_train_vs_validation": {
+        "evidence": {
+          "clan": {
+            "n_left_records_with_shared": 61231,
+            "n_left_unique": 130,
+            "n_right_records_with_shared": 7374,
+            "n_right_unique": 88,
+            "n_shared": 88,
+            "state": "EXACT"
+          },
+          "exact_sequence": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 95181,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 10540,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          },
+          "exact_structure_signature": {
+            "n_left_records_with_shared": 119,
+            "n_left_unique": 94182,
+            "n_right_records_with_shared": 21,
+            "n_right_unique": 10540,
+            "n_shared": 21,
+            "state": "EXACT"
+          },
+          "family": {
+            "n_left_records_with_shared": 87884,
+            "n_left_unique": 3478,
+            "n_right_records_with_shared": 10539,
+            "n_right_unique": 710,
+            "n_shared": 709,
+            "state": "EXACT"
+          },
+          "homology_80pct": {
+            "n_alignments": 514015,
+            "n_train_records": 34687,
+            "n_validation_records": 6774
+          }
+        },
+        "matched_clean": {
+          "exact_sequence": "UNCHECKED",
+          "exact_structure_signature": "UNCHECKED",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "own_clean": {
+          "exact_sequence": "UNCHECKED",
+          "exact_structure_signature": "UNCHECKED",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "raw": {
+          "exact_sequence": "NOT_DETECTED_UNKNOWN",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "HOMOLOGY",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        }
+      },
+      "tr1c_registered_train_vs_dev": {
+        "evidence": {
+          "clan": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 0,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 0,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          },
+          "exact_sequence": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 33421,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 9143,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          },
+          "exact_structure_signature": {
+            "n_left_records_with_shared": 3207,
+            "n_left_unique": 22382,
+            "n_right_records_with_shared": 1651,
+            "n_right_unique": 6108,
+            "n_shared": 495,
+            "state": "EXACT"
+          },
+          "family": {
+            "n_left_records_with_shared": 13431,
+            "n_left_unique": 1606,
+            "n_right_records_with_shared": 4399,
+            "n_right_unique": 824,
+            "n_shared": 698,
+            "state": "EXACT"
+          },
+          "homology_80pct": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 12417,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 3104,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          }
+        },
+        "matched_clean": {
+          "exact_sequence": "NOT_DETECTED_UNKNOWN",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "NOT_DETECTED_UNKNOWN",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "own_clean": {
+          "exact_sequence": "NOT_DETECTED_UNKNOWN",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "NOT_DETECTED_UNKNOWN",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "raw": {
+          "exact_sequence": "NOT_DETECTED_UNKNOWN",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "NOT_DETECTED_UNKNOWN",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        }
+      },
+      "tr1c_vs_chanrg_train": {
+        "evidence": {
+          "clan": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 0,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 130,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          },
+          "exact_sequence": {
+            "n_left_records_with_shared": 1575,
+            "n_left_unique": 42564,
+            "n_right_records_with_shared": 1575,
+            "n_right_unique": 95181,
+            "n_shared": 1575,
+            "state": "EXACT"
+          },
+          "exact_structure_signature": {
+            "n_left_records_with_shared": 1020,
+            "n_left_unique": 27995,
+            "n_right_records_with_shared": 903,
+            "n_right_unique": 94182,
+            "n_shared": 466,
+            "state": "EXACT"
+          },
+          "family": {
+            "n_left_records_with_shared": 20664,
+            "n_left_unique": 1732,
+            "n_right_records_with_shared": 78631,
+            "n_right_unique": 3478,
+            "n_shared": 1449,
+            "state": "EXACT"
+          },
+          "homology_80pct": {
+            "reason": "No cross-source MMseqs search performed; family/cluster labels are not a substitute."
+          }
+        },
+        "matched_clean": {
+          "exact_sequence": "UNCHECKED",
+          "exact_structure_signature": "UNCHECKED",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "own_clean": {
+          "exact_sequence": "EXACT",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "raw": {
+          "exact_sequence": "EXACT",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        }
+      },
+      "tr1c_vs_chanrg_validation": {
+        "evidence": {
+          "clan": {
+            "n_left_records_with_shared": 0,
+            "n_left_unique": 0,
+            "n_right_records_with_shared": 0,
+            "n_right_unique": 88,
+            "n_shared": 0,
+            "state": "NOT_DETECTED_UNKNOWN"
+          },
+          "exact_sequence": {
+            "n_left_records_with_shared": 147,
+            "n_left_unique": 42564,
+            "n_right_records_with_shared": 147,
+            "n_right_unique": 10540,
+            "n_shared": 147,
+            "state": "EXACT"
+          },
+          "exact_structure_signature": {
+            "n_left_records_with_shared": 62,
+            "n_left_unique": 27995,
+            "n_right_records_with_shared": 21,
+            "n_right_unique": 10540,
+            "n_shared": 21,
+            "state": "EXACT"
+          },
+          "family": {
+            "n_left_records_with_shared": 13259,
+            "n_left_unique": 1732,
+            "n_right_records_with_shared": 9121,
+            "n_right_unique": 710,
+            "n_shared": 487,
+            "state": "EXACT"
+          },
+          "homology_80pct": {
+            "reason": "No cross-source MMseqs search performed; family/cluster labels are not a substitute."
+          }
+        },
+        "matched_clean": {
+          "exact_sequence": "UNCHECKED",
+          "exact_structure_signature": "UNCHECKED",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "own_clean": {
+          "exact_sequence": "EXACT",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        },
+        "raw": {
+          "exact_sequence": "EXACT",
+          "exact_structure_signature": "EXACT",
+          "homology_80pct": "UNCHECKED",
+          "pretraining_exposure": "UNCHECKED",
+          "structure_similarity": "UNCHECKED",
+          "temporal_and_label_lineage": "UNCHECKED"
+        }
+      }
+    },
+    "not_clean_claim": true,
+    "state_vocabulary": [
+      "EXACT",
+      "HOMOLOGY",
+      "NOT_DETECTED_UNKNOWN",
+      "UNCHECKED"
+    ],
+    "structure_similarity": "UNCHECKED"
+  },
+  "model_runs": [
+    {
+      "arm": "destroy_interval_shuffle",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v1",
+      "run_id": "gec_seed0_v1/destroy_interval_shuffle",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "ensemble_context",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v1",
+      "run_id": "gec_seed0_v1/ensemble_context",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "independent_context",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v1",
+      "run_id": "gec_seed0_v1/independent_context",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "matched_control",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v1",
+      "run_id": "gec_seed0_v1/matched_control",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "destroy_interval_shuffle",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v2",
+      "run_id": "gec_seed0_v2/destroy_interval_shuffle",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "ensemble_context",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v2",
+      "run_id": "gec_seed0_v2/ensemble_context",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "independent_context",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v2",
+      "run_id": "gec_seed0_v2/independent_context",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "matched_control",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v2",
+      "run_id": "gec_seed0_v2/matched_control",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "destroy_interval_shuffle",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v3",
+      "run_id": "gec_seed0_v3/destroy_interval_shuffle",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "ensemble_context",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v3",
+      "run_id": "gec_seed0_v3/ensemble_context",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "independent_context",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v3",
+      "run_id": "gec_seed0_v3/independent_context",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    },
+    {
+      "arm": "matched_control",
+      "route_eligibility": {
+        "chanrg_matched_clean_validation_v2": {
+          "cross_tr1c_80pct": "UNCHECKED",
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 61,
+          "reason": "requires exact CHANRG matched-clean Train lineage; cross-TR1c 80% remains UNCHECKED",
+          "state": "INELIGIBLE"
+        },
+        "chanrg_raw_validation_v2": {
+          "n_validation_exact_sequence_overlaps_with_cluster_train": 109,
+          "n_validation_records_with_chanrg_train_80pct_hits": 6774,
+          "reason": "raw CHANRG Validation has 80% Train/Validation homology and is never a route panel",
+          "state": "INELIGIBLE"
+        },
+        "tr1c_cluster80_dev_v2": {
+          "reason": "exact registered cluster80 Train IDs and no added gradient-update rows",
+          "state": "ELIGIBLE"
+        },
+        "tr1c_rfam_family_dev_v1": {
+          "n_dev_ids_present_in_cluster_train": 3651,
+          "reason": "cluster80 Train IDs are not the family-panel Train IDs; full family-dev is forbidden",
+          "state": "INELIGIBLE"
+        }
+      },
+      "run_group_id": "gec_seed0_v3",
+      "run_id": "gec_seed0_v3/matched_control",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3",
+      "training_panel": "tr1c_cluster80_train_v1"
+    }
+  ],
+  "population_views": [
+    {
+      "dataset": "bprna_tr1c",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 1437222,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_raw_ids.txt",
+        "sha256": "87c60ad3b472804bdecc3037aab2a3333befad087063827050d1a464a9a5a3d4"
+      },
+      "n_sequences": 42564,
+      "own_clean_state": "NOT_APPLICABLE",
+      "population_id": "tr1c_raw",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "raw"
+    },
+    {
+      "dataset": "bprna_tr1c",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 1437222,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_own_clean_declared_ids.txt",
+        "sha256": "87c60ad3b472804bdecc3037aab2a3333befad087063827050d1a464a9a5a3d4"
+      },
+      "n_sequences": 42564,
+      "own_clean_state": "SUPPLIED_TR1C_EXACT_DOWNSTREAM_CLEAN_MANIFEST",
+      "population_id": "tr1c_own_clean_declared",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "own_clean"
+    },
+    {
+      "dataset": "bprna_tr1c",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 1130259,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_matched_clean_train_ids.txt",
+        "sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+      },
+      "n_sequences": 33421,
+      "own_clean_state": "NOT_APPLICABLE",
+      "population_id": "tr1c_matched_clean_train",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "matched_clean"
+    },
+    {
+      "dataset": "bprna_tr1c",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 306963,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_matched_clean_dev_ids.txt",
+        "sha256": "2560ecadf85b2557de048f53c4c0dddbb7841b840feae1e90deed7aceb1f1ae6"
+      },
+      "n_sequences": 9143,
+      "own_clean_state": "NOT_APPLICABLE",
+      "population_id": "tr1c_matched_clean_dev",
+      "route_condition": "only models with exact registered cluster80 Train IDs",
+      "route_selection_allowed": true,
+      "view": "matched_clean"
+    },
+    {
+      "dataset": "chanrg_train",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 4926450,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_train_raw_ids.txt",
+        "sha256": "be1484b942869b33c741524665f1bd34387e83d783f1afa84e38b08182dee33f"
+      },
+      "n_sequences": 95181,
+      "own_clean_state": "NOT_APPLICABLE",
+      "population_id": "chanrg_train_raw",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "raw"
+    },
+    {
+      "dataset": "chanrg_validation",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 588228,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_raw_ids.txt",
+        "sha256": "493ba48590df3c82aaaa787be180088e6aff016002eb3bf91b83b259641e50b2"
+      },
+      "n_sequences": 10540,
+      "own_clean_state": "NOT_APPLICABLE",
+      "population_id": "chanrg_validation_raw",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "raw"
+    },
+    {
+      "dataset": "chanrg_train",
+      "id_semantics": "source-population IDs only; this is not a cleaned subset",
+      "ids": {
+        "bytes": 4926450,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_train_own_clean_unchecked_source_ids.txt",
+        "sha256": "be1484b942869b33c741524665f1bd34387e83d783f1afa84e38b08182dee33f"
+      },
+      "n_sequences": 95181,
+      "own_clean_state": "UNCHECKED_NO_SEPARATE_OWN_CLEAN_ASSET",
+      "population_id": "chanrg_train_own_clean_unchecked_source",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "own_clean"
+    },
+    {
+      "dataset": "chanrg_validation",
+      "id_semantics": "source-population IDs only; this is not a cleaned subset",
+      "ids": {
+        "bytes": 588228,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_own_clean_unchecked_source_ids.txt",
+        "sha256": "493ba48590df3c82aaaa787be180088e6aff016002eb3bf91b83b259641e50b2"
+      },
+      "n_sequences": 10540,
+      "own_clean_state": "UNCHECKED_NO_SEPARATE_OWN_CLEAN_ASSET",
+      "population_id": "chanrg_validation_own_clean_unchecked_source",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "own_clean"
+    },
+    {
+      "dataset": "chanrg_train",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 4086578,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_train_matched_clean_ids.txt",
+        "sha256": "3b6b4dadddb7bcd70b4cc83c085acfae52561e9bf2fcdb38987fc7a2b3575eea"
+      },
+      "n_sequences": 78859,
+      "own_clean_state": "NOT_APPLICABLE",
+      "population_id": "chanrg_train_matched_clean",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "matched_clean"
+    },
+    {
+      "dataset": "chanrg_validation",
+      "id_semantics": "frozen stable IDs",
+      "ids": {
+        "bytes": 327621,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_matched_clean_ids.txt",
+        "sha256": "a96b820edd7dbd4868d757269357d8fc8cce89d05ce7dc77e2975aa790206fd2"
+      },
+      "n_sequences": 5872,
+      "own_clean_state": "NOT_APPLICABLE",
+      "population_id": "chanrg_validation_matched_clean",
+      "route_condition": "not independently route-eligible",
+      "route_selection_allowed": false,
+      "view": "matched_clean"
+    }
+  ],
+  "remaining_gaps": [
+    "cross-TR1c/CHANRG 80% homology assets do not exist in data_governance_v1; state remains UNCHECKED and no new search was run",
+    "exact topology signatures are exact-label overlap only; broader structure similarity remains UNCHECKED",
+    "pretraining exposure and temporal/label lineage remain UNCHECKED",
+    "CHANRG has no separate own-clean asset; own-clean source ID files are not cleaned subsets",
+    "matched-clean removes both sides of cross-split CHANRG 80% clusters only; it does not remove TR1c overlap or establish global cleanliness",
+    "no registered GEC run has family-panel or CHANRG matched-clean training lineage",
+    "CHANRG Train/Validation files are frozen subsets with contract coverage mismatch; per-record experimental quality remains unresolved"
+  ],
+  "route_panels": [
+    {
+      "current_route_eligible": true,
+      "eligible_current_run_ids": [
+        "gec_seed0_v1/destroy_interval_shuffle",
+        "gec_seed0_v1/ensemble_context",
+        "gec_seed0_v1/independent_context",
+        "gec_seed0_v1/matched_control",
+        "gec_seed0_v2/destroy_interval_shuffle",
+        "gec_seed0_v2/ensemble_context",
+        "gec_seed0_v2/independent_context",
+        "gec_seed0_v2/matched_control",
+        "gec_seed0_v3/destroy_interval_shuffle",
+        "gec_seed0_v3/ensemble_context",
+        "gec_seed0_v3/independent_context",
+        "gec_seed0_v3/matched_control"
+      ],
+      "n_validation_sequences": 9143,
+      "panel_id": "tr1c_cluster80_dev_v2",
+      "scope": "route selection only under v1 environment thresholds and paired-comparison contract; NOT_DETECTED_UNKNOWN is not clean",
+      "train_ids": {
+        "bytes": 1130259,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_cluster80_train_ids.txt",
+        "sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+      },
+      "validation_ids": {
+        "bytes": 306963,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/tr1c_matched_clean_dev_ids.txt",
+        "sha256": "2560ecadf85b2557de048f53c4c0dddbb7841b840feae1e90deed7aceb1f1ae6"
+      }
+    },
+    {
+      "current_route_eligible": false,
+      "eligible_current_run_ids": [],
+      "future_condition": "complete gradient-update set exactly equals family-panel Train IDs and excluded IDs never enter training",
+      "n_validation_sequences": 4846,
+      "panel_id": "tr1c_rfam_family_dev_v1",
+      "train_ids": {
+        "bytes": 676546,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_train_ids.txt",
+        "sha256": "a00e78bc04e46b99fb7a8559c64825c33c95929e78875f8b5e10b3b4f46652ad"
+      },
+      "validation_ids": {
+        "bytes": 167598,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1/tr1c_rfam_family_dev_ids.txt",
+        "sha256": "89ba58047e0e583b735ad1668ca32089873d35505d4ec0fba743c6e150c61a34"
+      }
+    },
+    {
+      "current_route_eligible": false,
+      "eligible_current_run_ids": [],
+      "future_condition": "none: raw CHANRG Train/Validation 80% homology makes this panel non-route-eligible",
+      "n_validation_sequences": 10540,
+      "panel_id": "chanrg_raw_validation_v2",
+      "validation_ids": {
+        "bytes": 588228,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_raw_ids.txt",
+        "sha256": "493ba48590df3c82aaaa787be180088e6aff016002eb3bf91b83b259641e50b2"
+      }
+    },
+    {
+      "current_route_eligible": false,
+      "eligible_current_run_ids": [],
+      "future_condition": "complete gradient-update set exactly equals CHANRG matched-clean Train IDs; cross-source leakage and unchecked layers must be separately reported",
+      "n_validation_sequences": 5872,
+      "panel_id": "chanrg_matched_clean_validation_v2",
+      "train_ids": {
+        "bytes": 4086578,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_train_matched_clean_ids.txt",
+        "sha256": "3b6b4dadddb7bcd70b4cc83c085acfae52561e9bf2fcdb38987fc7a2b3575eea"
+      },
+      "validation_ids": {
+        "bytes": 327621,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/chanrg_validation_matched_clean_ids.txt",
+        "sha256": "a96b820edd7dbd4868d757269357d8fc8cce89d05ce7dc77e2975aa790206fd2"
+      }
+    }
+  ],
+  "run_groups": [
+    {
+      "arms": [
+        "destroy_interval_shuffle",
+        "ensemble_context",
+        "independent_context",
+        "matched_control"
+      ],
+      "git_commit": "06736635593c0c88e470a1a04a3479076075cd6c",
+      "production_identity": {
+        "bytes": 13566,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v1/production_identity.json",
+        "sha256": "ed0f82bfbdfd7fd7cc302f3e530ec6530c8195f4b6f31de8e8df556727534656"
+      },
+      "run_group_id": "gec_seed0_v1",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+    },
+    {
+      "arms": [
+        "destroy_interval_shuffle",
+        "ensemble_context",
+        "independent_context",
+        "matched_control"
+      ],
+      "git_commit": "0ae696fad181e2ad3af0dfb4dc5f5973c4686770",
+      "production_identity": {
+        "bytes": 14058,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v2/production_identity.json",
+        "sha256": "3e325e8b2891055aa10dd9c6b81dd6bf3c84393b3346f83c6774109f49233fe8"
+      },
+      "run_group_id": "gec_seed0_v2",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+    },
+    {
+      "arms": [
+        "destroy_interval_shuffle",
+        "ensemble_context",
+        "independent_context",
+        "matched_control"
+      ],
+      "git_commit": "65211e041242b5f37c914bb18b7164a7c045abfe",
+      "production_identity": {
+        "bytes": 14058,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v3/production_identity.json",
+        "sha256": "da5a060f463b90e7c33af6be50f0644fb6e37d7af80a0abbc9097e1167974ad2"
+      },
+      "run_group_id": "gec_seed0_v3",
+      "train_ids_sha256": "3a5bdb60098c46a4db8923829f34b2827288be7bf54e795cba2627664c0584f3"
+    }
+  ],
+  "schema_version": "foldnar.model_dev_registry.v2",
+  "scientific_scope": "existing legal Train/Validation assets only; no new training, no external Test access, no new homology search",
+  "source_base_commit": "5b80abc4e77743ee0d8cafe6f5fed3a65c78099f",
+  "status": "FROZEN_WITH_UNCHECKED_LAYERS",
+  "v1_immutable": {
+    "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v1",
+    "modified_by_v2": false,
+    "registry": {
+      "bytes": 12987,
+      "path": "/home/rna_jev_model_dev_v2/manifests/foldnar_v1/model_dev_registry.json",
+      "sha256": "62ae08e06f1b3a291c2de2a9cf52d2e57ec55570396fc810cd3638612c774902"
+    }
+  }
+}
