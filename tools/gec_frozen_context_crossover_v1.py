@@ -64,6 +64,13 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def emit(message: str) -> None:
+    try:
+        print(message, flush=True)
+    except BrokenPipeError:
+        pass
+
+
 def sha256(path: str | Path) -> str:
     digest = hashlib.sha256()
     with Path(path).open("rb") as handle:
@@ -493,7 +500,7 @@ def run(mode: str, output_root: Path, source_root: Path, config_path: Path) -> P
                     accumulators[context].update(record, row["s1_predicted_pairs"])
                 s0_accumulator.update(record, rows[model]["s0_predicted_pairs"])
                 if index % 100 == 0 or index == len(records):
-                    print(f"[gec-crossover] mode={mode} model={model} {index}/{len(records)}", flush=True)
+                    emit(f"[gec-crossover] mode={mode} model={model} {index}/{len(records)}")
         hashes_after = model_hashes(encoder, head, residual)
         require_frozen((("encoder", encoder), ("head", head), ("residual", residual)))
         if hashes_after != hashes_before:
@@ -554,8 +561,8 @@ def run(mode: str, output_root: Path, source_root: Path, config_path: Path) -> P
     }
     path = output / "summary.json"
     atomic_json(summary, path)
-    print(json.dumps({"status": "COMPLETE", "mode": mode, "summary": str(path),
-                      "native_prediction_validation": native}, indent=2), flush=True)
+    emit(json.dumps({"status": "COMPLETE", "mode": mode, "summary": str(path),
+                     "native_prediction_validation": native}, indent=2))
     return path
 
 

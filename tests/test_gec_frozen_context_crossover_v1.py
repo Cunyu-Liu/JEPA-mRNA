@@ -129,6 +129,13 @@ def test_frozen_modules_require_eval_cuda_and_no_grad():
         C.require_frozen((("head", module),))
 
 
+def test_detached_logging_tolerates_closed_stdout(monkeypatch):
+    def closed(*args, **kwargs):
+        raise BrokenPipeError()
+    monkeypatch.setattr("builtins.print", closed)
+    C.emit("progress")
+
+
 def test_atomic_outputs_refuse_overwrite(tmp_path):
     path = tmp_path / "rows.jsonl.gz"
     C.atomic_jsonl_gz([{"x": 1}], path)
