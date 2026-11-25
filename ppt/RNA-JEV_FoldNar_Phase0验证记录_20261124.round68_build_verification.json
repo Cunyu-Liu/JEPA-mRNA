@@ -1,0 +1,111 @@
+{
+  "status": "PASS_BUILD_REOPEN_11_PRIOR_XML_ATOMIC_REPLACE_SOURCE_TEXT_AND_SHAPE_BOUNDS",
+  "deck": "/home/rna_jev_gec_seed0_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "472ee9e2dff451c05c8ed2bb43c30c90691c8781e4f45e71ea3528a26c2ce98a",
+  "deck_bytes": 66706,
+  "backup": "/home/rna_jev_gec_seed0_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round68.pptx",
+  "backup_sha256": "222b2ce19f9a5b2bf881fe05e7218484d411b5c7c221fa752abeea5b8bc24777",
+  "builder": "/home/rna_jev_gec_seed0_record/ppt/add_phase0_gec_seed0_result_round68.py",
+  "builder_sha256": "c067a3897268ac4ab3c7c64e1bd97a9dbfe4d788c92ca1a2b5485ff6372d74f8",
+  "base_commit": "5b80abc4e77743ee0d8cafe6f5fed3a65c78099f",
+  "independent_reeval_commit": "342a714",
+  "convergence_fix_commit": "6a1178e",
+  "sources": {
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v3_independent_reeval_v1/artifact_manifest.json": "83f5b7bbc1752255f07a6d80a3e1043f21df0dc53aa2da8ce086399fed594765",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v3_independent_reeval_v1/independent_reeval.json": "dd6250a36e41e62813576832dec4aad82a8116672a20e880c6deeeec6f4eaad7",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v3_independent_reeval_v1/gate_summary.json": "0fd93d12412159f27a54d83b3a3cbe53fbc8fd5c1a241c99449e6535125aa166"
+  },
+  "source_values": {
+    "status": "FAIL_GEC_SEED0_INDEPENDENT_REEVAL",
+    "arm_metrics": {
+      "destroy_interval_shuffle": {
+        "macro_pair_f1": 0.7360553532532974,
+        "macro_pair_precision": 0.7815212950808401,
+        "macro_pair_recall": 0.595248410614304,
+        "macro_stem_f1": 0.661450723857422,
+        "macro_stem_precision": 0.41054948259205154,
+        "macro_stem_recall": 0.29938137964294176,
+        "micro_pair_f1": 0.7077029737291702,
+        "micro_pair_precision": 0.7969874875788364,
+        "micro_pair_recall": 0.6364078003991692,
+        "micro_stem_f1": 0.3590030803696444,
+        "micro_stem_precision": 0.4059692039741915,
+        "micro_stem_recall": 0.3217770526778151
+      },
+      "ensemble_context": {
+        "macro_pair_f1": 0.6746040481514581,
+        "macro_pair_precision": 0.836526953987413,
+        "macro_pair_recall": 0.5561207001751203,
+        "macro_stem_f1": 0.6280752649802507,
+        "macro_stem_precision": 0.41232446970838443,
+        "macro_stem_recall": 0.2501003337808393,
+        "micro_pair_f1": 0.6812310470423341,
+        "micro_pair_precision": 0.8184626918227563,
+        "micro_pair_recall": 0.5834105897260468,
+        "micro_stem_f1": 0.3220558227663606,
+        "micro_stem_precision": 0.38403215294373233,
+        "micro_stem_recall": 0.2773036739560129
+      },
+      "independent_context": {
+        "macro_pair_f1": 0.695207549333746,
+        "macro_pair_precision": 0.8035535069802802,
+        "macro_pair_recall": 0.5791224995767589,
+        "macro_stem_f1": 0.6498774101322055,
+        "macro_stem_precision": 0.4270348212018737,
+        "macro_stem_recall": 0.28515132074560134,
+        "micro_pair_f1": 0.6698328145557232,
+        "micro_pair_precision": 0.7720123210879754,
+        "micro_pair_recall": 0.591539716533138,
+        "micro_stem_f1": 0.3266203375407744,
+        "micro_stem_precision": 0.37546362339514977,
+        "micro_stem_recall": 0.2890220562858846
+      },
+      "matched_control": {
+        "macro_pair_f1": 0.6843107065127545,
+        "macro_pair_precision": 0.8200852966615046,
+        "macro_pair_recall": 0.5500521882419837,
+        "macro_stem_f1": 0.6438858050241836,
+        "macro_stem_precision": 0.41585135136904305,
+        "macro_stem_recall": 0.2610647212757559,
+        "micro_pair_f1": 0.6905868356971578,
+        "micro_pair_precision": 0.8104470367522346,
+        "micro_pair_recall": 0.6016120609036771,
+        "micro_stem_f1": 0.34529675201708804,
+        "micro_stem_precision": 0.4034859575896134,
+        "micro_stem_recall": 0.3017757976971104
+      }
+    },
+    "ensemble_minus_control": {
+      "micro_pair_f1": -0.009355788654823782,
+      "macro_pair_f1": -0.00970665836129636,
+      "micro_stem_f1": -0.02324092925072746,
+      "macro_stem_f1": -0.015810540043932786
+    },
+    "ensemble_minus_destroy": {
+      "micro_pair_f1": -0.026471926686836178,
+      "macro_pair_f1": -0.06145130510183916,
+      "micro_stem_f1": -0.03694725760328382,
+      "macro_stem_f1": -0.033375458877171194
+    },
+    "isolated_recall_delta": -0.01979227905153831,
+    "span_ge128_recall_delta": -0.05280762213663093,
+    "metric_gates_passed": 4,
+    "metric_gates_total": 16,
+    "qualification_pass": false,
+    "panel": {
+      "exact_train_id_overlap": false,
+      "n_pairs": 247013,
+      "n_sequences": 9143,
+      "panel_id": "tr1c_cluster80_dev_v1",
+      "route_scope": "model development only; no external test data",
+      "train_cluster_overlap": false
+    }
+  },
+  "slide_count": 12,
+  "deck_slide_index": 12,
+  "added_slide_number": 31,
+  "prior_slide_xml_preserved": 11,
+  "atomic_replace": true,
+  "shape_bounds_checks": 21,
+  "render_visual_check": "PENDING_SEPARATE_LIBREOFFICE_RENDER"
+}
