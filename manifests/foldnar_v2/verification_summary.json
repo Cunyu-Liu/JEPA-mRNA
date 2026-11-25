@@ -1,0 +1,61 @@
+{
+  "deterministic_rebuild": {
+    "ids_sha256_manifest_digest_before_after": "00f4d5534fbc7799013e0b36e721b4230284aeffa39b39254dff85674f8b3b3c",
+    "passed": true,
+    "registry_sha256_before_after": "09c2a87e0e2d255a59c096ac3af5c17b5ae983cc663dfe0506e709f03a67ba55"
+  },
+  "registry": {
+    "bytes": 47029,
+    "path": "/home/rna_jev_model_dev_v2/manifests/foldnar_v2/model_dev_registry.json",
+    "sha256": "09c2a87e0e2d255a59c096ac3af5c17b5ae983cc663dfe0506e709f03a67ba55"
+  },
+  "remaining_gaps": [
+    "cross-TR1c/CHANRG 80% homology assets do not exist in data_governance_v1; state remains UNCHECKED and no new search was run",
+    "exact topology signatures are exact-label overlap only; broader structure similarity remains UNCHECKED",
+    "pretraining exposure and temporal/label lineage remain UNCHECKED",
+    "CHANRG has no separate own-clean asset; own-clean source ID files are not cleaned subsets",
+    "matched-clean removes both sides of cross-split CHANRG 80% clusters only; it does not remove TR1c overlap or establish global cleanliness",
+    "no registered GEC run has family-panel or CHANRG matched-clean training lineage",
+    "CHANRG Train/Validation files are frozen subsets with contract coverage mismatch; per-record experimental quality remains unresolved"
+  ],
+  "rounds": [
+    {
+      "method": "non-importing raw-source reread, leakage and hash verification",
+      "n_checks": 143,
+      "round": 1,
+      "verification": {
+        "bytes": 22115,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/verification_round1.json",
+        "sha256": "c790627118238efe87ccaeef5d486dfd6fe284e9f0006338793fe5bb88a76066"
+      }
+    },
+    {
+      "method": "non-importing raw-source reread, leakage and hash verification",
+      "n_checks": 143,
+      "round": 2,
+      "verification": {
+        "bytes": 22115,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/verification_round2.json",
+        "sha256": "c790627118238efe87ccaeef5d486dfd6fe284e9f0006338793fe5bb88a76066"
+      }
+    },
+    {
+      "method": "PASS_INDEPENDENT_MANIFEST_LEAKAGE_HASH_RECONCILIATION",
+      "n_checks": 47,
+      "round": 3,
+      "verification": {
+        "bytes": 5049,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v2/verification_round3.json",
+        "sha256": "a369897e447d52016d22e467034611a9649f8a6a05501ee6172e98595155c679"
+      }
+    }
+  ],
+  "route_eligible_current": "12 cluster-trained GEC arms: tr1c_cluster80_dev_v2 only (9143 sequences)",
+  "schema_version": "foldnar.model_dev_registry.verification_summary.v2",
+  "status": "PASS_THREE_ROUNDS",
+  "unit_tests": {
+    "command": "/root/miniconda3/envs/lucaone_cu128/bin/python -m pytest -q tests/test_foldnar_model_dev_registry_v2.py tests/test_foldnar_model_dev_registry_phase0a.py tests/test_phase2_data_governance_v1.py",
+    "failed": 0,
+    "passed": 24
+  }
+}
