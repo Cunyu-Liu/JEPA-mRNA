@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "renderer": "LibreOffice 26.8.1.1 bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1 headless PDF export; pdftoppm 120 dpi",
+  "deck": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "222b2ce19f9a5b2bf881fe05e7218484d411b5c7c221fa752abeea5b8bc24777",
+  "slides_rendered": 11,
+  "raster_sizes": [
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ]
+  ],
+  "ppt_to_pdf_complete_text_checks": 398,
+  "missing_or_clipped_text": [],
+  "pdf_words_checked": 1839,
+  "pdf_sha256": "e0f82e01893d21a94e2aff7f261cc603c33f4fef653ebf5d2ea7366f8c71a225",
+  "render_host": "local_macOS_libreoffice"
+}

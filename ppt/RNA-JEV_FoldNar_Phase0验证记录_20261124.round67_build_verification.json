@@ -1,0 +1,64 @@
+{
+  "status": "PASS_BUILD_REOPEN_PRIOR_SLIDES_SOURCE_TEXT_AND_SHAPE_BOUNDS",
+  "deck": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "222b2ce19f9a5b2bf881fe05e7218484d411b5c7c221fa752abeea5b8bc24777",
+  "backup": "/home/rna_jev_xens2_dualview_round56/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round67.pptx",
+  "backup_sha256": "b099b656c0107363397918d037b74a276a891cfa602d188838c33f3ed59d2c6b",
+  "builder": "/home/rna_jev_xens2_dualview_round56/ppt/add_phase0_recovery_v4_gec_launch_round67.py",
+  "builder_sha256": "34ed6aea3cc16e85bb7fbf4a769d8fb1b2f86e6b21240be486ae4fc3c7ecf584",
+  "project_commit": "eed09df8cdb634140aeced9bb2340c5500587b92",
+  "gec_launch_commit": "65211e041242b5f37c914bb18b7164a7c045abfe",
+  "sources": {
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v4_thermodynamic/reports/thermodynamic_bprna_new_metrics_v4.json": "4095fe935ea2b8532d365af85eb08700435c35762520498fb36a75113a020bf1",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v4_thermodynamic/reports/delivery_verification_v4.json": "d6c6cb96e1a680df4704960e4e0b3f5c3229c5a503cb64a668bb4fa3f14c7743",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v4_kirigami/reports/delivery_verification_v4.json": "75edb6adeb71e1ce1233a6333cc1d840b688596d3f5427c5bce4bf143f037bf4",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v1/xens2_absolute_gap_audit_20261124.json": "c7165a04a6c0da8812e481af54d50e7a5d2298bfcd55e77f5f119c68a93d68c5",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v3/production_identity.json": "da5a060f463b90e7c33af6be50f0644fb6e37d7af80a0abbc9097e1167974ad2",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_seed0_v3/production_launch.json": "d6812f5afbdaeb22db501ebb3a43c1cc2bda4e1f07800943d9c27399305302d0",
+    "/home/rna_jev_xens2_dualview_round56/configs/gec_four_arm_convergence_v1.json": "bb40c56ace8d96aae980bba41f87479da936b1a99388d42add36906fc09e0cfe"
+  },
+  "slide_count": 11,
+  "added_slide_numbers": [
+    29,
+    30
+  ],
+  "prior_slide_xml_preserved": 9,
+  "verified_micro_f1": {
+    "ViennaRNA MFE": "0.6379382",
+    "ViennaRNA centroid": "0.6770327",
+    "ViennaRNA MEA": "0.6619892",
+    "RNAstructure Fold": "0.6318346",
+    "RNAstructure MaxExpect": "0.6628923",
+    "CONTRAfold MEA": "0.6967639",
+    "Kirigami": "0.5783642"
+  },
+  "verified_macro_f1": {
+    "ViennaRNA MFE": "0.6580838",
+    "ViennaRNA centroid": "0.6820728",
+    "ViennaRNA MEA": "0.6764248",
+    "RNAstructure Fold": "0.6496592",
+    "RNAstructure MaxExpect": "0.6746697",
+    "CONTRAfold MEA": "0.7108879",
+    "Kirigami": "0.5526673"
+  },
+  "contrafold_clean_tr1c": {
+    "n": 5386,
+    "micro_f1": "0.6967483"
+  },
+  "xens2_gap": {
+    "xens2_micro_f1": "0.5531421",
+    "mxfold2_gap": "0.1157",
+    "eternafold_gap": "0.1322"
+  },
+  "gec_progress_observation": {
+    "step": 11000,
+    "observed_cst": "23:03",
+    "validation_loss": {
+      "matched_control": 0.243223,
+      "ensemble_context": 0.241049
+    },
+    "peak_cuda_gb_per_arm": 13.47
+  },
+  "shape_bounds_checks": 211,
+  "render_visual_check": "PENDING_SEPARATE_LIBREOFFICE_RENDER"
+}
