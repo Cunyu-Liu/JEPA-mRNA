@@ -39,6 +39,7 @@ from tools.train_plan_a_gec_convergence_v1 import (
     _batch_norm_running_state,
     _finite_float_or_none,
     build_validation_log_record,
+    build_terminal_convergence_metadata,
     require_finite_validation_nll,
     validation_error_record,
     _read_previous_run_meta,
@@ -105,6 +106,31 @@ def test_first_terminal_validation_resets_legacy_state_and_patience_selects_best
         assert not state.observe(step, 2.1, 20)["stop"]
     assert state.observe(13100, 2.1, 20)["stop"]
     assert state.best_step == 10600
+
+
+def test_early_stop_restore_best_preserves_both_convergence_states():
+    convergence = GECConvergenceStateV1(terminal_step=100, patience=2)
+    assert convergence.observe(100, 1.0, 20)["save_best"]
+    best_checkpoint = {"convergence": copy.deepcopy(convergence.state_dict())}
+    assert convergence.observe(200, 1.1, 20)["stop"] is False
+    assert convergence.observe(300, 1.2, 20)["stop"] is True
+    stopped = convergence.state_dict()
+
+    convergence.load_state_dict(best_checkpoint["convergence"])
+    restored_best = convergence.state_dict()
+    metadata = build_terminal_convergence_metadata(stopped, restored_best)
+
+    assert stopped["bad_evaluations"] == 2
+    assert metadata == {
+        "convergence": {**stopped, "best_step": 100, "best_validation_loss": 1.0},
+        "best_convergence": {
+            **stopped, "best_step": 100, "best_validation_loss": 1.0,
+            "bad_evaluations": 0,
+        },
+    }
+    assert metadata["convergence"] is stopped
+    assert metadata["best_convergence"] is restored_best
+    assert convergence.state_dict() == best_checkpoint["convergence"]
 
 
 def test_convergence_resume_identity_and_nonfinite_guards():

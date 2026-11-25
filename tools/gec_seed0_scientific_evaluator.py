@@ -454,7 +454,7 @@ def validate_checkpoint_pair(metadata: dict, arm: str, best_path: Path,
             raise ValueError(f"{arm} {label}: selected best-step mismatch")
         if checkpoint.get("n_unfrozen") != 20:
             raise ValueError(f"{arm} {label}: terminal 20/33 unfreezing mismatch")
-        if checkpoint.get("convergence") != metadata["convergence"]:
+        if checkpoint.get("convergence") != metadata["best_convergence"]:
             raise ValueError(f"{arm} {label}: convergence state mismatch")
     if best.get("checkpoint_phase") != "best_eligible":
         raise ValueError(f"{arm} best.pt: checkpoint phase is not best_eligible")
@@ -596,6 +596,8 @@ def validate_run_metadata(
                 or convergence["bad_evaluations"] < convergence_contract["patience"]
                 or not math.isfinite(float(convergence["best_validation_loss"]))):
             raise ValueError(f"{arm}: best checkpoint is not eligible post-terminal convergence")
+        if metadata.get("best_convergence") != {**convergence, "bad_evaluations": 0}:
+            raise ValueError(f"{arm}: restored best convergence state mismatch")
         environment = metadata["environment"]
         if (not str(environment["requested_device"]).startswith("cuda:")
                 or environment["resolved_device"] != environment["requested_device"]

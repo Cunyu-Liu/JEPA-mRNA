@@ -151,6 +151,13 @@ def build_validation_log_record(step: int, validation_loss: float, decision: dic
     }
 
 
+def build_terminal_convergence_metadata(stopped: dict, restored_best: dict | None = None) -> dict:
+    metadata = {"convergence": stopped}
+    if restored_best is not None:
+        metadata["best_convergence"] = restored_best
+    return metadata
+
+
 def _read_previous_run_meta(path: Path) -> dict | None:
     if not path.exists():
         return None
@@ -977,6 +984,8 @@ def main() -> None:
 
     training_stopped_step = int(step)
     training_stopped_optimizer_steps = optimizer_steps
+    training_stopped_convergence = convergence.state_dict()
+    best_convergence = None
     if early_stopped:
         best_path = output / "best.pt"
         best = torch.load(best_path, map_location="cpu", weights_only=False)
@@ -993,6 +1002,7 @@ def main() -> None:
         optimizer_steps = int(best["optimizer_steps"])
         restore_batch_stream(stream, best["stream_state"], args.batch_size)
         convergence.load_state_dict(best["convergence"])
+        best_convergence = convergence.state_dict()
         _restore_random_state(best["random_state"])
         step = int(best["step"])
         save_resume(step, "restored_best_eligible", "converged")
@@ -1012,7 +1022,7 @@ def main() -> None:
             config["convergence"]["stop_reason"] if early_stopped else "ENGINEERING_SMOKE_TWO_STEP_CAP"
         ),
         "divergence_reason": divergence, "converged": early_stopped,
-        "convergence": convergence.state_dict(),
+        **build_terminal_convergence_metadata(training_stopped_convergence, best_convergence),
         "final_residual_tensor_sha256": final_hash,
         "residual_changed_from_initial": final_hash != initial_residual_hash,
         "final_unfrozen_blocks": n_unfrozen,

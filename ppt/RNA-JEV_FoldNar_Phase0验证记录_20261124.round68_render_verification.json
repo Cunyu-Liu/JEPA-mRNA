@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "renderer": "LibreOffice 26.8.1.1 bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1 headless PDF export; pdftoppm 120 dpi",
+  "deck": "/home/rna_jev_gec_seed0_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "472ee9e2dff451c05c8ed2bb43c30c90691c8781e4f45e71ea3528a26c2ce98a",
+  "slides_rendered": 12,
+  "deck_slide_count": 12,
+  "added_slide": {
+    "deck_index": 12,
+    "display_number": 31,
+    "png": "page-12.png",
+    "png_sha256": "c4ba1068d82902f888e33bc852d68cf973cc3c9d3a32c18dbfccd105dda41b92"
+  },
+  "raster_sizes": [
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ],
+    [
+      1601,
+      900
+    ]
+  ],
+  "ppt_to_pdf_complete_text_checks": 454,
+  "missing_or_clipped_text": [],
+  "pdf_words_checked": 2007,
+  "pdf_sha256": "744534a05e70c904c07637d0922519cd2b4527a8b52edf4c4fb1309eb282016f",
+  "slide_part_sha256": {
+    "ppt/slides/slide1.xml": "58320c5836ae9a8cb47ed27b24de395e536cb6064d9a9cd3da6776ddaf675a49",
+    "ppt/slides/slide2.xml": "91e5beb10601eace3480701b6bc974e343d3da5c525447cff077f9a282c8e584",
+    "ppt/slides/slide3.xml": "90b7822a8ba3c4f561e9130681d723d2a3091c64d9721b770e069fa05d9a97ea",
+    "ppt/slides/slide4.xml": "9879fdc7748e6c2107a4cba7ff0f3745960e1ce92e5042825f1ff7d6a7140f61",
+    "ppt/slides/slide5.xml": "b0239626bffb8b85038256ad7ac2208628225dd8dab97f35414dde69bc627713",
+    "ppt/slides/slide6.xml": "96f2f5758e0432a06a4bdbf852321d48734e9639afeb78970459319851554246",
+    "ppt/slides/slide7.xml": "da7af9d2f4047680dabfed666bd19d1e165a140aa696b53e15f3afac661f8c15",
+    "ppt/slides/slide8.xml": "bf43015a0cd984848ea680ff5928fdf2bad665326bf7ba55f4378e5c470261cc",
+    "ppt/slides/slide9.xml": "aee93d290bc787d00d142fc0967a3be9ef77d01004abd5da7df5adf95b20950d",
+    "ppt/slides/slide10.xml": "865b5a83a750eb5368220234f3f53fb748cff4c7a10d60135a4bf535fff31c7c",
+    "ppt/slides/slide11.xml": "c32dc3882548d7ec25f7c004b919fa77562fea76ba238074054e0ececcb5bcda",
+    "ppt/slides/slide12.xml": "9e0dce89bc0c4ba3ae9d946a3da55fa3697991fdff8e97c60c224694f5cce67f"
+  },
+  "render_host": "local_macOS_libreoffice",
+  "visual_review": "PENDING_AGENT_IMAGE_REVIEW"
+}

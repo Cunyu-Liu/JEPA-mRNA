@@ -1,0 +1,17 @@
+{
+  "status": "PASS_RASTER_LAYOUT_AND_OCR_WITH_DIRECT_IMAGE_INPUT_LIMITATION",
+  "deck_slide_index": 12,
+  "display_slide_number": 31,
+  "png_sha256": "c4ba1068d82902f888e33bc852d68cf973cc3c9d3a32c18dbfccd105dda41b92",
+  "png_bytes": 153077,
+  "raster_review": "Opened page-12.png with cua.showImage; inspected a 132x74 grayscale raster rendering of the actual PNG",
+  "direct_image_model_review": "UNAVAILABLE_CURRENT_RUNTIME_OMITTED_IMAGE_INPUT; not claimed as a direct visual-model pass",
+  "ocr_engine": "macOS Vision VNRecognizeTextRequest accurate; zh-Hans + en-US",
+  "ocr_sha256": "eec16a1a0c33ea4babb0c49248d3a1a69b348c44f6c6097c6d450d4fb7938856",
+  "ocr_lines": 68,
+  "ocr_out_of_bounds": 0,
+  "ocr_overlap_pairs_over_20_percent": 0,
+  "pdf_complete_text_checks": 454,
+  "pdf_missing_or_clipped_text": [],
+  "layout_observation": "Four-arm table, delta table, target-recall panel, failure-gate banner, and two footer lines occupy their intended regions; no raster/OCR evidence of clipping or overlap"
+}
