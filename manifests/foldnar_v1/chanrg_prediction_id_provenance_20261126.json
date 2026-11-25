@@ -1,0 +1,534 @@
+{
+  "frozen_registry": {
+    "bytes": 394117,
+    "path": "manifests/foldnar_v1/prediction_registry.json",
+    "sha256": "3bdbc06ffc698e9be90a2239cefbaaeb47ceb6ee96fa4bf22965c0b36753e8b7"
+  },
+  "join_contract": {
+    "aggregate_evidence": "micro TP/FP/FN, precision, recall, F1 and macro F1 recompute",
+    "export_implementations": {
+      "ens3": "tools/eval_multi_head_ensemble.py -> eval/ss/evaluate_decision.py",
+      "r2d": "eval/ss/evaluate_decision.py",
+      "xens2": "tools/xens2_eval.py"
+    },
+    "order": "frozen JSONL record order equals raw per_sequence export order",
+    "per_row_evidence": [
+      "raw pred_pairs and frozen pairs recompute the stored F1",
+      "raw predicted/reference pair counts match",
+      "stored length matches frozen sequence length when present"
+    ],
+    "raw_name_field": "per_sequence[].name",
+    "required_raw_name": "",
+    "source_id_field": "id"
+  },
+  "manifest_id": "chanrg_prediction_id_provenance_20261126",
+  "reexport_tool": {
+    "path": "tools/reexport_chanrg_prediction_ids.py",
+    "sha256": "f839001de146b15edd7ad8f99ef1846ed538b63c7299aaeb8b2cc2b64878c19d"
+  },
+  "rows": [
+    {
+      "arm": "r2d",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "rinalmo_2d_s0/chanrg_test",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 175585,
+        "fp": 134461,
+        "macro_f1": 0.5034156013298469,
+        "micro_f1": 0.4934633795683641,
+        "n_sequences": 10597,
+        "tp": 151022
+      },
+      "metrics_unchanged": true,
+      "model": "rinalmo_2d_s0",
+      "prediction_id": "chanrg_id_repaired/r2d/chanrg_test",
+      "raw_empty_names": 10597,
+      "raw_prediction": {
+        "bytes": 11259224,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_test/r2d/result.json",
+        "sha256": "97162a37862f5df54c10b9df0950231ed2fdfda7c75abc8b8db4bb1f1cdedf9f"
+      },
+      "repaired_names": 10597,
+      "repaired_prediction": {
+        "bytes": 17075434,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/r2d/chanrg_test.json",
+        "sha256": "6387e9bce060366fb165c056d1b6676c7611e41f380a863f2cdbad413e27408e"
+      },
+      "source_data": {
+        "bytes": 7334833,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_test.jsonl",
+        "sha256": "521262a7b05ee79e2ac04e978d1e97dd699d61c0b42bd0cc4fc22cef7040c29d"
+      },
+      "split": "chanrg_test",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "xens2",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "xens2/chanrg_test",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 163483,
+        "fp": 87133,
+        "macro_f1": 0.565016367011867,
+        "micro_f1": 0.5655544461086148,
+        "n_sequences": 10597,
+        "tp": 163124
+      },
+      "metrics_unchanged": true,
+      "model": "xens2",
+      "prediction_id": "chanrg_id_repaired/xens2/chanrg_test",
+      "raw_empty_names": 10597,
+      "raw_prediction": {
+        "bytes": 8698080,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_test/xens2/result.json",
+        "sha256": "1f473270d009bfa2ac6849150ec79f7b14b032180073a9b4f5e0afa6e4ff681e"
+      },
+      "repaired_names": 10597,
+      "repaired_prediction": {
+        "bytes": 13720639,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/xens2/chanrg_test.json",
+        "sha256": "8a3e74b7c48ab2bffdd98ec92f4ce0e86beff402679eb5be501bf9fdc92e33f8"
+      },
+      "source_data": {
+        "bytes": 7334833,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_test.jsonl",
+        "sha256": "521262a7b05ee79e2ac04e978d1e97dd699d61c0b42bd0cc4fc22cef7040c29d"
+      },
+      "split": "chanrg_test",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "ens3",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "chanrg_ens3/chanrg_test",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 135852,
+        "fp": 82255,
+        "macro_f1": 0.632886961131871,
+        "micro_f1": 0.6362561435049373,
+        "n_sequences": 10597,
+        "tp": 190755
+      },
+      "metrics_unchanged": true,
+      "model": "chanrg_ens3",
+      "prediction_id": "chanrg_id_repaired/ens3/chanrg_test",
+      "raw_empty_names": 10597,
+      "raw_prediction": {
+        "bytes": 10886966,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_ens3_gt/chanrg_test/result.json",
+        "sha256": "7d66bfd4a3be7f360ae187d54e297afcd70c705895f72fdb7218c40c9b01219e"
+      },
+      "repaired_names": 10597,
+      "repaired_prediction": {
+        "bytes": 16478623,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/ens3/chanrg_test.json",
+        "sha256": "e66c0fa98f386e18f341d49bd9eedac690c1c583f30bb510b3d9cb9f4bc9b82b"
+      },
+      "source_data": {
+        "bytes": 7334833,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_test.jsonl",
+        "sha256": "521262a7b05ee79e2ac04e978d1e97dd699d61c0b42bd0cc4fc22cef7040c29d"
+      },
+      "split": "chanrg_test",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "r2d",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "rinalmo_2d_s0/chanrg_gena",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 78453,
+        "fp": 62877,
+        "macro_f1": 0.5662570331758547,
+        "micro_f1": 0.5772157805937467,
+        "n_sequences": 5337,
+        "tp": 96477
+      },
+      "metrics_unchanged": true,
+      "model": "rinalmo_2d_s0",
+      "prediction_id": "chanrg_id_repaired/r2d/chanrg_gena",
+      "raw_empty_names": 5337,
+      "raw_prediction": {
+        "bytes": 6174742,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_gena/r2d/result.json",
+        "sha256": "2e7cf3c6c0e84b02fa28489ea4471029897e73826a18c0520b6eab7210f43d7d"
+      },
+      "repaired_names": 5337,
+      "repaired_prediction": {
+        "bytes": 9381375,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/r2d/chanrg_gena.json",
+        "sha256": "5983204e4fe78fd2a3f55e062d22e8270ce3268a568d1740648bc7902405b1e1"
+      },
+      "source_data": {
+        "bytes": 4052249,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_gena.jsonl",
+        "sha256": "f6becee322c12943cdc1c7dc7c5ce6f06d4d31a81268971812f429682e2ff893"
+      },
+      "split": "chanrg_gena",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "xens2",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "xens2/chanrg_gena",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 73153,
+        "fp": 39244,
+        "macro_f1": 0.6224433529609156,
+        "micro_f1": 0.6442581286338704,
+        "n_sequences": 5337,
+        "tp": 101777
+      },
+      "metrics_unchanged": true,
+      "model": "xens2",
+      "prediction_id": "chanrg_id_repaired/xens2/chanrg_gena",
+      "raw_empty_names": 5337,
+      "raw_prediction": {
+        "bytes": 4859784,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_gena/xens2/result.json",
+        "sha256": "6c4d990d5dc6140e077134969535bfd897d2a3d6989dae15a1b85cdce336be22"
+      },
+      "repaired_names": 5337,
+      "repaired_prediction": {
+        "bytes": 7655767,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/xens2/chanrg_gena.json",
+        "sha256": "1501a5c91599ad2d4bcaa84a724b2e9bfc9616a026bb5237f5e58d71e03025c0"
+      },
+      "source_data": {
+        "bytes": 4052249,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_gena.jsonl",
+        "sha256": "f6becee322c12943cdc1c7dc7c5ce6f06d4d31a81268971812f429682e2ff893"
+      },
+      "split": "chanrg_gena",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "ens3",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "chanrg_ens3/chanrg_gena",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 92578,
+        "fp": 53735,
+        "macro_f1": 0.5198600712231325,
+        "micro_f1": 0.5295659079728761,
+        "n_sequences": 5337,
+        "tp": 82352
+      },
+      "metrics_unchanged": true,
+      "model": "chanrg_ens3",
+      "prediction_id": "chanrg_id_repaired/ens3/chanrg_gena",
+      "raw_empty_names": 5337,
+      "raw_prediction": {
+        "bytes": 5460997,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_ens3_gt/chanrg_gena/result.json",
+        "sha256": "04c488e0638050e410418042a3110c09c42e2d38785ab3e184dd2b2a63429a4d"
+      },
+      "repaired_names": 5337,
+      "repaired_prediction": {
+        "bytes": 8248818,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/ens3/chanrg_gena.json",
+        "sha256": "956b2096131e7b1a2510ab21f31ad0209d0e8bfb13b5a4256420debf3b046e19"
+      },
+      "source_data": {
+        "bytes": 4052249,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_gena.jsonl",
+        "sha256": "f6becee322c12943cdc1c7dc7c5ce6f06d4d31a81268971812f429682e2ff893"
+      },
+      "split": "chanrg_gena",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "r2d",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "rinalmo_2d_s0/chanrg_genc",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 91694,
+        "fp": 69458,
+        "macro_f1": 0.27092644435896684,
+        "micro_f1": 0.2769367445282985,
+        "n_sequences": 3936,
+        "tp": 30861
+      },
+      "metrics_unchanged": true,
+      "model": "rinalmo_2d_s0",
+      "prediction_id": "chanrg_id_repaired/r2d/chanrg_genc",
+      "raw_empty_names": 3936,
+      "raw_prediction": {
+        "bytes": 3953383,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_genc/r2d/result.json",
+        "sha256": "c87a10984d6237275f216ea63ccf6ad0323519a4660ed12df358683f36fd0972"
+      },
+      "repaired_names": 3936,
+      "repaired_prediction": {
+        "bytes": 6014051,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/r2d/chanrg_genc.json",
+        "sha256": "5eba55fd40d7fa1bd3cf49624681bc85e854a86cc752f744addc8d1703256835"
+      },
+      "source_data": {
+        "bytes": 2624564,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genc.jsonl",
+        "sha256": "f5c4406736a8324c73bf8ac6b406dd7cf4246999bf2ea05057aff5c86f95de7b"
+      },
+      "split": "chanrg_genc",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "xens2",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "xens2/chanrg_genc",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 83983,
+        "fp": 42273,
+        "macro_f1": 0.3591132694211972,
+        "micro_f1": 0.37927236971484757,
+        "n_sequences": 3936,
+        "tp": 38572
+      },
+      "metrics_unchanged": true,
+      "model": "xens2",
+      "prediction_id": "chanrg_id_repaired/xens2/chanrg_genc",
+      "raw_empty_names": 3936,
+      "raw_prediction": {
+        "bytes": 2841963,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_genc/xens2/result.json",
+        "sha256": "94b73a5f83e4ac31ebe0cc2a86480e1ed06fb50b66f6d95b62c943d4e1c1b8f9"
+      },
+      "repaired_names": 3936,
+      "repaired_prediction": {
+        "bytes": 4492470,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/xens2/chanrg_genc.json",
+        "sha256": "73b04d5d499698e60fad82f9f10ed0d9a9352a02b65203076d1aab52c35e221d"
+      },
+      "source_data": {
+        "bytes": 2624564,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genc.jsonl",
+        "sha256": "f5c4406736a8324c73bf8ac6b406dd7cf4246999bf2ea05057aff5c86f95de7b"
+      },
+      "split": "chanrg_genc",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "ens3",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "chanrg_ens3/chanrg_genc",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 93373,
+        "fp": 64658,
+        "macro_f1": 0.26689508590024136,
+        "micro_f1": 0.2697104831442501,
+        "n_sequences": 3936,
+        "tp": 29182
+      },
+      "metrics_unchanged": true,
+      "model": "chanrg_ens3",
+      "prediction_id": "chanrg_id_repaired/ens3/chanrg_genc",
+      "raw_empty_names": 3936,
+      "raw_prediction": {
+        "bytes": 3763636,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_ens3_gt/chanrg_genc/result.json",
+        "sha256": "25e64b4d8dcdd9501bb3e08572d58f28d0b5cd5bb28e967ff0c1746c5e804400"
+      },
+      "repaired_names": 3936,
+      "repaired_prediction": {
+        "bytes": 5707685,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/ens3/chanrg_genc.json",
+        "sha256": "aa711fa44556d27123570d19ee4dce3512bf56f0bd7742af6ed8aeb4773ea5d9"
+      },
+      "source_data": {
+        "bytes": 2624564,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genc.jsonl",
+        "sha256": "f5c4406736a8324c73bf8ac6b406dd7cf4246999bf2ea05057aff5c86f95de7b"
+      },
+      "split": "chanrg_genc",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "r2d",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "rinalmo_2d_s0/chanrg_genf",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 32799,
+        "fp": 23726,
+        "macro_f1": 0.30293344163974745,
+        "micro_f1": 0.3037335402732099,
+        "n_sequences": 1734,
+        "tp": 12329
+      },
+      "metrics_unchanged": true,
+      "model": "rinalmo_2d_s0",
+      "prediction_id": "chanrg_id_repaired/r2d/chanrg_genf",
+      "raw_empty_names": 1734,
+      "raw_prediction": {
+        "bytes": 1481524,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_genf/r2d/result.json",
+        "sha256": "57d9a00884f949e03876b5fe033d2d0eeac2f57651f7ec48734e1422c22f561a"
+      },
+      "repaired_names": 1734,
+      "repaired_prediction": {
+        "bytes": 2246326,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/r2d/chanrg_genf.json",
+        "sha256": "b718d1d5ba484d04b5d70ec82d00505a43cafe87965cb6215a1f7ba9c517ba15"
+      },
+      "source_data": {
+        "bytes": 988793,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genf.jsonl",
+        "sha256": "2623970d59f009856f3aad69e9c262512852b7a65592f6d1f10b4e18c6134bae"
+      },
+      "split": "chanrg_genf",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "xens2",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "xens2/chanrg_genf",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 33636,
+        "fp": 18352,
+        "macro_f1": 0.3051010986419243,
+        "micro_f1": 0.3065677853065144,
+        "n_sequences": 1734,
+        "tp": 11492
+      },
+      "metrics_unchanged": true,
+      "model": "xens2",
+      "prediction_id": "chanrg_id_repaired/xens2/chanrg_genf",
+      "raw_empty_names": 1734,
+      "raw_prediction": {
+        "bytes": 1069469,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_genf/xens2/result.json",
+        "sha256": "e273fc750d0d580b2edd06ba8621b0f2946e82b1737483006521e2e633d331ad"
+      },
+      "repaired_names": 1734,
+      "repaired_prediction": {
+        "bytes": 1695871,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/xens2/chanrg_genf.json",
+        "sha256": "e2130b94ea4a0c81604ed94c449625093248c91b22cea5b39a87bdbbad5385d1"
+      },
+      "source_data": {
+        "bytes": 988793,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genf.jsonl",
+        "sha256": "2623970d59f009856f3aad69e9c262512852b7a65592f6d1f10b4e18c6134bae"
+      },
+      "split": "chanrg_genf",
+      "status": "ID_PROVENANCE_REPAIRED"
+    },
+    {
+      "arm": "ens3",
+      "changed_fields": [
+        "per_sequence[].name"
+      ],
+      "frozen_registry_prediction_id": "chanrg_ens3/chanrg_genf",
+      "frozen_registry_sha256_match": true,
+      "metrics": {
+        "fn": 34509,
+        "fp": 21477,
+        "macro_f1": 0.2765198419786589,
+        "micro_f1": 0.2750181290790428,
+        "n_sequences": 1734,
+        "tp": 10619
+      },
+      "metrics_unchanged": true,
+      "model": "chanrg_ens3",
+      "prediction_id": "chanrg_id_repaired/ens3/chanrg_genf",
+      "raw_empty_names": 1734,
+      "raw_prediction": {
+        "bytes": 1363797,
+        "path": "/root/rna_jepa_data/eval_decision/chanrg_ens3_gt/chanrg_genf/result.json",
+        "sha256": "34849a0d57f2bd7b002448e46f6b85573aa683ad23d384545962305af365dcf3"
+      },
+      "repaired_names": 1734,
+      "repaired_prediction": {
+        "bytes": 2057337,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/chanrg_prediction_id_provenance_20261126/predictions/ens3/chanrg_genf.json",
+        "sha256": "9be5482ee12e44b0f01e4e8ca6ec5219c4e90f58d6d347bd91a2c786d4ba5f05"
+      },
+      "source_data": {
+        "bytes": 988793,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genf.jsonl",
+        "sha256": "2623970d59f009856f3aad69e9c262512852b7a65592f6d1f10b4e18c6134bae"
+      },
+      "split": "chanrg_genf",
+      "status": "ID_PROVENANCE_REPAIRED"
+    }
+  ],
+  "schema_version": 1,
+  "scope": {
+    "arms": [
+      "r2d",
+      "xens2",
+      "ens3"
+    ],
+    "n_prediction_files": 12,
+    "n_prediction_rows_total": 64812,
+    "n_sequences_per_arm": 21604,
+    "splits": [
+      "chanrg_test",
+      "chanrg_gena",
+      "chanrg_genc",
+      "chanrg_genf"
+    ]
+  },
+  "source_files": {
+    "chanrg_gena": {
+      "bytes": 4052249,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_gena.jsonl",
+      "sha256": "f6becee322c12943cdc1c7dc7c5ce6f06d4d31a81268971812f429682e2ff893"
+    },
+    "chanrg_genc": {
+      "bytes": 2624564,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genc.jsonl",
+      "sha256": "f5c4406736a8324c73bf8ac6b406dd7cf4246999bf2ea05057aff5c86f95de7b"
+    },
+    "chanrg_genf": {
+      "bytes": 988793,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_genf.jsonl",
+      "sha256": "2623970d59f009856f3aad69e9c262512852b7a65592f6d1f10b4e18c6134bae"
+    },
+    "chanrg_test": {
+      "bytes": 7334833,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/chanrg_test.jsonl",
+      "sha256": "521262a7b05ee79e2ac04e978d1e97dd699d61c0b42bd0cc4fc22cef7040c29d"
+    }
+  },
+  "status": "PASS",
+  "usage_policy": {
+    "historical_results_scientific_gates_gec_seed0": "UNCHANGED",
+    "inference": "NOT_RUN",
+    "labels": "verification only; predictions and metrics are unchanged",
+    "model_selection": "NOT_RUN",
+    "original_predictions": "read-only; original registry is not modified"
+  }
+}
