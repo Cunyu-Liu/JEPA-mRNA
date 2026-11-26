@@ -561,8 +561,9 @@ def main() -> None:
     source_root = args.source_root or repo / "source_data/archive_label_lineage_audit_20261127"
     artifact_root = args.artifact_root or repo / "artifacts/archive_label_lineage_audit_20261127"
     report_path = args.report or repo / "docs/plans/2026-11-27-archive-label-lineage-audit.md"
-    if subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip() != BASE_COMMIT:
-        raise ValueError("audit builder must start from the frozen base commit")
+    head = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+    if subprocess.run(["git", "-C", str(repo), "merge-base", "--is-ancestor", BASE_COMMIT, head]).returncode != 0:
+        raise ValueError("audit head must be the frozen base or its descendant")
     if not subprocess.run(["git", "-C", str(repo), "merge-base", "--is-ancestor", OFFICIAL_REFERENCE_FIX, "HEAD"]).returncode == 0:
         raise ValueError("official-reference fix is not an ancestor")
     for path, expected in EXPECTED_INPUTS.items():

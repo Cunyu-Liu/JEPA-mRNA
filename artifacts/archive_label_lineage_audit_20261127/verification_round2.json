@@ -1,0 +1,59 @@
+{
+  "checks": [
+    "independent BPSEQ parser and crossing/min-loop projection",
+    "ID, sequence, pair-set, archive-member and per-record SHA",
+    "BPfold_data versus MXfold2 reference packages for ArchiveII and TS0",
+    "TR0/TR1/TR1c exact sequence overlap and TR0/TR1c frozen clean JSONL SHA",
+    "all registered prediction actions and current artifact SHA",
+    "official documentation and read-only shared registry identities"
+  ],
+  "deliverables": {
+    "artifacts/archive_label_lineage_audit_20261127/prediction_recompute.json": {
+      "bytes": 106912,
+      "sha256": "b4e12b6ce57a797bdd103d3cb006a07f4deadaa62f8f97bb7c78d569c73cf023"
+    },
+    "artifacts/archive_label_lineage_audit_20261127/records.jsonl.gz": {
+      "bytes": 1234362,
+      "sha256": "a8f3157d721fa528ce81845684a44fcac89a06be607bca9ab07133c12943ac65"
+    },
+    "artifacts/archive_label_lineage_audit_20261127/summary.json": {
+      "bytes": 58737,
+      "sha256": "c10d3bc2dee1fc93c5dbfb6207a0806d7e1fbeca99f69478b91eea0f15cc4581"
+    },
+    "artifacts/archive_label_lineage_audit_20261127/training_overlap.jsonl.gz": {
+      "bytes": 643535,
+      "sha256": "38f9176902d9fcddc288a1fecc6f30e423a5b5ad66e547506860f5ac90737107"
+    },
+    "docs/plans/2026-11-27-archive-label-lineage-audit.md": {
+      "bytes": 9231,
+      "sha256": "7492937e4317cc222984a9b538425fd3797a40596e1af0a32f3b3a5b658f2826"
+    },
+    "source_data/archive_label_lineage_audit_20261127/source_manifest.json": {
+      "bytes": 9610,
+      "sha256": "33ef21af843e4fbc912dae8fcdf7a4d13b69ed7b195881442067c7940e67c305"
+    },
+    "tests/test_archive_label_lineage_audit_20261127.py": {
+      "bytes": 5301,
+      "sha256": "e085865fa2c788871d099558858b0ccde4eaab10d60e8eecdc44c4a07d528625"
+    },
+    "tools/build_archive_label_lineage_audit_20261127.py": {
+      "bytes": 40264,
+      "sha256": "d6fcf6c178979c43cc922ef7ed08f458fca871341500bb937691e93ca63e3714"
+    },
+    "tools/verify_archive_label_lineage_audit_20261127.py": {
+      "bytes": 25649,
+      "sha256": "197b87e65bcc5c0f336efb02fad9f56f496428c11fe7c8aed85efa5c5dbde46b"
+    }
+  },
+  "external_test_model_selection": false,
+  "generator_imported": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "official_only_or_filtered_records_verified": 1441,
+  "prediction_recompute_rows_compared_field_by_field": 97,
+  "project_records_verified": 4260,
+  "records_compared_field_by_field": 5701,
+  "schema_version": "archive_label_lineage.independent_verification.round2.v1",
+  "status": "PASS_INDEPENDENT_SECOND_IMPLEMENTATION",
+  "training_overlap_rows_compared_field_by_field": 12780
+}
