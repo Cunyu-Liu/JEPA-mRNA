@@ -12043,6 +12043,46 @@
     "URS0000D56600_8665_14-81.bpseq"
   ],
   "schema_version": "foldnar.pdb_rfam_label_lineage.v1",
+  "source_rejected_records_require_review": {
+    "ref_pdb_ts1": [
+      {
+        "detail": "'N' (L=73)",
+        "length": 73,
+        "name": "pdb_ts1#633010",
+        "reason": "bad_alphabet"
+      },
+      {
+        "detail": "'N' (L=62)",
+        "length": 62,
+        "name": "pdb_ts1#633017",
+        "reason": "bad_alphabet"
+      },
+      {
+        "detail": "'N' (L=67)",
+        "length": 67,
+        "name": "pdb_ts1#633024",
+        "reason": "bad_alphabet"
+      },
+      {
+        "detail": "'N' (L=76)",
+        "length": 76,
+        "name": "pdb_ts1#633027",
+        "reason": "bad_alphabet"
+      }
+    ],
+    "ref_pdb_ts2": [],
+    "ref_pdb_ts3": [],
+    "ref_pdb_ts_hard": [],
+    "rfam_fam": [
+      {
+        "detail": "row 59 -> 70, but 70 -> 60",
+        "length": 0,
+        "name": "URS0000D674C3_12908_1-131.bpseq",
+        "reason": "partner_asymmetric"
+      }
+    ],
+    "rfam_temporal": []
+  },
   "tr1c_exact_sequence_overlap": {
     "ref_pdb_ts1": [],
     "ref_pdb_ts2": [],

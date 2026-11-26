@@ -20,7 +20,29 @@
       "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/14.9/fasta_files/Rfam.fa.gz"
     },
     "rfam15_0": {
-      "status": "UNCHECKED"
+      "files": {
+        "Rfam.fa.gz": {
+          "bytes": 450256285,
+          "sha256": "4ea9d2b1330131c8a8b29d58843b05af35262b174e1d967265331b483bddaa0b"
+        },
+        "family.txt.gz": {
+          "bytes": 369713,
+          "sha256": "d238563403e45d7b6a5293fe916e18b328494182e3161e8157d3e21e4a3ae668"
+        },
+        "full_region.txt.gz": {
+          "bytes": 135765791,
+          "sha256": "4f88cc1dba0d6f842d5ec95e07849afff56f23ccaaa31b12c77a693747b5c04b"
+        }
+      },
+      "pair_lineage": "UNCHECKED",
+      "release": "15.0",
+      "release_membership_is_not_first_release_date": true,
+      "status": "EXACT_SEQUENCE_AND_REGION_AUDIT_ONLY",
+      "urls": {
+        "family": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/family.txt.gz",
+        "fasta": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/fasta_files/Rfam.fa.gz",
+        "full_region": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/database_files/full_region.txt.gz"
+      }
     }
   },
   "panels": {
@@ -72,7 +94,7 @@
         "filtered_projection": true,
         "observation_mask": "UNCHECKED",
         "per_record_experimental_lineage": "UNCHECKED",
-        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "prediction_derived_labels": "UNCHECKED",
         "raw_pair_lineage": "UNCHECKED",
         "registry_label_source": "EXPERIMENTAL"
       },
@@ -95,6 +117,37 @@
         ]
       },
       "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "source_rejects": {
+        "n_records": 4,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl.rejects.jsonl",
+        "records": [
+          {
+            "detail": "'N' (L=73)",
+            "length": 73,
+            "name": "pdb_ts1#633010",
+            "reason": "bad_alphabet"
+          },
+          {
+            "detail": "'N' (L=62)",
+            "length": 62,
+            "name": "pdb_ts1#633017",
+            "reason": "bad_alphabet"
+          },
+          {
+            "detail": "'N' (L=67)",
+            "length": 67,
+            "name": "pdb_ts1#633024",
+            "reason": "bad_alphabet"
+          },
+          {
+            "detail": "'N' (L=76)",
+            "length": 76,
+            "name": "pdb_ts1#633027",
+            "reason": "bad_alphabet"
+          }
+        ],
+        "sha256": "78dce4b9e2570f9194391cda9856ae6e249990ef72760599c69461fde4faa169"
+      },
       "tr1c_exact_sequence_overlap_records": 0
     },
     "ref_pdb_ts2": {
@@ -143,7 +196,7 @@
         "filtered_projection": true,
         "observation_mask": "UNCHECKED",
         "per_record_experimental_lineage": "UNCHECKED",
-        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "prediction_derived_labels": "UNCHECKED",
         "raw_pair_lineage": "UNCHECKED",
         "registry_label_source": "EXPERIMENTAL"
       },
@@ -166,6 +219,12 @@
         ]
       },
       "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "source_rejects": {
+        "n_records": 0,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl.rejects.jsonl",
+        "records": [],
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
       "tr1c_exact_sequence_overlap_records": 0
     },
     "ref_pdb_ts3": {
@@ -214,7 +273,7 @@
         "filtered_projection": true,
         "observation_mask": "UNCHECKED",
         "per_record_experimental_lineage": "UNCHECKED",
-        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "prediction_derived_labels": "UNCHECKED",
         "raw_pair_lineage": "UNCHECKED",
         "registry_label_source": "EXPERIMENTAL"
       },
@@ -237,6 +296,12 @@
         ]
       },
       "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "source_rejects": {
+        "n_records": 0,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl.rejects.jsonl",
+        "records": [],
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
       "tr1c_exact_sequence_overlap_records": 0
     },
     "ref_pdb_ts_hard": {
@@ -285,7 +350,7 @@
         "filtered_projection": true,
         "observation_mask": "UNCHECKED",
         "per_record_experimental_lineage": "UNCHECKED",
-        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "prediction_derived_labels": "UNCHECKED",
         "raw_pair_lineage": "UNCHECKED",
         "registry_label_source": "EXPERIMENTAL"
       },
@@ -308,6 +373,12 @@
         ]
       },
       "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "source_rejects": {
+        "n_records": 0,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl.rejects.jsonl",
+        "records": [],
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
       "tr1c_exact_sequence_overlap_records": 0
     },
     "rfam_fam": {
@@ -349,7 +420,7 @@
         "filtered_projection": true,
         "observation_mask": "UNCHECKED",
         "per_record_experimental_lineage": "UNCHECKED",
-        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "prediction_derived_labels": "UNCHECKED",
         "raw_pair_lineage": "UNCHECKED",
         "registry_label_source": "COMPARATIVE_INFERRED"
       },
@@ -361,7 +432,11 @@
       "n_unique_sequences": 10790,
       "official_rfam14_9_exact_sequence_records": 10223,
       "official_rfam15_0_status_counts": {
-        "UNCHECKED": 10790
+        "DIRECT_REGION_NOT_EXACT_SEQUENCE": 137,
+        "EXACT_SEQUENCE_OTHER_REGION_ONLY": 2045,
+        "NOT_EXACT_IN_RFAM15_0": 6620,
+        "PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED": 1874,
+        "PASS_REGION_SEQUENCE_FAMILY_ONLY": 114
       },
       "qualification": {
         "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
@@ -376,6 +451,19 @@
         ]
       },
       "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "source_rejects": {
+        "n_records": 1,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl.rejects.jsonl",
+        "records": [
+          {
+            "detail": "row 59 -> 70, but 70 -> 60",
+            "length": 0,
+            "name": "URS0000D674C3_12908_1-131.bpseq",
+            "reason": "partner_asymmetric"
+          }
+        ],
+        "sha256": "805409e71608cbc7c2dc7fbf99c50c40f8a180494825f4b665171a3bc788d045"
+      },
       "tr1c_exact_sequence_overlap_records": 284
     },
     "rfam_temporal": {
@@ -415,7 +503,7 @@
         "filtered_projection": true,
         "observation_mask": "UNCHECKED",
         "per_record_experimental_lineage": "UNCHECKED",
-        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "prediction_derived_labels": "UNCHECKED",
         "raw_pair_lineage": "UNCHECKED",
         "registry_label_source": "COMPARATIVE_INFERRED"
       },
@@ -427,7 +515,9 @@
       "n_unique_sequences": 436,
       "official_rfam14_9_exact_sequence_records": 43,
       "official_rfam15_0_status_counts": {
-        "UNCHECKED": 436
+        "EXACT_SEQUENCE_OTHER_REGION_ONLY": 6,
+        "NOT_EXACT_IN_RFAM15_0": 110,
+        "PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED": 320
       },
       "qualification": {
         "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
@@ -442,6 +532,12 @@
         ]
       },
       "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "source_rejects": {
+        "n_records": 0,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/rfam_temporal.jsonl.rejects.jsonl",
+        "records": [],
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
       "tr1c_exact_sequence_overlap_records": 33
     }
   },

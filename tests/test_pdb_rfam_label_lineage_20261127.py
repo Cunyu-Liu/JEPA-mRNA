@@ -59,6 +59,12 @@ def test_region_key_supports_genomic_and_rnacentral_names():
     assert audit.region_key("pdb_ts1#632970") is None
 
 
+def test_direct_rnacentral_sequence_does_not_invent_family_metadata():
+    assert audit.rfam15_status(True, [], ["URS000075C6AE_59729/1-80"]) == "PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED"
+    assert audit.rfam15_status(True, [{"rfam_acc": "RF00001"}], ["x/1-8"]) == "PASS_REGION_SEQUENCE_FAMILY_ONLY"
+    assert audit.rfam15_status(False, [], []) == "NOT_EXACT_IN_RFAM15_0"
+
+
 def test_fasta_match_requires_exact_sequence_or_region(tmp_path):
     path = tmp_path / "Rfam.fa.gz"
     with gzip.open(path, "wt") as handle:

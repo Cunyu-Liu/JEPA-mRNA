@@ -11,12 +11,17 @@ External Test is audit-only. No prediction, metric, checkpoint, or model-selecti
 | `rfam_fam` | 10790 | 0 failures | 284 | 5 | NOT_QUALIFIED |
 | `rfam_temporal` | 436 | 0 failures | 33 | 2 | NOT_QUALIFIED |
 
+`rfam_fam` official sequence checks: Rfam 14.9 exact=10223; Rfam 15.0 statuses={'PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED': 1874, 'EXACT_SEQUENCE_OTHER_REGION_ONLY': 2045, 'PASS_REGION_SEQUENCE_FAMILY_ONLY': 114, 'NOT_EXACT_IN_RFAM15_0': 6620, 'DIRECT_REGION_NOT_EXACT_SEQUENCE': 137}. Pair provenance and first-release dates remain `UNCHECKED`.
+
+`rfam_temporal` official sequence checks: Rfam 14.9 exact=43; Rfam 15.0 statuses={'NOT_EXACT_IN_RFAM15_0': 110, 'EXACT_SEQUENCE_OTHER_REGION_ONLY': 6, 'PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED': 320}. Pair provenance and first-release dates remain `UNCHECKED`.
+
 ## Binding conclusions
 
 - All six panels are filtered canonical/nested projections; their dots are not proven experimental negative labels.
 - PDB TS records lack PDB/entity/chain mappings in the frozen JSONL. mmCIF entity/poly-seq-scheme/atom_site and DSSR lineage are therefore `UNCHECKED`; all PDB labels require raw-source rebuilding for experimental claims.
 - Rfam directory names and BPfold test-result locations do not establish prediction-derived ground truth, first-release dates, or pair provenance. Rfam labels remain comparative-inference candidates, not experimental labels.
 - Exact training or cross-panel overlaps require exclusion/recompute before independent evaluation; TS-hard is not sequence-disjoint from TS1/TS3.
+- Source-rejected rows are preserved in `recompute_sets.json` (TS1: 4; Rfam family: 1); accepted-row counts alone are not full source-panel lineage.
 - Rfam temporal records already exactly present in Rfam 14.9 cannot be called new to the later temporal interval. Other records remain `UNCHECKED`, not automatically novel.
 - The related post-cutoff PDB collection is also not qualified: collection errors remain and full-polymer evaluation requires an unobserved-residue mask or observed-only rebuild.
 

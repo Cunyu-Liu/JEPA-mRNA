@@ -173,7 +173,9 @@ def rfam15_metadata(full_region: Path, family_path: Path, target_keys: set[str])
     with gzip.open(family_path, "rt", encoding="latin-1") as handle:
         for line in handle:
             fields = line.rstrip("\n").split("\t")
-            families[fields[0]] = {"rfam_id": fields[1], "description": fields[3], "type": fields[17]}
+            families[fields[0]] = {"rfam_id": fields[1], "description": fields[3], "type": fields[17],
+                                   "family_created": fields[32], "family_updated": fields[33],
+                                   "date_scope": "family row timestamps, not region or sequence first-release evidence"}
     regions = collections.defaultdict(list)
     with gzip.open(full_region, "rt", encoding="latin-1") as handle:
         for line in handle:
@@ -188,8 +190,20 @@ def limited_keys(keys: list[str]) -> dict:
     return {"count": len(keys), "first_20": sorted(keys)[:20], "truncated": len(keys) > 20}
 
 
+def rfam15_status(direct_fasta: bool, direct_regions: list, exact_keys: list[str]) -> str:
+    if direct_fasta and direct_regions:
+        return "PASS_REGION_SEQUENCE_FAMILY_ONLY"
+    if direct_fasta:
+        return "PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED"
+    if exact_keys:
+        return "EXACT_SEQUENCE_OTHER_REGION_ONLY"
+    if direct_regions:
+        return "DIRECT_REGION_NOT_EXACT_SEQUENCE"
+    return "NOT_EXACT_IN_RFAM15_0"
+
+
 def summarize_panel(dataset: str, rows: list[dict], records: list[dict], source: Path,
-                    manifest: dict, registry_row: dict) -> dict:
+                    manifest: dict, registry_row: dict, rejects: list[dict], reject_path: Path) -> dict:
     expected_n, expected_sha = EXPECTED[dataset]
     actual_sha = sha256_file(source)
     return {
@@ -211,6 +225,12 @@ def summarize_panel(dataset: str, rows: list[dict], records: list[dict], source:
             "count_match": len(rows) == registry_row["n_sequences"] == manifest["n_accepted"] == expected_n,
         },
         "declared_source": manifest["provenance"],
+        "source_rejects": {
+            "path": str(reject_path),
+            "sha256": sha256_file(reject_path),
+            "n_records": len(rejects),
+            "records": rejects,
+        },
         "declared_filtering": {
             key: manifest.get(key) for key in (
                 "source_kind", "min_loop_policy", "pseudoknot_policy", "n_records_with_drops",
@@ -220,7 +240,7 @@ def summarize_panel(dataset: str, rows: list[dict], records: list[dict], source:
         "label_lineage": {
             "registry_label_source": registry_row["label_source"],
             "per_record_experimental_lineage": "UNCHECKED",
-            "prediction_derived_labels": "NOT_ESTABLISHED",
+            "prediction_derived_labels": "UNCHECKED",
             "filtered_projection": True,
             "raw_pair_lineage": "UNCHECKED",
             "observation_mask": "UNCHECKED",
@@ -301,12 +321,7 @@ def main() -> None:
                 exact_keys = hits15.get(row["seq"], [])
                 direct_regions = regions15.get(key, []) if key else []
                 direct_fasta = key in exact_keys if key else False
-                if direct_fasta and direct_regions:
-                    status = "PASS_REGION_SEQUENCE_FAMILY_ONLY"
-                elif exact_keys:
-                    status = "EXACT_SEQUENCE_OTHER_REGION_ONLY"
-                else:
-                    status = "NOT_EXACT_IN_RFAM15_0"
+                status = rfam15_status(direct_fasta, direct_regions, exact_keys)
                 accessions = sorted({item["rfam_acc"] for item in direct_regions})
                 record["official_rfam15_0"] = {
                     "status": status,
@@ -320,9 +335,13 @@ def main() -> None:
                 }
 
     panels = {}
+    source_rejects = {}
     for name in PANELS:
+        reject_path = args.jsonl_root / f"{name}.jsonl.rejects.jsonl"
+        rejects = read_jsonl(reject_path)
+        source_rejects[name] = rejects
         panel = summarize_panel(name, datasets[name], records[name], args.jsonl_root / f"{name}.jsonl",
-                                manifests[name], registry_rows[name])
+                                manifests[name], registry_rows[name], rejects, reject_path)
         reasons = ["FILTERED_CANONICAL_NESTED_PROJECTION", "RAW_PAIR_LINEAGE_UNCHECKED"]
         if name in PDB_PANELS:
             reasons += ["PDB_ENTITY_CHAIN_MAP_UNCHECKED", "MMCIF_DSSR_ATOM_SITE_CROSSCHECK_UNCHECKED"]
@@ -386,6 +405,7 @@ def main() -> None:
         "schema_version": SCHEMA,
         "policy": "No source file is changed; these are audit sets for later unified registration",
         "full_panel_raw_label_rebuild_required": {name: [row["name"] for row in datasets[name]] for name in PANELS},
+        "source_rejected_records_require_review": source_rejects,
         "tr1c_exact_sequence_overlap": train_overlap,
         "rfam_temporal_exact_in_rfam14_9": [row["name"] for row_index, row in enumerate(datasets["rfam_temporal"])
                                                    if records["rfam_temporal"][row_index]["official_rfam14_9_exact_sequence"]],
@@ -411,11 +431,16 @@ def main() -> None:
         panel = panels[name]
         lines.append(f"| `{name}` | {panel['n_records']} | {panel['internal_projection_failures']} failures | "
                      f"{panel['tr1c_exact_sequence_overlap_records']} | {panel['cross_panel_exact_sequence_overlap_records']} | NOT_QUALIFIED |")
+    for name in RFAM_PANELS:
+        lines += ["", f"`{name}` official sequence checks: Rfam 14.9 exact="
+                  f"{panels[name]['official_rfam14_9_exact_sequence_records']}; Rfam 15.0 statuses="
+                  f"{panels[name]['official_rfam15_0_status_counts']}. Pair provenance and first-release dates remain `UNCHECKED`."]
     lines += ["", "## Binding conclusions", "",
               "- All six panels are filtered canonical/nested projections; their dots are not proven experimental negative labels.",
               "- PDB TS records lack PDB/entity/chain mappings in the frozen JSONL. mmCIF entity/poly-seq-scheme/atom_site and DSSR lineage are therefore `UNCHECKED`; all PDB labels require raw-source rebuilding for experimental claims.",
               "- Rfam directory names and BPfold test-result locations do not establish prediction-derived ground truth, first-release dates, or pair provenance. Rfam labels remain comparative-inference candidates, not experimental labels.",
               "- Exact training or cross-panel overlaps require exclusion/recompute before independent evaluation; TS-hard is not sequence-disjoint from TS1/TS3.",
+              "- Source-rejected rows are preserved in `recompute_sets.json` (TS1: 4; Rfam family: 1); accepted-row counts alone are not full source-panel lineage.",
               "- Rfam temporal records already exactly present in Rfam 14.9 cannot be called new to the later temporal interval. Other records remain `UNCHECKED`, not automatically novel.",
               "- The related post-cutoff PDB collection is also not qualified: collection errors remain and full-polymer evaluation requires an unobserved-residue mask or observed-only rebuild.", "",
               "See `recompute_sets.json` for exact record sets and `record_audit.jsonl.gz` for per-record evidence.", ""]

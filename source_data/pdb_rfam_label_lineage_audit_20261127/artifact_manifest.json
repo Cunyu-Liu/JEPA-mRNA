@@ -2,20 +2,20 @@
   "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
   "files": {
     "panel_summary.json": {
-      "bytes": 17949,
-      "sha256": "89ab7fc8382853e2e87e937c6370beafdb12eee7d7a812a24b5f72448de1a19e"
+      "bytes": 21570,
+      "sha256": "95dc35dcadaff7e3db1bc906062f5c4479bfb29881e960a989758c42458e8fb4"
     },
     "recompute_sets.json": {
-      "bytes": 487775,
-      "sha256": "b00a84bd0df4a1bc7f4b1c31719b1966f865cfa332d40f1caf5847df07e2ef8b"
+      "bytes": 488702,
+      "sha256": "0bf8f5e3e4df6b655b2210636ca847c39f3e53eaeaa174b9e6e1f56ceef2c4ba"
     },
     "record_audit.jsonl.gz": {
-      "bytes": 1387045,
-      "sha256": "a3fe60e0178d1831919e9c53903f9d8b33ebb17357e56077c2f66bd2352d4c2b"
+      "bytes": 1600711,
+      "sha256": "aa156dd73d5c517c548c4854e614a8a994f69ca29a48a1731879f5231ba6677d"
     },
     "report.md": {
-      "bytes": 1853,
-      "sha256": "0b469e3187d54d61cc7635ba0b40f67f4d00e3c7860bf1848369519edc21d801"
+      "bytes": 2605,
+      "sha256": "1f154ea5040f3d951007652982f616e6b0e354ab7834e698c2ec4bbf01efefed"
     }
   },
   "schema_version": "foldnar.pdb_rfam_label_lineage.v1"
