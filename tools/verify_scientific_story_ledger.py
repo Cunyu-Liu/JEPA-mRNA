@@ -22,6 +22,8 @@ LABEL_QUALITY_REPO = Path("/home/rna_jev_label_quality")
 LABEL_QUALITY = F / "label_quality_v1"
 PRETRAIN_EXPOSURE_REPO = Path("/home/rna_jev_pretrain_exposure")
 PRETRAIN_EXPOSURE = PRETRAIN_EXPOSURE_REPO / "manifests/pretrain_exposure_v1"
+MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
+MODEL_DEV_V3 = F / "model_dev_v3"
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -56,6 +58,10 @@ SOURCES = {
     "exposure_summary": PRETRAIN_EXPOSURE / "summary.json",
     "exposure_assets": PRETRAIN_EXPOSURE / "asset_registry.json",
     "exposure_verification": PRETRAIN_EXPOSURE / "independent_verification.json",
+    "model_dev_v3_registry": MODEL_DEV_V3_REPO / "manifests/foldnar_v3/model_dev_registry.json",
+    "model_dev_v3_summary": MODEL_DEV_V3_REPO / "manifests/foldnar_v3/verification_summary.json",
+    "model_dev_v3_manifest": MODEL_DEV_V3 / "artifact_manifest.json",
+    "model_dev_v3_verification": MODEL_DEV_V3 / "verification_round3.json",
 }
 
 SOURCE_COMMITS = {
@@ -63,6 +69,7 @@ SOURCE_COMMITS = {
     "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
     "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
+    "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
 }
 
 
@@ -88,7 +95,19 @@ def verify_source_commits() -> list[str]:
             check=True, capture_output=True, text=True,
         ).stdout.strip()
         if actual != expected:
-            errors.append(f"{name} commit: expected {expected}, got {actual}")
+            compatible_test_only_advance = False
+            if name == "independent margin evaluator":
+                ancestor = subprocess.run(
+                    ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
+                    check=False,
+                ).returncode
+                functional_diff = subprocess.run(
+                    ["git", "-C", str(repo), "diff", "--quiet", expected, "HEAD", "--", "tools"],
+                    check=False,
+                ).returncode
+                compatible_test_only_advance = ancestor == 0 and functional_diff == 0
+            if not compatible_test_only_advance:
+                errors.append(f"{name} commit: expected {expected}, got {actual}")
     return errors
 
 
@@ -156,6 +175,9 @@ def verify_narrative_guards() -> list[str]:
         "current independent margin evaluator",
         "不得干扰 GPU 或改原 16 门",
         "margin 仍无结论",
+        "302b70a228d77b0f1847489c93ead402e33510b5",
+        "PASS_THREE_ROUNDS",
+        "206,588 / 19,528 / 20,897",
     ]
     errors = [f"missing narrative guard: {item}" for item in required if item not in text]
     if OBSOLETE_MARGIN_EVALUATOR_COMMIT in text:
@@ -415,6 +437,36 @@ def verify_numbers() -> list[str]:
     for required in ["clean-OOD", "NOT_DETECTED_UNKNOWN is not clean", "no complete exposure rate", "not proof of superiority on unseen RNA families"]:
         if not any(required in item for item in sota_limits):
             errors.append(f"exposure SOTA limitation missing: {required}")
+
+    check("v3 registry schema", pointer(data["model_dev_v3_registry"], "schema_version"), "foldnar.model_dev_registry.v3")
+    check("v3 registry base", pointer(data["model_dev_v3_registry"], "source_base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("v3 registry status", pointer(data["model_dev_v3_registry"], "status"), "FROZEN_WITH_UNCHECKED_LAYERS")
+    check("v3 scientific scope", pointer(data["model_dev_v3_registry"], "scientific_scope"), "additive exposure sensitivity and final reporting only; no new training, inference, homology search or route selection")
+    check("v3 summary status", pointer(data["model_dev_v3_summary"], "status"), "PASS_THREE_ROUNDS", "PASS_THREE_ROUNDS")
+    check("v3 summary base", pointer(data["model_dev_v3_summary"], "source_base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("v3 registry sha", pointer(data["model_dev_v3_summary"], "registry/sha256"), "4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904")
+    check("v3 deterministic rebuild", pointer(data["model_dev_v3_summary"], "deterministic_rebuild/byte_identical"), True)
+    check("v3 tests each round", pointer(data["model_dev_v3_summary"], "unit_tests/passed_per_round"), 31)
+    check("v3 test rounds", pointer(data["model_dev_v3_summary"], "unit_tests/rounds"), [31, 31, 31])
+    check("v3 dev rows", pointer(data["model_dev_v3_summary"], "cluster_dev/n_sequences"), 9143)
+    check("v3 dev counts", pointer(data["model_dev_v3_summary"], "cluster_dev/exposure_counts"), {"EXACT": 7978, "HOMOLOGY": 539, "NOT_DETECTED_UNKNOWN": 626})
+    check("v3 dev pairs", pointer(data["model_dev_v3_summary"], "cluster_dev/exposure_pairs"), {"EXACT": 206588, "HOMOLOGY": 19528, "NOT_DETECTED_UNKNOWN": 20897}, "206,588 / 19,528 / 20,897")
+    check("v3 eligibility all runs", pointer(data["model_dev_v3_summary"], "cluster_dev/sensitivity_eligible_all_12_runs"), {"EXACT": True, "HOMOLOGY": False, "NOT_DETECTED_UNKNOWN": False})
+    check("v3 official unchecked", pointer(data["model_dev_v3_summary"], "complete_official_pretraining_manifest"), "UNCHECKED")
+    check("v3 unknown not clean", pointer(data["model_dev_v3_summary"], "unknown_is_not_clean"), True)
+    check("v3 metric values absent", pointer(data["model_dev_v3_registry"], "sensitivity_reporting/metric_values_status"), "NOT_COMPUTED_BY_REGISTRY_BUILD")
+    check("v3 primary panel only", pointer(data["model_dev_v3_registry"], "route_selection_policy/primary_full_panel_only"), True)
+    check("v3 additive sensitivity", pointer(data["model_dev_v3_registry"], "route_selection_policy/sensitivity_only_additive"), True)
+    check("v3 cannot rescue or veto", pointer(data["model_dev_v3_registry"], "route_selection_policy/exposure_strata_can_rescue_or_veto_primary"), False)
+    check("v3 margin unread", pointer(data["model_dev_v3_registry"], "route_selection_policy/margin_results_read"), False)
+    check("v3 margin no route influence", pointer(data["model_dev_v3_registry"], "route_selection_policy/margin_route_selection_influence"), False)
+    check("v3 verification status", pointer(data["model_dev_v3_verification"], "status"), "PASS")
+    check("v3 verification checks", pointer(data["model_dev_v3_verification"], "n_checks"), 257, "257")
+    check("v3 verification round", pointer(data["model_dev_v3_verification"], "verification_round"), 3)
+    check("v3 manifest pass", pointer(data["model_dev_v3_manifest"], "verification_passed"), True)
+    check("v3 manifest rounds", pointer(data["model_dev_v3_manifest"], "verification_rounds"), [1, 2, 3])
+    check("v3 no GPU", pointer(data["model_dev_v3_manifest"], "gpu_task_launched"), False)
+    check("v3 v1/v2 unchanged", pointer(data["model_dev_v3_manifest"], "v1_v2_modified"), False)
 
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")

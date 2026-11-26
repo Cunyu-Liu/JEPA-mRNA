@@ -93,6 +93,15 @@ def test_obsolete_margin_evaluator_is_not_current():
     assert "current independent margin evaluator" in text
 
 
+def test_model_dev_v3_registration_and_conservation():
+    text = ledger.DOC.read_text()
+    assert "302b70a228d77b0f1847489c93ead402e33510b5" in text
+    assert "PASS_THREE_ROUNDS" in text
+    assert 206588 + 19528 + 20897 == 247013
+    assert "206,588 / 19,528 / 20,897" in text
+    assert "NOT_COMPUTED_BY_REGISTRY_BUILD" in text
+
+
 def test_linearpartition_recall_and_gec_boundary():
     assert 53 / 73 == pytest.approx(0.726027397260274)
     assert 8 / 73 == pytest.approx(0.1095890410958904)
