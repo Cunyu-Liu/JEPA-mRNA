@@ -8919,15 +8919,15 @@
       "data_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
       "prediction_schema": "normalized_name_pairs_jsonl",
       "count_consistent": true,
-      "status": "FROZEN",
-      "e0_scope": "BPRNA_NEW_RECOVERY_20261125",
+      "status": "BLOCKED",
+      "e0_scope": "HISTORICAL_UNLINKED_DO_NOT_USE_AS_VERIFIED_OFFICIAL",
       "baseline_id": "structrfm",
       "dataset_id": "bprna_new",
       "recovery_asset_id": "structrfm_author_bprna1m_single_raw",
       "model_form": "single_model",
       "label_protocol": "PROJECT_DATABASE_RAW_5388",
       "prediction_origin": "project_replay",
-      "training_identity": "author structRFM_SSP_bpRNA1m downstream fine-tune; local checkpoint bytes remain unverified",
+      "training_identity": "Historical log names structRFM_SSP_bpRNA1m.pt, but historical weight bytes are absent; official v0.0.8 checkpoint recovered separately",
       "postprocess_identity": "frozen LM embeddings + MixedFold scorer + constrained DP; max_len=512",
       "source_artifact": {
         "path": "/root/rna_jepa_data/eval_decision_ref/structrfm_bprna_new.json",
@@ -8949,7 +8949,14 @@
         "macro_f1": 0.5338105702966888,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "Historical project replay retained for trace only; blocked from verified-official comparisons; raw is not clean",
+      "official_checkpoint_link": {
+        "status": "UNVERIFIED_HISTORICAL_WEIGHT_BYTES",
+        "historical_weight_path": "/mnt/cunyuliu/rna-jepa/refmodels/models/structRFM_SSP_bpRNA1m.pt",
+        "historical_weight_sha256": null,
+        "new_official_checkpoint_sha256": "689e09e0ad3b51af19b03cb32ea3be5237384c3c9aa5716dff29989098e12145",
+        "eligible_as_verified_official": false
+      }
     },
     {
       "prediction_id": "rnafm_project_frozen_encoder_crf/bprna_new",

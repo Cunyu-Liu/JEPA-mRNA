@@ -1692,37 +1692,45 @@
           "cohort_label": "structRFM"
         }
       ],
-      "version_protocol": "BLOCKED_PROVENANCE",
+      "version_protocol": "structRFM v0.0.8 bpRNA1m SSP; single checkpoint; official inference source f0c1add; B=1; max_seq_len=512; MixedFold constrained DP",
       "official_weights": {
-        "status": "BLOCKED_PROVENANCE",
-        "path": null,
-        "sha256": null,
-        "reason": "official/current checkpoint asset or identity not verified"
+        "status": "VERIFIED_OFFICIAL_RELEASE_BYTES",
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/structRFM_SSP_bpRNA1m.pt",
+        "bytes": 348179698,
+        "sha256": "689e09e0ad3b51af19b03cb32ea3be5237384c3c9aa5716dff29989098e12145",
+        "official_url": "https://github.com/heqin-zhu/structRFM/releases/download/v0.0.8/structRFM_SSP_bpRNA1m.pt",
+        "release_tag": "v0.0.8"
       },
       "training_data": {
-        "status": "BLOCKED_PROVENANCE: exact training union not verified",
+        "status": "AUTHOR_CORPORA_IDENTIFIED_BPRNA_NEW_EXPOSURE_UNRESOLVED",
         "project_training_dataset_ids": [],
-        "external_training_corpora": []
+        "external_training_corpora": [
+          "RNAcentral + BPfold-derived ~21M sequence-structure pairs (length<=512)",
+          "bpRNA1m downstream secondary-structure fine-tune"
+        ],
+        "raw_not_clean": true
       },
       "license": {
-        "status": "BLOCKED_PROVENANCE",
-        "spdx": null,
-        "reason": "model/weight license not verified; dataset or framework license is not a substitute"
+        "status": "OFFICIAL_REPOSITORY_MIT_NO_SEPARATE_WEIGHT_LICENSE",
+        "spdx": "MIT",
+        "scope": "official source/release; no separate weight license found",
+        "source_sha256": "cb4768592947e40d6ef70a65e393eaee5cf33b139e45cfa641ff0cd04b33224b"
       },
       "inference": {
-        "status": "FROZEN_RAW_PROTOCOL",
-        "version_protocol": "BLOCKED_PROVENANCE",
-        "decoder": null,
+        "status": "OFFICIAL_WEIGHT_VERIFIED_GPU_PREDICTION_PENDING",
+        "version_protocol": "structRFM v0.0.8 bpRNA1m SSP; single checkpoint; official inference source f0c1add; B=1; max_seq_len=512; MixedFold constrained DP",
+        "decoder": "MixedFold Turner + constrained DP (interface.predict_mxfold)",
         "threshold": null,
-        "evaluation_scope": null,
-        "efold_version": null
+        "evaluation_scope": "bpRNA-new raw 5388; no new prediction yet",
+        "model_form": "single_checkpoint_not_ensemble",
+        "ensemble": false
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
+        "status": "HISTORICAL_RAW_REPLAY_UNLINKED; new official-checkpoint raw predictions pending; raw is not clean",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
-      "provenance_status": "BLOCKED_PROVENANCE",
+      "provenance_status": "PARTIAL_OFFICIAL_WEIGHT_VERIFIED_RUNTIME_AND_PREDICTION_PENDING",
       "evidence": {
         "source_type": "local_file",
         "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
@@ -1732,25 +1740,26 @@
         "hash_scope": "full_content"
       },
       "evidence_additional": [],
-      "status": "RAW_BPRNA_NEW_RECOVERED",
-      "inclusion_reason": "required historical 25 coverage; no verified current checkpoint/prediction",
+      "status": "OFFICIAL_WEIGHT_RECOVERED_GPU_PREDICTION_PENDING",
+      "inclusion_reason": "required historical 25 coverage; official v0.0.8 checkpoint recovered, new official 5388 prediction pending",
       "exclusion_reason": null,
-      "prediction_registry_scope": "FROZEN_RAW",
+      "prediction_registry_scope": "HISTORICAL_UNLINKED_NOT_VERIFIED_OFFICIAL",
       "prediction_ids": [
         "structrfm/bprna_new"
       ],
-      "n_frozen_prediction_rows": 1,
+      "n_frozen_prediction_rows": 0,
       "n_summary_only_rows": 0,
-      "n_blocked_prediction_rows": 0,
+      "n_blocked_prediction_rows": 1,
       "unknown_fields_are_not_zero": true,
       "bprna_new_recovery": {
         "registry": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
         "asset_ids": [
           "structrfm_author_bprna1m_single_raw"
         ],
-        "status": "PASS_20_ASSET_OVERLAY_MEMBER",
+        "status": "HISTORICAL_UNLINKED_OFFICIAL_REPLAY_PENDING",
         "raw_clean_sota_claim": false
-      }
+      },
+      "structrfm_official_recovery": "manifests/foldnar_v2/structrfm_official_recovery_20261126.json"
     },
     {
       "baseline_id": "xens2",
