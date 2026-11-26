@@ -26,6 +26,10 @@ VERIFICATION = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.round71_build_
 EVALUATION_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_independent_eval_v1/generation_01")
 CROSS_SOURCE_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/cross_source_leakage_v1")
 CROSS_SOURCE_COMMIT = "06fa2f8e039a41324063ecf975c0101958243dab"
+MARGIN_EVALUATOR_COMMIT = "536b79e450c1ad18b67e06cb39ecb3730546221b"
+EXPOSURE_SCHEMA = "foldnar.structured_margin_exposure_sensitivity.v1"
+EXPOSURE_SOURCE_COMMIT = "4247d1e4a971ceb8c63e3f8338e026a23c18941b"
+EXPOSURE_COUNTS = {"EXACT": 7978, "HOMOLOGY": 539, "NOT_DETECTED_UNKNOWN": 626}
 SOURCE_DECK_SHA256 = "89d2aee9c83ace55385eaf1bfc6f619ff3422168f99f9152fe232c4ccb0524d0"
 SCHEMA = "foldnar.structured_margin_independent_eval.v1"
 ARMS = ("matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context")
@@ -202,11 +206,64 @@ def validate_cross_source_boundary(root: str | Path) -> dict:
     }
 
 
+def validate_exposure_sensitivity(evaluation: dict, manifest: dict, path: Path) -> dict:
+    exposure = load_json(path)
+    require(evaluation.get("code_identity", {}).get("git_head") == MARGIN_EVALUATOR_COMMIT,
+            "final evaluation is not from the exposure-aware evaluator commit")
+    require(evaluation.get("preregistered_exposure_sensitivity") == exposure,
+            "standalone exposure_sensitivity.json differs from the embedded final field")
+    require(exposure.get("schema_version") == EXPOSURE_SCHEMA
+            and exposure.get("status") == "COMPLETE_PREREGISTERED_SENSITIVITY"
+            and exposure.get("role") == "PREREGISTERED_SENSITIVITY_ONLY"
+            and exposure.get("gate_use") == exposure.get("checkpoint_selection_use") == "FORBIDDEN"
+            and exposure.get("checkpoint_or_arm_selection_performed") is False,
+            "exposure sensitivity is not final preregistered sensitivity-only output")
+    require(exposure.get("support_contract", {}).get("failure_policy") == "FAIL_CLOSED_NO_METRIC_OR_CI_EMITTED"
+            and exposure.get("ci_contract", {}).get("resamples") == 2000
+            and exposure["ci_contract"].get("seed") == 20261118
+            and exposure["ci_contract"].get("confidence") == 0.95
+            and "exposure_sensitivity_script" in evaluation.get("code_identity", {}),
+            "exposure support/CI/script identity contract is incomplete")
+    registry = exposure.get("registry", {})
+    require(registry.get("source_commit") == EXPOSURE_SOURCE_COMMIT
+            and registry.get("cluster_dev_counts") == EXPOSURE_COUNTS
+            and sum(EXPOSURE_COUNTS.values()) == evaluation["panel"]["n_sequences"]
+            and registry.get("complete_official_pretraining_coverage_state") == "UNCHECKED"
+            and registry.get("official_pretraining_clean_claim_allowed") is False
+            and registry.get("not_detected_unknown_is_clean") is False,
+            "exposure counts or UNKNOWN/official-manifest semantics changed")
+    artifact_names = {"sequence_registry.jsonl.gz", "summary.json", "asset_registry.json",
+                      "independent_verification.json"}
+    artifacts = registry.get("artifacts", {})
+    require(set(artifacts) == artifact_names, "exposure registry artifact coverage is incomplete")
+    inputs = manifest.get("inputs", {})
+    for name in artifact_names:
+        require(inputs.get(f"exposure:{name}") == artifacts[name],
+                f"exposure artifact identity is not bound into input_manifest: {name}")
+    require(set(exposure.get("strata", {})) == set(EXPOSURE_COUNTS),
+            "exposure sensitivity does not cover EXACT/HOMOLOGY/UNKNOWN")
+    for state in EXPOSURE_COUNTS:
+        comparisons = exposure["strata"][state].get("ensemble_vs_controls", {})
+        require(set(comparisons) == set(CONTROLS), f"incomplete exposure controls: {state}")
+        for control in CONTROLS:
+            for kind in ("pair", "stem"):
+                metric = comparisons[control].get(kind, {}).get("f1", {})
+                require(type(metric.get("delta_ensemble_minus_control")) in (int, float)
+                        and math.isfinite(metric["delta_ensemble_minus_control"]),
+                        f"invalid exposure delta: {state}/{control}/{kind}")
+                ci(metric.get("paired_ci95"))
+                family = metric.get("family_cluster_sensitivity_ci95")
+                if family is not None:
+                    ci(family)
+    return {"data": exposure, "identity": identity(path)}
+
+
 def validate_final_evaluation(root: str | Path) -> dict:
     root = Path(root).resolve()
     evaluation_path = root / "independent_evaluation.json"
     summary_path = root / "gate_summary.json"
     manifest_path = root / "input_manifest.json"
+    exposure_path = root / "exposure_sensitivity.json"
     evaluation = load_json(evaluation_path)
     summary = load_json(summary_path)
     manifest = load_json(manifest_path)
@@ -293,9 +350,10 @@ def validate_final_evaluation(root: str | Path) -> dict:
     required_inputs = {"config", "source_contract", "registry", "raw_tr1c", "panel_records",
                        "dev_ids", "train_ids", "candidate_contract"}
     require(required_inputs.issubset(manifest.get("inputs", {})), "final input manifest is incomplete")
-    verified = verify_identities(evaluation, manifest)
-    return {"root": root, "evaluation": evaluation, "summary": summary,
-            "paths": (evaluation_path, summary_path, manifest_path),
+    exposure = validate_exposure_sensitivity(evaluation, manifest, exposure_path)
+    verified = verify_identities(evaluation, manifest, exposure["data"])
+    return {"root": root, "evaluation": evaluation, "summary": summary, "exposure": exposure,
+            "paths": (evaluation_path, summary_path, manifest_path, exposure_path),
             "verified_identities": verified}
 
 
@@ -312,6 +370,10 @@ def ci(value: list[float]) -> str:
             and all(type(item) in (int, float) and math.isfinite(item) for item in value),
             "invalid paired CI")
     return f"[{value[0]:+.4f}, {value[1]:+.4f}]"
+
+
+def optional_ci(value: list[float] | None) -> str:
+    return "n/a (null≠0)" if value is None else ci(value)
 
 
 def text(slide, x, y, w, h, value, size, color=INK, bold=False, font="Arial", align=PP_ALIGN.LEFT):
@@ -396,9 +458,12 @@ def add_slide(prs: Presentation, bundle: dict, cross_source: dict) -> None:
          "34 · FOLDNAR PHASE 1 / STRUCTURED MARGIN FOUR-ARM VERDICT", 10.5, accent, True)
     title = ("结构化 margin 通过独立四臂验收" if passed else "结构化 margin 未通过独立四臂验收")
     text(slide, 0.78, 0.63, 11.9, 0.52, title, 25, INK, True, SERIF)
-    text(slide, 0.78, 1.20, 11.9, 0.30,
+    text(slide, 0.78, 1.16, 11.9, 0.19,
          f"MODEL-DEV ONLY · {panel['n_sequences']:,} sequences / {panel['n_pairs']:,} pairs · seed0 · 固定 MEA · 独立原始 pair 重算",
-         10.8, MUTED, font=SANS)
+         9.8, MUTED, font=SANS)
+    text(slide, 0.78, 1.38, 11.9, 0.17,
+         "EXACT 7,978 · HOMOLOGY 539 · UNKNOWN 626 · UNKNOWN≠clean · 官方 manifest UNCHECKED",
+         8.8, accent, True, SANS)
     rows = [[ARM_LABELS[arm]] + [fmt(metrics[arm][metric]) for metric in CORE_METRICS] for arm in ARMS]
     table(slide, 0.78, 1.60, (3.18, 2.15, 2.15, 2.15, 2.15), 0.31,
           ("四臂核心结果", "micro pair-F1", "macro pair-F1", "micro stem-F1", "macro stem-F1"),
@@ -433,13 +498,20 @@ def add_slide(prs: Presentation, bundle: dict, cross_source: dict) -> None:
     gates = evaluation["margin_gates"]["gates"]
     passed_count = sum(gates.values())
     rect(slide, 8.58, 4.80, 3.98, 1.36, PASS_PALE if passed else FAIL_PALE, accent)
-    text(slide, 8.80, 4.89, 3.54, 0.28, f"科学门控 {passed_count} / 16", 16, accent, True, SANS)
-    text(slide, 8.80, 5.22, 3.54, 0.23, evaluation["status"], 8.6, accent, True)
-    failed = evaluation["margin_gates"]["failed_gates"]
-    verdict_note = ("16 项全部通过；仅限 registered model-dev，不能外推外部测试或 SOTA。" if passed else
-                    f"科学 FAIL 如实记录 · {len(failed)} 项失败：{', '.join(failed[:2])}" +
-                    (" …" if len(failed) > 2 else ""))
-    text(slide, 8.80, 5.52, 3.50, 0.49, verdict_note, 9.0, INK, True, SANS)
+    text(slide, 8.80, 4.87, 3.54, 0.26, f"科学门控 {passed_count} / 16", 15, accent, True, SANS)
+    text(slide, 8.80, 5.14, 3.54, 0.19, evaluation["status"], 7.1, accent, True)
+    unknown = bundle["exposure"]["data"]["strata"]["NOT_DETECTED_UNKNOWN"]["ensemble_vs_controls"]["matched_control"]
+    pair = unknown["pair"]["f1"]
+    stem = unknown["stem"]["f1"]
+    text(slide, 8.80, 5.39, 3.54, 0.20,
+         f"UNKNOWN pair Δ {signed(pair['delta_ensemble_minus_control'])} · CI {ci(pair['paired_ci95'])}",
+         8.0, INK, True)
+    text(slide, 8.80, 5.62, 3.54, 0.20,
+         f"UNKNOWN stem Δ {signed(stem['delta_ensemble_minus_control'])} · CI {ci(stem['paired_ci95'])}",
+         8.0, INK, True)
+    family_values = [pair["family_cluster_sensitivity_ci95"], stem["family_cluster_sensitivity_ci95"]]
+    family_text = " / ".join(optional_ci(value) for value in family_values)
+    text(slide, 8.80, 5.87, 3.54, 0.17, f"family CI pair/stem: {family_text}", 7.0, MUTED)
     rect(slide, 0.78, 6.42, 11.78, 0.012, RGBColor(212, 165, 154)).line.fill.background()
     text(slide, 0.78, 6.51, 11.65, 0.18,
          f"evaluator {evaluation['code_identity']['git_head'][:12]} · {cross_source['display_boundary']} · no external test/decoder tuning",
@@ -477,8 +549,15 @@ def verify_built_deck(path: Path, prior_deck: Path, evaluation: dict, cross_sour
                       comparison["subgroups"]["isolated_pair:isolated"]["recall"]["delta"],
                       comparison["subgroups"]["pair_span:ge128"]["recall"]["delta"]):
             require(signed(value) in joined, f"missing ensemble comparison: {control}")
+    unknown = evaluation["preregistered_exposure_sensitivity"]["strata"]["NOT_DETECTED_UNKNOWN"]["ensemble_vs_controls"]["matched_control"]
+    for kind in ("pair", "stem"):
+        metric = unknown[kind]["f1"]
+        for value in (signed(metric["delta_ensemble_minus_control"]), ci(metric["paired_ci95"]),
+                      optional_ci(metric["family_cluster_sensitivity_ci95"])):
+            require(value in joined, f"missing UNKNOWN {kind} sensitivity")
     for phrase in ("34 · FOLDNAR PHASE 1 / STRUCTURED MARGIN FOUR-ARM VERDICT",
-                   "MODEL-DEV ONLY", "QUALIFIED NLL", "相同冻结 MEA", "isolated", "span≥128",
+                   "EXACT 7,978", "HOMOLOGY 539", "UNKNOWN 626", "UNKNOWN≠clean",
+                   "官方 manifest UNCHECKED", "MODEL-DEV ONLY", "QUALIFIED NLL", "相同冻结 MEA", "isolated", "span≥128",
                    cross_source["display_boundary"], "not clean", "GEC INELIGIBLE",
                    cross_source["summary_identity"]["sha256"][:12], evaluation["status"],
                    f"科学门控 {sum(evaluation['margin_gates']['gates'].values())} / 16",
@@ -550,6 +629,12 @@ def build(deck: str | Path = DECK, evaluation_root: str | Path = EVALUATION_ROOT
             "matched_clean": cross_source["matched_clean"],
             "gec_qualification": cross_source["gec_qualification"],
             "display_boundary": cross_source["display_boundary"],
+        },
+        "exposure_sensitivity": {
+            **bundle["exposure"]["identity"],
+            "embedded_field": "preregistered_exposure_sensitivity", "embedded_matches": True,
+            "cluster_dev_counts": EXPOSURE_COUNTS,
+            "unknown_ensemble_minus_control": bundle["exposure"]["data"]["strata"]["NOT_DETECTED_UNKNOWN"]["ensemble_vs_controls"]["matched_control"],
         },
         "final_json": {str(path): identity(path) for path in bundle["paths"]},
         "verified_source_identities": bundle["verified_identities"],
