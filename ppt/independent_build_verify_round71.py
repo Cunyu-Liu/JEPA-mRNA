@@ -92,6 +92,9 @@ def main(argv: list[str] | None = None) -> int:
         "evaluation_root": str(args.evaluation_root.resolve()),
         "cross_source_root": str(args.cross_source_root.resolve()),
         "cross_source_summary_sha256": build_report["cross_source_boundary"]["summary"]["sha256"],
+        "exposure_sensitivity_path": build_report["exposure_sensitivity"]["path"],
+        "exposure_sensitivity_sha256": build_report["exposure_sensitivity"]["sha256"],
+        "exposure_embedded_matches": build_report["exposure_sensitivity"]["embedded_matches"],
     }
     atomic_json(args.verification.resolve(), report)
     print(json.dumps(report, ensure_ascii=False, indent=2))

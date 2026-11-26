@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -22,6 +23,7 @@ OUT = Path(__file__).resolve().parent
 ROOT = OUT.parent
 DECK = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx"
 MARGIN_VERIFICATION = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.round71_build_verification.json"
+MARGIN_INDEPENDENT_VERIFICATION = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.round71_independent_build_verification.json"
 STRUCT_RESULTS = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json")
 STRUCT_REGISTRY = ROOT / "manifests/foldnar_v2/structrfm_official_bprna_new_results_20261126.json"
 RAW_REGISTRY = ROOT / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json"
@@ -100,10 +102,13 @@ def slide_text(slide) -> str:
     return "\n".join(values)
 
 
-def validate_margin(deck: str | Path, verification_path: str | Path) -> dict:
+def validate_margin(deck: str | Path, verification_path: str | Path,
+                    independent_verification_path: str | Path = MARGIN_INDEPENDENT_VERIFICATION) -> dict:
     deck = Path(deck).resolve()
     verification_path = Path(verification_path).resolve()
+    independent_verification_path = Path(independent_verification_path).resolve()
     report = load_json(verification_path)
+    independent_report = load_json(independent_verification_path)
     require(deck.is_file(), f"margin deck missing: {deck}")
     prs = Presentation(deck)
     require(len(prs.slides) == 15, "round72 requires exactly 15 slides including real margin page 34")
@@ -128,6 +133,10 @@ def validate_margin(deck: str | Path, verification_path: str | Path) -> dict:
             and builder_path.is_file(), "round71 builder identity is missing")
     require(sha256(builder_path) == report.get("builder_sha256"),
             "round71 builder hash differs from the page34 build report")
+    spec = importlib.util.spec_from_file_location("round72_margin_contract_round71", builder_path)
+    round71 = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(round71)
     backup = Path(report.get("backup", "")).resolve()
     require(backup.is_file() and backup != deck, "round71 14-slide backup is missing")
     require(sha256(backup) == report.get("backup_sha256") == report.get("prior_deck_sha256"),
@@ -137,16 +146,71 @@ def validate_margin(deck: str | Path, verification_path: str | Path) -> dict:
         for index in range(1, 15):
             part = f"ppt/slides/slide{index}.xml"
             require(before.read(part) == after.read(part), f"margin build changed prior XML: {part}")
-    margin_text = slide_text(prs.slides[14])
-    require("34 · FOLDNAR PHASE 1 / STRUCTURED MARGIN FOUR-ARM VERDICT" in margin_text
-            and "MODEL-DEV ONLY" in margin_text and report["scientific_status"] in margin_text,
-            "deck page 34 is not the verified structured-margin result")
+    final_by_name = {}
     final_identities = []
     for path_text, recorded in report.get("final_json", {}).items():
         final_identities.append(require_identity(recorded, path_text, "margin final JSON"))
-    require(len(final_identities) == 3, "margin final evaluation/summary/manifest identities incomplete")
-    return {"deck": deck, "verification_path": verification_path, "report": report,
-            "deck_identity": deck_identity, "backup": backup, "final_identities": final_identities}
+        final_by_name[Path(path_text).name] = Path(path_text).resolve()
+    require(len(final_identities) == 4
+            and {"independent_evaluation.json", "gate_summary.json", "input_manifest.json",
+                 "exposure_sensitivity.json"}.issubset(final_by_name),
+            "margin final evaluation/summary/manifest/exposure identities incomplete")
+    evaluation = load_json(final_by_name["independent_evaluation.json"])
+    manifest = load_json(final_by_name["input_manifest.json"])
+    exposure_report = report.get("exposure_sensitivity", {})
+    require(exposure_report.get("embedded_field") == "preregistered_exposure_sensitivity"
+            and exposure_report.get("embedded_matches") is True,
+            "margin exposure embedded field/match evidence is absent")
+    exposure_path = Path(exposure_report.get("path", "")).resolve()
+    require(exposure_path == final_by_name["exposure_sensitivity.json"],
+            "margin exposure path differs from final_json identity")
+    exposure_identity = require_identity(exposure_report, exposure_path, "margin exposure sensitivity")
+    try:
+        exposure_bundle = round71.validate_exposure_sensitivity(evaluation, manifest, exposure_path)
+        exposure_registry_identities = round71.verify_identities(exposure_bundle["data"])
+    except round71.EligibilityError as error:
+        raise EligibilityError(f"round71 exposure revalidation failed: {error}") from error
+    require(exposure_bundle["identity"] == exposure_identity,
+            "round71 exposure revalidation identity differs from margin report")
+    exposure = exposure_bundle["data"]
+    counts = exposure["registry"]["cluster_dev_counts"]
+    require(exposure_report.get("cluster_dev_counts") == counts == round71.EXPOSURE_COUNTS,
+            "margin cluster_dev_counts differ from preregistered exposure counts")
+    unknown = exposure["strata"]["NOT_DETECTED_UNKNOWN"]["ensemble_vs_controls"]["matched_control"]
+    require(exposure_report.get("unknown_ensemble_minus_control") == unknown,
+            "margin UNKNOWN ensemble-minus-control evidence differs from exposure artifact")
+    require(independent_report.get("status") == "PASS_INDEPENDENT_CLEAN_BUILD_ALL_ZIP_PARTS_IDENTICAL"
+            and independent_report.get("slide_count") == 15
+            and independent_report.get("prior_slide_xml_preserved") == 14
+            and independent_report.get("primary_sha256") == deck_identity["sha256"]
+            and independent_report.get("scientific_status") == report["scientific_status"]
+            and independent_report.get("missing_parts") == []
+            and independent_report.get("extra_parts") == []
+            and independent_report.get("different_parts") == [],
+            "round71 independent rebuild report is incomplete or belongs to another deck")
+    require(Path(independent_report.get("exposure_sensitivity_path", "")).resolve() == exposure_path
+            and independent_report.get("exposure_sensitivity_sha256") == exposure_identity["sha256"]
+            and independent_report.get("exposure_embedded_matches") is True,
+            "round71 independent report exposure path/SHA/match evidence is absent or inconsistent")
+    margin_text = slide_text(prs.slides[14])
+    require("34 · FOLDNAR PHASE 1 / STRUCTURED MARGIN FOUR-ARM VERDICT" in margin_text
+            and "MODEL-DEV ONLY" in margin_text and report["scientific_status"] in margin_text
+            and "UNKNOWN≠clean" in margin_text and "官方 manifest UNCHECKED" in margin_text
+            and "UNKNOWN pair Δ" in margin_text and "UNKNOWN stem Δ" in margin_text,
+            "deck page 34 lacks the verified structured-margin or exposure result")
+    for state, count in counts.items():
+        label = "UNKNOWN" if state == "NOT_DETECTED_UNKNOWN" else state
+        require(f"{label} {count:,}" in margin_text, f"page34 exposure count missing: {state}")
+    for kind in ("pair", "stem"):
+        delta = unknown[kind]["f1"]["delta_ensemble_minus_control"]
+        require(f"{delta:+.6f}" in margin_text, f"page34 UNKNOWN {kind} delta missing")
+    return {"deck": deck, "verification_path": verification_path,
+            "independent_verification_path": independent_verification_path,
+            "report": report, "independent_report": independent_report,
+            "deck_identity": deck_identity, "backup": backup, "final_identities": final_identities,
+            "exposure": exposure, "exposure_identity": exposure_identity,
+            "exposure_registry_identities": exposure_registry_identities,
+            "cluster_dev_counts": counts, "unknown_ensemble_minus_control": unknown}
 
 
 def validate_external_raw(struct_results_path: str | Path, struct_registry_path: str | Path,
@@ -555,6 +619,7 @@ def atomic_write_json(path: Path, value: dict) -> None:
 
 
 def build(deck: str | Path = DECK, margin_verification: str | Path = MARGIN_VERIFICATION,
+          margin_independent_verification: str | Path = MARGIN_INDEPENDENT_VERIFICATION,
           backup: str | Path | None = None, verification: str | Path | None = None,
           struct_results: str | Path = STRUCT_RESULTS, struct_registry: str | Path = STRUCT_REGISTRY,
           raw_registry: str | Path = RAW_REGISTRY, baseline_registry: str | Path = BASELINE_REGISTRY,
@@ -563,7 +628,7 @@ def build(deck: str | Path = DECK, margin_verification: str | Path = MARGIN_VERI
     backup = Path(backup).resolve() if backup else deck.with_name(deck.stem + ".pre_round72.pptx")
     verification = (Path(verification).resolve() if verification else
                     deck.with_name(deck.stem + ".round72_build_verification.json"))
-    margin = validate_margin(deck, margin_verification)
+    margin = validate_margin(deck, margin_verification, margin_independent_verification)
     external = validate_external_raw(struct_results, struct_registry, raw_registry, baseline_registry)
     longseq = validate_longseq(longseq_root)
     require(not backup.exists(), f"refusing to overwrite existing backup: {backup}")
@@ -592,8 +657,15 @@ def build(deck: str | Path = DECK, margin_verification: str | Path = MARGIN_VERI
         "prior_deck_sha256": prior_sha256, "backup": str(backup), "backup_sha256": sha256(backup),
         "builder": str(Path(__file__).resolve()), "builder_sha256": sha256(Path(__file__).resolve()),
         "margin_verification": identity(margin["verification_path"]),
+        "margin_independent_verification": identity(margin["independent_verification_path"]),
         "margin_deck_sha256_verified": margin["deck_identity"]["sha256"],
         "margin_final_json": margin["final_identities"],
+        "exposure_sensitivity": {**margin["exposure_identity"],
+                                 "embedded_field": "preregistered_exposure_sensitivity",
+                                 "embedded_matches": True,
+                                 "cluster_dev_counts": margin["cluster_dev_counts"],
+                                 "unknown_ensemble_minus_control": margin["unknown_ensemble_minus_control"]},
+        "verified_exposure_registry_identities": margin["exposure_registry_identities"],
         "external_artifacts": [identity(path) for path in external["paths"]],
         "longseq_artifacts": [identity(path) for path in longseq["paths"]],
         "scope": {"raw_not_clean_not_sota": True, "external_raw_n": 5388,
@@ -612,6 +684,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--deck", type=Path, default=DECK)
     parser.add_argument("--margin-verification", type=Path, default=MARGIN_VERIFICATION)
+    parser.add_argument("--margin-independent-verification", type=Path,
+                        default=MARGIN_INDEPENDENT_VERIFICATION)
     parser.add_argument("--backup", type=Path)
     parser.add_argument("--verification", type=Path)
     parser.add_argument("--struct-results", type=Path, default=STRUCT_RESULTS)
@@ -621,9 +695,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--longseq-root", type=Path, default=LONGSEQ_ROOT)
     args = parser.parse_args(argv)
     try:
-        report = build(args.deck, args.margin_verification, args.backup, args.verification,
-                       args.struct_results, args.struct_registry, args.raw_registry,
-                       args.baseline_registry, args.longseq_root)
+        report = build(args.deck, args.margin_verification, args.margin_independent_verification,
+                       args.backup, args.verification, args.struct_results, args.struct_registry,
+                       args.raw_registry, args.baseline_registry, args.longseq_root)
     except (EligibilityError, OSError, KeyError, TypeError, ValueError) as error:
         parser.exit(2, f"round72 build refused: {error}\n")
     print(json.dumps(report, ensure_ascii=False, indent=2))

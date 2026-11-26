@@ -40,7 +40,7 @@ def comparison(margin: float, other: float) -> dict:
             "family_cluster_sensitivity_ci95": [margin - other - 0.012, margin - other + 0.012]}
 
 
-def make_fixture(root: Path, scientific_pass: bool) -> Path:
+def make_fixture(root: Path, scientific_pass: bool, family_null: bool = False) -> Path:
     root.mkdir(parents=True, exist_ok=False)
     marker = "SYNTHETIC_TEST_ONLY_NOT_SCIENTIFIC_EVIDENCE"
     prediction_identities = {}
@@ -80,7 +80,46 @@ def make_fixture(root: Path, scientific_pass: bool) -> Path:
         path = root / "inputs" / f"{name}.json"
         write_json(path, {"fixture": marker, "name": name})
         input_values[name] = file_identity(path)
+    exposure_artifacts = {}
+    for name in ("sequence_registry.jsonl.gz", "summary.json", "asset_registry.json",
+                 "independent_verification.json"):
+        path = root / "pretrain_exposure" / name
+        write_json(path, {"fixture": marker, "name": name})
+        exposure_artifacts[name] = file_identity(path)
+        input_values[f"exposure:{name}"] = exposure_artifacts[name]
     write_json(root / "input_manifest.json", {"fixture": marker, "inputs": input_values})
+    strata = {}
+    for state_index, state in enumerate(M.EXPOSURE_COUNTS):
+        controls = {}
+        for control_index, control in enumerate(M.CONTROLS):
+            controls[control] = {}
+            for kind_index, kind in enumerate(("pair", "stem")):
+                delta = 0.015 - state_index * 0.002 - control_index * 0.001 - kind_index * 0.005
+                controls[control][kind] = {"f1": {
+                    "ensemble_context": 0.7, "control": 0.7 - delta,
+                    "delta_ensemble_minus_control": delta,
+                    "paired_ci95": [delta - 0.01, delta + 0.01],
+                    "family_cluster_sensitivity_ci95": None if family_null else [delta - 0.012, delta + 0.012],
+                }}
+        strata[state] = {"ensemble_vs_controls": controls}
+    exposure = {
+        "fixture": marker, "schema_version": M.EXPOSURE_SCHEMA,
+        "status": "COMPLETE_PREREGISTERED_SENSITIVITY", "role": "PREREGISTERED_SENSITIVITY_ONLY",
+        "gate_use": "FORBIDDEN", "checkpoint_selection_use": "FORBIDDEN",
+        "checkpoint_or_arm_selection_performed": False,
+        "registry": {
+            "source_commit": M.EXPOSURE_SOURCE_COMMIT, "cluster_dev_counts": M.EXPOSURE_COUNTS,
+            "complete_official_pretraining_coverage_state": "UNCHECKED",
+            "official_pretraining_clean_claim_allowed": False, "not_detected_unknown_is_clean": False,
+            "artifacts": exposure_artifacts,
+        },
+        "support_contract": {"failure_policy": "FAIL_CLOSED_NO_METRIC_OR_CI_EMITTED"},
+        "ci_contract": {"resamples": 2000, "seed": 20261118, "confidence": 0.95},
+        "strata": strata,
+    }
+    write_json(root / "exposure_sensitivity.json", exposure)
+    exposure_script = root / "exposure_evaluator.py"
+    exposure_script.write_text("# synthetic exposure evaluator identity only\n")
     arm_metrics = {}
     comparisons = {}
     nll_comparisons = {}
@@ -123,8 +162,9 @@ def make_fixture(root: Path, scientific_pass: bool) -> Path:
                          "metric_source": "synthetic raw predicted pairs",
                          "validation_loss_nll_comparison": "FORBIDDEN_DIFFERENT_OBJECTIVES"},
         "execution": {"metric_device": "cpu", "model_inference_during_evaluation": False},
-        "code_identity": {"git_head": "0" * 40, "script": file_identity(script)},
-        "panel": {"panel_id": "tr1c_cluster80_dev_v1", "n_sequences": 100, "n_pairs": 1000},
+        "code_identity": {"git_head": M.MARGIN_EVALUATOR_COMMIT, "script": file_identity(script),
+                          "exposure_sensitivity_script": file_identity(exposure_script)},
+        "panel": {"panel_id": "tr1c_cluster80_dev_v1", "n_sequences": 9143, "n_pairs": 1000},
         "validation_audit": validation, "checkpoint_audit": checkpoints,
         "margin_prediction_identities": prediction_identities,
         "qualified_nll_reference": {
@@ -140,6 +180,7 @@ def make_fixture(root: Path, scientific_pass: bool) -> Path:
                     for target in M.TARGETS},
         "margin_gates": {"pass": scientific_pass, "gates": gates, "failed_gates": failed},
         "margin_vs_qualified_nll_same_arm": nll_comparisons,
+        "preregistered_exposure_sensitivity": exposure,
     }
     summary = {"fixture": marker, "schema_version": M.SCHEMA, "status": status,
                "overall_pass": scientific_pass, "failed_margin_gates": failed,
@@ -231,6 +272,12 @@ def test_synthetic_pass_and_fail_layouts_never_touch_real_deck(tmp_path):
         assert built["report"]["prior_slide_xml_preserved"] == 14
         assert f"科学门控 {16 if scientific_pass else 0} / 16" in joined
         assert "MODEL-DEV ONLY" in joined and "QUALIFIED NLL" in joined
+        assert "EXACT 7,978" in joined and "HOMOLOGY 539" in joined and "UNKNOWN 626" in joined
+        assert "UNKNOWN≠clean" in joined and "官方 manifest UNCHECKED" in joined
+        assert "UNKNOWN pair Δ" in joined and "UNKNOWN stem Δ" in joined and "family CI pair/stem:" in joined
+        exposure_report = built["report"]["exposure_sensitivity"]
+        assert exposure_report["embedded_matches"] and exposure_report["sha256"] == M.sha256(
+            built["evaluation_root"] / "exposure_sensitivity.json")
         assert "5,872−closure 769=5,103 NOT_DETECTED_UNKNOWN (not clean)" in joined
         assert "GEC INELIGIBLE" in joined
         assert built["report"]["cross_source_boundary"]["summary"]["sha256"] in json.dumps(built["report"])
@@ -246,7 +293,7 @@ def test_synthetic_pass_and_fail_layouts_never_touch_real_deck(tmp_path):
 
 
 def test_in_progress_engineering_failure_and_missing_final_cannot_modify_deck(tmp_path):
-    for mode in ("IN_PROGRESS", "ENGINEERING_FAIL", "MISSING_SUMMARY"):
+    for mode in ("IN_PROGRESS", "ENGINEERING_FAIL", "MISSING_SUMMARY", "MISSING_EXPOSURE", "EXPOSURE_MISMATCH"):
         case = tmp_path / mode
         evaluation_root = make_fixture(case / "evaluation", True)
         cross_source_root = make_cross_source_fixture(case / "cross_source")
@@ -262,8 +309,16 @@ def test_in_progress_engineering_failure_and_missing_final_cannot_modify_deck(tm
         elif mode == "ENGINEERING_FAIL":
             evaluation.update(status="FAIL_STRUCTURED_MARGIN_CHECKPOINT", overall_pass=False)
             write_json(path, evaluation)
-        else:
+        elif mode == "MISSING_SUMMARY":
             (evaluation_root / "gate_summary.json").unlink()
+        elif mode == "MISSING_EXPOSURE":
+            (evaluation_root / "exposure_sensitivity.json").unlink()
+        else:
+            exposure_path = evaluation_root / "exposure_sensitivity.json"
+            exposure = json.loads(exposure_path.read_text())
+            unknown = exposure["strata"]["NOT_DETECTED_UNKNOWN"]["ensemble_vs_controls"]["matched_control"]
+            unknown["pair"]["f1"]["delta_ensemble_minus_control"] = 99
+            write_json(exposure_path, exposure)
         with pytest.raises(M.EligibilityError):
             M.build(deck, evaluation_root, cross_source_root=cross_source_root)
         assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
@@ -327,6 +382,20 @@ def test_cross_source_hash_counts_and_ineligible_are_enforced(tmp_path):
         assert len(Presentation(deck).slides) == 14
 
 
+def test_null_family_sensitivity_is_not_rendered_as_zero(tmp_path):
+    case = tmp_path / "NULL_FAMILY"
+    evaluation_root = make_fixture(case / "evaluation", True, family_null=True)
+    cross_source_root = make_cross_source_fixture(case / "cross_source")
+    deck = case / "deck.pptx"
+    deck.parent.mkdir(parents=True, exist_ok=True)
+    deck.write_bytes(DECK.read_bytes())
+    report = M.build(deck, evaluation_root, cross_source_root=cross_source_root)
+    joined = M.slide_text(Presentation(deck).slides[14])
+    assert "family CI pair/stem: n/a (null≠0) / n/a (null≠0)" in joined
+    assert M.optional_ci(None) == "n/a (null≠0)"
+    assert report["exposure_sensitivity"]["unknown_ensemble_minus_control"]["pair"]["f1"]["family_cluster_sensitivity_ci95"] is None
+
+
 def test_duplicate_append_is_refused(tmp_path):
     built = build_fixture(tmp_path, True)
     before = hashlib.sha256(built["deck"].read_bytes()).hexdigest()
@@ -350,6 +419,9 @@ def test_readiness_is_read_only_and_allows_scientific_fail(tmp_path):
     assert boundary["summary_sha256"] == M.sha256(cross_source_root / "summary.json")
     assert "5,872−closure 769=5,103 NOT_DETECTED_UNKNOWN (not clean)" in boundary["display_boundary"]
     assert boundary["gec_state"] == "INELIGIBLE"
+    assert result["exposure_sensitivity"]["embedded_matches"]
+    assert result["exposure_sensitivity"]["sha256"] == M.sha256(evaluation_root / "exposure_sensitivity.json")
+    assert result["exposure_sensitivity"]["cluster_dev_counts"] == M.EXPOSURE_COUNTS
     assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
     evaluation_path = evaluation_root / "independent_evaluation.json"
     evaluation = json.loads(evaluation_path.read_text())
