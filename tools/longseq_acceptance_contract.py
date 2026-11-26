@@ -291,7 +291,7 @@ def static_audit(repo: Path, recovery_report_path: Path) -> dict:
         "full_ready": False,
         "ready": ["official source pinned and hashed", "C/V CPU binaries compiled", "official 76nt C/V smoke with full BPP and MEA",
                   "exact 7224/19000nt input identities", "strict raw-pair/coverage/long-range/resource validator"],
-        "not_ready": ["no 7224/19000nt LinearPartition prediction", "coverage/recall not measured on long targets",
+        "not_ready": ["this static evidence bundle contains no 7224/19000nt LinearPartition prediction", "coverage/recall not measured in this static bundle",
                       "memory/latency/FLOPs not measured on long targets", "no exact global DP long-sequence implementation validated"],
         "targets": public_targets,
         "recovery_report": file_record(recovery_report_path),

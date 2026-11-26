@@ -5,12 +5,14 @@
 Branch `longseq-linearpartition-contract-20261126` starts at FoldNAR integration HEAD
 `81601249aefa2ea1ae343d5e9d2f6d382cf8455b`. This delivery performs CPU-only source
 recovery, compilation, an official short smoke, input identity checks, and static
-acceptance tests. It does **not** run 7224/19000 nt inference and does not create or
-modify any GPU job.
+acceptance tests. Its initial static phase did not run 7224/19000 nt inference.
+A later train-only 7224 nt resource pilot is documented in
+`docs/linearpartition_7224_cpu_pilot_20261126.md`; the 19000 nt holdout remains unexecuted.
+No phase creates or modifies a GPU job.
 
 **LinearPartition is executable and short-smoke ready, but not long-sequence
-full-ready.** Long-chain coverage, recall, memory, latency, and FLOPs remain
-`NOT_MEASURED`. No exact global-DP implementation has qualified for these targets.
+full-ready.** Two train-only 7224 nt runs now have measured coverage, recall, memory and
+latency; 19000 nt coverage/recall/resources and all long-chain FLOPs remain `NOT_MEASURED`. No exact global-DP implementation has qualified for these targets.
 GEC support at 7224/19000 nt, exact cubic or otherwise, is not established or claimed.
 Summary tables, logs, and the short smoke are not long-chain predictions.
 
@@ -119,13 +121,11 @@ zero. FLOPs must be a non-negative measured value in `FLOPs`, with method record
 `estimated=false`, using hardware performance counters or instrumented operation counts
 for that exact execution. Short-chain scaling formulas are not accepted.
 
-No long-chain memory, latency, or FLOPs value is reported here. The next authorized
-LinearPartition stage needs only a serial CPU worker and external evidence storage:
-run C and V separately, one chain at a time, capture `/usr/bin/time -v`, raw BPP/MEA and
-counter output, and establish repeats/warmup before timing. Start with a separately
-authorized 7224 nt resource pilot before considering 19000 nt; required RAM and runtime
-must come from that measurement rather than an invented budget. No GPU task is needed
-for LinearPartition. Any GEC long-sequence experiment requires a separate support proof,
+The initial static report contained no long-chain resources. The subsequent two-chain
+7224 nt train-only pilot measured memory and latency with GNU time; FLOPs could not be
+measured because hardware counter access was denied. See the pilot document for observed
+values and the separate 19000 nt authorization gate. No GPU task is needed for
+LinearPartition. Any GEC long-sequence experiment requires a separate support proof,
 resource review, and explicit authorization.
 
 ## Evidence and reproduction
