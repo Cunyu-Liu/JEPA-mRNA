@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-26T08:02:32.796170+00:00",
+  "baseline_id": "debfold",
+  "status": "BLOCKED_OFFICIAL_IMPLEMENTATION_AND_WEIGHTS",
+  "full_ready": false,
+  "ready_scope": "Official source snapshot, data archives, paper protocol, bpRNA-new I/O contract and fail-closed GPU launcher",
+  "blocked_scope": "No official local implementation, checkpoint/weights, checkpoint SHA, model/weight license, official batch CLI, or author-released bpRNA-new 5388 predictions",
+  "official_repository": "https://github.com/cobisLab/DEBFold",
+  "official_commit": "ff693cdf4cb177e50d8a6a15c7a6292af802b75e",
+  "official_tree": [
+    "README",
+    "TestSet_alpha.zip",
+    "TestSet_beta.zip",
+    "TestSet_gamma.zip",
+    "TrainingValidationSet.zip"
+  ],
+  "official_releases": [],
+  "official_tags": [],
+  "official_web": "https://cobis.bme.ncku.edu.tw/DEBFold/",
+  "official_archives": {
+    "TrainingValidationSet.zip": {
+      "official_github_url": "https://github.com/cobisLab/DEBFold/blob/ff693cdf4cb177e50d8a6a15c7a6292af802b75e/TrainingValidationSet.zip",
+      "official_download_url": "https://cobis.bme.ncku.edu.tw/DEBFold/data_download/TrainingValidationSet.zip",
+      "git_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/source/DEBFold/TrainingValidationSet.zip",
+      "website_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/official_download/TrainingValidationSet.zip",
+      "sha256": "20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2",
+      "n_structures": 8782,
+      "n_unique_sequences": 8384,
+      "scope": "training/validation provenance"
+    },
+    "TestSet_alpha.zip": {
+      "official_github_url": "https://github.com/cobisLab/DEBFold/blob/ff693cdf4cb177e50d8a6a15c7a6292af802b75e/TestSet_alpha.zip",
+      "official_download_url": "https://cobis.bme.ncku.edu.tw/DEBFold/data_download/TestSet_alpha.zip",
+      "git_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/source/DEBFold/TestSet_alpha.zip",
+      "website_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/official_download/TestSet_alpha.zip",
+      "sha256": "5880ea4ac0cfde158bc43485b6ceb2be97be2a12efe816552409e8140c6384e0",
+      "n_structures": 44,
+      "n_unique_sequences": 44,
+      "scope": "official test archive; audited only, never used for tuning"
+    },
+    "TestSet_beta.zip": {
+      "official_github_url": "https://github.com/cobisLab/DEBFold/blob/ff693cdf4cb177e50d8a6a15c7a6292af802b75e/TestSet_beta.zip",
+      "official_download_url": "https://cobis.bme.ncku.edu.tw/DEBFold/data_download/TestSet_beta.zip",
+      "git_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/source/DEBFold/TestSet_beta.zip",
+      "website_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/official_download/TestSet_beta.zip",
+      "sha256": "59aa85fae302b5bda0dcf88410a4b98ab46a44baf234c99a89949173ecb49538",
+      "n_structures": 40,
+      "n_unique_sequences": 40,
+      "scope": "official test archive; audited only, never used for tuning"
+    },
+    "TestSet_gamma.zip": {
+      "official_github_url": "https://github.com/cobisLab/DEBFold/blob/ff693cdf4cb177e50d8a6a15c7a6292af802b75e/TestSet_gamma.zip",
+      "official_download_url": "https://cobis.bme.ncku.edu.tw/DEBFold/data_download/TestSet_gamma.zip",
+      "git_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/source/DEBFold/TestSet_gamma.zip",
+      "website_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/official_download/TestSet_gamma.zip",
+      "sha256": "4dc936cc0cd456619852d6552e7e7a7cdc6cc207a0875441c13060524b472d7f",
+      "n_structures": 15,
+      "n_unique_sequences": 15,
+      "scope": "official test archive; audited only, never used for tuning"
+    }
+  },
+  "weights": {
+    "status": "NOT_PUBLISHED_IN_OFFICIAL_REPOSITORY_OR_WEB_DOWNLOAD",
+    "url": null,
+    "path": null,
+    "sha256": null
+  },
+  "implementation": {
+    "status": "NOT_PUBLISHED_IN_OFFICIAL_REPOSITORY_OR_WEB_DOWNLOAD",
+    "source_commit": "ff693cdf4cb177e50d8a6a15c7a6292af802b75e",
+    "local_inference_entrypoint": null
+  },
+  "license": {
+    "status": "NOT_SPECIFIED",
+    "spdx": null,
+    "github_license_api_http_status": 404,
+    "paper_license_cc_by_applies_to_paper_only": true
+  },
+  "paper": {
+    "title": "DEBFold: Computational Identification of RNA Secondary Structures for Sequences across Structural Families Using Deep Learning",
+    "doi": "10.1021/acs.jcim.4c00458",
+    "pmcid": "PMC11094721",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11094721/",
+    "fulltext_xml": "/teams/HoulabData_1788502323/liucunyu/foldnar/debfold_official_recovery_20261126/paper/PMC11094721.fulltext.xml",
+    "fulltext_xml_sha256": "e8f960eafb7f00edfdd81d4fb75c6de838e9b872b7e18875fc7a5bff2a2f72b3"
+  },
+  "training_protocol": {
+    "source": "PMC11094721 Methods and Data Sets",
+    "input": "l x 10: l x 4 RNA one-hot plus six l x 1 paired-location tracks from RNAfold, IPknot, MaxExpect, ProbKnot, RNAprob and Fold",
+    "stage1_output": "l folding probabilities Y; SHAPE-like score S=1-Y",
+    "stage2": "RNAstructure Fold MFE with SHAPE-like soft constraints; default slope/intercept",
+    "training_padding": 512,
+    "prediction_padding": null,
+    "length_protocol": "Methods: no prediction padding and <512 nt suggested; Limitations: current version suitable only for sequences up to 512 bps",
+    "cross_validation_folds": 25,
+    "epochs": 250,
+    "batch_size": 512,
+    "optimizer": "Adam",
+    "loss": "sum of per-base binary cross-entropy; positive weight 1.8",
+    "learning_rate": "cosine decay to 1e-13 for epochs 1-227, then exponential decay with multiplicative factor 1e-10 for 23 epochs",
+    "dropout": {
+      "residual": 0.1,
+      "convolution_and_transpose_convolution": 0.4
+    },
+    "attention": {
+      "blocks": 2,
+      "heads": 16,
+      "query_key_value_dimension": 512,
+      "feed_forward_dimension": 1024
+    },
+    "training_gpu_reported_by_paper": "NVIDIA RTX 4080"
+  },
+  "dataset_protocol": {
+    "training_validation": "bpRNA-1m/Rfam12.2; 43269 valid sequences/2125 families; reserve 44 families; 2081 training-validation families; at most 5 sequences/family; 8782 structures",
+    "test_alpha": "44 sequences, one per reserved family; CD-HIT 0.85 separation",
+    "test_beta": "bpRNA-new/Rfam14.4 excluding Rfam12.2; 481 families/5265 sequences eligible, then 4 families from each of 10 length bins = 40 sequences; CD-HIT 0.85 separation",
+    "test_gamma": "PDB-derived; 147 eligible before length balancing; 15 sequences; excludes >85% similarity to DEBFold training-validation and SPOT-RNA TR1",
+    "external_test_used_for_tuning": false
+  },
+  "bprna_new_5388_contract": {
+    "dataset_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+    "dataset_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "n_sequences": 5388,
+    "unique_names": 5388,
+    "length_min": 33,
+    "length_max": 489,
+    "n_over_512": 0,
+    "over_512_requires_verified_official_protocol": true,
+    "input": "JSONL name/seq; project reference pairs retained only for later evaluation, never official-model tuning",
+    "output": "One JSONL row per input: {name,seq,pred_pairs}; zero-based inclusive i<j; complete 5388-name/sequence identity required",
+    "predictions": null,
+    "prediction_sha256": null,
+    "coverage": null,
+    "metrics": null,
+    "official_test_beta_40_is_not_project_5388": true,
+    "summary_only_substitution_forbidden": true
+  },
+  "gpu_execution": {
+    "performed": false,
+    "reason": "Official implementation/weights absent and occupied GPU must not be disturbed",
+    "launcher": "tools/run_debfold_bprna_new_gpu_20261126.py"
+  },
+  "provenance_policy": "No unrelated same-name repository, paper-derived reimplementation, pseudo-weights, summary-only score, reference labels, or zero scores substituted"
+}
