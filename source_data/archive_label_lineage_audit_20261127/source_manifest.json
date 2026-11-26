@@ -1,0 +1,155 @@
+{
+  "base_commit": "bf463ccb4b5d0a8da2a2d2fed1696fbf63a8809c",
+  "bprna_new_old_label_precedent": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+  "documentation": {
+    "bpfold_release": {
+      "api_sha256": "e85fa172bfc958a5b7f82e22ddf3ade3bcbaf47d3bc7fa2cff031c7adbec46cc",
+      "data_role": "datasets in BPSEQ format",
+      "tag": "v0.2",
+      "test_results_role": "predicted structures on four test datasets",
+      "url": "https://github.com/heqin-zhu/BPfold/releases/tag/v0.2"
+    },
+    "bprna_paper": {
+      "doi": "10.1093/nar/gky285",
+      "excerpts": {
+        "crw_comparative": "The Comparative RNA Web (CRW) site contains RNA sequences and secondary structures obtained from comparative sequence analysis. There are 55 600 records extracted from this reference through the mass data retrieval option. For each RNA extracted from this source, we retrieved phylogenetic lineage, organism name, and RNA type. The tmRNA Database provides structures of transfer messenger RNAs (tmRNAs), which are bacterial RNAs with both tRNA- and mRNA-like functions. The base pair information for all 728 RNAs from this source was also determined using comparative sequence analysis. Single Recognition Particle Database (SRP) is a source for structures and functions of single recognition particle RNAs (SRP RNAs) along with phylogenetic lineage and organism names for each RNA (28). The tRNAdb 2009 database (formerly Sprinzl tRNA Database) encompasses all the structures and sequences from tRNA genes from three different university sources: Leipzig, Marburg, and Strasbourg (31). All 623 of these verified RNA structures were downloaded from this source along with their taxonomy and links to each individual reference. The RNase P Database (RNP) has sequences and secondary structures of Ribonuclease P type RNA of bacteria, archaea, and eukaryotes. All available taxonomy, organism name, and associated PubMed ID data were downloaded for the 466 entries in this database.",
+        "pdb_rnaview": "RCSB Protein Data Bank (PDB) contains structures of proteins and nucleic acids obtained using X-ray crystallography and NMR techniques. We downloaded all 669 RNA structures (PDB files) consisting of one RNA molecule as of 12 June 2017. We first parsed the 3D structures from PDB files with the June 2017 version of RNAview (35), and used custom perl scripts to convert to BPSEQ format. This conversion considers both canonical and non-canonical base pairs. The priority is on the positions with Watson-Crick and Wobble pairs. The Watson–Crick pairs are identified by the edge represented in RNAView output (+/+ for GC pairs and –/– for AU pairs), and wobble pairs are recognized when the edge is Watson–Crick/Watson–Crick and has the cis orientation with XXVII Saengers classification (35). Similarly, non-canonical pairs are extracted based on these three specifications (36).",
+        "rfam_comparative_projection": "The RNA Family Database (RFAM) V12.2 contains consensus structures derived from comparative sequence analysis of individual sequence family members of thousands of RNA families. For each sequence, we extracted the RNA type, validation technique and when available, the URL for the RNA family Wikipedia page. There are 2495 families in RFAM V12.2 and 43 273 individual sequences. For each family, we projected consensus structures to individual sequences using multiple sequence alignments provide by RFAM and custom perl scripts. Base-paired positions in the consensus structure were mapped to individual sequences, while removing gaps in the alignment, as done in previous studies (14). We include information on the publication status in the database for users who want to exclude unpublished structures."
+      },
+      "full_text_sha256": "b77dcbf837182113f3434f7c13aab33c93313841118cb8b757567e9c11e99842",
+      "interpretation": "bpRNA is a meta-database with source-specific comparative, PDB/RNAview and other lineages; dataset membership is not uniform per-record experimental proof.",
+      "pmcid": "PMC6009582",
+      "source_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC6009582/fullTextXML",
+      "title": "bpRNA: large-scale automated annotation and analysis of RNA secondary structure"
+    }
+  },
+  "external_test_used_for_model_selection": false,
+  "gpu_used": false,
+  "inputs": [
+    {
+      "bytes": 166902534,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz",
+      "role": "frozen audit input",
+      "sha256": "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403"
+    },
+    {
+      "bytes": 8279584,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/official_assets/bpfold/BPfold_test_results_v0.2.tar.gz",
+      "role": "frozen audit input",
+      "sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073"
+    },
+    {
+      "bytes": 4215860,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2/bpRNA.tar.gz",
+      "role": "frozen audit input",
+      "sha256": "69dc58fe6cfdf1ec178b1732b7da35b828dbbc7608e89d9debdde9d538937a55"
+    },
+    {
+      "bytes": 2545591,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2/archiveII.tar.gz",
+      "role": "frozen audit input",
+      "sha256": "633bc50f8e9381f737b680fa6b4c79061a0a781773a5c38b342856eb1a6ac8a4"
+    },
+    {
+      "bytes": 2269843,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2/Rivas.tar.gz",
+      "role": "frozen audit input",
+      "sha256": "4ec63e183ef21cdc7dc76561da5ad1543bdd53d1ec09c14d692cc0cd8da86db2"
+    },
+    {
+      "bytes": 3021206,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl",
+      "role": "frozen audit input",
+      "sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399"
+    },
+    {
+      "bytes": 4747261,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok.jsonl",
+      "role": "frozen audit input",
+      "sha256": "8b1e5ff79070fe3933f1f432f8188956180d705c1dce3838c7331c672282efb9"
+    },
+    {
+      "bytes": 4811816,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/archiveii.jsonl",
+      "role": "frozen audit input",
+      "sha256": "affeec0356be1d16db9a9e1927218d815dcb24018a8d64a81929f894d848e337"
+    },
+    {
+      "bytes": 998247,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+      "role": "frozen audit input",
+      "sha256": "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882"
+    },
+    {
+      "bytes": 259002,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "role": "frozen audit input",
+      "sha256": "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06"
+    },
+    {
+      "bytes": 8158461,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr0.jsonl",
+      "role": "frozen audit input",
+      "sha256": "93d328a49998435333413c61b8c1c530010d195a658f7a008e59bbfd3644a4cc"
+    },
+    {
+      "bytes": 34587311,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1.jsonl",
+      "role": "frozen audit input",
+      "sha256": "473f62458695554335a5a6911bcc590aa788fd1d70b2ebc6ab4830baf0e93929"
+    },
+    {
+      "bytes": 31262653,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_tr1c.jsonl",
+      "role": "frozen audit input",
+      "sha256": "5f024ab2c488e790632bdc7383452f8ef00b92af8fb3b027623ca1b2a49ea854"
+    },
+    {
+      "bytes": 1128,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/archiveii.manifest.json",
+      "role": "frozen audit input",
+      "sha256": "fc8eb64cbb1d55223be401c961edd5d89d2e931c35a10667f1eb7f3540979d6b"
+    },
+    {
+      "bytes": 1060,
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.manifest.json",
+      "role": "frozen audit input",
+      "sha256": "f654bd8a046db6a32814ef89224eaa6fdc54503d3328b5453e6369e0acea8f5c"
+    },
+    {
+      "bytes": 9412,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/official_assets/bpfold/release_v0.2_api.json",
+      "role": "frozen audit input",
+      "sha256": "e85fa172bfc958a5b7f82e22ddf3ade3bcbaf47d3bc7fa2cff031c7adbec46cc"
+    },
+    {
+      "bytes": 798,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2/SHA256SUMS",
+      "role": "frozen audit input",
+      "sha256": "8da484999b29f5f0b57b7a2d1bd60c2baba1005218ac795fd45431358c0d0c4b"
+    },
+    {
+      "bytes": 102069,
+      "path": "/home/rna_jev_archive_label_lineage/manifests/foldnar_v1/data_registry.json",
+      "role": "read-only shared registry; no modification",
+      "sha256": "fa6af42420bf21484bc43b2ceaf46c6c2813de2e2d515f857b9f4dc3ef34a14c"
+    },
+    {
+      "bytes": 463727,
+      "path": "/home/rna_jev_archive_label_lineage/manifests/foldnar_v1/prediction_registry.json",
+      "role": "read-only shared registry; no modification",
+      "sha256": "3193f8eac3c025ca176d8b69b06210c93061b82e223ebf0453add5d9a94f2fac"
+    },
+    {
+      "bytes": 226469,
+      "path": "/home/rna_jev_archive_label_lineage/manifests/foldnar_v1/baseline_registry.json",
+      "role": "read-only shared registry; no modification",
+      "sha256": "4016cc4b54d42b7dd59463fa90c9d201fa3db9094dff6fc05e01f6854e79a15c"
+    }
+  ],
+  "new_training_or_inference": false,
+  "official_reference_fix_commit": "e7ff4e76fe078178ab41d2052349627317b5a3e3",
+  "official_reference_fix_is_ancestor": true,
+  "schema_version": "archive_label_lineage.audit.v1.source_manifest",
+  "shared_registry_access": "READ_ONLY_NO_REGISTRATION"
+}
