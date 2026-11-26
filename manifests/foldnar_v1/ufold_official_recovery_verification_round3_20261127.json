@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "round": 3,
+  "date": "2026-11-27",
+  "round1_commit": "b29567d29796bfc80cafda2f74de59f8f86b5d38",
+  "round2_commit": "629fc2be1d643bcab8d3fabab7e4e790f56ff085",
+  "round1_push_verified": true,
+  "round2_push_verified": true,
+  "fresh_remote_delivery_check": {
+    "source": "git@github.com:Cunyu-Liu/JEPA-mRNA.git",
+    "branch": "ufold-official-recovery-20261127",
+    "cloned_commit": "629fc2be1d643bcab8d3fabab7e4e790f56ff085",
+    "temporary_checkout": "/home/rna_jev_ufold_delivery_verify",
+    "temporary_checkout_removed": true,
+    "tests": "PASS: 13/13 with CUDA_VISIBLE_DEVICES empty",
+    "contract_only": "PASS: CONTRACT_PASS_NO_INFERENCE; 5388 rows; checkpoint_sha256=null; predictions=null"
+  },
+  "foldnar_non_interference": {
+    "repository": "/home/rna_jev_foldnar_integration",
+    "head": "c183df8457b2e3d3695b6e9eb78bb6b56bff5d91",
+    "tracked_worktree_changes": 0,
+    "gpu_tasks_started": 0,
+    "training_or_evaluation_or_release_processes_modified": 0
+  },
+  "final_contract": {
+    "official_source_authenticated": true,
+    "official_commit": "75bd9acc83826059682dfca9d3659df66b132cd1",
+    "source_archive_sha256": "a233d3577cbb213712c06f8f0827b18624e7df99ad093c6bfd70782b8e86b76b",
+    "source_license": "MIT",
+    "source_license_sha256": "5c93b3a2d31b6e7b964633ff5e81bd9e31ff9ee845996ab3b0d3d71b0d368f2e",
+    "author_weights_authenticated": false,
+    "author_weights_sha256": null,
+    "full_ready": false,
+    "status": "BLOCKED_AUTHOR_WEIGHTS_UNAVAILABLE",
+    "predictions": null
+  },
+  "external_test_policy": "bpRNA-new5388 protocol audit only; official all-data default includes bpnew; no model selection, tuning, ranking, or checkpoint choice",
+  "large_files_in_git": 0,
+  "verdict": "ROUND3_PASS_DELIVERABLE_REMOTE_REPRODUCED_WEIGHT_AUTHENTICATION_REMAINS_THE_ONLY_FULL_READY_BLOCKER"
+}

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "created_date": "2026-11-27",
+  "status": "BLOCKED_AUTHOR_WEIGHTS_UNAVAILABLE",
+  "full_ready": false,
+  "base_commit": "c183df8457b2e3d3695b6e9eb78bb6b56bff5d91",
+  "branch": "ufold-official-recovery-20261127",
+  "source": {
+    "official_repository": "https://github.com/uci-cbcl/UFold",
+    "commit": "75bd9acc83826059682dfca9d3659df66b132cd1",
+    "commit_url": "https://github.com/uci-cbcl/UFold/commit/75bd9acc83826059682dfca9d3659df66b132cd1",
+    "commit_author": "Laiyi Fu",
+    "commit_date": "2025-04-22T01:26:17+08:00",
+    "github_commit_signature": {
+      "verified": true,
+      "reason": "valid",
+      "verification_source": "https://api.github.com/repos/uci-cbcl/UFold/commits/75bd9acc83826059682dfca9d3659df66b132cd1"
+    },
+    "readme_url": "https://raw.githubusercontent.com/uci-cbcl/UFold/75bd9acc83826059682dfca9d3659df66b132cd1/README.md",
+    "paper_url": "https://doi.org/10.1093/nar/gkab1074",
+    "archive_url": "https://github.com/uci-cbcl/UFold/archive/75bd9acc83826059682dfca9d3659df66b132cd1.tar.gz",
+    "archive_sha256": "a233d3577cbb213712c06f8f0827b18624e7df99ad093c6bfd70782b8e86b76b",
+    "archive_construction": "git archive --format=tar --prefix=UFold-75bd9acc83826059682dfca9d3659df66b132cd1/ 75bd9acc83826059682dfca9d3659df66b132cd1 | gzip -n",
+    "asset_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/ufold-official-recovery-20261127/source/UFold-75bd9acc83826059682dfca9d3659df66b132cd1",
+    "in_git": false
+  },
+  "license": {
+    "source_spdx": "MIT",
+    "copyright": "2021 Computational Biology and Computational Learning @ UCI",
+    "url": "https://github.com/uci-cbcl/UFold/blob/75bd9acc83826059682dfca9d3659df66b132cd1/LICENSE",
+    "sha256": "5c93b3a2d31b6e7b964633ff5e81bd9e31ff9ee845996ab3b0d3d71b0d368f2e",
+    "weight_license": "No separate weight license is stated in the official repository; Drive contents could not be inspected. Weights are not redistributed in Git."
+  },
+  "weights": {
+    "author_distribution_url": "https://drive.google.com/drive/folders/1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi?usp=sharing",
+    "linked_by_official_readme": true,
+    "official_readme_link_first_added_commit": "1f3e5fad604ec56ffb89e1bcb264034d734bda67",
+    "expected_offline_filename": "ufold_train_alldata.pt",
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/ufold-official-recovery-20261127/weights/ufold_train_alldata.pt",
+    "sha256": null,
+    "size_bytes": null,
+    "authenticated": false,
+    "author_published_sha256": null,
+    "blocker": "Both the local host and px2 failed to establish HTTPS connections to the author Google Drive. Local gdown/urllib returned connection refused; px2 urllib returned Errno 99 and curl timed out. No official per-file IDs, checksums, or alternate author weight URLs were available in the pinned source. Third-party mirrors and previously cached uncertified weights are forbidden.",
+    "required_unblock": "Download ufold_train_alldata.pt (and preferably every file in the author folder) through the exact author Drive URL on a network with Google Drive access; retain Drive file ID/metadata, compute SHA256 independently, verify strict U_Net(img_ch=17) state-dict loading on CPU, and update this manifest and EXPECTED_CHECKPOINT_SHA256 before any gated GPU run."
+  },
+  "dataset": {
+    "name": "bpRNA-new5388",
+    "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+    "sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "n_sequences": 5388,
+    "unique_names": 5388,
+    "length_min": 33,
+    "length_max": 489,
+    "n_reference_pairs": 135184,
+    "input_contract": "JSONL name/seq/pairs; ACGU only; zero-based inclusive i<j; canonical AU/CG/GU; j-i>3; one partner per base",
+    "output_contract": "JSONL in input order with exactly {name, pairs}; pairs retain the same zero-based i<j convention; atomic 5388-row output and manifest only after strict checkpoint authentication"
+  },
+  "runtime_contract": {
+    "script": "tools/run_ufold_official_bprna_new.py",
+    "entry": "ufold_predict.py-compatible offline all-data path",
+    "checkpoint": "ufold_train_alldata.pt",
+    "network": "Network.U_Net(img_ch=17)",
+    "parameter_count": 8641377,
+    "state_dict_bytes_fp32": 34593076,
+    "input_storage_length": 600,
+    "feature_channels": "16 ordered AUCG outer products plus one official creatmat coupling channel",
+    "length_padding": "official get_cut_len(length,80): minimum 80 then next multiple of 16; maximum for this dataset is 496",
+    "batch_size": 1,
+    "noncanonical": false,
+    "postprocess": "postprocess_new(pred, seq_ori, 0.01, 0.1, 100, 1.6, True, 1.5); threshold >0.5",
+    "gpu_execution_performed": false,
+    "prediction_execution_performed": false
+  },
+  "resource_requirements": {
+    "status": "STATIC_ESTIMATE_ONLY_NOT_GPU_MEASURED",
+    "checkpoint_state_dict_mib": 32.99,
+    "recommended_free_cuda_memory_gib": 4,
+    "basis": "Batch-one maximum tensor side 496 and 8,641,377 parameters; 4 GiB is a conservative launch reservation, not a measured minimum.",
+    "cpu_feature_preparation": "NumPy/SciPy/scikit-learn/pandas plus PyTorch; official creatmat uses CPU only when CUDA is hidden during CPU tests",
+    "runtime_estimate": null
+  },
+  "training_exposure": {
+    "scope": "External Test is restricted to protocol audit and cannot be used for model selection",
+    "official_default_train_files": [
+      "RNAStralign",
+      "ArchiveII",
+      "TR0_with_data_augmentation",
+      "TS0",
+      "PDB_train",
+      "bpnew",
+      "TS1",
+      "TS2",
+      "TS3"
+    ],
+    "bpnew_in_official_default_train_files": true,
+    "assessment": "DIRECT_BPNEW_EXPOSURE_DECLARED_BY_OFFICIAL_ALL_DATA_TRAINING_DEFAULT",
+    "evidence": "ufold/utils.py get_args default train_files and ufold_train.py iteration over train_files; ufold_predict.py selects models/ufold_train_alldata.pt",
+    "per_weight_training_ledger": null,
+    "caveat": "No official per-weight lineage manifest is published. The all-data filename and current default training list are recorded without claiming independent proof of the checkpoint's exact training samples.",
+    "model_selection_permitted": false
+  },
+  "verification": {
+    "source_compile": "PASS with px2 /root/miniconda3/bin/python compileall",
+    "static_cpu_tests": "PASS: 13 unittest cases with CUDA_VISIBLE_DEVICES empty on px2 /home/rna_jev/envs/efold_speed/bin/python",
+    "gpu_inference": "NOT_RUN_FORBIDDEN_IN_THIS_TASK",
+    "predictions": null
+  },
+  "predictions": null
+}
