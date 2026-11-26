@@ -117,10 +117,12 @@ def main(argv: list[str] | None = None) -> int:
                 missing.append({"slide": index, "text": value[:180]})
     new_page_text = norm("".join(slide_texts[-1]))
     required_pdf = ("MODEL-DEV ONLY", "QUALIFIED NLL", "ensemble", "destroy", "independent",
-                    "isolated", "span≥128", f"{args.expected_status}_STRUCTURED_MARGIN_INDEPENDENT_EVAL")
+                    "isolated", "span≥128", "5,872−closure 769=5,103 NOT_DETECTED_UNKNOWN (not clean)",
+                    "GEC INELIGIBLE", f"{args.expected_status}_STRUCTURED_MARGIN_INDEPENDENT_EVAL")
     missing_pdf = [value for value in required_pdf if norm(value) not in new_page_text]
     ocr_haystack = norm(ocr_text)
-    required_ocr = ("FOLDNAR", "MODEL-DEV", "ensemble", "QUALIFIED", args.expected_status)
+    required_ocr = ("FOLDNAR", "MODEL-DEV", "ensemble", "QUALIFIED", "5,103", "INELIGIBLE",
+                    args.expected_status)
     missing_ocr = [value for value in required_ocr if norm(value) not in ocr_haystack]
     report = {
         "status": "PASS_RENDER_PDF_TEXT_AND_SLIDE33_OCR"

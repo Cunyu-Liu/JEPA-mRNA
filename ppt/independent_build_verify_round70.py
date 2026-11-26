@@ -19,6 +19,7 @@ OUT = Path(__file__).resolve().parent
 DECK = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx"
 BACKUP = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round70.pptx"
 EVALUATION_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_independent_eval_v1/generation_01")
+CROSS_SOURCE_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/cross_source_leakage_v1")
 
 
 def sha256(path: Path) -> str:
@@ -45,6 +46,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--source-deck", type=Path, default=BACKUP)
     parser.add_argument("--primary-deck", type=Path, default=DECK)
     parser.add_argument("--evaluation-root", type=Path, default=EVALUATION_ROOT)
+    parser.add_argument("--cross-source-root", type=Path, default=CROSS_SOURCE_ROOT)
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--verification", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -61,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     shutil.copy2(source, independent)
     command = [sys.executable, str(args.builder.resolve()), "--deck", str(independent),
                "--evaluation-root", str(args.evaluation_root.resolve()),
+               "--cross-source-root", str(args.cross_source_root.resolve()),
                "--backup", str(work / "independent.pre_round70.pptx"),
                "--verification", str(work / "independent_build.json")]
     result = subprocess.run(command, capture_output=True, text=True, timeout=300)
@@ -87,6 +90,8 @@ def main(argv: list[str] | None = None) -> int:
         "slide_count": len(Presentation(primary).slides), "prior_slide_xml_preserved": 13 if prior_xml else 0,
         "scientific_status": build_report["scientific_status"],
         "evaluation_root": str(args.evaluation_root.resolve()),
+        "cross_source_root": str(args.cross_source_root.resolve()),
+        "cross_source_summary_sha256": build_report["cross_source_boundary"]["summary"]["sha256"],
     }
     atomic_json(args.verification.resolve(), report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
