@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-26T12:33:55.415595+00:00",
+  "status": "OFFICIAL_CP38_DIFFERENTIAL_AND_SM120_SINGLE_SEQUENCE_READINESS_PASS",
+  "full_ready": false,
+  "runtime_ready": true,
+  "ready_scope": "Current CPython 3.10 + torch 2.7.1+cu128 + rebuilt original C++ DP; exact pair/DBN differential against official cp38 interface; one shortest-sequence GPU forward + CPU DP",
+  "blocked_scope": "Full 5388 GPU inference and new official predictions were not run in this task",
+  "upstream": {
+    "repository": "https://github.com/mxfold/mxfold2",
+    "version": "v0.1.2",
+    "commit": "51b213676708bebd664f0c40873a46e09353e1ee",
+    "license": "MIT",
+    "source_path": "/home/rna_jev_structrfm_interface_upstream/mxfold2-v0.1.2",
+    "source_tree_clean": true,
+    "dp_source_modified": false
+  },
+  "official_cp38_reference": {
+    "path": "/home/rna_jev/third_party/structRFM/tasks/seqcls_ssp/interface.cpython-38-x86_64-linux-gnu.so",
+    "sha256": "7d332a297216ecc0d5ccbeec356c42876b543d089cba8846f478ebbaec4ea007",
+    "role": "CPU differential gold standard only, not GPU torch runtime"
+  },
+  "cp38_benchmark_interpreter": {
+    "distribution": "python-build-standalone",
+    "release": "20240726",
+    "python": "3.8.19",
+    "license": "PSF-2.0",
+    "official_url": "https://github.com/astral-sh/python-build-standalone/releases/download/20240726/cpython-3.8.19+20240726-x86_64-unknown-linux-gnu-install_only.tar.gz",
+    "archive_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/downloads/cpython-3.8.19+20240726-x86_64-unknown-linux-gnu-install_only.tar.gz",
+    "archive_sha256": "e81ea4dd16e6057c8121bdbcb7b64e2956068ca019f244c814bc3ad907cb2765",
+    "environment_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/envs/cp38-standalone"
+  },
+  "build_dependencies": {
+    "pybind11": {
+      "version": "2.13.6",
+      "commit": "a2e59f0e7065404b44dfe92a28aca47ba1378dc4",
+      "license": "BSD",
+      "source": "https://github.com/pybind/pybind11"
+    },
+    "BPfold": {
+      "version": "0.3.1",
+      "license": "MIT",
+      "source": "https://github.com/heqin-zhu/BPfold",
+      "distribution_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/pydeps"
+    }
+  },
+  "rebuilt_runtime": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/runtime/cp310/interface.cpython-310-x86_64-linux-gnu.so",
+    "sha256": "616ec59fd9c853bebbcb811eeff8af8ec2ce2b7380971dda9de63b9cc33cb6d0",
+    "python": "3.10.22",
+    "torch": "2.7.1+cu128",
+    "cuda": "12.8",
+    "bpfold": "0.3.1",
+    "arch_list_includes": "sm_120",
+    "build_script": "tools/build_structrfm_interface_cp310_20261126.sh",
+    "mathematical_semantics_modified": false
+  },
+  "differential": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/differential/differential_report.json",
+    "sha256": "4a4fd51793e12c8c0d8e37e88589b8ff2752e705725108d62e9f1a57dedbefcd",
+    "n_cases": 18,
+    "real_bprna_new_cases": 18,
+    "parameter_manifest": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/readiness_params/cases.json",
+    "parameter_manifest_sha256": "703fceee9a5465fdd2d9de414b1eb51a2deb815ac30aab30fbfc83ed6b3691dd",
+    "pair_and_dot_bracket_exact": true,
+    "max_energy_delta": 0.0,
+    "energy_absolute_tolerance": 1e-05
+  },
+  "gpu_readiness": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/gpu_readiness_one_20261126.json",
+    "sha256": "bfef7875c12bdd46302784c1fa01709de4fdfa0cf8807e95db9db8d38a4a9e64",
+    "schema_version": 1,
+    "created_utc": "2026-11-26T12:31:23.491662+00:00",
+    "status": "PASS_SINGLE_SEQUENCE_GPU_FORWARD_AND_CPU_DP_READINESS",
+    "n_sequences_processed": 1,
+    "sequence_name": "URS0000D66999_12908_1-33.bpseq",
+    "sequence_length": 33,
+    "checkpoint_sha256": "689e09e0ad3b51af19b03cb32ea3be5237384c3c9aa5716dff29989098e12145",
+    "runtime": {
+      "python": "3.10.22",
+      "platform": "x86_64",
+      "torch": "2.7.1+cu128",
+      "torch_cuda": "12.8",
+      "torch_arch_list": [
+        "sm_75",
+        "sm_80",
+        "sm_86",
+        "sm_90",
+        "sm_100",
+        "sm_120",
+        "compute_120"
+      ],
+      "numpy": "2.2.6",
+      "transformers": "4.49.0",
+      "bpfold": "0.3.1",
+      "official_dp": "interface.predict_mxfold",
+      "interface": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/runtime/cp310/interface.cpython-310-x86_64-linux-gnu.so",
+        "sha256": "616ec59fd9c853bebbcb811eeff8af8ec2ce2b7380971dda9de63b9cc33cb6d0",
+        "differential_report": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/differential/differential_report.json",
+        "differential_cases": 18
+      },
+      "source_commit": "f0c1add19f8dfc786f16bc4abb7aa775dbadddbf"
+    },
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "gpu_capability": [
+      12,
+      0
+    ],
+    "gpu_architecture": "sm_120",
+    "model_forward_device": "cuda:0",
+    "dp_device": "cpu",
+    "prediction_artifact": null,
+    "metrics": null,
+    "full_dataset_inference_performed": false,
+    "summary_only_prediction_substitution": false
+  },
+  "predictions": null,
+  "metrics": null,
+  "summary_only_prediction_substitution": false
+}

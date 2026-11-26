@@ -2,11 +2,11 @@
   "schema_version": 1,
   "created_utc": "2026-11-26T11:07:05.090823+00:00",
   "baseline_id": "structrfm",
-  "status": "OFFICIAL_CHECKPOINT_RECOVERED_GPU_RUNTIME_AND_PREDICTION_PENDING",
+  "status": "OFFICIAL_CHECKPOINT_AND_RUNTIME_READY_GPU_PREDICTION_PENDING",
   "full_ready": false,
   "asset_ready": true,
   "ready_scope": "Official v0.0.8 release checkpoint bytes, release/source identity, model/training/single-model attributes and bpRNA-new 5388 I/O contract",
-  "blocked_scope": "No GPU inference or new verified-official predictions; CPython 3.8 official DP runtime must be supplied; historical weight bytes are unavailable for retrospective linkage",
+  "blocked_scope": "Full 5388 GPU inference and new verified-official predictions remain pending; historical weight bytes are unavailable for retrospective linkage",
   "source": {
     "repository": "https://github.com/heqin-zhu/structRFM",
     "path": "/home/rna_jev/third_party/structRFM",
@@ -177,10 +177,15 @@
     "eligible_as_new_official_prediction": false
   },
   "gpu_execution": {
-    "performed": false,
+    "performed": true,
     "launcher": "tools/run_structrfm_bprna_new_gpu_20261126.py",
-    "runtime_requirement": "CPython 3.8 x86_64 for official interface.cpython-38-x86_64-linux-gnu.so plus compatible torch/transformers/numpy",
-    "occupied_gpu_policy": "No automatic execution; explicit --execute required"
+    "runtime_requirement": "Verified cp310 interface built from unmodified MXfold2 v0.1.2 C++ source; torch 2.7.1+cu128 supports sm_120",
+    "occupied_gpu_policy": "No automatic execution; explicit --execute required",
+    "single_sequence_readiness_performed": true,
+    "full_dataset_inference_performed": false,
+    "execution_scope": "18 GPU-forward parameter exports plus one end-to-end readiness sequence; no full inference or prediction artifact"
   },
-  "provenance_policy": "No summary-only score, unlinked historical replay, partial download, differing-weight prediction, or reference label may be substituted for a new official-checkpoint prediction"
+  "provenance_policy": "No summary-only score, unlinked historical replay, partial download, differing-weight prediction, or reference label may be substituted for a new official-checkpoint prediction",
+  "runtime_ready": true,
+  "runtime_compatibility": "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json"
 }

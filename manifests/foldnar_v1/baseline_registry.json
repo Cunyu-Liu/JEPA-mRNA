@@ -1717,7 +1717,7 @@
         "source_sha256": "cb4768592947e40d6ef70a65e393eaee5cf33b139e45cfa641ff0cd04b33224b"
       },
       "inference": {
-        "status": "OFFICIAL_WEIGHT_VERIFIED_GPU_PREDICTION_PENDING",
+        "status": "OFFICIAL_CHECKPOINT_AND_RUNTIME_VERIFIED_FULL_GPU_PREDICTION_PENDING",
         "version_protocol": "structRFM v0.0.8 bpRNA1m SSP; single checkpoint; official inference source f0c1add; B=1; max_seq_len=512; MixedFold constrained DP",
         "decoder": "MixedFold Turner + constrained DP (interface.predict_mxfold)",
         "threshold": null,
@@ -1730,7 +1730,7 @@
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
-      "provenance_status": "PARTIAL_OFFICIAL_WEIGHT_VERIFIED_RUNTIME_AND_PREDICTION_PENDING",
+      "provenance_status": "OFFICIAL_WEIGHT_AND_CP38_DIFFERENTIAL_RUNTIME_VERIFIED_PREDICTION_PENDING",
       "evidence": {
         "source_type": "local_file",
         "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
@@ -1759,7 +1759,8 @@
         "status": "HISTORICAL_UNLINKED_OFFICIAL_REPLAY_PENDING",
         "raw_clean_sota_claim": false
       },
-      "structrfm_official_recovery": "manifests/foldnar_v2/structrfm_official_recovery_20261126.json"
+      "structrfm_official_recovery": "manifests/foldnar_v2/structrfm_official_recovery_20261126.json",
+      "structrfm_runtime_compatibility": "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json"
     },
     {
       "baseline_id": "xens2",

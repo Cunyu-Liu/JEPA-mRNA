@@ -18,6 +18,7 @@ def load_module(name):
 
 recovery = load_module("structrfm_official_recovery_20261126")
 launcher = load_module("run_structrfm_bprna_new_gpu_20261126")
+differential = load_module("structrfm_interface_differential_20261126")
 
 
 class PairContractTest(unittest.TestCase):
@@ -100,11 +101,28 @@ class OfficialIdentityTest(unittest.TestCase):
         self.assertEqual(report["status"], "MISSING_HISTORICAL_WEIGHT_BYTES")
 
 
+class DifferentialContractTest(unittest.TestCase):
+    def test_cases_cover_synthetic_and_real_bprna_new_lengths(self):
+        rows = differential.cases(recovery.DEFAULT_SOURCE)
+        self.assertEqual(len(rows), 18)
+        real = [row for row in rows if "dataset_name" in row]
+        self.assertEqual(len(real), 6)
+        self.assertEqual(min(len(row["sequence"]) for row in real), 33)
+        self.assertEqual(max(len(row["sequence"]) for row in real), 489)
+
+
 class LauncherTest(unittest.TestCase):
-    def test_current_runtime_fails_closed_before_cuda(self):
-        with unittest.mock.patch.object(launcher.sys, "version_info", (3, 10, 22)):
-            with self.assertRaisesRegex(launcher.PreflightError, "CPython 3.8"):
-                launcher.runtime_preflight()
+    def test_verified_interface_and_runtime_preflight(self):
+        report = launcher.runtime_preflight()
+        self.assertEqual(report["torch_cuda"], "12.8")
+        self.assertIn("sm_120", report["torch_arch_list"])
+        self.assertEqual(report["interface"]["sha256"], launcher.INTERFACE_SHA256)
+        self.assertEqual(report["interface"]["differential_cases"], 18)
+
+    def test_unverified_interface_root_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(launcher.PreflightError, "interface missing|Missing official cp38"):
+                launcher.load_verified_interface(Path(directory))
 
     def test_missing_checkpoint_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -129,7 +147,21 @@ class ManifestTest(unittest.TestCase):
         self.assertFalse(document["model_identity"]["ensemble"])
         self.assertEqual(document["model_identity"]["n_checkpoints"], 1)
         self.assertFalse(document["historical_artifacts"]["eligible_as_new_official_prediction"])
-        self.assertFalse(document["gpu_execution"]["performed"])
+        self.assertTrue(document["gpu_execution"]["performed"])
+        self.assertFalse(document["gpu_execution"]["full_dataset_inference_performed"])
+
+    def test_runtime_manifest_is_ready_without_faking_full_predictions(self):
+        root = Path(__file__).parents[1]
+        document = json.loads((root / "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json").read_text())
+        self.assertTrue(document["runtime_ready"])
+        self.assertFalse(document["full_ready"])
+        self.assertIsNone(document["predictions"])
+        self.assertIsNone(document["metrics"])
+        self.assertFalse(document["gpu_readiness"]["full_dataset_inference_performed"])
+        self.assertEqual(document["differential"]["n_cases"], 18)
+        original = json.loads((root / "manifests/foldnar_v2/structrfm_official_recovery_20261126.json").read_text())
+        self.assertTrue(original["runtime_ready"])
+        self.assertFalse(original["gpu_execution"]["full_dataset_inference_performed"])
 
     def test_registry_blocks_unlinked_historical_prediction(self):
         root = Path(__file__).parents[1]
