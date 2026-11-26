@@ -1,0 +1,134 @@
+{
+  "artifact_manifest": {
+    "bytes": 1994,
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v3/artifact_manifest.json",
+    "sha256": "37dc7c83db0a8f28c521a73a866a0d4891fdf2eb8856f71de3eaa8a0ef766be9"
+  },
+  "artifact_sha256sums": {
+    "bytes": 559,
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v3/SHA256SUMS",
+    "sha256": "09999dfa453c6753f380e48ce249d9970bf973af661615aae07a119048e9c6f2"
+  },
+  "bprna_new_final_only": {
+    "EXACT": 5381,
+    "HOMOLOGY": 7,
+    "NOT_DETECTED_UNKNOWN": 0,
+    "n_sequences": 5388,
+    "selection_use": false
+  },
+  "cluster_dev": {
+    "diagnostic_only": [
+      "HOMOLOGY",
+      "NOT_DETECTED_UNKNOWN"
+    ],
+    "diagnostic_reason": "zero mapped families; family/HHI/unmapped gates fail despite passing sequence and pair minima",
+    "exposure_counts": {
+      "EXACT": 7978,
+      "HOMOLOGY": 539,
+      "NOT_DETECTED_UNKNOWN": 626
+    },
+    "exposure_pairs": {
+      "EXACT": 206588,
+      "HOMOLOGY": 19528,
+      "NOT_DETECTED_UNKNOWN": 20897
+    },
+    "n_sequences": 9143,
+    "sensitivity_eligible_all_12_runs": {
+      "EXACT": true,
+      "HOMOLOGY": false,
+      "NOT_DETECTED_UNKNOWN": false
+    }
+  },
+  "complete_official_pretraining_manifest": "UNCHECKED",
+  "current_seed0_main_gate": {
+    "changed_by_v3": false,
+    "n_failed_gates": 12,
+    "n_gates": 16,
+    "pass": false,
+    "status": "FAIL_GEC_SEED0_INDEPENDENT_REEVAL"
+  },
+  "deterministic_rebuild": {
+    "byte_identical": true,
+    "passed": true,
+    "registry_sha256": "4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904"
+  },
+  "external_test_selection_use": false,
+  "frozen_source_commits": {
+    "label_quality": "3e64df111cffaeaf21add48094434123234ea40f",
+    "pretrain_exposure": "4247d1e4a971ceb8c63e3f8338e026a23c18941b"
+  },
+  "gpu_task_launched": false,
+  "immutability": {
+    "original_16_gate_count": 16,
+    "original_16_gates_modified": false,
+    "original_route_panels_modified": false,
+    "v1_registry_sha256": "62ae08e06f1b3a291c2de2a9cf52d2e57ec55570396fc810cd3638612c774902",
+    "v1_v2_modified": false,
+    "v2_registry_sha256": "09c2a87e0e2d255a59c096ac3af5c17b5ae983cc663dfe0506e709f03a67ba55"
+  },
+  "registry": {
+    "bytes": 423362,
+    "path": "/home/rna_jev_model_dev_v3/manifests/foldnar_v3/model_dev_registry.json",
+    "sha256": "4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904"
+  },
+  "route_selection": {
+    "changed_by_v3": false,
+    "eligible_run_count": 12,
+    "exposure_strata_can_rescue_or_veto": false,
+    "margin_results_read": false,
+    "margin_route_selection_influence": false,
+    "primary_panel": "tr1c_cluster80_dev_v2"
+  },
+  "schema_version": "foldnar.model_dev_registry.verification_summary.v3",
+  "source_base_commit": "79a2ed45879f1f4e81d6719ed54600bf7f8da807",
+  "status": "PASS_THREE_ROUNDS",
+  "unit_tests": {
+    "command": "/root/miniconda3/envs/lucaone_cu128/bin/python -m pytest -q tests/test_foldnar_model_dev_registry_v3.py tests/test_foldnar_model_dev_registry_v2.py tests/test_foldnar_model_dev_registry_phase0a.py tests/test_foldnar_label_quality_v1.py tools/test_pretrain_exposure_registry_v1.py",
+    "failed": 0,
+    "passed_per_round": 31,
+    "rounds": [
+      31,
+      31,
+      31
+    ]
+  },
+  "unknown_is_not_clean": true,
+  "verification_rounds": [
+    {
+      "n_checks": 257,
+      "round": 1,
+      "status": "PASS",
+      "unit_tests_failed": 0,
+      "unit_tests_passed": 31,
+      "verification": {
+        "bytes": 15700,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v3/verification_round1.json",
+        "sha256": "3daba83d2debd3c6b9188cb9351a12ef4c57db66e3ff58d8374e745367149010"
+      }
+    },
+    {
+      "n_checks": 257,
+      "round": 2,
+      "status": "PASS",
+      "unit_tests_failed": 0,
+      "unit_tests_passed": 31,
+      "verification": {
+        "bytes": 15700,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v3/verification_round2.json",
+        "sha256": "9fe7bde2f74e13a7c10f76ba10113baa9c1feb6e212c56b1dbff93a064513753"
+      }
+    },
+    {
+      "n_checks": 257,
+      "round": 3,
+      "status": "PASS",
+      "unit_tests_failed": 0,
+      "unit_tests_passed": 31,
+      "verification": {
+        "bytes": 15700,
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/model_dev_v3/verification_round3.json",
+        "sha256": "99e043b52d4fae82567485a3bb9bb96a4e539de57918ebdcd65820dbc2a9cf19"
+      }
+    }
+  ]
+}
