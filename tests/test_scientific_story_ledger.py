@@ -29,3 +29,30 @@ def test_crossover_claim_separation_guard():
     assert "crossover 直接支持①，但不支持②" in text
     assert "上下文有因果作用”与“真实 ensemble 一致有益”是不同命题" in text
     assert "没有最终 hash-verified 四臂评估可填入" in text
+
+
+def test_structrfm_official_raw_scope_and_arithmetic():
+    text = ledger.DOC.read_text()
+    assert "不是我们的候选正向性能，也不是 clean SOTA" in text
+    assert "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED" in text
+    micro = 2 * 73864 / (2 * 73864 + 62616 + 61320)
+    assert micro == pytest.approx(0.5437893868896873)
+
+
+def test_raw_baseline_absolute_gap_arithmetic():
+    structrfm = 0.5437893868896873
+    assert 0.7370074184282851 - structrfm == pytest.approx(0.19321803153859785)
+    assert 0.6967639314022964 - structrfm == pytest.approx(0.15297454451260917)
+    text = ledger.DOC.read_text()
+    assert "这不是相对百分比，也不是我们的候选提升" in text
+    assert "BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入" in text
+
+
+def test_linearpartition_recall_and_gec_boundary():
+    assert 53 / 73 == pytest.approx(0.726027397260274)
+    assert 8 / 73 == pytest.approx(0.1095890410958904)
+    text = ledger.DOC.read_text()
+    assert "长序列只有 baseline 回答，GEC unsupported" in text
+    assert "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION" in text
+    assert "candidate recall 不是最终结构准确率" in text
+    assert "\n+- **" not in text

@@ -13,6 +13,9 @@ DOC = REPO / "docs/plans/2026-11-26-gec-margin-scientific-story-ledger.md"
 F = Path("/teams/HoulabData_1788502323/liucunyu/foldnar")
 A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts")
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
+STRUCTRFM = F / "structrfm_official_v0.0.8"
+FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
+LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
     "capacity": A / "representation_head_mechanism_4arm_v1/capacity_freeze_audit.json",
@@ -31,6 +34,14 @@ SOURCES = {
     "margin_authorization": F / "structured_margin_full_v1/full_authorization_v1.json",
     "margin_scheduler": F / "structured_margin_full_v1/generation_01/scheduler_state.json",
     "margin_config": MARGIN_REPO / "configs/gec_structured_margin_convergence_v1.json",
+    "structrfm": STRUCTRFM / "reports/structrfm_official_bprna_new_metrics_20261126.json",
+    "structrfm_provenance": STRUCTRFM / "reports/structrfm_official_provenance_20261126.json",
+    "structrfm_delivery": STRUCTRFM / "reports/full_delivery_verification_20261126.json",
+    "raw_baselines": FOLDNAR_REPO / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+    "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
+    "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
+    "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
+    "linearpartition_delivery": LINEARPARTITION_RUN.parent / "holdout_delivery_verification.json",
 }
 
 
@@ -72,6 +83,19 @@ def verify_narrative_guards() -> list[str]:
         "03f7f4e14ef906359cbd9d1b519089b6e61116f4",
         "PPT 第 33 页",
         "PPT 第 34 页",
+        "fd497e9819e39a29887ec26698a46c91284d230b",
+        "5a7ccbd418f520eb44f02f0fdf6fbdf9f6ff238e",
+        "真实 deck 为 14 张、记录至第 33 页",
+        "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED",
+        "不是我们的候选正向性能，也不是 clean SOTA",
+        "0.19321803153859785",
+        "0.15297454451260917",
+        "这不是相对百分比，也不是我们的候选提升",
+        "长序列只有 baseline 回答，GEC unsupported",
+        "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION",
+        "8,481,693,696 bytes",
+        "53/73=0.726027397260274",
+        "8/73=0.1095890410958904",
         "margin_superior_to_nll_claim_allowed=false",
         "完成臂 0",
         "scientific_conclusion=null",
@@ -172,6 +196,80 @@ def verify_numbers() -> list[str]:
     for required in ["final hash-verified four-arm evaluation", "34 · FOLDNAR PHASE 1 / STRUCTURED MARGIN FOUR-ARM VERDICT", "added_slide_number"]:
         if required not in page34:
             errors.append(f"PPT34 builder lacks final-evidence guard: {required}")
+
+    check("structRFM status", pointer(data["structrfm"], "status"), "PASS_INDEPENDENT_OFFICIAL_5388_IDENTITY_AND_METRICS")
+    check("structRFM full ready", pointer(data["structrfm"], "full_ready"), True)
+    check("structRFM sequences", pointer(data["structrfm"], "dataset/n_sequences"), 5388, "5,388")
+    check("structRFM coverage", pointer(data["structrfm"], "metrics/coverage"), 1.0)
+    check("structRFM TP", pointer(data["structrfm"], "metrics/tp"), 73864, "73,864")
+    check("structRFM FP", pointer(data["structrfm"], "metrics/fp"), 62616, "62,616")
+    check("structRFM FN", pointer(data["structrfm"], "metrics/fn"), 61320, "61,320")
+    check("structRFM micro", pointer(data["structrfm"], "metrics/micro_f1"), 0.5437893868896873, "0.5437893868896873")
+    check("structRFM macro", pointer(data["structrfm"], "metrics/macro_f1"), 0.5338105702966888, "0.5338105702966888")
+    check("structRFM raw scope", pointer(data["structrfm"], "label_scope"), "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED")
+    check("structRFM raw not clean", pointer(data["structrfm"], "raw_not_clean"), True)
+    check("structRFM historical unchanged", pointer(data["structrfm"], "historical_prediction/overwritten"), False)
+    check("structRFM single model", pointer(data["structrfm_provenance"], "model_identity/model_form"), "single_checkpoint_single_model")
+    check("structRFM not ensemble", pointer(data["structrfm_provenance"], "model_identity/ensemble"), False)
+    check("structRFM exposure unresolved", pointer(data["structrfm_provenance"], "training_exposure/raw_not_clean"), True)
+    check("structRFM delivery status", pointer(data["structrfm_delivery"], "status"), "PASS_FULL_5388_GPU_INFERENCE_AND_INDEPENDENT_DELIVERY")
+    check("structRFM delivery raw", pointer(data["structrfm_delivery"], "raw_not_clean"), True)
+    check("structRFM delivery micro", pointer(data["structrfm_delivery"], "micro_f1"), 0.5437893868896873)
+    check("structRFM delivery macro", pointer(data["structrfm_delivery"], "macro_f1"), 0.5338105702966888)
+
+    check("raw registry status", pointer(data["raw_baselines"], "status"), "PASS_20_EXISTING_ASSETS_SHA_ID_METRICS")
+    check("raw registry not clean", pointer(data["raw_baselines"], "scope_contract/raw_is_not_clean"), True)
+    check("BPfold model form", pointer(data["raw_baselines"], "strongest_project_raw/model_form"), "six_checkpoint_ensemble")
+    check("BPfold coverage", pointer(data["raw_baselines"], "strongest_project_raw/coverage"), 1.0)
+    check("BPfold sequences", pointer(data["raw_baselines"], "strongest_project_raw/n_sequences"), 5388)
+    check("BPfold micro", pointer(data["raw_baselines"], "strongest_project_raw/micro_f1"), 0.7370074184282851, "0.7370074184282851")
+    check("CONTRAfold model form", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/model_form"), "deterministic_single_predictor")
+    check("CONTRAfold coverage", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/coverage"), 1.0)
+    check("CONTRAfold sequences", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/n_sequences"), 5388)
+    check("CONTRAfold micro", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1"), 0.6967639314022964, "0.6967639314022964")
+    structrfm_micro = pointer(data["structrfm"], "metrics/micro_f1")
+    bpfold_gap = pointer(data["raw_baselines"], "strongest_project_raw/micro_f1") - structrfm_micro
+    contrafold_gap = pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1") - structrfm_micro
+    check("BPfold minus structRFM", bpfold_gap, 0.19321803153859785, "0.19321803153859785")
+    check("CONTRAfold minus structRFM", contrafold_gap, 0.15297454451260917, "0.15297454451260917")
+
+    check("LinearPartition run status", pointer(data["linearpartition_run"], "status"), "PASS_FULL_LENGTH_HOLDOUT_EXECUTION_AND_OUTPUT__FLOPS_NOT_MEASURED")
+    check("LinearPartition split", pointer(data["linearpartition_run"], "split"), "holdout")
+    check("LinearPartition target", pointer(data["linearpartition_run"], "name"), "7AM2_1")
+    check("LinearPartition variant", pointer(data["linearpartition_run"], "execution/variant"), "LinearPartition-C")
+    check("LinearPartition approximate sparse", pointer(data["linearpartition_run"], "execution/column"), "APPROXIMATE_SPARSE")
+    check("LinearPartition CPU threads", pointer(data["linearpartition_run"], "execution/threads"), 1)
+    check("LinearPartition full input", pointer(data["linearpartition_run"], "input/length"), 19000, "19,000")
+    check("LinearPartition not truncated", pointer(data["linearpartition_run"], "input/truncated"), False)
+    check("LinearPartition wall", pointer(data["linearpartition_run"], "resources/latency/wall_seconds"), 362.79, "362.79")
+    check("LinearPartition RSS", pointer(data["linearpartition_run"], "resources/memory/peak_cpu_rss_bytes"), 8481693696, "8,481,693,696")
+    check("LinearPartition FLOPs", pointer(data["linearpartition_run"], "resources/flops/status"), "NOT_MEASURED")
+    check("LinearPartition no FLOPs estimate", pointer(data["linearpartition_run"], "resources/flops/estimated"), False)
+    check("LinearPartition holdout only", pointer(data["linearpartition_run"], "holdout_descriptive_only"), True)
+    check("LinearPartition not selection", pointer(data["linearpartition_run"], "not_for_model_selection"), True)
+    check("LinearPartition metric scope", pointer(data["linearpartition_metrics"], "scope"), "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION")
+    check("LinearPartition record coverage", pointer(data["linearpartition_metrics"], "coverage/record_coverage"), 1.0)
+    check("LinearPartition nucleotide coverage", pointer(data["linearpartition_metrics"], "coverage/completed_nucleotide_coverage"), 1.0)
+    check("LinearPartition output length", pointer(data["linearpartition_metrics"], "coverage/output_nucleotides"), 19000)
+    check("LinearPartition coverage not truncated", pointer(data["linearpartition_metrics"], "coverage/truncated"), False)
+    for output, tp, recall in [("bpp_candidate_pair_recall", 53, 0.726027397260274), ("mea_pair_recall", 8, 0.1095890410958904)]:
+        check(f"LinearPartition {output} TP", pointer(data["linearpartition_metrics"], f"{output}/overall/true_positive"), tp)
+        check(f"LinearPartition {output} reference", pointer(data["linearpartition_metrics"], f"{output}/overall/reference"), 73)
+        check(f"LinearPartition {output} recall", pointer(data["linearpartition_metrics"], f"{output}/overall/recall"), recall)
+        check(f"LinearPartition {output} 200-999 TP", pointer(data["linearpartition_metrics"], f"{output}/200-999/true_positive"), 0)
+        check(f"LinearPartition {output} 200-999 reference", pointer(data["linearpartition_metrics"], f"{output}/200-999/reference"), 13)
+        check(f"LinearPartition {output} >=1000 reference", pointer(data["linearpartition_metrics"], f"{output}/>=1000/reference"), 0)
+        check(f"LinearPartition {output} >=1000 null", pointer(data["linearpartition_metrics"], f"{output}/>=1000/recall"), None)
+    check("LinearPartition verification status", pointer(data["linearpartition_verification"], "status"), "PASS_INDEPENDENT_HOLDOUT_OUTPUT_HASH_RESOURCE_AND_METRIC_VERIFICATION")
+    check("LinearPartition independent wall", pointer(data["linearpartition_verification"], "recomputed/wall_seconds"), 362.79)
+    check("LinearPartition independent RSS", pointer(data["linearpartition_verification"], "recomputed/peak_cpu_rss_bytes"), 8481693696)
+    check("LinearPartition independent BPP TP", pointer(data["linearpartition_verification"], "recomputed/bpp_candidate_pair_recall/overall/true_positive"), 53)
+    check("LinearPartition independent MEA TP", pointer(data["linearpartition_verification"], "recomputed/mea_pair_recall/overall/true_positive"), 8)
+    check("LinearPartition delivery status", pointer(data["linearpartition_delivery"], "status"), "PASS_FULL_19000_HOLDOUT_CPU_PILOT_AND_INDEPENDENT_VERIFICATION")
+    check("LinearPartition delivery head", pointer(data["linearpartition_delivery"], "head"), "bbc4366bae1e4643bccb2e960470abcee77a83c2")
+    check("LinearPartition delivery coverage", pointer(data["linearpartition_delivery"], "coverage"), 1.0)
+    check("LinearPartition delivery holdout only", pointer(data["linearpartition_delivery"], "holdout_descriptive_only"), True)
+    check("LinearPartition delivery not selection", pointer(data["linearpartition_delivery"], "not_for_model_selection"), True)
 
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")
