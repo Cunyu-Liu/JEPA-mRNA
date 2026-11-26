@@ -1,0 +1,12 @@
+{
+  "status": "PASS_INDEPENDENT_CLEAN_BUILD_ALL_ZIP_PARTS_IDENTICAL",
+  "primary_deck": "/home/rna_jev_gec_residual_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "independent_deck": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_residual_record_round69_verification/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "primary_sha256": "b8f8c4da1f1e7d33e9ed70f14307b4b94f0af53806b4a52582c4cb97bbaafc55",
+  "independent_sha256": "057e33a791f603d577ed77ac3df0a0ef26c7692f22776bc1717131330b32bc2a",
+  "zip_parts_compared": 62,
+  "missing_parts": [],
+  "different_parts": [],
+  "slide_count": 13,
+  "prior_slide_xml_preserved": 12
+}

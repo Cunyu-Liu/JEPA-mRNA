@@ -1,0 +1,69 @@
+{
+  "status": "PASS_BUILD_REOPEN_12_PRIOR_XML_ATOMIC_REPLACE_SOURCE_TEXT_AND_SHAPE_BOUNDS",
+  "deck": "/home/rna_jev_gec_residual_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "b8f8c4da1f1e7d33e9ed70f14307b4b94f0af53806b4a52582c4cb97bbaafc55",
+  "deck_bytes": 70208,
+  "backup": "/home/rna_jev_gec_residual_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round69.pptx",
+  "backup_sha256": "472ee9e2dff451c05c8ed2bb43c30c90691c8781e4f45e71ea3528a26c2ce98a",
+  "builder": "/home/rna_jev_gec_residual_record/ppt/add_phase0_gec_residual_record_round69.py",
+  "builder_sha256": "58672699a0977533639eab562bceb2b63834b5d85433e2f2cc475875ef30d620",
+  "base_commit": "82f6b4ef6f948c40aba0a53f73a31e1515af3efb",
+  "residual_audit_commit": "0589b2f489aa456f7a885b6d5dfe625b5de1b76b",
+  "sources": {
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_residual_error_audit_v1/artifact_manifest.json": "2d81190e5f6712e3761be5877dfccceaa6596f6cb7fa642f9e658c125af191dc",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_residual_error_audit_v1/comparison.json": "c6f76d59606c190ecc602767a8fbec3defe480c476b5df4c12b684d487b9beff",
+    "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_residual_error_audit_v1/verification.json": "2feb0752f1e91e75c40a6572ad296d8b2e442d47fe526f97ee45998d4cc06c25"
+  },
+  "source_values": {
+    "ensemble_fn": 102903,
+    "nonpositive_score_margin_fn": 101164,
+    "nonpositive_score_margin_fn_percent": 98.31005898759025,
+    "positive_weight_mea_competition_fn": 1739,
+    "destroy_to_ensemble_recall_lost": 14471,
+    "recall_lost_to_nonpositive_score_margin": 13993,
+    "isolated_delta_native_mean": -0.7433502003602543,
+    "span_ge128_delta_native_mean": -0.36869847865594174,
+    "ensemble_validation_log": {
+      "best_step": 10500,
+      "best_validation_nll": 0.24104913161550023,
+      "stop_step": 13000,
+      "stop_validation_nll": 0.29187715590698143,
+      "post_best_validation_nll_change": 0.0508280242914812,
+      "training_loss_windows": {
+        "pre_best": {
+          "n": 500,
+          "mean": 0.15249370073340834,
+          "median": 0.1327914372086525,
+          "residual_gradient_norm_median": 0.09426803516918542,
+          "residual_to_total_gradient_ratio_median": 0.044355648958554254
+        },
+        "post_best": {
+          "n": 500,
+          "mean": 0.1496550358425011,
+          "median": 0.13906193524599075,
+          "residual_gradient_norm_median": 0.09151563796185183,
+          "residual_to_total_gradient_ratio_median": 0.039181018048450214
+        },
+        "last_500": {
+          "n": 500,
+          "mean": 0.13989585306949448,
+          "median": 0.1278361901640892,
+          "residual_gradient_norm_median": 0.08269680362576984,
+          "residual_to_total_gradient_ratio_median": 0.03488217115128271
+        }
+      },
+      "stop_reason_satisfied": true
+    },
+    "best_checkpoint_error_explained_by_post_best_overfitting": false,
+    "next_hypothesis": "pair-Hamming cost-augmented structured max-margin",
+    "decoder_search_allowed": false,
+    "seeds_1_2_allowed": false
+  },
+  "slide_count": 13,
+  "deck_slide_index": 13,
+  "added_slide_number": 32,
+  "prior_slide_xml_preserved": 12,
+  "atomic_replace": true,
+  "shape_bounds_checks": 36,
+  "render_visual_check": "PENDING_SEPARATE_LIBREOFFICE_RENDER"
+}
