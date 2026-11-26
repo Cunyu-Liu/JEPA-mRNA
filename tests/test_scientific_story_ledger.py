@@ -48,6 +48,22 @@ def test_raw_baseline_absolute_gap_arithmetic():
     assert "BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入" in text
 
 
+def test_label_quality_soft_review_and_zero_deletion():
+    text = ledger.DOC.read_text()
+    assert 33421 + 9143 + 95181 + 10540 == 148285
+    assert "TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 均不能称为实验真值" in text
+    assert "95,052 条 noncanonical" in text
+    assert "10,250 条 short-span" in text
+    assert "硬冲突记录=0" in text
+    assert "实际删除=0" in text
+    assert "不自动删除" in text
+
+
+@pytest.mark.skipif(not ledger.LABEL_QUALITY_REPO.is_dir(), reason="host-specific source repository is unavailable")
+def test_round1_source_commit_identity():
+    assert ledger.verify_source_commits() == []
+
+
 def test_linearpartition_recall_and_gec_boundary():
     assert 53 / 73 == pytest.approx(0.726027397260274)
     assert 8 / 73 == pytest.approx(0.1095890410958904)

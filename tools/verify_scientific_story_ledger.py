@@ -6,6 +6,7 @@ import argparse
 import json
 import math
 import re
+import subprocess
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -15,6 +16,8 @@ A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/a
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
 STRUCTRFM = F / "structrfm_official_v0.0.8"
 FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
+LABEL_QUALITY_REPO = Path("/home/rna_jev_label_quality")
+LABEL_QUALITY = F / "label_quality_v1"
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -42,6 +45,15 @@ SOURCES = {
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
     "linearpartition_delivery": LINEARPARTITION_RUN.parent / "holdout_delivery_verification.json",
+    "label_summary": LABEL_QUALITY / "summary.json",
+    "label_conservation": LABEL_QUALITY / "deletion_conservation.json",
+    "label_verification": LABEL_QUALITY / "independent_verification.json",
+    "label_manifest": LABEL_QUALITY / "artifact_manifest.json",
+}
+
+SOURCE_COMMITS = {
+    "FoldNAR integration": (FOLDNAR_REPO, "79a2ed45879f1f4e81d6719ed54600bf7f8da807"),
+    "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
 }
 
 
@@ -54,6 +66,21 @@ def pointer(document, path: str):
 
 def missing_sources() -> list[str]:
     return [f"{name}: {path}" for name, path in SOURCES.items() if not path.is_file()]
+
+
+def verify_source_commits() -> list[str]:
+    errors = []
+    for name, (repo, expected) in SOURCE_COMMITS.items():
+        if not (repo / ".git").exists():
+            errors.append(f"missing source repository: {name}: {repo}")
+            continue
+        actual = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"],
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+        if actual != expected:
+            errors.append(f"{name} commit: expected {expected}, got {actual}")
+    return errors
 
 
 def verify_links() -> list[str]:
@@ -100,6 +127,13 @@ def verify_narrative_guards() -> list[str]:
         "完成臂 0",
         "scientific_conclusion=null",
         "只有对应**直接、已完成、可回溯**的证据全部存在",
+        "3e64df111cffaeaf21add48094434123234ea40f",
+        "TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 均不能称为实验真值",
+        "95,052 条 noncanonical",
+        "10,250 条 short-span",
+        "不自动删除",
+        "硬冲突记录=0",
+        "实际删除=0",
     ]
     return [f"missing narrative guard: {item}" for item in required if item not in text]
 
@@ -271,6 +305,46 @@ def verify_numbers() -> list[str]:
     check("LinearPartition delivery holdout only", pointer(data["linearpartition_delivery"], "holdout_descriptive_only"), True)
     check("LinearPartition delivery not selection", pointer(data["linearpartition_delivery"], "not_for_model_selection"), True)
 
+    check("label base commit", pointer(data["label_summary"], "base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("label schema", pointer(data["label_summary"], "schema_version"), "foldnar.label_quality.v1")
+    check("label total", pointer(data["label_summary"], "total_records"), 148285, "148,285")
+    check("label record counts", pointer(data["label_summary"], "record_counts"), {
+        "tr1c_cluster_train": 33421,
+        "tr1c_cluster_dev": 9143,
+        "chanrg_train": 95181,
+        "chanrg_validation": 10540,
+    })
+    check("label combined records", pointer(data["label_summary"], "combined/records"), 148285)
+    check("TR1c train DATABASE", pointer(data["label_summary"], "split_summaries/tr1c_cluster_train/source_categories"), {"DATABASE": 33421})
+    check("TR1c dev DATABASE", pointer(data["label_summary"], "split_summaries/tr1c_cluster_dev/source_categories"), {"DATABASE": 9143})
+    check("CHANRG train COMPARATIVE_INFERRED", pointer(data["label_summary"], "split_summaries/chanrg_train/source_categories"), {"COMPARATIVE_INFERRED": 95181})
+    check("CHANRG validation COMPARATIVE_INFERRED", pointer(data["label_summary"], "split_summaries/chanrg_validation/source_categories"), {"COMPARATIVE_INFERRED": 10540})
+    check("label lineage unchecked", pointer(data["label_summary"], "combined/experimental_lineage_status"), {"UNCHECKED": 148285})
+    check("label lineage verified", pointer(data["label_summary"], "per_record_experimental_lineage_verified_records"), 0)
+    check("label noncanonical records", pointer(data["label_summary"], "combined/issue_record_counts/noncanonical_pairs"), 95052, "95,052")
+    check("label short-span records", pointer(data["label_summary"], "combined/issue_record_counts/min_loop_span_lt4"), 10250, "10,250")
+    check("label review records", pointer(data["label_summary"], "combined/review_records"), 95783, "95,783")
+    check("label hard conflicts", pointer(data["label_summary"], "combined/hard_conflict_records"), 0, "硬冲突记录=0")
+    check("label proposed exclusions", pointer(data["label_summary"], "combined/proposed_exclusion_records"), 0)
+    check("label actual deletions", pointer(data["label_summary"], "combined/actual_deleted_records"), 0, "实际删除=0")
+    check("label soft only", pointer(data["label_summary"], "combined/deletion_conservation/soft_review_only_records"), 95783)
+    check("label conservation", pointer(data["label_summary"], "combined/deletion_conservation/conservation_holds"), True)
+    check("label deletion unauthorized", pointer(data["label_summary"], "combined/deletion_conservation/deletion_authorized"), False)
+    check("label no deletion performed", pointer(data["label_summary"], "actual_deletion_performed"), False)
+    check("label IDs unchanged", pointer(data["label_summary"], "training_ids_modified"), False)
+    check("label model-dev unchanged", pointer(data["label_summary"], "model_dev_v2_modified"), False)
+    check("label no external test", pointer(data["label_summary"], "external_test_accessed"), False)
+    check("label no GPU task", pointer(data["label_summary"], "gpu_task_launched"), False)
+    check("label soft-review policy", pointer(data["label_conservation"], "policy/soft_review"), "review only; noncanonical, short-loop and crossing labels are not automatically invalid")
+    check("label independent pass", pointer(data["label_verification"], "verification_passed"), True)
+    check("label independent raw", pointer(data["label_verification"], "independent_raw_recomputation"), True)
+    check("label builder not imported", pointer(data["label_verification"], "builder_imported"), False)
+    check("label independent conflicts", pointer(data["label_verification"], "hard_conflict_records_verified"), 0)
+    check("label independent deletions", pointer(data["label_verification"], "actual_deleted_records"), 0)
+    check("label manifest base", pointer(data["label_manifest"], "base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("label manifest pass", pointer(data["label_manifest"], "verification_passed"), True)
+    check("label manifest rounds", pointer(data["label_manifest"], "verification_rounds"), [1, 2, 3])
+
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")
     check("NLL science unchanged", pointer(data["nll"], "reference_use/original_scientific_fail_unchanged"), True)
@@ -311,12 +385,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers()
+        errors += verify_numbers() + verify_source_commits()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, and JSON numeric provenance"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, and source commits"
     print(f"PASS: {scope}")
     return 0
 
