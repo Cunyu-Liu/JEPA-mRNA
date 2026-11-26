@@ -31,7 +31,94 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "xens2",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "three_checkpoint_ensemble",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 33988,
+              "fp": 14395,
+              "macro_f1": 0.8596587124620273,
+              "macro_precision": 0.8981631687290657,
+              "macro_recall": 0.8345239005584189,
+              "micro_f1": 0.8156522070450173,
+              "micro_precision": 0.8814553120702292,
+              "micro_recall": 0.7589913773542092,
+              "n_scored": 2544,
+              "tp": 107036,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": 0.0,
+              "macro_precision": 0.0,
+              "macro_recall": 0.0,
+              "micro_f1": 0.0,
+              "micro_precision": 0.0,
+              "micro_recall": 0.0
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 33988,
+              "fp": 14395,
+              "macro_f1": 0.8596587124620273,
+              "macro_precision": 0.8981631687290657,
+              "macro_recall": 0.8345239005584189,
+              "micro_f1": 0.8156522070450173,
+              "micro_precision": 0.8814553120702292,
+              "micro_recall": 0.7589913773542092,
+              "n_scored": 2544,
+              "tp": 107036,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                0.0,
+                0.0
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": 0.0,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rinalmo_2d_s0/archiveii_embok_clean",
@@ -45,7 +132,44 @@
       "block_reason": "registered prediction file missing",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "r2d",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_REGISTERED_PREDICTION_MISSING",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_REGISTERED_PREDICTION_MISSING",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "ufold/archiveii_embok_clean",
@@ -74,7 +198,94 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "ufold",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 71536,
+              "fp": 69547,
+              "macro_f1": 0.6157846094024889,
+              "macro_precision": 0.6183172336226781,
+              "macro_recall": 0.6194280730323855,
+              "micro_f1": 0.49623829264547825,
+              "micro_precision": 0.4997878232099831,
+              "micro_recall": 0.4927388245972317,
+              "n_scored": 2544,
+              "tp": 69488,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.24387410305953838,
+              "macro_precision": -0.27984593510638756,
+              "macro_recall": -0.2150958275260334,
+              "micro_f1": -0.31941391439953903,
+              "micro_precision": -0.3816674888602461,
+              "micro_recall": -0.2662525527569775
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 71536,
+              "fp": 69547,
+              "macro_f1": 0.6157846094024889,
+              "macro_precision": 0.6183172336226781,
+              "macro_recall": 0.6194280730323855,
+              "micro_f1": 0.49623829264547825,
+              "micro_precision": 0.4997878232099831,
+              "micro_recall": 0.4927388245972317,
+              "n_scored": 2544,
+              "tp": 69488,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.25312244954109303,
+                -0.23490102318039408
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.2438741030595384,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "mxfold2/archiveii_embok_clean",
@@ -161,7 +372,94 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "mxfold2",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "deterministic_single_predictor",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 37624,
+              "fp": 46672,
+              "macro_f1": 0.7512771918252508,
+              "macro_precision": 0.7378670262658196,
+              "macro_recall": 0.7719408333895909,
+              "micro_f1": 0.7104185560777201,
+              "micro_precision": 0.6890026120795352,
+              "micro_recall": 0.7332085318810982,
+              "n_scored": 2544,
+              "tp": 103400,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.10838152063677653,
+              "macro_precision": -0.16029614246324608,
+              "macro_recall": -0.062583067168828,
+              "micro_f1": -0.1052336509672972,
+              "micro_precision": -0.19245269999069403,
+              "micro_recall": -0.025782845473110938
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 37624,
+              "fp": 46672,
+              "macro_f1": 0.7512771918252508,
+              "macro_precision": 0.7378670262658196,
+              "macro_recall": 0.7719408333895909,
+              "micro_f1": 0.7104185560777201,
+              "micro_precision": 0.6890026120795352,
+              "micro_recall": 0.7332085318810982,
+              "n_scored": 2544,
+              "tp": 103400,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.1155653388058068,
+                -0.1011706091267602
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.10838152063677653,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rinalmo_ft/archiveii_embok_clean",
@@ -187,7 +485,94 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "rinalmo_ft",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 27818,
+              "fp": 21730,
+              "macro_f1": 0.8630290508840547,
+              "macro_precision": 0.8692056328600261,
+              "macro_recall": 0.8624298565939417,
+              "micro_f1": 0.8204522394549935,
+              "micro_precision": 0.8389606924764332,
+              "micro_recall": 0.80274279555253,
+              "n_scored": 2544,
+              "tp": 113206,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": 0.0033703384220273858,
+              "macro_precision": -0.028957535869039597,
+              "macro_recall": 0.027905956035522816,
+              "micro_f1": 0.004800032409976174,
+              "micro_precision": -0.04249461959379597,
+              "micro_recall": 0.043751418198320846
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 27818,
+              "fp": 21730,
+              "macro_f1": 0.8630290508840547,
+              "macro_precision": 0.8692056328600261,
+              "macro_recall": 0.8624298565939417,
+              "micro_f1": 0.8204522394549935,
+              "micro_precision": 0.8389606924764332,
+              "micro_recall": 0.80274279555253,
+              "n_scored": 2544,
+              "tp": 113206,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.0012121956293114915,
+                0.00786996899701714
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": 0.0033703384220275267,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "eternafold/archiveii_embok_clean",
@@ -218,7 +603,94 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "eternafold",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "deterministic_single_predictor",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 55174,
+              "fp": 72626,
+              "macro_f1": 0.6020168480294191,
+              "macro_precision": 0.5748638551395079,
+              "macro_recall": 0.6370069139801574,
+              "micro_f1": 0.5732888146911519,
+              "micro_precision": 0.5417224059163532,
+              "micro_recall": 0.608761629226231,
+              "n_scored": 2544,
+              "tp": 85850,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.25764186443260817,
+              "macro_precision": -0.32329931358955777,
+              "macro_recall": -0.19751698657826144,
+              "micro_f1": -0.2423633923538654,
+              "micro_precision": -0.33973290615387597,
+              "micro_recall": -0.15022974812797818
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 55174,
+              "fp": 72626,
+              "macro_f1": 0.6020168480294191,
+              "macro_precision": 0.5748638551395079,
+              "macro_recall": 0.6370069139801574,
+              "micro_f1": 0.5732888146911519,
+              "micro_precision": 0.5417224059163532,
+              "micro_recall": 0.608761629226231,
+              "n_scored": 2544,
+              "tp": 85850,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.26725824414799615,
+                -0.24803970509290793
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.2576418644326081,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "bpfold/archiveii_embok_clean",
@@ -244,7 +716,94 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "bpfold",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "six_checkpoint_ensemble",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 13836,
+              "fp": 14449,
+              "macro_f1": 0.9161611813979388,
+              "macro_precision": 0.909264330236915,
+              "macro_recall": 0.9264180926628117,
+              "micro_f1": 0.8999331354520079,
+              "micro_precision": 0.8979856958280675,
+              "micro_recall": 0.9018890401633765,
+              "n_scored": 2544,
+              "tp": 127188,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": 0.05650246893591149,
+              "macro_precision": 0.011101161507849344,
+              "macro_recall": 0.09189419210439287,
+              "micro_f1": 0.08428092840699064,
+              "micro_precision": 0.01653038375783833,
+              "micro_recall": 0.14289766280916727
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 13836,
+              "fp": 14449,
+              "macro_f1": 0.9161611813979388,
+              "macro_precision": 0.909264330236915,
+              "macro_recall": 0.9264180926628117,
+              "micro_f1": 0.8999331354520079,
+              "micro_precision": 0.8979856958280675,
+              "micro_recall": 0.9018890401633765,
+              "n_scored": 2544,
+              "tp": 127188,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                0.05111753565735653,
+                0.06194679545248867
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": 0.05650246893591147,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "xens2/bprna_new",
@@ -1185,7 +1744,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "xens2",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_2d_s0/ref_pdb_ts1",
@@ -1211,7 +1779,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "r2d",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "ufold/ref_pdb_ts1",
@@ -1240,7 +1817,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "ufold",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "mxfold2/ref_pdb_ts1",
@@ -1327,7 +1913,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "mxfold2",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_ft/ref_pdb_ts1",
@@ -1353,7 +1948,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "rinalmo_ft",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "eternafold/ref_pdb_ts1",
@@ -1384,7 +1988,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "eternafold",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "bpfold/ref_pdb_ts1",
@@ -1410,7 +2023,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "bpfold",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "xens2/ref_pdb_ts2",
@@ -1440,7 +2062,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "xens2",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_2d_s0/ref_pdb_ts2",
@@ -1466,7 +2097,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "r2d",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "ufold/ref_pdb_ts2",
@@ -1495,7 +2135,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "ufold",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "mxfold2/ref_pdb_ts2",
@@ -1582,7 +2231,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "mxfold2",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_ft/ref_pdb_ts2",
@@ -1608,7 +2266,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "rinalmo_ft",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "eternafold/ref_pdb_ts2",
@@ -1639,7 +2306,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "eternafold",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "bpfold/ref_pdb_ts2",
@@ -1665,7 +2341,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "bpfold",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "xens2/ref_pdb_ts3",
@@ -1695,7 +2380,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "xens2",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_2d_s0/ref_pdb_ts3",
@@ -1721,7 +2415,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "r2d",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "ufold/ref_pdb_ts3",
@@ -1750,7 +2453,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "ufold",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "mxfold2/ref_pdb_ts3",
@@ -1837,7 +2549,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "mxfold2",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_ft/ref_pdb_ts3",
@@ -1863,7 +2584,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "rinalmo_ft",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "eternafold/ref_pdb_ts3",
@@ -1894,7 +2624,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "eternafold",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "bpfold/ref_pdb_ts3",
@@ -1920,7 +2659,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "bpfold",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "xens2/ref_pdb_ts_hard",
@@ -1950,7 +2698,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "xens2",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_2d_s0/ref_pdb_ts_hard",
@@ -1976,7 +2733,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "r2d",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "ufold/ref_pdb_ts_hard",
@@ -2005,7 +2771,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "ufold",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "mxfold2/ref_pdb_ts_hard",
@@ -2092,7 +2867,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "mxfold2",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rinalmo_ft/ref_pdb_ts_hard",
@@ -2118,7 +2902,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "rinalmo_ft",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "eternafold/ref_pdb_ts_hard",
@@ -2149,7 +2942,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "eternafold",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "bpfold/ref_pdb_ts_hard",
@@ -2175,7 +2977,16 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "bpfold",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "xens2/testsetb",
@@ -2907,7 +3718,44 @@
       "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "best_plan_a",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_REGISTERED_PREDICTION_MISSING",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_REGISTERED_PREDICTION_MISSING",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "best_plan_a/bprna_new",
@@ -2994,7 +3842,16 @@
       "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "best_plan_a",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "best_plan_a/ref_pdb_ts2",
@@ -3016,7 +3873,16 @@
       "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "best_plan_a",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "best_plan_a/ref_pdb_ts3",
@@ -3038,7 +3904,16 @@
       "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "best_plan_a",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "best_plan_a/ref_pdb_ts_hard",
@@ -3060,7 +3935,16 @@
       "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "best_plan_a",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "best_plan_a/testsetb",
@@ -3096,7 +3980,44 @@
       "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "h0",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_REGISTERED_PREDICTION_MISSING",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_REGISTERED_PREDICTION_MISSING",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "h0/bprna_new",
@@ -3159,7 +4080,16 @@
       "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "h0",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "h0/ref_pdb_ts2",
@@ -3173,7 +4103,16 @@
       "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "h0",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "h0/ref_pdb_ts3",
@@ -3187,7 +4126,16 @@
       "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "h0",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "h0/ref_pdb_ts_hard",
@@ -3201,7 +4149,16 @@
       "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "h0",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "h0/testsetb",
@@ -3244,7 +4201,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_centroid/archiveii_embok_clean/repeat0",
@@ -3273,7 +4267,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_mea/archiveii_embok_clean/repeat0",
@@ -3302,7 +4333,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "nussinov_turner/archiveii_embok_clean/repeat0",
@@ -3331,7 +4399,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_mfe/archiveii_embok_clean/repeat1",
@@ -3360,7 +4465,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_centroid/archiveii_embok_clean/repeat1",
@@ -3389,7 +4531,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_mea/archiveii_embok_clean/repeat1",
@@ -3418,7 +4597,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "nussinov_turner/archiveii_embok_clean/repeat1",
@@ -3447,7 +4663,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_mfe/archiveii_embok_clean/repeat2",
@@ -3476,7 +4729,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_centroid/archiveii_embok_clean/repeat2",
@@ -3505,7 +4795,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_mea/archiveii_embok_clean/repeat2",
@@ -3534,7 +4861,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "nussinov_turner/archiveii_embok_clean/repeat2",
@@ -3563,7 +4927,44 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 0.0,
+            "delta_vs_xens2": null,
+            "metrics": null,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 0,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED",
+            "ranking_eligible": false
+          }
+        }
+      }
     },
     {
       "prediction_id": "vienna_mfe/bprna_new/repeat0",
@@ -4540,7 +5941,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts1/repeat0",
@@ -4569,7 +5979,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts1/repeat0",
@@ -4598,7 +6017,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts1/repeat0",
@@ -4627,7 +6055,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts1/repeat1",
@@ -4656,7 +6093,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts1/repeat1",
@@ -4685,7 +6131,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts1/repeat1",
@@ -4714,7 +6169,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts1/repeat1",
@@ -4743,7 +6207,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts1/repeat2",
@@ -4772,7 +6245,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts1/repeat2",
@@ -4801,7 +6283,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts1/repeat2",
@@ -4830,7 +6321,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts1/repeat2",
@@ -4859,7 +6359,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts2/repeat0",
@@ -4888,7 +6397,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts2/repeat0",
@@ -4917,7 +6435,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts2/repeat0",
@@ -4946,7 +6473,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts2/repeat0",
@@ -4975,7 +6511,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts2/repeat1",
@@ -5004,7 +6549,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts2/repeat1",
@@ -5033,7 +6587,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts2/repeat1",
@@ -5062,7 +6625,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts2/repeat1",
@@ -5091,7 +6663,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts2/repeat2",
@@ -5120,7 +6701,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts2/repeat2",
@@ -5149,7 +6739,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts2/repeat2",
@@ -5178,7 +6777,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts2/repeat2",
@@ -5207,7 +6815,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts3/repeat0",
@@ -5236,7 +6853,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts3/repeat0",
@@ -5265,7 +6891,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts3/repeat0",
@@ -5294,7 +6929,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts3/repeat0",
@@ -5323,7 +6967,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts3/repeat1",
@@ -5352,7 +7005,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts3/repeat1",
@@ -5381,7 +7043,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts3/repeat1",
@@ -5410,7 +7081,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts3/repeat1",
@@ -5439,7 +7119,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts3/repeat2",
@@ -5468,7 +7157,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts3/repeat2",
@@ -5497,7 +7195,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts3/repeat2",
@@ -5526,7 +7233,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts3/repeat2",
@@ -5555,7 +7271,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts_hard/repeat0",
@@ -5584,7 +7309,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts_hard/repeat0",
@@ -5613,7 +7347,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts_hard/repeat0",
@@ -5642,7 +7385,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts_hard/repeat0",
@@ -5671,7 +7423,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts_hard/repeat1",
@@ -5700,7 +7461,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts_hard/repeat1",
@@ -5729,7 +7499,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts_hard/repeat1",
@@ -5758,7 +7537,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts_hard/repeat1",
@@ -5787,7 +7575,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/ref_pdb_ts_hard/repeat2",
@@ -5816,7 +7613,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_centroid/ref_pdb_ts_hard/repeat2",
@@ -5845,7 +7651,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mea/ref_pdb_ts_hard/repeat2",
@@ -5874,7 +7689,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nussinov_turner/ref_pdb_ts_hard/repeat2",
@@ -5903,7 +7727,16 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "vienna_mfe/testsetb/repeat0",
@@ -6281,7 +8114,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "efold_0_1_3",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 59506,
+              "fp": 74003,
+              "macro_f1": 0.6053761719815118,
+              "macro_precision": 0.5782932447591651,
+              "macro_recall": 0.6410191843801912,
+              "micro_f1": 0.549785024195316,
+              "micro_precision": 0.5241607242751782,
+              "micro_recall": 0.578043453596551,
+              "n_scored": 2544,
+              "tp": 81518,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.25428254048051546,
+              "macro_precision": -0.31986992396990055,
+              "macro_recall": -0.19350471617822762,
+              "micro_f1": -0.26586718284970123,
+              "micro_precision": -0.35729458779505097,
+              "micro_recall": -0.18094792375765822
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 59506,
+              "fp": 74003,
+              "macro_f1": 0.6053761719815118,
+              "macro_precision": 0.5782932447591651,
+              "macro_recall": 0.6410191843801912,
+              "micro_f1": 0.549785024195316,
+              "micro_precision": 0.5241607242751782,
+              "micro_recall": 0.578043453596551,
+              "n_scored": 2544,
+              "tp": 81518,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.2621030370504974,
+                -0.2465753694817702
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.2542825404805155,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "efold_0_1_3/bprna_new",
@@ -6462,7 +8382,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "efold_0_1_3",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "efold_0_1_3/ref_pdb_ts2",
@@ -6492,7 +8421,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "efold_0_1_3",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "efold_0_1_3/ref_pdb_ts3",
@@ -6522,7 +8460,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "efold_0_1_3",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "efold_0_1_3/ref_pdb_ts_hard",
@@ -6552,7 +8499,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "efold_0_1_3",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "efold_0_1_3/testsetb",
@@ -6617,7 +8573,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "contrafold",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "deterministic_single_predictor",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 53743,
+              "fp": 66351,
+              "macro_f1": 0.6306631338220281,
+              "macro_precision": 0.6071409675117454,
+              "macro_recall": 0.6616497844909841,
+              "micro_f1": 0.5924264226759339,
+              "micro_precision": 0.5681173193084774,
+              "micro_recall": 0.6189088382119355,
+              "n_scored": 2544,
+              "tp": 87281,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.2289955786399992,
+              "macro_precision": -0.29102220121732025,
+              "macro_recall": -0.17287411606743475,
+              "micro_f1": -0.22322578436908336,
+              "micro_precision": -0.3133379927617518,
+              "micro_recall": -0.14008253914227364
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 53743,
+              "fp": 66351,
+              "macro_f1": 0.6306631338220281,
+              "macro_precision": 0.6071409675117454,
+              "macro_recall": 0.6616497844909841,
+              "micro_f1": 0.5924264226759339,
+              "micro_precision": 0.5681173193084774,
+              "micro_recall": 0.6189088382119355,
+              "n_scored": 2544,
+              "tp": 87281,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.2379181511782555,
+                -0.22022216674577932
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.2289955786399992,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "contrafold/bprna_new",
@@ -6813,7 +8856,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "contrafold",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "contrafold/ref_pdb_ts2",
@@ -6848,7 +8900,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "contrafold",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "contrafold/ref_pdb_ts3",
@@ -6883,7 +8944,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "contrafold",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "contrafold/ref_pdb_ts_hard",
@@ -6918,7 +8988,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "contrafold",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "contrafold/testsetb",
@@ -6991,7 +9070,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_frozen_official",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 3,
+              "fn": 88682,
+              "fp": 12110,
+              "macro_f1": 0.5148706103076244,
+              "macro_precision": 0.7389580337901804,
+              "macro_recall": 0.4279873744590093,
+              "micro_f1": 0.5094706924409663,
+              "micro_precision": 0.8121082355861726,
+              "micro_recall": 0.37115668255048784,
+              "n_scored": 2544,
+              "tp": 52342,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.3447881021544029,
+              "macro_precision": -0.15920513493888522,
+              "macro_recall": -0.40653652609940955,
+              "micro_f1": -0.30618151460405096,
+              "micro_precision": -0.06934707648405658,
+              "micro_recall": -0.38783469480372135
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 3,
+              "fn": 88682,
+              "fp": 12110,
+              "macro_f1": 0.5148706103076244,
+              "macro_precision": 0.7389580337901804,
+              "macro_recall": 0.4279873744590093,
+              "micro_f1": 0.5094706924409663,
+              "micro_precision": 0.8121082355861726,
+              "micro_recall": 0.37115668255048784,
+              "n_scored": 2544,
+              "tp": 52342,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.35704067083823277,
+                -0.3327398522289116
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.3447881021544028,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "nucleicbert_frozen_official/bprna_new",
@@ -7196,7 +9362,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_frozen_official",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_frozen_official/ref_pdb_ts2",
@@ -7234,7 +9409,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_frozen_official",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_frozen_official/ref_pdb_ts3",
@@ -7272,7 +9456,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_frozen_official",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_frozen_official/ref_pdb_ts_hard",
@@ -7310,7 +9503,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_frozen_official",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_frozen_official/testsetb",
@@ -7380,7 +9582,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_ft",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 68125,
+              "fp": 113208,
+              "macro_f1": 0.6230066998455989,
+              "macro_precision": 0.5840391631269723,
+              "macro_recall": 0.6742451676239308,
+              "micro_f1": 0.4456868960752726,
+              "micro_precision": 0.39170477198600806,
+              "micro_recall": 0.5169261969593828,
+              "n_scored": 2544,
+              "tp": 72899,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.23665201261642843,
+              "macro_precision": -0.3141240056020933,
+              "macro_recall": -0.16027873293448802,
+              "micro_f1": -0.36996531096974467,
+              "micro_precision": -0.48975054008422114,
+              "micro_recall": -0.24206518039482638
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 68125,
+              "fp": 113208,
+              "macro_f1": 0.6230066998455989,
+              "macro_precision": 0.5840391631269723,
+              "macro_recall": 0.6742451676239308,
+              "micro_f1": 0.4456868960752726,
+              "micro_precision": 0.39170477198600806,
+              "micro_recall": 0.5169261969593828,
+              "n_scored": 2544,
+              "tp": 72899,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.2467600721608629,
+                -0.22698336949524814
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.23665201261642846,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "nucleicbert_ft/bprna_new",
@@ -7567,7 +9856,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_ft",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_ft/ref_pdb_ts2",
@@ -7599,7 +9897,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_ft",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_ft/ref_pdb_ts3",
@@ -7631,7 +9938,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_ft",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_ft/ref_pdb_ts_hard",
@@ -7663,7 +9979,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nucleicbert_ft",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "nucleicbert_ft/testsetb",
@@ -7722,7 +10047,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_fold",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "deterministic_single_predictor",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 60522,
+              "fp": 79364,
+              "macro_f1": 0.5684986641006701,
+              "macro_precision": 0.5459844932551879,
+              "macro_recall": 0.5977234603740395,
+              "micro_f1": 0.5350925587423976,
+              "micro_precision": 0.5035592308558418,
+              "micro_recall": 0.5708390061266168,
+              "n_scored": 2544,
+              "tp": 80502,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.2911600483613572,
+              "macro_precision": -0.3521786754738777,
+              "macro_recall": -0.2368004401843794,
+              "micro_f1": -0.2805596483026197,
+              "micro_precision": -0.37789608121438745,
+              "micro_recall": -0.18815237122759243
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 60522,
+              "fp": 79364,
+              "macro_f1": 0.5684986641006701,
+              "macro_precision": 0.5459844932551879,
+              "macro_recall": 0.5977234603740395,
+              "micro_f1": 0.5350925587423976,
+              "micro_precision": 0.5035592308558418,
+              "micro_recall": 0.5708390061266168,
+              "n_scored": 2544,
+              "tp": 80502,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.30117991283241785,
+                -0.28087404274953126
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.2911600483613571,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rnastructure_fold/bprna_new",
@@ -7894,7 +10306,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_fold",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_fold/ref_pdb_ts2",
@@ -7921,7 +10342,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_fold",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_fold/ref_pdb_ts3",
@@ -7948,7 +10378,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_fold",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_fold/ref_pdb_ts_hard",
@@ -7975,7 +10414,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_fold",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_fold/testsetb",
@@ -8029,7 +10477,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_maxexpect",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "deterministic_single_predictor",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 60239,
+              "fp": 71351,
+              "macro_f1": 0.573191859720243,
+              "macro_precision": 0.5606868512150864,
+              "macro_recall": 0.5914913258832901,
+              "micro_f1": 0.5511324873789057,
+              "micro_precision": 0.5310051532839039,
+              "micro_recall": 0.572845756750624,
+              "n_scored": 2544,
+              "tp": 80785,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.2864668527417843,
+              "macro_precision": -0.3374763175139792,
+              "macro_recall": -0.24303257467512873,
+              "micro_f1": -0.26451971966611154,
+              "micro_precision": -0.35045015878632535,
+              "micro_recall": -0.1861456206035852
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 60239,
+              "fp": 71351,
+              "macro_f1": 0.573191859720243,
+              "macro_precision": 0.5606868512150864,
+              "macro_recall": 0.5914913258832901,
+              "micro_f1": 0.5511324873789057,
+              "micro_precision": 0.5310051532839039,
+              "micro_recall": 0.572845756750624,
+              "n_scored": 2544,
+              "tp": 80785,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.2965066947028129,
+                -0.27640114528326537
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.2864668527417842,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rnastructure_maxexpect/bprna_new",
@@ -8201,7 +10736,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_maxexpect",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_maxexpect/ref_pdb_ts2",
@@ -8228,7 +10772,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_maxexpect",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_maxexpect/ref_pdb_ts3",
@@ -8255,7 +10808,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_maxexpect",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_maxexpect/ref_pdb_ts_hard",
@@ -8282,7 +10844,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnastructure_maxexpect",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnastructure_maxexpect/testsetb",
@@ -8337,7 +10908,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_bprna",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 3,
+              "fn": 37069,
+              "fp": 12102,
+              "macro_f1": 0.8489915230874132,
+              "macro_precision": 0.8986936788484778,
+              "macro_recall": 0.8189488396250065,
+              "micro_f1": 0.8087334342094515,
+              "micro_precision": 0.8957236530325616,
+              "micro_recall": 0.7371440322214659,
+              "n_scored": 2544,
+              "tp": 103955,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.010667189374614083,
+              "macro_precision": 0.0005305101194121864,
+              "macro_recall": -0.015575060933412321,
+              "micro_f1": -0.006918772835565745,
+              "micro_precision": 0.014268340962332426,
+              "micro_recall": -0.021847345132743334
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 3,
+              "fn": 37069,
+              "fp": 12102,
+              "macro_f1": 0.8489915230874132,
+              "macro_precision": 0.8986936788484778,
+              "macro_recall": 0.8189488396250065,
+              "micro_f1": 0.8087334342094515,
+              "micro_precision": 0.8957236530325616,
+              "micro_recall": 0.7371440322214659,
+              "n_scored": 2544,
+              "tp": 103955,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.016633650251751703,
+                -0.00474238875000625
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.010667189374614168,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rnaformer_bprna/bprna_new",
@@ -8512,7 +11170,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_bprna",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_bprna/ref_pdb_ts2",
@@ -8540,7 +11207,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_bprna",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_bprna/ref_pdb_ts3",
@@ -8568,7 +11244,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_bprna",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_bprna/ref_pdb_ts_hard",
@@ -8596,7 +11281,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_bprna",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_bprna/testsetb",
@@ -8652,7 +11346,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_interfamily",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 45640,
+              "fp": 27685,
+              "macro_f1": 0.7867907946103265,
+              "macro_precision": 0.7985645814048176,
+              "macro_recall": 0.7918907251987432,
+              "micro_f1": 0.7223515958393445,
+              "micro_precision": 0.77504489351502,
+              "micro_recall": 0.6763671431813024,
+              "n_scored": 2544,
+              "tp": 95384,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.07286791785170077,
+              "macro_precision": -0.09959858732424809,
+              "macro_recall": -0.0426331753596757,
+              "micro_f1": -0.09330061120567279,
+              "micro_precision": -0.10641041855520916,
+              "micro_recall": -0.08262423417290676
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 45640,
+              "fp": 27685,
+              "macro_f1": 0.7867907946103265,
+              "macro_precision": 0.7985645814048176,
+              "macro_recall": 0.7918907251987432,
+              "micro_f1": 0.7223515958393445,
+              "micro_precision": 0.77504489351502,
+              "micro_recall": 0.6763671431813024,
+              "n_scored": 2544,
+              "tp": 95384,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.07832958229450993,
+                -0.06748762316536071
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.07286791785170069,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rnaformer_interfamily/bprna_new",
@@ -8768,7 +11549,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_interfamily",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_interfamily/ref_pdb_ts2",
@@ -8796,7 +11586,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_interfamily",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_interfamily/ref_pdb_ts3",
@@ -8824,7 +11623,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_interfamily",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_interfamily/ref_pdb_ts_hard",
@@ -8852,7 +11660,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_interfamily",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_interfamily/testsetb",
@@ -8908,7 +11725,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_intrafamily",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 44717,
+              "fp": 28217,
+              "macro_f1": 0.7909518515950421,
+              "macro_precision": 0.7999981066631603,
+              "macro_recall": 0.7970835582627285,
+              "micro_f1": 0.7253453236326389,
+              "micro_precision": 0.7734011114323344,
+              "micro_recall": 0.68291212843204,
+              "n_scored": 2544,
+              "tp": 96307,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.06870686086698519,
+              "macro_precision": -0.09816506206590536,
+              "macro_recall": -0.037440342295690376,
+              "micro_f1": -0.09030688341237836,
+              "micro_precision": -0.10805420063789484,
+              "micro_recall": -0.07607924892216922
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 44717,
+              "fp": 28217,
+              "macro_f1": 0.7909518515950421,
+              "macro_precision": 0.7999981066631603,
+              "macro_recall": 0.7970835582627285,
+              "micro_f1": 0.7253453236326389,
+              "micro_precision": 0.7734011114323344,
+              "micro_recall": 0.68291212843204,
+              "n_scored": 2544,
+              "tp": 96307,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.07412714658634847,
+                -0.06340354733852901
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.06870686086698514,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rnaformer_intrafamily/bprna_new",
@@ -9024,7 +11928,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_intrafamily",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_intrafamily/ref_pdb_ts2",
@@ -9052,7 +11965,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_intrafamily",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_intrafamily/ref_pdb_ts3",
@@ -9080,7 +12002,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_intrafamily",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_intrafamily/ref_pdb_ts_hard",
@@ -9108,7 +12039,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_intrafamily",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_intrafamily/testsetb",
@@ -9164,7 +12104,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_biophysical",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 60492,
+              "fp": 74367,
+              "macro_f1": 0.5754162898046222,
+              "macro_precision": 0.553441828418052,
+              "macro_recall": 0.6052712189609546,
+              "micro_f1": 0.544276720633408,
+              "micro_precision": 0.519900063912614,
+              "micro_recall": 0.5710517358747447,
+              "n_scored": 2544,
+              "tp": 80532,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.28424242265740507,
+              "macro_precision": -0.34472134031101365,
+              "macro_recall": -0.22925268159746426,
+              "micro_f1": -0.27137548641160925,
+              "micro_precision": -0.3615552481576152,
+              "micro_recall": -0.18793964147946451
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 60492,
+              "fp": 74367,
+              "macro_f1": 0.5754162898046222,
+              "macro_precision": 0.553441828418052,
+              "macro_recall": 0.6052712189609546,
+              "micro_f1": 0.544276720633408,
+              "micro_precision": 0.519900063912614,
+              "micro_recall": 0.5710517358747447,
+              "n_scored": 2544,
+              "tp": 80532,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.29434782442737284,
+                -0.27417961862771045
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.284242422657405,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "rnaformer_biophysical/bprna_new",
@@ -9280,7 +12307,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_biophysical",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_biophysical/ref_pdb_ts2",
@@ -9308,7 +12344,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_biophysical",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_biophysical/ref_pdb_ts3",
@@ -9336,7 +12381,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_biophysical",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_biophysical/ref_pdb_ts_hard",
@@ -9364,7 +12418,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_biophysical",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "rnaformer_biophysical/testsetb",
@@ -9571,7 +12634,94 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "kirigami_fast",
-      "dataset_id": "archiveii_embok_clean"
+      "dataset_id": "archiveii_embok_clean",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_2544",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; use archiveii_official_reference overlay",
+      "archiveii_official_reference": {
+        "registry": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json",
+        "model_form": "single_model",
+        "panels": {
+          "archiveii_official_reference_3966": {
+            "coverage": 0.6414523449319214,
+            "delta_vs_xens2": null,
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 38218,
+              "fp": 20200,
+              "macro_f1": 0.8229724636794603,
+              "macro_precision": 0.8535512666522801,
+              "macro_recall": 0.8049238884556355,
+              "micro_f1": 0.7787448396015604,
+              "micro_precision": 0.835780368437312,
+              "micro_recall": 0.7289964828681643,
+              "n_scored": 2544,
+              "tp": 102806,
+              "truth_empty_records": 4
+            },
+            "missing_count": 1422,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 3966,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": null,
+            "status": "PARTIAL_COVERAGE_NOT_RANKED",
+            "ranking_eligible": false
+          },
+          "archiveii_official_reference_clean_2544": {
+            "coverage": 1.0,
+            "delta_vs_xens2": {
+              "macro_f1": -0.03668624878256699,
+              "macro_precision": -0.04461190207678556,
+              "macro_recall": -0.029600012102783402,
+              "micro_f1": -0.03690736744345691,
+              "micro_precision": -0.04567494363291724,
+              "micro_recall": -0.029994894486044865
+            },
+            "extra_count": 0,
+            "metrics": {
+              "empty_empty_records": 0,
+              "fn": 38218,
+              "fp": 20200,
+              "macro_f1": 0.8229724636794603,
+              "macro_precision": 0.8535512666522801,
+              "macro_recall": 0.8049238884556355,
+              "micro_f1": 0.7787448396015604,
+              "micro_precision": 0.835780368437312,
+              "micro_recall": 0.7289964828681643,
+              "n_scored": 2544,
+              "tp": 102806,
+              "truth_empty_records": 4
+            },
+            "missing_count": 0,
+            "missing_predictions_imputed_as_zero": false,
+            "n_panel_sequences": 2544,
+            "n_with_prediction": 2544,
+            "paired_macro_f1_delta_ci95_vs_xens2": {
+              "applicability": "full common clean 2544 coverage only",
+              "ci95": [
+                -0.04324085787803471,
+                -0.030560594862680385
+              ],
+              "method": "paired sequence-level percentile bootstrap",
+              "n_bootstrap": 10000,
+              "observed_delta": -0.036686248782566946,
+              "seed": 20261127,
+              "unit": "sequence"
+            },
+            "status": "PASS_FULL_COVERAGE",
+            "ranking_eligible": true
+          }
+        }
+      }
     },
     {
       "prediction_id": "kirigami_fast/bprna_new",
@@ -9693,7 +12843,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "kirigami_fast",
-      "dataset_id": "ref_pdb_ts1"
+      "dataset_id": "ref_pdb_ts1",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts1",
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "kirigami_fast/ref_pdb_ts2",
@@ -9723,7 +12882,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "kirigami_fast",
-      "dataset_id": "ref_pdb_ts2"
+      "dataset_id": "ref_pdb_ts2",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts2",
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "kirigami_fast/ref_pdb_ts3",
@@ -9753,7 +12921,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "kirigami_fast",
-      "dataset_id": "ref_pdb_ts3"
+      "dataset_id": "ref_pdb_ts3",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts3",
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "kirigami_fast/ref_pdb_ts_hard",
@@ -9783,7 +12960,16 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "kirigami_fast",
-      "dataset_id": "ref_pdb_ts_hard"
+      "dataset_id": "ref_pdb_ts_hard",
+      "label_protocol": "FILTERED_RNAFORMER_PROJECTION_RAW_SOURCE_REBUILD_REQUIRED",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "registry_key": "pdb_raw_source_rebuild",
+        "panel": "pdb_ts_hard",
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED"
+      }
     },
     {
       "prediction_id": "kirigami_fast/testsetb",
@@ -10633,5 +13819,6 @@
     }
   ],
   "recovery_overlay": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
-  "official_reference_5388_overlay": "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json"
+  "official_reference_5388_overlay": "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json",
+  "archiveii_official_reference_overlay": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json"
 }

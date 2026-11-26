@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_utc": "2026-11-18T12:57:34.793656+00:00",
-  "n_rows": 33,
+  "n_rows": 35,
   "rows": [
     {
       "dataset_id": "bprna_tr1c",
@@ -426,8 +426,8 @@
       "role": "test",
       "description": "archiveii_embok_clean",
       "scope": "IN_SCOPE",
-      "label_source": "DATABASE",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
+      "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+      "label_provenance_status": "CONFIRMED_DERIVED_FROM_BPFOLD_RELEASE_PREDICTIONS; circular-audit-only",
       "split_provenance": "frozen JSONL split identity: archiveii_embok_clean",
       "cluster_80_status": "AVAILABLE_IN_V2_AUDIT; integrate by dataset identity",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
@@ -486,6 +486,19 @@
         "rnaformer_intrafamily/archiveii_embok_clean",
         "rnaformer_biophysical/archiveii_embok_clean",
         "kirigami_fast/archiveii_embok_clean"
+      ],
+      "legacy_label_source_before_20261127": "DATABASE",
+      "label_lineage": {
+        "dataset_id": "archiveii_embok_clean",
+        "disposition": "circular-audit-only",
+        "historical_numeric_values_retained": true,
+        "independent_sota_eligible": false,
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS"
+      },
+      "independent_sota_eligible": false,
+      "official_reference_replacement_panels": [
+        "archiveii_official_reference_3966",
+        "archiveii_official_reference_clean_2544"
       ]
     },
     {
@@ -650,8 +663,8 @@
       "role": "test",
       "description": "ref_pdb_ts1",
       "scope": "IN_SCOPE",
-      "label_source": "EXPERIMENTAL",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
+      "label_source": "FILTERED_RNAFORMER_PROJECTION",
+      "label_provenance_status": "RAW_SOURCE_REBUILD_REQUIRED; filtered projection is not independent experimental truth",
       "split_provenance": "frozen JSONL split identity: ref_pdb_ts1",
       "cluster_80_status": "AVAILABLE_IN_V2_AUDIT; integrate by dataset identity",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
@@ -710,15 +723,40 @@
         "rnaformer_intrafamily/ref_pdb_ts1",
         "rnaformer_biophysical/ref_pdb_ts1",
         "kirigami_fast/ref_pdb_ts1"
-      ]
+      ],
+      "legacy_label_source_before_20261127": "EXPERIMENTAL",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "status": "PARTIAL_REBUILT_UNRESOLVED_UNCHECKED",
+        "registry_key": "pdb_raw_source_rebuild",
+        "source_candidates": 67,
+        "source_rejected": 4,
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS1.full_polymer_observed_mask.jsonl",
+            "bytes": 77862,
+            "sha256": "3bb129ae46d5190071ffb64212a4da9c01653f52ed5f7b3a1224131d53d1dfb4",
+            "n_records": 15
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS1.observed_only.jsonl",
+            "bytes": 77763,
+            "sha256": "bd0610c3432dd07a35c02a4e2d9a3a30876e5a52ddc88597da385a2e64876730",
+            "n_records": 15
+          }
+        }
+      }
     },
     {
       "dataset_id": "ref_pdb_ts2",
       "role": "test",
       "description": "ref_pdb_ts2",
       "scope": "IN_SCOPE",
-      "label_source": "EXPERIMENTAL",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
+      "label_source": "FILTERED_RNAFORMER_PROJECTION",
+      "label_provenance_status": "RAW_SOURCE_REBUILD_REQUIRED; filtered projection is not independent experimental truth",
       "split_provenance": "frozen JSONL split identity: ref_pdb_ts2",
       "cluster_80_status": "AVAILABLE_IN_V2_AUDIT; integrate by dataset identity",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
@@ -777,15 +815,40 @@
         "rnaformer_intrafamily/ref_pdb_ts2",
         "rnaformer_biophysical/ref_pdb_ts2",
         "kirigami_fast/ref_pdb_ts2"
-      ]
+      ],
+      "legacy_label_source_before_20261127": "EXPERIMENTAL",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "status": "PARTIAL_REBUILT_UNRESOLVED_UNCHECKED",
+        "registry_key": "pdb_raw_source_rebuild",
+        "source_candidates": 39,
+        "source_rejected": 0,
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS2.full_polymer_observed_mask.jsonl",
+            "bytes": 121740,
+            "sha256": "1b002a473410b5106d1abc5559495da23667ef4198be45ffd7346af2b1db4330",
+            "n_records": 26
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS2.observed_only.jsonl",
+            "bytes": 121662,
+            "sha256": "a136d6b7f6d82ecdae00f70ad6e2f50036286c6e5906c3ce0ea288071d7c4183",
+            "n_records": 26
+          }
+        }
+      }
     },
     {
       "dataset_id": "ref_pdb_ts3",
       "role": "test",
       "description": "ref_pdb_ts3",
       "scope": "IN_SCOPE",
-      "label_source": "EXPERIMENTAL",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
+      "label_source": "FILTERED_RNAFORMER_PROJECTION",
+      "label_provenance_status": "RAW_SOURCE_REBUILD_REQUIRED; filtered projection is not independent experimental truth",
       "split_provenance": "frozen JSONL split identity: ref_pdb_ts3",
       "cluster_80_status": "AVAILABLE_IN_V2_AUDIT; integrate by dataset identity",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
@@ -844,15 +907,40 @@
         "rnaformer_intrafamily/ref_pdb_ts3",
         "rnaformer_biophysical/ref_pdb_ts3",
         "kirigami_fast/ref_pdb_ts3"
-      ]
+      ],
+      "legacy_label_source_before_20261127": "EXPERIMENTAL",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "status": "PARTIAL_REBUILT_UNRESOLVED_UNCHECKED",
+        "registry_key": "pdb_raw_source_rebuild",
+        "source_candidates": 19,
+        "source_rejected": 0,
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS3.full_polymer_observed_mask.jsonl",
+            "bytes": 52105,
+            "sha256": "f3d479070208a6aded149f6cec480e99a283a766d5d1d4090fb2183459c3c474",
+            "n_records": 8
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS3.observed_only.jsonl",
+            "bytes": 52059,
+            "sha256": "8261800e8981cf653eb2ee95350c1b581f692495f2eebfcb3770a4ef4c4edcbb",
+            "n_records": 8
+          }
+        }
+      }
     },
     {
       "dataset_id": "ref_pdb_ts_hard",
       "role": "test",
       "description": "ref_pdb_ts_hard",
       "scope": "IN_SCOPE",
-      "label_source": "EXPERIMENTAL",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
+      "label_source": "FILTERED_RNAFORMER_PROJECTION",
+      "label_provenance_status": "RAW_SOURCE_REBUILD_REQUIRED; filtered projection is not independent experimental truth",
       "split_provenance": "frozen JSONL split identity: ref_pdb_ts_hard",
       "cluster_80_status": "AVAILABLE_IN_V2_AUDIT; integrate by dataset identity",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
@@ -911,7 +999,32 @@
         "rnaformer_intrafamily/ref_pdb_ts_hard",
         "rnaformer_biophysical/ref_pdb_ts_hard",
         "kirigami_fast/ref_pdb_ts_hard"
-      ]
+      ],
+      "legacy_label_source_before_20261127": "EXPERIMENTAL",
+      "independent_sota_eligible": false,
+      "raw_source_rebuild": {
+        "status": "PARTIAL_REBUILT_UNRESOLVED_UNCHECKED",
+        "registry_key": "pdb_raw_source_rebuild",
+        "source_candidates": 28,
+        "source_rejected": 0,
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS-hard.full_polymer_observed_mask.jsonl",
+            "bytes": 34744,
+            "sha256": "5ef2d11e5e478aa2205b4bc7853e3257beb877da12a44bd5445086329f0bdb2f",
+            "n_records": 9
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS-hard.observed_only.jsonl",
+            "bytes": 34684,
+            "sha256": "029c0e6dfbf3096f16c37046df63cb20b0b9a1b725ac06ef69c92493ffc72655",
+            "n_records": 9
+          }
+        }
+      }
     },
     {
       "dataset_id": "testsetb",
@@ -2018,6 +2131,272 @@
         "structrfm_official_v0.0.8/bprna_new"
       ],
       "comparability": "same official labels and IDs for all scored systems; full coverage required for ranking"
+    },
+    {
+      "role": "external_protocol_reference",
+      "description": "ArchiveII unfiltered official BPSEQ reference; frozen CPU rescore only",
+      "scope": "EXTERNAL_PROTOCOL_ONLY",
+      "label_source": "ARCHIVEII_OFFICIAL_REFERENCE",
+      "label_provenance_status": "OFFICIAL_BPSEQ_REFERENCE; per-record experimental lineage UNCHECKED",
+      "bytes": 1305518,
+      "dataset_id": "archiveii_official_reference_3966",
+      "empty_reference_records": 5,
+      "id_order_sha256": "d557319a4b40bef20df7de13154626aff283fd10f1ddd87a8f20e30ab56a12ca",
+      "n_sequences": 3966,
+      "pair_protocol": "unfiltered official BPSEQ; no min-loop/crossing/canonical projection",
+      "path": "source_data/archiveii_official_reference_20261127/official_reference_3966.jsonl.gz",
+      "sha256": "a2fc055ec86333af4e292bcc78dc7858908dfc5a4596d53f44b391213afec1a0",
+      "source_archives": {
+        "BPfold_data": {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz",
+          "sha256": "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403"
+        },
+        "MXfold2_archiveII": {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2/archiveII.tar.gz",
+          "sha256": "633bc50f8e9381f737b680fa6b4c79061a0a781773a5c38b342856eb1a6ac8a4"
+        }
+      },
+      "exists": true,
+      "hash_scope": "full_content",
+      "status": "FROZEN",
+      "ranking_scope": "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION",
+      "partial_coverage_not_ranked": true,
+      "prediction_ids": [
+        "best_plan_a/archiveii_embok_clean",
+        "bpfold/archiveii_embok_clean",
+        "contrafold/archiveii_embok_clean",
+        "efold_0_1_3/archiveii_embok_clean",
+        "eternafold/archiveii_embok_clean",
+        "h0/archiveii_embok_clean",
+        "kirigami_fast/archiveii_embok_clean",
+        "mxfold2/archiveii_embok_clean",
+        "nucleicbert_frozen_official/archiveii_embok_clean",
+        "nucleicbert_ft/archiveii_embok_clean",
+        "nussinov_turner/archiveii_embok_clean/repeat0",
+        "nussinov_turner/archiveii_embok_clean/repeat1",
+        "nussinov_turner/archiveii_embok_clean/repeat2",
+        "rinalmo_2d_s0/archiveii_embok_clean",
+        "rinalmo_ft/archiveii_embok_clean",
+        "rnaformer_biophysical/archiveii_embok_clean",
+        "rnaformer_bprna/archiveii_embok_clean",
+        "rnaformer_interfamily/archiveii_embok_clean",
+        "rnaformer_intrafamily/archiveii_embok_clean",
+        "rnastructure_fold/archiveii_embok_clean",
+        "rnastructure_maxexpect/archiveii_embok_clean",
+        "ufold/archiveii_embok_clean",
+        "vienna_centroid/archiveii_embok_clean/repeat0",
+        "vienna_centroid/archiveii_embok_clean/repeat1",
+        "vienna_centroid/archiveii_embok_clean/repeat2",
+        "vienna_mea/archiveii_embok_clean/repeat0",
+        "vienna_mea/archiveii_embok_clean/repeat1",
+        "vienna_mea/archiveii_embok_clean/repeat2",
+        "vienna_mfe/archiveii_embok_clean/repeat0",
+        "vienna_mfe/archiveii_embok_clean/repeat1",
+        "vienna_mfe/archiveii_embok_clean/repeat2",
+        "xens2/archiveii_embok_clean",
+        "bpfold_official_release/archiveii",
+        "rinalmo_2d_s1/archiveii_embok_clean",
+        "rinalmo_2d_s2/archiveii_embok_clean",
+        "rinalmo_2d_s0/archiveii_embok_clean_trunc598"
+      ]
+    },
+    {
+      "role": "external_protocol_reference",
+      "description": "ArchiveII unfiltered official BPSEQ reference; frozen CPU rescore only",
+      "scope": "EXTERNAL_PROTOCOL_ONLY",
+      "label_source": "ARCHIVEII_OFFICIAL_REFERENCE",
+      "label_provenance_status": "OFFICIAL_BPSEQ_REFERENCE; per-record experimental lineage UNCHECKED",
+      "bytes": 805662,
+      "dataset_id": "archiveii_official_reference_clean_2544",
+      "empty_reference_records": 4,
+      "id_order_sha256": "dc74ef9c39ecf025a1453779e78c623138715595bc5d6825eafe3537078e10d5",
+      "n_sequences": 2544,
+      "pair_protocol": "unfiltered official BPSEQ; no min-loop/crossing/canonical projection",
+      "path": "source_data/archiveii_official_reference_20261127/official_reference_clean_2544.jsonl.gz",
+      "sha256": "cde658b5d61813ff9530509bd25631d6f33dcb08021bae107636f0a212c11afb",
+      "source_archives": {
+        "BPfold_data": {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz",
+          "sha256": "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403"
+        },
+        "MXfold2_archiveII": {
+          "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2/archiveII.tar.gz",
+          "sha256": "633bc50f8e9381f737b680fa6b4c79061a0a781773a5c38b342856eb1a6ac8a4"
+        }
+      },
+      "exists": true,
+      "hash_scope": "full_content",
+      "status": "FROZEN",
+      "ranking_scope": "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION",
+      "partial_coverage_not_ranked": true,
+      "prediction_ids": [
+        "best_plan_a/archiveii_embok_clean",
+        "bpfold/archiveii_embok_clean",
+        "contrafold/archiveii_embok_clean",
+        "efold_0_1_3/archiveii_embok_clean",
+        "eternafold/archiveii_embok_clean",
+        "h0/archiveii_embok_clean",
+        "kirigami_fast/archiveii_embok_clean",
+        "mxfold2/archiveii_embok_clean",
+        "nucleicbert_frozen_official/archiveii_embok_clean",
+        "nucleicbert_ft/archiveii_embok_clean",
+        "nussinov_turner/archiveii_embok_clean/repeat0",
+        "nussinov_turner/archiveii_embok_clean/repeat1",
+        "nussinov_turner/archiveii_embok_clean/repeat2",
+        "rinalmo_2d_s0/archiveii_embok_clean",
+        "rinalmo_ft/archiveii_embok_clean",
+        "rnaformer_biophysical/archiveii_embok_clean",
+        "rnaformer_bprna/archiveii_embok_clean",
+        "rnaformer_interfamily/archiveii_embok_clean",
+        "rnaformer_intrafamily/archiveii_embok_clean",
+        "rnastructure_fold/archiveii_embok_clean",
+        "rnastructure_maxexpect/archiveii_embok_clean",
+        "ufold/archiveii_embok_clean",
+        "vienna_centroid/archiveii_embok_clean/repeat0",
+        "vienna_centroid/archiveii_embok_clean/repeat1",
+        "vienna_centroid/archiveii_embok_clean/repeat2",
+        "vienna_mea/archiveii_embok_clean/repeat0",
+        "vienna_mea/archiveii_embok_clean/repeat1",
+        "vienna_mea/archiveii_embok_clean/repeat2",
+        "vienna_mfe/archiveii_embok_clean/repeat0",
+        "vienna_mfe/archiveii_embok_clean/repeat1",
+        "vienna_mfe/archiveii_embok_clean/repeat2",
+        "xens2/archiveii_embok_clean",
+        "bpfold_official_release/archiveii",
+        "rinalmo_2d_s1/archiveii_embok_clean",
+        "rinalmo_2d_s2/archiveii_embok_clean",
+        "rinalmo_2d_s0/archiveii_embok_clean_trunc598"
+      ]
     }
-  ]
+  ],
+  "pdb_raw_source_rebuild": {
+    "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+    "source_commit": "e252f5351322994395968c61e3df3a51a0330293",
+    "status": "COMPLETE_58_REBUILT_95_UNCHECKED",
+    "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+    "n_source_records": 153,
+    "n_rebuilt": 58,
+    "n_unresolved": 95,
+    "panel_rebuilt": {
+      "pdb_ts1": 15,
+      "pdb_ts2": 26,
+      "pdb_ts3": 8,
+      "pdb_ts_hard": 9
+    },
+    "unresolved_status_counts": {
+      "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED": 61,
+      "DSSR_MAPPING_ERROR_UNCHECKED": 4,
+      "NO_EXACT_CHAIN_MATCH_UNCHECKED": 26,
+      "SOURCE_BAD_ALPHABET_UNCHECKED": 4
+    },
+    "pair_match_counts": {
+      "false": 2,
+      "true": 56
+    },
+    "summary": {
+      "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
+      "bytes": 19826,
+      "sha256": "8b2766efc662387686ef1e798b0d781db0fa603f15c634920f85260a00beb819"
+    },
+    "unresolved_records": {
+      "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/unresolved_records.jsonl",
+      "bytes": 547931,
+      "sha256": "2a2142ed18f495b02950462c005c3fd5a07bf276e151a5e9ede63616a41370cd",
+      "n_records": 95
+    },
+    "recompute_sets": {
+      "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/recompute_sets.json",
+      "bytes": 20410,
+      "sha256": "edf16dc5fbf9c29811b4cddebb9a6bf82d74f6c48edc5808c889697355c8ac57"
+    },
+    "panels": {
+      "pdb_ts1": {
+        "source_candidates": 67,
+        "source_rejected": 4,
+        "n_rebuilt": 15,
+        "n_unresolved": 52,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS1.full_polymer_observed_mask.jsonl",
+            "bytes": 77862,
+            "sha256": "3bb129ae46d5190071ffb64212a4da9c01653f52ed5f7b3a1224131d53d1dfb4",
+            "n_records": 15
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS1.observed_only.jsonl",
+            "bytes": 77763,
+            "sha256": "bd0610c3432dd07a35c02a4e2d9a3a30876e5a52ddc88597da385a2e64876730",
+            "n_records": 15
+          }
+        }
+      },
+      "pdb_ts2": {
+        "source_candidates": 39,
+        "source_rejected": 0,
+        "n_rebuilt": 26,
+        "n_unresolved": 13,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS2.full_polymer_observed_mask.jsonl",
+            "bytes": 121740,
+            "sha256": "1b002a473410b5106d1abc5559495da23667ef4198be45ffd7346af2b1db4330",
+            "n_records": 26
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS2.observed_only.jsonl",
+            "bytes": 121662,
+            "sha256": "a136d6b7f6d82ecdae00f70ad6e2f50036286c6e5906c3ce0ea288071d7c4183",
+            "n_records": 26
+          }
+        }
+      },
+      "pdb_ts3": {
+        "source_candidates": 19,
+        "source_rejected": 0,
+        "n_rebuilt": 8,
+        "n_unresolved": 11,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS3.full_polymer_observed_mask.jsonl",
+            "bytes": 52105,
+            "sha256": "f3d479070208a6aded149f6cec480e99a283a766d5d1d4090fb2183459c3c474",
+            "n_records": 8
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS3.observed_only.jsonl",
+            "bytes": 52059,
+            "sha256": "8261800e8981cf653eb2ee95350c1b581f692495f2eebfcb3770a4ef4c4edcbb",
+            "n_records": 8
+          }
+        }
+      },
+      "pdb_ts_hard": {
+        "source_candidates": 28,
+        "source_rejected": 0,
+        "n_rebuilt": 9,
+        "n_unresolved": 19,
+        "unresolved_status": "UNCHECKED",
+        "protocols": {
+          "FULL_POLYMER_OBSERVED_MASK_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS-hard.full_polymer_observed_mask.jsonl",
+            "bytes": 34744,
+            "sha256": "5ef2d11e5e478aa2205b4bc7853e3257beb877da12a44bd5445086329f0bdb2f",
+            "n_records": 9
+          },
+          "OBSERVED_ONLY_V1": {
+            "path": "source_data/pdb_rcsb_rebuild_20261127/round3_build/TS-hard.observed_only.jsonl",
+            "bytes": 34684,
+            "sha256": "029c0e6dfbf3096f16c37046df63cb20b0b9a1b725ac06ef69c92493ffc72655",
+            "n_records": 9
+          }
+        }
+      }
+    },
+    "ranking_scope": "LABEL_REFERENCE_REBUILD_ONLY; no prediction metrics or model ranking authorized",
+    "observation_policy": "Unobserved residues are masked, never negative labels; unresolved records remain UNCHECKED"
+  },
+  "archiveii_official_reference_overlay": "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json"
 }

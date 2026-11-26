@@ -1,0 +1,3260 @@
+{
+  "schema_version": "foldnar.archiveii_pdb_registry_integration.verification.v1",
+  "round": 3,
+  "status": "PASS",
+  "verification_passed": true,
+  "independent_reimplementation": true,
+  "builder_imported": false,
+  "source_commits": {
+    "archiveii": "4daccb0eb1c78db565532634ed0d77cf1e6ddaae",
+    "pdb": "e252f5351322994395968c61e3df3a51a0330293"
+  },
+  "n_checks": 808,
+  "checks": [
+    {
+      "name": "data_n_rows",
+      "passed": true
+    },
+    {
+      "name": "prediction_n_rows",
+      "passed": true
+    },
+    {
+      "name": "baseline_n_rows",
+      "passed": true
+    },
+    {
+      "name": "overlay_source_commit",
+      "passed": true
+    },
+    {
+      "name": "overlay_row_count",
+      "passed": true
+    },
+    {
+      "name": "overlay_recommendation_identities",
+      "passed": true
+    },
+    {
+      "name": "data_overlay_pointer",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_pointer",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_pointer",
+      "passed": true
+    },
+    {
+      "name": "archive_legacy_source",
+      "passed": true
+    },
+    {
+      "name": "archive_legacy_disposition",
+      "passed": true
+    },
+    {
+      "name": "archive_legacy_not_sota",
+      "passed": true
+    },
+    {
+      "name": "archive_legacy_history_retained",
+      "passed": true
+    },
+    {
+      "name": "archive_two_replacement_panels",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_3966_role",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_3966_n",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_3966_bytes",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_3966_sha256",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_3966_partial_policy",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_clean_2544_role",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_clean_2544_n",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_clean_2544_bytes",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_clean_2544_sha256",
+      "passed": true
+    },
+    {
+      "name": "archiveii_official_reference_clean_2544_partial_policy",
+      "passed": true
+    },
+    {
+      "name": "panels:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panels:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panels:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panels:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "panels:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "panels:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:bpfold_official_release/archiveii",
+      "passed": true
+    },
+    {
+      "name": "panels:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rinalmo_2d_s1/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_delta:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_no_ci:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "partial_count:archiveii_official_reference_3966:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rinalmo_2d_s2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "panels:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_3966:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_size:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_status:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_coverage:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_count:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "panel_metrics:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "partial_not_ranked:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "partial_status:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "blocked_metrics_null:archiveii_official_reference_clean_2544:rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "passed": true
+    },
+    {
+      "name": "full3966_only_release_ranked",
+      "passed": true
+    },
+    {
+      "name": "clean2544_full_coverage_count",
+      "passed": true
+    },
+    {
+      "name": "full3966_release_identity",
+      "passed": true
+    },
+    {
+      "name": "full3966_single_unchecked",
+      "passed": true
+    },
+    {
+      "name": "clean2544_strongest_overall_full_coverage",
+      "passed": true
+    },
+    {
+      "name": "clean2544_strongest_ensemble_full_coverage",
+      "passed": true
+    },
+    {
+      "name": "clean2544_strongest_single_predictor_full_coverage",
+      "passed": true
+    },
+    {
+      "name": "baseline_partial_policy",
+      "passed": true
+    },
+    {
+      "name": "archive_main_prediction_count",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_prediction:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "prediction_overlay_match:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:vienna_mfe",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:vienna_mfe",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_mfe:vienna_mfe/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_mfe:vienna_mfe/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_mfe:vienna_mfe/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:vienna_centroid",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:vienna_centroid",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_centroid:vienna_centroid/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_centroid:vienna_centroid/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_centroid:vienna_centroid/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:vienna_mea",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:vienna_mea",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_mea:vienna_mea/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_mea:vienna_mea/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:vienna_mea:vienna_mea/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:contrafold",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:contrafold",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:contrafold:contrafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:eternafold",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:eternafold",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:eternafold:eternafold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:mxfold2",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:mxfold2",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:mxfold2:mxfold2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:bpfold",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:bpfold",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:bpfold:bpfold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:ufold",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:ufold",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:ufold:ufold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:xens2",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:xens2",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:xens2:xens2/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:best_plan_a",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:best_plan_a",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:best_plan_a:best_plan_a/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:r2d",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:r2d",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:r2d:rinalmo_2d_s0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:h0",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:h0",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:h0:h0/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:nussinov_turner",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:nussinov_turner",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:nussinov_turner:nussinov_turner/archiveii_embok_clean/repeat0",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:nussinov_turner:nussinov_turner/archiveii_embok_clean/repeat1",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:nussinov_turner:nussinov_turner/archiveii_embok_clean/repeat2",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:rnaformer_bprna",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:rnaformer_bprna",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:rnaformer_bprna:rnaformer_bprna/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:rnaformer_interfamily",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:rnaformer_interfamily",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:rnaformer_interfamily:rnaformer_interfamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:rnaformer_biophysical",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:rnaformer_biophysical",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:rnaformer_biophysical:rnaformer_biophysical/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:rinalmo_ft",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:rinalmo_ft",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:rinalmo_ft:rinalmo_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:rnastructure_fold",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:rnastructure_fold",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:rnastructure_fold:rnastructure_fold/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:efold_0_1_3",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:efold_0_1_3",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:efold_0_1_3:efold_0_1_3/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:nucleicbert_frozen_official",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:nucleicbert_frozen_official",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:nucleicbert_frozen_official:nucleicbert_frozen_official/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:nucleicbert_ft",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:nucleicbert_ft",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:nucleicbert_ft:nucleicbert_ft/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:rnaformer_intrafamily",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:rnaformer_intrafamily",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:rnaformer_intrafamily:rnaformer_intrafamily/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:kirigami_fast",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:kirigami_fast",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:kirigami_fast:kirigami_fast/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "legacy_baseline:rnastructure_maxexpect",
+      "passed": true
+    },
+    {
+      "name": "baseline_overlay_identities:rnastructure_maxexpect",
+      "passed": true
+    },
+    {
+      "name": "baseline_panels:rnastructure_maxexpect:rnastructure_maxexpect/archiveii_embok_clean",
+      "passed": true
+    },
+    {
+      "name": "archive_baseline_count",
+      "passed": true
+    },
+    {
+      "name": "pdb_registry_present",
+      "passed": true
+    },
+    {
+      "name": "pdb_source_commit",
+      "passed": true
+    },
+    {
+      "name": "pdb_status",
+      "passed": true
+    },
+    {
+      "name": "pdb_conservation",
+      "passed": true
+    },
+    {
+      "name": "pdb_rebuilt_plus_unchecked",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_sum",
+      "passed": true
+    },
+    {
+      "name": "pdb_unresolved_status_sum",
+      "passed": true
+    },
+    {
+      "name": "pdb_all_unresolved_unchecked",
+      "passed": true
+    },
+    {
+      "name": "pdb_unresolved_file_count",
+      "passed": true
+    },
+    {
+      "name": "pdb_unresolved_file_states",
+      "passed": true
+    },
+    {
+      "name": "pdb_unresolved_sha",
+      "passed": true
+    },
+    {
+      "name": "pdb_no_ranking",
+      "passed": true
+    },
+    {
+      "name": "pdb_legacy_not_sota:ref_pdb_ts1",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_conservation:ref_pdb_ts1",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_unchecked:ref_pdb_ts1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts1:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts1:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts1:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts1:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_legacy_not_sota:ref_pdb_ts2",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_conservation:ref_pdb_ts2",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_unchecked:ref_pdb_ts2",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts2:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts2:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts2:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts2:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_legacy_not_sota:ref_pdb_ts3",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_conservation:ref_pdb_ts3",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_unchecked:ref_pdb_ts3",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts3:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts3:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts3:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts3:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_legacy_not_sota:ref_pdb_ts_hard",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_conservation:ref_pdb_ts_hard",
+      "passed": true
+    },
+    {
+      "name": "pdb_panel_unchecked:ref_pdb_ts_hard",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts_hard:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts_hard:FULL_POLYMER_OBSERVED_MASK_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_count:ref_pdb_ts_hard:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_asset_sha:ref_pdb_ts_hard:OBSERVED_ONLY_V1",
+      "passed": true
+    },
+    {
+      "name": "pdb_prediction_count",
+      "passed": true
+    },
+    {
+      "name": "pdb_predictions_not_sota",
+      "passed": true
+    },
+    {
+      "name": "pdb_predictions_rebuild_bound",
+      "passed": true
+    }
+  ],
+  "failures": [],
+  "registry_sha256": {
+    "manifests/foldnar_v1/data_registry.json": "6cfcaa01534b870a7ea6fcbd44b4d90ea4362bbdd9c7cf1b35a4d7649579219a",
+    "manifests/foldnar_v1/prediction_registry.json": "e64cfeb3506ad109764144228ff153e3620582259a2778ea275804e4b0bff4e3",
+    "manifests/foldnar_v1/baseline_registry.json": "673a30e280aecaa8ed9922dfd0dc2186c59890aaa5bd0814b2fe7313d2d8a733",
+    "manifests/foldnar_v1/archiveii_official_reference_prediction_registry.json": "113b1d78d4fc402ea251e3d34e1ab3919b69d8db8efc50791d3e9afa0b5f6b9d"
+  },
+  "archiveii_full3966_ranking_eligible": [
+    "bpfold_official_release/archiveii"
+  ],
+  "archiveii_clean2544_full_coverage_count": 20,
+  "pdb_rebuilt": 58,
+  "pdb_unchecked": 95
+}
