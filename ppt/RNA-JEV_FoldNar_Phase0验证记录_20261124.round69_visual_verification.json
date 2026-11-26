@@ -1,0 +1,40 @@
+{
+  "status": "PASS_RASTER_LAYOUT_AND_OCR_WITH_DIRECT_IMAGE_INPUT_LIMITATION",
+  "deck_slide_index": 13,
+  "display_slide_number": 32,
+  "png_sha256": "afbd4a0079da4012163efb639f4bdedd4c38c8b4a0021fa67a37e46406f62519",
+  "png_bytes": 151011,
+  "raster_size": [
+    1601,
+    900
+  ],
+  "raster_review": "Inspected a 132x74 grayscale raster rendering of the actual final PNG; evidence cards, two analysis panels, hypothesis banner, and footer occupy their intended regions",
+  "raster_sha256": "21c1b1c77109bbd9a802fd96aacad58361233cb65f34257c72acb55149965e2f",
+  "raster_nonwhite_content_bounds_px": [
+    91,
+    45,
+    1511,
+    829
+  ],
+  "raster_edge_clip_detected": false,
+  "direct_image_model_review": "UNAVAILABLE_CURRENT_RUNTIME_OMITTED_IMAGE_INPUT; not claimed as a direct visual-model pass",
+  "ocr_engine": "macOS Vision VNRecognizeTextRequest accurate; zh-Hans + en-US",
+  "ocr_sha256": "7019fd255a9edc2fc25e5614a106631f8c07c3a1128050131f801d472a9e6063",
+  "ocr_lines": 40,
+  "ocr_out_of_bounds": [],
+  "ocr_overlap_pairs_over_20_percent": [],
+  "ocr_key_values_passed": [
+    "98.31%",
+    "101,164/102,903",
+    "13,993/14,471",
+    "96.70%",
+    "-0.74335",
+    "-0.36870",
+    "best=10500",
+    "pair-Hamming cost-augmented structured max-margin",
+    "seeds 1/2"
+  ],
+  "pdf_complete_text_checks": 483,
+  "pdf_missing_or_clipped_text": [],
+  "layout_observation": "Three evidence cards, isolated/span panel, post-best overfitting boundary panel, structured max-margin hypothesis banner, and two footer lines are visible in the raster with no OCR bounds, overlap, or edge-clipping evidence"
+}
