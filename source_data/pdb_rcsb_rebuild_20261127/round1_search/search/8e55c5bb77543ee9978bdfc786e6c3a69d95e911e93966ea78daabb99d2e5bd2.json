@@ -1,0 +1,76 @@
+{
+  "candidate_entity_ids": [
+    "5NWQ_1",
+    "5NY8_1",
+    "5NZ3_1",
+    "5NZD_1",
+    "5O62_1",
+    "5O69_1",
+    "5NZ6_1",
+    "5O69_2"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "CCGGACGAGGUGCGCCGUACCCGGUCAGGACAAGACGGCGC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "2438d20c-dcb7-436c-8d8b-6b051fc9244b",
+    "result_set": [
+      {
+        "identifier": "5NWQ_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5NY8_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5NZ3_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5NZD_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5O62_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5O69_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5NZ6_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "5O69_2",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 8
+  },
+  "response_sha256": "f3f8c5321e8161eab681ef21e9d91af4121f96a7b7a6f5d9f2520878aaa91491",
+  "retrieved_utc": "2026-11-26T20:46:07.075748+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

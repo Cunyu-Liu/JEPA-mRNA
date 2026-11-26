@@ -1,0 +1,91 @@
+{
+  "candidate_entity_ids": [
+    "5OB3_1",
+    "7L0Z_1",
+    "4KZD_3",
+    "4KZE_3",
+    "4Q9Q_3",
+    "4Q9R_3",
+    "6B14_3",
+    "6B3K_3",
+    "8TVZ_1",
+    "4TS0_2",
+    "4TS2_2"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGGAGUACGGUGAGGGUCGGGUCCAGUAGGUACGCCUACUGUUGAGUAGAGUGUGGGCUCCGUACUCCC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "e84f5253-6344-495f-8104-1f33e892729d",
+    "result_set": [
+      {
+        "identifier": "5OB3_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "7L0Z_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "4KZD_3",
+        "score": 0.16279069767441862
+      },
+      {
+        "identifier": "4KZE_3",
+        "score": 0.16279069767441862
+      },
+      {
+        "identifier": "4Q9Q_3",
+        "score": 0.16279069767441862
+      },
+      {
+        "identifier": "4Q9R_3",
+        "score": 0.16279069767441862
+      },
+      {
+        "identifier": "6B14_3",
+        "score": 0.16279069767441862
+      },
+      {
+        "identifier": "6B3K_3",
+        "score": 0.16279069767441862
+      },
+      {
+        "identifier": "8TVZ_1",
+        "score": 0.046511627906976744
+      },
+      {
+        "identifier": "4TS0_2",
+        "score": 0.0
+      },
+      {
+        "identifier": "4TS2_2",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 11
+  },
+  "response_sha256": "9bd72cf30ce0238efc46417bcbf6b87df3f0d487ba06ad9e0c96805348d19af0",
+  "retrieved_utc": "2026-11-26T20:46:39.974899+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

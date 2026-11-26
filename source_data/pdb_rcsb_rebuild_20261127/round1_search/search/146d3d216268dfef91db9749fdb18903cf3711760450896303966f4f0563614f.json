@@ -1,0 +1,436 @@
+{
+  "candidate_entity_ids": [
+    "5ML7_1",
+    "1FFK_1",
+    "1FFZ_1",
+    "1FG0_1",
+    "1JJ2_1",
+    "1K73_1",
+    "1K8A_1",
+    "1K9M_1",
+    "1KC8_1",
+    "1KD1_1",
+    "1KQS_1",
+    "1M1K_1",
+    "1M90_1",
+    "1N8R_1",
+    "1NJI_1",
+    "1Q7Y_1",
+    "1Q81_1",
+    "1Q82_1",
+    "1Q86_1",
+    "1QVF_1",
+    "1QVG_1",
+    "1S72_1",
+    "1VQ4_1",
+    "1VQ5_1",
+    "1VQ6_1",
+    "1VQ7_1",
+    "1VQ8_1",
+    "1VQ9_1",
+    "1VQK_1",
+    "1VQL_1",
+    "1VQM_1",
+    "1VQN_1",
+    "1VQO_1",
+    "1VQP_1",
+    "1W2B_1",
+    "2OTJ_1",
+    "2OTL_1",
+    "2QA4_1",
+    "3CPW_1",
+    "3CXC_1",
+    "3OW2_1",
+    "4V9F_1",
+    "1YHQ_1",
+    "1YI2_1",
+    "1YIJ_1",
+    "1YIT_1",
+    "1YJ9_1",
+    "1YJN_1",
+    "1YJW_1",
+    "3CC2_30",
+    "3CC4_30",
+    "3CC7_30",
+    "3CCE_30",
+    "3CCJ_30",
+    "3CCL_30",
+    "3CCM_30",
+    "3CCQ_30",
+    "3CCR_30",
+    "3CCS_30",
+    "3CCU_30",
+    "3CCV_30",
+    "3CD6_30",
+    "3CMA_30",
+    "3CME_30",
+    "3G4S_1",
+    "3G6E_1",
+    "3G71_1",
+    "3I55_1",
+    "3I56_30",
+    "4ADX_1",
+    "4V4B_18",
+    "12DM_53",
+    "9L94_1",
+    "9L95_1",
+    "9L96_1",
+    "9L98_1",
+    "9L9C_1",
+    "9L9J_1",
+    "9L9K_1",
+    "9L9V_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGGUCGCCGAUGUGCAGCAUAGGUAGGAGACACUACACAGGUACCCGCGCUAGCGGGCCACCGAGUCAACAGUGAAAUACUACCCGUCGGUGACC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "09fd0c1d-c237-4a44-aaf5-ca7a4aa2c241",
+    "result_set": [
+      {
+        "identifier": "5ML7_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "1FFK_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1FFZ_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1FG0_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1JJ2_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1K73_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1K8A_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1K9M_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1KC8_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1KD1_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1KQS_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1M1K_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1M90_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1N8R_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1NJI_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1Q7Y_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1Q81_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1Q82_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1Q86_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1QVF_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1QVG_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1S72_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQ4_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQ5_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQ6_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQ7_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQ8_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQ9_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQK_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQL_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQM_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQN_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQO_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1VQP_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1W2B_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "2OTJ_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "2OTL_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "2QA4_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "3CPW_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "3CXC_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "3OW2_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "4V9F_1",
+        "score": 0.875
+      },
+      {
+        "identifier": "1YHQ_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "1YI2_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "1YIJ_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "1YIT_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "1YJ9_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "1YJN_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "1YJW_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CC2_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CC4_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CC7_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCE_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCJ_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCL_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCM_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCQ_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCR_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCS_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCU_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CCV_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CD6_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CMA_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3CME_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3G4S_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3G6E_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3G71_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3I55_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "3I56_30",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "4ADX_1",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "4V4B_18",
+        "score": 0.4107142857142857
+      },
+      {
+        "identifier": "12DM_53",
+        "score": 0.08928571428571429
+      },
+      {
+        "identifier": "9L94_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "9L95_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "9L96_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "9L98_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "9L9C_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "9L9J_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "9L9K_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "9L9V_1",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 80
+  },
+  "response_sha256": "97857eb05fb1206a6fea5ab0679ce973cfb8a7653ba336eaf85a26416e0dc5b5",
+  "retrieved_utc": "2026-11-26T20:46:45.228747+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

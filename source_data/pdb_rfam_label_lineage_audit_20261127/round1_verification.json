@@ -1,0 +1,26 @@
+{
+  "artifact_manifest_sha256": "22f41d37a2506c5592c26a1a4bd26b6be4fe0444e10d288aeeb9bc446848b79f",
+  "checks": [
+    "artifact SHA256 and byte identity",
+    "source JSONL SHA256 and row conservation",
+    "per-record ID/sequence/pair SHA256",
+    "internal projection status and UNCHECKED boundaries",
+    "independent TR1c and cross-panel exact-overlap recomputation",
+    "fail-closed evaluation qualification"
+  ],
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "n_cross_panel_exact_sequence_groups": 34,
+  "n_records": 11375,
+  "panel_summary_sha256": "89ab7fc8382853e2e87e937c6370beafdb12eee7d7a812a24b5f72448de1a19e",
+  "qualification_fail_closed": true,
+  "rfam_temporal_exact_in_rfam14_9": 43,
+  "status": "PASS_PDB_RFAM_LABEL_LINEAGE_INDEPENDENT_VERIFIER",
+  "tr1c_exact_sequence_overlap": {
+    "ref_pdb_ts1": 0,
+    "ref_pdb_ts2": 0,
+    "ref_pdb_ts3": 0,
+    "ref_pdb_ts_hard": 0,
+    "rfam_fam": 284,
+    "rfam_temporal": 33
+  }
+}

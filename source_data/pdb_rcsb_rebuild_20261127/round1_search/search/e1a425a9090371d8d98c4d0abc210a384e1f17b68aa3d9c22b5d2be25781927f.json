@@ -1,0 +1,171 @@
+{
+  "candidate_entity_ids": [
+    "2OZB_1",
+    "3JCR_27",
+    "5O9Z_41",
+    "6QW6_2",
+    "6QX9_45",
+    "8Q7N_20",
+    "6AH0_40",
+    "6AHD_2",
+    "8H6E_22",
+    "8H6J_22",
+    "8H6K_22",
+    "8H6L_22",
+    "8QO9_49",
+    "8QOZ_16",
+    "8QP8_5",
+    "8QP9_14",
+    "8QPA_16",
+    "8QPB_15",
+    "8QPE_1",
+    "8QPK_10",
+    "8QXD_4",
+    "8QZS_6",
+    "8R08_14",
+    "8R09_45",
+    "8R0A_15",
+    "8R0B_4",
+    "8RM5_45"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "AUCGUAGCCAAUGAGGUUUAUCCGAGGCGCGAU"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "e857b8f1-347c-4dab-9bbc-9d4212bf1de8",
+    "result_set": [
+      {
+        "identifier": "2OZB_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "3JCR_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "5O9Z_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6QW6_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "6QX9_45",
+        "score": 1.0
+      },
+      {
+        "identifier": "8Q7N_20",
+        "score": 1.0
+      },
+      {
+        "identifier": "6AH0_40",
+        "score": 0.0
+      },
+      {
+        "identifier": "6AHD_2",
+        "score": 0.0
+      },
+      {
+        "identifier": "8H6E_22",
+        "score": 0.0
+      },
+      {
+        "identifier": "8H6J_22",
+        "score": 0.0
+      },
+      {
+        "identifier": "8H6K_22",
+        "score": 0.0
+      },
+      {
+        "identifier": "8H6L_22",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QO9_49",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QOZ_16",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QP8_5",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QP9_14",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QPA_16",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QPB_15",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QPE_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QPK_10",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QXD_4",
+        "score": 0.0
+      },
+      {
+        "identifier": "8QZS_6",
+        "score": 0.0
+      },
+      {
+        "identifier": "8R08_14",
+        "score": 0.0
+      },
+      {
+        "identifier": "8R09_45",
+        "score": 0.0
+      },
+      {
+        "identifier": "8R0A_15",
+        "score": 0.0
+      },
+      {
+        "identifier": "8R0B_4",
+        "score": 0.0
+      },
+      {
+        "identifier": "8RM5_45",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 27
+  },
+  "response_sha256": "3e459465077756f0a755345a5cbd4fbd5358d86913e012cbf8ed266bb46a3dde",
+  "retrieved_utc": "2026-11-26T20:46:07.486637+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

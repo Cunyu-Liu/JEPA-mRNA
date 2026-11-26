@@ -1,0 +1,35 @@
+   34 ENERGY = 0.0 [2KPV] -- secondary structure derived by DSSR
+    1 G     0     2    34     1 # name=A.G1, pairedNt=A.C34
+    2 G     1     3    33     2 # name=A.G2, pairedNt=A.C33
+    3 A     2     4    32     3 # name=A.A3, pairedNt=A.U32
+    4 G     3     5    31     4 # name=A.G4, pairedNt=A.C31
+    5 G     4     6    29     5 # name=A.G5, pairedNt=A.C29
+    6 U     5     7    28     6 # name=A.U6, pairedNt=A.A28
+    7 A     6     8    27     7 # name=A.A7, pairedNt=A.U27
+    8 G     7     9    26     8 # name=A.G8, pairedNt=A.C26
+    9 U     8    10     0     9 # name=A.U9
+   10 A     9    11    24    10 # name=A.A10, pairedNt=A.U24
+   11 G    10    12    22    11 # name=A.G11, pairedNt=A.C22
+   12 G    11    13    21    12 # name=A.G12, pairedNt=A.C21
+   13 U    12    14    20    13 # name=A.U13, pairedNt=A.A20
+   14 C    13    15    19    14 # name=A.C14, pairedNt=A.G19
+   15 G    14    16     0    15 # name=A.G15
+   16 A    15    17     0    16 # name=A.A16
+   17 A    16    18     0    17 # name=A.A17
+   18 A    17    19     0    18 # name=A.A18
+   19 G    18    20    14    19 # name=A.G19, pairedNt=A.C14
+   20 A    19    21    13    20 # name=A.A20, pairedNt=A.U13
+   21 C    20    22    12    21 # name=A.C21, pairedNt=A.G12
+   22 C    21    23    11    22 # name=A.C22, pairedNt=A.G11
+   23 G    22    24     0    23 # name=A.G23
+   24 U    23    25    10    24 # name=A.U24, pairedNt=A.A10
+   25 U    24    26     0    25 # name=A.U25
+   26 C    25    27     8    26 # name=A.C26, pairedNt=A.G8
+   27 U    26    28     7    27 # name=A.U27, pairedNt=A.A7
+   28 A    27    29     6    28 # name=A.A28, pairedNt=A.U6
+   29 C    28    30     5    29 # name=A.C29, pairedNt=A.G5
+   30 A    29    31     0    30 # name=A.A30
+   31 C    30    32     4    31 # name=A.C31, pairedNt=A.G4
+   32 U    31    33     3    32 # name=A.U32, pairedNt=A.A3
+   33 C    32    34     2    33 # name=A.C33, pairedNt=A.G2
+   34 C    33     0     1    34 # name=A.C34, pairedNt=A.G1

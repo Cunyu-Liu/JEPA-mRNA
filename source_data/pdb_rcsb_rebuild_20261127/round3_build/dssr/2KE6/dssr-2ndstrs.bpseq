@@ -1,0 +1,48 @@
+    1 G    48 # name=A.G1, pairedNt=A.C48
+    2 G    47 # name=A.G2, pairedNt=A.C47
+    3 C    46 # name=A.C3, pairedNt=A.G46
+    4 U    45 # name=A.U4, pairedNt=A.A45
+    5 U    44 # name=A.U5, pairedNt=A.A44
+    6 G     0 # name=A.G6
+    7 A    42 # name=A.A7, pairedNt=A.U42
+    8 U    41 # name=A.U8, pairedNt=A.A41
+    9 U    40 # name=A.U9, pairedNt=A.A40
+   10 G    38 # name=A.G10, pairedNt=A.C38
+   11 U    37 # name=A.U11, pairedNt=A.A37
+   12 A    36 # name=A.A12, pairedNt=A.U36
+   13 U    34 # name=A.U13, pairedNt=A.A34
+   14 U    33 # name=A.U14, pairedNt=A.A33
+   15 U    32 # name=A.U15, pairedNt=A.A32
+   16 U    31 # name=A.U16, pairedNt=A.A31
+   17 U    30 # name=A.U17, pairedNt=A.A30
+   18 A    29 # name=A.A18, pairedNt=A.U29
+   19 A    28 # name=A.A19, pairedNt=A.U28
+   20 A     0 # name=A.A20
+   21 U     0 # name=A.U21
+   22 U     0 # name=A.U22
+   23 A     0 # name=A.A23
+   24 A     0 # name=A.A24
+   25 U     0 # name=A.U25
+   26 U     0 # name=A.U26
+   27 C     0 # name=A.C27
+   28 U    19 # name=A.U28, pairedNt=A.A19
+   29 U    18 # name=A.U29, pairedNt=A.A18
+   30 A    17 # name=A.A30, pairedNt=A.U17
+   31 A    16 # name=A.A31, pairedNt=A.U16
+   32 A    15 # name=A.A32, pairedNt=A.U15
+   33 A    14 # name=A.A33, pairedNt=A.U14
+   34 A    13 # name=A.A34, pairedNt=A.U13
+   35 C     0 # name=A.C35
+   36 U    12 # name=A.U36, pairedNt=A.A12
+   37 A    11 # name=A.A37, pairedNt=A.U11
+   38 C    10 # name=A.C38, pairedNt=A.G10
+   39 A     0 # name=A.A39
+   40 A     9 # name=A.A40, pairedNt=A.U9
+   41 A     8 # name=A.A41, pairedNt=A.U8
+   42 U     7 # name=A.U42, pairedNt=A.A7
+   43 U     0 # name=A.U43
+   44 A     5 # name=A.A44, pairedNt=A.U5
+   45 A     4 # name=A.A45, pairedNt=A.U4
+   46 G     3 # name=A.G46, pairedNt=A.C3
+   47 C     2 # name=A.C47, pairedNt=A.G2
+   48 C     1 # name=A.C48, pairedNt=A.G1

@@ -1,0 +1,61 @@
+{
+  "candidate_entity_ids": [
+    "6DLQ_1",
+    "6DLR_1",
+    "6DLS_1",
+    "6DLT_1",
+    "6DNR_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGAAAGUGUGUCUAGGGUUCCGCGUGCUUCGGCACGGACUGGUCCAAGUGACACAGACGCAUUCGUGCGUUACACCGGAGGGAUAGAAGCCCAGGCGGGUAGGUUUC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "91e78870-2468-44aa-a96e-a6f3c2112260",
+    "result_set": [
+      {
+        "identifier": "6DLQ_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6DLR_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6DLS_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6DLT_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6DNR_1",
+        "score": 1.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 5
+  },
+  "response_sha256": "319770a7e4fea78863f263cda55b63c386af98285c1a2bffb8f93b17a4297974",
+  "retrieved_utc": "2026-11-26T20:46:15.709975+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

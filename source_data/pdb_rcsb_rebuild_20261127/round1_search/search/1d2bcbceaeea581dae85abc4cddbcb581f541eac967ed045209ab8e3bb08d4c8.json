@@ -1,0 +1,206 @@
+{
+  "candidate_entity_ids": [
+    "1P5M_1",
+    "1P5O_1",
+    "1P5P_1",
+    "2AGN_3",
+    "4UJC_3",
+    "4UJD_49",
+    "5A2Q_2",
+    "5FLX_35",
+    "6IP6_83",
+    "6IP8_84",
+    "7SYG_36",
+    "7SYH_36",
+    "7SYI_36",
+    "7SYJ_35",
+    "7SYK_36",
+    "7SYL_36",
+    "7SYM_36",
+    "7SYN_36",
+    "7SYO_36",
+    "7SYP_37",
+    "7SYQ_37",
+    "7SYR_39",
+    "7SYS_38",
+    "7SYT_37",
+    "7SYU_36",
+    "7SYV_26",
+    "7SYW_39",
+    "7SYX_39",
+    "9KKF_36",
+    "9KN5_37",
+    "9KN6_38",
+    "9KRP_37",
+    "9KZU_83",
+    "9KZX_83"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGCUGUGAGGAACUACUGUCUUCACGCCUUCGGGAGUGUCGUGCAGCCUCCAGCC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "8c9f034a-01be-4685-b6a4-0d2a151cee68",
+    "result_set": [
+      {
+        "identifier": "1P5M_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "1P5O_1",
+        "score": 0.10714285714285714
+      },
+      {
+        "identifier": "1P5P_1",
+        "score": 0.10714285714285714
+      },
+      {
+        "identifier": "2AGN_3",
+        "score": 0.10714285714285714
+      },
+      {
+        "identifier": "4UJC_3",
+        "score": 0.0
+      },
+      {
+        "identifier": "4UJD_49",
+        "score": 0.0
+      },
+      {
+        "identifier": "5A2Q_2",
+        "score": 0.0
+      },
+      {
+        "identifier": "5FLX_35",
+        "score": 0.0
+      },
+      {
+        "identifier": "6IP6_83",
+        "score": 0.0
+      },
+      {
+        "identifier": "6IP8_84",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYG_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYH_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYI_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYJ_35",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYK_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYL_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYM_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYN_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYO_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYP_37",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYQ_37",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYR_39",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYS_38",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYT_37",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYU_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYV_26",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYW_39",
+        "score": 0.0
+      },
+      {
+        "identifier": "7SYX_39",
+        "score": 0.0
+      },
+      {
+        "identifier": "9KKF_36",
+        "score": 0.0
+      },
+      {
+        "identifier": "9KN5_37",
+        "score": 0.0
+      },
+      {
+        "identifier": "9KN6_38",
+        "score": 0.0
+      },
+      {
+        "identifier": "9KRP_37",
+        "score": 0.0
+      },
+      {
+        "identifier": "9KZU_83",
+        "score": 0.0
+      },
+      {
+        "identifier": "9KZX_83",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 34
+  },
+  "response_sha256": "9c4121c3ceb1c88967e55e6cbd5a94b106dde8417d32cf2e604011ae120f70aa",
+  "retrieved_utc": "2026-11-26T20:46:38.374115+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

@@ -1,0 +1,94 @@
+    1 G    94 # name=H.G1, pairedNt=H.C94
+    2 U    93 # name=H.U2, pairedNt=H.A93
+    3 U    92 # name=H.U3, pairedNt=H.A92
+    4 G    91 # name=H.G4, pairedNt=H.C91
+    5 A    90 # name=H.A5, pairedNt=H.U90
+    6 U    89 # name=H.U6, pairedNt=H.G89
+    7 A     0 # name=H.A7
+    8 U     0 # name=H.U8
+    9 G    85 # name=H.G9, pairedNt=H.C85
+   10 G    84 # name=H.G10, pairedNt=H.C84
+   11 A    83 # name=H.A11, pairedNt=H.U83
+   12 U    82 # name=H.U12, pairedNt=H.G82
+   13 U    81 # name=H.U13, pairedNt=H.A81
+   14 U    80 # name=H.U14, pairedNt=H.A80
+   15 A    79 # name=H.A15, pairedNt=H.U79
+   16 C    78 # name=H.C16, pairedNt=H.G78
+   17 U    77 # name=H.U17, pairedNt=H.A77
+   18 C    76 # name=H.C18, pairedNt=H.G76
+   19 C     0 # name=H.C19
+   20 G     0 # name=H.G20
+   21 A     0 # name=H.A21
+   22 G    68 # name=H.G22, pairedNt=H.C68
+   23 G    67 # name=H.G23, pairedNt=H.C67
+   24 A    66 # name=H.A24, pairedNt=H.U66
+   25 G    65 # name=H.G25, pairedNt=H.C65
+   26 A    64 # name=H.A26, pairedNt=H.U64
+   27 C    63 # name=H.C27, pairedNt=H.G63
+   28 G    62 # name=H.G28, pairedNt=H.C62
+   29 A     0 # name=H.A29
+   30 A     0 # name=H.A30
+   31 C     0 # name=H.C31
+   32 U     0 # name=H.U32
+   33 A     0 # name=H.A33
+   34 C    61 # name=H.C34, pairedNt=H.G61
+   35 C    60 # name=H.C35, pairedNt=H.G60
+   36 A    59 # name=H.A36, pairedNt=H.U59
+   37 C    58 # name=H.C37, pairedNt=H.G58
+   38 G    57 # name=H.G38, pairedNt=H.C57
+   39 A     0 # name=H.A39
+   40 A     0 # name=H.A40
+   41 C     0 # name=H.C41
+   42 A     0 # name=H.A42
+   43 G    52 # name=H.G43, pairedNt=H.C52
+   44 G    51 # name=H.G44, pairedNt=H.U51
+   45 G    50 # name=H.G45, pairedNt=H.C50
+   46 G     0 # name=H.G46
+   47 A     0 # name=H.A47
+   48 A     0 # name=H.A48
+   49 A     0 # name=H.A49
+   50 C    45 # name=H.C50, pairedNt=H.G45
+   51 U    44 # name=H.U51, pairedNt=H.G44
+   52 C    43 # name=H.C52, pairedNt=H.G43
+   53 U     0 # name=H.U53
+   54 A     0 # name=H.A54
+   55 C     0 # name=H.C55
+   56 C     0 # name=H.C56
+   57 C    38 # name=H.C57, pairedNt=H.G38
+   58 G    37 # name=H.G58, pairedNt=H.C37
+   59 U    36 # name=H.U59, pairedNt=H.A36
+   60 G    35 # name=H.G60, pairedNt=H.C35
+   61 G    34 # name=H.G61, pairedNt=H.C34
+   62 C    28 # name=H.C62, pairedNt=H.G28
+   63 G    27 # name=H.G63, pairedNt=H.C27
+   64 U    26 # name=H.U64, pairedNt=H.A26
+   65 C    25 # name=H.C65, pairedNt=H.G25
+   66 U    24 # name=H.U66, pairedNt=H.A24
+   67 C    23 # name=H.C67, pairedNt=H.G23
+   68 C    22 # name=H.C68, pairedNt=H.G22
+   69 G     0 # name=H.G69
+   70 U     0 # name=H.U70
+   71 U     0 # name=H.U71
+   72 U     0 # name=H.U72
+   73 G     0 # name=H.G73
+   74 A     0 # name=H.A74
+   75 C     0 # name=H.C75
+   76 G    18 # name=H.G76, pairedNt=H.C18
+   77 A    17 # name=H.A77, pairedNt=H.U17
+   78 G    16 # name=H.G78, pairedNt=H.C16
+   79 U    15 # name=H.U79, pairedNt=H.A15
+   80 A    14 # name=H.A80, pairedNt=H.U14
+   81 A    13 # name=H.A81, pairedNt=H.U13
+   82 G    12 # name=H.G82, pairedNt=H.U12
+   83 U    11 # name=H.U83, pairedNt=H.A11
+   84 C    10 # name=H.C84, pairedNt=H.G10
+   85 C     9 # name=H.C85, pairedNt=H.G9
+   86 U     0 # name=H.U86
+   87 A     0 # name=H.A87
+   88 A     0 # name=H.A88
+   89 G     6 # name=H.G89, pairedNt=H.U6
+   90 U     5 # name=H.U90, pairedNt=H.A5
+   91 C     4 # name=H.C91, pairedNt=H.G4
+   92 A     3 # name=H.A92, pairedNt=H.U3
+   93 A     2 # name=H.A93, pairedNt=H.U2
+   94 C     1 # name=H.C94, pairedNt=H.G1

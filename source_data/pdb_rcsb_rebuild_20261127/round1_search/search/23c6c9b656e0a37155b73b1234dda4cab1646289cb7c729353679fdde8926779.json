@@ -1,0 +1,41 @@
+{
+  "candidate_entity_ids": [
+    "6PMO_2"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GAAAGUGGGUGCGCGUUUGGCGCAUCAACUCGGGUGGAACCGCGGGAGCUACGCUCUCGUCCCGAG"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "625a4ab1-452c-4af3-9029-9e913972fc49",
+    "result_set": [
+      {
+        "identifier": "6PMO_2",
+        "score": 1.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 1
+  },
+  "response_sha256": "615f320ef38899e35ecdeaf59a01290452d879964ad5f394fef599b658294504",
+  "retrieved_utc": "2026-11-26T20:46:09.079638+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

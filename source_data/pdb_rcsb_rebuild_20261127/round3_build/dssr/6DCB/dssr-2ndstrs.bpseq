@@ -1,0 +1,37 @@
+    1 g    28 # name=B.GTP1, pairedNt=B.C108
+    2 G    27 # name=B.G2, pairedNt=B.C107
+    3 A    26 # name=B.A3, pairedNt=B.U106
+    4 U     0 # name=B.U4
+    5 G    22 # name=B.G5, pairedNt=B.C102
+    6 U    21 # name=B.U6, pairedNt=B.A101
+    7 G    20 # name=B.G7, pairedNt=B.C100
+    8 A    19 # name=B.A8, pairedNt=B.U99
+    9 G    18 # name=B.G9, pairedNt=B.C98
+   10 G    17 # name=B.G10, pairedNt=B.C97
+   11 C    16 # name=B.C11, pairedNt=B.G16
+   12 U     0 # name=B.U12
+   13 U     0 # name=B.U13
+   14 C     0 # name=B.C14
+   15 G     0 # name=B.G15
+   16 G    11 # name=B.G16, pairedNt=B.C11
+   17 C    10 # name=B.C97, pairedNt=B.G10
+   18 C     9 # name=B.C98, pairedNt=B.G9
+   19 U     8 # name=B.U99, pairedNt=B.A8
+   20 C     7 # name=B.C100, pairedNt=B.G7
+   21 A     6 # name=B.A101, pairedNt=B.U6
+   22 C     5 # name=B.C102, pairedNt=B.G5
+   23 C     0 # name=B.C103
+   24 G     0 # name=B.G104
+   25 C     0 # name=B.C105
+   26 U     3 # name=B.U106, pairedNt=B.A3
+   27 C     2 # name=B.C107, pairedNt=B.G2
+   28 C     1 # name=B.C108, pairedNt=B.GTP1
+   29 A     0 # name=B.A109
+   30 U     0 # name=B.U110
+   31 G     0 # name=B.G111
+   32 U     0 # name=B.U112
+   33 G     0 # name=B.G113
+   34 C     0 # name=B.C114
+   35 G     0 # name=B.G115
+   36 A     0 # name=B.A116
+   37 a     0 # name=A.SAH701

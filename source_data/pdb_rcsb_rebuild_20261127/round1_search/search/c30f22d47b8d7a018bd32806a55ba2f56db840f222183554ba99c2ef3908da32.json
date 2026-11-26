@@ -1,0 +1,86 @@
+{
+  "candidate_entity_ids": [
+    "3A3A_1",
+    "3HL2_2",
+    "4ZDO_2",
+    "4ZDP_2",
+    "7MDL_2",
+    "7ZJW_2",
+    "8G9Z_2",
+    "3RG5_1",
+    "4RQE_2",
+    "4RQF_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GCCCGGAUGAUCCUCAGUGGUCUGGGGUGCAGGCUUCAAACCUGUAGCUGUCUAGCGACAGAGUGGUUCAAUUCCACCUUUCGGGC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "e3b49753-0d4d-49c9-85e9-3bdcda4fa2d1",
+    "result_set": [
+      {
+        "identifier": "3A3A_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "3HL2_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "4ZDO_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "4ZDP_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7MDL_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ZJW_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "8G9Z_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "3RG5_1",
+        "score": 0.2857142857142857
+      },
+      {
+        "identifier": "4RQE_2",
+        "score": 0.0
+      },
+      {
+        "identifier": "4RQF_1",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 10
+  },
+  "response_sha256": "32c3f1d8e29c51a66e63c3d895f8653e9a45c6178da0e5a35eed78028c1390cd",
+  "retrieved_utc": "2026-11-26T20:46:12.201014+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

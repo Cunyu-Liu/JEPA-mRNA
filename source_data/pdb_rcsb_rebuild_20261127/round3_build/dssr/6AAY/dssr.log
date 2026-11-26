@@ -1,0 +1,41 @@
+[i] JSON output should end with the .json extension
+
+Processing file '/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round2_resolve_score1/mmcif/6AAY.cif'
+[i] '/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round2_resolve_score1/mmcif/6AAY.cif' taken as in .cif format by file extension.
+    total number of nucleotides: 52
+    total number of amino acids: 1199
+[w] arginine [A.ARG193] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG198] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG330] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG425] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG450] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG491] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG526] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG720] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG734] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG193] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG198] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG330] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG425] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG450] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG491] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG526] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG720] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG722] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG734] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG890] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG991] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG1000] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG1002] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG1080] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG1090] -- NH1/NH2 naming swapped
+    total number of base pairs: 13
+    total number of helices: 1
+    total number of stems: 2
+    total number of splayed-apart dinucleotides: 14
+                        consolidated into units: 7
+    total number of hairpin loops: 1
+    total number of internal loops: 1
+    total number of non-loop single-stranded segments: 2
+
+Time used: 00:00:00:02

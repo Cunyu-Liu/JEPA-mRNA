@@ -1,0 +1,261 @@
+{
+  "candidate_entity_ids": [
+    "6PMO_1",
+    "6POM_2",
+    "36UK_3",
+    "4MGM_1",
+    "4MGN_2",
+    "9OWJ_2",
+    "9OWK_2",
+    "9OWL_2",
+    "9OWM_2",
+    "9OWN_2",
+    "9OWO_2",
+    "9OWP_2",
+    "9OWQ_2",
+    "9OWT_3",
+    "9OWU_3",
+    "9OWV_2",
+    "9OWW_3",
+    "9OWX_3",
+    "9OWY_3",
+    "4LCK_2",
+    "4TZP_2",
+    "4TZV_2",
+    "4TZW_2",
+    "4TZZ_2",
+    "3J46_5",
+    "7F36_2",
+    "7YSE_3",
+    "7ZQ6_31",
+    "8QOA_25",
+    "8ZEJ_30",
+    "8ZFI_30",
+    "9I3L_32",
+    "9R3A_30",
+    "9VVI_57",
+    "9WNQ_30",
+    "9WNR_31",
+    "9XWO_56",
+    "9Q3Q_23",
+    "6OM6_5",
+    "6JXM_1",
+    "6Q97_60",
+    "9H9H_2",
+    "9H9I_3",
+    "9H9K_3",
+    "8QCQ_37"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GCGGAAGUAGUUCAGUGGUAGAACACCACCUUGCCAAGGUGGGGGUCGCGGGUUCGAAUCCCGUCUUCCGCUCCA"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "a3f5753e-5593-4972-aaed-60033937888c",
+    "result_set": [
+      {
+        "identifier": "6PMO_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6POM_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "36UK_3",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "4MGM_1",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "4MGN_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWJ_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWK_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWL_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWM_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWN_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWO_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWP_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWQ_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWT_3",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWU_3",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWV_2",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWW_3",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWX_3",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "9OWY_3",
+        "score": 0.9479166666666666
+      },
+      {
+        "identifier": "4LCK_2",
+        "score": 0.7083333333333334
+      },
+      {
+        "identifier": "4TZP_2",
+        "score": 0.7083333333333334
+      },
+      {
+        "identifier": "4TZV_2",
+        "score": 0.7083333333333334
+      },
+      {
+        "identifier": "4TZW_2",
+        "score": 0.7083333333333334
+      },
+      {
+        "identifier": "4TZZ_2",
+        "score": 0.7083333333333334
+      },
+      {
+        "identifier": "3J46_5",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "7F36_2",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "7YSE_3",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "7ZQ6_31",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "8QOA_25",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "8ZEJ_30",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "8ZFI_30",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "9I3L_32",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "9R3A_30",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "9VVI_57",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "9WNQ_30",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "9WNR_31",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "9XWO_56",
+        "score": 0.4166666666666667
+      },
+      {
+        "identifier": "9Q3Q_23",
+        "score": 0.40625
+      },
+      {
+        "identifier": "6OM6_5",
+        "score": 0.375
+      },
+      {
+        "identifier": "6JXM_1",
+        "score": 0.17708333333333334
+      },
+      {
+        "identifier": "6Q97_60",
+        "score": 0.13541666666666666
+      },
+      {
+        "identifier": "9H9H_2",
+        "score": 0.020833333333333332
+      },
+      {
+        "identifier": "9H9I_3",
+        "score": 0.020833333333333332
+      },
+      {
+        "identifier": "9H9K_3",
+        "score": 0.020833333333333332
+      },
+      {
+        "identifier": "8QCQ_37",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 45
+  },
+  "response_sha256": "9c32ef63f1cb0a52389c594f3c7a9134b6303690d9fd30616aba8d5786ab38ee",
+  "retrieved_utc": "2026-11-26T20:46:13.378330+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

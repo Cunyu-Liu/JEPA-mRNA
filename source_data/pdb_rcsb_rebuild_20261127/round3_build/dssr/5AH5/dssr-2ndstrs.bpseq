@@ -1,0 +1,163 @@
+    1 G    76 # name=C.G1, pairedNt=C.C72
+    2 C    75 # name=C.C2, pairedNt=C.G71
+    3 C    74 # name=C.C3, pairedNt=C.G70
+    4 C    73 # name=C.C4, pairedNt=C.G69
+    5 G    72 # name=C.G5, pairedNt=C.C68
+    6 C    71 # name=C.C6, pairedNt=C.G67
+    7 A    70 # name=C.A7, pairedNt=C.U66
+    8 U     0 # name=C.U8
+    9 G     0 # name=C.G9
+   10 G    26 # name=C.G10, pairedNt=C.C25
+   11 U    25 # name=C.U11, pairedNt=C.A24
+   12 G    24 # name=C.G12, pairedNt=C.C23
+   13 A     0 # name=C.A13
+   14 A     0 # name=C.A14
+   15 A     0 # name=C.A15
+   16 U     0 # name=C.U16
+   17 C     0 # name=C.C17
+   18 G     0 # name=C.G18
+   19 G    60 # name=C.G19, pairedNt=C.C56
+   20 U     0 # name=C.U20
+   21 A     0 # name=C.A20^A
+   22 A     0 # name=C.A21
+   23 A     0 # name=C.A22
+   24 C    12 # name=C.C23, pairedNt=C.G12
+   25 A    11 # name=C.A24, pairedNt=C.U11
+   26 C    10 # name=C.C25, pairedNt=C.G10
+   27 A     0 # name=C.A26
+   28 U     0 # name=C.U27
+   29 C    39 # name=C.C28, pairedNt=C.G42
+   30 G    38 # name=C.G29, pairedNt=C.C41
+   31 C    37 # name=C.C30, pairedNt=C.G40
+   32 A    36 # name=C.A31, pairedNt=C.U39
+   33 C     0 # name=C.C32
+   34 A     0 # name=C.A37
+   35 A     0 # name=C.A38
+   36 U    32 # name=C.U39, pairedNt=C.A31
+   37 G    31 # name=C.G40, pairedNt=C.C30
+   38 C    30 # name=C.C41, pairedNt=C.G29
+   39 G    29 # name=C.G42, pairedNt=C.C28
+   40 C     0 # name=C.C43
+   41 C     0 # name=C.C44
+   42 G    50 # name=C.G45, pairedNt=C.C46^G
+   43 C    49 # name=C.C46, pairedNt=C.G46^F
+   44 C    48 # name=C.C46^A, pairedNt=C.G46^E
+   45 U     0 # name=C.U46^B
+   46 C     0 # name=C.C46^C
+   47 U     0 # name=C.U46^D
+   48 G    44 # name=C.G46^E, pairedNt=C.C46^A
+   49 G    43 # name=C.G46^F, pairedNt=C.C46
+   50 C    42 # name=C.C46^G, pairedNt=C.G45
+   51 U     0 # name=C.U47
+   52 U     0 # name=C.U48
+   53 G    69 # name=C.G49, pairedNt=C.C65
+   54 C    68 # name=C.C50, pairedNt=C.G64
+   55 C    67 # name=C.C51, pairedNt=C.G63
+   56 G    66 # name=C.G52, pairedNt=C.C62
+   57 G    65 # name=C.G53, pairedNt=C.C61
+   58 U     0 # name=C.U54
+   59 U     0 # name=C.U55
+   60 C    19 # name=C.C56, pairedNt=C.G19
+   61 A     0 # name=C.A57
+   62 A     0 # name=C.A58
+   63 G     0 # name=C.G59
+   64 U     0 # name=C.U60
+   65 C    57 # name=C.C61, pairedNt=C.G53
+   66 C    56 # name=C.C62, pairedNt=C.G52
+   67 G    55 # name=C.G63, pairedNt=C.C51
+   68 G    54 # name=C.G64, pairedNt=C.C50
+   69 C    53 # name=C.C65, pairedNt=C.G49
+   70 U     7 # name=C.U66, pairedNt=C.A7
+   71 G     6 # name=C.G67, pairedNt=C.C6
+   72 C     5 # name=C.C68, pairedNt=C.G5
+   73 G     4 # name=C.G69, pairedNt=C.C4
+   74 G     3 # name=C.G70, pairedNt=C.C3
+   75 G     2 # name=C.G71, pairedNt=C.C2
+   76 C     1 # name=C.C72, pairedNt=C.G1
+   77 A     0 # name=C.A73
+   78 C     0 # name=C.C74
+   79 C     0 # name=C.C75
+   80 A     0 # name=C.A76
+   81 G   157 # name=D.G1, pairedNt=D.C72
+   82 C   156 # name=D.C2, pairedNt=D.G71
+   83 C   155 # name=D.C3, pairedNt=D.G70
+   84 C   154 # name=D.C4, pairedNt=D.G69
+   85 G   153 # name=D.G5, pairedNt=D.C68
+   86 C   152 # name=D.C6, pairedNt=D.G67
+   87 A   151 # name=D.A7, pairedNt=D.U66
+   88 U     0 # name=D.U8
+   89 G     0 # name=D.G9
+   90 G   106 # name=D.G10, pairedNt=D.C25
+   91 U   105 # name=D.U11, pairedNt=D.A24
+   92 G   104 # name=D.G12, pairedNt=D.C23
+   93 A     0 # name=D.A13
+   94 A     0 # name=D.A14
+   95 A     0 # name=D.A15
+   96 U     0 # name=D.U16
+   97 C     0 # name=D.C17
+   98 G     0 # name=D.G18
+   99 G   141 # name=D.G19, pairedNt=D.C56
+  100 U     0 # name=D.U20
+  101 A     0 # name=D.A20^A
+  102 A     0 # name=D.A21
+  103 A     0 # name=D.A22
+  104 C    92 # name=D.C23, pairedNt=D.G12
+  105 A    91 # name=D.A24, pairedNt=D.U11
+  106 C    90 # name=D.C25, pairedNt=D.G10
+  107 A     0 # name=D.A26
+  108 U     0 # name=D.U27
+  109 C   120 # name=D.C28, pairedNt=D.G42
+  110 G   119 # name=D.G29, pairedNt=D.C41
+  111 C   118 # name=D.C30, pairedNt=D.G40
+  112 A   117 # name=D.A31, pairedNt=D.U39
+  113 C     0 # name=D.C32
+  114 U     0 # name=D.U33
+  115 A     0 # name=D.A37
+  116 A     0 # name=D.A38
+  117 U   112 # name=D.U39, pairedNt=D.A31
+  118 G   111 # name=D.G40, pairedNt=D.C30
+  119 C   110 # name=D.C41, pairedNt=D.G29
+  120 G   109 # name=D.G42, pairedNt=D.C28
+  121 C     0 # name=D.C43
+  122 C     0 # name=D.C44
+  123 G   131 # name=D.G45, pairedNt=D.C46^G
+  124 C   130 # name=D.C46, pairedNt=D.G46^F
+  125 C   129 # name=D.C46^A, pairedNt=D.G46^E
+  126 U     0 # name=D.U46^B
+  127 C     0 # name=D.C46^C
+  128 U     0 # name=D.U46^D
+  129 G   125 # name=D.G46^E, pairedNt=D.C46^A
+  130 G   124 # name=D.G46^F, pairedNt=D.C46
+  131 C   123 # name=D.C46^G, pairedNt=D.G45
+  132 U     0 # name=D.U47
+  133 U     0 # name=D.U48
+  134 G   150 # name=D.G49, pairedNt=D.C65
+  135 C   149 # name=D.C50, pairedNt=D.G64
+  136 C   148 # name=D.C51, pairedNt=D.G63
+  137 G   147 # name=D.G52, pairedNt=D.C62
+  138 G   146 # name=D.G53, pairedNt=D.C61
+  139 U     0 # name=D.U54
+  140 U     0 # name=D.U55
+  141 C    99 # name=D.C56, pairedNt=D.G19
+  142 A     0 # name=D.A57
+  143 A     0 # name=D.A58
+  144 G     0 # name=D.G59
+  145 U     0 # name=D.U60
+  146 C   138 # name=D.C61, pairedNt=D.G53
+  147 C   137 # name=D.C62, pairedNt=D.G52
+  148 G   136 # name=D.G63, pairedNt=D.C51
+  149 G   135 # name=D.G64, pairedNt=D.C50
+  150 C   134 # name=D.C65, pairedNt=D.G49
+  151 U    87 # name=D.U66, pairedNt=D.A7
+  152 G    86 # name=D.G67, pairedNt=D.C6
+  153 C    85 # name=D.C68, pairedNt=D.G5
+  154 G    84 # name=D.G69, pairedNt=D.C4
+  155 G    83 # name=D.G70, pairedNt=D.C3
+  156 G    82 # name=D.G71, pairedNt=D.C2
+  157 C    81 # name=D.C72, pairedNt=D.G1
+  158 A     0 # name=D.A73
+  159 C     0 # name=D.C74
+  160 C     0 # name=D.C75
+  161 A     0 # name=D.A76
+  162 a     0 # name=A.LSS1818
+  163 a     0 # name=B.LSS1818

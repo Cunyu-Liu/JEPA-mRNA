@@ -1,0 +1,37 @@
+   36 ENERGY = 0.0 [1E95] -- secondary structure derived by DSSR
+    1 G     0     2    19     1 # name=A.G1, pairedNt=A.C19
+    2 C     1     3    18     2 # name=A.C2, pairedNt=A.G18
+    3 G     2     4    17     3 # name=A.G3, pairedNt=A.C17
+    4 G     3     5    16     4 # name=A.G4, pairedNt=A.C16
+    5 C     4     6    15     5 # name=A.C5, pairedNt=A.G15
+    6 C     5     7    14     6 # name=A.C6, pairedNt=A.G14
+    7 A     6     8     0     7 # name=A.A7
+    8 G     7     9    34     8 # name=A.G8, pairedNt=A.C34
+    9 C     8    10    33     9 # name=A.C9, pairedNt=A.G33
+   10 U     9    11    32    10 # name=A.U10, pairedNt=A.A32
+   11 C    10    12    31    11 # name=A.C11, pairedNt=A.G31
+   12 C    11    13    30    12 # name=A.C12, pairedNt=A.G30
+   13 A    12    14    29    13 # name=A.A13, pairedNt=A.U29
+   14 G    13    15     6    14 # name=A.G14, pairedNt=A.C6
+   15 G    14    16     5    15 # name=A.G15, pairedNt=A.C5
+   16 C    15    17     4    16 # name=A.C16, pairedNt=A.G4
+   17 C    16    18     3    17 # name=A.C17, pairedNt=A.G3
+   18 G    17    19     2    18 # name=A.G18, pairedNt=A.C2
+   19 C    18    20     1    19 # name=A.C19, pairedNt=A.G1
+   20 C    19    21     0    20 # name=A.C20
+   21 A    20    22     0    21 # name=A.A21
+   22 A    21    23     0    22 # name=A.A22
+   23 A    22    24     0    23 # name=A.A23
+   24 C    23    25     0    24 # name=A.C24
+   25 A    24    26     0    25 # name=A.A25
+   26 A    25    27     0    26 # name=A.A26
+   27 U    26    28     0    27 # name=A.U27
+   28 A    27    29     0    28 # name=A.A28
+   29 U    28    30    13    29 # name=A.U29, pairedNt=A.A13
+   30 G    29    31    12    30 # name=A.G30, pairedNt=A.C12
+   31 G    30    32    11    31 # name=A.G31, pairedNt=A.C11
+   32 A    31    33    10    32 # name=A.A32, pairedNt=A.U10
+   33 G    32    34     9    33 # name=A.G33, pairedNt=A.C9
+   34 C    33    35     8    34 # name=A.C34, pairedNt=A.G8
+   35 A    34    36     0    35 # name=A.A35
+   36 C    35     0     0    36 # name=A.C36

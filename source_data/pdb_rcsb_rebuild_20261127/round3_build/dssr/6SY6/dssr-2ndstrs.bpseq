@@ -1,0 +1,36 @@
+    1 G     0 # name=D.G2
+    2 C     0 # name=D.C3
+    3 G    35 # name=D.G4, pairedNt=D.C36
+    4 G    34 # name=D.G5, pairedNt=D.C35
+    5 A     0 # name=D.A6
+    6 G     0 # name=D.G7
+    7 A     0 # name=D.A8
+    8 A     0 # name=D.A9
+    9 U     0 # name=D.U10
+   10 G     0 # name=D.G11
+   11 U     0 # name=D.U12
+   12 U     0 # name=D.U13
+   13 A     0 # name=D.A14
+   14 U     0 # name=D.U15
+   15 G     0 # name=D.G16
+   16 G    25 # name=D.G17, pairedNt=D.C26
+   17 C    24 # name=D.C18, pairedNt=D.G25
+   18 C    23 # name=D.C19, pairedNt=D.G24
+   19 U     0 # name=D.U20
+   20 U     0 # name=D.U21
+   21 C     0 # name=D.C22
+   22 G     0 # name=D.G23
+   23 G    18 # name=D.G24, pairedNt=D.C19
+   24 G    17 # name=D.G25, pairedNt=D.C18
+   25 C    16 # name=D.C26, pairedNt=D.G17
+   26 A     0 # name=D.A27
+   27 G     0 # name=D.G28
+   28 A     0 # name=D.A29
+   29 G     0 # name=D.G30
+   30 A     0 # name=D.A31
+   31 A     0 # name=D.A32
+   32 A     0 # name=D.A33
+   33 A     0 # name=D.A34
+   34 C     4 # name=D.C35, pairedNt=D.G5
+   35 C     3 # name=D.C36, pairedNt=D.G4
+   36 G     0 # name=D.G37

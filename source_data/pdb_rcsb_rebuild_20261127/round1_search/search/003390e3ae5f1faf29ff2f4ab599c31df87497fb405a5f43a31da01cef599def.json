@@ -1,0 +1,56 @@
+{
+  "candidate_entity_ids": [
+    "6LAS_1",
+    "6LAU_1",
+    "6LAZ_1",
+    "6LAX_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGCAUUGUGCCUCGCAUUGCACUCCGCGGGGCGAUAAGUCCUGAAAAGGGAUGUC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "850c9422-2563-4468-ae69-f481c03ddf3d",
+    "result_set": [
+      {
+        "identifier": "6LAS_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6LAU_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6LAZ_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6LAX_1",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 4
+  },
+  "response_sha256": "3709f6dd212cf59dadd3fd34e3c0693971559570cf0f057c37fdcda351ccc158",
+  "retrieved_utc": "2026-11-26T20:46:30.067187+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

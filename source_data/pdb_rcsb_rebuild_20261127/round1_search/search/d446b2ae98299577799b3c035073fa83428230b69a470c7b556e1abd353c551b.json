@@ -1,0 +1,91 @@
+{
+  "candidate_entity_ids": [
+    "2KE6_1",
+    "9UJU_1",
+    "2KUR_1",
+    "9RVY_3",
+    "9RVZ_3",
+    "9RW0_3",
+    "9RW1_3",
+    "9RW2_3",
+    "2KUV_1",
+    "2KUU_1",
+    "2KUW_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGCUUGAUUGUAUUUUUAAAUUAAUUCUUAAAAACUACAAAUUAAGCC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "9b13d8b1-cbd3-4d07-a381-77dd855d0815",
+    "result_set": [
+      {
+        "identifier": "2KE6_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "9UJU_1",
+        "score": 0.84375
+      },
+      {
+        "identifier": "2KUR_1",
+        "score": 0.71875
+      },
+      {
+        "identifier": "9RVY_3",
+        "score": 0.6875
+      },
+      {
+        "identifier": "9RVZ_3",
+        "score": 0.6875
+      },
+      {
+        "identifier": "9RW0_3",
+        "score": 0.6875
+      },
+      {
+        "identifier": "9RW1_3",
+        "score": 0.6875
+      },
+      {
+        "identifier": "9RW2_3",
+        "score": 0.6875
+      },
+      {
+        "identifier": "2KUV_1",
+        "score": 0.5625
+      },
+      {
+        "identifier": "2KUU_1",
+        "score": 0.4375
+      },
+      {
+        "identifier": "2KUW_1",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 11
+  },
+  "response_sha256": "2f89a49e9123b7146cbfe768d4f1b476b73bcf79c57e161219176bdc518d3ed0",
+  "retrieved_utc": "2026-11-26T20:46:38.815883+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}
