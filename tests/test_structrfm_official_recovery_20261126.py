@@ -137,43 +137,48 @@ class LauncherTest(unittest.TestCase):
 
 
 class ManifestTest(unittest.TestCase):
-    def test_manifest_never_fakes_new_predictions(self):
+    def test_manifest_contains_verified_full_predictions(self):
         path = Path(__file__).parents[1] / "manifests/foldnar_v2/structrfm_official_recovery_20261126.json"
         document = json.loads(path.read_text())
-        self.assertFalse(document["full_ready"])
+        self.assertTrue(document["full_ready"])
         self.assertTrue(document["asset_ready"])
-        self.assertIsNone(document["bprna_new_5388_contract"]["predictions"])
-        self.assertIsNone(document["bprna_new_5388_contract"]["metrics"])
+        self.assertEqual(document["bprna_new_5388_contract"]["coverage"], 1.0)
+        self.assertIsNotNone(document["bprna_new_5388_contract"]["predictions"])
+        self.assertIsNotNone(document["bprna_new_5388_contract"]["metrics"])
         self.assertFalse(document["model_identity"]["ensemble"])
         self.assertEqual(document["model_identity"]["n_checkpoints"], 1)
         self.assertFalse(document["historical_artifacts"]["eligible_as_new_official_prediction"])
         self.assertTrue(document["gpu_execution"]["performed"])
-        self.assertFalse(document["gpu_execution"]["full_dataset_inference_performed"])
+        self.assertTrue(document["gpu_execution"]["full_dataset_inference_performed"])
 
-    def test_runtime_manifest_is_ready_without_faking_full_predictions(self):
+    def test_runtime_manifest_separates_readiness_and_full_results(self):
         root = Path(__file__).parents[1]
         document = json.loads((root / "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json").read_text())
         self.assertTrue(document["runtime_ready"])
-        self.assertFalse(document["full_ready"])
-        self.assertIsNone(document["predictions"])
-        self.assertIsNone(document["metrics"])
+        self.assertTrue(document["full_ready"])
+        self.assertEqual(document["predictions"]["coverage"], 1.0)
+        self.assertIsNotNone(document["metrics"])
         self.assertFalse(document["gpu_readiness"]["full_dataset_inference_performed"])
         self.assertEqual(document["differential"]["n_cases"], 18)
         original = json.loads((root / "manifests/foldnar_v2/structrfm_official_recovery_20261126.json").read_text())
         self.assertTrue(original["runtime_ready"])
-        self.assertFalse(original["gpu_execution"]["full_dataset_inference_performed"])
+        self.assertTrue(original["gpu_execution"]["full_dataset_inference_performed"])
 
     def test_registry_blocks_unlinked_historical_prediction(self):
         root = Path(__file__).parents[1]
         baseline_doc = json.loads((root / "manifests/foldnar_v1/baseline_registry.json").read_text())
         baseline = next(row for row in baseline_doc["rows"] if row["baseline_id"] == "structrfm")
         self.assertEqual(baseline["official_weights"]["sha256"], recovery.ASSET_SHA256)
-        self.assertEqual(baseline["n_frozen_prediction_rows"], 0)
+        self.assertEqual(baseline["n_frozen_prediction_rows"], 1)
         self.assertEqual(baseline["n_blocked_prediction_rows"], 1)
         prediction_doc = json.loads((root / "manifests/foldnar_v1/prediction_registry.json").read_text())
         prediction = next(row for row in prediction_doc["rows"] if row["prediction_id"] == "structrfm/bprna_new")
         self.assertEqual(prediction["status"], "BLOCKED")
         self.assertFalse(prediction["official_checkpoint_link"]["eligible_as_verified_official"])
+        official = next(row for row in prediction_doc["rows"] if row["prediction_id"] == "structrfm_official_v0.0.8/bprna_new")
+        self.assertEqual(official["status"], "FROZEN")
+        self.assertEqual(official["metrics"]["coverage"], 1.0)
+        self.assertTrue(official["comparability"].startswith("verified official v0.0.8 raw replay"))
 
 
 if __name__ == "__main__":

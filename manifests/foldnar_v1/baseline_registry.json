@@ -1717,20 +1717,20 @@
         "source_sha256": "cb4768592947e40d6ef70a65e393eaee5cf33b139e45cfa641ff0cd04b33224b"
       },
       "inference": {
-        "status": "OFFICIAL_CHECKPOINT_AND_RUNTIME_VERIFIED_FULL_GPU_PREDICTION_PENDING",
+        "status": "FROZEN_RAW_PROTOCOL",
         "version_protocol": "structRFM v0.0.8 bpRNA1m SSP; single checkpoint; official inference source f0c1add; B=1; max_seq_len=512; MixedFold constrained DP",
         "decoder": "MixedFold Turner + constrained DP (interface.predict_mxfold)",
         "threshold": null,
-        "evaluation_scope": "bpRNA-new raw 5388; no new prediction yet",
+        "evaluation_scope": "official v0.0.8 bpRNA-new raw 5388 complete",
         "model_form": "single_checkpoint_not_ensemble",
         "ensemble": false
       },
       "comparability": {
-        "status": "HISTORICAL_RAW_REPLAY_UNLINKED; new official-checkpoint raw predictions pending; raw is not clean",
+        "status": "OFFICIAL_V008_PROJECT_RAW_GT_ONLY; raw is not clean; historical unlinked replay remains separately blocked",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
         "e0_expanded_71_used": false
       },
-      "provenance_status": "OFFICIAL_WEIGHT_AND_CP38_DIFFERENTIAL_RUNTIME_VERIFIED_PREDICTION_PENDING",
+      "provenance_status": "OFFICIAL_WEIGHT_RUNTIME_AND_RAW_5388_PREDICTION_VERIFIED",
       "evidence": {
         "source_type": "local_file",
         "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
@@ -1740,14 +1740,15 @@
         "hash_scope": "full_content"
       },
       "evidence_additional": [],
-      "status": "OFFICIAL_WEIGHT_RECOVERED_GPU_PREDICTION_PENDING",
-      "inclusion_reason": "required historical 25 coverage; official v0.0.8 checkpoint recovered, new official 5388 prediction pending",
+      "status": "OFFICIAL_V008_RAW_BPRNA_NEW_COMPLETE",
+      "inclusion_reason": "required historical 25 coverage; official v0.0.8 checkpoint and raw 5388 prediction complete",
       "exclusion_reason": null,
-      "prediction_registry_scope": "HISTORICAL_UNLINKED_NOT_VERIFIED_OFFICIAL",
+      "prediction_registry_scope": "OFFICIAL_V008_FROZEN_PLUS_HISTORICAL_UNLINKED",
       "prediction_ids": [
-        "structrfm/bprna_new"
+        "structrfm/bprna_new",
+        "structrfm_official_v0.0.8/bprna_new"
       ],
-      "n_frozen_prediction_rows": 0,
+      "n_frozen_prediction_rows": 1,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 1,
       "unknown_fields_are_not_zero": true,
@@ -1760,7 +1761,8 @@
         "raw_clean_sota_claim": false
       },
       "structrfm_official_recovery": "manifests/foldnar_v2/structrfm_official_recovery_20261126.json",
-      "structrfm_runtime_compatibility": "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json"
+      "structrfm_runtime_compatibility": "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json",
+      "structrfm_official_v008_results": "manifests/foldnar_v2/structrfm_official_bprna_new_results_20261126.json"
     },
     {
       "baseline_id": "xens2",

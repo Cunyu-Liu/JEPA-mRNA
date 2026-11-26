@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "created_utc": "2026-11-26T12:33:55.415595+00:00",
-  "status": "OFFICIAL_CP38_DIFFERENTIAL_AND_SM120_SINGLE_SEQUENCE_READINESS_PASS",
-  "full_ready": false,
+  "status": "FULL_READY_OFFICIAL_V008_RAW_5388",
+  "full_ready": true,
   "runtime_ready": true,
   "ready_scope": "Current CPython 3.10 + torch 2.7.1+cu128 + rebuilt original C++ DP; exact pair/DBN differential against official cp38 interface; one shortest-sequence GPU forward + CPU DP",
-  "blocked_scope": "Full 5388 GPU inference and new official predictions were not run in this task",
+  "blocked_scope": null,
   "upstream": {
     "repository": "https://github.com/mxfold/mxfold2",
     "version": "v0.1.2",
@@ -115,7 +115,27 @@
     "full_dataset_inference_performed": false,
     "summary_only_prediction_substitution": false
   },
-  "predictions": null,
-  "metrics": null,
+  "predictions": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/predictions/structrfm_official_v0.0.8_bprna_new_5388.jsonl",
+    "sha256": "dca0be0a4a383af7902eb06b12fda8a6af618b931f06869516f9154a981f787b",
+    "n_sequences": 5388,
+    "coverage": 1.0
+  },
+  "metrics": {
+    "n_dataset_sequences": 5388,
+    "n_with_prediction": 5388,
+    "coverage": 1.0,
+    "missing_names": [],
+    "extra_names": [],
+    "tp": 73864,
+    "fp": 62616,
+    "fn": 61320,
+    "micro_precision": 0.5412075029308323,
+    "micro_recall": 0.5463960231980116,
+    "micro_f1": 0.5437893868896873,
+    "macro_f1": 0.5338105702966888,
+    "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs",
+    "prediction_identity_sha256": "9ec75dab3386b9dbf2c948fb502803a186d6f970f840353c0c0c9c5ab6d937a3"
+  },
   "summary_only_prediction_substitution": false
 }

@@ -2,11 +2,11 @@
   "schema_version": 1,
   "created_utc": "2026-11-26T11:07:05.090823+00:00",
   "baseline_id": "structrfm",
-  "status": "OFFICIAL_CHECKPOINT_AND_RUNTIME_READY_GPU_PREDICTION_PENDING",
-  "full_ready": false,
+  "status": "FULL_READY_OFFICIAL_V008_RAW_5388",
+  "full_ready": true,
   "asset_ready": true,
   "ready_scope": "Official v0.0.8 release checkpoint bytes, release/source identity, model/training/single-model attributes and bpRNA-new 5388 I/O contract",
-  "blocked_scope": "Full 5388 GPU inference and new verified-official predictions remain pending; historical weight bytes are unavailable for retrospective linkage",
+  "blocked_scope": null,
   "source": {
     "repository": "https://github.com/heqin-zhu/structRFM",
     "path": "/home/rna_jev/third_party/structRFM",
@@ -158,10 +158,25 @@
     "output": "one JSONL row per input in identical order: {name,seq,pred_pairs}; zero-based inclusive i<j; reciprocal one-based connects accepted only at conversion boundary",
     "labels_excluded_from_inference_input": true,
     "summary_only_substitution_forbidden": true,
-    "predictions": null,
-    "prediction_sha256": null,
-    "coverage": null,
-    "metrics": null
+    "predictions": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/predictions/structrfm_official_v0.0.8_bprna_new_5388.jsonl",
+    "prediction_sha256": "dca0be0a4a383af7902eb06b12fda8a6af618b931f06869516f9154a981f787b",
+    "coverage": 1.0,
+    "metrics": {
+      "n_dataset_sequences": 5388,
+      "n_with_prediction": 5388,
+      "coverage": 1.0,
+      "missing_names": [],
+      "extra_names": [],
+      "tp": 73864,
+      "fp": 62616,
+      "fn": 61320,
+      "micro_precision": 0.5412075029308323,
+      "micro_recall": 0.5463960231980116,
+      "micro_f1": 0.5437893868896873,
+      "macro_f1": 0.5338105702966888,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs",
+      "prediction_identity_sha256": "9ec75dab3386b9dbf2c948fb502803a186d6f970f840353c0c0c9c5ab6d937a3"
+    }
   },
   "historical_artifacts": {
     "weight": {
@@ -182,7 +197,7 @@
     "runtime_requirement": "Verified cp310 interface built from unmodified MXfold2 v0.1.2 C++ source; torch 2.7.1+cu128 supports sm_120",
     "occupied_gpu_policy": "No automatic execution; explicit --execute required",
     "single_sequence_readiness_performed": true,
-    "full_dataset_inference_performed": false,
+    "full_dataset_inference_performed": true,
     "execution_scope": "18 GPU-forward parameter exports plus one end-to-end readiness sequence; no full inference or prediction artifact"
   },
   "provenance_policy": "No summary-only score, unlinked historical replay, partial download, differing-weight prediction, or reference label may be substituted for a new official-checkpoint prediction",
