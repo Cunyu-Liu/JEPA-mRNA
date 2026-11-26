@@ -14,6 +14,7 @@ F = Path("/teams/HoulabData_1788502323/liucunyu/foldnar")
 A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts")
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
 STRUCTRFM = F / "structrfm_official_v0.0.8"
+FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
 
 SOURCES = {
     "capacity": A / "representation_head_mechanism_4arm_v1/capacity_freeze_audit.json",
@@ -35,6 +36,7 @@ SOURCES = {
     "structrfm": STRUCTRFM / "reports/structrfm_official_bprna_new_metrics_20261126.json",
     "structrfm_provenance": STRUCTRFM / "reports/structrfm_official_provenance_20261126.json",
     "structrfm_delivery": STRUCTRFM / "reports/full_delivery_verification_20261126.json",
+    "raw_baselines": FOLDNAR_REPO / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
 }
 
 
@@ -81,6 +83,9 @@ def verify_narrative_guards() -> list[str]:
         "真实 deck 为 14 张、记录至第 33 页",
         "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED",
         "不是我们的候选正向性能，也不是 clean SOTA",
+        "0.19321803153859785",
+        "0.15297454451260917",
+        "这不是相对百分比，也不是我们的候选提升",
         "margin_superior_to_nll_claim_allowed=false",
         "完成臂 0",
         "scientific_conclusion=null",
@@ -201,6 +206,22 @@ def verify_numbers() -> list[str]:
     check("structRFM delivery raw", pointer(data["structrfm_delivery"], "raw_not_clean"), True)
     check("structRFM delivery micro", pointer(data["structrfm_delivery"], "micro_f1"), 0.5437893868896873)
     check("structRFM delivery macro", pointer(data["structrfm_delivery"], "macro_f1"), 0.5338105702966888)
+
+    check("raw registry status", pointer(data["raw_baselines"], "status"), "PASS_20_EXISTING_ASSETS_SHA_ID_METRICS")
+    check("raw registry not clean", pointer(data["raw_baselines"], "scope_contract/raw_is_not_clean"), True)
+    check("BPfold model form", pointer(data["raw_baselines"], "strongest_project_raw/model_form"), "six_checkpoint_ensemble")
+    check("BPfold coverage", pointer(data["raw_baselines"], "strongest_project_raw/coverage"), 1.0)
+    check("BPfold sequences", pointer(data["raw_baselines"], "strongest_project_raw/n_sequences"), 5388)
+    check("BPfold micro", pointer(data["raw_baselines"], "strongest_project_raw/micro_f1"), 0.7370074184282851, "0.7370074184282851")
+    check("CONTRAfold model form", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/model_form"), "deterministic_single_predictor")
+    check("CONTRAfold coverage", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/coverage"), 1.0)
+    check("CONTRAfold sequences", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/n_sequences"), 5388)
+    check("CONTRAfold micro", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1"), 0.6967639314022964, "0.6967639314022964")
+    structrfm_micro = pointer(data["structrfm"], "metrics/micro_f1")
+    bpfold_gap = pointer(data["raw_baselines"], "strongest_project_raw/micro_f1") - structrfm_micro
+    contrafold_gap = pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1") - structrfm_micro
+    check("BPfold minus structRFM", bpfold_gap, 0.19321803153859785, "0.19321803153859785")
+    check("CONTRAfold minus structRFM", contrafold_gap, 0.15297454451260917, "0.15297454451260917")
 
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")

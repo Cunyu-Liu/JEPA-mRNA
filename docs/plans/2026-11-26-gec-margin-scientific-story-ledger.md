@@ -7,7 +7,7 @@
 
 ## 当前一句话
 
-已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；structRFM 官方 raw 结果只是外部基线；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
+已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；structRFM 官方 raw 结果及其与 BPfold/CONTRAfold 的差距只是外部基线算术；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
 
 ## 时间、提交与运行快照
 
@@ -118,6 +118,17 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：标签范围为 `PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED`，`raw_not_clean=true`；未作精确/同源去污染，checkpoint 训练暴露未解决。它是官方外部单模型 baseline，不是 FoldNar/GEC/margin 候选结果，不授权 clean、OOD、外部候选性能或 SOTA 宣称。
 - **Next**：只允许与同一 raw 5,388 标签、同一 strict micro-F1 口径的 baseline 做绝对差距描述；候选正向性能仍须等待其自身合格实验。
 
+## 10. BPfold / CONTRAfold 绝对差距：同 raw 口径的 baseline 算术
+
+- **Claim（绝对 micro-F1 差距）**：在项目 raw bpRNA-new 5,388 条、相同 strict micro-F1 口径下，BPfold 六 checkpoint 集成与 CONTRAfold 确定性单模型分别高于 structRFM 官方单模型 **0.19321803153859785** 和 **0.15297454451260917**；这不是相对百分比，也不是我们的候选提升。
+- **Phenomenon**：raw baseline 排名同时混有不同模型形式与未解决训练暴露；只报一个较高分数会误导读成集成/单模型等同或 clean SOTA。
+- **Intervention**：固定项目 `bprna_new.jsonl`（SHA256 `271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9`）、zero-based inclusive exact pairs、5,388/5,388 coverage，直接计算 comparator−structRFM 的 pooled strict micro-F1 绝对差。
++- **Expected observation**：三者身份、模型形式、coverage 与 raw 标签口径一致可比时才允许相减；BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入。
++- **Actual**：BPfold `six_checkpoint_ensemble` micro-F1=**0.7370074184282851**，绝对差=**0.7370074184282851−0.5437893868896873=0.19321803153859785**；CONTRAfold `deterministic_single_predictor` micro-F1=**0.6967639314022964**，绝对差=**0.6967639314022964−0.5437893868896873=0.15297454451260917**。数值来自 FoldNAR HEAD `fd497e9819e39a29887ec26698a46c91284d230b` 的冻结 registry，structRFM 执行提交仍为 `b53a4f8245776eda43f1bb2ee651a654df68425b`。
++- **Artifact**：`/home/rna_jev_foldnar_integration/manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json` 的 `strongest_project_raw` 与 `strongest_project_raw_single_predictor`；structRFM 来源仍为 `F/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json`。
++- **Limitation**：三项都是 `raw ranking only; not clean SOTA` 口径；raw 未去污染，BPfold 训练 overlap 未解决，CONTRAfold 的 TR1c-clean 结果属于另一面板。两个差距都不是 FoldNar/GEC/margin 候选正向性能，不证明集成优于所有单模型，也不授权 clean/OOD/SOTA。
++- **Next**：保留该差距作为 raw 基线差距事实；若未来评估候选，必须独立取得同协议候选预测并重新计算，不能从 baseline 差值反推候选得分。
++
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -131,6 +142,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | NLL 仅恢复结构参照 | 收敛元数据缺陷 | raw ledger/checkpoint 双实现复核 | 唯一资格缺陷解除且科学门不动 | `qualification_summary.json` | 不是科学 PASS 或 margin 参照 checkpoint |
 | margin 待检验 | 98.31% FN 定位 | seed0 margin 四臂至各自收敛 | 固定 MEA 下通过全部科学与对照门 | authorization/startup/scheduler；结果尚缺 | 当前无收敛结构结果，不得阳性宣称 |
 | structRFM 官方 raw baseline | 历史预测无法绑定官方权重 | 官方 v0.0.8 全量新推理+独立评分 | 5,388 条身份/coverage/raw 指标完整 | `structrfm_official_bprna_new_metrics_20261126.json` | 外部 baseline；raw 非 clean；不是候选正向性能或 SOTA |
+| BPfold/CONTRAfold 相对 structRFM 的 raw 绝对差 | baseline 模型形式与暴露不同 | 同 5,388 raw 标签 strict micro-F1 相减 | 身份/coverage 一致且差距可复算 | `bprna_new_recovered_prediction_registry.json` | 外部 baseline 算术；不是候选提升或 clean SOTA |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -148,7 +160,8 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **NLL 资格措辞**：`QUALIFIED_STRUCTURE_REFERENCE` 只能支持“可作结构参照”；不得省略为“NLL/GEC 科学通过”，且原 seed0 FAIL 必须同场保留。
 - [ ] **负面结果完整性**：容量、SRD、stacking 与 GEC 的停止/失败不得被后续候选叙事抹去；任何新阳性 claim 必须同时说明其不同干预与直接证据。
 - [ ] **官方 raw baseline 措辞**：structRFM 结果必须同时保留官方外部 baseline、5,388 条 raw 非去污染与候选隔离边界；不得写成我们的正向性能、clean/OOD 或 SOTA。
+- [ ] **raw 绝对差距**：BPfold 集成、CONTRAfold 单模型与 structRFM 的差值只能是同面板 micro-F1 绝对算术；不得混用 official-reference/TR1c-clean 标签、改写成相对百分比或候选提升。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、BPfold/CONTRAfold 绝对差距算术、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。

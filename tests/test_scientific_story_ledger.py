@@ -37,3 +37,12 @@ def test_structrfm_official_raw_scope_and_arithmetic():
     assert "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED" in text
     micro = 2 * 73864 / (2 * 73864 + 62616 + 61320)
     assert micro == pytest.approx(0.5437893868896873)
+
+
+def test_raw_baseline_absolute_gap_arithmetic():
+    structrfm = 0.5437893868896873
+    assert 0.7370074184282851 - structrfm == pytest.approx(0.19321803153859785)
+    assert 0.6967639314022964 - structrfm == pytest.approx(0.15297454451260917)
+    text = ledger.DOC.read_text()
+    assert "这不是相对百分比，也不是我们的候选提升" in text
+    assert "BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入" in text
