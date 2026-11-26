@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-26T11:35:24Z",
+  "baseline_id": "contextfold",
+  "status": "BLOCKED_OFFICIAL_IMPLEMENTATION_AND_PARAMETERS_NOT_RECOVERED",
+  "full_ready": false,
+  "ready_scope": "Author-official homepage/readme/resources evidence, verified partial training protocol, strict bpRNA-new I/O contract and fail-closed reproducible CPU launcher",
+  "blocked_scope": "Original ContextFold_1_00.zip bytes, Java classes/source and trained model files were not recovered; no executable or parameter SHA256 can be asserted",
+  "blocking_reason": "The author site times out on HTTP and HTTPS. Arquivo.pt contains the homepage but not the ZIP. Exact ZIP queries returned no captures in the queried annual Common Crawl indexes from 2012 through 2025. Wayback/archive.org endpoints time out from both available networks. No official binary/source/model bytes are therefore available for a full-ready claim.",
+  "official_identity": {
+    "software": "Context Fold 1.00",
+    "homepage": "http://www.cs.bgu.ac.il/~negevcb/contextfold/",
+    "archive_url": "http://www.cs.bgu.ac.il/~negevcb/contextfold/ContextFold_1_00.zip",
+    "default_model": "StHighCoHigh",
+    "default_model_path": "trained/StHighCoHigh.model",
+    "prediction_entrypoint": "java -cp bin contextFold.app.Predict",
+    "training_entrypoint": "java -cp bin contextFold.app.Train",
+    "runtime": "Java 6 or higher",
+    "third_party_same_name_implementations_accepted": false
+  },
+  "implementation": {
+    "status": "BLOCKED_OFFICIAL_DISTRIBUTION_BYTES_NOT_RECOVERED",
+    "archive": {
+      "url": "http://www.cs.bgu.ac.il/~negevcb/contextfold/ContextFold_1_00.zip",
+      "path": null,
+      "expected_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/contextfold_official_recovery_20261126/source/ContextFold_1_00.zip",
+      "sha256": null
+    },
+    "package_root": null,
+    "predict_class": null,
+    "source_tree_sha256": null
+  },
+  "trained_parameters": {
+    "status": "BLOCKED_OFFICIAL_DISTRIBUTION_BYTES_NOT_RECOVERED",
+    "default_model": "StHighCoHigh",
+    "reported_nonzero_scoring_parameters_approx": 70000,
+    "path": null,
+    "sha256": null,
+    "reduced_models_named_by_homepage": ["Baseline", "StHighCoMed", "StMedCoHigh", "StMedCoMed"],
+    "family_specialized_models": "Official homepage/resources describe them, but no parameter bytes were recovered"
+  },
+  "paper": {
+    "title": "Rich Parameterization Improves RNA Structure Prediction",
+    "authors": ["Shay Zakov", "Yoav Goldberg", "Michael Elhadad", "Michal Ziv-Ukelson"],
+    "doi": "10.1089/cmb.2011.0184",
+    "pmid": "22035327",
+    "recomb_doi": "10.1007/978-3-642-20036-6_48",
+    "crossref_url": "https://api.crossref.org/works/10.1089/cmb.2011.0184",
+    "crossref_sha256": "2285276e66d70da7e810dc05b2686b913f948663be9605271d7ffe8f23331086",
+    "pubmed_xml_sha256": "92546e923591785c81e33b7ddcb83efb7840a2036bbac0946dacd87d5a876a54",
+    "license": "No open paper license was asserted by OpenAlex/Crossref for the journal article; this does not determine software licensing"
+  },
+  "training_protocol": {
+    "verification_scope": "PARTIAL_OFFICIAL_README_RESOURCES_AND_ABSTRACT; full article methods and Train defaults were not invented",
+    "dataset_provenance": "S-Full, S-Full-Test, S-Full-Train and S-Strand2 are taken from Andronescu et al., Computational approaches for RNA energy parameter estimation, RNA 2010 16:2304-2318",
+    "paper_prediction_training_set": "S-Full-Train",
+    "feature_filter": "Features with absolute weight below 0.01 of the maximum absolute feature weight were filtered for the reported S-Full-Test/S-Strand2 predictions (RECOMB Table 3 protocol)",
+    "default_feature_model": "StHighCoHigh",
+    "family_specialized_protocol": "Train StHighCoHigh on S-Full, then retrain separately on each main RNA family; official resources explicitly warn that these models are over-fitted to their families",
+    "strand2_warning": "Official resources state that S-Strand2 overlaps to some extent with the training set",
+    "train_command_example": "java -cp bin contextFold.app.Train train:<data> f:StHighCoHigh",
+    "retrain_example_not_default": "iter:6 and improve:0.5 are only a readme example (stop after six iterations or <0.5% improvement in three consecutive iterations), not asserted as released-model defaults",
+    "optimizer_and_released_training_hyperparameters": "BLOCKED_FULL_METHODS_AND_TRAIN_DEFAULTS_NOT_VERIFIED",
+    "bpRNA_new_used_for_training_or_tuning": false
+  },
+  "official_evidence": {
+    "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/contextfold_official_recovery_20261126/evidence",
+    "homepage": {
+      "original_url": "https://www.cs.bgu.ac.il/~negevcb/contextfold/",
+      "archive_url": "https://arquivo.pt/wayback/20241029125313id_/https://www.cs.bgu.ac.il/~negevcb/contextfold/",
+      "capture_utc": "2024-10-29T12:53:13Z",
+      "sha256": "af8844426996bc43f382336853c03d654bccdeecc71ef45878ef53b96e34afd7",
+      "observed": "Original HTML links ContextFold_1_00.zip, readme.pdf and resources.pdf and names StHighCoHigh as the default feature-richest model"
+    },
+    "readme": {
+      "original_url": "https://www.cs.bgu.ac.il/~negevcb/contextfold/readme.pdf",
+      "index_url": "https://index.commoncrawl.org/CC-MAIN-2022-49-index?url=www.cs.bgu.ac.il%2F~negevcb%2Fcontextfold%2Freadme.pdf&output=json",
+      "capture_utc": "2022-12-10T09:08:28Z",
+      "http_status": 200,
+      "last_modified": "2012-07-06T19:09:24Z",
+      "warc_payload_sha1_base32": "7N7CB4GEFS2SA33RMZIYXM77GV2I4G73",
+      "warc_sha256": "d032fa8620c745d0e9434730f5d833e5262e99d442c65316a6a344c3d17ec6b5",
+      "pdf_sha256": "c140e86b20a2b64e1bc76f83d2383599b5ac049fa6c91cb76423a69d8e43006b",
+      "pdf_bytes": 363704
+    },
+    "resources": {
+      "original_url": "https://www.cs.bgu.ac.il/~negevcb/contextfold/resources.pdf",
+      "index_url": "https://index.commoncrawl.org/CC-MAIN-2022-49-index?url=www.cs.bgu.ac.il%2F~negevcb%2Fcontextfold%2Fresources.pdf&output=json",
+      "capture_utc": "2022-12-10T09:29:17Z",
+      "http_status": 200,
+      "last_modified": "2012-07-28T15:37:05Z",
+      "warc_payload_sha1_base32": "CVG3KY54NQD4AVABKJP7CU47AFATJGBO",
+      "warc_sha256": "136a032299de9f79ae4ab81085c5cb3bb0b46564bc6eebce4465a7cd8ea623ab",
+      "pdf_sha256": "3b925b6641191a62ac714b3a352ebcf78e72eec9b8e50ded052584c687b4b98f",
+      "pdf_bytes": 284461
+    }
+  },
+  "source_checks": [
+    {
+      "channel": "Author official site and original WARC IP",
+      "observed": "www.cs.bgu.ac.il and cs.bgu.ac.il HTTP/HTTPS plus 132.72.118.165 timed out; no ZIP bytes"
+    },
+    {
+      "channel": "Arquivo.pt CDX and raw replay",
+      "observed": "Homepage and example.js recovered; ContextFold_1_00.zip, readme.pdf and resources.pdf had no Arquivo CDX captures; ZIP replay returned 404"
+    },
+    {
+      "channel": "Common Crawl annual exact ZIP queries",
+      "indexes": ["CC-MAIN-2012", "CC-MAIN-2013-48", "CC-MAIN-2014-52", "CC-MAIN-2015-48", "CC-MAIN-2016-50", "CC-MAIN-2017-51", "CC-MAIN-2018-51", "CC-MAIN-2019-51", "CC-MAIN-2020-50", "CC-MAIN-2021-49", "CC-MAIN-2022-49", "CC-MAIN-2023-50", "CC-MAIN-2024-51", "CC-MAIN-2025-30"],
+      "observed": "All final responses were HTTP 404 No Captures; transient 502/503/504 responses were retried"
+    },
+    {
+      "channel": "Wayback CDX, wayback.archive.org and archive.org availability/advanced search",
+      "observed": "Connection timeouts from px2 and the client network; no capture claim is inferred from this network block"
+    },
+    {
+      "channel": "Crossref, PubMed, OpenAlex, Springer RECOMB landing page and GitHub repository search",
+      "observed": "Confirmed identity and official homepage; no official implementation mirror or downloadable publisher supplementary ZIP was exposed. GitHub same-name results are unrelated and were rejected"
+    }
+  ],
+  "license": {
+    "status": "BLOCKED_NOT_SPECIFIED_IN_RECOVERED_OFFICIAL_DOCUMENTS",
+    "spdx": null,
+    "reason": "The official homepage/readme/resources do not state a software/model license; the full ZIP license notices are unavailable"
+  },
+  "bprna_new_5388_contract": {
+    "dataset_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+    "dataset_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "n_sequences": 5388,
+    "unique_names": 5388,
+    "length_min": 33,
+    "length_max": 489,
+    "alphabet": ["A", "C", "G", "U"],
+    "n_reference_pairs": 135184,
+    "native_input": "For each row: >name, then one A/C/G/U sequence line; reference structures/pairs are never supplied to Predict",
+    "native_output": "Same item identity and sequence plus exactly one non-pseudoknotted dot-bracket prediction line",
+    "output": "One JSONL row per input in input order: {name,seq,pred_pairs}; zero-based inclusive i<j; no duplicate partners or crossing pairs; complete 5388 identity required",
+    "predictions": null,
+    "prediction_sha256": null,
+    "coverage": null,
+    "metrics": null,
+    "summary_only_substitution_forbidden": true,
+    "reference_labels_used_for_inference": false
+  },
+  "execution": {
+    "gpu_tasks_started_or_modified": false,
+    "full_bprna_new_inference_performed": false,
+    "launcher": "tools/run_contextfold_official_bprna_new.py",
+    "launcher_behavior": "Fails closed until official ZIP/source/Predict.class/StHighCoHigh.model identities and SHA256 are verified; uses CPU Java only and writes predictions atomically"
+  },
+  "provenance_policy": "No same-name third-party implementation, paper-derived pseudo-implementation, fabricated parameters, summary-only score, reference labels or empty predictions substituted"
+}
