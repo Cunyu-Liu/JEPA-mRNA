@@ -561,7 +561,8 @@
         "vienna_mfe/bprna_new/recovered_v4",
         "vienna_centroid/bprna_new/recovered_v4",
         "vienna_mea/bprna_new/recovered_v4",
-        "contrafold/bprna_new/clean_tr1c"
+        "contrafold/bprna_new/clean_tr1c",
+        "structrfm_official_v0.0.8/bprna_new"
       ]
     },
     {

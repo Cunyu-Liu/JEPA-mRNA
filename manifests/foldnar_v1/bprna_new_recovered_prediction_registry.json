@@ -39,7 +39,7 @@
   "remaining_blocked": [
     "ContextFold, E2Efold, DEBFold and ERNIE-RNA have no eligible full bpRNA-new prediction asset",
     "raw assets are not homology-decontaminated; exact training-union and exposure blocks remain system-specific",
-    "structRFM local checkpoint bytes and several license/training provenance fields remain blocked",
+    "structRFM historical SSP weight is absent; old 5388 predictions are trace-only, while the recovered official checkpoint still needs a new GPU replay",
     "only CONTRAfold has this particular TR1c-clean asset; no cross-system clean SOTA ranking is supported",
     "CHANRG records with empty names were not processed"
   ],
@@ -321,10 +321,10 @@
       "model_form": "single_model",
       "label_protocol": "PROJECT_DATABASE_RAW_5388",
       "prediction_origin": "project_replay",
-      "training_identity": "author structRFM_SSP_bpRNA1m downstream fine-tune; local checkpoint bytes remain unverified",
+      "training_identity": "Historical log names structRFM_SSP_bpRNA1m.pt, but historical weight bytes are absent; official v0.0.8 checkpoint recovered separately",
       "postprocess_identity": "frozen LM embeddings + MixedFold scorer + constrained DP; max_len=512",
       "raw_clean_scope": "raw",
-      "status": "PASS_SHA_ID_METRICS",
+      "status": "HISTORICAL_UNLINKED_OFFICIAL_WEIGHT_BYTES_UNAVAILABLE",
       "dataset_id": "bprna_new",
       "label_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
       "label_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
@@ -346,7 +346,14 @@
       },
       "order_matches_labels": true,
       "prediction_identity_sha256": "9ec75dab3386b9dbf2c948fb502803a186d6f970f840353c0c0c9c5ab6d937a3",
-      "sota_use": "raw ranking only; not clean SOTA"
+      "sota_use": "historical unlinked project replay only; not a verified official v0.0.8 result and not clean SOTA",
+      "official_checkpoint_link": {
+        "status": "UNVERIFIED_HISTORICAL_WEIGHT_BYTES",
+        "historical_weight_path": "/mnt/cunyuliu/rna-jepa/refmodels/models/structRFM_SSP_bpRNA1m.pt",
+        "historical_weight_sha256": null,
+        "new_official_checkpoint_sha256": "689e09e0ad3b51af19b03cb32ea3be5237384c3c9aa5716dff29989098e12145",
+        "eligible_as_verified_official": false
+      }
     },
     {
       "asset_id": "rnafm_project_frozen_encoder_crf_single_raw",

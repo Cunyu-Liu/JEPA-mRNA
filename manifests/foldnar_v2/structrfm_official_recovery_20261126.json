@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-26T11:07:05.090823+00:00",
+  "baseline_id": "structrfm",
+  "status": "FULL_READY_OFFICIAL_V008_RAW_5388",
+  "full_ready": true,
+  "asset_ready": true,
+  "ready_scope": "Official v0.0.8 release checkpoint bytes, release/source identity, model/training/single-model attributes and bpRNA-new 5388 I/O contract",
+  "blocked_scope": null,
+  "source": {
+    "repository": "https://github.com/heqin-zhu/structRFM",
+    "path": "/home/rna_jev/third_party/structRFM",
+    "release_tag": "v0.0.8",
+    "release_commit": "35c5f416e0f8395c459ae65c691200a2ddff3eb3",
+    "inference_commit": "f0c1add19f8dfc786f16bc4abb7aa775dbadddbf",
+    "inference_package_version": "0.0.9",
+    "file_sha256": {
+      "LICENSE": "cb4768592947e40d6ef70a65e393eaee5cf33b139e45cfa641ff0cd04b33224b",
+      "src/structRFM/model/structRFM.py": "17088a2f4662a6ba73b8e63044dcfafc5f4158315a3ef16074403471f1e4cd56",
+      "src/structRFM/model/__init__.py": "d392860a86ca5988ff815449b3924367988c0b8851a8040d763e84e009566881",
+      "src/structRFM/data/tokenizer.py": "8461ff17347cbb8f386266f00ae2f7845702745bb376acfb0612b414157eceff",
+      "src/structRFM/data/tokenizer_mlm.json": "fe018d5c215e53d07a435dc33a6e968344da967fb36e26e6bb5951743e6d76dc",
+      "tasks/seqcls_ssp/ss_pred.py": "f5c981dcfc051ad94c1698e03400dbb67d74f49e4eb6ad104de89d578144a55e",
+      "tasks/seqcls_ssp/base_classes.py": "d89853503d77811eae5b58d820913cef5cf6deef5de4adfa08d72d3e3dab48d0",
+      "tasks/seqcls_ssp/utils.py": "854965ba58053c72c7cfb6ac5f1acd6330df9c7ff66d4bce855c568dd43fe5b1",
+      "tasks/seqcls_ssp/param_turner2004.py": "9b8e58972ed5a8fa6795a55b5a9fc01c881771baaec1bd4a7732e76dc7c2f3ac",
+      "tasks/seqcls_ssp/interface.cpython-38-x86_64-linux-gnu.so": "7d332a297216ecc0d5ccbeec356c42876b543d089cba8846f478ebbaec4ea007"
+    }
+  },
+  "release": {
+    "url": "https://github.com/heqin-zhu/structRFM/releases/tag/v0.0.8",
+    "api_snapshot": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/release_v0.0.8.json",
+    "api_snapshot_sha256": "03f93f709128547f7e077d876f1c6c8baa7d17f14345381ad6e4bc97af13d4d8",
+    "published_at": "2026-01-16T17:06:16Z"
+  },
+  "checkpoint": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/structRFM_SSP_bpRNA1m.pt",
+    "bytes": 348179698,
+    "sha256": "689e09e0ad3b51af19b03cb32ea3be5237384c3c9aa5716dff29989098e12145",
+    "official_url": "https://github.com/heqin-zhu/structRFM/releases/download/v0.0.8/structRFM_SSP_bpRNA1m.pt",
+    "load_device": "cpu",
+    "torch_version": "2.5.1+cu121",
+    "state_dicts": {
+      "model": {
+        "n_tensors": 134,
+        "n_parameters": 958546
+      },
+      "pretrained_model": {
+        "n_tensors": 204,
+        "n_parameters": 86059796
+      }
+    },
+    "top_level_keys": [
+      "model",
+      "pretrained_model"
+    ]
+  },
+  "license": {
+    "code_spdx": "MIT",
+    "source_path": "/home/rna_jev/third_party/structRFM/LICENSE",
+    "source_sha256": "cb4768592947e40d6ef70a65e393eaee5cf33b139e45cfa641ff0cd04b33224b",
+    "weight_status": "NO_SEPARATE_WEIGHT_LICENSE_FOUND; official asset distributed under the MIT-licensed project release; do not infer dataset licenses"
+  },
+  "model_identity": {
+    "family": "structRFM",
+    "checkpoint_version": "v0.0.8",
+    "task_checkpoint": "bpRNA1m secondary-structure fine-tune",
+    "encoder": "base: dim=768, layers=12, attention_heads=12, tokenizer_max_length=514",
+    "head": "structRFMForSsp embeddings -> MixedFold CNN/LSTM pair scorer + Turner parameters -> interface.predict_mxfold constrained DP",
+    "model_form": "single_checkpoint_single_model",
+    "ensemble": false,
+    "n_checkpoints": 1,
+    "batch_size": 1,
+    "dropout_disabled_by_eval": true,
+    "mixedfold_config": {
+      "max_helix_length": 30,
+      "embed_size": 64,
+      "num_filters": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "filter_size": [
+        5,
+        3,
+        5,
+        3,
+        5,
+        3,
+        5,
+        3
+      ],
+      "pool_size": [
+        1
+      ],
+      "dilation": 0,
+      "num_lstm_layers": 2,
+      "num_lstm_units": 32,
+      "num_transformer_layers": 0,
+      "num_hidden_units": [
+        32
+      ],
+      "num_paired_filters": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "paired_filter_size": [
+        5,
+        3,
+        5,
+        3,
+        5,
+        3,
+        5,
+        3
+      ],
+      "dropout_rate": 0.5,
+      "fc_dropout_rate": 0.5,
+      "num_att": 8,
+      "pair_join": "cat",
+      "no_split_lr": false,
+      "n_out_paired_layers": 3,
+      "n_out_unpaired_layers": 0,
+      "exclude_diag": true,
+      "embed_dim": 768
+    }
+  },
+  "training_exposure": {
+    "status": "AUTHOR_CORPORA_IDENTIFIED_BPRNA_NEW_CLEARANCE_UNRESOLVED",
+    "pretraining": "About 21M RNAcentral sequences with BPfold-derived structures, length <=512; official README and Zenodo DOI 10.5281/zenodo.16754363",
+    "downstream": "bpRNA1m secondary-structure fine-tune; exact checkpoint-specific union not reconstructed here",
+    "project_training_dataset_ids": [],
+    "bprna_new_used_for_training_or_tuning_by_this_recovery": false,
+    "raw_not_clean": true,
+    "claim": "No exact/homology decontamination or bpRNA-new non-exposure claim is made"
+  },
+  "bprna_new_5388_contract": {
+    "dataset_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+    "dataset_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "n_sequences": 5388,
+    "n_reference_pairs": 135184,
+    "length_min": 33,
+    "length_max": 489,
+    "n_over_511": 0,
+    "input_order": "frozen JSONL order and unique names",
+    "normalization": "uppercase T->U; [CLS]+sequence; B=1; max_seq_len=512 with at most 511 residues",
+    "output": "one JSONL row per input in identical order: {name,seq,pred_pairs}; zero-based inclusive i<j; reciprocal one-based connects accepted only at conversion boundary",
+    "labels_excluded_from_inference_input": true,
+    "summary_only_substitution_forbidden": true,
+    "predictions": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/predictions/structrfm_official_v0.0.8_bprna_new_5388.jsonl",
+    "prediction_sha256": "dca0be0a4a383af7902eb06b12fda8a6af618b931f06869516f9154a981f787b",
+    "coverage": 1.0,
+    "metrics": {
+      "n_dataset_sequences": 5388,
+      "n_with_prediction": 5388,
+      "coverage": 1.0,
+      "missing_names": [],
+      "extra_names": [],
+      "tp": 73864,
+      "fp": 62616,
+      "fn": 61320,
+      "micro_precision": 0.5412075029308323,
+      "micro_recall": 0.5463960231980116,
+      "micro_f1": 0.5437893868896873,
+      "macro_f1": 0.5338105702966888,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs",
+      "prediction_identity_sha256": "9ec75dab3386b9dbf2c948fb502803a186d6f970f840353c0c0c9c5ab6d937a3"
+    }
+  },
+  "historical_artifacts": {
+    "weight": {
+      "status": "MISSING_HISTORICAL_WEIGHT_BYTES",
+      "path": "/mnt/cunyuliu/rna-jepa/refmodels/models/structRFM_SSP_bpRNA1m.pt",
+      "sha256": null,
+      "matches_official": null
+    },
+    "prediction_status": "HISTORICAL_PREDICTION_UNLINKED_DO_NOT_USE_AS_VERIFIED_OFFICIAL",
+    "prediction_path": "/root/rna_jepa_data/eval_decision_ref/structrfm_bprna_new.json",
+    "prediction_sha256": "3243b141eed79a8c419bc737dece47943fd7708f2db5cd881523dcc9df1d6519",
+    "historical_metrics_retained_as_unlinked_history_only": true,
+    "eligible_as_new_official_prediction": false
+  },
+  "gpu_execution": {
+    "performed": true,
+    "launcher": "tools/run_structrfm_bprna_new_gpu_20261126.py",
+    "runtime_requirement": "Verified cp310 interface built from unmodified MXfold2 v0.1.2 C++ source; torch 2.7.1+cu128 supports sm_120",
+    "occupied_gpu_policy": "No automatic execution; explicit --execute required",
+    "single_sequence_readiness_performed": true,
+    "full_dataset_inference_performed": true,
+    "execution_scope": "18 GPU-forward parameter exports plus one end-to-end readiness sequence; no full inference or prediction artifact"
+  },
+  "provenance_policy": "No summary-only score, unlinked historical replay, partial download, differing-weight prediction, or reference label may be substituted for a new official-checkpoint prediction",
+  "runtime_ready": true,
+  "runtime_compatibility": "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json"
+}

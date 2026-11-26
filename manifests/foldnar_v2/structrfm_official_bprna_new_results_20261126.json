@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-26T12:48:35.660926+00:00",
+  "status": "PASS_INDEPENDENT_OFFICIAL_5388_IDENTITY_AND_METRICS",
+  "full_ready": true,
+  "prediction_id": "structrfm_official_v0.0.8/bprna_new",
+  "predictions": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/predictions/structrfm_official_v0.0.8_bprna_new_5388.jsonl",
+    "bytes": 2085088,
+    "sha256": "dca0be0a4a383af7902eb06b12fda8a6af618b931f06869516f9154a981f787b",
+    "run_manifest": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/predictions/structrfm_official_v0.0.8_bprna_new_5388.run_manifest.json",
+    "run_manifest_sha256": "3f217cbfe04406b6d4eb2803c9accc11c8975f1f771b7f30631e6f459ff62457"
+  },
+  "dataset": {
+    "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+    "sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "n_sequences": 5388,
+    "n_truth_pairs": 135184,
+    "id_sequence_order_verified": true
+  },
+  "execution": {
+    "checkpoint_sha256": "689e09e0ad3b51af19b03cb32ea3be5237384c3c9aa5716dff29989098e12145",
+    "release_commit": "35c5f416e0f8395c459ae65c691200a2ddff3eb3",
+    "inference_commit": "f0c1add19f8dfc786f16bc4abb7aa775dbadddbf",
+    "gpu_name": "NVIDIA GeForce RTX 5090",
+    "model_forward_device": "cuda:0",
+    "dp_device": "cpu",
+    "cuda_visible_devices": "0",
+    "runtime": {
+      "python": "3.10.22",
+      "platform": "x86_64",
+      "torch": "2.7.1+cu128",
+      "torch_cuda": "12.8",
+      "torch_arch_list": [
+        "sm_75",
+        "sm_80",
+        "sm_86",
+        "sm_90",
+        "sm_100",
+        "sm_120",
+        "compute_120"
+      ],
+      "numpy": "2.2.6",
+      "transformers": "4.49.0",
+      "bpfold": "0.3.1",
+      "official_dp": "interface.predict_mxfold",
+      "interface": {
+        "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/runtime/cp310/interface.cpython-310-x86_64-linux-gnu.so",
+        "sha256": "616ec59fd9c853bebbcb811eeff8af8ec2ce2b7380971dda9de63b9cc33cb6d0",
+        "differential_report": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/differential/differential_report.json",
+        "differential_cases": 18
+      },
+      "source_commit": "f0c1add19f8dfc786f16bc4abb7aa775dbadddbf"
+    }
+  },
+  "code_files": [
+    {
+      "path": "/home/rna_jev_structrfm_recovery/tools/run_structrfm_bprna_new_gpu_20261126.py",
+      "sha256": "320d84ad9042e633a4e7033ca869bac06b923679798cd498db14ca220dc3366e"
+    },
+    {
+      "path": "/home/rna_jev_structrfm_recovery/tools/run_structrfm_gated_full_20261126.py",
+      "sha256": "44bb50463c6900799014378104b0c24e40703d647f07e0a9beefa73f10689353"
+    },
+    {
+      "path": "/home/rna_jev_structrfm_recovery/tools/probe_structrfm_longest_gpu_20261126.py",
+      "sha256": "c881569f72d83416569084aa09a8a178aa2eafd9bbd9fd36dd8574081fed6885"
+    },
+    {
+      "path": "/home/rna_jev_structrfm_recovery/tools/score_structrfm_official_bprna_new_20261126.py",
+      "sha256": "ef9c4f1328f63183bb57aa0425df6dd0c0822af7fced47e9c2ca7b3d694908d4"
+    }
+  ],
+  "metrics": {
+    "n_dataset_sequences": 5388,
+    "n_with_prediction": 5388,
+    "coverage": 1.0,
+    "missing_names": [],
+    "extra_names": [],
+    "tp": 73864,
+    "fp": 62616,
+    "fn": 61320,
+    "micro_precision": 0.5412075029308323,
+    "micro_recall": 0.5463960231980116,
+    "micro_f1": 0.5437893868896873,
+    "macro_f1": 0.5338105702966888,
+    "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs",
+    "prediction_identity_sha256": "9ec75dab3386b9dbf2c948fb502803a186d6f970f840353c0c0c9c5ab6d937a3"
+  },
+  "label_scope": "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED",
+  "raw_not_clean": true,
+  "summary_only_substitution": false,
+  "historical_prediction": {
+    "path": "/root/rna_jepa_data/eval_decision_ref/structrfm_bprna_new.json",
+    "sha256": "3243b141eed79a8c419bc737dece47943fd7708f2db5cd881523dcc9df1d6519",
+    "status": "UNCHANGED_BLOCKED",
+    "overwritten": false
+  },
+  "per_sequence_report": "/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_per_sequence_20261126.jsonl",
+  "per_sequence_report_sha256": "6c773d1a811576af3f141fa8f0507b788d81198c26fd9338a77c7aec3509c4dc"
+}
