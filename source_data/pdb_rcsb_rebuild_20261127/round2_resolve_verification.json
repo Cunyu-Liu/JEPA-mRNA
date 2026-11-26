@@ -1,0 +1,11 @@
+{
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "identity_status_counts": {
+    "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED": 61,
+    "NO_EXACT_CHAIN_MATCH_UNCHECKED": 30,
+    "UNIQUE_EXACT_CHAIN_MATCH": 62
+  },
+  "n_records": 153,
+  "resolved_identities_sha256": "342d7eff4c7444e5198bfc889adcbf78734352954e147364c574cf50cdb5bf47",
+  "status": "PASS_RNAFORMER_MMCIF_IDENTITY_INDEPENDENT_VERIFIER"
+}
