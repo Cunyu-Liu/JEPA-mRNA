@@ -16,6 +16,7 @@ A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/a
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
 MARGIN_EVALUATOR_REPO = Path("/home/rna_jev_margin_evaluator")
 OBSOLETE_MARGIN_EVALUATOR_COMMIT = "8b1861f9f8c116250aba194799bf5ee7d9a4f39e"
+OBSOLETE_RAW_GAP_VALUES = ("0.19321803153859785", "0.15297454451260917")
 STRUCTRFM = F / "structrfm_official_v0.0.8"
 FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
 LABEL_QUALITY_REPO = Path("/home/rna_jev_label_quality")
@@ -24,6 +25,7 @@ PRETRAIN_EXPOSURE_REPO = Path("/home/rna_jev_pretrain_exposure")
 PRETRAIN_EXPOSURE = PRETRAIN_EXPOSURE_REPO / "manifests/pretrain_exposure_v1"
 MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
 MODEL_DEV_V3 = F / "model_dev_v3"
+BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -46,7 +48,13 @@ SOURCES = {
     "structrfm": STRUCTRFM / "reports/structrfm_official_bprna_new_metrics_20261126.json",
     "structrfm_provenance": STRUCTRFM / "reports/structrfm_official_provenance_20261126.json",
     "structrfm_delivery": STRUCTRFM / "reports/full_delivery_verification_20261126.json",
-    "raw_baselines": FOLDNAR_REPO / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+    "raw_baselines": BPFOLD_PROTOCOL_REPO / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+    "bpfold_protocol": BPFOLD_PROTOCOL_REPO / "source_data/bpfold_label_protocol_audit_20261127/summary.json",
+    "bpfold_protocol_verification": BPFOLD_PROTOCOL_REPO / "source_data/bpfold_label_protocol_audit_20261127/independent_verification.json",
+    "official_panel": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/official_reference_5388.jsonl.gz",
+    "official_registry": BPFOLD_PROTOCOL_REPO / "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json",
+    "official_metrics": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/system_metrics.json",
+    "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -70,6 +78,7 @@ SOURCE_COMMITS = {
     "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
+    "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
 }
 
 
@@ -95,14 +104,13 @@ def verify_source_commits() -> list[str]:
             check=True, capture_output=True, text=True,
         ).stdout.strip()
         if actual != expected:
-            compatible_test_only_advance = False
+            compatible_advance = False
             if name == "FoldNAR integration":
-                ancestor = subprocess.run(
+                compatible_advance = subprocess.run(
                     ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
                     check=False,
-                ).returncode
-                compatible_test_only_advance = ancestor == 0
-            elif name == "independent margin evaluator":
+                ).returncode == 0
+            if name == "independent margin evaluator":
                 ancestor = subprocess.run(
                     ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
                     check=False,
@@ -111,8 +119,8 @@ def verify_source_commits() -> list[str]:
                     ["git", "-C", str(repo), "diff", "--quiet", expected, "HEAD", "--", "tools"],
                     check=False,
                 ).returncode
-                compatible_test_only_advance = ancestor == 0 and functional_diff == 0
-            if not compatible_test_only_advance:
+                compatible_advance = ancestor == 0 and functional_diff == 0
+            if not compatible_advance:
                 errors.append(f"{name} commit: expected {expected}, got {actual}")
     return errors
 
@@ -192,6 +200,60 @@ def verify_evaluator_v3_contract() -> list[str]:
     return errors
 
 
+def verify_bpfold_official_contract() -> list[str]:
+    errors = []
+    names = ["raw_baselines", "official_registry", "official_metrics", "official_verification", "bpfold_protocol"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            errors.append(f"missing BPfold official contract source: {name}: {SOURCES[name]}")
+    if errors:
+        return errors
+    raw = json.loads(SOURCES["raw_baselines"].read_text())
+    official = json.loads(SOURCES["official_registry"].read_text())
+    metrics = json.loads(SOURCES["official_metrics"].read_text())
+    verification = json.loads(SOURCES["official_verification"].read_text())
+    protocol = json.loads(SOURCES["bpfold_protocol"].read_text())
+    derived = [row for row in raw["rows"] if row.get("label_lineage", {}).get("label_source") == "DERIVED_FROM_BPFOLD_PREDICTIONS"]
+    if len(derived) != 19:
+        errors.append(f"derived raw/clean asset count: expected 19, got {len(derived)}")
+    for row in derived:
+        asset_id = row["asset_id"]
+        if row.get("independent_sota_eligible") is not False:
+            errors.append(f"derived asset regained SOTA eligibility: {asset_id}")
+        if row.get("sota_use") != "circular-audit-only; historical value retained; not independent SOTA":
+            errors.append(f"derived asset is not circular-audit-only: {asset_id}")
+        if row["label_lineage"].get("disposition") != "circular-audit-only":
+            errors.append(f"derived lineage disposition mismatch: {asset_id}")
+    if raw["xens2_project_raw_reference"]["independent_sota_eligible"] is not False:
+        errors.append("legacy xens2 raw reference regained SOTA eligibility")
+    if official["circular_project_label_score_excluded"] is not True:
+        errors.append("circular project-label score is not excluded from official registry")
+    circular = protocol["project_label_protocol_audits"]["official_release_on_project_labels_5388"]["micro_f1"]
+    official_scored = [row for row in official["rows"] if row.get("status") == "PASS_FULL_COVERAGE"]
+    if len(official_scored) != 28:
+        errors.append(f"official scored row count: expected 28, got {len(official_scored)}")
+    for row in official_scored:
+        if math.isclose(row["metrics"]["micro_f1"], circular, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"circular 0.9617 value entered official rows: {row['prediction_id']}")
+    metrics_scored = [row for row in metrics["rows"] if row.get("status") == "PASS_FULL_COVERAGE"]
+    if len(metrics_scored) != 28:
+        errors.append(f"official metrics scored row count: expected 28, got {len(metrics_scored)}")
+    if {row["prediction_id"] for row in metrics_scored} != {row["prediction_id"] for row in official_scored}:
+        errors.append("official registry and system metrics scored identities differ")
+    for row in metrics_scored:
+        if math.isclose(row["metrics"]["micro_f1"], circular, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"circular 0.9617 value entered official metrics: {row['prediction_id']}")
+    for key in ["strongest_overall", "strongest_ensemble", "strongest_single_predictor"]:
+        if official[key]["ranking_scope"] != "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION":
+            errors.append(f"official ranking scope mismatch: {key}")
+    if verification["model_selection"] is not False or verification["new_inference"] is not False:
+        errors.append("official-reference audit allowed selection or new inference")
+    required_check = "0.9616708875167174 absent from official-reference results and ranking"
+    if required_check not in verification["checks"]:
+        errors.append("independent verification lacks circular-score exclusion check")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -224,8 +286,21 @@ def verify_narrative_guards() -> list[str]:
         "真实 deck 为 14 张、记录至第 33 页",
         "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED",
         "不是我们的候选正向性能，也不是 clean SOTA",
-        "0.19321803153859785",
-        "0.15297454451260917",
+        "0.48901660903024696",
+        "0.7745179151021447",
+        "0.2855013060718978",
+        "0.629675588219163",
+        "0.14065897918891607",
+        "0.6339521964768657",
+        "official release 与项目 replay 是不同 prediction identity",
+        "19/19 派生标签资产",
+        "28/28 official-reference scored rows 均不含 0.9617",
+        "旧差距禁止回写",
+        "e7ff4e76fe078178ab41d2052349627317b5a3e3",
+        "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "circular-audit-only",
+        "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4",
+        "0.9617 仅循环审计不得排名",
         "这不是相对百分比，也不是我们的候选提升",
         "长序列只有 baseline 回答，GEC unsupported",
         "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION",
@@ -268,6 +343,9 @@ def verify_narrative_guards() -> list[str]:
     errors = [f"missing narrative guard: {item}" for item in required if item not in text]
     if OBSOLETE_MARGIN_EVALUATOR_COMMIT in text:
         errors.append("obsolete margin evaluator commit remains in ledger")
+    for value in OBSOLETE_RAW_GAP_VALUES:
+        if value in text:
+            errors.append(f"obsolete derived-label gap remains in ledger: {value}")
     return errors
 
 
@@ -275,7 +353,7 @@ def verify_numbers() -> list[str]:
     errors = []
     if missing_sources():
         return [f"missing JSON source: {item}" for item in missing_sources()]
-    data = {name: None if name == "page34_builder" else json.loads(path.read_text()) for name, path in SOURCES.items()}
+    data = {name: None if name in {"page34_builder", "official_panel"} else json.loads(path.read_text()) for name, path in SOURCES.items()}
     text = DOC.read_text()
     checks = []
 
@@ -386,19 +464,78 @@ def verify_numbers() -> list[str]:
 
     check("raw registry status", pointer(data["raw_baselines"], "status"), "PASS_20_EXISTING_ASSETS_SHA_ID_METRICS")
     check("raw registry not clean", pointer(data["raw_baselines"], "scope_contract/raw_is_not_clean"), True)
+    check("derived labels not SOTA", pointer(data["raw_baselines"], "scope_contract/derived_project_labels_are_not_independent_sota"), True)
+    check("historical raw circular only", pointer(data["raw_baselines"], "historical_raw_ranking_disposition"), "CIRCULAR_AUDIT_ONLY_NOT_INDEPENDENT_SOTA; values retained")
+    check("protocol base", pointer(data["bpfold_protocol"], "base_commit"), "c183df8457b2e3d3695b6e9eb78bb6b56bff5d91")
+    check("protocol label accounting", pointer(data["bpfold_protocol"], "label_set_accounting"), {
+        "official_release": 5401, "official_reference": 5401, "project": 5388,
+        "same_name_same_sequence_intersection": 5388, "official_only": 13, "project_only": 0,
+        "exact_reference_project_label_sets": 106, "different_reference_project_label_sets": 5282,
+    })
+    check("project derived projections", pointer(data["bpfold_protocol"], "release_to_project_projection/exact_projection_records"), 5388)
+    check("circular score", pointer(data["bpfold_protocol"], "project_label_protocol_audits/official_release_on_project_labels_5388/micro_f1"), 0.9616708875167174, "0.9616708875167174")
+    check("circular FN", pointer(data["bpfold_protocol"], "project_label_protocol_audits/official_release_on_project_labels_5388/fn"), 0)
+    check("protocol verification", pointer(data["bpfold_protocol_verification"], "status"), "PASS_INDEPENDENT_PROTOCOL_AUDIT")
+    check("protocol records independently checked", pointer(data["bpfold_protocol_verification"], "records_compared_field_by_field"), 5401)
+    check("protocol no selection", pointer(data["bpfold_protocol_verification"], "external_test_used_for_model_selection"), False)
+    check("protocol history unchanged", pointer(data["bpfold_protocol_verification"], "historical_results_modified"), False)
+    check("official panel SHA", pointer(data["official_registry"], "label_panel/sha256"), "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4", "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4")
+    check("official panel rows", pointer(data["official_registry"], "label_panel/n_sequences"), 5388)
+    check("official panel source", pointer(data["official_registry"], "label_panel/source_archive_sha256"), "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403")
+    check("official panel independent verification", pointer(data["official_verification"], "status"), "PASS_INDEPENDENT_SECOND_IMPLEMENTATION")
+    check("official panel records verified", pointer(data["official_verification"], "panel_records_verified"), 5388)
+    check("official full systems verified", pointer(data["official_verification"], "full_coverage_systems_verified"), 28)
+    check("official circular excluded", pointer(data["official_registry"], "circular_project_label_score_excluded"), True)
+    check("official no inference", pointer(data["official_verification"], "new_inference"), False)
+    check("official no selection", pointer(data["official_verification"], "model_selection"), False)
+    check("official panel delivery SHA", pointer(data["official_verification"], "deliverables/4/sha256"), "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4")
+    for key in ["strongest_project_raw", "strongest_project_raw_single_predictor"]:
+        check(f"legacy {key} circular", pointer(data["raw_baselines"], f"{key}/disposition"), "historical circular-audit-only; not independent SOTA")
+        check(f"legacy {key} not SOTA", pointer(data["raw_baselines"], f"{key}/independent_sota_eligible"), False)
     check("BPfold model form", pointer(data["raw_baselines"], "strongest_project_raw/model_form"), "six_checkpoint_ensemble")
     check("BPfold coverage", pointer(data["raw_baselines"], "strongest_project_raw/coverage"), 1.0)
     check("BPfold sequences", pointer(data["raw_baselines"], "strongest_project_raw/n_sequences"), 5388)
-    check("BPfold micro", pointer(data["raw_baselines"], "strongest_project_raw/micro_f1"), 0.7370074184282851, "0.7370074184282851")
+    check("BPfold micro", pointer(data["raw_baselines"], "strongest_project_raw/micro_f1"), 0.7370074184282851)
     check("CONTRAfold model form", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/model_form"), "deterministic_single_predictor")
     check("CONTRAfold coverage", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/coverage"), 1.0)
     check("CONTRAfold sequences", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/n_sequences"), 5388)
-    check("CONTRAfold micro", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1"), 0.6967639314022964, "0.6967639314022964")
-    structrfm_micro = pointer(data["structrfm"], "metrics/micro_f1")
-    bpfold_gap = pointer(data["raw_baselines"], "strongest_project_raw/micro_f1") - structrfm_micro
-    contrafold_gap = pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1") - structrfm_micro
-    check("BPfold minus structRFM", bpfold_gap, 0.19321803153859785, "0.19321803153859785")
-    check("CONTRAfold minus structRFM", contrafold_gap, 0.15297454451260917, "0.15297454451260917")
+    check("CONTRAfold micro", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1"), 0.6967639314022964)
+    check("official registry schema", pointer(data["official_registry"], "schema_version"), "bprna.official_reference_5388.prediction_registry.v1")
+    check("official metrics agree with registry", {k: v for k, v in data["official_metrics"].items() if k != "rows"}, {k: v for k, v in data["official_registry"].items() if k != "rows"})
+    check("official ranking scope", pointer(data["official_registry"], "strongest_overall/ranking_scope"), "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION")
+    check("official coverage accounting", pointer(data["official_registry"], "coverage_accounting"), {
+        "inventory_entries": 43, "recovered_20": 20, "additional_registered": 23,
+        "full_coverage_scored": 28, "partial_coverage_not_ranked": 1, "blocked_or_summary_only": 14,
+    })
+    xens2_micro = pointer(data["official_registry"], "xens2_reference/metrics/micro_f1")
+    check("official xens2 identity", pointer(data["official_registry"], "xens2_reference/prediction_id"), "xens2/bprna_new")
+    check("official xens2 model form", pointer(data["official_registry"], "xens2_reference/model_form"), "three_checkpoint_ensemble")
+    check("official xens2 coverage", pointer(data["official_registry"], "xens2_reference/coverage"), 1.0)
+    check("official xens2 micro", xens2_micro, 0.48901660903024696, "0.48901660903024696")
+    check("official BPfold replay identity", pointer(data["official_registry"], "strongest_overall/prediction_id"), "bpfold/bprna_new")
+    check("official BPfold replay model form", pointer(data["official_registry"], "strongest_overall/model_form"), "six_checkpoint_ensemble")
+    bpfold_micro = pointer(data["official_registry"], "strongest_overall/metrics/micro_f1")
+    check("official BPfold replay micro", bpfold_micro, 0.7745179151021447, "0.7745179151021447")
+    check("official BPfold replay delta", pointer(data["official_registry"], "strongest_overall/delta_vs_xens2/micro_f1"), 0.2855013060718978, "0.2855013060718978")
+    check("official BPfold replay arithmetic", bpfold_micro - xens2_micro, 0.2855013060718978)
+    check("official CONTRAfold identity", pointer(data["official_registry"], "strongest_single_predictor/prediction_id"), "contrafold/bprna_new")
+    check("official CONTRAfold model form", pointer(data["official_registry"], "strongest_single_predictor/model_form"), "deterministic_single_predictor")
+    contrafold_micro = pointer(data["official_registry"], "strongest_single_predictor/metrics/micro_f1")
+    check("official CONTRAfold micro", contrafold_micro, 0.629675588219163, "0.629675588219163")
+    check("official CONTRAfold delta", pointer(data["official_registry"], "strongest_single_predictor/delta_vs_xens2/micro_f1"), 0.14065897918891607, "0.14065897918891607")
+    check("official CONTRAfold arithmetic", contrafold_micro - xens2_micro, 0.14065897918891607)
+    official_rows = {row["prediction_id"]: row for row in data["official_registry"]["rows"]}
+    release = official_rows["bpfold_official_release/bprna_new_official_reference"]
+    replay = official_rows["bpfold/bprna_new"]
+    check("official release origin", release["prediction_origin"], "author_release")
+    check("official replay origin", replay["prediction_origin"], "project_replay")
+    check("official release SHA", release["sha256"], "bc41c0bc196e9508274625c44b794d29eca9878d698f88570c89841fb6b618ad")
+    check("official replay SHA", replay["sha256"], "9832e97bcb5e6879e57a317ef560dd1ca364b11a48575b3f89cd9c94c773255a")
+    check("official release and replay differ", release["sha256"] != replay["sha256"], True)
+    check("official release micro", pointer(release, "metrics/micro_f1"), 0.6339521964768657, "0.6339521964768657")
+    release_metrics = {row["prediction_id"]: row for row in data["official_metrics"]["rows"]}["bpfold_official_release/bprna_new_official_reference"]
+    check("official release delta", pointer(release_metrics, "delta_vs_xens2/micro_f1"), 0.14493558744661877)
+    check("official release arithmetic", pointer(release, "metrics/micro_f1") - xens2_micro, 0.14493558744661877)
 
     check("LinearPartition run status", pointer(data["linearpartition_run"], "status"), "PASS_FULL_LENGTH_HOLDOUT_EXECUTION_AND_OUTPUT__FLOPS_NOT_MEASURED")
     check("LinearPartition split", pointer(data["linearpartition_run"], "split"), "holdout")
@@ -594,12 +731,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, and evaluator/v3 contracts"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, and BPfold official protocol"
     print(f"PASS: {scope}")
     return 0
 
