@@ -40,7 +40,7 @@ def append_jsonl(value: dict, path: Path) -> None:
 def training_command(source_repo: Path, config_path: Path, arm: str, out: Path) -> list[str]:
     config = json.loads(config_path.read_text())
     return [
-        PYTHON, str(REPO / "tools/run_frozen_margin_trainer_with_resume_audit_20261127.py"),
+        PYTHON, str(source_repo / "tools/train_plan_a_gec_convergence_v1.py"),
         "--gec-config", str(config_path), "--arm", arm, "--out", str(out),
         "--shared-init", config["assets"]["shared_init"], "--gec-init", GEC_INIT,
         "--device", "cuda:0", "--steps", "0", "--seed", "0", "--batch-size", "4",
