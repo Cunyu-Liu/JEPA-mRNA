@@ -1,0 +1,106 @@
+{
+  "schema_version": "rinalmo.pretrain_exposure.assets.v1",
+  "created_utc": "2026-11-26T14:39:19.845824+00:00",
+  "scientific_scope": "existing legal assets; static normalized full-sequence audit; no inference, training, downloads or model selection",
+  "current_candidate_backbone": {
+    "identity": "RiNALMo-giga",
+    "loader": "tools/rinalmo_preflight.py",
+    "path": "/root/rna_jepa_data/weights/rinalmo-giga/model.safetensors",
+    "sha256": "0b3f73b5c80d267f0b7e92655b28f16088e3d5a595c6dae631b52142aa38bcda",
+    "config_path": "/root/rna_jepa_data/weights/rinalmo-giga/config.json",
+    "config_sha256": "04fb8fad8cf6f7a89ca0c6008ecc872a82c9bb27b054a1043b327614fbe06e9d",
+    "architecture": {
+      "hidden_size": 1280,
+      "num_hidden_layers": 33,
+      "max_position_embeddings": 1024
+    },
+    "upstream_distribution": "multimolecule/rinalmo-giga; direct byte identity to Zenodo rinalmo_giga_pretrained.pt is UNCHECKED"
+  },
+  "official_pretraining_declaration": {
+    "repository": "https://github.com/lbcb-sci/RiNALMo",
+    "commit": "2c2c5c14a5ae609d8c560a5d9ca32e51e0288955",
+    "declared_sources": [
+      "RNAcentral",
+      "Rfam",
+      "nt",
+      "Ensembl 109",
+      "Ensembl Bacteria 56"
+    ],
+    "paper_preprocessing": "36M unique sequences; 17M clusters at 70% identity and 0.8 coverage; lengths 16..8192 nt; training crops above 1022 nt",
+    "complete_official_training_set_state": "UNCHECKED",
+    "reason": "No complete official sequence manifest; historical nt snapshot has no pinned release/date/SHA; local public snapshots must not be renamed as the exact historical training union",
+    "nt": {
+      "url": "https://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nt.gz",
+      "current_bytes": 405949398878,
+      "status": "NOT_DOWNLOADED_HISTORICAL_SNAPSHOT_UNPINNED"
+    },
+    "nt_assessment": "/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit/nt_snapshot_assessment.json",
+    "nt_assessment_sha256": "5f4282bdcda743cc14de112a4b6e6c8d5436b9404dff3180553f27a04c336232"
+  },
+  "known_public_source_snapshots": {
+    "rnacentral_22_active": {
+      "release": "RNAcentral 22.0",
+      "url": "https://ftp.ebi.ac.uk/pub/databases/RNAcentral/releases/22.0/sequences/rnacentral_active.fasta.gz",
+      "license_evidence": "CC0 icon displayed on https://rnacentral.org/",
+      "n_files": 1,
+      "bytes": 7281938321,
+      "file_sha256": [
+        "9698f99e05743be566b06f0885e5cae8e087bf781538f32af0950fc8e33c8f2d"
+      ],
+      "scan_counts": {
+        "raw_fasta_records": 30191670,
+        "records_after_original_length_filter": 30045014
+      }
+    },
+    "rfam_14_9": {
+      "release": "Rfam 14.9",
+      "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/14.9/fasta_files/Rfam.fa.gz",
+      "license_evidence": "CC0 stated on https://rfam.org/",
+      "n_files": 1,
+      "bytes": 180119223,
+      "file_sha256": [
+        "5909e198df80a0febf6a62cbe128654a2b6ffffafda9b77f258fd4557009cc5c"
+      ],
+      "scan_counts": {
+        "raw_fasta_records": 3132784,
+        "records_after_original_length_filter": 3132771
+      }
+    },
+    "ensembl_109_and_bacteria_56": {
+      "release": "Ensembl 109 plus Ensembl Bacteria 56",
+      "manifest": "/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit/ensembl_asset_verification.json",
+      "manifest_sha256": "1a9b2804e8cde6536506e8291abcd0cace34ff99b961581fe11957d90523c30b",
+      "license_evidence": "https://www.ensembl.org/info/about/legal/disclaimer.html",
+      "n_files": 31046,
+      "bytes": 701138004,
+      "file_sha256": null,
+      "scan_counts": {
+        "raw_fasta_records": 4040439,
+        "records_after_original_length_filter": 4032030
+      }
+    }
+  },
+  "baseline_finetuning_is_separate": {
+    "baseline_id": "rinalmo_ft",
+    "checkpoint": "rinalmo_giga_ss_bprna_ft.pt",
+    "path": "/root/rna_baselines_src/rinalmo_giga_ss_bprna_ft.pt",
+    "sha256": "44e377cb0c92f7b9cff8db8a38e33e5c0363d2f9a19831c6342346bb788a5e55",
+    "fine_tuning_corpus": "bpRNA TR0 (registered downstream fine-tuning corpus)",
+    "interpretation": "This baseline's supervised fine-tuning exposure is additional to and not evidence about the current candidate backbone's self-supervised pretraining exposure"
+  },
+  "homology_evidence": {
+    "query_index": "/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit/homology_round56/query_index.jsonl.gz",
+    "query_index_sha256": "f53898bbb8d26246394fdad61372be042cbc7a0b2a13946a4a8f1cb9c816091d",
+    "union": "/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit/homology_round56/query_homology_union.jsonl.gz",
+    "union_sha256": "d0562d623591ae8da624bb22c9284b8310595efc48c7a8b940a4ccc8bbf04504",
+    "summary": "/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit/homology_round56/homology_union_summary.json",
+    "summary_sha256": "69a0b13b2ef0cb061807e10f50efca3a6da7889ee006cd032e2e72bca2197131",
+    "protocol": "existing MMseqs2 80% identity, cov-mode 0, c 0.8; no new search"
+  },
+  "state_semantics": {
+    "EXACT": "normalized full sequence is present in at least one hash-bound known public source",
+    "HOMOLOGY": "no exact hit, but an existing 80% identity/bidirectional-coverage search detected a known-source hit",
+    "NOT_DETECTED_UNKNOWN": "the declared known-source search did not detect a match; this is not clean or independent",
+    "UNCHECKED": "coverage is unavailable or the complete historical corpus cannot be assessed"
+  }
+}

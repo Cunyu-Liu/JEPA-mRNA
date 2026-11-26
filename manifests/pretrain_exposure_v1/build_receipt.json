@@ -1,0 +1,9 @@
+{
+  "schema_version": "rinalmo.pretrain_exposure.build_receipt.v1",
+  "n_sequence_rows": 157227,
+  "sha256": {
+    "asset_registry.json": "37cdabc5b5132fc29224b1a3890fd25e642999f5fc87e9c7b96613a509006e4a",
+    "sequence_registry.jsonl.gz": "5c0d95a31abe849a76975f06216835a3707129d139beb92569d112b645503301",
+    "summary.json": "af39cd32a42344340f7d083b606e9d79208414d15b0e47d0690c40bfb28f4866"
+  }
+}

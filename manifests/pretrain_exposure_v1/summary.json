@@ -1,0 +1,736 @@
+{
+  "schema_version": "rinalmo.pretrain_exposure.summary.v1",
+  "created_utc": "2026-11-26T14:39:25.855791+00:00",
+  "complete_official_pretraining_coverage_state": "UNCHECKED",
+  "normalization": "uppercase and T->U; preserve all other symbols; full sequence; source length filter 16..8192 nt",
+  "populations": {
+    "tr1c_raw": {
+      "dataset_id": "bprna_tr1c",
+      "role": "train",
+      "selection_use": false,
+      "n_input_rows": 42564,
+      "n_unique_sequences": 42564,
+      "known_source_exact_state": {
+        "EXACT": 37870,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 4694,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 37870,
+        "HOMOLOGY": 2464,
+        "NOT_DETECTED_UNKNOWN": 2230,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 37870,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 4694
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 33379,
+          "exact_unique_sequences": 33379
+        },
+        "rfam_14_9": {
+          "exact_rows": 28914,
+          "exact_unique_sequences": 28914
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 7333,
+          "exact_unique_sequences": 7333
+        }
+      },
+      "previous_exact_union_count": 37870
+    },
+    "tr1c_cluster80_train": {
+      "dataset_id": "bprna_tr1c",
+      "role": "train",
+      "selection_use": false,
+      "n_input_rows": 33421,
+      "n_unique_sequences": 33421,
+      "known_source_exact_state": {
+        "EXACT": 29892,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 3529,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 29892,
+        "HOMOLOGY": 1925,
+        "NOT_DETECTED_UNKNOWN": 1604,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 29892,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 3529
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 26435,
+          "exact_unique_sequences": 26435
+        },
+        "rfam_14_9": {
+          "exact_rows": 22955,
+          "exact_unique_sequences": 22955
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 5905,
+          "exact_unique_sequences": 5905
+        }
+      },
+      "previous_exact_union_count": null
+    },
+    "tr1c_cluster80_dev": {
+      "dataset_id": "bprna_tr1c",
+      "role": "development",
+      "selection_use": true,
+      "n_input_rows": 9143,
+      "n_unique_sequences": 9143,
+      "known_source_exact_state": {
+        "EXACT": 7978,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 1165,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 7978,
+        "HOMOLOGY": 539,
+        "NOT_DETECTED_UNKNOWN": 626,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 7978,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 1165
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 6944,
+          "exact_unique_sequences": 6944
+        },
+        "rfam_14_9": {
+          "exact_rows": 5959,
+          "exact_unique_sequences": 5959
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 1428,
+          "exact_unique_sequences": 1428
+        }
+      },
+      "previous_exact_union_count": null
+    },
+    "archiveii_embok_clean": {
+      "dataset_id": "archiveii_embok_clean",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 2544,
+      "n_unique_sequences": 2214,
+      "known_source_exact_state": {
+        "EXACT": 2048,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 496,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 2048,
+        "HOMOLOGY": 462,
+        "NOT_DETECTED_UNKNOWN": 34,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 2048,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 496
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 2048,
+          "exact_unique_sequences": 1736
+        },
+        "rfam_14_9": {
+          "exact_rows": 664,
+          "exact_unique_sequences": 550
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 504,
+          "exact_unique_sequences": 417
+        }
+      },
+      "previous_exact_union_count": 2048
+    },
+    "bprna_new": {
+      "dataset_id": "bprna_new",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 5388,
+      "n_unique_sequences": 5388,
+      "known_source_exact_state": {
+        "EXACT": 5381,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 7,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 5381,
+        "HOMOLOGY": 7,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 5381,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 7
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 5303,
+          "exact_unique_sequences": 5303
+        },
+        "rfam_14_9": {
+          "exact_rows": 5380,
+          "exact_unique_sequences": 5380
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 10,
+          "exact_unique_sequences": 10
+        }
+      },
+      "previous_exact_union_count": 5381
+    },
+    "bprna_ts0": {
+      "dataset_id": "bprna_ts0",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 1288,
+      "n_unique_sequences": 1288,
+      "known_source_exact_state": {
+        "EXACT": 1253,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 35,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 1253,
+        "HOMOLOGY": 30,
+        "NOT_DETECTED_UNKNOWN": 5,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 1253,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 35
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 1098,
+          "exact_unique_sequences": 1098
+        },
+        "rfam_14_9": {
+          "exact_rows": 1047,
+          "exact_unique_sequences": 1047
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 195,
+          "exact_unique_sequences": 195
+        }
+      },
+      "previous_exact_union_count": 1253
+    },
+    "ref_pdb_ts1": {
+      "dataset_id": "ref_pdb_ts1",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 63,
+      "n_unique_sequences": 63,
+      "known_source_exact_state": {
+        "EXACT": 36,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 27,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 36,
+        "HOMOLOGY": 21,
+        "NOT_DETECTED_UNKNOWN": 6,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 36,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 27
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 36,
+          "exact_unique_sequences": 36
+        },
+        "rfam_14_9": {
+          "exact_rows": 7,
+          "exact_unique_sequences": 7
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 5,
+          "exact_unique_sequences": 5
+        }
+      },
+      "previous_exact_union_count": 36
+    },
+    "ref_pdb_ts2": {
+      "dataset_id": "ref_pdb_ts2",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 39,
+      "n_unique_sequences": 39,
+      "known_source_exact_state": {
+        "EXACT": 38,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 1,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 38,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 1,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 38,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 1
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 38,
+          "exact_unique_sequences": 38
+        },
+        "rfam_14_9": {
+          "exact_rows": 2,
+          "exact_unique_sequences": 2
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 0,
+          "exact_unique_sequences": 0
+        }
+      },
+      "previous_exact_union_count": 38
+    },
+    "ref_pdb_ts3": {
+      "dataset_id": "ref_pdb_ts3",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 19,
+      "n_unique_sequences": 19,
+      "known_source_exact_state": {
+        "EXACT": 17,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 2,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 17,
+        "HOMOLOGY": 2,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 17,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 2
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 17,
+          "exact_unique_sequences": 17
+        },
+        "rfam_14_9": {
+          "exact_rows": 2,
+          "exact_unique_sequences": 2
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 1,
+          "exact_unique_sequences": 1
+        }
+      },
+      "previous_exact_union_count": 17
+    },
+    "ref_pdb_ts_hard": {
+      "dataset_id": "ref_pdb_ts_hard",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 28,
+      "n_unique_sequences": 28,
+      "known_source_exact_state": {
+        "EXACT": 19,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 9,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 19,
+        "HOMOLOGY": 5,
+        "NOT_DETECTED_UNKNOWN": 4,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 19,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 9
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 19,
+          "exact_unique_sequences": 19
+        },
+        "rfam_14_9": {
+          "exact_rows": 4,
+          "exact_unique_sequences": 4
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 0,
+          "exact_unique_sequences": 0
+        }
+      },
+      "previous_exact_union_count": 19
+    },
+    "testsetb": {
+      "dataset_id": "testsetb",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 428,
+      "n_unique_sequences": 428,
+      "known_source_exact_state": {
+        "EXACT": 416,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 12,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 416,
+        "HOMOLOGY": 6,
+        "NOT_DETECTED_UNKNOWN": 6,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 416,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 12
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 339,
+          "exact_unique_sequences": 339
+        },
+        "rfam_14_9": {
+          "exact_rows": 415,
+          "exact_unique_sequences": 415
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 9,
+          "exact_unique_sequences": 9
+        }
+      },
+      "previous_exact_union_count": 416
+    },
+    "chanrg_test": {
+      "dataset_id": "chanrg_test",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 10597,
+      "n_unique_sequences": 10597,
+      "known_source_exact_state": {
+        "EXACT": 3868,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 6729,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 3868,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 6729
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 3868,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 6729
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 3274,
+          "exact_unique_sequences": 3274
+        },
+        "rfam_14_9": {
+          "exact_rows": 2910,
+          "exact_unique_sequences": 2910
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 1186,
+          "exact_unique_sequences": 1186
+        }
+      },
+      "previous_exact_union_count": null
+    },
+    "chanrg_gena": {
+      "dataset_id": "chanrg_gena",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 5337,
+      "n_unique_sequences": 5337,
+      "known_source_exact_state": {
+        "EXACT": 2372,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 2965,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 2372,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 2965
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 2372,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 2965
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 1864,
+          "exact_unique_sequences": 1864
+        },
+        "rfam_14_9": {
+          "exact_rows": 2266,
+          "exact_unique_sequences": 2266
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 49,
+          "exact_unique_sequences": 49
+        }
+      },
+      "previous_exact_union_count": null
+    },
+    "chanrg_genc": {
+      "dataset_id": "chanrg_genc",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 3936,
+      "n_unique_sequences": 3936,
+      "known_source_exact_state": {
+        "EXACT": 1458,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 2478,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 1458,
+        "HOMOLOGY": 3,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 2475
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 1458,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 2478
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 683,
+          "exact_unique_sequences": 683
+        },
+        "rfam_14_9": {
+          "exact_rows": 1352,
+          "exact_unique_sequences": 1352
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 47,
+          "exact_unique_sequences": 47
+        }
+      },
+      "previous_exact_union_count": null
+    },
+    "chanrg_genf": {
+      "dataset_id": "chanrg_genf",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 1734,
+      "n_unique_sequences": 1734,
+      "known_source_exact_state": {
+        "EXACT": 713,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 1021,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 713,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 1021
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 713,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 1021
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 509,
+          "exact_unique_sequences": 509
+        },
+        "rfam_14_9": {
+          "exact_rows": 713,
+          "exact_unique_sequences": 713
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 1,
+          "exact_unique_sequences": 1
+        }
+      },
+      "previous_exact_union_count": null
+    },
+    "rfam_temporal": {
+      "dataset_id": "rfam_temporal",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 436,
+      "n_unique_sequences": 436,
+      "known_source_exact_state": {
+        "EXACT": 112,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 324,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 112,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 324
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 112,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 324
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 112,
+          "exact_unique_sequences": 112
+        },
+        "rfam_14_9": {
+          "exact_rows": 43,
+          "exact_unique_sequences": 43
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 14,
+          "exact_unique_sequences": 14
+        }
+      },
+      "previous_exact_union_count": null
+    },
+    "rfam_fam": {
+      "dataset_id": "rfam_fam",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 10790,
+      "n_unique_sequences": 10790,
+      "known_source_exact_state": {
+        "EXACT": 10327,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 463,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 10327,
+        "HOMOLOGY": 384,
+        "NOT_DETECTED_UNKNOWN": 79,
+        "UNCHECKED": 0
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 10327,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 463
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 9989,
+          "exact_unique_sequences": 9989
+        },
+        "rfam_14_9": {
+          "exact_rows": 10223,
+          "exact_unique_sequences": 10223
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 391,
+          "exact_unique_sequences": 391
+        }
+      },
+      "previous_exact_union_count": 10327
+    },
+    "ncrna_rfamnovel_test": {
+      "dataset_id": "ncrna_rfamnovel_test",
+      "role": "external_test_final_audit_only",
+      "selection_use": false,
+      "n_input_rows": 29472,
+      "n_unique_sequences": 29472,
+      "known_source_exact_state": {
+        "EXACT": 29306,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 166,
+        "UNCHECKED": 0
+      },
+      "known_source_exact_or_homology_state": {
+        "EXACT": 29306,
+        "HOMOLOGY": 117,
+        "NOT_DETECTED_UNKNOWN": 9,
+        "UNCHECKED": 40
+      },
+      "complete_official_pretraining_exposure_state": {
+        "EXACT": 29306,
+        "HOMOLOGY": 0,
+        "NOT_DETECTED_UNKNOWN": 0,
+        "UNCHECKED": 166
+      },
+      "by_source": {
+        "rnacentral_22_active": {
+          "exact_rows": 25012,
+          "exact_unique_sequences": 25012
+        },
+        "rfam_14_9": {
+          "exact_rows": 28003,
+          "exact_unique_sequences": 28003
+        },
+        "ensembl_109_and_bacteria_56": {
+          "exact_rows": 3136,
+          "exact_unique_sequences": 3136
+        }
+      },
+      "previous_exact_union_count": null
+    }
+  },
+  "external_test_policy": "final exposure/quality audit only; no model, arm, threshold, checkpoint or hyperparameter selection",
+  "sota_limitations": [
+    "Known-source EXACT or HOMOLOGY exposure invalidates clean-OOD, pretraining-unseen and uncontaminated-SOTA wording for the affected population",
+    "NOT_DETECTED_UNKNOWN is not clean; UNCHECKED is not a negative exposure result",
+    "Historical nt is unpinned, so no complete exposure rate, uncontaminated remainder or absolute generalization claim is identifiable",
+    "Raw benchmark comparisons remain exposure-aware descriptive results, not proof of superiority on unseen RNA families",
+    "RiNALMo-ft bpRNA TR0 fine-tuning must not be attributed to the current candidate backbone pretraining"
+  ]
+}
