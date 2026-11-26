@@ -1,0 +1,401 @@
+{
+  "candidate_entity_ids": [
+    "4WJ3_5",
+    "4WJ4_2",
+    "8P6P_4",
+    "8P7X_9",
+    "8P7Y_9",
+    "8P8B_9",
+    "8P8V_9",
+    "7D6Z_5",
+    "7D80_31",
+    "10ZD_5",
+    "10ZE_13",
+    "5E7K_24",
+    "5E7K_56",
+    "5E7K_57",
+    "5E81_22",
+    "5E81_24",
+    "5EL4_22",
+    "5EL4_24",
+    "5EL4_56",
+    "5EL4_57",
+    "5EL5_22",
+    "5EL5_24",
+    "5EL5_56",
+    "5EL5_57",
+    "5EL6_22",
+    "5EL6_24",
+    "5EL7_22",
+    "5EL7_24",
+    "5EL7_56",
+    "5GAK_7",
+    "5IB7_22",
+    "5IB7_24",
+    "5IB8_22",
+    "5IB8_24",
+    "5IB8_56",
+    "5MC6_36",
+    "5UYN_58",
+    "5UYP_58",
+    "5UYQ_58",
+    "6HD7_4",
+    "6TNU_37",
+    "7NRC_36",
+    "7P7T_12",
+    "7ZTA_54",
+    "8BF7_55",
+    "8BH4_54",
+    "8BHJ_54",
+    "8BHN_55",
+    "8UT0_81",
+    "8UTI_5",
+    "9O3H_54",
+    "9O3H_57",
+    "9O3I_54",
+    "9O3I_57",
+    "9O3J_54",
+    "9O3J_57",
+    "9O3K_54",
+    "9O3K_57",
+    "9YDC_80",
+    "9YDD_80",
+    "9ZR0_57",
+    "9ZR1_57",
+    "9ZR3_56",
+    "9ZR4_56",
+    "1FIR_1",
+    "8D9K_3",
+    "8D9L_3",
+    "8EG0_3",
+    "9DOW_2",
+    "9DPA_2",
+    "9DPB_2",
+    "9DPL_2",
+    "9LTT_2"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "UCCGCGAUAGCUCAGUCGGUAGAGCAAAUGACUGUUAAUCAUUGGGUCCCUGGUUCGAGUCCAGGUCGCGGAGCCA"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "e8b3a1bf-90e7-409a-a216-873b7b47661c",
+    "result_set": [
+      {
+        "identifier": "4WJ3_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "4WJ4_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "8P6P_4",
+        "score": 0.2
+      },
+      {
+        "identifier": "8P7X_9",
+        "score": 0.2
+      },
+      {
+        "identifier": "8P7Y_9",
+        "score": 0.2
+      },
+      {
+        "identifier": "8P8B_9",
+        "score": 0.2
+      },
+      {
+        "identifier": "8P8V_9",
+        "score": 0.2
+      },
+      {
+        "identifier": "7D6Z_5",
+        "score": 0.09411764705882353
+      },
+      {
+        "identifier": "7D80_31",
+        "score": 0.09411764705882353
+      },
+      {
+        "identifier": "10ZD_5",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "10ZE_13",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5E7K_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5E7K_56",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5E7K_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5E81_22",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5E81_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL4_22",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL4_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL4_56",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL4_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL5_22",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL5_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL5_56",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL5_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL6_22",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL6_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL7_22",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL7_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5EL7_56",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5GAK_7",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5IB7_22",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5IB7_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5IB8_22",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5IB8_24",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5IB8_56",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5MC6_36",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5UYN_58",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5UYP_58",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "5UYQ_58",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "6HD7_4",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "6TNU_37",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "7NRC_36",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "7P7T_12",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "7ZTA_54",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "8BF7_55",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "8BH4_54",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "8BHJ_54",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "8BHN_55",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "8UT0_81",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "8UTI_5",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3H_54",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3H_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3I_54",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3I_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3J_54",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3J_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3K_54",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9O3K_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9YDC_80",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9YDD_80",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9ZR0_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9ZR1_57",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9ZR3_56",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "9ZR4_56",
+        "score": 0.058823529411764705
+      },
+      {
+        "identifier": "1FIR_1",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "8D9K_3",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "8D9L_3",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "8EG0_3",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "9DOW_2",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "9DPA_2",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "9DPB_2",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "9DPL_2",
+        "score": 0.03529411764705882
+      },
+      {
+        "identifier": "9LTT_2",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 73
+  },
+  "response_sha256": "53f914e74edf25d23dc9316e87e07987b9863d350f9d54b06d2f698c9c698b3b",
+  "retrieved_utc": "2026-11-26T20:46:57.092443+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

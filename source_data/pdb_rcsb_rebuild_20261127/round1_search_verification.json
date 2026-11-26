@@ -1,0 +1,11 @@
+{
+  "candidate_entity_memberships": 3217,
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "n_source_records": 153,
+  "n_unique_sequences": 125,
+  "search_index_sha256": "6c5939ec1730d600596eb9933818c7ca76c8e0f0459dcecf4fe57319fa796728",
+  "search_status_counts": {
+    "FROZEN": 125
+  },
+  "status": "PASS_RNAFORMER_RCSB_SEARCH_INDEPENDENT_VERIFIER"
+}

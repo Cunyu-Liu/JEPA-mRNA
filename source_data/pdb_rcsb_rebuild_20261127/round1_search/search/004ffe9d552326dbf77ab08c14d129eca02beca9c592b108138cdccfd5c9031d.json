@@ -1,0 +1,56 @@
+{
+  "candidate_entity_ids": [
+    "5DDP_1",
+    "5DDQ_1",
+    "5DDR_1",
+    "5DDO_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "CGUUGACCCAGGAAACUGGGCGGAAGUAAGGUCCAUUGCACUCCGGGCCUGAAGCAACGCG"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "36595246-73e4-4024-87ed-5e48bf8e6c72",
+    "result_set": [
+      {
+        "identifier": "5DDP_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5DDQ_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5DDR_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5DDO_1",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 4
+  },
+  "response_sha256": "7e2eb748e8ab25e12b2371e08cd4e9b5a115d815c9277b6741474bf958637cbd",
+  "retrieved_utc": "2026-11-26T20:46:08.281929+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

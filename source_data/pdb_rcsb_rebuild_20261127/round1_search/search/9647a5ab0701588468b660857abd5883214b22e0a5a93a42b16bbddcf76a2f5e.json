@@ -1,0 +1,56 @@
+{
+  "candidate_entity_ids": [
+    "4TVX_5",
+    "5CD4_6",
+    "5H9E_5",
+    "5H9F_5"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "AUAAACCGACGGUAUUGUUCAGAUCCUGGCUUGCCAACAGGAGUUCCCCGCGCCAGCGGGG"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "78ce0c20-74a0-4ea1-8771-4c7f3dac2194",
+    "result_set": [
+      {
+        "identifier": "4TVX_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "5CD4_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "5H9E_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "5H9F_5",
+        "score": 1.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 4
+  },
+  "response_sha256": "249b26d6870bf0a200e889b57e892001ae90b55a37e04effb42710a96e5447e7",
+  "retrieved_utc": "2026-11-26T20:45:55.625396+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

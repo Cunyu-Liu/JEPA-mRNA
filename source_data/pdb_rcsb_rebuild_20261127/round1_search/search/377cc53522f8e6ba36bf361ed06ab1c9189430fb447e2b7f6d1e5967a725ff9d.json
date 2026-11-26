@@ -1,0 +1,3721 @@
+{
+  "candidate_entity_ids": [
+    "10QM_2",
+    "10ZD_12",
+    "10ZE_19",
+    "11DG_29",
+    "11EL_29",
+    "11FV_21",
+    "11GG_21",
+    "1C2X_1",
+    "28UH_6",
+    "28UI_10",
+    "28UJ_5",
+    "28UK_5",
+    "28UL_5",
+    "28UM_4",
+    "28UN_5",
+    "2RDO_1",
+    "30QZ_2",
+    "30RA_31",
+    "30RB_29",
+    "3BBX_1",
+    "3J9Z_26",
+    "3JA1_25",
+    "3JBU_52",
+    "3JBV_33",
+    "3JCD_54",
+    "3JCE_29",
+    "3JCN_7",
+    "4V47_2",
+    "4V48_2",
+    "4V4H_22",
+    "4V4Q_22",
+    "4V50_24",
+    "4V52_22",
+    "4V53_22",
+    "4V54_22",
+    "4V55_22",
+    "4V56_22",
+    "4V57_22",
+    "4V5B_7",
+    "4V5Y_22",
+    "4V64_22",
+    "4V6K_1",
+    "4V6L_25",
+    "4V6M_26",
+    "4V6N_1",
+    "4V6O_25",
+    "4V6P_25",
+    "4V6Q_25",
+    "4V6R_25",
+    "4V6S_1",
+    "4V6V_58",
+    "4V7B_26",
+    "4V7I_1",
+    "4V9C_25",
+    "4V9O_1",
+    "4V9P_2",
+    "4WOI_26",
+    "4YBB_23",
+    "5ADY_9",
+    "5AKA_9",
+    "5GAD_4",
+    "5GAE_2",
+    "5GAF_4",
+    "5GAG_4",
+    "5GAH_4",
+    "5H5U_8",
+    "5IT8_28",
+    "5J5B_28",
+    "5J7L_28",
+    "5J88_28",
+    "5J8A_28",
+    "5J91_28",
+    "5JC9_28",
+    "5KCR_2",
+    "5KCS_2",
+    "5LZA_25",
+    "5LZB_27",
+    "5LZC_27",
+    "5LZD_27",
+    "5LZE_26",
+    "5LZF_26",
+    "5MDV_3",
+    "5MDW_3",
+    "5MDY_3",
+    "5MDZ_3",
+    "5NCO_4",
+    "5NWY_3",
+    "5ZZM_2",
+    "6C4I_2",
+    "6HRM_2",
+    "6OM6_3",
+    "6ORE_3",
+    "6ORL_3",
+    "6OSK_3",
+    "6OSQ_3",
+    "6OST_3",
+    "6OT3_3",
+    "6OUO_3",
+    "6Q97_3",
+    "6Q98_3",
+    "6Q9A_3",
+    "6QDW_9",
+    "6QUL_3",
+    "6S0K_3",
+    "6SZS_8",
+    "6TBV_23",
+    "6TC3_23",
+    "6VU3_42",
+    "6VYQ_42",
+    "6VYR_42",
+    "6VYS_42",
+    "6VYT_40",
+    "6VYU_41",
+    "6VYW_41",
+    "6VYX_41",
+    "6VYY_41",
+    "6VYZ_41",
+    "6VZ2_41",
+    "6VZ3_41",
+    "6VZ5_41",
+    "6VZ7_41",
+    "6VZJ_41",
+    "6X6T_44",
+    "6X7F_44",
+    "6X7K_44",
+    "6X9Q_44",
+    "6XDQ_44",
+    "6XDR_43",
+    "6XGF_43",
+    "6XII_43",
+    "6XIJ_42",
+    "6XZ7_2",
+    "6XZA_23",
+    "6XZB_23",
+    "6YS3_9",
+    "6YSR_9",
+    "6YSS_9",
+    "6YST_9",
+    "6YSU_8",
+    "6ZTJ_27",
+    "6ZTL_26",
+    "6ZTM_26",
+    "6ZTN_26",
+    "6ZTO_26",
+    "6ZTP_26",
+    "6ZU1_26",
+    "7AC7_3",
+    "7ACJ_3",
+    "7ACR_3",
+    "7B5K_2",
+    "7BL2_2",
+    "7BL5_22",
+    "7BV8_2",
+    "7K00_23",
+    "7LVK_2",
+    "7M5D_3",
+    "7N1P_24",
+    "7N2C_24",
+    "7N2U_24",
+    "7N2V_24",
+    "7N30_24",
+    "7N31_24",
+    "7NBU_27",
+    "7NSO_2",
+    "7NSP_2",
+    "7NSQ_2",
+    "7NWT_28",
+    "7NWW_3",
+    "7O19_23",
+    "7O1A_23",
+    "7O1C_23",
+    "7OIF_3",
+    "7OIG_3",
+    "7OII_3",
+    "7OT5_3",
+    "7OTC_23",
+    "7PJS_9",
+    "7PJT_9",
+    "7PJU_9",
+    "7PJV_9",
+    "7PJW_9",
+    "7PJX_9",
+    "7PJY_9",
+    "7PJZ_9",
+    "7Q4K_23",
+    "7QG8_4",
+    "7QGH_1",
+    "7QGN_5",
+    "7QGR_1",
+    "7S1G_13",
+    "7S1H_11",
+    "7S1I_13",
+    "7S1J_11",
+    "7S1K_13",
+    "7SA4_3",
+    "7UG7_23",
+    "7Y7C_23",
+    "7Y7D_23",
+    "7Y7E_23",
+    "7Y7F_23",
+    "7Y7G_23",
+    "7Y7H_23",
+    "7Z20_9",
+    "7ZOD_9",
+    "7ZP8_9",
+    "7ZQ5_9",
+    "7ZQ6_9",
+    "7ZTA_23",
+    "8A3L_27",
+    "8AKN_33",
+    "8AM9_28",
+    "8ANA_8",
+    "8AP4_9",
+    "8AYE_31",
+    "8BF7_51",
+    "8BGE_50",
+    "8BGH_51",
+    "8BH4_50",
+    "8BHJ_50",
+    "8BHL_50",
+    "8BHN_51",
+    "8BHP_51",
+    "8BIL_51",
+    "8BIM_51",
+    "8CAM_6",
+    "8CEU_6",
+    "8CGD_6",
+    "8CGK_6",
+    "8CGV_6",
+    "8EIU_30",
+    "8EMM_2",
+    "8FIZ_26",
+    "8FTO_30",
+    "8G6W_31",
+    "8G6X_2",
+    "8G6Y_10",
+    "8HSP_23",
+    "8HTZ_23",
+    "8HU1_23",
+    "8IFB_23",
+    "8IFC_23",
+    "8J1Z_2",
+    "8P16_25",
+    "8P17_25",
+    "8P18_25",
+    "8PEG_9",
+    "8PHJ_34",
+    "8PVA_23",
+    "8QBT_2",
+    "8QK7_25",
+    "8QOA_26",
+    "8R3V_6",
+    "8R6C_32",
+    "8R8M_5",
+    "8RCL_6",
+    "8RCM_6",
+    "8RCS_6",
+    "8RCT_6",
+    "8UPO_42",
+    "8UPR_43",
+    "8UQL_43",
+    "8UQM_44",
+    "8UQP_43",
+    "8UR0_44",
+    "8URH_43",
+    "8URI_44",
+    "8URM_3",
+    "8URX_43",
+    "8URY_44",
+    "8UTJ_3",
+    "8UX8_3",
+    "8VKV_44",
+    "8VL1_44",
+    "8VOO_44",
+    "8VOP_44",
+    "8VOQ_44",
+    "8VOR_44",
+    "8VOS_44",
+    "8VV4_26",
+    "8VWQ_3",
+    "8W2N_3",
+    "8YUO_23",
+    "8YUP_23",
+    "8YUQ_23",
+    "8YUR_23",
+    "8YUS_23",
+    "8ZEJ_32",
+    "8ZFF_23",
+    "8ZFG_23",
+    "8ZFI_32",
+    "8ZTU_23",
+    "8ZTV_28",
+    "9AX7_30",
+    "9B4Z_32",
+    "9CG5_30",
+    "9CG6_30",
+    "9CG7_30",
+    "9FBV_5",
+    "9GFT_26",
+    "9GGR_27",
+    "9GXX_26",
+    "9H0L_26",
+    "9HUQ_9",
+    "9HUS_9",
+    "9HY6_12",
+    "9HYM_9",
+    "9I3L_9",
+    "9JMK_6",
+    "9JPM_23",
+    "9JPO_23",
+    "9JPP_23",
+    "9JQ2_23",
+    "9MKK_28",
+    "9MOR_3",
+    "9MQ4_3",
+    "9O2X_27",
+    "9O2Y_25",
+    "9PIH_30",
+    "9PII_30",
+    "9PIJ_30",
+    "9Q87_31",
+    "9QQQ_31",
+    "9QSJ_31",
+    "9R3A_32",
+    "9RBF_37",
+    "9RFW_8",
+    "9RJA_40",
+    "9RTU_9",
+    "9RTV_9",
+    "9SE1_9",
+    "9SLG_28",
+    "9SRO_25",
+    "9SYH_26",
+    "9T0Y_26",
+    "9T19_4",
+    "9T1A_4",
+    "9T1B_4",
+    "9T1C_3",
+    "9T1E_4",
+    "9T1F_4",
+    "9T1G_3",
+    "9T1H_4",
+    "9T1I_3",
+    "9T1J_4",
+    "9T2J_2",
+    "9T2K_3",
+    "9T2L_3",
+    "9T2M_3",
+    "9T2N_3",
+    "9T2O_3",
+    "9T2P_3",
+    "9T2Q_3",
+    "9T2R_3",
+    "9T2S_3",
+    "9T5G_36",
+    "9T5X_37",
+    "9T6M_26",
+    "9T8K_2",
+    "9T8L_2",
+    "9T8M_2",
+    "9T8N_4",
+    "9T8O_2",
+    "9T8P_3",
+    "9T8Q_3",
+    "9T8R_3",
+    "9T8S_3",
+    "9T8T_4",
+    "9TEW_28",
+    "9TEX_31",
+    "9TEY_28",
+    "9TEZ_10",
+    "9TMI_26",
+    "9TNL_9",
+    "9TQA_31",
+    "9W0N_2",
+    "9WNQ_32",
+    "9WNR_33",
+    "9Y79_44",
+    "9ZR0_24",
+    "9ZR1_24",
+    "9ZR3_24",
+    "9ZR4_24",
+    "9ZTL_31",
+    "11BQ_29",
+    "23WI_23",
+    "3J9Y_26",
+    "4U1U_23",
+    "4U1V_23",
+    "4U20_23",
+    "4U24_23",
+    "4U25_23",
+    "4U26_23",
+    "4U27_23",
+    "4V6T_56",
+    "4V7C_26",
+    "4V7D_2",
+    "4V9D_26",
+    "4WF1_23",
+    "5AFI_27",
+    "5JTE_27",
+    "5JU8_26",
+    "5KPS_55",
+    "5KPV_54",
+    "5KPW_54",
+    "5KPX_54",
+    "5L3P_2",
+    "5MGP_2",
+    "5NP6_26",
+    "5O2R_2",
+    "5U9F_3",
+    "5U9G_3",
+    "5UYK_55",
+    "5UYL_55",
+    "5UYM_55",
+    "5UYN_55",
+    "5UYP_55",
+    "5UYQ_55",
+    "5WDT_2",
+    "5WE4_2",
+    "5WE6_2",
+    "5WF0_2",
+    "5WFK_2",
+    "5WFS_2",
+    "6BU8_55",
+    "6DNC_3",
+    "6ENF_24",
+    "6ENJ_2",
+    "6ENU_24",
+    "6GBZ_28",
+    "6GC0_2",
+    "6GC4_23",
+    "6GC8_2",
+    "6GWT_2",
+    "6GXM_2",
+    "6GXN_2",
+    "6GXO_2",
+    "6GXP_2",
+    "6H4N_23",
+    "6H58_8",
+    "6I7V_5",
+    "6OFX_52",
+    "6OG7_52",
+    "6OGF_52",
+    "6OGG_52",
+    "6OGI_52",
+    "6VWL_28",
+    "6VWM_1",
+    "6VWN_1",
+    "6WD0_54",
+    "6WD1_54",
+    "6WD2_54",
+    "6WD3_54",
+    "6WD4_54",
+    "6WD5_54",
+    "6WD6_54",
+    "6WD7_54",
+    "6WD8_54",
+    "6WD9_54",
+    "6WDA_54",
+    "6WDB_54",
+    "6WDC_54",
+    "6WDD_54",
+    "6WDE_54",
+    "6WDF_54",
+    "6WDG_54",
+    "6WDH_54",
+    "6WDI_54",
+    "6WDJ_54",
+    "6WDK_54",
+    "6WDL_54",
+    "6WDM_54",
+    "6Y69_23",
+    "7BL3_2",
+    "7BL4_30",
+    "7BL6_30",
+    "7CPJ_23",
+    "7JSS_51",
+    "7JSW_51",
+    "7JSZ_54",
+    "7JT1_51",
+    "7JT2_52",
+    "7JT3_54",
+    "7K50_55",
+    "7K51_55",
+    "7K52_55",
+    "7K53_55",
+    "7K54_55",
+    "7K55_55",
+    "7LV0_55",
+    "7OIZ_23",
+    "7OJ0_23",
+    "7P3K_23",
+    "7SS9_3",
+    "7SSD_3",
+    "7SSL_3",
+    "7SSN_3",
+    "7SSO_3",
+    "7SSW_3",
+    "7ST2_3",
+    "7ST6_3",
+    "7ST7_2",
+    "7TOS_55",
+    "8B0X_29",
+    "8C8X_28",
+    "8C8Y_22",
+    "8C8Z_21",
+    "8C90_20",
+    "8C94_4",
+    "8C95_3",
+    "8PKL_9",
+    "8RPY_8",
+    "8RPZ_8",
+    "8RQ0_8",
+    "8RQ2_8",
+    "8UXB_3",
+    "8UZ3_3",
+    "8UZG_3",
+    "8V03_3",
+    "8VS9_3",
+    "8VSA_34",
+    "8VUP_3",
+    "8Y5K_52",
+    "8Y5L_52",
+    "8Y5M_52",
+    "8Y5N_52",
+    "8Y5O_52",
+    "8Y5P_52",
+    "8Y5Q_52",
+    "8Y5R_52",
+    "8Y5S_52",
+    "8Y5T_52",
+    "8YDE_52",
+    "8YDF_52",
+    "8YDG_52",
+    "8YDH_52",
+    "8YDI_52",
+    "8YDJ_52",
+    "9B50_29",
+    "9B51_32",
+    "9D89_6",
+    "9GHA_31",
+    "9GHB_31",
+    "9GHC_32",
+    "9GHD_32",
+    "9GHE_31",
+    "9GHF_31",
+    "9GR1_29",
+    "9H3P_3",
+    "9H3Q_4",
+    "9H3R_5",
+    "9H3S_5",
+    "9H3V_4",
+    "9H3W_4",
+    "9H3X_6",
+    "9H3Y_6",
+    "9H3Z_7",
+    "9HA4_2",
+    "9HA6_6",
+    "9HA7_2",
+    "9NJF_35",
+    "9NJV_31",
+    "9NKL_31",
+    "9NL5_34",
+    "9NL6_31",
+    "9NL7_33",
+    "9NLB_34",
+    "9NLE_34",
+    "9NLF_33",
+    "9NLH_33",
+    "9NLJ_31",
+    "9NLQ_33",
+    "9NLS_33",
+    "9SS4_34",
+    "9SS5_33",
+    "9SS6_54",
+    "9TKP_53",
+    "9TKQ_53",
+    "9TKR_53",
+    "9VVI_23",
+    "9XWO_23",
+    "3J5L_10",
+    "3J7Z_10",
+    "3JCJ_1",
+    "4CSU_11",
+    "4UY8_11",
+    "4V6C_23",
+    "4V6D_25",
+    "4V6E_25",
+    "4V6Y_55",
+    "4V6Z_55",
+    "4V70_55",
+    "4V71_55",
+    "4V72_55",
+    "4V73_55",
+    "4V74_55",
+    "4V75_55",
+    "4V76_55",
+    "4V77_55",
+    "4V78_55",
+    "4V79_55",
+    "4V7A_54",
+    "4V7S_23",
+    "4V7T_23",
+    "4V7U_23",
+    "4V7V_23",
+    "4V85_35",
+    "4V89_34",
+    "4V9D_56",
+    "4WWW_2",
+    "5IQR_54",
+    "5U4I_2",
+    "6BY1_3",
+    "6I0Y_12",
+    "6LKQ_53",
+    "6O9K_44",
+    "6PC5_2",
+    "6PC6_2",
+    "6PC7_2",
+    "6PC8_2",
+    "6PCH_2",
+    "6PCQ_2",
+    "6PCR_2",
+    "6PCS_2",
+    "6PCT_2",
+    "6PJ6_2",
+    "6U48_2",
+    "6WYV_2",
+    "7ABZ_3",
+    "7D6Z_8",
+    "7D80_32",
+    "7UPH_10",
+    "7YLA_3",
+    "8B7Y_2",
+    "8E30_2",
+    "8E32_2",
+    "8E33_2",
+    "8E35_2",
+    "8E36_2",
+    "8E3L_2",
+    "8E3M_2",
+    "8E3O_2",
+    "8E41_2",
+    "8E42_2",
+    "8E43_2",
+    "8E44_2",
+    "8E45_2",
+    "8E46_2",
+    "8E47_2",
+    "8E48_2",
+    "8E49_2",
+    "8W51_2",
+    "9AX8_27",
+    "9XFK_2",
+    "9XFL_2",
+    "8EKC_26",
+    "8FZD_28",
+    "8FZE_26",
+    "8FZF_26",
+    "8FZG_27",
+    "8FZH_26",
+    "8FZI_26",
+    "8FZJ_26",
+    "8G7P_27",
+    "8G7Q_27",
+    "8G7R_26",
+    "8G7S_25",
+    "8SYL_26",
+    "9IOT_8",
+    "9N2B_24",
+    "9N2C_24",
+    "9Q3Q_28",
+    "9Q3R_27",
+    "9ZN2_27",
+    "2J28_9",
+    "3J8G_1",
+    "4V5H_34",
+    "4V65_24",
+    "4V66_24",
+    "4V69_58",
+    "4V6C_54",
+    "4V6D_56",
+    "4V6E_56",
+    "4V7S_57",
+    "4V7T_58",
+    "4V7V_57",
+    "6O9J_1",
+    "8G2U_6",
+    "8G31_7",
+    "8G34_6",
+    "8G38_6",
+    "8T5D_6",
+    "8T5H_6",
+    "7QQ3_2",
+    "32PC_29",
+    "32PE_31",
+    "9SX5_31",
+    "9SXK_29",
+    "9T7X_29",
+    "9TCO_31",
+    "9TCQ_31",
+    "9TCR_29",
+    "4V4V_23",
+    "4V4W_23",
+    "6WNT_31",
+    "6WNV_52",
+    "6WNW_54",
+    "9H91_7",
+    "32PB_29",
+    "6SPB_2",
+    "6SPD_2",
+    "6SPF_2",
+    "6SPG_23",
+    "7UNR_26",
+    "7UNU_26",
+    "7UNV_26",
+    "7UNW_26",
+    "8CD1_6",
+    "8RWG_12",
+    "9Q40_2",
+    "9Q42_2",
+    "9Q43_2",
+    "9Q44_2",
+    "9SY6_29",
+    "9T8U_29",
+    "9YLQ_2",
+    "9YPH_2",
+    "9YPK_2",
+    "9YPN_2",
+    "9TZ5_6",
+    "9TZ9_6",
+    "9TZE_26",
+    "1A51_1",
+    "357D_3",
+    "364D_3",
+    "1MJI_1",
+    "5NS3_2",
+    "5NS4_2"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "8b241ed6-e382-4c80-a74f-ecf6e2a41e55",
+    "result_set": [
+      {
+        "identifier": "10QM_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "10ZD_12",
+        "score": 1.0
+      },
+      {
+        "identifier": "10ZE_19",
+        "score": 1.0
+      },
+      {
+        "identifier": "11DG_29",
+        "score": 1.0
+      },
+      {
+        "identifier": "11EL_29",
+        "score": 1.0
+      },
+      {
+        "identifier": "11FV_21",
+        "score": 1.0
+      },
+      {
+        "identifier": "11GG_21",
+        "score": 1.0
+      },
+      {
+        "identifier": "1C2X_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "28UH_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "28UI_10",
+        "score": 1.0
+      },
+      {
+        "identifier": "28UJ_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "28UK_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "28UL_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "28UM_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "28UN_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "2RDO_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "30QZ_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "30RA_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "30RB_29",
+        "score": 1.0
+      },
+      {
+        "identifier": "3BBX_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "3J9Z_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "3JA1_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "3JBU_52",
+        "score": 1.0
+      },
+      {
+        "identifier": "3JBV_33",
+        "score": 1.0
+      },
+      {
+        "identifier": "3JCD_54",
+        "score": 1.0
+      },
+      {
+        "identifier": "3JCE_29",
+        "score": 1.0
+      },
+      {
+        "identifier": "3JCN_7",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V47_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V48_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V4H_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V4Q_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V50_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V52_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V53_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V54_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V55_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V56_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V57_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V5B_7",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V5Y_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V64_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6K_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6L_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6M_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6N_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6O_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6P_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6Q_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6R_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6S_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V6V_58",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V7B_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V7I_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V9C_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V9O_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "4V9P_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "4WOI_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "4YBB_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "5ADY_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "5AKA_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "5GAD_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "5GAE_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "5GAF_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "5GAG_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "5GAH_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "5H5U_8",
+        "score": 1.0
+      },
+      {
+        "identifier": "5IT8_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "5J5B_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "5J7L_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "5J88_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "5J8A_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "5J91_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "5JC9_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "5KCR_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "5KCS_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "5LZA_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "5LZB_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "5LZC_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "5LZD_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "5LZE_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "5LZF_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "5MDV_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "5MDW_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "5MDY_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "5MDZ_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "5NCO_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "5NWY_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "5ZZM_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "6C4I_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "6HRM_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "6OM6_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ORE_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ORL_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6OSK_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6OSQ_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6OST_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6OT3_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6OUO_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6Q97_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6Q98_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6Q9A_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6QDW_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "6QUL_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6S0K_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "6SZS_8",
+        "score": 1.0
+      },
+      {
+        "identifier": "6TBV_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "6TC3_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VU3_42",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYQ_42",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYR_42",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYS_42",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYT_40",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYU_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYW_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYX_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYY_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VYZ_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VZ2_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VZ3_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VZ5_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VZ7_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6VZJ_41",
+        "score": 1.0
+      },
+      {
+        "identifier": "6X6T_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "6X7F_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "6X7K_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "6X9Q_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XDQ_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XDR_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XGF_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XII_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XIJ_42",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XZ7_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XZA_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XZB_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "6YS3_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "6YSR_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "6YSS_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "6YST_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "6YSU_8",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ZTJ_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ZTL_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ZTM_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ZTN_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ZTO_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ZTP_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "6ZU1_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "7AC7_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ACJ_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ACR_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7B5K_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7BL2_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7BL5_22",
+        "score": 1.0
+      },
+      {
+        "identifier": "7BV8_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7K00_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7LVK_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7M5D_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7N1P_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "7N2C_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "7N2U_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "7N2V_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "7N30_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "7N31_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "7NBU_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "7NSO_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7NSP_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7NSQ_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "7NWT_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "7NWW_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7O19_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7O1A_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7O1C_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7OIF_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7OIG_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7OII_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7OT5_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7OTC_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJS_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJT_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJU_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJV_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJW_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJX_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJY_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7PJZ_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Q4K_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7QG8_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "7QGH_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "7QGN_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "7QGR_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "7S1G_13",
+        "score": 1.0
+      },
+      {
+        "identifier": "7S1H_11",
+        "score": 1.0
+      },
+      {
+        "identifier": "7S1I_13",
+        "score": 1.0
+      },
+      {
+        "identifier": "7S1J_11",
+        "score": 1.0
+      },
+      {
+        "identifier": "7S1K_13",
+        "score": 1.0
+      },
+      {
+        "identifier": "7SA4_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "7UG7_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Y7C_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Y7D_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Y7E_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Y7F_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Y7G_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Y7H_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "7Z20_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ZOD_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ZP8_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ZQ5_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ZQ6_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "7ZTA_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8A3L_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "8AKN_33",
+        "score": 1.0
+      },
+      {
+        "identifier": "8AM9_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "8ANA_8",
+        "score": 1.0
+      },
+      {
+        "identifier": "8AP4_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "8AYE_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BF7_51",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BGE_50",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BGH_51",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BH4_50",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BHJ_50",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BHL_50",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BHN_51",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BHP_51",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BIL_51",
+        "score": 1.0
+      },
+      {
+        "identifier": "8BIM_51",
+        "score": 1.0
+      },
+      {
+        "identifier": "8CAM_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8CEU_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8CGD_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8CGK_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8CGV_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8EIU_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "8EMM_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "8FIZ_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "8FTO_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "8G6W_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "8G6X_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "8G6Y_10",
+        "score": 1.0
+      },
+      {
+        "identifier": "8HSP_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8HTZ_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8HU1_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8IFB_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8IFC_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8J1Z_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "8P16_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "8P17_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "8P18_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "8PEG_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "8PHJ_34",
+        "score": 1.0
+      },
+      {
+        "identifier": "8PVA_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8QBT_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "8QK7_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "8QOA_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "8R3V_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8R6C_32",
+        "score": 1.0
+      },
+      {
+        "identifier": "8R8M_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "8RCL_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8RCM_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8RCS_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8RCT_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UPO_42",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UPR_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UQL_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UQM_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UQP_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UR0_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8URH_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "8URI_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8URM_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "8URX_43",
+        "score": 1.0
+      },
+      {
+        "identifier": "8URY_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UTJ_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "8UX8_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VKV_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VL1_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VOO_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VOP_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VOQ_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VOR_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VOS_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VV4_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "8VWQ_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "8W2N_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "8YUO_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8YUP_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8YUQ_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8YUR_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8YUS_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8ZEJ_32",
+        "score": 1.0
+      },
+      {
+        "identifier": "8ZFF_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8ZFG_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8ZFI_32",
+        "score": 1.0
+      },
+      {
+        "identifier": "8ZTU_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "8ZTV_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "9AX7_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "9B4Z_32",
+        "score": 1.0
+      },
+      {
+        "identifier": "9CG5_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "9CG6_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "9CG7_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "9FBV_5",
+        "score": 1.0
+      },
+      {
+        "identifier": "9GFT_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "9GGR_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "9GXX_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "9H0L_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "9HUQ_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9HUS_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9HY6_12",
+        "score": 1.0
+      },
+      {
+        "identifier": "9HYM_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9I3L_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9JMK_6",
+        "score": 1.0
+      },
+      {
+        "identifier": "9JPM_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "9JPO_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "9JPP_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "9JQ2_23",
+        "score": 1.0
+      },
+      {
+        "identifier": "9MKK_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "9MOR_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9MQ4_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9O2X_27",
+        "score": 1.0
+      },
+      {
+        "identifier": "9O2Y_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "9PIH_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "9PII_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "9PIJ_30",
+        "score": 1.0
+      },
+      {
+        "identifier": "9Q87_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "9QQQ_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "9QSJ_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "9R3A_32",
+        "score": 1.0
+      },
+      {
+        "identifier": "9RBF_37",
+        "score": 1.0
+      },
+      {
+        "identifier": "9RFW_8",
+        "score": 1.0
+      },
+      {
+        "identifier": "9RJA_40",
+        "score": 1.0
+      },
+      {
+        "identifier": "9RTU_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9RTV_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9SE1_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9SLG_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "9SRO_25",
+        "score": 1.0
+      },
+      {
+        "identifier": "9SYH_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T0Y_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T19_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1A_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1B_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1C_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1E_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1F_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1G_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1H_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1I_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T1J_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2J_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2K_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2L_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2M_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2N_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2O_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2P_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2Q_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2R_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T2S_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T5G_36",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T5X_37",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T6M_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8K_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8L_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8M_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8N_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8O_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8P_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8Q_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8R_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8S_3",
+        "score": 1.0
+      },
+      {
+        "identifier": "9T8T_4",
+        "score": 1.0
+      },
+      {
+        "identifier": "9TEW_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "9TEX_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "9TEY_28",
+        "score": 1.0
+      },
+      {
+        "identifier": "9TEZ_10",
+        "score": 1.0
+      },
+      {
+        "identifier": "9TMI_26",
+        "score": 1.0
+      },
+      {
+        "identifier": "9TNL_9",
+        "score": 1.0
+      },
+      {
+        "identifier": "9TQA_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "9W0N_2",
+        "score": 1.0
+      },
+      {
+        "identifier": "9WNQ_32",
+        "score": 1.0
+      },
+      {
+        "identifier": "9WNR_33",
+        "score": 1.0
+      },
+      {
+        "identifier": "9Y79_44",
+        "score": 1.0
+      },
+      {
+        "identifier": "9ZR0_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "9ZR1_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "9ZR3_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "9ZR4_24",
+        "score": 1.0
+      },
+      {
+        "identifier": "9ZTL_31",
+        "score": 1.0
+      },
+      {
+        "identifier": "11BQ_29",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "23WI_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "3J9Y_26",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4U1U_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4U1V_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4U20_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4U24_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4U25_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4U26_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4U27_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4V6T_56",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4V7C_26",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4V7D_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4V9D_26",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "4WF1_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5AFI_27",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5JTE_27",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5JU8_26",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5KPS_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5KPV_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5KPW_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5KPX_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5L3P_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5MGP_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5NP6_26",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5O2R_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5U9F_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5U9G_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5UYK_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5UYL_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5UYM_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5UYN_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5UYP_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5UYQ_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5WDT_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5WE4_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5WE6_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5WF0_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5WFK_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "5WFS_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6BU8_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6DNC_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6ENF_24",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6ENJ_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6ENU_24",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GBZ_28",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GC0_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GC4_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GC8_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GWT_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GXM_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GXN_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GXO_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6GXP_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6H4N_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6H58_8",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6I7V_5",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6OFX_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6OG7_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6OGF_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6OGG_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6OGI_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6VWL_28",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6VWM_1",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6VWN_1",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD0_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD1_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD2_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD3_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD4_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD5_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD6_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD7_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD8_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WD9_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDA_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDB_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDC_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDD_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDE_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDF_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDG_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDH_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDI_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDJ_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDK_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDL_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6WDM_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "6Y69_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7BL3_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7BL4_30",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7BL6_30",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7CPJ_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7JSS_51",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7JSW_51",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7JSZ_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7JT1_51",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7JT2_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7JT3_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7K50_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7K51_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7K52_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7K53_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7K54_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7K55_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7LV0_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7OIZ_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7OJ0_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7P3K_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7SS9_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7SSD_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7SSL_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7SSN_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7SSO_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7SSW_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7ST2_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7ST6_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7ST7_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "7TOS_55",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8B0X_29",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8C8X_28",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8C8Y_22",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8C8Z_21",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8C90_20",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8C94_4",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8C95_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8PKL_9",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8RPY_8",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8RPZ_8",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8RQ0_8",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8RQ2_8",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8UXB_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8UZ3_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8UZG_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8V03_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8VS9_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8VSA_34",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8VUP_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5K_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5L_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5M_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5N_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5O_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5P_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5Q_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5R_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5S_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8Y5T_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8YDE_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8YDF_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8YDG_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8YDH_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8YDI_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "8YDJ_52",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9B50_29",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9B51_32",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9D89_6",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9GHA_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9GHB_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9GHC_32",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9GHD_32",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9GHE_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9GHF_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9GR1_29",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3P_3",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3Q_4",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3R_5",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3S_5",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3V_4",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3W_4",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3X_6",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3Y_6",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9H3Z_7",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9HA4_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9HA6_6",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9HA7_2",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NJF_35",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NJV_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NKL_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NL5_34",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NL6_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NL7_33",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NLB_34",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NLE_34",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NLF_33",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NLH_33",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NLJ_31",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NLQ_33",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9NLS_33",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9SS4_34",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9SS5_33",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9SS6_54",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9TKP_53",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9TKQ_53",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9TKR_53",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9VVI_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "9XWO_23",
+        "score": 0.9939393939393939
+      },
+      {
+        "identifier": "3J5L_10",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "3J7Z_10",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "3JCJ_1",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4CSU_11",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4UY8_11",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V6C_23",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V6D_25",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V6E_25",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V6Y_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V6Z_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V70_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V71_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V72_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V73_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V74_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V75_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V76_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V77_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V78_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V79_55",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V7A_54",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V7S_23",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V7T_23",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V7U_23",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V7V_23",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V85_35",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V89_34",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4V9D_56",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "4WWW_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "5IQR_54",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "5U4I_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6BY1_3",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6I0Y_12",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6LKQ_53",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6O9K_44",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PC5_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PC6_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PC7_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PC8_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PCH_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PCQ_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PCR_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PCS_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PCT_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6PJ6_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6U48_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "6WYV_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "7ABZ_3",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "7D6Z_8",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "7D80_32",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "7UPH_10",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "7YLA_3",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8B7Y_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E30_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E32_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E33_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E35_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E36_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E3L_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E3M_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E3O_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E41_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E42_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E43_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E44_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E45_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E46_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E47_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E48_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8E49_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8W51_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "9AX8_27",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "9XFK_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "9XFL_2",
+        "score": 0.9818181818181818
+      },
+      {
+        "identifier": "8EKC_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8FZD_28",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8FZE_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8FZF_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8FZG_27",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8FZH_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8FZI_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8FZJ_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8G7P_27",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8G7Q_27",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8G7R_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8G7S_25",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "8SYL_26",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "9IOT_8",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "9N2B_24",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "9N2C_24",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "9Q3Q_28",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "9Q3R_27",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "9ZN2_27",
+        "score": 0.9757575757575757
+      },
+      {
+        "identifier": "2J28_9",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "3J8G_1",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V5H_34",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V65_24",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V66_24",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V69_58",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V6C_54",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V6D_56",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V6E_56",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V7S_57",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V7T_58",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "4V7V_57",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "6O9J_1",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "8G2U_6",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "8G31_7",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "8G34_6",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "8G38_6",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "8T5D_6",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "8T5H_6",
+        "score": 0.9696969696969697
+      },
+      {
+        "identifier": "7QQ3_2",
+        "score": 0.9515151515151515
+      },
+      {
+        "identifier": "32PC_29",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "32PE_31",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "9SX5_31",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "9SXK_29",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "9T7X_29",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "9TCO_31",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "9TCQ_31",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "9TCR_29",
+        "score": 0.8787878787878788
+      },
+      {
+        "identifier": "4V4V_23",
+        "score": 0.8363636363636363
+      },
+      {
+        "identifier": "4V4W_23",
+        "score": 0.8363636363636363
+      },
+      {
+        "identifier": "6WNT_31",
+        "score": 0.6424242424242425
+      },
+      {
+        "identifier": "6WNV_52",
+        "score": 0.6424242424242425
+      },
+      {
+        "identifier": "6WNW_54",
+        "score": 0.6424242424242425
+      },
+      {
+        "identifier": "9H91_7",
+        "score": 0.4666666666666667
+      },
+      {
+        "identifier": "32PB_29",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "6SPB_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "6SPD_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "6SPF_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "6SPG_23",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "7UNR_26",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "7UNU_26",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "7UNV_26",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "7UNW_26",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "8CD1_6",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "8RWG_12",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9Q40_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9Q42_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9Q43_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9Q44_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9SY6_29",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9T8U_29",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9YLQ_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9YPH_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9YPK_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9YPN_2",
+        "score": 0.3939393939393939
+      },
+      {
+        "identifier": "9TZ5_6",
+        "score": 0.37575757575757573
+      },
+      {
+        "identifier": "9TZ9_6",
+        "score": 0.37575757575757573
+      },
+      {
+        "identifier": "9TZE_26",
+        "score": 0.37575757575757573
+      },
+      {
+        "identifier": "1A51_1",
+        "score": 0.09696969696969697
+      },
+      {
+        "identifier": "357D_3",
+        "score": 0.03636363636363636
+      },
+      {
+        "identifier": "364D_3",
+        "score": 0.03636363636363636
+      },
+      {
+        "identifier": "1MJI_1",
+        "score": 0.0
+      },
+      {
+        "identifier": "5NS3_2",
+        "score": 0.0
+      },
+      {
+        "identifier": "5NS4_2",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 737
+  },
+  "response_sha256": "ddff61c892764af7df713f15e48ff29bf08ad4402ed381ffbcba2d6949dccf6c",
+  "retrieved_utc": "2026-11-26T20:46:54.198110+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

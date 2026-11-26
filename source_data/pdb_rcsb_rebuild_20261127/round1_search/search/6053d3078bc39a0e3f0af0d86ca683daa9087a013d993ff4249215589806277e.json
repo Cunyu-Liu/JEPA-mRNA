@@ -1,0 +1,46 @@
+{
+  "candidate_entity_ids": [
+    "2N1Q_1",
+    "1N8X_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGUGCCCGUCUGUUGUGUGACUCUGGUGAGAGCCAGAGGAGAUCUCUCGACGCAGGACUCGGCUUGCUGGAGACGGCAAGAGGCGAGGGGCGGCGACUGGUGAGUACGCCAAAAAUUUUGACUAGCGGAGGCUAGAAGGAGAGAGAUGGGUGCCC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "93ea2331-6191-497e-afc3-0ef8a9d45f58",
+    "result_set": [
+      {
+        "identifier": "2N1Q_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "1N8X_1",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 2
+  },
+  "response_sha256": "6b5cfb975acbd921c786181aad17a1455486bbc22b5fee74e899cf052f49c665",
+  "retrieved_utc": "2026-11-26T20:46:48.881351+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}

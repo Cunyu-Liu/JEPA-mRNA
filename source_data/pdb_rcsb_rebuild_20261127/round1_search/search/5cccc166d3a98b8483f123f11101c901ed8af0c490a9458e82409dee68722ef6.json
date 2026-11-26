@@ -1,0 +1,51 @@
+{
+  "candidate_entity_ids": [
+    "5V16_1",
+    "6XB7_1",
+    "5V17_1"
+  ],
+  "candidate_scope": "retrieval only; identity 0.8 is not evidence of an exact match",
+  "http_status": 200,
+  "request": {
+    "query": {
+      "parameters": {
+        "evalue_cutoff": 1,
+        "identity_cutoff": 0.8,
+        "sequence_type": "rna",
+        "value": "GGAUCAAUAGCAGGUGUGGCACACCAGUCAUACCUUGAUCC"
+      },
+      "service": "sequence",
+      "type": "terminal"
+    },
+    "request_options": {
+      "results_content_type": [
+        "experimental"
+      ],
+      "return_all_hits": true
+    },
+    "return_type": "polymer_entity"
+  },
+  "response": {
+    "query_id": "cc4b2681-5609-4f5f-9627-3d3da86c4a3c",
+    "result_set": [
+      {
+        "identifier": "5V16_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "6XB7_1",
+        "score": 1.0
+      },
+      {
+        "identifier": "5V17_1",
+        "score": 0.0
+      }
+    ],
+    "result_type": "polymer_entity",
+    "total_count": 3
+  },
+  "response_sha256": "248f717bf4ba9c78b6d250243d53e819b8522a19d5a8d5d735326407f7bade72",
+  "retrieved_utc": "2026-11-26T20:46:27.304820+00:00",
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "source": "https://search.rcsb.org/rcsbsearch/v2/query"
+}
