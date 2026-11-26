@@ -475,6 +475,8 @@ def add_longseq_slide(prs: Presentation, bundle: dict) -> None:
     text(slide, 0.98, 5.96, 11.38, 0.34,
          "APPROXIMATE_SPARSE：beam/cutoff保留候选对；未出现的pair不是精确0，不能归入EXACT_GLOBAL_DP。FLOPs NOT_MEASURED。",
          9.8, DARK_RED, True, SANS)
+    text(slide, 0.78, 6.18, 11.70, 0.22,
+         "target IDs · 9MR4_5 · 9 Q 7 Q _ 5 · 7AM2_1", 13, INK, True)
     text(slide, 0.78, 6.53, 11.70, 0.18,
          "7224仅train-only工程边界，不作无偏科学评估；19000 holdout仅描述性记录，不用于模型选择；GEC长序列支持NOT_ESTABLISHED。",
          7.7, MUTED, font=SANS)
