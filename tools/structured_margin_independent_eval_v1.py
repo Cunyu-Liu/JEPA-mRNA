@@ -25,6 +25,7 @@ sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO / "tools"))
 
 from tools import gec_seed0_independent_reeval_v1 as independent
+from tools import structured_margin_exposure_sensitivity_v1 as exposure
 
 ARMS = independent.ARMS
 SCHEMA = "foldnar.structured_margin_independent_eval.v1"
@@ -285,7 +286,7 @@ def _nll_comparison(margin_distribution: dict, nll_distribution: dict) -> dict:
     }
 
 
-def evaluate_bound(frozen: list, margin: dict, nll: dict) -> dict:
+def evaluate_bound(frozen: list, margin: dict, nll: dict, exposure_binding: tuple | None = None) -> dict:
     margin_evaluation = independent.evaluate_metrics(frozen, margin)
     gates = independent.verify_gates(margin_evaluation)
     if len(gates["gates"]) != 16:
@@ -312,8 +313,14 @@ def evaluate_bound(frozen: list, margin: dict, nll: dict) -> dict:
                     independent.metric_distribution(nll_arrays, bootstrap, metric, subgroup),
                 )
         comparisons[arm] = {"metrics": metrics, "subgroups": subgroups}
-    return {**margin_evaluation, "margin_gates": gates,
-            "margin_vs_qualified_nll_same_arm": comparisons}
+    result = {**margin_evaluation, "margin_gates": gates,
+              "margin_vs_qualified_nll_same_arm": comparisons}
+    if exposure_binding is not None:
+        assignments, provenance = exposure_binding
+        result["preregistered_exposure_sensitivity"] = exposure.evaluate_exposure_sensitivity(
+            frozen, margin, assignments, provenance,
+        )
+    return result
 
 
 def bind_margin_predictions(frozen: list, prediction_root: Path, checkpoints: dict) -> tuple[dict, dict]:
@@ -438,7 +445,8 @@ def export_arm(repo: Path, arm: str, qualification: dict, prediction_root: Path,
 
 
 def evaluate_run(repo: Path, artifact_root: Path, prediction_root: Path,
-                 nll_root: Path, output_root: Path) -> dict:
+                 nll_root: Path, output_root: Path,
+                 exposure_root: Path = exposure.DEFAULT_EXPOSURE_ROOT) -> dict:
     if output_root.exists():
         unexpected = [path.name for path in output_root.iterdir()
                       if path.name != "predictions" or path.resolve() != prediction_root.resolve()]
@@ -449,8 +457,9 @@ def evaluate_run(repo: Path, artifact_root: Path, prediction_root: Path,
     frozen = qualification["frozen"]
     margin, margin_identities = bind_margin_predictions(frozen, prediction_root, qualification["checkpoints"])
     nll, nll_identities, nll_provenance = load_nll_predictions(repo, frozen, nll_root)
-    print("[margin-eval] recomputing 16 gates, paired CI and sensitivity from raw pairs", flush=True)
-    science = evaluate_bound(frozen, margin, nll)
+    exposure_binding = exposure.bind_exposure_registry(frozen, exposure_root)
+    print("[margin-eval] recomputing 16 gates, paired CI and exposure sensitivity from raw pairs", flush=True)
+    science = evaluate_bound(frozen, margin, nll, exposure_binding)
     passed = science["margin_gates"]["pass"]
     report = {
         "schema_version": SCHEMA,
@@ -463,7 +472,8 @@ def evaluate_run(repo: Path, artifact_root: Path, prediction_root: Path,
                       "model_inference_during_evaluation": False, "python": platform.python_version(),
                       "numpy": np.__version__, "torch": torch.__version__},
         "code_identity": {"git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip(),
-                          "script": identity(Path(__file__).resolve())},
+                          "script": identity(Path(__file__).resolve()),
+                          "exposure_sensitivity_script": identity(Path(exposure.__file__).resolve())},
         "panel": {"panel_id": "tr1c_cluster80_dev_v1", "n_sequences": len(frozen),
                   "n_pairs": sum(len(row.true_pairs) for row in frozen)},
         "validation_audit": qualification["validation"], "checkpoint_audit": qualification["checkpoints"],
@@ -471,12 +481,16 @@ def evaluate_run(repo: Path, artifact_root: Path, prediction_root: Path,
         **science,
     }
     write_json(output_root / "independent_evaluation.json", report)
+    write_json(output_root / "exposure_sensitivity.json", science["preregistered_exposure_sensitivity"])
     summary = {"schema_version": SCHEMA, "status": report["status"], "overall_pass": passed,
                "failed_margin_gates": science["margin_gates"]["failed_gates"],
                "arm_metrics": science["arm_metrics"],
                "margin_vs_nll_global": {arm: row["metrics"] for arm, row in science["margin_vs_qualified_nll_same_arm"].items()}}
     write_json(output_root / "gate_summary.json", summary)
-    write_json(output_root / "input_manifest.json", {"inputs": qualification["inputs"]})
+    inputs = dict(qualification["inputs"])
+    inputs.update({f"exposure:{name}": value
+                   for name, value in exposure_binding[1]["artifacts"].items()})
+    write_json(output_root / "input_manifest.json", {"inputs": inputs})
     return summary
 
 
@@ -497,6 +511,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo", type=Path, default=REPO)
     parser.add_argument("--artifact-root", type=Path, required=True)
     parser.add_argument("--nll-artifact-root", type=Path, default=DEFAULT_NLL_ROOT)
+    parser.add_argument("--exposure-artifact-root", type=Path, default=exposure.DEFAULT_EXPOSURE_ROOT)
     parser.add_argument("--prediction-root", type=Path)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--device", default="cuda:0")
@@ -521,7 +536,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "all":
             export_run(repo, args.artifact_root, prediction_root, args.device)
         summary = evaluate_run(repo, args.artifact_root, prediction_root,
-                               args.nll_artifact_root, args.output_root)
+                               args.nll_artifact_root, args.output_root, args.exposure_artifact_root)
         print(json.dumps(summary, indent=2, sort_keys=True))
         return 0 if summary["overall_pass"] else 1
     except TrainingInProgress as progress:

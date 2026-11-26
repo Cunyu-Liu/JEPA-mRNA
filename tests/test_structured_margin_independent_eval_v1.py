@@ -212,3 +212,17 @@ def test_synthetic_full_science_and_same_arm_nll_comparison():
     assert "paired_ci95" in matched["metrics"]["macro_stem_f1"]
     assert "family_cluster_sensitivity_ci95" in matched["subgroups"]["isolated_pair:isolated"]["recall"]
     assert result["bootstrap"]["family_cluster_sensitivity"]["role"].startswith("SENSITIVITY_ONLY")
+
+
+def test_in_progress_final_eval_never_reads_exposure_registry(monkeypatch, tmp_path):
+    def incomplete(repo, artifact_root):
+        raise M.TrainingInProgress({arm: {"status": "IN_PROGRESS", "reason": "fixture"} for arm in M.ARMS})
+
+    def forbidden_registry_read(*args, **kwargs):
+        raise AssertionError("exposure registry was read before terminal qualification")
+
+    monkeypatch.setattr(M, "qualify", incomplete)
+    monkeypatch.setattr(M.exposure, "bind_exposure_registry", forbidden_registry_read)
+    with pytest.raises(M.TrainingInProgress):
+        M.evaluate_run(REPO, tmp_path / "artifacts", tmp_path / "predictions",
+                       tmp_path / "nll", tmp_path / "output", tmp_path / "missing-exposure")
