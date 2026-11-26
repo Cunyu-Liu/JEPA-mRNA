@@ -419,6 +419,9 @@ def test_readiness_is_read_only_and_allows_scientific_fail(tmp_path):
     assert boundary["summary_sha256"] == M.sha256(cross_source_root / "summary.json")
     assert "5,872−closure 769=5,103 NOT_DETECTED_UNKNOWN (not clean)" in boundary["display_boundary"]
     assert boundary["gec_state"] == "INELIGIBLE"
+    assert result["exposure_sensitivity"]["embedded_matches"]
+    assert result["exposure_sensitivity"]["sha256"] == M.sha256(evaluation_root / "exposure_sensitivity.json")
+    assert result["exposure_sensitivity"]["cluster_dev_counts"] == M.EXPOSURE_COUNTS
     assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
     evaluation_path = evaluation_root / "independent_evaluation.json"
     evaluation = json.loads(evaluation_path.read_text())

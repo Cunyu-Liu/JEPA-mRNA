@@ -42,6 +42,11 @@ def check_readiness(deck: Path, evaluation_root: Path, cross_source_root: Path,
         "scientific_status": bundle["evaluation"]["status"],
         "scientific_overall_pass": bundle["evaluation"]["overall_pass"],
         "verified_source_identities": len(bundle["verified_identities"]),
+        "exposure_sensitivity": {
+            **bundle["exposure"]["identity"], "embedded_field": "preregistered_exposure_sensitivity",
+            "embedded_matches": True, "cluster_dev_counts": M.EXPOSURE_COUNTS,
+            "unknown_ensemble_minus_control": bundle["exposure"]["data"]["strata"]["NOT_DETECTED_UNKNOWN"]["ensemble_vs_controls"]["matched_control"],
+        },
         "cross_source_boundary": {
             "code_commit": cross_source["code_commit"],
             "summary_sha256": cross_source["summary_identity"]["sha256"],
