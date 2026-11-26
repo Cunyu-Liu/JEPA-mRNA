@@ -25,6 +25,7 @@ BACKUP = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round70.pptx"
 VERIFICATION = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.round70_build_verification.json"
 EVALUATION_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_independent_eval_v1/generation_01")
 SCHEMA = "foldnar.structured_margin_independent_eval.v1"
+CROSS_SOURCE_CAVEAT = "TR1c train↔CHANRG Validation 80%=UNCHECKED"
 ARMS = ("matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context")
 CONTROLS = ("matched_control", "destroy_interval_shuffle", "independent_context")
 METRICS = (
@@ -371,7 +372,7 @@ def add_slide(prs: Presentation, bundle: dict) -> None:
     text(slide, 8.80, 5.52, 3.50, 0.49, verdict_note, 9.0, INK, True, SANS)
     rect(slide, 0.78, 6.42, 11.78, 0.012, RGBColor(212, 165, 154)).line.fill.background()
     text(slide, 0.78, 6.51, 11.65, 0.18,
-         f"evaluator {evaluation['code_identity']['git_head'][:12]} · panel={panel['panel_id']} · model-dev only · no external test · no decoder tuning",
+         f"evaluator {evaluation['code_identity']['git_head'][:12]} · panel={panel['panel_id']} · {CROSS_SOURCE_CAVEAT} · no external test/decoder tuning",
          7.5, MUTED)
     text(slide, 0.78, 6.72, 11.65, 0.18,
          "final sources structured_margin_independent_eval_v1/generation_01/{independent_evaluation.json,gate_summary.json,input_manifest.json} · SHA-256 verified",
@@ -407,7 +408,8 @@ def verify_built_deck(path: Path, prior_deck: Path, evaluation: dict) -> dict:
                       comparison["subgroups"]["pair_span:ge128"]["recall"]["delta"]):
             require(signed(value) in joined, f"missing ensemble comparison: {control}")
     for phrase in ("MODEL-DEV ONLY", "QUALIFIED NLL", "相同冻结 MEA", "isolated", "span≥128",
-                   evaluation["status"], f"科学门控 {sum(evaluation['margin_gates']['gates'].values())} / 16",
+                   CROSS_SOURCE_CAVEAT, evaluation["status"],
+                   f"科学门控 {sum(evaluation['margin_gates']['gates'].values())} / 16",
                    "SHA-256 verified"):
         require(phrase in joined, f"missing required slide text: {phrase}")
     return {"slide_count": 14, "deck_slide_index": 14, "added_slide_number": 33,

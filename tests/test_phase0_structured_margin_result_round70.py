@@ -17,6 +17,11 @@ M = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(M)
 DECK = MODULE_PATH.parent / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx"
+READINESS_PATH = MODULE_PATH.parent / "check_round70_readiness.py"
+READINESS_SPEC = importlib.util.spec_from_file_location("check_round70_readiness", READINESS_PATH)
+R = importlib.util.module_from_spec(READINESS_SPEC)
+assert READINESS_SPEC.loader is not None
+READINESS_SPEC.loader.exec_module(R)
 
 
 def file_identity(path: Path) -> dict:
@@ -173,6 +178,7 @@ def test_synthetic_pass_and_fail_layouts_never_touch_real_deck(tmp_path):
         assert expected in joined
         assert f"科学门控 {16 if scientific_pass else 0} / 16" in joined
         assert "MODEL-DEV ONLY" in joined and "QUALIFIED NLL" in joined
+        assert M.CROSS_SOURCE_CAVEAT in joined
         assert "ensemble − independent" in joined and "span≥128" in joined
         with zipfile.ZipFile(DECK) as before, zipfile.ZipFile(built["deck"]) as after:
             for index in range(1, 14):
@@ -235,3 +241,30 @@ def test_duplicate_append_is_refused(tmp_path):
     with pytest.raises(M.EligibilityError, match="refusing duplicate append"):
         M.build(built["deck"], built["evaluation_root"], built["case"] / "second_backup.pptx")
     assert hashlib.sha256(built["deck"].read_bytes()).hexdigest() == before
+
+
+def test_readiness_is_read_only_and_allows_scientific_fail(tmp_path):
+    evaluation_root = make_fixture(tmp_path / "evaluation", False)
+    deck = tmp_path / "deck.pptx"
+    deck.write_bytes(DECK.read_bytes())
+    registry = tmp_path / "registry.json"
+    registry.write_text(json.dumps({"synthetic": True}))
+    verification = tmp_path / "model_dev_verification.json"
+    write_json(verification, {
+        "status": "PASS_INDEPENDENT_MANIFEST_LEAKAGE_HASH_RECONCILIATION",
+        "checks": [{"check": "leakage/cross_80_unchecked/tr1c_vs_chanrg_validation", "passed": True}],
+        "remaining_unchecked": ["cross-TR1c/CHANRG 80%"],
+        "registry_sha256": hashlib.sha256(registry.read_bytes()).hexdigest(),
+    })
+    before = hashlib.sha256(deck.read_bytes()).hexdigest()
+    result = R.check_readiness(deck, evaluation_root, verification, registry)
+    assert result["ready"] and not result["scientific_overall_pass"]
+    assert result["cross_source_caveat"] == M.CROSS_SOURCE_CAVEAT
+    assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
+    evaluation_path = evaluation_root / "independent_evaluation.json"
+    evaluation = json.loads(evaluation_path.read_text())
+    evaluation.update(status="IN_PROGRESS", final_verdict_allowed=False, overall_pass=False)
+    write_json(evaluation_path, evaluation)
+    with pytest.raises(R.M.EligibilityError):
+        R.check_readiness(deck, evaluation_root, verification, registry)
+    assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
