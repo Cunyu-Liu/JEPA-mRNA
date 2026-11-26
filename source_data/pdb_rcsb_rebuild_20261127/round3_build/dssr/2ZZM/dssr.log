@@ -1,0 +1,27 @@
+[i] JSON output should end with the .json extension
+
+Processing file '/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round2_resolve_score1/mmcif/2ZZM.cif'
+[i] '/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round2_resolve_score1/mmcif/2ZZM.cif' taken as in .cif format by file extension.
+    total number of nucleotides: 85
+    total number of amino acids: 334
+[w] arginine [A.ARG188] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG261] -- NH1/NH2 naming swapped
+[w] arginine [A.ARG315] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG188] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG261] -- NH1/NH2 naming swapped
+[w] Residue [A.ARG315] -- NH1/NH2 naming swapped
+    total number of base pairs: 36
+    total number of multiplets: 3
+    total number of helices: 3
+    total number of stems: 5
+    total number of isolated WC/wobble pairs: 2
+    total number of atom-base capping interactions: 6
+    total number of splayed-apart dinucleotides: 16
+                        consolidated into units: 11
+    total number of hairpin loops: 4
+    total number of internal loops: 1
+    total number of junctions: 1
+    total number of non-loop single-stranded segments: 3
+    total number of kissing loops: 1
+
+Time used: 00:00:00:00

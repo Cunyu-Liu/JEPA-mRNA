@@ -213,7 +213,7 @@ def verify_build(artifact: Path, identities: Path, plk: Path, dssr_binary: Path)
         for pair in full["full_pairs"]:
             assert len(pair) == 2 and pair[0] < pair[1]
             assert mask[pair[0]] == mask[pair[1]] == "1"
-        assert full["observed_pairs"] == sorted([sorted(observed_to_full.index(index) for index in pair)]
+        assert full["observed_pairs"] == sorted(sorted(observed_to_full.index(index) for index in pair)
                                                 for pair in full["full_pairs"])
         pair_records = full["dssr_pair_records"]
         assert full["full_pairs"] == [row["full_pair"] for row in pair_records]

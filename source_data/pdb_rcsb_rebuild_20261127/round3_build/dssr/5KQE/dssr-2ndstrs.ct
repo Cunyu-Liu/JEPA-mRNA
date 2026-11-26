@@ -1,0 +1,37 @@
+   36 ENERGY = 0.0 [5KQE] -- secondary structure derived by DSSR
+    1 G     0     2    36     1 # name=A.G1, pairedNt=A.C36
+    2 G     1     3    35     2 # name=A.G2, pairedNt=A.C35
+    3 G     2     4    34     3 # name=A.G3, pairedNt=A.U34
+    4 U     3     5    33     4 # name=A.U4, pairedNt=A.A33
+    5 G     4     6    32     5 # name=A.G5, pairedNt=A.C32
+    6 U     5     7    31     6 # name=A.U6, pairedNt=A.A31
+    7 A     6     8     0     7 # name=A.A7
+    8 C     7     9     0     8 # name=A.C8
+    9 U     8    10     0     9 # name=A.U9
+   10 U     9    11     0    10 # name=A.U10
+   11 A    10    12     0    11 # name=A.A11
+   12 A    11    13    30    12 # name=A.A12, pairedNt=A.U30
+   13 C    12    14     0    13 # name=A.C13
+   14 G    13    15    29    14 # name=A.G14, pairedNt=A.C29
+   15 U    14    16    28    15 # name=A.U15, pairedNt=A.A28
+   16 U    15    17    27    16 # name=A.U16, pairedNt=A.A27
+   17 U    16    18    26    17 # name=A.U17, pairedNt=A.A26
+   18 G    17    19    25    18 # name=A.G18, pairedNt=A.C25
+   19 C    18    20    24    19 # name=A.C19, pairedNt=A.G24
+   20 U    19    21     0    20 # name=A.U20
+   21 U    20    22     0    21 # name=A.U21
+   22 C    21    23     0    22 # name=A.C22
+   23 G    22    24     0    23 # name=A.G23
+   24 G    23    25    19    24 # name=A.G24, pairedNt=A.C19
+   25 C    24    26    18    25 # name=A.C25, pairedNt=A.G18
+   26 A    25    27    17    26 # name=A.A26, pairedNt=A.U17
+   27 A    26    28    16    27 # name=A.A27, pairedNt=A.U16
+   28 A    27    29    15    28 # name=A.A28, pairedNt=A.U15
+   29 C    28    30    14    29 # name=A.C29, pairedNt=A.G14
+   30 U    29    31    12    30 # name=A.U30, pairedNt=A.A12
+   31 A    30    32     6    31 # name=A.A31, pairedNt=A.U6
+   32 C    31    33     5    32 # name=A.C32, pairedNt=A.G5
+   33 A    32    34     4    33 # name=A.A33, pairedNt=A.U4
+   34 U    33    35     3    34 # name=A.U34, pairedNt=A.G3
+   35 C    34    36     2    35 # name=A.C35, pairedNt=A.G2
+   36 C    35     0     1    36 # name=A.C36, pairedNt=A.G1

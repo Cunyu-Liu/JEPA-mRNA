@@ -1,0 +1,337 @@
+{
+  "dssr_assets": {
+    "1B36": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1B36/dssr.json",
+      "sha256": "620b225cdf4c95bc77276e3b3e97a17398260be721dad5741eb21771a06e7140",
+      "status": "PASS"
+    },
+    "1E95": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1E95/dssr.json",
+      "sha256": "d1e8948e6bfed522ac044ffc61a1393b63f6d28fec3ab4b53b180d8ecb418e68",
+      "status": "PASS"
+    },
+    "1FMN": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1FMN/dssr.json",
+      "sha256": "4ef67b1f66edb2c8198b2475f1db2a41aee54f279ef8226747c76c8924c5c98a",
+      "status": "PASS"
+    },
+    "1KXK": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1KXK/dssr.json",
+      "sha256": "8f00ed9acb5744897c54a607a1771e4f36c72d09f2866703241b2465caa3f000",
+      "status": "PASS"
+    },
+    "1MNX": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1MNX/dssr.json",
+      "sha256": "5dcebbe4b4b97ae8d691a7cd18e423f65fbaab04d69381e5043793ea031ae2c5",
+      "status": "PASS"
+    },
+    "1NBK": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1NBK/dssr.json",
+      "sha256": "fd44ff171521c1d069ae5d55b502ef1888fe0fe7056cb0e3040c21f9960e493c",
+      "status": "PASS"
+    },
+    "1P5M": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1P5M/dssr.json",
+      "sha256": "a8c407a5d3bc73e3434b50ef17072675a93addc70bc5ad8c882de3e44dd0525f",
+      "status": "PASS"
+    },
+    "1RNK": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1RNK/dssr.json",
+      "sha256": "dc0a3492cef4b94014af4acf797b7eb3e57cd40fa31263317f7e4e6ad8941da3",
+      "status": "PASS"
+    },
+    "1U9S": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1U9S/dssr.json",
+      "sha256": "b2b71e2e1044a29875fdaf5abe95154f9fe8f207b87ec386fa1d21412f4b9dc9",
+      "status": "PASS"
+    },
+    "1XJR": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/1XJR/dssr.json",
+      "sha256": "040487e76eb4a35f61e156c83d7ff7631847733b69554f6a264a5f9e1f30e677",
+      "status": "PASS"
+    },
+    "2HUA": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2HUA/dssr.json",
+      "sha256": "a929da44c107653bcfd00c39d005ea290eee0af6cf9a4717ae7ad41769cf8627",
+      "status": "PASS"
+    },
+    "2KE6": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2KE6/dssr.json",
+      "sha256": "6d592bfdf1d220404b8161ba8da4c018b0d0ae1b5f4fc68429355de9aaf3f670",
+      "status": "PASS"
+    },
+    "2KHY": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2KHY/dssr.json",
+      "sha256": "53aaaa9651b992880320a83c8515c5427ad2361b7692a76f421eba336432ada0",
+      "status": "PASS"
+    },
+    "2KPV": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2KPV/dssr.json",
+      "sha256": "80beec664d9d468aa3755034dba95e275bf134f8d8915e4f336a3176f1055bd4",
+      "status": "PASS"
+    },
+    "2KZL": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2KZL/dssr.json",
+      "sha256": "efa806ec014f7ef188a52d0043d0a6d68dec1f088a320deadc76f860d4f36115",
+      "status": "PASS"
+    },
+    "2LHP": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2LHP/dssr.json",
+      "sha256": "c495cb73d11b615ea69a94f09ff78764bd425309dcf3822e28b87b71a9a9753e",
+      "status": "PASS"
+    },
+    "2LU0": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2LU0/dssr.json",
+      "sha256": "413f24dc857d35dea15374f9683a27a4c4e7260400f3cae44474a1f4cbfbb040",
+      "status": "PASS"
+    },
+    "2M58": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2M58/dssr.json",
+      "sha256": "47cb1ae82be7fa8991e0768ded0e676f4fb8c49303b1f87a4eebdf3476f46ee3",
+      "status": "PASS"
+    },
+    "2M8K": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2M8K/dssr.json",
+      "sha256": "3e628cadf1333bd20e33ccc0f2c215481b1d0c6fe6a546689051380ee41bf89c",
+      "status": "PASS"
+    },
+    "2N1Q": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2N1Q/dssr.json",
+      "sha256": "e0c2378ace338a65e4b4a9c5cee985efd9ad84da67946ab38aee348e14f585d1",
+      "status": "PASS"
+    },
+    "2N4L": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2N4L/dssr.json",
+      "sha256": "8c2dc84ed54623bd288ef93f2562387f9bbd5be5f69940eee9cbeaf4e600d1c0",
+      "status": "PASS"
+    },
+    "2N6S": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2N6S/dssr.json",
+      "sha256": "bfb6d72a1a40900ae4955b78fd551c3ece34a2efe5ea11f9261b2d214d76df6c",
+      "status": "PASS"
+    },
+    "2N6W": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2N6W/dssr.json",
+      "sha256": "49eed0dc19d6b339f9aa5649c5cfc5bdf436a640c351648343d1dd5a62115afe",
+      "status": "PASS"
+    },
+    "2N7M": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2N7M/dssr.json",
+      "sha256": "d1e6dc2ad4e669afd9af7f004ef21d8cabbdb3106146d1623554eabd028b5a82",
+      "status": "PASS"
+    },
+    "2N8V": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2N8V/dssr.json",
+      "sha256": "11f4f7c22135e8134cf2d2f2053788a7557e25b10d44ca98b1ee56e18dfe2bb3",
+      "status": "PASS"
+    },
+    "2NC1": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2NC1/dssr.json",
+      "sha256": "4eb6a7b3bcb6cc0d7b586e88a254565c8f5b895df014f3cbd181e5a93d755f31",
+      "status": "PASS"
+    },
+    "2RVO": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2RVO/dssr.json",
+      "sha256": "e62e9f6bbb12fa6496bd0343b928e16a9fed04ea90e35b282dd6204be77ed66b",
+      "status": "PASS"
+    },
+    "2TPK": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2TPK/dssr.json",
+      "sha256": "55eb8fb5482e66df676f90b3f11e17b863a38a2c8f461088f30a197e205f41e2",
+      "status": "PASS"
+    },
+    "2ZZM": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/2ZZM/dssr.json",
+      "sha256": "ab00e2e56a88ef1e64893006a0e96f38612e705b8980f220f3faf198c4b6e776",
+      "status": "PASS"
+    },
+    "3A3A": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/3A3A/dssr.json",
+      "sha256": "3017ea65c342b0e2bf42f1db63e77098f3c1236f2092a114955c4d7e86a3f793",
+      "status": "PASS"
+    },
+    "3EGZ": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/3EGZ/dssr.json",
+      "sha256": "fecd951e84f8b56e2b0a26402e18b35e63e65092f6aefc67191152ff47090a88",
+      "status": "PASS"
+    },
+    "4ATO": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/4ATO/dssr.json",
+      "sha256": "96e8941a30e998657ba2579c351517755d7674bcbb0b7539fbc0e230ea82ad04",
+      "status": "PASS"
+    },
+    "4OOG": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/4OOG/dssr.json",
+      "sha256": "44c0bce62265f4c500fd472476fab6a9e1dbb69fff7db74e5132b1a1103b397e",
+      "status": "PASS"
+    },
+    "4P9R": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/4P9R/dssr.json",
+      "sha256": "064e5e0f4387f9e74f57b5a1aae97d7aa3dd1098ebd741271f9e125861bd6b74",
+      "status": "PASS"
+    },
+    "4PKD": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/4PKD/dssr.json",
+      "sha256": "13a60dcbaa7ef544fb98212a7b78f076481ab1185caf8772ddfa092f333b55a3",
+      "status": "PASS"
+    },
+    "5AH5": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/5AH5/dssr.json",
+      "sha256": "4bcbd9622b879da89bca986b8c2c95525a3d473f512d3d02c4989abd357f1443",
+      "status": "PASS"
+    },
+    "5KQE": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/5KQE/dssr.json",
+      "sha256": "c3e2fd80782bc12be57274985955cd1b1d509dc69f55064de703fca20a396141",
+      "status": "PASS"
+    },
+    "5LWJ": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/5LWJ/dssr.json",
+      "sha256": "126f35aea8083389ff4199cc1a4e60c3c5dec951f0b23f2f6f892f535f4bed75",
+      "status": "PASS"
+    },
+    "5M0H": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/5M0H/dssr.json",
+      "sha256": "f164765819927fed8572002be1dce004aea6ecefd67b94f49e742212bf199f7d",
+      "status": "PASS"
+    },
+    "5WTK": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/5WTK/dssr.json",
+      "sha256": "5601676a5cae715bd4c17d178dbea1a99a93bc45235ebe935cc9fc79f4d1933d",
+      "status": "PASS"
+    },
+    "5ZTM": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/5ZTM/dssr.json",
+      "sha256": "014cc883843f7a144763c86e98f2e85446e511fc7ce5a46d4fbf953624ecb55f",
+      "status": "PASS"
+    },
+    "6AAY": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6AAY/dssr.json",
+      "sha256": "c3fc1f0739e6fd23bd33760c86f367c2d3f6790871caca3689996a221adabf7f",
+      "status": "PASS"
+    },
+    "6DCB": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6DCB/dssr.json",
+      "sha256": "109f8854940a90707e2744b696b6fc3ae26e77653c595a7fda9e47eb8bad514b",
+      "status": "PASS"
+    },
+    "6DVK": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6DVK/dssr.json",
+      "sha256": "3b898b27674a0a0ffeba4867638127ef39cf0f658ba3b7f694ca3d1887fd2535",
+      "status": "PASS"
+    },
+    "6IV8": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6IV8/dssr.json",
+      "sha256": "1c224a15b7aae9089293a07cbc4e60916101dddc7167c291dc5a4784cafae084",
+      "status": "PASS"
+    },
+    "6JXM": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6JXM/dssr.json",
+      "sha256": "7359bfa573b717338c069f61f6f6adef6ba1021b78092cc1212b395f56ada222",
+      "status": "PASS"
+    },
+    "6OL3": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6OL3/dssr.json",
+      "sha256": "84bfce0782439c47665871842772c3e53a2ad6ce4b76918320771e56c3a0eb99",
+      "status": "PASS"
+    },
+    "6P2H": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6P2H/dssr.json",
+      "sha256": "ea0959c72c99e7293ffc3f6bb1bf1761cd1a89ae5771b4c23440662b2b48e1bb",
+      "status": "PASS"
+    },
+    "6PMO": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6PMO/dssr.json",
+      "sha256": "6abb471b3ebd01adff5c7c1e7cfd3a867ae56c713bd00994601af57e2304df9e",
+      "status": "PASS"
+    },
+    "6SY4": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6SY4/dssr.json",
+      "sha256": "cfddbf6b3faf5070012cecfb19a9300113c008dff3a9db188cecb39f84cdbb5a",
+      "status": "PASS"
+    },
+    "6SY6": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6SY6/dssr.json",
+      "sha256": "7c142902e5495ec85075a08cbba6d8f6320d7ebadff8b17801472e48d374e3f0",
+      "status": "PASS"
+    },
+    "6UFH": {
+      "dssr_binary_sha256": "c7261c0ab099e1f70c508c51363c7aa6915e216a78bb6d65ccda533092d6c39a",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round3_build/dssr/6UFH/dssr.json",
+      "sha256": "a47f3284f684696f9451df0d997832cb788443e253ae4aee7f61e6d6b2ccb105",
+      "status": "PASS"
+    }
+  },
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "n_rebuilt": 58,
+  "n_source_records": 153,
+  "n_unresolved": 95,
+  "pair_match_counts": {
+    "false": 2,
+    "true": 56
+  },
+  "panel_rebuilt": {
+    "pdb_ts1": 15,
+    "pdb_ts2": 26,
+    "pdb_ts3": 8,
+    "pdb_ts_hard": 9
+  },
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "unresolved_status_counts": {
+    "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED": 61,
+    "DSSR_MAPPING_ERROR_UNCHECKED": 4,
+    "NO_EXACT_CHAIN_MATCH_UNCHECKED": 26,
+    "SOURCE_BAD_ALPHABET_UNCHECKED": 4
+  }
+}

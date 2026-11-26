@@ -1,0 +1,18 @@
+[i] JSON output should end with the .json extension
+
+Processing file '/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round2_resolve_score1/mmcif/2N8V.cif'
+[i] '/teams/HoulabData_1788502323/liucunyu/foldnar/pdb_rfam_label_lineage_audit_20261127/pdb_rebuild/round2_resolve_score1/mmcif/2N8V.cif' taken as in .cif format by file extension.
+    total number of nucleotides: 70
+    total number of base pairs: 30
+    total number of multiplets: 1
+    total number of helices: 2
+    total number of stems: 4
+    total number of isolated WC/wobble pairs: 1
+    total number of splayed-apart dinucleotides: 3
+    total number of hairpin loops: 2
+    total number of bulges: 1
+    total number of junctions: 1
+    total number of non-loop single-stranded segments: 2
+    total number of eXtended A-minor (type X) motifs: 1
+
+Time used: 00:00:00:00

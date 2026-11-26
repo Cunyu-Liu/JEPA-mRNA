@@ -1,0 +1,737 @@
+{
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "policy": "New DSSR references require complete metric recomputation; no model selection",
+  "rebuilt": [
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:5AH5_2:D",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#632970"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:3EGZ_2:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#632993"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:2ZZM_2:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#632995"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:3A3A_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#632997"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:5ZTM_2:C",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#632999"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:4OOG_3:D",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633002"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:4PKD_1:V",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633003"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:1U9S_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633006"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:4ATO_2:G",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633009"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:6AAY_2:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633016"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:6DCB_1:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633019"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:5WTK_2:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633020"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:5M0H_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633028"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:1KXK_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633029"
+    },
+    {
+      "panel": "pdb_ts1",
+      "reference_id": "RCSB:1XJR_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts1#633035"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2M8K_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633037"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2KE6_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633038"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:1NBK_1:A",
+      "rnaformer_dssr_pair_match": false,
+      "source_record_id": "pdb_ts2#633040"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2KZL_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633041"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2LU0_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633042"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2N4L_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633043"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2NC1_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633046"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2KPV_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633048"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:1FMN_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633049"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:1P5M_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633052"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2LHP_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633053"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:1E95_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633054"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:1B36_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633055"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2N1Q_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633056"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2HUA_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633057"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:1RNK_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633058"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:1MNX_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633059"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2N8V_1:X",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633061"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2TPK_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633062"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2M58_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633063"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2RVO_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633065"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:5KQE_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633068"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2KHY_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633070"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2N7M_1:X",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633073"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2N6S_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633074"
+    },
+    {
+      "panel": "pdb_ts2",
+      "reference_id": "RCSB:2N6W_1:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts2#633075"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6JXM_1:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts3#633078"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6SY4_2:C",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts3#633079"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6PMO_2:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts3#633081"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6DVK_1:H",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts3#633082"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6UFH_2:A",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts3#633085"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6OL3_1:C",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts3#633087"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6IV8_3:D",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts3#633090"
+    },
+    {
+      "panel": "pdb_ts3",
+      "reference_id": "RCSB:6SY6_2:D",
+      "rnaformer_dssr_pair_match": false,
+      "source_record_id": "pdb_ts3#633092"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:6SY4_2:C",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633095"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:6DVK_1:H",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633098"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:3EGZ_2:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633103"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:4OOG_3:D",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633107"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:6IV8_3:D",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633110"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:4ATO_2:G",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633112"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:6AAY_2:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633114"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:6DCB_1:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633116"
+    },
+    {
+      "panel": "pdb_ts_hard",
+      "reference_id": "RCSB:5WTK_2:B",
+      "rnaformer_dssr_pair_match": true,
+      "source_record_id": "pdb_ts_hard#633117"
+    }
+  ],
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "unresolved": [
+    {
+      "source_record_id": "pdb_ts1#632971",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632972",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632973",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632974",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632975",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632976",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632977",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632978",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632979",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632980",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632981",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632982",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632983",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632984",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632985",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632986",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632987",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632988",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632989",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632990",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632991",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632992",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632994",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632996",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632998",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633000",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633001",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633004",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633005",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633007",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633008",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633010",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633011",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633012",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633013",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633014",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633015",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633017",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633018",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633021",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633022",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633023",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633024",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633025",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633026",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633027",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633030",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633031",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633032",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633033",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633034",
+      "status": "DSSR_MAPPING_ERROR_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633036",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633039",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633044",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633045",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633047",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633050",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633051",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633060",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633064",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633066",
+      "status": "DSSR_MAPPING_ERROR_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633067",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633069",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633071",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633072",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633076",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633077",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633080",
+      "status": "DSSR_MAPPING_ERROR_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633083",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633084",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633086",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633088",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633089",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633091",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633093",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633094",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633096",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633097",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633099",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633100",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633101",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633102",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633104",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633105",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633106",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633108",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633109",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633111",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633113",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633115",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633118",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633119",
+      "status": "NO_EXACT_CHAIN_MATCH_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633120",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633121",
+      "status": "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633122",
+      "status": "DSSR_MAPPING_ERROR_UNCHECKED"
+    }
+  ]
+}
