@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "created_utc": "2026-11-26T07:17:38Z",
+  "updated_utc": "2026-11-26T08:06:37Z",
   "system": "E2Efold",
   "status": "BLOCKED_OFFICIAL_WEIGHTS_UNAVAILABLE",
   "full_ready": false,
@@ -58,6 +59,21 @@
       "result": "ACCESS_DENIED",
       "observation": "HTTP response was an Error page containing Sorry/cannot access, not a model archive.",
       "response_sha256": "f96833d2352321816a3df0da12a313e997edd02de5ab886c98bf818fe3108ec6"
+    },
+    {
+      "channel": "Local macOS Google Drive curl and FetchURL",
+      "url": "https://drive.google.com/drive/folders/1m038Fw0HBGEzsvhS0mRxd0U7cGXqLAVt",
+      "result": "FAILED",
+      "observation": "curl exit 28 after 15011 ms connection timeout; FetchURL also failed with a network error. Neither returned a payload.",
+      "evidence_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/e2efold-official-recovery-20261126/downloads/macos_network/drive_curl_attempt.log"
+    },
+    {
+      "channel": "Local macOS SharePoint FetchURL and download=1 curl",
+      "result": "REJECTED_HTML_NOT_WEIGHTS",
+      "observation": "FetchURL reported cannot access with correlation ID 0b9152a2-3060-9000-2be4-8606e23fe2a2. Curl returned HTTP 200 with Content-Type text/html; charset=utf-8 and <!DOCTYPE html magic, so no torch.load was attempted.",
+      "response_bytes": 143339,
+      "response_sha256": "8f78921edc5788fcc29787e19872c9572f4ad7ec6ea90129b5803d5f32cf6382",
+      "evidence_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/e2efold-official-recovery-20261126/downloads/macos_network"
     },
     {
       "channel": "GitHub releases API",
@@ -138,6 +154,8 @@
     "round_2_initial_failure_and_fix": "The first contract run rejected the archive directory because the adapter expected a bare commit directory name. The assertion was corrected to e2efold-<full-commit>; the complete round was rerun and passed.",
     "round_3_unit_tests": "PASS: 13 new E2Efold recovery tests and 7 existing eFold-family contract tests; no pytest cache and no bytecode written",
     "official_tree_crosscheck": "PASS: all 55 tracked files in the official commit match the extracted archive by independent Git blob SHA1; zero mismatches",
+    "macos_network_recheck": "NO_CANDIDATE: Google Drive curl/FetchURL network failures; SharePoint access denied and HTTP 200 text/html response excluded by Content-Type and HTML magic. Torch structure check not run because no candidate file exists. Raw evidence transferred to teams with SHA256 verified.",
+    "built_in_browser": "UNAVAILABLE in this subagent run; permitted FetchURL and local curl alternatives were used without login",
     "gpu_tests": "NOT_RUN by task constraint"
   }
 }
