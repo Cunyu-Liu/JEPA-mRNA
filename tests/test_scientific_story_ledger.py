@@ -59,8 +59,8 @@ def test_label_quality_soft_review_and_zero_deletion():
     assert "不自动删除" in text
 
 
-@pytest.mark.skipif(not ledger.LABEL_QUALITY_REPO.is_dir(), reason="host-specific source repository is unavailable")
-def test_round1_source_commit_identity():
+@pytest.mark.skipif(any(not repo.exists() for repo, _ in ledger.SOURCE_COMMITS.values()), reason="host-specific source repositories are unavailable")
+def test_source_commit_identity():
     assert ledger.verify_source_commits() == []
 
 
@@ -73,6 +73,17 @@ def test_pretrain_exposure_conservation_and_sota_limits():
     assert "完整官方预训练语料仍 `UNCHECKED`" in text
     assert "dev 不能外推 clean-OOD" in text
     assert "剩余 7 条均为 HOMOLOGY" in text
+
+
+def test_next_page_exposure_strata_and_margin_pending():
+    text = ledger.DOC.read_text()
+    assert "下一页必须暴露分层" in text
+    assert "margin 双训练未完成" in text
+    assert "/home/rna_jev_margin_evaluator" in text
+    assert "8b1861f9f8c116250aba194799bf5ee7d9a4f39e" in text
+    assert "不得干扰 GPU 或改原 16 门" in text
+    assert "margin 仍无结论" in text
+    assert "本节只约束后续内容，不修改 PPT" in text
 
 
 def test_linearpartition_recall_and_gec_boundary():
