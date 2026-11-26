@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-26T07:17:38Z",
+  "system": "E2Efold",
+  "status": "BLOCKED_OFFICIAL_WEIGHTS_UNAVAILABLE",
+  "full_ready": false,
+  "ready_scope": "Official source, frozen bpRNA-new input/output contract, strict single-model GPU replay script, and CPU tests are ready. No model inference or prediction artifact was produced.",
+  "source": {
+    "url": "https://github.com/ml4bio/e2efold",
+    "commit": "2aab9e78326ddaa27d14c49eb34001c0003a1960",
+    "ref": "master",
+    "archive_url": "https://codeload.github.com/ml4bio/e2efold/tar.gz/2aab9e78326ddaa27d14c49eb34001c0003a1960",
+    "archive_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/e2efold-official-recovery-20261126/downloads/e2efold-2aab9e78326ddaa27d14c49eb34001c0003a1960.tar.gz",
+    "archive_sha256": "4a599a1a74eae1766de9782ca3eb7ca8017ac322b996cadba0188b9594ab2803",
+    "extracted_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/e2efold-official-recovery-20261126/source/e2efold-2aab9e78326ddaa27d14c49eb34001c0003a1960",
+    "license": {
+      "spdx": "MIT",
+      "scope": "Official repository code; this does not establish a separate checkpoint license",
+      "sha256": "a10fe3436b8aaf66478bdfd46c45fdfe39674a0db2a0a9aa1b37cf443a53cd12"
+    },
+    "short_config_sha256": "10f00718840eb53efaf9b89cb2d78364d654c7d05c60b5d50e1006ffaf3b291a"
+  },
+  "weights": {
+    "status": "BLOCKED_OFFICIAL_WEIGHTS_UNAVAILABLE",
+    "expected_filename": "e2e_att_simple_fix_mixed_s20_d10_rnastralign_all_600_f1_position_matrix.pt",
+    "expected_path_when_recovered": "/teams/HoulabData_1788502323/liucunyu/foldnar/e2efold-official-recovery-20261126/weights/e2e_att_simple_fix_mixed_s20_d10_rnastralign_all_600_f1_position_matrix.pt",
+    "path": null,
+    "sha256": null,
+    "license": null,
+    "official_google_drive": "https://drive.google.com/drive/folders/1m038Fw0HBGEzsvhS0mRxd0U7cGXqLAVt",
+    "official_sharepoint": "https://gocuhk-my.sharepoint.com/:f:/g/personal/yuli_cuhk_edu_hk/Ekuec1yiSc9Jp7leSEYtsvABJyhIVXAblV0wb-8PrTezMg?e=eqXvzd",
+    "reason": "The official repository contains only a checkpoint download link. Both official hosting channels failed in this recovery; no file or response page was accepted as a checkpoint."
+  },
+  "download_attempts": [
+    {
+      "channel": "Git clone",
+      "url": "https://github.com/ml4bio/e2efold.git",
+      "result": "FAILED",
+      "observation": "Remote hung up unexpectedly; early EOF; index-pack failed after about 579 seconds."
+    },
+    {
+      "channel": "Official commit codeload archive",
+      "result": "PASS",
+      "observation": "Archive downloaded, gzip integrity passed, extracted under the designated data root, and SHA256 recorded."
+    },
+    {
+      "channel": "Google Drive folder curl",
+      "result": "FAILED",
+      "observation": "curl exit 28 after 15-second connection timeout; no response payload."
+    },
+    {
+      "channel": "Google Drive folder gdown 6.4.2",
+      "result": "FAILED",
+      "observation": "timeout exit 124 after 75 seconds while retrieving folder contents; zero checkpoint files."
+    },
+    {
+      "channel": "SharePoint folder with download=1",
+      "result": "ACCESS_DENIED",
+      "observation": "HTTP response was an Error page containing Sorry/cannot access, not a model archive.",
+      "response_sha256": "f96833d2352321816a3df0da12a313e997edd02de5ab886c98bf818fe3108ec6"
+    },
+    {
+      "channel": "GitHub releases API",
+      "url": "https://api.github.com/repos/ml4bio/e2efold/releases?per_page=100",
+      "result": "EMPTY",
+      "observation": "Official release list is empty."
+    },
+    {
+      "channel": "Official Git history",
+      "result": "EMPTY",
+      "observation": "No .pt, .pth, or .ckpt object in any official revision; models_ckpt history contains only the README update."
+    }
+  ],
+  "dataset": {
+    "name": "bpRNA-new",
+    "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+    "sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "n_sequences": 5388,
+    "unique_names": 5388,
+    "length_min": 33,
+    "length_max": 489,
+    "alphabet": [
+      "A",
+      "C",
+      "G",
+      "U"
+    ],
+    "n_reference_pairs": 135184,
+    "n_noncanonical_reference_pairs": 0,
+    "n_min_loop_reference_violations": 0,
+    "input_order": "Frozen JSONL order and unique names are preserved",
+    "pair_output": "Zero-based inclusive i<j; one partner per base; AU/CG/GU only; j-i>3; crossing pairs are not filtered",
+    "label_boundary": "Reference pairs are checked for input-contract integrity only. They are not model inputs, decoder inputs, tuning targets, or substitutes for predictions. No external Test set was read for tuning."
+  },
+  "single_model_identity": {
+    "contact_net": "ContactAttention_simple_fix_PE(d=10, L=600)",
+    "postprocessor": "Lag_PP_mixed(steps=20, k=1, rho_per_position=matrix)",
+    "training_identity_from_official_config": "rnastralign_all_600; pp_loss=f1",
+    "threshold": 0.5,
+    "seed": 0,
+    "batch_size": 1,
+    "ensemble": false,
+    "checkpoint_loading": "One named checkpoint, mandatory SHA256, torch.load(weights_only=True), strict state-dict load, eval mode",
+    "long_model_required": false,
+    "official_output_adapter": "Official contact2ct, then strict mutual-CT to zero-based pair conversion; invalid pairs fail without repair"
+  },
+  "predictions": null,
+  "metrics": null,
+  "execution_boundary": {
+    "gpu_inference_executed": false,
+    "gpu_forward_executed": false,
+    "gpu_memory_benchmark_executed": false,
+    "summary_only_accepted_as_prediction": false,
+    "third_party_or_retrained_weights_accepted": false
+  },
+  "static_environment": {
+    "recovery_python": "3.10.22",
+    "torch": "2.7.1+cu128",
+    "numpy": "2.2.6",
+    "scipy": "1.15.3",
+    "sklearn": "1.7.2",
+    "pandas": "2.3.3",
+    "pytest": "9.1.1",
+    "gdown": "6.4.2",
+    "official_historical_environment": "Python 3.7.3, PyTorch 1.2.0, CUDA 9.2 from official environment.yml; not created or used for inference here"
+  },
+  "resource_requirements": {
+    "parameters": 718863,
+    "float32_parameter_bytes": 2875452,
+    "float32_parameter_mib": 2.742137908935547,
+    "execution": "One CUDA GPU, batch size 1, padded length 600, serial 5388-sequence replay",
+    "memory_and_runtime": "NOT_MEASURED. Parameter size is only a static lower bound and excludes activations, attention, postprocessing, CUDA context, and driver overhead. Run only after current GPU jobs finish and sufficient free memory is confirmed.",
+    "storage": "Official source archive and extraction are under the designated data root; checkpoint size is unknown because no checkpoint was recovered. Large assets and future predictions remain outside Git."
+  },
+  "verification": {
+    "round_1_download": "PASS for official archive SHA256/gzip and empty release/weight scope; official weights remain blocked with concrete failed attempts",
+    "round_2_static_and_contract": "PASS: 31 Python files compiled in memory; real 5388-row contract passed with CUDA_VISIBLE_DEVICES empty; predictions remained null",
+    "round_2_initial_failure_and_fix": "The first contract run rejected the archive directory because the adapter expected a bare commit directory name. The assertion was corrected to e2efold-<full-commit>; the complete round was rerun and passed.",
+    "round_3_unit_tests": "PASS: 13 new E2Efold recovery tests and 7 existing eFold-family contract tests; no pytest cache and no bytecode written",
+    "official_tree_crosscheck": "PASS: all 55 tracked files in the official commit match the extracted archive by independent Git blob SHA1; zero mismatches",
+    "gpu_tests": "NOT_RUN by task constraint"
+  }
+}
