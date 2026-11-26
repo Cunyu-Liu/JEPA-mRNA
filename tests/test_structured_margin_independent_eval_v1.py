@@ -226,3 +226,38 @@ def test_in_progress_final_eval_never_reads_exposure_registry(monkeypatch, tmp_p
     with pytest.raises(M.TrainingInProgress):
         M.evaluate_run(REPO, tmp_path / "artifacts", tmp_path / "predictions",
                        tmp_path / "nll", tmp_path / "output", tmp_path / "missing-exposure")
+
+
+def legacy_all_args(tmp_path):
+    return [
+        "all", "--repo", str(REPO), "--artifact-root", str(tmp_path / "artifacts"),
+        "--nll-artifact-root", str(tmp_path / "nll"), "--output-root", str(tmp_path / "output"),
+    ]
+
+
+def test_legacy_all_command_uses_frozen_exposure_default(monkeypatch, tmp_path):
+    captured = {}
+    monkeypatch.setattr(M, "export_run", lambda *args: {})
+
+    def fake_evaluate(repo, artifact_root, prediction_root, nll_root, output_root, exposure_root):
+        captured["exposure_root"] = exposure_root
+        return {"overall_pass": True}
+
+    monkeypatch.setattr(M, "evaluate_run", fake_evaluate)
+    assert M.main(legacy_all_args(tmp_path)) == 0
+    assert captured["exposure_root"] == M.exposure.DEFAULT_EXPOSURE_ROOT
+    assert M.exposure.DEFAULT_EXPOSURE_ROOT == Path(
+        "/home/rna_jev_pretrain_exposure/manifests/pretrain_exposure_v1"
+    )
+    assert M.exposure.SOURCE_COMMIT == "4247d1e4a971ceb8c63e3f8338e026a23c18941b"
+
+
+def test_legacy_all_command_in_progress_precedes_export_and_registry(monkeypatch, tmp_path):
+    def incomplete(repo, artifact_root):
+        raise M.TrainingInProgress({arm: {"status": "IN_PROGRESS", "reason": "fixture"} for arm in M.ARMS})
+
+    monkeypatch.setattr(M, "qualify", incomplete)
+    monkeypatch.setattr(M.exposure, "bind_exposure_registry", lambda *args: pytest.fail("registry read"))
+    assert M.main(legacy_all_args(tmp_path)) == 3
+    assert (tmp_path / "output/in_progress.json").is_file()
+    assert not (tmp_path / "output/exposure_sensitivity.json").exists()
