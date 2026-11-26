@@ -102,6 +102,20 @@ def test_model_dev_v3_registration_and_conservation():
     assert "NOT_COMPUTED_BY_REGISTRY_BUILD" in text
 
 
+def test_v3_exposure_roles_and_original_16_gates():
+    text = ledger.DOC.read_text()
+    assert "EXACT sensitivity-only，HOMOLOGY/UNKNOWN diagnostic-only，原16门不变" in text
+    assert "PREREGISTERED_SENSITIVITY_ONLY" in text
+    assert "gate_use=FORBIDDEN" in text
+    assert "original_16_gates_modified=false" in text
+    assert "n_gates=16 / n_failed_gates=12" in text
+
+
+@pytest.mark.skipif(any(not repo.exists() for repo, _ in ledger.SOURCE_COMMITS.values()), reason="host-specific source repositories are unavailable")
+def test_evaluator_model_dev_v3_contract():
+    assert ledger.verify_evaluator_v3_contract() == []
+
+
 def test_linearpartition_recall_and_gec_boundary():
     assert 53 / 73 == pytest.approx(0.726027397260274)
     assert 8 / 73 == pytest.approx(0.1095890410958904)

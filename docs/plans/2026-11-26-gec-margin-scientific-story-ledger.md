@@ -187,6 +187,17 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：该 registry 是 additive reporting layer，不得 rescue/veto primary full-panel 结论，不得影响 route selection，也不得把外部 Test 用于选型。EXACT sensitivity-only 不等于 clean-OOD 或 primary gate；HOMOLOGY/UNKNOWN diagnostic-only 不得改写成 sensitivity 证据或 clean 组。
 - **Next**：后续独立 margin evaluator 只能在训练终端资格完成后读取同一冻结暴露 registry；分层用途与原 16 门不变必须由独立门禁再次核对。
 
+## 16. Evaluator × model-dev v3 联合门禁：EXACT sensitivity-only，其余 diagnostic-only
+
+- **Claim（不可降级的用途边界）**：**EXACT sensitivity-only，HOMOLOGY/UNKNOWN diagnostic-only，原16门不变**。当前 evaluator `536b79e450c1ad18b67e06cb39ecb3730546221b` 只增加 `PREREGISTERED_SENSITIVITY_ONLY` 分析；它不重写第 4 节科学 FAIL，也不产生 margin 结论。
+- **Phenomenon**：EXACT 层满足样本量、pair 数与家族集中度门槛，因此可作为附加敏感性层；HOMOLOGY 与 UNKNOWN 虽有序列/pair 数量，却没有 mapped families，family/HHI/unmapped 检查失败，只能保留诊断。若把这些层用于 rescue/veto primary gate 或 checkpoint selection，会改变预注册科学问题。
+- **Intervention**：逐 run 检查 v3 的 12 个 `exposure_stratified_eligibility` 块，并对照 evaluator 源码中的 `PREREGISTERED_SENSITIVITY_ONLY`、`gate_use=FORBIDDEN`、`checkpoint_selection_use=FORBIDDEN` 与 exactly-16-gate fail-closed assertion；同时核对 v3 artifact manifest 的 immutability flags。
+- **Expected observation**：每个 run 均为 EXACT `SENSITIVITY_ONLY` 且 `sensitivity_eligible=true`，HOMOLOGY/UNKNOWN 均为 `DIAGNOSTIC_ONLY` 且 `sensitivity_eligible=false`；三层 `route_selection_allowed=false`。原 16 门名称、定义、通过状态和 route eligibility 不变。
+- **Actual**：12/12 run 逐层符合上述用途。v3 记录 `original_16_gates_modified=false`、`current_seed0_main_gate_changed=false`、`gate_count_changed=false`、`gate_definitions_changed=false`；当前 seed0 仍为 `FAIL_GEC_SEED0_INDEPENDENT_REEVAL`，**n_gates=16 / n_failed_gates=12**，pass=false。Evaluator 的 exposure sensitivity 明确禁止 gate/checkpoint/arm selection；registry 本身仍无新性能数值。
+- **Artifact**：`/home/rna_jev_margin_evaluator/tools/structured_margin_exposure_sensitivity_v1.py`、`structured_margin_independent_eval_v1.py`；`/home/rna_jev_model_dev_v3/manifests/foldnar_v3/model_dev_registry.json`；`F/model_dev_v3/artifact_manifest.json`。
+- **Limitation**：EXACT sensitivity 是已暴露子层的附加描述，不是 clean-OOD、pretraining-unseen 或 primary SOTA 证据；HOMOLOGY/UNKNOWN diagnostic 不得转成 sensitivity 或 clean 对照。任何分层结果都不能替代 full-panel paired CI 与原 16 门。Margin 双训练仍未完成，无 margin>NLL 或机制特异性结论。
+- **Next**：保持原 16 门与当前 FAIL 不变；待 margin 终端资格真实完成后，current evaluator 才可在同一 raw pairs、相同 IDs/coverage 上追加 sensitivity，且必须继续禁止分层 rescue/veto、checkpoint/arm selection 和外部 Test 选型。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -206,6 +217,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | 预训练暴露分层 | 下游去泄露不等于 backbone 未接触 | 已知来源 exact+homology 独立重扫 | 分层守恒且不升级 UNKNOWN/UNCHECKED | `pretrain_exposure_v1/summary.json` | 完整官方语料 UNCHECKED；dev 非 clean-OOD；仅描述性表现 |
 | 下一页暴露分层与 margin 准入 | 总分掩盖暴露，运行状态冒充结果 | 冻结分层+独立评估器身份门禁 | 分层显式出现；双训练完成后再复评 | exposure registry；margin evaluator `536b79e` | 当前双训练未完成、margin 无结论；不改 PPT/GPU/原 16 门 |
 | Model-dev v3 暴露登记 | 分层需连接 12 个历史 run | 非 import 独立重算与三轮验证 | 序列/pair 守恒；additive-only | `foldnar_v3/verification_summary.json` | 无新性能；EXACT sensitivity-only，其余 diagnostic-only；不选路线 |
+| Evaluator×v3 用途与16门不变 | 分层不能改写主科学门 | 12 run 逐层+evaluator 源码联合门禁 | EXACT sensitivity-only；其余 diagnostic-only；16门原样 | evaluator tools；v3 registry/manifest | 不 rescue/veto，不选 checkpoint/arm；margin 无结论 |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -224,6 +236,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **负面结果完整性**：容量、SRD、stacking 与 GEC 的停止/失败不得被后续候选叙事抹去；任何新阳性 claim 必须同时说明其不同干预与直接证据。
 - [ ] **官方 raw baseline 措辞**：structRFM 结果必须同时保留官方外部 baseline、5,388 条 raw 非去污染与候选隔离边界；不得写成我们的正向性能、clean/OOD 或 SOTA。
 - [ ] **raw 绝对差距**：BPfold 集成、CONTRAfold 单模型与 structRFM 的差值只能是同面板 micro-F1 绝对算术；不得混用 official-reference/TR1c-clean 标签、改写成相对百分比或候选提升。
+- [ ] **Model-dev v3 / 原16门**：EXACT 只能 sensitivity-only，HOMOLOGY/UNKNOWN 只能 diagnostic-only；不得 rescue/veto primary 或选择 checkpoint/arm。原16门定义与 seed0 FAIL（16门、12失败）不变，current evaluator 只能是 `536b79e450c1ad18b67e06cb39ecb3730546221b`，旧 evaluator 不得回写。
 - [ ] **下一页与 margin 准入**：下一页必须显式展示暴露分层及完整官方语料 UNCHECKED；margin 双训练未完成、仍无结论。独立评估器固定 `/home/rna_jev_margin_evaluator`@`536b79e450c1ad18b67e06cb39ecb3730546221b`，不得干扰 GPU 或改原 16 门；本轮不修改 PPT。
 - [ ] **Pretrain exposure / SOTA 边界**：dev 必须保留 7,978 EXACT、539 HOMOLOGY、626 NOT_DETECTED_UNKNOWN；bpRNA-new 为 5,381/5,388 EXACT，其余 7 条 HOMOLOGY。完整官方语料 UNCHECKED，dev 不能外推 clean-OOD；只能写 exposure-aware descriptive performance，UNKNOWN/UNCHECKED 不得写成 clean。
 - [ ] **Label quality 边界**：TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 不得称为实验真值；95,052 noncanonical 与 10,250 short-span 仅为可重叠的软复核记录数，硬冲突 0、实际删除 0，不得自动删除或把无 flag 写成 clean。
@@ -231,4 +244,4 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、BPfold/CONTRAfold 绝对差距算术、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交与 v3 三轮验证、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、BPfold/CONTRAfold 绝对差距算术、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。

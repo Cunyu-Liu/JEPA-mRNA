@@ -111,6 +111,81 @@ def verify_source_commits() -> list[str]:
     return errors
 
 
+def verify_evaluator_v3_contract() -> list[str]:
+    errors = []
+    sensitivity_path = MARGIN_EVALUATOR_REPO / "tools/structured_margin_exposure_sensitivity_v1.py"
+    evaluator_path = MARGIN_EVALUATOR_REPO / "tools/structured_margin_independent_eval_v1.py"
+    registry_path = MODEL_DEV_V3_REPO / "manifests/foldnar_v3/model_dev_registry.json"
+    manifest_path = MODEL_DEV_V3 / "artifact_manifest.json"
+    for path in [sensitivity_path, evaluator_path, registry_path, manifest_path]:
+        if not path.is_file():
+            errors.append(f"missing evaluator/v3 contract source: {path}")
+    if errors:
+        return errors
+    sensitivity = sensitivity_path.read_text()
+    evaluator = evaluator_path.read_text()
+    for required in [
+        'SOURCE_COMMIT = "4247d1e4a971ceb8c63e3f8338e026a23c18941b"',
+        '"role": "PREREGISTERED_SENSITIVITY_ONLY"',
+        '"gate_use": "FORBIDDEN"',
+        '"checkpoint_selection_use": "FORBIDDEN"',
+        '"checkpoint_or_arm_selection_performed": False',
+    ]:
+        if required not in sensitivity:
+            errors.append(f"evaluator exposure contract missing: {required}")
+    for required in [
+        'if len(gates["gates"]) != 16:',
+        'frozen scientific contract no longer has exactly 16 gates',
+    ]:
+        if required not in evaluator:
+            errors.append(f"evaluator original-16-gate guard missing: {required}")
+
+    registry = json.loads(registry_path.read_text())
+    runs = registry["model_runs"]
+    if len(runs) != 12:
+        errors.append(f"v3 run count: expected 12, got {len(runs)}")
+    for run in runs:
+        run_id = run["run_id"]
+        exposure = run["exposure_stratified_eligibility"]
+        if exposure["primary_route_eligibility_unchanged"] is not True:
+            errors.append(f"v3 primary route changed: {run_id}")
+        for state, eligibility, sensitive in [
+            ("EXACT", "SENSITIVITY_ONLY", True),
+            ("HOMOLOGY", "DIAGNOSTIC_ONLY", False),
+            ("NOT_DETECTED_UNKNOWN", "DIAGNOSTIC_ONLY", False),
+        ]:
+            stratum = exposure["states"][state]
+            if stratum["eligibility"] != eligibility:
+                errors.append(f"v3 {run_id}/{state}: expected {eligibility}, got {stratum['eligibility']}")
+            if stratum["sensitivity_eligible"] is not sensitive:
+                errors.append(f"v3 {run_id}/{state}: sensitivity_eligible mismatch")
+            if stratum["minimum_sample_gate"]["pass"] is not sensitive:
+                errors.append(f"v3 {run_id}/{state}: minimum-sample gate mismatch")
+            if stratum["route_selection_allowed"] is not False:
+                errors.append(f"v3 {run_id}/{state}: route selection must remain forbidden")
+    gate = registry["seed0_main_gate"]
+    expected_gate = {
+        "gate_count_changed": False,
+        "gate_definitions_changed": False,
+        "v3_changes_current_seed0_main_gate": False,
+        "route_selection_changed": False,
+        "baseline_pass": False,
+        "baseline_status": "FAIL_GEC_SEED0_INDEPENDENT_REEVAL",
+    }
+    for key, expected in expected_gate.items():
+        if gate[key] != expected:
+            errors.append(f"v3 seed0 {key}: expected {expected!r}, got {gate[key]!r}")
+    if len(gate["original_16_gate_names"]) != 16 or len(gate["original_16_gates"]["gates"]) != 16:
+        errors.append("v3 original scientific contract no longer has exactly 16 gates")
+    if len(gate["original_failed_gates"]) != 12 or gate["original_16_gates"]["pass"] is not False:
+        errors.append("v3 original seed0 12-failed-gate FAIL was not preserved")
+    manifest = json.loads(manifest_path.read_text())
+    for key in ["original_16_gates_modified", "current_seed0_main_gate_changed", "v1_v2_modified", "margin_results_read", "gpu_task_launched"]:
+        if manifest[key] is not False:
+            errors.append(f"v3 manifest {key}: expected False, got {manifest[key]!r}")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -178,6 +253,11 @@ def verify_narrative_guards() -> list[str]:
         "302b70a228d77b0f1847489c93ead402e33510b5",
         "PASS_THREE_ROUNDS",
         "206,588 / 19,528 / 20,897",
+        "EXACT sensitivity-only，HOMOLOGY/UNKNOWN diagnostic-only，原16门不变",
+        "PREREGISTERED_SENSITIVITY_ONLY",
+        "gate_use=FORBIDDEN",
+        "original_16_gates_modified=false",
+        "n_gates=16 / n_failed_gates=12",
     ]
     errors = [f"missing narrative guard: {item}" for item in required if item not in text]
     if OBSOLETE_MARGIN_EVALUATOR_COMMIT in text:
@@ -508,12 +588,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, and source commits"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, and evaluator/v3 contracts"
     print(f"PASS: {scope}")
     return 0
 
