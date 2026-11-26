@@ -24,8 +24,9 @@ DECK = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx"
 BACKUP = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round70.pptx"
 VERIFICATION = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.round70_build_verification.json"
 EVALUATION_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_independent_eval_v1/generation_01")
+CROSS_SOURCE_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/cross_source_leakage_v1")
+CROSS_SOURCE_COMMIT = "06fa2f8e039a41324063ecf975c0101958243dab"
 SCHEMA = "foldnar.structured_margin_independent_eval.v1"
-CROSS_SOURCE_CAVEAT = "TR1c train↔CHANRG Validation 80%=UNCHECKED"
 ARMS = ("matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context")
 CONTROLS = ("matched_control", "destroy_interval_shuffle", "independent_context")
 METRICS = (
@@ -130,6 +131,74 @@ def verify_identities(*values: dict) -> list[dict]:
         require(sha256(source) == recorded["sha256"], f"source SHA-256 changed: {path}")
         verified.append(recorded)
     return verified
+
+
+def validate_cross_source_boundary(root: str | Path) -> dict:
+    root = Path(root).resolve()
+    summary_path = root / "summary.json"
+    manifest_path = root / "artifact_manifest.json"
+    verification_path = root / "independent_verification.json"
+    summary = load_json(summary_path)
+    manifest = load_json(manifest_path)
+    verification = load_json(verification_path)
+    require(summary.get("schema_version") == "foldnar.cross_source_leakage.v1"
+            and summary.get("status") == "COMPLETE_WITH_UNCHECKED_LAYERS",
+            "unexpected cross-source summary schema or status")
+    require(summary.get("code_commit") == verification.get("code_commit") == CROSS_SOURCE_COMMIT,
+            "cross-source code commit mismatch")
+    summary_identity = identity(summary_path)
+    require(manifest.get("schema_version") == "foldnar.cross_source_leakage.artifact_manifest.v1"
+            and manifest.get("files", {}).get("summary.json") == summary_identity,
+            "frozen summary identity does not match artifact manifest")
+    require(verification.get("schema_version") == "foldnar.cross_source_leakage.independent_verification.v1"
+            and verification.get("status") == "PASS_RAW_REREAD_BIDIRECTIONAL_CLUSTER_AND_HASH"
+            and verification.get("summary_sha256") == summary_identity["sha256"],
+            "independent verification does not reference the frozen summary SHA-256")
+    checks = {row.get("check"): row for row in verification.get("checks", [])}
+    require(verification.get("n_checks") == 9 and len(checks) == 9
+            and all(row.get("passed") is True for row in checks.values()),
+            "cross-source independent verification is incomplete")
+    matched = summary.get("views", {}).get("matched_clean", {})
+    expected_counts = {
+        "n_chanrg_validation_input": 5872,
+        "n_cluster_closure_excluded_chanrg_validation": 769,
+        "n_cluster_only_excluded_chanrg_validation": 23,
+        "n_direct_hit_chanrg_validation": 746,
+        "n_remaining_after_observed_exclusion": 5103,
+    }
+    require(all(matched.get(key) == value for key, value in expected_counts.items()),
+            "matched-clean cross-source boundary counts changed")
+    require(matched["n_chanrg_validation_input"]
+            - matched["n_cluster_closure_excluded_chanrg_validation"]
+            == matched["n_remaining_after_observed_exclusion"],
+            "matched-clean closure arithmetic mismatch")
+    require(matched["n_direct_hit_chanrg_validation"]
+            + matched["n_cluster_only_excluded_chanrg_validation"]
+            == matched["n_cluster_closure_excluded_chanrg_validation"],
+            "direct-hit/cluster-only closure arithmetic mismatch")
+    require(matched.get("state") == "HOMOLOGY_DETECTED"
+            and matched.get("remaining_state") == "NOT_DETECTED_UNKNOWN"
+            and matched.get("route_selection_eligible_for_current_tr1c_cluster_train_gec") is False
+            and summary.get("not_clean_claim") is True and summary.get("external_test_accessed") is False,
+            "cross-source remaining subset must stay NOT_DETECTED_UNKNOWN, never clean")
+    independent_matched = checks["view/matched_clean/raw_reread_exclusion_and_unknown_boundary"]
+    require(all(independent_matched.get(key) == value for key, value in expected_counts.items()),
+            "independent matched-clean counts differ from summary")
+    gec = summary.get("gec_chanrg_dev_qualification", {})
+    require(gec.get("changed") is False and gec.get("previous_state") == "INELIGIBLE"
+            and gec.get("state_after_this_screen") == "INELIGIBLE"
+            and verification.get("gec_chanrg_dev_qualification") == gec,
+            "current GEC CHANRG-dev qualification must remain INELIGIBLE")
+    boundary = (f"cross80 matched-clean val {matched['n_chanrg_validation_input']:,}−closure "
+                f"{matched['n_cluster_closure_excluded_chanrg_validation']:,}="
+                f"{matched['n_remaining_after_observed_exclusion']:,} NOT_DETECTED_UNKNOWN (not clean)")
+    return {
+        "root": root, "summary": summary, "manifest": manifest, "verification": verification,
+        "paths": (summary_path, manifest_path, verification_path),
+        "summary_identity": summary_identity, "code_commit": CROSS_SOURCE_COMMIT,
+        "matched_clean": matched, "gec_qualification": gec,
+        "display_boundary": boundary + " · GEC INELIGIBLE",
+    }
 
 
 def validate_final_evaluation(root: str | Path) -> dict:
@@ -313,7 +382,7 @@ def slide_text(slide) -> str:
     return "\n".join(values)
 
 
-def add_slide(prs: Presentation, bundle: dict) -> None:
+def add_slide(prs: Presentation, bundle: dict, cross_source: dict) -> None:
     evaluation = bundle["evaluation"]
     metrics = evaluation["arm_metrics"]
     passed = evaluation["overall_pass"]
@@ -372,14 +441,14 @@ def add_slide(prs: Presentation, bundle: dict) -> None:
     text(slide, 8.80, 5.52, 3.50, 0.49, verdict_note, 9.0, INK, True, SANS)
     rect(slide, 0.78, 6.42, 11.78, 0.012, RGBColor(212, 165, 154)).line.fill.background()
     text(slide, 0.78, 6.51, 11.65, 0.18,
-         f"evaluator {evaluation['code_identity']['git_head'][:12]} · panel={panel['panel_id']} · {CROSS_SOURCE_CAVEAT} · no external test/decoder tuning",
+         f"evaluator {evaluation['code_identity']['git_head'][:12]} · {cross_source['display_boundary']} · no external test/decoder tuning",
          7.5, MUTED)
     text(slide, 0.78, 6.72, 11.65, 0.18,
-         "final sources structured_margin_independent_eval_v1/generation_01/{independent_evaluation.json,gate_summary.json,input_manifest.json} · SHA-256 verified",
+         f"cross80 {cross_source['code_commit'][:7]} · frozen summary {cross_source['summary_identity']['sha256'][:12]} · final four-arm JSON + source SHA-256 verified",
          7.5, MUTED)
 
 
-def verify_built_deck(path: Path, prior_deck: Path, evaluation: dict) -> dict:
+def verify_built_deck(path: Path, prior_deck: Path, evaluation: dict, cross_source: dict) -> dict:
     reopened = Presentation(path)
     prior = Presentation(prior_deck)
     require(len(prior.slides) == 13, "source deck no longer has 13 slides")
@@ -408,10 +477,13 @@ def verify_built_deck(path: Path, prior_deck: Path, evaluation: dict) -> dict:
                       comparison["subgroups"]["pair_span:ge128"]["recall"]["delta"]):
             require(signed(value) in joined, f"missing ensemble comparison: {control}")
     for phrase in ("MODEL-DEV ONLY", "QUALIFIED NLL", "相同冻结 MEA", "isolated", "span≥128",
-                   CROSS_SOURCE_CAVEAT, evaluation["status"],
+                   cross_source["display_boundary"], "not clean", "GEC INELIGIBLE",
+                   cross_source["summary_identity"]["sha256"][:12], evaluation["status"],
                    f"科学门控 {sum(evaluation['margin_gates']['gates'].values())} / 16",
                    "SHA-256 verified"):
         require(phrase in joined, f"missing required slide text: {phrase}")
+    require("TR1c train↔CHANRG Validation 80%=UNCHECKED" not in joined,
+            "obsolete cross-source UNCHECKED statement found")
     return {"slide_count": 14, "deck_slide_index": 14, "added_slide_number": 33,
             "prior_slide_xml_preserved": 13, "shape_bounds_checks": len(new_slide.shapes),
             "new_slide_text_chars": len(joined)}
@@ -433,24 +505,26 @@ def atomic_write_json(path: Path, value: dict) -> None:
 
 
 def build(deck: str | Path = DECK, evaluation_root: str | Path = EVALUATION_ROOT,
-          backup: str | Path | None = None, verification: str | Path | None = None) -> dict:
+          backup: str | Path | None = None, verification: str | Path | None = None,
+          cross_source_root: str | Path = CROSS_SOURCE_ROOT) -> dict:
     deck = Path(deck).resolve()
     backup = Path(backup).resolve() if backup else deck.with_name(deck.stem + ".pre_round70.pptx")
     verification = (Path(verification).resolve() if verification else
                     deck.with_name(deck.stem + ".round70_build_verification.json"))
+    cross_source = validate_cross_source_boundary(cross_source_root)
     bundle = validate_final_evaluation(evaluation_root)
     require(deck.is_file(), f"deck missing: {deck}")
     prs = Presentation(deck)
     require(len(prs.slides) == 13, "expected 13-slide Phase 0 deck; refusing duplicate append")
     require(not backup.exists(), f"refusing to overwrite existing backup: {backup}")
     prior_sha256 = sha256(deck)
-    add_slide(prs, bundle)
+    add_slide(prs, bundle, cross_source)
     descriptor, temporary = tempfile.mkstemp(prefix=deck.stem + ".round70.", suffix=".pptx", dir=deck.parent)
     os.close(descriptor)
     temporary_path = Path(temporary)
     try:
         prs.save(temporary_path)
-        layout = verify_built_deck(temporary_path, deck, bundle["evaluation"])
+        layout = verify_built_deck(temporary_path, deck, bundle["evaluation"], cross_source)
         shutil.copy2(deck, backup)
         os.replace(temporary_path, deck)
     finally:
@@ -465,6 +539,15 @@ def build(deck: str | Path = DECK, evaluation_root: str | Path = EVALUATION_ROOT
         "prior_deck_sha256": prior_sha256, "backup": str(backup), "backup_sha256": sha256(backup),
         "builder": str(Path(__file__).resolve()), "builder_sha256": sha256(Path(__file__).resolve()),
         "evaluation_root": str(bundle["root"]),
+        "cross_source_boundary": {
+            "root": str(cross_source["root"]), "code_commit": cross_source["code_commit"],
+            "summary": cross_source["summary_identity"],
+            "artifact_manifest": identity(cross_source["paths"][1]),
+            "independent_verification": identity(cross_source["paths"][2]),
+            "matched_clean": cross_source["matched_clean"],
+            "gec_qualification": cross_source["gec_qualification"],
+            "display_boundary": cross_source["display_boundary"],
+        },
         "final_json": {str(path): identity(path) for path in bundle["paths"]},
         "verified_source_identities": bundle["verified_identities"],
         "evaluator_git_head": bundle["evaluation"]["code_identity"]["git_head"],
@@ -479,11 +562,13 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--deck", type=Path, default=DECK)
     parser.add_argument("--evaluation-root", type=Path, default=EVALUATION_ROOT)
+    parser.add_argument("--cross-source-root", type=Path, default=CROSS_SOURCE_ROOT)
     parser.add_argument("--backup", type=Path)
     parser.add_argument("--verification", type=Path)
     args = parser.parse_args(argv)
     try:
-        report = build(args.deck, args.evaluation_root, args.backup, args.verification)
+        report = build(args.deck, args.evaluation_root, args.backup, args.verification,
+                       args.cross_source_root)
     except (EligibilityError, OSError, KeyError, TypeError, ValueError) as error:
         parser.exit(2, f"round70 build refused: {error}\n")
     print(json.dumps(report, ensure_ascii=False, indent=2))
