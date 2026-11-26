@@ -495,7 +495,7 @@ def add_external_slide(prs: Presentation, bundle: dict) -> None:
                       f"OFFICIAL_REFERENCE_5388 · {bundle['coverage']['full_coverage_scored']} full-coverage systems · raw-exposure descriptive · Δ = structRFM − 对照")
     table(slide, 0.78, 1.65, (4.18, 1.80, 2.00, 1.80, 2.00), 0.46,
           ("同一官方参考标签面板", "micro-F1", "Δ micro", "macro-F1", "Δ macro"), rows,
-          font_size=10.0, emphasis_row=1)
+          font_size=10.2, emphasis_row=1)
     rect(slide, 0.78, 4.18, 11.78, 0.90, PALE, BURGUNDY)
     text(slide, 1.00, 4.29, 11.32, 0.28, "RAW-EXPOSURE DESCRIPTIVE ≠ CLEAN SOTA", 16, DARK_RED, True)
     text(slide, 1.00, 4.62, 11.30, 0.26,
