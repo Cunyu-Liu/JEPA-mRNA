@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "recovery_date": "2026-11-26",
+  "foldnar_base_commit": "906f554cd59454b09101cea447583836215be3e2",
+  "official_source": {
+    "repository_url": "https://github.com/Bruce-ywj/ERNIE-RNA",
+    "commit": "43bc06de1088ed03ffd7de918ad4b2c2a3346a43",
+    "commit_url": "https://github.com/Bruce-ywj/ERNIE-RNA/commit/43bc06de1088ed03ffd7de918ad4b2c2a3346a43",
+    "remote_identity": "git ls-remote HEAD and refs/heads/main both equal the pinned commit on 2026-11-26",
+    "snapshot_url": "https://codeload.github.com/Bruce-ywj/ERNIE-RNA/tar.gz/43bc06de1088ed03ffd7de918ad4b2c2a3346a43",
+    "snapshot_sha256": "55db465d0029bf17b05821d3d590d4bcaa74b845548e8fa4a204d9b4395ec146",
+    "snapshot_bytes": 23065119,
+    "local_relative_path": "ERNIE-RNA",
+    "retrieval": "Official GitHub codeload snapshot of the exact commit; incomplete git clone was discarded and is not used as evidence",
+    "required_file_sha256": {
+      "README.md": "d2b2ca2f33c4d4d1dac63659cff494631732b7ec87ac07ad99a0826e55bfa603",
+      "LICENSE": "b7aa7b89bff7b3c4cca2f78dc0900f038a7253bcbea9b780eca30b2bc1610ffb",
+      "environment.yml": "d668c3c883235627a7536374952d2a954b76467f9ee2fbab91691077961eb598",
+      "predict_ss_rna.py": "159fa2188b830d86927acff3d534e0668d249eadf12af4bed32ba3f62f6508b8",
+      "src/utils.py": "6b19c8c352f82432c1aa1f47ba8ba75daf9128d629bdd3a103a1566b56ae0ab8",
+      "checkpoint/ERNIE-RNA_checkpoint/ERNIE-RNA_checkpoint.txt": "550e13c22605b289af3fb4efeb18f8f54de554ef556133aa51123adb421d060e",
+      "checkpoint/ERNIE-RNA_ss_prediction_checkpoint/ERNIE-RNA_ss_prediction_checkpoint.txt": "a452edf42b8234a6dcbd6c49b5ee5401a7b2f187a3d3d6184f9d3d14621b3c7c"
+    }
+  },
+  "license": {
+    "code": "MIT",
+    "copyright": "Copyright (c) 2024 Weijie Yin",
+    "evidence": "Official LICENSE at the pinned commit; SHA256 recorded in official_source.required_file_sha256",
+    "weights": "NOT_SEPARATELY_SPECIFIED_IN_OFFICIAL_REPOSITORY",
+    "boundary": "The README explicitly licenses source code under MIT; it does not separately state a checkpoint license. Do not infer a weight license."
+  },
+  "weights": [
+    {
+      "asset_id": "ernierna_pretrain_official",
+      "filename": "ERNIE-RNA_pretrain.pt",
+      "official_url": "https://drive.google.com/file/d/1CmNxJxgjDhRoBdlDODFFjDNNzJMHVzmO",
+      "direct_download_url": "https://drive.usercontent.google.com/download?id=1CmNxJxgjDhRoBdlDODFFjDNNzJMHVzmO&export=download&confirm=t",
+      "url_provenance": "checkpoint/ERNIE-RNA_checkpoint/ERNIE-RNA_checkpoint.txt at the pinned commit",
+      "local_relative_path": "weights/ERNIE-RNA_pretrain.pt",
+      "bytes": null,
+      "sha256": null,
+      "status": "BLOCKED_NETWORK_NO_WEIGHT_BYTES",
+      "download_audit": "Direct px2 attempts on 2026-11-26 ended with curl error 28 connection timeout and zero downloaded bytes. Google APIs and alternate official Google hosts also timed out. No third-party mirror or unverified checksum was used."
+    },
+    {
+      "asset_id": "ernierna_attn_map_frozen_bprna1m_head_official",
+      "filename": "ERNIE-RNA_attn-map_frozen_ss_prediction_bpRNA-1m_checkpoint.pt",
+      "official_url": "https://drive.google.com/file/d/1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7",
+      "direct_download_url": "https://drive.usercontent.google.com/download?id=1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7&export=download&confirm=t",
+      "url_provenance": "checkpoint/ERNIE-RNA_ss_prediction_checkpoint/ERNIE-RNA_ss_prediction_checkpoint.txt at the pinned commit; key bpRNA-new",
+      "local_relative_path": "weights/ERNIE-RNA_attn-map_frozen_ss_prediction_bpRNA-1m_checkpoint.pt",
+      "bytes": null,
+      "sha256": null,
+      "status": "BLOCKED_NETWORK_NO_WEIGHT_BYTES",
+      "download_audit": "Direct px2 attempts on 2026-11-26 ended with curl error 28 connection timeout and zero downloaded bytes. No existing file with this official name was found in project asset searches. No third-party mirror or unverified checksum was used."
+    }
+  ],
+  "macos_official_download_retry_20261126": {
+    "attempted_utc": "2026-11-26T08:10:13Z",
+    "network": "Local macOS with HTTPEnable=0, HTTPSEnable=0 and SOCKSEnable=0; no proxy environment variables",
+    "built_in_browser": {
+      "status": "UNAVAILABLE_IN_SUBAGENT",
+      "error": "This subagent run is not currently running with built-in browser control enabled, so mcp__desktop_browser__run is unavailable."
+    },
+    "curl_attempts": [
+      {
+        "asset_id": "ernierna_pretrain_official",
+        "official_url": "https://drive.usercontent.google.com/download?id=1CmNxJxgjDhRoBdlDODFFjDNNzJMHVzmO&export=download&confirm=t",
+        "exit_code": 28,
+        "error": "curl: (28) Failed to connect to drive.usercontent.google.com port 443 after 15011 ms: Couldn't connect to server"
+      },
+      {
+        "asset_id": "ernierna_attn_map_frozen_bprna1m_head_official",
+        "official_url": "https://drive.google.com/file/d/1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7/view",
+        "exit_code": 28,
+        "error": "curl: (28) Failed to connect to drive.google.com port 443 after 15011 ms: Timeout was reached"
+      },
+      {
+        "asset_id": "ernierna_attn_map_frozen_bprna1m_head_official",
+        "official_url": "https://www.googleapis.com/drive/v3/files/1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7?fields=id,name,size,md5Checksum",
+        "exit_code": 28,
+        "error": "curl: (28) Connection timeout after 15010 ms"
+      }
+    ],
+    "gdown_attempts": [
+      {
+        "asset_id": "ernierna_pretrain_official",
+        "official_url": "https://drive.google.com/uc?id=1CmNxJxgjDhRoBdlDODFFjDNNzJMHVzmO",
+        "elapsed_seconds_before_manual_stop": 144.628,
+        "result": "NO_HTTP_RESPONSE_ZERO_BYTES",
+        "local_bytes": 0
+      },
+      {
+        "asset_id": "ernierna_attn_map_frozen_bprna1m_head_official",
+        "official_url": "https://drive.google.com/uc?id=1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7",
+        "elapsed_seconds_before_manual_stop": 144.631,
+        "result": "NO_HTTP_RESPONSE_ZERO_BYTES",
+        "local_bytes": 0
+      }
+    ],
+    "local_magic_and_size_check": "NOT_RUN_NO_FILES_CREATED",
+    "scp_to_teams": "NOT_RUN_NO_FILES_CREATED",
+    "end_to_end_sha256_verified": false,
+    "state_dict_static_check": "NOT_RUN_NO_CHECKPOINT_BYTES",
+    "login_used": false,
+    "third_party_mirror_used": false,
+    "demo_used_as_checkpoint_or_prediction": false
+  },
+  "model_identity": {
+    "family": "ERNIE-RNA",
+    "prediction_id": "ernierna_author_attn_map_frozen_bprna1m/bprna_new/raw_v1",
+    "target_output": "finetune_prediction",
+    "model_form": "single_model_not_ensemble",
+    "pretrained_checkpoint_count": 1,
+    "downstream_checkpoint_count": 1,
+    "loading_evidence": "One checkpoint path is passed to fairseq load_model_ensemble_and_task and rna_models[0] is selected; the API name does not make this an ensemble.",
+    "backbone": "Official ERNIE-RNA pretrained encoder",
+    "head": "ChooseModel attention-map head: last-layer attention head index 5; Conv2d 1->8 and 8->63; concatenate original map to 64 channels; eight residual blocks; Conv2d 64->1; symmetric output",
+    "decode": "Official constrained attention-map post-processing, 100 iterations, followed by matrix2ct threshold 0.5 with one partner per nucleotide",
+    "downstream_training_dataset": "bpRNA-1m",
+    "encoder_training_mode": "frozen attention-map secondary-structure protocol per official README and checkpoint name",
+    "bprna_new_role": "evaluation_only_not_downstream_training_set",
+    "training_exposure": "The pinned README establishes bpRNA-1m downstream exposure. It does not prove complete pretraining-corpus decontamination or absence of bpRNA-new pretraining/homology exposure.",
+    "zeroshot_identity": "Separate auxiliary output from the same pretrained encoder without secondary-structure fine-tuning; not a second ensemble member and never substituted for the target fine-tuned prediction"
+  },
+  "full_ready": {
+    "official_code_bytes_and_sha_ready": true,
+    "official_weight_bytes_and_sha_ready": false,
+    "official_runtime_static_compatible": false,
+    "batch_contract_ready": true,
+    "full_bprna_new_predictions_ready": false,
+    "overall_full_ready": false,
+    "status": "BLOCKED_OFFICIAL_WEIGHTS_RUNTIME_AND_FULL_PREDICTIONS",
+    "prediction_coverage": 0.0,
+    "n_dataset_sequences": 5388,
+    "n_with_verified_prediction": 0,
+    "no_summary_or_demo_substitution": true,
+    "gpu_inference_executed": false
+  }
+}

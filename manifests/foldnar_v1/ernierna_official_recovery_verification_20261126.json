@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "recovery_branch": "ernierna-official-recovery-20261126",
+  "foldnar_base_commit": "906f554cd59454b09101cea447583836215be3e2",
+  "phases": {
+    "download_and_sha": {
+      "status": "SOURCE_PASS_WEIGHTS_BLOCKED_NETWORK",
+      "official_snapshot_gzip_test": "PASS",
+      "official_snapshot_sha256_test": "PASS",
+      "official_required_file_sha256_count": 7,
+      "official_required_file_sha256_pass_count": 7,
+      "weight_sha256_pass_count": 0,
+      "weight_required_count": 2,
+      "weight_bytes_downloaded": 0,
+      "no_third_party_mirror": true
+    },
+    "macos_official_download_retry": {
+      "status": "FAILED_NETWORK_ZERO_BYTES",
+      "attempted_utc": "2026-11-26T08:10:13Z",
+      "built_in_browser_available": false,
+      "curl_exit_code": 28,
+      "curl_connect_timeout_ms": [15011, 15011, 15010],
+      "gdown_zero_byte_attempts": 2,
+      "gdown_elapsed_seconds_before_manual_stop": [144.628, 144.631],
+      "local_checkpoint_files_created": 0,
+      "magic_checks_performed": 0,
+      "scp_transfers_performed": 0,
+      "end_to_end_sha256_verified": false,
+      "state_dict_static_check": "NOT_RUN_NO_CHECKPOINT_BYTES",
+      "detailed_errors_manifest": "manifests/foldnar_v1/ernierna_official_asset_provenance_20261126.json#macos_official_download_retry_20261126",
+      "demo_substitution": false
+    },
+    "environment_static_check": {
+      "status": "CHECK_COMPLETED_RUNTIME_BLOCKED",
+      "official_python_sources_ast_parsed": 16,
+      "official_python_sources_ast_failed": 0,
+      "checkpoint_load_or_tensor_execution": false,
+      "runtime_static_compatible": false,
+      "missing_modules": ["fairseq", "hydra", "omegaconf", "sacrebleu", "tensorboardX", "portalocker", "bitarray", "antlr4"],
+      "external_report": "/teams/HoulabData_1788502323/liucunyu/foldnar/ernierna_official_recovery_20261126/bprna_new_batch/runtime_static_check.json",
+      "external_report_sha256": "c104f433e40773bbfdc8a7762052798a5bf4939541d4346709574c69e79072a0"
+    },
+    "cpu_unit_tests": {
+      "status": "PASS",
+      "command": "CUDA_VISIBLE_DEVICES=\"\" /root/miniconda3/envs/lucaone_cu128/bin/python -m pytest -q tests/test_ernierna_bprna_new_batch.py",
+      "passed": 13,
+      "failed": 0,
+      "scope": "Synthetic fixtures only; no model import, checkpoint load or inference"
+    }
+  },
+  "batch_contract": {
+    "n_sequences": 5388,
+    "fasta_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/ernierna_official_recovery_20261126/bprna_new_batch/bprna_new.official_input.fasta",
+    "fasta_sha256": "0e85b09425dd2c7a867507d4200ed91d0ed94d40dfaae11fc081023c6c128780",
+    "contract_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/ernierna_official_recovery_20261126/bprna_new_batch/batch_contract.json",
+    "contract_sha256": "2da4b8a6b3ea181fa008bd6a4a8eb37f07d32568fbfe99eed855b25a03d7bc30",
+    "readiness_audit_path": "/teams/HoulabData_1788502323/liucunyu/foldnar/ernierna_official_recovery_20261126/bprna_new_batch/readiness_audit.json",
+    "readiness_audit_sha256": "a3a1f8ac7c275c8737576f5905c2dd62abbaecd9de5b1c2294afed06d729f829",
+    "eligible_to_launch": false,
+    "full_prediction_ready": false,
+    "n_with_prediction": 0,
+    "coverage": 0.0
+  },
+  "gpu_inference_executed": false,
+  "external_test_used_for_tuning": false,
+  "existing_crossover_and_margin_processes_left_running": true
+}
