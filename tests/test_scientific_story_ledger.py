@@ -39,13 +39,16 @@ def test_structrfm_official_raw_scope_and_arithmetic():
     assert micro == pytest.approx(0.5437893868896873)
 
 
-def test_raw_baseline_absolute_gap_arithmetic():
-    structrfm = 0.5437893868896873
-    assert 0.7370074184282851 - structrfm == pytest.approx(0.19321803153859785)
-    assert 0.6967639314022964 - structrfm == pytest.approx(0.15297454451260917)
+def test_official_reference_absolute_gap_arithmetic():
+    xens2 = 0.48901660903024696
+    assert 0.7745179151021447 - xens2 == pytest.approx(0.2855013060718978)
+    assert 0.629675588219163 - xens2 == pytest.approx(0.14065897918891607)
+    assert 0.6339521964768657 - xens2 == pytest.approx(0.14493558744661877)
     text = ledger.DOC.read_text()
     assert "这不是相对百分比，也不是我们的候选提升" in text
-    assert "BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入" in text
+    assert "official release 与项目 replay 是不同 prediction identity" in text
+    assert "0.19321803153859785" not in text
+    assert "0.15297454451260917" not in text
 
 
 def test_bpfold_protocol_and_official_panel_provenance():

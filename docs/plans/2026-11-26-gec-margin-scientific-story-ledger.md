@@ -123,16 +123,17 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：标签范围为 `PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED`，`raw_not_clean=true`；协议审计进一步证明旧标签 `DERIVED_FROM_BPFOLD_PREDICTIONS`，因此该分数只保留为 circular-audit-only，不再具备独立排名或 SOTA 资格。它是官方 checkpoint 对旧派生标签的历史审计，不是 FoldNar/GEC/margin 候选结果，不授权 clean、OOD、外部候选性能或 SOTA 宣称。
 - **Next**：只允许与同一 raw 5,388 标签、同一 strict micro-F1 口径的 baseline 做绝对差距描述；候选正向性能仍须等待其自身合格实验。
 
-## 10. BPfold / CONTRAfold 旧派生标签差距：仅历史循环审计，禁止独立排名
+## 10. Official-reference 5,388：xens2 参照下的新差距
 
-- **Claim（绝对 micro-F1 差距）**：在项目 raw bpRNA-new 5,388 条、相同 strict micro-F1 口径下，BPfold 六 checkpoint 集成与 CONTRAfold 确定性单模型分别高于 structRFM 官方单模型 **0.19321803153859785** 和 **0.15297454451260917**；这不是相对百分比，也不是我们的候选提升。
-- **Phenomenon**：raw baseline 排名同时混有不同模型形式与未解决训练暴露；只报一个较高分数会误导读成集成/单模型等同或 clean SOTA。
-- **Intervention**：固定项目 `bprna_new.jsonl`（SHA256 `271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9`）、zero-based inclusive exact pairs、5,388/5,388 coverage，直接计算 comparator−structRFM 的 pooled strict micro-F1 绝对差。
-- **Expected observation**：三者身份、模型形式、coverage 与 raw 标签口径一致可比时才允许相减；BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入。
-- **Actual**：BPfold `six_checkpoint_ensemble` micro-F1=**0.7370074184282851**，绝对差=**0.7370074184282851−0.5437893868896873=0.19321803153859785**；CONTRAfold `deterministic_single_predictor` micro-F1=**0.6967639314022964**，绝对差=**0.6967639314022964−0.5437893868896873=0.15297454451260917**。数值来自 FoldNAR HEAD `fd497e9819e39a29887ec26698a46c91284d230b` 的冻结 registry，structRFM 执行提交仍为 `b53a4f8245776eda43f1bb2ee651a654df68425b`。
-- **Artifact**：`/home/rna_jev_foldnar_integration/manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json` 的 `strongest_project_raw` 与 `strongest_project_raw_single_predictor`；structRFM 来源仍为 `F/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json`。
-- **Limitation**：三项均使用 `DERIVED_FROM_BPFOLD_PREDICTIONS` 旧标签，所有历史数值与差值仅为 circular-audit-only，不具备独立 SOTA/排名资格；CONTRAfold 的 TR1c-clean 结果同样属于派生标签面板。两个旧差距不是 FoldNar/GEC/margin 候选正向性能，不得与 official-reference 结果混排或用于选模。
-- **Next**：保留该差距作为 raw 基线差距事实；若未来评估候选，必须独立取得同协议候选预测并重新计算，不能从 baseline 差值反推候选得分。
+- **Claim（同官方参考的绝对 micro-F1 差距）**：在 SHA256=`4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4` 的 official-reference 5,388 面板、相同 strict zero-based inclusive exact-pair 口径下，xens2 micro-F1=**0.48901660903024696**；BPfold 项目 replay=**0.7745179151021447**，Δ=**0.2855013060718978**；CONTRAfold=**0.629675588219163**，Δ=**0.14065897918891607**。这不是相对百分比，也不是我们的候选提升。
+- **Phenomenon**：旧 structRFM 差距混用了派生标签与不同参考身份，不能迁移到本面板。BPfold 项目六 checkpoint replay 与 BPfold 官方 v0.2 release 是不同预测资产，必须与 xens2 在同一官方参考、相同 5,388 ID 上重新计分。
+- **Intervention**：固定官方参考面板、全覆盖预测与 pooled TP/FP/F1，直接计算各系统−xens2 的 micro-F1 绝对差；官方 release 独立使用其 author-release prediction identity，不用项目 replay 替代。所有结果只由冻结预测 CPU 复算。
+- **Expected observation**：三者均覆盖 5,388/5,388；registry 与 system metrics 逐字段一致，差距可由冻结 micro 值独立相减。部分覆盖、blocked/summary-only 与 0.9617 循环值不得进入描述排名。
+- **Actual**：xens2 为 `three_checkpoint_ensemble`，micro=**0.48901660903024696**。BPfold replay 为 `six_checkpoint_ensemble`，micro=**0.7745179151021447**，故 **0.7745179151021447−0.48901660903024696=0.2855013060718978**。CONTRAfold 为 `deterministic_single_predictor`，micro=**0.629675588219163**，故差值 **0.14065897918891607**。BPfold official release 独立 micro=**0.6339521964768657**，相对 xens2 Δ=**0.14493558744661877**；其 SHA256=`bc41c0bc...`，不同于 replay SHA256=`9832e97b...`，**official release 与项目 replay 是不同 prediction identity**。
+- **Artifact / links**：[official-reference registry](/home/rna_jev_bpfold_protocol/manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json) 的 `xens2_reference`、`strongest_overall`、`strongest_single_predictor` 与 `rows`；[system metrics](/home/rna_jev_bpfold_protocol/source_data/bprna_official_reference_5388/system_metrics.json) 与其逐字段一致；[独立验证](/home/rna_jev_bpfold_protocol/source_data/bprna_official_reference_5388/independent_verification.json) 为 `PASS_INDEPENDENT_SECOND_IMPLEMENTATION`。
+- **Limitation**：这些是 `DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION` 的同面板描述差值，不是 clean-OOD、pretraining-unseen 或无限定 SOTA，不证明集成普遍优于单模型，也不是 FoldNar/GEC/margin 候选正向性能。模型形式与预训练暴露必须同时报告，外部 Test 不得用于 checkpoint、阈值、臂或模型选择。
+- **Next**：废弃旧 structRFM raw 差距的当前比较用途；后续只可复用本官方面板及同一协议重算。0.9617 永远不得进入本面板或排行榜，official release 与 replay 不得合并成同一系统身份。
+
 ## 11. LinearPartition 19,000 nt holdout：只有 baseline 计算回答，GEC unsupported
 
 - **Claim（单条 holdout 描述）**：官方 LinearPartition-C 已在 `7AM2_1` 完整 19,000 nt holdout 上完成一次 serial-CPU `APPROXIMATE_SPARSE` 运行，提供真实 coverage、资源与 candidate/MEA recall 边界；**长序列只有 baseline 回答，GEC unsupported**。
@@ -223,7 +224,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | NLL 仅恢复结构参照 | 收敛元数据缺陷 | raw ledger/checkpoint 双实现复核 | 唯一资格缺陷解除且科学门不动 | `qualification_summary.json` | 不是科学 PASS 或 margin 参照 checkpoint |
 | margin 待检验 | 98.31% FN 定位 | seed0 margin 四臂至各自收敛 | 固定 MEA 下通过全部科学与对照门 | authorization/startup/scheduler；结果尚缺 | 当前无收敛结构结果，不得阳性宣称 |
 | structRFM 旧派生标签审计 | 历史预测无法绑定官方权重 | 官方 v0.0.8 全量新推理+独立评分 | 5,388 条身份/coverage/raw 指标完整 | `structrfm_official_bprna_new_metrics_20261126.json` | 标签来自 BPfold 预测；仅 circular-audit-only；不是独立 SOTA |
-| BPfold/CONTRAfold 旧派生标签差值 | 旧标签实为 release 预测投影 | 历史 raw 算术保留但撤销排名资格 | 只能 circular-audit-only | `bprna_new_recovered_prediction_registry.json` | 禁止独立排名/SOTA/选模 |
+| Official-reference 下 BPfold/CONTRAfold 相对 xens2 的差值 | 旧 raw 标签循环且预测身份不同 | 同 5,388 官方参考 strict micro-F1 相减 | 身份/coverage 一致且差值可复算 | `bprna_new_official_reference_5388_prediction_registry.json` | 描述性协议审计；不是候选提升、clean-OOD 或选模 |
 | BPfold 官方参考 5,388 面板 | 项目旧标签与官方参考不同 | 官方参考重建+第二实现复算 | 同面板/同协议/全覆盖描述比较 | `bprna_new_official_reference_5388_prediction_registry.json` | 描述性协议审计；0.9617 禁排名；不选模 |
 | LinearPartition 19,000 nt 仅 baseline 可计算 | 短序列不能外推全长 | 官方 CPU 全长运行+raw 独立复算 | 不截断；coverage/recall/资源完整 | `7AM2_1/run_report.json`、`metrics.json` | 单条 holdout 描述；GEC unsupported；不用于选型 |
 | 标签软复核与零删除 | 来源/配对质量不能混为实验真值 | 148,285 条 raw 独立重算与守恒 | 软复核不删除，硬冲突另行授权 | `label_quality_v1/summary.json` | DATABASE/COMPARATIVE_INFERRED 非实验真值；无 flag 非 clean |
@@ -257,4 +258,4 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证及 xens2/BPfold/CONTRAfold 新差距算术、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。

@@ -231,8 +231,13 @@ def verify_narrative_guards() -> list[str]:
         "真实 deck 为 14 张、记录至第 33 页",
         "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED",
         "不是我们的候选正向性能，也不是 clean SOTA",
-        "0.19321803153859785",
-        "0.15297454451260917",
+        "0.48901660903024696",
+        "0.7745179151021447",
+        "0.2855013060718978",
+        "0.629675588219163",
+        "0.14065897918891607",
+        "0.6339521964768657",
+        "official release 与项目 replay 是不同 prediction identity",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
@@ -429,16 +434,47 @@ def verify_numbers() -> list[str]:
     check("BPfold model form", pointer(data["raw_baselines"], "strongest_project_raw/model_form"), "six_checkpoint_ensemble")
     check("BPfold coverage", pointer(data["raw_baselines"], "strongest_project_raw/coverage"), 1.0)
     check("BPfold sequences", pointer(data["raw_baselines"], "strongest_project_raw/n_sequences"), 5388)
-    check("BPfold micro", pointer(data["raw_baselines"], "strongest_project_raw/micro_f1"), 0.7370074184282851, "0.7370074184282851")
+    check("BPfold micro", pointer(data["raw_baselines"], "strongest_project_raw/micro_f1"), 0.7370074184282851)
     check("CONTRAfold model form", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/model_form"), "deterministic_single_predictor")
     check("CONTRAfold coverage", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/coverage"), 1.0)
     check("CONTRAfold sequences", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/n_sequences"), 5388)
-    check("CONTRAfold micro", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1"), 0.6967639314022964, "0.6967639314022964")
-    structrfm_micro = pointer(data["structrfm"], "metrics/micro_f1")
-    bpfold_gap = pointer(data["raw_baselines"], "strongest_project_raw/micro_f1") - structrfm_micro
-    contrafold_gap = pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1") - structrfm_micro
-    check("BPfold minus structRFM", bpfold_gap, 0.19321803153859785, "0.19321803153859785")
-    check("CONTRAfold minus structRFM", contrafold_gap, 0.15297454451260917, "0.15297454451260917")
+    check("CONTRAfold micro", pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1"), 0.6967639314022964)
+    check("official registry schema", pointer(data["official_registry"], "schema_version"), "bprna.official_reference_5388.prediction_registry.v1")
+    check("official metrics agree with registry", {k: v for k, v in data["official_metrics"].items() if k != "rows"}, {k: v for k, v in data["official_registry"].items() if k != "rows"})
+    check("official ranking scope", pointer(data["official_registry"], "strongest_overall/ranking_scope"), "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION")
+    check("official coverage accounting", pointer(data["official_registry"], "coverage_accounting"), {
+        "inventory_entries": 43, "recovered_20": 20, "additional_registered": 23,
+        "full_coverage_scored": 28, "partial_coverage_not_ranked": 1, "blocked_or_summary_only": 14,
+    })
+    xens2_micro = pointer(data["official_registry"], "xens2_reference/metrics/micro_f1")
+    check("official xens2 identity", pointer(data["official_registry"], "xens2_reference/prediction_id"), "xens2/bprna_new")
+    check("official xens2 model form", pointer(data["official_registry"], "xens2_reference/model_form"), "three_checkpoint_ensemble")
+    check("official xens2 coverage", pointer(data["official_registry"], "xens2_reference/coverage"), 1.0)
+    check("official xens2 micro", xens2_micro, 0.48901660903024696, "0.48901660903024696")
+    check("official BPfold replay identity", pointer(data["official_registry"], "strongest_overall/prediction_id"), "bpfold/bprna_new")
+    check("official BPfold replay model form", pointer(data["official_registry"], "strongest_overall/model_form"), "six_checkpoint_ensemble")
+    bpfold_micro = pointer(data["official_registry"], "strongest_overall/metrics/micro_f1")
+    check("official BPfold replay micro", bpfold_micro, 0.7745179151021447, "0.7745179151021447")
+    check("official BPfold replay delta", pointer(data["official_registry"], "strongest_overall/delta_vs_xens2/micro_f1"), 0.2855013060718978, "0.2855013060718978")
+    check("official BPfold replay arithmetic", bpfold_micro - xens2_micro, 0.2855013060718978)
+    check("official CONTRAfold identity", pointer(data["official_registry"], "strongest_single_predictor/prediction_id"), "contrafold/bprna_new")
+    check("official CONTRAfold model form", pointer(data["official_registry"], "strongest_single_predictor/model_form"), "deterministic_single_predictor")
+    contrafold_micro = pointer(data["official_registry"], "strongest_single_predictor/metrics/micro_f1")
+    check("official CONTRAfold micro", contrafold_micro, 0.629675588219163, "0.629675588219163")
+    check("official CONTRAfold delta", pointer(data["official_registry"], "strongest_single_predictor/delta_vs_xens2/micro_f1"), 0.14065897918891607, "0.14065897918891607")
+    check("official CONTRAfold arithmetic", contrafold_micro - xens2_micro, 0.14065897918891607)
+    official_rows = {row["prediction_id"]: row for row in data["official_registry"]["rows"]}
+    release = official_rows["bpfold_official_release/bprna_new_official_reference"]
+    replay = official_rows["bpfold/bprna_new"]
+    check("official release origin", release["prediction_origin"], "author_release")
+    check("official replay origin", replay["prediction_origin"], "project_replay")
+    check("official release SHA", release["sha256"], "bc41c0bc196e9508274625c44b794d29eca9878d698f88570c89841fb6b618ad")
+    check("official replay SHA", replay["sha256"], "9832e97bcb5e6879e57a317ef560dd1ca364b11a48575b3f89cd9c94c773255a")
+    check("official release and replay differ", release["sha256"] != replay["sha256"], True)
+    check("official release micro", pointer(release, "metrics/micro_f1"), 0.6339521964768657, "0.6339521964768657")
+    release_metrics = {row["prediction_id"]: row for row in data["official_metrics"]["rows"]}["bpfold_official_release/bprna_new_official_reference"]
+    check("official release delta", pointer(release_metrics, "delta_vs_xens2/micro_f1"), 0.14493558744661877)
+    check("official release arithmetic", pointer(release, "metrics/micro_f1") - xens2_micro, 0.14493558744661877)
 
     check("LinearPartition run status", pointer(data["linearpartition_run"], "status"), "PASS_FULL_LENGTH_HOLDOUT_EXECUTION_AND_OUTPUT__FLOPS_NOT_MEASURED")
     check("LinearPartition split", pointer(data["linearpartition_run"], "split"), "holdout")
