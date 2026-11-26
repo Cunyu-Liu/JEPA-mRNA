@@ -7,12 +7,12 @@
 
 ## 当前一句话
 
-已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
+已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；structRFM 官方 raw 结果只是外部基线；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
 
 ## 时间、提交与运行快照
 
 - 科学结果及 NLL 资格链整合到 `780044c`；capacity/SRD/stacking 的结果提交分别为 `c289384afcd801cb0509941c40e973f7c320f230`、`03f9afe430c445fffd5d0e386ba3c16970747ab8`、`dde6641db437d1d1c35ee876843d30d0a5cf6f68`。
-- GEC 四臂训练与独立复评为 `bd01b4a120a8ed3b7c77690f593a8caa03fb533d`、`342a714b24998ed0c739908613f21e50866d6b56`；残差冻结审计为 `0589b2f489aa456f7a885b6d5dfe625b5de1b76b`；frozen context crossover 为 `810441e7480ea06a717097c57a49130c820c9636`，对应 PPT 第 33 页记录提交 `03f7f4e14ef906359cbd9d1b519089b6e61116f4`。第 34 页的四臂 verdict 生成工具链见 `1782cd6`，仍须等待最终 hash-verified 评估。
+- GEC 四臂训练与独立复评为 `bd01b4a120a8ed3b7c77690f593a8caa03fb533d`、`342a714b24998ed0c739908613f21e50866d6b56`；残差冻结审计为 `0589b2f489aa456f7a885b6d5dfe625b5de1b76b`；frozen context crossover 为 `810441e7480ea06a717097c57a49130c820c9636`，对应 PPT 第 33 页记录提交 `03f7f4e14ef906359cbd9d1b519089b6e61116f4`。FoldNAR 整合 HEAD 为 `fd497e9819e39a29887ec26698a46c91284d230b`，真实 deck 为 14 张、记录至第 33 页。第 34 页的 round71 builder 引入提交为 `1782cd64a7c6253beefe77c93634a2652f6fab5e`，render/OCR 留痕提交为 `5a7ccbd418f520eb44f02f0fdf6fbdf9f6ff238e`，仍须等待最终 hash-verified 评估。
 - NLL 资格修复为 `c4bfbb8734af3535393ef424f4c1b0b39af7b081`、`e388b504d7888b8a355d33fe80150ebd650a0adc`、`ecc40d3a8ec545bf332199a935e6380b718d415b`。
 - margin 数值核心、独立合同复核、显存探针与正式调度分别为 `92f0bc2e6440bcbfc682d2f8ca3e502ec86a6b48`、`55be915f6e7eda26254d87ab133624fa99cd5b8c`、`cd61c57f48cc0fe543b869b3319e4bd8b7f820f5`、`a846d90519e575a79b7db76f63692afb755e8ac6`；`a846d90` 已核对与 GitHub 分支远端一致。
 - **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。**本次更新实时状态**：`scheduler_state.json` 为 `QUEUED_ARM_MEMORY`，`matched_control` 与 `ensemble_context` 两臂运行，`destroy_interval_shuffle` 与 `independent_context` 两臂等待资源，完成臂仍为 0，`scientific_conclusion=null`。这里区分初始快照与后续调度；排队、探针、启动、运行或等待资源的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
@@ -107,6 +107,17 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：两步 smoke、授权、排队或启动均不证明收敛，更不证明科学有效；98.31% 只说明干预动机。seed0 即使通过也只能提议后续多种子，不能单独建立稳健性、外部泛化或 SOTA。
 - **Next**：不干扰现有资源门控调度；等待四臂各自收敛和 best restore，独立检查身份/日志/artifact，再做固定 MEA 结构复评。通过或失败都追加真实结果，并由最终评估驱动第 34 页；此前摘要与标题保持“待检验”。
 
+## 9. structRFM 官方 raw：补齐外部基线，不是候选正向结果
+
+- **Claim（仅官方 raw 口径）**：官方 structRFM v0.0.8 单 checkpoint 已在项目 raw bpRNA-new 5,388 条上完成新推理与独立评分；该结果描述外部 baseline，**不是我们的候选正向性能，也不是 clean SOTA**。
+- **Phenomenon**：历史 structRFM 预测与缺失的历史权重字节无法回溯绑定，不能用旧 replay 代替官方 checkpoint 结果。
+- **Intervention**：固定官方 v0.0.8 checkpoint、官方 constrained DP 与项目 raw 标签，完成 5,388 条 GPU 推理；独立核对 prediction identity、coverage 与 exact-pair 指标，历史预测保持不变。
+- **Expected observation**：只有新官方 checkpoint 的完整预测、身份和 raw 指标全部通过，才可进入同口径 baseline 算术；不得借 raw 排名推断去污染泛化或 SOTA。
+- **Actual**：coverage=**5,388/5,388=1.0**，TP/FP/FN=**73,864/62,616/61,320**，micro/macro pair-F1=**0.5437893868896873/0.5338105702966888**。状态为 `PASS_INDEPENDENT_OFFICIAL_5388_IDENTITY_AND_METRICS`，执行提交 `b53a4f8245776eda43f1bb2ee651a654df68425b`，并由 FoldNAR HEAD `fd497e9819e39a29887ec26698a46c91284d230b` 整合。
+- **Artifact**：`F/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json`、`structrfm_official_provenance_20261126.json` 与 `full_delivery_verification_20261126.json`；原始预测为 `F/structrfm_official_v0.0.8/predictions/structrfm_official_v0.0.8_bprna_new_5388.jsonl`。
+- **Limitation**：标签范围为 `PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED`，`raw_not_clean=true`；未作精确/同源去污染，checkpoint 训练暴露未解决。它是官方外部单模型 baseline，不是 FoldNar/GEC/margin 候选结果，不授权 clean、OOD、外部候选性能或 SOTA 宣称。
+- **Next**：只允许与同一 raw 5,388 标签、同一 strict micro-F1 口径的 baseline 做绝对差距描述；候选正向性能仍须等待其自身合格实验。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -119,6 +130,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | 上下文有因果作用；真实 ensemble 非一致最优 | 不同训练臂无法分离输入作用 | 4 模型 × 4 输入 frozen crossover | 换输入可改变预测，但 native ensemble 应胜过替代输入才支持一致有益 | `gec_frozen_context_crossover_v1/full/summary.json` | 支持前一命题，不支持后一命题；seed0/model-dev |
 | NLL 仅恢复结构参照 | 收敛元数据缺陷 | raw ledger/checkpoint 双实现复核 | 唯一资格缺陷解除且科学门不动 | `qualification_summary.json` | 不是科学 PASS 或 margin 参照 checkpoint |
 | margin 待检验 | 98.31% FN 定位 | seed0 margin 四臂至各自收敛 | 固定 MEA 下通过全部科学与对照门 | authorization/startup/scheduler；结果尚缺 | 当前无收敛结构结果，不得阳性宣称 |
+| structRFM 官方 raw baseline | 历史预测无法绑定官方权重 | 官方 v0.0.8 全量新推理+独立评分 | 5,388 条身份/coverage/raw 指标完整 | `structrfm_official_bprna_new_metrics_20261126.json` | 外部 baseline；raw 非 clean；不是候选正向性能或 SOTA |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -135,7 +147,8 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **残差措辞**：98.31% 只能表述为“冻结 ensemble FN 中非正 score-margin 的分类占比”；不得写成准确率、提升幅度、因果比例或 margin 有效性。
 - [ ] **NLL 资格措辞**：`QUALIFIED_STRUCTURE_REFERENCE` 只能支持“可作结构参照”；不得省略为“NLL/GEC 科学通过”，且原 seed0 FAIL 必须同场保留。
 - [ ] **负面结果完整性**：容量、SRD、stacking 与 GEC 的停止/失败不得被后续候选叙事抹去；任何新阳性 claim 必须同时说明其不同干预与直接证据。
+- [ ] **官方 raw baseline 措辞**：structRFM 结果必须同时保留官方外部 baseline、5,388 条 raw 非去污染与候选隔离边界；不得写成我们的正向性能、clean/OOD 或 SOTA。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。

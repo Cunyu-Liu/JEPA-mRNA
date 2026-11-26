@@ -13,6 +13,7 @@ DOC = REPO / "docs/plans/2026-11-26-gec-margin-scientific-story-ledger.md"
 F = Path("/teams/HoulabData_1788502323/liucunyu/foldnar")
 A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts")
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
+STRUCTRFM = F / "structrfm_official_v0.0.8"
 
 SOURCES = {
     "capacity": A / "representation_head_mechanism_4arm_v1/capacity_freeze_audit.json",
@@ -31,6 +32,9 @@ SOURCES = {
     "margin_authorization": F / "structured_margin_full_v1/full_authorization_v1.json",
     "margin_scheduler": F / "structured_margin_full_v1/generation_01/scheduler_state.json",
     "margin_config": MARGIN_REPO / "configs/gec_structured_margin_convergence_v1.json",
+    "structrfm": STRUCTRFM / "reports/structrfm_official_bprna_new_metrics_20261126.json",
+    "structrfm_provenance": STRUCTRFM / "reports/structrfm_official_provenance_20261126.json",
+    "structrfm_delivery": STRUCTRFM / "reports/full_delivery_verification_20261126.json",
 }
 
 
@@ -72,6 +76,11 @@ def verify_narrative_guards() -> list[str]:
         "03f7f4e14ef906359cbd9d1b519089b6e61116f4",
         "PPT 第 33 页",
         "PPT 第 34 页",
+        "fd497e9819e39a29887ec26698a46c91284d230b",
+        "5a7ccbd418f520eb44f02f0fdf6fbdf9f6ff238e",
+        "真实 deck 为 14 张、记录至第 33 页",
+        "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED",
+        "不是我们的候选正向性能，也不是 clean SOTA",
         "margin_superior_to_nll_claim_allowed=false",
         "完成臂 0",
         "scientific_conclusion=null",
@@ -172,6 +181,26 @@ def verify_numbers() -> list[str]:
     for required in ["final hash-verified four-arm evaluation", "34 · FOLDNAR PHASE 1 / STRUCTURED MARGIN FOUR-ARM VERDICT", "added_slide_number"]:
         if required not in page34:
             errors.append(f"PPT34 builder lacks final-evidence guard: {required}")
+
+    check("structRFM status", pointer(data["structrfm"], "status"), "PASS_INDEPENDENT_OFFICIAL_5388_IDENTITY_AND_METRICS")
+    check("structRFM full ready", pointer(data["structrfm"], "full_ready"), True)
+    check("structRFM sequences", pointer(data["structrfm"], "dataset/n_sequences"), 5388, "5,388")
+    check("structRFM coverage", pointer(data["structrfm"], "metrics/coverage"), 1.0)
+    check("structRFM TP", pointer(data["structrfm"], "metrics/tp"), 73864, "73,864")
+    check("structRFM FP", pointer(data["structrfm"], "metrics/fp"), 62616, "62,616")
+    check("structRFM FN", pointer(data["structrfm"], "metrics/fn"), 61320, "61,320")
+    check("structRFM micro", pointer(data["structrfm"], "metrics/micro_f1"), 0.5437893868896873, "0.5437893868896873")
+    check("structRFM macro", pointer(data["structrfm"], "metrics/macro_f1"), 0.5338105702966888, "0.5338105702966888")
+    check("structRFM raw scope", pointer(data["structrfm"], "label_scope"), "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED")
+    check("structRFM raw not clean", pointer(data["structrfm"], "raw_not_clean"), True)
+    check("structRFM historical unchanged", pointer(data["structrfm"], "historical_prediction/overwritten"), False)
+    check("structRFM single model", pointer(data["structrfm_provenance"], "model_identity/model_form"), "single_checkpoint_single_model")
+    check("structRFM not ensemble", pointer(data["structrfm_provenance"], "model_identity/ensemble"), False)
+    check("structRFM exposure unresolved", pointer(data["structrfm_provenance"], "training_exposure/raw_not_clean"), True)
+    check("structRFM delivery status", pointer(data["structrfm_delivery"], "status"), "PASS_FULL_5388_GPU_INFERENCE_AND_INDEPENDENT_DELIVERY")
+    check("structRFM delivery raw", pointer(data["structrfm_delivery"], "raw_not_clean"), True)
+    check("structRFM delivery micro", pointer(data["structrfm_delivery"], "micro_f1"), 0.5437893868896873)
+    check("structRFM delivery macro", pointer(data["structrfm_delivery"], "macro_f1"), 0.5338105702966888)
 
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")
