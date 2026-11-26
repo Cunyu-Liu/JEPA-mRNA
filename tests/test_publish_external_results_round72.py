@@ -124,7 +124,7 @@ def test_in_progress_missing_exposure_hash_error_and_mid_pipeline_failure_leave_
             prediction.write_text(prediction.read_text() + "changed\n")
         options = {}
         if mode == "MID_PIPELINE":
-            options["struct_results"] = tmp_path / "missing_struct_results.json"
+            options["panel_registry"] = tmp_path / "missing_official_reference_registry.json"
         with pytest.raises(M.PublicationError):
             publish_fixture(fixture, **options)
         case = fixture["case"]

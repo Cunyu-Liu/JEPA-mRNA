@@ -95,6 +95,10 @@ def test_synthetic_margin_exposure_to_pages35_36_end_to_end_and_real_deck_untouc
     assert independent["exposure_embedded_matches"] is True
     assert built["report"]["scope"] == {
         "raw_not_clean_not_sota": True, "external_raw_n": 5388,
+        "official_reference_descriptive_only": True,
+        "official_reference_full_coverage_systems": 28,
+        "old_derived_label_ranking_used": False,
+        "bpfold_replay_author_release_conflated": False,
         "longseq_execution_column": "APPROXIMATE_SPARSE",
         "train_only_not_unbiased_evaluation": True,
         "holdout_descriptive_not_model_selection": True,
@@ -105,16 +109,21 @@ def test_synthetic_margin_exposure_to_pages35_36_end_to_end_and_real_deck_untouc
         for index in range(1, 16):
             part = f"ppt/slides/slide{index}.xml"
             assert before.read(part) == after.read(part)
-    external = M.validate_external_raw(M.STRUCT_RESULTS, M.STRUCT_REGISTRY,
-                                       M.RAW_REGISTRY, M.BASELINE_REGISTRY)
+    external = M.validate_external_raw(M.PANEL_REGISTRY, M.PANEL_SYSTEM_METRICS,
+                                       M.PANEL_INDEPENDENT_VERIFICATION, M.PANEL_LABELS)
     text35 = M.slide_text(prs.slides[15])
     official = external["official"]["metrics"]
     for value in (official["micro_f1"], official["macro_f1"]):
-        assert M.fmt(value) in text35
-    for metrics in [row["metrics"] for row in external["comparators"]] + [external["xens2"]]:
+        assert M.fmt10(value) in text35
+    for metrics in [row["metrics"] for row in external["comparators"]] + [external["xens2"]["metrics"]]:
+        assert M.fmt10(metrics["micro_f1"]) in text35 and M.fmt10(metrics["macro_f1"]) in text35
         assert M.signed(official["micro_f1"] - metrics["micro_f1"]) in text35
         assert M.signed(official["macro_f1"] - metrics["macro_f1"]) in text35
-    assert "RAW ≠ CLEAN ≠ SOTA" in text35 and "不宣称SOTA" in text35
+    assert "RAW-EXPOSURE DESCRIPTIVE ≠ CLEAN SOTA" in text35
+    assert "28 full-coverage systems" in text35 and "不宣称clean SOTA" in text35
+    assert "BPfold项目replay ≠ 官方release" in text35
+    assert built["readiness"]["official_reference_panel"]["full_coverage_systems"] == 28
+    assert built["readiness"]["official_reference_panel"]["sha256"].startswith("4924e351")
     longseq = M.validate_longseq(M.LONGSEQ_ROOT)
     text36 = M.slide_text(prs.slides[16])
     for chain in longseq["chains"]:
@@ -204,18 +213,26 @@ def test_exposure_artifact_hash_tamper_cannot_publish_or_change_deck(tmp_path, t
     assert len(Presentation(deck).slides) == 15
 
 
-def test_tampered_frozen_raw_metric_cannot_modify_margin_deck(tmp_path):
-    margin = synthetic_margin(tmp_path / "tamper")
+def test_old_lineage_missing_panel_and_metric_tamper_cannot_modify_margin_deck(tmp_path):
+    margin = synthetic_margin(tmp_path / "panel_gates")
     deck = margin["deck"]
-    raw = json.loads(M.RAW_REGISTRY.read_text())
-    bp = next(row for row in raw["rows"] if row["asset_id"] == "bpfold_project_six_checkpoint_raw")
-    bp["metrics"]["micro_f1"] += 0.01
-    altered = tmp_path / "altered_raw_registry.json"
-    altered.write_text(json.dumps(raw))
-    before = hashlib.sha256(deck.read_bytes()).hexdigest()
-    with pytest.raises(GATE_ERRORS, match="registry summary differs"):
-        M.build(deck, margin_verification(margin), margin["independent_verification"],
-                raw_registry=altered, backup=tmp_path / "tamper-backup.pptx",
-                verification=tmp_path / "tamper.json")
-    assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
-    assert len(Presentation(deck).slides) == 15
+    for mode in ("OLD_LINEAGE", "MISSING_PANEL", "METRIC_TAMPER"):
+        registry = json.loads(M.PANEL_REGISTRY.read_text())
+        if mode == "OLD_LINEAGE":
+            registry["label_panel"]["dataset_id"] = "DERIVED_FROM_BPFOLD_PREDICTIONS"
+        elif mode == "METRIC_TAMPER":
+            replay = next(row for row in registry["rows"] if row["prediction_id"] == "bpfold/bprna_new")
+            replay["metrics"]["micro_f1"] += 0.01
+        altered = tmp_path / f"{mode}.json"
+        altered.write_text(json.dumps(registry))
+        labels = tmp_path / "missing_panel.jsonl.gz" if mode == "MISSING_PANEL" else M.PANEL_LABELS
+        before = hashlib.sha256(deck.read_bytes()).hexdigest()
+        with pytest.raises(GATE_ERRORS):
+            M.build(deck, margin_verification(margin), margin["independent_verification"],
+                    panel_registry=altered, panel_labels=labels,
+                    backup=tmp_path / f"{mode}-backup.pptx", verification=tmp_path / f"{mode}.json.report")
+        with pytest.raises(GATE_ERRORS):
+            R.check_readiness(deck, margin_verification(margin), margin["independent_verification"],
+                              panel_registry=altered, panel_labels=labels)
+        assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
+        assert len(Presentation(deck).slides) == 15

@@ -1,0 +1,77 @@
+{
+  "schema_version": "bprna.official_reference_5388.independent_verification.v1",
+  "audit_date": "2026-11-27",
+  "status": "PASS_INDEPENDENT_SECOND_IMPLEMENTATION",
+  "panel_records_verified": 5388,
+  "full_coverage_systems_verified": 28,
+  "paired_ci_verified": 28,
+  "bootstrap_replicates": 10000,
+  "checks": [
+    "official archive to 5388 panel IDs/sequences/pairs/per-record SHA",
+    "every available prediction SHA, sequence, pair set, coverage and micro/macro P/R/F1",
+    "paired sequence bootstrap macro-F1 CI versus xens2",
+    "strongest single and ensemble descriptive ranking",
+    "derived-label lineage and historical raw metric retention",
+    "0.9616708875167174 absent from official-reference results and ranking"
+  ],
+  "new_inference": false,
+  "model_selection": false,
+  "gpu_task_launched": false,
+  "deliverables": [
+    {
+      "path": "/home/rna_jev_bpfold_protocol/tools/build_bprna_official_reference_panel_20261127.py",
+      "bytes": 29685,
+      "sha256": "ecd944d32f67b750e6d6965c0e7f1072ea874ad7d2a339905440ac16b3eabe77"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/tools/verify_bprna_official_reference_panel_20261127.py",
+      "bytes": 12286,
+      "sha256": "11248dc865c013a4d373ff13ec3b82fc9bebf0b63fc3ea8883da0e224fd108a2"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/tests/test_bprna_official_reference_panel_20261127.py",
+      "bytes": 2694,
+      "sha256": "fa604b8ba05a607a10408610371c11df1bf2d2bccf972222efff2005184cfe6f"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/docs/plans/2026-11-27-bprna-official-reference-5388-panel.md",
+      "bytes": 8294,
+      "sha256": "8c1936634971cb6d13d54ebab5a5ada4bcca98f5caad6dea278024631800a62d"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/source_data/bprna_official_reference_5388/official_reference_5388.jsonl.gz",
+      "bytes": 1314368,
+      "sha256": "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/source_data/bprna_official_reference_5388/system_metrics.json",
+      "bytes": 78122,
+      "sha256": "641048b3df85c16801c844a77ce18544cfdc0ef6806562400a25961dc0fc6814"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json",
+      "bytes": 57314,
+      "sha256": "8a033e5fefb7e90cc750caeac63f3dc23ef1b099a78fc0291f65c1b87599124c"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+      "bytes": 69777,
+      "sha256": "e5c955114cb351a9ad7ddd82d06396b53f51dc310089a8fe6fa1227357d90a73"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/manifests/foldnar_v1/prediction_registry.json",
+      "bytes": 463727,
+      "sha256": "3193f8eac3c025ca176d8b69b06210c93061b82e223ebf0453add5d9a94f2fac"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/manifests/foldnar_v1/data_registry.json",
+      "bytes": 102069,
+      "sha256": "fa6af42420bf21484bc43b2ceaf46c6c2813de2e2d515f857b9f4dc3ef34a14c"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/manifests/foldnar_v1/baseline_registry.json",
+      "bytes": 226469,
+      "sha256": "4016cc4b54d42b7dd59463fa90c9d201fa3db9094dff6fc05e01f6854e79a15c"
+    }
+  ]
+}

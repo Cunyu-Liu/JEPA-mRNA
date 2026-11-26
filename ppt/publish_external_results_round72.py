@@ -26,10 +26,10 @@ WORK_DIR = ROOT / ".round72_work/final_publication"
 EVALUATION_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_independent_eval_v1/generation_01")
 CROSS_SOURCE_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/cross_source_leakage_v1")
 MODEL_DEV_REGISTRY = ROOT / "manifests/foldnar_v2/model_dev_registry.json"
-STRUCT_RESULTS = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json")
-STRUCT_REGISTRY = ROOT / "manifests/foldnar_v2/structrfm_official_bprna_new_results_20261126.json"
-RAW_REGISTRY = ROOT / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json"
-BASELINE_REGISTRY = ROOT / "manifests/foldnar_v1/baseline_registry.json"
+PANEL_REGISTRY = ROOT / "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json"
+PANEL_SYSTEM_METRICS = ROOT / "source_data/bprna_official_reference_5388/system_metrics.json"
+PANEL_INDEPENDENT_VERIFICATION = ROOT / "source_data/bprna_official_reference_5388/independent_verification.json"
+PANEL_LABELS = ROOT / "source_data/bprna_official_reference_5388/official_reference_5388.jsonl.gz"
 LONGSEQ_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/longseq_linearpartition_contract_20261126")
 FINAL_STATUSES = {"PASS_STRUCTURED_MARGIN_INDEPENDENT_EVAL", "FAIL_STRUCTURED_MARGIN_INDEPENDENT_EVAL"}
 FINAL_FILES = ("independent_evaluation.json", "gate_summary.json", "input_manifest.json",
@@ -165,8 +165,10 @@ def run_publication(source_deck: Path = SOURCE_DECK, delivery_deck: Path = DELIV
                     work_dir: Path = WORK_DIR, evaluation_root: Path = EVALUATION_ROOT,
                     cross_source_root: Path = CROSS_SOURCE_ROOT,
                     model_dev_registry: Path = MODEL_DEV_REGISTRY,
-                    struct_results: Path = STRUCT_RESULTS, struct_registry: Path = STRUCT_REGISTRY,
-                    raw_registry: Path = RAW_REGISTRY, baseline_registry: Path = BASELINE_REGISTRY,
+                    panel_registry: Path = PANEL_REGISTRY,
+                    system_metrics: Path = PANEL_SYSTEM_METRICS,
+                    panel_independent_verification: Path = PANEL_INDEPENDENT_VERIFICATION,
+                    panel_labels: Path = PANEL_LABELS,
                     longseq_root: Path = LONGSEQ_ROOT, wait: bool = False,
                     timeout_seconds: float = 0, poll_interval: float = 30,
                     backup_deck: Path | None = None) -> dict:
@@ -200,10 +202,10 @@ def run_publication(source_deck: Path = SOURCE_DECK, delivery_deck: Path = DELIV
         round72_report = transaction / "round72_build_verification.json"
         round72_independent = transaction / "round72_independent_build_verification.json"
         python = sys.executable
-        external_args = ["--struct-results", str(struct_results.resolve()),
-                         "--struct-registry", str(struct_registry.resolve()),
-                         "--raw-registry", str(raw_registry.resolve()),
-                         "--baseline-registry", str(baseline_registry.resolve()),
+        external_args = ["--panel-registry", str(panel_registry.resolve()),
+                         "--system-metrics", str(system_metrics.resolve()),
+                         "--panel-independent-verification", str(panel_independent_verification.resolve()),
+                         "--panel-labels", str(panel_labels.resolve()),
                          "--longseq-root", str(longseq_root.resolve())]
         commands = [
             ("round71_readiness", [python, str(OUT / "check_round71_readiness.py"),
@@ -308,10 +310,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--evaluation-root", type=Path, default=EVALUATION_ROOT)
     parser.add_argument("--cross-source-root", type=Path, default=CROSS_SOURCE_ROOT)
     parser.add_argument("--model-dev-registry", type=Path, default=MODEL_DEV_REGISTRY)
-    parser.add_argument("--struct-results", type=Path, default=STRUCT_RESULTS)
-    parser.add_argument("--struct-registry", type=Path, default=STRUCT_REGISTRY)
-    parser.add_argument("--raw-registry", type=Path, default=RAW_REGISTRY)
-    parser.add_argument("--baseline-registry", type=Path, default=BASELINE_REGISTRY)
+    parser.add_argument("--panel-registry", type=Path, default=PANEL_REGISTRY)
+    parser.add_argument("--system-metrics", type=Path, default=PANEL_SYSTEM_METRICS)
+    parser.add_argument("--panel-independent-verification", type=Path,
+                        default=PANEL_INDEPENDENT_VERIFICATION)
+    parser.add_argument("--panel-labels", type=Path, default=PANEL_LABELS)
     parser.add_argument("--longseq-root", type=Path, default=LONGSEQ_ROOT)
     parser.add_argument("--wait", action="store_true")
     parser.add_argument("--timeout-seconds", type=float, default=0)
@@ -320,8 +323,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         report = run_publication(args.source_deck, args.delivery_deck, args.work_dir,
                                  args.evaluation_root, args.cross_source_root, args.model_dev_registry,
-                                 args.struct_results, args.struct_registry, args.raw_registry,
-                                 args.baseline_registry, args.longseq_root, args.wait,
+                                 args.panel_registry, args.system_metrics,
+                                 args.panel_independent_verification, args.panel_labels,
+                                 args.longseq_root, args.wait,
                                  args.timeout_seconds, args.poll_interval, args.backup_deck)
     except (PublicationError, OSError, KeyError, TypeError, ValueError) as error:
         parser.exit(1, f"round72 publication refused without partial delivery: {error}\n")

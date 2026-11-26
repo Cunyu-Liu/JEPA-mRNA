@@ -100,8 +100,9 @@ def main(argv: list[str] | None = None) -> int:
     pages = sorted(work.glob("page-*.png"))
     ocr_results = {}
     required_ocr = {
-        35: ("FOLDNAR", "structRFM", "0.543789", "0.533811", "BPfold", "CONTRAfold", "xens2",
-             "RAW", "CLEAN", "SOTA"),
+        35: ("FOLDNAR", "structRFM", "0.4875747710", "0.4850647195", "0.7745179151",
+             "0.6296755882", "0.4890166090", "BPfold", "CONTRAfold", "xens2",
+             "RAW-EXPOSURE", "CLEAN", "SOTA", "4924e351"),
         36: ("FOLDNAR", "LinearPartition", "APPROXIMATE_SPARSE", "9MR4_5", "9Q7Q_5", "7AM2_1",
              "53/73", "8/73", "362.79", "8,481,693,696", "EXACT_GLOBAL_DP"),
     }
@@ -129,8 +130,10 @@ def main(argv: list[str] | None = None) -> int:
             if norm(value) not in haystack:
                 missing.append({"slide": index, "text": value[:180]})
     required_pdf = {
-        35: ("PROJECT_RAW_GT_ONLY", "0.543789", "0.533811", "0.737007", "0.696764", "0.553142",
-             "RAW ≠ CLEAN ≠ SOTA", "不宣称SOTA", "绝对差距"),
+        35: ("OFFICIAL_REFERENCE_5388", "0.4875747710", "0.4850647195", "0.7745179151",
+             "0.6296755882", "0.4890166090", "RAW-EXPOSURE DESCRIPTIVE ≠ CLEAN SOTA",
+             "28 full-coverage systems", "BPfold项目replay ≠ 官方release", "4924e351",
+             "DERIVED_FROM_BPFOLD_PREDICTIONS"),
         36: ("APPROXIMATE_SPARSE", "EXACT_GLOBAL_DP", "53/73 · 72.60%", "8/73 · 10.96%",
              "362.79 s", "8,481,693,696 B RSS", "FLOPs NOT_MEASURED", "NOT_ESTABLISHED",
              "不用于模型选择", "span=j−i"),
