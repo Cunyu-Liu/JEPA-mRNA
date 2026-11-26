@@ -1,0 +1,151 @@
+{
+  "schema_version": "rinalmo.pretrain_exposure.independent_verification.v1",
+  "created_utc": "2026-11-26T15:02:40.726936+00:00",
+  "status": "PASS",
+  "method": "independent JSONL/FASTA parsers; source and query SHA256; per-row source IDs/counts/states; summary and legacy report reconciliation",
+  "n_registry_rows": 157227,
+  "n_populations": 18,
+  "n_unique_query_sequences": 107960,
+  "source_scan": {
+    "rnacentral_22_active": {
+      "matched_unique_queries": 77534
+    },
+    "rfam_14_9": {
+      "matched_unique_queries": 75599
+    },
+    "ensembl_109_and_bacteria_56": {
+      "matched_unique_queries": 12550
+    }
+  },
+  "population_exact_counts": {
+    "tr1c_raw": {
+      "EXACT": 37870,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 4694,
+      "UNCHECKED": 0
+    },
+    "tr1c_cluster80_train": {
+      "EXACT": 29892,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 3529,
+      "UNCHECKED": 0
+    },
+    "tr1c_cluster80_dev": {
+      "EXACT": 7978,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 1165,
+      "UNCHECKED": 0
+    },
+    "archiveii_embok_clean": {
+      "EXACT": 2048,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 496,
+      "UNCHECKED": 0
+    },
+    "bprna_new": {
+      "EXACT": 5381,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 7,
+      "UNCHECKED": 0
+    },
+    "bprna_ts0": {
+      "EXACT": 1253,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 35,
+      "UNCHECKED": 0
+    },
+    "ref_pdb_ts1": {
+      "EXACT": 36,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 27,
+      "UNCHECKED": 0
+    },
+    "ref_pdb_ts2": {
+      "EXACT": 38,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 1,
+      "UNCHECKED": 0
+    },
+    "ref_pdb_ts3": {
+      "EXACT": 17,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 2,
+      "UNCHECKED": 0
+    },
+    "ref_pdb_ts_hard": {
+      "EXACT": 19,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 9,
+      "UNCHECKED": 0
+    },
+    "testsetb": {
+      "EXACT": 416,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 12,
+      "UNCHECKED": 0
+    },
+    "chanrg_test": {
+      "EXACT": 3868,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 6729,
+      "UNCHECKED": 0
+    },
+    "chanrg_gena": {
+      "EXACT": 2372,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 2965,
+      "UNCHECKED": 0
+    },
+    "chanrg_genc": {
+      "EXACT": 1458,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 2478,
+      "UNCHECKED": 0
+    },
+    "chanrg_genf": {
+      "EXACT": 713,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 1021,
+      "UNCHECKED": 0
+    },
+    "rfam_temporal": {
+      "EXACT": 112,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 324,
+      "UNCHECKED": 0
+    },
+    "rfam_fam": {
+      "EXACT": 10327,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 463,
+      "UNCHECKED": 0
+    },
+    "ncrna_rfamnovel_test": {
+      "EXACT": 29306,
+      "HOMOLOGY": 0,
+      "NOT_DETECTED_UNKNOWN": 166,
+      "UNCHECKED": 0
+    }
+  },
+  "bprna_new": {
+    "rows": 5388,
+    "exact": 5381,
+    "exact_not_detected_unknown": 7,
+    "homology_only": 7,
+    "homology_not_detected": 0
+  },
+  "official_complete_coverage": "UNCHECKED",
+  "external_test_use": "final exposure/quality audit only",
+  "no_model_inference_or_training": true,
+  "artifact_sha256": {
+    "asset_registry.json": "37cdabc5b5132fc29224b1a3890fd25e642999f5fc87e9c7b96613a509006e4a",
+    "sequence_registry.jsonl.gz": "5c0d95a31abe849a76975f06216835a3707129d139beb92569d112b645503301",
+    "summary.json": "af39cd32a42344340f7d083b606e9d79208414d15b0e47d0690c40bfb28f4866",
+    "build_receipt.json": "aa81c0418934a963a799e3e77a4d00f8e35296544cb66bd4a706951295176c7a"
+  },
+  "limitations": [
+    "Independent verification reproduces known-source evidence, not the unavailable historical nt snapshot",
+    "NOT_DETECTED_UNKNOWN and UNCHECKED never establish clean data",
+    "The seven bpRNA-new exact-undetected rows have known-source homology and are not a clean comparison group"
+  ]
+}
