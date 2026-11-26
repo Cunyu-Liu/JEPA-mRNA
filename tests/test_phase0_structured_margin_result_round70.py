@@ -340,22 +340,19 @@ def test_readiness_is_read_only_and_allows_scientific_fail(tmp_path):
     deck.write_bytes(DECK.read_bytes())
     registry = tmp_path / "registry.json"
     registry.write_text(json.dumps({"synthetic": True}))
-    verification = tmp_path / "model_dev_verification.json"
-    write_json(verification, {
-        "status": "PASS_INDEPENDENT_MANIFEST_LEAKAGE_HASH_RECONCILIATION",
-        "checks": [{"check": "leakage/cross_80_unchecked/tr1c_vs_chanrg_validation", "passed": True}],
-        "remaining_unchecked": ["cross-TR1c/CHANRG 80%"],
-        "registry_sha256": hashlib.sha256(registry.read_bytes()).hexdigest(),
-    })
+    cross_source_root = make_cross_source_fixture(tmp_path / "cross_source", registry)
     before = hashlib.sha256(deck.read_bytes()).hexdigest()
-    result = R.check_readiness(deck, evaluation_root, verification, registry)
+    result = R.check_readiness(deck, evaluation_root, cross_source_root, registry)
     assert result["ready"] and not result["scientific_overall_pass"]
-    assert result["cross_source_caveat"] == M.CROSS_SOURCE_CAVEAT
+    boundary = result["cross_source_boundary"]
+    assert boundary["summary_sha256"] == M.sha256(cross_source_root / "summary.json")
+    assert "5,872−closure 769=5,103 NOT_DETECTED_UNKNOWN (not clean)" in boundary["display_boundary"]
+    assert boundary["gec_state"] == "INELIGIBLE"
     assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
     evaluation_path = evaluation_root / "independent_evaluation.json"
     evaluation = json.loads(evaluation_path.read_text())
     evaluation.update(status="IN_PROGRESS", final_verdict_allowed=False, overall_pass=False)
     write_json(evaluation_path, evaluation)
     with pytest.raises(R.M.EligibilityError):
-        R.check_readiness(deck, evaluation_root, verification, registry)
+        R.check_readiness(deck, evaluation_root, cross_source_root, registry)
     assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
