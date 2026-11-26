@@ -1,0 +1,46 @@
+{
+  "status": "PASS_RASTER_LAYOUT_AND_OCR_WITH_DIRECT_IMAGE_INPUT_LIMITATION",
+  "deck_slide_index": 14,
+  "display_slide_number": 33,
+  "png_sha256": "33a4d52cda0e89e4f1b3a1a8d553f2acfb8d790002566678da43fae07faa54a3",
+  "png_bytes": 161100,
+  "raster_size": [
+    2001,
+    1125
+  ],
+  "raster_review": "Inspected a 132x74 grayscale raster rendering of the actual final PNG; three evidence cards, two analysis panels, boundary banner, and footer occupy their intended regions",
+  "raster_sha256": "e3cdd0ce3edcfda5ce427e7ce399a21f7be0a569be8aaa7b295d730daae33ffe",
+  "raster_nonwhite_content_bounds_px": [
+    112,
+    57,
+    1891,
+    1037
+  ],
+  "raster_nonwhite_fraction": 0.301567882725304,
+  "raster_edge_clip_detected": false,
+  "direct_image_model_review": "UNAVAILABLE_CURRENT_RUNTIME_OMITTED_IMAGE_INPUT; Preview screenshot captured, but not claimed as a direct visual-model pass",
+  "ocr_engine": "macOS Vision VNRecognizeTextRequest accurate; zh-Hans + en-US",
+  "ocr_sha256": "a8786d2b05655f3173e55a5511b78ce15811eb198b4decb0380645e72ea6282d",
+  "ocr_boxes_sha256": "b029f69fa11f4513b84e569d9d0e5d85d0c579b98d4340b987541e3e90ca13f1",
+  "ocr_lines": 45,
+  "ocr_out_of_bounds": [],
+  "ocr_overlap_pairs_over_20_percent": [],
+  "ocr_key_values_passed": [
+    "0.699302",
+    "0.681231",
+    "0.687129",
+    "-0.104102",
+    "-0.193295",
+    "-0.289777",
+    "+0.010192",
+    "+0.001519",
+    "+0.001206",
+    "4x9,143nativepredictionvalidation•PASS",
+    "independentverificationPASS",
+    "structuredmargin"
+  ],
+  "ocr_key_values_missing": [],
+  "pdf_complete_text_checks": 519,
+  "pdf_missing_or_clipped_text": [],
+  "layout_observation": "Three input-metric cards, independent-degradation and native-reproduction panels, structured-margin boundary banner, and two footer lines are present in the raster with no OCR bounds, overlap, or edge-clipping evidence"
+}
