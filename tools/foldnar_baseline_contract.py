@@ -199,6 +199,7 @@ def _default_training(baseline_id: str) -> dict:
                 "current_file_coverage": "FROZEN_SUBSET_OR_VERSION_MISMATCH; full official counts not available",
                 "checkpoint_config": "BLOCKED_PROVENANCE"}
     external = {
+        "debfold": (["DEBFold official TrainingValidationSet.zip: 8782 structures/8384 unique sequences; SHA256=20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2"], "OFFICIAL_TRAIN_VALIDATION_ARCHIVE_RECOVERED; 25-fold assignments and checkpoint-specific training union not published"),
         "mxfold2": (["bpRNA-1m TrainSetA+TrainSetB"], "OFFICIAL_PACKAGE_TRAINING_IDENTITY; homology overlap unresolved"),
         "rinalmo_ft": (["bpRNA TR0"], "ZENODO_CHECKPOINT_TRAINING_CORPUS; TestSetB overlap known"),
         "ufold": ([], "BLOCKED_PROVENANCE: paper/code-default/historical audit do not define one identical training union"),
@@ -211,7 +212,11 @@ def _default_training(baseline_id: str) -> dict:
         "rnaformer_biophysical": (["official biophysical_model_data.plk train=410408"], "OFFICIAL_DATASET_IDENTITY; Rfam synthetic RNAfold-distilled experiment, not PDB experimental labels"),
     }
     datasets, status = external.get(baseline_id, ([], "BLOCKED_PROVENANCE: exact training union not verified"))
-    return {"status": status, "project_training_dataset_ids": [], "external_training_corpora": datasets}
+    result = {"status": status, "project_training_dataset_ids": [], "external_training_corpora": datasets}
+    if baseline_id == "debfold":
+        result.update(source_commit="ff693cdf4cb177e50d8a6a15c7a6292af802b75e",
+                      archive_sha256="20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2")
+    return result
 
 
 def build_baseline_rows(predictions: list[dict], file_info: Callable) -> list[dict]:

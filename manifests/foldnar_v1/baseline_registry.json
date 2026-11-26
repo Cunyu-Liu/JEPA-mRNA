@@ -1373,9 +1373,13 @@
         "reason": "official/current checkpoint asset or identity not verified"
       },
       "training_data": {
-        "status": "BLOCKED_PROVENANCE: exact training union not verified",
+        "status": "OFFICIAL_TRAIN_VALIDATION_ARCHIVE_RECOVERED; 25-fold assignments and checkpoint-specific training union not published",
         "project_training_dataset_ids": [],
-        "external_training_corpora": []
+        "external_training_corpora": [
+          "DEBFold official TrainingValidationSet.zip: 8782 structures/8384 unique sequences; SHA256=20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2"
+        ],
+        "source_commit": "ff693cdf4cb177e50d8a6a15c7a6292af802b75e",
+        "archive_sha256": "20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2"
       },
       "license": {
         "status": "BLOCKED_PROVENANCE",
