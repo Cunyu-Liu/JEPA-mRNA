@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "round": 2,
+  "date": "2026-11-27",
+  "round1_commit": "b29567d29796bfc80cafda2f74de59f8f86b5d38",
+  "round1_remote_match": true,
+  "branch": "ufold-official-recovery-20261127",
+  "base_commit": "c183df8457b2e3d3695b6e9eb78bb6b56bff5d91",
+  "independent_checks": {
+    "focused_tests": {
+      "command": "CUDA_VISIBLE_DEVICES='' /home/rna_jev/envs/efold_speed/bin/python -m unittest -v tests.test_ufold_official_recovery",
+      "status": "PASS",
+      "tests": 13,
+      "covers": [
+        "real bpRNA-new5388 input hash/count/length/pair totals",
+        "official source archive/config/license identity",
+        "official 17-channel feature construction and 8641377-parameter architecture",
+        "synthetic CT mutual-pair round trip without model inference",
+        "missing/uncertified/mismatched checkpoint rejection",
+        "blocked manifest and null predictions"
+      ]
+    },
+    "contract_only": {
+      "command": "CUDA_VISIBLE_DEVICES='' /home/rna_jev/envs/efold_speed/bin/python tools/run_ufold_official_bprna_new.py --contract-only",
+      "status": "PASS",
+      "output": "/teams/HoulabData_1788502323/liucunyu/foldnar/ufold-official-recovery-20261127/audit/contract-report.json",
+      "predictions": null
+    },
+    "official_source": {
+      "commit": "75bd9acc83826059682dfca9d3659df66b132cd1",
+      "archive_sha256": "a233d3577cbb213712c06f8f0827b18624e7df99ad093c6bfd70782b8e86b76b",
+      "license_sha256": "5c93b3a2d31b6e7b964633ff5e81bd9e31ff9ee845996ab3b0d3d71b0d368f2e",
+      "config_sha256": "1cfd3d7310f549b43e7defe890f19e69b09b001caefd61bab0ce2f9a9b3fa88d",
+      "compileall": "PASS"
+    },
+    "dataset_sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9",
+    "git_diff_check": "PASS",
+    "new_large_files_in_git": 0
+  },
+  "weight_authentication": {
+    "status": "BLOCKED_AUTHOR_DRIVE_UNREACHABLE",
+    "author_url": "https://drive.google.com/drive/folders/1Sq7MVgFOshGPlumRE_hpNXadvhJKaryi?usp=sharing",
+    "checkpoint_path_exists": false,
+    "sha256": null,
+    "third_party_substitute_used": false
+  },
+  "execution_boundary": {
+    "gpu_inference_run": false,
+    "training_run": false,
+    "automatic_evaluation_run": false,
+    "foldnar_release_modified": false,
+    "external_test_model_selection": false,
+    "predictions": null
+  },
+  "verdict": "ROUND2_PASS_BLOCKED_DELIVERABLE_AUTHENTIC_SOURCE_AND_FROZEN_CONTRACT_ONLY"
+}
