@@ -46,3 +46,13 @@ def test_raw_baseline_absolute_gap_arithmetic():
     text = ledger.DOC.read_text()
     assert "这不是相对百分比，也不是我们的候选提升" in text
     assert "BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入" in text
+
+
+def test_linearpartition_recall_and_gec_boundary():
+    assert 53 / 73 == pytest.approx(0.726027397260274)
+    assert 8 / 73 == pytest.approx(0.1095890410958904)
+    text = ledger.DOC.read_text()
+    assert "长序列只有 baseline 回答，GEC unsupported" in text
+    assert "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION" in text
+    assert "candidate recall 不是最终结构准确率" in text
+    assert "\n+- **" not in text

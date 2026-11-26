@@ -15,6 +15,7 @@ A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/a
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
 STRUCTRFM = F / "structrfm_official_v0.0.8"
 FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
+LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
     "capacity": A / "representation_head_mechanism_4arm_v1/capacity_freeze_audit.json",
@@ -37,6 +38,10 @@ SOURCES = {
     "structrfm_provenance": STRUCTRFM / "reports/structrfm_official_provenance_20261126.json",
     "structrfm_delivery": STRUCTRFM / "reports/full_delivery_verification_20261126.json",
     "raw_baselines": FOLDNAR_REPO / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+    "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
+    "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
+    "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
+    "linearpartition_delivery": LINEARPARTITION_RUN.parent / "holdout_delivery_verification.json",
 }
 
 
@@ -86,6 +91,11 @@ def verify_narrative_guards() -> list[str]:
         "0.19321803153859785",
         "0.15297454451260917",
         "这不是相对百分比，也不是我们的候选提升",
+        "长序列只有 baseline 回答，GEC unsupported",
+        "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION",
+        "8,481,693,696 bytes",
+        "53/73=0.726027397260274",
+        "8/73=0.1095890410958904",
         "margin_superior_to_nll_claim_allowed=false",
         "完成臂 0",
         "scientific_conclusion=null",
@@ -222,6 +232,44 @@ def verify_numbers() -> list[str]:
     contrafold_gap = pointer(data["raw_baselines"], "strongest_project_raw_single_predictor/micro_f1") - structrfm_micro
     check("BPfold minus structRFM", bpfold_gap, 0.19321803153859785, "0.19321803153859785")
     check("CONTRAfold minus structRFM", contrafold_gap, 0.15297454451260917, "0.15297454451260917")
+
+    check("LinearPartition run status", pointer(data["linearpartition_run"], "status"), "PASS_FULL_LENGTH_HOLDOUT_EXECUTION_AND_OUTPUT__FLOPS_NOT_MEASURED")
+    check("LinearPartition split", pointer(data["linearpartition_run"], "split"), "holdout")
+    check("LinearPartition target", pointer(data["linearpartition_run"], "name"), "7AM2_1")
+    check("LinearPartition variant", pointer(data["linearpartition_run"], "execution/variant"), "LinearPartition-C")
+    check("LinearPartition approximate sparse", pointer(data["linearpartition_run"], "execution/column"), "APPROXIMATE_SPARSE")
+    check("LinearPartition CPU threads", pointer(data["linearpartition_run"], "execution/threads"), 1)
+    check("LinearPartition full input", pointer(data["linearpartition_run"], "input/length"), 19000, "19,000")
+    check("LinearPartition not truncated", pointer(data["linearpartition_run"], "input/truncated"), False)
+    check("LinearPartition wall", pointer(data["linearpartition_run"], "resources/latency/wall_seconds"), 362.79, "362.79")
+    check("LinearPartition RSS", pointer(data["linearpartition_run"], "resources/memory/peak_cpu_rss_bytes"), 8481693696, "8,481,693,696")
+    check("LinearPartition FLOPs", pointer(data["linearpartition_run"], "resources/flops/status"), "NOT_MEASURED")
+    check("LinearPartition no FLOPs estimate", pointer(data["linearpartition_run"], "resources/flops/estimated"), False)
+    check("LinearPartition holdout only", pointer(data["linearpartition_run"], "holdout_descriptive_only"), True)
+    check("LinearPartition not selection", pointer(data["linearpartition_run"], "not_for_model_selection"), True)
+    check("LinearPartition metric scope", pointer(data["linearpartition_metrics"], "scope"), "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION")
+    check("LinearPartition record coverage", pointer(data["linearpartition_metrics"], "coverage/record_coverage"), 1.0)
+    check("LinearPartition nucleotide coverage", pointer(data["linearpartition_metrics"], "coverage/completed_nucleotide_coverage"), 1.0)
+    check("LinearPartition output length", pointer(data["linearpartition_metrics"], "coverage/output_nucleotides"), 19000)
+    check("LinearPartition coverage not truncated", pointer(data["linearpartition_metrics"], "coverage/truncated"), False)
+    for output, tp, recall in [("bpp_candidate_pair_recall", 53, 0.726027397260274), ("mea_pair_recall", 8, 0.1095890410958904)]:
+        check(f"LinearPartition {output} TP", pointer(data["linearpartition_metrics"], f"{output}/overall/true_positive"), tp)
+        check(f"LinearPartition {output} reference", pointer(data["linearpartition_metrics"], f"{output}/overall/reference"), 73)
+        check(f"LinearPartition {output} recall", pointer(data["linearpartition_metrics"], f"{output}/overall/recall"), recall)
+        check(f"LinearPartition {output} 200-999 TP", pointer(data["linearpartition_metrics"], f"{output}/200-999/true_positive"), 0)
+        check(f"LinearPartition {output} 200-999 reference", pointer(data["linearpartition_metrics"], f"{output}/200-999/reference"), 13)
+        check(f"LinearPartition {output} >=1000 reference", pointer(data["linearpartition_metrics"], f"{output}/>=1000/reference"), 0)
+        check(f"LinearPartition {output} >=1000 null", pointer(data["linearpartition_metrics"], f"{output}/>=1000/recall"), None)
+    check("LinearPartition verification status", pointer(data["linearpartition_verification"], "status"), "PASS_INDEPENDENT_HOLDOUT_OUTPUT_HASH_RESOURCE_AND_METRIC_VERIFICATION")
+    check("LinearPartition independent wall", pointer(data["linearpartition_verification"], "recomputed/wall_seconds"), 362.79)
+    check("LinearPartition independent RSS", pointer(data["linearpartition_verification"], "recomputed/peak_cpu_rss_bytes"), 8481693696)
+    check("LinearPartition independent BPP TP", pointer(data["linearpartition_verification"], "recomputed/bpp_candidate_pair_recall/overall/true_positive"), 53)
+    check("LinearPartition independent MEA TP", pointer(data["linearpartition_verification"], "recomputed/mea_pair_recall/overall/true_positive"), 8)
+    check("LinearPartition delivery status", pointer(data["linearpartition_delivery"], "status"), "PASS_FULL_19000_HOLDOUT_CPU_PILOT_AND_INDEPENDENT_VERIFICATION")
+    check("LinearPartition delivery head", pointer(data["linearpartition_delivery"], "head"), "bbc4366bae1e4643bccb2e960470abcee77a83c2")
+    check("LinearPartition delivery coverage", pointer(data["linearpartition_delivery"], "coverage"), 1.0)
+    check("LinearPartition delivery holdout only", pointer(data["linearpartition_delivery"], "holdout_descriptive_only"), True)
+    check("LinearPartition delivery not selection", pointer(data["linearpartition_delivery"], "not_for_model_selection"), True)
 
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")

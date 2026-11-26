@@ -7,7 +7,7 @@
 
 ## 当前一句话
 
-已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；structRFM 官方 raw 结果及其与 BPfold/CONTRAfold 的差距只是外部基线算术；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
+已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；structRFM 官方 raw 结果及其与 BPfold/CONTRAfold 的差距只是外部基线算术；LinearPartition 19,000 nt 只有 baseline 运行回答而 GEC unsupported；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
 
 ## 时间、提交与运行快照
 
@@ -123,12 +123,22 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Claim（绝对 micro-F1 差距）**：在项目 raw bpRNA-new 5,388 条、相同 strict micro-F1 口径下，BPfold 六 checkpoint 集成与 CONTRAfold 确定性单模型分别高于 structRFM 官方单模型 **0.19321803153859785** 和 **0.15297454451260917**；这不是相对百分比，也不是我们的候选提升。
 - **Phenomenon**：raw baseline 排名同时混有不同模型形式与未解决训练暴露；只报一个较高分数会误导读成集成/单模型等同或 clean SOTA。
 - **Intervention**：固定项目 `bprna_new.jsonl`（SHA256 `271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9`）、zero-based inclusive exact pairs、5,388/5,388 coverage，直接计算 comparator−structRFM 的 pooled strict micro-F1 绝对差。
-+- **Expected observation**：三者身份、模型形式、coverage 与 raw 标签口径一致可比时才允许相减；BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入。
-+- **Actual**：BPfold `six_checkpoint_ensemble` micro-F1=**0.7370074184282851**，绝对差=**0.7370074184282851−0.5437893868896873=0.19321803153859785**；CONTRAfold `deterministic_single_predictor` micro-F1=**0.6967639314022964**，绝对差=**0.6967639314022964−0.5437893868896873=0.15297454451260917**。数值来自 FoldNAR HEAD `fd497e9819e39a29887ec26698a46c91284d230b` 的冻结 registry，structRFM 执行提交仍为 `b53a4f8245776eda43f1bb2ee651a654df68425b`。
-+- **Artifact**：`/home/rna_jev_foldnar_integration/manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json` 的 `strongest_project_raw` 与 `strongest_project_raw_single_predictor`；structRFM 来源仍为 `F/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json`。
-+- **Limitation**：三项都是 `raw ranking only; not clean SOTA` 口径；raw 未去污染，BPfold 训练 overlap 未解决，CONTRAfold 的 TR1c-clean 结果属于另一面板。两个差距都不是 FoldNar/GEC/margin 候选正向性能，不证明集成优于所有单模型，也不授权 clean/OOD/SOTA。
-+- **Next**：保留该差距作为 raw 基线差距事实；若未来评估候选，必须独立取得同协议候选预测并重新计算，不能从 baseline 差值反推候选得分。
-+
+- **Expected observation**：三者身份、模型形式、coverage 与 raw 标签口径一致可比时才允许相减；BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入。
+- **Actual**：BPfold `six_checkpoint_ensemble` micro-F1=**0.7370074184282851**，绝对差=**0.7370074184282851−0.5437893868896873=0.19321803153859785**；CONTRAfold `deterministic_single_predictor` micro-F1=**0.6967639314022964**，绝对差=**0.6967639314022964−0.5437893868896873=0.15297454451260917**。数值来自 FoldNAR HEAD `fd497e9819e39a29887ec26698a46c91284d230b` 的冻结 registry，structRFM 执行提交仍为 `b53a4f8245776eda43f1bb2ee651a654df68425b`。
+- **Artifact**：`/home/rna_jev_foldnar_integration/manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json` 的 `strongest_project_raw` 与 `strongest_project_raw_single_predictor`；structRFM 来源仍为 `F/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json`。
+- **Limitation**：三项都是 `raw ranking only; not clean SOTA` 口径；raw 未去污染，BPfold 训练 overlap 未解决，CONTRAfold 的 TR1c-clean 结果属于另一面板。两个差距都不是 FoldNar/GEC/margin 候选正向性能，不证明集成优于所有单模型，也不授权 clean/OOD/SOTA。
+- **Next**：保留该差距作为 raw 基线差距事实；若未来评估候选，必须独立取得同协议候选预测并重新计算，不能从 baseline 差值反推候选得分。
+## 11. LinearPartition 19,000 nt holdout：只有 baseline 计算回答，GEC unsupported
+
+- **Claim（单条 holdout 描述）**：官方 LinearPartition-C 已在 `7AM2_1` 完整 19,000 nt holdout 上完成一次 serial-CPU `APPROXIMATE_SPARSE` 运行，提供真实 coverage、资源与 candidate/MEA recall 边界；**长序列只有 baseline 回答，GEC unsupported**。
+- **Phenomenon**：短序列结构结果不能外推为 19,000 nt 可计算性或准确性；candidate coverage、最终 MEA 输出与资源消耗必须分别核对。
+- **Intervention**：固定官方 LinearPartition-C binary（上游 commit `b450fb3e63189073b68d385589035f992080aa3a`）、beam=100、BPP cutoff=0.0、单 CPU 线程和 600 秒 timeout，不截断输入；独立重读 raw BPP/MEA，复算 coverage、span recall 和 GNU time 资源。
+- **Expected observation**：必须完整输出 19,000 nt，先报告 candidate recall，再报告 MEA 与资源；空 span 桶保持 null，FLOPs 无法测量时不得估算替代。baseline 通过不等于 GEC 通过。
+- **Actual**：coverage=**19,000/19,000=1.0**、`truncated=false`；wall time=**362.79 s**，peak CPU RSS=**8,481,693,696 bytes**。BPP candidate overall recall=**53/73=0.726027397260274**，MEA overall recall=**8/73=0.1095890410958904**；两者在 span 200–999 均为 **0/13**，span ≥1000 因 reference=0 而为 **null**。FLOPs=`NOT_MEASURED`，不作估算。执行/独立验证提交为 `024ef5aadeed1d560802f1a13387b5079d6a56b5`，结果记录提交为 `bbc4366bae1e4643bccb2e960470abcee77a83c2`，整合 HEAD 为 `fd497e9819e39a29887ec26698a46c91284d230b`。
+- **Artifact**：`F/longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1/run_report.json`、`metrics.json`、`independent_verification.json` 及上级 `holdout_delivery_verification.json`；raw BPP/MEA 路径与 SHA256 均由这些文件绑定。
+- **Limitation**：范围为 `HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION`，只有一条 holdout，不用于模型选择、校准、early stopping 或训练。BPP candidate recall 不是最终结构准确率，MEA recall 也不是我们的候选结果；这不是我们的候选正向性能或 clean SOTA。GEC 没有此 19,000 nt 全长预测、candidate recall、结构准确性或资源对照，故长序列 GEC 仍为 unsupported。
+- **Next**：只可声称 LinearPartition baseline 在该单条 holdout 上完成了全长计算并报告上述边界；任何 GEC 长序列性能、scaling 或优于 baseline 的句子都必须等待其自身完整、独立的直接证据。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -143,6 +153,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | margin 待检验 | 98.31% FN 定位 | seed0 margin 四臂至各自收敛 | 固定 MEA 下通过全部科学与对照门 | authorization/startup/scheduler；结果尚缺 | 当前无收敛结构结果，不得阳性宣称 |
 | structRFM 官方 raw baseline | 历史预测无法绑定官方权重 | 官方 v0.0.8 全量新推理+独立评分 | 5,388 条身份/coverage/raw 指标完整 | `structrfm_official_bprna_new_metrics_20261126.json` | 外部 baseline；raw 非 clean；不是候选正向性能或 SOTA |
 | BPfold/CONTRAfold 相对 structRFM 的 raw 绝对差 | baseline 模型形式与暴露不同 | 同 5,388 raw 标签 strict micro-F1 相减 | 身份/coverage 一致且差距可复算 | `bprna_new_recovered_prediction_registry.json` | 外部 baseline 算术；不是候选提升或 clean SOTA |
+| LinearPartition 19,000 nt 仅 baseline 可计算 | 短序列不能外推全长 | 官方 CPU 全长运行+raw 独立复算 | 不截断；coverage/recall/资源完整 | `7AM2_1/run_report.json`、`metrics.json` | 单条 holdout 描述；GEC unsupported；不用于选型 |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -161,7 +172,8 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **负面结果完整性**：容量、SRD、stacking 与 GEC 的停止/失败不得被后续候选叙事抹去；任何新阳性 claim 必须同时说明其不同干预与直接证据。
 - [ ] **官方 raw baseline 措辞**：structRFM 结果必须同时保留官方外部 baseline、5,388 条 raw 非去污染与候选隔离边界；不得写成我们的正向性能、clean/OOD 或 SOTA。
 - [ ] **raw 绝对差距**：BPfold 集成、CONTRAfold 单模型与 structRFM 的差值只能是同面板 micro-F1 绝对算术；不得混用 official-reference/TR1c-clean 标签、改写成相对百分比或候选提升。
+- [ ] **长序列边界**：19,000 nt 只能陈述 LinearPartition 单条 holdout 的全长 coverage、真实资源与 BPP/MEA recall；candidate recall 不得冒充结构准确率，baseline coverage 不得冒充 GEC coverage，GEC unsupported 不得省略。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、BPfold/CONTRAfold 绝对差距算术、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、BPfold/CONTRAfold 绝对差距算术、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
