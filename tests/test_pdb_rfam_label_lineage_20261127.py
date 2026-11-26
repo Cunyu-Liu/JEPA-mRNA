@@ -73,6 +73,17 @@ def test_fasta_match_requires_exact_sequence_or_region(tmp_path):
     assert hits == {"ACGU": ["x/1-4"], "ACGA": ["y/1-4"]}
 
 
+def test_rnaformer_filter_replay_preserves_projection_accounting():
+    kept, stats = audit.project_rnaformer_pairs("GCAAGCUU", [(0, 7), (0, 6), (1, 5)], [1, 0, 0])
+    assert kept == [(0, 6)]
+    assert stats["dropped_pseudoknot_pairs"] == 1
+    assert stats["dropped_noncanonical_pairs"] == 1
+    kept, stats = audit.project_rnaformer_pairs("GGAAGCUU", [(0, 7), (0, 6)], [0, 0])
+    assert kept == [(0, 7)]
+    assert stats["dropped_multiplet_pairs"] == 1
+    assert stats["multiplet_positions"] == 1
+
+
 def test_bad_alphabet_is_not_silently_normalized():
     result = audit.audit_record("rfam_temporal", 0, record(seq="GCAAGCNN", structure="(......)"))
     assert result["internal_projection_status"] == "FAIL"

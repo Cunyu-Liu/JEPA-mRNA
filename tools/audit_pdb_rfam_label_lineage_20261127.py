@@ -8,7 +8,10 @@ import gzip
 import hashlib
 import io
 import json
+import pickle
 import re
+import sys
+import types
 from pathlib import Path
 
 SCHEMA = "foldnar.pdb_rfam_label_lineage.v1"
@@ -133,6 +136,118 @@ def audit_record(dataset: str, row_index: int, row: dict) -> dict:
 def read_jsonl(path: Path) -> list[dict]:
     with path.open(encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
+
+
+def crossing_pairs(pairs: list[tuple[int, int]]) -> list[tuple[tuple[int, int], tuple[int, int]]]:
+    ordered = sorted(pairs)
+    result = []
+    for index, (a, b) in enumerate(ordered):
+        for c, d in ordered[index + 1:]:
+            if c >= b:
+                break
+            if b < d:
+                result.append(((a, b), (c, d)))
+    return result
+
+
+def project_rnaformer_pairs(sequence: str, pairs: list[tuple[int, int]], labels: list[int]) -> tuple:
+    keep = {pair: True for pair in pairs}
+    stats = collections.Counter()
+    for pair, label in zip(pairs, labels):
+        if label:
+            keep[pair] = False
+            stats["dropped_pseudoknot_pairs"] += 1
+    for i, j in pairs:
+        if keep[(i, j)] and (sequence[i], sequence[j]) not in CANONICAL:
+            keep[(i, j)] = False
+            stats["dropped_noncanonical_pairs"] += 1
+    partners = collections.defaultdict(list)
+    for pair in pairs:
+        if keep[pair]:
+            for endpoint in pair:
+                partners[endpoint].append(pair)
+    for members in partners.values():
+        if len(members) > 1:
+            stats["multiplet_positions"] += 1
+            winner = min(members, key=lambda pair: (-(pair[1] - pair[0]), pair))
+            for pair in members:
+                if pair != winner:
+                    keep[pair] = False
+                    stats["dropped_multiplet_pairs"] += 1
+    kept = [pair for pair in pairs if keep[pair]]
+    legal = []
+    for pair in kept:
+        if pair[1] - pair[0] <= 3:
+            stats["dropped_illegal"] += 1
+        else:
+            legal.append(pair)
+    while True:
+        crossings = crossing_pairs(legal)
+        if not crossings:
+            break
+        counts = collections.Counter(pair for crossing in crossings for pair in crossing)
+        victim = max(counts.items(), key=lambda item: (item[1], item[0][1] - item[0][0]))[0]
+        legal.remove(victim)
+        stats["dropped_crossing"] += 1
+    return sorted(legal), dict(stats)
+
+
+def load_rnaformer_plk(path: Path) -> dict:
+    import pandas as pd
+    shim = types.ModuleType("pandas.core.indexes.numeric")
+    for name in ("Int64Index", "UInt64Index", "Float64Index", "NumericIndex"):
+        setattr(shim, name, pd.Index)
+    sys.modules["pandas.core.indexes.numeric"] = shim
+    with path.open("rb") as handle:
+        return pickle.load(handle)
+
+
+def audit_rnaformer_source(path: Path, datasets: dict, records: dict, rejects: dict) -> dict:
+    frames = load_rnaformer_plk(path)
+    candidates = {}
+    for dataset in PDB_PANELS:
+        frame_name = dataset[4:]
+        frame = frames[frame_name]
+        candidates[dataset] = []
+        accepted = {row["name"]: (index, row) for index, row in enumerate(datasets[dataset])}
+        rejected_names = {row["name"] for row in rejects[dataset]}
+        for index, source_row in frame.iterrows():
+            name = f"{frame_name}#{index}"
+            sequence = "".join(source_row["sequence"]).upper().replace("T", "U")
+            pairs = sorted(tuple(sorted((int(a), int(b)))) for a, b in
+                           zip(source_row["pos1id"], source_row["pos2id"]))
+            labels_by_pair = {tuple(sorted((int(a), int(b)))): int(label) for a, b, label in
+                              zip(source_row["pos1id"], source_row["pos2id"], source_row["pk"])}
+            labels = [labels_by_pair[pair] for pair in pairs]
+            kept, stats = project_rnaformer_pairs(sequence, pairs, labels)
+            candidate = {"source_record_id": name, "Id": int(source_row["Id"]),
+                         "family": str(source_row["family"]), "is_pdb": bool(source_row["is_pdb"]),
+                         "sequence_sha256": sha256_text(sequence), "raw_pairs_sha256": pairs_sha256(pairs),
+                         "raw_pair_count": len(pairs), "kept_pairs_sha256": pairs_sha256(kept),
+                         "projection_stats": stats,
+                         "accepted_in_frozen_jsonl": name in accepted,
+                         "rejected_in_frozen_jsonl": name in rejected_names,
+                         "pdb_accession_entity_chain": "UNCHECKED"}
+            assert name in accepted or name in rejected_names
+            if name in accepted:
+                row_index, row = accepted[name]
+                record = records[dataset][row_index]
+                assert record["sequence_sha256"] == candidate["sequence_sha256"]
+                assert record["pairs_sha256"] == candidate["kept_pairs_sha256"]
+                assert row["n_dropped_illegal"] == stats.get("dropped_illegal", 0)
+                assert row["n_dropped_crossing"] == stats.get("dropped_crossing", 0)
+                record["rnaformer_official_source"] = candidate
+            candidates[dataset].append(candidate)
+    return {
+        "status": "PASS_OFFICIAL_PLK_SEQUENCE_AND_FILTER_REPLAY_COORDINATE_LINEAGE_UNCHECKED",
+        "url": "https://ml.informatik.uni-freiburg.de/research-artifacts/RNAformer/datasets/test_sets.plk",
+        "repository_download_script": "https://github.com/automl/RNAformer/blob/main/download_all_datasets.sh",
+        "file": {"path": str(path), "bytes": path.stat().st_size, "sha256": sha256_file(path)},
+        "source_candidates": candidates,
+        "coordinate_identifier_columns_present": False,
+        "identifier_scope": "numeric DataFrame index/Id, is_pdb and optional free-text family; no PDB accession, entity or chain",
+        "mmcif_dssr_atom_site_status": "UNCHECKED",
+    }
 
 
 def fasta_target_map(path: Path, target_sequences: set[str], target_keys: set[str]) -> dict:
@@ -265,6 +380,7 @@ def main() -> None:
     parser.add_argument("--registry", type=Path, required=True)
     parser.add_argument("--rfam14-root", type=Path)
     parser.add_argument("--rfam15-root", type=Path)
+    parser.add_argument("--rnaformer-plk", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.output.exists() and any(args.output.iterdir()):
@@ -357,6 +473,15 @@ def main() -> None:
                 record["official_rfam15_0"]["status"] for record in records[name]))
         panels[name] = panel
 
+    rnaformer = {"status": "UNCHECKED"}
+    if args.rnaformer_plk:
+        rnaformer = audit_rnaformer_source(args.rnaformer_plk, datasets, records, source_rejects)
+        assert rnaformer["file"]["sha256"] == "12000d35e6a0501838587a8eabb47e75572f56da8460b3ee98c51836e8aa9181"
+        for name in PDB_PANELS:
+            panels[name]["source_asset_availability"] = "OFFICIAL_PLK_FROZEN_HASH_MATCH"
+            panels[name]["rnaformer_source_candidates"] = len(rnaformer["source_candidates"][name])
+            panels[name]["rnaformer_projection_replay"] = "PASS"
+
     train_sequences = {row["seq"].upper().replace("T", "U") for row in datasets["bprna_tr1c"]}
     train_overlap = {name: [row["name"] for row in datasets[name]
                             if row["seq"].upper().replace("T", "U") in train_sequences] for name in PANELS}
@@ -394,7 +519,7 @@ def main() -> None:
             "missing_observation_map": "UNCHECKED; dots are not accepted as experimental negatives",
         },
         "panels": panels,
-        "official_sources": {"rfam14_9": official14, "rfam15_0": official15},
+        "official_sources": {"rfam14_9": official14, "rfam15_0": official15, "rnaformer": rnaformer},
         "related_temporal_pdb_collection": {
             "status": "NOT_QUALIFIED",
             "reason": "Existing collection has entry errors; full-polymer strings lack an evaluation observation mask and atom_site crosscheck remains UNCHECKED",
@@ -411,6 +536,7 @@ def main() -> None:
                                                    if records["rfam_temporal"][row_index]["official_rfam14_9_exact_sequence"]],
         "cross_panel_exact_sequence_groups": cross_panel,
         "pdb_mmcif_dssr_rebuild_required": {name: [row["name"] for row in datasets[name]] for name in PDB_PANELS},
+        "pdb_rnaformer_source_candidates": rnaformer.get("source_candidates", {}),
         "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
     }
     write_json(args.output / "panel_summary.json", summary)
@@ -437,7 +563,8 @@ def main() -> None:
                   f"{panels[name]['official_rfam15_0_status_counts']}. Pair provenance and first-release dates remain `UNCHECKED`."]
     lines += ["", "## Binding conclusions", "",
               "- All six panels are filtered canonical/nested projections; their dots are not proven experimental negative labels.",
-              "- PDB TS records lack PDB/entity/chain mappings in the frozen JSONL. mmCIF entity/poly-seq-scheme/atom_site and DSSR lineage are therefore `UNCHECKED`; all PDB labels require raw-source rebuilding for experimental claims.",
+              "- The official RNAformer PLK hash matches and all 153 PDB candidate rows are replayed, including source rejects. Its numeric index/Id, `is_pdb` and optional free-text `family` fields still provide no PDB/entity/chain mapping.",
+              "- PDB TS records lack PDB/entity/chain mappings in the frozen JSONL and official PLK. mmCIF entity/poly-seq-scheme/atom_site and DSSR lineage are therefore `UNCHECKED`; all PDB labels require raw-source rebuilding for experimental claims.",
               "- Rfam directory names and BPfold test-result locations do not establish prediction-derived ground truth, first-release dates, or pair provenance. Rfam labels remain comparative-inference candidates, not experimental labels.",
               "- Exact training or cross-panel overlaps require exclusion/recompute before independent evaluation; TS-hard is not sequence-disjoint from TS1/TS3.",
               "- Source-rejected rows are preserved in `recompute_sets.json` (TS1: 4; Rfam family: 1); accepted-row counts alone are not full source-panel lineage.",

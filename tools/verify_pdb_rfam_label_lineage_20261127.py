@@ -7,7 +7,10 @@ import collections
 import gzip
 import hashlib
 import json
+import pickle
 import re
+import sys
+import types
 from pathlib import Path
 
 SCHEMA = "foldnar.pdb_rfam_label_lineage.v1"
@@ -88,6 +91,78 @@ def official_regions(path: Path, sources: dict) -> dict:
     return dict(result)
 
 
+def rnaformer_candidates(path: Path, sources: dict, rejects: dict) -> dict:
+    import pandas as pd
+    shim = types.ModuleType("pandas.core.indexes.numeric")
+    for name in ("Int64Index", "UInt64Index", "Float64Index", "NumericIndex"):
+        setattr(shim, name, pd.Index)
+    sys.modules["pandas.core.indexes.numeric"] = shim
+    with path.open("rb") as handle:
+        frames = pickle.load(handle)
+    canonical = {("A", "U"), ("U", "A"), ("G", "C"), ("C", "G"), ("G", "U"), ("U", "G")}
+    output = {}
+    for dataset in PANELS[:4]:
+        frame_name = dataset[4:]
+        accepted = {row["name"] for row in sources[dataset]}
+        rejected = {row["name"] for row in rejects[dataset]}
+        output[dataset] = []
+        for index, row in frames[frame_name].iterrows():
+            name = f"{frame_name}#{index}"
+            sequence = "".join(row["sequence"]).upper().replace("T", "U")
+            pairs = sorted(tuple(sorted((int(a), int(b)))) for a, b in zip(row["pos1id"], row["pos2id"]))
+            label_map = {tuple(sorted((int(a), int(b)))): int(label)
+                         for a, b, label in zip(row["pos1id"], row["pos2id"], row["pk"])}
+            keep = {pair: not label_map[pair] for pair in pairs}
+            stats = collections.Counter()
+            n_dropped_pseudoknot = sum(not value for value in keep.values())
+            if n_dropped_pseudoknot:
+                stats["dropped_pseudoknot_pairs"] = n_dropped_pseudoknot
+            for i, j in pairs:
+                if keep[(i, j)] and (sequence[i], sequence[j]) not in canonical:
+                    keep[(i, j)] = False
+                    stats["dropped_noncanonical_pairs"] += 1
+            partners = collections.defaultdict(list)
+            for pair in pairs:
+                if keep[pair]:
+                    for endpoint in pair:
+                        partners[endpoint].append(pair)
+            for members in partners.values():
+                if len(members) > 1:
+                    stats["multiplet_positions"] += 1
+                    winner = min(members, key=lambda pair: (-(pair[1] - pair[0]), pair))
+                    for pair in members:
+                        if pair != winner:
+                            keep[pair] = False
+                            stats["dropped_multiplet_pairs"] += 1
+            kept = [pair for pair in pairs if keep[pair] and pair[1] - pair[0] > 3]
+            n_dropped_illegal = sum(keep[pair] and pair[1] - pair[0] <= 3 for pair in pairs)
+            if n_dropped_illegal:
+                stats["dropped_illegal"] = n_dropped_illegal
+            while True:
+                crossings = []
+                for i, (a, b) in enumerate(kept):
+                    for c, d in kept[i + 1:]:
+                        if c >= b:
+                            break
+                        if b < d:
+                            crossings.append(((a, b), (c, d)))
+                if not crossings:
+                    break
+                counts = collections.Counter(pair for crossing in crossings for pair in crossing)
+                victim = max(counts.items(), key=lambda item: (item[1], item[0][1] - item[0][0]))[0]
+                kept.remove(victim)
+                stats["dropped_crossing"] += 1
+            output[dataset].append({"source_record_id": name, "Id": int(row["Id"]),
+                                    "family": str(row["family"]), "is_pdb": bool(row["is_pdb"]),
+                                    "sequence_sha256": sequence_sha256(sequence),
+                                    "raw_pairs_sha256": pair_sha256(pairs), "raw_pair_count": len(pairs),
+                                    "kept_pairs_sha256": pair_sha256(kept), "projection_stats": dict(stats),
+                                    "accepted_in_frozen_jsonl": name in accepted,
+                                    "rejected_in_frozen_jsonl": name in rejected,
+                                    "pdb_accession_entity_chain": "UNCHECKED"})
+    return output
+
+
 def verify_official_sources(args, summary, recompute, sources, records) -> list[str]:
     checks = []
     if args.rfam14_root:
@@ -135,6 +210,23 @@ def verify_official_sources(args, summary, recompute, sources, records) -> list[
                 assert official["status"] == status
                 assert official["pair_lineage"] == official["first_release_date"] == "UNCHECKED"
         checks += ["Rfam 15.0 source SHA256", "independent Rfam 15.0 FASTA and full_region recomputation"]
+    if args.rnaformer_plk:
+        expected = summary["official_sources"]["rnaformer"]
+        assert expected["file"]["sha256"] == "12000d35e6a0501838587a8eabb47e75572f56da8460b3ee98c51836e8aa9181"
+        assert expected["file"]["sha256"] == sha256_file(args.rnaformer_plk)
+        rejects = {name: load_jsonl(args.jsonl_root / f"{name}.jsonl.rejects.jsonl") for name in PANELS[:4]}
+        candidates = rnaformer_candidates(args.rnaformer_plk, sources, rejects)
+        assert recompute["pdb_rnaformer_source_candidates"] == candidates
+        for name in PANELS[:4]:
+            by_id = {row["source_record_id"]: row for row in candidates[name]}
+            for source, record in zip(sources[name], records[name]):
+                candidate = by_id[source["name"]]
+                official = record["rnaformer_official_source"]
+                assert official == candidate
+                assert official["sequence_sha256"] == record["sequence_sha256"]
+                assert official["kept_pairs_sha256"] == record["pairs_sha256"]
+                assert official["pdb_accession_entity_chain"] == "UNCHECKED"
+        checks.append("independent RNAformer PLK raw-pair/filter replay including source rejects")
     return checks
 
 
@@ -144,6 +236,7 @@ def main() -> None:
     parser.add_argument("--jsonl-root", type=Path, default=Path("/root/rna_jepa_data/ss_data/jsonl"))
     parser.add_argument("--rfam14-root", type=Path)
     parser.add_argument("--rfam15-root", type=Path)
+    parser.add_argument("--rnaformer-plk", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     artifact = args.artifact

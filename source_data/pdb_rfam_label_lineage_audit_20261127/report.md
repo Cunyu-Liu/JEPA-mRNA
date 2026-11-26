@@ -18,7 +18,8 @@ External Test is audit-only. No prediction, metric, checkpoint, or model-selecti
 ## Binding conclusions
 
 - All six panels are filtered canonical/nested projections; their dots are not proven experimental negative labels.
-- PDB TS records lack PDB/entity/chain mappings in the frozen JSONL. mmCIF entity/poly-seq-scheme/atom_site and DSSR lineage are therefore `UNCHECKED`; all PDB labels require raw-source rebuilding for experimental claims.
+- The official RNAformer PLK hash matches and all 153 PDB candidate rows are replayed, including source rejects. Its numeric index/Id, `is_pdb` and optional free-text `family` fields still provide no PDB/entity/chain mapping.
+- PDB TS records lack PDB/entity/chain mappings in the frozen JSONL and official PLK. mmCIF entity/poly-seq-scheme/atom_site and DSSR lineage are therefore `UNCHECKED`; all PDB labels require raw-source rebuilding for experimental claims.
 - Rfam directory names and BPfold test-result locations do not establish prediction-derived ground truth, first-release dates, or pair provenance. Rfam labels remain comparative-inference candidates, not experimental labels.
 - Exact training or cross-panel overlaps require exclusion/recompute before independent evaluation; TS-hard is not sequence-disjoint from TS1/TS3.
 - Source-rejected rows are preserved in `recompute_sets.json` (TS1: 4; Rfam family: 1); accepted-row counts alone are not full source-panel lineage.

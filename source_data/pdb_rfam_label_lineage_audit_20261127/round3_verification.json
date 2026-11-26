@@ -1,0 +1,31 @@
+{
+  "artifact_manifest_sha256": "8b631610aaaab932a842451a45ff24763bc72822e10295a32099276e20a8c129",
+  "checks": [
+    "artifact SHA256 and byte identity",
+    "source JSONL SHA256 and row conservation",
+    "per-record ID/sequence/pair SHA256",
+    "internal projection status and UNCHECKED boundaries",
+    "independent TR1c and cross-panel exact-overlap recomputation",
+    "source-reject conservation",
+    "fail-closed evaluation qualification",
+    "independent Rfam 14.9 FASTA exact-sequence recomputation",
+    "Rfam 15.0 source SHA256",
+    "independent Rfam 15.0 FASTA and full_region recomputation",
+    "independent RNAformer PLK raw-pair/filter replay including source rejects"
+  ],
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "n_cross_panel_exact_sequence_groups": 34,
+  "n_records": 11375,
+  "panel_summary_sha256": "6110f4c7ebd6d8c85797a49268894ec17c645acebe4af416f9ad97f45fa4a6d2",
+  "qualification_fail_closed": true,
+  "rfam_temporal_exact_in_rfam14_9": 43,
+  "status": "PASS_PDB_RFAM_LABEL_LINEAGE_INDEPENDENT_VERIFIER",
+  "tr1c_exact_sequence_overlap": {
+    "ref_pdb_ts1": 0,
+    "ref_pdb_ts2": 0,
+    "ref_pdb_ts3": 0,
+    "ref_pdb_ts_hard": 0,
+    "rfam_fam": 284,
+    "rfam_temporal": 33
+  }
+}

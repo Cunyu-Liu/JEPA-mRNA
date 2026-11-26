@@ -11996,6 +11996,2691 @@
       "pdb_ts_hard#633122"
     ]
   },
+  "pdb_rnaformer_source_candidates": {
+    "ref_pdb_ts1": [
+      {
+        "Id": 632970,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "dea808e1f8ace283f6b67cce8d60022527c2b372da11a64d383920c629a863b0",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 37,
+        "raw_pairs_sha256": "b078355d4cd603bbfe269f400680c93123a12d5c21256449a3e2999c0af90fad",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "122e50bc4e3b6dc24289eb026eda9eb974373c41c722ecd216ec19b32fabcdba",
+        "source_record_id": "pdb_ts1#632970"
+      },
+      {
+        "Id": 632971,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d48849e8222276fc9e8e519046b5d3971c6da432699e852dfcfe6ee1c5d5e04e",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 8,
+          "dropped_pseudoknot_pairs": 16,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 57,
+        "raw_pairs_sha256": "c9228d82114435bfd98e07e9be363b703212d46aaf64c0d611e37483e5eb104d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "be23b84a8acd96121a5def9023bad62bebeb3f37c6094d338404fbc366632b08",
+        "source_record_id": "pdb_ts1#632971"
+      },
+      {
+        "Id": 632972,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "779074da89c2798fe4861dbddb412497fae43ac7873dd8edf20d3669498cc6ed",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 13,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 47,
+        "raw_pairs_sha256": "3d083ddf0e0a6446ae67a9d4012bd8d0b66853afec6e064c3c899a3c7871aec6",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "146d3d216268dfef91db9749fdb18903cf3711760450896303966f4f0563614f",
+        "source_record_id": "pdb_ts1#632972"
+      },
+      {
+        "Id": 632973,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d135d12d68d0f048250677cbe6ae8810062a3491ef2a27e38e05c6d42020bd6a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 36,
+        "raw_pairs_sha256": "083954e00565f752f8fe91eee8e0ac9a06dee2d3fac0893be9991d0fa7ab9f6e",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "dd915b70e493f3491bc3735c1713fdb9f888d01a3e3428bed6e1897d764a1bba",
+        "source_record_id": "pdb_ts1#632973"
+      },
+      {
+        "Id": 632974,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "7efb0c737c03f483009f89e7512eeb3ff7bc6ca1421743bf715006e1f0cd3c96",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 3,
+          "dropped_noncanonical_pairs": 9,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 51,
+        "raw_pairs_sha256": "465d43772bfc1833113aa50dd078dccc927b48895f692aa5681fafb2238519c7",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "557e963fa90a867fdfa5473ec1be77c9ebf6f6a1e9c9d9848eb79bf7fca61fdf",
+        "source_record_id": "pdb_ts1#632974"
+      },
+      {
+        "Id": 632975,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "4223a87b53b6353f44b30a93048ff6473c59775ccc8116bc5310aff220beb9eb",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 1,
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 33,
+        "raw_pairs_sha256": "4bbcdf114fc0e14e7f9b6101871a108578b83215115f56ad2b67eba824cd6074",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1913b0fe9a792a688968cce7f1ecde585a4d63b4ed086fca8768a43a85c32a8c",
+        "source_record_id": "pdb_ts1#632975"
+      },
+      {
+        "Id": 632976,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "7d10ecc5433390f5e60a528685730e7ae54bd1cc1cb61367777c87b2692e635f",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 24,
+        "raw_pairs_sha256": "887c70352117defbc3ef06d5e116d3ef57543c35649ef11c9a42c442cdacfb73",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "3ad45f7bed06509243666efc1d024abcdd667571c8febcd440940b404741f822",
+        "source_record_id": "pdb_ts1#632976"
+      },
+      {
+        "Id": 632977,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ce03c30010ad6ecf8ba06a15ac0a63e77e4b528bda416a5faf59e337868d6753",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 1,
+          "dropped_noncanonical_pairs": 5,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 34,
+        "raw_pairs_sha256": "6b328f37c48dd721a2b7b2b80cbd5f3b96c387a4a7c240f4365cda77255f50f0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f84bbfee6c2a9fc4f504f51d5197db85672b731d424d54b5cd491bddbe600fb3",
+        "source_record_id": "pdb_ts1#632977"
+      },
+      {
+        "Id": 632978,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2d985ae1ac6996a5657ea0d35afef8d9c5d569bb0c3216a3ec37090921ab6ab6",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 2,
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 11
+        },
+        "raw_pair_count": 36,
+        "raw_pairs_sha256": "58d51b08ca5e2721812b3d4d2eebb8854d4ed7893e4fa970950790b496ee23ae",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1d9cfe0a88bc23b093aba65cd329007bbb22d386f97c418b7a772dd42f0da1b9",
+        "source_record_id": "pdb_ts1#632978"
+      },
+      {
+        "Id": 632979,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "74feaa492b5ef280291e65610fb5c9d42c89c5dc000e7d7e50823a87fd0cb203",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 17,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 29,
+        "raw_pairs_sha256": "02972455cd84426427ba83c3addc046045b70a7e0fb8c9f9880d135c47c27d68",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "8e55c5bb77543ee9978bdfc786e6c3a69d95e911e93966ea78daabb99d2e5bd2",
+        "source_record_id": "pdb_ts1#632979"
+      },
+      {
+        "Id": 632980,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "15e93eff5cf6696786d36ea5a600b235749eef0786d18f9ba23e646c07dc68b3",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 5
+        },
+        "raw_pair_count": 16,
+        "raw_pairs_sha256": "4381260f0634f0990277206403207fc026de1228cd3b9554a2a4c5735a289956",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "9d47f46a499c2e8c39b5f4a91ad69f85b0439472a1f80fc97becc6eec1054ae7",
+        "source_record_id": "pdb_ts1#632980"
+      },
+      {
+        "Id": 632981,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2c8f61989fce0a03d2055401b25a0a6c09ab71ab78f4d2514f05ee62fa86e407",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_pseudoknot_pairs": 7,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "01ba50067fe8997fc849f0b98fa69f753f08c55258db9681366d32e5055c131c",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "4637b9d1751ac0a7128246ce81d04f793a7232809c098d5d2e13afef46330e6e",
+        "source_record_id": "pdb_ts1#632981"
+      },
+      {
+        "Id": 632982,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "f37182539c91346699dbd95c94b0954bd1b449a65ac2058746a145a9151a6b9b",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "5061751c77908e25fb359e546aa5c30ed62d5d093bf4b30a0aefca337c55c35b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "0fe80e6d831d5ff6fc2fcd7a6f9f721bdde27ea3f7eadb4000718b663968174a",
+        "source_record_id": "pdb_ts1#632982"
+      },
+      {
+        "Id": 632983,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "c42fe1e2da84246beac64ac14d3d42da622873508ee2c23e8f7ad870fa8f4ec4",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 14,
+          "dropped_pseudoknot_pairs": 15,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 87,
+        "raw_pairs_sha256": "42e539f13a028de09a1b46d74db5cd1678687924ad140d9436cd33f5ad3a948a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "482fc3414774e7e921c9b38d3d218205c6150765d336d29637e35d1a73eac6f4",
+        "source_record_id": "pdb_ts1#632983"
+      },
+      {
+        "Id": 632984,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "a4f80769336859347cb02c80d019b996b9af5bab26ca0883ae6d3cf932362530",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_multiplet_pairs": 2,
+          "dropped_noncanonical_pairs": 8,
+          "dropped_pseudoknot_pairs": 11,
+          "multiplet_positions": 2
+        },
+        "raw_pair_count": 47,
+        "raw_pairs_sha256": "e2153acc12b5e238dd39dfb0da9888c94214de42bb8b84a9bc12411bbd32cb84",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "2a22afda337cd85c2aebd76d57938223891c4f1891b8a1475dfd152249f84295",
+        "source_record_id": "pdb_ts1#632984"
+      },
+      {
+        "Id": 632985,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "3d2fdf9dc1d5a0cf3656f49cc178718ac4105af388cf12acff6ceb3f3f951b67",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_noncanonical_pairs": 5,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 33,
+        "raw_pairs_sha256": "2fe531c5da27d90e67c04b37aa79d5971ff483967539b1646d79740a26cdbe76",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "b654b20dfa9315e3d098f0c3d8b6ec062f044c5689109c23ed2a1fb03dbf4e99",
+        "source_record_id": "pdb_ts1#632985"
+      },
+      {
+        "Id": 632986,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "bf155f94e2b5fc97ac9adbd0c6487d149f981bcbe033104658372114d86e22a9",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 3,
+          "dropped_noncanonical_pairs": 7,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 56,
+        "raw_pairs_sha256": "9df72a165190bd8e022672eb2a393c0cae54529f43467186bef28343299420a8",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "796fd91bfc4eb1d684c6e451ca296b5fe1077657142579d41f7bf424795b42f6",
+        "source_record_id": "pdb_ts1#632986"
+      },
+      {
+        "Id": 632987,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "0ba290f784cbe846dd53c14f4904d9d42585f0ede73bced1c27810daf7584ffe",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "df50cbeada0bbd5033021431e38b329c855238136abdc44499bdbf55d09a97d0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "6dc4922a7a56188b5d33a0cde6b3cea2c61c5957df5501e445c7f41b1efa1e96",
+        "source_record_id": "pdb_ts1#632987"
+      },
+      {
+        "Id": 632988,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "350eb98ce8f5500eea0fe0b30043b5bf4e2dc42ccd02b5fcead9e61a971ff216",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 5,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 28,
+        "raw_pairs_sha256": "98792bf5590528de9a7230e6621e80ccd5e22b4fdb0cc43eecc38779340f227c",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "004ffe9d552326dbf77ab08c14d129eca02beca9c592b108138cdccfd5c9031d",
+        "source_record_id": "pdb_ts1#632988"
+      },
+      {
+        "Id": 632989,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "cf15254db02ee55c00cca5f2196ada6cd7e30cc557a76c72a100b7f8a4c157c6",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 10,
+          "dropped_pseudoknot_pairs": 12
+        },
+        "raw_pair_count": 47,
+        "raw_pairs_sha256": "eead4921ee016072775237cae9586c7b40d795391bd18f43c8e1883c3de6f99a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f446f465c7b59f7c853a9e8aaf367c92c622a71e1ba5ea39dd4060a9c05d5e59",
+        "source_record_id": "pdb_ts1#632989"
+      },
+      {
+        "Id": 632990,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "4c506e70226fcdc9bc6e721726e3c7a593a95936bc8046fc7eab0582efde618a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1
+        },
+        "raw_pair_count": 6,
+        "raw_pairs_sha256": "8a8cb4870f8c7e329f88fbdd1d6f313eb78541e5ca69bbc34255edb876103c44",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "8a6b8602794fec55da992e93f0e8778edcdc95b659698143bcff68807d238b63",
+        "source_record_id": "pdb_ts1#632990"
+      },
+      {
+        "Id": 632991,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "f5a9b02ae229068c0853cf6a1a224c24df17e8ba95e3acdf6f592fa5ce500e10",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 7,
+        "raw_pairs_sha256": "4dac505b897a5074b3191528e87b17e2e19ea6dd60ea72ba350958f378c1dc1a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "800c1d4a42f6e015db6116a47fd5b1fda0919a5279acd5a7a34679b8d67f999d",
+        "source_record_id": "pdb_ts1#632991"
+      },
+      {
+        "Id": 632992,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "aa9fa201e75a895b89361734719fc833d61864a88906a2dda884d8c68bbb714f",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 11,
+          "dropped_pseudoknot_pairs": 15
+        },
+        "raw_pair_count": 59,
+        "raw_pairs_sha256": "18cff3f9a85dd4476fbfdbede7a67199d42904c68367c8cb9c5903dd24ab1273",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "caff9fa7a0e44692bc8826169bb8e5d9717158de3e6fd4b30b53721e002817c8",
+        "source_record_id": "pdb_ts1#632992"
+      },
+      {
+        "Id": 632993,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d1feca474c87976797917619d4bdf155f43a09fe53673cdfe8ed5d17bbeed6fe",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 5
+        },
+        "raw_pair_count": 29,
+        "raw_pairs_sha256": "2366caa000adf26e7386247b788221ba27a3f16f2b7c1baef198cc13d4b673f2",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "983a99eb90f34c07ccb99fba0dd3bcffcae523247bdce97bb79c311e472cdd9a",
+        "source_record_id": "pdb_ts1#632993"
+      },
+      {
+        "Id": 632994,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "749dcd3f2b653c810a0352106624fb46b8a552d28ca402bc422014b279a5ebed",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 39,
+        "raw_pairs_sha256": "22e8d824ccf8a8ec1c17a665c5a7790bc287075c20279dde220a232ea62a5ee4",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "cb4d1eba5ddc43ca99f8d5a7c99825d78cc28c4823be20d28876043b53068c6a",
+        "source_record_id": "pdb_ts1#632994"
+      },
+      {
+        "Id": 632995,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "9db410032601b85dfe6566a54f534ed412bff347a7aa1fadf3d85db87d7363bb",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 5,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 36,
+        "raw_pairs_sha256": "37cbc2868d1244aea9adf1300f7dc45306f1d0b0632a7087d9666f1366f80d7b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "3fb17c58b7fbe5f87c068a8f3ac000c0cd40958a059a93b60e981200b8754a58",
+        "source_record_id": "pdb_ts1#632995"
+      },
+      {
+        "Id": 632996,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "286f9e2d238263e89a5bb2fc466146a225ec0514946b8b8fe7c585f4182495bd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4
+        },
+        "raw_pair_count": 13,
+        "raw_pairs_sha256": "07d5c580b3665c69735c58578ef592415ceb8acdd562290a9a858ca96c5a9f18",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "86acac49800c19e45d381e13d8b42b1d40f0333c9b11077b19678cf2f9bb8bcf",
+        "source_record_id": "pdb_ts1#632996"
+      },
+      {
+        "Id": 632997,
+        "accepted_in_frozen_jsonl": true,
+        "family": "Selenocysteine transfer RNA",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ac8cf87d0719a14f063718e2a6a650352501d262f9a4a8f8042bdce34d79eb9a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 4
+        },
+        "raw_pair_count": 38,
+        "raw_pairs_sha256": "d44b04be48b367d0400ff80ac550e146c58dc192bc1679e7f2df006de2aea509",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "c30f22d47b8d7a018bd32806a55ba2f56db840f222183554ba99c2ef3908da32",
+        "source_record_id": "pdb_ts1#632997"
+      },
+      {
+        "Id": 632998,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "89be53690b88724c2e53fd71adda5bb308552f7f221bb7395d9a03aa67b3ddf4",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 34,
+        "raw_pairs_sha256": "788331f1454fed6caa0b8038a8d1062c471540a8f79f834e3d4435e544f2ee76",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "ba627142edf85d3f53dc8572db7182b71d23ab039a629731d8d6e9a6507f1104",
+        "source_record_id": "pdb_ts1#632998"
+      },
+      {
+        "Id": 632999,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "3173d3242a32946c674d2ab0d8761e7ae847d2892418245651bf59ecb895aa68",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 21,
+        "raw_pairs_sha256": "7cd6869511a8446e1713ca0e3485549567ba1988514906b938d5275e9d3cea8e",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "fa070d292a3a4428f5cbcf38a9412a734fff0d2253dca878c7b882d43a7a2dd4",
+        "source_record_id": "pdb_ts1#632999"
+      },
+      {
+        "Id": 633000,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "66a23e7d7b79a878991884e11bcc9ed77af5bb1dbd5bf2e2206d34c0dada682d",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 25,
+        "raw_pairs_sha256": "6ab063aee087173eb97e586e155f87a146a8487e70313ab602e40584ed31f581",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f6f74dbc678025ca7840a29d946c44ac80a020f25bb5fb52866e371506be3474",
+        "source_record_id": "pdb_ts1#633000"
+      },
+      {
+        "Id": 633001,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ad34c39deaac07a7be4d350a90d0d1f59673b5ac46a81198e051ddedba0ab8fb",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 12,
+        "raw_pairs_sha256": "a9fbba2dbf4799785e0fa6892d534d39a6a56249a5d6fee35e2ac2307f191402",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "e1a425a9090371d8d98c4d0abc210a384e1f17b68aa3d9c22b5d2be25781927f",
+        "source_record_id": "pdb_ts1#633001"
+      },
+      {
+        "Id": 633002,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "bbf0c161803b8187badcb9ada54e275a3f7df99f836e323a8417cecf86c939bb",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {},
+        "raw_pair_count": 14,
+        "raw_pairs_sha256": "bbf0c161803b8187badcb9ada54e275a3f7df99f836e323a8417cecf86c939bb",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "20d82c1ef762c08192c6287f9be9aa0c6726540554db6a68ebf134acc7e98035",
+        "source_record_id": "pdb_ts1#633002"
+      },
+      {
+        "Id": 633003,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "08a5b33e91c43339f870d208547ed287caeef243d08ffa05d7cfa10e7ffa265d",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "71fcbe67410deac9e686a75ffefe69b68ed1e5afca2a80cd71cde4afd11e44f0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "56c72a1f0c0eca3a3d2f4376a47ae5d6ce394064a36db9ff3f30c9e83793021e",
+        "source_record_id": "pdb_ts1#633003"
+      },
+      {
+        "Id": 633004,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "9299ff987e8c0658213d124bbae73ad57b078ecb78684641f4979857b9469ea7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 18,
+        "raw_pairs_sha256": "26fabd2a2286d75799fda64cb3fffd8367be8d5bca69c19cd2c5a1fd3d7de00a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "c67ca09a644d991f4a901efe5479d8c5148e0a2089a7ddec1e11bdbbdb0b6258",
+        "source_record_id": "pdb_ts1#633004"
+      },
+      {
+        "Id": 633005,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "b212a64c62a97fc7ce9730935b853c6d91343184ab330d30728946c1a7e3f2f2",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 1,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 39,
+        "raw_pairs_sha256": "88df1edceaebe4b5d874a52c27ac3b2fa194e71b17a6f215955e9ef04ff78766",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "7daadff32bb9dd22a2b9718b7a228a57b20530fb8d2139e6d446ef1e2e26b6fd",
+        "source_record_id": "pdb_ts1#633005"
+      },
+      {
+        "Id": 633006,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d4ef882470570596fcebd283d17560c380bb917ab741bf51e4996cbe836c96ed",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_noncanonical_pairs": 10,
+          "dropped_pseudoknot_pairs": 21
+        },
+        "raw_pair_count": 80,
+        "raw_pairs_sha256": "aeb6514a4b2e8030f2b4e104284a221d933fd1154d01201298aa750b764529dc",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "73f5e49ec96137aac86992ec1f1744643159d5059584bc85dd2ec938964ca50b",
+        "source_record_id": "pdb_ts1#633006"
+      },
+      {
+        "Id": 633007,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "3d0648425fb8ae76b7b65286eb90b64be128b6cc410431132dbdde15d3e11f52",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 13,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 62,
+        "raw_pairs_sha256": "b2b7f5d9764c4342a6f34164958442ff9e80d2594943d70fcf13222c8d07f364",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "377cc53522f8e6ba36bf361ed06ab1c9189430fb447e2b7f6d1e5967a725ff9d",
+        "source_record_id": "pdb_ts1#633007"
+      },
+      {
+        "Id": 633008,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "be1805977d257e091ea8053b32fab4c64c8e82a1172f5a293619df86a1546f8f",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 33,
+        "raw_pairs_sha256": "c854815f2c49fb73ebee64ec7f06a57e0e4b7c922faa5d402f496651ca37c99c",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "068f00c952e25ccbfef76d34abb1fb29c3845e4ea7c0e5e3e7894076812f2572",
+        "source_record_id": "pdb_ts1#633008"
+      },
+      {
+        "Id": 633009,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e756b36a6ad54b846375a113f07970218197e5a8c31c5102a4287f2af5e812e5",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 12,
+        "raw_pairs_sha256": "c8277f837526f44cc6b28c8b92ed1c671c3ea64f5a591dcdf610367a519b6507",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "a99ef94ada6e4acd2aa7212e10e72cf45921785ede589b5c0e734244380c2da7",
+        "source_record_id": "pdb_ts1#633009"
+      },
+      {
+        "Id": 633010,
+        "accepted_in_frozen_jsonl": false,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "48aca0bad5a10ab4950a37db9f2f1ebba406de082b232a3151d0cf6ae75d749b",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 7
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "25adfcb32495ed18edf6b7f6a4f8137c3bba736949d73cfd89899540e2de113f",
+        "rejected_in_frozen_jsonl": true,
+        "sequence_sha256": "e3fff4d0328420011e276d43535f1b652dbaeca8bfbb8c621c4da7c93eecbed4",
+        "source_record_id": "pdb_ts1#633010"
+      },
+      {
+        "Id": 633011,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "1620c9195818ee2a18b779c091db94f8ec14f97a83a92d5eabf0d8cba6e4c244",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 3,
+          "dropped_multiplet_pairs": 2,
+          "dropped_noncanonical_pairs": 7,
+          "dropped_pseudoknot_pairs": 10,
+          "multiplet_positions": 2
+        },
+        "raw_pair_count": 56,
+        "raw_pairs_sha256": "283bb915cd58cc927d4a62c3139c8ed626480ef96b996489e67da928e635335c",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "2acb1345eb259905224200541d75c0ddb5e143207353120a0fea00d6901e8c85",
+        "source_record_id": "pdb_ts1#633011"
+      },
+      {
+        "Id": 633012,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "bdb14b98b8491fb1a2724aa5d772f5734b013820c8f878f6c11de7ffd4b9b1a3",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 12,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 37,
+        "raw_pairs_sha256": "b14256bb0cf64a857358e2772f7c333e9704071a4f27f171b7a6ae3123eef7d5",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "ea0703483c2d65623392d87c9d87332666caaa27619a34bda37f23ce4159085c",
+        "source_record_id": "pdb_ts1#633012"
+      },
+      {
+        "Id": 633013,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2cd316c78e6f240d43701d474402768f22b12aa433773b4506f27cfc71233de7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 7,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 32,
+        "raw_pairs_sha256": "96ba1f8546a61f757adb283729391b09c4256d20d4b2f272e079a9130aea1785",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "00f7a5c40faa0257838abe122c51e2a9cada68e856d2024a6e5119d039103e5a",
+        "source_record_id": "pdb_ts1#633013"
+      },
+      {
+        "Id": 633014,
+        "accepted_in_frozen_jsonl": true,
+        "family": "AdoCbl variant RNA",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d6b291044ec0374a525fd8b44d4758a95249d0b58929840e36ae12775b9360f2",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 13
+        },
+        "raw_pair_count": 42,
+        "raw_pairs_sha256": "c1d8618df3c539fd61b55909fecf628cc1a5a25b76af42dc4c87b0a91ef93de0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "6caf94478059be39dc41b4f1871fffcbb6cd52810714a024663b6ce170522310",
+        "source_record_id": "pdb_ts1#633014"
+      },
+      {
+        "Id": 633015,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "4b22973094f8052d78d9b88b34b1a2351a09f98fb13bfe074de131b048f23600",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 8,
+        "raw_pairs_sha256": "ebaeabe547e911e631fce58b4bbca083f4933ef131363e167d62dbbb76a5d7d8",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "9647a5ab0701588468b660857abd5883214b22e0a5a93a42b16bbddcf76a2f5e",
+        "source_record_id": "pdb_ts1#633015"
+      },
+      {
+        "Id": 633016,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "887c024082841b8420ef44e7b8933dd47de1fcbf0406c71e51bbd6961ce88256",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 13,
+        "raw_pairs_sha256": "47a94287b26fac4e3a39360f3ffe4d7d46367519eab8822629d27b83efe28ca0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "e49d15e0e9be9f383fadb329d93a1ee319d7dc9cd8734204513e6420de228552",
+        "source_record_id": "pdb_ts1#633016"
+      },
+      {
+        "Id": 633017,
+        "accepted_in_frozen_jsonl": false,
+        "family": "transfer-messenger RNA",
+        "is_pdb": true,
+        "kept_pairs_sha256": "b0f75ee77ee364f3f8237b3e1a9abd17d11a367d6399a56b4b2f1e971caff3f8",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 24,
+        "raw_pairs_sha256": "18e4a574756d9db9a4892ae3c1c39e6551e88d634dd50e158a287356be0eec28",
+        "rejected_in_frozen_jsonl": true,
+        "sequence_sha256": "98115acb44ee199d431eacf7cf7178e4d2d40c542928b2b0d8bb97afbf13c4ce",
+        "source_record_id": "pdb_ts1#633017"
+      },
+      {
+        "Id": 633018,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "7602c8b118838d23603ee582a2a380627d80d175366840f0c31c8e7a651f55e1",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 35,
+        "raw_pairs_sha256": "94ff7df8588f5c09986a75935e8c3a63aada21972bdb7bf6e8fdebb674a64318",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1e7ad3a28ddb4f60dab123026a334aa51b6737b0924c5a5d5b76fd75ef73c9f3",
+        "source_record_id": "pdb_ts1#633018"
+      },
+      {
+        "Id": 633019,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "699d6c36b962e081f330eda571a43dc3fa39d14a5d5d17149ac0e9c3b8d8d222",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1
+        },
+        "raw_pair_count": 12,
+        "raw_pairs_sha256": "e11b9d8d74b7b375624369dc54434480ec991796b10a70e76799f36bb3d2334d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f200fd9e29fab436f9cfed7473251e949d19bb9d66cc9bde817ee6c1aed7d759",
+        "source_record_id": "pdb_ts1#633019"
+      },
+      {
+        "Id": 633020,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "acc9c950a7f40cecd65fc9ffcfc8e34c4c3c06fa2673c91feae938df9fb010c7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {},
+        "raw_pair_count": 5,
+        "raw_pairs_sha256": "acc9c950a7f40cecd65fc9ffcfc8e34c4c3c06fa2673c91feae938df9fb010c7",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f654214bd07e847dda7af8651152468376babfb3c4ab95ef3d6f3eaa0dd98141",
+        "source_record_id": "pdb_ts1#633020"
+      },
+      {
+        "Id": 633021,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "4a63559ff2ab3e2571b838ef43d15e7999c0e365d13fe7677414d1bcabcbee3a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 12,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 58,
+        "raw_pairs_sha256": "94c24f6451a7bb65e9db56977ce8e25f5c7d67f988b28148bc0a31505295d614",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f795f3dd4ffb8a2729af51bc2675db874dc554cf652ec5b6b62cb223dc21acf0",
+        "source_record_id": "pdb_ts1#633021"
+      },
+      {
+        "Id": 633022,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "85c8c1813575219606f18f7fb150009863381ca7ed567d00a3ae20b0cae50ab7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 17,
+        "raw_pairs_sha256": "2e1f81ef24e90e6c773167cce792753da4308c07b97975bf4e80800fa5670566",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "a00c9cf09852ff4cc0bca44fe23282a205fd3c3a5b57b6e7f06e8eac0f432008",
+        "source_record_id": "pdb_ts1#633022"
+      },
+      {
+        "Id": 633023,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e637bb087059a0db6cf154b5f7b726fba082265eeaf362d164b942ecb06519dd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_pseudoknot_pairs": 5
+        },
+        "raw_pair_count": 16,
+        "raw_pairs_sha256": "8054cb372ec69f4b4e3d4a3d58a14b9cf0e9faab940ddec948597ebb5fd41a1e",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "241afa91fd1da032f81c32cd4957c194b06c021d29a80a54ad8d54e3a28502bd",
+        "source_record_id": "pdb_ts1#633023"
+      },
+      {
+        "Id": 633024,
+        "accepted_in_frozen_jsonl": false,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "492df18cc5b9c9337420d4361565f6408405ab21e5db6ea17c51fdf1f7010929",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 1,
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "9b352874c2713f9094158c00ef5cc73d0b2b5136152d1628eee7d9cc46d19713",
+        "rejected_in_frozen_jsonl": true,
+        "sequence_sha256": "e6280580f37f9ca9fd46f64edb6953ef9a4fe1a1b494a1076315ba8f74e62d77",
+        "source_record_id": "pdb_ts1#633024"
+      },
+      {
+        "Id": 633025,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "6d1b85239257ed0571ce7f03c581fb2ad8b2ee471f9f3ba6c1881d5a3f6d6eee",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 14,
+        "raw_pairs_sha256": "acba56b1fae445e9708614e4e7cc27fe954851cb66126c39ab225466d519e96b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "40a28693f768a2392bc40113cfe4cb1078fd2c906d11ac04828ec82d20f3cd2d",
+        "source_record_id": "pdb_ts1#633025"
+      },
+      {
+        "Id": 633026,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "33621b0473f2c0c9c0ff835beb7f40bef22a5c2043a9bc9d5f28980f5147d505",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 14
+        },
+        "raw_pair_count": 25,
+        "raw_pairs_sha256": "fd229cecd4144756c54ee5f5f94ac9cdba3d77ddb171cf5232cc97bf9a6621be",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "bba2c3fb0f7371cf87cd2dfc3f60de0a98e94b634ccb7b3eedd8aae0a4e09967",
+        "source_record_id": "pdb_ts1#633026"
+      },
+      {
+        "Id": 633027,
+        "accepted_in_frozen_jsonl": false,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "39ddd1f5b71d4925116d93198b327acc4eda0b6d85abd08ea24c83ccb11b6be6",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 1,
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 34,
+        "raw_pairs_sha256": "01bbf804f40e722358b53c3edffda09907cfa45a9501803b7334f7de9a9b9b49",
+        "rejected_in_frozen_jsonl": true,
+        "sequence_sha256": "46993d03f1e6af3e6f39ef61c97dcf797b200c8cf2ab4228e7e5be10f6b7c004",
+        "source_record_id": "pdb_ts1#633027"
+      },
+      {
+        "Id": 633028,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "c1de42fc92ae27bbe11210e28846b3c72f568d83b3c670c0e43fb24353f66b4a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 19,
+        "raw_pairs_sha256": "e0191a5bbfcb1a0564dafb59042d8962641198e269ae0759454b3dafb1704747",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "75c084ada4814632055d75401afe592fbed9107ea20fd15f10108a9fe1831027",
+        "source_record_id": "pdb_ts1#633028"
+      },
+      {
+        "Id": 633029,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "922075932a8f0c6f97104b4b6b7dbeb9b106db564420a8127e62ed8daa04b30c",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "8a6bc9b380d478ab9dbd71afd95aaede44c066d65b0dcfc10e47b6ca4f32bb55",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "01754b7b064fe5e23932dcc2108e46fee6d76ed9281f5779de9766d9d6404940",
+        "source_record_id": "pdb_ts1#633029"
+      },
+      {
+        "Id": 633030,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ca588206c82560259485f9a691d49e3598d2ec0b5682a5338d13b25a20bf3370",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 2,
+          "dropped_noncanonical_pairs": 9,
+          "dropped_pseudoknot_pairs": 10,
+          "multiplet_positions": 2
+        },
+        "raw_pair_count": 70,
+        "raw_pairs_sha256": "ad1a078c791ec63385617555b56981e44c646058ae6ef55751b7a6fa37a6d8b9",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "d320a527810b92e47abc240c6e73f6a409ec5e0fe3685dcb1a8e629d573ef64d",
+        "source_record_id": "pdb_ts1#633030"
+      },
+      {
+        "Id": 633031,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "27058783cd0f8480bc79478e251399bf16f4498c162a61c0adc7fc498ee7238a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 19
+        },
+        "raw_pair_count": 55,
+        "raw_pairs_sha256": "dbd8ea26f80bd5d486f4ee30455e5ff31cab3d0a7aaa1c262a12924f83cf3973",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "4500bc730a0a5e57cb063ea7a721e695d47771d69b723bb7fd1d7457c972a2cd",
+        "source_record_id": "pdb_ts1#633031"
+      },
+      {
+        "Id": 633032,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e8545938b86281ed69c6722017086d4eebe2398ed8edf98dda51d48b2c165cd6",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 5,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 24,
+        "raw_pairs_sha256": "1bddcad529c9fee2556ddf4fd7e048ef64dcd72a9da748eb252f9a3be9be54d9",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "b7c0af1817e9e4e0901d70c24361bafada0680bfadd73e58699ea4cd2fe068e3",
+        "source_record_id": "pdb_ts1#633032"
+      },
+      {
+        "Id": 633033,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "1f6befa9ec0e5510fae0c875d7d3dfdaa4dc501b25830b40ed606c1490c507e2",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 22,
+        "raw_pairs_sha256": "72ca281edc42c48316c47865b3a9b7e5678d3c8b96ef2b5068e9031c1e10c7ec",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "22dbfa6ba3b900139a9e4cac0cf32f847f3a9ce2c7822fbf376f72717449d436",
+        "source_record_id": "pdb_ts1#633033"
+      },
+      {
+        "Id": 633034,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "7d454ace5543d5bfcc149ed89ab92ffa89900e9a51f2d6a351be291de8f1283c",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 9,
+          "dropped_pseudoknot_pairs": 34,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 91,
+        "raw_pairs_sha256": "25647c52b1965c47cbf760373ea586561944d62449293b6e3ea532042f20bfc8",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "537d42102766a6409c80070c760f0ed5aee5d384524d5c6192691bd9d2021897",
+        "source_record_id": "pdb_ts1#633034"
+      },
+      {
+        "Id": 633035,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "40f43ab04216a449b9e54634980a24866a95d21a853efc317bf63b7b73dc77db",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 2,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 3,
+          "multiplet_positions": 2
+        },
+        "raw_pair_count": 22,
+        "raw_pairs_sha256": "e00cbc1be14fb588fece1dfc61906dd8dbd3bc029b3497027296d7579a30d28f",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "dad5967d5d2a32f25f85278ec62bbaf1237f6395136dbba4a762852ce8102449",
+        "source_record_id": "pdb_ts1#633035"
+      },
+      {
+        "Id": 633036,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ff0fda1d42de1957d4aeede9e61fd017ed8900af7f86523f7db716cfa035dc42",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 8,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 31,
+        "raw_pairs_sha256": "ed0924dd5b6b014e86312ee5590d59d0a62e44759dfd9ebb337620009a929fed",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "45fe340bb2766d200dca8d6a6643ecf6530edda6fcc8b11ae554faf3967758f6",
+        "source_record_id": "pdb_ts1#633036"
+      }
+    ],
+    "ref_pdb_ts2": [
+      {
+        "Id": 633037,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "f9bedc7353bdbc349cff9dd936d3c16c40c8d294aceb8145aaf997fde40d7299",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_pseudoknot_pairs": 12
+        },
+        "raw_pair_count": 24,
+        "raw_pairs_sha256": "3725b2a4a01c5312a48f5078de8a3dbaf31ad2a0ae5966e51c2ae09efdcedc66",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "4e847130a0d8384a30a629052b69221606690bc51990f874fc7987151ceb6189",
+        "source_record_id": "pdb_ts2#633037"
+      },
+      {
+        "Id": 633038,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2048d1f7438c4a8e9603071f01a263906693e6906a63dd47b5df1e86fd5680e7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "48f85f881c7a0e0d45fa878a9600b9242ae0d6380e2f2be284e925eea2171211",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "d446b2ae98299577799b3c035073fa83428230b69a470c7b556e1abd353c551b",
+        "source_record_id": "pdb_ts2#633038"
+      },
+      {
+        "Id": 633039,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e4a5cfbe1443a1deaf89d5c5e5ea6b854ffa396a2e7c78a40f47f990b50ac6bb",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 43,
+        "raw_pairs_sha256": "e9fdb5ef743e4b778a78922b844f795fb379415a1844dfff6ecac79ed52c975d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "44dd1724f5e565910b00547e4b4c3a57fbd5c23ff2cb1f2ce8cb3e127cd967e3",
+        "source_record_id": "pdb_ts2#633039"
+      },
+      {
+        "Id": 633040,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "a2d7ed5df578c4e6d6de6457ef274ae8cd87ce63d705b8c1bf5c0d14aa4e1dbf",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1
+        },
+        "raw_pair_count": 14,
+        "raw_pairs_sha256": "2d856f754cff9b8ec6de4d14c1490c0a329c8aaca9bcd539acf71cb87c336097",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "73a71a1b0044852234a8be155cef7a13de3626cfc1768ed515dd3e46b879c8a9",
+        "source_record_id": "pdb_ts2#633040"
+      },
+      {
+        "Id": 633041,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "5dbf1ad6a91203d60307e1e065b76233ffc216c38043810dc134b813c116f21b",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 5
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "0b8ad14f60ca97c0da60351565e41edc0fabee34a59b585fa5666f23c9c75b5b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1db0a8fdd2e882722122c955d7957427a8822650a419c3d9fa5b00b079378517",
+        "source_record_id": "pdb_ts2#633041"
+      },
+      {
+        "Id": 633042,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "0a2d8ad832df8675b12d873f2a9a666893bac4032156e96e228c817af1d60b5c",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 19,
+        "raw_pairs_sha256": "40c3e9347c64b0e16c298125e4ac0625c9cd486d667b86b34e2975d92ec6483e",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "be33262421346470eb46c5bbe15c2c009800fa38f1da6798712429b04377ab1b",
+        "source_record_id": "pdb_ts2#633042"
+      },
+      {
+        "Id": 633043,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2884afffa1d6a9d2c8f64612ca6aed956e70f9e05f32ae4bf4e4a8e5e74b91b2",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 26,
+        "raw_pairs_sha256": "3197e6e5d1136b81aa099a5947fd6bbae75434bd89d899fe167e16ff9681b48f",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "077567d6212530981916d9f3e45b620abd868635bfc94b5c12bbed31a7eff3d1",
+        "source_record_id": "pdb_ts2#633043"
+      },
+      {
+        "Id": 633044,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "835c5671b95842a12e0b0ba0a7ba0d2724f1b478303b9d4c3bb47902a12473bd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "01b4e6d5aa18c1c6c2b9ab5110f26335e9133eeb784120b039483a97972c4f0b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "a46732703b3efe46f02790e0c2ff26fefafd27ab2e14aedf50e10a57c1a25696",
+        "source_record_id": "pdb_ts2#633044"
+      },
+      {
+        "Id": 633045,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "01dea011aa4f7b4e6cd473ae177ba8b1a9741af8bc11c72e241bd3d522bc5193",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 7,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 50,
+        "raw_pairs_sha256": "3dfb1ae1b7140217c9c22ea9a3f464d61d73df3cbd85736b7ebd443f724e9da3",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "7b8e84d95e1f3c9b02665ba5714ab083ab0ee8e814758c33840dcf2613c68e19",
+        "source_record_id": "pdb_ts2#633045"
+      },
+      {
+        "Id": 633046,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "8eeedb9bfa3077da20309febbef8cc587233368fab83e541f75e9cf5fc01f436",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 32,
+        "raw_pairs_sha256": "3aa17fb2a9fd19e4ea2fe92102ea8ea502135117d6aa10c2b4f629fb5d226b9c",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "165ecd0efad3826374989a283896649e4ee96b3320c7a2760693298b94c16217",
+        "source_record_id": "pdb_ts2#633046"
+      },
+      {
+        "Id": 633047,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "9097b068563d54d5b6d7e92e7ba25a85d83f3c9576c3dabdda692bb6c9990458",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "94f0a026172ba74a5d8daf382f05eb4e4745589e160d3dfc6e095bd85150f338",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1d917df8bfe354e304961b85eb7ffa07bc2b6d39645946edf724720db60942af",
+        "source_record_id": "pdb_ts2#633047"
+      },
+      {
+        "Id": 633048,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "8d862f7b8d88a96d3f65637e1cfeb5fb834bf44845d22359d68f578c011acbd0",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 15,
+        "raw_pairs_sha256": "ca8dd4d31df1d63f14374f530383e10bf1ab9f9586ddbd10063b8f298183ff6b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "69a2bb52b87cd428356454a8c35b824a9236a28e0b708f09bc022a5eedc3985f",
+        "source_record_id": "pdb_ts2#633048"
+      },
+      {
+        "Id": 633049,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "52d8c805038c250e7515a016607e0b2e09a67f916b33e88ef6d80b283f8069cd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 2,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 18,
+        "raw_pairs_sha256": "18ebf4aabf867c55f77087e43a40cf0f5b75d3e4fcc58c32f542a8721039c154",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "a99a31ecdaf435ade91d9528b9d45af224072e16ae1528596ecae44328f906bf",
+        "source_record_id": "pdb_ts2#633049"
+      },
+      {
+        "Id": 633050,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "93507c55abf9f4bd348b2847c5af3803b809991467dc4d5d35d68f28b87f9733",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "fbbedaf684ef57c4908e5af366a0e0ec3aca4cf4dd78ffb598032975b066ad1a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f4bb04a2b1e76931ce4c9d70cc0b876d3dfdceae9874684533a7522173afb04a",
+        "source_record_id": "pdb_ts2#633050"
+      },
+      {
+        "Id": 633051,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "add857f51529f9dbf11f336c6360f8435421e1c4e093b615ae80761c9ea430e9",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "f8326f80147cbb03098524969907abc059adac831225a52cd9a24404dc008de6",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "6ffdf757416f35ff044bb083e44af64f2ecd6967da7224a8bc3eda599ade8723",
+        "source_record_id": "pdb_ts2#633051"
+      },
+      {
+        "Id": 633052,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ce50e3c10968df6b1b9b3a878648051b96c1927569dbcee8f3938eb489a72fb4",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 26,
+        "raw_pairs_sha256": "26188c27c8d103058e86290e827aaed3d682de956d459adaa6eff64af8670434",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1d2bcbceaeea581dae85abc4cddbcb581f541eac967ed045209ab8e3bb08d4c8",
+        "source_record_id": "pdb_ts2#633052"
+      },
+      {
+        "Id": 633053,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "8e0f46a272508e6c9b400cf29ff0a294d1c4742f8db076f28e496446db8c6edd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 1
+        },
+        "raw_pair_count": 17,
+        "raw_pairs_sha256": "cf52a3a4373d3078e500fc3497fa66a5b907e047a4f3a9c54bb95bb25fc75295",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "98d4bdcb41df4745858be3cfd522655fd5ccb85024fe6c6d461dfc8092d55976",
+        "source_record_id": "pdb_ts2#633053"
+      },
+      {
+        "Id": 633054,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "fb2376ab38f6184e21cce31719bcda2fc63b6b589e87bb6fe75151bb64a68396",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 10
+        },
+        "raw_pair_count": 19,
+        "raw_pairs_sha256": "f681140d5b06443b9a8f4a1e408d0df6c2ced660a1aeb60ae11b76dac2bbba0f",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "788aa7b394ed9edf5178d44494eff9bab5bc73bd5dbb4a4091fcbfe21d4da0f3",
+        "source_record_id": "pdb_ts2#633054"
+      },
+      {
+        "Id": 633055,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "28e4ed648a6d9f6c5235ed2abb2436975dccf9bf177d4fa970aff7485b533260",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 17,
+        "raw_pairs_sha256": "b8030679a80bf521edb9e7e36a9bde086629854914ea866c5e9f5f63a67750a2",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "bc5277436539450514b6d04bd0fe22632b4e0556da97bad4d5a9c01de9cbda7b",
+        "source_record_id": "pdb_ts2#633055"
+      },
+      {
+        "Id": 633056,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "067a5205bea6335c0088b795adafdebcd13224ed14ace99782d07fc784beb4b6",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 13,
+          "dropped_pseudoknot_pairs": 4
+        },
+        "raw_pair_count": 70,
+        "raw_pairs_sha256": "57e1d43f31f0f6928202753f92045e02c695c8de9be4ce9ed51ede4f2d0aa2ee",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "6053d3078bc39a0e3f0af0d86ca683daa9087a013d993ff4249215589806277e",
+        "source_record_id": "pdb_ts2#633056"
+      },
+      {
+        "Id": 633057,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "c8b349f184fe14e92be1a57aab2a5c53d21455aabc30a90b03d31754d0dc17c6",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 15,
+        "raw_pairs_sha256": "d67bf83a480282bd7f4c188bad3325bd5f007e60f8214db0e6f6ebc98e788d76",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "65d6b9b8b9f0fc1c45b5ec93fe3be45dfd49fea47a2a77512b98ee61015bf253",
+        "source_record_id": "pdb_ts2#633057"
+      },
+      {
+        "Id": 633058,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2e9410d395f98692ca7589d6765576dd83274be71ac01612b97631dcecd222e4",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 14,
+        "raw_pairs_sha256": "fc0854a1f05efda3413a1c3d466f95647c59e0358d944bab7f8457beeea8ed26",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "215a17f3c5b179ea9b28d018a5547039a2c98b7ec85054eaafa08f6f0b31b415",
+        "source_record_id": "pdb_ts2#633058"
+      },
+      {
+        "Id": 633059,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "359d6df52e56008de85d96d474a367ab6d85e8ec73fdcc13caff2df813bdcefe",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "fbbedaf684ef57c4908e5af366a0e0ec3aca4cf4dd78ffb598032975b066ad1a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "c16b53d912a4f73e6603e4591fbe6de3f4b184a535ea3169789011a4d306a580",
+        "source_record_id": "pdb_ts2#633059"
+      },
+      {
+        "Id": 633060,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d8b20c6ae9d23887e0914b48629c88fc9359f10591e0180c826e9b9da981610d",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {},
+        "raw_pair_count": 14,
+        "raw_pairs_sha256": "d8b20c6ae9d23887e0914b48629c88fc9359f10591e0180c826e9b9da981610d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "d276b4f122c80d118deedc0b52181f28be5dd1f4ebff5ac0411ffb400abce660",
+        "source_record_id": "pdb_ts2#633060"
+      },
+      {
+        "Id": 633061,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e995ca7ffab69818930efed9079a040105b71a5a5bfbc44dc234790be12a4a1a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "2d1b0871d92a8a3b05f991b50776b1533d4b0623fee47730e652eb42bf6da469",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "e24f1dfc4cf3e667e8806f3d324b5a31c61fbba8de5dc28d2e1b937e5ca3ae20",
+        "source_record_id": "pdb_ts2#633061"
+      },
+      {
+        "Id": 633062,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "dfaacece2bd51f7994471bf17191fe8656a1f7763db8c05006e10cb10a11a218",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_pseudoknot_pairs": 7,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 17,
+        "raw_pairs_sha256": "a78b9388dd41c57c0e4c1f33abb3462caba647354045f898ad65a65c0007e9ec",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "5b1f1da2157099831ff70e8671ac69f13acde9457a239305b99813de05863e2a",
+        "source_record_id": "pdb_ts2#633062"
+      },
+      {
+        "Id": 633063,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "086b924e3db53bd2aaa1ad4ac9b0ad5751371e22f2d3b5e046b740561d7ea5d1",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_noncanonical_pairs": 7,
+          "dropped_pseudoknot_pairs": 11
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "6382c54e2b08fe8247fef3b7dcc122d1ccd0de546ccfe48655b4679fbc0f1f83",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "825614ade41936497930f1c91f2daab6d40aef8f2ba5d37be3ad6bf92c536850",
+        "source_record_id": "pdb_ts2#633063"
+      },
+      {
+        "Id": 633064,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ae6d9e7a4f3f1d87d38e5c34fed44920785e4455951a27a73b249ab88b58afca",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3
+        },
+        "raw_pair_count": 18,
+        "raw_pairs_sha256": "396081b2343b5fcd23c2f325d16b76b23c04400abb12df26d3c5ac5ceb362c64",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "5cccc166d3a98b8483f123f11101c901ed8af0c490a9458e82409dee68722ef6",
+        "source_record_id": "pdb_ts2#633064"
+      },
+      {
+        "Id": 633065,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "0a85bd25f3c9e7e0e82b6512d2cac02e931024bc9e69cab43e65138135dc7a30",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 15,
+        "raw_pairs_sha256": "c31a79c315d5fad063c342fb6a3db688ac741ae686f127a8c88e6a191cf635e0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "802f4213aea1d9dc9134a33a1d48916bfe05c60d5b282be81023426ea3ddd460",
+        "source_record_id": "pdb_ts2#633065"
+      },
+      {
+        "Id": 633066,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "a0f0f4912d8aaa2a6b2a9408949785f80a02fa3666080b5c55d5429ac4c125fc",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 4
+        },
+        "raw_pair_count": 16,
+        "raw_pairs_sha256": "45075c1e830d145f79f72f94b4bcecb8711b3144cf7e08f9eda80143e4164213",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "cce2b0497aefc6a0b21b07f9634b8faa48cbb298855b09cb182dec86276f787d",
+        "source_record_id": "pdb_ts2#633066"
+      },
+      {
+        "Id": 633067,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "fea70d2d2eb5fee1e2383a7f8b2202b1778cc867c4df73e1473d4628cf229729",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 13
+        },
+        "raw_pair_count": 19,
+        "raw_pairs_sha256": "85ce5c0235a669e577fed770b804a1008e74672c965c742716e852d22c20e1a8",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f878a3d1e81db502fd9e782ba5889e8e6ffe2523cb07c8f143a46503a1f2e72a",
+        "source_record_id": "pdb_ts2#633067"
+      },
+      {
+        "Id": 633068,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "8196f296a5e48f30a395a75c8b3fe01431adcbbee9efe516ebe615f5926544fb",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 15,
+        "raw_pairs_sha256": "be762821f860651e5b1b4e89ae49e49959e67576178dcd0f9b2bf1d6ef05443d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "2af832d6a7c98019cad63cd37137c94a984804896cf08ddf743168bcacd2a4d1",
+        "source_record_id": "pdb_ts2#633068"
+      },
+      {
+        "Id": 633069,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "065c5e8b91caddc44fff3e3934e553a7f3525f6bbdf34a205a1fa232c7c73e1c",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 20,
+        "raw_pairs_sha256": "24f434d62488630a03558f30cfaa3553c8fc6ae82afec4ef8a56d11c8bf53e36",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "5598cc7e04f20e555893d1d56058ffe6267d9af710076eab1f5fa39c1e290313",
+        "source_record_id": "pdb_ts2#633069"
+      },
+      {
+        "Id": 633070,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "497999c3f14fb31037d013e8076b8d0be7af676f73b97110a15dff7d9712e672",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4
+        },
+        "raw_pair_count": 16,
+        "raw_pairs_sha256": "998332577cd0766bd6299053d4ff078b25b44935e12d2cfd07dfffbcf717ac04",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "199074bf0fc77816c8109e0207718a8859edeac16958ac1cadd396a3c2dcfc2a",
+        "source_record_id": "pdb_ts2#633070"
+      },
+      {
+        "Id": 633071,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "051c3e5a4a523ee87f56dfd928d4c09546c6a793a8fe074a95d927682fbed6af",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 22,
+        "raw_pairs_sha256": "4e383f030d58b7647ef4328ca38215a8fe77d3337e2f2038efc06df505991285",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "be5fa2eaf52c9178ae8bb5cd29f33bb25da14f41b3479f273e5dc715b29463e3",
+        "source_record_id": "pdb_ts2#633071"
+      },
+      {
+        "Id": 633072,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "11f891e8fd47689c5b96a54107b5fda2d67050041d521cf11cfa4208fb8030de",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 14,
+        "raw_pairs_sha256": "7a42cd3eaa70491515b1f0b758fc24b2950edacbd91089648d3467f7267efd4b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "8d6fdedd19f5a35f029073fc3921535e95aeb1f802d629fcf7213ff254351446",
+        "source_record_id": "pdb_ts2#633072"
+      },
+      {
+        "Id": 633073,
+        "accepted_in_frozen_jsonl": true,
+        "family": "U4 spliceosomal RNA",
+        "is_pdb": true,
+        "kept_pairs_sha256": "893323f37b13a941f22b8ce23a7c48865c6f4d9051ab49773884ff499222e672",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 40,
+        "raw_pairs_sha256": "cf10b74f75ec0f78a8dbb1373b68fceb89142c0be7c84710b84c2693d362500d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "e8c2eb7d4f0c1bd4313bc5a298f63f87f10590fae5ef2c40d0fcc6adf1a26628",
+        "source_record_id": "pdb_ts2#633073"
+      },
+      {
+        "Id": 633074,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "f70710c6e112830bb18264b1a7cd8e369aec72b0f35a9a61a0fb1700fbb08cbf",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 18,
+        "raw_pairs_sha256": "9b28aca5a6921e7d987f8e405fc685d475c59bd7a0fbf32c18c8774f47cac47b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "0003defbecf6800901746f38b4ece82591efe20269b9d0c1683492d315d16e60",
+        "source_record_id": "pdb_ts2#633074"
+      },
+      {
+        "Id": 633075,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "07398d2af8d3e9f5ff9d01391cffe2342cbbb2fd60dc8b7857356278ab919de2",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 31,
+        "raw_pairs_sha256": "658a50cbb952bb9223d9f44e1a38f341d256271c050879997c632906d41c8a51",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "7d66de173b53c8cdd2b3c80bf4cc441e5ce7293144827866240dfbdd68a11790",
+        "source_record_id": "pdb_ts2#633075"
+      }
+    ],
+    "ref_pdb_ts3": [
+      {
+        "Id": 633076,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ccaf097ee47e17cf13d153163be4689a39678a15347d3aaedc852fef9d152556",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 9,
+          "dropped_pseudoknot_pairs": 2,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 46,
+        "raw_pairs_sha256": "949bcd07727820a626c6cc2185a74222ed9bcc29897ca4ac8107d49b35afbab2",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "eb9aede4fec5abe5cb2ab8e35d6e1d4841873218611a62950936679c2c939cdc",
+        "source_record_id": "pdb_ts3#633076"
+      },
+      {
+        "Id": 633077,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "66100ee1ce0fa9e731df7c54d2cd7c1f5d9d20fbeb39d8e4edbc4a5df74d767f",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 1,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 32,
+        "raw_pairs_sha256": "12ed8ddd541f0b474b4521fde960f83ee92e43997d349e9bad4778b0013a3455",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "156e66746676330db52f940d17f18768990ae93353bdf54ea68fb2ab1cc72695",
+        "source_record_id": "pdb_ts3#633077"
+      },
+      {
+        "Id": 633078,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "ffd7bb3d4e21a2a76439ab3cfec053b8438f4a56e7bb0227c1cfa806bbed71f5",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 1,
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 9
+        },
+        "raw_pair_count": 42,
+        "raw_pairs_sha256": "62470ddb9d23f2793fe38ba69e592b23390a3f61410f4abe1b0d3c58416de038",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "6187e7a2c284630a06cb8a7c07476404819ea4901490fa45caed8b6ed889e653",
+        "source_record_id": "pdb_ts3#633078"
+      },
+      {
+        "Id": 633079,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "6acbfa27df52190cb151600815e745b6e7fb950af46c5474da39b898bc8564ff",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 17,
+        "raw_pairs_sha256": "9cdc7292f73a6427d28461794f7059a90b4b17c45f77e0fa97d9d01ed14ccdce",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "26ace48259fb239a734f36111fe5de37c2ecec5793d8669786add73c86c2c517",
+        "source_record_id": "pdb_ts3#633079"
+      },
+      {
+        "Id": 633080,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "3bce60dfcd310a1da2741809d9e6f180778119619aa4934c862813e975b137bf",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_crossing": 3,
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 2,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 8,
+          "multiplet_positions": 2
+        },
+        "raw_pair_count": 35,
+        "raw_pairs_sha256": "38de48423b7f766838f12dc43f4d1d35ccdec77583fd4052b012b01a245fd210",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1746ce8bac188fac4c237cd9925d9af5397cd570248d96df5db9048d6255dde7",
+        "source_record_id": "pdb_ts3#633080"
+      },
+      {
+        "Id": 633081,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "382a19ae6274abc65f861630a45f35bcf71603e0347e7e9b490b3ae1999cdc09",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 26,
+        "raw_pairs_sha256": "a1d63b7fc78bdf002d989809394b1b0648d26680ec547f66e93c389276458108",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "23c6c9b656e0a37155b73b1234dda4cab1646289cb7c729353679fdde8926779",
+        "source_record_id": "pdb_ts3#633081"
+      },
+      {
+        "Id": 633082,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "391ce5e34252122e7e431ab9f6a2e5c03cf829a81edb80534ed7034bea96f11d",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 7,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 43,
+        "raw_pairs_sha256": "3d9564272352cdbabcfbaea9844366229cf4002d556168f07ed248312a9a1a44",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "956da9e358de5f17c12deca3c46165d20e324ffd73bed05ba11debcbc18a4ee1",
+        "source_record_id": "pdb_ts3#633082"
+      },
+      {
+        "Id": 633083,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "bd1f91efd83a627cc10a9479efdf8fc006516f4ceab316f6fdef07f425389628",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 40,
+        "raw_pairs_sha256": "389f7873c169ac086d14faeab022bd96fb771c1fe037574c67462d2de41f0111",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "6b6e7328e1b2e819a9f193f8ace175c496e58564056f3a40335543a47fa63a41",
+        "source_record_id": "pdb_ts3#633083"
+      },
+      {
+        "Id": 633084,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e24690f953397a658546e7b170205baea342a3181beb74cf9c13dc36fbf36561",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 5
+        },
+        "raw_pair_count": 21,
+        "raw_pairs_sha256": "53195901eac895462dc24e29612653a4fb28faf4e600756adb8de7ff0387af5a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "bd23fb6c6539b2d9908410e84872dfd1b69058fdf190fcb7c051cf5badacd379",
+        "source_record_id": "pdb_ts3#633084"
+      },
+      {
+        "Id": 633085,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2d009202c2997dc4b3008afcb2866a13775bdf23f913bd394a6c6de38fae8fc3",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 13,
+          "dropped_pseudoknot_pairs": 8
+        },
+        "raw_pair_count": 67,
+        "raw_pairs_sha256": "b7433910825ce651bb10be5cc4345e0819da8b5359088beab0dbf43ce8fba50b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "78f3c07cfc6e25ec01c89a1f655f333ba2221583edef52973c3f1f1f6ad09cf7",
+        "source_record_id": "pdb_ts3#633085"
+      },
+      {
+        "Id": 633086,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "cb9597f8d1e60ae3fa1b6f447a2f5795ec18154a95188c2115c2b6096d1572ee",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 2,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 23,
+        "raw_pairs_sha256": "807439ad93caf373ae72b2d2afaa01d12e11b5b2397f838c432eb163290a286d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "003390e3ae5f1faf29ff2f4ab599c31df87497fb405a5f43a31da01cef599def",
+        "source_record_id": "pdb_ts3#633086"
+      },
+      {
+        "Id": 633087,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "3a160dd8585128070177cbd033992090c277a335868a4d4b7cd0ddc4c7ec31de",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 52,
+        "raw_pairs_sha256": "646b7e8343f7c8b6a1195054dfb02310016e1351d0464737736502ea468ba0de",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "4952f37ed530b0fd706fff59d1cdf397df7a2ee9f83d4c8e98d4f38152a8492d",
+        "source_record_id": "pdb_ts3#633087"
+      },
+      {
+        "Id": 633088,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "f5e28d21d69289bd04bc8f702cd8bd2e75369f8e4101161420b5338e85859cbd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 2,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 48,
+        "raw_pairs_sha256": "b4a7d541e2917acc85a82db2d06008fed4954b6f142c2c367ac19f2c50d1b385",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "b56015b36db5e520c2fec1618bdc37bad8f88a771aafb0d53580b71814d520c8",
+        "source_record_id": "pdb_ts3#633088"
+      },
+      {
+        "Id": 633089,
+        "accepted_in_frozen_jsonl": true,
+        "family": "Hatchet ribozyme",
+        "is_pdb": true,
+        "kept_pairs_sha256": "3fe6dbbfaaf8010a8caac84fcb92e2fb0802d808e39a540850ce30cc483444ab",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "b87fc51ca53034a724614dc22c43e8a9dac501444da944489ba83837fe649a32",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "392d069b9b8aebe1be5afc14f23470bb731970f69e378ac9e7123871386689bf",
+        "source_record_id": "pdb_ts3#633089"
+      },
+      {
+        "Id": 633090,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e74d9c85253cc87348157fed8ad0fb8274cc7644ff6f6bd6341c398649bc869b",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {},
+        "raw_pair_count": 9,
+        "raw_pairs_sha256": "e74d9c85253cc87348157fed8ad0fb8274cc7644ff6f6bd6341c398649bc869b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "73ac82cc4030885cabeb24c356d13b58ee7468a94e849ec9b4136405e4e65dd3",
+        "source_record_id": "pdb_ts3#633090"
+      },
+      {
+        "Id": 633091,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "cf689d4bea10b2e6208c6a10ee33448a4d201b7743ac8ac4a0bea13b5afa3cfa",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 11
+        },
+        "raw_pair_count": 25,
+        "raw_pairs_sha256": "6884f3c1490ba0da185dcacb895765fac5f3ea2f2ba606d6b9583e34d3dec52a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "997597deb95164d39de35e1b67954a512363cc4a1c9f78c06be564ef32a6b228",
+        "source_record_id": "pdb_ts3#633091"
+      },
+      {
+        "Id": 633092,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "415ce03b8abb4f64c9e4d31aa89f576ebaa7ce68d842e79429e9b4b5b5873938",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 10,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 15,
+        "raw_pairs_sha256": "9a2f21f72efca8073eabaa553fc706ac03d00eb7096bbd8cb51a42593e0b2267",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "67e05bd5b9734310a9c573ef48ce66050746e0b14e860f042110874580dbc125",
+        "source_record_id": "pdb_ts3#633092"
+      },
+      {
+        "Id": 633093,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "8268ba8a9e1bd10997c74bd2e9a5a6b63deaa7ba38d873e86556d5cb37129be9",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 14,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 37,
+        "raw_pairs_sha256": "e87d645cfcceeac8af32864c57240f807f1fd737e218e290d5806e829ac143a0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "564ab5dbd42a6863b2e9d6c0c29f1e1c50a66ba87582dc28481915dadf83e1d2",
+        "source_record_id": "pdb_ts3#633093"
+      },
+      {
+        "Id": 633094,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d2785a5ddec12e9a632a6faf59b40417e567725e5efcf8c7158f0ec9a86175a1",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 4,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 15
+        },
+        "raw_pair_count": 36,
+        "raw_pairs_sha256": "8f9205fa7b8053c9aa59c583e7c544ecce4a3657e6839e06e59919c798537480",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "c41c706f0c27da1dbd4111fa857fcff13aa453e29c82d62180686caa61d9c87f",
+        "source_record_id": "pdb_ts3#633094"
+      }
+    ],
+    "ref_pdb_ts_hard": [
+      {
+        "Id": 633095,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "6acbfa27df52190cb151600815e745b6e7fb950af46c5474da39b898bc8564ff",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 17,
+        "raw_pairs_sha256": "9cdc7292f73a6427d28461794f7059a90b4b17c45f77e0fa97d9d01ed14ccdce",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "26ace48259fb239a734f36111fe5de37c2ecec5793d8669786add73c86c2c517",
+        "source_record_id": "pdb_ts_hard#633095"
+      },
+      {
+        "Id": 633096,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "74feaa492b5ef280291e65610fb5c9d42c89c5dc000e7d7e50823a87fd0cb203",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 17,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 29,
+        "raw_pairs_sha256": "02972455cd84426427ba83c3addc046045b70a7e0fb8c9f9880d135c47c27d68",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "8e55c5bb77543ee9978bdfc786e6c3a69d95e911e93966ea78daabb99d2e5bd2",
+        "source_record_id": "pdb_ts_hard#633096"
+      },
+      {
+        "Id": 633097,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "15e93eff5cf6696786d36ea5a600b235749eef0786d18f9ba23e646c07dc68b3",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 5
+        },
+        "raw_pair_count": 16,
+        "raw_pairs_sha256": "4381260f0634f0990277206403207fc026de1228cd3b9554a2a4c5735a289956",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "9d47f46a499c2e8c39b5f4a91ad69f85b0439472a1f80fc97becc6eec1054ae7",
+        "source_record_id": "pdb_ts_hard#633097"
+      },
+      {
+        "Id": 633098,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "391ce5e34252122e7e431ab9f6a2e5c03cf829a81edb80534ed7034bea96f11d",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 7,
+          "dropped_pseudoknot_pairs": 3
+        },
+        "raw_pair_count": 43,
+        "raw_pairs_sha256": "3d9564272352cdbabcfbaea9844366229cf4002d556168f07ed248312a9a1a44",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "956da9e358de5f17c12deca3c46165d20e324ffd73bed05ba11debcbc18a4ee1",
+        "source_record_id": "pdb_ts_hard#633098"
+      },
+      {
+        "Id": 633099,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "bd1f91efd83a627cc10a9479efdf8fc006516f4ceab316f6fdef07f425389628",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 40,
+        "raw_pairs_sha256": "389f7873c169ac086d14faeab022bd96fb771c1fe037574c67462d2de41f0111",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "6b6e7328e1b2e819a9f193f8ace175c496e58564056f3a40335543a47fa63a41",
+        "source_record_id": "pdb_ts_hard#633099"
+      },
+      {
+        "Id": 633100,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "cb9597f8d1e60ae3fa1b6f447a2f5795ec18154a95188c2115c2b6096d1572ee",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 2,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 23,
+        "raw_pairs_sha256": "807439ad93caf373ae72b2d2afaa01d12e11b5b2397f838c432eb163290a286d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "003390e3ae5f1faf29ff2f4ab599c31df87497fb405a5f43a31da01cef599def",
+        "source_record_id": "pdb_ts_hard#633100"
+      },
+      {
+        "Id": 633101,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "4c506e70226fcdc9bc6e721726e3c7a593a95936bc8046fc7eab0582efde618a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1
+        },
+        "raw_pair_count": 6,
+        "raw_pairs_sha256": "8a8cb4870f8c7e329f88fbdd1d6f313eb78541e5ca69bbc34255edb876103c44",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "8a6b8602794fec55da992e93f0e8778edcdc95b659698143bcff68807d238b63",
+        "source_record_id": "pdb_ts_hard#633101"
+      },
+      {
+        "Id": 633102,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "f5a9b02ae229068c0853cf6a1a224c24df17e8ba95e3acdf6f592fa5ce500e10",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 7,
+        "raw_pairs_sha256": "4dac505b897a5074b3191528e87b17e2e19ea6dd60ea72ba350958f378c1dc1a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "800c1d4a42f6e015db6116a47fd5b1fda0919a5279acd5a7a34679b8d67f999d",
+        "source_record_id": "pdb_ts_hard#633102"
+      },
+      {
+        "Id": 633103,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d1feca474c87976797917619d4bdf155f43a09fe53673cdfe8ed5d17bbeed6fe",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 2,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 5
+        },
+        "raw_pair_count": 29,
+        "raw_pairs_sha256": "2366caa000adf26e7386247b788221ba27a3f16f2b7c1baef198cc13d4b673f2",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "983a99eb90f34c07ccb99fba0dd3bcffcae523247bdce97bb79c311e472cdd9a",
+        "source_record_id": "pdb_ts_hard#633103"
+      },
+      {
+        "Id": 633104,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "f5e28d21d69289bd04bc8f702cd8bd2e75369f8e4101161420b5338e85859cbd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 2,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 48,
+        "raw_pairs_sha256": "b4a7d541e2917acc85a82db2d06008fed4954b6f142c2c367ac19f2c50d1b385",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "b56015b36db5e520c2fec1618bdc37bad8f88a771aafb0d53580b71814d520c8",
+        "source_record_id": "pdb_ts_hard#633104"
+      },
+      {
+        "Id": 633105,
+        "accepted_in_frozen_jsonl": true,
+        "family": "Hatchet ribozyme",
+        "is_pdb": true,
+        "kept_pairs_sha256": "3fe6dbbfaaf8010a8caac84fcb92e2fb0802d808e39a540850ce30cc483444ab",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 30,
+        "raw_pairs_sha256": "b87fc51ca53034a724614dc22c43e8a9dac501444da944489ba83837fe649a32",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "392d069b9b8aebe1be5afc14f23470bb731970f69e378ac9e7123871386689bf",
+        "source_record_id": "pdb_ts_hard#633105"
+      },
+      {
+        "Id": 633106,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "286f9e2d238263e89a5bb2fc466146a225ec0514946b8b8fe7c585f4182495bd",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4
+        },
+        "raw_pair_count": 13,
+        "raw_pairs_sha256": "07d5c580b3665c69735c58578ef592415ceb8acdd562290a9a858ca96c5a9f18",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "86acac49800c19e45d381e13d8b42b1d40f0333c9b11077b19678cf2f9bb8bcf",
+        "source_record_id": "pdb_ts_hard#633106"
+      },
+      {
+        "Id": 633107,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "bbf0c161803b8187badcb9ada54e275a3f7df99f836e323a8417cecf86c939bb",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {},
+        "raw_pair_count": 14,
+        "raw_pairs_sha256": "bbf0c161803b8187badcb9ada54e275a3f7df99f836e323a8417cecf86c939bb",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "20d82c1ef762c08192c6287f9be9aa0c6726540554db6a68ebf134acc7e98035",
+        "source_record_id": "pdb_ts_hard#633107"
+      },
+      {
+        "Id": 633108,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "9299ff987e8c0658213d124bbae73ad57b078ecb78684641f4979857b9469ea7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 3,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 18,
+        "raw_pairs_sha256": "26fabd2a2286d75799fda64cb3fffd8367be8d5bca69c19cd2c5a1fd3d7de00a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "c67ca09a644d991f4a901efe5479d8c5148e0a2089a7ddec1e11bdbbdb0b6258",
+        "source_record_id": "pdb_ts_hard#633108"
+      },
+      {
+        "Id": 633109,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "b212a64c62a97fc7ce9730935b853c6d91343184ab330d30728946c1a7e3f2f2",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 1,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 39,
+        "raw_pairs_sha256": "88df1edceaebe4b5d874a52c27ac3b2fa194e71b17a6f215955e9ef04ff78766",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "7daadff32bb9dd22a2b9718b7a228a57b20530fb8d2139e6d446ef1e2e26b6fd",
+        "source_record_id": "pdb_ts_hard#633109"
+      },
+      {
+        "Id": 633110,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e74d9c85253cc87348157fed8ad0fb8274cc7644ff6f6bd6341c398649bc869b",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {},
+        "raw_pair_count": 9,
+        "raw_pairs_sha256": "e74d9c85253cc87348157fed8ad0fb8274cc7644ff6f6bd6341c398649bc869b",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "73ac82cc4030885cabeb24c356d13b58ee7468a94e849ec9b4136405e4e65dd3",
+        "source_record_id": "pdb_ts_hard#633110"
+      },
+      {
+        "Id": 633111,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "cf689d4bea10b2e6208c6a10ee33448a4d201b7743ac8ac4a0bea13b5afa3cfa",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 6,
+          "dropped_pseudoknot_pairs": 11
+        },
+        "raw_pair_count": 25,
+        "raw_pairs_sha256": "6884f3c1490ba0da185dcacb895765fac5f3ea2f2ba606d6b9583e34d3dec52a",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "997597deb95164d39de35e1b67954a512363cc4a1c9f78c06be564ef32a6b228",
+        "source_record_id": "pdb_ts_hard#633111"
+      },
+      {
+        "Id": 633112,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "e756b36a6ad54b846375a113f07970218197e5a8c31c5102a4287f2af5e812e5",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 1,
+          "dropped_pseudoknot_pairs": 6
+        },
+        "raw_pair_count": 12,
+        "raw_pairs_sha256": "c8277f837526f44cc6b28c8b92ed1c671c3ea64f5a591dcdf610367a519b6507",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "a99ef94ada6e4acd2aa7212e10e72cf45921785ede589b5c0e734244380c2da7",
+        "source_record_id": "pdb_ts_hard#633112"
+      },
+      {
+        "Id": 633113,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "2cd316c78e6f240d43701d474402768f22b12aa433773b4506f27cfc71233de7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 7,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 32,
+        "raw_pairs_sha256": "96ba1f8546a61f757adb283729391b09c4256d20d4b2f272e079a9130aea1785",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "00f7a5c40faa0257838abe122c51e2a9cada68e856d2024a6e5119d039103e5a",
+        "source_record_id": "pdb_ts_hard#633113"
+      },
+      {
+        "Id": 633114,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "887c024082841b8420ef44e7b8933dd47de1fcbf0406c71e51bbd6961ce88256",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2
+        },
+        "raw_pair_count": 13,
+        "raw_pairs_sha256": "47a94287b26fac4e3a39360f3ffe4d7d46367519eab8822629d27b83efe28ca0",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "e49d15e0e9be9f383fadb329d93a1ee319d7dc9cd8734204513e6420de228552",
+        "source_record_id": "pdb_ts_hard#633114"
+      },
+      {
+        "Id": 633115,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "7602c8b118838d23603ee582a2a380627d80d175366840f0c31c8e7a651f55e1",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 1
+        },
+        "raw_pair_count": 35,
+        "raw_pairs_sha256": "94ff7df8588f5c09986a75935e8c3a63aada21972bdb7bf6e8fdebb674a64318",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "1e7ad3a28ddb4f60dab123026a334aa51b6737b0924c5a5d5b76fd75ef73c9f3",
+        "source_record_id": "pdb_ts_hard#633115"
+      },
+      {
+        "Id": 633116,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "699d6c36b962e081f330eda571a43dc3fa39d14a5d5d17149ac0e9c3b8d8d222",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1
+        },
+        "raw_pair_count": 12,
+        "raw_pairs_sha256": "e11b9d8d74b7b375624369dc54434480ec991796b10a70e76799f36bb3d2334d",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f200fd9e29fab436f9cfed7473251e949d19bb9d66cc9bde817ee6c1aed7d759",
+        "source_record_id": "pdb_ts_hard#633116"
+      },
+      {
+        "Id": 633117,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "acc9c950a7f40cecd65fc9ffcfc8e34c4c3c06fa2673c91feae938df9fb010c7",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {},
+        "raw_pair_count": 5,
+        "raw_pairs_sha256": "acc9c950a7f40cecd65fc9ffcfc8e34c4c3c06fa2673c91feae938df9fb010c7",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "f654214bd07e847dda7af8651152468376babfb3c4ab95ef3d6f3eaa0dd98141",
+        "source_record_id": "pdb_ts_hard#633117"
+      },
+      {
+        "Id": 633118,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "d2785a5ddec12e9a632a6faf59b40417e567725e5efcf8c7158f0ec9a86175a1",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 4,
+          "dropped_noncanonical_pairs": 4,
+          "dropped_pseudoknot_pairs": 15
+        },
+        "raw_pair_count": 36,
+        "raw_pairs_sha256": "8f9205fa7b8053c9aa59c583e7c544ecce4a3657e6839e06e59919c798537480",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "c41c706f0c27da1dbd4111fa857fcff13aa453e29c82d62180686caa61d9c87f",
+        "source_record_id": "pdb_ts_hard#633118"
+      },
+      {
+        "Id": 633119,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "33621b0473f2c0c9c0ff835beb7f40bef22a5c2043a9bc9d5f28980f5147d505",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 14
+        },
+        "raw_pair_count": 25,
+        "raw_pairs_sha256": "fd229cecd4144756c54ee5f5f94ac9cdba3d77ddb171cf5232cc97bf9a6621be",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "bba2c3fb0f7371cf87cd2dfc3f60de0a98e94b634ccb7b3eedd8aae0a4e09967",
+        "source_record_id": "pdb_ts_hard#633119"
+      },
+      {
+        "Id": 633120,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "27058783cd0f8480bc79478e251399bf16f4498c162a61c0adc7fc498ee7238a",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 19
+        },
+        "raw_pair_count": 55,
+        "raw_pairs_sha256": "dbd8ea26f80bd5d486f4ee30455e5ff31cab3d0a7aaa1c262a12924f83cf3973",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "4500bc730a0a5e57cb063ea7a721e695d47771d69b723bb7fd1d7457c972a2cd",
+        "source_record_id": "pdb_ts_hard#633120"
+      },
+      {
+        "Id": 633121,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "1f6befa9ec0e5510fae0c875d7d3dfdaa4dc501b25830b40ed606c1490c507e2",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_noncanonical_pairs": 2,
+          "dropped_pseudoknot_pairs": 2
+        },
+        "raw_pair_count": 22,
+        "raw_pairs_sha256": "72ca281edc42c48316c47865b3a9b7e5678d3c8b96ef2b5068e9031c1e10c7ec",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "22dbfa6ba3b900139a9e4cac0cf32f847f3a9ce2c7822fbf376f72717449d436",
+        "source_record_id": "pdb_ts_hard#633121"
+      },
+      {
+        "Id": 633122,
+        "accepted_in_frozen_jsonl": true,
+        "family": "unknown",
+        "is_pdb": true,
+        "kept_pairs_sha256": "7d454ace5543d5bfcc149ed89ab92ffa89900e9a51f2d6a351be291de8f1283c",
+        "pdb_accession_entity_chain": "UNCHECKED",
+        "projection_stats": {
+          "dropped_illegal": 1,
+          "dropped_multiplet_pairs": 1,
+          "dropped_noncanonical_pairs": 9,
+          "dropped_pseudoknot_pairs": 34,
+          "multiplet_positions": 1
+        },
+        "raw_pair_count": 91,
+        "raw_pairs_sha256": "25647c52b1965c47cbf760373ea586561944d62449293b6e3ea532042f20bfc8",
+        "rejected_in_frozen_jsonl": false,
+        "sequence_sha256": "537d42102766a6409c80070c760f0ed5aee5d384524d5c6192691bd9d2021897",
+        "source_record_id": "pdb_ts_hard#633122"
+      }
+    ]
+  },
   "policy": "No source file is changed; these are audit sets for later unified registration",
   "rfam_temporal_exact_in_rfam14_9": [
     "URS000001FC0F_7244_8-90.bpseq",
