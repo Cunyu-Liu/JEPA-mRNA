@@ -22,3 +22,10 @@ def test_json_pointer_and_residual_arithmetic():
 @pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
 def test_frozen_json_numeric_provenance():
     assert ledger.verify_numbers() == []
+
+
+def test_crossover_claim_separation_guard():
+    text = ledger.DOC.read_text()
+    assert "crossover 直接支持①，但不支持②" in text
+    assert "上下文有因果作用”与“真实 ensemble 一致有益”是不同命题" in text
+    assert "没有最终 hash-verified 四臂评估可填入" in text

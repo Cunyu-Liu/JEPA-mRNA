@@ -7,15 +7,15 @@
 
 ## 当前一句话
 
-已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；NLL 四臂恢复为结构参照”；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
+已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
 
 ## 时间、提交与运行快照
 
 - 科学结果及 NLL 资格链整合到 `780044c`；capacity/SRD/stacking 的结果提交分别为 `c289384afcd801cb0509941c40e973f7c320f230`、`03f9afe430c445fffd5d0e386ba3c16970747ab8`、`dde6641db437d1d1c35ee876843d30d0a5cf6f68`。
-- GEC 四臂训练与独立复评为 `bd01b4a120a8ed3b7c77690f593a8caa03fb533d`、`342a714b24998ed0c739908613f21e50866d6b56`；残差冻结审计为 `0589b2f489aa456f7a885b6d5dfe625b5de1b76b`。
+- GEC 四臂训练与独立复评为 `bd01b4a120a8ed3b7c77690f593a8caa03fb533d`、`342a714b24998ed0c739908613f21e50866d6b56`；残差冻结审计为 `0589b2f489aa456f7a885b6d5dfe625b5de1b76b`；frozen context crossover 为 `810441e7480ea06a717097c57a49130c820c9636`，对应 PPT 第 33 页记录提交 `03f7f4e14ef906359cbd9d1b519089b6e61116f4`。第 34 页的四臂 verdict 生成工具链见 `1782cd6`，仍须等待最终 hash-verified 评估。
 - NLL 资格修复为 `c4bfbb8734af3535393ef424f4c1b0b39af7b081`、`e388b504d7888b8a355d33fe80150ebd650a0adc`、`ecc40d3a8ec545bf332199a935e6380b718d415b`。
 - margin 数值核心、独立合同复核、显存探针与正式调度分别为 `92f0bc2e6440bcbfc682d2f8ca3e502ec86a6b48`、`55be915f6e7eda26254d87ab133624fa99cd5b8c`、`cd61c57f48cc0fe543b869b3319e4bd8b7f820f5`、`a846d90519e575a79b7db76f63692afb755e8ac6`；`a846d90` 已核对与 GitHub 分支远端一致。
-- **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。撰写期间实时 `scheduler_state.json` 已按既有资源门推进为 `RUNNING_ARMS`，仅 `matched_control` 启动，完成臂仍为 0。这里区分快照与后续启动；排队、探针、启动、收敛中的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
+- **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。**本次更新实时状态**：`scheduler_state.json` 为 `QUEUED_ARM_MEMORY`，`matched_control` 与 `ensemble_context` 两臂运行，`destroy_interval_shuffle` 与 `independent_context` 两臂等待资源，完成臂仍为 0，`scientific_conclusion=null`。这里区分初始快照与后续调度；排队、探针、启动、运行或等待资源的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
 
 Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldnar`，`A=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts`。
 
@@ -74,7 +74,18 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：这是 frozen-forward 关联与反事实解码分类，**不识别训练因果，不证明 pair-Hamming structured margin 会改善这些 FN，更不保证最终 pair/stem F1 改善**；98.31% 也不是 margin 的预期提升幅度。
 - **Next**：将该定位转化为独立目标函数的预注册四臂检验，而非直接把诊断比例写进疗效叙事。
 
-## 6. NLL 资格修复：恢复结构参照，不重写科学 FAIL
+## 6. Frozen context crossover：输入有因果作用，不等于真实 ensemble 一致有益
+
+- **Claim（两个必须分开的命题）**：① 在 frozen seed0 模型上，替换上下文输入会因果性改变结构预测；② 真实 ensemble 上下文一致优于 matched/destroy/independent 输入。crossover 直接支持①，但不支持②，GEC seed0 科学 FAIL 不变。
+- **Phenomenon**：第 4 节比较的是不同训练臂，无法单独分离“输入上下文”与“训练后参数”的作用；需要同一模型下只替换输入的干预。
+- **Intervention**：四个 frozen 模型 × 四种输入上下文共 16 组合，固定同一批 9,143 条 dev IDs、模型参数与 MEA，独立从 raw pairs/truth 重算；四个 native 预测均逐条吻合历史输出。PPT 第 33 页由 `03f7f4e14ef906359cbd9d1b519089b6e61116f4` 留痕，本 ledger 只引用该记录。
+- **Expected observation**：若输入上下文有因果作用，同模型仅换输入应改变结构指标；若真实 ensemble 机制一致有益，则 ensemble 模型使用真实 ensemble 输入应优于使用 matched/destroy 等替代输入，而不只是“换输入会变化”。
+- **Actual**：同一 `ensemble_context` 模型的 micro pair-F1 在 native ensemble 输入为 **0.6812310470**，matched 输入为 **0.6993017226**，destroy 输入为 **0.6871289606**；真实 native 反而低于两种替代输入。independent 输入−matched 输入在 `matched_control/ensemble_context/destroy_interval_shuffle` 三个模型上分别为 **−0.1041019496/−0.1932951914/−0.2897765982**，均明显退化，直接证明上下文输入不是无关装饰；但“有作用”的方向不恒为真实 ensemble 有益。
+- **Artifact**：`F/gec_frozen_context_crossover_v1/full/summary.json`（SHA256 `5d1984e9271e190cbc83c79d3c87f6571580fefc3ae84e0bbec5cca7db3fefd7`）与 `independent_verification.json`（SHA256 `06322b53c93d6e5428b347176443e48a0b4ce0416c0ebc0b0c28557c58808054`，`status=PASS`）；执行 commit `810441e7480ea06a717097c57a49130c820c9636`，PPT 第 33 页记录 commit `03f7f4e14ef906359cbd9d1b519089b6e61116f4`。
+- **Limitation**：single seed0、cluster dev、frozen causal diagnostic；证明输入干预有效，不证明真实 ensemble 表示已经解决问题，也不推翻第 4 节对照失败。`gec_pass_claim=false`，不授权 seeds 1/2、外部测试或 SOTA。
+- **Next**：把“真实 ensemble 并非一致最优”作为 margin 检验必须面对的反证，继续第 8 节四臂目标检验；crossover 本身不是 margin 效果证据。
+
+## 7. NLL 资格修复：恢复结构参照，不重写科学 FAIL
 
 - **Claim**：历史 NLL 四臂可作固定结构评估参照，但不是 margin  checkpoint/目标，也不是 GEC 阳性证据。
 - **Phenomenon**：旧独立复评中四臂 `checkpoint_and_restored_convergence=false`，源于 best restore 后 `bad_evaluations` 由 stopped=5 变为 best=0 的元数据口径缺陷。
@@ -85,16 +96,16 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：资格 PASS 仅修复参照身份，不推翻第 4 节科学结果；NLL 与 margin validation loss 不是共同标量，禁止同步数/同 loss 选冠军。
 - **Next**：若比较目标函数，双方须各自收敛、恢复 best，再用同一冻结 MEA 与结构指标独立复评。
 
-## 7. Structured margin 四臂：正式检验已授权，科学结果仍为空
+## 8. Structured margin 四臂：正式检验已授权，科学结果仍为空
 
 - **Claim（待检验假设，不是结论）**：exact pair-Hamming cost-augmented structured max-margin 是否能针对残差定位改善 GEC，并证明 ensemble 的机制特异性。
-- **Phenomenon**：第 5 节非正 score-margin FN 提供了干预动机；第 4 节说明仅有动机不足以支持 GEC。
+- **Phenomenon**：第 5 节非正 score-margin FN 提供干预动机；第 4 节说明仅有动机不足以支持 GEC；第 6 节进一步证明“上下文有因果作用”与“真实 ensemble 一致有益”是不同命题，后者仍未支持。
 - **Intervention**：在 `a846d90` 使用独立 margin 目标/artifact namespace，seed0 四臂 `matched_control/ensemble_context/destroy_interval_shuffle/independent_context` 各自训练至收敛；`lambda_nll=0`、length normalization、terminal 20/33 后每 500 step 验证、patience=5、restore best；固定 MEA（temperature=1、gamma=1），禁止 NLL checkpoint 复用、decoder 搜索和 seeds 1/2。
 - **Expected observation**：四臂全部收敛并通过 artifact 身份审查后，ensemble 才可在同一固定 MEA 下接受第 4 节全部对照、结构终点、paired CI、目标子群和家族集中性检验。若声称 margin>NLL，还须有 NLL 合格参照的同协议直接结构比较；validation loss 不可跨目标比较。
-- **Actual（截至本 ledger）**：数值穷举/两步 smoke/合同复核属于工程通过；resource probe 仅是 B=4/L=500/terminal-20 的显存与运行时测量。登记快照仅排队，后续仅见单臂启动；**完成臂 0、无四臂收敛结构评估、无 margin>NLL 结果、`scientific_conclusion=null`**。
+- **Actual（截至本次更新）**：数值穷举/两步 smoke/合同复核属于工程通过；resource probe 仅是 B=4/L=500/terminal-20 的显存与运行时测量。实时调度为 matched/ensemble 两臂运行、destroy/independent 两臂等待资源；**完成臂 0、无四臂收敛结构评估、无 margin>NLL 结果、`scientific_conclusion=null`**。PPT 第 34 页仅已有最终四臂 verdict 的生成与独立验收工具链（`1782cd6` 等），没有最终 hash-verified 四臂评估可填入，不得把工具或预留页码写成结果页。
 - **Artifact**：`F/structured_margin_smoke_v1/generation_01/smoke_verification_v1.json`；`F/structured_margin_memory_probe_v1/resource_probe_v1.json`；`F/structured_margin_full_v1/full_authorization_v1.json`；`F/structured_margin_full_v1/generation_01/startup_report_v1.json` 与实时 `scheduler_state.json`。配置来源为 `a846d90:configs/gec_structured_margin_convergence_v1.json`。
 - **Limitation**：两步 smoke、授权、排队或启动均不证明收敛，更不证明科学有效；98.31% 只说明干预动机。seed0 即使通过也只能提议后续多种子，不能单独建立稳健性、外部泛化或 SOTA。
-- **Next**：不干扰现有资源门控调度；等待四臂各自收敛和 best restore，独立检查身份/日志/artifact，再做固定 MEA 结构复评。通过或失败都追加真实结果；此前摘要与标题保持“待检验”。
+- **Next**：不干扰现有资源门控调度；等待四臂各自收敛和 best restore，独立检查身份/日志/artifact，再做固定 MEA 结构复评。通过或失败都追加真实结果，并由最终评估驱动第 34 页；此前摘要与标题保持“待检验”。
 
 ## Claim → evidence 索引（审稿时逐项回溯）
 
@@ -105,6 +116,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | stacking closure 停止 | 边界 FN 环境 | 同参数四臂+两 destroy | macro 保持且全面优于 destroy | `pilot_verdict.json` | seed0；destroy 不等于随机有益 |
 | GEC seed0 FAIL | ensemble 机制待证 | NLL 四臂+独立复评 | ensemble 胜过全部相关对照 | `independent_reeval.json` | 单 seed/model-dev；不推广到所有 context |
 | FN 主要为非正 score-margin | GEC 残差需定位 | frozen-forward 分类/反事实 | 可守恒分解并形成候选靶点 | `ensemble_context_summary.json` | 描述性；不证明 margin 有效 |
+| 上下文有因果作用；真实 ensemble 非一致最优 | 不同训练臂无法分离输入作用 | 4 模型 × 4 输入 frozen crossover | 换输入可改变预测，但 native ensemble 应胜过替代输入才支持一致有益 | `gec_frozen_context_crossover_v1/full/summary.json` | 支持前一命题，不支持后一命题；seed0/model-dev |
 | NLL 仅恢复结构参照 | 收敛元数据缺陷 | raw ledger/checkpoint 双实现复核 | 唯一资格缺陷解除且科学门不动 | `qualification_summary.json` | 不是科学 PASS 或 margin 参照 checkpoint |
 | margin 待检验 | 98.31% FN 定位 | seed0 margin 四臂至各自收敛 | 固定 MEA 下通过全部科学与对照门 | authorization/startup/scheduler；结果尚缺 | 当前无收敛结构结果，不得阳性宣称 |
 
@@ -116,6 +128,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **训练完整性**：每个被比较臂均达到预注册收敛并 restore best；日志、代码/配置哈希、checkpoint、预测和独立 artifact 审查一致。启动或固定 step cap 不等于收敛。
 - [ ] **结构终点**：使用同一冻结 MEA 的 micro/macro pair/stem F1 与 precision 门；不得以 AUPRC、r@P0.8、局部 recall 或训练/validation loss 替代结构失败门。
 - [ ] **机制特异性**：ensemble/候选必须直接优于 matched 及 destroy/independent 对照；destroy 单次相对较好不得写成“随机有益”，也不得事后选择冠军。
+- [ ] **因果作用与一致有益分离**：crossover 可支持“替换上下文会改变预测”，但真实 ensemble 一致有益仍需 native ensemble 直接优于替代输入及训练对照；不得用前一命题替代后一命题。
 - [ ] **目标子群与不确定性**：隔离/长跨距等 claim 必须有计数、paired sequence CI、家族集中性/leave-one-family-out 等预注册检查，不能只报一个子群均值。
 - [ ] **跨目标比较**：margin>NLL 必须来自各自独立收敛后的同协议结构复评；禁止比较 NLL 与 margin validation loss 或用 same-step 诊断作优胜结论。
 - [ ] **多种子与外部性**：稳健机制需后续获授权并完成多种子直接证据；严格 OOD、外部测试、SOTA 只能在相应面板与 provenance 实际完成后宣称。
@@ -125,4 +138,4 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、NLL 科学 FAIL 不变及 margin 登记排队/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
