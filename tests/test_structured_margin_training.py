@@ -60,11 +60,8 @@ def test_only_two_step_seed0_smoke_is_accepted(tmp_path, monkeypatch):
         trainer.validate_training_args(args, config)
 
 
-def test_full_margin_training_is_explicitly_frozen(tmp_path, monkeypatch):
-    monkeypatch.setenv("RN_CUDA_INSIDE", "1")
-    config = trainer.load_gec_config(CONFIG)
-    monkeypatch.setattr(trainer, "sha256_file", lambda path: config["assets"]["shared_init_sha256"])
-    args = smoke_args(Path(config["smoke"]["artifact_root"]) / "ensemble_context", config)
+def full_args(config):
+    args = smoke_args(Path(config["full_training"]["artifact_root"]) / "ensemble_context", config)
     args.engineering_smoke = False
     args.steps = 0
     args.train_record_limit = 0
@@ -72,8 +69,30 @@ def test_full_margin_training_is_explicitly_frozen(tmp_path, monkeypatch):
     args.validation_every = 500
     args.smoke_interrupt_after_step = 0
     args.save_every = 500
+    return args
+
+
+def test_full_margin_training_requires_explicit_authorization(monkeypatch):
+    monkeypatch.setenv("RN_CUDA_INSIDE", "1")
+    config = trainer.load_gec_config(CONFIG)
+    monkeypatch.setattr(trainer, "sha256_file", lambda path: config["assets"]["shared_init_sha256"])
+    args = full_args(config)
+    trainer.validate_training_args(args, config)
+    frozen = copy.deepcopy(config)
+    frozen["scientific_training_authorized"] = False
     with pytest.raises(ValueError, match="full training is frozen"):
-        trainer.validate_training_args(args, config)
+        trainer.validate_training_args(args, frozen)
+
+
+def test_full_margin_training_cannot_start_without_current_artifacts(monkeypatch):
+    monkeypatch.setenv("RN_CUDA_INSIDE", "1")
+    config = trainer.load_gec_config(CONFIG)
+    monkeypatch.setattr(trainer, "sha256_file", lambda path: config["assets"]["shared_init_sha256"])
+    args = full_args(config)
+    trainer.validate_training_args(args, config)
+    monkeypatch.undo()
+    with pytest.raises(FileNotFoundError):
+        trainer.validate_full_training_prerequisites(args, config)
 
 
 def test_margin_convergence_selects_its_own_post_terminal_metric():

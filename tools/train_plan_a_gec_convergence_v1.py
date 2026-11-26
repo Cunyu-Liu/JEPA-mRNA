@@ -8,6 +8,7 @@ import itertools
 import json
 import math
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -84,6 +85,9 @@ CODE_FILES = (
     "tests/test_structured_margin.py",
     "tests/test_structured_margin_training.py",
     "tests/test_structured_margin_smoke.py",
+    "tools/probe_structured_margin_memory_v1.py",
+    "tools/run_structured_margin_full_v1.py",
+    "tests/test_structured_margin_full.py",
 )
 
 
@@ -391,9 +395,10 @@ def load_gec_config(path: str | Path) -> dict:
             raise ValueError("structured-margin objective identity mismatch")
         contract = candidate_contract_path(config)
         text = contract.read_text()
+        authorization = str(bool(config.get("scientific_training_authorized"))).lower()
         for token in ("foldnar_pair_hamming_structured_margin_candidate_v1",
                       "82f6b4ef6f948c40aba0a53f73a31e1515af3efb",
-                      "scientific_training_authorized`: false"):
+                      f"scientific_training_authorized`: {authorization}"):
             if token not in text:
                 raise ValueError("structured-margin candidate contract mismatch")
         if config["training"].get("lambda_nll") != 0.0 or config["training"].get("lambda_structured_margin") != 1.0:
@@ -558,14 +563,84 @@ def validate_training_args(args: argparse.Namespace, config: dict) -> None:
     elif args.smoke_interrupt_after_step:
         raise ValueError("controlled interruption is restricted to engineering smoke")
     else:
-        if is_structured_margin(config):
-            raise ValueError("structured-margin full training is frozen; only two-step smoke is authorized")
+        if is_structured_margin(config) and not config.get("scientific_training_authorized"):
+            raise ValueError("structured-margin full training is frozen without explicit authorization")
         if args.steps != 0:
             raise ValueError("non-smoke GEC training has no fixed step cap; use --steps 0")
         if args.validation_every != convergence["validation_every"]:
             raise ValueError("non-smoke validation cadence differs from the contract")
         if args.train_record_limit or args.validation_record_limit:
             raise ValueError("record limits are restricted to engineering smoke")
+
+
+def current_git_commit(repo: str | Path = REPO) -> str:
+    return subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=repo, text=True,
+    ).strip()
+
+
+def validate_full_training_prerequisites(args: argparse.Namespace, config: dict) -> dict | None:
+    if args.engineering_smoke or not is_structured_margin(config):
+        return None
+    full = config.get("full_training", {})
+    if not config.get("scientific_training_authorized") or not full:
+        raise ValueError("structured-margin full training lacks an authorized resource contract")
+    root = Path(full["artifact_root"]).resolve()
+    if root not in Path(args.out).resolve().parents:
+        raise ValueError("full output must be under the registered structured-margin full root")
+    commit = current_git_commit()
+    authorization_path = Path(full["authorization_artifact"])
+    authorization = json.loads(authorization_path.read_text())
+    expected_authorization = {
+        "status": "AUTHORIZED_SEED0_FULL_CONVERGENCE_WITH_RESOURCE_GATE",
+        "code_commit": commit,
+        "gec_config_sha256": sha256_file(args.gec_config),
+        "candidate_contract_sha256": sha256_file(candidate_contract_path(config)),
+        "trainer_sha256": sha256_file(Path(__file__).resolve()),
+        "code_manifest_sha256": code_manifest_sha256(build_code_manifest()),
+        "tests_passed": True,
+        "push_verified": True,
+        "scientific_conclusion": None,
+    }
+    for key, expected in expected_authorization.items():
+        if authorization.get(key) != expected:
+            raise ValueError(f"stale or invalid full authorization field: {key}")
+    smoke_path = Path(full["required_smoke_verification"])
+    if sha256_file(smoke_path) != full["required_smoke_verification_sha256"]:
+        raise ValueError("pinned structured-margin smoke verification SHA256 mismatch")
+    smoke = json.loads(smoke_path.read_text())
+    if (smoke.get("status") != "PASS_TWO_STEP_ENGINEERING_SMOKE_ONLY"
+            or set(smoke.get("arms", {})) != set(config["arms"])):
+        raise ValueError("four-arm structured-margin smoke evidence is incomplete")
+    probe_path = Path(full["resource_probe"])
+    probe = json.loads(probe_path.read_text())
+    if (probe.get("status") != "COMPLETED_FORWARD_BACKWARD_RESOURCE_PROBE_ONLY"
+            or probe.get("code_commit") != commit
+            or probe.get("batch_size") != 4 or probe.get("max_sequence_length") != 500
+            or probe.get("unfrozen_blocks") != 20 or probe.get("optimizer_steps") != 0
+            or probe.get("full_training_started") is not False):
+        raise ValueError("current worst-case resource probe is missing or stale")
+    for key, path in (
+        ("trainer", Path(__file__).resolve()),
+        ("config", Path(args.gec_config)),
+        ("candidate_contract", candidate_contract_path(config)),
+        ("structured_margin", REPO / "src/rnajepa/structured_margin.py"),
+    ):
+        if probe.get("hashes", {}).get(key) != sha256_file(path):
+            raise ValueError(f"resource probe code identity mismatch: {key}")
+    thresholds = probe.get("release_thresholds", {})
+    if (thresholds.get("single_arm", {}).get("required_free_bytes", 0) <= 0
+            or thresholds.get("dual_arm", {}).get("required_free_bytes", 0) <= 0):
+        raise ValueError("resource probe has no valid single/dual-arm release thresholds")
+    return {
+        "code_commit": commit,
+        "authorization_artifact": str(authorization_path.resolve()),
+        "authorization_artifact_sha256": sha256_file(authorization_path),
+        "smoke_verification_sha256": full["required_smoke_verification_sha256"],
+        "resource_probe": str(probe_path.resolve()),
+        "resource_probe_sha256": sha256_file(probe_path),
+        "release_thresholds": thresholds,
+    }
 
 
 def _locate_blocks(encoder):
@@ -623,6 +698,7 @@ def main() -> None:
     args = build_parser().parse_args()
     config = load_gec_config(args.gec_config)
     validate_training_args(args, config)
+    full_prerequisites = validate_full_training_prerequisites(args, config)
     torch.use_deterministic_algorithms(True)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
@@ -726,7 +802,11 @@ def main() -> None:
         "run_identity": run_identity,
         "arm": args.arm,
         "engineering_smoke": args.engineering_smoke,
-        "scientific_training_authorized": False,
+        "scientific_training_authorized": bool(
+            is_structured_margin(config) and not args.engineering_smoke
+            and config.get("scientific_training_authorized")
+        ),
+        "full_training_prerequisites": full_prerequisites,
         "gec_config": str(Path(args.gec_config).resolve()),
         "gec_config_sha256": sha256_file(args.gec_config),
         "source_contract": config["source_contract"],

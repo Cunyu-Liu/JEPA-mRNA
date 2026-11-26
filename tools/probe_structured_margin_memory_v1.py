@@ -62,6 +62,10 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def repo_commit() -> str:
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO, text=True).strip()
+
+
 def atomic_json(value: dict, path: Path) -> None:
     temporary = path.with_name(path.name + f".tmp.{os.getpid()}")
     temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
@@ -274,6 +278,7 @@ def main() -> None:
         atomic_json({
             "schema_version": "foldnar.structured_margin_memory_probe.v1",
             "status": gate["status"], "created_at": utc_now(), "command": command,
+            "code_commit": repo_commit(),
             "full_training_started": False, "optimizer_steps": 0,
             "preflight": preflight, "gate": gate,
             "action": "leave queued and rerun the same command after memory is available",
@@ -389,7 +394,7 @@ def main() -> None:
     result = {
         "schema_version": "foldnar.structured_margin_memory_probe.v1",
         "status": "COMPLETED_FORWARD_BACKWARD_RESOURCE_PROBE_ONLY",
-        "created_at": utc_now(), "command": command,
+        "created_at": utc_now(), "command": command, "code_commit": repo_commit(),
         "scientific_training_authorized": False, "full_training_started": False,
         "optimizer_steps": 0, "decoder_search": False, "seed": 0, "arm": args.arm,
         "batch_size": BATCH_SIZE, "max_sequence_length": LENGTH,

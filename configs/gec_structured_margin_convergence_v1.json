@@ -1,7 +1,7 @@
 {
   "config_id": "gec_structured_margin_implementation_v1",
-  "status": "FROZEN_FOR_TWO_STEP_STRUCTURED_MARGIN_SMOKE_ONLY",
-  "scientific_training_authorized": false,
+  "status": "AUTHORIZED_SEED0_FULL_CONVERGENCE_WITH_RESOURCE_GATE",
+  "scientific_training_authorized": true,
   "source_contract": "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_run_identity_v1/phase0d_identity_convergence_20261124T034824Z/phase0d_gec_four_arm_convergence_contract_v1.json",
   "arms": [
     "matched_control",
@@ -113,6 +113,19 @@
     "validation_destroy_step": 0,
     "batch_norm_policy": "inherited_padded_batch_train_once_plus_frozen_singleton_eval",
     "identity_schema": "foldnar.structured_margin_smoke_artifact_identity.v1"
+  },
+  "full_training": {
+    "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_full_v1/generation_01",
+    "resource_probe": "/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_memory_probe_v1/resource_probe_v1.json",
+    "authorization_artifact": "/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_full_v1/full_authorization_v1.json",
+    "required_smoke_verification": "/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_smoke_v1/generation_01/smoke_verification_v1.json",
+    "required_smoke_verification_sha256": "a59f603f026a52af55104885ec23955d06eb28487373e96b6fbfee1f108ffa77",
+    "historical_nll_reference_commit": "ecc40d3",
+    "historical_nll_status": "QUALIFIED_STRUCTURE_REFERENCE",
+    "max_parallel_arms": 2,
+    "probe_min_free_gib": 24,
+    "queue_poll_seconds": 60,
+    "identity_schema": "foldnar.structured_margin_full_launch_identity.v1"
   },
   "candidate_contract": "docs/plans/2026-11-26-structured-margin-candidate-design.md",
   "objective": {
