@@ -55,9 +55,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -124,7 +125,19 @@
           "vienna_mfe_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "vienna_mfe/bprna_new/recovered_v4",
+          "vienna_mfe/bprna_new/repeat0",
+          "vienna_mfe/bprna_new/repeat1",
+          "vienna_mfe/bprna_new/repeat2"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -174,9 +187,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -229,7 +243,19 @@
           "vienna_centroid_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "vienna_centroid/bprna_new/recovered_v4",
+          "vienna_centroid/bprna_new/repeat0",
+          "vienna_centroid/bprna_new/repeat1",
+          "vienna_centroid/bprna_new/repeat2"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -279,9 +305,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -334,7 +361,19 @@
           "vienna_mea_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "vienna_mea/bprna_new/recovered_v4",
+          "vienna_mea/bprna_new/repeat0",
+          "vienna_mea/bprna_new/repeat1",
+          "vienna_mea/bprna_new/repeat2"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -449,9 +488,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -503,7 +543,17 @@
           "contrafold_mea_single_clean_tr1c"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "contrafold/bprna_new",
+          "contrafold/bprna_new/clean_tr1c"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -557,9 +607,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": true
+        "e0_expanded_71_used": true,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -602,6 +653,14 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "eternafold/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -658,9 +717,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": true
+        "e0_expanded_71_used": true,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -703,6 +763,14 @@
         "numeric_values_copied": false,
         "result_access": "CANONICAL_MAIN_FIGURE_ONLY",
         "identity_evidence": "VERIFIED_MAIN_FIGURE"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "mxfold2/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -751,9 +819,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": true
+        "e0_expanded_71_used": true,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -806,7 +875,17 @@
           "bpfold_author_release_official_reference"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "bpfold/bprna_new",
+          "bpfold_official_release/bprna_new_official_reference"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -861,9 +940,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": true
+        "e0_expanded_71_used": true,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -913,7 +993,16 @@
           "ufold_converted_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "ufold/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -1028,9 +1117,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -1075,7 +1165,17 @@
           "spot_rna_postprocessed_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "spot_rna/bprna_new",
+          "spot_rna_postprocessed/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -1185,9 +1285,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -1217,7 +1318,16 @@
           "kirigami_standard_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "kirigami/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -1728,9 +1838,10 @@
         "ensemble": false
       },
       "comparability": {
-        "status": "OFFICIAL_V008_PROJECT_RAW_GT_ONLY; raw is not clean; historical unlinked replay remains separately blocked",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "OFFICIAL_V008_PROJECT_RAW_GT_ONLY; raw is not clean; historical unlinked replay remains separately blocked"
       },
       "provenance_status": "OFFICIAL_WEIGHT_RUNTIME_AND_RAW_5388_PREDICTION_VERIFIED",
       "evidence": {
@@ -1760,11 +1871,21 @@
           "structrfm_author_bprna1m_single_raw"
         ],
         "status": "HISTORICAL_UNLINKED_OFFICIAL_REPLAY_PENDING",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
       },
       "structrfm_official_recovery": "manifests/foldnar_v2/structrfm_official_recovery_20261126.json",
       "structrfm_runtime_compatibility": "manifests/foldnar_v2/structrfm_runtime_compatibility_20261126.json",
-      "structrfm_official_v008_results": "manifests/foldnar_v2/structrfm_official_bprna_new_results_20261126.json"
+      "structrfm_official_v008_results": "manifests/foldnar_v2/structrfm_official_bprna_new_results_20261126.json",
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "structrfm/bprna_new",
+          "structrfm_official_v0.0.8/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "xens2",
@@ -1813,9 +1934,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": true
+        "e0_expanded_71_used": true,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -1852,7 +1974,15 @@
       "n_frozen_prediction_rows": 15,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 1,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "xens2/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "best_plan_a",
@@ -1932,7 +2062,15 @@
       "n_frozen_prediction_rows": 0,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 8,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "best_plan_a/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "r2d",
@@ -1982,9 +2120,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": true
+        "e0_expanded_71_used": true,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "PARTIAL_OR_VERIFIED",
       "evidence": {
@@ -2017,7 +2156,15 @@
       "n_frozen_prediction_rows": 11,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 1,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rinalmo_2d_s0/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "h0",
@@ -2097,7 +2244,15 @@
       "n_frozen_prediction_rows": 0,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 8,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "h0/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "nussinov_turner",
@@ -2188,7 +2343,17 @@
       "n_frozen_prediction_rows": 0,
       "n_summary_only_rows": 24,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "nussinov_turner/bprna_new/repeat0",
+          "nussinov_turner/bprna_new/repeat1",
+          "nussinov_turner/bprna_new/repeat2"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "rnaformer_bprna",
@@ -2234,9 +2399,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -2272,7 +2438,16 @@
           "rnaformer_bprna_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rnaformer_bprna/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -2319,9 +2494,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -2350,7 +2526,15 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rnaformer_interfamily/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "rnaformer_biophysical",
@@ -2396,9 +2580,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -2427,7 +2612,15 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rnaformer_biophysical/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "rinalmo_ft",
@@ -2473,9 +2666,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": true
+        "e0_expanded_71_used": true,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -2511,7 +2705,16 @@
           "rinalmo_author_bprna_ft_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rinalmo_ft/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -2932,9 +3135,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -2984,7 +3188,16 @@
           "rnastructure_fold_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rnastructure_fold/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -4798,9 +5011,10 @@
         "efold_version": "0.1.3"
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -4836,7 +5050,16 @@
           "efold_0_1_3_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "efold_0_1_3/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -4876,9 +5099,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -4914,9 +5138,18 @@
           "nucleicbert_author_secstr_full_ft_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
       },
-      "identity_correction": "Historical frozen_official filename does not mean frozen-encoder training."
+      "identity_correction": "Historical frozen_official filename does not mean frozen-encoder training.",
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "nucleicbert_frozen_official/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "nucleicbert_ft",
@@ -4957,9 +5190,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -4995,9 +5229,18 @@
           "nucleicbert_project_frozen_encoder_tr1c_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
       },
-      "identity_correction": "Historical nucleicbert_ft is a project frozen-encoder head, not the author full-fine-tuned checkpoint."
+      "identity_correction": "Historical nucleicbert_ft is a project frozen-encoder head, not the author full-fine-tuned checkpoint.",
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "nucleicbert_ft/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "rnaformer_intrafamily",
@@ -5036,9 +5279,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -5067,7 +5311,15 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rnaformer_intrafamily/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "kirigami_fast",
@@ -5104,9 +5356,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -5135,7 +5388,15 @@
       "n_frozen_prediction_rows": 8,
       "n_summary_only_rows": 0,
       "n_blocked_prediction_rows": 0,
-      "unknown_fields_are_not_zero": true
+      "unknown_fields_are_not_zero": true,
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "kirigami_fast/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
+      }
     },
     {
       "baseline_id": "rnastructure_maxexpect",
@@ -5172,9 +5433,10 @@
         "efold_version": null
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable",
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
         "clean_subset_policy": "baseline-specific; no shared TR1c-clean assumed",
-        "e0_expanded_71_used": false
+        "e0_expanded_71_used": false,
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; raw is not clean and is not automatically CHANRG-protocol comparable"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -5210,7 +5472,16 @@
           "rnastructure_maxexpect_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rnastructure_maxexpect/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     },
     {
@@ -5306,8 +5577,9 @@
         "status": "FROZEN_RAW_PROTOCOL"
       },
       "comparability": {
-        "status": "PROJECT_RAW_GT_ONLY; not official RNA-FM ResNet",
-        "clean_subset_policy": "not applied"
+        "status": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; official-reference identities separated",
+        "clean_subset_policy": "not applied",
+        "legacy_status_before_label_lineage_repair": "PROJECT_RAW_GT_ONLY; not official RNA-FM ResNet"
       },
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
@@ -5335,7 +5607,16 @@
           "rnafm_project_frozen_encoder_crf_single_raw"
         ],
         "status": "PASS_20_ASSET_OVERLAY_MEMBER",
-        "raw_clean_sota_claim": false
+        "raw_clean_sota_claim": false,
+        "derived_raw_disposition": "circular-audit-only; not independent SOTA"
+      },
+      "bprna_new_official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "prediction_ids": [
+          "rnafm_project_frozen_encoder_crf/bprna_new"
+        ],
+        "ranking_scope": "descriptive frozen protocol audit only; not model selection"
       }
     }
   ],
@@ -5564,5 +5845,6 @@
   ],
   "sota_protocol": "one frozen model/config per protocol; raw/clean and project/CHANRG panels separate; LEGACY_TABLE_ONLY is never a frozen prediction or SOTA claim",
   "scientific_decision_effect": "REGISTRY_COMPLETION_ONLY; E0/E1 decision unchanged",
-  "recovery_overlay": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json"
+  "recovery_overlay": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+  "official_reference_5388_overlay": "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json"
 }

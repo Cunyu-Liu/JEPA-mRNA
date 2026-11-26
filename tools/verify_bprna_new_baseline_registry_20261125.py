@@ -140,11 +140,12 @@ def main():
     for row in document["rows"]:
         assert digest(row["prediction_path"]) == row["prediction_sha256"], row["asset_id"]
         assert digest(row["source_path"]) == row["source_sha256"], row["asset_id"]
-        if row["label_protocol"] == "PROJECT_DATABASE_RAW_5388":
+        historical_protocol = row.get("legacy_label_protocol_before_20261127", row["label_protocol"])
+        if historical_protocol == "PROJECT_DATABASE_RAW_5388":
             if raw_labels is None:
                 raw_labels = jsonl(RAW_LABELS, row["label_sha256"])
             labels = raw_labels
-        elif row["label_protocol"] == "PROJECT_TR1C_CLEAN_5386":
+        elif historical_protocol == "PROJECT_TR1C_CLEAN_5386":
             if clean_labels is None:
                 clean_labels = jsonl(CLEAN_LABELS, row["label_sha256"])
             labels = clean_labels
@@ -203,7 +204,9 @@ def main():
         for dataset_id in baseline.get("training_data", {}).get("project_training_dataset_ids", []):
             assert dataset_id in dataset_ids, (baseline["baseline_id"], dataset_id)
 
-    raw = [row for row in document["rows"] if row["label_protocol"] == "PROJECT_DATABASE_RAW_5388"]
+    raw = [row for row in document["rows"] if row.get("legacy_label_protocol_before_20261127", row["label_protocol"]) == "PROJECT_DATABASE_RAW_5388"]
+    assert all(row["independent_sota_eligible"] is False for row in raw)
+    assert document["historical_raw_ranking_disposition"].startswith("CIRCULAR_AUDIT_ONLY")
     best = max(raw, key=lambda row: row["metrics"]["micro_f1"])
     single = max((row for row in raw if row["model_form"] != "six_checkpoint_ensemble"), key=lambda row: row["metrics"]["micro_f1"])
     assert best["asset_id"] == document["strongest_project_raw"]["asset_id"] == "bpfold_project_six_checkpoint_raw"

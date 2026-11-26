@@ -1,0 +1,102 @@
+{
+  "schema_version": "bpfold.label_protocol_audit.independent_verification.v1",
+  "audit_date": "2026-11-27",
+  "status": "PASS_INDEPENDENT_PROTOCOL_AUDIT",
+  "independence": "Separate BPSEQ parser, projection, pair validation, and metric implementation; generator module is not imported",
+  "records_compared_field_by_field": 5401,
+  "metrics_recomputed": {
+    "official": {
+      "n_sequences": 5401,
+      "coverage": 1.0,
+      "tp": 86933,
+      "fp": 59441,
+      "fn": 41092,
+      "micro_precision": 0.5939101206498422,
+      "micro_recall": 0.6790314391720367,
+      "micro_f1": 0.633624758107719,
+      "macro_f1": 0.6470223791166072,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    },
+    "intersection": {
+      "n_sequences": 5388,
+      "coverage": 1.0,
+      "tp": 86731,
+      "fp": 59229,
+      "fn": 40929,
+      "micro_precision": 0.5942107426692245,
+      "micro_recall": 0.6793905686981043,
+      "micro_f1": 0.6339521964768657,
+      "macro_f1": 0.6472307861307366,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    },
+    "release_project": {
+      "n_sequences": 5388,
+      "coverage": 1.0,
+      "tp": 135184,
+      "fp": 10776,
+      "fn": 0,
+      "micro_precision": 0.92617155385037,
+      "micro_recall": 1.0,
+      "micro_f1": 0.9616708875167174,
+      "macro_f1": 0.9584497822657716,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    },
+    "replay_project": {
+      "n_sequences": 5388,
+      "coverage": 1.0,
+      "tp": 106998,
+      "fp": 48176,
+      "fn": 28186,
+      "micro_precision": 0.6895356180803485,
+      "micro_recall": 0.7914989939637826,
+      "micro_f1": 0.7370074184282851,
+      "macro_f1": 0.7447389175263477,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    }
+  },
+  "checks": [
+    "all 5401 records and all per-record fields",
+    "5401 official names equal official reference names",
+    "5388 project sequences and projected release pair identities",
+    "13 bad-alphabet exclusions",
+    "106 equal and 5282 different reference/project label sets",
+    "four requested metric identities and pooled TP/FP/FN",
+    "input SHA256 and byte counts",
+    "no standalone canonical filter and no unsupported DSSR/literature attribution"
+  ],
+  "external_test_used_for_model_selection": false,
+  "gpu_task_launched": false,
+  "historical_results_modified": false,
+  "deliverables": [
+    {
+      "path": "/home/rna_jev_bpfold_protocol/tools/audit_bpfold_label_protocol_20261127.py",
+      "bytes": 18880,
+      "sha256": "46ea4742998785889b79f23b163e6475575e8bdc64776ae040d7e97eb27211c2"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/tools/verify_bpfold_label_protocol_20261127.py",
+      "bytes": 15051,
+      "sha256": "0b9bc45f4b945bbfe88f4281ff2d06cd3c902a270a513b50a69bc996a4852f73"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/tests/test_bpfold_label_protocol_20261127.py",
+      "bytes": 2553,
+      "sha256": "3e2516188f752d320648effccdce0d7f396f323cbd5a1a746ad0939f772a8fd7"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/docs/plans/2026-11-27-bpfold-label-protocol-audit.md",
+      "bytes": 8010,
+      "sha256": "5887dd61abb4327528c091d9470be06c2e94b96a54e3b9280e9cc49996367f05"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/source_data/bpfold_label_protocol_audit_20261127/per_record.jsonl.gz",
+      "bytes": 768023,
+      "sha256": "4799b894a09840e646b503d082c21b2cb39151fc36159b4bf9e331b92ae2e1cd"
+    },
+    {
+      "path": "/home/rna_jev_bpfold_protocol/source_data/bpfold_label_protocol_audit_20261127/summary.json",
+      "bytes": 7290,
+      "sha256": "9dc0affef431bff76691ed201c5c062f269df304a9a6a973ab0971d6d3b31a1c"
+    }
+  ]
+}
