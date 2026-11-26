@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import importlib.util
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -16,6 +18,8 @@ def load_module(name):
 
 
 recovery = load_module("contextfold_official_recovery_20261126")
+sys.path.insert(0, str(TOOLS))
+launcher = load_module("run_contextfold_official_bprna_new")
 
 
 class NativeContractTest(unittest.TestCase):
@@ -77,6 +81,50 @@ class DatasetContractTest(unittest.TestCase):
             self.assertEqual(len(recovery.load_dataset(path, require_full=False)), 2)
             with self.assertRaises(recovery.ContractError):
                 recovery.load_dataset(path)
+
+
+class RecoveryManifestTest(unittest.TestCase):
+    def test_blocked_manifest_never_fakes_assets_or_predictions(self):
+        path = Path(__file__).parents[1] / "manifests/foldnar_v2/contextfold_official_recovery_20261126.json"
+        document = json.loads(path.read_text())
+        self.assertFalse(document["full_ready"])
+        self.assertEqual(document["implementation"]["archive"]["sha256"], None)
+        self.assertEqual(document["trained_parameters"]["sha256"], None)
+        self.assertIsNone(document["bprna_new_5388_contract"]["predictions"])
+        self.assertEqual(document["bprna_new_5388_contract"]["n_sequences"], 5388)
+        self.assertFalse(document["execution"]["gpu_tasks_started_or_modified"])
+        self.assertEqual(document["official_identity"]["archive_url"], recovery.OFFICIAL_ARCHIVE_URL)
+
+
+class LauncherTest(unittest.TestCase):
+    def test_missing_official_implementation_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({"implementation": {"status": "BLOCKED"}}))
+            with self.assertRaisesRegex(launcher.PreflightError, "fail-closed"):
+                launcher.preflight(root, manifest, root / "dataset.jsonl")
+
+    def test_asset_and_output_cannot_escape_artifact_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "assets"
+            root.mkdir()
+            with self.assertRaises(launcher.PreflightError):
+                launcher.inside_root(Path(directory) / "prediction.jsonl", root)
+
+    def test_real_cli_makes_no_prediction_file_when_blocked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "prediction.jsonl"
+            command = [
+                sys.executable,
+                str(TOOLS / "run_contextfold_official_bprna_new.py"),
+                "--output", str(output),
+                "--asset-root", directory,
+            ]
+            completed = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(completed.returncode, 2)
+            self.assertIn("PREFLIGHT_BLOCKED", completed.stderr)
+            self.assertFalse(output.exists())
 
 
 if __name__ == "__main__":
