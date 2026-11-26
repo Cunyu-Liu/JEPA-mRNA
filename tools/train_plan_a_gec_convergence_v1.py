@@ -38,6 +38,7 @@ from rnajepa.gec_context import (
 from rnajepa.gec_numeric_v1 import compute_gec_context_v1
 from rnajepa.prior_alignment import sha256_file, tensor_state_sha256
 from rnajepa.raw_score_matrix import capped_unfreeze_blocks
+from rnajepa.structured_margin import pair_hamming_structured_margin
 from rinalmo_preflight import VOCAB, load_encoder
 from tools.train_plan_a_clean_head_p1 import (
     BatchStream,
@@ -56,6 +57,12 @@ RUN_META_SCHEMA_V2 = "foldnar.gec_training_run.v2"
 RUN_IDENTITY_SCHEMA_V2 = "foldnar.gec_run_identity.v2"
 SMOKE_IDENTITY_SCHEMA_V2 = "foldnar.gec_smoke_artifact_identity.v2"
 SMOKE_ARTIFACT_GENERATION_V2 = "gec_smoke_v2"
+STRUCTURED_MARGIN_CONFIG_V1 = "gec_structured_margin_implementation_v1"
+STRUCTURED_MARGIN_OBJECTIVE_V1 = "exact_pair_hamming_cost_augmented_structured_max_margin"
+STRUCTURED_MARGIN_RUN_META_V1 = "foldnar.structured_margin_training_run.v1"
+STRUCTURED_MARGIN_RUN_IDENTITY_V1 = "foldnar.structured_margin_run_identity.v1"
+STRUCTURED_MARGIN_CHECKPOINT_V1 = "foldnar.structured_margin_checkpoint.v1"
+STRUCTURED_MARGIN_SMOKE_V1 = "structured_margin_smoke_v1"
 VALIDATION_DESTROY_STEP_V2 = 0
 BATCH_NORM_POLICY_V2 = "inherited_padded_batch_train_once_plus_frozen_singleton_eval"
 CODE_FILES = (
@@ -69,6 +76,14 @@ CODE_FILES = (
     "tests/test_gec_numeric_v1.py",
     "tests/test_gec_context.py",
     "tests/test_gec_convergence.py",
+    "src/rnajepa/structured_margin.py",
+    "tools/run_structured_margin_smoke_v1.sh",
+    "tools/verify_structured_margin_smoke_v1.py",
+    "configs/gec_structured_margin_convergence_v1.json",
+    "docs/plans/2026-11-26-structured-margin-candidate-design.md",
+    "tests/test_structured_margin.py",
+    "tests/test_structured_margin_training.py",
+    "tests/test_structured_margin_smoke.py",
 )
 
 
@@ -111,21 +126,43 @@ def _append_jsonl(value, path: str | Path) -> None:
         handle.write(json.dumps(value, allow_nan=False) + "\n")
 
 
+def is_structured_margin(config: dict) -> bool:
+    return config.get("config_id") == STRUCTURED_MARGIN_CONFIG_V1
+
+
+def validation_metric(config: dict) -> str:
+    if is_structured_margin(config):
+        return config["convergence"]["validation_metric"]
+    return "length_normalized_structured_NLL"
+
+
+def candidate_contract_path(config: dict) -> Path | None:
+    if not is_structured_margin(config):
+        return None
+    path = Path(config["candidate_contract"])
+    return path if path.is_absolute() else REPO / path
+
+
 def _finite_float_or_none(value) -> float | None:
     value = float(value)
     return value if math.isfinite(value) else None
 
 
-def require_finite_validation_nll(value, step: int, record: dict | None = None) -> float:
+def require_finite_validation_loss(value, step: int, record: dict | None = None,
+                                   metric: str = "NLL") -> float:
     value = float(value)
     if math.isfinite(value):
         return value
     if record is None:
-        raise FloatingPointError(f"NON_FINITE_AGGREGATE_VALIDATION_NLL step={step} loss={value}")
+        raise FloatingPointError(f"NON_FINITE_AGGREGATE_VALIDATION_{metric} step={step} loss={value}")
     raise FloatingPointError(
-        f"NON_FINITE_VALIDATION_NLL step={step} record_id={record['id']} "
+        f"NON_FINITE_VALIDATION_{metric} step={step} record_id={record['id']} "
         f"length={len(record['sequence'])} loss={value}"
     )
+
+
+def require_finite_validation_nll(value, step: int, record: dict | None = None) -> float:
+    return require_finite_validation_loss(value, step, record, metric="NLL")
 
 
 def validation_error_record(step: int, error: Exception, record: dict | None = None,
@@ -162,10 +199,12 @@ def _read_previous_run_meta(path: Path) -> dict | None:
     if not path.exists():
         return None
     previous = json.loads(path.read_text())
-    if not isinstance(previous, dict) or previous.get("schema_version") != RUN_META_SCHEMA_V2:
-        raise ValueError("previous run_meta is missing or has an unsupported schema")
+    if not isinstance(previous, dict):
+        raise ValueError("previous run_meta must be a mapping")
     if not isinstance(previous.get("run_identity"), dict):
         raise ValueError("previous run_meta has no complete run identity")
+    if previous.get("schema_version") not in {RUN_META_SCHEMA_V2, STRUCTURED_MARGIN_RUN_META_V1}:
+        raise ValueError("unsupported run metadata schema")
     if previous.get("status") not in {
         "running", "interrupted", "diverged", "engineering_smoke_completed", "converged",
     }:
@@ -184,9 +223,9 @@ def build_smoke_artifact_identity(
     registry_path, _ = require_model_dev_registry(config)
     assets = config["assets"]
     manifest = build_code_manifest(repo)
-    return {
-        "schema_version": SMOKE_IDENTITY_SCHEMA_V2,
-        "artifact_generation": SMOKE_ARTIFACT_GENERATION_V2,
+    identity = {
+        "schema_version": config["smoke"].get("identity_schema", SMOKE_IDENTITY_SCHEMA_V2),
+        "artifact_generation": config["smoke"]["artifact_generation"],
         "code_manifest": manifest,
         "code_manifest_sha256": code_manifest_sha256(manifest),
         "gec_config": str(Path(config_path).resolve()),
@@ -208,6 +247,11 @@ def build_smoke_artifact_identity(
         "initial_residual_tensor_sha256": residual_initial["residual_tensor_sha256"],
         "smoke": config["smoke"],
     }
+    contract = candidate_contract_path(config)
+    if contract is not None:
+        identity["candidate_contract"] = str(contract.resolve())
+        identity["candidate_contract_sha256"] = sha256_file(contract)
+    return identity
 
 
 def validate_smoke_artifact_identity(document: dict, expected: dict) -> None:
@@ -228,7 +272,7 @@ def build_run_identity(
     assets = config["assets"]
     manifest = build_code_manifest()
     identity = {
-        "schema_version": RUN_IDENTITY_SCHEMA_V2,
+        "schema_version": STRUCTURED_MARGIN_RUN_IDENTITY_V1 if is_structured_margin(config) else RUN_IDENTITY_SCHEMA_V2,
         "arm": args.arm,
         "engineering_smoke": bool(args.engineering_smoke),
         "code_manifest": manifest,
@@ -250,6 +294,10 @@ def build_run_identity(
         "determinism": "torch_and_cudnn_deterministic_tf32_off",
         "terminal_unfrozen_blocks": config["training"]["max_unfrozen_blocks"],
     }
+    if is_structured_margin(config):
+        identity["objective"] = config["objective"]
+        identity["validation_metric"] = validation_metric(config)
+        identity["candidate_contract_sha256"] = sha256_file(candidate_contract_path(config))
     if args.engineering_smoke:
         identity["smoke_artifact_identity_sha256"] = sha256_file(
             Path(config["smoke"]["artifact_root"]) / "smoke_artifact_identity.json"
@@ -272,7 +320,7 @@ def validate_run_identity(previous: dict, current_identity: dict) -> None:
 
 
 def validate_checkpoint_identity(state: dict, current_identity: dict) -> None:
-    if state.get("format") != "foldnar.gec_checkpoint.v2":
+    if state.get("format") not in {"foldnar.gec_checkpoint.v2", STRUCTURED_MARGIN_CHECKPOINT_V1}:
         raise ValueError("unsupported GEC checkpoint format")
     if state.get("run_identity") != current_identity:
         raise ValueError("checkpoint run identity mismatch")
@@ -324,7 +372,7 @@ def _restore_batch_norm_running_state(saved) -> None:
 def load_gec_config(path: str | Path) -> dict:
     config = json.loads(Path(path).read_text())
     require_model_dev_registry(config)
-    if config.get("config_id") != "gec_four_arm_implementation_v1":
+    if config.get("config_id") not in {"gec_four_arm_implementation_v1", STRUCTURED_MARGIN_CONFIG_V1}:
         raise ValueError("unexpected GEC implementation config")
     if tuple(config.get("arms", ())) != (
         "matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context"
@@ -333,6 +381,23 @@ def load_gec_config(path: str | Path) -> dict:
     source = json.loads(Path(config["source_contract"]).read_text())
     if source.get("contract_id") != "gec_four_arm_convergence_contract_v1":
         raise ValueError("unexpected frozen GEC source contract")
+    if is_structured_margin(config):
+        objective = config.get("objective", {})
+        if (objective.get("name") != STRUCTURED_MARGIN_OBJECTIVE_V1
+                or objective.get("lambda_nll") != 0.0
+                or objective.get("lambda_structured_margin") != 1.0
+                or objective.get("normalization") != "length"
+                or objective.get("internal_precision") != "float64"):
+            raise ValueError("structured-margin objective identity mismatch")
+        contract = candidate_contract_path(config)
+        text = contract.read_text()
+        for token in ("foldnar_pair_hamming_structured_margin_candidate_v1",
+                      "82f6b4ef6f948c40aba0a53f73a31e1515af3efb",
+                      "scientific_training_authorized`: false"):
+            if token not in text:
+                raise ValueError("structured-margin candidate contract mismatch")
+        if config["training"].get("lambda_nll") != 0.0 or config["training"].get("lambda_structured_margin") != 1.0:
+            raise ValueError("structured-margin training weights drift")
     training = config["training"]
     terminal = terminal_unfreeze_step_v1(
         training["warmup_head_steps"], training["unfreeze_every"],
@@ -482,8 +547,10 @@ def validate_training_args(args: argparse.Namespace, config: dict) -> None:
             raise ValueError("smoke requires a resume checkpoint after every step")
         if args.smoke_interrupt_after_step not in (0, smoke["controlled_interrupt_after_step"]):
             raise ValueError("invalid controlled smoke interruption step")
-        if smoke["artifact_generation"] != SMOKE_ARTIFACT_GENERATION_V2:
-            raise ValueError("smoke artifact generation is not gec_smoke_v2")
+        expected_generation = (STRUCTURED_MARGIN_SMOKE_V1 if is_structured_margin(config)
+                               else SMOKE_ARTIFACT_GENERATION_V2)
+        if smoke["artifact_generation"] != expected_generation:
+            raise ValueError("smoke artifact generation mismatch")
         if smoke["validation_destroy_step"] != VALIDATION_DESTROY_STEP_V2:
             raise ValueError("validation destroy identity must be frozen at step zero")
         if smoke["batch_norm_policy"] != BATCH_NORM_POLICY_V2:
@@ -491,6 +558,8 @@ def validate_training_args(args: argparse.Namespace, config: dict) -> None:
     elif args.smoke_interrupt_after_step:
         raise ValueError("controlled interruption is restricted to engineering smoke")
     else:
+        if is_structured_margin(config):
+            raise ValueError("structured-margin full training is frozen; only two-step smoke is authorized")
         if args.steps != 0:
             raise ValueError("non-smoke GEC training has no fixed step cap; use --steps 0")
         if args.validation_every != convergence["validation_every"]:
@@ -522,7 +591,10 @@ def _load_initialization(args, config, encoder, head, residual):
         raise ValueError("unexpected GEC residual initialization format")
     if residual_initial.get("seed") != args.seed:
         raise ValueError("GEC residual initialization seed mismatch")
-    if residual_initial.get("gec_config_sha256") != sha256_file(args.gec_config):
+    accepted_config_hashes = {sha256_file(args.gec_config)}
+    if is_structured_margin(config):
+        accepted_config_hashes.add(sha256_file(REPO / "configs/gec_four_arm_convergence_v1.json"))
+    if residual_initial.get("gec_config_sha256") not in accepted_config_hashes:
         raise ValueError("GEC residual initialization config hash mismatch")
     if residual_initial.get("base_shared_init_sha256") != sha256_file(args.shared_init):
         raise ValueError("GEC residual/base initialization identity mismatch")
@@ -636,7 +708,7 @@ def main() -> None:
     if args.engineering_smoke:
         artifact_path = Path(config["smoke"]["artifact_root"]) / "smoke_artifact_identity.json"
         if not artifact_path.is_file():
-            raise ValueError("missing current gec_smoke_v2 artifact identity document")
+            raise ValueError("missing current structured-objective smoke artifact identity document")
         artifact = json.loads(artifact_path.read_text())
         expected_artifact = build_smoke_artifact_identity(
             args.gec_config, args.shared_init, args.gec_init,
@@ -649,7 +721,7 @@ def main() -> None:
     start_step = 0
     optimizer_steps = 0
     meta = {
-        "schema_version": RUN_META_SCHEMA_V2,
+        "schema_version": STRUCTURED_MARGIN_RUN_META_V1 if is_structured_margin(config) else RUN_META_SCHEMA_V2,
         "status": "running",
         "run_identity": run_identity,
         "arm": args.arm,
@@ -673,11 +745,14 @@ def main() -> None:
         "trainable_head_and_residual_parameter_count": sum(p.numel() for p in head_parameters),
         "train_record_ids": [row["id"] for row in train_records],
         "validation_record_ids": [row["id"] for row in validation_records],
-        "objective": {
+        "objective": (config["objective"] if is_structured_margin(config) else {
             "name": "exact_structured_NLL_only", "lambda_nll": 1.0,
             "normalization": "length", "all_auxiliary_weights": 0.0,
             "first_pass_auxiliary_loss": False,
-        },
+        }),
+        "validation_metric": validation_metric(config),
+        "candidate_contract_sha256": (sha256_file(candidate_contract_path(config))
+                                      if is_structured_margin(config) else None),
         "schedule": vars(args),
         "convergence": convergence.state_dict(),
         "environment": {
@@ -697,6 +772,7 @@ def main() -> None:
         },
         "compute_kernels": {
             "inside_outside": "triton_cuda_float64",
+            **({"structured_margin": "torch_cuda_float64_max_product"} if is_structured_margin(config) else {}),
             "cpu_fallback": False,
             "RN_CUDA_INSIDE": os.environ["RN_CUDA_INSIDE"],
         },
@@ -819,11 +895,16 @@ def main() -> None:
             scores = torch.where(
                 mask, first_pass + delta, torch.full_like(first_pass, NEG_BIG),
             )
-            loss = harness.negative_log_likelihood(
-                scores, mask, row["pairs"], normalization="length",
-            )
+            if is_structured_margin(config):
+                loss = pair_hamming_structured_margin(
+                    scores, mask, row["pairs"], normalization="length",
+                )
+            else:
+                loss = harness.negative_log_likelihood(
+                    scores, mask, row["pairs"], normalization="length",
+                )
             if not isinstance(loss, torch.Tensor) or loss.device != device:
-                raise RuntimeError("CUDA structured NLL left the requested device")
+                raise RuntimeError("CUDA structured objective left the requested device")
             losses.append(loss)
             final_scores.append(scores)
             context_log_z.append(float(numerics.log_z.detach()))
@@ -839,14 +920,14 @@ def main() -> None:
                 for row in validation_records:
                     loss, _, _, _ = score_batch([row], VALIDATION_DESTROY_STEP_V2, 0)
                     try:
-                        losses.append(require_finite_validation_nll(loss.detach(), step, row))
+                        losses.append(require_finite_validation_loss(loss.detach(), step, row, validation_metric(config)))
                     except FloatingPointError as error:
                         _append_jsonl(validation_error_record(step, error, row),
                                       output / "validation_error.jsonl")
                         raise
             aggregate = float(np.mean(losses))
             try:
-                return require_finite_validation_nll(aggregate, step)
+                return require_finite_validation_loss(aggregate, step, metric=validation_metric(config))
             except FloatingPointError as error:
                 _append_jsonl(validation_error_record(step, error, losses=losses),
                               output / "validation_error.jsonl")
@@ -858,7 +939,7 @@ def main() -> None:
 
     def training_checkpoint(step: int, phase: str, terminal_status: str = "running"):
         return {
-            "format": "foldnar.gec_checkpoint.v2",
+            "format": STRUCTURED_MARGIN_CHECKPOINT_V1 if is_structured_margin(config) else "foldnar.gec_checkpoint.v2",
             "checkpoint_phase": phase,
             "terminal_status": terminal_status,
             "run_identity": run_identity,
@@ -952,6 +1033,7 @@ def main() -> None:
             validation_loss = evaluate(step)
             decision = convergence.observe(step, validation_loss, n_unfrozen)
             record = build_validation_log_record(step, validation_loss, decision, convergence, n_unfrozen)
+            record["validation_metric"] = validation_metric(config)
             _append_jsonl(record, output / "validation_log.jsonl")
             if decision["save_best"]:
                 best_payload = training_checkpoint(step, "best_eligible")
