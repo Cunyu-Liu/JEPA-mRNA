@@ -1,0 +1,30 @@
+{
+  "build_output_tail": "{\"coverage\": {\"blocked_or_protocol_mismatch\": 16, \"clean_2544_full_coverage\": 20, \"inventory_entries\": 36, \"official_3966_full_coverage\": 1, \"official_3966_partial_not_ranked\": 19, \"scored_identities\": 20}, \"per_record_metric_rows\": 103182, \"status\": \"PASS\", \"strongest_clean\": {\"strongest_ensemble\": {\"delta_vs_xens2\": {\"macro_f1\": 0.05650246893591149, \"macro_precision\": 0.011101161507849344, \"macro_recall\": 0.09189419210439287, \"micro_f1\": 0.08428092840699064, \"micro_precision\": 0.01653038375783833, \"micro_recall\": 0.14289766280916727}, \"metrics\": {\"empty_empty_records\": 0, \"fn\": 13836, \"fp\": 14449, \"macro_f1\": 0.9161611813979388, \"macro_precision\": 0.909264330236915, \"macro_recall\": 0.9264180926628117, \"micro_f1\": 0.8999331354520079, \"micro_precision\": 0.8979856958280675, \"micro_recall\": 0.9018890401633765, \"n_scored\": 2544, \"tp\": 127188, \"truth_empty_records\": 4}, \"model_form\": \"six_checkpoint_ensemble\", \"prediction_id\": \"bpfold/archiveii_embok_clean\", \"ranking_scope\": \"DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION\"}, \"strongest_overall\": {\"delta_vs_xens2\": {\"macro_f1\": 0.05650246893591149, \"macro_precision\": 0.011101161507849344, \"macro_recall\": 0.09189419210439287, \"micro_f1\": 0.08428092840699064, \"micro_precision\": 0.01653038375783833, \"micro_recall\": 0.14289766280916727}, \"metrics\": {\"empty_empty_records\": 0, \"fn\": 13836, \"fp\": 14449, \"macro_f1\": 0.9161611813979388, \"macro_precision\": 0.909264330236915, \"macro_recall\": 0.9264180926628117, \"micro_f1\": 0.8999331354520079, \"micro_precision\": 0.8979856958280675, \"micro_recall\": 0.9018890401633765, \"n_scored\": 2544, \"tp\": 127188, \"truth_empty_records\": 4}, \"model_form\": \"six_checkpoint_ensemble\", \"prediction_id\": \"bpfold/archiveii_embok_clean\", \"ranking_scope\": \"DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION\"}, \"strongest_single_predictor\": {\"delta_vs_xens2\": {\"macro_f1\": 0.0033703384220273858, \"macro_precision\": -0.028957535869039597, \"macro_recall\": 0.027905956035522816, \"micro_f1\": 0.004800032409976174, \"micro_precision\": -0.04249461959379597, \"micro_recall\": 0.043751418198320846}, \"metrics\": {\"empty_empty_records\": 0, \"fn\": 27818, \"fp\": 21730, \"macro_f1\": 0.8630290508840547, \"macro_precision\": 0.8692056328600261, \"macro_recall\": 0.8624298565939417, \"micro_f1\": 0.8204522394549935, \"micro_precision\": 0.8389606924764332, \"micro_recall\": 0.80274279555253, \"n_scored\": 2544, \"tp\": 113206, \"truth_empty_records\": 4}, \"model_form\": \"single_model\", \"prediction_id\": \"rinalmo_ft/archiveii_embok_clean\", \"ranking_scope\": \"DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION\"}}}",
+  "clean_clone_commit": "145093942f1d3e5d2448d8f85a3bbc7dcd6f7e26",
+  "clean_clone_output_sha256": {
+    "artifacts/archiveii_official_reference_20261127/build_receipt.json": "b5bacc07038ca201ddd04e74fb49610f37ae5fd7ae2ff00e210947f0fd92a90e",
+    "artifacts/archiveii_official_reference_20261127/per_record_metrics.jsonl.gz": "729528e411fd6efb36f2194a27659d7e5e5c7c48a5c5e75637ac157b891069cc",
+    "artifacts/archiveii_official_reference_20261127/registry_recommendation.json": "16a650d171e16cc01bb0be051f679faa4382b185b81a55b8507293932183c4e3",
+    "artifacts/archiveii_official_reference_20261127/system_metrics.json": "01de9163a6ced10c1a968b0396c60fd68dca6d5ab5b8d80511603628f7155d83",
+    "artifacts/archiveii_official_reference_20261127/verification_round2.json": "bf5e4f425357deeea4cbe1540738821b8137eecbc6b7229ff5c51c5639498db9",
+    "docs/plans/2026-11-27-archiveii-official-reference-panel.md": "e04db8b410057f79b2b18385f703a325ae2455874a4023681f4cb75fcac62fb2",
+    "source_data/archiveii_official_reference_20261127/official_reference_3966.jsonl.gz": "a2fc055ec86333af4e292bcc78dc7858908dfc5a4596d53f44b391213afec1a0",
+    "source_data/archiveii_official_reference_20261127/official_reference_clean_2544.jsonl.gz": "cde658b5d61813ff9530509bd25631d6f33dcb08021bae107636f0a212c11afb",
+    "source_data/archiveii_official_reference_20261127/source_manifest.json": "b0340bc5dc24daa7851b7f930908b6c4d72bdb00090d029af376862c9910dbbb"
+  },
+  "clean_clone_outputs_byte_identical": true,
+  "delivery_files_hashed": 14,
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "schema_version": "archiveii.official_reference.delivery_verification.round3.v1",
+  "sha256sums_sha256": "dc758f01b3751f031d49f4599fdf061b202f38a8622154c4a473a156ff3a4155",
+  "shared_registry_diff": "EMPTY",
+  "status": "PASS_CLEAN_CLONE_AND_DELIVERY",
+  "unit_tests": {
+    "failed": 0,
+    "output_tail": "7 passed in 1.30s",
+    "passed": 7
+  },
+  "verifier_output_tail": "{\"identities\": 36, \"records\": 103182, \"status\": \"PASS_INDEPENDENT_SECOND_IMPLEMENTATION\"}"
+}
