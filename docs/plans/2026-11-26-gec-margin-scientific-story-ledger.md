@@ -13,8 +13,12 @@
 
 - 科学结果及 NLL 资格链整合到 `780044c`；capacity/SRD/stacking 的结果提交分别为 `c289384afcd801cb0509941c40e973f7c320f230`、`03f9afe430c445fffd5d0e386ba3c16970747ab8`、`dde6641db437d1d1c35ee876843d30d0a5cf6f68`。
 - GEC 四臂训练与独立复评为 `bd01b4a120a8ed3b7c77690f593a8caa03fb533d`、`342a714b24998ed0c739908613f21e50866d6b56`；残差冻结审计为 `0589b2f489aa456f7a885b6d5dfe625b5de1b76b`；frozen context crossover 为 `810441e7480ea06a717097c57a49130c820c9636`，对应 PPT 第 33 页记录提交 `03f7f4e14ef906359cbd9d1b519089b6e61116f4`。FoldNAR 整合 HEAD 为 `fd497e9819e39a29887ec26698a46c91284d230b`，真实 deck 为 14 张、记录至第 33 页。第 34 页的 round71 builder 引入提交为 `1782cd64a7c6253beefe77c93634a2652f6fab5e`，render/OCR 留痕提交为 `5a7ccbd418f520eb44f02f0fdf6fbdf9f6ff238e`，仍须等待最终 hash-verified 评估。
+- 本轮 FoldNAR 整合 HEAD 为 `79a2ed45879f1f4e81d6719ed54600bf7f8da807`；record-level label quality 来源提交为 `3e64df111cffaeaf21add48094434123234ea40f`。该静态 CPU 审计不访问外部 Test、不启动 GPU 任务、不修改 model-dev 或训练 IDs。
+- RiNALMo-giga pretrain exposure 来源提交为 `4247d1e4a971ceb8c63e3f8338e026a23c18941b`，使用既有合法资产做静态 CPU 审计；157,227 条 population-row 独立复核通过，不训练、不推理、不下载、不新跑 homology search，也不用于模型/臂/checkpoint/阈值/超参选择。
 - NLL 资格修复为 `c4bfbb8734af3535393ef424f4c1b0b39af7b081`、`e388b504d7888b8a355d33fe80150ebd650a0adc`、`ecc40d3a8ec545bf332199a935e6380b718d415b`。
 - margin 数值核心、独立合同复核、显存探针与正式调度分别为 `92f0bc2e6440bcbfc682d2f8ca3e502ec86a6b48`、`55be915f6e7eda26254d87ab133624fa99cd5b8c`、`cd61c57f48cc0fe543b869b3319e4bd8b7f820f5`、`a846d90519e575a79b7db76f63692afb755e8ac6`；`a846d90` 已核对与 GitHub 分支远端一致。
+- Model-dev v3 登记提交为 `302b70a228d77b0f1847489c93ead402e33510b5`，registry SHA256=`4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904`；它只做 additive exposure sensitivity/final reporting，不读 margin 结果，不启动 GPU，不做新训练、推理、homology search 或 route selection。
+- current independent margin evaluator 固定为 `/home/rna_jev_margin_evaluator`，HEAD `536b79e450c1ad18b67e06cb39ecb3730546221b`；本 ledger 更新只读核对该提交，不修改评估器、候选训练或调度。
 - **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。**本次更新实时状态**：`scheduler_state.json` 为 `QUEUED_ARM_MEMORY`，`matched_control` 与 `ensemble_context` 两臂运行，`destroy_interval_shuffle` 与 `independent_context` 两臂等待资源，完成臂仍为 0，`scientific_conclusion=null`。这里区分初始快照与后续调度；排队、探针、启动、运行或等待资源的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
 
 Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldnar`，`A=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts`。
@@ -139,6 +143,61 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：范围为 `HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION`，只有一条 holdout，不用于模型选择、校准、early stopping 或训练。BPP candidate recall 不是最终结构准确率，MEA recall 也不是我们的候选结果；这不是我们的候选正向性能或 clean SOTA。GEC 没有此 19,000 nt 全长预测、candidate recall、结构准确性或资源对照，故长序列 GEC 仍为 unsupported。
 - **Next**：只可声称 LinearPartition baseline 在该单条 holdout 上完成了全长计算并报告上述边界；任何 GEC 长序列性能、scaling 或优于 baseline 的句子都必须等待其自身完整、独立的直接证据。
 
+## 12. Label quality：软复核不是删除授权，来源类别不是实验真值
+
+- **Claim（记录级质量边界）**：TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 均不能称为实验真值；noncanonical 或 short-span 只触发软复核，**不自动删除**。
+- **Phenomenon**：数据库来源、比较推断标签与实验测定是不同 provenance；格式合法的 noncanonical/短跨距配对也不等于无效标签。无 issue flag 同样只能记为 `NOT_DETECTED_UNKNOWN`，不能升级为 clean。
+- **Intervention**：在 FoldNAR HEAD `79a2ed45879f1f4e81d6719ed54600bf7f8da807` 上，对 TR1c cluster train/dev 与 CHANRG train/validation 共 **148,285** 条记录做独立 raw 重算，核对 stable ID、0-based inclusive pairs、对称性、最小 loop、partner conflict、canonical/crossing 与删除守恒；外部 Test 未访问，训练 IDs 未修改。
+- **Expected observation**：来源类别逐数据集保留，per-record experimental lineage 无证据时保持 `UNCHECKED`；硬冲突只可列为 proposed exclusion candidate，软复核不得直接变成删除，实际删除必须有单独授权与留痕。
+- **Actual**：记录级 issue 计数为 **95,052 条 noncanonical**、**10,250 条 short-span**；二者可重叠，不能相加成唯一记录数。合计 review candidate=**95,783** 且全部为 soft-review-only；**硬冲突记录=0**、proposed exclusion=0、**实际删除=0**，`training_ids_modified=false`、`model_dev_v2_modified=false`。TR1c 42,564 条均为 `DATABASE`，CHANRG 105,721 条均为 `COMPARATIVE_INFERRED`；全部 148,285 条 per-record experimental lineage 仍 `UNCHECKED`。独立验证 `verification_passed=true`、`independent_raw_recomputation=true`、`builder_imported=false`。
+- **Artifact**：`F/label_quality_v1/summary.json`、`deletion_conservation.json`、`independent_verification.json` 与 `artifact_manifest.json`；来源代码提交 `3e64df111cffaeaf21add48094434123234ea40f`，artifact manifest 的三轮验证均通过。
+- **Limitation**：这是质量审计，不是 cleaned dataset、路线选择结果或删除授权。TR1c 的数据库成员身份不证明逐条实验 lineage；CHANRG 的 Rfam consensus/comparative inference 不得改写为实验真值。PDB/mmCIF、modified-parent 与逐条实验 lineage 仍未核实；无 flag 不代表 clean。
+- **Next**：保留原始记录与 IDs；任何后续清洗必须针对具体硬冲突另行授权并独立守恒复核，不能把本节的软复核计数直接转换为删除清单。
+
+## 13. Pretrain exposure：已知来源高度暴露，完整官方语料仍未封闭
+
+- **Claim（暴露分层而非 clean 认证）**：当前 RiNALMo-giga backbone 的已知公开来源审计显示，cluster80 dev 9,143 条为 **EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626**；**bpRNA-new EXACT=5,381/5,388**，剩余 7 条均为 HOMOLOGY。**完整官方预训练语料仍 `UNCHECKED`，dev 不能外推 clean-OOD**。
+- **Phenomenon**：下游 cluster/family 去泄露不能移除 backbone 预训练接触；已知来源未检出与完整历史语料未覆盖也不是同一命题。把一个 dev 总分或 raw 榜单直接写成 pretraining-unseen/uncontaminated SOTA，会隐藏上述暴露层。
+- **Intervention**：固定官方声明的 RNAcentral、Rfam、nt、Ensembl 109 与 Ensembl Bacteria 56 来源边界，扫描 hash-bound RNAcentral 22.0、Rfam 14.9、Ensembl 快照并复用既有 80% identity/bidirectional-coverage 搜索；规范化 full-sequence exact 与 homology 分层，由独立 JSONL/FASTA parser 全量重扫。历史 nt 无固定训练日期 release/hash，不拿当前 nt 冒充历史训练快照。
+- **Expected observation**：`EXACT` 只表示已知来源全长序列命中，`HOMOLOGY` 只表示无 exact 但有已登记同源命中；`NOT_DETECTED_UNKNOWN` 与 `UNCHECKED` 不得改写为 clean。外部 Test 只能做最终暴露/质量审计，不能用于选型。
+- **Actual**：dev 的 exact-only 层为 7,978 EXACT + 1,165 exact-undetected；加入已知来源 homology 后为 7,978/539/626，三者守恒至 9,143。bpRNA-new 为 5,381 EXACT + 7 exact-undetected，而这 7 条均进入 HOMOLOGY，因此已知来源 homology-undetected=0，不能构造 clean 七条对照或作暴露—性能因果比较。完整官方 coverage=`UNCHECKED`；独立验证 `status=PASS`、registry rows=**157,227**，只证明已声明已知来源证据可复算，不封闭历史 nt。
+- **Artifact**：`/home/rna_jev_pretrain_exposure/manifests/pretrain_exposure_v1/summary.json`、`asset_registry.json`、`sequence_registry.jsonl.gz` 与 `independent_verification.json`；来源提交 `4247d1e4a971ceb8c63e3f8338e026a23c18941b`。
+- **Limitation**：支持的措辞只有 **exposure-aware descriptive performance on the registered benchmarks**。已知 EXACT/HOMOLOGY 暴露使相关总体不得声称 clean-OOD、pretraining-unseen 或 uncontaminated SOTA；`NOT_DETECTED_UNKNOWN` 不是 clean，`UNCHECKED` 不是阴性暴露。历史 nt 未封闭，不能估计完整暴露率、认证无污染余量或宣称对未见 RNA 家族优越。RiNALMo-ft 的 bpRNA TR0 监督微调暴露是额外层级，不得与当前 backbone 自监督预训练暴露混用。
+- **Next**：任何 benchmark 叙述必须保留对应 EXACT/HOMOLOGY/NOT_DETECTED_UNKNOWN/UNCHECKED 层；dev 结论只限 development/model-dev，不外推 clean-OOD。外部 Test 暴露结果不得反向选择模型、臂、checkpoint、阈值或超参。
+
+## 14. 下一页准入：暴露分层必须显式出现，margin 仍无结论
+
+- **Claim（后续内容门禁，不是新结果）**：**下一页必须暴露分层**；至少展示 dev 的 EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626，以及 bpRNA-new 的 EXACT=5,381/5,388、其余 7 条 HOMOLOGY，并同场保留完整官方预训练语料 `UNCHECKED`。本节只约束后续内容，不修改 PPT。
+- **Phenomenon**：只给合并排行榜或总分会把已知暴露、已知来源未检出与完整语料未核实压成一个误导性的 clean/OOD 叙事；工程工具链或双训练运行状态也容易被误写为科学阳性结果。
+- **Intervention**：后续页面直接引用第 13 节冻结 registry 的分层数字与语义，不用 UNKNOWN/UNCHECKED 创建 clean 组，不把 bpRNA-new 的 7 条 HOMOLOGY 当作未暴露对照；dev 结论不外推 clean-OOD，SOTA 仅限 exposure-aware descriptive wording。
+- **Expected observation**：页面必须能逐层回溯 EXACT/HOMOLOGY/NOT_DETECTED_UNKNOWN/UNCHECKED，并保留历史 nt 未封闭的 limitation。margin 只有在双训练完成、各自收敛、best restore、独立身份检查与固定 MEA 结构复评全部完成后才可进入结果叙事。
+- **Actual（冻结状态）**：**margin 双训练未完成，完成臂 0，`scientific_conclusion=null`，margin 仍无结论**。current independent margin evaluator 为 `/home/rna_jev_margin_evaluator`、commit `536b79e450c1ad18b67e06cb39ecb3730546221b`，只作为后续独立复评身份；当前没有 hash-verified 四臂结构结果。本轮**不得干扰 GPU 或改原 16 门**，也未执行训练、推理、资源调度或科学门修改。
+- **Artifact**：暴露分层来自 `pretrain_exposure_v1/summary.json` 与 `independent_verification.json`；margin 无结论状态仍由 `structured_margin_full_v1/generation_01/scheduler_state.json` 和 `full_authorization_v1.json` 绑定；独立评估器身份由上述路径与 commit 绑定。
+- **Limitation**：暴露审计不创造新的模型性能结果，也不授权用外部 Test 选型。评估器 commit、页面工具或待生成页面均不等于实验完成；margin>NLL、机制特异性、clean-OOD 与 SOTA 均保持 unsupported。
+- **Next**：后续制作页面时先逐项通过本门禁；等待 margin 双训练及剩余对照真实完成后，再由固定独立评估器复评并追加结果。无论通过或失败，都不得回填或改写当前“无结论”快照。
+
+## 15. Model-dev v3：12 个历史 run 的可回溯暴露登记，不产生新性能结果
+
+- **Claim（registry 登记）**：model-dev v3 已在提交 `302b70a228d77b0f1847489c93ead402e33510b5` 冻结，给既有 12 个 GEC seed0 run 增加可回溯的暴露分层与最终报告字段；不增加训练、推理或 route-selection 结果。
+- **Phenomenon**：第 13 节暴露 population 需要与既有 run、train/dev IDs、配对和家族环境精确连接，否则分层数字无法用于后续 sensitivity；但 registry 连接本身也不能冒充新模型评估。
+- **Intervention**：以 FoldNAR base `79a2ed45879f1f4e81d6719ed54600bf7f8da807`、label-quality `3e64df1` 和 pretrain-exposure `4247d1e` 为冻结来源，非 import 独立重读 gzip/registry，重算 sequence/pair/family/concentration 与资格；v1/v2 保持 immutable。
+- **Expected observation**：三轮独立验证应逐轮通过 257 项检查和 31 个单元测试，deterministic rebuild byte-identical；dev 分层序列与 pair 守恒，完整官方语料继续 `UNCHECKED`，UNKNOWN 不升级为 clean。
+- **Actual**：验证状态 `PASS_THREE_ROUNDS`，三轮均为 **31 passed / 257 checks**，registry SHA256=`4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904`。Dev 序列仍为 7,978/539/626；对应 pair 数为 **206,588 / 19,528 / 20,897**，合计 247,013。12 个 run 的 sensitivity eligibility 为 EXACT=true、HOMOLOGY=false、NOT_DETECTED_UNKNOWN=false；因此 EXACT 仅 sensitivity-only，HOMOLOGY/UNKNOWN 仅 diagnostic-only。`metric_values_status=NOT_COMPUTED_BY_REGISTRY_BUILD`，没有新 sensitivity 性能数值。
+- **Artifact**：`/home/rna_jev_model_dev_v3/manifests/foldnar_v3/model_dev_registry.json` 与 `verification_summary.json`；`F/model_dev_v3/artifact_manifest.json`、`verification_round3.json`。v3 manifest 记录 `v1_v2_modified=false`、`margin_results_read=false`、`gpu_task_launched=false`。
+- **Limitation**：该 registry 是 additive reporting layer，不得 rescue/veto primary full-panel 结论，不得影响 route selection，也不得把外部 Test 用于选型。EXACT sensitivity-only 不等于 clean-OOD 或 primary gate；HOMOLOGY/UNKNOWN diagnostic-only 不得改写成 sensitivity 证据或 clean 组。
+- **Next**：后续独立 margin evaluator 只能在训练终端资格完成后读取同一冻结暴露 registry；分层用途与原 16 门不变必须由独立门禁再次核对。
+
+## 16. Evaluator × model-dev v3 联合门禁：EXACT sensitivity-only，其余 diagnostic-only
+
+- **Claim（不可降级的用途边界）**：**EXACT sensitivity-only，HOMOLOGY/UNKNOWN diagnostic-only，原16门不变**。当前 evaluator `536b79e450c1ad18b67e06cb39ecb3730546221b` 只增加 `PREREGISTERED_SENSITIVITY_ONLY` 分析；它不重写第 4 节科学 FAIL，也不产生 margin 结论。
+- **Phenomenon**：EXACT 层满足样本量、pair 数与家族集中度门槛，因此可作为附加敏感性层；HOMOLOGY 与 UNKNOWN 虽有序列/pair 数量，却没有 mapped families，family/HHI/unmapped 检查失败，只能保留诊断。若把这些层用于 rescue/veto primary gate 或 checkpoint selection，会改变预注册科学问题。
+- **Intervention**：逐 run 检查 v3 的 12 个 `exposure_stratified_eligibility` 块，并对照 evaluator 源码中的 `PREREGISTERED_SENSITIVITY_ONLY`、`gate_use=FORBIDDEN`、`checkpoint_selection_use=FORBIDDEN` 与 exactly-16-gate fail-closed assertion；同时核对 v3 artifact manifest 的 immutability flags。
+- **Expected observation**：每个 run 均为 EXACT `SENSITIVITY_ONLY` 且 `sensitivity_eligible=true`，HOMOLOGY/UNKNOWN 均为 `DIAGNOSTIC_ONLY` 且 `sensitivity_eligible=false`；三层 `route_selection_allowed=false`。原 16 门名称、定义、通过状态和 route eligibility 不变。
+- **Actual**：12/12 run 逐层符合上述用途。v3 记录 `original_16_gates_modified=false`、`current_seed0_main_gate_changed=false`、`gate_count_changed=false`、`gate_definitions_changed=false`；当前 seed0 仍为 `FAIL_GEC_SEED0_INDEPENDENT_REEVAL`，**n_gates=16 / n_failed_gates=12**，pass=false。Evaluator 的 exposure sensitivity 明确禁止 gate/checkpoint/arm selection；registry 本身仍无新性能数值。
+- **Artifact**：`/home/rna_jev_margin_evaluator/tools/structured_margin_exposure_sensitivity_v1.py`、`structured_margin_independent_eval_v1.py`；`/home/rna_jev_model_dev_v3/manifests/foldnar_v3/model_dev_registry.json`；`F/model_dev_v3/artifact_manifest.json`。
+- **Limitation**：EXACT sensitivity 是已暴露子层的附加描述，不是 clean-OOD、pretraining-unseen 或 primary SOTA 证据；HOMOLOGY/UNKNOWN diagnostic 不得转成 sensitivity 或 clean 对照。任何分层结果都不能替代 full-panel paired CI 与原 16 门。Margin 双训练仍未完成，无 margin>NLL 或机制特异性结论。
+- **Next**：保持原 16 门与当前 FAIL 不变；待 margin 终端资格真实完成后，current evaluator 才可在同一 raw pairs、相同 IDs/coverage 上追加 sensitivity，且必须继续禁止分层 rescue/veto、checkpoint/arm selection 和外部 Test 选型。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -154,6 +213,11 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | structRFM 官方 raw baseline | 历史预测无法绑定官方权重 | 官方 v0.0.8 全量新推理+独立评分 | 5,388 条身份/coverage/raw 指标完整 | `structrfm_official_bprna_new_metrics_20261126.json` | 外部 baseline；raw 非 clean；不是候选正向性能或 SOTA |
 | BPfold/CONTRAfold 相对 structRFM 的 raw 绝对差 | baseline 模型形式与暴露不同 | 同 5,388 raw 标签 strict micro-F1 相减 | 身份/coverage 一致且差距可复算 | `bprna_new_recovered_prediction_registry.json` | 外部 baseline 算术；不是候选提升或 clean SOTA |
 | LinearPartition 19,000 nt 仅 baseline 可计算 | 短序列不能外推全长 | 官方 CPU 全长运行+raw 独立复算 | 不截断；coverage/recall/资源完整 | `7AM2_1/run_report.json`、`metrics.json` | 单条 holdout 描述；GEC unsupported；不用于选型 |
+| 标签软复核与零删除 | 来源/配对质量不能混为实验真值 | 148,285 条 raw 独立重算与守恒 | 软复核不删除，硬冲突另行授权 | `label_quality_v1/summary.json` | DATABASE/COMPARATIVE_INFERRED 非实验真值；无 flag 非 clean |
+| 预训练暴露分层 | 下游去泄露不等于 backbone 未接触 | 已知来源 exact+homology 独立重扫 | 分层守恒且不升级 UNKNOWN/UNCHECKED | `pretrain_exposure_v1/summary.json` | 完整官方语料 UNCHECKED；dev 非 clean-OOD；仅描述性表现 |
+| 下一页暴露分层与 margin 准入 | 总分掩盖暴露，运行状态冒充结果 | 冻结分层+独立评估器身份门禁 | 分层显式出现；双训练完成后再复评 | exposure registry；margin evaluator `536b79e` | 当前双训练未完成、margin 无结论；不改 PPT/GPU/原 16 门 |
+| Model-dev v3 暴露登记 | 分层需连接 12 个历史 run | 非 import 独立重算与三轮验证 | 序列/pair 守恒；additive-only | `foldnar_v3/verification_summary.json` | 无新性能；EXACT sensitivity-only，其余 diagnostic-only；不选路线 |
+| Evaluator×v3 用途与16门不变 | 分层不能改写主科学门 | 12 run 逐层+evaluator 源码联合门禁 | EXACT sensitivity-only；其余 diagnostic-only；16门原样 | evaluator tools；v3 registry/manifest | 不 rescue/veto，不选 checkpoint/arm；margin 无结论 |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -172,8 +236,12 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **负面结果完整性**：容量、SRD、stacking 与 GEC 的停止/失败不得被后续候选叙事抹去；任何新阳性 claim 必须同时说明其不同干预与直接证据。
 - [ ] **官方 raw baseline 措辞**：structRFM 结果必须同时保留官方外部 baseline、5,388 条 raw 非去污染与候选隔离边界；不得写成我们的正向性能、clean/OOD 或 SOTA。
 - [ ] **raw 绝对差距**：BPfold 集成、CONTRAfold 单模型与 structRFM 的差值只能是同面板 micro-F1 绝对算术；不得混用 official-reference/TR1c-clean 标签、改写成相对百分比或候选提升。
+- [ ] **Model-dev v3 / 原16门**：EXACT 只能 sensitivity-only，HOMOLOGY/UNKNOWN 只能 diagnostic-only；不得 rescue/veto primary 或选择 checkpoint/arm。原16门定义与 seed0 FAIL（16门、12失败）不变，current evaluator 只能是 `536b79e450c1ad18b67e06cb39ecb3730546221b`，旧 evaluator 不得回写。
+- [ ] **下一页与 margin 准入**：下一页必须显式展示暴露分层及完整官方语料 UNCHECKED；margin 双训练未完成、仍无结论。独立评估器固定 `/home/rna_jev_margin_evaluator`@`536b79e450c1ad18b67e06cb39ecb3730546221b`，不得干扰 GPU 或改原 16 门；本轮不修改 PPT。
+- [ ] **Pretrain exposure / SOTA 边界**：dev 必须保留 7,978 EXACT、539 HOMOLOGY、626 NOT_DETECTED_UNKNOWN；bpRNA-new 为 5,381/5,388 EXACT，其余 7 条 HOMOLOGY。完整官方语料 UNCHECKED，dev 不能外推 clean-OOD；只能写 exposure-aware descriptive performance，UNKNOWN/UNCHECKED 不得写成 clean。
+- [ ] **Label quality 边界**：TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 不得称为实验真值；95,052 noncanonical 与 10,250 short-span 仅为可重叠的软复核记录数，硬冲突 0、实际删除 0，不得自动删除或把无 flag 写成 clean。
 - [ ] **长序列边界**：19,000 nt 只能陈述 LinearPartition 单条 holdout 的全长 coverage、真实资源与 BPP/MEA recall；candidate recall 不得冒充结构准确率，baseline coverage 不得冒充 GEC coverage，GEC unsupported 不得省略。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、BPfold/CONTRAfold 绝对差距算术、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 官方 raw 身份与指标、BPfold/CONTRAfold 绝对差距算术、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。

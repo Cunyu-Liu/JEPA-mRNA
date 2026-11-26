@@ -48,6 +48,74 @@ def test_raw_baseline_absolute_gap_arithmetic():
     assert "BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入" in text
 
 
+def test_label_quality_soft_review_and_zero_deletion():
+    text = ledger.DOC.read_text()
+    assert 33421 + 9143 + 95181 + 10540 == 148285
+    assert "TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 均不能称为实验真值" in text
+    assert "95,052 条 noncanonical" in text
+    assert "10,250 条 short-span" in text
+    assert "硬冲突记录=0" in text
+    assert "实际删除=0" in text
+    assert "不自动删除" in text
+
+
+@pytest.mark.skipif(any(not repo.exists() for repo, _ in ledger.SOURCE_COMMITS.values()), reason="host-specific source repositories are unavailable")
+def test_source_commit_identity():
+    assert ledger.verify_source_commits() == []
+
+
+def test_pretrain_exposure_conservation_and_sota_limits():
+    text = ledger.DOC.read_text()
+    assert 7978 + 539 + 626 == 9143
+    assert 5381 + 7 == 5388
+    assert "EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626" in text
+    assert "bpRNA-new EXACT=5,381/5,388" in text
+    assert "完整官方预训练语料仍 `UNCHECKED`" in text
+    assert "dev 不能外推 clean-OOD" in text
+    assert "剩余 7 条均为 HOMOLOGY" in text
+
+
+def test_next_page_exposure_strata_and_margin_pending():
+    text = ledger.DOC.read_text()
+    assert "下一页必须暴露分层" in text
+    assert "margin 双训练未完成" in text
+    assert "/home/rna_jev_margin_evaluator" in text
+    assert "536b79e450c1ad18b67e06cb39ecb3730546221b" in text
+    assert "不得干扰 GPU 或改原 16 门" in text
+    assert "margin 仍无结论" in text
+    assert "本节只约束后续内容，不修改 PPT" in text
+
+
+def test_obsolete_margin_evaluator_is_not_current():
+    text = ledger.DOC.read_text()
+    assert ledger.OBSOLETE_MARGIN_EVALUATOR_COMMIT not in text
+    assert ledger.SOURCE_COMMITS["independent margin evaluator"][1] == "536b79e450c1ad18b67e06cb39ecb3730546221b"
+    assert "current independent margin evaluator" in text
+
+
+def test_model_dev_v3_registration_and_conservation():
+    text = ledger.DOC.read_text()
+    assert "302b70a228d77b0f1847489c93ead402e33510b5" in text
+    assert "PASS_THREE_ROUNDS" in text
+    assert 206588 + 19528 + 20897 == 247013
+    assert "206,588 / 19,528 / 20,897" in text
+    assert "NOT_COMPUTED_BY_REGISTRY_BUILD" in text
+
+
+def test_v3_exposure_roles_and_original_16_gates():
+    text = ledger.DOC.read_text()
+    assert "EXACT sensitivity-only，HOMOLOGY/UNKNOWN diagnostic-only，原16门不变" in text
+    assert "PREREGISTERED_SENSITIVITY_ONLY" in text
+    assert "gate_use=FORBIDDEN" in text
+    assert "original_16_gates_modified=false" in text
+    assert "n_gates=16 / n_failed_gates=12" in text
+
+
+@pytest.mark.skipif(any(not repo.exists() for repo, _ in ledger.SOURCE_COMMITS.values()), reason="host-specific source repositories are unavailable")
+def test_evaluator_model_dev_v3_contract():
+    assert ledger.verify_evaluator_v3_contract() == []
+
+
 def test_linearpartition_recall_and_gec_boundary():
     assert 53 / 73 == pytest.approx(0.726027397260274)
     assert 8 / 73 == pytest.approx(0.1095890410958904)

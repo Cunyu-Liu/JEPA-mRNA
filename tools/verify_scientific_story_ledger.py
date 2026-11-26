@@ -6,6 +6,7 @@ import argparse
 import json
 import math
 import re
+import subprocess
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -13,8 +14,16 @@ DOC = REPO / "docs/plans/2026-11-26-gec-margin-scientific-story-ledger.md"
 F = Path("/teams/HoulabData_1788502323/liucunyu/foldnar")
 A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts")
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
+MARGIN_EVALUATOR_REPO = Path("/home/rna_jev_margin_evaluator")
+OBSOLETE_MARGIN_EVALUATOR_COMMIT = "8b1861f9f8c116250aba194799bf5ee7d9a4f39e"
 STRUCTRFM = F / "structrfm_official_v0.0.8"
 FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
+LABEL_QUALITY_REPO = Path("/home/rna_jev_label_quality")
+LABEL_QUALITY = F / "label_quality_v1"
+PRETRAIN_EXPOSURE_REPO = Path("/home/rna_jev_pretrain_exposure")
+PRETRAIN_EXPOSURE = PRETRAIN_EXPOSURE_REPO / "manifests/pretrain_exposure_v1"
+MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
+MODEL_DEV_V3 = F / "model_dev_v3"
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -42,6 +51,25 @@ SOURCES = {
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
     "linearpartition_delivery": LINEARPARTITION_RUN.parent / "holdout_delivery_verification.json",
+    "label_summary": LABEL_QUALITY / "summary.json",
+    "label_conservation": LABEL_QUALITY / "deletion_conservation.json",
+    "label_verification": LABEL_QUALITY / "independent_verification.json",
+    "label_manifest": LABEL_QUALITY / "artifact_manifest.json",
+    "exposure_summary": PRETRAIN_EXPOSURE / "summary.json",
+    "exposure_assets": PRETRAIN_EXPOSURE / "asset_registry.json",
+    "exposure_verification": PRETRAIN_EXPOSURE / "independent_verification.json",
+    "model_dev_v3_registry": MODEL_DEV_V3_REPO / "manifests/foldnar_v3/model_dev_registry.json",
+    "model_dev_v3_summary": MODEL_DEV_V3_REPO / "manifests/foldnar_v3/verification_summary.json",
+    "model_dev_v3_manifest": MODEL_DEV_V3 / "artifact_manifest.json",
+    "model_dev_v3_verification": MODEL_DEV_V3 / "verification_round3.json",
+}
+
+SOURCE_COMMITS = {
+    "FoldNAR integration": (FOLDNAR_REPO, "79a2ed45879f1f4e81d6719ed54600bf7f8da807"),
+    "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
+    "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
+    "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
+    "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
 }
 
 
@@ -54,6 +82,108 @@ def pointer(document, path: str):
 
 def missing_sources() -> list[str]:
     return [f"{name}: {path}" for name, path in SOURCES.items() if not path.is_file()]
+
+
+def verify_source_commits() -> list[str]:
+    errors = []
+    for name, (repo, expected) in SOURCE_COMMITS.items():
+        if not (repo / ".git").exists():
+            errors.append(f"missing source repository: {name}: {repo}")
+            continue
+        actual = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"],
+            check=True, capture_output=True, text=True,
+        ).stdout.strip()
+        if actual != expected:
+            compatible_test_only_advance = False
+            if name == "independent margin evaluator":
+                ancestor = subprocess.run(
+                    ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
+                    check=False,
+                ).returncode
+                functional_diff = subprocess.run(
+                    ["git", "-C", str(repo), "diff", "--quiet", expected, "HEAD", "--", "tools"],
+                    check=False,
+                ).returncode
+                compatible_test_only_advance = ancestor == 0 and functional_diff == 0
+            if not compatible_test_only_advance:
+                errors.append(f"{name} commit: expected {expected}, got {actual}")
+    return errors
+
+
+def verify_evaluator_v3_contract() -> list[str]:
+    errors = []
+    sensitivity_path = MARGIN_EVALUATOR_REPO / "tools/structured_margin_exposure_sensitivity_v1.py"
+    evaluator_path = MARGIN_EVALUATOR_REPO / "tools/structured_margin_independent_eval_v1.py"
+    registry_path = MODEL_DEV_V3_REPO / "manifests/foldnar_v3/model_dev_registry.json"
+    manifest_path = MODEL_DEV_V3 / "artifact_manifest.json"
+    for path in [sensitivity_path, evaluator_path, registry_path, manifest_path]:
+        if not path.is_file():
+            errors.append(f"missing evaluator/v3 contract source: {path}")
+    if errors:
+        return errors
+    sensitivity = sensitivity_path.read_text()
+    evaluator = evaluator_path.read_text()
+    for required in [
+        'SOURCE_COMMIT = "4247d1e4a971ceb8c63e3f8338e026a23c18941b"',
+        '"role": "PREREGISTERED_SENSITIVITY_ONLY"',
+        '"gate_use": "FORBIDDEN"',
+        '"checkpoint_selection_use": "FORBIDDEN"',
+        '"checkpoint_or_arm_selection_performed": False',
+    ]:
+        if required not in sensitivity:
+            errors.append(f"evaluator exposure contract missing: {required}")
+    for required in [
+        'if len(gates["gates"]) != 16:',
+        'frozen scientific contract no longer has exactly 16 gates',
+    ]:
+        if required not in evaluator:
+            errors.append(f"evaluator original-16-gate guard missing: {required}")
+
+    registry = json.loads(registry_path.read_text())
+    runs = registry["model_runs"]
+    if len(runs) != 12:
+        errors.append(f"v3 run count: expected 12, got {len(runs)}")
+    for run in runs:
+        run_id = run["run_id"]
+        exposure = run["exposure_stratified_eligibility"]
+        if exposure["primary_route_eligibility_unchanged"] is not True:
+            errors.append(f"v3 primary route changed: {run_id}")
+        for state, eligibility, sensitive in [
+            ("EXACT", "SENSITIVITY_ONLY", True),
+            ("HOMOLOGY", "DIAGNOSTIC_ONLY", False),
+            ("NOT_DETECTED_UNKNOWN", "DIAGNOSTIC_ONLY", False),
+        ]:
+            stratum = exposure["states"][state]
+            if stratum["eligibility"] != eligibility:
+                errors.append(f"v3 {run_id}/{state}: expected {eligibility}, got {stratum['eligibility']}")
+            if stratum["sensitivity_eligible"] is not sensitive:
+                errors.append(f"v3 {run_id}/{state}: sensitivity_eligible mismatch")
+            if stratum["minimum_sample_gate"]["pass"] is not sensitive:
+                errors.append(f"v3 {run_id}/{state}: minimum-sample gate mismatch")
+            if stratum["route_selection_allowed"] is not False:
+                errors.append(f"v3 {run_id}/{state}: route selection must remain forbidden")
+    gate = registry["seed0_main_gate"]
+    expected_gate = {
+        "gate_count_changed": False,
+        "gate_definitions_changed": False,
+        "v3_changes_current_seed0_main_gate": False,
+        "route_selection_changed": False,
+        "baseline_pass": False,
+        "baseline_status": "FAIL_GEC_SEED0_INDEPENDENT_REEVAL",
+    }
+    for key, expected in expected_gate.items():
+        if gate[key] != expected:
+            errors.append(f"v3 seed0 {key}: expected {expected!r}, got {gate[key]!r}")
+    if len(gate["original_16_gate_names"]) != 16 or len(gate["original_16_gates"]["gates"]) != 16:
+        errors.append("v3 original scientific contract no longer has exactly 16 gates")
+    if len(gate["original_failed_gates"]) != 12 or gate["original_16_gates"]["pass"] is not False:
+        errors.append("v3 original seed0 12-failed-gate FAIL was not preserved")
+    manifest = json.loads(manifest_path.read_text())
+    for key in ["original_16_gates_modified", "current_seed0_main_gate_changed", "v1_v2_modified", "margin_results_read", "gpu_task_launched"]:
+        if manifest[key] is not False:
+            errors.append(f"v3 manifest {key}: expected False, got {manifest[key]!r}")
+    return errors
 
 
 def verify_links() -> list[str]:
@@ -100,8 +230,39 @@ def verify_narrative_guards() -> list[str]:
         "完成臂 0",
         "scientific_conclusion=null",
         "只有对应**直接、已完成、可回溯**的证据全部存在",
+        "3e64df111cffaeaf21add48094434123234ea40f",
+        "TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 均不能称为实验真值",
+        "95,052 条 noncanonical",
+        "10,250 条 short-span",
+        "不自动删除",
+        "硬冲突记录=0",
+        "实际删除=0",
+        "4247d1e4a971ceb8c63e3f8338e026a23c18941b",
+        "EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626",
+        "bpRNA-new EXACT=5,381/5,388",
+        "完整官方预训练语料仍 `UNCHECKED`",
+        "dev 不能外推 clean-OOD",
+        "exposure-aware descriptive performance",
+        "下一页必须暴露分层",
+        "margin 双训练未完成",
+        "/home/rna_jev_margin_evaluator",
+        "536b79e450c1ad18b67e06cb39ecb3730546221b",
+        "current independent margin evaluator",
+        "不得干扰 GPU 或改原 16 门",
+        "margin 仍无结论",
+        "302b70a228d77b0f1847489c93ead402e33510b5",
+        "PASS_THREE_ROUNDS",
+        "206,588 / 19,528 / 20,897",
+        "EXACT sensitivity-only，HOMOLOGY/UNKNOWN diagnostic-only，原16门不变",
+        "PREREGISTERED_SENSITIVITY_ONLY",
+        "gate_use=FORBIDDEN",
+        "original_16_gates_modified=false",
+        "n_gates=16 / n_failed_gates=12",
     ]
-    return [f"missing narrative guard: {item}" for item in required if item not in text]
+    errors = [f"missing narrative guard: {item}" for item in required if item not in text]
+    if OBSOLETE_MARGIN_EVALUATOR_COMMIT in text:
+        errors.append("obsolete margin evaluator commit remains in ledger")
+    return errors
 
 
 def verify_numbers() -> list[str]:
@@ -271,6 +432,122 @@ def verify_numbers() -> list[str]:
     check("LinearPartition delivery holdout only", pointer(data["linearpartition_delivery"], "holdout_descriptive_only"), True)
     check("LinearPartition delivery not selection", pointer(data["linearpartition_delivery"], "not_for_model_selection"), True)
 
+    check("label base commit", pointer(data["label_summary"], "base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("label schema", pointer(data["label_summary"], "schema_version"), "foldnar.label_quality.v1")
+    check("label total", pointer(data["label_summary"], "total_records"), 148285, "148,285")
+    check("label record counts", pointer(data["label_summary"], "record_counts"), {
+        "tr1c_cluster_train": 33421,
+        "tr1c_cluster_dev": 9143,
+        "chanrg_train": 95181,
+        "chanrg_validation": 10540,
+    })
+    check("label combined records", pointer(data["label_summary"], "combined/records"), 148285)
+    check("TR1c train DATABASE", pointer(data["label_summary"], "split_summaries/tr1c_cluster_train/source_categories"), {"DATABASE": 33421})
+    check("TR1c dev DATABASE", pointer(data["label_summary"], "split_summaries/tr1c_cluster_dev/source_categories"), {"DATABASE": 9143})
+    check("CHANRG train COMPARATIVE_INFERRED", pointer(data["label_summary"], "split_summaries/chanrg_train/source_categories"), {"COMPARATIVE_INFERRED": 95181})
+    check("CHANRG validation COMPARATIVE_INFERRED", pointer(data["label_summary"], "split_summaries/chanrg_validation/source_categories"), {"COMPARATIVE_INFERRED": 10540})
+    check("label lineage unchecked", pointer(data["label_summary"], "combined/experimental_lineage_status"), {"UNCHECKED": 148285})
+    check("label lineage verified", pointer(data["label_summary"], "per_record_experimental_lineage_verified_records"), 0)
+    check("label noncanonical records", pointer(data["label_summary"], "combined/issue_record_counts/noncanonical_pairs"), 95052, "95,052")
+    check("label short-span records", pointer(data["label_summary"], "combined/issue_record_counts/min_loop_span_lt4"), 10250, "10,250")
+    check("label review records", pointer(data["label_summary"], "combined/review_records"), 95783, "95,783")
+    check("label hard conflicts", pointer(data["label_summary"], "combined/hard_conflict_records"), 0, "硬冲突记录=0")
+    check("label proposed exclusions", pointer(data["label_summary"], "combined/proposed_exclusion_records"), 0)
+    check("label actual deletions", pointer(data["label_summary"], "combined/actual_deleted_records"), 0, "实际删除=0")
+    check("label soft only", pointer(data["label_summary"], "combined/deletion_conservation/soft_review_only_records"), 95783)
+    check("label conservation", pointer(data["label_summary"], "combined/deletion_conservation/conservation_holds"), True)
+    check("label deletion unauthorized", pointer(data["label_summary"], "combined/deletion_conservation/deletion_authorized"), False)
+    check("label no deletion performed", pointer(data["label_summary"], "actual_deletion_performed"), False)
+    check("label IDs unchanged", pointer(data["label_summary"], "training_ids_modified"), False)
+    check("label model-dev unchanged", pointer(data["label_summary"], "model_dev_v2_modified"), False)
+    check("label no external test", pointer(data["label_summary"], "external_test_accessed"), False)
+    check("label no GPU task", pointer(data["label_summary"], "gpu_task_launched"), False)
+    check("label soft-review policy", pointer(data["label_conservation"], "policy/soft_review"), "review only; noncanonical, short-loop and crossing labels are not automatically invalid")
+    check("label independent pass", pointer(data["label_verification"], "verification_passed"), True)
+    check("label independent raw", pointer(data["label_verification"], "independent_raw_recomputation"), True)
+    check("label builder not imported", pointer(data["label_verification"], "builder_imported"), False)
+    check("label independent conflicts", pointer(data["label_verification"], "hard_conflict_records_verified"), 0)
+    check("label independent deletions", pointer(data["label_verification"], "actual_deleted_records"), 0)
+    check("label manifest base", pointer(data["label_manifest"], "base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("label manifest pass", pointer(data["label_manifest"], "verification_passed"), True)
+    check("label manifest rounds", pointer(data["label_manifest"], "verification_rounds"), [1, 2, 3])
+
+    check("exposure schema", pointer(data["exposure_summary"], "schema_version"), "rinalmo.pretrain_exposure.summary.v1")
+    check("complete official corpus UNCHECKED", pointer(data["exposure_summary"], "complete_official_pretraining_coverage_state"), "UNCHECKED", "完整官方预训练语料仍 `UNCHECKED`")
+    check("exposure dev rows", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/n_input_rows"), 9143, "9,143")
+    check("exposure dev unique", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/n_unique_sequences"), 9143)
+    check("exposure dev role", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/role"), "development")
+    check("exposure dev selection", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/selection_use"), True)
+    check("exposure dev exact states", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/known_source_exact_state"), {
+        "EXACT": 7978, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 1165, "UNCHECKED": 0,
+    })
+    check("exposure dev joint states", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/known_source_exact_or_homology_state"), {
+        "EXACT": 7978, "HOMOLOGY": 539, "NOT_DETECTED_UNKNOWN": 626, "UNCHECKED": 0,
+    }, "EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626")
+    check("exposure dev complete official states", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/complete_official_pretraining_exposure_state"), {
+        "EXACT": 7978, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 0, "UNCHECKED": 1165,
+    })
+    check("exposure bpRNA-new rows", pointer(data["exposure_summary"], "populations/bprna_new/n_input_rows"), 5388, "5,388")
+    check("exposure bpRNA-new role", pointer(data["exposure_summary"], "populations/bprna_new/role"), "external_test_final_audit_only")
+    check("exposure bpRNA-new no selection", pointer(data["exposure_summary"], "populations/bprna_new/selection_use"), False)
+    check("exposure bpRNA-new exact states", pointer(data["exposure_summary"], "populations/bprna_new/known_source_exact_state"), {
+        "EXACT": 5381, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 7, "UNCHECKED": 0,
+    })
+    check("exposure bpRNA-new joint states", pointer(data["exposure_summary"], "populations/bprna_new/known_source_exact_or_homology_state"), {
+        "EXACT": 5381, "HOMOLOGY": 7, "NOT_DETECTED_UNKNOWN": 0, "UNCHECKED": 0,
+    }, "bpRNA-new EXACT=5,381/5,388")
+    check("exposure bpRNA-new complete official states", pointer(data["exposure_summary"], "populations/bprna_new/complete_official_pretraining_exposure_state"), {
+        "EXACT": 5381, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 0, "UNCHECKED": 7,
+    })
+    check("official training set UNCHECKED", pointer(data["exposure_assets"], "official_pretraining_declaration/complete_official_training_set_state"), "UNCHECKED")
+    check("official nt unpinned", pointer(data["exposure_assets"], "official_pretraining_declaration/nt/status"), "NOT_DOWNLOADED_HISTORICAL_SNAPSHOT_UNPINNED")
+    check("official declared sources", pointer(data["exposure_assets"], "official_pretraining_declaration/declared_sources"), ["RNAcentral", "Rfam", "nt", "Ensembl 109", "Ensembl Bacteria 56"])
+    check("exposure verification status", pointer(data["exposure_verification"], "status"), "PASS")
+    check("exposure registry rows", pointer(data["exposure_verification"], "n_registry_rows"), 157227, "157,227")
+    check("exposure verification dev", pointer(data["exposure_verification"], "population_exact_counts/tr1c_cluster80_dev"), {
+        "EXACT": 7978, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 1165, "UNCHECKED": 0,
+    })
+    check("exposure verification bpRNA-new", pointer(data["exposure_verification"], "bprna_new"), {
+        "rows": 5388, "exact": 5381, "exact_not_detected_unknown": 7, "homology_only": 7, "homology_not_detected": 0,
+    })
+    check("exposure verification official coverage", pointer(data["exposure_verification"], "official_complete_coverage"), "UNCHECKED")
+    check("exposure no training", pointer(data["exposure_verification"], "no_model_inference_or_training"), True)
+    check("exposure external final audit", pointer(data["exposure_verification"], "external_test_use"), "final exposure/quality audit only")
+    sota_limits = pointer(data["exposure_summary"], "sota_limitations")
+    for required in ["clean-OOD", "NOT_DETECTED_UNKNOWN is not clean", "no complete exposure rate", "not proof of superiority on unseen RNA families"]:
+        if not any(required in item for item in sota_limits):
+            errors.append(f"exposure SOTA limitation missing: {required}")
+
+    check("v3 registry schema", pointer(data["model_dev_v3_registry"], "schema_version"), "foldnar.model_dev_registry.v3")
+    check("v3 registry base", pointer(data["model_dev_v3_registry"], "source_base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("v3 registry status", pointer(data["model_dev_v3_registry"], "status"), "FROZEN_WITH_UNCHECKED_LAYERS")
+    check("v3 scientific scope", pointer(data["model_dev_v3_registry"], "scientific_scope"), "additive exposure sensitivity and final reporting only; no new training, inference, homology search or route selection")
+    check("v3 summary status", pointer(data["model_dev_v3_summary"], "status"), "PASS_THREE_ROUNDS", "PASS_THREE_ROUNDS")
+    check("v3 summary base", pointer(data["model_dev_v3_summary"], "source_base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
+    check("v3 registry sha", pointer(data["model_dev_v3_summary"], "registry/sha256"), "4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904")
+    check("v3 deterministic rebuild", pointer(data["model_dev_v3_summary"], "deterministic_rebuild/byte_identical"), True)
+    check("v3 tests each round", pointer(data["model_dev_v3_summary"], "unit_tests/passed_per_round"), 31)
+    check("v3 test rounds", pointer(data["model_dev_v3_summary"], "unit_tests/rounds"), [31, 31, 31])
+    check("v3 dev rows", pointer(data["model_dev_v3_summary"], "cluster_dev/n_sequences"), 9143)
+    check("v3 dev counts", pointer(data["model_dev_v3_summary"], "cluster_dev/exposure_counts"), {"EXACT": 7978, "HOMOLOGY": 539, "NOT_DETECTED_UNKNOWN": 626})
+    check("v3 dev pairs", pointer(data["model_dev_v3_summary"], "cluster_dev/exposure_pairs"), {"EXACT": 206588, "HOMOLOGY": 19528, "NOT_DETECTED_UNKNOWN": 20897}, "206,588 / 19,528 / 20,897")
+    check("v3 eligibility all runs", pointer(data["model_dev_v3_summary"], "cluster_dev/sensitivity_eligible_all_12_runs"), {"EXACT": True, "HOMOLOGY": False, "NOT_DETECTED_UNKNOWN": False})
+    check("v3 official unchecked", pointer(data["model_dev_v3_summary"], "complete_official_pretraining_manifest"), "UNCHECKED")
+    check("v3 unknown not clean", pointer(data["model_dev_v3_summary"], "unknown_is_not_clean"), True)
+    check("v3 metric values absent", pointer(data["model_dev_v3_registry"], "sensitivity_reporting/metric_values_status"), "NOT_COMPUTED_BY_REGISTRY_BUILD")
+    check("v3 primary panel only", pointer(data["model_dev_v3_registry"], "route_selection_policy/primary_full_panel_only"), True)
+    check("v3 additive sensitivity", pointer(data["model_dev_v3_registry"], "route_selection_policy/sensitivity_only_additive"), True)
+    check("v3 cannot rescue or veto", pointer(data["model_dev_v3_registry"], "route_selection_policy/exposure_strata_can_rescue_or_veto_primary"), False)
+    check("v3 margin unread", pointer(data["model_dev_v3_registry"], "route_selection_policy/margin_results_read"), False)
+    check("v3 margin no route influence", pointer(data["model_dev_v3_registry"], "route_selection_policy/margin_route_selection_influence"), False)
+    check("v3 verification status", pointer(data["model_dev_v3_verification"], "status"), "PASS")
+    check("v3 verification checks", pointer(data["model_dev_v3_verification"], "n_checks"), 257, "257")
+    check("v3 verification round", pointer(data["model_dev_v3_verification"], "verification_round"), 3)
+    check("v3 manifest pass", pointer(data["model_dev_v3_manifest"], "verification_passed"), True)
+    check("v3 manifest rounds", pointer(data["model_dev_v3_manifest"], "verification_rounds"), [1, 2, 3])
+    check("v3 no GPU", pointer(data["model_dev_v3_manifest"], "gpu_task_launched"), False)
+    check("v3 v1/v2 unchanged", pointer(data["model_dev_v3_manifest"], "v1_v2_modified"), False)
+
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")
     check("NLL science unchanged", pointer(data["nll"], "reference_use/original_scientific_fail_unchanged"), True)
@@ -311,12 +588,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, and JSON numeric provenance"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, and evaluator/v3 contracts"
     print(f"PASS: {scope}")
     return 0
 
