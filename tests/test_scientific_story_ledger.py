@@ -64,6 +64,17 @@ def test_round1_source_commit_identity():
     assert ledger.verify_source_commits() == []
 
 
+def test_pretrain_exposure_conservation_and_sota_limits():
+    text = ledger.DOC.read_text()
+    assert 7978 + 539 + 626 == 9143
+    assert 5381 + 7 == 5388
+    assert "EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626" in text
+    assert "bpRNA-new EXACT=5,381/5,388" in text
+    assert "完整官方预训练语料仍 `UNCHECKED`" in text
+    assert "dev 不能外推 clean-OOD" in text
+    assert "剩余 7 条均为 HOMOLOGY" in text
+
+
 def test_linearpartition_recall_and_gec_boundary():
     assert 53 / 73 == pytest.approx(0.726027397260274)
     assert 8 / 73 == pytest.approx(0.1095890410958904)

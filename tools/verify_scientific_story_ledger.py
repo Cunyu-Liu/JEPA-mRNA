@@ -18,6 +18,8 @@ STRUCTRFM = F / "structrfm_official_v0.0.8"
 FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
 LABEL_QUALITY_REPO = Path("/home/rna_jev_label_quality")
 LABEL_QUALITY = F / "label_quality_v1"
+PRETRAIN_EXPOSURE_REPO = Path("/home/rna_jev_pretrain_exposure")
+PRETRAIN_EXPOSURE = PRETRAIN_EXPOSURE_REPO / "manifests/pretrain_exposure_v1"
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -49,11 +51,15 @@ SOURCES = {
     "label_conservation": LABEL_QUALITY / "deletion_conservation.json",
     "label_verification": LABEL_QUALITY / "independent_verification.json",
     "label_manifest": LABEL_QUALITY / "artifact_manifest.json",
+    "exposure_summary": PRETRAIN_EXPOSURE / "summary.json",
+    "exposure_assets": PRETRAIN_EXPOSURE / "asset_registry.json",
+    "exposure_verification": PRETRAIN_EXPOSURE / "independent_verification.json",
 }
 
 SOURCE_COMMITS = {
     "FoldNAR integration": (FOLDNAR_REPO, "79a2ed45879f1f4e81d6719ed54600bf7f8da807"),
     "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
+    "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
 }
 
 
@@ -134,6 +140,12 @@ def verify_narrative_guards() -> list[str]:
         "不自动删除",
         "硬冲突记录=0",
         "实际删除=0",
+        "4247d1e4a971ceb8c63e3f8338e026a23c18941b",
+        "EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626",
+        "bpRNA-new EXACT=5,381/5,388",
+        "完整官方预训练语料仍 `UNCHECKED`",
+        "dev 不能外推 clean-OOD",
+        "exposure-aware descriptive performance",
     ]
     return [f"missing narrative guard: {item}" for item in required if item not in text]
 
@@ -344,6 +356,52 @@ def verify_numbers() -> list[str]:
     check("label manifest base", pointer(data["label_manifest"], "base_commit"), "79a2ed45879f1f4e81d6719ed54600bf7f8da807")
     check("label manifest pass", pointer(data["label_manifest"], "verification_passed"), True)
     check("label manifest rounds", pointer(data["label_manifest"], "verification_rounds"), [1, 2, 3])
+
+    check("exposure schema", pointer(data["exposure_summary"], "schema_version"), "rinalmo.pretrain_exposure.summary.v1")
+    check("complete official corpus UNCHECKED", pointer(data["exposure_summary"], "complete_official_pretraining_coverage_state"), "UNCHECKED", "完整官方预训练语料仍 `UNCHECKED`")
+    check("exposure dev rows", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/n_input_rows"), 9143, "9,143")
+    check("exposure dev unique", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/n_unique_sequences"), 9143)
+    check("exposure dev role", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/role"), "development")
+    check("exposure dev selection", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/selection_use"), True)
+    check("exposure dev exact states", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/known_source_exact_state"), {
+        "EXACT": 7978, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 1165, "UNCHECKED": 0,
+    })
+    check("exposure dev joint states", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/known_source_exact_or_homology_state"), {
+        "EXACT": 7978, "HOMOLOGY": 539, "NOT_DETECTED_UNKNOWN": 626, "UNCHECKED": 0,
+    }, "EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626")
+    check("exposure dev complete official states", pointer(data["exposure_summary"], "populations/tr1c_cluster80_dev/complete_official_pretraining_exposure_state"), {
+        "EXACT": 7978, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 0, "UNCHECKED": 1165,
+    })
+    check("exposure bpRNA-new rows", pointer(data["exposure_summary"], "populations/bprna_new/n_input_rows"), 5388, "5,388")
+    check("exposure bpRNA-new role", pointer(data["exposure_summary"], "populations/bprna_new/role"), "external_test_final_audit_only")
+    check("exposure bpRNA-new no selection", pointer(data["exposure_summary"], "populations/bprna_new/selection_use"), False)
+    check("exposure bpRNA-new exact states", pointer(data["exposure_summary"], "populations/bprna_new/known_source_exact_state"), {
+        "EXACT": 5381, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 7, "UNCHECKED": 0,
+    })
+    check("exposure bpRNA-new joint states", pointer(data["exposure_summary"], "populations/bprna_new/known_source_exact_or_homology_state"), {
+        "EXACT": 5381, "HOMOLOGY": 7, "NOT_DETECTED_UNKNOWN": 0, "UNCHECKED": 0,
+    }, "bpRNA-new EXACT=5,381/5,388")
+    check("exposure bpRNA-new complete official states", pointer(data["exposure_summary"], "populations/bprna_new/complete_official_pretraining_exposure_state"), {
+        "EXACT": 5381, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 0, "UNCHECKED": 7,
+    })
+    check("official training set UNCHECKED", pointer(data["exposure_assets"], "official_pretraining_declaration/complete_official_training_set_state"), "UNCHECKED")
+    check("official nt unpinned", pointer(data["exposure_assets"], "official_pretraining_declaration/nt/status"), "NOT_DOWNLOADED_HISTORICAL_SNAPSHOT_UNPINNED")
+    check("official declared sources", pointer(data["exposure_assets"], "official_pretraining_declaration/declared_sources"), ["RNAcentral", "Rfam", "nt", "Ensembl 109", "Ensembl Bacteria 56"])
+    check("exposure verification status", pointer(data["exposure_verification"], "status"), "PASS")
+    check("exposure registry rows", pointer(data["exposure_verification"], "n_registry_rows"), 157227, "157,227")
+    check("exposure verification dev", pointer(data["exposure_verification"], "population_exact_counts/tr1c_cluster80_dev"), {
+        "EXACT": 7978, "HOMOLOGY": 0, "NOT_DETECTED_UNKNOWN": 1165, "UNCHECKED": 0,
+    })
+    check("exposure verification bpRNA-new", pointer(data["exposure_verification"], "bprna_new"), {
+        "rows": 5388, "exact": 5381, "exact_not_detected_unknown": 7, "homology_only": 7, "homology_not_detected": 0,
+    })
+    check("exposure verification official coverage", pointer(data["exposure_verification"], "official_complete_coverage"), "UNCHECKED")
+    check("exposure no training", pointer(data["exposure_verification"], "no_model_inference_or_training"), True)
+    check("exposure external final audit", pointer(data["exposure_verification"], "external_test_use"), "final exposure/quality audit only")
+    sota_limits = pointer(data["exposure_summary"], "sota_limitations")
+    for required in ["clean-OOD", "NOT_DETECTED_UNKNOWN is not clean", "no complete exposure rate", "not proof of superiority on unseen RNA families"]:
+        if not any(required in item for item in sota_limits):
+            errors.append(f"exposure SOTA limitation missing: {required}")
 
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")
