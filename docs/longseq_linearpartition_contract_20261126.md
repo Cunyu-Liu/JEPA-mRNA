@@ -6,13 +6,14 @@ Branch `longseq-linearpartition-contract-20261126` starts at FoldNAR integration
 `81601249aefa2ea1ae343d5e9d2f6d382cf8455b`. This delivery performs CPU-only source
 recovery, compilation, an official short smoke, input identity checks, and static
 acceptance tests. Its initial static phase did not run 7224/19000 nt inference.
-A later train-only 7224 nt resource pilot is documented in
-`docs/linearpartition_7224_cpu_pilot_20261126.md`; the 19000 nt holdout remains unexecuted.
-No phase creates or modifies a GPU job.
+Later train-only 7224 nt and holdout 19000 nt resource pilots are documented in
+`docs/linearpartition_7224_cpu_pilot_20261126.md` and
+`docs/linearpartition_19000_holdout_cpu_pilot_20261126.md`. No phase creates or modifies a GPU job.
 
 **LinearPartition is executable and short-smoke ready, but not long-sequence
-full-ready.** Two train-only 7224 nt runs now have measured coverage, recall, memory and
-latency; 19000 nt coverage/recall/resources and all long-chain FLOPs remain `NOT_MEASURED`. No exact global-DP implementation has qualified for these targets.
+full-ready.** Two train-only 7224 nt runs and one descriptive 19000 nt holdout run now
+have measured coverage, recall, memory and latency; all long-chain FLOPs remain
+`NOT_MEASURED`, and no exact global-DP implementation has qualified. No exact global-DP implementation has qualified for these targets.
 GEC support at 7224/19000 nt, exact cubic or otherwise, is not established or claimed.
 Summary tables, logs, and the short smoke are not long-chain predictions.
 
@@ -124,7 +125,8 @@ for that exact execution. Short-chain scaling formulas are not accepted.
 The initial static report contained no long-chain resources. The subsequent two-chain
 7224 nt train-only pilot measured memory and latency with GNU time; FLOPs could not be
 measured because hardware counter access was denied. See the pilot document for observed
-values and the separate 19000 nt authorization gate. No GPU task is needed for
+values and the subsequently authorized 19000 nt holdout measurement. The 19000 nt run
+used descriptive holdout outputs only, not model selection. No GPU task is needed for
 LinearPartition. Any GEC long-sequence experiment requires a separate support proof,
 resource review, and explicit authorization.
 

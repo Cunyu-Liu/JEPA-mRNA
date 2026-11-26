@@ -61,4 +61,5 @@ a separately authorized serial-CPU holdout run is feasible with 8 GiB available 
 an initial 600 second timeout, preserving the same raw-output and independent-verification
 protocol. No 19000 nt execution or scientific result is claimed here.
 
-No GPU job was launched or modified by this pilot.
+No GPU job was launched or modified by this pilot. A later separately authorized 19000 nt
+holdout execution is documented in `docs/linearpartition_19000_holdout_cpu_pilot_20261126.md`.
