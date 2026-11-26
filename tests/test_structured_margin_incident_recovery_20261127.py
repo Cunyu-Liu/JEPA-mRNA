@@ -5,6 +5,7 @@ import pytest
 
 from tools import audit_structured_margin_incident_recovery_20261127 as audit
 from tools import run_structured_margin_incident_recovery_20261127 as recovery
+from tools.run_frozen_margin_trainer_with_resume_audit_20261127 import ValidationAuditList
 
 
 def write_jsonl(path, rows):
@@ -50,7 +51,7 @@ def test_training_command_is_frozen_unbounded_20_of_33(tmp_path):
     config.write_text(json.dumps({"assets": {"shared_init": "/shared.pt"}}))
     command = recovery.training_command(Path("/frozen"), config, "matched_control", tmp_path)
     joined = " ".join(command)
-    assert command[1] == "/frozen/tools/train_plan_a_gec_convergence_v1.py"
+    assert command[1].endswith("tools/run_frozen_margin_trainer_with_resume_audit_20261127.py")
     assert "--steps 0" in joined
     assert "--max-unfrozen-blocks 20" in joined
     assert "--seed 0" in joined and "--batch-size 4" in joined
@@ -85,6 +86,14 @@ def test_running_or_incomplete_run_is_never_converged(tmp_path):
         "stop_reason": recovery.STOP_REASON,
     }))
     assert recovery.converged_meta(path) is not None
+
+
+def test_validation_audit_list_preserves_truthiness():
+    values = ValidationAuditList([{"id": "record"}])
+    assert bool(values) is True
+    assert values.truth_checks == 1
+    values.clear()
+    assert bool(values) is False
 
 
 def test_evaluation_is_reattached_to_separate_output(tmp_path):

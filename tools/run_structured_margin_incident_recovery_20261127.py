@@ -40,7 +40,7 @@ def append_jsonl(value: dict, path: Path) -> None:
 def training_command(source_repo: Path, config_path: Path, arm: str, out: Path) -> list[str]:
     config = json.loads(config_path.read_text())
     return [
-        PYTHON, str(source_repo / "tools/train_plan_a_gec_convergence_v1.py"),
+        PYTHON, str(REPO / "tools/run_frozen_margin_trainer_with_resume_audit_20261127.py"),
         "--gec-config", str(config_path), "--arm", arm, "--out", str(out),
         "--shared-init", config["assets"]["shared_init"], "--gec-init", GEC_INIT,
         "--device", "cuda:0", "--steps", "0", "--seed", "0", "--batch-size", "4",
@@ -210,7 +210,7 @@ def main() -> None:
             event("EVALUATION_COMPLETED", returncode=returncode, status=status)
             break
         remaining = [arm for arm in ARMS if arm not in completed and arm not in active]
-        if remaining and len(active) < 2:
+        if remaining and len(active) < 1:
             free_bytes = free_gpu_bytes()
             required = config["full_training"].get("recovery_single_arm_required_free_bytes", 23692771328)
             if free_bytes < required:
