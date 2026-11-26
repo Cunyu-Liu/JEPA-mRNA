@@ -16,6 +16,7 @@ A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/a
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
 MARGIN_EVALUATOR_REPO = Path("/home/rna_jev_margin_evaluator")
 OBSOLETE_MARGIN_EVALUATOR_COMMIT = "8b1861f9f8c116250aba194799bf5ee7d9a4f39e"
+OBSOLETE_RAW_GAP_VALUES = ("0.19321803153859785", "0.15297454451260917")
 STRUCTRFM = F / "structrfm_official_v0.0.8"
 FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
 LABEL_QUALITY_REPO = Path("/home/rna_jev_label_quality")
@@ -199,6 +200,60 @@ def verify_evaluator_v3_contract() -> list[str]:
     return errors
 
 
+def verify_bpfold_official_contract() -> list[str]:
+    errors = []
+    names = ["raw_baselines", "official_registry", "official_metrics", "official_verification", "bpfold_protocol"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            errors.append(f"missing BPfold official contract source: {name}: {SOURCES[name]}")
+    if errors:
+        return errors
+    raw = json.loads(SOURCES["raw_baselines"].read_text())
+    official = json.loads(SOURCES["official_registry"].read_text())
+    metrics = json.loads(SOURCES["official_metrics"].read_text())
+    verification = json.loads(SOURCES["official_verification"].read_text())
+    protocol = json.loads(SOURCES["bpfold_protocol"].read_text())
+    derived = [row for row in raw["rows"] if row.get("label_lineage", {}).get("label_source") == "DERIVED_FROM_BPFOLD_PREDICTIONS"]
+    if len(derived) != 19:
+        errors.append(f"derived raw/clean asset count: expected 19, got {len(derived)}")
+    for row in derived:
+        asset_id = row["asset_id"]
+        if row.get("independent_sota_eligible") is not False:
+            errors.append(f"derived asset regained SOTA eligibility: {asset_id}")
+        if row.get("sota_use") != "circular-audit-only; historical value retained; not independent SOTA":
+            errors.append(f"derived asset is not circular-audit-only: {asset_id}")
+        if row["label_lineage"].get("disposition") != "circular-audit-only":
+            errors.append(f"derived lineage disposition mismatch: {asset_id}")
+    if raw["xens2_project_raw_reference"]["independent_sota_eligible"] is not False:
+        errors.append("legacy xens2 raw reference regained SOTA eligibility")
+    if official["circular_project_label_score_excluded"] is not True:
+        errors.append("circular project-label score is not excluded from official registry")
+    circular = protocol["project_label_protocol_audits"]["official_release_on_project_labels_5388"]["micro_f1"]
+    official_scored = [row for row in official["rows"] if row.get("status") == "PASS_FULL_COVERAGE"]
+    if len(official_scored) != 28:
+        errors.append(f"official scored row count: expected 28, got {len(official_scored)}")
+    for row in official_scored:
+        if math.isclose(row["metrics"]["micro_f1"], circular, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"circular 0.9617 value entered official rows: {row['prediction_id']}")
+    metrics_scored = [row for row in metrics["rows"] if row.get("status") == "PASS_FULL_COVERAGE"]
+    if len(metrics_scored) != 28:
+        errors.append(f"official metrics scored row count: expected 28, got {len(metrics_scored)}")
+    if {row["prediction_id"] for row in metrics_scored} != {row["prediction_id"] for row in official_scored}:
+        errors.append("official registry and system metrics scored identities differ")
+    for row in metrics_scored:
+        if math.isclose(row["metrics"]["micro_f1"], circular, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"circular 0.9617 value entered official metrics: {row['prediction_id']}")
+    for key in ["strongest_overall", "strongest_ensemble", "strongest_single_predictor"]:
+        if official[key]["ranking_scope"] != "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION":
+            errors.append(f"official ranking scope mismatch: {key}")
+    if verification["model_selection"] is not False or verification["new_inference"] is not False:
+        errors.append("official-reference audit allowed selection or new inference")
+    required_check = "0.9616708875167174 absent from official-reference results and ranking"
+    if required_check not in verification["checks"]:
+        errors.append("independent verification lacks circular-score exclusion check")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -238,6 +293,9 @@ def verify_narrative_guards() -> list[str]:
         "0.14065897918891607",
         "0.6339521964768657",
         "official release 与项目 replay 是不同 prediction identity",
+        "19/19 派生标签资产",
+        "28/28 official-reference scored rows 均不含 0.9617",
+        "旧差距禁止回写",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
@@ -285,6 +343,9 @@ def verify_narrative_guards() -> list[str]:
     errors = [f"missing narrative guard: {item}" for item in required if item not in text]
     if OBSOLETE_MARGIN_EVALUATOR_COMMIT in text:
         errors.append("obsolete margin evaluator commit remains in ledger")
+    for value in OBSOLETE_RAW_GAP_VALUES:
+        if value in text:
+            errors.append(f"obsolete derived-label gap remains in ledger: {value}")
     return errors
 
 
@@ -670,12 +731,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, and evaluator/v3 contracts"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, and BPfold official protocol"
     print(f"PASS: {scope}")
     return 0
 

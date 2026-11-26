@@ -61,6 +61,20 @@ def test_bpfold_protocol_and_official_panel_provenance():
     assert "bprna_new_official_reference_5388_prediction_registry.json" in text
 
 
+def test_bpfold_sota_and_circular_exclusion_contract():
+    text = ledger.DOC.read_text()
+    assert "19/19 派生标签资产" in text
+    assert "28/28 official-reference scored rows 均不含 0.9617" in text
+    assert "旧差距禁止回写" in text
+    for value in ledger.OBSOLETE_RAW_GAP_VALUES:
+        assert value not in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_bpfold_official_registry_contract():
+    assert ledger.verify_bpfold_official_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
