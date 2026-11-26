@@ -1,0 +1,175 @@
+{
+  "schema_version": "bpfold.label_protocol_audit.v1",
+  "audit_date": "2026-11-27",
+  "base_commit": "c183df8457b2e3d3695b6e9eb78bb6b56bff5d91",
+  "scope": "CPU-only protocol audit of frozen external Test artifacts; no inference, training, calibration, model selection, or historical-result modification",
+  "inputs": [
+    {
+      "role": "BPfold v0.2 author-released predicted structures",
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/official_assets/bpfold/BPfold_test_results_v0.2.tar.gz",
+      "bytes": 8279584,
+      "sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073"
+    },
+    {
+      "role": "BPfold v0.2 BPfold_data/test_data/bpRNAnew reference labels",
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz",
+      "bytes": 166902534,
+      "sha256": "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403"
+    },
+    {
+      "role": "frozen project bpRNA-new labels",
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.jsonl",
+      "bytes": 3847895,
+      "sha256": "271efd8d2d143c1ff6d5d2210775a5099727a31d76fbab9525740347ae1368f9"
+    },
+    {
+      "role": "project conversion manifest",
+      "path": "/root/rna_jepa_data/ss_data/jsonl/bprna_new.manifest.json",
+      "bytes": 1117,
+      "sha256": "81a4d22638edb21c8b64987db7fe50ea12b6423ff1ea3f7cd1828fdeb457737d"
+    },
+    {
+      "role": "frozen project six-checkpoint BPfold replay predictions",
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/bprna_new.json",
+      "bytes": 8386850,
+      "sha256": "9832e97bcb5e6879e57a317ef560dd1ca364b11a48575b3f89cd9c94c773255a"
+    }
+  ],
+  "label_set_accounting": {
+    "official_release": 5401,
+    "official_reference": 5401,
+    "project": 5388,
+    "same_name_same_sequence_intersection": 5388,
+    "official_only": 13,
+    "project_only": 0,
+    "exact_reference_project_label_sets": 106,
+    "different_reference_project_label_sets": 5282
+  },
+  "record_classification_counts": {
+    "DIFFERENT_MIN_LOOP_OR_CROSSING_PROJECTION_ONLY": 1,
+    "DIFFERENT_REFERENCE_AND_PROJECT_PROJECTION": 2557,
+    "DIFFERENT_REFERENCE_VS_UNFILTERED_RELEASE": 2724,
+    "LABEL_SETS_EQUAL": 106,
+    "OFFICIAL_ONLY_PROJECT_REJECTED_BAD_ALPHABET": 13
+  },
+  "sequence_and_index": {
+    "project_sequence_mismatches": 0,
+    "reference_release_sequence_mismatches": 0,
+    "index_offset_transformations_required": 0,
+    "evidence": "All 5388 project pair sets equal the historical projection of same-name release BPSEQ pairs after contiguous 1-based to zero-based conversion."
+  },
+  "project_exclusions": {
+    "count": 13,
+    "reason_counts": {
+      "bad_alphabet": 13
+    },
+    "names": [
+      "CP007500.1_8618-8854.bpseq",
+      "NC_039208.1_1-280.bpseq",
+      "URS0000D661BB_12908_1-77.bpseq",
+      "URS0000D67255_12908_1-80.bpseq",
+      "URS0000D68725_12908_1-53.bpseq",
+      "URS0000D69110_12908_1-61.bpseq",
+      "URS0000D6933B_12908_1-264.bpseq",
+      "URS0000D6A4D9_12908_1-66.bpseq",
+      "URS0000D6A629_12908_1-109.bpseq",
+      "URS0000D6B31B_12908_1-130.bpseq",
+      "URS0000D6B7EF_12908_1-107.bpseq",
+      "URS0000D6BAD3_12908_1-211.bpseq",
+      "URS0000D6BD84_12908_1-182.bpseq"
+    ]
+  },
+  "release_to_project_projection": {
+    "exact_projection_records": 5388,
+    "records_with_min_loop_drops": 219,
+    "records_with_crossing_drops": 2463,
+    "records_with_any_drops": 2602,
+    "min_loop_pairs_dropped": 227,
+    "crossing_pairs_dropped": 10549,
+    "min_loop_rule": "drop span<=3 before greedy crossing removal",
+    "crossing_rule": "repeatedly remove the pair in the most crossings; ties go to the larger span"
+  },
+  "canonical_policy": {
+    "intersection_scope": 5388,
+    "official_only_release_noncanonical_pairs": 11,
+    "official_only_reference_noncanonical_pairs": 0,
+    "standalone_canonical_filter_applied": false,
+    "release_records_with_noncanonical_pairs": 0,
+    "release_noncanonical_pairs": 0,
+    "reference_records_with_noncanonical_pairs": 0,
+    "reference_noncanonical_pairs": 0,
+    "project_records_retaining_noncanonical_pairs": 0,
+    "project_noncanonical_pairs_retained": 0,
+    "note": "Canonical identity is descriptive here. Noncanonical pairs can still be removed by the min-loop or crossing rules; there is no separate canonical-pair deletion stage."
+  },
+  "official_reference_protocol": {
+    "pair_matching": "strict exact zero-based inclusive pairs; no crossing, canonical, or short-span filtering by the scorer",
+    "release_on_official_labels_5401": {
+      "n_sequences": 5401,
+      "coverage": 1.0,
+      "tp": 86933,
+      "fp": 59441,
+      "fn": 41092,
+      "micro_precision": 0.5939101206498422,
+      "micro_recall": 0.6790314391720367,
+      "micro_f1": 0.633624758107719,
+      "macro_f1": 0.6470223791166072,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    },
+    "release_on_official_labels_project_intersection_5388": {
+      "n_sequences": 5388,
+      "coverage": 1.0,
+      "tp": 86731,
+      "fp": 59229,
+      "fn": 40929,
+      "micro_precision": 0.5942107426692245,
+      "micro_recall": 0.6793905686981043,
+      "micro_f1": 0.6339521964768657,
+      "macro_f1": 0.6472307861307366,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    },
+    "readme_macro_rounding_reproduced": true
+  },
+  "project_label_protocol_audits": {
+    "project_replay_on_project_labels_5388": {
+      "n_sequences": 5388,
+      "coverage": 1.0,
+      "tp": 106998,
+      "fp": 48176,
+      "fn": 28186,
+      "micro_precision": 0.6895356180803485,
+      "micro_recall": 0.7914989939637826,
+      "micro_f1": 0.7370074184282851,
+      "macro_f1": 0.7447389175263477,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    },
+    "official_release_on_project_labels_5388": {
+      "n_sequences": 5388,
+      "coverage": 1.0,
+      "tp": 135184,
+      "fp": 10776,
+      "fn": 0,
+      "micro_precision": 0.92617155385037,
+      "micro_recall": 1.0,
+      "micro_f1": 0.9616708875167174,
+      "macro_f1": 0.9584497822657716,
+      "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
+    },
+    "warning": "The 0.9616708875167174 value scores release predictions against labels derived from those same release predictions after filtering; it is not an independent accuracy estimate or official BPfold result."
+  },
+  "dssr_literature_attribution": {
+    "status": "NOT_ESTABLISHED_BY_THESE_ARTIFACTS",
+    "evidence": "The release API identifies BPfold_test_results as predicted structures and BPfold_data as datasets. The project converter and manifest establish the subsequent filtering. They contain no per-record DSSR or literature curation lineage, so no such root cause is assigned."
+  },
+  "historical_manifest_crosscheck": {
+    "n_accepted": 5388,
+    "n_rejected": 13,
+    "reject_reasons": {
+      "bad_alphabet": 13
+    },
+    "n_dropped_illegal_pairs": 227,
+    "n_dropped_crossing_pairs": 10549,
+    "n_records_with_drops": 2602,
+    "source_directory": "/mnt/cunyuliu/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results/bpRNAnew"
+  }
+}
