@@ -1,0 +1,69 @@
+{
+  "checks": [
+    "two official archives and panel SHA",
+    "all prediction schemas and sequence joins",
+    "strict pair metrics and empty/empty convention",
+    "coverage/missing/extra IDs and no zero imputation",
+    "xens2 deltas and paired macro CI",
+    "release/replay/R2D identity boundaries",
+    "registry recommendation and read-only shared registries"
+  ],
+  "clean_full_coverage_identities": 20,
+  "deliverables": {
+    "artifacts/archiveii_official_reference_20261127/build_receipt.json": {
+      "bytes": 1564,
+      "sha256": "b5bacc07038ca201ddd04e74fb49610f37ae5fd7ae2ff00e210947f0fd92a90e"
+    },
+    "artifacts/archiveii_official_reference_20261127/per_record_metrics.jsonl.gz": {
+      "bytes": 2565388,
+      "sha256": "729528e411fd6efb36f2194a27659d7e5e5c7c48a5c5e75637ac157b891069cc"
+    },
+    "artifacts/archiveii_official_reference_20261127/registry_recommendation.json": {
+      "bytes": 1598409,
+      "sha256": "16a650d171e16cc01bb0be051f679faa4382b185b81a55b8507293932183c4e3"
+    },
+    "artifacts/archiveii_official_reference_20261127/system_metrics.json": {
+      "bytes": 1609622,
+      "sha256": "01de9163a6ced10c1a968b0396c60fd68dca6d5ab5b8d80511603628f7155d83"
+    },
+    "docs/plans/2026-11-27-archiveii-official-reference-panel.md": {
+      "bytes": 11815,
+      "sha256": "e04db8b410057f79b2b18385f703a325ae2455874a4023681f4cb75fcac62fb2"
+    },
+    "source_data/archiveii_official_reference_20261127/official_reference_3966.jsonl.gz": {
+      "bytes": 1305518,
+      "sha256": "a2fc055ec86333af4e292bcc78dc7858908dfc5a4596d53f44b391213afec1a0"
+    },
+    "source_data/archiveii_official_reference_20261127/official_reference_clean_2544.jsonl.gz": {
+      "bytes": 805662,
+      "sha256": "cde658b5d61813ff9530509bd25631d6f33dcb08021bae107636f0a212c11afb"
+    },
+    "source_data/archiveii_official_reference_20261127/source_manifest.json": {
+      "bytes": 13327,
+      "sha256": "b0340bc5dc24daa7851b7f930908b6c4d72bdb00090d029af376862c9910dbbb"
+    },
+    "tests/test_archiveii_official_reference_panel_20261127.py": {
+      "bytes": 6177,
+      "sha256": "3a962744a0c0879bb5852a35806e18bb91e56fa5d56eecef95cb42be9b966b0a"
+    },
+    "tools/build_archiveii_official_reference_panel_20261127.py": {
+      "bytes": 31247,
+      "sha256": "1d7e68f5ac460e4143331cceaa9d512146df145f73a7176dcca45f1b2baf3753"
+    },
+    "tools/verify_archiveii_official_reference_panel_20261127.py": {
+      "bytes": 23883,
+      "sha256": "1120207bf1924f99088dd8b771ddf13658d0b99f3d5fcf4a40dd1545c1eb33fc"
+    }
+  },
+  "external_test_model_selection": false,
+  "generator_imported": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "official_full_coverage_identities": 1,
+  "paired_bootstrap_replicates_per_identity": 10000,
+  "panel_records_compared_field_by_field": 6510,
+  "per_record_metrics_compared_field_by_field": 103182,
+  "prediction_identities_verified": 36,
+  "schema_version": "archiveii.official_reference.independent_verification.round2.v1",
+  "status": "PASS_INDEPENDENT_SECOND_IMPLEMENTATION"
+}
