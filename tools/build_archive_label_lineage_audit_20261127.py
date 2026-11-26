@@ -414,7 +414,7 @@ def training_overlap(project_by_dataset: dict, repo: Path) -> tuple[list[dict], 
                     "removed_homology_only": audit["removed_homology_only"],
                     "clean_n": audit["clean_n"], "clean_sha256": audit["clean_sha256"],
                     "clean_subset_reconstruction": "EXACT",
-                    "audit_artifact": str(audit_path), "audit_artifact_sha256": sha256_file(audit_path),
+                    "audit_artifact": str(audit_path.relative_to(repo)), "audit_artifact_sha256": sha256_file(audit_path),
                     "full_set_eligibility_under_frozen_homology_protocol": "NOT_ELIGIBLE" if union else "ELIGIBLE_EXACT_AND_HOMOLOGY_SCREENED",
                     "clean_subset_eligibility": "ELIGIBLE_ONLY_WITH_DATASET_LABEL_AND_MODEL_ROUTE_CONDITIONS",
                 })
@@ -581,7 +581,10 @@ def main() -> None:
     registry = json.loads((repo / "manifests/foldnar_v1/prediction_registry.json").read_text())
     prediction_rows, prediction_summary = prediction_plan(registry)
     inputs = [identity(path, "frozen audit input") for path in EXPECTED_INPUTS]
-    inputs += [identity(path, "read-only shared registry; no modification") for path in registry_paths]
+    for path in registry_paths:
+        item = identity(path, "read-only shared registry; no modification")
+        item["path"] = str(path.relative_to(repo))
+        inputs.append(item)
     docs = documentation_evidence(source_root)
     source_manifest = {
         "schema_version": SCHEMA + ".source_manifest", "base_commit": BASE_COMMIT,
@@ -630,16 +633,18 @@ def main() -> None:
     write_json(artifact_root / "prediction_recompute.json", {"schema_version": SCHEMA + ".prediction_plan", "rows": prediction_rows})
     write_json(artifact_root / "summary.json", summary)
     atomic_write(report_path, markdown_report(summary, prediction_rows))
+    output_identities = {}
+    for path in (source_root / "source_manifest.json", artifact_root / "records.jsonl.gz",
+                 artifact_root / "training_overlap.jsonl.gz", artifact_root / "prediction_recompute.json",
+                 artifact_root / "summary.json", report_path):
+        relative = str(path.relative_to(repo))
+        item = identity(path, "audit output")
+        item["path"] = relative
+        output_identities[relative] = item
     write_json(artifact_root / "build_receipt.json", {
         "schema_version": SCHEMA + ".build_receipt", "status": "PASS",
         "record_rows": len(records), "training_overlap_rows": len(overlap_rows),
-        "prediction_rows": len(prediction_rows), "outputs": {
-            str(path.relative_to(repo)): identity(path, "audit output") for path in (
-                source_root / "source_manifest.json", artifact_root / "records.jsonl.gz",
-                artifact_root / "training_overlap.jsonl.gz", artifact_root / "prediction_recompute.json",
-                artifact_root / "summary.json", report_path,
-            )
-        },
+        "prediction_rows": len(prediction_rows), "outputs": output_identities,
     })
     print(json.dumps({"status": "PASS", "datasets": {name: item["record_status_counts"] for name, item in dataset_summaries.items()},
                       "prediction_actions": prediction_summary}, sort_keys=True))

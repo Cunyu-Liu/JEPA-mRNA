@@ -198,7 +198,7 @@
   "training_overlap": {
     "archiveii_embok_clean": {
       "bprna_tr0": {
-        "audit_artifact": "/home/rna_jev_archive_label_lineage/source_data/appendix_leakage/round39_clean_audits/tr0/archiveii_embok_clean.audit.json",
+        "audit_artifact": "source_data/appendix_leakage/round39_clean_audits/tr0/archiveii_embok_clean.audit.json",
         "audit_artifact_sha256": "f72c7ecb8205929fca98817953ac972193eafca046ac461f4ca8d6496a94555a",
         "clean_n": 1094,
         "clean_sha256": "20f5e4a0c235498ae092d341991fff40f6db134f240db7d107de766f0dc784eb",
@@ -1239,7 +1239,7 @@
         "train_sha256": "473f62458695554335a5a6911bcc590aa788fd1d70b2ebc6ab4830baf0e93929"
       },
       "bprna_tr1c": {
-        "audit_artifact": "/home/rna_jev_archive_label_lineage/source_data/appendix_leakage/round39_clean_audits/tr1c/archiveii_embok_clean.audit.json",
+        "audit_artifact": "source_data/appendix_leakage/round39_clean_audits/tr1c/archiveii_embok_clean.audit.json",
         "audit_artifact_sha256": "fc34586cb11ab32ea4d32661393ed6288ac2a4b6039bec9829a8e9b6dd244eb1",
         "clean_n": 1107,
         "clean_sha256": "2ee519190c6ebab33359dbed020b60570da4ae4c5b9f554e2cc8612d25f7524d",
@@ -1258,7 +1258,7 @@
     },
     "bprna_ts0": {
       "bprna_tr0": {
-        "audit_artifact": "/home/rna_jev_archive_label_lineage/source_data/appendix_leakage/round39_clean_audits/tr0/bprna_ts0.audit.json",
+        "audit_artifact": "source_data/appendix_leakage/round39_clean_audits/tr0/bprna_ts0.audit.json",
         "audit_artifact_sha256": "c8b3b4722b651bd937f528bfcbf842811abbda64ba74d1c79f1e45305057820b",
         "clean_n": 1192,
         "clean_sha256": "cdb8520355f6b39666b403291a1865fed799222e2a292aeb3cc44bc20e0f9649",
@@ -2372,7 +2372,7 @@
         "train_sha256": "473f62458695554335a5a6911bcc590aa788fd1d70b2ebc6ab4830baf0e93929"
       },
       "bprna_tr1c": {
-        "audit_artifact": "/home/rna_jev_archive_label_lineage/source_data/appendix_leakage/round39_clean_audits/tr1c/bprna_ts0.audit.json",
+        "audit_artifact": "source_data/appendix_leakage/round39_clean_audits/tr1c/bprna_ts0.audit.json",
         "audit_artifact_sha256": "dfad153f2708e69efb4e442512ac94f0f358936a19e9c0271100d4a1ee1b5f2c",
         "clean_n": 713,
         "clean_sha256": "a2ec92fdc9851f5ed282bc70931aaa13627a48acc3260214bae1f43211db7bb8",
@@ -2391,7 +2391,7 @@
     },
     "testsetb": {
       "bprna_tr0": {
-        "audit_artifact": "/home/rna_jev_archive_label_lineage/source_data/appendix_leakage/round39_clean_audits/tr0/testsetb.audit.json",
+        "audit_artifact": "source_data/appendix_leakage/round39_clean_audits/tr0/testsetb.audit.json",
         "audit_artifact_sha256": "0253e0c4a45f8084ca874f6f8661eaf7a12372faf27fa5b9ada72277b930001c",
         "clean_n": 116,
         "clean_sha256": "146aafc7a10bcf9c87e4ce68f521a943139538fbae6fd136bdb926c7cf9481d2",
@@ -3024,7 +3024,7 @@
         "train_sha256": "473f62458695554335a5a6911bcc590aa788fd1d70b2ebc6ab4830baf0e93929"
       },
       "bprna_tr1c": {
-        "audit_artifact": "/home/rna_jev_archive_label_lineage/source_data/appendix_leakage/round39_clean_audits/tr1c/testsetb.audit.json",
+        "audit_artifact": "source_data/appendix_leakage/round39_clean_audits/tr1c/testsetb.audit.json",
         "audit_artifact_sha256": "007028f067bf032d7b7ec23e939c98025f1ee43f8490a2c7c98042ebfc4193cd",
         "clean_n": 288,
         "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",

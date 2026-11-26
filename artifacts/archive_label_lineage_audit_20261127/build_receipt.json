@@ -2,39 +2,39 @@
   "outputs": {
     "artifacts/archive_label_lineage_audit_20261127/prediction_recompute.json": {
       "bytes": 106912,
-      "path": "/home/rna_jev_archive_label_lineage/artifacts/archive_label_lineage_audit_20261127/prediction_recompute.json",
+      "path": "artifacts/archive_label_lineage_audit_20261127/prediction_recompute.json",
       "role": "audit output",
       "sha256": "b4e12b6ce57a797bdd103d3cb006a07f4deadaa62f8f97bb7c78d569c73cf023"
     },
     "artifacts/archive_label_lineage_audit_20261127/records.jsonl.gz": {
       "bytes": 1234362,
-      "path": "/home/rna_jev_archive_label_lineage/artifacts/archive_label_lineage_audit_20261127/records.jsonl.gz",
+      "path": "artifacts/archive_label_lineage_audit_20261127/records.jsonl.gz",
       "role": "audit output",
       "sha256": "a8f3157d721fa528ce81845684a44fcac89a06be607bca9ab07133c12943ac65"
     },
     "artifacts/archive_label_lineage_audit_20261127/summary.json": {
-      "bytes": 58737,
-      "path": "/home/rna_jev_archive_label_lineage/artifacts/archive_label_lineage_audit_20261127/summary.json",
+      "bytes": 58521,
+      "path": "artifacts/archive_label_lineage_audit_20261127/summary.json",
       "role": "audit output",
-      "sha256": "c10d3bc2dee1fc93c5dbfb6207a0806d7e1fbeca99f69478b91eea0f15cc4581"
+      "sha256": "4ccff4945929e6918a74c797101bcf1e1ff7a097ec9f2462c24d0f6b49ae36e4"
     },
     "artifacts/archive_label_lineage_audit_20261127/training_overlap.jsonl.gz": {
       "bytes": 643535,
-      "path": "/home/rna_jev_archive_label_lineage/artifacts/archive_label_lineage_audit_20261127/training_overlap.jsonl.gz",
+      "path": "artifacts/archive_label_lineage_audit_20261127/training_overlap.jsonl.gz",
       "role": "audit output",
       "sha256": "38f9176902d9fcddc288a1fecc6f30e423a5b5ad66e547506860f5ac90737107"
     },
     "docs/plans/2026-11-27-archive-label-lineage-audit.md": {
       "bytes": 9231,
-      "path": "/home/rna_jev_archive_label_lineage/docs/plans/2026-11-27-archive-label-lineage-audit.md",
+      "path": "docs/plans/2026-11-27-archive-label-lineage-audit.md",
       "role": "audit output",
       "sha256": "7492937e4317cc222984a9b538425fd3797a40596e1af0a32f3b3a5b658f2826"
     },
     "source_data/archive_label_lineage_audit_20261127/source_manifest.json": {
-      "bytes": 9610,
-      "path": "/home/rna_jev_archive_label_lineage/source_data/archive_label_lineage_audit_20261127/source_manifest.json",
+      "bytes": 9502,
+      "path": "source_data/archive_label_lineage_audit_20261127/source_manifest.json",
       "role": "audit output",
-      "sha256": "33ef21af843e4fbc912dae8fcdf7a4d13b69ed7b195881442067c7940e67c305"
+      "sha256": "8c05d7592bdd2324ec51949d08c46b924ec44c937c40afe6b2cd8205ec8f85d4"
     }
   },
   "prediction_rows": 97,

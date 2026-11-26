@@ -130,19 +130,19 @@
     },
     {
       "bytes": 102069,
-      "path": "/home/rna_jev_archive_label_lineage/manifests/foldnar_v1/data_registry.json",
+      "path": "manifests/foldnar_v1/data_registry.json",
       "role": "read-only shared registry; no modification",
       "sha256": "fa6af42420bf21484bc43b2ceaf46c6c2813de2e2d515f857b9f4dc3ef34a14c"
     },
     {
       "bytes": 463727,
-      "path": "/home/rna_jev_archive_label_lineage/manifests/foldnar_v1/prediction_registry.json",
+      "path": "manifests/foldnar_v1/prediction_registry.json",
       "role": "read-only shared registry; no modification",
       "sha256": "3193f8eac3c025ca176d8b69b06210c93061b82e223ebf0453add5d9a94f2fac"
     },
     {
       "bytes": 226469,
-      "path": "/home/rna_jev_archive_label_lineage/manifests/foldnar_v1/baseline_registry.json",
+      "path": "manifests/foldnar_v1/baseline_registry.json",
       "role": "read-only shared registry; no modification",
       "sha256": "4016cc4b54d42b7dd59463fa90c9d201fa3db9094dff6fc05e01f6854e79a15c"
     }

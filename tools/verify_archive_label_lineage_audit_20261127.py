@@ -345,7 +345,7 @@ def verify_training(summary):
                                    "clean_n": audit["clean_n"], "clean_sha256": audit["clean_sha256"],
                                    "clean_subset_reconstruction": "EXACT"}.items():
                     compare(item[key], value, f"clean summary {dataset}/{route}.{key}")
-                compare(item["audit_artifact_sha256"], file_sha(item["audit_artifact"]), f"audit artifact SHA {dataset}/{route}")
+                compare(item["audit_artifact_sha256"], file_sha(ROOT / item["audit_artifact"]), f"audit artifact SHA {dataset}/{route}")
     compare(len(actual_rows), expected_count, "total training rows")
 
 
@@ -389,6 +389,8 @@ def verify_inputs_and_delivery(summary):
     manifest = json.loads((SOURCE / "source_manifest.json").read_text())
     for item in manifest["inputs"]:
         path = Path(item["path"])
+        if not path.is_absolute():
+            path = ROOT / path
         require(path.is_file(), f"missing source input {path}")
         compare(path.stat().st_size, item["bytes"], f"source bytes {path}")
         compare(file_sha(path), item["sha256"], f"source SHA {path}")

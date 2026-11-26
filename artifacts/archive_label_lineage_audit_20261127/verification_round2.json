@@ -17,8 +17,8 @@
       "sha256": "a8f3157d721fa528ce81845684a44fcac89a06be607bca9ab07133c12943ac65"
     },
     "artifacts/archive_label_lineage_audit_20261127/summary.json": {
-      "bytes": 58737,
-      "sha256": "c10d3bc2dee1fc93c5dbfb6207a0806d7e1fbeca99f69478b91eea0f15cc4581"
+      "bytes": 58521,
+      "sha256": "4ccff4945929e6918a74c797101bcf1e1ff7a097ec9f2462c24d0f6b49ae36e4"
     },
     "artifacts/archive_label_lineage_audit_20261127/training_overlap.jsonl.gz": {
       "bytes": 643535,
@@ -29,20 +29,20 @@
       "sha256": "7492937e4317cc222984a9b538425fd3797a40596e1af0a32f3b3a5b658f2826"
     },
     "source_data/archive_label_lineage_audit_20261127/source_manifest.json": {
-      "bytes": 9610,
-      "sha256": "33ef21af843e4fbc912dae8fcdf7a4d13b69ed7b195881442067c7940e67c305"
+      "bytes": 9502,
+      "sha256": "8c05d7592bdd2324ec51949d08c46b924ec44c937c40afe6b2cd8205ec8f85d4"
     },
     "tests/test_archive_label_lineage_audit_20261127.py": {
       "bytes": 5301,
       "sha256": "e085865fa2c788871d099558858b0ccde4eaab10d60e8eecdc44c4a07d528625"
     },
     "tools/build_archive_label_lineage_audit_20261127.py": {
-      "bytes": 40264,
-      "sha256": "d6fcf6c178979c43cc922ef7ed08f458fca871341500bb937691e93ca63e3714"
+      "bytes": 40470,
+      "sha256": "99a1a42889b4d78c81483fc14ba8beeb2dd6a61cb31d7db849eb65fd4660a1de"
     },
     "tools/verify_archive_label_lineage_audit_20261127.py": {
-      "bytes": 25649,
-      "sha256": "197b87e65bcc5c0f336efb02fad9f56f496428c11fe7c8aed85efa5c5dbde46b"
+      "bytes": 25722,
+      "sha256": "ca9cf86241cd6983efb4cc5e5645965ae79b2bc721a61ce4271025873c96dc0a"
     }
   },
   "external_test_model_selection": false,
