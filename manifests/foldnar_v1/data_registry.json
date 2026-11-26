@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_utc": "2026-11-18T12:57:34.793656+00:00",
-  "n_rows": 32,
+  "n_rows": 33,
   "rows": [
     {
       "dataset_id": "bprna_tr1c",
@@ -493,8 +493,8 @@
       "role": "test",
       "description": "bprna_new",
       "scope": "IN_SCOPE",
-      "label_source": "DATABASE",
-      "label_provenance_status": "DATASET_LEVEL; per-record experimental lineage unresolved",
+      "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+      "label_provenance_status": "CONFIRMED_DERIVED_FROM_BPFOLD_RELEASE_PREDICTIONS; circular-audit-only",
       "split_provenance": "frozen JSONL split identity: bprna_new",
       "cluster_80_status": "AVAILABLE_IN_V2_AUDIT; integrate by dataset identity",
       "cluster_80_evidence_path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/manifests/v2/data_audit/data_exposure_audit.json",
@@ -563,7 +563,19 @@
         "vienna_mea/bprna_new/recovered_v4",
         "contrafold/bprna_new/clean_tr1c",
         "structrfm_official_v0.0.8/bprna_new"
-      ]
+      ],
+      "legacy_label_source_before_20261127": "DATABASE",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "official_reference_replacement_panel": "bpfold_official_bprna_new_reference_5388"
     },
     {
       "dataset_id": "bprna_ts0",
@@ -1957,6 +1969,55 @@
         "bpfold_official_release/bprna_new_official_reference"
       ],
       "comparability": "Do not mix with project raw 5388 labels; 13 official-only records retained"
+    },
+    {
+      "dataset_id": "bpfold_official_bprna_new_reference_5388",
+      "role": "external_protocol_reference",
+      "description": "BPfold official reference labels restricted to frozen project 5388 IDs for same-label comparisons",
+      "scope": "EXTERNAL_PROTOCOL_ONLY",
+      "label_source": "BPFOLD_OFFICIAL_REFERENCE",
+      "path": "source_data/bprna_official_reference_5388/official_reference_5388.jsonl.gz",
+      "exists": true,
+      "bytes": 1314368,
+      "sha256": "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4",
+      "hash_scope": "full_content",
+      "n_sequences": 5388,
+      "status": "FROZEN",
+      "source_archive": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz",
+      "source_archive_sha256": "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403",
+      "selection_rule": "exact frozen project IDs only; coverage alignment, not model selection",
+      "id_order_sha256": "ef573022b3344bcb5092c97fd40478a7ee7060958f18efdb081e1d4acf0cba6e",
+      "prediction_ids": [
+        "bpfold/bprna_new",
+        "ufold/bprna_new",
+        "bpfold_official_release/bprna_new_official_reference",
+        "efold_0_1_3/bprna_new",
+        "rinalmo_ft/bprna_new",
+        "nucleicbert_frozen_official/bprna_new",
+        "nucleicbert_ft/bprna_new",
+        "structrfm/bprna_new",
+        "rnafm_project_frozen_encoder_crf/bprna_new",
+        "spot_rna/bprna_new",
+        "spot_rna_postprocessed/bprna_new",
+        "rnaformer_bprna/bprna_new",
+        "kirigami/bprna_new",
+        "vienna_mfe/bprna_new/recovered_v4",
+        "vienna_centroid/bprna_new/recovered_v4",
+        "vienna_mea/bprna_new/recovered_v4",
+        "rnastructure_fold/bprna_new",
+        "rnastructure_maxexpect/bprna_new",
+        "contrafold/bprna_new",
+        "xens2/bprna_new",
+        "rinalmo_2d_s0/bprna_new",
+        "mxfold2/bprna_new",
+        "eternafold/bprna_new",
+        "rnaformer_interfamily/bprna_new",
+        "rnaformer_intrafamily/bprna_new",
+        "rnaformer_biophysical/bprna_new",
+        "kirigami_fast/bprna_new",
+        "structrfm_official_v0.0.8/bprna_new"
+      ],
+      "comparability": "same official labels and IDs for all scored systems; full coverage required for ranking"
     }
   ]
 }

@@ -274,7 +274,39 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "xens2",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 55220,
+          "fp": 42961,
+          "fn": 72440,
+          "micro_precision": 0.5624306128476997,
+          "micro_recall": 0.4325552248159173,
+          "micro_f1": 0.48901660903024696,
+          "macro_precision": 0.5738515065226805,
+          "macro_recall": 0.4598143307425872,
+          "macro_f1": 0.49728826391259245
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rinalmo_2d_s0/bprna_new",
@@ -300,7 +332,39 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "r2d",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 64502,
+          "fp": 58351,
+          "fn": 63158,
+          "micro_precision": 0.5250339837041017,
+          "micro_recall": 0.5052639824533918,
+          "micro_f1": 0.5149593035091992,
+          "macro_precision": 0.5485867532050962,
+          "macro_recall": 0.5282194752673472,
+          "macro_f1": 0.5274788803487915
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "ufold/bprna_new",
@@ -351,7 +415,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "ufold_converted_single_raw",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "MultiMolecule-converted UFold checkpoint; not original-author distribution",
         "postprocess_identity": "threshold=0.5; frozen project decode",
@@ -375,8 +439,52 @@
           "macro_f1": 0.5589247295596474,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 67735,
+          "fp": 97664,
+          "fn": 59925,
+          "micro_precision": 0.4095248459785126,
+          "micro_recall": 0.5305890647031176,
+          "micro_f1": 0.4622618653581702,
+          "macro_precision": 0.4465127211089489,
+          "macro_recall": 0.5603551244234448,
+          "macro_f1": 0.48936482049328645
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "mxfold2/bprna_new",
@@ -463,7 +571,39 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "mxfold2",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 90680,
+          "fp": 73837,
+          "fn": 36980,
+          "micro_precision": 0.551189238802069,
+          "micro_recall": 0.7103242989190036,
+          "micro_f1": 0.6207196322776947,
+          "macro_precision": 0.5799138845585283,
+          "macro_recall": 0.7182616665740993,
+          "macro_f1": 0.6330391053474306
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rinalmo_ft/bprna_new",
@@ -511,7 +651,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "rinalmo_author_bprna_ft_single_raw",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "author RiNALMo-giga bpRNA secondary-structure fine-tune; deterministic repeats are not an ensemble",
         "postprocess_identity": "frozen native decode",
@@ -535,8 +675,52 @@
           "macro_f1": 0.44123738936817275,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 42407,
+          "fp": 51578,
+          "fn": 85253,
+          "micro_precision": 0.4512102995158802,
+          "micro_recall": 0.33218705937646875,
+          "micro_f1": 0.38265695143134293,
+          "macro_precision": 0.4634412771199579,
+          "macro_recall": 0.3605041700690262,
+          "macro_f1": 0.39185559851572205
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "eternafold/bprna_new",
@@ -567,7 +751,39 @@
       "status": "FROZEN",
       "e0_scope": "E0_EXPANDED_71",
       "baseline_id": "eternafold",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 92067,
+          "fp": 77600,
+          "fn": 35593,
+          "micro_precision": 0.5426335115255176,
+          "micro_recall": 0.7211890960363465,
+          "micro_f1": 0.6192979446871626,
+          "macro_precision": 0.568649980462274,
+          "macro_recall": 0.7365984729939424,
+          "macro_f1": 0.6331692943125411
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "bpfold/bprna_new",
@@ -615,7 +831,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "bpfold_project_six_checkpoint_raw",
         "model_form": "six_checkpoint_ensemble",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "BPfold project replay; six released checkpoints",
         "postprocess_identity": "project model_predict six-checkpoint ensemble; not a single model",
@@ -639,8 +855,52 @@
           "macro_f1": 0.7447389175263477,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 109530,
+          "fp": 45644,
+          "fn": 18130,
+          "micro_precision": 0.7058527846159794,
+          "micro_recall": 0.8579821400595331,
+          "micro_f1": 0.7745179151021447,
+          "macro_precision": 0.7197046555912414,
+          "macro_recall": 0.8805564148007402,
+          "macro_f1": 0.782790682408547
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "xens2/bprna_ts0",
@@ -2669,7 +2929,28 @@
       "selection_evidence": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_xens2/qa/xens2_plana_distill_s0_vl0/qa_summary.json",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "best_plan_a",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_MISSING_PREDICTION_PATH",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "best_plan_a/bprna_ts0",
@@ -2829,7 +3110,28 @@
       "block_reason": "raw-complete frozen per-sequence prediction not located in current evaluation inventories",
       "e0_scope": "E0_EXPANDED_BLOCKED_18",
       "baseline_id": "h0",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_MISSING_PREDICTION_PATH",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "h0/bprna_ts0",
@@ -3290,7 +3592,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_centroid/bprna_new/repeat0",
@@ -3319,7 +3642,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_mea/bprna_new/repeat0",
@@ -3348,7 +3692,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "nussinov_turner/bprna_new/repeat0",
@@ -3377,7 +3742,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_mfe/bprna_new/repeat1",
@@ -3406,7 +3792,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_centroid/bprna_new/repeat1",
@@ -3435,7 +3842,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_mea/bprna_new/repeat1",
@@ -3464,7 +3892,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "nussinov_turner/bprna_new/repeat1",
@@ -3493,7 +3942,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_mfe/bprna_new/repeat2",
@@ -3522,7 +3992,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mfe",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_centroid/bprna_new/repeat2",
@@ -3551,7 +4042,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_centroid",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_mea/bprna_new/repeat2",
@@ -3580,7 +4092,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "vienna_mea",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "nussinov_turner/bprna_new/repeat2",
@@ -3609,7 +4142,28 @@
       "block_reason": "aggregate metrics only; no per-sequence prediction list",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "nussinov_turner",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "BLOCKED_NO_PER_SEQUENCE_PREDICTIONS",
+        "coverage": 0.0,
+        "missing_names": [],
+        "metrics": null
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "vienna_mfe/bprna_ts0/repeat0",
@@ -5779,7 +6333,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "efold_0_1_3_single_raw",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "eFold 0.1.3 official weights; project replay",
         "postprocess_identity": "official constraints + UFold postprocess + Hungarian decode",
@@ -5803,8 +6357,52 @@
           "macro_f1": 0.6556973548256184,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 84591,
+          "fp": 89947,
+          "fn": 43069,
+          "micro_precision": 0.4846566363771786,
+          "micro_recall": 0.6626272912423625,
+          "micro_f1": 0.5598382517422352,
+          "macro_precision": 0.5022811273753216,
+          "macro_recall": 0.6778536178489233,
+          "macro_f1": 0.5681537054891934
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "efold_0_1_3/bprna_ts0",
@@ -6076,7 +6674,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "contrafold_mea_single_raw",
         "model_form": "deterministic_single_predictor",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "not sequence-fit learned model; frozen parameters",
         "postprocess_identity": "CONTRAfold native posterior MEA",
@@ -6100,8 +6698,52 @@
           "macro_f1": 0.7108879112448466,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 91847,
+          "fp": 72221,
+          "fn": 35813,
+          "micro_precision": 0.5598105663505376,
+          "micro_recall": 0.7194657684474385,
+          "micro_f1": 0.629675588219163,
+          "macro_precision": 0.58494931107398,
+          "macro_recall": 0.7348931655179155,
+          "macro_f1": 0.6424043795760952
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "contrafold/bprna_ts0",
@@ -6409,7 +7051,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "nucleicbert_author_secstr_full_ft_single_raw",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "author secstr.ckpt epoch99/global-step258000; official frozen=False full fine-tune",
         "postprocess_identity": "B=2 first-598-nt protocol; threshold=0.5; historical frozen_official filename is not the training identity",
@@ -6433,8 +7075,52 @@
           "macro_f1": 0.18515300147695582,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 12992,
+          "fp": 18688,
+          "fn": 114668,
+          "micro_precision": 0.4101010101010101,
+          "micro_recall": 0.10177032743224189,
+          "micro_f1": 0.16307267478348186,
+          "macro_precision": 0.36765790278918153,
+          "macro_recall": 0.11946071815340692,
+          "macro_f1": 0.16758041308850952
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "nucleicbert_frozen_official/bprna_ts0",
@@ -6748,7 +7434,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "nucleicbert_project_frozen_encoder_tr1c_single_raw",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "official pretrained encoder frozen; project SecStruct2DPredictionHead trained on TR1c; not author full fine-tune",
         "postprocess_identity": "B=4 first-598-nt protocol; VL0-selected threshold=0.55",
@@ -6772,8 +7458,52 @@
           "macro_f1": 0.3611124978084714,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 48325,
+          "fp": 168724,
+          "fn": 79335,
+          "micro_precision": 0.22264557772668844,
+          "micro_recall": 0.37854457151809495,
+          "micro_f1": 0.28038142317142867,
+          "macro_precision": 0.2521303997295373,
+          "macro_recall": 0.40039191244877714,
+          "macro_f1": 0.3029833377538977
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "nucleicbert_ft/bprna_ts0",
@@ -7041,7 +7771,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "rnastructure_fold_single_raw",
         "model_form": "deterministic_single_predictor",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "not sequence-fit learned model; frozen parameters",
         "postprocess_identity": "RNAstructure 6.6 Fold MFE",
@@ -7065,8 +7795,52 @@
           "macro_f1": 0.6496591555816604,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 89025,
+          "fp": 84970,
+          "fn": 38635,
+          "micro_precision": 0.5116526336963706,
+          "micro_recall": 0.6973601754660818,
+          "micro_f1": 0.5902438215842601,
+          "macro_precision": 0.5426002268939522,
+          "macro_recall": 0.7029741703124165,
+          "macro_f1": 0.604241541362636
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rnastructure_fold/bprna_ts0",
@@ -7304,7 +8078,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "rnastructure_maxexpect_single_raw",
         "model_form": "deterministic_single_predictor",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "not sequence-fit learned model; frozen parameters",
         "postprocess_identity": "RNAstructure 6.6 MaxExpect",
@@ -7328,8 +8102,52 @@
           "macro_f1": 0.6746697017140534,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 90151,
+          "fp": 76346,
+          "fn": 37509,
+          "micro_precision": 0.5414572034330949,
+          "micro_recall": 0.706180479398402,
+          "micro_f1": 0.6129447879873673,
+          "macro_precision": 0.5664048249357009,
+          "macro_recall": 0.7106308751427303,
+          "macro_f1": 0.6215347252345744
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rnastructure_maxexpect/bprna_ts0",
@@ -7569,7 +8387,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "rnaformer_bprna_single_raw",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "official RNAformer 32M bpRNA checkpoint; single model",
         "postprocess_identity": "frozen native decode",
@@ -7593,8 +8411,52 @@
           "macro_f1": 0.45885354923978383,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 44612,
+          "fp": 28365,
+          "fn": 83048,
+          "micro_precision": 0.6113158940488099,
+          "micro_recall": 0.3494595018016607,
+          "micro_f1": 0.4447036189735692,
+          "macro_precision": 0.5519794493443844,
+          "macro_recall": 0.3712638219347875,
+          "macro_f1": 0.42369847713500824
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rnaformer_bprna/bprna_ts0",
@@ -7818,7 +8680,39 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_interfamily",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 72854,
+          "fp": 47167,
+          "fn": 54806,
+          "micro_precision": 0.6070104398396947,
+          "micro_recall": 0.5706877643741187,
+          "micro_f1": 0.588288968471542,
+          "macro_precision": 0.591675216892092,
+          "macro_recall": 0.5904215027371946,
+          "macro_f1": 0.5775316012712074
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rnaformer_interfamily/bprna_ts0",
@@ -8042,7 +8936,39 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_intrafamily",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 73278,
+          "fp": 48088,
+          "fn": 54382,
+          "micro_precision": 0.6037770050920357,
+          "micro_recall": 0.5740090866363778,
+          "micro_f1": 0.5885168616931565,
+          "macro_precision": 0.5919362598863318,
+          "macro_recall": 0.5930714238553356,
+          "macro_f1": 0.5791259574991264
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rnaformer_intrafamily/bprna_ts0",
@@ -8266,7 +9192,39 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "rnaformer_biophysical",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 90539,
+          "fp": 84073,
+          "fn": 37121,
+          "micro_precision": 0.518515336861155,
+          "micro_recall": 0.709219802600658,
+          "micro_f1": 0.5990564789328816,
+          "macro_precision": 0.550317024831784,
+          "macro_recall": 0.7191051340521424,
+          "macro_f1": 0.6150748687405542
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "rnaformer_biophysical/bprna_ts0",
@@ -8514,7 +9472,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "kirigami_standard_single_raw",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "official Kirigami weights; project replay",
         "postprocess_identity": "standard decoder; optimized C decode is pair-identical evidence, not another asset",
@@ -8538,8 +9496,52 @@
           "macro_f1": 0.552667340300811,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 53858,
+          "fp": 35678,
+          "fn": 73802,
+          "micro_precision": 0.6015234095782702,
+          "micro_recall": 0.42188626037913207,
+          "micro_f1": 0.4959391517339177,
+          "macro_precision": 0.5883240506769158,
+          "macro_recall": 0.44685028861321263,
+          "macro_f1": 0.4873753420902478
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "kirigami_fast/archiveii_embok_clean",
@@ -8599,7 +9601,39 @@
       "status": "FROZEN",
       "e0_scope": "NOT_IN_EXPANDED_E0_PHASE0_COMPLETION",
       "baseline_id": "kirigami_fast",
-      "dataset_id": "bprna_new"
+      "dataset_id": "bprna_new",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 53858,
+          "fp": 35678,
+          "fn": 73802,
+          "micro_precision": 0.6015234095782702,
+          "micro_recall": 0.42188626037913207,
+          "micro_f1": 0.4959391517339177,
+          "macro_precision": 0.5883240506769158,
+          "macro_recall": 0.44685028861321263,
+          "macro_f1": 0.4873753420902478
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "kirigami_fast/bprna_ts0",
@@ -8830,7 +9864,7 @@
         "dataset_id": "bprna_new",
         "recovery_asset_id": "spot_rna_registry_raw_single",
         "model_form": "single_model",
-        "label_protocol": "PROJECT_DATABASE_RAW_5388",
+        "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
         "prediction_origin": "project_replay",
         "training_identity": "MultiMolecule-converted SPOT-RNA checkpoint; not original-author distribution",
         "postprocess_identity": "threshold=0.335; registry raw arm has 5388 empty predictions; not the postprocessed arm",
@@ -8854,8 +9888,52 @@
           "macro_f1": 0.0001855976243504083,
           "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
         },
-        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
-      }
+        "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+        "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+        "label_lineage": {
+          "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+          "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+          "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+          "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+          "disposition": "circular-audit-only",
+          "independent_sota_eligible": false,
+          "historical_numeric_values_retained": true
+        },
+        "independent_sota_eligible": false,
+        "sota_use": "circular-audit-only; historical value retained; not independent SOTA"
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 0,
+          "fp": 0,
+          "fn": 127660,
+          "micro_precision": 0.0,
+          "micro_recall": 0.0,
+          "micro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "macro_f1": 0.0
+        }
+      },
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true,
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay"
     },
     {
       "prediction_id": "bpfold_official_release/bprna_new_official_reference",
@@ -8902,7 +9980,26 @@
         "macro_f1": 0.6470223791166072,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 86731,
+          "fp": 59229,
+          "fn": 40929,
+          "micro_precision": 0.5942107426692245,
+          "micro_recall": 0.6793905686981043,
+          "micro_f1": 0.6339521964768657,
+          "macro_precision": 0.6035264394448371,
+          "macro_recall": 0.7235105242193366,
+          "macro_f1": 0.6472307861307366
+        }
+      }
     },
     {
       "prediction_id": "structrfm/bprna_new",
@@ -8925,7 +10022,7 @@
       "dataset_id": "bprna_new",
       "recovery_asset_id": "structrfm_author_bprna1m_single_raw",
       "model_form": "single_model",
-      "label_protocol": "PROJECT_DATABASE_RAW_5388",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "project_replay",
       "training_identity": "Historical log names structRFM_SSP_bpRNA1m.pt, but historical weight bytes are absent; official v0.0.8 checkpoint recovered separately",
       "postprocess_identity": "frozen LM embeddings + MixedFold scorer + constrained DP; max_len=512",
@@ -8949,14 +10046,45 @@
         "macro_f1": 0.5338105702966888,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "Historical project replay retained for trace only; blocked from verified-official comparisons; raw is not clean",
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
       "official_checkpoint_link": {
         "status": "UNVERIFIED_HISTORICAL_WEIGHT_BYTES",
         "historical_weight_path": "/mnt/cunyuliu/rna-jepa/refmodels/models/structRFM_SSP_bpRNA1m.pt",
         "historical_weight_sha256": null,
         "new_official_checkpoint_sha256": "689e09e0ad3b51af19b03cb32ea3be5237384c3c9aa5716dff29989098e12145",
         "eligible_as_verified_official": false
-      }
+      },
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 64394,
+          "fp": 72086,
+          "fn": 63266,
+          "micro_precision": 0.4718200468933177,
+          "micro_recall": 0.5044179852733824,
+          "micro_f1": 0.4875747709547967,
+          "macro_precision": 0.48360628957843427,
+          "macro_recall": 0.5079596442473141,
+          "macro_f1": 0.4850647194847227
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     },
     {
       "prediction_id": "rnafm_project_frozen_encoder_crf/bprna_new",
@@ -8979,7 +10107,7 @@
       "dataset_id": "bprna_new",
       "recovery_asset_id": "rnafm_project_frozen_encoder_crf_single_raw",
       "model_form": "single_model",
-      "label_protocol": "PROJECT_DATABASE_RAW_5388",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "project_replay",
       "training_identity": "project frozen RNA-FM encoder + TR0 CRF/decision head; not official RNA-FM bpRNA ResNet checkpoint",
       "postprocess_identity": "learned Turner prior + exact max-product/Nussinov decode",
@@ -9003,7 +10131,38 @@
         "macro_f1": 0.3201747208074672,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 33333,
+          "fp": 81552,
+          "fn": 94327,
+          "micro_precision": 0.2901423162292728,
+          "micro_recall": 0.2611076296412345,
+          "micro_f1": 0.2748603351955307,
+          "macro_precision": 0.33256536070465664,
+          "macro_recall": 0.292774270389307,
+          "macro_f1": 0.30573671562544996
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     },
     {
       "prediction_id": "spot_rna_postprocessed/bprna_new",
@@ -9026,7 +10185,7 @@
       "dataset_id": "bprna_new",
       "recovery_asset_id": "spot_rna_postprocessed_single_raw",
       "model_form": "single_model",
-      "label_protocol": "PROJECT_DATABASE_RAW_5388",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "project_replay",
       "training_identity": "same converted SPOT-RNA checkpoint as registry raw; separate inference identity",
       "postprocess_identity": "threshold=0.335 plus valid-pair postprocessing; never substituted for registry raw",
@@ -9050,7 +10209,38 @@
         "macro_f1": 0.5682797332188521,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 64506,
+          "fp": 65306,
+          "fn": 63154,
+          "micro_precision": 0.49691862077465876,
+          "micro_recall": 0.505295315682281,
+          "micro_f1": 0.5010719612229679,
+          "macro_precision": 0.4960927689447126,
+          "macro_recall": 0.5279989557910899,
+          "macro_f1": 0.5016089945825697
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     },
     {
       "prediction_id": "vienna_mfe/bprna_new/recovered_v4",
@@ -9073,7 +10263,7 @@
       "dataset_id": "bprna_new",
       "recovery_asset_id": "vienna_mfe_single_raw",
       "model_form": "deterministic_single_predictor",
-      "label_protocol": "PROJECT_DATABASE_RAW_5388",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "project_replay",
       "training_identity": "not sequence-fit learned model; frozen parameters",
       "postprocess_identity": "ViennaRNA 2.7.2 MFE",
@@ -9097,7 +10287,38 @@
         "macro_f1": 0.6580838104925161,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 91296,
+          "fp": 84246,
+          "fn": 36364,
+          "micro_precision": 0.5200806644563695,
+          "micro_recall": 0.7151496161679461,
+          "micro_f1": 0.6022123864618307,
+          "macro_precision": 0.552002430809743,
+          "macro_recall": 0.720428012216507,
+          "macro_f1": 0.6167327988103345
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     },
     {
       "prediction_id": "vienna_centroid/bprna_new/recovered_v4",
@@ -9120,7 +10341,7 @@
       "dataset_id": "bprna_new",
       "recovery_asset_id": "vienna_centroid_single_raw",
       "model_form": "deterministic_single_predictor",
-      "label_protocol": "PROJECT_DATABASE_RAW_5388",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "project_replay",
       "training_identity": "not sequence-fit learned model; frozen parameters",
       "postprocess_identity": "ViennaRNA 2.7.2 centroid/BPP",
@@ -9144,7 +10365,38 @@
         "macro_f1": 0.6820727922460756,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 88553,
+          "fp": 65735,
+          "fn": 39107,
+          "micro_precision": 0.5739461267240485,
+          "micro_recall": 0.6936628544571518,
+          "micro_f1": 0.6281512903088513,
+          "macro_precision": 0.5928516029888067,
+          "macro_recall": 0.7000228889600054,
+          "macro_f1": 0.6303173654921355
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     },
     {
       "prediction_id": "vienna_mea/bprna_new/recovered_v4",
@@ -9167,7 +10419,7 @@
       "dataset_id": "bprna_new",
       "recovery_asset_id": "vienna_mea_single_raw",
       "model_form": "deterministic_single_predictor",
-      "label_protocol": "PROJECT_DATABASE_RAW_5388",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "project_replay",
       "training_identity": "not sequence-fit learned model; frozen parameters",
       "postprocess_identity": "ViennaRNA 2.7.2 MEA/BPP",
@@ -9191,7 +10443,38 @@
         "macro_f1": 0.6764248352692245,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 91052,
+          "fp": 77062,
+          "fn": 36608,
+          "micro_precision": 0.5416086703070535,
+          "micro_recall": 0.7132382892057026,
+          "micro_f1": 0.6156863010271356,
+          "macro_precision": 0.5678304289785477,
+          "macro_recall": 0.7181511429992646,
+          "macro_f1": 0.6255327478964323
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     },
     {
       "prediction_id": "contrafold/bprna_new/clean_tr1c",
@@ -9214,7 +10497,7 @@
       "dataset_id": "bprna_new",
       "recovery_asset_id": "contrafold_mea_single_clean_tr1c",
       "model_form": "deterministic_single_predictor",
-      "label_protocol": "PROJECT_TR1C_CLEAN_5386",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "project_replay",
       "training_identity": "same CONTRAfold predictor as raw; distinct label subset only",
       "postprocess_identity": "native MEA; project TR1c exclusion is not verified CONTRAfold-own-train cleaning",
@@ -9238,7 +10521,41 @@
         "macro_f1": 0.7108660734957,
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs"
       },
-      "comparability": "raw is not clean; label protocols and model forms are separate ranking columns"
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PARTIAL_COVERAGE_NOT_RANKED",
+        "coverage": 0.9996288047512992,
+        "missing_names": [
+          "FP929046.1_562024-562125.bpseq",
+          "URS0000D67ADA_12908_1-55.bpseq"
+        ],
+        "metrics": {
+          "n_scored": 5386,
+          "tp": 91820,
+          "fp": 72203,
+          "fn": 35804,
+          "micro_precision": 0.5597995403083714,
+          "micro_recall": 0.7194571553939698,
+          "micro_f1": 0.6296653145754971,
+          "macro_precision": 0.5849364396451305,
+          "macro_recall": 0.7348615625344465,
+          "macro_f1": 0.6423816171089108
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_TR1C_CLEAN_5386",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     },
     {
       "prediction_id": "structrfm_official_v0.0.8/bprna_new",
@@ -9260,7 +10577,7 @@
       "baseline_id": "structrfm",
       "dataset_id": "bprna_new",
       "model_form": "single_checkpoint_not_ensemble",
-      "label_protocol": "PROJECT_DATABASE_RAW_5388_NON_DECONTAMINATED",
+      "label_protocol": "DERIVED_FROM_BPFOLD_PREDICTIONS_PROJECTED_5388",
       "prediction_origin": "new_official_checkpoint_gpu_forward_cpu_dp",
       "training_identity": "official structRFM v0.0.8 bpRNA1m SSP checkpoint",
       "postprocess_identity": "CUDA model forward + official CPU MixedFold constrained DP; B=1; max_seq_len=512",
@@ -9281,8 +10598,40 @@
         "zero_pair_f1_convention": "F1=1 when truth and prediction both have zero pairs",
         "prediction_identity_sha256": "9ec75dab3386b9dbf2c948fb502803a186d6f970f840353c0c0c9c5ab6d937a3"
       },
-      "comparability": "verified official v0.0.8 raw replay; raw is not clean; historical blocked prediction is a separate artifact"
+      "comparability": "DERIVED_LABEL_CIRCULAR_AUDIT_ONLY; not independent SOTA; use official_reference_5388 overlay",
+      "official_reference_5388": {
+        "registry": "bprna_new_official_reference_5388_prediction_registry.json",
+        "label_dataset_id": "bpfold_official_bprna_new_reference_5388",
+        "status": "PASS_FULL_COVERAGE",
+        "coverage": 1.0,
+        "missing_names": [],
+        "metrics": {
+          "n_scored": 5388,
+          "tp": 64394,
+          "fp": 72086,
+          "fn": 63266,
+          "micro_precision": 0.4718200468933177,
+          "micro_recall": 0.5044179852733824,
+          "micro_f1": 0.4875747709547967,
+          "macro_precision": 0.48360628957843427,
+          "macro_recall": 0.5079596442473141,
+          "macro_f1": 0.4850647194847227
+        }
+      },
+      "legacy_label_protocol_before_20261127": "PROJECT_DATABASE_RAW_5388_NON_DECONTAMINATED",
+      "label_lineage": {
+        "label_source": "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "source_release": "BPfold v0.2 BPfold_test_results.tar.gz",
+        "source_release_sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073",
+        "projection": "data/ss/prepare_decision_data.py project_to_legal; drop span<=3 then greedy crossing removal",
+        "disposition": "circular-audit-only",
+        "independent_sota_eligible": false,
+        "historical_numeric_values_retained": true
+      },
+      "independent_sota_eligible": false,
+      "historical_metrics_retained": true
     }
   ],
-  "recovery_overlay": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json"
+  "recovery_overlay": "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+  "official_reference_5388_overlay": "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json"
 }
