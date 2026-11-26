@@ -22,9 +22,14 @@ SOURCES = {
     "residual": F / "gec_residual_error_audit_v1/ensemble_context_summary.json",
     "residual_verification": F / "gec_residual_error_audit_v1/verification.json",
     "residual_comparison": F / "gec_residual_error_audit_v1/comparison.json",
+    "crossover": F / "gec_frozen_context_crossover_v1/full/summary.json",
+    "crossover_verification": F / "gec_frozen_context_crossover_v1/full/independent_verification.json",
+    "ppt33_record": Path("/home/rna_jev_foldnar_integration/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round70_crossover_build_verification.json"),
+    "page34_builder": Path("/home/rna_jev_foldnar_integration/ppt/add_phase0_structured_margin_result_round71.py"),
     "nll": F / "gec_seed0_v3_requalified_v1/qualification_summary.json",
     "margin_startup": F / "structured_margin_full_v1/generation_01/startup_report_v1.json",
     "margin_authorization": F / "structured_margin_full_v1/full_authorization_v1.json",
+    "margin_scheduler": F / "structured_margin_full_v1/generation_01/scheduler_state.json",
     "margin_config": MARGIN_REPO / "configs/gec_structured_margin_convergence_v1.json",
 }
 
@@ -61,6 +66,12 @@ def verify_narrative_guards() -> list[str]:
         "不能解释成随机扰动有益",
         "不证明 pair-Hamming structured margin",
         "original_scientific_fail_unchanged=true",
+        "上下文有因果作用",
+        "真实 ensemble 一致有益",
+        "810441e7480ea06a717097c57a49130c820c9636",
+        "03f7f4e14ef906359cbd9d1b519089b6e61116f4",
+        "PPT 第 33 页",
+        "PPT 第 34 页",
         "margin_superior_to_nll_claim_allowed=false",
         "完成臂 0",
         "scientific_conclusion=null",
@@ -73,7 +84,7 @@ def verify_numbers() -> list[str]:
     errors = []
     if missing_sources():
         return [f"missing JSON source: {item}" for item in missing_sources()]
-    data = {name: json.loads(path.read_text()) for name, path in SOURCES.items()}
+    data = {name: None if name == "page34_builder" else json.loads(path.read_text()) for name, path in SOURCES.items()}
     text = DOC.read_text()
     checks = []
 
@@ -128,6 +139,40 @@ def verify_numbers() -> list[str]:
     check("residual verification", pointer(data["residual_verification"], "status"), "PASS")
     check("residual failure unchanged", pointer(data["residual_comparison"], "independent_seed0_failure_remains"), True)
 
+    check("crossover commit", pointer(data["crossover"], "git_commit"), "810441e7480ea06a717097c57a49130c820c9636")
+    check("crossover status", pointer(data["crossover"], "status"), "COMPLETE")
+    check("crossover records", pointer(data["crossover"], "record_count"), 9143)
+    check("crossover combinations", len(pointer(data["crossover"], "artifacts")), 16)
+    check("crossover GEC pass", pointer(data["crossover"], "gec_pass_claim"), False)
+    check("crossover seeds closed", pointer(data["crossover"], "seeds_1_2_authorized"), False)
+    for context, expected, snippet in [
+        ("ensemble_context", 0.6812310470423341, "0.6812310470"),
+        ("matched_control", 0.6993017226005002, "0.6993017226"),
+        ("destroy_interval_shuffle", 0.6871289606495534, "0.6871289606"),
+    ]:
+        check(f"crossover ensemble model {context} input", pointer(data["crossover"], f"metrics/ensemble_context__{context}/micro_pair_f1"), expected, snippet)
+    for arm, expected, snippet in [
+        ("matched_control", -0.10410194955059948, "−0.1041019496"),
+        ("ensemble_context", -0.1932951913581875, "−0.1932951914"),
+        ("destroy_interval_shuffle", -0.28977659820091917, "−0.2897765982"),
+    ]:
+        path = f"comparisons/{arm}/each_context_s1_minus_matched_s1/independent_context/micro_pair_f1"
+        check(f"crossover {arm} independent delta", pointer(data["crossover"], path), expected, snippet)
+        check(f"crossover verification {arm} independent delta", pointer(data["crossover_verification"], path), expected)
+        check(f"crossover native {arm}", pointer(data["crossover"], f"native_prediction_validation/{arm}/pass"), True)
+        check(f"crossover native {arm} records", pointer(data["crossover"], f"native_prediction_validation/{arm}/matched_records"), 9143)
+    check("crossover native independent", pointer(data["crossover"], "native_prediction_validation/independent_context/pass"), True)
+    check("crossover verification status", pointer(data["crossover_verification"], "status"), "PASS")
+    check("crossover raw recomputation", pointer(data["crossover_verification"], "independent_raw_truth_recomputation"), True)
+    check("crossover no official aggregate", pointer(data["crossover_verification"], "official_aggregate_read"), False)
+    check("PPT33 page", pointer(data["ppt33_record"], "added_slide_number"), 33)
+    check("PPT33 crossover commit", pointer(data["ppt33_record"], "crossover_commit"), "810441e7480ea06a717097c57a49130c820c9636")
+    check("PPT33 native value", pointer(data["ppt33_record"], "source_values/ensemble_model_micro_pair_f1_by_input/ensemble_context"), 0.6812310470423341)
+    page34 = SOURCES["page34_builder"].read_text()
+    for required in ["final hash-verified four-arm evaluation", "34 · FOLDNAR PHASE 1 / STRUCTURED MARGIN FOUR-ARM VERDICT", "added_slide_number"]:
+        if required not in page34:
+            errors.append(f"PPT34 builder lacks final-evidence guard: {required}")
+
     check("NLL qualification", pointer(data["nll"], "qualification_pass"), True)
     check("NLL final commit", pointer(data["nll"], "code_identity/final_head"), "ecc40d3a8ec545bf332199a935e6380b718d415b")
     check("NLL science unchanged", pointer(data["nll"], "reference_use/original_scientific_fail_unchanged"), True)
@@ -143,6 +188,12 @@ def verify_numbers() -> list[str]:
     check("margin no completed arms", pointer(data["margin_startup"], "scheduler_state/completed_arms"), [], "完成臂 0")
     check("margin no conclusion at startup", pointer(data["margin_startup"], "scientific_conclusion"), None)
     check("margin no authorized conclusion", pointer(data["margin_authorization"], "scientific_conclusion"), None)
+    check("margin latest scheduler status", pointer(data["margin_scheduler"], "status"), "QUEUED_ARM_MEMORY")
+    check("margin latest completed arms", pointer(data["margin_scheduler"], "completed_arms"), [], "完成臂仍为 0")
+    check("margin latest remaining arms", pointer(data["margin_scheduler"], "remaining_arms"), ["destroy_interval_shuffle", "independent_context"])
+    check("margin latest conclusion", pointer(data["margin_scheduler"], "scientific_conclusion"), None)
+    for arm in ["matched_control", "ensemble_context"]:
+        check(f"margin latest {arm} running", pointer(data["margin_scheduler"], f"processes/{arm}/status"), "running")
     check("margin code", pointer(data["margin_authorization"], "code_commit"), "a846d90519e575a79b7db76f63692afb755e8ac6")
     check("margin NLL reference", pointer(data["margin_authorization"], "historical_nll_status"), "QUALIFIED_STRUCTURE_REFERENCE")
     check("margin arms", pointer(data["margin_config"], "arms"), ["matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context"])
