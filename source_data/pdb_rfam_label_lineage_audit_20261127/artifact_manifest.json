@@ -1,0 +1,22 @@
+{
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "files": {
+    "panel_summary.json": {
+      "bytes": 17949,
+      "sha256": "89ab7fc8382853e2e87e937c6370beafdb12eee7d7a812a24b5f72448de1a19e"
+    },
+    "recompute_sets.json": {
+      "bytes": 487775,
+      "sha256": "b00a84bd0df4a1bc7f4b1c31719b1966f865cfa332d40f1caf5847df07e2ef8b"
+    },
+    "record_audit.jsonl.gz": {
+      "bytes": 1387045,
+      "sha256": "a3fe60e0178d1831919e9c53903f9d8b33ebb17357e56077c2f66bd2352d4c2b"
+    },
+    "report.md": {
+      "bytes": 1853,
+      "sha256": "0b469e3187d54d61cc7635ba0b40f67f4d00e3c7860bf1848369519edc21d801"
+    }
+  },
+  "schema_version": "foldnar.pdb_rfam_label_lineage.v1"
+}

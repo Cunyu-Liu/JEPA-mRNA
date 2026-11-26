@@ -1,0 +1,460 @@
+{
+  "base_commit": "bf463ccb4b5d0a8da2a2d2fed1696fbf63a8809c",
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "model_outcomes_used": false,
+  "negative_label_policy": {
+    "missing_observation_map": "UNCHECKED; dots are not accepted as experimental negatives",
+    "observed_unpaired": "eligible only after sequence-coordinate and pair-provenance checks",
+    "unobserved": "must be masked, never a negative label"
+  },
+  "official_sources": {
+    "rfam14_9": {
+      "file": {
+        "bytes": 180119223,
+        "path": "/teams/HoulabData_1788502323/liucunyu/rinalmo_pretrain_audit/raw/Rfam.fa.gz",
+        "sha256": "5909e198df80a0febf6a62cbe128654a2b6ffffafda9b77f258fd4557009cc5c"
+      },
+      "pair_lineage": "UNCHECKED",
+      "release": "14.9",
+      "status": "EXACT_SEQUENCE_AUDIT_ONLY",
+      "url": "https://ftp.ebi.ac.uk/pub/databases/Rfam/14.9/fasta_files/Rfam.fa.gz"
+    },
+    "rfam15_0": {
+      "status": "UNCHECKED"
+    }
+  },
+  "panels": {
+    "ref_pdb_ts1": {
+      "cross_panel_exact_sequence_overlap_records": 22,
+      "dataset": "ref_pdb_ts1",
+      "declared_filtering": {
+        "min_loop_policy": "drop",
+        "n_records_containing_pseudoknot": 3,
+        "n_records_with_drops": 25,
+        "pseudoknot_policy": "drop",
+        "raw_annotation_stats": {
+          "dropped_multiplet_pairs": 19,
+          "dropped_noncanonical_pairs": 274,
+          "dropped_pseudoknot_pairs": 470,
+          "multiplet_positions": 19,
+          "structure_crosscheck_skipped_filtered": 64
+        },
+        "reject_reasons": {
+          "bad_alphabet": 4
+        },
+        "source_kind": "ref_plk"
+      },
+      "declared_source": {
+        "file": "/mnt/cunyuliu/rna-jepa/refmodels/datasets/test_sets.plk",
+        "multiplet_policy": "drop",
+        "pair_type_policy": "canonical-drop",
+        "pseudoknot_source": "pk",
+        "set": "pdb_ts1",
+        "sha256": "12000d35e6a0501838587a8eabb47e75572f56da8460b3ee98c51836e8aa9181",
+        "structure_crosscheck": "report"
+      },
+      "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+      "file": {
+        "bytes": 35775,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts1.jsonl",
+        "sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a"
+      },
+      "identity_checks": {
+        "count_match": true,
+        "expected_n": 63,
+        "expected_sha256": "16a6961786f63fa5cd64c790df33f945a66d8ef2175bea8828d9211c334b176a",
+        "manifest_sha256_match": true,
+        "registry_sha256_match": true
+      },
+      "internal_projection_failures": 0,
+      "label_lineage": {
+        "atom_site_crosscheck": "UNCHECKED",
+        "filtered_projection": true,
+        "observation_mask": "UNCHECKED",
+        "per_record_experimental_lineage": "UNCHECKED",
+        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "raw_pair_lineage": "UNCHECKED",
+        "registry_label_source": "EXPERIMENTAL"
+      },
+      "n_dropped_crossing": 4,
+      "n_dropped_illegal": 34,
+      "n_pairs": 1345,
+      "n_records": 63,
+      "n_unique_ids": 63,
+      "n_unique_sequences": 63,
+      "qualification": {
+        "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
+        "internal_projected_pair_audit": "QUALIFIED_AFTER_VERIFIER_PASS",
+        "model_selection": "FORBIDDEN",
+        "reason_codes": [
+          "FILTERED_CANONICAL_NESTED_PROJECTION",
+          "RAW_PAIR_LINEAGE_UNCHECKED",
+          "PDB_ENTITY_CHAIN_MAP_UNCHECKED",
+          "MMCIF_DSSR_ATOM_SITE_CROSSCHECK_UNCHECKED",
+          "CROSS_PANEL_EXACT_SEQUENCE_OVERLAP"
+        ]
+      },
+      "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "tr1c_exact_sequence_overlap_records": 0
+    },
+    "ref_pdb_ts2": {
+      "cross_panel_exact_sequence_overlap_records": 1,
+      "dataset": "ref_pdb_ts2",
+      "declared_filtering": {
+        "min_loop_policy": "drop",
+        "n_records_containing_pseudoknot": 0,
+        "n_records_with_drops": 18,
+        "pseudoknot_policy": "drop",
+        "raw_annotation_stats": {
+          "dropped_multiplet_pairs": 2,
+          "dropped_noncanonical_pairs": 124,
+          "dropped_pseudoknot_pairs": 104,
+          "multiplet_positions": 2,
+          "structure_crosscheck_skipped_filtered": 38
+        },
+        "reject_reasons": {},
+        "source_kind": "ref_plk"
+      },
+      "declared_source": {
+        "file": "/mnt/cunyuliu/rna-jepa/refmodels/datasets/test_sets.plk",
+        "multiplet_policy": "drop",
+        "pair_type_policy": "canonical-drop",
+        "pseudoknot_source": "pk",
+        "set": "pdb_ts2",
+        "sha256": "12000d35e6a0501838587a8eabb47e75572f56da8460b3ee98c51836e8aa9181",
+        "structure_crosscheck": "report"
+      },
+      "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+      "file": {
+        "bytes": 18381,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts2.jsonl",
+        "sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d"
+      },
+      "identity_checks": {
+        "count_match": true,
+        "expected_n": 39,
+        "expected_sha256": "26e888eda6e8c10786f2fc3ac7cfc10e385035af270796d8e50ce1f516d6ed9d",
+        "manifest_sha256_match": true,
+        "registry_sha256_match": true
+      },
+      "internal_projection_failures": 0,
+      "label_lineage": {
+        "atom_site_crosscheck": "UNCHECKED",
+        "filtered_projection": true,
+        "observation_mask": "UNCHECKED",
+        "per_record_experimental_lineage": "UNCHECKED",
+        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "raw_pair_lineage": "UNCHECKED",
+        "registry_label_source": "EXPERIMENTAL"
+      },
+      "n_dropped_crossing": 0,
+      "n_dropped_illegal": 19,
+      "n_pairs": 655,
+      "n_records": 39,
+      "n_unique_ids": 39,
+      "n_unique_sequences": 39,
+      "qualification": {
+        "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
+        "internal_projected_pair_audit": "QUALIFIED_AFTER_VERIFIER_PASS",
+        "model_selection": "FORBIDDEN",
+        "reason_codes": [
+          "FILTERED_CANONICAL_NESTED_PROJECTION",
+          "RAW_PAIR_LINEAGE_UNCHECKED",
+          "PDB_ENTITY_CHAIN_MAP_UNCHECKED",
+          "MMCIF_DSSR_ATOM_SITE_CROSSCHECK_UNCHECKED",
+          "CROSS_PANEL_EXACT_SEQUENCE_OVERLAP"
+        ]
+      },
+      "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "tr1c_exact_sequence_overlap_records": 0
+    },
+    "ref_pdb_ts3": {
+      "cross_panel_exact_sequence_overlap_records": 11,
+      "dataset": "ref_pdb_ts3",
+      "declared_filtering": {
+        "min_loop_policy": "drop",
+        "n_records_containing_pseudoknot": 3,
+        "n_records_with_drops": 9,
+        "pseudoknot_policy": "drop",
+        "raw_annotation_stats": {
+          "dropped_multiplet_pairs": 6,
+          "dropped_noncanonical_pairs": 93,
+          "dropped_pseudoknot_pairs": 111,
+          "multiplet_positions": 6,
+          "structure_crosscheck_skipped_filtered": 18
+        },
+        "reject_reasons": {},
+        "source_kind": "ref_plk"
+      },
+      "declared_source": {
+        "file": "/mnt/cunyuliu/rna-jepa/refmodels/datasets/test_sets.plk",
+        "multiplet_policy": "drop",
+        "pair_type_policy": "canonical-drop",
+        "pseudoknot_source": "pk",
+        "set": "pdb_ts3",
+        "sha256": "12000d35e6a0501838587a8eabb47e75572f56da8460b3ee98c51836e8aa9181",
+        "structure_crosscheck": "report"
+      },
+      "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+      "file": {
+        "bytes": 11055,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts3.jsonl",
+        "sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a"
+      },
+      "identity_checks": {
+        "count_match": true,
+        "expected_n": 19,
+        "expected_sha256": "0224d61efe30cf18e9eb072a7bc6d2f3ca07663c7ae7e27e0a32c4977e0bde6a",
+        "manifest_sha256_match": true,
+        "registry_sha256_match": true
+      },
+      "internal_projection_failures": 0,
+      "label_lineage": {
+        "atom_site_crosscheck": "UNCHECKED",
+        "filtered_projection": true,
+        "observation_mask": "UNCHECKED",
+        "per_record_experimental_lineage": "UNCHECKED",
+        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "raw_pair_lineage": "UNCHECKED",
+        "registry_label_source": "EXPERIMENTAL"
+      },
+      "n_dropped_crossing": 5,
+      "n_dropped_illegal": 13,
+      "n_pairs": 417,
+      "n_records": 19,
+      "n_unique_ids": 19,
+      "n_unique_sequences": 19,
+      "qualification": {
+        "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
+        "internal_projected_pair_audit": "QUALIFIED_AFTER_VERIFIER_PASS",
+        "model_selection": "FORBIDDEN",
+        "reason_codes": [
+          "FILTERED_CANONICAL_NESTED_PROJECTION",
+          "RAW_PAIR_LINEAGE_UNCHECKED",
+          "PDB_ENTITY_CHAIN_MAP_UNCHECKED",
+          "MMCIF_DSSR_ATOM_SITE_CROSSCHECK_UNCHECKED",
+          "CROSS_PANEL_EXACT_SEQUENCE_OVERLAP"
+        ]
+      },
+      "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "tr1c_exact_sequence_overlap_records": 0
+    },
+    "ref_pdb_ts_hard": {
+      "cross_panel_exact_sequence_overlap_records": 28,
+      "dataset": "ref_pdb_ts_hard",
+      "declared_filtering": {
+        "min_loop_policy": "drop",
+        "n_records_containing_pseudoknot": 0,
+        "n_records_with_drops": 11,
+        "pseudoknot_policy": "drop",
+        "raw_annotation_stats": {
+          "dropped_multiplet_pairs": 6,
+          "dropped_noncanonical_pairs": 90,
+          "dropped_pseudoknot_pairs": 157,
+          "multiplet_positions": 6,
+          "structure_crosscheck_skipped_filtered": 24
+        },
+        "reject_reasons": {},
+        "source_kind": "ref_plk"
+      },
+      "declared_source": {
+        "file": "/mnt/cunyuliu/rna-jepa/refmodels/datasets/test_sets.plk",
+        "multiplet_policy": "drop",
+        "pair_type_policy": "canonical-drop",
+        "pseudoknot_source": "pk",
+        "set": "pdb_ts_hard",
+        "sha256": "12000d35e6a0501838587a8eabb47e75572f56da8460b3ee98c51836e8aa9181",
+        "structure_crosscheck": "report"
+      },
+      "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+      "file": {
+        "bytes": 14372,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/ref_pdb_ts_hard.jsonl",
+        "sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806"
+      },
+      "identity_checks": {
+        "count_match": true,
+        "expected_n": 28,
+        "expected_sha256": "486b4bc0b3dfea87861b513790483d85c1cb986625711e967d12afedc8c5c806",
+        "manifest_sha256_match": true,
+        "registry_sha256_match": true
+      },
+      "internal_projection_failures": 0,
+      "label_lineage": {
+        "atom_site_crosscheck": "UNCHECKED",
+        "filtered_projection": true,
+        "observation_mask": "UNCHECKED",
+        "per_record_experimental_lineage": "UNCHECKED",
+        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "raw_pair_lineage": "UNCHECKED",
+        "registry_label_source": "EXPERIMENTAL"
+      },
+      "n_dropped_crossing": 0,
+      "n_dropped_illegal": 16,
+      "n_pairs": 475,
+      "n_records": 28,
+      "n_unique_ids": 28,
+      "n_unique_sequences": 28,
+      "qualification": {
+        "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
+        "internal_projected_pair_audit": "QUALIFIED_AFTER_VERIFIER_PASS",
+        "model_selection": "FORBIDDEN",
+        "reason_codes": [
+          "FILTERED_CANONICAL_NESTED_PROJECTION",
+          "RAW_PAIR_LINEAGE_UNCHECKED",
+          "PDB_ENTITY_CHAIN_MAP_UNCHECKED",
+          "MMCIF_DSSR_ATOM_SITE_CROSSCHECK_UNCHECKED",
+          "CROSS_PANEL_EXACT_SEQUENCE_OVERLAP"
+        ]
+      },
+      "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "tr1c_exact_sequence_overlap_records": 0
+    },
+    "rfam_fam": {
+      "cross_panel_exact_sequence_overlap_records": 5,
+      "dataset": "rfam_fam",
+      "declared_filtering": {
+        "min_loop_policy": "drop",
+        "n_records_containing_pseudoknot": 3943,
+        "n_records_with_drops": 4194,
+        "pseudoknot_policy": "drop",
+        "raw_annotation_stats": null,
+        "reject_reasons": {
+          "partner_asymmetric": 1
+        },
+        "source_kind": "bpseq"
+      },
+      "declared_source": {
+        "directory": "/mnt/cunyuliu/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results/Rfam12.3-14.10",
+        "n_files": 10791,
+        "names_sha256": "8939394de060c29ab30b7049c88b573e0d235cfee4f6b50dee472dde2b376313",
+        "pattern": ".bpseq"
+      },
+      "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+      "file": {
+        "bytes": 7864835,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/rfam_fam.jsonl",
+        "sha256": "569b3fe999e1a4fc494cfd48d78c7c30bb0ead93c7f9969b7e85708bf033b067"
+      },
+      "identity_checks": {
+        "count_match": true,
+        "expected_n": 10790,
+        "expected_sha256": "569b3fe999e1a4fc494cfd48d78c7c30bb0ead93c7f9969b7e85708bf033b067",
+        "manifest_sha256_match": true,
+        "registry_sha256_match": true
+      },
+      "internal_projection_failures": 0,
+      "label_lineage": {
+        "atom_site_crosscheck": "UNCHECKED",
+        "filtered_projection": true,
+        "observation_mask": "UNCHECKED",
+        "per_record_experimental_lineage": "UNCHECKED",
+        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "raw_pair_lineage": "UNCHECKED",
+        "registry_label_source": "COMPARATIVE_INFERRED"
+      },
+      "n_dropped_crossing": 16820,
+      "n_dropped_illegal": 415,
+      "n_pairs": 289845,
+      "n_records": 10790,
+      "n_unique_ids": 10790,
+      "n_unique_sequences": 10790,
+      "official_rfam14_9_exact_sequence_records": 10223,
+      "official_rfam15_0_status_counts": {
+        "UNCHECKED": 10790
+      },
+      "qualification": {
+        "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
+        "internal_projected_pair_audit": "QUALIFIED_AFTER_VERIFIER_PASS",
+        "model_selection": "FORBIDDEN",
+        "reason_codes": [
+          "FILTERED_CANONICAL_NESTED_PROJECTION",
+          "RAW_PAIR_LINEAGE_UNCHECKED",
+          "FAMILY_INDEPENDENCE_NOT_ESTABLISHED",
+          "CROSS_PANEL_EXACT_SEQUENCE_OVERLAP",
+          "TR1C_EXACT_SEQUENCE_OVERLAP"
+        ]
+      },
+      "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "tr1c_exact_sequence_overlap_records": 284
+    },
+    "rfam_temporal": {
+      "cross_panel_exact_sequence_overlap_records": 2,
+      "dataset": "rfam_temporal",
+      "declared_filtering": {
+        "min_loop_policy": "drop",
+        "n_records_containing_pseudoknot": 39,
+        "n_records_with_drops": 40,
+        "pseudoknot_policy": "drop",
+        "raw_annotation_stats": null,
+        "reject_reasons": {},
+        "source_kind": "bpseq"
+      },
+      "declared_source": {
+        "directory": "/mnt/cunyuliu/rna_ss_data/bpfold/BPfold_test_results/BPfold_test_results/Rfam14.10-15.0",
+        "n_files": 436,
+        "names_sha256": "9b72bbbedfc544f5025a1d7274063b2568070aa2e62594aad2432db61240c089",
+        "pattern": ".bpseq"
+      },
+      "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+      "file": {
+        "bytes": 282089,
+        "path": "/root/rna_jepa_data/ss_data/jsonl/rfam_temporal.jsonl",
+        "sha256": "ae3757667ac2ee49244fef9b03cd01f38d1cb61f4550a87a9365e75f7c62694e"
+      },
+      "identity_checks": {
+        "count_match": true,
+        "expected_n": 436,
+        "expected_sha256": "ae3757667ac2ee49244fef9b03cd01f38d1cb61f4550a87a9365e75f7c62694e",
+        "manifest_sha256_match": true,
+        "registry_sha256_match": true
+      },
+      "internal_projection_failures": 0,
+      "label_lineage": {
+        "atom_site_crosscheck": "UNCHECKED",
+        "filtered_projection": true,
+        "observation_mask": "UNCHECKED",
+        "per_record_experimental_lineage": "UNCHECKED",
+        "prediction_derived_labels": "NOT_ESTABLISHED",
+        "raw_pair_lineage": "UNCHECKED",
+        "registry_label_source": "COMPARATIVE_INFERRED"
+      },
+      "n_dropped_crossing": 123,
+      "n_dropped_illegal": 1,
+      "n_pairs": 10979,
+      "n_records": 436,
+      "n_unique_ids": 436,
+      "n_unique_sequences": 436,
+      "official_rfam14_9_exact_sequence_records": 43,
+      "official_rfam15_0_status_counts": {
+        "UNCHECKED": 436
+      },
+      "qualification": {
+        "independent_experimental_or_official_label_evaluation": "NOT_QUALIFIED",
+        "internal_projected_pair_audit": "QUALIFIED_AFTER_VERIFIER_PASS",
+        "model_selection": "FORBIDDEN",
+        "reason_codes": [
+          "FILTERED_CANONICAL_NESTED_PROJECTION",
+          "RAW_PAIR_LINEAGE_UNCHECKED",
+          "TEMPORAL_FIRST_RELEASE_UNCHECKED",
+          "CROSS_PANEL_EXACT_SEQUENCE_OVERLAP",
+          "TR1C_EXACT_SEQUENCE_OVERLAP"
+        ]
+      },
+      "source_asset_availability": "DECLARED_PATH_NOT_PRESENT_IN_CURRENT_ENVIRONMENT",
+      "tr1c_exact_sequence_overlap_records": 33
+    }
+  },
+  "registry_identity": {
+    "path": "manifests/foldnar_v1/data_registry.json",
+    "sha256": "fa6af42420bf21484bc43b2ceaf46c6c2813de2e2d515f857b9f4dc3ef34a14c"
+  },
+  "related_temporal_pdb_collection": {
+    "reason": "Existing collection has entry errors; full-polymer strings lack an evaluation observation mask and atom_site crosscheck remains UNCHECKED",
+    "required_recompute": "Rebuild coordinate-observed sequences or freeze an unobserved-residue mask before any pair evaluation",
+    "status": "NOT_QUALIFIED"
+  },
+  "schema_version": "foldnar.pdb_rfam_label_lineage.v1",
+  "scope": "Six registered external-test panels; audit only, no model outcomes and no model selection",
+  "shared_registry_modified": false
+}
