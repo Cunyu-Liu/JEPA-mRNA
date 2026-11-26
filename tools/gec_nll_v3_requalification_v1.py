@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import platform
 import subprocess
@@ -193,7 +194,9 @@ def audit_historical_code(run_identity: dict, launcher: dict) -> dict:
                   actual["bytes"] == recorded["bytes"] and actual["sha256"] == recorded["sha256"])
         except OSError as error:
             check(checks, f"file:{relative}", False, str(error))
-    check(checks, "manifest_digest", run_identity.get("code_manifest_sha256") == canonical_hash(manifest))
+    check(checks, "manifest_digest", run_identity.get("code_manifest_sha256") == hashlib.sha256(
+        json.dumps(manifest, sort_keys=True).encode()
+    ).hexdigest())
     check(checks, "launcher_status", launcher.get("status") == "exported" and launcher.get("returncode") == 0)
     check(checks, "launcher_arm", "--arm" in command and command[command.index("--arm") + 1] == run_identity.get("arm"))
     check(checks, "launcher_seed_zero", "--seed" in command and command[command.index("--seed") + 1] == "0")
@@ -246,7 +249,6 @@ def run(repo: Path, artifact_root: Path, output_root: Path) -> dict:
         prediction_export = audit_prediction_export(
             arm_dir, arm, checkpoint["best_checkpoint"]["sha256"], sha256(prediction_path), len(frozen),
         )
-        dev_ids = (arm_dir / "dev_predictions.jsonl",)
         expected_validation_ids = set(Path(config["assets"]["validation_ids"]).read_text().splitlines())
         data_checks = {}
         check(data_checks, "run_meta_validation_ids_exact",

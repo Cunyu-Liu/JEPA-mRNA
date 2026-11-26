@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib.util
 import json
 import sys
@@ -132,3 +133,23 @@ def test_source_identity_recheck_detects_mutation(tmp_path):
     assert R.unchanged_identities(inputs)
     path.write_text("{\"changed\":true}")
     assert not R.unchanged_identities(inputs)
+
+
+def test_historical_manifest_digest_matches_training_implementation(tmp_path):
+    script = tmp_path / "tools/train_plan_a_gec_convergence_v1.py"
+    script.parent.mkdir()
+    script.write_text("historical code")
+    manifest = {"tools/train_plan_a_gec_convergence_v1.py": {
+        "bytes": script.stat().st_size, "sha256": R.sha256(script),
+    }}
+    identity = {"arm": "matched_control", "code_manifest": manifest,
+                "code_manifest_sha256": hashlib.sha256(
+                    json.dumps(manifest, sort_keys=True).encode()
+                ).hexdigest()}
+    launcher = {"command": ["python", str(script), "--arm", "matched_control", "--seed", "0"],
+                "status": "exported", "returncode": 0}
+    result = R.audit_historical_code(identity, launcher)
+    assert result["pass"], result["checks"]
+    identity["code_manifest_sha256"] = R.canonical_hash(manifest)
+    result = R.audit_historical_code(identity, launcher)
+    assert not result["pass"] and not result["checks"]["manifest_digest"]["pass"]
