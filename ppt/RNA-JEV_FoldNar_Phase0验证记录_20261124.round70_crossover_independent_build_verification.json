@@ -1,0 +1,22 @@
+{
+  "status": "PASS_INDEPENDENT_CLEAN_BUILD_ALL_ZIP_PARTS_IDENTICAL",
+  "primary_deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/crossover_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "independent_deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/independent_build/independent_crossover_round70.pptx",
+  "primary_sha256": "89d2aee9c83ace55385eaf1bfc6f619ff3422168f99f9152fe232c4ccb0524d0",
+  "independent_sha256": "87a487b7a5957a6e5e6db29393d83a5c23089188605c559704dcf2768ff4ba11",
+  "source_deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/crossover_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round70_crossover.pptx",
+  "source_sha256_before_and_after": "b8f8c4da1f1e7d33e9ed70f14307b4b94f0af53806b4a52582c4cb97bbaafc55",
+  "source_unchanged": true,
+  "primary_unchanged": true,
+  "zip_parts_compared": 64,
+  "missing_parts": [],
+  "extra_parts": [],
+  "different_parts": [],
+  "slide_count": 14,
+  "prior_slide_xml_preserved": 13,
+  "scientific_status": "CONTEXT_CAUSAL_BUT_REAL_ENSEMBLE_NOT_UNIFORMLY_OPTIMAL_MODEL_DEV_ONLY",
+  "summary_sha256": "5d1984e9271e190cbc83c79d3c87f6571580fefc3ae84e0bbec5cca7db3fefd7",
+  "independent_verification_sha256": "06322b53c93d6e5428b347176443e48a0b4ce0416c0ebc0b0c28557c58808054",
+  "base_commit": "b6f4d9c6452f302861ff0832e284de3512ac3bc1",
+  "crossover_commit": "810441e7480ea06a717097c57a49130c820c9636"
+}

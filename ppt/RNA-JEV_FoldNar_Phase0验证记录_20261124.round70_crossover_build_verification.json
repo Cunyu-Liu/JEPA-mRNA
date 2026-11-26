@@ -1,0 +1,63 @@
+{
+  "status": "PASS_BUILD_REOPEN_13_PRIOR_XML_ATOMIC_REPLACE_SOURCE_TEXT_AND_SHAPE_BOUNDS",
+  "scientific_status": "CONTEXT_CAUSAL_BUT_REAL_ENSEMBLE_NOT_UNIFORMLY_OPTIMAL_MODEL_DEV_ONLY",
+  "deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/crossover_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx",
+  "deck_sha256": "89d2aee9c83ace55385eaf1bfc6f619ff3422168f99f9152fe232c4ccb0524d0",
+  "deck_bytes": 73705,
+  "backup": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/crossover_record/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pre_round70_crossover.pptx",
+  "backup_sha256": "b8f8c4da1f1e7d33e9ed70f14307b4b94f0af53806b4a52582c4cb97bbaafc55",
+  "builder": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/crossover_record/ppt/add_phase0_gec_context_crossover_round70.py",
+  "builder_sha256": "ff6d301fc0aa1d56d66cf17bba61d98261404113e16e5675009490579ccbdf68",
+  "base_commit": "b6f4d9c6452f302861ff0832e284de3512ac3bc1",
+  "crossover_commit": "810441e7480ea06a717097c57a49130c820c9636",
+  "sources": {
+    "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/full/summary.json": {
+      "sha256": "5d1984e9271e190cbc83c79d3c87f6571580fefc3ae84e0bbec5cca7db3fefd7",
+      "bytes": 158568
+    },
+    "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round70_work/full/independent_verification.json": {
+      "sha256": "06322b53c93d6e5428b347176443e48a0b4ce0416c0ebc0b0c28557c58808054",
+      "bytes": 137270
+    }
+  },
+  "source_values": {
+    "record_count": 9143,
+    "combination_count": 16,
+    "ensemble_model_micro_pair_f1_by_input": {
+      "matched_control": 0.6993017226005002,
+      "ensemble_context": 0.6812310470423341,
+      "destroy_interval_shuffle": 0.6871289606495534
+    },
+    "independent_minus_matched_micro_pair_f1": {
+      "matched_control": -0.10410194955059948,
+      "ensemble_context": -0.1932951913581875,
+      "destroy_interval_shuffle": -0.28977659820091917
+    },
+    "native_s1_minus_shared_s0_micro_pair_f1": {
+      "matched_control": 0.010192200405064189,
+      "ensemble_context": 0.0015191724417250585,
+      "destroy_interval_shuffle": 0.0012056775895332716
+    },
+    "native_prediction_validated_records_per_arm": 9143,
+    "native_prediction_validation_arms": [
+      "matched_control",
+      "ensemble_context",
+      "destroy_interval_shuffle",
+      "independent_context"
+    ],
+    "scientific_scope": "single_seed0_cluster_dev_frozen_causal_diagnostic_only",
+    "gec_pass_claim": false,
+    "sota_claim": false,
+    "representation_solved_claim": false,
+    "decoder_search_allowed": false,
+    "seeds_1_2_allowed": false,
+    "next_hypothesis": "structured margin; this slide is not margin efficacy evidence"
+  },
+  "slide_count": 14,
+  "deck_slide_index": 14,
+  "added_slide_number": 33,
+  "prior_slide_xml_preserved": 13,
+  "atomic_replace": true,
+  "shape_bounds_checks": 43,
+  "render_visual_check": "PENDING_SEPARATE_LIBREOFFICE_RENDER_OCR_AND_IMAGE_REVIEW"
+}
