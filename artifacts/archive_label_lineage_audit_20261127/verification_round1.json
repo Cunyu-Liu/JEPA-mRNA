@@ -1,0 +1,21 @@
+{
+  "base_commit": "bf463ccb4b5d0a8da2a2d2fed1696fbf63a8809c",
+  "deterministic_files": {
+    "prediction_recompute.json": "b4e12b6ce57a797bdd103d3cb006a07f4deadaa62f8f97bb7c78d569c73cf023",
+    "records.jsonl.gz": "a8f3157d721fa528ce81845684a44fcac89a06be607bca9ab07133c12943ac65",
+    "summary.json": "c10d3bc2dee1fc93c5dbfb6207a0806d7e1fbeca99f69478b91eea0f15cc4581",
+    "training_overlap.jsonl.gz": "38f9176902d9fcddc288a1fecc6f30e423a5b5ad66e547506860f5ac90737107"
+  },
+  "deterministic_rebuild": true,
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "schema_version": "archive_label_lineage.verification.round1.v1",
+  "shared_registry_diff": "EMPTY",
+  "status": "PASS",
+  "unit_tests": {
+    "command": "/root/miniconda3/envs/lucaone_cu128/bin/python -m pytest -q tests/test_archive_label_lineage_audit_20261127.py",
+    "failed": 0,
+    "passed": 8
+  }
+}

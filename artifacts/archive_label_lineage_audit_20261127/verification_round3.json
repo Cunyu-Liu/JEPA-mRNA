@@ -1,0 +1,35 @@
+{
+  "build_output_tail": "{\"datasets\": {\"archiveii_embok_clean\": {\"EXACT_DERIVED_FROM_BPFOLD_PREDICTION_PROJECTION\": 2544, \"FILTERED_OUT_OF_CLEAN_SUBSET_UNCHECKED_RULE\": 1422, \"project_empty\": 0, \"reference_empty_in_project\": 4, \"sequence_mismatch_lineage\": 0, \"sequence_mismatch_reference\": 0, \"unfiltered_reference_equal\": 181}, \"bprna_ts0\": {\"EXACT_DERIVED_FROM_REFERENCE_PROJECTION\": 1288, \"PROJECT_REJECTED_BAD_ALPHABET\": 17, \"project_empty\": 0, \"reference_empty_in_project\": 0, \"sequence_mismatch_lineage\": 0, \"sequence_mismatch_reference\": 0, \"unfiltered_reference_equal\": 1243}, \"testsetb\": {\"EXACT_DERIVED_FROM_REFERENCE_PROJECTION\": 428, \"PROJECT_REJECTED_BAD_ALPHABET\": 2, \"project_empty\": 0, \"reference_empty_in_project\": 0, \"sequence_mismatch_lineage\": 0, \"sequence_mismatch_reference\": 0, \"unfiltered_reference_equal\": 353}}, \"prediction_actions\": {\"archiveii_embok_clean\": {\"action_counts\": {\"BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED\": 12, \"BLOCKED_REGISTERED_PREDICTION_MISSING\": 3, \"RESCORE_FROZEN_RECORD_LEVEL_PREDICTIONS\": 17}, \"registered_prediction_identities\": 32, \"sha_mismatches\": []}, \"bprna_ts0\": {\"action_counts\": {\"BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED\": 12, \"BLOCKED_REGISTERED_PREDICTION_MISSING\": 2, \"RESCORE_FROZEN_RECORD_LEVEL_PREDICTIONS\": 19}, \"registered_prediction_identities\": 33, \"sha_mismatches\": []}, \"testsetb\": {\"action_counts\": {\"BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED\": 12, \"BLOCKED_REGISTERED_PREDICTION_MISSING\": 2, \"RESCORE_FROZEN_RECORD_LEVEL_PREDICTIONS\": 18}, \"registered_prediction_identities\": 32, \"sha_mismatches\": []}}, \"status\": \"PASS\"}",
+  "clean_clone_commit": "9eae0bd0ea3a7911cf5f075c7494aa98515cfef3",
+  "clean_clone_output_sha256": {
+    "artifacts/archive_label_lineage_audit_20261127/build_receipt.json": "b5e41700497ee2105f31e7e8cc2c68d8ac5933efcbf0eae45f0a36b9a00a748a",
+    "artifacts/archive_label_lineage_audit_20261127/prediction_recompute.json": "b4e12b6ce57a797bdd103d3cb006a07f4deadaa62f8f97bb7c78d569c73cf023",
+    "artifacts/archive_label_lineage_audit_20261127/records.jsonl.gz": "a8f3157d721fa528ce81845684a44fcac89a06be607bca9ab07133c12943ac65",
+    "artifacts/archive_label_lineage_audit_20261127/summary.json": "4ccff4945929e6918a74c797101bcf1e1ff7a097ec9f2462c24d0f6b49ae36e4",
+    "artifacts/archive_label_lineage_audit_20261127/training_overlap.jsonl.gz": "38f9176902d9fcddc288a1fecc6f30e423a5b5ad66e547506860f5ac90737107",
+    "artifacts/archive_label_lineage_audit_20261127/verification_round2.json": "7cfd6635d57484d2730fb9c200a290ada7c99c4adaec13f3df8839e127e537dc",
+    "docs/plans/2026-11-27-archive-label-lineage-audit.md": "7492937e4317cc222984a9b538425fd3797a40596e1af0a32f3b3a5b658f2826",
+    "source_data/archive_label_lineage_audit_20261127/source_manifest.json": "8c05d7592bdd2324ec51949d08c46b924ec44c937c40afe6b2cd8205ec8f85d4"
+  },
+  "clean_clone_outputs_byte_identical": true,
+  "commands": {
+    "build": "tools/build_archive_label_lineage_audit_20261127.py",
+    "independent_verifier": "tools/verify_archive_label_lineage_audit_20261127.py",
+    "tests": "python -m pytest -q tests/test_archive_label_lineage_audit_20261127.py"
+  },
+  "delivery_files_hashed": 17,
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "prior_round_deliverables_verified": 9,
+  "schema_version": "archive_label_lineage.delivery_verification.round3.v1",
+  "sha256sums_sha256": "fa4ea924de43dd36ddab3a5f9ec5e9be5323c767c70c3d874bede575c4f6fc95",
+  "shared_registry_diff": "EMPTY",
+  "status": "PASS_CLEAN_CLONE_AND_DELIVERY",
+  "unit_tests": {
+    "failed": 0,
+    "output_tail": "8 passed in 2.72s",
+    "passed": 8
+  },
+  "verifier_output_tail": "{\"prediction_rows\": 97, \"records\": 5701, \"status\": \"PASS_INDEPENDENT_SECOND_IMPLEMENTATION\", \"training_rows\": 12780}"
+}

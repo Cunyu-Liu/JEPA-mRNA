@@ -1,0 +1,252 @@
+{
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "official_archives": [
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz",
+      "role": "official reference BPfold_data",
+      "sha256": "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403"
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2/archiveII.tar.gz",
+      "role": "official reference MXfold2 mirror",
+      "sha256": "633bc50f8e9381f737b680fa6b4c79061a0a781773a5c38b342856eb1a6ac8a4"
+    },
+    {
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/official_assets/bpfold/BPfold_test_results_v0.2.tar.gz",
+      "role": "author predicted structures; not labels",
+      "sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073"
+    },
+    {
+      "path": "/root/rna_jepa_data/ss_data/jsonl/archiveii_embok_clean.jsonl",
+      "role": "legacy prediction-derived project labels",
+      "sha256": "6c1fbaa4684cbe4644acdac2f31ae95e5f9b0eb36871f23d8148006f3d571399"
+    }
+  ],
+  "prediction_inputs": [
+    {
+      "available": false,
+      "path": null,
+      "prediction_id": "best_plan_a/archiveii_embok_clean",
+      "sha256": null
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/archiveii_embok_clean.json",
+      "prediction_id": "bpfold/archiveii_embok_clean",
+      "sha256": "e47f901ddafd60722787b4ed39d450d8e03ef721fc46afd04faf9fcd40ac2ab2"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/raw/archiveii_embok_clean.json",
+      "prediction_id": "contrafold/archiveii_embok_clean",
+      "sha256": "10226afece06107841d4173661cce9449d7e92daa6be97552950cb30fe75c5ef"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/efold/raw/archiveii_embok_clean.json",
+      "prediction_id": "efold_0_1_3/archiveii_embok_clean",
+      "sha256": "59f98892bee59b621168f1bfbfbe1e713f7bf8f89f190f292f9910e3e64bacd2"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/raw/archiveii_embok_clean.json",
+      "prediction_id": "eternafold/archiveii_embok_clean",
+      "sha256": "9261dab88630724bde74759bd67f7c179ad60b020504c6ee5f44343915e4b735"
+    },
+    {
+      "available": false,
+      "path": null,
+      "prediction_id": "h0/archiveii_embok_clean",
+      "sha256": null
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/raw/archiveii_embok_clean.json",
+      "prediction_id": "kirigami_fast/archiveii_embok_clean",
+      "sha256": "9c05abe7c1cc2ef5ff382566723e5aa9f9bfac654535a4faf7f915c8dde25343"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw_full/archiveii_embok_clean.json",
+      "prediction_id": "mxfold2/archiveii_embok_clean",
+      "sha256": "cdb9eccb6c62d9db11b8bd46bd979bb8f6d4781a985882821eb3e715212ffe8c"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/raw/archiveii_embok_clean.json",
+      "prediction_id": "nucleicbert_frozen_official/archiveii_embok_clean",
+      "sha256": "11360b631c363e12569e1efe30dcd95b19cbf7de552b9e47babaa3ec5e5ab569"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/raw/archiveii_embok_clean.json",
+      "prediction_id": "nucleicbert_ft/archiveii_embok_clean",
+      "sha256": "a724875054e463cc57faa8d2eda947525e043028db8e9df1f9cf5148038f5bd4"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat0.json",
+      "prediction_id": "nussinov_turner/archiveii_embok_clean/repeat0",
+      "sha256": "ed8c0f3ff374247c1e46ed8b1d45ea617f13353363b0da7447398ee895273cad"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat1.json",
+      "prediction_id": "nussinov_turner/archiveii_embok_clean/repeat1",
+      "sha256": "db2e6af4684b361b69a4068376d367b5445269519478e59686eacc44d77971b3"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat2.json",
+      "prediction_id": "nussinov_turner/archiveii_embok_clean/repeat2",
+      "sha256": "202b08d90672582db7aa862016eb0785533a973206c83a52c1128914cc93ba7a"
+    },
+    {
+      "available": false,
+      "path": "/root/rna_jepa_data/eval_decision/nb_jev_r2dtr1c_s0_step20000/archiveii_embok_clean/result.json",
+      "prediction_id": "rinalmo_2d_s0/archiveii_embok_clean",
+      "sha256": null
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/raw/archiveii_embok_clean.json",
+      "prediction_id": "rinalmo_ft/archiveii_embok_clean",
+      "sha256": "73d9580142688e0c09bdf1f12e4b890a3d785e77acae9151ea409af4b1e2c6fe"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/archiveii_embok_clean.json",
+      "prediction_id": "rnaformer_biophysical/archiveii_embok_clean",
+      "sha256": "de5602a768f81990e9dec95f06cf6cf34cc550164b32e310ab49f2d7684c9d2c"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/raw/archiveii_embok_clean.json",
+      "prediction_id": "rnaformer_bprna/archiveii_embok_clean",
+      "sha256": "c689c550a115f8478b9cf3e4303d9943314a4a8dd2c056ac206e8b9e7725f219"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/raw/archiveii_embok_clean.json",
+      "prediction_id": "rnaformer_interfamily/archiveii_embok_clean",
+      "sha256": "002c77c4ae46ea8bf2deed262be34de63346e35f262b43aff66269cff883d932"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/archiveii_embok_clean.json",
+      "prediction_id": "rnaformer_intrafamily/archiveii_embok_clean",
+      "sha256": "22e66b0e6d1f5addb80f91307fb72e31fe342a973767c6fbb12403633edd0790"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/archiveii_embok_clean.json",
+      "prediction_id": "rnastructure_fold/archiveii_embok_clean",
+      "sha256": "00e7a8b4f2a8843c514beee83500d679b2b04f169e85e393c2817260ecd027f3"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/archiveii_embok_clean.json",
+      "prediction_id": "rnastructure_maxexpect/archiveii_embok_clean",
+      "sha256": "00e7a8b4f2a8843c514beee83500d679b2b04f169e85e393c2817260ecd027f3"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/archiveii_embok_clean.json",
+      "prediction_id": "ufold/archiveii_embok_clean",
+      "sha256": "5ee57224b749e6428292158e63fe43118aab4dc1c55bffe45d003a8bf5ecc6eb"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat0.json",
+      "prediction_id": "vienna_centroid/archiveii_embok_clean/repeat0",
+      "sha256": "ed8c0f3ff374247c1e46ed8b1d45ea617f13353363b0da7447398ee895273cad"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat1.json",
+      "prediction_id": "vienna_centroid/archiveii_embok_clean/repeat1",
+      "sha256": "db2e6af4684b361b69a4068376d367b5445269519478e59686eacc44d77971b3"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat2.json",
+      "prediction_id": "vienna_centroid/archiveii_embok_clean/repeat2",
+      "sha256": "202b08d90672582db7aa862016eb0785533a973206c83a52c1128914cc93ba7a"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat0.json",
+      "prediction_id": "vienna_mea/archiveii_embok_clean/repeat0",
+      "sha256": "ed8c0f3ff374247c1e46ed8b1d45ea617f13353363b0da7447398ee895273cad"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat1.json",
+      "prediction_id": "vienna_mea/archiveii_embok_clean/repeat1",
+      "sha256": "db2e6af4684b361b69a4068376d367b5445269519478e59686eacc44d77971b3"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat2.json",
+      "prediction_id": "vienna_mea/archiveii_embok_clean/repeat2",
+      "sha256": "202b08d90672582db7aa862016eb0785533a973206c83a52c1128914cc93ba7a"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat0.json",
+      "prediction_id": "vienna_mfe/archiveii_embok_clean/repeat0",
+      "sha256": "ed8c0f3ff374247c1e46ed8b1d45ea617f13353363b0da7447398ee895273cad"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat1.json",
+      "prediction_id": "vienna_mfe/archiveii_embok_clean/repeat1",
+      "sha256": "db2e6af4684b361b69a4068376d367b5445269519478e59686eacc44d77971b3"
+    },
+    {
+      "available": false,
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/archiveii_embok_clean.repeat2.json",
+      "prediction_id": "vienna_mfe/archiveii_embok_clean/repeat2",
+      "sha256": "202b08d90672582db7aa862016eb0785533a973206c83a52c1128914cc93ba7a"
+    },
+    {
+      "available": true,
+      "path": "/root/rna_jepa_data/eval_decision/xens2_board_4090/archiveii_embok_clean.json",
+      "prediction_id": "xens2/archiveii_embok_clean",
+      "sha256": "1b8e98acf425786325614d58268d5db7c6b8b853a277d6f2c41c1a8c2348e81d"
+    },
+    {
+      "available": true,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/official_assets/bpfold/BPfold_test_results_v0.2.tar.gz",
+      "prediction_id": "bpfold_official_release/archiveii",
+      "sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073"
+    },
+    {
+      "available": true,
+      "path": "/root/rna_jepa_data/eval_decision/ow_rinalmo_r2dtr1c_b4_s1_step20000/archiveii_embok_clean/result.json",
+      "prediction_id": "rinalmo_2d_s1/archiveii_embok_clean",
+      "sha256": "a8a0875fb63cdeb4782d6b6cfa28f0d87766d2e5989085d8f0f743b6827d8151"
+    },
+    {
+      "available": true,
+      "path": "/root/rna_jepa_data/eval_decision/ow_rinalmo_r2dtr1c_b4_s2_step20000/archiveii_embok_clean/result.json",
+      "prediction_id": "rinalmo_2d_s2/archiveii_embok_clean",
+      "sha256": "376278c46e29733d611a9343381bdd6f2b5ae4cbb4d593cf32bf0cfee5459caa"
+    },
+    {
+      "available": false,
+      "path": "/root/rna_jepa_data/eval_decision/nb_jev_r2dtr1c_s0_step20000/archiveii_embok_clean_trunc598/result.json",
+      "prediction_id": "rinalmo_2d_s0/archiveii_embok_clean_trunc598",
+      "sha256": "89990cecfaf8c5c98cdf6608044d089a5b9236285067605ccb78d53ae76f19d8"
+    }
+  ],
+  "schema_version": "archiveii.official_reference.panel.v1.source_manifest",
+  "shared_registry_modified": false,
+  "shared_registry_sha256_before_after": {
+    "manifests/foldnar_v1/baseline_registry.json": "4016cc4b54d42b7dd59463fa90c9d201fa3db9094dff6fc05e01f6854e79a15c",
+    "manifests/foldnar_v1/data_registry.json": "fa6af42420bf21484bc43b2ceaf46c6c2813de2e2d515f857b9f4dc3ef34a14c",
+    "manifests/foldnar_v1/prediction_registry.json": "3193f8eac3c025ca176d8b69b06210c93061b82e223ebf0453add5d9a94f2fac"
+  }
+}

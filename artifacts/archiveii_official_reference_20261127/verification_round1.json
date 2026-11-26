@@ -1,0 +1,22 @@
+{
+  "deterministic_rebuild": true,
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "output_sha256": {
+    "build_receipt.json": "b5bacc07038ca201ddd04e74fb49610f37ae5fd7ae2ff00e210947f0fd92a90e",
+    "per_record_metrics.jsonl.gz": "729528e411fd6efb36f2194a27659d7e5e5c7c48a5c5e75637ac157b891069cc",
+    "registry_recommendation.json": "16a650d171e16cc01bb0be051f679faa4382b185b81a55b8507293932183c4e3",
+    "system_metrics.json": "01de9163a6ced10c1a968b0396c60fd68dca6d5ab5b8d80511603628f7155d83"
+  },
+  "per_record_metric_rows": 103182,
+  "prediction_identities": 36,
+  "schema_version": "archiveii.official_reference.verification.round1.v1",
+  "shared_registry_diff": "EMPTY",
+  "status": "PASS",
+  "unit_tests": {
+    "command": "python -m pytest -q tests/test_archiveii_official_reference_panel_20261127.py",
+    "failed": 0,
+    "passed": 7
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "outputs": {
+    "artifacts/archiveii_official_reference_20261127/per_record_metrics.jsonl.gz": {
+      "bytes": 2565388,
+      "sha256": "729528e411fd6efb36f2194a27659d7e5e5c7c48a5c5e75637ac157b891069cc"
+    },
+    "artifacts/archiveii_official_reference_20261127/registry_recommendation.json": {
+      "bytes": 1598409,
+      "sha256": "16a650d171e16cc01bb0be051f679faa4382b185b81a55b8507293932183c4e3"
+    },
+    "artifacts/archiveii_official_reference_20261127/system_metrics.json": {
+      "bytes": 1609622,
+      "sha256": "01de9163a6ced10c1a968b0396c60fd68dca6d5ab5b8d80511603628f7155d83"
+    },
+    "docs/plans/2026-11-27-archiveii-official-reference-panel.md": {
+      "bytes": 11815,
+      "sha256": "e04db8b410057f79b2b18385f703a325ae2455874a4023681f4cb75fcac62fb2"
+    },
+    "source_data/archiveii_official_reference_20261127/official_reference_3966.jsonl.gz": {
+      "bytes": 1305518,
+      "sha256": "a2fc055ec86333af4e292bcc78dc7858908dfc5a4596d53f44b391213afec1a0"
+    },
+    "source_data/archiveii_official_reference_20261127/official_reference_clean_2544.jsonl.gz": {
+      "bytes": 805662,
+      "sha256": "cde658b5d61813ff9530509bd25631d6f33dcb08021bae107636f0a212c11afb"
+    },
+    "source_data/archiveii_official_reference_20261127/source_manifest.json": {
+      "bytes": 13327,
+      "sha256": "b0340bc5dc24daa7851b7f930908b6c4d72bdb00090d029af376862c9910dbbb"
+    }
+  },
+  "per_record_metric_rows": 103182,
+  "prediction_identities": 36,
+  "schema_version": "archiveii.official_reference.panel.v1.build_receipt",
+  "status": "PASS"
+}
