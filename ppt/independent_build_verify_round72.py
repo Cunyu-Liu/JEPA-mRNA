@@ -46,6 +46,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--primary-deck", type=Path, required=True, help="built 17-slide deck")
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--verification", type=Path, required=True)
+    parser.add_argument("--compare-previous-deck", type=Path,
+                        help="optional pre-panel 17-slide deck; require page35 change and page36 XML identity")
     args = parser.parse_args(argv)
     source = args.source_deck.resolve()
     primary = args.primary_deck.resolve()
@@ -78,9 +80,18 @@ def main(argv: list[str] | None = None) -> int:
         prior_xml = all(old.read(f"ppt/slides/slide{index}.xml")
                         == new.read(f"ppt/slides/slide{index}.xml") for index in range(1, 16))
     build_report = json.loads((work / "independent_build.json").read_text())
+    page36_unchanged = None
+    page35_changed = None
+    if args.compare_previous_deck:
+        with zipfile.ZipFile(args.compare_previous_deck) as previous, zipfile.ZipFile(independent) as current:
+            page36_unchanged = (previous.read("ppt/slides/slide17.xml")
+                                == current.read("ppt/slides/slide17.xml"))
+            page35_changed = (previous.read("ppt/slides/slide16.xml")
+                              != current.read("ppt/slides/slide16.xml"))
     report = {
         "status": "PASS_INDEPENDENT_CLEAN_BUILD_ALL_ZIP_PARTS_IDENTICAL"
-        if not missing and not extra and not different and prior_xml else "FAIL_INDEPENDENT_BUILD",
+        if not missing and not extra and not different and prior_xml
+        and page36_unchanged is not False and page35_changed is not False else "FAIL_INDEPENDENT_BUILD",
         "primary_deck": str(primary), "independent_deck": str(independent),
         "primary_sha256": primary_hash, "independent_sha256": sha256(independent),
         "source_deck": str(source), "source_sha256_before_and_after": source_hash,
@@ -99,6 +110,10 @@ def main(argv: list[str] | None = None) -> int:
         "slide_count": len(Presentation(primary).slides), "prior_slide_xml_preserved": 15 if prior_xml else 0,
         "original_phase0_xml_preserved": build_report["original_phase0_xml_preserved"],
         "added_slide_numbers": build_report["added_slide_numbers"],
+        "compare_previous_deck": str(args.compare_previous_deck) if args.compare_previous_deck else None,
+        "page35_xml_changed": page35_changed, "page36_xml_unchanged": page36_unchanged,
+        "official_reference_panel_sha256": next(item["sha256"] for item in build_report["external_artifacts"]
+                                                if item["path"].endswith("official_reference_5388.jsonl.gz")),
         "scope": build_report["scope"],
     }
     atomic_json(args.verification.resolve(), report)

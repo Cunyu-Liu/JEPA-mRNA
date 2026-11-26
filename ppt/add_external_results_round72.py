@@ -24,10 +24,13 @@ ROOT = OUT.parent
 DECK = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx"
 MARGIN_VERIFICATION = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.round71_build_verification.json"
 MARGIN_INDEPENDENT_VERIFICATION = OUT / "RNA-JEV_FoldNar_Phase0验证记录_20261124.round71_independent_build_verification.json"
-STRUCT_RESULTS = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/structrfm_official_v0.0.8/reports/structrfm_official_bprna_new_metrics_20261126.json")
-STRUCT_REGISTRY = ROOT / "manifests/foldnar_v2/structrfm_official_bprna_new_results_20261126.json"
-RAW_REGISTRY = ROOT / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json"
-BASELINE_REGISTRY = ROOT / "manifests/foldnar_v1/baseline_registry.json"
+PANEL_REGISTRY = ROOT / "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json"
+PANEL_SYSTEM_METRICS = ROOT / "source_data/bprna_official_reference_5388/system_metrics.json"
+PANEL_INDEPENDENT_VERIFICATION = ROOT / "source_data/bprna_official_reference_5388/independent_verification.json"
+PANEL_LABELS = ROOT / "source_data/bprna_official_reference_5388/official_reference_5388.jsonl.gz"
+PANEL_COMMIT = "e7ff4e76fe078178ab41d2052349627317b5a3e3"
+PANEL_SCHEMA = "bprna.official_reference_5388.prediction_registry.v1"
+PANEL_DATASET = "bpfold_official_bprna_new_reference_5388"
 LONGSEQ_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/foldnar/longseq_linearpartition_contract_20261126")
 BURGUNDY = RGBColor(122, 32, 44)
 DARK_RED = RGBColor(145, 36, 48)
@@ -213,82 +216,98 @@ def validate_margin(deck: str | Path, verification_path: str | Path,
             "cluster_dev_counts": counts, "unknown_ensemble_minus_control": unknown}
 
 
-def validate_external_raw(struct_results_path: str | Path, struct_registry_path: str | Path,
-                          raw_registry_path: str | Path, baseline_registry_path: str | Path) -> dict:
-    struct_results_path = Path(struct_results_path).resolve()
-    struct_registry_path = Path(struct_registry_path).resolve()
-    raw_registry_path = Path(raw_registry_path).resolve()
-    baseline_registry_path = Path(baseline_registry_path).resolve()
-    official = load_json(struct_results_path)
-    registered_official = load_json(struct_registry_path)
-    raw = load_json(raw_registry_path)
-    baseline = load_json(baseline_registry_path)
-    require(official == registered_official, "official structRFM artifact and frozen registry copy differ")
-    require(official.get("status") == "PASS_INDEPENDENT_OFFICIAL_5388_IDENTITY_AND_METRICS"
-            and official.get("full_ready") is True
-            and official.get("prediction_id") == "structrfm_official_v0.0.8/bprna_new"
-            and official.get("raw_not_clean") is True
-            and official.get("summary_only_substitution") is False
-            and official.get("label_scope") == "PROJECT_RAW_GT_ONLY_NON_DECONTAMINATED",
-            "structRFM result is not the complete official raw 5388 artifact")
-    require_identity(official["predictions"], official["predictions"]["path"], "structRFM predictions")
-    metrics = official.get("metrics", {})
-    require(metrics.get("n_dataset_sequences") == metrics.get("n_with_prediction")
-            == official.get("dataset", {}).get("n_sequences") == 5388
-            and metrics.get("coverage") == 1.0 and not metrics.get("missing_names")
-            and not metrics.get("extra_names"), "structRFM raw coverage is incomplete")
-    for name in ("micro_f1", "macro_f1"):
-        finite_metric(metrics.get(name), f"structRFM {name}")
-    rows = {row.get("asset_id"): row for row in raw.get("rows", [])}
-    asset_ids = ("bpfold_project_six_checkpoint_raw", "contrafold_mea_single_raw")
-    comparators = []
-    for asset_id in asset_ids:
-        row = rows.get(asset_id, {})
-        require(row.get("status") == "PASS_SHA_ID_METRICS"
-                and row.get("raw_clean_scope") == "raw"
-                and row.get("label_protocol") == "PROJECT_DATABASE_RAW_5388"
-                and row.get("n_sequences") == 5388
-                and row.get("label_sha256") == official["dataset"]["sha256"]
-                and row.get("dataset_id") == "bprna_new"
-                and row.get("metrics", {}).get("coverage") == 1.0,
-                f"raw comparator scope/coverage mismatch: {asset_id}")
-        require(row.get("prediction_sha256") == sha256(row["prediction_path"]),
-                f"raw comparator prediction hash mismatch: {asset_id}")
-        comparators.append(row)
-    for key, row in (("strongest_project_raw", comparators[0]),
-                     ("strongest_project_raw_single_predictor", comparators[1])):
-        summary = raw.get(key, {})
-        require(summary.get("asset_id") == row["asset_id"]
-                and summary.get("micro_f1") == row["metrics"]["micro_f1"]
-                and summary.get("macro_f1") == row["metrics"]["macro_f1"],
-                f"registry summary differs from raw row: {key}")
-    xens2 = raw.get("xens2_project_raw_reference", {})
-    for name in ("micro_f1", "macro_f1"):
-        finite_metric(xens2.get(name), f"xens2 {name}")
-    bp_metrics = comparators[0]["metrics"]
-    require(xens2.get("gap_to_strongest_ensemble_micro")
-            == bp_metrics["micro_f1"] - xens2["micro_f1"]
-            and xens2.get("gap_to_strongest_ensemble_macro")
-            == bp_metrics["macro_f1"] - xens2["macro_f1"],
-            "xens2 raw reference gaps differ from frozen registry metrics")
-    require(raw.get("scope_contract", {}).get("raw_is_not_clean") is True,
-            "raw registry no longer states raw_is_not_clean")
-    baseline_rows = {row.get("baseline_id"): row for row in baseline.get("rows", [])}
-    for baseline_id in ("structrfm", "bpfold", "contrafold", "xens2"):
-        comparability = baseline_rows.get(baseline_id, {}).get("comparability", {})
-        require("raw is not clean" in comparability.get("status", "")
-                and comparability.get("clean_subset_policy") == "baseline-specific; no shared TR1c-clean assumed",
-                f"raw/clean boundary missing for {baseline_id}")
-    struct_baseline = baseline_rows["structrfm"]
-    require(struct_baseline.get("official_weights", {}).get("sha256")
-            == official["execution"]["checkpoint_sha256"]
-            and struct_baseline.get("status") == "OFFICIAL_V008_RAW_BPRNA_NEW_COMPLETE",
-            "structRFM official checkpoint/registry identity mismatch")
-    return {"official": official, "comparators": comparators, "xens2": xens2,
-            "struct_results_path": struct_results_path,
-            "paths": (struct_results_path, struct_registry_path, raw_registry_path,
-                      baseline_registry_path, Path(official["predictions"]["path"]),
-                      *(Path(row["prediction_path"]) for row in comparators))}
+def validate_external_raw(panel_registry_path: str | Path, system_metrics_path: str | Path,
+                          independent_verification_path: str | Path, panel_labels_path: str | Path) -> dict:
+    panel_registry_path = Path(panel_registry_path).resolve()
+    system_metrics_path = Path(system_metrics_path).resolve()
+    independent_verification_path = Path(independent_verification_path).resolve()
+    panel_labels_path = Path(panel_labels_path).resolve()
+    registry = load_json(panel_registry_path)
+    system = load_json(system_metrics_path)
+    independent = load_json(independent_verification_path)
+    require(registry.get("schema_version") == system.get("schema_version") == PANEL_SCHEMA,
+            "old DERIVED_FROM_BPFOLD_PREDICTIONS lineage or missing official-reference registry")
+    panel = registry.get("label_panel", {})
+    require(panel == system.get("label_panel")
+            and panel.get("dataset_id") == PANEL_DATASET
+            and panel.get("n_sequences") == 5388
+            and panel.get("sha256", "").startswith("4924e351")
+            and "DERIVED_FROM_BPFOLD_PREDICTIONS" not in json.dumps(panel),
+            "official-reference 5388 panel identity/lineage changed")
+    require(panel_labels_path.is_file(), f"missing official-reference 5388 panel: {panel_labels_path}")
+    labels_identity = identity(panel_labels_path)
+    require(labels_identity["bytes"] == panel.get("bytes")
+            and labels_identity["sha256"] == panel.get("sha256")
+            and panel_labels_path.as_posix().endswith(panel.get("path", "")),
+            "official-reference panel path/bytes/SHA mismatch")
+    coverage = registry.get("coverage_accounting", {})
+    require(coverage == system.get("coverage_accounting")
+            and coverage.get("full_coverage_scored") == 28
+            and coverage.get("inventory_entries") == 43
+            and registry.get("circular_project_label_score_excluded") is True
+            and "descriptive audit, not model selection" in registry.get("metric_contract", {}).get("ranking", ""),
+            "official-reference panel must contain 28 full-coverage descriptive systems")
+    rows = registry.get("rows", [])
+    system_rows = system.get("rows", [])
+    require(len(rows) == len(system_rows) == 43
+            and sum(row.get("status") == "PASS_FULL_COVERAGE" for row in rows) == 28,
+            "official-reference inventory or full-coverage count mismatch")
+    by_id = {row.get("prediction_id"): row for row in rows}
+    system_by_id = {row.get("prediction_id"): row for row in system_rows}
+    for prediction_id, row in by_id.items():
+        other = system_by_id.get(prediction_id, {})
+        for key in ("baseline_id", "prediction_origin", "path", "sha256", "label_dataset_id",
+                    "n_panel_sequences", "n_with_prediction", "coverage", "status", "metrics"):
+            require(row.get(key) == other.get(key), f"registry/system_metrics mismatch: {prediction_id}/{key}")
+    ids = ("structrfm_official_v0.0.8/bprna_new", "bpfold/bprna_new",
+           "contrafold/bprna_new", "xens2/bprna_new",
+           "bpfold_official_release/bprna_new_official_reference")
+    selected = []
+    for prediction_id in ids:
+        row = by_id.get(prediction_id, {})
+        require(row.get("label_dataset_id") == PANEL_DATASET
+                and row.get("status") == "PASS_FULL_COVERAGE"
+                and row.get("n_panel_sequences") == row.get("n_with_prediction") == 5388
+                and row.get("coverage") == 1.0 and row.get("missing_count") == 0
+                and row.get("metrics", {}).get("n_scored") == 5388,
+                f"selected system lacks full new-panel coverage: {prediction_id}")
+        require(row.get("sha256") == sha256(row["path"]),
+                f"selected prediction SHA mismatch: {prediction_id}")
+        for metric in ("micro_f1", "macro_f1"):
+            finite_metric(row["metrics"].get(metric), f"{prediction_id} {metric}")
+        selected.append(row)
+    official, replay, contrafold, xens2, author_release = selected
+    require(official.get("prediction_origin") == "registered_frozen_prediction"
+            and official.get("registry_status") == "FROZEN"
+            and replay.get("prediction_origin") == "project_replay"
+            and author_release.get("prediction_origin") == "author_release"
+            and replay.get("path") != author_release.get("path")
+            and replay.get("sha256") != author_release.get("sha256"),
+            "BPfold project replay and author release identities must remain distinct")
+    require(registry.get("strongest_overall", {}).get("prediction_id") == replay["prediction_id"]
+            and registry["strongest_overall"].get("metrics") == replay["metrics"]
+            and registry.get("strongest_single_predictor", {}).get("prediction_id") == contrafold["prediction_id"]
+            and registry["strongest_single_predictor"].get("metrics") == contrafold["metrics"]
+            and registry.get("xens2_reference", {}).get("metrics") == xens2["metrics"],
+            "official-reference descriptive summary differs from selected rows")
+    require(independent.get("status") == "PASS_INDEPENDENT_SECOND_IMPLEMENTATION"
+            and independent.get("panel_records_verified") == 5388
+            and independent.get("full_coverage_systems_verified") == 28
+            and independent.get("paired_ci_verified") == 28
+            and independent.get("new_inference") is False
+            and independent.get("model_selection") is False,
+            "official-reference independent verification is incomplete")
+    deliverables = {Path(row.get("path", "")).name: row for row in independent.get("deliverables", [])}
+    for path in (panel_labels_path, system_metrics_path, panel_registry_path):
+        recorded = deliverables.get(path.name, {})
+        actual = identity(path)
+        require(recorded.get("bytes") == actual["bytes"] and recorded.get("sha256") == actual["sha256"],
+                f"independent report does not bind new-panel deliverable: {path.name}")
+    return {"official": official, "comparators": [replay, contrafold], "xens2": xens2,
+            "author_release": author_release, "panel": panel, "coverage": coverage,
+            "system_metrics_path": system_metrics_path,
+            "paths": (panel_registry_path, system_metrics_path, independent_verification_path,
+                      panel_labels_path, *(Path(row["path"]) for row in selected))}
 
 
 def validate_longseq(root: str | Path) -> dict:
@@ -385,6 +404,10 @@ def fmt(value: float) -> str:
     return f"{value:.6f}"
 
 
+def fmt10(value: float) -> str:
+    return f"{value:.10f}"
+
+
 def signed(value: float) -> str:
     return f"{value:+.6f}"
 
@@ -459,40 +482,40 @@ def new_slide(prs: Presentation, number: int, section: str, title: str, subtitle
 def add_external_slide(prs: Presentation, bundle: dict) -> None:
     official = bundle["official"]
     sm = official["metrics"]
-    rows = [["structRFM official v0.0.8 · single", fmt(sm["micro_f1"]), "reference",
-             fmt(sm["macro_f1"]), "reference"]]
-    labels = (("BPfold · six-checkpoint ensemble", bundle["comparators"][0]["metrics"]),
+    rows = [["structRFM official v0.0.8 · single", fmt10(sm["micro_f1"]), "reference",
+             fmt10(sm["macro_f1"]), "reference"]]
+    labels = (("BPfold project replay · six-checkpoint", bundle["comparators"][0]["metrics"]),
               ("CONTRAfold · deterministic MEA", bundle["comparators"][1]["metrics"]),
-              ("xens2 · frozen project ensemble", bundle["xens2"]))
+              ("xens2 · frozen project ensemble", bundle["xens2"]["metrics"]))
     for label, metrics in labels:
-        rows.append([label, fmt(metrics["micro_f1"]), signed(sm["micro_f1"] - metrics["micro_f1"]),
-                     fmt(metrics["macro_f1"]), signed(sm["macro_f1"] - metrics["macro_f1"])])
-    slide = new_slide(prs, 35, "FOLDNAR EXTERNAL RESULTS / UNIFIED RAW COMPARISON",
-                      "structRFM官方结果：放回统一raw绝对差距语境",
-                      f"PROJECT_RAW_GT_ONLY · bpRNA-new {sm['n_dataset_sequences']:,} / coverage {sm['coverage']:.3f} · Δ = structRFM − 对照（绝对F1差）")
+        rows.append([label, fmt10(metrics["micro_f1"]), signed(sm["micro_f1"] - metrics["micro_f1"]),
+                     fmt10(metrics["macro_f1"]), signed(sm["macro_f1"] - metrics["macro_f1"])])
+    slide = new_slide(prs, 35, "FOLDNAR EXTERNAL RESULTS / OFFICIAL-REFERENCE RAW-EXPOSURE",
+                      "structRFM官方结果：新参考面板统一重算",
+                      f"OFFICIAL_REFERENCE_5388 · {bundle['coverage']['full_coverage_scored']} full-coverage systems · raw-exposure descriptive · Δ = structRFM − 对照")
     table(slide, 0.78, 1.65, (4.18, 1.80, 2.00, 1.80, 2.00), 0.46,
-          ("同一raw标签域", "micro-F1", "Δ micro", "macro-F1", "Δ macro"), rows,
+          ("同一官方参考标签面板", "micro-F1", "Δ micro", "macro-F1", "Δ macro"), rows,
           font_size=10.2, emphasis_row=1)
     rect(slide, 0.78, 4.18, 11.78, 0.90, PALE, BURGUNDY)
-    text(slide, 1.00, 4.29, 11.32, 0.28, "RAW ≠ CLEAN ≠ SOTA", 17, DARK_RED, True)
+    text(slide, 1.00, 4.29, 11.32, 0.28, "RAW-EXPOSURE DESCRIPTIVE ≠ CLEAN SOTA", 16, DARK_RED, True)
     text(slide, 1.00, 4.62, 11.30, 0.26,
-         "仅描述同一PROJECT_RAW 5388标签域的绝对差距；不去污、不外推clean、不宣称SOTA，也不把六checkpoint集成当单模型。",
+         "28个全覆盖系统仅作raw-exposure描述与绝对差距审计；不去污、不用于模型选择、不宣称clean SOTA。",
          10.3, INK, True, SANS)
     rect(slide, 0.78, 5.30, 5.72, 0.84, PASS_PALE, GREEN)
-    text(slide, 1.00, 5.40, 5.28, 0.24, "官方身份已闭环", 12, GREEN, True, SANS)
+    text(slide, 1.00, 5.40, 5.28, 0.24, "BPfold项目replay ≠ 官方release", 12, GREEN, True, SANS)
     text(slide, 1.00, 5.69, 5.28, 0.27,
-         f"v0.0.8 · checkpoint {official['execution']['checkpoint_sha256'][:12]} · official MixedFold constrained DP",
-         8.7, INK)
+         "不同prediction_id / path / SHA；作者release另行注册，禁止把项目replay身份写成作者发布结果。",
+         8.6, INK, font=SANS)
     rect(slide, 6.74, 5.30, 5.82, 0.84, ROSE, LINE)
-    text(slide, 6.96, 5.40, 5.38, 0.24, "协议差异保留", 12, BURGUNDY, True, SANS)
+    text(slide, 6.96, 5.40, 5.38, 0.24, "面板身份与独立重算", 12, BURGUNDY, True, SANS)
     text(slide, 6.96, 5.69, 5.38, 0.27,
-         "BPfold六checkpoint / CONTRAfold单预测器 / xens2项目集成；模型形式不作等同。",
-         8.9, INK, font=SANS)
+         f"official-reference SHA {bundle['panel']['sha256'][:8]}… · 5388 records · 28 full coverage · second implementation PASS",
+         8.5, INK)
     text(slide, 0.78, 6.46, 11.70, 0.18,
-         f"official metrics SHA-256 {sha256(bundle['struct_results_path'])[:12]} · raw registry + baseline registry逐行读取 · raw_not_clean=true",
+         f"panel commit {PANEL_COMMIT[:8]} · system_metrics SHA {sha256(bundle['system_metrics_path'])[:12]} · registry/system rows + prediction SHA verified",
          7.7, MUTED)
     text(slide, 0.78, 6.72, 11.70, 0.18,
-         "structRFM作者训练语料含bpRNA1m；bpRNA-new暴露未清除，故本页不构成独立外部测试或clean SOTA证据。",
+         "旧DERIVED_FROM_BPFOLD_PREDICTIONS项目raw排名已弃用；本页不构成去污外部测试、训练暴露清除或clean SOTA证据。",
          7.7, MUTED, font=SANS)
 
 
@@ -570,13 +593,14 @@ def verify_built_deck(path: Path, prior_deck: Path, margin_backup: Path,
             require(shape.top + shape.height <= reopened.slide_height + 2, "shape exceeds slide height")
     external_text = slide_text(reopened.slides[15])
     sm = external["official"]["metrics"]
-    for phrase in ("35 · FOLDNAR EXTERNAL RESULTS", "structRFM官方结果", fmt(sm["micro_f1"]),
-                   fmt(sm["macro_f1"]), "BPfold", "CONTRAfold", "xens2", "RAW ≠ CLEAN ≠ SOTA",
-                   "不去污", "不宣称SOTA", "绝对差距"): 
+    for phrase in ("35 · FOLDNAR EXTERNAL RESULTS", "structRFM官方结果", fmt10(sm["micro_f1"]),
+                   fmt10(sm["macro_f1"]), "BPfold project replay", "官方release", "CONTRAfold", "xens2",
+                   "RAW-EXPOSURE DESCRIPTIVE ≠ CLEAN SOTA", "28 full-coverage systems",
+                   "不去污", "不宣称clean SOTA", "DERIVED_FROM_BPFOLD_PREDICTIONS"):
         require(phrase in external_text, f"missing external slide text: {phrase}")
-    for metrics in [row["metrics"] for row in external["comparators"]] + [external["xens2"]]:
-        require(fmt(metrics["micro_f1"]) in external_text and fmt(metrics["macro_f1"]) in external_text,
-                "raw comparator metrics missing")
+    for metrics in [row["metrics"] for row in external["comparators"]] + [external["xens2"]["metrics"]]:
+        require(fmt10(metrics["micro_f1"]) in external_text and fmt10(metrics["macro_f1"]) in external_text,
+                "official-reference comparator metrics missing")
         require(signed(sm["micro_f1"] - metrics["micro_f1"]) in external_text
                 and signed(sm["macro_f1"] - metrics["macro_f1"]) in external_text,
                 "raw absolute gap missing")
@@ -621,15 +645,18 @@ def atomic_write_json(path: Path, value: dict) -> None:
 def build(deck: str | Path = DECK, margin_verification: str | Path = MARGIN_VERIFICATION,
           margin_independent_verification: str | Path = MARGIN_INDEPENDENT_VERIFICATION,
           backup: str | Path | None = None, verification: str | Path | None = None,
-          struct_results: str | Path = STRUCT_RESULTS, struct_registry: str | Path = STRUCT_REGISTRY,
-          raw_registry: str | Path = RAW_REGISTRY, baseline_registry: str | Path = BASELINE_REGISTRY,
+          panel_registry: str | Path = PANEL_REGISTRY,
+          system_metrics: str | Path = PANEL_SYSTEM_METRICS,
+          panel_independent_verification: str | Path = PANEL_INDEPENDENT_VERIFICATION,
+          panel_labels: str | Path = PANEL_LABELS,
           longseq_root: str | Path = LONGSEQ_ROOT) -> dict:
     deck = Path(deck).resolve()
     backup = Path(backup).resolve() if backup else deck.with_name(deck.stem + ".pre_round72.pptx")
     verification = (Path(verification).resolve() if verification else
                     deck.with_name(deck.stem + ".round72_build_verification.json"))
     margin = validate_margin(deck, margin_verification, margin_independent_verification)
-    external = validate_external_raw(struct_results, struct_registry, raw_registry, baseline_registry)
+    external = validate_external_raw(panel_registry, system_metrics,
+                                     panel_independent_verification, panel_labels)
     longseq = validate_longseq(longseq_root)
     require(not backup.exists(), f"refusing to overwrite existing backup: {backup}")
     require(not verification.exists(), f"refusing to overwrite existing verification: {verification}")
@@ -669,6 +696,10 @@ def build(deck: str | Path = DECK, margin_verification: str | Path = MARGIN_VERI
         "external_artifacts": [identity(path) for path in external["paths"]],
         "longseq_artifacts": [identity(path) for path in longseq["paths"]],
         "scope": {"raw_not_clean_not_sota": True, "external_raw_n": 5388,
+                  "official_reference_descriptive_only": True,
+                  "official_reference_full_coverage_systems": 28,
+                  "old_derived_label_ranking_used": False,
+                  "bpfold_replay_author_release_conflated": False,
                   "longseq_execution_column": "APPROXIMATE_SPARSE",
                   "train_only_not_unbiased_evaluation": True,
                   "holdout_descriptive_not_model_selection": True,
@@ -688,16 +719,17 @@ def main(argv: list[str] | None = None) -> int:
                         default=MARGIN_INDEPENDENT_VERIFICATION)
     parser.add_argument("--backup", type=Path)
     parser.add_argument("--verification", type=Path)
-    parser.add_argument("--struct-results", type=Path, default=STRUCT_RESULTS)
-    parser.add_argument("--struct-registry", type=Path, default=STRUCT_REGISTRY)
-    parser.add_argument("--raw-registry", type=Path, default=RAW_REGISTRY)
-    parser.add_argument("--baseline-registry", type=Path, default=BASELINE_REGISTRY)
+    parser.add_argument("--panel-registry", type=Path, default=PANEL_REGISTRY)
+    parser.add_argument("--system-metrics", type=Path, default=PANEL_SYSTEM_METRICS)
+    parser.add_argument("--panel-independent-verification", type=Path,
+                        default=PANEL_INDEPENDENT_VERIFICATION)
+    parser.add_argument("--panel-labels", type=Path, default=PANEL_LABELS)
     parser.add_argument("--longseq-root", type=Path, default=LONGSEQ_ROOT)
     args = parser.parse_args(argv)
     try:
         report = build(args.deck, args.margin_verification, args.margin_independent_verification,
-                       args.backup, args.verification, args.struct_results, args.struct_registry,
-                       args.raw_registry, args.baseline_registry, args.longseq_root)
+                       args.backup, args.verification, args.panel_registry, args.system_metrics,
+                       args.panel_independent_verification, args.panel_labels, args.longseq_root)
     except (EligibilityError, OSError, KeyError, TypeError, ValueError) as error:
         parser.exit(2, f"round72 build refused: {error}\n")
     print(json.dumps(report, ensure_ascii=False, indent=2))
