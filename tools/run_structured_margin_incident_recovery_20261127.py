@@ -20,6 +20,7 @@ GEC_INIT = "/teams/HoulabData_1788502323/liucunyu/foldnar/gec_smoke_v2/generatio
 ARMS = ("matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context")
 INTERRUPTED_ARMS = frozenset(("matched_control", "ensemble_context"))
 STOP_REASON = "CONVERGED_VALIDATION_PAIR_HAMMING_STRUCTURED_MARGIN_AFTER_TERMINAL_UNFREEZE"
+LOCAL_LOG_ROOT = Path("/home/foldnar_incident_logs")
 
 
 def utc_now() -> str:
@@ -125,6 +126,7 @@ def main() -> None:
     artifact_root = Path(config["full_training"]["artifact_root"])
     preflight = json.loads(args.preflight.read_text())
     args.recovery_root.mkdir(parents=True, exist_ok=True)
+    LOCAL_LOG_ROOT.mkdir(parents=True, exist_ok=True)
     lock_handle = (args.recovery_root / "recovery_scheduler.lock").open("w")
     try:
         fcntl.flock(lock_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -187,7 +189,7 @@ def main() -> None:
             save("ALL_ARMS_CONVERGED_EVALUATION_STARTING", processes=history)
             command = evaluation_command(artifact_root, args.evaluation_root)
             args.evaluation_root.parent.mkdir(parents=True, exist_ok=True)
-            log_path = args.recovery_root / "independent_evaluation.log"
+            log_path = LOCAL_LOG_ROOT / "independent_evaluation.log"
             with log_path.open("a") as log:
                 process = subprocess.Popen(command, cwd=REPO, env=os.environ.copy(),
                                            start_new_session=True, stdout=log, stderr=subprocess.STDOUT)
@@ -222,7 +224,7 @@ def main() -> None:
                 kind = launch_eligibility(arm, out, preflight)
                 out.mkdir(parents=True, exist_ok=True)
                 command = training_command(SOURCE_REPO, source_config, arm, out)
-                log_path = out / "scheduler_command.log"
+                log_path = LOCAL_LOG_ROOT / f"{arm}.log"
                 with log_path.open("a") as log:
                     process = subprocess.Popen(command, cwd=SOURCE_REPO, env=os.environ.copy(),
                                                start_new_session=True, stdout=log, stderr=subprocess.STDOUT)
