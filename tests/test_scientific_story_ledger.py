@@ -48,6 +48,16 @@ def test_raw_baseline_absolute_gap_arithmetic():
     assert "BPfold official-reference 标签结果和 CONTRAfold TR1c-clean 子集均不得混入" in text
 
 
+def test_bpfold_protocol_and_official_panel_provenance():
+    text = ledger.DOC.read_text()
+    assert "e7ff4e76fe078178ab41d2052349627317b5a3e3" in text
+    assert "DERIVED_FROM_BPFOLD_PREDICTIONS" in text
+    assert "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4" in text
+    assert "106 条" in text and "5,282 条" in text
+    assert "0.9617 仅循环审计不得排名" in text
+    assert "bprna_new_official_reference_5388_prediction_registry.json" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

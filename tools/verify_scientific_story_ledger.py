@@ -24,6 +24,7 @@ PRETRAIN_EXPOSURE_REPO = Path("/home/rna_jev_pretrain_exposure")
 PRETRAIN_EXPOSURE = PRETRAIN_EXPOSURE_REPO / "manifests/pretrain_exposure_v1"
 MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
 MODEL_DEV_V3 = F / "model_dev_v3"
+BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -46,7 +47,13 @@ SOURCES = {
     "structrfm": STRUCTRFM / "reports/structrfm_official_bprna_new_metrics_20261126.json",
     "structrfm_provenance": STRUCTRFM / "reports/structrfm_official_provenance_20261126.json",
     "structrfm_delivery": STRUCTRFM / "reports/full_delivery_verification_20261126.json",
-    "raw_baselines": FOLDNAR_REPO / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+    "raw_baselines": BPFOLD_PROTOCOL_REPO / "manifests/foldnar_v1/bprna_new_recovered_prediction_registry.json",
+    "bpfold_protocol": BPFOLD_PROTOCOL_REPO / "source_data/bpfold_label_protocol_audit_20261127/summary.json",
+    "bpfold_protocol_verification": BPFOLD_PROTOCOL_REPO / "source_data/bpfold_label_protocol_audit_20261127/independent_verification.json",
+    "official_panel": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/official_reference_5388.jsonl.gz",
+    "official_registry": BPFOLD_PROTOCOL_REPO / "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json",
+    "official_metrics": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/system_metrics.json",
+    "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -70,6 +77,7 @@ SOURCE_COMMITS = {
     "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
+    "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
 }
 
 
@@ -95,7 +103,12 @@ def verify_source_commits() -> list[str]:
             check=True, capture_output=True, text=True,
         ).stdout.strip()
         if actual != expected:
-            compatible_test_only_advance = False
+            compatible_advance = False
+            if name == "FoldNAR integration":
+                compatible_advance = subprocess.run(
+                    ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
+                    check=False,
+                ).returncode == 0
             if name == "independent margin evaluator":
                 ancestor = subprocess.run(
                     ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
@@ -105,8 +118,8 @@ def verify_source_commits() -> list[str]:
                     ["git", "-C", str(repo), "diff", "--quiet", expected, "HEAD", "--", "tools"],
                     check=False,
                 ).returncode
-                compatible_test_only_advance = ancestor == 0 and functional_diff == 0
-            if not compatible_test_only_advance:
+                compatible_advance = ancestor == 0 and functional_diff == 0
+            if not compatible_advance:
                 errors.append(f"{name} commit: expected {expected}, got {actual}")
     return errors
 
@@ -220,6 +233,11 @@ def verify_narrative_guards() -> list[str]:
         "不是我们的候选正向性能，也不是 clean SOTA",
         "0.19321803153859785",
         "0.15297454451260917",
+        "e7ff4e76fe078178ab41d2052349627317b5a3e3",
+        "DERIVED_FROM_BPFOLD_PREDICTIONS",
+        "circular-audit-only",
+        "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4",
+        "0.9617 仅循环审计不得排名",
         "这不是相对百分比，也不是我们的候选提升",
         "长序列只有 baseline 回答，GEC unsupported",
         "HOLDOUT_DESCRIPTIVE_ONLY_NOT_FOR_MODEL_SELECTION",
@@ -269,7 +287,7 @@ def verify_numbers() -> list[str]:
     errors = []
     if missing_sources():
         return [f"missing JSON source: {item}" for item in missing_sources()]
-    data = {name: None if name == "page34_builder" else json.loads(path.read_text()) for name, path in SOURCES.items()}
+    data = {name: None if name in {"page34_builder", "official_panel"} else json.loads(path.read_text()) for name, path in SOURCES.items()}
     text = DOC.read_text()
     checks = []
 
@@ -380,6 +398,34 @@ def verify_numbers() -> list[str]:
 
     check("raw registry status", pointer(data["raw_baselines"], "status"), "PASS_20_EXISTING_ASSETS_SHA_ID_METRICS")
     check("raw registry not clean", pointer(data["raw_baselines"], "scope_contract/raw_is_not_clean"), True)
+    check("derived labels not SOTA", pointer(data["raw_baselines"], "scope_contract/derived_project_labels_are_not_independent_sota"), True)
+    check("historical raw circular only", pointer(data["raw_baselines"], "historical_raw_ranking_disposition"), "CIRCULAR_AUDIT_ONLY_NOT_INDEPENDENT_SOTA; values retained")
+    check("protocol base", pointer(data["bpfold_protocol"], "base_commit"), "c183df8457b2e3d3695b6e9eb78bb6b56bff5d91")
+    check("protocol label accounting", pointer(data["bpfold_protocol"], "label_set_accounting"), {
+        "official_release": 5401, "official_reference": 5401, "project": 5388,
+        "same_name_same_sequence_intersection": 5388, "official_only": 13, "project_only": 0,
+        "exact_reference_project_label_sets": 106, "different_reference_project_label_sets": 5282,
+    })
+    check("project derived projections", pointer(data["bpfold_protocol"], "release_to_project_projection/exact_projection_records"), 5388)
+    check("circular score", pointer(data["bpfold_protocol"], "project_label_protocol_audits/official_release_on_project_labels_5388/micro_f1"), 0.9616708875167174, "0.9616708875167174")
+    check("circular FN", pointer(data["bpfold_protocol"], "project_label_protocol_audits/official_release_on_project_labels_5388/fn"), 0)
+    check("protocol verification", pointer(data["bpfold_protocol_verification"], "status"), "PASS_INDEPENDENT_PROTOCOL_AUDIT")
+    check("protocol records independently checked", pointer(data["bpfold_protocol_verification"], "records_compared_field_by_field"), 5401)
+    check("protocol no selection", pointer(data["bpfold_protocol_verification"], "external_test_used_for_model_selection"), False)
+    check("protocol history unchanged", pointer(data["bpfold_protocol_verification"], "historical_results_modified"), False)
+    check("official panel SHA", pointer(data["official_registry"], "label_panel/sha256"), "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4", "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4")
+    check("official panel rows", pointer(data["official_registry"], "label_panel/n_sequences"), 5388)
+    check("official panel source", pointer(data["official_registry"], "label_panel/source_archive_sha256"), "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403")
+    check("official panel independent verification", pointer(data["official_verification"], "status"), "PASS_INDEPENDENT_SECOND_IMPLEMENTATION")
+    check("official panel records verified", pointer(data["official_verification"], "panel_records_verified"), 5388)
+    check("official full systems verified", pointer(data["official_verification"], "full_coverage_systems_verified"), 28)
+    check("official circular excluded", pointer(data["official_registry"], "circular_project_label_score_excluded"), True)
+    check("official no inference", pointer(data["official_verification"], "new_inference"), False)
+    check("official no selection", pointer(data["official_verification"], "model_selection"), False)
+    check("official panel delivery SHA", pointer(data["official_verification"], "deliverables/4/sha256"), "4924e3512e89fd965233a1a14b327c3d87e6c583764b7682c2d293b1454159e4")
+    for key in ["strongest_project_raw", "strongest_project_raw_single_predictor"]:
+        check(f"legacy {key} circular", pointer(data["raw_baselines"], f"{key}/disposition"), "historical circular-audit-only; not independent SOTA")
+        check(f"legacy {key} not SOTA", pointer(data["raw_baselines"], f"{key}/independent_sota_eligible"), False)
     check("BPfold model form", pointer(data["raw_baselines"], "strongest_project_raw/model_form"), "six_checkpoint_ensemble")
     check("BPfold coverage", pointer(data["raw_baselines"], "strongest_project_raw/coverage"), 1.0)
     check("BPfold sequences", pointer(data["raw_baselines"], "strongest_project_raw/n_sequences"), 5388)
