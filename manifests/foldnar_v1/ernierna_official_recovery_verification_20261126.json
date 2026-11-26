@@ -14,6 +14,22 @@
       "weight_bytes_downloaded": 0,
       "no_third_party_mirror": true
     },
+    "macos_official_download_retry": {
+      "status": "FAILED_NETWORK_ZERO_BYTES",
+      "attempted_utc": "2026-11-26T08:10:13Z",
+      "built_in_browser_available": false,
+      "curl_exit_code": 28,
+      "curl_connect_timeout_ms": [15011, 15011, 15010],
+      "gdown_zero_byte_attempts": 2,
+      "gdown_elapsed_seconds_before_manual_stop": [144.628, 144.631],
+      "local_checkpoint_files_created": 0,
+      "magic_checks_performed": 0,
+      "scp_transfers_performed": 0,
+      "end_to_end_sha256_verified": false,
+      "state_dict_static_check": "NOT_RUN_NO_CHECKPOINT_BYTES",
+      "detailed_errors_manifest": "manifests/foldnar_v1/ernierna_official_asset_provenance_20261126.json#macos_official_download_retry_20261126",
+      "demo_substitution": false
+    },
     "environment_static_check": {
       "status": "CHECK_COMPLETED_RUNTIME_BLOCKED",
       "official_python_sources_ast_parsed": 16,

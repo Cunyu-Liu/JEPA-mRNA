@@ -19,6 +19,10 @@
 
 所有官方源码、快照和权重目标均位于 `/teams/HoulabData_1788502323/liucunyu/foldnar/ernierna_official_recovery_20261126/`。Git 中只保存合同、测试和小型 provenance，不保存 checkpoint、预测大文件或源码快照。
 
+### 2026-11-26 macOS 官方下载复核
+
+本机未配置 HTTP/HTTPS/SOCKS 代理，当前 subagent 无内置浏览器控制权限。对两个官方文件使用 curl 和本机已有 `gdown` 直接访问，未登录、未使用第三方镜像：`drive.usercontent.google.com` 和 `drive.google.com` 均在约 15 秒连接阶段返回 curl 28；`www.googleapis.com` 同样连接超时。两个 `gdown` 请求分别运行 144.628/144.631 秒后仍无 HTTP 响应且本地零字节，因而中止。没有文件可供 magic、大小、scp 或端到端 SHA 检查，state-dict 静态检查保持 `NOT_RUN_NO_CHECKPOINT_BYTES`。逐端点原文错误记录在 provenance 的 `macos_official_download_retry_20261126`，full-ready 状态不变。
+
 ## 模型身份、head 和训练暴露
 
 目标是官方 `--dataset_name bpRNA-new` 选择的 `ERNIE-RNA_attn-map_frozen_ss_prediction_bpRNA-1m_checkpoint.pt`，不是 bpRNA-new 上训练的模型。官方 README 明确：下游结构训练集为 bpRNA-1m，bpRNA-new 是该协议评估对象，不作为训练集。预训练语料的完整去污染和 bpRNA-new 暴露没有由该提交证明，因此不声称 pretraining-clean 或 homology-clean。

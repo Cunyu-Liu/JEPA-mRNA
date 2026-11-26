@@ -55,6 +55,57 @@
       "download_audit": "Direct px2 attempts on 2026-11-26 ended with curl error 28 connection timeout and zero downloaded bytes. No existing file with this official name was found in project asset searches. No third-party mirror or unverified checksum was used."
     }
   ],
+  "macos_official_download_retry_20261126": {
+    "attempted_utc": "2026-11-26T08:10:13Z",
+    "network": "Local macOS with HTTPEnable=0, HTTPSEnable=0 and SOCKSEnable=0; no proxy environment variables",
+    "built_in_browser": {
+      "status": "UNAVAILABLE_IN_SUBAGENT",
+      "error": "This subagent run is not currently running with built-in browser control enabled, so mcp__desktop_browser__run is unavailable."
+    },
+    "curl_attempts": [
+      {
+        "asset_id": "ernierna_pretrain_official",
+        "official_url": "https://drive.usercontent.google.com/download?id=1CmNxJxgjDhRoBdlDODFFjDNNzJMHVzmO&export=download&confirm=t",
+        "exit_code": 28,
+        "error": "curl: (28) Failed to connect to drive.usercontent.google.com port 443 after 15011 ms: Couldn't connect to server"
+      },
+      {
+        "asset_id": "ernierna_attn_map_frozen_bprna1m_head_official",
+        "official_url": "https://drive.google.com/file/d/1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7/view",
+        "exit_code": 28,
+        "error": "curl: (28) Failed to connect to drive.google.com port 443 after 15011 ms: Timeout was reached"
+      },
+      {
+        "asset_id": "ernierna_attn_map_frozen_bprna1m_head_official",
+        "official_url": "https://www.googleapis.com/drive/v3/files/1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7?fields=id,name,size,md5Checksum",
+        "exit_code": 28,
+        "error": "curl: (28) Connection timeout after 15010 ms"
+      }
+    ],
+    "gdown_attempts": [
+      {
+        "asset_id": "ernierna_pretrain_official",
+        "official_url": "https://drive.google.com/uc?id=1CmNxJxgjDhRoBdlDODFFjDNNzJMHVzmO",
+        "elapsed_seconds_before_manual_stop": 144.628,
+        "result": "NO_HTTP_RESPONSE_ZERO_BYTES",
+        "local_bytes": 0
+      },
+      {
+        "asset_id": "ernierna_attn_map_frozen_bprna1m_head_official",
+        "official_url": "https://drive.google.com/uc?id=1ii6XDkAsfVC--ZN2o3uiOcF5j9TTcvm7",
+        "elapsed_seconds_before_manual_stop": 144.631,
+        "result": "NO_HTTP_RESPONSE_ZERO_BYTES",
+        "local_bytes": 0
+      }
+    ],
+    "local_magic_and_size_check": "NOT_RUN_NO_FILES_CREATED",
+    "scp_to_teams": "NOT_RUN_NO_FILES_CREATED",
+    "end_to_end_sha256_verified": false,
+    "state_dict_static_check": "NOT_RUN_NO_CHECKPOINT_BYTES",
+    "login_used": false,
+    "third_party_mirror_used": false,
+    "demo_used_as_checkpoint_or_prediction": false
+  },
   "model_identity": {
     "family": "ERNIE-RNA",
     "prediction_id": "ernierna_author_attn_map_frozen_bprna1m/bprna_new/raw_v1",
