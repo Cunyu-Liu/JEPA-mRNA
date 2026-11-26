@@ -15,6 +15,7 @@ F = Path("/teams/HoulabData_1788502323/liucunyu/foldnar")
 A = Path("/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts")
 MARGIN_REPO = Path("/home/rna_jev_margin_candidate")
 MARGIN_EVALUATOR_REPO = Path("/home/rna_jev_margin_evaluator")
+OBSOLETE_MARGIN_EVALUATOR_COMMIT = "8b1861f9f8c116250aba194799bf5ee7d9a4f39e"
 STRUCTRFM = F / "structrfm_official_v0.0.8"
 FOLDNAR_REPO = Path("/home/rna_jev_foldnar_integration")
 LABEL_QUALITY_REPO = Path("/home/rna_jev_label_quality")
@@ -61,7 +62,7 @@ SOURCE_COMMITS = {
     "FoldNAR integration": (FOLDNAR_REPO, "79a2ed45879f1f4e81d6719ed54600bf7f8da807"),
     "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
     "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
-    "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "8b1861f9f8c116250aba194799bf5ee7d9a4f39e"),
+    "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
 }
 
 
@@ -151,11 +152,15 @@ def verify_narrative_guards() -> list[str]:
         "下一页必须暴露分层",
         "margin 双训练未完成",
         "/home/rna_jev_margin_evaluator",
-        "8b1861f9f8c116250aba194799bf5ee7d9a4f39e",
+        "536b79e450c1ad18b67e06cb39ecb3730546221b",
+        "current independent margin evaluator",
         "不得干扰 GPU 或改原 16 门",
         "margin 仍无结论",
     ]
-    return [f"missing narrative guard: {item}" for item in required if item not in text]
+    errors = [f"missing narrative guard: {item}" for item in required if item not in text]
+    if OBSOLETE_MARGIN_EVALUATOR_COMMIT in text:
+        errors.append("obsolete margin evaluator commit remains in ledger")
+    return errors
 
 
 def verify_numbers() -> list[str]:

@@ -80,10 +80,17 @@ def test_next_page_exposure_strata_and_margin_pending():
     assert "下一页必须暴露分层" in text
     assert "margin 双训练未完成" in text
     assert "/home/rna_jev_margin_evaluator" in text
-    assert "8b1861f9f8c116250aba194799bf5ee7d9a4f39e" in text
+    assert "536b79e450c1ad18b67e06cb39ecb3730546221b" in text
     assert "不得干扰 GPU 或改原 16 门" in text
     assert "margin 仍无结论" in text
     assert "本节只约束后续内容，不修改 PPT" in text
+
+
+def test_obsolete_margin_evaluator_is_not_current():
+    text = ledger.DOC.read_text()
+    assert ledger.OBSOLETE_MARGIN_EVALUATOR_COMMIT not in text
+    assert ledger.SOURCE_COMMITS["independent margin evaluator"][1] == "536b79e450c1ad18b67e06cb39ecb3730546221b"
+    assert "current independent margin evaluator" in text
 
 
 def test_linearpartition_recall_and_gec_boundary():
