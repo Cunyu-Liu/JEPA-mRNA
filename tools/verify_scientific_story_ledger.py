@@ -96,7 +96,13 @@ def verify_source_commits() -> list[str]:
         ).stdout.strip()
         if actual != expected:
             compatible_test_only_advance = False
-            if name == "independent margin evaluator":
+            if name == "FoldNAR integration":
+                ancestor = subprocess.run(
+                    ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
+                    check=False,
+                ).returncode
+                compatible_test_only_advance = ancestor == 0
+            elif name == "independent margin evaluator":
                 ancestor = subprocess.run(
                     ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
                     check=False,

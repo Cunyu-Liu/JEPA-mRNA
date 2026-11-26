@@ -1,13 +1,13 @@
 {
   "status": "PASS_RENDER_PDF_TEXT_AND_SLIDE35_36_OCR",
   "deck_label": "SYNTHETIC_MARGIN_FIXTURE_REAL_FROZEN_EXTERNAL_RESULTS",
-  "deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round72_work/synthetic_round72_v4.pptx",
-  "deck_sha256": "72b7a5c9ce59c1b81b2c2c0fee9ce9f28ac39436a13750e024c92c9bc63fbd8d",
+  "deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round72_work/synthetic_round72_exposure.pptx",
+  "deck_sha256": "9201726a9d28d327c9b63f9766b0a7b195f4fd705ba8149b0822c40dc2d0a1fd",
   "deck_unchanged": true,
   "slides_rendered": 17,
   "deck_slide_count": 17,
   "renderer": "LibreOffice 26.8.1.1 bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1 headless PDF; pdftoppm 120 dpi; OCR 400 dpi",
-  "ppt_to_pdf_complete_text_checks": 686,
+  "ppt_to_pdf_complete_text_checks": 689,
   "missing_or_clipped_text": [],
   "missing_new_page_pdf_text": {},
   "missing_new_page_ocr_text": {},
@@ -16,7 +16,7 @@
       "deck_index": 16,
       "png": "slide35-ocr.png",
       "png_sha256": "1dc921299a24d0b0465dd48712d2ab12f64b9b1ac00d459d38997c500d193ef5",
-      "text_path": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round72_work/render_v5/slide35-ocr.txt",
+      "text_path": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round72_work/render_exposure/slide35-ocr.txt",
       "engine": "macOS Vision zh-Hans/en-US",
       "characters": 756,
       "missing": []
@@ -25,13 +25,13 @@
       "deck_index": 17,
       "png": "slide36-ocr.png",
       "png_sha256": "cd5bfce6c91b6d6122ff4e867f18514b61de56690bf08c563d1a170b7d6f4cbe",
-      "text_path": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round72_work/render_v5/slide36-ocr.txt",
+      "text_path": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round72_work/render_exposure/slide36-ocr.txt",
       "engine": "macOS Vision zh-Hans/en-US",
       "characters": 1066,
       "missing": []
     }
   },
-  "pdf_sha256": "371f5b31d3e08c2700bb402a6f08205e58386151343a3f50d614463755d278ad",
+  "pdf_sha256": "30082e225cee61ca48810807ffe532eb8b1edbd15a7a117d07471b954969cf37",
   "real_margin_data_used": false,
   "real_ppt_modified": false,
   "visual_review": "PENDING_AGENT_IMAGE_REVIEW"

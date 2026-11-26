@@ -5,6 +5,8 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import subprocess
+import sys
 import zipfile
 
 import pytest
@@ -21,7 +23,13 @@ R71_SPEC = importlib.util.spec_from_file_location("round71_fixture_for_round72",
 R71 = importlib.util.module_from_spec(R71_SPEC)
 assert R71_SPEC.loader is not None
 R71_SPEC.loader.exec_module(R71)
+READINESS_PATH = ROOT / "ppt/check_round72_readiness.py"
+READINESS_SPEC = importlib.util.spec_from_file_location("round72_readiness", READINESS_PATH)
+R = importlib.util.module_from_spec(READINESS_SPEC)
+assert READINESS_SPEC.loader is not None
+READINESS_SPEC.loader.exec_module(R)
 DECK = ROOT / "ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.pptx"
+GATE_ERRORS = (M.EligibilityError, R71.M.EligibilityError, R.M.EligibilityError)
 
 
 def fixture_root(tmp_path: Path) -> Path:
@@ -29,20 +37,39 @@ def fixture_root(tmp_path: Path) -> Path:
     return Path(configured) if configured else tmp_path
 
 
+def margin_verification(margin: dict) -> Path:
+    deck = margin["deck"]
+    return deck.with_name(deck.stem + ".round71_build_verification.json")
+
+
 def synthetic_margin(root: Path) -> dict:
-    return R71.build_fixture(root / "synthetic_margin", True)
+    margin = R71.build_fixture(root / "synthetic_margin", True)
+    deck = margin["deck"]
+    independent = deck.with_name(deck.stem + ".round71_independent_build_verification.json")
+    command = [sys.executable, str(ROOT / "ppt/independent_build_verify_round71.py"),
+               "--source-deck", margin["report"]["backup"], "--primary-deck", str(deck),
+               "--evaluation-root", str(margin["evaluation_root"]),
+               "--cross-source-root", str(margin["cross_source_root"]),
+               "--work-dir", str(root / "round71_independent"),
+               "--verification", str(independent)]
+    result = subprocess.run(command, capture_output=True, text=True, timeout=300)
+    assert result.returncode == 0, result.stdout + result.stderr
+    margin["independent_verification"] = independent
+    return margin
 
 
 def build_synthetic(root: Path) -> dict:
     margin = synthetic_margin(root)
     deck = margin["deck"]
+    readiness = R.check_readiness(deck, margin_verification(margin), margin["independent_verification"])
     verification = deck.with_name(deck.stem + ".round72_build_verification.json")
-    report = M.build(deck, deck.with_name(deck.stem + ".round71_build_verification.json"),
+    report = M.build(deck, margin_verification(margin), margin["independent_verification"],
                      verification=verification)
-    return {"margin": margin, "deck": deck, "verification": verification, "report": report}
+    return {"margin": margin, "deck": deck, "verification": verification,
+            "readiness": readiness, "report": report}
 
 
-def test_synthetic_margin_to_pages35_36_end_to_end_and_real_deck_untouched(tmp_path):
+def test_synthetic_margin_exposure_to_pages35_36_end_to_end_and_real_deck_untouched(tmp_path):
     real_hash = hashlib.sha256(DECK.read_bytes()).hexdigest()
     built = build_synthetic(fixture_root(tmp_path))
     deck = built["deck"]
@@ -50,9 +77,22 @@ def test_synthetic_margin_to_pages35_36_end_to_end_and_real_deck_untouched(tmp_p
     assert len(prs.slides) == 17
     assert len(Presentation(DECK).slides) == 14
     assert hashlib.sha256(DECK.read_bytes()).hexdigest() == real_hash
+    assert built["readiness"]["ready"] and not built["readiness"]["ppt_modified"]
+    assert built["readiness"]["added_slide_numbers"] == [35, 36]
+    assert built["readiness"]["exposure_sensitivity"]["embedded_matches"]
+    assert built["readiness"]["verified_exposure_registry_identities"] == 4
     assert built["report"]["prior_slide_xml_preserved"] == 15
     assert built["report"]["original_phase0_xml_preserved"] == 14
     assert built["report"]["sequential_append"] == [35, 36]
+    assert len(built["report"]["margin_final_json"]) == 4
+    exposure = built["report"]["exposure_sensitivity"]
+    assert exposure["embedded_matches"] and exposure["cluster_dev_counts"] == R71.M.EXPOSURE_COUNTS
+    assert exposure["sha256"] == M.sha256(built["margin"]["evaluation_root"] / "exposure_sensitivity.json")
+    assert len(built["report"]["verified_exposure_registry_identities"]) == 4
+    independent = json.loads(built["margin"]["independent_verification"].read_text())
+    assert independent["exposure_sensitivity_path"] == exposure["path"]
+    assert independent["exposure_sensitivity_sha256"] == exposure["sha256"]
+    assert independent["exposure_embedded_matches"] is True
     assert built["report"]["scope"] == {
         "raw_not_clean_not_sota": True, "external_raw_n": 5388,
         "longseq_execution_column": "APPROXIMATE_SPARSE",
@@ -91,40 +131,77 @@ def test_synthetic_margin_to_pages35_36_end_to_end_and_real_deck_untouched(tmp_p
     assert "FLOPs NOT_MEASURED" in text36 and "不用于模型选择" in text36
 
 
-def test_margin_hash_report_and_duplicate_gates_are_atomic(tmp_path):
+def test_margin_exposure_independent_and_duplicate_gates_are_atomic(tmp_path):
     margin = synthetic_margin(tmp_path / "gates")
     original = margin["deck"]
-    for mode in ("MISSING_REPORT", "DECK_HASH", "NOT_FINAL", "BUILDER_HASH"):
+    modes = ("MISSING_REPORT", "DECK_HASH", "NOT_FINAL", "BUILDER_HASH", "MISSING_EXPOSURE",
+             "EXPOSURE_HASH", "EMBEDDED_MISMATCH", "CLUSTER_COUNTS", "UNKNOWN_MISMATCH",
+             "MISSING_INDEPENDENT", "INDEPENDENT_EXPOSURE_SHA")
+    for mode in modes:
         case = tmp_path / mode
         case.mkdir()
         deck = case / "deck.pptx"
         deck.write_bytes(original.read_bytes())
-        source_report = original.with_name(original.stem + ".round71_build_verification.json")
-        report_path = case / "margin.json"
-        report = json.loads(source_report.read_text())
+        report = json.loads(margin_verification(margin).read_text())
         report["deck"] = str(deck)
         actual_backup = Path(report["backup"])
         report["backup"] = str(case / "source14.pptx")
         (case / "source14.pptx").write_bytes(actual_backup.read_bytes())
+        independent = json.loads(margin["independent_verification"].read_text())
         if mode == "DECK_HASH":
             report["deck_sha256"] = "0" * 64
         elif mode == "NOT_FINAL":
             report["scientific_status"] = "IN_PROGRESS"
         elif mode == "BUILDER_HASH":
             report["builder_sha256"] = "0" * 64
+        elif mode == "MISSING_EXPOSURE":
+            report.pop("exposure_sensitivity")
+        elif mode == "EXPOSURE_HASH":
+            report["exposure_sensitivity"]["sha256"] = "0" * 64
+        elif mode == "EMBEDDED_MISMATCH":
+            report["exposure_sensitivity"]["embedded_matches"] = False
+        elif mode == "CLUSTER_COUNTS":
+            report["exposure_sensitivity"]["cluster_dev_counts"]["EXACT"] += 1
+        elif mode == "UNKNOWN_MISMATCH":
+            metric = report["exposure_sensitivity"]["unknown_ensemble_minus_control"]["pair"]["f1"]
+            metric["delta_ensemble_minus_control"] += 0.1
+        elif mode == "INDEPENDENT_EXPOSURE_SHA":
+            independent["exposure_sensitivity_sha256"] = "0" * 64
+        report_path = case / "margin.json"
+        independent_path = case / "independent.json"
         report_path.write_text(json.dumps(report))
+        independent_path.write_text(json.dumps(independent))
         before = hashlib.sha256(deck.read_bytes()).hexdigest()
-        with pytest.raises(M.EligibilityError):
-            M.build(deck, report_path if mode != "MISSING_REPORT" else case / "absent.json")
+        selected_report = case / "absent.json" if mode == "MISSING_REPORT" else report_path
+        selected_independent = (case / "absent-independent.json" if mode == "MISSING_INDEPENDENT"
+                                else independent_path)
+        with pytest.raises(GATE_ERRORS):
+            M.build(deck, selected_report, selected_independent)
+        with pytest.raises(GATE_ERRORS):
+            R.check_readiness(deck, selected_report, selected_independent)
         assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
         assert len(Presentation(deck).slides) == 15
     built = build_synthetic(tmp_path / "duplicate")
     before = hashlib.sha256(built["deck"].read_bytes()).hexdigest()
-    with pytest.raises(M.EligibilityError, match="exactly 15 slides"):
-        M.build(built["deck"], built["margin"]["deck"].with_name(
-            built["margin"]["deck"].stem + ".round71_build_verification.json"),
-            backup=tmp_path / "duplicate-backup.pptx", verification=tmp_path / "duplicate.json")
+    with pytest.raises(GATE_ERRORS, match="exactly 15 slides"):
+        M.build(built["deck"], margin_verification(built["margin"]),
+                built["margin"]["independent_verification"],
+                backup=tmp_path / "duplicate-backup.pptx", verification=tmp_path / "duplicate.json")
     assert hashlib.sha256(built["deck"].read_bytes()).hexdigest() == before
+
+
+@pytest.mark.parametrize("target", ("standalone", "registry_artifact"))
+def test_exposure_artifact_hash_tamper_cannot_publish_or_change_deck(tmp_path, target):
+    margin = synthetic_margin(tmp_path / target)
+    deck = margin["deck"]
+    exposure_path = margin["evaluation_root"] / "exposure_sensitivity.json"
+    altered = exposure_path if target == "standalone" else margin["evaluation_root"] / "pretrain_exposure/summary.json"
+    altered.write_text(altered.read_text() + "\n")
+    before = hashlib.sha256(deck.read_bytes()).hexdigest()
+    with pytest.raises(GATE_ERRORS):
+        M.build(deck, margin_verification(margin), margin["independent_verification"])
+    assert hashlib.sha256(deck.read_bytes()).hexdigest() == before
+    assert len(Presentation(deck).slides) == 15
 
 
 def test_tampered_frozen_raw_metric_cannot_modify_margin_deck(tmp_path):
@@ -136,8 +213,8 @@ def test_tampered_frozen_raw_metric_cannot_modify_margin_deck(tmp_path):
     altered = tmp_path / "altered_raw_registry.json"
     altered.write_text(json.dumps(raw))
     before = hashlib.sha256(deck.read_bytes()).hexdigest()
-    with pytest.raises(M.EligibilityError, match="registry summary differs"):
-        M.build(deck, deck.with_name(deck.stem + ".round71_build_verification.json"),
+    with pytest.raises(GATE_ERRORS, match="registry summary differs"):
+        M.build(deck, margin_verification(margin), margin["independent_verification"],
                 raw_registry=altered, backup=tmp_path / "tamper-backup.pptx",
                 verification=tmp_path / "tamper.json")
     assert hashlib.sha256(deck.read_bytes()).hexdigest() == before

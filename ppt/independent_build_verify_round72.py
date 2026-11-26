@@ -42,6 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--builder", type=Path, default=OUT / "add_external_results_round72.py")
     parser.add_argument("--source-deck", type=Path, required=True, help="hash-verified synthetic or real 15-slide margin deck")
     parser.add_argument("--margin-verification", type=Path, required=True)
+    parser.add_argument("--margin-independent-verification", type=Path, required=True)
     parser.add_argument("--primary-deck", type=Path, required=True, help="built 17-slide deck")
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--verification", type=Path, required=True)
@@ -62,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     atomic_json(rebound_margin_verification, margin_report)
     command = [sys.executable, str(args.builder.resolve()), "--deck", str(independent),
                "--margin-verification", str(rebound_margin_verification),
+               "--margin-independent-verification", str(args.margin_independent_verification.resolve()),
                "--backup", str(work / "independent.pre_round72.pptx"),
                "--verification", str(work / "independent_build.json")]
     result = subprocess.run(command, capture_output=True, text=True, timeout=300)
@@ -86,6 +88,12 @@ def main(argv: list[str] | None = None) -> int:
         "primary_unchanged": sha256(primary) == primary_hash,
         "margin_verification": str(args.margin_verification.resolve()),
         "margin_verification_sha256": sha256(args.margin_verification.resolve()),
+        "margin_independent_verification": str(args.margin_independent_verification.resolve()),
+        "margin_independent_verification_sha256": sha256(args.margin_independent_verification.resolve()),
+        "exposure_sensitivity_path": build_report["exposure_sensitivity"]["path"],
+        "exposure_sensitivity_sha256": build_report["exposure_sensitivity"]["sha256"],
+        "exposure_embedded_matches": build_report["exposure_sensitivity"]["embedded_matches"],
+        "exposure_cluster_dev_counts": build_report["exposure_sensitivity"]["cluster_dev_counts"],
         "zip_parts_compared": len(set(before) & set(after)), "missing_parts": missing,
         "extra_parts": extra, "different_parts": different,
         "slide_count": len(Presentation(primary).slides), "prior_slide_xml_preserved": 15 if prior_xml else 0,
