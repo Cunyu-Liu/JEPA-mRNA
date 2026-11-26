@@ -20,6 +20,8 @@ def load_module(name):
 recovery = load_module("contextfold_official_recovery_20261126")
 sys.path.insert(0, str(TOOLS))
 launcher = load_module("run_contextfold_official_bprna_new")
+verifier = load_module("verify_contextfold_official_recovery_20261126")
+baseline = load_module("foldnar_baseline_contract")
 
 
 class NativeContractTest(unittest.TestCase):
@@ -125,6 +127,29 @@ class LauncherTest(unittest.TestCase):
             self.assertEqual(completed.returncode, 2)
             self.assertIn("PREFLIGHT_BLOCKED", completed.stderr)
             self.assertFalse(output.exists())
+
+
+class IndependentVerificationTest(unittest.TestCase):
+    def test_original_evidence_dataset_and_registry_pass(self):
+        report = verifier.verify()
+        self.assertEqual(report["status"], "PASS_BLOCKED_OFFICIAL_RECOVERY_CONTRACT")
+        self.assertEqual(report["n_dataset_rows"], 5388)
+        self.assertFalse(report["full_ready"])
+        self.assertIsNone(report["predictions"])
+
+    def test_registry_and_generator_keep_the_same_identity(self):
+        registry = json.loads((Path(__file__).parents[1] / "manifests/foldnar_v1/baseline_registry.json").read_text())
+        row = next(row for row in registry["rows"] if row["baseline_id"] == "contextfold")
+        spec = next(spec for spec in baseline._specs() if spec["baseline_id"] == "contextfold")
+        training = baseline._default_training("contextfold")
+        self.assertEqual(row["category"], "STRUCTURED_DECODER")
+        self.assertEqual(row["version_protocol"], spec["version_protocol"])
+        self.assertEqual(row["status"], spec["status"])
+        self.assertEqual(row["training_data"]["status"], training["status"])
+        self.assertEqual(row["training_data"]["external_training_corpora"], training["external_training_corpora"])
+        self.assertEqual(row["prediction_ids"], [])
+        self.assertEqual(row["n_frozen_prediction_rows"], 0)
+        self.assertEqual(row["n_summary_only_rows"], 0)
 
 
 if __name__ == "__main__":

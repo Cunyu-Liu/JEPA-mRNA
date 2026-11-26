@@ -1223,7 +1223,7 @@
     {
       "baseline_id": "contextfold",
       "model": "ContextFold",
-      "category": "DIRECT_NEURAL",
+      "category": "STRUCTURED_DECODER",
       "row_type": "PREDICTOR",
       "role": "baseline",
       "source_cohorts": [
@@ -1235,7 +1235,7 @@
           "cohort_label": "ContextFold"
         }
       ],
-      "version_protocol": "BLOCKED_PROVENANCE",
+      "version_protocol": "1.00; official readme/resources recovered; implementation and trained parameters blocked",
       "official_weights": {
         "status": "BLOCKED_PROVENANCE",
         "path": null,
@@ -1243,9 +1243,11 @@
         "reason": "official/current checkpoint asset or identity not verified"
       },
       "training_data": {
-        "status": "BLOCKED_PROVENANCE: exact training union not verified",
+        "status": "OFFICIAL_README_RESOURCES_RECOVERED; exact released Train defaults and implementation/model bytes blocked",
         "project_training_dataset_ids": [],
-        "external_training_corpora": []
+        "external_training_corpora": [
+          "Andronescu RNA 2010 S-Full-Train for paper prediction models; S-Full initialization for family-specialized models"
+        ]
       },
       "license": {
         "status": "BLOCKED_PROVENANCE",
@@ -1254,7 +1256,7 @@
       },
       "inference": {
         "status": "BLOCKED_PROVENANCE",
-        "version_protocol": "BLOCKED_PROVENANCE",
+        "version_protocol": "1.00; official readme/resources recovered; implementation and trained parameters blocked",
         "decoder": null,
         "threshold": null,
         "evaluation_scope": null,
@@ -1268,15 +1270,15 @@
       "provenance_status": "BLOCKED_PROVENANCE",
       "evidence": {
         "source_type": "local_file",
-        "path": "/home/rna_jev_xens2_dualview_round56/records/BASELINE_RESULTS.md",
+        "path": "/home/rna_jev_xens2_dualview_round56/source_data/appendix_leakage/round39_contextfold_asset_recheck.json",
         "exists": true,
-        "bytes": 9349,
-        "sha256": "ecd3b7bf2cb4cd1a734586de10fd793aae94ca25ebe8f743a81bf50004beb0f6",
+        "bytes": 1469,
+        "sha256": "704129e1d509d936166b0554cb30c2ce384b094c39363b31db4e132a6e2a09db",
         "hash_scope": "full_content"
       },
       "evidence_additional": [],
-      "status": "BLOCKED_PROVENANCE",
-      "inclusion_reason": "required historical 25 coverage; no verified current checkpoint/prediction",
+      "status": "BLOCKED_OFFICIAL_IMPLEMENTATION_AND_PARAMETERS",
+      "inclusion_reason": "required historical 25 coverage; official protocol evidence recovered but no executable/model/prediction",
       "exclusion_reason": null,
       "prediction_registry_scope": "NO_CURRENT_PREDICTION",
       "prediction_ids": [],
@@ -5391,8 +5393,8 @@
   "core_union_count": 54,
   "supplemental_row_count": 10,
   "four_category_counts": {
-    "STRUCTURED_DECODER": 14,
-    "DIRECT_NEURAL": 16,
+    "STRUCTURED_DECODER": 15,
+    "DIRECT_NEURAL": 15,
     "FOUNDATION_MODEL": 29,
     "PROJECT": 5
   },

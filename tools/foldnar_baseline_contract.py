@@ -122,7 +122,7 @@ def _specs() -> list[dict]:
     add("spot_rna", "SPOT-RNA", "DIRECT_NEURAL", "MultiMolecule converted checkpoint; not original-author distribution", SOURCE / "appendix_leakage/round39_spotrna_raw_summary.json", "RAW_BPRNA_NEW_ONLY", "historical 25 and CHANRG direct neural predictor")
     add("rnaformer", "RNAformer", "DIRECT_NEURAL", "32M family; four checkpoints separated", SOTA, "FAMILY_PROVENANCE_ONLY", "historical model family; checkpoint-specific rows carry predictions", "MODEL_FAMILY")
     add("kirigami", "Kirigami", "DIRECT_NEURAL", "official recovered weights; standard decoder", RECORDS, "RAW_TS0_AND_BPRNA_NEW_ONLY", "historical 25; two raw splits located")
-    add("contextfold", "ContextFold", "DIRECT_NEURAL", "BLOCKED_PROVENANCE", RECORDS, "BLOCKED_PROVENANCE", "required historical 25 coverage; no verified current checkpoint/prediction")
+    add("contextfold", "ContextFold", "STRUCTURED_DECODER", "1.00; official readme/resources recovered; implementation and trained parameters blocked", SOURCE / "appendix_leakage/round39_contextfold_asset_recheck.json", "BLOCKED_OFFICIAL_IMPLEMENTATION_AND_PARAMETERS", "required historical 25 coverage; official protocol evidence recovered but no executable/model/prediction")
     add("e2efold", "E2Efold", "DIRECT_NEURAL", "repository commit 2aab9e78326ddaa27d14c49eb34001c0003a1960; official weights not recovered", SOURCE / "fig05_speed/round38_baseline_assets.json", "BLOCKED_PROVENANCE", "required historical 25 coverage; old bpRNA-new note is not a reproduced result")
     add("debfold", "DEBFold", "DIRECT_NEURAL", "BLOCKED_PROVENANCE", RECORDS, "BLOCKED_PROVENANCE", "required historical 25 coverage; no verified current checkpoint/prediction")
     add("rinalmo", "RiNALMo", "FOUNDATION_MODEL", "family identity; micro/mega/giga and task heads separated", RECORDS, "FAMILY_PROVENANCE_ONLY", "historical foundation-model family", "MODEL_FAMILY")
@@ -199,6 +199,7 @@ def _default_training(baseline_id: str) -> dict:
                 "current_file_coverage": "FROZEN_SUBSET_OR_VERSION_MISMATCH; full official counts not available",
                 "checkpoint_config": "BLOCKED_PROVENANCE"}
     external = {
+        "contextfold": (["Andronescu RNA 2010 S-Full-Train for paper prediction models; S-Full initialization for family-specialized models"], "OFFICIAL_README_RESOURCES_RECOVERED; exact released Train defaults and implementation/model bytes blocked"),
         "debfold": (["DEBFold official TrainingValidationSet.zip: 8782 structures/8384 unique sequences; SHA256=20d4404ffa2c1d2b973f230de859bbfadd47cf3de46c3164e7b8c550b891c6a2"], "OFFICIAL_TRAIN_VALIDATION_ARCHIVE_RECOVERED; 25-fold assignments and checkpoint-specific training union not published"),
         "mxfold2": (["bpRNA-1m TrainSetA+TrainSetB"], "OFFICIAL_PACKAGE_TRAINING_IDENTITY; homology overlap unresolved"),
         "rinalmo_ft": (["bpRNA TR0"], "ZENODO_CHECKPOINT_TRAINING_CORPUS; TestSetB overlap known"),
