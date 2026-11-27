@@ -1,0 +1,13 @@
+{
+  "gpu_used": false,
+  "non_acgu_records": 0,
+  "plan_records": 1422,
+  "production_inference_started": false,
+  "schema_version": "archiveii.full3966.cpu_recovery.code_verification.round1.v1",
+  "shared_registry_modified": false,
+  "status": "PASS_CODE_AND_PLAN_ONLY_NO_PRODUCTION_INFERENCE",
+  "unit_tests": {
+    "failed": 0,
+    "passed": 6
+  }
+}
