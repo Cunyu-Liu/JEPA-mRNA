@@ -108,7 +108,7 @@ def main():
         run(["git", "checkout", "--quiet", "--detach", commit], clone)
         recovery_log = run([PYTHON, "tools/recover_ts0_official_coverage_20261127.py"], clone)
         recovery_verify_log = run([PYTHON, "tools/verify_ts0_official_coverage_recovery_20261127.py"], clone)
-        testsetb_verify_log = run([PYTHON, "tools/verify_testsetb_official_coverage_20261127.py"], clone)
+        testsetb_verify_log = run([PYTHON, "tools/verify_testsetb_official_coverage_20261127.py", "--round", "3"], clone)
         build_log = run([PYTHON, "tools/build_ts0_testsetb_official_reference_panels_20261127.py"], clone)
         verify_log = run([PYTHON, "tools/verify_ts0_testsetb_official_reference_panels_20261127.py"], clone)
         test_log = run([PYTHON, "-m", "pytest", "-q", "tests/test_ts0_testsetb_official_reference_panels_20261127.py",
