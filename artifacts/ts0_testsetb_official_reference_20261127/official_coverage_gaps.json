@@ -248,30 +248,12 @@
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9869731800766284,
-          "missing_count": 17,
-          "missing_names": [
-            "bpRNA_CRW_25863.bpseq",
-            "bpRNA_CRW_31704.bpseq",
-            "bpRNA_CRW_43565.bpseq",
-            "bpRNA_CRW_54323.bpseq",
-            "bpRNA_CRW_54562.bpseq",
-            "bpRNA_RFAM_10644.bpseq",
-            "bpRNA_RFAM_1072.bpseq",
-            "bpRNA_RFAM_18822.bpseq",
-            "bpRNA_RFAM_18935.bpseq",
-            "bpRNA_RFAM_38651.bpseq",
-            "bpRNA_SRP_192.bpseq",
-            "bpRNA_tmRNA_252.bpseq",
-            "bpRNA_tmRNA_397.bpseq",
-            "bpRNA_tmRNA_643.bpseq",
-            "bpRNA_tmRNA_651.bpseq",
-            "bpRNA_tmRNA_686.bpseq",
-            "bpRNA_tmRNA_693.bpseq"
-          ],
-          "n_with_prediction": 1288,
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 1305,
           "prediction_id": "contrafold/bprna_ts0",
-          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+          "status": "PASS_FULL_COVERAGE"
         },
         {
           "coverage": 0.9869731800766284,
@@ -300,30 +282,12 @@
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9869731800766284,
-          "missing_count": 17,
-          "missing_names": [
-            "bpRNA_CRW_25863.bpseq",
-            "bpRNA_CRW_31704.bpseq",
-            "bpRNA_CRW_43565.bpseq",
-            "bpRNA_CRW_54323.bpseq",
-            "bpRNA_CRW_54562.bpseq",
-            "bpRNA_RFAM_10644.bpseq",
-            "bpRNA_RFAM_1072.bpseq",
-            "bpRNA_RFAM_18822.bpseq",
-            "bpRNA_RFAM_18935.bpseq",
-            "bpRNA_RFAM_38651.bpseq",
-            "bpRNA_SRP_192.bpseq",
-            "bpRNA_tmRNA_252.bpseq",
-            "bpRNA_tmRNA_397.bpseq",
-            "bpRNA_tmRNA_643.bpseq",
-            "bpRNA_tmRNA_651.bpseq",
-            "bpRNA_tmRNA_686.bpseq",
-            "bpRNA_tmRNA_693.bpseq"
-          ],
-          "n_with_prediction": 1288,
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 1305,
           "prediction_id": "eternafold/bprna_ts0",
-          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+          "status": "PASS_FULL_COVERAGE"
         },
         {
           "coverage": 0.0,
@@ -644,54 +608,26 @@
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9869731800766284,
-          "missing_count": 17,
+          "coverage": 0.9977011494252873,
+          "missing_count": 3,
           "missing_names": [
-            "bpRNA_CRW_25863.bpseq",
-            "bpRNA_CRW_31704.bpseq",
-            "bpRNA_CRW_43565.bpseq",
-            "bpRNA_CRW_54323.bpseq",
-            "bpRNA_CRW_54562.bpseq",
             "bpRNA_RFAM_10644.bpseq",
-            "bpRNA_RFAM_1072.bpseq",
             "bpRNA_RFAM_18822.bpseq",
-            "bpRNA_RFAM_18935.bpseq",
-            "bpRNA_RFAM_38651.bpseq",
-            "bpRNA_SRP_192.bpseq",
-            "bpRNA_tmRNA_252.bpseq",
-            "bpRNA_tmRNA_397.bpseq",
-            "bpRNA_tmRNA_643.bpseq",
-            "bpRNA_tmRNA_651.bpseq",
-            "bpRNA_tmRNA_686.bpseq",
-            "bpRNA_tmRNA_693.bpseq"
+            "bpRNA_RFAM_18935.bpseq"
           ],
-          "n_with_prediction": 1288,
+          "n_with_prediction": 1302,
           "prediction_id": "rnastructure_fold/bprna_ts0",
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9869731800766284,
-          "missing_count": 17,
+          "coverage": 0.9977011494252873,
+          "missing_count": 3,
           "missing_names": [
-            "bpRNA_CRW_25863.bpseq",
-            "bpRNA_CRW_31704.bpseq",
-            "bpRNA_CRW_43565.bpseq",
-            "bpRNA_CRW_54323.bpseq",
-            "bpRNA_CRW_54562.bpseq",
             "bpRNA_RFAM_10644.bpseq",
-            "bpRNA_RFAM_1072.bpseq",
             "bpRNA_RFAM_18822.bpseq",
-            "bpRNA_RFAM_18935.bpseq",
-            "bpRNA_RFAM_38651.bpseq",
-            "bpRNA_SRP_192.bpseq",
-            "bpRNA_tmRNA_252.bpseq",
-            "bpRNA_tmRNA_397.bpseq",
-            "bpRNA_tmRNA_643.bpseq",
-            "bpRNA_tmRNA_651.bpseq",
-            "bpRNA_tmRNA_686.bpseq",
-            "bpRNA_tmRNA_693.bpseq"
+            "bpRNA_RFAM_18935.bpseq"
           ],
-          "n_with_prediction": 1288,
+          "n_with_prediction": 1302,
           "prediction_id": "rnastructure_maxexpect/bprna_ts0",
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
@@ -870,6 +806,46 @@
           "n_with_prediction": 1288,
           "prediction_id": "rinalmo_2d_s2/bprna_ts0",
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 1305,
+          "prediction_id": "bpfold_official_release/bprna_ts0",
+          "status": "PASS_FULL_COVERAGE"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 1305,
+          "prediction_id": "vienna_mfe/bprna_ts0/recovered_official17",
+          "status": "PASS_FULL_COVERAGE"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 1305,
+          "prediction_id": "vienna_centroid/bprna_ts0/recovered_official17",
+          "status": "PASS_FULL_COVERAGE"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 1305,
+          "prediction_id": "vienna_mea/bprna_ts0/recovered_official17",
+          "status": "PASS_FULL_COVERAGE"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 1305,
+          "prediction_id": "nussinov_turner/bprna_ts0/recovered_official17",
+          "status": "PASS_FULL_COVERAGE"
         }
       ],
       "project_n": 1288

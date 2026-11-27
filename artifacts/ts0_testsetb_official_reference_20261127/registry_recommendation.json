@@ -9,9 +9,102 @@
         "unfiltered_official_protocol_eligible": false
       },
       "official_full_summary": {
-        "strongest_ensemble": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
-        "strongest_overall": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
-        "strongest_single_predictor": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"
+        "strongest_ensemble": {
+          "delta_vs_xens2": null,
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 8111,
+            "fp": 17589,
+            "macro_f1": 0.657498135003441,
+            "macro_precision": 0.5985607163969222,
+            "macro_recall": 0.7692178545943475,
+            "micro_f1": 0.6812363564199246,
+            "micro_precision": 0.6095758140773789,
+            "micro_recall": 0.7719899924099739,
+            "n_scored": 1305,
+            "tp": 27462,
+            "truth_empty_records": 1
+          },
+          "model_form": "six_checkpoint_ensemble",
+          "prediction_id": "bpfold_official_release/bprna_ts0",
+          "ranking_scope": "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION",
+          "training_exposure": {
+            "baseline_id": "bpfold",
+            "clean_n": null,
+            "clean_sha256": null,
+            "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+            "exact_sequence_overlap": null,
+            "full_project_panel_exposure_status": "UNCHECKED",
+            "homology_only_overlap": null,
+            "route": null,
+            "training_corpora": [],
+            "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+          }
+        },
+        "strongest_overall": {
+          "delta_vs_xens2": null,
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 8111,
+            "fp": 17589,
+            "macro_f1": 0.657498135003441,
+            "macro_precision": 0.5985607163969222,
+            "macro_recall": 0.7692178545943475,
+            "micro_f1": 0.6812363564199246,
+            "micro_precision": 0.6095758140773789,
+            "micro_recall": 0.7719899924099739,
+            "n_scored": 1305,
+            "tp": 27462,
+            "truth_empty_records": 1
+          },
+          "model_form": "six_checkpoint_ensemble",
+          "prediction_id": "bpfold_official_release/bprna_ts0",
+          "ranking_scope": "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION",
+          "training_exposure": {
+            "baseline_id": "bpfold",
+            "clean_n": null,
+            "clean_sha256": null,
+            "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+            "exact_sequence_overlap": null,
+            "full_project_panel_exposure_status": "UNCHECKED",
+            "homology_only_overlap": null,
+            "route": null,
+            "training_corpora": [],
+            "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+          }
+        },
+        "strongest_single_predictor": {
+          "delta_vs_xens2": null,
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 11783,
+            "fp": 28885,
+            "macro_f1": 0.5391319525762095,
+            "macro_precision": 0.4751765022445447,
+            "macro_recall": 0.66264725379184,
+            "micro_f1": 0.5391623606200707,
+            "micro_precision": 0.4516373991457048,
+            "micro_recall": 0.6687656368594158,
+            "n_scored": 1305,
+            "tp": 23790,
+            "truth_empty_records": 1
+          },
+          "model_form": "deterministic_single_predictor",
+          "prediction_id": "eternafold/bprna_ts0",
+          "ranking_scope": "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION",
+          "training_exposure": {
+            "baseline_id": "eternafold",
+            "clean_n": null,
+            "clean_sha256": null,
+            "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+            "exact_sequence_overlap": null,
+            "full_project_panel_exposure_status": "UNCHECKED",
+            "homology_only_overlap": null,
+            "route": null,
+            "training_corpora": [],
+            "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+          }
+        }
       },
       "suggested_data_rows": [
         {
@@ -229,31 +322,49 @@
           {
             "available": true,
             "baseline_id": "contrafold",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 1288,
+            "n_prediction_records": 1305,
             "panels": {
               "bprna_ts0_official_reference_1305": {
-                "coverage": 0.9869731800766284,
+                "coverage": 1.0,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 12106,
-                  "fp": 26996,
-                  "macro_f1": 0.5365088054874078,
-                  "macro_precision": 0.4792055493077494,
-                  "macro_recall": 0.6470746522338592,
-                  "micro_f1": 0.5388044914134742,
-                  "micro_precision": 0.45831410397897143,
-                  "micro_recall": 0.6535897215783901,
-                  "n_scored": 1288,
-                  "tp": 22841,
-                  "truth_empty_records": 0
+                  "fn": 12353,
+                  "fp": 27523,
+                  "macro_f1": 0.5362908433479244,
+                  "macro_precision": 0.47898194856564474,
+                  "macro_recall": 0.6467249288128931,
+                  "micro_f1": 0.5380230779924927,
+                  "micro_precision": 0.45760006306288553,
+                  "micro_recall": 0.652742248334411,
+                  "n_scored": 1305,
+                  "tp": 23220,
+                  "truth_empty_records": 1
                 },
-                "missing_count": 17,
-                "missing_names": [
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1305,
+                "n_with_prediction": 1305,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "bprna_ts0_projected_reference_1288": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.26341052941828924,
+                  "macro_precision": -0.3376619452010491,
+                  "macro_recall": -0.1495068734638887,
+                  "micro_f1": -0.2644360800735913,
+                  "micro_precision": -0.36307601445624804,
+                  "micro_recall": -0.1322860331358915
+                },
+                "extra_count": 17,
+                "extra_names": [
                   "bpRNA_CRW_25863.bpseq",
                   "bpRNA_CRW_31704.bpseq",
                   "bpRNA_CRW_43565.bpseq",
@@ -272,24 +383,6 @@
                   "bpRNA_tmRNA_686.bpseq",
                   "bpRNA_tmRNA_693.bpseq"
                 ],
-                "missing_predictions_imputed_as_zero": false,
-                "n_panel_sequences": 1305,
-                "n_with_prediction": 1288,
-                "paired_macro_f1_delta_ci95_vs_xens2": null,
-                "status": "PARTIAL_COVERAGE_NOT_RANKED"
-              },
-              "bprna_ts0_projected_reference_1288": {
-                "coverage": 1.0,
-                "delta_vs_xens2": {
-                  "macro_f1": -0.26341052941828924,
-                  "macro_precision": -0.3376619452010491,
-                  "macro_recall": -0.1495068734638887,
-                  "micro_f1": -0.2644360800735913,
-                  "micro_precision": -0.36307601445624804,
-                  "micro_recall": -0.1322860331358915
-                },
-                "extra_count": 0,
-                "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 12106,
@@ -324,13 +417,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/raw/bprna_ts0.json",
+            "path": "source_data/ts0_official_coverage_recovery_20261127/contrafold__bprna_ts0__full1305.json.gz",
             "prediction_id": "contrafold/bprna_ts0",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "0a402bceba38d5fede0835cb6e986a7d556c9ca46c9699ceee59555cb2331ec4",
-            "source_group": "REGISTERED",
+            "sha256": "0d19d76be790a9c3f9a2af4a11cb2a0e0e45bc08623dcbd9f6177ea774e3a12d",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
             "training_exposure": {
               "baseline_id": "contrafold",
               "clean_n": null,
@@ -469,31 +562,49 @@
           {
             "available": true,
             "baseline_id": "eternafold",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 1288,
+            "n_prediction_records": 1305,
             "panels": {
               "bprna_ts0_official_reference_1305": {
-                "coverage": 0.9869731800766284,
+                "coverage": 1.0,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 11554,
-                  "fp": 28355,
-                  "macro_f1": 0.5392145246518428,
-                  "macro_precision": 0.4752548027659211,
-                  "macro_recall": 0.662913239872901,
-                  "micro_f1": 0.5396620335659496,
-                  "micro_precision": 0.45205611811084484,
-                  "micro_recall": 0.6693850688184966,
-                  "n_scored": 1288,
-                  "tp": 23393,
-                  "truth_empty_records": 0
+                  "fn": 11783,
+                  "fp": 28885,
+                  "macro_f1": 0.5391319525762095,
+                  "macro_precision": 0.4751765022445447,
+                  "macro_recall": 0.66264725379184,
+                  "micro_f1": 0.5391623606200707,
+                  "micro_precision": 0.4516373991457048,
+                  "micro_recall": 0.6687656368594158,
+                  "n_scored": 1305,
+                  "tp": 23790,
+                  "truth_empty_records": 1
                 },
-                "missing_count": 17,
-                "missing_names": [
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1305,
+                "n_with_prediction": 1305,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "bprna_ts0_projected_reference_1288": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.26070481025385417,
+                  "macro_precision": -0.3416126917428774,
+                  "macro_recall": -0.1336682858248469,
+                  "micro_f1": -0.26357853792111596,
+                  "micro_precision": -0.36933400032437463,
+                  "micro_recall": -0.11649068589578504
+                },
+                "extra_count": 17,
+                "extra_names": [
                   "bpRNA_CRW_25863.bpseq",
                   "bpRNA_CRW_31704.bpseq",
                   "bpRNA_CRW_43565.bpseq",
@@ -512,24 +623,6 @@
                   "bpRNA_tmRNA_686.bpseq",
                   "bpRNA_tmRNA_693.bpseq"
                 ],
-                "missing_predictions_imputed_as_zero": false,
-                "n_panel_sequences": 1305,
-                "n_with_prediction": 1288,
-                "paired_macro_f1_delta_ci95_vs_xens2": null,
-                "status": "PARTIAL_COVERAGE_NOT_RANKED"
-              },
-              "bprna_ts0_projected_reference_1288": {
-                "coverage": 1.0,
-                "delta_vs_xens2": {
-                  "macro_f1": -0.26070481025385417,
-                  "macro_precision": -0.3416126917428774,
-                  "macro_recall": -0.1336682858248469,
-                  "micro_f1": -0.26357853792111596,
-                  "micro_precision": -0.36933400032437463,
-                  "micro_recall": -0.11649068589578504
-                },
-                "extra_count": 0,
-                "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 11554,
@@ -564,13 +657,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/raw/bprna_ts0.json",
+            "path": "source_data/ts0_official_coverage_recovery_20261127/eternafold__bprna_ts0__full1305.json.gz",
             "prediction_id": "eternafold/bprna_ts0",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "6e25763a001fecef5158a9e2669ac4bdaad63519b6d8d7604450e7817dc44c79",
-            "source_group": "REGISTERED",
+            "sha256": "ca72c133b56d63291a9343cac9457401fa266be2719c1d8976526e20d787dd4e",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
             "training_exposure": {
               "baseline_id": "eternafold",
               "clean_n": null,
@@ -2081,52 +2174,38 @@
           {
             "available": true,
             "baseline_id": "rnastructure_fold",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 1288,
+            "n_prediction_records": 1302,
             "panels": {
               "bprna_ts0_official_reference_1305": {
-                "coverage": 0.9869731800766284,
+                "coverage": 0.9977011494252873,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 12894,
-                  "fp": 30891,
-                  "macro_f1": 0.5067783347592857,
-                  "macro_precision": 0.4475914859853919,
-                  "macro_recall": 0.6234475320457907,
-                  "micro_f1": 0.5018261255418643,
-                  "micro_precision": 0.4165344514959202,
-                  "micro_recall": 0.6310412910979484,
-                  "n_scored": 1288,
-                  "tp": 22053,
-                  "truth_empty_records": 0
+                  "fn": 13129,
+                  "fp": 31423,
+                  "macro_f1": 0.5061529373235045,
+                  "macro_precision": 0.44713410886575566,
+                  "macro_recall": 0.6223156743947266,
+                  "micro_f1": 0.5012538061973849,
+                  "micro_precision": 0.41604876326401663,
+                  "micro_recall": 0.6303460314778838,
+                  "n_scored": 1302,
+                  "tp": 22388,
+                  "truth_empty_records": 1
                 },
-                "missing_count": 17,
+                "missing_count": 3,
                 "missing_names": [
-                  "bpRNA_CRW_25863.bpseq",
-                  "bpRNA_CRW_31704.bpseq",
-                  "bpRNA_CRW_43565.bpseq",
-                  "bpRNA_CRW_54323.bpseq",
-                  "bpRNA_CRW_54562.bpseq",
                   "bpRNA_RFAM_10644.bpseq",
-                  "bpRNA_RFAM_1072.bpseq",
                   "bpRNA_RFAM_18822.bpseq",
-                  "bpRNA_RFAM_18935.bpseq",
-                  "bpRNA_RFAM_38651.bpseq",
-                  "bpRNA_SRP_192.bpseq",
-                  "bpRNA_tmRNA_252.bpseq",
-                  "bpRNA_tmRNA_397.bpseq",
-                  "bpRNA_tmRNA_643.bpseq",
-                  "bpRNA_tmRNA_651.bpseq",
-                  "bpRNA_tmRNA_686.bpseq",
-                  "bpRNA_tmRNA_693.bpseq"
+                  "bpRNA_RFAM_18935.bpseq"
                 ],
                 "missing_predictions_imputed_as_zero": false,
                 "n_panel_sequences": 1305,
-                "n_with_prediction": 1288,
+                "n_with_prediction": 1302,
                 "paired_macro_f1_delta_ci95_vs_xens2": null,
                 "status": "PARTIAL_COVERAGE_NOT_RANKED"
               },
@@ -2140,8 +2219,23 @@
                   "micro_precision": -0.40485566693929925,
                   "micro_recall": -0.15483446361633324
                 },
-                "extra_count": 0,
-                "extra_names": [],
+                "extra_count": 14,
+                "extra_names": [
+                  "bpRNA_CRW_25863.bpseq",
+                  "bpRNA_CRW_31704.bpseq",
+                  "bpRNA_CRW_43565.bpseq",
+                  "bpRNA_CRW_54323.bpseq",
+                  "bpRNA_CRW_54562.bpseq",
+                  "bpRNA_RFAM_1072.bpseq",
+                  "bpRNA_RFAM_38651.bpseq",
+                  "bpRNA_SRP_192.bpseq",
+                  "bpRNA_tmRNA_252.bpseq",
+                  "bpRNA_tmRNA_397.bpseq",
+                  "bpRNA_tmRNA_643.bpseq",
+                  "bpRNA_tmRNA_651.bpseq",
+                  "bpRNA_tmRNA_686.bpseq",
+                  "bpRNA_tmRNA_693.bpseq"
+                ],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 12894,
@@ -2176,13 +2270,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/bprna_ts0.json",
+            "path": "source_data/ts0_official_coverage_recovery_20261127/rnastructure_fold__bprna_ts0__partial1302.json.gz",
             "prediction_id": "rnastructure_fold/bprna_ts0",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "27e4bafdabf85fea47da235e0caf435511e32d422536f0357485d6b49496b69f",
-            "source_group": "REGISTERED",
+            "sha256": "f5398f28c4c8e6ef15a8a030615295d65c923c813ae6b79cb728842f1d87aee0",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
             "training_exposure": {
               "baseline_id": "rnastructure_fold",
               "clean_n": null,
@@ -2199,52 +2293,38 @@
           {
             "available": true,
             "baseline_id": "rnastructure_maxexpect",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/bprna_ts0.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 1288,
+            "n_prediction_records": 1302,
             "panels": {
               "bprna_ts0_official_reference_1305": {
-                "coverage": 0.9869731800766284,
+                "coverage": 0.9977011494252873,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 12594,
-                  "fp": 28413,
-                  "macro_f1": 0.5188606058395508,
-                  "macro_precision": 0.4617953728965963,
-                  "macro_recall": 0.6322669884882326,
-                  "micro_f1": 0.5215778236673551,
-                  "micro_precision": 0.44031438364259545,
-                  "micro_recall": 0.6396257189458323,
-                  "n_scored": 1288,
-                  "tp": 22353,
-                  "truth_empty_records": 0
+                  "fn": 12818,
+                  "fp": 28861,
+                  "macro_f1": 0.5184998218313167,
+                  "macro_precision": 0.46165948454209893,
+                  "macro_recall": 0.6312812149726195,
+                  "micro_f1": 0.5213546631142552,
+                  "micro_precision": 0.440244375484872,
+                  "micro_recall": 0.6391024016668074,
+                  "n_scored": 1302,
+                  "tp": 22699,
+                  "truth_empty_records": 1
                 },
-                "missing_count": 17,
+                "missing_count": 3,
                 "missing_names": [
-                  "bpRNA_CRW_25863.bpseq",
-                  "bpRNA_CRW_31704.bpseq",
-                  "bpRNA_CRW_43565.bpseq",
-                  "bpRNA_CRW_54323.bpseq",
-                  "bpRNA_CRW_54562.bpseq",
                   "bpRNA_RFAM_10644.bpseq",
-                  "bpRNA_RFAM_1072.bpseq",
                   "bpRNA_RFAM_18822.bpseq",
-                  "bpRNA_RFAM_18935.bpseq",
-                  "bpRNA_RFAM_38651.bpseq",
-                  "bpRNA_SRP_192.bpseq",
-                  "bpRNA_tmRNA_252.bpseq",
-                  "bpRNA_tmRNA_397.bpseq",
-                  "bpRNA_tmRNA_643.bpseq",
-                  "bpRNA_tmRNA_651.bpseq",
-                  "bpRNA_tmRNA_686.bpseq",
-                  "bpRNA_tmRNA_693.bpseq"
+                  "bpRNA_RFAM_18935.bpseq"
                 ],
                 "missing_predictions_imputed_as_zero": false,
                 "n_panel_sequences": 1305,
-                "n_with_prediction": 1288,
+                "n_with_prediction": 1302,
                 "paired_macro_f1_delta_ci95_vs_xens2": null,
                 "status": "PARTIAL_COVERAGE_NOT_RANKED"
               },
@@ -2258,8 +2338,23 @@
                   "micro_precision": -0.381075734792624,
                   "micro_recall": -0.1462500357684493
                 },
-                "extra_count": 0,
-                "extra_names": [],
+                "extra_count": 14,
+                "extra_names": [
+                  "bpRNA_CRW_25863.bpseq",
+                  "bpRNA_CRW_31704.bpseq",
+                  "bpRNA_CRW_43565.bpseq",
+                  "bpRNA_CRW_54323.bpseq",
+                  "bpRNA_CRW_54562.bpseq",
+                  "bpRNA_RFAM_1072.bpseq",
+                  "bpRNA_RFAM_38651.bpseq",
+                  "bpRNA_SRP_192.bpseq",
+                  "bpRNA_tmRNA_252.bpseq",
+                  "bpRNA_tmRNA_397.bpseq",
+                  "bpRNA_tmRNA_643.bpseq",
+                  "bpRNA_tmRNA_651.bpseq",
+                  "bpRNA_tmRNA_686.bpseq",
+                  "bpRNA_tmRNA_693.bpseq"
+                ],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 12594,
@@ -2294,13 +2389,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/bprna_ts0.json",
+            "path": "source_data/ts0_official_coverage_recovery_20261127/rnastructure_maxexpect__bprna_ts0__partial1302.json.gz",
             "prediction_id": "rnastructure_maxexpect/bprna_ts0",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "27e4bafdabf85fea47da235e0caf435511e32d422536f0357485d6b49496b69f",
-            "source_group": "REGISTERED",
+            "sha256": "a816ef1872d9bb0e46e7705f1e861fae0227df1de332e0cc265baa10b96c8f6f",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
             "training_exposure": {
               "baseline_id": "rnastructure_maxexpect",
               "clean_n": null,
@@ -3187,9 +3282,599 @@
               ],
               "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
             }
+          },
+          {
+            "available": true,
+            "baseline_id": "bpfold",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+            "model_form": "six_checkpoint_ensemble",
+            "n_prediction_records": 1305,
+            "panels": {
+              "bprna_ts0_official_reference_1305": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 8111,
+                  "fp": 17589,
+                  "macro_f1": 0.657498135003441,
+                  "macro_precision": 0.5985607163969222,
+                  "macro_recall": 0.7692178545943475,
+                  "micro_f1": 0.6812363564199246,
+                  "micro_precision": 0.6095758140773789,
+                  "micro_recall": 0.7719899924099739,
+                  "n_scored": 1305,
+                  "tp": 27462,
+                  "truth_empty_records": 1
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1305,
+                "n_with_prediction": 1305,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "bprna_ts0_projected_reference_1288": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.14320188600524575,
+                  "macro_precision": -0.21902604953860205,
+                  "macro_recall": -0.027941895352032953,
+                  "micro_f1": -0.12283496984041375,
+                  "micro_precision": -0.2124713949924928,
+                  "micro_recall": -0.01496551921481104
+                },
+                "extra_count": 17,
+                "extra_names": [
+                  "bpRNA_CRW_25863.bpseq",
+                  "bpRNA_CRW_31704.bpseq",
+                  "bpRNA_CRW_43565.bpseq",
+                  "bpRNA_CRW_54323.bpseq",
+                  "bpRNA_CRW_54562.bpseq",
+                  "bpRNA_RFAM_10644.bpseq",
+                  "bpRNA_RFAM_1072.bpseq",
+                  "bpRNA_RFAM_18822.bpseq",
+                  "bpRNA_RFAM_18935.bpseq",
+                  "bpRNA_RFAM_38651.bpseq",
+                  "bpRNA_SRP_192.bpseq",
+                  "bpRNA_tmRNA_252.bpseq",
+                  "bpRNA_tmRNA_397.bpseq",
+                  "bpRNA_tmRNA_643.bpseq",
+                  "bpRNA_tmRNA_651.bpseq",
+                  "bpRNA_tmRNA_686.bpseq",
+                  "bpRNA_tmRNA_693.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 8006,
+                  "fp": 17303,
+                  "macro_f1": 0.6567174489004513,
+                  "macro_precision": 0.5978414449701964,
+                  "macro_recall": 0.7686396303457149,
+                  "micro_f1": 0.6804056016466518,
+                  "micro_precision": 0.6089187234427267,
+                  "micro_recall": 0.7709102354994706,
+                  "n_scored": 1288,
+                  "tp": 26941,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1288,
+                "n_with_prediction": 1288,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common bprna_ts0 projected subset coverage only",
+                  "ci95": [
+                    -0.15589592101768693,
+                    -0.1306736790422149
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.14320188600524575,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "source_data/ts0_official_coverage_recovery_20261127/bpfold_official_release__bprna_ts0__full1305.json.gz",
+            "prediction_id": "bpfold_official_release/bprna_ts0",
+            "prediction_origin": "AUTHOR_BPFOLD_TEST_RESULTS_V0_2_FULL1305",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "096a7693f6f4c3e3b2fe93eba39d3c912019ea13f92261df8617541d19be74d3",
+            "source_group": "AUTHOR_OFFICIAL_RELEASE",
+            "training_exposure": {
+              "baseline_id": "bpfold",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "UNCHECKED",
+              "homology_only_overlap": null,
+              "route": null,
+              "training_corpora": [],
+              "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+            }
+          },
+          {
+            "available": true,
+            "baseline_id": "vienna_mfe",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+            "model_form": "deterministic_single_predictor",
+            "n_prediction_records": 1305,
+            "panels": {
+              "bprna_ts0_official_reference_1305": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 12856,
+                  "fp": 31596,
+                  "macro_f1": 0.5080129860247771,
+                  "macro_precision": 0.4455569841920893,
+                  "macro_recall": 0.6305640067537579,
+                  "micro_f1": 0.5054624746901631,
+                  "micro_precision": 0.4182608215344393,
+                  "micro_recall": 0.6386023107412926,
+                  "n_scored": 1305,
+                  "tp": 22717,
+                  "truth_empty_records": 1
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1305,
+                "n_with_prediction": 1305,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "bprna_ts0_projected_reference_1288": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.291565674112079,
+                  "macro_precision": -0.37097224110141425,
+                  "macro_recall": -0.16553635696279567,
+                  "micro_f1": -0.2980356009951137,
+                  "micro_precision": -0.4032703449323883,
+                  "micro_recall": -0.14776661802157554
+                },
+                "extra_count": 17,
+                "extra_names": [
+                  "bpRNA_CRW_25863.bpseq",
+                  "bpRNA_CRW_31704.bpseq",
+                  "bpRNA_CRW_43565.bpseq",
+                  "bpRNA_CRW_54323.bpseq",
+                  "bpRNA_CRW_54562.bpseq",
+                  "bpRNA_RFAM_10644.bpseq",
+                  "bpRNA_RFAM_1072.bpseq",
+                  "bpRNA_RFAM_18822.bpseq",
+                  "bpRNA_RFAM_18935.bpseq",
+                  "bpRNA_RFAM_38651.bpseq",
+                  "bpRNA_SRP_192.bpseq",
+                  "bpRNA_tmRNA_252.bpseq",
+                  "bpRNA_tmRNA_397.bpseq",
+                  "bpRNA_tmRNA_643.bpseq",
+                  "bpRNA_tmRNA_651.bpseq",
+                  "bpRNA_tmRNA_686.bpseq",
+                  "bpRNA_tmRNA_693.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 12647,
+                  "fp": 31034,
+                  "macro_f1": 0.508353660793618,
+                  "macro_precision": 0.44589525340738423,
+                  "macro_recall": 0.6310451687349522,
+                  "micro_f1": 0.5052049704919518,
+                  "micro_precision": 0.4181197735028312,
+                  "micro_recall": 0.6381091366927061,
+                  "n_scored": 1288,
+                  "tp": 22300,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1288,
+                "n_with_prediction": 1288,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common bprna_ts0 projected subset coverage only",
+                  "ci95": [
+                    -0.3077651866636636,
+                    -0.2752349246796324
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.29156567411207907,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "source_data/ts0_official_coverage_recovery_20261127/vienna_mfe__bprna_ts0__recovered_official17__full1305.json.gz",
+            "prediction_id": "vienna_mfe/bprna_ts0/recovered_official17",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "293cdc6bbe96e4f03fad8d0b2592c7903b7537da6c286d9314ce23b6c0af7a7a",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
+            "training_exposure": {
+              "baseline_id": "vienna_mfe",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
+          },
+          {
+            "available": true,
+            "baseline_id": "vienna_centroid",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+            "model_form": "deterministic_single_predictor",
+            "n_prediction_records": 1305,
+            "panels": {
+              "bprna_ts0_official_reference_1305": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 13174,
+                  "fp": 25154,
+                  "macro_f1": 0.5281497484008079,
+                  "macro_precision": 0.4851442555396174,
+                  "macro_recall": 0.6222718946982367,
+                  "micro_f1": 0.5389168250607511,
+                  "micro_precision": 0.47103232183037874,
+                  "micro_recall": 0.6296629466168161,
+                  "n_scored": 1305,
+                  "tp": 22399,
+                  "truth_empty_records": 1
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1305,
+                "n_with_prediction": 1305,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "bprna_ts0_projected_reference_1288": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.2713668466314375,
+                  "macro_precision": -0.3313276298073132,
+                  "macro_recall": -0.17371141847399385,
+                  "micro_f1": -0.2643541997796409,
+                  "micro_precision": -0.35037500519293663,
+                  "micro_recall": -0.15626520159098056
+                },
+                "extra_count": 17,
+                "extra_names": [
+                  "bpRNA_CRW_25863.bpseq",
+                  "bpRNA_CRW_31704.bpseq",
+                  "bpRNA_CRW_43565.bpseq",
+                  "bpRNA_CRW_54323.bpseq",
+                  "bpRNA_CRW_54562.bpseq",
+                  "bpRNA_RFAM_10644.bpseq",
+                  "bpRNA_RFAM_1072.bpseq",
+                  "bpRNA_RFAM_18822.bpseq",
+                  "bpRNA_RFAM_18935.bpseq",
+                  "bpRNA_RFAM_38651.bpseq",
+                  "bpRNA_SRP_192.bpseq",
+                  "bpRNA_tmRNA_252.bpseq",
+                  "bpRNA_tmRNA_397.bpseq",
+                  "bpRNA_tmRNA_643.bpseq",
+                  "bpRNA_tmRNA_651.bpseq",
+                  "bpRNA_tmRNA_686.bpseq",
+                  "bpRNA_tmRNA_693.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 12944,
+                  "fp": 24711,
+                  "macro_f1": 0.5285524882742595,
+                  "macro_precision": 0.4855398647014853,
+                  "macro_recall": 0.622870107223754,
+                  "micro_f1": 0.5388863717074246,
+                  "micro_precision": 0.47101511324228285,
+                  "micro_recall": 0.629610553123301,
+                  "n_scored": 1288,
+                  "tp": 22003,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1288,
+                "n_with_prediction": 1288,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common bprna_ts0 projected subset coverage only",
+                  "ci95": [
+                    -0.28764605743368804,
+                    -0.2551489114668649
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.2713668466314375,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "source_data/ts0_official_coverage_recovery_20261127/vienna_centroid__bprna_ts0__recovered_official17__full1305.json.gz",
+            "prediction_id": "vienna_centroid/bprna_ts0/recovered_official17",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "7967e820cc71b3b048dff8b592b7fe2c6ca60e4cb092a2cb7b611f527572c6ba",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
+            "training_exposure": {
+              "baseline_id": "vienna_centroid",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
+          },
+          {
+            "available": true,
+            "baseline_id": "vienna_mea",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+            "model_form": "deterministic_single_predictor",
+            "n_prediction_records": 1305,
+            "panels": {
+              "bprna_ts0_official_reference_1305": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 12658,
+                  "fp": 29021,
+                  "macro_f1": 0.5211055529355234,
+                  "macro_precision": 0.4625148274295834,
+                  "macro_recall": 0.6360942773213193,
+                  "micro_f1": 0.5237175604794936,
+                  "micro_precision": 0.44121611213801604,
+                  "micro_recall": 0.6441683299131363,
+                  "n_scored": 1305,
+                  "tp": 22915,
+                  "truth_empty_records": 1
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1305,
+                "n_with_prediction": 1305,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "bprna_ts0_projected_reference_1288": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.2783525622833246,
+                  "macro_precision": -0.353917268540598,
+                  "macro_recall": -0.1598344213537789,
+                  "micro_f1": -0.27947703179584604,
+                  "micro_precision": -0.38007179046094297,
+                  "micro_recall": -0.14178613328754974
+                },
+                "extra_count": 17,
+                "extra_names": [
+                  "bpRNA_CRW_25863.bpseq",
+                  "bpRNA_CRW_31704.bpseq",
+                  "bpRNA_CRW_43565.bpseq",
+                  "bpRNA_CRW_54323.bpseq",
+                  "bpRNA_CRW_54562.bpseq",
+                  "bpRNA_RFAM_10644.bpseq",
+                  "bpRNA_RFAM_1072.bpseq",
+                  "bpRNA_RFAM_18822.bpseq",
+                  "bpRNA_RFAM_18935.bpseq",
+                  "bpRNA_RFAM_38651.bpseq",
+                  "bpRNA_SRP_192.bpseq",
+                  "bpRNA_tmRNA_252.bpseq",
+                  "bpRNA_tmRNA_397.bpseq",
+                  "bpRNA_tmRNA_643.bpseq",
+                  "bpRNA_tmRNA_651.bpseq",
+                  "bpRNA_tmRNA_686.bpseq",
+                  "bpRNA_tmRNA_693.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 12438,
+                  "fp": 28495,
+                  "macro_f1": 0.5215667726223724,
+                  "macro_precision": 0.46295022596820046,
+                  "macro_recall": 0.636747104343969,
+                  "micro_f1": 0.5237635396912195,
+                  "micro_precision": 0.4413183279742765,
+                  "micro_recall": 0.6440896214267319,
+                  "n_scored": 1288,
+                  "tp": 22509,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1288,
+                "n_with_prediction": 1288,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common bprna_ts0 projected subset coverage only",
+                  "ci95": [
+                    -0.2945574289605275,
+                    -0.2622140431971755
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.27835256228332467,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "source_data/ts0_official_coverage_recovery_20261127/vienna_mea__bprna_ts0__recovered_official17__full1305.json.gz",
+            "prediction_id": "vienna_mea/bprna_ts0/recovered_official17",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "04aed1d33d7333a72367e22ff0b2aec4a56461fe5e58ab1ba94fb668e04143cd",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
+            "training_exposure": {
+              "baseline_id": "vienna_mea",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
+          },
+          {
+            "available": true,
+            "baseline_id": "nussinov_turner",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+            "model_form": "deterministic_single_predictor",
+            "n_prediction_records": 1305,
+            "panels": {
+              "bprna_ts0_official_reference_1305": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 26738,
+                  "fp": 39223,
+                  "macro_f1": 0.22936709063399185,
+                  "macro_precision": 0.21073524633772944,
+                  "macro_recall": 0.2745186215474327,
+                  "micro_f1": 0.21128528894787818,
+                  "micro_precision": 0.183840359565525,
+                  "micro_recall": 0.24836252213757626,
+                  "n_scored": 1305,
+                  "tp": 8835,
+                  "truth_empty_records": 1
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1305,
+                "n_with_prediction": 1305,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "bprna_ts0_projected_reference_1288": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.5697572182781241,
+                  "macro_precision": -0.6054184802386149,
+                  "macro_recall": -0.52094650217714,
+                  "micro_f1": -0.5909599978742298,
+                  "micro_precision": -0.6366616284248379,
+                  "micro_recall": -0.5363836666952815
+                },
+                "extra_count": 17,
+                "extra_names": [
+                  "bpRNA_CRW_25863.bpseq",
+                  "bpRNA_CRW_31704.bpseq",
+                  "bpRNA_CRW_43565.bpseq",
+                  "bpRNA_CRW_54323.bpseq",
+                  "bpRNA_CRW_54562.bpseq",
+                  "bpRNA_RFAM_10644.bpseq",
+                  "bpRNA_RFAM_1072.bpseq",
+                  "bpRNA_RFAM_18822.bpseq",
+                  "bpRNA_RFAM_18935.bpseq",
+                  "bpRNA_RFAM_38651.bpseq",
+                  "bpRNA_SRP_192.bpseq",
+                  "bpRNA_tmRNA_252.bpseq",
+                  "bpRNA_tmRNA_397.bpseq",
+                  "bpRNA_tmRNA_643.bpseq",
+                  "bpRNA_tmRNA_651.bpseq",
+                  "bpRNA_tmRNA_686.bpseq",
+                  "bpRNA_tmRNA_693.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 26228,
+                  "fp": 38480,
+                  "macro_f1": 0.23016211662757288,
+                  "macro_precision": 0.21144901427018353,
+                  "macro_recall": 0.27563502352060787,
+                  "micro_f1": 0.21228057361283567,
+                  "micro_precision": 0.18472849001038158,
+                  "micro_recall": 0.2494920880190002,
+                  "n_scored": 1288,
+                  "tp": 8719,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 1288,
+                "n_with_prediction": 1288,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common bprna_ts0 projected subset coverage only",
+                  "ci95": [
+                    -0.5839607052583223,
+                    -0.5554866820204568
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.5697572182781241,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "source_data/ts0_official_coverage_recovery_20261127/nussinov_turner__bprna_ts0__recovered_official17__full1305.json.gz",
+            "prediction_id": "nussinov_turner/bprna_ts0/recovered_official17",
+            "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "f7d02fddd86a2878a70af2e46de3e130697d743e0774b0b442654ef4c65a5901",
+            "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION",
+            "training_exposure": {
+              "baseline_id": "nussinov_turner",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
           }
         ],
-        "sha256": "0ed15421cdd0dce0d7c21d3ccc8b7c5065f0039adce210f0937422f1ae91a707"
+        "sha256": "1228cd5c110b4ad241e57ddd852f493da861ad19bda6dd7f2d79398156f8089e"
       },
       "training_exposure_overlay": {
         "bprna_tr0": {

@@ -1,0 +1,91 @@
+{
+  "deliverables": {
+    "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json": {
+      "bytes": 29319,
+      "sha256": "8d46957d83104cf5a574968230d75ef5f29ff08e551e84d63994da0de702bc77"
+    },
+    "docs/plans/2026-11-27-ts0-official-coverage-recovery.md": {
+      "bytes": 3852,
+      "sha256": "f7f6b7ac88959ffd6b2ca542a7ebdca66b16a48a63ab863637d7b3ae1882509a"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/bpfold_official_release__bprna_ts0__full1305.json.gz": {
+      "bytes": 298274,
+      "sha256": "096a7693f6f4c3e3b2fe93eba39d3c912019ea13f92261df8617541d19be74d3"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/contrafold__bprna_ts0__full1305.json.gz": {
+      "bytes": 325473,
+      "sha256": "0d19d76be790a9c3f9a2af4a11cb2a0e0e45bc08623dcbd9f6177ea774e3a12d"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/eternafold__bprna_ts0__full1305.json.gz": {
+      "bytes": 332344,
+      "sha256": "ca72c133b56d63291a9343cac9457401fa266be2719c1d8976526e20d787dd4e"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/missing17_cpu_predictions.json": {
+      "bytes": 529335,
+      "sha256": "2e80442278fe5a6025d4bad33dd7afa29762f233e906798405ca1f2e4e137279"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/nussinov_turner__bprna_ts0__recovered_official17__full1305.json.gz": {
+      "bytes": 324142,
+      "sha256": "f7d02fddd86a2878a70af2e46de3e130697d743e0774b0b442654ef4c65a5901"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/recovery_manifest.json": {
+      "bytes": 29319,
+      "sha256": "8d46957d83104cf5a574968230d75ef5f29ff08e551e84d63994da0de702bc77"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/rnastructure_fold__bprna_ts0__partial1302.json.gz": {
+      "bytes": 337635,
+      "sha256": "f5398f28c4c8e6ef15a8a030615295d65c923c813ae6b79cb728842f1d87aee0"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/rnastructure_maxexpect__bprna_ts0__partial1302.json.gz": {
+      "bytes": 327961,
+      "sha256": "a816ef1872d9bb0e46e7705f1e861fae0227df1de332e0cc265baa10b96c8f6f"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/vienna_centroid__bprna_ts0__recovered_official17__full1305.json.gz": {
+      "bytes": 312556,
+      "sha256": "7967e820cc71b3b048dff8b592b7fe2c6ca60e4cb092a2cb7b611f527572c6ba"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/vienna_mea__bprna_ts0__recovered_official17__full1305.json.gz": {
+      "bytes": 329672,
+      "sha256": "04aed1d33d7333a72367e22ff0b2aec4a56461fe5e58ab1ba94fb668e04143cd"
+    },
+    "source_data/ts0_official_coverage_recovery_20261127/vienna_mfe__bprna_ts0__recovered_official17__full1305.json.gz": {
+      "bytes": 339250,
+      "sha256": "293cdc6bbe96e4f03fad8d0b2592c7903b7537da6c286d9314ce23b6c0af7a7a"
+    },
+    "tests/test_ts0_official_coverage_recovery_20261127.py": {
+      "bytes": 4428,
+      "sha256": "c1421f3cacac7a32fb5e6cfd1a05147a8fcad88ed3317000a505e003b396a6e3"
+    },
+    "tools/recover_ts0_official_coverage_20261127.py": {
+      "bytes": 26592,
+      "sha256": "7a9be42d61d95909905a6bb4ad20c8ae48c577b816d4c0c31c1d04d7cfabbedc"
+    },
+    "tools/verify_ts0_official_coverage_recovery_20261127.py": {
+      "bytes": 12915,
+      "sha256": "d6f20fcd2b5720a88ff3a12f42fcfc496231b1bd26f7f45b0c48574d6e95334f"
+    }
+  },
+  "external_test_model_selection": false,
+  "full1305_identities": [
+    "bpfold_official_release/bprna_ts0",
+    "contrafold/bprna_ts0",
+    "eternafold/bprna_ts0",
+    "nussinov_turner/bprna_ts0/recovered_official17",
+    "vienna_centroid/bprna_ts0/recovered_official17",
+    "vienna_mea/bprna_ts0/recovered_official17",
+    "vienna_mfe/bprna_ts0/recovered_official17"
+  ],
+  "generator_imported": false,
+  "gpu_used": false,
+  "normalized_documents_compared_field_by_field": 9,
+  "official_only_ids_verified": 17,
+  "official_release_records_verified": 1305,
+  "partial1302_identities": [
+    "rnastructure_fold/bprna_ts0",
+    "rnastructure_maxexpect/bprna_ts0"
+  ],
+  "projected_records_rerun": 0,
+  "schema_version": "ts0.official_coverage_recovery.independent_verification.round2.v1",
+  "status": "PASS_INDEPENDENT_RECOVERY_RECONSTRUCTION",
+  "truth_empty_name": "bpRNA_SRP_192.bpseq"
+}

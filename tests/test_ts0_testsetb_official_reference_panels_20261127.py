@@ -44,13 +44,13 @@ def test_reference_panels_and_official_only_empty():
 
 
 def test_identity_and_coverage_accounting():
-    for dataset, available, total in (("bprna_ts0", 21, 35), ("testsetb", 20, 34)):
+    for dataset, available, total, full_coverage in (("bprna_ts0", 26, 40, 7), ("testsetb", 20, 34, 0)):
         doc = document(dataset)
         spec = BUILDER.SPECS[dataset]
         assert doc["coverage_accounting"] == {
             "inventory_entries": total, "scored_identities": available, "blocked_identities": 14,
-            "projected_full_coverage": available, "official_full_coverage": 0,
-            "official_partial_not_ranked": available,
+            "projected_full_coverage": available, "official_full_coverage": full_coverage,
+            "official_partial_not_ranked": available - full_coverage,
             "official_records_missing_from_project": spec["official_n"] - spec["project_n"],
         }
         for row in doc["rows"]:
@@ -58,13 +58,20 @@ def test_identity_and_coverage_accounting():
             projected = row["panels"][spec["project_panel_id"]]
             if row["available"]:
                 assert projected["status"] == "PASS_FULL_COVERAGE"
-                assert full["status"] == "PARTIAL_COVERAGE_NOT_RANKED"
-                assert full["missing_count"] == spec["official_n"] - spec["project_n"]
+                assert full["status"] in {"PASS_FULL_COVERAGE", "PARTIAL_COVERAGE_NOT_RANKED"}
+                if full["status"] == "PARTIAL_COVERAGE_NOT_RANKED":
+                    expected_missing = 3 if row["prediction_id"].startswith("rnastructure_") and dataset == "bprna_ts0" else spec["official_n"] - spec["project_n"]
+                    assert full["missing_count"] == expected_missing
+                else:
+                    assert full["n_with_prediction"] == spec["official_n"]
                 assert full["missing_predictions_imputed_as_zero"] is False
                 assert full["delta_vs_xens2"] is None
             else:
                 assert full["metrics"] is None and projected["metrics"] is None
-        assert doc["official_full_summary"]["strongest_single_predictor"] == "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"
+        if dataset == "testsetb":
+            assert doc["official_full_summary"]["strongest_single_predictor"] == "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"
+        else:
+            assert doc["official_full_summary"]["strongest_ensemble"]["prediction_id"] == "bpfold_official_release/bprna_ts0"
 
 
 def test_official_missing_ids_and_per_prediction_gap_lists():
@@ -76,17 +83,19 @@ def test_official_missing_ids_and_per_prediction_gap_lists():
         assert all(row["reason"] == "PROJECT_REJECTED_BAD_ALPHABET" and row["non_acgu_characters"] for row in item["official_missing_from_project"])
         for prediction in item["per_prediction_official_coverage"]:
             if prediction["status"] == "PARTIAL_COVERAGE_NOT_RANKED":
-                assert prediction["missing_count"] == count
-                assert len(prediction["missing_names"]) == count
+                expected_missing = 3 if prediction["prediction_id"].startswith("rnastructure_") and dataset == "bprna_ts0" else count
+                assert prediction["missing_count"] == expected_missing
+                assert len(prediction["missing_names"]) == expected_missing
 
 
 def test_per_record_metric_accounting_and_empty_rules():
     with gzip.open(OUT / "per_record_metrics.jsonl.gz", "rt", encoding="utf-8") as handle:
         rows = [json.loads(line) for line in handle if line.strip()]
-    assert len(rows) == 71216
-    assert sum(row["dataset"] == "bprna_ts0" for row in rows) == 54096
+    assert len(rows) == 84243
+    assert sum(row["dataset"] == "bprna_ts0" for row in rows) == 67123
     assert sum(row["dataset"] == "testsetb" for row in rows) == 17120
-    assert not any(row["truth_empty"] for row in rows)
+    assert sum(row["truth_empty"] for row in rows) == 9
+    assert {row["name"] for row in rows if row["truth_empty"]} == {"bpRNA_SRP_192.bpseq"}
     for row in rows:
         if row["empty_empty"]:
             assert (row["precision"], row["recall"], row["f1"]) == (1.0, 1.0, 1.0)
