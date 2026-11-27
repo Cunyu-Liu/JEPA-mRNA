@@ -38,6 +38,12 @@ def append_jsonl(value: dict, path: Path) -> None:
         handle.write(json.dumps(value, allow_nan=False) + "\n")
 
 
+def atomic_pid(path: Path, pid: int) -> None:
+    temporary = path.with_name(path.name + f".tmp.{os.getpid()}")
+    temporary.write_text(f"{pid}\n")
+    os.replace(temporary, path)
+
+
 def training_command(source_repo: Path, config_path: Path, arm: str, out: Path) -> list[str]:
     config = json.loads(config_path.read_text())
     return [
@@ -177,6 +183,7 @@ def main() -> None:
         return
     state_path = args.recovery_root / "recovery_scheduler_state.json"
     events_path = args.recovery_root / "recovery_scheduler_events.jsonl"
+    atomic_pid(args.recovery_root / "recovery_scheduler.pid", os.getpid())
     state = {
         "schema_version": "foldnar.structured_margin_incident_recovery_scheduler.v1",
         "status": "STARTING", "scheduler_pid": os.getpid(),

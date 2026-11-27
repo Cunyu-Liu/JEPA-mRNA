@@ -113,6 +113,13 @@ def test_staged_checkpoint_copy_failure_preserves_original_and_local(tmp_path, m
     assert (tmp_path / "local" / "arm" / "resume.pt").is_file()
 
 
+def test_atomic_pid_file_records_exact_scheduler_pid(tmp_path):
+    path = tmp_path / "recovery_scheduler.pid"
+    recovery.atomic_pid(path, 4111890)
+    assert path.read_text() == "4111890\n"
+    assert not list(tmp_path.glob("*.tmp.*"))
+
+
 def test_adopted_process_tracks_identity_without_starting_or_killing(monkeypatch):
     process = recovery.AdoptedProcess(12345, 67890)
     monkeypatch.setattr(recovery, "pid_alive", lambda pid, ticks: (pid, ticks) == (12345, 67890))
