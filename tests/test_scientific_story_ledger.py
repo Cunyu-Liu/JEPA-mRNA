@@ -96,10 +96,12 @@ def test_archiveii_official_artifact_contract():
 
 def test_pdb_rebuild_overlap_and_rfam_temporal_boundaries():
     text = ledger.DOC.read_text()
-    assert "58 条重建成功、95 条 UNCHECKED" in text
-    assert "56 true / 2 false" in text
-    assert "2 条 DSSR 差异" in text
-    assert "PDB58 不得排名" in text
+    assert "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4" in text
+    assert "62 条重建、91 条 UNCHECKED" in text
+    assert "58 true / 4 false" in text
+    assert "4 条 DSSR scheme 修复" in text
+    assert "旧 58/95 与 56/2 不再是当前值" in text
+    assert "PDB62 仍不得排名" in text
     assert "ref_pdb_ts_hard` 28/28" in text
     assert "TS-hard 与 TS1/TS3 不序列不相交" in text
     assert "Rfam 14.9 exact=**43**" in text

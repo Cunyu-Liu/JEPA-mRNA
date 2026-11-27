@@ -71,8 +71,10 @@ SOURCES = {
     "ts0_testsetb_verification": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json",
     "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
     "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
-    "pdb_rebuild_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
-    "pdb_rebuild_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json",
+    "pdb_rebuild_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round6_combined/rebuild_summary.json",
+    "pdb_rebuild_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round6_combined_verification.json",
+    "pdb_rebuild_round3_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
+    "pdb_rebuild_round3_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json",
     "recovery_preflight": RECOVERY_ROOT / "recovery_preflight_local.json",
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
@@ -350,7 +352,7 @@ def verify_archiveii_official_contract() -> list[str]:
 
 def verify_pdb_rfam_contract() -> list[str]:
     errors = []
-    names = ["pdb_rfam_summary", "pdb_rfam_verification", "pdb_rebuild_summary", "pdb_rebuild_verification"]
+    names = ["pdb_rfam_summary", "pdb_rfam_verification", "pdb_rebuild_summary", "pdb_rebuild_verification", "pdb_rebuild_round3_summary", "pdb_rebuild_round3_verification"]
     for name in names:
         if not SOURCES[name].is_file():
             return errors + [f"missing PDB/Rfam source: {name}: {SOURCES[name]}"]
@@ -399,19 +401,20 @@ def verify_pdb_rfam_contract() -> list[str]:
         errors.append("Rfam temporal labels were promoted to experimental truth")
     if summary["official_sources"]["rfam15_0"]["release_membership_is_not_first_release_date"] is not True:
         errors.append("Rfam release membership was equated to first-release date")
-    if rebuild["n_source_records"] != 153 or rebuild["n_rebuilt"] != 58 or rebuild["n_unresolved"] != 95:
-        errors.append("PDB rebuild 153/58/95 conservation mismatch")
+    if rebuild["n_source_records"] != 153 or rebuild["n_rebuilt"] != 62 or rebuild["n_unresolved"] != 91:
+        errors.append("PDB current rebuild 153/62/91 conservation mismatch")
     if rebuild["unresolved_status_counts"] != {
-        "NO_EXACT_CHAIN_MATCH_UNCHECKED": 26,
-        "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED": 61,
+        "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED": 32,
+        "METADATA_AMBIGUOUS_UNCHECKED": 55,
         "SOURCE_BAD_ALPHABET_UNCHECKED": 4,
-        "DSSR_MAPPING_ERROR_UNCHECKED": 4,
     }:
-        errors.append("PDB rebuild unresolved status counts mismatch")
-    if rebuild["pair_match_counts"] != {"true": 56, "false": 2}:
-        errors.append("PDB RNAformer/DSSR pair difference count mismatch")
-    if rebuild["panel_rebuilt"] != {"pdb_ts1": 15, "pdb_ts2": 26, "pdb_ts3": 8, "pdb_ts_hard": 9}:
-        errors.append("PDB per-panel rebuilt counts mismatch")
+        errors.append("PDB current unresolved status counts mismatch")
+    if rebuild["scheme_repaired_references"] != 4 or rebuild["new_metadata_references"] != 0:
+        errors.append("PDB scheme repair/metadata reference counts mismatch")
+    if rebuild["pair_match_counts"] != {"true": 58, "false": 4}:
+        errors.append("PDB current RNAformer/DSSR pair difference count mismatch")
+    if rebuild["panel_rebuilt"] != {"pdb_ts1": 16, "pdb_ts2": 27, "pdb_ts3": 9, "pdb_ts_hard": 10}:
+        errors.append("PDB current per-panel rebuilt counts mismatch")
     if rebuild["external_test_policy"] != "AUDIT_ONLY_NO_MODEL_SELECTION":
         errors.append("PDB rebuild allowed model selection")
     if verification["status"] != "PASS_PDB_RFAM_LABEL_LINEAGE_INDEPENDENT_VERIFIER" or verification["qualification_fail_closed"] is not True:
@@ -420,10 +423,18 @@ def verify_pdb_rfam_contract() -> list[str]:
         errors.append("PDB/Rfam independent verification counts mismatch")
     if rebuild_verification["status"] != "PASS_RNAFORMER_DOUBLE_PROTOCOL_DSSR_INDEPENDENT_VERIFIER":
         errors.append("PDB double-protocol DSSR verification did not pass")
-    if rebuild_verification["n_rebuilt"] != 58 or rebuild_verification["n_unresolved"] != 95 or rebuild_verification["pair_match_counts"] != {"true": 56, "false": 2}:
-        errors.append("PDB rebuild independent verification counts mismatch")
+    if rebuild_verification["n_rebuilt"] != 62 or rebuild_verification["n_unresolved"] != 91 or rebuild_verification["pair_match_counts"] != {"true": 58, "false": 4}:
+        errors.append("PDB current rebuild independent verification counts mismatch")
     if rebuild_verification["unobserved_negative_policy"] != "MASKED_NEVER_NEGATIVE":
         errors.append("PDB rebuild unobserved-negative policy mismatch")
+    historical = json.loads(SOURCES["pdb_rebuild_round3_summary"].read_text())
+    historical_verification = json.loads(SOURCES["pdb_rebuild_round3_verification"].read_text())
+    if historical["n_rebuilt"] != 58 or historical["n_unresolved"] != 95 or historical["pair_match_counts"] != {"true": 56, "false": 2}:
+        errors.append("PDB historical round3 snapshot changed")
+    if historical["panel_rebuilt"] != {"pdb_ts1": 15, "pdb_ts2": 26, "pdb_ts3": 8, "pdb_ts_hard": 9}:
+        errors.append("PDB historical per-panel counts changed")
+    if historical_verification["status"] != "PASS_RNAFORMER_DOUBLE_PROTOCOL_DSSR_INDEPENDENT_VERIFIER" or historical_verification["n_rebuilt"] != 58 or historical_verification["n_unresolved"] != 95:
+        errors.append("PDB historical round3 verification mismatch")
     return errors
 
 
@@ -792,10 +803,11 @@ def verify_narrative_guards() -> list[str]:
         "−0.0012121956293115, +0.0078699689970171",
         "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR",
         "19 个有部分预测的身份均为 2,544/3,966",
-        "e252f5351322994395968c61e3df3a51a0330293",
-        "58 条重建成功、95 条 UNCHECKED",
-        "56 true / 2 false",
-        "2 条 DSSR 差异",
+        "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4",
+        "62 条重建、91 条 UNCHECKED",
+        "58 true / 4 false",
+        "4 条 DSSR scheme 修复",
+        "旧 58/95 与 56/2 不再是当前值",
         "TS-hard 与 TS1/TS3 不序列不相交",
         "Rfam 14.9 exact=**43**",
         "TEMPORAL_FIRST_RELEASE_UNCHECKED",
