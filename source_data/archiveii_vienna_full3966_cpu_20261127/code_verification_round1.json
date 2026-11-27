@@ -1,0 +1,13 @@
+{
+  "gpu_probe_started": false,
+  "gpu_production_started": false,
+  "schema_version": "archiveii.coverage_closure.code_verification.round1.v1",
+  "shared_registry_modified": false,
+  "status": "PASS_CODE_ONLY_NO_GPU_PROBE",
+  "unit_tests": {
+    "failed": 0,
+    "passed": 4
+  },
+  "vienna_clean_records": 2544,
+  "xens2_protocol_blocked_records": 16
+}

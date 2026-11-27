@@ -36,11 +36,16 @@
     "vienna_mfe": {
       "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/vienna_mfe/predictor_metadata.json",
       "sha256": "3c2c27041e42ab5d75d82fdf1d4e2315491095223418c292b1ba5e454cc77bf5"
+    },
+    "xens2": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/production/predictor_metadata.json",
+      "sha256": null
     }
   },
   "recovery_plan": "source_data/archiveii_full3966_cpu_recovery_20261127/recovery_plan.json",
   "recovery_plan_sha256": "c6b801752967f04a37c4359981de16cb11c54e09a20a1330157ac80b1be71d9f",
   "schema_version": "archiveii.full3966.cpu_recovery.panel.v1.source_manifest",
   "shared_registry_modified": false,
-  "work_root": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127"
+  "work_root": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127",
+  "xens2_queue_evidence_sha256": "bcad99ef16497f8bcb418b4ddbfb39db29de6a5bcf5310c594b3cb0d754ff116"
 }

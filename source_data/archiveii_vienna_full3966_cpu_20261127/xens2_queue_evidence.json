@@ -1,0 +1,81 @@
+{
+  "captured_utc": "2026-11-27T23:27:20+08:00",
+  "external_peak": {
+    "baseline_device": {
+      "free_mib": 15988,
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5090",
+      "total_mib": 32607,
+      "used_mib": 16124
+    },
+    "child_pid": 4131323,
+    "external_peak_delta_mib": 10465
+  },
+  "note": "Frozen evidence snapshot; live queue may continue waiting. No xens2 production prediction is claimed.",
+  "probe_result": {
+    "checkpoints": {
+      "plana_s0": {
+        "bytes": 2606999216,
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s0_step20000.pt",
+        "sha256": "bd917b6380738e65ce46020eb52ab12333d2cd7a475ab066ed37379dc71828cd"
+      },
+      "plana_s1": {
+        "bytes": 2606999216,
+        "path": "/teams/HoulabData_1788502323/liucunyu/rna_jev_data/weights_20261013/ckpts/plana_giga_tr1c_s1_step20000.pt",
+        "sha256": "c10fb303b589346b806ff15ba1f4bb789af1ada3ac78a8010246f6d85c3296c8"
+      },
+      "r2d_s0": {
+        "bytes": 9664096,
+        "path": "/root/rna_jepa_data/ckpts_1014/rinalmo_r2dtr1c_b4_s0_step20000.pt",
+        "sha256": "47a823514111d116825f5eeef5e39d992abe45b3844d47cf174468bef3b345a3"
+      }
+    },
+    "coverage": {
+      "blocked_reason_counts": {},
+      "coverage": 1.0,
+      "n_blocked": 0,
+      "n_completed": 1,
+      "n_pass": 1,
+      "n_target": 1,
+      "predictions_sha256": "02ef1c8feee2cfdd9253747978e63c1db7c34b9ccd37a79408432fba801d4570",
+      "remaining_count": 0,
+      "remaining_names": [],
+      "schema_version": "archiveii.xens2.gpu_recovery.v1.coverage",
+      "status": "COMPLETE"
+    },
+    "device": "cuda",
+    "device_name": "NVIDIA GeForce RTX 5090",
+    "elapsed_seconds": 1.3571620639413595,
+    "embedding_shard": "/root/rna_jepa_data/embeddings/rinalmo-giga/archiveii.shard0of1.npz",
+    "embedding_shard_sha256": "eadd31d4bd93750ad14e7f283c5066eb8faa4152df101189e26263d910bc1686",
+    "plana_s1_weight": 0.5,
+    "protocol": "frozen xens2_eval; len>1024 or missing embeddings explicitly blocked, never substituted",
+    "schema_version": "archiveii.xens2.gpu_recovery.v1.metadata",
+    "torch_peak_mib": 6938.66015625,
+    "w_plana": 0.7
+  },
+  "production_blocked_reason_counts": {
+    "BLOCKED_PROTOCOL_LENGTH_GT1024": 16
+  },
+  "production_started": false,
+  "queue_command": "/root/miniconda3/envs/lucaone_cu128/bin/python tools/queue_archiveii_xens2_gpu_recovery_20261127.py --poll-seconds 60",
+  "queue_pid": 4131240,
+  "schema_version": "archiveii.xens2.frozen_queue_evidence.v1",
+  "status": {
+    "device": {
+      "free_mib": 15988,
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5090",
+      "total_mib": 32607,
+      "used_mib": 16124
+    },
+    "measured_peak_mib": 10465.0,
+    "message": "persistent wait; production has not been launched",
+    "pid": 4131240,
+    "probe_result": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/probe/xens2/probe_result.json",
+    "required_free_mib": 17746,
+    "schema_version": "archiveii.xens2.gpu_queue.v1",
+    "state": "WAITING_PRODUCTION",
+    "updated_utc": "2026-11-27T23:26:27+08:00"
+  }
+}
