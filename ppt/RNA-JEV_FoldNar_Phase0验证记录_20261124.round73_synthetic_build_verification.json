@@ -1,0 +1,83 @@
+{
+  "status": "PASS_BUILD_REOPEN_17_PRIOR_XML_ATOMIC_REPLACE_HASH_GATE",
+  "deck": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1/temporary_round73_copy.pptx",
+  "deck_sha256": "479db1c942f758f55276c38257a57b7015f73fa7f8c05dfc075413894a1a578a",
+  "deck_bytes": 45744,
+  "prior_deck_sha256": "833415f1ca3fee19a4e19239a8874daf4704dbc52501b5c36c474a4590399c8b",
+  "backup": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1/temporary_round73_copy.pre_round73.pptx",
+  "backup_sha256": "833415f1ca3fee19a4e19239a8874daf4704dbc52501b5c36c474a4590399c8b",
+  "source_delivery": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1/synthetic_round72_delivery.pptx",
+    "bytes": 42458,
+    "sha256": "833415f1ca3fee19a4e19239a8874daf4704dbc52501b5c36c474a4590399c8b"
+  },
+  "source_verification": {
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1/publication_success.json",
+    "bytes": 1029,
+    "sha256": "82e24a7159aae0c7c3491a739219681ddc20773248eb1ebde65676c082349c8a"
+  },
+  "source_delivery_unchanged": true,
+  "builder": "/home/rna_jev_label_protocol_ppt/ppt/add_label_protocol_round73.py",
+  "builder_sha256": "f2bd716ce56728dae5b0997164d2a2f53cff808988ddb72d1b0e0fcbcb7c44de",
+  "evidence_artifacts": [
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/manifests/foldnar_v1/data_registry.json",
+      "bytes": 118957,
+      "sha256": "6cfcaa01534b870a7ea6fcbd44b4d90ea4362bbdd9c7cf1b35a4d7649579219a"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/artifacts/archive_label_lineage_audit_20261127/summary.json",
+      "bytes": 58521,
+      "sha256": "4ccff4945929e6918a74c797101bcf1e1ff7a097ec9f2462c24d0f6b49ae36e4"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/artifacts/archiveii_official_reference_20261127/system_metrics.json",
+      "bytes": 1609622,
+      "sha256": "01de9163a6ced10c1a968b0396c60fd68dca6d5ab5b8d80511603628f7155d83"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/artifacts/archiveii_official_reference_20261127/registry_recommendation.json",
+      "bytes": 1598409,
+      "sha256": "16a650d171e16cc01bb0be051f679faa4382b185b81a55b8507293932183c4e3"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/source_data/bprna_official_reference_5388/system_metrics.json",
+      "bytes": 78122,
+      "sha256": "641048b3df85c16801c844a77ce18544cfdc0ef6806562400a25961dc0fc6814"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/manifests/pretrain_exposure_v1/summary.json",
+      "bytes": 20746,
+      "sha256": "af39cd32a42344340f7d083b606e9d79208414d15b0e47d0690c40bfb28f4866"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
+      "bytes": 145592,
+      "sha256": "6110f4c7ebd6d8c85797a49268894ec17c645acebe4af416f9ad97f45fa4a6d2"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
+      "bytes": 19826,
+      "sha256": "8b2766efc662387686ef1e798b0d781db0fa603f15c634920f85260a00beb819"
+    }
+  ],
+  "scope": {
+    "legacy_prediction_derived_labels_sota_eligible": false,
+    "official_reference_descriptive_only": true,
+    "pdb58_95_ranking_allowed": false,
+    "pretrain_unknown_or_unchecked_clean": false,
+    "four_arm_converged": false,
+    "complete_sota_closed": false,
+    "model_selection": false
+  },
+  "atomic_replace": true,
+  "temporary_copy_only": true,
+  "real_ppt_modified": false,
+  "slide_count": 18,
+  "deck_slide_index": 18,
+  "added_slide_number": 37,
+  "prior_slide_xml_preserved": 17,
+  "shape_bounds_checks": 18,
+  "new_slide_text_chars": 1131,
+  "render_visual_check": "PENDING_SEPARATE_RENDER_AND_OCR"
+}
