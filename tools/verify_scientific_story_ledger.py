@@ -26,6 +26,7 @@ PRETRAIN_EXPOSURE = PRETRAIN_EXPOSURE_REPO / "manifests/pretrain_exposure_v1"
 MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
 MODEL_DEV_V3 = F / "model_dev_v3"
 BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
+ARCHIVEII_REPO = Path("/home/rna_jev_archive_label_lineage")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -55,6 +56,8 @@ SOURCES = {
     "official_registry": BPFOLD_PROTOCOL_REPO / "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json",
     "official_metrics": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/system_metrics.json",
     "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
+    "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
+    "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -73,12 +76,13 @@ SOURCES = {
 }
 
 SOURCE_COMMITS = {
-    "FoldNAR integration": (FOLDNAR_REPO, "79a2ed45879f1f4e81d6719ed54600bf7f8da807"),
+    "FoldNAR integration": (FOLDNAR_REPO, "8bd87223edb9b5a21c1e13676b4192de54505d9f"),
     "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
     "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
+    "ArchiveII official reference": (ARCHIVEII_REPO, "4daccb0eb1c78db565532634ed0d77cf1e6ddaae"),
 }
 
 
@@ -254,6 +258,74 @@ def verify_bpfold_official_contract() -> list[str]:
     return errors
 
 
+def verify_archiveii_official_contract() -> list[str]:
+    errors = []
+    for name in ["archiveii_metrics", "archiveii_verification"]:
+        if not SOURCES[name].is_file():
+            return errors + [f"missing ArchiveII official source: {name}: {SOURCES[name]}"]
+    metrics = json.loads(SOURCES["archiveii_metrics"].read_text())
+    verification = json.loads(SOURCES["archiveii_verification"].read_text())
+    expected_coverage = {
+        "inventory_entries": 36,
+        "clean_2544_full_coverage": 20,
+        "official_3966_full_coverage": 1,
+        "official_3966_partial_not_ranked": 19,
+        "blocked_or_protocol_mismatch": 16,
+        "scored_identities": 20,
+    }
+    if metrics["coverage_accounting"] != expected_coverage:
+        errors.append(f"ArchiveII coverage accounting mismatch: {metrics['coverage_accounting']}")
+    if metrics["legacy_derived_label_disposition"] != "circular-audit-only; historical values retained; not independent SOTA":
+        errors.append("ArchiveII legacy derived labels regained ranking eligibility")
+    if metrics["new_training_or_inference"] is not False or metrics["external_test_model_selection"] is not False:
+        errors.append("ArchiveII audit allowed new inference/training or model selection")
+    rows = {row["prediction_id"]: row for row in metrics["rows"]}
+    expected = {
+        "xens2/archiveii_embok_clean": (0.8156522070450173, 0.8596587124620273, [0.0, 0.0]),
+        "bpfold/archiveii_embok_clean": (0.8999331354520079, 0.9161611813979388, [0.05111753565735653, 0.06194679545248867]),
+        "rinalmo_ft/archiveii_embok_clean": (0.8204522394549935, 0.8630290508840547, [-0.0012121956293114915, 0.00786996899701714]),
+    }
+    for prediction_id, (micro, macro, ci95) in expected.items():
+        clean = rows[prediction_id]["panels"]["archiveii_official_reference_clean_2544"]
+        official = rows[prediction_id]["panels"]["archiveii_official_reference_3966"]
+        if clean["status"] != "PASS_FULL_COVERAGE" or clean["n_with_prediction"] != 2544 or clean["coverage"] != 1.0:
+            errors.append(f"ArchiveII clean coverage mismatch: {prediction_id}")
+        if not math.isclose(clean["metrics"]["micro_f1"], micro, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"ArchiveII clean micro mismatch: {prediction_id}")
+        if not math.isclose(clean["metrics"]["macro_f1"], macro, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"ArchiveII clean macro mismatch: {prediction_id}")
+        interval = clean["paired_macro_f1_delta_ci95_vs_xens2"]
+        if interval["ci95"] != ci95 or interval["n_bootstrap"] != 10000 or interval["seed"] != 20261127:
+            errors.append(f"ArchiveII paired macro CI mismatch: {prediction_id}")
+        if interval["method"] != "paired sequence-level percentile bootstrap":
+            errors.append(f"ArchiveII CI method mismatch: {prediction_id}")
+        if official["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or official["n_with_prediction"] != 2544 or official["missing_count"] != 1422:
+            errors.append(f"ArchiveII partial official panel was ranked: {prediction_id}")
+        if official["paired_macro_f1_delta_ci95_vs_xens2"] is not None or official["delta_vs_xens2"] is not None:
+            errors.append(f"ArchiveII partial panel gained a delta/CI: {prediction_id}")
+        if official["missing_predictions_imputed_as_zero"] is not False:
+            errors.append(f"ArchiveII missing predictions were imputed: {prediction_id}")
+    full = [row for row in metrics["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"]
+    if len(full) != 1 or full[0]["prediction_id"] != "bpfold_official_release/archiveii":
+        errors.append("ArchiveII official 3966 full-coverage identity mismatch")
+    else:
+        release = full[0]["panels"]["archiveii_official_reference_3966"]
+        if release["n_with_prediction"] != 3966 or not math.isclose(release["metrics"]["micro_f1"], 0.7974584107660678, rel_tol=0.0, abs_tol=1e-15):
+            errors.append("ArchiveII official release full-panel micro mismatch")
+    if metrics["official_3966_full_coverage_summary"]["strongest_single_predictor"] != "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR":
+        errors.append("ArchiveII official 3966 ranked a predictor without full single-model coverage")
+    if metrics["strongest_single_predictor"]["prediction_id"] != "rinalmo_ft/archiveii_embok_clean" or metrics["strongest_overall"]["prediction_id"] != "bpfold/archiveii_embok_clean":
+        errors.append("ArchiveII clean strongest identities mismatch")
+    for key in ["strongest_overall", "strongest_ensemble", "strongest_single_predictor"]:
+        if metrics[key]["ranking_scope"] != "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION":
+            errors.append(f"ArchiveII clean ranking scope mismatch: {key}")
+    if verification["status"] != "PASS_CLEAN_CLONE_AND_DELIVERY" or verification["clean_clone_outputs_byte_identical"] is not True:
+        errors.append("ArchiveII round3 clean-clone delivery did not pass")
+    if verification["shared_registry_diff"] != "EMPTY" or verification["new_training_or_inference"] is not False or verification["external_test_model_selection"] is not False:
+        errors.append("ArchiveII delivery changed registry or allowed inference/selection")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -296,6 +368,15 @@ def verify_narrative_guards() -> list[str]:
         "19/19 派生标签资产",
         "28/28 official-reference scored rows 均不含 0.9617",
         "旧差距禁止回写",
+        "8bd87223edb9b5a21c1e13676b4192de54505d9f",
+        "4daccb0eb1c78db565532634ed0d77cf1e6ddaae",
+        "0.8156522070450173",
+        "0.8999331354520079",
+        "0.8204522394549935",
+        "+0.0511175356573565, +0.0619467954524887",
+        "−0.0012121956293115, +0.0078699689970171",
+        "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR",
+        "19 个有部分预测的身份均为 2,544/3,966",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
@@ -731,12 +812,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, and BPfold official protocol"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold official protocol, and ArchiveII coverage/CI"
     print(f"PASS: {scope}")
     return 0
 

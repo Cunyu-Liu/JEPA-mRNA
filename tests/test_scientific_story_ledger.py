@@ -75,6 +75,25 @@ def test_bpfold_official_registry_contract():
     assert ledger.verify_bpfold_official_contract() == []
 
 
+def test_archiveii_official_values_ci_and_full_coverage_boundary():
+    text = ledger.DOC.read_text()
+    assert "0.8156522070450173" in text
+    assert "0.8999331354520079" in text
+    assert "0.8204522394549935" in text
+    assert "+0.0511175356573565, +0.0619467954524887" in text
+    assert "−0.0012121956293115, +0.0078699689970171" in text
+    assert "RiNALMo-ft 的对应 CI **跨 0**" in text
+    assert "CI 只属于 macro-F1 差值" in text
+    assert "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR" in text
+    assert "19 个有部分预测的身份均为 2,544/3,966" in text
+    assert "PARTIAL_COVERAGE_NOT_RANKED" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_archiveii_official_artifact_contract():
+    assert ledger.verify_archiveii_official_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

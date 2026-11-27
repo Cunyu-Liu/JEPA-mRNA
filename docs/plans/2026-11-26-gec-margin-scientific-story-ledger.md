@@ -21,6 +21,7 @@
 - Model-dev v3 登记提交为 `302b70a228d77b0f1847489c93ead402e33510b5`，registry SHA256=`4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904`；它只做 additive exposure sensitivity/final reporting，不读 margin 结果，不启动 GPU，不做新训练、推理、homology search 或 route selection。
 - current independent margin evaluator 固定为 `/home/rna_jev_margin_evaluator`，HEAD `536b79e450c1ad18b67e06cb39ecb3730546221b`；本 ledger 更新只读核对该提交，不修改评估器、候选训练或调度。
 - **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。**本次更新实时状态**：`scheduler_state.json` 为 `QUEUED_ARM_MEMORY`，`matched_control` 与 `ensemble_context` 两臂运行，`destroy_interval_shuffle` 与 `independent_context` 两臂等待资源，完成臂仍为 0，`scientific_conclusion=null`。这里区分初始快照与后续调度；排队、探针、启动、运行或等待资源的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
+- ArchiveII/PDB/Rfam 标签谱系整合基线固定为 `/home/rna_jev_foldnar_integration`@`8bd87223edb9b5a21c1e13676b4192de54505d9f`；ArchiveII official-reference 证据与三轮 clean-clone delivery 固定为 `/home/rna_jev_archive_label_lineage`@`4daccb0eb1c78db565532634ed0d77cf1e6ddaae`。这些是外部预测在官方参考上的 CPU 复算，不是 margin 结果，也不用于模型选择。
 
 Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldnar`，`A=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts`。
 
@@ -222,6 +223,26 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：官方参考修复解决标签独立性与同协议可比性，不解决所有模型的预训练暴露、集成/单模型形式差异或外部泛化；不得把描述性最高值写成我们的候选提升或 clean-OOD SOTA。外部 Test 审计不参与任何选型。
 - **Next**：后续 ledger 只接受新 official-reference 差值及完整身份/覆盖率；任何旧差距、raw 排名或 0.9617 回写均触发验证失败。本轮不修改 PPT。
 
+## 19. ArchiveII official-reference：clean 2544 描述比较与 3966 覆盖禁排名门
+
+- **Claim（面板与标签身份）**：旧 ArchiveII `DERIVED_FROM_BPFOLD_PREDICTIONS` 标签及旧分数只保留 **circular-audit-only**。新面板在未过滤官方参考上做 strict zero-based inclusive pair CPU 复算；clean 2544 共同全覆盖结果仅 `DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION`，不用于选模、checkpoint 选择或 margin 结论。
+- **Phenomenon**：旧标签会把预测来源与评价参考混在一起；仅替换参考还不够，因为 release、项目 replay、集成和单预测器的覆盖范围及模型形式不同，缺失预测也不能补 0 后排名。
+- **Intervention**：逐条核对 BPfold_data 与 MXfold2 的 3,966 条官方 BPSEQ 身份，使用冻结预测独立复算 clean 2,544 交集和官方 3,966 全集；共同覆盖面内以 10,000 次序列级 paired percentile bootstrap（seed=20261127）计算**相对 xens2 的 macro-F1 差值** 95% CI。
+- **Expected observation**：clean 2544 内可报告真实 micro/macro-F1 及配对 macro 差值 CI；全集只有全覆盖身份可做全集描述，部分覆盖必须 `PARTIAL_COVERAGE_NOT_RANKED`，没有全覆盖单预测器时不得给出单预测器排名。
+- **Actual（clean 2544）**：
+
+  | Prediction identity / form | micro-F1 | macro-F1 | Δmicro vs xens2 | Δmacro vs xens2 [paired 95% CI] |
+  |---|---:|---:|---:|---:|
+  | xens2 / three-checkpoint ensemble | **0.8156522070450173** | 0.8596587124620273 | 0 | 0 [0, 0] |
+  | BPfold replay / six-checkpoint ensemble | **0.8999331354520079** | 0.9161611813979388 | +0.0842809284069906 | +0.0565024689359115 **[+0.0511175356573565, +0.0619467954524887]** |
+  | RiNALMo-ft / single model，clean 内最强单预测器 | **0.8204522394549935** | 0.8630290508840547 | +0.0048000324099762 | +0.0033703384220274 **[−0.0012121956293115, +0.0078699689970171]** |
+
+  BPfold replay 的配对 macro 差值 CI 不跨 0；RiNALMo-ft 的对应 CI **跨 0**，所以其相对 xens2 的微小描述性差值不是已解析的统计优势。CI 只属于 macro-F1 差值，不得写成 micro-F1 CI。
+- **Actual（official 3966）**：36 个 inventory identities 中，clean 2544 全覆盖 20 个；全集只有 `bpfold_official_release/archiveii` 为 3,966/3,966 全覆盖，micro/macro-F1=**0.7974584107660678 / 0.8200813622940291**。其余 19 个有部分预测的身份均为 2,544/3,966、coverage=0.6414523449319214、`PARTIAL_COVERAGE_NOT_RANKED`，16 个 blocked/protocol-mismatch。全集最强单预测器保持 **`UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR`**，禁止用 clean 2544 的 RiNALMo-ft 排名替代全集排名。BPfold official release 与项目 replay 仍是不同 prediction identity。
+- **Artifact / links**：[冻结复算 system metrics](/home/rna_jev_archive_label_lineage/artifacts/archiveii_official_reference_20261127/system_metrics.json)、[registry recommendation](/home/rna_jev_archive_label_lineage/artifacts/archiveii_official_reference_20261127/registry_recommendation.json)、[clean 2544 官方参考](/home/rna_jev_archive_label_lineage/source_data/archiveii_official_reference_20261127/official_reference_clean_2544.jsonl.gz)（SHA256=`cde658b5d61813ff9530509bd25631d6f33dcb08021bae107636f0a212c11afb`）和 [round3 clean-clone delivery](/home/rna_jev_archive_label_lineage/artifacts/archiveii_official_reference_20261127/verification_round3.json)（`PASS_CLEAN_CLONE_AND_DELIVERY`）。
+- **Limitation**：这是外部 Test 的 audit-only 描述复算，不授权外部 Test 选型，不消除预训练暴露、集成/单模型形式或家族独立性限制，也不构成我们的 margin 候选提升或无限定 SOTA。全集 release 结果不能与 replay 的 clean 2544 结果混排。
+- **Next**：保留同一面板、同一协议、全覆盖和 paired CI 的完整身份；任何 3,966 单预测器名次、部分覆盖补 0 或旧派生标签分数回写均触发验证失败。本轮不修改 PPT。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -243,6 +264,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | 下一页暴露分层与 margin 准入 | 总分掩盖暴露，运行状态冒充结果 | 冻结分层+独立评估器身份门禁 | 分层显式出现；双训练完成后再复评 | exposure registry；margin evaluator `536b79e` | 当前双训练未完成、margin 无结论；不改 PPT/GPU/原 16 门 |
 | Model-dev v3 暴露登记 | 分层需连接 12 个历史 run | 非 import 独立重算与三轮验证 | 序列/pair 守恒；additive-only | `foldnar_v3/verification_summary.json` | 无新性能；EXACT sensitivity-only，其余 diagnostic-only；不选路线 |
 | Evaluator×v3 用途与16门不变 | 分层不能改写主科学门 | 12 run 逐层+evaluator 源码联合门禁 | EXACT sensitivity-only；其余 diagnostic-only；16门原样 | evaluator tools；v3 registry/manifest | 不 rescue/veto，不选 checkpoint/arm；margin 无结论 |
+| ArchiveII official-reference | 旧标签循环且预测覆盖不齐 | 未过滤官方参考+冻结预测独立复算 | clean 2544 同协议值与 paired macro CI；3966 仅全覆盖可描述 | `archiveii_official_reference_20261127/system_metrics.json` | 3966 无全覆盖单预测器，禁排名；audit-only，不选模、不是 margin 结果 |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -267,7 +289,8 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **Pretrain exposure / SOTA 边界**：dev 必须保留 7,978 EXACT、539 HOMOLOGY、626 NOT_DETECTED_UNKNOWN；bpRNA-new 为 5,381/5,388 EXACT，其余 7 条 HOMOLOGY。完整官方语料 UNCHECKED，dev 不能外推 clean-OOD；只能写 exposure-aware descriptive performance，UNKNOWN/UNCHECKED 不得写成 clean。
 - [ ] **Label quality 边界**：TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 不得称为实验真值；95,052 noncanonical 与 10,250 short-span 仅为可重叠的软复核记录数，硬冲突 0、实际删除 0，不得自动删除或把无 flag 写成 clean。
 - [ ] **长序列边界**：19,000 nt 只能陈述 LinearPartition 单条 holdout 的全长 coverage、真实资源与 BPP/MEA recall；candidate recall 不得冒充结构准确率，baseline coverage 不得冒充 GEC coverage，GEC unsupported 不得省略。
+- [ ] **ArchiveII 覆盖与 CI**：旧派生标签只能 circular-audit-only；clean 2544 的 xens2/BPfold replay/RiNALMo-ft 必须使用 official-reference 真实值并标明 paired macro 差值 CI，RiNALMo-ft CI 跨 0。3966 只有 official release 全覆盖，单预测器保持 UNCHECKED，19 个部分覆盖身份不得排名或补 0。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
