@@ -34,7 +34,10 @@ PDB_SUMMARY = ROOT / "source_data/pdb_rcsb_rebuild_20261127/round6_combined/rebu
 PDB_VERIFICATION = ROOT / "source_data/pdb_rcsb_rebuild_20261127/round6_combined_verification.json"
 TS_COVERAGE = ROOT / "artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json"
 TS_VERIFICATION = ROOT / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json"
-TS_RECOMMENDATION = ROOT / "artifacts/ts0_testsetb_official_reference_20261127/registry_recommendation.json"
+TS0_RECOVERY = ROOT / "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json"
+TS0_RECOVERY_CHECK = ROOT / "artifacts/ts0_official_coverage_recovery_20261127/verification_round2.json"
+TESTSETB_RECOVERY = ROOT / "artifacts/testsetb_official_coverage_recovery_20261127/recovery_audit.json"
+TESTSETB_RECOVERY_CHECK = ROOT / "artifacts/testsetb_official_coverage_recovery_20261127/verification_round3.json"
 BURGUNDY = RGBColor(122, 32, 44)
 DARK_RED = RGBColor(145, 36, 48)
 GREEN = RGBColor(36, 105, 78)
@@ -168,13 +171,17 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                       pdb_verification: str | Path = PDB_VERIFICATION,
                       ts_coverage: str | Path = TS_COVERAGE,
                       ts_verification: str | Path = TS_VERIFICATION,
-                      ts_recommendation: str | Path = TS_RECOMMENDATION) -> dict:
+                      ts0_recovery: str | Path = TS0_RECOVERY,
+                      ts0_recovery_check: str | Path = TS0_RECOVERY_CHECK,
+                      testsetb_recovery: str | Path = TESTSETB_RECOVERY,
+                      testsetb_recovery_check: str | Path = TESTSETB_RECOVERY_CHECK) -> dict:
     paths = tuple(Path(path).resolve() for path in
                   (data_registry, archive_lineage, archive_system, archive_recommendation,
                    bprna_system, pretrain_summary, pdb_lineage, pdb_summary, pdb_verification,
-                   ts_coverage, ts_verification, ts_recommendation))
+                   ts_coverage, ts_verification, ts0_recovery, ts0_recovery_check,
+                   testsetb_recovery, testsetb_recovery_check))
     (registry, lineage, archive, recommendation, bprna, pretrain, pdb, pdb_rebuild,
-     pdb_check, coverage, coverage_check, coverage_recommendation) = map(load_json, paths)
+     pdb_check, coverage, coverage_check, ts0, ts0_check, testsetb, testsetb_check) = map(load_json, paths)
     legacy = {}
     for dataset_id, replacement in (("bprna_new", "bpfold_official_bprna_new_reference_5388"),
                                     ("archiveii_embok_clean", None)):
@@ -252,14 +259,43 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                 and len(panel.get("official_missing_from_project", [])) == missing_n
                 and official_n - project_n == missing_n,
                 f"TS0/TestSetB projected/full coverage accounting changed: {dataset_id}")
-        for prediction in panel.get("per_prediction_official_coverage", []):
-            require(prediction.get("coverage") != 1.0
-                    and prediction.get("n_with_prediction") != official_n,
-                    f"official-full prediction unexpectedly appeared: {dataset_id}")
-        full = coverage_recommendation.get("datasets", {}).get(dataset_id, {}).get(
-            "official_full_summary", {})
-        require(set(full.values()) == {"UNCHECKED_NO_FULL_COVERAGE_PREDICTION"},
-                f"official-full no-ranking boundary changed: {dataset_id}")
+    require(ts0.get("status") == "PASS_7_FULL1305_IDENTITIES_2_PARTIAL"
+            and ts0.get("external_test_model_selection") is False
+            and len(ts0.get("new_full_coverage_identities", [])) == 7
+            and ts0.get("official_panel", {}).get("n_sequences") == 1305
+            and ts0.get("project_panel", {}).get("n_sequences") == 1288,
+            "TS0 seven-full/projected recovery contract changed")
+    require(ts0_check.get("status") == "PASS_INDEPENDENT_RECOVERY_RECONSTRUCTION"
+            and set(ts0_check.get("full1305_identities", [])) == set(ts0["new_full_coverage_identities"])
+            and len(ts0_check.get("partial1302_identities", [])) == 2
+            and ts0_check.get("deliverables", {}).get(
+                "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json", {}
+            ).get("sha256") == sha256(ts0_recovery),
+            "TS0 independent recovery verification changed")
+    require(testsetb.get("status") == "PASS_7_FULL430_IDENTITIES_AND_2_PARTIAL429_WITH_EXPLICIT_BLOCKS"
+            and testsetb.get("external_test_model_selection") is False
+            and len(testsetb.get("new_full_coverage_identities", [])) == 7
+            and testsetb.get("official_panel", {}).get("n_sequences") == 430
+            and testsetb.get("project_panel", {}).get("n_sequences") == 428,
+            "TestSetB seven-full/projected recovery contract changed")
+    require(testsetb_check.get("status") == "PASS"
+            and testsetb_check.get("coverage_accounting", {}).get("official_full_coverage") == 7
+            and set(testsetb_check.get("official_full_coverage_identities", [])) ==
+            set(testsetb["new_full_coverage_identities"])
+            and testsetb_check.get("recovery_manifest_sha256") == sha256(testsetb_recovery)
+            and testsetb_check.get("project_428_metrics_unchanged_for_prior_20") is True,
+            "TestSetB independent recovery verification changed")
+    for recovery, count_key, partial_n in ((ts0, "n_prediction_records", 1302),
+                                           (testsetb, "n_sequences", 429)):
+        entries = {row.get("prediction_id"): row for row in recovery.get("prediction_entries", [])}
+        official_n = recovery["official_panel"]["n_sequences"]
+        for prediction_id in recovery["new_full_coverage_identities"]:
+            require(entries.get(prediction_id, {}).get(count_key) == official_n,
+                    f"official-full identity is incomplete: {prediction_id}")
+        for prediction_id in ("rnastructure_fold/" + recovery["dataset_id"],
+                              "rnastructure_maxexpect/" + recovery["dataset_id"]):
+            require(entries.get(prediction_id, {}).get(count_key) == partial_n,
+                    f"RNAstructure partial coverage changed: {prediction_id}")
     require(pdb.get("related_temporal_pdb_collection", {}).get("status") == "NOT_QUALIFIED"
             and pdb.get("negative_label_policy", {}).get("unobserved") ==
             "must be masked, never a negative label",
@@ -277,7 +313,7 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                 f"pretrain exposure boundary changed: {dataset_id}")
     return {"legacy": legacy, "xens2": xens2, "replay": replay, "rinalmo": rinalmo,
             "pdb_rebuild": pdb_rebuild, "pretrain": pretrain, "coverage": coverage,
-            "paths": paths}
+            "ts0_recovery": ts0, "testsetb_recovery": testsetb, "paths": paths}
 
 
 def text(slide, x, y, w, h, value, size, color=INK, bold=False, font="Arial", align=PP_ALIGN.LEFT):
@@ -360,11 +396,18 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
         value = evidence[key]["metrics"]["micro_f1"]
         delta = "reference" if key == "xens2" else signed10(value - xens2)
         rows.append([label, fmt10(value), delta, role])
-    table(slide, 0.78, 3.00, (4.10, 2.00, 2.12, 3.56), 0.43,
+    table(slide, 0.78, 2.96, (4.10, 2.00, 2.12, 3.56), 0.40,
           ("ArchiveII official clean2544", "micro-F1", "Δ vs xens2", "descriptive role"), rows)
-    text(slide, 0.78, 4.76, 11.70, 0.27,
-         "* official-reference 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。\nTS0 1288/1305 · TestSetB 428/430 为 projected-reference；全集无任何 full-coverage prediction，均不排名。",
+    text(slide, 0.78, 4.59, 11.70, 0.15,
+         "* official-reference 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。",
          7.8, MUTED, font=SANS)
+    rect(slide, 0.78, 4.78, 4.40, 0.24, PALE, BURGUNDY)
+    text(slide, 0.94, 4.80, 4.08, 0.20,
+         "PROJECTED · TS0 1288 · TestSetB 428\nfrozen project IDs；与 official 分开报告", 7.1, BURGUNDY, True, SANS)
+    rect(slide, 5.40, 4.78, 7.16, 0.24, ROSE, DARK_RED)
+    text(slide, 5.56, 4.80, 6.84, 0.20,
+         "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full\nRNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
+         7.0, DARK_RED, True, SANS)
     rect(slide, 0.78, 5.05, 11.78, 0.66, PASS_PALE, GREEN)
     text(slide, 1.00, 5.13, 4.25, 0.22, "② Pretrain exposure 仍否决 clean-OOD", 11.0, GREEN, True, SANS)
     text(slide, 1.00, 5.39, 11.30, 0.20,
@@ -396,13 +439,16 @@ def verify_built_deck(path: Path, prior_deck: Path, evidence: dict) -> dict:
     required = ("37 · LABEL PROTOCOL", "标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                 "bpRNA-new 5388", "clean 2544", "0.8156522070", "0.8999331355", "0.8204522395",
                 "+0.0842809284", "+0.0048000324", "strongest single", "62 rebuilt / 91 UNCHECKED",
-                "TS0 1288/1305", "TestSetB 428/430", "全集无任何 full-coverage prediction，均不排名",
+                "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
+                "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
+                "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
                 "不得排名", "5381/5388", "2048/2544", "UNKNOWN / UNCHECKED ≠ clean",
                 "完整 SOTA 仍未闭环", "四臂未收敛", "≠ clean SOTA")
     for phrase in required:
         require(phrase in content, f"missing label-protocol slide text: {phrase}")
-    for obsolete in ("58 rebuilt / 95 UNCHECKED", "PDB58/95"):
-        require(obsolete not in content, f"obsolete PDB58/95 value remains on slide: {obsolete}")
+    for obsolete in ("58 rebuilt / 95 UNCHECKED", "PDB58/95",
+                     "全集无任何 full-coverage prediction"):
+        require(obsolete not in content, f"obsolete evidence value remains on slide: {obsolete}")
     return {"slide_count": 18, "deck_slide_index": 18, "added_slide_number": 37,
             "prior_slide_xml_preserved": 17, "shape_bounds_checks": len(reopened.slides[17].shapes),
             "new_slide_text_chars": len(content)}
@@ -466,6 +512,8 @@ def build(deck: str | Path, source_deck: str | Path = SOURCE_DECK,
         "scope": {"legacy_prediction_derived_labels_sota_eligible": False,
                   "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
                   "ts0_testsetb_official_full_ranking_allowed": False,
+                  "ts0_official_full_coverage_identities": 7,
+                  "testsetb_official_full_coverage_identities": 7,
                   "pretrain_unknown_or_unchecked_clean": False, "four_arm_converged": False,
                   "complete_sota_closed": False, "model_selection": False},
         "atomic_replace": True, "temporary_copy_only": True, "real_ppt_modified": False,
@@ -494,12 +542,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--pdb-verification", type=Path, default=PDB_VERIFICATION)
     parser.add_argument("--ts-coverage", type=Path, default=TS_COVERAGE)
     parser.add_argument("--ts-verification", type=Path, default=TS_VERIFICATION)
-    parser.add_argument("--ts-recommendation", type=Path, default=TS_RECOMMENDATION)
+    parser.add_argument("--ts0-recovery", type=Path, default=TS0_RECOVERY)
+    parser.add_argument("--ts0-recovery-check", type=Path, default=TS0_RECOVERY_CHECK)
+    parser.add_argument("--testsetb-recovery", type=Path, default=TESTSETB_RECOVERY)
+    parser.add_argument("--testsetb-recovery-check", type=Path, default=TESTSETB_RECOVERY_CHECK)
     args = parser.parse_args(argv)
     evidence_paths = {name: getattr(args, name) for name in
                       ("data_registry", "archive_lineage", "archive_system", "archive_recommendation",
                        "bprna_system", "pretrain_summary", "pdb_lineage", "pdb_summary",
-                       "pdb_verification", "ts_coverage", "ts_verification", "ts_recommendation")}
+                       "pdb_verification", "ts_coverage", "ts_verification", "ts0_recovery",
+                       "ts0_recovery_check", "testsetb_recovery", "testsetb_recovery_check")}
     try:
         report = build(args.deck, args.source_deck, args.source_verification,
                        args.expected_source_sha256, args.backup, args.verification, **evidence_paths)

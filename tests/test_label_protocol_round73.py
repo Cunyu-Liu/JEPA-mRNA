@@ -75,6 +75,8 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
         "legacy_prediction_derived_labels_sota_eligible": False,
         "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
         "ts0_testsetb_official_full_ranking_allowed": False,
+        "ts0_official_full_coverage_identities": 7,
+        "testsetb_official_full_coverage_identities": 7,
         "pretrain_unknown_or_unchecked_clean": False, "four_arm_converged": False,
         "complete_sota_closed": False, "model_selection": False,
     }
@@ -86,11 +88,14 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
     for phrase in ("标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                    "0.8156522070", "0.8999331355", "0.8204522395", "+0.0842809284",
                    "+0.0048000324", "62 rebuilt / 91 UNCHECKED", "不得排名",
-                   "TS0 1288/1305", "TestSetB 428/430", "全集无任何 full-coverage prediction，均不排名",
+                   "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
+                   "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
+                   "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
                    "5381/5388", "2048/2544", "完整 SOTA 仍未闭环", "四臂未收敛"):
         assert phrase in content
     assert "58 rebuilt / 95 UNCHECKED" not in content
     assert "PDB58/95" not in content
+    assert "全集无任何 full-coverage prediction" not in content
     assert hashlib.sha256(built["source"].read_bytes()).hexdigest() == source_hash
 
 
@@ -149,7 +154,7 @@ def test_source_and_duplicate_gates_are_atomic(tmp_path, mode):
         assert len(Presentation(deck).slides) == 17
 
 
-@pytest.mark.parametrize("target", ("LEGACY", "PDB", "COVERAGE", "EXPOSURE"))
+@pytest.mark.parametrize("target", ("LEGACY", "PDB", "COVERAGE", "TS0_FULL", "TESTSETB_PARTIAL", "EXPOSURE"))
 def test_evidence_tamper_refuses_build_without_changing_copy(tmp_path, target):
     fixture = synthetic_source(tmp_path / target)
     deck = tmp_path / f"{target}-copy.pptx"
@@ -168,11 +173,21 @@ def test_evidence_tamper_refuses_build_without_changing_copy(tmp_path, target):
         overrides["pdb_summary"] = path
     elif target == "COVERAGE":
         altered = json.loads(M.TS_COVERAGE.read_text())
-        row = altered["datasets"]["bprna_ts0"]["per_prediction_official_coverage"][1]
-        row["coverage"] = 1.0
-        row["n_with_prediction"] = 1305
+        altered["datasets"]["bprna_ts0"]["project_n"] = 0
         path = tmp_path / "coverage.json"
         overrides["ts_coverage"] = path
+    elif target == "TS0_FULL":
+        altered = json.loads(M.TS0_RECOVERY.read_text())
+        altered["new_full_coverage_identities"] = altered["new_full_coverage_identities"][:-1]
+        path = tmp_path / "ts0-full.json"
+        overrides["ts0_recovery"] = path
+    elif target == "TESTSETB_PARTIAL":
+        altered = json.loads(M.TESTSETB_RECOVERY.read_text())
+        row = next(row for row in altered["prediction_entries"]
+                   if row["prediction_id"] == "rnastructure_fold/testsetb")
+        row["n_sequences"] = 430
+        path = tmp_path / "testsetb-partial.json"
+        overrides["testsetb_recovery"] = path
     else:
         altered = json.loads(M.PRETRAIN_SUMMARY.read_text())
         altered["populations"]["bprna_new"]["known_source_exact_state"]["EXACT"] = 0
