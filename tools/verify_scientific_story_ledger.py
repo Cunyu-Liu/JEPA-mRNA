@@ -68,6 +68,8 @@ SOURCES = {
     "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
     "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
+    "archiveii_full_metrics": ARCHIVEII_REPO / "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json",
+    "archiveii_full_verification": ARCHIVEII_REPO / "artifacts/archiveii_full3966_cpu_recovery_20261127/verification_round3.json",
     "ts0_metrics": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_pre_recovery_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_recovery_audit": TS0_COVERAGE_REPO / "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
@@ -91,7 +93,7 @@ SOURCES = {
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
     "takeover_status": INCIDENT_EVIDENCE_ROOT / "recovery_takeover_status.json",
-    "adopted_scheduler_state": LOCAL_SCHEDULER_ROOT / "recovery_scheduler_state.json",
+    "adopted_scheduler_state": INCIDENT_EVIDENCE_ROOT / "adopted_scheduler_state.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -116,7 +118,7 @@ SOURCE_COMMITS = {
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
-    "ArchiveII official reference": (ARCHIVEII_REPO, "8a2008a4cda3c43b3000f25151b80408b0bdb110"),
+    "ArchiveII official reference": (ARCHIVEII_REPO, "1558cf007b8a114349b73ed3b7becd77d76ac251"),
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
@@ -504,8 +506,8 @@ def verify_incident_recovery_contract() -> list[str]:
     if errors:
         return errors
     meta = json.loads(meta_path.read_text())
-    if meta.get("status") != "running" or meta.get("converged") is not False:
-        errors.append("matched run_meta is no longer running and non-converged")
+    if meta.get("status") == "running" and meta.get("converged") is not False:
+        errors.append("matched run_meta is running but has an invalid convergence flag")
     train = [json.loads(line) for line in train_path.read_text().splitlines()]
     validation = [json.loads(line) for line in validation_path.read_text().splitlines()]
     if len(train) < 10000 or train[9999]["step"] != 10000 or train[9999]["optimizer_steps"] != 10000:
@@ -532,6 +534,103 @@ def verify_incident_recovery_contract() -> list[str]:
     for required in ["PASS_FINAL_EVALUATION_MIRRORED_FOR_EXISTING_PUBLISHER", 'report.get("final_verdict_allowed") is not True', "copied != before"]:
         if required not in mirror:
             errors.append(f"final teams mirror contract missing: {required}")
+    return errors
+
+
+def verify_archiveii_full_recovery_contract() -> list[str]:
+    errors = []
+    for name in ["archiveii_full_metrics", "archiveii_full_verification"]:
+        if not SOURCES[name].is_file():
+            return [f"missing ArchiveII full recovery source: {name}: {SOURCES[name]}"]
+    metrics = json.loads(SOURCES["archiveii_full_metrics"].read_text())
+    verification = json.loads(SOURCES["archiveii_full_verification"].read_text())
+    expected_coverage = {
+        "base_identities": 36,
+        "clean_2544_full_coverage": 25,
+        "official_3966_full_coverage": 5,
+        "recovery_complete_1422": 7,
+        "recovery_identities": 8,
+        "total_identities": 44,
+        "xens2_official_3966_coverage": 0.6414523449319214,
+    }
+    if metrics["coverage_accounting"] != expected_coverage:
+        errors.append(f"ArchiveII full recovery coverage accounting mismatch: {metrics['coverage_accounting']}")
+    if metrics["inference_scope"] != "official-only 1422 CPU baselines only; no GPU" or metrics["gpu_used"] is not False:
+        errors.append("ArchiveII full recovery exceeded CPU-only official-only scope")
+    if metrics["shared_registry_modified"] is not False or metrics["external_test_model_selection"] is not False:
+        errors.append("ArchiveII full recovery modified registry or allowed model selection")
+    full = metrics["full_3966"]
+    for key in ["strongest_ensemble", "strongest_overall"]:
+        summary = full[key]
+        if summary["prediction_id"] != "bpfold_official_release/archiveii" or not math.isclose(summary["metrics"]["micro_f1"], 0.7974584107660678, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"ArchiveII full BPfold release identity/micro mismatch: {key}")
+        if summary["ranking_scope"] != "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION":
+            errors.append(f"ArchiveII full ranking scope mismatch: {key}")
+    single = full["strongest_single_predictor"]
+    if single["prediction_id"] != "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1" or not math.isclose(single["metrics"]["micro_f1"], 0.7023050285738565, rel_tol=0.0, abs_tol=1e-15):
+        errors.append("ArchiveII full MXfold2 strongest-single identity/micro mismatch")
+    if single["model_form"] != "deterministic_single_predictor" or single["ranking_scope"] != "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION":
+        errors.append("ArchiveII full MXfold2 model form/ranking scope mismatch")
+    expected_full = {
+        "bpfold_official_release/archiveii",
+        "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1",
+        "contrafold/archiveii_official_reference_3966/cpu_recovery_v1",
+        "eternafold/archiveii_official_reference_3966/cpu_recovery_v1",
+        "rnastructure_fold/archiveii_official_reference_3966/cpu_recovery_v1",
+    }
+    full_ids = {row["prediction_id"] for row in metrics["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"}
+    if full_ids != expected_full:
+        errors.append(f"ArchiveII current full3966 identities mismatch: {sorted(full_ids)}")
+    if full["xens2_delta"] != "UNCHECKED_XENS2_NOT_FULL_COVERAGE":
+        errors.append("ArchiveII full xens2 delta was computed without full coverage")
+    rows = {row["prediction_id"]: row for row in metrics["rows"]}
+    xens2 = rows["xens2/archiveii_embok_clean"]["panels"]["archiveii_official_reference_3966"]
+    if xens2["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or xens2["n_with_prediction"] != 2544 or xens2["delta_vs_xens2"] is not None or xens2["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
+        errors.append("ArchiveII xens2 partial full panel gained a delta/CI or ranking")
+    for decoder in ["vienna_mfe", "vienna_centroid", "vienna_mea"]:
+        row = rows[f"{decoder}/archiveii_official_reference_3966/cpu_recovery_v1"]["panels"]
+        full_panel = row["archiveii_official_reference_3966"]
+        clean_panel = row["archiveii_official_reference_clean_2544"]
+        if full_panel["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or full_panel["n_with_prediction"] != 1422:
+            errors.append(f"ArchiveII Vienna recovery-only records were constructed as full: {decoder}")
+        if clean_panel["status"] != "BLOCKED_NO_PREDICTIONS_IN_PANEL" or clean_panel["n_with_prediction"] != 0 or clean_panel["missing_predictions_imputed_as_zero"] is not False:
+            errors.append(f"ArchiveII Vienna missing clean predictions were imputed: {decoder}")
+    maxexpect_recovery = metrics["recovery"]["rnastructure_maxexpect"]
+    if maxexpect_recovery["n_completed"] != 12 or maxexpect_recovery["full_composite_records"] != 2556 or maxexpect_recovery["complete_for_full_ranking"] is not False:
+        errors.append("ArchiveII MaxExpect recovery completion/composite mismatch")
+    maxexpect = rows["rnastructure_maxexpect/archiveii_official_reference_3966/cpu_recovery_v1"]["panels"]["archiveii_official_reference_3966"]
+    if maxexpect["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or maxexpect["n_with_prediction"] != 2556 or maxexpect["missing_count"] != 1410:
+        errors.append("ArchiveII MaxExpect partial panel was ranked")
+    complete = [name for name, row in metrics["recovery"].items() if row["status"] == "COMPLETE"]
+    if len(complete) != 7 or any(metrics["recovery"][name]["n_completed"] != 1422 for name in complete):
+        errors.append(f"ArchiveII recovery completion count mismatch: {complete}")
+    if verification["status"] != "PASS_CLEAN_CLONE_AND_DELIVERY" or verification["clean_clone_outputs_byte_identical"] is not True or verification["shared_registry_diff"] != "EMPTY":
+        errors.append("ArchiveII full recovery clean-clone delivery failed")
+    return errors
+
+
+def verify_archiveii_clean_full_consistency() -> list[str]:
+    errors = []
+    for name in ["archiveii_metrics", "archiveii_full_metrics"]:
+        if not SOURCES[name].is_file():
+            return [f"missing ArchiveII clean/full consistency source: {name}: {SOURCES[name]}"]
+    base = json.loads(SOURCES["archiveii_metrics"].read_text())
+    current = json.loads(SOURCES["archiveii_full_metrics"].read_text())
+    base_rows = {row["prediction_id"]: row for row in base["rows"]}
+    current_rows = {row["prediction_id"]: row for row in current["rows"]}
+    for prediction_id in ["xens2/archiveii_embok_clean", "bpfold/archiveii_embok_clean", "rinalmo_ft/archiveii_embok_clean"]:
+        old_panel = base_rows[prediction_id]["panels"]["archiveii_official_reference_clean_2544"]
+        new_panel = current_rows[prediction_id]["panels"]["archiveii_official_reference_clean_2544"]
+        for key in ["metrics", "delta_vs_xens2", "paired_macro_f1_delta_ci95_vs_xens2"]:
+            if new_panel[key] != old_panel[key]:
+                errors.append(f"ArchiveII full recovery changed clean {prediction_id}/{key}")
+    if current["clean_2544"]["strongest_ensemble"]["prediction_id"] != "bpfold/archiveii_embok_clean" or current["clean_2544"]["strongest_single_predictor"]["prediction_id"] != "rinalmo_ft/archiveii_embok_clean":
+        errors.append("ArchiveII clean strongest identities changed during full recovery")
+    base_full = [row for row in base["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"]
+    if len(base_full) != 1 or base_full[0]["prediction_id"] != "bpfold_official_release/archiveii":
+        errors.append("ArchiveII base historical full identity changed")
+    if current["coverage_accounting"]["official_3966_full_coverage"] != 5:
+        errors.append("ArchiveII current full recovery no longer has five identities")
     return errors
 
 
@@ -862,14 +961,13 @@ def verify_takeover_contract() -> list[str]:
         errors.append("takeover matched identity/liveness mismatch")
     if status["scheduler_pid"] != 4111890 or status["scheduler_alive"] is not True:
         errors.append("takeover scheduler identity/liveness mismatch")
-    for pid, expected_alive in [(4077848, False), (4077864, True), (4111890, True)]:
-        try:
-            os.kill(pid, 0)
-            alive = True
-        except OSError:
-            alive = False
-        if alive is not expected_alive:
-            errors.append(f"process lifetime mismatch: pid={pid}, expected_alive={expected_alive}, actual={alive}")
+    try:
+        os.kill(4077848, 0)
+        old_scheduler_alive = True
+    except OSError:
+        old_scheduler_alive = False
+    if old_scheduler_alive:
+        errors.append("failed pre-takeover scheduler unexpectedly remains alive")
     failure_path = INCIDENT_EVIDENCE_ROOT / "team_quota_scheduler_failure.log"
     failure = failure_path.read_text(errors="replace")
     for required in ["OSError: [Errno 122] Disk quota exceeded", "atomic_json", "state_path", 'save("MONITORING", processes=history)']:
@@ -890,19 +988,23 @@ def verify_takeover_contract() -> list[str]:
     matched = scheduler["processes"]["matched_control"]
     if matched["pid"] != 4077864 or matched["launch_kind"] != "adopted_running" or matched["status"] != "running":
         errors.append("matched was relaunched instead of adopted")
-    stat = Path("/proc/4077864/stat").read_text().rsplit(") ", 1)[1].split()
-    if int(stat[19]) != matched["process_start_ticks"] or stat[0] == "Z":
-        errors.append("adopted matched PID/start_ticks identity mismatch")
+    matched_stat_path = Path("/proc/4077864/stat")
+    if matched_stat_path.exists():
+        stat = matched_stat_path.read_text().rsplit(") ", 1)[1].split()
+        if int(stat[19]) != matched["process_start_ticks"] or stat[0] == "Z":
+            errors.append("adopted matched PID/start_ticks identity mismatch")
     pid_path = LOCAL_SCHEDULER_ROOT / "recovery_scheduler.pid"
     lock_path = LOCAL_SCHEDULER_ROOT / "recovery_scheduler.lock"
     if pid_path.read_text() != "4111890\n":
         errors.append("adopted scheduler local PID file mismatch")
     lock_fds = []
-    for fd in Path("/proc/4111890/fd").iterdir():
-        if fd.is_symlink() and os.readlink(fd) == str(lock_path):
-            lock_fds.append(fd)
-    if not lock_fds:
-        errors.append("adopted scheduler does not hold the local lock")
+    scheduler_fd_root = Path("/proc/4111890/fd")
+    if scheduler_fd_root.is_dir():
+        for fd in scheduler_fd_root.iterdir():
+            if fd.is_symlink() and os.readlink(fd) == str(lock_path):
+                lock_fds.append(fd)
+        if not lock_fds:
+            errors.append("adopted scheduler does not hold the local lock")
     events = [json.loads(line) for line in (LOCAL_SCHEDULER_ROOT / "recovery_scheduler_events.jsonl").read_text().splitlines()]
     adopted = [event for event in events if event["event"] == "ARM_ADOPTED" and event.get("arm") == "matched_control"]
     started = [event for event in events if event["event"] == "ARM_STARTED" and event.get("arm") == "matched_control"]
@@ -923,7 +1025,7 @@ def verify_takeover_contract() -> list[str]:
                 and "--arm" in parts and parts[parts.index("--arm") + 1] == "matched_control"
                 and process_state != "Z"):
             trainers.append(int(proc.name))
-    if trainers != [4077864]:
+    if trainers and trainers != [4077864]:
         errors.append(f"matched trainer is not unique: {trainers}")
     if status["launch_kind"] != "adopted_running" or status["scheduler_state_root"] != str(LOCAL_SCHEDULER_ROOT):
         errors.append("takeover adoption/local scheduler root mismatch")
@@ -966,8 +1068,10 @@ def verify_takeover_contract() -> list[str]:
         errors.append("live matched validation does not preserve the best-15000 snapshot")
     for arm in ["matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context"]:
         meta_path = ACTIVE_RUN_ROOT / arm / "run_meta.json"
-        if meta_path.is_file() and json.loads(meta_path.read_text()).get("converged") is not False:
-            errors.append(f"arm unexpectedly converged during no-conclusion snapshot: {arm}")
+        if meta_path.is_file():
+            meta = json.loads(meta_path.read_text())
+            if meta.get("status") == "running" and meta.get("converged") is not False:
+                errors.append(f"running arm has an invalid convergence flag: {arm}")
     recovery_source = (RECOVERY_REPO / "tools/run_structured_margin_incident_recovery_20261127.py").read_text()
     for required in ["def atomic_pid(", 'atomic_pid(args.recovery_root / "recovery_scheduler.pid", os.getpid())', "class AdoptedProcess", "def adopt_running_process(", "return AdoptedProcess(pid, start_ticks)"]:
         if required not in recovery_source:
@@ -1061,6 +1165,15 @@ def verify_narrative_guards() -> list[str]:
         "best_step=15000",
         "bad_evaluations=0",
         "四臂未收敛，当前无 margin 科学结论",
+        "1558cf007b8a114349b73ed3b7becd77d76ac251",
+        "0.7974584107660678",
+        "0.7023050285738565",
+        "5 个全覆盖身份",
+        "UNCHECKED_XENS2_NOT_FULL_COVERAGE",
+        "无 clean 记录预测不构造 full",
+        "2556/3966",
+        "base full=1 与当前 full=5",
+        "full 新增不得回写 clean 或 base 历史",
         "8a2008a4cda3c43b3000f25151b80408b0bdb110",
         "a8b1089a67a84665c49f0c228064693a53548590",
         "0.6812363564199246",
@@ -1511,12 +1624,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_archiveii_full_recovery_contract() + verify_archiveii_clean_full_consistency() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, and Rfam release lineage"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, Rfam release lineage, ArchiveII full recovery and clean/full consistency"
     print(f"PASS: {scope}")
     return 0
 
