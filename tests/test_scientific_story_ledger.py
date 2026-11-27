@@ -258,6 +258,15 @@ def test_rfam_temporal_novelty_strata_and_exposure_columns():
     assert "不能称全 temporal 独立" in text
 
 
+def test_rfam_sequence_release_and_novelty_conservation():
+    text = ledger.DOC.read_text()
+    assert "14.9_OR_EARLIER=43、15.0=278、UNCHECKED=115" in text
+    assert "33 个 raw TR1c exact 扣除 pre14.9 后为 12 个独立排除 ID" in text
+    assert "五类互斥并守恒 436" in text
+    assert "早期报告的“所有 first-release UNCHECKED”" in text
+    assert "不能称全 temporal 独立" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

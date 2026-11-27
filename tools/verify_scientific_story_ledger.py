@@ -85,6 +85,7 @@ SOURCES = {
     "rfam_release_verification": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_release_verification.json",
     "rfam_registry_recommendation": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/registry_recommendation.json",
     "rfam_temporal_verification": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_verification.json",
+    "rfam_novelty_strata": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/novelty_strata.json",
     "rfam_provenance": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/provenance.json",
     "recovery_preflight": RECOVERY_ROOT / "recovery_preflight_local.json",
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
@@ -756,7 +757,7 @@ def verify_projected_recovery_history() -> list[str]:
 
 def verify_rfam_release_contract() -> list[str]:
     errors = []
-    names = ["rfam_release_summary", "rfam_release_verification", "rfam_registry_recommendation", "rfam_temporal_verification", "rfam_provenance"]
+    names = ["rfam_release_summary", "rfam_release_verification", "rfam_registry_recommendation", "rfam_temporal_verification", "rfam_novelty_strata", "rfam_provenance"]
     for name in names:
         if not SOURCES[name].is_file():
             return [f"missing Rfam release source: {name}: {SOURCES[name]}"]
@@ -764,6 +765,7 @@ def verify_rfam_release_contract() -> list[str]:
     verification = json.loads(SOURCES["rfam_release_verification"].read_text())
     recommendation = json.loads(SOURCES["rfam_registry_recommendation"].read_text())
     temporal_verification = json.loads(SOURCES["rfam_temporal_verification"].read_text())
+    strata = json.loads(SOURCES["rfam_novelty_strata"].read_text())
     provenance = json.loads(SOURCES["rfam_provenance"].read_text())
     if summary["n_records"] != 11226 or summary["family_status_counts"] != {
         "AMBIGUOUS_FAMILY_UNCHECKED": 22,
@@ -811,6 +813,38 @@ def verify_rfam_release_contract() -> list[str]:
         "RF04301", "RF04302", "RF04303", "RF04305", "RF04306", "RF04307", "RF04308", "RF04309", "RF04310",
     ]:
         errors.append("Rfam 14.10 alignment failure identities mismatch")
+    expected_lengths = {
+        "novel_sequence_supported": 269,
+        "novelty_unchecked": 110,
+        "pre14_9_exact": 43,
+        "cross_panel_exact": 2,
+        "tr1c_exact": 33,
+    }
+    for key, expected_length in expected_lengths.items():
+        values = strata[key]
+        if len(values) != expected_length or len(set(values)) != expected_length:
+            errors.append(f"Rfam novelty ID list length/uniqueness mismatch: {key}")
+    independent_keys = ["novel_sequence_supported", "pre14_9_exact", "novelty_unchecked", "cross_panel_exact"]
+    for index, left in enumerate(independent_keys):
+        for right in independent_keys[index + 1:]:
+            overlap = set(strata[left]) & set(strata[right])
+            if overlap:
+                errors.append(f"Rfam novelty strata are not disjoint: {left}/{right}: {len(overlap)}")
+    excluded_tr1c = set(strata["tr1c_exact"]) - set(strata["pre14_9_exact"])
+    if len(excluded_tr1c) != 12 or excluded_tr1c & set(strata["novel_sequence_supported"]):
+        errors.append("Rfam TR1c novelty exclusion is not 12 independent IDs")
+    if recommendation["temporal_sequence_first_release_counts"] != {
+        "14.9_OR_EARLIER": 43,
+        "15.0": 278,
+        "UNCHECKED": 115,
+    }:
+        errors.append("Rfam sequence first-release counts mismatch")
+    if sum(recommendation["temporal_sequence_first_release_counts"].values()) != 436:
+        errors.append("Rfam sequence first-release counts do not conserve 436")
+    if verification["n_records"] != 11226 or temporal_verification["n_records"] != 11226:
+        errors.append("Rfam combined record count is not 11226")
+    if recommendation["panels"]["rfam_fam"]["n_records"] + recommendation["panels"]["rfam_temporal"]["n_records"] != 11226:
+        errors.append("Rfam family+temporal panel counts do not conserve 11226")
     return errors
 
 
@@ -1000,6 +1034,8 @@ def verify_narrative_guards() -> list[str]:
         "12 条 `NOT_INDEPENDENT_TR1C_EXACT`",
         "原始 TR1c exact overlap 为 **33**",
         "不能称全 temporal 独立",
+        "14.9_OR_EARLIER=43、15.0=278、UNCHECKED=115",
+        "五类互斥并守恒 436",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
