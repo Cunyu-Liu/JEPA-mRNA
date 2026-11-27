@@ -17,6 +17,9 @@ PYTHON = "/root/miniconda3/envs/lucaone_cu128/bin/python"
 BASELINES = ("contrafold", "eternafold", "mxfold2", "vienna_mfe", "vienna_centroid", "vienna_mea",
              "rnastructure_fold", "rnastructure_maxexpect")
 CORE = ["source_data/archiveii_full3966_cpu_recovery_20261127/recovery_plan.json",
+        "source_data/archiveii_vienna_full3966_cpu_20261127/clean_recovery_plan.json",
+        "source_data/archiveii_vienna_full3966_cpu_20261127/code_verification_round1.json",
+        "source_data/archiveii_vienna_full3966_cpu_20261127/xens2_queue_evidence.json",
         "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json",
         "artifacts/archiveii_full3966_cpu_recovery_20261127/registry_recommendation.json",
         "artifacts/archiveii_full3966_cpu_recovery_20261127/source_manifest.json",
@@ -42,12 +45,17 @@ def run(command, cwd):
 
 
 def delivery_files():
-    files = [REPORT, ROOT / "tools/recover_archiveii_full3966_cpu_baselines_20261127.py",
+    files = [REPORT, ROOT / "docs/plans/2026-11-27-archiveii-coverage-closure.md",
+             ROOT / "tools/recover_archiveii_full3966_cpu_baselines_20261127.py",
+             ROOT / "tools/recover_archiveii_vienna_clean_cpu_20261127.py",
+             ROOT / "tools/recover_archiveii_xens2_gpu_20261127.py",
+             ROOT / "tools/queue_archiveii_xens2_gpu_recovery_20261127.py",
              ROOT / "tools/build_archiveii_full3966_recovered_panel_20261127.py",
              ROOT / "tools/verify_archiveii_full3966_recovered_panel_20261127.py",
              ROOT / "tools/verify_archiveii_full3966_recovered_delivery_20261127.py",
              ROOT / "tests/test_recover_archiveii_full3966_cpu_baselines_20261127.py",
-             ROOT / "tests/test_archiveii_full3966_recovered_panel_20261127.py"]
+             ROOT / "tests/test_archiveii_full3966_recovered_panel_20261127.py",
+             ROOT / "tests/test_archiveii_coverage_closure_20261127.py"]
     for base in (SOURCE, OUT):
         files.extend(path for path in base.rglob("*") if path.is_file()
                      and path.name not in {"verification_round3.json", "SHA256SUMS"})
@@ -76,7 +84,8 @@ def main():
         build_log = run([PYTHON, "tools/build_archiveii_full3966_recovered_panel_20261127.py"], clone)
         verify_log = run([PYTHON, "tools/verify_archiveii_full3966_recovered_panel_20261127.py"], clone)
         test_log = run([PYTHON, "-m", "pytest", "-q", "tests/test_archiveii_full3966_recovered_panel_20261127.py",
-                        "tests/test_recover_archiveii_full3966_cpu_baselines_20261127.py"], clone)
+                        "tests/test_recover_archiveii_full3966_cpu_baselines_20261127.py",
+                        "tests/test_archiveii_coverage_closure_20261127.py"], clone)
         after = {relative: sha256(clone / relative) for relative in CORE}
         if before != after:
             changed = [relative for relative in before if before[relative] != after[relative]]
@@ -87,7 +96,7 @@ def main():
     verification = {"schema_version": "archiveii.full3966.cpu_recovery.delivery_verification.round3.v1",
         "status": "PASS_CLEAN_CLONE_AND_DELIVERY", "clean_clone_commit": commit,
         "clean_clone_outputs_byte_identical": True, "clean_clone_output_sha256": after,
-        "baseline_inference_rerun": False, "unit_tests": {"passed": 11, "failed": 0,
+        "baseline_inference_rerun": False, "unit_tests": {"passed": 15, "failed": 0,
             "output_tail": test_log.strip().splitlines()[-1]},
         "build_output_tail": build_log.strip().splitlines()[-1],
         "verifier_output_tail": verify_log.strip().splitlines()[-1],
@@ -95,7 +104,7 @@ def main():
         "shared_registry_diff": "EMPTY", "gpu_used": False, "external_test_model_selection": False}
     (OUT / "verification_round3.json").write_text(json.dumps(verification, indent=2, sort_keys=True) + "\n")
     print(json.dumps({"status": verification["status"], "clean_clone_commit": commit,
-                      "core_outputs": len(CORE), "delivery_files": len(files), "tests": "11 passed"}, sort_keys=True))
+                      "core_outputs": len(CORE), "delivery_files": len(files), "tests": "15 passed"}, sort_keys=True))
 
 
 if __name__ == "__main__":
