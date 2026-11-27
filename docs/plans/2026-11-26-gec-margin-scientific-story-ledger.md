@@ -21,7 +21,7 @@
 - Model-dev v3 登记提交为 `302b70a228d77b0f1847489c93ead402e33510b5`，registry SHA256=`4a047b8ed6a520e00a52543a3aa2e3f595fa0a29c565753d39e9ccbaf8f4d904`；它只做 additive exposure sensitivity/final reporting，不读 margin 结果，不启动 GPU，不做新训练、推理、homology search 或 route selection。
 - current independent margin evaluator 固定为 `/home/rna_jev_margin_evaluator`，HEAD `536b79e450c1ad18b67e06cb39ecb3730546221b`；本 ledger 更新只读核对该提交，不修改评估器、候选训练或调度。
 - **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。**本次更新实时状态**：`scheduler_state.json` 为 `QUEUED_ARM_MEMORY`，`matched_control` 与 `ensemble_context` 两臂运行，`destroy_interval_shuffle` 与 `independent_context` 两臂等待资源，完成臂仍为 0，`scientific_conclusion=null`。这里区分初始快照与后续调度；排队、探针、启动、运行或等待资源的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
-- ArchiveII/PDB/Rfam 标签谱系整合基线固定为 `/home/rna_jev_foldnar_integration`@`8bd87223edb9b5a21c1e13676b4192de54505d9f`；ArchiveII official-reference 证据与三轮 clean-clone delivery 固定为 `/home/rna_jev_archive_label_lineage`@`4daccb0eb1c78db565532634ed0d77cf1e6ddaae`。这些是外部预测在官方参考上的 CPU 复算，不是 margin 结果，也不用于模型选择。
+- ArchiveII/PDB/Rfam 标签谱系整合基线固定为 `/home/rna_jev_foldnar_integration`@`8bd87223edb9b5a21c1e13676b4192de54505d9f`；ArchiveII official-reference 证据与三轮 clean-clone delivery 固定为 `/home/rna_jev_archive_label_lineage`@`4daccb0eb1c78db565532634ed0d77cf1e6ddaae`，PDB/Rfam 原始来源审计与 RCSB/mmCIF/DSSR 双协议重建固定为 `/home/rna_jev_pdb_rfam_label_lineage`@`e252f5351322994395968c61e3df3a51a0330293`。这些是外部预测/标签的 CPU 审计与复算，不是 margin 结果，也不用于模型选择。
 
 Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldnar`，`A=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts`。
 
@@ -243,6 +243,19 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：这是外部 Test 的 audit-only 描述复算，不授权外部 Test 选型，不消除预训练暴露、集成/单模型形式或家族独立性限制，也不构成我们的 margin 候选提升或无限定 SOTA。全集 release 结果不能与 replay 的 clean 2544 结果混排。
 - **Next**：保留同一面板、同一协议、全覆盖和 paired CI 的完整身份；任何 3,966 单预测器名次、部分覆盖补 0 或旧派生标签分数回写均触发验证失败。本轮不修改 PPT。
 
+## 20. PDB/Rfam 标签谱系：PDB58 可重建不等于可排名，95 条与 temporal 保持 UNCHECKED
+
+- **Claim（fail-closed 标签边界）**：PDB/Rfam 六个面板均为 filtered canonical/nested projections，目录名、BPfold 结果位置或 registry 的 `EXPERIMENTAL` 标签本身不能证明实验标签谱系。PDB 的 RCSB/mmCIF/DSSR 重建只解决 58 条唯一链映射与观测协议，**PDB58 不得排名**；其余 **95 条 UNCHECKED** 不得丢弃后冒充完整面板。
+- **Phenomenon**：冻结 JSONL 与官方 RNAformer PLK 没有 PDB/entity/chain 坐标映射；未观测残基不能当负例。跨面板 exact overlap 与 Rfam release membership 也分别破坏“独立面板”和“时间外新记录”的简化解释。
+- **Intervention**：对 153 条 PDB source candidates 重放官方 PLK，按唯一 exact full-polymer/observed-only `(PDB, entity, auth_chain)` 匹配并运行固定 DSSR；同时冻结 `FULL_POLYMER_OBSERVED_MASK_V1` 与 `OBSERVED_ONLY_V1` 双协议。对 Rfam 14.9/15.0 官方 FASTA、family/full_region 独立复算 exact/region 身份，不读取或使用任何模型结果。
+- **Expected observation**：只有唯一映射且 DSSR 有效的 58 条可进入重建资产；95 条按原因保持 UNCHECKED。RNAformer 与 DSSR 原始配对差异必须保留并重算指标，不能静默覆盖。TS-hard 与 Rfam temporal 的重叠/时间限制必须显式阻断独立或 temporal 宣称。
+- **Actual（PDB rebuild）**：153 条中 **58 条重建成功、95 条 UNCHECKED**；未解决原因分别为 `NO_EXACT_CHAIN_MATCH_UNCHECKED`=26、`AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED`=61、`SOURCE_BAD_ALPHABET_UNCHECKED`=4、`DSSR_MAPPING_ERROR_UNCHECKED`=4。分面板重建为 TS1/TS2/TS3/TS-hard=15/26/8/9。RNAformer-vs-DSSR raw pair exact-match 为 **56 true / 2 false**；这 **2 条 DSSR 差异**被保留，要求完整指标重算，当前不得沿用旧指标或排名。未观测位置 `MASKED_NEVER_NEGATIVE`，DSSR pairs 不做 canonical/nested 投影。
+- **Actual（TS-hard overlap）**：`ref_pdb_ts_hard` 28/28 均有 cross-panel exact-sequence overlap，**TS-hard 与 TS1/TS3 不序列不相交**；TS1/TS2/TS3 的对应 cross-panel overlap 为 22/1/11。即使 TR1c exact overlap 为 0，也不能省略跨面板重叠或将四者当相互独立的 PDB 证据。
+- **Actual（Rfam temporal）**：436 条中 TR1c exact=33、cross-panel exact=2、Rfam 14.9 exact=**43**；这 43 条不能称为后一时间区间的新记录。Rfam 15.0 状态为 `PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED`=320、`EXACT_SEQUENCE_OTHER_REGION_ONLY`=6、`NOT_EXACT_IN_RFAM15_0`=110；release membership 不是 first-release date，其余记录也保持 UNCHECKED 而非自动 novel。`TEMPORAL_FIRST_RELEASE_UNCHECKED`、pair provenance 与独立实验标签资格均未闭合，Rfam 标签仍是 `COMPARATIVE_INFERRED`，六个面板均 `NOT_QUALIFIED`。
+- **Artifact / links**：[PDB/Rfam 谱系报告](/home/rna_jev_pdb_rfam_label_lineage/source_data/pdb_rfam_label_lineage_audit_20261127/report.md)、[panel summary](/home/rna_jev_pdb_rfam_label_lineage/source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json)、[round3 独立验证](/home/rna_jev_pdb_rfam_label_lineage/source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json)、[PDB 重建报告](/home/rna_jev_pdb_rfam_label_lineage/source_data/pdb_rcsb_rebuild_20261127/round3_build/report.md)、[rebuild summary](/home/rna_jev_pdb_rfam_label_lineage/source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json) 和 [双协议验证](/home/rna_jev_pdb_rfam_label_lineage/source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json)（`PASS_RNAFORMER_DOUBLE_PROTOCOL_DSSR_INDEPENDENT_VERIFIER`）。
+- **Limitation**：58 条重建资产不是完整 PDB 面板，2 条差异不是可忽略噪声，95 条 UNCHECKED 不是阴性或失败预测。所有内容均 `AUDIT_ONLY_NO_MODEL_SELECTION`，没有 prediction/metric/checkpoint/model-selection outcome，不支持 PDB/Rfam 排名、实验真值、独立泛化或 temporal-OOD 结论。
+- **Next**：任何 PDB 性能比较必须先处理 95 条缺失身份、2 条 DSSR 差异和跨面板重叠并完整重算；Rfam temporal 必须补齐 pair provenance 与逐记录 first-release dates。当前不启动推理、不修改 PPT。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -265,6 +278,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | Model-dev v3 暴露登记 | 分层需连接 12 个历史 run | 非 import 独立重算与三轮验证 | 序列/pair 守恒；additive-only | `foldnar_v3/verification_summary.json` | 无新性能；EXACT sensitivity-only，其余 diagnostic-only；不选路线 |
 | Evaluator×v3 用途与16门不变 | 分层不能改写主科学门 | 12 run 逐层+evaluator 源码联合门禁 | EXACT sensitivity-only；其余 diagnostic-only；16门原样 | evaluator tools；v3 registry/manifest | 不 rescue/veto，不选 checkpoint/arm；margin 无结论 |
 | ArchiveII official-reference | 旧标签循环且预测覆盖不齐 | 未过滤官方参考+冻结预测独立复算 | clean 2544 同协议值与 paired macro CI；3966 仅全覆盖可描述 | `archiveii_official_reference_20261127/system_metrics.json` | 3966 无全覆盖单预测器，禁排名；audit-only，不选模、不是 margin 结果 |
+| PDB/Rfam 标签谱系与 PDB58 重建 | 原面板缺坐标/时间/配对谱系且互相重叠 | 官方 PLK、mmCIF/DSSR、Rfam release 独立重算 | 58 重建、95 UNCHECKED；56 一致/2 差异；限制显式保留 | `pdb_rfam_label_lineage_audit_20261127`；`pdb_rcsb_rebuild_20261127` | 不排名；TS-hard 非独立；Rfam temporal 非自动 novel；不选模 |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -290,7 +304,8 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **Label quality 边界**：TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 不得称为实验真值；95,052 noncanonical 与 10,250 short-span 仅为可重叠的软复核记录数，硬冲突 0、实际删除 0，不得自动删除或把无 flag 写成 clean。
 - [ ] **长序列边界**：19,000 nt 只能陈述 LinearPartition 单条 holdout 的全长 coverage、真实资源与 BPP/MEA recall；candidate recall 不得冒充结构准确率，baseline coverage 不得冒充 GEC coverage，GEC unsupported 不得省略。
 - [ ] **ArchiveII 覆盖与 CI**：旧派生标签只能 circular-audit-only；clean 2544 的 xens2/BPfold replay/RiNALMo-ft 必须使用 official-reference 真实值并标明 paired macro 差值 CI，RiNALMo-ft CI 跨 0。3966 只有 official release 全覆盖，单预测器保持 UNCHECKED，19 个部分覆盖身份不得排名或补 0。
+- [ ] **PDB/Rfam 禁排名与 temporal 限制**：PDB 仅 58 条重建，95 条 UNCHECKED，56 条 raw pair 一致而 2 条 DSSR 差异须重算；不得排名。TS-hard 28/28 跨面板重叠且与 TS1/TS3 不相交性不成立。Rfam temporal 43 条已在 14.9，first-release/pair provenance UNCHECKED，其他记录也不得自动称 novel。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、PDB58/95UNCHECKED/2 条 DSSR 差异、TS-hard 重叠、Rfam temporal 限制、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。

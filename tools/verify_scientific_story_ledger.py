@@ -27,6 +27,7 @@ MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
 MODEL_DEV_V3 = F / "model_dev_v3"
 BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
 ARCHIVEII_REPO = Path("/home/rna_jev_archive_label_lineage")
+PDB_RFAM_REPO = Path("/home/rna_jev_pdb_rfam_label_lineage")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -58,6 +59,10 @@ SOURCES = {
     "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
     "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
+    "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
+    "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
+    "pdb_rebuild_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
+    "pdb_rebuild_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -83,6 +88,7 @@ SOURCE_COMMITS = {
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
     "ArchiveII official reference": (ARCHIVEII_REPO, "4daccb0eb1c78db565532634ed0d77cf1e6ddaae"),
+    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "e252f5351322994395968c61e3df3a51a0330293"),
 }
 
 
@@ -326,6 +332,85 @@ def verify_archiveii_official_contract() -> list[str]:
     return errors
 
 
+def verify_pdb_rfam_contract() -> list[str]:
+    errors = []
+    names = ["pdb_rfam_summary", "pdb_rfam_verification", "pdb_rebuild_summary", "pdb_rebuild_verification"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return errors + [f"missing PDB/Rfam source: {name}: {SOURCES[name]}"]
+    summary = json.loads(SOURCES["pdb_rfam_summary"].read_text())
+    verification = json.loads(SOURCES["pdb_rfam_verification"].read_text())
+    rebuild = json.loads(SOURCES["pdb_rebuild_summary"].read_text())
+    rebuild_verification = json.loads(SOURCES["pdb_rebuild_verification"].read_text())
+    if summary["external_test_policy"] != "AUDIT_ONLY_NO_MODEL_SELECTION" or summary["model_outcomes_used"] is not False:
+        errors.append("PDB/Rfam audit used model outcomes or allowed selection")
+    if summary["shared_registry_modified"] is not False:
+        errors.append("PDB/Rfam audit modified the shared registry")
+    if summary["negative_label_policy"]["unobserved"] != "must be masked, never a negative label":
+        errors.append("PDB/Rfam unobserved-negative policy mismatch")
+    expected_panels = {
+        "ref_pdb_ts1": (63, 0, 22),
+        "ref_pdb_ts2": (39, 0, 1),
+        "ref_pdb_ts3": (19, 0, 11),
+        "ref_pdb_ts_hard": (28, 0, 28),
+        "rfam_fam": (10790, 284, 5),
+        "rfam_temporal": (436, 33, 2),
+    }
+    for panel_id, (n_records, tr1c_overlap, cross_overlap) in expected_panels.items():
+        panel = summary["panels"][panel_id]
+        if panel["n_records"] != n_records or panel["tr1c_exact_sequence_overlap_records"] != tr1c_overlap:
+            errors.append(f"PDB/Rfam panel count/TR1c overlap mismatch: {panel_id}")
+        if panel["cross_panel_exact_sequence_overlap_records"] != cross_overlap:
+            errors.append(f"PDB/Rfam cross-panel overlap mismatch: {panel_id}")
+        if panel["qualification"]["independent_experimental_or_official_label_evaluation"] != "NOT_QUALIFIED":
+            errors.append(f"PDB/Rfam panel regained evaluation qualification: {panel_id}")
+        if panel["qualification"]["model_selection"] != "FORBIDDEN":
+            errors.append(f"PDB/Rfam panel allowed model selection: {panel_id}")
+        if panel["label_lineage"]["filtered_projection"] is not True:
+            errors.append(f"PDB/Rfam filtered-projection identity missing: {panel_id}")
+    temporal = summary["panels"]["rfam_temporal"]
+    if temporal["official_rfam14_9_exact_sequence_records"] != 43:
+        errors.append("Rfam temporal exact-in-14.9 count mismatch")
+    if temporal["official_rfam15_0_status_counts"] != {
+        "NOT_EXACT_IN_RFAM15_0": 110,
+        "EXACT_SEQUENCE_OTHER_REGION_ONLY": 6,
+        "PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED": 320,
+    }:
+        errors.append("Rfam temporal 15.0 status counts mismatch")
+    if "TEMPORAL_FIRST_RELEASE_UNCHECKED" not in temporal["qualification"]["reason_codes"]:
+        errors.append("Rfam temporal first-release limitation was removed")
+    if temporal["label_lineage"]["registry_label_source"] != "COMPARATIVE_INFERRED":
+        errors.append("Rfam temporal labels were promoted to experimental truth")
+    if summary["official_sources"]["rfam15_0"]["release_membership_is_not_first_release_date"] is not True:
+        errors.append("Rfam release membership was equated to first-release date")
+    if rebuild["n_source_records"] != 153 or rebuild["n_rebuilt"] != 58 or rebuild["n_unresolved"] != 95:
+        errors.append("PDB rebuild 153/58/95 conservation mismatch")
+    if rebuild["unresolved_status_counts"] != {
+        "NO_EXACT_CHAIN_MATCH_UNCHECKED": 26,
+        "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED": 61,
+        "SOURCE_BAD_ALPHABET_UNCHECKED": 4,
+        "DSSR_MAPPING_ERROR_UNCHECKED": 4,
+    }:
+        errors.append("PDB rebuild unresolved status counts mismatch")
+    if rebuild["pair_match_counts"] != {"true": 56, "false": 2}:
+        errors.append("PDB RNAformer/DSSR pair difference count mismatch")
+    if rebuild["panel_rebuilt"] != {"pdb_ts1": 15, "pdb_ts2": 26, "pdb_ts3": 8, "pdb_ts_hard": 9}:
+        errors.append("PDB per-panel rebuilt counts mismatch")
+    if rebuild["external_test_policy"] != "AUDIT_ONLY_NO_MODEL_SELECTION":
+        errors.append("PDB rebuild allowed model selection")
+    if verification["status"] != "PASS_PDB_RFAM_LABEL_LINEAGE_INDEPENDENT_VERIFIER" or verification["qualification_fail_closed"] is not True:
+        errors.append("PDB/Rfam independent fail-closed verification did not pass")
+    if verification["rfam_temporal_exact_in_rfam14_9"] != 43 or verification["n_records"] != 11375:
+        errors.append("PDB/Rfam independent verification counts mismatch")
+    if rebuild_verification["status"] != "PASS_RNAFORMER_DOUBLE_PROTOCOL_DSSR_INDEPENDENT_VERIFIER":
+        errors.append("PDB double-protocol DSSR verification did not pass")
+    if rebuild_verification["n_rebuilt"] != 58 or rebuild_verification["n_unresolved"] != 95 or rebuild_verification["pair_match_counts"] != {"true": 56, "false": 2}:
+        errors.append("PDB rebuild independent verification counts mismatch")
+    if rebuild_verification["unobserved_negative_policy"] != "MASKED_NEVER_NEGATIVE":
+        errors.append("PDB rebuild unobserved-negative policy mismatch")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -377,6 +462,13 @@ def verify_narrative_guards() -> list[str]:
         "−0.0012121956293115, +0.0078699689970171",
         "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR",
         "19 个有部分预测的身份均为 2,544/3,966",
+        "e252f5351322994395968c61e3df3a51a0330293",
+        "58 条重建成功、95 条 UNCHECKED",
+        "56 true / 2 false",
+        "2 条 DSSR 差异",
+        "TS-hard 与 TS1/TS3 不序列不相交",
+        "Rfam 14.9 exact=**43**",
+        "TEMPORAL_FIRST_RELEASE_UNCHECKED",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
@@ -812,12 +904,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold official protocol, and ArchiveII coverage/CI"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, and PDB/Rfam lineage"
     print(f"PASS: {scope}")
     return 0
 

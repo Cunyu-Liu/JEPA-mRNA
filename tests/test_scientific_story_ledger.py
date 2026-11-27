@@ -94,6 +94,25 @@ def test_archiveii_official_artifact_contract():
     assert ledger.verify_archiveii_official_contract() == []
 
 
+def test_pdb_rebuild_overlap_and_rfam_temporal_boundaries():
+    text = ledger.DOC.read_text()
+    assert "58 条重建成功、95 条 UNCHECKED" in text
+    assert "56 true / 2 false" in text
+    assert "2 条 DSSR 差异" in text
+    assert "PDB58 不得排名" in text
+    assert "ref_pdb_ts_hard` 28/28" in text
+    assert "TS-hard 与 TS1/TS3 不序列不相交" in text
+    assert "Rfam 14.9 exact=**43**" in text
+    assert "TEMPORAL_FIRST_RELEASE_UNCHECKED" in text
+    assert "COMPARATIVE_INFERRED" in text
+    assert "AUDIT_ONLY_NO_MODEL_SELECTION" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_pdb_rfam_artifact_contract():
+    assert ledger.verify_pdb_rfam_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
