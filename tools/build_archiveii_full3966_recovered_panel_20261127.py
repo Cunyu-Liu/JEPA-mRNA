@@ -18,13 +18,17 @@ SOURCE = ROOT / "source_data/archiveii_full3966_cpu_recovery_20261127"
 OUT = ROOT / "artifacts/archiveii_full3966_cpu_recovery_20261127"
 REPORT = ROOT / "docs/plans/2026-11-27-archiveii-full3966-recovered-panel.md"
 WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127")
+VIENNA_CLEAN_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_vienna_clean_cpu_20261127")
+XENS2_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/production")
+XENS2_EVIDENCE_PATH = ROOT / "source_data/archiveii_vienna_full3966_cpu_20261127/xens2_queue_evidence.json"
+VIENNA_PLAN_PATH = ROOT / "source_data/archiveii_vienna_full3966_cpu_20261127/clean_recovery_plan.json"
 FULL_PANEL = ROOT / "source_data/archiveii_official_reference_20261127/official_reference_3966.jsonl.gz"
 CLEAN_PANEL = ROOT / "source_data/archiveii_official_reference_20261127/official_reference_clean_2544.jsonl.gz"
 FULL_ID = "archiveii_official_reference_3966"
 CLEAN_ID = "archiveii_official_reference_clean_2544"
 XENS2 = "xens2/archiveii_embok_clean"
 BASELINES = ("contrafold", "eternafold", "mxfold2", "vienna_mfe", "vienna_centroid", "vienna_mea",
-             "rnastructure_fold", "rnastructure_maxexpect")
+             "rnastructure_fold", "rnastructure_maxexpect", "xens2")
 SCHEMA = "archiveii.full3966.cpu_recovery.panel.v1"
 SEED = 20261127
 
@@ -136,7 +140,16 @@ def bootstrap(deltas):
 
 def original_predictions(baseline, rows):
     if baseline.startswith("vienna_"):
-        return {}
+        coverage_path = VIENNA_CLEAN_WORK / baseline / "coverage.json"
+        if not coverage_path.is_file():
+            return {}
+        coverage = json.loads(coverage_path.read_text())
+        prediction_path = VIENNA_CLEAN_WORK / baseline / "predictions.jsonl.gz"
+        if coverage["status"] != "COMPLETE" or coverage["n_pass"] != 2544 or sha256(prediction_path) != coverage["predictions_sha256"]:
+            return {}
+        return {row["name"]: {"pairs": row["pairs"], "origin": "CPU_CLEAN_2544_RECOVERY",
+                              "source_prediction_id": f"{baseline}/archiveii_clean_2544/cpu_recovery_v1",
+                              "source_sha256": coverage["predictions_sha256"]} for row in read_gzip(prediction_path)}
     prediction_id = baseline + "/archiveii_embok_clean"
     source = next(row for row in rows if row["prediction_id"] == prediction_id)
     document = json.loads(Path(source["path"]).read_text())
@@ -159,12 +172,13 @@ def original_predictions(baseline, rows):
 
 
 def recovery_predictions(baseline, plan_rows):
-    coverage_path = WORK / baseline / "coverage.json"
+    work_root = XENS2_WORK if baseline == "xens2" else WORK / baseline
+    coverage_path = work_root / "coverage.json"
     if not coverage_path.is_file():
         return {}, {"status": "NOT_STARTED", "n_completed": 0, "n_pass": 0, "remaining_count": len(plan_rows),
                     "remaining_names": [row["name"] for row in plan_rows], "coverage": 0.0}
     coverage = json.loads(coverage_path.read_text())
-    prediction_path = WORK / baseline / "predictions.jsonl.gz"
+    prediction_path = work_root / "predictions.jsonl.gz"
     if sha256(prediction_path) != coverage["predictions_sha256"]:
         raise ValueError(f"recovery coverage SHA mismatch {baseline}")
     records = read_gzip(prediction_path)
@@ -179,21 +193,23 @@ def recovery_predictions(baseline, plan_rows):
         plan = next(row for row in plan_rows if row["name"] == name)
         if record["sequence_sha256"] != plan["sequence_sha256"]:
             raise ValueError(f"recovery sequence SHA mismatch {name}")
-        if record["status"] == "REJECTED_NON_ACGU":
+        if record["status"] != "PASS":
             continue
-        if record["status"] != "PASS" or set(plan["seq"]) - set("ACGU"):
+        if set(plan["seq"]) - set("ACGU"):
             raise ValueError(f"invalid recovery status {name}")
         pairs = sorted(pair_set(record["pairs"], len(plan["seq"])))
         if record["pair_set_sha256"] != value_sha(pairs):
             raise ValueError(f"recovery pair SHA mismatch {name}")
         output[name] = {"pairs": pairs, "origin": "CPU_RECOVERY_1422",
-                        "checkpoint_sha256": sha256(WORK / baseline / "records" / (hashlib.sha256(name.encode()).hexdigest()[:24] + ".json"))}
+                        "checkpoint_sha256": sha256(work_root / "records" / (hashlib.sha256(name.encode()).hexdigest()[:24] + ".json"))}
     if len(output) != coverage["n_pass"]:
         raise ValueError(f"recovery PASS accounting mismatch {baseline}")
     return output, coverage
 
 
 def recovery_id(baseline):
+    if baseline == "xens2":
+        return "xens2/archiveii_official_reference_3966/gpu_recovery_v1"
     return f"{baseline}/archiveii_official_reference_3966/cpu_recovery_v1"
 
 
@@ -215,6 +231,12 @@ def main():
     for baseline in BASELINES:
         prediction_id = recovery_id(baseline)
         recovered, coverage = recovery_predictions(baseline, plan["rows"])
+        if baseline == "xens2" and coverage["status"] == "NOT_STARTED":
+            recovery_summary[baseline] = {**coverage, "checkpoint_root": str(XENS2_WORK),
+                                          "predictor_metadata_sha256": None, "pause": None,
+                                          "queue_evidence": json.loads((XENS2_EVIDENCE_PATH).read_text()),
+                                          "full_composite_records": 2544, "complete_for_full_ranking": False}
+            continue
         original = original_predictions(baseline, base_rows)
         if original and set(original) != {row["name"] for row in clean}:
             raise ValueError(f"original clean ID mismatch {baseline}")
@@ -223,12 +245,16 @@ def main():
             if name in original and name in recovered:
                 raise ValueError(f"duplicate composite origin {name}")
         complete = coverage["status"] == "COMPLETE" and coverage["n_pass"] == 1422 and len(recovered) == 1422
-        if coverage["n_completed"] != len(recovered) and coverage["n_rejected_non_acgu"] == 0:
+        if coverage["n_completed"] != len(recovered) and coverage.get("n_rejected_non_acgu", coverage.get("n_blocked", 0)) == 0:
             raise ValueError(f"coverage accounting mismatch {baseline}")
-        pause_path = WORK / baseline / "PAUSED.json"
-        recovery_summary[baseline] = {**coverage, "checkpoint_root": str(WORK / baseline),
-                                      "predictor_metadata_sha256": sha256(WORK / baseline / "predictor_metadata.json") if (WORK / baseline / "predictor_metadata.json").is_file() else None,
+        work_root = XENS2_WORK if baseline == "xens2" else WORK / baseline
+        pause_path = work_root / "PAUSED.json"
+        clean_recovery_path = VIENNA_CLEAN_WORK / baseline / "coverage.json"
+        clean_recovery = json.loads(clean_recovery_path.read_text()) if baseline.startswith("vienna_") and clean_recovery_path.is_file() else None
+        recovery_summary[baseline] = {**coverage, "checkpoint_root": str(work_root),
+                                      "predictor_metadata_sha256": sha256(work_root / "predictor_metadata.json") if (work_root / "predictor_metadata.json").is_file() else None,
                                       "pause": json.loads(pause_path.read_text()) if pause_path.is_file() else None,
+                                      "clean_recovery": clean_recovery,
                                       "full_composite_records": len(composite), "complete_for_full_ranking": complete}
         write_gzip_jsonl(OUT / "predictions" / f"{baseline}.jsonl.gz", [
             {"name": row["name"], "sequence_sha256": row["sequence_sha256"], **composite[row["name"]]}
@@ -236,8 +262,10 @@ def main():
         row = {"prediction_id": prediction_id, "source_group": "CPU_RECOVERY_COMPOSITE",
                "registry_status": "UNREGISTERED_INDEPENDENT_AUDIT_ASSET",
                "path": str((OUT / "predictions" / f"{baseline}.jsonl.gz").relative_to(ROOT)),
-               "available": True, "model_form": "deterministic_single_predictor",
-               "prediction_origin": "FROZEN_CLEAN_2544_PLUS_CPU_RECOVERY_1422",
+               "available": True, "model_form": "three_checkpoint_ensemble" if baseline == "xens2" else "deterministic_single_predictor",
+               "prediction_origin": "FROZEN_CLEAN_2544_PLUS_XENS2_GPU_RECOVERY_1422" if baseline == "xens2" else
+                                    "CLEAN_2544_AND_OFFICIAL_1422_CPU_RECOVERY" if baseline.startswith("vienna_") else
+                                    "FROZEN_CLEAN_2544_PLUS_CPU_RECOVERY_1422",
                "n_prediction_records": len(composite), "panels": {},
                "recovery_complete_1422": complete}
         if not composite:
@@ -312,7 +340,8 @@ def main():
         "coverage_accounting": {"base_identities": len(base_rows), "recovery_identities": len(new_rows),
             "total_identities": len(all_rows), "recovery_complete_1422": sum(row["recovery_complete_1422"] for row in new_rows),
             "clean_2544_full_coverage": len(clean_eligible), "official_3966_full_coverage": len(full_eligible),
-            "xens2_official_3966_coverage": xens2_row["panels"][FULL_ID]["coverage"]},
+            "xens2_official_3966_coverage": max(row["panels"][FULL_ID]["coverage"] for row in all_rows if row["prediction_id"].startswith("xens2/")),
+            "xens2_protocol_blocked_records": 16},
         **strongest, "rows": all_rows, "new_prediction_ids": [row["prediction_id"] for row in new_rows],
         "new_per_record_metric_rows": len(metric_rows), "external_test_model_selection": False,
         "new_training_or_inference": True, "inference_scope": "official-only 1422 CPU baselines only; no GPU",
@@ -330,7 +359,8 @@ def main():
         "recovery_plan": str((SOURCE / "recovery_plan.json").relative_to(ROOT)), "recovery_plan_sha256": sha256(SOURCE / "recovery_plan.json"),
         "work_root": str(WORK), "base_system_metrics_sha256": sha256(BASE / "system_metrics.json"),
         "full_panel_sha256": sha256(FULL_PANEL), "clean_panel_sha256": sha256(CLEAN_PANEL),
-        "predictor_metadata": {baseline: {"path": str(WORK / baseline / "predictor_metadata.json"),
+        "xens2_queue_evidence_sha256": sha256(XENS2_EVIDENCE_PATH),
+        "predictor_metadata": {baseline: {"path": str((XENS2_WORK if baseline == "xens2" else WORK / baseline) / "predictor_metadata.json"),
             "sha256": recovery_summary[baseline]["predictor_metadata_sha256"]} for baseline in BASELINES},
         "shared_registry_modified": False, "gpu_used": False, "external_test_model_selection": False})
     lines = ["# ArchiveII full3966 CPU 恢复双面板", "",
@@ -364,6 +394,10 @@ def main():
                 lines.append(f"- {panel} {kind}: `{item}`")
             else:
                 lines.append(f"- {panel} {kind}: `{item['prediction_id']}`，micro-F1={item['metrics']['micro_f1']:.16f}，macro-F1={item['metrics']['macro_f1']:.16f}。")
+    queue_evidence = recovery_summary["xens2"].get("queue_evidence")
+    if queue_evidence:
+        queue_status = queue_evidence["status"]
+        lines += ["", f"xens2 探针 peak={queue_status['measured_peak_mib']} MiB，生产门限={queue_status['required_free_mib']} MiB，快照 free={queue_status['device']['free_mib']} MiB，状态=`{queue_status['state']}`，排队 PID=`{queue_evidence['queue_pid']}`。未启动生产，未声称 xens2 full3966。"]
     paused = recovery_summary["rnastructure_maxexpect"].get("pause")
     if paused:
         lines += ["", f"MaxExpect 已安全暂停在 {recovery_summary['rnastructure_maxexpect']['n_completed']} 条，原 PID `{paused['pid']}`。恢复命令：`{paused['resume_command']}`。其 coverage 仍为部分，不参与 full3966 排名。"]
@@ -371,12 +405,14 @@ def main():
     REPORT.write_text("\n".join(lines), encoding="utf-8")
     write_json(OUT / "official_coverage_gaps.json", {"schema_version": SCHEMA + ".coverage_gaps",
         "recovery": recovery_summary, "new_prediction_panels": {row["prediction_id"]: row["panels"] for row in new_rows}})
+    output_files = [OUT / "system_metrics.json", OUT / "registry_recommendation.json", OUT / "source_manifest.json",
+                    OUT / "official_coverage_gaps.json", OUT / "recovered_per_record_metrics.jsonl.gz", REPORT,
+                    VIENNA_PLAN_PATH, XENS2_EVIDENCE_PATH]
+    output_files += [OUT / "predictions" / f"{baseline}.jsonl.gz" for baseline in BASELINES
+                     if (OUT / "predictions" / f"{baseline}.jsonl.gz").is_file()]
     write_json(OUT / "build_receipt.json", {"schema_version": SCHEMA + ".build_receipt", "status": "PASS",
         "new_per_record_metric_rows": len(metric_rows), "recovery_complete_baselines": sum(row["recovery_complete_1422"] for row in new_rows),
-        "outputs": {str(path.relative_to(ROOT)): {"bytes": path.stat().st_size, "sha256": sha256(path)} for path in [
-            OUT / "system_metrics.json", OUT / "registry_recommendation.json", OUT / "source_manifest.json",
-            OUT / "official_coverage_gaps.json", OUT / "recovered_per_record_metrics.jsonl.gz", REPORT,
-            *[OUT / "predictions" / f"{baseline}.jsonl.gz" for baseline in BASELINES]]}})
+        "outputs": {str(path.relative_to(ROOT)): {"bytes": path.stat().st_size, "sha256": sha256(path)} for path in output_files}})
     print(json.dumps({"status": "PASS", "recovery_complete": document["coverage_accounting"],
                       "full_strongest": strongest["full_3966"]}, sort_keys=True))
 
