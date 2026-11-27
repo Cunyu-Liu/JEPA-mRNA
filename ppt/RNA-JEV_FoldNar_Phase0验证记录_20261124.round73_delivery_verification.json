@@ -1,0 +1,63 @@
+{
+  "status": "PASS_ROUND73_SYNTHETIC_DELIVERY_REAL_PPT_UNMODIFIED",
+  "base_commit": "8bd87223edb9b5a21c1e13676b4192de54505d9f",
+  "branch": "label-protocol-ppt-round73-20261127",
+  "test_rounds": [
+    {
+      "round": 1,
+      "command": "pytest -q tests/test_label_protocol_round73.py",
+      "passed": 11,
+      "commit": "c4c01d2"
+    },
+    {
+      "round": 2,
+      "command": "pytest -q tests/test_label_protocol_round73.py; independent clean rebuild; LibreOffice PDF + macOS Vision OCR",
+      "passed": 11,
+      "commit": "8b6fb51"
+    },
+    {
+      "round": 3,
+      "command": "pytest -q tests/test_label_protocol_round73.py tests/test_pdb_rfam_label_lineage_20261127.py",
+      "passed": 20
+    }
+  ],
+  "synthetic_slide_count": 18,
+  "synthetic_added_slide_number": 37,
+  "prior_slide_xml_preserved": 17,
+  "independent_zip_parts_compared": 72,
+  "independent_missing_parts": [],
+  "independent_extra_parts": [],
+  "independent_different_parts": [],
+  "render_status": "PASS_RENDER_PDF_TEXT_AND_SLIDE37_OCR",
+  "render_missing_or_clipped_text": [],
+  "render_missing_new_page_pdf_text": [],
+  "render_missing_new_page_ocr_text": [],
+  "partial_files": [],
+  "real_round72_delivery_used": false,
+  "real_round72_delivery_currently_present": false,
+  "real_ppt_modified": false,
+  "real_source14_sha256_at_final_verification": "89d2aee9c83ace55385eaf1bfc6f619ff3422168f99f9152fe232c4ccb0524d0",
+  "reports": [
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_build_verification.json",
+      "bytes": 3912,
+      "sha256": "51a8b396b27f516b238ccc19d5f91c4df8acdcf94fe4c2edb0c2c96f7fad45e1"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_independent_build_verification.json",
+      "bytes": 1649,
+      "sha256": "d6f3145e2dbd6c0e2b888d313efd0f66a6862c7bc9b04d116793e3e5d4dd2b93"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_render_verification.json",
+      "bytes": 1272,
+      "sha256": "9013691703f2d30357d44b83497006d856e721d730ec2345c8bb980941d4e22a"
+    }
+  ],
+  "builder_sha256": "f2bd716ce56728dae5b0997164d2a2f53cff808988ddb72d1b0e0fcbcb7c44de",
+  "scope": {
+    "complete_sota_closed": false,
+    "pdb58_95_ranking_allowed": false,
+    "model_selection": false
+  }
+}
