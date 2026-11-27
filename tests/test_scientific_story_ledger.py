@@ -246,6 +246,18 @@ def test_rfam_release_artifact_contract():
     assert ledger.verify_rfam_release_contract() == []
 
 
+def test_rfam_temporal_novelty_strata_and_exposure_columns():
+    text = ledger.DOC.read_text()
+    assert "269 条 `NOVEL_SEQUENCE_RELEASE_SUPPORTED`" in text
+    assert "43 条 `NOT_NOVEL_PRE14_9_SEQUENCE`" in text
+    assert "12 条 `NOT_INDEPENDENT_TR1C_EXACT`" in text
+    assert "2 条 `NOT_INDEPENDENT_CROSS_PANEL_EXACT`" in text
+    assert "110 条 `UNCHECKED`" in text
+    assert "原始 TR1c exact overlap 为 **33**" in text
+    assert "33 与 12 是不同字段" in text
+    assert "不能称全 temporal 独立" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

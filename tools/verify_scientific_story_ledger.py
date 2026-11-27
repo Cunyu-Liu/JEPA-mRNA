@@ -756,13 +756,14 @@ def verify_projected_recovery_history() -> list[str]:
 
 def verify_rfam_release_contract() -> list[str]:
     errors = []
-    names = ["rfam_release_summary", "rfam_release_verification", "rfam_registry_recommendation", "rfam_provenance"]
+    names = ["rfam_release_summary", "rfam_release_verification", "rfam_registry_recommendation", "rfam_temporal_verification", "rfam_provenance"]
     for name in names:
         if not SOURCES[name].is_file():
             return [f"missing Rfam release source: {name}: {SOURCES[name]}"]
     summary = json.loads(SOURCES["rfam_release_summary"].read_text())
     verification = json.loads(SOURCES["rfam_release_verification"].read_text())
     recommendation = json.loads(SOURCES["rfam_registry_recommendation"].read_text())
+    temporal_verification = json.loads(SOURCES["rfam_temporal_verification"].read_text())
     provenance = json.loads(SOURCES["rfam_provenance"].read_text())
     if summary["n_records"] != 11226 or summary["family_status_counts"] != {
         "AMBIGUOUS_FAMILY_UNCHECKED": 22,
@@ -787,6 +788,29 @@ def verify_rfam_release_contract() -> list[str]:
         errors.append("Rfam provenance allowed registration/shared modification/pair use")
     if provenance["full_region_14_10_scope"] != "not used; family release uses family table/seed and sequence release uses per-family alignments":
         errors.append("Rfam family/sequence release evidence scopes were conflated")
+    expected_novelty = {
+        "NOT_INDEPENDENT_CROSS_PANEL_EXACT": 2,
+        "NOT_INDEPENDENT_TR1C_EXACT": 12,
+        "NOT_NOVEL_PRE14_9_SEQUENCE": 43,
+        "NOVEL_SEQUENCE_RELEASE_SUPPORTED": 269,
+        "UNCHECKED": 110,
+    }
+    if recommendation["temporal_novelty_counts"] != expected_novelty or temporal_verification["temporal_novelty_counts"] != expected_novelty:
+        errors.append("Rfam temporal novelty counts mismatch")
+    if sum(expected_novelty.values()) != 436:
+        errors.append("Rfam temporal novelty counts do not conserve 436")
+    if recommendation["panels"]["rfam_temporal"]["tr1c_exact_overlap"] != 33 or recommendation["panels"]["rfam_temporal"]["cross_panel_exact_overlap"] != 2:
+        errors.append("Rfam temporal independent exposure columns mismatch")
+    if temporal_verification["tr1c_exact"] != 33 or temporal_verification["cross_panel_exact"] != 2:
+        errors.append("Rfam temporal verification exposure columns mismatch")
+    if temporal_verification["status"] != "PASS_RFAM_TEMPORAL_LINEAGE_INDEPENDENT_VERIFIER" or temporal_verification["pre14_9_exact"] != 43:
+        errors.append("Rfam temporal independent verification failed")
+    if temporal_verification["shared_registry_modified"] is not False or temporal_verification["identity_pairs_used"] is not False:
+        errors.append("Rfam temporal verification modified registry or used pairs")
+    if len(provenance["alignment_14_10_failures"]) != 9 or provenance["alignment_14_10_failures"] != [
+        "RF04301", "RF04302", "RF04303", "RF04305", "RF04306", "RF04307", "RF04308", "RF04309", "RF04310",
+    ]:
+        errors.append("Rfam 14.10 alignment failure identities mismatch")
     return errors
 
 
@@ -972,6 +996,10 @@ def verify_narrative_guards() -> list[str]:
         "11,186 条 `UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED`",
         "family first-release **14.10=166、15.0=99**",
         "family release≠sequence release",
+        "269 条 `NOVEL_SEQUENCE_RELEASE_SUPPORTED`",
+        "12 条 `NOT_INDEPENDENT_TR1C_EXACT`",
+        "原始 TR1c exact overlap 为 **33**",
+        "不能称全 temporal 独立",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
