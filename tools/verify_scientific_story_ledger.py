@@ -26,6 +26,12 @@ PRETRAIN_EXPOSURE = PRETRAIN_EXPOSURE_REPO / "manifests/pretrain_exposure_v1"
 MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
 MODEL_DEV_V3 = F / "model_dev_v3"
 BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
+ARCHIVEII_REPO = Path("/home/rna_jev_archive_label_lineage")
+PDB_RFAM_REPO = Path("/home/rna_jev_pdb_rfam_label_lineage")
+RECOVERY_REPO = Path("/home/rna_jev_margin_incident_recovery")
+RECOVERY_ROOT = F / "structured_margin_full_v1/incident_recovery_20261127"
+ACTIVE_RUN_ROOT = Path("/home/foldnar_incident_run")
+ACTIVE_CHECKPOINT_ROOT = Path("/home/foldnar_incident_checkpoints")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -55,6 +61,15 @@ SOURCES = {
     "official_registry": BPFOLD_PROTOCOL_REPO / "manifests/foldnar_v1/bprna_new_official_reference_5388_prediction_registry.json",
     "official_metrics": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/system_metrics.json",
     "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
+    "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
+    "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
+    "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
+    "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
+    "pdb_rebuild_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
+    "pdb_rebuild_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json",
+    "recovery_preflight": RECOVERY_ROOT / "recovery_preflight_local.json",
+    "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
+    "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -73,12 +88,15 @@ SOURCES = {
 }
 
 SOURCE_COMMITS = {
-    "FoldNAR integration": (FOLDNAR_REPO, "79a2ed45879f1f4e81d6719ed54600bf7f8da807"),
+    "FoldNAR integration": (FOLDNAR_REPO, "8bd87223edb9b5a21c1e13676b4192de54505d9f"),
     "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
     "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
+    "ArchiveII official reference": (ARCHIVEII_REPO, "4daccb0eb1c78db565532634ed0d77cf1e6ddaae"),
+    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "e252f5351322994395968c61e3df3a51a0330293"),
+    "margin incident recovery": (RECOVERY_REPO, "442636dd660f93f1d39156ca9bbdbd107ecdbf42"),
 }
 
 
@@ -254,6 +272,231 @@ def verify_bpfold_official_contract() -> list[str]:
     return errors
 
 
+def verify_archiveii_official_contract() -> list[str]:
+    errors = []
+    for name in ["archiveii_metrics", "archiveii_verification"]:
+        if not SOURCES[name].is_file():
+            return errors + [f"missing ArchiveII official source: {name}: {SOURCES[name]}"]
+    metrics = json.loads(SOURCES["archiveii_metrics"].read_text())
+    verification = json.loads(SOURCES["archiveii_verification"].read_text())
+    expected_coverage = {
+        "inventory_entries": 36,
+        "clean_2544_full_coverage": 20,
+        "official_3966_full_coverage": 1,
+        "official_3966_partial_not_ranked": 19,
+        "blocked_or_protocol_mismatch": 16,
+        "scored_identities": 20,
+    }
+    if metrics["coverage_accounting"] != expected_coverage:
+        errors.append(f"ArchiveII coverage accounting mismatch: {metrics['coverage_accounting']}")
+    if metrics["legacy_derived_label_disposition"] != "circular-audit-only; historical values retained; not independent SOTA":
+        errors.append("ArchiveII legacy derived labels regained ranking eligibility")
+    if metrics["new_training_or_inference"] is not False or metrics["external_test_model_selection"] is not False:
+        errors.append("ArchiveII audit allowed new inference/training or model selection")
+    rows = {row["prediction_id"]: row for row in metrics["rows"]}
+    expected = {
+        "xens2/archiveii_embok_clean": (0.8156522070450173, 0.8596587124620273, [0.0, 0.0]),
+        "bpfold/archiveii_embok_clean": (0.8999331354520079, 0.9161611813979388, [0.05111753565735653, 0.06194679545248867]),
+        "rinalmo_ft/archiveii_embok_clean": (0.8204522394549935, 0.8630290508840547, [-0.0012121956293114915, 0.00786996899701714]),
+    }
+    for prediction_id, (micro, macro, ci95) in expected.items():
+        clean = rows[prediction_id]["panels"]["archiveii_official_reference_clean_2544"]
+        official = rows[prediction_id]["panels"]["archiveii_official_reference_3966"]
+        if clean["status"] != "PASS_FULL_COVERAGE" or clean["n_with_prediction"] != 2544 or clean["coverage"] != 1.0:
+            errors.append(f"ArchiveII clean coverage mismatch: {prediction_id}")
+        if not math.isclose(clean["metrics"]["micro_f1"], micro, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"ArchiveII clean micro mismatch: {prediction_id}")
+        if not math.isclose(clean["metrics"]["macro_f1"], macro, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"ArchiveII clean macro mismatch: {prediction_id}")
+        interval = clean["paired_macro_f1_delta_ci95_vs_xens2"]
+        if interval["ci95"] != ci95 or interval["n_bootstrap"] != 10000 or interval["seed"] != 20261127:
+            errors.append(f"ArchiveII paired macro CI mismatch: {prediction_id}")
+        if interval["method"] != "paired sequence-level percentile bootstrap":
+            errors.append(f"ArchiveII CI method mismatch: {prediction_id}")
+        if official["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or official["n_with_prediction"] != 2544 or official["missing_count"] != 1422:
+            errors.append(f"ArchiveII partial official panel was ranked: {prediction_id}")
+        if official["paired_macro_f1_delta_ci95_vs_xens2"] is not None or official["delta_vs_xens2"] is not None:
+            errors.append(f"ArchiveII partial panel gained a delta/CI: {prediction_id}")
+        if official["missing_predictions_imputed_as_zero"] is not False:
+            errors.append(f"ArchiveII missing predictions were imputed: {prediction_id}")
+    full = [row for row in metrics["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"]
+    if len(full) != 1 or full[0]["prediction_id"] != "bpfold_official_release/archiveii":
+        errors.append("ArchiveII official 3966 full-coverage identity mismatch")
+    else:
+        release = full[0]["panels"]["archiveii_official_reference_3966"]
+        if release["n_with_prediction"] != 3966 or not math.isclose(release["metrics"]["micro_f1"], 0.7974584107660678, rel_tol=0.0, abs_tol=1e-15):
+            errors.append("ArchiveII official release full-panel micro mismatch")
+    if metrics["official_3966_full_coverage_summary"]["strongest_single_predictor"] != "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR":
+        errors.append("ArchiveII official 3966 ranked a predictor without full single-model coverage")
+    if metrics["strongest_single_predictor"]["prediction_id"] != "rinalmo_ft/archiveii_embok_clean" or metrics["strongest_overall"]["prediction_id"] != "bpfold/archiveii_embok_clean":
+        errors.append("ArchiveII clean strongest identities mismatch")
+    for key in ["strongest_overall", "strongest_ensemble", "strongest_single_predictor"]:
+        if metrics[key]["ranking_scope"] != "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION":
+            errors.append(f"ArchiveII clean ranking scope mismatch: {key}")
+    if verification["status"] != "PASS_CLEAN_CLONE_AND_DELIVERY" or verification["clean_clone_outputs_byte_identical"] is not True:
+        errors.append("ArchiveII round3 clean-clone delivery did not pass")
+    if verification["shared_registry_diff"] != "EMPTY" or verification["new_training_or_inference"] is not False or verification["external_test_model_selection"] is not False:
+        errors.append("ArchiveII delivery changed registry or allowed inference/selection")
+    return errors
+
+
+def verify_pdb_rfam_contract() -> list[str]:
+    errors = []
+    names = ["pdb_rfam_summary", "pdb_rfam_verification", "pdb_rebuild_summary", "pdb_rebuild_verification"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return errors + [f"missing PDB/Rfam source: {name}: {SOURCES[name]}"]
+    summary = json.loads(SOURCES["pdb_rfam_summary"].read_text())
+    verification = json.loads(SOURCES["pdb_rfam_verification"].read_text())
+    rebuild = json.loads(SOURCES["pdb_rebuild_summary"].read_text())
+    rebuild_verification = json.loads(SOURCES["pdb_rebuild_verification"].read_text())
+    if summary["external_test_policy"] != "AUDIT_ONLY_NO_MODEL_SELECTION" or summary["model_outcomes_used"] is not False:
+        errors.append("PDB/Rfam audit used model outcomes or allowed selection")
+    if summary["shared_registry_modified"] is not False:
+        errors.append("PDB/Rfam audit modified the shared registry")
+    if summary["negative_label_policy"]["unobserved"] != "must be masked, never a negative label":
+        errors.append("PDB/Rfam unobserved-negative policy mismatch")
+    expected_panels = {
+        "ref_pdb_ts1": (63, 0, 22),
+        "ref_pdb_ts2": (39, 0, 1),
+        "ref_pdb_ts3": (19, 0, 11),
+        "ref_pdb_ts_hard": (28, 0, 28),
+        "rfam_fam": (10790, 284, 5),
+        "rfam_temporal": (436, 33, 2),
+    }
+    for panel_id, (n_records, tr1c_overlap, cross_overlap) in expected_panels.items():
+        panel = summary["panels"][panel_id]
+        if panel["n_records"] != n_records or panel["tr1c_exact_sequence_overlap_records"] != tr1c_overlap:
+            errors.append(f"PDB/Rfam panel count/TR1c overlap mismatch: {panel_id}")
+        if panel["cross_panel_exact_sequence_overlap_records"] != cross_overlap:
+            errors.append(f"PDB/Rfam cross-panel overlap mismatch: {panel_id}")
+        if panel["qualification"]["independent_experimental_or_official_label_evaluation"] != "NOT_QUALIFIED":
+            errors.append(f"PDB/Rfam panel regained evaluation qualification: {panel_id}")
+        if panel["qualification"]["model_selection"] != "FORBIDDEN":
+            errors.append(f"PDB/Rfam panel allowed model selection: {panel_id}")
+        if panel["label_lineage"]["filtered_projection"] is not True:
+            errors.append(f"PDB/Rfam filtered-projection identity missing: {panel_id}")
+    temporal = summary["panels"]["rfam_temporal"]
+    if temporal["official_rfam14_9_exact_sequence_records"] != 43:
+        errors.append("Rfam temporal exact-in-14.9 count mismatch")
+    if temporal["official_rfam15_0_status_counts"] != {
+        "NOT_EXACT_IN_RFAM15_0": 110,
+        "EXACT_SEQUENCE_OTHER_REGION_ONLY": 6,
+        "PASS_DIRECT_SEQUENCE_FAMILY_UNCHECKED": 320,
+    }:
+        errors.append("Rfam temporal 15.0 status counts mismatch")
+    if "TEMPORAL_FIRST_RELEASE_UNCHECKED" not in temporal["qualification"]["reason_codes"]:
+        errors.append("Rfam temporal first-release limitation was removed")
+    if temporal["label_lineage"]["registry_label_source"] != "COMPARATIVE_INFERRED":
+        errors.append("Rfam temporal labels were promoted to experimental truth")
+    if summary["official_sources"]["rfam15_0"]["release_membership_is_not_first_release_date"] is not True:
+        errors.append("Rfam release membership was equated to first-release date")
+    if rebuild["n_source_records"] != 153 or rebuild["n_rebuilt"] != 58 or rebuild["n_unresolved"] != 95:
+        errors.append("PDB rebuild 153/58/95 conservation mismatch")
+    if rebuild["unresolved_status_counts"] != {
+        "NO_EXACT_CHAIN_MATCH_UNCHECKED": 26,
+        "AMBIGUOUS_EXACT_CHAIN_MATCHES_UNCHECKED": 61,
+        "SOURCE_BAD_ALPHABET_UNCHECKED": 4,
+        "DSSR_MAPPING_ERROR_UNCHECKED": 4,
+    }:
+        errors.append("PDB rebuild unresolved status counts mismatch")
+    if rebuild["pair_match_counts"] != {"true": 56, "false": 2}:
+        errors.append("PDB RNAformer/DSSR pair difference count mismatch")
+    if rebuild["panel_rebuilt"] != {"pdb_ts1": 15, "pdb_ts2": 26, "pdb_ts3": 8, "pdb_ts_hard": 9}:
+        errors.append("PDB per-panel rebuilt counts mismatch")
+    if rebuild["external_test_policy"] != "AUDIT_ONLY_NO_MODEL_SELECTION":
+        errors.append("PDB rebuild allowed model selection")
+    if verification["status"] != "PASS_PDB_RFAM_LABEL_LINEAGE_INDEPENDENT_VERIFIER" or verification["qualification_fail_closed"] is not True:
+        errors.append("PDB/Rfam independent fail-closed verification did not pass")
+    if verification["rfam_temporal_exact_in_rfam14_9"] != 43 or verification["n_records"] != 11375:
+        errors.append("PDB/Rfam independent verification counts mismatch")
+    if rebuild_verification["status"] != "PASS_RNAFORMER_DOUBLE_PROTOCOL_DSSR_INDEPENDENT_VERIFIER":
+        errors.append("PDB double-protocol DSSR verification did not pass")
+    if rebuild_verification["n_rebuilt"] != 58 or rebuild_verification["n_unresolved"] != 95 or rebuild_verification["pair_match_counts"] != {"true": 56, "false": 2}:
+        errors.append("PDB rebuild independent verification counts mismatch")
+    if rebuild_verification["unobserved_negative_policy"] != "MASKED_NEVER_NEGATIVE":
+        errors.append("PDB rebuild unobserved-negative policy mismatch")
+    return errors
+
+
+def verify_incident_recovery_contract() -> list[str]:
+    errors = []
+    names = ["recovery_preflight", "recovery_scheduler", "matched_recovery_launch"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return errors + [f"missing incident recovery source: {name}: {SOURCES[name]}"]
+    preflight = json.loads(SOURCES["recovery_preflight"].read_text())
+    scheduler = json.loads(SOURCES["recovery_scheduler"].read_text())
+    launch = json.loads(SOURCES["matched_recovery_launch"].read_text())
+    if preflight["status"] != "PASS_INTERRUPTED_RESUME_AUDIT" or preflight["scientific_conclusion"] is not None:
+        errors.append("incident preflight is not a passing no-conclusion resume audit")
+    for arm in ["matched_control", "ensemble_context"]:
+        report = preflight["arms"][arm]
+        checkpoint = report["checkpoint"]
+        if report["status"] != "PASS_INTERRUPTED_RESUME_AUDIT" or report["converged"] is not False:
+            errors.append(f"incident arm is not a resumable non-converged run: {arm}")
+        if checkpoint["step"] != 9500 or checkpoint["optimizer_steps"] != 9500 or checkpoint["checkpoint_phase"] != "latest":
+            errors.append(f"incident checkpoint is not step 9500 latest: {arm}")
+        if report["stream"]["next_step"] != 9501 or report["stream"]["next_batch_contract_valid"] is not True:
+            errors.append(f"incident next-batch continuity mismatch: {arm}")
+        for name in ["train_log.jsonl", "batch_order.jsonl", "compute_ledger.jsonl"]:
+            if report["ledgers"][name]["rows_through_checkpoint"] != 9500:
+                errors.append(f"incident ledger does not conserve 9500 steps: {arm}/{name}")
+    if scheduler["recovery_code_commit"] != "442636dd660f93f1d39156ca9bbdbd107ecdbf42":
+        errors.append("incident scheduler recovery commit mismatch")
+    if scheduler["frozen_source_commit"] != "a846d90519e575a79b7db76f63692afb755e8ac6":
+        errors.append("incident scheduler frozen source commit mismatch")
+    if scheduler["scientific_conclusion"] is not None or scheduler["completed_arms"] != [] or scheduler["evaluation"] is not None:
+        errors.append("incident scheduler gained a conclusion/completed arm/evaluation without ledger review")
+    process = scheduler["processes"].get("matched_control", {})
+    if process.get("status") != "running" or process.get("launch_kind") != "resume":
+        errors.append("matched recovery is no longer the recorded running/resume process")
+    if launch["launch_kind"] != "resume" or launch["recovery_code_commit"] != scheduler["recovery_code_commit"]:
+        errors.append("matched launch identity does not bind the recovery commit")
+    if launch["preflight_sha256"] != "b72b144915c9e07ecdfc701b55d9b5266df27875afe27f6b28e9fc30e26ce4dd" or launch["scientific_conclusion"] is not None:
+        errors.append("matched launch identity does not bind the no-conclusion preflight")
+    meta_path = ACTIVE_RUN_ROOT / "matched_control/run_meta.json"
+    train_path = ACTIVE_RUN_ROOT / "matched_control/train_log.jsonl"
+    validation_path = ACTIVE_RUN_ROOT / "matched_control/validation_log.jsonl"
+    checkpoint_path = ACTIVE_CHECKPOINT_ROOT / "matched_control/resume.pt"
+    log_path = Path("/home/foldnar_incident_logs/matched_control.log")
+    for path in [meta_path, train_path, validation_path, checkpoint_path, log_path]:
+        if not path.is_file():
+            errors.append(f"missing active recovery evidence: {path}")
+    if errors:
+        return errors
+    meta = json.loads(meta_path.read_text())
+    if meta.get("status") != "running" or meta.get("converged") is not False:
+        errors.append("matched run_meta is no longer running and non-converged")
+    train = [json.loads(line) for line in train_path.read_text().splitlines()]
+    validation = [json.loads(line) for line in validation_path.read_text().splitlines()]
+    if len(train) < 10000 or train[9999]["step"] != 10000 or train[9999]["optimizer_steps"] != 10000:
+        errors.append("matched train log lacks contiguous step/optimizer 10000")
+    step10000 = next((row for row in validation if row["step"] == 10000), None)
+    if step10000 is None:
+        errors.append("matched step-10000 validation has not completed")
+    else:
+        if not math.isclose(step10000["validation_loss"], 0.4183340173506429, rel_tol=0.0, abs_tol=1e-15):
+            errors.append("matched step-10000 validation loss mismatch")
+        if step10000["eligible"] is not True or step10000["improved"] is not True or step10000["save_best"] is not True or step10000["stop"] is not False:
+            errors.append("matched step-10000 validation flags mismatch")
+    if checkpoint_path.stat().st_size <= 0:
+        errors.append("matched local staged checkpoint is empty")
+    incident_log = log_path.read_text(errors="replace")
+    for required in ["Errno 122", "Disk quota exceeded", "resumed arm=matched_control step=9500", "stage=/home/foldnar_incident_checkpoints/matched_control/resume.pt"]:
+        if required not in incident_log:
+            errors.append(f"incident log lacks evidence: {required}")
+    staged = (RECOVERY_REPO / "tools/run_frozen_margin_trainer_with_staged_checkpoint_20261127.py").read_text()
+    mirror = (RECOVERY_REPO / "tools/mirror_structured_margin_evaluation_for_publication_20261127.py").read_text()
+    for required in ['LOCAL_CHECKPOINT_ROOT = Path("/home/foldnar_incident_checkpoints")', "staged_atomic_torch_save", "sha256_file"]:
+        if required not in staged:
+            errors.append(f"staged-checkpoint contract missing: {required}")
+    for required in ["PASS_FINAL_EVALUATION_MIRRORED_FOR_EXISTING_PUBLISHER", 'report.get("final_verdict_allowed") is not True', "copied != before"]:
+        if required not in mirror:
+            errors.append(f"final teams mirror contract missing: {required}")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -296,6 +539,28 @@ def verify_narrative_guards() -> list[str]:
         "19/19 派生标签资产",
         "28/28 official-reference scored rows 均不含 0.9617",
         "旧差距禁止回写",
+        "8bd87223edb9b5a21c1e13676b4192de54505d9f",
+        "4daccb0eb1c78db565532634ed0d77cf1e6ddaae",
+        "0.8156522070450173",
+        "0.8999331354520079",
+        "0.8204522394549935",
+        "+0.0511175356573565, +0.0619467954524887",
+        "−0.0012121956293115, +0.0078699689970171",
+        "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR",
+        "19 个有部分预测的身份均为 2,544/3,966",
+        "e252f5351322994395968c61e3df3a51a0330293",
+        "58 条重建成功、95 条 UNCHECKED",
+        "56 true / 2 false",
+        "2 条 DSSR 差异",
+        "TS-hard 与 TS1/TS3 不序列不相交",
+        "Rfam 14.9 exact=**43**",
+        "TEMPORAL_FIRST_RELEASE_UNCHECKED",
+        "442636dd660f93f1d39156ca9bbdbd107ecdbf42",
+        "b72b144915c9e07ecdfc701b55d9b5266df27875afe27f6b28e9fc30e26ce4dd",
+        "OSError: [Errno 122] Disk quota exceeded",
+        "step=10000 validation 已完成",
+        "0.4183340173506429",
+        "四臂未收敛，当前无 margin 科学结论",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
@@ -731,12 +996,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, and BPfold official protocol"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, and incident recovery"
     print(f"PASS: {scope}")
     return 0
 

@@ -75,6 +75,64 @@ def test_bpfold_official_registry_contract():
     assert ledger.verify_bpfold_official_contract() == []
 
 
+def test_archiveii_official_values_ci_and_full_coverage_boundary():
+    text = ledger.DOC.read_text()
+    assert "0.8156522070450173" in text
+    assert "0.8999331354520079" in text
+    assert "0.8204522394549935" in text
+    assert "+0.0511175356573565, +0.0619467954524887" in text
+    assert "−0.0012121956293115, +0.0078699689970171" in text
+    assert "RiNALMo-ft 的对应 CI **跨 0**" in text
+    assert "CI 只属于 macro-F1 差值" in text
+    assert "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR" in text
+    assert "19 个有部分预测的身份均为 2,544/3,966" in text
+    assert "PARTIAL_COVERAGE_NOT_RANKED" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_archiveii_official_artifact_contract():
+    assert ledger.verify_archiveii_official_contract() == []
+
+
+def test_pdb_rebuild_overlap_and_rfam_temporal_boundaries():
+    text = ledger.DOC.read_text()
+    assert "58 条重建成功、95 条 UNCHECKED" in text
+    assert "56 true / 2 false" in text
+    assert "2 条 DSSR 差异" in text
+    assert "PDB58 不得排名" in text
+    assert "ref_pdb_ts_hard` 28/28" in text
+    assert "TS-hard 与 TS1/TS3 不序列不相交" in text
+    assert "Rfam 14.9 exact=**43**" in text
+    assert "TEMPORAL_FIRST_RELEASE_UNCHECKED" in text
+    assert "COMPARATIVE_INFERRED" in text
+    assert "AUDIT_ONLY_NO_MODEL_SELECTION" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_pdb_rfam_artifact_contract():
+    assert ledger.verify_pdb_rfam_contract() == []
+
+
+def test_incident_recovery_and_step10000_validation_status():
+    text = ledger.DOC.read_text()
+    assert "442636dd660f93f1d39156ca9bbdbd107ecdbf42" in text
+    assert "OSError: [Errno 122] Disk quota exceeded" in text
+    assert "step=9500" in text
+    assert "step=10000 validation 已完成" in text
+    assert "0.4183340173506429" in text
+    assert "stop=false" in text
+    assert "completed_arms=[]" in text
+    assert "evaluation=null" in text
+    assert "四臂未收敛，当前无 margin 科学结论" in text
+    assert "/home/foldnar_incident_checkpoints" in text
+    assert "不得宣称最终镜像完成" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_incident_recovery_artifact_contract():
+    assert ledger.verify_incident_recovery_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
