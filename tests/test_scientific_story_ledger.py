@@ -282,6 +282,17 @@ def test_archiveii_full_recovery_artifact_contract():
     assert ledger.verify_archiveii_full_recovery_contract() == []
 
 
+def test_archiveii_full_xens2_vienna_and_maxexpect_boundaries():
+    text = ledger.DOC.read_text()
+    assert "UNCHECKED_XENS2_NOT_FULL_COVERAGE" in text
+    assert "xens2 仍只有 **2544/3966**" in text
+    assert "无 clean 记录预测不构造 full" in text
+    assert "BLOCKED_NO_PREDICTIONS_IN_PANEL" in text
+    assert "MaxExpect 仅恢复 12/1422" in text
+    assert "2556/3966" in text
+    assert "missing=1410" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

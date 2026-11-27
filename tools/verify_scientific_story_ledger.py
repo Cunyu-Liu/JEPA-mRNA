@@ -581,6 +581,26 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
     full_ids = {row["prediction_id"] for row in metrics["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"}
     if full_ids != expected_full:
         errors.append(f"ArchiveII current full3966 identities mismatch: {sorted(full_ids)}")
+    if full["xens2_delta"] != "UNCHECKED_XENS2_NOT_FULL_COVERAGE":
+        errors.append("ArchiveII full xens2 delta was computed without full coverage")
+    rows = {row["prediction_id"]: row for row in metrics["rows"]}
+    xens2 = rows["xens2/archiveii_embok_clean"]["panels"]["archiveii_official_reference_3966"]
+    if xens2["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or xens2["n_with_prediction"] != 2544 or xens2["delta_vs_xens2"] is not None or xens2["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
+        errors.append("ArchiveII xens2 partial full panel gained a delta/CI or ranking")
+    for decoder in ["vienna_mfe", "vienna_centroid", "vienna_mea"]:
+        row = rows[f"{decoder}/archiveii_official_reference_3966/cpu_recovery_v1"]["panels"]
+        full_panel = row["archiveii_official_reference_3966"]
+        clean_panel = row["archiveii_official_reference_clean_2544"]
+        if full_panel["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or full_panel["n_with_prediction"] != 1422:
+            errors.append(f"ArchiveII Vienna recovery-only records were constructed as full: {decoder}")
+        if clean_panel["status"] != "BLOCKED_NO_PREDICTIONS_IN_PANEL" or clean_panel["n_with_prediction"] != 0 or clean_panel["missing_predictions_imputed_as_zero"] is not False:
+            errors.append(f"ArchiveII Vienna missing clean predictions were imputed: {decoder}")
+    maxexpect_recovery = metrics["recovery"]["rnastructure_maxexpect"]
+    if maxexpect_recovery["n_completed"] != 12 or maxexpect_recovery["full_composite_records"] != 2556 or maxexpect_recovery["complete_for_full_ranking"] is not False:
+        errors.append("ArchiveII MaxExpect recovery completion/composite mismatch")
+    maxexpect = rows["rnastructure_maxexpect/archiveii_official_reference_3966/cpu_recovery_v1"]["panels"]["archiveii_official_reference_3966"]
+    if maxexpect["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or maxexpect["n_with_prediction"] != 2556 or maxexpect["missing_count"] != 1410:
+        errors.append("ArchiveII MaxExpect partial panel was ranked")
     complete = [name for name, row in metrics["recovery"].items() if row["status"] == "COMPLETE"]
     if len(complete) != 7 or any(metrics["recovery"][name]["n_completed"] != 1422 for name in complete):
         errors.append(f"ArchiveII recovery completion count mismatch: {complete}")
@@ -1124,6 +1144,9 @@ def verify_narrative_guards() -> list[str]:
         "0.7974584107660678",
         "0.7023050285738565",
         "5 个全覆盖身份",
+        "UNCHECKED_XENS2_NOT_FULL_COVERAGE",
+        "无 clean 记录预测不构造 full",
+        "2556/3966",
         "8a2008a4cda3c43b3000f25151b80408b0bdb110",
         "a8b1089a67a84665c49f0c228064693a53548590",
         "0.6812363564199246",
