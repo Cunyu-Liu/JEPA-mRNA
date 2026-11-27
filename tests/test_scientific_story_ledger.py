@@ -182,9 +182,11 @@ def test_ts0_projected_values_and_official_coverage_boundary():
     assert "0.8032405714870655" in text
     assert "0.7568974968024850" in text
     assert "−0.0674523877056411, −0.0435507990639508" in text
-    assert "21 个 scored identities 均只有 1288/1305" in text
-    assert "official full coverage=0" in text
-    assert "UNCHECKED_NO_FULL_COVERAGE_PREDICTION" in text
+    assert "a8b1089a67a84665c49f0c228064693a53548590" in text
+    assert "0.6812363564199246" in text
+    assert "现有 **7 个全覆盖身份**" in text
+    assert "1302/1305" in text
+    assert "旧零全覆盖" in text
     assert "homology-only=575" in text
 
 

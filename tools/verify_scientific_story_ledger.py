@@ -28,6 +28,7 @@ MODEL_DEV_V3_REPO = Path("/home/rna_jev_model_dev_v3")
 MODEL_DEV_V3 = F / "model_dev_v3"
 BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
 ARCHIVEII_REPO = Path("/home/rna_jev_archive_label_lineage")
+TS0_COVERAGE_REPO = Path("/home/rna_jev_ts0_coverage")
 PDB_RFAM_REPO = Path("/home/rna_jev_pdb_rfam_label_lineage")
 RECOVERY_REPO = Path("/home/rna_jev_margin_incident_recovery")
 RECOVERY_ROOT = F / "structured_margin_full_v1/incident_recovery_20261127"
@@ -66,9 +67,10 @@ SOURCES = {
     "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
     "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
-    "ts0_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
+    "ts0_metrics": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
+    "ts0_recovery_audit": TS0_COVERAGE_REPO / "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
     "testsetb_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/testsetb_system_metrics.json",
-    "ts0_testsetb_verification": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json",
+    "ts0_testsetb_verification": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json",
     "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
     "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
     "pdb_rebuild_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round6_combined/rebuild_summary.json",
@@ -105,6 +107,7 @@ SOURCE_COMMITS = {
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
     "ArchiveII official reference": (ARCHIVEII_REPO, "8a2008a4cda3c43b3000f25151b80408b0bdb110"),
+    "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4"),
     "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
 }
@@ -134,6 +137,11 @@ def verify_source_commits() -> list[str]:
         if actual != expected:
             compatible_advance = False
             if name == "FoldNAR integration":
+                compatible_advance = subprocess.run(
+                    ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
+                    check=False,
+                ).returncode == 0
+            if name == "margin incident recovery":
                 compatible_advance = subprocess.run(
                     ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
                     check=False,
@@ -518,28 +526,57 @@ def verify_incident_recovery_contract() -> list[str]:
 
 def verify_ts0_contract() -> list[str]:
     errors = []
-    for name in ["ts0_metrics", "ts0_testsetb_verification"]:
+    for name in ["ts0_metrics", "ts0_recovery_audit", "ts0_testsetb_verification"]:
         if not SOURCES[name].is_file():
             return [f"missing TS0 source: {name}: {SOURCES[name]}"]
     metrics = json.loads(SOURCES["ts0_metrics"].read_text())
+    recovery = json.loads(SOURCES["ts0_recovery_audit"].read_text())
     verification = json.loads(SOURCES["ts0_testsetb_verification"].read_text())
     expected_coverage = {
         "blocked_identities": 14,
-        "inventory_entries": 35,
-        "official_full_coverage": 0,
-        "official_partial_not_ranked": 21,
+        "inventory_entries": 40,
+        "official_full_coverage": 7,
+        "official_partial_not_ranked": 19,
         "official_records_missing_from_project": 17,
-        "projected_full_coverage": 21,
-        "scored_identities": 21,
+        "projected_full_coverage": 26,
+        "scored_identities": 26,
     }
     if metrics["coverage_accounting"] != expected_coverage:
         errors.append(f"TS0 coverage accounting mismatch: {metrics['coverage_accounting']}")
     if metrics["legacy_project_label_disposition"] != "DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION; projected-reference-protocol-only; not unfiltered official protocol":
         errors.append("TS0 projected-reference protocol identity mismatch")
-    for key in ["strongest_single_predictor", "strongest_ensemble", "strongest_overall"]:
-        if metrics["official_full_summary"][key] != "UNCHECKED_NO_FULL_COVERAGE_PREDICTION":
-            errors.append(f"TS0 official full panel gained a ranking: {key}")
+    expected_full = [
+        "bpfold_official_release/bprna_ts0",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+    ]
+    if recovery["status"] != "PASS_7_FULL1305_IDENTITIES_2_PARTIAL" or set(recovery["new_full_coverage_identities"]) != set(expected_full):
+        errors.append("TS0 recovery full1305 identities/status mismatch")
+    if recovery["recovered_partial_identities"] != ["rnastructure_fold/bprna_ts0", "rnastructure_maxexpect/bprna_ts0"] or recovery["supplement"]["gpu_used"] is not False:
+        errors.append("TS0 recovery partial identities/GPU boundary mismatch")
+    for key in ["strongest_ensemble", "strongest_overall"]:
+        summary = metrics["official_full_summary"][key]
+        if summary["prediction_id"] != "bpfold_official_release/bprna_ts0" or summary["ranking_scope"] != "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION":
+            errors.append(f"TS0 full descriptive identity/scope mismatch: {key}")
+        if not math.isclose(summary["metrics"]["micro_f1"], 0.6812363564199246, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"TS0 BPfold official release micro mismatch: {key}")
+        if summary["training_exposure"]["full_project_panel_exposure_status"] != "UNCHECKED":
+            errors.append(f"TS0 BPfold release exposure was upgraded: {key}")
     rows = {row["prediction_id"]: row for row in metrics["rows"]}
+    full_ids = [row["prediction_id"] for row in metrics["rows"] if row["panels"]["bprna_ts0_official_reference_1305"]["status"] == "PASS_FULL_COVERAGE"]
+    if set(full_ids) != set(expected_full):
+        errors.append(f"TS0 current full1305 rows mismatch: {full_ids}")
+    release = rows["bpfold_official_release/bprna_ts0"]["panels"]["bprna_ts0_official_reference_1305"]
+    if release["n_with_prediction"] != 1305 or not math.isclose(release["metrics"]["micro_f1"], 0.6812363564199246, rel_tol=0.0, abs_tol=1e-15):
+        errors.append("TS0 BPfold release full1305 coverage/micro mismatch")
+    for prediction_id in ["rnastructure_fold/bprna_ts0", "rnastructure_maxexpect/bprna_ts0"]:
+        official = rows[prediction_id]["panels"]["bprna_ts0_official_reference_1305"]
+        if official["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or official["n_with_prediction"] != 1302 or official["missing_count"] != 3 or official["missing_predictions_imputed_as_zero"] is not False:
+            errors.append(f"TS0 RNAstructure partial panel was ranked or imputed: {prediction_id}")
     expected = {
         "xens2/bprna_ts0": (0.8032405714870655, 0.799919334905697, [0.0, 0.0]),
         "rnaformer_bprna/bprna_ts0": (0.756897496802485, 0.7444430454311176, [-0.0674523877056411, -0.04355079906395077]),
@@ -830,6 +867,10 @@ def verify_narrative_guards() -> list[str]:
         "bad_evaluations=0",
         "四臂未收敛，当前无 margin 科学结论",
         "8a2008a4cda3c43b3000f25151b80408b0bdb110",
+        "a8b1089a67a84665c49f0c228064693a53548590",
+        "0.6812363564199246",
+        "7 个全覆盖身份",
+        "1302/1305",
         "0.8032405714870655",
         "0.7568974968024850",
         "official full coverage=0",
