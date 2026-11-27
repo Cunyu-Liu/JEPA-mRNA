@@ -1,0 +1,2904 @@
+{
+  "audit_date": "2026-11-27",
+  "coverage_accounting": {
+    "blocked_identities": 14,
+    "inventory_entries": 38,
+    "official_full_coverage": 7,
+    "official_partial_not_ranked": 17,
+    "official_records_missing_from_project": 2,
+    "projected_full_coverage": 24,
+    "scored_identities": 24
+  },
+  "dataset": "testsetb",
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "label_panels": {
+    "testsetb_official_reference_430": {
+      "n_sequences": 430,
+      "path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "sha256": "aed077ce5a913476c79084733d03e46ae4dd58c1cef1f1998b60f6cda4b86727"
+    },
+    "testsetb_projected_reference_428": {
+      "n_sequences": 428,
+      "path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_projected_428.jsonl.gz",
+      "sha256": "7bc6db613d8bf6d8099fe17283e3d25fe7725c84811fa5b11b7dd228dc5bbf44"
+    }
+  },
+  "metric_contract": {
+    "macro": "unweighted mean per-sequence P/R/F1; P=R=F1=1 only when truth and prediction are both empty",
+    "micro": "pool TP/FP/FN; zero-denominator precision or recall=0",
+    "missing_predictions": "present-only coverage accounting; never impute zero; partial coverage not ranked",
+    "pair_matching": "strict zero-based inclusive exact pairs; no additional crossing/canonical/min-loop filtering",
+    "paired_ci": "10000 paired sequence-level percentile bootstraps versus xens2 on projected 428; seed 20261127",
+    "ranking": "micro-F1, full coverage within the stated panel only; descriptive audit, not model selection"
+  },
+  "new_full_coverage_identities": [
+    "contrafold/testsetb",
+    "eternafold/testsetb",
+    "mxfold2/testsetb",
+    "nussinov_turner/testsetb/recovered_official2",
+    "vienna_centroid/testsetb/recovered_official2",
+    "vienna_mea/testsetb/recovered_official2",
+    "vienna_mfe/testsetb/recovered_official2"
+  ],
+  "new_inference_scope": "official-only two records for nine CPU decoders; bounded six-record protocol replay not used for metrics",
+  "new_training": false,
+  "per_id_audit": [
+    {
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "contrafold/testsetb",
+        "eternafold/testsetb",
+        "mxfold2/testsetb",
+        "nussinov_turner/testsetb/recovered_official2",
+        "vienna_centroid/testsetb/recovered_official2",
+        "vienna_mea/testsetb/recovered_official2",
+        "vienna_mfe/testsetb/recovered_official2"
+      ],
+      "name": "testsetb_104.bpseq",
+      "non_acgu_characters": [
+        "S"
+      ],
+      "pair_set_sha256": "33bd673ee5e39fe3b50c9736ff5d6ed017c2da8990d355d538434a02903b4037",
+      "sequence_sha256": "855948a33aa36c39f20df998767d941d86317b1fc2169c9502438365b3d800da",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "contrafold/testsetb",
+        "eternafold/testsetb",
+        "mxfold2/testsetb",
+        "nussinov_turner/testsetb/recovered_official2",
+        "vienna_centroid/testsetb/recovered_official2",
+        "vienna_mea/testsetb/recovered_official2",
+        "vienna_mfe/testsetb/recovered_official2"
+      ],
+      "name": "testsetb_36.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "e94733016a96336537b990ad589ff5658b2e09ab8e52f7203fcda58339545d3f",
+      "sequence_sha256": "4c8f10e48cced0047b195427d887286b72f9d7a21bc7fb8adfa6861ed95a7a2b",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    }
+  ],
+  "recovery_manifest": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/recovery_manifest.json",
+  "recovery_manifest_sha256": "81b6d5178830381ec1143aecd83f8ba02475da05555fe60377a23c13ada3e13e",
+  "rows": [
+    {
+      "available": false,
+      "baseline_id": "best_plan_a",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        }
+      },
+      "path": null,
+      "prediction_id": "best_plan_a/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "BLOCKED",
+      "sha256": null,
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "best_plan_a",
+        "clean_n": 288,
+        "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN",
+        "homology_only_overlap": 140,
+        "route": "bprna_tr1c",
+        "training_corpora": [
+          "bprna_tr1c"
+        ],
+        "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "bpfold",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "six_checkpoint_ensemble",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 1902,
+            "fp": 3188,
+            "macro_f1": 0.79498482073545,
+            "macro_precision": 0.7689395611730231,
+            "macro_recall": 0.8351531264845838,
+            "micro_f1": 0.7881461749771081,
+            "micro_precision": 0.7481036662452591,
+            "micro_recall": 0.8327176781002639,
+            "n_scored": 428,
+            "tp": 9468,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.037262985602720344,
+            "macro_precision": -0.13119829840389108,
+            "macro_recall": 0.052505835986590976,
+            "micro_f1": -0.052174037234535064,
+            "micro_precision": -0.16248046269427474,
+            "micro_recall": 0.052594547053649965
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 1902,
+            "fp": 3188,
+            "macro_f1": 0.79498482073545,
+            "macro_precision": 0.7689395611730231,
+            "macro_recall": 0.8351531264845838,
+            "micro_f1": 0.7881461749771081,
+            "micro_precision": 0.7481036662452591,
+            "micro_recall": 0.8327176781002639,
+            "n_scored": 428,
+            "tp": 9468,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/bpfold/raw/testsetb.json",
+      "prediction_id": "bpfold/testsetb",
+      "prediction_origin": "project_bpfold_replay",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "b1024d3af6f90d316a495e76a0338691539f791b0d1ee4d305207ff1bf1c36c2",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "bpfold",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [],
+        "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "contrafold",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 430,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 1.0,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4362,
+            "fp": 6593,
+            "macro_f1": 0.5793087893442543,
+            "macro_precision": 0.5498042023551927,
+            "macro_recall": 0.629770796493025,
+            "micro_f1": 0.5633544581290606,
+            "micro_precision": 0.5173499267935578,
+            "micro_recall": 0.6183393122757896,
+            "n_scored": 430,
+            "tp": 7067,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 430,
+          "status": "PASS_FULL_COVERAGE"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.25235220649830536,
+            "macro_precision": -0.34974396987945944,
+            "macro_recall": -0.15221625319272392,
+            "micro_f1": -0.27642308858372877,
+            "micro_precision": -0.39277953800368925,
+            "micro_recall": -0.16112576956904134
+          },
+          "extra_count": 2,
+          "extra_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4332,
+            "fp": 6554,
+            "macro_f1": 0.5798955998398649,
+            "macro_precision": 0.5503938896974547,
+            "macro_recall": 0.630431037305269,
+            "micro_f1": 0.5638971236279144,
+            "micro_precision": 0.5178045909358446,
+            "micro_recall": 0.6189973614775726,
+            "n_scored": 428,
+            "tp": 7038,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/contrafold__testsetb__full430.json.gz",
+      "prediction_id": "contrafold/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "9b3a6406a7d91d1edf3e053fa35340c32f1400ec71f2a6dc8b8caf5f04fb6b50",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "contrafold",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [],
+        "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "efold_0_1_3",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4092,
+            "fp": 7601,
+            "macro_f1": 0.5705247033621826,
+            "macro_precision": 0.5166842836666219,
+            "macro_recall": 0.6539932277476549,
+            "micro_f1": 0.5545354108727951,
+            "micro_precision": 0.48914577592580144,
+            "micro_recall": 0.6401055408970976,
+            "n_scored": 428,
+            "tp": 7278,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.26172310297598766,
+            "macro_precision": -0.3834535759102923,
+            "macro_recall": -0.12865406275033797,
+            "micro_f1": -0.2857848013388481,
+            "micro_precision": -0.42143835301373245,
+            "micro_recall": -0.1400175901495163
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4092,
+            "fp": 7601,
+            "macro_f1": 0.5705247033621826,
+            "macro_precision": 0.5166842836666219,
+            "macro_recall": 0.6539932277476549,
+            "micro_f1": 0.5545354108727951,
+            "micro_precision": 0.48914577592580144,
+            "micro_recall": 0.6401055408970976,
+            "n_scored": 428,
+            "tp": 7278,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/efold/raw/testsetb.json",
+      "prediction_id": "efold_0_1_3/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "fdc699508e6ffdc24ed50a4c090a88de925e25383853515df7b9b1387d466851",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "efold_0_1_3",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [
+          "bpRNA subset",
+          "RNAstralign",
+          "Ribonanza"
+        ],
+        "training_provenance_status": "PUBLISHED_COMPOSITION_PARTIAL; 0.1.3 weight-specific audit not complete"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "eternafold",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 430,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 1.0,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3940,
+            "fp": 6833,
+            "macro_f1": 0.5997317048254183,
+            "macro_precision": 0.5575683640162618,
+            "macro_recall": 0.6662274464187824,
+            "micro_f1": 0.5816473146673916,
+            "micro_precision": 0.5229018293534422,
+            "micro_recall": 0.6552629276402135,
+            "n_scored": 430,
+            "tp": 7489,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 430,
+          "status": "PASS_FULL_COVERAGE"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.23175151929913385,
+            "macro_precision": -0.34180897550997236,
+            "macro_recall": -0.11558924508974344,
+            "micro_f1": -0.25793994756431116,
+            "micro_precision": -0.38703861697378195,
+            "micro_recall": -0.12401055408970973
+          },
+          "extra_count": 2,
+          "extra_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3910,
+            "fp": 6789,
+            "macro_f1": 0.6004962870390365,
+            "macro_precision": 0.5583288840669418,
+            "macro_recall": 0.6670580454082494,
+            "micro_f1": 0.5823802646473321,
+            "micro_precision": 0.5235455119657519,
+            "micro_recall": 0.6561125769569042,
+            "n_scored": 428,
+            "tp": 7460,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/eternafold__testsetb__full430.json.gz",
+      "prediction_id": "eternafold/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "ab5516925279be00d01986aaf234fcb1450d8c5a128c42eeb46685421029fcbc",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "eternafold",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [],
+        "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "h0",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        }
+      },
+      "path": null,
+      "prediction_id": "h0/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "BLOCKED",
+      "sha256": null,
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "h0",
+        "clean_n": 288,
+        "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN",
+        "homology_only_overlap": 140,
+        "route": "bprna_tr1c",
+        "training_corpora": [
+          "bprna_tr1c"
+        ],
+        "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "kirigami_fast",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 2268,
+            "fp": 1143,
+            "macro_f1": 0.8343000298047613,
+            "macro_precision": 0.8828772873152106,
+            "macro_recall": 0.7991194692455189,
+            "micro_f1": 0.8421929215822346,
+            "micro_precision": 0.8884333821376281,
+            "micro_recall": 0.8005277044854882,
+            "n_scored": 428,
+            "tp": 9102,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": 0.0020522234665909522,
+            "macro_precision": -0.017260572261703522,
+            "macro_recall": 0.016472178747526045,
+            "micro_f1": 0.0018727093705913633,
+            "micro_precision": -0.022150746801905763,
+            "micro_recall": 0.02040457343887425
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 2268,
+            "fp": 1143,
+            "macro_f1": 0.8343000298047613,
+            "macro_precision": 0.8828772873152106,
+            "macro_recall": 0.7991194692455189,
+            "micro_f1": 0.8421929215822346,
+            "micro_precision": 0.8884333821376281,
+            "micro_recall": 0.8005277044854882,
+            "n_scored": 428,
+            "tp": 9102,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/kirigami_fast/raw/testsetb.json",
+      "prediction_id": "kirigami_fast/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "a9d23096eb67904c2d6380f35eb8c70f050d9a0e9a818d2f6a001dfa451a42c8",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "kirigami_fast",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [],
+        "training_provenance_status": "BLOCKED_PROVENANCE: exact training union not verified"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "mxfold2",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 430,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 1.0,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3504,
+            "fp": 5149,
+            "macro_f1": 0.6692063276068385,
+            "macro_precision": 0.6514902120677037,
+            "macro_recall": 0.7021020092751667,
+            "micro_f1": 0.6468595682161368,
+            "micro_precision": 0.6061649074499006,
+            "micro_recall": 0.69341149706886,
+            "n_scored": 430,
+            "tp": 7925,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 430,
+          "status": "PASS_FULL_COVERAGE"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.1624030447408048,
+            "macro_precision": -0.24790669611457739,
+            "macro_recall": -0.07998310938052644,
+            "micro_f1": -0.19296215510629366,
+            "micro_precision": -0.30394104113390574,
+            "micro_recall": -0.08619173262972735
+          },
+          "extra_count": 2,
+          "extra_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3480,
+            "fp": 5116,
+            "macro_f1": 0.6698447615973655,
+            "macro_precision": 0.6522311634623368,
+            "macro_recall": 0.7026641811174664,
+            "micro_f1": 0.6473580571053495,
+            "micro_precision": 0.6066430878056281,
+            "micro_recall": 0.6939313984168866,
+            "n_scored": 428,
+            "tp": 7890,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/mxfold2__testsetb__full430.json.gz",
+      "prediction_id": "mxfold2/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "348b3d004b4f92c1ae3a4bc33e4d9b82ef15060427630b0ed64d18e9844ffa32",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "mxfold2",
+        "clean_n": 373,
+        "clean_sha256": "193441e4f7a7803a6c98dc0a70548f8a1d7a1f70b81f6b9715343b2c47b9a3f7",
+        "evidence_status": "OFFICIAL_TRAINSETAB_AUDIT_ARTIFACT; FULL_EXPOSURE_NOT_PROVEN",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED",
+        "homology_only_overlap": 55,
+        "route": "mxfold2_trainsetab",
+        "training_corpora": [
+          "bpRNA-1m TrainSetA+TrainSetB"
+        ],
+        "training_provenance_status": "OFFICIAL_PACKAGE_TRAINING_IDENTITY; homology overlap unresolved"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "nucleicbert_frozen_official",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 8563,
+            "fp": 1194,
+            "macro_f1": 0.3126424605861162,
+            "macro_precision": 0.5168310883754529,
+            "macro_recall": 0.2532599699933217,
+            "micro_f1": 0.3652332314097977,
+            "micro_precision": 0.7015746063484128,
+            "micro_recall": 0.2468777484608619,
+            "n_scored": 428,
+            "tp": 2807,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.5196053457520541,
+            "macro_precision": -0.3833067712014613,
+            "macro_recall": -0.5293873205046712,
+            "micro_f1": -0.4750869808018455,
+            "micro_precision": -0.20900952259112104,
+            "micro_recall": -0.5332453825857519
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 8563,
+            "fp": 1194,
+            "macro_f1": 0.3126424605861162,
+            "macro_precision": 0.5168310883754529,
+            "macro_recall": 0.2532599699933217,
+            "micro_f1": 0.3652332314097977,
+            "micro_precision": 0.7015746063484128,
+            "micro_recall": 0.2468777484608619,
+            "n_scored": 428,
+            "tp": 2807,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_frozen/raw/testsetb.json",
+      "prediction_id": "nucleicbert_frozen_official/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "cbea1ba17d56b977b92ca0d8cbba1e22ba418f9279cda34d1698e0b3dea2a2c8",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "nucleicbert_frozen_official",
+        "clean_n": 116,
+        "clean_sha256": "146aafc7a10bcf9c87e4ce68f521a943139538fbae6fd136bdb926c7cf9481d2",
+        "evidence_status": "AUTHOR_TR0_STYLE_AUDIT_ARTIFACT; FULL_EXPOSURE_NOT_PROVEN",
+        "exact_sequence_overlap": 247,
+        "full_project_panel_exposure_status": "AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED",
+        "homology_only_overlap": 65,
+        "route": "rnastralign_tr0_style",
+        "training_corpora": [
+          "RNAStrAlign/TR0-style secondary-structure data"
+        ],
+        "training_provenance_status": "AUTHOR_FULL_FINE_TUNE"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "nucleicbert_ft",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4563,
+            "fp": 9936,
+            "macro_f1": 0.5244210001344128,
+            "macro_precision": 0.46483576988264264,
+            "macro_recall": 0.6170283417615853,
+            "micro_f1": 0.48425995091238927,
+            "micro_precision": 0.406557964522487,
+            "micro_recall": 0.5986807387862797,
+            "n_scored": 428,
+            "tp": 6807,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.30782680620375746,
+            "macro_precision": -0.43530208969427153,
+            "macro_recall": -0.1656189487364076,
+            "micro_f1": -0.35606026129925394,
+            "micro_precision": -0.504026164417047,
+            "micro_recall": -0.1814423922603342
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4563,
+            "fp": 9936,
+            "macro_f1": 0.5244210001344128,
+            "macro_precision": 0.46483576988264264,
+            "macro_recall": 0.6170283417615853,
+            "micro_f1": 0.48425995091238927,
+            "micro_precision": 0.406557964522487,
+            "micro_recall": 0.5986807387862797,
+            "n_scored": 428,
+            "tp": 6807,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/nucleicbert_ft/raw/testsetb.json",
+      "prediction_id": "nucleicbert_ft/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "6f34c0e829755244e181dfc0c7b0e7a09902f9b50e9ea307a866428f41dd5778",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "nucleicbert_ft",
+        "clean_n": 288,
+        "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN",
+        "homology_only_overlap": 140,
+        "route": "bprna_tr1c",
+        "training_corpora": [
+          "bprna_tr1c"
+        ],
+        "training_provenance_status": "PROJECT_FROZEN_ENCODER_DOWNSTREAM_HEAD"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "nussinov_turner",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 430,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 1.0,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 8708,
+            "fp": 11065,
+            "macro_f1": 0.22402842985332533,
+            "macro_precision": 0.2099962534114679,
+            "macro_recall": 0.2456725540873714,
+            "micro_f1": 0.21582391433670434,
+            "micro_precision": 0.19737414768605832,
+            "micro_recall": 0.238078572053548,
+            "n_scored": 430,
+            "tp": 2721,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 430,
+          "status": "PASS_FULL_COVERAGE"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.6084807222659755,
+            "macro_precision": -0.6904038305238612,
+            "macro_recall": -0.5372156825272294,
+            "micro_f1": -0.6248816436865565,
+            "micro_precision": -0.7136155360662555,
+            "micro_recall": -0.5423922603342128
+          },
+          "extra_count": 2,
+          "extra_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 8667,
+            "fp": 11020,
+            "macro_f1": 0.22376708407219484,
+            "macro_precision": 0.20973402905305297,
+            "macro_recall": 0.2454316079707634,
+            "micro_f1": 0.21543856852508667,
+            "micro_precision": 0.19696859287327845,
+            "micro_recall": 0.23773087071240107,
+            "n_scored": 428,
+            "tp": 2703,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/nussinov_turner__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "nussinov_turner/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "997afb81d197cfd8cb91fe77f6c9ce27952986c3a24e599af30ebe137250492a",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "nussinov_turner",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "nussinov_turner",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat0.json",
+      "prediction_id": "nussinov_turner/testsetb/repeat0",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "0dda82cc6277ee89422c9780895dc7b795b2cf050689219051cbfd7caa009888",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "nussinov_turner",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "nussinov_turner",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat1.json",
+      "prediction_id": "nussinov_turner/testsetb/repeat1",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "39e207489fa34715055e2c4c45ef370ac006d99d76480681c93bebf8fad706f4",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "nussinov_turner",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "nussinov_turner",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat2.json",
+      "prediction_id": "nussinov_turner/testsetb/repeat2",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "b72cc0c6c2d8fccbdb552cf16faf5768ecfb2053054282dffdf19534bcd1c76e",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "nussinov_turner",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "r2d",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 5598,
+            "fp": 4305,
+            "macro_f1": 0.553141026590278,
+            "macro_precision": 0.601658287389292,
+            "macro_recall": 0.5263260351712608,
+            "micro_f1": 0.5382570988949503,
+            "micro_precision": 0.5727895206906818,
+            "micro_recall": 0.5076517150395778,
+            "n_scored": 428,
+            "tp": 5772,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.27910677974789233,
+            "macro_precision": -0.2984795721876222,
+            "macro_recall": -0.2563212553267321,
+            "micro_f1": -0.3020631133166929,
+            "micro_precision": -0.3377946082488521,
+            "micro_recall": -0.27247141600703606
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 5598,
+            "fp": 4305,
+            "macro_f1": 0.553141026590278,
+            "macro_precision": 0.601658287389292,
+            "macro_recall": 0.5263260351712608,
+            "micro_f1": 0.5382570988949503,
+            "micro_precision": 0.5727895206906818,
+            "micro_recall": 0.5076517150395778,
+            "n_scored": 428,
+            "tp": 5772,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/root/rna_jepa_data/eval_decision/nb_jev_r2dtr1c_s0_step20000/testsetb/result.json",
+      "prediction_id": "rinalmo_2d_s0/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "3254910c1c8852c3dd18bc3a0d1472fb7df1dfe9823b8cab40a7e81410152d3b",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "r2d",
+        "clean_n": 288,
+        "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN",
+        "homology_only_overlap": 140,
+        "route": "bprna_tr1c",
+        "training_corpora": [
+          "bprna_tr1c"
+        ],
+        "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "r2d",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 2978,
+            "fp": 3274,
+            "macro_f1": 0.7434270614913203,
+            "macro_precision": 0.7582660969569337,
+            "macro_recall": 0.7442353777667919,
+            "micro_f1": 0.728598715054697,
+            "micro_precision": 0.7193553917366706,
+            "micro_recall": 0.7380826737027265,
+            "n_scored": 428,
+            "tp": 8392,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.08882074484684999,
+            "macro_precision": -0.14187176261998047,
+            "macro_recall": -0.038411912731200926,
+            "micro_f1": -0.11172149715694624,
+            "micro_precision": -0.19122873720286326,
+            "micro_recall": -0.042040457343887394
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 2978,
+            "fp": 3274,
+            "macro_f1": 0.7434270614913203,
+            "macro_precision": 0.7582660969569337,
+            "macro_recall": 0.7442353777667919,
+            "micro_f1": 0.728598715054697,
+            "micro_precision": 0.7193553917366706,
+            "micro_recall": 0.7380826737027265,
+            "n_scored": 428,
+            "tp": 8392,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/root/rna_jepa_data/eval_decision/ow_rinalmo_r2dtr1c_b4_s1_step20000/testsetb/result.json",
+      "prediction_id": "rinalmo_2d_s1/testsetb",
+      "prediction_origin": "additional_frozen_r2d_seed1",
+      "registry_status": "UNREGISTERED_INDEPENDENT_AUDIT_ASSET",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "fe3b7e261b1f38a6d61762f88f878c5f6e6bd2454733c1889aa29fe8d30fd893",
+      "source_group": "INDEPENDENT_AUDIT_ASSET",
+      "training_exposure": {
+        "baseline_id": "r2d",
+        "clean_n": 288,
+        "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN",
+        "homology_only_overlap": 140,
+        "route": "bprna_tr1c",
+        "training_corpora": [
+          "bprna_tr1c"
+        ],
+        "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "r2d",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3922,
+            "fp": 1934,
+            "macro_f1": 0.71460012391213,
+            "macro_precision": 0.8062844733160329,
+            "macro_recall": 0.6584799189825075,
+            "micro_f1": 0.71781033153431,
+            "micro_precision": 0.7938605840972074,
+            "micro_recall": 0.6550571679859278,
+            "n_scored": 428,
+            "tp": 7448,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.11764768242604029,
+            "macro_precision": -0.09385338626088124,
+            "macro_recall": -0.1241673715154854,
+            "micro_f1": -0.12250988067733326,
+            "micro_precision": -0.1167235448423265,
+            "micro_recall": -0.12506596306068607
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3922,
+            "fp": 1934,
+            "macro_f1": 0.71460012391213,
+            "macro_precision": 0.8062844733160329,
+            "macro_recall": 0.6584799189825075,
+            "micro_f1": 0.71781033153431,
+            "micro_precision": 0.7938605840972074,
+            "micro_recall": 0.6550571679859278,
+            "n_scored": 428,
+            "tp": 7448,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/root/rna_jepa_data/eval_decision/ow_rinalmo_r2dtr1c_b4_s2_step20000/testsetb/result.json",
+      "prediction_id": "rinalmo_2d_s2/testsetb",
+      "prediction_origin": "additional_frozen_r2d_seed2",
+      "registry_status": "UNREGISTERED_INDEPENDENT_AUDIT_ASSET",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "588b99cebc99c5c7293d9768179074a29d748d4fa8f493df8878935d3a458f7c",
+      "source_group": "INDEPENDENT_AUDIT_ASSET",
+      "training_exposure": {
+        "baseline_id": "r2d",
+        "clean_n": 288,
+        "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN",
+        "homology_only_overlap": 140,
+        "route": "bprna_tr1c",
+        "training_corpora": [
+          "bprna_tr1c"
+        ],
+        "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "rinalmo_ft",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 1924,
+            "fp": 973,
+            "macro_f1": 0.8628944070360038,
+            "macro_precision": 0.9046101608255211,
+            "macro_recall": 0.8302502002699887,
+            "micro_f1": 0.8670430033503144,
+            "micro_precision": 0.9066129187062099,
+            "micro_recall": 0.8307827616534741,
+            "n_scored": 428,
+            "tp": 9446,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": 0.030646600697833537,
+            "macro_precision": 0.00447230124860698,
+            "macro_recall": 0.04760290977199588,
+            "micro_f1": 0.026722791138671154,
+            "micro_precision": -0.0039712102333240296,
+            "micro_recall": 0.050659630606860184
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 1924,
+            "fp": 973,
+            "macro_f1": 0.8628944070360038,
+            "macro_precision": 0.9046101608255211,
+            "macro_recall": 0.8302502002699887,
+            "micro_f1": 0.8670430033503144,
+            "micro_precision": 0.9066129187062099,
+            "micro_recall": 0.8307827616534741,
+            "n_scored": 428,
+            "tp": 9446,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rinalmo_ft/raw/testsetb.json",
+      "prediction_id": "rinalmo_ft/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "6e6da0da496919bd590182fe89d4a45ae5a1fea6ba30330c31ec3f44a4b11820",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "rinalmo_ft",
+        "clean_n": 116,
+        "clean_sha256": "146aafc7a10bcf9c87e4ce68f521a943139538fbae6fd136bdb926c7cf9481d2",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 247,
+        "full_project_panel_exposure_status": "EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT",
+        "homology_only_overlap": 65,
+        "route": "bprna_tr0",
+        "training_corpora": [
+          "bpRNA TR0"
+        ],
+        "training_provenance_status": "ZENODO_CHECKPOINT_TRAINING_CORPUS; TestSetB overlap known"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "rnaformer_biophysical",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4632,
+            "fp": 8258,
+            "macro_f1": 0.5314199087528171,
+            "macro_precision": 0.4883942942799117,
+            "macro_recall": 0.5973314140012452,
+            "micro_f1": 0.5111127967837367,
+            "micro_precision": 0.44931981861829823,
+            "micro_recall": 0.5926121372031662,
+            "n_scored": 428,
+            "tp": 6738,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.3008278975853532,
+            "macro_precision": -0.41174356529700246,
+            "macro_recall": -0.18531587649674763,
+            "micro_f1": -0.32920741542790655,
+            "micro_precision": -0.46126431032123566,
+            "micro_recall": -0.18751099384344772
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4632,
+            "fp": 8258,
+            "macro_f1": 0.5314199087528171,
+            "macro_precision": 0.4883942942799117,
+            "macro_recall": 0.5973314140012452,
+            "micro_f1": 0.5111127967837367,
+            "micro_precision": 0.44931981861829823,
+            "micro_recall": 0.5926121372031662,
+            "n_scored": 428,
+            "tp": 6738,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/biophysical/raw/testsetb.json",
+      "prediction_id": "rnaformer_biophysical/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "b2c9cd5912a784ab072afc52b150fc8509617c4e64984af205d18b8bb1448a2d",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "rnaformer_biophysical",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [
+          "official biophysical_model_data.plk train=410408"
+        ],
+        "training_provenance_status": "OFFICIAL_DATASET_IDENTITY; Rfam synthetic RNAfold-distilled experiment, not PDB experimental labels"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "rnaformer_bprna",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3203,
+            "fp": 1004,
+            "macro_f1": 0.7711776660701546,
+            "macro_precision": 0.8563054826601847,
+            "macro_recall": 0.7150667458728681,
+            "micro_f1": 0.7951901075896987,
+            "micro_precision": 0.8905244793370407,
+            "micro_recall": 0.7182937554969218,
+            "n_scored": 428,
+            "tp": 8167,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.061070140268015716,
+            "macro_precision": -0.043832376916729476,
+            "macro_recall": -0.06758054462512475,
+            "micro_f1": -0.045130104621944556,
+            "micro_precision": -0.02005964960249318,
+            "micro_recall": -0.061829375549692145
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3203,
+            "fp": 1004,
+            "macro_f1": 0.7711776660701546,
+            "macro_precision": 0.8563054826601847,
+            "macro_recall": 0.7150667458728681,
+            "micro_f1": 0.7951901075896987,
+            "micro_precision": 0.8905244793370407,
+            "micro_recall": 0.7182937554969218,
+            "n_scored": 428,
+            "tp": 8167,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/raw/testsetb.json",
+      "prediction_id": "rnaformer_bprna/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "16e3cd089068222e762ba913fe09d6186f7c1396d4cf2f0509526fa3fa1ff718",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "rnaformer_bprna",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [
+          "official bprna_data.plk"
+        ],
+        "training_provenance_status": "OFFICIAL_DATASET_IDENTITY; exact clean overlap outside current baseline audit"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "rnaformer_interfamily",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3890,
+            "fp": 3528,
+            "macro_f1": 0.663743423733321,
+            "macro_precision": 0.680848433771716,
+            "macro_recall": 0.6696715478734483,
+            "micro_f1": 0.6685137188309948,
+            "micro_precision": 0.6795058139534884,
+            "micro_recall": 0.6578715919085312,
+            "n_scored": 428,
+            "tp": 7480,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.16850438260484935,
+            "macro_precision": -0.21928942580519817,
+            "macro_recall": -0.11297574262454457,
+            "micro_f1": -0.17180649338064846,
+            "micro_precision": -0.23107831498604547,
+            "micro_recall": -0.12225153913808273
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3890,
+            "fp": 3528,
+            "macro_f1": 0.663743423733321,
+            "macro_precision": 0.680848433771716,
+            "macro_recall": 0.6696715478734483,
+            "micro_f1": 0.6685137188309948,
+            "micro_precision": 0.6795058139534884,
+            "micro_recall": 0.6578715919085312,
+            "n_scored": 428,
+            "tp": 7480,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/interfam/raw/testsetb.json",
+      "prediction_id": "rnaformer_interfamily/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "717e03ba7baaadcea7e8f4aa4e03bc29e9fb6ad80ee63db7ebff1a7e1a19f1a5",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "rnaformer_interfamily",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [
+          "official inter-family training data"
+        ],
+        "training_provenance_status": "OFFICIAL_DATASET_IDENTITY; exact clean overlap outside current baseline audit"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "rnaformer_intrafamily",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3886,
+            "fp": 3651,
+            "macro_f1": 0.6586049650300057,
+            "macro_precision": 0.6722722111690017,
+            "macro_recall": 0.6671038302807742,
+            "micro_f1": 0.6650966451899578,
+            "micro_precision": 0.6721149528513696,
+            "micro_recall": 0.6582233948988566,
+            "n_scored": 428,
+            "tp": 7484,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.17364284130816465,
+            "macro_precision": -0.22786564840791246,
+            "macro_recall": -0.11554346021721862,
+            "micro_f1": -0.1752235670216854,
+            "micro_precision": -0.23846917608816431,
+            "micro_recall": -0.12189973614775729
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3886,
+            "fp": 3651,
+            "macro_f1": 0.6586049650300057,
+            "macro_precision": 0.6722722111690017,
+            "macro_recall": 0.6671038302807742,
+            "micro_f1": 0.6650966451899578,
+            "micro_precision": 0.6721149528513696,
+            "micro_recall": 0.6582233948988566,
+            "n_scored": 428,
+            "tp": 7484,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnaformer/intrafam/raw/testsetb.json",
+      "prediction_id": "rnaformer_intrafamily/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "28a90f95b0d20829f842ca694c21d7dca3261eb59437b818cf81ec86bbd89697",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "rnaformer_intrafamily",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [
+          "official intra-family training data"
+        ],
+        "training_provenance_status": "OFFICIAL_DATASET_IDENTITY; exact clean overlap outside current baseline audit"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "rnastructure_fold",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 429,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9976744186046511,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4772,
+            "fp": 8311,
+            "macro_f1": 0.5225221948182905,
+            "macro_precision": 0.479898230052205,
+            "macro_recall": 0.5881000026587067,
+            "micro_f1": 0.5033218176986447,
+            "micro_precision": 0.4437081659973226,
+            "micro_recall": 0.5814402245417069,
+            "n_scored": 429,
+            "tp": 6629,
+            "truth_empty_records": 0
+          },
+          "missing_count": 1,
+          "missing_names": [
+            "testsetb_104.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 429,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.3099694046900281,
+            "macro_precision": -0.4204813003267678,
+            "macro_recall": -0.19475597791447308,
+            "micro_f1": -0.337313437453327,
+            "micro_precision": -0.4672132218005108,
+            "micro_recall": -0.19894459102902373
+          },
+          "extra_count": 1,
+          "extra_names": [
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4762,
+            "fp": 8296,
+            "macro_f1": 0.5222784016481422,
+            "macro_precision": 0.4796565592501464,
+            "macro_recall": 0.5878913125835198,
+            "micro_f1": 0.5030067747583162,
+            "micro_precision": 0.4433709071390231,
+            "micro_recall": 0.5811785400175902,
+            "n_scored": 428,
+            "tp": 6608,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/rnastructure_fold__testsetb__partial429.json.gz",
+      "prediction_id": "rnastructure_fold/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "c6641b103c4c2670818676b353ece417b53eddcf15a5ee9defae1a0526ce0bbc",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "rnastructure_fold",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "rnastructure_maxexpect",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 429,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9976744186046511,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4656,
+            "fp": 7437,
+            "macro_f1": 0.5455791702898665,
+            "macro_precision": 0.5105907452115777,
+            "macro_recall": 0.6000691554679835,
+            "micro_f1": 0.5273032873392487,
+            "micro_precision": 0.4756028768861938,
+            "micro_recall": 0.5916147706341549,
+            "n_scored": 429,
+            "tp": 6745,
+            "truth_empty_records": 0
+          },
+          "missing_count": 1,
+          "missing_names": [
+            "testsetb_104.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 429,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.286928302514707,
+            "macro_precision": -0.3897819750333261,
+            "macro_recall": -0.1828342291045113,
+            "micro_f1": -0.313356738312913,
+            "micro_precision": -0.4353261054700019,
+            "micro_recall": -0.188830255057168
+          },
+          "extra_count": 1,
+          "extra_names": [
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4647,
+            "fp": 7423,
+            "macro_f1": 0.5453195038234633,
+            "macro_precision": 0.510355884543588,
+            "macro_recall": 0.5998130613934816,
+            "micro_f1": 0.5269634738987302,
+            "micro_precision": 0.475258023469532,
+            "micro_recall": 0.5912928759894459,
+            "n_scored": 428,
+            "tp": 6723,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/rnastructure_maxexpect__testsetb__partial429.json.gz",
+      "prediction_id": "rnastructure_maxexpect/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "0469f196621bb9b7cad533494a07bf5f23ffe4dee84011b559103545c6635b2d",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "rnastructure_maxexpect",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "ufold",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "single_model",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 5933,
+            "fp": 7313,
+            "macro_f1": 0.47811119389252443,
+            "macro_precision": 0.4695527601570337,
+            "macro_recall": 0.5013081597140377,
+            "micro_f1": 0.4508291873963516,
+            "micro_precision": 0.4264313725490196,
+            "micro_recall": 0.4781882145998241,
+            "n_scored": 428,
+            "tp": 5437,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.35413661244564587,
+            "macro_precision": -0.4305850994198805,
+            "macro_recall": -0.2813391307839551,
+            "micro_f1": -0.38949102481529163,
+            "micro_precision": -0.4841527563905143,
+            "micro_recall": -0.3019349164467898
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 5933,
+            "fp": 7313,
+            "macro_f1": 0.47811119389252443,
+            "macro_precision": 0.4695527601570337,
+            "macro_recall": 0.5013081597140377,
+            "micro_f1": 0.4508291873963516,
+            "micro_precision": 0.4264313725490196,
+            "micro_recall": 0.4781882145998241,
+            "n_scored": 428,
+            "tp": 5437,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/ufold_mm_corrected/raw/testsetb.json",
+      "prediction_id": "ufold/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "790b372cb483b9a66738a479534d315a896e949e55feff0eec4de76d5db10dad",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "ufold",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "UNCHECKED_EXTERNAL_TRAINING_OVERLAP",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "UNCHECKED",
+        "homology_only_overlap": null,
+        "route": null,
+        "training_corpora": [],
+        "training_provenance_status": "BLOCKED_PROVENANCE: paper/code-default/historical audit do not define one identical training union"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "vienna_centroid",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 430,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 1.0,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4766,
+            "fp": 6347,
+            "macro_f1": 0.5547336489357659,
+            "macro_precision": 0.5437354780872521,
+            "macro_recall": 0.5869538023046846,
+            "micro_f1": 0.5452759932894145,
+            "micro_precision": 0.5121445042275173,
+            "micro_recall": 0.5829906378510806,
+            "n_scored": 430,
+            "tp": 6663,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 430,
+          "status": "PASS_FULL_COVERAGE"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.2770977618466298,
+            "macro_precision": -0.3559413547582999,
+            "macro_recall": -0.1952333267931593,
+            "micro_f1": -0.294648815954189,
+            "micro_precision": -0.3981082695343582,
+            "micro_recall": -0.1966578715919085
+          },
+          "extra_count": 2,
+          "extra_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4736,
+            "fp": 6311,
+            "macro_f1": 0.5551500444915405,
+            "macro_precision": 0.5441965048186143,
+            "macro_recall": 0.5874139637048336,
+            "micro_f1": 0.5456713962574542,
+            "micro_precision": 0.5124758594051757,
+            "micro_recall": 0.5834652594547054,
+            "n_scored": 428,
+            "tp": 6634,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_centroid__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "vienna_centroid/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "f94ae0c1bf75ca670c87c6344c4c9f8df648acdfdbe70a0f51fb245fa4410133",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "vienna_centroid",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_centroid",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat0.json",
+      "prediction_id": "vienna_centroid/testsetb/repeat0",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "0dda82cc6277ee89422c9780895dc7b795b2cf050689219051cbfd7caa009888",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_centroid",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_centroid",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat1.json",
+      "prediction_id": "vienna_centroid/testsetb/repeat1",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "39e207489fa34715055e2c4c45ef370ac006d99d76480681c93bebf8fad706f4",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_centroid",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_centroid",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat2.json",
+      "prediction_id": "vienna_centroid/testsetb/repeat2",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "b72cc0c6c2d8fccbdb552cf16faf5768ecfb2053054282dffdf19534bcd1c76e",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_centroid",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "vienna_mea",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 430,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 1.0,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4522,
+            "fp": 7408,
+            "macro_f1": 0.5519406982122722,
+            "macro_precision": 0.5148995359774288,
+            "macro_recall": 0.6087195859441948,
+            "micro_f1": 0.5365910503418272,
+            "micro_precision": 0.4825008732099197,
+            "micro_recall": 0.6043398372561029,
+            "n_scored": 430,
+            "tp": 6907,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 430,
+          "status": "PASS_FULL_COVERAGE"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.27991793064087767,
+            "macro_precision": -0.38487664352482454,
+            "macro_recall": -0.17344120319392264,
+            "micro_f1": -0.30341112840011186,
+            "micro_precision": -0.4278860170563304,
+            "micro_recall": -0.17528583992963942
+          },
+          "extra_count": 2,
+          "extra_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4493,
+            "fp": 7370,
+            "macro_f1": 0.5523298756972926,
+            "macro_precision": 0.5152612160520896,
+            "macro_recall": 0.6092060873040702,
+            "micro_f1": 0.5369090838115314,
+            "micro_precision": 0.4826981118832035,
+            "micro_recall": 0.6048372911169745,
+            "n_scored": 428,
+            "tp": 6877,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_mea__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "vienna_mea/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "9234c413ccb9e924d32cae74ccdb3d8211ac0192a1b6c67038ef528cdfb1f179",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "vienna_mea",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_mea",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat0.json",
+      "prediction_id": "vienna_mea/testsetb/repeat0",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "0dda82cc6277ee89422c9780895dc7b795b2cf050689219051cbfd7caa009888",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_mea",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_mea",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat1.json",
+      "prediction_id": "vienna_mea/testsetb/repeat1",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "39e207489fa34715055e2c4c45ef370ac006d99d76480681c93bebf8fad706f4",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_mea",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_mea",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat2.json",
+      "prediction_id": "vienna_mea/testsetb/repeat2",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "b72cc0c6c2d8fccbdb552cf16faf5768ecfb2053054282dffdf19534bcd1c76e",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_mea",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "vienna_mfe",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 430,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 1.0,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4546,
+            "fp": 8149,
+            "macro_f1": 0.5404191111112032,
+            "macro_precision": 0.49775026639337333,
+            "macro_recall": 0.6057440139425819,
+            "micro_f1": 0.5202373304107932,
+            "micro_precision": 0.45788983501862696,
+            "micro_recall": 0.6022399160031499,
+            "n_scored": 430,
+            "tp": 6883,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 430,
+          "status": "PASS_FULL_COVERAGE"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": -0.2916810523218295,
+            "macro_precision": -0.4022639180311596,
+            "macro_recall": -0.17665678766645054,
+            "micro_f1": -0.3200604620882239,
+            "micro_precision": -0.4527882323947234,
+            "micro_recall": -0.17766051011433603
+          },
+          "extra_count": 2,
+          "extra_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 4520,
+            "fp": 8113,
+            "macro_f1": 0.5405667540163408,
+            "macro_precision": 0.4978739415457546,
+            "macro_recall": 0.6059905028315423,
+            "micro_f1": 0.5202597501234193,
+            "micro_precision": 0.4577958965448105,
+            "micro_recall": 0.6024626209322779,
+            "n_scored": 428,
+            "tp": 6850,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_mfe__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "vienna_mfe/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "registry_status": "RECOVERED_FROZEN_WITH_COMPLETION",
+      "sequence_join": "official panel ID plus sequence SHA256",
+      "sha256": "6462ebc427db9979bfc6aa94cf0e6f4e25e61512f5de761cf3dd59eac36caeae",
+      "source_group": "FROZEN_WITH_OFFICIAL2_CPU_COMPLETION",
+      "training_exposure": {
+        "baseline_id": "vienna_mfe",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_mfe",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat0.json",
+      "prediction_id": "vienna_mfe/testsetb/repeat0",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "0dda82cc6277ee89422c9780895dc7b795b2cf050689219051cbfd7caa009888",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_mfe",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_mfe",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat1.json",
+      "prediction_id": "vienna_mfe/testsetb/repeat1",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "39e207489fa34715055e2c4c45ef370ac006d99d76480681c93bebf8fad706f4",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_mfe",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": false,
+      "baseline_id": "vienna_mfe",
+      "data_path": null,
+      "model_form": "single_model",
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 0.0,
+          "delta_vs_xens2": null,
+          "metrics": null,
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 0,
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        }
+      },
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw/testsetb.repeat2.json",
+      "prediction_id": "vienna_mfe/testsetb/repeat2",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "SUMMARY_ONLY",
+      "sha256": "b72cc0c6c2d8fccbdb552cf16faf5768ecfb2053054282dffdf19534bcd1c76e",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "vienna_mfe",
+        "clean_n": null,
+        "clean_sha256": null,
+        "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+        "exact_sequence_overlap": null,
+        "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+        "homology_only_overlap": null,
+        "route": "NOT_SEQUENCE_FITTED",
+        "training_corpora": [],
+        "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+      }
+    },
+    {
+      "available": true,
+      "baseline_id": "xens2",
+      "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+      "model_form": "three_checkpoint_ensemble",
+      "n_prediction_records": 428,
+      "panels": {
+        "testsetb_official_reference_430": {
+          "coverage": 0.9953488372093023,
+          "delta_vs_xens2": null,
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 2500,
+            "fp": 871,
+            "macro_f1": 0.8322478063381703,
+            "macro_precision": 0.9001378595769142,
+            "macro_recall": 0.7826472904979929,
+            "micro_f1": 0.8403202122116432,
+            "micro_precision": 0.9105841289395339,
+            "micro_recall": 0.7801231310466139,
+            "n_scored": 428,
+            "tp": 8870,
+            "truth_empty_records": 0
+          },
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 430,
+          "n_with_prediction": 428,
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        "testsetb_projected_reference_428": {
+          "coverage": 1.0,
+          "delta_vs_xens2": {
+            "macro_f1": 0.0,
+            "macro_precision": 0.0,
+            "macro_recall": 0.0,
+            "micro_f1": 0.0,
+            "micro_precision": 0.0,
+            "micro_recall": 0.0
+          },
+          "extra_count": 0,
+          "extra_names": [],
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 2500,
+            "fp": 871,
+            "macro_f1": 0.8322478063381703,
+            "macro_precision": 0.9001378595769142,
+            "macro_recall": 0.7826472904979929,
+            "micro_f1": 0.8403202122116432,
+            "micro_precision": 0.9105841289395339,
+            "micro_recall": 0.7801231310466139,
+            "n_scored": 428,
+            "tp": 8870,
+            "truth_empty_records": 0
+          },
+          "missing_count": 0,
+          "missing_names": [],
+          "missing_predictions_imputed_as_zero": false,
+          "n_panel_sequences": 428,
+          "n_with_prediction": 428,
+          "status": "PASS_FULL_COVERAGE"
+        }
+      },
+      "path": "/root/rna_jepa_data/eval_decision/xens2_board_4090/testsetb.json",
+      "prediction_id": "xens2/testsetb",
+      "prediction_origin": "registered_frozen_prediction",
+      "registry_status": "FROZEN",
+      "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+      "sha256": "2116b8bab637cace67b93e8e69697a124f8f00191b2ea9d3e481d431b1ef2ff9",
+      "source_group": "REGISTERED",
+      "training_exposure": {
+        "baseline_id": "xens2",
+        "clean_n": 288,
+        "clean_sha256": "5c2072f7ac6fa4c93c151d7167fa45b6e078acfdae70470c91e58e560080be63",
+        "evidence_status": "FROZEN_EXACT_AND_MMSEQS_AUDIT_RECONSTRUCTED",
+        "exact_sequence_overlap": 0,
+        "full_project_panel_exposure_status": "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN",
+        "homology_only_overlap": 140,
+        "route": "bprna_tr1c",
+        "training_corpora": [
+          "bprna_tr1c"
+        ],
+        "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
+      }
+    }
+  ],
+  "schema_version": "testsetb.official_coverage_recovery.metrics.v1",
+  "scope": "official-full and projected frozen baseline coverage recovery; no training or model selection"
+}
