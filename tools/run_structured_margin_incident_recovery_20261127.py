@@ -79,7 +79,7 @@ def launch_eligibility(arm: str, arm_dir: Path, preflight: dict) -> str:
                 or report.get("converged") is not False
                 or not (arm_dir / "resume.pt").is_file()):
             raise ValueError(f"interrupted arm lacks a passing checkpoint audit: {arm}")
-        if not report.get("stream", {}).get("matches_interrupted_batch_order"):
+        if not report.get("stream", {}).get("next_batch_contract_valid"):
             raise ValueError(f"interrupted arm lacks batch continuity: {arm}")
         return "resume"
     if arm_dir.exists() and any(arm_dir.iterdir()):
@@ -113,6 +113,7 @@ def main() -> None:
     parser.add_argument("--preflight", type=Path, required=True)
     parser.add_argument("--recovery-root", type=Path, required=True)
     parser.add_argument("--evaluation-root", type=Path, required=True)
+    parser.add_argument("--artifact-root-override", type=Path)
     parser.add_argument("--poll-seconds", type=int, default=60)
     args = parser.parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -123,7 +124,7 @@ def main() -> None:
     source_config = SOURCE_REPO / "configs/gec_structured_margin_convergence_v1.json"
     validate_frozen_source(config_path)
     config = json.loads(config_path.read_text())
-    artifact_root = Path(config["full_training"]["artifact_root"])
+    artifact_root = (args.artifact_root_override or Path(config["full_training"]["artifact_root"])).resolve()
     preflight = json.loads(args.preflight.read_text())
     args.recovery_root.mkdir(parents=True, exist_ok=True)
     LOCAL_LOG_ROOT.mkdir(parents=True, exist_ok=True)

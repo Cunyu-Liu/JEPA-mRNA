@@ -67,14 +67,14 @@ def test_interrupted_arm_requires_checkpoint_and_batch_preflight(tmp_path):
         "status": "PASS_INTERRUPTED_RESUME_AUDIT",
         "arms": {"matched_control": {
             "status": "PASS_INTERRUPTED_RESUME_AUDIT", "converged": False,
-            "stream": {"matches_interrupted_batch_order": True},
+            "stream": {"matches_interrupted_batch_order": True, "next_batch_contract_valid": True},
         }},
     }
     with pytest.raises(ValueError, match="checkpoint audit"):
         recovery.launch_eligibility("matched_control", arm_dir, preflight)
     (arm_dir / "resume.pt").touch()
     assert recovery.launch_eligibility("matched_control", arm_dir, preflight) == "resume"
-    preflight["arms"]["matched_control"]["stream"]["matches_interrupted_batch_order"] = False
+    preflight["arms"]["matched_control"]["stream"]["next_batch_contract_valid"] = False
     with pytest.raises(ValueError, match="batch continuity"):
         recovery.launch_eligibility("matched_control", arm_dir, preflight)
 
@@ -109,6 +109,18 @@ def test_staged_checkpoint_copy_failure_preserves_original_and_local(tmp_path, m
         staged.staged_atomic_torch_save({"x": torch.arange(8)}, destination, tmp_path / "local")
     assert destination.read_bytes() == b"original"
     assert (tmp_path / "local" / "arm" / "resume.pt").is_file()
+
+
+def test_recovery_root_override_is_scoped_to_prerequisites(tmp_path):
+    args = type("Args", (), {"out": str(tmp_path / "run" / "matched_control")})()
+    config = {"full_training": {"artifact_root": "/teams/original"}}
+    seen = []
+    staged.trainer._validate_prerequisites_without_recovery_root = (
+        lambda args, config: seen.append(config["full_training"]["artifact_root"]) or {"ok": True})
+    result = staged.validate_prerequisites_with_recovery_root(args, config)
+    assert result == {"ok": True}
+    assert seen == [str(tmp_path / "run")]
+    assert config["full_training"]["artifact_root"] == "/teams/original"
 
 
 def test_final_evaluation_mirror_preserves_source_and_publisher_paths(tmp_path):

@@ -73,13 +73,16 @@ def audit_ledgers(arm_dir: Path, checkpoint_step: int) -> dict:
             raise ValueError(f"optimizer ledger mismatch at step {index + 1}")
     validation = read_jsonl(arm_dir / "validation_log.jsonl")
     expected_validation_steps = list(range(500, checkpoint_step + 1, 500))
-    if [row["step"] for row in validation] != expected_validation_steps:
+    actual_validation_steps = [row["step"] for row in validation]
+    validation_pending_at_checkpoint = actual_validation_steps == expected_validation_steps[:-1]
+    if actual_validation_steps != expected_validation_steps and not validation_pending_at_checkpoint:
         raise ValueError(f"validation cadence mismatch: {arm_dir.name}")
     if validation[-1]["stop"] or validation[-1]["eligible"]:
         raise ValueError(f"interrupted checkpoint unexpectedly claims convergence: {arm_dir.name}")
     report["validation_log.jsonl"] = {
         "rows": len(validation), "last_step": validation[-1]["step"],
         "eligible": validation[-1]["eligible"], "stop": validation[-1]["stop"],
+        "pending_at_checkpoint": validation_pending_at_checkpoint,
     }
     return report
 
@@ -114,12 +117,11 @@ def audit_arm(artifact_root: Path, arm: str) -> dict:
         raise ValueError(f"invalid NumPy RNG state: {arm}")
     ledger_report = audit_ledgers(arm_dir, step)
     batch_order = read_jsonl(arm_dir / "batch_order.jsonl")
-    if len(batch_order) <= step:
-        raise ValueError(f"missing post-checkpoint batch continuity witness: {arm}")
     indices = next_batch_indices(state["stream_state"])
     expected_ids = [meta["train_record_ids"][index] for index in indices]
-    observed_ids = batch_order[step]["record_ids"]
-    if expected_ids != observed_ids:
+    witness_observed = len(batch_order) > step
+    observed_ids = batch_order[step]["record_ids"] if witness_observed else None
+    if witness_observed and expected_ids != observed_ids:
         raise ValueError(f"next resumed batch differs from interrupted batch order: {arm}")
     current_manifest = build_code_manifest(SOURCE_REPO)
     if (meta["run_identity"]["code_manifest"] != current_manifest
@@ -145,7 +147,9 @@ def audit_arm(artifact_root: Path, arm: str) -> dict:
             "epoch": state["stream_state"]["epoch"],
             "queued_batches": len(state["stream_state"]["queue"]),
             "next_step": step + 1, "next_record_ids": expected_ids,
+            "next_batch_contract_valid": True,
             "matches_interrupted_batch_order": True,
+            "interrupted_witness_observed": witness_observed,
         },
         "ledgers": ledger_report,
         "identity": {

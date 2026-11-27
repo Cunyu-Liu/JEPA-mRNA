@@ -44,9 +44,20 @@ def staged_atomic_torch_save(value, path, checkpoint_root=LOCAL_CHECKPOINT_ROOT)
     print(f"[checkpoint-staging] path={path} stage={stage} sha256={stage_sha256}", flush=True)
 
 
+def validate_prerequisites_with_recovery_root(args, config):
+    original_root = config["full_training"]["artifact_root"]
+    config["full_training"]["artifact_root"] = str(Path(args.out).resolve().parent)
+    try:
+        return trainer._validate_prerequisites_without_recovery_root(args, config)
+    finally:
+        config["full_training"]["artifact_root"] = original_root
+
+
 def main() -> None:
     trainer._atomic_torch_save_without_staging = trainer.atomic_torch_save
+    trainer._validate_prerequisites_without_recovery_root = trainer.validate_full_training_prerequisites
     trainer.atomic_torch_save = staged_atomic_torch_save
+    trainer.validate_full_training_prerequisites = validate_prerequisites_with_recovery_root
     sys.argv[0] = str(SOURCE_REPO / "tools/train_plan_a_gec_convergence_v1.py")
     trainer.main()
 
