@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -32,6 +33,8 @@ RECOVERY_REPO = Path("/home/rna_jev_margin_incident_recovery")
 RECOVERY_ROOT = F / "structured_margin_full_v1/incident_recovery_20261127"
 ACTIVE_RUN_ROOT = Path("/home/foldnar_incident_run")
 ACTIVE_CHECKPOINT_ROOT = Path("/home/foldnar_incident_checkpoints")
+INCIDENT_EVIDENCE_ROOT = Path("/home/foldnar_incident_evidence")
+LOCAL_SCHEDULER_ROOT = Path("/home/foldnar_incident_scheduler")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -70,6 +73,8 @@ SOURCES = {
     "recovery_preflight": RECOVERY_ROOT / "recovery_preflight_local.json",
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
+    "takeover_status": INCIDENT_EVIDENCE_ROOT / "recovery_takeover_status.json",
+    "adopted_scheduler_state": LOCAL_SCHEDULER_ROOT / "recovery_scheduler_state.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -96,7 +101,7 @@ SOURCE_COMMITS = {
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
     "ArchiveII official reference": (ARCHIVEII_REPO, "4daccb0eb1c78db565532634ed0d77cf1e6ddaae"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "e252f5351322994395968c61e3df3a51a0330293"),
-    "margin incident recovery": (RECOVERY_REPO, "442636dd660f93f1d39156ca9bbdbd107ecdbf42"),
+    "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
 }
 
 
@@ -497,6 +502,133 @@ def verify_incident_recovery_contract() -> list[str]:
     return errors
 
 
+def verify_takeover_contract() -> list[str]:
+    errors = []
+    if not SOURCES["takeover_status"].is_file():
+        return [f"missing takeover status: {SOURCES['takeover_status']}"]
+    status = json.loads(SOURCES["takeover_status"].read_text())
+    expected_head = "aa9f1c4a92e92d70841e33cec455734f160075c4"
+    if status["head"] != expected_head or status["remote_head"] != expected_head:
+        errors.append("takeover final local/remote recovery HEAD mismatch")
+    if status["status"] != "ADOPTED_RUNNING_15500_VALIDATION_PENDING" or status["scientific_conclusion"] is not None:
+        errors.append("takeover status is not the frozen running/no-conclusion snapshot")
+    if status["matched_pid"] != 4077864 or status["matched_alive"] is not True:
+        errors.append("takeover matched identity/liveness mismatch")
+    if status["scheduler_pid"] != 4111890 or status["scheduler_alive"] is not True:
+        errors.append("takeover scheduler identity/liveness mismatch")
+    for pid, expected_alive in [(4077848, False), (4077864, True), (4111890, True)]:
+        try:
+            os.kill(pid, 0)
+            alive = True
+        except OSError:
+            alive = False
+        if alive is not expected_alive:
+            errors.append(f"process lifetime mismatch: pid={pid}, expected_alive={expected_alive}, actual={alive}")
+    failure_path = INCIDENT_EVIDENCE_ROOT / "team_quota_scheduler_failure.log"
+    failure = failure_path.read_text(errors="replace")
+    for required in ["OSError: [Errno 122] Disk quota exceeded", "atomic_json", "state_path", 'save("MONITORING", processes=history)']:
+        if required not in failure:
+            errors.append(f"second scheduler quota failure lacks evidence: {required}")
+    stale_tmp = RECOVERY_ROOT / "recovery_scheduler_state.json.tmp.4077848"
+    if not stale_tmp.is_file() or stale_tmp.stat().st_size != 0:
+        errors.append("second scheduler quota failure stale temporary state is not preserved")
+    if not SOURCES["adopted_scheduler_state"].is_file():
+        return errors + [f"missing adopted scheduler state: {SOURCES['adopted_scheduler_state']}"]
+    scheduler = json.loads(SOURCES["adopted_scheduler_state"].read_text())
+    if scheduler["scheduler_pid"] != 4111890 or scheduler["status"] != "MONITORING":
+        errors.append("adopted scheduler state PID/status mismatch")
+    if scheduler["recovery_code_commit"] != "a61a6ea8e52f72fa129387b74cb28b3af8bc64ff":
+        errors.append("adopted scheduler launch commit must remain a61a6ea, not be rewritten to final HEAD")
+    if scheduler["frozen_source_commit"] != "a846d90519e575a79b7db76f63692afb755e8ac6":
+        errors.append("adopted scheduler frozen training source changed")
+    matched = scheduler["processes"]["matched_control"]
+    if matched["pid"] != 4077864 or matched["launch_kind"] != "adopted_running" or matched["status"] != "running":
+        errors.append("matched was relaunched instead of adopted")
+    stat = Path("/proc/4077864/stat").read_text().rsplit(") ", 1)[1].split()
+    if int(stat[19]) != matched["process_start_ticks"] or stat[0] == "Z":
+        errors.append("adopted matched PID/start_ticks identity mismatch")
+    pid_path = LOCAL_SCHEDULER_ROOT / "recovery_scheduler.pid"
+    lock_path = LOCAL_SCHEDULER_ROOT / "recovery_scheduler.lock"
+    if pid_path.read_text() != "4111890\n":
+        errors.append("adopted scheduler local PID file mismatch")
+    lock_fds = []
+    for fd in Path("/proc/4111890/fd").iterdir():
+        if fd.is_symlink() and os.readlink(fd) == str(lock_path):
+            lock_fds.append(fd)
+    if not lock_fds:
+        errors.append("adopted scheduler does not hold the local lock")
+    events = [json.loads(line) for line in (LOCAL_SCHEDULER_ROOT / "recovery_scheduler_events.jsonl").read_text().splitlines()]
+    adopted = [event for event in events if event["event"] == "ARM_ADOPTED" and event.get("arm") == "matched_control"]
+    started = [event for event in events if event["event"] == "ARM_STARTED" and event.get("arm") == "matched_control"]
+    if len(adopted) != 1 or adopted[0]["pid"] != 4077864 or adopted[0]["launch_kind"] != "adopted_running":
+        errors.append("local events do not contain exactly one matched adoption")
+    if started:
+        errors.append("local events contain a duplicate matched ARM_STARTED")
+    trainers = []
+    for proc in Path("/proc").iterdir():
+        if not proc.name.isdigit():
+            continue
+        try:
+            parts = [part.decode(errors="replace") for part in (proc / "cmdline").read_bytes().split(b"\0") if part]
+            process_state = (proc / "stat").read_text().rsplit(") ", 1)[1].split()[0]
+        except (FileNotFoundError, ProcessLookupError):
+            continue
+        if ("run_frozen_margin_trainer_with_staged_checkpoint_20261127.py" in " ".join(parts)
+                and "--arm" in parts and parts[parts.index("--arm") + 1] == "matched_control"
+                and process_state != "Z"):
+            trainers.append(int(proc.name))
+    if trainers != [4077864]:
+        errors.append(f"matched trainer is not unique: {trainers}")
+    if status["launch_kind"] != "adopted_running" or status["scheduler_state_root"] != str(LOCAL_SCHEDULER_ROOT):
+        errors.append("takeover adoption/local scheduler root mismatch")
+    if status["evaluation_root"] != "/home/foldnar_incident_eval" or status["teams_writes"] != "small final evaluation mirror only":
+        errors.append("takeover evaluation/teams storage boundary mismatch")
+    for path in [ACTIVE_RUN_ROOT, ACTIVE_CHECKPOINT_ROOT, LOCAL_SCHEDULER_ROOT, INCIDENT_EVIDENCE_ROOT]:
+        if not path.is_dir() or not str(path).startswith("/home/"):
+            errors.append(f"active incident work is not local /home storage: {path}")
+    old_pid = (RECOVERY_ROOT / "recovery_scheduler.pid").read_text().strip()
+    if old_pid == "4111890":
+        errors.append("stale teams PID was rewritten as the adopted local scheduler")
+    if scheduler["completed_arms"] != [] or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
+        errors.append("adopted scheduler gained a completed arm/evaluation/conclusion without ledger review")
+    if status["train_step"] != 15500 or status["unfrozen_blocks"] != 20 or status["run_meta_status"] != "running" or status["converged"] is not False:
+        errors.append("takeover train/run_meta snapshot mismatch")
+    if status["next_arms"] != ["ensemble_context", "destroy_interval_shuffle", "independent_context"]:
+        errors.append("takeover remaining arms mismatch")
+    validation = status["validation"]
+    expected_validation = {
+        "step": 15000,
+        "validation_loss": 0.3896151208942566,
+        "n_unfrozen": 20,
+        "eligible": True,
+        "improved": True,
+        "save_best": True,
+        "stop": False,
+        "best_step": 15000,
+        "best_validation_loss": 0.3896151208942566,
+        "bad_evaluations": 0,
+        "validation_metric": "length_normalized_pair_hamming_structured_margin",
+    }
+    if validation != expected_validation:
+        errors.append(f"takeover best-15000 validation mismatch: {validation}")
+    best_path = ACTIVE_RUN_ROOT / "matched_control/best.pt"
+    if status["best_pt_exists"] is not True or not best_path.is_file() or best_path.stat().st_size <= 0:
+        errors.append("matched best-15000 checkpoint evidence missing")
+    live_validation = [json.loads(line) for line in (ACTIVE_RUN_ROOT / "matched_control/validation_log.jsonl").read_text().splitlines()]
+    live_15000 = next((row for row in live_validation if row["step"] == 15000), None)
+    if live_15000 != expected_validation:
+        errors.append("live matched validation does not preserve the best-15000 snapshot")
+    for arm in ["matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context"]:
+        meta_path = ACTIVE_RUN_ROOT / arm / "run_meta.json"
+        if meta_path.is_file() and json.loads(meta_path.read_text()).get("converged") is not False:
+            errors.append(f"arm unexpectedly converged during no-conclusion snapshot: {arm}")
+    recovery_source = (RECOVERY_REPO / "tools/run_structured_margin_incident_recovery_20261127.py").read_text()
+    for required in ["def atomic_pid(", 'atomic_pid(args.recovery_root / "recovery_scheduler.pid", os.getpid())', "class AdoptedProcess", "def adopt_running_process(", "return AdoptedProcess(pid, start_ticks)"]:
+        if required not in recovery_source:
+            errors.append(f"final adoption/PID source contract missing: {required}")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -560,6 +692,18 @@ def verify_narrative_guards() -> list[str]:
         "OSError: [Errno 122] Disk quota exceeded",
         "step=10000 validation 已完成",
         "0.4183340173506429",
+        "四臂未收敛，当前无 margin 科学结论",
+        "aa9f1c4a92e92d70841e33cec455734f160075c4",
+        "第二次独立的 scheduler 状态写盘事故",
+        "4077848` 已退出，matched `4077864` 仍存活",
+        "launch_kind=adopted_running",
+        "process_start_ticks=1329819713",
+        "recovery_scheduler.pid` 内容为 `4111890\\n`",
+        "adopt 原进程而非重复训练",
+        "teams 写入仅限合法终态后的最终小证据镜像",
+        "step=15000、validation_loss=0.3896151208942566",
+        "best_step=15000",
+        "bad_evaluations=0",
         "四臂未收敛，当前无 margin 科学结论",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
@@ -996,12 +1140,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, and incident recovery"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, and scheduler takeover"
     print(f"PASS: {scope}")
     return 0
 

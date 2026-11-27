@@ -133,6 +133,47 @@ def test_incident_recovery_artifact_contract():
     assert ledger.verify_incident_recovery_contract() == []
 
 
+def test_second_scheduler_quota_incident_and_final_head():
+    text = ledger.DOC.read_text()
+    assert "aa9f1c4a92e92d70841e33cec455734f160075c4" in text
+    assert "第二次独立的 scheduler 状态写盘事故" in text
+    assert "4077848` 已退出，matched `4077864` 仍存活" in text
+    assert "recovery_takeover_status.json" in text
+    assert "旧 teams lock/PID/state/events 仅作事故证据" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_takeover_artifact_contract():
+    assert ledger.verify_takeover_contract() == []
+
+
+def test_takeover_lock_pid_adoption_and_local_storage():
+    text = ledger.DOC.read_text()
+    assert "scheduler PID **4111890**" in text
+    assert "PID **4077864**" in text
+    assert "process_start_ticks=1329819713" in text
+    assert "recovery_scheduler.pid` 内容为 `4111890\\n`" in text
+    assert "fd 3 持有 `/home/foldnar_incident_scheduler/recovery_scheduler.lock`" in text
+    assert "adopt 原进程而非重复训练" in text
+    assert "recovery_code_commit=a61a6ea8e52f72fa129387b74cb28b3af8bc64ff" in text
+    assert "teams 写入仅限合法终态后的最终小证据镜像" in text
+    assert "当前评估未开始、目录尚未创建" in text
+
+
+def test_takeover_best15000_remains_nonterminal_and_no_conclusion():
+    text = ledger.DOC.read_text()
+    assert "train step=15500" in text
+    assert "15500 validation pending" in text
+    assert "step=15000、validation_loss=0.3896151208942566" in text
+    assert "best_step=15000" in text
+    assert "bad_evaluations=0" in text
+    assert "save_best=true" in text
+    assert "stop=false" in text
+    assert "best.pt` 存在" in text
+    assert "completed_arms=[]" in text
+    assert "四臂未收敛，当前无 margin 科学结论" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
