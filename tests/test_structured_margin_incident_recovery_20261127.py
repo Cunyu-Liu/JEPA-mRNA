@@ -2,9 +2,11 @@ import json
 from pathlib import Path
 
 import pytest
+import torch
 
 from tools import audit_structured_margin_incident_recovery_20261127 as audit
 from tools import run_structured_margin_incident_recovery_20261127 as recovery
+from tools import run_frozen_margin_trainer_with_staged_checkpoint_20261127 as staged
 
 
 def write_jsonl(path, rows):
@@ -50,7 +52,7 @@ def test_training_command_is_frozen_unbounded_20_of_33(tmp_path):
     config.write_text(json.dumps({"assets": {"shared_init": "/shared.pt"}}))
     command = recovery.training_command(Path("/frozen"), config, "matched_control", tmp_path)
     joined = " ".join(command)
-    assert command[1] == "/frozen/tools/train_plan_a_gec_convergence_v1.py"
+    assert command[1].endswith("tools/run_frozen_margin_trainer_with_staged_checkpoint_20261127.py")
     assert "--steps 0" in joined
     assert "--max-unfrozen-blocks 20" in joined
     assert "--seed 0" in joined and "--batch-size 4" in joined
@@ -85,6 +87,27 @@ def test_running_or_incomplete_run_is_never_converged(tmp_path):
         "stop_reason": recovery.STOP_REASON,
     }))
     assert recovery.converged_meta(path) is not None
+
+
+def test_staged_checkpoint_copy_is_verified_and_loadable(tmp_path):
+    staged.trainer._atomic_torch_save_without_staging = staged.trainer.atomic_torch_save
+    destination = tmp_path / "arm" / "resume.pt"
+    staged.staged_atomic_torch_save({"x": torch.arange(8)}, destination, tmp_path / "local")
+    local = tmp_path / "local" / "arm" / "resume.pt"
+    assert staged.sha256_file(local) == staged.sha256_file(destination)
+    assert torch.equal(torch.load(destination, weights_only=False)["x"], torch.arange(8))
+
+
+def test_staged_checkpoint_copy_failure_preserves_original_and_local(tmp_path, monkeypatch):
+    staged.trainer._atomic_torch_save_without_staging = staged.trainer.atomic_torch_save
+    destination = tmp_path / "arm" / "resume.pt"
+    destination.parent.mkdir()
+    destination.write_bytes(b"original")
+    monkeypatch.setattr(staged.shutil, "copyfile", lambda *args: (_ for _ in ()).throw(OSError("copy failed")))
+    with pytest.raises(OSError, match="copy failed"):
+        staged.staged_atomic_torch_save({"x": torch.arange(8)}, destination, tmp_path / "local")
+    assert destination.read_bytes() == b"original"
+    assert (tmp_path / "local" / "arm" / "resume.pt").is_file()
 
 
 def test_terminal_unfreeze_is_not_misreported_as_a_validation_cadence_bug():
