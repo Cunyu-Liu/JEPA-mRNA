@@ -1,0 +1,10 @@
+{
+  "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127",
+  "full430_identities": 7,
+  "per_record_metric_rows": 20560,
+  "schema_version": "testsetb.official_coverage_recovery.receipt.v1",
+  "scored_identities": 24,
+  "source_manifest_sha256": "42e3b5e4806246390d3562946bc9d7dda9cb78c2b329798a7e59db7ed3e482a0",
+  "status": "PASS",
+  "system_metrics_sha256": "38d451258f761eca533aef49eb1ef14c666d9b6a0792753c4b541dde1aad3feb"
+}

@@ -1,0 +1,131 @@
+{
+  "artifact_root": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127",
+  "base_commit": "9aeec63d73f90360bd69f7a65fdbb19d5d651908",
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "new_training": false,
+  "panels": {
+    "n_sequences": 430,
+    "path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+    "project": {
+      "n_sequences": 428,
+      "path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_projected_428.jsonl.gz",
+      "sha256": "7bc6db613d8bf6d8099fe17283e3d25fe7725c84811fa5b11b7dd228dc5bbf44"
+    },
+    "sha256": "aed077ce5a913476c79084733d03e46ae4dd58c1cef1f1998b60f6cda4b86727"
+  },
+  "per_record_metrics": {
+    "n_rows": 20560,
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/per_record_metrics.jsonl.gz",
+    "sha256": "ff36241152ce335d214e8a8bff773659069f659477f078e7d056e61f42682155"
+  },
+  "prediction_entries": [
+    {
+      "n_sequences": 430,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_mfe__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "vienna_mfe/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "6462ebc427db9979bfc6aa94cf0e6f4e25e61512f5de761cf3dd59eac36caeae"
+    },
+    {
+      "n_sequences": 430,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_centroid__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "vienna_centroid/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "f94ae0c1bf75ca670c87c6344c4c9f8df648acdfdbe70a0f51fb245fa4410133"
+    },
+    {
+      "n_sequences": 430,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_mea__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "vienna_mea/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "9234c413ccb9e924d32cae74ccdb3d8211ac0192a1b6c67038ef528cdfb1f179"
+    },
+    {
+      "n_sequences": 430,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/nussinov_turner__testsetb__recovered_official2__full430.json.gz",
+      "prediction_id": "nussinov_turner/testsetb/recovered_official2",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "997afb81d197cfd8cb91fe77f6c9ce27952986c3a24e599af30ebe137250492a"
+    },
+    {
+      "n_sequences": 430,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/contrafold__testsetb__full430.json.gz",
+      "prediction_id": "contrafold/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "9b3a6406a7d91d1edf3e053fa35340c32f1400ec71f2a6dc8b8caf5f04fb6b50"
+    },
+    {
+      "n_sequences": 430,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/eternafold__testsetb__full430.json.gz",
+      "prediction_id": "eternafold/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "ab5516925279be00d01986aaf234fcb1450d8c5a128c42eeb46685421029fcbc"
+    },
+    {
+      "n_sequences": 430,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/mxfold2__testsetb__full430.json.gz",
+      "prediction_id": "mxfold2/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "348b3d004b4f92c1ae3a4bc33e4d9b82ef15060427630b0ed64d18e9844ffa32"
+    },
+    {
+      "n_sequences": 429,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/rnastructure_fold__testsetb__partial429.json.gz",
+      "prediction_id": "rnastructure_fold/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "c6641b103c4c2670818676b353ece417b53eddcf15a5ee9defae1a0526ce0bbc"
+    },
+    {
+      "n_sequences": 429,
+      "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/rnastructure_maxexpect__testsetb__partial429.json.gz",
+      "prediction_id": "rnastructure_maxexpect/testsetb",
+      "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+      "sha256": "0469f196621bb9b7cad533494a07bf5f23ffe4dee84011b559103545c6635b2d"
+    }
+  ],
+  "raw_sources": {
+    "contrafold": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/raw/testsetb.json",
+      "sha256": "1f3e14785abb9fbde0c3e2fcf953dd535f482804c621be746a6db86899cd9bd2"
+    },
+    "eternafold": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/raw/testsetb.json",
+      "sha256": "13185fe2545d8cad000406f6061facb62cdc544fbae699d1517979f811dc3556"
+    },
+    "mxfold2": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/testsetb.json",
+      "sha256": "921f9e5170726cb9f6f9014902a60446038fcac74c69e03c585f3fd384a1f452"
+    },
+    "rnastructure": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/testsetb.json",
+      "sha256": "271d1d8dae18897ca9efcbdc2daa302c131e09e260fdc446ed8ffab792d11f5d"
+    },
+    "vienna": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw_strict/testsetb.json",
+      "sha256": "b11fa255ad74bd5c007b111e421ae69b5dedb068bbaf492660f089bbc4345d25"
+    }
+  },
+  "schema_version": "testsetb.official_coverage_recovery.source_manifest.v1",
+  "shared_registries_modified": false,
+  "supplement": {
+    "bounded_replay_indices": [
+      0,
+      17,
+      100,
+      200,
+      300,
+      427
+    ],
+    "bounded_replay_sequences_per_system": 6,
+    "cuda_visible_devices": "",
+    "deterministic_repeats": 3,
+    "device": "CPU_ONLY",
+    "gpu_used": false,
+    "mxfold2_gpu_argument": -1,
+    "new_inference_records_per_system": 2,
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/missing2_cpu_predictions.json",
+    "projected_records_rerun": 0,
+    "sha256": "81592be8ed1fd3c6ae48a4f3c584d1296604ee30ab178b166543f7fb1e4a5f37"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "coverage_accounting": {
+    "blocked_identities": 14,
+    "inventory_entries": 38,
+    "official_full_coverage": 7,
+    "official_partial_not_ranked": 17,
+    "official_records_missing_from_project": 2,
+    "projected_full_coverage": 24,
+    "scored_identities": 24
+  },
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "method": "separate process; exact Fraction per-sequence arithmetic; no recovery-module import",
+  "missing_predictions_imputed_as_zero": false,
+  "new_training": false,
+  "official_full_coverage_identities": [
+    "contrafold/testsetb",
+    "eternafold/testsetb",
+    "mxfold2/testsetb",
+    "nussinov_turner/testsetb/recovered_official2",
+    "vienna_centroid/testsetb/recovered_official2",
+    "vienna_mea/testsetb/recovered_official2",
+    "vienna_mfe/testsetb/recovered_official2"
+  ],
+  "official_only_sequences_exact_and_unmodified": true,
+  "per_record_metric_rows": 20560,
+  "project_428_metrics_unchanged_for_prior_20": true,
+  "recovery_manifest_sha256": "81b6d5178830381ec1143aecd83f8ba02475da05555fe60377a23c13ada3e13e",
+  "round": 2,
+  "schema_version": "testsetb.official_coverage_recovery.independent_verification.v1",
+  "source_manifest_sha256": "42e3b5e4806246390d3562946bc9d7dda9cb78c2b329798a7e59db7ed3e482a0",
+  "status": "PASS",
+  "system_metrics_sha256": "38d451258f761eca533aef49eb1ef14c666d9b6a0792753c4b541dde1aad3feb"
+}
