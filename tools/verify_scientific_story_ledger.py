@@ -580,6 +580,40 @@ def verify_matched_convergence_contract() -> list[str]:
         errors.append("matched best/resume tensor identity mismatch")
     if audit["structural_model_selection_performed"] is not False or audit["additional_evaluation_started"] is not False or audit["scientific_conclusion"] is not None:
         errors.append("matched audit allowed structural selection/evaluation/conclusion")
+    ensemble = audit["ensemble_context"]
+    if ensemble["status"] != "PASS_ENSEMBLE_RECOVERY_IDENTITY_CONTINUES" or ensemble["run_meta_status"] != "running" or ensemble["converged"] is not False:
+        errors.append("ensemble recovery status mismatch")
+    if ensemble["shared_scientific_identity_with_matched"] is not True:
+        errors.append("ensemble/matched shared scientific identity mismatch")
+    if ensemble["first_eligible_validation"] != {
+        "step": 10000,
+        "validation_loss": 0.40810874768920063,
+        "n_unfrozen": 20,
+        "eligible": True,
+        "improved": True,
+        "save_best": True,
+        "stop": False,
+        "best_step": 10000,
+        "best_validation_loss": 0.40810874768920063,
+        "bad_evaluations": 0,
+        "validation_metric": "length_normalized_pair_hamming_structured_margin",
+    }:
+        errors.append("ensemble first eligible best-10000 validation mismatch")
+    if ensemble["current_resume_step"] != 10500 or ensemble["current_unfrozen_blocks"] != 20:
+        errors.append("ensemble audit-time resume step mismatch")
+    if ensemble["next_batch"]["step"] != 10501 or ensemble["next_batch"]["matches_saved_stream"] is not True:
+        errors.append("ensemble next-batch continuity mismatch")
+    if ensemble["current_best"] != {
+        "step": 10000,
+        "validation_loss": 0.40810874768920063,
+        "sha256": "7407f2dcc27204b8ca78d359af0ac8fd6bf7e66d99bc7c2ca0c69dc0fdfd397d",
+    }:
+        errors.append("ensemble current best identity mismatch")
+    scheduler = json.loads(SOURCES["current_margin_scheduler"].read_text())
+    if scheduler["completed_arms"] != ["matched_control"] or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
+        errors.append("four-arm completion/evaluation/conclusion state overclaimed")
+    if scheduler["processes"]["matched_control"]["status"] != "converged" or scheduler["processes"]["ensemble_context"]["status"] != "running":
+        errors.append("scheduler matched/ensemble process state mismatch")
     source = (RECOVERY_REPO / "tools/audit_structured_margin_converged_19000_v1.py").read_text()
     for required in ["def validate_stop_sequence(", "len(rows) != 19000", "best_hashes != resume_hashes", "best_resume_tensor_identity_match", "additional_evaluation_started"]:
         if required not in source:
@@ -1196,6 +1230,9 @@ def verify_narrative_guards() -> list[str]:
         "best_convergence` 为同一 best/loss、**bad_evaluations=0**",
         "train/batch/compute 各 **19,000** 行",
         "best_resume_tensor_identity_match=true",
+        "step=10000、validation_loss=0.40810874768920063",
+        "审计时 resume 已到 **10500**",
+        "completed_arms=[matched_control]",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",

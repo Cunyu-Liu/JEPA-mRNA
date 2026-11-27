@@ -334,6 +334,17 @@ def test_matched_ledger_and_best_resume_integrity():
     assert "acec9e6f3bc025597fef673422ab2b1d4081587ba7a5172b3494ce9c05e42ad0" in text
 
 
+def test_ensemble_audit_time_status_and_four_arm_conclusion_gate():
+    text = ledger.DOC.read_text()
+    assert "step=10000、validation_loss=0.40810874768920063" in text
+    assert "审计时 resume 已到 **10500**" in text
+    assert "下一批为 10501 且匹配 saved stream" in text
+    assert "completed_arms=[matched_control]" in text
+    assert "evaluation=null" in text
+    assert "matched 一臂自然收敛不得外推为四臂完成" in text
+    assert "独立结构评估仍未开始" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
