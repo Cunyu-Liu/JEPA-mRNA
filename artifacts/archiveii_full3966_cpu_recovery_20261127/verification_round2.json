@@ -1,0 +1,96 @@
+{
+  "checks": [
+    "all per-ID checkpoint sequence/pairs/SHA",
+    "composite origin and clean source identity",
+    "strict pair metrics and empty/empty convention",
+    "coverage/missing IDs and no zero imputation",
+    "clean xens2 delta/CI and full-coverage-only strongest",
+    "registry recommendation and delivery hashes"
+  ],
+  "clean_2544_coverage_identities": 25,
+  "composite_predictions_verified": 22686,
+  "deliverables": {
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/build_receipt.json": {
+      "bytes": 3036,
+      "sha256": "b39adfa5b7cd59ef5360c6357b4b0de0e6dc2020559eaaab823cf9fa56e6b352"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/official_coverage_gaps.json": {
+      "bytes": 1375147,
+      "sha256": "419d707f9fb1a05918fcce3cac9c6d8b3460ff5a080d32f6fcd3ec13539b1cc2"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/contrafold.jsonl.gz": {
+      "bytes": 742714,
+      "sha256": "779127b2088aaa6fa22d36ee7fc37bb5f709402dbcff73c447a1ace21041f306"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/eternafold.jsonl.gz": {
+      "bytes": 765659,
+      "sha256": "666d521af3de9b0db0d6a5b2f6cc0afb86ab0a5c191415b63662a421c156a23c"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/mxfold2.jsonl.gz": {
+      "bytes": 699023,
+      "sha256": "9c79ada9350bf9c22aaabe8c9aa2a76f140cbac019bab5e3e90b23fe3de48c91"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/rnastructure_fold.jsonl.gz": {
+      "bytes": 779406,
+      "sha256": "8ae01692bacda5acbf557b1338a8c4d133fc63a75f557b847b1e10fa8c42d653"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/rnastructure_maxexpect.jsonl.gz": {
+      "bytes": 436055,
+      "sha256": "55a35d38b1fd822caccf287af384911851f96bb06817ccff06619317fc12427f"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/vienna_centroid.jsonl.gz": {
+      "bytes": 313078,
+      "sha256": "eb585eff836032a540120878542ab62fe3e2ec401e227a8c866040804ecaea87"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/vienna_mea.jsonl.gz": {
+      "bytes": 335029,
+      "sha256": "63267e14d4d58c134d756e656b00506d906de30363021eadce3a6c84100d5d02"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/vienna_mfe.jsonl.gz": {
+      "bytes": 356739,
+      "sha256": "3bcd86f13489bd12a3df8f49cbfcac1778f0b5564fac3f9a4b6bc51d8a950228"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/recovered_per_record_metrics.jsonl.gz": {
+      "bytes": 969521,
+      "sha256": "cdf7e9b09acffd6183183c120a3c1ff7c27d8d70223b45a29f90319e3e38a091"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/registry_recommendation.json": {
+      "bytes": 80240,
+      "sha256": "1a043cc56f0dd7c2e68bf38dd3486d0e61995aadba9ccce86d1dae9485b25221"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/source_manifest.json": {
+      "bytes": 2842,
+      "sha256": "60bc5365ab7ef980db7dece553a890d0eabf9c9c77ed08efe70bbfab62830ccf"
+    },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json": {
+      "bytes": 2973199,
+      "sha256": "8756fde0764d10a44c4081a01da5644c400f5d937ee5b2bc4fa2f2a7d5d355d0"
+    },
+    "docs/plans/2026-11-27-archiveii-full3966-recovered-panel.md": {
+      "bytes": 3766,
+      "sha256": "6a63221ce0347e5d590379c7b234292a55fd962b82a4a84f337c5bdc4078492d"
+    },
+    "tests/test_archiveii_full3966_recovered_panel_20261127.py": {
+      "bytes": 4732,
+      "sha256": "94164021732794f75a360466e71858fa25d93e8cf19ab3c56a60de676c8004fd"
+    },
+    "tools/build_archiveii_full3966_recovered_panel_20261127.py": {
+      "bytes": 23629,
+      "sha256": "88310d7b5a6fe3dd25e6440067f6828a3f927febff42350cbd4a5ec02e68d920"
+    },
+    "tools/verify_archiveii_full3966_recovered_panel_20261127.py": {
+      "bytes": 18844,
+      "sha256": "5478a57b6b35732daf962e2931a01fc56528c3e4a3342d842df01c01cb689d18"
+    }
+  },
+  "external_test_model_selection": false,
+  "full_3966_coverage_identities": 5,
+  "generator_imported": false,
+  "gpu_used": false,
+  "new_inference_executed_by_verifier": false,
+  "new_prediction_identities": 8,
+  "per_record_metrics_compared_field_by_field": 35406,
+  "recovery_checkpoints_verified": 9966,
+  "schema_version": "archiveii.full3966.cpu_recovery.independent_verification.round2.v1",
+  "status": "PASS_INDEPENDENT_SECOND_IMPLEMENTATION"
+}

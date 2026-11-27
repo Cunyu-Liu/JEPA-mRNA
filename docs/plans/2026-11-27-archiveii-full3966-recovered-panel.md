@@ -1,0 +1,47 @@
+# ArchiveII full3966 CPU 恢复双面板
+
+新预测仅来自官方 clean 2544 之外的 1422 条，原始 sequence/SHA 未改写；新 identity 为 clean-frozen + CPU-recovery composite。缺预测不补 0，部分覆盖不排名。xens2 仍只有 clean 2544，故 full3966 的 xens2 差距保持 `UNCHECKED_XENS2_NOT_FULL_COVERAGE`。
+
+| Baseline | checkpoint 完成 | PASS | coverage | full3966 可排名 |
+|---|---:|---:|---:|---|
+| contrafold | 1422 / 1422 | 1422 | 1.0000000000 | True |
+| eternafold | 1422 / 1422 | 1422 | 1.0000000000 | True |
+| mxfold2 | 1422 / 1422 | 1422 | 1.0000000000 | True |
+| vienna_mfe | 1422 / 1422 | 1422 | 1.0000000000 | True |
+| vienna_centroid | 1422 / 1422 | 1422 | 1.0000000000 | True |
+| vienna_mea | 1422 / 1422 | 1422 | 1.0000000000 | True |
+| rnastructure_fold | 1422 / 1422 | 1422 | 1.0000000000 | True |
+| rnastructure_maxexpect | 12 / 1422 | 12 | 0.0084388186 | False |
+
+## full3966 全覆盖指标
+
+| Prediction identity | Model form | n | micro F1 | macro F1 |
+|---|---|---:|---:|---:|
+| `bpfold_official_release/archiveii` | six_checkpoint_ensemble | 3966 | 0.7974584108 | 0.8200813623 |
+| `mxfold2/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.7023050286 | 0.7457279553 |
+| `contrafold/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5796193275 | 0.6186547352 |
+| `eternafold/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5691609744 | 0.5994220587 |
+| `rnastructure_fold/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5346280306 | 0.5725529991 |
+
+## 新增 composite 在 clean 2544 的 xens2 差距
+
+仅列 clean 全覆盖的新身份；Vienna 没有旧 clean 记录级预测，故不在此表补 0 或排名。
+
+| Prediction identity | n | micro F1 | macro F1 | Δmicro vs xens2 | Δmacro vs xens2 |
+|---|---:|---:|---:|---:|---:|
+| `contrafold/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.5924264227 | 0.6306631338 | -0.2232257844 | -0.2289955786 |
+| `eternafold/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.5732888147 | 0.6020168480 | -0.2423633924 | -0.2576418644 |
+| `mxfold2/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.7104185561 | 0.7512771918 | -0.1052336510 | -0.1083815206 |
+| `rnastructure_fold/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.5350925587 | 0.5684986641 | -0.2805596483 | -0.2911600484 |
+| `rnastructure_maxexpect/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.5511324874 | 0.5731918597 | -0.2645197197 | -0.2864668527 |
+
+## 最强结果
+
+- clean_2544 strongest_ensemble: `bpfold/archiveii_embok_clean`，micro-F1=0.8999331354520079，macro-F1=0.9161611813979388。
+- clean_2544 strongest_single_predictor: `rinalmo_ft/archiveii_embok_clean`，micro-F1=0.8204522394549935，macro-F1=0.8630290508840547。
+- full_3966 strongest_ensemble: `bpfold_official_release/archiveii`，micro-F1=0.7974584107660678，macro-F1=0.8200813622940291。
+- full_3966 strongest_single_predictor: `mxfold2/archiveii_official_reference_3966/cpu_recovery_v1`，micro-F1=0.7023050285738565，macro-F1=0.7457279552838411。
+
+MaxExpect 已安全暂停在 12 条，原 PID `4122842`。恢复命令：`cd /home/rna_jev_archive_label_lineage && /root/miniconda3/envs/lucaone_cu128/bin/python tools/recover_archiveii_full3966_cpu_baselines_20261127.py --baseline rnastructure_maxexpect`。其 coverage 仍为部分，不参与 full3966 排名。
+
+完整逐 ID coverage、指标、delta/CI 和 registry 建议见 `system_metrics.json`、`recovered_per_record_metrics.jsonl.gz`、`official_coverage_gaps.json` 与 `registry_recommendation.json`。
