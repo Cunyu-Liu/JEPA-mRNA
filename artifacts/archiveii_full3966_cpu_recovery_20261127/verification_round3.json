@@ -1,7 +1,7 @@
 {
   "baseline_inference_rerun": false,
   "build_output_tail": "{\"full_strongest\": {\"strongest_ensemble\": {\"delta_vs_xens2\": null, \"metrics\": {\"empty_empty_records\": 0, \"fn\": 51535, \"fp\": 38707, \"macro_f1\": 0.8200813622940291, \"macro_precision\": 0.8180097957855491, \"macro_recall\": 0.8330474495109694, \"micro_f1\": 0.7974584107660678, \"micro_precision\": 0.8210990941024219, \"micro_recall\": 0.7751409323350262, \"n_scored\": 3966, \"tp\": 177653, \"truth_empty_records\": 5}, \"model_form\": \"six_checkpoint_ensemble\", \"prediction_id\": \"bpfold_official_release/archiveii\", \"ranking_scope\": \"DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION\"}, \"strongest_overall\": {\"delta_vs_xens2\": null, \"metrics\": {\"empty_empty_records\": 0, \"fn\": 51535, \"fp\": 38707, \"macro_f1\": 0.8200813622940291, \"macro_precision\": 0.8180097957855491, \"macro_recall\": 0.8330474495109694, \"micro_f1\": 0.7974584107660678, \"micro_precision\": 0.8210990941024219, \"micro_recall\": 0.7751409323350262, \"n_scored\": 3966, \"tp\": 177653, \"truth_empty_records\": 5}, \"model_form\": \"six_checkpoint_ensemble\", \"prediction_id\": \"bpfold_official_release/archiveii\", \"ranking_scope\": \"DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION\"}, \"strongest_single_predictor\": {\"delta_vs_xens2\": null, \"metrics\": {\"empty_empty_records\": 0, \"fn\": 63897, \"fp\": 76231, \"macro_f1\": 0.7457279552838411, \"macro_precision\": 0.7334542775835906, \"macro_recall\": 0.7653177467823864, \"micro_f1\": 0.7023050285738565, \"micro_precision\": 0.684372438121579, \"micro_recall\": 0.7212026807686266, \"n_scored\": 3966, \"tp\": 165291, \"truth_empty_records\": 5}, \"model_form\": \"deterministic_single_predictor\", \"prediction_id\": \"mxfold2/archiveii_official_reference_3966/cpu_recovery_v1\", \"ranking_scope\": \"DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION\"}, \"xens2_delta\": \"UNCHECKED_XENS2_NOT_FULL_COVERAGE\"}, \"recovery_complete\": {\"base_identities\": 36, \"clean_2544_full_coverage\": 25, \"official_3966_full_coverage\": 5, \"recovery_complete_1422\": 7, \"recovery_identities\": 8, \"total_identities\": 44, \"xens2_official_3966_coverage\": 0.6414523449319214}, \"status\": \"PASS\"}",
-  "clean_clone_commit": "0727fd074d5c7317bc6a349517c091d25c8a478d",
+  "clean_clone_commit": "1df8c93a21c62d1310c7db1f34318e7146d3eb6b",
   "clean_clone_output_sha256": {
     "artifacts/archiveii_full3966_cpu_recovery_20261127/build_receipt.json": "b39adfa5b7cd59ef5360c6357b4b0de0e6dc2020559eaaab823cf9fa56e6b352",
     "artifacts/archiveii_full3966_cpu_recovery_20261127/official_coverage_gaps.json": "419d707f9fb1a05918fcce3cac9c6d8b3460ff5a080d32f6fcd3ec13539b1cc2",
@@ -31,7 +31,7 @@
   "status": "PASS_CLEAN_CLONE_AND_DELIVERY",
   "unit_tests": {
     "failed": 0,
-    "output_tail": "11 passed in 0.84s",
+    "output_tail": "11 passed in 0.91s",
     "passed": 11
   },
   "verifier_output_tail": "{\"checkpoints\": 9966, \"metrics\": 35406, \"status\": \"PASS_INDEPENDENT_SECOND_IMPLEMENTATION\"}"
