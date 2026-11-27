@@ -174,6 +174,23 @@ def test_takeover_best15000_remains_nonterminal_and_no_conclusion():
     assert "四臂未收敛，当前无 margin 科学结论" in text
 
 
+def test_ts0_projected_values_and_official_coverage_boundary():
+    text = ledger.DOC.read_text()
+    assert "8a2008a4cda3c43b3000f25151b80408b0bdb110" in text
+    assert "0.8032405714870655" in text
+    assert "0.7568974968024850" in text
+    assert "−0.0674523877056411, −0.0435507990639508" in text
+    assert "21 个 scored identities 均只有 1288/1305" in text
+    assert "official full coverage=0" in text
+    assert "UNCHECKED_NO_FULL_COVERAGE_PREDICTION" in text
+    assert "homology-only=575" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_ts0_artifact_contract():
+    assert ledger.verify_ts0_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
