@@ -1,8 +1,8 @@
 {
   "status": "PASS_RENDER_PDF_TEXT_AND_SLIDE37_OCR",
-  "deck_label": "SYNTHETIC_ARCHIVEII_FULL3966_5_FULL_MXFOLD2",
+  "deck_label": "SYNTHETIC_ARCHIVEII_FULL8_XENS2_GPU_QUEUED",
   "deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round73_work/render/temporary_round73_copy.pptx",
-  "deck_sha256": "268edf67b1489c185527f807822f8681ac64028e7e0f038b338eee179da31cc8",
+  "deck_sha256": "4a144342f58ee16928e26040c2ddfb78ea08597ab58f50ec3d0700290b126974",
   "deck_unchanged": true,
   "slides_rendered": 18,
   "deck_slide_count": 18,
@@ -16,12 +16,12 @@
     "deck_index": 18,
     "display_number": 37,
     "png": "slide37-ocr.png",
-    "png_sha256": "557af5e6c5b7a54dfb4456e585c882eadda618c176cf8d2589bc8ba0a3e25e35",
+    "png_sha256": "03e0f39acb3c052bf7a2b5a531863860ac024cb71fa6eaf77815ab6ff0f92b0f",
     "text_path": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round73_work/render/output/slide37-ocr.txt",
     "engine": "macOS Vision zh-Hans/en-US",
-    "characters": 1319
+    "characters": 1365
   },
-  "pdf_sha256": "097b241725c931b02518e21823eed90cbbb543d529c6e4ad8fed622b2eb2abae",
+  "pdf_sha256": "6574699c803d8764c80f5fd980c3f0be56f4d7e47a7619fcf5bb37f243a3b3bb",
   "real_ppt_modified": false,
   "visual_review": "PENDING_AGENT_IMAGE_REVIEW"
 }
