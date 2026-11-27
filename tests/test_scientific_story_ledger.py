@@ -267,6 +267,21 @@ def test_rfam_sequence_release_and_novelty_conservation():
     assert "不能称全 temporal 独立" in text
 
 
+def test_archiveii_full_recovery_overall_and_strongest_single():
+    text = ledger.DOC.read_text()
+    assert "1558cf007b8a114349b73ed3b7becd77d76ac251" in text
+    assert "full3966 现有 **5 个全覆盖身份**" in text
+    assert "0.7974584107660678" in text
+    assert "0.7023050285738565" in text
+    assert "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1" in text
+    assert "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_archiveii_full_recovery_artifact_contract():
+    assert ledger.verify_archiveii_full_recovery_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
