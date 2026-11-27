@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -109,6 +110,20 @@ def test_staged_checkpoint_copy_failure_preserves_original_and_local(tmp_path, m
         staged.staged_atomic_torch_save({"x": torch.arange(8)}, destination, tmp_path / "local")
     assert destination.read_bytes() == b"original"
     assert (tmp_path / "local" / "arm" / "resume.pt").is_file()
+
+
+def test_adopted_process_tracks_identity_without_starting_or_killing(monkeypatch):
+    process = recovery.AdoptedProcess(12345, 67890)
+    monkeypatch.setattr(recovery, "pid_alive", lambda pid, ticks: (pid, ticks) == (12345, 67890))
+    assert process.poll() is None
+    monkeypatch.setattr(recovery, "pid_alive", lambda pid, ticks: False)
+    assert process.poll() == "adopted_exit"
+
+
+def test_current_process_identity_is_live():
+    state, ticks = recovery.process_identity(os.getpid())
+    assert state != "Z"
+    assert recovery.pid_alive(os.getpid(), ticks) is True
 
 
 def test_recovery_root_override_is_scoped_to_prerequisites(tmp_path):
