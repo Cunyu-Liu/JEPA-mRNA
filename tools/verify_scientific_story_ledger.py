@@ -29,6 +29,7 @@ MODEL_DEV_V3 = F / "model_dev_v3"
 BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
 ARCHIVEII_REPO = Path("/home/rna_jev_archive_label_lineage")
 TS0_COVERAGE_REPO = Path("/home/rna_jev_ts0_coverage")
+TESTSETB_COVERAGE_REPO = Path("/home/rna_jev_testsetb_coverage")
 PDB_RFAM_REPO = Path("/home/rna_jev_pdb_rfam_label_lineage")
 RECOVERY_REPO = Path("/home/rna_jev_margin_incident_recovery")
 RECOVERY_ROOT = F / "structured_margin_full_v1/incident_recovery_20261127"
@@ -69,7 +70,8 @@ SOURCES = {
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
     "ts0_metrics": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_recovery_audit": TS0_COVERAGE_REPO / "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
-    "testsetb_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/testsetb_system_metrics.json",
+    "testsetb_metrics": TESTSETB_COVERAGE_REPO / "artifacts/testsetb_official_coverage_recovery_20261127/system_metrics.json",
+    "testsetb_recovery_verification": TESTSETB_COVERAGE_REPO / "artifacts/testsetb_official_coverage_recovery_20261127/verification_round3.json",
     "ts0_testsetb_verification": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json",
     "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
     "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
@@ -108,6 +110,7 @@ SOURCE_COMMITS = {
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
     "ArchiveII official reference": (ARCHIVEII_REPO, "8a2008a4cda3c43b3000f25151b80408b0bdb110"),
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
+    "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4"),
     "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
 }
@@ -610,26 +613,57 @@ def verify_ts0_contract() -> list[str]:
 
 def verify_testsetb_contract() -> list[str]:
     errors = []
-    if not SOURCES["testsetb_metrics"].is_file():
-        return [f"missing TestSetB source: {SOURCES['testsetb_metrics']}"]
+    for name in ["testsetb_metrics", "testsetb_recovery_verification"]:
+        if not SOURCES[name].is_file():
+            return [f"missing TestSetB source: {name}: {SOURCES[name]}"]
     metrics = json.loads(SOURCES["testsetb_metrics"].read_text())
+    verification = json.loads(SOURCES["testsetb_recovery_verification"].read_text())
     expected_coverage = {
         "blocked_identities": 14,
-        "inventory_entries": 34,
-        "official_full_coverage": 0,
-        "official_partial_not_ranked": 20,
+        "inventory_entries": 38,
+        "official_full_coverage": 7,
+        "official_partial_not_ranked": 17,
         "official_records_missing_from_project": 2,
-        "projected_full_coverage": 20,
-        "scored_identities": 20,
+        "projected_full_coverage": 24,
+        "scored_identities": 24,
     }
     if metrics["coverage_accounting"] != expected_coverage:
         errors.append(f"TestSetB coverage accounting mismatch: {metrics['coverage_accounting']}")
-    if metrics["legacy_project_label_disposition"] != "DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION; projected-reference-protocol-only; not unfiltered official protocol":
-        errors.append("TestSetB projected-reference protocol identity mismatch")
-    for key in ["strongest_single_predictor", "strongest_ensemble", "strongest_overall"]:
-        if metrics["official_full_summary"][key] != "UNCHECKED_NO_FULL_COVERAGE_PREDICTION":
-            errors.append(f"TestSetB official full panel gained a ranking: {key}")
+    if set(metrics["label_panels"]) != {"testsetb_official_reference_430", "testsetb_projected_reference_428"}:
+        errors.append("TestSetB full/project panel identity mismatch")
+    if "never impute zero; partial coverage not ranked" not in metrics["metric_contract"]["missing_predictions"]:
+        errors.append("TestSetB missing-prediction protocol mismatch")
+    expected_full = [
+        "contrafold/testsetb",
+        "eternafold/testsetb",
+        "mxfold2/testsetb",
+        "nussinov_turner/testsetb/recovered_official2",
+        "vienna_centroid/testsetb/recovered_official2",
+        "vienna_mea/testsetb/recovered_official2",
+        "vienna_mfe/testsetb/recovered_official2",
+    ]
+    if metrics["new_full_coverage_identities"] != expected_full or verification["official_full_coverage_identities"] != expected_full:
+        errors.append("TestSetB full430 identities mismatch")
+    if verification["status"] != "PASS" or verification["project_428_metrics_unchanged_for_prior_20"] is not True:
+        errors.append("TestSetB recovery changed prior projected metrics or failed verification")
+    if verification["official_only_sequences_exact_and_unmodified"] is not True or verification["missing_predictions_imputed_as_zero"] is not False:
+        errors.append("TestSetB recovery modified sequences or imputed missing predictions")
     rows = {row["prediction_id"]: row for row in metrics["rows"]}
+    full_rows = [row for row in metrics["rows"] if row["panels"]["testsetb_official_reference_430"]["status"] == "PASS_FULL_COVERAGE"]
+    if {row["prediction_id"] for row in full_rows} != set(expected_full):
+        errors.append("TestSetB current full430 rows mismatch")
+    strongest = max(full_rows, key=lambda row: row["panels"]["testsetb_official_reference_430"]["metrics"]["micro_f1"])
+    if strongest["prediction_id"] != "mxfold2/testsetb":
+        errors.append("TestSetB full430 strongest descriptive identity mismatch")
+    mxfold = rows["mxfold2/testsetb"]["panels"]["testsetb_official_reference_430"]
+    if mxfold["n_with_prediction"] != 430 or not math.isclose(mxfold["metrics"]["micro_f1"], 0.6468595682161368, rel_tol=0.0, abs_tol=1e-15):
+        errors.append("TestSetB MXfold2 full430 coverage/micro mismatch")
+    if rows["mxfold2/testsetb"]["training_exposure"]["full_project_panel_exposure_status"] != "AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED":
+        errors.append("TestSetB MXfold2 exposure was upgraded without evidence")
+    for prediction_id in ["rnastructure_fold/testsetb", "rnastructure_maxexpect/testsetb"]:
+        official = rows[prediction_id]["panels"]["testsetb_official_reference_430"]
+        if official["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or official["n_with_prediction"] != 429 or official["missing_count"] != 1 or official["missing_predictions_imputed_as_zero"] is not False:
+            errors.append(f"TestSetB RNAstructure partial panel was ranked or imputed: {prediction_id}")
     expected = {
         "xens2/testsetb": (0.8403202122116432, 0.8322478063381703, [0.0, 0.0]),
         "rinalmo_ft/testsetb": (0.8670430033503144, 0.8628944070360038, [0.0169091444489763, 0.04524705102861153]),
@@ -642,12 +676,12 @@ def verify_testsetb_contract() -> list[str]:
             errors.append(f"TestSetB projected coverage mismatch: {prediction_id}")
         if not math.isclose(projected["metrics"]["micro_f1"], micro, rel_tol=0.0, abs_tol=1e-15) or not math.isclose(projected["metrics"]["macro_f1"], macro, rel_tol=0.0, abs_tol=1e-15):
             errors.append(f"TestSetB projected metric mismatch: {prediction_id}")
-        interval = projected["paired_macro_f1_delta_ci95_vs_xens2"]
-        if interval["ci95"] != ci95 or interval["n_bootstrap"] != 10000 or interval["seed"] != 20261127:
+        interval = projected.get("paired_macro_f1_delta_ci95_vs_xens2")
+        if interval is not None and (interval["ci95"] != ci95 or interval["n_bootstrap"] != 10000 or interval["seed"] != 20261127):
             errors.append(f"TestSetB paired macro CI mismatch: {prediction_id}")
         if official["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or official["n_with_prediction"] != 428 or official["missing_count"] != 2:
             errors.append(f"TestSetB partial official panel was ranked: {prediction_id}")
-        if official["missing_predictions_imputed_as_zero"] is not False or official["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
+        if official["missing_predictions_imputed_as_zero"] is not False or official.get("paired_macro_f1_delta_ci95_vs_xens2") is not None:
             errors.append(f"TestSetB official gaps were imputed or given CI: {prediction_id}")
     rinalmo = rows["rinalmo_ft/testsetb"]["training_exposure"]
     if rinalmo["route"] != "bprna_tr0" or rinalmo["exact_sequence_overlap"] != 247 or rinalmo["homology_only_overlap"] != 65 or rinalmo["clean_n"] != 116:
@@ -657,7 +691,11 @@ def verify_testsetb_contract() -> list[str]:
     xens2 = rows["xens2/testsetb"]["training_exposure"]
     if xens2["exact_sequence_overlap"] != 0 or xens2["homology_only_overlap"] != 140 or xens2["clean_n"] != 288 or xens2["full_project_panel_exposure_status"] != "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN":
         errors.append("TestSetB xens2 training exposure mismatch")
-    if metrics["strongest_ensemble"]["prediction_id"] != "xens2/testsetb" or metrics["strongest_single_predictor"]["prediction_id"] != "rinalmo_ft/testsetb" or metrics["strongest_overall"]["prediction_id"] != "rinalmo_ft/testsetb":
+    projected_rows = [(row, row["panels"]["testsetb_projected_reference_428"]) for row in metrics["rows"] if row["panels"]["testsetb_projected_reference_428"]["status"] == "PASS_FULL_COVERAGE"]
+    ensemble = max((item for item in projected_rows if "ensemble" in item[0]["model_form"]), key=lambda item: item[1]["metrics"]["micro_f1"])
+    single = max((item for item in projected_rows if "ensemble" not in item[0]["model_form"]), key=lambda item: item[1]["metrics"]["micro_f1"])
+    overall = max(projected_rows, key=lambda item: item[1]["metrics"]["micro_f1"])
+    if ensemble[0]["prediction_id"] != "xens2/testsetb" or single[0]["prediction_id"] != "rinalmo_ft/testsetb" or overall[0]["prediction_id"] != "rinalmo_ft/testsetb":
         errors.append("TestSetB projected strongest identities mismatch")
     return errors
 
@@ -874,6 +912,9 @@ def verify_narrative_guards() -> list[str]:
         "0.8032405714870655",
         "0.7568974968024850",
         "official full coverage=0",
+        "7342f26303d3acc8d61f395c040534242d0f7895",
+        "0.6468595682161368",
+        "429/430",
         "0.8403202122116432",
         "0.8670430033503144",
         "TR0 精确序列暴露 247/428",

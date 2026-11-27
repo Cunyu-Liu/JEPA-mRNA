@@ -203,8 +203,11 @@ def test_testsetb_exposure_and_official_coverage_boundary():
     assert "TR0 精确序列暴露 247/428" in text
     assert "EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT" in text
     assert "不可独立排名" in text
-    assert "20 个 scored identities 均只有 428/430" in text
-    assert "official full coverage=0" in text
+    assert "7342f26303d3acc8d61f395c040534242d0f7895" in text
+    assert "0.6468595682161368" in text
+    assert "现有 **7 个全覆盖身份**" in text
+    assert "429/430" in text
+    assert "原 20 个 projected 身份指标经独立验证保持不变" in text
     assert "homology-only=140" in text
 
 
