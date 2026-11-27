@@ -66,6 +66,10 @@ SOURCES = {
     "official_verification": BPFOLD_PROTOCOL_REPO / "source_data/bprna_official_reference_5388/independent_verification.json",
     "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
+    "ts0_testsetb_recommendation": REPO / "artifacts/ts0_testsetb_official_reference_20261127/registry_recommendation.json",
+    "ts0_testsetb_coverage": REPO / "artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json",
+    "ts0_testsetb_verification": REPO / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json",
+    "pdb_rebuild_latest_summary": REPO / "source_data/pdb_rcsb_rebuild_20261127/round6_combined/rebuild_summary.json",
     "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
     "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
     "pdb_rebuild_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
@@ -94,13 +98,15 @@ SOURCES = {
 
 SOURCE_COMMITS = {
     "FoldNAR integration": (FOLDNAR_REPO, "8bd87223edb9b5a21c1e13676b4192de54505d9f"),
+    "TS0/TestSetB official panels": (FOLDNAR_REPO, "8a2008a4cda3c43b3000f25151b80408b0bdb110"),
+    "PDB observed-safe references": (FOLDNAR_REPO, "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4"),
     "label quality": (LABEL_QUALITY_REPO, "3e64df111cffaeaf21add48094434123234ea40f"),
     "pretrain exposure": (PRETRAIN_EXPOSURE_REPO, "4247d1e4a971ceb8c63e3f8338e026a23c18941b"),
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
-    "ArchiveII official reference": (ARCHIVEII_REPO, "4daccb0eb1c78db565532634ed0d77cf1e6ddaae"),
-    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "e252f5351322994395968c61e3df3a51a0330293"),
+    "ArchiveII official reference": (ARCHIVEII_REPO, "8a2008a4cda3c43b3000f25151b80408b0bdb110"),
+    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4"),
     "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
 }
 
@@ -128,7 +134,7 @@ def verify_source_commits() -> list[str]:
         ).stdout.strip()
         if actual != expected:
             compatible_advance = False
-            if name == "FoldNAR integration":
+            if repo == FOLDNAR_REPO:
                 compatible_advance = subprocess.run(
                     ["git", "-C", str(repo), "merge-base", "--is-ancestor", expected, "HEAD"],
                     check=False,
@@ -345,9 +351,67 @@ def verify_archiveii_official_contract() -> list[str]:
     return errors
 
 
+def verify_ts0_testsetb_contract() -> list[str]:
+    errors = []
+    names = ["ts0_testsetb_recommendation", "ts0_testsetb_coverage", "ts0_testsetb_verification"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return errors + [f"missing TS0/TestSetB source: {name}: {SOURCES[name]}"]
+    recommendation = json.loads(SOURCES["ts0_testsetb_recommendation"].read_text())
+    coverage = json.loads(SOURCES["ts0_testsetb_coverage"].read_text())
+    verification = json.loads(SOURCES["ts0_testsetb_verification"].read_text())
+    if recommendation["recommendation_only"] is not True or recommendation["apply_by_unified_process_only"] is not True:
+        errors.append("TS0/TestSetB recommendation was promoted beyond unified-process registration")
+    if recommendation["shared_registry_modified"] is not False:
+        errors.append("TS0/TestSetB recommendation modified the shared registry")
+    expected = {
+        "bprna_ts0": ("bprna_ts0_official_reference_1305", 1305,
+                      "bprna_ts0_projected_reference_1288", 1288, 17),
+        "testsetb": ("testsetb_official_reference_430", 430,
+                     "testsetb_projected_reference_428", 428, 2),
+    }
+    for dataset, (official_id, official_n, projected_id, projected_n, missing_n) in expected.items():
+        entry = recommendation["datasets"][dataset]
+        rows = entry["suggested_data_rows"]
+        if [row["dataset_id"] for row in rows] != [official_id, projected_id]:
+            errors.append(f"TS0/TestSetB dual-panel identities mismatch: {dataset}")
+        if [row["n_sequences"] for row in rows] != [official_n, projected_n]:
+            errors.append(f"TS0/TestSetB dual-panel counts mismatch: {dataset}")
+        for row in rows:
+            if not (REPO / row["path"]).is_file():
+                errors.append(f"TS0/TestSetB panel missing: {row['path']}")
+        legacy = entry["legacy_project_labels"]
+        if legacy != {
+            "disposition": "projected-reference-protocol-only",
+            "label_source": "DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION",
+            "unfiltered_official_protocol_eligible": False,
+        }:
+            errors.append(f"TS0/TestSetB projected labels gained official-protocol eligibility: {dataset}")
+        if set(entry["official_full_summary"].values()) != {"UNCHECKED_NO_FULL_COVERAGE_PREDICTION"}:
+            errors.append(f"TS0/TestSetB official full panel gained a ranked winner: {dataset}")
+        gaps = coverage["datasets"][dataset]
+        if gaps["official_n"] != official_n or gaps["official_missing_from_project_count"] != missing_n:
+            errors.append(f"TS0/TestSetB official coverage-gap conservation mismatch: {dataset}")
+        partial = [row for row in gaps["per_prediction_official_coverage"]
+                   if row["status"] == "PARTIAL_COVERAGE_NOT_RANKED"]
+        if not partial:
+            errors.append(f"TS0/TestSetB partial-coverage rows lost fail-closed status: {dataset}")
+        for row in partial:
+            if row["n_with_prediction"] != projected_n or row["missing_count"] != missing_n:
+                errors.append(f"TS0/TestSetB partial-coverage count mismatch: {dataset}/{row['prediction_id']}")
+    if verification["status"] != "PASS_CLEAN_CLONE_AND_DELIVERY" or verification["clean_clone_outputs_byte_identical"] is not True:
+        errors.append("TS0/TestSetB clean-clone delivery did not pass")
+    if verification["shared_registry_diff"] != "EMPTY" or verification["new_training_or_inference"] is not False:
+        errors.append("TS0/TestSetB delivery changed the registry or ran training/inference")
+    if verification["external_test_model_selection"] is not False or verification["gpu_used"] is not False:
+        errors.append("TS0/TestSetB delivery allowed model selection or GPU use")
+    return errors
+
+
 def verify_pdb_rfam_contract() -> list[str]:
     errors = []
-    names = ["pdb_rfam_summary", "pdb_rfam_verification", "pdb_rebuild_summary", "pdb_rebuild_verification"]
+    names = ["pdb_rfam_summary", "pdb_rfam_verification", "pdb_rebuild_summary", "pdb_rebuild_verification",
+             "pdb_rebuild_latest_summary"]
     for name in names:
         if not SOURCES[name].is_file():
             return errors + [f"missing PDB/Rfam source: {name}: {SOURCES[name]}"]
@@ -355,6 +419,7 @@ def verify_pdb_rfam_contract() -> list[str]:
     verification = json.loads(SOURCES["pdb_rfam_verification"].read_text())
     rebuild = json.loads(SOURCES["pdb_rebuild_summary"].read_text())
     rebuild_verification = json.loads(SOURCES["pdb_rebuild_verification"].read_text())
+    latest_rebuild = json.loads(SOURCES["pdb_rebuild_latest_summary"].read_text())
     if summary["external_test_policy"] != "AUDIT_ONLY_NO_MODEL_SELECTION" or summary["model_outcomes_used"] is not False:
         errors.append("PDB/Rfam audit used model outcomes or allowed selection")
     if summary["shared_registry_modified"] is not False:
@@ -421,6 +486,22 @@ def verify_pdb_rfam_contract() -> list[str]:
         errors.append("PDB rebuild independent verification counts mismatch")
     if rebuild_verification["unobserved_negative_policy"] != "MASKED_NEVER_NEGATIVE":
         errors.append("PDB rebuild unobserved-negative policy mismatch")
+    if latest_rebuild["n_source_records"] != 153 or latest_rebuild["n_rebuilt"] != 62 or latest_rebuild["n_unresolved"] != 91:
+        errors.append("latest PDB rebuild 153/62/91 conservation mismatch")
+    if latest_rebuild["unresolved_status_counts"] != {
+        "METADATA_AMBIGUOUS_UNCHECKED": 55,
+        "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED": 32,
+        "SOURCE_BAD_ALPHABET_UNCHECKED": 4,
+    }:
+        errors.append("latest PDB rebuild unresolved status counts mismatch")
+    if latest_rebuild["pair_match_counts"] != {"true": 58, "false": 4}:
+        errors.append("latest PDB RNAformer/DSSR pair difference count mismatch")
+    if latest_rebuild["panel_rebuilt"] != {"pdb_ts1": 16, "pdb_ts2": 27, "pdb_ts3": 9, "pdb_ts_hard": 10}:
+        errors.append("latest PDB per-panel rebuilt counts mismatch")
+    if latest_rebuild["scheme_repaired_references"] != 4 or latest_rebuild["new_metadata_references"] != 0:
+        errors.append("latest PDB metadata/seq-scheme repair accounting mismatch")
+    if latest_rebuild["external_test_policy"] != "AUDIT_ONLY_NO_MODEL_SELECTION":
+        errors.append("latest PDB rebuild allowed model selection")
     return errors
 
 
@@ -680,10 +761,17 @@ def verify_narrative_guards() -> list[str]:
         "−0.0012121956293115, +0.0078699689970171",
         "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR",
         "19 个有部分预测的身份均为 2,544/3,966",
+        "8a2008a4cda3c43b3000f25151b80408b0bdb110",
+        "bprna_ts0 官方 1305 / projected 1288",
+        "TestSetB 官方 430 / projected 428",
+        "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
+        "recommendation_only=true",
+        "shared_registry_modified=false",
+        "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4",
         "e252f5351322994395968c61e3df3a51a0330293",
-        "58 条重建成功、95 条 UNCHECKED",
-        "56 true / 2 false",
-        "2 条 DSSR 差异",
+        "62 条重建成功、91 条 UNCHECKED",
+        "58 true / 4 false",
+        "4 条 DSSR 差异",
         "TS-hard 与 TS1/TS3 不序列不相交",
         "Rfam 14.9 exact=**43**",
         "TEMPORAL_FIRST_RELEASE_UNCHECKED",
@@ -1140,12 +1228,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_ts0_testsetb_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, and scheduler takeover"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII/TS0/TestSetB official protocols, PDB/Rfam lineage and latest 62/91 rebuild, incident recovery, and scheduler takeover"
     print(f"PASS: {scope}")
     return 0
 

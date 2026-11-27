@@ -94,12 +94,29 @@ def test_archiveii_official_artifact_contract():
     assert ledger.verify_archiveii_official_contract() == []
 
 
+def test_ts0_testsetb_dual_panels_and_official_partial_coverage_boundary():
+    text = ledger.DOC.read_text()
+    assert "8a2008a4cda3c43b3000f25151b80408b0bdb110" in text
+    assert "bprna_ts0 官方 1305 / projected 1288" in text
+    assert "TestSetB 官方 430 / projected 428" in text
+    assert "PARTIAL_COVERAGE_NOT_RANKED" in text
+    assert "UNCHECKED_NO_FULL_COVERAGE_PREDICTION" in text
+    assert "recommendation_only=true" in text
+    assert "shared_registry_modified=false" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_ts0_testsetb_artifact_contract():
+    assert ledger.verify_ts0_testsetb_contract() == []
+
+
 def test_pdb_rebuild_overlap_and_rfam_temporal_boundaries():
     text = ledger.DOC.read_text()
-    assert "58 条重建成功、95 条 UNCHECKED" in text
-    assert "56 true / 2 false" in text
-    assert "2 条 DSSR 差异" in text
-    assert "PDB58 不得排名" in text
+    assert "62 条重建成功、91 条 UNCHECKED" in text
+    assert "58 true / 4 false" in text
+    assert "4 条 DSSR 差异" in text
+    assert "PDB62 不得排名" in text
+    assert "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4" in text
     assert "ref_pdb_ts_hard` 28/28" in text
     assert "TS-hard 与 TS1/TS3 不序列不相交" in text
     assert "Rfam 14.9 exact=**43**" in text
