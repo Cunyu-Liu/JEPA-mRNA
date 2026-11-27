@@ -28,6 +28,10 @@ MODEL_DEV_V3 = F / "model_dev_v3"
 BPFOLD_PROTOCOL_REPO = Path("/home/rna_jev_bpfold_protocol")
 ARCHIVEII_REPO = Path("/home/rna_jev_archive_label_lineage")
 PDB_RFAM_REPO = Path("/home/rna_jev_pdb_rfam_label_lineage")
+RECOVERY_REPO = Path("/home/rna_jev_margin_incident_recovery")
+RECOVERY_ROOT = F / "structured_margin_full_v1/incident_recovery_20261127"
+ACTIVE_RUN_ROOT = Path("/home/foldnar_incident_run")
+ACTIVE_CHECKPOINT_ROOT = Path("/home/foldnar_incident_checkpoints")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -63,6 +67,9 @@ SOURCES = {
     "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
     "pdb_rebuild_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
     "pdb_rebuild_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json",
+    "recovery_preflight": RECOVERY_ROOT / "recovery_preflight_local.json",
+    "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
+    "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -89,6 +96,7 @@ SOURCE_COMMITS = {
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
     "ArchiveII official reference": (ARCHIVEII_REPO, "4daccb0eb1c78db565532634ed0d77cf1e6ddaae"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "e252f5351322994395968c61e3df3a51a0330293"),
+    "margin incident recovery": (RECOVERY_REPO, "442636dd660f93f1d39156ca9bbdbd107ecdbf42"),
 }
 
 
@@ -411,6 +419,84 @@ def verify_pdb_rfam_contract() -> list[str]:
     return errors
 
 
+def verify_incident_recovery_contract() -> list[str]:
+    errors = []
+    names = ["recovery_preflight", "recovery_scheduler", "matched_recovery_launch"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return errors + [f"missing incident recovery source: {name}: {SOURCES[name]}"]
+    preflight = json.loads(SOURCES["recovery_preflight"].read_text())
+    scheduler = json.loads(SOURCES["recovery_scheduler"].read_text())
+    launch = json.loads(SOURCES["matched_recovery_launch"].read_text())
+    if preflight["status"] != "PASS_INTERRUPTED_RESUME_AUDIT" or preflight["scientific_conclusion"] is not None:
+        errors.append("incident preflight is not a passing no-conclusion resume audit")
+    for arm in ["matched_control", "ensemble_context"]:
+        report = preflight["arms"][arm]
+        checkpoint = report["checkpoint"]
+        if report["status"] != "PASS_INTERRUPTED_RESUME_AUDIT" or report["converged"] is not False:
+            errors.append(f"incident arm is not a resumable non-converged run: {arm}")
+        if checkpoint["step"] != 9500 or checkpoint["optimizer_steps"] != 9500 or checkpoint["checkpoint_phase"] != "latest":
+            errors.append(f"incident checkpoint is not step 9500 latest: {arm}")
+        if report["stream"]["next_step"] != 9501 or report["stream"]["next_batch_contract_valid"] is not True:
+            errors.append(f"incident next-batch continuity mismatch: {arm}")
+        for name in ["train_log.jsonl", "batch_order.jsonl", "compute_ledger.jsonl"]:
+            if report["ledgers"][name]["rows_through_checkpoint"] != 9500:
+                errors.append(f"incident ledger does not conserve 9500 steps: {arm}/{name}")
+    if scheduler["recovery_code_commit"] != "442636dd660f93f1d39156ca9bbdbd107ecdbf42":
+        errors.append("incident scheduler recovery commit mismatch")
+    if scheduler["frozen_source_commit"] != "a846d90519e575a79b7db76f63692afb755e8ac6":
+        errors.append("incident scheduler frozen source commit mismatch")
+    if scheduler["scientific_conclusion"] is not None or scheduler["completed_arms"] != [] or scheduler["evaluation"] is not None:
+        errors.append("incident scheduler gained a conclusion/completed arm/evaluation without ledger review")
+    process = scheduler["processes"].get("matched_control", {})
+    if process.get("status") != "running" or process.get("launch_kind") != "resume":
+        errors.append("matched recovery is no longer the recorded running/resume process")
+    if launch["launch_kind"] != "resume" or launch["recovery_code_commit"] != scheduler["recovery_code_commit"]:
+        errors.append("matched launch identity does not bind the recovery commit")
+    if launch["preflight_sha256"] != "b72b144915c9e07ecdfc701b55d9b5266df27875afe27f6b28e9fc30e26ce4dd" or launch["scientific_conclusion"] is not None:
+        errors.append("matched launch identity does not bind the no-conclusion preflight")
+    meta_path = ACTIVE_RUN_ROOT / "matched_control/run_meta.json"
+    train_path = ACTIVE_RUN_ROOT / "matched_control/train_log.jsonl"
+    validation_path = ACTIVE_RUN_ROOT / "matched_control/validation_log.jsonl"
+    checkpoint_path = ACTIVE_CHECKPOINT_ROOT / "matched_control/resume.pt"
+    log_path = Path("/home/foldnar_incident_logs/matched_control.log")
+    for path in [meta_path, train_path, validation_path, checkpoint_path, log_path]:
+        if not path.is_file():
+            errors.append(f"missing active recovery evidence: {path}")
+    if errors:
+        return errors
+    meta = json.loads(meta_path.read_text())
+    if meta.get("status") != "running" or meta.get("converged") is not False:
+        errors.append("matched run_meta is no longer running and non-converged")
+    train = [json.loads(line) for line in train_path.read_text().splitlines()]
+    validation = [json.loads(line) for line in validation_path.read_text().splitlines()]
+    if len(train) < 10000 or train[9999]["step"] != 10000 or train[9999]["optimizer_steps"] != 10000:
+        errors.append("matched train log lacks contiguous step/optimizer 10000")
+    step10000 = next((row for row in validation if row["step"] == 10000), None)
+    if step10000 is None:
+        errors.append("matched step-10000 validation has not completed")
+    else:
+        if not math.isclose(step10000["validation_loss"], 0.4183340173506429, rel_tol=0.0, abs_tol=1e-15):
+            errors.append("matched step-10000 validation loss mismatch")
+        if step10000["eligible"] is not True or step10000["improved"] is not True or step10000["save_best"] is not True or step10000["stop"] is not False:
+            errors.append("matched step-10000 validation flags mismatch")
+    if checkpoint_path.stat().st_size <= 0:
+        errors.append("matched local staged checkpoint is empty")
+    incident_log = log_path.read_text(errors="replace")
+    for required in ["Errno 122", "Disk quota exceeded", "resumed arm=matched_control step=9500", "stage=/home/foldnar_incident_checkpoints/matched_control/resume.pt"]:
+        if required not in incident_log:
+            errors.append(f"incident log lacks evidence: {required}")
+    staged = (RECOVERY_REPO / "tools/run_frozen_margin_trainer_with_staged_checkpoint_20261127.py").read_text()
+    mirror = (RECOVERY_REPO / "tools/mirror_structured_margin_evaluation_for_publication_20261127.py").read_text()
+    for required in ['LOCAL_CHECKPOINT_ROOT = Path("/home/foldnar_incident_checkpoints")', "staged_atomic_torch_save", "sha256_file"]:
+        if required not in staged:
+            errors.append(f"staged-checkpoint contract missing: {required}")
+    for required in ["PASS_FINAL_EVALUATION_MIRRORED_FOR_EXISTING_PUBLISHER", 'report.get("final_verdict_allowed") is not True', "copied != before"]:
+        if required not in mirror:
+            errors.append(f"final teams mirror contract missing: {required}")
+    return errors
+
+
 def verify_links() -> list[str]:
     errors = []
     for target in re.findall(r"\[[^]]+\]\(([^)]+)\)", DOC.read_text()):
@@ -469,6 +555,12 @@ def verify_narrative_guards() -> list[str]:
         "TS-hard 与 TS1/TS3 不序列不相交",
         "Rfam 14.9 exact=**43**",
         "TEMPORAL_FIRST_RELEASE_UNCHECKED",
+        "442636dd660f93f1d39156ca9bbdbd107ecdbf42",
+        "b72b144915c9e07ecdfc701b55d9b5266df27875afe27f6b28e9fc30e26ce4dd",
+        "OSError: [Errno 122] Disk quota exceeded",
+        "step=10000 validation 已完成",
+        "0.4183340173506429",
+        "四臂未收敛，当前无 margin 科学结论",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
@@ -904,12 +996,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, and PDB/Rfam lineage"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, and incident recovery"
     print(f"PASS: {scope}")
     return 0
 

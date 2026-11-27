@@ -22,6 +22,7 @@
 - current independent margin evaluator 固定为 `/home/rna_jev_margin_evaluator`，HEAD `536b79e450c1ad18b67e06cb39ecb3730546221b`；本 ledger 更新只读核对该提交，不修改评估器、候选训练或调度。
 - **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。**本次更新实时状态**：`scheduler_state.json` 为 `QUEUED_ARM_MEMORY`，`matched_control` 与 `ensemble_context` 两臂运行，`destroy_interval_shuffle` 与 `independent_context` 两臂等待资源，完成臂仍为 0，`scientific_conclusion=null`。这里区分初始快照与后续调度；排队、探针、启动、运行或等待资源的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
 - ArchiveII/PDB/Rfam 标签谱系整合基线固定为 `/home/rna_jev_foldnar_integration`@`8bd87223edb9b5a21c1e13676b4192de54505d9f`；ArchiveII official-reference 证据与三轮 clean-clone delivery 固定为 `/home/rna_jev_archive_label_lineage`@`4daccb0eb1c78db565532634ed0d77cf1e6ddaae`，PDB/Rfam 原始来源审计与 RCSB/mmCIF/DSSR 双协议重建固定为 `/home/rna_jev_pdb_rfam_label_lineage`@`e252f5351322994395968c61e3df3a51a0330293`。这些是外部预测/标签的 CPU 审计与复算，不是 margin 结果，也不用于模型选择。
+- 磁盘配额事故恢复代码固定为 `/home/rna_jev_margin_incident_recovery`@`442636dd660f93f1d39156ca9bbdbd107ecdbf42`，preflight SHA256=`b72b144915c9e07ecdfc701b55d9b5266df27875afe27f6b28e9fc30e26ce4dd`。恢复调度只读快照为完成臂 0、`scientific_conclusion=null`；本 ledger 不启动、停止或修改任何训练/恢复进程。
 
 Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldnar`，`A=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts`。
 
@@ -256,6 +257,18 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：58 条重建资产不是完整 PDB 面板，2 条差异不是可忽略噪声，95 条 UNCHECKED 不是阴性或失败预测。所有内容均 `AUDIT_ONLY_NO_MODEL_SELECTION`，没有 prediction/metric/checkpoint/model-selection outcome，不支持 PDB/Rfam 排名、实验真值、独立泛化或 temporal-OOD 结论。
 - **Next**：任何 PDB 性能比较必须先处理 95 条缺失身份、2 条 DSSR 差异和跨面板重叠并完整重算；Rfam temporal 必须补齐 pair provenance 与逐记录 first-release dates。当前不启动推理、不修改 PPT。
 
+## 21. 磁盘配额事故与 9500 断点恢复：工程连续性不是科学收敛
+
+- **Claim（当前运行边界）**：本次中断有真实 `OSError: [Errno 122] Disk quota exceeded`，发生在 `/home` staged checkpoint 向 teams 目标复制时，不能归因为模型、CUDA 或科学门失败。修复 commit `442636dd660f93f1d39156ca9bbdbd107ecdbf42` 保持原训练合同不变；**四臂未收敛，当前无 margin 科学结论**。
+- **Phenomenon**：大 checkpoint 在团队配额压力下会使训练/调度中断；仅重新启动进程不足以证明连续性，必须核对 checkpoint、optimizer/RNG/stream、下一 batch 和逐 step ledgers，同时避免把活跃大文件继续写向配额事故路径。
+- **Intervention**：双臂 preflight 对 9,500 step checkpoint、optimizer step、tensor/RNG 身份、下一批记录和 train/batch/compute/validation 连续性做只读审计；训练使用 frozen source `a846d90519e575a79b7db76f63692afb755e8ac6`、`steps=0`、batch=4、500-step validation/save、最多解冻 20/33，不以固定步数替代自然收敛。活跃 run 与大 checkpoint 暂存分别位于 `/home/foldnar_incident_run` 和 `/home/foldnar_incident_checkpoints`，最终独立评估只在合法终态后由既有 publisher 镜像到 teams。
+- **Expected observation**：恢复必须从 9,500 的下一批继续，不重复/跳批，不篡改原 16 门；10000 训练点或 checkpoint staging 只证明恢复运行。只有四臂均满足自然收敛和终态资格后，才允许独立评估及最终 teams 镜像；在此之前没有 margin>NLL、机制特异性或 SOTA 结论。
+- **Actual（只读快照）**：`recovery_preflight_local.json` 为 `PASS_INTERRUPTED_RESUME_AUDIT`，matched/ensemble 双臂 checkpoint 与 optimizer 均为 **step=9500**、`converged=false`、下一 step=9501，三条训练 ledger 均守恒到 9500，preflight `scientific_conclusion=null`。matched 的 launch identity 为 `launch_kind=resume`、recovery commit=`442636d…`、preflight SHA256=`b72b1449…ce4dd`。随后 matched train log 已到达 step=10000（optimizer=10000、20/33 unfrozen），并完成 `/home/foldnar_incident_checkpoints/matched_control/resume.pt` staging。**step=10000 validation 已完成**：validation_loss=**0.4183340173506429**、`eligible=true`、`improved=true`、`save_best=true`、`stop=false`。继续只读跟踪至最新快照时，train log 已到 step=15000，validation 已完成到 step=14500；当前 best 为 step=12500、validation_loss=0.4035744189001614、bad_evaluations=4，仍 `stop=false`。这些只是中途训练/validation 状态，不是自然收敛或结构评估结果。
+- **Actual（调度与存储）**：`recovery_scheduler_state.json` 的 `recovery_code_commit=442636dd660f93f1d39156ca9bbdbd107ecdbf42`，matched `run_meta` 为 running、`converged=false`，调度进程为 running/resume，`completed_arms=[]`、`evaluation=null`、`scientific_conclusion=null`；destroy/independent 尚未形成终态。代码留在 `/home`，常规 artifacts 与最终 publication mirror 留在 teams；只有本次活跃 run/大 checkpoint 按事故记录暂放 `/home`，不得把该例外推广为新存储默认。
+- **Artifact / links**：[9500 preflight](/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_full_v1/incident_recovery_20261127/recovery_preflight_local.json)、[恢复调度状态](/teams/HoulabData_1788502323/liucunyu/foldnar/structured_margin_full_v1/incident_recovery_20261127/recovery_scheduler_state.json)、[matched launch identity](/home/foldnar_incident_run/matched_control/recovery_launch_identity_20261127.json)、[staged-checkpoint trainer](/home/rna_jev_margin_incident_recovery/tools/run_frozen_margin_trainer_with_staged_checkpoint_20261127.py) 和 [最终评估镜像器](/home/rna_jev_margin_incident_recovery/tools/mirror_structured_margin_evaluation_for_publication_20261127.py)。事故原始日志为 `/home/foldnar_incident_logs/matched_control.log`，其中保留 Errno 122 与后续 9500 resume/10000 staging 证据。
+- **Limitation**：9500 preflight PASS、10000 step、进程 running、checkpoint 可写或镜像器等待都不是科学 PASS；当前四臂未收敛，独立评估尚未开始，不能比较 margin/NLL validation loss，也不能选择臂或 checkpoint。活跃 `/home` 文件仍需在合法终态后完成 hash-verified teams 镜像，当前不得宣称最终镜像完成。
+- **Next**：让既有恢复调度自然运行，不干扰 GPU/进程；后续仅读取终端 `run_meta`、独立评估和镜像 hash。若任何臂未达到预注册自然收敛，维持无结论，不用 step cap 或中途 validation 代替。此轮不修改 PPT。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -279,6 +292,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | Evaluator×v3 用途与16门不变 | 分层不能改写主科学门 | 12 run 逐层+evaluator 源码联合门禁 | EXACT sensitivity-only；其余 diagnostic-only；16门原样 | evaluator tools；v3 registry/manifest | 不 rescue/veto，不选 checkpoint/arm；margin 无结论 |
 | ArchiveII official-reference | 旧标签循环且预测覆盖不齐 | 未过滤官方参考+冻结预测独立复算 | clean 2544 同协议值与 paired macro CI；3966 仅全覆盖可描述 | `archiveii_official_reference_20261127/system_metrics.json` | 3966 无全覆盖单预测器，禁排名；audit-only，不选模、不是 margin 结果 |
 | PDB/Rfam 标签谱系与 PDB58 重建 | 原面板缺坐标/时间/配对谱系且互相重叠 | 官方 PLK、mmCIF/DSSR、Rfam release 独立重算 | 58 重建、95 UNCHECKED；56 一致/2 差异；限制显式保留 | `pdb_rfam_label_lineage_audit_20261127`；`pdb_rcsb_rebuild_20261127` | 不排名；TS-hard 非独立；Rfam temporal 非自动 novel；不选模 |
+| 配额事故与 9500 恢复 | Errno 122 中断且大 checkpoint 压迫 teams 配额 | 双臂 preflight+原合同恢复+/home 暂存+终态 teams 镜像 | 下一批连续；四臂自然收敛后才评估 | `recovery_preflight_local.json`；`recovery_scheduler_state.json` | matched 10000 validation 已完成但未收敛；四臂未完成；无 margin 结论 |
 
 ## 摘要 / 标题准入审稿清单
 
@@ -305,7 +319,8 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **长序列边界**：19,000 nt 只能陈述 LinearPartition 单条 holdout 的全长 coverage、真实资源与 BPP/MEA recall；candidate recall 不得冒充结构准确率，baseline coverage 不得冒充 GEC coverage，GEC unsupported 不得省略。
 - [ ] **ArchiveII 覆盖与 CI**：旧派生标签只能 circular-audit-only；clean 2544 的 xens2/BPfold replay/RiNALMo-ft 必须使用 official-reference 真实值并标明 paired macro 差值 CI，RiNALMo-ft CI 跨 0。3966 只有 official release 全覆盖，单预测器保持 UNCHECKED，19 个部分覆盖身份不得排名或补 0。
 - [ ] **PDB/Rfam 禁排名与 temporal 限制**：PDB 仅 58 条重建，95 条 UNCHECKED，56 条 raw pair 一致而 2 条 DSSR 差异须重算；不得排名。TS-hard 28/28 跨面板重叠且与 TS1/TS3 不相交性不成立。Rfam temporal 43 条已在 14.9，first-release/pair provenance UNCHECKED，其他记录也不得自动称 novel。
+- [ ] **配额事故与恢复状态**：Errno 122 不得写成模型/CUDA 失败；9500 preflight 只证明可恢复，matched 10000 validation 已完成但 stop=false，不等于四臂收敛。完成臂 0、evaluation=null、scientific_conclusion=null；活跃大 checkpoint 暂 /home 是事故例外，最终 teams 镜像尚未完成，当前无任何 margin 科学结论。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、PDB58/95UNCHECKED/2 条 DSSR 差异、TS-hard 重叠、Rfam temporal 限制、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、PDB58/95UNCHECKED/2 条 DSSR 差异、TS-hard 重叠、Rfam temporal 限制、磁盘配额 Errno 122、9500 断点连续性、matched 10000 validation 真实状态、活跃 /home 暂存/终态 teams 镜像门、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。

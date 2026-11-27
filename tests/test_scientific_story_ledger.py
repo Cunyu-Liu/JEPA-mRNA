@@ -113,6 +113,26 @@ def test_pdb_rfam_artifact_contract():
     assert ledger.verify_pdb_rfam_contract() == []
 
 
+def test_incident_recovery_and_step10000_validation_status():
+    text = ledger.DOC.read_text()
+    assert "442636dd660f93f1d39156ca9bbdbd107ecdbf42" in text
+    assert "OSError: [Errno 122] Disk quota exceeded" in text
+    assert "step=9500" in text
+    assert "step=10000 validation 已完成" in text
+    assert "0.4183340173506429" in text
+    assert "stop=false" in text
+    assert "completed_arms=[]" in text
+    assert "evaluation=null" in text
+    assert "四臂未收敛，当前无 margin 科学结论" in text
+    assert "/home/foldnar_incident_checkpoints" in text
+    assert "不得宣称最终镜像完成" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_incident_recovery_artifact_contract():
+    assert ledger.verify_incident_recovery_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
