@@ -1,24 +1,24 @@
 {
   "status": "PASS_BUILD_REOPEN_17_PRIOR_XML_ATOMIC_REPLACE_HASH_GATE",
-  "deck": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_pdb62_round1/temporary_round73_copy.pptx",
-  "deck_sha256": "1c2d7276b40a188840579d8b4e0c79b7fd0afe75e4a56fac7ee635b075903e37",
-  "deck_bytes": 45817,
-  "prior_deck_sha256": "aced23d3dbdc122379489f55ff702c9427db481dd02d41b5d385fa48c64de29f",
-  "backup": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_pdb62_round1/source17_backup.pptx",
-  "backup_sha256": "aced23d3dbdc122379489f55ff702c9427db481dd02d41b5d385fa48c64de29f",
+  "deck": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_full7_round1/temporary_round73_copy.pptx",
+  "deck_sha256": "1658a6cc261ab3c6c6726693e181c73d6cf535e3e66076dec9a6c21dbbecc5b4",
+  "deck_bytes": 46003,
+  "prior_deck_sha256": "670cc7b096b2f80e391b08df04ca9c5a2752692df1edadd1bfa779891f906510",
+  "backup": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_full7_round1/source17_backup.pptx",
+  "backup_sha256": "670cc7b096b2f80e391b08df04ca9c5a2752692df1edadd1bfa779891f906510",
   "source_delivery": {
-    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_pdb62_round1/synthetic_round72_delivery.pptx",
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_full7_round1/synthetic_round72_delivery.pptx",
     "bytes": 42458,
-    "sha256": "aced23d3dbdc122379489f55ff702c9427db481dd02d41b5d385fa48c64de29f"
+    "sha256": "670cc7b096b2f80e391b08df04ca9c5a2752692df1edadd1bfa779891f906510"
   },
   "source_verification": {
-    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_pdb62_round1/publication_success.json",
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_full7_round1/publication_success.json",
     "bytes": 1041,
-    "sha256": "38047f920b632798e504f1a17f6612e7540e6cb3659740580f5d1c6a53d024a8"
+    "sha256": "dc3b04fc5e9b6a4097aba95aa1a4209be613f574b64721c2ec600e18c083dcdd"
   },
   "source_delivery_unchanged": true,
   "builder": "/home/rna_jev_label_protocol_ppt/ppt/add_label_protocol_round73.py",
-  "builder_sha256": "fce2b228eabd56e290ff37d708995c690ee73e246b3144554a05e804d1492760",
+  "builder_sha256": "59f22424b7d1e7b45af7b17f0152840b0f13e77c1c588d8ddf5fa5f536d8789f",
   "evidence_artifacts": [
     {
       "path": "/home/rna_jev_label_protocol_ppt/manifests/foldnar_v1/data_registry.json",
@@ -76,9 +76,24 @@
       "sha256": "68031451cdfd4725f139449d47726bc23327912be0f1008a5de974e574496986"
     },
     {
-      "path": "/home/rna_jev_label_protocol_ppt/artifacts/ts0_testsetb_official_reference_20261127/registry_recommendation.json",
-      "bytes": 302636,
-      "sha256": "3530994b84f86782b2ef3135b61cc85ec2d73fcc8f535391db84d73005ac890d"
+      "path": "/home/rna_jev_label_protocol_ppt/artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
+      "bytes": 29319,
+      "sha256": "8d46957d83104cf5a574968230d75ef5f29ff08e551e84d63994da0de702bc77"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/artifacts/ts0_official_coverage_recovery_20261127/verification_round2.json",
+      "bytes": 4270,
+      "sha256": "b1a1688033a2e1b31850f972cbee4978542ddf71e1ef8ba223b8622623b0ee05"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/artifacts/testsetb_official_coverage_recovery_20261127/recovery_audit.json",
+      "bytes": 8913,
+      "sha256": "81b6d5178830381ec1143aecd83f8ba02475da05555fe60377a23c13ada3e13e"
+    },
+    {
+      "path": "/home/rna_jev_label_protocol_ppt/artifacts/testsetb_official_coverage_recovery_20261127/verification_round3.json",
+      "bytes": 1388,
+      "sha256": "295acfdec61bb24a84a1c10daa8ac5d38a1171acc1381bc2f80a056a665e6906"
     }
   ],
   "scope": {
@@ -86,6 +101,8 @@
     "official_reference_descriptive_only": true,
     "pdb62_91_ranking_allowed": false,
     "ts0_testsetb_official_full_ranking_allowed": false,
+    "ts0_official_full_coverage_identities": 7,
+    "testsetb_official_full_coverage_identities": 7,
     "pretrain_unknown_or_unchecked_clean": false,
     "four_arm_converged": false,
     "complete_sota_closed": false,
@@ -98,7 +115,7 @@
   "deck_slide_index": 18,
   "added_slide_number": 37,
   "prior_slide_xml_preserved": 17,
-  "shape_bounds_checks": 18,
-  "new_slide_text_chars": 1223,
+  "shape_bounds_checks": 22,
+  "new_slide_text_chars": 1309,
   "render_visual_check": "PENDING_SEPARATE_RENDER_AND_OCR"
 }

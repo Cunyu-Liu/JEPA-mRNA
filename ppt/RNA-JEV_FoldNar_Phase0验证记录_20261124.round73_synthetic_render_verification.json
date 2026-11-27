@@ -1,27 +1,27 @@
 {
   "status": "PASS_RENDER_PDF_TEXT_AND_SLIDE37_OCR",
-  "deck_label": "SYNTHETIC_PDB62_91_AND_OFFICIAL_COVERAGE_GAPS",
+  "deck_label": "SYNTHETIC_OFFICIAL_7_FULL_AND_RNASTRUCTURE_PARTIAL",
   "deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round73_work/render/temporary_round73_copy.pptx",
-  "deck_sha256": "1c2d7276b40a188840579d8b4e0c79b7fd0afe75e4a56fac7ee635b075903e37",
+  "deck_sha256": "1658a6cc261ab3c6c6726693e181c73d6cf535e3e66076dec9a6c21dbbecc5b4",
   "deck_unchanged": true,
   "slides_rendered": 18,
   "deck_slide_count": 18,
   "renderer": "LibreOffice 26.8.1.1 bf6ef2662401c7d6dce671ab4deb26ee0af3a7c1 headless PDF; pdftoppm 120 dpi; OCR 400 dpi",
-  "ppt_to_pdf_complete_text_checks": 46,
+  "ppt_to_pdf_complete_text_checks": 48,
   "missing_or_clipped_text": [],
   "missing_new_page_pdf_text": [],
   "missing_new_page_ocr_text": [],
-  "obsolete_pdb58_95_text": [],
+  "obsolete_evidence_text": [],
   "ocr": {
     "deck_index": 18,
     "display_number": 37,
     "png": "slide37-ocr.png",
-    "png_sha256": "6dd47a44bfec702b0faf44189a800757488894321f326cbd6f34b6548d426e14",
+    "png_sha256": "5b1a4f70596286400876a274f123bd0e2b41d5ef5fe67e0164affe7b127f7a6d",
     "text_path": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round73_work/render/output/slide37-ocr.txt",
     "engine": "macOS Vision zh-Hans/en-US",
-    "characters": 1068
+    "characters": 1156
   },
-  "pdf_sha256": "3feb39bf917216e034be5a03fb1956733a848c9ebeca5153df82d2c0318d6c81",
+  "pdf_sha256": "6ef8cf795f77805b216910e306c61b29a11d40b19a8edfc6321ebc25a05ba922",
   "real_ppt_modified": false,
   "visual_review": "PENDING_AGENT_IMAGE_REVIEW"
 }
