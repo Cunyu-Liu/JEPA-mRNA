@@ -345,6 +345,18 @@ def test_ensemble_audit_time_status_and_four_arm_conclusion_gate():
     assert "独立结构评估仍未开始" in text
 
 
+def test_archiveii_xens2_memory_wait_is_not_production():
+    text = ledger.DOC.read_text()
+    assert "external peak delta 为 **10,465 MiB**" in text
+    assert "required_free_mib=17746" in text
+    assert "free_mib=15988" in text
+    assert "15988<17746" in text
+    assert "4131240" in text
+    assert "WAITING_PRODUCTION" in text
+    assert "production_started=false" in text
+    assert "full_composite_records=2544" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

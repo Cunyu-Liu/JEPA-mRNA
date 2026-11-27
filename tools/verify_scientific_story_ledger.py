@@ -624,11 +624,12 @@ def verify_matched_convergence_contract() -> list[str]:
 
 def verify_archiveii_full_recovery_contract() -> list[str]:
     errors = []
-    for name in ["archiveii_full_metrics", "archiveii_full_verification"]:
+    for name in ["archiveii_full_metrics", "archiveii_full_verification", "archiveii_xens2_queue"]:
         if not SOURCES[name].is_file():
             return [f"missing ArchiveII full recovery source: {name}: {SOURCES[name]}"]
     metrics = json.loads(SOURCES["archiveii_full_metrics"].read_text())
     verification = json.loads(SOURCES["archiveii_full_verification"].read_text())
+    queue = json.loads(SOURCES["archiveii_xens2_queue"].read_text())
     expected_coverage = {
         "base_identities": 36,
         "clean_2544_full_coverage": 28,
@@ -672,6 +673,17 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         errors.append(f"ArchiveII current full3966 identities mismatch: {sorted(full_ids)}")
     if full["xens2_delta"] != "UNCHECKED_XENS2_NOT_FULL_COVERAGE":
         errors.append("ArchiveII full xens2 delta was computed without full coverage")
+    queue_status = queue["status"]
+    if queue_status["state"] != "WAITING_PRODUCTION" or queue_status["pid"] != 4131240:
+        errors.append("ArchiveII xens2 queue is not the frozen production wait")
+    if queue_status["measured_peak_mib"] != 10465.0 or queue_status["required_free_mib"] != 17746 or queue_status["device"]["free_mib"] != 15988:
+        errors.append("ArchiveII xens2 probe/production/free memory mismatch")
+    if queue_status["device"]["free_mib"] >= queue_status["required_free_mib"] or queue["production_started"] is not False:
+        errors.append("ArchiveII xens2 production was launched without required free memory")
+    if metrics["recovery"]["xens2"]["n_completed"] != 0 or metrics["recovery"]["xens2"]["full_composite_records"] != 2544 or metrics["recovery"]["xens2"]["remaining_count"] != 1422:
+        errors.append("ArchiveII xens2 production has unreported completed predictions")
+    if queue["probe_result"]["protocol"] != "frozen xens2_eval; len>1024 or missing embeddings explicitly blocked, never substituted":
+        errors.append("ArchiveII xens2 probe protocol mismatch")
     rows = {row["prediction_id"]: row for row in metrics["rows"]}
     xens2 = rows["xens2/archiveii_embok_clean"]["panels"]["archiveii_official_reference_3966"]
     if xens2["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or xens2["n_with_prediction"] != 2544 or xens2["delta_vs_xens2"] is not None or xens2["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
@@ -1268,6 +1280,10 @@ def verify_narrative_guards() -> list[str]:
         "0.7023050285738565",
         "8 个全覆盖身份",
         "UNCHECKED_XENS2_NOT_FULL_COVERAGE",
+        "external peak delta 为 **10,465 MiB**",
+        "required_free_mib=17746",
+        "free_mib=15988",
+        "WAITING_PRODUCTION",
         "Vienna 真实 clean 记录级预测后已 full",
         "2556/3966",
         "base full=1 与当前 full=8",
