@@ -23,6 +23,7 @@
 - **登记排队快照**：`structured_margin_full_v1/generation_01/startup_report_v1.json` 为 `QUEUED_PROBE_MEMORY`，scheduler PID `3976280`，完成臂 0，`scientific_conclusion=null`。**本次更新实时状态**：`scheduler_state.json` 为 `QUEUED_ARM_MEMORY`，`matched_control` 与 `ensemble_context` 两臂运行，`destroy_interval_shuffle` 与 `independent_context` 两臂等待资源，完成臂仍为 0，`scientific_conclusion=null`。这里区分初始快照与后续调度；排队、探针、启动、运行或等待资源的进程都不是科学结果。本 ledger 不修改调度器、资源门或任何运行任务。
 - ArchiveII/PDB/Rfam 标签谱系整合基线固定为 `/home/rna_jev_foldnar_integration`@`8bd87223edb9b5a21c1e13676b4192de54505d9f`；ArchiveII official-reference 证据与三轮 clean-clone delivery 固定为 `/home/rna_jev_archive_label_lineage`@`4daccb0eb1c78db565532634ed0d77cf1e6ddaae`，PDB/Rfam 原始来源审计与 RCSB/mmCIF/DSSR 双协议重建固定为 `/home/rna_jev_pdb_rfam_label_lineage`@`e252f5351322994395968c61e3df3a51a0330293`。这些是外部预测/标签的 CPU 审计与复算，不是 margin 结果，也不用于模型选择。
 - 磁盘配额事故恢复代码固定为 `/home/rna_jev_margin_incident_recovery`@`442636dd660f93f1d39156ca9bbdbd107ecdbf42`，preflight SHA256=`b72b144915c9e07ecdfc701b55d9b5266df27875afe27f6b28e9fc30e26ce4dd`。恢复调度只读快照为完成臂 0、`scientific_conclusion=null`；本 ledger 不启动、停止或修改任何训练/恢复进程。
+- 第二次 scheduler Errno 122 后的最终修复固定为 `/home/rna_jev_margin_incident_recovery`@`aa9f1c4a92e92d70841e33cec455734f160075c4`，本地 HEAD 与 GitHub 分支 HEAD 一致；接管证据固定为 `/home/foldnar_incident_evidence/recovery_takeover_status.json`。历史 teams scheduler state 与当前本地接管 state 分开记录，不把旧快照覆盖成新状态。
 
 Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldnar`，`A=/teams/HoulabData_1788502323/liucunyu/rna_jev_xens2_dualview_round56/artifacts`。
 
@@ -269,6 +270,17 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：9500 preflight PASS、10000 step、进程 running、checkpoint 可写或镜像器等待都不是科学 PASS；当前四臂未收敛，独立评估尚未开始，不能比较 margin/NLL validation loss，也不能选择臂或 checkpoint。活跃 `/home` 文件仍需在合法终态后完成 hash-verified teams 镜像，当前不得宣称最终镜像完成。
 - **Next**：让既有恢复调度自然运行，不干扰 GPU/进程；后续仅读取终端 `run_meta`、独立评估和镜像 hash。若任何臂未达到预注册自然收敛，维持无结论，不用 step cap 或中途 validation 代替。此轮不修改 PPT。
 
+## 22. 第二次 Errno 122 与最终接管修复：scheduler 退出不等于训练退出
+
+- **Claim（第二次事故事实）**：第一次恢复后，旧 scheduler PID `4077848` 在 teams 上执行 `atomic_json` 写 `recovery_scheduler_state.json` 时再次发生 **`OSError: [Errno 122] Disk quota exceeded`** 并退出；这是第二次独立的 scheduler 状态写盘事故，不是 matched 训练、checkpoint 或科学门失败。
+- **Phenomenon**：旧 teams state 最后停在 `MONITORING`、matched `resume/running`，同时留下零字节 `recovery_scheduler_state.json.tmp.4077848`、旧 lock/PID 文件。它们只是中断现场，不能继续当作当前 scheduler 身份，也不能据此重启 matched。
+- **Intervention**：将第二次 failure log、旧 teams state/events 与 `/home` takeover status 分开冻结，核对进程生命周期与最终代码 `aa9f1c4a92e92d70841e33cec455734f160075c4`；不修改旧证据、不杀进程、不重启训练。
+- **Expected observation**：旧 scheduler 已退出而 matched 原 PID 继续存活；最终修复的本地/远端 commit 一致，接管证据 `scientific_conclusion=null`。只有核清身份后才允许记录接管，不能把进程监控事件改写成科学结果。
+- **Actual（事故与身份）**：`team_quota_scheduler_failure.log` 明确显示第二次 Errno 122 位于 `save("MONITORING") → atomic_json → recovery_scheduler_state.json`；只读 `/proc` 核对旧 scheduler `4077848` 已退出，matched `4077864` 仍存活。`recovery_takeover_status.json` 的 `head` 与 `remote_head` 均为 `aa9f1c4a92e92d70841e33cec455734f160075c4`，`scientific_conclusion=null`。
+- **Artifact / links**：[第二次 scheduler failure log](/home/foldnar_incident_evidence/team_quota_scheduler_failure.log)、[旧 teams state](/home/foldnar_incident_evidence/team_quota_scheduler_state.json)、[旧 teams events](/home/foldnar_incident_evidence/team_quota_scheduler_events.jsonl) 和 [takeover status](/home/foldnar_incident_evidence/recovery_takeover_status.json)。旧 teams lock/PID/state/events 仅作事故证据，当前身份另见本地接管 state。
+- **Limitation**：第二次 Errno 122 与最终修复 HEAD 不构成收敛、独立评估或 margin>NLL 证据；四臂仍未收敛，当前无 margin 科学结论。最终镜像尚未完成。
+- **Next**：继续核对本地 scheduler state/events/lock/PID、adopt 唯一性和存储边界；不干扰运行，不修改 PPT。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -323,4 +335,4 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、PDB58/95UNCHECKED/2 条 DSSR 差异、TS-hard 重叠、Rfam temporal 限制、磁盘配额 Errno 122、9500 断点连续性、matched 10000 validation 真实状态、活跃 /home 暂存/终态 teams 镜像门、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、PDB58/95UNCHECKED/2 条 DSSR 差异、TS-hard 重叠、Rfam temporal 限制、磁盘配额 Errno 122、9500 断点连续性、matched 10000 validation 真实状态、第二次 scheduler Errno 122、aa9f1c4 最终修复/takeover 证据、活跃 /home 暂存/终态 teams 镜像门、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
