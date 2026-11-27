@@ -1,0 +1,18 @@
+{
+  "excluded_pairs_by_repair": {
+    "pdb_ts1#633034": 89,
+    "pdb_ts2#633066": 2,
+    "pdb_ts3#633080": 2,
+    "pdb_ts_hard#633122": 89
+  },
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "n_new_metadata_references": 0,
+  "n_remaining": 91,
+  "n_scheme_repaired_references": 4,
+  "remaining_status_counts": {
+    "METADATA_AMBIGUOUS_UNCHECKED": 55,
+    "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED": 32,
+    "SOURCE_BAD_ALPHABET_UNCHECKED": 4
+  },
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1"
+}

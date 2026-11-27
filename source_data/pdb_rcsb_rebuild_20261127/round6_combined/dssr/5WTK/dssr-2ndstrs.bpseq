@@ -1,0 +1,40 @@
+    1 C     0 # name=B.C2
+    2 A    22 # name=B.A3, pairedNt=B.U23
+    3 C    19 # name=B.C4, pairedNt=B.G20
+    4 C    18 # name=B.C5, pairedNt=B.G19
+    5 C    17 # name=B.C6, pairedNt=B.G18
+    6 C    16 # name=B.C7, pairedNt=B.G17
+    7 A     0 # name=B.A8
+    8 A     0 # name=B.A9
+    9 U     0 # name=B.U10
+   10 A     0 # name=B.A11
+   11 U     0 # name=B.U12
+   12 C     0 # name=B.C13
+   13 G     0 # name=B.G14
+   14 A     0 # name=B.A15
+   15 A     0 # name=B.A16
+   16 G     6 # name=B.G17, pairedNt=B.C7
+   17 G     5 # name=B.G18, pairedNt=B.C6
+   18 G     4 # name=B.G19, pairedNt=B.C5
+   19 G     3 # name=B.G20, pairedNt=B.C4
+   20 A     0 # name=B.A21
+   21 C     0 # name=B.C22
+   22 U     2 # name=B.U23, pairedNt=B.A3
+   23 A     0 # name=B.A24
+   24 A     0 # name=B.A25
+   25 A     0 # name=B.A26
+   26 A     0 # name=B.A27
+   27 C     0 # name=B.C28
+   28 G     0 # name=B.G29
+   29 A     0 # name=B.A30
+   30 C     0 # name=B.C31
+   31 A     0 # name=B.A32
+   32 A     0 # name=B.A34
+   33 U     0 # name=B.U35
+   34 C     0 # name=B.C36
+   35 A     0 # name=B.A46
+   36 A     0 # name=B.A47
+   37 A     0 # name=B.A48
+   38 C     0 # name=B.C49
+   39 U     0 # name=B.U50
+   40 C     0 # name=B.C51

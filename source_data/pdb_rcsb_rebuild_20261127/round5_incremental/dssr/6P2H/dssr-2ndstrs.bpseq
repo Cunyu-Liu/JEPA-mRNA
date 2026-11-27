@@ -1,0 +1,70 @@
+    1 g    67 # name=A.GTP17, pairedNt=A.C83
+    2 G    66 # name=A.G18, pairedNt=A.C82
+    3 G    65 # name=A.G19, pairedNt=A.C81
+    4 U    64 # name=A.U20, pairedNt=A.A80
+    5 G    63 # name=A.G21, pairedNt=A.C79
+    6 U    36 # name=A.U22, pairedNt=A.A52
+    7 A     0 # name=A.A23
+    8 A     0 # name=A.A24
+    9 U    29 # name=A.U25, pairedNt=A.A45
+   10 C    28 # name=A.C26, pairedNt=A.G44
+   11 U    27 # name=A.U27, pairedNt=A.G43
+   12 C    26 # name=A.C28, pairedNt=A.G42
+   13 C    25 # name=A.C29, pairedNt=A.G41
+   14 A    24 # name=A.A30, pairedNt=A.U40
+   15 A    23 # name=A.A31, pairedNt=A.U39
+   16 A     0 # name=A.A32
+   17 A     0 # name=A.A33
+   18 U     0 # name=A.U34
+   19 A     0 # name=A.A35
+   20 U     0 # name=A.U36
+   21 G    46 # name=A.G37, pairedNt=A.C62
+   22 G    45 # name=A.G38, pairedNt=A.C61
+   23 U    15 # name=A.U39, pairedNt=A.A31
+   24 U    14 # name=A.U40, pairedNt=A.A30
+   25 G    13 # name=A.G41, pairedNt=A.C29
+   26 G    12 # name=A.G42, pairedNt=A.C28
+   27 G    11 # name=A.G43, pairedNt=A.U27
+   28 G    10 # name=A.G44, pairedNt=A.C26
+   29 A     9 # name=A.A45, pairedNt=A.U25
+   30 G     0 # name=A.G46
+   31 C     0 # name=A.C47
+   32 C     0 # name=A.C48
+   33 U     0 # name=A.U49
+   34 C     0 # name=A.C50
+   35 C     0 # name=A.C51
+   36 A     6 # name=A.A52, pairedNt=A.U22
+   37 C     0 # name=A.C53
+   38 C    58 # name=A.C54, pairedNt=A.G74
+   39 A    57 # name=A.A55, pairedNt=A.U73
+   40 G    56 # name=A.G56, pairedNt=A.C72
+   41 U    55 # name=A.U57, pairedNt=A.G71
+   42 G    54 # name=A.G58, pairedNt=A.C70
+   43 A    53 # name=A.A59, pairedNt=A.U69
+   44 A     0 # name=A.A60
+   45 C    22 # name=A.C61, pairedNt=A.G38
+   46 C    21 # name=A.C62, pairedNt=A.G37
+   47 G     0 # name=A.G63
+   48 U     0 # name=A.U64
+   49 A     0 # name=A.A65
+   50 A     0 # name=A.A66
+   51 A     0 # name=A.A67
+   52 A     0 # name=A.A68
+   53 U    43 # name=A.U69, pairedNt=A.A59
+   54 C    42 # name=A.C70, pairedNt=A.G58
+   55 G    41 # name=A.G71, pairedNt=A.U57
+   56 C    40 # name=A.C72, pairedNt=A.G56
+   57 U    39 # name=A.U73, pairedNt=A.A55
+   58 G    38 # name=A.G74, pairedNt=A.C54
+   59 U     0 # name=A.U75
+   60 C     0 # name=A.C76
+   61 A     0 # name=A.A77
+   62 C    70 # name=A.C78, pairedNt=A.GNG101
+   63 C     5 # name=A.C79, pairedNt=A.G21
+   64 A     4 # name=A.A80, pairedNt=A.U20
+   65 C     3 # name=A.C81, pairedNt=A.G19
+   66 C     2 # name=A.C82, pairedNt=A.G18
+   67 C     1 # name=A.C83, pairedNt=A.GTP17
+   68 A     0 # name=A.A84
+   69 G     0 # name=A.G85
+   70 g    62 # name=A.GNG101, pairedNt=A.C78

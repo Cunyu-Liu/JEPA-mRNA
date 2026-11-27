@@ -1,0 +1,56 @@
+   55 ENERGY = 0.0 [4PKD] -- secondary structure derived by DSSR
+    1 g     0     2    22    59 # name=V.GTP59, pairedNt=V.C80
+    2 G     1     3    21    60 # name=V.G60, pairedNt=V.C79
+    3 A     2     4    20    61 # name=V.A61, pairedNt=V.U78
+    4 U     3     5    19    62 # name=V.U62, pairedNt=V.A77
+    5 C     4     6    18    63 # name=V.C63, pairedNt=V.G76
+    6 C     5     7    17    64 # name=V.C64, pairedNt=V.G75
+    7 A     6     8     0    65 # name=V.A65
+    8 U     7     9     0    66 # name=V.U66
+    9 U     8    10     0    67 # name=V.U67
+   10 G     9    11     0    68 # name=V.G68
+   11 C    10    12     0    69 # name=V.C69
+   12 A    11    13     0    70 # name=V.A70
+   13 C    12    14     0    71 # name=V.C71
+   14 U    13    15     0    72 # name=V.U72
+   15 C    14    16     0    73 # name=V.C73
+   16 C    15    17     0    74 # name=V.C74
+   17 G    16    18     6    75 # name=V.G75, pairedNt=V.C64
+   18 G    17    19     5    76 # name=V.G76, pairedNt=V.C63
+   19 A    18    20     4    77 # name=V.A77, pairedNt=V.U62
+   20 U    19    21     3    78 # name=V.U78, pairedNt=V.A61
+   21 C    20    22     2    79 # name=V.C79, pairedNt=V.G60
+   22 C    21    23     1    80 # name=V.C80, pairedNt=V.GTP59
+   23 A    22    24    55    81 # name=V.A81, pairedNt=V.U113
+   24 G    23    25    54    82 # name=V.G82, pairedNt=V.C112
+   25 G    24    26    53    83 # name=V.G83, pairedNt=V.C111
+   26 A    25    27    52    84 # name=V.A84, pairedNt=V.U110
+   27 G    26    28    51    85 # name=V.G85, pairedNt=V.U109
+   28 A    27    29    50    86 # name=V.A86, pairedNt=V.U108
+   29 U    28    30     0    87 # name=V.U87
+   30 A    29    31     0    88 # name=V.A88
+   31 C    30    32    48    89 # name=V.C89, pairedNt=V.G106
+   32 C    31    33    47    90 # name=V.C90, pairedNt=V.G105
+   33 A    32    34    46    91 # name=V.A91, pairedNt=V.U104
+   34 U    33    35    45    92 # name=V.U92, pairedNt=V.G103
+   35 G    34    36     0    93 # name=V.G93
+   36 A    35    37     0    94 # name=V.A94
+   37 U    36    38     0    95 # name=V.U95
+   38 C    37    39     0    96 # name=V.C96
+   39 A    38    40     0    97 # name=V.A97
+   40 C    39    41     0    98 # name=V.C98
+   41 G    40    42     0    99 # name=V.G99
+   42 A    41    43     0   100 # name=V.A100
+   43 A    42    44     0   101 # name=V.A101
+   44 G    43    45     0   102 # name=V.G102
+   45 G    44    46    34   103 # name=V.G103, pairedNt=V.U92
+   46 U    45    47    33   104 # name=V.U104, pairedNt=V.A91
+   47 G    46    48    32   105 # name=V.G105, pairedNt=V.C90
+   48 G    47    49    31   106 # name=V.G106, pairedNt=V.C89
+   49 U    48    50     0   107 # name=V.U107
+   50 U    49    51    28   108 # name=V.U108, pairedNt=V.A86
+   51 U    50    52    27   109 # name=V.U109, pairedNt=V.G85
+   52 U    51    53    26   110 # name=V.U110, pairedNt=V.A84
+   53 C    52    54    25   111 # name=V.C111, pairedNt=V.G83
+   54 C    53    55    24   112 # name=V.C112, pairedNt=V.G82
+   55 U    54     0    23   113 # name=V.U113, pairedNt=V.A81

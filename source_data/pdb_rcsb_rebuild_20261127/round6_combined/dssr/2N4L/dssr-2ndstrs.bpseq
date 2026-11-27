@@ -1,0 +1,53 @@
+    1 G    53 # name=A.G1, pairedNt=A.C53
+    2 G    52 # name=A.G2, pairedNt=A.C52
+    3 A    51 # name=A.A3, pairedNt=A.U51
+    4 A    50 # name=A.A4, pairedNt=A.U50
+    5 U    49 # name=A.U5, pairedNt=A.A49
+    6 A    48 # name=A.A6, pairedNt=A.U48
+    7 U    47 # name=A.U7, pairedNt=A.A47
+    8 U    46 # name=A.U8, pairedNt=A.G46
+    9 U    45 # name=A.U9, pairedNt=A.G45
+   10 U    44 # name=A.U10, pairedNt=A.G44
+   11 U    43 # name=A.U11, pairedNt=A.A43
+   12 G    42 # name=A.G12, pairedNt=A.C42
+   13 C    41 # name=A.C13, pairedNt=A.G41
+   14 U    40 # name=A.U14, pairedNt=A.G40
+   15 G     0 # name=A.G15
+   16 U     0 # name=A.U16
+   17 A    37 # name=A.A17, pairedNt=A.U37
+   18 C    36 # name=A.C18, pairedNt=A.G36
+   19 U    35 # name=A.U19, pairedNt=A.A35
+   20 U     0 # name=A.U20
+   21 U     0 # name=A.U21
+   22 C    34 # name=A.C22, pairedNt=A.G34
+   23 U    33 # name=A.U23, pairedNt=A.A33
+   24 A    32 # name=A.A24, pairedNt=A.U32
+   25 U    31 # name=A.U25, pairedNt=A.A31
+   26 A     0 # name=A.A26
+   27 G     0 # name=A.G27
+   28 U     0 # name=A.U28
+   29 G     0 # name=A.G29
+   30 A     0 # name=A.A30
+   31 A    25 # name=A.A31, pairedNt=A.U25
+   32 U    24 # name=A.U32, pairedNt=A.A24
+   33 A    23 # name=A.A33, pairedNt=A.U23
+   34 G    22 # name=A.G34, pairedNt=A.C22
+   35 A    19 # name=A.A35, pairedNt=A.U19
+   36 G    18 # name=A.G36, pairedNt=A.C18
+   37 U    17 # name=A.U37, pairedNt=A.A17
+   38 U     0 # name=A.U38
+   39 A     0 # name=A.A39
+   40 G    14 # name=A.G40, pairedNt=A.U14
+   41 G    13 # name=A.G41, pairedNt=A.C13
+   42 C    12 # name=A.C42, pairedNt=A.G12
+   43 A    11 # name=A.A43, pairedNt=A.U11
+   44 G    10 # name=A.G44, pairedNt=A.U10
+   45 G     9 # name=A.G45, pairedNt=A.U9
+   46 G     8 # name=A.G46, pairedNt=A.U8
+   47 A     7 # name=A.A47, pairedNt=A.U7
+   48 U     6 # name=A.U48, pairedNt=A.A6
+   49 A     5 # name=A.A49, pairedNt=A.U5
+   50 U     4 # name=A.U50, pairedNt=A.A4
+   51 U     3 # name=A.U51, pairedNt=A.A3
+   52 C     2 # name=A.C52, pairedNt=A.G2
+   53 C     1 # name=A.C53, pairedNt=A.G1

@@ -1,0 +1,131 @@
+  130 ENERGY = 0.0 [6PMO] -- secondary structure derived by DSSR
+    1 G     0     2    66     1 # name=B.G1, pairedNt=B.C72
+    2 C     1     3    65     2 # name=B.C2, pairedNt=B.G71
+    3 G     2     4    64     3 # name=B.G3, pairedNt=B.C70
+    4 G     3     5    63     4 # name=B.G4, pairedNt=B.C69
+    5 A     4     6    62     5 # name=B.A5, pairedNt=B.U68
+    6 A     5     7    61     6 # name=B.A6, pairedNt=B.U67
+    7 G     6     8    60     7 # name=B.G7, pairedNt=B.C66
+    8 U     7     9     0     8 # name=B.U8
+    9 A     8    10     0     9 # name=B.A9
+   10 G     9    11    24    10 # name=B.G10, pairedNt=B.C24
+   11 U    10    12    23    11 # name=B.U11, pairedNt=B.A23
+   12 U    11    13    22    12 # name=B.U12, pairedNt=B.A22
+   13 C    12    14    21    13 # name=B.C13, pairedNt=B.G21
+   14 A    13    15     0    14 # name=B.A14
+   15 G    14    16     0    15 # name=B.G15
+   16 U    15    17     0    16 # name=B.U16
+   17 G    16    18     0    17 # name=B.G17
+   18 G    17    19    50    18 # name=B.G18, pairedNt=B.C56
+   19 U    18    20     0    19 # name=B.U19
+   20 A    19    21     0    20 # name=B.A20
+   21 G    20    22    13    21 # name=B.G21, pairedNt=B.C13
+   22 A    21    23    12    22 # name=B.A22, pairedNt=B.U12
+   23 A    22    24    11    23 # name=B.A23, pairedNt=B.U11
+   24 C    23    25    10    24 # name=B.C24, pairedNt=B.G10
+   25 A    24    26     0    25 # name=B.A25
+   26 C    25    27    37    26 # name=B.C26, pairedNt=B.G43
+   27 C    26    28    36    27 # name=B.C27, pairedNt=B.G42
+   28 A    27    29    35    28 # name=B.A28, pairedNt=B.U41
+   29 C    28    30    34    29 # name=B.C29, pairedNt=B.G40
+   30 C    29     0    33    30 # name=B.C30, pairedNt=B.G39
+   31 A     0    32     0    37 # name=B.A37
+   32 A    31    33     0    38 # name=B.A38
+   33 G    32    34    30    39 # name=B.G39, pairedNt=B.C30
+   34 G    33    35    29    40 # name=B.G40, pairedNt=B.C29
+   35 U    34    36    28    41 # name=B.U41, pairedNt=B.A28
+   36 G    35    37    27    42 # name=B.G42, pairedNt=B.C27
+   37 G    36    38    26    43 # name=B.G43, pairedNt=B.C26
+   38 G    37    39     0    44 # name=B.G44
+   39 G    38    40     0    45 # name=B.G45
+   40 G    39    41     0    46 # name=B.G46
+   41 U    40    42     0    47 # name=B.U47
+   42 C    41    43     0    48 # name=B.C48
+   43 G    42    44    59    49 # name=B.G49, pairedNt=B.U65
+   44 C    43    45    58    50 # name=B.C50, pairedNt=B.G64
+   45 G    44    46    57    51 # name=B.G51, pairedNt=B.C63
+   46 G    45    47    56    52 # name=B.G52, pairedNt=B.C62
+   47 G    46    48    55    53 # name=B.G53, pairedNt=B.C61
+   48 U    47    49     0    54 # name=B.U54
+   49 U    48    50     0    55 # name=B.U55
+   50 C    49    51    18    56 # name=B.C56, pairedNt=B.G18
+   51 G    50    52     0    57 # name=B.G57
+   52 A    51    53     0    58 # name=B.A58
+   53 A    52    54     0    59 # name=B.A59
+   54 U    53    55     0    60 # name=B.U60
+   55 C    54    56    47    61 # name=B.C61, pairedNt=B.G53
+   56 C    55    57    46    62 # name=B.C62, pairedNt=B.G52
+   57 C    56    58    45    63 # name=B.C63, pairedNt=B.G51
+   58 G    57    59    44    64 # name=B.G64, pairedNt=B.C50
+   59 U    58    60    43    65 # name=B.U65, pairedNt=B.G49
+   60 C    59    61     7    66 # name=B.C66, pairedNt=B.G7
+   61 U    60    62     6    67 # name=B.U67, pairedNt=B.A6
+   62 U    61    63     5    68 # name=B.U68, pairedNt=B.A5
+   63 C    62    64     4    69 # name=B.C69, pairedNt=B.G4
+   64 C    63    65     3    70 # name=B.C70, pairedNt=B.G3
+   65 G    64    66     2    71 # name=B.G71, pairedNt=B.C2
+   66 C    65    67     1    72 # name=B.C72, pairedNt=B.G1
+   67 U    66    68   104    73 # name=B.U73, pairedNt=A.A163
+   68 C    67    69   103    74 # name=B.C74, pairedNt=A.G162
+   69 C    68    70   102    75 # name=B.C75, pairedNt=A.G161
+   70 A    69     0   101    76 # name=B.A76, pairedNt=A.U160
+   71 A     0    72     0   128 # name=A.A128
+   72 A    71    73     0   129 # name=A.A129
+   73 G    72    74     0   130 # name=A.G130
+   74 U    73    75     0   131 # name=A.U131
+   75 G    74    76     0   132 # name=A.G132
+   76 G    75    77    93   133 # name=A.G133, pairedNt=A.C151
+   77 G    76    78     0   134 # name=A.G134
+   78 U    77    79    91   135 # name=A.U135, pairedNt=A.A149
+   79 G    78    80    90   136 # name=A.G136, pairedNt=A.C148
+   80 C    79    81    89   137 # name=A.C137, pairedNt=A.G147
+   81 G    80    82    88   138 # name=A.G138, pairedNt=A.C146
+   82 C    81    83    87   139 # name=A.C139, pairedNt=A.G145
+   83 G    82    84     0   140 # name=A.G140
+   84 U    83    85     0   141 # name=A.U141
+   85 U    84     0     0   142 # name=A.U142
+   86 G     0    87     0   144 # name=A.G144
+   87 G    86    88    82   145 # name=A.G145, pairedNt=A.C139
+   88 C    87    89    81   146 # name=A.C146, pairedNt=A.G138
+   89 G    88    90    80   147 # name=A.G147, pairedNt=A.C137
+   90 C    89    91    79   148 # name=A.C148, pairedNt=A.G136
+   91 A    90    92    78   149 # name=A.A149, pairedNt=A.U135
+   92 U    91    93     0   150 # name=A.U150
+   93 C    92     0    76   151 # name=A.C151, pairedNt=A.G133
+   94 A     0    95     0   153 # name=A.A153
+   95 C    94    96   130   154 # name=A.C154, pairedNt=A.G191
+   96 U    95    97   129   155 # name=A.U155, pairedNt=A.A190
+   97 C    96    98   128   156 # name=A.C156, pairedNt=A.G189
+   98 G    97    99   127   157 # name=A.G157, pairedNt=A.C188
+   99 G    98   100   126   158 # name=A.G158, pairedNt=A.C187
+  100 G    99   101   125   159 # name=A.G159, pairedNt=A.C186
+  101 U   100   102    70   160 # name=A.U160, pairedNt=B.A76
+  102 G   101   103    69   161 # name=A.G161, pairedNt=B.C75
+  103 G   102   104    68   162 # name=A.G162, pairedNt=B.C74
+  104 A   103   105    67   163 # name=A.A163, pairedNt=B.U73
+  105 A   104   106     0   164 # name=A.A164
+  106 C   105   107     0   165 # name=A.C165
+  107 C   106   108     0   166 # name=A.C166
+  108 G   107   109   124   167 # name=A.G167, pairedNt=A.U185
+  109 C   108   110   123   168 # name=A.C168, pairedNt=A.G184
+  110 G   109   111   122   169 # name=A.G169, pairedNt=A.C183
+  111 G   110   112   121   170 # name=A.G170, pairedNt=A.U182
+  112 G   111   113   120   171 # name=A.G171, pairedNt=A.C181
+  113 A   112   114   119   172 # name=A.A172, pairedNt=A.U180
+  114 G   113   115   118   173 # name=A.G173, pairedNt=A.C179
+  115 C   114   116   117   174 # name=A.C174, pairedNt=A.G178
+  116 U   115     0     0   175 # name=A.U175
+  117 G     0   118   115   178 # name=A.G178, pairedNt=A.C174
+  118 C   117   119   114   179 # name=A.C179, pairedNt=A.G173
+  119 U   118   120   113   180 # name=A.U180, pairedNt=A.A172
+  120 C   119   121   112   181 # name=A.C181, pairedNt=A.G171
+  121 U   120   122   111   182 # name=A.U182, pairedNt=A.G170
+  122 C   121   123   110   183 # name=A.C183, pairedNt=A.G169
+  123 G   122   124   109   184 # name=A.G184, pairedNt=A.C168
+  124 U   123   125   108   185 # name=A.U185, pairedNt=A.G167
+  125 C   124   126   100   186 # name=A.C186, pairedNt=A.G159
+  126 C   125   127    99   187 # name=A.C187, pairedNt=A.G158
+  127 C   126   128    98   188 # name=A.C188, pairedNt=A.G157
+  128 G   127   129    97   189 # name=A.G189, pairedNt=A.C156
+  129 A   128   130    96   190 # name=A.A190, pairedNt=A.U155
+  130 G   129     0    95   191 # name=A.G191, pairedNt=A.C154

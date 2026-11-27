@@ -1,0 +1,713 @@
+{
+  "request_ids": [
+    "6XGF",
+    "6XHV",
+    "6XHW",
+    "6XHX",
+    "6XHY",
+    "6XII",
+    "6XIJ",
+    "6XQD",
+    "6XQE",
+    "6XZ7",
+    "6XZA",
+    "6XZB",
+    "6Y69",
+    "6YEF",
+    "6YHS",
+    "6YS3",
+    "6YSI",
+    "6YSR",
+    "6YSS",
+    "6YST",
+    "6YSU",
+    "6ZTJ",
+    "6ZTL",
+    "6ZTM",
+    "6ZTN",
+    "6ZTO",
+    "6ZTP",
+    "6ZU1",
+    "7A0R",
+    "7A0S",
+    "7A18",
+    "7ABZ",
+    "7AC7",
+    "7ACJ",
+    "7ACR",
+    "7AQC",
+    "7AQD",
+    "7AS8",
+    "7AS9",
+    "7ASA",
+    "7ASM",
+    "7ASP",
+    "7AZO",
+    "7AZS",
+    "7B5K",
+    "7BL2",
+    "7BL3",
+    "7BL4",
+    "7BL5",
+    "7BL6",
+    "7BV8",
+    "7CPJ",
+    "7D6Z",
+    "7D80",
+    "7F0D",
+    "7F36",
+    "7JIL",
+    "7JQL",
+    "7JQM",
+    "7JSS",
+    "7JSW",
+    "7JSZ",
+    "7JT1",
+    "7JT2",
+    "7JT3",
+    "7K00",
+    "7K50",
+    "7K51",
+    "7K52",
+    "7K53",
+    "7K54",
+    "7K55",
+    "7KGB",
+    "7L0Z",
+    "7LH5",
+    "7LV0",
+    "7LVK",
+    "7M4V",
+    "7M4W",
+    "7M4X",
+    "7M4Y",
+    "7M4Z",
+    "7M5D",
+    "7MD7",
+    "7MSC",
+    "7MSH",
+    "7MSM",
+    "7MSZ",
+    "7MT2",
+    "7MT3",
+    "7MT7",
+    "7N1P",
+    "7N2C",
+    "7N2U",
+    "7N2V",
+    "7N30",
+    "7N31",
+    "7NBU",
+    "7NFX",
+    "7NHK"
+  ],
+  "response": {
+    "data": {
+      "entries": [
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-23T00:00:00Z"
+          },
+          "rcsb_id": "6XHV"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-23T00:00:00Z"
+          },
+          "rcsb_id": "6XHW"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-23T00:00:00Z"
+          },
+          "rcsb_id": "6XHX"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-01-27T00:00:00Z"
+          },
+          "rcsb_id": "6YEF"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-11-17T00:00:00Z"
+          },
+          "rcsb_id": "7ASP"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-12T00:00:00Z"
+          },
+          "rcsb_id": "7BL2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-06-02T00:00:00Z"
+          },
+          "rcsb_id": "7LH5"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-04-21T00:00:00Z"
+          },
+          "rcsb_id": "7MD7"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-05T00:00:00Z"
+          },
+          "rcsb_id": "7NHK"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-06-02T00:00:00Z"
+          },
+          "rcsb_id": "7NFX"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-03-02T00:00:00Z"
+          },
+          "rcsb_id": "7NBU"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-14T00:00:00Z"
+          },
+          "rcsb_id": "7N31"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-14T00:00:00Z"
+          },
+          "rcsb_id": "7N30"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-14T00:00:00Z"
+          },
+          "rcsb_id": "7N2V"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-14T00:00:00Z"
+          },
+          "rcsb_id": "7N2U"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-14T00:00:00Z"
+          },
+          "rcsb_id": "7N2C"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-14T00:00:00Z"
+          },
+          "rcsb_id": "7N1P"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-02-02T00:00:00Z"
+          },
+          "rcsb_id": "7MT7"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-02-02T00:00:00Z"
+          },
+          "rcsb_id": "7MT3"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-02-02T00:00:00Z"
+          },
+          "rcsb_id": "7MT2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-02-02T00:00:00Z"
+          },
+          "rcsb_id": "7MSZ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-02-02T00:00:00Z"
+          },
+          "rcsb_id": "7MSM"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-02-02T00:00:00Z"
+          },
+          "rcsb_id": "7MSH"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-02-02T00:00:00Z"
+          },
+          "rcsb_id": "7MSC"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-10-19T00:00:00Z"
+          },
+          "rcsb_id": "7M5D"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-19T00:00:00Z"
+          },
+          "rcsb_id": "7M4Z"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-19T00:00:00Z"
+          },
+          "rcsb_id": "7M4Y"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-19T00:00:00Z"
+          },
+          "rcsb_id": "7M4X"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-19T00:00:00Z"
+          },
+          "rcsb_id": "7M4W"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-19T00:00:00Z"
+          },
+          "rcsb_id": "7M4V"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-12-15T00:00:00Z"
+          },
+          "rcsb_id": "7LVK"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-28T00:00:00Z"
+          },
+          "rcsb_id": "7LV0"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-26T00:00:00Z"
+          },
+          "rcsb_id": "7L0Z"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-01-19T00:00:00Z"
+          },
+          "rcsb_id": "7KGB"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-28T00:00:00Z"
+          },
+          "rcsb_id": "7K55"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-28T00:00:00Z"
+          },
+          "rcsb_id": "7K54"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-28T00:00:00Z"
+          },
+          "rcsb_id": "7K53"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-28T00:00:00Z"
+          },
+          "rcsb_id": "7K52"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-28T00:00:00Z"
+          },
+          "rcsb_id": "7K51"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-07-28T00:00:00Z"
+          },
+          "rcsb_id": "7K50"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-23T00:00:00Z"
+          },
+          "rcsb_id": "7K00"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-11T00:00:00Z"
+          },
+          "rcsb_id": "7JT3"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-11T00:00:00Z"
+          },
+          "rcsb_id": "7JT2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-11T00:00:00Z"
+          },
+          "rcsb_id": "7JT1"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-11T00:00:00Z"
+          },
+          "rcsb_id": "7JSZ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-11T00:00:00Z"
+          },
+          "rcsb_id": "7JSW"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-11T00:00:00Z"
+          },
+          "rcsb_id": "7JSS"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-26T00:00:00Z"
+          },
+          "rcsb_id": "7JQM"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-26T00:00:00Z"
+          },
+          "rcsb_id": "7JQL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-02T00:00:00Z"
+          },
+          "rcsb_id": "7JIL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-12-22T00:00:00Z"
+          },
+          "rcsb_id": "7F36"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-06-29T00:00:00Z"
+          },
+          "rcsb_id": "7F0D"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-04-07T00:00:00Z"
+          },
+          "rcsb_id": "7D80"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-04-07T00:00:00Z"
+          },
+          "rcsb_id": "7D6Z"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-12-08T00:00:00Z"
+          },
+          "rcsb_id": "7CPJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-07-01T00:00:00Z"
+          },
+          "rcsb_id": "7BV8"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-12T00:00:00Z"
+          },
+          "rcsb_id": "7BL6"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-12T00:00:00Z"
+          },
+          "rcsb_id": "7BL5"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-12T00:00:00Z"
+          },
+          "rcsb_id": "7BL4"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-12T00:00:00Z"
+          },
+          "rcsb_id": "7BL3"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-05-26T00:00:00Z"
+          },
+          "rcsb_id": "7B5K"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-06-08T00:00:00Z"
+          },
+          "rcsb_id": "7AZS"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2022-06-01T00:00:00Z"
+          },
+          "rcsb_id": "7AZO"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-11-17T00:00:00Z"
+          },
+          "rcsb_id": "7ASM"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-23T00:00:00Z"
+          },
+          "rcsb_id": "7ASA"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-23T00:00:00Z"
+          },
+          "rcsb_id": "7AS9"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-09T00:00:00Z"
+          },
+          "rcsb_id": "7AS8"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-25T00:00:00Z"
+          },
+          "rcsb_id": "7AQD"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-25T00:00:00Z"
+          },
+          "rcsb_id": "7AQC"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-08-18T00:00:00Z"
+          },
+          "rcsb_id": "7ACR"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-08-18T00:00:00Z"
+          },
+          "rcsb_id": "7ACJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-08-18T00:00:00Z"
+          },
+          "rcsb_id": "7AC7"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-08-18T00:00:00Z"
+          },
+          "rcsb_id": "7ABZ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-10-06T00:00:00Z"
+          },
+          "rcsb_id": "7A18"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-08-18T00:00:00Z"
+          },
+          "rcsb_id": "7A0S"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2021-08-18T00:00:00Z"
+          },
+          "rcsb_id": "7A0R"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6ZU1"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6ZTP"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-23T00:00:00Z"
+          },
+          "rcsb_id": "6ZTO"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6ZTN"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6ZTM"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6ZTL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6ZTJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-19T00:00:00Z"
+          },
+          "rcsb_id": "6YSU"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-19T00:00:00Z"
+          },
+          "rcsb_id": "6YST"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-19T00:00:00Z"
+          },
+          "rcsb_id": "6YSS"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-19T00:00:00Z"
+          },
+          "rcsb_id": "6YSR"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6YSI"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-30T00:00:00Z"
+          },
+          "rcsb_id": "6YS3"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-16T00:00:00Z"
+          },
+          "rcsb_id": "6YHS"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-07-01T00:00:00Z"
+          },
+          "rcsb_id": "6Y69"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-04T00:00:00Z"
+          },
+          "rcsb_id": "6XZB"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-11-04T00:00:00Z"
+          },
+          "rcsb_id": "6XZA"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-07-22T00:00:00Z"
+          },
+          "rcsb_id": "6XZ7"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-05T00:00:00Z"
+          },
+          "rcsb_id": "6XQE"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-08-05T00:00:00Z"
+          },
+          "rcsb_id": "6XQD"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-02T00:00:00Z"
+          },
+          "rcsb_id": "6XIJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-02T00:00:00Z"
+          },
+          "rcsb_id": "6XII"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-12-23T00:00:00Z"
+          },
+          "rcsb_id": "6XHY"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2020-09-02T00:00:00Z"
+          },
+          "rcsb_id": "6XGF"
+        }
+      ]
+    }
+  },
+  "response_sha256": "1df96a1f05b5f780d4eaf7a9b7e90d2890518a40486be98bc288250b37342de4",
+  "retrieved_utc": "2026-11-27T09:08:50.354226+00:00",
+  "source": "https://data.rcsb.org/graphql"
+}

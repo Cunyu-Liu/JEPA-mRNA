@@ -1,0 +1,393 @@
+{
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "new_metadata_references": [],
+  "remaining": [
+    {
+      "source_record_id": "pdb_ts1#632971",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632972",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632973",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632974",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632975",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632976",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632977",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632978",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632979",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632980",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632981",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632982",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632983",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632984",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632985",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632986",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632987",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632988",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632989",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632990",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632991",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632992",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632994",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632996",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#632998",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633000",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633001",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633004",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633005",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633007",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633008",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633011",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633012",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633013",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633014",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633015",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633018",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633021",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633022",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633023",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633025",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633026",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633030",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633031",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633032",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633033",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633036",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633039",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633044",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633045",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633047",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633050",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633051",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633060",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633064",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633067",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633069",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633071",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts2#633072",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633076",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633077",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633083",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633084",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633086",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633088",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633089",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633091",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633093",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts3#633094",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633096",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633097",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633099",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633100",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633101",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633102",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633104",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633105",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633106",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633108",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633109",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633111",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633113",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633115",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633118",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633119",
+      "status": "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633120",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts_hard#633121",
+      "status": "METADATA_AMBIGUOUS_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633010",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633017",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633024",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    },
+    {
+      "source_record_id": "pdb_ts1#633027",
+      "status": "SOURCE_BAD_ALPHABET_UNCHECKED"
+    }
+  ],
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "scheme_repaired_references": [
+    {
+      "n_excluded_pairs": 89,
+      "reference_id": "RCSB:4P9R_1:A",
+      "source_record_id": "pdb_ts1#633034"
+    },
+    {
+      "n_excluded_pairs": 2,
+      "reference_id": "RCSB:5LWJ_1:A",
+      "source_record_id": "pdb_ts2#633066"
+    },
+    {
+      "n_excluded_pairs": 2,
+      "reference_id": "RCSB:6P2H_1:A",
+      "source_record_id": "pdb_ts3#633080"
+    },
+    {
+      "n_excluded_pairs": 89,
+      "reference_id": "RCSB:4P9R_1:A",
+      "source_record_id": "pdb_ts_hard#633122"
+    }
+  ]
+}

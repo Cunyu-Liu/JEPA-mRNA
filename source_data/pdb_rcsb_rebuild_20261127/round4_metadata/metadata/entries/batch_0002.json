@@ -1,0 +1,713 @@
+{
+  "request_ids": [
+    "32PC",
+    "32PD",
+    "32PE",
+    "357D",
+    "364D",
+    "36UK",
+    "37CM",
+    "37CN",
+    "37CO",
+    "37CP",
+    "37CQ",
+    "37CR",
+    "3AKZ",
+    "3AL0",
+    "3B31",
+    "3BBX",
+    "3CC2",
+    "3CC4",
+    "3CC7",
+    "3CCE",
+    "3CCJ",
+    "3CCL",
+    "3CCM",
+    "3CCQ",
+    "3CCR",
+    "3CCS",
+    "3CCU",
+    "3CCV",
+    "3CD6",
+    "3CF5",
+    "3CMA",
+    "3CME",
+    "3CPW",
+    "3CUL",
+    "3CUN",
+    "3CXC",
+    "3D0U",
+    "3D0X",
+    "3DEG",
+    "3DG0",
+    "3DG2",
+    "3DG4",
+    "3DG5",
+    "3DIG",
+    "3DIL",
+    "3DIM",
+    "3DIO",
+    "3DIQ",
+    "3DIR",
+    "3DIS",
+    "3DIX",
+    "3DIY",
+    "3DIZ",
+    "3DJ0",
+    "3DJ2",
+    "3DLL",
+    "3EP2",
+    "3EPH",
+    "3EPJ",
+    "3EPK",
+    "3EPL",
+    "3EQ3",
+    "3EQ4",
+    "3FWO",
+    "3G4S",
+    "3G6E",
+    "3G71",
+    "3HHN",
+    "3I55",
+    "3I56",
+    "3IVK",
+    "3J0D",
+    "3J3V",
+    "3J3W",
+    "3J46",
+    "3J5L",
+    "3J7Z",
+    "3J8G",
+    "3J9W",
+    "3J9Y",
+    "3J9Z",
+    "3JA1",
+    "3JAJ",
+    "3JAN",
+    "3JBU",
+    "3JBV",
+    "3JCD",
+    "3JCE",
+    "3JCJ",
+    "3JCN",
+    "3JCR",
+    "3JQ4",
+    "3KTV",
+    "3MJ3",
+    "3MJA",
+    "3MJB",
+    "3NPN",
+    "3NPQ",
+    "3OW2",
+    "3PIO"
+  ],
+  "response": {
+    "data": {
+      "entries": [
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCS"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CD6"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-06-24T00:00:00Z"
+          },
+          "rcsb_id": "3CUL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-04-28T00:00:00Z"
+          },
+          "rcsb_id": "3G4S"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-03-09T00:00:00Z"
+          },
+          "rcsb_id": "3I55"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2015-08-05T00:00:00Z"
+          },
+          "rcsb_id": "3JAJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2011-02-23T00:00:00Z"
+          },
+          "rcsb_id": "3PIO"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2012-06-20T00:00:00Z"
+          },
+          "rcsb_id": "3OW2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-10-06T00:00:00Z"
+          },
+          "rcsb_id": "3NPQ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-10-06T00:00:00Z"
+          },
+          "rcsb_id": "3NPN"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-05-19T00:00:00Z"
+          },
+          "rcsb_id": "3MJB"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-05-19T00:00:00Z"
+          },
+          "rcsb_id": "3MJA"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-05-19T00:00:00Z"
+          },
+          "rcsb_id": "3MJ3"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-02-16T00:00:00Z"
+          },
+          "rcsb_id": "3KTV"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-09-08T00:00:00Z"
+          },
+          "rcsb_id": "3JQ4"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2016-03-09T00:00:00Z"
+          },
+          "rcsb_id": "3JCR"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2016-03-09T00:00:00Z"
+          },
+          "rcsb_id": "3JCN"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2016-03-09T00:00:00Z"
+          },
+          "rcsb_id": "3JCJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2016-01-13T00:00:00Z"
+          },
+          "rcsb_id": "3JCE"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2016-01-13T00:00:00Z"
+          },
+          "rcsb_id": "3JCD"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2016-01-27T00:00:00Z"
+          },
+          "rcsb_id": "3JBV"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2016-01-27T00:00:00Z"
+          },
+          "rcsb_id": "3JBU"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2015-08-05T00:00:00Z"
+          },
+          "rcsb_id": "3JAN"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2015-07-01T00:00:00Z"
+          },
+          "rcsb_id": "3JA1"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2015-07-01T00:00:00Z"
+          },
+          "rcsb_id": "3J9Z"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2015-04-15T00:00:00Z"
+          },
+          "rcsb_id": "3J9Y"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2015-04-29T00:00:00Z"
+          },
+          "rcsb_id": "3J9W"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2014-11-26T00:00:00Z"
+          },
+          "rcsb_id": "3J8G"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2014-10-22T00:00:00Z"
+          },
+          "rcsb_id": "3J7Z"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2014-03-26T00:00:00Z"
+          },
+          "rcsb_id": "3J5L"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2013-10-23T00:00:00Z"
+          },
+          "rcsb_id": "3J46"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2013-06-12T00:00:00Z"
+          },
+          "rcsb_id": "3J3W"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2013-06-12T00:00:00Z"
+          },
+          "rcsb_id": "3J3V"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2012-04-25T00:00:00Z"
+          },
+          "rcsb_id": "3J0D"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-03-02T00:00:00Z"
+          },
+          "rcsb_id": "3IVK"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-03-09T00:00:00Z"
+          },
+          "rcsb_id": "3I56"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-11-24T00:00:00Z"
+          },
+          "rcsb_id": "3HHN"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-04-28T00:00:00Z"
+          },
+          "rcsb_id": "3G71"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-04-28T00:00:00Z"
+          },
+          "rcsb_id": "3G6E"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-01-19T00:00:00Z"
+          },
+          "rcsb_id": "3FWO"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-12-16T00:00:00Z"
+          },
+          "rcsb_id": "3EQ4"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-12-16T00:00:00Z"
+          },
+          "rcsb_id": "3EQ3"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-11-04T00:00:00Z"
+          },
+          "rcsb_id": "3EPL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-11-04T00:00:00Z"
+          },
+          "rcsb_id": "3EPK"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-11-04T00:00:00Z"
+          },
+          "rcsb_id": "3EPJ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-11-04T00:00:00Z"
+          },
+          "rcsb_id": "3EPH"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-12-16T00:00:00Z"
+          },
+          "rcsb_id": "3EP2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DLL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DJ2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DJ0"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIZ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIY"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIX"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIS"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIR"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIQ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIO"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIM"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-16T00:00:00Z"
+          },
+          "rcsb_id": "3DIG"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-02-03T00:00:00Z"
+          },
+          "rcsb_id": "3DG5"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-02-03T00:00:00Z"
+          },
+          "rcsb_id": "3DG4"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-02-03T00:00:00Z"
+          },
+          "rcsb_id": "3DG2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-02-03T00:00:00Z"
+          },
+          "rcsb_id": "3DG0"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-08-19T00:00:00Z"
+          },
+          "rcsb_id": "3DEG"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-07-01T00:00:00Z"
+          },
+          "rcsb_id": "3D0X"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-07-01T00:00:00Z"
+          },
+          "rcsb_id": "3D0U"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2009-04-28T00:00:00Z"
+          },
+          "rcsb_id": "3CXC"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-06-24T00:00:00Z"
+          },
+          "rcsb_id": "3CUN"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-07-22T00:00:00Z"
+          },
+          "rcsb_id": "3CPW"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-23T00:00:00Z"
+          },
+          "rcsb_id": "3CME"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-09-23T00:00:00Z"
+          },
+          "rcsb_id": "3CMA"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-06-17T00:00:00Z"
+          },
+          "rcsb_id": "3CF5"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCV"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCU"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCR"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCQ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCM"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCL"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CCE"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CC7"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CC4"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-05-20T00:00:00Z"
+          },
+          "rcsb_id": "3CC2"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2008-10-21T00:00:00Z"
+          },
+          "rcsb_id": "3BBX"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2007-12-25T00:00:00Z"
+          },
+          "rcsb_id": "3B31"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-09-29T00:00:00Z"
+          },
+          "rcsb_id": "3AL0"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2010-09-29T00:00:00Z"
+          },
+          "rcsb_id": "3AKZ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-09-16T00:00:00Z"
+          },
+          "rcsb_id": "37CR"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-09-09T00:00:00Z"
+          },
+          "rcsb_id": "37CQ"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-08-26T00:00:00Z"
+          },
+          "rcsb_id": "37CP"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-08-26T00:00:00Z"
+          },
+          "rcsb_id": "37CO"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-08-26T00:00:00Z"
+          },
+          "rcsb_id": "37CN"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-08-05T00:00:00Z"
+          },
+          "rcsb_id": "37CM"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-08-19T00:00:00Z"
+          },
+          "rcsb_id": "36UK"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "1998-01-02T00:00:00Z"
+          },
+          "rcsb_id": "364D"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "1997-12-01T00:00:00Z"
+          },
+          "rcsb_id": "357D"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-11-18T00:00:00Z"
+          },
+          "rcsb_id": "32PE"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-11-18T00:00:00Z"
+          },
+          "rcsb_id": "32PD"
+        },
+        {
+          "rcsb_accession_info": {
+            "initial_release_date": "2026-11-18T00:00:00Z"
+          },
+          "rcsb_id": "32PC"
+        }
+      ]
+    }
+  },
+  "response_sha256": "e3385f182dd9090d05028be4804e78091be090b172970eef51073bf2bd74fb33",
+  "retrieved_utc": "2026-11-27T09:08:36.990570+00:00",
+  "source": "https://data.rcsb.org/graphql"
+}

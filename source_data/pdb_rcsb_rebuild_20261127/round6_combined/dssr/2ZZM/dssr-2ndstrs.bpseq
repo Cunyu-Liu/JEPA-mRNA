@@ -1,0 +1,85 @@
+    1 G     0 # name=B.G1
+    2 C     0 # name=B.C2
+    3 A     0 # name=B.A3
+    4 G     0 # name=B.G4
+    5 G    80 # name=B.G5, pairedNt=B.C68
+    6 G    79 # name=B.G6, pairedNt=B.C67
+    7 G    78 # name=B.G7, pairedNt=B.C66
+    8 U     0 # name=B.U8
+    9 C     0 # name=B.C9
+   10 G    28 # name=B.G10, pairedNt=B.C25
+   11 C    27 # name=B.C11, pairedNt=B.G24
+   12 C    26 # name=B.C12, pairedNt=B.G23
+   13 A     0 # name=B.A13
+   14 A     0 # name=B.A14
+   15 G     0 # name=B.G15
+   16 C     0 # name=B.C16
+   17 C     0 # name=B.C17
+   18 U     0 # name=B.U17^A
+   19 G     0 # name=B.G18
+   20 G    68 # name=B.G19, pairedNt=B.C56
+   21 C     0 # name=B.C20
+   22 C     0 # name=B.C20^A
+   23 A     0 # name=B.A20^B
+   24 A     0 # name=B.A21
+   25 A     0 # name=B.A22
+   26 G    12 # name=B.G23, pairedNt=B.C12
+   27 G    11 # name=B.G24, pairedNt=B.C11
+   28 C    10 # name=B.C25, pairedNt=B.G10
+   29 G    47 # name=B.G26, pairedNt=B.U44
+   30 C    46 # name=B.C27, pairedNt=B.G43
+   31 U    45 # name=B.U28, pairedNt=B.A42
+   32 G    44 # name=B.G29, pairedNt=B.C41
+   33 G    43 # name=B.G30, pairedNt=B.C40
+   34 G    42 # name=B.G31, pairedNt=B.C39
+   35 C     0 # name=B.C32
+   36 C     0 # name=B.C33
+   37 U     0 # name=B.U34
+   38 A     0 # name=B.A35
+   39 G     0 # name=B.G36
+   40 G     0 # name=B.G37
+   41 A     0 # name=B.A38
+   42 C    34 # name=B.C39, pairedNt=B.G31
+   43 C    33 # name=B.C40, pairedNt=B.G30
+   44 C    32 # name=B.C41, pairedNt=B.G29
+   45 A    31 # name=B.A42, pairedNt=B.U28
+   46 G    30 # name=B.G43, pairedNt=B.C27
+   47 U    29 # name=B.U44, pairedNt=B.G26
+   48 C    57 # name=B.C45, pairedNt=B.G47^G
+   49 C    56 # name=B.C46, pairedNt=B.G47^F
+   50 C    55 # name=B.C47, pairedNt=B.G47^E
+   51 G     0 # name=B.G47^A
+   52 U     0 # name=B.U47^B
+   53 A     0 # name=B.A47^C
+   54 G     0 # name=B.G47^D
+   55 G    50 # name=B.G47^E, pairedNt=B.C47
+   56 G    49 # name=B.G47^F, pairedNt=B.C46
+   57 G    48 # name=B.G47^G, pairedNt=B.C45
+   58 U     0 # name=B.U47^H
+   59 U     0 # name=B.U47^I
+   60 C     0 # name=B.C48
+   61 C    77 # name=B.C49, pairedNt=B.G65
+   62 A     0 # name=B.A50
+   63 G    75 # name=B.G51, pairedNt=B.C63
+   64 G    74 # name=B.G52, pairedNt=B.C62
+   65 G    73 # name=B.G53, pairedNt=B.C61
+   66 U     0 # name=B.U54
+   67 U     0 # name=B.U55
+   68 C    20 # name=B.C56, pairedNt=B.G19
+   69 A     0 # name=B.A57
+   70 A     0 # name=B.A58
+   71 A     0 # name=B.A59
+   72 U     0 # name=B.U60
+   73 C    65 # name=B.C61, pairedNt=B.G53
+   74 C    64 # name=B.C62, pairedNt=B.G52
+   75 C    63 # name=B.C63, pairedNt=B.G51
+   76 U     0 # name=B.U64
+   77 G    61 # name=B.G65, pairedNt=B.C49
+   78 C     7 # name=B.C66, pairedNt=B.G7
+   79 C     6 # name=B.C67, pairedNt=B.G6
+   80 C     5 # name=B.C68, pairedNt=B.G5
+   81 C     0 # name=B.C69
+   82 U     0 # name=B.U70
+   83 G     0 # name=B.G71
+   84 C     0 # name=B.C72
+   85 a     0 # name=A.SAM401

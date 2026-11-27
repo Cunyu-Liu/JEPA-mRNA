@@ -1,0 +1,55 @@
+    1 g    22 # name=V.GTP59, pairedNt=V.C80
+    2 G    21 # name=V.G60, pairedNt=V.C79
+    3 A    20 # name=V.A61, pairedNt=V.U78
+    4 U    19 # name=V.U62, pairedNt=V.A77
+    5 C    18 # name=V.C63, pairedNt=V.G76
+    6 C    17 # name=V.C64, pairedNt=V.G75
+    7 A     0 # name=V.A65
+    8 U     0 # name=V.U66
+    9 U     0 # name=V.U67
+   10 G     0 # name=V.G68
+   11 C     0 # name=V.C69
+   12 A     0 # name=V.A70
+   13 C     0 # name=V.C71
+   14 U     0 # name=V.U72
+   15 C     0 # name=V.C73
+   16 C     0 # name=V.C74
+   17 G     6 # name=V.G75, pairedNt=V.C64
+   18 G     5 # name=V.G76, pairedNt=V.C63
+   19 A     4 # name=V.A77, pairedNt=V.U62
+   20 U     3 # name=V.U78, pairedNt=V.A61
+   21 C     2 # name=V.C79, pairedNt=V.G60
+   22 C     1 # name=V.C80, pairedNt=V.GTP59
+   23 A    55 # name=V.A81, pairedNt=V.U113
+   24 G    54 # name=V.G82, pairedNt=V.C112
+   25 G    53 # name=V.G83, pairedNt=V.C111
+   26 A    52 # name=V.A84, pairedNt=V.U110
+   27 G    51 # name=V.G85, pairedNt=V.U109
+   28 A    50 # name=V.A86, pairedNt=V.U108
+   29 U     0 # name=V.U87
+   30 A     0 # name=V.A88
+   31 C    48 # name=V.C89, pairedNt=V.G106
+   32 C    47 # name=V.C90, pairedNt=V.G105
+   33 A    46 # name=V.A91, pairedNt=V.U104
+   34 U    45 # name=V.U92, pairedNt=V.G103
+   35 G     0 # name=V.G93
+   36 A     0 # name=V.A94
+   37 U     0 # name=V.U95
+   38 C     0 # name=V.C96
+   39 A     0 # name=V.A97
+   40 C     0 # name=V.C98
+   41 G     0 # name=V.G99
+   42 A     0 # name=V.A100
+   43 A     0 # name=V.A101
+   44 G     0 # name=V.G102
+   45 G    34 # name=V.G103, pairedNt=V.U92
+   46 U    33 # name=V.U104, pairedNt=V.A91
+   47 G    32 # name=V.G105, pairedNt=V.C90
+   48 G    31 # name=V.G106, pairedNt=V.C89
+   49 U     0 # name=V.U107
+   50 U    28 # name=V.U108, pairedNt=V.A86
+   51 U    27 # name=V.U109, pairedNt=V.G85
+   52 U    26 # name=V.U110, pairedNt=V.A84
+   53 C    25 # name=V.C111, pairedNt=V.G83
+   54 C    24 # name=V.C112, pairedNt=V.G82
+   55 U    23 # name=V.U113, pairedNt=V.A81

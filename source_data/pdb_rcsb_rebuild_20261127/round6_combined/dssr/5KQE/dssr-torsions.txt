@@ -1,0 +1,237 @@
+         Output of DNA/RNA backbone conformational parameters
+             DSSR v1.9.10-2020apr23 by xiangjun@x3dna.org
+******************************************************************************************
+Main chain conformational parameters:
+
+  alpha:   O3'(i-1)-P-O5'-C5'
+  beta:    P-O5'-C5'-C4'
+  gamma:   O5'-C5'-C4'-C3'
+  delta:   C5'-C4'-C3'-O3'
+  epsilon: C4'-C3'-O3'-P(i+1)
+  zeta:    C3'-O3'-P(i+1)-O5'(i+1)
+  e-z:     epsilon-zeta (BI/BII backbone classification)
+
+  chi for pyrimidines(Y): O4'-C1'-N1-C2; purines(R): O4'-C1'-N9-C4
+    Range [170, -50(310)] is assigned to anti, and [50, 90] to syn
+
+  phase-angle: the phase angle of pseudorotation and puckering
+  sugar-type: ~C2'-endo for C2'-endo like conformation, or
+               ~C3'-endo for C3'-endo like conformation
+              Note the ONE column offset (for easy visual distinction)
+
+ssZp: single-stranded Zp, defined as the z-coordinate of the 3' phosphorus atom
+      (P) expressed in the standard reference frame of the 5' base; the value is
+      POSITIVE when P lies on the +z-axis side (base in anti conformation);
+      NEGATIVE if P is on the -z-axis side (base in syn conformation)
+  Dp: perpendicular distance of the 3' P atom to the glycosidic bond
+      [Ref: Chen et al. (2010): "MolProbity: all-atom structure
+            validation for macromolecular crystallography."
+            Acta Crystallogr D Biol Crystallogr, 66(1):12-21]
+splay: angle between the bridging P to the two base-origins of a dinucleotide.
+
+          nt               alpha    beta   gamma   delta  epsilon   zeta     e-z        chi            phase-angle   sugar-type    ssZp     Dp    splay
+ 1     G A.G1                ---     ---    53.1    82.7  -155.7   -64.0    -92(BI)   -160.0(anti)    10.2(C3'-endo)  ~C3'-endo    4.45    4.60   25.04
+ 2     G A.G2              -70.3   177.2    53.1    79.2  -155.3   -64.8    -91(BI)   -171.3(anti)    16.5(C3'-endo)  ~C3'-endo    4.68    4.62   22.16
+ 3     G A.G3              -63.8   173.9    54.8    79.7  -152.1   -71.0    -81(BI)   -169.8(anti)    19.7(C3'-endo)  ~C3'-endo    4.63    4.61   24.46
+ 4     U A.U4              -58.6   170.9    52.5    80.3  -152.1   -76.2    -76(BI)   -168.2(anti)    20.8(C3'-endo)  ~C3'-endo    4.44    4.58   21.08
+ 5     G A.G5              -63.6   158.3    67.6    82.2  -158.1   -66.5    -92(BI)   -168.0(anti)    24.0(C3'-endo)  ~C3'-endo    4.28    4.45   20.12
+ 6     U A.U6              -67.2   170.5    62.6    82.7  -166.9   -69.0    -98(BI)   -163.6(anti)    38.6(C4'-exo)   ~C3'-endo    4.08    4.16   20.50
+ 7     A A.A7              114.4  -167.3  -149.3    99.5  -132.7   -57.0    -76(BI)   -169.6(anti)   349.8(C2'-exo)   ~C3'-endo    4.35    4.53   38.51
+ 8     C A.C8              120.8  -143.2  -176.7    92.3  -177.9   -93.8    -84(BI)   -164.3(anti)     3.8(C3'-endo)  ~C3'-endo    4.15    4.24   44.83
+ 9     U A.U9              -48.5   166.6    74.3   130.4  -169.7   104.1     86(..)   -176.3(anti)   144.5(C2'-endo) ~C2'-endo     1.59    2.48   67.85
+ 10    U A.U10             -54.4   -85.3  -161.0    88.5  -160.0   -30.6   -129(BI)   -150.6(anti)    59.7(C4'-exo)     ....       3.70    3.79   70.38
+ 11    A A.A11            -141.3  -112.7    51.1    85.4  -124.1   -48.1    -76(..)   -145.7(anti)    15.9(C3'-endo)  ~C3'-endo    3.76    4.68   57.62
+ 12    A A.A12             -67.0  -161.1    52.8    85.2  -174.4   -75.9    -99(BI)   -157.4(anti)    44.6(C4'-exo)   ~C3'-endo    4.08    4.00   20.67
+ 13    C A.C13             -71.5   173.8    58.0    75.3  -151.4   -75.6    -76(BI)   -149.5(anti)    39.5(C4'-exo)   ~C3'-endo    4.24    4.41   29.22
+ 14    G A.G14             -58.3   157.5    66.6    98.2  -171.9   -75.7    -96(BI)   -163.5(anti)    51.0(C4'-exo)     ....       3.77    3.71   22.63
+ 15    U A.U15             -83.3  -173.7    49.7    80.3  -156.4   -58.0    -98(BI)   -160.5(anti)    17.9(C3'-endo)  ~C3'-endo    4.51    4.57   22.09
+ 16    U A.U16             -68.1   172.1    56.4    78.7  -160.9   -76.3    -85(BI)   -163.2(anti)    21.6(C3'-endo)  ~C3'-endo    4.58    4.52   23.33
+ 17    U A.U17             -64.2   178.5    52.3    80.8  -153.5   -73.0    -80(BI)   -160.3(anti)    12.9(C3'-endo)  ~C3'-endo    4.31    4.62   19.33
+ 18    G A.G18             -69.6   160.5    64.8    80.1  -163.2   -74.2    -89(BI)   -166.5(anti)    19.0(C3'-endo)  ~C3'-endo    4.51    4.52   23.91
+ 19    C A.C19             -76.5  -166.4    46.9    82.7  -145.2   -47.4    -98(BI)   -162.2(anti)     9.5(C3'-endo)  ~C3'-endo    4.61    4.69   32.83
+ 20    U A.U20             -69.4   172.9    56.5    81.6  -155.1  -120.4    -35(BI)   -157.2(anti)    19.7(C3'-endo)  ~C3'-endo    4.35    4.54  105.16
+ 21    U A.U21              81.6  -168.2   145.3   150.5   -83.0   -55.9    -27(..)   -139.4(anti)   186.6(C3'-exo)  ~C2'-endo     1.00    1.13   94.54
+ 22    C A.C22             -69.1  -164.9    48.0   150.6   -90.3    74.2    196(..)   -139.0(anti)   169.9(C2'-endo) ~C2'-endo     0.89    0.62   44.88
+ 23    G A.G23              61.1  -173.5   172.0    86.5  -179.6   -29.5   -150(BI)     57.0(syn)     39.8(C4'-exo)   ~C3'-endo   -3.57    4.10   24.63
+ 24    G A.G24            -108.1   176.0    77.7    85.1  -166.4   -50.0   -116(BI)   -169.5(anti)   355.7(C2'-exo)   ~C3'-endo    4.60    4.58   26.97
+ 25    C A.C25             -78.0  -169.7    59.2    81.9  -155.1   -62.9    -92(BI)   -166.4(anti)     9.2(C3'-endo)  ~C3'-endo    4.66    4.63   20.18
+ 26    A A.A26             -67.3   177.9    49.4    79.8  -145.2   -80.1    -65(BI)   -163.4(anti)    12.1(C3'-endo)  ~C3'-endo    4.53    4.71   21.35
+ 27    A A.A27             -66.5   149.9    72.8    76.2  -152.7   -77.2    -75(BI)   -178.5(anti)    24.3(C3'-endo)  ~C3'-endo    4.46    4.59   21.71
+ 28    A A.A28             -73.2  -175.2    48.8    82.0  -155.8   -71.8    -84(BI)   -161.5(anti)     3.6(C3'-endo)  ~C3'-endo    4.46    4.65   19.67
+ 29    C A.C29             -58.7   172.7    48.7    84.6  -165.0   -44.2   -121(BI)   -156.8(anti)     8.5(C3'-endo)  ~C3'-endo    4.47    4.51   36.94
+ 30    U A.U30             -85.1  -151.4    76.7    99.5  -161.7   -93.3    -68(BI)   -137.3(anti)    75.9(O4'-endo)    ....       3.20    3.35   86.02
+ 31    A A.A31             -58.6  -174.5    77.5   101.7  -144.3   -87.2    -57(BI)    179.4(anti)   346.1(C2'-exo)   ~C3'-endo    4.18    4.46   27.66
+ 32    C A.C32             -73.8  -179.7    49.3    84.3  -151.5   -65.3    -86(BI)   -165.7(anti)     2.7(C3'-endo)  ~C3'-endo    4.62    4.67   20.19
+ 33    A A.A33             -65.7   170.8    53.5    81.9  -155.8   -67.9    -88(BI)   -165.8(anti)    11.2(C3'-endo)  ~C3'-endo    4.48    4.60   25.78
+ 34    U A.U34             -63.1   170.2    56.3    80.6  -157.1   -76.2    -81(BI)   -169.6(anti)    10.1(C3'-endo)  ~C3'-endo    4.55    4.63   21.41
+ 35    C A.C35             -87.1   177.1    70.5    81.7  -152.0   -67.5    -85(BI)   -166.9(anti)     4.2(C3'-endo)  ~C3'-endo    4.50    4.67   19.97
+ 36    C A.C36             -64.9  -174.9    42.2    85.2     ---     ---     ---      -156.6(anti)     5.3(C3'-endo)  ~C3'-endo     ---     ---     ---
+******************************************************************************************
+Virtual eta/theta torsion angles:
+
+  eta:    C4'(i-1)-P(i)-C4'(i)-P(i+1)
+  theta:  P(i)-C4'(i)-P(i+1)-C4'(i+1)
+    [Ref: Olson (1980): "Configurational statistics of polynucleotide chains.
+          An updated virtual bond model to treat effects of base stacking."
+          Macromolecules, 13(3):721-728]
+
+  eta':   C1'(i-1)-P(i)-C1'(i)-P(i+1)
+  theta': P(i)-C1'(i)-P(i+1)-C1'(i+1)
+    [Ref: Keating et al. (2011): "A new way to see RNA." Quarterly Reviews
+          of Biophysics, 44(4):433-466]
+
+  eta":   base(i-1)-P(i)-base(i)-P(i+1)
+  theta": P(i)-base(i)-P(i+1)-base(i+1)
+
+          nt                eta   theta     eta'  theta'    eta"  theta"
+ 1     G A.G1                ---     ---     ---     ---     ---     ---
+ 2     G A.G2              163.9  -144.2   179.2  -142.9  -135.8  -112.7
+ 3     G A.G3              170.4  -146.0  -173.9  -143.7  -126.4  -113.3
+ 4     U A.U4              171.5  -149.9  -173.2  -148.7  -127.6  -120.2
+ 5     G A.G5              170.8  -141.8  -171.4  -146.1  -126.8  -122.5
+ 6     U A.U6              170.8  -122.8  -170.7  -135.6  -128.5   -86.0
+ 7     A A.A7              171.8  -116.4  -174.9  -109.6  -103.5   -45.3
+ 8     C A.C8              146.4   158.4  -165.2   159.6   -71.4   164.0
+ 9     U A.U9             -169.3    34.7  -146.8   -35.2  -145.7   -55.0
+ 10    U A.U10              89.9  -124.7   128.5  -116.9   170.7   -79.6
+ 11    A A.A11             148.9   -91.2   178.8   -85.0  -138.7   -62.6
+ 12    A A.A12             171.9  -164.4  -158.5  -167.2  -119.6  -167.9
+ 13    C A.C13             169.1  -152.2   173.2  -144.4   179.2   -97.7
+ 14    G A.G14             171.3  -144.1  -159.9  -156.9  -100.1  -139.1
+ 15    U A.U15             157.9  -138.3   166.1  -135.7  -157.8   -95.0
+ 16    U A.U16             164.6  -159.3  -174.1  -158.4  -113.9  -137.5
+ 17    U A.U17             172.8  -149.7  -179.4  -150.1  -149.3  -127.0
+ 18    G A.G18             162.5  -156.1   179.7  -159.6  -139.1  -147.9
+ 19    C A.C19             168.2  -118.9   170.4  -111.3  -168.1   -58.7
+ 20    U A.U20             163.4  -170.4  -165.0   147.0   -89.5    91.3
+ 21    U A.U21             103.8   -60.3    97.4   -61.2    71.8   -36.8
+ 22    C A.C22             163.7   122.5  -142.1    70.5  -129.8    58.6
+ 23    G A.G23             114.5  -152.5   102.1  -140.9   127.6  -134.7
+ 24    G A.G24             156.3  -131.6  -161.5  -136.6  -120.6  -118.0
+ 25    C A.C25             174.7  -139.2  -166.9  -138.3  -123.8  -101.3
+ 26    A A.A26             166.5  -152.2  -178.7  -151.5  -124.0  -139.0
+ 27    A A.A27             166.5  -154.1  -177.9  -156.7  -149.7  -127.8
+ 28    A A.A28             164.1  -149.3   171.7  -147.5  -145.2  -124.4
+ 29    C A.C29             167.7  -126.2  -177.5  -123.6  -138.5  -103.1
+ 30    U A.U30            -163.7  -154.7  -141.2  -146.8  -111.9  -113.7
+ 31    A A.A31            -146.1  -135.8  -133.5  -141.1  -107.6  -134.1
+ 32    C A.C32             164.3  -136.6   173.6  -135.1  -160.0  -101.0
+ 33    A A.A33             164.3  -143.3  -176.3  -143.1  -120.9  -114.7
+ 34    U A.U34             168.9  -154.8  -173.4  -155.6  -124.7  -138.0
+ 35    C A.C35             166.8  -142.4   175.4  -142.9  -153.8  -116.2
+ 36    C A.C36               ---     ---     ---     ---     ---     ---
+******************************************************************************************
+Sugar conformational parameters:
+
+  v0: C4'-O4'-C1'-C2'
+  v1: O4'-C1'-C2'-C3'
+  v2: C1'-C2'-C3'-C4'
+  v3: C2'-C3'-C4'-O4'
+  v4: C3'-C4'-O4'-C1'
+
+  tm: the amplitude of pucker
+  P:  the phase angle of pseudorotation
+    [Ref: Altona & Sundaralingam (1972): "Conformational analysis
+          of the sugar ring in nucleosides and nucleotides. A new
+          description using the concept of pseudorotation."
+          J Am Chem Soc, 94(23):8205-8212]
+
+          nt                 v0      v1      v2      v3      v4      tm      P   Puckering
+ 1     G A.G1                6.1   -29.1    39.8   -37.5    19.7    40.4    10.2  C3'-endo
+ 2     G A.G2                1.7   -27.7    41.9   -42.2    25.5    43.7    16.5  C3'-endo
+ 3     G A.G3               -0.7   -24.7    39.2   -40.9    26.3    41.7    19.7  C3'-endo
+ 4     U A.U4               -1.5   -23.8    38.5   -40.7    26.6    41.2    20.8  C3'-endo
+ 5     G A.G5               -3.7   -20.7    35.7   -39.0    26.9    39.1    24.0  C3'-endo
+ 6     U A.U6              -13.0   -10.7    28.9   -37.2    31.5    37.0    38.6   C4'-exo
+ 7     A A.A7               14.0   -26.1    27.7   -20.5     4.2    28.2   349.8   C2'-exo
+ 8     C A.C8                8.4   -25.5    32.1   -28.1    12.5    32.2     3.8  C3'-endo
+ 9     U A.U9              -26.5    32.2   -25.7    11.4     9.2    31.6   144.5  C2'-endo
+ 10    U A.U10             -23.9     2.7    17.9   -32.1    35.2    35.3    59.7   C4'-exo
+ 11    A A.A11               1.8   -23.7    35.3   -35.4    21.1    36.7    15.9  C3'-endo
+ 12    A A.A12             -16.0    -6.6    25.3   -35.1    32.2    35.5    44.6   C4'-exo
+ 13    C A.C13             -16.2   -12.3    34.5   -45.0    38.6    44.7    39.5   C4'-exo
+ 14    G A.G14             -13.4    -1.9    15.3   -23.3    23.2    24.3    51.0   C4'-exo
+ 15    U A.U15               0.4   -25.3    39.4   -40.0    24.9    41.5    17.9  C3'-endo
+ 16    U A.U16              -2.2   -23.6    39.2   -41.5    27.6    42.2    21.6  C3'-endo
+ 17    U A.U17               4.3   -28.9    41.1   -39.7    22.3    42.1    12.9  C3'-endo
+ 18    G A.G18              -0.4   -25.2    39.7   -41.0    25.9    42.0    19.0  C3'-endo
+ 19    C A.C19               6.6   -29.7    40.2   -37.6    19.5    40.8     9.5  C3'-endo
+ 20    U A.U20              -0.7   -23.3    37.1   -38.7    24.9    39.5    19.7  C3'-endo
+ 21    U A.U21              -7.3    25.9   -33.7    30.4   -14.7    33.9   186.6   C3'-exo
+ 22    C A.C22             -20.3    37.9   -40.5    29.9    -6.2    41.1   169.9  C2'-endo
+ 23    G A.G23             -13.3    -9.8    27.4   -35.7    30.9    35.6    39.8   C4'-exo
+ 24    G A.G24              17.6   -38.5    44.3   -34.9    11.1    44.4   355.7   C2'-exo
+ 25    C A.C25               6.9   -30.0    40.7   -37.8    19.4    41.2     9.2  C3'-endo
+ 26    A A.A26               4.9   -29.4    41.2   -39.7    21.8    42.1    12.1  C3'-endo
+ 27    A A.A27              -4.6   -23.7    41.3   -45.2    31.4    45.4    24.3  C3'-endo
+ 28    A A.A28              11.5   -34.5    43.2   -37.8    16.6    43.3     3.6  C3'-endo
+ 29    C A.C29               7.0   -29.0    38.8   -35.8    18.1    39.3     8.5  C3'-endo
+ 30    U A.U30             -23.4     9.6     6.6   -20.1    27.4    27.0    75.9  O4'-endo
+ 31    A A.A31              14.9   -25.8    26.3   -18.4     2.4    27.1   346.1   C2'-exo
+ 32    C A.C32              11.5   -32.8    40.8   -35.3    15.0    40.8     2.7  C3'-endo
+ 33    A A.A33               5.5   -29.2    40.6   -38.6    20.9    41.4    11.2  C3'-endo
+ 34    U A.U34               6.6   -31.3    42.9   -40.2    21.1    43.6    10.1  C3'-endo
+ 35    C A.C35              11.0   -33.7    42.6   -37.5    16.7    42.7     4.2  C3'-endo
+ 36    C A.C36               9.3   -30.7    39.3   -35.1    16.2    39.4     5.3  C3'-endo
+******************************************************************************************
+Assignment of sugar-phosphate backbone suites
+
+  bin: name of the 12 bins based on [delta(i-1), delta, gamma], where
+       delta(i-1) and delta can be either 3 (for C3'-endo sugar) or 2
+       (for C2'-endo) and gamma can be p/t/m (for gauche+/trans/gauche-
+       conformations, respectively) (2x2x3=12 combinations: 33p, 33t,
+       ... 22m); 'inc' refers to incomplete cases (i.e., with missing
+       torsions), and 'trig' to triages (i.e., with torsion angle
+       outliers)
+  cluster: 2-char suite name, for one of 53 reported clusters (46
+           certain and 7 wannabes), '__' for incomplete cases, and
+           '!!' for outliers
+  suiteness: measure of conformer-match quality (low to high in range 0 to 1)
+
+    [Ref: Richardson et al. (2008): "RNA backbone: consensus all-angle
+          conformers and modular string nomenclature (an RNA Ontology
+          Consortium contribution)." RNA, 14(3):465-481]
+
+          nt             bin    cluster   suiteness
+ 1     G A.G1            inc      __       0
+ 2     G A.G2            33p      1a       0.919
+ 3     G A.G3            33p      1a       0.936
+ 4     U A.U4            33p      1a       0.951
+ 5     G A.G5            33p      1a       0.614
+ 6     U A.U6            33p      1a       0.811
+ 7     A A.A7            33t      !!       0
+ 8     C A.C8            33t      1c       0.012
+ 9     U A.U9            32p      1b       0.098
+ 10    U A.U10           23t      !!       0
+ 11    A A.A11           33p      !!       0
+ 12    A A.A12           33p      1a       0.390
+ 13    C A.C13           33p      1a       0.548
+ 14    G A.G14           33p      1a       0.236
+ 15    U A.U15           33p      1a       0.214
+ 16    U A.U16           33p      1a       0.839
+ 17    U A.U17           33p      1a       0.872
+ 18    G A.G18           33p      1a       0.730
+ 19    C A.C19           33p      1a       0.671
+ 20    U A.U20           33p      1a       0.601
+ 21    U A.U21           32t      !!       0
+ 22    C A.C22           22p      2[       0.674
+ 23    G A.G23           23t      6n       0.887
+ 24    G A.G24           33p      !!       0
+ 25    C A.C25           33p      1a       0.503
+ 26    A A.A26           33p      1a       0.910
+ 27    A A.A27           33p      1a       0.343
+ 28    A A.A28           33p      1a       0.833
+ 29    C A.C29           33p      1a       0.895
+ 30    U A.U30           33p      1m       0.128
+ 31    A A.A31           33p      !!       0
+ 32    C A.C32           33p      1a       0.153
+ 33    A A.A33           33p      1a       0.954
+ 34    U A.U34           33p      1a       0.946
+ 35    C A.C35           33p      1a       0.361
+ 36    C A.C36           33p      1a       0.731
+
+Concatenated suite string per chain. To avoid confusion of lower case
+modified nucleotide name (e.g., 'a') with suite cluster (e.g., '1a'),
+use --suite-delimiter to add delimiters (matched '()' by default).
+
+1   A RNA nts=36  G1aG1aG1aU1aG1aU!!A1cC1bU!!U!!A1aA1aC1aG1aU1aU1aU1aG1aC1aU!!U2[C6nG!!G1aC1aA1aA1aA1aC1mU!!A1aC1aA1aU1aC1aC
