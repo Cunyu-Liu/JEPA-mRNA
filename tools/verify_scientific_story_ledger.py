@@ -609,6 +609,31 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
     return errors
 
 
+def verify_archiveii_clean_full_consistency() -> list[str]:
+    errors = []
+    for name in ["archiveii_metrics", "archiveii_full_metrics"]:
+        if not SOURCES[name].is_file():
+            return [f"missing ArchiveII clean/full consistency source: {name}: {SOURCES[name]}"]
+    base = json.loads(SOURCES["archiveii_metrics"].read_text())
+    current = json.loads(SOURCES["archiveii_full_metrics"].read_text())
+    base_rows = {row["prediction_id"]: row for row in base["rows"]}
+    current_rows = {row["prediction_id"]: row for row in current["rows"]}
+    for prediction_id in ["xens2/archiveii_embok_clean", "bpfold/archiveii_embok_clean", "rinalmo_ft/archiveii_embok_clean"]:
+        old_panel = base_rows[prediction_id]["panels"]["archiveii_official_reference_clean_2544"]
+        new_panel = current_rows[prediction_id]["panels"]["archiveii_official_reference_clean_2544"]
+        for key in ["metrics", "delta_vs_xens2", "paired_macro_f1_delta_ci95_vs_xens2"]:
+            if new_panel[key] != old_panel[key]:
+                errors.append(f"ArchiveII full recovery changed clean {prediction_id}/{key}")
+    if current["clean_2544"]["strongest_ensemble"]["prediction_id"] != "bpfold/archiveii_embok_clean" or current["clean_2544"]["strongest_single_predictor"]["prediction_id"] != "rinalmo_ft/archiveii_embok_clean":
+        errors.append("ArchiveII clean strongest identities changed during full recovery")
+    base_full = [row for row in base["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"]
+    if len(base_full) != 1 or base_full[0]["prediction_id"] != "bpfold_official_release/archiveii":
+        errors.append("ArchiveII base historical full identity changed")
+    if current["coverage_accounting"]["official_3966_full_coverage"] != 5:
+        errors.append("ArchiveII current full recovery no longer has five identities")
+    return errors
+
+
 def verify_ts0_contract() -> list[str]:
     errors = []
     for name in ["ts0_metrics", "ts0_recovery_audit", "ts0_testsetb_verification"]:
@@ -1147,6 +1172,8 @@ def verify_narrative_guards() -> list[str]:
         "UNCHECKED_XENS2_NOT_FULL_COVERAGE",
         "无 clean 记录预测不构造 full",
         "2556/3966",
+        "base full=1 与当前 full=5",
+        "full 新增不得回写 clean 或 base 历史",
         "8a2008a4cda3c43b3000f25151b80408b0bdb110",
         "a8b1089a67a84665c49f0c228064693a53548590",
         "0.6812363564199246",
@@ -1597,12 +1624,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_archiveii_full_recovery_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_archiveii_full_recovery_contract() + verify_archiveii_clean_full_consistency() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, Rfam release lineage, and ArchiveII full recovery"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, Rfam release lineage, ArchiveII full recovery and clean/full consistency"
     print(f"PASS: {scope}")
     return 0
 

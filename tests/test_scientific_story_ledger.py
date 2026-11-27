@@ -293,6 +293,19 @@ def test_archiveii_full_xens2_vienna_and_maxexpect_boundaries():
     assert "missing=1410" in text
 
 
+def test_archiveii_clean_full_consistency_contract():
+    text = ledger.DOC.read_text()
+    assert "ArchiveII clean/full 联合不变量" in text
+    assert "base full=1 与当前 full=5" in text
+    assert "三者的 metrics、相对 xens2 delta 和 paired macro CI 均与 base 一致" in text
+    assert "full 新增不得回写 clean 或 base 历史" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_archiveii_clean_full_consistency_artifact_contract():
+    assert ledger.verify_archiveii_clean_full_consistency() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
