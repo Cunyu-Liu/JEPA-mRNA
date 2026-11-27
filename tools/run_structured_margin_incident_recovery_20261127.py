@@ -38,6 +38,12 @@ def append_jsonl(value: dict, path: Path) -> None:
         handle.write(json.dumps(value, allow_nan=False) + "\n")
 
 
+def atomic_pid(path: Path, pid: int) -> None:
+    temporary = path.with_name(path.name + f".tmp.{os.getpid()}")
+    temporary.write_text(f"{pid}\n")
+    os.replace(temporary, path)
+
+
 def training_command(source_repo: Path, config_path: Path, arm: str, out: Path) -> list[str]:
     config = json.loads(config_path.read_text())
     return [
@@ -106,6 +112,45 @@ def free_gpu_bytes() -> int:
     return int(output.splitlines()[0]) * 1024 ** 2
 
 
+def process_identity(pid: int, proc_root: Path = Path("/proc")) -> tuple[str, int]:
+    raw = (proc_root / str(pid) / "stat").read_text()
+    fields = raw.rsplit(") ", 1)[1].split()
+    return fields[0], int(fields[19])
+
+
+def pid_alive(pid: int, start_ticks: int) -> bool:
+    try:
+        state, current_start = process_identity(pid)
+    except (FileNotFoundError, ProcessLookupError):
+        return False
+    return state != "Z" and current_start == start_ticks
+
+
+def process_command(pid: int) -> list[str]:
+    return [part.decode() for part in Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0") if part]
+
+
+class AdoptedProcess:
+    def __init__(self, pid: int, start_ticks: int):
+        self.pid = pid
+        self.start_ticks = start_ticks
+
+    def poll(self):
+        return None if pid_alive(self.pid, self.start_ticks) else "adopted_exit"
+
+
+def adopt_running_process(pid: int, arm: str, out: Path) -> AdoptedProcess:
+    start_ticks = process_identity(pid)[1]
+    if not pid_alive(pid, start_ticks):
+        raise ValueError(f"adoption target is not alive: {pid}")
+    command = process_command(pid)
+    if "--arm" not in command or command[command.index("--arm") + 1] != arm:
+        raise ValueError(f"adoption target arm mismatch: {pid}")
+    if "--out" not in command or Path(command[command.index("--out") + 1]).resolve() != out.resolve():
+        raise ValueError(f"adoption target output mismatch: {pid}")
+    return AdoptedProcess(pid, start_ticks)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gec-config", type=Path,
@@ -114,6 +159,8 @@ def main() -> None:
     parser.add_argument("--recovery-root", type=Path, required=True)
     parser.add_argument("--evaluation-root", type=Path, required=True)
     parser.add_argument("--artifact-root-override", type=Path)
+    parser.add_argument("--adopt-arm", choices=ARMS)
+    parser.add_argument("--adopt-pid", type=int)
     parser.add_argument("--poll-seconds", type=int, default=60)
     args = parser.parse_args()
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -136,6 +183,7 @@ def main() -> None:
         return
     state_path = args.recovery_root / "recovery_scheduler_state.json"
     events_path = args.recovery_root / "recovery_scheduler_events.jsonl"
+    atomic_pid(args.recovery_root / "recovery_scheduler.pid", os.getpid())
     state = {
         "schema_version": "foldnar.structured_margin_incident_recovery_scheduler.v1",
         "status": "STARTING", "scheduler_pid": os.getpid(),
@@ -161,6 +209,21 @@ def main() -> None:
     active = {}
     history = {}
     failure = None
+    if bool(args.adopt_arm) != bool(args.adopt_pid):
+        raise ValueError("--adopt-arm and --adopt-pid are required together")
+    if args.adopt_arm:
+        out = artifact_root / args.adopt_arm
+        process = adopt_running_process(args.adopt_pid, args.adopt_arm, out)
+        active[args.adopt_arm] = process
+        record = {
+            "arm": args.adopt_arm, "pid": process.pid, "status": "running",
+            "launch_kind": "adopted_running", "adopted_at": utc_now(),
+            "process_start_ticks": process.start_ticks, "command": process_command(process.pid),
+            "stdout_log": str(LOCAL_LOG_ROOT / f"{args.adopt_arm}.log"),
+        }
+        history[args.adopt_arm] = record
+        save("RUNNING_ARMS", processes=history)
+        event("ARM_ADOPTED", **record)
     while True:
         for arm in list(active):
             process = active[arm]
@@ -170,7 +233,7 @@ def main() -> None:
             record = history[arm]
             record.update({"returncode": returncode, "finished_at": utc_now()})
             meta = converged_meta(artifact_root / arm / "run_meta.json")
-            if returncode == 0 and meta is not None:
+            if returncode in (0, "adopted_exit") and meta is not None:
                 record["status"] = "converged"
                 state["completed_arms"] = sorted(set(state["completed_arms"]) | {arm})
                 event("ARM_CONVERGED", arm=arm, pid=process.pid, stop_reason=meta["stop_reason"])

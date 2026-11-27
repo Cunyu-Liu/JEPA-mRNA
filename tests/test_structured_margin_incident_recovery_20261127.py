@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -8,6 +9,7 @@ from tools import audit_structured_margin_incident_recovery_20261127 as audit
 from tools import run_structured_margin_incident_recovery_20261127 as recovery
 from tools import run_frozen_margin_trainer_with_staged_checkpoint_20261127 as staged
 from tools import mirror_structured_margin_evaluation_for_publication_20261127 as mirror
+from tools import supervise_structured_margin_publication_20261127 as publication
 
 
 def write_jsonl(path, rows):
@@ -111,6 +113,27 @@ def test_staged_checkpoint_copy_failure_preserves_original_and_local(tmp_path, m
     assert (tmp_path / "local" / "arm" / "resume.pt").is_file()
 
 
+def test_atomic_pid_file_records_exact_scheduler_pid(tmp_path):
+    path = tmp_path / "recovery_scheduler.pid"
+    recovery.atomic_pid(path, 4111890)
+    assert path.read_text() == "4111890\n"
+    assert not list(tmp_path.glob("*.tmp.*"))
+
+
+def test_adopted_process_tracks_identity_without_starting_or_killing(monkeypatch):
+    process = recovery.AdoptedProcess(12345, 67890)
+    monkeypatch.setattr(recovery, "pid_alive", lambda pid, ticks: (pid, ticks) == (12345, 67890))
+    assert process.poll() is None
+    monkeypatch.setattr(recovery, "pid_alive", lambda pid, ticks: False)
+    assert process.poll() == "adopted_exit"
+
+
+def test_current_process_identity_is_live():
+    state, ticks = recovery.process_identity(os.getpid())
+    assert state != "Z"
+    assert recovery.pid_alive(os.getpid(), ticks) is True
+
+
 def test_recovery_root_override_is_scoped_to_prerequisites(tmp_path):
     args = type("Args", (), {"out": str(tmp_path / "run" / "matched_control")})()
     config = {"full_training": {"artifact_root": "/teams/original"}}
@@ -121,6 +144,21 @@ def test_recovery_root_override_is_scoped_to_prerequisites(tmp_path):
     assert result == {"ok": True}
     assert seen == [str(tmp_path / "run")]
     assert config["full_training"]["artifact_root"] == "/teams/original"
+
+
+def test_publication_replacement_never_duplicates_live_or_completed_publisher():
+    assert publication.should_start(True, False, False) is False
+    assert publication.should_start(False, True, False) is False
+    assert publication.should_start(False, False, True) is False
+    assert publication.should_start(False, False, False) is True
+
+
+def test_publication_replacement_uses_local_work_and_explicit_evaluation(tmp_path):
+    command = publication.publisher_command(tmp_path / "evaluation", tmp_path / "work")
+    joined = " ".join(command)
+    assert "--evaluation-root" in joined and str(tmp_path / "evaluation") in joined
+    assert "--work-dir" in joined and str(tmp_path / "work") in joined
+    assert "--timeout-seconds 86400" in joined
 
 
 def test_final_evaluation_mirror_preserves_source_and_publisher_paths(tmp_path):
