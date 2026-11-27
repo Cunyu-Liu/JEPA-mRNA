@@ -306,6 +306,45 @@ def test_archiveii_clean_full_consistency_artifact_contract():
     assert ledger.verify_archiveii_clean_full_consistency() == []
 
 
+def test_matched_natural_convergence_states_and_no_structural_claim():
+    text = ledger.DOC.read_text()
+    assert "9cc035be714ce0487593ce042aaee259d5a6cd7d" in text
+    assert "step=19000" in text
+    assert "step=16500、validation_loss=0.35262170191251785" in text
+    assert "bad_evaluations=5" in text
+    assert "best_convergence` 为同一 best/loss、**bad_evaluations=0**" in text
+    assert "additional_evaluation_started=false" in text
+    assert "其余三臂未完成，四臂结构结论仍不存在" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_matched_convergence_artifact_contract():
+    assert ledger.verify_matched_convergence_contract() == []
+
+
+def test_matched_ledger_and_best_resume_integrity():
+    text = ledger.DOC.read_text()
+    assert "train/batch/compute 各 **19,000** 行" in text
+    assert "validation **38** 行" in text
+    assert "duplicates=0" in text and "missing=0" in text
+    assert "record_order_consistent=true" in text
+    assert "restored_best_eligible" in text
+    assert "best_resume_tensor_identity_match=true" in text
+    assert "5a9167ff1d26327c38900ec6e248fd752b8520eac7dc91d1a253afcb3735f1a6" in text
+    assert "acec9e6f3bc025597fef673422ab2b1d4081587ba7a5172b3494ce9c05e42ad0" in text
+
+
+def test_ensemble_audit_time_status_and_four_arm_conclusion_gate():
+    text = ledger.DOC.read_text()
+    assert "step=10000、validation_loss=0.40810874768920063" in text
+    assert "审计时 resume 已到 **10500**" in text
+    assert "下一批为 10501 且匹配 saved stream" in text
+    assert "completed_arms=[matched_control]" in text
+    assert "evaluation=null" in text
+    assert "matched 一臂自然收敛不得外推为四臂完成" in text
+    assert "独立结构评估仍未开始" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

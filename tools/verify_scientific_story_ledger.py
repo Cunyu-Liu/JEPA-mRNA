@@ -93,6 +93,8 @@ SOURCES = {
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
     "takeover_status": INCIDENT_EVIDENCE_ROOT / "recovery_takeover_status.json",
+    "matched_convergence_audit": INCIDENT_EVIDENCE_ROOT / "matched_converged_19000_audit.json",
+    "current_margin_scheduler": LOCAL_SCHEDULER_ROOT / "recovery_scheduler_state.json",
     "adopted_scheduler_state": INCIDENT_EVIDENCE_ROOT / "adopted_scheduler_state.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
@@ -122,7 +124,7 @@ SOURCE_COMMITS = {
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
-    "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
+    "margin incident recovery": (RECOVERY_REPO, "9cc035be714ce0487593ce042aaee259d5a6cd7d"),
 }
 
 
@@ -534,6 +536,88 @@ def verify_incident_recovery_contract() -> list[str]:
     for required in ["PASS_FINAL_EVALUATION_MIRRORED_FOR_EXISTING_PUBLISHER", 'report.get("final_verdict_allowed") is not True', "copied != before"]:
         if required not in mirror:
             errors.append(f"final teams mirror contract missing: {required}")
+    return errors
+
+
+def verify_matched_convergence_contract() -> list[str]:
+    errors = []
+    if not SOURCES["matched_convergence_audit"].is_file():
+        return [f"missing matched convergence audit: {SOURCES['matched_convergence_audit']}"]
+    audit = json.loads(SOURCES["matched_convergence_audit"].read_text())
+    if audit["status"] != "PASS_MATCHED_19000_AND_ENSEMBLE_RECOVERY_READONLY_AUDIT":
+        errors.append("matched/ensemble read-only audit did not pass")
+    matched = audit["matched_control"]
+    if matched["status"] != "PASS_MATCHED_NATURAL_CONVERGENCE_19000" or matched["training_stopped_step"] != 19000 or matched["best_step"] != 16500:
+        errors.append("matched natural stop/best steps mismatch")
+    if matched["best_validation_loss"] != 0.35262170191251785:
+        errors.append("matched best validation loss mismatch")
+    if matched["convergence"]["bad_evaluations"] != 5 or matched["best_convergence"]["bad_evaluations"] != 0:
+        errors.append("matched stopped/best convergence bad-evaluation states were conflated")
+    if matched["convergence"]["eligible"] is not True or matched["best_convergence"]["eligible"] is not True:
+        errors.append("matched convergence eligibility mismatch")
+    if matched["best_convergence"] != {**matched["convergence"], "bad_evaluations": 0}:
+        errors.append("matched best_convergence differs beyond restored-best bad=0")
+    if matched["stop_reason"] != "CONVERGED_VALIDATION_PAIR_HAMMING_STRUCTURED_MARGIN_AFTER_TERMINAL_UNFREEZE":
+        errors.append("matched stop reason mismatch")
+    if matched["ledgers"] != {
+        "train_rows": 19000,
+        "batch_rows": 19000,
+        "compute_rows": 19000,
+        "validation_rows": 38,
+        "duplicates": 0,
+        "missing": 0,
+        "record_order_consistent": True,
+        "losses_finite": True,
+    }:
+        errors.append("matched 19000/validation-38 ledger integrity mismatch")
+    resume = matched["resume"]
+    best = matched["best"]
+    if resume["step"] != 16500 or resume["phase"] != "restored_best_eligible" or resume["sha256"] != "5a9167ff1d26327c38900ec6e248fd752b8520eac7dc91d1a253afcb3735f1a6":
+        errors.append("matched restored resume identity mismatch")
+    if best["step"] != 16500 or best["phase"] != "best_eligible" or best["sha256"] != "acec9e6f3bc025597fef673422ab2b1d4081587ba7a5172b3494ce9c05e42ad0":
+        errors.append("matched best checkpoint identity mismatch")
+    if best["nested_export_tensors_match"] is not True or matched["best_resume_tensor_identity_match"] is not True or best["model_tensor_sha256"] != resume["model_tensor_sha256"]:
+        errors.append("matched best/resume tensor identity mismatch")
+    if audit["structural_model_selection_performed"] is not False or audit["additional_evaluation_started"] is not False or audit["scientific_conclusion"] is not None:
+        errors.append("matched audit allowed structural selection/evaluation/conclusion")
+    ensemble = audit["ensemble_context"]
+    if ensemble["status"] != "PASS_ENSEMBLE_RECOVERY_IDENTITY_CONTINUES" or ensemble["run_meta_status"] != "running" or ensemble["converged"] is not False:
+        errors.append("ensemble recovery status mismatch")
+    if ensemble["shared_scientific_identity_with_matched"] is not True:
+        errors.append("ensemble/matched shared scientific identity mismatch")
+    if ensemble["first_eligible_validation"] != {
+        "step": 10000,
+        "validation_loss": 0.40810874768920063,
+        "n_unfrozen": 20,
+        "eligible": True,
+        "improved": True,
+        "save_best": True,
+        "stop": False,
+        "best_step": 10000,
+        "best_validation_loss": 0.40810874768920063,
+        "bad_evaluations": 0,
+        "validation_metric": "length_normalized_pair_hamming_structured_margin",
+    }:
+        errors.append("ensemble first eligible best-10000 validation mismatch")
+    if ensemble["current_resume_step"] != 10500 or ensemble["current_unfrozen_blocks"] != 20:
+        errors.append("ensemble audit-time resume step mismatch")
+    if ensemble["next_batch"]["step"] != 10501 or ensemble["next_batch"]["matches_saved_stream"] is not True:
+        errors.append("ensemble next-batch continuity mismatch")
+    if ensemble["current_best"] != {
+        "step": 10000,
+        "validation_loss": 0.40810874768920063,
+        "sha256": "7407f2dcc27204b8ca78d359af0ac8fd6bf7e66d99bc7c2ca0c69dc0fdfd397d",
+    }:
+        errors.append("ensemble current best identity mismatch")
+    scheduler = json.loads(SOURCES["current_margin_scheduler"].read_text())
+    if scheduler["completed_arms"] != ["matched_control"] or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
+        errors.append("four-arm completion/evaluation/conclusion state overclaimed")
+    if scheduler["processes"]["matched_control"]["status"] != "converged" or scheduler["processes"]["ensemble_context"]["status"] != "running":
+        errors.append("scheduler matched/ensemble process state mismatch")
+    source = (RECOVERY_REPO / "tools/audit_structured_margin_converged_19000_v1.py").read_text()
+    for required in ["def validate_stop_sequence(", "len(rows) != 19000", "best_hashes != resume_hashes", "best_resume_tensor_identity_match", "additional_evaluation_started"]:
+        if required not in source:
+            errors.append(f"matched convergence audit source contract missing: {required}")
     return errors
 
 
@@ -1140,6 +1224,15 @@ def verify_narrative_guards() -> list[str]:
         "不能称全 temporal 独立",
         "14.9_OR_EARLIER=43、15.0=278、UNCHECKED=115",
         "五类互斥并守恒 436",
+        "9cc035be714ce0487593ce042aaee259d5a6cd7d",
+        "step=19000",
+        "step=16500、validation_loss=0.35262170191251785",
+        "best_convergence` 为同一 best/loss、**bad_evaluations=0**",
+        "train/batch/compute 各 **19,000** 行",
+        "best_resume_tensor_identity_match=true",
+        "step=10000、validation_loss=0.40810874768920063",
+        "审计时 resume 已到 **10500**",
+        "completed_arms=[matched_control]",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
@@ -1624,12 +1717,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_archiveii_full_recovery_contract() + verify_archiveii_clean_full_consistency() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_archiveii_full_recovery_contract() + verify_archiveii_clean_full_consistency() + verify_matched_convergence_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, Rfam release lineage, ArchiveII full recovery and clean/full consistency"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, Rfam release lineage, ArchiveII full recovery clean/full consistency, and matched convergence"
     print(f"PASS: {scope}")
     return 0
 
