@@ -160,6 +160,20 @@ def test_takeover_lock_pid_adoption_and_local_storage():
     assert "当前评估未开始、目录尚未创建" in text
 
 
+def test_takeover_best15000_remains_nonterminal_and_no_conclusion():
+    text = ledger.DOC.read_text()
+    assert "train step=15500" in text
+    assert "15500 validation pending" in text
+    assert "step=15000、validation_loss=0.3896151208942566" in text
+    assert "best_step=15000" in text
+    assert "bad_evaluations=0" in text
+    assert "save_best=true" in text
+    assert "stop=false" in text
+    assert "best.pt` 存在" in text
+    assert "completed_arms=[]" in text
+    assert "四臂未收敛，当前无 margin 科学结论" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

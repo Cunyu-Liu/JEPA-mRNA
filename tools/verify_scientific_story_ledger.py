@@ -589,6 +589,39 @@ def verify_takeover_contract() -> list[str]:
     old_pid = (RECOVERY_ROOT / "recovery_scheduler.pid").read_text().strip()
     if old_pid == "4111890":
         errors.append("stale teams PID was rewritten as the adopted local scheduler")
+    if scheduler["completed_arms"] != [] or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
+        errors.append("adopted scheduler gained a completed arm/evaluation/conclusion without ledger review")
+    if status["train_step"] != 15500 or status["unfrozen_blocks"] != 20 or status["run_meta_status"] != "running" or status["converged"] is not False:
+        errors.append("takeover train/run_meta snapshot mismatch")
+    if status["next_arms"] != ["ensemble_context", "destroy_interval_shuffle", "independent_context"]:
+        errors.append("takeover remaining arms mismatch")
+    validation = status["validation"]
+    expected_validation = {
+        "step": 15000,
+        "validation_loss": 0.3896151208942566,
+        "n_unfrozen": 20,
+        "eligible": True,
+        "improved": True,
+        "save_best": True,
+        "stop": False,
+        "best_step": 15000,
+        "best_validation_loss": 0.3896151208942566,
+        "bad_evaluations": 0,
+        "validation_metric": "length_normalized_pair_hamming_structured_margin",
+    }
+    if validation != expected_validation:
+        errors.append(f"takeover best-15000 validation mismatch: {validation}")
+    best_path = ACTIVE_RUN_ROOT / "matched_control/best.pt"
+    if status["best_pt_exists"] is not True or not best_path.is_file() or best_path.stat().st_size <= 0:
+        errors.append("matched best-15000 checkpoint evidence missing")
+    live_validation = [json.loads(line) for line in (ACTIVE_RUN_ROOT / "matched_control/validation_log.jsonl").read_text().splitlines()]
+    live_15000 = next((row for row in live_validation if row["step"] == 15000), None)
+    if live_15000 != expected_validation:
+        errors.append("live matched validation does not preserve the best-15000 snapshot")
+    for arm in ["matched_control", "ensemble_context", "destroy_interval_shuffle", "independent_context"]:
+        meta_path = ACTIVE_RUN_ROOT / arm / "run_meta.json"
+        if meta_path.is_file() and json.loads(meta_path.read_text()).get("converged") is not False:
+            errors.append(f"arm unexpectedly converged during no-conclusion snapshot: {arm}")
     recovery_source = (RECOVERY_REPO / "tools/run_structured_margin_incident_recovery_20261127.py").read_text()
     for required in ["def atomic_pid(", 'atomic_pid(args.recovery_root / "recovery_scheduler.pid", os.getpid())', "class AdoptedProcess", "def adopt_running_process(", "return AdoptedProcess(pid, start_ticks)"]:
         if required not in recovery_source:
@@ -668,6 +701,10 @@ def verify_narrative_guards() -> list[str]:
         "recovery_scheduler.pid` 内容为 `4111890\\n`",
         "adopt 原进程而非重复训练",
         "teams 写入仅限合法终态后的最终小证据镜像",
+        "step=15000、validation_loss=0.3896151208942566",
+        "best_step=15000",
+        "bad_evaluations=0",
+        "四臂未收敛，当前无 margin 科学结论",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
