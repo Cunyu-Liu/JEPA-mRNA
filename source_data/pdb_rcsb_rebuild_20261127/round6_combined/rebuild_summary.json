@@ -1,0 +1,24 @@
+{
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "n_rebuilt": 62,
+  "n_source_records": 153,
+  "n_unresolved": 91,
+  "new_metadata_references": 0,
+  "pair_match_counts": {
+    "false": 4,
+    "true": 58
+  },
+  "panel_rebuilt": {
+    "pdb_ts1": 16,
+    "pdb_ts2": 27,
+    "pdb_ts3": 9,
+    "pdb_ts_hard": 10
+  },
+  "schema_version": "foldnar.rnaformer_pdb_rcsb_rebuild.v1",
+  "scheme_repaired_references": 4,
+  "unresolved_status_counts": {
+    "METADATA_AMBIGUOUS_UNCHECKED": 55,
+    "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED": 32,
+    "SOURCE_BAD_ALPHABET_UNCHECKED": 4
+  }
+}

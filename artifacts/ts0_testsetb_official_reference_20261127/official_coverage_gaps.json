@@ -1,0 +1,1245 @@
+{
+  "datasets": {
+    "bprna_ts0": {
+      "dataset": "bprna_ts0",
+      "official_missing_from_project": [
+        {
+          "name": "bpRNA_CRW_25863.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "4d546c0535f973c2e3038a347d18ae198fdb44bb527a4e56e5126a0eaa09548b",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_CRW_25863.bpseq",
+          "reference_member_sha256": "d7ec48b1e53633f160740b34e84d1a7c5f2d74d34e864bb0bf235101e83492ff",
+          "sequence_sha256": "22a02733db0a051710ee176dba8055a65bb3fe16faa487167a1939db1cce1e18",
+          "source_id": "bpRNA_CRW_25863.bpseq"
+        },
+        {
+          "name": "bpRNA_CRW_31704.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "9f7918931fbe46d42964c95e1673571d6e4efa0a773da34321da1df65fa969c3",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_CRW_31704.bpseq",
+          "reference_member_sha256": "d4dc406217226d6599c817f13176a42a7291afe0ce6175befb5a46cbec37815a",
+          "sequence_sha256": "f24495e214070f3c6382964c82bd46b70819e0d557a88a58f89525b9d3527ddd",
+          "source_id": "bpRNA_CRW_31704.bpseq"
+        },
+        {
+          "name": "bpRNA_CRW_43565.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "4d546c0535f973c2e3038a347d18ae198fdb44bb527a4e56e5126a0eaa09548b",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_CRW_43565.bpseq",
+          "reference_member_sha256": "8a53035fe02ea6a39c2385dcb45cf07095ed277d8db5de0d43eb495cfaaf1050",
+          "sequence_sha256": "c2a855d6681f2bf4ae1aa21f7194f6799cc160872d9c46a5f5631b55d8c24f57",
+          "source_id": "bpRNA_CRW_43565.bpseq"
+        },
+        {
+          "name": "bpRNA_CRW_54323.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "4d546c0535f973c2e3038a347d18ae198fdb44bb527a4e56e5126a0eaa09548b",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_CRW_54323.bpseq",
+          "reference_member_sha256": "e2503e6a5334b1bf332d85af3db172c5b296b1c1893bd26471ddbcca95205956",
+          "sequence_sha256": "80009717a803bdf7f70febe3fb09de52b98a0fb2cfd069a53b80ed86202259f5",
+          "source_id": "bpRNA_CRW_54323.bpseq"
+        },
+        {
+          "name": "bpRNA_CRW_54562.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "75fba408b16f96c0ef60c09d0b9822bca99cc92463d7808decdcc13b8ce9dc22",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_CRW_54562.bpseq",
+          "reference_member_sha256": "09b1407a524d186684f40b7d6c64c621c5ab042b1b211dac7eeb22069048ef27",
+          "sequence_sha256": "76eeafebe71b11420a72e0957a30d9df66b9222ca6a9a44a66b2297c27584e2d",
+          "source_id": "bpRNA_CRW_54562.bpseq"
+        },
+        {
+          "name": "bpRNA_RFAM_10644.bpseq",
+          "non_acgu_characters": [
+            "Y"
+          ],
+          "pair_set_sha256": "8b3da569c7fa0bfe2e4a7475884943030923b889ea5d385f848c6e7db8d5e153",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_RFAM_10644.bpseq",
+          "reference_member_sha256": "5d8180df05257099befb072f2b3c322d83d028521d1a82fa1b3984c05a754618",
+          "sequence_sha256": "f135e3474dd0a87e63523200db5fd1ee4204e7ff9db132dbe535e9b78c8bc2bf",
+          "source_id": "bpRNA_RFAM_10644.bpseq"
+        },
+        {
+          "name": "bpRNA_RFAM_1072.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "be77b8a60168b556af51467ae7a9165bd3e3b48b25c4e8bfeb19771559e27b87",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_RFAM_1072.bpseq",
+          "reference_member_sha256": "6e3fcbcad9928be765bea6f94ad39a30eccabdd6edd9888a622efe34eb26bcf5",
+          "sequence_sha256": "73b9f2664355a810198226554b18733faba194cc237a9e59092f10bcb848aacc",
+          "source_id": "bpRNA_RFAM_1072.bpseq"
+        },
+        {
+          "name": "bpRNA_RFAM_18822.bpseq",
+          "non_acgu_characters": [
+            "R",
+            "Y"
+          ],
+          "pair_set_sha256": "155057b657e4dc9f7fdbd7c70dbea723f04e929e105ae76d92b766ee799eb1c6",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_RFAM_18822.bpseq",
+          "reference_member_sha256": "452047191afa5a701f559360df4018c9a06756a8a4bb74df7d08139b75900770",
+          "sequence_sha256": "43598ac624b527baa58a0b0c984d4bb6488672c04c42e8d8c7a3e1ead6685903",
+          "source_id": "bpRNA_RFAM_18822.bpseq"
+        },
+        {
+          "name": "bpRNA_RFAM_18935.bpseq",
+          "non_acgu_characters": [
+            "R",
+            "Y"
+          ],
+          "pair_set_sha256": "7a4bda2fdfa1cdfbf36e29f79f8b74a243b57e641873cc458068345a90483f27",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_RFAM_18935.bpseq",
+          "reference_member_sha256": "c67745f649dfe96a2bce011930cc7fd0d1ec9324f7be74c472b37fdcd140f1a7",
+          "sequence_sha256": "deaa2696d0f7b1a825d2ad0ecb76166d4e97b19a2cd234b4701b1930dbb44031",
+          "source_id": "bpRNA_RFAM_18935.bpseq"
+        },
+        {
+          "name": "bpRNA_RFAM_38651.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "c1a769f02a2a498d289efc9950902ce01481f0a1bb1ee8da77917d05c2f708c6",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_RFAM_38651.bpseq",
+          "reference_member_sha256": "197cbdd650dbe99c9c53fab6ec2baaf466fa307eff30f7bf90d2198f3285dedb",
+          "sequence_sha256": "d93483b998630d8ca7b059a32f0d7a85b53a0529d616c1af41c5b16b912bb2ea",
+          "source_id": "bpRNA_RFAM_38651.bpseq"
+        },
+        {
+          "name": "bpRNA_SRP_192.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_SRP_192.bpseq",
+          "reference_member_sha256": "9331af51557f7d70557c25f059cb955f49643cf91039cf6b7ef4b3c5fe2cbb96",
+          "sequence_sha256": "a2dd23f58e0f022e64c1b2403762b7beea9357bc9a74e3c32b35f8421c25e3c2",
+          "source_id": "bpRNA_SRP_192.bpseq"
+        },
+        {
+          "name": "bpRNA_tmRNA_252.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "dc7e2367bdeb6f7a16f9a4c3b29d577b58e26b5bb6ddb15fb95acb67eb920690",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_tmRNA_252.bpseq",
+          "reference_member_sha256": "72178758218339b0d34e0671087c6d43f749780612226ee8b641d108c37dc0ce",
+          "sequence_sha256": "baacca7f205b4bf9cb006dd64fd3f95ebbb108c5e7a2e4003bdeff9a89786b4f",
+          "source_id": "bpRNA_tmRNA_252.bpseq"
+        },
+        {
+          "name": "bpRNA_tmRNA_397.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "6cfcf614a8e4d0bc37d43b60168fc4b7e07fc314b884795322273ba876c0f93b",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_tmRNA_397.bpseq",
+          "reference_member_sha256": "af3ee58566cfc6c1176d50b19a59e61de893696b4ccf9e3d2fcbc870eee9c611",
+          "sequence_sha256": "c17a76f95881601b298af952e61cea07a3e5b2aedbe51d89b66108d441f967d8",
+          "source_id": "bpRNA_tmRNA_397.bpseq"
+        },
+        {
+          "name": "bpRNA_tmRNA_643.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "5ae415d6af965a2d670bd8a9e8d5d7decc7718cd4a06eab9e248ec5f7a7dce0e",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_tmRNA_643.bpseq",
+          "reference_member_sha256": "d666f73aeb92ae236ea4d265816dbef5f48071153a25eb2d0b7a3b6a3cd5bdf2",
+          "sequence_sha256": "ea8da51a5db7deb60da7eca9ed951f5ceaa27fd178d4d6b3c0012a934864049d",
+          "source_id": "bpRNA_tmRNA_643.bpseq"
+        },
+        {
+          "name": "bpRNA_tmRNA_651.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "575dd3816f09579c70bab15a14ff54d71e40da922e7812bbec8ab3e22020efec",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_tmRNA_651.bpseq",
+          "reference_member_sha256": "f020f0b87cc1fe4ab4f33f572c76d16a84f9f7b3b856563db0b9403afdbac62e",
+          "sequence_sha256": "87476f8d3bd126d0ccdf6d7d214790245ee7ba90479699c9b543fa7c0f49ee85",
+          "source_id": "bpRNA_tmRNA_651.bpseq"
+        },
+        {
+          "name": "bpRNA_tmRNA_686.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "117164b764cfe163bdee70626a61106959aadffb66eea5d8b130e5834301ae19",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_tmRNA_686.bpseq",
+          "reference_member_sha256": "00ab3528e964f58bc909712375ce0ec4ae2e73f57e68b9b26a64a9f9960bc7fb",
+          "sequence_sha256": "d38cd4661c104e20b2e8b7821666e9386109ded29dda7eb83563a6417eced780",
+          "source_id": "bpRNA_tmRNA_686.bpseq"
+        },
+        {
+          "name": "bpRNA_tmRNA_693.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "4cf11481d95c6736f8fc25128c9e1e8c1812515a484d6046ce9e1391261aeebb",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "BPfold_data/bpRNA/TS0/bpRNA_tmRNA_693.bpseq",
+          "reference_member_sha256": "724c7267e705b9c041591f0c3cb354bb86527c43e93a9d86419633f172c7fe39",
+          "sequence_sha256": "229fcf56c0a41a8c83070770496e07304b10e7e66930d2923a3bba54249e133c",
+          "source_id": "bpRNA_tmRNA_693.bpseq"
+        }
+      ],
+      "official_missing_from_project_count": 17,
+      "official_n": 1305,
+      "per_prediction_official_coverage": [
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "best_plan_a/bprna_ts0",
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "bpfold/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "contrafold/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "efold_0_1_3/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "eternafold/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "h0/bprna_ts0",
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "kirigami/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "kirigami_fast/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "mxfold2/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "nucleicbert_frozen_official/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "nucleicbert_ft/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "nussinov_turner/bprna_ts0/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "nussinov_turner/bprna_ts0/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "nussinov_turner/bprna_ts0/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rinalmo_2d_s0/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rinalmo_ft/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rnaformer_biophysical/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rnaformer_bprna/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rnaformer_interfamily/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rnaformer_intrafamily/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rnastructure_fold/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rnastructure_maxexpect/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "ufold/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_centroid/bprna_ts0/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_centroid/bprna_ts0/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_centroid/bprna_ts0/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mea/bprna_ts0/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mea/bprna_ts0/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mea/bprna_ts0/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mfe/bprna_ts0/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mfe/bprna_ts0/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mfe/bprna_ts0/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "xens2/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rinalmo_2d_s1/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9869731800766284,
+          "missing_count": 17,
+          "missing_names": [
+            "bpRNA_CRW_25863.bpseq",
+            "bpRNA_CRW_31704.bpseq",
+            "bpRNA_CRW_43565.bpseq",
+            "bpRNA_CRW_54323.bpseq",
+            "bpRNA_CRW_54562.bpseq",
+            "bpRNA_RFAM_10644.bpseq",
+            "bpRNA_RFAM_1072.bpseq",
+            "bpRNA_RFAM_18822.bpseq",
+            "bpRNA_RFAM_18935.bpseq",
+            "bpRNA_RFAM_38651.bpseq",
+            "bpRNA_SRP_192.bpseq",
+            "bpRNA_tmRNA_252.bpseq",
+            "bpRNA_tmRNA_397.bpseq",
+            "bpRNA_tmRNA_643.bpseq",
+            "bpRNA_tmRNA_651.bpseq",
+            "bpRNA_tmRNA_686.bpseq",
+            "bpRNA_tmRNA_693.bpseq"
+          ],
+          "n_with_prediction": 1288,
+          "prediction_id": "rinalmo_2d_s2/bprna_ts0",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        }
+      ],
+      "project_n": 1288
+    },
+    "testsetb": {
+      "dataset": "testsetb",
+      "official_missing_from_project": [
+        {
+          "name": "testsetb_104.bpseq",
+          "non_acgu_characters": [
+            "S"
+          ],
+          "pair_set_sha256": "33bd673ee5e39fe3b50c9736ff5d6ed017c2da8990d355d538434a02903b4037",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "data/TestSetB/104.bpseq",
+          "reference_member_sha256": "9dc30fa2b2f7484a799e4ccce421fa4fc27a695204a87637d8a9e2e526d154c4",
+          "sequence_sha256": "855948a33aa36c39f20df998767d941d86317b1fc2169c9502438365b3d800da",
+          "source_id": "104.bpseq"
+        },
+        {
+          "name": "testsetb_36.bpseq",
+          "non_acgu_characters": [
+            "N"
+          ],
+          "pair_set_sha256": "e94733016a96336537b990ad589ff5658b2e09ab8e52f7203fcda58339545d3f",
+          "reason": "PROJECT_REJECTED_BAD_ALPHABET",
+          "reference_member": "data/TestSetB/36.bpseq",
+          "reference_member_sha256": "8fbfd4d232f6cb62f4e0b0c54b115ac929bde67d82bd6e31cc2aa208cb18e564",
+          "sequence_sha256": "4c8f10e48cced0047b195427d887286b72f9d7a21bc7fb8adfa6861ed95a7a2b",
+          "source_id": "36.bpseq"
+        }
+      ],
+      "official_missing_from_project_count": 2,
+      "official_n": 430,
+      "per_prediction_official_coverage": [
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "best_plan_a/testsetb",
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "bpfold/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "contrafold/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "efold_0_1_3/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "eternafold/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "h0/testsetb",
+          "status": "BLOCKED_REGISTERED_PREDICTION_MISSING"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "kirigami_fast/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "mxfold2/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "nucleicbert_frozen_official/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "nucleicbert_ft/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "nussinov_turner/testsetb/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "nussinov_turner/testsetb/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "nussinov_turner/testsetb/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rinalmo_2d_s0/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rinalmo_ft/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rnaformer_biophysical/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rnaformer_bprna/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rnaformer_interfamily/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rnaformer_intrafamily/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rnastructure_fold/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rnastructure_maxexpect/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "ufold/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_centroid/testsetb/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_centroid/testsetb/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_centroid/testsetb/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mea/testsetb/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mea/testsetb/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mea/testsetb/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mfe/testsetb/repeat0",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mfe/testsetb/repeat1",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.0,
+          "missing_count": null,
+          "missing_names": null,
+          "n_with_prediction": 0,
+          "prediction_id": "vienna_mfe/testsetb/repeat2",
+          "status": "BLOCKED_RECORD_LEVEL_PREDICTIONS_REQUIRED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "xens2/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rinalmo_2d_s1/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 0.9953488372093023,
+          "missing_count": 2,
+          "missing_names": [
+            "testsetb_104.bpseq",
+            "testsetb_36.bpseq"
+          ],
+          "n_with_prediction": 428,
+          "prediction_id": "rinalmo_2d_s2/testsetb",
+          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        }
+      ],
+      "project_n": 428
+    }
+  },
+  "schema_version": "ts0_testsetb.official_reference_panels.v1.coverage_gaps"
+}

@@ -110,7 +110,8 @@ def main(argv: list[str] | None = None) -> int:
     text_path = work / f"{stem}.txt"
     text_path.write_text(ocr_text)
     required_ocr = ("LABEL", "SOTA", "BPfold", "ArchiveII", "0.8156522070", "0.8999331355",
-                    "0.8204522395", "PDB", "58", "95", "UNCHECKED", "5381/5388", "2048/2544")
+                    "0.8204522395", "PDB", "62", "91", "UNCHECKED", "5381/5388", "2048/2544",
+                    "1288/1305", "428/430")
     ocr_missing = [value for value in required_ocr if ocr_norm(value) not in ocr_norm(ocr_text)]
     pdf_text = subprocess.run([pdftotext, str(pdf), "-"], capture_output=True, text=True,
                               check=True, timeout=300).stdout
@@ -124,12 +125,15 @@ def main(argv: list[str] | None = None) -> int:
                 missing.append({"slide": index, "text": value[:180]})
     required_pdf = ("37 · LABEL PROTOCOL", "标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                     "bpRNA-new 5388", "clean 2544", "0.8156522070", "0.8999331355", "0.8204522395",
-                    "+0.0842809284", "+0.0048000324", "strongest single", "58 rebuilt / 95 UNCHECKED",
+                    "+0.0842809284", "+0.0048000324", "strongest single", "62 rebuilt / 91 UNCHECKED",
+                    "TS0 1288/1305", "TestSetB 428/430", "全集无任何 full-coverage prediction，均不排名",
                     "不得排名", "5381/5388", "2048/2544", "UNKNOWN / UNCHECKED ≠ clean",
                     "完整 SOTA 仍未闭环", "四臂未收敛", "≠ clean SOTA")
     slide37 = norm("".join(slide_texts[17]))
     missing_pdf = [value for value in required_pdf if norm(value) not in slide37]
-    passed = len(pages) == 18 and not missing and not missing_pdf and not ocr_missing
+    obsolete_pdf = [value for value in ("58 rebuilt / 95 UNCHECKED", "PDB58/95")
+                    if norm(value) in slide37]
+    passed = len(pages) == 18 and not missing and not missing_pdf and not ocr_missing and not obsolete_pdf
     report = {
         "status": "PASS_RENDER_PDF_TEXT_AND_SLIDE37_OCR" if passed else "FAIL_RENDER_OR_TEXT",
         "deck_label": args.deck_label, "deck": str(deck), "deck_sha256": deck_hash,
@@ -137,6 +141,7 @@ def main(argv: list[str] | None = None) -> int:
         "deck_slide_count": len(parts), "renderer": f"{version} headless PDF; pdftoppm 120 dpi; OCR 400 dpi",
         "ppt_to_pdf_complete_text_checks": checks, "missing_or_clipped_text": missing,
         "missing_new_page_pdf_text": missing_pdf, "missing_new_page_ocr_text": ocr_missing,
+        "obsolete_pdb58_95_text": obsolete_pdf,
         "ocr": {"deck_index": 18, "display_number": 37, "png": page.name,
                 "png_sha256": sha256(page), "text_path": str(text_path), "engine": engine,
                 "characters": len(ocr_text)},
