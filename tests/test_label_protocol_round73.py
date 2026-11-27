@@ -74,6 +74,8 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
     assert built["report"]["scope"] == {
         "legacy_prediction_derived_labels_sota_eligible": False,
         "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
+        "archiveii_full3966_full_coverage_identities": 5,
+        "archiveii_full3966_xens2_ranking_allowed": False,
         "ts0_testsetb_official_full_ranking_allowed": False,
         "ts0_official_full_coverage_identities": 7,
         "testsetb_official_full_coverage_identities": 7,
@@ -90,6 +92,8 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
     for phrase in ("标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                    "0.8156522070", "0.8999331355", "0.8204522395", "+0.0842809284",
                    "+0.0048000324", "62 rebuilt / 91 UNCHECKED", "不得排名",
+                   "ArchiveII full3966：5 full", "MXfold2 strongest single=0.7023050286",
+                   "xens2 2544/3966（missing 1422）不排名",
                    "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
                    "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
                    "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
@@ -158,7 +162,7 @@ def test_source_and_duplicate_gates_are_atomic(tmp_path, mode):
         assert len(Presentation(deck).slides) == 17
 
 
-@pytest.mark.parametrize("target", ("LEGACY", "PDB", "COVERAGE", "TS0_FULL", "TESTSETB_PARTIAL", "RFAM", "EXPOSURE"))
+@pytest.mark.parametrize("target", ("LEGACY", "ARCHIVE_FULL", "PDB", "COVERAGE", "TS0_FULL", "TESTSETB_PARTIAL", "RFAM", "EXPOSURE"))
 def test_evidence_tamper_refuses_build_without_changing_copy(tmp_path, target):
     fixture = synthetic_source(tmp_path / target)
     deck = tmp_path / f"{target}-copy.pptx"
@@ -170,6 +174,11 @@ def test_evidence_tamper_refuses_build_without_changing_copy(tmp_path, target):
         row["label_source"] = "DATABASE"
         path = tmp_path / "legacy.json"
         overrides["data_registry"] = path
+    elif target == "ARCHIVE_FULL":
+        altered = json.loads(M.ARCHIVE_FULL_SYSTEM.read_text())
+        altered["full_3966"]["strongest_single_predictor"]["prediction_id"] = "rinalmo_ft/archiveii_embok_clean"
+        path = tmp_path / "archive-full.json"
+        overrides["archive_full_system"] = path
     elif target == "PDB":
         altered = json.loads(M.PDB_SUMMARY.read_text())
         altered["n_unresolved"] = 95

@@ -1,24 +1,24 @@
 {
-  "status": "PASS_ROUND73_RFAM269_SYNTHETIC_DELIVERY_REAL_PPT_UNMODIFIED",
+  "status": "PASS_ROUND73_ARCHIVEII_FULL5_SYNTHETIC_DELIVERY_REAL_PPT_UNMODIFIED",
   "base_commit": "8bd87223edb9b5a21c1e13676b4192de54505d9f",
   "branch": "label-protocol-ppt-round73-20261127",
   "test_rounds": [
     {
       "round": 1,
       "command": "pytest -q tests/test_label_protocol_round73.py",
-      "passed": 15,
-      "commit": "d24f6e7"
+      "passed": 16,
+      "commit": "bc8450d"
     },
     {
       "round": 2,
       "command": "pytest -q tests/test_label_protocol_round73.py; independent clean rebuild; LibreOffice PDF + macOS Vision OCR",
-      "passed": 15,
-      "commit": "cda84e7"
+      "passed": 16,
+      "commit": "52ac1db"
     },
     {
       "round": 3,
       "command": "pytest -q tests/test_label_protocol_round73.py tests/test_pdb_rfam_label_lineage_20261127.py",
-      "passed": 24
+      "passed": 25
     }
   ],
   "synthetic_slide_count": 18,
@@ -42,38 +42,39 @@
   "reports": [
     {
       "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_build_verification.json",
-      "bytes": 6408,
-      "sha256": "157c9428198d62531681c5a1b89a90dd679d6d1380837ecbbae8b864877a4a5c"
+      "bytes": 7021,
+      "sha256": "5dd9ebf73f11be356e9ae5596e9dfbe13a111dbb64cd899ababd9a184684d948"
     },
     {
       "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_independent_build_verification.json",
-      "bytes": 1963,
-      "sha256": "fbfd2cd1783073708eff03435f0fdbb9b0277be090c4f79f79e93c40f1e79d33"
+      "bytes": 2092,
+      "sha256": "5d9457c245581efdb27ec314054841fecfd65b2341a140e814dbb7cf28125baa"
     },
     {
       "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_render_verification.json",
-      "bytes": 1288,
-      "sha256": "065fd1d0d1d34d1452020d949bda2d8344ca33f2a7068c5f82053f01eb88324b"
+      "bytes": 1293,
+      "sha256": "728a689f3bbc84bbd1df4aac35234930ba91842820373543274955319901609f"
     }
   ],
-  "builder_sha256": "1ab73619d61369293d8a5f5b9c060b3e2635d58ad88d2f5dafb25f844fac0a4c",
-  "latest_rfam_artifact": {
-    "path": "/home/rna_jev_label_protocol_ppt/source_data/rfam_release_lineage_20261127/final_registry_proposal/registry_recommendation.json",
-    "bytes": 1400,
-    "sha256": "b3b7a2c53ab978f04fe246cc4bad5f50c07caa3f3fc17c0b3c50376fee12a6a1"
+  "builder_sha256": "264aa1b5dfd9bcb7efabfa687ed7cc98fab7709e991773f9fbbf7f28004a3b99",
+  "latest_archiveii_full3966_artifact": {
+    "path": "/home/rna_jev_label_protocol_ppt/artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json",
+    "bytes": 2973199,
+    "sha256": "8756fde0764d10a44c4081a01da5644c400f5d937ee5b2bc4fa2f2a7d5d355d0"
   },
-  "latest_rfam_verification": {
-    "path": "/home/rna_jev_label_protocol_ppt/source_data/rfam_release_lineage_20261127/final_registry_verification.json",
-    "bytes": 611,
-    "sha256": "df936f76fcfd2e05e088219601654f2b54c76057755c66e4bec1e8887276c36a"
+  "latest_archiveii_full3966_verification": {
+    "path": "/home/rna_jev_label_protocol_ppt/artifacts/archiveii_full3966_cpu_recovery_20261127/verification_round3.json",
+    "bytes": 5625,
+    "sha256": "a6d1311174f856576a7768d029c790c702479a38455a492305b30f038a23e470"
   },
   "scope": {
     "complete_sota_closed": false,
-    "rfam_temporal_novel_supported": 269,
-    "rfam_temporal_unchecked": 110,
-    "rfam_tr1c_exact_overlap": 33,
-    "rfam_cross_panel_exact_overlap": 2,
-    "rfam_temporal_blanket_qualified": false,
+    "archiveii_full3966_full_coverage_identities": 5,
+    "archiveii_full3966_strongest_single": "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1",
+    "archiveii_full3966_strongest_single_micro_f1": 0.7023050285738565,
+    "archiveii_full3966_xens2_n_with_prediction": 2544,
+    "archiveii_full3966_xens2_missing": 1422,
+    "archiveii_full3966_xens2_ranking_allowed": false,
     "model_selection": false
   }
 }

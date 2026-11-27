@@ -27,6 +27,8 @@ DATA_REGISTRY = ROOT / "manifests/foldnar_v1/data_registry.json"
 ARCHIVE_LINEAGE = ROOT / "artifacts/archive_label_lineage_audit_20261127/summary.json"
 ARCHIVE_SYSTEM = ROOT / "artifacts/archiveii_official_reference_20261127/system_metrics.json"
 ARCHIVE_RECOMMENDATION = ROOT / "artifacts/archiveii_official_reference_20261127/registry_recommendation.json"
+ARCHIVE_FULL_SYSTEM = ROOT / "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json"
+ARCHIVE_FULL_CHECK = ROOT / "artifacts/archiveii_full3966_cpu_recovery_20261127/verification_round3.json"
 BPRNA_SYSTEM = ROOT / "source_data/bprna_official_reference_5388/system_metrics.json"
 PRETRAIN_SUMMARY = ROOT / "manifests/pretrain_exposure_v1/summary.json"
 PDB_LINEAGE = ROOT / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json"
@@ -166,6 +168,8 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                       archive_lineage: str | Path = ARCHIVE_LINEAGE,
                       archive_system: str | Path = ARCHIVE_SYSTEM,
                       archive_recommendation: str | Path = ARCHIVE_RECOMMENDATION,
+                      archive_full_system: str | Path = ARCHIVE_FULL_SYSTEM,
+                      archive_full_check: str | Path = ARCHIVE_FULL_CHECK,
                       bprna_system: str | Path = BPRNA_SYSTEM,
                       pretrain_summary: str | Path = PRETRAIN_SUMMARY,
                       pdb_lineage: str | Path = PDB_LINEAGE,
@@ -181,12 +185,13 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                       rfam_verification: str | Path = RFAM_VERIFICATION) -> dict:
     paths = tuple(Path(path).resolve() for path in
                   (data_registry, archive_lineage, archive_system, archive_recommendation,
-                   bprna_system, pretrain_summary, pdb_lineage, pdb_summary, pdb_verification,
-                   ts_coverage, ts_verification, ts0_recovery, ts0_recovery_check,
-                   testsetb_recovery, testsetb_recovery_check, rfam_registry, rfam_verification))
-    (registry, lineage, archive, recommendation, bprna, pretrain, pdb, pdb_rebuild,
-     pdb_check, coverage, coverage_check, ts0, ts0_check, testsetb, testsetb_check,
-     rfam, rfam_check) = map(load_json, paths)
+                   archive_full_system, archive_full_check, bprna_system, pretrain_summary,
+                   pdb_lineage, pdb_summary, pdb_verification, ts_coverage, ts_verification,
+                   ts0_recovery, ts0_recovery_check, testsetb_recovery, testsetb_recovery_check,
+                   rfam_registry, rfam_verification))
+    (registry, lineage, archive, recommendation, archive_full, archive_full_check_report,
+     bprna, pretrain, pdb, pdb_rebuild, pdb_check, coverage, coverage_check, ts0, ts0_check,
+     testsetb, testsetb_check, rfam, rfam_check) = map(load_json, paths)
     legacy = {}
     for dataset_id, replacement in (("bprna_new", "bpfold_official_bprna_new_reference_5388"),
                                     ("archiveii_embok_clean", None)):
@@ -235,6 +240,43 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
             "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION"
             and recommendation.get("legacy_project_labels", {}).get("independent_sota_eligible") is False,
             "ArchiveII strongest-single descriptive boundary changed")
+    full = archive_full.get("full_3966", {})
+    strongest_full = full.get("strongest_single_predictor", {})
+    require(archive_full.get("label_panels", {}).get(
+                "archiveii_official_reference_3966", {}).get("n_sequences") == 3966
+            and archive_full.get("coverage_accounting", {}).get("official_3966_full_coverage") == 5
+            and archive_full.get("external_test_model_selection") is False
+            and strongest_full.get("prediction_id") ==
+            "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1"
+            and strongest_full.get("model_form") == "deterministic_single_predictor"
+            and fmt10(strongest_full.get("metrics", {}).get("micro_f1")) == "0.7023050286"
+            and full.get("xens2_delta") == "UNCHECKED_XENS2_NOT_FULL_COVERAGE",
+            "ArchiveII full3966 five-full/MXfold2 contract changed")
+    full_rows = []
+    xens2_full = None
+    for row in archive_full.get("rows", []):
+        row_panel = row.get("panels", {}).get("archiveii_official_reference_3966") or {}
+        if row_panel.get("status") == "PASS_FULL_COVERAGE":
+            require(row_panel.get("coverage") == 1.0
+                    and row_panel.get("n_with_prediction") == 3966
+                    and row_panel.get("missing_count") == 0,
+                    f"ArchiveII full3966 coverage changed: {row.get('prediction_id')}")
+            full_rows.append(row.get("prediction_id"))
+        if row.get("prediction_id") == "xens2/archiveii_embok_clean":
+            xens2_full = row_panel
+    require(len(full_rows) == 5 and xens2_full is not None
+            and xens2_full.get("status") == "PARTIAL_COVERAGE_NOT_RANKED"
+            and xens2_full.get("n_with_prediction") == 2544
+            and xens2_full.get("missing_count") == 1422
+            and xens2_full.get("coverage") == 2544 / 3966,
+            "ArchiveII xens2 full3966 partial/no-ranking boundary changed")
+    require(archive_full_check_report.get("status") == "PASS_CLEAN_CLONE_AND_DELIVERY"
+            and archive_full_check_report.get("clean_clone_outputs_byte_identical") is True
+            and archive_full_check_report.get("external_test_model_selection") is False
+            and archive_full_check_report.get("clean_clone_output_sha256", {}).get(
+                "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json"
+            ) == sha256(archive_full_system),
+            "ArchiveII full3966 clean-clone verification or artifact identity changed")
     require(pdb_rebuild.get("n_source_records") == 153
             and pdb_rebuild.get("n_rebuilt") == 62
             and pdb_rebuild.get("n_unresolved") == 91
@@ -333,7 +375,7 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                 and population.get("selection_use") is False,
                 f"pretrain exposure boundary changed: {dataset_id}")
     return {"legacy": legacy, "xens2": xens2, "replay": replay, "rinalmo": rinalmo,
-            "pdb_rebuild": pdb_rebuild, "pretrain": pretrain, "coverage": coverage,
+            "archive_full": archive_full, "pdb_rebuild": pdb_rebuild, "pretrain": pretrain, "coverage": coverage,
             "ts0_recovery": ts0, "testsetb_recovery": testsetb, "paths": paths}
 
 
@@ -420,9 +462,11 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
         rows.append([label, fmt10(value), delta, role])
     table(slide, 0.78, 2.96, (4.10, 2.00, 2.12, 3.56), 0.40,
           ("ArchiveII official clean2544", "micro-F1", "Δ vs xens2", "descriptive role"), rows)
-    text(slide, 0.78, 4.59, 11.70, 0.15,
-         "* official-reference 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。",
-         7.8, MUTED, font=SANS)
+    full_single = evidence["archive_full"]["full_3966"]["strongest_single_predictor"]["metrics"]["micro_f1"]
+    text(slide, 0.78, 4.56, 11.70, 0.20,
+         "* clean2544 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。\nArchiveII full3966：5 full · MXfold2 strongest single=" + fmt10(full_single) +
+         " · xens2 2544/3966（missing 1422）不排名",
+         7.0, MUTED, font=SANS)
     rect(slide, 0.78, 4.78, 4.40, 0.24, PALE, BURGUNDY)
     text(slide, 0.94, 4.80, 4.08, 0.20,
          "PROJECTED · TS0 1288 · TestSetB 428\nfrozen project IDs；与 official 分开报告", 7.1, BURGUNDY, True, SANS)
@@ -461,6 +505,8 @@ def verify_built_deck(path: Path, prior_deck: Path, evidence: dict) -> dict:
     required = ("37 · LABEL PROTOCOL", "标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                 "bpRNA-new 5388", "clean 2544", "0.8156522070", "0.8999331355", "0.8204522395",
                 "+0.0842809284", "+0.0048000324", "strongest single", "62 rebuilt / 91 UNCHECKED",
+                "ArchiveII full3966：5 full", "MXfold2 strongest single=0.7023050286",
+                "xens2 2544/3966（missing 1422）不排名",
                 "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
                 "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
                 "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
@@ -535,6 +581,8 @@ def build(deck: str | Path, source_deck: str | Path = SOURCE_DECK,
         "evidence_artifacts": [identity(path) for path in evidence["paths"]],
         "scope": {"legacy_prediction_derived_labels_sota_eligible": False,
                   "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
+                  "archiveii_full3966_full_coverage_identities": 5,
+                  "archiveii_full3966_xens2_ranking_allowed": False,
                   "ts0_testsetb_official_full_ranking_allowed": False,
                   "ts0_official_full_coverage_identities": 7,
                   "testsetb_official_full_coverage_identities": 7,
@@ -561,6 +609,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--archive-lineage", type=Path, default=ARCHIVE_LINEAGE)
     parser.add_argument("--archive-system", type=Path, default=ARCHIVE_SYSTEM)
     parser.add_argument("--archive-recommendation", type=Path, default=ARCHIVE_RECOMMENDATION)
+    parser.add_argument("--archive-full-system", type=Path, default=ARCHIVE_FULL_SYSTEM)
+    parser.add_argument("--archive-full-check", type=Path, default=ARCHIVE_FULL_CHECK)
     parser.add_argument("--bprna-system", type=Path, default=BPRNA_SYSTEM)
     parser.add_argument("--pretrain-summary", type=Path, default=PRETRAIN_SUMMARY)
     parser.add_argument("--pdb-lineage", type=Path, default=PDB_LINEAGE)
@@ -577,7 +627,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     evidence_paths = {name: getattr(args, name) for name in
                       ("data_registry", "archive_lineage", "archive_system", "archive_recommendation",
-                       "bprna_system", "pretrain_summary", "pdb_lineage", "pdb_summary",
+                       "archive_full_system", "archive_full_check", "bprna_system",
+                       "pretrain_summary", "pdb_lineage", "pdb_summary",
                        "pdb_verification", "ts_coverage", "ts_verification", "ts0_recovery",
                        "ts0_recovery_check", "testsetb_recovery", "testsetb_recovery_check",
                        "rfam_registry", "rfam_verification")}

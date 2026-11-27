@@ -113,7 +113,8 @@ def main(argv: list[str] | None = None) -> int:
     required_ocr = ("LABEL", "SOTA", "BPfold", "ArchiveII", "0.8156522070", "0.8999331355",
                     "0.8204522395", "PDB", "62", "91", "UNCHECKED", "5381/5388", "2048/2544",
                     "PROJECTED", "OFFICIAL", "7×1305", "7×430", "1302/1305", "429/430",
-                    "Rfam", "269", "110", "TR1c", "33")
+                    "Rfam", "269", "110", "TR1c", "33", "full3966", "MXfold2",
+                    "0.7023050286", "2544/3966")
     ocr_missing = [value for value in required_ocr if ocr_norm(value) not in ocr_norm(ocr_text)]
     pdf_text = subprocess.run([pdftotext, str(pdf), "-"], capture_output=True, text=True,
                               check=True, timeout=300).stdout
@@ -128,6 +129,8 @@ def main(argv: list[str] | None = None) -> int:
     required_pdf = ("37 · LABEL PROTOCOL", "标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                     "bpRNA-new 5388", "clean 2544", "0.8156522070", "0.8999331355", "0.8204522395",
                     "+0.0842809284", "+0.0048000324", "strongest single", "62 rebuilt / 91 UNCHECKED",
+                    "ArchiveII full3966：5 full", "MXfold2 strongest single=0.7023050286",
+                    "xens2 2544/3966（missing 1422）不排名",
                     "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
                     "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
                     "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
