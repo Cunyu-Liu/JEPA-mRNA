@@ -25,7 +25,8 @@ def norm(value: str) -> str:
 
 
 def ocr_norm(value: str) -> str:
-    return norm(value).replace("archiveli", "archiveii").replace("archivell", "archiveii")
+    return (norm(value).replace("archiveli", "archiveii").replace("archivell", "archiveii")
+            .replace("×", "x"))
 
 
 def atomic_json(path: Path, value: dict) -> None:
