@@ -9,6 +9,7 @@ import gzip
 import hashlib
 import json
 import re
+import shutil
 import urllib.request
 from pathlib import Path
 
@@ -361,6 +362,45 @@ def command_novelty(args):
     print(json.dumps({"status": "PASS_TEMPORAL_NOVELTY_WITH_UNCHECKED", **recommendation}, indent=2))
 
 
+def command_finalize(args):
+    shutil.copytree(args.novelty, args.output, dirs_exist_ok=True)
+    release = json.loads((args.lineage / "release_summary.json").read_text())
+    recommendation = json.loads((args.novelty / "registry_recommendation.json").read_text())
+    provenance = {"schema_version": SCHEMA,
+                  "release_summary_sha256": sha256_file(args.lineage / "release_summary.json"),
+                  "registry_recommendation_sha256": sha256_file(args.novelty / "registry_recommendation.json"),
+                  "official_release_roots": {release: f"https://ftp.ebi.ac.uk/pub/databases/Rfam/{release}/" for release in RELEASES},
+                  "release_source_sha256": release["source_sha256"],
+                  "alignment_14_10_failures": recommendation["alignment_14_10_failures"],
+                  "full_region_14_10_scope": "not used; family release uses family table/seed and sequence release uses per-family alignments",
+                  "registration_status": "PROPOSED_ONLY_NOT_REGISTERED", "shared_registry_modified": False,
+                  "identity_pairs_used": False, "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION"}
+    write_json(args.output / "provenance.json", provenance)
+    temporal = recommendation["panels"]["rfam_temporal"]
+    report = ["# Rfam family/temporal release-lineage closure", "",
+              "External Test is audit-only. No pairs, model outcomes, ranking, or model selection were used.", "",
+              "## Family and release", "",
+              "- Family/clan assignments require exact sequence/region/seed evidence; ambiguous or absent evidence remains `UNCHECKED`.",
+              "- `family_first_release` comes from accession presence in official 14.9/14.10/15.0 family tables, with seed crosschecks. Created/updated timestamps are not first-release proof.",
+              "- `sequence_first_release` uses exact FASTA/per-family alignment evidence and is distinct from family release.", "",
+              "## Temporal strata", "",
+              f"- Pre-14.9 exact: 43; direct 15.0 FASTA: 320; other-region exact: 6; no 15.0 exact: 110.",
+              f"- Supported novel sequences: {recommendation['temporal_novelty_counts'].get('NOVEL_SEQUENCE_RELEASE_SUPPORTED', 0)}.",
+              f"- TR1c exact overlap: {temporal['tr1c_exact_overlap']}; cross-panel exact overlap: {temporal['cross_panel_exact_overlap']}; these are independent columns before novelty assignment.",
+              f"- Remaining UNCHECKED: {recommendation['temporal_novelty_counts'].get('UNCHECKED', 0)}.",
+              f"- Failed 14.10 alignments: {', '.join(recommendation['alignment_14_10_failures'])}; affected records remain UNCHECKED.", "",
+              "Registry content is a proposal only. No shared registry was modified.", ""]
+    (args.output / "report.md").write_text("\n".join(report))
+    files = {}
+    for path in sorted(args.output.rglob("*")):
+        if path.is_file() and path.name != "artifact_manifest.json":
+            files[str(path.relative_to(args.output))] = {"bytes": path.stat().st_size, "sha256": sha256_file(path)}
+    write_json(args.output / "artifact_manifest.json", {"schema_version": SCHEMA, "files": files,
+                                                         "shared_registry_modified": False})
+    print(json.dumps({"status": "PASS_RFAM_REGISTRY_PROPOSAL_FINALIZED",
+                      "provenance_sha256": sha256_file(args.output / "provenance.json")}, indent=2))
+
+
 def main():
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -378,6 +418,11 @@ def main():
     novelty.add_argument("--previous-overlap", type=Path, required=True)
     novelty.add_argument("--output", type=Path, required=True)
     novelty.set_defaults(function=command_novelty)
+    finalize = sub.add_parser("finalize")
+    finalize.add_argument("--lineage", type=Path, required=True)
+    finalize.add_argument("--novelty", type=Path, required=True)
+    finalize.add_argument("--output", type=Path, required=True)
+    finalize.set_defaults(function=command_finalize)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     args.function(args)

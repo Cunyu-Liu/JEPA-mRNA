@@ -1,0 +1,18 @@
+{
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "family_status_counts": {
+    "AMBIGUOUS_FAMILY_UNCHECKED": 22,
+    "FAMILY_UNCHECKED": 18,
+    "UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED": 11186
+  },
+  "identity_pairs_used": false,
+  "n_records": 11226,
+  "release_summary_sha256": "11bb5246ea360869703870de77bf8a15bf27833df741abb8469fa55414c341c0",
+  "status": "PASS_RFAM_RELEASE_LINEAGE_INDEPENDENT_VERIFIER",
+  "temporal_rfam14_9_exact": 43,
+  "temporal_rfam15_0_status": {
+    "DIRECT_EXACT": 320,
+    "NOT_EXACT": 110,
+    "OTHER_REGION_EXACT": 6
+  }
+}
