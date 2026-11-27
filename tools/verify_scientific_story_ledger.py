@@ -559,8 +559,31 @@ def verify_matched_convergence_contract() -> list[str]:
         errors.append("matched best_convergence differs beyond restored-best bad=0")
     if matched["stop_reason"] != "CONVERGED_VALIDATION_PAIR_HAMMING_STRUCTURED_MARGIN_AFTER_TERMINAL_UNFREEZE":
         errors.append("matched stop reason mismatch")
+    if matched["ledgers"] != {
+        "train_rows": 19000,
+        "batch_rows": 19000,
+        "compute_rows": 19000,
+        "validation_rows": 38,
+        "duplicates": 0,
+        "missing": 0,
+        "record_order_consistent": True,
+        "losses_finite": True,
+    }:
+        errors.append("matched 19000/validation-38 ledger integrity mismatch")
+    resume = matched["resume"]
+    best = matched["best"]
+    if resume["step"] != 16500 or resume["phase"] != "restored_best_eligible" or resume["sha256"] != "5a9167ff1d26327c38900ec6e248fd752b8520eac7dc91d1a253afcb3735f1a6":
+        errors.append("matched restored resume identity mismatch")
+    if best["step"] != 16500 or best["phase"] != "best_eligible" or best["sha256"] != "acec9e6f3bc025597fef673422ab2b1d4081587ba7a5172b3494ce9c05e42ad0":
+        errors.append("matched best checkpoint identity mismatch")
+    if best["nested_export_tensors_match"] is not True or matched["best_resume_tensor_identity_match"] is not True or best["model_tensor_sha256"] != resume["model_tensor_sha256"]:
+        errors.append("matched best/resume tensor identity mismatch")
     if audit["structural_model_selection_performed"] is not False or audit["additional_evaluation_started"] is not False or audit["scientific_conclusion"] is not None:
         errors.append("matched audit allowed structural selection/evaluation/conclusion")
+    source = (RECOVERY_REPO / "tools/audit_structured_margin_converged_19000_v1.py").read_text()
+    for required in ["def validate_stop_sequence(", "len(rows) != 19000", "best_hashes != resume_hashes", "best_resume_tensor_identity_match", "additional_evaluation_started"]:
+        if required not in source:
+            errors.append(f"matched convergence audit source contract missing: {required}")
     return errors
 
 
@@ -1171,6 +1194,8 @@ def verify_narrative_guards() -> list[str]:
         "step=19000",
         "step=16500、validation_loss=0.35262170191251785",
         "best_convergence` 为同一 best/loss、**bad_evaluations=0**",
+        "train/batch/compute 各 **19,000** 行",
+        "best_resume_tensor_identity_match=true",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",

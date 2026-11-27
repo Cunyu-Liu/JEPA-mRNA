@@ -322,6 +322,18 @@ def test_matched_convergence_artifact_contract():
     assert ledger.verify_matched_convergence_contract() == []
 
 
+def test_matched_ledger_and_best_resume_integrity():
+    text = ledger.DOC.read_text()
+    assert "train/batch/compute 各 **19,000** 行" in text
+    assert "validation **38** 行" in text
+    assert "duplicates=0" in text and "missing=0" in text
+    assert "record_order_consistent=true" in text
+    assert "restored_best_eligible" in text
+    assert "best_resume_tensor_identity_match=true" in text
+    assert "5a9167ff1d26327c38900ec6e248fd752b8520eac7dc91d1a253afcb3735f1a6" in text
+    assert "acec9e6f3bc025597fef673422ab2b1d4081587ba7a5172b3494ce9c05e42ad0" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
