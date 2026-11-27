@@ -81,6 +81,11 @@ SOURCES = {
     "pdb_rebuild_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round6_combined_verification.json",
     "pdb_rebuild_round3_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
     "pdb_rebuild_round3_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json",
+    "rfam_release_summary": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/round1_map_v2/release_summary.json",
+    "rfam_release_verification": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_release_verification.json",
+    "rfam_registry_recommendation": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/registry_recommendation.json",
+    "rfam_temporal_verification": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_verification.json",
+    "rfam_provenance": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/provenance.json",
     "recovery_preflight": RECOVERY_ROOT / "recovery_preflight_local.json",
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
@@ -113,7 +118,7 @@ SOURCE_COMMITS = {
     "ArchiveII official reference": (ARCHIVEII_REPO, "8a2008a4cda3c43b3000f25151b80408b0bdb110"),
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
-    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4"),
+    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
     "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
 }
 
@@ -749,6 +754,42 @@ def verify_projected_recovery_history() -> list[str]:
     return errors
 
 
+def verify_rfam_release_contract() -> list[str]:
+    errors = []
+    names = ["rfam_release_summary", "rfam_release_verification", "rfam_registry_recommendation", "rfam_provenance"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return [f"missing Rfam release source: {name}: {SOURCES[name]}"]
+    summary = json.loads(SOURCES["rfam_release_summary"].read_text())
+    verification = json.loads(SOURCES["rfam_release_verification"].read_text())
+    recommendation = json.loads(SOURCES["rfam_registry_recommendation"].read_text())
+    provenance = json.loads(SOURCES["rfam_provenance"].read_text())
+    if summary["n_records"] != 11226 or summary["family_status_counts"] != {
+        "AMBIGUOUS_FAMILY_UNCHECKED": 22,
+        "FAMILY_UNCHECKED": 18,
+        "UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED": 11186,
+    }:
+        errors.append("Rfam family status/record conservation mismatch")
+    if summary["family_first_release_counts"] != {
+        "14.10": 166,
+        "14.9_OR_EARLIER": 10921,
+        "15.0": 99,
+        "UNCHECKED": 40,
+    }:
+        errors.append("Rfam family first-release counts mismatch")
+    if sum(summary["family_first_release_counts"].values()) != 11226 or sum(summary["family_status_counts"].values()) != 11226:
+        errors.append("Rfam family counts do not conserve 11226")
+    if verification["status"] != "PASS_RFAM_RELEASE_LINEAGE_INDEPENDENT_VERIFIER" or verification["family_status_counts"] != summary["family_status_counts"]:
+        errors.append("Rfam release independent verification mismatch")
+    if recommendation["registration_status"] != "PROPOSED_ONLY_NOT_REGISTERED" or recommendation["shared_registry_modified"] is not False:
+        errors.append("Rfam registry proposal was registered or shared registry changed")
+    if provenance["registration_status"] != "PROPOSED_ONLY_NOT_REGISTERED" or provenance["shared_registry_modified"] is not False or provenance["identity_pairs_used"] is not False:
+        errors.append("Rfam provenance allowed registration/shared modification/pair use")
+    if provenance["full_region_14_10_scope"] != "not used; family release uses family table/seed and sequence release uses per-family alignments":
+        errors.append("Rfam family/sequence release evidence scopes were conflated")
+    return errors
+
+
 def verify_takeover_contract() -> list[str]:
     errors = []
     if not SOURCES["takeover_status"].is_file():
@@ -927,7 +968,10 @@ def verify_narrative_guards() -> list[str]:
         "−0.0012121956293115, +0.0078699689970171",
         "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR",
         "19 个有部分预测的身份均为 2,544/3,966",
-        "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4",
+        "105bb55d2e959e587c85d3de7607fdc3c14c5c73",
+        "11,186 条 `UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED`",
+        "family first-release **14.10=166、15.0=99**",
+        "family release≠sequence release",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
@@ -1403,12 +1447,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, and projected recovery history"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, and Rfam release lineage"
     print(f"PASS: {scope}")
     return 0
 
