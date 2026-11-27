@@ -1,8 +1,22 @@
 # bpRNA TS0 / TestSetB 官方全集与 projected-reference 双面板
 
-仅对冻结预测做 CPU 复算，不做训练、新推理、阈值调整或模型选择。项目子集结果是 `DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION` 的显式 projected-reference 协议，不与未过滤官方全集混排。缺预测不补 0，部分覆盖不排名；共享 registry 未修改。
+面板构建仅对冻结及已恢复预测做 CPU 复算，不做训练、新推理、阈值调整或模型选择。TS0 的 17 条补充推理在独立恢复阶段完成；项目子集结果是 `DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION` 的显式 projected-reference 协议，不与未过滤官方全集混排。缺预测不补 0，部分覆盖不排名；共享 registry 未修改。
 
-严格 zero-based inclusive 配对，不追加过滤；macro 是逐序列 P/R/F1 非加权平均，仅 empty/empty 时 P/R/F1=1。TS0 官方唯一 truth-empty 记录不在项目 1288 中，当前所有预测均缺失该记录，未被补 0 或计入 macro；TestSetB 无 truth-empty。
+严格 zero-based inclusive 配对，不追加过滤；macro 是逐序列 P/R/F1 非加权平均，仅 empty/empty 时 P/R/F1=1。TS0 官方唯一 truth-empty 为 `bpRNA_SRP_192.bpseq`，只在 full1305 全覆盖身份中计分；部分覆盖身份仍不排名。TestSetB 无 truth-empty。
+
+## bprna_ts0：官方全集 1305 结果
+
+| Prediction identity | Model form | n | micro F1 | macro F1 | truth-empty | empty/empty |
+|---|---|---:|---:|---:|---:|---:|
+| `bpfold_official_release/bprna_ts0` | six_checkpoint_ensemble | 1305 | 0.6812363564 | 0.6574981350 | 1 | 0 |
+| `eternafold/bprna_ts0` | deterministic_single_predictor | 1305 | 0.5391623606 | 0.5391319526 | 1 | 0 |
+| `vienna_centroid/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1305 | 0.5389168251 | 0.5281497484 | 1 | 0 |
+| `contrafold/bprna_ts0` | deterministic_single_predictor | 1305 | 0.5380230780 | 0.5362908433 | 1 | 0 |
+| `vienna_mea/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1305 | 0.5237175605 | 0.5211055529 | 1 | 0 |
+| `vienna_mfe/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1305 | 0.5054624747 | 0.5080129860 | 1 | 0 |
+| `nussinov_turner/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1305 | 0.2112852889 | 0.2293670906 | 1 | 0 |
+
+全集结果仅作 frozen baseline 描述性覆盖审计，不用于选模；部分覆盖身份不进入本表。
 
 ## bprna_ts0：projected 1288 子集结果
 
@@ -14,6 +28,7 @@
 | `kirigami/bprna_ts0` | single_model | 1288 | 0.7296615755 | 0.7261263011 | -0.0735789960 | -0.0737930338 |
 | `kirigami_fast/bprna_ts0` | single_model | 1288 | 0.7296615755 | 0.7261263011 | -0.0735789960 | -0.0737930338 |
 | `rinalmo_ft/bprna_ts0` | single_model | 1288 | 0.7208173117 | 0.7241314670 | -0.0824232597 | -0.0757878679 |
+| `bpfold_official_release/bprna_ts0` | six_checkpoint_ensemble | 1288 | 0.6804056016 | 0.6567174489 | -0.1228349698 | -0.1432018860 |
 | `rinalmo_2d_s1/bprna_ts0` | single_model | 1288 | 0.6499831872 | 0.6603953076 | -0.1532573843 | -0.1395240273 |
 | `rinalmo_2d_s2/bprna_ts0` | single_model | 1288 | 0.6429869240 | 0.6408665162 | -0.1602536475 | -0.1590528187 |
 | `rnaformer_intrafamily/bprna_ts0` | single_model | 1288 | 0.6389316470 | 0.6437297979 | -0.1643089244 | -0.1561895370 |
@@ -21,23 +36,27 @@
 | `mxfold2/bprna_ts0` | deterministic_single_predictor | 1288 | 0.5647599096 | 0.5695812107 | -0.2384806619 | -0.2303381242 |
 | `efold_0_1_3/bprna_ts0` | single_model | 1288 | 0.5503063121 | 0.5674471035 | -0.2529342594 | -0.2324722314 |
 | `eternafold/bprna_ts0` | deterministic_single_predictor | 1288 | 0.5396620336 | 0.5392145247 | -0.2635785379 | -0.2607048103 |
+| `vienna_centroid/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1288 | 0.5388863717 | 0.5285524883 | -0.2643541998 | -0.2713668466 |
 | `contrafold/bprna_ts0` | deterministic_single_predictor | 1288 | 0.5388044914 | 0.5365088055 | -0.2644360801 | -0.2634105294 |
 | `rinalmo_2d_s0/bprna_ts0` | single_model | 1288 | 0.5284031939 | 0.5579239135 | -0.2748373776 | -0.2419954214 |
+| `vienna_mea/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1288 | 0.5237635397 | 0.5215667726 | -0.2794770318 | -0.2783525623 |
 | `rnastructure_maxexpect/bprna_ts0` | deterministic_single_predictor | 1288 | 0.5215778237 | 0.5188606058 | -0.2816627478 | -0.2810587291 |
 | `rnaformer_biophysical/bprna_ts0` | single_model | 1288 | 0.5056427227 | 0.5094441970 | -0.2975978488 | -0.2904751379 |
+| `vienna_mfe/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1288 | 0.5052049705 | 0.5083536608 | -0.2980356010 | -0.2915656741 |
 | `rnastructure_fold/bprna_ts0` | deterministic_single_predictor | 1288 | 0.5018261255 | 0.5067783348 | -0.3014144459 | -0.2931410001 |
 | `nucleicbert_ft/bprna_ts0` | single_model | 1288 | 0.4606195215 | 0.5427560917 | -0.3426210500 | -0.2571632432 |
 | `ufold/bprna_ts0` | single_model | 1288 | 0.4604204516 | 0.4976113824 | -0.3428201199 | -0.3023079525 |
 | `nucleicbert_frozen_official/bprna_ts0` | single_model | 1288 | 0.4024960380 | 0.3674415140 | -0.4007445335 | -0.4324778209 |
+| `nussinov_turner/bprna_ts0/recovered_official17` | deterministic_single_predictor | 1288 | 0.2122805736 | 0.2301621166 | -0.5909599979 | -0.5697572183 |
 
 ### 最强单预测器与集成（描述性，不用于选模）
 
 - **最强集成/总体**：`xens2/bprna_ts0`，micro-F1=0.8032405714870655，macro-F1=0.7999193349056970；Δmicro=+0.0000000000000000，Δmacro=+0.0000000000000000，配对 macro Δ95% CI [+0.0000000000000000, +0.0000000000000000]。训练暴露栏：`HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN`（route=bprna_tr1c）。
 - **最强单预测器**：`rnaformer_bprna/bprna_ts0`，micro-F1=0.7568974968024850，macro-F1=0.7444430454311176；Δmicro=-0.0463430746845805，Δmacro=-0.0554762894745794，配对 macro Δ95% CI [-0.0674523877056411, -0.0435507990639508]。训练暴露栏：`UNCHECKED`（route=UNCHECKED）。
 
-### 官方全集 1305 覆盖缺口
+### 官方独有 17 条与覆盖状态
 
-官方比项目子集多 17 条；所有可用预测均只有 1288/1305，coverage=0.9869731801，状态为 `PARTIAL_COVERAGE_NOT_RANKED`。全集没有全覆盖预测，最强单/集成均为 `UNCHECKED_NO_FULL_COVERAGE_PREDICTION`。
+官方比项目子集多 17 条；当前 official-full 全覆盖 7 个，部分覆盖不排名 19 个，blocked 14 个。逐 ID 恢复来源见 `ts0-official-coverage-recovery.md`（TS0）；未恢复身份不以空结构或 0 分补齐。
 
 官方独有 ID（均为项目 bad-alphabet 拒绝，异常字符在括号内）：`bpRNA_CRW_25863.bpseq` (N)、`bpRNA_CRW_31704.bpseq` (N)、`bpRNA_CRW_43565.bpseq` (N)、`bpRNA_CRW_54323.bpseq` (N)、`bpRNA_CRW_54562.bpseq` (N)、`bpRNA_RFAM_10644.bpseq` (Y)、`bpRNA_RFAM_1072.bpseq` (N)、`bpRNA_RFAM_18822.bpseq` (RY)、`bpRNA_RFAM_18935.bpseq` (RY)、`bpRNA_RFAM_38651.bpseq` (N)、`bpRNA_SRP_192.bpseq` (N)、`bpRNA_tmRNA_252.bpseq` (N)、`bpRNA_tmRNA_397.bpseq` (N)、`bpRNA_tmRNA_643.bpseq` (N)、`bpRNA_tmRNA_651.bpseq` (N)、`bpRNA_tmRNA_686.bpseq` (N)、`bpRNA_tmRNA_693.bpseq` (N)。
 
@@ -61,6 +80,7 @@
 | `kirigami/bprna_ts0` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `kirigami_fast/bprna_ts0` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `rinalmo_ft/bprna_ts0` | bprna_tr0 | 0 | 96 | 1192 | `HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN` |
+| `bpfold_official_release/bprna_ts0` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `rinalmo_2d_s1/bprna_ts0` | bprna_tr1c | 0 | 575 | 713 | `HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN` |
 | `rinalmo_2d_s2/bprna_ts0` | bprna_tr1c | 0 | 575 | 713 | `HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN` |
 | `rnaformer_intrafamily/bprna_ts0` | official intra-family training data | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
@@ -68,16 +88,24 @@
 | `mxfold2/bprna_ts0` | mxfold2_trainsetab | 61 | 39 | 1188 | `AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED` |
 | `efold_0_1_3/bprna_ts0` | bpRNA subset+RNAstralign+Ribonanza | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `eternafold/bprna_ts0` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
+| `vienna_centroid/bprna_ts0/recovered_official17` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `contrafold/bprna_ts0` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `rinalmo_2d_s0/bprna_ts0` | bprna_tr1c | 0 | 575 | 713 | `HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN` |
+| `vienna_mea/bprna_ts0/recovered_official17` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `rnastructure_maxexpect/bprna_ts0` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `rnaformer_biophysical/bprna_ts0` | official biophysical_model_data.plk train=410408 | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
+| `vienna_mfe/bprna_ts0/recovered_official17` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `rnastructure_fold/bprna_ts0` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `nucleicbert_ft/bprna_ts0` | bprna_tr1c | 0 | 575 | 713 | `HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN` |
 | `ufold/bprna_ts0` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `nucleicbert_frozen_official/bprna_ts0` | rnastralign_tr0_style | 72 | 172 | 1044 | `AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED` |
+| `nussinov_turner/bprna_ts0/recovered_official17` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 
 外部模型的未核实训练语料保持 `UNCHECKED`；MXfold2/NucleicBERT 的审计子集证据不升级为完整训练暴露排除证明。逐模型 provenance 原文和 clean SHA 见 `system_metrics.json`。
+
+## testsetb：官方全集 430 结果
+
+没有全覆盖预测，最强单/集成均为 `UNCHECKED_NO_FULL_COVERAGE_PREDICTION`；部分覆盖不进入排名。
 
 ## testsetb：projected 428 子集结果
 
@@ -109,9 +137,9 @@
 - **最强集成/总体**：`xens2/testsetb`，micro-F1=0.8403202122116432，macro-F1=0.8322478063381703；Δmicro=+0.0000000000000000，Δmacro=+0.0000000000000000，配对 macro Δ95% CI [+0.0000000000000000, +0.0000000000000000]。训练暴露栏：`HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN`（route=bprna_tr1c）。
 - **最强单预测器**：`rinalmo_ft/testsetb`，micro-F1=0.8670430033503144，macro-F1=0.8628944070360038；Δmicro=+0.0267227911386712，Δmacro=+0.0306466006978335，配对 macro Δ95% CI [+0.0169091444489763, +0.0452470510286115]。训练暴露栏：`EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT`（route=bprna_tr0）。
 
-### 官方全集 430 覆盖缺口
+### 官方独有 2 条与覆盖状态
 
-官方比项目子集多 2 条；所有可用预测均只有 428/430，coverage=0.9953488372，状态为 `PARTIAL_COVERAGE_NOT_RANKED`。全集没有全覆盖预测，最强单/集成均为 `UNCHECKED_NO_FULL_COVERAGE_PREDICTION`。
+官方比项目子集多 2 条；当前 official-full 全覆盖 0 个，部分覆盖不排名 20 个，blocked 14 个。逐 ID 恢复来源见 `ts0-official-coverage-recovery.md`（TS0）；未恢复身份不以空结构或 0 分补齐。
 
 官方独有 ID（均为项目 bad-alphabet 拒绝，异常字符在括号内）：`testsetb_104.bpseq` (S)、`testsetb_36.bpseq` (N)。
 

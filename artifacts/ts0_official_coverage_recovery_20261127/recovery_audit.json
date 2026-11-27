@@ -1,0 +1,690 @@
+{
+  "added_identities": [
+    "bpfold_official_release/bprna_ts0",
+    "vienna_mfe/bprna_ts0/recovered_official17",
+    "vienna_centroid/bprna_ts0/recovered_official17",
+    "vienna_mea/bprna_ts0/recovered_official17",
+    "nussinov_turner/bprna_ts0/recovered_official17"
+  ],
+  "dataset_id": "bprna_ts0",
+  "external_test_model_selection": false,
+  "new_full_coverage_identities": [
+    "bpfold_official_release/bprna_ts0",
+    "vienna_mfe/bprna_ts0/recovered_official17",
+    "vienna_centroid/bprna_ts0/recovered_official17",
+    "vienna_mea/bprna_ts0/recovered_official17",
+    "nussinov_turner/bprna_ts0/recovered_official17",
+    "contrafold/bprna_ts0",
+    "eternafold/bprna_ts0"
+  ],
+  "official_only_n": 17,
+  "official_panel": {
+    "n_sequences": 1305,
+    "path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+    "sha256": "c8e82e25063ec5c2c09b1a38e28ea499b8c0f94b4d35fef9d93b3ac7cd44d9ae"
+  },
+  "per_id_audit": [
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_CRW_25863.bpseq",
+        "member_sha256": "576dc47e13b113e038c7e7ce096817d4de0a8dab33edb445e3f0df1415a36209"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_CRW_25863.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "4d546c0535f973c2e3038a347d18ae198fdb44bb527a4e56e5126a0eaa09548b",
+      "sequence_sha256": "22a02733db0a051710ee176dba8055a65bb3fe16faa487167a1939db1cce1e18",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_CRW_31704.bpseq",
+        "member_sha256": "d4dc406217226d6599c817f13176a42a7291afe0ce6175befb5a46cbec37815a"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_CRW_31704.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "9f7918931fbe46d42964c95e1673571d6e4efa0a773da34321da1df65fa969c3",
+      "sequence_sha256": "f24495e214070f3c6382964c82bd46b70819e0d557a88a58f89525b9d3527ddd",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_CRW_43565.bpseq",
+        "member_sha256": "8a53035fe02ea6a39c2385dcb45cf07095ed277d8db5de0d43eb495cfaaf1050"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_CRW_43565.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "4d546c0535f973c2e3038a347d18ae198fdb44bb527a4e56e5126a0eaa09548b",
+      "sequence_sha256": "c2a855d6681f2bf4ae1aa21f7194f6799cc160872d9c46a5f5631b55d8c24f57",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_CRW_54323.bpseq",
+        "member_sha256": "2999d722b549d311190a998990bb0c51486b6fb0962b0e5c62e88b7cc9f2c962"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_CRW_54323.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "4d546c0535f973c2e3038a347d18ae198fdb44bb527a4e56e5126a0eaa09548b",
+      "sequence_sha256": "80009717a803bdf7f70febe3fb09de52b98a0fb2cfd069a53b80ed86202259f5",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_CRW_54562.bpseq",
+        "member_sha256": "6165b44950e5e29d582d5ae05d0ea9e1e4f80ed0a40e124788c86278caa34833"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_CRW_54562.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "75fba408b16f96c0ef60c09d0b9822bca99cc92463d7808decdcc13b8ce9dc22",
+      "sequence_sha256": "76eeafebe71b11420a72e0957a30d9df66b9222ca6a9a44a66b2297c27584e2d",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_RFAM_10644.bpseq",
+        "member_sha256": "b90a615f5f1cf9aa1c18ba3a3a9fd79dd6ac98e541072365b7d8b413e523cb01"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0"
+      ],
+      "name": "bpRNA_RFAM_10644.bpseq",
+      "non_acgu_characters": [
+        "Y"
+      ],
+      "pair_set_sha256": "8b3da569c7fa0bfe2e4a7475884943030923b889ea5d385f848c6e7db8d5e153",
+      "sequence_sha256": "f135e3474dd0a87e63523200db5fd1ee4204e7ff9db132dbe535e9b78c8bc2bf",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_RFAM_1072.bpseq",
+        "member_sha256": "bd764018dc9042c2bbd5d77a0a316f9b2ca3bfc02ee40b5603bd8b2e2155ff47"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_RFAM_1072.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "be77b8a60168b556af51467ae7a9165bd3e3b48b25c4e8bfeb19771559e27b87",
+      "sequence_sha256": "73b9f2664355a810198226554b18733faba194cc237a9e59092f10bcb848aacc",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_RFAM_18822.bpseq",
+        "member_sha256": "5c12e6ef28f80860d4204fe2668f925c171aa4fef08fa2be8eaa1b50a45bc6ce"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0"
+      ],
+      "name": "bpRNA_RFAM_18822.bpseq",
+      "non_acgu_characters": [
+        "R",
+        "Y"
+      ],
+      "pair_set_sha256": "155057b657e4dc9f7fdbd7c70dbea723f04e929e105ae76d92b766ee799eb1c6",
+      "sequence_sha256": "43598ac624b527baa58a0b0c984d4bb6488672c04c42e8d8c7a3e1ead6685903",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_RFAM_18935.bpseq",
+        "member_sha256": "5c7a82c709caf5a0f7828e3cbc5b5f12b0c42d34118e7ec4b6676cd8f42565a8"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0"
+      ],
+      "name": "bpRNA_RFAM_18935.bpseq",
+      "non_acgu_characters": [
+        "R",
+        "Y"
+      ],
+      "pair_set_sha256": "7a4bda2fdfa1cdfbf36e29f79f8b74a243b57e641873cc458068345a90483f27",
+      "sequence_sha256": "deaa2696d0f7b1a825d2ad0ecb76166d4e97b19a2cd234b4701b1930dbb44031",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_RFAM_38651.bpseq",
+        "member_sha256": "9bc7cf971be7d0f8e33a1b3e063fac3b1c8485922bce7c7358dbfc018bd88418"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_RFAM_38651.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "c1a769f02a2a498d289efc9950902ce01481f0a1bb1ee8da77917d05c2f708c6",
+      "sequence_sha256": "d93483b998630d8ca7b059a32f0d7a85b53a0529d616c1af41c5b16b912bb2ea",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_SRP_192.bpseq",
+        "member_sha256": "d5cb64f88abc53eedf73fbd6820fb87044a3b866b36f91b763111da702003ac2"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_SRP_192.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "sequence_sha256": "a2dd23f58e0f022e64c1b2403762b7beea9357bc9a74e3c32b35f8421c25e3c2",
+      "truth_empty": true,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_tmRNA_252.bpseq",
+        "member_sha256": "77d783eee925a1f6008e6a1b468679e2515b08c2946f81619fb14aba995af2fc"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_tmRNA_252.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "dc7e2367bdeb6f7a16f9a4c3b29d577b58e26b5bb6ddb15fb95acb67eb920690",
+      "sequence_sha256": "baacca7f205b4bf9cb006dd64fd3f95ebbb108c5e7a2e4003bdeff9a89786b4f",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_tmRNA_397.bpseq",
+        "member_sha256": "c2d4984cd17c6b432f9f177e5095fc0a04289c2971dfec69a078089a71556290"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_tmRNA_397.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "6cfcf614a8e4d0bc37d43b60168fc4b7e07fc314b884795322273ba876c0f93b",
+      "sequence_sha256": "c17a76f95881601b298af952e61cea07a3e5b2aedbe51d89b66108d441f967d8",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_tmRNA_643.bpseq",
+        "member_sha256": "0608bdb5a8cb58a825b55dd8b06b8b5e47e7ecc965cd964cd13f3acf81a4b00e"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_tmRNA_643.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "5ae415d6af965a2d670bd8a9e8d5d7decc7718cd4a06eab9e248ec5f7a7dce0e",
+      "sequence_sha256": "ea8da51a5db7deb60da7eca9ed951f5ceaa27fd178d4d6b3c0012a934864049d",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_tmRNA_651.bpseq",
+        "member_sha256": "54aa183eb7135b9af406b2149388aaaee9d1ae7ac1b49f9f6d1bd2ba62109159"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_tmRNA_651.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "575dd3816f09579c70bab15a14ff54d71e40da922e7812bbec8ab3e22020efec",
+      "sequence_sha256": "87476f8d3bd126d0ccdf6d7d214790245ee7ba90479699c9b543fa7c0f49ee85",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_tmRNA_686.bpseq",
+        "member_sha256": "09977569b1da953db07b84ddb64d0cb79b00f0eec1c0454aaed0ce633f4e9a04"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_tmRNA_686.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "117164b764cfe163bdee70626a61106959aadffb66eea5d8b130e5834301ae19",
+      "sequence_sha256": "d38cd4661c104e20b2e8b7821666e9386109ded29dda7eb83563a6417eced780",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    },
+    {
+      "blocked_recovered_identities": [],
+      "bpfold_official_release": {
+        "covered": true,
+        "member": "BPfold_test_results/bpRNA/bpRNA_tmRNA_693.bpseq",
+        "member_sha256": "2824f5d5f6cf18ec7869e2996b2b5dde0c98b442eb78cfc8ba5e9fb5d1d20db9"
+      },
+      "existing_frozen_coverage": [],
+      "final_full_coverage_identities": [
+        "bpfold_official_release/bprna_ts0",
+        "vienna_mfe/bprna_ts0/recovered_official17",
+        "vienna_centroid/bprna_ts0/recovered_official17",
+        "vienna_mea/bprna_ts0/recovered_official17",
+        "nussinov_turner/bprna_ts0/recovered_official17",
+        "contrafold/bprna_ts0",
+        "eternafold/bprna_ts0",
+        "rnastructure_fold/bprna_ts0",
+        "rnastructure_maxexpect/bprna_ts0"
+      ],
+      "name": "bpRNA_tmRNA_693.bpseq",
+      "non_acgu_characters": [
+        "N"
+      ],
+      "pair_set_sha256": "4cf11481d95c6736f8fc25128c9e1e8c1812515a484d6046ce9e1391261aeebb",
+      "sequence_sha256": "229fcf56c0a41a8c83070770496e07304b10e7e66930d2923a3bba54249e133c",
+      "truth_empty": false,
+      "vienna_raw_strict_coverage": []
+    }
+  ],
+  "prediction_entries": [
+    {
+      "available": true,
+      "baseline_id": "bpfold",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "six_checkpoint_ensemble",
+      "n_prediction_records": 1305,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/bpfold_official_release__bprna_ts0__full1305.json.gz",
+      "prediction_id": "bpfold_official_release/bprna_ts0",
+      "prediction_origin": "AUTHOR_BPFOLD_TEST_RESULTS_V0_2_FULL1305",
+      "registry_status": "FROZEN",
+      "sha256": "096a7693f6f4c3e3b2fe93eba39d3c912019ea13f92261df8617541d19be74d3",
+      "source_group": "AUTHOR_OFFICIAL_RELEASE"
+    },
+    {
+      "available": true,
+      "baseline_id": "vienna_mfe",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1305,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/vienna_mfe__bprna_ts0__recovered_official17__full1305.json.gz",
+      "prediction_id": "vienna_mfe/bprna_ts0/recovered_official17",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "293cdc6bbe96e4f03fad8d0b2592c7903b7537da6c286d9314ce23b6c0af7a7a",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    },
+    {
+      "available": true,
+      "baseline_id": "vienna_centroid",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1305,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/vienna_centroid__bprna_ts0__recovered_official17__full1305.json.gz",
+      "prediction_id": "vienna_centroid/bprna_ts0/recovered_official17",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "7967e820cc71b3b048dff8b592b7fe2c6ca60e4cb092a2cb7b611f527572c6ba",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    },
+    {
+      "available": true,
+      "baseline_id": "vienna_mea",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1305,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/vienna_mea__bprna_ts0__recovered_official17__full1305.json.gz",
+      "prediction_id": "vienna_mea/bprna_ts0/recovered_official17",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "04aed1d33d7333a72367e22ff0b2aec4a56461fe5e58ab1ba94fb668e04143cd",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    },
+    {
+      "available": true,
+      "baseline_id": "nussinov_turner",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1305,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/nussinov_turner__bprna_ts0__recovered_official17__full1305.json.gz",
+      "prediction_id": "nussinov_turner/bprna_ts0/recovered_official17",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "f7d02fddd86a2878a70af2e46de3e130697d743e0774b0b442654ef4c65a5901",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    },
+    {
+      "available": true,
+      "baseline_id": "contrafold",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1305,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/contrafold__bprna_ts0__full1305.json.gz",
+      "prediction_id": "contrafold/bprna_ts0",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "0d19d76be790a9c3f9a2af4a11cb2a0e0e45bc08623dcbd9f6177ea774e3a12d",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    },
+    {
+      "available": true,
+      "baseline_id": "eternafold",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1305,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/eternafold__bprna_ts0__full1305.json.gz",
+      "prediction_id": "eternafold/bprna_ts0",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "ca72c133b56d63291a9343cac9457401fa266be2719c1d8976526e20d787dd4e",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    },
+    {
+      "available": true,
+      "baseline_id": "rnastructure_fold",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1302,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/rnastructure_fold__bprna_ts0__partial1302.json.gz",
+      "prediction_id": "rnastructure_fold/bprna_ts0",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "f5398f28c4c8e6ef15a8a030615295d65c923c813ae6b79cb728842f1d87aee0",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    },
+    {
+      "available": true,
+      "baseline_id": "rnastructure_maxexpect",
+      "data_path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
+      "model_form": "deterministic_single_predictor",
+      "n_prediction_records": 1302,
+      "path": "source_data/ts0_official_coverage_recovery_20261127/rnastructure_maxexpect__bprna_ts0__partial1302.json.gz",
+      "prediction_id": "rnastructure_maxexpect/bprna_ts0",
+      "prediction_origin": "FROZEN_RAW1288_PLUS_OFFICIAL17_CPU_COMPLETION",
+      "registry_status": "FROZEN",
+      "sha256": "a816ef1872d9bb0e46e7705f1e861fae0227df1de332e0cc265baa10b96c8f6f",
+      "source_group": "FROZEN_WITH_OFFICIAL17_CPU_COMPLETION"
+    }
+  ],
+  "project_panel": {
+    "n_sequences": 1288,
+    "path": "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_projected_1288.jsonl.gz",
+    "sha256": "c8a48651e6e64f96c049609aafe531455e36f65f1cc5354d371b68430b98466e"
+  },
+  "raw_sources": {
+    "contrafold": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/raw/bprna_ts0.json",
+      "sha256": "0a402bceba38d5fede0835cb6e986a7d556c9ca46c9699ceee59555cb2331ec4"
+    },
+    "eternafold": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/raw/bprna_ts0.json",
+      "sha256": "6e25763a001fecef5158a9e2669ac4bdaad63519b6d8d7604450e7817dc44c79"
+    },
+    "rnastructure": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/bprna_ts0.json",
+      "sha256": "27e4bafdabf85fea47da235e0caf435511e32d422536f0357485d6b49496b69f"
+    },
+    "vienna": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/vienna/raw_strict/bprna_ts0.json",
+      "sha256": "d76865f8c8cfb630bc0335094fbe5f45a7cbf31e963857d0f87487fd5f073e32"
+    }
+  },
+  "recovered_partial_existing_identities": [
+    "rnastructure_fold/bprna_ts0",
+    "rnastructure_maxexpect/bprna_ts0"
+  ],
+  "recovered_partial_identities": [
+    "rnastructure_fold/bprna_ts0",
+    "rnastructure_maxexpect/bprna_ts0"
+  ],
+  "release": {
+    "n_sequences": 1305,
+    "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/baseline_recovery_v2/official_assets/bpfold/BPfold_test_results_v0.2.tar.gz",
+    "prefix": "BPfold_test_results/bpRNA/",
+    "sha256": "e8a3420e3458f7aad4c86b500f5d56d0e935b7da82b936675fefda64c5e03073"
+  },
+  "schema_version": "ts0.official_coverage_recovery.manifest.v1",
+  "status": "PASS_7_FULL1305_IDENTITIES_2_PARTIAL",
+  "supplement": {
+    "bounded_replay_indices": [
+      0,
+      17,
+      100,
+      501,
+      1000,
+      1287
+    ],
+    "deterministic_repeats": 3,
+    "device": "CPU_ONLY",
+    "gpu_used": false,
+    "new_inference_records_per_system": 17,
+    "path": "source_data/ts0_official_coverage_recovery_20261127/missing17_cpu_predictions.json",
+    "projected_records_rerun": 0,
+    "sha256": "2e80442278fe5a6025d4bad33dd7afa29762f233e906798405ca1f2e4e137279"
+  },
+  "truth_empty_name": "bpRNA_SRP_192.bpseq",
+  "unrecovered_neural_models": "NO_FULL1305_RAW_ASSET; PARTIAL_OR_BLOCKED; NO_GPU_INFERENCE",
+  "upgraded_existing_identities": [
+    "contrafold/bprna_ts0",
+    "eternafold/bprna_ts0"
+  ]
+}

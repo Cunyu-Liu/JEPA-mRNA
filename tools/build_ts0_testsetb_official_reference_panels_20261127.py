@@ -18,6 +18,7 @@ SOURCE = ROOT / "source_data/ts0_testsetb_official_reference_20261127"
 OUT = ROOT / "artifacts/ts0_testsetb_official_reference_20261127"
 REPORT = ROOT / "docs/plans/2026-11-27-ts0-testsetb-official-reference-panels.md"
 PRIOR = ROOT / "artifacts/archive_label_lineage_audit_20261127/summary.json"
+RECOVERY = ROOT / "source_data/ts0_official_coverage_recovery_20261127/recovery_manifest.json"
 J = Path("/root/rna_jepa_data/ss_data/jsonl")
 BD = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz")
 MX_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2")
@@ -33,7 +34,7 @@ SPECS = {
         "mirror_sha": "69dc58fe6cfdf1ec178b1732b7da35b828dbbc7608e89d9debdde9d538937a55",
         "full_id": "bprna_ts0_official_reference_1305", "project_panel_id": "bprna_ts0_projected_reference_1288",
         "full_file": "bprna_ts0_official_1305.jsonl.gz", "project_file": "bprna_ts0_projected_1288.jsonl.gz",
-        "metrics_file": "bprna_ts0_system_metrics.json", "expected_available": 21,
+        "metrics_file": "bprna_ts0_system_metrics.json", "expected_available": 26,
         "id_transform": lambda name: name,
     },
     "testsetb": {
@@ -205,24 +206,40 @@ def inventory(dataset):
                         "source_group": "INDEPENDENT_AUDIT_ASSET", "registry_status": "UNREGISTERED_INDEPENDENT_AUDIT_ASSET",
                         "path": path, "sha256": digest, "data_path": str(J / f"{dataset}.jsonl"),
                         "available": True, "model_form": "single_model", "prediction_origin": f"additional_frozen_r2d_seed{seed}"})
+    if dataset == "bprna_ts0":
+        recovery = json.loads(RECOVERY.read_text())
+        if recovery["status"] != "PASS_7_FULL1305_IDENTITIES_2_PARTIAL" or recovery["external_test_model_selection"]:
+            raise ValueError("invalid TS0 recovery manifest")
+        by_id = {row["prediction_id"]: index for index, row in enumerate(entries)}
+        for recovered in recovery["prediction_entries"]:
+            if recovered["prediction_id"] in by_id:
+                entries[by_id[recovered["prediction_id"]]] = recovered
+            else:
+                entries.append(recovered)
     if len(entries) != SPECS[dataset]["expected_available"] + 14 or sum(row["available"] for row in entries) != SPECS[dataset]["expected_available"]:
         raise ValueError(f"prediction inventory changed {dataset}")
     return entries
 
 
 def load_predictions(entry):
-    document = json.loads(Path(entry["path"]).read_text())
+    path = Path(entry["path"])
+    if path.suffix == ".gz":
+        with gzip.open(path, "rt", encoding="utf-8") as handle:
+            document = json.load(handle)
+    else:
+        document = json.loads(path.read_text())
     if document.get("data") and document["data"] != entry["data_path"]:
         raise ValueError(f"prediction data path mismatch {entry['prediction_id']}")
-    dataset = entry["prediction_id"].rsplit("/", 1)[-1]
-    if document.get("data_sha256") and document["data_sha256"] != SPECS[dataset]["project_sha"]:
+    dataset = "bprna_ts0" if entry["prediction_id"].endswith("recovered_official17") or entry["prediction_id"] == "bpfold_official_release/bprna_ts0" else entry["prediction_id"].rsplit("/", 1)[-1]
+    allowed_data_sha = {SPECS[dataset]["project_sha"], sha256(SOURCE / SPECS[dataset]["full_file"])}
+    if document.get("data_sha256") and document["data_sha256"] not in allowed_data_sha:
         raise ValueError(f"prediction data SHA mismatch {entry['prediction_id']}")
-    if entry["prediction_id"].startswith("rnastructure_fold/"):
+    if "per_sequence" in document:
+        source = document["per_sequence"]
+    elif entry["prediction_id"].startswith("rnastructure_fold/"):
         source = document["results"]["fold"]["per_sequence"]
     elif entry["prediction_id"].startswith("rnastructure_maxexpect/"):
         source = document["results"]["maxexpect"]["per_sequence"]
-    elif "per_sequence" in document:
-        source = document["per_sequence"]
     elif "predictions" in document:
         source = document["predictions"]
     else:
@@ -352,12 +369,11 @@ def panel_identity(panel, path, dataset_id, spec, selection):
             "pair_protocol": "unfiltered official BPSEQ within the stated ID panel; no scorer-added projection"}
 
 
-def public_strongest(row, panel_id):
+def public_strongest(row, panel_id, ranking_scope="DESCRIPTIVE_FROZEN_PROJECTED_SUBSET_AUDIT_ONLY_NOT_MODEL_SELECTION"):
     result = row["panels"][panel_id]
     return {"prediction_id": row["prediction_id"], "model_form": row["model_form"],
             "metrics": result["metrics"], "delta_vs_xens2": result["delta_vs_xens2"],
-            "training_exposure": row["training_exposure"],
-            "ranking_scope": "DESCRIPTIVE_FROZEN_PROJECTED_SUBSET_AUDIT_ONLY_NOT_MODEL_SELECTION"}
+            "training_exposure": row["training_exposure"], "ranking_scope": ranking_scope}
 
 
 def evaluate_dataset(dataset, full, projected, prior):
@@ -423,8 +439,6 @@ def evaluate_dataset(dataset, full, projected, prior):
         "strongest_ensemble": public_strongest(max((row for row in eligible if "ensemble" in row["model_form"]), key=lambda row: row["panels"][project_id]["metrics"]["micro_f1"]), project_id),
         "strongest_single_predictor": public_strongest(max((row for row in eligible if "ensemble" not in row["model_form"]), key=lambda row: row["panels"][project_id]["metrics"]["micro_f1"]), project_id),
     }
-    if any(row["panels"][full_id]["status"] == "PASS_FULL_COVERAGE" for row in rows):
-        raise ValueError(f"unexpected official-full prediction coverage {dataset}")
     return rows, record_rows, strongest
 
 
@@ -454,6 +468,18 @@ def coverage_gaps(dataset, full, rows):
 def system_document(dataset, full, projected, rows, strongest, prior):
     spec = SPECS[dataset]
     full_id, project_id = spec["full_id"], spec["project_panel_id"]
+    full_eligible = [row for row in rows if row["panels"][full_id]["status"] == "PASS_FULL_COVERAGE"]
+    if full_eligible:
+        full_scope = "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION"
+        full_summary = {
+            "strongest_overall": public_strongest(max(full_eligible, key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"]), full_id, full_scope),
+            "strongest_ensemble": public_strongest(max((row for row in full_eligible if "ensemble" in row["model_form"]), key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"]), full_id, full_scope),
+            "strongest_single_predictor": public_strongest(max((row for row in full_eligible if "ensemble" not in row["model_form"]), key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"]), full_id, full_scope),
+        }
+    else:
+        full_summary = {"strongest_overall": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
+                        "strongest_ensemble": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
+                        "strongest_single_predictor": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"}
     return {
         "schema_version": SCHEMA, "dataset": dataset, "audit_date": "2026-11-27",
         "scope": "CPU-only frozen-prediction rescoring on official-full and projected-reference panels; no inference, training or model selection",
@@ -478,9 +504,7 @@ def system_document(dataset, full, projected, rows, strongest, prior):
             "official_records_missing_from_project": spec["official_n"] - spec["project_n"],
         },
         **strongest,
-        "official_full_summary": {"strongest_overall": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
-                                  "strongest_ensemble": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
-                                  "strongest_single_predictor": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"},
+        "official_full_summary": full_summary,
         "xens2_reference": next(row for row in rows if row["prediction_id"] == f"xens2/{dataset}"),
         "training_exposure_summary": prior["training_overlap"][dataset],
         "legacy_project_label_disposition": "DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION; projected-reference-protocol-only; not unfiltered official protocol",
@@ -490,11 +514,23 @@ def system_document(dataset, full, projected, rows, strongest, prior):
 
 def render_report(documents, gaps):
     lines = ["# bpRNA TS0 / TestSetB 官方全集与 projected-reference 双面板", "",
-             "仅对冻结预测做 CPU 复算，不做训练、新推理、阈值调整或模型选择。项目子集结果是 `DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION` 的显式 projected-reference 协议，不与未过滤官方全集混排。缺预测不补 0，部分覆盖不排名；共享 registry 未修改。", "",
-             "严格 zero-based inclusive 配对，不追加过滤；macro 是逐序列 P/R/F1 非加权平均，仅 empty/empty 时 P/R/F1=1。TS0 官方唯一 truth-empty 记录不在项目 1288 中，当前所有预测均缺失该记录，未被补 0 或计入 macro；TestSetB 无 truth-empty。", ""]
+             "面板构建仅对冻结及已恢复预测做 CPU 复算，不做训练、新推理、阈值调整或模型选择。TS0 的 17 条补充推理在独立恢复阶段完成；项目子集结果是 `DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION` 的显式 projected-reference 协议，不与未过滤官方全集混排。缺预测不补 0，部分覆盖不排名；共享 registry 未修改。", "",
+             "严格 zero-based inclusive 配对，不追加过滤；macro 是逐序列 P/R/F1 非加权平均，仅 empty/empty 时 P/R/F1=1。TS0 官方唯一 truth-empty 为 `bpRNA_SRP_192.bpseq`，只在 full1305 全覆盖身份中计分；部分覆盖身份仍不排名。TestSetB 无 truth-empty。", ""]
     for dataset, document in documents.items():
         spec = SPECS[dataset]
         project_id, full_id = spec["project_panel_id"], spec["full_id"]
+        full_scored = sorted((row for row in document["rows"] if row["panels"][full_id]["status"] == "PASS_FULL_COVERAGE"),
+                             key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"], reverse=True)
+        lines += [f"## {dataset}：官方全集 {spec['official_n']} 结果", ""]
+        if full_scored:
+            lines += ["| Prediction identity | Model form | n | micro F1 | macro F1 | truth-empty | empty/empty |",
+                      "|---|---|---:|---:|---:|---:|---:|"]
+            for row in full_scored:
+                metric = row["panels"][full_id]["metrics"]
+                lines.append(f"| `{row['prediction_id']}` | {row['model_form']} | {spec['official_n']} | {metric['micro_f1']:.10f} | {metric['macro_f1']:.10f} | {metric['truth_empty_records']} | {metric['empty_empty_records']} |")
+            lines += ["", "全集结果仅作 frozen baseline 描述性覆盖审计，不用于选模；部分覆盖身份不进入本表。", ""]
+        else:
+            lines += ["没有全覆盖预测，最强单/集成均为 `UNCHECKED_NO_FULL_COVERAGE_PREDICTION`；部分覆盖不进入排名。", ""]
         lines += [f"## {dataset}：projected {spec['project_n']} 子集结果", "",
                   "| Prediction identity | Model form | n | micro F1 | macro F1 | Δmicro vs xens2 | Δmacro vs xens2 |",
                   "|---|---|---:|---:|---:|---:|---:|"]
@@ -511,8 +547,8 @@ def render_report(documents, gaps):
             ci = next(item for item in document["rows"] if item["prediction_id"] == row["prediction_id"])["panels"][project_id]["paired_macro_f1_delta_ci95_vs_xens2"]["ci95"]
             exposure = row["training_exposure"]
             lines.append(f"- **{title}**：`{row['prediction_id']}`，micro-F1={metric['micro_f1']:.16f}，macro-F1={metric['macro_f1']:.16f}；Δmicro={delta['micro_f1']:+.16f}，Δmacro={delta['macro_f1']:+.16f}，配对 macro Δ95% CI [{ci[0]:+.16f}, {ci[1]:+.16f}]。训练暴露栏：`{exposure['full_project_panel_exposure_status']}`（route={exposure['route'] or 'UNCHECKED'}）。")
-        lines += ["", f"### 官方全集 {spec['official_n']} 覆盖缺口", "",
-                  f"官方比项目子集多 {spec['official_n'] - spec['project_n']} 条；所有可用预测均只有 {spec['project_n']}/{spec['official_n']}，coverage={spec['project_n'] / spec['official_n']:.10f}，状态为 `PARTIAL_COVERAGE_NOT_RANKED`。全集没有全覆盖预测，最强单/集成均为 `UNCHECKED_NO_FULL_COVERAGE_PREDICTION`。", "",
+        lines += ["", f"### 官方独有 {spec['official_n'] - spec['project_n']} 条与覆盖状态", "",
+                  f"官方比项目子集多 {spec['official_n'] - spec['project_n']} 条；当前 official-full 全覆盖 {len(full_scored)} 个，部分覆盖不排名 {document['coverage_accounting']['official_partial_not_ranked']} 个，blocked {document['coverage_accounting']['blocked_identities']} 个。逐 ID 恢复来源见 `ts0-official-coverage-recovery.md`（TS0）；未恢复身份不以空结构或 0 分补齐。", "",
                   "官方独有 ID（均为项目 bad-alphabet 拒绝，异常字符在括号内）：" + "、".join(
                       f"`{row['name']}` ({''.join(row['non_acgu_characters'])})" for row in gaps[dataset]["official_missing_from_project"]) + "。", "",
                   "逐预测 missing ID 全表见 `official_coverage_gaps.json`；summary-only/blocked 的 metrics=null，不补 0。", "",
