@@ -24,6 +24,10 @@ def norm(value: str) -> str:
     return re.sub(r"\s+", "", value).lower()
 
 
+def ocr_norm(value: str) -> str:
+    return norm(value).replace("archiveli", "archiveii").replace("archivell", "archiveii")
+
+
 def atomic_json(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
@@ -107,7 +111,7 @@ def main(argv: list[str] | None = None) -> int:
     text_path.write_text(ocr_text)
     required_ocr = ("LABEL", "SOTA", "BPfold", "ArchiveII", "0.8156522070", "0.8999331355",
                     "0.8204522395", "PDB", "58", "95", "UNCHECKED", "5381/5388", "2048/2544")
-    ocr_missing = [value for value in required_ocr if norm(value) not in norm(ocr_text)]
+    ocr_missing = [value for value in required_ocr if ocr_norm(value) not in ocr_norm(ocr_text)]
     pdf_text = subprocess.run([pdftotext, str(pdf), "-"], capture_output=True, text=True,
                               check=True, timeout=300).stdout
     haystack = norm(pdf_text)

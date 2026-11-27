@@ -1,0 +1,30 @@
+{
+  "status": "PASS_INDEPENDENT_CLEAN_BUILD_ALL_ZIP_PARTS_IDENTICAL",
+  "primary_deck": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1/temporary_round73_copy.pptx",
+  "independent_deck": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1_independent/independent_round73.pptx",
+  "primary_sha256": "479db1c942f758f55276c38257a57b7015f73fa7f8c05dfc075413894a1a578a",
+  "independent_sha256": "2cd4a83f7cee70991bce05cd9451573589d05921caf277e484d1e31d26b27989",
+  "source_deck": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1/synthetic_round72_delivery.pptx",
+  "source_sha256_before_and_after": "833415f1ca3fee19a4e19239a8874daf4704dbc52501b5c36c474a4590399c8b",
+  "source_unchanged": true,
+  "primary_unchanged": true,
+  "source_verification": "/teams/HoulabData_1788502323/liucunyu/foldnar/label_protocol_ppt_round73_20261127/synthetic_round1/publication_success.json",
+  "source_verification_sha256": "82e24a7159aae0c7c3491a739219681ddc20773248eb1ebde65676c082349c8a",
+  "zip_parts_compared": 72,
+  "missing_parts": [],
+  "extra_parts": [],
+  "different_parts": [],
+  "slide_count": 18,
+  "prior_slide_xml_preserved": 17,
+  "added_slide_number": 37,
+  "scope": {
+    "legacy_prediction_derived_labels_sota_eligible": false,
+    "official_reference_descriptive_only": true,
+    "pdb58_95_ranking_allowed": false,
+    "pretrain_unknown_or_unchecked_clean": false,
+    "four_arm_converged": false,
+    "complete_sota_closed": false,
+    "model_selection": false
+  },
+  "real_ppt_modified": false
+}
