@@ -216,6 +216,21 @@ def test_testsetb_artifact_contract():
     assert ledger.verify_testsetb_contract() == []
 
 
+def test_full_recovery_preserves_projected_history_and_exposure():
+    text = ledger.DOC.read_text()
+    assert "Full 覆盖恢复联合不变量" in text
+    assert "projected 原值/CI/暴露不变" in text
+    assert "旧零覆盖仅历史" in text
+    assert "当前若保留 CI 字段也必须一致" in text
+    assert "RNAstructure 在 full1305 仍为 1302、full430 仍为 429" in text
+    assert text.count("official full coverage=0") == 2
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_projected_recovery_history_artifact_contract():
+    assert ledger.verify_projected_recovery_history() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

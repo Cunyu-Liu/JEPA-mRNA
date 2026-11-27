@@ -69,8 +69,10 @@ SOURCES = {
     "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
     "ts0_metrics": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
+    "ts0_pre_recovery_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_recovery_audit": TS0_COVERAGE_REPO / "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
     "testsetb_metrics": TESTSETB_COVERAGE_REPO / "artifacts/testsetb_official_coverage_recovery_20261127/system_metrics.json",
+    "testsetb_pre_recovery_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/testsetb_system_metrics.json",
     "testsetb_recovery_verification": TESTSETB_COVERAGE_REPO / "artifacts/testsetb_official_coverage_recovery_20261127/verification_round3.json",
     "ts0_testsetb_verification": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json",
     "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
@@ -697,6 +699,53 @@ def verify_testsetb_contract() -> list[str]:
     overall = max(projected_rows, key=lambda item: item[1]["metrics"]["micro_f1"])
     if ensemble[0]["prediction_id"] != "xens2/testsetb" or single[0]["prediction_id"] != "rinalmo_ft/testsetb" or overall[0]["prediction_id"] != "rinalmo_ft/testsetb":
         errors.append("TestSetB projected strongest identities mismatch")
+    return errors
+
+
+def verify_projected_recovery_history() -> list[str]:
+    errors = []
+    names = ["ts0_pre_recovery_metrics", "testsetb_pre_recovery_metrics", "ts0_metrics", "testsetb_metrics"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return [f"missing projected recovery history source: {name}: {SOURCES[name]}"]
+    ts0_before = json.loads(SOURCES["ts0_pre_recovery_metrics"].read_text())
+    testsetb_before = json.loads(SOURCES["testsetb_pre_recovery_metrics"].read_text())
+    ts0_now = json.loads(SOURCES["ts0_metrics"].read_text())
+    testsetb_now = json.loads(SOURCES["testsetb_metrics"].read_text())
+    if ts0_before["coverage_accounting"]["official_full_coverage"] != 0 or testsetb_before["coverage_accounting"]["official_full_coverage"] != 0:
+        errors.append("pre-recovery zero-full snapshots changed")
+    if ts0_now["coverage_accounting"]["official_full_coverage"] != 7 or testsetb_now["coverage_accounting"]["official_full_coverage"] != 7:
+        errors.append("current full recovery counts are not seven per panel")
+    configurations = [
+        (ts0_before, ts0_now, "bprna_ts0_projected_reference_1288", {
+            "xens2/bprna_ts0": [0.0, 0.0],
+            "rnaformer_bprna/bprna_ts0": [-0.0674523877056411, -0.04355079906395077],
+        }),
+        (testsetb_before, testsetb_now, "testsetb_projected_reference_428", {
+            "xens2/testsetb": [0.0, 0.0],
+            "rinalmo_ft/testsetb": [0.0169091444489763, 0.04524705102861153],
+        }),
+    ]
+    for before, now, panel_name, expected_ci in configurations:
+        before_rows = {row["prediction_id"]: row for row in before["rows"]}
+        now_rows = {row["prediction_id"]: row for row in now["rows"]}
+        for prediction_id, ci95 in expected_ci.items():
+            old_panel = before_rows[prediction_id]["panels"][panel_name]
+            new_panel = now_rows[prediction_id]["panels"][panel_name]
+            for key in ["metrics", "delta_vs_xens2"]:
+                if new_panel[key] != old_panel[key]:
+                    errors.append(f"projected recovery changed {panel_name}/{prediction_id}/{key}")
+            if now_rows[prediction_id]["training_exposure"] != before_rows[prediction_id]["training_exposure"]:
+                errors.append(f"projected recovery changed training exposure: {prediction_id}")
+            interval = old_panel["paired_macro_f1_delta_ci95_vs_xens2"]
+            if interval["ci95"] != ci95 or interval["n_bootstrap"] != 10000 or interval["seed"] != 20261127:
+                errors.append(f"pre-recovery paired macro CI mismatch: {prediction_id}")
+            new_interval = new_panel.get("paired_macro_f1_delta_ci95_vs_xens2")
+            if new_interval is not None and new_interval != interval:
+                errors.append(f"current projected CI changed: {prediction_id}")
+    text = DOC.read_text()
+    if text.count("official full coverage=0") != 2 or "旧零覆盖冒充当前" not in text:
+        errors.append("zero-full history is not restricted to the two pre-recovery snapshots")
     return errors
 
 
@@ -1354,12 +1403,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, and TS0/TestSetB coverage"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, and projected recovery history"
     print(f"PASS: {scope}")
     return 0
 
