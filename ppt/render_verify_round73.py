@@ -26,7 +26,7 @@ def norm(value: str) -> str:
 
 def ocr_norm(value: str) -> str:
     return (norm(value).replace("archiveli", "archiveii").replace("archivell", "archiveii")
-            .replace("×", "x"))
+            .replace("×", "x").replace("trlc", "tr1c"))
 
 
 def atomic_json(path: Path, value: dict) -> None:
@@ -112,7 +112,8 @@ def main(argv: list[str] | None = None) -> int:
     text_path.write_text(ocr_text)
     required_ocr = ("LABEL", "SOTA", "BPfold", "ArchiveII", "0.8156522070", "0.8999331355",
                     "0.8204522395", "PDB", "62", "91", "UNCHECKED", "5381/5388", "2048/2544",
-                    "PROJECTED", "OFFICIAL", "7×1305", "7×430", "1302/1305", "429/430")
+                    "PROJECTED", "OFFICIAL", "7×1305", "7×430", "1302/1305", "429/430",
+                    "Rfam", "269", "110", "TR1c", "33")
     ocr_missing = [value for value in required_ocr if ocr_norm(value) not in ocr_norm(ocr_text)]
     pdf_text = subprocess.run([pdftotext, str(pdf), "-"], capture_output=True, text=True,
                               check=True, timeout=300).stdout
@@ -130,6 +131,8 @@ def main(argv: list[str] | None = None) -> int:
                     "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
                     "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
                     "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
+                    "Rfam temporal：269 novel-supported", "110 UNCHECKED",
+                    "TR1c exact 33", "cross-panel exact 2", "训练重叠不豁免",
                     "不得排名", "5381/5388", "2048/2544", "UNKNOWN / UNCHECKED ≠ clean",
                     "完整 SOTA 仍未闭环", "四臂未收敛", "≠ clean SOTA")
     slide37 = norm("".join(slide_texts[17]))

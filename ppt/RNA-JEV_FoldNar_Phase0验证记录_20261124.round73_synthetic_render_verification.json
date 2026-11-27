@@ -1,8 +1,8 @@
 {
   "status": "PASS_RENDER_PDF_TEXT_AND_SLIDE37_OCR",
-  "deck_label": "SYNTHETIC_OFFICIAL_7_FULL_AND_RNASTRUCTURE_PARTIAL",
+  "deck_label": "SYNTHETIC_RFAM_269_NOVEL_110_UNCHECKED",
   "deck": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round73_work/render/temporary_round73_copy.pptx",
-  "deck_sha256": "1658a6cc261ab3c6c6726693e181c73d6cf535e3e66076dec9a6c21dbbecc5b4",
+  "deck_sha256": "cee7153f042c76f004f5006f4f05f450c46588123cbff1d5f835e7208d458f08",
   "deck_unchanged": true,
   "slides_rendered": 18,
   "deck_slide_count": 18,
@@ -16,12 +16,12 @@
     "deck_index": 18,
     "display_number": 37,
     "png": "slide37-ocr.png",
-    "png_sha256": "5b1a4f70596286400876a274f123bd0e2b41d5ef5fe67e0164affe7b127f7a6d",
+    "png_sha256": "81e54f27aa38cc98ee4cd2fedc0ab8a947bc7e4ede834445c3fafb02bc258d22",
     "text_path": "/Users/liucunyu/Documents/课题idea 数据 结论/浙江大学/RNA 相关模型/RNA-JEV/.round73_work/render/output/slide37-ocr.txt",
     "engine": "macOS Vision zh-Hans/en-US",
-    "characters": 1156
+    "characters": 1235
   },
-  "pdf_sha256": "6ef8cf795f77805b216910e306c61b29a11d40b19a8edfc6321ebc25a05ba922",
+  "pdf_sha256": "11e463b4f5b747051d81f43c612c3d7e12f9c1beaaefc54ab976194d893efbc2",
   "real_ppt_modified": false,
   "visual_review": "PENDING_AGENT_IMAGE_REVIEW"
 }
