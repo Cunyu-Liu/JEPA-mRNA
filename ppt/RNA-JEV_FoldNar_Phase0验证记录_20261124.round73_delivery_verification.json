@@ -1,24 +1,24 @@
 {
-  "status": "PASS_ROUND73_PDB62_91_SYNTHETIC_DELIVERY_REAL_PPT_UNMODIFIED",
+  "status": "PASS_ROUND73_OFFICIAL_FULL7_SYNTHETIC_DELIVERY_REAL_PPT_UNMODIFIED",
   "base_commit": "8bd87223edb9b5a21c1e13676b4192de54505d9f",
   "branch": "label-protocol-ppt-round73-20261127",
   "test_rounds": [
     {
       "round": 1,
       "command": "pytest -q tests/test_label_protocol_round73.py",
-      "passed": 12,
-      "commit": "84d87dc"
+      "passed": 14,
+      "commit": "b518384"
     },
     {
       "round": 2,
       "command": "pytest -q tests/test_label_protocol_round73.py; independent clean rebuild; LibreOffice PDF + macOS Vision OCR",
-      "passed": 12,
-      "commit": "f3ef621"
+      "passed": 14,
+      "commit": "d0ae824"
     },
     {
       "round": 3,
       "command": "pytest -q tests/test_label_protocol_round73.py tests/test_pdb_rfam_label_lineage_20261127.py",
-      "passed": 21
+      "passed": 23
     }
   ],
   "synthetic_slide_count": 18,
@@ -32,7 +32,7 @@
   "render_missing_or_clipped_text": [],
   "render_missing_new_page_pdf_text": [],
   "render_missing_new_page_ocr_text": [],
-  "render_obsolete_pdb58_95_text": [],
+  "render_obsolete_evidence_text": [],
   "visual_review": "PENDING_AGENT_IMAGE_REVIEW",
   "partial_files": [],
   "real_round72_delivery_used": false,
@@ -42,35 +42,37 @@
   "reports": [
     {
       "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_build_verification.json",
-      "bytes": 4952,
-      "sha256": "c84fbc978ec96dd14a12c55e5487da0ded11077622b5463d4f58818553474a04"
+      "bytes": 5773,
+      "sha256": "e6a0c0d177b7bce2fabee5b162089d34f5fc618cda694c9a2b772af2ee4e86e4"
     },
     {
       "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_independent_build_verification.json",
-      "bytes": 1730,
-      "sha256": "19211b10fd783c1db2767449d5e5a0771e3601a88b547744f2b6da5ffc9ac53d"
+      "bytes": 1831,
+      "sha256": "82dada1df0f29289cd178f9c0f3d7fedcecaa020b8efa78e26e7dcdd1492632e"
     },
     {
       "path": "/home/rna_jev_label_protocol_ppt/ppt/RNA-JEV_FoldNar_Phase0验证记录_20261124.round73_synthetic_render_verification.json",
-      "bytes": 1295,
-      "sha256": "54d4a17ac60ae9a572d105c27504127fa4cc23a46ecca4c58126690a102c2f3b"
+      "bytes": 1300,
+      "sha256": "f47e2dd067217d004e0002c87d840c33a2d9e63d4134d5663561d57fd82267a8"
     }
   ],
-  "builder_sha256": "fce2b228eabd56e290ff37d708995c690ee73e246b3144554a05e804d1492760",
-  "latest_pdb_artifact": {
-    "path": "/home/rna_jev_label_protocol_ppt/source_data/pdb_rcsb_rebuild_20261127/round6_combined/rebuild_summary.json",
-    "bytes": 587,
-    "sha256": "c73fcff13fc501604c2f5ed902277ec75b24567306dd0868af121dd0b80d9377"
+  "builder_sha256": "59f22424b7d1e7b45af7b17f0152840b0f13e77c1c588d8ddf5fa5f536d8789f",
+  "latest_ts0_recovery_artifact": {
+    "path": "/home/rna_jev_label_protocol_ppt/artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
+    "bytes": 29319,
+    "sha256": "8d46957d83104cf5a574968230d75ef5f29ff08e551e84d63994da0de702bc77"
   },
-  "latest_ts_coverage_artifact": {
-    "path": "/home/rna_jev_label_protocol_ppt/artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json",
-    "bytes": 45494,
-    "sha256": "bc44577f8b9b22ce05353e064f2479e2c8e0f00407f79b141b8ef52b80c7fbaf"
+  "latest_testsetb_recovery_artifact": {
+    "path": "/home/rna_jev_label_protocol_ppt/artifacts/testsetb_official_coverage_recovery_20261127/recovery_audit.json",
+    "bytes": 8913,
+    "sha256": "81b6d5178830381ec1143aecd83f8ba02475da05555fe60377a23c13ada3e13e"
   },
   "scope": {
     "complete_sota_closed": false,
     "pdb62_91_ranking_allowed": false,
-    "ts0_testsetb_official_full_ranking_allowed": false,
+    "ts0_official_full_coverage_identities": 7,
+    "testsetb_official_full_coverage_identities": 7,
+    "rnastructure_partial_coverage_retained": true,
     "model_selection": false
   }
 }

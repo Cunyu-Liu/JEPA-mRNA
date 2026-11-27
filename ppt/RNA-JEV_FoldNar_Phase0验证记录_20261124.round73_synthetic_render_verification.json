@@ -11,7 +11,7 @@
   "missing_or_clipped_text": [],
   "missing_new_page_pdf_text": [],
   "missing_new_page_ocr_text": [],
-  "obsolete_pdb58_95_text": [],
+  "obsolete_evidence_text": [],
   "ocr": {
     "deck_index": 18,
     "display_number": 37,
@@ -21,7 +21,7 @@
     "engine": "macOS Vision zh-Hans/en-US",
     "characters": 1156
   },
-  "pdf_sha256": "5d42474205efe60ddf4a02a35d1cfd3c2a42c18af057a3d00773c2eddf5ff7a1",
+  "pdf_sha256": "6ef8cf795f77805b216910e306c61b29a11d40b19a8edfc6321ebc25a05ba922",
   "real_ppt_modified": false,
   "visual_review": "PENDING_AGENT_IMAGE_REVIEW"
 }

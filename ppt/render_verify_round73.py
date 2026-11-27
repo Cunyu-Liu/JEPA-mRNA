@@ -145,7 +145,7 @@ def main(argv: list[str] | None = None) -> int:
         "deck_slide_count": len(parts), "renderer": f"{version} headless PDF; pdftoppm 120 dpi; OCR 400 dpi",
         "ppt_to_pdf_complete_text_checks": checks, "missing_or_clipped_text": missing,
         "missing_new_page_pdf_text": missing_pdf, "missing_new_page_ocr_text": ocr_missing,
-        "obsolete_pdb58_95_text": obsolete_pdf,
+        "obsolete_evidence_text": obsolete_pdf,
         "ocr": {"deck_index": 18, "display_number": 37, "png": page.name,
                 "png_sha256": sha256(page), "text_path": str(text_path), "engine": engine,
                 "characters": len(ocr_text)},
