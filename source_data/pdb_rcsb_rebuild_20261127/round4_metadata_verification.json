@@ -1,0 +1,12 @@
+{
+  "date_ranking_used": false,
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "identity_pairs_used": false,
+  "metadata_resolution_sha256": "33c0464a5e0cbbe9327072f5aa7320046afeeefc8a6e7ab5419e1b6c3568e721",
+  "n_records": 87,
+  "status": "PASS_RNAFORMER_METADATA_ONLY_IDENTITY_VERIFIER",
+  "status_counts": {
+    "METADATA_AMBIGUOUS_UNCHECKED": 55,
+    "NO_METADATA_ELIGIBLE_CHAIN_UNCHECKED": 32
+  }
+}
