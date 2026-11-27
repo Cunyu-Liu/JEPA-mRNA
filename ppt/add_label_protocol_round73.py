@@ -38,6 +38,8 @@ TS0_RECOVERY = ROOT / "artifacts/ts0_official_coverage_recovery_20261127/recover
 TS0_RECOVERY_CHECK = ROOT / "artifacts/ts0_official_coverage_recovery_20261127/verification_round2.json"
 TESTSETB_RECOVERY = ROOT / "artifacts/testsetb_official_coverage_recovery_20261127/recovery_audit.json"
 TESTSETB_RECOVERY_CHECK = ROOT / "artifacts/testsetb_official_coverage_recovery_20261127/verification_round3.json"
+RFAM_REGISTRY = ROOT / "source_data/rfam_release_lineage_20261127/final_registry_proposal/registry_recommendation.json"
+RFAM_VERIFICATION = ROOT / "source_data/rfam_release_lineage_20261127/final_registry_verification.json"
 BURGUNDY = RGBColor(122, 32, 44)
 DARK_RED = RGBColor(145, 36, 48)
 GREEN = RGBColor(36, 105, 78)
@@ -174,14 +176,17 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                       ts0_recovery: str | Path = TS0_RECOVERY,
                       ts0_recovery_check: str | Path = TS0_RECOVERY_CHECK,
                       testsetb_recovery: str | Path = TESTSETB_RECOVERY,
-                      testsetb_recovery_check: str | Path = TESTSETB_RECOVERY_CHECK) -> dict:
+                      testsetb_recovery_check: str | Path = TESTSETB_RECOVERY_CHECK,
+                      rfam_registry: str | Path = RFAM_REGISTRY,
+                      rfam_verification: str | Path = RFAM_VERIFICATION) -> dict:
     paths = tuple(Path(path).resolve() for path in
                   (data_registry, archive_lineage, archive_system, archive_recommendation,
                    bprna_system, pretrain_summary, pdb_lineage, pdb_summary, pdb_verification,
                    ts_coverage, ts_verification, ts0_recovery, ts0_recovery_check,
-                   testsetb_recovery, testsetb_recovery_check))
+                   testsetb_recovery, testsetb_recovery_check, rfam_registry, rfam_verification))
     (registry, lineage, archive, recommendation, bprna, pretrain, pdb, pdb_rebuild,
-     pdb_check, coverage, coverage_check, ts0, ts0_check, testsetb, testsetb_check) = map(load_json, paths)
+     pdb_check, coverage, coverage_check, ts0, ts0_check, testsetb, testsetb_check,
+     rfam, rfam_check) = map(load_json, paths)
     legacy = {}
     for dataset_id, replacement in (("bprna_new", "bpfold_official_bprna_new_reference_5388"),
                                     ("archiveii_embok_clean", None)):
@@ -296,10 +301,26 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                               "rnastructure_maxexpect/" + recovery["dataset_id"]):
             require(entries.get(prediction_id, {}).get(count_key) == partial_n,
                     f"RNAstructure partial coverage changed: {prediction_id}")
-    require(pdb.get("related_temporal_pdb_collection", {}).get("status") == "NOT_QUALIFIED"
-            and pdb.get("negative_label_policy", {}).get("unobserved") ==
+    require(pdb.get("negative_label_policy", {}).get("unobserved") ==
             "must be masked, never a negative label",
             "PDB observation-mask qualification changed")
+    temporal = rfam.get("panels", {}).get("rfam_temporal", {})
+    novelty = rfam.get("temporal_novelty_counts", {})
+    require(rfam.get("external_test_policy") == "AUDIT_ONLY_NO_MODEL_SELECTION"
+            and temporal.get("n_records") == 436
+            and novelty.get("NOVEL_SEQUENCE_RELEASE_SUPPORTED") == 269
+            and novelty.get("UNCHECKED") == 110
+            and sum(novelty.values()) == 436
+            and temporal.get("tr1c_exact_overlap") == 33
+            and temporal.get("cross_panel_exact_overlap") == 2
+            and temporal.get("tr1c_family_overlap") == 321,
+            "Rfam temporal novelty or training-overlap accounting changed")
+    require(rfam_check.get("status") == "PASS_RFAM_TEMPORAL_LINEAGE_INDEPENDENT_VERIFIER"
+            and rfam_check.get("temporal_novelty_counts") == novelty
+            and rfam_check.get("tr1c_exact") == 33 and rfam_check.get("cross_panel_exact") == 2
+            and rfam_check.get("identity_pairs_used") is False
+            and rfam_check.get("registry_recommendation_sha256") == sha256(rfam_registry),
+            "Rfam temporal independent verification or artifact identity changed")
     require(pretrain.get("complete_official_pretraining_coverage_state") == "UNCHECKED",
             "complete pretraining exposure must remain UNCHECKED")
     populations = pretrain.get("populations", {})
@@ -385,9 +406,10 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
          "旧 label_source = DERIVED_FROM_BPFOLD_PREDICTIONS；旧分数仅 circular-audit。\n新 official-reference：bpRNA-new 5388；ArchiveII 3966 → clean 2544（unfiltered BPSEQ）。",
          9.2, INK, font=SANS)
     rect(slide, 8.54, 1.62, 4.02, 1.14, ROSE, DARK_RED)
-    text(slide, 8.76, 1.73, 3.58, 0.25, "③ PDB：62 rebuilt / 91 UNCHECKED", 11.4, DARK_RED, True)
-    text(slide, 8.76, 2.03, 3.58, 0.56,
-         "153 candidates · no model ranking\n未观测位点 mask ≠ 负标签；不得排名。", 9.4, INK, font=SANS)
+    text(slide, 8.76, 1.71, 3.58, 0.25, "③ PDB：62 rebuilt / 91 UNCHECKED", 11.0, DARK_RED, True)
+    text(slide, 8.76, 1.99, 3.58, 0.70,
+         "PDB 153 candidates · mask≠negative · no ranking\nRfam temporal：269 novel-supported · 110 UNCHECKED\nTR1c exact 33 · cross-panel exact 2；训练重叠不豁免",
+         7.8, INK, font=SANS)
     xens2 = evidence["xens2"]["metrics"]["micro_f1"]
     rows = []
     for label, key, role in (("xens2 · frozen project ensemble", "xens2", "reference"),
@@ -442,6 +464,8 @@ def verify_built_deck(path: Path, prior_deck: Path, evidence: dict) -> dict:
                 "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
                 "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
                 "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
+                "Rfam temporal", "269 novel-supported", "110 UNCHECKED",
+                "TR1c exact 33", "cross-panel exact 2", "训练重叠不豁免",
                 "不得排名", "5381/5388", "2048/2544", "UNKNOWN / UNCHECKED ≠ clean",
                 "完整 SOTA 仍未闭环", "四臂未收敛", "≠ clean SOTA")
     for phrase in required:
@@ -514,6 +538,8 @@ def build(deck: str | Path, source_deck: str | Path = SOURCE_DECK,
                   "ts0_testsetb_official_full_ranking_allowed": False,
                   "ts0_official_full_coverage_identities": 7,
                   "testsetb_official_full_coverage_identities": 7,
+                  "rfam_temporal_novel_supported": 269, "rfam_temporal_unchecked": 110,
+                  "rfam_temporal_blanket_qualified": False,
                   "pretrain_unknown_or_unchecked_clean": False, "four_arm_converged": False,
                   "complete_sota_closed": False, "model_selection": False},
         "atomic_replace": True, "temporary_copy_only": True, "real_ppt_modified": False,
@@ -546,12 +572,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ts0-recovery-check", type=Path, default=TS0_RECOVERY_CHECK)
     parser.add_argument("--testsetb-recovery", type=Path, default=TESTSETB_RECOVERY)
     parser.add_argument("--testsetb-recovery-check", type=Path, default=TESTSETB_RECOVERY_CHECK)
+    parser.add_argument("--rfam-registry", type=Path, default=RFAM_REGISTRY)
+    parser.add_argument("--rfam-verification", type=Path, default=RFAM_VERIFICATION)
     args = parser.parse_args(argv)
     evidence_paths = {name: getattr(args, name) for name in
                       ("data_registry", "archive_lineage", "archive_system", "archive_recommendation",
                        "bprna_system", "pretrain_summary", "pdb_lineage", "pdb_summary",
                        "pdb_verification", "ts_coverage", "ts_verification", "ts0_recovery",
-                       "ts0_recovery_check", "testsetb_recovery", "testsetb_recovery_check")}
+                       "ts0_recovery_check", "testsetb_recovery", "testsetb_recovery_check",
+                       "rfam_registry", "rfam_verification")}
     try:
         report = build(args.deck, args.source_deck, args.source_verification,
                        args.expected_source_sha256, args.backup, args.verification, **evidence_paths)

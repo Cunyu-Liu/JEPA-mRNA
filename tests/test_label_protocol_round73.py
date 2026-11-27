@@ -77,6 +77,8 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
         "ts0_testsetb_official_full_ranking_allowed": False,
         "ts0_official_full_coverage_identities": 7,
         "testsetb_official_full_coverage_identities": 7,
+        "rfam_temporal_novel_supported": 269, "rfam_temporal_unchecked": 110,
+        "rfam_temporal_blanket_qualified": False,
         "pretrain_unknown_or_unchecked_clean": False, "four_arm_converged": False,
         "complete_sota_closed": False, "model_selection": False,
     }
@@ -91,6 +93,8 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
                    "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
                    "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
                    "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
+                   "Rfam temporal：269 novel-supported", "110 UNCHECKED",
+                   "TR1c exact 33", "cross-panel exact 2", "训练重叠不豁免",
                    "5381/5388", "2048/2544", "完整 SOTA 仍未闭环", "四臂未收敛"):
         assert phrase in content
     assert "58 rebuilt / 95 UNCHECKED" not in content
@@ -154,7 +158,7 @@ def test_source_and_duplicate_gates_are_atomic(tmp_path, mode):
         assert len(Presentation(deck).slides) == 17
 
 
-@pytest.mark.parametrize("target", ("LEGACY", "PDB", "COVERAGE", "TS0_FULL", "TESTSETB_PARTIAL", "EXPOSURE"))
+@pytest.mark.parametrize("target", ("LEGACY", "PDB", "COVERAGE", "TS0_FULL", "TESTSETB_PARTIAL", "RFAM", "EXPOSURE"))
 def test_evidence_tamper_refuses_build_without_changing_copy(tmp_path, target):
     fixture = synthetic_source(tmp_path / target)
     deck = tmp_path / f"{target}-copy.pptx"
@@ -188,6 +192,11 @@ def test_evidence_tamper_refuses_build_without_changing_copy(tmp_path, target):
         row["n_sequences"] = 430
         path = tmp_path / "testsetb-partial.json"
         overrides["testsetb_recovery"] = path
+    elif target == "RFAM":
+        altered = json.loads(M.RFAM_REGISTRY.read_text())
+        altered["temporal_novelty_counts"]["NOVEL_SEQUENCE_RELEASE_SUPPORTED"] = 0
+        path = tmp_path / "rfam.json"
+        overrides["rfam_registry"] = path
     else:
         altered = json.loads(M.PRETRAIN_SUMMARY.read_text())
         altered["populations"]["bprna_new"]["known_source_exact_state"]["EXACT"] = 0
