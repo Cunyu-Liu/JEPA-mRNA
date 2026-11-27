@@ -1,0 +1,50 @@
+   49 ENERGY = 0.0 [5ZTM] -- secondary structure derived by DSSR
+    1 g     0     2    49   114 # name=C.GTP114, pairedNt=C.C168
+    2 C     1     3    48   115 # name=C.C115, pairedNt=C.G167
+    3 U     2     4    47   116 # name=C.U116, pairedNt=C.A166
+    4 U     3     5    46   117 # name=C.U117, pairedNt=C.A165
+    5 U     4     6    45   118 # name=C.U118, pairedNt=C.G164
+    6 A     5     7     0   119 # name=C.A119
+    7 G     6     8    43   120 # name=C.G120, pairedNt=C.C162
+    8 A     7     9    42   121 # name=C.A121, pairedNt=C.U161
+    9 G     8    10    41   122 # name=C.G122, pairedNt=C.C160
+   10 A     9    11    40   123 # name=C.A123, pairedNt=C.U159
+   11 U    10    12     0   124 # name=C.U124
+   12 C    11    13    38   125 # name=C.C125, pairedNt=C.G157
+   13 G    12    14    37   126 # name=C.G126, pairedNt=C.C156
+   14 U    13    15    36   127 # name=C.U127, pairedNt=C.A155
+   15 U    14    16    35   128 # name=C.U128, pairedNt=C.A154
+   16 U    15    17    34   129 # name=C.U129, pairedNt=C.A153
+   17 C    16    18    33   130 # name=C.C130, pairedNt=C.G152
+   18 G    17    19    32   131 # name=C.G131, pairedNt=C.C151
+   19 A    18    20    31   132 # name=C.A132, pairedNt=C.U150
+   20 A    19    21    30   133 # name=C.A133, pairedNt=C.U149
+   21 U    20     0     0   134 # name=C.U134
+   22 G     0    23     0   141 # name=C.G141
+   23 A    22    24     0   142 # name=C.A142
+   24 U    23    25     0   143 # name=C.U143
+   25 A    24    26     0   144 # name=C.A144
+   26 A    25    27     0   145 # name=C.A145
+   27 U    26    28     0   146 # name=C.U146
+   28 C    27    29     0   147 # name=C.C147
+   29 G    28    30     0   148 # name=C.G148
+   30 U    29    31    20   149 # name=C.U149, pairedNt=C.A133
+   31 U    30    32    19   150 # name=C.U150, pairedNt=C.A132
+   32 C    31    33    18   151 # name=C.C151, pairedNt=C.G131
+   33 G    32    34    17   152 # name=C.G152, pairedNt=C.C130
+   34 A    33    35    16   153 # name=C.A153, pairedNt=C.U129
+   35 A    34    36    15   154 # name=C.A154, pairedNt=C.U128
+   36 A    35    37    14   155 # name=C.A155, pairedNt=C.U127
+   37 C    36    38    13   156 # name=C.C156, pairedNt=C.G126
+   38 G    37    39    12   157 # name=C.G157, pairedNt=C.C125
+   39 U    38    40     0   158 # name=C.U158
+   40 U    39    41    10   159 # name=C.U159, pairedNt=C.A123
+   41 C    40    42     9   160 # name=C.C160, pairedNt=C.G122
+   42 U    41    43     8   161 # name=C.U161, pairedNt=C.A121
+   43 C    42    44     7   162 # name=C.C162, pairedNt=C.G120
+   44 C    43    45     0   163 # name=C.C163
+   45 G    44    46     5   164 # name=C.G164, pairedNt=C.U118
+   46 A    45    47     4   165 # name=C.A165, pairedNt=C.U117
+   47 A    46    48     3   166 # name=C.A166, pairedNt=C.U116
+   48 G    47    49     2   167 # name=C.G167, pairedNt=C.C115
+   49 C    48     0     1   168 # name=C.C168, pairedNt=C.GTP114

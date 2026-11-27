@@ -1,0 +1,12 @@
+{
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "n_rebuilt": 62,
+  "n_unresolved": 91,
+  "pair_match_counts": {
+    "false": 4,
+    "true": 58
+  },
+  "rebuild_summary_sha256": "c73fcff13fc501604c2f5ed902277ec75b24567306dd0868af121dd0b80d9377",
+  "status": "PASS_RNAFORMER_DOUBLE_PROTOCOL_DSSR_INDEPENDENT_VERIFIER",
+  "unobserved_negative_policy": "MASKED_NEVER_NEGATIVE"
+}

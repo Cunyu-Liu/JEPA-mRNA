@@ -1,0 +1,93 @@
+   92 ENERGY = 0.0 [2N7M] -- secondary structure derived by DSSR
+    1 G     0     2    92     0 # name=X.G0, pairedNt=X.U91
+    2 G     1     3    91     1 # name=X.G1, pairedNt=X.C90
+    3 C     2     4    90     2 # name=X.C2, pairedNt=X.G89
+    4 C     3     5    89     3 # name=X.C3, pairedNt=X.G88
+    5 U     4     6    88     4 # name=X.U4, pairedNt=X.A87
+    6 U     5     7    87     5 # name=X.U5, pairedNt=X.A86
+    7 A     6     8    86     6 # name=X.A6, pairedNt=X.U85
+    8 U     7     9    85     7 # name=X.U7, pairedNt=X.A84
+    9 G     8    10    84     8 # name=X.G8, pairedNt=X.C83
+   10 C     9    11    83     9 # name=X.C9, pairedNt=X.G82
+   11 A    10    12    82    10 # name=X.A10, pairedNt=X.U81
+   12 C    11    13     0    11 # name=X.C11
+   13 G    12    14    80    12 # name=X.G12, pairedNt=X.C79
+   14 G    13    15    79    13 # name=X.G13, pairedNt=X.C78
+   15 G    14    16    78    14 # name=X.G14, pairedNt=X.C77
+   16 A    15    17    77    15 # name=X.A15, pairedNt=X.U76
+   17 A    16    18    76    16 # name=X.A16, pairedNt=X.U75
+   18 A    17    19     0    17 # name=X.A17
+   19 U    18    20     0    18 # name=X.U18
+   20 A    19    21    53    19 # name=X.A19, pairedNt=X.U52
+   21 C    20    22    52    20 # name=X.C20, pairedNt=X.G51
+   22 G    21    23    51    21 # name=X.G21, pairedNt=X.U50
+   23 C    22    24    50    22 # name=X.C22, pairedNt=X.G49
+   24 A    23    25    49    23 # name=X.A23, pairedNt=X.U48
+   25 U    24    26     0    24 # name=X.U24
+   26 A    25    27    48    25 # name=X.A25, pairedNt=X.U47
+   27 U    26    28    47    26 # name=X.U26, pairedNt=X.A46
+   28 C    27    29    46    27 # name=X.C27, pairedNt=X.G45
+   29 A    28    30     0    28 # name=X.A28
+   30 G    29    31     0    29 # name=X.G29
+   31 U    30    32     0    30 # name=X.U30
+   32 G    31    33     0    31 # name=X.G31
+   33 A    32    34     0    32 # name=X.A32
+   34 G    33    35    43    33 # name=X.G33, pairedNt=X.C42
+   35 G    34    36    42    34 # name=X.G34, pairedNt=X.C41
+   36 A    35    37    41    35 # name=X.A35, pairedNt=X.U40
+   37 U    36    38     0    36 # name=X.U36
+   38 U    37    39     0    37 # name=X.U37
+   39 C    38    40     0    38 # name=X.C38
+   40 G    39    41     0    39 # name=X.G39
+   41 U    40    42    36    40 # name=X.U40, pairedNt=X.A35
+   42 C    41    43    35    41 # name=X.C41, pairedNt=X.G34
+   43 C    42    44    34    42 # name=X.C42, pairedNt=X.G33
+   44 G    43    45     0    43 # name=X.G43
+   45 A    44    46     0    44 # name=X.A44
+   46 G    45    47    28    45 # name=X.G45, pairedNt=X.C27
+   47 A    46    48    27    46 # name=X.A46, pairedNt=X.U26
+   48 U    47    49    26    47 # name=X.U47, pairedNt=X.A25
+   49 U    48    50    24    48 # name=X.U48, pairedNt=X.A23
+   50 G    49    51    23    49 # name=X.G49, pairedNt=X.C22
+   51 U    50    52    22    50 # name=X.U50, pairedNt=X.G21
+   52 G    51    53    21    51 # name=X.G51, pairedNt=X.C20
+   53 U    52    54    20    52 # name=X.U52, pairedNt=X.A19
+   54 U    53    55     0    53 # name=X.U53
+   55 U    54    56     0    54 # name=X.U54
+   56 U    55    57     0    55 # name=X.U55
+   57 U    56    58    74    56 # name=X.U56, pairedNt=X.A73
+   58 G    57    59    73    57 # name=X.G57, pairedNt=X.C72
+   59 C    58    60    72    58 # name=X.C58, pairedNt=X.G71
+   60 U    59    61    71    59 # name=X.U59, pairedNt=X.A70
+   61 G    60    62    70    60 # name=X.G60, pairedNt=X.C69
+   62 G    61    63    69    61 # name=X.G61, pairedNt=X.U68
+   63 U    62    64    68    62 # name=X.U62, pairedNt=X.A67
+   64 G    63    65     0    63 # name=X.G63
+   65 U    64    66     0    64 # name=X.U64
+   66 A    65    67     0    65 # name=X.A65
+   67 A    66    68     0    66 # name=X.A66
+   68 A    67    69    63    67 # name=X.A67, pairedNt=X.U62
+   69 U    68    70    62    68 # name=X.U68, pairedNt=X.G61
+   70 C    69    71    61    69 # name=X.C69, pairedNt=X.G60
+   71 A    70    72    60    70 # name=X.A70, pairedNt=X.U59
+   72 G    71    73    59    71 # name=X.G71, pairedNt=X.C58
+   73 C    72    74    58    72 # name=X.C72, pairedNt=X.G57
+   74 A    73    75    57    73 # name=X.A73, pairedNt=X.U56
+   75 G    74    76     0    74 # name=X.G74
+   76 U    75    77    17    75 # name=X.U75, pairedNt=X.A16
+   77 U    76    78    16    76 # name=X.U76, pairedNt=X.A15
+   78 C    77    79    15    77 # name=X.C77, pairedNt=X.G14
+   79 C    78    80    14    78 # name=X.C78, pairedNt=X.G13
+   80 C    79    81    13    79 # name=X.C79, pairedNt=X.G12
+   81 C    80    82     0    80 # name=X.C80
+   82 U    81    83    11    81 # name=X.U81, pairedNt=X.A10
+   83 G    82    84    10    82 # name=X.G82, pairedNt=X.C9
+   84 C    83    85     9    83 # name=X.C83, pairedNt=X.G8
+   85 A    84    86     8    84 # name=X.A84, pairedNt=X.U7
+   86 U    85    87     7    85 # name=X.U85, pairedNt=X.A6
+   87 A    86    88     6    86 # name=X.A86, pairedNt=X.U5
+   88 A    87    89     5    87 # name=X.A87, pairedNt=X.U4
+   89 G    88    90     4    88 # name=X.G88, pairedNt=X.C3
+   90 G    89    91     3    89 # name=X.G89, pairedNt=X.C2
+   91 C    90    92     2    90 # name=X.C90, pairedNt=X.G1
+   92 U    91     0     1    91 # name=X.U91, pairedNt=X.G0

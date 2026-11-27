@@ -1,0 +1,36 @@
+    1 G    36 # name=A.G1, pairedNt=A.C36
+    2 G    35 # name=A.G2, pairedNt=A.C35
+    3 A    34 # name=A.A3, pairedNt=A.U34
+    4 A    33 # name=A.A4, pairedNt=A.U33
+    5 U    32 # name=A.U5, pairedNt=A.A32
+    6 U    31 # name=A.U6, pairedNt=A.G31
+    7 U    30 # name=A.U7, pairedNt=A.A30
+    8 A    29 # name=A.A8, pairedNt=A.U29
+    9 U    28 # name=A.U9, pairedNt=A.A28
+   10 G    27 # name=A.G10, pairedNt=A.U27
+   11 A    26 # name=A.A11, pairedNt=A.U26
+   12 G    25 # name=A.G12, pairedNt=A.C25
+   13 U    24 # name=A.U13, pairedNt=A.A24
+   14 A    23 # name=A.A14, pairedNt=A.U23
+   15 C     0 # name=A.C15
+   16 C    21 # name=A.C16, pairedNt=A.G21
+   17 U     0 # name=A.U17
+   18 U     0 # name=A.U18
+   19 C     0 # name=A.C19
+   20 G     0 # name=A.G20
+   21 G    16 # name=A.G21, pairedNt=A.C16
+   22 A     0 # name=A.A22
+   23 U    14 # name=A.U23, pairedNt=A.A14
+   24 A    13 # name=A.A24, pairedNt=A.U13
+   25 C    12 # name=A.C25, pairedNt=A.G12
+   26 U    11 # name=A.U26, pairedNt=A.A11
+   27 U    10 # name=A.U27, pairedNt=A.G10
+   28 A     9 # name=A.A28, pairedNt=A.U9
+   29 U     8 # name=A.U29, pairedNt=A.A8
+   30 A     7 # name=A.A30, pairedNt=A.U7
+   31 G     6 # name=A.G31, pairedNt=A.U6
+   32 A     5 # name=A.A32, pairedNt=A.U5
+   33 U     4 # name=A.U33, pairedNt=A.A4
+   34 U     3 # name=A.U34, pairedNt=A.A3
+   35 C     2 # name=A.C35, pairedNt=A.G2
+   36 C     1 # name=A.C36, pairedNt=A.G1
