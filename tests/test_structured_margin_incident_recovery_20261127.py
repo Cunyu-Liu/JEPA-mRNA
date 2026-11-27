@@ -7,6 +7,7 @@ import torch
 from tools import audit_structured_margin_incident_recovery_20261127 as audit
 from tools import run_structured_margin_incident_recovery_20261127 as recovery
 from tools import run_frozen_margin_trainer_with_staged_checkpoint_20261127 as staged
+from tools import mirror_structured_margin_evaluation_for_publication_20261127 as mirror
 
 
 def write_jsonl(path, rows):
@@ -108,6 +109,26 @@ def test_staged_checkpoint_copy_failure_preserves_original_and_local(tmp_path, m
         staged.staged_atomic_torch_save({"x": torch.arange(8)}, destination, tmp_path / "local")
     assert destination.read_bytes() == b"original"
     assert (tmp_path / "local" / "arm" / "resume.pt").is_file()
+
+
+def test_final_evaluation_mirror_preserves_source_and_publisher_paths(tmp_path):
+    source = tmp_path / "recovery"
+    source.mkdir()
+    verdict = {"status": "PASS_STRUCTURED_MARGIN_INDEPENDENT_EVAL",
+               "final_verdict_allowed": True, "overall_pass": True}
+    (source / "independent_evaluation.json").write_text(json.dumps(verdict))
+    for name in mirror.FINAL_FILES[1:]:
+        (source / name).write_text(json.dumps({"name": name}))
+    (source / "predictions").mkdir()
+    (source / "predictions" / "pairs.jsonl").write_text("pair\n")
+    destination = tmp_path / "publisher"
+    destination.mkdir()
+    report = mirror.mirror_final_evaluation(source, destination, tmp_path / "empty",
+                                            tmp_path / "report.json")
+    assert report["status"] == "PASS_FINAL_EVALUATION_MIRRORED_FOR_EXISTING_PUBLISHER"
+    assert (source / "predictions" / "pairs.jsonl").read_text() == "pair\n"
+    assert (destination / "predictions" / "pairs.jsonl").read_text() == "pair\n"
+    assert (tmp_path / "empty").is_dir() and not any((tmp_path / "empty").iterdir())
 
 
 def test_terminal_unfreeze_is_not_misreported_as_a_validation_cadence_bug():
