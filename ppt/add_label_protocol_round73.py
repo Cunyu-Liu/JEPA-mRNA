@@ -30,6 +30,11 @@ ARCHIVE_RECOMMENDATION = ROOT / "artifacts/archiveii_official_reference_20261127
 BPRNA_SYSTEM = ROOT / "source_data/bprna_official_reference_5388/system_metrics.json"
 PRETRAIN_SUMMARY = ROOT / "manifests/pretrain_exposure_v1/summary.json"
 PDB_LINEAGE = ROOT / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json"
+PDB_SUMMARY = ROOT / "source_data/pdb_rcsb_rebuild_20261127/round6_combined/rebuild_summary.json"
+PDB_VERIFICATION = ROOT / "source_data/pdb_rcsb_rebuild_20261127/round6_combined_verification.json"
+TS_COVERAGE = ROOT / "artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json"
+TS_VERIFICATION = ROOT / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json"
+TS_RECOMMENDATION = ROOT / "artifacts/ts0_testsetb_official_reference_20261127/registry_recommendation.json"
 BURGUNDY = RGBColor(122, 32, 44)
 DARK_RED = RGBColor(145, 36, 48)
 GREEN = RGBColor(36, 105, 78)
@@ -158,11 +163,18 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                       archive_recommendation: str | Path = ARCHIVE_RECOMMENDATION,
                       bprna_system: str | Path = BPRNA_SYSTEM,
                       pretrain_summary: str | Path = PRETRAIN_SUMMARY,
-                      pdb_lineage: str | Path = PDB_LINEAGE) -> dict:
+                      pdb_lineage: str | Path = PDB_LINEAGE,
+                      pdb_summary: str | Path = PDB_SUMMARY,
+                      pdb_verification: str | Path = PDB_VERIFICATION,
+                      ts_coverage: str | Path = TS_COVERAGE,
+                      ts_verification: str | Path = TS_VERIFICATION,
+                      ts_recommendation: str | Path = TS_RECOMMENDATION) -> dict:
     paths = tuple(Path(path).resolve() for path in
                   (data_registry, archive_lineage, archive_system, archive_recommendation,
-                   bprna_system, pretrain_summary, pdb_lineage))
-    registry, lineage, archive, recommendation, bprna, pretrain, pdb = map(load_json, paths)
+                   bprna_system, pretrain_summary, pdb_lineage, pdb_summary, pdb_verification,
+                   ts_coverage, ts_verification, ts_recommendation))
+    (registry, lineage, archive, recommendation, bprna, pretrain, pdb, pdb_rebuild,
+     pdb_check, coverage, coverage_check, coverage_recommendation) = map(load_json, paths)
     legacy = {}
     for dataset_id, replacement in (("bprna_new", "bpfold_official_bprna_new_reference_5388"),
                                     ("archiveii_embok_clean", None)):
@@ -211,22 +223,43 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
             "DESCRIPTIVE_FROZEN_PROTOCOL_AUDIT_ONLY_NOT_MODEL_SELECTION"
             and recommendation.get("legacy_project_labels", {}).get("independent_sota_eligible") is False,
             "ArchiveII strongest-single descriptive boundary changed")
-    pdb_rebuild = registry.get("pdb_raw_source_rebuild", {})
-    require(pdb_rebuild.get("status") == "COMPLETE_58_REBUILT_95_UNCHECKED"
-            and pdb_rebuild.get("n_source_records") == 153
-            and pdb_rebuild.get("n_rebuilt") == 58
-            and pdb_rebuild.get("n_unresolved") == 95
+    require(pdb_rebuild.get("n_source_records") == 153
+            and pdb_rebuild.get("n_rebuilt") == 62
+            and pdb_rebuild.get("n_unresolved") == 91
             and pdb_rebuild.get("external_test_policy") == "AUDIT_ONLY_NO_MODEL_SELECTION"
-            and "no prediction metrics or model ranking authorized" in pdb_rebuild.get("ranking_scope", ""),
-            "PDB58/95 rebuild/no-ranking contract changed")
-    require(sum(pdb_rebuild.get("unresolved_status_counts", {}).values()) == 95,
-            "PDB unresolved status counts do not sum to 95")
-    summary = pdb_rebuild.get("summary", {})
-    summary_path = ROOT / summary.get("path", "")
-    actual_summary = identity(summary_path)
-    require(summary.get("bytes") == actual_summary["bytes"]
-            and summary.get("sha256") == actual_summary["sha256"],
-            "PDB rebuild summary identity mismatch")
+            and sum(pdb_rebuild.get("panel_rebuilt", {}).values()) == 62
+            and sum(pdb_rebuild.get("unresolved_status_counts", {}).values()) == 91
+            and sum(pdb_rebuild.get("pair_match_counts", {}).values()) == 62,
+            "PDB62/91 rebuild conservation or no-ranking contract changed")
+    require(pdb_check.get("status") == "PASS_RNAFORMER_DOUBLE_PROTOCOL_DSSR_INDEPENDENT_VERIFIER"
+            and pdb_check.get("n_rebuilt") == 62 and pdb_check.get("n_unresolved") == 91
+            and pdb_check.get("pair_match_counts") == pdb_rebuild.get("pair_match_counts")
+            and pdb_check.get("rebuild_summary_sha256") == sha256(pdb_summary)
+            and pdb_check.get("unobserved_negative_policy") == "MASKED_NEVER_NEGATIVE",
+            "PDB62/91 independent verification or summary identity changed")
+    require(coverage_check.get("status") == "PASS_CLEAN_CLONE_AND_DELIVERY"
+            and coverage_check.get("clean_clone_outputs_byte_identical") is True
+            and coverage_check.get("external_test_model_selection") is False
+            and coverage_check.get("clean_clone_output_sha256", {}).get(
+                "artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json"
+            ) == sha256(ts_coverage),
+            "TS0/TestSetB clean-clone verification or coverage identity changed")
+    for dataset_id, project_n, official_n, missing_n in (("bprna_ts0", 1288, 1305, 17),
+                                                        ("testsetb", 428, 430, 2)):
+        panel = coverage.get("datasets", {}).get(dataset_id, {})
+        require(panel.get("project_n") == project_n and panel.get("official_n") == official_n
+                and panel.get("official_missing_from_project_count") == missing_n
+                and len(panel.get("official_missing_from_project", [])) == missing_n
+                and official_n - project_n == missing_n,
+                f"TS0/TestSetB projected/full coverage accounting changed: {dataset_id}")
+        for prediction in panel.get("per_prediction_official_coverage", []):
+            require(prediction.get("coverage") != 1.0
+                    and prediction.get("n_with_prediction") != official_n,
+                    f"official-full prediction unexpectedly appeared: {dataset_id}")
+        full = coverage_recommendation.get("datasets", {}).get(dataset_id, {}).get(
+            "official_full_summary", {})
+        require(set(full.values()) == {"UNCHECKED_NO_FULL_COVERAGE_PREDICTION"},
+                f"official-full no-ranking boundary changed: {dataset_id}")
     require(pdb.get("related_temporal_pdb_collection", {}).get("status") == "NOT_QUALIFIED"
             and pdb.get("negative_label_policy", {}).get("unobserved") ==
             "must be masked, never a negative label",
@@ -243,8 +276,8 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                 and population.get("selection_use") is False,
                 f"pretrain exposure boundary changed: {dataset_id}")
     return {"legacy": legacy, "xens2": xens2, "replay": replay, "rinalmo": rinalmo,
-            "pdb_rebuild": pdb_rebuild, "pretrain": pretrain,
-            "paths": (*paths, summary_path)}
+            "pdb_rebuild": pdb_rebuild, "pretrain": pretrain, "coverage": coverage,
+            "paths": paths}
 
 
 def text(slide, x, y, w, h, value, size, color=INK, bold=False, font="Arial", align=PP_ALIGN.LEFT):
@@ -316,7 +349,7 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
          "旧 label_source = DERIVED_FROM_BPFOLD_PREDICTIONS；旧分数仅 circular-audit。\n新 official-reference：bpRNA-new 5388；ArchiveII 3966 → clean 2544（unfiltered BPSEQ）。",
          9.2, INK, font=SANS)
     rect(slide, 8.54, 1.62, 4.02, 1.14, ROSE, DARK_RED)
-    text(slide, 8.76, 1.73, 3.58, 0.25, "③ PDB：58 rebuilt / 95 UNCHECKED", 11.4, DARK_RED, True)
+    text(slide, 8.76, 1.73, 3.58, 0.25, "③ PDB：62 rebuilt / 91 UNCHECKED", 11.4, DARK_RED, True)
     text(slide, 8.76, 2.03, 3.58, 0.56,
          "153 candidates · no model ranking\n未观测位点 mask ≠ 负标签；不得排名。", 9.4, INK, font=SANS)
     xens2 = evidence["xens2"]["metrics"]["micro_f1"]
@@ -329,8 +362,9 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
         rows.append([label, fmt10(value), delta, role])
     table(slide, 0.78, 3.00, (4.10, 2.00, 2.12, 3.56), 0.43,
           ("ArchiveII official clean2544", "micro-F1", "Δ vs xens2", "descriptive role"), rows)
-    text(slide, 0.78, 4.78, 11.70, 0.18,
-         "* official-reference 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。", 8.3, MUTED, font=SANS)
+    text(slide, 0.78, 4.76, 11.70, 0.27,
+         "* official-reference 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。\nTS0 1288/1305 · TestSetB 428/430 为 projected-reference；全集无任何 full-coverage prediction，均不排名。",
+         7.8, MUTED, font=SANS)
     rect(slide, 0.78, 5.05, 11.78, 0.66, PASS_PALE, GREEN)
     text(slide, 1.00, 5.13, 4.25, 0.22, "② Pretrain exposure 仍否决 clean-OOD", 11.0, GREEN, True, SANS)
     text(slide, 1.00, 5.39, 11.30, 0.20,
@@ -342,7 +376,7 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
          "official标签 × full coverage × model-specific exposure × PDB coordinate/observation lineage\n四臂未收敛；外部描述值不能替代任何一项证据资格。",
          9.0, INK, True, SANS)
     text(slide, 0.78, 6.80, 11.70, 0.18,
-         "LABEL_REFERENCE_REBUILD_ONLY · PDB58/95不得排名 · legacy prediction-derived labels不用于独立SOTA · raw-exposure descriptive ≠ clean SOTA",
+         "LABEL_REFERENCE_REBUILD_ONLY · PDB62/91不得排名 · legacy prediction-derived labels不用于独立SOTA · raw-exposure descriptive ≠ clean SOTA",
          7.6, MUTED, font=SANS)
 
 
@@ -361,11 +395,14 @@ def verify_built_deck(path: Path, prior_deck: Path, evidence: dict) -> dict:
     content = slide_text(reopened.slides[17])
     required = ("37 · LABEL PROTOCOL", "标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                 "bpRNA-new 5388", "clean 2544", "0.8156522070", "0.8999331355", "0.8204522395",
-                "+0.0842809284", "+0.0048000324", "strongest single", "58 rebuilt / 95 UNCHECKED",
+                "+0.0842809284", "+0.0048000324", "strongest single", "62 rebuilt / 91 UNCHECKED",
+                "TS0 1288/1305", "TestSetB 428/430", "全集无任何 full-coverage prediction，均不排名",
                 "不得排名", "5381/5388", "2048/2544", "UNKNOWN / UNCHECKED ≠ clean",
                 "完整 SOTA 仍未闭环", "四臂未收敛", "≠ clean SOTA")
     for phrase in required:
         require(phrase in content, f"missing label-protocol slide text: {phrase}")
+    for obsolete in ("58 rebuilt / 95 UNCHECKED", "PDB58/95"):
+        require(obsolete not in content, f"obsolete PDB58/95 value remains on slide: {obsolete}")
     return {"slide_count": 18, "deck_slide_index": 18, "added_slide_number": 37,
             "prior_slide_xml_preserved": 17, "shape_bounds_checks": len(reopened.slides[17].shapes),
             "new_slide_text_chars": len(content)}
@@ -427,7 +464,8 @@ def build(deck: str | Path, source_deck: str | Path = SOURCE_DECK,
         "builder": str(Path(__file__).resolve()), "builder_sha256": sha256(Path(__file__).resolve()),
         "evidence_artifacts": [identity(path) for path in evidence["paths"]],
         "scope": {"legacy_prediction_derived_labels_sota_eligible": False,
-                  "official_reference_descriptive_only": True, "pdb58_95_ranking_allowed": False,
+                  "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
+                  "ts0_testsetb_official_full_ranking_allowed": False,
                   "pretrain_unknown_or_unchecked_clean": False, "four_arm_converged": False,
                   "complete_sota_closed": False, "model_selection": False},
         "atomic_replace": True, "temporary_copy_only": True, "real_ppt_modified": False,
@@ -452,10 +490,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--bprna-system", type=Path, default=BPRNA_SYSTEM)
     parser.add_argument("--pretrain-summary", type=Path, default=PRETRAIN_SUMMARY)
     parser.add_argument("--pdb-lineage", type=Path, default=PDB_LINEAGE)
+    parser.add_argument("--pdb-summary", type=Path, default=PDB_SUMMARY)
+    parser.add_argument("--pdb-verification", type=Path, default=PDB_VERIFICATION)
+    parser.add_argument("--ts-coverage", type=Path, default=TS_COVERAGE)
+    parser.add_argument("--ts-verification", type=Path, default=TS_VERIFICATION)
+    parser.add_argument("--ts-recommendation", type=Path, default=TS_RECOMMENDATION)
     args = parser.parse_args(argv)
     evidence_paths = {name: getattr(args, name) for name in
                       ("data_registry", "archive_lineage", "archive_system", "archive_recommendation",
-                       "bprna_system", "pretrain_summary", "pdb_lineage")}
+                       "bprna_system", "pretrain_summary", "pdb_lineage", "pdb_summary",
+                       "pdb_verification", "ts_coverage", "ts_verification", "ts_recommendation")}
     try:
         report = build(args.deck, args.source_deck, args.source_verification,
                        args.expected_source_sha256, args.backup, args.verification, **evidence_paths)
