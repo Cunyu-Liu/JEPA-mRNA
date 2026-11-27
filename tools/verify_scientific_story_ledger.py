@@ -93,6 +93,8 @@ SOURCES = {
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
     "takeover_status": INCIDENT_EVIDENCE_ROOT / "recovery_takeover_status.json",
+    "matched_convergence_audit": INCIDENT_EVIDENCE_ROOT / "matched_converged_19000_audit.json",
+    "current_margin_scheduler": LOCAL_SCHEDULER_ROOT / "recovery_scheduler_state.json",
     "adopted_scheduler_state": INCIDENT_EVIDENCE_ROOT / "adopted_scheduler_state.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
@@ -122,7 +124,7 @@ SOURCE_COMMITS = {
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
-    "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
+    "margin incident recovery": (RECOVERY_REPO, "9cc035be714ce0487593ce042aaee259d5a6cd7d"),
 }
 
 
@@ -534,6 +536,31 @@ def verify_incident_recovery_contract() -> list[str]:
     for required in ["PASS_FINAL_EVALUATION_MIRRORED_FOR_EXISTING_PUBLISHER", 'report.get("final_verdict_allowed") is not True', "copied != before"]:
         if required not in mirror:
             errors.append(f"final teams mirror contract missing: {required}")
+    return errors
+
+
+def verify_matched_convergence_contract() -> list[str]:
+    errors = []
+    if not SOURCES["matched_convergence_audit"].is_file():
+        return [f"missing matched convergence audit: {SOURCES['matched_convergence_audit']}"]
+    audit = json.loads(SOURCES["matched_convergence_audit"].read_text())
+    if audit["status"] != "PASS_MATCHED_19000_AND_ENSEMBLE_RECOVERY_READONLY_AUDIT":
+        errors.append("matched/ensemble read-only audit did not pass")
+    matched = audit["matched_control"]
+    if matched["status"] != "PASS_MATCHED_NATURAL_CONVERGENCE_19000" or matched["training_stopped_step"] != 19000 or matched["best_step"] != 16500:
+        errors.append("matched natural stop/best steps mismatch")
+    if matched["best_validation_loss"] != 0.35262170191251785:
+        errors.append("matched best validation loss mismatch")
+    if matched["convergence"]["bad_evaluations"] != 5 or matched["best_convergence"]["bad_evaluations"] != 0:
+        errors.append("matched stopped/best convergence bad-evaluation states were conflated")
+    if matched["convergence"]["eligible"] is not True or matched["best_convergence"]["eligible"] is not True:
+        errors.append("matched convergence eligibility mismatch")
+    if matched["best_convergence"] != {**matched["convergence"], "bad_evaluations": 0}:
+        errors.append("matched best_convergence differs beyond restored-best bad=0")
+    if matched["stop_reason"] != "CONVERGED_VALIDATION_PAIR_HAMMING_STRUCTURED_MARGIN_AFTER_TERMINAL_UNFREEZE":
+        errors.append("matched stop reason mismatch")
+    if audit["structural_model_selection_performed"] is not False or audit["additional_evaluation_started"] is not False or audit["scientific_conclusion"] is not None:
+        errors.append("matched audit allowed structural selection/evaluation/conclusion")
     return errors
 
 
@@ -1140,6 +1167,10 @@ def verify_narrative_guards() -> list[str]:
         "不能称全 temporal 独立",
         "14.9_OR_EARLIER=43、15.0=278、UNCHECKED=115",
         "五类互斥并守恒 436",
+        "9cc035be714ce0487593ce042aaee259d5a6cd7d",
+        "step=19000",
+        "step=16500、validation_loss=0.35262170191251785",
+        "best_convergence` 为同一 best/loss、**bad_evaluations=0**",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
@@ -1624,12 +1655,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_archiveii_full_recovery_contract() + verify_archiveii_clean_full_consistency() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_archiveii_full_recovery_contract() + verify_archiveii_clean_full_consistency() + verify_matched_convergence_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, Rfam release lineage, ArchiveII full recovery and clean/full consistency"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, Rfam release lineage, ArchiveII full recovery clean/full consistency, and matched convergence"
     print(f"PASS: {scope}")
     return 0
 

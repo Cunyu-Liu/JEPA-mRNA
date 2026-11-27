@@ -306,6 +306,22 @@ def test_archiveii_clean_full_consistency_artifact_contract():
     assert ledger.verify_archiveii_clean_full_consistency() == []
 
 
+def test_matched_natural_convergence_states_and_no_structural_claim():
+    text = ledger.DOC.read_text()
+    assert "9cc035be714ce0487593ce042aaee259d5a6cd7d" in text
+    assert "step=19000" in text
+    assert "step=16500、validation_loss=0.35262170191251785" in text
+    assert "bad_evaluations=5" in text
+    assert "best_convergence` 为同一 best/loss、**bad_evaluations=0**" in text
+    assert "additional_evaluation_started=false" in text
+    assert "其余三臂未完成，四臂结构结论仍不存在" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_matched_convergence_artifact_contract():
+    assert ledger.verify_matched_convergence_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285
