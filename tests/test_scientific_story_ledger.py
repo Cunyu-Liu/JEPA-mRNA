@@ -96,7 +96,7 @@ def test_archiveii_official_artifact_contract():
 
 def test_pdb_rebuild_overlap_and_rfam_temporal_boundaries():
     text = ledger.DOC.read_text()
-    assert "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4" in text
+    assert "105bb55d2e959e587c85d3de7607fdc3c14c5c73" in text
     assert "62 条重建、91 条 UNCHECKED" in text
     assert "58 true / 4 false" in text
     assert "4 条 DSSR scheme 修复" in text
@@ -229,6 +229,42 @@ def test_full_recovery_preserves_projected_history_and_exposure():
 @pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
 def test_projected_recovery_history_artifact_contract():
     assert ledger.verify_projected_recovery_history() == []
+
+
+def test_rfam_family_release_counts_and_sequence_distinction():
+    text = ledger.DOC.read_text()
+    assert "105bb55d2e959e587c85d3de7607fdc3c14c5c73" in text
+    assert "11,186 条 `UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED`" in text
+    assert "family first-release **14.10=166、15.0=99**" in text
+    assert "14.9_OR_EARLIER=10,921、UNCHECKED=40" in text
+    assert "family release≠sequence release" in text
+    assert "PROPOSED_ONLY_NOT_REGISTERED" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_rfam_release_artifact_contract():
+    assert ledger.verify_rfam_release_contract() == []
+
+
+def test_rfam_temporal_novelty_strata_and_exposure_columns():
+    text = ledger.DOC.read_text()
+    assert "269 条 `NOVEL_SEQUENCE_RELEASE_SUPPORTED`" in text
+    assert "43 条 `NOT_NOVEL_PRE14_9_SEQUENCE`" in text
+    assert "12 条 `NOT_INDEPENDENT_TR1C_EXACT`" in text
+    assert "2 条 `NOT_INDEPENDENT_CROSS_PANEL_EXACT`" in text
+    assert "110 条 `UNCHECKED`" in text
+    assert "原始 TR1c exact overlap 为 **33**" in text
+    assert "33 与 12 是不同字段" in text
+    assert "不能称全 temporal 独立" in text
+
+
+def test_rfam_sequence_release_and_novelty_conservation():
+    text = ledger.DOC.read_text()
+    assert "14.9_OR_EARLIER=43、15.0=278、UNCHECKED=115" in text
+    assert "33 个 raw TR1c exact 扣除 pre14.9 后为 12 个独立排除 ID" in text
+    assert "五类互斥并守恒 436" in text
+    assert "早期报告的“所有 first-release UNCHECKED”" in text
+    assert "不能称全 temporal 独立" in text
 
 
 def test_label_quality_soft_review_and_zero_deletion():

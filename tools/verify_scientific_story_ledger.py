@@ -81,6 +81,12 @@ SOURCES = {
     "pdb_rebuild_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round6_combined_verification.json",
     "pdb_rebuild_round3_summary": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build/rebuild_summary.json",
     "pdb_rebuild_round3_verification": PDB_RFAM_REPO / "source_data/pdb_rcsb_rebuild_20261127/round3_build_verification.json",
+    "rfam_release_summary": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/round1_map_v2/release_summary.json",
+    "rfam_release_verification": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_release_verification.json",
+    "rfam_registry_recommendation": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/registry_recommendation.json",
+    "rfam_temporal_verification": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_verification.json",
+    "rfam_novelty_strata": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/novelty_strata.json",
+    "rfam_provenance": PDB_RFAM_REPO / "source_data/rfam_release_lineage_20261127/final_registry_proposal/provenance.json",
     "recovery_preflight": RECOVERY_ROOT / "recovery_preflight_local.json",
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
@@ -113,7 +119,7 @@ SOURCE_COMMITS = {
     "ArchiveII official reference": (ARCHIVEII_REPO, "8a2008a4cda3c43b3000f25151b80408b0bdb110"),
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
-    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4"),
+    "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
     "margin incident recovery": (RECOVERY_REPO, "aa9f1c4a92e92d70841e33cec455734f160075c4"),
 }
 
@@ -749,6 +755,99 @@ def verify_projected_recovery_history() -> list[str]:
     return errors
 
 
+def verify_rfam_release_contract() -> list[str]:
+    errors = []
+    names = ["rfam_release_summary", "rfam_release_verification", "rfam_registry_recommendation", "rfam_temporal_verification", "rfam_novelty_strata", "rfam_provenance"]
+    for name in names:
+        if not SOURCES[name].is_file():
+            return [f"missing Rfam release source: {name}: {SOURCES[name]}"]
+    summary = json.loads(SOURCES["rfam_release_summary"].read_text())
+    verification = json.loads(SOURCES["rfam_release_verification"].read_text())
+    recommendation = json.loads(SOURCES["rfam_registry_recommendation"].read_text())
+    temporal_verification = json.loads(SOURCES["rfam_temporal_verification"].read_text())
+    strata = json.loads(SOURCES["rfam_novelty_strata"].read_text())
+    provenance = json.loads(SOURCES["rfam_provenance"].read_text())
+    if summary["n_records"] != 11226 or summary["family_status_counts"] != {
+        "AMBIGUOUS_FAMILY_UNCHECKED": 22,
+        "FAMILY_UNCHECKED": 18,
+        "UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED": 11186,
+    }:
+        errors.append("Rfam family status/record conservation mismatch")
+    if summary["family_first_release_counts"] != {
+        "14.10": 166,
+        "14.9_OR_EARLIER": 10921,
+        "15.0": 99,
+        "UNCHECKED": 40,
+    }:
+        errors.append("Rfam family first-release counts mismatch")
+    if sum(summary["family_first_release_counts"].values()) != 11226 or sum(summary["family_status_counts"].values()) != 11226:
+        errors.append("Rfam family counts do not conserve 11226")
+    if verification["status"] != "PASS_RFAM_RELEASE_LINEAGE_INDEPENDENT_VERIFIER" or verification["family_status_counts"] != summary["family_status_counts"]:
+        errors.append("Rfam release independent verification mismatch")
+    if recommendation["registration_status"] != "PROPOSED_ONLY_NOT_REGISTERED" or recommendation["shared_registry_modified"] is not False:
+        errors.append("Rfam registry proposal was registered or shared registry changed")
+    if provenance["registration_status"] != "PROPOSED_ONLY_NOT_REGISTERED" or provenance["shared_registry_modified"] is not False or provenance["identity_pairs_used"] is not False:
+        errors.append("Rfam provenance allowed registration/shared modification/pair use")
+    if provenance["full_region_14_10_scope"] != "not used; family release uses family table/seed and sequence release uses per-family alignments":
+        errors.append("Rfam family/sequence release evidence scopes were conflated")
+    expected_novelty = {
+        "NOT_INDEPENDENT_CROSS_PANEL_EXACT": 2,
+        "NOT_INDEPENDENT_TR1C_EXACT": 12,
+        "NOT_NOVEL_PRE14_9_SEQUENCE": 43,
+        "NOVEL_SEQUENCE_RELEASE_SUPPORTED": 269,
+        "UNCHECKED": 110,
+    }
+    if recommendation["temporal_novelty_counts"] != expected_novelty or temporal_verification["temporal_novelty_counts"] != expected_novelty:
+        errors.append("Rfam temporal novelty counts mismatch")
+    if sum(expected_novelty.values()) != 436:
+        errors.append("Rfam temporal novelty counts do not conserve 436")
+    if recommendation["panels"]["rfam_temporal"]["tr1c_exact_overlap"] != 33 or recommendation["panels"]["rfam_temporal"]["cross_panel_exact_overlap"] != 2:
+        errors.append("Rfam temporal independent exposure columns mismatch")
+    if temporal_verification["tr1c_exact"] != 33 or temporal_verification["cross_panel_exact"] != 2:
+        errors.append("Rfam temporal verification exposure columns mismatch")
+    if temporal_verification["status"] != "PASS_RFAM_TEMPORAL_LINEAGE_INDEPENDENT_VERIFIER" or temporal_verification["pre14_9_exact"] != 43:
+        errors.append("Rfam temporal independent verification failed")
+    if temporal_verification["shared_registry_modified"] is not False or temporal_verification["identity_pairs_used"] is not False:
+        errors.append("Rfam temporal verification modified registry or used pairs")
+    if len(provenance["alignment_14_10_failures"]) != 9 or provenance["alignment_14_10_failures"] != [
+        "RF04301", "RF04302", "RF04303", "RF04305", "RF04306", "RF04307", "RF04308", "RF04309", "RF04310",
+    ]:
+        errors.append("Rfam 14.10 alignment failure identities mismatch")
+    expected_lengths = {
+        "novel_sequence_supported": 269,
+        "novelty_unchecked": 110,
+        "pre14_9_exact": 43,
+        "cross_panel_exact": 2,
+        "tr1c_exact": 33,
+    }
+    for key, expected_length in expected_lengths.items():
+        values = strata[key]
+        if len(values) != expected_length or len(set(values)) != expected_length:
+            errors.append(f"Rfam novelty ID list length/uniqueness mismatch: {key}")
+    independent_keys = ["novel_sequence_supported", "pre14_9_exact", "novelty_unchecked", "cross_panel_exact"]
+    for index, left in enumerate(independent_keys):
+        for right in independent_keys[index + 1:]:
+            overlap = set(strata[left]) & set(strata[right])
+            if overlap:
+                errors.append(f"Rfam novelty strata are not disjoint: {left}/{right}: {len(overlap)}")
+    excluded_tr1c = set(strata["tr1c_exact"]) - set(strata["pre14_9_exact"])
+    if len(excluded_tr1c) != 12 or excluded_tr1c & set(strata["novel_sequence_supported"]):
+        errors.append("Rfam TR1c novelty exclusion is not 12 independent IDs")
+    if recommendation["temporal_sequence_first_release_counts"] != {
+        "14.9_OR_EARLIER": 43,
+        "15.0": 278,
+        "UNCHECKED": 115,
+    }:
+        errors.append("Rfam sequence first-release counts mismatch")
+    if sum(recommendation["temporal_sequence_first_release_counts"].values()) != 436:
+        errors.append("Rfam sequence first-release counts do not conserve 436")
+    if verification["n_records"] != 11226 or temporal_verification["n_records"] != 11226:
+        errors.append("Rfam combined record count is not 11226")
+    if recommendation["panels"]["rfam_fam"]["n_records"] + recommendation["panels"]["rfam_temporal"]["n_records"] != 11226:
+        errors.append("Rfam family+temporal panel counts do not conserve 11226")
+    return errors
+
+
 def verify_takeover_contract() -> list[str]:
     errors = []
     if not SOURCES["takeover_status"].is_file():
@@ -927,7 +1026,16 @@ def verify_narrative_guards() -> list[str]:
         "−0.0012121956293115, +0.0078699689970171",
         "UNCHECKED_NO_FULL_COVERAGE_SINGLE_PREDICTOR",
         "19 个有部分预测的身份均为 2,544/3,966",
-        "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4",
+        "105bb55d2e959e587c85d3de7607fdc3c14c5c73",
+        "11,186 条 `UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED`",
+        "family first-release **14.10=166、15.0=99**",
+        "family release≠sequence release",
+        "269 条 `NOVEL_SEQUENCE_RELEASE_SUPPORTED`",
+        "12 条 `NOT_INDEPENDENT_TR1C_EXACT`",
+        "原始 TR1c exact overlap 为 **33**",
+        "不能称全 temporal 独立",
+        "14.9_OR_EARLIER=43、15.0=278、UNCHECKED=115",
+        "五类互斥并守恒 436",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
@@ -1403,12 +1511,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_projected_recovery_history() + verify_rfam_release_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, and projected recovery history"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, TS0/TestSetB coverage, projected recovery history, and Rfam release lineage"
     print(f"PASS: {scope}")
     return 0
 
