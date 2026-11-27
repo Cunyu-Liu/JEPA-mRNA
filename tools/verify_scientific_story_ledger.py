@@ -67,6 +67,7 @@ SOURCES = {
     "archiveii_metrics": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/system_metrics.json",
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
     "ts0_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
+    "testsetb_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/testsetb_system_metrics.json",
     "ts0_testsetb_verification": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json",
     "pdb_rfam_summary": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json",
     "pdb_rfam_verification": PDB_RFAM_REPO / "source_data/pdb_rfam_label_lineage_audit_20261127/round3_verification.json",
@@ -559,6 +560,60 @@ def verify_ts0_contract() -> list[str]:
     return errors
 
 
+def verify_testsetb_contract() -> list[str]:
+    errors = []
+    if not SOURCES["testsetb_metrics"].is_file():
+        return [f"missing TestSetB source: {SOURCES['testsetb_metrics']}"]
+    metrics = json.loads(SOURCES["testsetb_metrics"].read_text())
+    expected_coverage = {
+        "blocked_identities": 14,
+        "inventory_entries": 34,
+        "official_full_coverage": 0,
+        "official_partial_not_ranked": 20,
+        "official_records_missing_from_project": 2,
+        "projected_full_coverage": 20,
+        "scored_identities": 20,
+    }
+    if metrics["coverage_accounting"] != expected_coverage:
+        errors.append(f"TestSetB coverage accounting mismatch: {metrics['coverage_accounting']}")
+    if metrics["legacy_project_label_disposition"] != "DERIVED_FROM_OFFICIAL_REFERENCE_PROJECTION; projected-reference-protocol-only; not unfiltered official protocol":
+        errors.append("TestSetB projected-reference protocol identity mismatch")
+    for key in ["strongest_single_predictor", "strongest_ensemble", "strongest_overall"]:
+        if metrics["official_full_summary"][key] != "UNCHECKED_NO_FULL_COVERAGE_PREDICTION":
+            errors.append(f"TestSetB official full panel gained a ranking: {key}")
+    rows = {row["prediction_id"]: row for row in metrics["rows"]}
+    expected = {
+        "xens2/testsetb": (0.8403202122116432, 0.8322478063381703, [0.0, 0.0]),
+        "rinalmo_ft/testsetb": (0.8670430033503144, 0.8628944070360038, [0.0169091444489763, 0.04524705102861153]),
+    }
+    for prediction_id, (micro, macro, ci95) in expected.items():
+        row = rows[prediction_id]
+        projected = row["panels"]["testsetb_projected_reference_428"]
+        official = row["panels"]["testsetb_official_reference_430"]
+        if projected["status"] != "PASS_FULL_COVERAGE" or projected["n_with_prediction"] != 428:
+            errors.append(f"TestSetB projected coverage mismatch: {prediction_id}")
+        if not math.isclose(projected["metrics"]["micro_f1"], micro, rel_tol=0.0, abs_tol=1e-15) or not math.isclose(projected["metrics"]["macro_f1"], macro, rel_tol=0.0, abs_tol=1e-15):
+            errors.append(f"TestSetB projected metric mismatch: {prediction_id}")
+        interval = projected["paired_macro_f1_delta_ci95_vs_xens2"]
+        if interval["ci95"] != ci95 or interval["n_bootstrap"] != 10000 or interval["seed"] != 20261127:
+            errors.append(f"TestSetB paired macro CI mismatch: {prediction_id}")
+        if official["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or official["n_with_prediction"] != 428 or official["missing_count"] != 2:
+            errors.append(f"TestSetB partial official panel was ranked: {prediction_id}")
+        if official["missing_predictions_imputed_as_zero"] is not False or official["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
+            errors.append(f"TestSetB official gaps were imputed or given CI: {prediction_id}")
+    rinalmo = rows["rinalmo_ft/testsetb"]["training_exposure"]
+    if rinalmo["route"] != "bprna_tr0" or rinalmo["exact_sequence_overlap"] != 247 or rinalmo["homology_only_overlap"] != 65 or rinalmo["clean_n"] != 116:
+        errors.append("TestSetB RiNALMo-ft TR0 exposure counts mismatch")
+    if rinalmo["full_project_panel_exposure_status"] != "EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT":
+        errors.append("TestSetB RiNALMo-ft regained independent ranking eligibility")
+    xens2 = rows["xens2/testsetb"]["training_exposure"]
+    if xens2["exact_sequence_overlap"] != 0 or xens2["homology_only_overlap"] != 140 or xens2["clean_n"] != 288 or xens2["full_project_panel_exposure_status"] != "HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN":
+        errors.append("TestSetB xens2 training exposure mismatch")
+    if metrics["strongest_ensemble"]["prediction_id"] != "xens2/testsetb" or metrics["strongest_single_predictor"]["prediction_id"] != "rinalmo_ft/testsetb" or metrics["strongest_overall"]["prediction_id"] != "rinalmo_ft/testsetb":
+        errors.append("TestSetB projected strongest identities mismatch")
+    return errors
+
+
 def verify_takeover_contract() -> list[str]:
     errors = []
     if not SOURCES["takeover_status"].is_file():
@@ -766,6 +821,10 @@ def verify_narrative_guards() -> list[str]:
         "0.8032405714870655",
         "0.7568974968024850",
         "official full coverage=0",
+        "0.8403202122116432",
+        "0.8670430033503144",
+        "TR0 精确序列暴露 247/428",
+        "EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
@@ -1201,12 +1260,12 @@ def main() -> int:
     args = parser.parse_args()
     errors = verify_links() + verify_narrative_guards()
     if not args.links_only:
-        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_takeover_contract()
+        errors += verify_numbers() + verify_source_commits() + verify_evaluator_v3_contract() + verify_bpfold_official_contract() + verify_archiveii_official_contract() + verify_pdb_rfam_contract() + verify_incident_recovery_contract() + verify_ts0_contract() + verify_testsetb_contract() + verify_takeover_contract()
     for error in errors:
         print(f"FAIL: {error}")
     if errors:
         return 1
-    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, and TS0 coverage"
+    scope = "links and narrative guards" if args.links_only else "links, narrative guards, JSON numeric provenance, source commits, evaluator/v3 contracts, BPfold/ArchiveII official protocols, PDB/Rfam lineage, incident recovery, scheduler takeover, and TS0/TestSetB coverage"
     print(f"PASS: {scope}")
     return 0
 

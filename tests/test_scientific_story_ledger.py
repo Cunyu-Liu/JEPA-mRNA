@@ -191,6 +191,24 @@ def test_ts0_artifact_contract():
     assert ledger.verify_ts0_contract() == []
 
 
+def test_testsetb_exposure_and_official_coverage_boundary():
+    text = ledger.DOC.read_text()
+    assert "0.8403202122116432" in text
+    assert "0.8670430033503144" in text
+    assert "+0.0169091444489763, +0.0452470510286115" in text
+    assert "TR0 精确序列暴露 247/428" in text
+    assert "EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT" in text
+    assert "不可独立排名" in text
+    assert "20 个 scored identities 均只有 428/430" in text
+    assert "official full coverage=0" in text
+    assert "homology-only=140" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_testsetb_artifact_contract():
+    assert ledger.verify_testsetb_contract() == []
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

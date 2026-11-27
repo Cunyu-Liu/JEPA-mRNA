@@ -297,6 +297,19 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - **Limitation**：这些值只适用于 projected 1288 的冻结协议描述，不是 official 1305 排名、独立 SOTA、clean-OOD 或模型选择证据；标签来源独立不等于训练独立。
 - **Next**：official 全集只有在预测覆盖补齐后才可重算名次；任何 1288/1305 排名或暴露省略均触发验证失败。本轮不修改 PPT。
 
+## 24. TestSetB：projected 428 高值受 TR0 精确暴露约束，official 430 无全覆盖预测
+
+- **Claim（暴露优先于名次）**：TestSetB 项目子集仅支持 projected-reference 428 描述性复算。RiNALMo-ft 虽为面板内单模型最高值，但 **TR0 精确序列暴露 247/428**，状态 `EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT`，因此 **不可独立排名**；xens2 集成也有 TR1c homology-only 暴露。
+- **Phenomenon**：仅看 micro-F1 会把 RiNALMo-ft 的 0.8670 写成独立优势；仅看标签来源又会漏掉训练集精确重叠。官方全集还多 2 条 bad-alphabet 记录，所有可用预测均缺这两条。
+- **Intervention**：冻结预测 CPU strict pair 复算，分别核对 projected 428 与 official 430；projected 内以 10,000 次序列级 paired bootstrap（seed=20261127）计算相对 xens2 的 macro 差值 CI，并逐行固定训练路线、exact/homology/clean 数量。缺预测不补 0，外部 Test 不选模。
+- **Expected observation**：可描述 projected 内数值与 CI，但精确暴露不得被 CI 或高值抵消；official 430 中 428/430 只能 `PARTIAL_COVERAGE_NOT_RANKED`，全集最强单/集成均 UNCHECKED。
+- **Actual（projected 428）**：xens2 三 checkpoint 集成 micro-F1=**0.8403202122116432**、macro-F1=0.8322478063381703，为描述性最强集成；RiNALMo-ft 单模型 micro-F1=**0.8670430033503144**、macro-F1=0.8628944070360038，为描述性最强单/总体。RiNALMo-ft 相对 xens2 Δmicro=+0.0267227911386712、Δmacro=+0.0306466006978335，paired macro 95% CI=**[+0.0169091444489763, +0.0452470510286115]**；该 CI 不消除暴露，不能升级为独立优势。
+- **Actual（训练暴露）**：RiNALMo-ft 路线为 TR0 exact=**247/428**、homology-only=65、clean n=116，`EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT`；xens2 路线为 TR1c exact=0、homology-only=140、clean n=288，`HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN`。两者都不能写成完整未见或 clean-OOD。
+- **Actual（official 430）**：20 个 scored identities 均只有 428/430，coverage=**0.9953488372093023**，missing=2、`PARTIAL_COVERAGE_NOT_RANKED`；official full coverage=0，`strongest_single_predictor/strongest_ensemble/strongest_overall=UNCHECKED_NO_FULL_COVERAGE_PREDICTION`。官方独有的 `testsetb_104.bpseq` 与 `testsetb_36.bpseq` 不得从分母删除或补 0。
+- **Artifact / links**：[TestSetB system metrics](/home/rna_jev_archive_label_lineage/artifacts/ts0_testsetb_official_reference_20261127/testsetb_system_metrics.json)、[official coverage gaps](/home/rna_jev_archive_label_lineage/artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json) 和 [round3 delivery](/home/rna_jev_archive_label_lineage/artifacts/ts0_testsetb_official_reference_20261127/verification_round3.json)。
+- **Limitation**：projected 数值、paired CI 和“最强单”标签都只是暴露受限的描述，不支持独立排名、SOTA、clean-OOD 或选模；official 430 更没有全覆盖预测可排名。
+- **Next**：需要独立结论时必须使用与实际模型路线一致的去暴露评估，并补齐官方覆盖；任何利用 247/428 精确暴露记录进行独立排名的表述均触发验证失败。本轮不修改 PPT。
+
 ## Claim → evidence 索引（审稿时逐项回溯）
 
 | Claim | Phenomenon | Intervention | Expected observation | Artifact | Limitation |
@@ -320,6 +333,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | Evaluator×v3 用途与16门不变 | 分层不能改写主科学门 | 12 run 逐层+evaluator 源码联合门禁 | EXACT sensitivity-only；其余 diagnostic-only；16门原样 | evaluator tools；v3 registry/manifest | 不 rescue/veto，不选 checkpoint/arm；margin 无结论 |
 | ArchiveII official-reference | 旧标签循环且预测覆盖不齐 | 未过滤官方参考+冻结预测独立复算 | clean 2544 同协议值与 paired macro CI；3966 仅全覆盖可描述 | `archiveii_official_reference_20261127/system_metrics.json` | 3966 无全覆盖单预测器，禁排名；audit-only，不选模、不是 margin 结果 |
 | TS0 projected/official 双面板 | 子集值不能覆盖官方 17 条缺口 | projected 1288 冻结复算+official 1305 覆盖审计 | 子集真实值/CI；全集仅全覆盖可排名 | `bprna_ts0_system_metrics.json` | 全集零覆盖，禁排名；homology/UNCHECKED 暴露不省略 |
+| TestSetB projected/official 双面板 | 高值伴随 TR0 精确暴露且官方缺 2 条 | projected 428 复算+TR0/TR1c 暴露审计+official 430 覆盖审计 | 描述值/CI 不消除暴露；全集仅全覆盖可排名 | `testsetb_system_metrics.json` | 247/428 精确暴露，不可独立排名；全集零覆盖 |
 | PDB/Rfam 标签谱系与 PDB58 重建 | 原面板缺坐标/时间/配对谱系且互相重叠 | 官方 PLK、mmCIF/DSSR、Rfam release 独立重算 | 58 重建、95 UNCHECKED；56 一致/2 差异；限制显式保留 | `pdb_rfam_label_lineage_audit_20261127`；`pdb_rcsb_rebuild_20261127` | 不排名；TS-hard 非独立；Rfam temporal 非自动 novel；不选模 |
 | 配额事故与 9500 恢复 | Errno 122 中断且大 checkpoint 压迫 teams 配额 | 双臂 preflight+原合同恢复+/home 暂存+终态 teams 镜像 | 下一批连续；四臂自然收敛后才评估 | `recovery_preflight_local.json`；`recovery_scheduler_state.json` | matched 10000 validation 已完成但未收敛；四臂未完成；无 margin 结论 |
 | 第二次 scheduler 配额事故与接管 | 旧 scheduler 写 teams state 再遇 Errno 122 | 本地 state/events/lock/PID+原 PID adopt+最终小证据镜像 | 不重复 matched；所有活跃工作留 /home | `recovery_takeover_status.json`；本地 scheduler state/events | 四臂未收敛；评估 pending；无 margin 结论 |
@@ -349,10 +363,11 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **长序列边界**：19,000 nt 只能陈述 LinearPartition 单条 holdout 的全长 coverage、真实资源与 BPP/MEA recall；candidate recall 不得冒充结构准确率，baseline coverage 不得冒充 GEC coverage，GEC unsupported 不得省略。
 - [ ] **ArchiveII 覆盖与 CI**：旧派生标签只能 circular-audit-only；clean 2544 的 xens2/BPfold replay/RiNALMo-ft 必须使用 official-reference 真实值并标明 paired macro 差值 CI，RiNALMo-ft CI 跨 0。3966 只有 official release 全覆盖，单预测器保持 UNCHECKED，19 个部分覆盖身份不得排名或补 0。
 - [ ] **TS0 projected 与 official 覆盖**：xens2=0.8032405714870655、最强单 RNAformer=0.7568974968024850 仅限 projected 1288 描述；official 1305 全部只有 1288、零全覆盖，不得排名。xens2 homology-only=575、RNAformer UNCHECKED 不得省略。
+- [ ] **TestSetB 暴露与 official 覆盖**：xens2=0.8403202122116432、RiNALMo-ft=0.8670430033503144 仅限 projected 428 描述；RiNALMo-ft TR0 exact=247/428，CI 为正也不可独立排名。official 430 全部只有 428、零全覆盖，不得排名或补 0。
 - [ ] **PDB/Rfam 禁排名与 temporal 限制**：PDB 仅 58 条重建，95 条 UNCHECKED，56 条 raw pair 一致而 2 条 DSSR 差异须重算；不得排名。TS-hard 28/28 跨面板重叠且与 TS1/TS3 不相交性不成立。Rfam temporal 43 条已在 14.9，first-release/pair provenance UNCHECKED，其他记录也不得自动称 novel。
 - [ ] **配额事故与恢复状态**：Errno 122 不得写成模型/CUDA 失败；9500 preflight 只证明可恢复，matched 10000 validation 已完成但 stop=false，不等于四臂收敛。完成臂 0、evaluation=null、scientific_conclusion=null；活跃大 checkpoint 暂 /home 是事故例外，最终 teams 镜像尚未完成，当前无任何 margin 科学结论。
 - [ ] **第二次 scheduler 事故与接管**：第二次 Errno 122 是旧 scheduler 写 teams state 失败，不是训练失败；4111890 只能 adopt 唯一 matched PID4077864，不得重复启动。训练/checkpoint/scheduler/评估根均在 /home，teams 只写最终小证据镜像；评估 pending、四臂未收敛。best15000 loss=0.3896151208942566、bad0、stop=false 只是中途 validation，不是科学结论。
 
 ## 校验
 
-`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、TS0 projected 1288 真实值/CI 与 official 1305 零全覆盖门、PDB58/95UNCHECKED/2 条 DSSR 差异、TS-hard 重叠、Rfam temporal 限制、磁盘配额 Errno 122、9500 断点连续性、matched 10000 validation 真实状态、第二次 scheduler Errno 122、aa9f1c4 最终修复/takeover 证据、本地 scheduler state/events/lock/PID 与 matched adopt 唯一性、训练/checkpoint/评估 /home 存储及 teams 小证据镜像门、best15000 validation/bad0/stop=false 与四臂未收敛状态、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
+`tools/verify_scientific_story_ledger.py` 检查本文相对 Markdown 链接、上述核心 JSON 数值/裁决、98.31% 的分母与计算、crossover 输入指标与 independent 扰动差值、NLL 科学 FAIL 不变、structRFM 旧派生标签身份与指标、BPfold 标签谱系/circular-only 边界、official-reference 面板 SHA/独立验证、xens2/BPfold/CONTRAfold 新差距算术及19派生资产/28官方行跨registry禁排名门禁、LinearPartition 全长 coverage/资源/recall 与 GEC unsupported 边界、label quality 来源分类/软复核/零删除守恒、pretrain exposure 分层/完整语料 UNCHECKED/SOTA 限制、下一页准入门及 FoldNAR/label-quality/pretrain-exposure/独立 margin 评估器/model-dev-v3 源提交、v3 三轮验证及 evaluator×v3 分层用途/原16门联合门禁、BPfold-protocol 源提交、ArchiveII official clean 2544 真实值/paired macro CI、3966 全覆盖与单预测器禁排名门、TS0 projected 1288 真实值/CI 与 official 1305 零全覆盖门、TestSetB projected 428 真实值/CI、TR0 247/428 精确暴露与 official 430 零全覆盖门、PDB58/95UNCHECKED/2 条 DSSR 差异、TS-hard 重叠、Rfam temporal 限制、磁盘配额 Errno 122、9500 断点连续性、matched 10000 validation 真实状态、第二次 scheduler Errno 122、aa9f1c4 最终修复/takeover 证据、本地 scheduler state/events/lock/PID 与 matched adopt 唯一性、训练/checkpoint/评估 /home 存储及 teams 小证据镜像门、best15000 validation/bad0/stop=false 与四臂未收敛状态、PPT 第 33 页来源及 margin 最新调度/无结论状态。它只读源码与 artifact，不查询或控制 GPU，不修改科学门。
