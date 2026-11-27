@@ -408,8 +408,8 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
     rect(slide, 8.54, 1.62, 4.02, 1.14, ROSE, DARK_RED)
     text(slide, 8.76, 1.71, 3.58, 0.25, "③ PDB：62 rebuilt / 91 UNCHECKED", 11.0, DARK_RED, True)
     text(slide, 8.76, 1.99, 3.58, 0.70,
-         "PDB 153 candidates · mask≠negative · no ranking\nRfam temporal：269 novel-supported · 110 UNCHECKED\nTR1c exact 33 · cross-panel exact 2；训练重叠不豁免",
-         7.8, INK, font=SANS)
+         "PDB 153 · mask≠negative · no ranking\nRfam temporal：269 novel-supported\n110 UNCHECKED · TR1c exact 33 · cross-panel exact 2\n训练重叠不豁免",
+         6.8, INK, font=SANS)
     xens2 = evidence["xens2"]["metrics"]["micro_f1"]
     rows = []
     for label, key, role in (("xens2 · frozen project ensemble", "xens2", "reference"),
