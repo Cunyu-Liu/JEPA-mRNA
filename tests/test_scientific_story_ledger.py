@@ -147,6 +147,19 @@ def test_takeover_artifact_contract():
     assert ledger.verify_takeover_contract() == []
 
 
+def test_takeover_lock_pid_adoption_and_local_storage():
+    text = ledger.DOC.read_text()
+    assert "scheduler PID **4111890**" in text
+    assert "PID **4077864**" in text
+    assert "process_start_ticks=1329819713" in text
+    assert "recovery_scheduler.pid` 内容为 `4111890\\n`" in text
+    assert "fd 3 持有 `/home/foldnar_incident_scheduler/recovery_scheduler.lock`" in text
+    assert "adopt 原进程而非重复训练" in text
+    assert "recovery_code_commit=a61a6ea8e52f72fa129387b74cb28b3af8bc64ff" in text
+    assert "teams 写入仅限合法终态后的最终小证据镜像" in text
+    assert "当前评估未开始、目录尚未创建" in text
+
+
 def test_label_quality_soft_review_and_zero_deletion():
     text = ledger.DOC.read_text()
     assert 33421 + 9143 + 95181 + 10540 == 148285

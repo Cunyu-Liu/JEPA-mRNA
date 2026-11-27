@@ -34,6 +34,7 @@ RECOVERY_ROOT = F / "structured_margin_full_v1/incident_recovery_20261127"
 ACTIVE_RUN_ROOT = Path("/home/foldnar_incident_run")
 ACTIVE_CHECKPOINT_ROOT = Path("/home/foldnar_incident_checkpoints")
 INCIDENT_EVIDENCE_ROOT = Path("/home/foldnar_incident_evidence")
+LOCAL_SCHEDULER_ROOT = Path("/home/foldnar_incident_scheduler")
 LINEARPARTITION_RUN = F / "longseq_linearpartition_contract_20261126/runs/linearpartition_c_19000_holdout_cpu_20261126/7AM2_1"
 
 SOURCES = {
@@ -73,6 +74,7 @@ SOURCES = {
     "recovery_scheduler": RECOVERY_ROOT / "recovery_scheduler_state.json",
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
     "takeover_status": INCIDENT_EVIDENCE_ROOT / "recovery_takeover_status.json",
+    "adopted_scheduler_state": LOCAL_SCHEDULER_ROOT / "recovery_scheduler_state.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
     "linearpartition_metrics": LINEARPARTITION_RUN / "metrics.json",
     "linearpartition_verification": LINEARPARTITION_RUN / "independent_verification.json",
@@ -530,6 +532,67 @@ def verify_takeover_contract() -> list[str]:
     stale_tmp = RECOVERY_ROOT / "recovery_scheduler_state.json.tmp.4077848"
     if not stale_tmp.is_file() or stale_tmp.stat().st_size != 0:
         errors.append("second scheduler quota failure stale temporary state is not preserved")
+    if not SOURCES["adopted_scheduler_state"].is_file():
+        return errors + [f"missing adopted scheduler state: {SOURCES['adopted_scheduler_state']}"]
+    scheduler = json.loads(SOURCES["adopted_scheduler_state"].read_text())
+    if scheduler["scheduler_pid"] != 4111890 or scheduler["status"] != "MONITORING":
+        errors.append("adopted scheduler state PID/status mismatch")
+    if scheduler["recovery_code_commit"] != "a61a6ea8e52f72fa129387b74cb28b3af8bc64ff":
+        errors.append("adopted scheduler launch commit must remain a61a6ea, not be rewritten to final HEAD")
+    if scheduler["frozen_source_commit"] != "a846d90519e575a79b7db76f63692afb755e8ac6":
+        errors.append("adopted scheduler frozen training source changed")
+    matched = scheduler["processes"]["matched_control"]
+    if matched["pid"] != 4077864 or matched["launch_kind"] != "adopted_running" or matched["status"] != "running":
+        errors.append("matched was relaunched instead of adopted")
+    stat = Path("/proc/4077864/stat").read_text().rsplit(") ", 1)[1].split()
+    if int(stat[19]) != matched["process_start_ticks"] or stat[0] == "Z":
+        errors.append("adopted matched PID/start_ticks identity mismatch")
+    pid_path = LOCAL_SCHEDULER_ROOT / "recovery_scheduler.pid"
+    lock_path = LOCAL_SCHEDULER_ROOT / "recovery_scheduler.lock"
+    if pid_path.read_text() != "4111890\n":
+        errors.append("adopted scheduler local PID file mismatch")
+    lock_fds = []
+    for fd in Path("/proc/4111890/fd").iterdir():
+        if fd.is_symlink() and os.readlink(fd) == str(lock_path):
+            lock_fds.append(fd)
+    if not lock_fds:
+        errors.append("adopted scheduler does not hold the local lock")
+    events = [json.loads(line) for line in (LOCAL_SCHEDULER_ROOT / "recovery_scheduler_events.jsonl").read_text().splitlines()]
+    adopted = [event for event in events if event["event"] == "ARM_ADOPTED" and event.get("arm") == "matched_control"]
+    started = [event for event in events if event["event"] == "ARM_STARTED" and event.get("arm") == "matched_control"]
+    if len(adopted) != 1 or adopted[0]["pid"] != 4077864 or adopted[0]["launch_kind"] != "adopted_running":
+        errors.append("local events do not contain exactly one matched adoption")
+    if started:
+        errors.append("local events contain a duplicate matched ARM_STARTED")
+    trainers = []
+    for proc in Path("/proc").iterdir():
+        if not proc.name.isdigit():
+            continue
+        try:
+            parts = [part.decode(errors="replace") for part in (proc / "cmdline").read_bytes().split(b"\0") if part]
+            process_state = (proc / "stat").read_text().rsplit(") ", 1)[1].split()[0]
+        except (FileNotFoundError, ProcessLookupError):
+            continue
+        if ("run_frozen_margin_trainer_with_staged_checkpoint_20261127.py" in " ".join(parts)
+                and "--arm" in parts and parts[parts.index("--arm") + 1] == "matched_control"
+                and process_state != "Z"):
+            trainers.append(int(proc.name))
+    if trainers != [4077864]:
+        errors.append(f"matched trainer is not unique: {trainers}")
+    if status["launch_kind"] != "adopted_running" or status["scheduler_state_root"] != str(LOCAL_SCHEDULER_ROOT):
+        errors.append("takeover adoption/local scheduler root mismatch")
+    if status["evaluation_root"] != "/home/foldnar_incident_eval" or status["teams_writes"] != "small final evaluation mirror only":
+        errors.append("takeover evaluation/teams storage boundary mismatch")
+    for path in [ACTIVE_RUN_ROOT, ACTIVE_CHECKPOINT_ROOT, LOCAL_SCHEDULER_ROOT, INCIDENT_EVIDENCE_ROOT]:
+        if not path.is_dir() or not str(path).startswith("/home/"):
+            errors.append(f"active incident work is not local /home storage: {path}")
+    old_pid = (RECOVERY_ROOT / "recovery_scheduler.pid").read_text().strip()
+    if old_pid == "4111890":
+        errors.append("stale teams PID was rewritten as the adopted local scheduler")
+    recovery_source = (RECOVERY_REPO / "tools/run_structured_margin_incident_recovery_20261127.py").read_text()
+    for required in ["def atomic_pid(", 'atomic_pid(args.recovery_root / "recovery_scheduler.pid", os.getpid())', "class AdoptedProcess", "def adopt_running_process(", "return AdoptedProcess(pid, start_ticks)"]:
+        if required not in recovery_source:
+            errors.append(f"final adoption/PID source contract missing: {required}")
     return errors
 
 
@@ -600,6 +663,11 @@ def verify_narrative_guards() -> list[str]:
         "aa9f1c4a92e92d70841e33cec455734f160075c4",
         "第二次独立的 scheduler 状态写盘事故",
         "4077848` 已退出，matched `4077864` 仍存活",
+        "launch_kind=adopted_running",
+        "process_start_ticks=1329819713",
+        "recovery_scheduler.pid` 内容为 `4111890\\n`",
+        "adopt 原进程而非重复训练",
+        "teams 写入仅限合法终态后的最终小证据镜像",
         "e7ff4e76fe078178ab41d2052349627317b5a3e3",
         "DERIVED_FROM_BPFOLD_PREDICTIONS",
         "circular-audit-only",
