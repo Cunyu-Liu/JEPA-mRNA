@@ -1,0 +1,53 @@
+{
+  "alignment_14_10_failures": [
+    "RF04301",
+    "RF04302",
+    "RF04303",
+    "RF04305",
+    "RF04306",
+    "RF04307",
+    "RF04308",
+    "RF04309",
+    "RF04310"
+  ],
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "panels": {
+    "rfam_fam": {
+      "cross_panel_exact_overlap": 5,
+      "family_status_counts": {
+        "AMBIGUOUS_FAMILY_UNCHECKED": 22,
+        "FAMILY_UNCHECKED": 14,
+        "UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED": 10754
+      },
+      "n_records": 10790,
+      "tr1c_exact_overlap": 284,
+      "tr1c_family_overlap": 894
+    },
+    "rfam_temporal": {
+      "cross_panel_exact_overlap": 2,
+      "family_status_counts": {
+        "FAMILY_UNCHECKED": 4,
+        "UNIQUE_FAMILY_EXACT_SEQUENCE_REGION_SEED": 432
+      },
+      "n_records": 436,
+      "tr1c_exact_overlap": 33,
+      "tr1c_family_overlap": 321
+    }
+  },
+  "registration_status": "PROPOSED_ONLY_NOT_REGISTERED",
+  "schema_version": "foldnar.rfam_release_lineage.v1",
+  "shared_registry_modified": false,
+  "temporal_novelty_counts": {
+    "NOT_INDEPENDENT_CROSS_PANEL_EXACT": 2,
+    "NOT_INDEPENDENT_TR1C_EXACT": 12,
+    "NOT_NOVEL_PRE14_9_SEQUENCE": 43,
+    "NOVEL_SEQUENCE_RELEASE_SUPPORTED": 269,
+    "UNCHECKED": 110
+  },
+  "temporal_sequence_first_release_counts": {
+    "14.9_OR_EARLIER": 43,
+    "15.0": 278,
+    "UNCHECKED": 115
+  },
+  "temporal_strata_file": "novelty_strata.json"
+}

@@ -1,0 +1,45 @@
+{
+  "alignment_14_10_failures": [
+    "RF04301",
+    "RF04302",
+    "RF04303",
+    "RF04305",
+    "RF04306",
+    "RF04307",
+    "RF04308",
+    "RF04309",
+    "RF04310"
+  ],
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "full_region_14_10_scope": "not used; family release uses family table/seed and sequence release uses per-family alignments",
+  "identity_pairs_used": false,
+  "official_release_roots": {
+    "14.10": "https://ftp.ebi.ac.uk/pub/databases/Rfam/14.10/",
+    "14.9": "https://ftp.ebi.ac.uk/pub/databases/Rfam/14.9/",
+    "15.0": "https://ftp.ebi.ac.uk/pub/databases/Rfam/15.0/"
+  },
+  "registration_status": "PROPOSED_ONLY_NOT_REGISTERED",
+  "registry_recommendation_sha256": "b3b7a2c53ab978f04fe246cc4bad5f50c07caa3f3fc17c0b3c50376fee12a6a1",
+  "release_source_sha256": {
+    "14.10": {
+      "family": "fac6766feb58bc583660d6c9988b00ba641c5a16a6c101b9dac900d067125547",
+      "full_region": "NOT_USED_14_10_RELEASE_FAMILY_AND_ALIGNMENT_ONLY",
+      "seed": "e0dda7fc95e9dac7214ddcc130a0356f56ca176942d0bf5881289270311da000"
+    },
+    "14.9": {
+      "family": "c35ba4ab02e83c362730bc379c2c7651b7f8c2c1feb5f6ef4121fe94b76c668a",
+      "fasta": "5909e198df80a0febf6a62cbe128654a2b6ffffafda9b77f258fd4557009cc5c",
+      "full_region": "edd83a97cb6b4212d27c538bff22eedc5c293b9100d22eba8dd95c17a4b1907b",
+      "seed": "d612622e40ce31412fa2479263424adfa7768535f8aad8ff34236d91e5da3e25"
+    },
+    "15.0": {
+      "family": "d238563403e45d7b6a5293fe916e18b328494182e3161e8157d3e21e4a3ae668",
+      "fasta": "4ea9d2b1330131c8a8b29d58843b05af35262b174e1d967265331b483bddaa0b",
+      "full_region": "4f88cc1dba0d6f842d5ec95e07849afff56f23ccaaa31b12c77a693747b5c04b",
+      "seed": "b06ac74d772609e863c5e1906eb491d699e9d325c5f22f4fc78126a808ad0bed"
+    }
+  },
+  "release_summary_sha256": "11bb5246ea360869703870de77bf8a15bf27833df741abb8469fa55414c341c0",
+  "schema_version": "foldnar.rfam_release_lineage.v1",
+  "shared_registry_modified": false
+}
