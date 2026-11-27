@@ -94,29 +94,14 @@ def test_archiveii_official_artifact_contract():
     assert ledger.verify_archiveii_official_contract() == []
 
 
-def test_ts0_testsetb_dual_panels_and_official_partial_coverage_boundary():
-    text = ledger.DOC.read_text()
-    assert "8a2008a4cda3c43b3000f25151b80408b0bdb110" in text
-    assert "bprna_ts0 官方 1305 / projected 1288" in text
-    assert "TestSetB 官方 430 / projected 428" in text
-    assert "PARTIAL_COVERAGE_NOT_RANKED" in text
-    assert "UNCHECKED_NO_FULL_COVERAGE_PREDICTION" in text
-    assert "recommendation_only=true" in text
-    assert "shared_registry_modified=false" in text
-
-
-@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
-def test_ts0_testsetb_artifact_contract():
-    assert ledger.verify_ts0_testsetb_contract() == []
-
-
 def test_pdb_rebuild_overlap_and_rfam_temporal_boundaries():
     text = ledger.DOC.read_text()
-    assert "62 条重建成功、91 条 UNCHECKED" in text
-    assert "58 true / 4 false" in text
-    assert "4 条 DSSR 差异" in text
-    assert "PDB62 不得排名" in text
     assert "f20a2802c67e245cfc0324b24a0d0ba9ca36b4f4" in text
+    assert "62 条重建、91 条 UNCHECKED" in text
+    assert "58 true / 4 false" in text
+    assert "4 条 DSSR scheme 修复" in text
+    assert "旧 58/95 与 56/2 不再是当前值" in text
+    assert "PDB62 仍不得排名" in text
     assert "ref_pdb_ts_hard` 28/28" in text
     assert "TS-hard 与 TS1/TS3 不序列不相交" in text
     assert "Rfam 14.9 exact=**43**" in text
@@ -189,6 +174,41 @@ def test_takeover_best15000_remains_nonterminal_and_no_conclusion():
     assert "best.pt` 存在" in text
     assert "completed_arms=[]" in text
     assert "四臂未收敛，当前无 margin 科学结论" in text
+
+
+def test_ts0_projected_values_and_official_coverage_boundary():
+    text = ledger.DOC.read_text()
+    assert "8a2008a4cda3c43b3000f25151b80408b0bdb110" in text
+    assert "0.8032405714870655" in text
+    assert "0.7568974968024850" in text
+    assert "−0.0674523877056411, −0.0435507990639508" in text
+    assert "21 个 scored identities 均只有 1288/1305" in text
+    assert "official full coverage=0" in text
+    assert "UNCHECKED_NO_FULL_COVERAGE_PREDICTION" in text
+    assert "homology-only=575" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_ts0_artifact_contract():
+    assert ledger.verify_ts0_contract() == []
+
+
+def test_testsetb_exposure_and_official_coverage_boundary():
+    text = ledger.DOC.read_text()
+    assert "0.8403202122116432" in text
+    assert "0.8670430033503144" in text
+    assert "+0.0169091444489763, +0.0452470510286115" in text
+    assert "TR0 精确序列暴露 247/428" in text
+    assert "EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT" in text
+    assert "不可独立排名" in text
+    assert "20 个 scored identities 均只有 428/430" in text
+    assert "official full coverage=0" in text
+    assert "homology-only=140" in text
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_testsetb_artifact_contract():
+    assert ledger.verify_testsetb_contract() == []
 
 
 def test_label_quality_soft_review_and_zero_deletion():
