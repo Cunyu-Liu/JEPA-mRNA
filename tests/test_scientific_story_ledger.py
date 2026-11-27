@@ -182,9 +182,11 @@ def test_ts0_projected_values_and_official_coverage_boundary():
     assert "0.8032405714870655" in text
     assert "0.7568974968024850" in text
     assert "−0.0674523877056411, −0.0435507990639508" in text
-    assert "21 个 scored identities 均只有 1288/1305" in text
-    assert "official full coverage=0" in text
-    assert "UNCHECKED_NO_FULL_COVERAGE_PREDICTION" in text
+    assert "a8b1089a67a84665c49f0c228064693a53548590" in text
+    assert "0.6812363564199246" in text
+    assert "现有 **7 个全覆盖身份**" in text
+    assert "1302/1305" in text
+    assert "旧零全覆盖" in text
     assert "homology-only=575" in text
 
 
@@ -201,14 +203,32 @@ def test_testsetb_exposure_and_official_coverage_boundary():
     assert "TR0 精确序列暴露 247/428" in text
     assert "EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT" in text
     assert "不可独立排名" in text
-    assert "20 个 scored identities 均只有 428/430" in text
-    assert "official full coverage=0" in text
+    assert "7342f26303d3acc8d61f395c040534242d0f7895" in text
+    assert "0.6468595682161368" in text
+    assert "现有 **7 个全覆盖身份**" in text
+    assert "429/430" in text
+    assert "原 20 个 projected 身份指标经独立验证保持不变" in text
     assert "homology-only=140" in text
 
 
 @pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
 def test_testsetb_artifact_contract():
     assert ledger.verify_testsetb_contract() == []
+
+
+def test_full_recovery_preserves_projected_history_and_exposure():
+    text = ledger.DOC.read_text()
+    assert "Full 覆盖恢复联合不变量" in text
+    assert "projected 原值/CI/暴露不变" in text
+    assert "旧零覆盖仅历史" in text
+    assert "当前若保留 CI 字段也必须一致" in text
+    assert "RNAstructure 在 full1305 仍为 1302、full430 仍为 429" in text
+    assert text.count("official full coverage=0") == 2
+
+
+@pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
+def test_projected_recovery_history_artifact_contract():
+    assert ledger.verify_projected_recovery_history() == []
 
 
 def test_label_quality_soft_review_and_zero_deletion():
