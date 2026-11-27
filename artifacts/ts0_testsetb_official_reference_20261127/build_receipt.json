@@ -1,0 +1,52 @@
+{
+  "outputs": {
+    "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json": {
+      "bytes": 150953,
+      "sha256": "0ed15421cdd0dce0d7c21d3ccc8b7c5065f0039adce210f0937422f1ae91a707"
+    },
+    "artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json": {
+      "bytes": 45494,
+      "sha256": "bc44577f8b9b22ce05353e064f2479e2c8e0f00407f79b141b8ef52b80c7fbaf"
+    },
+    "artifacts/ts0_testsetb_official_reference_20261127/per_record_metrics.jsonl.gz": {
+      "bytes": 1357607,
+      "sha256": "532c4b9f8c2bbd2aea18189db961070a3035fec23451a48066c4e077227b9e77"
+    },
+    "artifacts/ts0_testsetb_official_reference_20261127/registry_recommendation.json": {
+      "bytes": 302636,
+      "sha256": "3530994b84f86782b2ef3135b61cc85ec2d73fcc8f535391db84d73005ac890d"
+    },
+    "artifacts/ts0_testsetb_official_reference_20261127/testsetb_system_metrics.json": {
+      "bytes": 127325,
+      "sha256": "4fc495d1abc5a373630cc3b21442d570edc99ac9f2f759e0eed1a748a31956db"
+    },
+    "docs/plans/2026-11-27-ts0-testsetb-official-reference-panels.md": {
+      "bytes": 14871,
+      "sha256": "b4b4adf38eabd1077bff89a4883c1b33ead166af7253300b3ae4ff67dcd0902c"
+    },
+    "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz": {
+      "bytes": 427066,
+      "sha256": "c8e82e25063ec5c2c09b1a38e28ea499b8c0f94b4d35fef9d93b3ac7cd44d9ae"
+    },
+    "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_projected_1288.jsonl.gz": {
+      "bytes": 420757,
+      "sha256": "c8a48651e6e64f96c049609aafe531455e36f65f1cc5354d371b68430b98466e"
+    },
+    "source_data/ts0_testsetb_official_reference_20261127/source_manifest.json": {
+      "bytes": 24242,
+      "sha256": "465d45bd8bd55cbd4d3573b0156f92420c23721cd5591e15a095be58d1bd74a2"
+    },
+    "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz": {
+      "bytes": 115631,
+      "sha256": "aed077ce5a913476c79084733d03e46ae4dd58c1cef1f1998b60f6cda4b86727"
+    },
+    "source_data/ts0_testsetb_official_reference_20261127/testsetb_projected_428.jsonl.gz": {
+      "bytes": 115099,
+      "sha256": "7bc6db613d8bf6d8099fe17283e3d25fe7725c84811fa5b11b7dd228dc5bbf44"
+    }
+  },
+  "per_record_metric_rows": 71216,
+  "prediction_identities": 69,
+  "schema_version": "ts0_testsetb.official_reference_panels.v1.build_receipt",
+  "status": "PASS"
+}

@@ -1,0 +1,34 @@
+{
+  "build_output_tail": "{\"datasets\": {\"bprna_ts0\": {\"coverage\": {\"blocked_identities\": 14, \"inventory_entries\": 35, \"official_full_coverage\": 0, \"official_partial_not_ranked\": 21, \"official_records_missing_from_project\": 17, \"projected_full_coverage\": 21, \"scored_identities\": 21}, \"strongest_ensemble\": \"xens2/bprna_ts0\", \"strongest_single\": \"rnaformer_bprna/bprna_ts0\"}, \"testsetb\": {\"coverage\": {\"blocked_identities\": 14, \"inventory_entries\": 34, \"official_full_coverage\": 0, \"official_partial_not_ranked\": 20, \"official_records_missing_from_project\": 2, \"projected_full_coverage\": 20, \"scored_identities\": 20}, \"strongest_ensemble\": \"xens2/testsetb\", \"strongest_single\": \"rinalmo_ft/testsetb\"}}, \"per_record_metric_rows\": 71216, \"status\": \"PASS\"}",
+  "clean_clone_commit": "7fab82dc3bb1f7afbf62b3b2a3e851299a5df8e6",
+  "clean_clone_output_sha256": {
+    "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json": "0ed15421cdd0dce0d7c21d3ccc8b7c5065f0039adce210f0937422f1ae91a707",
+    "artifacts/ts0_testsetb_official_reference_20261127/build_receipt.json": "7a62de1741405a571267caaa7b6c13f519dfcee23d51517d1729c3d71c2f85e1",
+    "artifacts/ts0_testsetb_official_reference_20261127/official_coverage_gaps.json": "bc44577f8b9b22ce05353e064f2479e2c8e0f00407f79b141b8ef52b80c7fbaf",
+    "artifacts/ts0_testsetb_official_reference_20261127/per_record_metrics.jsonl.gz": "532c4b9f8c2bbd2aea18189db961070a3035fec23451a48066c4e077227b9e77",
+    "artifacts/ts0_testsetb_official_reference_20261127/registry_recommendation.json": "3530994b84f86782b2ef3135b61cc85ec2d73fcc8f535391db84d73005ac890d",
+    "artifacts/ts0_testsetb_official_reference_20261127/testsetb_system_metrics.json": "4fc495d1abc5a373630cc3b21442d570edc99ac9f2f759e0eed1a748a31956db",
+    "artifacts/ts0_testsetb_official_reference_20261127/verification_round2.json": "497e5aaa160fa8b1b4692a42dc7c129461ed5d7c93dc653c58268ec99c8e51cb",
+    "docs/plans/2026-11-27-ts0-testsetb-official-reference-panels.md": "b4b4adf38eabd1077bff89a4883c1b33ead166af7253300b3ae4ff67dcd0902c",
+    "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz": "c8e82e25063ec5c2c09b1a38e28ea499b8c0f94b4d35fef9d93b3ac7cd44d9ae",
+    "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_projected_1288.jsonl.gz": "c8a48651e6e64f96c049609aafe531455e36f65f1cc5354d371b68430b98466e",
+    "source_data/ts0_testsetb_official_reference_20261127/source_manifest.json": "465d45bd8bd55cbd4d3573b0156f92420c23721cd5591e15a095be58d1bd74a2",
+    "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz": "aed077ce5a913476c79084733d03e46ae4dd58c1cef1f1998b60f6cda4b86727",
+    "source_data/ts0_testsetb_official_reference_20261127/testsetb_projected_428.jsonl.gz": "7bc6db613d8bf6d8099fe17283e3d25fe7725c84811fa5b11b7dd228dc5bbf44"
+  },
+  "clean_clone_outputs_byte_identical": true,
+  "delivery_files_hashed": 18,
+  "external_test_model_selection": false,
+  "gpu_used": false,
+  "new_training_or_inference": false,
+  "schema_version": "ts0_testsetb.official_reference.delivery_verification.round3.v1",
+  "sha256sums_sha256": "af763059c39ca2608d10962fae46bcae2e323d53ef2648cb5d278eab8b91b8fe",
+  "shared_registry_diff": "EMPTY",
+  "status": "PASS_CLEAN_CLONE_AND_DELIVERY",
+  "unit_tests": {
+    "failed": 0,
+    "output_tail": "7 passed in 0.91s",
+    "passed": 7
+  },
+  "verifier_output_tail": "{\"identities\": 69, \"records\": 71216, \"status\": \"PASS_INDEPENDENT_SECOND_IMPLEMENTATION\"}"
+}
