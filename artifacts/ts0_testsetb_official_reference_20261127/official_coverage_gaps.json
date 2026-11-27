@@ -901,15 +901,12 @@
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9953488372093023,
-          "missing_count": 2,
-          "missing_names": [
-            "testsetb_104.bpseq",
-            "testsetb_36.bpseq"
-          ],
-          "n_with_prediction": 428,
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 430,
           "prediction_id": "contrafold/testsetb",
-          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+          "status": "PASS_FULL_COVERAGE"
         },
         {
           "coverage": 0.9953488372093023,
@@ -923,15 +920,12 @@
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9953488372093023,
-          "missing_count": 2,
-          "missing_names": [
-            "testsetb_104.bpseq",
-            "testsetb_36.bpseq"
-          ],
-          "n_with_prediction": 428,
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 430,
           "prediction_id": "eternafold/testsetb",
-          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+          "status": "PASS_FULL_COVERAGE"
         },
         {
           "coverage": 0.0,
@@ -953,15 +947,12 @@
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9953488372093023,
-          "missing_count": 2,
-          "missing_names": [
-            "testsetb_104.bpseq",
-            "testsetb_36.bpseq"
-          ],
-          "n_with_prediction": 428,
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 430,
           "prediction_id": "mxfold2/testsetb",
-          "status": "PARTIAL_COVERAGE_NOT_RANKED"
+          "status": "PASS_FULL_COVERAGE"
         },
         {
           "coverage": 0.9953488372093023,
@@ -1076,24 +1067,22 @@
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9953488372093023,
-          "missing_count": 2,
+          "coverage": 0.9976744186046511,
+          "missing_count": 1,
           "missing_names": [
-            "testsetb_104.bpseq",
-            "testsetb_36.bpseq"
+            "testsetb_104.bpseq"
           ],
-          "n_with_prediction": 428,
+          "n_with_prediction": 429,
           "prediction_id": "rnastructure_fold/testsetb",
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
         {
-          "coverage": 0.9953488372093023,
-          "missing_count": 2,
+          "coverage": 0.9976744186046511,
+          "missing_count": 1,
           "missing_names": [
-            "testsetb_104.bpseq",
-            "testsetb_36.bpseq"
+            "testsetb_104.bpseq"
           ],
-          "n_with_prediction": 428,
+          "n_with_prediction": 429,
           "prediction_id": "rnastructure_maxexpect/testsetb",
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
         },
@@ -1212,6 +1201,38 @@
           "n_with_prediction": 428,
           "prediction_id": "rinalmo_2d_s2/testsetb",
           "status": "PARTIAL_COVERAGE_NOT_RANKED"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 430,
+          "prediction_id": "vienna_mfe/testsetb/recovered_official2",
+          "status": "PASS_FULL_COVERAGE"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 430,
+          "prediction_id": "vienna_centroid/testsetb/recovered_official2",
+          "status": "PASS_FULL_COVERAGE"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 430,
+          "prediction_id": "vienna_mea/testsetb/recovered_official2",
+          "status": "PASS_FULL_COVERAGE"
+        },
+        {
+          "coverage": 1.0,
+          "missing_count": 0,
+          "missing_names": [],
+          "n_with_prediction": 430,
+          "prediction_id": "nussinov_turner/testsetb/recovered_official2",
+          "status": "PASS_FULL_COVERAGE"
         }
       ],
       "project_n": 428

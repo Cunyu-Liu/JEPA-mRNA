@@ -44,7 +44,19 @@ def test_reference_panels_and_official_only_empty():
 
 
 def test_identity_and_coverage_accounting():
-    for dataset, available, total, full_coverage in (("bprna_ts0", 26, 40, 7), ("testsetb", 20, 34, 0)):
+    expected_full = {
+        "bprna_ts0": {
+            "bpfold_official_release/bprna_ts0", "contrafold/bprna_ts0", "eternafold/bprna_ts0",
+            "nussinov_turner/bprna_ts0/recovered_official17", "vienna_centroid/bprna_ts0/recovered_official17",
+            "vienna_mea/bprna_ts0/recovered_official17", "vienna_mfe/bprna_ts0/recovered_official17",
+        },
+        "testsetb": {
+            "contrafold/testsetb", "eternafold/testsetb", "mxfold2/testsetb",
+            "nussinov_turner/testsetb/recovered_official2", "vienna_centroid/testsetb/recovered_official2",
+            "vienna_mea/testsetb/recovered_official2", "vienna_mfe/testsetb/recovered_official2",
+        },
+    }
+    for dataset, available, total, full_coverage in (("bprna_ts0", 26, 40, 7), ("testsetb", 24, 38, 7)):
         doc = document(dataset)
         spec = BUILDER.SPECS[dataset]
         assert doc["coverage_accounting"] == {
@@ -60,7 +72,10 @@ def test_identity_and_coverage_accounting():
                 assert projected["status"] == "PASS_FULL_COVERAGE"
                 assert full["status"] in {"PASS_FULL_COVERAGE", "PARTIAL_COVERAGE_NOT_RANKED"}
                 if full["status"] == "PARTIAL_COVERAGE_NOT_RANKED":
-                    expected_missing = 3 if row["prediction_id"].startswith("rnastructure_") and dataset == "bprna_ts0" else spec["official_n"] - spec["project_n"]
+                    if row["prediction_id"].startswith("rnastructure_"):
+                        expected_missing = 3 if dataset == "bprna_ts0" else 1
+                    else:
+                        expected_missing = spec["official_n"] - spec["project_n"]
                     assert full["missing_count"] == expected_missing
                 else:
                     assert full["n_with_prediction"] == spec["official_n"]
@@ -68,9 +83,10 @@ def test_identity_and_coverage_accounting():
                 assert full["delta_vs_xens2"] is None
             else:
                 assert full["metrics"] is None and projected["metrics"] is None
-        if dataset == "testsetb":
-            assert doc["official_full_summary"]["strongest_single_predictor"] == "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"
-        else:
+        actual_full = {row["prediction_id"] for row in doc["rows"]
+                       if row["panels"][spec["full_id"]]["status"] == "PASS_FULL_COVERAGE"}
+        assert actual_full == expected_full[dataset]
+        if dataset == "bprna_ts0":
             assert doc["official_full_summary"]["strongest_ensemble"]["prediction_id"] == "bpfold_official_release/bprna_ts0"
 
 
@@ -83,7 +99,10 @@ def test_official_missing_ids_and_per_prediction_gap_lists():
         assert all(row["reason"] == "PROJECT_REJECTED_BAD_ALPHABET" and row["non_acgu_characters"] for row in item["official_missing_from_project"])
         for prediction in item["per_prediction_official_coverage"]:
             if prediction["status"] == "PARTIAL_COVERAGE_NOT_RANKED":
-                expected_missing = 3 if prediction["prediction_id"].startswith("rnastructure_") and dataset == "bprna_ts0" else count
+                if prediction["prediction_id"].startswith("rnastructure_"):
+                    expected_missing = 3 if dataset == "bprna_ts0" else 1
+                else:
+                    expected_missing = count
                 assert prediction["missing_count"] == expected_missing
                 assert len(prediction["missing_names"]) == expected_missing
 
@@ -91,9 +110,9 @@ def test_official_missing_ids_and_per_prediction_gap_lists():
 def test_per_record_metric_accounting_and_empty_rules():
     with gzip.open(OUT / "per_record_metrics.jsonl.gz", "rt", encoding="utf-8") as handle:
         rows = [json.loads(line) for line in handle if line.strip()]
-    assert len(rows) == 84243
+    assert len(rows) == 87683
     assert sum(row["dataset"] == "bprna_ts0" for row in rows) == 67123
-    assert sum(row["dataset"] == "testsetb" for row in rows) == 17120
+    assert sum(row["dataset"] == "testsetb" for row in rows) == 20560
     assert sum(row["truth_empty"] for row in rows) == 9
     assert {row["name"] for row in rows if row["truth_empty"]} == {"bpRNA_SRP_192.bpseq"}
     for row in rows:

@@ -16,6 +16,9 @@ REPORT = ROOT / "docs/plans/2026-11-27-ts0-testsetb-official-reference-panels.md
 RECOVERY_SOURCE = ROOT / "source_data/ts0_official_coverage_recovery_20261127"
 RECOVERY_OUT = ROOT / "artifacts/ts0_official_coverage_recovery_20261127"
 RECOVERY_REPORT = ROOT / "docs/plans/2026-11-27-ts0-official-coverage-recovery.md"
+TESTSETB_SOURCE = ROOT / "source_data/testsetb_official_coverage_recovery_20261127"
+TESTSETB_OUT = ROOT / "artifacts/testsetb_official_coverage_recovery_20261127"
+TESTSETB_REPORT = ROOT / "docs/plans/2026-11-27-testsetb-official-coverage-recovery.md"
 PYTHON = "/root/miniconda3/envs/lucaone_cu128/bin/python"
 CORE = [
     "source_data/ts0_testsetb_official_reference_20261127/bprna_ts0_official_1305.jsonl.gz",
@@ -36,6 +39,13 @@ CORE = [
     "source_data/ts0_official_coverage_recovery_20261127/missing17_cpu_predictions.json",
     "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
     "artifacts/ts0_official_coverage_recovery_20261127/verification_round2.json",
+    "source_data/testsetb_official_coverage_recovery_20261127/source_manifest.json",
+    "artifacts/testsetb_official_coverage_recovery_20261127/build_receipt.json",
+    "artifacts/testsetb_official_coverage_recovery_20261127/recovery_audit.json",
+    "artifacts/testsetb_official_coverage_recovery_20261127/system_metrics.json",
+    "artifacts/testsetb_official_coverage_recovery_20261127/verification_round1.json",
+    "artifacts/testsetb_official_coverage_recovery_20261127/verification_round2.json",
+    "artifacts/testsetb_official_coverage_recovery_20261127/verification_round3.json",
 ]
 RECOVERY_MANIFEST = json.loads((RECOVERY_SOURCE / "recovery_manifest.json").read_text())
 CORE += [entry["path"] for entry in RECOVERY_MANIFEST["prediction_entries"]]
@@ -61,8 +71,11 @@ def delivery_files():
              ROOT / "tools/recover_ts0_official_coverage_20261127.py",
              ROOT / "tools/verify_ts0_official_coverage_recovery_20261127.py",
              ROOT / "tests/test_ts0_testsetb_official_reference_panels_20261127.py",
-             ROOT / "tests/test_ts0_official_coverage_recovery_20261127.py", RECOVERY_REPORT]
-    for base in (SOURCE, OUT, RECOVERY_SOURCE, RECOVERY_OUT):
+             ROOT / "tests/test_ts0_official_coverage_recovery_20261127.py", RECOVERY_REPORT,
+             ROOT / "tools/recover_testsetb_official_coverage_20261127.py",
+             ROOT / "tools/verify_testsetb_official_coverage_20261127.py",
+             ROOT / "tests/test_testsetb_official_coverage_recovery_20261127.py", TESTSETB_REPORT]
+    for base in (SOURCE, OUT, RECOVERY_SOURCE, RECOVERY_OUT, TESTSETB_SOURCE, TESTSETB_OUT):
         files.extend(path for path in base.rglob("*") if path.is_file()
                      and path.name not in {"verification_round3.json", "SHA256SUMS"})
     return sorted(set(files))
@@ -95,10 +108,12 @@ def main():
         run(["git", "checkout", "--quiet", "--detach", commit], clone)
         recovery_log = run([PYTHON, "tools/recover_ts0_official_coverage_20261127.py"], clone)
         recovery_verify_log = run([PYTHON, "tools/verify_ts0_official_coverage_recovery_20261127.py"], clone)
+        testsetb_verify_log = run([PYTHON, "tools/verify_testsetb_official_coverage_20261127.py"], clone)
         build_log = run([PYTHON, "tools/build_ts0_testsetb_official_reference_panels_20261127.py"], clone)
         verify_log = run([PYTHON, "tools/verify_ts0_testsetb_official_reference_panels_20261127.py"], clone)
         test_log = run([PYTHON, "-m", "pytest", "-q", "tests/test_ts0_testsetb_official_reference_panels_20261127.py",
-                        "tests/test_ts0_official_coverage_recovery_20261127.py"], clone)
+                        "tests/test_ts0_official_coverage_recovery_20261127.py",
+                        "tests/test_testsetb_official_coverage_recovery_20261127.py"], clone)
         after = {relative: sha256(clone / relative) for relative in CORE}
         if before != after:
             changed = [relative for relative in before if before[relative] != after[relative]]
@@ -110,9 +125,10 @@ def main():
         "schema_version": "ts0_testsetb.official_reference.delivery_verification.round3.v1",
         "status": "PASS_CLEAN_CLONE_AND_DELIVERY", "clean_clone_commit": commit,
         "clean_clone_outputs_byte_identical": True, "clean_clone_output_sha256": after,
-        "unit_tests": {"passed": 12, "failed": 0, "output_tail": test_log.strip().splitlines()[-1]},
+        "unit_tests": {"passed": 16, "failed": 0, "output_tail": test_log.strip().splitlines()[-1]},
         "recovery_output_tail": recovery_log.strip().splitlines()[-1],
         "recovery_verifier_output_tail": recovery_verify_log.strip().splitlines()[-1],
+        "testsetb_verifier_output_tail": testsetb_verify_log.strip().splitlines()[-1],
         "build_output_tail": build_log.strip().splitlines()[-1],
         "verifier_output_tail": verify_log.strip().splitlines()[-1],
         "delivery_files_hashed": len(files), "sha256sums_sha256": sha256(OUT / "SHA256SUMS"),
@@ -121,7 +137,7 @@ def main():
     }
     (OUT / "verification_round3.json").write_text(json.dumps(verification, indent=2, sort_keys=True) + "\n")
     print(json.dumps({"status": verification["status"], "clean_clone_commit": commit,
-                      "core_outputs": len(CORE), "delivery_files": len(files), "tests": "12 passed"}, sort_keys=True))
+                      "core_outputs": len(CORE), "delivery_files": len(files), "tests": "16 passed"}, sort_keys=True))
 
 
 if __name__ == "__main__":

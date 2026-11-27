@@ -105,7 +105,17 @@
 
 ## testsetb：官方全集 430 结果
 
-没有全覆盖预测，最强单/集成均为 `UNCHECKED_NO_FULL_COVERAGE_PREDICTION`；部分覆盖不进入排名。
+| Prediction identity | Model form | n | micro F1 | macro F1 | truth-empty | empty/empty |
+|---|---|---:|---:|---:|---:|---:|
+| `mxfold2/testsetb` | deterministic_single_predictor | 430 | 0.6468595682 | 0.6692063276 | 0 | 0 |
+| `eternafold/testsetb` | deterministic_single_predictor | 430 | 0.5816473147 | 0.5997317048 | 0 | 0 |
+| `contrafold/testsetb` | deterministic_single_predictor | 430 | 0.5633544581 | 0.5793087893 | 0 | 0 |
+| `vienna_centroid/testsetb/recovered_official2` | single_model | 430 | 0.5452759933 | 0.5547336489 | 0 | 0 |
+| `vienna_mea/testsetb/recovered_official2` | single_model | 430 | 0.5365910503 | 0.5519406982 | 0 | 0 |
+| `vienna_mfe/testsetb/recovered_official2` | single_model | 430 | 0.5202373304 | 0.5404191111 | 0 | 0 |
+| `nussinov_turner/testsetb/recovered_official2` | single_model | 430 | 0.2158239143 | 0.2240284299 | 0 | 0 |
+
+全集结果仅作 frozen baseline 描述性覆盖审计，不用于选模；部分覆盖身份不进入本表。
 
 ## testsetb：projected 428 子集结果
 
@@ -124,13 +134,17 @@
 | `eternafold/testsetb` | deterministic_single_predictor | 428 | 0.5823802646 | 0.6004962870 | -0.2579399476 | -0.2317515193 |
 | `contrafold/testsetb` | deterministic_single_predictor | 428 | 0.5638971236 | 0.5798955998 | -0.2764230886 | -0.2523522065 |
 | `efold_0_1_3/testsetb` | single_model | 428 | 0.5545354109 | 0.5705247034 | -0.2857848013 | -0.2617231030 |
+| `vienna_centroid/testsetb/recovered_official2` | single_model | 428 | 0.5456713963 | 0.5551500445 | -0.2946488160 | -0.2770977618 |
 | `rinalmo_2d_s0/testsetb` | single_model | 428 | 0.5382570989 | 0.5531410266 | -0.3020631133 | -0.2791067797 |
+| `vienna_mea/testsetb/recovered_official2` | single_model | 428 | 0.5369090838 | 0.5523298757 | -0.3034111284 | -0.2799179306 |
 | `rnastructure_maxexpect/testsetb` | deterministic_single_predictor | 428 | 0.5269634739 | 0.5453195038 | -0.3133567383 | -0.2869283025 |
+| `vienna_mfe/testsetb/recovered_official2` | single_model | 428 | 0.5202597501 | 0.5405667540 | -0.3200604621 | -0.2916810523 |
 | `rnaformer_biophysical/testsetb` | single_model | 428 | 0.5111127968 | 0.5314199088 | -0.3292074154 | -0.3008278976 |
 | `rnastructure_fold/testsetb` | deterministic_single_predictor | 428 | 0.5030067748 | 0.5222784016 | -0.3373134375 | -0.3099694047 |
 | `nucleicbert_ft/testsetb` | single_model | 428 | 0.4842599509 | 0.5244210001 | -0.3560602613 | -0.3078268062 |
 | `ufold/testsetb` | single_model | 428 | 0.4508291874 | 0.4781111939 | -0.3894910248 | -0.3541366124 |
 | `nucleicbert_frozen_official/testsetb` | single_model | 428 | 0.3652332314 | 0.3126424606 | -0.4750869808 | -0.5196053458 |
+| `nussinov_turner/testsetb/recovered_official2` | single_model | 428 | 0.2154385685 | 0.2237670841 | -0.6248816437 | -0.6084807223 |
 
 ### 最强单预测器与集成（描述性，不用于选模）
 
@@ -139,7 +153,7 @@
 
 ### 官方独有 2 条与覆盖状态
 
-官方比项目子集多 2 条；当前 official-full 全覆盖 0 个，部分覆盖不排名 20 个，blocked 14 个。逐 ID 恢复来源见 `ts0-official-coverage-recovery.md`（TS0）；未恢复身份不以空结构或 0 分补齐。
+官方比项目子集多 2 条；当前 official-full 全覆盖 7 个，部分覆盖不排名 17 个，blocked 14 个。逐 ID 恢复来源见 `ts0-official-coverage-recovery.md`（TS0）；未恢复身份不以空结构或 0 分补齐。
 
 官方独有 ID（均为项目 bad-alphabet 拒绝，异常字符在括号内）：`testsetb_104.bpseq` (S)、`testsetb_36.bpseq` (N)。
 
@@ -170,12 +184,16 @@
 | `eternafold/testsetb` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `contrafold/testsetb` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `efold_0_1_3/testsetb` | bpRNA subset+RNAstralign+Ribonanza | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
+| `vienna_centroid/testsetb/recovered_official2` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `rinalmo_2d_s0/testsetb` | bprna_tr1c | 0 | 140 | 288 | `HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN` |
+| `vienna_mea/testsetb/recovered_official2` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `rnastructure_maxexpect/testsetb` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
+| `vienna_mfe/testsetb/recovered_official2` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `rnaformer_biophysical/testsetb` | official biophysical_model_data.plk train=410408 | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `rnastructure_fold/testsetb` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 | `nucleicbert_ft/testsetb` | bprna_tr1c | 0 | 140 | 288 | `HOMOLOGY_OVERLAP_PRESENT_UNDER_FROZEN_SCREEN` |
 | `ufold/testsetb` | UNCHECKED | UNCHECKED | UNCHECKED | UNCHECKED | `UNCHECKED` |
 | `nucleicbert_frozen_official/testsetb` | rnastralign_tr0_style | 247 | 65 | 116 | `AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED` |
+| `nussinov_turner/testsetb/recovered_official2` | NOT_SEQUENCE_FITTED | UNCHECKED | UNCHECKED | UNCHECKED | `NOT_SEQUENCE_FITTED` |
 
 外部模型的未核实训练语料保持 `UNCHECKED`；MXfold2/NucleicBERT 的审计子集证据不升级为完整训练暴露排除证明。逐模型 provenance 原文和 clean SHA 见 `system_metrics.json`。

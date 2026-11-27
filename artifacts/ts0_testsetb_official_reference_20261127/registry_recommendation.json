@@ -5018,8 +5018,74 @@
       },
       "official_full_summary": {
         "strongest_ensemble": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
-        "strongest_overall": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
-        "strongest_single_predictor": "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"
+        "strongest_overall": {
+          "delta_vs_xens2": null,
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3504,
+            "fp": 5149,
+            "macro_f1": 0.6692063276068385,
+            "macro_precision": 0.6514902120677037,
+            "macro_recall": 0.7021020092751667,
+            "micro_f1": 0.6468595682161368,
+            "micro_precision": 0.6061649074499006,
+            "micro_recall": 0.69341149706886,
+            "n_scored": 430,
+            "tp": 7925,
+            "truth_empty_records": 0
+          },
+          "model_form": "deterministic_single_predictor",
+          "prediction_id": "mxfold2/testsetb",
+          "ranking_scope": "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION",
+          "training_exposure": {
+            "baseline_id": "mxfold2",
+            "clean_n": 373,
+            "clean_sha256": "193441e4f7a7803a6c98dc0a70548f8a1d7a1f70b81f6b9715343b2c47b9a3f7",
+            "evidence_status": "OFFICIAL_TRAINSETAB_AUDIT_ARTIFACT; FULL_EXPOSURE_NOT_PROVEN",
+            "exact_sequence_overlap": 0,
+            "full_project_panel_exposure_status": "AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED",
+            "homology_only_overlap": 55,
+            "route": "mxfold2_trainsetab",
+            "training_corpora": [
+              "bpRNA-1m TrainSetA+TrainSetB"
+            ],
+            "training_provenance_status": "OFFICIAL_PACKAGE_TRAINING_IDENTITY; homology overlap unresolved"
+          }
+        },
+        "strongest_single_predictor": {
+          "delta_vs_xens2": null,
+          "metrics": {
+            "empty_empty_records": 0,
+            "fn": 3504,
+            "fp": 5149,
+            "macro_f1": 0.6692063276068385,
+            "macro_precision": 0.6514902120677037,
+            "macro_recall": 0.7021020092751667,
+            "micro_f1": 0.6468595682161368,
+            "micro_precision": 0.6061649074499006,
+            "micro_recall": 0.69341149706886,
+            "n_scored": 430,
+            "tp": 7925,
+            "truth_empty_records": 0
+          },
+          "model_form": "deterministic_single_predictor",
+          "prediction_id": "mxfold2/testsetb",
+          "ranking_scope": "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION",
+          "training_exposure": {
+            "baseline_id": "mxfold2",
+            "clean_n": 373,
+            "clean_sha256": "193441e4f7a7803a6c98dc0a70548f8a1d7a1f70b81f6b9715343b2c47b9a3f7",
+            "evidence_status": "OFFICIAL_TRAINSETAB_AUDIT_ARTIFACT; FULL_EXPOSURE_NOT_PROVEN",
+            "exact_sequence_overlap": 0,
+            "full_project_panel_exposure_status": "AUDITED_SUBSET_AVAILABLE_BUT_FULL_EXTERNAL_EXPOSURE_UNRESOLVED",
+            "homology_only_overlap": 55,
+            "route": "mxfold2_trainsetab",
+            "training_corpora": [
+              "bpRNA-1m TrainSetA+TrainSetB"
+            ],
+            "training_provenance_status": "OFFICIAL_PACKAGE_TRAINING_IDENTITY; homology overlap unresolved"
+          }
+        }
       },
       "suggested_data_rows": [
         {
@@ -5222,39 +5288,37 @@
           {
             "available": true,
             "baseline_id": "contrafold",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 428,
+            "n_prediction_records": 430,
+            "n_sequences": 430,
             "panels": {
               "testsetb_official_reference_430": {
-                "coverage": 0.9953488372093023,
+                "coverage": 1.0,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 4332,
-                  "fp": 6554,
-                  "macro_f1": 0.5798955998398649,
-                  "macro_precision": 0.5503938896974547,
-                  "macro_recall": 0.630431037305269,
-                  "micro_f1": 0.5638971236279144,
-                  "micro_precision": 0.5178045909358446,
-                  "micro_recall": 0.6189973614775726,
-                  "n_scored": 428,
-                  "tp": 7038,
+                  "fn": 4362,
+                  "fp": 6593,
+                  "macro_f1": 0.5793087893442543,
+                  "macro_precision": 0.5498042023551927,
+                  "macro_recall": 0.629770796493025,
+                  "micro_f1": 0.5633544581290606,
+                  "micro_precision": 0.5173499267935578,
+                  "micro_recall": 0.6183393122757896,
+                  "n_scored": 430,
+                  "tp": 7067,
                   "truth_empty_records": 0
                 },
-                "missing_count": 2,
-                "missing_names": [
-                  "testsetb_104.bpseq",
-                  "testsetb_36.bpseq"
-                ],
+                "missing_count": 0,
+                "missing_names": [],
                 "missing_predictions_imputed_as_zero": false,
                 "n_panel_sequences": 430,
-                "n_with_prediction": 428,
+                "n_with_prediction": 430,
                 "paired_macro_f1_delta_ci95_vs_xens2": null,
-                "status": "PARTIAL_COVERAGE_NOT_RANKED"
+                "status": "PASS_FULL_COVERAGE"
               },
               "testsetb_projected_reference_428": {
                 "coverage": 1.0,
@@ -5266,8 +5330,11 @@
                   "micro_precision": -0.39277953800368925,
                   "micro_recall": -0.16112576956904134
                 },
-                "extra_count": 0,
-                "extra_names": [],
+                "extra_count": 2,
+                "extra_names": [
+                  "testsetb_104.bpseq",
+                  "testsetb_36.bpseq"
+                ],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 4332,
@@ -5302,13 +5369,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/contrafold/raw/testsetb.json",
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/contrafold__testsetb__full430.json.gz",
             "prediction_id": "contrafold/testsetb",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "1f3e14785abb9fbde0c3e2fcf953dd535f482804c621be746a6db86899cd9bd2",
-            "source_group": "REGISTERED",
+            "sha256": "9b3a6406a7d91d1edf3e053fa35340c32f1400ec71f2a6dc8b8caf5f04fb6b50",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
             "training_exposure": {
               "baseline_id": "contrafold",
               "clean_n": null,
@@ -5432,39 +5499,37 @@
           {
             "available": true,
             "baseline_id": "eternafold",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 428,
+            "n_prediction_records": 430,
+            "n_sequences": 430,
             "panels": {
               "testsetb_official_reference_430": {
-                "coverage": 0.9953488372093023,
+                "coverage": 1.0,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 3910,
-                  "fp": 6789,
-                  "macro_f1": 0.6004962870390365,
-                  "macro_precision": 0.5583288840669418,
-                  "macro_recall": 0.6670580454082494,
-                  "micro_f1": 0.5823802646473321,
-                  "micro_precision": 0.5235455119657519,
-                  "micro_recall": 0.6561125769569042,
-                  "n_scored": 428,
-                  "tp": 7460,
+                  "fn": 3940,
+                  "fp": 6833,
+                  "macro_f1": 0.5997317048254183,
+                  "macro_precision": 0.5575683640162618,
+                  "macro_recall": 0.6662274464187824,
+                  "micro_f1": 0.5816473146673916,
+                  "micro_precision": 0.5229018293534422,
+                  "micro_recall": 0.6552629276402135,
+                  "n_scored": 430,
+                  "tp": 7489,
                   "truth_empty_records": 0
                 },
-                "missing_count": 2,
-                "missing_names": [
-                  "testsetb_104.bpseq",
-                  "testsetb_36.bpseq"
-                ],
+                "missing_count": 0,
+                "missing_names": [],
                 "missing_predictions_imputed_as_zero": false,
                 "n_panel_sequences": 430,
-                "n_with_prediction": 428,
+                "n_with_prediction": 430,
                 "paired_macro_f1_delta_ci95_vs_xens2": null,
-                "status": "PARTIAL_COVERAGE_NOT_RANKED"
+                "status": "PASS_FULL_COVERAGE"
               },
               "testsetb_projected_reference_428": {
                 "coverage": 1.0,
@@ -5476,8 +5541,11 @@
                   "micro_precision": -0.38703861697378195,
                   "micro_recall": -0.12401055408970973
                 },
-                "extra_count": 0,
-                "extra_names": [],
+                "extra_count": 2,
+                "extra_names": [
+                  "testsetb_104.bpseq",
+                  "testsetb_36.bpseq"
+                ],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 3910,
@@ -5512,13 +5580,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/eternafold/raw/testsetb.json",
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/eternafold__testsetb__full430.json.gz",
             "prediction_id": "eternafold/testsetb",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "13185fe2545d8cad000406f6061facb62cdc544fbae699d1517979f811dc3556",
-            "source_group": "REGISTERED",
+            "sha256": "ab5516925279be00d01986aaf234fcb1450d8c5a128c42eeb46685421029fcbc",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
             "training_exposure": {
               "baseline_id": "eternafold",
               "clean_n": null,
@@ -5684,39 +5752,37 @@
           {
             "available": true,
             "baseline_id": "mxfold2",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 428,
+            "n_prediction_records": 430,
+            "n_sequences": 430,
             "panels": {
               "testsetb_official_reference_430": {
-                "coverage": 0.9953488372093023,
+                "coverage": 1.0,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 3480,
-                  "fp": 5116,
-                  "macro_f1": 0.6698447615973655,
-                  "macro_precision": 0.6522311634623368,
-                  "macro_recall": 0.7026641811174664,
-                  "micro_f1": 0.6473580571053495,
-                  "micro_precision": 0.6066430878056281,
-                  "micro_recall": 0.6939313984168866,
-                  "n_scored": 428,
-                  "tp": 7890,
+                  "fn": 3504,
+                  "fp": 5149,
+                  "macro_f1": 0.6692063276068385,
+                  "macro_precision": 0.6514902120677037,
+                  "macro_recall": 0.7021020092751667,
+                  "micro_f1": 0.6468595682161368,
+                  "micro_precision": 0.6061649074499006,
+                  "micro_recall": 0.69341149706886,
+                  "n_scored": 430,
+                  "tp": 7925,
                   "truth_empty_records": 0
                 },
-                "missing_count": 2,
-                "missing_names": [
-                  "testsetb_104.bpseq",
-                  "testsetb_36.bpseq"
-                ],
+                "missing_count": 0,
+                "missing_names": [],
                 "missing_predictions_imputed_as_zero": false,
                 "n_panel_sequences": 430,
-                "n_with_prediction": 428,
+                "n_with_prediction": 430,
                 "paired_macro_f1_delta_ci95_vs_xens2": null,
-                "status": "PARTIAL_COVERAGE_NOT_RANKED"
+                "status": "PASS_FULL_COVERAGE"
               },
               "testsetb_projected_reference_428": {
                 "coverage": 1.0,
@@ -5728,8 +5794,11 @@
                   "micro_precision": -0.30394104113390574,
                   "micro_recall": -0.08619173262972735
                 },
-                "extra_count": 0,
-                "extra_names": [],
+                "extra_count": 2,
+                "extra_names": [
+                  "testsetb_104.bpseq",
+                  "testsetb_36.bpseq"
+                ],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 3480,
@@ -5764,13 +5833,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/mxfold2/raw/testsetb.json",
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/mxfold2__testsetb__full430.json.gz",
             "prediction_id": "mxfold2/testsetb",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "921f9e5170726cb9f6f9014902a60446038fcac74c69e03c585f3fd384a1f452",
-            "source_group": "REGISTERED",
+            "sha256": "348b3d004b4f92c1ae3a4bc33e4d9b82ef15060427630b0ed64d18e9844ffa32",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
             "training_exposure": {
               "baseline_id": "mxfold2",
               "clean_n": 373,
@@ -6761,37 +6830,37 @@
           {
             "available": true,
             "baseline_id": "rnastructure_fold",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 428,
+            "n_prediction_records": 429,
+            "n_sequences": 429,
             "panels": {
               "testsetb_official_reference_430": {
-                "coverage": 0.9953488372093023,
+                "coverage": 0.9976744186046511,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 4762,
-                  "fp": 8296,
-                  "macro_f1": 0.5222784016481422,
-                  "macro_precision": 0.4796565592501464,
-                  "macro_recall": 0.5878913125835198,
-                  "micro_f1": 0.5030067747583162,
-                  "micro_precision": 0.4433709071390231,
-                  "micro_recall": 0.5811785400175902,
-                  "n_scored": 428,
-                  "tp": 6608,
+                  "fn": 4772,
+                  "fp": 8311,
+                  "macro_f1": 0.5225221948182905,
+                  "macro_precision": 0.479898230052205,
+                  "macro_recall": 0.5881000026587067,
+                  "micro_f1": 0.5033218176986447,
+                  "micro_precision": 0.4437081659973226,
+                  "micro_recall": 0.5814402245417069,
+                  "n_scored": 429,
+                  "tp": 6629,
                   "truth_empty_records": 0
                 },
-                "missing_count": 2,
+                "missing_count": 1,
                 "missing_names": [
-                  "testsetb_104.bpseq",
-                  "testsetb_36.bpseq"
+                  "testsetb_104.bpseq"
                 ],
                 "missing_predictions_imputed_as_zero": false,
                 "n_panel_sequences": 430,
-                "n_with_prediction": 428,
+                "n_with_prediction": 429,
                 "paired_macro_f1_delta_ci95_vs_xens2": null,
                 "status": "PARTIAL_COVERAGE_NOT_RANKED"
               },
@@ -6805,8 +6874,10 @@
                   "micro_precision": -0.4672132218005108,
                   "micro_recall": -0.19894459102902373
                 },
-                "extra_count": 0,
-                "extra_names": [],
+                "extra_count": 1,
+                "extra_names": [
+                  "testsetb_36.bpseq"
+                ],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 4762,
@@ -6841,13 +6912,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/testsetb.json",
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/rnastructure_fold__testsetb__partial429.json.gz",
             "prediction_id": "rnastructure_fold/testsetb",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "271d1d8dae18897ca9efcbdc2daa302c131e09e260fdc446ed8ffab792d11f5d",
-            "source_group": "REGISTERED",
+            "sha256": "c6641b103c4c2670818676b353ece417b53eddcf15a5ee9defae1a0526ce0bbc",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
             "training_exposure": {
               "baseline_id": "rnastructure_fold",
               "clean_n": null,
@@ -6864,37 +6935,37 @@
           {
             "available": true,
             "baseline_id": "rnastructure_maxexpect",
-            "data_path": "/root/rna_jepa_data/ss_data/jsonl/testsetb.jsonl",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
             "model_form": "deterministic_single_predictor",
-            "n_prediction_records": 428,
+            "n_prediction_records": 429,
+            "n_sequences": 429,
             "panels": {
               "testsetb_official_reference_430": {
-                "coverage": 0.9953488372093023,
+                "coverage": 0.9976744186046511,
                 "delta_vs_xens2": null,
                 "extra_count": 0,
                 "extra_names": [],
                 "metrics": {
                   "empty_empty_records": 0,
-                  "fn": 4647,
-                  "fp": 7423,
-                  "macro_f1": 0.5453195038234633,
-                  "macro_precision": 0.510355884543588,
-                  "macro_recall": 0.5998130613934816,
-                  "micro_f1": 0.5269634738987302,
-                  "micro_precision": 0.475258023469532,
-                  "micro_recall": 0.5912928759894459,
-                  "n_scored": 428,
-                  "tp": 6723,
+                  "fn": 4656,
+                  "fp": 7437,
+                  "macro_f1": 0.5455791702898665,
+                  "macro_precision": 0.5105907452115777,
+                  "macro_recall": 0.6000691554679835,
+                  "micro_f1": 0.5273032873392487,
+                  "micro_precision": 0.4756028768861938,
+                  "micro_recall": 0.5916147706341549,
+                  "n_scored": 429,
+                  "tp": 6745,
                   "truth_empty_records": 0
                 },
-                "missing_count": 2,
+                "missing_count": 1,
                 "missing_names": [
-                  "testsetb_104.bpseq",
-                  "testsetb_36.bpseq"
+                  "testsetb_104.bpseq"
                 ],
                 "missing_predictions_imputed_as_zero": false,
                 "n_panel_sequences": 430,
-                "n_with_prediction": 428,
+                "n_with_prediction": 429,
                 "paired_macro_f1_delta_ci95_vs_xens2": null,
                 "status": "PARTIAL_COVERAGE_NOT_RANKED"
               },
@@ -6908,8 +6979,10 @@
                   "micro_precision": -0.4353261054700019,
                   "micro_recall": -0.188830255057168
                 },
-                "extra_count": 0,
-                "extra_names": [],
+                "extra_count": 1,
+                "extra_names": [
+                  "testsetb_36.bpseq"
+                ],
                 "metrics": {
                   "empty_empty_records": 0,
                   "fn": 4647,
@@ -6944,13 +7017,13 @@
                 "status": "PASS_FULL_COVERAGE"
               }
             },
-            "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/eval_decision/round39_clean_benchmark/rnastructure/raw/testsetb.json",
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/rnastructure_maxexpect__testsetb__partial429.json.gz",
             "prediction_id": "rnastructure_maxexpect/testsetb",
-            "prediction_origin": "registered_frozen_prediction",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
             "registry_status": "FROZEN",
             "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
-            "sha256": "271d1d8dae18897ca9efcbdc2daa302c131e09e260fdc446ed8ffab792d11f5d",
-            "source_group": "REGISTERED",
+            "sha256": "0469f196621bb9b7cad533494a07bf5f23ffe4dee84011b559103545c6635b2d",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
             "training_exposure": {
               "baseline_id": "rnastructure_maxexpect",
               "clean_n": null,
@@ -7777,9 +7850,425 @@
               ],
               "training_provenance_status": "PROJECT_TR1c_PROTOCOL"
             }
+          },
+          {
+            "available": true,
+            "baseline_id": "vienna_mfe",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+            "model_form": "single_model",
+            "n_prediction_records": 430,
+            "n_sequences": 430,
+            "panels": {
+              "testsetb_official_reference_430": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 4546,
+                  "fp": 8149,
+                  "macro_f1": 0.5404191111112032,
+                  "macro_precision": 0.49775026639337333,
+                  "macro_recall": 0.6057440139425819,
+                  "micro_f1": 0.5202373304107932,
+                  "micro_precision": 0.45788983501862696,
+                  "micro_recall": 0.6022399160031499,
+                  "n_scored": 430,
+                  "tp": 6883,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 430,
+                "n_with_prediction": 430,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "testsetb_projected_reference_428": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.2916810523218295,
+                  "macro_precision": -0.4022639180311596,
+                  "macro_recall": -0.17665678766645054,
+                  "micro_f1": -0.3200604620882239,
+                  "micro_precision": -0.4527882323947234,
+                  "micro_recall": -0.17766051011433603
+                },
+                "extra_count": 2,
+                "extra_names": [
+                  "testsetb_104.bpseq",
+                  "testsetb_36.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 4520,
+                  "fp": 8113,
+                  "macro_f1": 0.5405667540163408,
+                  "macro_precision": 0.4978739415457546,
+                  "macro_recall": 0.6059905028315423,
+                  "micro_f1": 0.5202597501234193,
+                  "micro_precision": 0.4577958965448105,
+                  "micro_recall": 0.6024626209322779,
+                  "n_scored": 428,
+                  "tp": 6850,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 428,
+                "n_with_prediction": 428,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common testsetb projected subset coverage only",
+                  "ci95": [
+                    -0.3168727816212173,
+                    -0.2670748202490226
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.2916810523218295,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_mfe__testsetb__recovered_official2__full430.json.gz",
+            "prediction_id": "vienna_mfe/testsetb/recovered_official2",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "6462ebc427db9979bfc6aa94cf0e6f4e25e61512f5de761cf3dd59eac36caeae",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
+            "training_exposure": {
+              "baseline_id": "vienna_mfe",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
+          },
+          {
+            "available": true,
+            "baseline_id": "vienna_centroid",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+            "model_form": "single_model",
+            "n_prediction_records": 430,
+            "n_sequences": 430,
+            "panels": {
+              "testsetb_official_reference_430": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 4766,
+                  "fp": 6347,
+                  "macro_f1": 0.5547336489357659,
+                  "macro_precision": 0.5437354780872521,
+                  "macro_recall": 0.5869538023046846,
+                  "micro_f1": 0.5452759932894145,
+                  "micro_precision": 0.5121445042275173,
+                  "micro_recall": 0.5829906378510806,
+                  "n_scored": 430,
+                  "tp": 6663,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 430,
+                "n_with_prediction": 430,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "testsetb_projected_reference_428": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.2770977618466298,
+                  "macro_precision": -0.3559413547582999,
+                  "macro_recall": -0.1952333267931593,
+                  "micro_f1": -0.294648815954189,
+                  "micro_precision": -0.3981082695343582,
+                  "micro_recall": -0.1966578715919085
+                },
+                "extra_count": 2,
+                "extra_names": [
+                  "testsetb_104.bpseq",
+                  "testsetb_36.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 4736,
+                  "fp": 6311,
+                  "macro_f1": 0.5551500444915405,
+                  "macro_precision": 0.5441965048186143,
+                  "macro_recall": 0.5874139637048336,
+                  "micro_f1": 0.5456713962574542,
+                  "micro_precision": 0.5124758594051757,
+                  "micro_recall": 0.5834652594547054,
+                  "n_scored": 428,
+                  "tp": 6634,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 428,
+                "n_with_prediction": 428,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common testsetb projected subset coverage only",
+                  "ci95": [
+                    -0.30104873455908027,
+                    -0.2528994238695504
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.2770977618466298,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_centroid__testsetb__recovered_official2__full430.json.gz",
+            "prediction_id": "vienna_centroid/testsetb/recovered_official2",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "f94ae0c1bf75ca670c87c6344c4c9f8df648acdfdbe70a0f51fb245fa4410133",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
+            "training_exposure": {
+              "baseline_id": "vienna_centroid",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
+          },
+          {
+            "available": true,
+            "baseline_id": "vienna_mea",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+            "model_form": "single_model",
+            "n_prediction_records": 430,
+            "n_sequences": 430,
+            "panels": {
+              "testsetb_official_reference_430": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 4522,
+                  "fp": 7408,
+                  "macro_f1": 0.5519406982122722,
+                  "macro_precision": 0.5148995359774288,
+                  "macro_recall": 0.6087195859441948,
+                  "micro_f1": 0.5365910503418272,
+                  "micro_precision": 0.4825008732099197,
+                  "micro_recall": 0.6043398372561029,
+                  "n_scored": 430,
+                  "tp": 6907,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 430,
+                "n_with_prediction": 430,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "testsetb_projected_reference_428": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.27991793064087767,
+                  "macro_precision": -0.38487664352482454,
+                  "macro_recall": -0.17344120319392264,
+                  "micro_f1": -0.30341112840011186,
+                  "micro_precision": -0.4278860170563304,
+                  "micro_recall": -0.17528583992963942
+                },
+                "extra_count": 2,
+                "extra_names": [
+                  "testsetb_104.bpseq",
+                  "testsetb_36.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 4493,
+                  "fp": 7370,
+                  "macro_f1": 0.5523298756972926,
+                  "macro_precision": 0.5152612160520896,
+                  "macro_recall": 0.6092060873040702,
+                  "micro_f1": 0.5369090838115314,
+                  "micro_precision": 0.4826981118832035,
+                  "micro_recall": 0.6048372911169745,
+                  "n_scored": 428,
+                  "tp": 6877,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 428,
+                "n_with_prediction": 428,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common testsetb projected subset coverage only",
+                  "ci95": [
+                    -0.30414624555967756,
+                    -0.2559703130362925
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.2799179306408777,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/vienna_mea__testsetb__recovered_official2__full430.json.gz",
+            "prediction_id": "vienna_mea/testsetb/recovered_official2",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "9234c413ccb9e924d32cae74ccdb3d8211ac0192a1b6c67038ef528cdfb1f179",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
+            "training_exposure": {
+              "baseline_id": "vienna_mea",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
+          },
+          {
+            "available": true,
+            "baseline_id": "nussinov_turner",
+            "data_path": "source_data/ts0_testsetb_official_reference_20261127/testsetb_official_430.jsonl.gz",
+            "model_form": "single_model",
+            "n_prediction_records": 430,
+            "n_sequences": 430,
+            "panels": {
+              "testsetb_official_reference_430": {
+                "coverage": 1.0,
+                "delta_vs_xens2": null,
+                "extra_count": 0,
+                "extra_names": [],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 8708,
+                  "fp": 11065,
+                  "macro_f1": 0.22402842985332533,
+                  "macro_precision": 0.2099962534114679,
+                  "macro_recall": 0.2456725540873714,
+                  "micro_f1": 0.21582391433670434,
+                  "micro_precision": 0.19737414768605832,
+                  "micro_recall": 0.238078572053548,
+                  "n_scored": 430,
+                  "tp": 2721,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 430,
+                "n_with_prediction": 430,
+                "paired_macro_f1_delta_ci95_vs_xens2": null,
+                "status": "PASS_FULL_COVERAGE"
+              },
+              "testsetb_projected_reference_428": {
+                "coverage": 1.0,
+                "delta_vs_xens2": {
+                  "macro_f1": -0.6084807222659755,
+                  "macro_precision": -0.6904038305238612,
+                  "macro_recall": -0.5372156825272294,
+                  "micro_f1": -0.6248816436865565,
+                  "micro_precision": -0.7136155360662555,
+                  "micro_recall": -0.5423922603342128
+                },
+                "extra_count": 2,
+                "extra_names": [
+                  "testsetb_104.bpseq",
+                  "testsetb_36.bpseq"
+                ],
+                "metrics": {
+                  "empty_empty_records": 0,
+                  "fn": 8667,
+                  "fp": 11020,
+                  "macro_f1": 0.22376708407219484,
+                  "macro_precision": 0.20973402905305297,
+                  "macro_recall": 0.2454316079707634,
+                  "micro_f1": 0.21543856852508667,
+                  "micro_precision": 0.19696859287327845,
+                  "micro_recall": 0.23773087071240107,
+                  "n_scored": 428,
+                  "tp": 2703,
+                  "truth_empty_records": 0
+                },
+                "missing_count": 0,
+                "missing_names": [],
+                "missing_predictions_imputed_as_zero": false,
+                "n_panel_sequences": 428,
+                "n_with_prediction": 428,
+                "paired_macro_f1_delta_ci95_vs_xens2": {
+                  "applicability": "full common testsetb projected subset coverage only",
+                  "ci95": [
+                    -0.6289715243969964,
+                    -0.5882054240343773
+                  ],
+                  "method": "paired sequence-level percentile bootstrap",
+                  "n_bootstrap": 10000,
+                  "observed_delta": -0.6084807222659755,
+                  "seed": 20261127,
+                  "unit": "sequence"
+                },
+                "status": "PASS_FULL_COVERAGE"
+              }
+            },
+            "path": "/teams/HoulabData_1788502323/liucunyu/foldnar/testsetb_official_coverage_recovery_20261127/predictions/nussinov_turner__testsetb__recovered_official2__full430.json.gz",
+            "prediction_id": "nussinov_turner/testsetb/recovered_official2",
+            "prediction_origin": "FROZEN_RAW428_PLUS_OFFICIAL2_CPU_COMPLETION",
+            "registry_status": "FROZEN",
+            "sequence_join": "frozen source data path/SHA plus per-ID reference join; direct seq checked when present",
+            "sha256": "997afb81d197cfd8cb91fe77f6c9ce27952986c3a24e599af30ebe137250492a",
+            "source_group": "OFFICIAL_COVERAGE_RECOVERY",
+            "training_exposure": {
+              "baseline_id": "nussinov_turner",
+              "clean_n": null,
+              "clean_sha256": null,
+              "evidence_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED",
+              "exact_sequence_overlap": null,
+              "full_project_panel_exposure_status": "NOT_SEQUENCE_FITTED",
+              "homology_only_overlap": null,
+              "route": "NOT_SEQUENCE_FITTED",
+              "training_corpora": [],
+              "training_provenance_status": "NOT_APPLICABLE_NOT_SEQUENCE_FITTED"
+            }
           }
         ],
-        "sha256": "4fc495d1abc5a373630cc3b21442d570edc99ac9f2f759e0eed1a748a31956db"
+        "sha256": "2586c2cdeb273a383fc0fd98aee4a9c8f6797baac4aee079092da3e7b8578c25"
       },
       "training_exposure_overlay": {
         "bprna_tr0": {

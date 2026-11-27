@@ -18,7 +18,10 @@ SOURCE = ROOT / "source_data/ts0_testsetb_official_reference_20261127"
 OUT = ROOT / "artifacts/ts0_testsetb_official_reference_20261127"
 REPORT = ROOT / "docs/plans/2026-11-27-ts0-testsetb-official-reference-panels.md"
 PRIOR = ROOT / "artifacts/archive_label_lineage_audit_20261127/summary.json"
-RECOVERY = ROOT / "source_data/ts0_official_coverage_recovery_20261127/recovery_manifest.json"
+RECOVERY = {
+    "bprna_ts0": ROOT / "source_data/ts0_official_coverage_recovery_20261127/recovery_manifest.json",
+    "testsetb": ROOT / "source_data/testsetb_official_coverage_recovery_20261127/source_manifest.json",
+}
 J = Path("/root/rna_jepa_data/ss_data/jsonl")
 BD = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz")
 MX_ROOT = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2")
@@ -44,7 +47,7 @@ SPECS = {
         "mirror_archive": None, "mirror_prefix": None, "mirror_sha": None,
         "full_id": "testsetb_official_reference_430", "project_panel_id": "testsetb_projected_reference_428",
         "full_file": "testsetb_official_430.jsonl.gz", "project_file": "testsetb_projected_428.jsonl.gz",
-        "metrics_file": "testsetb_system_metrics.json", "expected_available": 20,
+        "metrics_file": "testsetb_system_metrics.json", "expected_available": 24,
         "id_transform": lambda name: "testsetb_" + name,
     },
 }
@@ -206,22 +209,35 @@ def inventory(dataset):
                         "source_group": "INDEPENDENT_AUDIT_ASSET", "registry_status": "UNREGISTERED_INDEPENDENT_AUDIT_ASSET",
                         "path": path, "sha256": digest, "data_path": str(J / f"{dataset}.jsonl"),
                         "available": True, "model_form": "single_model", "prediction_origin": f"additional_frozen_r2d_seed{seed}"})
+    recovery = json.loads(RECOVERY[dataset].read_text())
     if dataset == "bprna_ts0":
-        recovery = json.loads(RECOVERY.read_text())
         if recovery["status"] != "PASS_7_FULL1305_IDENTITIES_2_PARTIAL" or recovery["external_test_model_selection"]:
             raise ValueError("invalid TS0 recovery manifest")
-        by_id = {row["prediction_id"]: index for index, row in enumerate(entries)}
-        for recovered in recovery["prediction_entries"]:
-            if recovered["prediction_id"] in by_id:
-                entries[by_id[recovered["prediction_id"]]] = recovered
-            else:
-                entries.append(recovered)
+    elif (recovery["schema_version"] != "testsetb.official_coverage_recovery.source_manifest.v1"
+          or recovery["shared_registries_modified"] is not False
+          or recovery["external_test_model_selection"] is not False):
+        raise ValueError("invalid TestSetB recovery manifest")
+    by_id = {row["prediction_id"]: index for index, row in enumerate(entries)}
+    for item in recovery["prediction_entries"]:
+        recovered = dict(item)
+        if dataset == "testsetb":
+            baseline_id = recovered["prediction_id"].split("/", 1)[0]
+            recovered.setdefault("available", True)
+            recovered.setdefault("baseline_id", baseline_id)
+            recovered.setdefault("data_path", f"source_data/ts0_testsetb_official_reference_20261127/{SPECS[dataset]['full_file']}")
+            recovered.setdefault("model_form", model_form(recovered["prediction_id"], baseline_id))
+            recovered.setdefault("registry_status", "FROZEN")
+            recovered.setdefault("source_group", "OFFICIAL_COVERAGE_RECOVERY")
+        if recovered["prediction_id"] in by_id:
+            entries[by_id[recovered["prediction_id"]]] = recovered
+        else:
+            entries.append(recovered)
     if len(entries) != SPECS[dataset]["expected_available"] + 14 or sum(row["available"] for row in entries) != SPECS[dataset]["expected_available"]:
         raise ValueError(f"prediction inventory changed {dataset}")
     return entries
 
 
-def load_predictions(entry):
+def load_predictions(entry, dataset):
     path = Path(entry["path"])
     if path.suffix == ".gz":
         with gzip.open(path, "rt", encoding="utf-8") as handle:
@@ -230,7 +246,6 @@ def load_predictions(entry):
         document = json.loads(path.read_text())
     if document.get("data") and document["data"] != entry["data_path"]:
         raise ValueError(f"prediction data path mismatch {entry['prediction_id']}")
-    dataset = "bprna_ts0" if entry["prediction_id"].endswith("recovered_official17") or entry["prediction_id"] == "bpfold_official_release/bprna_ts0" else entry["prediction_id"].rsplit("/", 1)[-1]
     allowed_data_sha = {SPECS[dataset]["project_sha"], sha256(SOURCE / SPECS[dataset]["full_file"])}
     if document.get("data_sha256") and document["data_sha256"] not in allowed_data_sha:
         raise ValueError(f"prediction data SHA mismatch {entry['prediction_id']}")
@@ -395,7 +410,7 @@ def evaluate_dataset(dataset, full, projected, prior):
             continue
         if not Path(entry["path"]).is_file() or sha256(Path(entry["path"])) != entry["sha256"]:
             raise ValueError(f"prediction SHA mismatch {entry['prediction_id']}")
-        predictions = load_predictions(entry)
+        predictions = load_predictions(entry, dataset)
         row["n_prediction_records"] = len(predictions)
         row["sequence_join"] = "frozen source data path/SHA plus per-ID reference join; direct seq checked when present"
         for panel_id, panel in ((full_id, full), (project_id, projected)):
@@ -473,7 +488,9 @@ def system_document(dataset, full, projected, rows, strongest, prior):
         full_scope = "DESCRIPTIVE_FROZEN_OFFICIAL_FULL_AUDIT_ONLY_NOT_MODEL_SELECTION"
         full_summary = {
             "strongest_overall": public_strongest(max(full_eligible, key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"]), full_id, full_scope),
-            "strongest_ensemble": public_strongest(max((row for row in full_eligible if "ensemble" in row["model_form"]), key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"]), full_id, full_scope),
+            "strongest_ensemble": (public_strongest(max((row for row in full_eligible if "ensemble" in row["model_form"]), key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"]), full_id, full_scope)
+                                   if any("ensemble" in row["model_form"] for row in full_eligible)
+                                   else "UNCHECKED_NO_FULL_COVERAGE_PREDICTION"),
             "strongest_single_predictor": public_strongest(max((row for row in full_eligible if "ensemble" not in row["model_form"]), key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"]), full_id, full_scope),
         }
     else:

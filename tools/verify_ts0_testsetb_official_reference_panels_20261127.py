@@ -16,13 +16,16 @@ OUT = ROOT / "artifacts/ts0_testsetb_official_reference_20261127"
 SOURCE = ROOT / "source_data/ts0_testsetb_official_reference_20261127"
 REPORT = ROOT / "docs/plans/2026-11-27-ts0-testsetb-official-reference-panels.md"
 PRIOR = ROOT / "artifacts/archive_label_lineage_audit_20261127/summary.json"
-RECOVERY = ROOT / "source_data/ts0_official_coverage_recovery_20261127/recovery_manifest.json"
+RECOVERY = {
+    "bprna_ts0": ROOT / "source_data/ts0_official_coverage_recovery_20261127/recovery_manifest.json",
+    "testsetb": ROOT / "source_data/testsetb_official_coverage_recovery_20261127/source_manifest.json",
+}
 J = Path("/root/rna_jepa_data/ss_data/jsonl")
 BD = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/BPfold_data.tar.gz")
 MX = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/source_corpora/mxfold2")
 SPECS = {
     "bprna_ts0": (1288, 1305, "f21eb88c1e83fc25bc47cec823e1d4aec441b18a5305f20d5314411667d06882", BD, "BPfold_data/bpRNA/TS0/", "819acdea53c6b093df14cab35bf079c4678325d2d5ea4296b904068d35959403", MX / "bpRNA.tar.gz", "data/bpRNA_dataset-canonicals/TS0/", "69dc58fe6cfdf1ec178b1732b7da35b828dbbc7608e89d9debdde9d538937a55", "bprna_ts0_official_reference_1305", "bprna_ts0_projected_reference_1288", "bprna_ts0_official_1305.jsonl.gz", "bprna_ts0_projected_1288.jsonl.gz", 26),
-    "testsetb": (428, 430, "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06", MX / "Rivas.tar.gz", "data/TestSetB/", "4ec63e183ef21cdc7dc76561da5ad1543bdd53d1ec09c14d692cc0cd8da86db2", None, None, None, "testsetb_official_reference_430", "testsetb_projected_reference_428", "testsetb_official_430.jsonl.gz", "testsetb_projected_428.jsonl.gz", 20),
+    "testsetb": (428, 430, "78bba9255f36b301617c5017bdad79b7329190361c6822d2aec12f0043483a06", MX / "Rivas.tar.gz", "data/TestSetB/", "4ec63e183ef21cdc7dc76561da5ad1543bdd53d1ec09c14d692cc0cd8da86db2", None, None, None, "testsetb_official_reference_430", "testsetb_projected_reference_428", "testsetb_official_430.jsonl.gz", "testsetb_projected_428.jsonl.gz", 24),
 }
 DETERMINISTIC = {"contrafold", "eternafold", "mxfold2", "rnastructure_fold", "rnastructure_maxexpect"}
 
@@ -165,14 +168,22 @@ def inventory(dataset):
                        "path": f"/root/rna_jepa_data/eval_decision/ow_rinalmo_r2dtr1c_b4_s{seed}_step20000/{dataset}/result.json",
                        "sha256": digests[dataset][seed], "data_path": str(J / f"{dataset}.jsonl"), "available": True,
                        "model_form": "single_model", "prediction_origin": f"additional_frozen_r2d_seed{seed}"})
-    if dataset == "bprna_ts0":
-        recovery = json.loads(RECOVERY.read_text())
-        by_id = {row["prediction_id"]: index for index, row in enumerate(result)}
-        for recovered in recovery["prediction_entries"]:
-            if recovered["prediction_id"] in by_id:
-                result[by_id[recovered["prediction_id"]]] = recovered
-            else:
-                result.append(recovered)
+    recovery = json.loads(RECOVERY[dataset].read_text())
+    by_id = {row["prediction_id"]: index for index, row in enumerate(result)}
+    for item in recovery["prediction_entries"]:
+        recovered = dict(item)
+        if dataset == "testsetb":
+            baseline_id = recovered["prediction_id"].split("/", 1)[0]
+            recovered.setdefault("available", True)
+            recovered.setdefault("baseline_id", baseline_id)
+            recovered.setdefault("data_path", f"source_data/ts0_testsetb_official_reference_20261127/{SPECS[dataset][11]}")
+            recovered.setdefault("model_form", model_form(baseline_id))
+            recovered.setdefault("registry_status", "FROZEN")
+            recovered.setdefault("source_group", "OFFICIAL_COVERAGE_RECOVERY")
+        if recovered["prediction_id"] in by_id:
+            result[by_id[recovered["prediction_id"]]] = recovered
+        else:
+            result.append(recovered)
     require(len(result) == SPECS[dataset][-1] + 14 and sum(row["available"] for row in result) == SPECS[dataset][-1], f"inventory {dataset}")
     return result
 
@@ -360,6 +371,10 @@ def verify_dataset(dataset, full, projected, actual_records, baselines, prior):
     if full_eligible:
         for key, subset in (("strongest_overall", full_eligible), ("strongest_ensemble", [row for row in full_eligible if "ensemble" in row["model_form"]]),
                             ("strongest_single_predictor", [row for row in full_eligible if "ensemble" not in row["model_form"]])):
+            if not subset:
+                compare(document["official_full_summary"][key], "UNCHECKED_NO_FULL_COVERAGE_PREDICTION",
+                        f"{dataset}.official_full.{key}.empty")
+                continue
             strongest = max(subset, key=lambda row: row["panels"][full_id]["metrics"]["micro_f1"])
             expected = {"prediction_id": strongest["prediction_id"], "model_form": strongest["model_form"],
                         "metrics": strongest["panels"][full_id]["metrics"], "delta_vs_xens2": None,
@@ -391,7 +406,7 @@ def verify_coverage_and_delivery(documents, panels, actual_record_count):
                         "coverage": row["panels"][full_id]["coverage"], "missing_count": row["panels"][full_id].get("missing_count"),
                         "missing_names": row["panels"][full_id].get("missing_names")} for row in document["rows"]]}
         compare(gaps[dataset], expected, f"coverage gaps {dataset}")
-    compare(actual_record_count, 84243, "record rows")
+    compare(actual_record_count, 87683, "record rows")
     recommendation = json.loads((OUT / "registry_recommendation.json").read_text())
     require(recommendation["recommendation_only"] and not recommendation["shared_registry_modified"], "recommendation boundary")
     for dataset, document in documents.items():
@@ -412,14 +427,15 @@ def verify_coverage_and_delivery(documents, panels, actual_record_count):
             else:
                 require(not prediction["available"] and prediction["sha256"] is None, "missing available prediction")
     receipt = json.loads((OUT / "build_receipt.json").read_text())
-    compare(receipt["per_record_metric_rows"], 84243, "receipt rows")
-    compare(receipt["prediction_identities"], 74, "receipt identities")
+    compare(receipt["per_record_metric_rows"], 87683, "receipt rows")
+    compare(receipt["prediction_identities"], 78, "receipt identities")
     for relative, item in receipt["outputs"].items():
         path = ROOT / relative
         compare(path.stat().st_size, item["bytes"], f"receipt bytes {relative}")
         compare(sha(path), item["sha256"], f"receipt SHA {relative}")
     text = REPORT.read_text()
-    require("EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT" in text and "UNCHECKED_NO_FULL_COVERAGE_PREDICTION" in text, "report exposure/full coverage")
+    require("EXACT_TRAIN_OVERLAP_PRESENT_NOT_INDEPENDENT" in text and "部分覆盖不排名" in text,
+            "report exposure/partial coverage")
 
 
 def main():
@@ -440,7 +456,9 @@ def main():
     files = [ROOT / "tools/build_ts0_testsetb_official_reference_panels_20261127.py",
              ROOT / "tools/verify_ts0_testsetb_official_reference_panels_20261127.py",
              ROOT / "tests/test_ts0_testsetb_official_reference_panels_20261127.py", REPORT,
-             SOURCE / "source_manifest.json", OUT / "per_record_metrics.jsonl.gz",
+             SOURCE / "source_manifest.json", RECOVERY["bprna_ts0"], RECOVERY["testsetb"],
+             ROOT / "artifacts/testsetb_official_coverage_recovery_20261127/system_metrics.json",
+             OUT / "per_record_metrics.jsonl.gz",
              OUT / "official_coverage_gaps.json", OUT / "registry_recommendation.json", OUT / "build_receipt.json"]
     files += [SOURCE / SPECS[dataset][11] for dataset in SPECS] + [SOURCE / SPECS[dataset][12] for dataset in SPECS]
     files += [OUT / f"{dataset}_system_metrics.json" for dataset in SPECS]
@@ -448,9 +466,9 @@ def main():
         "schema_version": "ts0_testsetb.official_reference.independent_verification.round2.v1",
         "status": "PASS_INDEPENDENT_SECOND_IMPLEMENTATION", "generator_imported": False,
         "panel_records_compared_field_by_field": 1305 + 1288 + 430 + 428,
-        "per_record_metrics_compared_field_by_field": 84243, "prediction_identities_verified": 74,
-        "projected_full_coverage": {"bprna_ts0": 26, "testsetb": 20},
-        "official_full_coverage": {"bprna_ts0": 7, "testsetb": 0},
+        "per_record_metrics_compared_field_by_field": 87683, "prediction_identities_verified": 78,
+        "projected_full_coverage": {"bprna_ts0": 26, "testsetb": 24},
+        "official_full_coverage": {"bprna_ts0": 7, "testsetb": 7},
         "checks": ["official reference packages and four panel identities", "all prediction schemas and strict pair metrics",
                    "official missing ID lists and no zero imputation", "xens2 deltas and paired macro CI",
                    "per-model training exposure columns and provenance status", "registry recommendation and source hashes"],
@@ -458,7 +476,7 @@ def main():
         "deliverables": {str(path.relative_to(ROOT)): {"bytes": path.stat().st_size, "sha256": sha(path)} for path in files},
     }
     (OUT / "verification_round2.json").write_text(json.dumps(verification, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({"status": verification["status"], "records": 84243, "identities": 74}, sort_keys=True))
+    print(json.dumps({"status": verification["status"], "records": 87683, "identities": 78}, sort_keys=True))
 
 
 if __name__ == "__main__":
