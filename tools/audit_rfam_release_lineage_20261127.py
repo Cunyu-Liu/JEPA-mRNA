@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import concurrent.futures
 import gzip
 import hashlib
 import json
@@ -241,10 +242,16 @@ def download_14_10_family(family, output):
         return path
     url = f"https://ftp.ebi.ac.uk/pub/databases/Rfam/14.10/fasta_files/{family}.fa.gz"
     temporary = path.with_suffix(".fa.gz.part")
-    with urllib.request.urlopen(url, timeout=180) as response:
-        temporary.write_bytes(response.read())
-    temporary.replace(path)
-    return path
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(url, timeout=120) as response:
+                temporary.write_bytes(response.read())
+            temporary.replace(path)
+            return path
+        except Exception:
+            if attempt == 2:
+                return None
+    return None
 
 
 def command_novelty(args):
@@ -252,8 +259,12 @@ def command_novelty(args):
     temporal = [row for row in rows if row["dataset"] == "rfam_temporal"]
     needed = sorted({row["family"] for row in temporal if row["family"] and not row["per_release"]["14.9"]["exact_fasta"]})
     hits14_10 = {}
-    for family in needed:
-        path = download_14_10_family(family, args.output / "alignments_14_10")
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        paths = list(executor.map(lambda family: download_14_10_family(family, args.output / "alignments_14_10"), needed))
+    for family, path in zip(needed, paths):
+        if path is None:
+            hits14_10[family] = None
+            continue
         target_sequences = {row["source_record_id"]: row["sequence_sha256"] for row in temporal if row["family"] == family}
         sequences = {row["seq"].upper().replace("T", "U") for row in read_jsonl(args.jsonl_root / "rfam_temporal.jsonl")
                      if sha256_text(row["seq"].upper().replace("T", "U")) in target_sequences.values()}
@@ -286,7 +297,9 @@ def command_novelty(args):
             sequence_first = "14.9_OR_EARLIER"
         elif row["dataset"] == "rfam_temporal" and row["family"]:
             family_hits = hits14_10.get(row["family"], {})
-            if sequence in family_hits:
+            if family_hits is None:
+                sequence_first = "UNCHECKED"
+            elif sequence in family_hits:
                 sequence_first = "14.10"
             elif row["per_release"]["15.0"]["exact_fasta"]:
                 sequence_first = "15.0"
@@ -336,6 +349,7 @@ def command_novelty(args):
                       "temporal_novelty_counts": dict(collections.Counter(row["temporal_novelty_layer"] for row in novel_rows if row["dataset"] == "rfam_temporal")),
                       "temporal_sequence_first_release_counts": dict(collections.Counter(row["sequence_first_release"] for row in novel_rows if row["dataset"] == "rfam_temporal")),
                       "temporal_strata_file": "novelty_strata.json",
+                      "alignment_14_10_failures": [family for family in needed if hits14_10.get(family) is None],
                       "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION"}
     write_json(args.output / "registry_recommendation.json", recommendation)
     files = {}

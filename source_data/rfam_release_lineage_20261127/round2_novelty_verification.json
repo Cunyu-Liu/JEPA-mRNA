@@ -1,0 +1,18 @@
+{
+  "cross_panel_exact": 2,
+  "external_test_policy": "AUDIT_ONLY_NO_MODEL_SELECTION",
+  "identity_pairs_used": false,
+  "n_records": 11226,
+  "pre14_9_exact": 43,
+  "registry_recommendation_sha256": "b3b7a2c53ab978f04fe246cc4bad5f50c07caa3f3fc17c0b3c50376fee12a6a1",
+  "shared_registry_modified": false,
+  "status": "PASS_RFAM_TEMPORAL_LINEAGE_INDEPENDENT_VERIFIER",
+  "temporal_novelty_counts": {
+    "NOT_INDEPENDENT_CROSS_PANEL_EXACT": 2,
+    "NOT_INDEPENDENT_TR1C_EXACT": 12,
+    "NOT_NOVEL_PRE14_9_SEQUENCE": 43,
+    "NOVEL_SEQUENCE_RELEASE_SUPPORTED": 269,
+    "UNCHECKED": 110
+  },
+  "tr1c_exact": 33
+}
