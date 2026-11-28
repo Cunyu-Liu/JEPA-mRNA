@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independently accept the matched 19000 natural stop without structural evaluation."""
+"""Independently accept 19000 natural stops without structural evaluation."""
 from __future__ import annotations
 
 import argparse
@@ -59,43 +59,43 @@ def shared_identity(left: dict, right: dict) -> bool:
     return all(left.get(key) == right.get(key) for key in set(left) | set(right) if key != "arm")
 
 
-def audit_matched(root: Path) -> dict:
-    directory = root / "matched_control"
+def audit_converged_arm(root: Path, arm: str, expected_latest: float, expected_best: float) -> dict:
+    directory = root / arm
     meta = json.loads((directory / "run_meta.json").read_text())
     validation = read_jsonl(directory / "validation_log.jsonl")
     train = read_jsonl(directory / "train_log.jsonl")
     batch = read_jsonl(directory / "batch_order.jsonl")
     compute = read_jsonl(directory / "compute_ledger.jsonl")
     for name, rows in (("train", train), ("batch", batch), ("compute", compute)):
-        require_contiguous(rows, f"matched_{name}")
+        require_contiguous(rows, f"{arm}_{name}")
         if len(rows) != 19000:
-            raise ValueError(f"matched {name} does not end at exactly 19000")
+            raise ValueError(f"{arm} {name} does not end at exactly 19000")
     for index in range(19000):
         if batch[index]["record_ids"] != compute[index]["record_ids"]:
-            raise ValueError(f"matched batch/compute mismatch at step {index + 1}")
+            raise ValueError(f"{arm} batch/compute mismatch at step {index + 1}")
         if not math.isfinite(float(train[index]["loss"])):
-            raise ValueError(f"matched non-finite loss at step {index + 1}")
+            raise ValueError(f"{arm} non-finite loss at step {index + 1}")
     if any(not math.isfinite(float(row["validation_loss"])) for row in validation):
-        raise ValueError("matched non-finite validation loss")
+        raise ValueError(f"{arm} non-finite validation loss")
     stopped = meta["convergence"]
     best_convergence = meta["best_convergence"]
     if stopped["best_step"] != 16500:
-        raise ValueError("matched best step is not 16500")
+        raise ValueError(f"{arm} best step is not 16500")
     validate_stop_sequence(validation, stopped["best_step"], 19000)
-    if (meta["status"] != "converged" or meta["converged"] is not True
+    if (meta["arm"] != arm or meta["status"] != "converged" or meta["converged"] is not True
             or meta["stop_reason"] != EXPECTED_STOP or meta["final_unfrozen_blocks"] != 20
             or meta["steps_completed"] != 19000 or meta["training_stopped_step"] != 19000
             or meta["training_stopped_optimizer_steps"] != 19000
             or meta["optimizer_steps"] != 16500 or meta["restored_best_step"] != 16500):
-        raise ValueError("matched terminal metadata mismatch")
+        raise ValueError(f"{arm} terminal metadata mismatch")
     if (stopped["bad_evaluations"] != 5 or stopped["eligible"] is not True
             or best_convergence != {**stopped, "bad_evaluations": 0}):
-        raise ValueError("matched stopped/best convergence metadata mismatch")
+        raise ValueError(f"{arm} stopped/best convergence metadata mismatch")
     latest = validation[-1]
-    if latest["validation_loss"] != 0.40534604989096473:
-        raise ValueError("matched 19000 validation loss mismatch")
-    if stopped["best_validation_loss"] != 0.35262170191251785:
-        raise ValueError("matched best validation loss mismatch")
+    if latest["validation_loss"] != expected_latest:
+        raise ValueError(f"{arm} 19000 validation loss mismatch")
+    if stopped["best_validation_loss"] != expected_best:
+        raise ValueError(f"{arm} best validation loss mismatch")
 
     resume_path = directory / "resume.pt"
     resume = torch.load(resume_path, map_location="cpu", weights_only=False)
@@ -105,7 +105,7 @@ def audit_matched(root: Path) -> dict:
             or resume["terminal_status"] != "converged" or resume_hashes != resume["model_tensor_sha256"]
             or resume["run_identity"] != meta["run_identity"]
             or resume["convergence"] != best_convergence):
-        raise ValueError("matched restored resume checkpoint mismatch")
+        raise ValueError(f"{arm} restored resume checkpoint mismatch")
     resume_sha256 = sha256_file(resume_path)
     del resume
     best_path = directory / "best.pt"
@@ -119,12 +119,13 @@ def audit_matched(root: Path) -> dict:
             or best["run_identity"] != meta["run_identity"]
             or best["convergence"] != best_convergence
             or best["validation_loss"] != stopped["best_validation_loss"]):
-        raise ValueError("matched best checkpoint mismatch")
+        raise ValueError(f"{arm} best checkpoint mismatch")
     best_sha256 = sha256_file(best_path)
     if meta["best_checkpoint_sha256"] != best_sha256 or meta["resume_checkpoint_sha256"] != resume_sha256:
-        raise ValueError("matched run_meta checkpoint SHA256 mismatch")
+        raise ValueError(f"{arm} run_meta checkpoint SHA256 mismatch")
     return {
-        "status": "PASS_MATCHED_NATURAL_CONVERGENCE_19000",
+        "status": f"PASS_{arm.upper()}_NATURAL_CONVERGENCE_19000",
+        "arm": arm,
         "stop_reason": meta["stop_reason"], "training_stopped_step": 19000,
         "best_step": 16500, "best_validation_loss": stopped["best_validation_loss"],
         "convergence": stopped, "best_convergence": best_convergence,
@@ -140,6 +141,19 @@ def audit_matched(root: Path) -> dict:
                  "nested_export_tensors_match": True},
         "best_resume_tensor_identity_match": True,
     }
+
+
+def audit_matched(root: Path) -> dict:
+    return audit_converged_arm(root, "matched_control", 0.40534604989096473, 0.35262170191251785)
+
+
+def audit_ensemble_converged(root: Path, matched_meta: dict) -> dict:
+    result = audit_converged_arm(root, "ensemble_context", 0.40581660895363675, 0.3766131074069069)
+    meta = json.loads((root / "ensemble_context/run_meta.json").read_text())
+    if not shared_identity(meta["run_identity"], matched_meta["run_identity"]):
+        raise ValueError("ensemble/matched shared scientific identity mismatch")
+    result["shared_scientific_identity_with_matched"] = True
+    return result
 
 
 def audit_ensemble(root: Path, matched_meta: dict) -> dict:
@@ -189,19 +203,32 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("/home/foldnar_incident_run"))
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--ensemble-converged", action="store_true")
     args = parser.parse_args()
-    matched = audit_matched(args.root)
     matched_meta = json.loads((args.root / "matched_control/run_meta.json").read_text())
-    ensemble = audit_ensemble(args.root, matched_meta)
-    report = {
-        "schema_version": "foldnar.structured_margin_matched_converged_19000_audit.v1",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "status": "PASS_MATCHED_19000_AND_ENSEMBLE_RECOVERY_READONLY_AUDIT",
-        "matched_control": matched, "ensemble_context": ensemble,
-        "structural_model_selection_performed": False,
-        "additional_evaluation_started": False,
-        "scientific_conclusion": None,
-    }
+    if args.ensemble_converged:
+        ensemble = audit_ensemble_converged(args.root, matched_meta)
+        report = {
+            "schema_version": "foldnar.structured_margin_ensemble_converged_19000_audit.v1",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "status": "PASS_ENSEMBLE_NATURAL_CONVERGENCE_19000",
+            "ensemble_context": ensemble,
+            "structural_model_selection_performed": False,
+            "additional_evaluation_started": False,
+            "scientific_conclusion": None,
+        }
+    else:
+        matched = audit_matched(args.root)
+        ensemble = audit_ensemble(args.root, matched_meta)
+        report = {
+            "schema_version": "foldnar.structured_margin_matched_converged_19000_audit.v1",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "status": "PASS_MATCHED_19000_AND_ENSEMBLE_RECOVERY_READONLY_AUDIT",
+            "matched_control": matched, "ensemble_context": ensemble,
+            "structural_model_selection_performed": False,
+            "additional_evaluation_started": False,
+            "scientific_conclusion": None,
+        }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     atomic_json(report, args.output)
     print(json.dumps(report, indent=2))
