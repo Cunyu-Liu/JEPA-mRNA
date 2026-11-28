@@ -11,7 +11,7 @@
 | vienna_centroid | 1422 / 1422 | 1422 | 1.0000000000 | True |
 | vienna_mea | 1422 / 1422 | 1422 | 1.0000000000 | True |
 | rnastructure_fold | 1422 / 1422 | 1422 | 1.0000000000 | True |
-| rnastructure_maxexpect | 12 / 1422 | 12 | 0.0084388186 | False |
+| rnastructure_maxexpect | 1422 / 1422 | 1422 | 1.0000000000 | True |
 | xens2 | 1422 / 1422 | 1406 | 1.0000000000 | False |
 
 ## full3966 全覆盖指标
@@ -24,6 +24,7 @@
 | `eternafold/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5691609744 | 0.5994220587 |
 | `vienna_centroid/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5691313692 | 0.5943999687 |
 | `vienna_mea/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5597636145 | 0.5919867904 |
+| `rnastructure_maxexpect/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5500991323 | 0.5765659118 |
 | `vienna_mfe/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5388319123 | 0.5771613799 |
 | `rnastructure_fold/archiveii_official_reference_3966/cpu_recovery_v1` | deterministic_single_predictor | 3966 | 0.5346280306 | 0.5725529991 |
 
@@ -51,7 +52,5 @@
 - full_3966 strongest_single_predictor: `mxfold2/archiveii_official_reference_3966/cpu_recovery_v1`，micro-F1=0.7023050285738565，macro-F1=0.7457279552838411。
 
 xens2 live queue=`COMPLETE_WITH_PROTOCOL_BLOCKS`，处理 1422/1422，pass=1406，protocol-blocked=16，预测 SHA256=`dd776f0be7f8470f37e57e939179088b14acf4f7369cb67f837c9534ffa5adf1`。恢复完成不等于 full coverage；3950/3966 仍不排名。
-
-MaxExpect 已安全暂停在 12 条，原 PID `4122842`。恢复命令：`cd /home/rna_jev_archive_label_lineage && /root/miniconda3/envs/lucaone_cu128/bin/python tools/recover_archiveii_full3966_cpu_baselines_20261127.py --baseline rnastructure_maxexpect`。其 coverage 仍为部分，不参与 full3966 排名。
 
 完整逐 ID coverage、指标、delta/CI 和 registry 建议见 `system_metrics.json`、`recovered_per_record_metrics.jsonl.gz`、`official_coverage_gaps.json` 与 `registry_recommendation.json`。
