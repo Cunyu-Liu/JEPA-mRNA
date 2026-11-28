@@ -269,7 +269,7 @@ def test_rfam_sequence_release_and_novelty_conservation():
 
 def test_archiveii_full_recovery_overall_and_strongest_single():
     text = ledger.DOC.read_text()
-    assert "6ef88a8f32fb58ae1ab0a2c9af718a0cb02aefbc" in text
+    assert "5a14660631fd3061509d6d7590a281e891e2036a" in text
     assert "full3966 现有 **8 个全覆盖身份**" in text
     assert "0.7974584107660678" in text
     assert "0.7023050285738565" in text
