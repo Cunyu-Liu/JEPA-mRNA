@@ -269,7 +269,7 @@ def test_rfam_sequence_release_and_novelty_conservation():
 
 def test_archiveii_full_recovery_overall_and_strongest_single():
     text = ledger.DOC.read_text()
-    assert "e02791e3875412038f64941838169ffb83aad737" in text
+    assert "6ef88a8f32fb58ae1ab0a2c9af718a0cb02aefbc" in text
     assert "full3966 现有 **8 个全覆盖身份**" in text
     assert "0.7974584107660678" in text
     assert "0.7023050285738565" in text
@@ -285,7 +285,8 @@ def test_archiveii_full_recovery_artifact_contract():
 def test_archiveii_full_xens2_vienna_and_maxexpect_boundaries():
     text = ledger.DOC.read_text()
     assert "UNCHECKED_XENS2_NOT_FULL_COVERAGE" in text
-    assert "xens2 仍只有 **2544/3966**" in text
+    assert "原 xens2 clean 身份仍为 **2544/3966**" in text
+    assert "composite 为 **3950/3966**" in text
     assert "Vienna 真实 clean 记录级预测后已 full" in text
     assert "早期 clean=0 的状态仅属恢复前历史" in text
     assert "MaxExpect 仅恢复 12/1422" in text
