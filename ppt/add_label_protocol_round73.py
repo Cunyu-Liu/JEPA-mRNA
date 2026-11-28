@@ -248,7 +248,7 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
     strongest_full = full.get("strongest_single_predictor", {})
     require(archive_full.get("label_panels", {}).get(
                 "archiveii_official_reference_3966", {}).get("n_sequences") == 3966
-            and archive_full.get("coverage_accounting", {}).get("official_3966_full_coverage") == 8
+            and archive_full.get("coverage_accounting", {}).get("official_3966_full_coverage") == 9
             and archive_full.get("coverage_accounting", {}).get("xens2_protocol_blocked_records") == 16
             and archive_full.get("coverage_accounting", {}).get("xens2_official_3966_coverage") == 3950 / 3966
             and archive_full.get("gpu_used") is True
@@ -277,7 +277,7 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
     vienna_full = {"vienna_mfe/archiveii_official_reference_3966/cpu_recovery_v1",
                    "vienna_centroid/archiveii_official_reference_3966/cpu_recovery_v1",
                    "vienna_mea/archiveii_official_reference_3966/cpu_recovery_v1"}
-    require(len(full_rows) == 8 and vienna_full.issubset(full_rows) and xens2_full is not None
+    require(len(full_rows) == 9 and vienna_full.issubset(full_rows) and xens2_full is not None
             and xens2_full.get("status") == "PARTIAL_COVERAGE_NOT_RANKED"
             and xens2_full.get("n_with_prediction") == 2544
             and xens2_full.get("missing_count") == 1422
@@ -493,7 +493,7 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
           ("ArchiveII official clean2544", "micro-F1", "Δ vs xens2", "descriptive role"), rows)
     full_single = evidence["archive_full"]["full_3966"]["strongest_single_predictor"]["metrics"]["micro_f1"]
     text(slide, 0.78, 4.43, 11.70, 0.32,
-         "* clean2544 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。\nArchiveII full3966：8 full · Vienna MFE/centroid/MEA full · MXfold2 strongest single=" + fmt10(full_single) +
+         "* clean2544 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。\nArchiveII full3966：9 full · Vienna MFE/centroid/MEA + MaxExpect full · MXfold2 strongest single=" + fmt10(full_single) +
          "\nxens2 GPU composite 3950/3966（16 blocked）不排名 · 原clean身份2544单列 · full未完成",
          6.8, MUTED, font=SANS)
     rect(slide, 0.78, 4.78, 4.40, 0.24, PALE, BURGUNDY)
@@ -534,7 +534,7 @@ def verify_built_deck(path: Path, prior_deck: Path, evidence: dict) -> dict:
     required = ("37 · LABEL PROTOCOL", "标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                 "bpRNA-new 5388", "clean 2544", "0.8156522070", "0.8999331355", "0.8204522395",
                 "+0.0842809284", "+0.0048000324", "strongest single", "62 rebuilt / 91 UNCHECKED",
-                "ArchiveII full3966：8 full", "Vienna MFE/centroid/MEA full",
+                "ArchiveII full3966：9 full", "Vienna MFE/centroid/MEA + MaxExpect full",
                 "MXfold2 strongest single=0.7023050286",
                 "xens2 GPU composite 3950/3966", "16 blocked", "原clean身份2544单列", "full未完成",
                 "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
@@ -611,7 +611,7 @@ def build(deck: str | Path, source_deck: str | Path = SOURCE_DECK,
         "evidence_artifacts": [identity(path) for path in evidence["paths"]],
         "scope": {"legacy_prediction_derived_labels_sota_eligible": False,
                   "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
-                  "archiveii_full3966_full_coverage_identities": 8,
+                  "archiveii_full3966_full_coverage_identities": 9,
                   "archiveii_full3966_xens2_ranking_allowed": False,
                   "archiveii_full3966_xens2_gpu_recovery_complete": True,
                   "archiveii_full3966_xens2_composite_coverage": 3950,
