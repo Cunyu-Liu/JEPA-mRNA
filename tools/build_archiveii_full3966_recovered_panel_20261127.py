@@ -254,7 +254,7 @@ def main():
         clean_recovery = json.loads(clean_recovery_path.read_text()) if baseline.startswith("vienna_") and clean_recovery_path.is_file() else None
         recovery_summary[baseline] = {**coverage, "checkpoint_root": str(work_root),
                                       "predictor_metadata_sha256": sha256(work_root / "predictor_metadata.json") if (work_root / "predictor_metadata.json").is_file() else None,
-                                      "pause": json.loads(pause_path.read_text()) if pause_path.is_file() else None,
+                                      "pause": None if complete else (json.loads(pause_path.read_text()) if pause_path.is_file() else None),
                                       "clean_recovery": clean_recovery,
                                       "full_composite_records": len(composite), "complete_for_full_ranking": complete}
         write_gzip_jsonl(OUT / "predictions" / f"{baseline}.jsonl.gz", [

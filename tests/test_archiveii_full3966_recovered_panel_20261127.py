@@ -23,18 +23,18 @@ def test_all_eight_recoveries_complete_with_per_id_coverage():
     document = json.loads((OUT / "system_metrics.json").read_text())
     assert document["coverage_accounting"] == {
         "base_identities": 36, "recovery_identities": 9, "total_identities": 45,
-        "recovery_complete_1422": 7, "clean_2544_full_coverage": 29,
-        "official_3966_full_coverage": 8,
+        "recovery_complete_1422": 8, "clean_2544_full_coverage": 29,
+        "official_3966_full_coverage": 9,
         "xens2_official_3966_coverage": 3950 / 3966,
         "xens2_protocol_blocked_records": 16,
     }
     for baseline in BUILDER.BASELINES:
         recovery = document["recovery"][baseline]
         if baseline == "rnastructure_maxexpect":
-            assert recovery["status"] == "PARTIAL"
-            assert recovery["n_completed"] == recovery["n_pass"] == 12
-            assert recovery["remaining_count"] == 1410
-            assert recovery["complete_for_full_ranking"] is False
+            assert recovery["status"] == "COMPLETE"
+            assert recovery["n_completed"] == recovery["n_pass"] == 1422
+            assert recovery["remaining_count"] == 0
+            assert recovery["complete_for_full_ranking"] is True
         elif baseline == "xens2":
             assert recovery["status"] == "COMPLETE"
             assert recovery["n_completed"] == 1422 and recovery["n_pass"] == 1406
@@ -66,8 +66,8 @@ def test_composite_identity_and_vienna_clean_coverage():
             assert clean["delta_vs_xens2"] is not None
             assert row["prediction_origin"] == "CLEAN_2544_AND_OFFICIAL_1422_CPU_RECOVERY"
         elif row["prediction_id"].startswith("rnastructure_maxexpect/"):
-            assert full["status"] == "PARTIAL_COVERAGE_NOT_RANKED"
-            assert full["n_with_prediction"] == 2556 and full["missing_count"] == 1410
+            assert full["status"] == "PASS_FULL_COVERAGE"
+            assert full["n_with_prediction"] == 3966 and full["missing_count"] == 0
             assert row["panels"][BUILDER.CLEAN_ID]["status"] == "PASS_FULL_COVERAGE"
         elif row["prediction_id"].startswith("xens2/"):
             assert full["status"] == "PARTIAL_COVERAGE_NOT_RANKED"
@@ -84,10 +84,10 @@ def test_composite_identity_and_vienna_clean_coverage():
 def test_new_per_record_metric_accounting_and_empty_rules():
     with gzip.open(OUT / "recovered_per_record_metrics.jsonl.gz", "rt", encoding="utf-8") as handle:
         rows = [json.loads(line) for line in handle if line.strip()]
-    assert len(rows) == 57164
-    assert sum(row["panel_id"] == BUILDER.FULL_ID for row in rows) == 34268
+    assert len(rows) == 58574
+    assert sum(row["panel_id"] == BUILDER.FULL_ID for row in rows) == 35678
     assert sum(row["panel_id"] == BUILDER.CLEAN_ID for row in rows) == 22896
-    assert sum(row["truth_empty"] for row in rows if row["panel_id"] == BUILDER.FULL_ID) == 44
+    assert sum(row["truth_empty"] for row in rows if row["panel_id"] == BUILDER.FULL_ID) == 45
     for row in rows:
         if row["empty_empty"]:
             assert (row["precision"], row["recall"], row["f1"]) == (1.0, 1.0, 1.0)

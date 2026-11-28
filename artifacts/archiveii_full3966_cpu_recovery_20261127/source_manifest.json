@@ -23,7 +23,7 @@
     },
     "rnastructure_maxexpect": {
       "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/rnastructure_maxexpect/predictor_metadata.json",
-      "sha256": null
+      "sha256": "d491ae100696d53d5975a45411801af938bac97803fc3fc33fecba2b2b4d3dd3"
     },
     "vienna_centroid": {
       "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/vienna_centroid/predictor_metadata.json",
