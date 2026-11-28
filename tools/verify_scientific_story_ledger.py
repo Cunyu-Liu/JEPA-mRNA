@@ -122,7 +122,7 @@ SOURCE_COMMITS = {
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
-    "ArchiveII official reference": (ARCHIVEII_REPO, "e02791e3875412038f64941838169ffb83aad737"),
+    "ArchiveII official reference": (ARCHIVEII_REPO, "6ef88a8f32fb58ae1ab0a2c9af718a0cb02aefbc"),
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
@@ -634,18 +634,18 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
     live_queue = json.loads(SOURCES["archiveii_xens2_live_queue"].read_text())
     expected_coverage = {
         "base_identities": 36,
-        "clean_2544_full_coverage": 28,
+        "clean_2544_full_coverage": 29,
         "official_3966_full_coverage": 8,
         "recovery_complete_1422": 7,
-        "recovery_identities": 8,
-        "total_identities": 44,
-        "xens2_official_3966_coverage": 0.6414523449319214,
+        "recovery_identities": 9,
+        "total_identities": 45,
+        "xens2_official_3966_coverage": 3950 / 3966,
         "xens2_protocol_blocked_records": 16,
     }
     if metrics["coverage_accounting"] != expected_coverage:
         errors.append(f"ArchiveII full recovery coverage accounting mismatch: {metrics['coverage_accounting']}")
-    if metrics["inference_scope"] != "official-only 1422 CPU baselines only; no GPU" or metrics["gpu_used"] is not False:
-        errors.append("ArchiveII full recovery exceeded CPU-only official-only scope")
+    if metrics["inference_scope"] != "official-only 1422 CPU baselines plus frozen xens2 GPU recovery; 16 protocol blocks retained" or metrics["gpu_used"] is not True:
+        errors.append("ArchiveII full recovery compute scope mismatch")
     if metrics["shared_registry_modified"] is not False or metrics["external_test_model_selection"] is not False:
         errors.append("ArchiveII full recovery modified registry or allowed model selection")
     full = metrics["full_3966"]
@@ -689,8 +689,8 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         errors.append("ArchiveII xens2 live recovery coverage mismatch")
     if live_coverage["blocked_reason_counts"] != {"BLOCKED_PROTOCOL_LENGTH_GT1024": 16} or live_coverage["predictions_sha256"] != "dd776f0be7f8470f37e57e939179088b14acf4f7369cb67f837c9534ffa5adf1":
         errors.append("ArchiveII xens2 live protocol-block or prediction identity mismatch")
-    if metrics["recovery"]["xens2"]["n_completed"] != 0 or metrics["recovery"]["xens2"]["full_composite_records"] != 2544 or metrics["recovery"]["xens2"]["remaining_count"] != 1422:
-        errors.append("ArchiveII xens2 production has unreported completed predictions")
+    if metrics["recovery"]["xens2"]["n_completed"] != 1422 or metrics["recovery"]["xens2"]["n_pass"] != 1406 or metrics["recovery"]["xens2"]["full_composite_records"] != 3950 or metrics["recovery"]["xens2"]["remaining_count"] != 0:
+        errors.append("ArchiveII xens2 completed recovery/composite accounting mismatch")
     if queue["probe_result"]["protocol"] != "frozen xens2_eval; len>1024 or missing embeddings explicitly blocked, never substituted":
         errors.append("ArchiveII xens2 probe protocol mismatch")
     blocked = queue["production_blocked_reason_counts"]
@@ -698,12 +698,13 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         errors.append("ArchiveII xens2 protocol blocked count mismatch")
     if 1422 - blocked["BLOCKED_PROTOCOL_LENGTH_GT1024"] != 1406 or 2544 + 1406 != 3950:
         errors.append("ArchiveII xens2 compliant recovery/composite upper bound mismatch")
-    if metrics["recovery"]["xens2"]["n_completed"] != 0:
-        errors.append("ArchiveII xens2 compliant upper bound was misreported as completed recovery")
     rows = {row["prediction_id"]: row for row in metrics["rows"]}
     xens2 = rows["xens2/archiveii_embok_clean"]["panels"]["archiveii_official_reference_3966"]
     if xens2["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or xens2["n_with_prediction"] != 2544 or xens2["delta_vs_xens2"] is not None or xens2["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
-        errors.append("ArchiveII xens2 partial full panel gained a delta/CI or ranking")
+        errors.append("ArchiveII original xens2 partial full panel gained a delta/CI or ranking")
+    xens2_composite = rows["xens2/archiveii_official_reference_3966/gpu_recovery_v1"]["panels"]["archiveii_official_reference_3966"]
+    if xens2_composite["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or xens2_composite["n_with_prediction"] != 3950 or xens2_composite["missing_count"] != 16 or xens2_composite["delta_vs_xens2"] is not None:
+        errors.append("ArchiveII xens2 GPU composite was ranked despite 16 missing records")
     for decoder in ["vienna_mfe", "vienna_centroid", "vienna_mea"]:
         row = rows[f"{decoder}/archiveii_official_reference_3966/cpu_recovery_v1"]["panels"]
         full_panel = row["archiveii_official_reference_3966"]
@@ -719,7 +720,7 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
     if maxexpect["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or maxexpect["n_with_prediction"] != 2556 or maxexpect["missing_count"] != 1410:
         errors.append("ArchiveII MaxExpect partial panel was ranked")
     complete = [name for name, row in metrics["recovery"].items() if row["status"] == "COMPLETE"]
-    if len(complete) != 7 or any(metrics["recovery"][name]["n_completed"] != 1422 for name in complete):
+    if len(complete) != 8 or any(metrics["recovery"][name]["n_completed"] != 1422 for name in complete):
         errors.append(f"ArchiveII recovery completion count mismatch: {complete}")
     if verification["status"] != "PASS_CLEAN_CLONE_AND_DELIVERY" or verification["clean_clone_outputs_byte_identical"] is not True or verification["shared_registry_diff"] != "EMPTY":
         errors.append("ArchiveII full recovery clean-clone delivery failed")
@@ -1293,7 +1294,7 @@ def verify_narrative_guards() -> list[str]:
         "best_step=15000",
         "bad_evaluations=0",
         "四臂未收敛，当前无 margin 科学结论",
-        "e02791e3875412038f64941838169ffb83aad737",
+        "6ef88a8f32fb58ae1ab0a2c9af718a0cb02aefbc",
         "0.7974584107660678",
         "0.7023050285738565",
         "8 个全覆盖身份",
