@@ -269,8 +269,8 @@ def test_rfam_sequence_release_and_novelty_conservation():
 
 def test_archiveii_full_recovery_overall_and_strongest_single():
     text = ledger.DOC.read_text()
-    assert "5a14660631fd3061509d6d7590a281e891e2036a" in text
-    assert "full3966 现有 **8 个全覆盖身份**" in text
+    assert "fcfbf91e0d66592254b53e8133ae96e6376f66b6" in text
+    assert "full3966 现有 **9 个全覆盖身份**" in text
     assert "0.7974584107660678" in text
     assert "0.7023050285738565" in text
     assert "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1" in text
@@ -289,15 +289,15 @@ def test_archiveii_full_xens2_vienna_and_maxexpect_boundaries():
     assert "composite 为 **3950/3966**" in text
     assert "Vienna 真实 clean 记录级预测后已 full" in text
     assert "早期 clean=0 的状态仅属恢复前历史" in text
-    assert "MaxExpect 仅恢复 12/1422" in text
-    assert "2556/3966" in text
-    assert "missing=1410" in text
+    assert "MaxExpect 已补齐 **1422/1422**" in text
+    assert "3966/3966" in text
+    assert "missing=0" in text
 
 
 def test_archiveii_clean_full_consistency_contract():
     text = ledger.DOC.read_text()
     assert "ArchiveII clean/full 联合不变量" in text
-    assert "base full=1 与当前 full=8" in text
+    assert "base full=1 与当前 full=9" in text
     assert "三者的 metrics、相对 xens2 delta 和 paired macro CI 均与 base 一致" in text
     assert "full 新增不得回写 clean 或 base 历史" in text
 

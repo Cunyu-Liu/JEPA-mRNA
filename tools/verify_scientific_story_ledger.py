@@ -123,7 +123,7 @@ SOURCE_COMMITS = {
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
-    "ArchiveII official reference": (ARCHIVEII_REPO, "5a14660631fd3061509d6d7590a281e891e2036a"),
+    "ArchiveII official reference": (ARCHIVEII_REPO, "fcfbf91e0d66592254b53e8133ae96e6376f66b6"),
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
@@ -651,8 +651,8 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
     expected_coverage = {
         "base_identities": 36,
         "clean_2544_full_coverage": 29,
-        "official_3966_full_coverage": 8,
-        "recovery_complete_1422": 7,
+        "official_3966_full_coverage": 9,
+        "recovery_complete_1422": 8,
         "recovery_identities": 9,
         "total_identities": 45,
         "xens2_official_3966_coverage": 3950 / 3966,
@@ -682,6 +682,7 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         "contrafold/archiveii_official_reference_3966/cpu_recovery_v1",
         "eternafold/archiveii_official_reference_3966/cpu_recovery_v1",
         "rnastructure_fold/archiveii_official_reference_3966/cpu_recovery_v1",
+        "rnastructure_maxexpect/archiveii_official_reference_3966/cpu_recovery_v1",
         "vienna_mfe/archiveii_official_reference_3966/cpu_recovery_v1",
         "vienna_centroid/archiveii_official_reference_3966/cpu_recovery_v1",
         "vienna_mea/archiveii_official_reference_3966/cpu_recovery_v1",
@@ -730,13 +731,13 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         if clean_panel["status"] != "PASS_FULL_COVERAGE" or clean_panel["n_with_prediction"] != 2544 or clean_panel["missing_count"] != 0 or clean_panel["missing_predictions_imputed_as_zero"] is not False:
             errors.append(f"ArchiveII Vienna clean prediction coverage mismatch: {decoder}")
     maxexpect_recovery = metrics["recovery"]["rnastructure_maxexpect"]
-    if maxexpect_recovery["n_completed"] != 12 or maxexpect_recovery["full_composite_records"] != 2556 or maxexpect_recovery["complete_for_full_ranking"] is not False:
+    if maxexpect_recovery["n_completed"] != 1422 or maxexpect_recovery["full_composite_records"] != 3966 or maxexpect_recovery["complete_for_full_ranking"] is not True:
         errors.append("ArchiveII MaxExpect recovery completion/composite mismatch")
     maxexpect = rows["rnastructure_maxexpect/archiveii_official_reference_3966/cpu_recovery_v1"]["panels"]["archiveii_official_reference_3966"]
-    if maxexpect["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or maxexpect["n_with_prediction"] != 2556 or maxexpect["missing_count"] != 1410:
-        errors.append("ArchiveII MaxExpect partial panel was ranked")
+    if maxexpect["status"] != "PASS_FULL_COVERAGE" or maxexpect["n_with_prediction"] != 3966 or maxexpect["missing_count"] != 0:
+        errors.append("ArchiveII MaxExpect full panel coverage mismatch")
     complete = [name for name, row in metrics["recovery"].items() if row["status"] == "COMPLETE"]
-    if len(complete) != 8 or any(metrics["recovery"][name]["n_completed"] != 1422 for name in complete):
+    if len(complete) != 9 or any(metrics["recovery"][name]["n_completed"] != 1422 for name in complete):
         errors.append(f"ArchiveII recovery completion count mismatch: {complete}")
     if verification["status"] != "PASS_CLEAN_CLONE_AND_DELIVERY" or verification["clean_clone_outputs_byte_identical"] is not True or verification["shared_registry_diff"] != "EMPTY":
         errors.append("ArchiveII full recovery clean-clone delivery failed")
@@ -763,8 +764,8 @@ def verify_archiveii_clean_full_consistency() -> list[str]:
     base_full = [row for row in base["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"]
     if len(base_full) != 1 or base_full[0]["prediction_id"] != "bpfold_official_release/archiveii":
         errors.append("ArchiveII base historical full identity changed")
-    if current["coverage_accounting"]["official_3966_full_coverage"] != 8:
-        errors.append("ArchiveII current full recovery no longer has eight identities")
+    if current["coverage_accounting"]["official_3966_full_coverage"] != 9:
+        errors.append("ArchiveII current full recovery no longer has nine identities")
     return errors
 
 
@@ -1312,10 +1313,10 @@ def verify_narrative_guards() -> list[str]:
         "best_step=15000",
         "bad_evaluations=0",
         "四臂未收敛，当前无 margin 科学结论",
-        "5a14660631fd3061509d6d7590a281e891e2036a",
+        "fcfbf91e0d66592254b53e8133ae96e6376f66b6",
         "0.7974584107660678",
         "0.7023050285738565",
-        "8 个全覆盖身份",
+        "9 个全覆盖身份",
         "UNCHECKED_XENS2_NOT_FULL_COVERAGE",
         "external peak delta 为 **10,465 MiB**",
         "required_free_mib=17746",
@@ -1326,8 +1327,8 @@ def verify_narrative_guards() -> list[str]:
         "2544+1406=3950/3966",
         "恢复完成与面板排名资格必须分开",
         "Vienna 真实 clean 记录级预测后已 full",
-        "2556/3966",
-        "base full=1 与当前 full=8",
+        "MaxExpect 已补齐 **1422/1422**",
+        "base full=1 与当前 full=9",
         "full 新增不得回写 clean 或 base 历史",
         "8a2008a4cda3c43b3000f25151b80408b0bdb110",
         "a8b1089a67a84665c49f0c228064693a53548590",
