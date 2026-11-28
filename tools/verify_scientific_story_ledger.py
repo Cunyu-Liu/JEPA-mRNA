@@ -96,6 +96,7 @@ SOURCES = {
     "matched_recovery_launch": ACTIVE_RUN_ROOT / "matched_control/recovery_launch_identity_20261127.json",
     "takeover_status": INCIDENT_EVIDENCE_ROOT / "recovery_takeover_status.json",
     "matched_convergence_audit": INCIDENT_EVIDENCE_ROOT / "matched_converged_19000_audit.json",
+    "ensemble_convergence_audit": INCIDENT_EVIDENCE_ROOT / "ensemble_converged_19000_audit.json",
     "current_margin_scheduler": LOCAL_SCHEDULER_ROOT / "recovery_scheduler_state.json",
     "adopted_scheduler_state": INCIDENT_EVIDENCE_ROOT / "adopted_scheduler_state.json",
     "linearpartition_run": LINEARPARTITION_RUN / "run_report.json",
@@ -126,7 +127,7 @@ SOURCE_COMMITS = {
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
-    "margin incident recovery": (RECOVERY_REPO, "9cc035be714ce0487593ce042aaee259d5a6cd7d"),
+    "margin incident recovery": (RECOVERY_REPO, "14d745b4e7d573947a738cdf814f5e9e5126201f"),
 }
 
 
@@ -616,6 +617,21 @@ def verify_matched_convergence_contract() -> list[str]:
         errors.append("current two-arm completion/evaluation/conclusion state overclaimed")
     if scheduler["processes"]["matched_control"]["status"] != "converged" or scheduler["processes"]["ensemble_context"]["status"] != "converged" or scheduler["processes"]["destroy_interval_shuffle"]["status"] != "running":
         errors.append("current scheduler matched/ensemble/destroy process state mismatch")
+    ensemble_audit_path = SOURCES["ensemble_convergence_audit"]
+    if not ensemble_audit_path.is_file():
+        errors.append(f"missing ensemble convergence audit: {ensemble_audit_path}")
+    else:
+        ensemble_audit = json.loads(ensemble_audit_path.read_text())
+        ensemble_result = ensemble_audit.get("ensemble_context", {})
+        if (ensemble_audit.get("status") != "PASS_ENSEMBLE_NATURAL_CONVERGENCE_19000"
+                or ensemble_result.get("training_stopped_step") != 19000
+                or ensemble_result.get("best_step") != 16500
+                or ensemble_result.get("best_validation_loss") != 0.3766131074069069
+                or ensemble_result.get("convergence", {}).get("bad_evaluations") != 5
+                or ensemble_result.get("best_convergence", {}).get("bad_evaluations") != 0
+                or ensemble_result.get("best_resume_tensor_identity_match") is not True
+                or ensemble_result.get("shared_scientific_identity_with_matched") is not True):
+            errors.append("ensemble independent convergence audit contract mismatch")
     source = (RECOVERY_REPO / "tools/audit_structured_margin_converged_19000_v1.py").read_text()
     for required in ["def validate_stop_sequence(", "len(rows) != 19000", "best_hashes != resume_hashes", "best_resume_tensor_identity_match", "additional_evaluation_started"]:
         if required not in source:
@@ -1259,6 +1275,8 @@ def verify_narrative_guards() -> list[str]:
         "14.9_OR_EARLIER=43、15.0=278、UNCHECKED=115",
         "五类互斥并守恒 436",
         "9cc035be714ce0487593ce042aaee259d5a6cd7d",
+        "14d745b4e7d573947a738cdf814f5e9e5126201f",
+        "PASS_ENSEMBLE_NATURAL_CONVERGENCE_19000",
         "step=19000",
         "step=16500、validation_loss=0.35262170191251785",
         "best_convergence` 为同一 best/loss、**bad_evaluations=0**",
