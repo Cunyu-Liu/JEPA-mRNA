@@ -30,6 +30,7 @@ ARCHIVE_RECOMMENDATION = ROOT / "artifacts/archiveii_official_reference_20261127
 ARCHIVE_FULL_SYSTEM = ROOT / "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json"
 ARCHIVE_FULL_CHECK = ROOT / "artifacts/archiveii_full3966_cpu_recovery_20261127/verification_round3.json"
 ARCHIVE_XENS2_QUEUE = ROOT / "source_data/archiveii_vienna_full3966_cpu_20261127/xens2_queue_evidence.json"
+ARCHIVE_XENS2_LIVE_QUEUE = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/queue_status.json")
 BPRNA_SYSTEM = ROOT / "source_data/bprna_official_reference_5388/system_metrics.json"
 PRETRAIN_SUMMARY = ROOT / "manifests/pretrain_exposure_v1/summary.json"
 PDB_LINEAGE = ROOT / "source_data/pdb_rfam_label_lineage_audit_20261127/panel_summary.json"
@@ -172,6 +173,7 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                       archive_full_system: str | Path = ARCHIVE_FULL_SYSTEM,
                       archive_full_check: str | Path = ARCHIVE_FULL_CHECK,
                       archive_xens2_queue: str | Path = ARCHIVE_XENS2_QUEUE,
+                      archive_xens2_live_queue: str | Path = ARCHIVE_XENS2_LIVE_QUEUE,
                       bprna_system: str | Path = BPRNA_SYSTEM,
                       pretrain_summary: str | Path = PRETRAIN_SUMMARY,
                       pdb_lineage: str | Path = PDB_LINEAGE,
@@ -187,12 +189,12 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                       rfam_verification: str | Path = RFAM_VERIFICATION) -> dict:
     paths = tuple(Path(path).resolve() for path in
                   (data_registry, archive_lineage, archive_system, archive_recommendation,
-                   archive_full_system, archive_full_check, archive_xens2_queue,
+                   archive_full_system, archive_full_check, archive_xens2_queue, archive_xens2_live_queue,
                    bprna_system, pretrain_summary, pdb_lineage, pdb_summary, pdb_verification,
                    ts_coverage, ts_verification, ts0_recovery, ts0_recovery_check,
                    testsetb_recovery, testsetb_recovery_check, rfam_registry, rfam_verification))
     (registry, lineage, archive, recommendation, archive_full, archive_full_check_report,
-     xens2_queue, bprna, pretrain, pdb, pdb_rebuild, pdb_check, coverage, coverage_check, ts0, ts0_check,
+     xens2_queue, xens2_live_queue, bprna, pretrain, pdb, pdb_rebuild, pdb_check, coverage, coverage_check, ts0, ts0_check,
      testsetb, testsetb_check, rfam, rfam_check) = map(load_json, paths)
     legacy = {}
     for dataset_id, replacement in (("bprna_new", "bpfold_official_bprna_new_reference_5388"),
@@ -248,6 +250,8 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
                 "archiveii_official_reference_3966", {}).get("n_sequences") == 3966
             and archive_full.get("coverage_accounting", {}).get("official_3966_full_coverage") == 8
             and archive_full.get("coverage_accounting", {}).get("xens2_protocol_blocked_records") == 16
+            and archive_full.get("coverage_accounting", {}).get("xens2_official_3966_coverage") == 3950 / 3966
+            and archive_full.get("gpu_used") is True
             and archive_full.get("external_test_model_selection") is False
             and strongest_full.get("prediction_id") ==
             "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1"
@@ -257,6 +261,7 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
             "ArchiveII full3966 eight-full/MXfold2 contract changed")
     full_rows = []
     xens2_full = None
+    xens2_composite_full = None
     for row in archive_full.get("rows", []):
         row_panel = row.get("panels", {}).get("archiveii_official_reference_3966") or {}
         if row_panel.get("status") == "PASS_FULL_COVERAGE":
@@ -267,6 +272,8 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
             full_rows.append(row.get("prediction_id"))
         if row.get("prediction_id") == "xens2/archiveii_embok_clean":
             xens2_full = row_panel
+        if row.get("prediction_id") == "xens2/archiveii_official_reference_3966/gpu_recovery_v1":
+            xens2_composite_full = row_panel
     vienna_full = {"vienna_mfe/archiveii_official_reference_3966/cpu_recovery_v1",
                    "vienna_centroid/archiveii_official_reference_3966/cpu_recovery_v1",
                    "vienna_mea/archiveii_official_reference_3966/cpu_recovery_v1"}
@@ -274,14 +281,24 @@ def validate_evidence(data_registry: str | Path = DATA_REGISTRY,
             and xens2_full.get("status") == "PARTIAL_COVERAGE_NOT_RANKED"
             and xens2_full.get("n_with_prediction") == 2544
             and xens2_full.get("missing_count") == 1422
-            and xens2_full.get("coverage") == 2544 / 3966,
+            and xens2_full.get("coverage") == 2544 / 3966
+            and xens2_composite_full is not None
+            and xens2_composite_full.get("status") == "PARTIAL_COVERAGE_NOT_RANKED"
+            and xens2_composite_full.get("n_with_prediction") == 3950
+            and xens2_composite_full.get("missing_count") == 16
+            and xens2_composite_full.get("coverage") == 3950 / 3966,
             "ArchiveII Vienna eight-full or xens2 partial/no-ranking boundary changed")
     require(xens2_queue.get("production_started") is False
             and xens2_queue.get("status", {}).get("state") == "WAITING_PRODUCTION"
             and xens2_queue.get("production_blocked_reason_counts", {}).get(
-                "BLOCKED_PROTOCOL_LENGTH_GT1024") == 16
-            and 2544 + 1422 - 16 == 3950,
-            "ArchiveII xens2 GPU-queued/theoretical-max3950 boundary changed")
+                "BLOCKED_PROTOCOL_LENGTH_GT1024") == 16,
+            "ArchiveII xens2 historical GPU-wait boundary changed")
+    require(xens2_live_queue.get("state") == "COMPLETE_WITH_PROTOCOL_BLOCKS"
+            and xens2_live_queue.get("coverage", {}).get("n_pass") == 1406
+            and xens2_live_queue.get("coverage", {}).get("n_blocked") == 16
+            and xens2_live_queue.get("coverage", {}).get("remaining_count") == 0
+            and 2544 + 1406 == 3950,
+            "ArchiveII xens2 live GPU-recovery/partial-composite boundary changed")
     require(archive_full_check_report.get("status") == "PASS_CLEAN_CLONE_AND_DELIVERY"
             and archive_full_check_report.get("clean_clone_outputs_byte_identical") is True
             and archive_full_check_report.get("external_test_model_selection") is False
@@ -477,7 +494,7 @@ def add_label_slide(prs: Presentation, evidence: dict) -> None:
     full_single = evidence["archive_full"]["full_3966"]["strongest_single_predictor"]["metrics"]["micro_f1"]
     text(slide, 0.78, 4.43, 11.70, 0.32,
          "* clean2544 新差距仅描述同一全覆盖面板；不是模型选择，也不自动继承 clean SOTA 资格。\nArchiveII full3966：8 full · Vienna MFE/centroid/MEA full · MXfold2 strongest single=" + fmt10(full_single) +
-         "\nxens2 GPU queued · 理论最多3950/3966（16 blocked）不排名 · full未完成",
+         "\nxens2 GPU composite 3950/3966（16 blocked）不排名 · 原clean身份2544单列 · full未完成",
          6.8, MUTED, font=SANS)
     rect(slide, 0.78, 4.78, 4.40, 0.24, PALE, BURGUNDY)
     text(slide, 0.94, 4.80, 4.08, 0.20,
@@ -519,7 +536,7 @@ def verify_built_deck(path: Path, prior_deck: Path, evidence: dict) -> dict:
                 "+0.0842809284", "+0.0048000324", "strongest single", "62 rebuilt / 91 UNCHECKED",
                 "ArchiveII full3966：8 full", "Vienna MFE/centroid/MEA full",
                 "MXfold2 strongest single=0.7023050286",
-                "xens2 GPU queued", "理论最多3950/3966（16 blocked）不排名", "full未完成",
+                "xens2 GPU composite 3950/3966", "16 blocked", "原clean身份2544单列", "full未完成",
                 "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
                 "OFFICIAL · TS0 7×1305 full · TestSetB 7×430 full",
                 "RNAstructure fold/MaxExpect：1302/1305 · 429/430 partial",
@@ -596,8 +613,9 @@ def build(deck: str | Path, source_deck: str | Path = SOURCE_DECK,
                   "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
                   "archiveii_full3966_full_coverage_identities": 8,
                   "archiveii_full3966_xens2_ranking_allowed": False,
-                  "archiveii_full3966_xens2_gpu_queued": True,
-                  "archiveii_full3966_xens2_theoretical_max": 3950,
+                  "archiveii_full3966_xens2_gpu_recovery_complete": True,
+                  "archiveii_full3966_xens2_composite_coverage": 3950,
+                  "archiveii_full3966_xens2_original_clean_coverage": 2544,
                   "ts0_testsetb_official_full_ranking_allowed": False,
                   "ts0_official_full_coverage_identities": 7,
                   "testsetb_official_full_coverage_identities": 7,
@@ -627,6 +645,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--archive-full-system", type=Path, default=ARCHIVE_FULL_SYSTEM)
     parser.add_argument("--archive-full-check", type=Path, default=ARCHIVE_FULL_CHECK)
     parser.add_argument("--archive-xens2-queue", type=Path, default=ARCHIVE_XENS2_QUEUE)
+    parser.add_argument("--archive-xens2-live-queue", type=Path, default=ARCHIVE_XENS2_LIVE_QUEUE)
     parser.add_argument("--bprna-system", type=Path, default=BPRNA_SYSTEM)
     parser.add_argument("--pretrain-summary", type=Path, default=PRETRAIN_SUMMARY)
     parser.add_argument("--pdb-lineage", type=Path, default=PDB_LINEAGE)
@@ -643,7 +662,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     evidence_paths = {name: getattr(args, name) for name in
                       ("data_registry", "archive_lineage", "archive_system", "archive_recommendation",
-                       "archive_full_system", "archive_full_check", "archive_xens2_queue",
+                       "archive_full_system", "archive_full_check", "archive_xens2_queue", "archive_xens2_live_queue",
                        "bprna_system", "pretrain_summary", "pdb_lineage", "pdb_summary",
                        "pdb_verification", "ts_coverage", "ts_verification", "ts0_recovery",
                        "ts0_recovery_check", "testsetb_recovery", "testsetb_recovery_check",

@@ -1,0 +1,53 @@
+{
+  "base_system_metrics_sha256": "01de9163a6ced10c1a968b0396c60fd68dca6d5ab5b8d80511603628f7155d83",
+  "clean_panel_sha256": "cde658b5d61813ff9530509bd25631d6f33dcb08021bae107636f0a212c11afb",
+  "external_test_model_selection": false,
+  "full_panel_sha256": "a2fc055ec86333af4e292bcc78dc7858908dfc5a4596d53f44b391213afec1a0",
+  "gpu_used": true,
+  "predictor_metadata": {
+    "contrafold": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/contrafold/predictor_metadata.json",
+      "sha256": "e70920e1ea63c8e277709e684ce9d29e8e53584491bb7fd0cb3ff8ae061f73e0"
+    },
+    "eternafold": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/eternafold/predictor_metadata.json",
+      "sha256": "2671e44e57082891f9d26428f492995ef44cede10f0f55730cae1433ba008ba6"
+    },
+    "mxfold2": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/mxfold2/predictor_metadata.json",
+      "sha256": "3a11fd194b394ab4a19c1f70ad7be5b62226ff78f2672a21cf8a1860579a0cd2"
+    },
+    "rnastructure_fold": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/rnastructure_fold/predictor_metadata.json",
+      "sha256": "216d483ae9ad7ca9e2f102c05b6009a503b1fa963165b03443f86723a92b2b9a"
+    },
+    "rnastructure_maxexpect": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/rnastructure_maxexpect/predictor_metadata.json",
+      "sha256": null
+    },
+    "vienna_centroid": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/vienna_centroid/predictor_metadata.json",
+      "sha256": "12c13204b3af57b19ac02963425bd051a3ae1fc307b307741fd09a15effbc7bd"
+    },
+    "vienna_mea": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/vienna_mea/predictor_metadata.json",
+      "sha256": "53682116583bdf341d1989ef03b0a153b925fd673beed3ae17a67b1b6cb7c1f7"
+    },
+    "vienna_mfe": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127/vienna_mfe/predictor_metadata.json",
+      "sha256": "3c2c27041e42ab5d75d82fdf1d4e2315491095223418c292b1ba5e454cc77bf5"
+    },
+    "xens2": {
+      "path": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/production/xens2/predictor_metadata.json",
+      "sha256": "237aeb2ea626a5e28835ea04f50dff3af1f2e67f8d400ee03bc1c50e0774ce2e"
+    }
+  },
+  "recovery_plan": "source_data/archiveii_full3966_cpu_recovery_20261127/recovery_plan.json",
+  "recovery_plan_sha256": "c6b801752967f04a37c4359981de16cb11c54e09a20a1330157ac80b1be71d9f",
+  "schema_version": "archiveii.full3966.cpu_recovery.panel.v1.source_manifest",
+  "shared_registry_modified": false,
+  "work_root": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127",
+  "xens2_live_queue_status": "/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/queue_status.json",
+  "xens2_live_queue_status_sha256": "db8c467edf8ee024b41ab85b919967e366a87a733046d3bf46d91504a5572595",
+  "xens2_queue_evidence_sha256": "bcad99ef16497f8bcb418b4ddbfb39db29de6a5bcf5310c594b3cb0d754ff116"
+}
