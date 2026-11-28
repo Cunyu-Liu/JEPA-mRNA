@@ -269,8 +269,8 @@ def test_rfam_sequence_release_and_novelty_conservation():
 
 def test_archiveii_full_recovery_overall_and_strongest_single():
     text = ledger.DOC.read_text()
-    assert "1558cf007b8a114349b73ed3b7becd77d76ac251" in text
-    assert "full3966 现有 **5 个全覆盖身份**" in text
+    assert "e02791e3875412038f64941838169ffb83aad737" in text
+    assert "full3966 现有 **8 个全覆盖身份**" in text
     assert "0.7974584107660678" in text
     assert "0.7023050285738565" in text
     assert "mxfold2/archiveii_official_reference_3966/cpu_recovery_v1" in text
@@ -286,8 +286,8 @@ def test_archiveii_full_xens2_vienna_and_maxexpect_boundaries():
     text = ledger.DOC.read_text()
     assert "UNCHECKED_XENS2_NOT_FULL_COVERAGE" in text
     assert "xens2 仍只有 **2544/3966**" in text
-    assert "无 clean 记录预测不构造 full" in text
-    assert "BLOCKED_NO_PREDICTIONS_IN_PANEL" in text
+    assert "Vienna 真实 clean 记录级预测后已 full" in text
+    assert "早期 clean=0 的状态仅属恢复前历史" in text
     assert "MaxExpect 仅恢复 12/1422" in text
     assert "2556/3966" in text
     assert "missing=1410" in text
@@ -296,7 +296,7 @@ def test_archiveii_full_xens2_vienna_and_maxexpect_boundaries():
 def test_archiveii_clean_full_consistency_contract():
     text = ledger.DOC.read_text()
     assert "ArchiveII clean/full 联合不变量" in text
-    assert "base full=1 与当前 full=5" in text
+    assert "base full=1 与当前 full=8" in text
     assert "三者的 metrics、相对 xens2 delta 和 paired macro CI 均与 base 一致" in text
     assert "full 新增不得回写 clean 或 base 历史" in text
 
@@ -314,7 +314,7 @@ def test_matched_natural_convergence_states_and_no_structural_claim():
     assert "bad_evaluations=5" in text
     assert "best_convergence` 为同一 best/loss、**bad_evaluations=0**" in text
     assert "additional_evaluation_started=false" in text
-    assert "其余三臂未完成，四臂结构结论仍不存在" in text
+    assert "destroy/independent 未完成，四臂结构结论仍不存在" in text
 
 
 @pytest.mark.skipif(ledger.missing_sources(), reason="host-specific frozen artifacts are unavailable")
@@ -337,12 +337,36 @@ def test_matched_ledger_and_best_resume_integrity():
 def test_ensemble_audit_time_status_and_four_arm_conclusion_gate():
     text = ledger.DOC.read_text()
     assert "step=10000、validation_loss=0.40810874768920063" in text
-    assert "审计时 resume 已到 **10500**" in text
-    assert "下一批为 10501 且匹配 saved stream" in text
-    assert "completed_arms=[matched_control]" in text
+    assert "审计时历史状态" in text
+    assert "ensemble 同样在 **step=19000**" in text
+    assert "best validation loss=**0.3766131074069069**" in text
+    assert "completed_arms={matched_control, ensemble_context}" in text
     assert "evaluation=null" in text
-    assert "matched 一臂自然收敛不得外推为四臂完成" in text
+    assert "两臂 validation margin 不可直接比较为结构优劣" in text
     assert "独立结构评估仍未开始" in text
+
+
+def test_archiveii_xens2_memory_wait_is_historical_not_current():
+    text = ledger.DOC.read_text()
+    assert "external peak delta 为 **10,465 MiB**" in text
+    assert "required_free_mib=17746" in text
+    assert "free_mib=15988" in text
+    assert "15988<17746" in text
+    assert "4131240" in text
+    assert "WAITING_PRODUCTION" in text
+    assert "production_started=false" in text
+    assert "该快照只证明当时未越过资源门" in text
+
+
+def test_archiveii_xens2_live_completion_remains_partial_coverage():
+    text = ledger.DOC.read_text()
+    assert "COMPLETE_WITH_PROTOCOL_BLOCKS" in text
+    assert "1406 pass + 16" in text
+    assert "2544+1406=3950/3966" in text
+    assert "BLOCKED_PROTOCOL_LENGTH_GT1024" in text
+    assert "dd776f0be7f8470f37e57e939179088b14acf4f7369cb67f837c9534ffa5adf1" in text
+    assert "恢复完成与面板排名资格必须分开" in text
+    assert "PARTIAL_COVERAGE_NOT_RANKED" in text
 
 
 def test_label_quality_soft_review_and_zero_deletion():

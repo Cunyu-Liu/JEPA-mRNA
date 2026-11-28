@@ -70,6 +70,8 @@ SOURCES = {
     "archiveii_verification": ARCHIVEII_REPO / "artifacts/archiveii_official_reference_20261127/verification_round3.json",
     "archiveii_full_metrics": ARCHIVEII_REPO / "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json",
     "archiveii_full_verification": ARCHIVEII_REPO / "artifacts/archiveii_full3966_cpu_recovery_20261127/verification_round3.json",
+    "archiveii_xens2_queue": ARCHIVEII_REPO / "source_data/archiveii_vienna_full3966_cpu_20261127/xens2_queue_evidence.json",
+    "archiveii_xens2_live_queue": Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/queue_status.json"),
     "ts0_metrics": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_pre_recovery_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_recovery_audit": TS0_COVERAGE_REPO / "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
@@ -120,7 +122,7 @@ SOURCE_COMMITS = {
     "independent margin evaluator": (MARGIN_EVALUATOR_REPO, "536b79e450c1ad18b67e06cb39ecb3730546221b"),
     "model-dev v3": (MODEL_DEV_V3_REPO, "302b70a228d77b0f1847489c93ead402e33510b5"),
     "BPfold label protocol": (BPFOLD_PROTOCOL_REPO, "e7ff4e76fe078178ab41d2052349627317b5a3e3"),
-    "ArchiveII official reference": (ARCHIVEII_REPO, "1558cf007b8a114349b73ed3b7becd77d76ac251"),
+    "ArchiveII official reference": (ARCHIVEII_REPO, "e02791e3875412038f64941838169ffb83aad737"),
     "TS0 official coverage recovery": (TS0_COVERAGE_REPO, "a8b1089a67a84665c49f0c228064693a53548590"),
     "TestSetB official coverage recovery": (TESTSETB_COVERAGE_REPO, "7342f26303d3acc8d61f395c040534242d0f7895"),
     "PDB/Rfam label lineage": (PDB_RFAM_REPO, "105bb55d2e959e587c85d3de7607fdc3c14c5c73"),
@@ -610,10 +612,10 @@ def verify_matched_convergence_contract() -> list[str]:
     }:
         errors.append("ensemble current best identity mismatch")
     scheduler = json.loads(SOURCES["current_margin_scheduler"].read_text())
-    if scheduler["completed_arms"] != ["matched_control"] or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
-        errors.append("four-arm completion/evaluation/conclusion state overclaimed")
-    if scheduler["processes"]["matched_control"]["status"] != "converged" or scheduler["processes"]["ensemble_context"]["status"] != "running":
-        errors.append("scheduler matched/ensemble process state mismatch")
+    if set(scheduler["completed_arms"]) != {"matched_control", "ensemble_context"} or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
+        errors.append("current two-arm completion/evaluation/conclusion state overclaimed")
+    if scheduler["processes"]["matched_control"]["status"] != "converged" or scheduler["processes"]["ensemble_context"]["status"] != "converged" or scheduler["processes"]["destroy_interval_shuffle"]["status"] != "running":
+        errors.append("current scheduler matched/ensemble/destroy process state mismatch")
     source = (RECOVERY_REPO / "tools/audit_structured_margin_converged_19000_v1.py").read_text()
     for required in ["def validate_stop_sequence(", "len(rows) != 19000", "best_hashes != resume_hashes", "best_resume_tensor_identity_match", "additional_evaluation_started"]:
         if required not in source:
@@ -623,19 +625,22 @@ def verify_matched_convergence_contract() -> list[str]:
 
 def verify_archiveii_full_recovery_contract() -> list[str]:
     errors = []
-    for name in ["archiveii_full_metrics", "archiveii_full_verification"]:
+    for name in ["archiveii_full_metrics", "archiveii_full_verification", "archiveii_xens2_queue", "archiveii_xens2_live_queue"]:
         if not SOURCES[name].is_file():
             return [f"missing ArchiveII full recovery source: {name}: {SOURCES[name]}"]
     metrics = json.loads(SOURCES["archiveii_full_metrics"].read_text())
     verification = json.loads(SOURCES["archiveii_full_verification"].read_text())
+    queue = json.loads(SOURCES["archiveii_xens2_queue"].read_text())
+    live_queue = json.loads(SOURCES["archiveii_xens2_live_queue"].read_text())
     expected_coverage = {
         "base_identities": 36,
-        "clean_2544_full_coverage": 25,
-        "official_3966_full_coverage": 5,
+        "clean_2544_full_coverage": 28,
+        "official_3966_full_coverage": 8,
         "recovery_complete_1422": 7,
         "recovery_identities": 8,
         "total_identities": 44,
         "xens2_official_3966_coverage": 0.6414523449319214,
+        "xens2_protocol_blocked_records": 16,
     }
     if metrics["coverage_accounting"] != expected_coverage:
         errors.append(f"ArchiveII full recovery coverage accounting mismatch: {metrics['coverage_accounting']}")
@@ -661,12 +666,40 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         "contrafold/archiveii_official_reference_3966/cpu_recovery_v1",
         "eternafold/archiveii_official_reference_3966/cpu_recovery_v1",
         "rnastructure_fold/archiveii_official_reference_3966/cpu_recovery_v1",
+        "vienna_mfe/archiveii_official_reference_3966/cpu_recovery_v1",
+        "vienna_centroid/archiveii_official_reference_3966/cpu_recovery_v1",
+        "vienna_mea/archiveii_official_reference_3966/cpu_recovery_v1",
     }
     full_ids = {row["prediction_id"] for row in metrics["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"}
     if full_ids != expected_full:
         errors.append(f"ArchiveII current full3966 identities mismatch: {sorted(full_ids)}")
     if full["xens2_delta"] != "UNCHECKED_XENS2_NOT_FULL_COVERAGE":
         errors.append("ArchiveII full xens2 delta was computed without full coverage")
+    queue_status = queue["status"]
+    if queue_status["state"] != "WAITING_PRODUCTION" or queue_status["pid"] != 4131240:
+        errors.append("ArchiveII xens2 frozen queue evidence is not the historical production wait")
+    if queue_status["measured_peak_mib"] != 10465.0 or queue_status["required_free_mib"] != 17746 or queue_status["device"]["free_mib"] != 15988:
+        errors.append("ArchiveII xens2 historical probe/production/free memory mismatch")
+    if queue_status["device"]["free_mib"] >= queue_status["required_free_mib"] or queue["production_started"] is not False:
+        errors.append("ArchiveII xens2 historical production was launched without required free memory")
+    if live_queue["state"] != "COMPLETE_WITH_PROTOCOL_BLOCKS" or live_queue["pid"] != 4131240 or live_queue["returncode"] != 0:
+        errors.append("ArchiveII xens2 live queue did not complete under the frozen protocol")
+    live_coverage = live_queue["coverage"]
+    if live_coverage["status"] != "COMPLETE" or live_coverage["n_completed"] != 1422 or live_coverage["n_pass"] != 1406 or live_coverage["n_blocked"] != 16 or live_coverage["remaining_count"] != 0:
+        errors.append("ArchiveII xens2 live recovery coverage mismatch")
+    if live_coverage["blocked_reason_counts"] != {"BLOCKED_PROTOCOL_LENGTH_GT1024": 16} or live_coverage["predictions_sha256"] != "dd776f0be7f8470f37e57e939179088b14acf4f7369cb67f837c9534ffa5adf1":
+        errors.append("ArchiveII xens2 live protocol-block or prediction identity mismatch")
+    if metrics["recovery"]["xens2"]["n_completed"] != 0 or metrics["recovery"]["xens2"]["full_composite_records"] != 2544 or metrics["recovery"]["xens2"]["remaining_count"] != 1422:
+        errors.append("ArchiveII xens2 production has unreported completed predictions")
+    if queue["probe_result"]["protocol"] != "frozen xens2_eval; len>1024 or missing embeddings explicitly blocked, never substituted":
+        errors.append("ArchiveII xens2 probe protocol mismatch")
+    blocked = queue["production_blocked_reason_counts"]
+    if blocked != {"BLOCKED_PROTOCOL_LENGTH_GT1024": 16} or metrics["coverage_accounting"]["xens2_protocol_blocked_records"] != 16:
+        errors.append("ArchiveII xens2 protocol blocked count mismatch")
+    if 1422 - blocked["BLOCKED_PROTOCOL_LENGTH_GT1024"] != 1406 or 2544 + 1406 != 3950:
+        errors.append("ArchiveII xens2 compliant recovery/composite upper bound mismatch")
+    if metrics["recovery"]["xens2"]["n_completed"] != 0:
+        errors.append("ArchiveII xens2 compliant upper bound was misreported as completed recovery")
     rows = {row["prediction_id"]: row for row in metrics["rows"]}
     xens2 = rows["xens2/archiveii_embok_clean"]["panels"]["archiveii_official_reference_3966"]
     if xens2["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or xens2["n_with_prediction"] != 2544 or xens2["delta_vs_xens2"] is not None or xens2["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
@@ -675,10 +708,10 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         row = rows[f"{decoder}/archiveii_official_reference_3966/cpu_recovery_v1"]["panels"]
         full_panel = row["archiveii_official_reference_3966"]
         clean_panel = row["archiveii_official_reference_clean_2544"]
-        if full_panel["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or full_panel["n_with_prediction"] != 1422:
-            errors.append(f"ArchiveII Vienna recovery-only records were constructed as full: {decoder}")
-        if clean_panel["status"] != "BLOCKED_NO_PREDICTIONS_IN_PANEL" or clean_panel["n_with_prediction"] != 0 or clean_panel["missing_predictions_imputed_as_zero"] is not False:
-            errors.append(f"ArchiveII Vienna missing clean predictions were imputed: {decoder}")
+        if full_panel["status"] != "PASS_FULL_COVERAGE" or full_panel["n_with_prediction"] != 3966 or full_panel["missing_count"] != 0:
+            errors.append(f"ArchiveII Vienna full3966 coverage mismatch: {decoder}")
+        if clean_panel["status"] != "PASS_FULL_COVERAGE" or clean_panel["n_with_prediction"] != 2544 or clean_panel["missing_count"] != 0 or clean_panel["missing_predictions_imputed_as_zero"] is not False:
+            errors.append(f"ArchiveII Vienna clean prediction coverage mismatch: {decoder}")
     maxexpect_recovery = metrics["recovery"]["rnastructure_maxexpect"]
     if maxexpect_recovery["n_completed"] != 12 or maxexpect_recovery["full_composite_records"] != 2556 or maxexpect_recovery["complete_for_full_ranking"] is not False:
         errors.append("ArchiveII MaxExpect recovery completion/composite mismatch")
@@ -713,8 +746,8 @@ def verify_archiveii_clean_full_consistency() -> list[str]:
     base_full = [row for row in base["rows"] if row["panels"]["archiveii_official_reference_3966"]["status"] == "PASS_FULL_COVERAGE"]
     if len(base_full) != 1 or base_full[0]["prediction_id"] != "bpfold_official_release/archiveii":
         errors.append("ArchiveII base historical full identity changed")
-    if current["coverage_accounting"]["official_3966_full_coverage"] != 5:
-        errors.append("ArchiveII current full recovery no longer has five identities")
+    if current["coverage_accounting"]["official_3966_full_coverage"] != 8:
+        errors.append("ArchiveII current full recovery no longer has eight identities")
     return errors
 
 
@@ -1231,8 +1264,10 @@ def verify_narrative_guards() -> list[str]:
         "train/batch/compute 各 **19,000** 行",
         "best_resume_tensor_identity_match=true",
         "step=10000、validation_loss=0.40810874768920063",
-        "审计时 resume 已到 **10500**",
-        "completed_arms=[matched_control]",
+        "审计时历史状态",
+        "ensemble 同样在 **step=19000**",
+        "best validation loss=**0.3766131074069069**",
+        "completed_arms={matched_control, ensemble_context}",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
@@ -1258,14 +1293,22 @@ def verify_narrative_guards() -> list[str]:
         "best_step=15000",
         "bad_evaluations=0",
         "四臂未收敛，当前无 margin 科学结论",
-        "1558cf007b8a114349b73ed3b7becd77d76ac251",
+        "e02791e3875412038f64941838169ffb83aad737",
         "0.7974584107660678",
         "0.7023050285738565",
-        "5 个全覆盖身份",
+        "8 个全覆盖身份",
         "UNCHECKED_XENS2_NOT_FULL_COVERAGE",
-        "无 clean 记录预测不构造 full",
+        "external peak delta 为 **10,465 MiB**",
+        "required_free_mib=17746",
+        "free_mib=15988",
+        "WAITING_PRODUCTION",
+        "COMPLETE_WITH_PROTOCOL_BLOCKS",
+        "1406 pass + 16",
+        "2544+1406=3950/3966",
+        "恢复完成与面板排名资格必须分开",
+        "Vienna 真实 clean 记录级预测后已 full",
         "2556/3966",
-        "base full=1 与当前 full=5",
+        "base full=1 与当前 full=8",
         "full 新增不得回写 clean 或 base 历史",
         "8a2008a4cda3c43b3000f25151b80408b0bdb110",
         "a8b1089a67a84665c49f0c228064693a53548590",
