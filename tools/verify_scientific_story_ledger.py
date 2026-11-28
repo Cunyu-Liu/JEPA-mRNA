@@ -71,6 +71,7 @@ SOURCES = {
     "archiveii_full_metrics": ARCHIVEII_REPO / "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json",
     "archiveii_full_verification": ARCHIVEII_REPO / "artifacts/archiveii_full3966_cpu_recovery_20261127/verification_round3.json",
     "archiveii_xens2_queue": ARCHIVEII_REPO / "source_data/archiveii_vienna_full3966_cpu_20261127/xens2_queue_evidence.json",
+    "archiveii_xens2_live_queue": Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/queue_status.json"),
     "ts0_metrics": TS0_COVERAGE_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_pre_recovery_metrics": ARCHIVEII_REPO / "artifacts/ts0_testsetb_official_reference_20261127/bprna_ts0_system_metrics.json",
     "ts0_recovery_audit": TS0_COVERAGE_REPO / "artifacts/ts0_official_coverage_recovery_20261127/recovery_audit.json",
@@ -611,10 +612,10 @@ def verify_matched_convergence_contract() -> list[str]:
     }:
         errors.append("ensemble current best identity mismatch")
     scheduler = json.loads(SOURCES["current_margin_scheduler"].read_text())
-    if scheduler["completed_arms"] != ["matched_control"] or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
-        errors.append("four-arm completion/evaluation/conclusion state overclaimed")
-    if scheduler["processes"]["matched_control"]["status"] != "converged" or scheduler["processes"]["ensemble_context"]["status"] != "running":
-        errors.append("scheduler matched/ensemble process state mismatch")
+    if set(scheduler["completed_arms"]) != {"matched_control", "ensemble_context"} or scheduler["evaluation"] is not None or scheduler["scientific_conclusion"] is not None:
+        errors.append("current two-arm completion/evaluation/conclusion state overclaimed")
+    if scheduler["processes"]["matched_control"]["status"] != "converged" or scheduler["processes"]["ensemble_context"]["status"] != "converged" or scheduler["processes"]["destroy_interval_shuffle"]["status"] != "running":
+        errors.append("current scheduler matched/ensemble/destroy process state mismatch")
     source = (RECOVERY_REPO / "tools/audit_structured_margin_converged_19000_v1.py").read_text()
     for required in ["def validate_stop_sequence(", "len(rows) != 19000", "best_hashes != resume_hashes", "best_resume_tensor_identity_match", "additional_evaluation_started"]:
         if required not in source:
@@ -624,12 +625,13 @@ def verify_matched_convergence_contract() -> list[str]:
 
 def verify_archiveii_full_recovery_contract() -> list[str]:
     errors = []
-    for name in ["archiveii_full_metrics", "archiveii_full_verification", "archiveii_xens2_queue"]:
+    for name in ["archiveii_full_metrics", "archiveii_full_verification", "archiveii_xens2_queue", "archiveii_xens2_live_queue"]:
         if not SOURCES[name].is_file():
             return [f"missing ArchiveII full recovery source: {name}: {SOURCES[name]}"]
     metrics = json.loads(SOURCES["archiveii_full_metrics"].read_text())
     verification = json.loads(SOURCES["archiveii_full_verification"].read_text())
     queue = json.loads(SOURCES["archiveii_xens2_queue"].read_text())
+    live_queue = json.loads(SOURCES["archiveii_xens2_live_queue"].read_text())
     expected_coverage = {
         "base_identities": 36,
         "clean_2544_full_coverage": 28,
@@ -675,15 +677,29 @@ def verify_archiveii_full_recovery_contract() -> list[str]:
         errors.append("ArchiveII full xens2 delta was computed without full coverage")
     queue_status = queue["status"]
     if queue_status["state"] != "WAITING_PRODUCTION" or queue_status["pid"] != 4131240:
-        errors.append("ArchiveII xens2 queue is not the frozen production wait")
+        errors.append("ArchiveII xens2 frozen queue evidence is not the historical production wait")
     if queue_status["measured_peak_mib"] != 10465.0 or queue_status["required_free_mib"] != 17746 or queue_status["device"]["free_mib"] != 15988:
-        errors.append("ArchiveII xens2 probe/production/free memory mismatch")
+        errors.append("ArchiveII xens2 historical probe/production/free memory mismatch")
     if queue_status["device"]["free_mib"] >= queue_status["required_free_mib"] or queue["production_started"] is not False:
-        errors.append("ArchiveII xens2 production was launched without required free memory")
+        errors.append("ArchiveII xens2 historical production was launched without required free memory")
+    if live_queue["state"] != "COMPLETE_WITH_PROTOCOL_BLOCKS" or live_queue["pid"] != 4131240 or live_queue["returncode"] != 0:
+        errors.append("ArchiveII xens2 live queue did not complete under the frozen protocol")
+    live_coverage = live_queue["coverage"]
+    if live_coverage["status"] != "COMPLETE" or live_coverage["n_completed"] != 1422 or live_coverage["n_pass"] != 1406 or live_coverage["n_blocked"] != 16 or live_coverage["remaining_count"] != 0:
+        errors.append("ArchiveII xens2 live recovery coverage mismatch")
+    if live_coverage["blocked_reason_counts"] != {"BLOCKED_PROTOCOL_LENGTH_GT1024": 16} or live_coverage["predictions_sha256"] != "dd776f0be7f8470f37e57e939179088b14acf4f7369cb67f837c9534ffa5adf1":
+        errors.append("ArchiveII xens2 live protocol-block or prediction identity mismatch")
     if metrics["recovery"]["xens2"]["n_completed"] != 0 or metrics["recovery"]["xens2"]["full_composite_records"] != 2544 or metrics["recovery"]["xens2"]["remaining_count"] != 1422:
         errors.append("ArchiveII xens2 production has unreported completed predictions")
     if queue["probe_result"]["protocol"] != "frozen xens2_eval; len>1024 or missing embeddings explicitly blocked, never substituted":
         errors.append("ArchiveII xens2 probe protocol mismatch")
+    blocked = queue["production_blocked_reason_counts"]
+    if blocked != {"BLOCKED_PROTOCOL_LENGTH_GT1024": 16} or metrics["coverage_accounting"]["xens2_protocol_blocked_records"] != 16:
+        errors.append("ArchiveII xens2 protocol blocked count mismatch")
+    if 1422 - blocked["BLOCKED_PROTOCOL_LENGTH_GT1024"] != 1406 or 2544 + 1406 != 3950:
+        errors.append("ArchiveII xens2 compliant recovery/composite upper bound mismatch")
+    if metrics["recovery"]["xens2"]["n_completed"] != 0:
+        errors.append("ArchiveII xens2 compliant upper bound was misreported as completed recovery")
     rows = {row["prediction_id"]: row for row in metrics["rows"]}
     xens2 = rows["xens2/archiveii_embok_clean"]["panels"]["archiveii_official_reference_3966"]
     if xens2["status"] != "PARTIAL_COVERAGE_NOT_RANKED" or xens2["n_with_prediction"] != 2544 or xens2["delta_vs_xens2"] is not None or xens2["paired_macro_f1_delta_ci95_vs_xens2"] is not None:
@@ -1248,8 +1264,10 @@ def verify_narrative_guards() -> list[str]:
         "train/batch/compute 各 **19,000** 行",
         "best_resume_tensor_identity_match=true",
         "step=10000、validation_loss=0.40810874768920063",
-        "审计时 resume 已到 **10500**",
-        "completed_arms=[matched_control]",
+        "审计时历史状态",
+        "ensemble 同样在 **step=19000**",
+        "best validation loss=**0.3766131074069069**",
+        "completed_arms={matched_control, ensemble_context}",
         "62 条重建、91 条 UNCHECKED",
         "58 true / 4 false",
         "4 条 DSSR scheme 修复",
@@ -1284,6 +1302,10 @@ def verify_narrative_guards() -> list[str]:
         "required_free_mib=17746",
         "free_mib=15988",
         "WAITING_PRODUCTION",
+        "COMPLETE_WITH_PROTOCOL_BLOCKS",
+        "1406 pass + 16",
+        "2544+1406=3950/3966",
+        "恢复完成与面板排名资格必须分开",
         "Vienna 真实 clean 记录级预测后已 full",
         "2556/3966",
         "base full=1 与当前 full=8",
