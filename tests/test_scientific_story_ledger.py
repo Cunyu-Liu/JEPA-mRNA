@@ -393,13 +393,14 @@ def test_pretrain_exposure_conservation_and_sota_limits():
     assert "EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626" in text
     assert "bpRNA-new EXACT=5,381/5,388" in text
     assert "完整官方预训练语料仍 `UNCHECKED`" in text
-    assert "dev 不能外推 clean-OOD" in text
+    assert "不再作为排名否决或主线阻塞" in text
+    assert "下游去重、标签协议一致、覆盖率完整后正常排序" in text
     assert "剩余 7 条均为 HOMOLOGY" in text
 
 
 def test_next_page_exposure_strata_and_margin_pending():
     text = ledger.DOC.read_text()
-    assert "下一页必须暴露分层" in text
+    assert "不再把无监督预训练暴露作为 SOTA 否决门" in text
     assert "margin 双训练未完成" in text
     assert "/home/rna_jev_margin_evaluator" in text
     assert "536b79e450c1ad18b67e06cb39ecb3730546221b" in text
