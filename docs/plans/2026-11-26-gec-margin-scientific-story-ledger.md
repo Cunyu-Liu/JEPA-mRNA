@@ -5,6 +5,8 @@
 整合基线：`780044cc2c4c2fa3ae355edf1fb6e1d68eb44019`
 范围：bpRNA model-dev；既有 VL0 为 196 条，GEC 为 TR1c cluster80 dev 9,143 条。均非外部测试、严格 OOD 或 SOTA 证据。
 
+> **2026-11-29 用户统一评价口径**：RiNALMo 等无监督预训练暴露不再作为主线阻塞、排名否决或 clean-OOD gating。测评做好下游训练/评价去重、标签协议一致、覆盖率完整后正常排序。本文第 13/14 节及相关暴露审计保留为历史记录/补充描述，不再用于 veto。权威政策见整合仓库 `docs/plans/2026-11-29-evaluation-policy-user-override.md`。
+
 ## 当前一句话
 
 已完成证据支持的是“容量、SRD、stacking closure 按预注册门停止；GEC seed0 科学 FAIL；残差主要定位于非正 score-margin FN；crossover 证明上下文输入有因果作用，但真实 ensemble 并非一致有益；NLL 四臂恢复为结构参照”；项目旧 bpRNA-new 标签已证实为 `DERIVED_FROM_BPFOLD_PREDICTIONS`，structRFM/BPfold/CONTRAfold 旧 raw 结果仅作 circular-audit-only；新的同官方参考面板只支持描述性冻结协议比较；LinearPartition 19,000 nt 只有 baseline 运行回答而 GEC unsupported；**structured margin 是正在检验的候选目标，不是已成立结论，也没有任何 margin 四臂结构结果可供摘要或标题使用。**
@@ -162,24 +164,24 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 
 ## 13. Pretrain exposure：已知来源高度暴露，完整官方语料仍未封闭
 
-- **Claim（暴露分层而非 clean 认证）**：当前 RiNALMo-giga backbone 的已知公开来源审计显示，cluster80 dev 9,143 条为 **EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626**；**bpRNA-new EXACT=5,381/5,388**，剩余 7 条均为 HOMOLOGY。**完整官方预训练语料仍 `UNCHECKED`，dev 不能外推 clean-OOD**。
+- **Claim（历史暴露审计，当前非排名否决）**：当前 RiNALMo-giga backbone 的已知公开来源审计显示，cluster80 dev 9,143 条为 **EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626**；**bpRNA-new EXACT=5,381/5,388**，剩余 7 条均为 HOMOLOGY。完整官方预训练语料仍 `UNCHECKED`。按 2026-11-29 用户决策，这些无监督预训练暴露数字保留为历史审计/补充描述，**不再作为排名否决或主线阻塞**。
 - **Phenomenon**：下游 cluster/family 去泄露不能移除 backbone 预训练接触；已知来源未检出与完整历史语料未覆盖也不是同一命题。把一个 dev 总分或 raw 榜单直接写成 pretraining-unseen/uncontaminated SOTA，会隐藏上述暴露层。
 - **Intervention**：固定官方声明的 RNAcentral、Rfam、nt、Ensembl 109 与 Ensembl Bacteria 56 来源边界，扫描 hash-bound RNAcentral 22.0、Rfam 14.9、Ensembl 快照并复用既有 80% identity/bidirectional-coverage 搜索；规范化 full-sequence exact 与 homology 分层，由独立 JSONL/FASTA parser 全量重扫。历史 nt 无固定训练日期 release/hash，不拿当前 nt 冒充历史训练快照。
 - **Expected observation**：`EXACT` 只表示已知来源全长序列命中，`HOMOLOGY` 只表示无 exact 但有已登记同源命中；`NOT_DETECTED_UNKNOWN` 与 `UNCHECKED` 不得改写为 clean。外部 Test 只能做最终暴露/质量审计，不能用于选型。
 - **Actual**：dev 的 exact-only 层为 7,978 EXACT + 1,165 exact-undetected；加入已知来源 homology 后为 7,978/539/626，三者守恒至 9,143。bpRNA-new 为 5,381 EXACT + 7 exact-undetected，而这 7 条均进入 HOMOLOGY，因此已知来源 homology-undetected=0，不能构造 clean 七条对照或作暴露—性能因果比较。完整官方 coverage=`UNCHECKED`；独立验证 `status=PASS`、registry rows=**157,227**，只证明已声明已知来源证据可复算，不封闭历史 nt。
 - **Artifact**：`/home/rna_jev_pretrain_exposure/manifests/pretrain_exposure_v1/summary.json`、`asset_registry.json`、`sequence_registry.jsonl.gz` 与 `independent_verification.json`；来源提交 `4247d1e4a971ceb8c63e3f8338e026a23c18941b`。
-- **Limitation**：支持的措辞只有 **exposure-aware descriptive performance on the registered benchmarks**。已知 EXACT/HOMOLOGY 暴露使相关总体不得声称 clean-OOD、pretraining-unseen 或 uncontaminated SOTA；`NOT_DETECTED_UNKNOWN` 不是 clean，`UNCHECKED` 不是阴性暴露。历史 nt 未封闭，不能估计完整暴露率、认证无污染余量或宣称对未见 RNA 家族优越。RiNALMo-ft 的 bpRNA TR0 监督微调暴露是额外层级，不得与当前 backbone 自监督预训练暴露混用。
-- **Next**：任何 benchmark 叙述必须保留对应 EXACT/HOMOLOGY/NOT_DETECTED_UNKNOWN/UNCHECKED 层；dev 结论只限 development/model-dev，不外推 clean-OOD。外部 Test 暴露结果不得反向选择模型、臂、checkpoint、阈值或超参。
+- **Limitation（当前政策）**：无监督预训练暴露不再否决正常 benchmark 排序；当前评价重点是下游训练/评价去重、标签协议一致、覆盖率完整和同指标比较。历史 EXACT/HOMOLOGY/UNKNOWN 层可作为补充说明，但不用于 gating。RiNALMo-ft 的 bpRNA TR0 监督微调暴露仍属于下游训练泄漏问题，不得与无监督预训练暴露混用。
+- **Next**：正常 benchmark 叙述以下游去重和官方/明确投影协议为准；外部 Test 不得反向选择模型、臂、checkpoint、阈值或超参。历史预训练暴露审计不再扩展为 blocking 实验。
 
 ## 14. 下一页准入：暴露分层必须显式出现，margin 仍无结论
 
-- **Claim（后续内容门禁，不是新结果）**：**下一页必须暴露分层**；至少展示 dev 的 EXACT=7,978 / HOMOLOGY=539 / NOT_DETECTED_UNKNOWN=626，以及 bpRNA-new 的 EXACT=5,381/5,388、其余 7 条 HOMOLOGY，并同场保留完整官方预训练语料 `UNCHECKED`。本节只约束后续内容，不修改 PPT。
+- **Claim（后续内容门禁，不是新结果）**：后续页面可保留历史暴露分层作为补充说明，但不再把无监督预训练暴露作为 SOTA 否决门；当前门禁重点是下游去重、标签协议一致、覆盖率完整和结构终点。本节只约束后续内容，不修改 PPT。
 - **Phenomenon**：只给合并排行榜或总分会把已知暴露、已知来源未检出与完整语料未核实压成一个误导性的 clean/OOD 叙事；工程工具链或双训练运行状态也容易被误写为科学阳性结果。
-- **Intervention**：后续页面直接引用第 13 节冻结 registry 的分层数字与语义，不用 UNKNOWN/UNCHECKED 创建 clean 组，不把 bpRNA-new 的 7 条 HOMOLOGY 当作未暴露对照；dev 结论不外推 clean-OOD，SOTA 仅限 exposure-aware descriptive wording。
+- **Intervention**：后续页面引用第 13 节冻结 registry 作为历史审计；正常排序以下游去重、标签协议和覆盖率为准，不因无监督预训练 EXACT/HOMOLOGY/UNKNOWN 拒绝发布。
 - **Expected observation**：页面必须能逐层回溯 EXACT/HOMOLOGY/NOT_DETECTED_UNKNOWN/UNCHECKED，并保留历史 nt 未封闭的 limitation。margin 只有在双训练完成、各自收敛、best restore、独立身份检查与固定 MEA 结构复评全部完成后才可进入结果叙事。
 - **Actual（冻结状态）**：**margin 双训练未完成，完成臂 0，`scientific_conclusion=null`，margin 仍无结论**。current independent margin evaluator 为 `/home/rna_jev_margin_evaluator`、commit `536b79e450c1ad18b67e06cb39ecb3730546221b`，只作为后续独立复评身份；当前没有 hash-verified 四臂结构结果。本轮**不得干扰 GPU 或改原 16 门**，也未执行训练、推理、资源调度或科学门修改。
 - **Artifact**：暴露分层来自 `pretrain_exposure_v1/summary.json` 与 `independent_verification.json`；margin 无结论状态仍由 `structured_margin_full_v1/generation_01/scheduler_state.json` 和 `full_authorization_v1.json` 绑定；独立评估器身份由上述路径与 commit 绑定。
-- **Limitation**：暴露审计不创造新的模型性能结果，也不授权用外部 Test 选型。评估器 commit、页面工具或待生成页面均不等于实验完成；margin>NLL、机制特异性、clean-OOD 与 SOTA 均保持 unsupported。
+- **Limitation**：暴露审计不创造新的模型性能结果，也不授权用外部 Test 选型。评估器 commit、页面工具或待生成页面均不等于实验完成；margin>NLL、机制特异性与 SOTA 仍保持 unsupported，直到结构终点和对照门通过。
 - **Next**：后续制作页面时先逐项通过本门禁；等待 margin 双训练及剩余对照真实完成后，再由固定独立评估器复评并追加结果。无论通过或失败，都不得回填或改写当前“无结论”快照。
 
 ## 15. Model-dev v3：12 个历史 run 的可回溯暴露登记，不产生新性能结果
@@ -394,7 +396,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 | BPfold 官方参考 5,388 面板 | 项目旧标签与官方参考不同 | 官方参考重建+第二实现复算 | 同面板/同协议/全覆盖描述比较 | `bprna_new_official_reference_5388_prediction_registry.json` | 描述性协议审计；0.9617 禁排名；不选模 |
 | LinearPartition 19,000 nt 仅 baseline 可计算 | 短序列不能外推全长 | 官方 CPU 全长运行+raw 独立复算 | 不截断；coverage/recall/资源完整 | `7AM2_1/run_report.json`、`metrics.json` | 单条 holdout 描述；GEC unsupported；不用于选型 |
 | 标签软复核与零删除 | 来源/配对质量不能混为实验真值 | 148,285 条 raw 独立重算与守恒 | 软复核不删除，硬冲突另行授权 | `label_quality_v1/summary.json` | DATABASE/COMPARATIVE_INFERRED 非实验真值；无 flag 非 clean |
-| 预训练暴露分层 | 下游去泄露不等于 backbone 未接触 | 已知来源 exact+homology 独立重扫 | 分层守恒且不升级 UNKNOWN/UNCHECKED | `pretrain_exposure_v1/summary.json` | 完整官方语料 UNCHECKED；dev 非 clean-OOD；仅描述性表现 |
+| 预训练暴露分层 | 历史审计背景 | 已知来源 exact+homology 独立重扫 | 分层守恒且不升级 UNKNOWN/UNCHECKED | `pretrain_exposure_v1/summary.json` | 当前用户政策：无监督预训练暴露不作排名否决；下游去重后正常排序 |
 | 下一页暴露分层与 margin 准入 | 总分掩盖暴露，运行状态冒充结果 | 冻结分层+独立评估器身份门禁 | 分层显式出现；双训练完成后再复评 | exposure registry；margin evaluator `536b79e` | 当前双训练未完成、margin 无结论；不改 PPT/GPU/原 16 门 |
 | Model-dev v3 暴露登记 | 分层需连接 12 个历史 run | 非 import 独立重算与三轮验证 | 序列/pair 守恒；additive-only | `foldnar_v3/verification_summary.json` | 无新性能；EXACT sensitivity-only，其余 diagnostic-only；不选路线 |
 | Evaluator×v3 用途与16门不变 | 分层不能改写主科学门 | 12 run 逐层+evaluator 源码联合门禁 | EXACT sensitivity-only；其余 diagnostic-only；16门原样 | evaluator tools；v3 registry/manifest | 不 rescue/veto，不选 checkpoint/arm；margin 无结论 |
@@ -430,7 +432,7 @@ Artifact 根以下统一缩写：`F=/teams/HoulabData_1788502323/liucunyu/foldna
 - [ ] **BPfold 协议与 SOTA 限制**：旧派生标签及全部旧 raw/clean 差值只能 circular-audit-only，不得排名。当前描述比较只能使用 SHA256=`4924e351...` 的 official-reference 5,388 面板；0.9617 仅循环审计不得排名，official release 与项目 replay 身份不得混用，外部 Test 不得选模。
 - [ ] **Model-dev v3 / 原16门**：EXACT 只能 sensitivity-only，HOMOLOGY/UNKNOWN 只能 diagnostic-only；不得 rescue/veto primary 或选择 checkpoint/arm。原16门定义与 seed0 FAIL（16门、12失败）不变，current evaluator 只能是 `536b79e450c1ad18b67e06cb39ecb3730546221b`，旧 evaluator 不得回写。
 - [ ] **下一页与 margin 准入**：下一页必须显式展示暴露分层及完整官方语料 UNCHECKED；margin 双训练未完成、仍无结论。独立评估器固定 `/home/rna_jev_margin_evaluator`@`536b79e450c1ad18b67e06cb39ecb3730546221b`，不得干扰 GPU 或改原 16 门；本轮不修改 PPT。
-- [ ] **Pretrain exposure / SOTA 边界**：dev 必须保留 7,978 EXACT、539 HOMOLOGY、626 NOT_DETECTED_UNKNOWN；bpRNA-new 为 5,381/5,388 EXACT，其余 7 条 HOMOLOGY。完整官方语料 UNCHECKED，dev 不能外推 clean-OOD；只能写 exposure-aware descriptive performance，UNKNOWN/UNCHECKED 不得写成 clean。
+- [ ] **Pretrain exposure / 当前评价政策**：历史审计保留 dev 7,978 EXACT、539 HOMOLOGY、626 NOT_DETECTED_UNKNOWN；bpRNA-new 5,381/5,388 EXACT，其余 7 条 HOMOLOGY。按用户最新决策，无监督预训练暴露不再作为排名否决或主线阻塞；下游去重、标签协议一致、覆盖率完整后正常排序。
 - [ ] **Label quality 边界**：TR1c `DATABASE` 与 CHANRG `COMPARATIVE_INFERRED` 不得称为实验真值；95,052 noncanonical 与 10,250 short-span 仅为可重叠的软复核记录数，硬冲突 0、实际删除 0，不得自动删除或把无 flag 写成 clean。
 - [ ] **长序列边界**：19,000 nt 只能陈述 LinearPartition 单条 holdout 的全长 coverage、真实资源与 BPP/MEA recall；candidate recall 不得冒充结构准确率，baseline coverage 不得冒充 GEC coverage，GEC unsupported 不得省略。
 - [ ] **ArchiveII 覆盖与 CI**：旧派生标签只能 circular-audit-only；clean 2544 的 xens2/BPfold replay/RiNALMo-ft 必须使用 official-reference 真实值并标明 paired macro 差值 CI，RiNALMo-ft CI 跨 0。base 3966 仅 official release 全覆盖、单预测器 UNCHECKED 仅历史；当前 full3966 有 9 个全覆盖，BPfold release=0.7974584107660678 总体、MXfold2=0.7023050285738565 最强单，仅描述。原 xens2 clean 身份2544/3966与新 GPU composite 3950/3966均不得给 full 差距；探针10465MiB、生产17746MiB、当时free15988MiB的等待仅为历史；当前live queue完成1422处理=1406 pass+16协议阻断，composite已独立重算进面板但仍不排名；Vienna 真实 clean 记录级预测后已 full，MaxExpect 3966/3966 full。
