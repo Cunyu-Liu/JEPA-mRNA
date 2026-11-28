@@ -17,7 +17,7 @@ OUT = ROOT / "artifacts/archiveii_full3966_cpu_recovery_20261127"
 REPORT = ROOT / "docs/plans/2026-11-27-archiveii-full3966-recovered-panel.md"
 WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127")
 VIENNA_CLEAN_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_vienna_clean_cpu_20261127")
-XENS2_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/production")
+XENS2_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/production/xens2")
 XENS2_EVIDENCE_PATH = ROOT / "source_data/archiveii_vienna_full3966_cpu_20261127/xens2_queue_evidence.json"
 FULL_ID = "archiveii_official_reference_3966"
 CLEAN_ID = "archiveii_official_reference_clean_2544"
@@ -123,7 +123,7 @@ def verify_composite(baseline, plan_by_name, clean_names, base_rows):
     for name, row in composite.items():
         if name in plan_by_name:
             plan = plan_by_name[name]
-            compare(row["origin"], "CPU_RECOVERY_1422", f"recovery origin {baseline}/{name}")
+            compare(row["origin"], "XENS2_GPU_RECOVERY_1422" if baseline == "xens2" else "CPU_RECOVERY_1422", f"recovery origin {baseline}/{name}")
             compare(row["sequence_sha256"], plan["sequence_sha256"], f"recovery sequence {baseline}/{name}")
             checkpoint_file = checkpoint_path(baseline, name)
             checkpoint = json.loads(checkpoint_file.read_text())
@@ -142,7 +142,8 @@ def verify_composite(baseline, plan_by_name, clean_names, base_rows):
 
 
 def score(panel, composite, baseline, panel_id, actual_records):
-    prediction_id = f"{baseline}/archiveii_official_reference_3966/cpu_recovery_v1"
+    prediction_id = ("xens2/archiveii_official_reference_3966/gpu_recovery_v1" if baseline == "xens2"
+                     else f"{baseline}/archiveii_official_reference_3966/cpu_recovery_v1")
     totals = [0, 0, 0]
     values, f1_by_name, missing = [], {}, []
     for label in panel:
@@ -213,17 +214,18 @@ def main():
     actual_by_id = {row["prediction_id"]: row for row in document["rows"]}
     record_rows = read_gzip(OUT / "recovered_per_record_metrics.jsonl.gz")
     actual_records = {(row["panel_id"], row["prediction_id"], row["name"]): row for row in record_rows}
-    require(len(actual_records) == len(record_rows) == 50670, "metric population")
+    require(len(actual_records) == len(record_rows) == 57164, "metric population")
     clean_f1 = {}
     for baseline in BASELINES:
         if baseline == "xens2" and not (XENS2_WORK / "coverage.json").is_file():
             compare(document["recovery"][baseline]["status"], "NOT_STARTED", "xens2 queue status")
             continue
         composite, coverage = verify_composite(baseline, plan_by_name, clean_names, base_document["rows"])
-        prediction_id = f"{baseline}/archiveii_official_reference_3966/cpu_recovery_v1"
+        prediction_id = ("xens2/archiveii_official_reference_3966/gpu_recovery_v1" if baseline == "xens2"
+                         else f"{baseline}/archiveii_official_reference_3966/cpu_recovery_v1")
         actual = actual_by_id[prediction_id]
         compare(actual["n_prediction_records"], len(composite), f"composite n {baseline}")
-        compare(actual["recovery_complete_1422"], baseline != "rnastructure_maxexpect", f"recovery complete {baseline}")
+        compare(actual["recovery_complete_1422"], baseline not in {"rnastructure_maxexpect", "xens2"}, f"recovery complete {baseline}")
         for panel_id, panel in ((FULL_ID, full), (CLEAN_ID, clean)):
             metrics, f1_by_name, missing = score(panel, composite, baseline, panel_id, actual_records)
             extra = sorted(set(composite) - {row["name"] for row in panel})
@@ -247,7 +249,7 @@ def main():
         for key in ("status", "n_completed", "n_pass", "remaining_count"):
             compare(document["recovery"][baseline][key], coverage[key], f"recovery summary {baseline}.{key}")
         print(f"VERIFY_BASELINE_PASS {baseline}", flush=True)
-    require(len(clean_f1) == 8, "eight clean composite identities")
+    require(len(clean_f1) == 9, "nine clean composite identities")
     xens2_per_record = read_gzip(BASE / "per_record_metrics.jsonl.gz")
     xens2_f1 = {row["name"]: row["f1"] for row in xens2_per_record if row["panel_id"] == CLEAN_ID and row["prediction_id"] == XENS2}
     names = [row["name"] for row in clean]
@@ -270,17 +272,24 @@ def main():
                             ("strongest_single_predictor", [row for row in eligible if "ensemble" not in row["model_form"]])):
             strongest = max(subset, key=lambda row: row["panels"][panel_id]["metrics"]["micro_f1"])
             compare(document[panel_name][key], public(strongest, panel_id), f"{panel_name}.{key}")
-    compare(document["coverage_accounting"], {"base_identities": 36, "recovery_identities": 8, "total_identities": 44,
-            "recovery_complete_1422": 7, "clean_2544_full_coverage": 28, "official_3966_full_coverage": 8,
-            "xens2_official_3966_coverage": 2544 / 3966, "xens2_protocol_blocked_records": 16}, "coverage accounting")
+    compare(document["coverage_accounting"], {"base_identities": 36, "recovery_identities": 9, "total_identities": 45,
+            "recovery_complete_1422": 7, "clean_2544_full_coverage": 29, "official_3966_full_coverage": 8,
+            "xens2_official_3966_coverage": 3950 / 3966, "xens2_protocol_blocked_records": 16}, "coverage accounting")
     compare(document["base_system_metrics"]["sha256"], sha256(BASE / "system_metrics.json"), "base system SHA")
     compare(document["recovery_plan_sha256"], sha256(SOURCE / "recovery_plan.json"), "plan SHA")
-    queue = document["recovery"]["xens2"]["queue_evidence"]
+    queue = json.loads(XENS2_EVIDENCE_PATH.read_text())
     require(queue["production_started"] is False and queue["status"]["state"] == "WAITING_PRODUCTION", "xens2 queue evidence")
     require(queue["status"]["required_free_mib"] > queue["status"]["device"]["free_mib"], "xens2 production gate")
     compare(queue["status"]["measured_peak_mib"], 10465.0, "xens2 measured peak")
     compare(queue["status"]["required_free_mib"], 17746, "xens2 required free")
-    compare(sha256(XENS2_EVIDENCE_PATH), json.loads((OUT / "source_manifest.json").read_text())["xens2_queue_evidence_sha256"], "queue evidence SHA")
+    source_manifest = json.loads((OUT / "source_manifest.json").read_text())
+    compare(sha256(XENS2_EVIDENCE_PATH), source_manifest["xens2_queue_evidence_sha256"], "historical queue evidence SHA")
+    live_queue_path = Path(source_manifest["xens2_live_queue_status"])
+    live_queue = json.loads(live_queue_path.read_text())
+    require(live_queue["state"] == "COMPLETE_WITH_PROTOCOL_BLOCKS" and live_queue["returncode"] == 0, "xens2 live completion")
+    compare(live_queue["coverage"]["n_pass"], 1406, "xens2 live pass")
+    compare(live_queue["coverage"]["n_blocked"], 16, "xens2 live blocked")
+    compare(sha256(live_queue_path), source_manifest["xens2_live_queue_status_sha256"], "live queue SHA")
     pause = document["recovery"]["rnastructure_maxexpect"]["pause"]
     require(pause["status"] == "PAUSED_RECOVERABLE" and pause["n_completed"] == 12 and "--baseline rnastructure_maxexpect" in pause["resume_command"], "MaxExpect pause evidence")
     recommendation = json.loads((OUT / "registry_recommendation.json").read_text())
@@ -288,7 +297,7 @@ def main():
     compare(recommendation["suggested_prediction_overlay"]["sha256"], sha256(OUT / "system_metrics.json"), "recommendation SHA")
     compare(recommendation["suggested_prediction_overlay"]["new_prediction_ids"], document["new_prediction_ids"], "new IDs")
     gaps = json.loads((OUT / "official_coverage_gaps.json").read_text())
-    compare(gaps["new_prediction_panels"], {row["prediction_id"]: row["panels"] for row in all_rows if row["source_group"] == "CPU_RECOVERY_COMPOSITE"}, "coverage gaps")
+    compare(gaps["new_prediction_panels"], {row["prediction_id"]: row["panels"] for row in all_rows if row["source_group"] in {"CPU_RECOVERY_COMPOSITE", "XENS2_GPU_RECOVERY_COMPOSITE"}}, "coverage gaps")
     manifest = json.loads((OUT / "source_manifest.json").read_text())
     for baseline in BASELINES:
         item = manifest["predictor_metadata"][baseline]
@@ -297,13 +306,13 @@ def main():
         else:
             compare(sha256(item["path"]), item["sha256"], f"predictor metadata {baseline}")
     receipt = json.loads((OUT / "build_receipt.json").read_text())
-    compare(receipt["new_per_record_metric_rows"], 50670, "receipt rows")
+    compare(receipt["new_per_record_metric_rows"], 57164, "receipt rows")
     compare(receipt["recovery_complete_baselines"], 7, "receipt complete")
     for relative, item in receipt["outputs"].items():
         path = ROOT / relative
         compare(path.stat().st_size, item["bytes"], f"receipt bytes {relative}")
         compare(sha256(path), item["sha256"], f"receipt SHA {relative}")
-    require(document["gpu_used"] is False and document["external_test_model_selection"] is False, "compute boundary")
+    require(document["gpu_used"] is True and document["external_test_model_selection"] is False, "compute boundary")
     files = [ROOT / "tools/build_archiveii_full3966_recovered_panel_20261127.py",
              ROOT / "tools/verify_archiveii_full3966_recovered_panel_20261127.py",
              ROOT / "tests/test_archiveii_full3966_recovered_panel_20261127.py", REPORT,
@@ -312,16 +321,16 @@ def main():
     files += [OUT / "predictions" / f"{baseline}.jsonl.gz" for baseline in BASELINES if (OUT / "predictions" / f"{baseline}.jsonl.gz").is_file()]
     verification = {"schema_version": "archiveii.full3966.cpu_recovery.independent_verification.round2.v1",
         "status": "PASS_INDEPENDENT_SECOND_IMPLEMENTATION", "generator_imported": False,
-        "recovery_checkpoints_verified": 1422 * 7 + 2544 * 3 + 12, "composite_predictions_verified": 30318,
-        "per_record_metrics_compared_field_by_field": 50670, "new_prediction_identities": 8,
-        "full_3966_coverage_identities": 8, "clean_2544_coverage_identities": 28,
+        "recovery_checkpoints_verified": 1422 * 8 + 2544 * 3 + 12, "composite_predictions_verified": 34268,
+        "per_record_metrics_compared_field_by_field": 57164, "new_prediction_identities": 9,
+        "full_3966_coverage_identities": 8, "clean_2544_coverage_identities": 29,
         "checks": ["all per-ID checkpoint sequence/pairs/SHA", "composite origin and clean source identity",
                    "strict pair metrics and empty/empty convention", "coverage/missing IDs and no zero imputation",
                    "clean xens2 delta/CI and full-coverage-only strongest", "registry recommendation and delivery hashes"],
         "new_inference_executed_by_verifier": False, "gpu_used": False, "external_test_model_selection": False,
         "deliverables": {str(path.relative_to(ROOT)): {"bytes": path.stat().st_size, "sha256": sha256(path)} for path in files}}
     (OUT / "verification_round2.json").write_text(json.dumps(verification, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({"status": verification["status"], "checkpoints": 1422 * 7 + 2544 * 3 + 12, "metrics": 50670}, sort_keys=True))
+    print(json.dumps({"status": verification["status"], "checkpoints": 1422 * 8 + 2544 * 3 + 12, "metrics": 57164}, sort_keys=True))
 
 
 if __name__ == "__main__":

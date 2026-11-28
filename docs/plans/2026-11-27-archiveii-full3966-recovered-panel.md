@@ -1,6 +1,6 @@
-# ArchiveII full3966 CPU 恢复双面板
+# ArchiveII full3966 恢复双面板
 
-新预测仅来自官方 clean 2544 之外的 1422 条，原始 sequence/SHA 未改写；新 identity 为 clean-frozen + CPU-recovery composite。缺预测不补 0，部分覆盖不排名。xens2 仍只有 clean 2544，故 full3966 的 xens2 差距保持 `UNCHECKED_XENS2_NOT_FULL_COVERAGE`。
+新预测仅来自官方 clean 2544 之外的 1422 条，原始 sequence/SHA 未改写；新 identity 为 clean-frozen + recovery composite。缺预测不补 0，部分覆盖不排名。xens2 已恢复 1406 条、16 条协议阻断，composite 为 3950/3966，故 full3966 的 xens2 差距仍保持 `UNCHECKED_XENS2_NOT_FULL_COVERAGE`。
 
 | Baseline | checkpoint 完成 | PASS | coverage | full3966 可排名 |
 |---|---:|---:|---:|---|
@@ -12,7 +12,7 @@
 | vienna_mea | 1422 / 1422 | 1422 | 1.0000000000 | True |
 | rnastructure_fold | 1422 / 1422 | 1422 | 1.0000000000 | True |
 | rnastructure_maxexpect | 12 / 1422 | 12 | 0.0084388186 | False |
-| xens2 | 0 / 1422 | 0 | 0.0000000000 | False |
+| xens2 | 1422 / 1422 | 1406 | 1.0000000000 | False |
 
 ## full3966 全覆盖指标
 
@@ -41,6 +41,7 @@
 | `vienna_mea/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.5660990282 | 0.5921087656 | -0.2495531789 | -0.2675499469 |
 | `rnastructure_fold/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.5350925587 | 0.5684986641 | -0.2805596483 | -0.2911600484 |
 | `rnastructure_maxexpect/archiveii_official_reference_3966/cpu_recovery_v1` | 2544 | 0.5511324874 | 0.5731918597 | -0.2645197197 | -0.2864668527 |
+| `xens2/archiveii_official_reference_3966/gpu_recovery_v1` | 2544 | 0.8156522070 | 0.8596587125 | +0.0000000000 | +0.0000000000 |
 
 ## 最强结果
 
@@ -49,7 +50,7 @@
 - full_3966 strongest_ensemble: `bpfold_official_release/archiveii`，micro-F1=0.7974584107660678，macro-F1=0.8200813622940291。
 - full_3966 strongest_single_predictor: `mxfold2/archiveii_official_reference_3966/cpu_recovery_v1`，micro-F1=0.7023050285738565，macro-F1=0.7457279552838411。
 
-xens2 探针 peak=10465.0 MiB，生产门限=17746 MiB，快照 free=15988 MiB，状态=`WAITING_PRODUCTION`，排队 PID=`4131240`。未启动生产，未声称 xens2 full3966。
+xens2 live queue=`COMPLETE_WITH_PROTOCOL_BLOCKS`，处理 1422/1422，pass=1406，protocol-blocked=16，预测 SHA256=`dd776f0be7f8470f37e57e939179088b14acf4f7369cb67f837c9534ffa5adf1`。恢复完成不等于 full coverage；3950/3966 仍不排名。
 
 MaxExpect 已安全暂停在 12 条，原 PID `4122842`。恢复命令：`cd /home/rna_jev_archive_label_lineage && /root/miniconda3/envs/lucaone_cu128/bin/python tools/recover_archiveii_full3966_cpu_baselines_20261127.py --baseline rnastructure_maxexpect`。其 coverage 仍为部分，不参与 full3966 排名。
 

@@ -19,8 +19,9 @@ OUT = ROOT / "artifacts/archiveii_full3966_cpu_recovery_20261127"
 REPORT = ROOT / "docs/plans/2026-11-27-archiveii-full3966-recovered-panel.md"
 WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_full3966_cpu_20261127")
 VIENNA_CLEAN_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_vienna_clean_cpu_20261127")
-XENS2_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/production")
+XENS2_WORK = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/production/xens2")
 XENS2_EVIDENCE_PATH = ROOT / "source_data/archiveii_vienna_full3966_cpu_20261127/xens2_queue_evidence.json"
+XENS2_LIVE_STATUS_PATH = Path("/teams/HoulabData_1788502323/liucunyu/rna_ssp_20261024/recovery/archiveii_xens2_gpu_queue_20261127/queue_status.json")
 VIENNA_PLAN_PATH = ROOT / "source_data/archiveii_vienna_full3966_cpu_20261127/clean_recovery_plan.json"
 FULL_PANEL = ROOT / "source_data/archiveii_official_reference_20261127/official_reference_3966.jsonl.gz"
 CLEAN_PANEL = ROOT / "source_data/archiveii_official_reference_20261127/official_reference_clean_2544.jsonl.gz"
@@ -200,7 +201,7 @@ def recovery_predictions(baseline, plan_rows):
         pairs = sorted(pair_set(record["pairs"], len(plan["seq"])))
         if record["pair_set_sha256"] != value_sha(pairs):
             raise ValueError(f"recovery pair SHA mismatch {name}")
-        output[name] = {"pairs": pairs, "origin": "CPU_RECOVERY_1422",
+        output[name] = {"pairs": pairs, "origin": "XENS2_GPU_RECOVERY_1422" if baseline == "xens2" else "CPU_RECOVERY_1422",
                         "checkpoint_sha256": sha256(work_root / "records" / (hashlib.sha256(name.encode()).hexdigest()[:24] + ".json"))}
     if len(output) != coverage["n_pass"]:
         raise ValueError(f"recovery PASS accounting mismatch {baseline}")
@@ -259,7 +260,8 @@ def main():
         write_gzip_jsonl(OUT / "predictions" / f"{baseline}.jsonl.gz", [
             {"name": row["name"], "sequence_sha256": row["sequence_sha256"], **composite[row["name"]]}
             for row in full if row["name"] in composite])
-        row = {"prediction_id": prediction_id, "source_group": "CPU_RECOVERY_COMPOSITE",
+        row = {"prediction_id": prediction_id,
+               "source_group": "XENS2_GPU_RECOVERY_COMPOSITE" if baseline == "xens2" else "CPU_RECOVERY_COMPOSITE",
                "registry_status": "UNREGISTERED_INDEPENDENT_AUDIT_ASSET",
                "path": str((OUT / "predictions" / f"{baseline}.jsonl.gz").relative_to(ROOT)),
                "available": True, "model_form": "three_checkpoint_ensemble" if baseline == "xens2" else "deterministic_single_predictor",
@@ -333,7 +335,8 @@ def main():
         },
     }
     write_gzip_jsonl(OUT / "recovered_per_record_metrics.jsonl.gz", metric_rows)
-    document = {"schema_version": SCHEMA, "scope": "deterministic CPU checkpoint merge and frozen-prediction rescoring; no GPU or model selection",
+    xens2_gpu_recovery_used = recovery_summary["xens2"]["n_pass"] > 0
+    document = {"schema_version": SCHEMA, "scope": "deterministic checkpoint merge and frozen-prediction rescoring; CPU baselines plus gated xens2 GPU recovery; no model selection",
         "base_system_metrics": {"path": str((BASE / "system_metrics.json").relative_to(ROOT)), "sha256": sha256(BASE / "system_metrics.json")},
         "label_panels": base_document["label_panels"], "metric_contract": base_document["metric_contract"],
         "recovery_plan_sha256": sha256(SOURCE / "recovery_plan.json"), "recovery": recovery_summary,
@@ -344,8 +347,9 @@ def main():
             "xens2_protocol_blocked_records": 16},
         **strongest, "rows": all_rows, "new_prediction_ids": [row["prediction_id"] for row in new_rows],
         "new_per_record_metric_rows": len(metric_rows), "external_test_model_selection": False,
-        "new_training_or_inference": True, "inference_scope": "official-only 1422 CPU baselines only; no GPU",
-        "gpu_used": False, "shared_registry_modified": False}
+        "new_training_or_inference": True,
+        "inference_scope": "official-only 1422 CPU baselines plus frozen xens2 GPU recovery; 16 protocol blocks retained",
+        "gpu_used": xens2_gpu_recovery_used, "shared_registry_modified": False}
     write_json(OUT / "system_metrics.json", document)
     recommendation = {"schema_version": SCHEMA + ".registry_recommendation", "recommendation_only": True,
         "apply_by_unified_process_only": True, "shared_registry_modified": False,
@@ -360,11 +364,13 @@ def main():
         "work_root": str(WORK), "base_system_metrics_sha256": sha256(BASE / "system_metrics.json"),
         "full_panel_sha256": sha256(FULL_PANEL), "clean_panel_sha256": sha256(CLEAN_PANEL),
         "xens2_queue_evidence_sha256": sha256(XENS2_EVIDENCE_PATH),
+        "xens2_live_queue_status": str(XENS2_LIVE_STATUS_PATH),
+        "xens2_live_queue_status_sha256": sha256(XENS2_LIVE_STATUS_PATH),
         "predictor_metadata": {baseline: {"path": str((XENS2_WORK if baseline == "xens2" else WORK / baseline) / "predictor_metadata.json"),
             "sha256": recovery_summary[baseline]["predictor_metadata_sha256"]} for baseline in BASELINES},
-        "shared_registry_modified": False, "gpu_used": False, "external_test_model_selection": False})
-    lines = ["# ArchiveII full3966 CPU 恢复双面板", "",
-             "新预测仅来自官方 clean 2544 之外的 1422 条，原始 sequence/SHA 未改写；新 identity 为 clean-frozen + CPU-recovery composite。缺预测不补 0，部分覆盖不排名。xens2 仍只有 clean 2544，故 full3966 的 xens2 差距保持 `UNCHECKED_XENS2_NOT_FULL_COVERAGE`。", "",
+        "shared_registry_modified": False, "gpu_used": xens2_gpu_recovery_used, "external_test_model_selection": False})
+    lines = ["# ArchiveII full3966 恢复双面板", "",
+             "新预测仅来自官方 clean 2544 之外的 1422 条，原始 sequence/SHA 未改写；新 identity 为 clean-frozen + recovery composite。缺预测不补 0，部分覆盖不排名。xens2 已恢复 1406 条、16 条协议阻断，composite 为 3950/3966，故 full3966 的 xens2 差距仍保持 `UNCHECKED_XENS2_NOT_FULL_COVERAGE`。", "",
              "| Baseline | checkpoint 完成 | PASS | coverage | full3966 可排名 |",
              "|---|---:|---:|---:|---|"]
     for baseline in BASELINES:
@@ -398,6 +404,9 @@ def main():
     if queue_evidence:
         queue_status = queue_evidence["status"]
         lines += ["", f"xens2 探针 peak={queue_status['measured_peak_mib']} MiB，生产门限={queue_status['required_free_mib']} MiB，快照 free={queue_status['device']['free_mib']} MiB，状态=`{queue_status['state']}`，排队 PID=`{queue_evidence['queue_pid']}`。未启动生产，未声称 xens2 full3966。"]
+    if xens2_gpu_recovery_used:
+        live_queue = json.loads(XENS2_LIVE_STATUS_PATH.read_text())
+        lines += ["", f"xens2 live queue=`{live_queue['state']}`，处理 {live_queue['coverage']['n_completed']}/1422，pass={live_queue['coverage']['n_pass']}，protocol-blocked={live_queue['coverage']['n_blocked']}，预测 SHA256=`{live_queue['coverage']['predictions_sha256']}`。恢复完成不等于 full coverage；3950/3966 仍不排名。"]
     paused = recovery_summary["rnastructure_maxexpect"].get("pause")
     if paused:
         lines += ["", f"MaxExpect 已安全暂停在 {recovery_summary['rnastructure_maxexpect']['n_completed']} 条，原 PID `{paused['pid']}`。恢复命令：`{paused['resume_command']}`。其 coverage 仍为部分，不参与 full3966 排名。"]

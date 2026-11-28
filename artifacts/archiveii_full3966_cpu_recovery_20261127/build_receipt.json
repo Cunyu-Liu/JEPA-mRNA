@@ -1,9 +1,9 @@
 {
-  "new_per_record_metric_rows": 50670,
+  "new_per_record_metric_rows": 57164,
   "outputs": {
     "artifacts/archiveii_full3966_cpu_recovery_20261127/official_coverage_gaps.json": {
-      "bytes": 720560,
-      "sha256": "a338920d61834362b1a6cf211a55ea2463ebe7c5562665cfb8210482a97684fa"
+      "bytes": 722581,
+      "sha256": "15a94ba72b1d36c4af5a6910d998cb73c4b11b589e8dde3619ecc3952535a74a"
     },
     "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/contrafold.jsonl.gz": {
       "bytes": 742714,
@@ -37,25 +37,29 @@
       "bytes": 781939,
       "sha256": "366ac5dc13c4b6264ea3ce0a9502dbfaf605508934f552e5a493382179a837ed"
     },
+    "artifacts/archiveii_full3966_cpu_recovery_20261127/predictions/xens2.jsonl.gz": {
+      "bytes": 553478,
+      "sha256": "5c58ded3ed068de026f2e00d24dbcbd1ca417939be4b726b95ad69b72379fcef"
+    },
     "artifacts/archiveii_full3966_cpu_recovery_20261127/recovered_per_record_metrics.jsonl.gz": {
-      "bytes": 1375768,
-      "sha256": "a52d6e7f446028e773f02f15906da315f36a4d1c2ef65aa657d17043116ca390"
+      "bytes": 1524353,
+      "sha256": "8cbcc421d9de0682088537c03ce08c406488b2f5509b4538f1ea3b4a29c9edd4"
     },
     "artifacts/archiveii_full3966_cpu_recovery_20261127/registry_recommendation.json": {
-      "bytes": 152604,
-      "sha256": "8ad5f429bcb40e0483ee60d9574ac0c483419b54af37e5bf7d2848bbd16f7126"
+      "bytes": 83003,
+      "sha256": "f8257b4c8873fab4bb28472314fa90beb46e6242028978b410da189262c62ba4"
     },
     "artifacts/archiveii_full3966_cpu_recovery_20261127/source_manifest.json": {
-      "bytes": 3137,
-      "sha256": "61fc6ca166dbf0ff2e32db1cd58891a805efab6b7bf8d1413617c4745731a7cc"
+      "bytes": 3457,
+      "sha256": "e11381fe2f24eb0f37757849fb89d4a9355483499d1e6d7ebbf6575148ee299b"
     },
     "artifacts/archiveii_full3966_cpu_recovery_20261127/system_metrics.json": {
-      "bytes": 2288303,
-      "sha256": "5357c12c68c080241564a432f65623e554e945569a34ea677bace05423e6483e"
+      "bytes": 2293948,
+      "sha256": "44d58f59e42042f4d63909f4b4e822569254d8549dde96409d4ef1f7631baefb"
     },
     "docs/plans/2026-11-27-archiveii-full3966-recovered-panel.md": {
-      "bytes": 4824,
-      "sha256": "66f60bb8c3ba3382e9f83e879e57b6f8ce0eec4b6c56dea815ca4ec4ef8d2788"
+      "bytes": 5072,
+      "sha256": "e72d331692c46163abde671fbbf7c5dbd8d05aadbcfb273be679c451ca62cedb"
     },
     "source_data/archiveii_vienna_full3966_cpu_20261127/clean_recovery_plan.json": {
       "bytes": 1688896,
