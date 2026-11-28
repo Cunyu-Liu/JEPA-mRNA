@@ -74,7 +74,7 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
     assert built["report"]["scope"] == {
         "legacy_prediction_derived_labels_sota_eligible": False,
         "official_reference_descriptive_only": True, "pdb62_91_ranking_allowed": False,
-        "archiveii_full3966_full_coverage_identities": 8,
+        "archiveii_full3966_full_coverage_identities": 9,
         "archiveii_full3966_xens2_ranking_allowed": False,
         "archiveii_full3966_xens2_gpu_recovery_complete": True,
         "archiveii_full3966_xens2_composite_coverage": 3950,
@@ -95,7 +95,7 @@ def test_synthetic17_to_page37_preserves_all_prior_xml_and_real_ppt(tmp_path):
     for phrase in ("标签谱系决定SOTA证据资格", "DERIVED_FROM_BPFOLD_PREDICTIONS",
                    "0.8156522070", "0.8999331355", "0.8204522395", "+0.0842809284",
                    "+0.0048000324", "62 rebuilt / 91 UNCHECKED", "不得排名",
-                   "ArchiveII full3966：8 full", "Vienna MFE/centroid/MEA full",
+                   "ArchiveII full3966：9 full", "Vienna MFE/centroid/MEA + MaxExpect full",
                    "MXfold2 strongest single=0.7023050286",
                    "xens2 GPU composite 3950/3966", "16 blocked", "原clean身份2544单列", "full未完成",
                    "PROJECTED · TS0 1288 · TestSetB 428", "与 official 分开报告",
